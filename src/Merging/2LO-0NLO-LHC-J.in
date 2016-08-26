@@ -23,6 +23,11 @@ set PPMFactory:OrderInAlphaS 2
 set PPMFactory:OrderInAlphaEW 0
 do PPMFactory:Process p p j j
 
+
+create ColorFull::TraceBasis LargeNTraceBasis
+set LargeNTraceBasis:LargeN On
+set Merger:LargeNBasis LargeNTraceBasis
+
 cd /Herwig/MatrixElements/Matchbox/Scales/
 set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
 

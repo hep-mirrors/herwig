@@ -116,7 +116,7 @@ do PPMFactory:EndParticleGroup
 cd /Herwig/Merging
 create Herwig::Merger Merger
 
-create ColorFull::TraceBasis LargeNColourBasis
+create Herwig::SimpleColourBasis  LargeNColourBasis
 set LargeNColourBasis:LargeN On
 set Merger:LargeNBasis LargeNColourBasis
 

@@ -1245,7 +1245,7 @@ void ColourBasis::read(compressed_matrix<double>& m, istream& is,
 void ColourBasis::doinit() {
   HandlerBase::doinit();
   if ( theSearchPath.empty() && factory() )
-    theSearchPath = factory()->buildStorage();
+    theSearchPath = factory()->runStorage();
   readBasis();
 }
 
@@ -1257,7 +1257,7 @@ void ColourBasis::dofinish() {
 void ColourBasis::doinitrun() {
   HandlerBase::doinitrun();
   if ( theSearchPath.empty() && factory() )
-    theSearchPath = factory()->buildStorage();
+    theSearchPath = factory()->runStorage();
   readBasis();
 }
 

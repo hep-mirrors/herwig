@@ -54,9 +54,10 @@ set EEMFactory:OrderInAlphaEW 2
 do EEMFactory:Process e- e+ j j 
 
 
-create ColorFull::TraceBasis LargeNColourBasis
+create Herwig::SimpleColourBasis  LargeNColourBasis
 set LargeNColourBasis:LargeN On
-set /Herwig/Merging/Merger:LargeNBasis LargeNColourBasis
+set Merger:LargeNBasis LargeNColourBasis
+
 cd /Herwig/Generators
 set LEPGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL

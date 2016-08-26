@@ -1,8 +1,8 @@
 read Merging/MergingLHC.in
 
 
-set Herwig/DipoleShower/Kinematics/IFLightKinematics:OpenInintialStateZ Yes 
-set Herwig/DipoleShower/Kinematics/IILightKinematics:OpenInintialStateZ Yes
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:OpenInintialStateZ Yes
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:OpenInintialStateZ Yes
 set /Herwig/Merging/Merger:OpenInintialStateZ Yes
 
 cd /Herwig/Merging

@@ -1,8 +1,8 @@
 read Merging/MergingLHC.in
 
 
-set Herwig/DipoleShower/Kinematics/IFLightKinematics:OpenInintialStateZ Yes 
-set Herwig/DipoleShower/Kinematics/IILightKinematics:OpenInintialStateZ Yes
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:OpenInintialStateZ Yes
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:OpenInintialStateZ Yes
 set /Herwig/Merging/Merger:OpenInintialStateZ Yes
 
 cd /Herwig/Merging
@@ -26,6 +26,11 @@ cd /Herwig/Merging
 set PPMFactory:OrderInAlphaS 0
 set PPMFactory:OrderInAlphaEW 2
 do PPMFactory:Process p p e+ e-
+
+
+create ColorFull::TraceBasis LargeNTraceBasis
+set LargeNTraceBasis:LargeN On
+set Merger:LargeNBasis LargeNTraceBasis
 
 
 cd /Herwig/Generators
