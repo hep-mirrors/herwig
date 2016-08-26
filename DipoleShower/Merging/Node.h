@@ -85,15 +85,16 @@ namespace Herwig {
     bool headContribution(double hardscalefactor);
     
     bool DipolesAboveMergeingScale(Ptr<Node>::ptr& selectedNode,double& sum,Energy& minpt,int& number);
-    
+ 
+    /*   
     bool diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
     
     bool psBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
     
     bool dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
+    */
     
-    
-    double calcPsMinusDip(Energy scale);
+    pair<double,double> calcDipandPS(Energy scale);
     double calcPs(Energy scale);
     
     /** recursive flush caches and clean up XCombs. */
@@ -136,7 +137,8 @@ namespace Herwig {
     }
     
     Ptr<Node>::ptr  randomChild();
-    
+  
+    Energy miniPt()const ;  
     
     bool allAbove(Energy pt);
     

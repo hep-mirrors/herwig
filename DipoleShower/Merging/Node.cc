@@ -80,6 +80,17 @@ Ptr<Node>::ptr  Node::randomChild() {
   return thechildren[(int)(UseRandom::rnd() *  thechildren.size())];
 }
 
+Energy Node::miniPt() const{
+   Energy res=1000000000*GeV;
+   for (vector<Ptr<Node>::ptr>::const_iterator it = thechildren.begin(); it != thechildren.end(); it++) {
+    res=min(res,(*it)->dipol()->lastPt());
+  }
+  return res;
+   	
+}
+
+
+
 bool Node::allAbove(Energy pt){
   for (vector<Ptr<Node>::ptr>::iterator it = thechildren.begin(); it != thechildren.end(); it++) {
     if((*it)->dipol()->lastPt()<pt)return false;
@@ -405,8 +416,8 @@ bool Node::DipolesAboveMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,E
 
 
 
-double Node::calcPsMinusDip(Energy scale){
-  return -1.* dipol()->dipMinusPs(sqr(scale),deepHead()->MH()->largeNBasis())/nanobarn;
+pair<double,double> Node::calcDipandPS(Energy scale){
+  return  dipol()->dipandPs(sqr(scale),deepHead()->MH()->largeNBasis());
 }
 
 double Node::calcPs(Energy scale){
@@ -416,7 +427,7 @@ double Node::calcPs(Energy scale){
 
 
 
-
+/*
 bool Node::diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
   
   Selector<Ptr<Node>::ptr> first_subpro;
@@ -476,9 +487,9 @@ bool Node::diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum
   return false;
 }
 
+*/
 
-
-
+/*
 
 
 bool Node::psBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
@@ -515,7 +526,9 @@ bool Node::psBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy
   }
   return false;
 }
+*/
 
+/*
 
 bool Node::dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
   sum=0.;
@@ -560,6 +573,7 @@ bool Node::dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energ
   }
   return false;
 }
+*/
 
 
 IBPtr Node::clone() const {

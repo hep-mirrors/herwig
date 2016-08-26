@@ -287,6 +287,7 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
 
 double Merger::reweightCKKWRealStandard(NPtr Node,bool fast){
   bool allAbove=Node->allAbove(mergePt());
+  if(!Node->allAbove(theIRSafePT))return 0.;
   if (allAbove)return reweightCKKWRealAllAbove(Node, fast);
   if (UseRandom::rnd()<.5)
     return 2.*reweightCKKWRealBelowSubReal( Node, fast);
@@ -366,10 +367,11 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node,bool fast){
     if ((*child)->allAbove(mergePt()))
       sumPS-=(*child)->calcPs(startscale*xiFacME);
   }
-    //double me=matrixElementWeight(startscale,Node);
-    //cout<<"\nreweightCKKWRealBelowSubReal "<<me<<" "<<sumPS<<" "<<me/sumPS;
+  double me=matrixElementWeight(startscale,Node);
+  //cout<<"\nSubReal "<<Node->miniPt()/GeV<<" "<<me<<" "<<sumPS<<" "<<me/sumPS;
+  
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
-  (matrixElementWeight(startscale,Node)-sumPS);
+  (me-sumPS);
 }
 
 
@@ -397,14 +399,14 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node,bool fast){
   bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
-  double res=0.;
+  pair<double,double> DipAndPs=make_pair(0.,0.);
   if (Born==CLNode&&!CLNode->children().empty())
-    res=-1.*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
+    DipAndPs=make_pair(CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn,0.);
   else
-    res=CLNode->calcPsMinusDip(startscale*xiFacME);
+    DipAndPs=CLNode->calcDipandPS(startscale*xiFacME);
   
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
-         (double)Node->children().size()*res;
+         (double)Node->children().size()*(DipAndPs.second-DipAndPs.first);
 }
 
 
@@ -1016,7 +1018,7 @@ double Merger::singleUNLOPS(list<Dipole>::iterator dip ,Energy next,Energy runni
 
 
 
-void Merger::firstNodeMap(Ptr<MatchboxMEBase>::ptr a,NPtr b){theFirstNodeMap.insert(make_pair(a,b));};
+void Merger::firstNodeMap(Ptr<MatchboxMEBase>::ptr a,NPtr b){theFirstNodeMap.insert(make_pair(a,b));}
 
 
 

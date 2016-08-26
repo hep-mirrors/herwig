@@ -862,14 +862,14 @@ CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::
 
 
 
-CrossSection SubtractionDipole::dipMinusPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
+pair<double,double> SubtractionDipole::dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
   double jac = jacobian();
   assert( factorizationScale != ZERO );
   assert (! splitting());
   if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
     lastMECrossSection(ZERO);
     lastME2(0.0);
-    return ZERO;
+    return make_pair(0.,0.);
   }
   
   double pdfweight = 1.;
@@ -888,8 +888,11 @@ CrossSection SubtractionDipole::dipMinusPs(Energy2 factorizationScale,Ptr<Colour
   double ps = me2Avg(ccme2);
   double dip = me2();
   
+  double  factor= sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat())/nanobarn;
   
-  return -sqr(hbarc) * jac * pdfweight * (dip-ps) /  (2. * realEmissionME()->lastXComb().lastSHat());
+  pair<double,double> res=make_pair(factor*dip,factor*ps);
+
+  return res ;
 }
 
 

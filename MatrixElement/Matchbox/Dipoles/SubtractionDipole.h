@@ -789,7 +789,7 @@ public:
       
   CrossSection ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
 
-  CrossSection dipMinusPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
+  pair<double,double> dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
 
   //@}
 
