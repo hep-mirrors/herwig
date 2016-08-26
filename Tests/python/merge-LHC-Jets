@@ -120,9 +120,6 @@ if __name__ == "__main__":
     if len(args) < 1:
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
- 
-yodafiles=
-
 yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
@@ -228,7 +225,7 @@ for f in yodafiles:
            aopath.find("I1307243")>0 or aopath.find("I1325553")>0 or
            aopath.find("I1298810")>0 or aopath.find("I1298811")>0 or
            aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
-           aopath.find("I1419070")>0 
+           aopath.find("I1419070")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -249,44 +246,51 @@ for f in yodafiles:
             else :
                 outhistos[aopath] = ao
 
-yodafiles=["-7-Jets-1.yoda" ,"-7-DiJets-1.yoda" ,"-7-DiJets-2.yoda",
-           "-7-DiJets-3.yoda","-7-DiJets-4.yoda","-7-DiJets-5.yoda",
-           "-7-DiJets-6.yoda","-7-DiJets-7.yoda",
-           "-7-Bottom-6.yoda","-7-Bottom-7.yoda","-7-Bottom-8.yoda"]
+
+
+yodafiles=["-7-Bottom-6.yoda","-7-Bottom-7.yoda","-7-Bottom-8.yoda"]
+for i in range(1,8) :
+    yodafiles.append("-7-DiJets-%1.1i-A.yoda" % i)
+    yodafiles.append("-7-DiJets-%1.1i-B.yoda" % i)
+    yodafiles.append("-7-DiJets-%1.1i-C.yoda" % i)
 
 for f in yodafiles:
+    print file
     file=args[0]+f
-    if(file.find("-7-Jets-1.yoda")>0) :
+    if(file.find("-7-Jets-1")>0) :
         sqrts=7000
         mass=0
-    if(file.find("-7-Jets-9.yoda")>0) :
+    if(file.find("-7-DiJets-1")>0) :
         sqrts=7000
         mass=100
-    elif(file.find("-7-Jets-10.yoda")>0) :
+    elif(file.find("-7-DiJets-2")>0) :
         sqrts=7000
         mass=250
-    elif(file.find("-7-Jets-11.yoda")>0) :
+    elif(file.find("-7-DiJets-3")>0) :
         sqrts=7000
-        mass=650
-    elif(file.find("-7-Jets-12.yoda")>0) :
+        mass=500
+    elif(file.find("-7-DiJets-4")>0) :
         sqrts=7000
-        mass=1100
-    elif(file.find("-7-Jets-13.yoda")>0) :
+        mass=800
+    elif(file.find("-7-DiJets-5")>0) :
         sqrts=7000
-        mass=1700
-    elif(file.find("-7-Jets-14.yoda")>0) :
+        mass=1000
+    elif(file.find("-7-DiJets-6")>0) :
         sqrts=7000
-        mass=2300
-    elif(file.find("-7-Jets-15.yoda")>0) :
+        mass=1600
+    elif(file.find("-7-DiJets-7")>0) :
         sqrts=7000
-        mass=2900
-    elif(file.find("-7-Bottom-6.yoda")>0) :
+        mass=2200
+    elif(file.find("-7-DiJets-8")>0) :
+        sqrts=7000
+        mass=2800
+    elif(file.find("-7-Bottom-6")>0) :
         sqrts=7000
         mass=110
-    elif(file.find("-7-Bottom-7.yoda")>0) :
+    elif(file.find("-7-Bottom-7")>0) :
         sqrts=7000
         mass=370
-    elif(file.find("-7-Bottom-8.yoda")>0) :
+    elif(file.find("-7-Bottom-8")>0) :
         sqrts=7000
         mass=550
     if not os.access(file, os.R_OK):
@@ -316,7 +320,8 @@ for f in yodafiles:
            if not tmpP.has_key(mass):
                tmpP[mass] = ao
            else:
-                raise Exception("A set with mass = %s already exists" % ( mass))
+               print aopath
+               raise Exception("A set with mass = %s already exists" % ( mass))
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.iteritems():
