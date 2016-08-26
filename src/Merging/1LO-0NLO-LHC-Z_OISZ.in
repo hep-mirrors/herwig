@@ -17,7 +17,7 @@ set PPMFactory:onlyabove 0
 
 set Merger:chooseHistory 8
 set Merger:addNLOLegs -1
-set Merger:addLOLegs 1
+set Merger:addLOLegs 0
 set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
@@ -29,4 +29,4 @@ do PPMFactory:Process p p e+ e-
 
 
 cd /Herwig/Generators
-saverun 2LO-0NLO-LHC-Z-OISZ LHCGenerator
+saverun 1LO-0NLO-LHC-Z_OISZ LHCGenerator

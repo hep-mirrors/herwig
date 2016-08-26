@@ -13,7 +13,7 @@ set PPMFactory:onlyabove 0
 
 set Merger:chooseHistory 8
 set Merger:addNLOLegs -1
-set Merger:addLOLegs 0
+set Merger:addLOLegs 1
 set Merger:MergingScale 15.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
@@ -27,7 +27,6 @@ cd /Herwig/MatrixElements/Matchbox/Scales/
 set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
 
 cd /Herwig/Cuts
-create ThePEG::Cuts Cuts
 insert JetCuts:JetRegions 0 FirstJet
 insert Cuts:MultiCuts 0 JetCuts
 set Cuts:JetFinder JetFinder
@@ -59,4 +58,4 @@ set Herwig/DipoleShower/Kinematics/IILightKinematics:OpenInintialStateZ Yes
 set /Herwig/Merging/Merger:OpenInintialStateZ Yes
 
 cd /Herwig/Generators
-saverun 1LO-0NLO-LHC-J-OISZ LHCGenerator
+saverun 2LO-0NLO-LHC-J_OISZ LHCGenerator

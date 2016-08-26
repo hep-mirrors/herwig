@@ -27,7 +27,6 @@ cd /Herwig/MatrixElements/Matchbox/Scales/
 set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
 
 cd /Herwig/Cuts
-create ThePEG::Cuts Cuts
 insert JetCuts:JetRegions 0 FirstJet
 insert Cuts:MultiCuts 0 JetCuts
 set Cuts:JetFinder JetFinder
@@ -56,4 +55,4 @@ insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1307243
 
 
 cd /Herwig/Generators
-saverun 1LO-0NLO-LHC-J LHCGenerator
+saverun 1LO-0NLO-LHC_J LHCGenerator
