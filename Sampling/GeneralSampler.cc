@@ -131,12 +131,12 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	string prefix = RunDirectories::buildStorage();
+	string prefix = RunDirectories::runStorage();
 	if ( prefix.empty() )
 	  prefix = "./";
 	else if ( *prefix.rbegin() != '/' )
 	  prefix += "/";
-	name << prefix << "integrationJob" << jobCount;
+	name << prefix << "integrationJobID" << jobCount;
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
@@ -198,7 +198,7 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
-    string prefix = RunDirectories::buildStorage();
+    string prefix = RunDirectories::runStorage();
     if ( prefix.empty() )
       prefix = "./";
     else if ( *prefix.rbegin() != '/' )
