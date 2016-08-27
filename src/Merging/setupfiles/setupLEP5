@@ -1,0 +1,14 @@
+cd /Herwig/Merging
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.
+set EEMFactory:RenormalizationScaleFactor 0.5
+set EEMFactory:FactorizationScaleFactor 0.5
+
+set EEMFactory:onlyabove 0
+
+set Merger:chooseHistory 8
+set Merger:MergingScale 5.*GeV
+set Merger:MergingScaleSmearing 0.1
+set Merger:gamma 1.

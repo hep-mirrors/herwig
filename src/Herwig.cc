@@ -198,7 +198,15 @@ namespace {
       Herwig::RunDirectories::pushRunId(ui.integrationList());
 
     if ( ui.seed() > 0 ) eg->setSeed(ui.seed());
-    if ( !ui.setupfile().empty() ) eg->addTag("-" + ui.setupfile());
+
+
+    if ( !ui.setupfile().empty() ){
+      string str=ui.setupfile();
+      std::size_t found = str.find_last_of("/");
+      if (found!=std::string::npos)
+         str=str.substr(found+1);
+      eg->addTag("-" + str);
+    }
     if ( !ui.tag().empty() ) eg->addTag("-" + ui.tag());
 
     if ( ui.integrationJob() || ui.runMode() == Herwig::RunMode::MERGEGRIDS ) {
