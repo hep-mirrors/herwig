@@ -24,6 +24,10 @@ set PPMFactory:OrderInAlphaEW 0
 do PPMFactory:Process p p j j
 
 
+set MPreWeight:HTPower 4
+set MPreWeight:MaxPTPower 0
+
+
 create ColorFull::TraceBasis LargeNTraceBasis
 set LargeNTraceBasis:LargeN On
 set Merger:LargeNBasis LargeNTraceBasis

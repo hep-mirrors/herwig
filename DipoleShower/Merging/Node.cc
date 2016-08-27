@@ -584,33 +584,58 @@ IBPtr Node::fullclone() const {
   return new_ptr(*this);
 }
 
-  // If needed, insert default implementations of virtual function defined
-  // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void Node::persistentOutput(PersistentOStream & os) const {
-  os <<
-  theheadxcomb             <<  thexcomb          <<  thenodeMEPtr <<
-  thedipol                 <<  thechildren   <<theparent <<
-            theDeepHead       <<  theCutStage <<
-  theDeepProStage          <<  clustersafer      <<  ounit(theVetoPt, GeV) <<
-  ounit(theRunningPt, GeV) <<  theSubtractedReal <<  theVirtualContribution<<theMergingHelper;
   
-  
-  
-    // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+   os <<theheadxcomb<<
+   thexcomb<<
+   thenodeMEPtr<<
+   thedipol<<
+   thechildren<<
+   theparent<<
+   theProjectors<<
+   theDeepHead<<
+   theCutStage<<
+   isthissafe<<
+   theDeepProStage<<
+   clustersafer<<
+   isOrdered<<
+   theOrderdSteps<<
+   theNeedFullOrderedHistory<<
+   theSudakovSteps<<
+   ounit(theVetoPt,GeV)<<
+   ounit(theRunningPt,GeV)<<
+   theSubtractedReal<<
+   theVirtualContribution<<
+   theMergingHelper;
 }
 
 void Node::persistentInput(PersistentIStream & is, int) {
   
-  is >>
-  theheadxcomb             >>  thexcomb          >>  thenodeMEPtr >>
-  thedipol                 >>  thechildren       >>  theparent >>  theDeepHead       >>  theCutStage >>
-  theDeepProStage          >>  clustersafer      >>  iunit(theVetoPt, GeV) >>
-  iunit(theRunningPt, GeV) >>  theSubtractedReal >>  theVirtualContribution
-  >>theMergingHelper;
-  
-    // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+  is >>theheadxcomb>>
+  thexcomb>>
+  thenodeMEPtr>>
+  thedipol>>
+  thechildren>>
+  theparent>>
+  theProjectors>>
+  theDeepHead>>
+  theCutStage>>
+  isthissafe>>
+  theDeepProStage>>
+  clustersafer>>
+  isOrdered>>
+  theOrderdSteps>>
+  theNeedFullOrderedHistory>>
+  theSudakovSteps>>
+  iunit(theVetoPt,GeV)>>
+  iunit(theRunningPt,GeV)>>
+  theSubtractedReal>>
+  theVirtualContribution>>
+  theMergingHelper;
 }
+
+  
 
   // *** Attention *** The following static variable is needed for the type
   // description system in ThePEG. Please check that the template arguments

@@ -115,6 +115,14 @@ do PPMFactory:EndParticleGroup
 cd /Herwig/Merging
 create Herwig::Merger Merger
 
+
+
+create Herwig::MergingReweight MPreWeight HwDipoleShower.so
+insert PPMFactory:Preweighters 0  MPreWeight
+set MPreWeight:HTPower 2
+set MPreWeight:MaxPTPower 0
+set MPreWeight:OnlyColoured False
+
 create Herwig::SimpleColourBasis  LargeNColourBasis
 set LargeNColourBasis:LargeN On
 set Merger:LargeNBasis LargeNColourBasis

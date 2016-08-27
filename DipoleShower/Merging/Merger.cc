@@ -142,7 +142,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   }
 
   double res=0.;
-  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsNLO();
+  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
 
 
   if(weight!=0.){
@@ -253,9 +253,9 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node,fast);
-  if (history.size()==1&&Node->children().size()!=0) {
-    cout<<"\n1-->"<<startscale/GeV<<" "<<weight;
-  }
+  //if (history.size()==1&&Node->children().size()!=0) {
+  //  cout<<"\n1-->"<<startscale/GeV<<" "<<weight;
+  //}
   if (!fillProjector(projectedscale))return 0.;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
@@ -263,11 +263,10 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
   bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
-  double matrixElement=matrixElementWeight(startscale,Node);
+  double matrixElement=matrixElementWeightWithLoops(startscale,Node,fast);
   double Bornweight=Node->nodeME()->lastBorndSigHatDR();
   
  
-  
   
   double unlopsweight =(-sumpdfReweightUnlops()
                         -sumalphaReweightUnlops()
@@ -275,9 +274,11 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
                        *Bornweight
                        *SM().alphaS()/(2.*ThePEG::Constants::pi);
     //assert(unlopsweight==0.||history.size()!=1);
-  if (history.size()==1&&Node->children().size()!=0) {
-    cout<<"\n unlopsweight "<<unlopsweight<<" "<<matrixElement;
-  }
+  //if (history.size()==1&&Node->children().size()!=0) {
+     
+     //cout<<"\n unlopsweight "<<unlopsweight<<" "<<matrixElement;
+     //cout<<"\n updf"<< sumpdfReweightUnlops()<<"  ualpha "<<sumalphaReweightUnlops()<<" uhist "<<sumfillHistoryUnlops();
+   //}
  
   return weight*
          as(startscale*xiRenSh)/SM().alphaS()*
@@ -400,9 +401,9 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node,bool fast){
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   pair<double,double> DipAndPs=make_pair(0.,0.);
-  if (Born==CLNode&&!CLNode->children().empty())
-    DipAndPs=make_pair(CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn,0.);
-  else
+  //if (Born==CLNode&&!CLNode->children().empty())
+  //  DipAndPs=make_pair(CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn,0.);
+  //else
     DipAndPs=CLNode->calcDipandPS(startscale*xiFacME);
   
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
@@ -433,7 +434,6 @@ double Merger::matrixElementWeight(Energy startscale,NPtr Node,double diffAlpha)
 
 double Merger::matrixElementWeightWithLoops(Energy startscale,NPtr Node,bool fast){
   double res=0.;
-  return res;
     // The deephead should be calculated here.
   NPtr DeepHead=Node;//->deepHead();
   renormscale(startscale);
@@ -484,7 +484,14 @@ double Merger::alphaReweight(){
   Energy Q_R=xiRenME*history[0].scale;
   res *= pow(as(Q_R) / SM().alphaS(), history[0].node->nodeME()->orderInAlphaS());
   res *= pow(history[0].node->deepHead()->xcomb()->eventHandler().SM().alphaEMPtr()->value(history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED())/ SM().alphaEMMZ(), history[0].node->nodeME()->orderInAlphaEW());
-  
+ 
+
+  if (!(history[0].node->children().empty())){ 
+    res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(Q_R))/2./Constants::pi):1.),int(history[0].node->nodeME()->mePartonData().size()-N0()));
+  }
+
+
+ 
   for (History::iterator it=history.begin();(it+1)!=history.end();it++){
     if ((*it).node->parent()){
       Energy q_i=xiRenSh* (*it).node->dipol()->lastPt();
@@ -514,7 +521,7 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode,bool fast){
     
     Energy notunirunning=scale;
     
-    if (!isUnitarized&&N()+N0() > Begin->deepHead()->nodeME()->lastMEMomenta().size()) {
+    if (!isUnitarized&&N()+N0() > int(Begin->deepHead()->nodeME()->lastMEMomenta().size())) {
       if (!dosudakov(Begin,notunirunning,mergePt(),sudakov0_n,fast)){
         history.back().weight=0.;
       }else{
@@ -696,7 +703,8 @@ double Merger::sumalphaReweightUnlops(){
   double res=0.;
   if (!(history[0].node->children().empty())){
     res +=alphasUnlops(history[0].scale,
-                       history[0].scale);
+                       history[0].scale)*int(history[0].node->nodeME()->mePartonData().size()-N0());
+    assert(int(history[0].node->nodeME()->mePartonData().size()-N0()>0);
   }
     // dsig is calculated with fixed alpha_s
   for (History::iterator it=history.begin();(it+1)!=history.end();it++){
@@ -770,10 +778,12 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   xiFacSh=DSH()->factorizationScaleFactor();
   xiQSh=DSH()->hardScaleFactor();
   
+
+
   if(Node->deepHead()->subtractedReal()){
     res*=reweightCKKWRealStandard(Node);
     theCurrentMaxLegs=maxLegsNLO();
-  }else if(ME->oneLoopNoBorn()){
+  }else if(Node->deepHead()->virtualContribution()){
     res*=reweightCKKWVirtualStandard(Node);
     theCurrentMaxLegs=maxLegsNLO();
   }else if(theGamma!=1.){

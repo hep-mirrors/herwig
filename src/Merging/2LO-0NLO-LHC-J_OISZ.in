@@ -31,6 +31,11 @@ set Merger:LargeNBasis LargeNTraceBasis
 cd /Herwig/MatrixElements/Matchbox/Scales/
 set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
 
+set MPreWeight:HTPower 4
+set MPreWeight:MaxPTPower 0
+
+
+
 cd /Herwig/Cuts
 insert JetCuts:JetRegions 0 FirstJet
 

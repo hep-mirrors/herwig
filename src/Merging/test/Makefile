@@ -8,7 +8,7 @@
 #							#
 #########################################################
 
-NAME=LEP
+NAME=default
 JOBS=4
 NLO=0
 LO=2
@@ -16,6 +16,8 @@ POINTS=10000
 
 
 all: $(NAME)
+
+
 
 build$(NAME):
 	../../Herwig build Merging/$(LO)LO-$(NLO)NLO-$(NAME).in -y$(JOBS)
@@ -42,16 +44,18 @@ $(NAME): build$(NAME) integrate$(NAME) run$(NAME) mergeyodas$(NAME) tar$(NAME)
 
 
 plots:
-	rivet-mkhtml *LEP.yoda  -o LEP
-	rivet-mkhtml *LHC-Z.yoda -o LHC-Z
+	rivet-mkhtml *LEP.yoda *LEP-GAMMA-0.2.yoda   -o LEP
+	rivet-mkhtml *LHC-Z.yoda *LHC-Z_OISZ.yoda -o LHC-Z
 	rivet-mkhtml *LHC-W.yoda -o LHC-W
-	rivet-mkhtml *LHC-J.yoda  -o LHC-J
+	rivet-mkhtml *LHC-J.yoda  *LHC-J_OISZ.yoda -o LHC-J
 
 
 
-
-
-
+help:
+	@echo "usage:"
+	@echo "make NAME=LEP JOBS=4 LO=3 NLO=0 POINTS=10000"
+	@echo ""
+	@ls ../|grep NLO|cut -d"." -f1
 
 
 

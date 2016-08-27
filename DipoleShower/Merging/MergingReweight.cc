@@ -50,7 +50,6 @@ void MergingReweight::persistentInput(PersistentIStream & is, int) {
   is >> HTPower >> MaxPTPower >> iunit(scale,GeV) >> onlyColoured;
 }
 
-ClassDescription<MergingReweight> MergingReweight::initMergingReweight;
 // Definition of the static class description member.
 
   // *** Attention *** The following static variable is needed for the type
@@ -58,8 +57,8 @@ ClassDescription<MergingReweight> MergingReweight::initMergingReweight;
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
-DescribeClass<MergingReweight, ReweightBase>
-describeHerwigMerger("Herwig::MergingReweight", "HwDipoleShower.so");
+DescribeClass<MergingReweight, ThePEG::ReweightBase>
+describeHerwigMergingReweight("Herwig::MergingReweight", "HwDipoleShower.so");
 
 
 void MergingReweight::Init() {
@@ -105,10 +104,6 @@ void MergingReweight::Init() {
      false);
 
 
-  interfacePower.rank(10);
-  interfaceMaxPtPower.rank(10);
-  interfaceScale.rank(9);
-  interfaceOnlyColoured.rank(8);
 
 }
 
