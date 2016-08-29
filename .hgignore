@@ -97,7 +97,6 @@ Makefile\.in$
 ^src/Matchbox/NLO-NoShower.in$
 ^src/Matchbox/Powheg-DefaultShower.in$
 ^src/Matchbox/Powheg-DipoleShower.in$
-^src/defaults/MatchboxMergeDefaults.in
 ^src/defaults/MatchboxMergingDefaults.in
 ^src/Matchbox/done-all-links$
 ^src/snippets/done-all-links$

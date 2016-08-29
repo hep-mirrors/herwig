@@ -27,7 +27,6 @@ IBPtr MergingReweight::fullclone() const {
 }
 
 double MergingReweight::weight() const {
-  assert(false);
   Energy maxpt = 0.*GeV;
   Energy ht=0*GeV;
   

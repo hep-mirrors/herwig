@@ -65,6 +65,13 @@ public:
    */
   virtual double lastZ() const;
 
+  /*
+   * True if phase space point is above the alpha cut for this dipole.
+   */
+
+  bool aboveAlpha() const {return dipole()->alpha()<subtractionParameters()[1];}
+
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

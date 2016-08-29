@@ -556,7 +556,11 @@ public:
 
 
   /**
-   * Provide a possible faster, approximated dSigHatDR() method.
+   * Return the matrix element squared differential in the variables
+   * given by the last call to generateKinematics().
+   * If diffAlpha is not 1 and the matrix element has insertion operators 
+   * this routine adds the difference between the insertion operator calculated 
+   * an alpha-Parameter to the insertion operator without alpha-parameter.
    */
 
   CrossSection dSigHatDR(double diffAlpha) const;
@@ -784,10 +788,6 @@ public:
   vector<Ptr<SubtractionDipole>::ptr> 
   getDipoles(const vector<Ptr<SubtractionDipole>::ptr>&,
 	     const vector<Ptr<MatchboxMEBase>::ptr>&,bool slim=false) const;
-      
-  int
-  numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>&,
-                 const vector<Ptr<MatchboxMEBase>::ptr>& reals) const;
 
   
   /**

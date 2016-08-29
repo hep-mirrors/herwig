@@ -277,7 +277,9 @@ void AlpGenHandler::doinit() {
 
 // Throws a veto according to MLM strategy ... when we finish writing it.
 bool AlpGenHandler::showerHardProcessVeto() {
+
   if(vetoIsTurnedOff_) return false;
+
   // Skip veto for processes in which merging is not implemented:
   if(ihrd_==7||ihrd_==8||ihrd_==13) {
       ostringstream wstring;
@@ -433,7 +435,7 @@ bool AlpGenHandler::showerHardProcessVeto() {
     for(unsigned int ixx=0; ixx<pjet_.size(); ixx++)
       if(jetToPartonMap[ixx]<0&&etmin<etjet_[ixx]) return true;
   }
-  
+
   // **************************************************************** //
   // * Now look to the non-light partons for heavy quark processes. * //
   // **************************************************************** //

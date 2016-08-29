@@ -578,11 +578,6 @@ bool SubtractionDipole::generateTildeKinematics() {
   theLastSubtractionScale = kinematics->lastScale();
   theLastSubtractionPt = kinematics->lastPt();
   theLastSubtractionZ = kinematics->lastZ();
-  
-/*
-  theLastRealR=kinematics->lastRealR();
-  theLastBornR=kinematics->lastBornR();
-*/  
 
   meMomenta().resize(lastHeadXComb().meMomenta().size() - 1);
 
@@ -800,7 +795,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double coupl = lastMECouplings();
   coupl *= underlyingBornME()->lastXComb().lastAlphaS();
-  
   lastMECouplings(coupl);
 
   CrossSection res = 
@@ -830,6 +824,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 }
 
 
+bool SubtractionDipole::aboveAlpha() const{return theTildeKinematics->aboveAlpha();}
 
 
 

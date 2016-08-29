@@ -111,7 +111,6 @@ public:
   
   double as(Energy Q)const{return theGlobalAlphaS->value(sqr(Q));}
   
-  double as(Energy Q){return theGlobalAlphaS->value(sqr(Q));}
 
 protected:
 
@@ -130,7 +129,9 @@ protected:
   tPPair cascade(tSubProPtr sub, XCPtr xcomb, 
 		 Energy optHardPt, Energy optCutoff);
   
-  
+  /**
+   * Implementation of the merging algorithm.
+   **/
   
   double reweightCKKW(int, int);
 

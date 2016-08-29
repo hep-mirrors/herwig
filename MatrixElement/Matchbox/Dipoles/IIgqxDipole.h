@@ -96,12 +96,6 @@ public:
    * Return the matrix element averaged over spin correlations.
    */
   virtual double me2Avg(double ccme2) const;
-  
-  /*
-   * True if phase space point is above the alpha cut for this dipole.
-   */
-  
-  virtual bool aboveAlpha() const;
 
 public:
 

@@ -1,4 +1,4 @@
-SUBDIRS = Base Merging Kernels Kinematics Utility AlphaS
+SUBDIRS = Base Kernels Kinematics Utility AlphaS Merging 
 
 pkglib_LTLIBRARIES = HwDipoleShower.la
 

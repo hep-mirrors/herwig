@@ -86,9 +86,6 @@ double IFqgxDipole::me2Avg(double ccme2) const {
 
 }
 
-
-bool IFqgxDipole::aboveAlpha() const{return alpha()<subtractionParameters()[1];}
-
 double IFqgxDipole::me2() const {
 
   if ( jacobian() == 0.0 )

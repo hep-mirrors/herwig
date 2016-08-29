@@ -73,6 +73,10 @@ cd /Herwig/Merging
 insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPMFactory
 
 
+set PPMFactory:QuarkFlavourDiagonal Yes 
+
+set /Herwig/Vertices/FFWMatchboxVertex:Diagonal Yes 
+
 
 
 clear PPMFactory:ParticleGroup p
@@ -162,9 +166,9 @@ cd /Herwig/Samplers
 
 
 set Monaco:EnhancementFactor 1.2
-set Monaco:InitialPoints 10000
+set Monaco:InitialPoints 1000
 set Monaco:LuminosityMapperBins 8
-set Monaco:NIterations 4
+set Monaco:NIterations 2
 set Monaco:RemapChannelDimension Yes
 set Monaco:RemapperMinSelection 0.0001
 set Monaco:RemapperPoints 10000
