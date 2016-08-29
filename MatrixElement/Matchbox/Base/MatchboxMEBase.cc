@@ -749,7 +749,6 @@ CrossSection MatchboxMEBase::dSigHatDR(double diffAlpha) const {
       jacobian()* lastMEPDFWeight() * vme2;
 
   if ( (oneLoop() &&!onlyOneLoop())||diffAlpha!=1. ) {
-    assert(false);
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
 	    virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
