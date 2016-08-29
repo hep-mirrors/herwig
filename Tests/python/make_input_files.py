@@ -108,22 +108,22 @@ process=""
 # Bfactory
 if(collider=="BFactory") :
     if(simulation=="") :
-        process = "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
-        if(parameterName=="10.58") :
-            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+        if(parameterName=="10.58-res") :
+            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\nset /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+        elif(parameterName=="10.58") :
+            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
+            process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
+        else :
+            process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
     elif(simulation=="Powheg") :
-        process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4"
-        if(parameterName=="10.58") :
-            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+        process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
     elif(simulation=="Matchbox" ) :
-        process = "do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"
-        if(parameterName=="10.58") :
-            process += "\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
+        process = "do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\n"
 # DIS
 elif(collider=="DIS") :
     if(simulation=="") :
         if(parameterName.find("NoME")>=0) :
-            process = "set /Herwig/Shower/Evolver:MECorrMode 0"
+            process = "set /Herwig/Shower/ShowerHandler:HardEmission None"
             parameterName=parameterName.replace("NoME-","")
         else :
             process = ""
@@ -566,49 +566,64 @@ elif(collider=="LHC") :
             process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
             if(parameterName.find("Long")>=0) :
                 process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
-        elif(parameterName.find("7-Jets")>=0) :
+        elif(parameterName.find("7-DiJets")>=0 or parameterName.find("8-DiJets")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
             process+="set MEQCD2to2:MaximumFlavour 5\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if(parameterName.find("7-Jets-0")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
-            elif(parameterName.find("7-Jets-10")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 200.*GeV\n"
-            elif(parameterName.find("7-Jets-11")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 600.*GeV\n"
-            elif(parameterName.find("7-Jets-12")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 1000.*GeV\n"
-            elif(parameterName.find("7-Jets-13")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 1600.*GeV\n"
-            elif(parameterName.find("7-Jets-14")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 2200.*GeV\n"
-            elif(parameterName.find("7-Jets-15")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 2800.*GeV\n"
-            elif(parameterName.find("7-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 10.\n"
-            elif(parameterName.find("7-Jets-2")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
-            elif(parameterName.find("7-Jets-3")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 40.\n"
-            elif(parameterName.find("7-Jets-4")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 70.\n"
-            elif(parameterName.find("7-Jets-5")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 150.\n"
-            elif(parameterName.find("7-Jets-6")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 200.\n"
-            elif(parameterName.find("7-Jets-7")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 300.\n"
-            elif(parameterName.find("7-Jets-8")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 500.\n"
-            elif(parameterName.find("7-Jets-9")>=0) :
-                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
+            if(parameterName.find("-A")>=0) :
+               process+="set /Herwig/Cuts/JetKtCut:MinKT 45.\n"
+               process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
+               process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
+            elif(parameterName.find("-B")>=0) :
+               process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
+               process+="set /Herwig/Cuts/JetKtCut:MinEta -2.7\n"
+               process+="set /Herwig/Cuts/JetKtCut:MaxEta  2.7\n"
+            elif(parameterName.find("-C")>=0) :
+               process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
+               process+="set /Herwig/Cuts/JetKtCut:MinEta -4.8\n"
+               process+="set /Herwig/Cuts/JetKtCut:MaxEta  4.8\n"
+            if(parameterName.find("DiJets-1")>=0) :
                 process+="set /Herwig/Cuts/QCDCuts:MHatMin 90.*GeV\n"
+            elif(parameterName.find("DiJets-2")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 200.*GeV\n"
+            elif(parameterName.find("DiJets-3")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 450.*GeV\n"
+            elif(parameterName.find("DiJets-4")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 750.*GeV\n"
+            elif(parameterName.find("DiJets-5")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 950.*GeV\n"
+            elif(parameterName.find("DiJets-6")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 1550.*GeV\n"
+            elif(parameterName.find("DiJets-7")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 2150.*GeV\n"
+            elif(parameterName.find("DiJets-8")>=0) :
+                process+="set /Herwig/Cuts/QCDCuts:MHatMin 2750.*GeV\n"
+        elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
+            process+="set MEQCD2to2:MaximumFlavour 5\n"
+            process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
+            if(parameterName.find("Jets-10")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 1800.\n"
+            elif(parameterName.find("Jets-0")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
+            elif(parameterName.find("Jets-1")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 10.\n"
+            elif(parameterName.find("Jets-2")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
+            elif(parameterName.find("Jets-3")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 40.\n"
+            elif(parameterName.find("Jets-4")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 70.\n"
+            elif(parameterName.find("Jets-5")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 150.\n"
+            elif(parameterName.find("Jets-6")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 200.\n"
+            elif(parameterName.find("Jets-7")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 300.\n"
+            elif(parameterName.find("Jets-8")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 500.\n"
+            elif(parameterName.find("Jets-9")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 800.\n"
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
             if(parameterName.find("7-Bottom")>=0) :
@@ -620,7 +635,7 @@ elif(collider=="LHC") :
                 process+="set MECharm:QuarkType Charm\n"
                 process+="insert SimpleQCD:MatrixElements[0] MECharm\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if(parameterName.find("7-Heavy-0")>=0) :
+            if(parameterName.find("-0")>=0) :
                 if(parameterName.find("7-Bottom")>=0) :
                     process+="set MEBottom:Process Pair\n" 
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 0.\n"
@@ -643,13 +658,13 @@ elif(collider=="LHC") :
             elif(parameterName.find("-8")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
                 process+="set /Herwig/Cuts/QCDCuts:MHatMin 500.*GeV\n"
-        elif(parameterName.find("7-Top-L")>=0) :
+        elif(parameterName.find("Top-L")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-        elif(parameterName.find("7-Top-SL")>=0) :
+        elif(parameterName.find("Top-SL")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
             process+="set /Herwig/Particles/t:Synchronized Not_synchronized\n"
@@ -658,7 +673,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-        elif(parameterName.find("7-Top-All")>=0) :
+        elif(parameterName.find("Top-All")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
         elif(parameterName.find("WZ")>=0) :
@@ -714,6 +729,38 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+        elif(parameterName.find("Z-Mass1")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass2")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass3")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass4")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEWJet\nset MEWJet:WDecay Electron\n"
             if(parameterName.find("W-Jet-1-e")>=0) :
@@ -744,6 +791,22 @@ elif(collider=="LHC") :
                 process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Muon\n"
                 process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
+        elif(parameterName.find("WGamma")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 1\nset MEPP2VGamma:MassOption 1\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
+            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            if(parameterName.find("-e")>=0) :
+                process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+;\n"
+            else :
+                process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_mu,mu+;\n"
+        elif(parameterName.find("ZGamma")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
+            if(parameterName.find("-e")>=0) :
+                process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
+            else :
+                process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->mu-,mu+;\n"
         else :
             logging.error(" Process %s not supported for internal matrix elements" % name)
             sys.exit(1)
@@ -785,6 +848,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("WZ")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator NULL\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -797,6 +865,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("WW-emu")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator NULL\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -810,6 +883,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("WW-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator NULL\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -820,6 +898,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator NULL\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -830,6 +913,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator NULL\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator NULL\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -860,6 +948,38 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+        elif(parameterName.find("Z-Mass1")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass2")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass3")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass4")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
             process+="set MEGammaGammaPowheg:Process GammaGamma\n"
@@ -891,6 +1011,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -925,6 +1048,9 @@ elif(collider=="LHC") :
             process+="do Factory:Process p p h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
@@ -942,6 +1068,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("8-ZH")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
             process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
@@ -949,6 +1078,9 @@ elif(collider=="LHC") :
             process+="do Factory:Process p p Z0 h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
@@ -970,94 +1102,80 @@ elif(collider=="LHC") :
         elif(parameterName.find("UE")>=0) :
             logging.error(" Process %s not supported for Matchbox matrix elements" % name)
             sys.exit(1)
-        elif(parameterName.find("7-Jets")>=0) :
+        elif(parameterName.find("7-DiJets")>=0 or parameterName.find("8-DiJets")>=0) :
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p j j\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
+            process+="do Factory:Process p p j j\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
             process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
             process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
             process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if(parameterName.find("7-Jets-0")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 5.\n"
-            elif(parameterName.find("7-Jets-10")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 200.*GeV\n"
-            elif(parameterName.find("7-Jets-11")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 600.*GeV\n"
-            elif(parameterName.find("7-Jets-12")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 1000.*GeV\n"
-            elif(parameterName.find("7-Jets-13")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 1600.*GeV\n"
-            elif(parameterName.find("7-Jets-14")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 2200.*GeV\n"
-            elif(parameterName.find("7-Jets-15")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 2800.*GeV\n"
-            elif(parameterName.find("7-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
-            elif(parameterName.find("7-Jets-2")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
-            elif(parameterName.find("7-Jets-3")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 40.\n"
-            elif(parameterName.find("7-Jets-4")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 70.\n"
-            elif(parameterName.find("7-Jets-5")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 150.\n"
-            elif(parameterName.find("7-Jets-6")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 200.\n"
-            elif(parameterName.find("7-Jets-7")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 300.\n"
-            elif(parameterName.find("7-Jets-8")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 500.\n"
-            elif(parameterName.find("7-Jets-9")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
+            process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
+            process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
+            process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
+            process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
+            process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
+            if(parameterName.find("-A")>=0) :
+               process+="set /Herwig/Cuts/FirstJet:PtMin 45.*GeV\n"
+               process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
+               process+="set /Herwig/Cuts/FirstJet:YRange  -3. 3.\n"
+               process+="set /Herwig/Cuts/SecondJet:YRange -3. 3.\n"
+            elif(parameterName.find("-B")>=0) :
+                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
+                 process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
+                 process+="set /Herwig/Cuts/FirstJet:YRange  -2.7 2.7\n"
+                 process+="set /Herwig/Cuts/SecondJet:YRange -2.7 2.7\n"
+            elif(parameterName.find("-C")>=0) :
+                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
+                 process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
+                 process+="set /Herwig/Cuts/FirstJet:YRange  -4.8 4.8\n"
+                 process+="set /Herwig/Cuts/SecondJet:YRange -4.8 4.8\n"
+            if(parameterName.find("DiJets-1")>=0) :
                 process+="set /Herwig/Cuts/JetPairMass:MassMin 90.*GeV\n"
+            elif(parameterName.find("DiJets-2")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 200.*GeV\n"
+            elif(parameterName.find("DiJets-3")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 450.*GeV\n"
+            elif(parameterName.find("DiJets-4")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 750.*GeV\n"
+            elif(parameterName.find("DiJets-5")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 950.*GeV\n"
+            elif(parameterName.find("DiJets-6")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 1550.*GeV\n"
+            elif(parameterName.find("DiJets-7")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 2150.*GeV\n"
+            elif(parameterName.find("DiJets-8")>=0) :
+                process+="set /Herwig/Cuts/JetPairMass:MassMin 2750.*GeV\n"
+        elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0) :
+            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
+            process+="do Factory:Process p p j j\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
+            process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
+            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
+            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+            process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
+            if(parameterName.find("Jets-10")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 1800.\n"
+            elif(parameterName.find("Jets-0")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 5.\n"
+            elif(parameterName.find("Jets-1")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
+            elif(parameterName.find("Jets-2")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
+            elif(parameterName.find("Jets-3")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 40.\n"
+            elif(parameterName.find("Jets-4")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 70.\n"
+            elif(parameterName.find("Jets-5")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 150.\n"
+            elif(parameterName.find("Jets-6")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 200.\n"
+            elif(parameterName.find("Jets-7")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 300.\n"
+            elif(parameterName.find("Jets-8")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 500.\n"
+            elif(parameterName.find("Jets-9")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 800.\n"
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
@@ -1112,7 +1230,7 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
                 process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
                 process+="set /Herwig/Cuts/JetPairMass:MassMin 500.*GeV\n"
-        elif(parameterName.find("7-Top-L")>=0) :
+        elif(parameterName.find("Top-L")>=0) :
             process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
@@ -1121,7 +1239,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-        elif(parameterName.find("7-Top-SL")>=0) :
+        elif(parameterName.find("Top-SL")>=0) :
             process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
@@ -1133,7 +1251,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-        elif(parameterName.find("7-Top-All")>=0) :
+        elif(parameterName.find("Top-All")>=0) :
             process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
@@ -1228,14 +1346,49 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 20*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 40*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 130*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+        elif(parameterName.find("Z-Mass1")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 35*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+        elif(parameterName.find("Z-Mass2")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+        elif(parameterName.find("Z-Mass3")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+        elif(parameterName.find("Z-Mass4")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 115*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 8000*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu j\ndo Factory:Process p p e- nu j\n\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"
@@ -1305,7 +1458,9 @@ elif(collider=="LHC") :
         elif(parameterName.find("W-b")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process += "set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu b bbar\ndo Factory:Process p p e- nu b bbar\n"
+            process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\n"
+            process += "do Factory:Process p p e+  nu b bbar\ndo Factory:Process p p e-  nu b bbar\n"
+            process += "do Factory:Process p p mu+ nu b bbar\ndo Factory:Process p p mu- nu b bbar\n"
             process += "set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
             process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
@@ -1315,7 +1470,7 @@ elif(collider=="LHC") :
         else :
             logging.error(" Process %s not supported for Matchbox matrix elements" % name)
             sys.exit(1)
-# Star
+# LHC-GammaGamma
 elif(collider=="LHC-GammaGamma" ) :
     if(parameterName.find("-7-")>=0) :
         process="set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0\n"

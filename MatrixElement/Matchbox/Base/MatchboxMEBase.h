@@ -20,13 +20,12 @@
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
-#include "MergerBase.h"
-
 
 namespace Herwig {
 
@@ -553,14 +552,14 @@ public:
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
-  virtual CrossSection dSigHatDR() const{return dSigHatDR(false);}
+  virtual CrossSection dSigHatDR() const{return dSigHatDR(1.);}
 
 
   /**
    * Provide a possible faster, approximated dSigHatDR() method.
    */
 
-  CrossSection dSigHatDR(bool fast,double diffAlpha=1.) const;
+  CrossSection dSigHatDR(double diffAlpha) const;
 
   //@}
 

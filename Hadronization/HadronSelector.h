@@ -220,6 +220,7 @@ public:
   typedef map<pair<long,long>,KupcoData> HadronTable;
 
 public:
+
   /**
    * The default constructor.
    */
@@ -236,6 +237,15 @@ public:
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
 						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
     = 0;
+
+  /**
+   * Select the single hadron for a cluster decay
+   * return null pointer if not a single hadron decay
+   * @param par1 1st constituent
+   * @param par2 2nd constituent
+   * @param mass Mass of the cluster
+   */
+  tcPDPtr chooseSingleHadron(tcPDPtr par1, tcPDPtr par2, Energy mass) const;
 
   /**
    * This returns the lightest pair of hadrons given by the flavours.
@@ -293,49 +303,24 @@ public:
    * @param ptr3 is the third  constituent
    */
    tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
-#ifndef NDEBUG
-				tcPDPtr ptr3 = PDPtr ()) const {
-#else
-                                tcPDPtr = PDPtr ()) const {
-#endif
-    // The method assumes ptr3 == 0  
-    // rest not implemented
-    assert(ptr1 && ptr2 && !ptr3);
-    // find entry in the table
-    pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
-    HadronTable::const_iterator tit=_table.find(ids);
-    // throw exception if flavours wrong
-    if (tit==_table.end()) 
-      throw Exception() << "Could not find " 
-			<< ids.first << ' ' << ids.second 
-			<< " in _table. "
-			<< "In HadronSelector::lightestHadron()"
-			<< Exception::eventerror;
-    if(tit->second.empty())
-      throw Exception() << "HadronSelector::lightestHadron "
-			<< "could not find any hadrons containing " 
-			<< ptr1->id() << ' ' << ptr2->id() << '\n'
-			<< tit->first.first << ' ' 
-			<< tit->first.second << Exception::eventerror;
-    // find the lightest hadron
-    int sign = signHadron(ptr1,ptr2,tit->second.begin()->ptrData);
-    tcPDPtr candidate = sign > 0 ? 
-      tit->second.begin()->ptrData : tit->second.begin()->ptrData->CC();
-    // \todo 20 GeV limit is temporary fudge to let SM particles go through.
-    // \todo Use isExotic instead?
-    if (candidate->mass() > 20*GeV 
-	&& candidate->mass() < ptr1->constituentMass() + ptr2->constituentMass()) {
-      generator()->log() << "HadronSelector::lightestHadron: "
-			 << "chosen candidate " << candidate->PDGName() 
-			 << " is lighter than its constituents "
-			 << ptr1->PDGName() << ", " << ptr2->PDGName() << '\n'
-			 << candidate->mass()/GeV << " < " << ptr1->constituentMass()/GeV
-			 << " + " << ptr2->constituentMass()/GeV << '\n'
-			 << "Check your particle data tables.\n";
-      assert(false);
-    }
-    return candidate;
-  }
+			  tcPDPtr ptr3 = PDPtr ()) const;
+
+  /**
+   * Returns the hadrons below the constituent mass threshold formed by the given particles,
+   * together with their total weight
+   *
+   * Given the id of two (or three) constituents of a cluster, it returns
+   * the  lightest hadron with proper flavour numbers.
+   * At the moment it does *nothing* in the case that also 'ptr3' present.
+   * @param threshold The theshold
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   * @param ptr3 is the third  constituent
+   */
+  vector<pair<tcPDPtr,double> > 
+  hadronsBelowThreshold(Energy threshold,
+			tcPDPtr ptr1, tcPDPtr ptr2,
+			tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
    * Return the nominal mass of the hadron returned by lightestHadron()
@@ -803,6 +788,24 @@ private:
    *  Which particles to produce for debugging purposes
    */
   unsigned int _trial;
+
+  /**
+   * @name A parameter used for determining when clusters are too light.
+   *
+   * This parameter is used for setting the lower threshold, \f$ t \f$ as
+   * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
+   * where \f$ r \f$ is a random number [0,1].
+   */
+  //@{
+  double _limBottom;
+  double _limCharm;
+  double _limExotic;
+  //@}
+
+  /**
+   *  Option for the selection of hadrons below the pair threshold
+   */
+  unsigned int belowThreshold_;
 };
 
 

@@ -24,10 +24,9 @@
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
-#include "Herwig/Shower/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/Branching.h"
-#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
 
@@ -3749,26 +3748,21 @@ double MEPP2VVPowheg::lo_me() const {
   return sum_hel_amps_sqr;
 }
 
-HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
-					   vector<ShowerInteraction::Type> inter) {
-  // check QCD emission switched on
-  bool QCD=false;
-  for(unsigned int ix=0;ix<inter.size();++ix) 
-    QCD |= inter[ix]==ShowerInteraction::QCD;
-  if(!QCD) return HardTreePtr();
+RealEmissionProcessPtr MEPP2VVPowheg::generateHardest(RealEmissionProcessPtr born,
+						      ShowerInteraction::Type inter) {
+  if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
   // Now we want to set these data vectors according to the particles we've
   // received from the current 2->2 hard collision:
-  vector<ShowerProgenitorPtr> particlesToShower;
-  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
-	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit )
-    particlesToShower.push_back(cit->first);
+  vector<PPtr> particlesToShower;
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix)
+    particlesToShower.push_back(born->bornIncoming()[ix]);
 
   qProgenitor_  = particlesToShower[0];
   qbProgenitor_ = particlesToShower[1];
-  showerQuark_        = particlesToShower[0]->progenitor();
-  showerAntiquark_    = particlesToShower[1]->progenitor();
-  qHadron_      = particlesToShower[0]->beam();
-  qbHadron_     = particlesToShower[1]->beam();
+  showerQuark_        = particlesToShower[0];
+  showerAntiquark_    = particlesToShower[1];
+  qHadron_      = dynamic_ptr_cast<tcBeamPtr>(born->hadrons()[0]->dataPtr());
+  qbHadron_     = dynamic_ptr_cast<tcBeamPtr>(born->hadrons()[1]->dataPtr());
 
   if(showerQuark_->id()<0) {
     swap(qProgenitor_,qbProgenitor_);
@@ -3781,16 +3775,83 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
   // the incoming gluon for g+qbar processes. So now we might need to flip
   // the beams, bjorken x values, colliding partons accordingly:
   flipped_ = showerQuark_->momentum().z()<ZERO ? true : false;
-
-  assert(tree->outgoingLines().size()==2);
-  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
-	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit )
-    particlesToShower.push_back(cit->first);
-  
-  V1_           = particlesToShower[2]->progenitor();
-  V2_           = particlesToShower[3]->progenitor();
+  vector<unsigned int> cmap;
+  // undecayed gauge bosons
+  if(born->bornOutgoing().size()==2) {
+    for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+      particlesToShower.push_back(born->bornOutgoing()[ix]);
+    }
+    V1_           = particlesToShower[2];
+    V2_           = particlesToShower[3];
+  }
+  else if(born->bornOutgoing().size()==4) {
+    // If the vector bosons have decayed already then we may want to
+    // to get the children_ (and any associated photons) to correct
+    // spin correlations:
+    children_.clear();
+    map<ColinePtr,ColinePtr> clines;
+    for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+      tPPtr original = born->bornOutgoing()[ix];
+      PPtr copy      = original->dataPtr()->produceParticle(original->momentum());
+      children_.push_back(copy);
+      cmap.push_back(ix);
+      // sort out colour
+      if(original->colourLine()) {
+	map<ColinePtr,ColinePtr>::iterator cit = clines.find(original->colourLine());
+	if(cit!=clines.end()) {
+	  cit->second->addColoured(copy);
+	}
+	else {
+	  ColinePtr newline = new_ptr(ColourLine());
+	  clines[original->colourLine()] = newline;
+	  newline->addColoured(copy);
+	}
+      }
+      // and anticolour
+      else if(original->antiColourLine()) {
+	map<ColinePtr,ColinePtr>::iterator cit = clines.find(original->antiColourLine());
+	if(cit!=clines.end()) {
+	  cit->second->addAntiColoured(copy);
+	}
+	else {
+	  ColinePtr newline = new_ptr(ColourLine());
+	  clines[original->antiColourLine()] = newline;
+	  newline->addAntiColoured(copy);
+	}
+      }
+    }
+    assert(children_.size()==4);
+    PPtr V[2];
+    for(unsigned int ix=0;ix<2;++ix) {
+      int charge = 
+	children_[0+2*ix]->dataPtr()->iCharge()+
+	children_[1+2*ix]->dataPtr()->iCharge();
+      Lorentz5Momentum psum =children_[0+2*ix]->momentum()+
+	children_[1+2*ix]->momentum();
+      psum.rescaleMass();
+      if(charge==-3)
+	V[ix] = getParticleData(ParticleID::Wminus)->produceParticle(psum);
+      else if(charge==0)
+	V[ix] = getParticleData(ParticleID::Z0)->produceParticle(psum);
+      else if(charge==3)
+	V[ix] = getParticleData(ParticleID::Wplus)->produceParticle(psum);
+      else
+	assert(false);
+    }
+    V1_  = V[0];
+    V2_  = V[1];
+    if(children_[0]->id()<0) {
+      swap(children_[0],children_[1]);
+      swap(cmap[0],cmap[1]);
+    }
+    if(children_[2]->id()<0) {
+      swap(children_[2],children_[3]);
+      swap(cmap[2],cmap[3]);
+    }
+  }
+  else
+    assert(false);
   gluon_        = getParticleData(ParticleID::g)->produceParticle();
-  
   // Abort the run if V1_ and V2_ are not just pointers to different gauge bosons
   if(!V1_||!V2_) 
     throw Exception() 
@@ -3802,13 +3863,20 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
       << "V1_ = " << V1_->PDGName() << "\n"
       << "V2_ = " << V2_->PDGName() << "\n"
       << Exception::abortnow;
-  
   // Order the gauge bosons in the same way as in the NLO calculation
   // (the same way as in the NLO matrix element):
   // W+(->e+,nu_e) W-(->e-,nu_ebar) (MCFM: 61 [nproc])
-  if(V1_->id()==-24&&V2_->id()== 24) swap(V1_,V2_); 
-  // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 72+77 [nproc])
-  if(V1_->id()== 23&&abs(V2_->id())== 24) swap(V1_,V2_); 
+  bool order = false;
+  if((V1_->id()==-24&&V2_->id()== 24) ||
+     // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 72+77 [nproc])
+     (V1_->id()== 23&&abs(V2_->id())== 24) ) {
+    swap(V1_,V2_);
+    order = true;
+    swap(cmap[0],cmap[2]);
+    swap(cmap[1],cmap[3]);
+    swap(children_[0],children_[2]);
+    swap(children_[1],children_[3]);
+  }
   // *** N.B. ***
   // We should not have to do a swap in the ZZ case, even if the different
   // (off-shell) masses of the Z's are taken into account by generating
@@ -3816,37 +3884,6 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
   // those transformed matrix elements are, according to mathematica, 
   // symmetric in the momenta (and therefore also the masses) of the 2 Z's.
 
-  // If the vector bosons have decayed already then we may want to
-  // to get the children_ (and any associated photons) to correct
-  // spin correlations:
-  StepPtr theSubProcess = generator()->eventHandler()->currentStep();
-  tPVector outgoing = theSubProcess->getFinalState();
-  children_.clear();
-  photons_.clear();
-  if(outgoing.size()>=4) {
-    for(unsigned int ix=0;ix<outgoing.size();ix++) 
-      if(outgoing[ix]->parents()[0]&&
-	 (abs(outgoing[ix]->parents()[0]->id())==24||
-	  abs(outgoing[ix]->parents()[0]->id())==23)) {
-	if(outgoing[ix]->id()!=ParticleID::gamma)
-	  children_.push_back(outgoing[ix]);
-	else
-	  photons_.push_back(outgoing[ix]);
-      }
-    assert(children_.size()==4);
-    if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
-      swap(children_[0],children_[2]);
-    if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
-      swap(children_[0],children_[3]);
-    if(children_[0]->parents()[0]->id()!=V1_->id()) {
-      swap(children_[0],children_[2]);
-      swap(children_[1],children_[3]);
-    }
-    if(children_[0]->id()<0) swap(children_[0],children_[1]);
-    if(children_[2]->id()<0) swap(children_[2],children_[3]);
-    assert(children_[0]->parents()[0]==children_[1]->parents()[0]);
-    assert(children_[2]->parents()[0]==children_[3]->parents()[0]);
-  }
 
   // Now we want to construct a bornVVKinematics object. The
   // constructor for that needs all 4 momenta, q, qbar, V1_, V2_ 
@@ -3880,13 +3917,13 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
   // Attempt to generate some radiative variables and their kinematics:
   vector<Lorentz5Momentum> theRealMomenta;
   channel_ = 999;
-  if(!getEvent(theRealMomenta,channel_)) return HardTreePtr();
+  if(!getEvent(theRealMomenta,channel_)) {
+    born->pT()[ShowerInteraction::QCD] = min_pT_;
+    return born;
+  }
 
   // Set the maximum pT for subsequent emissions:
-  pT_ < min_pT_ ? qProgenitor_ ->maximumpT(min_pT_,ShowerInteraction::QCD) : 
-                  qProgenitor_ ->maximumpT(pT_    ,ShowerInteraction::QCD); 
-  pT_ < min_pT_ ? qbProgenitor_->maximumpT(min_pT_,ShowerInteraction::QCD) :
-                  qbProgenitor_->maximumpT(pT_    ,ShowerInteraction::QCD); 
+  born->pT()[ShowerInteraction::QCD] = pT_ < min_pT_ ? min_pT_ : pT_;
 
   // Determine whether the quark or antiquark emitted:
   fermionNumberOfMother_=0;
@@ -3920,93 +3957,79 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
          << "P_in minus P_out = " << inMinusOut/GeV << endl;
 
   // From the radiative kinematics we now have to form ShowerParticle objects:
-  ShowerParticlePtr p1;
-  ShowerParticlePtr p2;
-  ShowerParticlePtr k1(new_ptr(ShowerParticle(V1_->dataPtr(),true )));
-  ShowerParticlePtr k2(new_ptr(ShowerParticle(V2_->dataPtr(),true )));
-  ShowerParticlePtr k ;
+  PPtr p1,p2,k;
+  PPtr k1 = V1_->dataPtr()->produceParticle(theRealMomenta[2]);
+  PPtr k2 = V2_->dataPtr()->produceParticle(theRealMomenta[3]);
   // q+qbar -> V1+V2+g
   if(channel_==0) {
-    p1 = new_ptr(ShowerParticle(showerQuark_->dataPtr()           ,false));
-    p2 = new_ptr(ShowerParticle(showerAntiquark_->dataPtr()       ,false));
-    k  = new_ptr(ShowerParticle(gluon_->dataPtr()           ,true ));
+    p1 = showerQuark_    ->dataPtr()->produceParticle(theRealMomenta[0]);
+    p2 = showerAntiquark_->dataPtr()->produceParticle(theRealMomenta[1]);
+    k  = gluon_          ->dataPtr()->produceParticle(theRealMomenta[4]);
+    k->incomingColour(p1);
+    k->incomingColour(p2,true);
   }
   // q+g -> V1+V2+q
   else if(channel_==1) {
-    p1 = new_ptr(ShowerParticle(showerQuark_->dataPtr()           ,false));
-    p2 = new_ptr(ShowerParticle(gluon_->dataPtr()           ,false));
-    k  = new_ptr(ShowerParticle(showerAntiquark_->dataPtr()->CC() ,true ));
+    p1 = showerQuark_    ->dataPtr()      ->produceParticle(theRealMomenta[0]);
+    p2 = gluon_          ->dataPtr()      ->produceParticle(theRealMomenta[1]);
+    k  = showerAntiquark_->dataPtr()->CC()->produceParticle(theRealMomenta[4]);
+    k->incomingColour(p2);
+    p2->colourConnect(p1);
   }
   // g+qbar -> V1+V2+qbar
   else {
-    p1 = new_ptr(ShowerParticle(gluon_->dataPtr()           ,false));
-    p2 = new_ptr(ShowerParticle(showerAntiquark_->dataPtr()       ,false));
-    k  = new_ptr(ShowerParticle(showerQuark_->dataPtr()->CC()     ,true ));
+    p1 = gluon_          ->dataPtr()      ->produceParticle(theRealMomenta[0]);
+    p2 = showerAntiquark_->dataPtr()      ->produceParticle(theRealMomenta[1]);
+    k  = showerQuark_    ->dataPtr()->CC()->produceParticle(theRealMomenta[4]);
+    k->incomingColour(p1,true);
+    p1->colourConnect(p2,true);
   }
-  // Set the momenta of the ShowerParticlePtr's:
-  p1->set5Momentum(theRealMomenta[0]);
-  p2->set5Momentum(theRealMomenta[1]);
-  k1->set5Momentum(theRealMomenta[2]);
-  k2->set5Momentum(theRealMomenta[3]);
-  k ->set5Momentum(theRealMomenta[4]);
-  // Then construct another set of ShowerPointers that will be
-  // useful in creating the hardTree, using this information:
-  ShowerParticlePtr mother;
-  ShowerParticlePtr spacelikeSon;
-  ShowerParticlePtr timelikeSon;
-  ShowerParticlePtr spectator;
+  Lorentz5Momentum pmother,pspect;
   if(fermionNumberOfMother_==1) {
-    mother       = new_ptr(ShowerParticle(showerQuark_->dataPtr()    ,false));
-    spacelikeSon = p1;
-    timelikeSon  = k;
-    spectator    = p2;
-  } else if(fermionNumberOfMother_==-1) {
-    mother       = new_ptr(ShowerParticle(showerAntiquark_->dataPtr(),false));
-    spacelikeSon = p2;
-    timelikeSon  = k;
-    spectator    = p1;
-  } else {
-    throw Exception() << "MEPP2VVPowheg::generateHardest()" 
-		      << "Failed to determine whether the q or qbar branched"
-		      <<  Exception::runerror;
+    pmother = theRealMomenta[0]-theRealMomenta[4];
+    pspect  = theRealMomenta[1];
   }
-  Lorentz5Momentum motherMomentum(spacelikeSon->momentum()-timelikeSon->momentum());
-  motherMomentum.rescaleMass();
-  mother->set5Momentum(motherMomentum);
-  // Create HardBranchingPtrs for the particles
-  HardBranchingPtr spacelikeSonBranching =
-    new_ptr(HardBranching(spacelikeSon,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Incoming ));
-  HardBranchingPtr timelikeSonBranching =
-    new_ptr(HardBranching(timelikeSon ,SudakovPtr(),spacelikeSonBranching,HardBranching::Outgoing));
-  HardBranchingPtr spectatorBranching =
-    new_ptr(HardBranching(spectator   ,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Incoming ));
-  HardBranchingPtr motherBranching =
-    new_ptr(HardBranching(mother      ,SudakovPtr(),spacelikeSonBranching,HardBranching::Incoming ));
-  HardBranchingPtr V1_Branching =
-    new_ptr(HardBranching(k1          ,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Outgoing));
-  HardBranchingPtr V2_Branching =
-    new_ptr(HardBranching(k2          ,SudakovPtr(),HardBranchingPtr()   ,HardBranching::Outgoing));
+  else {
+    pmother = theRealMomenta[1]-theRealMomenta[4];
+    pspect  = theRealMomenta[0];
+  }
 
-  // N.B. The DrellYanHardGenerator first adds the timelikeSonBranching as a child
-  // child of the spacelikeSonBranching before adding the motherBranching. We do
-  // it the other way round in accordance with PowhegEvolver::checkShowerMomentum.
-  spacelikeSonBranching->addChild(motherBranching);
-  spacelikeSonBranching->addChild(timelikeSonBranching);
-  spacelikeSonBranching->type(motherBranching->branchingParticle()->id()>0 ? 
-			      ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
-  motherBranching->colourPartner(spectatorBranching);
-  spectatorBranching->colourPartner(motherBranching);
-
-  vector<HardBranchingPtr> spacelikeBranchings,hardBranchings;
-  spacelikeBranchings.push_back(fermionNumberOfMother_ ==  1 ? 
-				spacelikeSonBranching : spectatorBranching);
-  spacelikeBranchings.push_back(fermionNumberOfMother_ == -1 ? 
-				spacelikeSonBranching : spectatorBranching);
-  hardBranchings.push_back(motherBranching);
-  hardBranchings.push_back(spectatorBranching);
-  hardBranchings.push_back(V1_Branching);
-  hardBranchings.push_back(V2_Branching);
-
+  unsigned int iemit  = fermionNumberOfMother_==1 ? 0 : 1;
+  unsigned int ispect = fermionNumberOfMother_==1 ? 1 : 0;
+  // fill the output
+  if(showerQuark_ !=born->bornIncoming()[0]) {
+    born->incoming().push_back(p2);
+    born->incoming().push_back(p1);
+    swap(iemit,ispect);
+  }
+  else {
+    born->incoming().push_back(p1);
+    born->incoming().push_back(p2);
+  }
+  born->emitter  (iemit);
+  born->spectator(ispect);
+  pair<double,double> xnew;
+  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
+    double x = born->incoming()[ix]->momentum().rho()/born->hadrons()[ix]->momentum().rho();
+    if(ix==0)       xnew.first  = x;
+    else if (ix==1) xnew.second = x;
+  }
+  born->x(xnew);
+  born->interaction(ShowerInteraction::QCD);
+  // if gauge bosons not decayed, we're done
+  if(born->bornOutgoing().size()==2) {
+    born->emitted(4);
+    if(!order) {
+      born->outgoing().push_back(k1);
+      born->outgoing().push_back(k2);
+    }
+    else {
+      born->outgoing().push_back(k2);
+      born->outgoing().push_back(k1);
+    }
+    born->outgoing().push_back(k);
+    return born;
+  }
   // Recalculate the hard vertex for this event:
   // For spin correlations, if an emission occurs go calculate the relevant 
   // combination of amplitudes for the ProductionMatrixElement. 
@@ -4025,168 +4048,12 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
     else if(channel_==2) t_u_M_R_gqb_hel_amp(R_,true);
     recalculateVertex();
   }
-  // Construct the HardTree object needed to perform the showers
-  HardTreePtr hardTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
-					 ShowerInteraction::QCD));
-  
-  if(hardTree->branchings().size()!=4) throw Exception() 
-         << "MEPP2VVPowheg::generateHardest()\n" 
-         << "The hardTree has " << hardTree->branchings().size() << "branchings\n"
-	 << hardTree << "\n" <<  Exception::runerror;
-  if((motherBranching->parent()!=spacelikeSonBranching)&&
-     spacelikeSonBranching->parent()!=HardBranchingPtr()&&
-     spectatorBranching->parent()!=HardBranchingPtr()) throw Exception() 
-         << "MEPP2VVPowheg::generateHardest()\n" 
-         << "The parent-child relationships are not valid.\n" 
-	 << "motherBranching->parent()       = " << motherBranching->parent()       << "\n"
-	 << "spacelikeSonBranching           = " << spacelikeSonBranching           << "\n"
-	 << "spectatorBranching->parent()    = " << spectatorBranching->parent()    << "\n"
-	 << "spacelikeSonBranching->parent() = " << spacelikeSonBranching->parent() << "\n"
-	 <<  Exception::runerror;
-
-  if(fermionNumberOfMother_== 1) {
-    hardTree->connect(showerQuark_    ,motherBranching   );
-    hardTree->connect(showerAntiquark_,spectatorBranching);
-    spacelikeSonBranching->beam(qProgenitor_ ->original()->parents()[0]);
-    motherBranching      ->beam(qProgenitor_ ->original()->parents()[0]);
-    spectatorBranching   ->beam(qbProgenitor_->original()->parents()[0]);
-  } else if(fermionNumberOfMother_==-1) {
-    hardTree->connect(showerAntiquark_,motherBranching   );
-    hardTree->connect(showerQuark_    ,spectatorBranching);
-    spacelikeSonBranching->beam(qbProgenitor_->original()->parents()[0]);
-    motherBranching      ->beam(qbProgenitor_->original()->parents()[0]);
-    spectatorBranching   ->beam(qProgenitor_ ->original()->parents()[0]);
-  }
-//   hardTree->connect(V1_ ,V1_Branching );
-//   hardTree->connect(V2_ ,V2_Branching );
-
-  // This if {...} else if {...} puts the mother and spectator on the same colour
-  // line. If we don't do this, then when reconstructFinalStateShower calls
-  // setInitialEvolutionScales it says it failed to set the colour partners, so
-  // it can't set the scale and it just forgets the emission / event. This seems
-  // like an unintrusive work-around until reconstructFinalStateShower is sorted.
-  ColinePtr bornColourLine=new_ptr(ColourLine());
-  if(fermionNumberOfMother_== 1) {
-    bornColourLine->addColoured(mother);
-    bornColourLine->addAntiColoured(spectator);
-    if(timelikeSon->id()==ParticleID::g) {
-      bornColourLine->addAntiColoured(timelikeSon);
-      ColinePtr newLine=new_ptr(ColourLine());
-      newLine->addColoured(timelikeSon);
-      newLine->addColoured(spacelikeSon);
-    }
-    else {
-      bornColourLine->addColoured(spacelikeSon);
-      ColinePtr newLine=new_ptr(ColourLine());
-      newLine->addAntiColoured(timelikeSon);
-      newLine->addAntiColoured(spacelikeSon);
-    }
-  } else if(fermionNumberOfMother_==-1) {
-    bornColourLine->addAntiColoured(mother);
-    bornColourLine->addColoured(spectator);
-    if(timelikeSon->id()==ParticleID::g) {
-      bornColourLine->addColoured(timelikeSon);
-      ColinePtr newLine=new_ptr(ColourLine());
-      newLine->addAntiColoured(timelikeSon);
-      newLine->addAntiColoured(spacelikeSon);
-    }
-    else {
-      bornColourLine->addAntiColoured(spacelikeSon);
-      ColinePtr newLine=new_ptr(ColourLine());
-      newLine->addColoured(timelikeSon);
-      newLine->addColoured(spacelikeSon);
-    }
-  }
-  // this is a pain but we need the boost, which we don't have yet here!!
-  vector<Lorentz5Momentum> pin(2);
-  vector<Lorentz5Momentum> pq (2);
-  vector<HardBranchingPtr>::iterator cit;
-  pin[0] = motherBranching   ->branchingParticle()->momentum();
-  pin[1] = spectatorBranching->branchingParticle()->momentum();
-  Energy etemp = motherBranching    ->beam()->momentum().z();
-  pq[0] = Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp));
-  etemp        = spectatorBranching->beam()->momentum().z();
-  pq[1] = Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp));
-  // decompose the momenta
-  double alpha[2],beta[2];
-  Energy2 p12=pq[0]*pq[1];
-  Lorentz5Momentum pt[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    alpha[ix] = pin[ix]*pq[1]/p12;
-    beta [ix] = pin[ix]*pq[0]/p12;
-    pt[ix]    = pin[ix]-alpha[ix]*pq[0]-beta[ix]*pq[1];
-  }
-  // parton level centre-of-mass
-  Lorentz5Momentum pcm=pin[0]+pin[1];
-  pcm.rescaleMass();
-  double rap=pcm.rapidity();
-  // hadron level cmf
-  Energy2 s  = (pq[0] +pq[1] ).m2();
-  // calculate the x values 
-  double x[2]={sqrt(pcm.mass2()/s*exp(2.*rap)),pcm.mass2()/s/x[0]};
-  if(pq[0].z()<ZERO) swap(x[0],x[1]);
-  Lorentz5Momentum pnew = x[0]*pq[0]+x[1]*pq[1];
-  LorentzRotation toRest   = LorentzRotation(-pcm .boostVector());
-  LorentzRotation fromRest = LorentzRotation( pnew.boostVector());
-  Lorentz5Momentum pv[2]=
-    {fromRest*toRest*V1_Branching->branchingParticle()->momentum(),
-     fromRest*toRest*V2_Branching->branchingParticle()->momentum()};
-  LorentzRotation R(-(mother->momentum()+spectator ->momentum()).boostVector());
-  R.boost((showerQuark_->momentum()+showerAntiquark_->momentum()).boostVector());
-  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
-	tit  = tree->treelinks().begin();
-      tit != tree->treelinks().end();++tit) {
-    ShowerTreePtr decayTree = tit->first;
-    map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
-      cit = decayTree->incomingLines().begin();
-    // reset the momentum of the decay particle
-    Lorentz5Momentum oldMomentum = cit->first->progenitor()->momentum();
-    Lorentz5Momentum newMomentum = tit->second.second == V1_ ? pv[0] : pv[1];
-    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-    // reset the momenta of the decay products, 
-    LorentzRotation boostToORF(newMomentum.findBoostToCM(),
-			       newMomentum.e()/newMomentum.mass());
-    tPPtr children[2];
-    if(children_[0]->parents()[0]==cit->first->original()) {
-      children[0] = children_[0];
-      children[1] = children_[1];
-    } 
-    else {
-      children[0] = children_[2];
-      children[1] = children_[3];
-    }
-    if(UseRandom::rndbool()) swap(children[0],children[1]);
-    double originalTheta0 = (boostToORF*R*children[0]->momentum()).theta();
-    double originalPhi0   = (boostToORF*R*children[0]->momentum()).phi();
-    boostToORF.rotateZ(-originalPhi0);
-    boostToORF.rotateY(-originalTheta0);
-    double originalPhi1   = (boostToORF*children[1]->momentum()).phi();
-    LorentzRotation boost(oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
-    tPPtr newChildren[2];
-    for(cjt=decayTree->outgoingLines().begin();
-	cjt!=decayTree->outgoingLines().end();++cjt) {
-      if(cjt->first->progenitor()->id()==children[0]->id())
-	newChildren[0] = cjt->first->progenitor();
-      else if(cjt->first->progenitor()->id()==children[1]->id())
-	newChildren[1] = cjt->first->progenitor();
-    }
-    boost.rotateZ(-(boost*newChildren[0]->momentum()).phi());
-    boost.rotateY(-(boost*newChildren[0]->momentum()).theta());
-    boost.rotateZ(-(boost*newChildren[1]->momentum()).phi());
-    boost.rotateZ( originalPhi1);
-    boost.rotateY( originalTheta0);
-    boost.rotateZ( originalPhi0);
-    boost.boost(-oldMomentum.findBoostToCM(),
-		oldMomentum.e()/oldMomentum.mass());
-    for(cjt=decayTree->outgoingLines().begin();
-	cjt!=decayTree->outgoingLines().end();++cjt) {
-      cjt->first->original()  ->set5Momentum(cjt->first->progenitor()->momentum());
-      cjt->first->progenitor()->deepTransform(boost);
-      cjt->first->original()  ->deepTransform(boost);
-      cjt->first->copy()      ->deepTransform(boost);
-    }
-  }
-  return hardTree;
+  born->emitted(6);
+  for(unsigned int ix=0;ix<children_.size();++ix)
+    born->outgoing().push_back(children_[cmap[ix]]);
+  born->outgoing().push_back(k);
+  // return the result
+  return born;
 }   
 
 double MEPP2VVPowheg::getResult(int channel, realVVKinematics R, Energy pT) {

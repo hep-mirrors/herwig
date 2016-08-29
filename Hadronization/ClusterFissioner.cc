@@ -329,7 +329,7 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
   static const int max_loop = 1000;
   int counter = 0;
   Energy Mc1 = ZERO, Mc2 = ZERO,m1=ZERO,m2=ZERO,m=ZERO;
-  bool toHadron1(false), toHadron2(false);
+  tcPDPtr toHadron1, toHadron2;
   PPtr newPtr1 = PPtr ();
   PPtr newPtr2 = PPtr ();
   bool succeeded = false;
@@ -401,17 +401,10 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
        * procedure that would be necessary if we used LightClusterDecayer
        * to decay the light cluster to the lightest hadron.   
        ****************************/
-      toHadron1 = false;
-      if(Mc1 < _hadronsSelector->massLightestHadronPair(ptrQ1->dataPtr(), newPtr1->dataPtr())) { 
-	Mc1 = _hadronsSelector->massLightestHadron(ptrQ1->dataPtr(), newPtr1->dataPtr());          
-	toHadron1 = true;
-      }
-      toHadron2 = false;
-      if(Mc2 < _hadronsSelector->massLightestHadronPair(ptrQ2->dataPtr(), newPtr2->dataPtr())) { 
-	Mc2 = _hadronsSelector->massLightestHadron(ptrQ2->dataPtr(), newPtr2->dataPtr());           
-	toHadron2 = true;
-      }
-
+      toHadron1 = _hadronsSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc1);
+      if(toHadron1) Mc1 = toHadron1->mass();
+      toHadron2 = _hadronsSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc2);
+      if(toHadron2) Mc2 = toHadron2->mass();
       // if a beam cluster not allowed to decay to hadrons
       if(cluster->isBeamCluster() && (toHadron1||toHadron2) && softUEisOn)
 	continue;
@@ -419,11 +412,12 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
       // force the one-hadron decay for the other cluster as well.
       if(Mc1 + Mc2  >  Mc) {
 	if(!toHadron1) {
-	  Mc1 = _hadronsSelector->massLightestHadron(ptrQ1->dataPtr(), newPtr1->dataPtr()); 
-	  toHadron1 = true;	
-	} else if(!toHadron2) {
-	  Mc2 = _hadronsSelector->massLightestHadron(ptrQ2->dataPtr(), newPtr2->dataPtr());
-	  toHadron2 = true;
+	  toHadron1 = _hadronsSelector->chooseSingleHadron(ptrQ1->dataPtr(), newPtr1->dataPtr(),Mc-Mc2);
+	  if(toHadron1) Mc1 = toHadron1->mass();
+	} 
+	else if(!toHadron2) {
+	  toHadron2 = _hadronsSelector->chooseSingleHadron(ptrQ2->dataPtr(), newPtr2->dataPtr(),Mc-Mc1);
+	  if(toHadron2) Mc2 = toHadron2->mass();
 	}
       }
       succeeded = (Mc >= Mc1+Mc2);
@@ -445,7 +439,6 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
   pQ2.setMass(m2);
   pQone.setMass(m); 
   pQtwo.setMass(m);
-    
   calculateKinematics(pClu,p0Q1,toHadron1,toHadron2,
 		      pClu1,pClu2,pQ1,pQone,pQtwo,pQ2);                // out
 
@@ -474,14 +467,14 @@ ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
   calculatePositions(pClu, posC, pClu1, pClu2, pos1, pos2);
   cutType rval;
   if(toHadron1) {
-    rval.first = produceHadron(ptrQ1->dataPtr(), newPtr1, pClu1, pos1);
+    rval.first = produceHadron(toHadron1, newPtr1, pClu1, pos1);
     finalhadrons.push_back(rval.first.first);
   }
   else {
     rval.first = produceCluster(ptrQ1, newPtr1, pClu1, pos1, pQ1, pQone, rem1);
   }
   if(toHadron2) {
-    rval.second = produceHadron(ptrQ2->dataPtr(), newPtr2, pClu2, pos2);
+    rval.second = produceHadron(toHadron2, newPtr2, pClu2, pos2);
     finalhadrons.push_back(rval.second.first);
   }
   else {
@@ -542,7 +535,8 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
   static const int max_loop = 1000;
   int counter = 0;
   Energy Mc1 = ZERO, Mc2 = ZERO, m1=ZERO, m2=ZERO, m=ZERO;
-  bool toHadron(false), toDiQuark(false);
+  tcPDPtr toHadron;
+  bool toDiQuark(false);
   PPtr newPtr1 = PPtr(),newPtr2 = PPtr();
   PDPtr diquark;
   bool succeeded = false;
@@ -590,11 +584,8 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     Mc2 = drawChildMass(mmax,m2,m1,m,exp2,soft2);
     if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
     // check if need to force meson clster to hadron
-    toHadron = false;
-    if(Mc1 < _hadronsSelector->massLightestHadronPair(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr())) {
-      Mc1 = _hadronsSelector->massLightestHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr());
-      toHadron = true;
-    }
+    toHadron = _hadronsSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),Mc1);
+    if(toHadron) Mc1 = toHadron->mass();
     // check if need to force diquark cluster to be on-shell
     toDiQuark = false;
     diquark = CheckId::makeDiquark(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
@@ -609,8 +600,8 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
     // force the one-hadron decay for the other cluster as well.
     if(Mc1 + Mc2  >  mmax) {
       if(!toHadron) {
-	Mc1 = _hadronsSelector->massLightestHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr()); 
-	toHadron = true;
+	toHadron = _hadronsSelector->chooseSingleHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr(),mmax-Mc2);
+	if(toHadron) Mc1 = toHadron->mass();
       }
       else if(!toDiQuark) {
 	Mc2 = _hadronsSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
@@ -636,7 +627,7 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
   // first the mesonic cluster/meson
   cutType rval;
    if(toHadron) {
-     rval.first = produceHadron(ptrQ[iq1]->dataPtr(), newPtr1, pClu1, pos1);
+     rval.first = produceHadron(toHadron, newPtr1, pClu1, pos1);
      finalhadrons.push_back(rval.first.first);
    }
    else {
@@ -657,12 +648,14 @@ ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
 }
 
 ClusterFissioner::PPair 
-ClusterFissioner::produceHadron(tcPDPtr ptrQ, tPPtr newPtr, 
-				const Lorentz5Momentum &a,
+ClusterFissioner::produceHadron(tcPDPtr hadron, tPPtr newPtr, const Lorentz5Momentum &a,
 				const LorentzPoint &b) const {
   PPair rval;
-  rval.first =( _hadronsSelector->lightestHadron(ptrQ,newPtr->dataPtr()))->produceParticle();
-  
+  if(hadron->coloured()) {
+    rval.first = (_hadronsSelector->lightestHadron(hadron,newPtr->dataPtr()))->produceParticle();
+  }
+  else
+    rval.first = hadron->produceParticle();
   rval.second = newPtr;
   rval.first->set5Momentum(a);
   rval.first->setVertex(b);

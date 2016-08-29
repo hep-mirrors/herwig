@@ -300,7 +300,6 @@ double DipoleIOperator::me2() const {
   }
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
-    //cout<<"\nlastBorn()->lastAlphaS()"<<lastBorn()->lastAlphaS();
 
   return res;
 

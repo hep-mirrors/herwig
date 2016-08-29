@@ -52,6 +52,8 @@ Makefile\.in$
 ^src/herwigopts.h$
 ^src/herwigopts.c$
 ^src/defaults/Analysis.in$
+^src/defaults/Decays.in$
+^src/defaults/decayers.in$
 ^src/herwig-config$
 ^src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg|hepmc|dvi)$
 ^src/Makefile-UserModules$
@@ -106,4 +108,3 @@ test\.(log|trs)$
 test-suite\.log$
 ^Config/test-driver$
 param_card\.dat$
-tmp/*

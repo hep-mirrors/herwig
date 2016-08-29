@@ -56,7 +56,7 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 ##  Setup the POWHEG shower
 ###################################################
 #cd /Herwig/Shower
-#set Evolver:HardEmissionMode POWHEG
+#set ShowerHandler:HardEmission POWHEG
 #read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 ###################################################
 ## NLO Matrix Elements for lepton-hadron collisions 

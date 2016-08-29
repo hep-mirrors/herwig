@@ -222,12 +222,8 @@ const vector<PDT::Colour>& ColourBasis::normalOrderedLegs(const cPDVector& sub) 
 
 size_t ColourBasis::prepare(const cPDVector& sub,
 			    bool noCorrelations) {
-  
-  vector<PDT::Colour> legs;
-  if ( theNormalOrderedLegs.find(sub) != theNormalOrderedLegs.end() )
-    legs=theNormalOrderedLegs[sub];
-  else
-    legs = normalOrderMap(sub);
+
+  vector<PDT::Colour> legs = normalOrderMap(sub);
 
   bool doPrepare = false;
 
@@ -477,60 +473,42 @@ bool findPath(pair<int,bool> a, pair<int,bool> b,
 
   if ( !backward ) {
 
-    if ( diag->children(a.first).empty() )
+    if ( diag->children(a.first).first == -1 )
       return matchEnd(a.first,b,diag);
 
-    vector<int> children = diag->children(a.first);
-    assert(children[0]!=-1);
-    bool cc = (children[0] == diag->nSpace()-1);
-    if ( diag->allPartons()[children[0]]->coloured() )
+    pair<int,int> children = diag->children(a.first);
+
+    bool cc = (children.first == diag->nSpace()-1);
+    if ( diag->allPartons()[children.first]->coloured() )
       if ( !cc ? 
 	   (!a.second ?
-	    diag->allPartons()[children[0]]->hasColour() :
-	    diag->allPartons()[children[0]]->hasAntiColour()) :
+	    diag->allPartons()[children.first]->hasColour() :
+	    diag->allPartons()[children.first]->hasAntiColour()) :
 	   (!a.second ?
-	    diag->allPartons()[children[0]]->hasAntiColour() :
-	    diag->allPartons()[children[0]]->hasColour())  ) {
-	pair<int,bool> next(children[0],a.second);
+	    diag->allPartons()[children.first]->hasAntiColour() :
+	    diag->allPartons()[children.first]->hasColour())  ) {
+	pair<int,bool> next(children.first,a.second);
 	path.push_back(next);
 	if ( !findPath(next,b,diag,path,false) ) {
 	  path.pop_back();
 	} else return true;
       }
 
-    cc = (children[1] == diag->nSpace()-1);
-    if ( diag->allPartons()[children[1]]->coloured() )
+    cc = (children.second == diag->nSpace()-1);
+    if ( diag->allPartons()[children.second]->coloured() )
       if ( !cc ? 
 	   (!a.second ?
-	    diag->allPartons()[children[1]]->hasColour() :
-	    diag->allPartons()[children[1]]->hasAntiColour()) :
+	    diag->allPartons()[children.second]->hasColour() :
+	    diag->allPartons()[children.second]->hasAntiColour()) :
 	   (!a.second ?
-	    diag->allPartons()[children[1]]->hasAntiColour() :
-	    diag->allPartons()[children[1]]->hasColour())  ) {
-	pair<int,bool> next(children[1],a.second);
+	    diag->allPartons()[children.second]->hasAntiColour() :
+	    diag->allPartons()[children.second]->hasColour())  ) {
+	pair<int,bool> next(children.second,a.second);
 	path.push_back(next);
 	if ( !findPath(next,b,diag,path,false) ) {
 	  path.pop_back();
 	} else return true;
       }
-
-    if(children.size()==3){
-    cc = (children[2] == diag->nSpace()-1);
-    if ( diag->allPartons()[children[2]]->coloured() )
-        if ( !cc ?
-             (!a.second ?
-              diag->allPartons()[children[2]]->hasColour() :
-              diag->allPartons()[children[2]]->hasAntiColour()) :
-             (!a.second ?
-              diag->allPartons()[children[2]]->hasAntiColour() :
-              diag->allPartons()[children[2]]->hasColour())  ) { 
-          pair<int,bool> next(children[2],a.second);
-          path.push_back(next);
-          if ( !findPath(next,b,diag,path,false) ) {
-            path.pop_back();
-          } else return true;
-        }
-    }
 
     if ( path.size() == 1 )
       path.pop_back();
@@ -539,33 +517,29 @@ bool findPath(pair<int,bool> a, pair<int,bool> b,
   } else {
 
     int parent = diag->parent(a.first);
-    vector<int> neighbours = diag->children(parent);
-
+    pair<int,int> neighbours = diag->children(parent);
+    int neighbour = a.first == neighbours.first ? neighbours.second : neighbours.first;
 
     if ( matchEnd(parent,b,diag) ) {
       path.push_back(b);
       return true;
     }
 
-    for(vector<int>::iterator neighbour=neighbours.begin(); 
-                              neighbour!=neighbours.end();neighbour++){
-      if(a.first==*neighbour)continue;
-      if ( matchEnd(*neighbour,b,diag) ) {
-        path.push_back(b);
-        return true;
-      }
-
-      if ( diag->allPartons()[*neighbour]->coloured() ) 
-        if ( a.second ?
-	   diag->allPartons()[*neighbour]->hasColour() :
-	   diag->allPartons()[*neighbour]->hasAntiColour() ) {
-	  pair<int,bool> next(*neighbour,!a.second);
-	  path.push_back(next);
-	  if ( !findPath(next,b,diag,path,false) ) {
-	    path.pop_back();
-	  }   else return true;
-        }
+    if ( matchEnd(neighbour,b,diag) ) {
+      path.push_back(b);
+      return true;
     }
+
+    if ( diag->allPartons()[neighbour]->coloured() ) 
+      if ( a.second ?
+	   diag->allPartons()[neighbour]->hasColour() :
+	   diag->allPartons()[neighbour]->hasAntiColour() ) {
+	pair<int,bool> next(neighbour,!a.second);
+	path.push_back(next);
+	if ( !findPath(next,b,diag,path,false) ) {
+	  path.pop_back();
+	} else return true;
+      }
 
     if ( parent == 0 ) {
       if ( path.size() == 1 )
@@ -1094,11 +1068,8 @@ void ColourBasis::writeBasis(const string& prefix) const {
   for ( set<vector<PDT::Colour> >::const_iterator known = legs.begin();
 	known != legs.end(); ++known ) {
     string fname = searchPath + prefix + file(*known) + ".cdat";
-    if ( !( SamplerBase::runLevel() == SamplerBase::ReadMode ||
-            SamplerBase::runLevel() == SamplerBase::BuildMode ) ) {
-      ifstream check(fname.c_str());
-      if ( check ) continue;
-    }
+    ifstream check(fname.c_str());
+    if ( check ) continue;
     ofstream out(fname.c_str());
     if ( !out )
       throw Exception() << "ColourBasis: Failed to open "

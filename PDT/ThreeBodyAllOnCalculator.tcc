@@ -14,7 +14,7 @@ using namespace Herwig;
 
 // shift the variables for the outer integrand and give limits for the inner one
 template <class T>
-void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low,
+void ThreeBodyAllOnCalculator<T>::outerVariables(double x, Energy2 & low,
 						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
   if(_mapping[_thechannel]==0) {

@@ -64,11 +64,7 @@ public:
    * Return the momentum fraction associated to the last splitting.
    */
   virtual double lastZ() const;
-  
-  
-  virtual double lastRealR() const;
-  
-  virtual double lastBornR() const;
+
   /**
    * Return true, if this TildeKinematics object needs to transform
    * all other particles in the process except the emitter and spectator
@@ -81,9 +77,7 @@ public:
    * momentum.
    */
   virtual Lorentz5Momentum transform(const Lorentz5Momentum& p) const;
-  
-  double jacobian(Energy2,Energy2,int) const;
-  
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

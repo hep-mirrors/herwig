@@ -29,7 +29,6 @@ newdef DipoleShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 
 set DipoleShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 set DipoleShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
-set DipoleShowerHandler:Evolver /Herwig/Shower/Evolver
 
 ################################################################################
 # Setup the ordering.

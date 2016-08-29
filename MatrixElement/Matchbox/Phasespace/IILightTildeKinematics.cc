@@ -84,69 +84,6 @@ double IILightTildeKinematics::lastZ() const {
   return x + v;
 }
 
-double IILightTildeKinematics::lastRealR() const {
-  double deta2 = sqr(realEmitterMomentum().eta() - realEmissionMomentum().eta());
-  double dphi = 0.;//  abs(realEmitterMomentum().phi() - realEmissionMomentum().phi());
-  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
-  double dr = sqrt(deta2 + sqr(dphi));
-  return  dr;
-}
-
-
-double IILightTildeKinematics::lastBornR() const {
-  double deta2 = sqr(bornEmitterMomentum().eta() - bornSpectatorMomentum().eta());
-  double dphi =0.;//pi??  abs(bornEmitterMomentum().phi() - bornSpectatorMomentum().phi());
-  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
-  double dr = sqrt(deta2 + sqr(dphi));
-  return  dr;
-}
-
-
-
-
-
-double IILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const{
-    //   cout<<"\n-+-+-+-+ "<<sR/GeV2<<" "<<sB/GeV2<<" "<<(2.*bornEmitterMomentum()*bornSpectatorMomentum())/GeV2;
-  2./3.;
-  assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
-  assert(subtractionParameters()[1]<=1.&&subtractionParameters()[1]>=0.);
-  assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
-  
-  if (1.<subtractionParameters()[1]/(1.-subtractionParameters()[0])) {
-    cout<<"\ncut"<<flush;
-    return 0.;
-  }
-    // cout<<"\n"<<sR/sB<<" "<<1/subtractionParameters()[0];
-  
-  double x = subtractionParameters()[0];
-  
-    //cout<<"\n"<<x<<" "<<lastRealX();
-  
-  
-  
-  double v = subtractionParameters()[1];
-  double z=x+v;
-  
-    // cout<<"\n"<<lastRealX1()<<" "<<lastRealX2()<<" "<<lastBornX1()<<" "<<lastBornX2();
-  
-  
-    // cout<<"\nx= "<<x<<" sB "<<sB/GeV2<<" sR "<<sR/GeV2;
-    // cout<<"\n"<<1./(1.-dipole()->realEmitter()==0?lastBornX1():lastBornX2());
-  
-  return 1./(dipole()->realEmitter()==0?lastBornX1():lastBornX2());
-  
-  
-  pow((1.-v),3)*exp(lastBornX1()/lastBornX2())*exp(-lastRealX1()/lastRealX2());//pow(sB/sR,12)
-            //*(1-v)*(1-v)*pow(4*ThePEG::Constants::pi,n-4)*pow(sB/sR,n-3)*(16.*ThePEG::Constants::pi*ThePEG::Constants::pi);//pow(4*ThePEG::Constants::pi,n-4)*
-  
-  
-  //x*v*(16.*ThePEG::Constants::pi*ThePEG::Constants::pi)/(realEmitterMomentum()*realSpectatorMomentum())*sB*pow(sB/sR,n-4);
-  return (16.*ThePEG::Constants::pi*ThePEG::Constants::pi)/(realEmitterMomentum()*realSpectatorMomentum())*sB*pow(sB/sR,n-4)*x/z*x/z*3.;
-    //sR*v*2./3.;//*(x+v)/x;//*pow(sR/sB,n-4);*x
-}
-
-
-
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

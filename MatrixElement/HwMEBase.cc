@@ -12,8 +12,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig/Shower/Base/HardTree.h"
-#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
 
@@ -202,7 +202,7 @@ bool HwMEBase::generateKinematics(const double * r) {
 }
 
 bool HwMEBase::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
-				  const cPDVector & data) {
+			      const cPDVector & data) {
   assert(momenta.size()==4&&data.size()==4);
   // default just use the ones we generated
   rescaledMomenta_=momenta;
@@ -231,12 +231,24 @@ bool HwMEBase::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
   rescaledMomenta_[2].boost(bv);
   rescaledMomenta_[2].setMass(mnew[0]);
   rescaledMomenta_[2].setE(0.5*(sqr(m0)+sqr(mnew[0])-sqr(mnew[1]))/m0);
-  rescaledMomenta_[2].rescaleRho();
+  if(rescaledMomenta_[2].t()-rescaledMomenta_[2].mass()>1e-10*(rescaledMomenta_[2].t()+rescaledMomenta_[2].mass()))
+    rescaledMomenta_[2].rescaleRho();
+  else {
+    rescaledMomenta_[2].setX(ZERO);
+    rescaledMomenta_[2].setY(ZERO);
+    rescaledMomenta_[2].setZ(ZERO);
+  }
   rescaledMomenta_[2].boost(-bv);
   rescaledMomenta_[3].boost(bv);
   rescaledMomenta_[3].setMass(mnew[1]);
   rescaledMomenta_[3].setE(0.5*(sqr(m0)-sqr(mnew[0])+sqr(mnew[1]))/m0);
-  rescaledMomenta_[3].rescaleRho();
+  if(rescaledMomenta_[3].t()-rescaledMomenta_[3].mass()>1e-10*(rescaledMomenta_[3].t()+rescaledMomenta_[3].mass()))
+    rescaledMomenta_[3].rescaleRho();
+  else {
+    rescaledMomenta_[3].setX(ZERO);
+    rescaledMomenta_[3].setY(ZERO);
+    rescaledMomenta_[3].setZ(ZERO);
+  }
   rescaledMomenta_[3].boost(-bv);
   return true;
 }
@@ -269,9 +281,21 @@ double HwMEBase::getCosTheta(double ctmin, double ctmax, const double r) {
 
 bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
 				     ShowerParticlePtr,Branching) {
+  assert(false);
   return false;
 }
 
-HardTreePtr HwMEBase::generateHardest(ShowerTreePtr,vector<ShowerInteraction::Type>) {
-  return HardTreePtr();
+RealEmissionProcessPtr HwMEBase::generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type) {
+  assert(false);
+  return RealEmissionProcessPtr();
+}
+
+RealEmissionProcessPtr HwMEBase::applyHardMatrixElementCorrection(RealEmissionProcessPtr) {
+  assert(false);
+  return RealEmissionProcessPtr();
+}
+
+void HwMEBase::initializeMECorrection(RealEmissionProcessPtr , double & ,
+				      double & ) {
+  assert(false);
 }

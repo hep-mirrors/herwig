@@ -21,3 +21,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1303894
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289_W
 # ATLAS W+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490_MU
+# W +b 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109_MU
+# ATLAS W+charm
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1282447

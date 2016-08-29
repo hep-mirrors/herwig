@@ -208,11 +208,10 @@ public:
   /**
    * Produces a hadron and returns the flavour drawn from the vacuum.
    *
-   * This routine produces a new hadron from the partons ptrQ and newPtr. It
+   * This routine produces a new hadron. It
    * also sets the momentum and vertex to the values given.
    */
-  PPair produceHadron(tcPDPtr ptrQ, tPPtr newPtr, 
-		      const Lorentz5Momentum &a,
+  PPair produceHadron(tcPDPtr hadron, tPPtr newPtr, const Lorentz5Momentum &a,
 		      const LorentzPoint &b) const;
 protected:
 

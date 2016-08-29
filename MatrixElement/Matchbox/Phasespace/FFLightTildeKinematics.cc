@@ -40,7 +40,7 @@ bool FFLightTildeKinematics::doMap() {
 
   double y = emission*emitter / (emission*emitter + emission*spectator + emitter*spectator);
   double z = emitter*spectator / (emitter*spectator + emission*spectator);
-  
+
   subtractionParameters().resize(2);
   subtractionParameters()[0] = y;
   subtractionParameters()[1] = z;
@@ -68,35 +68,6 @@ Energy FFLightTildeKinematics::lastPt() const {
 
 double FFLightTildeKinematics::lastZ() const {
   return subtractionParameters()[1];
-}
-
-
-double FFLightTildeKinematics::lastRealR() const {
-  double deta2 = sqr(realEmitterMomentum().eta() - realEmissionMomentum().eta());
-  double dphi =  abs(realEmitterMomentum().phi() - realEmissionMomentum().phi());
-  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
-  double dr = sqrt(deta2 + sqr(dphi));
-  return  dr;
-}
-
-
-double FFLightTildeKinematics::lastBornR() const {
-  double deta2 = sqr(bornEmitterMomentum().eta() - bornSpectatorMomentum().eta());
-  double dphi =  abs(bornEmitterMomentum().phi() - bornSpectatorMomentum().phi());
-  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
-  double dr = sqrt(deta2 + sqr(dphi));
-  return  dr;
-}
-
-
-
-
-double FFLightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
-    //  cout<<"\nsR= "<<sR/GeV2<<" sB "<<sB/GeV2<<" n: "<<n<<"  "<<bornEmitterMomentum()*bornSpectatorMomentum()/GeV2<<" pow(sR/sB,n-4); "<<pow(sR/sB,n-4);;
-
-  
-  return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(bornEmitterMomentum()*bornSpectatorMomentum())*sB;//*pow(sR/sB,n-4);
-  
 }
 
 

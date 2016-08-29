@@ -255,24 +255,24 @@ pair<double,Lorentz5Momentum>
 MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
 				   int branch, double flatCut) const {
 
-  vector<int> children = diag.children(branch);
+  pair<int,int> children = diag.children(branch);
 
-  if ( children.empty() ) {
+  if ( children.first == -1 ) {
     return make_pair(1.,meMomenta()[diag.externalId(branch)]);
   }
 
   pair<double,Lorentz5Momentum> res
-    = timeLikeWeight(diag,children[0],flatCut);
+    = timeLikeWeight(diag,children.first,flatCut);
 
   pair<double,Lorentz5Momentum> other
-    = timeLikeWeight(diag,children[1],flatCut);
+    = timeLikeWeight(diag,children.second,flatCut);
 
   res.first *= other.first;
   res.second += other.second;
 
   LTriple vertexKey(diag.allPartons()[branch]->id(),
-		    diag.allPartons()[children[0]]->id(),
-		    diag.allPartons()[children[1]]->id());
+		    diag.allPartons()[children.first]->id(),
+		    diag.allPartons()[children.second]->id());
   map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
   if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
@@ -320,24 +320,24 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   if ( branch == -1 )
     return 1.;
 
-  vector<int> children = diag.children(branch);
-  assert(!children.empty());
+  pair<int,int> children = diag.children(branch);
+
   pair<double,Lorentz5Momentum> res =
-    timeLikeWeight(diag,children[1],flatCut);
+    timeLikeWeight(diag,children.second,flatCut);
 
   
   LTriple vertexKey(diag.allPartons()[branch]->id(),
-		    diag.allPartons()[children[0]]->id(),
-		    diag.allPartons()[children[1]]->id());
-  if ( children[0] == diag.nSpace() - 1 ) {
-    if ( diag.allPartons()[children[0]]->CC() )
+		    diag.allPartons()[children.first]->id(),
+		    diag.allPartons()[children.second]->id());
+  if ( children.first == diag.nSpace() - 1 ) {
+    if ( diag.allPartons()[children.first]->CC() )
       vertexKey = LTriple(diag.allPartons()[branch]->id(),
-			  diag.allPartons()[children[1]]->id(),
-			  diag.allPartons()[children[0]]->CC()->id());
+			  diag.allPartons()[children.second]->id(),
+			  diag.allPartons()[children.first]->CC()->id());
     else
       vertexKey = LTriple(diag.allPartons()[branch]->id(),
-			  diag.allPartons()[children[1]]->id(),
-			  diag.allPartons()[children[0]]->id());
+			  diag.allPartons()[children.second]->id(),
+			  diag.allPartons()[children.first]->id());
   }
   map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
   if ( cit != theCouplings->couplings().end() ){
@@ -347,17 +347,17 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
     cout<<"\n MatchboxPhasespace no coupling for (space) :"<< vertexKey.get<0>()
     <<" "<<vertexKey.get<1>()<<" " <<vertexKey.get<2>();
   }
-  if ( children[0] == diag.nSpace() - 1 ) {
+  if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
   }
 
   res.second = incoming - res.second;
 
-  Energy2 mass2 = sqr(diag.allPartons()[children[0]]->hardProcessMass());
-  Energy2 width2 = sqr(diag.allPartons()[children[0]]->hardProcessWidth());
+  Energy2 mass2 = sqr(diag.allPartons()[children.first]->hardProcessMass());
+  Energy2 width2 = sqr(diag.allPartons()[children.first]->hardProcessWidth());
 
-  if ( abs(diag.allPartons()[children[0]]->id()) >= theLoopParticleIdMin
-       && (diag.allPartons()[children[0]]->id()) <= theLoopParticleIdMax ) { // "loop particle"
+  if ( abs(diag.allPartons()[children.first]->id()) >= theLoopParticleIdMin
+       && (diag.allPartons()[children.first]->id()) <= theLoopParticleIdMax ) { // "loop particle"
 
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
       res.first /=
@@ -381,7 +381,7 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   }
 
   return
-    res.first * spaceLikeWeight(diag,res.second,children[0],flatCut);
+    res.first * spaceLikeWeight(diag,res.second,children.first,flatCut);
 
 }
 

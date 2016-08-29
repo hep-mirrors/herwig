@@ -17,11 +17,7 @@
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/Utilities/Maths.h"
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Base/ShowerParticle.h"
-#include "Herwig/Shower/Base/Branching.h"
-#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
@@ -1630,75 +1626,60 @@ void MEPP2GammaGammaPowheg::doinit() {
   prefactor_.push_back(preQEDgqbarqbar_);
 }
 
-HardTreePtr MEPP2GammaGammaPowheg::
-generateHardest(ShowerTreePtr tree,
-		vector<ShowerInteraction::Type> interactions) {
+RealEmissionProcessPtr MEPP2GammaGammaPowheg::
+generateHardest(RealEmissionProcessPtr born,
+		ShowerInteraction::Type inter) {
   beams_.clear();
   partons_.clear();
-  bool QCDAllowed(false),QEDAllowed(false);
-  for(unsigned int ix=0;ix<interactions.size();++ix) {
-    if(interactions[ix]==ShowerInteraction::QED)
-      QEDAllowed = true;
-    else if(interactions[ix]==ShowerInteraction::QCD)
-      QCDAllowed = true;
-    else if(interactions[ix]==ShowerInteraction::Both) {
-      QEDAllowed = true;
-      QCDAllowed = true;
-    }
-  }
+  bool QCDAllowed = inter !=ShowerInteraction::QED;
+  bool QEDAllowed = inter !=ShowerInteraction::QCD;
   // find the incoming particles
-  ShowerParticleVector incoming;
-  // get the particles to be showered
-  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  vector<ShowerProgenitorPtr> particlesToShower;
-  //progenitor particles are produced in z direction.
-  for( cit = tree->incomingLines().begin();
-       cit != tree->incomingLines().end(); ++cit ) {
-    incoming.push_back( cit->first->progenitor() );
-    beams_.push_back( cit->first->beam() );
-    partons_.push_back( cit->first->progenitor()->dataPtr() );
-    particlesToShower.push_back( cit->first );
+  // and get the particles to be showered
+  ParticleVector incoming,particlesToShower;
+  pair<double,double> x;
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    incoming.push_back( born->bornIncoming()[ix] );
+    beams_.push_back(dynamic_ptr_cast<tcBeamPtr>(born->hadrons()[ix]->dataPtr()));
+    partons_.push_back( born->bornIncoming()[ix]->dataPtr() );
+    particlesToShower.push_back( born->bornIncoming()[ix] );
+    if(ix==0) x.first  = incoming.back()->momentum().rho()/born->hadrons()[ix]->momentum().rho();
+    else      x.second = incoming.back()->momentum().rho()/born->hadrons()[ix]->momentum().rho();
   }
   // find the parton which should be first
-  if( ( particlesToShower[1]->progenitor()->id() > 0 &&
-        particlesToShower[0]->progenitor()->id() < 0 ) || 
-      ( particlesToShower[0]->progenitor()->id() == ParticleID::g &&
-	particlesToShower[1]->progenitor()->id() < 6 && 
-	particlesToShower[1]->progenitor()->id() > 0 ) )
+  if( ( particlesToShower[1]->id() > 0 && particlesToShower[0]->id() < 0 ) || 
+      ( particlesToShower[0]->id() == ParticleID::g &&
+  	particlesToShower[1]->id() < 6 && particlesToShower[1]->id() > 0 ) ) {
     swap(particlesToShower[0],particlesToShower[1]);
-  // check that quark is along +ve z direction
-  quarkplus_ = particlesToShower[0]->progenitor()->momentum().z() > ZERO;
-  if( partons_[0]->id() < 0 || 
-      (partons_[0]->id()==ParticleID::g && partons_[1]->id()>0)) {
     swap(partons_[0],partons_[1]);
     swap(beams_  [0],beams_  [1]);
+    swap(x.first    ,x.second   );
   }
+  // check that quark is along +ve z direction
+  quarkplus_ = particlesToShower[0]->momentum().z() > ZERO;
   // outgoing partons
-  for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-	 cjt= tree->outgoingLines().begin();
-       cjt != tree->outgoingLines().end();++cjt ) {
-    particlesToShower.push_back( cjt->first );
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    particlesToShower.push_back( born->bornOutgoing()[ix] );
   }
-  if(particlesToShower.size()!=4) return HardTreePtr();
+  if(particlesToShower.size()!=4) return RealEmissionProcessPtr();
   if(particlesToShower[2]->id()!=ParticleID::gamma)
     swap(particlesToShower[2],particlesToShower[3]);
-  if(particlesToShower[3]->progenitor()->id()==ParticleID::gamma) {
-    if(QCDAllowed) return hardQCDEmission(particlesToShower);
+  if(particlesToShower[3]->id()==ParticleID::gamma) {
+    if(QCDAllowed) return hardQCDEmission(born,particlesToShower,x);
   }
   else {
-    if(QEDAllowed) return hardQEDEmission(particlesToShower);
+    if(QEDAllowed) return hardQEDEmission(born,particlesToShower,x);
   }
-  return HardTreePtr();
+  return born;
 }
 
-HardTreePtr MEPP2GammaGammaPowheg::
-hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
+RealEmissionProcessPtr MEPP2GammaGammaPowheg::
+hardQCDEmission(RealEmissionProcessPtr born,
+		ParticleVector particlesToShower,
+		pair<double,double> x) {
   Energy rootS = sqrt(lastS());
   // limits on the rapidity of the jet
   double minyj = -8.0,maxyj = 8.0;
   // generate the hard emission
-  pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
-				    particlesToShower[1]->progenitor()->x());
   vector<Energy> pT;
   Energy pTmax(-GeV);
   cPDVector selectedParticles;
@@ -1710,7 +1691,7 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
       prefactor_[ix]*(maxyj-minyj);
     cPDVector particles;
     for(unsigned int iy=0;iy<particlesToShower.size();++iy) 
-      particles.push_back(particlesToShower[iy]->progenitor()->dataPtr());
+      particles.push_back(particlesToShower[iy]->dataPtr());
     if(ix<2) particles.push_back(gluon_);
     else if(ix==2) {
       particles.push_back(particles[0]->CC());
@@ -1726,69 +1707,69 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
       double y = UseRandom::rnd()*(maxyj-minyj)+ minyj;
       double vt,z;
       if(ix%2==0) {
-	vt = pT[ix]*exp(-y)/rootS/x.second;
-	z  = (1.-pT[ix]*exp(-y)/rootS/x.second)/(1.+pT[ix]*exp( y)/rootS/x.first );
-	if(z>1.||z<x.first) continue;
+  	vt = pT[ix]*exp(-y)/rootS/x.second;
+  	z  = (1.-pT[ix]*exp(-y)/rootS/x.second)/(1.+pT[ix]*exp( y)/rootS/x.first );
+  	if(z>1.||z<x.first) continue;
       }
       else {
-	vt = pT[ix]*exp( y)/rootS/x.first ;
-	z  = (1.-pT[ix]*exp( y)/rootS/x.first )/(1.+pT[ix]*exp(-y)/rootS/x.second );
-	if(z>1.||z<x.second) continue;
+  	vt = pT[ix]*exp( y)/rootS/x.first ;
+  	z  = (1.-pT[ix]*exp( y)/rootS/x.first )/(1.+pT[ix]*exp(-y)/rootS/x.second );
+  	if(z>1.||z<x.second) continue;
       }
       if(vt>1.-z || vt<0.) continue;
       if(ix%2==0) {
-	momenta[0] = particlesToShower[0]->progenitor()->momentum()/z;
-	momenta[1] = particlesToShower[1]->progenitor()->momentum();
+  	momenta[0] = particlesToShower[0]->momentum()/z;
+  	momenta[1] = particlesToShower[1]->momentum();
       }
       else {
-	momenta[0] = particlesToShower[0]->progenitor()->momentum();
-	momenta[1] = particlesToShower[1]->progenitor()->momentum()/z;
+  	momenta[0] = particlesToShower[0]->momentum();
+  	momenta[1] = particlesToShower[1]->momentum()/z;
       }
       double phi = Constants::twopi*UseRandom::rnd();
-      momenta[2] = particlesToShower[2]->progenitor()->momentum();
-      momenta[3] = particlesToShower[3]->progenitor()->momentum();
+      momenta[2] = particlesToShower[2]->momentum();
+      momenta[3] = particlesToShower[3]->momentum();
       if(!quarkplus_) y *= -1.;
       momenta[4] = Lorentz5Momentum(pT[ix]*cos(phi),pT[ix]*sin(phi),
-				    pT[ix]*sinh(y),pT[ix]*cosh(y), ZERO);
+  				    pT[ix]*sinh(y),pT[ix]*cosh(y), ZERO);
       Lorentz5Momentum K = momenta[0] + momenta[1] - momenta[4]; 
       Lorentz5Momentum Kt = momenta[2]+momenta[3];
       Lorentz5Momentum Ksum = K+Kt;
       Energy2 K2 = K.m2(), Ksum2 = Ksum.m2();
       for(unsigned int iy=2;iy<4;++iy) {
-	momenta [iy] = momenta [iy] - 2.*Ksum*(Ksum*momenta [iy])/Ksum2
-	  +2*K*(Kt*momenta [iy])/K2;
+  	momenta [iy] = momenta [iy] - 2.*Ksum*(Ksum*momenta [iy])/Ksum2
+  	  +2*K*(Kt*momenta [iy])/K2;
       }
       // matrix element piece
       double wgt = alphaQCD_->ratio(sqr(pT[ix]))*z/(1.-vt)/prefactor_[ix]/loME_;
       if(ix==0)
-	wgt *= sqr(pT[ix])*realGammaGammagME(particles,momenta,IIQCD1,Shower,false);
+  	wgt *= sqr(pT[ix])*realGammaGammagME(particles,momenta,IIQCD1,Shower,false);
       else if(ix==1)
-	wgt *= sqr(pT[ix])*realGammaGammagME(particles,momenta,IIQCD2,Shower,false);
+  	wgt *= sqr(pT[ix])*realGammaGammagME(particles,momenta,IIQCD2,Shower,false);
       else if(ix==2)
-	wgt *= sqr(pT[ix])*realGammaGammaqbarME(particles,momenta,IIQCD1,Shower,false);
+  	wgt *= sqr(pT[ix])*realGammaGammaqbarME(particles,momenta,IIQCD1,Shower,false);
       else if(ix==3)
-	wgt *= sqr(pT[ix])*realGammaGammaqME(particles,momenta,IIQCD2,Shower,false);
+  	wgt *= sqr(pT[ix])*realGammaGammaqME(particles,momenta,IIQCD2,Shower,false);
       wgt *= 4.*Constants::pi/alphaS_;
       // pdf piece
       double pdf[2];
       if(ix%2==0) {
-	pdf[0] = beams_[0]->pdf()->xfx(beams_[0],partons_ [0],
-				       scale(),            x.first   )  /x.first;
-	pdf[1] = beams_[0]->pdf()->xfx(beams_[0],particles[0],
-				       scale()+sqr(pT[ix]),x.first /z)*z/x.first;
+  	pdf[0] = beams_[0]->pdf()->xfx(beams_[0],partons_ [0],
+  				       scale(),            x.first   )  /x.first;
+  	pdf[1] = beams_[0]->pdf()->xfx(beams_[0],particles[0],
+  				       scale()+sqr(pT[ix]),x.first /z)*z/x.first;
       }
       else {
-	pdf[0] = beams_[1]->pdf()->xfx(beams_[1],partons_ [1],
-				       scale()            ,x.second  )  /x.second;
-	pdf[1] = beams_[1]->pdf()->xfx(beams_[1],particles[1],
-				       scale()+sqr(pT[ix]),x.second/z)*z/x.second;
+  	pdf[0] = beams_[1]->pdf()->xfx(beams_[1],partons_ [1],
+  				       scale()            ,x.second  )  /x.second;
+  	pdf[1] = beams_[1]->pdf()->xfx(beams_[1],particles[1],
+  				       scale()+sqr(pT[ix]),x.second/z)*z/x.second;
       }
       if(pdf[0]<=0.||pdf[1]<=0.) continue;
       wgt *= pdf[1]/pdf[0];
       if(wgt>1.) generator()->log() << "Weight greater than one in "
-				    << "MEPP2GammaGammaPowheg::hardQCDEmission() "
-				    << "for channel " << ix 
-				    << " Weight = " << wgt << "\n";
+  				    << "MEPP2GammaGammaPowheg::hardQCDEmission() "
+  				    << "for channel " << ix 
+  				    << " Weight = " << wgt << "\n";
       if(UseRandom::rnd()<wgt) break;
     }
     while(pT[ix]>minpT_);
@@ -1801,106 +1782,79 @@ hardQCDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   }
   // if no emission
   if(pTmax<ZERO) {
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(minpT_,ShowerInteraction::QCD);
-    return HardTreePtr();
+    born->pT()[ShowerInteraction::QCD] = minpT_;
+    return born;
   }
   // construct the HardTree object needed to perform the showers
   // create the partons
-  ShowerParticleVector newparticles;
-  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[0],false)));
-  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[1],false)));
-  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[4], true)));
-  // set the momenta
-  for(unsigned int ix=0;ix<2;++ix) 
-    newparticles[ix]->set5Momentum(selectedMomenta[ix]);
-  newparticles[2]->set5Momentum(selectedMomenta[4]);
-  // create the off-shell particle
-  Lorentz5Momentum poff = selectedMomenta[iemit%2] - selectedMomenta[4];
-  poff.rescaleMass();
-  newparticles.push_back(new_ptr(ShowerParticle(partons_[iemit%2],false)));
-  newparticles.back()->set5Momentum(poff);
+  ParticleVector newparticles;
+  newparticles.push_back(selectedParticles[0]->produceParticle(selectedMomenta[0]));
+  newparticles.push_back(selectedParticles[1]->produceParticle(selectedMomenta[1]));
   for(unsigned int ix=2;ix<particlesToShower.size();++ix) {
-    newparticles.push_back(new_ptr(ShowerParticle(particlesToShower[ix]->
-						  progenitor()->dataPtr(),true)));
-    newparticles.back()->set5Momentum(selectedMomenta[ix]);
+    newparticles.push_back(particlesToShower[ix]->dataPtr()->
+			   produceParticle(selectedMomenta[ix]));
   }
-  vector<HardBranchingPtr> inBranch,hardBranch;
-  // create the branchings for the incoming particles
-  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
-					  HardBranchingPtr(),HardBranching::Incoming)));
-  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
-					  HardBranchingPtr(),HardBranching::Incoming)));
-  // intermediate IS particle
-  hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					     inBranch[iemit%2],HardBranching::Incoming)));
-  inBranch[iemit%2]->addChild(hardBranch.back());
-  if(newparticles[3]->id()>0)
-    inBranch[iemit%2]->type(ShowerPartnerType::QCDColourLine    );
-  else
-    inBranch[iemit%2]->type(ShowerPartnerType::QCDAntiColourLine);
-  // create the branching for the emitted jet
-  inBranch[iemit%2]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						   inBranch[iemit%2],
-						   HardBranching::Outgoing)));
-  // set the colour partners
-  hardBranch.back()->colourPartner(inBranch[iemit%2==0 ? 1 : 0]);
-  inBranch[iemit%2==0 ? 1 : 0]->colourPartner(hardBranch.back());
-  // add other particle
-  hardBranch.push_back(inBranch[iemit%2==0 ? 1 : 0]);
-  // outgoing particles
-  for(unsigned int ix=4;ix<newparticles.size();++ix) {
-    hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
-					      HardBranchingPtr(),
-					      HardBranching::Outgoing)));
+  newparticles.push_back(selectedParticles[4]->produceParticle(selectedMomenta[4]));
+  // identify the type of process
+  // gluon emission
+  if(newparticles.back()->id()==ParticleID::g) {
+    newparticles[4]->incomingColour(newparticles[0]);
+    newparticles[4]->incomingColour(newparticles[1],true);
   }
-  // make the tree
-  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));
-  // connect the ShowerParticles with the branchings
-  // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=hardtree->branchings();
-  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    particlesToShower[ix]->maximumpT(pTmax,ShowerInteraction::QCD);
-    for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
-	mit!=hard.end();++mit) {
-      if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
-	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
-	    (**mit).status()==HardBranching::Outgoing)||
-	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
-	   (**mit).status()==HardBranching::Incoming))) {
-	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
-	if((**mit).status()==HardBranching::Incoming) {
-	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
-	}
-	HardBranchingPtr parent=(*mit)->parent();
-	while(parent) {
-	  parent->beam(particlesToShower[ix]->original()->parents()[0]);
-	  parent=parent->parent();
-	};
-      }
-    }
+  // quark
+  else if(newparticles.back()->id()>0) {
+    iemit=1;
+    newparticles[4]->incomingColour(newparticles[1]);
+    newparticles[1]-> colourConnect(newparticles[0]);
   }
-  ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
-      newline->addColoured((**cit).branchingParticle());
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
-      newline->addAntiColoured((**cit).branchingParticle());
+  // antiquark
+  else  {
+    iemit=0;
+    newparticles[4]->incomingColour(newparticles[0],true);
+    newparticles[1]-> colourConnect(newparticles[0]);
   }
-  // return the tree
-  return hardtree;
+  // add incoming
+  int ispect = iemit==0 ? 1 : 0;
+  if(particlesToShower[0]==born->bornIncoming()[0]) {
+    born->incoming().push_back(newparticles[0]);
+    born->incoming().push_back(newparticles[1]);
+  }
+  else {
+    born->incoming().push_back(newparticles[1]);
+    born->incoming().push_back(newparticles[0]);
+    swap(iemit,ispect);
+  }
+  // add the outgoing
+  for(unsigned int ix=2;ix<newparticles.size();++ix)
+    born->outgoing().push_back(newparticles[ix]);
+  // emitter spectator etc
+  born->emitter  (iemit );
+  born->spectator(ispect);
+  born->emitted(4);
+  // x values
+  pair<double,double> xnew;
+  for(unsigned int ix=0;ix<2;++ix) {
+    double x = born->incoming()[ix]->momentum().rho()/born->hadrons()[ix]->momentum().rho();
+    if(ix==0) xnew.first  = x;
+    else      xnew.second = x;
+  }
+  born->x(xnew);
+  // max pT
+  born->pT()[ShowerInteraction::QCD] = pTmax;
+  born->interaction(ShowerInteraction::QCD);
+  // return the process
+  return born;
 }
 
-HardTreePtr MEPP2GammaGammaPowheg::
-hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
+RealEmissionProcessPtr MEPP2GammaGammaPowheg::
+hardQEDEmission(RealEmissionProcessPtr born,
+		ParticleVector particlesToShower,
+		pair<double,double> x) {
   // return if not emission from quark
-  if(particlesToShower[0]->progenitor()->id()!=ParticleID::g &&
-     particlesToShower[1]->progenitor()->id()!=ParticleID::g )
-    return HardTreePtr();
+  if(particlesToShower[0]->id()!=ParticleID::g &&
+     particlesToShower[1]->id()!=ParticleID::g )
+    return RealEmissionProcessPtr();
   // generate the hard emission
-  pair<double,double> x = make_pair(particlesToShower[0]->progenitor()->x(),
-				    particlesToShower[1]->progenitor()->x());
   vector<Energy> pT;
   Energy pTmax(-GeV);
   cPDVector selectedParticles;
@@ -1908,8 +1862,8 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   int iemit(-1);
   pair<double,double> mewgt(make_pair(0.,0.));
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    selectedParticles.push_back(particlesToShower[ix]->progenitor()->dataPtr());
-    selectedMomenta.push_back(particlesToShower[ix]->progenitor()->momentum());
+    selectedParticles.push_back(particlesToShower[ix]->dataPtr());
+    selectedMomenta.push_back(particlesToShower[ix]->momentum());
   }
   selectedParticles.push_back(getParticleData(ParticleID::gamma));
   swap(selectedParticles[3],selectedParticles[4]);
@@ -1918,17 +1872,17 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
   Lorentz5Momentum pin,pout;
   double xB;
   unsigned int iloc;
-  if(particlesToShower[0]->progenitor()->dataPtr()->charged()) {
-    pin = particlesToShower[0]->progenitor()->momentum();
+  if(particlesToShower[0]->dataPtr()->charged()) {
+    pin = particlesToShower[0]->momentum();
     xB = x.first;
     iloc = 6;
   }
   else {
-    pin = particlesToShower[1]->progenitor()->momentum();
+    pin = particlesToShower[1]->momentum();
     xB = x.second;
     iloc = 7;
   }
-  pout = particlesToShower[3]->progenitor()->momentum();
+  pout = particlesToShower[3]->momentum();
   Lorentz5Momentum q = pout-pin;
   Axis axis(q.vect().unit());
   LorentzRotation rot;
@@ -1974,15 +1928,15 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
     double pdf[2];
     if(iloc==6) {
       pdf[0] = beams_[0]->pdf()->
-	xfx(beams_[0],partons_[0],scale()    ,x.first    );
+  	xfx(beams_[0],partons_[0],scale()    ,x.first    );
       pdf[1] = beams_[0]->pdf()->
-	xfx(beams_[0],partons_[0],scale()+pT2,x.first /xp);
+  	xfx(beams_[0],partons_[0],scale()+pT2,x.first /xp);
     }
     else {
       pdf[0] = beams_[1]->pdf()->
-	xfx(beams_[1],partons_[1],scale()    ,x.second   );
+  	xfx(beams_[1],partons_[1],scale()    ,x.second   );
       pdf[1] = beams_[1]->pdf()->
-	xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
+  	xfx(beams_[1],partons_[1],scale()+pT2,x.second/xp);
     }
     if(pdf[0]<=0.||pdf[1]<=0.) {
       wgt = 0.;
@@ -1995,206 +1949,99 @@ hardQEDEmission(vector<ShowerProgenitorPtr> particlesToShower) {
     double x3 = 2.-1./xp-x2;
     p1=Lorentz5Momentum(ZERO,ZERO,0.5*Q/xp,0.5*Q/xp,ZERO);
     p2=Lorentz5Momentum( 0.5*Q*xT*cos(phi), 0.5*Q*xT*sin(phi),
-			 -0.5*Q*x2,0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+  			 -0.5*Q*x2,0.5*Q*sqrt(sqr(xT)+sqr(x2)));
     p3=Lorentz5Momentum(-0.5*Q*xT*cos(phi),-0.5*Q*xT*sin(phi),
-			-0.5*Q*x3,0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+  			-0.5*Q*x3,0.5*Q*sqrt(sqr(xT)+sqr(x3)));
     selectedMomenta[iloc-6] = rot*p1;
     selectedMomenta[3] = rot*p3;
     selectedMomenta[4] = rot*p2;
     if(iloc==6) {
       mewgt.first  = 
-	sqr(Q)*realGammaGammaqME(selectedParticles,selectedMomenta,IFQED1,Shower,false);
+  	sqr(Q)*realGammaGammaqME(selectedParticles,selectedMomenta,IFQED1,Shower,false);
       mewgt.second = 
-	sqr(Q)*realGammaGammaqME(selectedParticles,selectedMomenta,FIQED1,Shower,false);
+  	sqr(Q)*realGammaGammaqME(selectedParticles,selectedMomenta,FIQED1,Shower,false);
       wgt *= mewgt.first+mewgt.second;
     }
     else {
       mewgt.first  = 
-	sqr(Q)*realGammaGammaqbarME(selectedParticles,selectedMomenta,IFQED2,Shower,false);
+  	sqr(Q)*realGammaGammaqbarME(selectedParticles,selectedMomenta,IFQED2,Shower,false);
       mewgt.second = 
-	sqr(Q)*realGammaGammaqbarME(selectedParticles,selectedMomenta,FIQED2,Shower,false); 
+  	sqr(Q)*realGammaGammaqbarME(selectedParticles,selectedMomenta,FIQED2,Shower,false); 
       wgt *= mewgt.first+mewgt.second;
     }
     if(wgt>1.) generator()->log() << "Weight greater than one in "
-				  << "MEPP2GammaGammaPowheg::hardQEDEmission() "
-				  << "for IF channel "
-				  << " Weight = " << wgt << "\n";
+  				  << "MEPP2GammaGammaPowheg::hardQEDEmission() "
+  				  << "for IF channel "
+  				  << " Weight = " << wgt << "\n";
   }
   while(xT>xTMin&&UseRandom::rnd()>wgt);
   // if no emission
   if(xT<xTMin) {
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(minpT_,ShowerInteraction::QED);
-    return HardTreePtr();
+    born->pT()[ShowerInteraction::QED] = minpT_;
+    return born;
   }
   pTmax = 0.5*xT*Q;
   iemit = mewgt.first>mewgt.second ? 2 : 3;
-  // construct the HardTree object needed to perform the showers
+  // construct the object needed to perform the showers
   // create the partons
-  ShowerParticleVector newparticles;
-  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[0],false)));
-  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[1],false)));
-  newparticles.push_back(new_ptr(ShowerParticle(selectedParticles[3], true)));
-  // set the momenta
-  for(unsigned int ix=0;ix<2;++ix) 
-    newparticles[ix]->set5Momentum(selectedMomenta[ix]);
-  newparticles[2]->set5Momentum(selectedMomenta[3]);
-  // create the off-shell particle
-  if(iemit==2) {
-    if(particlesToShower[0]->progenitor()->dataPtr()->charged()) {
-      Lorentz5Momentum poff = selectedMomenta[0] - selectedMomenta[3];
-      poff.rescaleMass();
-      newparticles.push_back(new_ptr(ShowerParticle(partons_[0],false)));
-      newparticles.back()->set5Momentum(poff);
-    }
-    else {
-      Lorentz5Momentum poff = selectedMomenta[1] - selectedMomenta[3];
-      poff.rescaleMass();
-      newparticles.push_back(new_ptr(ShowerParticle(partons_[1],false)));
-      newparticles.back()->set5Momentum(poff);
-    }
-  }
-  else if(iemit==3) {
-    Lorentz5Momentum poff = selectedMomenta[3]+selectedMomenta[4];
-    poff.rescaleMass();
-    newparticles.push_back(new_ptr(ShowerParticle(particlesToShower[3]
-						  ->progenitor()->dataPtr(),true)));
-    newparticles.back()->set5Momentum(poff);
-  }
-  else
-    assert(false);
+  ParticleVector newparticles;
+  newparticles.push_back(selectedParticles[0]->produceParticle(selectedMomenta[0]));
+  newparticles.push_back(selectedParticles[1]->produceParticle(selectedMomenta[1]));
   for(unsigned int ix=2;ix<particlesToShower.size();++ix) {
-    newparticles.push_back(new_ptr(ShowerParticle(particlesToShower[ix]->
-						  progenitor()->dataPtr(),true)));
-    newparticles.back()->set5Momentum(selectedMomenta[ix==2 ? 2 : 4 ]);
+    newparticles.push_back(particlesToShower[ix]->
+			   dataPtr()->produceParticle(selectedMomenta[ix==2 ? 2 : 4 ]));
   }
-  vector<HardBranchingPtr> inBranch,hardBranch;
-  // create the branchings for the incoming particles
-  inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
-					   HardBranchingPtr(),HardBranching::Incoming)));
-  inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
-					   HardBranchingPtr(),HardBranching::Incoming)));
-  if(iemit<3) {
-    int icharged = iemit;
-    if(icharged==2) icharged = particlesToShower[0]->progenitor()->
-		      dataPtr()->charged() ? 0 : 1;
-    // intermediate IS particle
-    hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					      inBranch[icharged],HardBranching::Incoming)));
-    inBranch[icharged]->addChild(hardBranch.back());
-    inBranch[icharged]->type(ShowerPartnerType::QED);
-    // create the branching for the emitted jet
-    inBranch[icharged]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						      inBranch[icharged],
-						      HardBranching::Outgoing)));
-    // set the colour partners
-    if(iemit<2) {
-      hardBranch.back()->colourPartner(inBranch[icharged==0 ? 1 : 0]);
-      inBranch[icharged==0 ? 1 : 0]->colourPartner(hardBranch.back());
-    }
-    // add other particle
-    hardBranch.push_back(inBranch[icharged == 0 ? 1 : 0]);
-    // outgoing particles
-    for(unsigned int ix=4;ix<newparticles.size();++ix) {
-      hardBranch.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-    }
-    if(iemit==2) {
-      hardBranch.back()->colourPartner(hardBranch[0]);
-      hardBranch[0]->colourPartner(hardBranch.back());
-    }
+  newparticles.push_back(selectedParticles[3]->produceParticle(selectedMomenta[3]));
+  // make the colour connections
+  bool col = newparticles[3]->id()<0;
+  if(particlesToShower[0]->dataPtr()->charged()) {
+    newparticles[3]->incomingColour(newparticles[1],col);
+    newparticles[1]->colourConnect (newparticles[0],col);
   }
   else {
-    for(unsigned int ix=0;ix<2;++ix)
-      hardBranch.push_back(inBranch[ix]);
-    hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					       HardBranchingPtr(),
-					       HardBranching::Outgoing)));
-    hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-					       HardBranchingPtr(),
-					       HardBranching::Outgoing)));
-    hardBranch.back()->type(ShowerPartnerType::QED);
-    hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[5],SudakovPtr(),
-						      HardBranchingPtr(),
-						      HardBranching::Outgoing)));
-    hardBranch.back()->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
-						      HardBranchingPtr(),
-						      HardBranching::Outgoing)));
-    if(hardBranch[0]->branchingParticle()->dataPtr()->charged()) {
-      hardBranch.back()->colourPartner(hardBranch[0]);
-      hardBranch[0]->colourPartner(hardBranch.back());
-    }
-    else {
-      hardBranch.back()->colourPartner(hardBranch[1]);
-      hardBranch[1]->colourPartner(hardBranch.back());
-    }
+    newparticles[3]->incomingColour(newparticles[0],col);
+    newparticles[0]->colourConnect (newparticles[1],col);
   }
-  // make the tree
-  HardTreePtr hardtree=new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QED));
-  // connect the ShowerParticles with the branchings
-  // and set the maximum pt for the radiation
-  set<HardBranchingPtr> hard=hardtree->branchings();
-  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    particlesToShower[ix]->maximumpT(pTmax,ShowerInteraction::QED);
-    for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
- 	mit!=hard.end();++mit) {
-      if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
-	 (( particlesToShower[ix]->progenitor()->isFinalState()&&
-	    (**mit).status()==HardBranching::Outgoing)||
-	  (!particlesToShower[ix]->progenitor()->isFinalState()&&
-	   (**mit).status()==HardBranching::Incoming))) {
-	hardtree->connect(particlesToShower[ix]->progenitor(),*mit);
-	if((**mit).status()==HardBranching::Incoming) {
-	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
-	}
-	HardBranchingPtr parent=(*mit)->parent();
-	while(parent) {
-	  parent->beam(particlesToShower[ix]->original()->parents()[0]);
-	  parent=parent->parent();
-	};
-      }
-    }
+  bool FSR = iemit==3;
+  // add incoming particles
+  if(particlesToShower[0]==born->bornIncoming()[0]) {
+    born->incoming().push_back(newparticles[0]);
+    born->incoming().push_back(newparticles[1]);
   }
-  ColinePtr newline1 = new_ptr(ColourLine());
-  ColinePtr newline2 = new_ptr(ColourLine());
-  HardBranchingPtr gluon,quark,antiQuark;
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour8) {
-      gluon = *cit;
-      if((**cit).status()==HardBranching::Incoming) {
-	newline1->addColoured    ((**cit).branchingParticle());
-	newline2->addAntiColoured((**cit).branchingParticle());
-      }
-      else {
-	newline2->addColoured    ((**cit).branchingParticle());
-	newline1->addAntiColoured((**cit).branchingParticle());
-      }
-    }
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
-      if((**cit).status()==HardBranching::Incoming) {
-	antiQuark = *cit;
-	newline2->addColoured((**cit).branchingParticle());
-      }
-      else {
-	quark = *cit;
-	newline1->addColoured((**cit).branchingParticle());
-      }
-    }
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar) {
-      if((**cit).status()==HardBranching::Incoming) {
-	quark = *cit;
-	newline1->addAntiColoured((**cit).branchingParticle());
-      }
-      else {
-	antiQuark = *cit;
-	newline2->addAntiColoured((**cit).branchingParticle());
-      }
-    }
+  else {
+    born->incoming().push_back(newparticles[1]);
+    born->incoming().push_back(newparticles[0]);
   }
-  assert(quark&&antiQuark&&gluon);
-  gluon->colourPartner(UseRandom::rndbool() ? quark : antiQuark);
-  // return the tree
-  return hardtree;
+  // IS radiatng particle
+  unsigned int iemitter = born->incoming()[0]->dataPtr()->charged() ? 0 : 1;
+  // add outgoing particles
+  if(particlesToShower[2]==born->bornOutgoing()[0]) {
+    born->outgoing().push_back(newparticles[2]);
+    born->outgoing().push_back(newparticles[3]);
+  }
+  else {
+    born->outgoing().push_back(newparticles[3]);
+    born->outgoing().push_back(newparticles[2]);
+  }
+  born->outgoing().push_back(newparticles[4]);
+  // outgoing radiating particle
+  unsigned int ispectator = born->outgoing()[0]->dataPtr()->charged() ? 2 : 3;
+  // get emitter and spectator right
+  if(FSR) swap(iemitter,ispectator);
+  born->emitter  (iemitter  );
+  born->spectator(ispectator);
+  born->emitted(4);
+  // x values
+  pair<double,double> xnew;
+  for(unsigned int ix=0;ix<2;++ix) {
+    double x = born->incoming()[ix]->momentum().rho()/born->hadrons()[ix]->momentum().rho();
+    if(ix==0) xnew.first  = x;
+    else      xnew.second = x;
+  }
+  born->x(xnew);
+  // max pT
+  born->pT()[ShowerInteraction::QED] = pTmax;
+  // return the process
+  born->interaction(ShowerInteraction::QED);
+  return born;
 }

@@ -50,7 +50,7 @@ public:
   double lastT() const {return thelastt;} 
   double lastK() const {return thelastk;} 
 
-  void setSTK(const double &s, const double &t, const double &K); 
+  void setSTK(double s, double t, double K); 
 
 
   /** @name Functions used by the persistent I/O system. */

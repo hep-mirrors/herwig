@@ -26,8 +26,8 @@ set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-set Evolver:IntrinsicPtGaussian 1.9*GeV
-set Evolver:HardEmissionMode POWHEG
+set ShowerHandler:IntrinsicPtGaussian 1.9*GeV
+set ShowerHandler:HardEmission POWHEG
 
 cd /Herwig/MatrixElements/
 # Neutral current DIS

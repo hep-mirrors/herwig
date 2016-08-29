@@ -66,9 +66,8 @@ public:
    */
   virtual int nDimPhasespace(int nFinal) const {
     if ( nFinal == 1 )
-      return 1+1;
-    return 3*(nFinal - 1)+1; 
-    // two additional number needed for channel selection and includeMirror
+      return 1;
+    return 3*(nFinal - 1); // one additional number needed for channel selection
   }
 
 public:

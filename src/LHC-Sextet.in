@@ -13,7 +13,7 @@
 ###################################################
 
 # Set emission to POWHEG for radiation in decays
-set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 
 # read model
 read Sextet.model
@@ -95,7 +95,7 @@ set Sextet/Model:g2Prime 2 1.0
 set Sextet/Model:g3L 2 1.0
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 # Other parameters for run
 cd /Herwig/Generators

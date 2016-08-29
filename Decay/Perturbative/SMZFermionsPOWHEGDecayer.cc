@@ -14,11 +14,8 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/Base/HardTree.h"
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Base/ShowerParticle.h"
-#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 using namespace Herwig;
 
@@ -58,126 +55,77 @@ void SMZFermionsPOWHEGDecayer::Init() {
      false, false, Interface::limited);
 }
 
-HardTreePtr SMZFermionsPOWHEGDecayer::
-generateHardest(ShowerTreePtr tree) {
-  // Get the progenitors: Q and Qbar.
-  ShowerProgenitorPtr 
-    QProgenitor    = tree->outgoingLines().begin()->first,
-    QbarProgenitor = tree->outgoingLines().rbegin()->first;
-  if(QProgenitor->id()<0) swap( QProgenitor, QbarProgenitor );
+RealEmissionProcessPtr SMZFermionsPOWHEGDecayer::
+generateHardest(RealEmissionProcessPtr born) {
+  assert(born->bornOutgoing().size()==2);
+  // check coloured
+  if(!born->bornOutgoing()[0]->dataPtr()->coloured()) return RealEmissionProcessPtr();
+  // extract required info
   partons_.resize(2);
-  partons_[0] = QProgenitor->progenitor()   ->dataPtr();
-  partons_[1] = QbarProgenitor->progenitor()->dataPtr();
-  if(!partons_[0]->coloured()) return HardTreePtr();
-  // momentum of the partons
   quark_.resize(2);
-  quark_[0] = QProgenitor   ->copy()->momentum();
-  quark_[1] = QbarProgenitor->copy()->momentum();
-  // Set the existing mass entries in partons 5 vectors with the
-  // once and for all.
-  quark_[0].setMass(partons_[0]->mass());
-  quark_[1].setMass(partons_[1]->mass());
+  vector<PPtr> hardProcess;
+  zboson_ = born->bornIncoming()[0];
+  hardProcess.push_back(zboson_);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    partons_[ix] = born->bornOutgoing()[ix]->dataPtr();
+    quark_[ix]   = born->bornOutgoing()[ix]->momentum();
+    quark_[ix].setMass(partons_[ix]->mass());
+    hardProcess.push_back(born->bornOutgoing()[ix]);
+  }
+  bool order = partons_[0]->id()<0;
+  if(order) {
+    swap(partons_[0]   ,partons_[1]   );
+    swap(quark_[0]     ,quark_[1]     );
+    swap(hardProcess[1],hardProcess[2]);
+  }
   gauge_.setMass(0.*MeV);
-  // Get the Z boson.
-  zboson_ = tree->incomingLines().begin()->first->copy();
-  // copy the particle objects
-  vector<PPtr> hardProcess (3);
-  hardProcess[0] = zboson_;
-  hardProcess[1] = QbarProgenitor->copy();
-  hardProcess[2] = QProgenitor   ->copy();
   // Get the Z boson mass.
   mz2_ = (quark_[0] + quark_[1]).m2();
   // Generate emission and set _quark[0,1] and _gauge to be the 
   // momenta of q, qbar and g after the hardest emission:
   if(!getEvent(hardProcess)) {
-    QProgenitor   ->maximumpT(pTmin_,ShowerInteraction::QCD);
-    QbarProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
-    return HardTreePtr();
+    born->pT()[ShowerInteraction::QCD] = pTmin_;
+    return born;
   }
   // Ensure the energies are greater than the constituent masses:
   for (int i=0; i<2; i++) {
-    if (quark_[i].e() < partons_[i]->constituentMass()) return HardTreePtr();
-    if (gauge_.e()    < gluon_     ->constituentMass()) return HardTreePtr();
+    if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
   }
+  if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
   // set masses
   quark_[0].setMass( partons_[0]->mass() );
   quark_[1].setMass( partons_[1]->mass() );
   gauge_   .setMass( ZERO );
   // assign the emitter based on evolution scales
-  unsigned int iemitter   = quark_[0]*gauge_ > quark_[1]*gauge_ ? 1 : 0;
-  unsigned int ispectator = iemitter==1                         ? 0 : 1;
-  // Make the particles for the HardTree:
-  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(partons_[iemitter  ],true)));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons_[ispectator],true)));
-  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon_              ,true)));
-  ShowerParticlePtr zboson   (new_ptr(ShowerParticle(zboson_->dataPtr() ,false)));
-  ShowerParticlePtr parent   (new_ptr(ShowerParticle(partons_[iemitter  ],true)));
-  emitter  ->set5Momentum(quark_[iemitter  ] ); 
-  spectator->set5Momentum(quark_[ispectator] );  
-  gauge    ->set5Momentum(gauge_             ); 
-  zboson   ->set5Momentum(zboson_->momentum());  
-  Lorentz5Momentum parentMomentum(quark_[iemitter]+gauge_);
-  parentMomentum.rescaleMass();
-  parent->set5Momentum(parentMomentum);
-  // Create the vectors of HardBranchings to create the HardTree:
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  // Incoming boson:
-  spaceBranchings.push_back(new_ptr(HardBranching(zboson,SudakovPtr(),
-						  HardBranchingPtr(),
-						  HardBranching::Incoming)));
-  // Outgoing particles from hard emission:
-  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
-							 HardBranchingPtr(),
-							 HardBranching::Outgoing)));
-  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
-						       HardBranchingPtr(),
-						       HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
-		      ShowerPartnerType::QCDColourLine : 
-		      ShowerPartnerType::QCDAntiColourLine);
-  allBranchings.push_back(emitterBranch);
-  allBranchings.push_back(spectatorBranch);
-  if(iemitter==1) swap(allBranchings[0],allBranchings[1]);
-  // Add incoming boson to allBranchings
-  allBranchings.push_back( spaceBranchings.back() );
-  // Make the HardTree from the HardBranching vectors.
-  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-					   ShowerInteraction::QCD));
-  // Set the maximum pt for all other emissions
-  Energy ptveto(pT_);
-  QProgenitor   ->maximumpT(ptveto,ShowerInteraction::QCD);
-  QbarProgenitor->maximumpT(ptveto,ShowerInteraction::QCD);
-  // Connect the particles with the branchings in the HardTree
-  hardtree->connect( QProgenitor->progenitor()   , allBranchings[0] );
-  hardtree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
-  // colour flow
-  ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
-      newline->addColoured((**cit).branchingParticle());
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
-      newline->addAntiColoured((**cit).branchingParticle());
-  }
-  ColinePtr newLine2=new_ptr(ColourLine());
-  if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
-    emitterBranch->branchingParticle()->colourLine()->addColoured(gauge);
-    newLine2->addColoured(emitter);
-    newLine2->addAntiColoured(gauge);
+  unsigned int iemitter   = quark_[0]*gauge_ > quark_[1]*gauge_ ? 2 : 1;
+  unsigned int ispectator = iemitter==1                         ? 1 : 2;
+  // create new partices and insert
+  PPtr zboson = zboson_->dataPtr()->produceParticle(zboson_->momentum());
+  born->incoming().push_back(zboson);
+  PPtr newq = partons_[0]->produceParticle(quark_[0]);
+  PPtr newa = partons_[1]->produceParticle(quark_[1]);
+  PPtr newg = gluon_->produceParticle(gauge_);
+  // make colour connections
+  newg->colourNeighbour(newq);
+  newa->colourNeighbour(newg);
+  // insert in output structure
+  if(!order) {
+    born->outgoing().push_back(newq);
+    born->outgoing().push_back(newa);
   }
   else {
-    emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
-    newLine2->addAntiColoured(emitter);
-    newLine2->addColoured(gauge);
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newq);
+    swap(iemitter,ispectator);
   }
-  // return the tree
-  return hardtree;
+  born->outgoing().push_back(newg);
+  born->emitter  (iemitter  );
+  born->spectator(ispectator);
+  born->emitted  (3);
+  born->pT()[ShowerInteraction::QCD] = pT_;
+  // return process
+  born->interaction(ShowerInteraction::QCD);
+  return born;
 }
 
 double SMZFermionsPOWHEGDecayer::

@@ -14,23 +14,15 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "Herwig/Shower/UEBase.h" 
-#include "Herwig/Shower/Base/Evolver.fh"
-#include "Herwig/Shower/Base/ShowerParticle.fh"
-#include "Herwig/Shower/Base/ShowerTree.fh"
-#include "Herwig/Shower/Base/HardTree.fh"
+#include "ShowerVariation.h"
 #include "Herwig/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
-#include "ShowerHandler.fh"
+#include "UEBase.h"
+#include "PerturbativeProcess.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
+#include "ShowerHandler.fh"
 
 namespace Herwig {
-
-/**
- *  Typedef for the ShowerTree for the decays
- */
-typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
-
 using namespace ThePEG;
 
 /** \ingroup Shower
@@ -48,12 +40,16 @@ using namespace ThePEG;
 class ShowerHandler: public CascadeHandler {
 
 public:
-  
-  /** Typedef for a pair of ThePEG::RemnantParticle pointers. */
-  typedef pair<tRemPPtr, tRemPPtr> RemPair;
 
   /**
-   * The default constructor.
+   * Typedef for a pair of ThePEG::RemnantParticle pointers.
+   */
+  typedef pair<tRemPPtr, tRemPPtr> RemPair;
+
+public:
+
+  /**
+   *  Default constructor
    */
   ShowerHandler();
 
@@ -71,10 +67,20 @@ public:
   virtual void cascade();
 
   /**
+   *  pointer to "this", the current ShowerHandler.
+   */
+  static const tShowerHandlerPtr currentHandler() {
+    assert(currentHandler_);
+    return currentHandler_;
+  }
+
+public:
+
+  /**
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto()  { return false; }
+  virtual bool showerHardProcessVeto() const { return false; }
 
   /**
    * Return true, if this cascade handler will perform reshuffling from hard
@@ -82,46 +88,10 @@ public:
    */
   virtual bool isReshuffling() const { return true; }
 
-public:
-
-  /**@name Methods related to PDF freezing */
-  //@{
   /**
    * Get the PDF freezing scale
    */
   Energy pdfFreezingScale() const { return pdfFreezingScale_; }
-  //@}
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
-public:
-
-  /** @name Functions to access information. */
-  //@{
 
   /**
    * Return true if currently the primary subprocess is showered.
@@ -133,55 +103,55 @@ public:
   }
 
   /**
-   * Return the currently used SubProcess.
-   */
-  tSubProPtr currentSubProcess() const {
-    assert(subProcess_);
-    return subProcess_;
-  }
-
-  /**
-   * Return true if multiple parton interactions are switched on 
-   * and can be used for this beam setup.
-   */
-  bool isMPIOn() const {
-    return MPIHandler_ && MPIHandler_->beamOK();
-  }
-
-  /**
    * Return the remnant decayer.
    */
   tHwRemDecPtr remnantDecayer() const { return remDec_; }
+
+public:
+
+  /**
+   * @name Switches for initial- and final-state radiation
+   */
+  //@{
+  /**
+   *  Switch for any radiation
+   */
+  bool doRadiation() const {return doFSR_ || doISR_;}
+
+  /**
+   * Switch on or off final state radiation.
+   */
+  bool doFSR() const { return doFSR_;}
+  
+  /**
+   * Switch on or off initial state radiation.
+   */
+  bool doISR() const { return doISR_;}
   //@}
 
-  /**
-   *  Access to the Evolver
-   */
-  tEvolverPtr evolver() const {return evolver_;}
+public:
 
   /**
-   *  Generate hard emissions for CKKW etc
+   * @name Switches for scales
    */
-  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
-
+  //@{
   /**
-   * Return true, if the shower handler can generate a truncated 
-   * shower for POWHEG style events generated using Matchbox
+   * Return true if maximum pt should be deduced from the factorization scale
    */
-  virtual bool canHandleMatchboxTrunc() const { return false; }
+  bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
   /**
    * The factorization scale factor.
    */
   double factorizationScaleFactor() const { 
-      return factorizationScaleFactor_;
+    return factorizationScaleFactor_;
   }
 
   /**
    * The renormalization scale factor.
    */
   double renormalizationScaleFactor() const {
-    return renormalizationScaleFactor_ ;
+    return renormalizationScaleFactor_;
   }
 
   /**
@@ -190,7 +160,6 @@ public:
   double hardScaleFactor() const {
     return hardScaleFactor_;
   }
-
   /**
    * Return true, if the phase space restrictions of the dipole shower should
    * be applied.
@@ -206,62 +175,9 @@ public:
    * Return the relevant hard scale to be used in the profile scales
    */
   virtual Energy hardScale() const;
+  //@}
 
-  /**
-   * Return true if maximum pt should be deduced from the factorization scale
-   */
-  bool hardScaleIsMuF() const { return maxPtIsMuF_; }
-
-  /**
-   * A struct identifying a shower variation
-   */
-  struct ShowerVariation {
-
-    /**
-     * Vary the renormalization scale by the given factor.
-     */
-    double renormalizationScaleFactor;
-
-    /**
-     * Vary the factorization scale by the given factor.
-     */
-    double factorizationScaleFactor;
-
-    /**
-     * Apply the variation to the first interaction
-     */
-    bool firstInteraction;
-
-    /**
-     * Apply the variation to the secondary interactions
-     */
-    bool secondaryInteractions;
-
-    /**
-     * Default constructor
-     */
-    ShowerVariation()
-      : renormalizationScaleFactor(1.0),
-	factorizationScaleFactor(1.0),
-	firstInteraction(true),
-	secondaryInteractions(false) {}
-
-    /**
-     * Parse from in file command
-     */
-    string fromInFile(const string&);
-
-    /**
-     * Put to persistent stream
-     */
-    void put(PersistentOStream& os) const;
-
-    /**
-     * Get from persistent stream
-     */
-    void get(PersistentIStream& is);
-
-  };
+public:
 
   /**
    * Access the shower variations
@@ -305,18 +221,216 @@ public:
     return reweight_;
   }
 
+public:
+
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to energy conservation issues of additional scatters
+   */
+  struct ExtraScatterVeto {};
+
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to fact that the Shower has been invoked more than
+   * a defined threshold on a certain configuration
+   */
+  struct ShowerTriesVeto {
+    /** variable to store the number of attempts */
+    const int tries;
+
+    /** constructor */
+    ShowerTriesVeto(int t) : tries(t) {}
+  };
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Functions to perform the cascade
+   */
+  //@{
+  /**
+   * The main method which manages the showering of a subprocess.
+   */
+  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
+
+  /**
+   * Set up for the cascade
+   */
+  void prepareCascade(tSubProPtr sub) { 
+    current_ = currentStep(); 
+    subProcess_ = sub;
+  } 
+
+  /**
+   *  Boost all the particles in the collision so that the collision always occurs
+   * in the rest frame with the incoming particles along the z axis
+   */
+  void boostCollision(bool boost);
+  //@}
+
 protected:
 
   /**
-   * A reweighting factor applied by the showering
+   *  Set/unset the current shower handler
    */
-  double reweight_;
+  //@{
+  /**
+   *  Set the current handler
+   */
+  void setCurrentHandler() {
+    currentHandler_ = tShowerHandlerPtr(this);
+  }
 
   /**
-   * The shower variation weights
+   * Unset the current handler
    */
-  map<string,double> currentWeights_;
+  void unSetCurrentHandler() {
+    currentHandler_ = tShowerHandlerPtr();
+  }
+  //@}
 
+protected:
+
+  /**
+   * @name Members relating to the underlying event and MPI
+   */
+  //@{
+
+  /**
+   * Return true if multiple parton interactions are switched on 
+   * and can be used for this beam setup.
+   */
+  bool isMPIOn() const {
+    return MPIHandler_ && MPIHandler_->beamOK();
+  }
+
+  /**
+   * Access function for the MPIHandler, it should only be called after
+   * checking with isMPIOn.
+   */
+  tUEBasePtr getMPIHandler() const {  
+    assert(MPIHandler_);
+    return MPIHandler_;    
+  }
+
+  /**
+   *  Is a beam particle where hadronic structure is resolved
+   */
+  bool isResolvedHadron(tPPtr);
+
+  /**
+   * Get the remnants from the ThePEG::PartonBinInstance es and 
+   * do some checks.
+   */
+  RemPair getRemnants(PBIPair incbins);
+
+  /**
+   *  Reset the PDF's after the hard collision has been showered
+   */
+  void setMPIPDFs();
+  //@}
+
+public:
+
+  /**
+   *  Check if a particle decays in the shower
+   * @param id The PDG code for the particle
+   */
+  bool decaysInShower(long id) const {
+    return ( particlesDecayInShower_.find( abs(id) ) != 
+	     particlesDecayInShower_.end() );
+  }
+
+protected:
+
+  /**
+   *   Members to handle splitting up of hard process and decays
+   */
+  //@{
+
+  /**
+   *  Split the hard process into production and decays
+   * @param tagged The tagged particles from the StepHandler
+   * @param hard  The hard perturbative process
+   * @param decay The decay particles
+   */
+  void splitHardProcess(tPVector tagged, PerturbativeProcessPtr & hard,
+			DecayProcessMap & decay) const;
+
+  /**
+   *  Decay a particle
+   */
+  void decay(PerturbativeProcessPtr,
+	     DecayProcessMap & decay) const;
+
+  /**
+   *  Find decay products from the hard process and create decay processes
+   * @param parent The parent particle
+   * @param hard  The hard process
+   * @param decay The decay processes
+   */
+  void findDecayProducts(PPtr parent, PerturbativeProcessPtr hard, DecayProcessMap decay) const;
+
+  /**
+   * Find decay products from the hard process and create decay processes
+   * @param parent The parent particle
+   * @param hard  The parent hard process
+   * @param decay The decay processes
+   */
+  void createDecayProcess(PPtr parent,PerturbativeProcessPtr hard, DecayProcessMap & decay) const;
+  //@}
+
+  /**
+   * @name Functions to return information relevant to the process being showered
+   */
+  //@{
+  /**
+   * Return the currently used SubProcess.
+   */
+  tSubProPtr currentSubProcess() const {
+    assert(subProcess_);
+    return subProcess_;
+  }
+
+  /**
+   *  Access to the incoming beam particles
+   */
+  tPPair incomingBeams() const {
+    return incoming_;
+  }
+  //@}
+
+protected:
+
+  /**
+   *  Weight handling for shower variations
+   */
+  //@
   /**
    * Combine the variation weights which have been encountered
    */
@@ -331,6 +445,28 @@ protected:
    * Reset the current weights
    */
   void resetWeights();
+  //@}
+
+
+
+  /**
+   * Return true, if the shower handler can generate a truncated 
+   * shower for POWHEG style events generated using Matchbox
+   */
+  virtual bool canHandleMatchboxTrunc() const { return false; }
+
+
+
+
+
+
+protected:
+
+  /**
+   * Return the maximum number of attempts for showering
+   * a given subprocess.
+   */
+  unsigned int maxtry() const { return maxtry_; }
 
 protected:
 
@@ -348,70 +484,6 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-
-protected:
-
-  /**
-   * Prepare to shower the given subprocess
-   */
-  void prepareCascade(tSubProPtr sub);
-
-  /**
-   * The main method which manages the showering of a subprocess.
-   */
-  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
-
-  /**
-   * Return the maximum number of attempts for showering
-   * a given subprocess.
-   */
-  unsigned int maxtry() const { return maxtry_; }
-
-  /**
-   * At the end of the Showering, transform ShowerParticle objects
-   * into ThePEG particles and fill the event record with them.
-   * Notice that the parent/child relationships and the 
-   * transformation from ShowerColourLine objects into ThePEG
-   * ColourLine ones must be properly handled.
-   */
-  void fillEventRecord();
-
-  /**
-   * Find the parton extracted from the incoming particle after ISR
-   */
-  PPtr findFirstParton(tPPtr seed) const;
-
-  /**
-   * Fix Remnant connections after ISR
-   */
-  tPPair remakeRemnant(tPPair oldp); 
-
-  /**
-   * Get the remnants from the ThePEG::PartonBinInstance es and 
-   * do some checks.
-   */
-  RemPair getRemnants(PBIPair incbins);
-
-  /**
-   *  Make the remnant after the shower
-   */
-  void makeRemnants();
-
-  /**
-   *  Reset the PDF's after the hard collision has been showered
-   */
-  void setMPIPDFs();
-
-  /**
-   *  Boost all the particles in the collision so that the collision always occurs
-   * in the rest frame with the incoming particles along the z axis
-   */
-  void boostCollision(bool boost);
-
-  /**
-   *  Is a beam particle where hadronic structure is resolved
-   */
-  bool isResolvedHadron(tPPtr);
 
 protected:
 
@@ -447,15 +519,9 @@ private:
 private:
 
   /**
-   * Access function for the MPIHandler, it should only be called after
-   * checking with isMPIOn.
+   *  pointer to "this", the current ShowerHandler.
    */
-  tUEBasePtr getMPIHandler() const {  
-    assert(MPIHandler_);
-    return MPIHandler_;    
-  }
-
-private:
+  static tShowerHandlerPtr  currentHandler_;
 
   /**
    * a MPIHandler to administer the creation of several (semihard) 
@@ -464,40 +530,16 @@ private:
   UEBasePtr MPIHandler_;
 
   /**
-   *  Pointer to the evolver
-   */
-  EvolverPtr evolver_;
-
-  /**
    *  Pointer to the HwRemDecayer
    */
   HwRemDecPtr remDec_;
 
-  /**
-   * The PDF for beam particle A. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFA_;
+private:
 
   /**
-   * The PDF for beam particle B. Overrides the particle's own PDF setting.
+   *  Maximum tries for various stages of the showering process
    */
-  PDFPtr PDFB_;
-
-  /**
-   * The PDF for beam particle A for remnant splitting. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFARemnant_;
-
-  /**
-   * The PDF for beam particle B for remnant splitting. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFBRemnant_;
-
-  /**
-   * The PDF freezing scale
-   */
-  Energy pdfFreezingScale_;
-
+  //@{
   /**
    *  Maximum number of attempts for the
    *   main showering loop
@@ -517,82 +559,17 @@ private:
   unsigned int maxtryDP_;
 
   /**
-   *  PDG codes of the particles which decay during showering
-   *  this is fast storage for use during running
+   *  Maximum number of attempts to generate a decay
    */
-  set<long> particlesDecayInShower_;
+  unsigned int maxtryDecay_;
+  //@}
+
+private:
 
   /**
-   *  PDG codes of the particles which decay during showering
-   *  this is a vector that is interfaced so they can be changed
+   *  Factors for the various scales
    */
-  vector<long> inputparticlesDecayInShower_;
-
-  /**
-   *   Whether or not to include spa-cetime distances in the shower
-   */
-  bool includeSpaceTime_;
-
-  /**
-   *  The minimum virtuality for the space-time model
-   */
-  Energy2 vMin_;
-
-  /**
-   *  The ShowerTree for the hard process
-   */
-  ShowerTreePtr hard_;
-
-  /**
-   *  The incoming beam particles for the current collision
-   */
-  tPPair incoming_;
-
-  /**
-   *  The ShowerTree for the decays
-   */
-  ShowerDecayMap decay_;
-
-  /**
-   *  The ShowerTrees for which the initial shower 
-   */
-  vector<ShowerTreePtr> done_;
-
-  /**
-   *  Const pointer to the current step
-   */
-  tcStepPtr current_;
-
-  /**
-   *  Const pointer to the currently handeled ThePEG::SubProcess
-   */
-  tSubProPtr subProcess_;
-
-  /**
-   *  pointer to "this", the current ShowerHandler.
-   */
-  static ShowerHandler * currentHandler_;
-
-  /**
-   *  Boost to get back to the lab
-   */
-  LorentzRotation boost_;
-
-  /**
-   * The MPI PDF's to be used for secondary scatters.
-   */
-  pair <PDFPtr, PDFPtr> mpipdfs_;
-
-  /**
-   * The MPI PDF's to be used for secondary scatters.
-   */
-  pair <PDFPtr, PDFPtr> rempdfs_;
-
-  /**
-   * The MPI PDF's to be used for secondary scatters.
-   */
-  pair <PDFPtr, PDFPtr> remmpipdfs_;
-
+  //@{
   /**
    * The factorization scale factor.
    */
@@ -623,12 +600,146 @@ private:
    * The profile scales
    */
   Ptr<HardScaleProfile>::ptr hardScaleProfile_;
+  //@}
 
+private:
+
+  /**
+   *  Storage of information about the current event
+   */
+  //@{
+  /**
+   *  The incoming beam particles for the current collision
+   */
+  tPPair incoming_;
+
+  /**
+   *  Boost to get back to the lab
+   */
+  LorentzRotation boost_;
+
+  /**
+   *  Const pointer to the currently handeled ThePEG::SubProcess
+   */
+  tSubProPtr subProcess_;
+
+  /**
+   *  Const pointer to the current step
+   */
+  tcStepPtr current_;
+  //@}
+
+private:
+
+  /**
+   * PDFs to be used for the various stages and related parameters
+   */
+  //@{
+  /**
+   * The PDF freezing scale
+   */
+  Energy pdfFreezingScale_;
+
+  /**
+   * The PDF for beam particle A. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFA_;
+
+  /**
+   * The PDF for beam particle B. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFB_;
+
+  /**
+   * The PDF for beam particle A for remnant splitting. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFARemnant_;
+
+  /**
+   * The PDF for beam particle B for remnant splitting. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFBRemnant_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> mpipdfs_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> rempdfs_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> remmpipdfs_;
+  //@}
+
+private:
+
+  /**
+   * @name Parameters for initial- and final-state radiation
+   */
+  //@{
+  /**
+   * Switch on or off final state radiation.
+   */
+  bool doFSR_;
+
+  /**
+   * Switch on or off initial state radiation.
+   */
+  bool doISR_;
+  //@}
+
+private:
+
+  /**
+   * @name Parameters for particle decays
+   */
+  //@{
   /**
    *  Whether or not to split into hard and decay trees
    */
   bool splitHardProcess_;
 
+  /**
+   *  PDG codes of the particles which decay during showering
+   *  this is fast storage for use during running
+   */
+  set<long> particlesDecayInShower_;
+
+  /**
+   *  PDG codes of the particles which decay during showering
+   *  this is a vector that is interfaced so they can be changed
+   */
+  vector<long> inputparticlesDecayInShower_;
+  //@}
+
+private:
+
+  /**
+   *  Parameters for the space-time model
+   */
+  //@{
+  /**
+   *   Whether or not to include spa-cetime distances in the shower
+   */
+  bool includeSpaceTime_;
+
+  /**
+   *  The minimum virtuality for the space-time model
+   */
+  Energy2 vMin_;
+  //@}
+
+private:
+
+  /**
+   *  Parameters relevant for reweight and variations
+   */
+  //@{
   /**
    * The shower variations
    */
@@ -639,53 +750,17 @@ private:
    */
   string doAddVariation(string);
 
-public:
-
-  /** 
-   * struct that is used to catch exceptions which are thrown
-   * due to energy conservation issues of additional scatters
+  /**
+   * A reweighting factor applied by the showering
    */
-  struct ExtraScatterVeto {};
-
-  /** 
-   * struct that is used to catch exceptions which are thrown
-   * due to fact that the Shower has been invoked more than
-   * a defined threshold on a certain configuration
-   */
-  struct ShowerTriesVeto {
-    /** variable to store the number of attempts */
-    const int tries;
-
-    /** constructor */
-    ShowerTriesVeto(int t) : tries(t) {}
-  };
+  double reweight_;
 
   /**
-   *  pointer to "this", the current ShowerHandler.
+   * The shower variation weights
    */
-  static ShowerHandler * currentHandler() {
-    assert(currentHandler_);
-    return currentHandler_;
-  }
-
-protected:
-
-  /**
-   *  Set the current handler
-   */
-  void setCurrentHandler() {
-    currentHandler_ = this;
-  }
-
+  map<string,double> currentWeights_;
+  //@}
 };
-
-inline PersistentOStream& operator<<(PersistentOStream& os, const ShowerHandler::ShowerVariation& var) {
-  var.put(os); return os;
-} 
-
-inline PersistentIStream& operator>>(PersistentIStream& is, ShowerHandler::ShowerVariation& var) {
-  var.get(is); return is;
-} 
 
 }
 

@@ -59,8 +59,7 @@ public:
   /**
    * Default constructor.
    */
-  LightClusterDecayer() : _limBottom(), _limCharm(), _limExotic() 
-  {} 
+  LightClusterDecayer() {}
   //@}
 
   /**
@@ -141,19 +140,6 @@ private:
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.
    */
   Ptr<HadronSelector>::pointer _hadronSelector;
-
-  /**
-   * @name A parameter used for determining when clusters are too light.
-   *
-   * This parameter is used for setting the lower threshold, \f$ t \f$ as
-   * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
-   * where \f$ r \f$ is a random number [0,1].
-   */
-  //@{
-  double _limBottom;
-  double _limCharm;
-  double _limExotic;
-  //@}
 };
 
 }

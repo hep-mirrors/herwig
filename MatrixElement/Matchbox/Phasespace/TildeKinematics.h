@@ -123,8 +123,6 @@ public:
    * mapping. This is used for matching subtractions.
    */
   virtual double jacobianRatio() const { return 1.; }
-  
-  virtual double jacobian(Energy2,Energy2,int) const {return 1.;}
 
 public:
 
@@ -173,20 +171,13 @@ public:
    * Return the momentum fraction associated to the last splitting.
    */
   virtual double lastZ() const = 0;
-  
-  
-  virtual double lastRealR() const {return -1.;};
-  
-  
-  virtual double lastBornR() const {return -1.;};
-  
-  
 
   /**
    * Return the relevant dipole scale
    */
   virtual Energy lastScale() const;
   
+/*
   double lastRealX() const{
     return theDipole->realEmitter()==0?(theBornXComb->lastX1()/theRealXComb->lastX1()):(theBornXComb->lastX2()/theRealXComb->lastX2());
   }
@@ -197,6 +188,7 @@ public:
   double lastBornX1() const{    return theBornXComb->lastX1(); }
   double lastBornX2() const{    return theBornXComb->lastX2(); }
 
+*/
   /**
    * Return the particle type of the emitter in the real emission process
    */

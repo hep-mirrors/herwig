@@ -74,7 +74,8 @@ HadronSelector::HadronSelector(unsigned int opt)
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
     _repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
     _sngWt( 1.0 ),_decWt( 1.0 ),
-    _topt(opt),_trial(0)
+    _topt(opt),_trial(0), 
+    _limBottom(), _limCharm(), _limExotic(), belowThreshold_(0) 
 {
   // The mixing angles
   // the ideal mixing angle
@@ -111,6 +112,7 @@ void HadronSelector::persistentOutput(PersistentOStream & os) const {
      << _weight1S0 << _weight3S1 << _weight1P1 << _weight3P0 << _weight3P1 
      << _weight3P2 << _weight1D2 << _weight3D1 << _weight3D2 << _weight3D3
      << _forbidden << _sngWt << _decWt << _repwt << _pwt
+     << _limBottom << _limCharm << _limExotic << belowThreshold_
      << _table;
 }
 
@@ -122,6 +124,7 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
      >> _weight1S0 >> _weight3S1 >> _weight1P1 >> _weight3P0 >> _weight3P1 
      >> _weight3P2 >> _weight1D2 >> _weight3D1 >> _weight3D2 >> _weight3D3
      >> _forbidden >> _sngWt >> _decWt >> _repwt >> _pwt
+     >> _limBottom >> _limCharm >> _limExotic >> belowThreshold_
      >> _table;
 }
 
@@ -347,8 +350,42 @@ void HadronSelector::Init() {
   static SwitchOption interfaceTrialSpin3
     (interfaceTrial,
      "Spin3",
-     "Only hadrons with spin less tan or equal to three are produced",
+     "Only hadrons with spin less than or equal to three are produced",
      3);
+
+  static Parameter<HadronSelector,double>
+    interfaceSingleHadronLimitBottom ("SingleHadronLimitBottom",
+				      "Threshold for one-hadron decay of b-cluster",
+				      &HadronSelector::_limBottom,
+				      0, 0.0, 0.0, 100.0,false,false,false);
+
+  static Parameter<HadronSelector,double>
+    interfaceSingleHadronLimitCharm ("SingleHadronLimitCharm",
+				     "threshold for one-hadron decay of c-cluster",
+				     &HadronSelector::_limCharm,
+				     0, 0.0, 0.0, 100.0,false,false,false);
+
+  static Parameter<HadronSelector,double>
+    interfaceSingleHadronLimitExotic ("SingleHadronLimitExotic",
+				      "threshold for one-hadron decay of exotic cluster",
+				      &HadronSelector::_limExotic,
+				      0, 0.0, 0.0, 100.0,false,false,false);
+
+  static Switch<HadronSelector,unsigned int> interfaceBelowThreshold
+    ("BelowThreshold",
+     "Option fo the selection of the hadrons if the cluster is below the pair threshold",
+     &HadronSelector::belowThreshold_, 0, false, false);
+  static SwitchOption interfaceBelowThresholdLightest
+    (interfaceBelowThreshold,
+     "Lightest",
+     "Force cluster to decay to the lightest hadron with the appropriate flavours",
+     0);
+  static SwitchOption interfaceBelowThresholdAll
+    (interfaceBelowThreshold,
+     "All",
+     "Select from all the hadrons below the two hadron threshold according to their spin weights",
+     1);
+
 
 }
 
@@ -821,3 +858,146 @@ Energy HadronSelector::massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const 
   return currentSum;
 }
 
+tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,tcPDPtr ptr3) const {
+  // The method assumes ptr3 == 0 rest not implemented
+  assert(ptr1 && ptr2 && !ptr3);
+  // find entry in the table
+  pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
+  HadronTable::const_iterator tit=_table.find(ids);
+  // throw exception if flavours wrong
+  if (tit==_table.end()) 
+    throw Exception() << "Could not find " 
+		      << ids.first << ' ' << ids.second 
+		      << " in _table. "
+		      << "In HadronSelector::lightestHadron()"
+		      << Exception::eventerror;
+  if(tit->second.empty())
+    throw Exception() << "HadronSelector::lightestHadron "
+		      << "could not find any hadrons containing " 
+		      << ptr1->id() << ' ' << ptr2->id() << '\n'
+		      << tit->first.first << ' ' 
+		      << tit->first.second << Exception::eventerror;
+  // find the lightest hadron
+  int sign = signHadron(ptr1,ptr2,tit->second.begin()->ptrData);
+  tcPDPtr candidate = sign > 0 ? 
+    tit->second.begin()->ptrData : tit->second.begin()->ptrData->CC();
+  // \todo 20 GeV limit is temporary fudge to let SM particles go through.
+  // \todo Use isExotic instead?
+  if (candidate->mass() > 20*GeV 
+      && candidate->mass() < ptr1->constituentMass() + ptr2->constituentMass()) {
+    generator()->log() << "HadronSelector::lightestHadron: "
+		       << "chosen candidate " << candidate->PDGName() 
+		       << " is lighter than its constituents "
+		       << ptr1->PDGName() << ", " << ptr2->PDGName() << '\n'
+		       << candidate->mass()/GeV << " < " << ptr1->constituentMass()/GeV
+		       << " + " << ptr2->constituentMass()/GeV << '\n'
+		       << "Check your particle data tables.\n";
+    assert(false);
+  }
+  return candidate;
+}
+
+vector<pair<tcPDPtr,double> > 
+HadronSelector::hadronsBelowThreshold(Energy threshold, tcPDPtr ptr1,
+				      tcPDPtr ptr2, tcPDPtr ptr3) const {
+  // The method assumes ptr3 == 0 rest not implemented
+  assert(ptr1 && ptr2 && !ptr3);
+  // find entry in the table
+  pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
+  HadronTable::const_iterator tit=_table.find(ids);
+  // throw exception if flavours wrong
+  if (tit==_table.end()) 
+    throw Exception() << "Could not find " 
+		      << ids.first << ' ' << ids.second 
+		      << " in _table. "
+		      << "In HadronSelector::hadronsBelowThreshold()"
+		      << Exception::eventerror;
+  if(tit->second.empty())
+    throw Exception() << "HadronSelector::hadronsBelowThreshold() "
+		      << "could not find any hadrons containing " 
+		      << ptr1->id() << ' ' << ptr2->id() << '\n'
+		      << tit->first.first << ' ' 
+		      << tit->first.second << Exception::eventerror;
+  vector<pair<tcPDPtr,double> > candidates;
+  KupcoData::const_iterator hit = tit->second.begin();
+  // find the hadrons
+  while(hit->mass<threshold&&hit!=tit->second.end()) {
+    // find the hadron
+    int sign = signHadron(ptr1,ptr2,hit->ptrData);
+    tcPDPtr candidate = sign > 0 ? hit->ptrData : hit->ptrData->CC();
+    // \todo 20 GeV limit is temporary fudge to let SM particles go through.
+    // \todo Use isExotic instead?
+    if (candidate->mass() > 20*GeV 
+	&& candidate->mass() < ptr1->constituentMass() + ptr2->constituentMass()) {
+      generator()->log() << "HadronSelector::hadronsBelowTheshold: "
+			 << "chosen candidate " << candidate->PDGName() 
+			 << " is lighter than its constituents "
+			 << ptr1->PDGName() << ", " << ptr2->PDGName() << '\n'
+			 << candidate->mass()/GeV << " < " << ptr1->constituentMass()/GeV
+			 << " + " << ptr2->constituentMass()/GeV << '\n'
+			 << "Check your particle data tables.\n";
+      assert(false);
+    } 
+    candidates.push_back(make_pair(candidate,hit->overallWeight));
+    ++hit;
+  }
+  return candidates;
+}
+
+
+tcPDPtr HadronSelector::chooseSingleHadron(tcPDPtr par1, tcPDPtr par2,
+					   Energy mass) const {
+  // Determine the sum of the nominal masses of the two lightest hadrons
+  // with the right flavour numbers as the cluster under consideration.
+  // Notice that we don't need real masses (drawn by a Breit-Wigner 
+  // distribution) because the lightest pair of hadrons does not involve
+  // any broad resonance.
+  Energy threshold = massLightestHadronPair(par1,par2);
+  // Special: it allows one-hadron decays also above threshold.
+  if (CheckId::isExotic(par1,par2)) 
+    threshold *= (1.0 + UseRandom::rnd()*_limExotic);
+  else if (CheckId::hasBottom(par1,par2)) 
+    threshold *= (1.0 + UseRandom::rnd()*_limBottom);
+  else if (CheckId::hasCharm(par1,par2)) 
+    threshold *= (1.0 + UseRandom::rnd()*_limCharm);
+  
+  // only do one hadron decay is mass less than the threshold
+  if(mass>=threshold) return tcPDPtr();
+
+  // select the hadron
+  tcPDPtr hadron;
+  // old option pick the lightest hadron
+  if(belowThreshold_ == 0) {
+    hadron= lightestHadron(par1,par2);
+  }
+  // new option select from those available
+  else if(belowThreshold_ == 1) {
+    vector<pair<tcPDPtr,double> > hadrons = 
+      hadronsBelowThreshold(threshold,par1,par2);
+    if(hadrons.size()==1) {
+      hadron = hadrons[0].first;
+    }
+    else if(hadrons.empty()) {
+      hadron= lightestHadron(par1,par2);
+    }
+    else {
+      double totalWeight=0.;
+      for(unsigned int ix=0;ix<hadrons.size();++ix) {
+	totalWeight += hadrons[ix].second;
+      }
+      totalWeight *= UseRandom::rnd();
+      for(unsigned int ix=0;ix<hadrons.size();++ix) {
+	if(totalWeight<=hadrons[ix].second) {
+	  hadron = hadrons[ix].first;
+	  break;
+	}
+	else
+	  totalWeight -= hadrons[ix].second;
+      }
+      assert(hadron);
+    }
+  }
+  else
+    assert(false);
+  return hadron;
+}

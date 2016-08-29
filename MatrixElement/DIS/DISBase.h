@@ -6,7 +6,7 @@
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -46,13 +46,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr, double &,
+  virtual void initializeMECorrection(RealEmissionProcessPtr, double &,
 				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -78,7 +78,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,vector<ShowerInteraction::Type>);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:

@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -78,13 +78,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr tree, double & initial,
-				      double & final);
+  virtual void initializeMECorrection(RealEmissionProcessPtr, double &,
+				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -101,8 +101,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,
-				      vector<ShowerInteraction::Type>);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:
@@ -358,7 +358,7 @@ protected:
    * @param out The ParticleData object for the outgoing parton
    * @return Whether or not the matrix element correction needs to be applied
    */
-  bool applyHard(ShowerParticleVector gluons,
+  bool applyHard(ParticleVector gluons,
 		 vector<tcBeamPtr> beams,
 		 PPtr higgs,unsigned int & iemit,
 		 unsigned int & itype,vector<Lorentz5Momentum> & pnew,

@@ -24,3 +24,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289_Z
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1122847
 # CMS Z+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1310737
+# ATLAS event shapes in Z events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1424838
+# ATLAS forwrd backward
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_EL

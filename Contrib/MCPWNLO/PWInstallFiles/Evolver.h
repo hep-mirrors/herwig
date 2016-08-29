@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Shower/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
 #include "ShowerModel.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ShowerTree.h"

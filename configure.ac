@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([Herwig],[7.0.3],[herwig@projects.hepforge.org],[Herwig])
+AC_INIT([Herwig],[trunk],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -24,28 +24,8 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 dnl Checks for C++ compiler. Handle C++11 flags.
-AC_PROG_CXX([g++])
-
-dnl this block can go once we decide to have C++11 always on
-AC_MSG_CHECKING([whether to include C++11 flag for testing])
-AC_ARG_ENABLE(stdcxx11,
-        AC_HELP_STRING([--enable-stdcxx11],
-        [turn on C++11 flag (only for testing, do not use in production!)]),
-        [],
-        [enable_stdcxx11=no]
-        )
-
-
-if test "x$enable_stdcxx11" = "xyes"; then
-AC_MSG_RESULT([yes])
-dnl remove the wrapper if block and "optional" once we decide to have C++11 always on
-AX_CXX_COMPILE_STDCXX([11],[noext],[optional])
-if test "x$HAVE_CXX11" != "x1"; then
-AC_MSG_ERROR([compiler does not recognize requested c++11 option])
-fi
-else
-AC_MSG_RESULT([no])
-fi
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 
 dnl check for POSIX
 AC_CHECK_HEADER([unistd.h],[],
@@ -116,6 +96,9 @@ HERWIG_CHECK_OPENLOOPS
 
 HERWIG_CHECK_MADGRAPH
 
+HERWIG_CHECK_EVTGEN
+HERWIG_CHECK_PYTHIA
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
@@ -169,6 +152,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/Partonic/Makefile
 		Decay/General/Makefile	
 		Decay/Radiation/Makefile
+		Decay/EvtGen/Makefile
                 Doc/refman.conf
                 Doc/refman.h
 		PDT/Makefile
@@ -207,15 +191,15 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
                 Shower/Makefile
-		Shower/Matching/Makefile
-		DipoleShower/Makefile
-		DipoleShower/Base/Makefile
-		DipoleShower/Kernels/Makefile
-		DipoleShower/Kinematics/Makefile
-		DipoleShower/Utility/Makefile
-		DipoleShower/AlphaS/Makefile
-		DipoleShower/Merging/Makefile
-		Utilities/Makefile
+		Shower/QTilde/Makefile
+		Shower/QTilde/Matching/Makefile
+		Shower/Dipole/Makefile
+		Shower/Dipole/Base/Makefile
+		Shower/Dipole/Kernels/Makefile
+		Shower/Dipole/Kinematics/Makefile
+		Shower/Dipole/Utility/Makefile
+		Shower/Dipole/AlphaS/Makefile
+                Utilities/Makefile
                 Utilities/XML/Makefile
                 Utilities/Statistics/Makefile
                 Hadronization/Makefile
@@ -225,7 +209,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/defaults/Makefile
 		src/snippets/Makefile
 		src/Matchbox/Makefile
-		src/Merging/Makefile
 		src/herwig-config
 		Doc/Makefile
 		Doc/HerwigDefaults.in
@@ -234,8 +217,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in
-		src/defaults/MatchboxMergeDefaults.in
-		src/defaults/MatchboxMergingDefaults.in
+		src/defaults/Decays.in
+		src/defaults/decayers.in
 		src/defaults/setup.gosam.in
 		src/Matchbox/LO-DefaultShower.in
 		src/Matchbox/LO-DipoleShower.in
@@ -247,6 +230,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Matchbox/NLO-NoShower.in
 		src/Matchbox/Powheg-DefaultShower.in
 		src/Matchbox/Powheg-DipoleShower.in
+		src/Merging/Makefile
+		Shower/Dipole/Merging/Makefile
+		src/defaults/MatchboxMergingDefaults.in
 		src/Merging/4LO-0NLO-LHC-Z.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh

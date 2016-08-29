@@ -200,9 +200,6 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
 
 }
 
- double SubtractionDipole::jacobianMerging(Energy2 shatBorn,Energy2 shatReal,int n) const {return theTildeKinematics->jacobian(shatBorn,shatReal,n);}
-
-
 void SubtractionDipole::subtractionBookkeeping() {
   /*
   if ( theMergingMap.empty() )
@@ -582,9 +579,10 @@ bool SubtractionDipole::generateTildeKinematics() {
   theLastSubtractionPt = kinematics->lastPt();
   theLastSubtractionZ = kinematics->lastZ();
   
+/*
   theLastRealR=kinematics->lastRealR();
   theLastBornR=kinematics->lastBornR();
-  
+*/  
 
   meMomenta().resize(lastHeadXComb().meMomenta().size() - 1);
 

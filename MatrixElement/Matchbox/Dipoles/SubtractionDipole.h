@@ -554,6 +554,7 @@ public:
     return splitting() ? theLastSplittingZ : theLastSubtractionZ;
   }
       
+/*
       
       double lastRealR() const{
         return theLastRealR;
@@ -562,6 +563,8 @@ public:
       double lastBornR() const{
         return theLastBornR;
       }
+
+*/
 
   /**
    * Return true, if this dipole acts in splitting mode.
@@ -627,9 +630,6 @@ public:
    * Indicate whether this configuration is in the shower phase space
    */
   void isInShowerPhasespace(bool yes) { theIsInShowerPhasespace = yes; }
-      
-      
-  double jacobianMerging(Energy2,Energy2,int n) const;
 
   /**
    * Return true, if this configuration is above the shower infrared cutoff
@@ -782,12 +782,23 @@ public:
    * given by the last call to generateKinematics().
    */
   virtual CrossSection dSigHatDR() const { return dSigHatDR(ZERO); }
-      //TODO
+
+  /**
+   * Return true if this dipole is safe for clustering
+   **/
   bool clustersafe() const;
 
   bool clustersafe();
+
+  /**
+   *  Calculate the parton shower approximation for this dipole.
+   **/
       
   CrossSection ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
+   *  Calculate the dipole dSigDR and the parton shower approximation for this dipole.
+   **/
 
   pair<double,double> dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
 
@@ -1197,9 +1208,10 @@ private:
    */
   double theLastSplittingZ;
       
+/*
       double theLastRealR;
       double theLastBornR;
-
+*/
   /**
    * The shower approximation.
    */

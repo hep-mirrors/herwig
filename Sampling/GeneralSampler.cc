@@ -136,7 +136,7 @@ void GeneralSampler::initialize() {
 	  prefix = "./";
 	else if ( *prefix.rbegin() != '/' )
 	  prefix += "/";
-	name << prefix << "integrationJobID" << jobCount;
+	name << prefix << "integrationJob" << jobCount<<"List";
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
@@ -199,11 +199,9 @@ void GeneralSampler::initialize() {
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
     string prefix = RunDirectories::runStorage();
-    if ( prefix.empty() )
-      prefix = "./";
-    else if ( *prefix.rbegin() != '/' )
-      prefix += "/";
-    string fname = prefix + integrationList();
+    assert ( !prefix.empty() );
+    string fname = prefix.substr(0, prefix.size()-1) + "List";
+
     ifstream jobList(fname.c_str());
     if ( jobList ) {
       int b = 0;
@@ -212,7 +210,7 @@ void GeneralSampler::initialize() {
     } else {
       Repository::clog() 
 	<< "Job list '"
-	<< integrationList() << "' not found.\n"
+	<< fname << "' not found.\n"
 	<< "Assuming empty integration job\n" << flush;
       return;
     }

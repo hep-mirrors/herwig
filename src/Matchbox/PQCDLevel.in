@@ -4,7 +4,7 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
 
-set /Herwig/Shower/Evolver:Interactions QCDOnly
+set /Herwig/Shower/ShowerHandler:Interactions QCD
 
 cd /Herwig/EventHandlers
 set EventHandler:HadronizationHandler NULL

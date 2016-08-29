@@ -11,7 +11,9 @@ lepton_decays.in leptons.in \
 masses.in MatrixElements.in meson_decays.in mesons.in Model.in BSM.in \
 Particles.in QEDRadiation.in quark_decays.in quarks.in \
 setup.gosam.in Shower.in StandardModelVertices.in UnderlyingEvent.in widths.in Partons.in \
-MatchboxDefaults.in MatchboxMergeDefaults.in  MatchboxMergingDefaults.in DipoleShowerDefaults.in MatchboxLoopInduced.in
+MatchboxDefaults.in  MatchboxMergingDefaults.in DipoleShowerDefaults.in MatchboxLoopInduced.in \
+EvtGenDecayer.in HerwigBDecays.in
+
 
 dist_defaults_DATA = $(INPUTFILES)
 

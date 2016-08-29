@@ -18,7 +18,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ShowerKinematics.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"

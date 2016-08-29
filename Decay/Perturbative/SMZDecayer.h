@@ -14,7 +14,7 @@
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.fh"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -51,13 +51,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr , double & ,
+  virtual void initializeMECorrection(RealEmissionProcessPtr , double & ,
 				      double & );
-
+  
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction

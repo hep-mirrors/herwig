@@ -129,7 +129,7 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
 
   // integration list
   if ( args_info.jobid_given ) {
-    integrationList_ = "integrationJobID" + std::string(args_info.jobid_arg);
+    integrationList_ = "integrationJob" + std::string(args_info.jobid_arg);
   }
 
   // job size

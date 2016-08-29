@@ -9,6 +9,58 @@ Script for merging aida files
 
 """
 
+def fillAbove(scale,desthisto, sourcehistosbyptmin) :
+    pthigh= 1e100
+    ptlow =-1e100
+    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+        ptlow=pt
+        if(type(desthisto)==yoda.core.Scatter2D) :
+            for i in range(0,h.numPoints) :
+                xMin = h.points[i].x-h.points[i].xErrs.minus
+                if( xMin*scale >= ptlow and 
+                    xMin*scale <  pthigh ) :
+                    desthisto.addPoint(h.points[i])
+        elif(type(desthisto)==yoda.core.Profile1D) :
+            for i in range(0,h.numBins) :
+                if(h.bins[i].xMin*scale  >= ptlow and 
+                   h.bins[i].xMin*scale  <  pthigh ) :
+                    desthisto.bins[i] += h.bins[i]
+        elif(type(desthisto)==yoda.core.Histo1D) :
+            for i in range(0,h.numBins) :
+                if(h.bins[i].xMin*scale  >= ptlow and 
+                   h.bins[i].xMin*scale  <  pthigh ) :
+                    desthisto.bins[i] += h.bins[i]
+        else :
+            logging.error("Can't merge %s, unknown type" % desthisto.path)
+            sys.exit(1)
+        pthigh=pt
+
+def mergeByMass(hpath, sqrts, scale=1.):
+    global inhistos_mass
+    global outhistos
+    try:
+        fillAbove(scale,outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
+    except:
+        pass
+
+def useOneMass(hpath, sqrts, ptmin):
+    global inhistos_mass
+    global outhistos
+    try:
+       ## Find best pT_min match
+        ptmins = inhistos_mass[hpath][float(sqrts)].keys()
+        closest_ptmin = None
+        for ptm in ptmins:
+            if closest_ptmin is None or \
+                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
+                closest_ptmin = ptm
+        if closest_ptmin != float(ptmin):
+            logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
+                                "using pTmin=%e instead" % closest_ptmin)
+        outhistos[hpath] =  inhistos_mass[hpath][float(sqrts)][closest_ptmin]
+    except:
+        pass
+
 import sys
 if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
@@ -35,8 +87,9 @@ if __name__ == "__main__":
 
     ## Get histos
     outhistos={}
+
+    inhistos_mass = {}
     for file in args:
-        print file
         if not os.access(file, os.R_OK):
             logging.error("%s can not be read" % file)
             break
@@ -45,6 +98,15 @@ if __name__ == "__main__":
         except:
             logging.error("%s can not be parsed as XML" % file)
             break
+        mass=66
+        if(file.find("Mass1")>=0) :
+            mass = 12
+        elif(file.find("Mass2")>=0) :
+            mass = 30
+        elif(file.find("Mass3")>=0) :
+            mass = 66
+        elif(file.find("Mass4")>=0) :
+            mass = 116
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
             if(aopath.find("ATLAS_2010_S8919674")>0) :
@@ -139,14 +201,174 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
                 elif(file.find("-e")>=0 and (aopath.find("d02")>=0 or aopath.find("d03")>=0)) :
                     outhistos[aopath] = ao
+            elif (aopath.find("ATLAS_2016_I1424838")>0) :
+                if(file.find("-mu")>=0 and aopath.find("x02")>=0 ) :
+                    outhistos[aopath] = ao
+                elif(file.find("-e")>=0 and (aopath.find("x01")>=0)) :
+                    outhistos[aopath] = ao
             elif (aopath.find("CMS_2015_I1310737")>0) :
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                 else :
                     outhistos[aopath] = ao
+            elif (aopath.find("ATLAS_2015_I1351916")>=0) :
+                if(aopath.find("-y01")>=0) :
+                    pathBase = aopath.replace("-y01","")
+                    hp = aos[pathBase+"-y02"]
+                    hm = aos[pathBase+"-y03"]
+                    ratio = (hp-hm)/(hp+hm)
+                    hnew = yoda.Scatter2D(aopath,ao.title)
+                    hnew.combineWith(ratio)
+                    outhistos[aopath] = hnew
+                else :
+                    continue
+            elif (aopath.find("ATLAS_2014_I1282447")>=0) :
+                if((aopath.find("/ATLAS_2014_I1282447/d02-x01-y01")>=0 or
+                    aopath.find("/ATLAS_2014_I1282447/d08-x01-y01")>=0 or 
+                    aopath.find("/ATLAS_2014_I1282447/d02-x01-y02")>=0 or 
+                    aopath.find("/ATLAS_2014_I1282447/d02-x01-y01")>=0 or
+                    aopath.find("/ATLAS_2014_I1282447/d05-x01-y02")>=0 or 
+                    aopath.find("/ATLAS_2014_I1282447/d05-x01-y03")>=0 or 
+                    aopath.find("/ATLAS_2014_I1282447/d06-x01-y01")>=0 or
+                    aopath.find("/ATLAS_2014_I1282447/d06-x01-y02")>=0 or 
+                    aopath.find("/ATLAS_2014_I1282447/d06-x01-y03")>=0 or 
+                    aopath.find("/ATLAS_2014_I1282447/d06-x01-y04")>=0) and 
+                   not (aopath.find("plus")>=0 or aopath.find("minus")>=0 or
+                        aopath.find("inc")>=0)) :
+                    continue
+                if aopath in outhistos :
+                    outhistos[aopath] += ao
+                else :
+                    outhistos[aopath] = ao
+            elif (aopath.find("ATLAS_2015_I1408516")>=0) :
+                if not inhistos_mass.has_key(aopath):
+                    inhistos_mass[aopath] = {}
+                tmpE = inhistos_mass[aopath]
+                sqrts=8000
+                if not tmpE.has_key(sqrts):
+                    tmpE[sqrts] = {}
+                tmpP = tmpE[sqrts]
+                if not tmpP.has_key(mass):
+                    tmpP[mass] = ao
+                else:
+                    raise Exception("A set with mass = %s already exists" % ( mass))
             else :
                 outhistos[aopath] = ao
 
+    for hpath,hsets in inhistos_mass.iteritems():
+        if(hpath!="/ATLAS_2015_I1408516_EL/d41-x01-y01" and
+           hpath!="/ATLAS_2015_I1408516_MU/d41-x01-y02" ) :
+            continue
+        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
+                                                   hsets.values()[0].values()[0].title)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].values()[0].path,
+                                                   hsets.values()[0].values()[0].title)
+            for i in range(0,hsets.values()[0].values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].values()[0].path,
+                                                hsets.values()[0].values()[0].title)
+            for i in range(0,hsets.values()[0].values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            sys.exit(1)
+    # sort out mass ibns for ATLAS Z-> e,mu at 8 TeV
+    for ltype in ["EL","MU"] :
+        if(ltype=="EL") :
+            y = "y01"
+            mergeByMass("/ATLAS_2015_I1408516_EL/d41-x01-y01", "8000")
+        else :
+            y = "y04"
+            mergeByMass("/ATLAS_2015_I1408516_MU/d41-x01-y02", "8000")
+        for d in [2,3,04,14,26,38]:
+            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
+        for d in [5,6,7,8,9,10,15,17,18,19,20,21,22,27,29,30,31,32,33,34,39]:
+            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "66" )
+        for d in [11,12,13,16,28,40]:
+            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "116" )
+        for d in [23,35]:
+            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
+        for d in [24,36]:
+            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
+        for d in [25,37]:
+            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
+    # sort out ratios for ATLAS W+c
+    if("/ATLAS_2014_I1282447/d02-x01-y01_plus" in outhistos and 
+       "/ATLAS_2014_I1282447/d02-x01-y01_minus" in outhistos) :
+        d02y01_plus  = outhistos["/ATLAS_2014_I1282447/d02-x01-y01_plus"]
+        d02y01_minus = outhistos["/ATLAS_2014_I1282447/d02-x01-y01_minus"]
+        ratio_d02y01 = d02y01_plus/d02y01_minus
+        ratio_d02y01.path = "/ATLAS_2014_I1282447/d02-x01-y01"
+        del outhistos["/ATLAS_2014_I1282447/d02-x01-y01_plus"]
+        del outhistos["/ATLAS_2014_I1282447/d02-x01-y01_minus"]
+        outhistos["/ATLAS_2014_I1282447/d02-x01-y01"] = ratio_d02y01
+    if("/ATLAS_2014_I1282447/d02-x01-y02_plus" in outhistos and 
+       "/ATLAS_2014_I1282447/d02-x01-y02_minus" in outhistos) :
+        d02y02_plus  = outhistos["/ATLAS_2014_I1282447/d02-x01-y02_plus"]
+        d02y02_minus = outhistos["/ATLAS_2014_I1282447/d02-x01-y02_minus"]
+        ratio_d02y02 = d02y02_plus/d02y02_minus
+        ratio_d02y02.path = "/ATLAS_2014_I1282447/d02-x01-y02"
+        del outhistos["/ATLAS_2014_I1282447/d02-x01-y02_plus"]
+        del outhistos["/ATLAS_2014_I1282447/d02-x01-y02_minus"]
+        outhistos["/ATLAS_2014_I1282447/d02-x01-y02"] = ratio_d02y02
+    if("/ATLAS_2014_I1282447/d08-x01-y01_plus" in outhistos and 
+       "/ATLAS_2014_I1282447/d08-x01-y01_minus" in outhistos) :
+        d08y01_plus  = outhistos["/ATLAS_2014_I1282447/d08-x01-y01_plus"]
+        d08y01_minus = outhistos["/ATLAS_2014_I1282447/d08-x01-y01_minus"]
+        ratio_d08y01 = d08y01_plus/d08y01_minus
+        ratio_d08y01.path = "/ATLAS_2014_I1282447/d08-x01-y01"
+        del outhistos["/ATLAS_2014_I1282447/d08-x01-y01_plus"]
+        del outhistos["/ATLAS_2014_I1282447/d08-x01-y01_minus"]
+        outhistos["/ATLAS_2014_I1282447/d08-x01-y01"] = ratio_d08y01
+    if ("/ATLAS_2014_I1282447/d05-x01-y01" in outhistos and
+        "/ATLAS_2014_I1282447/d01-x01-y02" in outhistos) :
+        h_winc = outhistos["/ATLAS_2014_I1282447/d05-x01-y01"]
+        h_d    = outhistos["/ATLAS_2014_I1282447/d01-x01-y02"]
+        ratio_wd      =  h_d/h_winc
+        ratio_wd.path = "/ATLAS_2014_I1282447/d05-x01-y02"
+        outhistos["/ATLAS_2014_I1282447/d05-x01-y02"] = ratio_wd
+    if ("/ATLAS_2014_I1282447/d05-x01-y01" in outhistos and
+        "/ATLAS_2014_I1282447/d01-x01-y03" in outhistos) :
+        h_winc = outhistos["/ATLAS_2014_I1282447/d05-x01-y01"]
+        h_dstar= outhistos["/ATLAS_2014_I1282447/d01-x01-y03"]
+        ratio_wdstar      =  h_dstar/h_winc
+        ratio_wdstar.path = "/ATLAS_2014_I1282447/d05-x01-y03"
+        outhistos["/ATLAS_2014_I1282447/d05-x01-y03"] = ratio_wdstar
+    if("/ATLAS_2014_I1282447/d06-x01-y01_winc" in outhistos and
+       "/ATLAS_2014_I1282447/d06-x01-y02_winc" in outhistos) :
+        h_winc_plus  = outhistos["/ATLAS_2014_I1282447/d06-x01-y01_winc"]
+        h_winc_minus = outhistos["/ATLAS_2014_I1282447/d06-x01-y02_winc"]
+        if( "/ATLAS_2014_I1282447/d06-x01-y01_wplus" in outhistos ) :
+            h_wd_plus      = outhistos["/ATLAS_2014_I1282447/d06-x01-y01_wplus"]
+            ratio_wd_plus       =  h_wd_plus/h_winc_plus
+            ratio_wd_plus.path  = "/ATLAS_2014_I1282447/d06-x01-y01"
+            outhistos["/ATLAS_2014_I1282447/d06-x01-y01"] = ratio_wd_plus
+            del outhistos["/ATLAS_2014_I1282447/d06-x01-y01_wplus"]
+        if( "/ATLAS_2014_I1282447/d06-x01-y02_wminus" in outhistos ) :
+            h_wd_minus     = outhistos["/ATLAS_2014_I1282447/d06-x01-y02_wminus"]
+            ratio_wd_minus      =  h_wd_minus/h_winc_minus
+            ratio_wd_minus.path = "/ATLAS_2014_I1282447/d06-x01-y02"
+            outhistos["/ATLAS_2014_I1282447/d06-x01-y02"] = ratio_wd_minus
+            del outhistos["/ATLAS_2014_I1282447/d06-x01-y02_wminus"]
+        if ( "/ATLAS_2014_I1282447/d06-x01-y03_wplus" in outhistos) : 
+            h_wdstar_plus  = outhistos["/ATLAS_2014_I1282447/d06-x01-y03_wplus"]
+            ratio_wdstar_plus       =  h_wdstar_plus/h_winc_plus
+            ratio_wdstar_plus.path  = "/ATLAS_2014_I1282447/d06-x01-y03"
+            outhistos["/ATLAS_2014_I1282447/d06-x01-y03"] = ratio_wdstar_plus 
+            del outhistos["/ATLAS_2014_I1282447/d06-x01-y03_wplus"]
+        if ( "/ATLAS_2014_I1282447/d06-x01-y04_wminus" in outhistos) :
+            h_wdstar_minus = outhistos["/ATLAS_2014_I1282447/d06-x01-y04_wminus"]
+            ratio_wdstar_minus      =  h_wdstar_minus/h_winc_minus
+            ratio_wdstar_minus.path = "/ATLAS_2014_I1282447/d06-x01-y04"
+            outhistos["/ATLAS_2014_I1282447/d06-x01-y04"] = ratio_wdstar_minus
+            del outhistos["/ATLAS_2014_I1282447/d06-x01-y04_wminus"]
+        del outhistos["/ATLAS_2014_I1282447/d06-x01-y01_winc"]
+        del outhistos["/ATLAS_2014_I1282447/d06-x01-y02_winc"]
     # Choose output file
     yoda.writeYODA(outhistos,opts.OUTFILE)
     sys.exit(0)

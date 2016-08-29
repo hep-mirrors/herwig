@@ -663,6 +663,83 @@ AC_SUBST([DO_MADGRAPH])
 
 ])
 
+
+dnl ##### EvtGen #####
+AC_DEFUN([HERWIG_CHECK_EVTGEN],
+[
+AC_MSG_CHECKING([for evtgen])
+
+AC_ARG_WITH([evtgen],
+    AS_HELP_STRING([--with-evtgen=DIR], [Installation path of EvtGen]),
+    [],
+    [with_evtgen=no]
+)
+
+AC_MSG_RESULT([$with_evtgen])
+
+AS_IF([test "x$with_evtgen" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_evtgen}/lib/libEvtGenExternal.so,
+      [have_evtgen=lib], [have_evtgen=no])],
+      [have_evtgen=no])
+
+AS_IF([test "x$have_evtgen" = "xlib"],
+      [EVTGENPREFIX=${with_evtgen}
+      AC_SUBST(EVTGENPREFIX)
+      ])
+
+AS_IF([test "x$with_evtgen" != "xno"  -a "x$have_evtgen" = "xno"],
+      [AC_MSG_ERROR([EvtGen requested but not found])])
+
+AM_CONDITIONAL(HAVE_EVTGEN,[test "x$have_evtgen" = "xlib" ])
+
+if test "x$have_evtgen" = "xlib"  ; then
+     	LOAD_EVTGEN_DECAYS="read EvtGenBDecays.in"
+     	LOAD_EVTGEN_DECAYER="read EvtGenDecayer.in"
+	EVTGENLIBS="-L$with_evtgen/lib -lEvtGen -lEvtGenExternal"
+else
+     	LOAD_EVTGEN_DECAYS="read HerwigBDecays.in"
+     	LOAD_EVTGEN_DECAYER="#read EvtGenDecayer.in"
+	EVTGENLIBS=""
+fi
+
+AC_SUBST([LOAD_EVTGEN_DECAYS])
+AC_SUBST([LOAD_EVTGEN_DECAYER])
+AC_SUBST([EVTGENLIBS])
+
+
+])
+
+AC_DEFUN([HERWIG_CHECK_PYTHIA],
+[
+dnl check if a directory is specified for Pythia
+AC_ARG_WITH(pythia,
+            [AC_HELP_STRING([--with-pythia=dir], 
+                            [Assume the given directory for Pythia])])
+
+dnl search for the pythia-config script
+if test "$with_pythia" = ""; then
+   AC_PATH_PROG(pythiaconfig, pythia8-config, no)
+else
+   AC_PATH_PROG(pythiaconfig, pythia8-config, no, ${with_pythia}/bin)
+fi
+
+if test "${pythiaconfig}" = "no"; then
+   AC_MSG_CHECKING(Pythia)
+   AC_MSG_RESULT(no);
+#   $2
+else
+
+   PYTHIA8DATA=`${pythiaconfig} --datadir`/xmldoc
+
+fi
+
+AC_SUBST(PYTHIA8DATA)
+
+])
+
+dnl CHECK PYTHIA END
+
 dnl ##### PDF PATH #####
 AC_DEFUN([HERWIG_PDF_PATH],
 [
@@ -861,6 +938,7 @@ cat << _HW_EOF_ > config.herwig
 *** OpenLoops:		$with_openloops
 *** VBFNLO:		$with_vbfnlo
 ***
+*** EvtGen:		$with_evtgen
 *** GSL:		$with_gsl
 *** boost:              ${BOOST_CPPFLAGS:-system}
 *** Fastjet:		${fjconfig}

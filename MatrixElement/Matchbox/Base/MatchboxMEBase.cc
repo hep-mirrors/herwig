@@ -334,12 +334,11 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
     if ( jacobian() == 0.0 )
       return false;
 
-    setScale();  
+    setScale();
 
     if (theMerger&&!theMerger->generateKinematics(this,r))
       return false;
 
-      
     logGenerateKinematics(r);
 
     assert(lastMatchboxXComb());
@@ -695,7 +694,7 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
-CrossSection MatchboxMEBase::dSigHatDR(bool fast,double diffAlpha) const {
+CrossSection MatchboxMEBase::dSigHatDR(double diffAlpha) const {
   getPDFWeight();
 
 
@@ -714,8 +713,6 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast,double diffAlpha) const {
   double xme2 = me2();
   lastME2(xme2);
 
- 
-  
   if (factory()->verboseDia()){
     double diagweightsum = 0.0;
     for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
@@ -733,20 +730,15 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast,double diffAlpha) const {
   }
 
   double vme2 = 0.;
-  if ( oneLoop() && !oneLoopNoLoops() && !fast){
+  if ( oneLoop() && !oneLoopNoLoops() )
     vme2 = oneLoopInterference();
-  }else if ( oneLoop() && !oneLoopNoLoops() && fast){
-    Ptr<StandardEventHandler>::ptr eH =
-     dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(generator()->eventHandler()); 
-    eH->estimatedDSigRD();
-  }
 
   CrossSection res = ZERO;
 
 
   setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
    
-  if ( !oneLoopNoBorn() || fast)
+  if ( !oneLoopNoBorn() )
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * xme2;
@@ -756,33 +748,24 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast,double diffAlpha) const {
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * vme2;
 
-  if ( (oneLoop() && !onlyOneLoop() && !fast)||diffAlpha!=1. ) {
+  if ( (oneLoop() &&!onlyOneLoop())||diffAlpha!=1. ) {
+    assert(false);
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
 	    virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
       if (diffAlpha==1.) {
-        CrossSection x= (**v).dSigHatDR();
-        res += x;
+        res += (**v).dSigHatDR();
       }else  {
         CrossSection x= (**v).dSigHatDR();
         factory()->setAlphaParameter(diffAlpha);
         (**v).setXComb(lastXCombPtr());
         x  -= (**v).dSigHatDR();
         factory()->setAlphaParameter(1.);
-        
-          // cout<<"\n"<<diffAlpha<<" "<<x/nanobarn<<" "<<(**v).name();
-        
-          // cout<<"\n"<<lastAlphaS()/SM().alphaS();
-        res -=x*lastAlphaS()/SM().alphaS();
-      
+        res -=x;
       }
     }
     if ( checkPoles() && oneLoop() )
       logPoles();
-  }else if (!onlyOneLoop() && fast ) {
-     Ptr<StandardEventHandler>::ptr eH =
-       dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(generator()->eventHandler());
-     eH->estimatedDSigRD();
   }
 
   double weight = 0.0;
@@ -1121,15 +1104,14 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	      ostringstream dname;
               if ( theMerger) {
                 dname << fullName();
-                if (theProjectorStage!=0)  dname <<  ".projected." << theProjectorStage << "." ;
                 if (theOneLoopNoBorn)  dname <<  ".projected-virtual." << theProjectorStage << "." ;
                 dname   << (**b).name() << "."
                         << (**d).name() << ".[("
                         << emitter << "," << emission << ")," << spectator << "]";
               } else {
                 dname << fullName() << "." << (**b).name() << "."
-		      << (**d).name() << ".[("
-		      << emitter << "," << emission << ")," << spectator << "]";
+		    << (**d).name() << ".[(" 
+		    << emitter << "," << emission << ")," << spectator << "]";
               }
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
 		throw Exception() << "MatchboxMEBase::getDipoles(): Dipole " << dname.str() << " already existing." << Exception::runerror;
@@ -1318,23 +1300,6 @@ MatchboxMEBase::numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>& di
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
   if ( matchboxAmplitude() ) {
@@ -1488,19 +1453,6 @@ pair<bool,bool> MatchboxMEBase::clustersafe(int emit,int emis,int spec){
   
   return make_pair(true,true);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

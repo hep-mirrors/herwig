@@ -60,7 +60,7 @@ public:
   virtual Energy mergingScale() const=0;
   virtual bool matrixElementRegion(PVector particles,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV)=0;
   
-  virtual bool reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fast=false)=0;
+  virtual bool reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res)=0;
 
 
   //@}

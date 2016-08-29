@@ -17,7 +17,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 #include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "HwRemDecayer.fh"

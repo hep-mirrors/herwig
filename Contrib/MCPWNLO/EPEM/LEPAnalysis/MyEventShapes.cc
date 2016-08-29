@@ -119,7 +119,7 @@ vector<double> MyEventShapes::eigenvalues(const double T[3][3]) {
 }
 
 
-Axis MyEventShapes::eigenvector(const double T[3][3], const double &lam) {
+Axis MyEventShapes::eigenvector(const double T[3][3], double lam) {
   // set up matrix of system to be solved
   double a11, a12, a13, a23, a33;
   a11 = T[0][0] - lam; 
