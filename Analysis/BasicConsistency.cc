@@ -94,10 +94,10 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 	break;
       }
       problem |= 
-	isnan(test.x()/mm) || isnan(test.y()/mm) ||
-	isnan(test.z()/mm) || isnan(test.t()/mm) ||
-	isinf(test.x()/mm) || isinf(test.y()/mm) ||
-	isinf(test.z()/mm) || isinf(test.t()/mm);
+	isnan(test.x().rawValue()) || isnan(test.y().rawValue()) ||
+	isnan(test.z().rawValue()) || isnan(test.t().rawValue()) ||
+	isinf(test.x().rawValue()) || isinf(test.y().rawValue()) ||
+	isinf(test.z().rawValue()) || isinf(test.t().rawValue());
     }
     if(problem) {
       generator()->log() << "Problem with position of " << **it << "\n"
@@ -125,7 +125,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   Energy mag = ptotal.m();
   Energy ee  = ptotal.e();
 
-  if (isnan(mag/MeV)) {
+  if (isnan(mag.rawValue())) {
     cerr << "\nMomentum is 'nan'; " << ptotal/MeV 
 	 << " MeV in event " << event->number() << '\n';
     generator()->log() <<"\nMomentum is 'nan'; " << ptotal/MeV 
@@ -184,7 +184,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 	test = (*it)->lifeLength();
 	break;
       }
-      problem |= isnan(test.m2()/mm/mm) || isinf(test.m2()/mm/mm);
+      problem |= isnan(test.m2().rawValue()) || isinf(test.m2().rawValue());
     }
     if(problem) {
       generator()->log() << "Problem with position of " << **it << "\n"

@@ -437,7 +437,7 @@ InvEnergy SMTopDecayer::threeBodydGammads(const int imode, const Energy2 mt2,
 						*mode(imode)->externalParticles(2));
   }
   // final spin average
-  assert(!isnan(width*GeV));
+  assert(!isnan(width.rawValue()));
   return 0.5*width;
 }
 

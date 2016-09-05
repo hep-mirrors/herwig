@@ -14,8 +14,6 @@
 
 namespace ExSample {
 
-using std::isnan;
-using std::isinf;
 
   /**
    * \brief A simple cell grid providing basic adaption and sampling
