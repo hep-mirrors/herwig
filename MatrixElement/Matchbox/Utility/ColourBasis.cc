@@ -915,7 +915,7 @@ double ColourBasis::interference(const cPDVector& sub,
     res += 2.*real(inner_prod(boost::numeric::ublas::conj(a->second),prod(sp,b->second)));
   }
 
-  assert(!isnan(res));
+  assert(!std::isnan(res));
 
   return res;
 

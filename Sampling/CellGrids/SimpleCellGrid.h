@@ -249,7 +249,7 @@ namespace ExSample {
       for ( std::size_t k = 0; k < nPoints; ++k ) {
 	sampleFlatPoint(point,rnd);
 	double w = f.evaluate(point);
-	if ( isnan(w) || isinf(w) ) {
+	if ( ! isfinite(w) ) {
 	  ++nanPoints;
 	  continue;
 	}

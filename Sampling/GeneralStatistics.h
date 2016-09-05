@@ -177,7 +177,7 @@ public:
    * Select an event
    */
   virtual void select(double weight, bool doIntegral = true) {
-    if ( isnan(weight) || isinf(weight) ) {
+    if ( ! isfinite(weight) ) {
       theLastWeight = weight;
       theNanPoints += 1;
       theAllPoints += 1;
@@ -206,7 +206,7 @@ public:
    * Reject an event.
    */
   virtual void reject() {
-    if ( isnan(lastWeight()) || isinf(lastWeight()) ) {
+    if ( ! isfinite(lastWeight()) ) {
       theNanPoints -= 1;
       theAllPoints -= 1;
       return;

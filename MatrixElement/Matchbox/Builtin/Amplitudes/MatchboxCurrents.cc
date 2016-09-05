@@ -2849,7 +2849,7 @@ void MatchboxCurrents::checkCurrent(const string& id,
   Complex c = current.dot(q);
   double ac = abs(real(conj(c) * c));
 
-  if ( isnan(ac) || isinf(ac) ) {
+  if ( ! isfinite(ac) ) {
     cerr << "ooops ... nan encountered in current conservation\n" << flush;
     return;
   }

@@ -273,7 +273,7 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
     wgt = makePhotons(-boostv,children);
 
     // Error checks
-    if ( isnan(wgt) ) {
+    if ( std::isnan(wgt) ) {
       generator()->log() << "Infinite weight for decay " 
 			 << p.PDGName() << " " 
 			 << children[0]->PDGName() 

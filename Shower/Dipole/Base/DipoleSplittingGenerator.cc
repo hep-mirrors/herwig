@@ -373,7 +373,7 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
   split.lastValue( abs(jac) * kernel );
 
-  if ( isnan(split.lastValue()) || isinf(split.lastValue()) ) {
+  if ( ! isfinite(split.lastValue()) ) {
     generator()->log() << "DipoleSplittingGenerator:evaluate(): problematic splitting kernel encountered for "
 		       << splittingKernel()->name() << "\n" << flush;
     split.lastValue(0.0);

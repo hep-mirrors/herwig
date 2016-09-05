@@ -85,7 +85,7 @@ double MonacoSampler::generate() {
   }
 // only store numbers
   double wgt = w;
-  if ( isnan(wgt) || isinf(wgt) ) wgt = 0;
+  if ( ! isfinite(wgt) ) wgt = 0;
 // save results for later grid optimization 
   theIterationPoints++;
   for ( int k = 0; k < dimension(); ++k ) {
