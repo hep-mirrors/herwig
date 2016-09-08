@@ -13,39 +13,41 @@
 * Spence, log and eta functions are taken from FF.
 * Oct 27 2008
 
+#include "externals.h"
+#include "types.h"
 #include "defs.h"
 
 
-	double complex function ffTn(ra, rb, rc, rgx, rhx,
+	ComplexType function ffTn(ra, rb, rc, rgx, rhx,
      &    cd, ce, cf, signf, cjx, signj, key, ier)
 	implicit none
-	double precision ra, rb, rc, rgx, rhx, signf, signj
-	double complex cd, ce, cf, cjx
+	RealType ra, rb, rc, rgx, rhx, signf, signj
+	ComplexType cd, ce, cf, cjx
 	integer key, ier
 
 #include "ff.h"
 
-	double complex cj, crdetq4, crdetq42, cy(2), cy2(2)
-	double complex crdisc, cbeta1, cbeta2, cbeta
-	double complex ctv, ctemp, cresd, cyij
-	double complex cbj(6), ccj(6), cbk(6), cck(6)
-	double precision rg, rh, reps
-	double precision sj, scj, sy(2), sy2(2), stv, syij
-	double precision rminuv, rminuv2, raj(6)
+	ComplexType cj, crdetq4, crdetq42, cy(2), cy2(2)
+	ComplexType crdisc, cbeta1, cbeta2, cbeta
+	ComplexType ctv, ctemp, cresd, cyij
+	ComplexType cbj(6), ccj(6), cbk(6), cck(6)
+	RealType rg, rh, reps
+	RealType sj, scj, sy(2), sy2(2), stv, syij
+	RealType rminuv, rminuv2, raj(6)
 	integer i, j, ny, ny2, chketa(2), chketa2(2)
 
-	double complex ffT_lin, ffS2, ffS3n, zfflog
+	ComplexType ffT_lin, ffS2, ffS3n, zfflog
 	integer nffet1
 	external ffT_lin, ffS2, ffS3n, zfflog, nffet1
 
 	ier = 0
 
 * calculate ieps and the sign of im(J)
-	reps = DIMAG(cf)
+	reps = Im(cf)
 	if( reps .eq. 0 ) reps = signf
 	reps = sign(1D0, -reps)
 
-	sj = DIMAG(cjx)
+	sj = Im(cjx)
 	if( sj .eq. 0 ) sj = signj
 	sj = sign(1D0, sj*reps)
 
@@ -75,7 +77,7 @@
 * calculate beta
 * beta is one root of: B beta^2 + C beta + A = 0
 * we do not need the ieps for beta
-	crdisc = sqrt(DCMPLX(rc**2 - 4*rb*ra))
+	crdisc = sqrt(ToComplex(rc**2 - 4*rb*ra))
 	cbeta1 = -.5D0/rb*(rc + crdisc)
 	cbeta2 = -.5D0/rb*(rc - crdisc)
 	if( abs(cbeta1) .gt. abs(cbeta2) ) then
@@ -198,21 +200,21 @@
 	    ctv = (rh*cy(i) + cj)/(cy(i)*(rb*cy(i) + ce) + cf)
 	    ctemp = (rg + cbeta*rh)/
      &        ((rc + 2*cbeta*rb)*cy(i) + cd + ce*cbeta)
-	    if( abs(DIMAG(ctemp)) .gt. abs(DIMAG(ctv)) ) ctv = ctemp
+	    if( abs(Im(ctemp)) .gt. abs(Im(ctv)) ) ctv = ctemp
 
 * if im(ctv) = 0 then take the ieps from T/V
-	    stv = -signf*DBLE(rh*cy(i) + cj)
+	    stv = -signf*Re(rh*cy(i) + cj)
 	    if( stv .eq. 0 ) stv = -signf
 
-	    ctv = zfflog(ctv, 1, DCMPLX(stv), ier)
+	    ctv = zfflog(ctv, 1, ToComplex(stv), ier)
 	    if( abs(ctv) .gt. precx ) then
 	      do j = 1, 3
 	        if( abs(cck(j)) .gt. precx ) then
 	          cyij = -Sgn(j)*(cy(i) + cbk(j))/cck(j)
-	          syij = -Sgn(j)*sy(i)*DBLE(cck(j))
+	          syij = -Sgn(j)*sy(i)*Re(cck(j))
 	          if( syij .eq. 0 ) syij = sy(i)
 	          cresd = cresd - Sgn(i+j)*
-     &              zfflog((cyij - 1)/cyij, 1, DCMPLX(syij), ier)
+     &              zfflog((cyij - 1)/cyij, 1, ToComplex(syij), ier)
 	        endif
 	      enddo
 	      cresd = cresd*ctv
@@ -223,7 +225,7 @@
 	  do j = 1, 6
 	    if( abs(cck(j)) .gt. precx ) then
 	      cyij = -Sgn(j)*(cy(i) + cbk(j))/cck(j)
-	      syij = -Sgn(j)*sy(i)*DBLE(cck(j))
+	      syij = -Sgn(j)*sy(i)*Re(cck(j))
 	      if( syij .eq. 0 ) syij = sy(i)
 	      cresd = cresd + Sgn(i+j)*
      &          ffS3n(cyij, syij, raj(j), cbj(j), ccj(j), scj, ier)
@@ -248,16 +250,16 @@
 	subroutine ffwbeta(rb, rc, rg, rh, cd, ce, cf, cj, signf,
      &    cbeta, crdetq4, ny, cy, signy, chketa, rminuv, key, ier)
 	implicit none
-	double precision rb, rc, rg, rh, signf, signy(2), rminuv
-	double complex cd, ce, cf, cj, cbeta, cy(2), crdetq4
+	RealType rb, rc, rg, rh, signf, signy(2), rminuv
+	ComplexType cd, ce, cf, cj, cbeta, cy(2), crdetq4
 	integer ny, chketa(2), key, ier
 
 #include "lt.h"
 
-	double complex ck, cl, cn
-	double complex cab, cac, cay
-	double precision dotyc, dotyb, dotbc, dotbb, dotcc
-	double precision sn, ru, rv, abc2
+	ComplexType ck, cl, cn
+	ComplexType cab, cac, cay
+	RealType dotyc, dotyb, dotbc, dotbb, dotcc
+	RealType sn, ru, rv, abc2
 	integer i
 
 	chketa(1) = 0
@@ -269,7 +271,7 @@
 	cn = (rg + rh*cbeta)*cf - cj*(cd + ce*cbeta)
 
 * the ieps for cn
-	sn = signf*DBLE(rg + rh*cbeta)
+	sn = signf*Re(rg + rh*cbeta)
 	if( sn .eq. 0 ) sn = signf
 
 	if( abs(ck) .lt. precx ) then
@@ -288,7 +290,7 @@
 
 	    cy(1) = -cn/cl
 * ieps for this pole
-	    signy(1) = -sn*DBLE(cl)
+	    signy(1) = -sn*Re(cl)
 	    if( signy(1) .eq. 0 ) signy(1) = signf
 
 	    crdetq4 = cl
@@ -307,12 +309,12 @@
 	  endif
 
 * calculate the sign of img(cy1) and img(cy2) which are related to ieps
-	  signy(1) = sn*DBLE(crdetq4)
+	  signy(1) = sn*Re(crdetq4)
 	  if( signy(1) .eq. 0 ) signy(1) = signf
 	  signy(2) = -signy(1)  
 	endif
 
-	if( ny .eq. 0 .or. abs(DIMAG(cbeta)) .lt. precx ) return
+	if( ny .eq. 0 .or. abs(Im(cbeta)) .lt. precx ) return
 
 	if( key .eq. 1 ) then
 	  chketa(1) = 1
@@ -321,17 +323,17 @@
 * check if the poles are inside the triangle [0, -cbeta, 1 - cbeta]
 * using the barycentric technique
 
-	  abc2 = 1/DIMAG(cbeta)**2
+	  abc2 = 1/Im(cbeta)**2
 
 	  do i = 1, ny
 	    cay = cy(i) + cbeta
 	    cac = cbeta
 	    cab = 1
 
-	    dotyc = DBLE(cay)*DBLE(cac) + DIMAG(cay)*DIMAG(cac)
-	    dotyb = DBLE(cay)*DBLE(cab) + DIMAG(cay)*DIMAG(cab)
-	    dotbc = DBLE(cab)*DBLE(cac) + DIMAG(cab)*DIMAG(cac)
-	    dotcc = DBLE(cac)*DBLE(cac) + DIMAG(cac)*DIMAG(cac)
+	    dotyc = Re(cay)*Re(cac) + Im(cay)*Im(cac)
+	    dotyb = Re(cay)*Re(cab) + Im(cay)*Im(cab)
+	    dotbc = Re(cab)*Re(cac) + Im(cab)*Im(cac)
+	    dotcc = Re(cac)*Re(cac) + Im(cac)*Im(cac)
 	    dotbb = 1
 
 	    ru = (dotyc*dotbb - dotbc*dotyb)*abc2
@@ -357,21 +359,21 @@
 * Spence, log and eta functions are taken from FF.
 * Nov 10 2008
 
-	double complex function ffT_lin(ra, rc, rg, rh,
+	ComplexType function ffT_lin(ra, rc, rg, rh,
      &    cd, ce, cf, cj, signf, reps, ier)
 	implicit none
-	double precision ra, rc, rg, rh, signf, reps
-	double complex cd, ce, cf, cj
+	RealType ra, rc, rg, rh, signf, reps
+	ComplexType cd, ce, cf, cj
 	integer ier
 
 #include "ff.h"
 
-	double complex ck, cl, cn, cy(2), crdetq4
-	double complex cbj(4), ccj(4)
-	double complex ffS3nAll1, ffS3nAll2
-	double precision sn, scj, sy(2), raj(4)
+	ComplexType ck, cl, cn, cy(2), crdetq4
+	ComplexType cbj(4), ccj(4)
+	ComplexType ffS3nAll1, ffS3nAll2
+	RealType sn, scj, sy(2), raj(4)
 	
-	double complex ffS2, ffS3n
+	ComplexType ffS2, ffS3n
 	external ffS2, ffS3n
 
 * the coefficients of the 4 log arguments
@@ -425,7 +427,7 @@
 * the case ny = 1, (S V - T U) = L y + N
 	  cy(1) = -cn/cl
 * ieps for this pole
-	  sy(1) = -sn*DBLE(cl)
+	  sy(1) = -sn*Re(cl)
 	  if( sy(1) .eq. 0 ) sy(1) = signf
 
 	  ffS3nAll1 =
@@ -448,7 +450,7 @@
 	endif
 
 * calculate the sign of im(cy1) and im(cy2) which are related to ieps
-	sy(1) = sn*DBLE(crdetq4)
+	sy(1) = sn*Re(crdetq4)
 	if( sy(1) .eq. 0 ) sy(1) = signf
 	sy(2) = -sy(1)
 

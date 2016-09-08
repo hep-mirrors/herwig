@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffai:
@@ -37,16 +38,16 @@
 *
 	integer ier
 	logical laai
-	DOUBLE PRECISION ai(4),daiaj(4,4),aai(4),del2s,sdel2s,xpi(10),
+	RealType ai(4),daiaj(4,4),aai(4),del2s,sdel2s,xpi(10),
      +		dpipj(10,10),piDpj(10,10)
 *
 *	local variables
 *
 	integer i,j,ier0,ier1,ier2
-	DOUBLE PRECISION del2sa,del2sb,del3mi(2),aim(4),aaim(4),delps,
+	RealType del2sa,del2sb,del3mi(2),aim(4),aaim(4),delps,
      +		del3m(1),dum,da2a1m,da1a3m,da1a4m,da2a3m,da2a4m,da3a4m
 *	for debugging purposes
-	DOUBLE COMPLEX ca1m
+	ComplexType ca1m
 *
 *	common blocks
 *
@@ -135,11 +136,11 @@
 	    endif
 	    else
 		laai = .FALSE.
-		ca1m = (c2sisj(1,4) - (c2sisj(1,3)*DBLE(xpi(4)) -
-     +			c2sisj(1,4)*DBLE(piDpj(3,4)))/DBLE(sdel2s))/
-     +			DBLE(2*xpi(4))
-		ca1 = DBLE(ai(4))/ca1m
-		ai(1) = ai(4)/DBLE(ca1m)
+		ca1m = (c2sisj(1,4) - (c2sisj(1,3)*Re(xpi(4)) -
+     +			c2sisj(1,4)*Re(piDpj(3,4)))/Re(sdel2s))/
+     +			Re(2*xpi(4))
+		ca1 = Re(ai(4))/ca1m
+		ai(1) = ai(4)/Re(ca1m)
 	    endif
 	else
 *
@@ -325,7 +326,7 @@
 *
 	integer ier
 	logical laai
-	DOUBLE PRECISION ai(4),daiaj(4,4),aai(4),xqi(10),dqiqj(10,10),
+	RealType ai(4),daiaj(4,4),aai(4),xqi(10),dqiqj(10,10),
      +		qiDqj(10,10),del2s,sdel2s,xpi(10),dpipj(10,10),
      +		piDpj(10,10)
 *
@@ -334,7 +335,7 @@
 	integer i,j,ji,k,kj,l,lk,is,isgnji,isgnlk,
      +		ifirst,i1,j1,k1,j2,kk,kkj,ier0,ier1,ier2
 	logical lgo
-	DOUBLE PRECISION xmax,dum,delps,del2d2,dl2d22,aijk,aijkl,
+	RealType xmax,dum,delps,del2d2,dl2d22,aijk,aijkl,
      +		smax,s(3),som
 *
 *	common blocks
@@ -361,7 +362,7 @@
 	if ( lsmug ) then
 	    do 40 j=1,3
 		do 30 i=i+1,4
-		    c2sisj(i,j) = DBLE(ai(j)*ai(i))*c2sisj(i,j)
+		    c2sisj(i,j) = Re(ai(j)*ai(i))*c2sisj(i,j)
 		    c2sisj(j,i) = c2sisj(i,j)
    30		continue
    40	    continue
@@ -375,9 +376,9 @@
 *		Riemann sheets.
 *
 		c2sisj(j,j) = c2sisj(j,1)
-		c2sisj(j,2) = ai(j)*ai(1)*DBLE(c2sisj(j,1))
+		c2sisj(j,2) = ai(j)*ai(1)*Re(c2sisj(j,1))
 		c2sisj(2,j) = c2sisj(j,2)
-		c2sisj(j,1) = DBLE(ai(j))*ca1*c2sisj(j,1)
+		c2sisj(j,1) = Re(ai(j))*ca1*c2sisj(j,1)
 		c2sisj(1,j) = c2sisj(j,1)
 *
    60	    continue

@@ -238,23 +238,6 @@ last modified 27 Feb 14 th
 #define DebugAll 31
 
 #define memindex integer*8
-#ifndef ComplexType
-#define ComplexType double complex
-#endif
-#ifndef RealType
-#define RealType double precision
-#endif
-
-#define Aval(id,p) cache(p+id,1)
-#define AvalC(id,p) cache(p+id,2)
-#define Bval(id,p) cache(p+id,3)
-#define BvalC(id,p) cache(p+id,4)
-#define Cval(id,p) cache(p+id,5)
-#define CvalC(id,p) cache(p+id,6)
-#define Dval(id,p) cache(p+id,7)
-#define DvalC(id,p) cache(p+id,8)
-#define Eval(id,p) cache(p+id,9)
-#define EvalC(id,p) cache(p+id,10)
 
 #define Ccache 0
 #define Dcache 0
@@ -266,6 +249,22 @@ last modified 27 Feb 14 th
 
 	ComplexType cache(2,ncaches)
 	common /ltvars/ cache
+
+	ComplexType Aval(1,1), AvalC(1,1)
+	ComplexType Bval(1,1), BvalC(1,1)
+	ComplexType Cval(1,1), CvalC(1,1)
+	ComplexType Dval(1,1), DvalC(1,1)
+	ComplexType Eval(1,1), EvalC(1,1)
+	equivalence (cache(2,1), Aval)
+	equivalence (cache(2,2), AvalC)
+	equivalence (cache(2,3), Bval)
+	equivalence (cache(2,4), BvalC)
+	equivalence (cache(2,5), Cval)
+	equivalence (cache(2,6), CvalC)
+	equivalence (cache(2,7), Dval)
+	equivalence (cache(2,8), DvalC)
+	equivalence (cache(2,9), Eval)
+	equivalence (cache(2,10), EvalC)
 
 	ComplexType A0, A0C, A00, A00C, B0i, B0iC
 	ComplexType B0, B1, B00, B11, B001, B111

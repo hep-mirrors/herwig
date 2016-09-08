@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffabcd:
@@ -38,8 +39,8 @@
 *
 	integer in,jn,jin,isji,kn,ln,lkn,islk,ifirst,
      +		ier
-	DOUBLE PRECISION aijkl,xpi(10),dpipj(10,10),piDpj(10,10),del2s
-	DOUBLE PRECISION sdel2s
+	RealType aijkl,xpi(10),dpipj(10,10),piDpj(10,10),del2s
+	RealType sdel2s
 *
 *	local variables:
 *
@@ -48,7 +49,7 @@
 	integer iii(6,2)
 	save iii
 	logical ldet(4)
-	DOUBLE PRECISION xa,xb,xc,xd,s(24),del3(4),som,somb,somd,
+	RealType xa,xb,xc,xd,s(24),del3(4),som,somb,somd,
      +		smax,save,xmax,del2d2,dum,del2i,del2j,
      +		del2ji,d2d2i,d2d2j,d2d2ji
 	save del3,ldet

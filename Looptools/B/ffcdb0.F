@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcdb0:
@@ -23,14 +24,14 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cdb0,cdb0p
-	DOUBLE COMPLEX cp,cma,cmb
+	ComplexType cdb0,cdb0p
+	ComplexType cp,cma,cmb
 *
 *	local variables
 *
 	integer ier0
-	DOUBLE COMPLEX cmamb,cmap,cmbp
-	DOUBLE PRECISION xp,xma,xmb
+	ComplexType cmamb,cmap,cmbp
+	RealType xp,xma,xmb
 *
 *	common
 *
@@ -38,10 +39,10 @@
 *
 *  #] declarations: 
 *  #[ check input:
-	if ( DIMAG(cma).eq.0 .and. DIMAG(cmb).eq.0 ) then
-	    xma = DBLE(cma)
-	    xmb = DBLE(cmb)
-	    xp = DBLE(cp)
+	if ( Im(cma).eq.0 .and. Im(cmb).eq.0 ) then
+	    xma = Re(cma)
+	    xmb = Re(cmb)
+	    xp = Re(cp)
 	    call ffxdb0(cdb0,cdb0p,xp,xma,xmb,ier)
 	    return
 	endif
@@ -80,33 +81,33 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cdb0,cdb0p
-	DOUBLE COMPLEX cp,cma,cmb,cmap,cmbp,cmamb
+	ComplexType cdb0,cdb0p
+	ComplexType cp,cma,cmb,cmap,cmbp,cmamb
 *
 *	local variables
 *
 	integer i,initeq,jsign,init,ithres,initir,n1,n2,nffet1
 	logical lreal
-	DOUBLE PRECISION ax,ffbnd,ffbndc,
+	RealType ax,ffbnd,ffbndc,
      +		xprceq,bdeq01,bdeq05,bdeq11,bdeq17,bdeq25,
      +		xprcn3,bdn301,bdn305,bdn310,bdn315,
      +		xprcn5,bdn501,bdn505,bdn510,bdn515,
      +		xprec0,bdn001,bdn005,bdn010,bdn015,bdn020,
      +		absc,xmax,prcsav
-	DOUBLE COMPLEX cm,cdmp,cm1,cm2,cm1m2,cdm1p,
+	ComplexType cm,cdmp,cm1,cm2,cm1m2,cdm1p,
      +		cdm2p,s,s1,s1a,s1b,s1p,s2,s2a,s2b,s2p,s3,cx,som,
      +		clam,slam,xlogmm,alpha,alph1,xnoe,xpneq(30),
      +		zfflo1,zfflo3,d1,d2,diff,h,a,b,c,d,beta,
      +		betm2n,s1c,s1d,s1e,s1f,cqi(3),cqiqj(3,3),zm,zp
-	DOUBLE COMPLEX cc
-	DOUBLE PRECISION xp,xma,xmb,dmamb,dmap,dmbp,sprec
+	ComplexType cc
+	RealType xp,xma,xmb,dmamb,dmap,dmbp,sprec
 	save initeq,xpneq,init,initir,
      +		xprceq,bdeq01,bdeq05,bdeq11,bdeq17,bdeq25,
      +		xprcn3,bdn301,bdn305,bdn310,bdn315,
      +		xprcn5,bdn501,bdn505,bdn510,bdn515,
      +		xprec0,bdn001,bdn005,bdn010,bdn015,bdn020
 *for ABSOFT only
-*	DOUBLE COMPLEX csqrt
+*	ComplexType csqrt
 *	external csqrt
 *
 *	common blocks
@@ -123,11 +124,11 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations: 
 *  #[ the real cases:
 *
-	if ( DIMAG(cma) .eq. 0 .and. DIMAG(cmb) .eq. 0 ) then
+	if ( Im(cma) .eq. 0 .and. Im(cmb) .eq. 0 ) then
 	    lreal = .TRUE.
 	elseif ( nschem.le.2 ) then
 	    lreal = .TRUE.
@@ -142,10 +143,10 @@
 		print *,'ffcdbp: nschem = 3,4 complex masses near ',
      +			'singularity: ',nschem
 	    endif
-	    if ( abs(DBLE(cma)) .lt. -xloss*DIMAG(cmb)
-     +		.and. abs(DBLE(cmbp)) .le. -nwidth*DIMAG(cmb)
-     +	    .or. abs(DBLE(cmb)) .lt. -xloss*DIMAG(cma)
-     +		.and. abs(DBLE(cmap)) .le. -nwidth*DIMAG(cma) ) then
+	    if ( abs(Re(cma)) .lt. -xloss*Im(cmb)
+     +		.and. abs(Re(cmbp)) .le. -nwidth*Im(cmb)
+     +	    .or. abs(Re(cmb)) .lt. -xloss*Im(cma)
+     +		.and. abs(Re(cmap)) .le. -nwidth*Im(cma) ) then
 		lreal = .FALSE.
 	    else
 		lreal = .TRUE.
@@ -178,12 +179,12 @@
 	    lreal = .FALSE.
 	endif
 	if ( lreal ) then
-	    xp = DBLE(cp)
-	    xma = DBLE(cma)
-	    xmb = DBLE(cmb)
-	    dmap = DBLE(cmap)
-	    dmbp = DBLE(cmbp)
-	    dmamb = DBLE(cmamb)
+	    xp = Re(cp)
+	    xma = Re(cma)
+	    xmb = Re(cmb)
+	    dmap = Re(cmap)
+	    dmbp = Re(cmbp)
+	    dmamb = Re(cmamb)
 	    sprec = precx
 	    precx = precc
 	    call ffxdbp(cdb0,cdb0p,xp,xma,xmb,dmap,dmbp,dmamb,ier)
@@ -214,7 +215,7 @@
 		cm = cma
 		cdmp = cmap
 		goto 300
-	elseif ( DBLE(cma) .gt. DBLE(cmb) ) then
+	elseif ( Re(cma) .gt. Re(cmb) ) then
 		cm2 = cma
 		cm1 = cmb
 		cm1m2 = -cmamb
@@ -280,27 +281,27 @@
 		precx = prcsav
 	    endif
 	    if ( ax .gt. bdn015 ) then
-		som = cx*(DBLE(xninv(17)) + cx*(DBLE(xninv(18))
-     +		    + cx*(DBLE(xninv(19)) + cx*(DBLE(xninv(20))
-     +		    + cx*(DBLE(xninv(21)) )))))
+		som = cx*(Re(xninv(17)) + cx*(Re(xninv(18))
+     +		    + cx*(Re(xninv(19)) + cx*(Re(xninv(20))
+     +		    + cx*(Re(xninv(21)) )))))
 	    else
 		som = 0
 	    endif
 	    if ( ax .gt. bdn010 ) then
-		som = cx*(DBLE(xninv(12)) + cx*(DBLE(xninv(13))
-     +		    + cx*(DBLE(xninv(14)) + cx*(DBLE(xninv(15))
-     +		    + cx*(DBLE(xninv(16)) + som )))))
+		som = cx*(Re(xninv(12)) + cx*(Re(xninv(13))
+     +		    + cx*(Re(xninv(14)) + cx*(Re(xninv(15))
+     +		    + cx*(Re(xninv(16)) + som )))))
 	    endif
 	    if ( ax .gt. bdn005 ) then
-		som = cx*(DBLE(xninv(7)) + cx*(DBLE(xninv(8))
-     +		    + cx*(DBLE(xninv(9)) + cx*(DBLE(xninv(10))
-     +		    + cx*(DBLE(xninv(11)) + som )))))
+		som = cx*(Re(xninv(7)) + cx*(Re(xninv(8))
+     +		    + cx*(Re(xninv(9)) + cx*(Re(xninv(10))
+     +		    + cx*(Re(xninv(11)) + som )))))
 	    endif
 	    if ( ax .gt. bdn001 ) then
-		som = cx*(DBLE(xninv(3)) + cx*(DBLE(xninv(4))
-     +		    + cx*(DBLE(xninv(5)) + cx*(DBLE(xninv(6)) + som ))))
+		som = cx*(Re(xninv(3)) + cx*(Re(xninv(4))
+     +		    + cx*(Re(xninv(5)) + cx*(Re(xninv(6)) + som ))))
 	    endif
-	    cdb0p = cx*(DBLE(xninv(2)) + som)
+	    cdb0p = cx*(Re(xninv(2)) + som)
 * 	#] Taylor expansion: 
 	else
 * 	#[ short formula:
@@ -330,7 +331,7 @@
 		initeq = 1
 		xpneq(1) = 1/6D0
 		do 1 i=2,30
-		    xpneq(i) = - xpneq(i-1)*DBLE(i)/DBLE(2*(2*i+1))
+		    xpneq(i) = - xpneq(i-1)*Re(i)/Re(2*(2*i+1))
     1		continue
 	    endif
 	    if (xprceq .ne. precx ) then
@@ -370,7 +371,7 @@
 	    endif
 	    cdb0p = -cx*(xpneq(1)+som)
 	    if ( cp.ne.0 ) then
-		cdb0 = cdb0p*(1/DBLE(cp))
+		cdb0 = cdb0p*(1/Re(cp))
 	    else
 		cdb0 = xpneq(1)/cm
 	    endif
@@ -476,7 +477,7 @@
 *--#[	first try:
 *	first try the normal way
 	slam = sqrt(clam)
-	if ( abs(DBLE(cm1)) .lt. abs(DBLE(cm2)) ) then
+	if ( abs(Re(cm1)) .lt. abs(Re(cm2)) ) then
 	    s2a = cm1 + cdm2p
 	else
 	    s2a = cm2 + cdm1p
@@ -523,7 +524,7 @@
 		endif
 		s = s1
 		s1 = s1*xlogmm
-		if ( abs(DBLE(cp)).lt.abs(DBLE(cm2)) ) then
+		if ( abs(Re(cp)).lt.abs(Re(cm2)) ) then
 		    s2a = cp - cm1m2
 		else
 		    s2a = cm2 - cdm1p
@@ -560,7 +561,7 @@
 		    c = -4/(cp*xnoe)
 		    d = sqrt(cp**(-2) + (2/xnoe)**2)
 		    call ffcoot(d1,d2,a,b,c,d,ier)
-		    if ( DBLE(cp).gt.0 ) then
+		    if ( Re(cp).gt.0 ) then
 			beta = d2
 		    else
 			beta = d1
@@ -575,7 +576,7 @@
 			b = -1/cp
 			c = -(2/xnoe)**2
 			call ffcoot(d1,d2,a,b,c,d,ier)
-			if ( DBLE(cp).gt.0 ) then
+			if ( Re(cp).gt.0 ) then
 			    betm2n = d2
 			else
 			    betm2n = d1
@@ -615,23 +616,23 @@
 			cx = beta*cp
 			ax = absc(cx)
 			if ( ax .gt. bdn510 ) then
-			   s2a = cx*(DBLE(xinfac(13)) + cx*(DBLE(xinfac(
-     +			   14))+ cx*(DBLE(xinfac(15)) + cx*(DBLE(xinfac(
-     +			   16))+ cx*(DBLE(xinfac(17)))))))
+			   s2a = cx*(Re(xinfac(13)) + cx*(Re(xinfac(
+     +			   14))+ cx*(Re(xinfac(15)) + cx*(Re(xinfac(
+     +			   16))+ cx*(Re(xinfac(17)))))))
 			else
 			    s2a = 0
 			endif
 			if ( ax .gt. bdn505 ) then
-			   s2a = cx*(DBLE(xinfac( 8)) + cx*(DBLE(xinfac(
-     +			    9))+ cx*(DBLE(xinfac(10)) + cx*(DBLE(xinfac(
-     +			   11))+ cx*(DBLE(xinfac(12)) + s2a)))))
+			   s2a = cx*(Re(xinfac( 8)) + cx*(Re(xinfac(
+     +			    9))+ cx*(Re(xinfac(10)) + cx*(Re(xinfac(
+     +			   11))+ cx*(Re(xinfac(12)) + s2a)))))
 			endif
 			if ( ax .gt. bdn501 ) then
-			    s2a =cx*(DBLE(xinfac(4))+cx*(DBLE(xinfac(5))
-     +				+cx*(DBLE(xinfac(6))+cx*(DBLE(xinfac(7))
+			    s2a =cx*(Re(xinfac(4))+cx*(Re(xinfac(5))
+     +				+cx*(Re(xinfac(6))+cx*(Re(xinfac(7))
      +				+ s2a))))
 			endif
-			s2a = cx**3*(DBLE(xinfac(3))+s2a)
+			s2a = cx**3*(Re(xinfac(3))+s2a)
 			s2b = 2*cp/xnoe*(s2a + cx**2/2)
 			s2p = s2b - s2a
 			s2p = -diff/(cp*slam)*zfflo1(s2p,ier)
@@ -674,23 +675,23 @@
 			s1d = cx*cm1m2/cm1
 			s1e = -cx**2/2
 			if ( ax .gt. bdn310 ) then
-			   s1a = cx*(DBLE(xinfac(13)) + cx*(DBLE(xinfac(
-     +			   14))+ cx*(DBLE(xinfac(15)) + cx*(DBLE(xinfac(
-     +			   16))+ cx*(DBLE(xinfac(17)))))))
+			   s1a = cx*(Re(xinfac(13)) + cx*(Re(xinfac(
+     +			   14))+ cx*(Re(xinfac(15)) + cx*(Re(xinfac(
+     +			   16))+ cx*(Re(xinfac(17)))))))
 			else
 			    s1a = 0
 			endif
 			if ( ax .gt. bdn305 ) then
-			   s1a = cx*(DBLE(xinfac( 8)) + cx*(DBLE(xinfac(
-     +			    9))+ cx*(DBLE(xinfac(10)) + cx*(DBLE(xinfac(
-     +			   11))+ cx*(DBLE(xinfac(12)) + s1a)))))
+			   s1a = cx*(Re(xinfac( 8)) + cx*(Re(xinfac(
+     +			    9))+ cx*(Re(xinfac(10)) + cx*(Re(xinfac(
+     +			   11))+ cx*(Re(xinfac(12)) + s1a)))))
 			endif
 			if ( ax .gt. bdn301 ) then
-			    s1a =cx*(DBLE(xinfac(4))+cx*(DBLE(xinfac(5))
-     +				+cx*(DBLE(xinfac(6))+cx*(DBLE(xinfac(7))
+			    s1a =cx*(Re(xinfac(4))+cx*(Re(xinfac(5))
+     +				+cx*(Re(xinfac(6))+cx*(Re(xinfac(7))
      +				+s1a))))
 			endif
-			s1a = -cx**3 *(DBLE(xinfac(3)) + s1a)
+			s1a = -cx**3 *(Re(xinfac(3)) + s1a)
 			s1f = cm1m2/cm1*(cx**2/2 - s1a)
 			s1p = s1e + s1d + s1c + s1b + s1a + s1f
 			xmax = max(absc(s1a),absc(s1b),absc(s1c),
@@ -705,7 +706,7 @@
 *--#]		    third try: 
 		endif
 	endif
-	cdb0 = cdb0p*(1/DBLE(cp))
+	cdb0 = cdb0p*(1/Re(cp))
 * -#]	normal case: 
 *  #] unequal nonzero masses: 
   990	continue

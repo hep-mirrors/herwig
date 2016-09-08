@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxc0p0
@@ -16,10 +17,10 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cc0
-	DOUBLE PRECISION xpi(6)
+	ComplexType cc0
+	RealType xpi(6)
 
-	DOUBLE PRECISION m1, m2, m3, m
+	RealType m1, m2, m3, m
 
 #include "ff.h"
 

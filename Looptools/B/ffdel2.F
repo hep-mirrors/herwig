@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffdel2:
@@ -16,11 +17,11 @@
 *	arguments:
 *
 	integer ns,i1,i2,i3,lerr,ier
-	DOUBLE PRECISION del2,piDpj(ns,ns)
+	RealType del2,piDpj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE PRECISION s1,s2
+	RealType s1,s2
 *
 *	common blocks
 *
@@ -71,11 +72,11 @@
 *	arguments:
 *
 	integer ns,ip1,ip2,ip3,is1,is2,is3
-	DOUBLE PRECISION delps1,xpi(ns),dpipj(ns,ns),piDpj(ns,ns)
+	RealType delps1,xpi(ns),dpipj(ns,ns),piDpj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE PRECISION s1,s2,s3,xmax,som
+	RealType s1,s2,s3,xmax,som
 *
 *	common blocks
 *
@@ -200,12 +201,12 @@
 *	arguments:
 *
 	integer in,jn,jin,isji,kn,ln,lkn,islk,ns
-	DOUBLE PRECISION delps1,piDpj(ns,ns)
+	RealType delps1,piDpj(ns,ns)
 *
 *	local variables
 *
 	integer ii,jj,i,j,ji,k,l,lk,ihlp
-	DOUBLE PRECISION s1,s2,som,smax
+	RealType s1,s2,som,smax
 *
 *	common blocks
 *
@@ -281,11 +282,11 @@
 *	arguments:
 *
 	integer in,jn,kn,ln,lkn,islk,iss,ns
-	DOUBLE PRECISION delps,piDpj(ns,ns)
+	RealType delps,piDpj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE PRECISION s1,s2,som,smax
+	RealType s1,s2,som,smax
 *
 *	common blocks
 *
@@ -362,12 +363,12 @@
 *
 	integer ns,ip1n,ip2n,ip3n,is,itime
 	logical ldel
-	DOUBLE PRECISION del3mi(itime),del3,del2,xpi(ns),dpipj(ns,ns),
+	RealType del3mi(itime),del3,del2,xpi(ns),dpipj(ns,ns),
      +		piDpj(ns,ns)
 *
 *	local variables:
 *
-	DOUBLE PRECISION s(7),som,smax,xsom,xmax
+	RealType s(7),som,smax,xsom,xmax
 	integer i,j,k,ip1,ip2,ip3,ipn,is1,is2,isi,is3,ihlp,iqn,
      +		jsgn1,jsgn2,jsgn3,jsgnn,iadj(10,10,3:4),init,nm
 	save iadj,init

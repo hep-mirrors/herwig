@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *--#[ log:
@@ -56,19 +57,19 @@ c
 *
 	integer ipi12,ieps,ier
 	logical ld2yzz,ldy2z
-	DOUBLE PRECISION y,y1,z,z1,dyz,d2yzz,zz,zz1,dy2z(3)
-	DOUBLE COMPLEX crr(7)
+	RealType y,y1,z,z1,dyz,d2yzz,zz,zz1,dy2z(3)
+	ComplexType crr(7)
 *
 *	local variables
 *
         integer i,iclas1,iclas2
-	DOUBLE PRECISION fact,xx1,xx2,xx1p,xx2p,arg2,arg3,
+	RealType fact,xx1,xx2,xx1p,xx2p,arg2,arg3,
      +		xli1,xli2,xli3,xlo1,xlo2,xlo3,xhill,xlog1,
      +		xlog2p,xx1n,d2,d21,d2n,d21n1,term,tot,xtroep,xli4,
      +		xlo4,som,xmax
-	DOUBLE COMPLEX clog1p,clog2p
-	DOUBLE PRECISION dfflo1
-	DOUBLE COMPLEX zxfflg
+	ComplexType clog1p,clog2p
+	RealType dfflo1
+	ComplexType zxfflg
 	external dfflo1,zxfflg
 *
 *	common blocks
@@ -210,7 +211,7 @@ c
 		if ( abs(xx2p) .lt. xloss ) then
 		    xlog2p = dfflo1(xx2p,ier)
 		else
-		    xlog2p = DBLE(zxfflg(1-xx2p,0,1D0,ier))
+		    xlog2p = Re(zxfflg(1-xx2p,0,1D0,ier))
 		endif
 		xhill = xlo1*xlog2p
 *--#]		Hill identity:
@@ -258,7 +259,7 @@ c
 		    if ( abs(d2) .lt. xloss ) then
 			xlo1 = dfflo1(d2,ier)
 		    else
-			xlo1 = DBLE(zxfflg(d21,0,1D0,ier))
+			xlo1 = Re(zxfflg(d21,0,1D0,ier))
 		    endif
 		endif
 		if ( iclas1 .eq. 2 ) xlo2 = dfflo1(1/y1,ier)
@@ -280,17 +281,17 @@ c
 		if ( abs(xx1p) .lt. xloss ) then
 		    xlog1 = dfflo1(xx1p,ier)
 		else
-		    xlog1 = DBLE(zxfflg(xx1,0,1D0,ier))
+		    xlog1 = Re(zxfflg(xx1,0,1D0,ier))
 		endif
 		crr(5) = xlo1*xlog1
 		clog2p = zxfflg(xx2p,ieps,-y1,ier)
-		crr(6) = -DBLE(xlo2)*clog2p
+		crr(6) = -Re(xlo2)*clog2p
 	    elseif ( iclas1 .eq. 3 ) then
 *
 *		we transformed to 1/x for both dilogs
 *
 		clog2p = zxfflg(-xx2p,-ieps,-y1,ier)
-		crr(5) = DBLE(xlo1)*(clog2p - DBLE(xlo1)/2)
+		crr(5) = Re(xlo1)*(clog2p - Re(xlo1)/2)
 	    endif
 * -#]	    handle transformation terms:
 * -#[	    add up and print out:
@@ -368,7 +369,7 @@ c
 		crr(1) = -xli1
 		ipi12 = ipi12 + 2
 		clog1p = zxfflg(xx1p,ieps,y,ier)
-		crr(3) = - DBLE(xlo1)*clog1p
+		crr(3) = - Re(xlo1)*clog1p
 	    elseif ( iclas1 .eq. 3 ) then
 		crr(1) = -xli1
 		ipi12 = ipi12 - 2
@@ -377,15 +378,15 @@ c
 	    elseif ( iclas1 .eq. 4 ) then
 		crr(1) = xli1
 *		Note that this sum does not cause problems as d2<<1
-		crr(3) = DBLE(-xli3-xli4) + DBLE(xlo4)*
+		crr(3) = Re(-xli3-xli4) + Re(xlo4)*
      +			zxfflg(fact,0,0D0,ier)
 		ipi12 = ipi12 - 1
 	    elseif ( iclas1 .eq. 5 ) then
 		crr(1) = xli1
 *		supply an imaginary part
 		clog1p = zxfflg(-1/xx1,-ieps,y,ier)
-		xtroep = -DIMAG(clog1p)*DBLE(clog1p)
-		crr(3) = DCMPLX(0D0,xtroep)
+		xtroep = -Im(clog1p)*Re(clog1p)
+		crr(3) = ToComplex(0D0,xtroep)
 	    else
 		call fferr(26,ier)
 	    endif
@@ -400,7 +401,7 @@ c
 		crr(2) = +xli2
 		ipi12 = ipi12 - 2
 		clog2p = zxfflg(xx2p,ieps,-y1,ier)
-		crr(4) = + DBLE(xlo2)*clog2p
+		crr(4) = + Re(xlo2)*clog2p
 	    elseif ( iclas2 .eq. 3 ) then
 		crr(2) = +xli2
 		ipi12 = ipi12 + 2
@@ -409,15 +410,15 @@ c
 	    elseif ( iclas2 .eq. 4 ) then
 		crr(2) = -xli2
 *		Note that this sum does not cause problems as d2<<1
-		crr(4) = DBLE(xli3+xli4) - DBLE(xlo4)*
+		crr(4) = Re(xli3+xli4) - Re(xlo4)*
      +			zxfflg(fact,0,0D0,ier)
 		ipi12 = ipi12 + 1
 	    elseif ( iclas2 .eq. 5 ) then
 		crr(2) = -xli2
 *		supply an imaginary part
 		clog2p = zxfflg(-1/xx2,-ieps,-y1,ier)
-		xtroep = DIMAG(clog2p)*DBLE(clog2p)
-		crr(4) = DCMPLX(0D0,xtroep)
+		xtroep = Im(clog2p)*Re(clog2p)
+		crr(4) = ToComplex(0D0,xtroep)
 	    else
 		call fferr(28,ier)
 	    endif

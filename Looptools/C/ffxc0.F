@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *	$Id: ffxc0.f,v 1.5 1996/08/15 09:36:47 gj Exp $
@@ -37,14 +38,14 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cc0
-	DOUBLE PRECISION xpi(6)
+	ComplexType cc0
+	RealType xpi(6)
 	integer ier
 *
 *	local variables:
 *
 	integer i,j
-	DOUBLE PRECISION dpipj(6,6)
+	RealType dpipj(6,6)
 *
 *	common blocks:
 *
@@ -88,16 +89,16 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cc0
-	DOUBLE PRECISION xpi(6),dpipj(6,6)
+	ComplexType cc0
+	RealType xpi(6),dpipj(6,6)
 	integer ier
 *
 *	local variables:
 *
 	logical ljust
 	integer i,j,inew(6,6)
-*	DOUBLE COMPLEX cs,cs1,cs2
-	DOUBLE PRECISION xqi(6),dqiqj(6,6),qiDqj(6,6),lambda0,dum66(6,6)
+*	ComplexType cs,cs1,cs2
+	RealType xqi(6),dqiqj(6,6),qiDqj(6,6),lambda0,dum66(6,6)
 	save inew,lambda0
 *
 *	common blocks:
@@ -107,8 +108,8 @@
 *	memory
 *
 	integer iermem(memory),ialmem(memory),memind,ierini
-	DOUBLE PRECISION xpimem(6,memory),dl2mem(memory)
-	DOUBLE COMPLEX cc0mem(memory)
+	RealType xpimem(6,memory),dl2mem(memory)
+	ComplexType cc0mem(memory)
 	save memind,iermem,ialmem,xpimem,dl2mem,cc0mem
 	data memind /0/
 *
@@ -237,8 +238,8 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cc0
-	DOUBLE PRECISION xqi(6),dqiqj(6,6),qiDqj(6,6)
+	ComplexType cc0
+	RealType xqi(6),dqiqj(6,6),qiDqj(6,6)
 	integer ier
 *
 *	local variables:
@@ -246,12 +247,12 @@
 	integer nerr
 	parameter(nerr=6)
 	integer isoort(8),ipi12(8),i,j,k,ipi12t,ilogi(3),ier0,ieri(nerr)
-	DOUBLE COMPLEX cs3(80),cs,c,clogi(3),cslam,cetalm,
+	ComplexType cs3(80),cs,c,clogi(3),cslam,cetalm,
      +		cetami(6),cel2s(3),calph(3),cblph(3),csdel2,
      +		cqi(6),cdqiqj(6,6),cqiDqj(6,6),celpsi(3)
-	DOUBLE PRECISION del2,del2s(3),del3,delpsi(3),
+	RealType del2,del2s(3),del3,delpsi(3),
      +		del3mi(3)
-	DOUBLE PRECISION xmax,absc,alph(3),etalam,etami(6),sdel2,
+	RealType xmax,absc,alph(3),etalam,etami(6),sdel2,
      +		blph(3)
 *
 *	common blocks:
@@ -260,7 +261,7 @@
 *
 *	statement function:
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ calculations:
@@ -329,7 +330,7 @@
   103		continue
   104	    continue
 	    cetalm = del3/del2
-	    csdel2 = isgnal*DCMPLX(0D0,sqrt(del2))
+	    csdel2 = isgnal*ToComplex(0D0,sqrt(del2))
 *
 *	    get alpha,1-alpha
 *
@@ -387,13 +388,13 @@
 	do 120 i=1,8
 	    ipi12t = ipi12t + ipi12(i)
   120	continue
-	cs = cs + ipi12t*DBLE(pi12)
+	cs = cs + ipi12t*Re(pi12)
 *
 *	A imaginary component less than precc times the real part is
 *	zero (may be removed)
 *
-	if ( abs(DIMAG(cs)) .lt. precc*abs(DBLE(cs)) )
-     +	    cs = DCMPLX(DBLE(cs))
+	if ( abs(Im(cs)) .lt. precc*abs(Re(cs)) )
+     +	    cs = ToComplex(Re(cs))
 *
 *	Finally ...
 *
@@ -422,13 +423,13 @@
 *	arguments:
 *
 	integer irota,iflag,ier,npoin
-	DOUBLE PRECISION xpi(6),dpipj(6,6),piDpj(6,6),xqi(6),dqiqj(6,6),
+	RealType xpi(6),dpipj(6,6),piDpj(6,6),xqi(6),dqiqj(6,6),
      +		qiDqj(6,6)
 *
 *	local variables
 *
-	DOUBLE PRECISION a1,a2,a3,xpimax
-	DOUBLE COMPLEX chulp(3,3)
+	RealType a1,a2,a3,xpimax
+	ComplexType chulp(3,3)
 	integer i,j,inew(6,6)
 	save inew
 *
@@ -571,7 +572,7 @@
 *	arguments
 *
 	integer ns,ier
-	DOUBLE PRECISION xpi(6),dpipj(6,6),piDpj(6,6)
+	RealType xpi(6),dpipj(6,6),piDpj(6,6)
 *
 *	locals
 *
@@ -704,8 +705,8 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE PRECISION xpi(6),xqi(6)
-	DOUBLE COMPLEX cc0,cc0p
+	RealType xpi(6),xqi(6)
+	ComplexType cc0,cc0p
 	integer inew(6,2),irota,ier1,i,j,ialsav
 	save inew
 #include "ff.h"
