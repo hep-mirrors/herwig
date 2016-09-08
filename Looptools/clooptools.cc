@@ -491,14 +491,14 @@ namespace Herwig {
     ComplexType Li2omx(_lt_Cr_(x))
     {
       COMPLEX res;
-      li2sub_(&res, _lt_Frp_(x));
+      li2omxsub_(&res, _lt_Frp_(x));
       return ToComplex(res);
     }
 
     ComplexType Li2omxC(_lt_Cc_(x))
     {
       COMPLEX res;
-      li2csub_(&res, _lt_Fcp_(x));
+      li2omxcsub_(&res, _lt_Fcp_(x));
       return ToComplex(res);
     }
 
