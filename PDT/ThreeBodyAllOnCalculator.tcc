@@ -63,7 +63,7 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(double x, Energy2 & low,
 
 template <class T>
 Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
-  assert(!std::isnan(y.rawValue())); 
+  assert(!std::isnan(double(y/MeV2))); 
   // set up the values of the s variables
   Energy2 s12(ZERO),s23(ZERO),s13(ZERO),
     m2sum(_m2[0]+_m2[1]+_m2[2]+_m2[3]);
@@ -101,7 +101,7 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
       sjac = s23;
       break;
     }
-    assert(!std::isnan(sjac.rawValue()));
+    assert(!std::isnan(double(sjac/MeV2)));
     InvEnergy2 term; 
 
     if(_mapping[ix]==0) {
