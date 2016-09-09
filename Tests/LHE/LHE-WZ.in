@@ -1,0 +1,66 @@
+#
+mkdir LesHouches
+cd LesHouches
+library LesHouches.so
+cd /Herwig/EventHandlers
+
+
+create ThePEG::LesHouchesFileReader Reader2  LesHouches.so
+set Reader2:FileName PPEE.lhe
+set Reader2:BeamA 2212
+set Reader2:BeamB -2212
+set Reader2:EBeamA 3500.0
+set Reader2:EBeamB 3500.0
+set Reader2:PDFA /Herwig/Partons/ShowerLOPDF
+set Reader2:PDFB /Herwig/Partons/ShowerLOPDF
+create ThePEG::Cuts QCDCuts
+set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:X1Min 0.00001
+set QCDCuts:X2Min 0.00001
+set QCDCuts:MHatMin 20.*GeV
+set QCDCuts:X1Max 0.9
+set QCDCuts:X2Max 0.9
+create ThePEG::LesHouchesEventHandler LesHouchesHandler
+insert LesHouchesHandler:LesHouchesReaders[0] Reader2
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set LesHouchesHandler:StatLevel 2
+set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
+set LesHouchesHandler:WeightOption NegUnitWeight
+
+cd /Herwig/Cuts
+set JetKtCut:MinKT 0.0*GeV
+
+cd /Herwig/Generators
+create ThePEG::EventGenerator MGGenerator
+set MGGenerator:RandomNumberGenerator /Herwig/Random
+set MGGenerator:StandardModelParameters /Herwig/Model
+set MGGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
+
+cd /Herwig/Generators
+set MGGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
+
+
+cd /Herwig/Analysis
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZINC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WINC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WJETS
+
+
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 RivetAnalysis
+
+cd /Herwig/Generators/
+set MGGenerator:NumberOfEvents 1000000
+set MGGenerator:RandomNumberGenerator:Seed 31122001
+set MGGenerator:PrintEvent 10
+set MGGenerator:MaxErrors 100000000
+#set MGGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+#
+saverun LHE MGGenerator
+
+
