@@ -35,14 +35,10 @@ define l+ = e+ mu+
 define l- = e- mu-
 define vl = ve vm vt
 define vl~ = ve~ vm~ vt~
-generate p p > e+ e-
+generate p p > W+ Z
 output PROC
 launch PROC
 set ebeam1 3500
 set ebeam2 3500
 set nevents 100000
-set ptl 0.0
-set etal 4.5
-set mmll 66.0
-set mmllmax 120.0
 
