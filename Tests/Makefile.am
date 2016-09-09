@@ -205,8 +205,9 @@ Rivet-ISR-% : Rivet/ISR-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
-Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
+Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
                   $(shell echo Rivet/LEP{,-Powheg,-Matchbox-Powheg}-14.in) \
+	          $(shell echo Rivet/LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg) \
                   $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10.52,10.52-sym,10.54,10.45}.in) \
                   $(shell echo Rivet/BFactory-{Upsilon,Upsilon2,Upsilon4,Tau,10.58-res}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
@@ -237,7 +238,8 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Po
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole}-ggHJet.in)
 #                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) $(shell echo Rivet/SppS-{53,63}-UE.in )
 
-Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi})
+Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
+	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg)
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
