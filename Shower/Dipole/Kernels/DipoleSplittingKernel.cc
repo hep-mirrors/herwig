@@ -34,7 +34,7 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
-    theCMWScheme(true),
+    theCMWScheme(false),
     theVirtualitySplittingScale(false),
     presampling(false) {}
 

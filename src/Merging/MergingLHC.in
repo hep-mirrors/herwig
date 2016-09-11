@@ -3,7 +3,7 @@
 cd /Herwig/Partons
 create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
 set PDFSet:RemnantHandler HadronRemnants
-set /Herwig/Partons/PDFSet:PDFName NNPDF30_nlo_as_0118_mc
+set /Herwig/Partons/PDFSet:PDFName MMHT2014nlo68cl
 set /Herwig/Particles/p+:PDF PDFSet
 set /Herwig/Particles/pbar-:PDF PDFSet
 
@@ -230,26 +230,8 @@ set LHCGenerator:EventHandler:HadronizationHandler NULL
 cd /Herwig/Analysis
 clear /Herwig/Generators/LHCGenerator:AnalysisHandlers
 
-create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
 insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Rivet
-
-
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_WINC
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I945498
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9131140
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1224539_ZJET
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZKTSPLITTINGS
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1258128
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1230812_EL
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1204784
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I925932
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1217867
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2014_I1303894
 
 
 cd /Herwig/Generators
@@ -273,3 +255,112 @@ cd /Herwig/Generators
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper:minusL No
+
+
+
+##################################################
+# select the analyses
+##################################################
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZINC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZKTSPLITTINGS
+# ATLAS pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1300647
+# ATLAS Z+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1230812
+# ATLAS phi*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
+# CMS Z + b-hadron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1256943
+# CMS Z pt and y
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I941555
+# ATLAS Z + bjets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1306294
+# ATLAS Z
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289_Z
+# CMS Z AFB
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1122847
+# CMS Z+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1310737
+# ATLAS event shapes in Z events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1424838
+# ATLAS forwrd backward
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_EL
+
+
+
+cd /Herwig/DipoleShower/
+set FFgx2ggxDipoleKernel:CMWScheme On
+set FFqx2qgxDipoleKernel:CMWScheme On
+set FFgx2ddxDipoleKernel:CMWScheme On
+set FFgx2uuxDipoleKernel:CMWScheme On
+set FFgx2ccxDipoleKernel:CMWScheme On
+set FFgx2ssxDipoleKernel:CMWScheme On
+set FFgx2bbxDipoleKernel:CMWScheme On
+set FFMgx2ggxDipoleKernel:CMWScheme On
+set FFMdx2dgxDipoleKernel:CMWScheme On
+set FFMux2ugxDipoleKernel:CMWScheme On
+set FFMcx2cgxDipoleKernel:CMWScheme On
+set FFMsx2sgxDipoleKernel:CMWScheme On
+set FFMbx2bgxDipoleKernel:CMWScheme On
+set FFMtx2tgxDipoleKernel:CMWScheme On
+set FFMgx2ddxDipoleKernel:CMWScheme On
+set FFMgx2uuxDipoleKernel:CMWScheme On
+set FFMgx2ccxDipoleKernel:CMWScheme On
+set FFMgx2ssxDipoleKernel:CMWScheme On
+set FFMgx2bbxDipoleKernel:CMWScheme On
+set FIgx2ggxDipoleKernel:CMWScheme On
+set FIqx2qgxDipoleKernel:CMWScheme On
+set FIgx2ddxDipoleKernel:CMWScheme On
+set FIgx2uuxDipoleKernel:CMWScheme On
+set FIgx2ccxDipoleKernel:CMWScheme On
+set FIgx2ssxDipoleKernel:CMWScheme On
+set FIgx2bbxDipoleKernel:CMWScheme On
+set FIMdx2dgxDipoleKernel:CMWScheme On
+set FIMux2ugxDipoleKernel:CMWScheme On
+set FIMcx2cgxDipoleKernel:CMWScheme On
+set FIMsx2sgxDipoleKernel:CMWScheme On
+set FIMbx2bgxDipoleKernel:CMWScheme On
+set FIMtx2tgxDipoleKernel:CMWScheme On
+set FIMgx2ddxDipoleKernel:CMWScheme On
+set FIMgx2uuxDipoleKernel:CMWScheme On
+set FIMgx2ccxDipoleKernel:CMWScheme On
+set FIMgx2ssxDipoleKernel:CMWScheme On
+set FIMgx2bbxDipoleKernel:CMWScheme On
+#set FIMgx2ttxDipoleKernel:CMWScheme On
+set IFgx2ggxDipoleKernel:CMWScheme On
+set IFqx2qgxDipoleKernel:CMWScheme On
+set IFqx2gqxDipoleKernel:CMWScheme On
+set IFgx2ddbarxDipoleKernel:CMWScheme On
+set IFgx2dbardxDipoleKernel:CMWScheme On
+set IFgx2uubarxDipoleKernel:CMWScheme On
+set IFgx2ubaruxDipoleKernel:CMWScheme On
+set IFgx2ccbarxDipoleKernel:CMWScheme On
+set IFgx2cbarcxDipoleKernel:CMWScheme On
+set IFgx2ssbarxDipoleKernel:CMWScheme On
+set IFgx2sbarsxDipoleKernel:CMWScheme On
+set IFMgx2ggxDipoleKernel:CMWScheme On
+set IFMqx2qgxDipoleKernel:CMWScheme On
+set IFMqx2gqxDipoleKernel:CMWScheme On
+set IFMgx2ddbarxDipoleKernel:CMWScheme On
+set IFMgx2dbardxDipoleKernel:CMWScheme On
+set IFMgx2uubarxDipoleKernel:CMWScheme On
+set IFMgx2ubaruxDipoleKernel:CMWScheme On
+set IFMgx2ccbarxDipoleKernel:CMWScheme On
+set IFMgx2cbarcxDipoleKernel:CMWScheme On
+set IFMgx2ssbarxDipoleKernel:CMWScheme On
+set IFMgx2sbarsxDipoleKernel:CMWScheme On
+set IIgx2ggxDipoleKernel:CMWScheme On
+set IIqx2qgxDipoleKernel:CMWScheme On
+set IIqx2gqxDipoleKernel:CMWScheme On
+set IIgx2ddbarxDipoleKernel:CMWScheme On
+set IIgx2dbardxDipoleKernel:CMWScheme On
+set IIgx2uubarxDipoleKernel:CMWScheme On
+set IIgx2ubaruxDipoleKernel:CMWScheme On
+set IIgx2ccbarxDipoleKernel:CMWScheme On
+set IIgx2cbarcxDipoleKernel:CMWScheme On
+set IIgx2ssbarxDipoleKernel:CMWScheme On
+set IIgx2sbarsxDipoleKernel:CMWScheme On

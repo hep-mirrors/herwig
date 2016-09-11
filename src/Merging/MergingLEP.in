@@ -13,8 +13,8 @@ set /Herwig/Particles/b:NominalMass 0*GeV
 set /Herwig/Particles/bbar:NominalMass 0*GeV
 
 
-set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+#set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+#set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 
 set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
@@ -69,9 +69,7 @@ set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
 
 
 
-create Herwig::MonacoSampler /Herwig/Samplers/Monaco
 
-set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/Monaco
 cd /Herwig/MatrixElements/Matchbox/Phasespace
 
 set TreePhasespace:M0 0.001*GeV
@@ -93,7 +91,8 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 cd /Herwig/Samplers
 
 
-
+create Herwig::MonacoSampler Monaco
+set /Herwig/Samplers/Sampler:BinSampler Monaco
 
 set Monaco:EnhancementFactor 1.2
 set Monaco:InitialPoints 1000
@@ -105,17 +104,6 @@ set Monaco:RemapperPoints 1000
 set Monaco:UseAllIterations No
 
 
-
-
-
-cd /Herwig/EventHandlers
-
-
-
-
-
-
-cd /Herwig/Samplers
 set Sampler:UpdateAfter 3000
 set Sampler:AddUpSamplers Off
 set Sampler:GlobalMaximumWeight Off
@@ -146,25 +134,9 @@ cd /Herwig/Generators
 cd /Herwig/Analysis
 clear /Herwig/Generators/LEPGenerator:AnalysisHandlers
 
-create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
-insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 0 Rivet
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 0 RivetAnalysis
 
-
-insert Rivet:Analyses 0 ALEPH_2004_S5765862 
-insert Rivet:Analyses 0 ALEPH_1991_S2435284 
-insert Rivet:Analyses 0 ALEPH_1996_S3486095 
-
-insert Rivet:Analyses 0 DELPHI_1995_S3137023 
-insert Rivet:Analyses 0 DELPHI_1996_S3430090 
-insert Rivet:Analyses 0 ALEPH_2001_S4656318 
-insert Rivet:Analyses 0 DELPHI_2002_069_CONF_603 
-insert Rivet:Analyses 0 JADE_OPAL_2000_S4300807 
-insert Rivet:Analyses 0 OPAL_1998_S3780481 
-insert Rivet:Analyses 0 OPAL_2001_S4553896 
-insert Rivet:Analyses 0 OPAL_2002_S5361494 
-insert Rivet:Analyses 0 OPAL_2004_S6132243 
-insert Rivet:Analyses 0 SLD_1996_S3398250
-insert Rivet:Analyses 0 MC_XS
 
 
 cd /Herwig/Generators
@@ -185,7 +157,110 @@ set MScale:MergingHelper Merger
 set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 
 
+
+
+
 cd /Herwig/Generators
 set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper:minusL No
+
+
+
+
+### From Tests/Rivet/LEP/LEP-91.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+# ALEPH charged particle multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_S2435284
+# ALEPH main LEP I QCD summary paper
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3486095
+# ALEPH D*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1999_S4193598
+# OPAL charged hadron analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1994_S2927284
+# OPAL Delta++ analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_S3198391
+# OPAL J/Psi analysis analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1996_S3257789
+# ALEPH eta/omega analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2002_S4823664
+# OPAL K*0 analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3608263
+# OPAL flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3780481
+# OPAL f_0,f_2 and phi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3702294
+# OPAL gamma,pi0,eta,eta',rho+/-,a0+/- 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1998_S3749908
+# OPAL K0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_S4418603
+# SLD flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1996_S3398250
+# SLD flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_1999_S3743934
+# SLD flavour specific charged multiplicities etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2004_S5693039
+# OPAL event shapes and multiplicities at different energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
+# ALEPH jet and event shapes at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
+# OPAL/JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+# DELPHI strange baryon production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_S3137023
+# DELPHI f_0, rho_0 and f_2 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_S3960137
+# OPAL strange baryon production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3396100
+# DELPHI tuning paper
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
+# DELPHI b quark
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2002_069_CONF_603
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2011_I890503
+# ALEPH b quark
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_S4656318
+# SLD b quark
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2002_S4869273
+# PDG hadron multiplicities and ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+# OPAL from gluon paper
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
+##################################################
+# unvalidated 
+##################################################
+# OPAL 4 jet angles 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
+
+
+
+cd /Herwig/DipoleShower/
+set FFgx2ggxDipoleKernel:CMWScheme On
+set FFqx2qgxDipoleKernel:CMWScheme On
+set FFgx2ddxDipoleKernel:CMWScheme On
+set FFgx2uuxDipoleKernel:CMWScheme On
+set FFgx2ccxDipoleKernel:CMWScheme On
+set FFgx2ssxDipoleKernel:CMWScheme On
+set FFgx2bbxDipoleKernel:CMWScheme On
+set FFMgx2ggxDipoleKernel:CMWScheme On
+set FFMdx2dgxDipoleKernel:CMWScheme On
+set FFMux2ugxDipoleKernel:CMWScheme On
+set FFMcx2cgxDipoleKernel:CMWScheme On
+set FFMsx2sgxDipoleKernel:CMWScheme On
+set FFMbx2bgxDipoleKernel:CMWScheme On
+set FFMtx2tgxDipoleKernel:CMWScheme On
+set FFMgx2ddxDipoleKernel:CMWScheme On
+set FFMgx2uuxDipoleKernel:CMWScheme On
+set FFMgx2ccxDipoleKernel:CMWScheme On
+set FFMgx2ssxDipoleKernel:CMWScheme On
+set FFMgx2bbxDipoleKernel:CMWScheme On
+
