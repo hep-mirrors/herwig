@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxd0m0:
@@ -17,14 +18,14 @@
 *
 *	arguments
 *
-	DOUBLE PRECISION xpi(13)
-	DOUBLE COMPLEX cd0
+	RealType xpi(13)
+	ComplexType cd0
 	integer ier
 
-	DOUBLE PRECISION a, b, c, d
-	DOUBLE COMPLEX x(2), z(2), k1, k2, t1, t2
-	DOUBLE COMPLEX dl1, dl2, zl, ww, tlg
-	DOUBLE COMPLEX k12, k23, k34, k14, k13, k24
+	RealType a, b, c, d
+	ComplexType x(2), z(2), k1, k2, t1, t2
+	ComplexType dl1, dl2, zl, ww, tlg
+	ComplexType k12, k23, k34, k14, k13, k24
 	integer j, ipi1(2), ipi2(2), nffeta
 
 #include "ff.h"
@@ -34,7 +35,7 @@
 	c = xpi(5)*xpi(9)
 	d = -xpi(6)
 
-	k1 = DCMPLX(c, precx*d)
+	k1 = ToComplex(c, precx*d)
 	k2 = sqrt(b*b - 4*a*k1)
 	x(1) = (-b - k2)/2D0/a
 	x(2) = (-b + k2)/2D0/a
@@ -44,12 +45,12 @@
 	  x(1) = k1/(a*x(2))
 	endif
 
-	k12 = DCMPLX(-xpi(5), -precx)
-	k13 = DCMPLX(-xpi(9), -precx)
-	k23 = DCMPLX(-xpi(6), -precx)
-	k34 = DCMPLX(-xpi(7), -precx)
-	k14 = DCMPLX(-xpi(8), -precx)
-	k24 = DCMPLX(-xpi(10), -precx)
+	k12 = ToComplex(-xpi(5), -precx)
+	k13 = ToComplex(-xpi(9), -precx)
+	k23 = ToComplex(-xpi(6), -precx)
+	k34 = ToComplex(-xpi(7), -precx)
+	k14 = ToComplex(-xpi(8), -precx)
+	k24 = ToComplex(-xpi(10), -precx)
 
 	k1 = k34/k13
 	k2 = k24/k12

@@ -956,7 +956,6 @@ double Merger::singlesudakov(list<Dipole>::iterator dip ,Energy next,Energy runn
       continue;
     
     Energy dScale =	gen->second->splittingKinematics()->dipoleScale(emitter->momentum(),spectator->momentum());
-    assert (! isnan(dScale/GeV ) );
     candidate.scale(dScale);
     candidate.continuesEvolving();
     Energy ptMax=(*gen).second->splittingKinematics()->ptMax(candidate.scale(),candidate.emitterX(), candidate.spectatorX(),
@@ -988,7 +987,6 @@ double Merger::singleUNLOPS(list<Dipole>::iterator dip ,Energy next,Energy runni
     if ( !(gen->first == candidate.index()) )
       continue;
     Energy dScale =	gen->second->splittingKinematics()->dipoleScale(emitter->momentum(),spectator->momentum());
-    assert (! isnan(dScale/GeV ) );
     candidate.scale(dScale);
     candidate.continuesEvolving();
     Energy ptMax=gen->second->splittingKinematics()->ptMax(candidate.scale(),candidate.emitterX(), candidate.spectatorX(),

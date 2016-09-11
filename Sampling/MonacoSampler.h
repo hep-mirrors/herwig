@@ -72,11 +72,6 @@ public:
   virtual void adapt();
 
   /**
-   * Return true, if grid data exists for this sampler.
-   */
-  virtual bool existsGrid() const;
-
-  /**
    * Save grid data
    */
   virtual void saveGrid() const;

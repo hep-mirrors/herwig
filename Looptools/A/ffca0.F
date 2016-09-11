@@ -5,6 +5,7 @@
 * last modified 7 Dec 10 th
 
 #include "externals.h"
+#include "types.h"
 
 * Input:	cm	(complex) mass2, re > 0, im < 0.
 * Output:	ca0	(complex) A0, the one-point function,
@@ -12,20 +13,20 @@
 
 	subroutine ffca0(ca0, cm, ier)
 	implicit none
-	double complex ca0, cm
+	ComplexType ca0, cm
 	integer ier
 
 #include "ff.h"
 
-	double complex cmu, clogm
+	ComplexType cmu, clogm
 
-	double precision absc
-	double complex c
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	RealType absc
+	ComplexType c
+	absc(c) = abs(Re(c)) + abs(Im(c))
 
 * the real case:
 * adapted to log-and-pole scheme 25-mar-1992
-	if( DIMAG(cm) .eq. 0 .or. nschem .lt. 7 ) then
+	if( Im(cm) .eq. 0 .or. nschem .lt. 7 ) then
 	  call ffxa0(ca0, cm, ier)
 	  return
 	endif

@@ -91,21 +91,6 @@ void CellGridSampler::saveGrid() const {
   sampler()->grids().append(grid);
 }
 
-bool CellGridSampler::existsGrid() const {
-  list<XML::Element>::iterator git = sampler()->grids().children().begin();
-  for ( ; git != sampler()->grids().children().end(); ++git ) {
-    if ( git->type() != XML::ElementTypes::Element )
-      continue;
-    if ( git->name() != "CellGrid" )
-      continue;
-    string proc;
-    git->getFromAttribute("process",proc);
-    if ( proc == id() ) 
-      return true;
-  }
-  return false;
-}
-
 void CellGridSampler::initialize(bool progress) {
 
   bool haveGrid = false;

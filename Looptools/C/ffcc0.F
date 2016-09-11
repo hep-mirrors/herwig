@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *	$Id: ffcc0.f,v 1.2 1996/06/30 19:03:55 gj Exp $
@@ -49,13 +50,13 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cc0,cpi(6)
+	ComplexType cc0,cpi(6)
 *
 *	local variables:
 *
 	integer i,j,init
-	DOUBLE COMPLEX cdpipj(6,6)
-	DOUBLE PRECISION xpi(6),sprecx
+	ComplexType cdpipj(6,6)
+	RealType xpi(6),sprecx
 	save init
 *
 *	common blocks:
@@ -73,7 +74,7 @@
 *
 	if ( nschem .ge. 3 ) then
 	    do 10 i = 1,6
-		if ( DIMAG(cpi(i)) .ne. 0 ) goto 30
+		if ( Im(cpi(i)) .ne. 0 ) goto 30
    10	    continue
 	elseif ( init .eq. 0 ) then
 	    init = 1
@@ -81,7 +82,7 @@
      +			nschem
 	endif
 	do 20 i = 1,6
-	    xpi(i) = DBLE(cpi(i))
+	    xpi(i) = Re(cpi(i))
    20	continue
 	sprecx = precx
 	precx = precc
@@ -120,7 +121,7 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE COMPLEX cc0,cc0p,cpi(6),cqi(6)
+	ComplexType cc0,cc0p,cpi(6),cqi(6)
 	integer inew(6,2),irota,ier1,i,j,ialsav
 	save inew
 #include "ff.h"
@@ -170,15 +171,15 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cc0,cpi(6),cdpipj(6,6)
+	ComplexType cc0,cpi(6),cdpipj(6,6)
 *
 *	local variables:
 *
 	integer i,j,irota,inew(6,6),i1,i2,i3,initlo,ithres(3),ifound
 	logical ljust
-*	DOUBLE COMPLEX cs,cs1,cs2
-	DOUBLE COMPLEX cqi(6),cqiqj(6,6),cqiDqj(6,6)
-	DOUBLE PRECISION xqi(6),dqiqj(6,6),qiDqj(6,6),sprec
+*	ComplexType cs,cs1,cs2
+	ComplexType cqi(6),cqiqj(6,6),cqiDqj(6,6)
+	RealType xqi(6),dqiqj(6,6),qiDqj(6,6),sprec
 	save initlo
 *
 *	common blocks:
@@ -189,9 +190,9 @@
 *
 	integer iermem(memory),ialmem(memory),nscmem(memory),memind,
      +		ierini
-	DOUBLE COMPLEX cpimem(6,memory)
-	DOUBLE COMPLEX cc0mem(memory)
-	DOUBLE PRECISION dl2mem(memory)
+	ComplexType cpimem(6,memory)
+	ComplexType cc0mem(memory)
+	RealType dl2mem(memory)
 	save memind,iermem,ialmem,cpimem,cc0mem
 	data memind /0/
 *
@@ -220,12 +221,12 @@
 	ljust = .FALSE.
 *  #] initialisations:
 *  #[ handle special cases:
-	if ( DIMAG(cpi(1)).eq.0 .and. DIMAG(cpi(2)).eq.0 .and.
-     +		DIMAG(cpi(3)).eq.0 ) then
+	if ( Im(cpi(1)).eq.0 .and. Im(cpi(2)).eq.0 .and.
+     +		Im(cpi(3)).eq.0 ) then
 	    do 4 i=1,6
-		xqi(i) = DBLE(cpi(i))
+		xqi(i) = Re(cpi(i))
 		do 3 j=1,6
-		    dqiqj(j,i) = DBLE(cdpipj(j,i))
+		    dqiqj(j,i) = Re(cdpipj(j,i))
     3		continue
     4	    continue
 	    sprec = precx
@@ -335,7 +336,7 @@
 *
 	    do 79 i=4,6
 		do 78 j=4,6
-		    fpij3(j,i) = DBLE(cfpij3(j,i))
+		    fpij3(j,i) = Re(cfpij3(j,i))
    78		continue
    79	    continue
 	endif
@@ -372,10 +373,10 @@
 		endif
 	    endif
 	    do 9 i=1,6
-		xqi(i) = DBLE(cqi(i))
+		xqi(i) = Re(cqi(i))
 		do 8 j=1,6
-		    dqiqj(j,i) = DBLE(cqiqj(j,i))
-		    qiDqj(j,i) = DBLE(cqiDqj(j,i))
+		    dqiqj(j,i) = Re(cqiqj(j,i))
+		    qiDqj(j,i) = Re(cqiDqj(j,i))
     8		continue
     9	    continue
 	    i1 = 0
@@ -470,16 +471,16 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cc0,cqi(6),cqiqj(6,6),cqiDqj(6,6)
+	ComplexType cc0,cqi(6),cqiqj(6,6),cqiDqj(6,6)
 	integer ier
 *
 *	local variables:
 *
 	integer isoort(8),ipi12(8),i,j,k,ipi12t,ilogi(3),ier0,ieri(nerr)
-	DOUBLE COMPLEX cs3(80),cs,cs1,cs2,cslam,c,cel2,cel3,cel2s(3),
+	ComplexType cs3(80),cs,cs1,cs2,cslam,c,cel2,cel3,cel2s(3),
      +		cel3mi(3),clogi(3),calph(3),cblph(3),cetalm,cetami(6),
      +		csdel2,celpsi(3)
-	DOUBLE PRECISION xmax,absc,del2,qiDqj(6,6)
+	RealType xmax,absc,del2,qiDqj(6,6)
 *
 *	common blocks:
 *
@@ -487,7 +488,7 @@
 *
 *	statement function:
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ calculations:
@@ -499,17 +500,17 @@
    98	continue
 	do 104 i=4,6
 	    do 103 j=4,6
-		qiDqj(j,i) = DBLE(cqiDqj(j,i))
+		qiDqj(j,i) = Re(cqiDqj(j,i))
   103	    continue
   104	continue
 	call ffdel2(del2,qiDqj,6,4,5,6,1,ier)
 	fodel2 = del2
 	fdel2 = fodel2
-	cel2 = DCMPLX(DBLE(del2))
+	cel2 = ToComplex(Re(del2))
 	call ffcel3(cel3,cqiDqj)
-	if ( DIMAG(cel3).ne.0 .and. 
-     +		abs(DIMAG(cel3)).lt.precc*abs(DBLE(cel3)) ) then
-	    cel3 = DBLE(cel3)
+	if ( Im(cel3).ne.0 .and. 
+     +		abs(Im(cel3)).lt.precc*abs(Re(cel3)) ) then
+	    cel3 = Re(cel3)
 	endif
 	call ffcl3m(cel3mi,.TRUE.,cel3,cel2,cqi,cqiqj,cqiDqj,6, 4,5,6,
      +							1,3)
@@ -521,11 +522,11 @@
 	    if ( k .eq. 0 ) k = 3
 	    call ffcl2p(celpsi(i),cqi,cqiqj,cqiDqj,i+3,j+3,k+3,i,j,k,6)
   105	continue
-	cetalm = cel3*DBLE(1/del2)
+	cetalm = cel3*Re(1/del2)
 	do 108 i=1,3
-	    cetami(i) = cel3mi(i)*DBLE(1/del2)
+	    cetami(i) = cel3mi(i)*Re(1/del2)
   108	continue
-	csdel2 = isgnal*DBLE(sqrt(-del2))
+	csdel2 = isgnal*Re(sqrt(-del2))
 	ier0 = 0
 	do 99 i=1,nerr
 	    ier0 = max(ier0,ieri(i))
@@ -549,7 +550,7 @@
      +								ier)
 	cs1 = cblph(1) - chalf
 	cs2 = calph(1) - chalf
-	if ( l4also .and. ( DBLE(calph(1)) .gt. 1 .or. DBLE(calph(1))
+	if ( l4also .and. ( Re(calph(1)) .gt. 1 .or. Re(calph(1))
      +		.lt. 0 ) .and. absc(cs1) .lt. absc(cs2) ) then
 	    calph(1) = cblph(1)
 	    calph(3) = cblph(3)
@@ -575,12 +576,12 @@
 	do 120 i=2,8
 	    ipi12t = ipi12t + ipi12(i)
   120	continue
-	cs = cs + ipi12t*DBLE(pi12)
+	cs = cs + ipi12t*Re(pi12)
 *
 *	check for imaginary part zero (this may have to be dropped)
 *
-	if ( abs(DIMAG(cs)) .lt. precc*abs(DBLE(cs)) )
-     +	    cs = DCMPLX(DBLE(cs))
+	if ( abs(Im(cs)) .lt. precc*abs(Re(cs)) )
+     +	    cs = ToComplex(Re(cs))
 	cc0 = - cs/cslam
 *  #] calculations:
 *###] ffcc0b:
@@ -601,12 +602,12 @@
 *	arguments:
 *
 	integer irota,ns,iflag,ier
-	DOUBLE COMPLEX cpi(ns),cdpipj(ns,ns),cqi(ns),cdqiqj(ns,ns)
+	ComplexType cpi(ns),cdpipj(ns,ns),cqi(ns),cdqiqj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE PRECISION a1,a2,a3,xpimax,absc
-	DOUBLE COMPLEX c
+	RealType a1,a2,a3,xpimax,absc
+	ComplexType c
 	integer i,j,inew(6,6)
 	save inew
 *
@@ -625,7 +626,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ get largest cancellation:
@@ -653,32 +654,32 @@
 		endif
 	    endif
 	elseif ( iflag .eq. 2 ) then
-	    xpimax = max(DBLE(cpi(4)),DBLE(cpi(5)),DBLE(cpi(6)))
+	    xpimax = max(Re(cpi(4)),Re(cpi(5)),Re(cpi(6)))
 	    if ( xpimax .eq. 0 ) then
-		if ( DBLE(cpi(5)) .ne. 0 ) then
+		if ( Re(cpi(5)) .ne. 0 ) then
 		    irota = 1
-		elseif ( DBLE(cpi(4)) .ne. 0 ) then
+		elseif ( Re(cpi(4)) .ne. 0 ) then
 		    irota = 2
-		elseif ( DBLE(cpi(6)) .ne. 0 ) then
+		elseif ( Re(cpi(6)) .ne. 0 ) then
 		    irota = 3
 		else
 		    call fferr(40,ier)
 		    return
 		endif
-	    elseif ( DBLE(cpi(5)) .eq. xpimax ) then
-		if ( DBLE(cpi(4)) .le. DBLE(cpi(6)) ) then
+	    elseif ( Re(cpi(5)) .eq. xpimax ) then
+		if ( Re(cpi(4)) .le. Re(cpi(6)) ) then
 		    irota = 1
 		else
 		    irota = 4
 		endif
-	    elseif ( DBLE(cpi(4)) .eq. xpimax ) then
-		if ( DBLE(cpi(5)) .ge. DBLE(cpi(6)) ) then
+	    elseif ( Re(cpi(4)) .eq. xpimax ) then
+		if ( Re(cpi(5)) .ge. Re(cpi(6)) ) then
 		    irota = 2
 		else
 		    irota = 5
 		endif
 	    else
-		if ( DBLE(cpi(4)) .ge. DBLE(cpi(6)) ) then
+		if ( Re(cpi(4)) .ge. Re(cpi(6)) ) then
 		    irota = 3
 		else
 		    irota = 6
@@ -714,18 +715,18 @@
 *	arguments
 *
 	integer ns,ier
-	DOUBLE COMPLEX cpi(ns),cdpipj(ns,ns),cpiDpj(ns,ns)
+	ComplexType cpi(ns),cdpipj(ns,ns),cpiDpj(ns,ns)
 *
 *	locals
 *
 	integer is1,is2,is3,ip1,ip2,ip3,ier1
-	DOUBLE COMPLEX c
-	DOUBLE PRECISION absc
+	ComplexType c
+	RealType absc
 *
 *	rest
 *
 #include "ff.h"
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ calculations:
@@ -823,13 +824,13 @@
 *	arguments
 *
 	integer ifound,ns,i1,i2,i3,ip1,ip3
-	DOUBLE COMPLEX cqi(ns),cqiqj(ns,ns),cqiDqj(ns,ns)
+	ComplexType cqi(ns),cqiqj(ns,ns),cqiDqj(ns,ns)
 *
 *	locals vars
 *
 	integer i123
-	DOUBLE PRECISION absc
-	DOUBLE COMPLEX cel3,cdm2,cdm3,c
+	RealType absc
+	ComplexType cel3,cdm2,cdm3,c
 *
 *	common blocks
 *
@@ -837,15 +838,15 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ work:
 	ifound = 0
-	if ( abs(DBLE(cqi(i1))) .lt. -xloss*(DIMAG(cqi(i2)) +
-     +		DIMAG(cqi(i3)))
-     +	    .and. abs(DBLE(cqiqj(ip1,i2))) .le. -nwidth*DIMAG(cqi(i2))
-     +	    .and. abs(DBLE(cqiqj(ip3,i3))) .le. -nwidth*DIMAG(cqi(i3))
+	if ( abs(Re(cqi(i1))) .lt. -xloss*(Im(cqi(i2)) +
+     +		Im(cqi(i3)))
+     +	    .and. abs(Re(cqiqj(ip1,i2))) .le. -nwidth*Im(cqi(i2))
+     +	    .and. abs(Re(cqiqj(ip3,i3))) .le. -nwidth*Im(cqi(i3))
      +		) then
 	    ifound = 1
 	    return
@@ -861,8 +862,8 @@
      +			cqiDqj(i1,i3)*cqiDqj(ip1,i3)
 		cdm3 = -cqiDqj(i1,i2)*cqiDqj(ip3,i2) -
      +			cqiDqj(i1,i3)*cqiDqj(ip1,i2)
-		if ( 2*absc(cel3) .lt.-nwidth*(absc(cdm2)*DIMAG(cqi(i2))
-     +			+ absc(cdm3)*DIMAG(cqi(i3))) ) then
+		if ( 2*absc(cel3) .lt.-nwidth*(absc(cdm2)*Im(cqi(i2))
+     +			+ absc(cdm3)*Im(cqi(i3))) ) then
 		    ifound = -1
 		endif
 	    endif
@@ -893,13 +894,13 @@
 *	arguments
 *
 	integer ithres,ns,i1,i2,ip
-	DOUBLE COMPLEX cqi(ns),cqiqj(ns,ns)
+	ComplexType cqi(ns),cqiqj(ns,ns)
 *
 *	local variables
 *
 	integer ier0
-	DOUBLE COMPLEX c
-	DOUBLE PRECISION absc,xq1,xq2,xq3,dq1q2,dq1q3,dq2q3,xlam,d1,d2,
+	ComplexType c
+	RealType absc,xq1,xq2,xq3,dq1q2,dq1q3,dq2q3,xlam,d1,d2,
      +		sprecx
 *
 *	common blocks
@@ -908,38 +909,38 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ work:
 	ithres = 0
-	if ( DIMAG(cqi(i1)).eq.0 .and. DIMAG(cqi(i2)).eq.0 .or.
+	if ( Im(cqi(i1)).eq.0 .and. Im(cqi(i2)).eq.0 .or.
      +		nschem.le.4 ) return
-	if ( DBLE(cqi(i1)).lt.-DIMAG(cqi(i2)) .and.
-     +		abs(DBLE(cqiqj(ip,i2))).lt.-nwidth*DIMAG(cqi(i2))
-     +	.or. DBLE(cqi(i2)).lt.-DIMAG(cqi(i1)) .and.
-     +		abs(DBLE(cqiqj(ip,i1))).lt.-nwidth*DIMAG(cqi(i1)) ) then
+	if ( Re(cqi(i1)).lt.-Im(cqi(i2)) .and.
+     +		abs(Re(cqiqj(ip,i2))).lt.-nwidth*Im(cqi(i2))
+     +	.or. Re(cqi(i2)).lt.-Im(cqi(i1)) .and.
+     +		abs(Re(cqiqj(ip,i1))).lt.-nwidth*Im(cqi(i1)) ) then
 	    ithres = 2
-	elseif ( nschem.ge.6 .and. DBLE(cqi(i1)).ne.0 .and.
-     +		DBLE(cqi(i2)).ne.0 ) then
+	elseif ( nschem.ge.6 .and. Re(cqi(i1)).ne.0 .and.
+     +		Re(cqi(i2)).ne.0 ) then
 	    ier0 = 0
-	    xq1 = DBLE(cqi(i1))
-	    xq2 = DBLE(cqi(i2))
-	    xq3 = DBLE(cqi(ip))
-	    dq1q2 = DBLE(cqiqj(i1,i2))
-	    dq1q3 = DBLE(cqiqj(i1,ip))
-	    dq2q3 = DBLE(cqiqj(i2,ip))
+	    xq1 = Re(cqi(i1))
+	    xq2 = Re(cqi(i2))
+	    xq3 = Re(cqi(ip))
+	    dq1q2 = Re(cqiqj(i1,i2))
+	    dq1q3 = Re(cqiqj(i1,ip))
+	    dq2q3 = Re(cqiqj(i2,ip))
 	    sprecx = precx
 	    precx = precc
 	    call ffxlmb(xlam,xq1,xq2,xq3, dq1q2,dq1q3,dq2q3)
 	    precx = sprecx
 	    d1 = absc(cqiqj(i1,ip) - cqi(i2))
 	    d2 = absc(cqiqj(i2,ip) - cqi(i1))
-*	    if ( d1 .lt. -nwidth*DIMAG(cqi(i1)) .or.
-**     +		 d2 .lt. -nwidth*DIMAG(cqi(i2)) )
+*	    if ( d1 .lt. -nwidth*Im(cqi(i1)) .or.
+**     +		 d2 .lt. -nwidth*Im(cqi(i2)) )
 **     +		call ffwarn(182,ier0,x1,x1)
-	    if ( abs(xlam) .lt. -nwidth*(DBLE(d1)*
-     +		    DIMAG(cqi(i1)) + d2*DIMAG(cqi(i2))) ) then
+	    if ( abs(xlam) .lt. -nwidth*(Re(d1)*
+     +		    Im(cqi(i1)) + d2*Im(cqi(i2))) ) then
 		ithres = 1
 	    endif
 	endif
@@ -964,7 +965,7 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cpi(6)
+	ComplexType cpi(6)
 *
 *	local variables
 *
@@ -983,18 +984,18 @@
 	    i2 = 1 + mod(i1,3)
 *	    s.s
 	    cfpij3(i,i) = cpi(i)
-	    cfpij3(i1,i) = DCMPLX(DBLE(fpij3(i1,i)),
-     +	    	(DIMAG(cpi(i1))+DIMAG(cpi(i)))/2)
+	    cfpij3(i1,i) = ToComplex(Re(fpij3(i1,i)),
+     +	    	(Im(cpi(i1))+Im(cpi(i)))/2)
 	    cfpij3(i,i1) = cfpij3(i1,i)
 *	    s.p
-	    cfpij3(i,ip) = DCMPLX(DBLE(fpij3(i,ip)),
-     +		(DIMAG(cpi(i1))-DIMAG(cpi(i)))/2)
+	    cfpij3(i,ip) = ToComplex(Re(fpij3(i,ip)),
+     +		(Im(cpi(i1))-Im(cpi(i)))/2)
 	    cfpij3(ip,i) = cfpij3(i,ip)
-	    cfpij3(i1,ip) = DCMPLX(DBLE(fpij3(i1,ip)),
-     +		(DIMAG(cpi(i1))-DIMAG(cpi(i)))/2)
+	    cfpij3(i1,ip) = ToComplex(Re(fpij3(i1,ip)),
+     +		(Im(cpi(i1))-Im(cpi(i)))/2)
 	    cfpij3(ip,i1) = cfpij3(i1,ip)
-	    cfpij3(i2,ip) = DCMPLX(DBLE(fpij3(i2,ip)),
-     +		(DIMAG(cpi(i1))-DIMAG(cpi(i)))/2)
+	    cfpij3(i2,ip) = ToComplex(Re(fpij3(i2,ip)),
+     +		(Im(cpi(i1))-Im(cpi(i)))/2)
 	    cfpij3(ip,i2) = cfpij3(i2,ip)
 *	    p.p
 	    cfpij3(ip,ip) = cpi(ip)

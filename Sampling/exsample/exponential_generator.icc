@@ -273,8 +273,7 @@ namespace exsample {
       } catch (constant_interpolation& c) {
 	last_point_[evolution_variable_] = rnd_gen_(c.range.first,c.range.second);
       }
-      assert(!std::isnan(last_point_[evolution_variable_]) &&
-	     !std::isinf(last_point_[evolution_variable_]));
+      assert(std::isfinite(last_point_[evolution_variable_]));
       if (last_point_[evolution_variable_] < evolution_cutoff_) {
 	return 0.;
       }

@@ -254,11 +254,6 @@ public:
   bool remappersFilled() const { return theRemappersFilled; }
 
   /**
-   * Return true, if grid data exists for this sampler.
-   */
-  virtual bool existsGrid() const { return false; }
-
-  /**
    * Return true, if this sampler has already read grid data.
    */
   bool hasGrids() const { return theHasGrids; }

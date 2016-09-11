@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxdir:
@@ -15,8 +16,8 @@
 *	arguments
 *
 	integer ipoin,idone,ndiv,ier
-	DOUBLE COMPLEX cs,cfac
-	DOUBLE PRECISION xpi(13),dpipj(10,13)
+	ComplexType cs,cfac
+	RealType xpi(13),dpipj(10,13)
 *
 *	local variables
 *
@@ -185,18 +186,18 @@
 *	arguments
 *
 	integer ilam,i1,i4,ic,ier
-	DOUBLE COMPLEX csom,cfac
-	DOUBLE PRECISION xpi(13),dpipj(10,13)
+	ComplexType csom,cfac
+	RealType xpi(13),dpipj(10,13)
 *
 *	local variables
 *
 	integer ier0,ier1,ipi12,ip,init,is,i2,i3,i,iepst,iepss,ieps2,
      +		ieps3
-	DOUBLE PRECISION absc,xmax
-	DOUBLE PRECISION xxs(3),xxt(1),xx2(3),xx3(3),xm0,xm1,xm4,xlam,
+	RealType absc,xmax
+	RealType xxs(3),xxt(1),xx2(3),xx3(3),xm0,xm1,xm4,xlam,
      +		d,dfflo1,fac
-	DOUBLE COMPLEX c,cs(21),z,zlg,som,cxt
-	DOUBLE COMPLEX zxfflg,zfflog
+	ComplexType c,cs(21),z,zlg,som,cxt
+	ComplexType zxfflg,zfflog
 	external dfflo1,zxfflg,zfflog
 	save init
 *
@@ -206,7 +207,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	data
 *
@@ -252,7 +253,7 @@
 		if ( abs(xxs(2)).gt.xloss ) then
 		    zlg = zxfflg(xxs(1),iepss,0D0,ier)
 		else
-		    zlg = DBLE(dfflo1(xxs(2),ier))
+		    zlg = Re(dfflo1(xxs(2),ier))
 		endif
 		csom = -2*zlg*
      +            zxfflg(-lambda/xpi(inx(ilam,ic)),-2,0D0,ier)
@@ -287,13 +288,13 @@
 		if ( abs(xxs(2)).gt.xloss ) then
 		    zlg = zxfflg(xxs(1),iepss,0D0,ier0)
 		else
-		    zlg = DBLE(dfflo1(xxs(2),ier0))
+		    zlg = Re(dfflo1(xxs(2),ier0))
 		endif
 		cs(1) = zlg**2
 		ier1 = max(ier0,ier1)
 		ier0 = ier
 		if ( xxs(1)**2.lt.xloss ) then
-		    cs(2) = -2*DBLE(dfflo1(xxs(1)**2,ier0))*zlg
+		    cs(2) = -2*Re(dfflo1(xxs(1)**2,ier0))*zlg
 		else
 		    cs(2) = -2*zxfflg(xxs(2)*xxs(3),0,0D0,ier0)*zlg
 		endif
@@ -312,7 +313,7 @@
 		ier1 = max(ier0,ier1)
 		ier = ier1
 		som = cs(1) + cs(2) + cs(3) + cs(4) + cs(5) +
-     +			ipi12*DBLE(pi12)
+     +			ipi12*Re(pi12)
 		xmax = max(absc(cs(1)),absc(cs(2)),absc(cs(3)),
      +			absc(cs(4)),absc(cs(5)))
 
@@ -340,9 +341,9 @@
 	if ( lsmug ) then
 *	    all is not what it seems
 	    if ( nschem .ge. 3 ) then
-		cxt = DBLE(xm0*xlam)/c2sisj(ic,ilam)
+		cxt = Re(xm0*xlam)/c2sisj(ic,ilam)
 	    else
-		cxt = DBLE(xm0*xlam)/DBLE(c2sisj(ic,ilam))
+		cxt = Re(xm0*xlam)/Re(c2sisj(ic,ilam))
 	    endif
 	else
 	    if ( dpipj(ic,inx(ilam,ic)) .eq. 0 ) then
@@ -376,7 +377,7 @@
 	zlg = zxfflg(xxs(1),iepss,0D0,ier)
 	d = xxs(1)**2
 	if ( abs(d) .lt. xloss ) then
-	    cs(1) = 2*zlg*DBLE(dfflo1(d,ier0))
+	    cs(1) = 2*zlg*Re(dfflo1(d,ier0))
 	else
 	    cs(1) = 2*zlg*zxfflg(xxs(2)*xxs(3),-iepss,0D0,ier0)
 	endif
@@ -428,7 +429,7 @@
 		if ( abs(xxs(2)) .gt. xloss ) then
 		     cs(is) = -zlg*zxfflg(xxs(1),iepss,0D0,ier0)
 		else
-		     cs(is) = -zlg*DBLE(dfflo1(xxs(2),ier0))
+		     cs(is) = -zlg*Re(dfflo1(xxs(2),ier0))
 		endif
 		is = is + 1
 		ier1 = max(ier0,ier1)
@@ -437,9 +438,9 @@
 		if ( abs(xx2(2)) .gt. xloss ) then
 		    cs(is) = -zlg*zxfflg(xx2(1)**i2,i2*ieps2,0D0,ier0)
 		elseif ( i2.eq.1 ) then
-		    cs(is) = -zlg*DBLE(dfflo1(xx2(2),ier0))
+		    cs(is) = -zlg*Re(dfflo1(xx2(2),ier0))
 		else
-		    cs(is) = -zlg*DBLE(dfflo1(-xx2(2)/xx2(1),ier0))
+		    cs(is) = -zlg*Re(dfflo1(-xx2(2)/xx2(1),ier0))
 		endif
 		is = is + 1
 		ier1 = max(ier0,ier1)
@@ -448,9 +449,9 @@
 		if ( abs(xx3(2)) .gt. xloss ) then
 		    cs(is) = -zlg*zxfflg(xx3(1)**i3,i3*ieps3,0D0,ier0)
 		elseif ( i3.eq.1 ) then
-		    cs(is) = -zlg*DBLE(dfflo1(xx3(2),ier0))
+		    cs(is) = -zlg*Re(dfflo1(xx3(2),ier0))
 		else
-		    cs(is) = -zlg*DBLE(dfflo1(-xx3(2)/xx3(1),ier0))
+		    cs(is) = -zlg*Re(dfflo1(-xx3(2)/xx3(1),ier0))
 		endif
 		is = is + 1
 		ier1 = max(ier0,ier1)
@@ -469,7 +470,7 @@
 	    som = som + cs(i)
 	    xmax = max(xmax,absc(cs(i)))
   200	continue
-	som = som + ipi12*DBLE(pi12)
+	som = som + ipi12*Re(pi12)
 *
 *  #] sum:
 *  #[ overall factors:
@@ -477,11 +478,11 @@
 	csom = som
 	if ( lsmug ) then
 	    if ( nschem .ge. 2 ) then
-		cfac = -DBLE(xxs(1)/((xm1*xm4*xxs(2)*xxs(3))))/
+		cfac = -Re(xxs(1)/((xm1*xm4*xxs(2)*xxs(3))))/
      +			c2sisj(ilam,ic)
 	    else
-		cfac = -DBLE(xxs(1))/(DBLE(xm1*xm4*xxs(2)*xxs(3))*
-     +			DBLE(c2sisj(ilam,ic)))
+		cfac = -Re(xxs(1))/(Re(xm1*xm4*xxs(2)*xxs(3))*
+     +			Re(c2sisj(ilam,ic)))
 	    endif
 	    if ( ldot .and. abs(idot).lt.4 ) then
 		fdel4s = 16*(xm1*xm4*dpipj(inx(ilam,ic),ic)*xxs(2)*
@@ -520,11 +521,11 @@
 *	arguments
 *
 	integer ieps,ier
-	DOUBLE PRECISION x(3),xpi,xm,xmp
+	RealType x(3),xpi,xm,xmp
 *
 *	local variables
 *
-	DOUBLE PRECISION wortel,xx1,xx2,xx3
+	RealType wortel,xx1,xx2,xx3
 *
 *	common blocks
 *
@@ -588,17 +589,17 @@
 *	arguments
 *
 	integer ilam,i1,i4,ic,ier
-	DOUBLE COMPLEX csom,cfac
-	DOUBLE PRECISION xpi(13),dpipj(10,13)
+	ComplexType csom,cfac
+	RealType xpi(13),dpipj(10,13)
 *
 *	local variables
 *
 	integer ier0,ier1,ipi12,ip,init,is,i2,i3,i,iepst,iepss,ieps2,
      +		ieps3
-	DOUBLE PRECISION absc,xmax
-	DOUBLE PRECISION xm0,xm1,xm4,xlam,xxt(1)
-	DOUBLE COMPLEX c,cs(21),z,zlg,som,cxt,cxs(3),cx2(3),cx3(3)
-	DOUBLE COMPLEX zxfflg,zfflog,zfflo1
+	RealType absc,xmax
+	RealType xm0,xm1,xm4,xlam,xxt(1)
+	ComplexType c,cs(21),z,zlg,som,cxt,cxs(3),cx2(3),cx3(3)
+	ComplexType zxfflg,zfflog,zfflo1
 	external zxfflg,zfflog,zfflo1
 	save init
 *
@@ -608,7 +609,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	data
 *
@@ -639,9 +640,9 @@
 	if ( lsmug ) then
 *	    all is not what it seems
 	    if ( nschem .ge. 3 ) then
-		cxt = DBLE(xm0*xlam)/c2sisj(ic,ilam)
+		cxt = Re(xm0*xlam)/c2sisj(ic,ilam)
 	    else
-		cxt = DBLE(xm0*xlam)/DBLE(c2sisj(ic,ilam))
+		cxt = Re(xm0*xlam)/Re(c2sisj(ic,ilam))
 	    endif
 	else
 	    xxt(1) = xm0*xlam/dpipj(ic,inx(ilam,ic))
@@ -736,7 +737,7 @@
 	    som = som + cs(i)
 	    xmax = max(xmax,absc(cs(i)))
   200	continue
-	som = som + ipi12*DBLE(pi12)
+	som = som + ipi12*Re(pi12)
 *
 *  #] sum:
 *  #[ overall factors:
@@ -744,26 +745,26 @@
 	csom = som
 	if ( lsmug ) then
 	    if ( nschem .ge. 2 ) then
-		cfac = -cxs(1)/(DBLE(xm1*xm4)*cxs(2)*cxs(3)*
+		cfac = -cxs(1)/(Re(xm1*xm4)*cxs(2)*cxs(3)*
      +			c2sisj(ilam,ic))
 	    else
-		cfac = -cxs(1)/(DBLE(xm1*xm4)*cxs(2)*cxs(3)*
-     +			DBLE(c2sisj(ilam,ic)))
+		cfac = -cxs(1)/(Re(xm1*xm4)*cxs(2)*cxs(3)*
+     +			Re(c2sisj(ilam,ic)))
 	    endif
 	    if ( ldot .and. abs(idot).lt.4 ) then
-		c = 16*(DBLE(xm1*xm4*dpipj(inx(ilam,ic),ic))*
+		c = 16*(Re(xm1*xm4*dpipj(inx(ilam,ic),ic))*
      +			cxs(2)*cxs(3)/cxs(1))**2
-		fdel4s = DBLE(c)
-		if ( xloss*DIMAG(c) .gt. precc*DBLE(c) ) then
+		fdel4s = Re(c)
+		if ( xloss*Im(c) .gt. precc*Re(c) ) then
 		    print *,'ffzdbd: error: Del4s is not real ',c
 		endif
 	    endif
 	else
-	    cfac = cxs(1)/(DBLE(xm1*xm4*dpipj(inx(ilam,ic),ic))*
+	    cfac = cxs(1)/(Re(xm1*xm4*dpipj(inx(ilam,ic),ic))*
      +		cxs(2)*cxs(3))
 	    if ( ldot .and. abs(idot).lt.4 ) then
-		fdel4s = 1/(16*DBLE(cfac)**2)
-		if ( xloss*abs(DIMAG(cfac)) .gt. precc*abs(DBLE(cfac)) )
+		fdel4s = 1/(16*Re(cfac)**2)
+		if ( xloss*abs(Im(cfac)) .gt. precc*abs(Re(cfac)) )
      +			then
 		    print *,'ffzdbd: error: fac is not real: ',cfac
 		endif
@@ -796,13 +797,13 @@
 *	arguments
 *
 	integer ieps
-	DOUBLE PRECISION xpi,xm,xmp
-	DOUBLE COMPLEX cx(3)
+	RealType xpi,xm,xmp
+	ComplexType cx(3)
 *
 *	local variables
 *
-	DOUBLE PRECISION xx1,xx2
-	DOUBLE COMPLEX wortel,cx3
+	RealType xx1,xx2
+	ComplexType wortel,cx3
 *
 *	common blocks
 *
@@ -816,14 +817,14 @@
 	if ( xx2 .ge. 0 ) then
 	    wortel = sqrt(xx2)
 	else
-	    wortel = DCMPLX(DBLE(0),DBLE(sqrt(-xx2)))
+	    wortel = ToComplex(Re(0),Re(sqrt(-xx2)))
 	endif
 	cx3 = 1/(1+wortel)
 	if ( xx1.eq.0 ) then
 	    print *, 'ffzkfn: error: xx1=0, contact author'
 	    cx(1) = 1/xclogm
 	else
-	    cx(1) = DBLE(-4*xm*xmp/xx1)*cx3**2
+	    cx(1) = Re(-4*xm*xmp/xx1)*cx3**2
 	endif
 	cx(2) = 2*cx3
 	cx(3) = 2*wortel*cx3

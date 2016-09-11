@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *	$Id: ffcxs4.f,v 1.3 1995/10/17 06:55:09 gj Exp $
@@ -30,8 +31,8 @@ c
 *	arguments:
 *
 	integer ipi12(4),ii,ns,isoort(4),ier
-	DOUBLE COMPLEX cs3(40)
-	DOUBLE PRECISION w(4),y(4),z(4),dwy(2,2),dwz(2,2),dyz(2,2),
+	ComplexType cs3(40)
+	RealType w(4),y(4),z(4),dwy(2,2),dwz(2,2),dyz(2,2),
      +		d2yww,d2yzz,xpi(ns),piDpj(ns,ns),x00(3)
 *
 *	local variables:
@@ -129,17 +130,17 @@ c
 *	arguments:
 *
 	integer ipi12(4),ii,ns,isoort(4),ier
-	DOUBLE COMPLEX cs3(40)
-	DOUBLE COMPLEX cw(4),cy(4),cz(4),cdwy(2,2),cdwz(2,2),cdyz(2,2)
-	DOUBLE COMPLEX cd2yww,cd2yzz,cpi(ns),cp2p,cpiDpj(ns,ns)
+	ComplexType cs3(40)
+	ComplexType cw(4),cy(4),cz(4),cdwy(2,2),cdwz(2,2),cdyz(2,2)
+	ComplexType cd2yww,cd2yzz,cpi(ns),cp2p,cpiDpj(ns,ns)
 *
 *	local variables:
 *
 	logical ld2yzz,ld2yww
 	integer i,j,ip,iepz(2),iepw(2),nz(4),nw(4),ntot,i2pi
-	DOUBLE COMPLEX c,cc,clogy,c2y1,cdyw(2,2)
-	DOUBLE COMPLEX zfflo1,zfflog
-	DOUBLE PRECISION absc
+	ComplexType c,cc,clogy,c2y1,cdyw(2,2)
+	ComplexType zfflo1,zfflog
+	RealType absc
 	external zfflo1,zfflog
 *
 *	common blocks
@@ -148,7 +149,7 @@ c
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations: 
 *  #[ get counters:
 	ip = ii+3
@@ -190,7 +191,7 @@ c
 	endif
 *  #] R's: 
 *  #[ eta's:
-	if ( DIMAG(cpi(ip)) .eq. 0 ) then
+	if ( Im(cpi(ip)) .eq. 0 ) then
 	    call ffgeta(nz,cz,cdyz,
      +		cpi(ip),cpiDpj(ii,ip),iepz,isoort,ier)
 	    do 120 i=1,2
@@ -210,7 +211,7 @@ c
 		clogy = zfflo1(1/cy(2),ier)
 	    else
 		c = -cy(4)/cy(2)
-		if ( DBLE(c) .gt. -abs(DIMAG(c)) ) then
+		if ( Re(c) .gt. -abs(Im(c)) ) then
 		    clogy = zfflog(c,0,czero,ier)
 		else
 *		    take out the factor 2*pi^2
@@ -225,9 +226,9 @@ c
 		    else
 			clogy = zfflog(-c,0,czero,ier)
 		    endif
-		    if ( DIMAG(c) .lt. 0 ) then
+		    if ( Im(c) .lt. 0 ) then
 			i2pi = -1
-		    elseif ( DIMAG(c) .gt. 0 ) then
+		    elseif ( Im(c) .gt. 0 ) then
 			i2pi = +1
 		    else
 			call fferr(51,ier)
@@ -274,18 +275,18 @@ c
 *	arguments:
 *
 	integer ipi12(2),iepsz,iepsw,ier
-	DOUBLE COMPLEX cs3(20)
-	DOUBLE PRECISION y,z,w,y1,z1,w1,dyz,dwy,dwz,zp,zp1,d2yzz,wp,wp1,
+	ComplexType cs3(20)
+	RealType y,z,w,y1,z1,w1,dyz,dwy,dwz,zp,zp1,d2yzz,wp,wp1,
      +		d2yww
 *
 *	local variables:
 *
 	integer i,ieps
 	logical again
-	DOUBLE PRECISION yy,yy1,zz,zz1,dyyzz,xx1,xx1n,term,tot,d2,d3,
+	RealType yy,yy1,zz,zz1,dyyzz,xx1,xx1n,term,tot,d2,d3,
      +		d21,d31,d2n,d3n,d21n1,d31n1,dw,x00(3)
-	DOUBLE COMPLEX chulp
-	DOUBLE PRECISION dfflo1
+	ComplexType chulp
+	RealType dfflo1
 	external dfflo1
 *
 *	common blocks
@@ -392,9 +393,9 @@ c
 	    elseif ( w1 .lt. 0 .or. w .lt. 0 ) then
 		chulp = log(-w1/w)
 	    else
-		chulp = DCMPLX(DBLE(log(w1/w)),DBLE(-iepsw*pi))
+		chulp = ToComplex(Re(log(w1/w)),Re(-iepsw*pi))
 	    endif
-	    cs3(20) = -DBLE(dfflo1(dwz/dwy,ier))*chulp
+	    cs3(20) = -Re(dfflo1(dwz/dwy,ier))*chulp
 *  #] Hill identity: 
 *  #[ Taylor expansion:
 	elseif ( (w.lt.0..or.w1.lt.0) .and. (z.lt.0..or.z1.lt.0) ) then
@@ -476,8 +477,8 @@ c
 *	arguments:
 *
 	integer ipi12(2),isoort,iepsz,iepsw,ier
-	DOUBLE COMPLEX cs3(20)
-	DOUBLE COMPLEX cy,cz,czp,cw,cwp,cy1,cz1,czp1,cw1,cwp1,
+	ComplexType cs3(20)
+	ComplexType cy,cz,czp,cw,cwp,cy1,cz1,czp1,cw1,cwp1,
      +		cdyz,cdwy,cdwz,cd2yzz,cd2yww
 *
 *	local variables:
@@ -485,12 +486,12 @@ c
 	integer i,ieps,ieps1,ieps2,
      +		nffeta,nffet1,n1,n2,n3,n4,n5,n6
 	logical ld2yyz
-	DOUBLE COMPLEX cyy,cyy1,czz,czz1,cdyyzz,chulp,zfflo1,zfflog,
+	ComplexType cyy,cyy1,czz,czz1,cdyyzz,chulp,zfflo1,zfflog,
      +		cc1,cdw,cc1n,cterm,ctot,cd2,cd3,
      +		cd21,cd31,cd2n,cd3n,cd21n1,cd31n1,
      +		cc2,cfactz,cfactw,czzp,czzp1,cd2yyz
-	DOUBLE COMPLEX c
-	DOUBLE PRECISION absc
+	ComplexType c
+	RealType absc
 	external nffeta,nffet1,zfflo1,zfflog
 *
 *	common blocks
@@ -499,13 +500,13 @@ c
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations: 
 *  #[ groundwork:
 	if ( cdwz .eq. 0 ) then
-	    if ( abs(DIMAG(cz)) .gt. precc*abs(DBLE(cz)) .or.
+	    if ( abs(Im(cz)) .gt. precc*abs(Re(cz)) .or.
      +		iepsz .eq. iepsw ) return
-	    if ( DBLE(cz) .ge. 0 .and. DBLE(cz1) .ge. 0 ) return
+	    if ( Re(cz) .ge. 0 .and. Re(cz1) .ge. 0 ) return
 	    call fferr(76,ier)
 	    return
 	endif
@@ -515,7 +516,7 @@ c
 	endif
 	cc1 = cy/cdyz
 	cdw = cdwz/cdyz
-	if ( DBLE(cc1) .le. .5D0 .or. abs(cc1-1) .gt. 1 ) then
+	if ( Re(cc1) .le. .5D0 .or. abs(cc1-1) .gt. 1 ) then
 	    cd2 = 1/cy
 	    cdw = cdw*cy/cw
 	else
@@ -531,14 +532,14 @@ c
 *	and are significant
 *
 	elseif ( absc(cdw) .gt. xloss .or. (iepsz.ne.iepsw .and.
-     +		(DBLE(cy/cdyz).gt.1 .or. DBLE(-cy1/cdyz).gt.1) ) ) then
+     +		(Re(cy/cdyz).gt.1 .or. Re(-cy1/cdyz).gt.1) ) ) then
 *	    nothing's the matter
 *	    special case to avoid bug found 15-oct=1995
 	    if ( iepsz.eq.iepsw ) then
-	    	if ( DIMAG(cz).eq.0 .and. DIMAG(cz1).eq.0 ) then
+	    	if ( Im(cz).eq.0 .and. Im(cz1).eq.0 ) then
 	    	    print *,'ffdcrr: flipping sign iepsz'
 	    	    iepsz = -iepsz
-	    	elseif ( DIMAG(cw).eq.0 .and. DIMAG(cw1).eq.0 ) then
+	    	elseif ( Im(cw).eq.0 .and. Im(cw1).eq.0 ) then
 	    	    print *,'ffdcrr: flipping sign iepsw'
 	    	    iepsw = -iepsw
 	    	else
@@ -563,7 +564,7 @@ c
 	    cyy1 = cdyz/cdwz
 	    czz1 = cyy1*cw/cy
 	    cdyyzz = cdyz*cyy/cy
-	    if ( DBLE(cy) .gt. 0 ) then
+	    if ( Re(cy) .gt. 0 ) then
 		ieps1 = -3*iepsz
 	    else
 		ieps1 = +3*iepsz
@@ -583,7 +584,7 @@ c
      +		ld2yyz,cd2yyz,czzp,czzp1,isoort,ieps1,ier)
 	    czz = cyy*cz1/cy1
 	    czz1 = cyy1*cw1/cy1
-	    if ( DBLE(-cy1) .gt. 0 ) then
+	    if ( Re(-cy1) .gt. 0 ) then
 		ieps2 = -3*iepsz
 	    else
 		ieps2 = +3*iepsz
@@ -606,14 +607,14 @@ c
 	    ipi12(2) = -ipi12(2)
 *	    eta terms (are not calculated in ffcrr as ieps = 3)
 	    cfactz = 1/cdyz
-	    if ( DIMAG(cz) .eq. 0 ) then
-		if ( DIMAG(cy) .eq. 0 ) then
+	    if ( Im(cz) .eq. 0 ) then
+		if ( Im(cy) .eq. 0 ) then
 		    n1 = 0
 		    n2 = 0
 		else
-		    n1 = nffet1(DCMPLX(DBLE(0),DBLE(iepsz)),cfactz,
+		    n1 = nffet1(ToComplex(Re(0),Re(iepsz)),cfactz,
      +			-cz*cfactz,ier)
-		    n2 = nffet1(DCMPLX(DBLE(0),DBLE(iepsz)),cfactz,
+		    n2 = nffet1(ToComplex(Re(0),Re(iepsz)),cfactz,
      +			cz1*cfactz,ier)
 		endif
 	    else
@@ -621,14 +622,14 @@ c
 		n2 = nffeta(cz1,cfactz,ier)
 	    endif
 	    cfactw = -1/cdwy
-	    if ( DIMAG(cw) .eq. 0 ) then
-		if ( DIMAG(cy) .eq. 0 ) then
+	    if ( Im(cw) .eq. 0 ) then
+		if ( Im(cy) .eq. 0 ) then
 		    n4 = 0
 		    n5 = 0
 		else
-		    n4 = nffet1(DCMPLX(DBLE(0),DBLE(iepsw)),cfactw,
+		    n4 = nffet1(ToComplex(Re(0),Re(iepsw)),cfactw,
      +			-cw*cfactw,ier)
-		    n5 = nffet1(DCMPLX(DBLE(0),DBLE(iepsw)),cfactw,
+		    n5 = nffet1(ToComplex(Re(0),Re(iepsw)),cfactw,
      +			cw1*cfactw,ier)
 		endif
 	    else
@@ -653,7 +654,7 @@ c
 		    endif
 		    cc1 = cy*cfactz
 		    cc2 = cy*cfactw
-		    if ( DIMAG(cc1).eq.0 .or. DIMAG(cc2).eq.0 ) then
+		    if ( Im(cc1).eq.0 .or. Im(cc2).eq.0 ) then
 			n3 = 0
 		    else
 			n3 = nffeta(cc1,1/cc2,ier)
@@ -683,7 +684,7 @@ c
 		    endif
 		    cc1 = -cy1*cfactz
 		    cc2 = -cy1*cfactw
-		    if ( DIMAG(cc1).eq.0 .or. DIMAG(cc2).eq.0 ) then
+		    if ( Im(cc1).eq.0 .or. Im(cc2).eq.0 ) then
 			n6 = 0
 		    else
 			n6 = nffeta(cc1,1/cc2,ier)
@@ -753,7 +754,7 @@ c
 		    cd31n1 = cd31n1*cd31
 		    cd2n = cd2n + cd2*cd21n1
 		    cd3n = cd3n + cd3*cd31n1
-		    cterm = cc1n*cd2n*cd3n*DBLE(xn2inv(i))
+		    cterm = cc1n*cd2n*cd3n*Re(xn2inv(i))
 		    ctot = ctot + cterm
 		    if ( absc(cterm) .lt. precc*absc(ctot) ) goto 51
    50		continue

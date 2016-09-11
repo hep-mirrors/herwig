@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffdel5:
@@ -22,7 +23,7 @@
 *
 *	arguments:
 *
-	DOUBLE PRECISION del5,xpi(15),pDp(15,15)
+	RealType del5,xpi(15),pDp(15,15)
 *
 *	local variables:
 *
@@ -30,7 +31,7 @@
 	parameter(mem=10,nperm=1296,nsi=73)
 	integer i,j1,j2,j3,j4,j5,iperm(5,nperm),
      +		imem,memarr(mem,3),memind,inow
-	DOUBLE PRECISION s(nsi),xmax,del5p,xmaxp
+	RealType s(nsi),xmax,del5p,xmaxp
 	save iperm,memind,memarr,inow
 *
 *	common blocks:
@@ -204,12 +205,12 @@
 *	arguments:
 *
 	integer ii(10)
-	DOUBLE PRECISION dl4p,piDpj(15,15)
+	RealType dl4p,piDpj(15,15)
 *
 *	local variables
 *
 	integer i,j,k,jj(8),iperm(4,60)
-	DOUBLE PRECISION s(24),som,xmax,smax
+	RealType s(24),som,xmax,smax
 *
 *	common blocks
 *
@@ -348,7 +349,7 @@
 *	arguments:
 *
 	integer miss
-	DOUBLE PRECISION dl4r,piDpj(15,15)
+	RealType dl4r,piDpj(15,15)
 *
 *	local variables
 *
@@ -356,7 +357,7 @@
      +		iplace(11,5),minus(125),mem,msign
 	parameter(mem=45)
 	integer memarr(mem,4),inow,jnow,imem,jmem,memind
-	DOUBLE PRECISION s(24),som,xmax,smax
+	RealType s(24),som,xmax,smax
 	save ipermp,iperms,iplace,minus,memarr,inow,jnow,memind
 *
 *	common blocks

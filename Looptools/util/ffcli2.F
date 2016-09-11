@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffzli2:
@@ -25,13 +26,13 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cx,zlog,zdilog
+	ComplexType cx,zlog,zdilog
 *
 *	local variables
 *
-	DOUBLE PRECISION xprec,bdn02,bdn05,bdn10,bdn15,
+	RealType xprec,bdn02,bdn05,bdn10,bdn15,
      +		xi,xr,xdilog,xlog,absc,xa,a,ffbnd
-	DOUBLE COMPLEX cc,cz,cz2,zfflo1
+	ComplexType cc,cz,cz2,zfflo1
 	external ffbnd,zfflo1
 	save xprec,bdn02,bdn05,bdn10,bdn15
 *
@@ -41,7 +42,7 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations: 
 *  #[ initialisations:
 	data xprec /-1D0/
@@ -55,8 +56,8 @@
 	endif
 *  #] initialisations: 
 *  #[ exceptional cases:
-	xi  = DIMAG(cx)
-	xr  = DBLE(cx)
+	xi  = Im(cx)
+	xr  = Re(cx)
 	if ( xi .eq. 0) then
 	    call ffxli2(xdilog,xlog,xr,ier)
 	    zdilog = xdilog
@@ -83,28 +84,28 @@
 	cz2 = cz*cz
 	a = xa**2
 	if ( a .gt. bdn15 ) then
-	    zdilog = cz2*(DBLE(bf(16)) + cz2*(DBLE(bf(17))
-     +		   + cz2*(DBLE(bf(18)) + cz2*(DBLE(bf(19))
-     +		   + cz2*(DBLE(bf(20)))))))
+	    zdilog = cz2*(Re(bf(16)) + cz2*(Re(bf(17))
+     +		   + cz2*(Re(bf(18)) + cz2*(Re(bf(19))
+     +		   + cz2*(Re(bf(20)))))))
 	else
 	    zdilog = 0
 	endif
 	if ( a .gt. bdn10 ) then
-	    zdilog = cz2*(DBLE(bf(11)) + cz2*(DBLE(bf(12))
-     +		   + cz2*(DBLE(bf(13)) + cz2*(DBLE(bf(14))
-     +		   + cz2*(DBLE(bf(15)) + zdilog)))))
+	    zdilog = cz2*(Re(bf(11)) + cz2*(Re(bf(12))
+     +		   + cz2*(Re(bf(13)) + cz2*(Re(bf(14))
+     +		   + cz2*(Re(bf(15)) + zdilog)))))
 	endif
 	if ( a .gt. bdn05 ) then
-	    zdilog = cz2*(DBLE(bf(6)) + cz2*(DBLE(bf(7))
-     +		   + cz2*(DBLE(bf(8)) + cz2*(DBLE(bf(9))
-     +		   + cz2*(DBLE(bf(10)) + zdilog)))))
+	    zdilog = cz2*(Re(bf(6)) + cz2*(Re(bf(7))
+     +		   + cz2*(Re(bf(8)) + cz2*(Re(bf(9))
+     +		   + cz2*(Re(bf(10)) + zdilog)))))
 	endif
 	if ( a .gt. bdn02 ) then
-	    zdilog = cz2*(DBLE(bf(3)) + cz2*(DBLE(bf(4))
-     +		   + cz2*(DBLE(bf(5)) + zdilog)))
+	    zdilog = cz2*(Re(bf(3)) + cz2*(Re(bf(4))
+     +		   + cz2*(Re(bf(5)) + zdilog)))
 	endif
 *	watch the powers of z.
-	zdilog = cz + cz2*(DBLE(bf(1)) + cz*(DBLE(bf(2)) + zdilog))
+	zdilog = cz + cz2*(Re(bf(1)) + cz*(Re(bf(2)) + zdilog))
 	endif
 *  #] get log,dilog: 
 *###] ffzli2:
@@ -136,14 +137,14 @@
 *	arguments
 *
 	integer ipi12,ier
-	DOUBLE COMPLEX zdilog,zlog,cx
+	ComplexType zdilog,zlog,cx
 *
 *	local variables
 *
 	integer jsgn
-	DOUBLE PRECISION xprec,bdn02,bdn05,bdn10,bdn15,
+	RealType xprec,bdn02,bdn05,bdn10,bdn15,
      +		xi,xr,s1,s2,xa,a,absc,ffbnd
-	DOUBLE COMPLEX cfact,cx1,cy,cz,cz2,zfflo1,c
+	ComplexType cfact,cx1,cy,cz,cz2,zfflo1,c
 	external ffbnd,zfflo1
 	save xprec,bdn02,bdn05,bdn10,bdn15
 *
@@ -153,7 +154,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations: 
 *  #[ initialisations:
 	data xprec /-1D0/
@@ -166,8 +167,8 @@
 	endif
 *  #] initialisations: 
 *  #[ exceptional cases:
-	xi  = DIMAG(cx)
-	xr  = DBLE(cx)
+	xi  = Im(cx)
+	xr  = Re(cx)
 	if ( xi .eq. 0 ) then
 	    if ( xr .gt. 1 ) call fferr(31,ier)
 	    call ffzxdl(zdilog,ipi12,zlog,xr,1,ier)
@@ -197,8 +198,8 @@
 		if ( 1/xa .lt. xalogm ) then
 		    cfact = 0
 		elseif ( 1/xa .lt. xclogm ) then
-		    cx1 = cx*DBLE(1/xa)
-		    cfact = log(-cx1) + log(DBLE(xa))
+		    cx1 = cx*Re(1/xa)
+		    cfact = log(-cx1) + log(Re(xa))
 		else
 		    cfact = log(-cx)
 		endif
@@ -206,9 +207,9 @@
 		ipi12 = -2
 		if ( xa*xloss**2 .gt. 1) then
 		    if ( 1/xa .lt. xclogm ) then
-			cx1 = cx*DBLE(1/xa)
+			cx1 = cx*Re(1/xa)
 			cx1 = 1/cx1
-			cx1 = cx1*DBLE(1/xa)
+			cx1 = cx1*Re(1/xa)
 		    else
 			cx1 = 1/cx
 		    endif
@@ -244,8 +245,8 @@
 		if ( 1/xa .lt. xalogm ) then
 		    cfact = 0
 		elseif ( 1/xa .lt. xclogm ) then
-		    cx1 = cx*DBLE(1/xa)
-		    cfact = log(-cx1) + log(DBLE(xa))
+		    cx1 = cx*Re(1/xa)
+		    cfact = log(-cx1) + log(Re(xa))
 		else
 		    cfact = log(-cx)
 		endif
@@ -253,9 +254,9 @@
 		ipi12 = -2
 		if ( xa*xloss .gt. 1) then
 		    if ( 1/xa .lt. xclogm ) then
-			cx1 = cx*DBLE(1/xa)
+			cx1 = cx*Re(1/xa)
 			cx1 = 1/cx1
-			cx1 = cx1*DBLE(1/xa)
+			cx1 = cx1*Re(1/xa)
 		    else
 			cx1 = 1/cx
 		    endif
@@ -273,30 +274,30 @@
 	    zdilog = cz
 	else
 	cz2 = cz*cz
-	a = DBLE(cz)**2 + DIMAG(cz)**2
+	a = Re(cz)**2 + Im(cz)**2
 	if ( a .gt. bdn15 ) then
-	    zdilog = cz2*(DBLE(bf(16)) + cz2*(DBLE(bf(17))
-     +		   + cz2*(DBLE(bf(18)) + cz2*(DBLE(bf(19))
-     +		   + cz2*(DBLE(bf(20)))))))
+	    zdilog = cz2*(Re(bf(16)) + cz2*(Re(bf(17))
+     +		   + cz2*(Re(bf(18)) + cz2*(Re(bf(19))
+     +		   + cz2*(Re(bf(20)))))))
 	else
 	    zdilog = 0
 	endif
 	if ( a .gt. bdn10 ) then
-	    zdilog = cz2*(DBLE(bf(11)) + cz2*(DBLE(bf(12))
-     +		   + cz2*(DBLE(bf(13)) + cz2*(DBLE(bf(14))
-     +		   + cz2*(DBLE(bf(15)) + zdilog)))))
+	    zdilog = cz2*(Re(bf(11)) + cz2*(Re(bf(12))
+     +		   + cz2*(Re(bf(13)) + cz2*(Re(bf(14))
+     +		   + cz2*(Re(bf(15)) + zdilog)))))
 	endif
 	if ( a .gt. bdn05 ) then
-	    zdilog = cz2*(DBLE(bf(6)) + cz2*(DBLE(bf(7))
-     +		   + cz2*(DBLE(bf(8)) + cz2*(DBLE(bf(9))
-     +		   + cz2*(DBLE(bf(10)) + zdilog)))))
+	    zdilog = cz2*(Re(bf(6)) + cz2*(Re(bf(7))
+     +		   + cz2*(Re(bf(8)) + cz2*(Re(bf(9))
+     +		   + cz2*(Re(bf(10)) + zdilog)))))
 	endif
 	if ( a .gt. bdn02 ) then
-	    zdilog = cz2*(DBLE(bf(3)) + cz2*(DBLE(bf(4))
-     +		   + cz2*(DBLE(bf(5)) + zdilog)))
+	    zdilog = cz2*(Re(bf(3)) + cz2*(Re(bf(4))
+     +		   + cz2*(Re(bf(5)) + zdilog)))
 	endif
 *	watch the powers of z.
-	zdilog = cz + cz2*(DBLE(bf(1)) + cz*(DBLE(bf(2)) + zdilog))
+	zdilog = cz + cz2*(Re(bf(1)) + cz*(Re(bf(2)) + zdilog))
 	endif
 	if(jsgn.eq.1)then
 	    zdilog =  zdilog + cy
@@ -309,7 +310,7 @@
 
 
 *###[ zfflog:
-	DOUBLE COMPLEX function zfflog(cx,ieps,cy,ier)
+	ComplexType function zfflog(cx,ieps,cy,ier)
 ***#[*comment:***********************************************************
 *									*
 *	Calculate the complex logarithm of cx.  The following cases	*
@@ -325,47 +326,47 @@
 *
 	implicit none
 	integer ieps,ier
-	DOUBLE COMPLEX cx,cy
+	ComplexType cx,cy
 *
 *	local variables
 *
-	DOUBLE COMPLEX c,ctroep
-	DOUBLE PRECISION absc,xa,xlog1p
+	ComplexType c,ctroep
+	RealType absc,xa,xlog1p
 *
 *	common blocks, statement function
 *
 #include "ff.h"
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations: 
 *  #[ calculations:
 	xa = absc(cx)
 	if ( xa .lt. xalogm ) then
 	    if ( cx .ne. 0 ) call fferr(23,ier)
 	    zfflog = 0
-	elseif ( DBLE(cx) .lt. 0 .and. DIMAG(cx) .eq. 0 ) then
-*     +		 abs(DIMAG(cx)) .lt. precc*abs(DBLE(cx)) ) then
-	    xlog1p = log(-DBLE(cx))
+	elseif ( Re(cx) .lt. 0 .and. Im(cx) .eq. 0 ) then
+*     +		 abs(Im(cx)) .lt. precc*abs(Re(cx)) ) then
+	    xlog1p = log(-Re(cx))
 *	    checked imaginary parts 19-May-1988
 	    if ( abs(ieps) .eq. 1 ) then
-		if ( ieps*DBLE(cy) .lt. 0 ) then
-		    zfflog = DCMPLX(xlog1p,-pi)
-		elseif ( ieps*DBLE(cy) .gt. 0 ) then
-		    zfflog = DCMPLX(xlog1p,pi)
+		if ( ieps*Re(cy) .lt. 0 ) then
+		    zfflog = ToComplex(xlog1p,-pi)
+		elseif ( ieps*Re(cy) .gt. 0 ) then
+		    zfflog = ToComplex(xlog1p,pi)
 		else
 		    call fferr(51,ier)
-		    zfflog = DCMPLX(xlog1p,pi)
+		    zfflog = ToComplex(xlog1p,pi)
 		endif
 	    elseif ( ieps .ge. 2 .and. ieps .le. 3 ) then
-		zfflog = DCMPLX(xlog1p,-pi)
+		zfflog = ToComplex(xlog1p,-pi)
 	    elseif ( ieps .le. -2 .and. ieps .ge. -3 ) then
-		zfflog = DCMPLX(xlog1p,pi)
+		zfflog = ToComplex(xlog1p,pi)
 	    else
 		call fferr(51,ier)
-		zfflog = DCMPLX(xlog1p,pi)
+		zfflog = ToComplex(xlog1p,pi)
 	    endif
 	elseif ( xa .lt. xclogm .or. 1/xa .lt. xclogm ) then
-	    ctroep = cx*DBLE(1/xa)
-	    zfflog = log(ctroep) + DBLE(log(xa))
+	    ctroep = cx*Re(1/xa)
+	    zfflog = log(ctroep) + Re(log(xa))
 	else
 *	    print *,'zfflog: neem log van ',cx
 	    zfflog = log(cx)
@@ -376,7 +377,7 @@
 
 
 *###[ zfflo1:
-	DOUBLE COMPLEX function zfflo1(cx,ier)
+	ComplexType function zfflo1(cx,ier)
 ***#[*comment:***************************************************
 *	calculates log(1-x) for |x|<.14 in a faster way to ~15	*
 *	significant figures.					*
@@ -384,13 +385,13 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE COMPLEX cx,c,zfflog
-	DOUBLE PRECISION xprec,bdn01,bdn05,bdn10,bdn15,bdn19,
+	ComplexType cx,c,zfflog
+	RealType xprec,bdn01,bdn05,bdn10,bdn15,bdn19,
      +		absc,xa,ffbnd
 	external zfflog,ffbnd
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn19
 #include "ff.h"
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations: 
 *  #[ initialisations:
 	data xprec /-1D0/
@@ -413,35 +414,35 @@
 	    return
 	endif
 	if ( xa .gt. bdn15 ) then
-	    zfflo1 = cx*( DBLE(xninv(16)) + cx*( DBLE(xninv(17))
-     +		   + cx*( DBLE(xninv(18)) + cx*( DBLE(xninv(19))
-     +		   + cx*( DBLE(xninv(20)) )))))
+	    zfflo1 = cx*( Re(xninv(16)) + cx*( Re(xninv(17))
+     +		   + cx*( Re(xninv(18)) + cx*( Re(xninv(19))
+     +		   + cx*( Re(xninv(20)) )))))
 	else
 	    zfflo1 = 0
 	endif
 	if ( xa .gt. bdn10 ) then
-	    zfflo1 = cx*( DBLE(xninv(11)) + cx*( DBLE(xninv(12))
-     +		   + cx*( DBLE(xninv(13)) + cx*( DBLE(xninv(14))
-     +		   + cx*( DBLE(xninv(15)) + zfflo1 )))))
+	    zfflo1 = cx*( Re(xninv(11)) + cx*( Re(xninv(12))
+     +		   + cx*( Re(xninv(13)) + cx*( Re(xninv(14))
+     +		   + cx*( Re(xninv(15)) + zfflo1 )))))
 	endif
 	if ( xa .gt. bdn05 ) then
-	    zfflo1 = cx*( DBLE(xninv(6)) + cx*( DBLE(xninv(7))
-     +		   + cx*( DBLE(xninv(8)) + cx*( DBLE(xninv(9))
-     +		   + cx*( DBLE(xninv(10)) + zfflo1 )))))
+	    zfflo1 = cx*( Re(xninv(6)) + cx*( Re(xninv(7))
+     +		   + cx*( Re(xninv(8)) + cx*( Re(xninv(9))
+     +		   + cx*( Re(xninv(10)) + zfflo1 )))))
 	endif
 	if ( xa .gt. bdn01 ) then
-	    zfflo1 = cx*( DBLE(xninv(2)) + cx*( DBLE(xninv(3))
-     +		   + cx*( DBLE(xninv(4)) + cx*( DBLE(xninv(5))
+	    zfflo1 = cx*( Re(xninv(2)) + cx*( Re(xninv(3))
+     +		   + cx*( Re(xninv(4)) + cx*( Re(xninv(5))
      +		   + zfflo1 ))))
 	endif
-	zfflo1 = - cx*( DBLE(xninv(1)) + zfflo1 )
+	zfflo1 = - cx*( Re(xninv(1)) + zfflo1 )
 *  #] calculations: 
 *###] zfflo1: 
 	end
 
 
 *###[ zfflo2:
-	DOUBLE COMPLEX function zfflo2(x,ier)
+	ComplexType function zfflo2(x,ier)
 ***#[*comment:***************************************************
 *	calculates log(1-x)+x for |x|<.14 in a faster way to	*
 *	~15 significant figures.				*
@@ -449,13 +450,13 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE COMPLEX x,zfflo1,cc
-	DOUBLE PRECISION bdn01,bdn05,bdn10,bdn15,bdn18,xprec,xa,
+	ComplexType x,zfflo1,cc
+	RealType bdn01,bdn05,bdn10,bdn15,bdn18,xprec,xa,
      +		ffbnd,absc
 	external ffbnd,zfflo1
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn18
 #include "ff.h"
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations: 
 *  #[ initialisation:
 	data xprec /-1D0/
@@ -479,33 +480,33 @@
 	    return
 	endif
 	if ( xa .gt. bdn15 ) then
-	    zfflo2 = x*( DBLE(xninv(17)) + x*( DBLE(xninv(18)) +
-     +		x*( DBLE(xninv(19)) + x*( DBLE(xninv(20)) ))))
+	    zfflo2 = x*( Re(xninv(17)) + x*( Re(xninv(18)) +
+     +		x*( Re(xninv(19)) + x*( Re(xninv(20)) ))))
 	else
 	    zfflo2 = 0
 	endif
 	if ( xa .gt. bdn10 ) then
-	    zfflo2 = x*( DBLE(xninv(12)) + x*( DBLE(xninv(13)) +
-     +		x*( DBLE(xninv(14)) + x*( DBLE(xninv(15)) +
-     +		x*( DBLE(xninv(16)) + zfflo2 )))))
+	    zfflo2 = x*( Re(xninv(12)) + x*( Re(xninv(13)) +
+     +		x*( Re(xninv(14)) + x*( Re(xninv(15)) +
+     +		x*( Re(xninv(16)) + zfflo2 )))))
 	endif
 	if ( xa .gt. bdn05 ) then
-	    zfflo2 = x*( DBLE(xninv(7)) + x*( DBLE(xninv(8)) +
-     +		x*( DBLE(xninv(9)) +x*( DBLE(xninv(10)) +
-     +		x*( DBLE(xninv(11)) + zfflo2 )))))
+	    zfflo2 = x*( Re(xninv(7)) + x*( Re(xninv(8)) +
+     +		x*( Re(xninv(9)) +x*( Re(xninv(10)) +
+     +		x*( Re(xninv(11)) + zfflo2 )))))
 	endif
 	if ( xa .gt. bdn01 ) then
-	    zfflo2 = x*( DBLE(xninv(3)) + x*( DBLE(xninv(4)) +
-     +		x*( DBLE(xninv(5)) + x*( DBLE(xninv(6)) + zfflo2 ))))
+	    zfflo2 = x*( Re(xninv(3)) + x*( Re(xninv(4)) +
+     +		x*( Re(xninv(5)) + x*( Re(xninv(6)) + zfflo2 ))))
 	endif
-	zfflo2 = - x**2*( DBLE(xninv(2)) + zfflo2 )
+	zfflo2 = - x**2*( Re(xninv(2)) + zfflo2 )
 *  #] calculations: 
 *###] zfflo2: 
 	end
 
 
 *###[ zfflo3:
-	DOUBLE COMPLEX function zfflo3(x,ier)
+	ComplexType function zfflo3(x,ier)
 ***#[*comment:***************************************************
 *	calculates log(1-x)+x+x^2/2 for |x|<.14 in a faster 	*
 *	way to ~15 significant figures.				*
@@ -513,13 +514,13 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE COMPLEX x,zfflo2,cc
-	DOUBLE PRECISION bdn01,bdn05,bdn10,bdn15,xprec,xa,ffbnd,
+	ComplexType x,zfflo2,cc
+	RealType bdn01,bdn05,bdn10,bdn15,xprec,xa,ffbnd,
      +		absc
 	external zfflo2,ffbnd
 	save xprec,bdn01,bdn05,bdn10,bdn15
 #include "ff.h"
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations: 
 *  #[ initialisation:
 	data xprec /-1D0/
@@ -542,22 +543,22 @@
 	    return
 	endif
 	if ( xa .gt. bdn10 ) then
-	    zfflo3 = x*( DBLE(xninv(13)) + x*( DBLE(xninv(14)) +
-     +		x*( DBLE(xninv(15)) + x*( DBLE(xninv(16)) +
-     +		x*( DBLE(xninv(17)) )))))
+	    zfflo3 = x*( Re(xninv(13)) + x*( Re(xninv(14)) +
+     +		x*( Re(xninv(15)) + x*( Re(xninv(16)) +
+     +		x*( Re(xninv(17)) )))))
 	else
 	    zfflo3 = 0
 	endif
 	if ( xa .gt. bdn05 ) then
-	    zfflo3 = x*( DBLE(xninv(8)) + x*( DBLE(xninv(9)) +
-     +		x*( DBLE(xninv(10)) + x*( DBLE(xninv(11)) +
-     +		x*( DBLE(xninv(12)) + zfflo3 )))))
+	    zfflo3 = x*( Re(xninv(8)) + x*( Re(xninv(9)) +
+     +		x*( Re(xninv(10)) + x*( Re(xninv(11)) +
+     +		x*( Re(xninv(12)) + zfflo3 )))))
 	endif
 	if ( xa .gt. bdn01 ) then
-	    zfflo3 = x*( DBLE(xninv(4)) + x*( DBLE(xninv(5)) +
-     +		x*( DBLE(xninv(6)) + x*( DBLE(xninv(7)) + zfflo3 ))))
+	    zfflo3 = x*( Re(xninv(4)) + x*( Re(xninv(5)) +
+     +		x*( Re(xninv(6)) + x*( Re(xninv(7)) + zfflo3 ))))
 	endif
-	zfflo3 = - x**3*( DBLE(xninv(3)) + zfflo3 )
+	zfflo3 = - x**3*( Re(xninv(3)) + zfflo3 )
 *  #] calculations: 
 *###] zfflo3: 
 	end

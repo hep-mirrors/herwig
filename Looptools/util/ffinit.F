@@ -1,7 +1,9 @@
+#include "externals.h"
+#include "types.h"
 #include "defs.h"
 
 *	$Id: ffinit.f,v 1.9 1996/04/26 10:39:03 gj Exp $
-*###[ ffini:
+*###[ ltini:
 	subroutine ltini
 ***#[*comment:***********************************************************
 *	calculate a lot of commonly-used constants in the common block	*
@@ -12,8 +14,8 @@
 	implicit none
 	integer i,j,init,ioldp(13,12),isgrop(10,12),ji
 	save init
-	DOUBLE PRECISION s,sold
-	DOUBLE COMPLEX cs
+	RealType s,sold
+	ComplexType cs
 
 #include "lt.h"
 
@@ -70,59 +72,72 @@
 	call getenv("LTMINMASS", env)
 	minmass = 0
 	read(env, *, end=90, err=90) minmass
-	print *, "using minmass    =", minmass
+	print *, "env LTMINMASS =", minmass
 90      continue
 
 	call getenv("LTMAXDEV", env)
 	maxdev = 1D-10
 	read(env, *, end=91, err=91) maxdev
-	print *, "using maxdev     =", maxdev
+	print *, "env LTMAXDEV =", maxdev
 91	continue
 
-	call getenv("LTCMPBITS", env)
-	cmpbits = 62 + (KIND-1)*4
-	read(env, *, end=92, err=92) cmpbits
-	print *, "using cmpbits    =", cmpbits
+	call getenv("LTDIFFEPS", env)
+	diffeps = 1D-12
+	read(env, *, end=92, err=92) diffeps
+	print *, "env LTDIFFEPS =", diffeps
 92	continue
+
+	call getenv("LTZEROEPS", env)
+	zeroeps = 1D-22
+	read(env, *, end=93, err=93) zeroeps
+	print *, "env LTZEROEPS =", zeroeps
+93	continue
+
+	call getenv("LTCMPBITS", env)
+	cmpbits = 58 + KIND*4
+	read(env, *, end=94, err=94) cmpbits
+	print *, "env LTCMPBITS =", cmpbits
+	cmpbits = max(cmpbits, 8 + KIND*4)
+94	continue
 
 	call getenv("LTVERSION", env)
 	versionkey = 0
-	read(env, *, end=93, err=93) versionkey
-	print *, "using versionkey =", versionkey
-93	continue
+	read(env, *, end=95, err=95) versionkey
+	print *, "env LTVERSION =", versionkey
+95	continue
 
 	call getenv("LTDEBUG", env)
 	debugkey = 0
-	read(env, *, end=94, err=94) debugkey
-	print *, "using debugkey   =", debugkey
-94	continue
+	read(env, *, end=96, err=96) debugkey
+	print *, "env LTDEBUG =", debugkey
+96	continue
 
 	call getenv("LTRANGE", env)
 	debugfrom = 0
 	debugto = 2**30
 	i = index(env, '-')
 	if( i .eq. 0 ) then
-	  read(env, *, end=95, err=95) debugfrom
+	  read(env, *, end=97, err=97) debugfrom
 	  debugto = debugfrom
 	else
-	  read(env(1:i-1), *, end=951, err=951) debugfrom
-951	  read(env(i+1:), *, end=952, err=952) debugto
-952	  continue
+	  read(env(1:i-1), *, end=971, err=971) debugfrom
+971	  read(env(i+1:), *, end=972, err=972) debugto
+972	  continue
 	endif
-	print *, "using debugrange =", debugfrom, debugto
-95	continue
+	print *, "env LTRANGE =", debugfrom, debugto
+97	continue
 
 	call getenv("LTWARN", env)
 	warndigits = 9
-	read(env, *, end=96, err=96) warndigits
-	print *, "using warndigits =", warndigits
-96	continue
+	read(env, *, end=98, err=98) warndigits
+	print *, "env LTWARN =", warndigits
+98	continue
 
 	call getenv("LTERR", env)
 	errdigits = 100
-	read(env, *, end=97, err=97) errdigits
-	print *, "using errdigits  =", errdigits
-97	continue
+	read(env, *, end=99, err=99) errdigits
+	print *, "env LTERR =", errdigits
+99	continue
 
 *
 *	regularization parameters
@@ -130,20 +145,28 @@
 	call getenv("LTDELTA", env)
 	delta = 0
 	read(env, *, end=100, err=100) delta
-	print *, "using delta      =", delta
+	print *, "env LTDELTA =", delta
 100	continue
 
 	call getenv("LTMUDIM", env)
-	mudim = 1
+	mudimc = 1
 	read(env, *, end=101, err=101) mudim
-	print *, "using mudim      =", mudim
+	print *, "env LTMUDIM =", mudim
 101	continue
 
 	call getenv("LTLAMBDA", env)
 	lambda = 1
+	epsi = 0
 	read(env, *, end=102, err=102) lambda
-	print *, "using lambda     =", lambda
+	print *, "env LTLAMBDA =", lambda
+	call setlambda(lambda)
 102	continue
+
+	call getenv("LTUVDIV", env)
+	uvdiv = 1
+	read(env, *, end=103, err=103) uvdiv
+	print *, "env LTUVDIV =", uvdiv
+103	continue
 *
 *  #] LoopTools stuff
 *  #[ precision etc:
@@ -177,9 +200,9 @@
 	do 3 i=1,1000
 	    precc = precc/2
 	    call ffset(s, 1 + precc)
-	    cs = exp(log(DCMPLX(s)))
-	    if ( DBLE(cs) .eq. sold ) goto 4
-	    sold = DBLE(cs)
+	    cs = exp(log(ToComplex(s)))
+	    if ( Re(cs) .eq. sold ) goto 4
+	    sold = Re(cs)
     3	continue
     4	continue
 	precc = precc*8
@@ -194,7 +217,7 @@
 	endif
 *
 *	and the minimum value the logarithm accepts without complaining
-*	about arguments zero is (DOUBLE PRECISION cq DOUBLE COMPLEX)
+*	about arguments zero is (RealType cq ComplexType)
 *
 	s = 1
 	xalogm = 1
@@ -207,11 +230,11 @@
 	if ( xalogm.eq.0 ) xalogm = 1d-307
 
 	s = 1
-	xclogm = abs(DCMPLX(s))
+	xclogm = abs(ToComplex(s))
 	do 7 i=1,10000
 	    call ffset(s, s/2)
-	    if ( 2*abs(DCMPLX(s)) .ne. xclogm ) goto 8
-	    xclogm = abs(DCMPLX(s))
+	    if ( 2*abs(ToComplex(s)) .ne. xclogm ) goto 8
+	    xclogm = abs(ToComplex(s))
     7	continue
     8	continue
 	if ( xclogm.eq.0 ) xclogm = 1d-307
@@ -398,7 +421,7 @@
 		elseif ( ji.lt.0 ) then
 		    isgn6(j,i) = -1
 		else
-		    print *,'ffini: internal error in isgn6'
+		    print *,'ltini: internal error in isgn6'
 		    stop
 		endif
 	    enddo
@@ -458,7 +481,7 @@
 	lsmug = .FALSE.
 *
 *  #] defaults for flags:
-*###] ffini:
+*###] ltini:
 	end
 
 
@@ -599,7 +622,7 @@
 ***#[*comment:***********************************************************
 *									*
 *	The warning routine.  A warning is aloss of precision greater	*
-*	than xloss (which is default set in ffini), whenever in a	*
+*	than xloss (which is default set in ltini), whenever in a	*
 *	subtraction the result is smaller than xloss*max(operands) this	*
 *	routine is called.  Now the strategy is to remember these	*
 *	warnings until a 998 message is obtained; then all warnings of	*
@@ -626,7 +649,7 @@
 *	arguments
 *
 	integer nerr,ierr
-	DOUBLE PRECISION som,xmax
+	RealType som,xmax
 *
 *	local variables
 *
@@ -635,7 +658,7 @@
 	integer noccur(nmax),i,inone,nnerr,ilost,
      +		nermem(memmax),losmem(memmax),idmem(memmax),
      +		idsmem(memmax),laseve,imem
-	DOUBLE PRECISION xlosti(nmax),xlost
+	RealType xlosti(nmax),xlost
 	save warn,noccur,xlosti,nermem,losmem,idmem,idsmem,
      +		laseve,imem
 *
@@ -732,7 +755,7 @@
 
 
 *###[ ffbnd:
-	DOUBLE PRECISION function ffbnd(n1,n2,array)
+	RealType function ffbnd(n1,n2,array)
 *************************************************************************
 *									*
 *	calculate bound = (precx*|a(n1)/a(n1+n2)|^(1/n2) which is the	*
@@ -743,14 +766,16 @@
 *************************************************************************
 	implicit none
 	integer n1,n2
-	DOUBLE PRECISION array(n1+n2)
+	RealType array(n1+n2)
 #include "ff.h"
 	if ( array(n1+n2) .eq. 0 ) then
 	   print *,'ffbnd: fatal: array not initialized; did you call ',
-     +		'ffini?'
+     +		'ltini?'
 	   stop
 	endif
-	ffbnd = (precx*abs(array(n1)/array(n1+n2)))**(1/DBLE(n2))
+	ffbnd = (precx*abs(array(n1)/array(n1+n2)))**(1/Re(n2))
+* added 22 Mar 11: be a bit more conservative:
+	ffbnd = .8D0*ffbnd
 *###] ffbnd:
 	end
 
@@ -771,7 +796,7 @@
 *	arguments:
 *
 	integer ier
-	DOUBLE PRECISION xm,xp,a,b,c,d
+	RealType xm,xp,a,b,c,d
 *
 *	common blocks:
 *
@@ -822,12 +847,12 @@
 *	arguments:
 *
 	integer ier
-	DOUBLE COMPLEX xm,xp,a,b,c,d
+	ComplexType xm,xp,a,b,c,d
 *
 *	local variables:
 *
-	DOUBLE COMPLEX cc
-	DOUBLE PRECISION absc
+	ComplexType cc
+	RealType absc
 *
 *	common blocks:
 *
@@ -835,12 +860,12 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations:
 *  #[ check input:
 	if ( a .eq. 0 ) then
 	    call fferr(38,ier)
-	    if ( DBLE(b).gt.0 .eqv. DBLE(d).gt.0 ) then
+	    if ( Re(b).gt.0 .eqv. Re(d).gt.0 ) then
 		xp = 1/xclogm
 		xm = c/(b+d)
 	    else
@@ -877,9 +902,9 @@
 *  #[ declarations:
 	implicit none
 	integer ns,ier
-	DOUBLE PRECISION xpi(ns),dpipj(ns,ns)
+	RealType xpi(ns),dpipj(ns,ns)
 	integer i,j
-	DOUBLE PRECISION xheck,rloss
+	RealType xheck,rloss
 #include "ff.h"
 *  #] declarations:
 *  #[ calculations:
@@ -887,7 +912,7 @@
 	    print *,'ffxhck: error: ier < 0 ',ier
 	    ier=0
 	endif
-	rloss = xloss**2*DBLE(10)**(-mod(ier,50))
+	rloss = xloss**2*Re(10)**(-mod(ier,50))
 	do 20 i=1,ns
 	    do 10 j=1,ns
 		xheck = dpipj(j,i) - xpi(j) + xpi(i)
@@ -914,19 +939,19 @@
 *  #[ declarations:
 	implicit none
 	integer ns,ier
-	DOUBLE COMPLEX cpi(ns),cdpipj(ns,ns),c
+	ComplexType cpi(ns),cdpipj(ns,ns),c
 	integer i,j
-	DOUBLE COMPLEX check
-	DOUBLE PRECISION absc,rloss
+	ComplexType check
+	RealType absc,rloss
 #include "ff.h"
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations:
 	if ( ier.lt.0 ) then
 	    print *,'ffchck: error: ier < 0 ',ier
 	    ier=0
 	endif
-	rloss = xloss**2*DBLE(10)**(-mod(ier,50))
+	rloss = xloss**2*Re(10)**(-mod(ier,50))
 	do 20 i=1,ns
 	    do 10 j=1,ns
 		check = cdpipj(j,i) - cpi(j) + cpi(i)
@@ -956,28 +981,28 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE COMPLEX ca,cb
-	DOUBLE PRECISION a,b,ab,rab
+	ComplexType ca,cb
+	RealType a,b,ab,rab
 #include "ff.h"
 *  #] declarations:
 *  #[ calculations:
-	a = DIMAG(ca)
-	b = DIMAG(cb)
+	a = Im(ca)
+	b = Im(cb)
 	if ( a*b .lt. 0 ) then
 	    nffeta = 0
 	    return
 	endif
-	rab = DBLE(ca)*DBLE(cb) - a*b
-	ab = DBLE(ca)*b + a*DBLE(cb)
-	if ( abs(ab) .lt. precc*abs(DBLE(ca)*b) ) then
+	rab = Re(ca)*Re(cb) - a*b
+	ab = Re(ca)*b + a*Re(cb)
+	if ( abs(ab) .lt. precc*abs(Re(ca)*b) ) then
 	    call fferr(32,ier)
 	endif
 	if ( a .lt. 0 .and. b .lt. 0 .and. ab .gt. 0 ) then
 	    nffeta = 1
 	elseif ( a .gt. 0 .and. b .gt. 0 .and. ab .lt. 0 ) then
 	    nffeta = -1
-	elseif ( a .eq. 0 .and. DBLE(ca) .le. 0 .or.
-     +		 b .eq. 0 .and. DBLE(cb) .le. 0 .or.
+	elseif ( a .eq. 0 .and. Re(ca) .le. 0 .or.
+     +		 b .eq. 0 .and. Re(cb) .le. 0 .or.
      +		 ab .eq. 0 .and. rab .le. 0 ) then
 	    call fferr(32,ier)
 	    nffeta = 0
@@ -1002,25 +1027,25 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE COMPLEX ca,cb,cc
-	DOUBLE PRECISION a,b,ab
+	ComplexType ca,cb,cc
+	RealType a,b,ab
 #include "ff.h"
 *  #] declarations:
 *  #[ calculations:
-	a = DIMAG(ca)
-	b = DIMAG(cb)
+	a = Im(ca)
+	b = Im(cb)
 	if ( a .gt. 0 .neqv. b .gt. 0 ) then
 	    nffet1 = 0
 	    return
 	endif
-	ab = DIMAG(cc)
+	ab = Im(cc)
 	if ( a .lt. 0 .and. b .lt. 0 .and. ab .gt. 0 ) then
 	    nffet1 = 1
 	elseif ( a .gt. 0 .and. b .gt. 0 .and. ab .lt. 0 ) then
 	    nffet1 = -1
-	elseif ( a .eq. 0 .and. DBLE(ca) .le. 0 .or.
-     +		 b .eq. 0 .and. DBLE(cb) .le. 0 .or.
-     +		 ab .eq. 0 .and. DBLE(cc) .le. 0 ) then
+	elseif ( a .eq. 0 .and. Re(ca) .le. 0 .or.
+     +		 b .eq. 0 .and. Re(cb) .le. 0 .or.
+     +		 ab .eq. 0 .and. Re(cc) .le. 0 ) then
 	    call fferr(33,ier)
 	    nffet1 = 1
 	else
@@ -1050,14 +1075,14 @@
 *	arguments
 *
 	integer n,ier
-	DOUBLE PRECISION coeff(n)
-	DOUBLE COMPLEX z,cs
+	RealType coeff(n)
+	ComplexType z,cs
 *
 *	local variables
 *
 	integer i
-	DOUBLE PRECISION absc
-	DOUBLE COMPLEX c,zi,csi
+	RealType absc
+	ComplexType c,zi,csi
 *
 *	common blocks
 *
@@ -1065,16 +1090,16 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *  #] declarations:
 *  #[ work:
-	cs = z*DBLE(coeff(1))
+	cs = z*Re(coeff(1))
 	if ( absc(z) .lt. precc ) return
 	zi = z
 	do 10 i=2,n
 	    zi = zi*z
-	    csi = zi*DBLE(coeff(i))
+	    csi = zi*Re(coeff(i))
 	    cs = cs + csi
 	    if ( absc(csi) .lt. precc*absc(cs) ) goto 20
    10	continue
@@ -1104,12 +1129,12 @@
 *	arguments
 *
 	integer n,ier
-	DOUBLE PRECISION coeff(n),z,s
+	RealType coeff(n),z,s
 *
 *	local variables
 *
 	integer i
-	DOUBLE PRECISION zi,si
+	RealType zi,si
 *
 *	common blocks
 *

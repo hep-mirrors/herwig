@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ff2dl2:
@@ -31,12 +32,12 @@
 *	arguments:
 *
 	integer i,j,k,kj,iskj,l,m,n,nm,isnm,ns,ier
-	DOUBLE PRECISION del2d2,del2n,xpi(10),dpipj(10,10),piDpj(10,10)
+	RealType del2d2,del2n,xpi(10),dpipj(10,10),piDpj(10,10)
 *
 *	local variables:
 *
 	integer isii,ii,ik,ij,im,in,ier0,ier1
-	DOUBLE PRECISION s(5),del2m,del2nm,som,xmax,smax
+	RealType s(5),del2m,del2nm,som,xmax,smax
 *
 *	common blocks:
 *
@@ -85,7 +86,7 @@
 	endif
 	s(1) = del2m*piDpj(n,l)
 	s(2) = del2n*piDpj(m,l)
-	smax = abs(s(1))*DBLE(10)**(ier0-ier)
+	smax = abs(s(1))*Re(10)**(ier0-ier)
 	del2d2 = s(1) - s(2)
 	if ( abs(del2d2) .ge. xloss*smax ) goto 60
 
@@ -97,7 +98,7 @@
 	s(1) = del2n*piDpj(nm,l)
 	s(2) = del2nm*piDpj(n,l)
 	del2d2 = isnm*(s(1) - s(2))
-	smax = abs(s(2))*DBLE(10)**(ier0-ier)
+	smax = abs(s(2))*Re(10)**(ier0-ier)
 	if ( abs(del2d2) .ge. xloss*abs(s(1)) ) goto 60
 
 	if ( smax .lt. xmax ) then
@@ -108,7 +109,7 @@
 	s(1) = del2m*piDpj(nm,l)
 	s(2) = del2nm*piDpj(m,l)
 	del2d2 = isnm*(s(1) - s(2))
-	smax = abs(s(2))*DBLE(10)**(ier0-ier)
+	smax = abs(s(2))*Re(10)**(ier0-ier)
 	if ( abs(del2d2) .ge. xloss*abs(s(1)) ) goto 60
 
 	if ( smax .lt. xmax ) then
@@ -218,12 +219,12 @@
 *	arguments:
 *
 	integer i,j,k,kj,iskj,m,n,nm,isnm
-	DOUBLE PRECISION dl2d22,xpi(10),dpipj(10,10),piDpj(10,10)
+	RealType dl2d22,xpi(10),dpipj(10,10),piDpj(10,10)
 *
 *	local variables:
 *
 	integer ii,isii
-	DOUBLE PRECISION s(10),del2s,del23,del24,del27,som,smax,xmax
+	RealType s(10),del2s,del23,del24,del27,som,smax,xmax
 *
 *	common blocks:
 *
@@ -351,14 +352,14 @@
 *	arguments:
 *
 	integer i,j,k,kj,iskj,l,m,ml,isml,n,o,p,po,ispo,ier
-	DOUBLE PRECISION del3d2,xpi(10),dpipj(10,10),piDpj(10,10)
+	RealType del3d2,xpi(10),dpipj(10,10),piDpj(10,10)
 *
 *	local variables:
 *
 	integer isii,ii
-	DOUBLE PRECISION s(2),dl2il,dl2im,dl2ln,dl2mn,dl2iml,dl2mln
-	DOUBLE PRECISION d2d2j,d2d2k,d2d2kj,dum,d2d2o,d2d2p,d2d2po
-	DOUBLE PRECISION som,xmax
+	RealType s(2),dl2il,dl2im,dl2ln,dl2mn,dl2iml,dl2mln
+	RealType d2d2j,d2d2k,d2d2kj,dum,d2d2o,d2d2p,d2d2po
+	RealType som,xmax
 *
 *	common blocks:
 *

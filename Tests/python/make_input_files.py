@@ -137,9 +137,15 @@ elif(collider=="DIS") :
 # LEP
 elif(collider=="LEP") :
     if(simulation=="") :
-        process=""
-        if(parameterName=="10") :
-            process="set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
+        if(parameterName.find("gg")>=0) :
+            process ="create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n"
+            process+="insert /Herwig/MatrixElements/SimpleEE:MatrixElements[0] /Herwig/MatrixElements/MEee2Higgs2SM\n"
+            process+="set /Herwig/MatrixElements/MEee2Higgs2SM:Allowed Gluon\n"
+
+        else :
+            process="insert  /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq\n"
+            if(parameterName=="10") :
+                process+="set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
     elif(simulation=="Powheg") :
         process=""
         if(parameterName=="10") :

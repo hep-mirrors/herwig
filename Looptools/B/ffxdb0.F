@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxdb0:
@@ -25,12 +26,12 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cdb0,cdb0p
-	DOUBLE PRECISION xp,xma,xmb
+	ComplexType cdb0,cdb0p
+	RealType xp,xma,xmb
 *
 *	local variables
 *
-	DOUBLE PRECISION dmamb,dmap,dmbp
+	RealType dmamb,dmap,dmbp
 *
 *	common blocks
 *
@@ -84,18 +85,18 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cdb0,cdb0p
-	DOUBLE PRECISION xp,xma,xmb,dmap,dmbp,dmamb
+	ComplexType cdb0,cdb0p
+	RealType xp,xma,xmb,dmap,dmbp,dmamb
 *
 *	local variables
 *
 	integer i,initeq,jsign,initir
-	DOUBLE PRECISION ax,ffbnd,
+	RealType ax,ffbnd,
      +		xprceq,bdeq01,bdeq05,bdeq11,bdeq17,
      +		xprcn3,bdn301,bdn305,bdn310,
      +		xprcn5,bdn501,bdn505,bdn510,
      +		xprec0,bdn001,bdn005,bdn010,bdn015
-	DOUBLE PRECISION xm,dmp,xm1,xm2,dm1m2,dm1p,
+	RealType xm,dmp,xm1,xm2,dm1m2,dm1p,
      +		dm2p,s,s1,s1a,s1b,s1p,s2,s2a,s2b,s2p,x,y,som,
      +		xlam,slam,xlogmm,alpha,alph1,xnoe,xpneq(30),
      +		xx,dfflo1,dfflo3,d1,d2,diff,h,a,b,c,d,beta,
@@ -176,12 +177,12 @@
 *
 *	special case xp = xm
 *
-	elseif ( dmp.eq.0 ) then
+	elseif ( abs(dmp) .lt. diffeps ) then
 	    if ( lsmug ) then
-		if ( DBLE(cmipj(1,3)).lt.DBLE(cmipj(2,3)) ) then
-		    cdb0p = -1 - log(cmipj(1,3)*DBLE(1/xm))
+		if ( Re(cmipj(1,3)).lt.Re(cmipj(2,3)) ) then
+		    cdb0p = -1 - log(cmipj(1,3)*Re(1/xm))
 		else
-		    cdb0p = -1 - log(cmipj(2,3)*DBLE(1/xm))
+		    cdb0p = -1 - log(cmipj(2,3)*Re(1/xm))
 		endif
 	    else
 		if ( initir.eq.0 ) then
@@ -195,7 +196,7 @@
 		    cdb0p = -1 + log(xm/lambda)/2
 		endif
 	    endif
-	    cdb0 = cdb0p*(1/DBLE(xp))
+	    cdb0 = cdb0p*(1/Re(xp))
 	    goto 990
 	endif
 *
@@ -236,10 +237,10 @@
 * 	#[ short formula:
 	    s = log(abs(dmp/xm))
 	    cdb0p = -(1 + s*xm/xp)
-	    if ( xp.gt.xm ) cdb0p = cdb0p+DCMPLX(DBLE(0),DBLE(xm/xp*pi))
+	    if ( xp.gt.xm ) cdb0p = cdb0p+ToComplex(Re(0),Re(xm/xp*pi))
 * 	#] short formula:
 	endif
-	cdb0 = cdb0p*(1/DBLE(xp))
+	cdb0 = cdb0p*(1/Re(xp))
 	goto 990
 *  #] one mass equal to zero:
 *  #[ both masses equal:
@@ -261,7 +262,7 @@
 		initeq = 1
 		xpneq(1) = 1D0/6D0
 		do 1 i=2,30
-		    xpneq(i) = - xpneq(i-1)*DBLE(i)/DBLE(2*(2*i+1))
+		    xpneq(i) = - xpneq(i-1)*Re(i)/Re(2*(2*i+1))
     1		continue
 	    endif
 	    if (xprceq .ne. precx ) then
@@ -300,7 +301,7 @@
 	    endif
 	    cdb0p = -x*(xpneq(1)+som)
 	    if ( xp.ne.0 ) then
-		cdb0 = cdb0p*(1/DBLE(xp))
+		cdb0 = cdb0p*(1/Re(xp))
 	    else
 		cdb0 = xpneq(1)/xm
 	    endif
@@ -355,8 +356,8 @@
 	    y = 0
 	endif
 	xx = s - 1
-	cdb0p = DCMPLX(DBLE(xx),DBLE(y))
-	cdb0 = cdb0p*(1/DBLE(xp))
+	cdb0p = ToComplex(Re(xx),Re(y))
+	cdb0 = cdb0p*(1/Re(xp))
 	goto 990
 * -#]	normal case:
 *
@@ -660,8 +661,8 @@
 *--#]	    first try:
 	    y = 0
 	endif
-	cdb0p = DCMPLX(DBLE(xx),DBLE(y))
-	cdb0 = cdb0p*(1/DBLE(xp))
+	cdb0p = ToComplex(Re(xx),Re(y))
+	cdb0 = cdb0p*(1/Re(xp))
 	goto 990
 * -#]	normal case:
 *  #] unequal nonzero masses:

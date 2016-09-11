@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcc0p:
@@ -39,7 +40,7 @@
 *	arguments:
 *
 	integer ipi12(8),isoort(8),ilogi(3),npoin,ier
-	DOUBLE COMPLEX cs3(80),clogi(3),cpi(6),cpipj(6,6),
+	ComplexType cs3(80),clogi(3),cpi(6),cpipj(6,6),
      +		cpiDpj(6,6),sdel2,cel2si(3),etalam,etami(6),
      +		delpsi(3),alpha(3)
 *
@@ -47,19 +48,19 @@
 *
 	integer i,j,k,ip,ierw,jsoort(8),iw,ismall(3)
 	logical l4,l4pos
-	DOUBLE COMPLEX c,cs,zfflog,cs1,cs2,cs4
-	DOUBLE COMPLEX cy(4,3),cz(4,3),cw(4,3),cdyz(2,2,3),
+	ComplexType c,cs,zfflog,cs1,cs2,cs4
+	ComplexType cy(4,3),cz(4,3),cw(4,3),cdyz(2,2,3),
      +		cdwy(2,2,3),cdwz(2,2,3),cd2yzz(3),cd2yww(3)
-	DOUBLE COMPLEX csdl2i(3)
-*	DOUBLE COMPLEX cyp,cym,ca,cb,cc,cd
-	DOUBLE COMPLEX zfflo1
-	DOUBLE PRECISION absc
+	ComplexType csdl2i(3)
+*	ComplexType cyp,cym,ca,cb,cc,cd
+	ComplexType zfflo1
+	RealType absc
 	external zfflo1,zfflog
 *
 *	common blocks:
 *
 #include "ff.h"
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ get roots etc:
 *  #[   get z-roots:
@@ -144,7 +145,7 @@
 *  #]   get w-roots:
 *  #[   which case:
    90	if ( l4 ) then
-	    if ( DIMAG(alpha(1)) .ne. 0 ) then
+	    if ( Im(alpha(1)) .ne. 0 ) then
 		l4pos = .FALSE.
 	    elseif ( ierw .ge. 1 ) then
 		l4pos = .FALSE.
@@ -167,30 +168,30 @@
 		    clogi(i) = zfflo1(cs,ier)
 		    ilogi(i) = 0
 		    ismall(i) = 1
-		elseif ( DBLE(c) .gt. 0 ) then
+		elseif ( Re(c) .gt. 0 ) then
 		    clogi(i) = zfflog(c,0,czero,ier)
 		    ilogi(i) = 0
 		else
 		    if ( absc(c+1) .lt. xloss ) then
 			cs = -2*csdl2i(i)/cdyz(2,2,i)/
-     +				DBLE(cpi(i+3))
+     +				Re(cpi(i+3))
 			clogi(i) = zfflo1(cs,ier)
 			ismall(i) = -1
 		    else
 			cs = 0
 			clogi(i) = zfflog(-c,0,czero,ier)
 		    endif
-		    if ( DIMAG(c).lt.0 .or. DIMAG(cs).lt.0 ) then
+		    if ( Im(c).lt.0 .or. Im(cs).lt.0 ) then
 			ilogi(i) = -1
-		    elseif ( DIMAG(c).gt.0 .or. DIMAG(cs).gt.0 ) then
+		    elseif ( Im(c).gt.0 .or. Im(cs).gt.0 ) then
 			ilogi(i) = +1
-		    elseif ( DBLE(cdyz(2,2,i)) .eq. 0 ) then
-			ilogi(i)=-nint(sign(1D0,DBLE(cpi(i+3))))
+		    elseif ( Re(cdyz(2,2,i)) .eq. 0 ) then
+			ilogi(i)=-nint(sign(1D0,Re(cpi(i+3))))
 			ier = ier + 50
 			print *,'doubtful imaginary part ',ilogi(i)
 		    endif
-		    if ( abs(DIMAG(c)).lt.precc*absc(c) .and.
-     +			abs(DIMAG(cs)).lt.precc*absc(cs) ) then
+		    if ( abs(Im(c)).lt.precc*absc(c) .and.
+     +			abs(Im(cs)).lt.precc*absc(cs) ) then
 			print *,'ffcc0p: error: imaginary part doubtful'
 			ier = ier + 50
 		    endif
@@ -203,9 +204,9 @@
 	    if ( abs(ismall(i)+ismall(j)) .eq. 2 .and. absc(clogi(i)+
      +			clogi(j)) .lt. xloss*absc(clogi(i)) ) then
 *		assume that we got here because of complex sqrt(-delta)
-		cs1=-2*cI*DIMAG(cy(2,i))*csdl2i(j)/DBLE(cpi(j+3))/
+		cs1=-2*cI*Im(cy(2,i))*csdl2i(j)/Re(cpi(j+3))/
      +			(cdyz(2,2,i)*cdyz(2,2,j))
-		cs2=-2*cI*DIMAG(cy(2,j))*csdl2i(i)/DBLE(cpi(i+3))/
+		cs2=-2*cI*Im(cy(2,j))*csdl2i(i)/Re(cpi(i+3))/
      +			(cdyz(2,2,i)*cdyz(2,2,j))
 		cs = cs1 + cs2
 		if ( absc(cs) .lt. xloss*absc(cs1) ) then
@@ -220,15 +221,15 @@
 			print *,'ffcc0p: cancellations in delj-deli'
 			goto 96
 		    endif
-		    cs1 = cI*DIMAG(cy(2,j))*cs/(csdl2i(i)+csdl2i(j))
+		    cs1 = cI*Im(cy(2,j))*cs/(csdl2i(i)+csdl2i(j))
 		    call ffcl2t(cs2,cpiDpj,k+3,j,4,5,6,+1,-1,6)
-		    cs2 = -cs2*csdl2i(j)/sdel2/DBLE(cpi(j+3))
+		    cs2 = -cs2*csdl2i(j)/sdel2/Re(cpi(j+3))
 		    cs = cs1 + cs2
 		    if ( absc(cs) .lt. xloss*absc(cs1) ) then
 			print *,'ffcc0p: cancellations in extra terms'
 			goto 96
 		    endif
-		    cs = -2*cs/DBLE(cpi(i+3))/(cdyz(2,2,i)*
+		    cs = -2*cs/Re(cpi(i+3))/(cdyz(2,2,i)*
      +			cdyz(2,2,j))
 		endif
 		clogi(i) = zfflo1(cs,ier)
@@ -305,14 +306,14 @@
 *	arguments:
 *
 	integer ivert,ier,isoort(2)
-	DOUBLE COMPLEX cy(4),cz(4),cdyz(2,2),cd2yzz,csdelp,csdels
-	DOUBLE COMPLEX etalam,etami(6),delps,xpi(6),piDpj(6,6)
+	ComplexType cy(4),cz(4),cdyz(2,2),cd2yzz,csdelp,csdels
+	ComplexType etalam,etami(6),delps,xpi(6),piDpj(6,6)
 *
 *	local variables:
 *
 	integer ip1,is1,is2,is3
-	DOUBLE COMPLEX cdisc,c
-	DOUBLE PRECISION absc
+	ComplexType cdisc,c
+	RealType absc
 *
 *	common blocks:
 *
@@ -320,7 +321,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ set up pointers:
 	is1 = ivert
@@ -337,7 +338,7 @@
 		isoort(1) = 0
 		return
 	    endif
-	    if ( DIMAG(etalam).ne.0 ) then
+	    if ( Im(etalam).ne.0 ) then
 		isoort(1) = -1
 	    else
 		isoort(1) = -3
@@ -358,7 +359,7 @@
 	endif
 *  #] xk = 0:
 *  #[ get cy(1,2),cz(1,2):
-	if ( DIMAG(etalam).ne.0 ) then
+	if ( Im(etalam).ne.0 ) then
 	    isoort(1) = -1
 	    isoort(2) = -1
 	else
@@ -382,22 +383,22 @@
 *	some precautions:
 	if ( cz(3) .eq. 0 ) cz(1) = 1
 	if ( cz(4) .eq. 0 ) cz(2) = 1
-	if ( DIMAG(cz(1)).eq.0 )
-     +		cz(1) = DCMPLX(DBLE(cz(1)),-DIMAG(cz(3)))
-	if ( DIMAG(cz(2)).eq.0 )
-     +		cz(2) = DCMPLX(DBLE(cz(2)),-DIMAG(cz(4)))
-	if ( DIMAG(cz(1)) .gt. 0 .neqv. DIMAG(cz(3)) .lt. 0 ) then
-	    if ( abs(DBLE(cz(1))) .ge. abs(DBLE(cz(3))) ) then
-		cz(1) = DCMPLX(DBLE(cz(1)),-DIMAG(cz(3)))
+	if ( Im(cz(1)).eq.0 )
+     +		cz(1) = ToComplex(Re(cz(1)),-Im(cz(3)))
+	if ( Im(cz(2)).eq.0 )
+     +		cz(2) = ToComplex(Re(cz(2)),-Im(cz(4)))
+	if ( Im(cz(1)) .gt. 0 .neqv. Im(cz(3)) .lt. 0 ) then
+	    if ( abs(Re(cz(1))) .ge. abs(Re(cz(3))) ) then
+		cz(1) = ToComplex(Re(cz(1)),-Im(cz(3)))
 	    else
-		cz(3) = DCMPLX(DBLE(cz(3)),-DIMAG(cz(1)))
+		cz(3) = ToComplex(Re(cz(3)),-Im(cz(1)))
 	    endif
 	endif
-	if ( DIMAG(cz(2)) .gt. 0 .neqv. DIMAG(cz(4)) .lt. 0 ) then
-	    if ( abs(DBLE(cz(2))) .ge. abs(DBLE(cz(4))) ) then
-		cz(2) = DCMPLX(DBLE(cz(2)),-DIMAG(cz(4)))
+	if ( Im(cz(2)) .gt. 0 .neqv. Im(cz(4)) .lt. 0 ) then
+	    if ( abs(Re(cz(2))) .ge. abs(Re(cz(4))) ) then
+		cz(2) = ToComplex(Re(cz(2)),-Im(cz(4)))
 	    else
-		cz(4) = DCMPLX(DBLE(cz(4)),-DIMAG(cz(2)))
+		cz(4) = ToComplex(Re(cz(4)),-Im(cz(2)))
 	    endif
 	endif
 	cy(4) = 1-cy(2)
@@ -408,22 +409,22 @@
 	endif
 	if ( cy(3) .eq. 0 ) cy(1) = 1
 	if ( cy(4) .eq. 0 ) cy(2) = 1
-	if ( DIMAG(cy(1)).eq.0 )
-     +		cy(1) = DCMPLX(DBLE(cy(1)),-DIMAG(cy(3)))
-	if ( DIMAG(cy(2)).eq.0 )
-     +		cy(2) = DCMPLX(DBLE(cy(2)),-DIMAG(cy(4)))
-	if ( DIMAG(cy(1)) .gt. 0 .neqv. DIMAG(cy(3)) .lt. 0 ) then
-	    if ( abs(DBLE(cy(1))) .ge. abs(DBLE(cy(3))) ) then
-		cy(1) = DCMPLX(DBLE(cy(1)),-DIMAG(cy(3)))
+	if ( Im(cy(1)).eq.0 )
+     +		cy(1) = ToComplex(Re(cy(1)),-Im(cy(3)))
+	if ( Im(cy(2)).eq.0 )
+     +		cy(2) = ToComplex(Re(cy(2)),-Im(cy(4)))
+	if ( Im(cy(1)) .gt. 0 .neqv. Im(cy(3)) .lt. 0 ) then
+	    if ( abs(Re(cy(1))) .ge. abs(Re(cy(3))) ) then
+		cy(1) = ToComplex(Re(cy(1)),-Im(cy(3)))
 	    else
-		cy(3) = DCMPLX(DBLE(cy(3)),-DIMAG(cy(1)))
+		cy(3) = ToComplex(Re(cy(3)),-Im(cy(1)))
 	    endif
 	endif
-	if ( DIMAG(cy(2)) .gt. 0 .neqv. DIMAG(cy(4)) .lt. 0 ) then
-	    if ( abs(DBLE(cy(2))) .ge. abs(DBLE(cy(4))) ) then
-		cy(2) = DCMPLX(DBLE(cy(2)),-DIMAG(cy(4)))
+	if ( Im(cy(2)) .gt. 0 .neqv. Im(cy(4)) .lt. 0 ) then
+	    if ( abs(Re(cy(2))) .ge. abs(Re(cy(4))) ) then
+		cy(2) = ToComplex(Re(cy(2)),-Im(cy(4)))
 	    else
-		cy(4) = DCMPLX(DBLE(cy(4)),-DIMAG(cy(2)))
+		cy(4) = ToComplex(Re(cy(4)),-Im(cy(2)))
 	    endif
 	endif
 *  #] get cy(3,4),cz(3,4):

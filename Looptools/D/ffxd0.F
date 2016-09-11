@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *--#[ log:
@@ -62,14 +63,14 @@ c
 *
 *	arguments
 *
-	DOUBLE PRECISION xpi(13)
-	DOUBLE COMPLEX cd0
+	RealType xpi(13)
+	ComplexType cd0
 	integer ier
 *
 *	local variables
 *
 	logical luvw(3)
-	DOUBLE PRECISION dpipj(10,13)
+	RealType dpipj(10,13)
 *
 *	common blocks:
 *
@@ -110,12 +111,12 @@ c
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xpi(13),dpipj(10,13)
-	DOUBLE COMPLEX cd0
+	RealType xpi(13),dpipj(10,13)
+	ComplexType cd0
 *
 *	locals
 *
-	DOUBLE COMPLEX cs,cfac
+	ComplexType cs,cfac
 *
 *	and go!
 *
@@ -170,15 +171,15 @@ c
 *	arguments
 *
 	integer ndiv,ier
-	DOUBLE PRECISION xpi(13),dpipj(10,13)
-	DOUBLE COMPLEX cs,cfac
+	RealType xpi(13),dpipj(10,13)
+	ComplexType cs,cfac
 *
 *	local variables
 *
 	integer i,j,itype,ini2ir,ier2,idone,ier0
 	logical ldel2s
-	DOUBLE COMPLEX c,cs1,cs2
-	DOUBLE PRECISION absc,xmax,xpip(13),dpipjp(10,13),piDpjp(10,10),
+	ComplexType c,cs1,cs2
+	RealType absc,xmax,xpip(13),dpipjp(10,13),piDpjp(10,10),
      +		qiDqj(10,10),del2s,lambda0
 	save ini2ir,lambda0
 *
@@ -191,14 +192,14 @@ c
 	integer iermem(memory),ialmem(memory),memind,ierini,nscsav,
      +		isgnsa
 	logical onssav
-	DOUBLE PRECISION xpimem(10,memory),dl4mem(memory)
-	DOUBLE COMPLEX csmem(memory),cfcmem(memory)
+	RealType xpimem(10,memory),dl4mem(memory)
+	ComplexType csmem(memory),cfcmem(memory)
 	save memind,iermem,ialmem,xpimem,dl4mem,nscsav,onssav,csmem,
      +		cfcmem
 *
 *	statement function:
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	data
 *
@@ -398,16 +399,16 @@ c
 *
 	integer ndiv,ier
 	logical lir,ldel2s
-	DOUBLE PRECISION xpip(13),dpipjp(10,13),piDpjp(10,10),xmax,del2s
-	DOUBLE COMPLEX cs,cfac
+	RealType xpip(13),dpipjp(10,13),piDpjp(10,10),xmax,del2s
+	ComplexType cs,cfac
 *
 *	local variables
 *
-	DOUBLE COMPLEX c,cs4(175),cs3(2)
+	ComplexType c,cs4(175),cs3(2)
 	logical laai
 	integer i,ier0,itime,maxlos,init,isoort(16),ipi12(28),
      +		ipi123(2),ipi12t,idone
-	DOUBLE PRECISION absc,sdel2s,ai(4),daiaj(4,4),aai(4),
+	RealType absc,sdel2s,ai(4),daiaj(4,4),aai(4),
      +		dt3t4,xqi(10),dqiqj(10,10),qiDqj(10,10),xfac
 	save maxlos
 *
@@ -417,7 +418,7 @@ c
 *
 *	statement function:
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	data
 *
@@ -525,10 +526,10 @@ c
 *
 *	see the note at the end of this section about the sign
 *
-	if ( DIMAG(cfac) .eq. 0 ) then
-	    cfac = xfac/DBLE(cfac)
+	if ( Im(cfac) .eq. 0 ) then
+	    cfac = xfac/Re(cfac)
 	else
-	    cfac = DBLE(xfac)/cfac
+	    cfac = Re(xfac)/cfac
 	endif
 *
 *	sum'em up:
@@ -561,17 +562,17 @@ c
 	do 120 i=17,28
 	    ipi12t = ipi12t + ipi12(i)
   120	continue
-	cs = cs + ipi12t*DBLE(pi12)
+	cs = cs + ipi12t*Re(pi12)
 *
 *	If the imaginary part is very small it most likely is zero
 *	(can be removed, just esthetically more pleasing)
 *
-	if ( abs(DIMAG(cs)) .lt. precc*abs(DBLE(cs)) )
-     +		cs = DCMPLX(DBLE(cs))
+	if ( abs(Im(cs)) .lt. precc*abs(Re(cs)) )
+     +		cs = ToComplex(Re(cs))
 *
 *	it is much nicer to have the sign of cfac fixed, say positive
 *
-	if ( DBLE(cfac) .lt. 0 .or. (DBLE(cfac) .eq. 0 .and. DIMAG(cfac)
+	if ( Re(cfac) .lt. 0 .or. (Re(cfac) .eq. 0 .and. Im(cfac)
      +		.lt. 0 ) ) then
 	    cfac = -cfac
 	    cs = -cs
@@ -591,8 +592,8 @@ c
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE PRECISION xpi(13),xqi(13)
-	DOUBLE COMPLEX cd0,cd0p
+	RealType xpi(13),xqi(13)
+	ComplexType cd0,cd0p
 	integer inew(13,6),irota,ier0,ier1,i,j,ialsav
 	save inew
 #include "ff.h"
@@ -667,8 +668,8 @@ c
 *	arguments
 *
 	integer info,ier
-	DOUBLE PRECISION xpi(13),piDpj(10,10),del3p,del4s
-	DOUBLE COMPLEX cd0
+	RealType xpi(13),piDpj(10,10),del3p,del4s
+	ComplexType cd0
 *
 *	local vars
 *
@@ -740,7 +741,7 @@ c
 *	arguments
 *
 	logical luvw(3)
-	DOUBLE PRECISION xpi(13),dpipj(10,13)
+	RealType xpi(13),dpipj(10,13)
 *
 *	local variables
 *
