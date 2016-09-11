@@ -173,7 +173,6 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper:minusL No
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
 ##################################################
 # select the analyses
 ##################################################
