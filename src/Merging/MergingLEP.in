@@ -242,7 +242,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
 
 
 
-cd /Herwig/DipoleShower/
+cd /Herwig/DipoleShower/Kernels
 set FFgx2ggxDipoleKernel:CMWScheme On
 set FFqx2qgxDipoleKernel:CMWScheme On
 set FFgx2ddxDipoleKernel:CMWScheme On

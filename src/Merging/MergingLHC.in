@@ -231,7 +231,7 @@ cd /Herwig/Analysis
 clear /Herwig/Generators/LHCGenerator:AnalysisHandlers
 
 create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
-insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Rivet
+insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 RivetAnalysis
 
 
 cd /Herwig/Generators
@@ -292,7 +292,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_EL
 
 
 
-cd /Herwig/DipoleShower/
+cd /Herwig/DipoleShower/Kernels
 set FFgx2ggxDipoleKernel:CMWScheme On
 set FFqx2qgxDipoleKernel:CMWScheme On
 set FFgx2ddxDipoleKernel:CMWScheme On
