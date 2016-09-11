@@ -88,7 +88,7 @@ IBPtr Merger::fullclone() const {
 
 
 
-double Merger::reweightCKKWBornGamma(NPtr Node){
+CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   
   double weightCL=0.;
   weight=1.;
@@ -127,7 +127,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node){
  
   if (treefactory()->onlymulti()!=-1&&
       treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
-    return 0.;
+    return ZERO;
   
   
   if(!Node->allAbove(mergePt()-0.1*GeV))weight=0.;
@@ -137,11 +137,11 @@ double Merger::reweightCKKWBornGamma(NPtr Node){
     if (Born->parent()) {
         //cout<<"\n parent not pass";
     }
-    return 0.;
+    return ZERO;
     
   }
 
-  double res=0.;
+  CrossSection res=ZERO;
   bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
 
 
@@ -152,26 +152,26 @@ double Merger::reweightCKKWBornGamma(NPtr Node){
   if (!fillProjector(projectedscale))weight=0.;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
-  if(weight==0.&&weightCL==0.)return 0.;
+  if(weight==0.&&weightCL==0.)return ZERO;
  
-  res+=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?theGamma:1.);
+  res+=weight*TreedSigDR(startscale,Node,(!maxMulti&&!projected)?theGamma:1.);
   }
   
   if(CLNode&&theGamma!=1.){
     Energy startscale=CKKW_StartScale(BornCL);
     Energy projectedscale=startscale;
     fillHistory( startscale,  BornCL, CLNode);
-    if (!fillProjector(projectedscale))return 0.;
+    if (!fillProjector(projectedscale))return ZERO;
     Node->runningPt(projectedscale);
     weightCL*=history.back().weight*alphaReweight()*pdfReweight();
-    double diff=0;
+    CrossSection diff=ZERO;
     Node->nodeME()->factory()->setAlphaParameter(1.);
-    diff-=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
+    diff-=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME));
     Node->nodeME()->factory()->setAlphaParameter(theGamma);
     
     string alp=(CLNode->dipol()->aboveAlpha()?"Above":"Below");
     
-    diff+=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
+    diff+=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME));
     Node->nodeME()->factory()->setAlphaParameter(1.);
     
     res+=diff;
@@ -185,7 +185,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node){
 
 
 
-double Merger::reweightCKKWBornStandard(NPtr Node){
+CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
   
 
   
@@ -195,7 +195,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node){
       Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
       particles.push_back(p);
     }
-    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))return 0.;
+    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))return ZERO;
   }
   
   NPtr Born= Node-> getHistory(true,xiQSh);
@@ -212,32 +212,32 @@ double Merger::reweightCKKWBornStandard(NPtr Node){
   
   if (treefactory()->onlymulti()!=-1&&
       treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
-    return 0.;
+    return ZERO;
   
   assert(Node->allAbove(mergePt()-0.1*GeV));
   
 
   
   if (!Born->xcomb()->willPassCuts()){
-    return 0.;
+    return ZERO;
   }
   
   
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node);
-  if (!fillProjector(projectedscale))return 0.;
+  if (!fillProjector(projectedscale))return ZERO;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight(); 
-  if(weight==0.)return 0.;
+  if(weight==0.)return ZERO;
   bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
-  return weight*matrixElementWeight(startscale,Node,1.);
+  return weight*TreedSigDR(startscale,Node,1.);
 }
 
  
 
-double Merger::reweightCKKWVirtualStandard(NPtr Node ){
+CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
     if (UseRandom::rnd()<.5){
@@ -248,36 +248,33 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node ){
   }else{
     weight=1.;projected=false;Node->nodeME()->projectorStage(0);
   }
-  if (!Born->xcomb()->willPassCuts())return 0.;
+  if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node);
   //if (history.size()==1&&Node->children().size()!=0) {
   //  cout<<"\n1-->"<<startscale/GeV<<" "<<weight;
   //}
-  if (!fillProjector(projectedscale))return 0.;
+  if (!fillProjector(projectedscale))return ZERO;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
-  if(weight==0.)return 0.;
+  if(weight==0.)return ZERO;
   bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
-  double matrixElement=matrixElementWeightWithLoops(startscale,Node);
-  double Bornweight=Node->nodeME()->lastBorndSigHatDR();
+  CrossSection matrixElement=LoopdSigDR(startscale,Node);
+  
+  assert(false);
+  CrossSection Bornweight=Node->nodeME()->dSigHatDRB();
   
  
   
-  double unlopsweight =(-sumpdfReweightUnlops()
+  CrossSection unlopsweight =(-sumpdfReweightUnlops()
                         -sumalphaReweightUnlops()
                         -sumfillHistoryUnlops())
                        *Bornweight
                        *SM().alphaS()/(2.*ThePEG::Constants::pi);
-    //assert(unlopsweight==0.||history.size()!=1);
-  //if (history.size()==1&&Node->children().size()!=0) {
-     
-     //cout<<"\n unlopsweight "<<unlopsweight<<" "<<matrixElement;
-     //cout<<"\n updf"<< sumpdfReweightUnlops()<<"  ualpha "<<sumalphaReweightUnlops()<<" uhist "<<sumfillHistoryUnlops();
-   //}
+
  
   return weight*
          as(startscale*xiRenSh)/SM().alphaS()*
@@ -285,16 +282,16 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node ){
 }
 
 
-double Merger::reweightCKKWRealStandard(NPtr Node){
+CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
   bool allAbove=Node->allAbove(mergePt());
-  if(!Node->allAbove(theIRSafePT))return 0.;
-  if (allAbove)return reweightCKKWRealAllAbove(Node);
+  if(!Node->allAbove(theIRSafePT))return ZERO;
+  if (allAbove)return MergingDSigDRRealAllAbove(Node);
   if (UseRandom::rnd()<.5)
-    return 2.*reweightCKKWRealBelowSubReal( Node );
-  return 2.*reweightCKKWRealBelowSubInt( Node);
+    return 2.*MergingDSigDRRealBelowSubReal( Node );
+  return 2.*MergingDSigDRRealBelowSubInt( Node);
 }
 
-double Merger::reweightCKKWRealAllAbove(NPtr Node){
+CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
   NPtr Born= Node-> getHistory(true,xiQSh);
   NPtr CLNode= Node->randomChild();
   bool inhist=CLNode->isInHistoryOf(Born);
@@ -307,27 +304,27 @@ double Merger::reweightCKKWRealAllAbove(NPtr Node){
   }else{
       weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
   }
-  if (!CLNode->allAbove(mergePt()))return 0.;
-  if (!Born->xcomb()->willPassCuts())return 0.;
+  if (!CLNode->allAbove(mergePt()))return ZERO;
+  if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, CLNode);
-  if (!fillProjector(projectedscale))return 0.;
+  if (!fillProjector(projectedscale))return ZERO;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
-  if(weight==0.)return 0.;
+  if(weight==0.)return ZERO;
   bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
-  double res= weight*as(startscale*xiRenSh)/SM().alphaS()*
+  CrossSection res= weight*as(startscale*xiRenSh)/SM().alphaS()*
          (double)Node->children().size()*
-         ((inhist?matrixElementWeight(startscale,Node):0.)
-          +CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn);
+         ((inhist?TreedSigDR(startscale,Node):ZERO)
+          +CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME)));
     // cout<<"\nCLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn "<<CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
   return res;
 }
 
-double Merger::reweightCKKWRealBelowSubReal(NPtr Node){
+CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   NPtrVec children=Node->children();
   Selector<NPtr> HistNodeSel;
   Energy minScale=generator()->maximumCMEnergy();
@@ -349,25 +346,25 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node){
   }else{
     weight=1.;  projected=false; Node->nodeME()->projectorStage(0);
   }
-  if (!Born->xcomb()->willPassCuts())return 0.;
+  if (!Born->xcomb()->willPassCuts())return ZERO;
   
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, HistNode);
-  if (!fillProjector(projectedscale))return 0.;
+  if (!fillProjector(projectedscale))return ZERO;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
-  if(weight==0.)return 0.;
+  if(weight==0.)return ZERO;
   bool maxMulti=HistNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
-  double sumPS=0;
+  CrossSection sumPS=ZERO;
   for (NPtrVec::iterator child = children.begin();
        child != children.end(); child++){
     if ((*child)->allAbove(mergePt()))
       sumPS-=(*child)->calcPs(startscale*xiFacME);
   }
-  double me=matrixElementWeight(startscale,Node);
+  CrossSection me=TreedSigDR(startscale,Node);
   //cout<<"\nSubReal "<<Node->miniPt()/GeV<<" "<<me<<" "<<sumPS<<" "<<me/sumPS;
   
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
@@ -376,7 +373,7 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node){
 
 
 
-double Merger::reweightCKKWRealBelowSubInt(NPtr Node){
+CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   NPtr CLNode= Node->randomChild();
   NPtr Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
@@ -387,23 +384,20 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node){
   }else{
     weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
   }
-  if (!CLNode->allAbove(mergePt()))return 0.;
-  if (!Born->xcomb()->willPassCuts())return 0.;
+  if (!CLNode->allAbove(mergePt()))return ZERO;
+  if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, CLNode);
-  if (!fillProjector(projectedscale))return 0.;
+  if (!fillProjector(projectedscale))return ZERO;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
-  if(weight==0.)return 0.;
+  if(weight==0.)return ZERO;
   bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
-  pair<double,double> DipAndPs=make_pair(0.,0.);
-  //if (Born==CLNode&&!CLNode->children().empty())
-  //  DipAndPs=make_pair(CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn,0.);
-  //else
-    DipAndPs=CLNode->calcDipandPS(startscale*xiFacME);
+  pair<CrossSection,CrossSection> DipAndPs=
+               CLNode->calcDipandPS(startscale*xiFacME);
   
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
          (double)Node->children().size()*(DipAndPs.second-DipAndPs.first);
@@ -418,21 +412,23 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node){
 
 
 
-double Merger::matrixElementWeight(Energy startscale,NPtr Node,double diffAlpha){
-  double res;
+CrossSection Merger::TreedSigDR(Energy startscale,NPtr Node,double diffAlpha){
+  
   NPtr DeepHead=Node;//->deepHead();
   renormscale(startscale);
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   theCalculateInNode=false;
-  res=DeepHead->nodeME()->dSigHatDR(diffAlpha)/nanobarn;
+  CrossSection res=DeepHead->nodeME()->dSigHatDRB();
+  if (diffAlpha!=1.) {
+    res+=DeepHead->nodeME()->dSigHatDRAlphaDiff(diffAlpha);
+  }
   renormscale(0.0*GeV);
   theCalculateInNode=true;
   return res;
 }
 
-double Merger::matrixElementWeightWithLoops(Energy startscale,NPtr Node){
-  double res=0.;
+CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
     // The deephead should be calculated here.
   NPtr DeepHead=Node;//->deepHead();
   renormscale(startscale);
@@ -440,7 +436,7 @@ double Merger::matrixElementWeightWithLoops(Energy startscale,NPtr Node){
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   theCalculateInNode=false;
   DeepHead->nodeME()->doOneLoopNoBorn();
-  res=DeepHead->nodeME()->dSigHatDR()/nanobarn;
+  CrossSection res=DeepHead->nodeME()->dSigHatDRV();
   DeepHead->nodeME()->noOneLoopNoBorn();
   renormscale(0.0*GeV);
   theCalculateInNode=true;
@@ -733,87 +729,75 @@ Ptr<MFactory>::ptr Merger::treefactory(){return theTreeFactory;}
 
 
 
-
-
-
-bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res) {
+void Merger::doinit(){
+  assert(DSH()->hardScaleIsMuF());
   
-  Ptr<StandardEventHandler>::ptr eH =
-  dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(generator()->eventHandler());
-  
+}
+
+
+CrossSection Merger::MergingDSigDR() {
   
   history.clear();
   
   theNf=5;//TODO
   
-  if (!SX) return true;
-  assert(SX->eventHandlerPtr());
-  Ptr<MatchboxMEBase>::ptr ME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(SX->matchboxME());
-  if (!ME) return true;
-  
-  if (theFirstNodeMap.find(ME)==theFirstNodeMap.end()) {
+  if (theFirstNodeMap.find(theCurrentME)==theFirstNodeMap.end()) {
     cout<<"\nnot in map:"<<theFirstNodeMap.size();
   }
   
   
-  NPtr Node = theFirstNodeMap[SX->matchboxME()];
+  NPtr Node = theFirstNodeMap[theCurrentME];  assert(Node);
   
-  Ptr<MFactory>::ptr factory = dynamic_ptr_cast<Ptr<MFactory>::ptr>(Node->nodeME()->factory());
   
-  assert(factory);
-  
-  if (!Node) return true;
-  NPtr MENode = Node;
-  Ptr<AlphaEMBase>::transient_pointer alphaEM = SX->eventHandler().SM().alphaEMPtr();
-  
-  assert(DSH()->hardScaleIsMuF());
-  
-  xiRenME=ME->renormalizationScaleFactor();
-  xiFacME=ME->factorizationScaleFactor();
+  xiRenME=theCurrentME->renormalizationScaleFactor();
+  xiFacME=theCurrentME->factorizationScaleFactor();
   xiRenSh=DSH()->renormalizationScaleFactor();
   xiFacSh=DSH()->factorizationScaleFactor();
   xiQSh=DSH()->hardScaleFactor();
   
+  DSH()->setCurrentHandler();
+  
+  DSH()->eventHandler(generator()->eventHandler());
+  
 
-
+  CrossSection res=ZERO;
   if(Node->deepHead()->subtractedReal()){
-    res*=reweightCKKWRealStandard(Node);
+    res=MergingDSigDRRealStandard(Node);
     theCurrentMaxLegs=maxLegsNLO();
   }else if(Node->deepHead()->virtualContribution()){
-    res*=reweightCKKWVirtualStandard(Node);
+    res=MergingDSigDRVirtualStandard(Node);
     theCurrentMaxLegs=maxLegsNLO();
   }else if(theGamma!=1.){
-    res*=reweightCKKWBornGamma(Node);
+    res=MergingDSigDRBornGamma(Node);
     theCurrentMaxLegs=maxLegsLO();
   }else{
-    res*=reweightCKKWBornStandard(Node);
+    res=MergingDSigDRBornStandard(Node);
     theCurrentMaxLegs=maxLegsLO();
   }
   
   
   
-  SX->lastCentralScale(sqr(Node->runningPt()));
-  SX->lastShowerScale(sqr(Node->runningPt()));
-  if(SX->lastProjector()){
-    SX->lastProjector()->lastCentralScale(sqr(Node->runningPt()));
-    SX->lastProjector()->lastShowerScale(sqr(Node->runningPt()));
+  theCurrentME->lastXCombPtr()->lastCentralScale(sqr(Node->runningPt()));
+  theCurrentME->lastXCombPtr()->lastShowerScale(sqr(Node->runningPt()));
+  if(theCurrentME->lastXCombPtr()->lastProjector()){
+    theCurrentME->lastXCombPtr()->lastProjector()->lastCentralScale(sqr(Node->runningPt()));
+    theCurrentME->lastXCombPtr()->lastProjector()->lastShowerScale(sqr(Node->runningPt()));
   }
   
   renormscale(0.0*GeV);
-  if (res == 0.){
+  if (res == ZERO){
     history.clear();
-    return false;
+    return res;
   }
   
   
-  cleanup(MENode);
   cleanup(Node);
   DSH()->eventRecord().clear();
-  SX->subProcess(SubProPtr());
+  theCurrentME->lastXCombPtr()->subProcess(SubProPtr());
   
   history.clear();
   
-  return true;
+  return res;
   
 }
 

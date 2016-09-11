@@ -49,6 +49,8 @@ public:
   virtual ~MergerBase();
 
   virtual void setXComb(Ptr<MatchboxMEBase>::ptr,tStdXCombPtr,int)=0;
+  virtual void setME(Ptr<MatchboxMEBase>::ptr)=0;
+  
   virtual void setKinematics(Ptr<MatchboxMEBase>::ptr)=0;
   virtual void clearKinematics(Ptr<MatchboxMEBase>::ptr)=0;
   virtual bool generateKinematics(Ptr<MatchboxMEBase>::ptr,const double *)=0;
@@ -60,7 +62,7 @@ public:
   virtual Energy mergingScale() const=0;
   virtual bool matrixElementRegion(PVector particles,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV)=0;
   
-  virtual bool reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res)=0;
+  virtual CrossSection MergingDSigDR() =0;
 
 
   //@}

@@ -61,16 +61,16 @@ IBPtr DipoleShowerHandler::fullclone() const {
 
 double DipoleShowerHandler::reweightCKKW(int, int) {
   
-  setCurrentHandler();
+    // setCurrentHandler();
 
-  eventHandler(generator()->eventHandler());
+    //eventHandler(generator()->eventHandler());
    
-  if (!firstInteraction()) return 1.;
+    //if (!firstInteraction()) return 1.;
   
   double res = 1.;
   
-  if (theMergingHelper&&!theMergingHelper->reweightCKKWSingle(dynamic_ptr_cast<Ptr<MatchboxXComb>::ptr>(lastXCombPtr()), res))
-      return 0.;
+    // if (theMergingHelper&&!theMergingHelper->reweightCKKWSingle(dynamic_ptr_cast<Ptr<MatchboxXComb>::ptr>(lastXCombPtr()), res))
+    //  return 0.;
   
   
   

@@ -94,8 +94,8 @@ namespace Herwig {
     bool dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
     */
     
-    pair<double,double> calcDipandPS(Energy scale);
-    double calcPs(Energy scale);
+    pair<CrossSection,CrossSection> calcDipandPS(Energy scale);
+    CrossSection calcPs(Energy scale);
     
     /** recursive flush caches and clean up XCombs. */
     

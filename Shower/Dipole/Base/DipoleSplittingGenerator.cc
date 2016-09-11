@@ -543,7 +543,7 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
     double varx=10.;
     int k=0;
 
-    while (((k<500.||var>0.05)&&k<50000)){
+    while (((k<100.||var>0.05)&&k<50000)){
      k+=1.;
      RN[0]= optKappaCutoff+(1-optKappaCutoff)*UseRandom::rnd();
      for (size_t rn=1;rn< parameters.size();rn++)RN[rn]=UseRandom::rnd();

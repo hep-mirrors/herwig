@@ -552,18 +552,35 @@ public:
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
-  virtual CrossSection dSigHatDR() const{return dSigHatDR(1.);}
-
+      virtual CrossSection dSigHatDR() const;
 
   /**
-   * Return the matrix element squared differential in the variables
-   * given by the last call to generateKinematics().
+   * Always same prefactor
+   **/
+  CrossSection prefactor()const;
+
+  /**
+   * Born part of the cross section
+   **/
+  CrossSection dSigHatDRB() const ;
+      
+  /**
+   * Virtual corrections of the cross section
+   **/
+  CrossSection dSigHatDRV() const ;
+      
+  /**
+   * Insertion operators of the cross section
+   **/
+  CrossSection dSigHatDRI() const ;
+      
+  /**
    * If diffAlpha is not 1 and the matrix element has insertion operators 
    * this routine adds the difference between the insertion operator calculated 
-   * an alpha-Parameter to the insertion operator without alpha-parameter.
-   */
-
-  CrossSection dSigHatDR(double diffAlpha) const;
+   * with an alpha-Parameter to the insertion operator without alpha-parameter.
+   */ 
+  CrossSection dSigHatDRAlphaDiff(double alpha) const ;
+      
 
   //@}
 
@@ -861,6 +878,11 @@ public:
    * Return true, if verbose
    */
   bool initVerbose() const;
+      
+  /**
+   * Tool to validate the diagrams
+   */
+  void verboseDia(double )const;
 
   /**
    * Dump the setup to an ostream

@@ -88,6 +88,14 @@ public:
     theLastXComb = xc;
     lastMatchboxXComb(xc);
   }
+      
+      
+  /**
+   * Set parameters for new alpha parameter.
+   */
+  virtual void setAlpha(double )const {assert(false);}
+  
+    
 
   /**
    * Return the number of additional random variables
@@ -155,6 +163,18 @@ public:
    * and possible additional random numbers.
    */
   virtual CrossSection dSigHatDR() const;
+      
+      
+  /**
+   * Evaluate the difference of dSigHatDR with and without alpha 
+   * parameter.
+   */
+  virtual CrossSection dSigHatDRAlphaDiff(double alpha) const{
+    setAlpha(alpha);
+    CrossSection res=dSigHatDR();
+    setAlpha(1.);
+    return res-dSigHatDR();
+  }
 
   //@}
 

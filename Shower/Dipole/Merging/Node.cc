@@ -416,12 +416,12 @@ bool Node::DipolesAboveMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,E
 
 
 
-pair<double,double> Node::calcDipandPS(Energy scale){
+pair<CrossSection,CrossSection> Node::calcDipandPS(Energy scale){
   return  dipol()->dipandPs(sqr(scale),deepHead()->MH()->largeNBasis());
 }
 
-double Node::calcPs(Energy scale){
-  return dipol()->ps(sqr(scale),deepHead()->MH()->largeNBasis())/nanobarn;
+CrossSection Node::calcPs(Energy scale){
+  return dipol()->ps(sqr(scale),deepHead()->MH()->largeNBasis());
 }
 
 

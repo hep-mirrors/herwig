@@ -269,8 +269,10 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
     scaleChoice()->setXComb(xc);
   if ( matchboxAmplitude() )
     matchboxAmplitude()->setXComb(xc);
-  if (theMerger)
+  if (theMerger){
+    theMerger->setME(this);
     theMerger->setXComb(this,xc, theProjectorStage);
+  }
 
 }
 
@@ -678,92 +680,78 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
-CrossSection MatchboxMEBase::dSigHatDR(double diffAlpha) const {
-  getPDFWeight();
-
-
-  if (theMerger&&theMerger->calculateInNode()) {
-    lastMECrossSection(1.0*nanobarn);
-    return lastMECrossSection();
+void MatchboxMEBase::verboseDia(double xme2)const{
+  double diagweightsum = 0.0;
+  for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
+       d != diagrams().end(); ++d ) {
+    diagweightsum += phasespace()->diagramWeight(dynamic_cast<const Tree2toNDiagram&>(**d));
   }
-  
-  
-  if (!theMerger&&!subNode()&& !lastXCombPtr()->willPassCuts() ) {
-    lastME2(0.0);
-    lastMECrossSection(ZERO);
-    return lastMECrossSection();
-  }
-
-  double xme2 = me2();
-  lastME2(xme2);
-
-  if (factory()->verboseDia()){
-    double diagweightsum = 0.0;
-    for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
-        d != diagrams().end(); ++d ) {
-        diagweightsum += phasespace()->diagramWeight(dynamic_cast<const Tree2toNDiagram&>(**d));
-    }
-    double piWeight = pow(2.*Constants::pi,(int)(3*(meMomenta().size()-2)-4));
-    double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-    bookMEoverDiaWeight(log(xme2/(diagweightsum*piWeight*units)));//
-  }
-  
-  if ( xme2 == 0. && !oneLoopNoBorn() ) {
-    lastMECrossSection(ZERO);
-    return lastMECrossSection();
-  }
-
-  double vme2 = 0.;
-  if ( oneLoop() && !oneLoopNoLoops() )
-    vme2 = oneLoopInterference();
-
-  CrossSection res = ZERO;
+  double piWeight = pow(2.*Constants::pi,(int)(3*(meMomenta().size()-2)-4));
+  double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+  bookMEoverDiaWeight(log(xme2/(diagweightsum*piWeight*units)));
+}
 
 
-  setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
-   
-  if ( !oneLoopNoBorn() )
-    res += 
-      (sqr(hbarc)/(2.*lastSHat())) *
-      jacobian()* lastMEPDFWeight() * xme2;
+CrossSection MatchboxMEBase::prefactor()const{
+  return (sqr(hbarc)/(2.*lastSHat())) *jacobian()* lastMEPDFWeight();
+}
 
-  if ( oneLoop() && !oneLoopNoLoops() )
-    res += 
-      (sqr(hbarc)/(2.*lastSHat())) *
-      jacobian()* lastMEPDFWeight() * vme2;
+CrossSection MatchboxMEBase::dSigHatDRB() const {
+  lastME2(me2());
+  return oneLoopNoBorn()?ZERO:prefactor() * lastME2();
+}
 
-  if ( (oneLoop() &&!onlyOneLoop())||diffAlpha!=1. ) {
+CrossSection MatchboxMEBase::dSigHatDRV() const {
+  lastME2(me2());
+  return ( oneLoop() && !oneLoopNoLoops() )?(prefactor() * oneLoopInterference()):ZERO;
+}
+
+CrossSection MatchboxMEBase::dSigHatDRI() const {
+  lastME2(me2());
+  CrossSection res=ZERO;
+  if  (oneLoop() &&!onlyOneLoop())  {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-	    virtuals().begin(); v != virtuals().end(); ++v ) {
+         virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
-      if (diffAlpha==1.) {
-        res += (**v).dSigHatDR();
-      }else  {
-        CrossSection x= (**v).dSigHatDR();
-        factory()->setAlphaParameter(diffAlpha);
-        (**v).setXComb(lastXCombPtr());
-        x  -= (**v).dSigHatDR();
-        factory()->setAlphaParameter(1.);
-        res -=x;
-      }
+      res += (**v).dSigHatDR();
     }
     if ( checkPoles() && oneLoop() )
       logPoles();
   }
+  return res;
+}
 
-  double weight = 0.0;
-  bool applied = false;
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    (**rw).setXComb(lastXCombPtr());
-    if ( !(**rw).apply() )
-      continue;
-    weight += (**rw).evaluate();
-    applied = true;
+CrossSection MatchboxMEBase::dSigHatDRAlphaDiff(double alpha) const {
+  lastME2(me2());
+  CrossSection res=ZERO;
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
+        virtuals().begin(); v != virtuals().end(); ++v ) {
+    (**v).setXComb(lastXCombPtr());
+    res+=(**v).dSigHatDRAlphaDiff( alpha);
   }
-  if ( applied )
-    res *= weight;
-  lastMECrossSection(res);
+  return res;
+}
+
+
+
+
+
+
+CrossSection MatchboxMEBase::dSigHatDR() const {
+  getPDFWeight();
+  
+  if (theMerger){
+    lastMECrossSection(theMerger->MergingDSigDR());
+    return lastMECrossSection();
+  }else if (lastXCombPtr()->willPassCuts() ) {
+    lastMECrossSection(dSigHatDRB()+
+                       dSigHatDRV()+
+                       dSigHatDRI());
+    return lastMECrossSection();
+  }
+
+  lastME2(ZERO);
+  lastMECrossSection(ZERO);
 
   return lastMECrossSection();
 

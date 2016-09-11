@@ -788,7 +788,7 @@ public:
    *  Calculate the dipole dSigDR and the parton shower approximation for this dipole.
    **/
 
-  pair<double,double> dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
+  pair<CrossSection,CrossSection> dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
 
   //@}
 

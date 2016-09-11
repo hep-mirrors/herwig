@@ -93,8 +93,8 @@ namespace Herwig {
     bool   projectorStage(NPtr);
     Energy CKKW_StartScale(NPtr);
     void   CKKW_PrepareSudakov(NPtr,Energy);
-    double matrixElementWeight(Energy startscale,NPtr,double diffalpha=1.);
-    double matrixElementWeightWithLoops(Energy startscale,NPtr);
+    CrossSection TreedSigDR(Energy startscale,NPtr,double diffalpha=1.);
+    CrossSection LoopdSigDR(Energy startscale,NPtr);
     bool   fillProjector(Energy&);
     void   fillHistory(Energy, NPtr, NPtr );
     
@@ -115,23 +115,21 @@ namespace Herwig {
     bool   doUNLOPS(NPtr Born,Energy  running, Energy next,Energy fixedScale, double& UNLOPS);
     
     
+    void setME(Ptr<MatchboxMEBase>::ptr me){theCurrentME=me;}
     
-    
-    bool   reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res) ;
-    double reweightCKKWBornStandard(NPtr Node);
-    double reweightCKKWBornGamma(NPtr Node);
+    CrossSection MergingDSigDR() ;
+    CrossSection MergingDSigDRBornStandard(NPtr Node);
+    CrossSection MergingDSigDRBornGamma(NPtr Node);
 
-    double reweightCKKWVirtualStandard(NPtr Node);
+    CrossSection MergingDSigDRVirtualStandard(NPtr Node);
     
-    double reweightCKKWRealStandard(NPtr Node);
-    double reweightCKKWRealAllAbove(NPtr Node);
+    CrossSection MergingDSigDRRealStandard(NPtr Node);
     
-    double reweightCKKWRealBelowSubReal(NPtr Node);
-    double reweightCKKWRealBelowSubInt(NPtr Node);
+    CrossSection MergingDSigDRRealAllAbove(NPtr Node);
+    CrossSection MergingDSigDRRealBelowSubReal(NPtr Node);
+    CrossSection MergingDSigDRRealBelowSubInt(NPtr Node);
     
     
-      //double reweightCKKWVirt(NPtr Node);
-      //double reweightCKKWReal(NPtr Node);
     double as(Energy q){return DSH()->as(q);}
     Ptr<DipoleShowerHandler>::ptr DSH(){return theDipoleShowerHandler;}
     
@@ -272,6 +270,8 @@ namespace Herwig {
     Ptr<JetFinder>::ptr theMergingJetFinder;
     Ptr<ColourBasis>::ptr theLargeNBasis;
     
+    Ptr<MatchboxMEBase>::ptr theCurrentME;
+    
     
 
     
@@ -286,7 +286,18 @@ namespace Herwig {
     Ptr<MFactory>::ptr theTreeFactory;
     map<Ptr<MatchboxMEBase>::ptr,NPtr> theFirstNodeMap;
     
+  protected:
     
+    /** @name Standard Interfaced functions. */
+      //@{
+    /**
+     * Initialize this object after the setup phase before saving an
+     * EventGenerator to disk.
+     * @throws InitException if object could not be initialized properly.
+     */
+    virtual void doinit();
+    
+      //@}
   
     
   public:
