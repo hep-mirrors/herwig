@@ -806,7 +806,12 @@ CrossSection Merger::MergingDSigDR() {
   theCurrentME->lastXCombPtr()->subProcess(SubProPtr());
   
   history.clear();
-  
+ 
+  if(std::isnan(double(res/nanobarn))|| !std::isfinite(double(res/nanobarn))){
+     cout<<"Warning merger weight is "<<res/nanobarn<<" -> setting to 0";
+     return ZERO;
+  }
+ 
   return res;
   
 }
