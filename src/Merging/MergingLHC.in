@@ -151,11 +151,11 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-set LHCGenerator:EventHandler:MultipleInteractionHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
-erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
+#set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+#set LHCGenerator:EventHandler:MultipleInteractionHandler NULL
+#set LHCGenerator:EventHandler:DecayHandler NULL
+#set LHCGenerator:EventHandler:HadronizationHandler NULL
+#erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
 
 
 
@@ -231,9 +231,6 @@ set  /Herwig/Merging/MScale:ScaleChoice LeptonPairMassScale
 
 
 
-cd /Herwig/Generators
-set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
 
 
 

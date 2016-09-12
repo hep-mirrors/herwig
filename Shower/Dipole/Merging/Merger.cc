@@ -228,11 +228,20 @@ CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
   fillHistory( startscale,  Born, Node);
   if (!fillProjector(projectedscale))return ZERO;
   Node->runningPt(projectedscale);
-  weight*=history.back().weight*alphaReweight()*pdfReweight(); 
+  double w1=history.back().weight;
+  double w2=alphaReweight();
+  double w3=pdfReweight();
+  
+  if(std::isnan(w1)){cout<<"\nhistory weight is nan";w1=0.;};
+  if(std::isnan(w2)){cout<<"\nalphaReweight weight is nan";w1=0.;};
+  if(std::isnan(w3)){cout<<"\npdfReweight weight is nan";w1=0.;};
+  weight*=w1*w2*w3;
   if(weight==0.)return ZERO;
   bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
-  return weight*TreedSigDR(startscale,Node,1.);
+  CrossSection w4=TreedSigDR(startscale,Node,1.);
+  if(std::isnan(double(w4/nanobarn))){cout<<"\nTreedSigDR is nan";w1=0.;};
+  return weight*w4;
 }
 
  
