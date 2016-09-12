@@ -16,7 +16,8 @@ set ShowerNLOPDF:PDFName MMHT2014nlo68cl
 
 
 
-
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.0*GeV
 
 
 set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
