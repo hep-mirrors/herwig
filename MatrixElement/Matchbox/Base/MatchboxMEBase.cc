@@ -696,16 +696,19 @@ CrossSection MatchboxMEBase::prefactor()const{
 }
 
 CrossSection MatchboxMEBase::dSigHatDRB() const {
+  getPDFWeight();
   lastME2(me2());
   return oneLoopNoBorn()?ZERO:prefactor() * lastME2();
 }
 
 CrossSection MatchboxMEBase::dSigHatDRV() const {
+  getPDFWeight();
   lastME2(me2());
   return ( oneLoop() && !oneLoopNoLoops() )?(prefactor() * oneLoopInterference()):ZERO;
 }
 
 CrossSection MatchboxMEBase::dSigHatDRI() const {
+  getPDFWeight();
   lastME2(me2());
   CrossSection res=ZERO;
   if  (oneLoop() &&!onlyOneLoop())  {
@@ -721,6 +724,7 @@ CrossSection MatchboxMEBase::dSigHatDRI() const {
 }
 
 CrossSection MatchboxMEBase::dSigHatDRAlphaDiff(double alpha) const {
+  getPDFWeight();
   lastME2(me2());
   CrossSection res=ZERO;
   for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =

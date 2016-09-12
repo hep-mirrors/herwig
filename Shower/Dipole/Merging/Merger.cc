@@ -126,7 +126,7 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
 
  
   if (treefactory()->onlymulti()!=-1&&
-      treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
+      treefactory()->onlymulti()!=int(Node->legsize()-Node->nodeME()->projectorStage()))
     return ZERO;
   
   
@@ -142,7 +142,7 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   }
 
   CrossSection res=ZERO;
-  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
+  bool maxMulti=Node->legsize() == maxLegsLO();
 
 
   if(weight!=0.){
@@ -444,14 +444,18 @@ CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
 }
 
 bool Merger::fillProjector(Energy& prerunning){
+  // in the shower handler the scale is multiplied by xiQSh
+  // so here we need to devide this
+  
+  double xiQShfactor=history.begin()->node->legsize()==N0()?xiQSh:1.;
   if(history.begin()->node->deepHead()->nodeME()->projectorStage() == 0){
-    prerunning=(history.size()==1?xiQSh:1.)*history.back().scale;
+    prerunning=(history.size()==1?1.:(1./xiQShfactor))*history.back().scale;
     return true;
   }
   for (History::iterator it=history.begin();it!=history.end();it++){
     if (projectorStage((*it).node)&&history.begin()->node->deepHead()->nodeME()->projectorStage() != 0){
       history.begin()->node->deepHead()->xcomb()->lastProjector((*it).node->xcomb());
-      prerunning=(it==history.begin()?xiQSh:1.)*(*it).scale;
+      prerunning=(it==history.begin()?1.:(1./xiQShfactor))*(*it).scale;
       return true;
     }
   }
@@ -461,14 +465,15 @@ bool Merger::fillProjector(Energy& prerunning){
 double Merger::pdfReweight(){
   
   double res=1.;
-  
+  double facfactor=(history[0].node->legsize()==N0()?xiFacME:xiFacSh);
   for(int side=0;side!=2;side++){
     if(history[0].node->xcomb()->mePartonData()[side]->coloured()){
       History::iterator it=history.begin();
       for (;it+1!=history.end();it++){
-        res *= pdfratio((*it).node, (*it).scale,xiFacSh*((*it).node->dipol()->lastPt()), side);
+        res *= pdfratio((*it).node, facfactor*(*it).scale,xiFacSh*((*it).node->dipol()->lastPt()), side);
+	facfactor=xiFacSh;
       }
-      res*=pdfratio(history.back().node,history.back().scale ,history[0].scale*xiFacME, side);
+      res*=pdfratio(history.back().node,facfactor*history.back().scale ,history[0].scale*xiFacME, side);
     }
   }
   return res;
@@ -476,13 +481,13 @@ double Merger::pdfReweight(){
 
 double Merger::alphaReweight(){
   double res=1.;
-  Energy Q_R=xiRenME*history[0].scale;
+  Energy Q_R=(history[0].node->legsize()==N0()?xiRenME:xiRenSh)*history[0].scale;
   res *= pow(as(Q_R) / SM().alphaS(), history[0].node->nodeME()->orderInAlphaS());
   res *= pow(history[0].node->deepHead()->xcomb()->eventHandler().SM().alphaEMPtr()->value(history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED())/ SM().alphaEMMZ(), history[0].node->nodeME()->orderInAlphaEW());
  
 
   if (!(history[0].node->children().empty())){ 
-    res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(Q_R))/2./Constants::pi):1.),int(history[0].node->nodeME()->mePartonData().size()-N0()));
+    res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(Q_R))/2./Constants::pi):1.),int(history[0].node->legsize()-N0()));
   }
 
 
@@ -503,7 +508,10 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode){
   double sudakov0_n=1.;
   history.push_back(HistoryStep(Begin,sudakov0_n,scale));
   
-  scale*=xiQSh;
+  
+  double xiQShfactor=history.begin()->node->legsize()==N0()?xiQSh:1.;
+  
+  scale*=xiQShfactor;
   if (Begin->parent()||!isUnitarized) {
     while (Begin->parent() && (Begin != EndNode)) {
       if (!dosudakov(Begin,scale, Begin->dipol()->lastPt(),sudakov0_n)){
@@ -516,7 +524,7 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode){
     
     Energy notunirunning=scale;
     
-    if (!isUnitarized&&N()+N0() > int(Begin->deepHead()->nodeME()->lastMEMomenta().size())) {
+    if (!isUnitarized&&N()+N0() > int(Begin->deepHead()->legsize())) {
       if (!dosudakov(Begin,notunirunning,mergePt(),sudakov0_n)){
         history.back().weight=0.;
       }else{
@@ -532,8 +540,8 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode){
 
 double Merger::sumpdfReweightUnlops(){
   double res=0.;
-  Energy beam1Scale=history[0].scale*xiFacME;
-  Energy beam2Scale=history[0].scale*xiFacME;
+  Energy beam1Scale=history[0].scale*(history[0].node->legsize()==N0()?xiFacME:xiFacSh);
+  Energy beam2Scale=history[0].scale*(history[0].node->legsize()==N0()?xiFacME:xiFacSh);
   History::iterator it=history.begin();
   
   
@@ -697,22 +705,23 @@ double Merger::pdfUnlops(tcPDPtr particle,tcPDPtr parton,tcPDFPtr pdf,Energy  ru
 double Merger::sumalphaReweightUnlops(){
   double res=0.;
   if (!(history[0].node->children().empty())){
-    res +=alphasUnlops(history[0].scale,
-                       history[0].scale)*int(history[0].node->nodeME()->mePartonData().size()-N0());
-    assert(int(history[0].node->nodeME()->mePartonData().size()-N0())>0);
+    res +=alphasUnlops(history[0].scale*xiRenSh,
+                       history[0].scale*xiRenME)*int(history[0].node->legsize()-N0());
+    assert(int(history[0].node->legsize()-N0()>0));
   }
     // dsig is calculated with fixed alpha_s
   for (History::iterator it=history.begin();(it+1)!=history.end();it++){
     assert((*it).node->parent());
-    res +=alphasUnlops((*it).node->dipol()->lastPt()*xiRenSh ,history[0].scale*xiRenME);
+    res +=alphasUnlops((*it).node->dipol()->lastPt()*xiRenSh ,history[0].scale);
   }
   return res;
 }
 
 double Merger::sumfillHistoryUnlops(){
   double res=0.;
+  double xiQShfactor=history.begin()->node->legsize()==N0()?xiQSh:1.;
   for (History::iterator it = history.begin(); (it+1) != history.end();it++){
-    doUNLOPS((*it).node,(it == history.begin()?xiQSh:1.)*(*it).scale , (*it).node->dipol()->lastPt() , history[0].scale, res);
+    doUNLOPS((*it).node,(it == history.begin()?xiQShfactor:1.)*(*it).scale , (*it).node->dipol()->lastPt() , history[0].scale, res);
   }
   return res;
 }
@@ -758,6 +767,7 @@ CrossSection Merger::MergingDSigDR() {
   DSH()->setCurrentHandler();
   
   DSH()->eventHandler(generator()->eventHandler());
+  assert(DSH()->hardScaleIsMuF());
   
 
   CrossSection res=ZERO;
@@ -776,7 +786,7 @@ CrossSection Merger::MergingDSigDR() {
   }
   
   
-  
+  //cout<<"\nrunning "<<Node->runningPt()/GeV<<" "<<Node->legsize(); 
   theCurrentME->lastXCombPtr()->lastCentralScale(sqr(Node->runningPt()));
   theCurrentME->lastXCombPtr()->lastShowerScale(sqr(Node->runningPt()));
   if(theCurrentME->lastXCombPtr()->lastProjector()){
@@ -836,9 +846,9 @@ void Merger::CKKW_PrepareSudakov(NPtr Born,Energy running){
 Energy Merger::CKKW_StartScale(NPtr Born){
   Energy res=generator()->maximumCMEnergy();;
   if(!Born->children().empty()){
-    for (size_t i=0;i<Born->nodeME()->mePartonData().size();i++){
+    for (int i=0;i<Born->legsize();i++){
       if (!Born->nodeME()->mePartonData()[i]->coloured())continue;
-      for (size_t j=i+1;j<Born->nodeME()->mePartonData().size();j++){
+      for (int j=i+1;j<Born->legsize();j++){
         if (i==j||!Born->nodeME()->mePartonData()[j]->coloured())continue;
         res= min(res,sqrt(2.*Born->nodeME()->lastMEMomenta()[i]*Born->nodeME()->lastMEMomenta()[j]));
       }
@@ -862,7 +872,7 @@ double Merger::alphasUnlops( Energy next,Energy fixedScale)  {
 }
 
 
-double Merger::pdfratio(NPtr  Born,Energy & nominator_scale, Energy denominator_scale,int side){
+double Merger::pdfratio(NPtr  Born,Energy  nominator_scale, Energy denominator_scale,int side){
   
   StdXCombPtr bXc = Born->xcomb();
   assert (bXc->mePartonData()[side]->coloured());
@@ -923,8 +933,8 @@ bool Merger::doUNLOPS(NPtr Born,Energy  running, Energy next,Energy fixedScale, 
 bool Merger::projectorStage(NPtr  Born){
   
   return	(Born->deepHead()->nodeME()->projectorStage() ==
-             int((Born->deepHead()->nodeME()->mePartonData().size()
-                  - Born->nodeME()->mePartonData().size())));
+             int((Born->deepHead()->legsize()
+                  - Born->legsize())));
 }
 
 void Merger::cleanup(NPtr Born) {

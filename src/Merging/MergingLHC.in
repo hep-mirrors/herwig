@@ -7,6 +7,18 @@ set /Herwig/Partons/PDFSet:PDFName MMHT2014nlo68cl
 set /Herwig/Particles/p+:PDF PDFSet
 set /Herwig/Particles/pbar-:PDF PDFSet
 
+set HardLOPDF:PDFName MMHT2014nlo68cl
+set HardNLOPDF:PDFName MMHT2014nlo68cl
+set ShowerLOPDF:PDFName MMHT2014nlo68cl
+set ShowerNLOPDF:PDFName MMHT2014nlo68cl
+#set MPIPDF:PDFName MMHT2014nlo68cl
+#set RemnantPDF:PDFName MMHT2014nlo68cl
+
+
+
+
+
+
 set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
 set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff  0.78
 set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff  0.78
@@ -122,8 +134,8 @@ create Herwig::Merger Merger
 
 
 create Herwig::MergingReweight MPreWeight HwDipoleShower.so
-insert PPMFactory:Preweighters 0  MPreWeight
-set MPreWeight:HTPower 2
+#insert PPMFactory:Preweighters 0  MPreWeight
+set MPreWeight:HTPower 0
 set MPreWeight:MaxPTPower 0
 set MPreWeight:OnlyColoured False
 
@@ -166,12 +178,12 @@ cd /Herwig/Samplers
 
 
 set Monaco:EnhancementFactor 1.2
-set Monaco:InitialPoints 200
+set Monaco:InitialPoints 1000
 set Monaco:LuminosityMapperBins 8
-set Monaco:NIterations 1
+set Monaco:NIterations 4
 set Monaco:RemapChannelDimension Yes
 set Monaco:RemapperMinSelection 0.0001
-set Monaco:RemapperPoints 200
+set Monaco:RemapperPoints 1000
 set Monaco:UseAllIterations No
 
 set Sampler:UpdateAfter 1000

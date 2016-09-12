@@ -75,6 +75,7 @@ Ptr<MatchboxMEBase>::ptr Node::nodeME() {
   return thenodeMEPtr;
 }
 
+int Node::legsize() const {return nodeME()->legsize();}
 
 Ptr<Node>::ptr  Node::randomChild() {
   return thechildren[(int)(UseRandom::rnd() *  thechildren.size())];
@@ -348,13 +349,20 @@ Ptr<Node>::ptr Node::getHistory(bool normal,double hardScaleFactor) {
                         make_pair((*it)->dipol()->bornEmitter(),(*it)->dipol()->bornSpectator()),
                                   deepHead()->MH()->largeNBasis())!=0.
          ){
-         
+        
+	  double weight=abs((*it)->dipol()->dSigHatDR()/nanobarn);
+	  if(weight!=0.){
+             subprosel.insert(weight , (*it));
+              minpt=min(minpt,(*it)->dipol()->lastPt());
+          }
+
+        /*
           if((*it)->nodeME()->dSigHatDR()/nanobarn!=0.){
              subprosel.insert((abs((*it)->dipol()->dSigHatDR() /
               (*it)->nodeME()->dSigHatDR()*deepHead()->MH()->as((*it)->dipol()->lastPt()))), (*it));
               minpt=min(minpt,(*it)->dipol()->lastPt());
           }
-        
+        */
            //TODO choosehistories
         
         

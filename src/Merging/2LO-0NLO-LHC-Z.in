@@ -18,10 +18,22 @@ set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
+cd /Herwig/MatrixElements/Matchbox/Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
+
 cd /Herwig/Merging
 set PPMFactory:OrderInAlphaS 0
 set PPMFactory:OrderInAlphaEW 2
 do PPMFactory:Process p p e+ e-
+
+create ColorFull::TraceBasis LargeNTraceBasis
+set LargeNTraceBasis:LargeN On
+set Merger:LargeNBasis LargeNTraceBasis
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+clear /Herwig/Merging/PPMFactory:Amplitudes
+insert /Herwig/Merging/PPMFactory:Amplitudes 0 MadGraph
+
 
 
 cd /Herwig/Generators

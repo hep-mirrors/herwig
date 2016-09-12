@@ -144,6 +144,8 @@ namespace Herwig {
     
     bool isInHistoryOf(Ptr<Node>::ptr other);
     
+    int legsize() const;
+    
     
     /** set the first node (godfather). only use in factory*/
     

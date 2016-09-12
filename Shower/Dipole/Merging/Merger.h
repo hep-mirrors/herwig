@@ -101,7 +101,7 @@ namespace Herwig {
     
     double sumpdfReweightUnlops();
     double sumalphaReweightUnlops();
-    double pdfratio(NPtr,Energy&,Energy,int);
+    double pdfratio(NPtr,Energy,Energy,int);
     double pdfReweight();
     double alphaReweight();
     

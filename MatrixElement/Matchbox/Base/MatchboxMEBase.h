@@ -373,6 +373,13 @@ public:
    * Access the meMomenta.
    */
   vector<Lorentz5Momentum>& lastMEMomenta() { return meMomenta(); }
+  
+  
+  /**
+   * leg size
+   */
+  
+  int legsize() const {return int(meMomenta().size());}
 
   //@}
 
