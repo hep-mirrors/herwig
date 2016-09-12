@@ -30,12 +30,12 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 create ColorFull::TraceBasis LargeNTraceBasis
 set LargeNTraceBasis:LargeN On
-set Merger:LargeNBasis LargeNTraceBasis
+set /Herwig/Merging/Merger:LargeNBasis LargeNTraceBasis
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
-clear /Herwig/MatrixElements/Matchbox/PPMFactory:Amplitudes
-insert /Herwig/MatrixElements/Matchbox/PPMFactory:Amplitudes 0 GenericProcesses
+clear /Herwig/Merging/PPMFactory:Amplitudes
+insert /Herwig/Merging/PPMFactory:Amplitudes 0 GenericProcesses
 
 set GenericProcesses:TreeLevelAmplitude MadGraph
 set GenericProcesses:OneLoopAmplitude OpenLoops

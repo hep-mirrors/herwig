@@ -30,7 +30,7 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 create ColorFull::TraceBasis LargeNTraceBasis
 set LargeNTraceBasis:LargeN On
-set Merger:LargeNBasis LargeNTraceBasis
+set /Herwig/Merging/Merger:LargeNBasis LargeNTraceBasis
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 clear /Herwig/Merging/PPMFactory:Amplitudes
