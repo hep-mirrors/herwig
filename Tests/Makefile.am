@@ -207,7 +207,7 @@ Rivet-ISR-% : Rivet/ISR-%.in
 
 Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
                   $(shell echo Rivet/LEP{,-Powheg,-Matchbox-Powheg}-14.in) \
-	          $(shell echo Rivet/LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg) \
+	          $(shell echo Rivet/LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10.52,10.52-sym,10.54,10.45}.in) \
                   $(shell echo Rivet/BFactory-{Upsilon,Upsilon2,Upsilon4,Tau,10.58-res}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \

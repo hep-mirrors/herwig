@@ -2,15 +2,16 @@
 * a special case of the D0 function
 * original code by Francesco Tramontano
 * this file is part of LoopTools
-* last modified 8 Dec 10 th
+* last modified 13 Sep 12 th
 
 #include "externals.h"
+#include "types.h"
 
 
 	subroutine ffd0tra(res, S, T, ML2, ME2, ier)
 	implicit none
-	DOUBLE COMPLEX res
-	DOUBLE PRECISION S, T, ML2, ME2
+	ComplexType res
+	RealType S, T, ML2, ME2
 	integer ier
 
 c===============================c
@@ -30,17 +31,12 @@ c   p4^2=ME2                    c
 c                               c
 c===============================c
 
-	DOUBLE COMPLEX xp, xm, ypS, ymS, ypT, ymT, ypE, ymE
-	DOUBLE COMPLEX xr, yr
+	ComplexType xp, xm, ypS, ymS, ypT, ymT, ypE, ymE
+	ComplexType xr, yr
 	integer iepsS, iepsT, iepsE
 
-	DOUBLE COMPLEX ffint3
+	ComplexType ffint3
 	external ffint3
-
-c	PRINT *, "ML2=", ML2
-c	PRINT *, "ME2=", ME2
-c	PRINT *, "S=", S
-c	PRINT *, "T=", T
 
 	call fftraroot(xm, xp, xr, -ML2*(ME2 - S - T)/(S*T))
 	call fftraroot(ymS, ypS, yr, ML2/S)
@@ -76,51 +72,45 @@ c	PRINT *, "T=", T
 ***#]*comment:***********************************************************
 *  #[ declarations:
 	implicit none
-	DOUBLE COMPLEX xm, xp, r
-	DOUBLE PRECISION c
+	ComplexType xm, xp, r
+	RealType c
 *  #] declarations:
 
-	r = sqrt(DCMPLX(1 - 4*c))
+	r = sqrt(ToComplex(1 - 4*c))
 	xp = .5D0*(1 + r)
 	xm = .5D0*(1 - r)
-c	PRINT *, "c=", c
-c	PRINT *, "r=", r
-c	PRINT *, "xp=", xp
-c	PRINT *, "xm=", xm
 	if( abs(xp) .gt. abs(xm) ) then
 	  xm = c/xp
 	else
 	  xp = c/xm
 	endif
-c	PRINT *, "xp'=", xp
-c	PRINT *, "xm'=", xm
 	end
 
 ************************************************************************
 
-	DOUBLE COMPLEX function ffint3(y, x, ieps, ier)
+	ComplexType function ffint3(y, x, ieps, ier)
 	implicit none
-	DOUBLE COMPLEX y, x
+	ComplexType y, x
 	integer ieps, ier
 
 * compute \int_0^1 dz log(z - y)/(z - x)
 
 #include "ff.h"
 
-	DOUBLE COMPLEX arg1, arg2, dd1, dd2, zlog
+	ComplexType arg1, arg2, dd1, dd2, zlog
 	integer ipi121, ipi122
 
-c	DOUBLE PRECISION rarg1, rarg2
+c	RealType rarg1, rarg2
 c	equivalence (arg1, rarg1), (arg2, rarg2)
 
-c	DOUBLE PRECISION ddilog
-c	DOUBLE COMPLEX li2
+c	RealType ddilog
+c	ComplexType li2
 c	external ddilog, li2
 
-	if( DIMAG(x) .ne. 0 ) call ffwarn(258, ier, 1D0, 0D0)
+	if( Im(x) .ne. 0 ) call ffwarn(258, ier, 1D0, 0D0)
 
 	arg1 = x/(x - y)
-	if( abs(DIMAG(arg1)) .lt. 1D-15 ) then
+	if( abs(Im(arg1)) .lt. 1D-15 ) then
 	  call ffzxdl(dd1, ipi121, zlog, arg1, ieps, ier)
 c	  dd1 = ddilog(rarg1)
 c	  if( rarg1 .gt. 1 )
@@ -131,7 +121,7 @@ c	  dd1 = li2(arg1)
 	endif
 
 	arg2 = (x - 1)/(x - y)
-	if( abs(DIMAG(arg2)) .lt. 1D-15 ) then
+	if( abs(Im(arg2)) .lt. 1D-15 ) then
 	  call ffzxdl(dd2, ipi122, zlog, arg2, ieps, ier)
 c	  dd2 = ddilog(rarg2)
 c	  if( rarg2 .gt. 1 )

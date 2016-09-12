@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxb1:
@@ -26,12 +27,12 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xp,xm1,xm2,piDpj(3,3)
-	DOUBLE COMPLEX cb1,cb0,ca0i(2)
+	RealType xp,xm1,xm2,piDpj(3,3)
+	ComplexType cb1,cb0,ca0i(2)
 *
 *	local variables
 *
-	DOUBLE PRECISION dm1m2
+	RealType dm1m2
 *
 *	common blocks
 *
@@ -73,17 +74,17 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xp,xm1,xm2,dm1m2,piDpj(3,3)
-	DOUBLE COMPLEX cb1,cb0,ca0i(2)
+	RealType xp,xm1,xm2,dm1m2,piDpj(3,3)
+	ComplexType cb1,cb0,ca0i(2)
 *
 *	local variables
 *
 	logical lneg
-	DOUBLE PRECISION xmax,absc,s,s1,h,slam,bnd101,bnd105,bnd110,
+	RealType xmax,absc,s,s1,h,slam,bnd101,bnd105,bnd110,
      +		xma,xmb,x,ax,xlogm,small,dmbma,xprec,xlam,ts2Dp,
      +		xmxp,xlo3,dfflo3
-	DOUBLE COMPLEX cs(5),cc,csom
-	DOUBLE PRECISION ffbnd,dfflo1
+	ComplexType cs(5),cc,csom
+	RealType ffbnd,dfflo1
 	external ffbnd,dfflo1,dfflo3
 	save xprec,bnd101,bnd105,bnd110
 *
@@ -93,7 +94,7 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *
 *	data
 *
@@ -110,14 +111,14 @@
 		cs(1) = 0
 		cs(2) = 0
 	    endif
-	    cs(3) = +DBLE(2*piDpj(1,3))*cb0
+	    cs(3) = +Re(2*piDpj(1,3))*cb0
 	    cb1 = cs(1) + cs(2) + cs(3)
 	    xmax = max(absc(cs(2)),absc(cs(3)))
 	    if ( absc(cb1) .ge. xloss*xmax ) goto 110
 * 	#] normal case:
 * 	#[ almost equal masses:
 	    if ( abs(dm1m2) .le. xloss*xm1 ) then
-		cs(2) = DBLE(dm1m2/xm1)*cs(2)
+		cs(2) = Re(dm1m2/xm1)*cs(2)
 		cs(1) = -xm2*dfflo1(-dm1m2/xm2,ier)
 		cb1 = cs(1) + cs(2) + cs(3)
 		xmax = max(absc(cs(2)),absc(cs(3)))
@@ -198,7 +199,7 @@
 		    cs(1) = -cs(1)
 		    cs(2) = -cs(2)
 		endif
-		cs(3) = -DBLE(xp)*cb0
+		cs(3) = -Re(xp)*cb0
 		cb1 = cs(1) + cs(2) + cs(3)
 		xmax = max(absc(cs(2)),absc(cs(3)))
 		if ( absc(cb1) .gt. xloss*xmax) goto 110
@@ -222,13 +223,13 @@
   100	    continue
   110	    continue
 * 	#] give up:
-	    cb1 = cb1*(1/DBLE(2*xp))
+	    cb1 = cb1*(1/Re(2*xp))
 *  #] p^2 != 0:
 *  #[ p^2=0, m1 != m2:
 	elseif ( dm1m2 .ne. 0 ) then
-	    cs(1) = +DBLE(xm2/(2*dm1m2**2))*(ca0i(2)+DBLE(xm2)/2)
-	    cs(2) = -DBLE(xm1/(2*dm1m2**2))*(ca0i(1)+DBLE(xm1)/2)
-	    cs(3) = +ca0i(2)*(1/DBLE(dm1m2))
+	    cs(1) = +Re(xm2/(2*dm1m2**2))*(ca0i(2)+Re(xm2)/2)
+	    cs(2) = -Re(xm1/(2*dm1m2**2))*(ca0i(1)+Re(xm1)/2)
+	    cs(3) = +ca0i(2)*(1/Re(dm1m2))
 	    cb1 = cs(1) + cs(2) + cs(3)
 	    xmax = max(absc(cs(1)),absc(cs(2)),absc(cs(3)))
 	    if ( absc(cb1).ge.xloss**2*xmax ) goto 120
@@ -242,7 +243,7 @@
 	    endif
 	    cs(1) = -(xm1/dm1m2)/2
 	    cs(2) = -xlogm/2*(xm1/dm1m2)**2
-	    cs(3) = +1/DBLE(4) - ca0i(1)*DBLE(1/(2*xm1))
+	    cs(3) = +1/Re(4) - ca0i(1)*Re(1/(2*xm1))
 	    cs(4) = xlogm/2
 	    csom = cs(1) + cs(2) + cs(3) + cs(4)
 	    xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)))
@@ -259,7 +260,7 @@
 	    cs(2) = -(dm1m2/xm1)/2
 	    cs(3) = -xlo3/(dm1m2/xm1)**2/2
 	    cs(4) = xlo3/2
-	    cs(5) = 1/DBLE(2) - ca0i(1)*DBLE(1/(2*xm1))
+	    cs(5) = 1/Re(2) - ca0i(1)*Re(1/(2*xm1))
 	    csom = cs(1) + cs(2) + cs(3) + cs(4) + cs(5)
 	    xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)),absc(cs(5)))
 	    if ( xmxp.lt.xmax ) then

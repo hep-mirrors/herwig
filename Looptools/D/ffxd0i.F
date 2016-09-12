@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffx2ir:
@@ -38,14 +39,14 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cs1,cs2
-	DOUBLE PRECISION xpip(13),dpipjp(10,13)
+	ComplexType cs1,cs2
+	RealType xpip(13),dpipjp(10,13)
 *
 *	local vars
 *
 	integer itest,ier0,ier1,i,j,iinx(6,4)
-	DOUBLE COMPLEX cc0
-	DOUBLE PRECISION xpi3(6),dpipj3(6,6)
+	ComplexType cc0
+	RealType xpi3(6),dpipj3(6,6)
 	save itest,iinx
 *
 *	common
@@ -87,7 +88,7 @@
 	idsub = idsub + 1
 	ier1 = 0
 	call ffxc0a(cc0,xpi3,dpipj3,ier1)
-	cs1 = -cc0/DBLE(dpipjp(9,2))
+	cs1 = -cc0/Re(dpipjp(9,2))
 *
 *	call second C0
 *
@@ -104,7 +105,7 @@
 	idsub = idsub + 1
 	ier0 = 0
 	call ffxc0a(cc0,xpi3,dpipj3,ier0)
-	cs2 = +cc0/DBLE(dpipjp(9,2))
+	cs2 = +cc0/Re(dpipjp(9,2))
 	ier1 = max(ier1,ier0)
 	ier = ier + ier1
 *  #] work 3: 
@@ -132,7 +133,7 @@
 	idsub = idsub + 1
 	ier1 = 0
 	call ffxc0a(cc0,xpi3,dpipj3,ier1)
-	cs1 = -cc0/DBLE(dpipjp(10,1))
+	cs1 = -cc0/Re(dpipjp(10,1))
 *
 *	call second C0
 *
@@ -149,7 +150,7 @@
 	idsub = idsub + 1
 	ier0 = 0
 	call ffxc0a(cc0,xpi3,dpipj3,ier0)
-	cs2 = +cc0/DBLE(dpipjp(10,1))
+	cs2 = +cc0/Re(dpipjp(10,1))
 	ier1 = max(ier1,ier0)
 	ier = ier + ier1
 *  #] work 4: 

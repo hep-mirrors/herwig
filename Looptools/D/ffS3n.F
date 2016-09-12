@@ -13,21 +13,22 @@
 * Oct 27 2008
 
 #include "externals.h"
+#include "types.h"
 
 
-	double complex function ffS3n(cy, signy, ra, cb, cc, signc,
+	ComplexType function ffS3n(cy, signy, ra, cb, cc, signc,
      &    ier)
 	implicit none
-	double precision ra, signy, signc
-	double complex cy, cb, cc
+	RealType ra, signy, signc
+	ComplexType cy, cb, cc
 	integer ier
 
 #include "ff.h"
 
-	double complex cl, crdisc, cza, czb
-	double precision sza, szb, sy1, sy2, sc
+	ComplexType cl, crdisc, cza, czb
+	RealType sza, szb, sy1, sy2, sc
 
-	double complex ffRn, zfflog
+	ComplexType ffRn, zfflog
 	integer nffet1
 	external ffRn, zfflog, nffet1
 	
@@ -38,9 +39,9 @@
 	  return
 	endif
 
-	cl = zfflog((cy - 1)/cy, 1, DCMPLX(signy), ier)
+	cl = zfflog((cy - 1)/cy, 1, ToComplex(signy), ier)
 
-	sc = DIMAG(cc)
+	sc = Im(cc)
 	if( sc .eq. 0 ) sc = signc
 
 	if( abs(ra) .lt. precx ) then
@@ -51,24 +52,24 @@
 	       ffS3n = 0
 	       return
 	    endif
-	    ffS3n = cl*zfflog(cc, 1, DCMPLX(signc), ier)
+	    ffS3n = cl*zfflog(cc, 1, ToComplex(signc), ier)
 	    return
 	  endif
 
 * 1 root:
 * eq.: b y + c == 0
 	  cza = -cc/cb
-	  sza = -signc*DBLE(cb)
+	  sza = -signc*Re(cb)
 	  if( sza .eq. 0 ) sza = -signc
 
-	  ffS3n = cl*zfflog(cb, 1, DCMPLX(signc), ier) +
+	  ffS3n = cl*zfflog(cb, 1, ToComplex(signc), ier) +
      &      ffRn(cy, signy, cza, sza, ier)
 
-	  if( abs(DIMAG(cb)) .gt. precx ) then
-	    szb = DIMAG(cza)
+	  if( abs(Im(cb)) .gt. precx ) then
+	    szb = Im(cza)
 	    if( szb .eq. 0 ) szb = sza
 	    ffS3n = ffS3n + cl*c2ipi*
-     &        nffet1(cb, DCMPLX(0D0, -szb), DCMPLX(0D0, sc), ier)
+     &        nffet1(cb, ToComplex(0D0, -szb), ToComplex(0D0, sc), ier)
 	  endif
 	  return
 	endif
@@ -90,21 +91,21 @@
 
 * calculate the sign of im(cza) and im(czb) which are related to ieps
 	sza = sc/ra
-	if( abs(DBLE(crdisc)) .gt. precx ) sza = sza/DBLE(crdisc)
+	if( abs(Re(crdisc)) .gt. precx ) sza = sza/Re(crdisc)
 	szb = -sza
 
-	sy1 = DIMAG(cza)
+	sy1 = Im(cza)
 	if( sy1 .eq. 0 ) sy1 = sza
-	sy2 = DIMAG(czb)
+	sy2 = Im(czb)
 	if( sy2 .eq. 0 ) sy2 = szb
 
 * calculate the log, etas, and the 2 R-functions
 * ieps=1 to choose the cut along the real axis
 
 	ffS3n =
-     &    cl*( zfflog(DCMPLX(ra), 1, DCMPLX(sc), ier) +
-     &      c2ipi*nffet1(DCMPLX(0D0, -sy1), DCMPLX(0D0, -sy2),
-     &        DCMPLX(0D0, sc/ra), ier) ) +
+     &    cl*( zfflog(ToComplex(ra), 1, ToComplex(sc), ier) +
+     &      c2ipi*nffet1(ToComplex(0D0, -sy1), ToComplex(0D0, -sy2),
+     &        ToComplex(0D0, sc/ra), ier) ) +
      &    ffRn(cy, signy, cza, sza, ier) +
      &    ffRn(cy, signy, czb, szb, ier)
 	end

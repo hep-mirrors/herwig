@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *--#[ log:
@@ -61,17 +62,17 @@ c
 *
 	integer ipi12,isoort,ieps,ier
 	logical ld2yzz,lreal
-	DOUBLE COMPLEX crr(7),cy,cy1,cz,cz1,cdyz,cd2yzz,czz,czz1
+	ComplexType crr(7),cy,cy1,cz,cz1,cdyz,cd2yzz,czz,czz1
 *
 *	local variables
 *
-	DOUBLE COMPLEX cfact,cc1,cc2,cc1p,cc2p,carg1,carg2,carg3,
+	ComplexType cfact,cc1,cc2,cc1p,cc2p,carg1,carg2,carg3,
      +		cli1,cli2,cli3,clo1,clo2,clo3,clog1p,clog2p,chill,
      +		cd2,cd21,cd2n,cd21n1,cc1n,cterm,ctot,zfflo1,clog1,clog2,
      +		cc,cli4,clo4
-	DOUBLE COMPLEX ctroep,zfflog
-	DOUBLE PRECISION xa,xr,absc,xprec,bndtay,ffbnd
-	DOUBLE PRECISION y,y1,z,z1,dyz,d2yzz,zz,zz1
+	ComplexType ctroep,zfflog
+	RealType xa,xr,absc,xprec,bndtay,ffbnd
+	RealType y,y1,z,z1,dyz,d2yzz,zz,zz1
 	integer i,nffeta,nffet1,iclas1,iclas2,n1,n2,n3,ntot,
      +		i2pi,n3p
 	external zfflog,zfflo1,ffbnd,nffeta,nffet1
@@ -83,7 +84,7 @@ c
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations:
 *  #[ initialisations:
 	data xprec /-1D0/
@@ -94,16 +95,16 @@ c
 	endif
 *  #] initialisations:
 *  #[ real case:
-	if ( DIMAG(cy).eq.0 .and. DIMAG(cy1).eq.0 .and. DIMAG(cz).eq.0
-     +		.and. DIMAG(cz1).eq.0 ) then
-	    y  = DBLE(cy)
-	    y1 = DBLE(cy1)
-	    z  = DBLE(cz)
-	    z1 = DBLE(cz1)
-	    dyz = DBLE(cdyz)
-	    d2yzz = DBLE(cd2yzz)
-	    zz = DBLE(czz)
-	    zz1 = DBLE(czz1)
+	if ( Im(cy).eq.0 .and. Im(cy1).eq.0 .and. Im(cz).eq.0
+     +		.and. Im(cz1).eq.0 ) then
+	    y  = Re(cy)
+	    y1 = Re(cy1)
+	    z  = Re(cz)
+	    z1 = Re(cz1)
+	    dyz = Re(cdyz)
+	    d2yzz = Re(cd2yzz)
+	    zz = Re(czz)
+	    zz1 = Re(czz1)
 	    call ffcxr(crr,ipi12,y,y1,z,z1,dyz,ld2yzz,d2yzz,zz,zz1,
      +		.FALSE.,0D0,ieps,ier)
 	    return
@@ -118,11 +119,11 @@ c
 	    return
 *	This line is for 68000 compilers that have a limited range for
 *	complex division (Absoft, Apollo, Gould NP1):
-	elseif ( DBLE(cdyz) .lt. xclogm .or. DIMAG(cdyz) .lt. xclogm
+	elseif ( Re(cdyz) .lt. xclogm .or. Im(cdyz) .lt. xclogm
      +		.or. 1/xa .lt. xclogm ) then
-	    ctroep = cdyz*DBLE(1/xa)
+	    ctroep = cdyz*Re(1/xa)
 	    cfact = 1/ctroep
-	    cfact = DBLE(1/xa)*cfact
+	    cfact = Re(1/xa)*cfact
 	else
 	    cfact = 1/cdyz
 	endif
@@ -139,11 +140,11 @@ c
 *				2={|1-x|<=1,Re(x)>1/2}
 *				3={|x|>1,|1-x|>1}
 *
-	xr = DBLE(cc1)
+	xr = Re(cc1)
 	xa = absc(cc1)
 	if ( xa .gt. 1 .and. xa .lt. 1+sqrt(2.) ) then
 *	    we need a more accurate estimate
-	    xa = xr**2 + DIMAG(cc1)**2
+	    xa = xr**2 + Im(cc1)**2
 	endif
 	if ( ld2yzz .and. absc(cc1+1) .lt. xloss/2 ) then
 	    iclas1 = 4
@@ -154,22 +155,22 @@ c
 	elseif ( xa .lt. 1+sqrt(2.) .and. xa .lt. 2*xr ) then
 	    iclas1 = 2
 	    cc1p = -cz * cfact
-	    if ( abs(DIMAG(cc1p)) .lt. precc*abs(DBLE(cc1p)) )
-     +		cc1p = DBLE(cc1p)
+	    if ( abs(Im(cc1p)) .lt. precc*abs(Re(cc1p)) )
+     +		cc1p = Re(cc1p)
 	else
 	    iclas1 = 3
 	    if ( 1/xa .lt. xclogm ) then
-		ctroep = cc1*DBLE(1/xa)
+		ctroep = cc1*Re(1/xa)
 		ctroep = 1/ctroep
-		cc1p = ctroep*DBLE(1/xa)
+		cc1p = ctroep*Re(1/xa)
 	    else
 		cc1p = 1/cc1
 	    endif
 	endif
-	xr = DBLE(cc2)
+	xr = Re(cc2)
 	xa = absc(cc2)
 	if ( xa .gt. 1 .and. xa .lt. 1+sqrt(2.) ) then
-	    xa = xr**2 + DIMAG(cc2)**2
+	    xa = xr**2 + Im(cc2)**2
 	endif
 	if ( ld2yzz .and. absc(cc2+1) .lt. xloss ) then
 	    iclas2 = 4
@@ -180,14 +181,14 @@ c
 	elseif ( xa .lt. 1+sqrt(2.) .and. xa .lt. 2*xr ) then
 	    iclas2 = 2
 	    cc2p = cz1 * cfact
-	    if ( abs(DIMAG(cc2p)) .lt. precc*abs(DBLE(cc2p)) )
-     +		cc2p = DBLE(cc2p)
+	    if ( abs(Im(cc2p)) .lt. precc*abs(Re(cc2p)) )
+     +		cc2p = Re(cc2p)
 	else
 	    iclas2 = 3
 	    if ( 1/xa .lt. xclogm ) then
-		ctroep = cc2*DBLE(1/xa)
+		ctroep = cc2*Re(1/xa)
 		ctroep = 1/ctroep
-		cc2p = ctroep*DBLE(1/xa)
+		cc2p = ctroep*Re(1/xa)
 	    else
 		cc2p = 1/cc2
 	    endif
@@ -228,24 +229,24 @@ c
 	    n1 = 0
 	    n2 = 0
 	else
-	if ( DIMAG(cz) .eq. 0 .or. DIMAG(cz1) .eq. 0 ) then
-	    if ( DIMAG(cz1) .eq. 0 ) then
-		if ( DIMAG(cz) .eq. 0 ) then
+	if ( Im(cz) .eq. 0 .or. Im(cz1) .eq. 0 ) then
+	    if ( Im(cz1) .eq. 0 ) then
+		if ( Im(cz) .eq. 0 ) then
 *		    cz is really real, the hard case:
 		    if ( cz .eq. 0 ) then
 *			multiplied with log(1), so don't care:
 			n1 = 0
 *			look at ieps for guidance
-*			n2 = nffet1(DCMPLX(DBLE(0),DBLE(ieps)),cfact,cfact,ier) = 0
+*			n2 = nffet1(ToComplex(Re(0),Re(ieps)),cfact,cfact,ier) = 0
 			n2 = 0
 		    elseif ( cz1 .eq. 0 ) then
-			n1 = nffet1(DCMPLX(DBLE(0),DBLE(ieps)),cfact,
+			n1 = nffet1(ToComplex(Re(0),Re(ieps)),cfact,
      +				-cfact,ier)
 			n2 = 0
 		    else
-			n1 = nffet1(DCMPLX(DBLE(0),DBLE(ieps)),cfact,
+			n1 = nffet1(ToComplex(Re(0),Re(ieps)),cfact,
      +				-cz*cfact,ier)
-			n2 = nffet1(DCMPLX(DBLE(0),DBLE(ieps)),cfact,
+			n2 = nffet1(ToComplex(Re(0),Re(ieps)),cfact,
      +				cz1*cfact,ier)
 		    endif
 		else
@@ -260,43 +261,43 @@ c
 *	    the imaginary part of cc1, cc1p is often very unstable.
 *	    make sure it agrees with the actual sign used.
 	    if ( iclas1 .eq. 2 ) then
-		if ( DIMAG(cc1p) .eq. 0 ) then
+		if ( Im(cc1p) .eq. 0 ) then
 *		    if y (or y1 further on) is purely imaginary
 *		    give a random shift, this will also be used in
 *		    the transformation terms.  Checked 7-mar-94 that it
 *		    is independent of the sign used.
-		    if ( DBLE(cy).eq.0 ) cy = cy +
-     +			isgnal*DBLE(precc)*DIMAG(cy)
-		    n1 = nffet1(-cz,cfact,DCMPLX(DBLE(0),ieps*DBLE(cy)),
+		    if ( Re(cy).eq.0 ) cy = cy +
+     +			isgnal*Re(precc)*Im(cy)
+		    n1 = nffet1(-cz,cfact,ToComplex(Re(0),ieps*Re(cy)),
      +			ier)
 		else
 		    n1 = nffet1(-cz,cfact,cc1p,ier)
 		endif
 	    else
-		if ( DIMAG(cc1) .eq. 0 ) then
-		    if ( DBLE(cy1).eq.0 ) cy1 = cy1 +
-     +			isgnal*DBLE(precc)*DIMAG(cy)
-		    n1 = nffet1(-cz,cfact,DCMPLX(DBLE(0),
-     +					-ieps*DBLE(cy1)),ier)
+		if ( Im(cc1) .eq. 0 ) then
+		    if ( Re(cy1).eq.0 ) cy1 = cy1 +
+     +			isgnal*Re(precc)*Im(cy)
+		    n1 = nffet1(-cz,cfact,ToComplex(Re(0),
+     +					-ieps*Re(cy1)),ier)
 		else
 		    n1 = nffet1(-cz,cfact,-cc1,ier)
 		endif
 	    endif
 	    if ( iclas2 .eq. 2 ) then
-		if ( DIMAG(cc2p) .eq. 0 ) then
-		    if ( DBLE(cy).eq.0 ) cy = cy +
-     +			isgnal*DBLE(precc)*DIMAG(cy)
-		    n2 = nffet1(cz1,cfact,DCMPLX(DBLE(0),ieps*DBLE(cy)),
+		if ( Im(cc2p) .eq. 0 ) then
+		    if ( Re(cy).eq.0 ) cy = cy +
+     +			isgnal*Re(precc)*Im(cy)
+		    n2 = nffet1(cz1,cfact,ToComplex(Re(0),ieps*Re(cy)),
      +			ier)
 		else
 		    n2 = nffet1(cz1,cfact,cc2p,ier)
 		endif
 	    else
-		if ( DIMAG(cc2) .eq. 0 ) then
-		    if ( DBLE(cy1).eq.0 ) cy1 = cy1 +
-     +			isgnal*DBLE(precc)*DIMAG(cy)
-		    n2 = nffet1(cz1,cfact,DCMPLX(DBLE(0),
-     +					-ieps*DBLE(cy1)),ier)
+		if ( Im(cc2) .eq. 0 ) then
+		    if ( Re(cy1).eq.0 ) cy1 = cy1 +
+     +			isgnal*Re(precc)*Im(cy)
+		    n2 = nffet1(cz1,cfact,ToComplex(Re(0),
+     +					-ieps*Re(cy1)),ier)
 		else
 		    n2 = nffet1(cz1,cfact,-cc2,ier)
 		endif
@@ -310,15 +311,15 @@ c
 *	only make things worse
 	if ( iclas1 .eq. iclas2 .and. isoort .ne. -2 .and.
      +		( absc(cc1p-cc2p) .lt. 2*xloss*absc(cc1p)
-     +		.or. lreal .and. abs(DBLE(cc1p-cc2p)) .lt. 2*xloss*
-     +			abs(DBLE(cc1p)) .and. (abs(DBLE(cc2p)) +
-     +			DIMAG(cc2p)**2/4) .lt. xloss .and.
-     +			abs(DIMAG(cc2p)) .lt. bndtay ) ) then
+     +		.or. lreal .and. abs(Re(cc1p-cc2p)) .lt. 2*xloss*
+     +			abs(Re(cc1p)) .and. (abs(Re(cc2p)) +
+     +			Im(cc2p)**2/4) .lt. xloss .and.
+     +			abs(Im(cc2p)) .lt. bndtay ) ) then
 *	    Close together:
 * -#[	    handle dilog's:
 	    if ( .not. lreal .and. absc(cc2p) .gt. xloss
-     +		 .or. lreal .and. ( (abs(DBLE(cc2p)) + DIMAG(cc2p)**2/4)
-     +			.gt. xloss .or. abs(DIMAG(cc2p)) .gt. bndtay ) )
+     +		 .or. lreal .and. ( (abs(Re(cc2p)) + Im(cc2p)**2/4)
+     +			.gt. xloss .or. abs(Im(cc2p)) .gt. bndtay ) )
      +		then
 *--#[		Hill identity:
 *
@@ -377,11 +378,11 @@ c
 		    cc1n = cc1n*cc1p
 		    cd21n1 = cd21n1*cd21
 		    cd2n = cd2n + cd2*cd21n1
-		    cterm = cc1n*cd2n*DBLE(xn2inv(i))
+		    cterm = cc1n*cd2n*Re(xn2inv(i))
 		    ctot = ctot + cterm
 		    if ( absc(cterm) .le. precc*absc(ctot) .or.
-     +			 lreal .and. abs(DBLE(cterm)) .le. precc*
-     +				abs(DBLE(ctot)) ) goto 51
+     +			 lreal .and. abs(Re(cterm)) .le. precc*
+     +				abs(Re(ctot)) ) goto 51
    50		continue
    51		continue
 		cli1 = ctot
@@ -434,17 +435,17 @@ c
 		else
 		    clog1 = zfflog(cc1,ieps,-cy,ier)
 		endif
-		if ( DIMAG(cc2p).eq.0 ) then
-		    if ( DIMAG(cc1p).eq.0 ) then
+		if ( Im(cc2p).eq.0 ) then
+		    if ( Im(cc1p).eq.0 ) then
 *			use the ieps instead
 			n3 = 0
 		    else
-			n3 = nffet1(DCMPLX(DBLE(0),ieps*DBLE(cy)),
+			n3 = nffet1(ToComplex(Re(0),ieps*Re(cy)),
      +				1/cc1p,cc2p/cc1p,ier)
 		    endif
 		else
-		    if ( DIMAG(cc1p).eq.0 ) then
-			n3 =nffet1(cc2p,DCMPLX(DBLE(0),-ieps*DBLE(cy1)),
+		    if ( Im(cc1p).eq.0 ) then
+			n3 =nffet1(cc2p,ToComplex(Re(0),-ieps*Re(cy1)),
      +				cc2p/cc1p,ier)
 		    else
 			n3 = nffet1(cc2p,1/cc1p,cz,ier)
@@ -461,7 +462,7 @@ c
 *		we transformed to 1/x for both dilogs
 *
 		clog2p = zfflog(-cc2p,ieps,cy1,ier)
-		if ( DIMAG(cc2p).eq.0 .or. DIMAG(cc1).eq.0 ) then
+		if ( Im(cc2p).eq.0 .or. Im(cc1).eq.0 ) then
 *		    we chose the eta's already equal, no worry.
 		    n3 = 0
 		    n3p = 0
@@ -537,7 +538,7 @@ c
 *
 	    if ( n1 .ne. 0 ) then
 		if ( iclas1 .ne. 2 .or. absc(cc1p) .gt. xloss ) then
-		    if ( DBLE(cc1) .gt. -abs(DIMAG(cc1)) ) then
+		    if ( Re(cc1) .gt. -abs(Im(cc1)) ) then
 			clog1 = zfflog(cc1,ieps,cy,ier)
 		    else
 *			take apart the factor i*pi^2
@@ -546,13 +547,13 @@ c
 			else
 			    clog1 = zfflog(-cc1,0,cy,ier)
 			endif
-			if ( DIMAG(cc1) .lt. 0 ) then
+			if ( Im(cc1) .lt. 0 ) then
 			    i2pi = -1
-			elseif ( DIMAG(cc1) .gt. 0 ) then
+			elseif ( Im(cc1) .gt. 0 ) then
 			    i2pi = +1
-			elseif ( DBLE(cy)*ieps .lt. 0 ) then
+			elseif ( Re(cy)*ieps .lt. 0 ) then
 			    i2pi = -1
-			elseif ( DBLE(cy)*ieps .gt. 0 ) then
+			elseif ( Re(cy)*ieps .gt. 0 ) then
 			    i2pi = +1
 			else
 			    call fferr(51,ier)
@@ -569,7 +570,7 @@ c
 	    endif
 	    if ( n2 .ne. 0 ) then
 		if ( iclas2 .ne. 2 .or. absc(cc2p) .gt. xloss ) then
-		    if ( DBLE(cc2) .gt. -abs(DIMAG(cc2)) ) then
+		    if ( Re(cc2) .gt. -abs(Im(cc2)) ) then
 			clog2 = zfflog(cc2,ieps,cy,ier)
 		    else
 *			take apart the factor i*pi^2
@@ -578,13 +579,13 @@ c
 			else
 			    clog2 = zfflog(-cc2,0,czero,ier)
 			endif
-			if ( DIMAG(cc2) .lt. 0 ) then
+			if ( Im(cc2) .lt. 0 ) then
 			    i2pi = -1
-			elseif ( DIMAG(cc2) .gt. 0 ) then
+			elseif ( Im(cc2) .gt. 0 ) then
 			    i2pi = +1
-			elseif ( DBLE(cy)*ieps .lt. 0 ) then
+			elseif ( Re(cy)*ieps .lt. 0 ) then
 			    i2pi = -1
-			elseif ( DBLE(cy)*ieps .gt. 0 ) then
+			elseif ( Re(cy)*ieps .gt. 0 ) then
 			    i2pi = +1
 			else
 			    call fferr(51,ier)

@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxb0:
@@ -24,13 +25,13 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cb0
-	DOUBLE PRECISION xp,xma,xmb
+	ComplexType cb0
+	RealType xp,xma,xmb
 *
 *	local variables
 *
-	DOUBLE COMPLEX cb0p
-	DOUBLE PRECISION dmamb,dmap,dmbp,xm
+	ComplexType cb0p
+	RealType dmamb,dmap,dmbp,xm
 *
 *	common blocks
 *
@@ -57,10 +58,10 @@
 	endif
 	if ( mudim .ne. 0 ) xm = xm/mudim**2
 	if ( abs(xm) .gt. xalogm ) then
-	    cb0 = DBLE(delta - log(xm)/2D0) - cb0p
+	    cb0 = Re(delta - log(xm)/2D0) - cb0p
 	else
 	    call fferr(4,ier)
-	    cb0 = DBLE(delta) - cb0p
+	    cb0 = Re(delta) - cb0p
 	endif
 *  #] calculations:
 *###] ffxb0:
@@ -94,24 +95,24 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cb0p
-	DOUBLE PRECISION xp,xma,xmb,dmap,dmbp,dmamb
+	ComplexType cb0p
+	RealType xp,xma,xmb,dmap,dmbp,dmamb
 *
 *	local variables
 *
 	integer i,initeq,initn1,jsign
-	DOUBLE PRECISION ax,ay,ffbnd,
+	RealType ax,ay,ffbnd,
      +		xprceq,bdeq01,bdeq05,bdeq11,bdeq17,
      +		xprcn1,bdn101,bdn105,bdn110,bdn115,
      +		xprnn2,bdn205,bdn210,bdn215,bdn220,
      +		xprcn3,bdn301,bdn305,bdn310,bdn315,
      +		xprcn5,bdn501,bdn505,bdn510,bdn515,
      +		absc
-	DOUBLE PRECISION xm,dmp,xm1,xm2,dm1m2,dm1p,
+	RealType xm,dmp,xm1,xm2,dm1m2,dm1p,
      +		dm2p,s,s1,s1a,s1b,s1p,s2,s2a,s2b,s2p,x,y,som,
      +		xlam,slam,xlogmm,alpha,alph1,xnoe,xpneq(30),
      +		xpnn1(30),xx,xtel,dfflo1
-	DOUBLE COMPLEX cs2a,cs2b,cs2p,c,cx
+	ComplexType cs2a,cs2b,cs2p,c,cx
 	external ffbnd,dfflo1
 	save initeq,initn1,xpneq,xpnn1,
      +		xprceq,bdeq01,bdeq05,bdeq11,bdeq17,
@@ -136,7 +137,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ fill some dotproducts:
 	if ( ldot ) then
@@ -185,7 +186,7 @@
 	if ( xp .lt. -xalogm ) then
 	    cb0p = log(-xp) - 2
 	elseif ( xp .gt. xalogm ) then
-	    cb0p = DCMPLX( DBLE(log(xp) - 2), DBLE(-pi) )
+	    cb0p = ToComplex( Re(log(xp) - 2), Re(-pi) )
 	else
 	    cb0p = 0
 	    call fferr(7,ier)
@@ -219,7 +220,7 @@
 	s = -s*dmp/xp
 	cb0p = s - 2
 	if ( xp .gt. xm )
-     +		cb0p = cb0p - DCMPLX(0D0,-(dmp/xp)*pi)
+     +		cb0p = cb0p - ToComplex(0D0,-(dmp/xp)*pi)
 	goto 990
 *  #] one mass equal to zero:
 *  #[ both masses equal:
@@ -241,7 +242,7 @@
 		initeq = 1
 		xpneq(1) = 1D0/6D0
 		do 1 i=2,30
-		    xpneq(i) = - xpneq(i-1)*DBLE(i-1)/DBLE(2*(2*i+1))
+		    xpneq(i) = - xpneq(i-1)*Re(i-1)/Re(2*(2*i+1))
     1		continue
 	    endif
 	    if (xprceq .ne. precx ) then
@@ -327,7 +328,7 @@
 	    y = 0
 	endif
 	xx = s - 2
-	cb0p = DCMPLX(DBLE(xx),DBLE(y))
+	cb0p = ToComplex(Re(xx),Re(y))
 	goto 990
 * -#]	normal case:
 *
@@ -367,7 +368,7 @@
 		    if ( initn1 .eq. 0 ) then
 			initn1 = 1
 			do 410 i = 1,30
-  410			    xpnn1(i) = DBLE(i)/DBLE((i+1)*(i+2))
+  410			    xpnn1(i) = Re(i)/Re((i+1)*(i+2))
 		    endif
 *		    determine the boundaries for 1,5,10,15 terms
 		    if ( xprcn1 .ne. precx ) then
@@ -636,14 +637,17 @@
 	    s2 = (slam/xp)*atan2(slam,xnoe)
 	    xx = s1 + s2 - 2
 *--#]	    first try:
-	    if ( abs(xx) .lt. xloss**2*max(abs(s1),abs(s2)) ) then
+* 13 Apr 11: added x .ne. 0 check to safeguard against div by zero
+	    x = 2*xp*xnoe
+	    if ( x .ne. 0 .and.
+     &           abs(xx) .lt. xloss**2*max(abs(s1),abs(s2)) ) then
 *--#[		second try:
 *		Again two times xloss as we'll accept that in the next
 *		step as well.
 *
 		xtel = dm1m2**2 - xp**2
-		alpha = -xlam/(2*xp*xnoe)
-		alph1 = xtel/(2*xp*xnoe)
+		alpha = -xlam/x
+		alph1 = xtel/x
 *
 *		try a taylor expansion on the terms.  First s1:
 *
@@ -702,32 +706,32 @@
 			bdn315 = ffbnd(3,15,xinfac)
 		    endif
 * -#]		    bounds:
-		    cx = DCMPLX(0D0,-slam/xnoe)
+		    cx = ToComplex(0D0,-slam/xnoe)
 		    ax = absc(cx)
 		    if ( ax .gt. bdn315 ) goto 600
 		    if ( ax .gt. bdn310 ) then
-			cs2a = cx*(DBLE(xinfac(13)) + cx*(DBLE(xinfac(14
-     +			  )) + cx*(DBLE(xinfac(15)) + cx*(DBLE(xinfac(16
-     +			  )) + cx*(DBLE(xinfac(17)))))))
+			cs2a = cx*(Re(xinfac(13)) + cx*(Re(xinfac(14
+     +			  )) + cx*(Re(xinfac(15)) + cx*(Re(xinfac(16
+     +			  )) + cx*(Re(xinfac(17)))))))
 		    else
 			cs2a = 0
 		    endif
 		    if ( ax .gt. bdn305 ) then
-			cs2a = cx*(DBLE(xinfac(8)) + cx*(DBLE(xinfac(9))
-     +			   + cx*(DBLE(xinfac(10)) + cx*(DBLE(xinfac(11))
-     +			   + cx*(DBLE(xinfac(12)) + cs2a)))))
+			cs2a = cx*(Re(xinfac(8)) + cx*(Re(xinfac(9))
+     +			   + cx*(Re(xinfac(10)) + cx*(Re(xinfac(11))
+     +			   + cx*(Re(xinfac(12)) + cs2a)))))
 		    endif
 		    if ( ax .gt. bdn301 ) then
-			cs2a = cx*(DBLE(xinfac(4)) + cx*(DBLE(xinfac(5))
-     +			     + cx*(DBLE(xinfac(6)) + cx*(DBLE(xinfac(7))
+			cs2a = cx*(Re(xinfac(4)) + cx*(Re(xinfac(5))
+     +			     + cx*(Re(xinfac(6)) + cx*(Re(xinfac(7))
      +			     + cs2a))))
 		    endif
-		    cs2a = cx**3*(DBLE(xinfac(3))+cs2a)*
-     +				DCMPLX(DBLE(xnoe),DBLE(slam))
-		    cs2b = DCMPLX(DBLE(xnoe-xlam/xnoe/2),
-     +				 -DBLE(slam**3/xnoe**2/2))
+		    cs2a = cx**3*(Re(xinfac(3))+cs2a)*
+     +				ToComplex(Re(xnoe),Re(slam))
+		    cs2b = ToComplex(Re(xnoe-xlam/xnoe/2),
+     +				 -Re(slam**3/xnoe**2/2))
 		    cs2p = cs2b + cs2a
-		    s2p = slam*atan2(DIMAG(cs2p),DBLE(cs2p))/xp
+		    s2p = slam*atan2(Im(cs2p),Re(cs2p))/xp
 		endif
   600		continue
 		xx = s1p + s2p
@@ -735,7 +739,7 @@
 	    endif
 	    y = 0
 	endif
-	cb0p = DCMPLX(DBLE(xx),DBLE(y))
+	cb0p = ToComplex(Re(xx),Re(y))
 	goto 990
 * -#]	normal case:
 *  #] unequal nonzero masses:
@@ -759,11 +763,11 @@
 *
 *	arguments
 *
-	DOUBLE PRECISION xlambd,a1,a2,a3,a12,a13,a23
+	RealType xlambd,a1,a2,a3,a12,a13,a23
 *
 *	local variables
 *
-	DOUBLE PRECISION aa1,aa2,aa3,a,aff,asq
+	RealType aa1,aa2,aa3,a,aff,asq
 *
 *	common blocks
 *
@@ -837,12 +841,12 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX clambd,cc1,cc2,cc3,cc12,cc13,cc23
+	ComplexType clambd,cc1,cc2,cc3,cc12,cc13,cc23
 *
 *	local variables
 *
-	DOUBLE PRECISION aa1,aa2,aa3,absc
-	DOUBLE COMPLEX cc,cff,csq,c
+	RealType aa1,aa2,aa3,absc
+	ComplexType cc,cff,csq,c
 *
 *	common blocks
 *
@@ -850,7 +854,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations (rather old style ...):
 	aa1 = absc(cc1)
@@ -859,11 +863,11 @@
 *
 *	first see if there are input parameters with opposite sign:
 *
-	if ( DBLE(cc1) .lt. 0 .and. DBLE(cc2) .gt. 0 .or.
-     +	     DBLE(cc1) .gt. 0 .and. DBLE(cc2) .lt. 0 ) then
+	if ( Re(cc1) .lt. 0 .and. Re(cc2) .gt. 0 .or.
+     +	     Re(cc1) .gt. 0 .and. Re(cc2) .lt. 0 ) then
 	    goto 12
-	elseif ( DBLE(cc1) .lt. 0 .and. DBLE(cc3) .gt. 0 .or.
-     +		 DBLE(cc1) .gt. 0 .and. DBLE(cc3) .lt. 0 ) then
+	elseif ( Re(cc1) .lt. 0 .and. Re(cc3) .gt. 0 .or.
+     +		 Re(cc1) .gt. 0 .and. Re(cc3) .lt. 0 ) then
 	    goto 13
 *
 *	all have the same sign, choose the smallest 4*ci*cj term
@@ -921,7 +925,7 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION piDpj(3,3),xp,xma,xmb,dmap,dmbp,dmamb
+	RealType piDpj(3,3),xp,xma,xmb,dmap,dmbp,dmamb
 *
 *	local variables
 *
@@ -933,7 +937,7 @@
 *
 *	statement function
 *
-*	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+*	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ work:
 	ier1 = ier

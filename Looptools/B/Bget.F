@@ -1,186 +1,282 @@
 * Bget.F
 * retrieve the two-point tensor coefficients
 * this file is part of LoopTools
-* last modified 15 Jun 09 th
+* last modified 23 Mar 15 th
 
+#include "externals.h"
+#include "types.h"
+
+#define npoint 2
 #include "defs.h"
 
 
-	integer function XBget(p, m1, m2)
+	subroutine XBpara(para, p, m1, m2)
+	implicit none
+	DVAR para(1,*)
+	DVAR p, m1, m2
+
+#include "lt.h"
+
+	P(1) = p
+
+	M(1) = m1
+	if( abs(M(1)) .lt. minmass ) M(1) = 0
+	M(2) = m2
+	if( abs(M(2)) .lt. minmass ) M(2) = 0
+	end
+
+************************************************************************
+
+	memindex function XBget(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer cachelookup
-	external cachelookup, XBcoeff
+	memindex cacheindex
+	external cacheindex, XBcoeff
 
-	DVAR para(Pbb)
+#ifdef COMPLEXPARA
+	memindex Bget
+	external Bget
+#endif
 
-	para(1) = p
-	para(2) = m1
-	if( abs(para(2)) .lt. minmass ) para(2) = 0
-	para(3) = m2
-	if( abs(para(3)) .lt. minmass ) para(3) = 0
+	DVAR para(1,Pbb)
 
-	XBget = cachelookup(para, Bval(1,0), XBcoeff, RC*Pbb, Nbb)
+#ifdef COMPLEXPARA
+	if( abs(Im(p)) .gt. 0 )
+     &    print *, "Complex momenta not implemented"
+	if( abs(Im(m1)) + abs(Im(m2)) .eq. 0 ) then
+	  XBget = Bget(p, m1, m2) - offsetC
+	  return
+	endif
+#endif
+
+	call XBpara(para, p, m1, m2)
+	XBget = cacheindex(para, Bval(1,0), XBcoeff, RC*Pbb, Nbb, Bno)
 	end
 
 ************************************************************************
 
-	double complex function XB0i(i, p, m1, m2)
+	subroutine XBput(res, p, m1, m2)
+	implicit none
+	ComplexType res(*)
+	DVAR p, m1, m2
+
+#include "lt.h"
+
+	external XBcoeff
+
+	DVAR para(1,Pbb)
+
+#ifdef COMPLEXPARA
+	if( abs(Im(p)) .gt. 0 )
+     &    print *, "Complex momenta not implemented"
+	if( abs(Im(m1)) + abs(Im(m2)) .eq. 0 ) then
+	  call Bput(res, p, m1, m2)
+	  return
+	endif
+#endif
+
+	call XBpara(para, p, m1, m2)
+	call cachecopy(res, para, Bval(1,0), XBcoeff, RC*Pbb, Nbb, Bno)
+	end
+
+************************************************************************
+
+	subroutine XBputnocache(res, p, m1, m2)
+	implicit none
+	ComplexType res(*)
+	DVAR p, m1, m2
+
+#include "lt.h"
+
+	external XBcoeff
+
+	DVAR para(1,Pbb)
+
+#ifdef COMPLEXPARA
+	if( abs(Im(p)) .gt. 0 )
+     &    print *, "Complex momenta not implemented"
+	if( abs(Im(m1)) + abs(Im(m2)) .eq. 0 ) then
+	  call Bputnocache(res, p, m1, m2)
+	  return
+	endif
+#endif
+
+	call XBpara(para, p, m1, m2)
+	call XBcoeff(res, para)
+	end
+
+************************************************************************
+
+	ComplexType function XB0i(i, p, m1, m2)
 	implicit none
 	integer i
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
+	memindex XBget
 	external XBget
 
-	integer b
+	memindex b
 
 	b = XBget(p, m1, m2)
-	XB0i = Bval(i,b)
+	XB0i = Bval(i+epsi,b)
 	end
 
 ************************************************************************
 
-	double complex function XB0(p, m1, m2)
+	ComplexType function XB0(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XB0 = Bval(bb0,XBget(p, m1, m2))
+	XB0 = XB0i(bb0, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XB1(p, m1, m2)
+	ComplexType function XB1(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XB1 = Bval(bb1,XBget(p, m1, m2))
+	XB1 = XB0i(bb1, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XB00(p, m1, m2)
+	ComplexType function XB00(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XB00 = Bval(bb00,XBget(p, m1, m2))
+	XB00 = XB0i(bb00, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XB11(p, m1, m2)
+	ComplexType function XB11(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XB11 = Bval(bb11,XBget(p, m1, m2))
+	XB11 = XB0i(bb11, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XB001(p, m1, m2)
+	ComplexType function XB001(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XB001 = Bval(bb001,XBget(p, m1, m2))
+	XB001 = XB0i(bb001, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XB111(p, m1, m2)
+	ComplexType function XB111(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XB111 = Bval(bb111,XBget(p, m1, m2))
+	XB111 = XB0i(bb111, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XDB0(p, m1, m2)
+	ComplexType function XDB0(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XDB0 = Bval(dbb0,XBget(p, m1, m2))
+	XDB0 = XB0i(dbb0, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XDB1(p, m1, m2)
+	ComplexType function XDB1(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XDB1 = Bval(dbb1,XBget(p, m1, m2))
+	XDB1 = XB0i(dbb1, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XDB00(p, m1, m2)
+	ComplexType function XDB00(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XDB00 = Bval(dbb00,XBget(p, m1, m2))
+	XDB00 = XB0i(dbb00, p, m1, m2)
 	end
 
 ************************************************************************
 
-	double complex function XDB11(p, m1, m2)
+	ComplexType function XDB11(p, m1, m2)
 	implicit none
 	DVAR p, m1, m2
 
 #include "lt.h"
 
-	integer XBget
-	external XBget
+	ComplexType XB0i
+	external XB0i
 
-	XDB11 = Bval(dbb11,XBget(p, m1, m2))
+	XDB11 = XB0i(dbb11, p, m1, m2)
+	end
+
+************************************************************************
+
+	ComplexType function XDB001(p, m1, m2)
+	implicit none
+	DVAR p, m1, m2
+
+#include "lt.h"
+
+	ComplexType XB0i
+	external XB0i
+
+	XDB001 = XB0i(dbb001, p, m1, m2)
 	end
 

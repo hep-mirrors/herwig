@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxb2p:
@@ -27,12 +28,12 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xp,xm1,xm2,piDpj(3,3)
-	DOUBLE COMPLEX cb2i(2),cb1,cb0,ca0i(2)
+	RealType xp,xm1,xm2,piDpj(3,3)
+	ComplexType cb2i(2),cb1,cb0,ca0i(2)
 *
 *	local variables
 *
-	DOUBLE PRECISION dm1m2
+	RealType dm1m2
 *
 *  #] declarations:
 *  #[ work:
@@ -71,16 +72,16 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xp,xm1,xm2,dm1m2,piDpj(3,3)
-	DOUBLE COMPLEX cb2i(2),cb1,cb0,ca0i(2)
+	RealType xp,xm1,xm2,dm1m2,piDpj(3,3)
+	ComplexType cb2i(2),cb1,cb0,ca0i(2)
 *
 *	local variables
 *
 	integer i,ier0,ier1
 	logical llogmm
-	DOUBLE PRECISION xmax,absc,xlam,slam,bet,xmxp,dfflo3,xlo3,
+	RealType xmax,absc,xlam,slam,bet,xmxp,dfflo3,xlo3,
      +		xmxsav,xnoe,xnoe2,xlogmm,dfflo1
-	DOUBLE COMPLEX cs(16),cc,csom,clo3,zfflo3
+	ComplexType cs(16),cc,csom,clo3,zfflo3
 	external dfflo1,dfflo3,zfflo3
 *
 *	common blocks
@@ -89,7 +90,7 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *
 *  #] declarations:
 *  #[ normal case:
@@ -100,8 +101,8 @@
 *
 	if ( xp .ne. 0) then
 	    cs(1) = ca0i(2)
-	    cs(2) = DBLE(xm1)*cb0
-	    cs(3) = DBLE(2*piDpj(1,3))*cb1
+	    cs(2) = Re(xm1)*cb0
+	    cs(3) = Re(2*piDpj(1,3))*cb1
 	    cs(4) = (xm1+xm2)/2
 	    cs(5) = -xp/6
 	    cb2i(1) = cs(1) - cs(2) - cs(4) + 2*cs(3) - cs(5)
@@ -118,24 +119,24 @@
 		if ( xp.lt.0 ) then
 		    slam = sqrt(xp**2-4*xm1*xp)
 		    xlo3 = dfflo3((xp-slam)/(2*xm1),ier)
-		    cs(1) = xp*(-1/DBLE(3) + slam/(4*xm1))
+		    cs(1) = xp*(-1/Re(3) + slam/(4*xm1))
 		    cs(2) = xp**2*(-slam/(4*xm1**2) - 3/(4*xm1))
 		    cs(3) = xp**3/(4*xm1**2)
-		    cs(4) = DBLE(xp/xm1)*ca0i(1)
+		    cs(4) = Re(xp/xm1)*ca0i(1)
 		    cs(5) = xlo3/xp*(-xm1*slam)
 		    cs(6) = xlo3*slam
 		else
 		    slam = isgnal*sqrt(-xp**2+4*xm1*xp)
-		    clo3 = zfflo3(DCMPLX(DBLE(xp/(2*xm1)),
-     +			DBLE(-slam/(2*xm1))),ier)
-		    cs(1) = DBLE(xp)*DCMPLX(-1/DBLE(3),
-     +			DBLE(slam/(4*xm1)))
-		    cs(2) = DBLE(xp**2)*DCMPLX(DBLE(-3/(4*xm1)),
-     +			DBLE(-slam/(4*xm1**2)))
-		    cs(3) = DBLE(xp**3/(4*xm1**2))
-		    cs(4) = DBLE(xp/xm1)*ca0i(1)
-		    cs(5) = clo3*DCMPLX(DBLE(0),DBLE(-xm1*slam/xp))
-		    cs(6) = clo3*DCMPLX(DBLE(0),DBLE(slam))
+		    clo3 = zfflo3(ToComplex(Re(xp/(2*xm1)),
+     +			Re(-slam/(2*xm1))),ier)
+		    cs(1) = Re(xp)*ToComplex(-1/Re(3),
+     +			Re(slam/(4*xm1)))
+		    cs(2) = Re(xp**2)*ToComplex(Re(-3/(4*xm1)),
+     +			Re(-slam/(4*xm1**2)))
+		    cs(3) = Re(xp**3/(4*xm1**2))
+		    cs(4) = Re(xp/xm1)*ca0i(1)
+		    cs(5) = clo3*ToComplex(Re(0),Re(-xm1*slam/xp))
+		    cs(6) = clo3*ToComplex(Re(0),Re(slam))
 		endif
 		csom = cs(1) + cs(2) + cs(3) + cs(4) + cs(5) + cs(6)
 		xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)),
@@ -143,8 +144,8 @@
 *		
 *		get rid of noise in the imaginary part
 *	
-		if ( xloss*abs(DIMAG(csom)).lt.precc*abs(DBLE(csom)) ) 
-     +			csom = DCMPLX(DBLE(csom),DBLE(0))
+		if ( xloss*abs(Im(csom)).lt.precc*abs(Re(csom)) ) 
+     +			csom = ToComplex(Re(csom),Re(0))
 		if ( xmxp.lt.xmax ) then
 		    cb2i(1) = csom
 		    xmax = xmxp
@@ -168,7 +169,7 @@
      +			xm1.lt.xm2 ) then
 		slam = sqrt(xlam)
 		bet = 4*xm1*xp/(2*piDpj(1,3)+slam)
-		cs(1) = DBLE(xp/xm2)*ca0i(2)
+		cs(1) = Re(xp/xm2)*ca0i(2)
 		cs(2) = -xlogmm*bet*xm1**2*2*(xm2 + xm1)
      +		/((-dm1m2+slam)*(2*piDpj(1,2)+slam)*(2*piDpj(1,3)+slam))
 		cs(3) = xlogmm*(-4*xp*xm1**3)
@@ -234,7 +235,7 @@ c		do i=1,7
 		bet = 4*xm2*xp/(-2*piDpj(2,3)+slam)
 		xnoe = 1/(-2*piDpj(1,3)+slam)
 		xnoe2 = xnoe**2
-		cs(1) = DBLE(xp/xm1)*ca0i(1)
+		cs(1) = Re(xp/xm1)*ca0i(1)
 		cs(2) = -2*xlogmm*bet*xm2*
      +            (3*xp*(2*xm1 + xm2 - xp) - xm2*(xm1 + xm2))/
      +		  ((dm1m2+slam)*(2*piDpj(1,2)+slam)*(-2*piDpj(2,3)+slam))
@@ -295,8 +296,8 @@ c		do i=1,7
 *  #[   wrap up:
   100	    continue
 	    xmax = xmxsav
-	    cb2i(1) = DBLE(1/(3*xp)) * cb2i(1)
-	    cb2i(2) = DBLE(1/6.d0)   * cb2i(2)
+	    cb2i(1) = Re(1/(3*xp)) * cb2i(1)
+	    cb2i(2) = Re(1/6.d0)   * cb2i(2)
 *  #]   wrap up:
 *  #[ xp=0, m1!=m2:
 	elseif (dm1m2 .ne. 0) then
@@ -305,8 +306,8 @@ c		do i=1,7
 *
 *		B21 (see thesis, b21.frm)
 *
-		cs(1) = DBLE(xm1**2/3/dm1m2**3)*ca0i(1)
-		cs(2) = DBLE((-xm1**2 + xm1*xm2 - xm2**2/3)/dm1m2**3)*
+		cs(1) = Re(xm1**2/3/dm1m2**3)*ca0i(1)
+		cs(2) = Re((-xm1**2 + xm1*xm2 - xm2**2/3)/dm1m2**3)*
      +			ca0i(2)
 		cs(3) = (5*xm1**3/18 - xm1*xm2**2/2 + 2*xm2**3/9)
      +			/dm1m2**3
@@ -325,7 +326,7 @@ c		do i=1,7
 		cs(1) = (xm1/dm1m2)/6
 		cs(2) = (xm1/dm1m2)**2/3
 		cs(3) = (xm1/dm1m2)**3*xlogmm/3
-		cs(4) = -2/DBLE(9) + ca0i(1)*DBLE(1/(3*xm1))
+		cs(4) = -2/Re(9) + ca0i(1)*Re(1/(3*xm1))
 		cs(5) = -xlogmm/3
 		csom = cs(1)+cs(2)+cs(3)+cs(4)+cs(5)
 		xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)),
@@ -342,7 +343,7 @@ c		do i=1,7
 		cs(1) = (dm1m2/xm1)**2/6
 		cs(2) = (dm1m2/xm1)/3
 		cs(3) = xlo3/(3*(dm1m2/xm1)**3)
-*same		cs(4) = -2/DBLE(9) + ca0i(1)*DBLE(1/(3*xm1))
+*same		cs(4) = -2/Re(9) + ca0i(1)*Re(1/(3*xm1))
 		cs(5) = -xlo3/3
 		csom = cs(1)+cs(2)+cs(3)+cs(4)+cs(5)
 		xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)),
@@ -361,8 +362,8 @@ c		do i=1,7
 *
 *		B22
 *
-		cs(1) = +DBLE(xm1/(4*dm1m2))*ca0i(1)
-		cs(2) = -DBLE(xm2/(4*dm1m2))*ca0i(2)
+		cs(1) = +Re(xm1/(4*dm1m2))*ca0i(1)
+		cs(2) = -Re(xm2/(4*dm1m2))*ca0i(2)
 		cs(3) = (xm1+xm2)/8
 		cb2i(2) = cs(1) + cs(2) + cs(3)
 		xmax = max(absc(cs(2)),absc(cs(3)))
@@ -377,10 +378,10 @@ c		do i=1,7
 		    	xlogmm = log(xm2/xm1)
 		    endif
 		endif
-		cs(1) = dm1m2*( -1/DBLE(8) - ca0i(1)*DBLE(1/(4*xm1)) )
+		cs(1) = dm1m2*( -1/Re(8) - ca0i(1)*Re(1/(4*xm1)) )
 		cs(2) = dm1m2*xlogmm/4
 		cs(3) = xm1*(xm1/dm1m2)/4*xlogmm
-		cs(4) = xm1*( 1/DBLE(4) + ca0i(1)*DBLE(1/(2*xm1)) )
+		cs(4) = xm1*( 1/Re(4) + ca0i(1)*Re(1/(2*xm1)) )
 		cs(5) = -xm1*xlogmm/2
 		csom = cs(1) + cs(2) + cs(3) + cs(4) + cs(5)
 		xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)),
@@ -402,7 +403,7 @@ c		do i=1,7
 *	    taken over from ffxb2a, which in turns stem from my thesis GJ
 *
 	    cb2i(1) = cb0/3
-	    cb2i(2) = DBLE(xm1/2)*(cb0 + 1)
+	    cb2i(2) = Re(xm1/2)*(cb0 + 1)
 	endif
 *  #] xp=0, m1==m2:
 *  #[ finish up:

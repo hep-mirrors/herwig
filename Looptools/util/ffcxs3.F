@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcxs3:
@@ -35,7 +36,7 @@
 *		ipi12	(integer)	these factors			*
 *		ier	(integer)	0=ok 1=inaccurate 2=error	*
 *									*
-*	calls:	ffcrr,ffcxr,real/dble,DCMPLX,log,ffadd1,ffadd2,ffadd3	*
+*	calls:	ffcrr,ffcxr,real/dble,ToComplex,log,ffadd1,ffadd2,ffadd3	*
 *									*
 ***#]*comment:***********************************************************
 *  #[ declarations:
@@ -44,14 +45,14 @@
 *	arguments:
 *
 	integer ipi12(2),ii,ns,isoort(2),ier
-	DOUBLE COMPLEX cs3(20)
-	DOUBLE PRECISION y(4),z(4),dyz(2,2),d2yzz,dy2z(4),
+	ComplexType cs3(20)
+	RealType y(4),z(4),dyz(2,2),d2yzz,dy2z(4),
      +		xpi(ns),piDpj(ns,ns)
 *
 *	local variables:
 *
 	integer i,ip,ieps(2)
-	DOUBLE PRECISION yy,yy1,zz,zz1,dyyzz,xdilog,xlog,x00(3)
+	RealType yy,yy1,zz,zz1,dyyzz,xdilog,xlog,x00(3)
 	logical ld2yzz
 *
 *	common blocks
@@ -124,7 +125,7 @@
 	    if ( mod(isoort(2),10) .eq. 2 ) then
 *		both roots are equal: multiply by 2
 		do 60 i=1,7
-		    cs3(i) = 2*DBLE(cs3(i))
+		    cs3(i) = 2*Re(cs3(i))
    60		continue
 		ipi12(1) = 2*ipi12(1)
 	    else
@@ -168,7 +169,7 @@
 *		ipi12(2) (integer)  these factors			*
 *		ier	 (integer)  0=ok, 1=numerical problems, 2=error	*
 *									*
-*	calls:	ffcrr,DIMAG,DBLE,zfflog					*
+*	calls:	ffcrr,Im,Re,zfflog					*
 *									*
 ***#]*comment:***********************************************************
 *  #[ declarations:
@@ -177,15 +178,15 @@
 *	arguments:
 *
 	integer ipi12(2),ii,ns,isoort(2),ier
-	DOUBLE COMPLEX cs3(20),cpi(ns),cpiDpj(ns,ns)
-	DOUBLE COMPLEX cy(4),cz(4),cdyz(2,2),cd2yzz
+	ComplexType cs3(20),cpi(ns),cpiDpj(ns,ns)
+	ComplexType cy(4),cz(4),cdyz(2,2),cd2yzz
 *
 *	local variables:
 *
 	integer i,ip,ieps(2),ieps0,ni(4),ntot
 	logical ld2yzz
-	DOUBLE COMPLEX c,zdilog,zlog,cyy,cyy1,czz,czz1,cdyyzz
-	DOUBLE PRECISION absc,y,y1,z,z1,dyz,d2yzz,zz,zz1,
+	ComplexType c,zdilog,zlog,cyy,cyy1,czz,czz1,cdyyzz
+	RealType absc,y,y1,z,z1,dyz,d2yzz,zz,zz1,
      +		x00(3),sprec
 *
 *	common blocks
@@ -194,7 +195,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ get ieps:
 	ip = ii+3
@@ -210,10 +211,10 @@
 	    cyy = cdyz(2,1)/cd2yzz
 	    cyy1 = cdyz(2,2)/cd2yzz
 	    if ( absc(cy(2)) .lt. xclogm ) then
-		if ( DIMAG(cy(2)) .eq. 0 .and. abs(DBLE(cy(2))) .gt.
+		if ( Im(cy(2)) .eq. 0 .and. abs(Re(cy(2))) .gt.
      +			xalogm ) then
-		    czz = cz(2)*cyy*DCMPLX(1/DBLE(cy(2)))
-		    cdyyzz = cyy*cdyz(2,2)*DCMPLX(1/DBLE(cy(2)))
+		    czz = cz(2)*cyy*ToComplex(1/Re(cy(2)))
+		    cdyyzz = cyy*cdyz(2,2)*ToComplex(1/Re(cy(2)))
 		elseif ( cy(2) .eq. 0 .and. cz(2) .ne. 0 .and. cyy
      +			.ne. 0 ) then
 *		    the answer IS zero
@@ -235,10 +236,10 @@
      +		czero,czero,czero,-1,ieps0,ier)
    30	    continue
 	    if ( absc(cy(4)) .lt. xclogm ) then
-		if ( DIMAG(cy(4)) .eq. 0 .and. abs(DBLE(cy(4))) .gt.
+		if ( Im(cy(4)) .eq. 0 .and. abs(Re(cy(4))) .gt.
      +			xalogm ) then
-		    czz = cz(4)*cyy*DCMPLX(1/DBLE(cy(4)))
-		    cdyyzz = -cyy*cdyz(2,2)*DCMPLX(1/DBLE(cy(4)))
+		    czz = cz(4)*cyy*ToComplex(1/Re(cy(4)))
+		    cdyyzz = -cyy*cdyz(2,2)*ToComplex(1/Re(cy(4)))
 		elseif ( cy(4) .eq. 0 .and. cz(4) .ne. 0 .and. cyy
      +			.ne. 0 ) then
 *		    the answer IS zero
@@ -284,14 +285,14 @@
      +		ieps(1),ier)
 	elseif ( mod(isoort(1),10) .eq. -5 .or. mod(isoort(1),10) .eq.
      +		-6 ) then
-	    y = DBLE(cy(2))
-	    y1 = DBLE(cy(4))
-	    z = DBLE(cz(1))
-	    z1 = DBLE(cz(3))
-	    dyz = DBLE(cdyz(2,1))
-	    d2yzz = DBLE(cd2yzz)
-	    zz = DBLE(cz(2))
-	    zz1 = DBLE(cz(4))
+	    y = Re(cy(2))
+	    y1 = Re(cy(4))
+	    z = Re(cz(1))
+	    z1 = Re(cz(3))
+	    dyz = Re(cdyz(2,1))
+	    d2yzz = Re(cd2yzz)
+	    zz = Re(cz(2))
+	    zz1 = Re(cz(4))
 	    sprec = precx
 	    precx = precc
 	    call ffcxr(cs3(1),ipi12(1),y,y1,z,z1,dyz,ld2yzz,d2yzz,zz,zz1
@@ -304,7 +305,7 @@
 *	    do nothing
 	elseif ( mod(isoort(2),5) .eq. 0 ) then
 	    do 100 i=1,7
-  100		cs3(i) = 2*DBLE(cs3(i))
+  100		cs3(i) = 2*Re(cs3(i))
 	    ipi12(1) = 2*ipi12(1)
 	elseif ( mod(isoort(2),10).eq.-1 .or. mod(isoort(1),10).eq.-3 )
      +		then
@@ -312,14 +313,14 @@
      +		cdyz(2,2),ld2yzz,cd2yzz,cz(1),cz(3),isoort(2),
      +		ieps(2),ier)
 	elseif ( mod(isoort(2),10) .eq. -6 ) then
-	    y = DBLE(cy(2))
-	    y1 = DBLE(cy(4))
-	    z = DBLE(cz(2))
-	    z1 = DBLE(cz(4))
-	    dyz = DBLE(cdyz(2,2))
-	    d2yzz = DBLE(cd2yzz)
-	    zz = DBLE(cz(1))
-	    zz1 = DBLE(cz(3))
+	    y = Re(cy(2))
+	    y1 = Re(cy(4))
+	    z = Re(cz(2))
+	    z1 = Re(cz(4))
+	    dyz = Re(cdyz(2,2))
+	    d2yzz = Re(cd2yzz)
+	    zz = Re(cz(1))
+	    zz1 = Re(cz(3))
 	    sprec = precx
 	    precx = precc
 	    call ffcxr(cs3(8),ipi12(2),y,y1,z,z1,dyz,ld2yzz,d2yzz,zz,zz1
@@ -338,7 +339,7 @@
 		ier = ier + 50
 	    endif
 *	    we called ffcxr - no eta's
-	elseif ( DIMAG(cpi(ip)).eq.0 ) then
+	elseif ( Im(cpi(ip)).eq.0 ) then
 	    call ffgeta(ni,cz(1),cdyz(1,1),
      +		cpi(ip),cpiDpj(ii,ip),ieps,isoort,ier)
 	    ntot = ni(1) + ni(2) + ni(3) + ni(4)
@@ -351,7 +352,7 @@
 *
 	    print *,'THIS PART IS NOT READY ',
      +			'and should not be reached'
-	    stop
+c	    stop
 	endif
 *  #] eta's:
   900	continue
@@ -388,15 +389,15 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cs3
-	DOUBLE COMPLEX cy(4),cz(4),cd2yzz
+	ComplexType cs3
+	ComplexType cy(4),cz(4),cd2yzz
 	integer ipi12,ntot,ier
 *
 *	local variables
 *
 	integer ipi
-	DOUBLE COMPLEX c,cc,clogy,c2y1,zfflog,zfflo1,csum
-	DOUBLE PRECISION absc
+	ComplexType c,cc,clogy,c2y1,zfflog,zfflo1,csum
+	RealType absc
 	external zfflog,zfflo1
 *
 *	common blocks
@@ -405,7 +406,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations:
 	ipi = 0
@@ -418,7 +419,7 @@
 		clogy = 0
 	    else
 		c = -cy(4)/cy(2)
-		if ( DBLE(c) .gt. -abs(DIMAG(c)) ) then
+		if ( Re(c) .gt. -abs(Im(c)) ) then
 		    clogy = zfflog(c,0,czero,ier)
 		else
 *		    take out the factor 2*pi^2
@@ -435,11 +436,11 @@
 			csum = 0
 			clogy = zfflog(-c,0,czero,ier)
 		    endif
-		    if ( DIMAG(c) .lt. -precc*absc(c) .or.
-     +			 DIMAG(csum) .lt. -precc*absc(csum) ) then
+		    if ( Im(c) .lt. -precc*absc(c) .or.
+     +			 Im(csum) .lt. -precc*absc(csum) ) then
 			ipi = -1
-		    elseif ( DIMAG(c) .gt. precc*absc(c) .or.
-     +			     DIMAG(csum) .gt. precc*absc(csum) ) then
+		    elseif ( Im(c) .gt. precc*absc(c) .or.
+     +			     Im(csum) .gt. precc*absc(csum) ) then
 			ipi = +1
 		    else
 			call fferr(51,ier)
@@ -480,41 +481,41 @@
 *	arguments:
 *
 	integer ieps(2),isoort(2)
-	DOUBLE COMPLEX cp,cpDs,cz(4)
+	ComplexType cp,cpDs,cz(4)
 *
 *  #] declarations:
 *  #[ work:
-	if ( DIMAG(cp) .ne. 0 ) then
+	if ( Im(cp) .ne. 0 ) then
 *	    do not calculate ANY eta terms, we'll do them ourselves.
 	    ieps(1) = 99
 	    ieps(2) = 99
 	elseif ( isoort(2) .ne. 0 ) then
-	    if ( DIMAG(cz(1)) .lt. 0 ) then
+	    if ( Im(cz(1)) .lt. 0 ) then
 		ieps(1) = +1
-		if ( DIMAG(cz(2)) .lt. 0 ) then
+		if ( Im(cz(2)) .lt. 0 ) then
 		    ieps(2) = +1
 		else
 		    ieps(2) = -1
 		endif
-	    elseif ( DIMAG(cz(1)) .gt. 0 ) then
+	    elseif ( Im(cz(1)) .gt. 0 ) then
 		ieps(1) = -1
-		if ( DIMAG(cz(2)) .le. 0 ) then
+		if ( Im(cz(2)) .le. 0 ) then
 		    ieps(2) = +1
 		else
 		    ieps(2) = -1
 		endif
 	    else
-		if ( DIMAG(cz(2)) .lt. 0 ) then
+		if ( Im(cz(2)) .lt. 0 ) then
 		    ieps(1) = -1
 		    ieps(2) = +1
-		elseif ( DIMAG(cz(2)) .gt. 0 ) then
+		elseif ( Im(cz(2)) .gt. 0 ) then
 		    ieps(1) = +1
 		    ieps(2) = -1
 		else
-		    if ( (DBLE(cz(2)).gt.DBLE(cz(1))
-     +			.or.  (DBLE(cz(1)).eq.DBLE(cz(2))
-     +				.and. DBLE(cz(4)).lt.DBLE(cz(3)))
-     +			) .eqv. DBLE(cp).gt.0 ) then
+		    if ( (Re(cz(2)).gt.Re(cz(1))
+     +			.or.  (Re(cz(1)).eq.Re(cz(2))
+     +				.and. Re(cz(4)).lt.Re(cz(3)))
+     +			) .eqv. Re(cp).gt.0 ) then
 			ieps(1) = +1
 			ieps(2) = -1
 		    else
@@ -524,11 +525,11 @@
 		endif
 	    endif
 	else
-	    if ( DIMAG(cz(1)) .lt. 0 ) then
+	    if ( Im(cz(1)) .lt. 0 ) then
 		ieps(1) = +1
-	    elseif ( DIMAG(cz(1)) .gt. 0 ) then
+	    elseif ( Im(cz(1)) .gt. 0 ) then
 		ieps(1) = -1
-	    elseif ( DBLE(cpDs) .gt. 0 ) then
+	    elseif ( Re(cpDs) .gt. 0 ) then
 		ieps(1) = +1
 	    else
 		ieps(1) = -1
@@ -564,12 +565,12 @@
 *	arguments:
 *
 	integer ni(4),ieps(2),isoort(2),ier
-	DOUBLE COMPLEX cp,cpDs,cz(4),cdyz(2,2)
+	ComplexType cp,cpDs,cz(4),cdyz(2,2)
 *
 *	local variables
 *
 	integer i,nffeta,nffet1
-	DOUBLE COMPLEX cmip
+	ComplexType cmip
 	external nffeta,nffet1
 *
 *	common
@@ -598,7 +599,7 @@
 	    ni(3) = 0
 	    ni(4) = 0
 	elseif ( mod(isoort(1),10) .ne. 0 .and. isoort(2) .ne. 0 ) then
-	    cmip = DCMPLX(0D0,-DBLE(cp))
+	    cmip = ToComplex(0D0,-Re(cp))
 *
 *	    ni(1) = eta(p2,(x-z-)(x-z+)) = 0 by definition (see ni(3))
 *	    ni(2) = eta(x-z-,x-z+)
@@ -622,7 +623,7 @@
 		ni(3) = 0
 		ni(4) = -nffet1(cdyz(2,1),cdyz(2,2),cmip,ier)
 	    else
-		if ( DBLE(cp) .lt. 0 .and. DIMAG(cdyz(2,1)*
+		if ( Re(cp) .lt. 0 .and. Im(cdyz(2,1)*
      +			cdyz(2,2)) .lt. 0 ) then
 		    ni(3) = -1
 		else
@@ -633,12 +634,12 @@
 	elseif ( (mod(isoort(1),10).eq.-1 .or. mod(isoort(1),10).eq.-3)
      +		.and. isoort(2) .eq. 0 ) then
 	    ni(1) = 0
-	    if ( DIMAG(cz(1)) .ne. 0 ) then
-		ni(2) = nffet1(-cpDs,-cz(1),DCMPLX(DBLE(0),
-     +			DBLE(-1)),ier)
+	    if ( Im(cz(1)) .ne. 0 ) then
+		ni(2) = nffet1(-cpDs,-cz(1),ToComplex(Re(0),
+     +			Re(-1)),ier)
 	    else
-		ni(2) = nffet1(-cpDs,DCMPLX(DBLE(0),DBLE(1)),
-     +			DCMPLX(DBLE(0),DBLE(-1)),ier)
+		ni(2) = nffet1(-cpDs,ToComplex(Re(0),Re(1)),
+     +			ToComplex(Re(0),Re(-1)),ier)
 	    endif
 	    ni(3) = 0
 	    ni(4) = -nffeta(-cpDs,cdyz(2,1),ier)

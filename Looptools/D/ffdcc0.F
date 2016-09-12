@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffdcc0:
@@ -40,8 +41,8 @@
 *
 	integer ipi12(16),isoort(16),ilogi(6),npoin,ier
 	logical ldel2s
-	DOUBLE COMPLEX cs3(160),clogi(6)
-	DOUBLE COMPLEX xqi(10),qiDqj(10,10),
+	ComplexType cs3(160),clogi(6)
+	ComplexType xqi(10),qiDqj(10,10),
      +		xpi(6,3:4),piDpj(6,6,3:4),
      +		sdel2,del2s(3,3:4),etalam(3:4),etami(6,3:4),alph(3),
      +		ddel2s(2:3),delpsi(3,3:4)
@@ -49,12 +50,12 @@
 *	local variables:
 *
 	integer i,j,k,ip,ii,ifirst,ieri(8)
-	DOUBLE COMPLEX c,cc
-	DOUBLE COMPLEX sdel2i(3,3:4),s(5),som,zfflo1,
+	ComplexType c,cc
+	ComplexType sdel2i(3,3:4),s(5),som,zfflo1,
      +		y(4,3:4,3),z(4,3:4,3),dyz(2,2,3:4,3),d2yzz(3:4,3),
      +		dyzzy(4,3),dsdel2,dyyzz(2,3)
-	DOUBLE PRECISION smax,absc,xmax
-	DOUBLE COMPLEX zfflog
+	RealType smax,absc,xmax
+	ComplexType zfflog
 	external zfflo1,zfflog
 *
 *	common blocks:
@@ -63,7 +64,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[   get y,z-roots:
 	do 20 k=3,4
@@ -154,9 +155,9 @@
 		    som = s(1) - s(2) - s(3) - s(4) - s(5)
 		endif
 		smax = max(absc(s(1)),absc(s(2)),absc(s(3)),absc(s(4)),
-     +			absc(s(5)))/DBLE(xqi(6))**2
+     +			absc(s(5)))/Re(xqi(6))**2
 		if ( smax .lt. xmax ) then
-		    dyzzy(ii,2) = som*(1/DBLE(xqi(6))**2)
+		    dyzzy(ii,2) = som*(1/Re(xqi(6))**2)
 		    xmax = smax
 		endif
    21	    continue
@@ -219,9 +220,9 @@
 		    som = s(1) - s(2) - s(3) - s(4) - s(5)
 		endif
 		smax = max(absc(s(1)),absc(s(2)),absc(s(3)),absc(s(4)),
-     +			absc(s(5)))/DBLE(xqi(8))**2
+     +			absc(s(5)))/Re(xqi(8))**2
 		if ( smax .lt. xmax ) then
-		    dyzzy(ii,3) = som*(1/DBLE(xqi(8))**2)
+		    dyzzy(ii,3) = som*(1/Re(xqi(8))**2)
 		    xmax = smax
 		endif
    25	    continue
@@ -262,27 +263,27 @@
 		    s(1) = d2yzz(i,k)/dyz(2,2,i,k)
 		    clogi(ii) = zfflo1(s(1),ier)
 		    ilogi(ii) = 0
-		elseif ( DBLE(c) .gt. 0 ) then
+		elseif ( Re(c) .gt. 0 ) then
 		    clogi(ii) = zfflog(c,0,czero,ier)
 		    ilogi(ii) = 0
 		else
 		    cc = c+1
 		    if ( absc(cc) .lt. xloss ) then
 			s(1) = -2*sdel2i(i,k)/dyz(2,2,i,k)/
-     +				DBLE(xpi(i+3,k))
+     +				Re(xpi(i+3,k))
 			clogi(ii) = zfflo1(s(1),ier)
 		    else
 			s(1) = 0
 			clogi(ii) = zfflog(-c,0,czero,ier)
 		    endif
-		    if ( DIMAG(c) .lt. -precc*absc(c) .or. DIMAG(s(1))
+		    if ( Im(c) .lt. -precc*absc(c) .or. Im(s(1))
      +				.lt. -precc*absc(s(1)) ) then
 			ilogi(ii) = -1
-		    elseif ( DIMAG(c) .gt. precc*absc(c) .or.
-     +				DIMAG(s(1)) .gt. precc*absc(s(1)) ) then
+		    elseif ( Im(c) .gt. precc*absc(c) .or.
+     +				Im(s(1)) .gt. precc*absc(s(1)) ) then
 			ilogi(ii) = +1
-		    elseif ( DBLE(dyz(2,2,i,k)) .eq. 0 ) then
-			ilogi(ii) = -nint(sign(1D0,DBLE(xpi(i+3,k))))
+		    elseif ( Re(dyz(2,2,i,k)) .eq. 0 ) then
+			ilogi(ii) = -nint(sign(1D0,Re(xpi(i+3,k))))
 			ier = ier + 50
 			print *,'doubtful imaginary part ',ilogi(ii)
 		    else

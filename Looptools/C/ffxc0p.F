@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *	$Id: ffxc0p.f,v 1.3 1995/10/06 09:17:26 gj Exp $
@@ -56,8 +57,8 @@ c
 *	arguments:
 *
 	integer ipi12(8),isoort(8),ilogi(3),npoin,ier
-	DOUBLE COMPLEX cs3(80),clogi(3)
-	DOUBLE PRECISION xpi(6),dpipj(6,6),piDpj(6,6),sdel2,del2s(3),
+	ComplexType cs3(80),clogi(3)
+	RealType xpi(6),dpipj(6,6),piDpj(6,6),sdel2,del2s(3),
      +		etalam,etami(6),delpsi(3),alph(3)
 *
 *	local variables:
@@ -65,16 +66,16 @@ c
 	integer i,j,k,m,ip,jsoort(8),ierw,iw,ier0,ier1,irota,
      +		ilogip(3)
 	logical l4,lcompl,lcpi,l4pos
-	DOUBLE COMPLEX c,cs,calph(3),csdl2i(3),csdel2
-	DOUBLE COMPLEX cy(4,3),cz(4,3),cw(4,3),cdyz(2,2,3),cdwy(2,2,3),
+	ComplexType c,cs,calph(3),csdl2i(3),csdel2
+	ComplexType cy(4,3),cz(4,3),cw(4,3),cdyz(2,2,3),cdwy(2,2,3),
      +		cdwz(2,2,3),cd2yzz(3),cd2yww(3)
-	DOUBLE COMPLEX cpi(6),cdpipj(6,6),cpiDpj(6,6),clogip(3)
-	DOUBLE PRECISION y(4,3),z(4,3),w(4,3),dyz(2,2,3),dwy(2,2,3),
+	ComplexType cpi(6),cdpipj(6,6),cpiDpj(6,6),clogip(3)
+	RealType y(4,3),z(4,3),w(4,3),dyz(2,2,3),dwy(2,2,3),
      +		dwz(2,2,3),d2yzz(3),d2yww(3),dy2z(4,3)
-	DOUBLE PRECISION sdel2i(3),s1,s2
-	DOUBLE PRECISION absc,s,xqi(6),dqiqj(6,6),qiDqj(6,6)
-	DOUBLE PRECISION dfflo1
-	DOUBLE COMPLEX zxfflg
+	RealType sdel2i(3),s1,s2
+	RealType absc,s,xqi(6),dqiqj(6,6),qiDqj(6,6)
+	RealType dfflo1
+	ComplexType zxfflg
 	external dfflo1,zxfflg
 *
 *	common blocks:
@@ -83,7 +84,7 @@ c
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ IR case:
 *
@@ -147,7 +148,7 @@ c
 	    else
 *		complex case
 		sdel2i(i) = sqrt(del2s(i))
-		csdl2i(i) = DCMPLX(0D0,sdel2i(i))
+		csdl2i(i) = ToComplex(0D0,sdel2i(i))
 		lcompl = .TRUE.
 		call ffcxyz(cy(1,i),cz(1,i),cdyz(1,1,i),cd2yzz(i),i,
      +			sdel2,sdel2i(i),etami,delpsi(i),xpi,
@@ -236,16 +237,16 @@ c
    25		    continue
    26		continue
 	    endif
-	    cd2yww(iw) = -cd2yzz(2)/DBLE(alph(4-iw))
+	    cd2yww(iw) = -cd2yzz(2)/Re(alph(4-iw))
 	    do 30 j=1,2
-		cw(j+iw-1,iw) = cz(j+3-iw,2)/DBLE(alph(4-iw))
+		cw(j+iw-1,iw) = cz(j+3-iw,2)/Re(alph(4-iw))
 		cw(j+3-iw,iw) = 1 - cw(j+iw-1,iw)
 		if ( absc(cw(j+3-iw,iw)) .lt. xloss ) then
-		    cs = cz(j+iw-1,2) - DBLE(alph(iw))
+		    cs = cz(j+iw-1,2) - Re(alph(iw))
 		    if ( absc(cs) .lt. xloss*alph(iw) ) ierw = ierw + 15
-		    cw(j+3-iw,iw) = cs/DBLE(alph(4-iw))
+		    cw(j+3-iw,iw) = cs/Re(alph(4-iw))
 		endif
-		cdwy(j,2,iw) = cdyz(2,j,2)/DBLE(alph(4-iw))
+		cdwy(j,2,iw) = cdyz(2,j,2)/Re(alph(4-iw))
 		do 29 i=1,2
 		    cdwz(j,i,iw) = cw(j,iw) - cz(i,iw)
 		    if ( absc(cdwz(j,i,iw)) .ge. xloss*absc(cw(j,iw)) )
@@ -325,23 +326,23 @@ c
 *		for stability split the unit circle up in 4*pi/2
 *		(this may have to be improved to 8*pi/4...)
 		ier0 = 0
-		if ( DBLE(cdyz(2,1,i)) .gt. DIMAG(cdyz(2,1,i)) ) then
-		    s = 2*atan2(DIMAG(cdyz(2,1,i)),DBLE(cdyz(2,1,i)))
-		    clogi(i) = DCMPLX(0D0,s)
+		if ( Re(cdyz(2,1,i)) .gt. Im(cdyz(2,1,i)) ) then
+		    s = 2*atan2(Im(cdyz(2,1,i)),Re(cdyz(2,1,i)))
+		    clogi(i) = ToComplex(0D0,s)
 		    ilogi(i) = -1
-		elseif ( DBLE(cdyz(2,1,i)) .lt. -DIMAG(cdyz(2,1,i)))
+		elseif ( Re(cdyz(2,1,i)) .lt. -Im(cdyz(2,1,i)))
      +								then
-		    if ( DIMAG(cdyz(2,1,i)) .eq. 0 ) then
+		    if ( Im(cdyz(2,1,i)) .eq. 0 ) then
 			call fferr(84,ier)
 		    endif
-		    s = 2*atan2(-DIMAG(cdyz(2,1,i)),-DBLE(cdyz(2,1,i)))
-		    clogi(i) = DCMPLX(0D0,s)
+		    s = 2*atan2(-Im(cdyz(2,1,i)),-Re(cdyz(2,1,i)))
+		    clogi(i) = ToComplex(0D0,s)
 		    ilogi(i) = 1
 		else
-		    s1 = -DBLE(cdyz(2,1,i))
-		    s2 = DIMAG(cdyz(2,1,i))
+		    s1 = -Re(cdyz(2,1,i))
+		    s2 = Im(cdyz(2,1,i))
 		    s = 2*atan2(s1,s2)
-		    clogi(i) = DCMPLX(0D0,s)
+		    clogi(i) = ToComplex(0D0,s)
 		    ilogi(i) = 0
 		endif
 	    endif
@@ -418,7 +419,7 @@ c
 		    call ffcs4(cs3(1),ipi12(1),cw(1,1),cy(1,1),
      +			cz(1,1),cdwy(1,1,1),cdwz(1,1,1),cdyz(1,1,1),
      +			cd2yww(1),cd2yzz(1),cpi,cpiDpj,
-     +			DCMPLX(xpi(5)*alph(3)**2),1,6,isoort(1),
+     +			ToComplex(xpi(5)*alph(3)**2),1,6,isoort(1),
      +			ier0)
 		endif
 		ier1 = max(ier1,ier0)
@@ -433,7 +434,7 @@ c
 		    call ffcs4(cs3(41),ipi12(5),cw(1,3),cy(1,3),
      +			cz(1,3),cdwy(1,1,3),cdwz(1,1,3),cdyz(1,1,3),
      +			cd2yww(3),cd2yzz(3),cpi,cpiDpj,
-     +			DCMPLX(xpi(5)*alph(1)**2),3,6,isoort(5),
+     +			ToComplex(xpi(5)*alph(1)**2),3,6,isoort(5),
      +			ier0)
 		endif
 		ier1 = max(ier1,ier0)
@@ -468,7 +469,7 @@ c
 *	arguments:
 *
 	integer irota,idir,ilogi(3),ilogip(3)
-	DOUBLE COMPLEX clogi(3),clogip(3)
+	ComplexType clogi(3),clogip(3)
 *
 *	local variables
 *

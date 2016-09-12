@@ -1,46 +1,34 @@
-* Bcoeffa.F
+* BcoeffFF.F
 * the two-point tensor coefficients from FF
 * this file is part of LoopTools
-* last modified 28 Sep 10 th
+* last modified 1 Sep 14 th
 
+#include "externals.h"
+#include "types.h"
+
+#define npoint 2
 #include "defs.h"
 
 
-	subroutine XBcoeffa(para, B, ldpara, ier)
+	subroutine XBcoeffFF(B, para, ier)
 	implicit none
-	integer ldpara, ier(Nbb)
-	DVAR para(ldpara,Pbb)
-	double complex B(Nbb)
+	ComplexType B(*)
+	DVAR para(1,*)
+	integer ier(*)
 
 #include "lt.h"
 
 	DVAR p, m1, m2, dm
-	double complex a0(2), b2(2), pdb0
+	ComplexType a0(2), b2(2), pdb0
 	integer i
-	logical dump
 #ifdef COMPLEXPARA
 	DVAR m1dm
-	double complex dmp, d2mp
+	ComplexType dmp, d2mp
 #endif
 
-#ifdef COMPLEXPARA
-	if( abs(DIMAG(para(1,1))) .gt. 0 )
-     &    print *, "Warning: complex momenta not implemented"
-	if( abs(DIMAG(para(1,2))) +
-     &      abs(DIMAG(para(1,3))) .eq. 0 ) then
-	  call Bcoeffa(para, B, 2, ier)
-	  return
-	endif
-#endif
-
-	p = para(1,1)
-	m1 = para(1,2)
-	m2 = para(1,3)
-
-	serial = serial + 1
-	dump = ibits(debugkey, DebugB, 1) .ne. 0 .and.
-     &    serial .ge. debugfrom .and. serial .le. debugto
-	if( dump ) call XDumpPara(2, para, ldpara, "Bcoeffa")
+	m1 = M(1)
+	m2 = M(2)
+	p = P(1)
 
 	do i = 1, Nbb
 	  ier(i) = 0
@@ -63,8 +51,8 @@
 
 	dm = m1 - m2
 
-	if( abs(p) .lt. acc ) then
-	  if( abs(dm) .lt. acc ) then
+	if( abs(p) .lt. diffeps ) then
+	  if( abs(dm) .lt. diffeps ) then
 	    B(bb001) = -.5D0*B(bb00)
 	  else
 	    B(bb001) = -( ((m1 + m2)/6D0)**2 +
@@ -79,22 +67,23 @@
 	call Xffdb0(B(dbb0), pdb0, p, m1, m2, ier(dbb0))
 
 #ifdef COMPLEXPARA
-	if( abs(p) .lt. acc ) then
-	  if( abs(dm) .lt. acc ) then
+	if( abs(p) .lt. diffeps ) then
+	  if( abs(dm) .lt. diffeps ) then
 	    B(bb111) = -.25D0*B(bb0)
+	    B(dbb1) = -1/12D0/m1
 	  else
 	    m1dm = m1/dm
 	    B(bb111)= 3/16D0 + .25D0*a0(2)/dm*(m1dm + 1) +
      &        .5D0*m1dm*(m1dm*(B(bb1) - .5D0) - 1/6D0)
+	    B(dbb1) = (2*m2*B(bb1) + a0(2) - (m1 + 2*m2)/3D0)/dm**2
 	  endif
 	else
 	  B(bb111) = -.25D0*( a0(2) + 2*m1*B(bb1) +
      &      (p + dm)*(3*B(bb11) + 1/6D0) - .5D0*(m1 + m2) )/p
+	  B(dbb1) = .5D0/p*(
+     &      (a0(2) - a0(1) + dm*B(bb0))/p -
+     &      (p + dm)*B(dbb0) )
 	endif
-
-	B(dbb1) = .5D0/p*(
-     &    (a0(2) - a0(1) + dm*B(bb0))/p -
-     &    (p + dm)*B(dbb0) )
 
 	dmp = (m1 - m2)/p
 	d2mp = (m1 - 2*m2)/p
@@ -112,6 +101,7 @@
 	B(dbb00) = 1/6D0*( 2*m1*B(dbb0) + B(bb1) +
      &    (p + dm)*B(dbb1) - 1/3D0 )
 
-	if( dump ) call DumpCoeff(2, B)
+	B(dbb001) = 1/8D0*( 2*m1*B(dbb1) + B(bb11) +
+     &    (p + dm)*B(dbb11) + 1/6D0 )
 	end
 

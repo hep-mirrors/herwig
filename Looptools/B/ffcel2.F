@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcel2:
@@ -16,18 +17,18 @@
 *	arguments:
 *
 	integer ns,i1,i2,i3,lerr,ier
-	DOUBLE COMPLEX del2,piDpj(ns,ns)
+	ComplexType del2,piDpj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE COMPLEX s1,s2,cc
-	DOUBLE PRECISION absc
+	ComplexType s1,s2,cc
+	RealType absc
 *
 *	common blocks
 *
 #include "ff.h"
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *
 *	calculations
 *
@@ -73,12 +74,12 @@
 *	arguments:
 *
 	integer ns,ip1,ip2,ip3,is1,is2,is3
-	DOUBLE COMPLEX delps1,xpi(ns),dpipj(ns,ns),piDpj(ns,ns)
+	ComplexType delps1,xpi(ns),dpipj(ns,ns),piDpj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE COMPLEX s1,s2,s3,som,c
-	DOUBLE PRECISION xmax,absc
+	ComplexType s1,s2,s3,som,c
+	RealType xmax,absc
 *
 *	common blocks
 *
@@ -86,7 +87,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ stupid tree:
 *	1
@@ -208,12 +209,12 @@
 *	arguments:
 *
 	integer in,jn,kn,ln,lkn,islk,iss,ns
-	DOUBLE COMPLEX delps,piDpj(ns,ns)
+	ComplexType delps,piDpj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE COMPLEX s1,s2,c
-	DOUBLE PRECISION absc
+	ComplexType s1,s2,c
+	RealType absc
 *
 *	common blocks
 *
@@ -221,7 +222,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations:
 	if ( in .eq. jn ) then
@@ -277,13 +278,13 @@
 *
 	integer ns,ip1n,ip2n,ip3n,is,itime
 	logical ldel
-	DOUBLE COMPLEX del3mi(itime),del3,del2,xpi(ns),dpipj(ns,ns),
+	ComplexType del3mi(itime),del3,del2,xpi(ns),dpipj(ns,ns),
      +		piDpj(ns,ns)
 *
 *	local variables:
 *
-	DOUBLE PRECISION smax,xmax,absc
-	DOUBLE COMPLEX s(7),som,xsom,c
+	RealType smax,xmax,absc
+	ComplexType s(7),som,xsom,c
 	integer i,j,k,ip1,ip2,ip3,ipn,is1,is2,isi,is3,ihlp,iqn,
      +		jsgn1,jsgn2,jsgn3,jsgnn,iadj(10,10,3:4),init,nm
 	save iadj,init
@@ -295,7 +296,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	data
 *

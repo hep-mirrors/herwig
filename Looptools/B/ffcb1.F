@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcb1:
@@ -26,14 +27,14 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX xp,xm1,xm2,piDpj(3,3)
-	DOUBLE COMPLEX cb1,cb0,ca0i(2)
+	ComplexType xp,xm1,xm2,piDpj(3,3)
+	ComplexType cb1,cb0,ca0i(2)
 *
 *	local variables
 *
 	integer ier0,i,j
-	DOUBLE COMPLEX dm1p,dm2p,dm1m2
-	DOUBLE PRECISION rm1,rm2,rp,rpiDpj(3,3),sprec
+	ComplexType dm1p,dm2p,dm1m2
+	RealType rm1,rm2,rp,rpiDpj(3,3),sprec
 *
 *	common blocks
 *
@@ -41,13 +42,13 @@
 *
 *  #] declarations:
 *  #[ real case:
-	if ( DIMAG(xm1).eq.0 .and. DIMAG(xm2).eq.0 ) then
-	    rm1 = DBLE(xm1)
-	    rm2 = DBLE(xm2)
-	    rp  = DBLE(xp)
+	if ( Im(xm1).eq.0 .and. Im(xm2).eq.0 ) then
+	    rm1 = Re(xm1)
+	    rm2 = Re(xm2)
+	    rp  = Re(xp)
 	    do 20 j=1,3
 		do 10 i=1,3
-		    rpiDpj(i,j) = DBLE(piDpj(i,j))
+		    rpiDpj(i,j) = Re(piDpj(i,j))
    10		continue
    20	    continue
 	    sprec = precx
@@ -94,24 +95,24 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX xp,xm1,xm2,dm1p,dm2p,dm1m2,piDpj(3,3)
-	DOUBLE COMPLEX cb1,cb0,ca0i(2)
+	ComplexType xp,xm1,xm2,dm1p,dm2p,dm1m2,piDpj(3,3)
+	ComplexType cb1,cb0,ca0i(2)
 *
 *	local variables
 *
 	integer i,j,ithres,init
 	logical lneg,lreal
-	DOUBLE PRECISION xmax,absc,bnd101,bnd105,bnd110,bnd115,ax,cprec,
+	RealType xmax,absc,bnd101,bnd105,bnd110,bnd115,ax,cprec,
      +		xprec,xmxp
-	DOUBLE COMPLEX s,s1,h,slam,xma,xmb,x,small,dmbma,clam,clogm,
+	ComplexType s,s1,h,slam,xma,xmb,x,small,dmbma,clam,clogm,
      +		ts2Dp,xlo3,xlogm,cqiqj(3,3),cqi(3)
-	DOUBLE COMPLEX cs(5),cc,csom
-	DOUBLE PRECISION ffbnd
-	DOUBLE COMPLEX zfflo1,zfflo3
-	DOUBLE PRECISION rm1,rm2,rp,rm1m2,rm1p,rm2p,rpiDpj(3,3),sprec
+	ComplexType cs(5),cc,csom
+	RealType ffbnd
+	ComplexType zfflo1,zfflo3
+	RealType rm1,rm2,rp,rm1m2,rm1p,rm2p,rpiDpj(3,3),sprec
 	save cprec,bnd101,bnd105,bnd110,bnd115,init
 *FOR ABSOFT ONLY
-*	DOUBLE COMPLEX csqrt
+*	ComplexType csqrt
 *	external csqrt
 *
 *	common blocks
@@ -120,7 +121,7 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *
 *	data
 *
@@ -129,7 +130,7 @@
 *  #] declarations:
 *  #[ the real cases:
 *
-	if ( DIMAG(xm1) .eq. 0 .and. DIMAG(xm2) .eq. 0 ) then
+	if ( Im(xm1) .eq. 0 .and. Im(xm2) .eq. 0 ) then
 	    lreal = .TRUE.
 	elseif ( nschem.le.4 ) then
 	    lreal = .TRUE.
@@ -166,15 +167,15 @@
 	    lreal = .FALSE.
 	endif
 	if ( lreal ) then
-	    rm1 = DBLE(xm1)
-	    rm2 = DBLE(xm2)
-	    rp  = DBLE(xp)
-	    rm1p  = DBLE(dm1p)
-	    rm2p  = DBLE(dm2p)
-	    rm1m2 = DBLE(dm1m2)
+	    rm1 = Re(xm1)
+	    rm2 = Re(xm2)
+	    rp  = Re(xp)
+	    rm1p  = Re(dm1p)
+	    rm2p  = Re(dm2p)
+	    rm1m2 = Re(dm1m2)
 	    do 20 j=1,3
 		do 10 i=1,3
-		    rpiDpj(i,j) = DBLE(piDpj(i,j))
+		    rpiDpj(i,j) = Re(piDpj(i,j))
    10		continue
    20	    continue
 	    sprec = precx
@@ -185,7 +186,7 @@
 	endif
 *  #] the real cases:
 *  #[ p^2 != 0:
-	if ( DBLE(xp) .ne. 0 ) then
+	if ( Re(xp) .ne. 0 ) then
 * 	#[ normal case:
 	    if ( dm1m2 .ne. 0 ) then
 		cs(1) = -ca0i(2)
@@ -213,7 +214,7 @@
 * 	#] almost equal masses:
 * 	#[ p2 -> 0:
 	    if ( xloss**2*max(absc(xm1),absc(xm2)) .gt. absc(xp) ) then
-		if ( DBLE(xm2).gt.DBLE(xm1) ) then
+		if ( Re(xm2).gt.Re(xm1) ) then
 		    xma = xm1
 		    xmb = xm2
 		    dmbma = -dm1m2
@@ -258,20 +259,20 @@
 	    x = xp/slam
 	    ax = absc(x)
 	    if ( ax.gt.bnd110 ) then
-		s = x*(DBLE(xinfac(12)) + x*(DBLE(xinfac(13)) +
-     +		    x*(DBLE(xinfac(14)) + x*(DBLE(xinfac(15)) +
-     +		    x*(DBLE(xinfac(16)) )))))
+		s = x*(Re(xinfac(12)) + x*(Re(xinfac(13)) +
+     +		    x*(Re(xinfac(14)) + x*(Re(xinfac(15)) +
+     +		    x*(Re(xinfac(16)) )))))
 	    else
 		s = 0
 	    endif
 	    if ( ax.gt.bnd105 ) then
-		s = x*(DBLE(xinfac(7)) + x*(DBLE(xinfac(8)) +
-     +		    x*(DBLE(xinfac(9)) + x*(DBLE(xinfac(10)) +
-     +		    x*(DBLE(xinfac(11) + s) )))))
+		s = x*(Re(xinfac(7)) + x*(Re(xinfac(8)) +
+     +		    x*(Re(xinfac(9)) + x*(Re(xinfac(10)) +
+     +		    x*(Re(xinfac(11) + s) )))))
 	    endif
 	    if ( ax.gt.bnd101) then
-		s = x*(DBLE(xinfac(3)) + x*(DBLE(xinfac(4)) +
-     +		    x*(DBLE(xinfac(5)) + x*(DBLE(xinfac(6)) + s))))
+		s = x*(Re(xinfac(3)) + x*(Re(xinfac(4)) +
+     +		    x*(Re(xinfac(5)) + x*(Re(xinfac(6)) + s))))
 	    endif
 	    s = x**2*(.5D0 + s)
 	    s1 = 2*xp/(ts2Dp + slam)*(s + x)
@@ -320,7 +321,7 @@
 	    endif
 	    cs(1) = -(xm1/dm1m2)/2
 	    cs(2) = -xlogm/2*(xm1/dm1m2)**2
-	    cs(3) = +1/DBLE(4) - ca0i(1)/(2*xm1)
+	    cs(3) = +1/Re(4) - ca0i(1)/(2*xm1)
 	    cs(4) = xlogm/2
 	    csom = cs(1) + cs(2) + cs(3) + cs(4)
 	    xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)))
@@ -337,7 +338,7 @@
 	    cs(2) = -(dm1m2/xm1)/2
 	    cs(3) = -xlo3/(dm1m2/xm1)**2/2
 	    cs(4) = xlo3/2
-	    cs(5) = 1/DBLE(2) - ca0i(1)/(2*xm1)
+	    cs(5) = 1/Re(2) - ca0i(1)/(2*xm1)
 	    csom = cs(1) + cs(2) + cs(3) + cs(4) + cs(5)
 	    xmxp = max(absc(cs(2)),absc(cs(3)),absc(cs(4)),absc(cs(5)))
 	    if ( xmxp.lt.xmax ) then

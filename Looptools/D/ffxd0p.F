@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *(##[ ffxd0p:
@@ -35,21 +36,21 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX cs4(175),cfac
+	ComplexType cs4(175),cfac
 	integer ipi12(28),isoort(16),ier
 	logical ldel2s
-	DOUBLE PRECISION xpi(10),dpipj(10,10),piDpj(10,10),
+	RealType xpi(10),dpipj(10,10),piDpj(10,10),
      +		xqi(10),dqiqj(10,10),qiDqj(10,10),ai(4),daiaj(4,4)
 *
 *	local variables
 *
 	integer i,j,k,ip,jp,m,ilogi(6),ii(6,2),jj(6,2),ier0,ier1
-	DOUBLE COMPLEX c,clogi(6),cipi
-	DOUBLE PRECISION xpi3(6,3:4),dpipj3(6,6,3:4),piDpj3(6,6,3:4),
+	ComplexType c,clogi(6),cipi
+	RealType xpi3(6,3:4),dpipj3(6,6,3:4),piDpj3(6,6,3:4),
      +		del2,del2s(3,3:4),del3(3:4),del3mi(6,3:4),
      +		del4,etalam(3:4),etami(6,3:4),ddel2s(2:3),delpsi(3,3:4),
      +		alph(3),blph(3),sdel2,hulp,som,s(4),smax,xmax
-	DOUBLE COMPLEX cpi(6,3:4),cpiDpj(6,6,3:4),cdpipj(6,6,3:4),
+	ComplexType cpi(6,3:4),cpiDpj(6,6,3:4),cdpipj(6,6,3:4),
      +		cetalm(3:4),cetami(6,3:4),calph(3),csdel2,
      +		cel2s(3,3:4),celpsi(3,3:4),zqi(10),zqiDqj(10,10),
      +		cddl2s(2:3)
@@ -141,7 +142,7 @@
 *	    call fferr(44,ier)
 	    lcroot = .TRUE.
 	    sdel2 = isgnal*sqrt(del2)
-	    csdel2 = DCMPLX(0D0,sdel2)
+	    csdel2 = ToComplex(0D0,sdel2)
 	elseif ( del2 .eq. 0 ) then
 	    call fferr(45,ier)
 	else
@@ -358,7 +359,7 @@
   600	continue
 *  #] cancellations:
 *  #[ Ai<0 terms:
-	cipi = DCMPLX(0D0,pi)
+	cipi = ToComplex(0D0,pi)
 	if ( ai(3) .lt. 0 .neqv. ai(4) .lt. 0 ) then
 *	    we need the S term
 	    if ( ai(1) .lt. 0 .eqv. ai(2) .lt. 0 ) then
@@ -429,8 +430,8 @@
 *
 *	arguments
 *
-	DOUBLE PRECISION xpi3(6),dpipj3(6,6),piDpj3(6,6)
-	DOUBLE PRECISION xpi(10),dpipj(10,10),piDpj(10,10)
+	RealType xpi3(6),dpipj3(6,6),piDpj3(6,6)
+	RealType xpi(10),dpipj(10,10),piDpj(10,10)
 	integer imiss
 *
 *	local variables
@@ -477,13 +478,13 @@
 *	arguments
 *
 	integer ipi12(3),ii,ier
-	DOUBLE COMPLEX cs4(3)
-	DOUBLE PRECISION xqi(10),qiDqj(10,10),sdel2
+	ComplexType cs4(3)
+	RealType xqi(10),qiDqj(10,10),sdel2
 *
 *	local variables
 *
 	integer i,ip(5)
-	DOUBLE PRECISION x(2,3),dfflo1,s,s1
+	RealType x(2,3),dfflo1,s,s1
 	external dfflo1
 *
 *	common blocks
@@ -526,7 +527,7 @@
 *		print *,'        qi^2     = ',xqi(ip(i))
 	    endif
 *	    there is an overall minus compared with Veltman
-	    cs4(i) = DCMPLX(0D0,-pi*s1)
+	    cs4(i) = ToComplex(0D0,-pi*s1)
 	    if ( sdel2 .lt. 0 ) then
 		cs4(i) = -cs4(i)
 		ipi12(i) = -ipi12(i)
@@ -559,14 +560,14 @@
 *	arguments
 *
 	integer ipi12(3),ii,ier
-	DOUBLE COMPLEX cs4(3)
-	DOUBLE PRECISION xqi(10),qiDqj(10,10),sdel2
+	ComplexType cs4(3)
+	RealType xqi(10),qiDqj(10,10),sdel2
 *
 *	local variables
 *
 	integer i,ip(5)
-	DOUBLE COMPLEX x(2,3),zfflo1,s,s1,c
-	DOUBLE PRECISION absc
+	ComplexType x(2,3),zfflo1,s,s1,c
+	RealType absc
 	external zfflo1
 *
 *	common blocks
@@ -579,24 +580,24 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations:
 	if ( ii .eq. 3 ) return
 	do 10 i=1,3
 	    if ( ii .eq. 1 .and. i .eq. 2 ) goto 10
-	    x(1,i) = DCMPLX(-qiDqj(ip(i),ip(i+1))/xqi(ip(i)),
+	    x(1,i) = ToComplex(-qiDqj(ip(i),ip(i+1))/xqi(ip(i)),
      +			-sdel2/xqi(ip(i)))
-	    x(2,i) = DCMPLX(-qiDqj(ip(i),ip(i+1))/xqi(ip(i)),
+	    x(2,i) = ToComplex(-qiDqj(ip(i),ip(i+1))/xqi(ip(i)),
      +			+sdel2/xqi(ip(i)))
 	    s = -x(2,i)/x(1,i)
 	    c = s-1
 	    if ( absc(c) .lt. xloss ) then
-		s1 = zfflo1(DBLE(-2*qiDqj(ip(i),ip(i+1))/xqi(ip(i)))/
+		s1 = zfflo1(Re(-2*qiDqj(ip(i),ip(i+1))/xqi(ip(i)))/
      +				x(1,i),ier)
 	    elseif ( abs(s+1) .lt. xloss ) then
-		s1 = zfflo1(DCMPLX(0D0,-2*sdel2/xqi(ip(i)))/x(1,i),ier)
-		if ( DIMAG(c).gt.0 ) then
+		s1 = zfflo1(ToComplex(0D0,-2*sdel2/xqi(ip(i)))/x(1,i),ier)
+		if ( Im(c).gt.0 ) then
 		    ipi12(i) = +12
 		else
 		    ipi12(i) = -12
@@ -605,7 +606,7 @@
 		s1 = log(s)
 	    endif
 *	    there is an overall minus compared with Veltman
-	    cs4(i) = DCMPLX(pi*DIMAG(s1),-pi*DBLE(s1))
+	    cs4(i) = ToComplex(pi*Im(s1),-pi*Re(s1))
 	    if ( ii .ne. 1 ) then
 		cs4(i) = -cs4(i)
 		ipi12(i) = -ipi12(i)
@@ -639,7 +640,7 @@
 *	arguments
 *
 	integer imiss
-	DOUBLE PRECISION xpi3(6)
+	RealType xpi3(6)
 *
 *	local variables
 *
