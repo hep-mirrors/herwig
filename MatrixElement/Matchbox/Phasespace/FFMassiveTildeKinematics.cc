@@ -90,6 +90,51 @@ Energy FFMassiveTildeKinematics::lastPt() const {
   return ret;
 }
 
+
+Energy FFMassiveTildeKinematics::lastPt(Lorentz5Momentum emitter,Lorentz5Momentum emission,Lorentz5Momentum spectator)const {
+
+  
+  Energy scale =  (emitter+emission+spectator).m();
+  
+  double y = emission*emitter/(emission*emitter + emission*spectator + emitter*spectator);
+  double z = emitter*spectator / (emitter*spectator + emission*spectator);
+  
+    // masses
+  double mui2 = sqr( emitter.m() / scale );
+  double mu2  = sqr( emission.m() / scale );
+  double muj2 = sqr( spectator.m() / scale );
+  
+  Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*mu2 );
+  
+  return ret;
+}
+
+
+  // NOTE: bounds calculated at this step may be too loose
+pair<double,double> FFMassiveTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  
+  if(pt>hardPt) return make_pair(0.5,0.5);
+  
+  Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
+    // masses
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  
+  double zp = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
+               rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
+               sqrt( 1.-sqr(pt/hardPt) ) ) /
+  ( 2.*sqr(1.-sqrt(muj2)) );
+  double zm = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
+               rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
+               sqrt( 1.-sqr(pt/hardPt) ) ) /
+  ( 2.*sqr(1.-sqrt(muj2)) );
+  
+  return make_pair(zm,zp);
+}
+
+
+
 double FFMassiveTildeKinematics::lastZ() const {
   return subtractionParameters()[1];
 }

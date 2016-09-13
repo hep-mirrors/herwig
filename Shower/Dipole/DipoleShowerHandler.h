@@ -111,6 +111,11 @@ public:
   
   double as(Energy Q)const{return theGlobalAlphaS->value(sqr(Q));}
   
+  /**
+   *
+   */
+
+  double Nf(Energy Q)const{return theGlobalAlphaS->Nf(sqr(Q));}
 
 protected:
 

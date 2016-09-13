@@ -1,6 +1,6 @@
-SUBDIRS = include \
+SUBDIRS = include MatrixElement Shower \
 	Utilities PDT Decay PDF Models \
-	Shower Hadronization MatrixElement \
+	Hadronization  \
 	UnderlyingEvent Analysis Looptools Sampling \
 	lib src Doc Contrib Tests
 

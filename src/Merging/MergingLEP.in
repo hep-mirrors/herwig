@@ -9,15 +9,13 @@ set /Herwig/Particles/s:NominalMass 0*GeV
 set /Herwig/Particles/sbar:NominalMass 0*GeV
 set /Herwig/Particles/c:NominalMass 0*GeV
 set /Herwig/Particles/cbar:NominalMass 0*GeV
-set /Herwig/Particles/b:NominalMass 0*GeV
-set /Herwig/Particles/bbar:NominalMass 0*GeV
+#set /Herwig/Particles/b:NominalMass 0*GeV
+#set /Herwig/Particles/bbar:NominalMass 0*GeV
 
 
 #set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 #set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
-
-set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
 set /Herwig/Couplings/NLOAlphaS:min_active_flavours 4
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
@@ -33,14 +31,14 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
 
 
 cd /Herwig/DipoleShower/Kernels
-clear  /Herwig/DipoleShower/DipoleShowerHandler:Kernels 
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ggxDipoleKernel
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFqx2qgxDipoleKernel
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ddxDipoleKernel
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2uuxDipoleKernel
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ccxDipoleKernel
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ssxDipoleKernel
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2bbxDipoleKernel
+#clear  /Herwig/DipoleShower/DipoleShowerHandler:Kernels 
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ggxDipoleKernel
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFqx2qgxDipoleKernel
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ddxDipoleKernel
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2uuxDipoleKernel
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ccxDipoleKernel
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ssxDipoleKernel
+#insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2bbxDipoleKernel
 
 
 cd /Herwig/EventHandlers
@@ -224,7 +222,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3396100
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
 # DELPHI b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2002_069_CONF_603
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2011_I890503
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2011_I890503
 # ALEPH b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_S4656318
 # SLD b quark
@@ -259,5 +257,59 @@ set FFMgx2ddxDipoleKernel:CMWScheme On
 set FFMgx2uuxDipoleKernel:CMWScheme On
 set FFMgx2ccxDipoleKernel:CMWScheme On
 set FFMgx2ssxDipoleKernel:CMWScheme On
-set FFMgx2bbxDipoleKernel:CMWScheme On
+set FFMgx2bbxDipoleKernel:CMWScheme Off
+#set FFMbx2bgxDipoleKernel:RenormalizationScaleFreeze 8.4*GeV
+set FFMgx2bbxDipoleKernel:RenormalizationScaleFreeze 8.4*GeV
 
+set FFMbx2bgxDipoleKernel:VirtualitySplittingScale No
+set FFMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+cd /Herwig/Hadronization
+
+#set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
+#set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff  0.1018
+
+#set ClusterFissioner:ClMaxLight                  3.30
+#set ClusterFissioner:ClPowLight                  2.50
+#set ClusterFissioner:PSplitLight                 1.29
+#set ClusterDecayer:ClDirLight                    1
+#set ClusterDecayer:ClSmrLight                    3.118342
+
+#set ClusterFissioner:ClMaxCharm                  3.11*GeV
+#set ClusterFissioner:ClPowCharm                  1.62
+#set ClusterFissioner:PSplitCharm                 2.54
+#set ClusterDecayer:ClDirCharm                    1
+#set ClusterDecayer:ClSmrCharm                    0.
+#set HadronSelector:SingleHadronLimitCharm   0.0
+
+#set ClusterFissioner:ClMaxBottom                 4.30*GeV
+get ClusterFissioner:ClMaxBottom 
+#set ClusterFissioner:ClPowBottom                 3.518
+get ClusterFissioner:ClPowBottom 
+#set ClusterFissioner:PSplitBottom                1.5
+#set ClusterDecayer:ClDirBottom                   1
+#set ClusterDecayer:ClSmrBottom                   .1
+#set HadronSelector:SingleHadronLimitBottom  0.1
+#set /Herwig/Particles/b:NominalMass 4.0
+#set /Herwig/Particles/b:ConstituentMass 4.3
+#set /Herwig/Particles/bbar:ConstituentMass 4.3
+#set /Herwig/Particles/g:ConstituentMass .7
+get /Herwig/Particles/u:ConstituentMass 
+get /Herwig/Particles/d:ConstituentMass 
+get /Herwig/Particles/s:ConstituentMass 
+
+
+#set HadronSelector:PwtUquark                     1.0
+#set HadronSelector:PwtDquark                     1.0
+#set HadronSelector:PwtSquark                     1.09
+#set HadronSelector:PwtCquark                     1.0
+#set HadronSelector:PwtBquark                     .1
+#set HadronSelector:PwtDIquark                    0.66
+#set HadronSelector:SngWt                         1.0
+#set HadronSelector:DecWt                         1.0
+
+#set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
+#set /Herwig/Couplings/NLOAlphaS:min_active_flavours 3
+#fulldescribe /Herwig/Couplings/NLOAlphaS:exact_evaluation exact
+
+#set /Herwig/Couplings/NLOAlphaS:max_active_flavours 6

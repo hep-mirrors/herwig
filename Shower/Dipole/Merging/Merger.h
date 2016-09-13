@@ -22,6 +22,14 @@
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingGenerator.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 
+#include "Herwig/MatrixElement/Matchbox/Phasespace/FFLightTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/IFLightTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/FFMassiveTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/IFMassiveTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/FILightTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/IILightTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/FIMassiveTildeKinematics.h"
+
 #include "ThePEG/Cuts/JetFinder.h"
 #include "ThePEG/Cuts/Cuts.h"
 
@@ -132,13 +140,16 @@ namespace Herwig {
     
     double as(Energy q){return DSH()->as(q);}
     Ptr<DipoleShowerHandler>::ptr DSH(){return theDipoleShowerHandler;}
+    Ptr<DipoleShowerHandler>::ptr DSH()const{return theDipoleShowerHandler;}
     
     
     size_t maxLegs() const {return theCurrentMaxLegs;}
     size_t maxLegsLO() const {return N0()+N();}
-    size_t maxLegsNLO()const {return N0()+M()+1;}
+    size_t maxLegsNLO()const {return N0()+M();}
     
     
+    
+    double Nf(Energy scale)const{return DSH()->Nf(scale);}
     
     Ptr<MFactory>::ptr treefactory();
     
@@ -271,6 +282,16 @@ namespace Herwig {
     Ptr<ColourBasis>::ptr theLargeNBasis;
     
     Ptr<MatchboxMEBase>::ptr theCurrentME;
+    
+    
+    Ptr<FFLightTildeKinematics>::ptr FFLTK;
+    Ptr<FILightTildeKinematics>::ptr FILTK;
+    Ptr<IFLightTildeKinematics>::ptr IFLTK;
+    Ptr<IILightTildeKinematics>::ptr IILTK;
+    Ptr<FFMassiveTildeKinematics>::ptr FFMTK;
+    Ptr<FIMassiveTildeKinematics>::ptr FIMTK;
+    Ptr<IFMassiveTildeKinematics>::ptr IFMTK;
+    
     
     
 

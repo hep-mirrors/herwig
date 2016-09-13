@@ -163,7 +163,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   double ret = pdf;
 
   if(split.fixedScale()<0.*GeV){
-    ret *= alphas / (2.*Constants::pi)*(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*alphaS()->value(rScale)/2./Constants::pi)):1.);  
+    ret *= alphas / (2.*Constants::pi)*(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*alphaS()->Nf(rScale))*alphaS()->value(rScale)/2./Constants::pi)):1.);
   }else{
     ret *=1.; 
   }

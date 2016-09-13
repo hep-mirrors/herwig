@@ -59,6 +59,9 @@ public:
    * Return the pt associated to the last generated splitting.
    */
   virtual Energy lastPt() const;
+  
+  
+
 
   /**
    * Return the momentum fraction associated to the last splitting.

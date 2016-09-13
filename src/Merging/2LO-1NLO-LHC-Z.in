@@ -23,6 +23,10 @@ set PPMFactory:OrderInAlphaS 0
 set PPMFactory:OrderInAlphaEW 2
 do PPMFactory:Process p p e+ e-
 
+cd /Herwig/MatrixElements/Matchbox/Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
+
+
 
 cd /Herwig/Generators
 saverun 2LO-1NLO-LHC-Z LHCGenerator

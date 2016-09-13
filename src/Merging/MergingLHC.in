@@ -16,8 +16,8 @@ set ShowerNLOPDF:PDFName MMHT2014nlo68cl
 
 
 
-set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.0*GeV
-set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.4*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.4*GeV
 
 
 set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
@@ -152,10 +152,10 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
-#set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-#set LHCGenerator:EventHandler:MultipleInteractionHandler NULL
-#set LHCGenerator:EventHandler:DecayHandler NULL
-#set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:MultipleInteractionHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
 #erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
 
 

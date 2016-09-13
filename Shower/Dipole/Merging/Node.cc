@@ -280,54 +280,16 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal,double hardScaleFac
 bool Node::inShowerPS(Energy hardpT){
 
   assert(deepHead()->MH()->largeNBasis());
-  
-  double x=0.;
   double z_=dipol()->lastZ();
-  
-    // if (dipol()->lastPt()>50*GeV) {
-    //  return false;
-    // }
-  
-  string type;
     // II
-  if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()<2){
-    type="II";
-    x =dipol()->bornEmitter()==0?xcomb()->lastX1():xcomb()->lastX2();
-    double ratio = sqr(dipol()->lastPt()/dipol()->lastDipoleScale());
-    double x__ = z_*(1.-z_)/(1.-z_+ratio);
-    double v = ratio*z_ /(1.-z_+ratio);
-    if (dipol()->lastPt()>(1.-x) * dipol()->lastDipoleScale()/ (2.*sqrt(x)))return false;
-    assert(v< 1.-x__&&x > 0. && x < 1. && v > 0.);
-    if (deepHead()->MH()->openInitialStateZ()) {
-      return true;
-    }
-  }
+  if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()<2&&deepHead()->MH()->openInitialStateZ()) return true;
     // IF
-  if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()>=2){
-    type="IF";
-    x =dipol()->bornEmitter()==0?xcomb()->lastX1():xcomb()->lastX2();
-    if (dipol()->lastPt()>dipol()->lastDipoleScale()* sqrt((1.- x)/x) /2.)return false;
-    if (deepHead()->MH()->openInitialStateZ()) {
+  if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()>=2&&deepHead()->MH()->openInitialStateZ())
       return true;
-    }
-  }
-    // FI
-  if( dipol()->bornEmitter()>=2&&dipol()->bornSpectator()<2){
-    type="FI";
-    double lastx=dipol()->bornSpectator()==0?xcomb()->lastX1():xcomb()->lastX2();
-    if (dipol()->lastPt()>dipol()->lastDipoleScale()*sqrt((1.-lastx)/lastx) /2.)return false;
-  }
-    // FF
-  if( dipol()->bornEmitter()>=2&&dipol()->bornSpectator()>=2){
-    type="FF";
-    if (dipol()->lastPt()>dipol()->lastDipoleScale()/2.)return false;
-  }
   
-  double kappa=sqr(dipol()->lastPt()/hardpT);
-
-  double s = sqrt(1.-kappa);
-  pair<double,double> zbounds= make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
- 
+  pair<double,double> zbounds=
+        dipol()->tildeKinematics()->zBounds(dipol()->lastPt(),hardpT);
+  
   return (zbounds.first<z_&&z_<zbounds.second);
 }
 

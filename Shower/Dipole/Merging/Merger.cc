@@ -42,13 +42,21 @@ using namespace Herwig;
 
 Merger::Merger()
 : MergerBase() {
-  theNf=5;
+  
   minusL=false;
   Unlopsweights=true;
   theCMWScheme=true;
   theSmearing=0.;
   theDipoleShowerHandler=
   Ptr<DipoleShowerHandler>::ptr();
+  FFLTK=new_ptr(FFLightTildeKinematics());
+  FILTK=new_ptr(FILightTildeKinematics());
+  IFLTK=new_ptr(IFLightTildeKinematics());
+  IILTK=new_ptr(IILightTildeKinematics());
+  FFMTK=new_ptr(FFMassiveTildeKinematics());
+  FIMTK=new_ptr(FIMassiveTildeKinematics());
+  IFMTK=new_ptr(IFMassiveTildeKinematics());
+  
   isUnitarized=true;
   isNLOUnitarized=true;
   defMERegionByJetAlg=false;
@@ -142,7 +150,7 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   }
 
   CrossSection res=ZERO;
-  bool maxMulti=Node->legsize() == maxLegsLO();
+  bool maxMulti=Node->legsize() == int(maxLegsLO());
 
 
   if(weight!=0.){
@@ -273,7 +281,6 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   
   CrossSection matrixElement=LoopdSigDR(startscale,Node);
   
-  assert(false);
   CrossSection Bornweight=Node->nodeME()->dSigHatDRB();
   
  
@@ -496,7 +503,7 @@ double Merger::alphaReweight(){
  
 
   if (!(history[0].node->children().empty())){ 
-    res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(Q_R))/2./Constants::pi):1.),int(history[0].node->legsize()-N0()));
+    res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(Q_R))*as(Q_R))/2./Constants::pi):1.),int(history[0].node->legsize()-N0()));
   }
 
 
@@ -505,7 +512,7 @@ double Merger::alphaReweight(){
     if ((*it).node->parent()){
       Energy q_i=xiRenSh* (*it).node->dipol()->lastPt();
       res *= as(q_i)/ SM().alphaS()
-      *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(q_i))/2./Constants::pi):1.);
+      *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(q_i))*as(q_i))/2./Constants::pi):1.);
     }
   }
   return res;
@@ -573,7 +580,7 @@ double Merger::sumpdfReweightUnlops(){
                         beam1Scale,
                         ((*it).node->dipol()->lastPt()),
                         (*it).node->nodeME()->lastX1(),
-                        theNf,
+                        Nf(history[0].scale),
                         history[0].scale);
         beam1Scale=((*it).node->dipol()->lastPt())*xiFacSh;
       }
@@ -584,7 +591,7 @@ double Merger::sumpdfReweightUnlops(){
                         beam2Scale,
                         ((*it).node->dipol()->lastPt()),
                         (*it).node->nodeME()->lastX2(),
-                        theNf,
+                        Nf(history[0].scale),
                         history[0].scale);
         beam2Scale=((*it).node->dipol()->lastPt())*xiFacSh;
       }
@@ -595,7 +602,7 @@ double Merger::sumpdfReweightUnlops(){
                         beam1Scale,
                         ((*it).node->dipol()->lastPt()),
                         (*it).node->nodeME()->lastX1(),
-                        theNf,
+                        Nf(history[0].scale),
                         history[0].scale);
           //pdfratio((*it).node, beam1Scale, sqrt((*it).node->dipol()->lastPt()), 1);
         beam1Scale=((*it).node->dipol()->lastPt())*xiFacSh;
@@ -607,7 +614,7 @@ double Merger::sumpdfReweightUnlops(){
                         beam2Scale,
                         ((*it).node->dipol()->lastPt()),
                         (*it).node->nodeME()->lastX2(),
-                        theNf,
+                        Nf(history[0].scale),
                         history[0].scale);
           //pdfratio((*it).node, beam2Scale , sqrt((*it).node->dipol()->lastPt()), 2);
         beam2Scale=((*it).node->dipol()->lastPt())*xiFacSh;
@@ -621,7 +628,7 @@ double Merger::sumpdfReweightUnlops(){
                     beam1Scale,
                     history[0].scale*xiFacME,
                     (history.back()).node->nodeME()->lastX1(),
-                    theNf,
+                    Nf(history[0].scale),
                     history[0].scale);
     
   }
@@ -632,7 +639,7 @@ double Merger::sumpdfReweightUnlops(){
                     beam2Scale,
                     history[0].scale*xiFacME,
                     (history.back()).node->nodeME()->lastX2(),
-                    theNf,
+                    Nf(history[0].scale),
                     history[0].scale);
     
       //history[0].node->deepHead()->nodeME()->pdf2(sqr(beam2Scale))/history[0].node->deepHead()->nodeME()->pdf2(sqr(history[0].scale));
@@ -695,7 +702,7 @@ double Merger::pdfUnlops(tcPDPtr particle,tcPDPtr parton,tcPDFPtr pdf,Energy  ru
         }
       }
       
-      restmp += ( (11./6.) * CA - (1./3.)*theNf + 2.*CA*log(1.-x) ) *PDFxparton;
+      restmp += ( (11./6.) * CA - (1./3.)*Nf(history[0].scale) + 2.*CA*log(1.-x) ) *PDFxparton;
       if ( z > x ) {
         restmp += 2. * CA * ( PDFxByzgluon - z*PDFxparton ) / (z*(1.-z));
         restmp += 2.* CA *( (1.-z)/z - 1. + z*(1.-z) ) * PDFxByzgluon / z;
@@ -757,7 +764,6 @@ CrossSection Merger::MergingDSigDR() {
   
   history.clear();
   
-  theNf=5;//TODO
   
   if (theFirstNodeMap.find(theCurrentME)==theFirstNodeMap.end()) {
     cout<<"\nnot in map:"<<theFirstNodeMap.size();
@@ -880,9 +886,9 @@ Energy Merger::CKKW_StartScale(NPtr Born){
 
 
 double Merger::alphasUnlops( Energy next,Energy fixedScale)  {
-  double betaZero =  (11./6.)*SM().Nc() - (1./3.)*theNf;
+  double betaZero =  (11./6.)*SM().Nc() - (1./3.)*Nf(history[0].scale);
   return (betaZero*log(sqr(fixedScale/next)))+
-  (theCMWScheme?(((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*theNf))):0.);
+  (theCMWScheme?(((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(history[0].scale)))):0.);
 }
 
 
@@ -1058,7 +1064,7 @@ bool Merger::generateKinematics(Ptr<MatchboxMEBase>::ptr me,const double * r){
            child != children.end(); child++){
        
         treefactory()->setAlphaParameter(theGamma);
-        inAlphaPS|=(*child)->dipol()->aboveAlpha();
+        inAlphaPS|=theGamma!=1.?(*child)->dipol()->aboveAlpha():false;
         treefactory()->setAlphaParameter(1.);
       }
       
@@ -1178,14 +1184,19 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
-        Energy scale = sqrt(2.*(emissionmom*emittermom + emissionmom*spectatormom + emittermom*spectatormom));
-        double y = emissionmom*emittermom / (emissionmom*emittermom + emissionmom*spectatormom + emittermom*spectatormom);
-        double z = emittermom*spectatormom / (emittermom*spectatormom + emissionmom*spectatormom);
-        if (abs(scale * sqrt(y*z*(1.-z))-winnerScale)<0.0001*GeV) {
+        Energy pt=0*GeV;
+        if (emittermom.m()==0*GeV&&emissionmom.m()==0*GeV&&spectatormom.m()==0*GeV) {
+          pt=FFLTK->lastPt(emittermom,emissionmom,spectatormom);
+        }else{
+          pt=FFMTK->lastPt(emittermom,emissionmom,spectatormom);
+        }
+        
+        
+        if (abs(pt-winnerScale)<0.0001*GeV) {
           foundwinnerpt=true;
         }
           //          if(scale * sqrt(y*z*(1.-z))<optVeto&&winnerScale>optVeto)cout<<"\nFF "<<(scale * sqrt(y*z*(1.-z))/GeV);
-        ptx =min(ptx,scale * sqrt(y*z*(1.-z)));
+        ptx =min(ptx,pt);
       }
     }
   }
@@ -1203,18 +1214,20 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
-        Lorentz5Momentum Emsp=emittermom+emissionmom-spectatormom;
-        Energy scale = sqrt(-1.*Emsp*Emsp);
-        double x = (- emissionmom*emittermom + emissionmom*spectatormom + emittermom*spectatormom) /(emittermom*spectatormom + emissionmom*spectatormom);
-        double z = emittermom*spectatormom / (emittermom*spectatormom + emissionmom*spectatormom);
-          //          if(scale * sqrt(z*(1.-z)*(1.-x)/x)<optVeto&&winnerScale>optVeto)cout<<"\nFI "<<(scale * sqrt(z*(1.-z)*(1.-x)/x)/GeV);
+        Energy pt=0*GeV;
+        if (emittermom.m()==0*GeV&&emissionmom.m()==0*GeV&&spectatormom.m()==0*GeV) {
+          pt=FILTK->lastPt(emittermom,emissionmom,spectatormom);
+        }else{
+          pt=FIMTK->lastPt(emittermom,emissionmom,spectatormom);
+        }
         
-        if (abs(scale *sqrt(z*(1.-z)*(1.-x)/x)-winnerScale)<0.0001*GeV) {
+        
+        if (abs(pt-winnerScale)<0.0001*GeV) {
           foundwinnerpt=true;
         }
         
-        if((z*(1.-z)*(1.-x)/x)>0.)
-          ptx =min(ptx,scale * sqrt(z*(1.-z)*(1.-x)/x));
+        if(pt>0.*GeV)
+          ptx =min(ptx,pt);
       }
     }
   }
@@ -1233,15 +1246,19 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
-        Lorentz5Momentum Emsp=-emittermom+emissionmom+spectatormom;
-        Energy scale = sqrt(-1.*Emsp*Emsp);
-        double x = (-emissionmom*spectatormom + emittermom*spectatormom + emittermom*emissionmom) /(emittermom*emissionmom + emittermom*spectatormom);
-        double u = emittermom*emissionmom / (emittermom*emissionmom + emittermom*spectatormom);
-        if (abs(scale *sqrt(u*(1.-u)*(1.-x)/x)-winnerScale)<0.0001*GeV) {
+        
+        Energy pt=0*GeV;
+        if (emittermom.m()==0*GeV&&emissionmom.m()==0*GeV&&spectatormom.m()==0*GeV) {
+          pt=IFLTK->lastPt(emittermom,emissionmom,spectatormom);
+        }else{
+          pt=IFMTK->lastPt(emittermom,emissionmom,spectatormom);
+        }
+        
+
+        if (abs(pt-winnerScale)<0.0001*GeV) {
           foundwinnerpt=true;
         }
-        if((u*(1.-u)*(1.-x)/x)>0.)
-          ptx =min(ptx,scale * sqrt(u*(1.-u)*(1.-x)/x));
+        ptx =min(ptx,pt);
       }
     }
   }
@@ -1261,15 +1278,11 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
-        Lorentz5Momentum Emsp=emittermom-emissionmom+spectatormom;
-        Energy scale = sqrt(Emsp*Emsp);
-        double x = (emittermom*spectatormom - emittermom*emissionmom - spectatormom*emissionmom)/(emittermom*spectatormom);
-        double v = (emittermom*emissionmom)/(emittermom*spectatormom);
-        if (abs(scale * sqrt(v*(1.-x-v)/x)-winnerScale)<0.0001*GeV) {
+        Energy  pt=IILTK->lastPt(emittermom,emissionmom,spectatormom);
+       if (abs(pt-winnerScale)<0.0001*GeV) {
           foundwinnerpt=true;
         }
-        if ((v*(1.-x-v)/x)>0.)
-          ptx =min(ptx, scale * sqrt(v*(1.-x-v)/x));
+        ptx =min(ptx, pt);
       }
     }
   }
@@ -1313,8 +1326,20 @@ void Merger::persistentOutput(PersistentOStream & os) const {
   theN<<   theM<<
   xiRenME<<     xiFacME<<
   xiRenSh<<     xiFacSh<<
-  xiQSh<<   theNf<<
-  weight<<weightCB<<theGamma<<ee_ycut<<pp_dcut<<theSmearing<<ounit(therenormscale, GeV)<<ounit(theIRSafePT, GeV)<<ounit(theMergePt, GeV)<<ounit(theCentralMergePt, GeV)<<theMergingJetFinder<<theLargeNBasis<<theDipoleShowerHandler<< theTreeFactory<<theFirstNodeMap ;
+  xiQSh<<     weight<<weightCB<<theGamma<<ee_ycut<<pp_dcut<<theSmearing<<ounit(therenormscale, GeV)<<ounit(theIRSafePT, GeV)<<ounit(theMergePt, GeV)<<ounit(theCentralMergePt, GeV)<<theMergingJetFinder
+  
+  <<theLargeNBasis
+  
+  
+  << FFLTK
+  << FILTK
+  << IFLTK
+  << IILTK
+  << FFMTK
+  << FIMTK
+  << IFMTK
+  
+  <<theDipoleShowerHandler<< theTreeFactory<<theFirstNodeMap ;
   
 }
 
@@ -1328,8 +1353,19 @@ void Merger::persistentInput(PersistentIStream & is, int) {
   theN>>   theM>>
   xiRenME>>     xiFacME>>
   xiRenSh>>     xiFacSh>>
-  xiQSh>>   theNf>>
-  weight>>weightCB>>theGamma>>ee_ycut>>pp_dcut>>theSmearing>>iunit(therenormscale, GeV)>>iunit(theIRSafePT, GeV)>>iunit(theMergePt, GeV)>>iunit(theCentralMergePt, GeV)>>theMergingJetFinder>>theLargeNBasis>>theDipoleShowerHandler>> theTreeFactory>>theFirstNodeMap ;
+  xiQSh>>  
+  weight>>weightCB>>theGamma>>ee_ycut>>pp_dcut>>theSmearing>>iunit(therenormscale, GeV)>>iunit(theIRSafePT, GeV)>>iunit(theMergePt, GeV)>>iunit(theCentralMergePt, GeV)>>theMergingJetFinder>>theLargeNBasis>>
+  
+  
+   FFLTK
+  >> FILTK
+  >> IFLTK
+  >> IILTK
+  >> FFMTK
+  >> FIMTK
+  >> IFMTK>>
+  
+  theDipoleShowerHandler>> theTreeFactory>>theFirstNodeMap ;
 }
 
   // *** Attention *** The following static variable is needed for the type
