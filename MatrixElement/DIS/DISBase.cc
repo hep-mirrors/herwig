@@ -769,7 +769,7 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
 }
 
 RealEmissionProcessPtr DISBase::generateHardest(RealEmissionProcessPtr born,
-						ShowerInteraction::Type inter) {
+						ShowerInteraction inter) {
   // check if generating QCD radiation
   if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
   PPtr quark[2],lepton[2];

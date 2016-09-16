@@ -76,7 +76,7 @@ public:
    */
   virtual void setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
-					 ShowerInteraction::Type,
+					 ShowerInteraction,
 					 const bool setPartners=true);
   //@}
 
@@ -132,7 +132,7 @@ protected:
    * @param particle The particle to find the partners for
    * @param particles The full set of particles to search
    */
-  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
+  vector< pair<ShowerPartnerType, tShowerParticlePtr> > 
   findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**

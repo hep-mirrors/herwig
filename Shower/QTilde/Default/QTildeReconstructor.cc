@@ -258,7 +258,7 @@ bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
 		    pair<Energy,double> > & intrinsic,
-		    ShowerInteraction::Type type,
+		    ShowerInteraction type,
 		    bool switchRecon) const {
   _currentTree = hard;
   _intrinsic=intrinsic;
@@ -472,7 +472,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq,
 
 bool QTildeReconstructor::
 reconstructDecayJets(ShowerTreePtr decay,
-		     ShowerInteraction::Type) const {
+		     ShowerInteraction) const {
   _currentTree = decay;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=decay->extractProgenitors();
@@ -746,7 +746,7 @@ solveDecayKFactor(Energy mb,
 }
 
 bool QTildeReconstructor::
-deconstructDecayJets(HardTreePtr decay,ShowerInteraction::Type) const {
+deconstructDecayJets(HardTreePtr decay,ShowerInteraction) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
@@ -1037,7 +1037,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 
 bool QTildeReconstructor::
 deconstructGeneralSystem(HardTreePtr tree,
-			 ShowerInteraction::Type type) const {
+			 ShowerInteraction type) const {
   // extract incoming and outgoing particles
   ColourSingletShower in,out;
   for(set<HardBranchingPtr>::const_iterator it=tree->branchings().begin();
@@ -1069,7 +1069,7 @@ deconstructGeneralSystem(HardTreePtr tree,
 }
 
 bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
-					      ShowerInteraction::Type type) const {
+					      ShowerInteraction type) const {
   // inverse of old recon method
   if(_reconopt == 0) {
     return deconstructGeneralSystem(tree,type);
@@ -1091,7 +1091,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
 
 bool QTildeReconstructor::
 deconstructColourSinglets(HardTreePtr tree,
-			  ShowerInteraction::Type type) const {
+			  ShowerInteraction type) const {
   // identify the colour singlet systems
   unsigned int nnun(0),nnii(0),nnif(0),nnf(0),nni(0);
   vector<ColourSingletShower> 
@@ -1172,7 +1172,7 @@ deconstructColourSinglets(HardTreePtr tree,
 
 bool QTildeReconstructor::
 deconstructColourPartner(HardTreePtr tree,
-			 ShowerInteraction::Type type) const {
+			 ShowerInteraction type) const {
   Lorentz5Momentum ptotal;
   HardBranchingPtr emitter;
   ColourSingletShower incomingShower,outgoingShower;
@@ -1746,7 +1746,7 @@ deconstructInitialInitialSystem(bool & applyBoost,
 				LorentzRotation & fromRest,
 				HardTreePtr tree,
 				vector<HardBranchingPtr> jets,
-				ShowerInteraction::Type) const {
+				ShowerInteraction) const {
   assert(jets.size()==2);
   // put beam with +z first
   if(jets[0]->beam()->momentum().z()<ZERO) swap(jets[0],jets[1]);
@@ -1804,7 +1804,7 @@ void QTildeReconstructor::
 deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
-			    ShowerInteraction::Type type) const {
+			    ShowerInteraction type) const {
   LorentzRotation trans = toRest;
   if(jets.size()==1) {
     Lorentz5Momentum pnew = toRest*(jets[0]->branchingParticle()->momentum());
@@ -2368,7 +2368,7 @@ inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
 
 void QTildeReconstructor::
 deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
-			      ShowerInteraction::Type type) const {
+			      ShowerInteraction type) const {
   HardBranchingPtr incoming;
   Lorentz5Momentum pin[2],pout[2],pbeam;
   HardBranchingPtr initial;
@@ -2818,7 +2818,7 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2,
 
 void QTildeReconstructor::
 reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
-			  ShowerInteraction::Type type) const {
+			  ShowerInteraction type) const {
   // identify and catagorize the colour singlet systems
   unsigned int nnun(0),nnii(0),nnif(0),nnf(0),nni(0);
   vector<ColourSingletSystem> 

@@ -69,7 +69,7 @@ public:
     /**
      *  Constructor
      */
-    EvolutionPartner(tShowerParticlePtr p,double w, ShowerPartnerType::Type t,
+    EvolutionPartner(tShowerParticlePtr p,double w, ShowerPartnerType t,
 		     Energy s) : partner(p), weight(w), type(t), scale(s)
     {}
 
@@ -86,7 +86,7 @@ public:
     /**
      *  Type
      */
-    ShowerPartnerType::Type type;
+    ShowerPartnerType type;
 
     /**
      *  The assoicated evolution scale
@@ -286,7 +286,7 @@ public:
   /**
    *  Veto emission at a given scale 
    */
-  void vetoEmission(ShowerPartnerType::Type type, Energy scale);
+  void vetoEmission(ShowerPartnerType type, Energy scale);
 
   /**
    *  Access to the evolution scales

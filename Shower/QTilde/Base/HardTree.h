@@ -32,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  HardTree(vector<HardBranchingPtr>, vector<HardBranchingPtr>, ShowerInteraction::Type);
+  HardTree(vector<HardBranchingPtr>, vector<HardBranchingPtr>, ShowerInteraction);
 
   /**
    *  Contructor from Real emission process
@@ -72,7 +72,7 @@ public:
   /**
    *  Type of interaction
    */
-  ShowerInteraction::Type interaction() {return interaction_;}
+  ShowerInteraction interaction() {return interaction_;}
 
   /**
    *  Get the Rotation to be applied to the tree
@@ -99,7 +99,7 @@ private:
   /**
    *  Type of interaction
    */
-  ShowerInteraction::Type interaction_;
+  ShowerInteraction interaction_;
 
   /**
    *  The ShowerTree

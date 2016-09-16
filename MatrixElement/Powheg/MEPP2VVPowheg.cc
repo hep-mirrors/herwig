@@ -3749,7 +3749,7 @@ double MEPP2VVPowheg::lo_me() const {
 }
 
 RealEmissionProcessPtr MEPP2VVPowheg::generateHardest(RealEmissionProcessPtr born,
-						      ShowerInteraction::Type inter) {
+						      ShowerInteraction inter) {
   if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
   // Now we want to set these data vectors according to the particles we've
   // received from the current 2->2 hard collision:

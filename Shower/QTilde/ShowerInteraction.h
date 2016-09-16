@@ -17,20 +17,25 @@ namespace Herwig {
  *  It contains only some useful enums.
  */
 
-  namespace ShowerInteraction {
+/**
+ *  Enum for the type of interaction
+ */
+enum class ShowerInteraction { 
+	UNDEFINED=-1, 
+	QCD, 
+	QED, 
+	Both 
+};
 
-    /**
-     *  Enum for the type of interaction
-     */
-    enum Type { UNDEFINED=-1, QCD, QED, Both };
-  }
-
-  namespace ShowerPartnerType {
-    /**
-     *  Enum for the type of shower partner
-     */
-    enum Type {Undefined,QCDColourLine,QCDAntiColourLine,QED};
-  }
+/**
+ *  Enum for the type of shower partner
+ */
+enum class ShowerPartnerType {
+	Undefined,
+	QCDColourLine,
+	QCDAntiColourLine,
+	QED
+};
 
 }
 #endif // HERWIG_ShowerInteraction_H

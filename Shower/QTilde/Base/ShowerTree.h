@@ -219,7 +219,7 @@ public:
   /**
    *  Set maximum Emission scales
    */
-  void setVetoes(const map<ShowerInteraction::Type,Energy> & pTs,
+  void setVetoes(const map<ShowerInteraction,Energy> & pTs,
 		 unsigned int type);
 
   /**

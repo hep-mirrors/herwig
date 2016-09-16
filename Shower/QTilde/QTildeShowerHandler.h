@@ -177,7 +177,7 @@ protected:
   /**
    *  set the colour partners
    */
-  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type,
+  virtual void setEvolutionPartners(bool hard,ShowerInteraction,
 				    bool clear);
 
   /**
@@ -193,7 +193,7 @@ protected:
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type,
+  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction,
 			      Branching fb, bool first);
 
   /**
@@ -205,7 +205,7 @@ protected:
    * @param beam The beam particle
    */
   virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-			       ShowerInteraction::Type); 
+			       ShowerInteraction); 
 
   /**
    * If does the forward evolution of the input on-shell particle
@@ -219,7 +219,7 @@ protected:
   virtual bool 
   spaceLikeDecayShower(tShowerParticlePtr particle,
 		       const ShowerParticle::EvolutionScales & maxScales,
-		       Energy minimumMass,ShowerInteraction::Type,
+		       Energy minimumMass,ShowerInteraction,
 		       Branching fb);
 
   /**
@@ -227,7 +227,7 @@ protected:
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type,
+				       ShowerInteraction type,
 				       Branching fb, bool first);
  
   /**
@@ -235,7 +235,7 @@ protected:
    */
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
 					HardBranchingPtr branch,
-					ShowerInteraction::Type type);
+					ShowerInteraction type);
 
   /**
    * Truncated shower from a time-like particle
@@ -243,7 +243,7 @@ protected:
   virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 					     const ShowerParticle::EvolutionScales & maxScales,
 					     Energy minimumMass, HardBranchingPtr branch,
-					     ShowerInteraction::Type type, Branching fb);
+					     ShowerInteraction type, Branching fb);
   //@}
 
   /**
@@ -433,7 +433,7 @@ protected:
   /**
    *  Convert the HardTree into an extra shower emission 
    */
-  void convertHardTree(bool hard,ShowerInteraction::Type type);
+  void convertHardTree(bool hard,ShowerInteraction type);
 
 protected:
 
@@ -452,7 +452,7 @@ protected:
   /**
    *  Start the shower of a timelike particle
    */
-  virtual bool startTimeLikeShower(ShowerInteraction::Type);
+  virtual bool startTimeLikeShower(ShowerInteraction);
 
   /**
    *  Update of the time-like stuff
@@ -462,20 +462,20 @@ protected:
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);
+  virtual bool startSpaceLikeShower(PPtr,ShowerInteraction);
 
   /**
    *  Start the shower of a spacelike particle
    */
   virtual bool 
   startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
-			    Energy minimumMass,ShowerInteraction::Type);
+			    Energy minimumMass,ShowerInteraction);
 
   /**
    * Select the branching for the next time-like emission
    */
   Branching selectTimeLikeBranching(tShowerParticlePtr particle,
-				    ShowerInteraction::Type type,
+				    ShowerInteraction type,
 				    HardBranchingPtr branch);
 
   /**
@@ -483,7 +483,7 @@ protected:
    */
   Branching selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 					  const ShowerParticle::EvolutionScales & maxScales,
-					  Energy minmass,ShowerInteraction::Type type,
+					  Energy minmass,ShowerInteraction type,
 					  HardBranchingPtr branch);
   /**
    *  Create the timelike child of a branching
@@ -765,7 +765,7 @@ private :
   /**
    *  The option for wqhich interactions to use
    */
-  ShowerInteraction::Type interaction_;
+  ShowerInteraction interaction_;
 
   /**
    *  Truncated shower switch
