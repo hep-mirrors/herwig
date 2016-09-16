@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# CMS underlying event in Z events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1107658

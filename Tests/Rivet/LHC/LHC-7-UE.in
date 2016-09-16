@@ -36,8 +36,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1119400
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
 # CMS forward energy flow
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
-# CMS charged particle rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
 # LHC K0s/Lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
 # TOTEM at large rapidity
