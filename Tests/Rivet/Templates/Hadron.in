@@ -7,6 +7,7 @@ set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 1000000
 set LHCGenerator:EventHandler:StatLevel Full
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
 ##################################################
 #  Create the Herwig analysis
 ##################################################

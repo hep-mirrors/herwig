@@ -6,6 +6,7 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 1000000
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
 ##################################################
 #  Need to use an NLO PDF
 ##################################################
