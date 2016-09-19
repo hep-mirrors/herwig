@@ -226,9 +226,9 @@ namespace Herwig {
     
     void largeNBasis(Ptr<ColourBasis>::ptr x){theLargeNBasis=x;}
     
-    int M()const{return theM;}
+    int M()const;
     
-    int N()const{return theN;}
+    int N()const;
     
     int N0()const{return theN0;}
     void N0(int n){ theN0=n;}
@@ -252,8 +252,6 @@ namespace Herwig {
      int theChooseHistory;
     int theN0;
      int  theOnlyN;
-    int theN;
-    int theM;
     size_t theCurrentMaxLegs;
     double   xiRenME;
     double   xiFacME;

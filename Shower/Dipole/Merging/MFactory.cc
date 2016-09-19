@@ -98,11 +98,17 @@ void MFactory::fill_amplitudes() {
   for ( PDVector::const_iterator p = partons.begin() ; p != partons.end() ; ++p )
     if ( abs((**p).id()) < 6 ) ++nl;
   
+  if (getProcesses().size()!=1) {
+    throw InitException() << "In this Factory only one process is supported so far.";
+  }
+  
   nLight(nl / 2);
   processMap[0] = getProcesses()[0];
   if(MH()->M()>=0)
     setHighestVirt(processMap[0].size()+MH()->M());
  
+  
+  
   MH()->N0(processMap[0].size());
   for ( int i = 1 ; i <= MH()->N() ; ++i ) {
     processMap[i] = processMap[i - 1];
@@ -398,6 +404,53 @@ void MFactory::orderOLPs() {
   
 }
 
+
+vector<string> MFactory::parseProcess(string in) {
+  vector<string> process = StringUtils::split(in);
+  if ( process.size() < 3 )
+    throw Exception() << "MatchboxFactory: Invalid process."
+    << Exception::runerror;
+  for ( vector<string>::iterator p = process.begin();
+       p != process.end(); ++p ) {
+    *p = StringUtils::stripws(*p);
+  }
+  theN=0;
+  bool prodprocess=true;
+  vector<string> pprocess;
+  for ( vector<string>::const_iterator p = process.begin();
+       p != process.end(); ++p ) {
+    if ( *p == "->" )
+      continue;
+
+    if (*p=="[") {
+      prodprocess=false;
+    }else if (*p=="]") {
+      prodprocess=false;
+      break;
+    }else if (*p=="[j") {
+      prodprocess=false;
+      theN++;
+    }else if (*p=="j"&&!prodprocess) {
+      theN++;
+      prodprocess=false;
+    }else if (*p=="j]") {
+      theN++;
+      prodprocess=false;
+      break;
+    }else if(prodprocess){
+      pprocess.push_back(*p);
+    }else{
+      cout<<"\nWarning: "<<*p<<" in the brackets of the process definition is not recognized.\n Only j as jets are recognized.";
+    }
+    
+  }
+  return pprocess;
+}
+
+
+
+
+
 void MFactory::setup() {
   
   useMe();
@@ -561,7 +614,7 @@ void MFactory::persistentOutput(PersistentOStream & os) const {
   << theonlyUnlopsweights << theonlyk           << theonlymulti
   << divideSub            << divideSubNumber    << theonlyabove
   << theonlysub           << theSubtractionData << ransetup
-  << processMap           << theMergingHelper;
+  << processMap           << theMergingHelper   <<theM<<theN;
 }
 
 void MFactory::persistentInput(PersistentIStream & is, int) {
@@ -570,7 +623,7 @@ void MFactory::persistentInput(PersistentIStream & is, int) {
   >> theonlyUnlopsweights >> theonlyk           >> theonlymulti
   >> divideSub            >> divideSubNumber    >> theonlyabove
   >> theonlysub           >> theSubtractionData >> ransetup
-  >> processMap           >> theMergingHelper;
+  >> processMap           >> theMergingHelper   >>theM>>theN;
 }
 
 void MFactory::Init() {
@@ -670,8 +723,6 @@ void MFactory::Init() {
   
   
   
-  /*	static Command<MFactory> interfaceProcess("Process", "Set the process to consider.", &MFactory::doProcess, false);*/
-  
   static Parameter<MFactory, string> interfaceSubtractionData("SubtractionData", "Prefix for subtraction check data.",
                                                               &MFactory::theSubtractionData, "", false, false);
   
@@ -683,6 +734,11 @@ void MFactory::Init() {
    "",
    &MFactory::theMergingHelper, false, false, true, true, false);
   
+  
+  
+  static Parameter<MFactory, int> interfaceaddNLOLegs("NLOProcesses",
+                                                    "Set the number of virtual corrections to consider. 0 is default for no virtual correction.", &MFactory::theM, 0, 0, 0, false, false,
+                                                    Interface::lowerlim);
   
   
   

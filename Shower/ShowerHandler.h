@@ -89,6 +89,12 @@ public:
   virtual bool isReshuffling() const { return true; }
 
   /**
+   * Return true, if the shower handler can generate a truncated 
+   * shower for POWHEG style events generated using Matchbox
+   */
+  virtual bool canHandleMatchboxTrunc() const { return false; }
+
+  /**
    * Get the PDF freezing scale
    */
   Energy pdfFreezingScale() const { return pdfFreezingScale_; }
@@ -106,6 +112,47 @@ public:
    * Return the remnant decayer.
    */
   tHwRemDecPtr remnantDecayer() const { return remDec_; }
+
+  /**
+   *  Split the hard process into production and decays
+   * @param tagged The tagged particles from the StepHandler
+   * @param hard  The hard perturbative process
+   * @param decay The decay particles
+   */
+  void splitHardProcess(tPVector tagged, PerturbativeProcessPtr & hard,
+			DecayProcessMap & decay) const;
+
+  /**
+   *  Decay a particle
+   */
+  tDMPtr decay(PerturbativeProcessPtr,
+	      DecayProcessMap & decay) const;
+
+  
+  /**
+   * Cached lookup of decay modes.
+   * Generator::findDecayMode() is not efficient.
+   */
+  tDMPtr findDecayMode(const string & tag) const;
+
+
+  /**
+   *  A struct to order the particles in the same way as in the DecayMode's
+   */
+  
+  struct ParticleOrdering {
+
+    bool operator() (tcPDPtr p1, tcPDPtr p2);
+
+  };
+  
+
+  /**
+   * A container for ordered particles required
+   * for constructing tags for decay mode lookup.
+   */
+  typedef multiset<tcPDPtr,ParticleOrdering> OrderedParticles;
+
 
 public:
 
@@ -279,6 +326,17 @@ protected:
   virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
 
   /**
+   * If cascade was called before, but there are still decaying partialces
+   * in the DecayInShower list to be showered. Also possible with another shower
+   * like combining Dipole and Qtilde.
+   */
+  virtual void cascade(tPVector) { 
+    throw Exception() 
+	 <<"\nError: Cascade Handler was called multiple times." 
+         << Exception::eventerror;
+  };
+
+  /**
    * Set up for the cascade
    */
   void prepareCascade(tSubProPtr sub) { 
@@ -320,7 +378,6 @@ protected:
    * @name Members relating to the underlying event and MPI
    */
   //@{
-
   /**
    * Return true if multiple parton interactions are switched on 
    * and can be used for this beam setup.
@@ -372,22 +429,6 @@ protected:
    *   Members to handle splitting up of hard process and decays
    */
   //@{
-
-  /**
-   *  Split the hard process into production and decays
-   * @param tagged The tagged particles from the StepHandler
-   * @param hard  The hard perturbative process
-   * @param decay The decay particles
-   */
-  void splitHardProcess(tPVector tagged, PerturbativeProcessPtr & hard,
-			DecayProcessMap & decay) const;
-
-  /**
-   *  Decay a particle
-   */
-  void decay(PerturbativeProcessPtr,
-	     DecayProcessMap & decay) const;
-
   /**
    *  Find decay products from the hard process and create decay processes
    * @param parent The parent particle
@@ -447,19 +488,6 @@ protected:
   void resetWeights();
   //@}
 
-
-
-  /**
-   * Return true, if the shower handler can generate a truncated 
-   * shower for POWHEG style events generated using Matchbox
-   */
-  virtual bool canHandleMatchboxTrunc() const { return false; }
-
-
-
-
-
-
 protected:
 
   /**
@@ -503,7 +531,8 @@ protected:
   virtual void doinitrun();
 
   /**
-   * Called at the end of the run phase.
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
    */
   virtual void dofinish();
   //@}
@@ -640,6 +669,10 @@ private:
    */
   Energy pdfFreezingScale_;
 
+  /**
+   * PDFs to be used for the various stages and related parameters
+   */
+  //@{
   /**
    * The PDF for beam particle A. Overrides the particle's own PDF setting.
    */

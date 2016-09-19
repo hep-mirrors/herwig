@@ -273,31 +273,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ShowerKinematics. */
-template <>
-struct BaseClassTrait<Herwig::ShowerKinematics,1> {
-  /** Typedef of the first base class of ShowerKinematics. */
-  typedef Base NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ShowerKinematics class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ShowerKinematics>
-  : public ClassTraitsBase<Herwig::ShowerKinematics> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ShowerKinematics"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_ShowerKinematics_H */

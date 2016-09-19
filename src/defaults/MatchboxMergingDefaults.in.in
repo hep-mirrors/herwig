@@ -116,6 +116,15 @@ do MFactory:StartParticleGroup bbar
 insert MFactory:ParticleGroup 0 /Herwig/Particles/bbar
 do MFactory:EndParticleGroup
 
+do MFactory:StartParticleGroup t
+insert MFactory:ParticleGroup 0 /Herwig/Particles/t
+do MFactory:EndParticleGroup
+
+do MFactory:StartParticleGroup tbar
+insert MFactory:ParticleGroup 0 /Herwig/Particles/tbar
+do MFactory:EndParticleGroup
+
+
 do MFactory:StartParticleGroup g
 insert MFactory:ParticleGroup 0 /Herwig/Particles/g
 do MFactory:EndParticleGroup
@@ -230,6 +239,14 @@ cd /Herwig/Merging
 create Herwig::MScale MScale 
 set MFactory:ScaleChoice MScale
 
+
+create Herwig::Merger Merger
+create Herwig::MergingReweight MPreWeight HwDipoleShower.so
+insert MFactory:Preweighters 0  MPreWeight
+
+create Herwig::SimpleColourBasis  LargeNColourBasis
+set LargeNColourBasis:LargeN On
+set Merger:LargeNBasis LargeNColourBasis
 
 
 ################################################################################

@@ -32,7 +32,8 @@ bool FIMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
     abs(ind.emitterData()->id())==abs(flavour()->id()) &&
     ind.emitterData()->mass() != ZERO &&
     ind.spectatorData()->mass() == ZERO &&
-    !ind.initialStateEmitter() && ind.initialStateSpectator();
+    !ind.initialStateEmitter() && ind.initialStateSpectator()&&
+    !ind.incomingDecayEmitter() && !ind.incomingDecaySpectator();
 }
 
 bool FIMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,

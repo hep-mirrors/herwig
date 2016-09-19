@@ -52,11 +52,13 @@ ILC-MUED.in \
 ILC-RS.in \
 LEP.in \
 LEP-Matchbox.in \
+LEP-Merging.in \
 LHC-ADD.in \
 LHC-diffractive.in \
 LHC-GammaGamma.in \
 LHC.in \
 LHC-Matchbox.in \
+LHC-Merging.in \
 LHC-LQ.in \
 LHC-MSSM.in \
 LHC-MUED.in \

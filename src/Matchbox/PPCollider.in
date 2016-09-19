@@ -14,6 +14,12 @@ set Factory:FirstPerturbativePDF Yes
 set Factory:SecondPerturbativePDF Yes
 set Factory:PartonExtractor /Herwig/Partons/QCDExtractor
 
+cd /Herwig/Merging
+set MFactory:FirstPerturbativePDF Yes
+set MFactory:SecondPerturbativePDF Yes
+set MFactory:PartonExtractor /Herwig/Partons/QCDExtractor
+
+
 cd /Herwig/Cuts
 
 set Cuts:ScaleMin 2.0*GeV

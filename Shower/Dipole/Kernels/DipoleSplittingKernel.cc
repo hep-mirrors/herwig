@@ -34,8 +34,8 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
-    theCMWScheme(false),
     theVirtualitySplittingScale(false),
+    theCMWScheme(false),
     presampling(false) {}
 
 
@@ -82,7 +82,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     scale = sqr(splittingKinematics()->QFromPt(pt,split)) + sqr(theScreeningScale);
   }
 
-  if(split.fixedScale()>0.*GeV){
+  if(split.calcFixedExpansion()){
     scale=sqr(split.fixedScale());
   }
  
@@ -162,7 +162,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 
   double ret = pdf;
 
-  if(split.fixedScale()<0.*GeV){
+  if(!split.calcFixedExpansion()){
     ret *= alphas / (2.*Constants::pi)*(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*alphaS()->Nf(rScale))*alphaS()->value(rScale)/2./Constants::pi)):1.);
   }else{
     ret *=1.; 

@@ -101,7 +101,7 @@ public:
   void prepare(const DipoleSplittingInfo&);
 
   /**
-   * Fix parameters from the fiven DipoleSplittingInfo
+   * Fix parameters from the given DipoleSplittingInfo
    * and generate the next splitting. Return the
    * pt selected for the next splitting.
    */
@@ -132,7 +132,7 @@ public:
   const DipoleSplittingInfo& lastSplitting() const { return generatedSplitting; }
   
  /**
-   * Sample the Sudakov in a monte carlo
+   * Sample the Sudakov in monte carlo fashion
    */
   double sudakov(const DipoleSplittingInfo&,Energy down);
 
@@ -265,7 +265,7 @@ public:
   /**
    * Evalute the splitting kernel.
    */
-  double evaluate(const vector<double>&,Energy fixed=-1*GeV);
+  double evaluate(const vector<double>&);
 
   /**
    * Indicate that a veto with the given kernel value and overestimate has occured.
@@ -285,7 +285,6 @@ public:
       return theOtherGenerator->splittingWeight();
     return theSplittingWeight;
   }
-
 
   /**
    * True, if sampler should apply compensation

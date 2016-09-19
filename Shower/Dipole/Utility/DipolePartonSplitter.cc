@@ -19,7 +19,10 @@
 using namespace Herwig;
 
 void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChild,
-				 bool initialState) {
+				 bool initialState, bool decayedEmitter) {
+  
+  if (decayedEmitter)
+    assert(false);
 
   firstChild->colourInfo(new_ptr(ColourBase()));
   secondChild->colourInfo(new_ptr(ColourBase()));
@@ -27,7 +30,9 @@ void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChi
   if (!initialState) {
     parent->addChild(firstChild);
     parent->addChild(secondChild);
-  } else {
+  } 
+
+  else {
 
     tPVector parents = parent->parents();
 
@@ -47,9 +52,12 @@ void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChi
 }
 
 void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChild,
-				 tPPtr ref, bool initialState) {
+				 tPPtr ref, bool initialState, bool decayedEmitter) {
 
-  split(parent,firstChild,secondChild,initialState);
+  // TODO: If decayedEmitter splittings are included,
+  // they need to be handled here
+
+  split(parent,firstChild,secondChild,initialState,decayedEmitter);
 
   // final state splittings
 
@@ -286,20 +294,23 @@ void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChi
 
 }
 
-void DipolePartonSplitter::change(tPPtr parent, tPPtr child, bool initialState) {
+void DipolePartonSplitter::change(tPPtr parent, tPPtr child, bool initialState, bool decayedSpec) {
 
   child->colourInfo(new_ptr(ColourBase()));
 
-  if (parent->hasColour())
+  if (parent->hasColour())	
     parent->colourLine()->addColoured(child);
 
   if (parent->hasAntiColour())
     parent->antiColourLine()->addAntiColoured(child);
 
-  if (!initialState) {
+  if (!initialState && !decayedSpec) {
     parent->addChild(child);
-  } else {
+  } 
 
+  // Treat the case of a decayed spectator as
+  // a backward evolution (momentum doesn't change in splitting)
+  else {
 
     tPVector parents = parent->parents();
 

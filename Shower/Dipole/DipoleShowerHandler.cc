@@ -31,6 +31,7 @@
 
 #include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include <queue>
 
 using namespace Herwig;
 
@@ -39,6 +40,7 @@ bool DipoleShowerHandler::firstWarn = true;
 DipoleShowerHandler::DipoleShowerHandler() 
   : ShowerHandler(), chainOrderVetoScales(true),
     nEmissions(0), discardNoEmissions(false), firstMCatNLOEmission(false),
+    thePowhegDecayEmission(true),
     realignmentScheme(0),
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
@@ -53,37 +55,23 @@ IBPtr DipoleShowerHandler::clone() const {
   return new_ptr(*this);
 }
 
+
+
+
 IBPtr DipoleShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
 
 
-double DipoleShowerHandler::reweightCKKW(int, int) {
-  
-    // setCurrentHandler();
-
-    //eventHandler(generator()->eventHandler());
-   
-    //if (!firstInteraction()) return 1.;
-  
-  double res = 1.;
-  
-    // if (theMergingHelper&&!theMergingHelper->reweightCKKWSingle(dynamic_ptr_cast<Ptr<MatchboxXComb>::ptr>(lastXCombPtr()), res))
-    //  return 0.;
-  
-  
-  
-  return res;
-}
+void  DipoleShowerHandler::cascade(tPVector finalstate) {
+   assert(false&&"Dipoleshower as second shower not implemented");
+  return;}
 
 
+tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
+	                                    Energy optHardPt, Energy optCutoff) {
 
-
-
-tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
-                                    Energy optHardPt, Energy optCutoff) {
-  
   useMe();
   
   prepareCascade(sub);
@@ -171,9 +159,75 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
     
       constituentReshuffle();
 
+      // Decay and shower any particles that require decaying
+      while ( !eventRecord().decays().empty() ) {
+
+
+	map<PPtr,PerturbativeProcessPtr>::iterator decayIt = eventRecord().decays().begin();
+	// find the decay to do, one with greatest width and parent showered
+	while(find(eventRecord().outgoing().begin(),eventRecord().outgoing().end(),decayIt->first)==
+	      eventRecord().outgoing().end() &&
+	      find(eventRecord().hard().begin(),eventRecord().hard().end(),decayIt->first)==
+	      eventRecord().hard().end()) ++decayIt;
+	assert(decayIt!=eventRecord().decays().end());
+	PPtr incoming = decayIt->first;
+	eventRecord().currentDecay(decayIt->second);
+	
+
+	// Use this to record if an emission actually happens
+	bool powhegEmission = thePowhegDecayEmission;
+
+
+	// Decay the particle / sort out its pert proc
+	Energy showerScale = eventRecord().decay(incoming, powhegEmission);
+	
+	// Following the decay, the bool powheg emission is updated to indicate whether or not an emission occurred
+	if ( powhegEmission ) 
+	  nEmitted += 1;
+	
+	// Check that there is only one particle incoming to the decay
+	assert(eventRecord().currentDecay()->incoming().size()==1);
+
+	// Prepare the event record for the showering of the decay
+	bool needToShower = eventRecord().prepareDecay(eventRecord().currentDecay());
+
+	// Only need to shower if we have coloured outgoing particles
+	if ( needToShower ) {
+
+	  // The decays currently considered produce a maximum of 2 chains (with powheg emission)
+	  // so all dipole should have the same scale as returned by the decay function.
+	  assert( eventRecord().chains().size() <= 2 );
+	  for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
+		ch != eventRecord().chains().end(); ++ch) {
+
+	    for ( list<Dipole>::iterator dip = ch->dipoles().begin();
+		  dip != ch->dipoles().end(); ++dip ) {
+
+	      assert ( showerScale > ZERO );
+	      dip->leftScale( showerScale );
+	      dip->rightScale( showerScale );
+
+	    }
+	  }
+	  // Perform the cascade
+	  doCascade(nEmitted,optHardPt,optCutoff,true);
+
+	  // Do the constituent mass shell reshuffling
+	  decayConstituentReshuffle(eventRecord().currentDecay(), true);
+
+	}
+
+	// Update the decays, adding any decays and updating momenta
+	eventRecord().updateDecays(eventRecord().currentDecay());
+	
+	eventRecord().decays().erase(decayIt->first);
+      }
+	
+
       break;
 
-    } catch (RedoShower&) {
+    }
+    catch (RedoShower&) {
 
       resetWeights();
 
@@ -191,31 +245,166 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
   }
 
-  return eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
+  tPPair res=eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
+  setDidRunCascade(true);
+  return res;
 
 }
 
+
+// Reshuffle the outgoing partons from the hard process onto their constituent mass shells
 void DipoleShowerHandler::constituentReshuffle() {
 
   if ( constituentReshuffler ) {
-    constituentReshuffler->reshuffle(eventRecord().outgoing(),
-				     eventRecord().incoming(),
-				     eventRecord().intermediates());
+    if ( eventRecord().decays().empty() ) {
+      constituentReshuffler->reshuffle(eventRecord().outgoing(),
+				       eventRecord().incoming(),
+				       eventRecord().intermediates());
+      return;
+    }
+  
+
+    //  if(eventRecord().decays().empty()) return;
+
+    else {
+      PList decaying;
+      for(map<PPtr,PerturbativeProcessPtr>::iterator it=eventRecord().decays().begin();
+	  it!=eventRecord().decays().end();++it) {
+	decaying.push_back(it->first);
+      }
+      constituentReshuffler->hardProcDecayReshuffle( decaying,
+						     eventRecord().outgoing(),
+						     eventRecord().hard(),
+						     eventRecord().incoming(),
+						     eventRecord().intermediates());
+    }
   }
 
+
+
+  // After reshuffling the hard process, the decays need to be updated
+  // as this is not done in reshuffle
+  vector<pair<PPtr,PerturbativeProcessPtr> > decays;
+  for(map<PPtr,PerturbativeProcessPtr>::iterator it=eventRecord().decays().begin();
+      it!=eventRecord().decays().end();++it) {
+    decays.push_back(make_pair(it->first,it->second));
+  }
+  
+  for(unsigned int ix=0;ix<decays.size();++ix) {
+
+    PPtr unstable = decays[ix].first;
+    PList::iterator pos = find(eventRecord().intermediates().begin(),eventRecord().intermediates().end(),decays[ix].first);
+
+    // Update the PPtr in theDecays
+    if(pos!=eventRecord().intermediates().end()) {
+      unstable = *pos;
+      while(!unstable->children().empty()) {
+	unstable = unstable->children()[0];
+      }
+      eventRecord().decays().erase(decays[ix].first);
+      eventRecord().decays()[unstable] = decays[ix].second;
+
+      // Update the momenta of any other particles in the decay chain
+      // (for externally provided events)
+      if ( !(eventRecord().decays()[unstable]->outgoing().empty()) )
+	eventRecord().updateDecayChainMom( unstable , eventRecord().decays()[unstable]);
+    }
+
+    
+    else {
+      if ( !(eventRecord().decays()[unstable]->outgoing().empty()) ) {
+	// Update the momenta of any other particles in the decay chain
+	// (for externally provided events)
+	// Note this needs to be done for all decaying particles in the 
+	// outgoing/hard regardless of whether that particle radiated
+	// or was involved in the reshuffling, this is due to the 
+	// transformation performed for IILightKinematics.
+	if ( (find(eventRecord().outgoing().begin(), 
+		   eventRecord().outgoing().end(), unstable) != eventRecord().outgoing().end()) 
+	     || (find(eventRecord().hard().begin(), 
+		      eventRecord().hard().end(), unstable) != eventRecord().hard().end()) )
+	  eventRecord().updateDecayChainMom( unstable , eventRecord().decays()[unstable]);
+
+      }
+    }
+  }
+  eventRecord().currentDecay(PerturbativeProcessPtr());
 }
 
-void DipoleShowerHandler::hardScales(Energy2 muf) {
 
+// Reshuffle outgoing partons from a decay process onto their constituent mass shells
+void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decayProc, const bool test) {
+
+  if ( !test ) {
+    // decayReshuffle updates both the event record and the decay perturbative process
+    if ( constituentReshuffler ) {
+      constituentReshuffler->decayReshuffle(decayProc,
+					    eventRecord().outgoing(),
+					    eventRecord().hard(),
+					    eventRecord().intermediates());
+    }
+    return;
+  }
+
+  if ( test ) {
+    // Test this function by comparing the
+    // invariant mass of the outgoing decay
+    // systems before and after reshuffling
+    Lorentz5Momentum testOutMomBefore (ZERO,ZERO,ZERO,ZERO);
+    Energy testInvMassBefore = ZERO;
+    
+    for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator testDecayOutItBefore = decayProc->outgoing().begin();
+	  testDecayOutItBefore!= decayProc->outgoing().end(); ++testDecayOutItBefore ) {
+      testOutMomBefore += testDecayOutItBefore->first->momentum();
+    }
+  
+    testInvMassBefore = testOutMomBefore.m();
+  
+
+    // decayReshuffle updates both the event record and the decay perturbative process
+    if ( constituentReshuffler ) {
+      constituentReshuffler->decayReshuffle(decayProc,
+					    eventRecord().outgoing(),
+					    eventRecord().hard(),
+					    eventRecord().intermediates());
+    }
+
+    Lorentz5Momentum testOutMomAfter (ZERO,ZERO,ZERO,ZERO);
+    Energy testInvMassAfter = ZERO;
+
+    for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator testDecayOutItAfter = decayProc->outgoing().begin();
+	  testDecayOutItAfter!= decayProc->outgoing().end(); ++testDecayOutItAfter ) {
+
+      testOutMomAfter += testDecayOutItAfter->first->momentum();
+	
+    }
+  
+    testInvMassAfter = testOutMomAfter.m();
+
+    Energy incomingMass = decayProc->incoming()[0].first->momentum().m();
+    assert( abs(testInvMassBefore-incomingMass)/GeV < 1e-5 );
+    assert( abs(testInvMassBefore-testInvMassAfter)/GeV < 1e-5);
+   
+
+  }
+}
+
+// Sets the scale of each particle in the dipole chains by finding the smallest of several upper bound energy scales: the CMEnergy of the event, the transverse mass of outgoing particles, the hardScale (maxPT or maxQ) calculated for each dipole (in both configurations) and the veto scale for each particle
+void DipoleShowerHandler::hardScales(Energy2 muf)  {
+
+  // Initalise maximum pt as max CMEnergy of the event
   maxPt = generator()->maximumCMEnergy();
 
   if ( restrictPhasespace() ) {
+    // First interaction == hard collision (i.e. not a MPI collision)
     if ( !hardScaleIsMuF() || !firstInteraction() ) {
       if ( !eventRecord().outgoing().empty() ) {
 	for ( PList::const_iterator p = eventRecord().outgoing().begin();
 	      p != eventRecord().outgoing().end(); ++p )
 	  maxPt = min(maxPt,(**p).momentum().mt());
-      } else {
+      } 
+      //Look at any non-coloured outgoing particles in the current subprocess
+      else {
 	assert(!eventRecord().hard().empty());
 	Lorentz5Momentum phard(ZERO,ZERO,ZERO,ZERO);
 	for ( PList::const_iterator p = eventRecord().hard().begin();
@@ -225,7 +414,9 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
 	maxPt = mhard;
       }
       maxPt *= hardScaleFactor();
-    } else {
+    }
+
+    else {
       maxPt = hardScaleFactor()*sqrt(muf);
     }
     muPt = maxPt;
@@ -233,28 +424,35 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
     muPt = hardScaleFactor()*sqrt(muf);
   }
 
+
+
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
 	ch != eventRecord().chains().end(); ++ch ) {
 
+    // Note that minVetoScale is a value for each DipoleChain, not each dipole
+    // It will contain the minimum veto scale from all of the dipoles in the chain
     Energy minVetoScale = -1.*GeV;
 
     for ( list<Dipole>::iterator dip = ch->dipoles().begin();
 	  dip != ch->dipoles().end(); ++dip ) {
 
       // max scale per config
-      Energy maxFirst = 0.0*GeV;
-      Energy maxSecond = 0.0*GeV;
+      Energy maxFirst = ZERO;
+      Energy maxSecond = ZERO;
 
+      // Loop over the kernels for the given dipole.
+      // For each dipole configuration, calculate ptMax (or QMax if virtuality ordering) for each kernel and find the maximum
       for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k =
 	      kernels.begin(); k != kernels.end(); ++k ) {
 	
 	pair<bool,bool> conf = make_pair(true,false);
 
 	if ( (**k).canHandle(dip->index(conf)) ) {
+	  // Look in DipoleChainOrdering for this
 	  Energy scale =
 	    evolutionOrdering()->hardScale(dip->emitter(conf),dip->spectator(conf),
-					 dip->emitterX(conf),dip->spectatorX(conf),
-					 **k,dip->index(conf));
+					   dip->emitterX(conf),dip->spectatorX(conf),
+					   **k,dip->index(conf));
 	  maxFirst = max(maxFirst,scale);
 	}
 
@@ -263,15 +461,19 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
 	if ( (**k).canHandle(dip->index(conf)) ) {
 	  Energy scale =
 	    evolutionOrdering()->hardScale(dip->emitter(conf),dip->spectator(conf),
-					 dip->emitterX(conf),dip->spectatorX(conf),
-					 **k,dip->index(conf));
+					   dip->emitterX(conf),dip->spectatorX(conf),
+					   **k,dip->index(conf));
 	  maxSecond = max(maxSecond,scale);
 	}
 
       }
 
+      // Find the maximum value from comparing the maxScale found from maxPt and the vetoScale of the particle
       if ( dip->leftParticle()->vetoScale() >= ZERO ) {
 	maxFirst = min(maxFirst,sqrt(dip->leftParticle()->vetoScale()));
+
+	// minVetoScale is a value for each DipoleChain, not each dipole
+	// It contains the minimum veto scale for all the dipoles in the entire DipoleChain
 	if ( minVetoScale >= ZERO )
 	  minVetoScale = min(minVetoScale,sqrt(dip->leftParticle()->vetoScale()));
 	else
@@ -286,6 +488,7 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
 	  minVetoScale = sqrt(dip->rightParticle()->vetoScale());
       }
 
+      // Set the emitterScale for both members of each dipole
       maxFirst = min(maxPt,maxFirst);
       dip->emitterScale(make_pair(true,false),maxFirst);
 
@@ -294,6 +497,7 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
 
     }
 
+    // if the smallest veto scale (i.e. from all of the dipoles) is smaller than the scale calculated for a particular particle in a particular dipole, replace the scale with the veto scale
     if ( !evolutionOrdering()->independentDipoles() &&
 	 chainOrderVetoScales &&
 	 minVetoScale >= ZERO ) {
@@ -340,6 +544,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      Energy optHardPt,
 				      Energy optCutoff) {
 
+
   if ( !index.initialStateEmitter() &&
        !doFSR() ) {
     winner.didStopEvolving();
@@ -352,13 +557,19 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     return 0.0*GeV;
   }
 
+  // Currently do not split IF dipoles so
+  // don't evaluate them in order to avoid
+  // exceptions in the log
+  if ( index.incomingDecayEmitter() ) {
+    winner.didStopEvolving();
+    return 0.0*GeV;
+  }
+
   DipoleSplittingInfo candidate;      
   candidate.index(index);
   candidate.configuration(conf);
   candidate.emitterX(emitterX);
   candidate.spectatorX(spectatorX);
-  candidate.emitter(emitter);
-  candidate.spectator(spectator);
 
   if ( generators().find(candidate.index()) == generators().end() )
     getGenerators(candidate.index(),theSplittingReweight);
@@ -376,6 +587,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   // the key is indeed what we wanted. See line after (*) comment
   // below.
   //
+  // SW - Update 04/01/2016: Note - This caused a bug for me as I did not
+  // include equality checks on the decay booleans in the == definition
 
   pair<GeneratorMap::iterator,GeneratorMap::iterator> gens
     = generators().equal_range(candidate.index());
@@ -401,13 +614,22 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       throw RedoShower();
 
     candidate.scale(dScale);
+
+    // Calculate the mass of the recoil system
+    // for decay dipoles
+    if (candidate.index().incomingDecayEmitter() || candidate.index().incomingDecaySpectator() ) {
+      Energy recoilMass = gen->second->splittingKinematics()->recoilMassKin(emitter->momentum(),
+									    spectator->momentum());
+      candidate.recoilMass(recoilMass);
+    }
+
     candidate.continuesEvolving();
     Energy hardScale = evolutionOrdering()->maxPt(startScale,candidate,*(gen->second->splittingKernel()));
 
     Energy maxPossible = 
       gen->second->splittingKinematics()->ptMax(candidate.scale(),
 						candidate.emitterX(), candidate.spectatorX(),
-						candidate.index(),
+						candidate,
 						*gen->second->splittingKernel());
 
     Energy ircutoff =
@@ -418,9 +640,9 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     if ( maxPossible <= ircutoff ) {
       continue;
     }
-
-    if ( maxPossible >= hardScale )
+    if ( maxPossible >= hardScale ){
       candidate.hardPt(hardScale);
+    }
     else {
       hardScale = maxPossible;
       candidate.hardPt(maxPossible);
@@ -454,7 +676,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 
 void DipoleShowerHandler::doCascade(unsigned int& emDone,
 				    Energy optHardPt,
-				    Energy optCutoff) {
+				    Energy optCutoff,
+				    const bool decay) {
 
   if ( nEmissions )
     if ( emDone == nEmissions )
@@ -464,23 +687,19 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   DipoleSplittingInfo dipoleWinner;
 
   while ( eventRecord().haveChain() ) {
-
     if ( verbosity > 2 ) {
       generator()->log() << "DipoleShowerHandler selecting splittings for the chain:\n"
 			 << eventRecord().currentChain() << flush;
     }
 
     list<Dipole>::iterator winnerDip = eventRecord().currentChain().dipoles().end();
-
     Energy winnerScale = 0.0*GeV;
     Energy nextLeftScale = 0.0*GeV;
     Energy nextRightScale = 0.0*GeV;
-
     for ( list<Dipole>::iterator dip = eventRecord().currentChain().dipoles().begin();
 	  dip != eventRecord().currentChain().dipoles().end(); ++dip ) {
-      
-      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false),optHardPt,optCutoff);
 
+      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false),optHardPt,optCutoff);
       if ( nextLeftScale > winnerScale ) {
 	winnerScale = nextLeftScale;
 	winner = dipoleWinner;
@@ -488,12 +707,12 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       }
 
       nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true),optHardPt,optCutoff);
-
       if ( nextRightScale > winnerScale ) {
 	winnerScale = nextRightScale;
 	winner = dipoleWinner;
 	winnerDip = dip;
       }
+      
 
       if ( evolutionOrdering()->independentDipoles() ) {
 	Energy dipScale = max(nextLeftScale,nextRightScale);
@@ -502,7 +721,6 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 	if ( dip->rightScale() > dipScale )
 	  dip->rightScale(dipScale);
       }
-
     }
 
     if ( verbosity > 1 ) {
@@ -522,8 +740,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 	if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
 	     (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
 	  double w = theEventReweight->weightCascade(eventRecord().incoming(),
-							eventRecord().outgoing(),
-							eventRecord().hard(),theGlobalAlphaS);
+						     eventRecord().outgoing(),
+						     eventRecord().hard(),theGlobalAlphaS);
 	  reweight(reweight()*w);
 	}
       continue;
@@ -531,10 +749,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     // otherwise perform the splitting
     
-    
     if (theMergingHelper&&eventHandler()->currentCollision()) {
       if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+eventRecord().hard().size()+2)
-
         if (theMergingHelper->mergingScale()<winnerScale){
           bool transparent=true;
           if (transparent) {
@@ -572,6 +788,13 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     DipoleChain* firstChain = 0;
     DipoleChain* secondChain = 0;
+
+    // Note: the dipoles are updated in eventRecord().split(....) after the splitting,
+    // hence the entire cascade is handled in doCascade
+    // The dipole scales are updated in dip->split(....)
+
+    if ( decay )
+      winner.isDecayProc( true );
 
     eventRecord().split(winnerDip,winner,children,firstChain,secondChain);
 
@@ -829,6 +1052,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << constituentReshuffler << intrinsicPtGenerator
      << theGlobalAlphaS << chainOrderVetoScales
      << nEmissions << discardNoEmissions << firstMCatNLOEmission
+     << thePowhegDecayEmission
      << realignmentScheme << verbosity << printEvent
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
@@ -843,6 +1067,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> constituentReshuffler >> intrinsicPtGenerator
      >> theGlobalAlphaS >> chainOrderVetoScales
      >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission
+     >> thePowhegDecayEmission
      >> realignmentScheme >> verbosity >> printEvent
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
@@ -1053,10 +1278,22 @@ void DipoleShowerHandler::Init() {
      "Set the splitting reweight.",
      &DipoleShowerHandler::theSplittingReweight, false, false, true, true, false);
 
+
+  static Switch<DipoleShowerHandler, bool> interfacePowhegDecayEmission
+    ("PowhegDecayEmission",
+     "Use Powheg style emission for the decays",
+     &DipoleShowerHandler::thePowhegDecayEmission, true, false, false);
+
+  static SwitchOption interfacePowhegDecayEmissionYes
+    (interfacePowhegDecayEmission,"Yes","Powheg decay emission on", true);
+
+  static SwitchOption interfacePowhegDecayEmissionNo
+    (interfacePowhegDecayEmission,"No","Powheg decay emission off", false);
+
+
   static Reference<DipoleShowerHandler,MergerBase> interfaceMergingHelper
   ("MergingHelper",
    "",
    &DipoleShowerHandler::theMergingHelper, false, false, true, true, false);
   
 }
-

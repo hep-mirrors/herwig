@@ -24,4 +24,7 @@ libHwDipoleShowerKernels_la_SOURCES = \
 	IFMqx2qgxDipoleKernel.h IFMqx2qgxDipoleKernel.cc \
 	IFMqx2gqxDipoleKernel.h IFMqx2gqxDipoleKernel.cc \
 	IFMgx2ggxDipoleKernel.h IFMgx2ggxDipoleKernel.cc \
-	IFMgx2qqxDipoleKernel.h IFMgx2qqxDipoleKernel.cc
+	IFMgx2qqxDipoleKernel.h IFMgx2qqxDipoleKernel.cc \
+	FIMDecaygx2qqxDipoleKernel.h FIMDecaygx2qqxDipoleKernel.cc \
+	FIMDecayqx2qgxDipoleKernelFull.h FIMDecayqx2qgxDipoleKernelFull.cc \
+	FIMDecaygx2ggxDipoleKernelFull.h FIMDecaygx2ggxDipoleKernelFull.cc

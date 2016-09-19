@@ -13,8 +13,8 @@
 //
 
 #include "Herwig/Shower/ShowerEventRecord.h"
+#include "Herwig/Shower/PerturbativeProcess.h"
 #include "ThePEG/PDF/PDF.h"
-#include "ThePEG/Handlers/StandardXComb.h"
 #include "Dipole.h"
 #include "DipoleChain.h"
 
@@ -337,9 +337,17 @@ public:
    * subprocess.
    */
   const map<PPtr,PPtr>& prepare(tSubProPtr subpro,
-				tStdXCombPtr xc,
-				const pair<PDF,PDF>& pdf,tPPair beam,
-				bool dipoles = true);
+                                tStdXCombPtr xc,
+                                const pair<PDF,PDF>& pdf,tPPair beam,
+                                bool dipoles = true);
+  /**
+   * Prepare the event record for the given
+   * subprocess.
+   */
+  const map<PPtr,PPtr>& slimprepare(tSubProPtr subpro,
+                                tStdXCombPtr xc,
+                                const pair<PDF,PDF>& pdf,tPPair beam,
+                                bool dipoles = true);
 
   /**
    * Clear the event record: Give up ownership
@@ -354,24 +362,87 @@ public:
    */
   void debugLastEvent(ostream&) const;
 
-protected:
+public:
+
+  /**
+   *  Get the decays
+   */
+  map<PPtr,PerturbativeProcessPtr> & decays() {return theDecays;}
+
+  /**
+   * Used in DipoleEventRecord::prepare.
+   * Add the outgoing particles from a perturbative 
+   * process to the vector of original particles. 
+   * Iterates through decay chains.
+   **/
+  void fillFromDecays(PerturbativeProcessPtr decayProc, vector<PPtr>& original);
+
+  /**
+   * Used in DipoleEventRecord::prepare.
+   * Replace the particles in the given 
+   * perturbative process with their copies from the 
+   * map, theOriginals.
+   * Iterates through decays chains.
+   **/
+  void separateDecay(PerturbativeProcessPtr decayProc);
+
+  /**
+   *  Decay the particle
+   */
+  Energy decay(PPtr incoming, bool& powhegEmission);
+
+  /**
+   * Prepare the event record for the showering of a decay.
+   * Return false if the decay does not need to be showered.
+   **/
+  bool prepareDecay(PerturbativeProcessPtr decayProc);
+
+  /**
+   * Boost the momentum of the outgoing of the given 
+   * perturbative process to the momentum of given particle.
+   **/
+  void updateDecayMom(PPtr decayParent, PerturbativeProcessPtr decayProc);
+
+  /**
+   * Iteratively update the momenta of all
+   * particles in a decay chain, starting 
+   * with the outgoing from the given parent
+   **/
+  void updateDecayChainMom(PPtr decayParent, PerturbativeProcessPtr decayProc);
+
+  /**
+   * Update theDecays following the decay and/or
+   * showering of a decay particle.
+   * With iteration switched on (true) this will
+   * update theDecays with the entire decay chain.
+   `**/
+  void updateDecays(PerturbativeProcessPtr decayProc, bool iterate = true);
+
+  /**
+   *  Access current decay process
+   */
+  PerturbativeProcessPtr currentDecay() {return theCurrentDecay;}
+
+  /**
+   *  Set current decay process
+   */
+  void currentDecay(PerturbativeProcessPtr in) {theCurrentDecay=in;}
+
+
+  // SW - Changed from protected to public so that functions can be used in DipoleShowerHandler
+public:
+
+  /**
+   * Find the chains to be showered.
+   * The decay bool avoids mixing up decaying particles in hard and decay processes
+   */
+  void findChains(const PList& ordered, const bool decay = false);
 
   /**
    * Sort the coloured partons into a colour ordered ensemble.
    */
-  PList colourOrdered();
+  PList colourOrdered(PPair & in,PList & out);
 
-  /**
-   * Find the chains to be showered.
-   */
-  void findChains(const PList& ordered);
-
-  /**
-   * Add all particles to the relevant sets
-   */
-  void getAll(const ParticleVector& childs,
-	      set<PPtr>& hardSet,
-	      set<PPtr>& outgoingSet);
 
 private:
 
@@ -407,12 +478,22 @@ private:
    */
   list<DipoleChain> theDoneChains;
 
+private:
+
+  /**
+   * Storage of the particles which need to be decayed
+   */
+  map<PPtr,PerturbativeProcessPtr> theDecays;
 
  /**
    * Get information about the last splitting.
    */
   DipoleSplittingInfo lastspliting;
 
+  /**
+   *
+   */
+  PerturbativeProcessPtr theCurrentDecay;
 };
 
 

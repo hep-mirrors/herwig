@@ -8,3 +8,15 @@ set /Herwig/MatrixElements/Matchbox/Factory:EnforceQuarkNumberConservation Yes
 
 set /Herwig/MatrixElements/Matchbox/Factory:LeptonFlavourDiagonal Yes
 
+
+
+
+set /Herwig/Merging/MFactory:EnforceChargeConservation Yes
+set /Herwig/Merging/MFactory:EnforceColourConservation Yes
+
+set /Herwig/Merging/MFactory:EnforceLeptonNumberConservation Yes
+set /Herwig/Merging/MFactory:EnforceQuarkNumberConservation Yes
+
+set /Herwig/Merging/MFactory:LeptonFlavourDiagonal Yes
+
+

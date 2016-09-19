@@ -35,6 +35,14 @@ public:
    * The default constructor
    */
   Dipole();
+  
+  /**
+   * The standard constructor
+   */
+  Dipole(const pair<PPtr,PPtr>& newParticles,
+	 const pair<PDF,PDF>& newPDFs,
+	 pair<double,double> newFractions,
+	 pair<Energy,Energy> newScales);
 
   /**
    * The standard constructor
@@ -42,8 +50,9 @@ public:
   Dipole(const pair<PPtr,PPtr>& newParticles,
 	 const pair<PDF,PDF>& newPDFs,
 	 pair<double,double> newFractions,
-	 pair<Energy,Energy> newScales =
-	 pair<Energy,Energy>(ZERO,ZERO));
+	 const pair<bool,bool> decaying = pair<bool,bool>(false,false),
+	 pair<Energy,Energy> newScales = pair<Energy,Energy>(ZERO,ZERO));
+
 
 public:
 
@@ -76,6 +85,21 @@ public:
    * Get the right fraction.
    */
   double rightFraction() const { return theFractions.second; }
+
+  /**
+   * Get the bool indicating
+   * incoming decay for the left
+   * particle, for debugging only.
+   */
+  bool leftDecaying() { return theDecaying.first; }
+
+  /**
+   * Get the bool indicating
+   * incoming decay for the right
+   * particle, for debugging only.
+   */
+  bool rightDecaying() { return theDecaying.second; }
+
 
   /**
    * Set the left particle.
@@ -126,6 +150,18 @@ public:
    * Set the scale for the right particle.
    */
   void rightScale(Energy s) { theScales.second = s; }
+
+  /**
+   * Set the decayed particle indicator
+   * for the left particle
+   */
+  void leftDecaying(bool decaying) { theDecaying.first = decaying; }
+
+  /**
+   * Set the decayed particle indicator
+   * for the right particle
+   */
+  void rightDecaying(bool decaying) { theDecaying.second = decaying; }
 
   /**
    * Update information, if modified.
@@ -264,6 +300,12 @@ private:
    * particle, respectively.
    */
   pair<Energy,Energy> theScales;
+
+  /**
+   * Indicates if either the first or the second parton 
+   * is incoming to a decay.
+   */
+  pair<bool,bool> theDecaying;
 
 };
 

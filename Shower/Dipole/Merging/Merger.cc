@@ -858,7 +858,7 @@ void Merger::CKKW_PrepareSudakov(NPtr Born,Energy running){
   
   DSH()->currentHandler()->remnantDecayer()->setHadronContent(Born->deepHead()->xcomb()->lastParticles());
   DSH()->eventRecord().clear();
-  DSH()->eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(Born->xcomb()), DSH()->pdfs(), Born->deepHead()->xcomb()->lastParticles());
+  DSH()->eventRecord().slimprepare(sub, dynamic_ptr_cast<tStdXCombPtr>(Born->xcomb()), DSH()->pdfs(), Born->deepHead()->xcomb()->lastParticles());
   DSH()->hardScales(sqr(running));
 }
 
@@ -1191,8 +1191,8 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
           pt=FFMTK->lastPt(emittermom,emissionmom,spectatormom);
         }
         
-        
-        if (abs(pt-winnerScale)<0.0001*GeV) {
+          //cout<<"\npt "<<pt/GeV<<" "<<winnerScale/GeV;
+        if (abs(pt-winnerScale)<0.001*GeV) {
           foundwinnerpt=true;
         }
           //          if(scale * sqrt(y*z*(1.-z))<optVeto&&winnerScale>optVeto)cout<<"\nFF "<<(scale * sqrt(y*z*(1.-z))/GeV);
@@ -1248,7 +1248,8 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
         
         Energy pt=0*GeV;
-        if (emittermom.m()==0*GeV&&emissionmom.m()==0*GeV&&spectatormom.m()==0*GeV) {
+
+        if (emittermom.m()<=0.0001*GeV&&emissionmom.m()<=0.0001*GeV&&spectatormom.m()<=0.0001*GeV) {
           pt=IFLTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=IFMTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1301,6 +1302,10 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
 
 
 
+int Merger::M()const{return theTreeFactory->M();}
+
+int Merger::N()const{return theTreeFactory->N();}
+
 
 
 
@@ -1323,7 +1328,6 @@ void Merger::persistentOutput(PersistentOStream & os) const {
   defMERegionByJetAlg<<theOpenInitialStateZ<<
   theChooseHistory<<
   theN0<<    theOnlyN<<
-  theN<<   theM<<
   xiRenME<<     xiFacME<<
   xiRenSh<<     xiFacSh<<
   xiQSh<<     weight<<weightCB<<theGamma<<ee_ycut<<pp_dcut<<theSmearing<<ounit(therenormscale, GeV)<<ounit(theIRSafePT, GeV)<<ounit(theMergePt, GeV)<<ounit(theCentralMergePt, GeV)<<theMergingJetFinder
@@ -1350,7 +1354,6 @@ void Merger::persistentInput(PersistentIStream & is, int) {
   defMERegionByJetAlg>>theOpenInitialStateZ>>
   theChooseHistory>>
   theN0>>    theOnlyN>>
-  theN>>   theM>>
   xiRenME>>     xiFacME>>
   xiRenSh>>     xiFacSh>>
   xiQSh>>  
@@ -1525,12 +1528,7 @@ void Merger::Init() {
   
   
   
-  static Parameter<Merger, int> interfaceaddLOLegs("addLOLegs", "Set the number of additional jets to consider.", &Merger::theN, 0, 0,
-                                                       0, false, false, Interface::lowerlim);
-  
-  static Parameter<Merger, int> interfaceaddNLOLegs("addNLOLegs",
-                                                    "Set the number of virtual corrections to consider. -1 is default for no virtual correction.", &Merger::theM, -1, -1, 0, false, false,
-                                                    Interface::lowerlim);
+
   
   
 }

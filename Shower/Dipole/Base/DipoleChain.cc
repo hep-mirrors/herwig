@@ -111,6 +111,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       theLeftNeighbour->rightScale(sqrt(children.first.leftParticle()->scale()));
     theLeftNeighbour->rightPDF(children.first.leftPDF());
     theLeftNeighbour->rightFraction(children.first.leftFraction());
+    theLeftNeighbour->rightDecaying(children.first.leftDecaying());
 
     theLeftNeighbour->update();
 
@@ -126,6 +127,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       theRightNeighbour->leftScale(sqrt(children.second.rightParticle()->scale()));
     theRightNeighbour->leftPDF(children.second.rightPDF());
     theRightNeighbour->leftFraction(children.second.rightFraction());
+    theRightNeighbour->leftDecaying(children.second.rightDecaying());
 
     theRightNeighbour->update();
 
@@ -153,6 +155,8 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       miss.rightPDF(dipoles().front().leftPDF());
       miss.leftFraction(dipoles().back().rightFraction());
       miss.rightFraction(dipoles().front().leftFraction());
+      miss.leftDecaying(dipoles().back().rightDecaying());
+      miss.rightDecaying(dipoles().front().leftDecaying());
       miss.update();
       dipoles().push_back(miss);
     }
@@ -184,6 +188,8 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       miss.rightPDF(children.first.leftPDF());
       miss.leftFraction(children.second.rightFraction());
       miss.rightFraction(children.first.leftFraction());
+      miss.leftDecaying(dipoles().back().rightDecaying());
+      miss.rightDecaying(dipoles().front().leftDecaying());
       miss.update();
       dipoles().push_back(miss);
       childIterators.first = dipoles().begin();
@@ -235,6 +241,8 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       miss.rightPDF(children.first.leftPDF());
       miss.leftFraction(children.second.rightFraction());
       miss.rightFraction(children.first.leftFraction());
+      miss.leftDecaying(dipoles().back().rightDecaying());
+      miss.rightDecaying(dipoles().front().leftDecaying());
       miss.update();
       dipoles().push_front(miss);
       childIterators.first = dipoles().begin();
@@ -279,6 +287,7 @@ void DipoleChain::updateDipole(list<Dipole>::iterator dip) {
     theLeftNeighbour->rightParticle(dip->leftParticle());
     theLeftNeighbour->rightPDF(dip->leftPDF());
     theLeftNeighbour->rightFraction(dip->leftFraction());
+    theLeftNeighbour->rightDecaying(dip->leftDecaying());
 
     theLeftNeighbour->update();
 
@@ -292,6 +301,7 @@ void DipoleChain::updateDipole(list<Dipole>::iterator dip) {
     theRightNeighbour->leftParticle(dip->rightParticle());
     theRightNeighbour->leftPDF(dip->rightPDF());
     theRightNeighbour->leftFraction(dip->rightFraction());
+    theRightNeighbour->leftDecaying(dip->rightDecaying());
 
     theRightNeighbour->update();
 

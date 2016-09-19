@@ -72,6 +72,7 @@ create Herwig::IILightKinematics IILightKinematics
 create Herwig::FFMassiveKinematics FFMassiveKinematics
 create Herwig::FIMassiveKinematics FIMassiveKinematics
 create Herwig::IFMassiveKinematics IFMassiveKinematics
+create Herwig::FIMassiveDecayKinematics FIMassiveDecayKinematics
 
 ################################################################################
 # Setup the kernels.
@@ -440,6 +441,73 @@ cp IIgx2qqxDipoleKernel IIgx2sbarsxDipoleKernel
 set IIgx2sbarsxDipoleKernel:Flavour /Herwig/Particles/sbar
 insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2sbarsxDipoleKernel
 
+################################################################################
+# Decays
+################################################################################
+
+# Currently only tested for top-quark decays
+
+################################################################################
+# q -> qg + t -> tg 
+################################################################################
+
+create Herwig::FIMDecayqx2qgxDipoleKernelFull FIMDecayqx2qgxDipoleKernelFull
+set FIMDecayqx2qgxDipoleKernelFull:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
+
+cp FIMDecayqx2qgxDipoleKernelFull FIMDecaybx2bgxDipoleKernelFull
+set FIMDecaybx2bgxDipoleKernelFull:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaybx2bgxDipoleKernelFull
+
+cp FIMDecayqx2qgxDipoleKernelFull FIMDecaydx2dgxDipoleKernelFull
+set FIMDecaydx2dgxDipoleKernelFull:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaydx2dgxDipoleKernelFull
+
+cp FIMDecayqx2qgxDipoleKernelFull FIMDecayux2ugxDipoleKernelFull
+set FIMDecayux2ugxDipoleKernelFull:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecayux2ugxDipoleKernelFull
+
+cp FIMDecayqx2qgxDipoleKernelFull FIMDecaysx2sgxDipoleKernelFull
+set FIMDecaysx2sgxDipoleKernelFull:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaysx2sgxDipoleKernelFull
+
+cp FIMDecayqx2qgxDipoleKernelFull FIMDecaycx2cgxDipoleKernelFull
+set FIMDecaycx2cgxDipoleKernelFull:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaycx2cgxDipoleKernelFull
+
+################################################################################
+## g -> gg + t -> tg
+################################################################################
+
+create Herwig::FIMDecaygx2ggxDipoleKernelFull FIMDecaygx2ggxDipoleKernelFull
+set FIMDecaygx2ggxDipoleKernelFull:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2ggxDipoleKernelFull
+
+#############
+## g -> qq ##
+#############
+
+create Herwig::FIMDecaygx2qqxDipoleKernel FIMDecaygx2qqxDipoleKernel
+set FIMDecaygx2qqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
+
+cp FIMDecaygx2qqxDipoleKernel FIMDecaygx2ddxDipoleKernel
+set FIMDecaygx2ddxDipoleKernel:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2ddxDipoleKernel
+
+cp FIMDecaygx2qqxDipoleKernel FIMDecaygx2uuxDipoleKernel
+set FIMDecaygx2uuxDipoleKernel:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2uuxDipoleKernel
+
+cp FIMDecaygx2qqxDipoleKernel FIMDecaygx2ssxDipoleKernel
+set FIMDecaygx2ssxDipoleKernel:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2ssxDipoleKernel
+
+cp FIMDecaygx2qqxDipoleKernel FIMDecaygx2ccxDipoleKernel
+set FIMDecaygx2ccxDipoleKernel:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2ccxDipoleKernel
+
+cp FIMDecaygx2qqxDipoleKernel FIMDecaygx2bbxDipoleKernel
+set FIMDecaygx2bbxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2bbxDipoleKernel
 cd /
 
 ################################################################################
@@ -494,6 +562,8 @@ set IILightKinematics:IRCutoff  1.0*GeV
 set FFMassiveKinematics:IRCutoff  1.014259*GeV
 set FIMassiveKinematics:IRCutoff  1.0*GeV
 set IFMassiveKinematics:IRCutoff  1.0*GeV
+
+set FIMassiveDecayKinematics:IRCutoff  1.0*GeV
 
 cd /
 

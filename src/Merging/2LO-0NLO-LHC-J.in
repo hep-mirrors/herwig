@@ -1,70 +1,156 @@
-read Merging/MergingLHC.in
+# -*- ThePEG-repository -*-
 
+##################################################
+## Herwig/Merging example input file
+##################################################
 
+##################################################
+## Collider type
+##################################################
+
+read Matchbox/PPCollider.in
+read Matchbox/Merging.in
+
+##################################################
+## Beam energy sqrt(s)
+##################################################
+
+cd /Herwig/EventHandlers
+set EventHandler:LuminosityFunction:Energy 7000*GeV
+
+##################################################
+## Process selection
+##################################################
+
+## Note that event generation may fail if no matching matrix element has
+## been found.  Coupling orders are with respect to the Born process,
+## i.e. NLO QCD does not require an additional power of alphas.
+
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+
+## Set the order of the couplings
 cd /Herwig/Merging
+set MFactory:OrderInAlphaS 2
+set MFactory:OrderInAlphaEW 0
 
-set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.
-set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.
-set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.
-set PPMFactory:RenormalizationScaleFactor 1.
-set PPMFactory:FactorizationScaleFactor 1.
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
-set PPMFactory:onlyabove 0
+do MFactory:Process p p -> j j [ j ]
 
-set Merger:chooseHistory 8
-set Merger:addNLOLegs -1
-set Merger:addLOLegs 1
-set Merger:MergingScale 15.*GeV
+set MFactory:NLOProcesses 0
+
+set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
-cd /Herwig/Merging
-set PPMFactory:OrderInAlphaS 2
-set PPMFactory:OrderInAlphaEW 0
-do PPMFactory:Process p p j j
-
-set MPreWeight:HTPower 4
+set MPreWeight:HTPower 1
 set MPreWeight:MaxPTPower 0
+set MPreWeight:OnlyColoured False
+
+read Matchbox/PQCDLevel.in
 
 
 
+## Special settings required for on-shell production of unstable particles
+## enable for on-shell top production
+# read Matchbox/OnShellTopProduction.in
+## enable for on-shell W, Z or h production
+# read Matchbox/OnShellWProduction.in
+# read Matchbox/OnShellZProduction.in
+# read Matchbox/OnShellHProduction.in
+# Special settings for the VBF approximation
+# read Matchbox/VBFDiagramsOnly.in
 
-create ColorFull::TraceBasis LargeNTraceBasis
-set LargeNTraceBasis:LargeN On
-set Merger:LargeNBasis LargeNTraceBasis
+##################################################
+## Matrix element library selection
+##################################################
+
+## Select a generic tree/loop combination or a
+## specialized NLO package
+
+# read Matchbox/MadGraph-GoSam.in
+read Matchbox/MadGraph-MadGraph.in
+# read Matchbox/MadGraph-NJet.in
+# read Matchbox/MadGraph-OpenLoops.in
+# read Matchbox/HJets.in
+# read Matchbox/VBFNLO.in
+
+## Uncomment this to use ggh effective couplings
+## currently only supported by MadGraph-GoSam
+
+# read Matchbox/HiggsEffective.in
+
+##################################################
+## Cut selection
+## See the documentation for more options
+##################################################
+
+set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
+set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
+
+cd /Herwig/MatrixElements/Matchbox/Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
+
+## cuts on additional jets
+
+read Matchbox/DefaultPPJets.in
+
+insert JetCuts:JetRegions 0 FirstJet
+# insert JetCuts:JetRegions 1 SecondJet
+# insert JetCuts:JetRegions 2 ThirdJet
+# insert JetCuts:JetRegions 3 FourthJet
+
+##################################################
+## Scale choice
+## See the documentation for more options
+##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
+set /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
 
-cd /Herwig/Cuts
-insert JetCuts:JetRegions 0 FirstJet
+##################################################
+## Scale uncertainties
+##################################################
 
-insert QCDCuts:MultiCuts 0 JetCuts
-set QCDCuts:JetFinder JetFinder
-set FirstJet:PtMin 20*GeV
-set QCDCuts:ScaleMin 2.0*GeV
-set QCDCuts:X1Min 1.0e-5
-set QCDCuts:X2Min 1.0e-5
-set MatchboxJetMatcher:Factory /Herwig/Merging/PPMFactory
-#set /Herwig/Generators/LHCGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts
+# read Matchbox/MuDown.in
+# read Matchbox/MuUp.in
+
+##################################################
+## Shower scale uncertainties
+##################################################
+
+# read Matchbox/MuQDown.in
+# read Matchbox/MuQUp.in
+
+##################################################
+## PDF choice
+##################################################
+
+read Matchbox/FiveFlavourNoBMassScheme.in
+read Matchbox/MMHT2014.in
+
+##################################################
+## Analyses
+##################################################
+
+cd /Herwig/Analysis
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+
+read Matchbox/LHC7-J-Analysis.in
 
 
+##################################################
+## Save the generator
+##################################################
 
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
-clear /Herwig/Merging/PPMFactory:Amplitudes
-insert /Herwig/Merging/PPMFactory:Amplitudes 0 MadGraph
+do /Herwig/Merging/MFactory:ProductionMode
 
-clear /Herwig/Analysis/Rivet:Analyses
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_JETS
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_S8968497
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_S8950903
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2014_I1298810
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1208923
-insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I1184941
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1326641
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1325553
-insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1307243
+set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 
 cd /Herwig/Generators
-saverun 2LO-0NLO-LHC-J LHCGenerator
+
+saverun 2LO-0NLO-LHC-J EventGenerator

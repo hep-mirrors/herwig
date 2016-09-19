@@ -76,9 +76,7 @@ Energy IFMassiveTildeKinematics::lastPt(Lorentz5Momentum emitter,Lorentz5Momentu
   (emitter*emission + emitter*spectator);
   double u = emitter*emission / (emitter*emission + emitter*spectator);
   
-  assert(scale * sqrt(u*(1.-u)*(1.-x))-emission.perp()<1*GeV);
-  
-  return emission.perp();
+  return scale * sqrt(u*(1.-u)*(1.-x));
 }
 
 pair<double,double> IFMassiveTildeKinematics::zBounds(Energy pt, Energy hardPt) const {

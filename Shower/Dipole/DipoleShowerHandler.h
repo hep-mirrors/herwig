@@ -17,7 +17,6 @@
 #include "Herwig/Shower/Dipole/DipoleShowerHandler.fh"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingInfo.h"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingReweight.h"
-
 #include "Herwig/Shower/Dipole/Kernels/DipoleSplittingKernel.h"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingGenerator.h"
 #include "Herwig/Shower/Dipole/Base/DipoleEventRecord.h"
@@ -64,6 +63,9 @@ public:
 
 public:
 
+
+  inline void colourPrint();
+
   /**
    * Indicate a problem in the shower.
    */
@@ -80,6 +82,9 @@ public:
    * Reset the alpha_s for all splitting kernels.
    */
   void resetAlphaS(Ptr<AlphaSBase>::tptr);
+  
+  
+  virtual void cascade(tPVector); 
 
   /**
    * Reset the splitting reweight for all splitting kernels.
@@ -124,21 +129,15 @@ protected:
   /**
    * The main method which manages the showering of a subprocess.
    */
-  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb) {
+  virtual tPPair cascade(tSubProPtr sub, XCombPtr xcomb) {
     return cascade(sub,xcomb,ZERO,ZERO);
   }
 
   /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub, XCPtr xcomb, 
+  tPPair cascade(tSubProPtr sub, XCombPtr xcomb, 
 		 Energy optHardPt, Energy optCutoff);
-  
-  /**
-   * Implementation of the merging algorithm.
-   **/
-  
-  double reweightCKKW(int, int);
 
   /**
    * Build splitting generators for the given
@@ -146,7 +145,7 @@ protected:
    */
   void getGenerators(const DipoleIndex&,
 		     Ptr<DipoleSplittingReweight>::tptr rw =
-		     Ptr<DipoleSplittingReweight>::tptr());
+  		     Ptr<DipoleSplittingReweight>::tptr());
 
   /**
    * Setup the hard scales.
@@ -162,6 +161,11 @@ protected:
    * Reshuffle to constituent mass shells
    */
   void constituentReshuffle();
+
+  /**
+   * Reshuffle to constituent mass shells
+   */
+  void decayConstituentReshuffle( PerturbativeProcessPtr decayProc, const bool test = false);
 
   /**
    * Access the generator map
@@ -198,8 +202,8 @@ protected:
    */
   void doCascade(unsigned int& emDone,
 		 Energy optHardPt = ZERO,
-		 Energy optCutoff = ZERO);
-
+		 Energy optCutoff = ZERO,
+		 const bool decay = false);
   /**
    * Set the number of emissions 
    **/
@@ -358,6 +362,11 @@ private:
    * Perform the first MC@NLO emission only.
    */
   bool firstMCatNLOEmission;
+
+  /**
+   * True if powheg style emissions are to be used in the decays
+   */
+  bool thePowhegDecayEmission;
 
   /**
    * The realignment scheme

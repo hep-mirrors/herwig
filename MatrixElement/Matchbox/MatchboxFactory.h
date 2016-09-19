@@ -1100,11 +1100,15 @@ private:
    */
   string endParticleGroup(string);
 
+protected:
+  
   /**
    * Parse a process description
    */
-  vector<string> parseProcess(string);
+  virtual vector<string> parseProcess(string);
 
+private:
+  
   /**
    * Command to set the process.
    */

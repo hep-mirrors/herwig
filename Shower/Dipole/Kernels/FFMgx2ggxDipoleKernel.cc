@@ -31,7 +31,8 @@ bool FFMgx2ggxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
     ind.emitterData()->id() == ParticleID::g &&
     ind.spectatorData()->mass() != ZERO &&
-    !ind.initialStateEmitter() && !ind.initialStateSpectator();
+    !ind.initialStateEmitter() && !ind.initialStateSpectator() &&
+    !ind.incomingDecayEmitter() && !ind.incomingDecaySpectator();
 
 }
 

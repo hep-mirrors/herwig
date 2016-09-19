@@ -231,7 +231,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Merging/Makefile
 		Shower/Dipole/Merging/Makefile
 		src/defaults/MatchboxMergingDefaults.in
-		src/Merging/4LO-0NLO-LHC-Z.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile

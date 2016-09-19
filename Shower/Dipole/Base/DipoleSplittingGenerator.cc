@@ -86,6 +86,7 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
   generatedSplitting = sp;
 
   generatedSplitting.splittingKinematics(splittingKernel()->splittingKinematics());
+
   generatedSplitting.splittingParameters().resize(splittingKernel()->nDimAdditional());
 
   if ( wrapping() ) {
@@ -103,22 +104,19 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
 
   presampledSplitting = generatedSplitting;
 
-  prepared = true;
+  prepared =  true;
 
   parameters.resize(nDim());
 
   theExponentialGenerator = 
     new exsample::exponential_generator<DipoleSplittingGenerator,UseRandom>();
-
   theExponentialGenerator->sampling_parameters().maxtry = maxtry();
   theExponentialGenerator->sampling_parameters().presampling_points = presamplingPoints();
   theExponentialGenerator->sampling_parameters().freeze_grid = freezeGrid();
   theExponentialGenerator->detuning(detuning());
-
   theExponentialGenerator->docompensate(theDoCompensate);
   theExponentialGenerator->function(this);
   theExponentialGenerator->initialize();
-
 }
 
 void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
@@ -132,7 +130,19 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
   assert(sp.index() == generatedSplitting.index());
 
   generatedSplitting.scale(sp.scale());
-  parameters[3] = sp.scale()/generator()->maximumCMEnergy();
+
+  // For dipoles containing a decayed particle,
+  // the scale is fixed but the mass of the recoil 
+  // system is not so sample over recoilMass(),
+  // so the parameter is related to recoilMass()
+  if (generatedSplitting.index().incomingDecayEmitter() || generatedSplitting.index().incomingDecaySpectator() ) {
+    generatedSplitting.recoilMass(sp.recoilMass());
+    parameters[3] = sp.recoilMass()/generator()->maximumCMEnergy();
+  }
+  // If not a decay dipole, sample over the scale of the dipole,
+  // so the parameter is related to scale()
+  else
+    parameters[3] = sp.scale()/generator()->maximumCMEnergy();
 
   generatedSplitting.hardPt(sp.hardPt());
 
@@ -237,7 +247,6 @@ const pair<vector<double>,vector<double> >& DipoleSplittingGenerator::support() 
 
   theSupport.first = lower;
   theSupport.second = upper;
-
   return theSupport;
 
 }
@@ -299,7 +308,7 @@ double DipoleSplittingGenerator::invertOverestimateIntegral(double value) const 
 
 
 //TODO: make some proper flag..
-double DipoleSplittingGenerator::evaluate(const vector<double>& point,Energy fixed) {
+double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
   assert(!wrapping());
   assert(prepared);
@@ -307,11 +316,7 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point,Energy fix
 
   DipoleSplittingInfo& split =
     ( !presampling ? generatedSplitting : presampledSplitting );
-  if(fixed>0.*GeV){
-    split.fixedScale(fixed);
-  }else{
-    split.fixedScale(-1.*GeV);
-  }
+
   
   split.continuesEvolving();
 
@@ -319,7 +324,31 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point,Energy fix
 
   if ( presampling ) {
 
-    split.scale(point[3] * generator()->maximumCMEnergy());
+    // For dipoles containing a decayed particle,
+    // the scale is fixed but the mass of the recoil 
+    // system is not so sample over recoilMass()
+    if ( split.index().incomingDecaySpectator() ) {
+      split.scale(split.index().spectatorData()->mass());
+      split.recoilMass(point[3] * generator()->maximumCMEnergy());
+
+      if (split.recoilMass() <= ZERO) {
+	std::cerr << "Test triggered in evaluate\n";
+      }
+
+    }
+
+    // For dipoles containing a decayed particle,
+    // the scale is fixed but the mass of the recoil 
+    // system is not so sample over recoilMass()
+    else if ( split.index().incomingDecayEmitter() ) {
+      split.scale(split.index().emitterData()->mass());
+      split.recoilMass(point[3] * generator()->maximumCMEnergy());
+    }
+
+    // If not a decay dipole, sample over the scale of the dipole
+    else
+      split.scale(point[3] * generator()->maximumCMEnergy());
+
 
     if ( split.index().emitterPDF().pdf() &&
 	 split.index().spectatorPDF().pdf() ) {
@@ -346,9 +375,8 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point,Energy fix
     split.hardPt(split.splittingKinematics()->ptMax(split.scale(),
 						    split.emitterX(),
 						    split.spectatorX(),
-						    split.index(),
+						    split,
 						    *splittingKernel()));
-
   }
 
   if ( ! split.splittingKinematics()->generateSplitting(point[0],point[1],point[2],split,*splittingKernel()) ) {
@@ -385,10 +413,8 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point,Energy fix
 		       << splittingKernel()->name() << "\n" << flush;
     split.lastValue(0.0);
   }
-
   if ( kernel < 0. )
     return 0.;
-
   return split.lastValue();
 
 }
@@ -427,8 +453,12 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
       generatedSplitting.hardPt(startPt);
       continue;
     } catch (exsample::hit_and_miss_maxtry&) {
+      //std::cerr << "RedoShower FIVE - exsample::hit_and_miss_maxtry& - in DipoleSplittingGenerator.cc\n";
+      //assert(false);
       throw DipoleShowerHandler::RedoShower();
     } catch (exsample::selection_maxtry&) {
+      //std::cerr << "RedoShower SIX - exsample::selection_maxtry& - in DipoleSplittingGenerator.cc\n";
+      //assert(false);
       throw DipoleShowerHandler::RedoShower();
     }
     break;
@@ -467,7 +497,6 @@ Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split,
 					  map<string,double>& variations,
 					  Energy optHardPt,
 					  Energy optCutoff) {
-
   fixParameters(split,optHardPt);
 
   if ( wrapping() ) {
@@ -512,17 +541,22 @@ double DipoleSplittingGenerator::dounlops(const DipoleSplittingInfo& ,Energy dow
     double resq=0.;
     double varx=10.;
     int k=0;
+  
+    generatedSplitting.setCalcFixedExpansion(true);
+    generatedSplitting.fixedScale(fixedScale);
+  
     while ((k<500.||varx>0.1)&&k<5000){
       k+=1.;
       RN[0]= optKappaCutoff+(1-optKappaCutoff)*UseRandom::rnd();
       for (size_t rn=1;rn< parameters.size();rn++)RN[rn]=UseRandom::rnd();
-      double tmp=(1-optKappaCutoff)*evaluate(RN,fixedScale);
+      double tmp=(1-optKappaCutoff)*evaluate(RN);
       res+= tmp;
       resq+=pow(tmp,2.);
       if(k%50==0.){
 	varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
       }
     }
+    generatedSplitting.setCalcFixedExpansion(false);
     return -res/(1.0*k);
 }
 

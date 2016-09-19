@@ -1462,9 +1462,17 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
     if(gamma<=0.) throw KinematicsReconstructionVeto();
     gamma = 1./sqrt(gamma);
   }
-  // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
-  ThreeVector<Energy2> ax = newq.vect().cross( oldp.vect() ); 
-  double delta = newq.vect().angle( oldp.vect() );
+  // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper.
+  ThreeVector<Energy2> ax = newq.vect().cross( oldp.vect() );
+  double delta;
+  if (newq.x()*oldp.x()+newq.y()*oldp.y()+newq.z()*oldp.z()< 1e-16*GeV2) {
+    cout<<"\nWarning!!!! "<<flush;
+    throw KinematicsReconstructionVeto();
+  }else{
+    delta = newq.vect().angle( oldp.vect() );
+  }
+  
+  
   LorentzRotation R;
   using Constants::pi;
   Energy2 scale1 = sqr(newq.x())+ sqr(newq.y())+sqr(newq.z());

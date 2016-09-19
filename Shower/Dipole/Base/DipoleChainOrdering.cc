@@ -42,11 +42,24 @@ Energy DipoleChainOrdering::hardScale(tPPtr emitter, tPPtr spectator,
     split.splittingKinematics()->dipoleScale(emitter->momentum(),
 					     spectator->momentum());
 
+
+  if ( !index.incomingDecaySpectator() && !index.incomingDecayEmitter() ) {
   return 
     virtualityOrdering ?
     split.splittingKinematics()->QMax(scale,emitterX,spectatorX,index,split) :
     split.splittingKinematics()->ptMax(scale,emitterX,spectatorX,index,split);
+  }
 
+  else {
+	DipoleSplittingInfo temp;
+	temp.index(index);
+	temp.recoilMass(split.splittingKinematics()->recoilMassKin(emitter->momentum(),
+								spectator->momentum()));
+	  return 
+    virtualityOrdering ?
+    split.splittingKinematics()->QMax(scale,emitterX,spectatorX,temp,split):
+    split.splittingKinematics()->ptMax(scale,emitterX,spectatorX,temp,split);
+  }
 }
 
 
@@ -99,7 +112,7 @@ Energy DipoleChainOrdering::maxPt(Energy scale,
 				  const DipoleSplittingKernel& spkernel) const {
   return 
     virtualityOrdering ?
-    spkernel.splittingKinematics()->ptMax(scale,split.emitterX(),split.spectatorX(),split.index(),spkernel) :
+    spkernel.splittingKinematics()->ptMax(scale,split.emitterX(),split.spectatorX(),split,spkernel) :
     scale;
 }
 

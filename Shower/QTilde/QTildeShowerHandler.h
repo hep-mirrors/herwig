@@ -555,6 +555,13 @@ protected:
   virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
 
   /**
+   * If cascade was called before, but there are still decaying partialces
+   * in the DecayInShower list to be showered. Also possible with another shower
+   * like combining Dipole and Qtilde.
+   */
+  virtual void cascade(tPVector) ;
+
+  /**
    *  Decay a ShowerTree
    */
   void decay(ShowerTreePtr tree, ShowerDecayMap & decay);

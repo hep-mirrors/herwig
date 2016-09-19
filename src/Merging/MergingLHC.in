@@ -30,7 +30,8 @@ set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOA
 set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS:input_alpha_s 0.118
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
 
-read Matchbox/FiveFlavourNoBMassScheme.in
+read Matchbox/FourFlavourScheme.in
+read Matchbox/OnShellTopProduction.in
 
 
 cd /Herwig/Particles
@@ -46,8 +47,8 @@ set cbar:NominalMass 0*GeV
 
 set c:HardProcessMass 0*GeV
 set cbar:HardProcessMass 0*GeV
-set b:HardProcessMass 0*GeV
-set bbar:HardProcessMass 0*GeV
+#set b:HardProcessMass 0*GeV
+#set bbar:HardProcessMass 0*GeV
 
 set e+:HardProcessMass 0*GeV
 set e-:HardProcessMass 0*GeV
@@ -103,8 +104,8 @@ insert PPMFactory:ParticleGroup 0 /Herwig/Particles/s
 insert PPMFactory:ParticleGroup 0 /Herwig/Particles/sbar
 insert PPMFactory:ParticleGroup 0 /Herwig/Particles/c
 insert PPMFactory:ParticleGroup 0 /Herwig/Particles/cbar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/b
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/bbar
+#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/b
+#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/bbar
 do PPMFactory:EndParticleGroup
 
 clear PPMFactory:ParticleGroup j
@@ -118,8 +119,8 @@ insert PPMFactory:ParticleGroup 0 /Herwig/Particles/s
 insert PPMFactory:ParticleGroup 0 /Herwig/Particles/sbar
 insert PPMFactory:ParticleGroup 0 /Herwig/Particles/c
 insert PPMFactory:ParticleGroup 0 /Herwig/Particles/cbar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/b
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/bbar
+#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/b
+#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/bbar
 do PPMFactory:EndParticleGroup
 
 
@@ -155,10 +156,8 @@ set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHa
 set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 set LHCGenerator:EventHandler:MultipleInteractionHandler NULL
 set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
-#erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
 
-
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 
 create Herwig::MonacoSampler /Herwig/Samplers/Monaco
 
@@ -296,9 +295,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1122847
 # CMS Z+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1310737
 # ATLAS event shapes in Z events
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1424838
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1424838
 # ATLAS forwrd backward
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_EL
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_EL
 
 
 

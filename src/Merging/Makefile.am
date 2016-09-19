@@ -26,11 +26,16 @@ INPUTFILES = \
 2LO-0NLO-LHC-Z_OISZ.in \
 3LO-0NLO-LHC-Z_OISZ.in \
 1LO-0NLO-LHC-J.in \
+1LO-0NLO-LHC-T.in \
+1LO-0NLO-LHC-T_QtDecay.in \
 1LO-0NLO-LHC-J_OISZ.in \
 2LO-0NLO-LHC-J.in \
-2LO-0NLO-LHC-J_OISZ.in \
-MergingLEP.in \
-MergingLHC.in
+2LO-0NLO-LHC-J_only0.in \
+2LO-0NLO-LHC-J_only1.in \
+2LO-0NLO-LHC-T.in \
+2LO-0NLO-LHC-T_QtDecay.in \
+3LO-0NLO-LHC-T.in \
+2LO-0NLO-LHC-J_OISZ.in 
 
 
  

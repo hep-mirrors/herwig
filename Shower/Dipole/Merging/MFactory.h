@@ -76,6 +76,10 @@ namespace Herwig {
     
     Ptr<Merger>::ptr MH(){return theMergingHelper;}
     
+    int M()const {return theM-1;}
+    
+    int N()const {return theN;}
+    
     
     /**
      * Return the Map of matrix elements to be considered
@@ -93,6 +97,14 @@ namespace Herwig {
       return thePureMEsMap;
     }
     
+    
+    /**
+     * Parse a process description
+     */
+    virtual vector<string> parseProcess(string);
+    
+
+
     
   public:
     
@@ -156,7 +168,8 @@ namespace Herwig {
     int theonlysub;
     int divideSub;
     int divideSubNumber;
-    
+    int theM;
+    int theN;
     
     /**
      * Prefix for subtraction data

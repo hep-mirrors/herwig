@@ -1,5 +1,11 @@
 // -*- C++ -*-
 //
+// QTildeShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the QTildeShowerHandler class.
 //
@@ -422,6 +428,94 @@ void QTildeShowerHandler::Init() {
      &QTildeShowerHandler::_fracFSR, 0.001, 1e-10, 1,
      false, false, Interface::limited);
 
+}
+
+void QTildeShowerHandler::cascade(tPVector finalstate) {
+  
+  hard_=ShowerTreePtr();
+  decay_.clear();
+  done_.clear();
+  tStdXCombPtr xcomb;
+  StepPtr pstep = newStep();
+  
+  unsigned int countFailures=0;
+  while (countFailures<maxtry()) {
+    try {
+      decay_.clear();
+      done_.clear();
+      DecayProcessMap decay;
+      
+      
+      PerturbativeProcessPtr hard=new_ptr(PerturbativeProcess());
+      PPtr p1,p2,p1tmp,p2tmp;
+      for(tPVector::iterator it=finalstate.begin();it!=finalstate.end();++it){
+        PPtr p=(*it);
+        while (!p->parents().empty()) {
+          if (p->parents().size()==2&&((!p1&&!p2)||p1==p2)) {
+            p1=p->parents()[1];
+            p2=p->parents()[0];
+            while (!p2->parents().empty()) {
+              p2=p2->parents()[0];
+            }
+            while (!p1->parents().empty()) {
+              p1=p1->parents()[0];
+            }
+          }
+          p=p->parents()[0];
+        }
+      }
+
+      assert(p1!=p2);
+      hard->incoming().push_back(make_pair(p1,PerturbativeProcessPtr()));
+      hard->incoming().push_back(make_pair(p2,PerturbativeProcessPtr()));
+      for(tPVector::iterator it=finalstate.begin();it!=finalstate.end();++it){
+        PPtr p=(*it);
+        PerturbativeProcessPtr newDecay=new_ptr(PerturbativeProcess());
+        if((decaysInShower((**it).id())&&!(**it).dataPtr()->stable())){
+          createDecayProcess(*it,hard,decay);
+        }else{
+          hard->outgoing().push_back(make_pair(*it,PerturbativeProcessPtr()));
+        }
+      }
+      
+      setCurrentHandler();
+      ShowerTree::constructTrees(hard_,decay_,hard,decay);
+      
+      done_.push_back(hard_);
+      
+      
+      if(decay_.empty()) return;
+      
+      while(!decay_.empty()) {
+        ShowerDecayMap::iterator dit = decay_.begin();
+        if (!dit->second->parent()) {
+          decay_.erase(dit);
+          continue;
+        }
+        ShowerTreePtr decayingTree = dit->second;
+        decay_.erase(dit);
+        QTildeShowerHandler::decay(decayingTree,decay_);
+        currentTree(decayingTree);
+        showerDecay(decayingTree);
+        done_.push_back(decayingTree);
+        decayingTree->updateAfterShower(decay_);
+        
+      }
+      break;
+    }
+    catch (KinematicsReconstructionVeto) {
+      resetWeights();
+      ++countFailures;
+    }
+  }
+  
+  
+  fillEventRecord();
+  setDidRunCascade(true);
+  hard_=ShowerTreePtr();
+  decay_.clear();
+  done_.clear();
+  return;
 }
 
 tPPair QTildeShowerHandler::cascade(tSubProPtr sub,

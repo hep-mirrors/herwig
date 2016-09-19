@@ -1,5 +1,5 @@
-SUBDIRS = include MatrixElement Shower \
-	Utilities PDT Decay PDF Models \
+SUBDIRS = include MatrixElement PDF Shower \
+	Utilities PDT Decay  Models \
 	Hadronization  \
 	UnderlyingEvent Analysis Looptools Sampling \
 	lib src Doc Contrib Tests

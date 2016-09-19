@@ -4,8 +4,6 @@ read Matchbox/LO.in
 
 cd /Herwig/EventHandlers
 
-insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler
-
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 

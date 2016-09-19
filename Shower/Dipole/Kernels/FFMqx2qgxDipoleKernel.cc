@@ -33,7 +33,8 @@ bool FFMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
     abs(ind.emitterData()->id()) == abs(flavour()->id()) &&
     !( ind.emitterData()->mass() == ZERO &&
        ind.spectatorData()->mass() == ZERO ) &&
-    !ind.initialStateEmitter() && !ind.initialStateSpectator();
+    !ind.initialStateEmitter() && !ind.initialStateSpectator() &&
+    !ind.incomingDecayEmitter() && !ind.incomingDecaySpectator();
 }
 
 bool FFMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
@@ -55,11 +56,8 @@ bool FFMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 
 // 2012-05-01
 tcPDPtr FFMqx2qgxDipoleKernel::emitter(const DipoleIndex& ind) const {
-  //  return ind.emitterData();
-  //  cout << "q2qg kernel: flavour " << flavour()->id() << endl << flush;
   assert(flavour());
   assert(abs(flavour()->id())<7);
-  //  cout << "  assertions passed" << endl << flush;
   return ind.emitterData()->id() > 0 ?
     (tcPDPtr) flavour() : (tcPDPtr) flavour()->CC();
 }
