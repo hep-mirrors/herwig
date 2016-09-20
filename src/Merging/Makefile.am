@@ -4,6 +4,7 @@ Matchboxdir = ${pkgdatadir}/Merging
 
 INPUTFILES = \
 1LO-0NLO-LEP.in \
+1LO-0NLO-LEP_Qt.in \
 1LO-0NLO-LHC-W.in \
 1LO-0NLO-LHC-Z.in \
 2LO-0NLO-LEP.in \
@@ -13,12 +14,16 @@ INPUTFILES = \
 2LO-1NLO-LHC-Z.in \
 2LO-1NLO-LHC-W.in \
 3LO-0NLO-LEP.in \
+3LO-0NLO-LEP_only0.in \
+3LO-0NLO-LEP_only1.in \
+3LO-0NLO-LEP_only2.in \
 3LO-0NLO-LHC-W.in \
 3LO-0NLO-LHC-Z.in \
 3LO-1NLO-LEP.in \
 3LO-1NLO-LHC-Z.in \
 3LO-1NLO-LHC-W.in \
 3LO-2NLO-LEP.in \
+3LO-2NLO-LEP_light.in \
 3LO-2NLO-LHC-Z.in \
 3LO-2NLO-LHC-W.in \
 4LO-0NLO-LHC-Z.in \

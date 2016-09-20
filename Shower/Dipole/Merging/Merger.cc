@@ -291,7 +291,7 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
                        *Bornweight
                        *SM().alphaS()/(2.*ThePEG::Constants::pi);
 
- 
+
   return weight*
          as(startscale*xiRenSh)/SM().alphaS()*
          (matrixElement+unlopsweight);
@@ -452,7 +452,7 @@ CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   theCalculateInNode=false;
   DeepHead->nodeME()->doOneLoopNoBorn();
-  CrossSection res=DeepHead->nodeME()->dSigHatDRV();
+  CrossSection res=DeepHead->nodeME()->dSigHatDRV()+DeepHead->nodeME()->dSigHatDRI();
   DeepHead->nodeME()->noOneLoopNoBorn();
   renormscale(0.0*GeV);
   theCalculateInNode=true;
