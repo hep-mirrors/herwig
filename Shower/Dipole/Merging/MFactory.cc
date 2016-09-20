@@ -82,27 +82,8 @@ IBPtr MFactory::fullclone() const {
 void MFactory::fill_amplitudes() {
   
   olpProcesses().clear();
-  if ( particleGroups().find("j") == particleGroups().end() ) throw InitException() << "Could not find a jet particle group named 'j'";
   
-    // rebind the particle data objects
-  for ( map<string, PDVector>::iterator g = particleGroups().begin() ; g != particleGroups().end() ; ++g ) {
-    for ( PDVector::iterator p = g->second.begin() ; p != g->second.end() ; ++p ) {
-      *p = getParticleData((**p).id());
-    }
-  }
   
-  const PDVector& partons = particleGroups()["j"];
-  
-  unsigned int nl = 0;
-  
-  for ( PDVector::const_iterator p = partons.begin() ; p != partons.end() ; ++p )
-    if ( abs((**p).id()) < 6 ) ++nl;
-  
-  if (getProcesses().size()!=1) {
-    throw InitException() << "In this Factory only one process is supported so far.";
-  }
-  
-  nLight(nl / 2);
   processMap[0] = getProcesses()[0];
   if(MH()->M()>=0)
     setHighestVirt(processMap[0].size()+MH()->M());
@@ -467,13 +448,21 @@ void MFactory::setup() {
     const PDVector& partons = particleGroups()["j"];
     unsigned int nl = 0;
     
+    
+      // rebind the particle data objects
+    for ( map<string, PDVector>::iterator g = particleGroups().begin() ; g != particleGroups().end() ; ++g ) {
+      for ( PDVector::iterator p = g->second.begin() ; p != g->second.end() ; ++p ) {
+        *p = getParticleData((**p).id());
+      }
+    }
+    
     for ( PDVector::const_iterator p = partons.begin();
          p != partons.end(); ++p ) {
-      if ( abs((**p).id()) < 7 && (**p).mass() == ZERO )
+      if ( abs((**p).id()) < 7 && (**p).hardProcessMass() == ZERO )
         ++nl;
-      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() == ZERO )
+      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).hardProcessMass() == ZERO )
         nLightJetVec( (**p).id() );
-      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() != ZERO )
+      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).hardProcessMass() != ZERO )
         nHeavyJetVec( (**p).id() );
     }
     nLight(nl/2);
@@ -481,7 +470,7 @@ void MFactory::setup() {
     const PDVector& partonsInP = particleGroups()["p"];
     for ( PDVector::const_iterator pip = partonsInP.begin();
          pip != partonsInP.end(); ++pip ) {
-      if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).mass() == ZERO )
+      if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).hardProcessMass() == ZERO )
         nLightProtonVec( (**pip).id() );
     }
     

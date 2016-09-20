@@ -499,8 +499,9 @@ double Merger::alphaReweight(){
   double res=1.;
   Energy Q_R=(history[0].node->legsize()==N0()?xiRenME:xiRenSh)*history[0].scale;
   res *= pow(as(Q_R) / SM().alphaS(), history[0].node->nodeME()->orderInAlphaS());
-  res *= pow(history[0].node->deepHead()->xcomb()->eventHandler().SM().alphaEMPtr()->value(history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED())/ SM().alphaEMMZ(), history[0].node->nodeME()->orderInAlphaEW());
- 
+  res *= pow(SM().alphaEMME(history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED())/ SM().alphaEMMZ(), history[0].node->nodeME()->orderInAlphaEW());
+
+
 
   if (!(history[0].node->children().empty())){ 
     res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(Q_R))*as(Q_R))/2./Constants::pi):1.),int(history[0].node->legsize()-N0()));

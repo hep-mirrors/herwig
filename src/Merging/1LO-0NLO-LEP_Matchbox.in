@@ -1,0 +1,278 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+## Herwig/Matchbox example input file
+##################################################
+
+##################################################
+## Collider type
+##################################################
+
+read Matchbox/EECollider.in
+
+##################################################
+## Beam energy sqrt(s)
+##################################################
+
+cd /Herwig/EventHandlers
+set EventHandler:LuminosityFunction:Energy 91.2*GeV
+
+##################################################
+## Process selection
+##################################################
+
+## Note that event generation may fail if no matching matrix element has
+## been found.  Coupling orders are with respect to the Born process,
+## i.e. NLO QCD does not require an additional power of alphas.
+
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set Factory:OrderInAlphaS 0
+set Factory:OrderInAlphaEW 2
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do Factory:Process e- e+ -> j j
+
+cd /Herwig/MatrixElements/Matchbox/Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
+
+## Special settings required for on-shell production of unstable particles
+## enable for on-shell top production
+# read Matchbox/OnShellTopProduction.in
+## enable for on-shell W, Z or h production
+# read Matchbox/OnShellWProduction.in
+# read Matchbox/OnShellZProduction.in
+# read Matchbox/OnShellHProduction.in
+
+##################################################
+## Matrix element library selection
+##################################################
+
+## Select a generic tree/loop combination or a
+## specialized NLO package
+
+# read Matchbox/MadGraph-GoSam.in
+# read Matchbox/MadGraph-MadGraph.in
+# read Matchbox/MadGraph-NJet.in
+# read Matchbox/MadGraph-OpenLoops.in
+
+## Uncomment this to use ggh effective couplings
+## currently only supported by MadGraph-GoSam
+
+# read Matchbox/HiggsEffective.in
+
+##################################################
+## Cut selection
+## See the documentation for more options
+##################################################
+
+## cuts on additional jets
+
+# read Matchbox/DefaultEEJets.in
+
+# set NJetsCut:NJetsMin 3
+
+##################################################
+## Scale choice
+## See the documentation for more options
+##################################################
+
+cd /Herwig/MatrixElements/Matchbox
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
+
+##################################################
+## Matching and shower selection
+##################################################
+
+#read Matchbox/MCatNLO-DefaultShower.in
+# read Matchbox/Powheg-DefaultShower.in
+## use for strict LO/NLO comparisons
+# read Matchbox/MCatLO-DefaultShower.in
+## use for improved LO showering
+# read Matchbox/LO-DefaultShower.in
+
+# read Matchbox/MCatNLO-DipoleShower.in
+# read Matchbox/Powheg-DipoleShower.in
+## use for strict LO/NLO comparisons
+# read Matchbox/MCatLO-DipoleShower.in
+## use for improved LO showering
+read Matchbox/LO-DipoleShower.in
+
+# read Matchbox/NLO-NoShower.in
+# read Matchbox/LO-NoShower.in
+
+##################################################
+## Scale uncertainties
+##################################################
+
+# read Matchbox/MuDown.in
+# read Matchbox/MuUp.in
+
+##################################################
+## Shower scale uncertainties
+##################################################
+
+# read Matchbox/MuQDown.in
+# read Matchbox/MuQUp.in
+
+##################################################
+## Analyses
+##################################################
+
+cd /Herwig/Analysis
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+
+read Matchbox/LEP91-Analysis.in
+
+
+##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+
+set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
+
+##################################################
+## Save the generator
+##################################################
+
+
+set /Herwig/Couplings/NLOAlphaS:min_active_flavours 4
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
+set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
+
+
+create Herwig::MonacoSampler /Herwig/Samplers/Monaco
+set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/Monaco
+
+cd /Herwig/Particles
+
+do c:UnsetHardProcessMass
+do cbar:UnsetHardProcessMass
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+
+do b:UnsetHardProcessMass
+do bbar:UnsetHardProcessMass
+
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+
+
+cd /Herwig/Samplers
+
+set Monaco:EnhancementFactor 1.2
+set Monaco:InitialPoints 10000
+set Monaco:LuminosityMapperBins 8
+set Monaco:NIterations 4
+set Monaco:RemapChannelDimension Yes
+set Monaco:RemapperMinSelection 0.0001
+set Monaco:RemapperPoints 10000
+set Monaco:UseAllIterations No
+
+set Sampler:UpdateAfter 1000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted On
+set Sampler:BinSampler:Kappa 1.
+set Sampler:RunCombinationData Off
+set Sampler:Verbose On
+
+#######
+# CMW scheme
+#######
+
+cd /Herwig/DipoleShower/Kernels
+set FFgx2ggxDipoleKernel:CMWScheme On
+set FFqx2qgxDipoleKernel:CMWScheme On
+set FFgx2ddxDipoleKernel:CMWScheme On
+set FFgx2uuxDipoleKernel:CMWScheme On
+set FFgx2ccxDipoleKernel:CMWScheme On
+set FFgx2ssxDipoleKernel:CMWScheme On
+set FFgx2bbxDipoleKernel:CMWScheme On
+set FFMgx2ggxDipoleKernel:CMWScheme On
+set FFMdx2dgxDipoleKernel:CMWScheme On
+set FFMux2ugxDipoleKernel:CMWScheme On
+set FFMcx2cgxDipoleKernel:CMWScheme On
+set FFMsx2sgxDipoleKernel:CMWScheme On
+set FFMbx2bgxDipoleKernel:CMWScheme On
+set FFMtx2tgxDipoleKernel:CMWScheme On
+set FFMgx2ddxDipoleKernel:CMWScheme On
+set FFMgx2uuxDipoleKernel:CMWScheme On
+set FFMgx2ccxDipoleKernel:CMWScheme On
+set FFMgx2ssxDipoleKernel:CMWScheme On
+set FFMgx2bbxDipoleKernel:CMWScheme On
+set FIgx2ggxDipoleKernel:CMWScheme On
+set FIqx2qgxDipoleKernel:CMWScheme On
+set FIgx2ddxDipoleKernel:CMWScheme On
+set FIgx2uuxDipoleKernel:CMWScheme On
+set FIgx2ccxDipoleKernel:CMWScheme On
+set FIgx2ssxDipoleKernel:CMWScheme On
+set FIgx2bbxDipoleKernel:CMWScheme On
+set FIMdx2dgxDipoleKernel:CMWScheme On
+set FIMux2ugxDipoleKernel:CMWScheme On
+set FIMcx2cgxDipoleKernel:CMWScheme On
+set FIMsx2sgxDipoleKernel:CMWScheme On
+set FIMbx2bgxDipoleKernel:CMWScheme On
+set FIMtx2tgxDipoleKernel:CMWScheme On
+set FIMgx2ddxDipoleKernel:CMWScheme On
+set FIMgx2uuxDipoleKernel:CMWScheme On
+set FIMgx2ccxDipoleKernel:CMWScheme On
+set FIMgx2ssxDipoleKernel:CMWScheme On
+set FIMgx2bbxDipoleKernel:CMWScheme On
+#set FIMgx2ttxDipoleKernel:CMWScheme On
+set IFgx2ggxDipoleKernel:CMWScheme On
+set IFqx2qgxDipoleKernel:CMWScheme On
+set IFqx2gqxDipoleKernel:CMWScheme On
+set IFgx2ddbarxDipoleKernel:CMWScheme On
+set IFgx2dbardxDipoleKernel:CMWScheme On
+set IFgx2uubarxDipoleKernel:CMWScheme On
+set IFgx2ubaruxDipoleKernel:CMWScheme On
+set IFgx2ccbarxDipoleKernel:CMWScheme On
+set IFgx2cbarcxDipoleKernel:CMWScheme On
+set IFgx2ssbarxDipoleKernel:CMWScheme On
+set IFgx2sbarsxDipoleKernel:CMWScheme On
+set IFMgx2ggxDipoleKernel:CMWScheme On
+set IFMqx2qgxDipoleKernel:CMWScheme On
+set IFMqx2gqxDipoleKernel:CMWScheme On
+set IFMgx2ddbarxDipoleKernel:CMWScheme On
+set IFMgx2dbardxDipoleKernel:CMWScheme On
+set IFMgx2uubarxDipoleKernel:CMWScheme On
+set IFMgx2ubaruxDipoleKernel:CMWScheme On
+set IFMgx2ccbarxDipoleKernel:CMWScheme On
+set IFMgx2cbarcxDipoleKernel:CMWScheme On
+set IFMgx2ssbarxDipoleKernel:CMWScheme On
+set IFMgx2sbarsxDipoleKernel:CMWScheme On
+set IIgx2ggxDipoleKernel:CMWScheme On
+set IIqx2qgxDipoleKernel:CMWScheme On
+set IIqx2gqxDipoleKernel:CMWScheme On
+set IIgx2ddbarxDipoleKernel:CMWScheme On
+set IIgx2dbardxDipoleKernel:CMWScheme On
+set IIgx2uubarxDipoleKernel:CMWScheme On
+set IIgx2ubaruxDipoleKernel:CMWScheme On
+set IIgx2ccbarxDipoleKernel:CMWScheme On
+set IIgx2cbarcxDipoleKernel:CMWScheme On
+set IIgx2ssbarxDipoleKernel:CMWScheme On
+set IIgx2sbarsxDipoleKernel:CMWScheme On
+
+
+
+
+
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+
+cd /Herwig/Generators
+saverun 1LO-0NLO-LEP_Matchbox EventGenerator

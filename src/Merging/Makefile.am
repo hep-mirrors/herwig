@@ -5,12 +5,15 @@ Matchboxdir = ${pkgdatadir}/Merging
 INPUTFILES = \
 1LO-0NLO-LEP.in \
 1LO-0NLO-LEP_Qt.in \
+1LO-0NLO-LEP_Matchbox.in \
+1LO-0NLO-LEP_FixedOrder.in \
 1LO-0NLO-LHC-W.in \
 1LO-0NLO-LHC-Z.in \
 2LO-0NLO-LEP.in \
 2LO-0NLO-LHC-W.in \
 2LO-0NLO-LHC-Z.in \
 2LO-1NLO-LEP.in \
+2LO-1NLO-LEP_Matchbox.in \
 2LO-1NLO-LHC-Z.in \
 2LO-1NLO-LHC-W.in \
 3LO-0NLO-LEP.in \
