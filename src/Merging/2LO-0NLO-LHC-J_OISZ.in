@@ -151,6 +151,8 @@ do /Herwig/Merging/MFactory:ProductionMode
 
 set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 
+
+set /Herwig/Samplers/Sampler:BinSampler:Kappa 0.02
 cd /Herwig/Generators
 
 set /Herwig/DipoleShower/Kinematics/IFLightKinematics:OpenInitialStateZ Yes

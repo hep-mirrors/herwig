@@ -1185,7 +1185,7 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
         Energy pt=0*GeV;
-        if (emittermom.m()==0*GeV&&emissionmom.m()==0*GeV&&spectatormom.m()==0*GeV) {
+        if (emittermom.m()==0.001*GeV&&emissionmom.m()==0.001*GeV&&spectatormom.m()==0.001*GeV) {
           pt=FFLTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=FFMTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1215,14 +1215,14 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
         Energy pt=0*GeV;
-        if (emittermom.m()==0*GeV&&emissionmom.m()==0*GeV&&spectatormom.m()==0*GeV) {
+        if (emittermom.m()==0.001*GeV&&emissionmom.m()==0.001*GeV&&spectatormom.m()==0.001*GeV) {
           pt=FILTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=FIMTK->lastPt(emittermom,emissionmom,spectatormom);
         }
         
         
-        if (abs(pt-winnerScale)<0.0001*GeV) {
+        if (abs(pt-winnerScale)<0.001*GeV) {
           foundwinnerpt=true;
         }
         
@@ -1249,14 +1249,14 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         
         Energy pt=0*GeV;
 
-        if (emittermom.m()<=0.0001*GeV&&emissionmom.m()<=0.0001*GeV&&spectatormom.m()<=0.0001*GeV) {
+        if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=IFLTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=IFMTK->lastPt(emittermom,emissionmom,spectatormom);
         }
         
 
-        if (abs(pt-winnerScale)<0.0001*GeV) {
+        if (abs(pt-winnerScale)<0.01*GeV) {
           foundwinnerpt=true;
         }
         ptx =min(ptx,pt);
@@ -1280,7 +1280,7 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
         Energy  pt=IILTK->lastPt(emittermom,emissionmom,spectatormom);
-       if (abs(pt-winnerScale)<0.0001*GeV) {
+       if (abs(pt-winnerScale)<0.01*GeV) {
           foundwinnerpt=true;
         }
         ptx =min(ptx, pt);
@@ -1292,7 +1292,12 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
   
   
   
-  assert(foundwinnerpt);
+  if(!foundwinnerpt){
+    cout<<"\nWarning: could not find winner with pt: "<<winnerScale/GeV;
+    for(size_t emm=0; emm < particles.size();emm++){
+    cout<<"\n"<<particles[emm]->id()<<" "<<particles[emm]->momentum()/GeV<<" "<<particles[emm]->momentum().m()/GeV<<flush;
+    }
+  }
   
   return (ptx>cutscale) ;
   

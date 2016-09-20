@@ -147,6 +147,8 @@ read Matchbox/LHC7-J-Analysis.in
 ## Save the generator
 ##################################################
 
+set /Herwig/Samplers/Sampler:BinSampler:Kappa 0.02
+
 do /Herwig/Merging/MFactory:ProductionMode
 
 set /Herwig/Generators/EventGenerator:IntermediateOutput Yes

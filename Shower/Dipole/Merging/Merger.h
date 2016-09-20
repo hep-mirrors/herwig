@@ -212,7 +212,7 @@ namespace Herwig {
     
     double gamma()const{return theGamma;}
     
-    
+    int chooseHistory()const {return theChooseHistory;}    
     
     
     double smear()const{return theSmearing;}
