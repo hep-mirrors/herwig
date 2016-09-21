@@ -37,21 +37,40 @@ MEDiffraction::MEDiffraction()
 void MEDiffraction::getDiagrams() const {
     //incoming particles
     //PPair incomingHardons = generator()->currentEvent()->primarySubProcess()->incoming();
+    cPDPair incomingHardons = generator()->eventHandler()->incoming();
+    //cout<<incomingHardons.first->id()<<" "<<incomingHardons.second->id()<<endl;    
     	
-    //TODO: only works for proton-proton collisions. Should be generalized 
+    //TODO: only works for proton-proton and proton-antiproton collisions.
     tcPDPtr pom = getParticleData(990);
-    tcPDPtr prt1 = getParticleData(2212);
+    //tcPDPtr prt1 = getParticleData(2212);
     
     //get incoming particles
-    //tcPDPtr prt1 = getParticleData(incomingHardons.first->id());
-    //tcPDPtr prt11 = getParticleData(incomingHardons.second->id());
-        
-    tcPDPtr prt2 = getParticleData(2214);//Delta+    
-    tcPDPtr q1 = getParticleData(2); //u
-    tcPDPtr q2 = getParticleData(1); //d
-    tcPDPtr dq1 = getParticleData(2101); //ud_0
-    tcPDPtr dq11 = getParticleData(2103); //ud_1
-    tcPDPtr dq2 = getParticleData(2203); //uu_1
+    tcPDPtr prt11 = getParticleData(incomingHardons.first->id());
+    tcPDPtr prt12 = getParticleData(incomingHardons.second->id());
+    
+    //get sign of id
+    int sign1=0, sign2=0;
+    sign1 = (incomingHardons.first->id() > 0) ? 1 : -1;
+    sign2 = (incomingHardons.second->id() > 0) ? 1 : -1;
+    //cout<<sign1<<" "<<sign2<<endl;
+    
+    tcPDPtr prt21 = getParticleData(sign1*2214);//Delta+
+    tcPDPtr prt22 = getParticleData(sign2*2214);//Delta+    
+    
+    //for the left side
+    tcPDPtr q11 = getParticleData(sign1*2); //u
+    tcPDPtr q21 = getParticleData(sign1*1); //d
+    //for the right side
+    tcPDPtr q12 = getParticleData(sign2*2); //u
+    tcPDPtr q22 = getParticleData(sign2*1); //d
+    //for the left side
+    tcPDPtr dq11 = getParticleData(sign1*2101); //ud_0
+    tcPDPtr dq111 = getParticleData(sign1*2103); //ud_1
+    tcPDPtr dq21 = getParticleData(sign1*2203); //uu_1
+    //for the right side
+    tcPDPtr dq12 = getParticleData(sign2*2101); //ud_0
+    tcPDPtr dq112 = getParticleData(sign2*2103); //ud_1
+    tcPDPtr dq22 = getParticleData(sign2*2203); //uu_1
     
     tcPDPtr gl = getParticleData(21);//gluon
     
@@ -66,13 +85,13 @@ void MEDiffraction::getDiagrams() const {
     	    	
     			switch (diffDirection){
     			case 0:
-    				add(new_ptr((Tree2toNDiagram(3), prt1, pom, prt1, 1, prt2, 2, prt1, -1)));
+    				add(new_ptr((Tree2toNDiagram(3), prt11, pom, prt12, 1, prt21, 2, prt12, -1)));
     				break;
     			case 1:
-    				add(new_ptr((Tree2toNDiagram(3), prt1, pom, prt1, 1, prt1, 2, prt2, -1)));
+    				add(new_ptr((Tree2toNDiagram(3), prt11, pom, prt12, 1, prt11, 2, prt22, -1)));
     				break;
     			case 2:
-    				add(new_ptr((Tree2toNDiagram(3), prt1, pom, prt1, 1, prt2, 2, prt2, -1)));
+    				add(new_ptr((Tree2toNDiagram(3), prt11, pom, prt12, 1, prt21, 2, prt22, -1)));
     				break;
         		}	
     	
@@ -85,27 +104,27 @@ void MEDiffraction::getDiagrams() const {
     			switch (diffDirection){
     			case 0: //left
     				//u -- ud_0
-    				add(new_ptr((Tree2toNDiagram(4), prt1, q1, pom, prt1, 3, prt1, 1, dq1, 2, q1, -1)));
+    				add(new_ptr((Tree2toNDiagram(4), prt11, q11, pom, prt12, 3, prt12, 1, dq11, 2, q11, -1)));
     				//u -- ud_1
     				//add(new_ptr((Tree2toNDiagram(4), prt1, q1, pom, prt1, 3, prt1, 1, dq11, 2, q1, -2)));
     				//d -- uu_1
-    				add(new_ptr((Tree2toNDiagram(4), prt1, q2, pom, prt1, 3, prt1, 1, dq2, 2, q2, -3)));
+    				add(new_ptr((Tree2toNDiagram(4), prt11, q21, pom, prt12, 3, prt12, 1, dq21, 2, q21, -3)));
     				break;
     			case 1:	//right
     				//u -- ud_0
-    				add(new_ptr((Tree2toNDiagram(4), prt1, pom, q1, prt1, 1, prt1, 3, dq1, 2, q1, -1)));
+    				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q12, prt12, 1, prt11, 3, dq12, 2, q12, -1)));
     				//u -- ud_1
     				//add(new_ptr((Tree2toNDiagram(4), prt1, pom, q1, prt1, 1, prt1, 3, dq11, 2, q1, -2)));
     				//d -- uu_1
-    				add(new_ptr((Tree2toNDiagram(4), prt1, pom, q2, prt1, 1, prt1, 3, dq2, 2, q2, -3)));
+    				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q22, prt12, 1, prt11, 3, dq22, 2, q22, -3)));
     				break;
     			case 2:	//double
     				//u -- ud_0 left u -- ud_0 right	
-    				add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q1, prt1, 1, dq1, 2, q1, 3, q1, 4, dq1, -1)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q12, prt12, 1, dq11, 2, q11, 3, q12, 4, dq12, -1)));
     				//u -- ud_0 left u -- ud_1 right
     				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q1, prt1, 1, dq1, 2, q1, 3, q1, 4, dq11, -2)));
     				//u -- ud_0 left d -- uu_1 right
-    				add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q2, prt1, 1, dq1, 2, q1, 3, q2, 4, dq2, -3)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q22, prt12, 1, dq11, 2, q11, 3, q22, 4, dq22, -3)));
     				//u -- ud_1 left u -- ud_0 right
     				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q1, prt1, 1, dq11, 2, q1, 3, q1, 4, dq1, -4)));
     				//u -- ud_1 left u -- ud_1 right
@@ -113,11 +132,11 @@ void MEDiffraction::getDiagrams() const {
     				//u -- ud_1 left d -- uu_1 right
     				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q2, prt1, 1, dq11, 2, q1, 3, q2, 4, dq2, -6)));
     				//d -- uu_1 left u -- ud_0 right
-    				add(new_ptr((Tree2toNDiagram(5), prt1, q2, pom, q1, prt1, 1, dq2, 2, q2, 3, q1, 4, dq1, -7)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q12, prt12, 1,dq21, 2, q21, 3, q12, 4, dq12, -7)));
     				//d -- uu_1 left u -- ud_1 right
     				//add(new_ptr((Tree2toNDiagram(5), prt1, q2, pom, q1, prt1, 1, dq2, 2, q2, 3, q1, 4, dq11, -8)));
     				//d -- uu_1 left d -- uu_1 right
-    				add(new_ptr((Tree2toNDiagram(5), prt1, q2, pom, q2, prt1, 1, dq2, 2, q2, 3, q2, 4, dq2, -9)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q22, prt12, 1, dq21, 2, q21, 3, q22, 4, dq22, -9)));
     			break;
         		}
     	
@@ -127,29 +146,29 @@ void MEDiffraction::getDiagrams() const {
     		switch (diffDirection){
     			case 0: //left
     				//u -- ud_0
-    				add(new_ptr((Tree2toNDiagram(5), prt1, q1, gl, pom, prt1, 1, dq1, 2, q1, 3, gl, 4, prt1, -1)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q11, gl, pom, prt12, 1, dq11, 2, q11, 3, gl, 4, prt12, -1)));
     				//d -- uu_1
-    				add(new_ptr((Tree2toNDiagram(5), prt1, q2, gl, pom, prt1, 1, dq2, 2, q2, 3, gl, 4, prt1, -2)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, gl, pom, prt12, 1, dq21, 2, q21, 3, gl, 4, prt12, -2)));
     				break;
     			case 1: //right
     				//u -- ud_0
-    				add(new_ptr((Tree2toNDiagram(5), prt1, pom, gl, q1, prt1, 1, prt1, 2, gl, 3, q1, 4, dq1, -1)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, pom, gl, q12, prt12, 1, prt11, 2, gl, 3, q12, 4, dq12, -1)));
     				//d -- ud_1
-    				add(new_ptr((Tree2toNDiagram(5), prt1, pom, gl, q2, prt1, 1, prt1, 2, gl, 3, q2, 4, dq2, -2)));	
+    				add(new_ptr((Tree2toNDiagram(5), prt11, pom, gl, q22, prt12, 1, prt11, 2, gl, 3, q22, 4, dq22, -2)));	
     				break;
     			case 2: //double
     				//u -- ud_0 left u -- ud_0 right
-    				add(new_ptr((Tree2toNDiagram(7), prt1, q1, gl, pom, gl, q1, prt1, 1, dq1, 2, q1, 3, gl, 4, 
-    				gl, 5, q1, 6, dq1, -1)));
+    				add(new_ptr((Tree2toNDiagram(7), prt11, q11, gl, pom, gl, q12, prt12, 1, dq11, 2, q11, 3, gl, 4, 
+    				gl, 5, q12, 6, dq12, -1)));
     				//u -- ud_0 left d -- uu_1 right
-    				add(new_ptr((Tree2toNDiagram(7), prt1, q1, gl, pom, gl, q2, prt1, 1, dq1, 2, q1, 3, gl, 4, 
-    				gl, 5, q2, 6, dq2, -2)));
+    				add(new_ptr((Tree2toNDiagram(7), prt11, q11, gl, pom, gl, q22, prt12, 1, dq11, 2, q11, 3, gl, 4, 
+    				gl, 5, q22, 6, dq22, -2)));
     				//d -- uu_1 left u -- ud_0 right
-    				add(new_ptr((Tree2toNDiagram(7), prt1, q2, gl, pom, gl, q1, prt1, 1, dq2, 2, q2, 3, gl, 4, 
-    				gl, 5, q1, 6, dq1, -3)));
+    				add(new_ptr((Tree2toNDiagram(7), prt11, q21, gl, pom, gl, q12, prt12, 1, dq21, 2, q21, 3, gl, 4, 
+    				gl, 5, q12, 6, dq12, -3)));
     				//d -- uu_1 left d -- uu_1 right
-    				add(new_ptr((Tree2toNDiagram(7), prt1, q2, gl, pom, gl, q2, prt1, 1, dq2, 2, q2, 3, gl, 4, 
-    				gl, 5, q2, 6, dq2, -4)));
+    				add(new_ptr((Tree2toNDiagram(7), prt11, q21, gl, pom, gl, q22, prt12, 1, dq21, 2, q21, 3, gl, 4, 
+    				gl, 5, q22, 6, dq22, -4)));
     				break;
     		}	
     		break;	
@@ -712,29 +731,56 @@ Selector<const ColourLines *>
 MEDiffraction::colourGeometries(tcDiagPtr ) const {
   Selector<const ColourLines *> sel;
   
+  int sign1=0, sign2=0;
+  sign1 = (generator()->eventHandler()->incoming().first->id() > 0) ? 1 : -1;
+  sign2 = (generator()->eventHandler()->incoming().second->id() > 0) ? 1 : -1;
+  
   switch(dissociationDecay){
   	case 0:
   		if(!deltaOnly)
   		{	
   			if(diffDirection!=2){
   				//static ColourLines dqq("-6 7");
-  				//TODO create the general case
+  				//TODO: only works for proton-proton and proton-antiproton collisions.
   				//ColourLines dqq("");
   				if (diffDirection == 0){
-  					static ColourLines dqq0=ColourLines("-6 2 7");
-  					sel.insert(1.0,&dqq0);
+  					if(sign1>0){
+  						static ColourLines dqq0=ColourLines("-6 2 7");
+  						sel.insert(1.0,&dqq0);
+  					}else{
+  						static ColourLines dqq0=ColourLines("6 -2 -7");
+  						sel.insert(1.0,&dqq0);
+  					}
+  					
+  					
   				}
   				else{
-  					static ColourLines dqq1=ColourLines("-6 3 7");
-  					sel.insert(1.0,&dqq1);
+  					if(sign2>0){
+  						static ColourLines dqq1=ColourLines("-6 3 7");
+  						sel.insert(1.0,&dqq1);
+  					}else{
+  						static ColourLines dqq1=ColourLines("6 -3 -7");
+  						sel.insert(1.0,&dqq1);
+  					}
   				}
   				//sel.insert(1.0, &dqq);
   			}else{
   				//static ColourLines dqq("-6 7, -8 9");
   				//sel.insert(1.0, &dqq);
+  				if(sign1>0 && sign2>0){
+  					static ColourLines ddqq0=ColourLines("-6 2 7, -9 4 8");
+  					sel.insert(1.0,&ddqq0);
+  				}else if(sign1<0 && sign2>0){
+  					static ColourLines ddqq0=ColourLines("6 -2 -7, -9 4 8");
+  					sel.insert(1.0,&ddqq0);
+  				}else if(sign1>0&& sign2<0){
+  					static ColourLines ddqq0=ColourLines("-6 2 7, 9 -4 -8");
+  					sel.insert(1.0,&ddqq0);
+  				}else{
+  					static ColourLines ddqq0=ColourLines("6 -2 -7, 9 -4 -8");
+  					sel.insert(1.0,&ddqq0);
+  				}
   				
-  				static ColourLines ddqq0=ColourLines("-6 2 7, -9 4 8");
-  				sel.insert(1.0,&ddqq0);
   				
   			}
   	

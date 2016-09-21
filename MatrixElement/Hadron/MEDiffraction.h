@@ -196,7 +196,6 @@ private:
   double thesoftPomeronSlope;
  
   
-  
   /**
    * Sample the diffractive mass squared M2 and the momentum transfer t
    */
