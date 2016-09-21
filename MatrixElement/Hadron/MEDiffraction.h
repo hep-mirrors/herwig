@@ -236,7 +236,7 @@ private:
   //Energy2 M2min() const{return sqr(0.938+2*0.2)*GeV2;}
   Energy2 M2min() const{return sqr(0.938+0.325+2*0.65)*GeV2;}
 
-  Energy2 M2max() const{return sqr(7000-1)*GeV2;}//TODO:modify to get proper parameters
+  Energy2 M2max() const{return sqr(generator()->maximumCMEnergy()-1*GeV);}//TODO:modify to get proper parameters
 
   InvEnergy2 softPomeronSlope() const;// { return 0.2 / GeV2; }
   

@@ -806,12 +806,21 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 	 << "-------------------\n"
 	 << *(beam.second) << *(softRems_.second) << endl;
   }
-
+  
+  //parton mass
+  Energy mp;
+  if(quarkPair_){
+  	mp = getParticleData(ParticleID::u)->constituentMass();
+  }else{
+  	mp = mg_;
+  }
+  
   //Get x_g1 and x_g2
   //first limits
   double xmin  = sqr(ptmin_)/4.0/(P1+P2).m2();
   double x1max = (r1.e()+abs(r1.z()))/(P1.e() + abs(P1.z()));
   double x2max = (r2.e()+abs(r2.z()))/(P2.e() + abs(P2.z()));
+  double x1;
   //modified
   if(!multiPeriph_){
   	//now generate according to 1/x
@@ -819,28 +828,14 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   	x_g2 = xmin * exp(UseRandom::rnd(log(x2max/xmin)));
   }else{
   	if(valOfN_==0) return;
-  	double x1;
-  	double param = (1/(2*valOfN_-1))*initTotRap_;
+  	
+  	double param = (1/(2*valOfN_+1))*initTotRap_;
   	do{
   		// need 1-x instead of x to get the proper final momenta
-    		x1 = UseRandom::rndGauss(0.05, 1 - (exp(param)-1)/exp(param));
-    	}while(x1>=1.0);
-  	//x1 = 1 - (exp(param)-1)/exp(param);
+    		x1 = UseRandom::rndGauss(0.03, 1 - (exp(param)-1)/exp(param));
+    	}while(x1 < 0 || x1>=1.0);
   	x_g1 = x1max*x1;
   	x_g2 = x2max*x1;
-  	
-  	//double x1, x2;
-    	//do{
-    	//	x1 = UseRandom::rndGauss(0.05,0.5);
-    	//	//x2 = UseRandom::rndGauss(0.05,0.5);
-    	//	//x2 = x1;
-    	////}while(x1>=1.0||x2>=1.0);
-    	//}while(x1>=1.0);
-    	//x1=1-x1;
-    	//x2=x1;
-    	//x_g1 = x1max*x1;
-    	//x_g2 = x2max*x2;
-    	//cout<<"x1: "<<x1<<" x2: "<<x2<<endl;
   }
   
 
@@ -851,14 +846,6 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 
   ig1 = x_g1*P1;
   ig2 = x_g2*P2;
-  //new
-  //parton mass
-  Energy mp;
-  if(quarkPair_){
-  	mp = getParticleData(ParticleID::u)->constituentMass();
-  }else{
-  	mp = mg_;
-  }
   
   ig1.setMass(mp);
   ig2.setMass(mp);
@@ -915,9 +902,10 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 
   //recalc the remnant momenta
   Lorentz5Momentum r1old(r1), r2old(r2);
+  
   r1 -= ig1;
   r2 -= ig2;
-
+  
   try{
     reShuffle(r1, r2, r1old.m(), r2old.m());
   }catch(ExtraSoftScatterVeto){
@@ -925,7 +913,6 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
     r2 = r2old;
     throw ExtraSoftScatterVeto();
   }
-
 
   if(dbg){
     cerr << "remnant 1,2 momenta: " << r1/GeV << "--" << r2/GeV << endl;
@@ -1017,13 +1004,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   int j(0);
   for(j=0;j<Nmpi;j++){
   ///////////////////////
-  // number (times two + plus quark-antiquark) of legs in the multiperipheral ladder
-  //int avgN = floor(1.0*log((softRems_.first->momentum()+softRems_.second->momentum()).m()/(sqrt(sqr(ptmin_)+sqr(mg_)))));
-  //int avgN = floor(0.5*log((softRems_.first->momentum()+softRems_.second->momentum()).m()/(sqrt(sqr(ptmin_)+sqr(mg_)))));
-  
-  int avgN = floor(ladderMult_*log((softRems_.first->momentum()+softRems_.second->momentum()).m()/mg_));
+  int avgN = floor(ladderMult_*log((softRems_.first->momentum()+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
   initTotRap_ = abs(softRems_.first->momentum().rapidity())+abs(softRems_.second->momentum().rapidity());
-  //int avgN = floor(ladderMult_*0.5*(softRems_.first->momentum().rapidity()-softRems_.second->momentum().rapidity()));
     
   //generate poisson distribution	
   double L = exp(-double(avgN));
@@ -1034,6 +1016,9 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       p *= UseRandom::rnd();
   } while( p > L);
   N=k-1;
+  
+  //N = avgN;
+  
   valOfN_=N;
   if(N == 0) return;
   
@@ -1057,10 +1042,11 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   unsigned int tries(1), i(0);
 
-  for(i=0; i<=N; i++){
+  for(i=0; i<N; i++){
     //check how often this scattering has been regenerated
-    if(tries > maxtrySoft_) break;
-
+    //if(tries > maxtrySoft_) break;
+    if(tries > maxtrySoft_) return;
+    	
     if(dbg){
       cerr << "new try \n" << *softRems_.first << *softRems_.second << endl;
     }
@@ -1070,22 +1056,17 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       //new
       if(i==0){
       	quarkPair_ = true;
+      	//first splitting: remnant -> remnant + quark
       	softKinematics(r1, r2, q1, q2);
-      	//cout<<r1/GeV<<" "<<r2/GeV<<endl;
       }else if(i==1){
-        //first splitting; remnant -> remnant + gluon
-      	//softKinematics(r1, r2, g1, g2);
+        //second splitting; quark -> quark + gluon
       	quarkPair_ = false;
       	softKinematics(q1, q2, g1, g2);
-      	//cout<<g1/GeV<<" "<<g2/GeV<<endl;
       	gluonMomPairs.push_back(make_pair(g1,g2));
       	
       }else{
       	//consequent splittings gluon -> gluon+gluon
       	//but, the previous gluon gets deleted
-      	
-      	//Lorentz5Momentum oldg1(g1), oldg2(g2);
-      	//Lorentz5Momentum oldg1(gluonMomPairs.back().first), oldg2(gluonMomPairs.back().second);
       	quarkPair_ = false;
       	//save first the previous gluon momentum
       	g1=gluonMomPairs.back().first;
@@ -1094,25 +1075,13 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       	softKinematics(g1, g2, gint1, gint2);
       	
       	//erase the last entry
-      	//gluonMomPairs.erase(std::remove(gluonMomPairs.begin(), gluonMomPairs.end(), make_pair(oldg1,oldg2)), gluonMomPairs.end());
       	gluonMomPairs.pop_back();
       	
       	//add new gluons
       	gluonMomPairs.push_back(make_pair(g1,g2));
-      	gluonMomPairs.push_back(make_pair(gint1,gint2));
-      	//cout<<g1/GeV<<" "<<g2/GeV<<" "<<gint1/GeV<<" "<<gint2/GeV<<endl;
-      	//cout<<gluonMomPairs.back().first/GeV<<" "<<gluonMomPairs.back().second/GeV<<endl<<endl;
-      	//cout<<gluonMomPairs.back().first/GeV<<" "<<gluonMomPairs.back().second/GeV<<" "
-      	//    <<gluonMomPairs.size()<<" "<<N<<endl<<endl; 
-      	
+      	gluonMomPairs.push_back(make_pair(gint1,gint2));  	
       }
       
-      
-      //new new
-      		//softKinematics(r1,r2,g1,g2);
-      		//gluonMomPairs.insert(gluonMomPairs.begin(),make_pair(g1,g2));
-      //		
-
     }catch(ExtraSoftScatterVeto){
       tries++;
       i--;
@@ -1130,7 +1099,6 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   PPair quarks;
   pair<bool, bool> anti_q;
   
-  if(gluonMomPairs.size()==0) return;
   for(i=0; i<=gluonMomPairs.size(); i++){
     
     PPair oldrems = softRems_;
@@ -1168,56 +1136,39 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     //new
       if(i==0){
       		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);	
+      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
+      		if(gluonMomPairs.size()==0){
+      			ColinePtr clq = new_ptr(ColourLine());
+      			clq->addColoured(quarks.first, anti_q.first);
+      			clq->addColoured(quarks.second, anti_q.second);
+      		}	
       }
       if(i!=0){
       		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
       		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
       		if(i==1){
       			cl1->addColoured(quarks.first, anti_q.first);
-      			cl1->addColoured(gluons.first, anti.first);
+      			cl1->addColoured(gluons.first, !anti_q.first);
       			cl2->addColoured(quarks.second, anti_q.second);
-      			cl2->addColoured(gluons.second, !anti.second);
+      			cl2->addColoured(gluons.second, !anti_q.second);
       		}else{
-      			cl1->addColoured(oldgluons.first, !anti.first);
-      			cl1->addColoured(gluons.first, anti.first);
-      			cl2->addColoured(oldgluons.second, anti.second);
-      			cl2->addColoured(gluons.second, !anti.second);
+      			cl1->addColoured(oldgluons.first, anti_q.first);
+      			cl1->addColoured(gluons.first, !anti_q.first);
+      			cl2->addColoured(oldgluons.second, anti_q.second);
+      			cl2->addColoured(gluons.second, !anti_q.second);
       		}
       		
       } 
-      if(i==gluonMomPairs.size()){
+      if(i > 0 && i == gluonMomPairs.size()){
       		ColinePtr clg = new_ptr(ColourLine());
-      		clg->addColoured(gluons.first, !anti.first);
-      		clg->addColoured(gluons.second, anti.second);
+      		clg->addColoured(gluons.first, anti_q.first);
+      		clg->addColoured(gluons.second, anti_q.second);
       }
       
       
     
-    oldgluons = gluons;
+      if(i < gluonMomPairs.size()) oldgluons = gluons;
   }
-  
-  ///TEST///////////
-  //cout<<"r1: "<<r1/GeV<<" q1: "<<q1/GeV;
-  //for(i=0; i<gluonMomPairs.size(); i++){
-  //	cout<<" g"<<i<<": "<<gluonMomPairs[i].first/GeV<<" ";
-  //}
-  
-  //for(i=0; i<gluonMomPairs.size(); i++){
-  //	cout<<" g"<<gluonMomPairs.size()+i<<": "<<gluonMomPairs[gluonMomPairs.size()-i-1].second/GeV<<" ";
-  //}
-  //cout<<"q2: "<<q2/GeV<<" r2: "<<r2/GeV;
-  //cout<<endl<<endl;
-  
-  //cout<<"r1: "<<r1.rapidity()<<" q1: "<<q1.rapidity();
-  //for(i=0; i<gluonMomPairs.size(); i++){
-  //	cout<<" g"<<i<<": "<<gluonMomPairs[i].first.rapidity()<<" ";
-  //}
-  //for(i=0; i<gluonMomPairs.size(); i++){
-  //	cout<<" g"<<gluonMomPairs.size()+i<<": "<<gluonMomPairs[gluonMomPairs.size()-i-1].second.rapidity()<<" ";
-  //}
-  //cout<<"q2: "<<q2.rapidity()<<" r2: "<<r2.rapidity()<<" end."<<endl<<endl;
-  //////////////////
   
   ////////
   }
@@ -1345,7 +1296,7 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_kinCutoff, GeV) << _range << _zbin << _ybin 
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
-     << maxtrySoft_ << colourDisrupt_ << ladderMult_ << pomeronStructure_
+     << maxtrySoft_ << colourDisrupt_ << ladderMult_ << ladderbFactor_ << pomeronStructure_
      << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV))
      << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_;
 }
@@ -1353,7 +1304,7 @@ void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_kinCutoff, GeV) >> _range >> _zbin >> _ybin 
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
-     >> maxtrySoft_ >> colourDisrupt_ >> ladderMult_ >> pomeronStructure_
+     >> maxtrySoft_ >> colourDisrupt_ >> ladderMult_ >> ladderbFactor_ >> pomeronStructure_
      >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV))
      >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_;
 }
@@ -1449,6 +1400,14 @@ void HwRemDecayer::Init() {
      &HwRemDecayer::ladderMult_, 
      1.0, 0.0, 10.0, 
      false, false, Interface::limited);
+     
+  
+  static Parameter<HwRemDecayer,double> interfaceladderbFactor
+    ("ladderbFactor",
+     "The additive factor in the multiperipheral ladder multiplicity.",
+     &HwRemDecayer::ladderbFactor_, 
+     1.0, 0.0, 10.0, 
+     false, false, Interface::limited);   
 
 
   static Switch<HwRemDecayer,unsigned int> interfacePomeronStructure

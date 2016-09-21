@@ -70,6 +70,7 @@ public:
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0),
 		   ladderMult_(1.0),
+		   ladderbFactor_(1.0),
 		   valOfN_(0), 
 		   initTotRap_(0),
 		   _kinCutoff(0.75*GeV), 
@@ -569,6 +570,12 @@ private:
    multiperipheral ladder.
    */
   double ladderMult_;
+  
+  /**
+   * Variable to store the additive factor of the 
+   multiperipheral ladder multiplicity.
+   */
+  double ladderbFactor_;
   
   /**
    * Variable to store the current total multiplicity 

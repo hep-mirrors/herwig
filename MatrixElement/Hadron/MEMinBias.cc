@@ -75,12 +75,17 @@ bool MEMinBias::generateKinematics(const double *) {
   meMomenta()[2].rescaleEnergy();
   meMomenta()[3].rescaleEnergy();
 
-  jacobian(1.0);
+  //jacobian(1.0);
+  jacobian(sqr(generator()->maximumCMEnergy())/GeV2);
   return true;
 }
 
 double MEMinBias::me2() const {
-  return 1.0;
+  //return 1.0;
+  //return 1.068*0.263*20*100.0; //for xmin = 0.33
+  return 8.14*0.56; //for xmin = 0.11
+  //return 0.171*8.14*0.56; //for xmin = 0.0634
+  //return 0.6967*0.171*8.14*0.56;
 }
 
 CrossSection MEMinBias::dSigHatDR() const {

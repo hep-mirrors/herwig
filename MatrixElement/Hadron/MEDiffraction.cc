@@ -474,6 +474,8 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   int count = 0;
   //proton mass squared
   const Energy2 m2 = sqr(getParticleData(2212)->mass());
+  //delta mass squared
+  const Energy2 md2 = sqr(getParticleData(2214)->mass());
   Energy2 M2;
   bool condition = true;
   do {	
@@ -481,8 +483,28 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
     //check if we want only delta 
     if(deltaOnly)
     {
-    	theM12=m2;
-    	theM22=m2;
+    	switch(diffDirection){
+    		case 0:
+    			theM12 = md2;
+    			theM22 = m2;
+    			M2 = md2;
+    			thet = randomt(md2);
+    			break;
+    		case 1:
+    			theM22 = md2;
+    			theM12 = m2;
+    			M2 = md2; 	
+    			thet = randomt(md2);
+    			break;
+    		case 2:
+    			theM12 = md2;
+    			theM22 = md2;
+    			M2 = md2;
+    			thet = doublediffrandomt(theM12,theM22);
+    			break;	
+    	}
+    	//theM12=m2;
+    	//theM22=m2;
     }else{
     	switch (diffDirection){
     	case 0:
@@ -531,9 +553,9 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   
   //(1-M2/s) added to smear the result for large M2.
   //condition = UseRandom::rnd()>(1-M2/s)*(1+(2*sqr(2*GeV))/(sqr(2*GeV)+M2))*(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2);
-  
   //condition = (UseRandom::rnd()>(1-M2/s)*(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2))
-  //		||((theM12/GeV2)*(theM22/GeV2)>=(sqr(cmEnergy)/GeV2)/(softPomeronSlope()*GeV2));//
+  //		||((theM12/GeV2)*(theM22/GeV2)>=(sqr(cmEnergy)/GeV2)/(softPomeronSlope()*GeV2));
+  
   
   //without (1-M2/s) constraint
   condition = (UseRandom::rnd()>(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2))
