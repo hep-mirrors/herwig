@@ -29,9 +29,11 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 
 
-set /Herwig/Couplings/NLOAlphaS:min_active_flavours 4
+set /Herwig/Couplings/NLOAlphaS:min_active_flavours 3
+set /Herwig/Couplings/NLOAlphaS:max_active_flavours 5
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
 set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
+
 
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
 set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
@@ -138,7 +140,7 @@ cd /
 cd /Herwig/Samplers
 
 set Monaco:EnhancementFactor 1.2
-set Monaco:InitialPoints 10000
+set Monaco:InitialPoints 5000
 set Monaco:LuminosityMapperBins 8
 set Monaco:NIterations 4
 set Monaco:RemapChannelDimension Yes

@@ -46,7 +46,7 @@ set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
-set MPreWeight:HTPower 1
+set MPreWeight:HTPower 2
 set MPreWeight:MaxPTPower 0
 set MPreWeight:OnlyColoured False
 

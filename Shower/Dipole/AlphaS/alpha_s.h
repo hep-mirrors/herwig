@@ -129,8 +129,8 @@ namespace matchbox {
      * flavours changes from <code>i</code> to <code>i+1</code>.
      */
     virtual inline vector<Energy2> flavourThresholds() const {
-      vector<Energy2> res (7);
-      copy(quark_masses_squared_.begin(),quark_masses_squared_.end(),res.begin());
+      vector<Energy2> res (6);
+      copy(quark_masses_squared_.begin()+1,quark_masses_squared_.end(),res.begin());
       return res;
     }
 

@@ -52,7 +52,7 @@ set MPreWeight:OnlyColoured False
 
 read Matchbox/PQCDLevel.in
 
-
+set /Herwig/Samplers/Sampler:BinSampler:Kappa 0.02
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
