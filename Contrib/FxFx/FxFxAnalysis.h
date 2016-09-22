@@ -61,8 +61,8 @@ public:
    * Produca a HepMC event for the given subprocess
    */
   HepMC::GenEvent * makeEventW(tEventPtr event, tSubProPtr sub, long no,
-			      Energy eUnit, Length lUnit,
-			       CrossSection xsec, CrossSection xsecErr, double weighttest) const;
+					  Energy eUnit, Length lUnit, 
+                                           CrossSection xsec, CrossSection xsecErr, double evoptweight, double centralweight) const;
 
   int _i;
 
@@ -189,6 +189,12 @@ private:
    * Enable use of optional weights in analysis
    */  
   bool useoptweights;
+
+   /** 
+   * normalize optional weights to the central weight
+   */  
+
+  bool normoptweights;
   
   /**
    *  The FxFxAnalysisHandler

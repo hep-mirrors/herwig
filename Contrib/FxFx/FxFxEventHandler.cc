@@ -188,10 +188,13 @@ void FxFxEventHandler::doinitrun() {
   for(int ww = 0; ww < weightnames.size(); ww++){
     initxsecs[ww].reset();
 
-    optstats.insert(std::make_pair<string,XSecStat>(weightnames[ww], initxsecs[ww]));			 
-    opthistStats.insert(std::make_pair<string,XSecStat>(weightnames[ww], initxsecs[ww]));
+    //  optstats.insert(std::make_pair<string,XSecStat>(weightnames[ww], initxsecs[ww]));			 
+    // opthistStats.insert(std::make_pair<string,XSecStat>(weightnames[ww], initxsecs[ww]));
     CrossSection initxs = 0.*picobarn;
-    optxs.insert(std::make_pair<string,CrossSection>(weightnames[ww], initxs));
+    //optxs.insert(std::make_pair<string,CrossSection>(weightnames[ww], initxs));
+    optstats.insert(std::make_pair(weightnames[ww], initxsecs[ww]));
+    opthistStats.insert(std::make_pair(weightnames[ww], initxsecs[ww]));
+    optxs.insert(std::make_pair(weightnames[ww], initxs));
   }
   ntries = 0;
 

@@ -42,11 +42,11 @@ FxFxHandler::FxFxHandler()
   : ncy_(100),ncphi_(60),ihvy_(-999),nph_(-999),nh_(-999),
     etclusmean_(20*GeV),rclus_(0.4),etaclmax_(5.0),rclusfactor_(1.5),
     ihrd_(-999),njets_(-999),drjmin_(-999), highestMultiplicity_(false),
-    ycmax_(5.4),ycmin_(-5.4),jetAlgorithm_(1),vetoIsTurnedOff_(false),vetoSoftThanMatched_(false), etclusfixed_(true),epsetclus_(2.5*GeV)
+    ycmax_(5.4),ycmin_(-5.4),jetAlgorithm_(1),vetoIsTurnedOff_(false),vetoSoftThanMatched_(false), etclusfixed_(true),epsetclus_(2.5*GeV), vetoHeavyQ_(true)
   {}
 
 void FxFxHandler::doinitrun() {
-  ShowerHandler::doinitrun();
+  QTildeShowerHandler::doinitrun();
   // et_ holds the ET deposited in the (ncy_ x ncphi_) calorimeter cells.
   et_.resize(ncy_);
   for(unsigned int ixx=0; ixx<et_.size(); ixx++) et_[ixx].resize(ncphi_);
@@ -71,7 +71,7 @@ void FxFxHandler::persistentOutput(PersistentOStream & os) const {
       << ounit(etclusmean_,GeV) << rclus_ << etaclmax_ << rclusfactor_
       << ihrd_ << njets_ << drjmin_ << highestMultiplicity_
       << ycmax_ << ycmin_ << jetAlgorithm_ << vetoIsTurnedOff_ << vetoSoftThanMatched_ << etclusfixed_
-      << cphcal_ << sphcal_ << cthcal_ << sthcal_ << ounit(epsetclus_,GeV);
+      << cphcal_ << sphcal_ << cthcal_ << sthcal_ << ounit(epsetclus_,GeV) << vetoHeavyQ_;
 }
 
 void FxFxHandler::persistentInput(PersistentIStream & is, int) {
@@ -80,7 +80,7 @@ void FxFxHandler::persistentInput(PersistentIStream & is, int) {
       >> iunit(etclusmean_,GeV) >> rclus_ >> etaclmax_ >> rclusfactor_
       >> ihrd_ >> njets_ >> drjmin_ >> highestMultiplicity_
       >> ycmax_ >> ycmin_ >> jetAlgorithm_ >> vetoIsTurnedOff_ >> vetoSoftThanMatched_ >> etclusfixed_
-      >> cphcal_ >> sphcal_ >> cthcal_ >> sthcal_ >> iunit(epsetclus_,GeV);
+      >> cphcal_ >> sphcal_ >> cthcal_ >> sthcal_ >> iunit(epsetclus_,GeV) >> vetoHeavyQ_;
 }
 
 ClassDescription<FxFxHandler> FxFxHandler::initFxFxHandler;
@@ -214,6 +214,21 @@ void FxFxHandler::Init() {
      "The MLM merging veto mechanism is switched OFF.",
      true);
 
+    static Switch<FxFxHandler,bool> interfaceHeavyQVeto
+    ("HeavyQVeto",
+     "Allows the vetoing mechanism on the heavy quark products to be switched off.",
+     &FxFxHandler::vetoHeavyQ_, false, false, false);
+  static SwitchOption HQVetoingIsOn
+    (interfaceHeavyQVeto,
+     "On",
+     "The MLM merging veto on Heavy quark decay produts mechanism is switched ON.",
+     true);
+  static SwitchOption HQVetoingIsOff
+    (interfaceHeavyQVeto,
+     "Off",
+     "The MLM merging veto on Heavy quark decay products mechanism is switched OFF.",
+     false);
+
     static Switch<FxFxHandler,bool> interfaceVetoSoftThanMatched
     ("VetoSoftThanMatched",
      "Allows the vetoing mechanism to be switched off.",
@@ -233,14 +248,14 @@ void FxFxHandler::Init() {
 }
 
 void FxFxHandler::dofinish() {
-  ShowerHandler::dofinish();
+  QTildeShowerHandler::dofinish();
 }
 
 void FxFxHandler::doinit() {
 
   //print error if HardProcID is not set in input file
   if(ihrd_ == -999) { cout << "Error: FxFxHandler:ihrd not set!" << endl; exit(1); }
-  ShowerHandler::doinit();
+  QTildeShowerHandler::doinit();
 
   // Compute calorimeter edges in rapidity for GetJet algorithm.
   ycmax_=etaclmax_+rclus_;
@@ -253,7 +268,11 @@ void FxFxHandler::doinit() {
 // Throws a veto according to MLM strategy ... when we finish writing it.
 bool FxFxHandler::showerHardProcessVeto() {
 
+  int debug_mode = 0;
+
   if(vetoIsTurnedOff_) return false;
+
+  //if(debug_mode) { cout << "debug_mode = " << 5 << endl; } 
 
   // Skip veto for processes in which merging is not implemented:
   if(ihrd_==7||ihrd_==8||ihrd_==13) {
@@ -281,7 +300,6 @@ bool FxFxHandler::showerHardProcessVeto() {
   //  cout << "HANDLER:\t\t\t\t" << npLO_ << "\t\t" << npNLO_ << endl; 
 
   // Turn on some screen output debugging: 0 = none ---> 5 = very verbose.
-  int debug_mode = 0;
   doSanityChecks(debug_mode);
   
   // Dimensions of each calorimter cell in y and phi.
@@ -389,6 +407,12 @@ bool FxFxHandler::showerHardProcessVeto() {
     }
   }
 
+  
+  if(!vetoHeavyQ_) {
+    //cout << "no heavy quark decay product veto!" << endl;
+    return false;
+  }
+  
   //end of FxFx part
   // **************************************************************** //
   // * Now look to the non-light partons for heavy quark processes. * //
