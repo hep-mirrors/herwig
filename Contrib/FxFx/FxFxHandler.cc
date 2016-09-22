@@ -269,7 +269,6 @@ void FxFxHandler::doinit() {
 bool FxFxHandler::showerHardProcessVeto() {
 
   int debug_mode = 0;
-
   if(vetoIsTurnedOff_) return false;
 
   //if(debug_mode) { cout << "debug_mode = " << 5 << endl; } 

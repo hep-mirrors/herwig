@@ -6,6 +6,7 @@
 //
 
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
+#include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/Config/Pointers.h"
 #include "Herwig/Shower/Couplings/ShowerAlpha.h"
 #include "fastjet/PseudoJet.hh"

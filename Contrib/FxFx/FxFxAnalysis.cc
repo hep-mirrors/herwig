@@ -24,6 +24,7 @@
 #include "HepMC/IO_AsciiParticles.h"
 #include "HepMC/IO_GenEvent.h"
 #include "ThePEG/Utilities/XSecStat.h"
+#include <boost/lexical_cast.hpp>
 //#include <config.h>
 
 using namespace ThePEG;
