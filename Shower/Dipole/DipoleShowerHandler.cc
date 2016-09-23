@@ -685,6 +685,9 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
   DipoleSplittingInfo winner;
   DipoleSplittingInfo dipoleWinner;
+  
+  
+  size_t currentMultiplicity=eventHandler()->currentStep()->particles().size();
 
   while ( eventRecord().haveChain() ) {
     if ( verbosity > 2 ) {
@@ -748,9 +751,9 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     }
 
     // otherwise perform the splitting
-    
+
     if (theMergingHelper&&eventHandler()->currentCollision()) {
-      if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+eventRecord().hard().size()+2)
+      if (theMergingHelper->maxLegs()>currentMultiplicity)
         if (theMergingHelper->mergingScale()<winnerScale){
           bool transparent=true;
           if (transparent) {
@@ -797,7 +800,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       winner.isDecayProc( true );
 
     eventRecord().split(winnerDip,winner,children,firstChain,secondChain);
-
+    currentMultiplicity++;
     assert(firstChain && secondChain);
 
     evolutionOrdering()->setEvolutionScale(winnerScale,winner,*firstChain,children);

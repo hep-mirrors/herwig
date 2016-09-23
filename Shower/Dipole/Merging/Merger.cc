@@ -448,6 +448,7 @@ CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
     // The deephead should be calculated here.
   NPtr DeepHead=Node;//->deepHead();
   renormscale(startscale);
+  DeepHead->nodeME()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   theCalculateInNode=false;
@@ -1186,7 +1187,7 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
         Energy pt=0*GeV;
-        if (emittermom.m()==0.001*GeV&&emissionmom.m()==0.001*GeV&&spectatormom.m()==0.001*GeV) {
+        if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=FFLTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=FFMTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1216,7 +1217,7 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
         Energy pt=0*GeV;
-        if (emittermom.m()==0.001*GeV&&emissionmom.m()==0.001*GeV&&spectatormom.m()==0.001*GeV) {
+        if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=FILTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=FIMTK->lastPt(emittermom,emissionmom,spectatormom);

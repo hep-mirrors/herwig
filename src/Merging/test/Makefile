@@ -55,7 +55,8 @@ help:
 	@echo "usage:"
 	@echo "make NAME=LEP JOBS=4 LO=3 NLO=0 POINTS=10000"
 	@echo ""
-	@ls ../|grep NLO|cut -d"." -f1
+	@ls ../
+#|grep NLO|cut -d"." -f1
 
 
 
