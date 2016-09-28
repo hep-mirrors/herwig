@@ -315,7 +315,25 @@ private:
    */
   Energy _heavyHwidth;
 
+  /*					       
+   * top yukawa multiplier, Heavy
+   */
+  double _yH;
 
+   /*					       
+   * top yukawa multiplier, light
+   */
+  double _yh;
+
+   /*					       
+   * bottom yukawa multiplier, Heavy
+   */
+  double _ybH;
+
+   /*					       
+   * bottom yukawa multiplier, light
+   */
+  double _ybh;
 
 private:
 
