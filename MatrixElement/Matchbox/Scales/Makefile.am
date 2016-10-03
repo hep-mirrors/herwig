@@ -13,9 +13,7 @@ MatchboxHtScale.cc \
 MatchboxLeptonMassScale.cc \
 MatchboxLeptonPtScale.cc \
 MatchboxParticlePtScale.cc \
-MatchboxPtScale.cc\
-MatchboxScale.h \
-MatchboxScale.cc \
+MatchboxPtScale.cc \
 MatchboxSHatScale.h \
 MatchboxSHatScale.cc \
 MatchboxTopMassScale.h \

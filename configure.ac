@@ -172,7 +172,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Cuts/Makefile
                 MatrixElement/Matchbox/Scales/Makefile
-                MatrixElement/Matchbox/Scales/MatchboxScale.cc
                 MatrixElement/Matchbox/ColorFull/Makefile
                 MatrixElement/Matchbox/CVolver/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
