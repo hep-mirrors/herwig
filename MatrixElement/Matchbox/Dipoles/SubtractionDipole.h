@@ -785,6 +785,14 @@ public:
   CrossSection ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
 
   /**
+   *  Calculate the dipole with clusterfsafe flag.
+   **/
+
+  CrossSection dip(Energy2 factorizationScale) const;
+
+  
+
+  /**
    *  Calculate the dipole dSigDR and the parton shower approximation for this dipole.
    **/
 

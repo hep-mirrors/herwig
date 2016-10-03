@@ -96,6 +96,7 @@ namespace Herwig {
     
     pair<CrossSection,CrossSection> calcDipandPS(Energy scale);
     CrossSection calcPs(Energy scale);
+    CrossSection calcDip(Energy scale);
     
     /** recursive flush caches and clean up XCombs. */
     

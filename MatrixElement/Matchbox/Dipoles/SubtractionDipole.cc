@@ -884,6 +884,29 @@ pair<CrossSection,CrossSection> SubtractionDipole::dipandPs(Energy2 factorizatio
   return make_pair(factor*dip,factor*ps);
 }
 
+CrossSection SubtractionDipole::dip(Energy2 factorizationScale) const {
+  double jac = jacobian();
+  assert( factorizationScale != ZERO );
+  assert (! splitting());
+  if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
+    return ZERO;
+  }
+
+  double pdfweight = 1.;
+  if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
+  if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
+
+  double dip = me2();
+
+  CrossSection  factor= sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat());
+
+
+  return -1.*factor*dip;
+}
+
+
 
 
 

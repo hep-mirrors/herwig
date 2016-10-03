@@ -309,6 +309,7 @@ CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
 
 CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
   NPtr Born= Node-> getHistory(true,xiQSh);
+  if(Node->children().empty())return ZERO;
   NPtr CLNode= Node->randomChild();
   bool inhist=CLNode->isInHistoryOf(Born);
   Born=CLNode-> getHistory(false,xiQSh);
@@ -346,7 +347,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   Energy minScale=generator()->maximumCMEnergy();
   for (NPtrVec::iterator child = children.begin();
        child != children.end(); child++){
-    if ((*child)->dipol()->lastPt()<minScale) {
+    if ((*child)->dipol()->lastPt()<mergePt()) {
       minScale=(*child)->dipol()->lastPt();
       HistNodeSel.insert(1.,*child);
     }
@@ -377,8 +378,13 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   CrossSection sumPS=ZERO;
   for (NPtrVec::iterator child = children.begin();
        child != children.end(); child++){
-    if ((*child)->allAbove(mergePt()))
-      sumPS-=(*child)->calcPs(startscale*xiFacME);
+    if ((*child)->allAbove(mergePt())){
+	// introduce some extra cutoff for difference between shower and dipoles
+	if((*child)->dipol()->lastPt()>mergePt()/3.)
+          sumPS-=(*child)->calcPs(startscale*xiFacME);
+	else
+	  sumPS-=(*child)->calcDip(startscale*xiFacME);
+    }
   }
   CrossSection me=TreedSigDR(startscale,Node);
   //cout<<"\nSubReal "<<Node->miniPt()/GeV<<" "<<me<<" "<<sumPS<<" "<<me/sumPS;
@@ -390,7 +396,9 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
 
 
 CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
+if(Node->children().empty())return ZERO;
   NPtr CLNode= Node->randomChild();
+  if(CLNode->dipol()->lastPt()<mergePt()/3.)return ZERO;
   NPtr Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
@@ -414,7 +422,8 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   
   pair<CrossSection,CrossSection> DipAndPs=
                CLNode->calcDipandPS(startscale*xiFacME);
-  
+  if(CLNode->dipol()->lastPt()/GeV<5.)
+  cout<<"\n"<<DipAndPs.second/nanobarn<<" "<<DipAndPs.first/nanobarn<<" "<<DipAndPs.second/DipAndPs.first<<" "<<CLNode->dipol()->lastPt()/GeV; 
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
          (double)Node->children().size()*(DipAndPs.second-DipAndPs.first);
 }
@@ -487,6 +496,10 @@ double Merger::pdfReweight(){
     if(history[0].node->xcomb()->mePartonData()[side]->coloured()){
       History::iterator it=history.begin();
       for (;it+1!=history.end();it++){
+        if(!(*it).node->dipol()){
+	   cout<<"\nthis should not happen";
+	   return 0.;
+	}
         res *= pdfratio((*it).node, facfactor*(*it).scale,xiFacSh*((*it).node->dipol()->lastPt()), side);
 	facfactor=xiFacSh;
       }

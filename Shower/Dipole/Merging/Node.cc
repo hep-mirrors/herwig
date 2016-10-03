@@ -394,6 +394,9 @@ CrossSection Node::calcPs(Energy scale){
   return dipol()->ps(sqr(scale),deepHead()->MH()->largeNBasis());
 }
 
+CrossSection Node::calcDip(Energy scale){
+  return dipol()->dip(sqr(scale));
+}
 
 
 

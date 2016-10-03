@@ -13,7 +13,7 @@ insert /Herwig/Merging/MFactory:Amplitudes 0 GenericProcesses
 
 create ColorFull::TraceBasis  /Herwig/Merging/LargeNColourBasis2
 set /Herwig/Merging/LargeNColourBasis2:LargeN On
-set /Herwig/Merging/Merger:LargeNBasis LargeNColourBasis2
+set /Herwig/Merging/Merger:LargeNBasis /Herwig/Merging/LargeNColourBasis2
 
 cd /Herwig/Particles
 
