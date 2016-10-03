@@ -80,7 +80,7 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto() const { return false; }
+  virtual bool showerHardProcessVeto() { return false; }
 
   /**
    * Return true, if this cascade handler will perform reshuffling from hard
