@@ -101,3 +101,4 @@ test\.(log|trs)$
 test-suite\.log$
 ^Config/test-driver$
 param_card\.dat$
+__all.cc$
