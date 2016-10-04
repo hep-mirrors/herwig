@@ -32,7 +32,7 @@ public:
    * Default constructor.
    */
   MergingReweight()
-    : HTPower(0),MaxPTPower(0), scale(50.0*GeV),onlyColoured(true) {}
+    : HTPower(0),MaxPTPower(0),MaxMjjPower(0), scale(50.0*GeV),onlyColoured(true) {}
   //@}
 
 public:
@@ -88,7 +88,7 @@ private:
   /**
    * The weight is the minimum pt/scale to a \a power.
    */
-  double HTPower,MaxPTPower;
+  double HTPower,MaxPTPower,MaxMjjPower;
 
   /**
    * The weight is the minimum pt/\a scale to a power.

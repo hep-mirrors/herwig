@@ -565,31 +565,45 @@ double DipoleSplittingGenerator::dounlops(const DipoleSplittingInfo& ,Energy dow
 double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy down){
   
     
-    double optKappaCutoff = splittingKinematics()->ptToRandom(down,
-						       generatedSplitting.scale(),
-						       generatedSplitting.emitterX(),
-						       generatedSplitting.spectatorX(),
-						       generatedSplitting.index(),
-						       *splittingKernel());
+
+  double optKappaCutoffd = splittingKinematics()->ptToRandom(down,
+                                                            generatedSplitting.scale(),
+                                                            generatedSplitting.emitterX(),
+                                                            generatedSplitting.spectatorX(),
+                                                            generatedSplitting.index(),
+                                                            *splittingKernel());
+  
+  
+  double optKappaCutoffu = splittingKinematics()->ptToRandom(generatedSplitting.hardPt(),
+                                                            generatedSplitting.scale(),
+                                                            generatedSplitting.emitterX(),
+                                                            generatedSplitting.spectatorX(),
+                                                            generatedSplitting.index(),
+                                                            *splittingKernel());
+  
     vector<double> RN;
-    RN.resize(parameters.size());
+    RN.resize(3);
+  
     double res=0.;
     double resq=0.;
     double var=10.;
     double varx=10.;
     int k=0;
-
-    while (((k<100.||var>0.1)&&k<50000)){
-     k+=1.;
-     RN[0]= optKappaCutoff+(1-optKappaCutoff)*UseRandom::rnd();
-     for (size_t rn=1;rn< parameters.size();rn++)RN[rn]=UseRandom::rnd();
-     double tmp=(1-optKappaCutoff)*evaluate(RN);
-     res+= tmp;
-     resq+=pow(tmp,2.);
-     varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
-	 if(k%50==0.)var=  exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx);
-     
-    }
+  while (((k<40.||var>0.03)&&k<50000)){
+    k+=1.;
+    RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
+    RN[1]=UseRandom::rnd(); //Z
+    RN[2]=1.;//UseRandom::rnd(); //PHI
+    double tmp=(optKappaCutoffu-optKappaCutoffd)*evaluate(RN);
+    
+    res+= tmp;
+    resq+=pow(tmp,2.);
+    varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
+    if(k%20==0.)var=  exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx);
+    
+  }
+  
+  
   
     return exp(-res/(1.0*k));
     

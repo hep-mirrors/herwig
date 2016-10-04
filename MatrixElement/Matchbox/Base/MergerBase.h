@@ -60,7 +60,7 @@ public:
   
   virtual size_t maxLegs() const=0;
   virtual Energy mergingScale() const=0;
-  virtual bool matrixElementRegion(PVector particles,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV)=0;
+  virtual bool matrixElementRegion(PVector incoming,PVector outcoming,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV)=0;
   
   virtual CrossSection MergingDSigDR() =0;
 

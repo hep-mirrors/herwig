@@ -9,15 +9,12 @@
 #ifndef HERWIG_MFactory_H
 #define HERWIG_MFactory_H
   //
-  // This is the declaration of the MergeboxFactory class.
+  // This is the declaration of the MFactory class.
   //
 
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Node.fh"
 #include "Merger.h"
-
-  //#include "ThePEG/MatrixElement/ReweightConstant.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 namespace Herwig {
@@ -29,7 +26,7 @@ namespace Herwig {
    * \author Johannes Bellm
    *
    * \brief MFactory automatically sets up a NLO
-   * QCD calculation carried out in dipole subtraction.
+   * QCD merging carried out in dipole subtraction.
    *
    * @see \ref MFactoryInterfaces "The interfaces"
    * defined for MergeboxFactory.
@@ -42,69 +39,52 @@ namespace Herwig {
     /**
      * The default constructor.
      */
-    MFactory();
+    MFactory();  //TODO MergingFactory
     
     /**
      * The destructor.
      */
     virtual ~MFactory();
       //@}
-    
+      // main method to setup the ME vector
     virtual void setup();
-    
-    /**fill all amplitudes, stored in pureMEsMap
-     */
+      //fill all amplitudes, stored in pureMEsMap
     void fill_amplitudes();
-    
-    /** prepare the Born and virtual matrix elements.
-     */
+      /// prepare the Born and virtual matrix elements.
     void prepare_BV(int i);
-    
+      //prepare the real emission matrix elements.
     void prepare_R(int i);
-    
+      // push the born contributions to the ME vector.
     void pushB(Ptr<MatchboxMEBase>::ptr,int);
-    
+      //push the virtual contributions to the ME vector.
     void pushV(Ptr<MatchboxMEBase>::ptr,int);
-    
+      // push the real contributions to the ME vector.
     void pushProR(Ptr<MatchboxMEBase>::ptr,int);
-    
+      //order matrix elements form one loop provider.
     void orderOLPs();
-    
-    int onlymulti()const {return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());}
-    
+      // Debugging: push only multiplicities to the ME vector
+      // in range of specified mulltiplicity.
+     int onlymulti()const {
+       return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());}
+      // calculate only unlops weights.
     bool onlyUnlopsweights() const {return theonlyUnlopsweights;}
-    
+      // pointer to the merging helper.
     Ptr<Merger>::ptr MH(){return theMergingHelper;}
-    
+      // maximal NLO mulitplicity: 0=NLO corrections to the productio process.
     int M()const {return theM-1;}
-    
-    int N()const {return theN;}
-    
-    
-    /**
-     * Return the Map of matrix elements to be considered
-     * (the Key is the number of additional jets)
-     */
+      // leg size of highest multiplicity.
+     int N()const {return theN;}
+     // Return the Map of matrix elements to be considered
+     // (the Key is the number of additional jets)
     const map<int, vector<Ptr<MatchboxMEBase>::ptr> >& pureMEsMap() const {
-      return thePureMEsMap;
-    }
-    
-    /**
-     * Access the Map of matrix elements to be considered
-     * (the Key is the number of additional jets)
-     */
+      return thePureMEsMap;}
+      // Access the Map of matrix elements to be considered
+      // (the Key is the number of additional jets)
     map<int, vector<Ptr<MatchboxMEBase>::ptr> >& pureMEsMap() {
       return thePureMEsMap;
     }
-    
-    
-    /**
-     * Parse a process description
-     */
+      //Parse a process description
     virtual vector<string> parseProcess(string);
-    
-
-
     
   public:
     
@@ -124,13 +104,9 @@ namespace Herwig {
     void persistentInput(PersistentIStream & is, int);
       //@}
     
-    
     static void Init();
     
-    
   protected:
-    
-    
     
     /** @name Clone Methods. */
       //@{
@@ -147,76 +123,53 @@ namespace Herwig {
     virtual IBPtr fullclone() const;
       //@}
     
-    
-    
   private:
     
+    // Calculate only virtual and real contributions.
     bool theonlyNLOParts;
+    // Calculate only virtual contributions.
     bool theonlyvirtualNLOParts;
+      // Calculate only real contributions.
     bool theonlyrealNLOParts;
+      // Calculate only expanded histories contributions.
     bool theonlyUnlopsweights;
+      // unitarize virtual and real contributions.
     bool theunitarizeNLOParts;
+      // Calculate born contributions.
     bool calc_born;
+      // Calculate virtual contributions.
     bool calc_virtual;
+      // Calculate real contributions.
     bool calc_real;
+      // unitarise the LO contributions.
     bool unitarized;
+      // unitarise the NLO contributions.
     bool NLOunitarized;
+      // did run setup.
     bool ransetup;
-    int theonlyk;
+      // Debugging: push only multiplicities to the ME vector
+      // in range of specified mulltiplicity.
     int theonlymulti;
-    int theonlyabove;
+      // calculate only the specified subprocess with no.
     int theonlysub;
+      // cut the subprocesses in equal size pieces.
     int divideSub;
+      // interface to calculate every # subprocess.
     int divideSubNumber;
+      // maximal legsize for NLO corrections.
     int theM;
+      // maximal legsize for LO contributions.
     int theN;
-    
-    /**
-     * Prefix for subtraction data
-     */
+      // Prefix for subtraction data.
     string theSubtractionData;
-    
-    
+      // map for processes.
     map< int, vector<string> > processMap;
-    
-    map< int, bool > thevirtualsAreExpandedMap;
-    
-    
-    /**
-     * The matrix elements: int = number of additional jets
-     */
-    
+      //The matrix elements: int = number of additional jets
     map< int, vector<Ptr<MatchboxMEBase>::ptr> > thePureMEsMap;
-    
-    /**
-     * The Born matrix elements to be considered
-     */
-    vector<Ptr<MatchboxMEBase>::ptr> theBornMEs;
-    
-    /**
-     * The virtual corrections to be considered
-     */
+      // map for virtual contributions
     map<int, vector<Ptr<MatchboxInsertionOperator>::ptr> > theVirtualsMap;
-    
-    /**
-     * The produced NLO matrix elements
-     */
-    vector<Ptr<MatchboxMEBase>::ptr> theBornVirtualMEs;
-    
-    /**
-     * The real emission matrix elements to be considered
-     */
-    
-    vector<Ptr<MatchboxMEBase>::ptr> theRealEmissionMEs;
-    
-    /**
-     * A large-N colour basis to be used when reproducing the shower
-     * kernels.
-     */
-    
+      // the merging helper
     Ptr<Merger>::ptr theMergingHelper;
-    
-    
     
     /**
      * The assignment operator is private and must never be called.

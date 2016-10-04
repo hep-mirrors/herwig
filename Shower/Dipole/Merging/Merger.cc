@@ -43,7 +43,6 @@ using namespace Herwig;
 Merger::Merger()
 : MergerBase() {
   
-  minusL=false;
   Unlopsweights=true;
   theCMWScheme=true;
   theSmearing=0.;
@@ -56,7 +55,6 @@ Merger::Merger()
   FFMTK=new_ptr(FFMassiveTildeKinematics());
   FIMTK=new_ptr(FIMassiveTildeKinematics());
   IFMTK=new_ptr(IFMassiveTildeKinematics());
-  
   isUnitarized=true;
   isNLOUnitarized=true;
   defMERegionByJetAlg=false;
@@ -87,13 +85,17 @@ IBPtr Merger::fullclone() const {
   return new_ptr(*this);
 }
 
-
-
-
-
-
-
-
+pair<PVector,PVector> getInOut(NPtr Node){
+  PVector incoming;
+  for(auto const & i : {0,1})
+    incoming.push_back(Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]));
+    PVector outgoing;
+  for (size_t i=2;i<Node->nodeME()->mePartonData().size();i++){
+    Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
+    outgoing.push_back(p);
+  }
+  return make_pair(incoming,outgoing);
+}
 
 
 CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
@@ -104,12 +106,9 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
 
  
   if (!Node->children().empty()) {
-    PVector particles;
-    for (size_t i=0;i<Node->nodeME()->mePartonData().size();i++){
-      Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
-      particles.push_back(p);
-    }
-    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))weight*= 0.;
+    auto const inoutpair=getInOut(Node);
+    NPtr rndCh= Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))weight*= 0.;
   }
   
   NPtr Born= Node-> getHistory(true,xiQSh);
@@ -148,38 +147,34 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
     return ZERO;
     
   }
-
+  
   CrossSection res=ZERO;
   bool maxMulti=Node->legsize() == int(maxLegsLO());
-
-
+  
+  
   if(weight!=0.){
-  Energy startscale=CKKW_StartScale(Born);
-  Energy projectedscale=startscale;
-  fillHistory( startscale,  Born, Node);
-  if (!fillProjector(projectedscale))weight=0.;
-  Node->runningPt(projectedscale);
-  weight*=history.back().weight*alphaReweight()*pdfReweight();
-  if(weight==0.&&weightCL==0.)return ZERO;
- 
-  res+=weight*TreedSigDR(startscale,Node,(!maxMulti&&!projected)?theGamma:1.);
+    Energy startscale=CKKW_StartScale(Born);
+    fillHistory( startscale,  Born, Node);
+    Node->runningPt(fillProjector());
+    weight*=history.back().weight*alphaReweight()*pdfReweight();
+    if(weight==0.&&weightCL==0.)return ZERO;
+    
+    res+=weight*TreedSigDR(startscale,Node,(!maxMulti&&!projected)?theGamma:1.);
   }
   
   if(CLNode&&theGamma!=1.){
     Energy startscale=CKKW_StartScale(BornCL);
-    Energy projectedscale=startscale;
     fillHistory( startscale,  BornCL, CLNode);
-    if (!fillProjector(projectedscale))return ZERO;
-    Node->runningPt(projectedscale);
+    Node->runningPt(fillProjector());
     weightCL*=history.back().weight*alphaReweight()*pdfReweight();
     CrossSection diff=ZERO;
     Node->nodeME()->factory()->setAlphaParameter(1.);
-    diff-=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME));
+    diff-=weightCL*CLNode->dipole()->dSigHatDR(sqr(startscale*xiFacME));
     Node->nodeME()->factory()->setAlphaParameter(theGamma);
     
-    string alp=(CLNode->dipol()->aboveAlpha()?"Above":"Below");
+    string alp=(CLNode->dipole()->aboveAlpha()?"Above":"Below");
     
-    diff+=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME));
+    diff+=weightCL*CLNode->dipole()->dSigHatDR(sqr(startscale*xiFacME));
     Node->nodeME()->factory()->setAlphaParameter(1.);
     
     res+=diff;
@@ -194,67 +189,60 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
 
 
 CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
-  
-
-  
+    // Check if phase space poing is in ME region
   if (!Node->children().empty()) {
-    PVector particles;
-    for (size_t i=0;i<Node->nodeME()->mePartonData().size();i++){
-      Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
-      particles.push_back(p);
-    }
-    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))return ZERO;
+    auto const & inoutpair=getInOut(Node);
+    NPtr rndCh= Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
   }
   
+    // get the history for the process
   NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
-    
+      // at least one history step -> unitarisation
     if (UseRandom::rnd()<.5){
       weight=-2.;projected=true;Node->nodeME()->projectorStage(1);
     }else{
       weight=2.;projected=false;Node->nodeME()->projectorStage(0);
     }
   }else{
+      // no ordered history -> no projection
     weight=1.;projected=false;Node->nodeME()->projectorStage(0);
   }
   
   if (treefactory()->onlymulti()!=-1&&
-      treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
+      treefactory()->onlymulti()!=int(Node->legsize()-(projected?1:0)))
     return ZERO;
   
   assert(Node->allAbove(mergePt()-0.1*GeV));
   
-
-  
-  if (!Born->xcomb()->willPassCuts()){
-    return ZERO;
-  }
-  
-  
+  if (!Born->xcomb()->willPassCuts())return ZERO;
+    // calculate the staring scale
   Energy startscale=CKKW_StartScale(Born);
-  Energy projectedscale=startscale;
+    // fill history with caluclation of sudakov supression
   fillHistory( startscale,  Born, Node);
-  if (!fillProjector(projectedscale))return ZERO;
-  Node->runningPt(projectedscale);
-  double w1=history.back().weight;
-  double w2=alphaReweight();
-  double w3=pdfReweight();
-  
-  if(std::isnan(w1)){cout<<"\nhistory weight is nan";w1=0.;};
-  if(std::isnan(w2)){cout<<"\nalphaReweight weight is nan";w1=0.;};
-  if(std::isnan(w3)){cout<<"\npdfReweight weight is nan";w1=0.;};
-  weight*=w1*w2*w3;
+    // fill the projector, the argument gets set to current scale
+  Node->runningPt(fillProjector());
+  assert(Node->runningPt()!=ZERO);
+    // the weight has three components to get shower history weight
+  weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
-  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
-  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
-  CrossSection w4=TreedSigDR(startscale,Node,1.);
-  if(std::isnan(double(w4/nanobarn))){cout<<"\nTreedSigDR is nan";w1=0.;};
-  return weight*w4;
+    //calculate the cross section
+  return weight*TreedSigDR(startscale,Node,1.);
 }
 
- 
+
 
 CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
+  
+    // Check if phase space poing is in ME region
+  if (!Node->children().empty()) {
+    auto inoutpair=getInOut(Node);
+    NPtr rndCh= Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
+  }
+
+  
   NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
     if (UseRandom::rnd()<.5){
@@ -267,17 +255,10 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   }
   if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
-  Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node);
-  //if (history.size()==1&&Node->children().size()!=0) {
-  //  cout<<"\n1-->"<<startscale/GeV<<" "<<weight;
-  //}
-  if (!fillProjector(projectedscale))return ZERO;
-  Node->runningPt(projectedscale);
+  Node->runningPt(fillProjector());
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
-  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsNLO();
-  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   CrossSection matrixElement=LoopdSigDR(startscale,Node);
   
@@ -300,7 +281,8 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
 
 CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
   bool allAbove=Node->allAbove(mergePt());
-  if(!Node->allAbove(theIRSafePT))return ZERO;
+    //TODO: VW Abgas Skandal
+  if(!Node->allAbove((Debug::level > 2?0.01:1.)*theIRSafePT))return ZERO;
   if (allAbove)return MergingDSigDRRealAllAbove(Node);
   if (UseRandom::rnd()<.5)
     return 2.*MergingDSigDRRealBelowSubReal( Node );
@@ -308,10 +290,25 @@ CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
 }
 
 CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
-  NPtr Born= Node-> getHistory(true,xiQSh);
-  if(Node->children().empty())return ZERO;
+  
+  assert(!Node->children().empty());
+    //If all dipoles pts are above, we cluster to this dipole.
   NPtr CLNode= Node->randomChild();
+    // Check if phase space poing is in ME region--> else rm PSP
+  if (!CLNode->children().empty()) {
+    auto inoutpair=getInOut(CLNode);
+    NPtr rndCh= CLNode->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
+  }
+
+    // first find the history for the acctual Node
+  NPtr Born= Node-> getHistory(true,xiQSh);
+    // check if the randomly choosen CLNode is part of the history.
+    // If CLNode is not part of the history, dont calculate the Real contribution
+    // else multiply the real contribution with N (number of children).
+    // this returns the sudakov suppression according to the clustering of the born parts.
   bool inhist=CLNode->isInHistoryOf(Born);
+    // get the history for the clustered Node.
   Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
@@ -319,40 +316,40 @@ CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
     else{
       weight= 2.; projected=false; Node->nodeME()->projectorStage(1);}
   }else{
-      weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
+    weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
   }
   if (!CLNode->allAbove(mergePt()))return ZERO;
   if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
-  Energy projectedscale=startscale;
   fillHistory( startscale,  Born, CLNode);
-  if (!fillProjector(projectedscale))return ZERO;
-  Node->runningPt(projectedscale);
+  Node->runningPt(fillProjector());
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
-  bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
-  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
+  
+  CrossSection me=(inhist?TreedSigDR(startscale,Node):ZERO);
+  CrossSection dip=CLNode->calcDip(startscale*xiFacME);
+  
   
   CrossSection res= weight*as(startscale*xiRenSh)/SM().alphaS()*
-         (double)Node->children().size()*
-         ((inhist?TreedSigDR(startscale,Node):ZERO)
-          +CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME)));
-    // cout<<"\nCLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn "<<CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
+  (double)Node->children().size()*(me -dip);
+  if (Node->legsize()==6&&Debug::level > 2) {
+  Energy minPT=1000*GeV;
+  for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
+  
+  cout<<"\nRAA "<<minPT/GeV<<" "<<weight<<" "<<(me-dip)/nanobarn<< " "<<me/nanobarn<<" "<<dip/nanobarn;
+  }
+    // cout<<"\nCLNode->dipole()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn "<<CLNode->dipole()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
   return res;
 }
 
 CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
-  NPtrVec children=Node->children();
-  Selector<NPtr> HistNodeSel;
-  Energy minScale=generator()->maximumCMEnergy();
-  for (NPtrVec::iterator child = children.begin();
-       child != children.end(); child++){
-    if ((*child)->dipol()->lastPt()<mergePt()) {
-      minScale=(*child)->dipol()->lastPt();
-      HistNodeSel.insert(1.,*child);
-    }
+  NPtr HistNode=Node->randomChild();
+  if (!HistNode->children().empty()) {
+    auto inoutpair=getInOut(HistNode);
+    NPtr rndCh= HistNode->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
   }
-  NPtr HistNode=HistNodeSel.select(UseRandom::rnd());
+  
   NPtr Born=HistNode-> getHistory(false,xiQSh);
   
   if( Born!= HistNode){
@@ -366,29 +363,34 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   if (!Born->xcomb()->willPassCuts())return ZERO;
   
   Energy startscale=CKKW_StartScale(Born);
-  Energy projectedscale=startscale;
   fillHistory( startscale,  Born, HistNode);
-  if (!fillProjector(projectedscale))return ZERO;
-  Node->runningPt(projectedscale);
+  Node->runningPt(fillProjector());
   weight*=history.back().weight*alphaReweight()*pdfReweight();
+    //cout<<"\n"<<history.back().weight<<" "<<alphaReweight()<<" "<<pdfReweight();
   if(weight==0.)return ZERO;
-  bool maxMulti=HistNode->xcomb()->meMomenta().size() == maxLegsNLO();
-  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   CrossSection sumPS=ZERO;
-  for (NPtrVec::iterator child = children.begin();
-       child != children.end(); child++){
-    if ((*child)->allAbove(mergePt())){
-	// introduce some extra cutoff for difference between shower and dipoles
-	if((*child)->dipol()->lastPt()>mergePt()/3.)
-          sumPS-=(*child)->calcPs(startscale*xiFacME);
-	else
-	  sumPS-=(*child)->calcDip(startscale*xiFacME);
+
+  for(auto const & child : Node->children()){
+    if (child->allAbove(mergePt())){
+      if((child)->pT()>mergePt()/3.)//TODO: this is a dynamical cutoff(see below)
+        sumPS+=child->calcPs(startscale*xiFacME);
+      else
+        sumPS+=child->calcDip(startscale*xiFacME);
+    }else{
+      assert(child->pT()>mergePt());
     }
   }
-  CrossSection me=TreedSigDR(startscale,Node);
-  //cout<<"\nSubReal "<<Node->miniPt()/GeV<<" "<<me<<" "<<sumPS<<" "<<me/sumPS;
   
+  CrossSection me=TreedSigDR(startscale,Node);
+  
+  if (Node->legsize()==6&&Debug::level > 2) {
+    Energy minPT=1000*GeV;
+    for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
+  
+  cout<<"\nRBSR "<<minPT/GeV<< " " <<weight<<" "<<(me-sumPS)/nanobarn<<" "<<me/nanobarn<<" "<<sumPS/nanobarn;
+  }
+    //Here we subtract the PS (and below the dynamical cutoff the Dip)
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
   (me-sumPS);
 }
@@ -396,36 +398,50 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
 
 
 CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
-if(Node->children().empty())return ZERO;
+  if(Node->children().empty())return ZERO;
   NPtr CLNode= Node->randomChild();
-  if(CLNode->dipol()->lastPt()<mergePt()/3.)return ZERO;
+  if(CLNode->pT()<mergePt()/3.)return ZERO;//TODO: this is a dynamical cutoff(see above)
+
+  if (!CLNode->children().empty()) {
+    auto inoutpair=getInOut(CLNode);
+    NPtr rndCh= CLNode->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
+  }
+  
+  
   NPtr Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
       weight=-2.; projected=true;  Node->nodeME()->projectorStage(2);}
     else{
-        weight= 2.; projected=false; Node->nodeME()->projectorStage(1);}
+      weight= 2.; projected=false; Node->nodeME()->projectorStage(1);}
   }else{
     weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
   }
   if (!CLNode->allAbove(mergePt()))return ZERO;
   if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
-  Energy projectedscale=startscale;
   fillHistory( startscale,  Born, CLNode);
-  if (!fillProjector(projectedscale))return ZERO;
-  Node->runningPt(projectedscale);
+  Node->runningPt(fillProjector());
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
-  bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
-  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
+  
+  
+
   
   pair<CrossSection,CrossSection> DipAndPs=
-               CLNode->calcDipandPS(startscale*xiFacME);
-  if(CLNode->dipol()->lastPt()/GeV<5.)
-  cout<<"\n"<<DipAndPs.second/nanobarn<<" "<<DipAndPs.first/nanobarn<<" "<<DipAndPs.second/DipAndPs.first<<" "<<CLNode->dipol()->lastPt()/GeV; 
+  CLNode->calcDipandPS(startscale*xiFacME);
+  
+  if (Node->legsize()==6&&Debug::level > 2) {
+    Energy minPT=1000*GeV;
+    for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
+  
+
+    cout<<"\nRBSI "<<CLNode->pT()/GeV<<" "<<weight<<" "<<(DipAndPs.second-DipAndPs.first)/nanobarn<<" "<<DipAndPs.second/nanobarn<<" "<<DipAndPs.first/nanobarn;
+  }
+    //Here we add the PS and subtrac the Dip (only above the dynamical cutoff)
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
-         (double)Node->children().size()*(DipAndPs.second-DipAndPs.first);
+  (double)Node->children().size()*(DipAndPs.second-DipAndPs.first);
 }
 
 
@@ -450,6 +466,7 @@ CrossSection Merger::TreedSigDR(Energy startscale,NPtr Node,double diffAlpha){
   }
   renormscale(0.0*GeV);
   theCalculateInNode=true;
+  if(std::isnan(double(res/nanobarn))){cout<<"\nTreedSigDR is nan";res=ZERO;};
   return res;
 }
 
@@ -469,43 +486,43 @@ CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
   return res;
 }
 
-bool Merger::fillProjector(Energy& prerunning){
-  // in the shower handler the scale is multiplied by xiQSh
-  // so here we need to devide this
-  
+Energy Merger::fillProjector(){
+    // in the shower handler the scale is multiplied by xiQSh
+    // so here we need to devide this
   double xiQShfactor=history.begin()->node->legsize()==N0()?xiQSh:1.;
   if(history.begin()->node->deepHead()->nodeME()->projectorStage() == 0){
-    prerunning=(history.size()==1?1.:(1./xiQShfactor))*history.back().scale;
-    return true;
+    return (history.size()==1?1.:(1./xiQShfactor))*history.back().scale;
   }
-  for (History::iterator it=history.begin();it!=history.end();it++){
-    if (projectorStage((*it).node)&&history.begin()->node->deepHead()->nodeME()->projectorStage() != 0){
-      history.begin()->node->deepHead()->xcomb()->lastProjector((*it).node->xcomb());
-      prerunning=(it==history.begin()?1.:(1./xiQShfactor))*(*it).scale;
-      return true;
+  for(auto const & hs : history)
+    if (projectorStage(hs.node)&&history.begin()->node->deepHead()->nodeME()->projectorStage() != 0){
+      history.begin()->node->deepHead()->xcomb()->lastProjector(hs.node->xcomb());
+      return (hs.node==history[0].node?1.:(1./xiQShfactor))*hs.scale;
     }
-  }
-  return false;
+  
+  assert(false);
+  return ZERO;
 }
 
 double Merger::pdfReweight(){
-  
   double res=1.;
   double facfactor=(history[0].node->legsize()==N0()?xiFacME:xiFacSh);
-  for(int side=0;side!=2;side++){
+  for(int side : {0,1}){
     if(history[0].node->xcomb()->mePartonData()[side]->coloured()){
-      History::iterator it=history.begin();
-      for (;it+1!=history.end();it++){
-        if(!(*it).node->dipol()){
-	   cout<<"\nthis should not happen";
-	   return 0.;
-	}
-        res *= pdfratio((*it).node, facfactor*(*it).scale,xiFacSh*((*it).node->dipol()->lastPt()), side);
-	facfactor=xiFacSh;
+      for (auto const & hs : history){
+          //pdf-ratio only to the last step
+        if(!hs.node->parent())continue;
+        if (hs.node==history.back().node)continue;
+        if(!hs.node->dipole()){
+          cout<<"\nthis should not happen";
+          return 0.;
+        }
+        res *= pdfratio(hs.node, facfactor*hs.scale,xiFacSh*(hs.node->pT()), side);
+        facfactor=xiFacSh;
       }
       res*=pdfratio(history.back().node,facfactor*history.back().scale ,history[0].scale*xiFacME, side);
     }
   }
+  if (std::isnan(res))cout<<"\nWarning:pdfReweight is nan.";
   return res;
 }
 
@@ -514,22 +531,23 @@ double Merger::alphaReweight(){
   Energy Q_R=(history[0].node->legsize()==N0()?xiRenME:xiRenSh)*history[0].scale;
   res *= pow(as(Q_R) / SM().alphaS(), history[0].node->nodeME()->orderInAlphaS());
   res *= pow(SM().alphaEMME(history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED())/ SM().alphaEMMZ(), history[0].node->nodeME()->orderInAlphaEW());
-
-
-
-  if (!(history[0].node->children().empty())){ 
+  
+  
+  
+  if (!(history[0].node->children().empty())){
     res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(Q_R))*as(Q_R))/2./Constants::pi):1.),int(history[0].node->legsize()-N0()));
   }
 
-
- 
-  for (History::iterator it=history.begin();(it+1)!=history.end();it++){
-    if ((*it).node->parent()){
-      Energy q_i=xiRenSh* (*it).node->dipol()->lastPt();
+  
+  for (auto const & hs : history)
+    if (hs.node!=history.back().node){
+      Energy q_i=xiRenSh* hs.node->pT();
       res *= as(q_i)/ SM().alphaS()
       *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(q_i))*as(q_i))/2./Constants::pi):1.);
+      if (std::isnan(res))cout<<"\nWarning:alphaReweight is nan:q_i "<<q_i/GeV<<" "<<Nf(q_i);
     }
-  }
+  
+  if (std::isnan(res))cout<<"\nWarning:alphaReweight is nan.";
   return res;
 }
 
@@ -545,11 +563,13 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode){
   scale*=xiQShfactor;
   if (Begin->parent()||!isUnitarized) {
     while (Begin->parent() && (Begin != EndNode)) {
-      if (!dosudakov(Begin,scale, Begin->dipol()->lastPt(),sudakov0_n)){
+      if (!dosudakov(Begin,scale, Begin->pT(),sudakov0_n)){
         history.push_back(HistoryStep(Begin->parent(),0.,scale));
       }
-      scale=Begin->dipol()->lastPt();
-      history.push_back(HistoryStep(Begin->parent(),sudakov0_n,Begin->dipol()->lastPt()));
+      scale=Begin->pT();
+      
+      if (std::isnan(sudakov0_n))cout<<"\nWarning:sudakov0_n is nan.";
+      history.push_back(HistoryStep(Begin->parent(),sudakov0_n,Begin->pT()));
       Begin = Begin->parent();
     }
     
@@ -573,73 +593,58 @@ double Merger::sumpdfReweightUnlops(){
   double res=0.;
   Energy beam1Scale=history[0].scale*(history[0].node->legsize()==N0()?xiFacME:xiFacSh);
   Energy beam2Scale=history[0].scale*(history[0].node->legsize()==N0()?xiFacME:xiFacSh);
-  History::iterator it=history.begin();
   
-  
-  
-  
-  for (;it!=history.end();it++){
-    History::iterator ittmp=it;
-    ittmp++;
-    if((*it).node->xcomb()->mePartonData()[0]->coloured()&&(*it).node->nodeME()->lastX1()>0.99)return 0.;
-    if((*it).node->xcomb()->mePartonData()[1]->coloured()&&(*it).node->nodeME()->lastX2()>0.99)return 0.;
+  for (auto const & hs : history){
+      //pdf expansion only to the last step
+    if(!hs.node->parent())continue;
+    if(hs.node->xcomb()->mePartonData()[0]->coloured()&&hs.node->nodeME()->lastX1()>0.99)return 0.;
+    if(hs.node->xcomb()->mePartonData()[1]->coloured()&&hs.node->nodeME()->lastX2()>0.99)return 0.;
     
-    if (ittmp!=history.end()){
-      if((*it).node->nodeME()->lastX1()<0.00001)return 0.;
-      if((*it).node->nodeME()->lastX2()<0.00001)return 0.;
-      
-      if ((*it).node->dipol()->bornEmitter() == 0 ){
-        res +=pdfUnlops((*it).node->nodeME()->lastParticles().first->dataPtr(),
-                        (*it).node->nodeME()->lastPartons().first->dataPtr(),
-                        (*it).node->xcomb()->partonBins().first->pdf(),
-                        beam1Scale,
-                        ((*it).node->dipol()->lastPt()),
-                        (*it).node->nodeME()->lastX1(),
-                        Nf(history[0].scale),
-                        history[0].scale);
-        beam1Scale=((*it).node->dipol()->lastPt())*xiFacSh;
-      }
-      if ((*it).node->dipol()->bornEmitter() == 1 ){
-        res +=pdfUnlops((*it).node->nodeME()->lastParticles().second->dataPtr(),
-                        (*it).node->nodeME()->lastPartons().second->dataPtr(),
-                        (*it).node->xcomb()->partonBins().second->pdf(),
-                        beam2Scale,
-                        ((*it).node->dipol()->lastPt()),
-                        (*it).node->nodeME()->lastX2(),
-                        Nf(history[0].scale),
-                        history[0].scale);
-        beam2Scale=((*it).node->dipol()->lastPt())*xiFacSh;
-      }
-      if ((*it).node->dipol()->bornSpectator() == 0 &&(*it).node->dipol()->bornEmitter() >1){//
-        res +=pdfUnlops((*it).node->nodeME()->lastParticles().first->dataPtr(),
-                        (*it).node->nodeME()->lastPartons().first->dataPtr(),
-                        (*it).node->xcomb()->partonBins().first->pdf(),
-                        beam1Scale,
-                        ((*it).node->dipol()->lastPt()),
-                        (*it).node->nodeME()->lastX1(),
-                        Nf(history[0].scale),
-                        history[0].scale);
-          //pdfratio((*it).node, beam1Scale, sqrt((*it).node->dipol()->lastPt()), 1);
-        beam1Scale=((*it).node->dipol()->lastPt())*xiFacSh;
-      }
-      if ((*it).node->dipol()->bornSpectator() == 1 &&(*it).node->dipol()->bornEmitter() >1){//
-        res +=pdfUnlops((*it).node->nodeME()->lastParticles().second->dataPtr(),
-                        (*it).node->nodeME()->lastPartons().second->dataPtr(),
-                        (*it).node->xcomb()->partonBins().second->pdf(),
-                        beam2Scale,
-                        ((*it).node->dipol()->lastPt()),
-                        (*it).node->nodeME()->lastX2(),
-                        Nf(history[0].scale),
-                        history[0].scale);
-          //pdfratio((*it).node, beam2Scale , sqrt((*it).node->dipol()->lastPt()), 2);
-        beam2Scale=((*it).node->dipol()->lastPt())*xiFacSh;
-      }
+    if(hs.node->nodeME()->lastX1()<0.00001)return 0.;
+    if(hs.node->nodeME()->lastX2()<0.00001)return 0.;
+    
+    if (hs.node->dipole()->bornEmitter() == 0 ){
+      res +=pdfUnlops(hs.node,0,
+                      beam1Scale,
+                      (hs.node->pT()),
+                      hs.node->nodeME()->lastX1(),
+                      Nf(history[0].scale),
+                      history[0].scale);
+      beam1Scale=(hs.node->pT())*xiFacSh;
+    }
+    if (hs.node->dipole()->bornEmitter() == 1 ){
+      res +=pdfUnlops(hs.node,1,
+                      beam2Scale,
+                      (hs.node->pT()),
+                      hs.node->nodeME()->lastX2(),
+                      Nf(history[0].scale),
+                      history[0].scale);
+      beam2Scale=(hs.node->pT())*xiFacSh;
+    }
+    if (hs.node->dipole()->bornSpectator() == 0 &&hs.node->dipole()->bornEmitter() >1){//
+      res +=pdfUnlops(hs.node,0,
+                      beam1Scale,
+                      (hs.node->pT()),
+                      hs.node->nodeME()->lastX1(),
+                      Nf(history[0].scale),
+                      history[0].scale);
+        //pdfratio(hs.node, beam1Scale, sqrt(hs.node->pT()), 1);
+      beam1Scale=(hs.node->pT())*xiFacSh;
+    }
+    if (hs.node->dipole()->bornSpectator() == 1 &&hs.node->dipole()->bornEmitter() >1){//
+      res +=pdfUnlops(hs.node,1,
+                      beam2Scale,
+                      (hs.node->pT()),
+                      hs.node->nodeME()->lastX2(),
+                      Nf(history[0].scale),
+                      history[0].scale);
+        //pdfratio(hs.node, beam2Scale , sqrt(hs.node->pT()), 2);
+      beam2Scale=(hs.node->pT())*xiFacSh;
     }
   }
+  
   if (history[0].node->deepHead()->xcomb()->mePartonData()[0]->coloured()){
-    res +=pdfUnlops(history.back().node->nodeME()->lastParticles().first->dataPtr(),
-                    history.back().node->nodeME()->lastPartons().first->dataPtr(),
-                    history.back().node->xcomb()->partonBins().first->pdf(),
+    res +=pdfUnlops(history.back().node,0,
                     beam1Scale,
                     history[0].scale*xiFacME,
                     (history.back()).node->nodeME()->lastX1(),
@@ -648,16 +653,12 @@ double Merger::sumpdfReweightUnlops(){
     
   }
   if (history[0].node->deepHead()->xcomb()->mePartonData()[1]->coloured()) {
-    res +=pdfUnlops(history.back().node->nodeME()->lastParticles().second->dataPtr(),
-                    history.back().node->nodeME()->lastPartons().second->dataPtr(),
-                    history.back().node->xcomb()->partonBins().second->pdf(),
+    res +=pdfUnlops(history.back().node,1,
                     beam2Scale,
                     history[0].scale*xiFacME,
                     (history.back()).node->nodeME()->lastX2(),
                     Nf(history[0].scale),
                     history[0].scale);
-    
-      //history[0].node->deepHead()->nodeME()->pdf2(sqr(beam2Scale))/history[0].node->deepHead()->nodeME()->pdf2(sqr(history[0].scale));
   }
   return res;
 }
@@ -667,7 +668,21 @@ double Merger::sumpdfReweightUnlops(){
 
 
 
-double Merger::pdfUnlops(tcPDPtr particle,tcPDPtr parton,tcPDFPtr pdf,Energy  running, Energy next,double x,int nlp,Energy fixedScale)  {
+double Merger::pdfUnlops(NPtr node ,int side,Energy  running, Energy next,double x,int nlp,Energy fixedScale)  {
+  
+  tcPDPtr particle,parton;
+  tcPDFPtr pdf;
+  if (side==0) {
+    particle = node->nodeME()->lastParticles().first->dataPtr();
+    parton=node->nodeME()->lastPartons().first->dataPtr();
+    pdf =node->xcomb()->partonBins().first->pdf();
+  }else{
+    assert(side==1);
+    particle = node->nodeME()->lastParticles().second->dataPtr();
+    parton=node->nodeME()->lastPartons().second->dataPtr();
+    pdf =node->xcomb()->partonBins().second->pdf();
+  }
+  
     //copied from PKOperator
   double res=0.;
   int number=10;//*int((max(running/next,next/running)));
@@ -741,32 +756,26 @@ double Merger::sumalphaReweightUnlops(){
     assert(int(history[0].node->legsize()-N0()>0));
   }
     // dsig is calculated with fixed alpha_s
-  for (History::iterator it=history.begin();(it+1)!=history.end();it++){
-    assert((*it).node->parent());
-    res +=alphasUnlops((*it).node->dipol()->lastPt()*xiRenSh ,history[0].scale);
+  for (auto const & hs : history){
+      //expansion only to the last step
+    if(!hs.node->parent())continue;
+    res +=alphasUnlops(hs.node->pT()*xiRenSh ,history[0].scale);
   }
   return res;
 }
 
 double Merger::sumfillHistoryUnlops(){
   double res=0.;
-  double xiQShfactor=history.begin()->node->legsize()==N0()?xiQSh:1.;
-  for (History::iterator it = history.begin(); (it+1) != history.end();it++){
-    doUNLOPS((*it).node,(it == history.begin()?xiQShfactor:1.)*(*it).scale , (*it).node->dipol()->lastPt() , history[0].scale, res);
+  double xiQShfactor=history[0].node->legsize()==N0()?xiQSh:1.;
+  for (auto const & hs : history){
+    if(!hs.node->parent())continue;
+    doUNLOPS(hs.node,(hs.node == history[0].node?xiQShfactor:1.)*hs.scale , hs.node->pT() , history[0].scale, res);
   }
   return res;
 }
 
 
-
-
-
 Ptr<MFactory>::ptr Merger::treefactory(){return theTreeFactory;}
-
-
-
-
-
 
 
 void Merger::doinit(){
@@ -799,7 +808,7 @@ CrossSection Merger::MergingDSigDR() {
   DSH()->eventHandler(generator()->eventHandler());
   assert(DSH()->hardScaleIsMuF());
   
-
+  
   CrossSection res=ZERO;
   if(Node->deepHead()->subtractedReal()){
     res=MergingDSigDRRealStandard(Node);
@@ -816,7 +825,7 @@ CrossSection Merger::MergingDSigDR() {
   }
   
   
-  //cout<<"\nrunning "<<Node->runningPt()/GeV<<" "<<Node->legsize(); 
+    //cout<<"\nrunning "<<Node->runningPt()/GeV<<" "<<Node->legsize();
   theCurrentME->lastXCombPtr()->lastCentralScale(sqr(Node->runningPt()));
   theCurrentME->lastXCombPtr()->lastShowerScale(sqr(Node->runningPt()));
   if(theCurrentME->lastXCombPtr()->lastProjector()){
@@ -836,12 +845,12 @@ CrossSection Merger::MergingDSigDR() {
   theCurrentME->lastXCombPtr()->subProcess(SubProPtr());
   
   history.clear();
- 
+  
   if(std::isnan(double(res/nanobarn))|| !std::isfinite(double(res/nanobarn))){
-     cout<<"Warning merger weight is "<<res/nanobarn<<" -> setting to 0";
-     return ZERO;
+    cout<<"Warning merger weight is "<<res/nanobarn<<" -> setting to 0";
+    return ZERO;
   }
- 
+  
   return res;
   
 }
@@ -935,9 +944,8 @@ double Merger::pdfratio(NPtr  Born,Energy  nominator_scale, Energy denominator_s
 
 bool Merger::dosudakov(NPtr Born,Energy running, Energy next, double& sudakov0_n) {
   CKKW_PrepareSudakov(Born, running);
-  for ( list<DipoleChain>::iterator chain = DSH()->eventRecord().chains().begin() ;
-       chain != DSH()->eventRecord().chains().end() ; chain++ ) {
-    for ( list<Dipole>::iterator dip = (*chain).dipoles().begin() ; dip != (*chain).dipoles().end() ; ++dip ) {
+  for(DipoleChain const & chain : DSH()->eventRecord().chains()){
+    for(Dipole const & dip : chain.dipoles()){
       sudakov0_n*=singlesudakov( dip, next,running,make_pair(true,false) );
       sudakov0_n*=singlesudakov( dip, next,running,make_pair(false,true) );
       if (sudakov0_n==0.0){
@@ -952,9 +960,8 @@ bool Merger::dosudakov(NPtr Born,Energy running, Energy next, double& sudakov0_n
 
 bool Merger::doUNLOPS(NPtr Born,Energy  running, Energy next,Energy fixedScale, double& UNLOPS) {
   CKKW_PrepareSudakov(Born, running);
-  for ( list<DipoleChain>::iterator chain = DSH()->eventRecord().chains().begin() ;
-       chain != DSH()->eventRecord().chains().end() ; chain++ ) {
-    for ( list<Dipole>::iterator dip = (*chain).dipoles().begin() ; dip != (*chain).dipoles().end() ; ++dip ) {
+  for(DipoleChain const & chain : DSH()->eventRecord().chains()){
+    for(Dipole const & dip : chain.dipoles()){
       UNLOPS+=singleUNLOPS( dip, next,running,fixedScale,make_pair(true,false) );;
       UNLOPS+=singleUNLOPS( dip, next,running,fixedScale,make_pair(false,true) );
     }
@@ -976,34 +983,38 @@ void Merger::cleanup(NPtr Born) {
   DSH()->eventRecord().clear();
   if(!Born->xcomb()->subProcess())return;
   ParticleVector vecfirst = Born->xcomb()->subProcess()->incoming().first->children();
-  for ( ParticleVector::const_iterator it = vecfirst.begin() ; it != vecfirst.end() ; it++ )
-    Born->xcomb()->subProcess()->incoming().first->abandonChild(*it);
+  for(auto const & particle : vecfirst)
+    Born->xcomb()->subProcess()->incoming().first->abandonChild(particle);
+  
   ParticleVector vecsecond = Born->xcomb()->subProcess()->incoming().second->children();
-  for ( ParticleVector::const_iterator it = vecsecond.begin() ; it != vecsecond.end() ; it++ )
-    Born->xcomb()->subProcess()->incoming().second->abandonChild(*it);
+  for(auto const & particle : vecsecond)
+    Born->xcomb()->subProcess()->incoming().second->abandonChild(particle);
   Born->xcomb()->subProcess(SubProPtr());
 }
 
-double Merger::singlesudakov(list<Dipole>::iterator dip ,Energy next,Energy running,pair<bool,bool> conf ){
+double Merger::singlesudakov(Dipole dip ,Energy next,Energy running,pair<bool,bool> conf ){
   
   double res=1.;
-  tPPtr emitter = dip->emitter(conf);
-  tPPtr spectator = dip->spectator(conf);
-  DipoleSplittingInfo candidate((*dip).index(conf),conf,(*dip).emitterX(conf),(*dip).spectatorX(conf),emitter,spectator);
+  tPPtr emitter = dip.emitter(conf);
+  tPPtr spectator = dip.spectator(conf);
+  DipoleSplittingInfo candidate(dip.index(conf),conf,
+                                dip.emitterX(conf),
+                                dip.spectatorX(conf),
+                                emitter,spectator);
   
   
   if ( DSH()->generators().find(candidate.index()) == DSH()->generators().end() ) DSH()->getGenerators(candidate.index());
   
-  pair<GeneratorMap2::iterator,GeneratorMap2::iterator> gens = DSH()->generators().equal_range(candidate.index());
+  auto const & gens = DSH()->generators().equal_range(candidate.index());
   
-  for ( GeneratorMap2::iterator gen = gens.first; gen != gens.second; ++gen ) {
+  for ( auto   gen = gens.first; gen != gens.second; ++gen ) {
     if ( !(gen->first == candidate.index()) )
       continue;
     
     Energy dScale =	gen->second->splittingKinematics()->dipoleScale(emitter->momentum(),spectator->momentum());
     candidate.scale(dScale);
     candidate.continuesEvolving();
-    Energy ptMax=(*gen).second->splittingKinematics()->ptMax(candidate.scale(),candidate.emitterX(), candidate.spectatorX(),
+    Energy ptMax=gen->second->splittingKinematics()->ptMax(candidate.scale(),candidate.emitterX(), candidate.spectatorX(),
                                                              candidate.index(),*gen->second->splittingKernel());
     
     candidate.hardPt(min(running,ptMax));
@@ -1017,18 +1028,18 @@ double Merger::singlesudakov(list<Dipole>::iterator dip ,Energy next,Energy runn
 }
 
 
-double Merger::singleUNLOPS(list<Dipole>::iterator dip ,Energy next,Energy running,Energy fixedScale,pair<bool,bool> conf ){
+double Merger::singleUNLOPS(Dipole dip ,Energy next,Energy running,Energy fixedScale,pair<bool,bool> conf ){
   
   double res=0.;
-  tPPtr emitter = dip->emitter(conf);
-  tPPtr spectator = dip->spectator(conf);
-  DipoleSplittingInfo candidate((*dip).index(conf),conf,(*dip).emitterX(conf),(*dip).spectatorX(conf),emitter,spectator);
+  tPPtr emitter = dip.emitter(conf);
+  tPPtr spectator = dip.spectator(conf);
+  DipoleSplittingInfo candidate(dip.index(conf),conf,dip.emitterX(conf),dip.spectatorX(conf),emitter,spectator);
   
   if ( DSH()->generators().find(candidate.index()) == DSH()->generators().end() ) DSH()->getGenerators(candidate.index());
   
-  pair<GeneratorMap2::iterator,GeneratorMap2::iterator> gens = DSH()->generators().equal_range(candidate.index());
+   auto const & gens = DSH()->generators().equal_range(candidate.index());
   
-  for ( GeneratorMap2::iterator gen = gens.first; gen != gens.second; ++gen ) {
+  for ( auto gen = gens.first; gen != gens.second; ++gen ) {
     if ( !(gen->first == candidate.index()) )
       continue;
     Energy dScale =	gen->second->splittingKinematics()->dipoleScale(emitter->momentum(),spectator->momentum());
@@ -1069,48 +1080,41 @@ void Merger::clearKinematics(Ptr<MatchboxMEBase>::ptr me){
 }
 bool Merger::generateKinematics(Ptr<MatchboxMEBase>::ptr me,const double * r){
   
-  theFirstNodeMap[me]->firstgenerateKinematics(r, 0,me->lastXCombPtr()->lastSHat());
+  theFirstNodeMap[me]->firstgenerateKinematics(r, 0);
   
-    if (theFirstNodeMap[me]->cutStage()==0 ){
-      
-      bool inAlphaPS=false;
-      NPtrVec children=theFirstNodeMap[me]->children();
-      for (NPtrVec::iterator child = children.begin();
-           child != children.end(); child++){
-       
-        treefactory()->setAlphaParameter(theGamma);
-        inAlphaPS|=theGamma!=1.?(*child)->dipol()->aboveAlpha():false;
-        treefactory()->setAlphaParameter(1.);
-      }
-      
-      SafeClusterMap temp=theFirstNodeMap[me]->clusterSafe();
-      for(SafeClusterMap::iterator
-          it=temp.begin();
-          it!=temp.end();++it){
-        if (!it->second.first&&!inAlphaPS)return false;
-    		}
+  if (theFirstNodeMap[me]->cutStage()==0 ){
+    
+    bool inAlphaPS=false;
+    NPtrVec children=theFirstNodeMap[me]->children();
+    for (Ptr<Node>::ptr const & child: children) {
+      treefactory()->setAlphaParameter(theGamma);
+      inAlphaPS|=theGamma!=1.?child->dipole()->aboveAlpha():false;
+      treefactory()->setAlphaParameter(1.);
     }
-    if (theFirstNodeMap[me]->cutStage()==1 ){
-      SafeClusterMap temp=theFirstNodeMap[me]->clusterSafe();
-      for(SafeClusterMap::iterator
-          it=temp.begin();
-          it!=temp.end();++it){
-      		if (!it->second.first && !it->second.second)return false;
-      }
+    
+    SafeClusterMap temp=theFirstNodeMap[me]->clusterSafe();
+    for (auto const & cs: temp) {
+      if (!cs.second.first&&!inAlphaPS)return false;
     }
+  }
+  if (theFirstNodeMap[me]->cutStage()==1 ){
+    SafeClusterMap temp=theFirstNodeMap[me]->clusterSafe();
+    for (auto const & sc: temp) {
+      if (!sc.second.first && !sc.second.second)return false;
+    }
+  }
   return true;
   
 }
 bool Merger::calculateInNode() const{
-    return theCalculateInNode;
+  return theCalculateInNode;
 }
 
 
 void Merger::fillProjectors(Ptr<MatchboxMEBase>::ptr me){
-  for (unsigned int i = 0; i < (theFirstNodeMap[me]->Projector()).size(); ++i) {
-    me->lastXCombPtr()->projectors().insert(
-                                        (theFirstNodeMap[me]->Projector())[i].first,
-                                        (theFirstNodeMap[me]->Projector())[i].second->xcomb());
+  for (auto const & propair: theFirstNodeMap[me]->Projector()) {
+    me->lastXCombPtr()->projectors().insert(propair.first,
+                                            propair.second->xcomb());
   }
 }
 pair<bool,bool> Merger::clusterSafe(Ptr<MatchboxMEBase>::ptr me,int emit,int emis,int spec){
@@ -1119,13 +1123,7 @@ pair<bool,bool> Merger::clusterSafe(Ptr<MatchboxMEBase>::ptr me,int emit,int emi
 }
 
 
-
-
-
-
-
-
-bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cutscale){
+bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winnerScale,Energy cutscale){
   
     //cout<<"\nparticles s"<<particles.size()<<" "<<particles[0]<<" "<<particles[1]<<flush;
   /*
@@ -1133,10 +1131,10 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
    assert(false);
    vector<fastjet::PseudoJet> input_particles;
    for(size_t em=2; em < particles.size();em++){
-   input_particles.push_back(fastjet::PseudoJet(particles[em]->momentum().x()/GeV,
-   particles[em]->momentum().y()/GeV,
-   particles[em]->momentum().z()/GeV,
-   particles[em]->momentum().e()/GeV));
+   input_particles.push_back(fastjet::PseudoJet(em->momentum().x()/GeV,
+   em->momentum().y()/GeV,
+   em->momentum().z()/GeV,
+   em->momentum().e()/GeV));
    }
    fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm);
    fastjet::ClusterSequence clust_seq(input_particles, jet_def);
@@ -1151,11 +1149,11 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
    size_t noncol=0;
    vector<fastjet::PseudoJet> input_particles;
    for(size_t em=2; em < particles.size();em++){
-   if (particles[em]->coloured())
-   input_particles.push_back(fastjet::PseudoJet(particles[em]->momentum().x()/GeV,
-   particles[em]->momentum().y()/GeV,
-   particles[em]->momentum().z()/GeV,
-   particles[em]->momentum().e()/GeV));
+   if (em->coloured())
+   input_particles.push_back(fastjet::PseudoJet(em->momentum().x()/GeV,
+   em->momentum().y()/GeV,
+   em->momentum().z()/GeV,
+   em->momentum().e()/GeV));
    else
    noncol++;
    }
@@ -1184,21 +1182,18 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
   
   Energy ptx=1000000.*GeV;
   bool foundwinnerpt=false;
-  
+  using namespace boost;
     //FF
-  for(size_t em=2; em < particles.size();em++){
-    if (!particles[em]->coloured()) continue;
-    for(size_t emm=2; emm < particles.size();emm++){
-      if (!particles[emm]->coloured()) continue;
-      if (em==emm) continue;
-      for(size_t spe=2; spe < particles.size();spe++){
-        if (!particles[spe]->coloured()) continue;
-        if (em==spe||emm==spe) continue;
-        if (!(particles[em]->id()==-particles[emm]->id()||particles[emm]->id()>6))continue;
-          //  assert(false);
-        Lorentz5Momentum emittermom = particles[em]->momentum();
-        Lorentz5Momentum emissionmom = particles[emm]->momentum();
-        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+  
+  for(auto const & em : outgoing){        if (! em->coloured()) continue;
+    for(auto const & emm : outgoing){     if (!emm->coloured()) continue; if (em==emm) continue;
+      for(auto const & spe : outgoing){   if (!spe->coloured()) continue; if (em==spe||emm==spe) continue;
+        
+        if (!(em->id()==-emm->id()||emm->id()>6))continue;
+
+        Lorentz5Momentum emittermom = em->momentum();
+        Lorentz5Momentum emissionmom = emm->momentum();
+        Lorentz5Momentum spectatormom = spe->momentum();
         Energy pt=0*GeV;
         if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=FFLTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1206,29 +1201,24 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
           pt=FFMTK->lastPt(emittermom,emissionmom,spectatormom);
         }
         
-          //cout<<"\npt "<<pt/GeV<<" "<<winnerScale/GeV;
         if (abs(pt-winnerScale)<0.001*GeV) {
           foundwinnerpt=true;
         }
-          //          if(scale * sqrt(y*z*(1.-z))<optVeto&&winnerScale>optVeto)cout<<"\nFF "<<(scale * sqrt(y*z*(1.-z))/GeV);
         ptx =min(ptx,pt);
       }
     }
   }
   
     //FI
-  for(size_t spe=0; spe < 2;spe++){
-    if (!particles[spe]->coloured()) continue;
-    for(size_t em=2; em < particles.size();em++){
-      if (!particles[em]->coloured()) continue;
-      for(size_t emm=2; emm < particles.size();emm++){
-        if (!particles[emm]->coloured()) continue;
-        if (em==emm) continue;
-        if (!(particles[em]->id()==-particles[emm]->id()||particles[emm]->id()>6))continue;
-          //  assert(false);
-        Lorentz5Momentum emittermom = particles[em]->momentum();
-        Lorentz5Momentum emissionmom = particles[emm]->momentum();
-        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+  for(auto const & spe : incoming){          if (! spe->coloured()) continue;
+    for(auto const & emm : outgoing){        if (! emm->coloured()) continue;
+      for(auto const & em : outgoing){       if (! em->coloured()) continue; if (em==emm) continue;
+        
+        if (!(em->id()==-emm->id()||emm->id()>6))continue;
+        
+        Lorentz5Momentum emittermom = em->momentum();
+        Lorentz5Momentum emissionmom = emm->momentum();
+        Lorentz5Momentum spectatormom = spe->momentum();
         Energy pt=0*GeV;
         if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=FILTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1248,29 +1238,24 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
   }
   
     //IF
-  for(size_t em=0; em < 2;em++){
-    if (!particles[em]->coloured()) continue;
-    for(size_t emm=2; emm < particles.size();emm++){
-      if (!particles[emm]->coloured()) continue;
-      for(size_t spe=2; spe < particles.size();spe++){
-        if (!particles[spe]->coloured()) continue;
+  for(auto const & em : incoming){          if (! em->coloured()) continue;
+    for(auto const & emm : outgoing){        if (! emm->coloured()) continue;
+      for(auto const & spe : outgoing){       if (! spe->coloured()) continue; if (emm==spe) continue;
         
-        if (emm==spe) continue;
-        if (!(particles[em]->id()>6|| particles[em]->id()==particles[emm]->id() ||particles[emm]->id()>6))continue;
-          // assert(false);
-        Lorentz5Momentum emittermom = particles[em]->momentum();
-        Lorentz5Momentum emissionmom = particles[emm]->momentum();
-        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+        if (!(em->id()>6|| em->id()==emm->id() ||emm->id()>6))continue;
         
+        Lorentz5Momentum emittermom = em->momentum();
+        Lorentz5Momentum emissionmom = emm->momentum();
+        Lorentz5Momentum spectatormom = spe->momentum();
         Energy pt=0*GeV;
-
+        
         if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=IFLTK->lastPt(emittermom,emissionmom,spectatormom);
         }else{
           pt=IFMTK->lastPt(emittermom,emissionmom,spectatormom);
         }
         
-
+        
         if (abs(pt-winnerScale)<0.01*GeV) {
           foundwinnerpt=true;
         }
@@ -1280,22 +1265,20 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
   }
   
     //II
-  for(size_t em=0; em < 2;em++){
-    if (!particles[em]->coloured()) continue;
-    for(size_t spe=0; spe < 2;spe++){
-      if (!particles[spe]->coloured()) continue;
-      for(size_t emm=2; emm < particles.size();emm++){
-        if (!particles[emm]->coloured()) continue;
-        if (em==spe) continue;
-        if (!(particles[em]->id()>6||
-              particles[em]->id()==particles[emm]->id() ||
-              particles[emm]->id()>6))continue;
-          //assert(false);
-        Lorentz5Momentum emittermom = particles[em]->momentum();
-        Lorentz5Momentum emissionmom = particles[emm]->momentum();
-        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+  for(auto const & em : incoming){          if (! em->coloured()) continue;
+    for(auto const & spe : incoming){       if (! spe->coloured()) continue; if (em==spe) continue;
+      for(auto const & emm : outgoing){        if (! emm->coloured()) continue;
+      
+        
+        if (!(em->id()>6||em->id()==emm->id() ||emm->id()>6))continue;
+        
+        Lorentz5Momentum emittermom = em->momentum();
+        Lorentz5Momentum emissionmom = emm->momentum();
+        Lorentz5Momentum spectatormom = spe->momentum();
+        
         Energy  pt=IILTK->lastPt(emittermom,emissionmom,spectatormom);
-       if (abs(pt-winnerScale)<0.01*GeV) {
+        
+        if (abs(pt-winnerScale)<0.01*GeV) {
           foundwinnerpt=true;
         }
         ptx =min(ptx, pt);
@@ -1303,15 +1286,15 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
     }
   }
   
-    // cout<<"\n"<<cutscale/GeV<< " "<<foundwinnerpt<<" "<<ptx/GeV;
-  
-  
-  
   if(!foundwinnerpt){
     cout<<"\nWarning: could not find winner with pt: "<<winnerScale/GeV;
-    for(size_t emm=0; emm < particles.size();emm++){
-    cout<<"\n"<<particles[emm]->id()<<" "<<particles[emm]->momentum()/GeV<<" "<<particles[emm]->momentum().m()/GeV<<flush;
+    for(auto const & emm : incoming){
+      cout<<"\n"<<emm->id()<<" "<<emm->momentum()/GeV<<" "<<emm->momentum().m()/GeV<<flush;
     }
+    for(auto const & emm : outgoing){
+      cout<<"\n"<<emm->id()<<" "<<emm->momentum()/GeV<<" "<<emm->momentum().m()/GeV<<flush;
+    }
+  
   }
   
   return (ptx>cutscale) ;
@@ -1342,7 +1325,7 @@ int Merger::N()const{return theTreeFactory->N();}
 
 void Merger::persistentOutput(PersistentOStream & os) const {
   
-  os << minusL<<  Unlopsweights<<
+  os <<  Unlopsweights<<
   theCMWScheme<<   projected<<
   isUnitarized<<   isNLOUnitarized<<
   defMERegionByJetAlg<<theOpenInitialStateZ<<
@@ -1368,7 +1351,7 @@ void Merger::persistentOutput(PersistentOStream & os) const {
 }
 
 void Merger::persistentInput(PersistentIStream & is, int) {
-  is >> minusL>>  Unlopsweights>>
+  is >>  Unlopsweights>>
   theCMWScheme>>   projected>>
   isUnitarized>>   isNLOUnitarized>>
   defMERegionByJetAlg>>theOpenInitialStateZ>>
@@ -1376,11 +1359,11 @@ void Merger::persistentInput(PersistentIStream & is, int) {
   theN0>>    theOnlyN>>
   xiRenME>>     xiFacME>>
   xiRenSh>>     xiFacSh>>
-  xiQSh>>  
+  xiQSh>>
   weight>>weightCB>>theGamma>>ee_ycut>>pp_dcut>>theSmearing>>iunit(therenormscale, GeV)>>iunit(theIRSafePT, GeV)>>iunit(theMergePt, GeV)>>iunit(theCentralMergePt, GeV)>>theMergingJetFinder>>theLargeNBasis>>
   
   
-   FFLTK
+  FFLTK
   >> FILTK
   >> IFLTK
   >> IILTK
@@ -1417,13 +1400,6 @@ void Merger::Init() {
   
   
   static Switch<Merger,bool>
-  interfaceminusL ("minusL","",&Merger::minusL, false, false, false);
-  static SwitchOption interfaceminusLYes
-  (interfaceminusL,"Yes","",true);
-  static SwitchOption interfaceminusLNo
-  (interfaceminusL,"No","",false);
-  
-  static Switch<Merger,bool>
   interfaceUnlopsweights ("Unlopsweights","",&Merger::Unlopsweights, false, false, false);
   static SwitchOption interfaceUnlopsweightsYes
   (interfaceUnlopsweights,"Yes","",true);
@@ -1437,8 +1413,8 @@ void Merger::Init() {
   static SwitchOption interfacetheCMWSchemeNo
   (interfacetheCMWScheme,"No","",false);
   
-
-
+  
+  
   
   
   
@@ -1452,7 +1428,7 @@ void Merger::Init() {
   
   
   
-
+  
   
   
   
@@ -1538,17 +1514,17 @@ void Merger::Init() {
   
   
   static Parameter<Merger, double> interfacemergePtsmearing("MergingScaleSmearing", "Set the percentage the merging pt should be smeared.",
-                                                              &Merger::theSmearing, 0., 0.,
-                                                              0.0, 0.5, true, false, Interface::limited);
+                                                            &Merger::theSmearing, 0., 0.,
+                                                            0.0, 0.5, true, false, Interface::limited);
   
   
   
   static Parameter<Merger, int> interfacechooseHistory("chooseHistory", "different ways of choosing the history", &Merger::theChooseHistory, 3, -1, 0,
-                                                         false, false, Interface::lowerlim);
+                                                       false, false, Interface::lowerlim);
   
   
   
-
+  
   
   
 }

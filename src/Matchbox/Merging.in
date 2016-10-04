@@ -14,7 +14,7 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
 set MScale:MergingHelper Merger
 set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 set MFactory:MergingHelper Merger
-set Merger:minusL No
+
 
 cd /Herwig/Analysis
 create ThePEG::RivetAnalysis Rivet RivetAnalysis.so

@@ -79,7 +79,7 @@ Energy IILightTildeKinematics::lastPt() const {
 }
 
 
-Energy IILightTildeKinematics::lastPt(Lorentz5Momentum emitter,Lorentz5Momentum emission,Lorentz5Momentum spectator)const {
+Energy IILightTildeKinematics::lastPt(Lorentz5Momentum ,Lorentz5Momentum emission,Lorentz5Momentum )const {
   return emission.perp();
 }
 

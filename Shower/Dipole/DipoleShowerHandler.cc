@@ -686,8 +686,12 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   DipoleSplittingInfo winner;
   DipoleSplittingInfo dipoleWinner;
   
+  //TODO: find a better solution
+  size_t currentMultiplicity=0.;
+  for(auto i : eventHandler()->currentStep()->getFinalState() )
+    if (i->id()!=82)currentMultiplicity++;
   
-  size_t currentMultiplicity=eventHandler()->currentStep()->particles().size();
+  currentMultiplicity+=2;
 
   while ( eventRecord().haveChain() ) {
     if ( verbosity > 2 ) {
@@ -752,8 +756,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     // otherwise perform the splitting
 
-    if (theMergingHelper&&eventHandler()->currentCollision()) {
-      if (theMergingHelper->maxLegs()>currentMultiplicity)
+    if (theMergingHelper&&eventHandler()->currentCollision()&&!decay) {
+      if (theMergingHelper->maxLegs()>currentMultiplicity){
         if (theMergingHelper->mergingScale()<winnerScale){
           bool transparent=true;
           if (transparent) {
@@ -762,14 +766,13 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
             DipoleChain* tmpfirstChain = 0;
             DipoleChain* tmpsecondChain = 0;
             
-            PVector New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
+            auto New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
             /*cout<<"\n ";
-             for (PVector::iterator p=New.begin(); p!=New.end(); p++) {
-             cout<<"\n   "<<(*p)->momentum()/GeV<<flush;
+             for (auto const & p:New) {
+             cout<<"\n   "<<p->momentum()/GeV<<flush;
              }
              */
-            
-            if (theMergingHelper->matrixElementRegion(New,winnerScale,theMergingHelper->mergingScale())) {
+            if (theMergingHelper->matrixElementRegion(New.first,New.second,winnerScale,theMergingHelper->mergingScale())) {
               optHardPt=winnerScale;
               continue;
             }
@@ -779,6 +782,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
             
           }
         }
+      }
     }
     
     

@@ -31,27 +31,23 @@ Node::Node() {
 
 bool NodeDebug=false;
 
-Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int deepprostage, int cutstage) {
+Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int cutstage) {
   nodeME->maxMultCKKW(1);
   nodeME->minMultCKKW(0);
   theDeepHead = this;
   thenodeMEPtr = nodeME;
-  theDeepProStage = deepprostage;
   theCutStage = cutstage;
   theSubtractedReal=false;
   theVirtualContribution=false;
-  
 }
 
 
 
-Node::Node(Ptr<Node>::ptr deephead, Ptr<Node>::ptr head, Ptr<SubtractionDipole>::ptr dipol, Ptr<MatchboxMEBase>::ptr nodeME,
-                         int deepprostage, int cutstage) {
+Node::Node(Ptr<Node>::ptr deephead, Ptr<Node>::ptr head, Ptr<SubtractionDipole>::ptr dipol, Ptr<MatchboxMEBase>::ptr nodeME,int cutstage) {
   theDeepHead = deephead;
   theparent = head;
   thedipol = dipol;
   thenodeMEPtr = nodeME;
-  theDeepProStage = deepprostage;
   theCutStage = cutstage;
   theSubtractedReal=false;
   theVirtualContribution=false;
@@ -59,7 +55,7 @@ Node::Node(Ptr<Node>::ptr deephead, Ptr<Node>::ptr head, Ptr<SubtractionDipole>:
 
 Node::~Node() { }
 
-Ptr<SubtractionDipole>::ptr Node::dipol() const {
+Ptr<SubtractionDipole>::ptr Node::dipole() const {
   return thedipol;
 }
 
@@ -81,21 +77,9 @@ Ptr<Node>::ptr  Node::randomChild() {
   return thechildren[(int)(UseRandom::rnd() *  thechildren.size())];
 }
 
-Energy Node::miniPt() const{
-   Energy res=1000000000*GeV;
-   for (vector<Ptr<Node>::ptr>::const_iterator it = thechildren.begin(); it != thechildren.end(); it++) {
-    res=min(res,(*it)->dipol()->lastPt());
-  }
-  return res;
-   	
-}
-
-
-
 bool Node::allAbove(Energy pt){
-  for (vector<Ptr<Node>::ptr>::iterator it = thechildren.begin(); it != thechildren.end(); it++) {
-    if((*it)->dipol()->lastPt()<pt)return false;
-  }
+  for (Ptr<Node>::ptr child : thechildren)
+    if(child->pT()<pt)return false;
   return true;
 }
 
@@ -112,85 +96,67 @@ bool Node::isInHistoryOf(Ptr<Node>::ptr other){
 
 
 void Node::flushCaches() {
+  
   this->theProjectors.clear();
-  for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
-    
-    thechildren[i]->dipol()->underlyingBornME()->flushCaches();
-    for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator r = thechildren[i]->dipol()->reweights().begin() ; r != thechildren[i]->dipol()->reweights().end() ;
-         ++r ) {
-      (**r).flushCaches();
-    }
-    
-    if ( thechildren[i]->xcomb() ) thechildren[i]->xcomb()->clean();
-    thechildren[i]->nodeME()->flushCaches();
-    thechildren[i]->flushCaches();
+  for ( auto const & ch: thechildren) {
+    ch->dipole()->underlyingBornME()->flushCaches();
+    for (Ptr<MatchboxReweightBase>::ptr r : ch->dipole()->reweights())
+      r->flushCaches();
+    if ( ch->xcomb() ) ch->xcomb()->clean();
+    ch->nodeME()->flushCaches();
+    ch->flushCaches();
   }
 }
 
 void Node::setKinematics() {
-  for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
-    thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
-    thechildren[i]->dipol()->setKinematics();
-    thechildren[i]->nodeME()->setKinematics();
-    thechildren[i]->setKinematics();
+  for (auto const & ch: thechildren) {
+    ch->dipole()->setXComb(ch->xcomb());
+    ch->dipole()->setKinematics();
+    ch->nodeME()->setKinematics();
+    ch->setKinematics();
   }
 }
 
 void Node::clearKinematics() {
-  for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
-    thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
-    thechildren[i]->nodeME()->clearKinematics();
-    thechildren[i]->dipol()->clearKinematics();
-    thechildren[i]->clearKinematics();
+  for (auto const & ch: thechildren) {
+    ch->dipole()->setXComb(ch->xcomb());
+    ch->nodeME()->clearKinematics();
+    ch->dipole()->clearKinematics();
+    ch->clearKinematics();
   }
 }
 
 bool Node::generateKinematics(const double *r, int stage, Energy2 shat) {
-  isOrdered = false;
-  isthissafe=true;
-  for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
-    thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
-    if ( !thechildren[i]->dipol()->generateKinematics(r) ) cout << "stop";
-    if ( dipol()->lastPt() < thechildren[i]->dipol()->lastPt() && parent()->ordered() ) {
-      isOrdered = true;
-      deepHead()->setOrderedSteps(stage + 1);
-    }
-    thechildren[i]->generateKinematics(r, stage + 1, thechildren[i]->xcomb()->lastSHat());
-    isthissafe = (isthissafe && thechildren[i]->dipol()->lastPt() >=deepHead()->MH()->mergePt());
+  bool isthissafe=true;
+  for (auto const & ch: thechildren) {
+    ch->dipole()->setXComb(ch->xcomb());
+    if ( !ch->dipole()->generateKinematics(r) ) cout << "stop";
+    ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
+    isthissafe = (isthissafe && ch->pT() >=deepHead()->MH()->mergePt());
   }
   return isthissafe;
 }
 
-void Node::firstgenerateKinematics(const double *r, int stage, Energy2 shat) {
+void Node::firstgenerateKinematics(const double *r, int stage) {
   flushCaches();
   
-  
-  
-    //Set here the new merge Pt for the next phase space point.( Smearing!!!)
-  
   MH()->smeareMergePt();
-  isOrdered = true;
-  
-  
-    // if we consider the hard scale to play a role in the steps we must change here to 0.
-  setOrderedSteps(1);
-  this->orderedSteps();
-  
-  
-  
+    //Set here the new merge Pt for the next phase space point.( Smearing!!!)
   clustersafer.clear();
-  for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
+  for (auto const & ch: thechildren) {
     bool ifirst = true;
     bool isecond = true;
-    thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
+    ch->dipole()->setXComb(ch->xcomb());
     
-    if ( !thechildren[i]->dipol()->generateKinematics(r) ) cout << "stop";
+    if ( !ch->dipole()->generateKinematics(r) ) cout << "stop";
     
-    isecond = thechildren[i]->generateKinematics(r, stage + 1, thechildren[i]->xcomb()->lastSHat());
-    ifirst = (thechildren[i]->dipol()->lastPt() >= deepHead()->MH()->mergePt());
-
-    pair<pair<int, int>, int> EmitEmisSpec = make_pair(make_pair(thechildren[i]->dipol()->realEmitter(), thechildren[i]->dipol()->realEmission()),
-                                                       thechildren[i]->dipol()->realSpectator());
+    isecond = ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
+    ifirst = (ch->pT() >= deepHead()->MH()->mergePt());
+    
+    pair<pair<int, int>, int> EmitEmisSpec =
+    make_pair(make_pair(ch->dipole()->realEmitter(),
+                        ch->dipole()->realEmission()),
+              ch->dipole()->realSpectator());
     clustersafer.insert(make_pair(EmitEmisSpec, make_pair(ifirst, isecond)));
     
   }
@@ -200,22 +166,22 @@ void Node::firstgenerateKinematics(const double *r, int stage, Energy2 shat) {
 
 void Node::setXComb(tStdXCombPtr xc, int proStage) {
   if ( !parent() ) this->xcomb(xc);
-  for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
-    if ( !thechildren[i]->xcomb() ) {
-      thechildren[i]->xcomb(thechildren[i]->dipol()->makeBornXComb(xc));
-      assert(thechildren[i]->xcomb());
-      thechildren[i]->xcomb()->head(xc);
-      if ( !thechildren[i]->dipol()->lastXCombPtr() ) {
-        thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
+  for (auto const & ch: thechildren) {
+    if ( !ch->xcomb() ) {
+      ch->xcomb(ch->dipole()->makeBornXComb(xc));
+      assert(ch->xcomb());
+      ch->xcomb()->head(xc);
+      if ( !ch->dipole()->lastXCombPtr() ) {
+        ch->dipole()->setXComb(ch->xcomb());
       }
-      thechildren[i]->setXComb(thechildren[i]->xcomb(), (proStage - 1));
+      ch->setXComb(ch->xcomb(), (proStage - 1));
       
     } else {
-      if ( !(thechildren[i]->dipol()->lastXCombPtr()->lastScale() == thechildren[i]->xcomb()->lastScale()) ) {
-        thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
+      if ( !(ch->dipole()->lastXCombPtr()->lastScale() == ch->xcomb()->lastScale()) ) {
+        ch->dipole()->setXComb(ch->xcomb());
       }
-      if ( thechildren[i]->xcomb()->head() != xc ) thechildren[i]->xcomb()->head(xc);
-      thechildren[i]->setXComb(thechildren[i]->xcomb(), (proStage - 1));
+      if ( ch->xcomb()->head() != xc ) ch->xcomb()->head(xc);
+      ch->setXComb(ch->xcomb(), (proStage - 1));
     }
   }
 }
@@ -226,11 +192,10 @@ void Node::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
            nodeME()->getDipoles(DipoleRepository::dipoles(
                         nodeME()->factory()->dipoleSet()), vec,true);
   
-  for ( unsigned int j = 0 ; j < dipoles.size() ; ++j ) {
-    dipoles[j]->doSubtraction();
-    Ptr<Node>::ptr node = new_ptr(Node(theDeepHead,this, dipoles[j],
-                                       dipoles[j]->underlyingBornME(),
-                                       theDeepHead->DeepProStage(),
+  for ( auto const & dip : dipoles ) {
+    dip->doSubtraction();
+    Ptr<Node>::ptr node = new_ptr(Node(theDeepHead,this, dip,
+                                       dip->underlyingBornME(),
                                        theDeepHead->cutStage()));
     thechildren.push_back(node);
     
@@ -242,35 +207,37 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal,double hardScaleFac
 
   vector<Ptr<Node>::ptr> temp = children();
   vector<Ptr<Node>::ptr> res;
-  for ( vector<Ptr<Node>::ptr>::const_iterator it = temp.begin() ; it != temp.end() ; ++it ) {
-    if(deepHead()->MH()->mergePt()>(*it)->dipol()->lastPt()){
+
+  for (Ptr<Node>::ptr  const & child : children()) {
+    if(deepHead()->MH()->mergePt()>child->pT()){
       res.clear();
-        // if any of the nodes is below the merging scale return empty vector
+      cout<<"\nclear res\n"<<flush;
       return res;
-      continue;
     }
+  }
+  
+  for (Ptr<Node>::ptr const & child: children()) {
+
     if (parent()&& normal){
-      if ( (*it)->dipol()->lastPt() < dipol()->lastPt() ){
+      if ( child->pT() < pT() ){
         continue;
       }
     }
-    if ( (*it)->children().size() != 0 ){
+    if ( child->children().size() != 0 ){
       
-      vector<Ptr<Node>::ptr> tempdown = (*it)->children();
-      for ( vector<Ptr<Node>::ptr>::const_iterator itd = tempdown.begin() ; itd != tempdown.end() ; ++itd ) {
-        if( (*itd)->dipol()->lastPt() > (*it)->dipol()->lastPt()&&(*it)->inShowerPS((*itd)->dipol()->lastPt()) ){
-          res.push_back(*it);
+      for (Ptr<Node>::ptr itChild:  child->children()) {
+        if( itChild->pT() > child->pT()&&child->inShowerPS(itChild->pT()) ){
+          res.push_back(child);
           break;
         }
       }
-      
     }
     else {
-      (*it)->nodeME()->factory()->scaleChoice()->setXComb((*it)->xcomb());
-      if ( sqr(hardScaleFactor)*(*it)->nodeME()->factory()->scaleChoice()->renormalizationScale()
-          >= (*it)->dipol()->lastPt() * (*it)->dipol()->lastPt()&&
-          (*it)->inShowerPS(hardScaleFactor*sqrt((*it)->nodeME()->factory()->scaleChoice()->renormalizationScale()))) {
-        res.push_back(*it);
+      child->nodeME()->factory()->scaleChoice()->setXComb(child->xcomb());
+      if ( sqr(hardScaleFactor)*child->nodeME()->factory()->scaleChoice()->renormalizationScale()
+          >= sqr(child->pT()) &&
+          child->inShowerPS(hardScaleFactor*sqrt(child->nodeME()->factory()->scaleChoice()->renormalizationScale()))) {
+        res.push_back(child);
       }
     }
   }
@@ -278,17 +245,16 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal,double hardScaleFac
 }
 
 bool Node::inShowerPS(Energy hardpT){
-
-  assert(deepHead()->MH()->largeNBasis());
-  double z_=dipol()->lastZ();
+    //Here we decide if the current phase space point can be reached from the underlying Node.
+  double z_=dipole()->lastZ();
     // II
-  if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()<2&&deepHead()->MH()->openInitialStateZ()) return true;
+  if( dipole()->bornEmitter()<2&&dipole()->bornSpectator()<2&&deepHead()->MH()->openInitialStateZ()) return true;
     // IF
-  if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()>=2&&deepHead()->MH()->openInitialStateZ())
-      return true;
+  if( dipole()->bornEmitter()<2&&dipole()->bornSpectator()>=2&&deepHead()->MH()->openInitialStateZ())
+    return true;
   
   pair<double,double> zbounds=
-        dipol()->tildeKinematics()->zBounds(dipol()->lastPt(),hardpT);
+  dipole()->tildeKinematics()->zBounds(pT(),hardpT);
   
   return (zbounds.first<z_&&z_<zbounds.second);
 }
@@ -300,35 +266,37 @@ bool Node::inShowerPS(Energy hardpT){
 
 Ptr<Node>::ptr Node::getHistory(bool normal,double hardScaleFactor) {
   Ptr<Node>::ptr res=this;
+    //cout<<"\nstart get next"<<flush;
   vector<Ptr<Node>::ptr> temp = getNextOrderedNodes(normal,hardScaleFactor);
+
   Energy minpt=100000.*GeV;
   Selector<Ptr<Node>::ptr> subprosel;
   while (temp.size()!=0){
     minpt=100000.*GeV;
     subprosel.clear();
-    for (vector<Ptr<Node>::ptr>::iterator it=temp.begin();it!=temp.end();it++){
-       if( (*it)->dipol()->underlyingBornME()->largeNColourCorrelatedME2(
-                        make_pair((*it)->dipol()->bornEmitter(),(*it)->dipol()->bornSpectator()),
-                                  deepHead()->MH()->largeNBasis())!=0.
+    for (Ptr<Node>::ptr const &  child : temp) {
+      if( child->dipole()->underlyingBornME()->largeNColourCorrelatedME2(
+                                                                         make_pair(child->dipole()->bornEmitter(),child->dipole()->bornSpectator()),
+                                                                         deepHead()->MH()->largeNBasis())!=0.
          ){
         
-	  double weight=abs((*it)->dipol()->dSigHatDR()/nanobarn);
-	  if(weight!=0.){
-             subprosel.insert(weight , (*it));
-              minpt=min(minpt,(*it)->dipol()->lastPt());
-          }
-
-        /*
-          if((*it)->nodeME()->dSigHatDR()/nanobarn!=0.){
-             subprosel.insert((abs((*it)->dipol()->dSigHatDR() /
-              (*it)->nodeME()->dSigHatDR()*deepHead()->MH()->as((*it)->dipol()->lastPt()))), (*it));
-              minpt=min(minpt,(*it)->dipol()->lastPt());
-          }
-        */
-           //TODO choosehistories
-        
-        
+        double weight=abs(child->dipole()->dSigHatDR()/nanobarn);
+        if(weight!=0.){
+          subprosel.insert(weight , child);
+          minpt=min(minpt,child->pT());
         }
+        
+        /*
+         if((*it)->nodeME()->dSigHatDR()/nanobarn!=0.){
+         subprosel.insert((abs((*it)->dipole()->dSigHatDR() /
+         (*it)->nodeME()->dSigHatDR()*deepHead()->MH()->as((*it)->pT()))), (*it));
+         minpt=min(minpt,(*it)->pT());
+         }
+         */
+          //TODO choosehistories
+        
+        
+      }
     }
     if (subprosel.empty())
       return res;
@@ -341,212 +309,24 @@ Ptr<Node>::ptr Node::getHistory(bool normal,double hardScaleFactor) {
 
 
 
-bool Node::headContribution(double hardScaleFactor){
-  bool allabove=true;
-  vector<Ptr<Node>::ptr> temp2 = children();
-  for (vector<Ptr<Node>::ptr>::iterator it = temp2.begin(); it != temp2.end(); it++) {
-    allabove&=(*it)->dipol()->lastPt()>deepHead()->MH()->mergePt();
-  }
-  if(allabove){
-    Ptr<Node>::ptr tmpBorn = getHistory(true,hardScaleFactor);
-    if(!tmpBorn->parent())return false;
-  }
-  return true;
-}
 
 
 
 
-
-
-
-bool Node::DipolesAboveMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
-  sum=0.;
-  Selector<Ptr<Node>::ptr> first_subpro;
-  vector<Ptr<Node>::ptr> tmp=children();
-  for (vector<Ptr<Node>::ptr>::iterator it = tmp.begin(); it != tmp.end(); it++) {
-    double Di=-1.* (*it)->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
-    
-    if ((Di!=0.)&&(*it)->xcomb()->willPassCuts()) {
-      assert((*it)->dipol()->clustersafe());
-      minpt=min(minpt,(*it)->dipol()->lastPt());
-      assert((*it)->dipol()->clustersafe());
-      sum+=Di;
-      first_subpro.insert(1., (*it));
-      
-    }
-  }
-  number=int(first_subpro.size());
-  if (number!=0) {
-    selectedNode=first_subpro.select(UseRandom::rnd());
-    return true;
-  }
-  return false;
-}
 
 
 
 pair<CrossSection,CrossSection> Node::calcDipandPS(Energy scale){
-  return  dipol()->dipandPs(sqr(scale),deepHead()->MH()->largeNBasis());
+  return  dipole()->dipandPs(sqr(scale),deepHead()->MH()->largeNBasis());
 }
 
 CrossSection Node::calcPs(Energy scale){
-  return dipol()->ps(sqr(scale),deepHead()->MH()->largeNBasis());
+  return dipole()->ps(sqr(scale),deepHead()->MH()->largeNBasis());
 }
 
 CrossSection Node::calcDip(Energy scale){
-  return dipol()->dip(sqr(scale));
+  return dipole()->dip(sqr(scale));
 }
-
-
-
-/*
-bool Node::diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
-  
-  Selector<Ptr<Node>::ptr> first_subpro;
-  vector<Ptr<Node>::ptr> tmp=children();
-  for (vector<Ptr<Node>::ptr>::iterator it = tmp.begin(); it != tmp.end(); it++) {
-    vector<Ptr<Node>::ptr> tmp2=(*it)->children();
-    bool isInSomePS=false;
-    Energy maxx=0.*GeV;
-    Energy minn=100000*GeV;
-    for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-      isInSomePS|=(*it)->inShowerPS((*it2)->dipol()->lastPt());
-      maxx=max(maxx,(*it)->dipol()->lastPt());
-      minn=min(minn,(*it)->dipol()->lastPt());
-    }
-    double Di=0.;
-    if(isInSomePS||(tmp2.empty())){
-    
-      Di=-1.* (*it)->dipol()->dipMinusPs(sqr(10.*GeV),deepHead()->MH()->largeNBasis())/nanobarn;
-    }else{
-      Di=-1.* (*it)->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
-    }
-    
-    
-    if ((Di!=0.)&&(*it)->xcomb()->willPassCuts()){//&&((*it)->dipol()->lastPt()<MH()->mergePt())) {
-      vector<Ptr<Node>::ptr> tmp2=(*it)->children();
-      for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++) assert(((*it2)->dipol()->lastPt()>deepHead()->MH()->mergePt()));
-      
-      
-      
-      
-      if (Di!=0.) {
-        first_subpro.insert(1., (*it));
-        minpt=min(minpt,(*it)->dipol()->lastPt());
-      }
-    }
-  }
-  number=int(first_subpro.size());
-  if (number!=0) {
-    selectedNode=first_subpro.select(UseRandom::rnd());
-    
-    
-    
-    vector<Ptr<Node>::ptr> tmp2=selectedNode->children();
-    bool isInSomePS=false;
-    for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-      isInSomePS|=selectedNode->inShowerPS((*it2)->dipol()->lastPt());
-    }
-    
-    
-    if((isInSomePS||(tmp2.empty()))){//selectedNode->dipol()->lastPt()<MH()->mergePt()&&
-      sum=-1.* selectedNode->dipol()->dipMinusPs(sqr(10.*GeV),deepHead()->MH()->largeNBasis())/nanobarn;
-    }else{
-      sum=-1.* selectedNode->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
-    }
-    return true;
-  }
-  return false;
-}
-
-*/
-
-/*
-
-
-bool Node::psBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
-  sum=0.;
-  Selector<Ptr<Node>::ptr> first_subpro;
-  vector<Ptr<Node>::ptr> tmp=children();
-  for (vector<Ptr<Node>::ptr>::iterator it = tmp.begin(); it != tmp.end(); it++) {
-    double Di=-1.* (*it)->dipol()->ps(sqr(10.*GeV),deepHead()->MH()->largeNBasis())/nanobarn;
-    if ((Di!=0)&&(*it)->xcomb()->willPassCuts()){//&&((*it)->dipol()->lastPt()<MH()->mergePt())) {
-      vector<Ptr<Node>::ptr> tmp2=(*it)->children();
-      
-      bool isInSomePS=false;
-      
-      for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-        assert(((*it2)->dipol()->lastPt()>deepHead()->MH()->mergePt())||((*it)->dipol()->lastPt()>deepHead()->MH()->mergePt()));
-        isInSomePS|=(*it)->inShowerPS((*it2)->dipol()->lastPt());
-        
-      }
-      
-      
-      if(!isInSomePS&&!(tmp2.empty()))continue;
-      
-      sum+=Di;
-      if (Di!=0) {
-        first_subpro.insert(1., (*it));
-        minpt=min(minpt,(*it)->dipol()->lastPt());
-      }
-    }
-  }
-  number=int(first_subpro.size());
-  if (number!=0) {
-    selectedNode=first_subpro.select(UseRandom::rnd());
-    return true;
-  }
-  return false;
-}
-*/
-
-/*
-
-bool Node::dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number){
-  sum=0.;
-  Selector<Ptr<Node>::ptr> first_subpro;
-  vector<Ptr<Node>::ptr> tmp=children();
-  for (vector<Ptr<Node>::ptr>::iterator it = tmp.begin(); it != tmp.end(); it++) {
-    if (true
-       //(*it)->dipol()->clustersafe() &&
-       // (*it)->xcomb()->willPassCuts()
-       ) {
-      
-      bool calcdip=true;
-      vector<Ptr<Node>::ptr> tmp2=(*it)->children();
-      for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-        assert(((*it2)->dipol()->lastPt()>deepHead()->MH()->mergePt())||((*it)->dipol()->lastPt()>deepHead()->MH()->mergePt()));
-	if(((*it2)->dipol()->lastPt()<deepHead()->MH()->mergePt())){
-	   if((*it)->dipol()->lastPt()<deepHead()->MH()->mergePt()){
-  	     sum=0;
-	     return false;
-	   }
-           calcdip=false;
-        }
-	   
-	}
-      
-      if(calcdip){
-        double Di=-1.* (*it)->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
-      
-        sum+=Di;
-      
-      minpt=min(minpt,(*it)->dipol()->lastPt());
-      if (Di!=0) {
-        first_subpro.insert(1., (*it));
-      }
-      }
-    }
-  }
-  number=int(first_subpro.size());
-  if (number!=0) {
-    selectedNode=first_subpro.select(UseRandom::rnd());
-    return true;
-  }
-  return false;
-}
-*/
 
 
 IBPtr Node::clone() const {
@@ -560,32 +340,25 @@ IBPtr Node::fullclone() const {
 
 void Node::persistentOutput(PersistentOStream & os) const {
   
-   os <<theheadxcomb<<
-   thexcomb<<
-   thenodeMEPtr<<
-   thedipol<<
-   thechildren<<
-   theparent<<
-   theProjectors<<
-   theDeepHead<<
-   theCutStage<<
-   isthissafe<<
-   theDeepProStage<<
-   clustersafer<<
-   isOrdered<<
-   theOrderdSteps<<
-   theNeedFullOrderedHistory<<
-   theSudakovSteps<<
-   ounit(theVetoPt,GeV)<<
-   ounit(theRunningPt,GeV)<<
-   theSubtractedReal<<
-   theVirtualContribution<<
-   theMergingHelper;
+  os <<
+  thexcomb<<
+  thenodeMEPtr<<
+  thedipol<<
+  thechildren<<
+  theparent<<
+  theProjectors<<
+  theDeepHead<<
+  theCutStage<<
+  clustersafer<<
+  ounit(theRunningPt,GeV)<<
+  theSubtractedReal<<
+  theVirtualContribution<<
+  theMergingHelper;
 }
 
 void Node::persistentInput(PersistentIStream & is, int) {
   
-  is >>theheadxcomb>>
+  is >>
   thexcomb>>
   thenodeMEPtr>>
   thedipol>>
@@ -594,21 +367,14 @@ void Node::persistentInput(PersistentIStream & is, int) {
   theProjectors>>
   theDeepHead>>
   theCutStage>>
-  isthissafe>>
-  theDeepProStage>>
   clustersafer>>
-  isOrdered>>
-  theOrderdSteps>>
-  theNeedFullOrderedHistory>>
-  theSudakovSteps>>
-  iunit(theVetoPt,GeV)>>
   iunit(theRunningPt,GeV)>>
   theSubtractedReal>>
   theVirtualContribution>>
   theMergingHelper;
 }
 
-  
+
 
   // *** Attention *** The following static variable is needed for the type
   // description system in ThePEG. Please check that the template arguments

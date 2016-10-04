@@ -271,7 +271,7 @@ public:
    * As split, but not touching the acctual event record.
    */
   
-  PVector tmpsplit(list<Dipole>::iterator dip,
+  pair<PVector,PVector> tmpsplit(list<Dipole>::iterator dip,
              DipoleSplittingInfo& dsplit,
              pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
              DipoleChain*& firstChain, DipoleChain*& secondChain) {
@@ -281,7 +281,7 @@ public:
   /**
    * As split, but not touching the acctual event record.
    */
-  PVector tmpsplit(list<Dipole>::iterator dip,
+  pair<PVector,PVector> tmpsplit(list<Dipole>::iterator dip,
              list<DipoleChain>::iterator ch,
              DipoleSplittingInfo& dsplit,
              pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
@@ -314,7 +314,7 @@ public:
   /**
    * As update, but not touching the acctual event record.
    */
-  PVector tmpupdate(DipoleSplittingInfo& dsplit);
+  pair<PVector,PVector> tmpupdate(DipoleSplittingInfo& dsplit);
 
   /**
    * Return the dipole(s) containing the incoming

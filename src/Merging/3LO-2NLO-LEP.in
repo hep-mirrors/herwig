@@ -46,6 +46,8 @@ set Merger:MergingScale 4.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
+set /Herwig/Samplers/Sampler:BinSampler:Kappa 0.02
+
 cd /Herwig/MatrixElements/Matchbox/Utility
 insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
@@ -68,8 +70,8 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 # read Matchbox/MadGraph-GoSam.in
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
-read Matchbox/MadGraph-OpenLoops.in
-set MadGraph:ProcessPath eejjjj
+#read Matchbox/MadGraph-OpenLoops.in
+#set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath eejjjj
 ## Uncomment this to use ggh effective couplings
 ## currently only supported by MadGraph-GoSam
 

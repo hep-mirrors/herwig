@@ -63,6 +63,7 @@ public:
   /**
    * Return the pt associated to emitter emission and sppectator momentum.
    */
+    //TODO: make this static?
   virtual Energy lastPt(Lorentz5Momentum,Lorentz5Momentum,Lorentz5Momentum) const ;
   
   /**

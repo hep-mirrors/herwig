@@ -849,7 +849,7 @@ CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::
   
     //double ccme2 =underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
   
-  return -sqr(hbarc) * jac * pdfweight * (me2Avg(ccme2)) /  (2. * realEmissionME()->lastXComb().lastSHat());
+  return sqr(hbarc) * jac * pdfweight * (me2Avg(ccme2)) /  (2. * realEmissionME()->lastXComb().lastSHat());
 }
 
 
@@ -903,7 +903,7 @@ CrossSection SubtractionDipole::dip(Energy2 factorizationScale) const {
   CrossSection  factor= sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat());
 
 
-  return -1.*factor*dip;
+  return factor*dip;
 }
 
 

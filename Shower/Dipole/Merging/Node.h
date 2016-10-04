@@ -18,9 +18,7 @@
 #include <vector>
 
 namespace Herwig {
-  
   using namespace ThePEG;
-  
   /**
    * Here is the documentation of the Node class.
    *
@@ -28,22 +26,11 @@ namespace Herwig {
    * defined for Node.
    */
   
-  
   /**
    * Define the SafeClusterMap type map<pair<pair<emitter,emmision>,spectator >
    *                                    ,pair<first-clustering,second-clustering> >
    */
   typedef map<pair<pair<int,int>,int >,pair<bool,bool> > SafeClusterMap;
-  
-  
-  
- 
-  
-  
-  
-  
-  
-  
   
   class Node : public Interfaced {
 		public:
@@ -55,14 +42,14 @@ namespace Herwig {
      * The default constructor. Do not use!
      */
     Node();
-    
-    Node(Ptr<MatchboxMEBase>::ptr nodeME,  int deepprostage,int cutstage);
-    
+      // another constructor for first nodes
+    Node(Ptr<MatchboxMEBase>::ptr nodeME,int cutstage);
+      // another constructor for underlying nodes
     Node(Ptr<Node>::ptr deephead,
          Ptr<Node>::ptr head,
          Ptr<SubtractionDipole>::ptr dipol,
          Ptr<MatchboxMEBase>::ptr nodeME,
-         int deepprostage, int cutstage);
+         int cutstage);
     
     /**
      * The destructor.
@@ -70,306 +57,128 @@ namespace Herwig {
     virtual ~Node();
       //@}
     
-		public:
-    
-    /** get children from vector<Ptr<MatchboxMEBase>::ptr>  */
-    
+  public:
+      // get children from vector<Ptr<MatchboxMEBase>::ptr>
     void birth(vector<Ptr<MatchboxMEBase>::ptr> vec);
-    
-    /** recursive setXComb. proStage is the number of clusterings
-     * before the projectors get filled. */
-    
+      // recursive setXComb. proStage is the number of clusterings
+      // before the projectors get filled.
     void setXComb(tStdXCombPtr xc, int proStage);
-    
-    
-    bool headContribution(double hardscalefactor);
-    
-    bool DipolesAboveMergeingScale(Ptr<Node>::ptr& selectedNode,double& sum,Energy& minpt,int& number);
- 
-    /*   
-    bool diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
-    
-    bool psBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
-    
-    bool dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
-    */
-    
+      // calculate the dipole and ps approximation
     pair<CrossSection,CrossSection> calcDipandPS(Energy scale);
+      // calculate the ps approximation
     CrossSection calcPs(Energy scale);
+      // calculate the dipole
     CrossSection calcDip(Energy scale);
-    
-    /** recursive flush caches and clean up XCombs. */
-    
+      // recursive flush caches and clean up XCombs.
     void flushCaches();
-    
-    /** recursive clearKinematics */
-    
+      // recursive clearKinematics
     void clearKinematics();
-    
-    
-    /** recursive setKinematics */
-    
+      // recursive setKinematics
     void setKinematics();
-    
-    /** recursive generateKinematics using tilde kinematics of the dipoles*/
-    
+      // recursive generateKinematics using tilde kinematics of the dipoles
     bool generateKinematics(const double *r, int stage,Energy2 shat);
-    
-    void  firstgenerateKinematics(const double *r, int stage,Energy2 shat);
-    
-    /** returns the matrix element pointer */
-    
+      // generate the kinamatics of the first node
+    void  firstgenerateKinematics(const double *r, int stage);
+      //return the ME
     const Ptr<MatchboxMEBase>::ptr nodeME()const;
-    
-    /** access the matrix element pointer */
-    
+      //return the node ME
     Ptr<MatchboxMEBase>::ptr nodeME();
-    
-    /** the parent node */
-    
-    Ptr<Node>::ptr parent()const {
-      return theparent;
-    }
-    
-    /** map of children nodes*/
-    
-    vector< Ptr<Node>::ptr > children() {
-      return thechildren;
-    }
-    
+      //return the parent Node
+    Ptr<Node>::ptr parent()const {return theparent;}
+      // vector of children nodes created in birth
+    vector< Ptr<Node>::ptr > children()const {return thechildren;}
+      //pick a random child (flat)
     Ptr<Node>::ptr  randomChild();
-  
-    Energy miniPt()const ;  
-    
+      // true if all children show scales above pt
     bool allAbove(Energy pt);
-    
+      // true if the node is in the history of other.
     bool isInHistoryOf(Ptr<Node>::ptr other);
-    
+      // legsize of the node ME
     int legsize() const;
-    
-    
-    /** set the first node (godfather). only use in factory*/
-    
-    void deepHead(Ptr<Node>::ptr deephead) {
-      theDeepHead = deephead;
-    }
-    
-    /** return the first node*/
-    
-    Ptr<Node>::ptr deepHead() const {
-      return theDeepHead;
-    }
-    
-    /** insert nodes to projector vector */
-    
+      // set the first node (first men). only use in factory
+    void deepHead(Ptr<Node>::ptr deephead) {theDeepHead = deephead;}
+      // return the first node
+    Ptr<Node>::ptr deepHead() const {return theDeepHead;}
+      // insert nodes to projector vector
     void Projector(double a, Ptr<Node>::ptr pro) {
       pair<double,Ptr<Node>::ptr> p;
       p.first  = a;
       p.second = pro;
       theProjectors.push_back(p);
-      
-        //theProjectors.push_back(make_pair(a,pro));
     }
-    
-    /** insert nodes to projector vector */
-    
-    vector< pair <double , Ptr<Node>::ptr > > Projector() {
-      return theProjectors;
-    }
-    /** returns the dipol of the node. */
-    
-    Ptr<SubtractionDipole>::ptr dipol() const;
-    
-    /** set the xcomb of the node */
-    
-    void xcomb(StdXCombPtr xc) {
-      thexcomb = xc;
-    }
-    
-    /** return the xcomb */
-    
-    StdXCombPtr xcomb() const {
-      return thexcomb;
-    }
-    /** set the headxcomb of the node */
-    
-    void headxcomb(StdXCombPtr xc) {
-      thexcomb = xc;
-    }
-    
-    /** return the xcomb */
-    
-    StdXCombPtr headxcomb() const {
-      return theheadxcomb;
-    }
-    
-
-    
-    Energy vetoPt() const {
-      return theVetoPt;
-    }
-    
-    void vetoPt(Energy x) {
-      theVetoPt=x;
-    }
-    
-    
-    
+      // insert nodes to projector vector
+    vector< pair <double , Ptr<Node>::ptr > > Projector() {return theProjectors;}
+      // returns the dipol of the node.
+    Ptr<SubtractionDipole>::ptr dipole() const;
+      // set the xcomb of the node
+    void xcomb(StdXCombPtr xc) { thexcomb = xc;}
+      // return the xcomb
+    StdXCombPtr xcomb() const {return thexcomb;}
+      // return the current running pt
     Energy runningPt(){return theRunningPt;}
+      // set the current running pt
     void runningPt(Energy x){theRunningPt=x;}
-    
-    int cutStage() const {
-      return theCutStage;
-    }
-
-    unsigned int DeepProStage() const {
-      return theDeepProStage;
-    }
-    
-  
-    
-    SafeClusterMap clusterSafe() const {
-      return clustersafer;
-    }
-    
-    bool ordered() {
-      return isOrdered;
-    }
-    
-    int orderedSteps() const {
-      return theOrderdSteps;
-    }
-    
-    void setOrderedSteps(int x) {
-      theOrderdSteps = x;
-    }
-    
-    bool isThisSafe() const {
-      return isthissafe;
-    }
-    
+      // return the cut stage to cut on merging pt in generate kinematics
+    int cutStage() const {return theCutStage;}
+      // get the clustersafe map for this node
+    SafeClusterMap clusterSafe() const {return clustersafer;}
+      // get a vector of the next nodes, ordered in pt (and in parton shower phace space)
     vector<Ptr<Node>::ptr> getNextOrderedNodes(bool normal=true,double hardscalefactor=1.);
-    
+      //true if the node is in shower history for a given pt
     bool inShowerPS(Energy hardpt);
-    
-    
-    vector<Ptr<Node>::ptr> getNextFullOrderedNodes();
-    
-    bool hasFullHistory();
-    
+      //get the history
     Ptr<Node>::ptr getHistory(bool normal=true,double hardscalefactor=1.);
-    
-    bool subtractedReal() {
-      return theSubtractedReal;
-    }
-    void subtractedReal(bool x) {
-      theSubtractedReal = x;
-    }
-    
-    bool virtualContribution() {
-      return theVirtualContribution ;
-    }
-    
-    
-    void virtualContribution(bool x) {
-      theVirtualContribution = x;
-    }
-    
+      //true if node correspond to a subtracted real.
+    bool subtractedReal() {return theSubtractedReal;}
+      // set if node correspont to a subtracted real.
+    void subtractedReal(bool x) { theSubtractedReal = x;}
+      //true if node correspond to a virtual contribution.
+    bool virtualContribution() { return theVirtualContribution ;}
+      // set if node correspont to a virtual contribution.
+    void virtualContribution(bool x) {theVirtualContribution = x;}
+      //pointer to the merging helper
     Ptr<Merger>::ptr MH()const{return theMergingHelper;}
+      // set the merging helper
+    void MH(Ptr<Merger>::ptr a){theMergingHelper=a;}
     
-     void MH(Ptr<Merger>::ptr a){theMergingHelper=a;}
+    Energy pT()const{return dipole()->lastPt();}
     
-
-    
-		private:
-    StdXCombPtr theheadxcomb;
-    
+  private:
+      //the xcomb of the node
     StdXCombPtr thexcomb;
-    
-    /** the Matrixelement representing this node. */
-    
+      // the Matrixelement representing this node.
     Ptr<MatchboxMEBase>::ptr thenodeMEPtr;
-    
-    /** the dipol used to substract
-     *  and generate kinematics using tilde kinematics */
-    
+      // the dipol used to substract
+      // and generate kinematics using tilde kinematics
     Ptr<SubtractionDipole>::ptr thedipol;
-    
-    /** vector of the children node*/
-    
+      // vector of the children node
     vector< Ptr<Node>::ptr > thechildren;
-    
-    /** the parent node*/
-    
+      // the parent node
     Ptr<Node>::ptr theparent;
-    
-    /** The nodes of the projection stage.    */
-    
+      // The nodes of the projection stage.
     vector< pair <double,Ptr<Node>::ptr> > theProjectors;
-    
-    
-    /** The godfather node of whole tree.(Firstnode) */
-    
+      // The godfather node of whole tree.(Firstnode)
     Ptr<Node>::ptr theDeepHead;
-    
-    /**
-     * The CutStage is number of clusterings which are possible without
-     * introducing a merging scale to cut away singularities.
-     * -> subtracted MEs have the CutStage 1.
-     * -> virtual and normal tree level ME get 0.
-     */
-    
+      // The CutStage is number of clusterings which are possible without
+      // introducing a merging scale to cut away singularities.
+      // -> subtracted MEs have the CutStage 1.
+      // -> virtual and normal tree level ME get 0.
     int theCutStage;
-    
-    
-    /**
-     * all nodes downstream have pt over merged pt.
-     */
-    
-    bool isthissafe;
-
-    
-    
-    
-    /**
-     * The DeepProStage is the number of additional partons of the DeepHead
-     * compared to the lowest multiplicity.
-     */
-    
-    int theDeepProStage;
-    
-    
-    /**
-     * For [[Emitter,Emission],Spectator] the mapped pair gives
-     * information if the first and the second cluster is safe.
-     */
-    
+      // For [[Emitter,Emission],Spectator] the mapped pair gives
+      // information if the first and the second cluster is safe.
     SafeClusterMap clustersafer;
-    
-    
-    bool isOrdered;
-    
-    int theOrderdSteps;
-    
-    bool theNeedFullOrderedHistory;
-    
-    unsigned int theSudakovSteps;
-    
-    Energy theVetoPt;
-    
+      // the current running pt
     Energy theRunningPt;
-    
+      // tell if node belongs to an ordered history
+    bool isOrdered;
+      // flag to tell if node is subtracted real
     bool theSubtractedReal;
-    
+      // flag to tell if node is virtual contribution
     bool theVirtualContribution;
+      // the merging helper
+    Ptr<Merger>::ptr theMergingHelper;
     
-    
-     Ptr<Merger>::ptr theMergingHelper;
-    
-    
-    
-		public:
-    
+  public:
     /** @name Functions used by the persistent I/O system. */
       //@{
     /**
@@ -395,10 +204,7 @@ namespace Herwig {
     static void Init();
     
     
-    
-    
-		protected:
-    
+  protected:
     /** @name Clone Methods. */
       //@{
     /**
@@ -419,8 +225,8 @@ namespace Herwig {
       // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
     
     
-		private:
     
+  private:
     /**
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.

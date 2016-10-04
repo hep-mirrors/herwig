@@ -184,6 +184,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
   if ( ui.seed() > 0 ) {
     ostringstream sseed;
     sseed << ui.seed();
+    eg->addTag("-" + sseed.str());
     Herwig::RunDirectories::pushRunId(sseed.str());
   }
 

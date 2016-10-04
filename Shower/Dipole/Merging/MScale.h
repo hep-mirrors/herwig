@@ -121,11 +121,11 @@ private:
    * In fact, it should not even be implemented.
    */
   MScale & operator=(const MScale &);
-    
-
   
+    // the scale choice object
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;
   
+    // the merging helper
   Ptr<Merger>::ptr theMergingHelper;
   
 };

@@ -29,25 +29,28 @@ IBPtr MergingReweight::fullclone() const {
 double MergingReweight::weight() const {
   Energy maxpt = 0.*GeV;
   Energy ht=0*GeV;
+  Energy maxmjj=0.*GeV;
   
-  for ( int i = 0, N = subProcess()->outgoing().size(); i < N; ++i )
-    if ( !onlyColoured || subProcess()->outgoing()[i]->coloured() ){
-      maxpt = max(maxpt, subProcess()->outgoing()[i]->momentum().perp());
-      ht+=subProcess()->outgoing()[i]->momentum().perp();
+  for (auto const & out : subProcess()->outgoing())
+    if ( !onlyColoured || out->coloured() ){
+      for (auto const & out2 : subProcess()->outgoing())
+        if (!onlyColoured || out2->coloured() )
+          maxmjj=max(maxmjj,(out->momentum()+out2->momentum()).m());
+      maxpt = max(maxpt, out->momentum().perp());
+      ht+=out->momentum().perp();
     }
   if (maxpt==0*GeV||ht==0*GeV) {
-    cout<<"\nMergingReweight: no particles contribute to reweight. Return 1.";
     return 1.;
   }
-  return pow(maxpt/scale, MaxPTPower)*pow(ht/scale, HTPower);
+  return pow(maxpt/scale, MaxPTPower)*pow(ht/scale, HTPower)*pow(maxmjj/scale,MaxMjjPower);
 }
 
 void MergingReweight::persistentOutput(PersistentOStream & os) const {
-  os << HTPower << MaxPTPower << ounit(scale,GeV) << onlyColoured;
+  os << HTPower << MaxPTPower<<MaxMjjPower << ounit(scale,GeV) << onlyColoured;
 }
 
 void MergingReweight::persistentInput(PersistentIStream & is, int) {
-  is >> HTPower >> MaxPTPower >> iunit(scale,GeV) >> onlyColoured;
+  is >> HTPower >> MaxPTPower >>MaxMjjPower>> iunit(scale,GeV) >> onlyColoured;
 }
 
 // Definition of the static class description member.
@@ -78,7 +81,10 @@ void MergingReweight::Init() {
    &MergingReweight::MaxPTPower, 4.0, -10.0, 10.0, false, false, true);
 
   
-
+  static Parameter<MergingReweight,double> interfaceMaxMjjPower
+  ("MaxMjjPower",
+   "Mjj power",
+   &MergingReweight::MaxMjjPower, 0.0, 0.0, 10.0, false, false, true);
   
   
   static Parameter<MergingReweight,Energy> interfaceScale

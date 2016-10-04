@@ -682,39 +682,37 @@ void DipoleEventRecord::clear() {
 
 
 
-PVector DipoleEventRecord::tmpupdate(DipoleSplittingInfo& dsplit) {
+pair<PVector,PVector> DipoleEventRecord::tmpupdate(DipoleSplittingInfo& dsplit) {
   
-  PVector res;
+  PVector inc;
+  PVector out;
   
   if ( incoming().first != dsplit.emitter() && incoming().first != dsplit.spectator()) {
     Ptr<ThePEG::Particle>::ptr p =(incoming().first )->data().produceParticle((incoming().first)->momentum());
-    res.push_back(p);
-  }else if ( incoming().first == dsplit.emitter()) res.push_back( dsplit.splitEmitter());
-   else if ( incoming().first == dsplit.spectator()) res.push_back( dsplit.splitSpectator());
+    inc.push_back(p);
+  }else if ( incoming().first == dsplit.emitter()) inc.push_back( dsplit.splitEmitter());
+   else if ( incoming().first == dsplit.spectator()) inc.push_back( dsplit.splitSpectator());
   
   if ( incoming().second != dsplit.emitter() && incoming().second != dsplit.spectator() ) {
     Ptr<ThePEG::Particle>::ptr p =(incoming().second )->data().produceParticle((incoming().second)->momentum());
-    res.push_back(p);
-  }else if ( incoming().second == dsplit.emitter()) res.push_back( dsplit.splitEmitter());
-   else if ( incoming().second == dsplit.spectator()) res.push_back( dsplit.splitSpectator());
+    inc.push_back(p);
+  }else if ( incoming().second == dsplit.emitter()) inc.push_back( dsplit.splitEmitter());
+   else if ( incoming().second == dsplit.spectator()) inc.push_back( dsplit.splitSpectator());
   
- 
+  
   if ( incoming().first != dsplit.emitter() && incoming().second != dsplit.emitter())
-    res.push_back( dsplit.splitEmitter());
+    out.push_back( dsplit.splitEmitter());
   if ( incoming().first != dsplit.spectator() && incoming().second != dsplit.spectator())
-    res.push_back( dsplit.splitSpectator());
-  res.push_back( dsplit.emission());
+    out.push_back( dsplit.splitSpectator());
+  out.push_back( dsplit.emission());
   
   for (PList::iterator h = theHard.begin();
        h != theHard.end(); ++h) {
     Ptr<ThePEG::Particle>::ptr p =(*h)->data().produceParticle((*h)->momentum());;
     if (dsplit.splittingKinematics()->doesTransform()){
       p->set5Momentum(dsplit.splittingKinematics()->transform((*p).momentum()));
-        // cout<<"\n hard "<<p->momentum()/GeV<<" "<<(**h).momentum()/GeV;
     }
-    res.push_back(p);
-      //cout<<"\n"<<p->momentum()/GeV<<" "<<(**h).momentum()/GeV;
-    
+    out.push_back(p);
   }
   
   for (PList::iterator p = outgoing().begin();
@@ -723,18 +721,13 @@ PVector DipoleEventRecord::tmpupdate(DipoleSplittingInfo& dsplit) {
         (*p) != dsplit.spectator() &&
         (*p) != dsplit.emission()){
       
-      Ptr<ThePEG::Particle>::ptr out=(*p)->data().produceParticle((*p)->momentum());;
+      Ptr<ThePEG::Particle>::ptr ou=(*p)->data().produceParticle((*p)->momentum());;
       if (dsplit.splittingKinematics()->doesTransform()){
-        out->set5Momentum(dsplit.splittingKinematics()->transform((*out).momentum()));
-          // cout<<"\n out "<<out->momentum()/GeV<<" "<<(**p).momentum()/GeV;
+        ou->set5Momentum(dsplit.splittingKinematics()->transform((*ou).momentum()));
       }
-      res.push_back(out);
-         
+      out.push_back(ou);
     }
-  
-    //cout<<"\nDipoleEventRecord::tmpupdate: res size: "<<res.size();
-  return res;
-  
+    return make_pair(inc,out);
 }
 
 
@@ -1009,7 +1002,7 @@ DipoleEventRecord::split(list<Dipole>::iterator dip,
 }
 
 
-PVector DipoleEventRecord::tmpsplit(list<Dipole>::iterator dip,
+pair<PVector,PVector> DipoleEventRecord::tmpsplit(list<Dipole>::iterator dip,
                          list<DipoleChain>::iterator ch,
                          DipoleSplittingInfo& dsplit,
                          pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,

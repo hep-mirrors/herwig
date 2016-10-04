@@ -58,9 +58,7 @@ MFactory::MFactory() :MatchboxFactory(),
  unitarized(true),
  NLOunitarized(true),
  ransetup(false),
- theonlyk(-1),
  theonlymulti(-1),
- theonlyabove(-1),
  theonlysub(-1),
  divideSub(-1),
  divideSubNumber(-1)
@@ -82,13 +80,10 @@ IBPtr MFactory::fullclone() const {
 void MFactory::fill_amplitudes() {
   
   olpProcesses().clear();
-  
-  
+
   processMap[0] = getProcesses()[0];
-  if(MH()->M()>=0)
-    setHighestVirt(processMap[0].size()+MH()->M());
- 
   
+  if(MH()->M()>=0) setHighestVirt(processMap[0].size()+MH()->M());
   
   MH()->N0(processMap[0].size());
   for ( int i = 1 ; i <= MH()->N() ; ++i ) {
@@ -99,104 +94,78 @@ void MFactory::fill_amplitudes() {
   for ( int i = 0 ; i <= MH()->N() ; ++i ) {
     vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(processMap[i], orderInAlphaS() + i,i<MH()->M()+1);
     copy(ames.begin(), ames.end(), back_inserter(pureMEsMap()[i]));
+    cout<<"\n"<<processMap[i].size()<<" "<<pureMEsMap()[i].size()<<" "<<orderInAlphaS()<<" "<<orderInAlphaEW()<<" "<<MH()->M()<<" "<< MH()->N0()<<" "<< MH()->N();
   }
 }
 
 void MFactory::prepare_BV(int i) {
     // check if we have virtual contributions
   bool haveVirtuals = true;
-  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = pureMEsMap()[i].begin() ; born != pureMEsMap()[i].end() ; ++born ) {
+  for ( auto born : pureMEsMap()[i]) {
     
-    prepareME(*born);
+    prepareME(born);
     
     
-    if ( (*born)->isOLPTree() ) {
-      int id = orderOLPProcess((*born)->subProcess(),
-                               (*born)->matchboxAmplitude(),
+    if ( born->isOLPTree() ) {
+      int id = orderOLPProcess(born->subProcess(),
+                               born->matchboxAmplitude(),
                                ProcessType::treeME2);
-      (*born)->olpProcess(ProcessType::treeME2,id);
-      id = orderOLPProcess((*born)->subProcess(),
-                           (*born)->matchboxAmplitude(),
+      born->olpProcess(ProcessType::treeME2,id);
+      id = orderOLPProcess(born->subProcess(),
+                           born->matchboxAmplitude(),
                            ProcessType::colourCorrelatedME2);
-      (*born)->olpProcess(ProcessType::colourCorrelatedME2,id);
+      born->olpProcess(ProcessType::colourCorrelatedME2,id);
       
       bool haveGluon = false;
-      for ( PDVector::const_iterator p = (*born)->subProcess().legs.begin();
-           p != (*born)->subProcess().legs.end(); ++p )
-        if ( (**p).id() == 21 ) {
+      for ( const auto p : born->subProcess().legs )
+        if ( p->id() == 21 ) {
           haveGluon = true;
           break;
         }
       if ( haveGluon ) {
-        id = orderOLPProcess((*born)->subProcess(),
-                             (*born)->matchboxAmplitude(),
+        id = orderOLPProcess(born->subProcess(),
+                             born->matchboxAmplitude(),
                              ProcessType::spinColourCorrelatedME2);
-        (*born)->olpProcess(ProcessType::spinColourCorrelatedME2,id);
+        born->olpProcess(ProcessType::spinColourCorrelatedME2,id);
       }
     }
-    if ( (*born)->isOLPLoop() &&  i <= MH()->M()) {
-      int id = orderOLPProcess((*born)->subProcess(),
-                               (*born)->matchboxAmplitude(),
+    if ( born->isOLPLoop() &&  i <= MH()->M()) {
+      int id = orderOLPProcess(born->subProcess(),
+                               born->matchboxAmplitude(),
                                ProcessType::oneLoopInterference);
-      (*born)->olpProcess(ProcessType::oneLoopInterference,id);
-      if ( !(*born)->onlyOneLoop() && (*born)->needsOLPCorrelators() ) {
-        id = orderOLPProcess((*born)->subProcess(),
-                             (*born)->matchboxAmplitude(),
+      born->olpProcess(ProcessType::oneLoopInterference,id);
+      if ( !born->onlyOneLoop() && born->needsOLPCorrelators() ) {
+        id = orderOLPProcess(born->subProcess(),
+                             born->matchboxAmplitude(),
                              ProcessType::colourCorrelatedME2);
-        (*born)->olpProcess(ProcessType::colourCorrelatedME2,id);
+        born->olpProcess(ProcessType::colourCorrelatedME2,id);
       }
     }
-    
-    
-    
-    
-    
-    
-    haveVirtuals &= (**born).haveOneLoop();
+    haveVirtuals &= born->haveOneLoop();
   }
   
     // check the additional insertion operators
   if ( !theVirtualsMap[i].empty() ) haveVirtuals = true;
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {
-    (**virt).factory(this);
-  }
   
+  for ( auto & virt : theVirtualsMap[i] ) virt->factory(this);
   
-    // check for consistent conventions on virtuals, if we are to include MH()->M()
-  if ( i <= MH()->M() ) {
-    if ( !haveVirtuals ) {
-      throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
-    }
-  }
+  // check for consistent conventions on virtuals, if we are to include MH()->M()
+  assert(i > MH()->M()||haveVirtuals);
+
+  for ( auto & virt : DipoleRepository::insertionIOperators(dipoleSet()) )
+    virt->factory(this);
   
-    // prepare dipole insertion operators
-    // Need MH()->M() for alpha-improvement
-    //if ( i <= MH()->M() ) {
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-       = DipoleRepository::insertionIOperators(dipoleSet()).begin();
-       virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
-    (**virt).factory(this);
-  }
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-       = DipoleRepository::insertionPKOperators(dipoleSet()).begin();
-       virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
-    
-    (**virt).factory(this);
-  }
-  
-    //}
-  
+  for ( auto & virt : DipoleRepository::insertionPKOperators(dipoleSet()) )
+    virt->factory(this);
 }
 
 void MFactory::prepare_R(int i) {
-  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator
-       real = thePureMEsMap[i].begin() ;
-       real!= thePureMEsMap[i].end() ; ++real )
-    prepareME(*real);
+  for ( auto real : pureMEsMap()[i])
+    prepareME(real);
 }
 
 void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
-  Ptr<MatchboxMEBase>::ptr bornme = (*born).cloneMe();
+  Ptr<MatchboxMEBase>::ptr bornme = born->cloneMe();
   bornme->maxMultCKKW(1);
   bornme->minMultCKKW(0);
   
@@ -205,20 +174,20 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Born ME " << pname << " already existing.";
   
   bornme->virtuals().clear();
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {
-    if ( (**virt).apply((*born).diagrams().front()->partons()) ) bornme->virtuals().push_back(*virt);
-  }
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
-       virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
-    if ( (**virt).apply((*born).diagrams().front()->partons()) ) bornme->virtuals().push_back(*virt);
-  }
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionPKOperators(dipoleSet()).begin() ;
-       virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
-    if ( (**virt).apply((*born).diagrams().front()->partons()) ) bornme->virtuals().push_back(*virt);
-  }
+  for ( auto virt : theVirtualsMap[i] )
+    if ( virt->apply(born->diagrams().front()->partons()) )
+      bornme->virtuals().push_back(virt);
   
+  for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
+    if ( I->apply(born->diagrams().front()->partons()) )
+      bornme->virtuals().push_back(I);
   
-  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, i, 0));
+  for ( auto PK : DipoleRepository::insertionPKOperators(dipoleSet()) )
+        if ( PK->apply(born->diagrams().front()->partons()) )
+          bornme->virtuals().push_back(PK);
+
+  
+  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 0));
   MH()->firstNodeMap(bornme,clusternode);
   bornme->factory(this);
   bornme->merger(MH());
@@ -232,27 +201,24 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   temp.push_back(clusternode);
   unsigned int k = 1;
   while (thePureMEsMap[i - k].size() != 0) {
-    for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
-      temp[j]->birth(thePureMEsMap[i - k]);
-      for ( unsigned int m = 0 ; m < temp[j]->children().size() ; m++ ) {
+    for ( auto tmp : temp){//j
+      tmp->birth(thePureMEsMap[i - k]);
+      for ( auto tmpchild : tmp->children()){//m
         if ( i <= MH()->M() ) {
-          for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
-               virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
-            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
-              Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
-              temp[j]->children()[m]->nodeME()->virtuals().push_back(myIOP);
+          for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
+            if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
+              Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
+              tmpchild->nodeME()->virtuals().push_back(myI);
             }
-          }
-          for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionPKOperators(dipoleSet()).begin() ;
-               virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
-            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
-              Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
-              temp[j]->children()[m]->nodeME()->virtuals().push_back(myIOP);
+          for ( auto I : DipoleRepository::insertionPKOperators(dipoleSet()) )
+            if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
+              Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
+              tmpchild->nodeME()->virtuals().push_back(myI);
             }
-          }
-          temp[j]->children()[m]->nodeME()->noOneLoop();
+    
+          tmpchild->nodeME()->noOneLoop();
         }
-        temp1.push_back(temp[j]->children()[m]);
+        temp1.push_back(tmpchild);
       }
     }
     temp = temp1;
@@ -265,9 +231,8 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   else bornme->needsNoCorrelations();
   
   bornme->cloneDependencies();
-  if ( theonlyk == -1  || (theonlyk == i-1 &&unitarized) || theonlyk == i) {
-    MEs().push_back(bornme);
-  }
+  MEs().push_back(bornme);
+  
 }
 
 
@@ -276,29 +241,33 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
 
 void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   
-  Ptr<MatchboxMEBase>::ptr nlo = (*born).cloneMe();
+  Ptr<MatchboxMEBase>::ptr nlo = born->cloneMe();
   
   string pname = fullName() + "/" + nlo->name() + ".Virtual";
   if ( !(generator()->preinitRegister(nlo, pname)) ) throw InitException() << "Virtual ME " << pname << " already existing.";
     ////////////////////////////////////NLO///////////////////////////
   nlo->virtuals().clear();
   if ( !nlo->onlyOneLoop() ) {
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {
-      if ( (**virt).apply((*born).diagrams().front()->partons()) ) nlo->virtuals().push_back(*virt);
-    }
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
-         virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
-      if ( (**virt).apply((*born).diagrams().front()->partons()) ) nlo->virtuals().push_back(*virt);
-    }
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionPKOperators(dipoleSet()).begin() ;
-         virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
-      if ( (**virt).apply((*born).diagrams().front()->partons()) ) nlo->virtuals().push_back(*virt);
-    }
-    if ( nlo->virtuals().empty() ) throw InitException() << "No insertion operators have been found for " << (*born).name() << "\n";
+    for ( auto OV : theVirtualsMap[i] )
+      if ( OV->apply(nlo->diagrams().front()->partons()) ){
+        nlo->virtuals().push_back(OV);
+      }
+    
+    for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
+      if ( I->apply(nlo->diagrams().front()->partons()) ){
+        nlo->virtuals().push_back(I);
+      }
+    
+    for ( auto PK : DipoleRepository::insertionPKOperators(dipoleSet()) )
+      if ( PK->apply(nlo->diagrams().front()->partons()) ){
+        nlo->virtuals().push_back(PK);
+      }
+    
+    if ( nlo->virtuals().empty() ) throw InitException() << "No insertion operators have been found for " << born->name() << "\n";
   }
   nlo->doOneLoopNoBorn();
     ////////////////////////////////////NLO///////////////////////////
-  Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, i, 0));
+  Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, 0));
   clusternode->virtualContribution(true);
   MH()->firstNodeMap(nlo,clusternode);
   nlo->merger(MH());
@@ -310,11 +279,10 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   temp.push_back(clusternode);
   unsigned int k = 1;
   while (thePureMEsMap[i - k].size() != 0) {
-    for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
-      temp[j]->birth(thePureMEsMap[i - k]);
-      for ( unsigned int m = 0 ; m < temp[j]->children().size() ; ++m ) {
-        temp1.push_back(temp[j]->children()[m]);
-      }
+    for ( auto tmp : temp ){
+      tmp->birth(thePureMEsMap[i - k]);
+      for ( auto tmpchild : tmp->children())
+        temp1.push_back(tmpchild);
     }
     temp = temp1;
     k++;
@@ -322,12 +290,12 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   if ( nlo->isOLPLoop() ) {
     int id = orderOLPProcess(nlo->subProcess(),
-                             (*born).matchboxAmplitude(),
+                             born->matchboxAmplitude(),
                              ProcessType::oneLoopInterference);
     nlo->olpProcess(ProcessType::oneLoopInterference,id);
     if ( !nlo->onlyOneLoop() && nlo->needsOLPCorrelators() ) {
       id = orderOLPProcess(nlo->subProcess(),
-                           (*born).matchboxAmplitude(),
+                           born->matchboxAmplitude(),
                            ProcessType::colourCorrelatedME2);
       nlo->olpProcess(ProcessType::colourCorrelatedME2,id);
     }
@@ -335,19 +303,18 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   nlo->needsCorrelations();
   nlo->cloneDependencies();
-  if ( theonlyk == -1 || theonlyk == i - 1|| theonlyk == i - 2  ) {
-    MEs().push_back(nlo);
-  }
+  MEs().push_back(nlo);
+  
 }
 
 void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
-  Ptr<MatchboxMEBase>::ptr bornme = (*born).cloneMe();
+  Ptr<MatchboxMEBase>::ptr bornme = born->cloneMe();
   
   string pname = fullName() + "/" + bornme->name() + ".Real";
   if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Subtracted ME " << pname << " already existing.";
   
   
-  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, i - 2, 1));
+  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 1));
   clusternode->subtractedReal(true);
   MH()->firstNodeMap(bornme,clusternode);
   bornme->merger(MH());
@@ -359,16 +326,17 @@ void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   temp.push_back(clusternode);
   
   unsigned int k = 1;
+  
   while (thePureMEsMap[i - k].size() != 0) {
-    for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
-      temp[j]->birth(thePureMEsMap[i - k]);
-      for ( unsigned int m = 0 ; m < temp[j]->children().size() ; ++m ) {
-        temp1.push_back(temp[j]->children()[m]);
-      }
+    for ( auto tmp : temp ){
+      tmp->birth(thePureMEsMap[i - k]);
+      for ( auto tmpchild : tmp->children()) temp1.push_back(tmpchild);
     }
     temp = temp1;
     k++;
   }
+  
+
   
   if(MH()->N()>i)
     bornme->needsCorrelations();
@@ -376,9 +344,7 @@ void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   bornme->cloneDependencies(pname);
   
-  if ( theonlyk == -1 || theonlyk == i - 1 || theonlyk == i - 2 ) {
-    MEs().push_back(bornme);
-  }
+  MEs().push_back(bornme);
 }
 
 void MFactory::orderOLPs() {
@@ -391,37 +357,35 @@ vector<string> MFactory::parseProcess(string in) {
   if ( process.size() < 3 )
     throw Exception() << "MatchboxFactory: Invalid process."
     << Exception::runerror;
-  for ( vector<string>::iterator p = process.begin();
-       p != process.end(); ++p ) {
-    *p = StringUtils::stripws(*p);
+  for ( string & p : process) {
+    p = StringUtils::stripws(p);
   }
   theN=0;
   bool prodprocess=true;
   vector<string> pprocess;
-  for ( vector<string>::const_iterator p = process.begin();
-       p != process.end(); ++p ) {
-    if ( *p == "->" )
+  for (string const p : process) {
+    if ( p == "->" )
       continue;
 
-    if (*p=="[") {
+    if (p=="[") {
       prodprocess=false;
-    }else if (*p=="]") {
+    }else if (p=="]") {
       prodprocess=false;
       break;
-    }else if (*p=="[j") {
+    }else if (p=="[j") {
       prodprocess=false;
       theN++;
-    }else if (*p=="j"&&!prodprocess) {
+    }else if (p=="j"&&!prodprocess) {
       theN++;
       prodprocess=false;
-    }else if (*p=="j]") {
+    }else if (p=="j]") {
       theN++;
       prodprocess=false;
       break;
     }else if(prodprocess){
-      pprocess.push_back(*p);
+      pprocess.push_back(p);
     }else{
-      cout<<"\nWarning: "<<*p<<" in the brackets of the process definition is not recognized.\n Only j as jets are recognized.";
+      cout<<"\nWarning: "<<p<<" in the brackets of the process definition is not recognized.\n Only j as jets are recognized.";
     }
     
   }
@@ -450,34 +414,28 @@ void MFactory::setup() {
     
     
       // rebind the particle data objects
-    for ( map<string, PDVector>::iterator g = particleGroups().begin() ; g != particleGroups().end() ; ++g ) {
-      for ( PDVector::iterator p = g->second.begin() ; p != g->second.end() ; ++p ) {
-        *p = getParticleData((**p).id());
+    for ( auto & g : particleGroups()) {
+      for ( auto & p : g.second) {
+        p = getParticleData(p->id());
       }
     }
     
-    for ( PDVector::const_iterator p = partons.begin();
-         p != partons.end(); ++p ) {
-      if ( abs((**p).id()) < 7 && (**p).hardProcessMass() == ZERO )
+    for ( const auto p : partons ) {
+      if ( abs(p->id()) < 7 && p->hardProcessMass() == ZERO )
         ++nl;
-      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).hardProcessMass() == ZERO )
-        nLightJetVec( (**p).id() );
-      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).hardProcessMass() != ZERO )
-        nHeavyJetVec( (**p).id() );
+      if ( p->id() > 0 && p->id() < 7 && p->hardProcessMass() == ZERO )
+        nLightJetVec( p->id() );
+      if ( p->id() > 0 && p->id() < 7 && p->hardProcessMass() != ZERO )
+        nHeavyJetVec( p->id() );
     }
     nLight(nl/2);
     
     const PDVector& partonsInP = particleGroups()["p"];
-    for ( PDVector::const_iterator pip = partonsInP.begin();
-         pip != partonsInP.end(); ++pip ) {
-      if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).hardProcessMass() == ZERO )
-        nLightProtonVec( (**pip).id() );
-    }
+    for ( const auto pip : partonsInP )
+      if ( pip->id() > 0 && pip->id() < 7 && pip->hardProcessMass() == ZERO )
+        nLightProtonVec( pip->id() );
     
-    
-    for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
-         = amplitudes().begin(); amp != amplitudes().end(); ++amp )
-      (**amp).factory(this);
+    for ( auto & amp: amplitudes() ) amp->factory(this);
     
     MH()->largeNBasis()->factory(this);
     
@@ -485,9 +443,7 @@ void MFactory::setup() {
     assert(!subProcessGroups());
     
       //fill the amplitudes
-    if ( !amplitudes().empty() ) {
-      fill_amplitudes();
-    }
+    if ( !amplitudes().empty() )  fill_amplitudes();
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);
@@ -502,57 +458,49 @@ void MFactory::setup() {
     MEs().clear();
     
     int onlysubcounter=0;
-    int i = theonlyabove ;
+    int i = 0 ;
     
     
-    if (calc_born) {
-      for (; i <= max(0, MH()->N()) ; ++i ) {
-        for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
-          if (!theonlyUnlopsweights&&( theonlyk == -1  || theonlyk == i -1|| theonlyk == i )){
-            if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-              pushB(*born, i);
-            onlysubcounter++;
-          }
+    for (; i <= max(0, MH()->N()) ; ++i )
+      for ( auto born : thePureMEsMap[i])
+        if (calc_born && !theonlyUnlopsweights){
+          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+            pushB(born, i);
+          onlysubcounter++;
         }
-      }
-    }
     
     
-    
-    if (calc_virtual) {
-      i = theonlyabove ;
-      for (; i <=max(0, MH()->N()); ++i ) {
-        for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
-          if ( i <= MH()->M()  &&( theonlyk == -1  || theonlyk == i -1|| theonlyk == i )){
-            if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-              pushV(*born, i);
-            onlysubcounter++;
-          }
-        }}
-    }
-    if (calc_real) {
-      i = theonlyabove ;
-      for (; i <= max(0, MH()->N()) ; ++i ) {
-        for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
-          if ( i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights&&( theonlyk == -1  || theonlyk == i -2|| theonlyk == i-1 )){
-            if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-              pushProR(*born, i);
-            onlysubcounter++;
-          }
+    i = 0 ;
+    for (; i <=max(0, MH()->N()); ++i )
+      for ( auto virt : thePureMEsMap[i])
+        if ( calc_virtual && i <= MH()->M()){
+          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+            pushV(virt, i);
+          onlysubcounter++;
         }
-      }
-    }
     
+    i = 0 ;
+    for (; i <= max(0, MH()->N()) ; ++i )
+      for ( auto real : thePureMEsMap[i] )
+        if (calc_real&& i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights){
+          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+            pushProR(real, i);
+          onlysubcounter++;
+        }
+  
+
     
     if ( !externalAmplitudes().empty() ) {
       generator()->log() << "Initializing external amplitudes.\n" << flush;
       boost::progress_display * progressBar =
       new boost::progress_display(externalAmplitudes().size(),generator()->log());
-      for ( set<Ptr<MatchboxAmplitude>::tptr>::const_iterator ext =
-           externalAmplitudes().begin(); ext != externalAmplitudes().end(); ++ext ) {
-        if ( !(**ext).initializeExternal() ) {
+      for ( const auto ext : externalAmplitudes()) {
+        if ( ! ext->initializeExternal() ) {
           throw InitException()
-          << "error: failed to initialize amplitude '" << (**ext).name() << "'\n";
+          << "error: failed to initialize amplitude '" << ext->name() << "'\n";
         }
         ++(*progressBar);
       }
@@ -565,14 +513,13 @@ void MFactory::setup() {
     if ( !olpProcesses().empty() ) {
       generator()->log() << "Initializing one-loop provider(s).\n" << flush;
       map<Ptr<MatchboxAmplitude>::tptr, map<pair<Process, int>, int> > olps;
-      for ( map<Ptr<MatchboxAmplitude>::tptr, map<pair<Process, int>, int> >::const_iterator oit = olpProcesses().begin() ; oit != olpProcesses().end() ;
-           ++oit ) {
-        olps[oit->first] = oit->second;
+      for (const auto oit : olpProcesses()) {
+        olps[oit.first] = oit.second;
       }
       boost::progress_display * progressBar = new boost::progress_display(olps.size(), generator()->log());
-      for ( map<Ptr<MatchboxAmplitude>::tptr, map<pair<Process, int>, int> >::const_iterator olpit = olps.begin() ; olpit != olps.end() ; ++olpit ) {
-        if ( !olpit->first->startOLP(olpit->second) ) {
-          throw InitException() << "error: failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
+      for ( const auto olpit : olps ) {
+        if ( !olpit.first->startOLP(olpit.second) ) {
+          throw InitException() << "error: failed to start OLP for amplitude '" << olpit.first->name() << "'\n";
         }
         ++(*progressBar);
       }
@@ -600,18 +547,18 @@ void MFactory::persistentOutput(PersistentOStream & os) const {
   
   os
   << calc_born            << calc_virtual       << calc_real
-  << theonlyUnlopsweights << theonlyk           << theonlymulti
-  << divideSub            << divideSubNumber    << theonlyabove
-  << theonlysub           << theSubtractionData << ransetup
+  << theonlyUnlopsweights            << theonlymulti
+  << divideSub            << divideSubNumber
+  << theonlysub            << ransetup
   << processMap           << theMergingHelper   <<theM<<theN;
 }
 
 void MFactory::persistentInput(PersistentIStream & is, int) {
   is
   >> calc_born            >> calc_virtual       >> calc_real
-  >> theonlyUnlopsweights >> theonlyk           >> theonlymulti
-  >> divideSub            >> divideSubNumber    >> theonlyabove
-  >> theonlysub           >> theSubtractionData >> ransetup
+  >> theonlyUnlopsweights            >> theonlymulti
+  >> divideSub            >> divideSubNumber
+  >> theonlysub            >> ransetup
   >> processMap           >> theMergingHelper   >>theM>>theN;
 }
 
@@ -619,12 +566,9 @@ void MFactory::Init() {
   
   
   
-  static Parameter<MFactory, int> interfaceonlyk("onlyk", "calculate only the ME with k additional partons.", &MFactory::theonlyk, -1, -1, 0,
-                                                 false, false, Interface::lowerlim);
   static Parameter<MFactory, int> interfaceonlymulti("onlymulti", "calculate only the ME with k additional partons.", &MFactory::theonlymulti, -1, -1, 0,
                                                      false, false, Interface::lowerlim);
-  static Parameter<MFactory, int> interfaceonlyabove("onlyabove", "calculate only the ME with more than k additional partons.", &MFactory::theonlyabove, -1, -1, 0,
-                                                     false, false, Interface::lowerlim);
+
   
   static Parameter<MFactory, int> interfaceonlysub("onlysub", "calculate only one subProcess. this is for building grids.", &MFactory::theonlysub, -1, -1, 0,
                                                    false, false, Interface::lowerlim);
@@ -708,16 +652,7 @@ void MFactory::Init() {
   static Switch<MFactory, bool> interface_NLOUnitarized("NLOUnitarized", "Unitarize the cross section.", &MFactory::NLOunitarized, true, false, false);
   static SwitchOption interface_NLOUnitarizedOn(interface_NLOUnitarized, "On", "Switch on the unitarized NLO cross section.", true);
   static SwitchOption interface_NLOUnitarizedOff(interface_NLOUnitarized, "Off", "Switch off the unitarized NLO cross section.", false);
-  
-  
-  
-  
-  static Parameter<MFactory, string> interfaceSubtractionData("SubtractionData", "Prefix for subtraction check data.",
-                                                              &MFactory::theSubtractionData, "", false, false);
-  
-  
-  
-  
+
   static Reference<MFactory,Merger> interfaceMergingHelper
   ("MergingHelper",
    "",
