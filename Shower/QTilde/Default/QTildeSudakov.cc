@@ -445,7 +445,7 @@ namespace {
 
 tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
 					  bool forward,
-					  ShowerInteraction::Type inter) {
+					  ShowerInteraction inter) {
   tPPtr child = &particle;
   tShowerParticlePtr mother;
   if(forward) {

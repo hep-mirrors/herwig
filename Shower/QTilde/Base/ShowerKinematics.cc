@@ -20,7 +20,7 @@ describeShowerKinematics("Herwig::ShowerKinematics","Herwig.so");
 
 void ShowerKinematics::updateChildren(const tShowerParticlePtr, 
 				      const ShowerParticleVector &,
-				      ShowerPartnerType::Type,bool) const {
+				      ShowerPartnerType,bool) const {
   throw Exception() << "Base class ShowerKinematics::updateChildren called,"
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;
@@ -34,7 +34,7 @@ void ShowerKinematics::resetChildren(const tShowerParticlePtr,
 
 void ShowerKinematics::updateParent(const tShowerParticlePtr, 
 				    const ShowerParticleVector &,
-				    ShowerPartnerType::Type) const {
+				    ShowerPartnerType) const {
   throw Exception() << "Base class ShowerKinematics::updateParent called,"
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;

@@ -304,7 +304,7 @@ void QTildeShowerHandler::Init() {
      "Powheg style hard emission",
      2);
 
-  static Switch<QTildeShowerHandler,ShowerInteraction::Type> interfaceInteractions
+  static Switch<QTildeShowerHandler,ShowerInteraction> interfaceInteractions
     ("Interactions",
      "The interactions to be used in the shower",
      &QTildeShowerHandler::interaction_, ShowerInteraction::Both, false, false);
@@ -823,7 +823,7 @@ ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticle
 }
 
 bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle, 
-					 ShowerInteraction::Type type,
+					 ShowerInteraction type,
 					 Branching fb, bool first) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || hardOnly() || 
@@ -983,7 +983,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
 
 bool 
 QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
-				     ShowerInteraction::Type type) {
+				     ShowerInteraction type) {
   //using the pdf's associated with the ShowerHandler assures, that
   //modified pdf's are used for the secondary interactions via 
   //CascadeHandler::resetPDFs(...)
@@ -1128,7 +1128,7 @@ void QTildeShowerHandler::showerDecay(ShowerTreePtr decay) {
 
 bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   const ShowerParticle::EvolutionScales & maxScales,
-				   Energy minmass,ShowerInteraction::Type type,
+				   Energy minmass,ShowerInteraction type,
 				   Branching fb) {
   // too many tries
   if(_nFSR>=_maxTryFSR) {
@@ -1299,7 +1299,7 @@ vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
   return particlesToShower;
 }
 
-void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction::Type type,
+void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
 					       bool clear) {
   // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
@@ -1348,7 +1348,7 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction::Type
       map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
 	mit = hardTree()->particles().find(particles[ix]);
       Energy hardScale(ZERO);
-      ShowerPartnerType::Type type(ShowerPartnerType::Undefined);
+      ShowerPartnerType type(ShowerPartnerType::Undefined);
       // final-state
       if(particles[ix]->isFinalState()) {
 	if(mit!= eit && !mit->second->children().empty()) {
@@ -1397,7 +1397,7 @@ void QTildeShowerHandler::updateHistory(tShowerParticlePtr particle) {
   }
 }
 
-bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
+bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction type) {
   _nFSR = 0;
   // initialize basis vectors etc
   progenitor()->progenitor()->initializeFinalState();
@@ -1420,7 +1420,7 @@ bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
   return output;
 }
 
-bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
+bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction type) {
   // initialise the basis vectors
   progenitor()->progenitor()->initializeInitialState(parent);
   if(!progenitor()->progenitor()->partner()) return false;
@@ -1440,7 +1440,7 @@ bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction::T
 
 bool QTildeShowerHandler::
 startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
-			  Energy minimumMass,ShowerInteraction::Type type) {
+			  Energy minimumMass,ShowerInteraction type) {
   _nFSR = 0;
   // set up the particle basis vectors
   progenitor()->progenitor()->initializeDecay();
@@ -1464,7 +1464,7 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
 			     ShowerParticlePtr particle) {
   // work out type of interaction
-  ShowerInteraction::Type type = convertInteraction(fb.type);
+  ShowerInteraction type = convertInteraction(fb.type);
   // check whether emission was harder than largest pt of hard subprocess
   if ( restrictPhasespace() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
@@ -1515,7 +1515,7 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
 bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
 			      ShowerParticlePtr particle) {
   // work out type of interaction
-  ShowerInteraction::Type type = convertInteraction(bb.type);
+  ShowerInteraction type = convertInteraction(bb.type);
   // check whether emission was harder than largest pt of hard subprocess
   if (restrictPhasespace() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
@@ -1562,7 +1562,7 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
 bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
 				    ShowerParticlePtr particle) {
   // work out type of interaction
-  ShowerInteraction::Type type = convertInteraction(fb.type);
+  ShowerInteraction type = convertInteraction(fb.type);
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
     if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
@@ -1868,7 +1868,7 @@ void QTildeShowerHandler::addFSRUsingDecayPOWHEG(HardTreePtr ISRTree) {
 
 bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
 				      HardBranchingPtr branch,
-				      ShowerInteraction::Type type,
+				      ShowerInteraction type,
 				      Branching fb, bool first) {
   // select a branching if we don't have one
   if(!fb.kinematics)
@@ -2067,7 +2067,7 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
 
 bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type) {
+				       ShowerInteraction type) {
   tcPDFPtr pdf;
   if(firstPDF().particle()  == beamParticle())
     pdf = firstPDF().pdf();
@@ -2103,7 +2103,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
       double zsplit = bb.kinematics->z();
       // apply the vetos for the truncated shower
       // if doesn't carry most of momentum
-      ShowerInteraction::Type type2 = convertInteraction(bb.type);
+      ShowerInteraction type2 = convertInteraction(bb.type);
       if(type2==branch->sudakov()->interactionType() &&
 	 zsplit < 0.5) {
 	particle->vetoEmission(bb.type,bb.kinematics->scale());
@@ -2232,7 +2232,7 @@ bool QTildeShowerHandler::
 truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, 
 			      const ShowerParticle::EvolutionScales & maxScales,
 			      Energy minmass, HardBranchingPtr branch,
-			      ShowerInteraction::Type type, Branching fb) {
+			      ShowerInteraction type, Branching fb) {
   // select a branching if we don't have one
   if(!fb.kinematics)
     fb = selectSpaceLikeDecayBranching(particle,maxScales,minmass,type,branch);
@@ -2881,7 +2881,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   hardTree(HardTreePtr());
 }
 
-void QTildeShowerHandler:: convertHardTree(bool hard,ShowerInteraction::Type type) {
+void QTildeShowerHandler:: convertHardTree(bool hard,ShowerInteraction type) {
   map<ColinePtr,ColinePtr> cmap;
   // incoming particles
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
@@ -3125,7 +3125,7 @@ void QTildeShowerHandler:: convertHardTree(bool hard,ShowerInteraction::Type typ
 }
 
 Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr particle,
-						       ShowerInteraction::Type type,
+						       ShowerInteraction type,
 						       HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
@@ -3160,7 +3160,7 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
       }
       double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
       // only if same interaction for forced branching
-      ShowerInteraction::Type type2 = convertInteraction(fb.type);
+      ShowerInteraction type2 = convertInteraction(fb.type);
       // and evolution
       if(type2==branch->sudakov()->interactionType()) {
 	if(zsplit < 0.5 || // hardest line veto
@@ -3235,7 +3235,7 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
 
 Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 						 const ShowerParticle::EvolutionScales & maxScales,
-						 Energy minmass,ShowerInteraction::Type type,
+						 Energy minmass,ShowerInteraction type,
 						 HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
@@ -3270,7 +3270,7 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
 	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
-      ShowerInteraction::Type type2 = convertInteraction(fb.type);
+      ShowerInteraction type2 = convertInteraction(fb.type);
       double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
       if(type2==branch->sudakov()->interactionType()) {
 	if(zsplit < 0.5 || // hardest line veto

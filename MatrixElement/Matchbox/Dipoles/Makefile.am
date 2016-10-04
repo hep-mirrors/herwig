@@ -1,56 +1,69 @@
 noinst_LTLIBRARIES = libHwMatchboxDipoles.la
 
-libHwMatchboxDipoles_la_SOURCES = \
-FFggxDipole.cc \
+libHwMatchboxDipoles_la_SOURCES = $(ALL_H_FILES) Dipole__all.cc
+
+BUILT_SOURCES  = Dipole__all.cc
+DISTCLEANFILES = Dipole__all.cc
+
+Dipole__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_CC_FILES)
+
+ALL_H_FILES = \
 FFggxDipole.h \
-FFqgxDipole.cc \
 FFqgxDipole.h \
-FFqqxDipole.cc \
 FFqqxDipole.h \
-FIggxDipole.cc \
 FIggxDipole.h \
-FIqgxDipole.cc \
 FIqgxDipole.h \
-FIqqxDipole.cc \
 FIqqxDipole.h \
-IFggxDipole.cc \
 IFggxDipole.h \
-IFgqxDipole.cc \
 IFgqxDipole.h \
-IFqgxDipole.cc \
 IFqgxDipole.h \
-IFqqxDipole.cc \
 IFqqxDipole.h \
-IIggxDipole.cc \
 IIggxDipole.h \
-IIgqxDipole.cc \
 IIgqxDipole.h \
-IIqgxDipole.cc \
 IIqgxDipole.h \
-IIqqxDipole.cc \
 IIqqxDipole.h \
-FFMggxDipole.cc \
 FFMggxDipole.h \
-FFMqgxDipole.cc \
 FFMqgxDipole.h \
-FFMsqgxDipole.cc \
 FFMsqgxDipole.h \
-FFMqqxDipole.cc \
 FFMqqxDipole.h \
-FIMqgxDipole.cc \
 FIMqgxDipole.h \
-FIMsqgxDipole.cc \
 FIMsqgxDipole.h \
-FIMqqxDipole.cc \
 FIMqqxDipole.h \
-IFMggxDipole.cc \
 IFMggxDipole.h \
-IFMgqxDipole.cc \
 IFMgqxDipole.h \
-IFMqgxDipole.cc \
 IFMqgxDipole.h \
-IFMqqxDipole.cc \
 IFMqqxDipole.h \
-SubtractionDipole.cc \
 SubtractionDipole.fh \
 SubtractionDipole.h
+
+
+ALL_CC_FILES = \
+FFggxDipole.cc \
+FFqgxDipole.cc \
+FFqqxDipole.cc \
+FIggxDipole.cc \
+FIqgxDipole.cc \
+FIqqxDipole.cc \
+IFggxDipole.cc \
+IFgqxDipole.cc \
+IFqgxDipole.cc \
+IFqqxDipole.cc \
+IIggxDipole.cc \
+IIgqxDipole.cc \
+IIqgxDipole.cc \
+IIqqxDipole.cc \
+FFMggxDipole.cc \
+FFMqgxDipole.cc \
+FFMsqgxDipole.cc \
+FFMqqxDipole.cc \
+FIMqgxDipole.cc \
+FIMsqgxDipole.cc \
+FIMqqxDipole.cc \
+IFMggxDipole.cc \
+IFMgqxDipole.cc \
+IFMqgxDipole.cc \
+IFMqqxDipole.cc \
+SubtractionDipole.cc

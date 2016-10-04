@@ -211,7 +211,6 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal,double hardScaleFac
   for (Ptr<Node>::ptr  const & child : children()) {
     if(deepHead()->MH()->mergePt()>child->pT()){
       res.clear();
-      cout<<"\nclear res\n"<<flush;
       return res;
     }
   }

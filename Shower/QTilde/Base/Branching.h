@@ -37,7 +37,7 @@ using namespace ThePEG;
     /**
      *  The type of radiation line
      */
-    ShowerPartnerType::Type type;
+    ShowerPartnerType type;
 
     /**
      *  Whether or not it keep from forced hard emisson
@@ -55,7 +55,7 @@ using namespace ThePEG;
      * @param c PDG codes of the particles in the branching
      * @param d The SudakovFormFactor for the branching
      */
-    Branching(ShoKinPtr a, IdList c,tSudakovPtr d,ShowerPartnerType::Type t) 
+    Branching(ShoKinPtr a, IdList c,tSudakovPtr d,ShowerPartnerType t) 
       : kinematics(a), ids(c), sudakov(d), type(t), hard(false), iout(0) {}
     
     /**

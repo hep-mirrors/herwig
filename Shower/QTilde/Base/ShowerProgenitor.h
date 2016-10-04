@@ -125,16 +125,16 @@ public:
   /**
    *  Access the maximum \f$p_T\f$ for radiation
    */
-  Energy maximumpT(ShowerInteraction::Type type) const {
+  Energy maximumpT(ShowerInteraction type) const {
     assert(type!=ShowerInteraction::Both);
-    map<ShowerInteraction::Type,Energy>::const_iterator it = _maxpT.find(type);
+    map<ShowerInteraction,Energy>::const_iterator it = _maxpT.find(type);
     return it !=_maxpT.end() ? it->second : Constants::MaxEnergy; 
   }
 
   /**
    *  Set the maximum \f$p_T\f$ for radiation
    */
-  void maximumpT(Energy in,ShowerInteraction::Type type) {
+  void maximumpT(Energy in,ShowerInteraction type) {
     _maxpT[type]=in; }
   //@}
 
@@ -228,7 +228,7 @@ private:
   /**
    *  Maximum allowed \f$p_T\f$ for emission from this particle
    */
-  map<ShowerInteraction::Type,Energy> _maxpT;
+  map<ShowerInteraction,Energy> _maxpT;
 
   /**
    *  maximum hard \f$p_T\f$ from the hard process

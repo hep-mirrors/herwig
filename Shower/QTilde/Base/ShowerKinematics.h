@@ -71,7 +71,7 @@ public:
    */
   virtual void updateChildren(const tShowerParticlePtr parent, 
 			      const ShowerParticleVector & children,
-			      ShowerPartnerType::Type partnerType,
+			      ShowerPartnerType partnerType,
 			      bool massVeto ) const;
 
   virtual void resetChildren( const tShowerParticlePtr parent, 
@@ -86,7 +86,7 @@ public:
    */
   virtual void updateParent(const tShowerParticlePtr parent,
 			    const ShowerParticleVector & children,
-			    ShowerPartnerType::Type partnerType) const;
+			    ShowerPartnerType partnerType) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction

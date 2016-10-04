@@ -87,7 +87,7 @@ public:
   /**
    *  Return the type of the interaction
    */
-  ShowerInteraction::Type interactionType() const {return _interactionType;}
+  ShowerInteraction interactionType() const {return _interactionType;}
 
   /**
    *  Return the order of the splitting function in the interaction
@@ -211,7 +211,7 @@ public:
   virtual void colourConnection(tShowerParticlePtr parent,
 				tShowerParticlePtr first,
 				tShowerParticlePtr second,
-				ShowerPartnerType::Type partnerType, 
+				ShowerPartnerType partnerType, 
 				const bool back) const;
 
   /**
@@ -261,7 +261,7 @@ public:
   /**
    *  Sort out scales for final-state emission
    */
-  void evaluateFinalStateScales(ShowerPartnerType::Type type,
+  void evaluateFinalStateScales(ShowerPartnerType type,
 				Energy scale, double z,
 				tShowerParticlePtr parent,
 				tShowerParticlePtr first,
@@ -269,7 +269,7 @@ public:
   /**
    *  Sort out scales for initial-state emission
    */
-  void evaluateInitialStateScales(ShowerPartnerType::Type type,
+  void evaluateInitialStateScales(ShowerPartnerType type,
 				  Energy scale, double z,
 				  tShowerParticlePtr parent,
 				  tShowerParticlePtr first,
@@ -278,7 +278,7 @@ public:
   /**
    *  Sort out scales for decay emission
    */
-  void evaluateDecayScales(ShowerPartnerType::Type type,
+  void evaluateDecayScales(ShowerPartnerType type,
 			   Energy scale, double z,
 			   tShowerParticlePtr parent,
 			   tShowerParticlePtr first,
@@ -343,7 +343,7 @@ private:
   /**
    *  The interaction type for the splitting function.
    */
-  ShowerInteraction::Type _interactionType;
+  ShowerInteraction _interactionType;
 
   /**
    *  The order of the splitting function in the coupling
