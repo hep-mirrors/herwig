@@ -93,9 +93,6 @@ namespace Herwig {
     
   public:
     
-      //TODO remove:
-    bool calculateInNode() const;
-    bool theCalculateInNode;
       //define the ME region for a particle vector.
     bool matrixElementRegion(PVector incoming,PVector outgoing,
                              Energy winnerScale=ZERO,

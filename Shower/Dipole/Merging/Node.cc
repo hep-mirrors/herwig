@@ -31,26 +31,40 @@ Node::Node() {
 
 bool NodeDebug=false;
 
-Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int cutstage) {
+Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int cutstage,Ptr<Merger>::ptr mh)
+  :Interfaced(),
+ thenodeMEPtr(nodeME),
+ thedipol(),
+ thechildren(),
+ theparent(),
+ theDeepHead(this),
+ theCutStage(cutstage),
+ isOrdered(true),
+ theSubtractedReal(false),
+ theVirtualContribution(false),
+ theMergingHelper(mh)
+{
   nodeME->maxMultCKKW(1);
   nodeME->minMultCKKW(0);
-  theDeepHead = this;
-  thenodeMEPtr = nodeME;
-  theCutStage = cutstage;
-  theSubtractedReal=false;
-  theVirtualContribution=false;
 }
 
 
 
-Node::Node(Ptr<Node>::ptr deephead, Ptr<Node>::ptr head, Ptr<SubtractionDipole>::ptr dipol, Ptr<MatchboxMEBase>::ptr nodeME,int cutstage) {
-  theDeepHead = deephead;
-  theparent = head;
-  thedipol = dipol;
-  thenodeMEPtr = nodeME;
-  theCutStage = cutstage;
-  theSubtractedReal=false;
-  theVirtualContribution=false;
+Node::Node(Ptr<Node>::ptr deephead,
+           Ptr<Node>::ptr head,
+           Ptr<SubtractionDipole>::ptr dipol,
+           Ptr<MatchboxMEBase>::ptr nodeME,
+           int cutstage)
+:Interfaced(),thenodeMEPtr(nodeME),
+thedipol(dipol),
+theparent(head),
+theDeepHead(deephead),
+theCutStage(cutstage),
+isOrdered(true),
+theSubtractedReal(false),
+theVirtualContribution(false),
+theMergingHelper() //The subnodes have no merging helper
+{
 }
 
 Node::~Node() { }
@@ -126,7 +140,7 @@ void Node::clearKinematics() {
   }
 }
 
-bool Node::generateKinematics(const double *r, int stage, Energy2 shat) {
+bool Node::generateKinematics(const double *r, int stage, Energy2 ) {
   bool isthissafe=true;
   for (auto const & ch: thechildren) {
     ch->dipole()->setXComb(ch->xcomb());
@@ -194,7 +208,9 @@ void Node::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
   
   for ( auto const & dip : dipoles ) {
     dip->doSubtraction();
-    Ptr<Node>::ptr node = new_ptr(Node(theDeepHead,this, dip,
+    Ptr<Node>::ptr node = new_ptr(Node(theDeepHead,
+                                       this,
+                                       dip,
                                        dip->underlyingBornME(),
                                        theDeepHead->cutStage()));
     thechildren.push_back(node);

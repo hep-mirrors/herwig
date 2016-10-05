@@ -187,12 +187,11 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
           bornme->virtuals().push_back(PK);
 
   
-  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 0));
+  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 0,MH()));
   MH()->firstNodeMap(bornme,clusternode);
   bornme->factory(this);
   bornme->merger(MH());
-  clusternode->MH(MH());
-  clusternode->deepHead(clusternode);
+  
   
   
   
@@ -267,12 +266,10 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   }
   nlo->doOneLoopNoBorn();
     ////////////////////////////////////NLO///////////////////////////
-  Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, 0));
+  Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, 0,MH()));
   clusternode->virtualContribution(true);
   MH()->firstNodeMap(nlo,clusternode);
   nlo->merger(MH());
-  clusternode->deepHead(clusternode);
-  clusternode->MH(MH());
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;
@@ -314,12 +311,10 @@ void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Subtracted ME " << pname << " already existing.";
   
   
-  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 1));
+  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 1,MH()));
   clusternode->subtractedReal(true);
   MH()->firstNodeMap(bornme,clusternode);
   bornme->merger(MH());
-  clusternode->deepHead(clusternode);
-  clusternode->MH(MH());
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;

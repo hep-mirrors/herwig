@@ -41,13 +41,35 @@ using namespace Herwig;
 
 
 Merger::Merger()
-: MergerBase() {
-  
-  Unlopsweights=true;
-  theCMWScheme=true;
-  theSmearing=0.;
-  theDipoleShowerHandler=
-  Ptr<DipoleShowerHandler>::ptr();
+: MergerBase(),
+Unlopsweights(true),
+theCMWScheme(true),
+isUnitarized(true),
+isNLOUnitarized(true),
+defMERegionByJetAlg(false),
+theOpenInitialStateZ(false),
+theChooseHistory(0),
+theN0(0),
+theOnlyN(-1),
+theCurrentMaxLegs(-1),
+xiRenME(1.),
+xiFacME(1.),
+xiRenSh(1.),
+xiFacSh(1.),
+xiQSh(1.),
+theGamma(1.),
+ee_ycut(-1),
+pp_dcut(-1),
+theSmearing(0.),
+therenormscale(-1.*GeV),
+theIRSafePT(1.*GeV),
+theMergePt(4.*GeV),
+theCentralMergePt(4.*GeV),
+theMergingJetFinder(),
+theLargeNBasis(),
+theDipoleShowerHandler(),
+theTreeFactory()
+{
   FFLTK=new_ptr(FFLightTildeKinematics());
   FILTK=new_ptr(FILightTildeKinematics());
   IFLTK=new_ptr(IFLightTildeKinematics());
@@ -55,23 +77,6 @@ Merger::Merger()
   FFMTK=new_ptr(FFMassiveTildeKinematics());
   FIMTK=new_ptr(FIMassiveTildeKinematics());
   IFMTK=new_ptr(IFMassiveTildeKinematics());
-  isUnitarized=true;
-  isNLOUnitarized=true;
-  defMERegionByJetAlg=false;
-  theOpenInitialStateZ=false;
-  theChooseHistory=8;
-  xiRenME=1.;
-  xiFacME=1.;
-  xiRenSh=1.;
-  xiFacSh=1.;
-  xiQSh=1.;
-  theGamma=1.;
-  ee_ycut=1000000;
-  pp_dcut=1000000;
-  therenormscale=0.*GeV;
-  theIRSafePT=1.*GeV;
-  theMergePt=3.*GeV;
-  theCentralMergePt=3.*GeV;
 }
 
 
@@ -475,13 +480,11 @@ CrossSection Merger::TreedSigDR(Energy startscale,NPtr Node,double diffAlpha){
   renormscale(startscale);
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
-  theCalculateInNode=false;
   CrossSection res=DeepHead->nodeME()->dSigHatDRB();
   if (diffAlpha!=1.) {
     res+=DeepHead->nodeME()->dSigHatDRAlphaDiff(diffAlpha);
   }
   renormscale(0.0*GeV);
-  theCalculateInNode=true;
   if(std::isnan(double(res/nanobarn))){cout<<"\nTreedSigDR is nan";res=ZERO;};
   return res;
 }
@@ -493,12 +496,10 @@ CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
   DeepHead->nodeME()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
-  theCalculateInNode=false;
   DeepHead->nodeME()->doOneLoopNoBorn();
   CrossSection res=DeepHead->nodeME()->dSigHatDRV()+DeepHead->nodeME()->dSigHatDRI();
   DeepHead->nodeME()->noOneLoopNoBorn();
   renormscale(0.0*GeV);
-  theCalculateInNode=true;
   return res;
 }
 
@@ -1109,9 +1110,7 @@ bool Merger::generateKinematics(Ptr<MatchboxMEBase>::ptr me,const double * r){
   return true;
   
 }
-bool Merger::calculateInNode() const{
-  return theCalculateInNode;
-}
+
 
 
 void Merger::fillProjectors(Ptr<MatchboxMEBase>::ptr me){

@@ -43,7 +43,7 @@ namespace Herwig {
      */
     Node();
       // another constructor for first nodes
-    Node(Ptr<MatchboxMEBase>::ptr nodeME,int cutstage);
+    Node(Ptr<MatchboxMEBase>::ptr nodeME,int cutstage,Ptr<Merger>::ptr mh);
       // another constructor for underlying nodes
     Node(Ptr<Node>::ptr deephead,
          Ptr<Node>::ptr head,
