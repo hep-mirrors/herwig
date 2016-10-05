@@ -1,7 +1,7 @@
 # -*- ThePEG-repository -*-
 
 set /Herwig/MatrixElements/Matchbox/Factory:QuarkFlavourDiagonal Yes
-set /Herwig/Merging/MFactory:QuarkFlavourDiagonal Yes
+set /Herwig/Merging/MergingFactory:QuarkFlavourDiagonal Yes
 
 set /Herwig/Vertices/FFWMatchboxVertex:Diagonal Yes
 

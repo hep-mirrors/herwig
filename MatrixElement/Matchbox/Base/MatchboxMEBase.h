@@ -764,6 +764,10 @@ public:
    */
   void doOneLoop() { theOneLoop = true; }
       
+  /**
+   * Instruct this matrix element not to include one-loop corrections
+   */
+      
   void noOneLoop() { theOneLoop = false; }
 
   /**

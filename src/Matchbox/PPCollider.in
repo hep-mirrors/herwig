@@ -15,9 +15,9 @@ set Factory:SecondPerturbativePDF Yes
 set Factory:PartonExtractor /Herwig/Partons/QCDExtractor
 
 cd /Herwig/Merging
-set MFactory:FirstPerturbativePDF Yes
-set MFactory:SecondPerturbativePDF Yes
-set MFactory:PartonExtractor /Herwig/Partons/QCDExtractor
+set MergingFactory:FirstPerturbativePDF Yes
+set MergingFactory:SecondPerturbativePDF Yes
+set MergingFactory:PartonExtractor /Herwig/Partons/QCDExtractor
 
 
 cd /Herwig/Cuts

@@ -3,10 +3,10 @@ cd /Herwig/Merging
 set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.
-set PPMFactory:RenormalizationScaleFactor 2.
-set PPMFactory:FactorizationScaleFactor 2.
+set PPMergingFactory:RenormalizationScaleFactor 2.
+set PPMergingFactory:FactorizationScaleFactor 2.
 
-set PPMFactory:onlyabove 0
+set PPMergingFactory:onlyabove 0
 
 set Merger:chooseHistory 8
 set Merger:MergingScale 30.*GeV

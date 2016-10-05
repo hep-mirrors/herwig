@@ -8,8 +8,8 @@ clear /Herwig/MatrixElements/Matchbox/Factory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 MadGraph
 
 
-clear /Herwig/Merging/MFactory:Amplitudes
-insert /Herwig/Merging/MFactory:Amplitudes 0 MadGraph
+clear /Herwig/Merging/MergingFactory:Amplitudes
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 MadGraph
 
 
 create ColorFull::TraceBasis  /Herwig/Merging/LargeNColourBasis2

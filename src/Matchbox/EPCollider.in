@@ -17,9 +17,9 @@ set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF Yes
 set Factory:PartonExtractor /Herwig/Partons/DISExtractor
 
-set /Herwig/Merging/MFactory:FirstPerturbativePDF No
-set /Herwig/Merging/MFactory:SecondPerturbativePDF Yes
-set /Herwig/Merging/MFactory:PartonExtractor /Herwig/Partons/DISExtractor
+set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
+set /Herwig/Merging/MergingFactory:SecondPerturbativePDF Yes
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/DISExtractor
 
 
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov

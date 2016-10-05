@@ -17,9 +17,9 @@ set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF No
 set Factory:PartonExtractor /Herwig/Partons/EEExtractor
 
-set /Herwig/Merging/MFactory:FirstPerturbativePDF No
-set /Herwig/Merging/MFactory:SecondPerturbativePDF No
-set /Herwig/Merging/MFactory:PartonExtractor /Herwig/Partons/EEExtractor
+set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
+set /Herwig/Merging/MergingFactory:SecondPerturbativePDF No
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/EEExtractor
 
 set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 

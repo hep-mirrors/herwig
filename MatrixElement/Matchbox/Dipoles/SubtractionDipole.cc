@@ -513,14 +513,13 @@ bool SubtractionDipole::generateKinematics(const double * r) {
     lastXCombPtr()->didGenerateKinematics();
     return true;
   }
-  if ( !generateTildeKinematics() )
-  {cout<<"\nxx  1  xx";  return false;}
+  if ( !generateTildeKinematics() ){ return false;}
   if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
-   {cout<<"\nxx  2  xx";  return false;}
+    return false;
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
-    {cout<<"\nxx  3  xx";  return false;}
+      return false;
   // need to have the scale and x's available for checking shower phase space
   if ( showerApproximation() &&
        lastXCombPtr()->willPassCuts() )
@@ -828,10 +827,9 @@ bool SubtractionDipole::aboveAlpha() const{return theTildeKinematics->aboveAlpha
 
 
 
-
-
-CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
-  double jac = jacobian();
+CrossSection SubtractionDipole::prefactor(Energy2 factorizationScale)const{
+  
+  const double jac = jacobian();
   assert( factorizationScale != ZERO );
   assert (! splitting());
   if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
@@ -842,33 +840,33 @@ CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::
   double pdfweight = 1.;
   if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
   if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
+
   
+  return sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat());
+  
+}
+
+
+
+
+CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
+
   double ccme2 =underlyingBornME()->me2()*
-  underlyingBornME()->largeNColourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()),largeNBasis)
-  /underlyingBornME()->largeNME2(largeNBasis);
+                underlyingBornME()->
+                largeNColourCorrelatedME2(
+                  make_pair(bornEmitter(),bornSpectator()),largeNBasis)/
+                underlyingBornME()->largeNME2(largeNBasis);
   
-    //double ccme2 =underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
-  
-  return sqr(hbarc) * jac * pdfweight * (me2Avg(ccme2)) /  (2. * realEmissionME()->lastXComb().lastSHat());
+  return prefactor(factorizationScale) * me2Avg(ccme2);
 }
 
 
 
 
 pair<CrossSection,CrossSection> SubtractionDipole::dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
-  double jac = jacobian();
-  assert( factorizationScale != ZERO );
-  assert (! splitting());
-  if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return make_pair(ZERO,ZERO);
-  }
   
-  double pdfweight = 1.;
-  if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
-  if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
-  
+  CrossSection  factor= prefactor(factorizationScale);
+
   double ccme2 =underlyingBornME()->me2()*
                 underlyingBornME()->
                 largeNColourCorrelatedME2(
@@ -878,31 +876,12 @@ pair<CrossSection,CrossSection> SubtractionDipole::dipandPs(Energy2 factorizatio
   double ps = me2Avg(ccme2);
   double dip = me2();
   
-  CrossSection  factor= sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat());
-  
-
   return make_pair(factor*dip,factor*ps);
 }
 
 CrossSection SubtractionDipole::dip(Energy2 factorizationScale) const {
-  double jac = jacobian();
-  assert( factorizationScale != ZERO );
-  assert (! splitting());
-  if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return ZERO;
-  }
-
-  double pdfweight = 1.;
-  if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
-  if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
-
+  CrossSection  factor= prefactor(factorizationScale);
   double dip = me2();
-
-  CrossSection  factor= sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat());
-
-
   return factor*dip;
 }
 
@@ -917,11 +896,6 @@ bool SubtractionDipole::clustersafe()const {
 }
 
 
-bool SubtractionDipole::clustersafe(){
-  
-  return (theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second);
-  
-}
 
 
 void SubtractionDipole::print(ostream& os) const {

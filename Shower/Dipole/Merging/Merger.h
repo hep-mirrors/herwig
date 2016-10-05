@@ -1,15 +1,15 @@
-  // -*- C++ -*-
+  /// -*- C++ -*-
   //
-  // Merger.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-  // Copyright (C) 2002-2007 The Herwig Collaboration
+  /// Merger.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+  /// Copyright (C) 2002-2007 The Herwig Collaboration
   //
-  // Herwig is licenced under version 2 of the GPL, see COPYING for details.
-  // Please respect the MCnet academic guidelines, see GUIDELINES for details.
+  /// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+  /// Please respect the MCnet academic guidelines, see GUIDELINES for details.
   //
 #ifndef HERWIG_Merger_H
 #define HERWIG_Merger_H
   //
-  // This is the declaration of the Merger class.
+  /// This is the declaration of the Merger class.
   //
 #include "MergingFactory.fh"
 #include "Node.fh"
@@ -43,23 +43,23 @@ namespace Herwig {
     //definition of a history step
   struct HistoryStep {
     HistoryStep(){}
-    HistoryStep(NPtr cn,double w ,Energy sc){
+    HistoryStep(NPtr cn, double w , Energy sc){
       node=cn;
       weight=w;
       scale=sc;
     }
-      // the cluster node defining this step
-      // containing the full information
+      /// the cluster node defining this step
+      /// containing the full information
     NPtr node;
-      // current sudakov weight of the history
+      /// current sudakov weight of the history
     double weight;
-      // current scale of the history
+      /// current scale of the history
     Energy scale;
   };
   
   typedef vector< HistoryStep > History;
   
-  typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap2;
+  typedef multimap<DipoleIndex, Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap2;
   
   /**
    * \ingroup DipoleShower
@@ -93,225 +93,225 @@ namespace Herwig {
     
   public:
     
-      //define the ME region for a particle vector.
-    bool matrixElementRegion(PVector incoming,PVector outgoing,
-                             Energy winnerScale=ZERO,
+      // define the ME region for a particle vector.
+    bool matrixElementRegion(PVector incoming, PVector outgoing, 
+                             Energy winnerScale=ZERO, 
                              Energy cutscale=ZERO);
-      // return the current merging scale,
-      // gets smeared around the central merging scale in generate kinematics.
+      /// return the current merging scale, 
+      /// gets smeared around the central merging scale in generate kinematics.
     Energy mergingScale()const{return theMergePt;}
-      // return the current merging pt (should be unified with mergingScale)
+      /// return the current merging pt (should be unified with mergingScale)
     Energy mergePt()const {return theMergePt;}
-      // legsize of highest process with NLO corrections
+      /// legsize of highest process with NLO corrections
     int M()const;
-      // legsize of the highest LO merged process
+      /// legsize of the highest LO merged process
     int N()const;
-      // legsize of the production process
+      /// legsize of the production process
     int N0()const{return theN0;}
-      // cross section of as given by the merging
+      /// cross section of as given by the merging
     CrossSection MergingDSigDR() ;
-      // ***** virtual functions of the base class ****///
-      // set the current xcomb, called from ME
-    void setXComb(Ptr<MatchboxMEBase>::ptr,tStdXCombPtr);
-      // set kinematics, called from ME
+      /// ***** virtual functions of the base class ****///
+      /// set the current xcomb, called from ME
+    void setXComb(Ptr<MatchboxMEBase>::ptr, tStdXCombPtr);
+      /// set kinematics, called from ME
     void setKinematics(Ptr<MatchboxMEBase>::ptr);
-      //  clear kinematics, called from ME
+      ///  clear kinematics, called from ME
     void clearKinematics(Ptr<MatchboxMEBase>::ptr);
-      // generate kinematics, called from ME
-    bool generateKinematics(Ptr<MatchboxMEBase>::ptr,const double *);
-      // fill the projector the subprocess is build from
+      /// generate kinematics, called from ME
+    bool generateKinematics(Ptr<MatchboxMEBase>::ptr, const double *);
+      /// fill the projector the subprocess is build from
     void fillProjectors(Ptr<MatchboxMEBase>::ptr);
-      // return true true if a given ME phase space point is TODO
-    pair<bool,bool> clusterSafe(Ptr<MatchboxMEBase>::ptr,int,int,int);
-      // return the current maximum legs, the shower should veto
+      /// return true true if a given ME phase space point is TODO
+    pair<bool, bool> clusterSafe(Ptr<MatchboxMEBase>::ptr, int, int, int);
+      /// return the current maximum legs, the shower should veto
     size_t maxLegs() const {return theCurrentMaxLegs;}
-      // set the current ME
+      /// set the current ME
     void setME(Ptr<MatchboxMEBase>::ptr me){theCurrentME=me;}
     
   protected:
-      // the merging factory needs to set the legsize of the production process
+      /// the merging factory needs to set the legsize of the production process
     void N0(int n){ theN0=n;}
-      // return the large-N basis (TODO: implement check if born ME works with the choice)
+      /// return the large-N basis (TODO: implement check if born ME works with the choice)
     Ptr<ColourBasis>::ptr largeNBasis(){return theLargeNBasis;}
-      // smeare the merging pt
+      /// smeare the merging pt
     void smeareMergePt(){theMergePt=centralMergePt()*(1.+0.*(-1.+2.*UseRandom::rnd())*smear());}
-      // true if the phase space for initial emissions should not be restricted in z.
+      /// true if the phase space for initial emissions should not be restricted in z.
     bool openInitialStateZ(){return theOpenInitialStateZ;}
-      // set the current renormalisation scale
+      /// set the current renormalisation scale
     Energy renormscale() { return therenormscale;}
     
   private:
-      // calculate a single sudakov step for a given dipole
-    double singlesudakov(Dipole,Energy,Energy,pair<bool,bool>);
-      // calculate the sudakov supression for a clusternode between
-      // the current running scale and next scale
-    bool   dosudakov(NPtr Born,Energy  running, Energy next, double& sudakov0_n);
-      // cleanup
+      /// calculate a single sudakov step for a given dipole
+    double singlesudakov(Dipole, Energy, Energy, pair<bool, bool>);
+      /// calculate the sudakov supression for a clusternode between
+      /// the current running scale and next scale
+    bool   dosudakov(NPtr Born, Energy  running, Energy next, double& sudakov0_n);
+      /// cleanup
     void   cleanup(NPtr);
-      // return true if the cluster node has the matching number of
-      // legs to the current projector stage
+      /// return true if the cluster node has the matching number of
+      /// legs to the current projector stage
     bool   isProjectorStage( NPtr , int );
-      // calculate the staring scale:
-      // if Node is part of the production process, calculate according to the
-      // scale choice object in the merging scale objekt, else
-      // return max(scale as scalechoice , min(Mass(i,j)))
+      /// calculate the staring scale:
+      /// if Node is part of the production process, calculate according to the
+      /// scale choice object in the merging scale objekt, else
+      /// return max(scale as scalechoice , min(Mass(i, j)))
     Energy CKKW_StartScale(NPtr);
-      // prepare the sudakov calculation
-    void   CKKW_PrepareSudakov(NPtr,Energy);
-      // number of active flavours as given by the shower
+      /// prepare the sudakov calculation
+    void   CKKW_PrepareSudakov(NPtr, Energy);
+      /// number of active flavours as given by the shower
     double Nf(Energy scale)const{return DSH()->Nf(scale);}
-      // pointer to the factory
+      /// pointer to the factory
     Ptr<MergingFactory>::ptr treefactory();
-      // map from ME to first clusternode
-    map<Ptr<MatchboxMEBase>::ptr,NPtr> firstNodeMap();
-      // set the current merging pt, smeared in generate kinematics
+      /// map from ME to first clusternode
+    map<Ptr<MatchboxMEBase>::ptr, NPtr> firstNodeMap();
+      /// set the current merging pt, smeared in generate kinematics
     void mergePt(Energy x) {theMergePt = x;}
-      // return the central merging pt
+      /// return the central merging pt
     Energy centralMergePt() {return theCentralMergePt;}
     
   private:
-      // calculate the history weighted born cross section
+      /// calculate the history weighted born cross section
     CrossSection MergingDSigDRBornStandard(NPtr Node);
-      // calculate the history weighted born cross section
-      // add the difference of IPK with and without alpha parameter
-      // subtract the dipoles above the alpha parameter
+      /// calculate the history weighted born cross section
+      /// add the difference of IPK with and without alpha parameter
+      /// subtract the dipoles above the alpha parameter
     CrossSection MergingDSigDRBornGamma(NPtr Node);
-      // calculate the history weighted virtual contribution
+      /// calculate the history weighted virtual contribution
     CrossSection MergingDSigDRVirtualStandard(NPtr Node);
-      // calculate the history weighted real contribution
-      // splitted into 3 differnt contibutions
+      /// calculate the history weighted real contribution
+      /// splitted into 3 differnt contibutions
     CrossSection MergingDSigDRRealStandard(NPtr Node);
-      // calculate the history weighted real contribution
-      // all dipoles above:
-      // N*(R rnd(i)-Dip_i) history_i U(\phi^n_i)
+      /// calculate the history weighted real contribution
+      /// all dipoles above:
+      /// N*(R rnd(i)-Dip_i) history_i U(\phi^n_i)
     CrossSection MergingDSigDRRealAllAbove(NPtr Node);
-      // calculate the history weighted real contribution
-      // not all dipoles above:
-      // (R - sum PS_i) history_rnd U(\phi^n+1)
+      /// calculate the history weighted real contribution
+      /// not all dipoles above:
+      /// (R - sum PS_i) history_rnd U(\phi^n+1)
     CrossSection MergingDSigDRRealBelowSubReal(NPtr Node);
-      // calculate the history weighted real contribution
-      // not all dipoles above:
-      // rnd(i)-> N*(PS_i - Dip_i) history_i U(\phi^n_i)
+      /// calculate the history weighted real contribution
+      /// not all dipoles above:
+      /// rnd(i)-> N*(PS_i - Dip_i) history_i U(\phi^n_i)
     CrossSection MergingDSigDRRealBelowSubInt(NPtr Node);
-      // max legssize the shower should veto for LO
+      /// max legssize the shower should veto for LO
     size_t maxLegsLO() const {return N0()+N();}
-      // Calculate the LO partonic cross section.
-      // if diffalpha != 1, add the difference of IPK(1)-IPK(diffalpha)
-    CrossSection TreedSigDR(Energy startscale,NPtr,double diffalpha=1.);
-      // fill the projecting xcomb
+      /// Calculate the LO partonic cross section.
+      /// if diffalpha != 1, add the difference of IPK(1)-IPK(diffalpha)
+    CrossSection TreedSigDR(Energy startscale, NPtr, double diffalpha=1.);
+      /// fill the projecting xcomb
     Energy fillProjector(int);
-      // fill the history, including calculation of sudakov supression
+      /// fill the history, including calculation of sudakov supression
     void   fillHistory(Energy, NPtr, NPtr );
-      // calculate the pdf ratio for the given clusternode
-    double pdfratio(NPtr,Energy,Energy,int);
-      // return the pdf-ratio reweight for the history
+      /// calculate the pdf ratio for the given clusternode
+    double pdfratio(NPtr, Energy, Energy, int);
+      /// return the pdf-ratio reweight for the history
     double pdfReweight();
-      // return the alpha_s reweight for the history
+      /// return the alpha_s reweight for the history
     double alphaReweight();
-      // max legssize the shower should veto for NLO
+      /// max legssize the shower should veto for NLO
     size_t maxLegsNLO()const {return N0()+M();}
-      // calculate the virtual contribution.
-    CrossSection LoopdSigDR(Energy startscale,NPtr);
-      // calculate alpha_s expansion of the pdf-ratios
+      /// calculate the virtual contribution.
+    CrossSection LoopdSigDR(Energy startscale, NPtr);
+      /// calculate alpha_s expansion of the pdf-ratios
     double sumpdfReweightUnlops();
-      // calculate alpha_s expansion of the alpha_s-ratios, including K_g
+      /// calculate alpha_s expansion of the alpha_s-ratios, including K_g
     double sumalphaReweightUnlops();
-      // calculate alpha_s expansion of the sudakov exponents
+      /// calculate alpha_s expansion of the sudakov exponents
     double sumfillHistoryUnlops();
-      // calculate alpha_s expansion of the single step alpha_s-ratio, including K_g
-    double alphasUnlops( Energy next,Energy fixedScale);
-      // calculate alpha_s expansion of the single step pdf-ratio
-    double pdfUnlops(NPtr,int,Energy,Energy,double,int,Energy);
-      // calculate alpha_s expansion of the single step sudakov exponent
-    bool   doUNLOPS(NPtr Born,Energy  running, Energy next,Energy fixedScale, double& UNLOPS);
-      // calculate alpha_s expansion of the single dipole sudakov exponent
-    double singleUNLOPS(Dipole,Energy,Energy,Energy,pair<bool,bool>);
+      /// calculate alpha_s expansion of the single step alpha_s-ratio, including K_g
+    double alphasUnlops( Energy next, Energy fixedScale);
+      /// calculate alpha_s expansion of the single step pdf-ratio
+    double pdfUnlops(NPtr, int, Energy, Energy, double, int, Energy);
+      /// calculate alpha_s expansion of the single step sudakov exponent
+    bool   doUNLOPS(NPtr Born, Energy  running, Energy next, Energy fixedScale, double& UNLOPS);
+      /// calculate alpha_s expansion of the single dipole sudakov exponent
+    double singleUNLOPS(Dipole, Energy, Energy, Energy, pair<bool, bool>);
       //alpha_s as given in the shower
     double as(Energy q){return DSH()->as(q);}
       //return the dipole shower handler
     Ptr<DipoleShowerHandler>::ptr DSH(){return theDipoleShowerHandler;}
       //return the const dipole shower handler
     Ptr<DipoleShowerHandler>::ptr DSH()const{return theDipoleShowerHandler;}
-      // set the current renormalisation scale
+      /// set the current renormalisation scale
     void renormscale(Energy x) {  therenormscale = x;}
-      // insert map from ME to first clusternode
-    void firstNodeMap(Ptr<MatchboxMEBase>::ptr,NPtr);
-      // the gamma parameter to subtract dipoles above a alpha parameter
-      // and subtract the corresponding IPK operator
+      /// insert map from ME to first clusternode
+    void firstNodeMap(Ptr<MatchboxMEBase>::ptr, NPtr);
+      /// the gamma parameter to subtract dipoles above a alpha parameter
+      /// and subtract the corresponding IPK operator
     double gamma()const{return theGamma;}
-      // history choice: weighted history choice
+      /// history choice: weighted history choice
     int chooseHistory()const {return theChooseHistory;}
-      // the smearing factor for the merging scale
+      /// the smearing factor for the merging scale
     double smear()const{return theSmearing;}
-      // flag to tell if ME region shoulcd be defined by jet algorithm
-      // currently not implemented
+      /// flag to tell if ME region shoulcd be defined by jet algorithm
+      /// currently not implemented
     bool MERegionByJetAlg(){return defMERegionByJetAlg;}
-      // return the large-N colour basis
+      /// return the large-N colour basis
     void largeNBasis(Ptr<ColourBasis>::ptr x){theLargeNBasis=x;}
 
     
     
   private:
     
-      // calculate the history expansion
+      /// calculate the history expansion
     bool Unlopsweights;
-      // use CMW scheme
+      /// use CMW scheme
     bool theCMWScheme;
-      // true if current point should be projected
+      /// true if current point should be projected
     bool projected;
-      // true if LO cross sections should be unitarised
+      /// true if LO cross sections should be unitarised
     bool isUnitarized;
-      // true if NLO contributions should be unitarised
+      /// true if NLO contributions should be unitarised
     bool isNLOUnitarized;
-      // define ME region by jet algorithm
+      /// define ME region by jet algorithm
     bool defMERegionByJetAlg;
-      // no z-restricions on initial state emissions in clustering
+      /// no z-restricions on initial state emissions in clustering
     bool theOpenInitialStateZ;
-      // history weight choice
+      /// history weight choice
     int theChooseHistory;
-      // legsize of production process
+      /// legsize of production process
     int theN0;
-      // calculate only the N particle contribution
+      /// calculate only the N particle contribution
     int  theOnlyN;
-      // the current maxlegs (either LO or NLO maxlegs)
+      /// the current maxlegs (either LO or NLO maxlegs)
     size_t theCurrentMaxLegs;
-      // renormalisation scale factor of the ME
+      /// renormalisation scale factor of the ME
     double   xiRenME;
-      // factorisation scale factor of the ME
+      /// factorisation scale factor of the ME
     double   xiFacME;
-      // renormalisation scale factor of the PS
+      /// renormalisation scale factor of the PS
     double   xiRenSh;
-      // factorisation scale factor of the PS
+      /// factorisation scale factor of the PS
     double   xiFacSh;
-      // starting scale factor of the PS
+      /// starting scale factor of the PS
     double   xiQSh;
-      // current weight and weight of clustered born
-    double weight,weightCB;
-      // subtract the dipole contribution above a given gamma
+      /// current weight and weight of clustered born
+    double weight, weightCB;
+      /// subtract the dipole contribution above a given gamma
     double theGamma;
-      // if ME region defined by jet algorithm, this is the y cut for ee
+      /// if ME region defined by jet algorithm, this is the y cut for ee
     double ee_ycut;
-      // if ME region defined by jet algorithm, this is the d cut for pp
+      /// if ME region defined by jet algorithm, this is the d cut for pp
     double pp_dcut;
-      // smearing factor for merging scale
+      /// smearing factor for merging scale
     double theSmearing;
-      // current renomalistion scale
+      /// current renomalistion scale
     Energy therenormscale;
-      // cutoff for real emission contribution
+      /// cutoff for real emission contribution
     Energy theIRSafePT;
-      // current merging scale
+      /// current merging scale
     Energy theMergePt;
-      // central merging scale
+      /// central merging scale
     Energy theCentralMergePt;
-      // current cluster histoy including sudakov weights
+      /// current cluster histoy including sudakov weights
     History history;
-      // if ME region defined by jet algorithm, this is the jetfinder
+      /// if ME region defined by jet algorithm, this is the jetfinder
     Ptr<JetFinder>::ptr theMergingJetFinder;
-      // pointer to the large-N basis
+      /// pointer to the large-N basis
     Ptr<ColourBasis>::ptr theLargeNBasis;
-      // current ME
+      /// current ME
     Ptr<MatchboxMEBase>::ptr theCurrentME;
-      // Tilde kinematics pointers, only to use lastPt(emitter,emission,spectator)
+      /// Tilde kinematics pointers, only to use lastPt(emitter, emission, spectator)
     Ptr<FFLightTildeKinematics>::ptr FFLTK;
     Ptr<FILightTildeKinematics>::ptr FILTK;
     Ptr<IFLightTildeKinematics>::ptr IFLTK;
@@ -321,10 +321,10 @@ namespace Herwig {
     Ptr<IFMassiveTildeKinematics>::ptr IFMTK;
       //pointer to the shower handler
     Ptr<DipoleShowerHandler>::ptr theDipoleShowerHandler;
-      // pointer to the MergingFactory
+      /// pointer to the MergingFactory
     Ptr<MergingFactory>::ptr theTreeFactory;
-      // map from ME to first Node
-    map<Ptr<MatchboxMEBase>::ptr,NPtr> theFirstNodeMap;
+      /// map from ME to first Node
+    map<Ptr<MatchboxMEBase>::ptr, NPtr> theFirstNodeMap;
     
   protected:
     

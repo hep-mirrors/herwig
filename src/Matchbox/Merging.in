@@ -1,19 +1,19 @@
 cd /Herwig/Merging
 
 clear /Herwig/EventHandlers/EventHandler:SubProcessHandlers
-insert /Herwig/EventHandlers/EventHandler:SubProcessHandlers[0] MFactory
-set /Herwig/Cuts/MatchboxJetMatcher:Factory MFactory
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MFactory
+insert /Herwig/EventHandlers/EventHandler:SubProcessHandlers[0] MergingFactory
+set /Herwig/Cuts/MatchboxJetMatcher:Factory MergingFactory
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
 
 
-set MFactory:Cuts /Herwig/Cuts/Cuts
-set MFactory:ScaleChoice /Herwig/Merging/MScale
-set Merger:MFactory MFactory
+set MergingFactory:Cuts /Herwig/Cuts/Cuts
+set MergingFactory:ScaleChoice /Herwig/Merging/MScale
+set Merger:MergingFactory MergingFactory
 set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
 set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
 set MScale:MergingHelper Merger
 set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
-set MFactory:MergingHelper Merger
+set MergingFactory:MergingHelper Merger
 
 
 cd /Herwig/Analysis

@@ -776,8 +776,10 @@ public:
    **/
   bool clustersafe() const;
 
-  bool clustersafe();
-
+      
+        /// calculate the general prefactor for merging.
+  CrossSection prefactor(Energy2 factorizationScale)const;
+      
   /**
    *  Calculate the parton shower approximation for this dipole.
    **/
