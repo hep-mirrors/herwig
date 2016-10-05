@@ -28,8 +28,7 @@ IBPtr FIMDecayqx2qgxDipoleKernel::fullclone() const {
 bool FIMDecayqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
     ind.incomingDecaySpectator() && !ind.incomingDecayEmitter() && 
-    // The requirement below may need changing for BSM scenarios, keep for now 
-    abs(ind.emitterData()->id()) < 6  &&
+    abs(ind.emitterData()->id()) < 7  &&
     // This line matches to the kernel declared in a .in file for the given emitter flavour
     abs(ind.emitterData()->id()) == abs(flavour()->id()) &&
     !(ind.spectatorData()->mass() == ZERO) && 
@@ -48,17 +47,15 @@ bool FIMDecayqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 
   return
     sk.emission(b)->id() == ParticleID::g &&
-    abs(sk.emitter(b)->id()) < 6 &&
+    abs(sk.emitter(b)->id()) < 7 &&
     abs(sk.emitter(b)->mass()) == abs(emitter(a)->mass()) &&
     abs(sk.spectator(b)->mass()) == abs(spectator(a)->mass());
 
 }
 
 tcPDPtr FIMDecayqx2qgxDipoleKernel::emitter(const DipoleIndex& ind) const {
-
   assert(flavour());
-  assert(abs(flavour()->id()) < 6);
-
+  assert(abs(flavour()->id()) < 7);
   return ind.emitterData()->id() > 0 ?
     (tcPDPtr) flavour() : (tcPDPtr) flavour()->CC();
 }
@@ -89,31 +86,24 @@ double FIMDecayqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double zPrime = split.lastSplittingParameters()[0];
 
   // Construct mass squared variables
-  Energy2 mi2 = sqr(split.emitterData()->mass());
-  
+  double mui2 = sqr(split.emitterData()->mass() / split.scale());
   // Recoil system mass
-  Energy2 mk2 = sqr(split.recoilMass());
+  double muj2 = sqr(split.recoilMass() / split.scale());
+  double bar = 1. - mui2 - muj2;
   
-  Energy2 Qijk = sqr(split.scale());
-  Energy2 sbar = Qijk - mi2 - mk2;
-
   // Calculate y
-  double y = (1./(sbar*zPrime*(1.-zPrime)))*( sqr(pt) + sqr(1.-zPrime)*mi2 );
+  double y = (sqr(pt)/sqr(split.scale()) + sqr(1.-zPrime)*mui2) / (bar*zPrime*(1.-zPrime));
 
-  double mui2 = mi2 / Qijk;
-  double muk2 = mk2 / Qijk;
-  double sbarMod = 1. - mui2 - muk2;
-
-  if( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 < 0. ){
+  if( sqr(2.*muj2+bar*(1.-y))-4.*muj2 < 0. ){
     cerr << "error in FIMDecayqx2qgxDipoleKernel::evaluate -- " <<
-      "muk2 " << muk2 << "  mui2 " << mui2 << "  y " << y << endl;
+      "muj2 " << muj2 << "  mui2 " << mui2 << "  y " << y << endl;
     return 0.0;
   }
 
-  double vijk = sqrt( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 ) / (sbarMod*(1.-y));
-  double vbar = sqrt( 1.+sqr(mui2)+sqr(muk2)-2.*(mui2+muk2+mui2*muk2) ) / sbarMod;
+  double vijk = sqrt( sqr(2.*muj2 + bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
+  double vbar = sqrt( 1.+sqr(mui2)+sqr(muj2)-2.*(mui2+muj2+mui2*muj2) ) / bar;
   
-  ret *= (!strictLargeN() ? 4./3. : 3./2.)*( 2.*(2.*mui2/sbarMod + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*((1.+z) + 2.*mui2/(y*sbarMod)) );
+  ret *= (!strictLargeN() ? 4./3. : 3./2.)*( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*((1.+z) + 2.*mui2/(y*bar)) );
 
   return ret > 0. ? ret : 0.;
   

@@ -62,7 +62,6 @@ Energy DipoleChainOrdering::hardScale(tPPtr emitter, tPPtr spectator,
   }
 }
 
-
 void DipoleChainOrdering::setEvolutionScale(Energy scale,
 					    const DipoleSplittingInfo&,
 					    DipoleChain& chain,

@@ -113,6 +113,18 @@ public:
 		      PList& eventOutgoing,
 		      PList& eventHard,
 		      PList& eventIntermediates) ;
+
+  /**
+   * Update the dipole event record and, if appropriate,
+   * the relevant decay process.
+   **/
+  void updateEvent( PList& intermediates,
+		    PList& eventIntermediates,
+		    PList& out,
+		    PList& eventOutgoing,
+		    PList& eventHard,
+		    PerturbativeProcessPtr decayProc = PerturbativeProcessPtr() ) ;
+
 protected:
 
   /**

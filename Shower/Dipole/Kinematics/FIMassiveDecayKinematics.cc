@@ -67,45 +67,40 @@ Energy FIMassiveDecayKinematics::recoilMassKin(const Lorentz5Momentum& pEmitter,
   return pkmass;
 }
 
-// Look at derivation of this and make sure it still applies
 Energy FIMassiveDecayKinematics::ptMax(Energy dScale, 
 				 double, double,
 				 const DipoleSplittingInfo& dInfo,
 				 const DipoleSplittingKernel& split) const {
 
+
   DipoleIndex ind = dInfo.index();
-  double mui = split.emitter(ind)->mass() / dScale;
-  double mu  = split.emission(ind)->mass() / dScale;
 
+  double mui2 = sqr( split.emitter(ind)->mass() / dScale );
+  double mu2  = sqr( split.emission(ind)->mass() / dScale );
+  
   // Mass of recoil system
-  // Use abs() due to generation of negative
-  // recoilMass during sampling.
-
-  if (dInfo.recoilMass() <= ZERO) {
-    std::cerr << "Test triggered in FIMassiveDecayKinematics\n";
-  }
-
-  double muj = abs(dInfo.recoilMass() / dScale); 
-
-  double mui2 = sqr( mui ), mu2  = sqr( mu );
+  double muj2 = sqr( dInfo.recoilMass() / dScale );
+  double muj = sqrt( muj2 );
 
   return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*muj ) * dScale;
 }
 
-// Where does this come from? - Ask Simon
 Energy FIMassiveDecayKinematics::QMax(Energy dScale, 
 				double, double,
 				const DipoleSplittingInfo& dInfo,
 				const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
   // Mass of recoil system
-  double Muj = abs(dInfo.recoilMass() / dScale ); 
+  double Muj2 = sqr( dInfo.recoilMass() / dScale );
+  double Muj = sqrt( Muj2 );
 
-  return dScale * ( 1.-2.*Muj+sqr(Muj) );
+  return dScale * ( 1.-2.*Muj+Muj2 );
 }
 
+// The name of this function is misleading
+// scale here is defined as sqr(scale) = sqr(qi+qj)
+// Here, scale is Q
 Energy FIMassiveDecayKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& split) const {
-  // from Martin's thesis
   double zPrime = split.lastSplittingParameters()[0];
   Energy mi = split.emitterData()->mass();
   Energy m = split.emissionData()->mass();
@@ -114,8 +109,11 @@ Energy FIMassiveDecayKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo
   return sqrt(pt2);
 }
 
+// The name of this function is misleading
+// scale here is the transverse momentum
+// Q2 is sqr(qi+qj)
+// This is simply the inverse of PtFromQ
 Energy FIMassiveDecayKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split) const {
-  // from Martin's thesis
   double zPrime = split.lastSplittingParameters()[0];
   Energy mi = split.emitterData()->mass();
   Energy m = split.emissionData()->mass();
@@ -135,26 +133,27 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
 					    DipoleSplittingInfo& info,
 					    const DipoleSplittingKernel&) {
 
-  // Construct mass squared variables
-  Energy2 mi2 = sqr( info.emitterData()->mass() );
-  Energy2 mj2 = sqr( info.emissionData()->mass() );
 
-  Energy2 mij2 = ZERO;
-  if ( info.emitterData()->id() + info.emissionData()->id() == 0 ) mij2 = ZERO; // g -> qq
-  else mij2 = mi2; // g -> gg or q -> qg
+  // scaled masses
+  double mui2 = sqr( info.emitterData()->mass() / info.scale() );
+  double mu2 = sqr( info.emissionData()->mass() / info.scale() );
+  double muj2 = sqr( info.recoilMass() / info.scale() );
 
-  Energy2 mk2 = sqr( info.recoilMass() );  
-  Energy2 Qijk = sqr(info.scale());
+  double Mui2 = 0.;
+  if ( info.emitterData()->id() + info.emissionData()->id() == 0 ) Mui2 = 0.; // gluon
+  else Mui2   = mui2; // (anti)quark 
+  double Muj2 = muj2;
 
   // To solve issue with scale during presampling
   // need to enforce that Qijk-mij2-mk2 = 2*pij.pk > 0,
   // so combine checks by comparing against square root.
-  if ( Qijk-mij2-mk2 < sqrt(4.*mij2*mk2) ) {
+  if ( 1.-Mui2-Muj2 < sqrt(4.*Mui2*Muj2) ) {
     jacobian(0.0);
     return false;
   }
 
-  Energy2 sijk = 0.5*( Qijk - mij2 - mk2 + sqrt( sqr(Qijk-mij2-mk2) - 4.*mij2*mk2 ) );
+  Energy2 Qijk = sqr(info.scale());
+  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
 
   // Calculate pt
   Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
@@ -178,14 +177,6 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
   else {
     zPrime = 1.-exp(-xi);
   }
-
-  // scaled masses *** TODO: rewrite above in terms of mu to avoid this calculation ***, and mix up of notation
-  double mui2 = mi2 / Qijk;
-  double mu2  = mj2 / Qijk;
-  double muj2 = mk2 / Qijk;
-
-  double Mui2 = mij2 / Qijk;
-  double Muj2 = muj2;
 
   // Check limit on pt
   Energy ptmax1 = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
@@ -230,15 +221,14 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
   }
 
   // Calculate A:=xij*w
-  double A = (1./(sijk*zPrime*(1.-zPrime))) * ( pt2 + zPrime*mj2 + (1.-zPrime)*mi2 - zPrime*(1.-zPrime)*mij2 );
+  double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
 
   // Calculate y from A (can also write explicitly in terms of qt, zPrime and masses however we need A anyway)
-  Energy2 sbar = Qijk - mi2 - mj2 - mk2;
-  double y = (1./sbar) * (A*sijk + mij2 - mi2 - mj2);
+  double bar = 1.-mui2-mu2-muj2;
+  double y = (1./bar) * (A*suijk + Mui2 - mui2 - mu2 );
 
   // kinematic phasespace boundaries for y
   // same as in Dittmaier hep-ph/9904440v2 (equivalent to CS)
-  double bar = 1.-mui2-mu2-muj2;
   double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
   double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
   if ( y < ym || y > yp ) {
@@ -247,16 +237,14 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
   }
 
   // Calculate xk and xij
-  double lambdaK = 1. + (mk2/sijk);
-  double lambdaIJ = 1. + (mij2/sijk);
-
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (mk2/sijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (mk2/sijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*mk2/sijk) );
-  double xij = 1. - ( (mk2/sijk) * (1.-xk) / xk );
+  double lambdaK = 1. + (Muj2/suijk);
+  double lambdaIJ = 1. + (Mui2/suijk);
+  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
+  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
 
   // Transform to standard z definition as used in the kernels (i.e. that used in CS and standard sudakov parametrisations)
-  double z = 
-    ( (zPrime*xij*xk*sijk/2.) + (mk2/ ( 2.*xk*xij*sijk*zPrime))*(pt2 + mi2) ) /
-    ( (xij*xk*sijk/2.) + (mk2*mij2/(2.*xk*xij*sijk)) + (mk2/(2.*xk*xij))*A );
+  double z = ( (zPrime*xij*xk*suijk/2.) + (Muj2/ ( 2.*xk*xij*suijk*zPrime))*(pt2/Qijk + mui2) ) /
+    ( (xij*xk*suijk/2.) + (Muj2/(2.*xk*xij))*(Mui2/suijk + A) );
 
   // These apply to z, not zPrime
   double zm = ( (2.*mui2+bar*y)*(1.-y) - sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
@@ -285,7 +273,6 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
     mapZJacobian = 1.-z;
   }
 
-  // TODO: May need a redefinition due to different definitions of z
   jacobian( 2. * mapZJacobian * (1.-y) * 
 	    log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) *
 	    bar / rootOfKallen(1.,Mui2,Muj2) );
@@ -321,51 +308,49 @@ void FIMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
   Lorentz5Momentum pk = pSpectator - pEmitter;
   Lorentz5Momentum pij = pEmitter;
 
-  // Masses - Currently not using the mu-ratio formalism and using a different notation to Simon
-  Energy2 mi2 = sqr( dInfo.emitterData()->mass() ); 
-  Energy2 mj2 = sqr( dInfo.emissionData()->mass() );
+  // scaled masses
+  double mui2 = sqr( dInfo.emitterData()->mass() / dInfo.scale() );
+  double mu2 = sqr( dInfo.emissionData()->mass() / dInfo.scale() );
+  double muj2 = sqr( dInfo.recoilMass() / dInfo.scale() );
 
-  Energy2 mij2 = ZERO;
-  if ( dInfo.emitterData()->id() + dInfo.emissionData()->id() == 0 ) mij2 = ZERO; // g -> qqbar
-  else mij2 = mi2; // g -> gg or q -> qg
-  Energy2 mk2 = sqr(dInfo.recoilMass());
+  double Mui2 = 0.;
+  if ( dInfo.emitterData()->id() + dInfo.emissionData()->id() == 0 ) Mui2 = 0.; // gluon
+  else Mui2   = mui2; // (anti)quark 
+  double Muj2 = muj2;
     
   Energy2 Qijk = sqr(dInfo.scale());
+  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
+  double suijk2 = sqr(suijk);
 
-  Energy2 sijk = 0.5*( Qijk - mij2 - mk2 + sqrt( sqr(Qijk-mij2-mk2) - 4.*mij2*mk2 ) );
-  Energy4 sijk2 = sqr(sijk);
+// Calculate A:=xij*w
+  double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
 
-  // Calculate A:=xij*w
-  double A = (1./(sijk*zPrime*(1.-zPrime))) * ( pt2 + zPrime*mj2 + (1.-zPrime)*mi2 - zPrime*(1.-zPrime)*mij2 );
-
-  // Calculate xk and xij
-  double lambdaK = 1. + (mk2/sijk);
-  double lambdaIJ = 1. + (mij2/sijk);
-
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (mk2/sijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (mk2/sijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*mk2/sijk) );
-  double xij = 1. - ( (mk2/sijk) * (1.-xk) / xk );
+  // Calculate the scaling factors, xk and xij
+  double lambdaK = 1. + (Muj2/suijk);
+  double lambdaIJ = 1. + (Mui2/suijk);
+  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
+  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
 
   // Construct reference momenta nk, nij, nt
-  Lorentz5Momentum nij = ( sijk2 / (sijk2-mij2*mk2) ) * (pij - (mij2/sijk)*pk);
-  Lorentz5Momentum nk = ( sijk2 / (sijk2-mij2*mk2) ) * (pk - (mk2/sijk)*pij);
+  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muj2) ) * (pij - (Mui2/suijk)*pk);
+  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muj2) ) * (pk - (Muj2/suijk)*pij);
 
   // Following notation in notes, qt = sqrt(wt)*nt
   Lorentz5Momentum qt = getKt(nij,nk,pt,dInfo.lastPhi());
 
   // Construct qij, qk, qi and qj
-  Lorentz5Momentum qij = xij*nij + (mij2/(xij*sijk))*nk;
-  Lorentz5Momentum qk = xk*nk + (mk2/(xk*sijk))*nij;
+  Lorentz5Momentum qij = xij*nij + (Mui2/(xij*suijk))*nk;
+  Lorentz5Momentum qk = xk*nk + (Muj2/(xk*suijk))*nij;
 
   // No need to actually calculate nt and wt:
-  Lorentz5Momentum qi = zPrime*qij + ((pt2 + mi2 - zPrime*zPrime*mij2)/(xij*sijk*zPrime))*nk + qt;
-  Lorentz5Momentum qj = (1.-zPrime)*qij + ((pt2 + mj2 - sqr(1.-zPrime)*mij2)/(xij*sijk*(1.-zPrime)))*nk - qt;
+  Lorentz5Momentum qi = zPrime*qij + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
+  Lorentz5Momentum qj = (1.-zPrime)*qij + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
 
   emitterMomentum(qi);
   emissionMomentum(qj);
   spectatorMomentum(pSpectator);
 
-  //recoilMomentum is not currently used
-  //recoilMomentum(pk); 
+  // Required for absorbing recoil in DipoleEventRecord::update
   splitRecoilMomentum(qk);
 
 }

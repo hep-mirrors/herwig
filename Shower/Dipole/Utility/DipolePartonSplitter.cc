@@ -54,7 +54,7 @@ void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChi
 void DipolePartonSplitter::split(tPPtr parent, tPPtr firstChild, tPPtr secondChild,
 				 tPPtr ref, bool initialState, bool decayedEmitter) {
 
-  // TODO: If decayedEmitter splittings are included,
+  // If decayedEmitter splittings are included,
   // they need to be handled here
 
   split(parent,firstChild,secondChild,initialState,decayedEmitter);

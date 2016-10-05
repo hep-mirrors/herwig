@@ -79,29 +79,22 @@ double FIMDecaygx2ggxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
   //assert(split.lastSplittingParameters().size() == 1 );
   double zPrime = split.lastSplittingParameters()[0];
 
+  // Construct mass squared variables
   // Recoil system mass
-  Energy2 mk2 = sqr(split.recoilMass());
-  Energy2 ma2 = sqr(split.spectatorData()->mass());
+  double muj2 = sqr(split.recoilMass() / split.scale());
+  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
+  double bar = 1. - muj2;
 
-  Energy2 Qijk = sqr(split.scale());
-  Energy2 sbar = Qijk - mk2;
+// Calculate y
+  double y = (sqr(pt)/sqr(split.scale())) / (bar*zPrime*(1.-zPrime));
 
-  // Calculate y
-  double y = (1./(sbar*zPrime*(1.-zPrime)))*( sqr(pt) );
-
-  // Scaled masses
-  double muk2 = mk2 / Qijk;
-  double mua2 = ma2 / Qijk;
-  double sbarMod = 1. - muk2;
-
-
-  if( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 < 0. ){
+  if( sqr(2.*muj2+bar*(1.-y))-4.*muj2 < 0. ){
     cerr << "error in FIMDecaygx2ggxDipoleKernelFull::evaluate -- " <<
-      "muk2 " << muk2 << "  y " << y << endl;
+      "muj2 " << muj2 << "  y " << y << endl;
     return 0.0;
   }
 
-  double vijk = sqrt( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 ) / (sbarMod*(1.-y));
+  double vijk = sqrt( sqr(2.*muj2+bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
   double viji = 1.;
   double vbar = 1.;
 
@@ -111,7 +104,7 @@ double FIMDecaygx2ggxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
   // how to choose kappa?
   double kappa = 0.;
 
-  ret *= theSymmetryFactor* ( 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) ) +       (!strictLargeN() ? 4./3. : 3./2.)*( (y/(1.-z*(1.-y)))*( 2.*( 2.*y + 1.)/ ((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*sbarMod)) ) +  (y/(1.-(1.-z)*(1.-y)))*( 2.*( 2.*y + 1.)/ ((1.+y)-(1.-z)*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-(1.-z)*(1.-y))*sbarMod)) ) ) ) ;
+  ret *= theSymmetryFactor* ( 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) ) +       (!strictLargeN() ? 4./3. : 3./2.)*( (y/(1.-z*(1.-y)))*( 2.*( 2.*y + 1.)/ ((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) ) +  (y/(1.-(1.-z)*(1.-y)))*( 2.*( 2.*y + 1.)/ ((1.+y)-(1.-z)*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-(1.-z)*(1.-y))*bar)) ) ) ) ;
 
   return ret > 0. ? ret : 0.;
 

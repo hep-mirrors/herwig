@@ -22,6 +22,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+// include theses to have complete types
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "Herwig/PDF/HwRemDecayer.h"
@@ -55,25 +56,22 @@ IBPtr DipoleShowerHandler::clone() const {
   return new_ptr(*this);
 }
 
-
-
-
 IBPtr DipoleShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
 
 
-void  DipoleShowerHandler::cascade(tPVector finalstate) {
+void  DipoleShowerHandler::cascade(tPVector ) {
    assert(false&&"Dipoleshower as second shower not implemented");
   return;}
 
 
 tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
-	                                    Energy optHardPt, Energy optCutoff) {
+				    Energy optHardPt, Energy optCutoff) {
 
   useMe();
-  
+
   prepareCascade(sub);
   resetWeights();
 
@@ -84,7 +82,6 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
   eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), pdfs(),
                         ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
   if ( eventRecord().outgoing().empty() && !doISR() )
-
     return sub->incoming();
   if ( !eventRecord().incoming().first->coloured() &&
        !eventRecord().incoming().second->coloured() &&
@@ -154,16 +151,14 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
 	  eventRecord().transform(rot);
 	}
       }
-
+      
       didRealign = realign();
-    
       constituentReshuffle();
 
       // Decay and shower any particles that require decaying
       while ( !eventRecord().decays().empty() ) {
 
-
-	map<PPtr,PerturbativeProcessPtr>::iterator decayIt = eventRecord().decays().begin();
+	map<PPtr,PerturbativeProcessPtr>::const_iterator decayIt = eventRecord().decays().begin();
 	// find the decay to do, one with greatest width and parent showered
 	while(find(eventRecord().outgoing().begin(),eventRecord().outgoing().end(),decayIt->first)==
 	      eventRecord().outgoing().end() &&
@@ -172,11 +167,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
 	assert(decayIt!=eventRecord().decays().end());
 	PPtr incoming = decayIt->first;
 	eventRecord().currentDecay(decayIt->second);
-	
 
 	// Use this to record if an emission actually happens
 	bool powhegEmission = thePowhegDecayEmission;
-
 
 	// Decay the particle / sort out its pert proc
 	Energy showerScale = eventRecord().decay(incoming, powhegEmission);
@@ -213,21 +206,20 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
 	  doCascade(nEmitted,optHardPt,optCutoff,true);
 
 	  // Do the constituent mass shell reshuffling
-	  decayConstituentReshuffle(eventRecord().currentDecay(), true);
+	  decayConstituentReshuffle(eventRecord().currentDecay(), false);
 
 	}
 
 	// Update the decays, adding any decays and updating momenta
 	eventRecord().updateDecays(eventRecord().currentDecay());
 	
-	eventRecord().decays().erase(decayIt->first);
+	eventRecord().decays().erase(decayIt);
       }
 	
 
       break;
 
-    }
-    catch (RedoShower&) {
+    } catch (RedoShower&) {
 
       resetWeights();
 
@@ -245,10 +237,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
 
   }
 
-  tPPair res=eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
+  tPPair incoming=eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
   setDidRunCascade(true);
-  return res;
-
+  return incoming;
 }
 
 
@@ -263,9 +254,6 @@ void DipoleShowerHandler::constituentReshuffle() {
       return;
     }
   
-
-    //  if(eventRecord().decays().empty()) return;
-
     else {
       PList decaying;
       for(map<PPtr,PerturbativeProcessPtr>::iterator it=eventRecord().decays().begin();
@@ -279,8 +267,6 @@ void DipoleShowerHandler::constituentReshuffle() {
 						     eventRecord().intermediates());
     }
   }
-
-
 
   // After reshuffling the hard process, the decays need to be updated
   // as this is not done in reshuffle
@@ -309,7 +295,6 @@ void DipoleShowerHandler::constituentReshuffle() {
       if ( !(eventRecord().decays()[unstable]->outgoing().empty()) )
 	eventRecord().updateDecayChainMom( unstable , eventRecord().decays()[unstable]);
     }
-
     
     else {
       if ( !(eventRecord().decays()[unstable]->outgoing().empty()) ) {
@@ -328,6 +313,7 @@ void DipoleShowerHandler::constituentReshuffle() {
       }
     }
   }
+    
   eventRecord().currentDecay(PerturbativeProcessPtr());
 }
 
@@ -423,7 +409,6 @@ void DipoleShowerHandler::hardScales(Energy2 muf)  {
   } else {
     muPt = hardScaleFactor()*sqrt(muf);
   }
-
 
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
@@ -543,7 +528,6 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      Energy startScale,
 				      Energy optHardPt,
 				      Energy optCutoff) {
-
 
   if ( !index.initialStateEmitter() &&
        !doFSR() ) {
@@ -694,6 +678,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   currentMultiplicity+=2;
 
   while ( eventRecord().haveChain() ) {
+
     if ( verbosity > 2 ) {
       generator()->log() << "DipoleShowerHandler selecting splittings for the chain:\n"
 			 << eventRecord().currentChain() << flush;
@@ -719,7 +704,6 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 	winner = dipoleWinner;
 	winnerDip = dip;
       }
-      
 
       if ( evolutionOrdering()->independentDipoles() ) {
 	Energy dipScale = max(nextLeftScale,nextRightScale);
@@ -806,9 +790,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     eventRecord().split(winnerDip,winner,children,firstChain,secondChain);
     currentMultiplicity++;
     assert(firstChain && secondChain);
-
     evolutionOrdering()->setEvolutionScale(winnerScale,winner,*firstChain,children);
-
     if ( !secondChain->dipoles().empty() )
       evolutionOrdering()->setEvolutionScale(winnerScale,winner,*secondChain,children);
 
@@ -835,7 +817,6 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     if ( nEmissions )
       if ( ++emDone == nEmissions )
 	return;
-
   }
 
 }
@@ -850,7 +831,7 @@ bool DipoleShowerHandler::realign() {
 
     if ( eventRecord().incoming().first->momentum().perp2()/GeV2 < 1e-10 &&
 	 eventRecord().incoming().second->momentum().perp2()/GeV2 < 1e-10 )
-	 return false;
+      return false;
 
     pair<Lorentz5Momentum,Lorentz5Momentum> inMomenta
       (eventRecord().incoming().first->momentum(),
@@ -963,7 +944,7 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
   for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k =
 	  kernels.begin(); k != kernels.end(); ++k ) {
     if ( (**k).canHandle(ind) ) {
-
+ 
       if ( verbosity > 0 ) {
 	generator()->log() << "DipoleShowerHandler encountered the dipole configuration\n"
 			   << ind << " in event number "
@@ -973,7 +954,6 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       }
 
       gotone = true;
-
       Ptr<DipoleSplittingGenerator>::ptr nGenerator =
 	new_ptr(DipoleSplittingGenerator());
       nGenerator->doCompensate(theDoCompensate);
@@ -1020,7 +1000,6 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       nGenerator->prepare(dummy);
 
       generators().insert(make_pair(ind,nGenerator));
-
 
     }
   }

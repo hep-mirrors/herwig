@@ -86,7 +86,6 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
   generatedSplitting = sp;
 
   generatedSplitting.splittingKinematics(splittingKernel()->splittingKinematics());
-
   generatedSplitting.splittingParameters().resize(splittingKernel()->nDimAdditional());
 
   if ( wrapping() ) {
@@ -247,6 +246,7 @@ const pair<vector<double>,vector<double> >& DipoleSplittingGenerator::support() 
 
   theSupport.first = lower;
   theSupport.second = upper;
+
   return theSupport;
 
 }
@@ -306,8 +306,6 @@ double DipoleSplittingGenerator::invertOverestimateIntegral(double value) const 
 
 }
 
-
-//TODO: make some proper flag..
 double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
   assert(!wrapping());
@@ -317,9 +315,7 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
   DipoleSplittingInfo& split =
     ( !presampling ? generatedSplitting : presampledSplitting );
 
-  
   split.continuesEvolving();
-
   size_t shift = 4;
 
   if ( presampling ) {
@@ -330,20 +326,13 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
     if ( split.index().incomingDecaySpectator() ) {
       split.scale(split.index().spectatorData()->mass());
       split.recoilMass(point[3] * generator()->maximumCMEnergy());
-
-      if (split.recoilMass() <= ZERO) {
-	std::cerr << "Test triggered in evaluate\n";
-      }
-
     }
 
-    // For dipoles containing a decayed particle,
-    // the scale is fixed but the mass of the recoil 
-    // system is not so sample over recoilMass()
-    else if ( split.index().incomingDecayEmitter() ) {
-      split.scale(split.index().emitterData()->mass());
-      split.recoilMass(point[3] * generator()->maximumCMEnergy());
-    }
+    // Currently do not have decaying emitters
+    //else if ( split.index().incomingDecayEmitter() ) {
+    //  split.scale(split.index().emitterData()->mass());
+    //  split.recoilMass(point[3] * generator()->maximumCMEnergy());
+    //}
 
     // If not a decay dipole, sample over the scale of the dipole
     else
@@ -453,12 +442,8 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
       generatedSplitting.hardPt(startPt);
       continue;
     } catch (exsample::hit_and_miss_maxtry&) {
-      //std::cerr << "RedoShower FIVE - exsample::hit_and_miss_maxtry& - in DipoleSplittingGenerator.cc\n";
-      //assert(false);
       throw DipoleShowerHandler::RedoShower();
     } catch (exsample::selection_maxtry&) {
-      //std::cerr << "RedoShower SIX - exsample::selection_maxtry& - in DipoleSplittingGenerator.cc\n";
-      //assert(false);
       throw DipoleShowerHandler::RedoShower();
     }
     break;

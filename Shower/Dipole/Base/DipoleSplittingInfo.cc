@@ -36,7 +36,7 @@ DipoleIndex::DipoleIndex(tcPDPtr newEmitter, tcPDPtr newSpectator,
 
 // SW Note, this is used in DipoleShowerHandler.getWinner(),
 // not including the comparison of the decay booleans led to a bug which took a long time to fix
-// i.e. remember to update this function in case of new characteristics in DipoleIndex
+// remember to update this function in case of new characteristics in DipoleIndex
 bool DipoleIndex::operator ==(const DipoleIndex& x) const {
   return
     theEmitterData == x.theEmitterData &&

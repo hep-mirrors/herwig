@@ -84,31 +84,25 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   //assert(split.lastSplittingParameters().size() == 1 );
   double zPrime = split.lastSplittingParameters()[0];
 
+
   // Construct mass squared variables
-  Energy2 mi2 = sqr(split.emitterData()->mass());
-
+  double mui2 = sqr(split.emitterData()->mass() / split.scale());
+  double mu2 = mui2;
   // Recoil system mass
-  Energy2 mk2 = sqr(split.recoilMass());
-
-  Energy2 Qijk = sqr(split.scale());
-  Energy2 sbar = Qijk - 2.*mi2 - mk2;
+  double muj2 = sqr(split.recoilMass() / split.scale());
+  double bar = 1. - mui2 - mu2 - muj2;
 
   // Calculate y
-  double y = (1./(sbar*zPrime*(1.-zPrime)))*( sqr(pt) + (1. - 2.*zPrime + 2.*sqr(zPrime))*mi2 );
+  double y = (sqr(pt)/sqr(split.scale()) + sqr(1.-zPrime)*mui2 + sqr(zPrime)*mu2) / (bar*zPrime*(1.-zPrime));
 
-  // Scaled masses
-  double mui2 = mi2 / Qijk;
-  double muk2 = mk2 / Qijk;
-  double sbarMod = 1. - 2.*mui2 - muk2;
-
-  if( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 < 0. ){
+  if( sqr(2.*muj2+bar*(1.-y))-4.*muj2 < 0. ){
     cerr << "error in FIMDecaygx2qqxDipoleKernel::evaluate -- " <<
-      "muk2 " << muk2 << "  mui2 " << mui2 << "  y " << y << endl;
+      "muj2 " << muj2 << "  mui2 " << mui2 << "  y " << y << endl;
     return 0.0;
   }
 
-  double vijk = sqrt( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 ) / (sbarMod*(1.-y));
-  double viji = sqrt( sqr(sbarMod*y)-4.*sqr(mui2) ) / (sbarMod*y+2.*mui2);
+  double vijk = sqrt( sqr(2.*muj2+bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
+  double viji = sqrt( sqr(bar*y)-4.*sqr(mui2) ) / (bar*y+2.*mui2);
 
   double zp = 0.5*(1.+viji*vijk);
   double zm = 0.5*(1.-viji*vijk);
@@ -117,7 +111,7 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double kappa = 0.;
 
   ret *= 0.25 / vijk *
-    ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm - kappa*mui2/(2*mui2+sbarMod*y) ) );
+    ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm - kappa*mui2/(2*mui2+bar*y) ) );
     
   return ret > 0. ? ret : 0.;
 

@@ -343,10 +343,12 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
 						   PPair& eventIncoming,
 						   PList& eventIntermediates) {
   
-  //std::cerr << "XWXWXWXWX TEST A for event 14, partons.size() = 1 XWXWXWXWXW\n";
   // Note, when this function is called, the particle pointers
   // in theDecays/decaying are those prior to the showering.
   // Here we find the newest pointers in the outgoing.
+  // The update of the PPtrs in theDecays is done in DipoleShowerHandler::constituentReshuffle()
+  // as this needs to be done if ConstituentReshuffling is switched off.
+
   // Find the outgoing decaying particles
   PList recoilers;
   for ( PList::iterator decIt = decaying.begin(); decIt != decaying.end(); ++decIt) {
@@ -382,18 +384,15 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
 
   // Make a list of partons
   PList partons;
-  //std::cerr << "Partons:\n";
   for ( PList::iterator outPos = eventOutgoing.begin(); outPos != eventOutgoing.end(); ++outPos ) {
     if ( find (recoilers.begin(), recoilers.end(), *outPos ) == recoilers.end() ) {
       partons.push_back( *outPos );
-      //std::cerr << "Parton: " << *outPos << "; " << (*outPos)->id() << "\n";
     }
   }
 
 
   // If no outgoing partons, do nothing
   if ( partons.size() == 0 ){
-    //std::cerr << "XWXWXWXWX TEST B for event 14, partons.size() = 1 XWXWXWXWXW\n";
     return;
   }
   
@@ -404,9 +403,8 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
   // hard process with no decays.
   else if ( partons.size() == 1 && ( DipolePartonSplitter::colourConnected(partons.front(),eventIncoming.first) || 
 				     DipolePartonSplitter::colourConnected(partons.front(),eventIncoming.second) ) ) {
-    //std::cerr << "XWXWXWXWX TEST C for event 14, partons.size() = 1 XWXWXWXWXW\n";
       
-    // Erase the parton from the event outgoing (todo fix this in rewrite)
+    // Erase the parton from the event outgoing
     eventOutgoing.erase( find( eventOutgoing.begin(), eventOutgoing.end(), partons.front() ) );
     // Perform the reshuffle, this update the intermediates and the incoming
     reshuffle(partons, eventIncoming, eventIntermediates);
@@ -418,7 +416,6 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
   // If reshuffling amongst the incoming is not possible
   // or if we have multiple outgoing partons.
   else {
-    //std::cerr << "XWXWXWXWX TEST D for event 14, partons.size() = 1 XWXWXWXWXW\n";
 
     // Create a complete list of the outgoing from the process
     PList out;
@@ -430,7 +427,7 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
     // A single parton which cannot be reshuffled 
     // with the incoming.
     if ( partons.size() == 1 ) {
-      //std::cerr << "XWXWXWXWX TEST E for event 14, partons.size() = 1 XWXWXWXWXW\n";
+
       // Populate the out for the reshuffling
       out.insert(out.end(),partons.begin(),partons.end());
       out.insert(out.end(),recoilers.begin(),recoilers.end());
@@ -443,7 +440,6 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
     // If there is more than one parton, reshuffle only
     // amongst the partons
     else {
-      //std::cerr << "XWXWXWXWX TEST F for event 14, partons.size() = 1 XWXWXWXWXW\n";
       assert(partons.size() > 1);
 
       // Populate the out for the reshuffling
@@ -455,33 +451,7 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
     }
   
     // Update the dipole event record
-    for (PList::iterator p = intermediates.begin();
-	 p != intermediates.end(); ++p) {
-
-      // Update the event record intermediates
-      eventIntermediates.push_back(*p);
-
-      // Identify the reshuffled particle
-      assert( (*p)->children().size()==1 );
-      PPtr reshuffled = (*p)->children()[0];
-      assert( find(out.begin(), out.end(), reshuffled) != out.end() );
-
-      // Update the event record outgoing
-      PList::iterator posOut = find(eventOutgoing.begin(), eventOutgoing.end(), *p);
-
-      if ( posOut != eventOutgoing.end() ) {
-	eventOutgoing.erase(posOut);
-	eventOutgoing.push_back(reshuffled);
-      }
-      
-
-      else {
-	PList::iterator posHard = find(eventHard.begin(), eventHard.end(), *p);
-	assert( posHard != eventHard.end() );
-	eventHard.erase(posHard);
-	eventHard.push_back(reshuffled);
-      }
-    }
+    updateEvent(intermediates, eventIntermediates, out, eventOutgoing, eventHard );
     return;
   }
 }
@@ -558,34 +528,48 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
 
 
     // Update the dipole event record and the decay process
-    for (PList::iterator p = intermediates.begin();
-	 p != intermediates.end(); ++p) {
+    updateEvent(intermediates, eventIntermediates, out, eventOutgoing, eventHard, decayProc );
+    return;
+  }
+}
 
-      // Update the event record intermediates
-      eventIntermediates.push_back(*p);
 
-      // Identify the reshuffled particle
-      assert( (*p)->children().size()==1 );
-      PPtr reshuffled = (*p)->children()[0];
-      assert( find(out.begin(), out.end(), reshuffled) != out.end() );
+void ConstituentReshuffler::updateEvent( PList& intermediates,
+					 PList& eventIntermediates,
+					 PList& out,
+					 PList& eventOutgoing,
+					 PList& eventHard,
+					 PerturbativeProcessPtr decayProc ) {
 
-      // Update the event record outgoing
-      PList::iterator posOut = find(eventOutgoing.begin(), eventOutgoing.end(), *p);
+  // Loop over the new intermediates following the reshuffling
+  for (PList::iterator p = intermediates.begin();
+       p != intermediates.end(); ++p) {
 
-      if ( posOut != eventOutgoing.end() ) {
-	eventOutgoing.erase(posOut);
-	eventOutgoing.push_back(reshuffled);
-      }
+    // Update the event record intermediates
+    eventIntermediates.push_back(*p);
+
+    // Identify the reshuffled particle
+    assert( (*p)->children().size()==1 );
+    PPtr reshuffled = (*p)->children()[0];
+    assert( find(out.begin(), out.end(), reshuffled) != out.end() );
+
+    // Update the event record outgoing
+    PList::iterator posOut = find(eventOutgoing.begin(), eventOutgoing.end(), *p);
+
+    if ( posOut != eventOutgoing.end() ) {
+      eventOutgoing.erase(posOut);
+      eventOutgoing.push_back(reshuffled);
+    }
       
-
-      else {
-	PList::iterator posHard = find(eventHard.begin(), eventHard.end(), *p);
-	assert( posHard != eventHard.end() );
-	eventHard.erase(posHard);
-	eventHard.push_back(reshuffled);
-      }
+    else {
+      PList::iterator posHard = find(eventHard.begin(), eventHard.end(), *p);
+      assert( posHard != eventHard.end() );
+      eventHard.erase(posHard);
+      eventHard.push_back(reshuffled);
+    }
     
-      // Replace the particle in the the decay process outgoing
+    // Replace the particle in the the decay process outgoing
+    if ( decayProc ) {
       vector<pair<PPtr,PerturbativeProcessPtr> >::iterator decayOutIt = decayProc->outgoing().end();
       for ( decayOutIt = decayProc->outgoing().begin();
 	    decayOutIt!= decayProc->outgoing().end(); ++decayOutIt ) {
@@ -596,12 +580,9 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
       }
       assert( decayOutIt != decayProc->outgoing().end() );
       decayOutIt->first = reshuffled;
-
     }
-
-  }
+  }  
 }
-
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

@@ -344,7 +344,7 @@ public:
    * Prepare the event record for the given
    * subprocess.
    */
-  const map<PPtr,PPtr>& slimprepare(tSubProPtr subpro,
+  void slimprepare(tSubProPtr subpro,
                                 tStdXCombPtr xc,
                                 const pair<PDF,PDF>& pdf,tPPair beam,
                                 bool dipoles = true);

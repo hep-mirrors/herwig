@@ -87,7 +87,6 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   }
  
   Energy2 rScale = sqr(theRenormalizationScaleFactor*rScaleFactor)*scale;
-
   rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
 
   Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
@@ -177,7 +176,6 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   return ret;
 
 }
-
 
 void DipoleSplittingKernel::accept(const DipoleSplittingInfo& split,
 				   double, double,

@@ -460,10 +460,6 @@ public:
    */
   void fixedScale(Energy fix){ theFixedScale=fix;}
   
-  
-  
-  
-  
   /**
    * Set the last splitting parameters.
    */
