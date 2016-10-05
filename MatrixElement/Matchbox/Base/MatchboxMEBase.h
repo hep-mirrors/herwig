@@ -885,11 +885,6 @@ public:
    * Return true, if verbose
    */
   bool initVerbose() const;
-      
-  /**
-   * Tool to validate the diagrams
-   */
-  void verboseDia(double )const;
 
   /**
    * Dump the setup to an ostream
@@ -1206,22 +1201,6 @@ private:
    */
   mutable bool checkedPDFs;
   
-  /**
-  * Diagnostic Diagram for TreePhaseSpace
-  */
-  
-  void bookMEoverDiaWeight(double x) const;
-  
-  mutable map<double,double > MEoverDiaWeight;
-  
-  mutable int Nevents;
-  
-  /**
-   * Range of diagram weight verbosity
-   */
-  mutable double theDiagramWeightVerboseDown, theDiagramWeightVerboseUp;
-  
-
   /**
    * The first cluster node
    */

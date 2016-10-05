@@ -51,9 +51,8 @@ void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
      << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints
      << theTrivialColourLegs << theReshuffleMasses.size();
   if ( !theReshuffleMasses.empty() ) {
-    for ( map<long,Energy>::const_iterator r = theReshuffleMasses.begin();
-	  r != theReshuffleMasses.end(); ++r )
-      os << r->first << ounit(r->second,GeV);
+    for (auto  & r : theReshuffleMasses )
+      os << r.first << ounit(r.second,GeV);
   }
 }
 
@@ -128,9 +127,8 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
 
   map<int,pair<Process,int> > sorted;
 
-  for ( map<pair<Process,int>,int>::const_iterator p = proc.begin();
-	p != proc.end(); ++p ) {
-    sorted[p->second] = p->first;
+  for (auto const & p :  proc ) {
+    sorted[p.second] = p.first;
   }
 
   unsigned int currentOrderInAlphaS = sorted.begin()->second.first.orderInAlphaS;

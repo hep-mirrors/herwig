@@ -48,9 +48,7 @@ MatchboxMEBase::MatchboxMEBase()
     theOneLoopNoBorn(false),
     theOneLoopNoLoops(false),
     theNoCorrelations(false),
-    theHavePDFs(false,false), checkedPDFs(false),
-    theDiagramWeightVerboseDown(10000000000000.),
-    theDiagramWeightVerboseUp(0.) {}
+    theHavePDFs(false,false), checkedPDFs(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -101,11 +99,9 @@ void MatchboxMEBase::getDiagrams() const {
     if ( diags.empty() )
       return;
 
-    for ( vector<Ptr<Tree2toNDiagram>::ptr>::iterator d = diags.begin();
-	  d != diags.end(); ++d ) {
-      add(*d);
-    }
-
+    for (auto const & d :  diags )
+      add(d);
+    
     return;
 
   }
@@ -152,17 +148,13 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
     list<list<list<pair<int,bool> > > > cflows =
       ColourBasis::colourFlows(tdiag);
 
-    for ( list<list<list<pair<int,bool> > > >::const_iterator fit =
-	    cflows.begin(); fit != cflows.end(); ++fit ) {
-      flows.push_back(new ColourLines(ColourBasis::cfstring(*fit)));
-    }
+    for ( auto const & fit : cflows)
+      flows.push_back(new ColourLines(ColourBasis::cfstring(fit)));
 
   }
 
   Selector<const ColourLines *> res;
-  for ( vector<ColourLines*>::const_iterator f = flows.begin();
-	f != flows.end(); ++f )
-    res.insert(1.0,*f);
+  for ( auto const & f : flows ) res.insert(1.0,f);
 
   return res;
 
@@ -186,9 +178,9 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   hard.push_back(sub->incoming().second);
   
   vector<PDT::Spin> out;
-  for ( size_t k = 0; k < sub->outgoing().size(); ++k ) {
-    out.push_back(sub->outgoing()[k]->data().iSpin());
-    hard.push_back(sub->outgoing()[k]);
+  for ( auto const & p  : sub->outgoing() ) {
+    out.push_back(p->data().iSpin());
+    hard.push_back(p);
   }
 
   // calculate dummy wave functions to fill the spin info
@@ -243,11 +235,10 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
     sub->incoming().first->spinInfo()->productionVertex(hardvertex);
   if ( sub->incoming().second->spinInfo() )
     sub->incoming().second->spinInfo()->productionVertex(hardvertex);
-  for ( ParticleVector::const_iterator p = sub->outgoing().begin();
-	p != sub->outgoing().end(); ++p ) {
-    if ( (**p).spinInfo() )
-      (**p).spinInfo()->productionVertex(hardvertex);
-  }
+  for ( auto const & p : sub->outgoing() )
+    if ( p->spinInfo() )
+      p->spinInfo()->productionVertex(hardvertex);
+  
 
 }
 
@@ -366,9 +357,8 @@ int MatchboxMEBase::nDim() const {
   }
 
   int insertionAdd = 0;
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    insertionAdd = max(insertionAdd,(**v).nDimAdditional());
+  for ( auto const & v : virtuals() ) {
+    insertionAdd = max(insertionAdd,v->nDimAdditional());
   }
 
   return nDimBorn() + ampAdd + insertionAdd;
@@ -624,15 +614,14 @@ double MatchboxMEBase::finalStateSymmetry() const {
     continue;
   }
 
-  for ( map<long,int>::const_iterator c = counts.begin();
-	c != counts.end(); ++c ) {
-    if ( c->second == 1 )
+  for ( auto const & c : counts) {
+    if ( c.second == 1 )
       continue;
-    if ( c->second == 2 )
+    if ( c.second == 2 )
       sFactor /= 2.;
-    else if ( c->second == 3 )
+    else if ( c.second == 3 )
       sFactor /= 6.;
-    else if ( c->second == 4 )
+    else if ( c.second == 4 )
       sFactor /= 24.;
   }
 
@@ -680,17 +669,6 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
-void MatchboxMEBase::verboseDia(double xme2)const{
-  double diagweightsum = 0.0;
-  for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
-       d != diagrams().end(); ++d ) {
-    diagweightsum += phasespace()->diagramWeight(dynamic_cast<const Tree2toNDiagram&>(**d));
-  }
-  double piWeight = pow(2.*Constants::pi,(int)(3*(meMomenta().size()-2)-4));
-  double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-  bookMEoverDiaWeight(log(xme2/(diagweightsum*piWeight*units)));
-}
-
 
 CrossSection MatchboxMEBase::prefactor()const{
   return (sqr(hbarc)/(2.*lastSHat())) *jacobian()* lastMEPDFWeight();
@@ -713,10 +691,9 @@ CrossSection MatchboxMEBase::dSigHatDRI() const {
   lastME2(me2());
   CrossSection res=ZERO;
   if  (oneLoop() &&!onlyOneLoop())  {
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-         virtuals().begin(); v != virtuals().end(); ++v ) {
-      (**v).setXComb(lastXCombPtr());
-      res += (**v).dSigHatDR();
+    for ( auto const & v : virtuals()) {
+      v->setXComb(lastXCombPtr());
+      res += v->dSigHatDR();
     }
     if ( checkPoles() && oneLoop() )
       logPoles();
@@ -875,10 +852,9 @@ void MatchboxMEBase::logPoles() const {
   double res1me = oneLoopSinglePole();
   double res2i = 0.;
   double res1i = 0.;
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    res2i += (**v).oneLoopDoublePole();
-    res1i += (**v).oneLoopSinglePole();
+  for ( auto const & v : virtuals()) {
+    res2i += v->oneLoopDoublePole();
+    res1i += v->oneLoopSinglePole();
   }
   if (res2me != 0.0 || res2i != 0.0) epsilonSquarePoleHistograms[mePartonData()].book(res2me,res2i);
   if (res1me != 0.0 || res1i != 0.0) epsilonPoleHistograms[mePartonData()].book(res1me,res1i);
@@ -976,11 +952,10 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
   for ( int emitter = 0; emitter < nreal; ++emitter ) {
 
     list<Ptr<SubtractionDipole>::ptr> matchDipoles;
-    for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-	    dipoles.begin(); d != dipoles.end(); ++d ) {
-      if ( !(**d).canHandleEmitter(rep,emitter) )
+    for ( auto const & d : dipoles ) {
+      if ( ! d->canHandleEmitter(rep,emitter) )
 	continue;
-      matchDipoles.push_back(*d);
+      matchDipoles.push_back(d);
     }
     if ( matchDipoles.empty() )
       continue;
@@ -990,21 +965,20 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	continue;
 
       list<Ptr<SubtractionDipole>::ptr> matchDipoles2;
-      for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-	      matchDipoles.begin(); d != matchDipoles.end(); ++d ) {
-	if ( !(**d).canHandleSplitting(rep,emitter,emission) )
+      for ( auto const & d : matchDipoles ) {
+	if ( !d->canHandleSplitting(rep,emitter,emission) )
 	  continue;
-	matchDipoles2.push_back(*d);
+	matchDipoles2.push_back(d);
       }
       if ( matchDipoles2.empty() )
 	continue;
 
       map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo> mergeInfo;
 
-      for ( DiagramVector::const_iterator d = diagrams().begin(); d != diagrams().end(); ++d ) {
+      for ( auto const & d : diagrams() ) {
 
 	Ptr<Tree2toNDiagram>::ptr check =
-	  new_ptr(Tree2toNDiagram(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d)));
+        new_ptr(Tree2toNDiagram(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(d)));
 
 	map<int,int> theMergeLegs;
 
@@ -1020,7 +994,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	info.diagram = check;
 	info.emitter = theEmitter;
 	info.mergeLegs = theMergeLegs;
-	mergeInfo[*d] = info;
+	mergeInfo[d] = info;
 
       }
 
@@ -1032,11 +1006,10 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	  continue;
 
 	list<Ptr<SubtractionDipole>::ptr> matchDipoles3;
-	for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-		matchDipoles2.begin(); d != matchDipoles2.end(); ++d ) {
-	  if ( !(**d).canHandleSpectator(rep,spectator) )
+    for ( auto const & d : matchDipoles2 ) {
+	  if ( ! d->canHandleSpectator(rep,spectator) )
 	    continue;
-	  matchDipoles3.push_back(*d);
+	  matchDipoles3.push_back(d);
 	}
 	if ( matchDipoles3.empty() )
 	  continue;
@@ -1044,57 +1017,53 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	if ( noDipole(emitter,emission,spectator) )
 	  continue;
 
-	for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-		matchDipoles3.begin(); d != matchDipoles3.end(); ++d ) {
+        for ( auto const & d : matchDipoles3 ) {
 
-	  if ( !(**d).canHandle(rep,emitter,emission,spectator) )
+	  if ( !d->canHandle(rep,emitter,emission,spectator) )
 	    continue;
 
-	  for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
-		  borns.begin(); b != borns.end(); ++b ) {
-	    if ( (**b).onlyOneLoop() )
+          for ( auto const & b : borns ) {
+	    if ( b->onlyOneLoop() )
 	      continue;
-	    if ( done.find(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d))) 
+	    if ( done.find(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(b,d)))
 		 != done.end() )
 	      continue;
 	    // now get to work
-	    (**d).clearBookkeeping();
-	    (**d).factory(factory());
-	    (**d).realEmitter(emitter);
-	    (**d).realEmission(emission);
-	    (**d).realSpectator(spectator);
-	    (**d).realEmissionME(const_cast<MatchboxMEBase*>(this));
-	    (**d).underlyingBornME(*b);
-	    (**d).setupBookkeeping(mergeInfo,slim);
-	    if ( !((**d).empty()) ) {
-	      res.push_back((**d).cloneMe());
+	    d->clearBookkeeping();
+	    d->factory(factory());
+	    d->realEmitter(emitter);
+	    d->realEmission(emission);
+	    d->realSpectator(spectator);
+	    d->realEmissionME(const_cast<MatchboxMEBase*>(this));
+	    d->underlyingBornME(b);
+	    d->setupBookkeeping(mergeInfo,slim);
+	    if ( ! d->empty() )  {
+	      res.push_back( d->cloneMe() );
 	      Ptr<SubtractionDipole>::tptr nDipole = res.back();
-	      done.insert(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d)));
+	      done.insert(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(b,d)));
 	      if ( nDipole->isSymmetric() )
-		done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(*b,*d)));
+		done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(b,d)));
 	      ostringstream dname;
               if ( theMerger) {
                 dname << fullName();
                 if (theOneLoopNoBorn)  dname <<  ".virtual." << theProjectorStage << "." ;
-                dname   << (**b).name() << "."
-                        << (**d).name() << ".[("
+                dname   << b->name() << "."
+                        << d->name() << ".[("
                         << emitter << "," << emission << ")," << spectator << "]";
               } else {
-                dname << fullName() << "." << (**b).name() << "."
-		    << (**d).name() << ".[(" 
+                dname << fullName() << "." << b->name() << "."
+		    << d->name() << ".[("
 		    << emitter << "," << emission << ")," << spectator << "]";
               }
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
 		throw Exception() << "MatchboxMEBase::getDipoles(): Dipole " << dname.str() << " already existing." << Exception::runerror;
 	      if ( !factory()->reweighters().empty() ) {
-		for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
-		      rw != factory()->reweighters().end(); ++rw )
-		  nDipole->addReweighter(*rw);
+            for ( auto const & rw : factory()->reweighters())
+		  nDipole->addReweighter(rw);
 	      }
 	      if ( !factory()->preweighters().empty() ) {
-		for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
-		      rw != factory()->preweighters().end(); ++rw )
-		  nDipole->addPreweighter(*rw);
+            for ( auto const & rw : factory()->preweighters() )
+		  nDipole->addPreweighter(rw);
 	      }
 	      nDipole->cloneDependencies(dname.str(),slim);
 	    }
@@ -1106,9 +1075,8 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 
   vector<Ptr<SubtractionDipole>::tptr> partners;
   copy(res.begin(),res.end(),back_inserter(partners));
-  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d = res.begin();
-	d != res.end(); ++d )
-    (**d).partnerDipoles(partners);
+  for ( auto const & d : res )
+    d->partnerDipoles(partners);
 
   return res;
 
@@ -1212,13 +1180,11 @@ void MatchboxMEBase::flushCaches() {
   MEBase::flushCaches();
   if ( matchboxAmplitude() )
     matchboxAmplitude()->flushCaches();
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator r =
-	  reweights().begin(); r != reweights().end(); ++r ) {
-    (**r).flushCaches();
+  for ( auto const & r : reweights() ) {
+    r->flushCaches();
   }
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    (**v).flushCaches();
+  for ( auto const &  v : virtuals()) {
+    v->flushCaches();
   }
 }
 
@@ -1490,25 +1456,23 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix,bool slim) {
     scaleChoice(myScaleChoice);
   }
 
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    Ptr<MatchboxReweightBase>::ptr myReweight = (**rw).cloneMe();
+  for ( auto &  rw : theReweights ) {
+    Ptr<MatchboxReweightBase>::ptr myReweight = rw->cloneMe();
     ostringstream pname;
-    pname << (prefix == "" ? fullName() : prefix) << "/" << (**rw).name();
+    pname << (prefix == "" ? fullName() : prefix) << "/" << rw->name();
     if ( ! (generator()->preinitRegister(myReweight,pname.str()) ) )
       throw Exception() << "MatchboxMEBase::cloneDependencies(): Reweight " << pname.str() << " already existing." << Exception::runerror;
     myReweight->cloneDependencies(pname.str());
-    *rw = myReweight;
+    rw = myReweight;
   }
 
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    Ptr<MatchboxInsertionOperator>::ptr myIOP = (**v).cloneMe();
+  for ( auto & v : virtuals()) {
+    Ptr<MatchboxInsertionOperator>::ptr myIOP = v->cloneMe();
     ostringstream pname;
-    pname << (prefix == "" ? fullName() : prefix) << "/" << (**v).name();
+    pname << (prefix == "" ? fullName() : prefix) << "/" << v->name();
     if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
       throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
-    *v = myIOP;
+    v = myIOP;
   }
 
 }
@@ -1534,24 +1498,23 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   }
 
   int insertionAdd = 0;
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    insertionAdd = max(insertionAdd,(**v).nDimAdditional());
-  }
+  for ( auto const &  v : virtuals() )
+    insertionAdd = max(insertionAdd,v->nDimAdditional());
+  
   xc.nDimInsertions(insertionAdd);
 
   xc.nLight(getNLight());
   if(xc.nLightJetVec().empty())
-  for (size_t inlv=0; inlv<getNLightJetVec().size(); ++inlv)
-    xc.nLightJetVec(getNLightJetVec()[inlv]);
+  for (auto const & id : getNLightJetVec())
+    xc.nLightJetVec( id );
   
   if(xc.nHeavyJetVec().empty())
-  for (size_t inhv=0; inhv<getNHeavyJetVec().size(); ++inhv)
-    xc.nHeavyJetVec(getNHeavyJetVec()[inhv]);
+  for (auto const & id :getNHeavyJetVec())
+    xc.nHeavyJetVec(id);
 
   if(xc.nLightProtonVec().empty())
-  for (size_t inlpv=0; inlpv<getNLightProtonVec().size(); ++inlpv)
-    xc.nLightProtonVec(getNLightProtonVec()[inlpv]);
+  for (auto const & id : getNLightProtonVec())
+    xc.nLightProtonVec(id);
 
   xc.olpId(olpProcess());
 
@@ -1634,7 +1597,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theSubNode<< theProjectorStage
      << theMerger
      << theOLPProcess << theNoCorrelations
-     << theHavePDFs << checkedPDFs<<theDiagramWeightVerboseDown<<theDiagramWeightVerboseUp;
+     << theHavePDFs << checkedPDFs;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
@@ -1646,7 +1609,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theSubNode >> theProjectorStage
      >> theMerger
      >> theOLPProcess >> theNoCorrelations
-     >> theHavePDFs >> checkedPDFs>>theDiagramWeightVerboseDown>>theDiagramWeightVerboseUp;
+     >> theHavePDFs >> checkedPDFs;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -1679,57 +1642,10 @@ void MatchboxMEBase::doinit() {
   if ( scaleChoice() ) {
     scaleChoice()->init();
   }
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    (**rw).init();
-  }
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    (**v).init();
-  }
-}
-
-
-
- void MatchboxMEBase::bookMEoverDiaWeight(double x) const {
-   
-      if (MEoverDiaWeight.size()==0){
-	theDiagramWeightVerboseDown=min(theDiagramWeightVerboseDown,x*0.9);
-	theDiagramWeightVerboseUp=max(theDiagramWeightVerboseUp,x*1.1);     
-      }
-      
-      map<double,double>::iterator bx =MEoverDiaWeight.upper_bound(x);
-      if ( bx == MEoverDiaWeight.end() ) {
-	return;
-      }
-      bx->second += 1.;
-      Nevents++;
-      if (int(Nevents)%1000==0){
-        ofstream out((RunDirectories::runStorage()+"/"+name()+"-MeoDiaW.dat").c_str());
-	int i=0;
-	double m=0.;
-        for ( map<double,double>::const_iterator bx = MEoverDiaWeight.begin();bx != MEoverDiaWeight.end(); ++bx,i++ ) {
-          out << " " << bx->first<<" "<<( bx->second/double(Nevents))<<"\n ";
-	  m=max(m,bx->second/double(Nevents));
-        }
-        out.close();
-	  ofstream gpout((RunDirectories::runStorage()+"/"+name()+"-MeoDiaW.gp").c_str());
-  gpout << "set terminal epslatex color solid\n"
-        << "set output '" << name()<<"-MeoDiaW"<< "-plot.tex'\n"
-        << "#set logscale x\n"
-        << "set xrange [" << theDiagramWeightVerboseDown << ":" << theDiagramWeightVerboseUp << "]\n"
-        << "set yrange [0.:"<<(m*0.95)<<"]\n"
-        << "set xlabel '$log(ME/\\sum DiaW)$'\n"
-        << "set size 0.7,0.7\n"
-        << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << name()<<"-MeoDiaW"
-        << ".dat' with histeps lc rgbcolor \"#00AACC\" t '$"<<name()<<"$'";
-  
-  gpout.close();
-	
-
-  
-    }
-  
+  for (auto const & rw : theReweights)
+    rw->init();
+  for (auto const & v :  virtuals() )
+    v->init();
 }
 
 
@@ -1737,68 +1653,26 @@ void MatchboxMEBase::doinitrun() {
   MEBase::doinitrun();
   if ( matchboxAmplitude() )
     matchboxAmplitude()->initrun();
-  if ( phasespace() ) {
-    phasespace()->initrun();
-  }
-  if ( scaleChoice() ) {
-    scaleChoice()->initrun();
-  }
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
-    (**rw).initrun();
-  }
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
-	  virtuals().begin(); v != virtuals().end(); ++v ) {
-    (**v).initrun();
-  }
-
-  if ( factory()->verboseDia() ) {
   
-    for (  int k = 0; k < factory()->diagramWeightVerboseNBins() ; ++k ) {
-      MEoverDiaWeight[theDiagramWeightVerboseDown+
-		      double(k)*(theDiagramWeightVerboseUp-
-				 theDiagramWeightVerboseDown)
-		      /double(factory()->diagramWeightVerboseNBins()) ] = 0.;
-	   
-    }
-    Nevents=0.;
-
-    ofstream out("DiagramWeights.sh");
-    out<<"P=$(pwd)"
-       <<"\ncd "<<RunDirectories::runStorage()
-       <<"\nrm -f DiagramWeights.tex"
-       <<"\n echo \"\\documentclass{article}\" >> DiagramWeights.tex"
-       <<"\n echo \"\\usepackage{amsmath,amsfonts,amssymb,graphicx,color}\" >> DiagramWeights.tex"
-       <<"\n echo \"\\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}\" >> DiagramWeights.tex"
-       <<"\n echo \"\\begin{document}\" >> DiagramWeights.tex"
-       <<"\n echo \"\\setlength{\\parindent}{0cm}\" >> DiagramWeights.tex"
-     
-       <<"\n\n for i in $(ls *.gp | sed s/'\\.gp'//g) ; "
-       <<"\n do"
-       <<"\n     echo \"\\input{\"\"$i\"-plot\"}\" >> DiagramWeights.tex"
-       <<"\n done"
-       <<"\n  echo \"\\end{document}\" >> DiagramWeights.tex  "
-       <<"\n  for i in *.gp ; do "
-       <<"\n  gnuplot $i   "
-       <<"\n   done      "
-       <<"\n  pdflatex DiagramWeights.tex  \ncp DiagramWeights.pdf $P";
-    out.close();
-
-  }
-
+  if ( phasespace() )
+    phasespace()->initrun();
+  
+  if ( scaleChoice() )
+    scaleChoice()->initrun();
+  
+  for (auto const & rw : theReweights)
+    rw->initrun();
+  for (auto const & v :  virtuals() )
+    v->initrun();
 }
   
 void MatchboxMEBase::dofinish() {
   MEBase::dofinish();
-  for ( map<cPDVector,AccuracyHistogram>::const_iterator
-	  b = epsilonSquarePoleHistograms.begin();
-	b != epsilonSquarePoleHistograms.end(); ++b ) {
-    b->second.dump(factory()->poleData(),"epsilonSquarePoles-",b->first);
+  for (auto const & b : epsilonSquarePoleHistograms ) {
+    b.second.dump(factory()->poleData(),"epsilonSquarePoles-",b.first);
   }
-  for ( map<cPDVector,AccuracyHistogram>::const_iterator
-	  b = epsilonPoleHistograms.begin();
-	b != epsilonPoleHistograms.end(); ++b ) {
-    b->second.dump(factory()->poleData(),"epsilonPoles-",b->first);
+  for (auto const & b :  epsilonPoleHistograms ) {
+    b.second.dump(factory()->poleData(),"epsilonPoles-",b.first);
   }
 }
 
