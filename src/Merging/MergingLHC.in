@@ -84,44 +84,44 @@ cd /Herwig/EventHandlers
 set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 7000.0*GeV
 set /Herwig/Generators/LHCGenerator:NumberOfEvents 100000000
 cd /Herwig/Merging
-insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPMFactory
+insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPMergingFactory
 
 
-set PPMFactory:QuarkFlavourDiagonal Yes 
+set PPMergingFactory:QuarkFlavourDiagonal Yes 
 
 set /Herwig/Vertices/FFWMatchboxVertex:Diagonal Yes 
 
 
 
-clear PPMFactory:ParticleGroup p
-do PPMFactory:StartParticleGroup p
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/g
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/u
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/ubar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/d
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/dbar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/s
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/sbar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/c
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/cbar
-#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/b
-#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/bbar
-do PPMFactory:EndParticleGroup
+clear PPMergingFactory:ParticleGroup p
+do PPMergingFactory:StartParticleGroup p
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/g
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+#insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/b
+#insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+do PPMergingFactory:EndParticleGroup
 
-clear PPMFactory:ParticleGroup j
-do PPMFactory:StartParticleGroup j
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/g
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/u
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/ubar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/d
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/dbar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/s
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/sbar
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/c
-insert PPMFactory:ParticleGroup 0 /Herwig/Particles/cbar
-#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/b
-#insert PPMFactory:ParticleGroup 0 /Herwig/Particles/bbar
-do PPMFactory:EndParticleGroup
+clear PPMergingFactory:ParticleGroup j
+do PPMergingFactory:StartParticleGroup j
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/g
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+#insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/b
+#insert PPMergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+do PPMergingFactory:EndParticleGroup
 
 
 
@@ -136,7 +136,7 @@ create Herwig::Merger Merger
 
 
 create Herwig::MergingReweight MPreWeight HwDipoleShower.so
-#insert PPMFactory:Preweighters 0  MPreWeight
+#insert PPMergingFactory:Preweighters 0  MPreWeight
 set MPreWeight:HTPower 0
 set MPreWeight:MaxPTPower 0
 set MPreWeight:OnlyColoured False
@@ -166,7 +166,7 @@ cd /Herwig/MatrixElements/Matchbox/Phasespace
 
 set TreePhasespace:M0 0.01*GeV
 set TreePhasespace:MC 0.0001*GeV
-set /Herwig/Merging/PPMFactory:Phasespace TreePhasespace
+set /Herwig/Merging/PPMergingFactory:Phasespace TreePhasespace
 
 
 cd /Herwig/EventHandlers
@@ -205,7 +205,7 @@ set Sampler:Verbose On
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
-#clear /Herwig/Merging/PPMFactory:Amplitudes
+#clear /Herwig/Merging/PPMergingFactory:Amplitudes
 
 #set GenericProcesses:TreeLevelAmplitude MadGraph
 #set GenericProcesses:OneLoopAmplitude OpenLoops
@@ -252,10 +252,10 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 cd /Herwig/Cuts
 
 set QCDCuts:Fuzzy FuzzyTheta
-set MatchboxJetMatcher:Factory /Herwig/Merging/PPMFactory
+set MatchboxJetMatcher:Factory /Herwig/Merging/PPMergingFactory
 cd /Herwig/Merging
-set PPMFactory:MergingHelper Merger
-set Merger:MFactory PPMFactory
+set PPMergingFactory:MergingHelper Merger
+set Merger:MergingFactory PPMergingFactory
 set MScale:MergingHelper Merger
 set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 

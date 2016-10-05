@@ -6,9 +6,9 @@ libHwDipoleShowerMerging_la_SOURCES = \
 	Node.h \
 	MScale.cc \
 	MScale.h \
-	MFactory.cc \
-	MFactory.fh  \
-	MFactory.h \
+	MergingFactory.cc \
+	MergingFactory.fh  \
+	MergingFactory.h \
 	Merger.fh\
 	Merger.h\
 	Merger.cc \

@@ -10,7 +10,7 @@
   // This is the implementation of the non-inlined, non-templated member
   // functions of the MergeboxFactory class.
   //
-#include "MFactory.h"
+#include "MergingFactory.h"
 #include "Node.h"
 
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
@@ -46,7 +46,7 @@ using std::ostream_iterator;
 using namespace Herwig;
 using std::ostream_iterator;
 
-MFactory::MFactory() :MatchboxFactory(),
+MergingFactory::MergingFactory() :MatchboxFactory(),
  theonlyNLOParts(false),
  theonlyvirtualNLOParts(false),
  theonlyrealNLOParts(false),
@@ -64,20 +64,20 @@ MFactory::MFactory() :MatchboxFactory(),
  divideSubNumber(-1)
 {}
 
-MFactory::~MFactory(){}
+MergingFactory::~MergingFactory(){}
 
-IBPtr MFactory::clone() const {
+IBPtr MergingFactory::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MFactory::fullclone() const {
+IBPtr MergingFactory::fullclone() const {
   return new_ptr(*this);
 }
 
 
 
 
-void MFactory::fill_amplitudes() {
+void MergingFactory::fill_amplitudes() {
   
   olpProcesses().clear();
 
@@ -98,7 +98,7 @@ void MFactory::fill_amplitudes() {
   }
 }
 
-void MFactory::prepare_BV(int i) {
+void MergingFactory::prepare_BV(int i) {
     // check if we have virtual contributions
   bool haveVirtuals = true;
   for ( auto born : pureMEsMap()[i]) {
@@ -159,12 +159,12 @@ void MFactory::prepare_BV(int i) {
     virt->factory(this);
 }
 
-void MFactory::prepare_R(int i) {
+void MergingFactory::prepare_R(int i) {
   for ( auto real : pureMEsMap()[i])
     prepareME(real);
 }
 
-void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
+void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   Ptr<MatchboxMEBase>::ptr bornme = born->cloneMe();
   bornme->maxMultCKKW(1);
   bornme->minMultCKKW(0);
@@ -238,7 +238,7 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
 
 
 
-void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
+void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   Ptr<MatchboxMEBase>::ptr nlo = born->cloneMe();
   
@@ -304,7 +304,7 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   
 }
 
-void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
+void MergingFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   Ptr<MatchboxMEBase>::ptr bornme = born->cloneMe();
   
   string pname = fullName() + "/" + bornme->name() + ".Real";
@@ -342,12 +342,12 @@ void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   MEs().push_back(bornme);
 }
 
-void MFactory::orderOLPs() {
+void MergingFactory::orderOLPs() {
   
 }
 
 
-vector<string> MFactory::parseProcess(string in) {
+vector<string> MergingFactory::parseProcess(string in) {
   vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
     throw Exception() << "MatchboxFactory: Invalid process."
@@ -391,7 +391,7 @@ vector<string> MFactory::parseProcess(string in) {
 
 
 
-void MFactory::setup() {
+void MergingFactory::setup() {
   
   useMe();
   
@@ -537,7 +537,7 @@ void MFactory::setup() {
   
 }
 
-void MFactory::persistentOutput(PersistentOStream & os) const {
+void MergingFactory::persistentOutput(PersistentOStream & os) const {
   
   
   os
@@ -548,7 +548,7 @@ void MFactory::persistentOutput(PersistentOStream & os) const {
   << processMap           << theMergingHelper   <<theM<<theN;
 }
 
-void MFactory::persistentInput(PersistentIStream & is, int) {
+void MergingFactory::persistentInput(PersistentIStream & is, int) {
   is
   >> calc_born            >> calc_virtual       >> calc_real
   >> theonlyUnlopsweights            >> theonlymulti
@@ -557,15 +557,15 @@ void MFactory::persistentInput(PersistentIStream & is, int) {
   >> processMap           >> theMergingHelper   >>theM>>theN;
 }
 
-void MFactory::Init() {
+void MergingFactory::Init() {
   
   
   
-  static Parameter<MFactory, int> interfaceonlymulti("onlymulti", "calculate only the ME with k additional partons.", &MFactory::theonlymulti, -1, -1, 0,
+  static Parameter<MergingFactory, int> interfaceonlymulti("onlymulti", "calculate only the ME with k additional partons.", &MergingFactory::theonlymulti, -1, -1, 0,
                                                      false, false, Interface::lowerlim);
 
   
-  static Parameter<MFactory, int> interfaceonlysub("onlysub", "calculate only one subProcess. this is for building grids.", &MFactory::theonlysub, -1, -1, 0,
+  static Parameter<MergingFactory, int> interfaceonlysub("onlysub", "calculate only one subProcess. this is for building grids.", &MergingFactory::theonlysub, -1, -1, 0,
                                                    false, false, Interface::lowerlim);
   
   
@@ -576,28 +576,28 @@ void MFactory::Init() {
   
   
   
-  static Parameter<MFactory, int> interfacedivideSub("divideSub", "calculate only one subProcess. this is for building grids.", &MFactory::divideSub, -1, -1, 0,
+  static Parameter<MergingFactory, int> interfacedivideSub("divideSub", "calculate only one subProcess. this is for building grids.", &MergingFactory::divideSub, -1, -1, 0,
                                                      false, false, Interface::lowerlim);
   
   
-  static Parameter<MFactory, int> interfacedivideSubNumber("divideSubNumber", "calculate only one subProcess. this is for building grids.", &MFactory::divideSubNumber, -1, -1, 0,
+  static Parameter<MergingFactory, int> interfacedivideSubNumber("divideSubNumber", "calculate only one subProcess. this is for building grids.", &MergingFactory::divideSubNumber, -1, -1, 0,
                                                            false, false, Interface::lowerlim);
   
   
   
   
   
-  static Switch<MFactory, bool> interface_calc_born("calc_born", "[debug] Switch on or off the born contribution.", &MFactory::calc_born, true,
+  static Switch<MergingFactory, bool> interface_calc_born("calc_born", "[debug] Switch on or off the born contribution.", &MergingFactory::calc_born, true,
                                                     false, false);
   static SwitchOption interface_calc_bornOn(interface_calc_born, "On", "Switch on calculation of born.", true);
   static SwitchOption interface_calc_bornOff(interface_calc_born, "Off", "Switch off calculation of born.", false);
   
-  static Switch<MFactory, bool> interface_calc_virtual("calc_virtual", "[debug] Switch on or off the virtual contribution.",
-                                                       &MFactory::calc_virtual, true, false, false);
+  static Switch<MergingFactory, bool> interface_calc_virtual("calc_virtual", "[debug] Switch on or off the virtual contribution.",
+                                                       &MergingFactory::calc_virtual, true, false, false);
   static SwitchOption interface_calc_virtualOn(interface_calc_virtual, "On", "Switch on calculation of virtual.", true);
   static SwitchOption interface_calc_virtualOff(interface_calc_virtual, "Off", "Switch off calculation of virtual.", false);
   
-  static Switch<MFactory, bool> interface_calc_real("calc_real", "[debug] Switch on or off the real contribution.", &MFactory::calc_real, true,
+  static Switch<MergingFactory, bool> interface_calc_real("calc_real", "[debug] Switch on or off the real contribution.", &MergingFactory::calc_real, true,
                                                     false, false);
   static SwitchOption interface_calc_realOn(interface_calc_real, "On", "Switch on calculation of real.", true);
   static SwitchOption interface_calc_realOff(interface_calc_real, "Off", "Switch off calculation of real.", false);
@@ -605,7 +605,7 @@ void MFactory::Init() {
   
   
   
-  static Switch<MFactory, bool> interface_theonlyNLOParts("onlyNLOParts", "Switch on or off the onlyNLOParts.", &MFactory::theonlyNLOParts, true, false,
+  static Switch<MergingFactory, bool> interface_theonlyNLOParts("onlyNLOParts", "Switch on or off the onlyNLOParts.", &MergingFactory::theonlyNLOParts, true, false,
                                                           false);
   static SwitchOption interface_theonlyNLOPartsOn(interface_theonlyNLOParts, "On", "Switch on the theonlyNLOParts.", true);
   static SwitchOption interface_theonlyNLOPartsOff(interface_theonlyNLOParts, "Off", "Switch off the theonlyNLOParts.", false);
@@ -614,49 +614,49 @@ void MFactory::Init() {
     //  theonlyvirtualNLOParts;
     //  theonlyrealNLOParts;
   
-  static Switch<MFactory, bool> interface_theonlyvirtualNLOParts("onlyvirtualNLOParts", "Switch on or off the onlyvirtualNLOParts.", &MFactory::theonlyvirtualNLOParts, true, false,
+  static Switch<MergingFactory, bool> interface_theonlyvirtualNLOParts("onlyvirtualNLOParts", "Switch on or off the onlyvirtualNLOParts.", &MergingFactory::theonlyvirtualNLOParts, true, false,
                                                                  false);
   static SwitchOption interface_theonlyvirtualNLOPartsOn(interface_theonlyvirtualNLOParts, "On", "Switch on the theonlyvirtualNLOParts.", true);
   static SwitchOption interface_theonlyvirtualNLOPartsOff(interface_theonlyvirtualNLOParts, "Off", "Switch off the theonlyvirtualNLOParts.", false);
   
-  static Switch<MFactory, bool> interface_theonlyrealNLOParts("onlyrealNLOParts", "Switch on or off the onlyrealNLOParts.", &MFactory::theonlyrealNLOParts, true, false,
+  static Switch<MergingFactory, bool> interface_theonlyrealNLOParts("onlyrealNLOParts", "Switch on or off the onlyrealNLOParts.", &MergingFactory::theonlyrealNLOParts, true, false,
                                                               false);
   static SwitchOption interface_theonlyrealNLOPartsOn(interface_theonlyrealNLOParts, "On", "Switch on the theonlyrealNLOParts.", true);
   static SwitchOption interface_theonlyrealNLOPartsOff(interface_theonlyrealNLOParts, "Off", "Switch off the theonlyrealNLOParts.", false);
   
-  static Switch<MFactory, bool> interface_theunitarizeNLOParts("unitarizeNLOParts", "Switch on or off the unitarizeNLOParts.", &MFactory::theunitarizeNLOParts, true, false,
+  static Switch<MergingFactory, bool> interface_theunitarizeNLOParts("unitarizeNLOParts", "Switch on or off the unitarizeNLOParts.", &MergingFactory::theunitarizeNLOParts, true, false,
                                                                false);
   static SwitchOption interface_theunitarizeNLOPartsOn(interface_theunitarizeNLOParts, "On", "Switch on the unitarizeNLOParts.", true);
   static SwitchOption interface_theunitarizeNLOPartsOff(interface_theunitarizeNLOParts, "Off", "Switch off the unitarizeNLOParts.", false);
   
   
-  static Switch<MFactory, bool> interface_theonlyUnlopsweights("onlyUnlopsweights", "Switch on or off the onlyUnlopsweights.", &MFactory::theonlyUnlopsweights, true, false,
+  static Switch<MergingFactory, bool> interface_theonlyUnlopsweights("onlyUnlopsweights", "Switch on or off the onlyUnlopsweights.", &MergingFactory::theonlyUnlopsweights, true, false,
                                                                false);
   static SwitchOption interface_theonlyUnlopsweightsOn(interface_theonlyUnlopsweights, "On", "Switch on the onlyUnlopsweights.", true);
   static SwitchOption interface_theonlyUnlopsweightsOff(interface_theonlyUnlopsweights, "Off", "Switch off the onlyUnlopsweights.", false);
   
   
   
-  static Switch<MFactory, bool> interface_Unitarized("Unitarized", "Unitarize the cross section.", &MFactory::unitarized, true, false, false);
+  static Switch<MergingFactory, bool> interface_Unitarized("Unitarized", "Unitarize the cross section.", &MergingFactory::unitarized, true, false, false);
   static SwitchOption interface_UnitarizedOn(interface_Unitarized, "On", "Switch on the unitarized cross section.", true);
   static SwitchOption interface_UnitarizedOff(interface_Unitarized, "Off", "Switch off the unitarized cross section.", false);
   
   
   
   
-  static Switch<MFactory, bool> interface_NLOUnitarized("NLOUnitarized", "Unitarize the cross section.", &MFactory::NLOunitarized, true, false, false);
+  static Switch<MergingFactory, bool> interface_NLOUnitarized("NLOUnitarized", "Unitarize the cross section.", &MergingFactory::NLOunitarized, true, false, false);
   static SwitchOption interface_NLOUnitarizedOn(interface_NLOUnitarized, "On", "Switch on the unitarized NLO cross section.", true);
   static SwitchOption interface_NLOUnitarizedOff(interface_NLOUnitarized, "Off", "Switch off the unitarized NLO cross section.", false);
 
-  static Reference<MFactory,Merger> interfaceMergingHelper
+  static Reference<MergingFactory,Merger> interfaceMergingHelper
   ("MergingHelper",
    "",
-   &MFactory::theMergingHelper, false, false, true, true, false);
+   &MergingFactory::theMergingHelper, false, false, true, true, false);
   
   
   
-  static Parameter<MFactory, int> interfaceaddNLOLegs("NLOProcesses",
-                                                    "Set the number of virtual corrections to consider. 0 is default for no virtual correction.", &MFactory::theM, 0, 0, 0, false, false,
+  static Parameter<MergingFactory, int> interfaceaddNLOLegs("NLOProcesses",
+                                                    "Set the number of virtual corrections to consider. 0 is default for no virtual correction.", &MergingFactory::theM, 0, 0, 0, false, false,
                                                     Interface::lowerlim);
   
   
@@ -668,4 +668,4 @@ void MFactory::Init() {
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
-DescribeClass<MFactory, Herwig::MatchboxFactory> describeHerwigMFactory("Herwig::MFactory", "HwDipoleShower.so");
+DescribeClass<MergingFactory, Herwig::MatchboxFactory> describeHerwigMergingFactory("Herwig::MergingFactory", "HwDipoleShower.so");

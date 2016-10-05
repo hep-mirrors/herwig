@@ -32,15 +32,15 @@ read Matchbox/DiagonalCKM.in
 
 ## Set the order of the couplings
 cd /Herwig/Merging
-set MFactory:OrderInAlphaS 2
-set MFactory:OrderInAlphaEW 0
+set MergingFactory:OrderInAlphaS 2
+set MergingFactory:OrderInAlphaEW 0
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
-do MFactory:Process p p -> j j [  ]
+do MergingFactory:Process p p -> j j [  ]
 
-set MFactory:NLOProcesses 0
+set MergingFactory:NLOProcesses 0
 
 set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
@@ -147,7 +147,7 @@ read Matchbox/LHC7-J-Analysis.in
 ## Save the generator
 ##################################################
 
-do /Herwig/Merging/MFactory:ProductionMode
+do /Herwig/Merging/MergingFactory:ProductionMode
 
 set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 

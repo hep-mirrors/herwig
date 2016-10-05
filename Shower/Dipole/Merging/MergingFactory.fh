@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the MergingFactory class
+
+#ifndef HERWIG_MergingFactory_FH
+#define HERWIG_MergingFactory_FH
+
+namespace Herwig {
+
+class MergingFactory;
+
+}
+
+#endif // HERWIG_MergingFactory_FH

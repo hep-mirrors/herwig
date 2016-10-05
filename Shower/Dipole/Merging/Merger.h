@@ -11,7 +11,7 @@
   //
   // This is the declaration of the Merger class.
   //
-#include "MFactory.fh"
+#include "MergingFactory.fh"
 #include "Node.fh"
 
 
@@ -72,7 +72,7 @@ namespace Herwig {
    */
   class Merger: public MergerBase {
     
-    friend class MFactory;
+    friend class MergingFactory;
     friend class Node;
     friend class MScale;
     
@@ -161,7 +161,7 @@ namespace Herwig {
       // number of active flavours as given by the shower
     double Nf(Energy scale)const{return DSH()->Nf(scale);}
       // pointer to the factory
-    Ptr<MFactory>::ptr treefactory();
+    Ptr<MergingFactory>::ptr treefactory();
       // map from ME to first clusternode
     map<Ptr<MatchboxMEBase>::ptr,NPtr> firstNodeMap();
       // set the current merging pt, smeared in generate kinematics
@@ -321,8 +321,8 @@ namespace Herwig {
     Ptr<IFMassiveTildeKinematics>::ptr IFMTK;
       //pointer to the shower handler
     Ptr<DipoleShowerHandler>::ptr theDipoleShowerHandler;
-      // pointer to the MFactory
-    Ptr<MFactory>::ptr theTreeFactory;
+      // pointer to the MergingFactory
+    Ptr<MergingFactory>::ptr theTreeFactory;
       // map from ME to first Node
     map<Ptr<MatchboxMEBase>::ptr,NPtr> theFirstNodeMap;
     

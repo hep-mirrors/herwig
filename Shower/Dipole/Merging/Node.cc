@@ -5,7 +5,7 @@
   //
 
 #include "Node.h"
-#include "MFactory.h"
+#include "MergingFactory.h"
 #include "Merger.h"
 
 

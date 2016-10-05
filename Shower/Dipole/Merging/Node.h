@@ -5,7 +5,7 @@
   // This is the declaration of the Node class.
   //
   //#include "Node.fh"
-#include "MFactory.fh"
+#include "MergingFactory.fh"
 #include "Merger.h"
 
 

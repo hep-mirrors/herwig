@@ -45,11 +45,11 @@ cd /Herwig/EventHandlers
 set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy   91.2*GeV
 
 cd /Herwig/Merging
-insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEMFactory
+insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEMergingFactory
 
-set EEMFactory:OrderInAlphaS 0
-set EEMFactory:OrderInAlphaEW 2
-do EEMFactory:Process e- e+ j j 
+set EEMergingFactory:OrderInAlphaS 0
+set EEMergingFactory:OrderInAlphaEW 2
+do EEMergingFactory:Process e- e+ j j 
 
 
 create Herwig::SimpleColourBasis  LargeNColourBasis
@@ -72,7 +72,7 @@ cd /Herwig/MatrixElements/Matchbox/Phasespace
 
 set TreePhasespace:M0 0.001*GeV
 set TreePhasespace:MC 0.00001*GeV
-set /Herwig/Merging/EEMFactory:Phasespace TreePhasespace
+set /Herwig/Merging/EEMergingFactory:Phasespace TreePhasespace
 
 
 cd /Herwig/EventHandlers
@@ -147,10 +147,10 @@ cd /Herwig/Cuts
 
 
 set EECuts:Fuzzy FuzzyTheta
-set MatchboxJetMatcher:Factory /Herwig/Merging/EEMFactory
+set MatchboxJetMatcher:Factory /Herwig/Merging/EEMergingFactory
 cd /Herwig/Merging
-set EEMFactory:MergingHelper Merger
-set Merger:MFactory EEMFactory
+set EEMergingFactory:MergingHelper Merger
+set Merger:MergingFactory EEMergingFactory
 set MScale:MergingHelper Merger
 set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 

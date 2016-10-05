@@ -1,15 +1,15 @@
   // -*- C++ -*-
   //
-  // MFactory.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+  // MergingFactory.h is a part of Herwig - A multi-purpose Monte Carlo event generator
   // Copyright (C) 2002-2012 The Herwig Collaboration
   //
   // Herwig is licenced under version 2 of the GPL, see COPYING for details.
   // Please respect the MCnet academic guidelines, see GUIDELINES for details.
   //
-#ifndef HERWIG_MFactory_H
-#define HERWIG_MFactory_H
+#ifndef HERWIG_MergingFactory_H
+#define HERWIG_MergingFactory_H
   //
-  // This is the declaration of the MFactory class.
+  // This is the declaration of the MergingFactory class.
   //
 
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
@@ -25,13 +25,13 @@ namespace Herwig {
    * \ingroup Matchbox
    * \author Johannes Bellm
    *
-   * \brief MFactory automatically sets up a NLO
+   * \brief MergingFactory automatically sets up a NLO
    * QCD merging carried out in dipole subtraction.
    *
-   * @see \ref MFactoryInterfaces "The interfaces"
+   * @see \ref MergingFactoryInterfaces "The interfaces"
    * defined for MergeboxFactory.
    */
-  class MFactory : public MatchboxFactory {
+  class MergingFactory : public MatchboxFactory {
   public:
     
     /** @name Standard constructors and destructors. */
@@ -39,12 +39,12 @@ namespace Herwig {
     /**
      * The default constructor.
      */
-    MFactory();  //TODO MergingFactory
+    MergingFactory();  //TODO MergingFactory
     
     /**
      * The destructor.
      */
-    virtual ~MFactory();
+    virtual ~MergingFactory();
       //@}
       // main method to setup the ME vector
     virtual void setup();
@@ -175,10 +175,10 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    MFactory & operator=(const MFactory &);
+    MergingFactory & operator=(const MergingFactory &);
     
   };
   
 }
 
-#endif /* HERWIG_MFactory_H */
+#endif /* HERWIG_MergingFactory_H */

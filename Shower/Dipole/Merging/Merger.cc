@@ -13,7 +13,7 @@
 
 #include "Merger.h"
 #include "Node.h"
-#include "MFactory.h"
+#include "MergingFactory.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -796,7 +796,7 @@ double Merger::sumfillHistoryUnlops(){
 }
 
 
-Ptr<MFactory>::ptr Merger::treefactory(){return theTreeFactory;}
+Ptr<MergingFactory>::ptr Merger::treefactory(){return theTreeFactory;}
 
 
 void Merger::doinit(){
@@ -1444,8 +1444,8 @@ void Merger::Init() {
   
   
   
-  static Reference<Merger,MFactory> interfaceMergerHelper
-  ("MFactory",
+  static Reference<Merger,MergingFactory> interfaceMergerHelper
+  ("MergingFactory",
    "",
    &Merger::theTreeFactory, false, false, true, true, false);
   
