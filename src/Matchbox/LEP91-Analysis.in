@@ -60,4 +60,4 @@ insert /Herwig/Analysis/Rivet:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
 ##################################################
 # OPAL 4 jet angles
 insert /Herwig/Analysis/Rivet:Analyses 0 OPAL_2001_S4553896
-insert /Herwig/Analysis/Rivet:Analyses 0 Clustermass
+#insert /Herwig/Analysis/Rivet:Analyses 0 Clustermass

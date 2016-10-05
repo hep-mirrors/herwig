@@ -257,22 +257,38 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   Energy startscale=CKKW_StartScale(Born);
   fillHistory( startscale,  Born, Node);
   Node->runningPt(fillProjector());
-  weight*=history.back().weight*alphaReweight()*pdfReweight();
+  
+  double ww1=history.back().weight;
+  double ww2=alphaReweight();
+  double ww3=pdfReweight();
+  
+  
+  weight*=ww1*ww2*ww3;
   if(weight==0.)return ZERO;
   
   CrossSection matrixElement=LoopdSigDR(startscale,Node);
   
   CrossSection Bornweight=Node->nodeME()->dSigHatDRB();
   
- 
+  double w1=-sumpdfReweightUnlops();
+  double w2=-sumalphaReweightUnlops();
+  double w3=-sumfillHistoryUnlops();
   
-  CrossSection unlopsweight =(-sumpdfReweightUnlops()
-                        -sumalphaReweightUnlops()
-                        -sumfillHistoryUnlops())
+  CrossSection unlopsweight =(w1+w2+w3)
                        *Bornweight
                        *SM().alphaS()/(2.*ThePEG::Constants::pi);
-
-
+  
+  if (Node->legsize()==5&&Debug::level > 2) {
+    Energy minPT=1000*GeV;
+    for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
+    
+    cout<<"\nVIRT "<<minPT/GeV<<" "<<weight<<" "<<w1;
+    cout<<" "<<w2;
+    cout<<" "<<w3;
+    cout<<" "<<(matrixElement/nanobarn)<<" "<<ww1<<" "<<ww2<<" "<<ww3<<" "<<Born->pT()/GeV<<" "<<Born->nodeME()->mePartonData()[3]->mass()/GeV<<" "<<(Bornweight*SM().alphaS()/(2.*ThePEG::Constants::pi)/nanobarn);
+  }
+  
+  
   return weight*
          as(startscale*xiRenSh)/SM().alphaS()*
          (matrixElement+unlopsweight);
@@ -791,6 +807,7 @@ CrossSection Merger::MergingDSigDR() {
   
   if (theFirstNodeMap.find(theCurrentME)==theFirstNodeMap.end()) {
     cout<<"\nnot in map:"<<theFirstNodeMap.size();
+    assert(false);
   }
   
   
@@ -825,7 +842,6 @@ CrossSection Merger::MergingDSigDR() {
   }
   
   
-    //cout<<"\nrunning "<<Node->runningPt()/GeV<<" "<<Node->legsize();
   theCurrentME->lastXCombPtr()->lastCentralScale(sqr(Node->runningPt()));
   theCurrentME->lastXCombPtr()->lastShowerScale(sqr(Node->runningPt()));
   if(theCurrentME->lastXCombPtr()->lastProjector()){
@@ -854,19 +870,6 @@ CrossSection Merger::MergingDSigDR() {
   return res;
   
 }
-
-
-
-
-
-
-
-
-
-
-
-  //----------------------------------Reviewed--------------------------------------//
-
 
 
 

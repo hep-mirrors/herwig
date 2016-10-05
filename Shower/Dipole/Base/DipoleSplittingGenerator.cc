@@ -529,14 +529,27 @@ double DipoleSplittingGenerator::sudakov(const DipoleSplittingInfo& split,Energy
 
 double DipoleSplittingGenerator::dounlops(const DipoleSplittingInfo& ,Energy down,Energy fixedScale){
     assert(down > splittingKinematics()->IRCutoff());
-    double optKappaCutoff = splittingKinematics()->ptToRandom(down,
-                                                              generatedSplitting.scale(),
-                                                              generatedSplitting.emitterX(),
-                                                              generatedSplitting.spectatorX(),
-                                                              generatedSplitting.index(),
-                                                              *splittingKernel());
+  
+  double optKappaCutoffd = splittingKinematics()->ptToRandom(down,
+                                                             generatedSplitting.scale(),
+                                                             generatedSplitting.emitterX(),
+                                                             generatedSplitting.spectatorX(),
+                                                             generatedSplitting.index(),
+                                                             *splittingKernel());
+  
+  
+  double optKappaCutoffu = splittingKinematics()->ptToRandom(generatedSplitting.hardPt(),
+                                                             generatedSplitting.scale(),
+                                                             generatedSplitting.emitterX(),
+                                                             generatedSplitting.spectatorX(),
+                                                             generatedSplitting.index(),
+                                                             *splittingKernel());
+  
+  
+
+  
     vector<double> RN;
-    RN.resize(parameters.size());
+    RN.resize(3);
     double res=0.;
     double resq=0.;
     double varx=10.;
@@ -544,18 +557,20 @@ double DipoleSplittingGenerator::dounlops(const DipoleSplittingInfo& ,Energy dow
   
     generatedSplitting.setCalcFixedExpansion(true);
     generatedSplitting.fixedScale(fixedScale);
-  
-    while ((k<500.||varx>0.1)&&k<5000){
+    //cout<<"\n"<<down/GeV<<" "<<generatedSplitting.hardPt()/GeV<<" "<<fixedScale/GeV;
+    while ((k<500.||varx>0.05)&&k<50000){
       k+=1.;
-      RN[0]= optKappaCutoff+(1-optKappaCutoff)*UseRandom::rnd();
-      for (size_t rn=1;rn< parameters.size();rn++)RN[rn]=UseRandom::rnd();
-      double tmp=(1-optKappaCutoff)*evaluate(RN);
+      RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
+      RN[1]=UseRandom::rnd(); //Z
+      RN[2]=UseRandom::rnd(); //PHI
+      double tmp=(optKappaCutoffu-optKappaCutoffd)*evaluate(RN);
       res+= tmp;
       resq+=pow(tmp,2.);
       if(k%50==0.){
 	varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
       }
     }
+    //cout<<"\n"<<k;
     generatedSplitting.setCalcFixedExpansion(false);
     return -res/(1.0*k);
 }
@@ -589,11 +604,11 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
     double var=10.;
     double varx=10.;
     int k=0;
-  while (((k<40.||var>0.03)&&k<50000)){
+  while (((k<100.||var>0.03)&&k<50000)){
     k+=1.;
     RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
     RN[1]=UseRandom::rnd(); //Z
-    RN[2]=1.;//UseRandom::rnd(); //PHI
+    RN[2]=UseRandom::rnd(); //PHI
     double tmp=(optKappaCutoffu-optKappaCutoffd)*evaluate(RN);
     
     res+= tmp;
