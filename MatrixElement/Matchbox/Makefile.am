@@ -1,4 +1,4 @@
-SUBDIRS =  \
+SUBDIRS = \
 Base Utility Phasespace \
 Dipoles InsertionOperators Matching \
 Cuts Scales Builtin External Tests \
@@ -14,7 +14,7 @@ Dipoles/libHwMatchboxDipoles.la \
 InsertionOperators/libHwMatchboxInsertionOperators.la \
 Matching/libHwMatchboxMatching.la \
 External/BLHAGeneric/libHwMatchboxExternalBLHAGeneric.la \
-Tests/libHwMatchboxTests.la $(FASTJETINCLUDE) $(FASTJETLIBS) 
+Tests/libHwMatchboxTests.la
 
 libHwMatchbox_la_SOURCES =  \
 MatchboxFactory.h MatchboxFactory.fh MatchboxFactory.cc

@@ -24,7 +24,7 @@
 #include "Herwig/Shower/Dipole/Base/DipoleEventReweight.h"
 #include "Herwig/Shower/Dipole/Utility/ConstituentReshuffler.h"
 #include "Herwig/Shower/Dipole/Utility/IntrinsicPtGenerator.h"
-#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {

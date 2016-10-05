@@ -182,8 +182,6 @@ public:
    */
   double lastLargeNColourCorrelator(const pair<int,int>& ij) const { return lastMatchboxXComb()->lastLargeNColourCorrelator(ij); }
 
- double lastBorndSigHatDR(){return lastMatchboxXComb()->lastBorndSigHatDR();}
-
   /**
    * True, if the indexed colour/spin correlated matrix element needs to be
    * calculated.
@@ -384,13 +382,6 @@ protected:
    * The last tree-level matrix element squared
    */
   void lastLargeNME2(double v) const { lastMatchboxXComb()->lastLargeNME2(v); }
-  
- 
-  
-  /**
-   * The last tree-level matrix element squared
-   */
-  void setLastBorndSigHatDR(double v) const { lastMatchboxXComb()->setLastBorndSigHatDR(v); }
 
   /**
    * The last one-loop/tree-level interference.

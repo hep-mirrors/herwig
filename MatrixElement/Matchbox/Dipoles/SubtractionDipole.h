@@ -943,9 +943,8 @@ public:
   /**
    * Clone the dependencies, using a given prefix.
    */
-  void cloneDependencies(const std::string& prefix = ""){cloneDependencies(prefix,false);};
-
-  void cloneDependencies(const std::string& prefix , bool slim);
+      
+  void cloneDependencies(const std::string& prefix = "", bool slim=false);
 
   //@}
 

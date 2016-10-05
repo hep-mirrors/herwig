@@ -885,18 +885,9 @@ CrossSection SubtractionDipole::dip(Energy2 factorizationScale) const {
   return factor*dip;
 }
 
-
-
-
-
 bool SubtractionDipole::clustersafe()const {
-  
   return (theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second);
-  
 }
-
-
-
 
 void SubtractionDipole::print(ostream& os) const {
 

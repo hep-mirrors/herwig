@@ -28,7 +28,7 @@ MatchboxXCombData::MatchboxXCombData()
     theLastTreeME2(0.0), theCalculateLargeNME2(true), 
     theLastLargeNME2(0.0), theCalculateOneLoopInterference(true), 
     theLastOneLoopInterference(0.0), theCalculateOneLoopPoles(true), 
-    theLastOneLoopPoles(0.0,0.0),
+    theLastOneLoopPoles(0.0,0.0), 
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),

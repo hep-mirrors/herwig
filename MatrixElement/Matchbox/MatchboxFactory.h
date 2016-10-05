@@ -173,7 +173,7 @@ public:
   /**
    * Access the processes vector.
    */
-   vector<vector<string> > getProcesses() const {return processes;}
+   const vector<vector<string> > getProcesses() const {return processes;}
 
   /**
    * Return true, if all processes up to a maximum order are considered
@@ -1262,6 +1262,8 @@ private:
 
   /**
    * The alpha parameter to be used for the dipole subtraction
+   * JB: The parameter is muatble, since we need to be able to change it 
+   * while calculating the difference of IPK with and without alpha.
    */  
   mutable double theAlphaParameter;
 
