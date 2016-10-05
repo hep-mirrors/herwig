@@ -62,7 +62,7 @@ namespace Herwig {
     void birth(vector<Ptr<MatchboxMEBase>::ptr> vec);
       // recursive setXComb. proStage is the number of clusterings
       // before the projectors get filled.
-    void setXComb(tStdXCombPtr xc, int proStage);
+    void setXComb(tStdXCombPtr xc);
       // calculate the dipole and ps approximation
     pair<CrossSection,CrossSection> calcDipandPS(Energy scale);
       // calculate the ps approximation

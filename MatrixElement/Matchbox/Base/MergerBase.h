@@ -58,7 +58,7 @@ public:
     // cross section of as given by the merging
   virtual CrossSection MergingDSigDR() = 0;
     // set the current xcomb, called from ME
-  virtual void setXComb(Ptr<MatchboxMEBase>::ptr, tStdXCombPtr, int) = 0;
+  virtual void setXComb(Ptr<MatchboxMEBase>::ptr, tStdXCombPtr) = 0;
    // set the current ME
   virtual void setME(Ptr<MatchboxMEBase>::ptr) = 0;
     // set kinematics, called from ME

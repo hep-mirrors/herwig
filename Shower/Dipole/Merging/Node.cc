@@ -178,7 +178,7 @@ void Node::firstgenerateKinematics(const double *r, int stage) {
 
 
 
-void Node::setXComb(tStdXCombPtr xc, int proStage) {
+void Node::setXComb(tStdXCombPtr xc) {
   if ( !parent() ) this->xcomb(xc);
   for (auto const & ch: thechildren) {
     if ( !ch->xcomb() ) {
@@ -188,14 +188,14 @@ void Node::setXComb(tStdXCombPtr xc, int proStage) {
       if ( !ch->dipole()->lastXCombPtr() ) {
         ch->dipole()->setXComb(ch->xcomb());
       }
-      ch->setXComb(ch->xcomb(), (proStage - 1));
+      ch->setXComb(ch->xcomb());
       
     } else {
       if ( !(ch->dipole()->lastXCombPtr()->lastScale() == ch->xcomb()->lastScale()) ) {
         ch->dipole()->setXComb(ch->xcomb());
       }
       if ( ch->xcomb()->head() != xc ) ch->xcomb()->head(xc);
-      ch->setXComb(ch->xcomb(), (proStage - 1));
+      ch->setXComb(ch->xcomb());
     }
   }
 }

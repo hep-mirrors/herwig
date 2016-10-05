@@ -960,32 +960,11 @@ public:
    * Set the theMerger.
    */
   void merger(MergerBasePtr v);
-      
-  /**
-   * Return the theSubNode.
-   */
-   bool subNode() const;
-
-  /**
-   * Set the theSubNode.
-   */
-  void subNode(bool v);
-    
 
   /**
    * Fill the projectors
    */  
   virtual void fillProjectors();
-  
-  /**
-   * Set the projector stage
-   */
-  void projectorStage(int a) { theProjectorStage=a; }
-
-  /**
-   * Set the projector stage
-   */
-  int projectorStage() {return theProjectorStage; }
   
   /// 
   pair<bool,bool> clustersafe(int emit,int emis,int spec);
@@ -1206,17 +1185,6 @@ private:
    */
 
   MergerBasePtr theMerger;
-  
-  /**
-   * The first cluster node
-   */
-  bool theSubNode;
-   
-  /**
-   * The projector stage
-   */
-  int theProjectorStage;
-
 
 
 private:

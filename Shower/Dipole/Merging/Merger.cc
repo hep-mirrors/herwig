@@ -107,6 +107,7 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   
   double weightCL=0.;
   weight=1.;
+  int pjs=-1;
 
 
  
@@ -126,19 +127,23 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
       CLNode= Node->randomChild();
       bool inhist=CLNode->isInHistoryOf(Born);
       weight*=inhist?(-2.*int(Node->children().size())):0.;
-      projected=true;Node->nodeME()->projectorStage(1);
+      projected=true;
+      pjs=1;
       weightCL=2.*int(Node->children().size());
       BornCL=CLNode-> getHistory(false,xiQSh);
     }else{
-      weight=2.;projected=false;Node->nodeME()->projectorStage(0);
+      weight=2.;projected=false;
+      pjs=0;
     }
   }else{
-    weight=1.;projected=false;Node->nodeME()->projectorStage(0);
+    weight=1.;
+    projected=false;
+    pjs=0;
   }
 
  
   if (treefactory()->onlymulti()!=-1&&
-      treefactory()->onlymulti()!=int(Node->legsize()-Node->nodeME()->projectorStage()))
+      treefactory()->onlymulti()!=int(Node->legsize()-pjs))
     return ZERO;
   
   
@@ -160,7 +165,7 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   if(weight!=0.){
     Energy startscale=CKKW_StartScale(Born);
     fillHistory( startscale,  Born, Node);
-    Node->runningPt(fillProjector());
+    Node->runningPt(fillProjector(pjs));
     weight*=history.back().weight*alphaReweight()*pdfReweight();
     if(weight==0.&&weightCL==0.)return ZERO;
     
@@ -170,7 +175,7 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   if(CLNode&&theGamma!=1.){
     Energy startscale=CKKW_StartScale(BornCL);
     fillHistory( startscale,  BornCL, CLNode);
-    Node->runningPt(fillProjector());
+    Node->runningPt(fillProjector(pjs));
     weightCL*=history.back().weight*alphaReweight()*pdfReweight();
     CrossSection diff=ZERO;
     Node->nodeME()->factory()->setAlphaParameter(1.);
@@ -194,6 +199,8 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
 
 
 CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
+  
+  int pjs=-1;
     // Check if phase space poing is in ME region
   if (!Node->children().empty()) {
     auto const & inoutpair=getInOut(Node);
@@ -206,13 +213,16 @@ CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
   if( Born!= Node){
       // at least one history step -> unitarisation
     if (UseRandom::rnd()<.5){
-      weight=-2.;projected=true;Node->nodeME()->projectorStage(1);
+      weight=-2.;projected=true;
+      pjs=1;
     }else{
-      weight=2.;projected=false;Node->nodeME()->projectorStage(0);
+      weight=2.;projected=false;
+      pjs=0;
     }
   }else{
       // no ordered history -> no projection
-    weight=1.;projected=false;Node->nodeME()->projectorStage(0);
+    weight=1.;projected=false;
+    pjs=0;
   }
   
   if (treefactory()->onlymulti()!=-1&&
@@ -227,7 +237,7 @@ CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
     // fill history with caluclation of sudakov supression
   fillHistory( startscale,  Born, Node);
     // fill the projector, the argument gets set to current scale
-  Node->runningPt(fillProjector());
+  Node->runningPt(fillProjector(pjs));
     // the weight has three components to get shower history weight
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
@@ -238,7 +248,7 @@ CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
 
 
 CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
-  
+  int pjs=-1;
     // Check if phase space poing is in ME region
   if (!Node->children().empty()) {
     auto inoutpair=getInOut(Node);
@@ -250,17 +260,20 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
     if (UseRandom::rnd()<.5){
-      weight=-2.;projected=true;Node->nodeME()->projectorStage(1);
+      weight=-2.;projected=true;
+      pjs=1;
     }else{
-      weight=2.;projected=false;Node->nodeME()->projectorStage(0);
+      weight=2.;projected=false;
+      pjs=0;
     }
   }else{
-    weight=1.;projected=false;Node->nodeME()->projectorStage(0);
+    weight=1.;projected=false;
+    pjs=0;
   }
   if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
   fillHistory( startscale,  Born, Node);
-  Node->runningPt(fillProjector());
+  Node->runningPt(fillProjector(pjs));
   
   double ww1=history.back().weight;
   double ww2=alphaReweight();
@@ -310,6 +323,7 @@ CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
 }
 
 CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
+  int pjs=-1;
   if (Node->children().empty()) {
     throw Exception()
     << "Real emission contribution without underlying born."
@@ -338,17 +352,23 @@ CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
   Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
-      weight=-2.; projected=true;  Node->nodeME()->projectorStage(2);}
+      weight=-2.; projected=true;
+      pjs=2;
+    }
     else{
-      weight= 2.; projected=false; Node->nodeME()->projectorStage(1);}
+      weight= 2.; projected=false;
+      pjs=1;
+    }
   }else{
-    weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
+    weight=1.;
+    projected=false;
+    pjs=1;
   }
   if (!CLNode->allAbove(mergePt()))return ZERO;
   if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
   fillHistory( startscale,  Born, CLNode);
-  Node->runningPt(fillProjector());
+  Node->runningPt(fillProjector(pjs));
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
   
@@ -369,6 +389,7 @@ CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
 }
 
 CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
+  int pjs=-1;
   NPtr HistNode=Node->randomChild();
   if (!HistNode->children().empty()) {
     auto inoutpair=getInOut(HistNode);
@@ -380,17 +401,20 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   
   if( Born!= HistNode){
     if (UseRandom::rnd()<.5){
-      weight=-2.; projected=true;  Node->nodeME()->projectorStage(1);}
+      weight=-2.; projected=true;
+      pjs=1;}
     else{
-      weight= 2.; projected=false; Node->nodeME()->projectorStage(0);}
+      weight= 2.; projected=false;
+    pjs=0;}
   }else{
-    weight=1.;  projected=false; Node->nodeME()->projectorStage(0);
+    weight=1.;  projected=false;
+    pjs=0;
   }
   if (!Born->xcomb()->willPassCuts())return ZERO;
   
   Energy startscale=CKKW_StartScale(Born);
   fillHistory( startscale,  Born, HistNode);
-  Node->runningPt(fillProjector());
+  Node->runningPt(fillProjector(pjs));
   weight*=history.back().weight*alphaReweight()*pdfReweight();
     //cout<<"\n"<<history.back().weight<<" "<<alphaReweight()<<" "<<pdfReweight();
   if(weight==0.)return ZERO;
@@ -424,6 +448,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
 
 
 CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
+  int pjs=-1;
   if(Node->children().empty())return ZERO;
   NPtr CLNode= Node->randomChild();
   if(CLNode->pT()<mergePt()/3.)return ZERO;//TODO: this is a dynamical cutoff(see above)
@@ -438,17 +463,20 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   NPtr Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
-      weight=-2.; projected=true;  Node->nodeME()->projectorStage(2);}
+      weight=-2.; projected=true;
+    pjs=2;}
     else{
-      weight= 2.; projected=false; Node->nodeME()->projectorStage(1);}
+      weight= 2.; projected=false;
+    pjs=1;}
   }else{
-    weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
+    weight=1.;  projected=false;
+    pjs=1;
   }
   if (!CLNode->allAbove(mergePt()))return ZERO;
   if (!Born->xcomb()->willPassCuts())return ZERO;
   Energy startscale=CKKW_StartScale(Born);
   fillHistory( startscale,  Born, CLNode);
-  Node->runningPt(fillProjector());
+  Node->runningPt(fillProjector(pjs));
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
   
@@ -508,15 +536,15 @@ CrossSection Merger::LoopdSigDR(Energy startscale,NPtr Node){
   return res;
 }
 
-Energy Merger::fillProjector(){
+Energy Merger::fillProjector(int pjs){
     // in the shower handler the scale is multiplied by xiQSh
     // so here we need to devide this
   double xiQShfactor=history.begin()->node->legsize()==N0()?xiQSh:1.;
-  if(history.begin()->node->deepHead()->nodeME()->projectorStage() == 0){
+  if(pjs == 0){
     return (history.size()==1?1.:(1./xiQShfactor))*history.back().scale;
   }
   for(auto const & hs : history)
-    if (projectorStage(hs.node)&&history.begin()->node->deepHead()->nodeME()->projectorStage() != 0){
+    if (isProjectorStage(hs.node,pjs)&&pjs != 0){
       history.begin()->node->deepHead()->xcomb()->lastProjector(hs.node->xcomb());
       return (hs.node==history[0].node?1.:(1./xiQShfactor))*hs.scale;
     }
@@ -987,11 +1015,8 @@ bool Merger::doUNLOPS(NPtr Born,Energy  running, Energy next,Energy fixedScale, 
 
 
 
-bool Merger::projectorStage(NPtr  Born){
-  
-  return	(Born->deepHead()->nodeME()->projectorStage() ==
-             int((Born->deepHead()->legsize()
-                  - Born->legsize())));
+bool Merger::isProjectorStage(NPtr  Born,int pjs){
+  return (pjs ==  int((Born->deepHead()->legsize() - Born->legsize())));
 }
 
 void Merger::cleanup(NPtr Born) {
@@ -1084,8 +1109,8 @@ map<Ptr<MatchboxMEBase>::ptr,NPtr> Merger::firstNodeMap(){return theFirstNodeMap
 
 
 
-void Merger::setXComb(Ptr<MatchboxMEBase>::ptr me,tStdXCombPtr xc,int st){
-  theFirstNodeMap[me]->setXComb(xc, st);
+void Merger::setXComb(Ptr<MatchboxMEBase>::ptr me,tStdXCombPtr xc){
+  theFirstNodeMap[me]->setXComb(xc);
 }
 void Merger::setKinematics(Ptr<MatchboxMEBase>::ptr me){
   theFirstNodeMap[me]->setKinematics();

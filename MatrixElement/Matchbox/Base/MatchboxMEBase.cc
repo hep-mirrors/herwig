@@ -262,7 +262,7 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
     matchboxAmplitude()->setXComb(xc);
   if (theMerger){
     theMerger->setME(this);
-    theMerger->setXComb(this, xc, theProjectorStage);
+    theMerger->setXComb(this, xc);
   }
 
 }
@@ -1046,7 +1046,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	      ostringstream dname;
               if ( theMerger) {
                 dname << fullName();
-                if (theOneLoopNoBorn)  dname <<  ".virtual." << theProjectorStage << "." ;
+                if (theOneLoopNoBorn)  dname <<  ".virtual" << "." ;
                 dname   << b->name() << "."
                         << d->name() << ".[("
                         << emitter << "," << emission << ")," << spectator << "]";
@@ -1205,12 +1205,8 @@ void MatchboxMEBase::clearKinematics() {
 }
 
 void MatchboxMEBase::fillProjectors() {
-  if (!theMerger)return;
-  if (theProjectorStage==0)return;
-  if (theMerger) {
+  if (theMerger)
     theMerger->fillProjectors(this);
-  }
-  
 }
 
 const MergerBasePtr MatchboxMEBase::merger() const {
@@ -1225,13 +1221,6 @@ void MatchboxMEBase::merger(MergerBasePtr v) {
   theMerger = v;
 }
 
-bool MatchboxMEBase::subNode() const {
-  return theSubNode;
-}
-
-void MatchboxMEBase::subNode(bool v) {
-  theSubNode = v;
-}
 
 pair<bool,bool> MatchboxMEBase::clustersafe(int emit,int emis,int spec){
   // frist true if pt > merging scale
@@ -1594,7 +1583,6 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn << theOneLoopNoLoops
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
-     << theSubNode<< theProjectorStage
      << theMerger
      << theOLPProcess << theNoCorrelations
      << theHavePDFs << checkedPDFs;
@@ -1606,7 +1594,6 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn >> theOneLoopNoLoops
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
-     >> theSubNode >> theProjectorStage
      >> theMerger
      >> theOLPProcess >> theNoCorrelations
      >> theHavePDFs >> checkedPDFs;

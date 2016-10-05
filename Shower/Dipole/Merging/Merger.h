@@ -112,7 +112,7 @@ namespace Herwig {
     CrossSection MergingDSigDR() ;
       // ***** virtual functions of the base class ****///
       // set the current xcomb, called from ME
-    void setXComb(Ptr<MatchboxMEBase>::ptr,tStdXCombPtr,int);
+    void setXComb(Ptr<MatchboxMEBase>::ptr,tStdXCombPtr);
       // set kinematics, called from ME
     void setKinematics(Ptr<MatchboxMEBase>::ptr);
       //  clear kinematics, called from ME
@@ -150,7 +150,7 @@ namespace Herwig {
     void   cleanup(NPtr);
       // return true if the cluster node has the matching number of
       // legs to the current projector stage
-    bool   projectorStage(NPtr);
+    bool   isProjectorStage( NPtr , int );
       // calculate the staring scale:
       // if Node is part of the production process, calculate according to the
       // scale choice object in the merging scale objekt, else
@@ -199,7 +199,7 @@ namespace Herwig {
       // if diffalpha != 1, add the difference of IPK(1)-IPK(diffalpha)
     CrossSection TreedSigDR(Energy startscale,NPtr,double diffalpha=1.);
       // fill the projecting xcomb
-    Energy fillProjector();
+    Energy fillProjector(int);
       // fill the history, including calculation of sudakov supression
     void   fillHistory(Energy, NPtr, NPtr );
       // calculate the pdf ratio for the given clusternode
