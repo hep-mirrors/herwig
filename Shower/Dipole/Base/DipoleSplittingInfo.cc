@@ -102,7 +102,7 @@ void DipoleIndex::print(ostream& os) const {
 DipoleSplittingInfo::DipoleSplittingInfo()
   : theConfiguration(false,false), 
     theSpectatorConfiguration(false,false),
-    theScale(0.0*GeV), theRecoilMass(0.0*GeV),
+    theScale(0.0*GeV),theIsDecayProc(false), theRecoilMass(0.0*GeV),
     theEmitterX(1.0), theSpectatorX(1.0), 
     theHardPt(0.0*GeV), theLastPt(0.0*GeV),
     theLastZ(0.0), theLastPhi(0.0), theLastEmitterZ(0.0),
