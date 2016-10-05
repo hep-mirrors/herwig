@@ -188,6 +188,8 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   
   Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 0,MH()));
+  
+  clusternode->deepHead(clusternode);
   MH()->firstNodeMap(bornme,clusternode);
   bornme->factory(this);
   bornme->merger(MH());
@@ -267,6 +269,8 @@ void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   nlo->doOneLoopNoBorn();
     ////////////////////////////////////NLO///////////////////////////
   Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, 0,MH()));
+  
+  clusternode->deepHead(clusternode);
   clusternode->virtualContribution(true);
   MH()->firstNodeMap(nlo,clusternode);
   nlo->merger(MH());
@@ -312,9 +316,12 @@ void MergingFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   
   Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 1,MH()));
+  clusternode->deepHead(clusternode);
   clusternode->subtractedReal(true);
   MH()->firstNodeMap(bornme,clusternode);
   bornme->merger(MH());
+  
+  
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;

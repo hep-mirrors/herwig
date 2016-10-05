@@ -849,18 +849,14 @@ CrossSection Merger::MergingDSigDR() {
   
   
   NPtr Node = theFirstNodeMap[theCurrentME];
-  
   xiRenME=theCurrentME->renormalizationScaleFactor();
   xiFacME=theCurrentME->factorizationScaleFactor();
   xiRenSh=DSH()->renormalizationScaleFactor();
   xiFacSh=DSH()->factorizationScaleFactor();
   xiQSh=DSH()->hardScaleFactor();
-  
   DSH()->setCurrentHandler();
-  
   DSH()->eventHandler(generator()->eventHandler());
-  
-  
+
   CrossSection res=ZERO;
   if(Node->deepHead()->subtractedReal()){
     res=MergingDSigDRRealStandard(Node);

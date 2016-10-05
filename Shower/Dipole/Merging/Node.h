@@ -124,11 +124,11 @@ namespace Herwig {
       //get the history
     Ptr<Node>::ptr getHistory(bool normal=true, double hardscalefactor=1.);
       //true if node correspond to a subtracted real.
-    bool subtractedReal() {return theSubtractedReal;}
+    bool subtractedReal() const {return theSubtractedReal;}
       /// set if node correspont to a subtracted real.
     void subtractedReal(bool x) { theSubtractedReal = x;}
       //true if node correspond to a virtual contribution.
-    bool virtualContribution() { return theVirtualContribution ;}
+    bool virtualContribution() const { return theVirtualContribution ;}
       /// set if node correspont to a virtual contribution.
     void virtualContribution(bool x) {theVirtualContribution = x;}
       //pointer to the merging helper
@@ -139,19 +139,13 @@ namespace Herwig {
     Energy pT()const{return dipole()->lastPt();}
     
   private:
-      //the xcomb of the node
-    StdXCombPtr thexcomb;
       /// the Matrixelement representing this node.
     Ptr<MatchboxMEBase>::ptr thenodeMEPtr;
       /// the dipol used to substract
       /// and generate kinematics using tilde kinematics
     Ptr<SubtractionDipole>::ptr thedipol;
-      /// vector of the children node
-    vector< Ptr<Node>::ptr > thechildren;
       /// the parent node
     Ptr<Node>::ptr theparent;
-      /// The nodes of the projection stage.
-    vector< pair <double, Ptr<Node>::ptr> > theProjectors;
       /// The godfather node of whole tree.(Firstnode)
     Ptr<Node>::ptr theDeepHead;
       /**
@@ -161,11 +155,6 @@ namespace Herwig {
        * -> virtual and normal tree level ME get 0.
        */
     int theCutStage;
-      /// For [[Emitter, Emission], Spectator] the mapped pair gives
-      /// information if the first and the second cluster is safe.
-    SafeClusterMap clustersafer;
-      /// the current running pt
-    Energy theRunningPt;
       /// tell if node belongs to an ordered history
     bool isOrdered;
       /// flag to tell if node is subtracted real
@@ -174,7 +163,17 @@ namespace Herwig {
     bool theVirtualContribution;
       /// the merging helper
     Ptr<Merger>::ptr theMergingHelper;
-    
+      //the xcomb of the node
+    StdXCombPtr thexcomb;
+      /// vector of the children node
+    vector< Ptr<Node>::ptr > thechildren;
+      /// the current running pt
+    Energy theRunningPt;
+      /// The nodes of the projection stage.
+    vector< pair <double, Ptr<Node>::ptr> > theProjectors;
+      /// For [[Emitter, Emission], Spectator] the mapped pair gives
+      /// information if the first and the second cluster is safe.
+    SafeClusterMap clustersafer;
   public:
     /** @name Functions used by the persistent I/O system. */
       //@{

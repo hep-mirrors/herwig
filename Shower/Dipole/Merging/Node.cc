@@ -29,15 +29,13 @@ using namespace Herwig;
 Node::Node() {
 }
 
-bool NodeDebug=false;
 
 Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int cutstage,Ptr<Merger>::ptr mh)
   :Interfaced(),
  thenodeMEPtr(nodeME),
  thedipol(),
- thechildren(),
  theparent(),
- theDeepHead(this),
+
  theCutStage(cutstage),
  isOrdered(true),
  theSubtractedReal(false),
@@ -62,8 +60,8 @@ theDeepHead(deephead),
 theCutStage(cutstage),
 isOrdered(true),
 theSubtractedReal(false),
-theVirtualContribution(false),
-theMergingHelper() //The subnodes have no merging helper
+theVirtualContribution(false)
+  //The subnodes have no merging helper
 {
 }
 
