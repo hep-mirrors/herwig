@@ -47,21 +47,21 @@ using namespace Herwig;
 using std::ostream_iterator;
 
 MergingFactory::MergingFactory() :MatchboxFactory(),
- theonlyNLOParts(false),
- theonlyvirtualNLOParts(false),
- theonlyrealNLOParts(false),
- theonlyUnlopsweights(false),
- theunitarizeNLOParts(true),
- calc_born(true),
- calc_virtual(true),
- calc_real(true),
- unitarized(true),
- NLOunitarized(true),
- ransetup(false),
- theonlymulti(-1),
- theonlysub(-1),
- divideSub(-1),
- divideSubNumber(-1)
+theonlyNLOParts(false),
+theonlyvirtualNLOParts(false),
+theonlyrealNLOParts(false),
+theonlyUnlopsweights(false),
+theunitarizeNLOParts(true),
+calc_born(true),
+calc_virtual(true),
+calc_real(true),
+unitarized(true),
+NLOunitarized(true),
+ransetup(false),
+theonlymulti(-1),
+theonlysub(-1),
+divideSub(-1),
+divideSubNumber(-1)
 {}
 
 MergingFactory::~MergingFactory(){}
@@ -80,7 +80,7 @@ IBPtr MergingFactory::fullclone() const {
 void MergingFactory::fill_amplitudes() {
   
   olpProcesses().clear();
-
+  
   processMap[0] = getProcesses()[0];
   
   if(MH()->M()>=0) setHighestVirt(processMap[0].size()+MH()->M());
@@ -118,10 +118,10 @@ void MergingFactory::prepare_BV(int i) {
       
       bool haveGluon = false;
       for ( const auto p : born->subProcess().legs )
-        if ( p->id() == 21 ) {
-          haveGluon = true;
-          break;
-        }
+      if ( p->id() == 21 ) {
+        haveGluon = true;
+        break;
+      }
       if ( haveGluon ) {
         id = orderOLPProcess(born->subProcess(),
                              born->matchboxAmplitude(),
@@ -149,19 +149,19 @@ void MergingFactory::prepare_BV(int i) {
   
   for ( auto & virt : theVirtualsMap[i] ) virt->factory(this);
   
-  // check for consistent conventions on virtuals, if we are to include MH()->M()
+    // check for consistent conventions on virtuals, if we are to include MH()->M()
   assert(i > MH()->M()||haveVirtuals);
-
+  
   for ( auto & virt : DipoleRepository::insertionIOperators(dipoleSet()) )
-    virt->factory(this);
+  virt->factory(this);
   
   for ( auto & virt : DipoleRepository::insertionPKOperators(dipoleSet()) )
-    virt->factory(this);
+  virt->factory(this);
 }
 
 void MergingFactory::prepare_R(int i) {
   for ( auto real : pureMEsMap()[i])
-    prepareME(real);
+  prepareME(real);
 }
 
 void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
@@ -175,17 +175,17 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   bornme->virtuals().clear();
   for ( auto virt : theVirtualsMap[i] )
-    if ( virt->apply(born->diagrams().front()->partons()) )
-      bornme->virtuals().push_back(virt);
+  if ( virt->apply(born->diagrams().front()->partons()) )
+  bornme->virtuals().push_back(virt);
   
   for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
-    if ( I->apply(born->diagrams().front()->partons()) )
-      bornme->virtuals().push_back(I);
+  if ( I->apply(born->diagrams().front()->partons()) )
+  bornme->virtuals().push_back(I);
   
   for ( auto PK : DipoleRepository::insertionPKOperators(dipoleSet()) )
-        if ( PK->apply(born->diagrams().front()->partons()) )
-          bornme->virtuals().push_back(PK);
-
+  if ( PK->apply(born->diagrams().front()->partons()) )
+  bornme->virtuals().push_back(PK);
+  
   
   Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 0,MH()));
   MH()->firstNodeMap(bornme,clusternode);
@@ -205,16 +205,16 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
       for ( auto tmpchild : tmp->children()){//m
         if ( i <= MH()->M() ) {
           for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
-            if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
-              Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
-              tmpchild->nodeME()->virtuals().push_back(myI);
-            }
+          if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
+            Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
+            tmpchild->nodeME()->virtuals().push_back(myI);
+          }
           for ( auto I : DipoleRepository::insertionPKOperators(dipoleSet()) )
-            if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
-              Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
-              tmpchild->nodeME()->virtuals().push_back(myI);
-            }
-    
+          if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
+            Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
+            tmpchild->nodeME()->virtuals().push_back(myI);
+          }
+          
           tmpchild->nodeME()->noOneLoop();
         }
         temp1.push_back(tmpchild);
@@ -226,7 +226,7 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   }
   
   if(MH()->N()>i)
-    bornme->needsCorrelations();
+  bornme->needsCorrelations();
   else bornme->needsNoCorrelations();
   
   bornme->cloneDependencies();
@@ -248,19 +248,19 @@ void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   nlo->virtuals().clear();
   if ( !nlo->onlyOneLoop() ) {
     for ( auto OV : theVirtualsMap[i] )
-      if ( OV->apply(nlo->diagrams().front()->partons()) ){
-        nlo->virtuals().push_back(OV);
-      }
+    if ( OV->apply(nlo->diagrams().front()->partons()) ){
+      nlo->virtuals().push_back(OV);
+    }
     
     for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
-      if ( I->apply(nlo->diagrams().front()->partons()) ){
-        nlo->virtuals().push_back(I);
-      }
+    if ( I->apply(nlo->diagrams().front()->partons()) ){
+      nlo->virtuals().push_back(I);
+    }
     
     for ( auto PK : DipoleRepository::insertionPKOperators(dipoleSet()) )
-      if ( PK->apply(nlo->diagrams().front()->partons()) ){
-        nlo->virtuals().push_back(PK);
-      }
+    if ( PK->apply(nlo->diagrams().front()->partons()) ){
+      nlo->virtuals().push_back(PK);
+    }
     
     if ( nlo->virtuals().empty() ) throw InitException() << "No insertion operators have been found for " << born->name() << "\n";
   }
@@ -279,7 +279,7 @@ void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
     for ( auto tmp : temp ){
       tmp->birth(thePureMEsMap[i - k]);
       for ( auto tmpchild : tmp->children())
-        temp1.push_back(tmpchild);
+      temp1.push_back(tmpchild);
     }
     temp = temp1;
     k++;
@@ -331,10 +331,10 @@ void MergingFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
     k++;
   }
   
-
+  
   
   if(MH()->N()>i)
-    bornme->needsCorrelations();
+  bornme->needsCorrelations();
   else bornme->needsNoCorrelations();
   
   bornme->cloneDependencies(pname);
@@ -350,8 +350,8 @@ void MergingFactory::orderOLPs() {
 vector<string> MergingFactory::parseProcess(string in) {
   vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
-    throw Exception() << "MatchboxFactory: Invalid process."
-    << Exception::runerror;
+  throw Exception() << "MatchboxFactory: Invalid process."
+  << Exception::runerror;
   for ( string & p : process) {
     p = StringUtils::stripws(p);
   }
@@ -360,8 +360,8 @@ vector<string> MergingFactory::parseProcess(string in) {
   vector<string> pprocess;
   for (string const p : process) {
     if ( p == "->" )
-      continue;
-
+    continue;
+    
     if (p=="[") {
       prodprocess=false;
     }else if (p=="]") {
@@ -417,18 +417,18 @@ void MergingFactory::setup() {
     
     for ( const auto p : partons ) {
       if ( abs(p->id()) < 7 && p->hardProcessMass() == ZERO )
-        ++nl;
+      ++nl;
       if ( p->id() > 0 && p->id() < 7 && p->hardProcessMass() == ZERO )
-        nLightJetVec( p->id() );
+      nLightJetVec( p->id() );
       if ( p->id() > 0 && p->id() < 7 && p->hardProcessMass() != ZERO )
-        nHeavyJetVec( p->id() );
+      nHeavyJetVec( p->id() );
     }
     nLight(nl/2);
     
     const PDVector& partonsInP = particleGroups()["p"];
     for ( const auto pip : partonsInP )
-      if ( pip->id() > 0 && pip->id() < 7 && pip->hardProcessMass() == ZERO )
-        nLightProtonVec( pip->id() );
+    if ( pip->id() > 0 && pip->id() < 7 && pip->hardProcessMass() == ZERO )
+    nLightProtonVec( pip->id() );
     
     for ( auto & amp: amplitudes() ) amp->factory(this);
     
@@ -457,36 +457,36 @@ void MergingFactory::setup() {
     
     
     for (; i <= max(0, MH()->N()) ; ++i )
-      for ( auto born : thePureMEsMap[i])
-        if (calc_born && !theonlyUnlopsweights){
-          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
-             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-            pushB(born, i);
-          onlysubcounter++;
-        }
+    for ( auto born : thePureMEsMap[i])
+    if (calc_born && !theonlyUnlopsweights){
+      if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+         ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+      pushB(born, i);
+      onlysubcounter++;
+    }
     
     
     i = 0 ;
     for (; i <=max(0, MH()->N()); ++i )
-      for ( auto virt : thePureMEsMap[i])
-        if ( calc_virtual && i <= MH()->M()){
-          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
-             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-            pushV(virt, i);
-          onlysubcounter++;
-        }
+    for ( auto virt : thePureMEsMap[i])
+    if ( calc_virtual && i <= MH()->M()){
+      if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+         ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+      pushV(virt, i);
+      onlysubcounter++;
+    }
     
     i = 0 ;
     for (; i <= max(0, MH()->N()) ; ++i )
-      for ( auto real : thePureMEsMap[i] )
-        if (calc_real&& i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights){
-          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
-             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-            pushProR(real, i);
-          onlysubcounter++;
-        }
-  
-
+    for ( auto real : thePureMEsMap[i] )
+    if (calc_real&& i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights){
+      if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+         ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+      pushProR(real, i);
+      onlysubcounter++;
+    }
+    
+    
     
     if ( !externalAmplitudes().empty() ) {
       generator()->log() << "Initializing external amplitudes.\n" << flush;
@@ -562,11 +562,11 @@ void MergingFactory::Init() {
   
   
   static Parameter<MergingFactory, int> interfaceonlymulti("onlymulti", "calculate only the ME with k additional partons.", &MergingFactory::theonlymulti, -1, -1, 0,
-                                                     false, false, Interface::lowerlim);
-
+                                                           false, false, Interface::lowerlim);
+  
   
   static Parameter<MergingFactory, int> interfaceonlysub("onlysub", "calculate only one subProcess. this is for building grids.", &MergingFactory::theonlysub, -1, -1, 0,
-                                                   false, false, Interface::lowerlim);
+                                                         false, false, Interface::lowerlim);
   
   
   
@@ -577,28 +577,28 @@ void MergingFactory::Init() {
   
   
   static Parameter<MergingFactory, int> interfacedivideSub("divideSub", "calculate only one subProcess. this is for building grids.", &MergingFactory::divideSub, -1, -1, 0,
-                                                     false, false, Interface::lowerlim);
+                                                           false, false, Interface::lowerlim);
   
   
   static Parameter<MergingFactory, int> interfacedivideSubNumber("divideSubNumber", "calculate only one subProcess. this is for building grids.", &MergingFactory::divideSubNumber, -1, -1, 0,
-                                                           false, false, Interface::lowerlim);
+                                                                 false, false, Interface::lowerlim);
   
   
   
   
   
   static Switch<MergingFactory, bool> interface_calc_born("calc_born", "[debug] Switch on or off the born contribution.", &MergingFactory::calc_born, true,
-                                                    false, false);
+                                                          false, false);
   static SwitchOption interface_calc_bornOn(interface_calc_born, "On", "Switch on calculation of born.", true);
   static SwitchOption interface_calc_bornOff(interface_calc_born, "Off", "Switch off calculation of born.", false);
   
   static Switch<MergingFactory, bool> interface_calc_virtual("calc_virtual", "[debug] Switch on or off the virtual contribution.",
-                                                       &MergingFactory::calc_virtual, true, false, false);
+                                                             &MergingFactory::calc_virtual, true, false, false);
   static SwitchOption interface_calc_virtualOn(interface_calc_virtual, "On", "Switch on calculation of virtual.", true);
   static SwitchOption interface_calc_virtualOff(interface_calc_virtual, "Off", "Switch off calculation of virtual.", false);
   
   static Switch<MergingFactory, bool> interface_calc_real("calc_real", "[debug] Switch on or off the real contribution.", &MergingFactory::calc_real, true,
-                                                    false, false);
+                                                          false, false);
   static SwitchOption interface_calc_realOn(interface_calc_real, "On", "Switch on calculation of real.", true);
   static SwitchOption interface_calc_realOff(interface_calc_real, "Off", "Switch off calculation of real.", false);
   
@@ -606,7 +606,7 @@ void MergingFactory::Init() {
   
   
   static Switch<MergingFactory, bool> interface_theonlyNLOParts("onlyNLOParts", "Switch on or off the onlyNLOParts.", &MergingFactory::theonlyNLOParts, true, false,
-                                                          false);
+                                                                false);
   static SwitchOption interface_theonlyNLOPartsOn(interface_theonlyNLOParts, "On", "Switch on the theonlyNLOParts.", true);
   static SwitchOption interface_theonlyNLOPartsOff(interface_theonlyNLOParts, "Off", "Switch off the theonlyNLOParts.", false);
   
@@ -615,23 +615,23 @@ void MergingFactory::Init() {
     //  theonlyrealNLOParts;
   
   static Switch<MergingFactory, bool> interface_theonlyvirtualNLOParts("onlyvirtualNLOParts", "Switch on or off the onlyvirtualNLOParts.", &MergingFactory::theonlyvirtualNLOParts, true, false,
-                                                                 false);
+                                                                       false);
   static SwitchOption interface_theonlyvirtualNLOPartsOn(interface_theonlyvirtualNLOParts, "On", "Switch on the theonlyvirtualNLOParts.", true);
   static SwitchOption interface_theonlyvirtualNLOPartsOff(interface_theonlyvirtualNLOParts, "Off", "Switch off the theonlyvirtualNLOParts.", false);
   
   static Switch<MergingFactory, bool> interface_theonlyrealNLOParts("onlyrealNLOParts", "Switch on or off the onlyrealNLOParts.", &MergingFactory::theonlyrealNLOParts, true, false,
-                                                              false);
+                                                                    false);
   static SwitchOption interface_theonlyrealNLOPartsOn(interface_theonlyrealNLOParts, "On", "Switch on the theonlyrealNLOParts.", true);
   static SwitchOption interface_theonlyrealNLOPartsOff(interface_theonlyrealNLOParts, "Off", "Switch off the theonlyrealNLOParts.", false);
   
   static Switch<MergingFactory, bool> interface_theunitarizeNLOParts("unitarizeNLOParts", "Switch on or off the unitarizeNLOParts.", &MergingFactory::theunitarizeNLOParts, true, false,
-                                                               false);
+                                                                     false);
   static SwitchOption interface_theunitarizeNLOPartsOn(interface_theunitarizeNLOParts, "On", "Switch on the unitarizeNLOParts.", true);
   static SwitchOption interface_theunitarizeNLOPartsOff(interface_theunitarizeNLOParts, "Off", "Switch off the unitarizeNLOParts.", false);
   
   
   static Switch<MergingFactory, bool> interface_theonlyUnlopsweights("onlyUnlopsweights", "Switch on or off the onlyUnlopsweights.", &MergingFactory::theonlyUnlopsweights, true, false,
-                                                               false);
+                                                                     false);
   static SwitchOption interface_theonlyUnlopsweightsOn(interface_theonlyUnlopsweights, "On", "Switch on the onlyUnlopsweights.", true);
   static SwitchOption interface_theonlyUnlopsweightsOff(interface_theonlyUnlopsweights, "Off", "Switch off the onlyUnlopsweights.", false);
   
@@ -647,7 +647,7 @@ void MergingFactory::Init() {
   static Switch<MergingFactory, bool> interface_NLOUnitarized("NLOUnitarized", "Unitarize the cross section.", &MergingFactory::NLOunitarized, true, false, false);
   static SwitchOption interface_NLOUnitarizedOn(interface_NLOUnitarized, "On", "Switch on the unitarized NLO cross section.", true);
   static SwitchOption interface_NLOUnitarizedOff(interface_NLOUnitarized, "Off", "Switch off the unitarized NLO cross section.", false);
-
+  
   static Reference<MergingFactory,Merger> interfaceMergingHelper
   ("MergingHelper",
    "",
@@ -656,8 +656,8 @@ void MergingFactory::Init() {
   
   
   static Parameter<MergingFactory, int> interfaceaddNLOLegs("NLOProcesses",
-                                                    "Set the number of virtual corrections to consider. 0 is default for no virtual correction.", &MergingFactory::theM, 0, 0, 0, false, false,
-                                                    Interface::lowerlim);
+                                                            "Set the number of virtual corrections to consider. 0 is default for no virtual correction.", &MergingFactory::theM, 0, 0, 0, false, false,
+                                                            Interface::lowerlim);
   
   
   

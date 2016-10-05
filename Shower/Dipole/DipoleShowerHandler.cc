@@ -63,8 +63,11 @@ IBPtr DipoleShowerHandler::fullclone() const {
 
 
 void  DipoleShowerHandler::cascade(tPVector ) {
-   assert(false&&"Dipoleshower as second shower not implemented");
-  return;}
+  throw Exception()
+  << "DipoleShowerHandler: Dipoleshower not implemented as second shower."
+  << "Check your setup or contact Herwig authors."
+  << Exception::runerror;
+}
 
 
 tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,

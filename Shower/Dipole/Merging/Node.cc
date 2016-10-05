@@ -183,7 +183,6 @@ void Node::setXComb(tStdXCombPtr xc) {
   for (auto const & ch: thechildren) {
     if ( !ch->xcomb() ) {
       ch->xcomb(ch->dipole()->makeBornXComb(xc));
-      assert(ch->xcomb());
       ch->xcomb()->head(xc);
       if ( !ch->dipole()->lastXCombPtr() ) {
         ch->dipole()->setXComb(ch->xcomb());

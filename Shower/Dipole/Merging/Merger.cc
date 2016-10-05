@@ -93,8 +93,8 @@ IBPtr Merger::fullclone() const {
 pair<PVector,PVector> getInOut(NPtr Node){
   PVector incoming;
   for(auto const & i : {0,1})
-    incoming.push_back(Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]));
-    PVector outgoing;
+  incoming.push_back(Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]));
+  PVector outgoing;
   for (size_t i=2;i<Node->nodeME()->mePartonData().size();i++){
     Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
     outgoing.push_back(p);
@@ -108,9 +108,9 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
   double weightCL=0.;
   weight=1.;
   int pjs=-1;
-
-
- 
+  
+  
+  
   if (!Node->children().empty()) {
     auto const inoutpair=getInOut(Node);
     NPtr rndCh= Node->randomChild(); // Here we make sure that clustering and splitting are invertible
@@ -140,11 +140,11 @@ CrossSection Merger::MergingDSigDRBornGamma(NPtr Node){
     projected=false;
     pjs=0;
   }
-
- 
+  
+  
   if (treefactory()->onlymulti()!=-1&&
       treefactory()->onlymulti()!=int(Node->legsize()-pjs))
-    return ZERO;
+  return ZERO;
   
   
   if(!Node->allAbove(mergePt()-0.1*GeV))weight=0.;
@@ -227,7 +227,7 @@ CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
   
   if (treefactory()->onlymulti()!=-1&&
       treefactory()->onlymulti()!=int(Node->legsize()-(projected?1:0)))
-    return ZERO;
+  return ZERO;
   
   assert(Node->allAbove(mergePt()-0.1*GeV));
   
@@ -255,7 +255,7 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
     NPtr rndCh= Node->randomChild(); // Here we make sure that clustering and splitting are invertible
     if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
   }
-
+  
   
   NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
@@ -292,8 +292,8 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   double w3=-sumfillHistoryUnlops();
   
   CrossSection unlopsweight =(w1+w2+w3)
-                       *Bornweight
-                       *SM().alphaS()/(2.*ThePEG::Constants::pi);
+  *Bornweight
+  *SM().alphaS()/(2.*ThePEG::Constants::pi);
   
   if (Node->legsize()==5&&Debug::level > 2) {
     Energy minPT=1000*GeV;
@@ -307,8 +307,8 @@ CrossSection Merger::MergingDSigDRVirtualStandard(NPtr Node ){
   
   
   return weight*
-         as(startscale*xiRenSh)/SM().alphaS()*
-         (matrixElement+unlopsweight);
+  as(startscale*xiRenSh)/SM().alphaS()*
+  (matrixElement+unlopsweight);
 }
 
 
@@ -318,7 +318,7 @@ CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
   if(!Node->allAbove((Debug::level > 2?0.01:1.)*theIRSafePT))return ZERO;
   if (allAbove)return MergingDSigDRRealAllAbove(Node);
   if (UseRandom::rnd()<.5)
-    return 2.*MergingDSigDRRealBelowSubReal( Node );
+  return 2.*MergingDSigDRRealBelowSubReal( Node );
   return 2.*MergingDSigDRRealBelowSubInt( Node);
 }
 
@@ -330,7 +330,7 @@ CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
     << "These are finite contibutions already handled in LO merging."
     << Exception::abortnow;
   }
-
+  
   
     //If all dipoles pts are above, we cluster to this dipole.
   NPtr CLNode= Node->randomChild();
@@ -340,7 +340,7 @@ CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
     NPtr rndCh= CLNode->randomChild(); // Here we make sure that clustering and splitting are invertible
     if(!matrixElementRegion(inoutpair.first,inoutpair.second, rndCh->pT(), theMergePt))return ZERO;
   }
-
+  
     // first find the history for the acctual Node
   NPtr Born= Node-> getHistory(true,xiQSh);
     // check if the randomly choosen CLNode is part of the history.
@@ -379,10 +379,10 @@ CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
   CrossSection res= weight*as(startscale*xiRenSh)/SM().alphaS()*
   (double)Node->children().size()*(me -dip);
   if (Node->legsize()==6&&Debug::level > 2) {
-  Energy minPT=1000*GeV;
-  for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
-  
-  cout<<"\nRAA "<<minPT/GeV<<" "<<weight<<" "<<(me-dip)/nanobarn<< " "<<me/nanobarn<<" "<<dip/nanobarn;
+    Energy minPT=1000*GeV;
+    for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
+    
+    cout<<"\nRAA "<<minPT/GeV<<" "<<weight<<" "<<(me-dip)/nanobarn<< " "<<me/nanobarn<<" "<<dip/nanobarn;
   }
     // cout<<"\nCLNode->dipole()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn "<<CLNode->dipole()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
   return res;
@@ -405,7 +405,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
       pjs=1;}
     else{
       weight= 2.; projected=false;
-    pjs=0;}
+      pjs=0;}
   }else{
     weight=1.;  projected=false;
     pjs=0;
@@ -420,13 +420,13 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   if(weight==0.)return ZERO;
   
   CrossSection sumPS=ZERO;
-
+  
   for(auto const & child : Node->children()){
     if (child->allAbove(mergePt())){
       if((child)->pT()>mergePt()/3.)//TODO: this is a dynamical cutoff(see below)
-        sumPS+=child->calcPs(startscale*xiFacME);
+      sumPS+=child->calcPs(startscale*xiFacME);
       else
-        sumPS+=child->calcDip(startscale*xiFacME);
+      sumPS+=child->calcDip(startscale*xiFacME);
     }else{
       assert(child->pT()>mergePt());
     }
@@ -437,8 +437,8 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(NPtr Node){
   if (Node->legsize()==6&&Debug::level > 2) {
     Energy minPT=1000*GeV;
     for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
-  
-  cout<<"\nRBSR "<<minPT/GeV<< " " <<weight<<" "<<(me-sumPS)/nanobarn<<" "<<me/nanobarn<<" "<<sumPS/nanobarn;
+    
+    cout<<"\nRBSR "<<minPT/GeV<< " " <<weight<<" "<<(me-sumPS)/nanobarn<<" "<<me/nanobarn<<" "<<sumPS/nanobarn;
   }
     //Here we subtract the PS (and below the dynamical cutoff the Dip)
   return weight*as(startscale*xiRenSh)/SM().alphaS()*
@@ -452,7 +452,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   if(Node->children().empty())return ZERO;
   NPtr CLNode= Node->randomChild();
   if(CLNode->pT()<mergePt()/3.)return ZERO;//TODO: this is a dynamical cutoff(see above)
-
+  
   if (!CLNode->children().empty()) {
     auto inoutpair=getInOut(CLNode);
     NPtr rndCh= CLNode->randomChild(); // Here we make sure that clustering and splitting are invertible
@@ -464,10 +464,10 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
       weight=-2.; projected=true;
-    pjs=2;}
+      pjs=2;}
     else{
       weight= 2.; projected=false;
-    pjs=1;}
+      pjs=1;}
   }else{
     weight=1.;  projected=false;
     pjs=1;
@@ -481,7 +481,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   if(weight==0.)return ZERO;
   
   
-
+  
   
   pair<CrossSection,CrossSection> DipAndPs=
   CLNode->calcDipandPS(startscale*xiFacME);
@@ -489,8 +489,8 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt(NPtr Node){
   if (Node->legsize()==6&&Debug::level > 2) {
     Energy minPT=1000*GeV;
     for(auto const & no :Node->children() )minPT=min(no->pT(),minPT);
-  
-
+    
+    
     cout<<"\nRBSI "<<CLNode->pT()/GeV<<" "<<weight<<" "<<(DipAndPs.second-DipAndPs.first)/nanobarn<<" "<<DipAndPs.second/nanobarn<<" "<<DipAndPs.first/nanobarn;
   }
     //Here we add the PS and subtrac the Dip (only above the dynamical cutoff)
@@ -544,10 +544,10 @@ Energy Merger::fillProjector(int pjs){
     return (history.size()==1?1.:(1./xiQShfactor))*history.back().scale;
   }
   for(auto const & hs : history)
-    if (isProjectorStage(hs.node,pjs)&&pjs != 0){
-      history.begin()->node->deepHead()->xcomb()->lastProjector(hs.node->xcomb());
-      return (hs.node==history[0].node?1.:(1./xiQShfactor))*hs.scale;
-    }
+  if (isProjectorStage(hs.node,pjs)&&pjs != 0){
+    history.begin()->node->deepHead()->xcomb()->lastProjector(hs.node->xcomb());
+    return (hs.node==history[0].node?1.:(1./xiQShfactor))*hs.scale;
+  }
   
   throw Exception() << "Could not fill projector."<< Exception::abortnow;
   return ZERO;
@@ -587,15 +587,15 @@ double Merger::alphaReweight(){
   if (!(history[0].node->children().empty())){
     res *=pow((theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(Q_R))*as(Q_R))/2./Constants::pi):1.),int(history[0].node->legsize()-N0()));
   }
-
+  
   
   for (auto const & hs : history)
-    if (hs.node!=history.back().node){
-      Energy q_i=xiRenSh* hs.node->pT();
-      res *= as(q_i)/ SM().alphaS()
-      *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(q_i))*as(q_i))/2./Constants::pi):1.);
-      if (std::isnan(res))cout<<"\nWarning:alphaReweight is nan:q_i "<<q_i/GeV<<" "<<Nf(q_i);
-    }
+  if (hs.node!=history.back().node){
+    Energy q_i=xiRenSh* hs.node->pT();
+    res *= as(q_i)/ SM().alphaS()
+    *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*Nf(q_i))*as(q_i))/2./Constants::pi):1.);
+    if (std::isnan(res))cout<<"\nWarning:alphaReweight is nan:q_i "<<q_i/GeV<<" "<<Nf(q_i);
+  }
   
   if (std::isnan(res))cout<<"\nWarning:alphaReweight is nan.";
   return res;
@@ -735,7 +735,7 @@ double Merger::pdfUnlops(NPtr node ,int side,Energy  running, Energy next,double
   
     //copied from PKOperator
   double res=0.;
-  int number=10;//*int((max(running/next,next/running)));
+  int number=10;
   for (int nr=0;nr<number;nr++){
     double restmp=0;
     
@@ -777,7 +777,7 @@ double Merger::pdfUnlops(NPtr node ,int side,Energy  running, Energy next,double
         
         for ( int f = -nlp; f <= nlp; ++f ) {
           if ( f == 0 )
-            continue;
+          continue;
           restmp += pdf->xfx(particle,getParticleData(f),sqr(fixedScale),x/z)*z/x*factor;
         }
       }
@@ -842,9 +842,9 @@ CrossSection Merger::MergingDSigDR() {
   
   
   if (theFirstNodeMap.find(theCurrentME)==theFirstNodeMap.end()) {
-      throw Exception()
-      << "Merger: The current matrix element could not be found."
-      << Exception::abortnow;
+    throw Exception()
+    << "Merger: The current matrix element could not be found."
+    << Exception::abortnow;
   }
   
   
@@ -958,9 +958,9 @@ double Merger::pdfratio(NPtr  Born,Energy  nominator_scale, Energy denominator_s
   
   StdXCombPtr bXc = Born->xcomb();
   if(!bXc->mePartonData()[side]->coloured())
-    throw Exception()
-    << "Merger: pdf-ratio required for non-coloured particle."
-    << Exception::abortnow;
+  throw Exception()
+  << "Merger: pdf-ratio required for non-coloured particle."
+  << Exception::abortnow;
   
   
   double from,to;
@@ -1024,11 +1024,11 @@ void Merger::cleanup(NPtr Born) {
   if(!Born->xcomb()->subProcess())return;
   ParticleVector vecfirst = Born->xcomb()->subProcess()->incoming().first->children();
   for(auto const & particle : vecfirst)
-    Born->xcomb()->subProcess()->incoming().first->abandonChild(particle);
+  Born->xcomb()->subProcess()->incoming().first->abandonChild(particle);
   
   ParticleVector vecsecond = Born->xcomb()->subProcess()->incoming().second->children();
   for(auto const & particle : vecsecond)
-    Born->xcomb()->subProcess()->incoming().second->abandonChild(particle);
+  Born->xcomb()->subProcess()->incoming().second->abandonChild(particle);
   Born->xcomb()->subProcess(SubProPtr());
 }
 
@@ -1049,13 +1049,13 @@ double Merger::singlesudakov(Dipole dip ,Energy next,Energy running,pair<bool,bo
   
   for ( auto   gen = gens.first; gen != gens.second; ++gen ) {
     if ( !(gen->first == candidate.index()) )
-      continue;
+    continue;
     
     Energy dScale =	gen->second->splittingKinematics()->dipoleScale(emitter->momentum(),spectator->momentum());
     candidate.scale(dScale);
     candidate.continuesEvolving();
     Energy ptMax=gen->second->splittingKinematics()->ptMax(candidate.scale(),candidate.emitterX(), candidate.spectatorX(),
-                                                             candidate.index(),*gen->second->splittingKernel());
+                                                           candidate.index(),*gen->second->splittingKernel());
     
     candidate.hardPt(min(running,ptMax));
     
@@ -1077,11 +1077,11 @@ double Merger::singleUNLOPS(Dipole dip ,Energy next,Energy running,Energy fixedS
   
   if ( DSH()->generators().find(candidate.index()) == DSH()->generators().end() ) DSH()->getGenerators(candidate.index());
   
-   auto const & gens = DSH()->generators().equal_range(candidate.index());
+  auto const & gens = DSH()->generators().equal_range(candidate.index());
   
   for ( auto gen = gens.first; gen != gens.second; ++gen ) {
     if ( !(gen->first == candidate.index()) )
-      continue;
+    continue;
     Energy dScale =	gen->second->splittingKinematics()->dipoleScale(emitter->momentum(),spectator->momentum());
     candidate.scale(dScale);
     candidate.continuesEvolving();
@@ -1227,10 +1227,10 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
       for(auto const & spe : outgoing){   if (!spe->coloured()) continue; if (em==spe||emm==spe) continue;
         
         if (!(em->id()==-emm->id()||emm->id()>6))continue;
-
-        Lorentz5Momentum emittermom = em->momentum();
-        Lorentz5Momentum emissionmom = emm->momentum();
-        Lorentz5Momentum spectatormom = spe->momentum();
+        
+        const Lorentz5Momentum emittermom = em->momentum();
+        const Lorentz5Momentum emissionmom = emm->momentum();
+        const Lorentz5Momentum spectatormom = spe->momentum();
         Energy pt=0*GeV;
         if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=FFLTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1253,9 +1253,9 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
         
         if (!(em->id()==-emm->id()||emm->id()>6))continue;
         
-        Lorentz5Momentum emittermom = em->momentum();
-        Lorentz5Momentum emissionmom = emm->momentum();
-        Lorentz5Momentum spectatormom = spe->momentum();
+        const Lorentz5Momentum emittermom = em->momentum();
+        const Lorentz5Momentum emissionmom = emm->momentum();
+        const Lorentz5Momentum spectatormom = spe->momentum();
         Energy pt=0*GeV;
         if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
           pt=FILTK->lastPt(emittermom,emissionmom,spectatormom);
@@ -1269,7 +1269,7 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
         }
         
         if(pt>0.*GeV)
-          ptx =min(ptx,pt);
+        ptx =min(ptx,pt);
       }
     }
   }
@@ -1281,9 +1281,9 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
         
         if (!(em->id()>6|| em->id()==emm->id() ||emm->id()>6))continue;
         
-        Lorentz5Momentum emittermom = em->momentum();
-        Lorentz5Momentum emissionmom = emm->momentum();
-        Lorentz5Momentum spectatormom = spe->momentum();
+        const Lorentz5Momentum emittermom = em->momentum();
+        const Lorentz5Momentum emissionmom = emm->momentum();
+        const Lorentz5Momentum spectatormom = spe->momentum();
         Energy pt=0*GeV;
         
         if (emittermom.m()<=0.001*GeV&&emissionmom.m()<=0.001*GeV&&spectatormom.m()<=0.001*GeV) {
@@ -1305,13 +1305,13 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
   for(auto const & em : incoming){          if (! em->coloured()) continue;
     for(auto const & spe : incoming){       if (! spe->coloured()) continue; if (em==spe) continue;
       for(auto const & emm : outgoing){        if (! emm->coloured()) continue;
-      
+        
         
         if (!(em->id()>6||em->id()==emm->id() ||emm->id()>6))continue;
         
-        Lorentz5Momentum emittermom = em->momentum();
-        Lorentz5Momentum emissionmom = emm->momentum();
-        Lorentz5Momentum spectatormom = spe->momentum();
+        const Lorentz5Momentum emittermom = em->momentum();
+        const Lorentz5Momentum emissionmom = emm->momentum();
+        const Lorentz5Momentum spectatormom = spe->momentum();
         
         Energy  pt=IILTK->lastPt(emittermom,emissionmom,spectatormom);
         
@@ -1324,14 +1324,21 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
   }
   
   if(!foundwinnerpt){
-    cout<<"\nWarning: could not find winner with pt: "<<winnerScale/GeV;
-    for(auto const & emm : incoming){
-      cout<<"\n"<<emm->id()<<" "<<emm->momentum()/GeV<<" "<<emm->momentum().m()/GeV<<flush;
+    generator()->logWarning(Exception()
+                            << "Merger: Could not find winner with pt."
+                            << "Run with -d2 to get phase space points. "
+                            << Exception::warning);
+    
+    if(Debug::level > 2) {
+      cout<<"\nWarning: could not find winner with pt: "<<winnerScale/GeV;
+      for(auto const & emm : incoming){
+        cout<<"\n"<<emm->id()<<" "<<emm->momentum()/GeV<<" "<<emm->momentum().m()/GeV<<flush;
+      }
+      for(auto const & emm : outgoing){
+        cout<<"\n"<<emm->id()<<" "<<emm->momentum()/GeV<<" "<<emm->momentum().m()/GeV<<flush;
+      }
     }
-    for(auto const & emm : outgoing){
-      cout<<"\n"<<emm->id()<<" "<<emm->momentum()/GeV<<" "<<emm->momentum().m()/GeV<<flush;
-    }
-  
+    
   }
   
   return (ptx>cutscale) ;
