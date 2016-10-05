@@ -658,44 +658,52 @@ pair<PVector,PVector> DipoleEventRecord::tmpupdate(DipoleSplittingInfo& dsplit) 
   
   PVector inc;
   PVector out;
+
+  tcPPtr IF = incoming().first;
+  tcPPtr IS = incoming().second;
+
+  tcPPtr DE = dsplit.emitter(); 
+  tcPPtr DS = dsplit.spectator(); 
   
-  if ( incoming().first != dsplit.emitter() && incoming().first != dsplit.spectator()) {
-    Ptr<ThePEG::Particle>::ptr p =(incoming().first )->data().produceParticle((incoming().first)->momentum());
+  if ( IF != DE && IF != DS ) {
+    PPtr p = IF->data().produceParticle(IF->momentum());
     inc.push_back(p);
-  }else if ( incoming().first == dsplit.emitter()) inc.push_back( dsplit.splitEmitter());
-   else if ( incoming().first == dsplit.spectator()) inc.push_back( dsplit.splitSpectator());
+  }
+  else if ( IF == DE ) inc.push_back( dsplit.splitEmitter() );
+  else if ( IF == DS ) inc.push_back( dsplit.splitSpectator() );
   
-  if ( incoming().second != dsplit.emitter() && incoming().second != dsplit.spectator() ) {
-    Ptr<ThePEG::Particle>::ptr p =(incoming().second )->data().produceParticle((incoming().second)->momentum());
+  if ( IS != DE && IS != DS ) {
+    PPtr p = IS->data().produceParticle(IS->momentum());
     inc.push_back(p);
-  }else if ( incoming().second == dsplit.emitter()) inc.push_back( dsplit.splitEmitter());
-   else if ( incoming().second == dsplit.spectator()) inc.push_back( dsplit.splitSpectator());
+  }
+  else if ( IS == DE ) inc.push_back( dsplit.splitEmitter() );
+  else if ( IS == DS ) inc.push_back( dsplit.splitSpectator() );
   
   
-  if ( incoming().first != dsplit.emitter() && incoming().second != dsplit.emitter())
+  if ( IF != DE && IS != DE)
     out.push_back( dsplit.splitEmitter());
-  if ( incoming().first != dsplit.spectator() && incoming().second != dsplit.spectator())
+
+  if ( IF != DS && IS != DS)
     out.push_back( dsplit.splitSpectator());
+
   out.push_back( dsplit.emission());
   
-  for (PList::iterator h = theHard.begin();
-       h != theHard.end(); ++h) {
-    Ptr<ThePEG::Particle>::ptr p =(*h)->data().produceParticle((*h)->momentum());;
-    if (dsplit.splittingKinematics()->doesTransform()){
-      p->set5Momentum(dsplit.splittingKinematics()->transform((*p).momentum()));
+  for ( tcPPtr h : theHard )
+    PPtr p = h->data().produceParticle(h->momentum());
+    if ( dsplit.splittingKinematics()->doesTransform() ) {
+      p->set5Momentum( dsplit.splittingKinematics()->transform(p->momentum()) );
     }
     out.push_back(p);
   }
   
-  for (PList::iterator p = outgoing().begin();
-       p != outgoing().end(); ++p)
-    if ((*p) != dsplit.emitter() &&
-        (*p) != dsplit.spectator() &&
-        (*p) != dsplit.emission()){
+  for ( tcPPtr p : outgoing() )
+    if ( p != DE &&
+         p != DS &&
+         p != dsplit.emission() ){
       
-      Ptr<ThePEG::Particle>::ptr ou=(*p)->data().produceParticle((*p)->momentum());;
-      if (dsplit.splittingKinematics()->doesTransform()){
-        ou->set5Momentum(dsplit.splittingKinematics()->transform((*ou).momentum()));
+      PPtr ou = p->data().produceParticle(p->momentum());;
+      if ( dsplit.splittingKinematics()->doesTransform() ){
+        ou->set5Momentum( dsplit.splittingKinematics()->transform(ou->momentum()) );
       }
       out.push_back(ou);
     }

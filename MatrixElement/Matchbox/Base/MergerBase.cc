@@ -26,15 +26,6 @@ MergerBase::MergerBase()
 
 MergerBase::~MergerBase() {}
 
-
-
-void MergerBase::persistentOutput(PersistentOStream & ) const {
-
-}
-
-void MergerBase::persistentInput(PersistentIStream & , int) {
-}
-
 void MergerBase::Init() {
 
   static ClassDocumentation<MergerBase> documentation
@@ -48,6 +39,6 @@ void MergerBase::Init() {
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeAbstractClass<MergerBase,HandlerBase>
+DescribeAbstractNoPIOClass<MergerBase,HandlerBase>
 describeHerwigMergerBase("Herwig::MergerBase", "Herwig.so");
 

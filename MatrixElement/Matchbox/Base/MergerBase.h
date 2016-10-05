@@ -48,47 +48,34 @@ public:
    */
   virtual ~MergerBase();
     //define the ME region for a particle vector.
-  virtual bool matrixElementRegion(PVector incoming,PVector outcoming,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV)=0;
+  virtual bool matrixElementRegion(PVector incoming,
+                                   PVector outcoming,
+                                   Energy winnerScale = ZERO,
+                                   Energy cutscale = ZERO) = 0;
     // cross section of as given by the merging
-  virtual CrossSection MergingDSigDR() =0;
+  virtual CrossSection MergingDSigDR() = 0;
     // set the current xcomb, called from ME
-  virtual void setXComb(Ptr<MatchboxMEBase>::ptr,tStdXCombPtr,int)=0;
+  virtual void setXComb(Ptr<MatchboxMEBase>::ptr, tStdXCombPtr, int) = 0;
    // set the current ME
-  virtual void setME(Ptr<MatchboxMEBase>::ptr)=0;
+  virtual void setME(Ptr<MatchboxMEBase>::ptr) = 0;
     // set kinematics, called from ME
-  virtual void setKinematics(Ptr<MatchboxMEBase>::ptr)=0;
+  virtual void setKinematics(Ptr<MatchboxMEBase>::ptr) = 0;
   //  clear kinematics, called from ME
-  virtual void clearKinematics(Ptr<MatchboxMEBase>::ptr)=0;
+  virtual void clearKinematics(Ptr<MatchboxMEBase>::ptr) = 0;
     // generate kinematics, called from ME
-  virtual bool generateKinematics(Ptr<MatchboxMEBase>::ptr,const double *)=0;
+  virtual bool generateKinematics(Ptr<MatchboxMEBase>::ptr, const double *) = 0;
     // fill the projector the subprocess is build from
-  virtual void fillProjectors(Ptr<MatchboxMEBase>::ptr)=0;
+  virtual void fillProjectors(Ptr<MatchboxMEBase>::ptr) = 0;
     // return true true if a given ME phase space point is TODO
-  virtual pair<bool,bool> clusterSafe(Ptr<MatchboxMEBase>::ptr,int,int,int)=0;
+  virtual pair<bool,bool> clusterSafe(Ptr<MatchboxMEBase>::ptr, int, int, int) = 0;
     // return the current maximum legs, the shower should veto
-  virtual size_t maxLegs() const=0;
+  virtual size_t maxLegs() const = 0;
     // return the current merging scale,
-  virtual Energy mergingScale() const=0;
+  virtual Energy mergingScale() const = 0;
 
   //@}
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.

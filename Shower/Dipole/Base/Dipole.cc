@@ -304,7 +304,6 @@ void Dipole::tmpsplit(DipoleSplittingInfo& dsplit,
   if ( !colourSpectator ) {
       newSpectator =
       dsplit.spectatorData()->produceParticle(dsplit.splittingKinematics()->lastSpectatorMomentum());
-      // DipolePartonSplitter::change(oldSpectator,newSpectator,spectatorPDF(dsplit.configuration()).pdf());
     dsplit.spectator(oldSpectator);
     dsplit.splitSpectator(newSpectator);
   } else {
@@ -317,13 +316,6 @@ void Dipole::tmpsplit(DipoleSplittingInfo& dsplit,
     dsplit.emitterData()->produceParticle(dsplit.splittingKinematics()->lastEmitterMomentum());
     PPtr newEmission =
     dsplit.emissionData()->produceParticle(dsplit.splittingKinematics()->lastEmissionMomentum());
-  
- /* newEmitter->scale(sqr(dsplit.lastPt()));
-  newEmission->scale(sqr(dsplit.lastPt()));
-  newSpectator->scale(oldSpectator->scale());
-  */
-    // DipolePartonSplitter::split(oldEmitter,newEmitter,newEmission,
-    //                         oldSpectator,emitterPDF(dsplit.configuration()).pdf());
   
     dsplit.emitter(oldEmitter);
     dsplit.splitEmitter(newEmitter);
