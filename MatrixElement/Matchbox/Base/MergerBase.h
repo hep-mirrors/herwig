@@ -69,7 +69,10 @@ public:
   virtual bool generateKinematics(Ptr<MatchboxMEBase>::ptr, const double *) = 0;
     // fill the projector the subprocess is build from
   virtual void fillProjectors(Ptr<MatchboxMEBase>::ptr) = 0;
-    // return true true if a given ME phase space point is TODO
+    /**
+     * first bool: the respective dipole has pt > rho
+     * second bool: all subsequent dipoles have pt > rho
+     */
   virtual pair<bool,bool> clusterSafe(Ptr<MatchboxMEBase>::ptr, int, int, int) = 0;
     // return the current maximum legs, the shower should veto
   virtual size_t maxLegs() const = 0;
