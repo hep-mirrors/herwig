@@ -688,7 +688,7 @@ pair<PVector,PVector> DipoleEventRecord::tmpupdate(DipoleSplittingInfo& dsplit) 
 
   out.push_back( dsplit.emission());
   
-  for ( tcPPtr h : theHard )
+  for ( tcPPtr h : theHard ){
     PPtr p = h->data().produceParticle(h->momentum());
     if ( dsplit.splittingKinematics()->doesTransform() ) {
       p->set5Momentum( dsplit.splittingKinematics()->transform(p->momentum()) );

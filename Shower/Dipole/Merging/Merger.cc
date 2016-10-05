@@ -228,7 +228,6 @@ CrossSection Merger::MergingDSigDRBornStandard(NPtr Node){
   fillHistory( startscale,  Born, Node);
     // fill the projector, the argument gets set to current scale
   Node->runningPt(fillProjector());
-  assert(Node->runningPt()!=ZERO);
     // the weight has three components to get shower history weight
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return ZERO;
@@ -311,8 +310,14 @@ CrossSection Merger::MergingDSigDRRealStandard(NPtr Node){
 }
 
 CrossSection Merger::MergingDSigDRRealAllAbove(NPtr Node){
+  if (Node->children().empty()) {
+    throw Exception()
+    << "Real emission contribution without underlying born."
+    << "These are finite contibutions already handled in LO merging."
+    << Exception::abortnow;
+  }
+
   
-  assert(!Node->children().empty());
     //If all dipoles pts are above, we cluster to this dipole.
   NPtr CLNode= Node->randomChild();
     // Check if phase space poing is in ME region--> else rm PSP
@@ -516,7 +521,7 @@ Energy Merger::fillProjector(){
       return (hs.node==history[0].node?1.:(1./xiQShfactor))*hs.scale;
     }
   
-  assert(false);
+  throw Exception() << "Could not fill projector."<< Exception::abortnow;
   return ZERO;
 }
 
@@ -770,7 +775,6 @@ double Merger::sumalphaReweightUnlops(){
   if (!(history[0].node->children().empty())){
     res +=alphasUnlops(history[0].scale*xiRenSh,
                        history[0].scale*xiRenME)*int(history[0].node->legsize()-N0());
-    assert(int(history[0].node->legsize()-N0()>0));
   }
     // dsig is calculated with fixed alpha_s
   for (auto const & hs : history){
@@ -796,8 +800,11 @@ Ptr<MFactory>::ptr Merger::treefactory(){return theTreeFactory;}
 
 
 void Merger::doinit(){
-  assert(DSH()->hardScaleIsMuF());
-  
+  if (!DSH()->hardScaleIsMuF()) {
+    throw Exception()
+    << "Merger: Merging is currently only sensible if we are using the hardScale as MuF."
+    << Exception::abortnow;
+  }
 }
 
 
@@ -807,13 +814,13 @@ CrossSection Merger::MergingDSigDR() {
   
   
   if (theFirstNodeMap.find(theCurrentME)==theFirstNodeMap.end()) {
-    cout<<"\nnot in map:"<<theFirstNodeMap.size();
-    assert(false);
+      throw Exception()
+      << "Merger: The current matrix element could not be found."
+      << Exception::abortnow;
   }
   
   
-  NPtr Node = theFirstNodeMap[theCurrentME];  assert(Node);
-  
+  NPtr Node = theFirstNodeMap[theCurrentME];
   
   xiRenME=theCurrentME->renormalizationScaleFactor();
   xiFacME=theCurrentME->factorizationScaleFactor();
@@ -824,7 +831,6 @@ CrossSection Merger::MergingDSigDR() {
   DSH()->setCurrentHandler();
   
   DSH()->eventHandler(generator()->eventHandler());
-  assert(DSH()->hardScaleIsMuF());
   
   
   CrossSection res=ZERO;
@@ -923,7 +929,12 @@ double Merger::alphasUnlops( Energy next,Energy fixedScale)  {
 double Merger::pdfratio(NPtr  Born,Energy  nominator_scale, Energy denominator_scale,int side){
   
   StdXCombPtr bXc = Born->xcomb();
-  assert (bXc->mePartonData()[side]->coloured());
+  if(!bXc->mePartonData()[side]->coloured())
+    throw Exception()
+    << "Merger: pdf-ratio required for non-coloured particle."
+    << Exception::abortnow;
+  
+  
   double from,to;
   if (side==0){
     if (denominator_scale==nominator_scale) {
@@ -1178,7 +1189,6 @@ bool Merger::matrixElementRegion(PVector incoming,PVector outgoing,Energy winner
    
    */
   
-    //assert(false);
   
   
   

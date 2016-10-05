@@ -89,11 +89,11 @@ bool DipoleIOperator::apply(tcPDPtr pd) const {
 
 void DipoleIOperator::setAlpha(double alpha)const{
   factory()->setAlphaParameter(alpha);
-  double lga=log(alpha);
+  const double lga=log(alpha);
   KQuark = (7./2.-sqr(pi)/6.)*CF;
-  KQuark +=-CF*sqr(log(alpha))+gammaQuark*(alpha-1-lga);
+  KQuark +=-CF*sqr(lga)+gammaQuark*(alpha-1-lga);
   KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
-  KGluon +=-CA*sqr(log(alpha))+gammaGluon*(alpha-1-lga);
+  KGluon +=-CA*sqr(lga)+gammaGluon*(alpha-1-lga);
 }
 
 void DipoleIOperator::setXComb(tStdXCombPtr xc) {

@@ -954,17 +954,17 @@ public:
   /**
    * Return the theMerger.
    */
-  const Ptr<MergerBase>::ptr& merger() const;
+  const MergerBasePtr merger() const;
     
   /**
    * Return the theMerger.
    */
-  Ptr<MergerBase>::ptr& merger() ;
+  MergerBasePtr merger() ;
       
   /**
    * Set the theMerger.
    */
-  void merger(Ptr<MergerBase>::ptr v);
+  void merger(MergerBasePtr v);
       
   /**
    * Return the theSubNode.
@@ -992,7 +992,7 @@ public:
    */
   int projectorStage() {return theProjectorStage; }
   
-
+  /// 
   pair<bool,bool> clustersafe(int emit,int emis,int spec);
 
   //@}
@@ -1225,7 +1225,8 @@ private:
   /**
    * The first cluster node
    */
-  Ptr<MergerBase>::ptr theMerger;
+
+  MergerBasePtr theMerger;
   
   /**
    * The first cluster node

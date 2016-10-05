@@ -29,6 +29,7 @@
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 #include "Herwig/Utilities/RunDirectories.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
@@ -270,7 +271,7 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
     matchboxAmplitude()->setXComb(xc);
   if (theMerger){
     theMerger->setME(this);
-    theMerger->setXComb(this,xc, theProjectorStage);
+    theMerger->setXComb(this, xc, theProjectorStage);
   }
 
 }
@@ -321,7 +322,7 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
 
     setScale();
 
-    if (theMerger&&!theMerger->generateKinematics(this,r))
+    if (theMerger&&!theMerger->generateKinematics(this, r))
       return false;
 
     logGenerateKinematics(r);
@@ -390,13 +391,13 @@ int MatchboxMEBase::nDimBorn() const {
 
 }
 
-void MatchboxMEBase::setScale(Energy2 ren,Energy2 fac) const {
+void MatchboxMEBase::setScale(Energy2 ren, Energy2 fac) const {
   if ( haveX1X2() ) {
     lastXCombPtr()->lastSHat((meMomenta()[0]+meMomenta()[1]).m2());
   }
-  Energy2 fcscale = fac==ZERO?factorizationScale():fac;
+  Energy2 fcscale = (fac == ZERO) ? factorizationScale() : fac;
   Energy2 fscale = fcscale*sqr(factorizationScaleFactor());
-  Energy2 rscale = (ren==ZERO?renormalizationScale():ren)*sqr(renormalizationScaleFactor());
+  Energy2 rscale = (ren == ZERO ? renormalizationScale() : ren)*sqr(renormalizationScaleFactor());
   Energy2 ewrscale = renormalizationScaleQED();
   lastXCombPtr()->lastScale(fscale);
   lastXCombPtr()->lastCentralScale(fcscale);
@@ -727,10 +728,9 @@ CrossSection MatchboxMEBase::dSigHatDRAlphaDiff(double alpha) const {
   getPDFWeight();
   lastME2(me2());
   CrossSection res=ZERO;
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
-        virtuals().begin(); v != virtuals().end(); ++v ) {
-    (**v).setXComb(lastXCombPtr());
-    res+=(**v).dSigHatDRAlphaDiff( alpha);
+  for ( auto const & v: virtuals() ) {
+    v->setXComb(lastXCombPtr());
+    res+=v->dSigHatDRAlphaDiff( alpha);
   }
   return res;
 }
@@ -1247,15 +1247,15 @@ void MatchboxMEBase::fillProjectors() {
   
 }
 
-const Ptr<MergerBase>::ptr& MatchboxMEBase::merger() const {
+const MergerBasePtr MatchboxMEBase::merger() const {
   return theMerger;
 }
 
-Ptr<MergerBase>::ptr& MatchboxMEBase::merger() {
+MergerBasePtr MatchboxMEBase::merger() {
   return theMerger;
 }
 
-void MatchboxMEBase::merger(Ptr<MergerBase>::ptr v) {
+void MatchboxMEBase::merger(MergerBasePtr v) {
   theMerger = v;
 }
 
@@ -1268,7 +1268,8 @@ void MatchboxMEBase::subNode(bool v) {
 }
 
 pair<bool,bool> MatchboxMEBase::clustersafe(int emit,int emis,int spec){
-  
+  // frist true if pt > merging scale
+  // second true if all children nodes show pt > meging scale.
   if (theMerger) {
     return theMerger->clusterSafe(this, emit, emis, spec);
   }

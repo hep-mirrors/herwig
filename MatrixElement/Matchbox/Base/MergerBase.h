@@ -22,6 +22,9 @@
 namespace Herwig {
 
 using namespace ThePEG;
+class MergerBase;
+  
+ThePEG_DECLARE_POINTERS(MergerBase,MergerBasePtr);
 
 /**
  * \ingroup Matchbox

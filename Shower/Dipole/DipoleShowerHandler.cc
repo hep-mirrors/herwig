@@ -28,7 +28,7 @@
 #include "Herwig/PDF/HwRemDecayer.h"
 
 #include "Herwig/Shower/Dipole/Utility/DipolePartonSplitter.h"
-#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 
 #include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"

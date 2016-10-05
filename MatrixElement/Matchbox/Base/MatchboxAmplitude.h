@@ -575,9 +575,8 @@ public:
   /**
    * Clone the dependencies, using a given prefix.
    */
-  //virtual void cloneDependencies(const std::string& prefix = ""){cloneDependencies( prefix ,false);};
+  virtual void cloneDependencies(const std::string& prefix="" , bool slim=false);
 
-  virtual void cloneDependencies(const std::string& prefix ,bool slim=false);
   //@}
 
 public:

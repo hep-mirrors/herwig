@@ -9,6 +9,8 @@ namespace Herwig {
 class MergerBase;
 class MatchboxAmplitude;
 
+ThePEG_DECLARE_POINTERS(MergerBase,MergerBasePtr);
+
 }
 
 #endif // HERWIG_MergerBase_FH
