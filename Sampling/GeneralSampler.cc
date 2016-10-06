@@ -74,9 +74,9 @@ void GeneralSampler::initialize() {
   if ( theParallelIntegration &&
        runLevel() == ReadMode )
     throw Exception()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Parallel integration is only supported in the build/integrate/run mode\n\n"
-      << "--------------------------------------------------------------------------------\n"
+      << "\n---------------------------------------------------\n\n"
+      << "Parallel integration is only supported\n in the build/integrate/run mode\n\n"
+      << "---------------------------------------------------\n"
       << Exception::abortnow;
 
   if ( runLevel() == ReadMode ||
@@ -84,10 +84,11 @@ void GeneralSampler::initialize() {
     assert(theSamplers.empty());
     if ( !theGrids.children().empty() )
       Repository::clog()
-	<< "--------------------------------------------------------------------------------\n\n"
-	<< "Using an existing grid. Please consider re-running the grid adaption\n"
-	<< "when there have been significant changes to parameters, cuts, etc.\n\n"
-	<< "--------------------------------------------------------------------------------\n"
+	<< "---------------------------------------------------\n\n"
+	<< "Using an existing grid. Please consider re-running \n"
+	<< "the grid adaption when there have been significant \n"
+    << "changes to parameters, cuts, etc.\n\n"
+	<< "---------------------------------------------------\n"
 	<< flush;
   }
 
@@ -111,7 +112,7 @@ void GeneralSampler::initialize() {
     ofstream* jobList = 0;
 
     generator()->log() 
-      << "--------------------------------------------------------------------------------\n"
+      << "---------------------------------------------------\n"
       << "preparing integration jobs ...\n" << flush;
 
     vector<int> randomized;
@@ -160,13 +161,13 @@ void GeneralSampler::initialize() {
     theIntegrationJobsCreated = jobCount;
 
     generator()->log() 
-      << "--------------------------------------------------------------------------------\n\n"
+      << "---------------------------------------------------\n\n"
       << "Wrote " << jobCount << " integration jobs\n"
       << "Please submit integration jobs with the\nintegrate --jobid=x\ncommand for job ids "
       << "from 0 to " << (jobCount-1) << "\n\n"
       << "e.g.:\n\n"
-      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done\n\n"
-      << "--------------------------------------------------------------------------------\n"
+      << "\e[93m for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done \e[0m \n\n"
+      << "---------------------------------------------------\n"
       << flush;
 
     if ( jobList ) {
@@ -554,13 +555,13 @@ void GeneralSampler::doinit() {
   readGrids();
   if ( theGrids.children().empty() && runLevel() == RunMode )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
+      << "\n---------------------------------------------------\n\n"
       << "Warning: No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+      << "---------------------------------------------------\n" << flush;
   if ( samplers().empty() && runLevel() == RunMode )
     justAfterIntegrate = true;
   SamplerBase::doinit();
@@ -675,13 +676,13 @@ void GeneralSampler::doinitrun() {
 
   if ( theGrids.children().empty() && !didReadGrids )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
+      << "\n---------------------------------------------------\n\n"
       << "Warning:No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+      << "---------------------------------------------------\n" << flush;
 
   if ( samplers().empty() ) {
     justAfterIntegrate = true;

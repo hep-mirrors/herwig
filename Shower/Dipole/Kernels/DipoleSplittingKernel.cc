@@ -102,27 +102,16 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     !ShowerHandler::currentHandler()->showerVariations().empty() &&
     !presampling;
   if ( variations ) {
-    /*
-    cerr << "--------------------------------------------------------------------------------\n"
-	 << flush;
-    cerr << "variations ... central scale/GeV = "
-	 <<  sqrt(scale/GeV2) << " r = "
-	 << rScaleFactor << " f = " << fScaleFactor << "\n"
-	 << flush;
-    */
+    
     map<double,double>::const_iterator pit = thePDFCache.find(fScaleFactor);
     evaluatePDF = (pit == thePDFCache.end());
     if ( !evaluatePDF ) {
-      //cerr << "PDF is cached: ";
       pdf = pit->second;
-      //cerr << pdf << "\n" << flush;
     }
     map<double,double>::const_iterator ait = theAlphaSCache.find(rScaleFactor);
     evaluateAlphaS = (ait == theAlphaSCache.end());
     if ( !evaluateAlphaS ) {
-      //cerr << "alphas is cached: ";
       alphas = ait->second;
-      //cerr << alphas << "\n" << flush;
     }
   }
 
@@ -150,12 +139,10 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   }
 
   if ( evaluatePDF && variations ) {
-    //cerr << "caching PDF = " << pdf << "\n" << flush;
     thePDFCache[fScaleFactor] = pdf;
   }
 
   if ( evaluateAlphaS && variations ) {
-    //cerr << "caching alphas = " << alphas << "\n" << flush;
     theAlphaSCache[rScaleFactor] = alphas;
   }
 
@@ -189,15 +176,6 @@ void DipoleSplittingKernel::accept(const DipoleSplittingInfo& split,
 	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
-      /*
-      cerr << "reweighting in accept for: "
-	   << var->first
-	   << " using "
-	   << var->second.renormalizationScaleFactor << " "
-	   << var->second.factorizationScaleFactor << " "
-	   << var->second.firstInteraction << " "
-	   << var->second.secondaryInteractions << "\n" << flush;
-      */
       double varied = alphaPDF(split,ZERO,
 			       var->second.renormalizationScaleFactor,
 			       var->second.factorizationScaleFactor);
@@ -228,15 +206,6 @@ void DipoleSplittingKernel::veto(const DipoleSplittingInfo& split,
 	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
-      /*
-      cerr << "reweighting in veto for: "
-	   << var->first
-	   << " using "
-	   << var->second.renormalizationScaleFactor << " "
-	   << var->second.factorizationScaleFactor << " "
-	   << var->second.firstInteraction << " "
-	   << var->second.secondaryInteractions << "\n" << flush;
-      */
       double varied = alphaPDF(split,ZERO,
 			       var->second.renormalizationScaleFactor,
 			       var->second.factorizationScaleFactor);

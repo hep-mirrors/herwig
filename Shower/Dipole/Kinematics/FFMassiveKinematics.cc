@@ -253,17 +253,7 @@ void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Energy ptResc = sqrt( sqr(Ei)-sqr(dInfo.scale())*mui2-sqr(qi3) );
   Lorentz5Momentum em  ( ptResc*cos(dInfo.lastPhi()), -ptResc*sin(dInfo.lastPhi()), qi3, Ei );
   Lorentz5Momentum emm ( -ptResc*cos(dInfo.lastPhi()), ptResc*sin(dInfo.lastPhi()), q3, E );
-  Lorentz5Momentum spe ( 0.*GeV, 0.*GeV, qj3, Ej );
-  
-  // output the mismatch between pt and physical pt
-//   ofstream output1("ptDiffOnPtAxis-uub-m.dat",ofstream::app);
-//   ofstream output2("ptDiffOnCosAxis-uub-m.dat",ofstream::app);
-//   if( abs(dInfo.spectatorData()->id())==5 && dInfo.emitterData()->id()+dInfo.emissionData()->id()==0 &&
-//       abs(dInfo.emitterData()->id())==1 ) {
-//     output1 << pt/dInfo.scale() << " " << abs(ptResc-pt)/(ptResc+pt) << " " << endl;
-//     output2 << em.vect().unit()*emm.vect().unit() << " " << abs(ptResc-pt)/(ptResc+pt) << " " << endl;
-//   }
-//   output1.close(); output2.close();
+  Lorentz5Momentum spe ( ZERO, ZERO, qj3, Ej );
   
   // rotate back
   em.rotateUz (pjAxis);
@@ -290,33 +280,10 @@ void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   
   // TODO: remove
   // 2011-11-09: never occurred
-  if(em.t()/GeV>=0. && emm.t()/GeV>=0. && spe.t()/GeV>=0.);
-  else cout << "FFMassiveKinematics::generateKinematics momenta corrupt" << endl;
-  
-  // 2011-11-03 LEP run with full masses:
-  // x,y,t no problem
-  // z order > 5.e-7 happend 41 times in 10000 runs
-  // maximum was 2.5e-6
-  
-//   double order=2.4e-6;
-//   Lorentz5Momentum pDif=em+emm+spe-pEmitter-pSpectator, pSum=em+emm+spe+pEmitter+pSpectator;
-//   if(abs(pDif.x()/(pSum.x()==ZERO ? 1.*GeV : pSum.x())) <order || (pDif-pSum).x()==ZERO);
-//   else cout << "FFMassiveKinematics::generateKinematics momenta corrupt: x  " <<
-//     abs(pDif.x()/(pSum.x()==ZERO ? 1.*GeV : pSum.x())) << endl <<
-//     "  " << em/GeV << "  " << emm/GeV << "  " << spe/GeV << endl <<
-//     "  " << pEmitter/GeV << "  " << pSpectator/GeV << endl;
-//   if(abs(pDif.y()/(pSum.y()==ZERO ? 1.*GeV : pSum.y())) <order || (pDif-pSum).y()==ZERO);
-//   else cout << "FFMassiveKinematics::generateKinematics momenta corrupt: y  " <<
-//     abs(pDif.y()/(pSum.y()==ZERO ? 1.*GeV : pSum.y())) << endl;
-//   if(abs(pDif.z()/(pSum.z()==ZERO ? 1.*GeV : pSum.z())) <order | (pDif-pSum).z()==ZERO);
-//   else cout << "FFMassiveKinematics::generateKinematics momenta corrupt: z  " <<
-//     abs(pDif.z()/(pSum.z()==ZERO ? 1.*GeV : pSum.z())) << endl <<
-//     "  " << em/GeV << "  " << emm/GeV << "  " << spe/GeV << endl <<
-//     "  " << pEmitter/GeV << "  " << pSpectator/GeV << endl;
-//   if(abs(pDif.t()/(pSum.t()==ZERO ? 1.*GeV : pSum.t())) <order || (pDif-pSum).t()==ZERO);
-//   else cout << "FFMassiveKinematics::generateKinematics momenta corrupt: t  " <<
-// //     abs(pDif.t()/(pSum.t()==ZERO ? 1.*GeV : pSum.t())) << endl;
-//   cout << endl;
+  if(em.t()<ZERO || emm.t()<ZERO || spe.t()<ZERO)
+     generator()->logWarning( Exception()
+                                     << "FFMassiveKinematics::generateKinematics momenta corrupt."
+                                     << Exception::warning );
 
 }
 

@@ -236,9 +236,6 @@ set /Herwig/Merging/MergingFactory:Phasespace TreePhasespace
 ################################################################################
 
 cd /Herwig/Merging
-create Herwig::MScale MScale 
-set MergingFactory:ScaleChoice MScale
-
 
 create Herwig::Merger Merger
 create Herwig::MergingReweight MPreWeight HwDipoleShower.so

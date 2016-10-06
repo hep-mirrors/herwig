@@ -93,7 +93,7 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MScale:ScaleChoice SHatScale
+set /Herwig/Merging/MFactory:ScaleChoice SHatScale
 
 ##################################################
 ## Scale uncertainties

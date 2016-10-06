@@ -1466,7 +1466,6 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   ThreeVector<Energy2> ax = newq.vect().cross( oldp.vect() );
   double delta;
   if (newq.x()*oldp.x()+newq.y()*oldp.y()+newq.z()*oldp.z()< 1e-16*GeV2) {
-    cout<<"\nWarning!!!! "<<flush;
     throw KinematicsReconstructionVeto();
   }else{
     delta = newq.vect().angle( oldp.vect() );

@@ -22,10 +22,9 @@ Merger::Merger() : MergerBase() ,
   isUnitarized( true ) , isNLOUnitarized( true ) ,
   defMERegionByJetAlg( false ) , theOpenInitialStateZ( false ) ,
   theChooseHistory( 0 ) , theN0( 0 ) , theOnlyN( -1 ) ,
-  theCurrentMaxLegs( -1 ) , xiRenME( 1. ) , xiFacME( 1. ) ,
-  xiRenSh( 1. ) , xiFacSh( 1. ) , xiQSh( 1. ) , theGamma( 1. ) ,
+  theCurrentMaxLegs( -1 )  , theGamma( 1. ) ,
   ee_ycut( -1 ) , pp_dcut( -1 ) , theSmearing( 0. ) ,
-  therenormscale( -1.*GeV ) , theIRSafePT( 1.*GeV ) ,
+  theIRSafePT( 1.*GeV ) ,
   theMergePt( 4.*GeV ) , theCentralMergePt( 4.*GeV ) ,
   theMergingJetFinder() , theLargeNBasis() ,
   theDipoleShowerHandler() , theTreeFactory()
@@ -81,7 +80,7 @@ CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
                               theMergePt ) )weight *= 0.;
   }
   
-  NodePtr Born =  Node-> getHistory( true , xiQSh );
+  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
   NodePtr CLNode;
   NodePtr BornCL;
   
@@ -93,7 +92,7 @@ CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
       weight *= inhist?( -2.*int( Node->children().size() ) ):0.;
       projected = true;
       weightCL = 2.*int( Node->children().size() );
-      BornCL = CLNode-> getHistory( false , xiQSh );
+      BornCL = CLNode-> getHistory( false , DSH()->hardScaleFactor() );
     }else{
       weight = 2.;
       projected = false;
@@ -136,12 +135,12 @@ CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
     weightCL *= history.back().weight*alphaReweight()*pdfReweight();
     CrossSection diff = ZERO;
     Node->nodeME()->factory()->setAlphaParameter( 1. );
-    diff -=  weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale*xiFacME ) );
+    diff -=  weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale*theCurrentME->renFac() ) );
     Node->nodeME()->factory()->setAlphaParameter( theGamma );
     
     string alp = ( CLNode->dipole()->aboveAlpha()?"Above":"Below" );
     
-    diff += weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale*xiFacME ) );
+    diff += weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale*theCurrentME->renFac() ) );
     Node->nodeME()->factory()->setAlphaParameter( 1. );
     
     res += diff;
@@ -152,6 +151,23 @@ CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
 }
 
 
+
+double decideClustering(const NodePtr sub,const NodePtr head,bool& pro){
+  if( sub !=  head ){
+      // at least one history step -> unitarisation
+    if ( UseRandom::rndbool() ){
+      pro = true;
+      return -2.;
+    }else{
+      pro = false;
+      return 2.;
+    }
+  }else{
+      // no ordered history -> no projection
+    pro = false;
+    return 1.;
+  }
+}
 
 
 
@@ -164,25 +180,14 @@ CrossSection Merger::MergingDSigDRBornStandard( NodePtr Node ){
   }
   
     // get the history for the process
-  NodePtr Born =  Node-> getHistory( true , xiQSh );
-  if( Born !=  Node ){
-      // at least one history step -> unitarisation
-    if ( UseRandom::rndbool() ){
-      weight = -2.;
-      projected = true;
-    }else{
-      weight = 2.;
-      projected = false;
-    }
-  }else{
-      // no ordered history -> no projection
-    weight = 1.;
-    projected = false;
-  }
+  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  
+    // decide if to cluster
+  weight = decideClustering(Born,Node,projected);
   
   if ( treefactory()->onlymulti() != -1&&
       treefactory()->onlymulti() != int( Node->legsize()-( projected ? 1 : 0 ) ) )
-  return ZERO;
+      return ZERO;
     // Check for cuts on the production proces.
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
     // calculate the staring scale
@@ -199,6 +204,59 @@ CrossSection Merger::MergingDSigDRBornStandard( NodePtr Node ){
 }
 
 
+  /// calculate the history weighted born cross section
+#include "ThePEG/Handlers/SamplerBase.h"
+CrossSection Merger::MergingDSigDRBornCheapME( NodePtr Node ){
+    // Check if phase space poing is in ME region
+  if ( !Node->children().empty() ) {
+    auto const & inoutpair = getInOut( Node );
+    NodePtr rndCh =  Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+    if( !matrixElementRegion( inoutpair.first , inoutpair.second , rndCh->pT() , theMergePt ) )return ZERO;
+  }
+  
+  CrossSection meweight=(SamplerBase::runLevel() == SamplerBase::RunMode)?TreedSigDR( 60.*GeV , Node , 1. ):1.*nanobarn;
+  
+  if (SamplerBase::runLevel() == SamplerBase::RunMode && theHighMeWeightMap.count(Node) ) {
+    if (abs(meweight)>abs(theHighMeWeightMap[Node])) {
+      theHighMeWeightMap[Node]=abs(meweight);
+    }else{
+      if (meweight/theHighMeWeightMap[Node]<UseRandom::rnd()) {
+        return ZERO;
+      }
+    }
+  }else{
+    theHighMeWeightMap.insert(make_pair(Node,abs(meweight)));
+  }
+  
+  
+  
+    // get the history for the process
+  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  
+    // decide if to cluster
+  weight = decideClustering(Born,Node,projected);
+  
+  if ( treefactory()->onlymulti() != -1&&
+      treefactory()->onlymulti() != int( Node->legsize()-( projected ? 1 : 0 ) ) )
+  return ZERO;
+    // Check for cuts on the production proces.
+  if ( !Born->xcomb()->willPassCuts() )return ZERO;
+    // calculate the staring scale
+  Energy startscale = CKKW_StartScale( Born );
+  
+    // fill history with caluclation of sudakov supression
+  fillHistory( startscale , Born , Node );
+    // fill the projector -> return the scale of the last splitting
+  Node->runningPt( fillProjector( projected ? 1 : 0 ) );
+    // the weight has three components to get shower history weight
+  weight *= history.back().weight*alphaReweight()*pdfReweight();
+  if( weight == 0. )return ZERO;
+    //calculate the cross section
+  return weight*TreedSigDR( startscale , Node , 1. )*theHighMeWeightMap[Node]/meweight;
+}
+
+
+
 
 CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
     // Check if phase space poing is in ME region
@@ -208,21 +266,12 @@ CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
     if( !matrixElementRegion( inoutpair.first , inoutpair.second , rndCh->pT() , theMergePt ) )return ZERO;
   }
   
-  NodePtr Born =  Node-> getHistory( true , xiQSh );
-  if( Born !=  Node ){
-    if ( UseRandom::rndbool() ){
-        // compensate for the random choice
-      weight = -2.;
-      projected = true;
-    }else{
-      weight = 2.;
-      projected = false;
-    }
-  }else{
-    weight = 1.;
-    projected = false;
-  }
+  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+
+  weight = decideClustering(Born,Node,projected);
+  
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
+
   Energy startscale = CKKW_StartScale( Born );
   fillHistory( startscale , Born , Node );
   Node->runningPt( fillProjector( projected ? 1 : 0 ) );
@@ -251,15 +300,15 @@ CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
     Energy minPT = Constants::MaxEnergy;
     for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
     
-    cout << "\nVIRT " << minPT/GeV << " " << weight << " " << w1;
-    cout << " " << w2;
-    cout << " " << w3;
-    cout << " " << ( matrixElement/nanobarn ) << " " << ww1 << " " << ww2 << " " << ww3 << " " << Born->pT()/GeV << " " << Born->nodeME()->mePartonData()[3]->mass()/GeV << " " << ( Bornweight*SM().alphaS()/( 2.*ThePEG::Constants::pi )/nanobarn );
+    generator()->log() << "\nVIRT " << minPT/GeV << " " << weight << " " << w1;
+    generator()->log() << " " << w2;
+    generator()->log() << " " << w3;
+    generator()->log() << " " << ( matrixElement/nanobarn ) << " " << ww1 << " " << ww2 << " " << ww3 << " " << Born->pT()/GeV << " " << Born->nodeME()->mePartonData()[3]->mass()/GeV << " " << ( Bornweight*SM().alphaS()/( 2.*ThePEG::Constants::pi )/nanobarn );
   }
   
   
   return weight*
-  as( startscale*xiRenSh )/SM().alphaS()*
+  as( startscale*DSH()->renFac() )/SM().alphaS()*
   ( matrixElement+unlopsweight );
 }
 
@@ -293,25 +342,17 @@ CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
   }
   
     // first find the history for the acctual Node
-  NodePtr Born =  Node-> getHistory( true , xiQSh );
+  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
     // check if the randomly choosen CLNode is part of the history.
     // If CLNode is not part of the history , dont calculate the Real contribution
     // else multiply the real contribution with N ( number of children ).
     // this returns the sudakov suppression according to the clustering of the born parts.
   bool inhist = CLNode->isInHistoryOf( Born );
     // get the history for the clustered Node.
-  Born = CLNode-> getHistory( false , xiQSh );
-  if( Born !=  CLNode ){
-    if ( UseRandom::rndbool() ){
-      weight = -2.; projected = true;
-    }
-    else{
-      weight =  2.; projected = false;
-    }
-  }else{
-    weight = 1.;
-    projected = false;
-  }
+  Born = CLNode-> getHistory( false , DSH()->hardScaleFactor() );
+
+  weight = decideClustering(Born,CLNode,projected);
+
   if ( !CLNode->allAbove( mergePt() ) )return ZERO;
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
   Energy startscale = CKKW_StartScale( Born );
@@ -321,18 +362,18 @@ CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
   if( weight == 0. )return ZERO;
   
   CrossSection me = ( inhist?TreedSigDR( startscale , Node ):ZERO );
-  CrossSection dip = CLNode->calcDip( startscale*xiFacME );
+  CrossSection dip = CLNode->calcDip( startscale*theCurrentME->renFac() );
   
   
-  CrossSection res =  weight*as( startscale*xiRenSh )/SM().alphaS()*
+  CrossSection res =  weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
   ( double )Node->children().size()*( me -dip );
   if ( Node->legsize() == 6&&Debug::level > 2 ) {
     Energy minPT = Constants::MaxEnergy;
     for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
     
-    cout << "\nRAA " << minPT/GeV << " " << weight << " " << ( me-dip )/nanobarn << " " << me/nanobarn << " " << dip/nanobarn;
+    generator()->log() << "\nRAA " << minPT/GeV << " " << weight << " " << ( me-dip )/nanobarn << " " << me/nanobarn << " " << dip/nanobarn;
   }
-    // cout << "\nCLNode->dipole()->dSigHatDR( sqr( startscale*xiFacME ) )/nanobarn " << CLNode->dipole()->dSigHatDR( sqr( startscale*xiFacME ) )/nanobarn;
+  
   return res;
 }
 
@@ -344,21 +385,10 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal( NodePtr Node ){
     if( !matrixElementRegion( inoutpair.first , inoutpair.second , rndCh->pT() , theMergePt ) )return ZERO;
   }
   
-  NodePtr Born = HistNode-> getHistory( false , xiQSh );
+  NodePtr Born = HistNode-> getHistory( false , DSH()->hardScaleFactor() );
   
-  if( Born !=  HistNode ){
-    if ( UseRandom::rndbool() ){
-      weight = -2.;
-      projected = true;
-      }
-    else{
-      weight =  2.;
-      projected = false;
-      }
-  }else{
-    weight = 1.;
-    projected = false;
-  }
+  weight = decideClustering(Born,HistNode,projected);
+
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
   
   Energy startscale = CKKW_StartScale( Born );
@@ -373,9 +403,9 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal( NodePtr Node ){
   for( auto const & child : Node->children() ){
     if ( child->allAbove( mergePt() ) ){
       if( ( child )->pT()>mergePt()/3. )//TODO: this is a dynamical cutoff( see below )
-      sumPS += child->calcPs( startscale*xiFacME );
+      sumPS += child->calcPs( startscale*theCurrentME->renFac() );
       else
-      sumPS += child->calcDip( startscale*xiFacME );
+      sumPS += child->calcDip( startscale*theCurrentME->renFac() );
     }else{
       assert( child->pT()>mergePt() );
     }
@@ -387,10 +417,10 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal( NodePtr Node ){
     Energy minPT = Constants::MaxEnergy;
     for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
     
-    cout << "\nRBSR " << minPT/GeV << " " << weight << " " << ( me-sumPS )/nanobarn << " " << me/nanobarn << " " << sumPS/nanobarn;
+    generator()->log() << "\nRBSR " << minPT/GeV << " " << weight << " " << ( me-sumPS )/nanobarn << " " << me/nanobarn << " " << sumPS/nanobarn;
   }
     //Here we subtract the PS ( and below the dynamical cutoff the Dip )
-  return weight*as( startscale*xiRenSh )/SM().alphaS()*
+  return weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
   ( me-sumPS );
 }
 
@@ -409,39 +439,37 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( NodePtr Node ){
   }
   
   
-  NodePtr Born = CLNode-> getHistory( false , xiQSh );
-  if( Born !=  CLNode ){
-    if ( UseRandom::rndbool() ){
-      weight = -2.; projected = true;
-      }
-    else{
-      weight =  2.; projected = false;
-      }
-  }else{
-    weight = 1.;  projected = false;
-    
-  }
+  NodePtr Born = CLNode-> getHistory( false , DSH()->hardScaleFactor() );
+  
+  weight = decideClustering(Born,CLNode,projected);
+
   if ( !CLNode->allAbove( mergePt() ) )return ZERO;
+  
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
+  
   Energy startscale = CKKW_StartScale( Born );
+  
   fillHistory( startscale , Born , CLNode );
+  
   Node->runningPt( fillProjector( projected ? 2 : 1 ) );
+  
   weight *= history.back().weight*alphaReweight()*pdfReweight();
+  
   if( weight == 0. )return ZERO;
   
   
   pair<CrossSection , CrossSection> DipAndPs =
-  CLNode->calcDipandPS( startscale*xiFacME );
+  CLNode->calcDipandPS( startscale*theCurrentME->renFac() );
   
   if ( Node->legsize() == 6&&Debug::level > 2 ) {
     Energy minPT = Constants::MaxEnergy;
     for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
     
     
-    cout << "\nRBSI " << CLNode->pT()/GeV << " " << weight << " " << ( DipAndPs.second-DipAndPs.first )/nanobarn << " " << DipAndPs.second/nanobarn << " " << DipAndPs.first/nanobarn;
+    generator()->log() << "\nRBSI " << CLNode->pT()/GeV << " " << weight << " " << ( DipAndPs.second-DipAndPs.first )/nanobarn << " " << DipAndPs.second/nanobarn << " " << DipAndPs.first/nanobarn;
   }
     //Here we add the PS and subtrac the Dip ( only above the dynamical cutoff )
-  return weight*as( startscale*xiRenSh )/SM().alphaS()*
+  return weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
   ( double )Node->children().size()*( DipAndPs.second-DipAndPs.first );
 }
 
@@ -455,45 +483,43 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( NodePtr Node ){
 
 
 CrossSection Merger::TreedSigDR( Energy startscale , NodePtr Node , double diffAlpha ){
+  assert( Node->deepHead() == Node );
   
-  NodePtr DeepHead = Node;//->deepHead();
-  renormscale( startscale );
-  DeepHead->nodeME()->factory()->scaleChoice()->setXComb( DeepHead->xcomb() );
-  DeepHead->nodeME()->setScale( sqr( startscale ) , sqr( startscale ) );
-  CrossSection res = DeepHead->nodeME()->dSigHatDRB();
+  Node->nodeME()->setScale( sqr( startscale ) , sqr( startscale ) );
+  CrossSection res = Node->nodeME()->dSigHatDRB();
   if ( diffAlpha != 1. ) {
-    res += DeepHead->nodeME()->dSigHatDRAlphaDiff( diffAlpha );
+    res += Node->nodeME()->dSigHatDRAlphaDiff( diffAlpha );
   }
-  renormscale( ZERO );
-  if( std::isnan( double( res/nanobarn ) ) ){cout << "\nTreedSigDR is nan";res = ZERO;};
+  if( std::isnan( double( res/nanobarn ) ) ){
+    generator()->logWarning(Exception()
+                            << "Merger: TreedSigDR is nan"
+                            << Exception::warning);
+    res = ZERO;};
   return res;
 }
 
 CrossSection Merger::LoopdSigDR( Energy startscale , NodePtr Node ){
-    // The deephead should be calculated here.
-  NodePtr DeepHead = Node;//->deepHead();
-  renormscale( startscale );
-  DeepHead->nodeME()->setXComb( DeepHead->xcomb() );
-  DeepHead->nodeME()->factory()->scaleChoice()->setXComb( DeepHead->xcomb() );
-  DeepHead->nodeME()->setScale( sqr( startscale ) , sqr( startscale ) );
-  DeepHead->nodeME()->doOneLoopNoBorn();
-  CrossSection res = DeepHead->nodeME()->dSigHatDRV()+DeepHead->nodeME()->dSigHatDRI();
-  DeepHead->nodeME()->noOneLoopNoBorn();
-  renormscale( ZERO );
+   // The deephead should be calculated here.
+  assert( Node->deepHead() == Node );
+    //Node->nodeME()->setXComb( Node->xcomb() );
+  Node->nodeME()->setScale( sqr( startscale ) , sqr( startscale ) );
+  Node->nodeME()->doOneLoopNoBorn();
+  CrossSection res = Node->nodeME()->dSigHatDRV()+Node->nodeME()->dSigHatDRI();
+  Node->nodeME()->noOneLoopNoBorn();
   return res;
 }
 
 Energy Merger::fillProjector( int pjs ){
-    // in the shower handler the scale is multiplied by xiQSh
+    // in the shower handler the scale is multiplied by DSH()->hardScaleFactor()
     // so here we need to devide this
-  double xiQShfactor = history.begin()->node->legsize() == N0()?xiQSh:1.;
+  double xiQSh = history.begin()->node->legsize() == N0()?DSH()->hardScaleFactor():1.;
   if( pjs == 0 ){
-    return ( history.size() == 1?1.:( 1./xiQShfactor ) )*history.back().scale;
+    return ( history.size() == 1?1.:( 1./xiQSh ) )*history.back().scale;
   }
   for( auto const & hs : history )
   if ( isProjectorStage( hs.node , pjs )&&pjs !=  0 ){
     history.begin()->node->deepHead()->xcomb()->lastProjector( hs.node->xcomb() );
-    return ( hs.node == history[0].node?1.:( 1./xiQShfactor ) )*hs.scale;
+    return ( hs.node == history[0].node?1.:( 1./xiQSh ) )*hs.scale;
   }
   
   throw Exception() << "Could not fill projector." << Exception::abortnow;
@@ -502,7 +528,7 @@ Energy Merger::fillProjector( int pjs ){
 
 double Merger::pdfReweight(){
   double res = 1.;
-  double facfactor = ( history[0].node->legsize() == N0()?xiFacME:xiFacSh );
+  double facfactor = ( history[0].node->legsize() == N0()?theCurrentME->renFac():DSH()->facFac() );
   for( int side : {0 , 1} ){
     if( history[0].node->xcomb()->mePartonData()[side]->coloured() ){
       for ( auto const & hs : history ){
@@ -510,41 +536,57 @@ double Merger::pdfReweight(){
         if( !hs.node->parent() )continue;
         if ( hs.node == history.back().node )continue;
         if( !hs.node->dipole() ){
-          cout << "\nthis should not happen";
+          throw Exception() << "\nMerger: pdfReweight: history step has no dipol. "<< Exception::abortnow;
           return 0.;
         }
-        res *= pdfratio( hs.node , facfactor*hs.scale , xiFacSh*( hs.node->pT() ) , side );
-        facfactor = xiFacSh;
+        res *= pdfratio( hs.node , facfactor*hs.scale , DSH()->facFac()*( hs.node->pT() ) , side );
+        facfactor = DSH()->facFac();
       }
-      res *= pdfratio( history.back().node , facfactor*history.back().scale  , history[0].scale*xiFacME , side );
+      res *= pdfratio( history.back().node , facfactor*history.back().scale  , history[0].scale*theCurrentME->renFac() , side );
     }
   }
-  if ( std::isnan( res ) )cout << "\nWarning:pdfReweight is nan.";
+  if ( std::isnan( res ) )
+     generator()->logWarning(Exception()
+                          << "Merger: pdfReweight is nan."
+                          << Exception::warning);
+
   return res;
 }
 
 double Merger::alphaReweight(){
   double res = 1.;
-  Energy Q_R = ( history[0].node->legsize() == N0()?xiRenME:xiRenSh )*history[0].scale;
-  res *= pow( as( Q_R ) / SM().alphaS() , history[0].node->nodeME()->orderInAlphaS() );
-  res *= pow( SM().alphaEMME( history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED() )/ SM().alphaEMMZ() , history[0].node->nodeME()->orderInAlphaEW() );
+  
+  Energy Q_R = ( history[0].node->legsize() == N0()?
+                theCurrentME->renFac():
+                DSH()->renFac() )*
+                history[0].scale;
+  
+  const auto pi=Constants::pi;
+  const auto Q_qed=history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED();
+  const auto Oew=history[0].node->nodeME()->orderInAlphaEW();
+  const auto Oqcd=history[0].node->nodeME()->orderInAlphaS();
+  const auto glfac=3.*( 67./18.-1./6.*pi*pi );
   
   
+  res *= pow( as( Q_R ) / SM().alphaS() , Oqcd );
+  res *= pow( SM().alphaEMME( Q_qed )/ SM().alphaEMMZ() , Oew );
   
   if ( !( history[0].node->children().empty() ) ){
-    res *= pow( ( theCMWScheme?( 1.+( ( 3.*( 67./18.-1./6.*Constants::pi*Constants::pi )-5./9.*Nf( Q_R ) )*as( Q_R ) )/2./Constants::pi ):1. ) , int( history[0].node->legsize()-N0() ) );
+    res *= pow( ( theCMWScheme?( 1.+ ( glfac-5./9.*Nf( Q_R ) )*as( Q_R )/2./pi ):1. ) , int( history[0].node->legsize()-N0() ) );
   }
+  
   
   
   for ( auto const & hs : history )
   if ( hs.node!= history.back().node ){
-    Energy q_i = xiRenSh* hs.node->pT();
+    Energy q_i = DSH()->renFac()* hs.node->pT();
     res *= as( q_i )/ SM().alphaS()
-    *( theCMWScheme?( 1.+( ( 3.*( 67./18.-1./6.*Constants::pi*Constants::pi )-5./9.*Nf( q_i ) )*as( q_i ) )/2./Constants::pi ):1. );
-    if ( std::isnan( res ) )cout << "\nWarning:alphaReweight is nan:q_i " << q_i/GeV << " " << Nf( q_i );
+    *( theCMWScheme?( 1.+ ( glfac-5./9.*Nf( q_i ) )*as( q_i )/2./pi ):1. );
   }
   
-  if ( std::isnan( res ) )cout << "\nWarning:alphaReweight is nan.";
+  if ( std::isnan( res ) )
+      generator()->logWarning(Exception()
+               << "Merger: alphaReweight is nan. "<< Exception::warning);
   return res;
 }
 
@@ -555,17 +597,22 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
   history.push_back( HistoryStep( Begin , sudakov0_n , scale ) );
   
   
-  double xiQShfactor = history.begin()->node->legsize() == N0()?xiQSh:1.;
+  double xiQSh = history.begin()->node->legsize() == N0()?DSH()->hardScaleFactor():1.;
   
-  scale *= xiQShfactor;
+  scale *= xiQSh;
   if ( Begin->parent()||!isUnitarized ) {
     while ( Begin->parent() && ( Begin !=  EndNode ) ) {
       if ( !dosudakov( Begin , scale , Begin->pT() , sudakov0_n ) ){
         history.push_back( HistoryStep( Begin->parent() , 0. , scale ) );
       }
+      
+      if ( std::isnan( sudakov0_n ) )
+      generator()->logWarning(Exception()
+                              << "Merger: sudakov"<<scale/GeV<<" "<<Begin->pT()/GeV<<"0_n is nan. "
+                              << Exception::warning);
+      
       scale = Begin->pT();
       
-      if ( std::isnan( sudakov0_n ) )cout << "\nWarning:sudakov0_n is nan.";
       history.push_back( HistoryStep( Begin->parent() , sudakov0_n , Begin->pT() ) );
       Begin = Begin->parent();
     }
@@ -580,7 +627,7 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
       }
     }
   }
-  if( history.size() == 1 )scale /= xiQSh;
+  if( history.size() == 1 )scale /= DSH()->hardScaleFactor();
 }
 
 
@@ -588,8 +635,8 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
 
 double Merger::sumpdfReweightUnlops(){
   double res = 0.;
-  Energy beam1Scale = history[0].scale*( history[0].node->legsize() == N0()?xiFacME:xiFacSh );
-  Energy beam2Scale = history[0].scale*( history[0].node->legsize() == N0()?xiFacME:xiFacSh );
+  Energy beam1Scale = history[0].scale*( history[0].node->legsize() == N0()?theCurrentME->renFac():DSH()->facFac() );
+  Energy beam2Scale = history[0].scale*( history[0].node->legsize() == N0()?theCurrentME->renFac():DSH()->facFac() );
   
   for ( auto const & hs : history ){
       //pdf expansion only to the last step
@@ -607,7 +654,7 @@ double Merger::sumpdfReweightUnlops(){
                        hs.node->nodeME()->lastX1() , 
                        Nf( history[0].scale ) , 
                        history[0].scale );
-      beam1Scale = ( hs.node->pT() )*xiFacSh;
+      beam1Scale = ( hs.node->pT() )*DSH()->facFac();
     }
     if ( hs.node->dipole()->bornEmitter() == 1 ){
       res += pdfUnlops( hs.node , 1 , 
@@ -616,7 +663,7 @@ double Merger::sumpdfReweightUnlops(){
                        hs.node->nodeME()->lastX2() , 
                        Nf( history[0].scale ) , 
                        history[0].scale );
-      beam2Scale = ( hs.node->pT() )*xiFacSh;
+      beam2Scale = ( hs.node->pT() )*DSH()->facFac();
     }
     if ( hs.node->dipole()->bornSpectator() == 0 &&
          hs.node->dipole()->bornEmitter() >1 ){
@@ -626,7 +673,7 @@ double Merger::sumpdfReweightUnlops(){
                        hs.node->nodeME()->lastX1() , 
                        Nf( history[0].scale ) , 
                        history[0].scale );
-      beam1Scale = ( hs.node->pT() )*xiFacSh;
+      beam1Scale = ( hs.node->pT() )*DSH()->facFac();
     }
     if ( hs.node->dipole()->bornSpectator() == 1 &&
          hs.node->dipole()->bornEmitter() >1 ){
@@ -636,14 +683,14 @@ double Merger::sumpdfReweightUnlops(){
                        hs.node->nodeME()->lastX2() , 
                        Nf( history[0].scale ) , 
                        history[0].scale );
-      beam2Scale = ( hs.node->pT() )*xiFacSh;
+      beam2Scale = ( hs.node->pT() )*DSH()->facFac();
     }
   }
   
   if ( history[0].node->deepHead()->xcomb()->mePartonData()[0]->coloured() ){
     res += pdfUnlops( history.back().node , 0 , 
                      beam1Scale , 
-                     history[0].scale*xiFacME , 
+                     history[0].scale*theCurrentME->renFac() , 
                      ( history.back() ).node->nodeME()->lastX1() , 
                      Nf( history[0].scale ) , 
                      history[0].scale );
@@ -652,7 +699,7 @@ double Merger::sumpdfReweightUnlops(){
   if ( history[0].node->deepHead()->xcomb()->mePartonData()[1]->coloured() ) {
     res += pdfUnlops( history.back().node , 1 , 
                      beam2Scale , 
-                     history[0].scale*xiFacME , 
+                     history[0].scale*theCurrentME->renFac() , 
                      ( history.back() ).node->nodeME()->lastX2() , 
                      Nf( history[0].scale ) , 
                      history[0].scale );
@@ -748,24 +795,25 @@ double Merger::pdfUnlops( NodePtr node  , int side , Energy  running , Energy ne
 double Merger::sumalphaReweightUnlops(){
   double res = 0.;
   if ( !( history[0].node->children().empty() ) ){
-    res += alphasUnlops( history[0].scale*xiRenSh , 
-                        history[0].scale*xiRenME )*int( history[0].node->legsize()-N0() );
+    res += alphasUnlops( history[0].scale*DSH()->renFac() ,
+                        history[0].scale*theCurrentME->renFac() )*
+                        int( history[0].node->legsize()-N0() );
   }
     // dsig is calculated with fixed alpha_s
   for ( auto const & hs : history ){
       //expansion only to the last step
     if( !hs.node->parent() )continue;
-    res += alphasUnlops( hs.node->pT()*xiRenSh  , history[0].scale );
+    res += alphasUnlops( hs.node->pT()*DSH()->renFac()  , history[0].scale );
   }
   return res;
 }
 
 double Merger::sumfillHistoryUnlops(){
   double res = 0.;
-  double xiQShfactor = history[0].node->legsize() == N0()?xiQSh:1.;
+  double xiQSh = history[0].node->legsize() == N0()?DSH()->hardScaleFactor():1.;
   for ( auto const & hs : history ){
     if( !hs.node->parent() )continue;
-    doUNLOPS( hs.node , ( hs.node == history[0].node?xiQShfactor:1. )*hs.scale , hs.node->pT() , history[0].scale , res );
+    doUNLOPS( hs.node , ( hs.node == history[0].node?xiQSh:1. )*hs.scale , hs.node->pT() , history[0].scale , res );
   }
   return res;
 }
@@ -785,8 +833,7 @@ void Merger::doinit(){
 
 CrossSection Merger::MergingDSigDR() {
   
-  history.clear();
-  
+  assert(history.empty());
   
   if ( theFirstNodeMap.find( theCurrentME ) == theFirstNodeMap.end() ) {
     throw Exception()
@@ -796,12 +843,7 @@ CrossSection Merger::MergingDSigDR() {
   
   
   NodePtr Node = theFirstNodeMap[theCurrentME];
-  xiRenME = theCurrentME->renormalizationScaleFactor();
-  xiFacME = theCurrentME->factorizationScaleFactor();
-  xiRenSh = DSH()->renormalizationScaleFactor();
-  xiFacSh = DSH()->factorizationScaleFactor();
-  xiQSh = DSH()->hardScaleFactor();
-  DSH()->setCurrentHandler();
+    //DSH()->setCurrentHandler();
   DSH()->eventHandler( generator()->eventHandler() );
   
   CrossSection res = ZERO;
@@ -811,6 +853,9 @@ CrossSection Merger::MergingDSigDR() {
   }else if( Node->deepHead()->virtualContribution() ){
     res = MergingDSigDRVirtualStandard( Node );
     theCurrentMaxLegs = maxLegsNLO();
+  }else if (true){
+    res = MergingDSigDRBornCheapME( Node );
+    theCurrentMaxLegs = maxLegsLO();
   }else if( theGamma!= 1. ){
     res = MergingDSigDRBornGamma( Node );
     theCurrentMaxLegs = maxLegsLO();
@@ -819,15 +864,16 @@ CrossSection Merger::MergingDSigDR() {
     theCurrentMaxLegs = maxLegsLO();
   }
   
+  auto lxc=theCurrentME->lastXCombPtr();
+    //lxc->lastCentralScale( sqr( Node->runningPt() ) );
+  lxc->lastShowerScale( sqr( Node->runningPt() ) );
   
-  theCurrentME->lastXCombPtr()->lastCentralScale( sqr( Node->runningPt() ) );
-  theCurrentME->lastXCombPtr()->lastShowerScale( sqr( Node->runningPt() ) );
-  if( theCurrentME->lastXCombPtr()->lastProjector() ){
-    theCurrentME->lastXCombPtr()->lastProjector()->lastCentralScale( sqr( Node->runningPt() ) );
-    theCurrentME->lastXCombPtr()->lastProjector()->lastShowerScale( sqr( Node->runningPt() ) );
+  auto lp=theCurrentME->lastXCombPtr()->lastProjector();
+  if( lp ){
+      //lp->lastCentralScale( sqr( Node->runningPt() ) );
+    lp->lastShowerScale( sqr( Node->runningPt() ) );
   }
   
-  renormscale( ZERO );
   if ( res == ZERO ){
     history.clear();
     return res;
@@ -835,13 +881,14 @@ CrossSection Merger::MergingDSigDR() {
   
   
   cleanup( Node );
-  DSH()->eventRecord().clear();
-  theCurrentME->lastXCombPtr()->subProcess( SubProPtr() );
+  lxc->subProcess( SubProPtr() );
   
   history.clear();
   
   if( std::isnan( double( res/nanobarn ) )|| !std::isfinite( double( res/nanobarn ) ) ){
-    cout << "Warning merger weight is " << res/nanobarn << " -> setting to 0";
+    generator()->logWarning(Exception()
+       << "Merger weight is " << res/nanobarn<< " -> setting to 0"
+       << Exception::warning);
     return ZERO;
   }
   
@@ -913,7 +960,12 @@ double Merger::pdfratio( NodePtr  Born , Energy  nominator_scale , Energy denomi
     }
     from = Born->nodeME()->pdf1( sqr( denominator_scale ) );
     to   = Born->nodeME()->pdf1( sqr( nominator_scale ) );
-    if ( ( to < 1e-8||from < 1e-8 )&&( to/from>10000000. ) ){cout << "\npdfratio to = " << to << " from = " << from;return 0.;}
+    if ( ( to < 1e-8||from < 1e-8 )&&( to/from>10000000. ) ){
+      generator()->logWarning(Exception()
+                              << "Merger: pdfratio to = " << to << " from = " << from
+                              << Exception::warning);
+      return 0.;
+    }
   }
   else{
     if ( denominator_scale == nominator_scale ) {
@@ -921,7 +973,11 @@ double Merger::pdfratio( NodePtr  Born , Energy  nominator_scale , Energy denomi
     }
     from = Born->nodeME()->pdf2( sqr( denominator_scale ) );
     to = Born->nodeME()->pdf2( sqr( nominator_scale ) );
-    if ( ( to < 1e-8||from < 1e-8 )&&( to/from>10000000. ) ){cout << "\npdfratio to = " << to << " from = " << from;return 0.;}
+    if ( ( to < 1e-8||from < 1e-8 )&&( to/from>10000000. ) ){
+      generator()->logWarning(Exception()
+                              << "Merger: pdfratio to = " << to << " from = " << from
+                              << Exception::warning);
+      return 0.;}
   }
   return to/from;
 }
@@ -935,12 +991,12 @@ bool Merger::dosudakov( NodePtr Born , Energy running , Energy next , double& su
       sudakov0_n *= singlesudakov( dip , next , running , make_pair( true , false ) );
       sudakov0_n *= singlesudakov( dip , next , running , make_pair( false , true ) );
       if ( sudakov0_n == 0.0 ){
-        cleanup( Born );
+          cleanup( Born );
         return false;
       }
     }
   }
-  cleanup( Born );
+    cleanup( Born );
   return true;
 }
 
@@ -1108,14 +1164,14 @@ void Merger::fillProjectors( MatchboxMEBasePtr me ){
   }
 }
 pair<bool , bool> Merger::clusterSafe( MatchboxMEBasePtr me , int emit , int emis , int spec ){
-  return theFirstNodeMap[me]->clusterSafe().find( make_pair( make_pair( emit , emis ) , spec ) )->second;
+  return theFirstNodeMap[me]->clusterSafe().find({emit, emis, spec})->second;
   
 }
 
   //#include "fastjet/ClusterSequence.hh"
 bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy winnerScale , Energy cutscale ){
   
-    //cout << "\nparticles s" << particles.size() << " " << particles[0] << " " << particles[1] << flush;
+    //generator()->log() << "\nparticles s" << particles.size() << " " << particles[0] << " " << particles[1] << flush;
   /*
    if ( defMERegionByJetAlg && !particles[0]->coloured()&& !particles[1]->coloured() ) {
    assert( false );
@@ -1156,9 +1212,9 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
    size_t n = particles.size()-2-noncol;
    vector<fastjet::PseudoJet> exclusive_jets = clust_seq.exclusive_jets( pp_dcut );
    
-   // cout << "\nn =  " << n << " jets =  " << exclusive_jets.size();
+   // generator()->log() << "\nn =  " << n << " jets =  " << exclusive_jets.size();
    //for ( size_t i = 0; i<exclusive_jets.size(); i++ ) {
-   //cout << "\nn =  " << n << " jetspt =  " << exclusive_jets[i].perp();
+   //generator()->log() << "\nn =  " << n << " jetspt =  " << exclusive_jets[i].perp();
    //}
    
    return n == exclusive_jets.size();
@@ -1276,12 +1332,12 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
                             << Exception::warning );
     
     if( Debug::level > 2 ) {
-      cout << "\nWarning: could not find winner with pt: " << winnerScale/GeV;
+      generator()->log() << "\nWarning: could not find winner with pt: " << winnerScale/GeV;
       for( auto const & emm : incoming ){
-        cout << "\n" << emm->id() << " " << emm->momentum()/GeV << " " << emm->momentum().m()/GeV << flush;
+        generator()->log() << "\n" << emm->id() << " " << emm->momentum()/GeV << " " << emm->momentum().m()/GeV << flush;
       }
       for( auto const & emm : outgoing ){
-        cout << "\n" << emm->id() << " " << emm->momentum()/GeV << " " << emm->momentum().m()/GeV << flush;
+        generator()->log() <<"\n" << emm->id() << " " << emm->momentum()/GeV << " " << emm->momentum().m()/GeV << flush;
       }
     }
     
@@ -1291,15 +1347,9 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
   
 }
 
-
-
-
-
 int Merger::M()const{return theTreeFactory->M();}
 
 int Merger::N()const{return theTreeFactory->N();}
-
-
 
 
   // If needed , insert default implementations of virtual function defined
@@ -1310,15 +1360,13 @@ void Merger::persistentOutput( PersistentOStream & os ) const {
   os << Unlopsweights << theCMWScheme << projected <<
   isUnitarized << isNLOUnitarized << defMERegionByJetAlg <<
   theOpenInitialStateZ << theChooseHistory <<
-  theN0 << theOnlyN << xiRenME << xiFacME <<
-  xiRenSh << xiFacSh << xiQSh << weight <<
+  theN0 << theOnlyN   << weight <<
   weightCB << theGamma << ee_ycut << pp_dcut <<
-  theSmearing << ounit( therenormscale , GeV ) <<
-  ounit( theIRSafePT , GeV ) << ounit( theMergePt , GeV ) <<
-  ounit( theCentralMergePt , GeV ) << theMergingJetFinder <<
-  theLargeNBasis << FFLTK << FILTK <<
+  theSmearing <<  ounit( theIRSafePT , GeV ) <<
+  ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV ) <<
+  theMergingJetFinder << theLargeNBasis << FFLTK << FILTK <<
   IFLTK << IILTK << FFMTK << FIMTK << IFMTK <<
-  theDipoleShowerHandler << theTreeFactory << theFirstNodeMap ;
+  theDipoleShowerHandler << theTreeFactory << theFirstNodeMap;
   
 }
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -1327,11 +1375,9 @@ void Merger::persistentInput( PersistentIStream & is , int ) {
   isUnitarized >> isNLOUnitarized >>
   defMERegionByJetAlg >> theOpenInitialStateZ >>
   theChooseHistory >> theN0 >> theOnlyN >>
-  xiRenME >> xiFacME >> xiRenSh >> xiFacSh >>
-  xiQSh >> weight >> weightCB >>
+  weight >> weightCB >>
   theGamma >> ee_ycut >> pp_dcut >>
-  theSmearing >> iunit( therenormscale , GeV ) >>
-  iunit( theIRSafePT , GeV ) >>
+  theSmearing >>  iunit( theIRSafePT , GeV ) >>
   iunit( theMergePt , GeV ) >>
   iunit( theCentralMergePt , GeV ) >>
   theMergingJetFinder >> theLargeNBasis >>

@@ -12,7 +12,8 @@ namespace Herwig {
 class MatchboxMEBase;
 class MatchboxAmplitude;
   
- ThePEG_DECLARE_POINTERS(MatchboxMEBase , MatchboxMEBasePtr );
+ThePEG_DECLARE_POINTERS(MatchboxMEBase , MatchboxMEBasePtr );
+ThePEG_DECLARE_POINTERS(MatchboxAmplitude , MatchboxAmplitudePtr );
 
 }
 

@@ -96,8 +96,10 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double y = (sqr(pt)/sqr(split.scale()) + sqr(1.-zPrime)*mui2 + sqr(zPrime)*mu2) / (bar*zPrime*(1.-zPrime));
 
   if( sqr(2.*muj2+bar*(1.-y))-4.*muj2 < 0. ){
-    cerr << "error in FIMDecaygx2qqxDipoleKernel::evaluate -- " <<
-      "muj2 " << muj2 << "  mui2 " << mui2 << "  y " << y << endl;
+    generator()->logWarning( Exception()
+                            << "error in FIMDecaygx2qqxDipoleKernel::evaluate -- " <<
+                            "muj2 " << muj2 << "  mui2 " << mui2 << "  y " << y << Exception::warning );
+
     return 0.0;
   }
 

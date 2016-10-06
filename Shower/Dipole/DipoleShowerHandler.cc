@@ -658,7 +658,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   DipoleSplittingInfo dipoleWinner;
   
     //TODO: find a better solution
-  size_t currentMultiplicity=0.;
+  size_t currentMultiplicity=0;
   for(auto i : eventHandler()->currentStep()->getFinalState() )
   if (i->id()!=82)currentMultiplicity++;
   
@@ -730,19 +730,16 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     if (theMergingHelper&&eventHandler()->currentCollision()&&!decay) {
       if (theMergingHelper->maxLegs()>currentMultiplicity){
         if (theMergingHelper->mergingScale()<winnerScale){
-          bool transparent=true;
+          const bool transparent=true;
           if (transparent) {
             pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
             DipoleSplittingInfo tmpwinner=winner;
-            DipoleChain* tmpfirstChain = 0;
-            DipoleChain* tmpsecondChain = 0;
+            DipoleChain* tmpfirstChain = nullptr;
+            DipoleChain* tmpsecondChain = nullptr;
             
             auto New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
-            /*cout<<"\n ";
-             for (auto const & p:New) {
-             cout<<"\n   "<<p->momentum()/GeV<<flush;
-             }
-             */
+            
+            
             if (theMergingHelper->matrixElementRegion(New.first,New.second,winnerScale,theMergingHelper->mergingScale())) {
               optHardPt=winnerScale;
               continue;
@@ -764,8 +761,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     
     pair<list<Dipole>::iterator,list<Dipole>::iterator> children;
     
-    DipoleChain* firstChain = 0;
-    DipoleChain* secondChain = 0;
+    DipoleChain* firstChain = nullptr;
+    DipoleChain* secondChain = nullptr;
     
       // Note: the dipoles are updated in eventRecord().split(....) after the splitting,
       // hence the entire cascade is handled in doCascade

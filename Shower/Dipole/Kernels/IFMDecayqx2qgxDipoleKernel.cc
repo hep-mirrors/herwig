@@ -106,8 +106,10 @@ double IFMDecayqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double sbarMod = 1. - mui2 - muk2;
  
   if( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 < 0. ){
-    cerr << "error in IFMDecayqx2qgxDipoleKernel::evaluate -- " <<
-    "muk2 " << muk2 << "  mui2 " << mui2 << "  y " << y << endl;
+    generator()->logWarning( Exception()
+                            << "error in IFMDecayqx2qgxDipoleKernel::evaluate -- " <<
+                            "muk2 " << muk2 << "  mui2 " << mui2 << "  y " << y
+                            << Exception::warning );
     return 0.0;
   }
 

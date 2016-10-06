@@ -46,12 +46,8 @@ namespace Herwig {
   typedef vector<NodePtr> NodePtrVec;
     //definition of a history step
   struct HistoryStep {
-    HistoryStep(){}
-    HistoryStep(NodePtr cn, double w , Energy sc){
-      node=cn;
-      weight=w;
-      scale=sc;
-    }
+    HistoryStep(NodePtr cn = NodePtr(), double w =0., Energy sc=ZERO):
+    node(cn),weight(w),scale(sc){}
       /// the cluster node defining this step
       /// containing the full information
     NodePtr node;
@@ -78,7 +74,7 @@ namespace Herwig {
     
     friend class MergingFactory;
     friend class Node;
-    friend class MScale;
+      //friend class MScale;
     
   public:
     
@@ -141,8 +137,6 @@ namespace Herwig {
     void smeareMergePt(){theMergePt=centralMergePt()*(1.+0.*(-1.+2.*UseRandom::rnd())*smear());}
       /// true if the phase space for initial emissions should not be restricted in z.
     bool openInitialStateZ(){return theOpenInitialStateZ;}
-      /// set the current renormalisation scale
-    Energy renormscale() { return therenormscale;}
     
   private:
       /// calculate a single sudakov step for a given dipole
@@ -155,10 +149,12 @@ namespace Herwig {
       /// return true if the cluster node has the matching number of
       /// legs to the current projector stage
     bool   isProjectorStage( NodePtr , int );
-      /// calculate the staring scale:
-      /// if Node is part of the production process, calculate according to the
-      /// scale choice object in the merging scale objekt, else
-      /// return max(scale as scalechoice , min(Mass(i, j)))
+      /** 
+       * Calculate the staring scale:
+       * if Node is part of the production process, calculate according to the
+       * scale choice object in the merging scale objekt, else
+       * return max(scale as scalechoice , min(Mass(i, j)))
+       */
     Energy CKKW_StartScale(NodePtr);
       /// prepare the sudakov calculation
     void   CKKW_PrepareSudakov(NodePtr, Energy);
@@ -177,13 +173,19 @@ namespace Herwig {
       /// calculate the history weighted born cross section
     CrossSection MergingDSigDRBornStandard(NodePtr Node);
       /// calculate the history weighted born cross section
-      /// add the difference of IPK with and without alpha parameter
-      /// subtract the dipoles above the alpha parameter
+    CrossSection MergingDSigDRBornCheapME(NodePtr Node);
+      /**
+       * calculate the history weighted born cross section
+       * add the difference of IPK with and without alpha parameter
+       * subtract the dipoles above the alpha parameter
+       */ 
     CrossSection MergingDSigDRBornGamma(NodePtr Node);
       /// calculate the history weighted virtual contribution
     CrossSection MergingDSigDRVirtualStandard(NodePtr Node);
-      /// calculate the history weighted real contribution
-      /// splitted into 3 differnt contibutions
+      /**
+       * calculate the history weighted real contribution
+       * splitted into 3 differnt contibutions
+       */
     CrossSection MergingDSigDRRealStandard(NodePtr Node);
       /// calculate the history weighted real contribution
       /// all dipoles above:
@@ -236,8 +238,6 @@ namespace Herwig {
     DipoleShowerHandlerPtr DSH(){return theDipoleShowerHandler;}
       //return the const dipole shower handler
     DipoleShowerHandlerPtr DSH()const{return theDipoleShowerHandler;}
-      /// set the current renormalisation scale
-    void renormscale(Energy x) {  therenormscale = x;}
       /// insert map from ME to first clusternode
     void firstNodeMap(MatchboxMEBasePtr, NodePtr);
       /// the gamma parameter to subtract dipoles above a alpha parameter
@@ -276,19 +276,9 @@ namespace Herwig {
       /// legsize of production process
     int theN0;
       /// calculate only the N particle contribution
-    int  theOnlyN;
+    int theOnlyN;
       /// the current maxlegs (either LO or NLO maxlegs)
     size_t theCurrentMaxLegs;
-      /// renormalisation scale factor of the ME
-    double   xiRenME;
-      /// factorisation scale factor of the ME
-    double   xiFacME;
-      /// renormalisation scale factor of the PS
-    double   xiRenSh;
-      /// factorisation scale factor of the PS
-    double   xiFacSh;
-      /// starting scale factor of the PS
-    double   xiQSh;
       /// current weight and weight of clustered born
     double weight, weightCB;
       /// subtract the dipole contribution above a given gamma
@@ -299,8 +289,6 @@ namespace Herwig {
     double pp_dcut;
       /// smearing factor for merging scale
     double theSmearing;
-      /// current renomalistion scale
-    Energy therenormscale;
       /// cutoff for real emission contribution
     Energy theIRSafePT;
       /// current merging scale
@@ -329,6 +317,8 @@ namespace Herwig {
     MergingFactoryPtr theTreeFactory;
       /// map from ME to first Node
     map<MatchboxMEBasePtr, NodePtr> theFirstNodeMap;
+      /// map from ME to highest ME weight so far
+    map<NodePtr, CrossSection> theHighMeWeightMap;
     
   protected:
     

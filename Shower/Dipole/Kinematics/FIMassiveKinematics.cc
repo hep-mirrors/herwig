@@ -79,8 +79,8 @@ Energy FIMassiveKinematics::QMax(Energy dScale,
 			       double, double specX,
 			       const DipoleIndex&,
 				const DipoleSplittingKernel&) const {
+  generator()->log() << "FIMassiveKinematics::QMax called.\n" << flush;
   assert(false && "implementation missing");
-  cout << "FIMassiveKinematics::QMax called.\n" << flush;
   // this is sqrt( 2qi*q ) -> max;
   return dScale * sqrt((1.-specX)/specX);
 }

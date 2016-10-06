@@ -110,7 +110,7 @@ insert JetCuts:JetRegions 0 FirstJet
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
+set /Herwig/Merging/MergingFactory:ScaleChoice MaxJetPtScale
 
 ##################################################
 ## Scale uncertainties

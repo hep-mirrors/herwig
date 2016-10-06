@@ -210,8 +210,6 @@ public:
     theSpectator=spect;
   }
 
-  
-
 public:
 
   /**

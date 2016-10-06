@@ -434,6 +434,12 @@ public:
    * Get the factorization scale factor
    */
   virtual double factorizationScaleFactor() const;
+      
+      
+  /**
+    * Get the factorization scale factor
+    */
+  virtual double facFac() const{return factorizationScaleFactor();}
 
   /**
    * Return the (QCD) renormalization scale for the last generated phasespace point.
@@ -444,6 +450,12 @@ public:
    * Get the renormalization scale factor
    */
   virtual double renormalizationScaleFactor() const;
+      
+      
+  /**
+   * Get the renormalization scale factor
+   */
+  virtual double renFac() const{return renormalizationScaleFactor();}
 
   /**
    * Return the QED renormalization scale for the last generated phasespace point.

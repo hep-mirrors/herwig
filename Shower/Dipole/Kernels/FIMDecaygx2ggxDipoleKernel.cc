@@ -94,8 +94,9 @@ double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
 
 
   if( sqr(2.*muk2+sbarMod*(1.-y))-4.*muk2 < 0. ){
-    cerr << "error in FIMDecaygx2ggxDipoleKernel::evaluate -- " <<
-      "muk2 " << muk2 << "  y " << y << endl;
+    generator()->logWarning( Exception()
+                            << "error in FIMDecaygx2ggxDipoleKernel::evaluate -- " <<
+                            "muk2 " << muk2 << "  y " << y << Exception::warning );
     return 0.0;
   }
 

@@ -7,11 +7,9 @@ set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
 
 
 set MergingFactory:Cuts /Herwig/Cuts/Cuts
-set MergingFactory:ScaleChoice /Herwig/Merging/MScale
 set Merger:MergingFactory MergingFactory
 set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
 set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
-set MScale:MergingHelper Merger
 set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 set MergingFactory:MergingHelper Merger
 

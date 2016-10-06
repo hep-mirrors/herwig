@@ -84,7 +84,7 @@ double FFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   // new: 2011-08-31
   // 2011-11-06: so far never happened
   if( sqr(2.*muj2+(1.-2.*muQ2-muj2)*(1.-y))-4.*muj2 < 0. ){
-    cout << "error in FFMgx2qqxDipoleKernel::evaluate1 -- " <<
+    generator()->log() <<  "error in FFMgx2qqxDipoleKernel::evaluate1 -- " <<
       "muj2 " << muj2 << "  muQ2 " << muQ2 << "  y " << y << endl;
     return 0.0;
   }

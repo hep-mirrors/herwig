@@ -190,10 +190,24 @@ public:
   /**
    * The factorization scale factor.
    */
-  double factorizationScaleFactor() const { 
+  double factorizationScaleFactor() const {
     return factorizationScaleFactor_;
   }
-
+  
+  /**
+   * The renormalization scale factor.
+   */
+  double renFac() const {
+    return renormalizationScaleFactor_;
+  }
+  
+  /**
+   * The factorization scale factor.
+   */
+  double facFac() const {
+    return factorizationScaleFactor_;
+  }
+  
   /**
    * The renormalization scale factor.
    */

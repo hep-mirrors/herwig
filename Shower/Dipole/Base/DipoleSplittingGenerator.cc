@@ -542,8 +542,8 @@ double DipoleSplittingGenerator::dounlops(const DipoleSplittingInfo& ,Energy dow
   
     generatedSplitting.setCalcFixedExpansion(true);
     generatedSplitting.fixedScale(fixedScale);
-    //cout<<"\n"<<down/GeV<<" "<<generatedSplitting.hardPt()/GeV<<" "<<fixedScale/GeV;
-    while ((k<500.||varx>0.05)&&k<50000){
+    
+    while ( k<500. && k<50000 ){
       k+=1.;
       RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
       RN[1]=UseRandom::rnd(); //Z
@@ -553,10 +553,11 @@ double DipoleSplittingGenerator::dounlops(const DipoleSplittingInfo& ,Energy dow
       resq+=pow(tmp,2.);
       if(k%50==0.){
 	varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
+        if(varx<0.05)break;
       }
     }
-    //cout<<"\n"<<k;
     generatedSplitting.setCalcFixedExpansion(false);
+
     return -res/(1.0*k);
 }
 

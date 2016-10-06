@@ -86,6 +86,8 @@ namespace Herwig {
     }
       //Parse a process description
     virtual vector<string> parseProcess(string);
+      // fill the virtuals vector (these are IPK-operators)
+    void getVirtuals(MatchboxMEBasePtr nlo,int i);
     
   public:
     
@@ -106,6 +108,21 @@ namespace Herwig {
       //@}
     
     static void Init();
+    
+    
+
+  protected:
+    
+    /** @name Standard Interfaced functions. */
+      //@{
+    /**
+     * Initialize this object after the setup phase before saving an
+     * EventGenerator to disk.
+     * @throws InitException if object could not be initialized properly.
+     */
+    virtual void doinit();
+    
+      //@}
     
   protected:
     

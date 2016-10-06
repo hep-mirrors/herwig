@@ -92,7 +92,7 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MScale:ScaleChoice SHatScale
+set /Herwig/Merging/MergingFactory:ScaleChoice SHatScale
 
 ##################################################
 ## Scale uncertainties
@@ -132,6 +132,6 @@ set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 ##################################################
 
 do /Herwig/Merging/MergingFactory:ProductionMode
-
+set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 cd /Herwig/Generators
 saverun 1LO-0NLO-LEP EventGenerator

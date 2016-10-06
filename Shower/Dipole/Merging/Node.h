@@ -35,10 +35,10 @@ namespace Herwig {
    */
   
   /**
-   * Define the SafeClusterMap type map<pair<pair<emitter, emission>, spectator >
+   * Define the SafeClusterMap type map< tuple<emitter, emission, spectator >
    *                                    , pair<first-clustering, second-clustering> >
    */
-  typedef map<pair<pair<int, int>, int> , pair<bool, bool> > SafeClusterMap;
+  typedef map<  std::tuple<int, int, int> , pair<bool, bool> > SafeClusterMap;
   
   class Node : public Interfaced {
 		public:
@@ -46,8 +46,10 @@ namespace Herwig {
     /** @name Standard constructors and destructors. */
       //@{
     
+    Node (){};
+    
       // constructor for first nodes
-    Node(MatchboxMEBasePtr nodeME = MatchboxMEBasePtr(), int cutstage = -1, MergerPtr mh = MergerPtr());
+    Node(MatchboxMEBasePtr nodeME , int cutstage , MergerPtr mh );
       // another constructor for underlying nodes
     Node(NodePtr deephead, 
          NodePtr head, 

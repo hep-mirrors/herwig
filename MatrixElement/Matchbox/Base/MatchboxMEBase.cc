@@ -936,11 +936,11 @@ double MatchboxMEBase::oneLoopSinglePole() const {
 
 }
 
-vector<Ptr<SubtractionDipole>::ptr> 
-MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
-			   const vector<Ptr<MatchboxMEBase>::ptr>& borns,bool slim) const {
+vector<SubtractionDipolePtr> 
+MatchboxMEBase::getDipoles(const vector<SubtractionDipolePtr>& dipoles,
+			   const vector<MatchboxMEBasePtr> & borns,bool slim) const {
 
-  vector<Ptr<SubtractionDipole>::ptr> res;
+  vector<SubtractionDipolePtr> res;
 
   // keep track of the dipoles we already did set up
   set<pair<pair<pair<int,int>,int>,pair<Ptr<MatchboxMEBase>::tptr,Ptr<SubtractionDipole>::tptr> > > done;
@@ -951,7 +951,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
   // now loop over configs
   for ( int emitter = 0; emitter < nreal; ++emitter ) {
 
-    list<Ptr<SubtractionDipole>::ptr> matchDipoles;
+    list<SubtractionDipolePtr> matchDipoles;
     for ( auto const & d : dipoles ) {
       if ( ! d->canHandleEmitter(rep,emitter) )
 	continue;
@@ -964,7 +964,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
       if ( emission == emitter )
 	continue;
 
-      list<Ptr<SubtractionDipole>::ptr> matchDipoles2;
+      list<SubtractionDipolePtr> matchDipoles2;
       for ( auto const & d : matchDipoles ) {
 	if ( !d->canHandleSplitting(rep,emitter,emission) )
 	  continue;
@@ -1005,7 +1005,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	if ( spectator == emitter || spectator == emission )
 	  continue;
 
-	list<Ptr<SubtractionDipole>::ptr> matchDipoles3;
+	list<SubtractionDipolePtr> matchDipoles3;
     for ( auto const & d : matchDipoles2 ) {
 	  if ( ! d->canHandleSpectator(rep,spectator) )
 	    continue;

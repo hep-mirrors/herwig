@@ -145,10 +145,9 @@ void Node::firstgenerateKinematics(const double *r, int stage) {
     isecond = ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
     ifirst = (ch->pT() >= deepHead()->MH()->mergePt());
     
-    pair<pair<int, int>, int> EmitEmisSpec  = 
-    make_pair(make_pair(ch->dipole()->realEmitter(), 
-                        ch->dipole()->realEmission()), 
-              ch->dipole()->realSpectator());
+     std::tuple< int, int, int> EmitEmisSpec  = {ch->dipole()->realEmitter(),
+                                          ch->dipole()->realEmission(),
+                                          ch->dipole()->realSpectator()};
     clustersafer.insert(make_pair(EmitEmisSpec, make_pair(ifirst, isecond)));
     
   }
@@ -334,7 +333,6 @@ void Node::persistentOutput(PersistentOStream & os) const {
   theProjectors<<
   theDeepHead<<
   theCutStage<<
-  clustersafer<<
   ounit(theRunningPt, GeV)<<
   theSubtractedReal<<
   theVirtualContribution<<
@@ -353,7 +351,6 @@ void Node::persistentInput(PersistentIStream & is, int) {
   theProjectors>>
   theDeepHead>>
   theCutStage>>
-  clustersafer>>
   iunit(theRunningPt, GeV)>>
   theSubtractedReal>>
   theVirtualContribution>>
