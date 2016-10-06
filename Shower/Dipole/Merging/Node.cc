@@ -11,9 +11,6 @@
 using namespace Herwig;
 
 Node::Node() {
-  throw Exception()
-  << "The default constructor should not be called."
-  << Exception::abortnow;
 }
 
 Node::Node(MatchboxMEBasePtr nodeME, int cutstage, MergerPtr mh)
