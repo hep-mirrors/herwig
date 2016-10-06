@@ -20,9 +20,9 @@ IBPtr MergingReweight::fullclone() const {
 }
 
 double MergingReweight::weight() const {
-  Energy maxpt = 0.*GeV;
-  Energy ht=0*GeV;
-  Energy maxmjj=0.*GeV;
+  Energy maxpt = ZERO;
+  Energy ht = ZERO;
+  Energy maxmjj = ZERO;
   
   for (auto const & out : subProcess()->outgoing())
     if ( !onlyColoured || out->coloured() ){
@@ -32,7 +32,7 @@ double MergingReweight::weight() const {
       maxpt = max(maxpt, out->momentum().perp());
       ht+=out->momentum().perp();
     }
-  if (maxpt==0*GeV||ht==0*GeV) {
+  if (maxpt==ZERO||ht==ZERO) {
     return 1.;
   }
   return pow(maxpt/scale, MaxPTPower)*pow(ht/scale, HTPower)*pow(maxmjj/scale,MaxMjjPower);

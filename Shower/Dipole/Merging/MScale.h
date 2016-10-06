@@ -24,7 +24,7 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Simon Platzer
  *
- * \brief MScale implements scale choices related to transverse momenta.
+ * \brief MScale implements scale choices related to TODO
  *
  */
 class MScale: public MatchboxScaleChoice {
@@ -97,7 +97,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MScale & operator=(const MScale &);
+  MScale & operator=(const MScale &) = delete;
   
     // the scale choice object
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;

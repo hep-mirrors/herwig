@@ -10,9 +10,6 @@
 
 using namespace Herwig;
 
-Node::Node() {
-}
-
 Node::Node(MatchboxMEBasePtr nodeME, int cutstage, MergerPtr mh)
   :Interfaced(), 
  thenodeMEPtr(nodeME), 
@@ -42,8 +39,8 @@ theDeepHead(deephead),
 theCutStage(cutstage), 
 isOrdered(true), 
 theSubtractedReal(false), 
-theVirtualContribution(false)
-  //The subnodes have no merging helper
+theVirtualContribution(false),
+ theMergingHelper() //The subnodes have no merging helper
 {
 }
 
@@ -68,12 +65,13 @@ MatchboxMEBasePtr Node::nodeME() {
 int Node::legsize() const {return nodeME()->legsize();}
 
 NodePtr  Node::randomChild() {
-  return thechildren[(int)(UseRandom::rnd() *  thechildren.size())];
+  return thechildren[UseRandom::irnd(thechildren.size())];
 }
 
 bool Node::allAbove(Energy pt) {
   for (NodePtr child : thechildren)
-    if(child->pT()<pt)return false;
+    if ( child->pT() < pt )
+    	return false;
   return true;
 }
 
@@ -81,7 +79,8 @@ bool Node::allAbove(Energy pt) {
 
 bool Node::isInHistoryOf(NodePtr other) {
   while (other->parent()) {
-    if(other == this)return true;
+    if (other == this) 
+    	return true;
     other = other->parent();
   }
   return false;
@@ -90,7 +89,6 @@ bool Node::isInHistoryOf(NodePtr other) {
 
 
 void Node::flushCaches() {
-  
   this->theProjectors.clear();
   for ( auto const & ch: thechildren) {
     ch->dipole()->underlyingBornME()->flushCaches();
@@ -124,9 +122,9 @@ bool Node::generateKinematics(const double *r, int stage, Energy2 ) {
   bool isthissafe = true;
   for (auto const & ch: thechildren) {
     ch->dipole()->setXComb(ch->xcomb());
-    if ( !ch->dipole()->generateKinematics(r) ) cout << "stop";
+    if ( !ch->dipole()->generateKinematics(r) ) { assert(false); }
     ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
-    isthissafe = (isthissafe && ch->pT()  >= deepHead()->MH()->mergePt());
+    isthissafe &= ch->pT() >= deepHead()->MH()->mergePt();
   }
   return isthissafe;
 }
@@ -142,7 +140,7 @@ void Node::firstgenerateKinematics(const double *r, int stage) {
     bool isecond = true;
     ch->dipole()->setXComb(ch->xcomb());
     
-    if ( !ch->dipole()->generateKinematics(r) ) cout << "stop";
+    if ( !ch->dipole()->generateKinematics(r) ) { assert(false); }
     
     isecond = ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
     ifirst = (ch->pT() >= deepHead()->MH()->mergePt());
@@ -180,7 +178,7 @@ void Node::setXComb(tStdXCombPtr xc) {
 }
 
 #include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
-void Node::birth(vector<MatchboxMEBasePtr> vec) {
+void Node::birth(const vector<MatchboxMEBasePtr> & vec) {
     // produce the children
   vector<SubtractionDipolePtr> dipoles  = 
            nodeME()->getDipoles(DipoleRepository::dipoles(

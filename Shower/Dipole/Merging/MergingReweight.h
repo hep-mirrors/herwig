@@ -109,7 +109,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MergingReweight & operator=(const MergingReweight &);
+  MergingReweight & operator=(const MergingReweight &) = delete;
 
 };
 

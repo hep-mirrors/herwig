@@ -35,10 +35,10 @@ namespace Herwig {
    */
   
   /**
-   * Define the SafeClusterMap type map<pair<pair<emitter, emmision>, spectator >
+   * Define the SafeClusterMap type map<pair<pair<emitter, emission>, spectator >
    *                                    , pair<first-clustering, second-clustering> >
    */
-  typedef map<pair<pair<int, int>, int >, pair<bool, bool> > SafeClusterMap;
+  typedef map<pair<pair<int, int>, int> , pair<bool, bool> > SafeClusterMap;
   
   class Node : public Interfaced {
 		public:
@@ -46,10 +46,8 @@ namespace Herwig {
     /** @name Standard constructors and destructors. */
       //@{
     
-      ///The default constructor. Do not use!
-    Node();
-      // another constructor for first nodes
-    Node(MatchboxMEBasePtr nodeME, int cutstage, MergerPtr mh);
+      // constructor for first nodes
+    Node(MatchboxMEBasePtr nodeME = MatchboxMEBasePtr(), int cutstage = -1, MergerPtr mh = MergerPtr());
       // another constructor for underlying nodes
     Node(NodePtr deephead, 
          NodePtr head, 
@@ -62,7 +60,7 @@ namespace Herwig {
     
   public:
       // get children from vector<MatchboxMEBasePtr>
-    void birth(vector<MatchboxMEBasePtr> vec);
+    void birth(const vector<MatchboxMEBasePtr> & vec);
       /// recursive setXComb. proStage is the number of clusterings
       /// before the projectors get filled.
     void setXComb(tStdXCombPtr xc);
@@ -83,13 +81,13 @@ namespace Herwig {
       /// generate the kinamatics of the first node
     void  firstgenerateKinematics(const double *r, int stage);
       //return the ME
-    const MatchboxMEBasePtr nodeME()const;
+    const MatchboxMEBasePtr nodeME() const;
       //return the node ME
     MatchboxMEBasePtr nodeME();
       //return the parent Node
-    NodePtr parent()const {return theparent;}
+    NodePtr parent() const {return theparent;}
       /// vector of children nodes created in birth
-    vector< NodePtr > children()const {return thechildren;}
+    vector< NodePtr > children() const {return thechildren;}
       //pick a random child (flat)
     NodePtr  randomChild();
       /// true if all children show scales above pt
@@ -104,25 +102,22 @@ namespace Herwig {
     NodePtr deepHead() const {return theDeepHead;}
       /// insert nodes to projector vector
     void Projector(double a, NodePtr pro) {
-      pair<double, NodePtr> p;
-      p.first  = a;
-      p.second = pro;
-      theProjectors.push_back(p);
+      theProjectors.push_back(make_pair(a,pro));
     }
       /// insert nodes to projector vector
     vector< pair <double , NodePtr > > Projector() {return theProjectors;}
       /// returns the dipol of the node.
     SubtractionDipolePtr dipole() const;
       /// set the xcomb of the node
-    void xcomb(StdXCombPtr xc) { thexcomb = xc;}
+    void xcomb(StdXCombPtr xc) { thexcomb = xc; }
       /// return the xcomb
-    StdXCombPtr xcomb() const {return thexcomb;}
+    StdXCombPtr xcomb() const { return thexcomb; }
       /// return the current running pt
-    Energy runningPt(){return theRunningPt;}
+    Energy runningPt() { return theRunningPt; }
       /// set the current running pt
-    void runningPt(Energy x){theRunningPt=x;}
+    void runningPt(Energy x) { theRunningPt=x; }
       /// return the cut stage to cut on merging pt in generate kinematics
-    int cutStage() const {return theCutStage;}
+    int cutStage() const { return theCutStage; }
       /// get the clustersafe map for this node
     SafeClusterMap clusterSafe() const {return clustersafer;}
       /// get a vector of the next nodes, ordered in pt (and in parton shower phace space)
@@ -235,7 +230,7 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    Node & operator=(const Node &);
+    Node & operator=(const Node &) = delete;
     
   };
   

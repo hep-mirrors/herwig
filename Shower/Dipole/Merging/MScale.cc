@@ -25,21 +25,22 @@ MScale::~MScale() {}
 
 Energy2 MScale::renormalizationScale() const {
 
-  if (theMergingHelper->renormscale()/GeV> Constants::epsilon ){
+  if (theMergingHelper->renormscale() != ZERO ){
       return sqr(theMergingHelper->renormscale());
   }
   if (!theScaleChoice){
     cerr<<"MScale: You need to set a scale for MScale.";
+    assert(false);
   }
   theScaleChoice->setXComb(theLastXComb);
   return theScaleChoice->renormalizationScale();
 }
 
 Energy2 MScale::factorizationScale() const {
-  if (theMergingHelper->renormscale()/GeV> Constants::epsilon )
+  if ( theMergingHelper->renormscale() != ZERO )
       return sqr( theMergingHelper->renormscale());
   
-  return sqr(10.*GeV);
+  return sqr(10.*GeV); // TODO fix in PDF workflow
 }
 
   // If needed, insert default implementations of virtual function defined
