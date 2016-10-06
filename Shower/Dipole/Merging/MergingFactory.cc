@@ -94,7 +94,6 @@ void MergingFactory::fill_amplitudes() {
   for ( int i = 0 ; i <= MH()->N() ; ++i ) {
     vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(processMap[i], orderInAlphaS() + i,i<MH()->M()+1);
     copy(ames.begin(), ames.end(), back_inserter(pureMEsMap()[i]));
-    cout<<"\n"<<processMap[i].size()<<" "<<pureMEsMap()[i].size()<<" "<<orderInAlphaS()<<" "<<orderInAlphaEW()<<" "<<MH()->M()<<" "<< MH()->N0()<<" "<< MH()->N();
   }
 }
 
@@ -150,7 +149,8 @@ void MergingFactory::prepare_BV(int i) {
   for ( auto & virt : theVirtualsMap[i] ) virt->factory(this);
   
     // check for consistent conventions on virtuals, if we are to include MH()->M()
-  assert(i > MH()->M()||haveVirtuals);
+  
+  if(!(i > MH()->M()||haveVirtuals))throw InitException() << MH()->M()<<" NLO corrections requested,\n but no virtual contributions are found.";
   
   for ( auto & virt : DipoleRepository::insertionIOperators(dipoleSet()) )
   virt->factory(this);
@@ -440,9 +440,15 @@ void MergingFactory::setup() {
     for ( auto & amp: amplitudes() ) amp->factory(this);
     
     MH()->largeNBasis()->factory(this);
+      //was an assert...
+    if(!(!(divideSub!=-1&&divideSubNumber==-1)||!(divideSub==-1&&divideSubNumber!=-1))){
+      throw InitException() << "dividing the subprocesses is not performed correct.";
+    }
+   
+    if (subProcessGroups()) {
+      throw InitException() << "There are no subprocess groups in merging!!!";
+    }
     
-    assert(!(divideSub!=-1&&divideSubNumber==-1)||!(divideSub==-1&&divideSubNumber!=-1));
-    assert(!subProcessGroups());
     
       //fill the amplitudes
     if ( !amplitudes().empty() )  fill_amplitudes();
