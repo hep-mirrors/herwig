@@ -17,8 +17,7 @@ Node::Node(MatchboxMEBasePtr nodeME, int cutstage, MergerPtr mh)
   :Interfaced(), 
  thenodeMEPtr(nodeME), 
  thedipol(), 
- theparent(), 
-
+ theparent(),
  theCutStage(cutstage), 
  isOrdered(true), 
  theSubtractedReal(false), 
@@ -182,7 +181,7 @@ void Node::setXComb(tStdXCombPtr xc) {
 
 #include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
 void Node::birth(vector<MatchboxMEBasePtr> vec) {
-
+    // produce the children
   vector<SubtractionDipolePtr> dipoles  = 
            nodeME()->getDipoles(DipoleRepository::dipoles(
                         nodeME()->factory()->dipoleSet()), vec, true);
@@ -262,13 +261,13 @@ bool Node::inShowerPS(Energy hardpT) {
 
 NodePtr Node::getHistory(bool normal, double hardScaleFactor) {
   NodePtr res = this;
-    //cout<<"\nstart get next"<<flush;
+
   vector<NodePtr> temp = getNextOrderedNodes(normal, hardScaleFactor);
 
-  Energy minpt = 100000.*GeV;
+  Energy minpt = Constants::MaxEnergy;
   Selector<NodePtr> subprosel;
   while (temp.size() != 0) {
-    minpt = 100000.*GeV;
+    minpt = Constants::MaxEnergy;
     subprosel.clear();
     for (NodePtr const &  child : temp) {
       if( child->dipole()->underlyingBornME()->largeNColourCorrelatedME2(
