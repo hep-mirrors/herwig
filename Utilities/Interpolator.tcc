@@ -23,15 +23,15 @@ using namespace Herwig;
 template <typename ValT, typename ArgT>
 void Interpolator<ValT,ArgT>::persistentOutput(PersistentOStream & os) const {
   os << _xval << _fun << _order 
-     << ounit(_funit,TypeTraits<ValT>::baseunit) 
-     << ounit(_xunit,TypeTraits<ArgT>::baseunit);
+     << ounit(_funit,TypeTraits<ValT>::baseunit()) 
+     << ounit(_xunit,TypeTraits<ArgT>::baseunit());
 }
 
 template <typename ValT, typename ArgT>
 void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
   is >> _xval >> _fun >> _order 
-     >> iunit(_funit,TypeTraits<ValT>::baseunit) 
-     >> iunit(_xunit,TypeTraits<ArgT>::baseunit);
+     >> iunit(_funit,TypeTraits<ValT>::baseunit()) 
+     >> iunit(_xunit,TypeTraits<ArgT>::baseunit());
 }
 
 /**
@@ -75,20 +75,20 @@ void Interpolator<ValT,ArgT>::Init() {
     ("ValueType",
      "The unit of the function values",
      &Interpolator<ValT,ArgT>::_funit, 
-     TypeTraits<ValT>::baseunit, 
-     1.0*TypeTraits<ValT>::baseunit, 
-     0*TypeTraits<ValT>::baseunit, 
-     0*TypeTraits<ValT>::baseunit,
+     TypeTraits<ValT>::baseunit(), 
+     1.0*TypeTraits<ValT>::baseunit(), 
+     0*TypeTraits<ValT>::baseunit(), 
+     0*TypeTraits<ValT>::baseunit(),
      false, true, Interface::nolimits);
 
   static Parameter<Interpolator<ValT,ArgT>,ArgT> interfaceArgType
     ("ArgType",
      "The unit of the function arguments",
      &Interpolator<ValT,ArgT>::_xunit, 
-     TypeTraits<ArgT>::baseunit, 
-     1.0*TypeTraits<ArgT>::baseunit, 
-     0*TypeTraits<ArgT>::baseunit, 
-     0*TypeTraits<ArgT>::baseunit,
+     TypeTraits<ArgT>::baseunit(), 
+     1.0*TypeTraits<ArgT>::baseunit(), 
+     0*TypeTraits<ArgT>::baseunit(), 
+     0*TypeTraits<ArgT>::baseunit(),
      false, true, Interface::nolimits);
 
 }
