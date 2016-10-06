@@ -4,9 +4,15 @@
 #ifndef HERWIG_SubtractionDipole_FH
 #define HERWIG_SubtractionDipole_FH
 
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
+
 namespace Herwig {
 
 class SubtractionDipole;
+  using namespace ThePEG;
+  
+  ThePEG_DECLARE_POINTERS(SubtractionDipole , SubtractionDipolePtr );
 
 }
 

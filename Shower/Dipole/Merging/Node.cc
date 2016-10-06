@@ -8,29 +8,15 @@
 #include "MergingFactory.h"
 #include "Merger.h"
 
-
-#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
-#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
-#include "Herwig/Shower/ShowerHandler.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/EventRecord/Particle.h"
-#include "ThePEG/Repository/UseRandom.h"
-#include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Handlers/StdXCombGroup.h"
-#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
 using namespace Herwig;
 
 Node::Node() {
+  throw Exception()
+  << "The default constructor should not be called."
+  << Exception::abortnow;
 }
 
-
-Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int cutstage, Ptr<Merger>::ptr mh)
+Node::Node(MatchboxMEBasePtr nodeME, int cutstage, MergerPtr mh)
   :Interfaced(), 
  thenodeMEPtr(nodeME), 
  thedipol(), 
@@ -48,10 +34,10 @@ Node::Node(Ptr<MatchboxMEBase>::ptr nodeME, int cutstage, Ptr<Merger>::ptr mh)
 
 
 
-Node::Node(Ptr<Node>::ptr deephead, 
-           Ptr<Node>::ptr head, 
-           Ptr<SubtractionDipole>::ptr dipol, 
-           Ptr<MatchboxMEBase>::ptr nodeME, 
+Node::Node(NodePtr deephead, 
+           NodePtr head, 
+           SubtractionDipolePtr dipol, 
+           MatchboxMEBasePtr nodeME, 
            int cutstage)
 :Interfaced(), thenodeMEPtr(nodeME), 
 thedipol(dipol), 
@@ -67,37 +53,37 @@ theVirtualContribution(false)
 
 Node::~Node() { }
 
-Ptr<SubtractionDipole>::ptr Node::dipole() const {
+SubtractionDipolePtr Node::dipole() const {
   return thedipol;
 }
 
 /** returns the matrix element pointer */
 
-const Ptr<MatchboxMEBase>::ptr Node::nodeME() const {
+const MatchboxMEBasePtr Node::nodeME() const {
   return thenodeMEPtr;
 }
 
 /** access the matrix element pointer */
 
-Ptr<MatchboxMEBase>::ptr Node::nodeME() {
+MatchboxMEBasePtr Node::nodeME() {
   return thenodeMEPtr;
 }
 
 int Node::legsize() const {return nodeME()->legsize();}
 
-Ptr<Node>::ptr  Node::randomChild() {
+NodePtr  Node::randomChild() {
   return thechildren[(int)(UseRandom::rnd() *  thechildren.size())];
 }
 
 bool Node::allAbove(Energy pt) {
-  for (Ptr<Node>::ptr child : thechildren)
+  for (NodePtr child : thechildren)
     if(child->pT()<pt)return false;
   return true;
 }
 
 
 
-bool Node::isInHistoryOf(Ptr<Node>::ptr other) {
+bool Node::isInHistoryOf(NodePtr other) {
   while (other->parent()) {
     if(other == this)return true;
     other = other->parent();
@@ -197,15 +183,16 @@ void Node::setXComb(tStdXCombPtr xc) {
   }
 }
 
-void Node::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
+void Node::birth(vector<MatchboxMEBasePtr> vec) {
 
-  vector<Ptr<SubtractionDipole>::ptr> dipoles  = 
+  vector<SubtractionDipolePtr> dipoles  = 
            nodeME()->getDipoles(DipoleRepository::dipoles(
                         nodeME()->factory()->dipoleSet()), vec, true);
   
   for ( auto const & dip : dipoles ) {
     dip->doSubtraction();
-    Ptr<Node>::ptr node = new_ptr(Node(theDeepHead, 
+    NodePtr node = new_ptr(Node(theDeepHead, 
                                        this, 
                                        dip, 
                                        dip->underlyingBornME(), 
@@ -216,19 +203,19 @@ void Node::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
 }
 
 
-vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal, double hardScaleFactor) {
+vector<NodePtr> Node::getNextOrderedNodes(bool normal, double hardScaleFactor) {
 
-  vector<Ptr<Node>::ptr> temp = children();
-  vector<Ptr<Node>::ptr> res;
+  vector<NodePtr> temp = children();
+  vector<NodePtr> res;
 
-  for (Ptr<Node>::ptr  const & child : children()) {
+  for (NodePtr  const & child : children()) {
     if(deepHead()->MH()->mergePt()>child->pT()) {
       res.clear();
       return res;
     }
   }
   
-  for (Ptr<Node>::ptr const & child: children()) {
+  for (NodePtr const & child: children()) {
 
     if (parent()&& normal) {
       if ( child->pT() < pT() ) {
@@ -237,7 +224,7 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal, double hardScaleFa
     }
     if ( child->children().size() != 0 ) {
       
-      for (Ptr<Node>::ptr itChild:  child->children()) {
+      for (NodePtr itChild:  child->children()) {
         if( itChild->pT() > child->pT()&&child->inShowerPS(itChild->pT()) ) {
           res.push_back(child);
           break;
@@ -276,17 +263,17 @@ bool Node::inShowerPS(Energy hardpT) {
 
 
 
-Ptr<Node>::ptr Node::getHistory(bool normal, double hardScaleFactor) {
-  Ptr<Node>::ptr res = this;
+NodePtr Node::getHistory(bool normal, double hardScaleFactor) {
+  NodePtr res = this;
     //cout<<"\nstart get next"<<flush;
-  vector<Ptr<Node>::ptr> temp = getNextOrderedNodes(normal, hardScaleFactor);
+  vector<NodePtr> temp = getNextOrderedNodes(normal, hardScaleFactor);
 
   Energy minpt = 100000.*GeV;
-  Selector<Ptr<Node>::ptr> subprosel;
+  Selector<NodePtr> subprosel;
   while (temp.size() != 0) {
     minpt = 100000.*GeV;
     subprosel.clear();
-    for (Ptr<Node>::ptr const &  child : temp) {
+    for (NodePtr const &  child : temp) {
       if( child->dipole()->underlyingBornME()->largeNColourCorrelatedME2(
                                                                          make_pair(child->dipole()->bornEmitter(), child->dipole()->bornSpectator()), 
                                                                          deepHead()->MH()->largeNBasis()) != 0.
@@ -341,7 +328,7 @@ IBPtr Node::fullclone() const {
   return new_ptr(*this);
 }
 
-
+#include "ThePEG/Persistency/PersistentOStream.h"
 void Node::persistentOutput(PersistentOStream & os) const {
   
   os <<
@@ -360,6 +347,7 @@ void Node::persistentOutput(PersistentOStream & os) const {
   theMergingHelper;
 }
 
+#include "ThePEG/Persistency/PersistentIStream.h"
 void Node::persistentInput(PersistentIStream & is, int) {
   
   is >>
@@ -385,6 +373,7 @@ void Node::persistentInput(PersistentIStream & is, int) {
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
+#include "ThePEG/Utilities/DescribeClass.h"
 DescribeClass<Node, Interfaced> describeHerwigNode("Herwig::Node", "HwDipoleShower.so");
 
 void Node::Init() {

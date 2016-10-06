@@ -4,9 +4,18 @@
 #ifndef HERWIG_MergingFactory_FH
 #define HERWIG_MergingFactory_FH
 
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
+
 namespace Herwig {
 
 class MergingFactory;
+  
+  class MergingFactory;
+  using namespace ThePEG;
+  
+  
+  ThePEG_DECLARE_POINTERS(MergingFactory , MergingFactoryPtr );
 
 }
 

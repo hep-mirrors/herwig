@@ -12,6 +12,7 @@
   /// This is the declaration of the MergingFactory class.
   //
 
+#include "MergingFactory.fh"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Node.fh"
 #include "Merger.h"
@@ -55,11 +56,11 @@ namespace Herwig {
       /// prepare the real emission matrix elements.
     void prepare_R(int i);
       /// push the born contributions to the ME vector.
-    void pushB(Ptr<MatchboxMEBase>::ptr, int);
+    void pushB(MatchboxMEBasePtr, int);
       //push the virtual contributions to the ME vector.
-    void pushV(Ptr<MatchboxMEBase>::ptr, int);
+    void pushV(MatchboxMEBasePtr, int);
       /// push the real contributions to the ME vector.
-    void pushProR(Ptr<MatchboxMEBase>::ptr, int);
+    void pushProR(MatchboxMEBasePtr, int);
       /// order matrix elements form one loop provider.
     void orderOLPs();
       /// Debugging: push only multiplicities to the ME vector
@@ -69,18 +70,18 @@ namespace Herwig {
       /// calculate only unlops weights.
     bool onlyUnlopsweights() const {return theonlyUnlopsweights;}
       /// pointer to the merging helper.
-    Ptr<Merger>::ptr MH(){return theMergingHelper;}
+    MergerPtr MH(){return theMergingHelper;}
       /// maximal NLO mulitplicity: 0=NLO corrections to the productio process.
     int M()const {return theM-1;}
       /// leg size of highest multiplicity.
      int N()const {return theN;}
      /// Return the Map of matrix elements to be considered
      /// (the Key is the number of additional jets)
-    const map<int, vector<Ptr<MatchboxMEBase>::ptr> >& pureMEsMap() const {
+    const map<int, vector<MatchboxMEBasePtr> >& pureMEsMap() const {
       return thePureMEsMap;}
       /// Access the Map of matrix elements to be considered
       /// (the Key is the number of additional jets)
-    map<int, vector<Ptr<MatchboxMEBase>::ptr> >& pureMEsMap() {
+    map<int, vector<MatchboxMEBasePtr> >& pureMEsMap() {
       return thePureMEsMap;
     }
       //Parse a process description
@@ -166,11 +167,11 @@ namespace Herwig {
       /// map for processes.
     map< int, vector<string> > processMap;
       //The matrix elements: int = number of additional jets
-    map< int, vector<Ptr<MatchboxMEBase>::ptr> > thePureMEsMap;
+    map< int, vector<MatchboxMEBasePtr> > thePureMEsMap;
       /// map for virtual contributions
     map<int, vector<Ptr<MatchboxInsertionOperator>::ptr> > theVirtualsMap;
       /// the merging helper
-    Ptr<Merger>::ptr theMergingHelper;
+    MergerPtr theMergingHelper;
     
     /**
      * The assignment operator is private and must never be called.

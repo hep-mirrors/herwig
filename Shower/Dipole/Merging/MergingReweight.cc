@@ -7,13 +7,6 @@
   // Please respect the MCnet academic guidelines, see GUIDELINES for details.
   //
 #include "MergingReweight.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Interface/Parameter.h"
-#include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Handlers/StandardXComb.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
@@ -45,10 +38,12 @@ double MergingReweight::weight() const {
   return pow(maxpt/scale, MaxPTPower)*pow(ht/scale, HTPower)*pow(maxmjj/scale,MaxMjjPower);
 }
 
+#include "ThePEG/Persistency/PersistentOStream.h"
 void MergingReweight::persistentOutput(PersistentOStream & os) const {
   os << HTPower << MaxPTPower<<MaxMjjPower << ounit(scale,GeV) << onlyColoured;
 }
 
+#include "ThePEG/Persistency/PersistentIStream.h"
 void MergingReweight::persistentInput(PersistentIStream & is, int) {
   is >> HTPower >> MaxPTPower >>MaxMjjPower>> iunit(scale,GeV) >> onlyColoured;
 }
@@ -60,10 +55,17 @@ void MergingReweight::persistentInput(PersistentIStream & is, int) {
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
+
+#include "ThePEG/Utilities/DescribeClass.h"
 DescribeClass<MergingReweight, ThePEG::ReweightBase>
 describeHerwigMergingReweight("Herwig::MergingReweight", "HwDipoleShower.so");
 
 
+
+
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 void MergingReweight::Init() {
 
   static ClassDocumentation<MergingReweight> documentation

@@ -90,29 +90,6 @@ public:
    */
   static void Init();
 
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const;
-  //@}
-
-private:
-
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
 
 private:
 
@@ -126,7 +103,7 @@ private:
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;
   
     // the merging helper
-  Ptr<Merger>::ptr theMergingHelper;
+  MergerPtr theMergingHelper;
   
 };
 

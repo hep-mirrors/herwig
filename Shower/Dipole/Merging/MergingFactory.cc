@@ -10,38 +10,10 @@
   // This is the implementation of the non-inlined, non-templated member
   // functions of the MergeboxFactory class.
   //
+
+
 #include "MergingFactory.h"
 #include "Node.h"
-
-#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Interface/Reference.h"
-#include "ThePEG/Interface/RefVector.h"
-#include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Parameter.h"
-#include "ThePEG/Interface/Command.h"
-#include "ThePEG/Utilities/StringUtils.h"
-#include "ThePEG/Repository/Repository.h"
-#include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
-#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-
-#include "ThePEG/MatrixElement/MEBase.h"
-
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
-#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
-
-#include "ThePEG/Cuts/JetFinder.h"
-#include "fastjet/ClusterSequence.hh"
-
-#include <boost/progress.hpp>
-
-#include <iterator>
-using std::ostream_iterator;
 
 using namespace Herwig;
 using std::ostream_iterator;
@@ -92,11 +64,13 @@ void MergingFactory::fill_amplitudes() {
   }
   
   for ( int i = 0 ; i <= MH()->N() ; ++i ) {
-    vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(processMap[i], orderInAlphaS() + i,i<MH()->M()+1);
+    vector<MatchboxMEBasePtr> ames = makeMEs(processMap[i], orderInAlphaS() + i,i<MH()->M()+1);
     copy(ames.begin(), ames.end(), back_inserter(pureMEsMap()[i]));
   }
 }
 
+
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
 void MergingFactory::prepare_BV(int i) {
     // check if we have virtual contributions
   bool haveVirtuals = true;
@@ -164,8 +138,10 @@ void MergingFactory::prepare_R(int i) {
   prepareME(real);
 }
 
-void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
-  Ptr<MatchboxMEBase>::ptr bornme = born->cloneMe();
+
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
+void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
+  MatchboxMEBasePtr bornme = born->cloneMe();
   bornme->maxMultCKKW(1);
   bornme->minMultCKKW(0);
   
@@ -187,7 +163,7 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   bornme->virtuals().push_back(PK);
   
   
-  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 0,MH()));
+  NodePtr clusternode = new_ptr(Node(bornme, 0,MH()));
   
   clusternode->deepHead(clusternode);
   MH()->firstNodeMap(bornme,clusternode);
@@ -197,8 +173,8 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   
   
-  vector<Ptr<Node>::ptr> temp;
-  vector<Ptr<Node>::ptr> temp1;
+  vector<NodePtr> temp;
+  vector<NodePtr> temp1;
   temp.push_back(clusternode);
   unsigned int k = 1;
   while (thePureMEsMap[i - k].size() != 0) {
@@ -240,9 +216,9 @@ void MergingFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
 
 
 
-void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
+void MergingFactory::pushV(MatchboxMEBasePtr born, int i) {
   
-  Ptr<MatchboxMEBase>::ptr nlo = born->cloneMe();
+  MatchboxMEBasePtr nlo = born->cloneMe();
   
   string pname = fullName() + "/" + nlo->name() + ".Virtual";
   if ( !(generator()->preinitRegister(nlo, pname)) ) throw InitException() << "Virtual ME " << pname << " already existing.";
@@ -268,15 +244,15 @@ void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   }
   nlo->doOneLoopNoBorn();
     ////////////////////////////////////NLO///////////////////////////
-  Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, 0,MH()));
+  NodePtr clusternode = new_ptr(Node(nlo, 0,MH()));
   
   clusternode->deepHead(clusternode);
   clusternode->virtualContribution(true);
   MH()->firstNodeMap(nlo,clusternode);
   nlo->merger(MH());
   
-  vector<Ptr<Node>::ptr> temp;
-  vector<Ptr<Node>::ptr> temp1;
+  vector<NodePtr> temp;
+  vector<NodePtr> temp1;
   temp.push_back(clusternode);
   unsigned int k = 1;
   while (thePureMEsMap[i - k].size() != 0) {
@@ -308,14 +284,14 @@ void MergingFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   
 }
 
-void MergingFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
-  Ptr<MatchboxMEBase>::ptr bornme = born->cloneMe();
+void MergingFactory::pushProR(MatchboxMEBasePtr born, int i) {
+  MatchboxMEBasePtr bornme = born->cloneMe();
   
   string pname = fullName() + "/" + bornme->name() + ".Real";
   if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Subtracted ME " << pname << " already existing.";
   
   
-  Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, 1,MH()));
+  NodePtr clusternode = new_ptr(Node(bornme, 1,MH()));
   clusternode->deepHead(clusternode);
   clusternode->subtractedReal(true);
   MH()->firstNodeMap(bornme,clusternode);
@@ -323,8 +299,8 @@ void MergingFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   
   
-  vector<Ptr<Node>::ptr> temp;
-  vector<Ptr<Node>::ptr> temp1;
+  vector<NodePtr> temp;
+  vector<NodePtr> temp1;
   temp.push_back(clusternode);
   
   unsigned int k = 1;
@@ -353,7 +329,7 @@ void MergingFactory::orderOLPs() {
   
 }
 
-
+#include "ThePEG/Utilities/StringUtils.h"
 vector<string> MergingFactory::parseProcess(string in) {
   vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
@@ -397,7 +373,7 @@ vector<string> MergingFactory::parseProcess(string in) {
 
 
 
-
+#include <boost/progress.hpp>
 void MergingFactory::setup() {
   
   useMe();
@@ -550,6 +526,9 @@ void MergingFactory::setup() {
   
 }
 
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
 void MergingFactory::persistentOutput(PersistentOStream & os) const {
   
   
@@ -569,6 +548,17 @@ void MergingFactory::persistentInput(PersistentIStream & is, int) {
   >> theonlysub            >> ransetup
   >> processMap           >> theMergingHelper   >>theM>>theN;
 }
+
+
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Command.h"
+
+
 
 void MergingFactory::Init() {
   

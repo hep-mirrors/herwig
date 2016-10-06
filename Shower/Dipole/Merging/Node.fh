@@ -4,9 +4,17 @@
 #ifndef HERWIG_Node_FH
 #define HERWIG_Node_FH
 
-namespace Herwig {
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
 
+
+namespace Herwig {
+  
 class Node;
+using namespace ThePEG;
+  
+  ThePEG_DECLARE_POINTERS(Node , NodePtr );
+  
 
 }
 
