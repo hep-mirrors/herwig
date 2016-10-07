@@ -411,7 +411,7 @@ void MergingFactory::setup() {
     unsigned int nl = 0;
     for ( const auto p : partons ) {
     	const Energy mass = p->hardProcessMass();
-    	const PID pid = p->id();
+    	const long pid = p->id();
 
       if ( abs(pid) < 7 && mass == ZERO )
         ++nl;

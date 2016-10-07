@@ -128,7 +128,7 @@ void Node::generateKinematics(const double *r ) {
 
 void Node::firstgenerateKinematics(const double *r) {
   flushCaches();
-  MH()->smeareMergePt();
+  MH()->smearMergePt();
   
     //Set here the new merge Pt for the next phase space point.( Smearing!!!)
   for (auto const & ch: thechildren) {

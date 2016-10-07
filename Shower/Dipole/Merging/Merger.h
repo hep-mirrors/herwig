@@ -71,29 +71,14 @@ namespace Herwig {
     
     friend class MergingFactory;
     friend class Node;
-      //friend class MScale;
-    
-  public:
-    
-    /** @name Standard constructors and destructors. */
-      //@{
-    /**
-     * The default constructor.
-     */
-    Merger();
-    
-    /**
-     * The destructor.
-     */
-    virtual ~Merger();
-      //@}
     
   public:
     
       // define the ME region for a particle vector.
-    bool matrixElementRegion(PVector incoming, PVector outgoing, 
-                             Energy winnerScale=ZERO, 
-                             Energy cutscale=ZERO);
+    bool matrixElementRegion(PVector incoming, 
+                             PVector outgoing, 
+                             Energy winnerScale = ZERO, 
+                             Energy cutscale = ZERO);
       /// return the current merging scale, 
       /// gets smeared around the central merging scale in generate kinematics.
     Energy mergingScale()const{return theMergePt;}
@@ -132,8 +117,11 @@ namespace Herwig {
     void N0(int n){ theN0=n;}
       /// return the large-N basis (TODO: implement check if born ME works with the choice)
     Ptr<ColourBasis>::ptr largeNBasis(){return theLargeNBasis;}
-      /// smeare the merging pt
-    void smeareMergePt(){theMergePt=centralMergePt()*(1.+0.*(-1.+2.*UseRandom::rnd())*smear());}
+      /// smear the merging pt
+    void smearMergePt(){
+    	const double factor = 1. + (-1. + 2.*UseRandom::rnd() ) * smear();
+    	theMergePt = factor * centralMergePt();
+    }
       /// true if the phase space for initial emissions should not be restricted in z.
     bool openInitialStateZ(){return theOpenInitialStateZ;}
       /// return the current ME
@@ -237,10 +225,10 @@ namespace Herwig {
     double singleUNLOPS(Dipole, Energy, Energy, Energy, pair<bool, bool>);
       //alpha_s as given in the shower
     double as(Energy q){return DSH()->as(q);}
-      //return the dipole shower handler
+    //   //return the dipole shower handler
     DipoleShowerHandlerPtr DSH(){return theDipoleShowerHandler;}
       //return the const dipole shower handler
-    DipoleShowerHandlerPtr DSH()const{return theDipoleShowerHandler;}
+    cDipoleShowerHandlerPtr DSH()const{return theDipoleShowerHandler;}
       /// insert map from ME to first clusternode
     void firstNodeMap(MatchboxMEBasePtr, NodePtr);
       /// the gamma parameter to subtract dipoles above a alpha parameter
@@ -261,43 +249,44 @@ namespace Herwig {
   private:
     
       /// calculate the history expansion
-    bool Unlopsweights;
+    bool Unlopsweights = true;
       /// use CMW scheme
-    bool theCMWScheme;
+    bool theCMWScheme = true;
       /// true if current point should be projected
-    bool projected;
+    bool projected = true;
       /// true if LO cross sections should be unitarised
-    bool isUnitarized;
+    bool isUnitarized = true;
       /// true if NLO contributions should be unitarised
-    bool isNLOUnitarized;
+    bool isNLOUnitarized = true;
       /// define ME region by jet algorithm
-    bool defMERegionByJetAlg;
+    bool defMERegionByJetAlg = false;
       /// no z-restricions on initial state emissions in clustering
-    bool theOpenInitialStateZ;
+    bool theOpenInitialStateZ = false;
       /// history weight choice
-    int theChooseHistory;
+    int theChooseHistory = 0;
       /// legsize of production process
-    int theN0;
+    int theN0 = 0;
       /// calculate only the N particle contribution
-    int theOnlyN;
+    int theOnlyN = -1;
       /// the current maxlegs (either LO or NLO maxlegs)
-    size_t theCurrentMaxLegs;
+    size_t theCurrentMaxLegs = -1;
       /// current weight and weight of clustered born
-    double weight, weightCB;
+    double weight = 1.0;
+    double weightCB = 1.0;
       /// subtract the dipole contribution above a given gamma
-    double theGamma;
+    double theGamma = 1.0;
       /// if ME region defined by jet algorithm, this is the y cut for ee
-    double ee_ycut;
+    double ee_ycut = -1;
       /// if ME region defined by jet algorithm, this is the d cut for pp
-    double pp_dcut;
+    double pp_dcut = -1;
       /// smearing factor for merging scale
-    double theSmearing;
+    double theSmearing = 0.;
       /// cutoff for real emission contribution
-    Energy theIRSafePT;
+    Energy theIRSafePT = 1_GeV;
       /// current merging scale
-    Energy theMergePt;
+    Energy theMergePt = 4_GeV;
       /// central merging scale
-    Energy theCentralMergePt;
+    Energy theCentralMergePt = 4_GeV;
       /// current cluster histoy including sudakov weights
     History history;
       /// if ME region defined by jet algorithm, this is the jetfinder
@@ -310,13 +299,13 @@ namespace Herwig {
       /// current ME
     MatchboxMEBasePtr theCurrentME;
       /// Tilde kinematics pointers, only to use lastPt(emitter, emission, spectator)
-    Ptr<FFLightTildeKinematics>::ptr FFLTK;
-    Ptr<FILightTildeKinematics>::ptr FILTK;
-    Ptr<IFLightTildeKinematics>::ptr IFLTK;
-    Ptr<IILightTildeKinematics>::ptr IILTK;
-    Ptr<FFMassiveTildeKinematics>::ptr FFMTK;
-    Ptr<FIMassiveTildeKinematics>::ptr FIMTK;
-    Ptr<IFMassiveTildeKinematics>::ptr IFMTK;
+    Ptr<FFLightTildeKinematics>::ptr FFLTK = new_ptr( FFLightTildeKinematics() );
+    Ptr<FILightTildeKinematics>::ptr FILTK = new_ptr( FILightTildeKinematics() );
+    Ptr<IFLightTildeKinematics>::ptr IFLTK = new_ptr( IFLightTildeKinematics() );
+    Ptr<IILightTildeKinematics>::ptr IILTK = new_ptr( IILightTildeKinematics() );
+    Ptr<FFMassiveTildeKinematics>::ptr FFMTK = new_ptr( FFMassiveTildeKinematics() );
+    Ptr<FIMassiveTildeKinematics>::ptr FIMTK = new_ptr( FIMassiveTildeKinematics() );
+    Ptr<IFMassiveTildeKinematics>::ptr IFMTK = new_ptr( IFMassiveTildeKinematics() );
       //pointer to the shower handler
     DipoleShowerHandlerPtr theDipoleShowerHandler;
       /// pointer to the MergingFactory
@@ -396,7 +385,7 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    Merger & operator=(const Merger &);
+    Merger & operator=(const Merger &) = delete;
     
   };
   
