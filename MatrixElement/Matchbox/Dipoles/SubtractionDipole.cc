@@ -832,11 +832,6 @@ CrossSection SubtractionDipole::prefactor(Energy2 factorizationScale)const{
   const double jac = jacobian();
   assert( factorizationScale != ZERO );
   assert (! splitting());
-  if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return ZERO;
-  }
   double pdfweight = 1.;
   if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
   if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
@@ -885,9 +880,6 @@ CrossSection SubtractionDipole::dip(Energy2 factorizationScale) const {
   return factor*dip;
 }
 
-bool SubtractionDipole::clustersafe()const {
-  return (theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second);
-}
 
 void SubtractionDipole::print(ostream& os) const {
 

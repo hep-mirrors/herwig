@@ -982,9 +982,6 @@ public:
    */  
   virtual void fillProjectors();
   
-  /// 
-  pair<bool,bool> clustersafe(int emit,int emis,int spec);
-
   //@}
 
   /** @name Methods used to setup MatchboxMEBase objects */

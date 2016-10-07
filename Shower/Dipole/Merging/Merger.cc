@@ -64,15 +64,15 @@ pair<PVector , PVector> getInOut( NodePtr Node ){
   return make_pair( incoming , outgoing );
 }
 
-CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
+CrossSection Merger::MergingDSigDRBornGamma( ){
   
   double weightCL = 0.;
   weight = 1.;
   
-  if ( !Node->children().empty() ) {
-    auto const inoutpair = getInOut( Node );
+  if ( !currentNode()->children().empty() ) {
+    auto const inoutpair = getInOut( currentNode() );
       // Here we make sure that clustering and splitting are invertible.
-    NodePtr rndCh =  Node->randomChild();
+    NodePtr rndCh =  currentNode()->randomChild();
       // Check if point is part of the ME region.
     if( !matrixElementRegion( inoutpair.first ,
                               inoutpair.second ,
@@ -80,18 +80,18 @@ CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
                               theMergePt ) )weight *= 0.;
   }
   
-  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  NodePtr Born =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
   NodePtr CLNode;
   NodePtr BornCL;
   
   
-  if( !Node->children().empty() ){
+  if( !currentNode()->children().empty() ){
     if ( UseRandom::rndbool() ){
-      CLNode =  Node->randomChild();
+      CLNode =  currentNode()->randomChild();
       bool inhist = CLNode->isInHistoryOf( Born );
-      weight *= inhist?( -2.*int( Node->children().size() ) ):0.;
+      weight *= inhist?( -2.*int( currentNode()->children().size() ) ):0.;
       projected = true;
-      weightCL = 2.*int( Node->children().size() );
+      weightCL = 2.*int( currentNode()->children().size() );
       BornCL = CLNode-> getHistory( false , DSH()->hardScaleFactor() );
     }else{
       weight = 2.;
@@ -104,44 +104,44 @@ CrossSection Merger::MergingDSigDRBornGamma( NodePtr Node ){
   
   
   if ( treefactory()->onlymulti() != -1&&
-      treefactory()->onlymulti() != int( Node->legsize()-(projected ? 1 : 0) ) )
+      treefactory()->onlymulti() != int( currentNode()->legsize()-(projected ? 1 : 0) ) )
   return ZERO;
   
   
-  if( !Node->allAbove( mergePt()*(1.-1e-6)  ) )weight = 0.;
+  if( !currentNode()->allAbove( mergePt()*(1.-1e-6)  ) )weight = 0.;
   if( CLNode&&!CLNode->allAbove( mergePt()*(1.-1e-6) ) )weightCL = 0.;
   if ( !Born->xcomb()->willPassCuts() ){
     return ZERO;
   }
   
   CrossSection res = ZERO;
-  bool maxMulti = Node->legsize() == int( maxLegsLO() );
+  bool maxMulti = currentNode()->legsize() == int( maxLegsLO() );
   
   
   if( weight != 0. ){
     Energy startscale = CKKW_StartScale( Born );
-    fillHistory( startscale , Born , Node );
-    Node->runningPt( fillProjector( (projected ? 1 : 0) ) );
+    fillHistory( startscale , Born , currentNode() );
+    currentNode()->runningPt( fillProjector( (projected ? 1 : 0) ) );
     weight *= history.back().weight*alphaReweight()*pdfReweight();
     if( weight == 0.&&weightCL == 0. )return ZERO;
     
-    res += weight*TreedSigDR( startscale , Node , ( !maxMulti&&!projected )?theGamma:1. );
+    res += weight*TreedSigDR( startscale , ( !maxMulti&&!projected )?theGamma:1. );
   }
   
   if( CLNode&&theGamma != 1. ){
     Energy startscale = CKKW_StartScale( BornCL );
     fillHistory( startscale , BornCL , CLNode );
-    Node->runningPt( fillProjector( projected ? 1 : 0 ) );
+    currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
     weightCL *= history.back().weight*alphaReweight()*pdfReweight();
     CrossSection diff = ZERO;
-    Node->nodeME()->factory()->setAlphaParameter( 1. );
-    diff -=  weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale*theCurrentME->renFac() ) );
-    Node->nodeME()->factory()->setAlphaParameter( theGamma );
+     currentME()->factory()->setAlphaParameter( 1. );
+    diff -=  weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale* currentME()->renFac() ) );
+     currentME()->factory()->setAlphaParameter( theGamma );
     
     string alp = ( CLNode->dipole()->aboveAlpha()?"Above":"Below" );
     
-    diff += weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale*theCurrentME->renFac() ) );
-    Node->nodeME()->factory()->setAlphaParameter( 1. );
+    diff += weightCL*CLNode->dipole()->dSigHatDR( sqr( startscale* currentME()->renFac() ) );
+     currentME()->factory()->setAlphaParameter( 1. );
     
     res += diff;
   }
@@ -171,73 +171,73 @@ double decideClustering(const NodePtr sub,const NodePtr head,bool& pro){
 
 
 
-CrossSection Merger::MergingDSigDRBornStandard( NodePtr Node ){
+CrossSection Merger::MergingDSigDRBornStandard( ){
       // Check if phase space poing is in ME region
-  if ( !Node->children().empty() ) {
-    auto const & inoutpair = getInOut( Node );
-    NodePtr rndCh =  Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+  if ( !currentNode()->children().empty() ) {
+    auto const & inoutpair = getInOut( currentNode() );
+    NodePtr rndCh =  currentNode()->randomChild(); // Here we make sure that clustering and splitting are invertible
     if( !matrixElementRegion( inoutpair.first , inoutpair.second , rndCh->pT() , theMergePt ) )return ZERO;
   }
   
     // get the history for the process
-  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  NodePtr Born =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
   
     // decide if to cluster
-  weight = decideClustering(Born,Node,projected);
+  weight = decideClustering(Born,currentNode(),projected);
   
   if ( treefactory()->onlymulti() != -1&&
-      treefactory()->onlymulti() != int( Node->legsize()-( projected ? 1 : 0 ) ) )
+      treefactory()->onlymulti() != int( currentNode()->legsize()-( projected ? 1 : 0 ) ) )
       return ZERO;
     // Check for cuts on the production proces.
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
     // calculate the staring scale
   Energy startscale = CKKW_StartScale( Born );
     // fill history with caluclation of sudakov supression
-  fillHistory( startscale , Born , Node );
+  fillHistory( startscale , Born , currentNode() );
     // fill the projector -> return the scale of the last splitting
-  Node->runningPt( fillProjector( projected ? 1 : 0 ) );
+  currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
     // the weight has three components to get shower history weight
   weight *= history.back().weight*alphaReweight()*pdfReweight();
   if( weight == 0. )return ZERO;
     //calculate the cross section
-  return weight*TreedSigDR( startscale , Node , 1. );
+  return weight*TreedSigDR( startscale ,  1. );
 }
 
 
   /// calculate the history weighted born cross section
 #include "ThePEG/Handlers/SamplerBase.h"
-CrossSection Merger::MergingDSigDRBornCheapME( NodePtr Node ){
+CrossSection Merger::MergingDSigDRBornCheapME( ){
     // Check if phase space poing is in ME region
-  if ( !Node->children().empty() ) {
-    auto const & inoutpair = getInOut( Node );
-    NodePtr rndCh =  Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+  if ( !currentNode()->children().empty() ) {
+    auto const & inoutpair = getInOut( currentNode() );
+    NodePtr rndCh =  currentNode()->randomChild(); // Here we make sure that clustering and splitting are invertible
     if( !matrixElementRegion( inoutpair.first , inoutpair.second , rndCh->pT() , theMergePt ) )return ZERO;
   }
   
-  CrossSection meweight=(SamplerBase::runLevel() == SamplerBase::RunMode)?TreedSigDR( 60.*GeV , Node , 1. ):1.*nanobarn;
+  CrossSection meweight=(SamplerBase::runLevel() == SamplerBase::RunMode)?TreedSigDR( 60.*GeV, 1. ):1.*nanobarn;
   
-  if (SamplerBase::runLevel() == SamplerBase::RunMode && theHighMeWeightMap.count(Node) ) {
-    if (abs(meweight)>abs(theHighMeWeightMap[Node])) {
-      theHighMeWeightMap[Node]=abs(meweight);
+  if (SamplerBase::runLevel() == SamplerBase::RunMode && theHighMeWeightMap.count(currentNode()) ) {
+    if (abs(meweight)>abs(theHighMeWeightMap[currentNode()])) {
+      theHighMeWeightMap[currentNode()]=abs(meweight);
     }else{
-      if (meweight/theHighMeWeightMap[Node]<UseRandom::rnd()) {
+      if (meweight/theHighMeWeightMap[currentNode()]<UseRandom::rnd()) {
         return ZERO;
       }
     }
   }else{
-    theHighMeWeightMap.insert(make_pair(Node,abs(meweight)));
+    theHighMeWeightMap.insert(make_pair(currentNode(),abs(meweight)));
   }
   
   
   
     // get the history for the process
-  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  NodePtr Born =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
   
     // decide if to cluster
-  weight = decideClustering(Born,Node,projected);
+  weight = decideClustering(Born,currentNode(),projected);
   
   if ( treefactory()->onlymulti() != -1&&
-      treefactory()->onlymulti() != int( Node->legsize()-( projected ? 1 : 0 ) ) )
+      treefactory()->onlymulti() != int( currentNode()->legsize()-( projected ? 1 : 0 ) ) )
   return ZERO;
     // Check for cuts on the production proces.
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
@@ -245,36 +245,36 @@ CrossSection Merger::MergingDSigDRBornCheapME( NodePtr Node ){
   Energy startscale = CKKW_StartScale( Born );
   
     // fill history with caluclation of sudakov supression
-  fillHistory( startscale , Born , Node );
+  fillHistory( startscale , Born , currentNode() );
     // fill the projector -> return the scale of the last splitting
-  Node->runningPt( fillProjector( projected ? 1 : 0 ) );
+  currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
     // the weight has three components to get shower history weight
   weight *= history.back().weight*alphaReweight()*pdfReweight();
   if( weight == 0. )return ZERO;
     //calculate the cross section
-  return weight*TreedSigDR( startscale , Node , 1. )*theHighMeWeightMap[Node]/meweight;
+  return weight*TreedSigDR( startscale , 1. )*theHighMeWeightMap[currentNode()]/meweight;
 }
 
 
 
 
-CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
+CrossSection Merger::MergingDSigDRVirtualStandard( ){
     // Check if phase space poing is in ME region
-  if ( !Node->children().empty() ) {
-    auto inoutpair = getInOut( Node );
-    NodePtr rndCh =  Node->randomChild(); // Here we make sure that clustering and splitting are invertible
+  if ( !currentNode()->children().empty() ) {
+    auto inoutpair = getInOut( currentNode() );
+    NodePtr rndCh =  currentNode()->randomChild(); // Here we make sure that clustering and splitting are invertible
     if( !matrixElementRegion( inoutpair.first , inoutpair.second , rndCh->pT() , theMergePt ) )return ZERO;
   }
   
-  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  NodePtr Born =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
 
-  weight = decideClustering(Born,Node,projected);
+  weight = decideClustering(Born,currentNode(),projected);
   
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
 
   Energy startscale = CKKW_StartScale( Born );
-  fillHistory( startscale , Born , Node );
-  Node->runningPt( fillProjector( projected ? 1 : 0 ) );
+  fillHistory( startscale , Born , currentNode() );
+  currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
   
   double ww1 = history.back().weight;
   double ww2 = alphaReweight();
@@ -284,9 +284,9 @@ CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
   weight *= ww1*ww2*ww3;
   if( weight == 0. )return ZERO;
   
-  CrossSection matrixElement = LoopdSigDR( startscale , Node );
+  CrossSection matrixElement = LoopdSigDR( startscale );
   
-  CrossSection Bornweight = Node->nodeME()->dSigHatDRB();
+  CrossSection Bornweight =  currentME()->dSigHatDRB();
   
   double w1 = -sumpdfReweightUnlops();
   double w2 = -sumalphaReweightUnlops();
@@ -296,9 +296,9 @@ CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
   *Bornweight
   *SM().alphaS()/( 2.*ThePEG::Constants::pi );
   
-  if ( Node->legsize() == 5&&Debug::level > 2 ) {
+  if ( currentNode()->legsize() == 5&&Debug::level > 2 ) {
     Energy minPT = Constants::MaxEnergy;
-    for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
+    for( auto const & no :currentNode()->children() )minPT = min( no->pT() , minPT );
     
     generator()->log() << "\nVIRT " << minPT/GeV << " " << weight << " " << w1;
     generator()->log() << " " << w2;
@@ -313,18 +313,18 @@ CrossSection Merger::MergingDSigDRVirtualStandard( NodePtr Node ){
 }
 
 
-CrossSection Merger::MergingDSigDRRealStandard( NodePtr Node ){
-  bool allAbove = Node->allAbove( mergePt() );
+CrossSection Merger::MergingDSigDRRealStandard(){
+  bool allAbove = currentNode()->allAbove( mergePt() );
     //TODO: VW Abgas Skandal
-  if( !Node->allAbove( ( Debug::level > 2?0.01:1. )*theIRSafePT ) )return ZERO;
-  if ( allAbove )return MergingDSigDRRealAllAbove( Node );
+  if( !currentNode()->allAbove( ( Debug::level > 2?0.01:1. )*theIRSafePT ) )return ZERO;
+  if ( allAbove )return MergingDSigDRRealAllAbove(  );
   if ( UseRandom::rndbool() )
-  return 2.*MergingDSigDRRealBelowSubReal( Node );
-  return 2.*MergingDSigDRRealBelowSubInt( Node );
+  return 2.*MergingDSigDRRealBelowSubReal(  );
+  return 2.*MergingDSigDRRealBelowSubInt(  );
 }
 
-CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
-  if ( Node->children().empty() ) {
+CrossSection Merger::MergingDSigDRRealAllAbove( ){
+  if ( currentNode()->children().empty() ) {
     throw Exception()
     << "Real emission contribution without underlying born."
     << "These are finite contibutions already handled in LO merging."
@@ -333,7 +333,7 @@ CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
   
   
     //If all dipoles pts are above , we cluster to this dipole.
-  NodePtr CLNode =  Node->randomChild();
+  NodePtr CLNode =  currentNode()->randomChild();
     // Check if phase space poing is in ME region--> else rm PSP
   if ( !CLNode->children().empty() ) {
     auto inoutpair = getInOut( CLNode );
@@ -342,7 +342,7 @@ CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
   }
   
     // first find the history for the acctual Node
-  NodePtr Born =  Node-> getHistory( true , DSH()->hardScaleFactor() );
+  NodePtr Born =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
     // check if the randomly choosen CLNode is part of the history.
     // If CLNode is not part of the history , dont calculate the Real contribution
     // else multiply the real contribution with N ( number of children ).
@@ -357,19 +357,19 @@ CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
   if ( !Born->xcomb()->willPassCuts() )return ZERO;
   Energy startscale = CKKW_StartScale( Born );
   fillHistory( startscale , Born , CLNode );
-  Node->runningPt( fillProjector( projected ? 2 : 1 ) );
+  currentNode()->runningPt( fillProjector( projected ? 2 : 1 ) );
   weight *= history.back().weight*alphaReweight()*pdfReweight();
   if( weight == 0. )return ZERO;
   
-  CrossSection me = ( inhist?TreedSigDR( startscale , Node ):ZERO );
-  CrossSection dip = CLNode->calcDip( startscale*theCurrentME->renFac() );
+  CrossSection me = ( inhist?TreedSigDR( startscale ):ZERO );
+  CrossSection dip = CLNode->calcDip( startscale* currentME()->renFac() );
   
   
   CrossSection res =  weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
-  ( double )Node->children().size()*( me -dip );
-  if ( Node->legsize() == 6&&Debug::level > 2 ) {
+  ( double )currentNode()->children().size()*( me -dip );
+  if ( currentNode()->legsize() == 6&&Debug::level > 2 ) {
     Energy minPT = Constants::MaxEnergy;
-    for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
+    for( auto const & no :currentNode()->children() )minPT = min( no->pT() , minPT );
     
     generator()->log() << "\nRAA " << minPT/GeV << " " << weight << " " << ( me-dip )/nanobarn << " " << me/nanobarn << " " << dip/nanobarn;
   }
@@ -377,8 +377,8 @@ CrossSection Merger::MergingDSigDRRealAllAbove( NodePtr Node ){
   return res;
 }
 
-CrossSection Merger::MergingDSigDRRealBelowSubReal( NodePtr Node ){
-  NodePtr HistNode = Node->randomChild();
+CrossSection Merger::MergingDSigDRRealBelowSubReal(  ){
+  NodePtr HistNode = currentNode()->randomChild();
   if ( !HistNode->children().empty() ) {
     auto inoutpair = getInOut( HistNode );
     NodePtr rndCh =  HistNode->randomChild(); // Here we make sure that clustering and splitting are invertible
@@ -393,29 +393,29 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal( NodePtr Node ){
   
   Energy startscale = CKKW_StartScale( Born );
   fillHistory( startscale , Born , HistNode );
-  Node->runningPt( fillProjector( projected ? 1 : 0 ) );
+  currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
   weight *= history.back().weight*alphaReweight()*pdfReweight();
   
   if( weight == 0. )return ZERO;
   
   CrossSection sumPS = ZERO;
   
-  for( auto const & child : Node->children() ){
+  for( auto const & child : currentNode()->children() ){
     if ( child->allAbove( mergePt() ) ){
       if( ( child )->pT()>mergePt()/3. )//TODO: this is a dynamical cutoff( see below )
-      sumPS += child->calcPs( startscale*theCurrentME->renFac() );
+      sumPS += child->calcPs( startscale* currentME()->renFac() );
       else
-      sumPS += child->calcDip( startscale*theCurrentME->renFac() );
+      sumPS += child->calcDip( startscale* currentME()->renFac() );
     }else{
       assert( child->pT()>mergePt() );
     }
   }
   
-  CrossSection me = TreedSigDR( startscale , Node );
+  CrossSection me = TreedSigDR( startscale );
   
-  if ( Node->legsize() == 6&&Debug::level > 2 ) {
+  if ( currentNode()->legsize() == 6&&Debug::level > 2 ) {
     Energy minPT = Constants::MaxEnergy;
-    for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
+    for( auto const & no :currentNode()->children() )minPT = min( no->pT() , minPT );
     
     generator()->log() << "\nRBSR " << minPT/GeV << " " << weight << " " << ( me-sumPS )/nanobarn << " " << me/nanobarn << " " << sumPS/nanobarn;
   }
@@ -426,10 +426,10 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal( NodePtr Node ){
 
 
 
-CrossSection Merger::MergingDSigDRRealBelowSubInt( NodePtr Node ){
+CrossSection Merger::MergingDSigDRRealBelowSubInt( ){
   
-  if( Node->children().empty() )return ZERO;
-  NodePtr CLNode =  Node->randomChild();
+  if( currentNode()->children().empty() )return ZERO;
+  NodePtr CLNode =  currentNode()->randomChild();
   if( CLNode->pT()<mergePt()/3. )return ZERO;//TODO: this is a dynamical cutoff( see above )
   
   if ( !CLNode->children().empty() ) {
@@ -451,7 +451,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( NodePtr Node ){
   
   fillHistory( startscale , Born , CLNode );
   
-  Node->runningPt( fillProjector( projected ? 2 : 1 ) );
+  currentNode()->runningPt( fillProjector( projected ? 2 : 1 ) );
   
   weight *= history.back().weight*alphaReweight()*pdfReweight();
   
@@ -459,18 +459,18 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( NodePtr Node ){
   
   
   pair<CrossSection , CrossSection> DipAndPs =
-  CLNode->calcDipandPS( startscale*theCurrentME->renFac() );
+  CLNode->calcDipandPS( startscale* currentME()->renFac() );
   
-  if ( Node->legsize() == 6&&Debug::level > 2 ) {
+  if ( currentNode()->legsize() == 6&&Debug::level > 2 ) {
     Energy minPT = Constants::MaxEnergy;
-    for( auto const & no :Node->children() )minPT = min( no->pT() , minPT );
+    for( auto const & no :currentNode()->children() )minPT = min( no->pT() , minPT );
     
     
     generator()->log() << "\nRBSI " << CLNode->pT()/GeV << " " << weight << " " << ( DipAndPs.second-DipAndPs.first )/nanobarn << " " << DipAndPs.second/nanobarn << " " << DipAndPs.first/nanobarn;
   }
     //Here we add the PS and subtrac the Dip ( only above the dynamical cutoff )
   return weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
-  ( double )Node->children().size()*( DipAndPs.second-DipAndPs.first );
+  ( double )currentNode()->children().size()*( DipAndPs.second-DipAndPs.first );
 }
 
 
@@ -482,13 +482,12 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( NodePtr Node ){
 
 
 
-CrossSection Merger::TreedSigDR( Energy startscale , NodePtr Node , double diffAlpha ){
-  assert( Node->deepHead() == Node );
+CrossSection Merger::TreedSigDR( Energy startscale , double diffAlpha ){
   
-  Node->nodeME()->setScale( sqr( startscale ) , sqr( startscale ) );
-  CrossSection res = Node->nodeME()->dSigHatDRB();
+   currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
+  CrossSection res =  currentME()->dSigHatDRB();
   if ( diffAlpha != 1. ) {
-    res += Node->nodeME()->dSigHatDRAlphaDiff( diffAlpha );
+    res +=  currentME()->dSigHatDRAlphaDiff( diffAlpha );
   }
   if( std::isnan( double( res/nanobarn ) ) ){
     generator()->logWarning(Exception()
@@ -498,14 +497,12 @@ CrossSection Merger::TreedSigDR( Energy startscale , NodePtr Node , double diffA
   return res;
 }
 
-CrossSection Merger::LoopdSigDR( Energy startscale , NodePtr Node ){
-   // The deephead should be calculated here.
-  assert( Node->deepHead() == Node );
-    //Node->nodeME()->setXComb( Node->xcomb() );
-  Node->nodeME()->setScale( sqr( startscale ) , sqr( startscale ) );
-  Node->nodeME()->doOneLoopNoBorn();
-  CrossSection res = Node->nodeME()->dSigHatDRV()+Node->nodeME()->dSigHatDRI();
-  Node->nodeME()->noOneLoopNoBorn();
+CrossSection Merger::LoopdSigDR( Energy startscale ){
+   currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
+   currentME()->doOneLoopNoBorn();
+  CrossSection res =  currentME()->dSigHatDRV()+
+                      currentME()->dSigHatDRI();
+   currentME()->noOneLoopNoBorn();
   return res;
 }
 
@@ -528,7 +525,7 @@ Energy Merger::fillProjector( int pjs ){
 
 double Merger::pdfReweight(){
   double res = 1.;
-  double facfactor = ( history[0].node->legsize() == N0()?theCurrentME->renFac():DSH()->facFac() );
+  double facfactor = ( history[0].node->legsize() == N0()? currentME()->renFac():DSH()->facFac() );
   for( int side : {0 , 1} ){
     if( history[0].node->xcomb()->mePartonData()[side]->coloured() ){
       for ( auto const & hs : history ){
@@ -542,7 +539,7 @@ double Merger::pdfReweight(){
         res *= pdfratio( hs.node , facfactor*hs.scale , DSH()->facFac()*( hs.node->pT() ) , side );
         facfactor = DSH()->facFac();
       }
-      res *= pdfratio( history.back().node , facfactor*history.back().scale  , history[0].scale*theCurrentME->renFac() , side );
+      res *= pdfratio( history.back().node , facfactor*history.back().scale  , history[0].scale* currentME()->renFac() , side );
     }
   }
   if ( std::isnan( res ) )
@@ -557,7 +554,7 @@ double Merger::alphaReweight(){
   double res = 1.;
   
   Energy Q_R = ( history[0].node->legsize() == N0()?
-                theCurrentME->renFac():
+                 currentME()->renFac():
                 DSH()->renFac() )*
                 history[0].scale;
   
@@ -636,8 +633,8 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
 
 double Merger::sumpdfReweightUnlops(){
   double res = 0.;
-  Energy beam1Scale = history[0].scale*( history[0].node->legsize() == N0()?theCurrentME->renFac():DSH()->facFac() );
-  Energy beam2Scale = history[0].scale*( history[0].node->legsize() == N0()?theCurrentME->renFac():DSH()->facFac() );
+  Energy beam1Scale = history[0].scale*( history[0].node->legsize() == N0()? currentME()->renFac():DSH()->facFac() );
+  Energy beam2Scale = history[0].scale*( history[0].node->legsize() == N0()? currentME()->renFac():DSH()->facFac() );
   
   for ( auto const & hs : history ){
       //pdf expansion only to the last step
@@ -691,7 +688,7 @@ double Merger::sumpdfReweightUnlops(){
   if ( history[0].node->deepHead()->xcomb()->mePartonData()[0]->coloured() ){
     res += pdfUnlops( history.back().node , 0 , 
                      beam1Scale , 
-                     history[0].scale*theCurrentME->renFac() , 
+                     history[0].scale* currentME()->renFac() , 
                      ( history.back() ).node->nodeME()->lastX1() , 
                      Nf( history[0].scale ) , 
                      history[0].scale );
@@ -700,7 +697,7 @@ double Merger::sumpdfReweightUnlops(){
   if ( history[0].node->deepHead()->xcomb()->mePartonData()[1]->coloured() ) {
     res += pdfUnlops( history.back().node , 1 , 
                      beam2Scale , 
-                     history[0].scale*theCurrentME->renFac() , 
+                     history[0].scale* currentME()->renFac() , 
                      ( history.back() ).node->nodeME()->lastX2() , 
                      Nf( history[0].scale ) , 
                      history[0].scale );
@@ -797,7 +794,7 @@ double Merger::sumalphaReweightUnlops(){
   double res = 0.;
   if ( !( history[0].node->children().empty() ) ){
     res += alphasUnlops( history[0].scale*DSH()->renFac() ,
-                        history[0].scale*theCurrentME->renFac() )*
+                        history[0].scale* currentME()->renFac() )*
                         int( history[0].node->legsize()-N0() );
   }
     // dsig is calculated with fixed alpha_s
@@ -836,43 +833,43 @@ CrossSection Merger::MergingDSigDR() {
   
   assert(history.empty());
   
-  if ( theFirstNodeMap.find( theCurrentME ) == theFirstNodeMap.end() ) {
+  if ( theFirstNodeMap.find(  currentME() ) == theFirstNodeMap.end() ) {
     throw Exception()
     << "Merger: The current matrix element could not be found."
     << Exception::abortnow;
   }
   
+  assert(currentNode()==theFirstNodeMap[ currentME()]);
   
-  NodePtr Node = theFirstNodeMap[theCurrentME];
     //DSH()->setCurrentHandler();
   DSH()->eventHandler( generator()->eventHandler() );
   
   CrossSection res = ZERO;
-  if( Node->deepHead()->subtractedReal() ){
-    res = MergingDSigDRRealStandard( Node );
+  if( currentNode()->deepHead()->subtractedReal() ){
+    res = MergingDSigDRRealStandard();
     theCurrentMaxLegs = maxLegsNLO();
-  }else if( Node->deepHead()->virtualContribution() ){
-    res = MergingDSigDRVirtualStandard( Node );
+  }else if( currentNode()->deepHead()->virtualContribution() ){
+    res = MergingDSigDRVirtualStandard();
     theCurrentMaxLegs = maxLegsNLO();
   }else if (true){
-    res = MergingDSigDRBornCheapME( Node );
+    res = MergingDSigDRBornCheapME(  );
     theCurrentMaxLegs = maxLegsLO();
   }else if( theGamma!= 1. ){
-    res = MergingDSigDRBornGamma( Node );
+    res = MergingDSigDRBornGamma();
     theCurrentMaxLegs = maxLegsLO();
   }else{
-    res = MergingDSigDRBornStandard( Node );
+    res = MergingDSigDRBornStandard();
     theCurrentMaxLegs = maxLegsLO();
   }
   
-  auto lxc=theCurrentME->lastXCombPtr();
-    //lxc->lastCentralScale( sqr( Node->runningPt() ) );
-  lxc->lastShowerScale( sqr( Node->runningPt() ) );
+  auto lxc= currentME()->lastXCombPtr();
+    //lxc->lastCentralScale( sqr( currentNode()->runningPt() ) );
+  lxc->lastShowerScale( sqr( currentNode()->runningPt() ) );
   
-  auto lp=theCurrentME->lastXCombPtr()->lastProjector();
+  auto lp= currentME()->lastXCombPtr()->lastProjector();
   if( lp ){
-      //lp->lastCentralScale( sqr( Node->runningPt() ) );
-    lp->lastShowerScale( sqr( Node->runningPt() ) );
+      //lp->lastCentralScale( sqr( currentNode()->runningPt() ) );
+    lp->lastShowerScale( sqr( currentNode()->runningPt() ) );
   }
   
   if ( res == ZERO ){
@@ -881,7 +878,7 @@ CrossSection Merger::MergingDSigDR() {
   }
   
   
-  cleanup( Node );
+  cleanup( currentNode() );
   lxc->subProcess( SubProPtr() );
   
   history.clear();
@@ -1129,28 +1126,34 @@ void Merger::clearKinematics( MatchboxMEBasePtr me ){
 }
 bool Merger::generateKinematics( MatchboxMEBasePtr me , const double * r ){
   
-  theFirstNodeMap[me]->firstgenerateKinematics( r , 0 );
+  assert(theFirstNodeMap[me]==currentNode());
   
-  if ( theFirstNodeMap[me]->cutStage() == 0 ){
-    
+  currentNode()->firstgenerateKinematics( r  );
+  
+  if ( currentNode()->cutStage() == 0 ){
+      // Born virtual
     bool inAlphaPS = false;
-    NodePtrVec children = theFirstNodeMap[me]->children();
-    for ( NodePtr const & child: children ) {
-      treefactory()->setAlphaParameter( theGamma );
-      inAlphaPS |=  theGamma!= 1.?child->dipole()->aboveAlpha():false;
-      treefactory()->setAlphaParameter( 1. );
+    if (theGamma!= 1.) {
+      NodePtrVec children = currentNode()->children();
+      for ( NodePtr const & child: children ) {
+        treefactory()->setAlphaParameter( theGamma );
+        inAlphaPS |= child->dipole()->aboveAlpha();
+        treefactory()->setAlphaParameter( 1. );
+      }
     }
     
-    SafeClusterMap temp = theFirstNodeMap[me]->clusterSafe();
-    for ( auto const & cs: temp ) {
-      if ( !cs.second.first&&!inAlphaPS )return false;
-    }
+    auto inoutpair = getInOut( currentNode() );
+    NodePtr rndCh =  currentNode()->randomChild();
+    if(!inAlphaPS && !matrixElementRegion( inoutpair.first ,
+                             inoutpair.second ,
+                             rndCh->pT() ,
+                             theMergePt ) )return false;
   }
-  if ( theFirstNodeMap[me]->cutStage() == 1 ){
-    SafeClusterMap temp = theFirstNodeMap[me]->clusterSafe();
-    for ( auto const & sc: temp ) {
-      if ( !sc.second.first && !sc.second.second )return false;
-    }
+  if ( currentNode()->cutStage() == 1 ){
+      //Real emission
+    assert(false);
+    
+  
   }
   return true;
   
@@ -1164,10 +1167,7 @@ void Merger::fillProjectors( MatchboxMEBasePtr me ){
                                             propair.second->xcomb() );
   }
 }
-pair<bool , bool> Merger::clusterSafe( MatchboxMEBasePtr me , int emit , int emis , int spec ){
-  return theFirstNodeMap[me]->clusterSafe().find({emit, emis, spec})->second;
-  
-}
+
 
   //#include "fastjet/ClusterSequence.hh"
 bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy winnerScale , Energy cutscale ){

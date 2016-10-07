@@ -118,12 +118,14 @@ namespace Herwig {
     bool generateKinematics(MatchboxMEBasePtr, const double *);
       /// fill the projector the subprocess is build from
     void fillProjectors(MatchboxMEBasePtr);
-      /// return true true if a given ME phase space point is TODO
-    pair<bool, bool> clusterSafe(MatchboxMEBasePtr, int, int, int);
       /// return the current maximum legs, the shower should veto
     size_t maxLegs() const {return theCurrentMaxLegs;}
       /// set the current ME
-    void setME(MatchboxMEBasePtr me){theCurrentME=me;}
+    void setME(MatchboxMEBasePtr me){
+      theCurrentME=me;
+      assert(theFirstNodeMap.count(theCurrentME));
+      theCurrentNode=theFirstNodeMap[theCurrentME];
+    }
     
   protected:
       /// the merging factory needs to set the legsize of the production process
@@ -134,6 +136,10 @@ namespace Herwig {
     void smeareMergePt(){theMergePt=centralMergePt()*(1.+0.*(-1.+2.*UseRandom::rnd())*smear());}
       /// true if the phase space for initial emissions should not be restricted in z.
     bool openInitialStateZ(){return theOpenInitialStateZ;}
+      /// return the current ME
+    MatchboxMEBasePtr currentME() const { return theCurrentME; }
+      /// return the current Node
+    NodePtr currentNode() const { return theCurrentNode; }
     
   private:
       /// calculate a single sudakov step for a given dipole
@@ -168,39 +174,39 @@ namespace Herwig {
     
   private:
       /// calculate the history weighted born cross section
-    CrossSection MergingDSigDRBornStandard(NodePtr Node);
+    CrossSection MergingDSigDRBornStandard();
       /// calculate the history weighted born cross section
-    CrossSection MergingDSigDRBornCheapME(NodePtr Node);
+    CrossSection MergingDSigDRBornCheapME();
       /**
        * calculate the history weighted born cross section
        * add the difference of IPK with and without alpha parameter
        * subtract the dipoles above the alpha parameter
        */ 
-    CrossSection MergingDSigDRBornGamma(NodePtr Node);
+    CrossSection MergingDSigDRBornGamma();
       /// calculate the history weighted virtual contribution
-    CrossSection MergingDSigDRVirtualStandard(NodePtr Node);
+    CrossSection MergingDSigDRVirtualStandard();
       /**
        * calculate the history weighted real contribution
        * splitted into 3 differnt contibutions
        */
-    CrossSection MergingDSigDRRealStandard(NodePtr Node);
+    CrossSection MergingDSigDRRealStandard();
       /// calculate the history weighted real contribution
       /// all dipoles above:
       /// N*(R rnd(i)-Dip_i) history_i U(\phi^n_i)
-    CrossSection MergingDSigDRRealAllAbove(NodePtr Node);
+    CrossSection MergingDSigDRRealAllAbove();
       /// calculate the history weighted real contribution
       /// not all dipoles above:
       /// (R - sum PS_i) history_rnd U(\phi^n+1)
-    CrossSection MergingDSigDRRealBelowSubReal(NodePtr Node);
+    CrossSection MergingDSigDRRealBelowSubReal();
       /// calculate the history weighted real contribution
       /// not all dipoles above:
       /// rnd(i)-> N*(PS_i - Dip_i) history_i U(\phi^n_i)
-    CrossSection MergingDSigDRRealBelowSubInt(NodePtr Node);
+    CrossSection MergingDSigDRRealBelowSubInt();
       /// max legssize the shower should veto for LO
     size_t maxLegsLO() const {return N0()+N();}
       /// Calculate the LO partonic cross section.
       /// if diffalpha != 1, add the difference of IPK(1)-IPK(diffalpha)
-    CrossSection TreedSigDR(Energy startscale, NodePtr, double diffalpha=1.);
+    CrossSection TreedSigDR(Energy startscale, double diffalpha=1.);
       /// fill the projecting xcomb
     Energy fillProjector(int);
       /// fill the history, including calculation of sudakov supression
@@ -214,7 +220,7 @@ namespace Herwig {
       /// max legssize the shower should veto for NLO
     size_t maxLegsNLO()const {return N0()+M();}
       /// calculate the virtual contribution.
-    CrossSection LoopdSigDR(Energy startscale, NodePtr);
+    CrossSection LoopdSigDR(Energy startscale );
       /// calculate alpha_s expansion of the pdf-ratios
     double sumpdfReweightUnlops();
       /// calculate alpha_s expansion of the alpha_s-ratios, including K_g
@@ -298,6 +304,9 @@ namespace Herwig {
     Ptr<JetFinder>::ptr theMergingJetFinder;
       /// pointer to the large-N basis
     Ptr<ColourBasis>::ptr theLargeNBasis;
+    
+      /// current Node
+    NodePtr theCurrentNode;
       /// current ME
     MatchboxMEBasePtr theCurrentME;
       /// Tilde kinematics pointers, only to use lastPt(emitter, emission, spectator)

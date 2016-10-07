@@ -79,9 +79,9 @@ namespace Herwig {
       /// recursive setKinematics
     void setKinematics();
       /// recursive generateKinematics using tilde kinematics of the dipoles
-    bool generateKinematics(const double *r, int stage, Energy2 shat);
+    void generateKinematics(const double *r);
       /// generate the kinamatics of the first node
-    void  firstgenerateKinematics(const double *r, int stage);
+    void  firstgenerateKinematics(const double *r);
       //return the ME
     const MatchboxMEBasePtr nodeME() const;
       //return the node ME
@@ -120,8 +120,6 @@ namespace Herwig {
     void runningPt(Energy x) { theRunningPt=x; }
       /// return the cut stage to cut on merging pt in generate kinematics
     int cutStage() const { return theCutStage; }
-      /// get the clustersafe map for this node
-    SafeClusterMap clusterSafe() const {return clustersafer;}
       /// get a vector of the next nodes, ordered in pt (and in parton shower phace space)
     vector<NodePtr> getNextOrderedNodes(bool normal=true, double hardscalefactor=1.);
       //true if the node is in shower history for a given pt
@@ -176,9 +174,7 @@ namespace Herwig {
     Energy theRunningPt;
       /// The nodes of the projection stage.
     vector< pair <double, NodePtr> > theProjectors;
-      /// For [[Emitter, Emission], Spectator] the mapped pair gives
-      /// information if the first and the second cluster is safe.
-    SafeClusterMap clustersafer;
+    
   public:
     /** @name Functions used by the persistent I/O system. */
       //@{

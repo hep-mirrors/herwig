@@ -118,38 +118,25 @@ void Node::clearKinematics() {
   }
 }
 
-bool Node::generateKinematics(const double *r, int stage, Energy2 ) {
-  bool isthissafe = true;
+void Node::generateKinematics(const double *r ) {
   for (auto const & ch: thechildren) {
     ch->dipole()->setXComb(ch->xcomb());
     if ( !ch->dipole()->generateKinematics(r) ) { assert(false); }
-    ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
-    isthissafe &= ch->pT() >= deepHead()->MH()->mergePt();
+    ch->generateKinematics(r);
   }
-  return isthissafe;
 }
 
-void Node::firstgenerateKinematics(const double *r, int stage) {
+void Node::firstgenerateKinematics(const double *r) {
   flushCaches();
-  
   MH()->smeareMergePt();
+  
     //Set here the new merge Pt for the next phase space point.( Smearing!!!)
-  clustersafer.clear();
   for (auto const & ch: thechildren) {
-    bool ifirst = true;
-    bool isecond = true;
     ch->dipole()->setXComb(ch->xcomb());
     
     if ( !ch->dipole()->generateKinematics(r) ) { assert(false); }
-    
-    isecond = ch->generateKinematics(r, stage + 1, ch->xcomb()->lastSHat());
-    ifirst = (ch->pT() >= deepHead()->MH()->mergePt());
-    
-     std::tuple< int, int, int> EmitEmisSpec  = {ch->dipole()->realEmitter(),
-                                          ch->dipole()->realEmission(),
-                                          ch->dipole()->realSpectator()};
-    clustersafer.insert(make_pair(EmitEmisSpec, make_pair(ifirst, isecond)));
-    
+  
+    ch->generateKinematics(r);
   }
 }
 

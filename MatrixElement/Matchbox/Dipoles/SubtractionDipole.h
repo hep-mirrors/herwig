@@ -771,11 +771,6 @@ public:
    */
   virtual CrossSection dSigHatDR() const { return dSigHatDR(ZERO); }
 
-  /**
-   * Return true if this dipole is safe for clustering
-   **/
-  bool clustersafe() const;
-
       
         /// calculate the general prefactor for merging.
   CrossSection prefactor(Energy2 factorizationScale)const;

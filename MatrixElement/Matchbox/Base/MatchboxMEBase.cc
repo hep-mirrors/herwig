@@ -1222,17 +1222,6 @@ void MatchboxMEBase::merger(MergerBasePtr v) {
 }
 
 
-pair<bool,bool> MatchboxMEBase::clustersafe(int emit,int emis,int spec){
-  // frist true if pt > merging scale
-  // second true if all children nodes show pt > meging scale.
-  if (theMerger) {
-    return theMerger->clusterSafe(this, emit, emis, spec);
-  }
-  
-  return make_pair(true,true);
-}
-
-
 
 
 void MatchboxMEBase::print(ostream& os) const {
