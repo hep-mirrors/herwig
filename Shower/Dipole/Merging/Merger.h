@@ -46,9 +46,6 @@ namespace Herwig {
   typedef vector<NodePtr> NodePtrVec;
     //definition of a history step
   struct HistoryStep {
-    HistoryStep(NodePtr cn = NodePtr(), double w =0., Energy sc=ZERO):
-    node(cn),weight(w),scale(sc){}
-      /// the cluster node defining this step
       /// containing the full information
     NodePtr node;
       /// current sudakov weight of the history

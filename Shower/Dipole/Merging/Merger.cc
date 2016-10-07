@@ -594,7 +594,8 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
   
   history.clear();
   double sudakov0_n = 1.;
-  history.push_back( HistoryStep( Begin , sudakov0_n , scale ) );
+  
+  history.push_back( {Begin , sudakov0_n , scale} );
   
   
   double xiQSh = history.begin()->node->legsize() == N0()?DSH()->hardScaleFactor():1.;
@@ -603,7 +604,7 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
   if ( Begin->parent()||!isUnitarized ) {
     while ( Begin->parent() && ( Begin !=  EndNode ) ) {
       if ( !dosudakov( Begin , scale , Begin->pT() , sudakov0_n ) ){
-        history.push_back( HistoryStep( Begin->parent() , 0. , scale ) );
+        history.push_back( { Begin->parent() , 0. , scale } );
       }
       
       if ( std::isnan( sudakov0_n ) )
@@ -613,7 +614,7 @@ void Merger::fillHistory( Energy scale , NodePtr Begin , NodePtr EndNode ){
       
       scale = Begin->pT();
       
-      history.push_back( HistoryStep( Begin->parent() , sudakov0_n , Begin->pT() ) );
+      history.push_back( { Begin->parent() , sudakov0_n , Begin->pT() } );
       Begin = Begin->parent();
     }
     

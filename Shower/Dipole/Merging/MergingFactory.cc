@@ -18,26 +18,6 @@
 using namespace Herwig;
 using std::ostream_iterator;
 
-MergingFactory::MergingFactory() :MatchboxFactory(),
-theonlyNLOParts(false),
-theonlyvirtualNLOParts(false),
-theonlyrealNLOParts(false),
-theonlyUnlopsweights(false),
-theunitarizeNLOParts(true),
-calc_born(true),
-calc_virtual(true),
-calc_real(true),
-unitarized(true),
-NLOunitarized(true),
-ransetup(false),
-theonlymulti(-1),
-theonlysub(-1),
-divideSub(-1),
-divideSubNumber(-1)
-{}
-
-MergingFactory::~MergingFactory(){}
-
 IBPtr MergingFactory::clone() const {
   return new_ptr(*this);
 }
@@ -51,8 +31,11 @@ void MergingFactory::doinit(){
   if (subProcessGroups()) {
     throw InitException() << "There are no subprocess groups in merging!!!";
   }
-  
-  if(!(!(divideSub!=-1&&divideSubNumber==-1)||!(divideSub==-1&&divideSubNumber!=-1))){
+  // two permitted conditions
+  const bool both_neg_one   = divideSub == -1   &&   divideSubNumber == -1;
+  const bool nobody_neg_one = divideSub != -1   &&   divideSubNumber != -1;
+
+  if (!( both_neg_one || nobody_neg_one )){
     throw InitException() << "dividing the subprocesses is not performed correct.";
   }
   
@@ -61,13 +44,15 @@ void MergingFactory::doinit(){
 }
 
 
-void MergingFactory::fill_amplitudes() {
+void MergingFactory::fillMEsMap() {
   
   olpProcesses().clear();
   
+  assert( getProcesses().size() == 1 );
   processMap[0] = getProcesses()[0];
   
-  if(MH()->M()>=0) setHighestVirt(processMap[0].size()+MH()->M());
+  if ( MH()->M() >= 0 ) 
+    setHighestVirt(processMap[0].size()+MH()->M());
   
   MH()->N0(processMap[0].size());
   for ( int i = 1 ; i <= MH()->N() ; ++i ) {
@@ -76,7 +61,9 @@ void MergingFactory::fill_amplitudes() {
   }
   
   for ( int i = 0 ; i <= MH()->N() ; ++i ) {
-    vector<MatchboxMEBasePtr> ames = makeMEs(processMap[i], orderInAlphaS() + i,i<MH()->M()+1);
+  	const bool below_maxNLO = i < MH()->M() + 1;
+    vector<MatchboxMEBasePtr> ames 
+    	= makeMEs(processMap[i], orderInAlphaS() + i, below_maxNLO );
     copy(ames.begin(), ames.end(), back_inserter(pureMEsMap()[i]));
   }
 }
@@ -86,6 +73,7 @@ void MergingFactory::fill_amplitudes() {
 void MergingFactory::prepare_BV(int i) {
     // check if we have virtual contributions
   bool haveVirtuals = true;
+
   for ( auto born : pureMEsMap()[i]) {
     
     prepareME(born);
@@ -102,7 +90,7 @@ void MergingFactory::prepare_BV(int i) {
       born->olpProcess(ProcessType::colourCorrelatedME2,id);
       
       bool haveGluon = false;
-      for ( const auto p : born->subProcess().legs )
+      for ( const auto & p : born->subProcess().legs )
       if ( p->id() == 21 ) {
         haveGluon = true;
         break;
@@ -114,7 +102,7 @@ void MergingFactory::prepare_BV(int i) {
         born->olpProcess(ProcessType::spinColourCorrelatedME2,id);
       }
     }
-    if ( born->isOLPLoop() &&  i <= MH()->M()) {
+    if ( born->isOLPLoop() &&  i <= MH()->M() ) {
       int id = orderOLPProcess(born->subProcess(),
                                born->matchboxAmplitude(),
                                ProcessType::oneLoopInterference);
@@ -128,45 +116,47 @@ void MergingFactory::prepare_BV(int i) {
     }
     haveVirtuals &= born->haveOneLoop();
   }
-  
-    // check the additional insertion operators
-  if ( !theVirtualsMap[i].empty() ) haveVirtuals = true;
-  
-  for ( auto & virt : theVirtualsMap[i] ) virt->factory(this);
-  
+   
     // check for consistent conventions on virtuals, if we are to include MH()->M()
   
-  if(!(i > MH()->M()||haveVirtuals))throw InitException() << MH()->M()<<" NLO corrections requested,\n but no virtual contributions are found.";
+  if (!(i > MH()->M()||haveVirtuals))
+  	throw InitException() 
+  					<< MH()->M()
+  					<< " NLO corrections requested,\n"
+  					<< "but no virtual contributions are found.";
   
   for ( auto & virt : DipoleRepository::insertionIOperators(dipoleSet()) )
-  virt->factory(this);
+    virt->factory(this);
   
   for ( auto & virt : DipoleRepository::insertionPKOperators(dipoleSet()) )
-  virt->factory(this);
+    virt->factory(this);
 }
 
 void MergingFactory::prepare_R(int i) {
   for ( auto real : pureMEsMap()[i])
-  prepareME(real);
+    prepareME(real);
 }
 
 
 #include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
-void MergingFactory::getVirtuals(MatchboxMEBasePtr nlo,int i){
+void MergingFactory::getVirtuals(MatchboxMEBasePtr nlo, bool clone){
   
-  for ( auto OV : theVirtualsMap[i] )
-  if ( OV->apply(nlo->diagrams().front()->partons()) ){
-    nlo->virtuals().push_back(OV);
-  }
-  
+	const auto & partons = nlo->diagrams().front()->partons();
+
   for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
-  if ( I->apply(nlo->diagrams().front()->partons()) ){
-    nlo->virtuals().push_back(I);
+  if ( I->apply(partons) ){
+  	auto myI = I;
+  	if ( clone ) 
+  		myI = I->cloneMe();
+    nlo->virtuals().push_back(myI);
   }
   
   for ( auto PK : DipoleRepository::insertionPKOperators(dipoleSet()) )
-  if ( PK->apply(nlo->diagrams().front()->partons()) ){
-    nlo->virtuals().push_back(PK);
+  if ( PK->apply(partons) ){
+  	auto myPK = PK;
+  	if ( clone ) 
+  		myPK = PK->cloneMe();
+    nlo->virtuals().push_back(myPK);
   }
   
 }
@@ -180,56 +170,48 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
   
   
   string pname = fullName() + "/" + bornme->name() + ".Born";
-  if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Born ME " << pname << " already existing.";
+  if ( !(generator()->preinitRegister(bornme, pname)) ) 
+  	throw InitException() 
+  					<< "Born ME " 
+  					<< pname 
+  					<< " already existing.";
   
   
-  getVirtuals(bornme,i);
+  getVirtuals(bornme,false);
   
   
-  NodePtr clusternode = new_ptr(Node(bornme, 0,MH()));
+  NodePtr clusternode = new_ptr(Node(bornme, 0, MH()));
   
   clusternode->deepHead(clusternode);
   MH()->firstNodeMap(bornme,clusternode);
   bornme->factory(this);
   bornme->merger(MH());
+
   
-  
-  
-  
-  vector<NodePtr> temp;
-  vector<NodePtr> temp1;
-  temp.push_back(clusternode);
+  vector<NodePtr> current = {{clusternode}};
+  vector<NodePtr> children;
+
   unsigned int k = 1;
-  while (thePureMEsMap[i - k].size() != 0) {
-    for ( auto tmp : temp){//j
+  while ( ! thePureMEsMap[i - k].empty() ) {
+    for ( auto tmp : current ){//j
       tmp->birth(thePureMEsMap[i - k]);
-      for ( auto tmpchild : tmp->children()){//m
+      for ( auto tmpchild : tmp->children() ) {//m
         if ( i <= MH()->M() ) {
-          
-          for ( auto I : DipoleRepository::insertionIOperators(dipoleSet()) )
-          if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
-            Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
-            tmpchild->nodeME()->virtuals().push_back(myI);
-          }
-          for ( auto I : DipoleRepository::insertionPKOperators(dipoleSet()) )
-          if ( I->apply(tmpchild->nodeME()->diagrams().front()->partons()) ){
-            Ptr<MatchboxInsertionOperator>::ptr myI = I->cloneMe();
-            tmpchild->nodeME()->virtuals().push_back(myI);
-          }
-          
+        	getVirtuals(tmpchild->nodeME(),true);
           tmpchild->nodeME()->noOneLoop();
         }
-        temp1.push_back(tmpchild);
+        children.push_back(tmpchild);
       }
     }
-    temp = temp1;
-    temp1.clear();
-    k++;
+    current = children;
+    children.clear();
+    ++k;
   }
   
-  if(MH()->N()>i)
-  bornme->needsCorrelations();
-  else bornme->needsNoCorrelations();
+  if ( MH()->N() > i )
+	  bornme->needsCorrelations();
+  else 
+  	bornme->needsNoCorrelations();
   
   bornme->cloneDependencies();
   MEs().push_back(bornme);
@@ -244,15 +226,21 @@ void MergingFactory::pushV(MatchboxMEBasePtr born, int i) {
   MatchboxMEBasePtr nlo = born->cloneMe();
   
   string pname = fullName() + "/" + nlo->name() + ".Virtual";
-  if ( !(generator()->preinitRegister(nlo, pname)) ) throw InitException() << "Virtual ME " << pname << " already existing.";
+  if ( !(generator()->preinitRegister(nlo, pname)) ) 
+  	throw InitException() 
+  		<< "Virtual ME " 
+  		<< pname 
+  		<< " already existing.";
     ////////////////////////////////////NLO///////////////////////////
   nlo->virtuals().clear();
   
-  getVirtuals(nlo , i);
+  getVirtuals(nlo , false);
   
   if ( nlo->virtuals().empty() )
-        throw InitException() << "No insertion operators have been found for "
-              << born->name() << "\n";
+        throw InitException() 
+      					<< "No insertion operators have been found for "
+              	<< born->name() 
+              	<< "\n";
   
   nlo->doOneLoopNoBorn();
     ////////////////////////////////////NLO///////////////////////////
@@ -263,18 +251,18 @@ void MergingFactory::pushV(MatchboxMEBasePtr born, int i) {
   MH()->firstNodeMap(nlo,clusternode);
   nlo->merger(MH());
   
-  vector<NodePtr> temp;
-  vector<NodePtr> temp1;
-  temp.push_back(clusternode);
+  vector<NodePtr> current = {{clusternode}};
+  vector<NodePtr> children;
   unsigned int k = 1;
-  while (thePureMEsMap[i - k].size() != 0) {
-    for ( auto tmp : temp ){
+  while ( ! thePureMEsMap[i - k].empty() ) {
+    for ( auto tmp : current ){
       tmp->birth(thePureMEsMap[i - k]);
       for ( auto tmpchild : tmp->children())
-      temp1.push_back(tmpchild);
+      children.push_back(tmpchild);
     }
-    temp = temp1;
-    k++;
+    current = children;
+    children.clear();
+    ++k;
   }
   
   if ( nlo->isOLPLoop() ) {
@@ -296,14 +284,18 @@ void MergingFactory::pushV(MatchboxMEBasePtr born, int i) {
   
 }
 
-void MergingFactory::pushProR(MatchboxMEBasePtr born, int i) {
+void MergingFactory::pushR(MatchboxMEBasePtr born, int i) {
   MatchboxMEBasePtr bornme = born->cloneMe();
   
   string pname = fullName() + "/" + bornme->name() + ".Real";
-  if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Subtracted ME " << pname << " already existing.";
+  if ( !(generator()->preinitRegister(bornme, pname)) ) 
+  	throw InitException() 
+  					<< "Subtracted ME " 
+  					<< pname 
+  					<< " already existing.";
   
   
-  NodePtr clusternode = new_ptr(Node(bornme, 1,MH()));
+  NodePtr clusternode = new_ptr(Node(bornme, 1, MH()));
   clusternode->deepHead(clusternode);
   clusternode->subtractedReal(true);
   MH()->firstNodeMap(bornme,clusternode);
@@ -311,77 +303,84 @@ void MergingFactory::pushProR(MatchboxMEBasePtr born, int i) {
   
   
   
-  vector<NodePtr> temp;
-  vector<NodePtr> temp1;
-  temp.push_back(clusternode);
-  
+  vector<NodePtr> current = {{clusternode}};
+  vector<NodePtr> children;
+ 
   unsigned int k = 1;
   
-  while (thePureMEsMap[i - k].size() != 0) {
-    for ( auto tmp : temp ){
+  while ( ! thePureMEsMap[i - k].empty() ) {
+    for ( auto tmp : current ){
       tmp->birth(thePureMEsMap[i - k]);
-      for ( auto tmpchild : tmp->children()) temp1.push_back(tmpchild);
+      for ( auto tmpchild : tmp->children()) 
+      	children.push_back(tmpchild);
     }
-    temp = temp1;
-    k++;
+    current = children;
+    children.clear();
+    ++k;
   }
+
   
-  
-  
-  if(MH()->N()>i)
-  bornme->needsCorrelations();
-  else bornme->needsNoCorrelations();
+  if ( MH()->N() > i )
+	  bornme->needsCorrelations();
+  else 
+  	bornme->needsNoCorrelations();
   
   bornme->cloneDependencies(pname);
   
   MEs().push_back(bornme);
 }
 
-void MergingFactory::orderOLPs() {
-  
-}
+// MergingFactory should never order OLPs here,
+// they're done elsewhere. 
+void MergingFactory::orderOLPs() {}
 
 #include "ThePEG/Utilities/StringUtils.h"
 vector<string> MergingFactory::parseProcess(string in) {
   vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
-  throw Exception() << "MatchboxFactory: Invalid process."
-  << Exception::runerror;
+    throw Exception() 
+  					<< "MatchboxFactory: Invalid process."
+  					<< Exception::runerror;
   for ( string & p : process) {
     p = StringUtils::stripws(p);
   }
-  theN=0;
-  bool prodprocess=true;
-  vector<string> pprocess;
-  for (string const p : process) {
+  theN = 0;
+  bool prodprocess = true;
+  vector<string> result;
+  for ( const string & p : process ) {
     if ( p == "->" )
-    continue;
+    	continue;
     
     if (p=="[") {
-      prodprocess=false;
-    }else if (p=="]") {
-      prodprocess=false;
+      prodprocess = false;
+    } else if (p=="]") {
+      prodprocess = false;
+      // TODO what if there's stuff after the bracket?
+      assert( p == process.back() );
       break;
-    }else if (p=="[j") {
-      prodprocess=false;
-      theN++;
-    }else if (p=="j"&&!prodprocess) {
-      theN++;
-      prodprocess=false;
-    }else if (p=="j]") {
-      theN++;
-      prodprocess=false;
+    } else if (p=="[j") {
+      prodprocess = false;
+      ++theN;
+    } else if (p=="j" && !prodprocess) {
+      ++theN;
+      prodprocess = false;
+    } else if (p=="j]") {
+      ++theN;
+      prodprocess = false;
+      // TODO what if there's stuff after the bracket?
+      assert( p == process.back() );
       break;
-    }else if(prodprocess){
-      pprocess.push_back(p);
-    }else{
+    } else if ( prodprocess ) {
+      result.push_back(p);
+    } else {
       throw InitException()
-      <<p<<" in the brackets of the process definition is not recognized."
-      <<   "\n Only j as jets are recognized.";
+      	<< "Unknown particle class \"" << p << '"' 
+      	<< " in the process definition merging bracket.\n"
+      	<< "Only jets (\"j\") are supported at the moment.";
     }
     
   }
-  return pprocess;
+  return result;
 }
 
 
@@ -428,7 +427,7 @@ void MergingFactory::setup() {
     for ( auto & amp: amplitudes() ) amp->factory(this);
     
       //fill the amplitudes
-    if ( !amplitudes().empty() )  fill_amplitudes();
+    if ( !amplitudes().empty() )  fillMEsMap();
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);
@@ -519,7 +518,7 @@ void MergingFactory::setup() {
     if (calc_real&& i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights){
       if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
          ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-      pushProR(real, i);
+      pushR(real, i);
       onlysubcounter++;
       generator()->log() << "\e[34m";
       ++(*progressBar);

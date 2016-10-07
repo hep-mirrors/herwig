@@ -35,22 +35,10 @@ namespace Herwig {
   class MergingFactory : public MatchboxFactory {
   public:
     
-    /** @name Standard constructors and destructors. */
-      //@{
-    /**
-     * The default constructor.
-     */
-    MergingFactory();  //TODO MergingFactory
-    
-    /**
-     * The destructor.
-     */
-    virtual ~MergingFactory();
-      //@}
       /// main method to setup the ME vector
     virtual void setup();
       /// fill all amplitudes, stored in pureMEsMap
-    void fill_amplitudes();
+    void fillMEsMap();
       /// prepare the Born and virtual matrix elements.
     void prepare_BV(int i);
       /// prepare the real emission matrix elements.
@@ -60,25 +48,27 @@ namespace Herwig {
       //push the virtual contributions to the ME vector.
     void pushV(MatchboxMEBasePtr, int);
       /// push the real contributions to the ME vector.
-    void pushProR(MatchboxMEBasePtr, int);
-      /// order matrix elements form one loop provider.
+    void pushR(MatchboxMEBasePtr, int);
+      /// order matrix elements from one loop provider.
     void orderOLPs();
       /// Debugging: push only multiplicities to the ME vector
       /// in range of specified mulltiplicity.
      int onlymulti()const {
-       return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());}
+       return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());
+     }
       /// calculate only unlops weights.
     bool onlyUnlopsweights() const {return theonlyUnlopsweights;}
       /// pointer to the merging helper.
-    MergerPtr MH(){return theMergingHelper;}
+    MergerPtr MH() {return theMergingHelper;}
       /// maximal NLO mulitplicity: 0=NLO corrections to the productio process.
-    int M()const {return theM-1;}
+    int M() const {return theM-1;}
       /// leg size of highest multiplicity.
-     int N()const {return theN;}
+     int N() const {return theN;}
      /// Return the Map of matrix elements to be considered
      /// (the Key is the number of additional jets)
     const map<int, vector<MatchboxMEBasePtr> >& pureMEsMap() const {
-      return thePureMEsMap;}
+      return thePureMEsMap;
+    }
       /// Access the Map of matrix elements to be considered
       /// (the Key is the number of additional jets)
     map<int, vector<MatchboxMEBasePtr> >& pureMEsMap() {
@@ -87,7 +77,7 @@ namespace Herwig {
       //Parse a process description
     virtual vector<string> parseProcess(string);
       // fill the virtuals vector (these are IPK-operators)
-    void getVirtuals(MatchboxMEBasePtr nlo,int i);
+    void getVirtuals(MatchboxMEBasePtr nlo, bool clone );
     
   public:
     
@@ -145,48 +135,46 @@ namespace Herwig {
   private:
     
       /// Calculate only virtual and real contributions.
-    bool theonlyNLOParts;
+    bool theonlyNLOParts = false;
       /// Calculate only virtual contributions.
-    bool theonlyvirtualNLOParts;
+    bool theonlyvirtualNLOParts = false;
       /// Calculate only real contributions.
-    bool theonlyrealNLOParts;
+    bool theonlyrealNLOParts = false;
       /// Calculate only expanded histories contributions.
-    bool theonlyUnlopsweights;
+    bool theonlyUnlopsweights = false;
       /// unitarize virtual and real contributions.
-    bool theunitarizeNLOParts;
+    bool theunitarizeNLOParts = true;
       /// Calculate born contributions.
-    bool calc_born;
+    bool calc_born = true;
       /// Calculate virtual contributions.
-    bool calc_virtual;
+    bool calc_virtual = true;
       /// Calculate real contributions.
-    bool calc_real;
+    bool calc_real = true;
       /// unitarise the LO contributions.
-    bool unitarized;
+    bool unitarized = true;
       /// unitarise the NLO contributions.
-    bool NLOunitarized;
+    bool NLOunitarized = true;
       /// did run setup.
-    bool ransetup;
+    bool ransetup = false;
       /// Debugging: push only multiplicities to the ME vector
       /// in range of specified mulltiplicity.
-    int theonlymulti;
+    int theonlymulti = -1;
       /// calculate only the specified subprocess with no.
-    int theonlysub;
+    int theonlysub = -1;
       /// cut the subprocesses in equal size pieces.
-    int divideSub;
+    int divideSub = -1;
       /// interface to calculate every # subprocess.
-    int divideSubNumber;
+    int divideSubNumber = -1;
       /// maximal legsize for NLO corrections.
-    int theM;
+    int theM = -1;
       /// maximal legsize for LO contributions.
-    int theN;
+    int theN = -1;
       /// Prefix for subtraction data.
     string theSubtractionData;
       /// map for processes.
     map< int, vector<string> > processMap;
       //The matrix elements: int = number of additional jets
     map< int, vector<MatchboxMEBasePtr> > thePureMEsMap;
-      /// map for virtual contributions
-    map<int, vector<Ptr<MatchboxInsertionOperator>::ptr> > theVirtualsMap;
       /// the merging helper
     MergerPtr theMergingHelper;
     
@@ -194,7 +182,7 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    MergingFactory & operator=(const MergingFactory &);
+    MergingFactory & operator=(const MergingFactory &) = delete;
     
   };
   

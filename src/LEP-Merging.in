@@ -32,16 +32,16 @@ read Matchbox/DiagonalCKM.in
 
 ## Set the order of the couplings
 cd /Herwig/Merging
-set MFactory:OrderInAlphaS 0
-set MFactory:OrderInAlphaEW 2
+set MergingFactory:OrderInAlphaS 0
+set MergingFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 ## Please mind the spaces between *j , j* in the brackets.
 
-do MFactory:Process e- e+ -> j j [ j , j ]
+do MergingFactory:Process e- e+ -> j j [ j j ]
 
-set MFactory:NLOProcesses 2
+set MergingFactory:NLOProcesses 2
 
 set Merger:MergingScale 4.*GeV
 set Merger:MergingScaleSmearing 0.1
@@ -93,7 +93,7 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MFactory:ScaleChoice SHatScale
+set /Herwig/Merging/MergingFactory:ScaleChoice SHatScale
 
 ##################################################
 ## Scale uncertainties
@@ -132,7 +132,7 @@ set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 ## Save the generator
 ##################################################
 
-do /Herwig/Merging/MFactory:ProductionMode
+do /Herwig/Merging/MergingFactory:ProductionMode
 
 cd /Herwig/Generators
 saverun LEP-Merging EventGenerator
