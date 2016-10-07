@@ -400,7 +400,7 @@ void MergingFactory::setup() {
     setFixedCouplings(true);
     setFixedQEDCouplings(true);
     
-      // rebind the particle data objects
+    // rebind the particle data objects, can't use rebind() function
     for ( auto & g : particleGroups()) {
       for ( auto & p : g.second) {
         p = getParticleData(p->id());
@@ -410,12 +410,15 @@ void MergingFactory::setup() {
     const PDVector& partons = particleGroups()["j"];
     unsigned int nl = 0;
     for ( const auto p : partons ) {
-      if ( abs(p->id()) < 7 && p->hardProcessMass() == ZERO )
-      ++nl;
-      if ( p->id() > 0 && p->id() < 7 && p->hardProcessMass() == ZERO )
-      nLightJetVec( p->id() );
-      if ( p->id() > 0 && p->id() < 7 && p->hardProcessMass() != ZERO )
-      nHeavyJetVec( p->id() );
+    	const Energy mass = p->hardProcessMass();
+    	const PID pid = p->id();
+
+      if ( abs(pid) < 7 && mass == ZERO )
+        ++nl;
+      if ( pid > 0 && pid < 7 && mass == ZERO )
+        nLightJetVec( pid );
+      if ( pid > 0 && pid < 7 && mass != ZERO )
+        nHeavyJetVec( pid );
     }
     nLight(nl/2);
     
@@ -441,44 +444,47 @@ void MergingFactory::setup() {
       // start creating matrix elements
     MEs().clear();
     
-    int onlysubcounter=0;
+    int onlysubcounter = 0;
       // count the subprocesses
     size_t numb = 0;
     size_t numv = 0;
     size_t numr = 0;
     
-    for (int i = 0; i <= max(0, MH()->N()) ; ++i ){
-      for ( auto born : thePureMEsMap[i]){
-        if (calc_born && !theonlyUnlopsweights){
+    for (int i = 0; i <= max(0, MH()->N()) ; ++i ) {
+      for ( auto born : thePureMEsMap[i] ) {
+        if (calc_born && !theonlyUnlopsweights) {
           if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
-             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber)){
+             ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber)) {
               numb++;
+              onlysubcounter++;
           }
         }
       }
     }
     for (int i = 0 ; i <=max(0, MH()->N()); ++i )
-    for ( auto virt : thePureMEsMap[i])
-    if ( calc_virtual && i <= MH()->M()){
-      if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
-         ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-      numv++;
-    }
+      for ( auto virt : thePureMEsMap[i] )
+        if ( calc_virtual && i <= MH()->M()) {
+          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+               ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+            numv++;
+            onlysubcounter++;
+        }
     
     for (int i = 0; i <= max(0, MH()->N()) ; ++i )
-    for ( auto real : thePureMEsMap[i] )
-    if (calc_real&& i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights){
-      if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
-         ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-      numr++;
+      for ( auto real : thePureMEsMap[i] )
+        if (calc_real&& i <= MH()->M() + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights){
+          if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)
+              ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
+            numr++;
+            onlysubcounter++;
     }
     
     
-    onlysubcounter=0;
+    onlysubcounter = 0;
     
     generator()->log() << "\e[31mPreparing Merging:" << flush;
     generator()->log() << "\e[32m "<<numb<<" x Born \e[31m" << flush;
-    if(MH()->M()>-1){
+    if (MH()->M()>-1) {
       generator()->log() << "\e[93m"<<numv<<" x Virtual " << flush;
       generator()->log() << "\e[34m"<<numr<<" x Real \e[31m" << flush;
     }
