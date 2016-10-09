@@ -154,10 +154,10 @@ bool Node::generateKinematics(const double *r, bool directCut) {
     if(!rc->dipole()->generateKinematics(r))assert(false);
     
       // If not in ME -> return false
-    if(!MH()->matrixElementRegion( inOutPair.first ,
+    if(!deepHead()->MH()->matrixElementRegion( inOutPair.first ,
                             inOutPair.second ,
                             rc->pT() ,
-                            MH()->mergePt() ) )return false;
+                            deepHead()->MH()->mergePt() ) )return false;
   }
   for (auto & ch : children() ) {
     ch->dipole()->setXComb(ch->xcomb());
