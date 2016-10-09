@@ -130,20 +130,17 @@ void Node::clearKinematics() {
 bool Node::generateKinematics(const double *r, bool directCut) {
   // If there are no children to the child process we are done.
   if(children().empty()) return true;
+  
+  assert(parent());
 
-  if ( ! directCut ) {
+  if ( ! directCut && pT() < deepHead()->MH()->mergePt()) {
       // Real emission:
       // If there are children to the child process,
       // we now require that all subsequent children
-      // are in their ME region. This is ambiguous
-      // since there can be children that are in the
-      // ME region and still the phase space point is
-      // rejected. So we "destroy" the point to point
-      // cancelation between the Insertion Operators
-      // and the Subtraction dipoles. However, since
-      // all children of the real emission contribution
-      // are now in their ME region, it is clear that
-      // a second clustering is possible
+      // with pt < merging scale are in their ME region.
+      // Since the possible children of the real emission
+      // contribution are now in their ME region,
+      // it is clear that a second clustering is possible
       // -- modulo phase space restrictions.
       // Therefore the real emission contribution
       // are unitarised and the cross section is
