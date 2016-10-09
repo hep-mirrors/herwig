@@ -78,7 +78,7 @@ namespace Herwig {
     bool matrixElementRegion(PVector incoming, 
                              PVector outgoing, 
                              Energy winnerScale = ZERO, 
-                             Energy cutscale = ZERO);
+                             Energy cutscale = ZERO)const;
       /// return the current merging scale, 
       /// gets smeared around the central merging scale in generate kinematics.
     Energy mergingScale()const{return theMergePt;}
@@ -91,18 +91,18 @@ namespace Herwig {
       /// legsize of the production process
     int N0()const{return theN0;}
       /// cross section of as given by the merging
-    CrossSection MergingDSigDR() ;
+    CrossSection MergingDSigDR();
       /// ***** virtual functions of the base class ****///
       /// set the current xcomb, called from ME
-    void setXComb(MatchboxMEBasePtr, tStdXCombPtr);
+    void setXComb( tStdXCombPtr );
       /// set kinematics, called from ME
-    void setKinematics(MatchboxMEBasePtr);
+    void setKinematics();
       ///  clear kinematics, called from ME
-    void clearKinematics(MatchboxMEBasePtr);
+    void clearKinematics();
       /// generate kinematics, called from ME
-    bool generateKinematics(MatchboxMEBasePtr, const double *);
-      /// fill the projector the subprocess is build from
-    void fillProjectors(MatchboxMEBasePtr);
+    bool generateKinematics( const double * );
+      /// generate kinematics, called from ME
+    void flushCaches();
       /// return the current maximum legs, the shower should veto
     size_t maxLegs() const {return theCurrentMaxLegs;}
       /// set the current ME
@@ -116,18 +116,21 @@ namespace Herwig {
       /// the merging factory needs to set the legsize of the production process
     void N0(int n){ theN0=n;}
       /// return the large-N basis (TODO: implement check if born ME works with the choice)
-    Ptr<ColourBasis>::ptr largeNBasis(){return theLargeNBasis;}
+    Ptr<ColourBasis>::ptr largeNBasis()const{return theLargeNBasis;}
       /// smear the merging pt
     void smearMergePt(){
     	const double factor = 1. + (-1. + 2.*UseRandom::rnd() ) * smear();
     	theMergePt = factor * centralMergePt();
     }
       /// true if the phase space for initial emissions should not be restricted in z.
-    bool openInitialStateZ(){return theOpenInitialStateZ;}
+    bool openInitialStateZ()const{return theOpenInitialStateZ;}
       /// return the current ME
     MatchboxMEBasePtr currentME() const { return theCurrentME; }
       /// return the current Node
     NodePtr currentNode() const { return theCurrentNode; }
+      /// the gamma parameter to subtract dipoles above a alpha parameter
+      /// and subtract the corresponding IPK operator
+    double gamma()const{return theGamma;}
     
   private:
       /// calculate a single sudakov step for a given dipole
@@ -139,26 +142,26 @@ namespace Herwig {
     void   cleanup(NodePtr);
       /// return true if the cluster node has the matching number of
       /// legs to the current projector stage
-    bool   isProjectorStage( NodePtr , int );
+    bool   isProjectorStage( NodePtr , int )const;
       /** 
        * Calculate the staring scale:
        * if Node is part of the production process, calculate according to the
        * scale choice object in the merging scale objekt, else
        * return max(scale as scalechoice , min(Mass(i, j)))
        */
-    Energy CKKW_StartScale(NodePtr);
+    Energy CKKW_StartScale(NodePtr) const;
       /// prepare the sudakov calculation
     void   CKKW_PrepareSudakov(NodePtr, Energy);
       /// number of active flavours as given by the shower
     double Nf(Energy scale)const{return DSH()->Nf(scale);}
       /// pointer to the factory
-    MergingFactoryPtr treefactory();
+    MergingFactoryPtr treefactory() const;
       /// map from ME to first clusternode
-    map<MatchboxMEBasePtr, NodePtr> firstNodeMap();
+    map<MatchboxMEBasePtr, NodePtr> firstNodeMap() const ;
       /// set the current merging pt, smeared in generate kinematics
     void mergePt(Energy x) {theMergePt = x;}
       /// return the central merging pt
-    Energy centralMergePt() {return theCentralMergePt;}
+    Energy centralMergePt() const {return theCentralMergePt;}
     
   private:
       /// calculate the history weighted born cross section
@@ -210,46 +213,49 @@ namespace Herwig {
       /// calculate the virtual contribution.
     CrossSection LoopdSigDR(Energy startscale );
       /// calculate alpha_s expansion of the pdf-ratios
-    double sumpdfReweightUnlops();
+    double sumPdfReweightExpansion()const;
       /// calculate alpha_s expansion of the alpha_s-ratios, including K_g
-    double sumalphaReweightUnlops();
+    double sumAlphaSReweightExpansion()const;
       /// calculate alpha_s expansion of the sudakov exponents
-    double sumfillHistoryUnlops();
+    double sumFillHistoryExpansion();
       /// calculate alpha_s expansion of the single step alpha_s-ratio, including K_g
-    double alphasUnlops( Energy next, Energy fixedScale);
+    double alphasExpansion( Energy next, Energy fixedScale)const;
       /// calculate alpha_s expansion of the single step pdf-ratio
-    double pdfUnlops(NodePtr, int, Energy, Energy, double, int, Energy);
+    double pdfExpansion(NodePtr, int, Energy, Energy, double, int, Energy)const;
       /// calculate alpha_s expansion of the single step sudakov exponent
-    bool   doUNLOPS(NodePtr Born, Energy  running, Energy next, Energy fixedScale, double& UNLOPS);
+    bool   doHistExpansion(NodePtr Born, Energy  running, Energy next, Energy fixedScale, double& HistExpansion);
       /// calculate alpha_s expansion of the single dipole sudakov exponent
-    double singleUNLOPS(Dipole, Energy, Energy, Energy, pair<bool, bool>);
+    double singleHistExpansion(Dipole, Energy, Energy, Energy, pair<bool, bool>);
       //alpha_s as given in the shower
-    double as(Energy q){return DSH()->as(q);}
+    double as(Energy q)const{return DSH()->as(q);}
     //   //return the dipole shower handler
     DipoleShowerHandlerPtr DSH(){return theDipoleShowerHandler;}
       //return the const dipole shower handler
     cDipoleShowerHandlerPtr DSH()const{return theDipoleShowerHandler;}
       /// insert map from ME to first clusternode
     void firstNodeMap(MatchboxMEBasePtr, NodePtr);
-      /// the gamma parameter to subtract dipoles above a alpha parameter
-      /// and subtract the corresponding IPK operator
-    double gamma()const{return theGamma;}
       /// history choice: weighted history choice
     int chooseHistory()const {return theChooseHistory;}
       /// the smearing factor for the merging scale
     double smear()const{return theSmearing;}
       /// flag to tell if ME region shoulcd be defined by jet algorithm
       /// currently not implemented
-    bool MERegionByJetAlg(){return defMERegionByJetAlg;}
+    bool MERegionByJetAlg()const{return defMERegionByJetAlg;}
       /// return the large-N colour basis
     void largeNBasis(Ptr<ColourBasis>::ptr x){theLargeNBasis=x;}
+      /// helper function to check the only multi condition.
+    bool notOnlyMulti()const;
+      /// debug output for virtual
+    void debugVirt(double, double, double, double, CrossSection,
+                   double, double, double, NodePtr,CrossSection) const;
+      /// debug output for reals
+    void debugReal( string, double, CrossSection, CrossSection) const;
 
-    
     
   private:
     
       /// calculate the history expansion
-    bool Unlopsweights = true;
+    bool ShowerExpansionWeights = true;
       /// use CMW scheme
     bool theCMWScheme = true;
       /// true if current point should be projected

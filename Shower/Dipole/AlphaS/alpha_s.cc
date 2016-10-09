@@ -31,7 +31,9 @@ void alpha_s::persistentOutput(PersistentOStream & os) const {
   for (size_t f = 0; f < 7; ++f)
     os << ounit(quark_masses_squared_[f],MeV2)
        << ounit(lambda_squared_[f],MeV2);
-  os << alpha_s_in_ << ounit(scale_in_,GeV) 
+  for (size_t f = 0; f < 6; ++f)
+    os << ounit(nfvector[f],MeV2);
+  os << alpha_s_in_ << ounit(scale_in_,GeV)
      << ounit(lambda_range_.first,MeV2) << ounit(lambda_range_.second,MeV2)
      << fixed_;
 }
@@ -41,7 +43,9 @@ void alpha_s::persistentInput(PersistentIStream & is, int) {
   for (size_t f = 0; f < 7; ++f)
     is >> iunit(quark_masses_squared_[f],MeV2)
        >> iunit(lambda_squared_[f],MeV2);
-  is >> alpha_s_in_ >> iunit(scale_in_,GeV) 
+  for (size_t f = 0; f < 6; ++f)
+     is >> iunit(nfvector[f],MeV2);
+  is >> alpha_s_in_ >> iunit(scale_in_,GeV)
      >> iunit(lambda_range_.first,MeV2) >> iunit(lambda_range_.second,MeV2)
      >> fixed_;
 }

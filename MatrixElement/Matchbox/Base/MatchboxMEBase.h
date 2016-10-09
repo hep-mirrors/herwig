@@ -187,21 +187,21 @@ public:
    * the light flavours, which are contained in the
    * jet particle group.
    */
-  virtual vector<int> getNLightJetVec() const;
+  virtual vector<long> getNLightJetVec() const;
 
   /**
    * Return the vector that contains the PDG ids of 
    * the heavy flavours, which are contained in the
    * jet particle group.
    */
-  virtual vector<int> getNHeavyJetVec() const;
+  virtual vector<long> getNHeavyJetVec() const;
 
   /**
    * Return the vector that contains the PDG ids of 
    * the light flavours, which are contained in the
    * proton particle group.
    */
-  virtual vector<int> getNLightProtonVec() const;
+  virtual vector<long> getNLightProtonVec() const;
 
   /**
    * Return true, if this matrix element is handled by a BLHA one-loop provider
@@ -571,7 +571,7 @@ public:
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
-      virtual CrossSection dSigHatDR() const;
+  virtual CrossSection dSigHatDR() const;
 
   /**
    * Always same prefactor
@@ -976,11 +976,6 @@ public:
    * Set the theMerger.
    */
   void merger(MergerBasePtr v);
-
-  /**
-   * Fill the projectors
-   */  
-  virtual void fillProjectors();
   
   //@}
 

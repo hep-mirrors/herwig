@@ -62,11 +62,11 @@ Ptr<ProcessData>::tptr MatchboxMEBase::processData() const { return factory()->p
 
 unsigned int MatchboxMEBase::getNLight() const { return factory()->nLight(); }
 
-vector<int> MatchboxMEBase::getNLightJetVec() const { return factory()->nLightJetVec(); }
+vector<long> MatchboxMEBase::getNLightJetVec() const { return factory()->nLightJetVec(); }
 
-vector<int> MatchboxMEBase::getNHeavyJetVec() const { return factory()->nHeavyJetVec(); }
+vector<long> MatchboxMEBase::getNHeavyJetVec() const { return factory()->nHeavyJetVec(); }
 
-vector<int> MatchboxMEBase::getNLightProtonVec() const { return factory()->nLightProtonVec(); }
+vector<long> MatchboxMEBase::getNLightProtonVec() const { return factory()->nLightProtonVec(); }
 
 double MatchboxMEBase::factorizationScaleFactor() const { return factory()->factorizationScaleFactor(); }
 
@@ -262,7 +262,7 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
     matchboxAmplitude()->setXComb(xc);
   if (theMerger){
     theMerger->setME(this);
-    theMerger->setXComb(this, xc);
+    theMerger->setXComb( xc );
   }
 
 }
@@ -312,9 +312,9 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
       return false;
 
     setScale();
-
-    if (theMerger&&!theMerger->generateKinematics(this, r))
+    if (theMerger&&!theMerger->generateKinematics(r)){
       return false;
+    }
 
     logGenerateKinematics(r);
 
@@ -1180,33 +1180,25 @@ void MatchboxMEBase::flushCaches() {
   MEBase::flushCaches();
   if ( matchboxAmplitude() )
     matchboxAmplitude()->flushCaches();
-  for ( auto const & r : reweights() ) {
+  for ( auto const & r : reweights() ) 
     r->flushCaches();
-  }
-  for ( auto const &  v : virtuals()) {
+  for ( auto const &  v : virtuals()) 
     v->flushCaches();
-  }
+  // The Merger cache is flushed in 
+  // generateKinematics
 }
 
 
 void MatchboxMEBase::setKinematics() {
   MEBase::setKinematics();
-  if ( theMerger ) {
-    theMerger->setKinematics(this);
-  }
+  if ( theMerger ) 
+    theMerger->setKinematics();
 }
 
 void MatchboxMEBase::clearKinematics() {
   MEBase::clearKinematics();
-  if ( theMerger ) {
-    theMerger->clearKinematics(this);
-  }
-  
-}
-
-void MatchboxMEBase::fillProjectors() {
-  if (theMerger)
-    theMerger->fillProjectors(this);
+  if ( theMerger )
+    theMerger->clearKinematics();
 }
 
 const MergerBasePtr MatchboxMEBase::merger() const {

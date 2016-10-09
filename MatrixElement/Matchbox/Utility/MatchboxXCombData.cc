@@ -38,9 +38,9 @@ MatchboxXCombData::MatchboxXCombData()
 }
 
 unsigned int MatchboxXCombData::theNLight(0);
-vector<int> MatchboxXCombData::theNLightJetVec=vector<int> ();
-vector<int> MatchboxXCombData::theNHeavyJetVec=vector<int>() ;
-vector<int> MatchboxXCombData::theNLightProtonVec=vector<int>() ;
+vector<long> MatchboxXCombData::theNLightJetVec=vector<long> ();
+vector<long> MatchboxXCombData::theNHeavyJetVec=vector<long>() ;
+vector<long> MatchboxXCombData::theNLightProtonVec=vector<long>() ;
 
 
 MatchboxXCombData::~MatchboxXCombData() {

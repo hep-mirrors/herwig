@@ -25,7 +25,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Johannes Bellm
  *
  * \brief DipoleSplittingGenerator is used by the dipole shower
  * to sample splittings from a given dipole splitting kernel.
@@ -141,14 +141,14 @@ public:
   double wrappedSudakov(DipoleSplittingInfo& split,Energy down);
   
   /**
-   * Sample the Sudakov exponent for unlops-like weights
+   * Sample the Sudakov exponent for sudakovExpansion weights
    */
 
-  double unlops(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
+  double sudakovExpansion(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
 
-  double dounlops(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
+  double dosudakovExpansion(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
 
-  double wrappedUnlops(DipoleSplittingInfo& split,Energy down,Energy fixedScale);
+  double wrappedSudakovExpansion(DipoleSplittingInfo& split,Energy down,Energy fixedScale);
 
 
 public:

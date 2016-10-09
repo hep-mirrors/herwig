@@ -67,11 +67,11 @@ namespace Herwig {
       /// before the projectors get filled.
     void setXComb(tStdXCombPtr xc);
       /// calculate the dipole and ps approximation
-    pair<CrossSection, CrossSection> calcDipandPS(Energy scale);
+    pair<CrossSection, CrossSection> calcDipandPS(Energy scale)const;
       /// calculate the ps approximation
-    CrossSection calcPs(Energy scale);
+    CrossSection calcPs(Energy scale)const;
       /// calculate the dipole
-    CrossSection calcDip(Energy scale);
+    CrossSection calcDip(Energy scale)const;
       /// recursive flush caches and clean up XCombs.
     void flushCaches();
       /// recursive clearKinematics
@@ -79,9 +79,9 @@ namespace Herwig {
       /// recursive setKinematics
     void setKinematics();
       /// recursive generateKinematics using tilde kinematics of the dipoles
-    void generateKinematics(const double *r);
+    bool generateKinematics(const double *r, bool directCut);
       /// generate the kinamatics of the first node
-    void  firstgenerateKinematics(const double *r);
+    bool firstgenerateKinematics(const double *r, bool directCut);
       //return the ME
     const MatchboxMEBasePtr nodeME() const;
       //return the node ME
@@ -102,28 +102,22 @@ namespace Herwig {
     void deepHead(NodePtr deephead) {theDeepHead = deephead;}
       /// return the first node
     NodePtr deepHead() const {return theDeepHead;}
-      /// insert nodes to projector vector
-    void Projector(double a, NodePtr pro) {
-      theProjectors.push_back(make_pair(a,pro));
-    }
-      /// insert nodes to projector vector
-    vector< pair <double , NodePtr > > Projector() {return theProjectors;}
       /// returns the dipol of the node.
     SubtractionDipolePtr dipole() const;
-      /// set the xcomb of the node
-    void xcomb(StdXCombPtr xc) { thexcomb = xc; }
       /// return the xcomb
-    StdXCombPtr xcomb() const { return thexcomb; }
+    StdXCombPtr xcomb() const;
+      /// return the xcomb (if not created, create one from head)
+    StdXCombPtr xcomb() ;
       /// return the current running pt
-    Energy runningPt() { return theRunningPt; }
+    Energy runningPt() const { return theRunningPt; }
       /// set the current running pt
     void runningPt(Energy x) { theRunningPt=x; }
       /// return the cut stage to cut on merging pt in generate kinematics
     int cutStage() const { return theCutStage; }
       /// get a vector of the next nodes, ordered in pt (and in parton shower phace space)
-    vector<NodePtr> getNextOrderedNodes(bool normal=true, double hardscalefactor=1.);
+    vector<NodePtr> getNextOrderedNodes(bool normal=true, double hardscalefactor=1.) const;
       //true if the node is in shower history for a given pt
-    bool inShowerPS(Energy hardpt);
+    bool inShowerPS(Energy hardpt)const;
       //get the history
     NodePtr getHistory(bool normal=true, double hardscalefactor=1.);
       //true if node correspond to a subtracted real.
@@ -138,8 +132,10 @@ namespace Herwig {
     MergerPtr MH()const{return theMergingHelper;}
       /// set the merging helper
     void MH(MergerPtr a){theMergingHelper=a;}
-    
+      ///  pT of the dipole
     Energy pT()const{return dipole()->lastPt();}
+      /// get incoming and outgoing particles (TODO: expensive)
+    pair<PVector , PVector> getInOut();
     
   private:
       /// the Matrixelement representing this node.
@@ -173,7 +169,7 @@ namespace Herwig {
       /// the current running pt
     Energy theRunningPt;
       /// The nodes of the projection stage.
-    vector< pair <double, NodePtr> > theProjectors;
+    NodePtr theProjector;
     
   public:
     /** @name Functions used by the persistent I/O system. */

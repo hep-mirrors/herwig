@@ -103,42 +103,42 @@ public:
    * the light flavours, which are contained in the
    * jet particle group.
    */
-  vector<PID> nLightJetVec() const { return theNLightJetVec; }
+  vector<long> nLightJetVec() const { return theNLightJetVec; }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the light flavours, which are contained in the
    * jet particle group.
    */
-  void nLightJetVec(PID n) { theNLightJetVec.push_back(n); }
+  void nLightJetVec(long n) { theNLightJetVec.push_back(n); }
 
   /**
    * Return the vector that contains the PDG ids of 
    * the heavy flavours, which are contained in the
    * jet particle group.
    */
-  vector<PID> nHeavyJetVec() const { return theNHeavyJetVec; }
+  vector<long> nHeavyJetVec() const { return theNHeavyJetVec; }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the heavy flavours, which are contained in the
    * jet particle group.
    */
-  void nHeavyJetVec(PID n) { theNHeavyJetVec.push_back(n); }
+  void nHeavyJetVec(long n) { theNHeavyJetVec.push_back(n); }
 
   /**
    * Return the vector that contains the PDG ids of 
    * the light flavours, which are contained in the
    * proton particle group.
    */
-  vector<PID> nLightProtonVec() const { return theNLightProtonVec; }
+  vector<long> nLightProtonVec() const { return theNLightProtonVec; }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the light flavours, which are contained in the
    * proton particle group.
    */
-  void nLightProtonVec(PID n) { theNLightProtonVec.push_back(n); }
+  void nLightProtonVec(long n) { theNLightProtonVec.push_back(n); }
 
   /**
    * Return the order in \f$\alpha_S\f$.
@@ -880,19 +880,19 @@ private:
    * Vector with the PDG ids of the light quark flavours,
    * which are contained in the jet particle group.
    */
-  vector<PID> theNLightJetVec;
+  vector<long> theNLightJetVec;
 
   /**
    * Vector with the PDG ids of the heavy quark flavours,
    * which are contained in the jet particle group.
    */
-  vector<PID> theNHeavyJetVec;
+  vector<long> theNHeavyJetVec;
 
   /**
    * Vector with the PDG ids of the light quark flavours,
    * which are contained in the proton particle group.
    */
-  vector<PID> theNLightProtonVec;
+  vector<long> theNLightProtonVec;
 
   /**
    * The order in \f$\alpha_S\f$.
