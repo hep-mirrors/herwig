@@ -29,7 +29,7 @@
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
-#include "Herwig/Utilities/RunDirectories.h"
+#include "Herwig/API/RunDirectories.h"
 
 #include "Herwig/Utilities/XML/ElementIO.h"
 
