@@ -239,9 +239,9 @@ namespace matchbox {
      * @throws InitException if object could not be initialized properly.
      */
     virtual inline void doinit() throw(InitException) {
+      match_thresholds();
       copy(quark_masses_squared_.begin()+1,
            quark_masses_squared_.end(),nfvector.begin());
-      match_thresholds();
       AlphaSBase::doinit();
     }
 
