@@ -9,7 +9,7 @@
 ##################################################
 
 read Matchbox/EECollider.in
-read Matchbox/Merging.in
+read Merging/Merging.in
 
 ##################################################
 ## Beam energy sqrt(s)
@@ -116,7 +116,7 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-read Matchbox/LEP91-Analysis.in
+read Merging/LEP91-Analysis.in
 
 
 ##################################################

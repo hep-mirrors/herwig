@@ -3,6 +3,16 @@ BUILT_SOURCES = done-all-links
 Matchboxdir = ${pkgdatadir}/Merging
 
 INPUTFILES = \
+Merging.in \
+LEP91-Analysis.in \
+LHC7-Z-Analysis.in \
+LHC7-W-Analysis.in \
+LHC7-J-Analysis.in \
+LHC7-T-Analysis.in \
+FactorCMWScheme.in \
+LinearCMWScheme.in \
+FactorCMWScheme_4fl.in \
+LinearCMWScheme_4fl.in \
 1LO-0NLO-LEP.in \
 1LO-0NLO-LEP_Qt.in \
 1LO-0NLO-LEP_Matchbox.in \

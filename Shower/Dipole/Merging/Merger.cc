@@ -495,6 +495,39 @@ double Merger::pdfReweight(){ // TODO factorization scale inside
   return res;
 }
 
+
+double Merger::cmwAlphaS(Energy q)const{
+  double alphas=1.;
+  using Constants::pi;
+    // No cmw-scheme
+  if (theCMWScheme==0) {
+    alphas = as( q );
+  }
+    // Linear cmw-scheme
+  else if(theCMWScheme==1){
+    alphas = as( q );
+    alphas *=1.+(3.*(67./18.-1./6.*sqr(pi))
+                 -5./9.*Nf(q))* alphas/2./pi;
+  }
+    // cmw-scheme as factor in argument.
+  else if(theCMWScheme==2){
+    double kg=exp(-(67.-3.*sqr(pi)-10/3*Nf(q))
+                  /(33.-2.*Nf(q)));
+    
+    alphas = as(max(kg*q,1_GeV));
+  }else{
+    throw Exception()
+    << "This CMW-Scheme is not implemented."
+    << Exception::abortnow;
+    
+  }
+  return alphas;
+
+}
+
+
+
+
 double Merger::alphaReweight(){
   double res = 1.;
   
@@ -508,22 +541,22 @@ double Merger::alphaReweight(){
   const auto Oew=history[0].node->nodeME()->orderInAlphaEW();
   const auto Oqcd=history[0].node->nodeME()->orderInAlphaS();
   const auto glfac=3.*( 67./18.-1./6.*pi*pi );
+  if (!history[0].node->children().empty()) {
+    assert(Oqcd!=0);
+  }
   
-  
-  res *= pow( as( Q_R ) / SM().alphaS() , Oqcd );
   res *= pow( SM().alphaEMME( Q_qed )/ SM().alphaEMMZ() , Oew );
   
-  if ( !( history[0].node->children().empty() ) ){
-    res *= pow( ( theCMWScheme?( 1.+ ( glfac-5./9.*Nf( Q_R ) )*as( Q_R )/2./pi ):1. ) , int( history[0].node->legsize()-N0() ) );
-  }
+  res *= pow( cmwAlphaS(Q_R) / SM().alphaS() , Oqcd );
+  
+
   
   
   
   for ( auto const & hs : history )
   if ( hs.node!= history.back().node ){
     Energy q_i = DSH()->renFac()* hs.node->pT();
-    res *= as( q_i )/ SM().alphaS()
-    *( theCMWScheme?( 1.+ ( glfac-5./9.*Nf( q_i ) )*as( q_i )/2./pi ):1. );
+    res *= cmwAlphaS(q_i) / SM().alphaS();
   }
   
   if ( std::isnan( res ) )
@@ -800,7 +833,6 @@ CrossSection Merger::MergingDSigDR() {
   history.clear();
   assert(currentNode()==theFirstNodeMap[ currentME()]);
   
-  assert( theCMWScheme );
   DSH()->eventHandler( generator()->eventHandler() );
   
   CrossSection res = ZERO;
@@ -1379,12 +1411,16 @@ void Merger::Init() {
   static SwitchOption interfaceShowerExpansionWeightsNo
   ( interfaceShowerExpansionWeights , "No" , "" , false );
   
-  static Switch<Merger , bool>
-  interfacetheCMWScheme ( "CMWScheme" , "" , &Merger::theCMWScheme , false , false , false );
-  static SwitchOption interfacetheCMWSchemeYes
-  ( interfacetheCMWScheme , "Yes" , "" , true );
-  static SwitchOption interfacetheCMWSchemeNo
-  ( interfacetheCMWScheme , "No" , "" , false );
+  static Switch<Merger , unsigned int>
+  interfacetheCMWScheme ( "CMWScheme" , "" , &Merger::theCMWScheme , 0 , false , false );
+  static SwitchOption interfacetheCMWSchemeOff
+  (interfacetheCMWScheme,"Off","No CMW-Scheme", 0);
+  static SwitchOption interfacetheCMWSchemeLinear
+  (interfacetheCMWScheme,"Linear",
+   "Linear CMW multiplication: alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )",1);
+  static SwitchOption interfacetheCMWSchemeFactor
+  (interfacetheCMWScheme,"Factor",
+   "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q) with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",2);
   
   static Parameter<Merger , Energy> interfaceMergerScale
   ( "MergingScale" , 

@@ -245,6 +245,8 @@ namespace Herwig {
     void largeNBasis(Ptr<ColourBasis>::ptr x){theLargeNBasis=x;}
       /// helper function to check the only multi condition.
     bool notOnlyMulti()const;
+      /// Calculate the CMW AlphaS
+    double cmwAlphaS(Energy q)const;
       /// debug output for virtual
     void debugVirt(double, double, double, double, CrossSection,
                    double, double, double, NodePtr,CrossSection) const;
@@ -257,7 +259,7 @@ namespace Herwig {
       /// calculate the history expansion
     bool ShowerExpansionWeights = true;
       /// use CMW scheme
-    bool theCMWScheme = true;
+    unsigned int theCMWScheme = 0;
       /// true if current point should be projected
     bool projected = true;
       /// true if LO cross sections should be unitarised

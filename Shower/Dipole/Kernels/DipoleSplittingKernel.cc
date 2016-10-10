@@ -35,7 +35,7 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
     theVirtualitySplittingScale(false),
-    theCMWScheme(false),
+    theCMWScheme(0),
     presampling(false) {}
 
 
@@ -87,10 +87,10 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   }
  
   Energy2 rScale = sqr(theRenormalizationScaleFactor*rScaleFactor)*scale;
-  rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
+  rScale = max( rScale , sqr(renormalizationScaleFreeze()) );
 
   Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
-  fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
+  fScale = max( fScale , sqr(factorizationScaleFreeze()) );
 
   double alphas = 1.0;
   double pdf = 1.0;
@@ -115,9 +115,29 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     }
   }
 
-  if ( evaluateAlphaS )
-    alphas = alphaS()->value(rScale);
-
+  if ( evaluateAlphaS ){
+    if (theCMWScheme==0) {
+      alphas = alphaS()->value(rScale);
+    }else if(theCMWScheme==1){
+      
+      alphas = alphaS()->value(rScale);
+      alphas *=1.+(3.*(67./18.-1./6.*sqr(Constants::pi))
+                   -5./9.*alphaS()->Nf(rScale))*
+               alphas/2./Constants::pi;
+      
+    }else if(theCMWScheme==2){
+      double kg=exp(-(67.-3.*sqr(Constants::pi)-10/3*alphaS()->Nf(rScale))
+                    /(33.-2.*alphaS()->Nf(rScale)));
+      Energy2 cmwscale2=max(sqr(kg)*rScale, sqr(renormalizationScaleFreeze()) );
+      alphas = alphaS()->value(cmwscale2);
+      
+    }else{
+      throw Exception()
+      << "This CMW-Scheme is not implemented."
+      << Exception::abortnow;
+    
+    }
+  }
   if ( evaluatePDF ) {
     if ( split.index().initialStateEmitter() ) {
       assert(pdfRatio());
@@ -150,10 +170,6 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 
   if(!split.calcFixedExpansion()){
     ret *= alphas / (2.*Constants::pi);
-    ret *= theCMWScheme?
-           (1.+(3.*(67./18.-1./6.*Constants::pi*Constants::pi)
-               -5./9.*alphaS()->Nf(rScale))*alphaS()->value(rScale)/2./Constants::pi)
-           :1.;
   }else{
     ret *=1.; 
   }
@@ -304,14 +320,18 @@ void DipoleSplittingKernel::Init() {
 
   interfaceStrictLargeN.rank(-2);
 
-  static Switch<DipoleSplittingKernel,bool> interfaceCMWScheme
+  static Switch<DipoleSplittingKernel,unsigned int> interfaceCMWScheme
     ("CMWScheme",
-     "Add the CMW Scheme related Kg expression to the splitting",
-    &DipoleSplittingKernel::theCMWScheme, false, false, false);
-  static SwitchOption interfaceCMWSchemeOn
-    (interfaceCMWScheme,"On","", true);
+     "Use the CMW Scheme related Kg expression to the splitting",
+    &DipoleSplittingKernel::theCMWScheme, 0, false, false);
   static SwitchOption interfaceCMWSchemeOff
-    (interfaceCMWScheme,"Off","",false);
+    (interfaceCMWScheme,"Off","No CMW-Scheme", 0);
+  static SwitchOption interfaceCMWSchemeLinear
+  (interfaceCMWScheme,"Linear",
+   "Linear CMW multiplication: alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )",1);
+  static SwitchOption interfaceCMWSchemeFactor
+  (interfaceCMWScheme,"Factor",
+   "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(k_g*q) with kfac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",2);
 
   static Parameter<DipoleSplittingKernel,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",

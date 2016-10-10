@@ -428,7 +428,7 @@ private:
    * Implementing CMW in the kernels.
    **/
 
-  bool theCMWScheme;
+  unsigned int theCMWScheme=0;
 
   /**
    * Cache for alphas evaluations

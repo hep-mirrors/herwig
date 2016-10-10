@@ -189,89 +189,28 @@ set Sampler:BinSampler:Kappa 1.
 set Sampler:RunCombinationData Off
 set Sampler:Verbose On
 
-#######
-# CMW scheme
-#######
-
-cd /Herwig/DipoleShower/Kernels
-set FFgx2ggxDipoleKernel:CMWScheme On
-set FFqx2qgxDipoleKernel:CMWScheme On
-set FFgx2ddxDipoleKernel:CMWScheme On
-set FFgx2uuxDipoleKernel:CMWScheme On
-set FFgx2ccxDipoleKernel:CMWScheme On
-set FFgx2ssxDipoleKernel:CMWScheme On
-set FFgx2bbxDipoleKernel:CMWScheme On
-set FFMgx2ggxDipoleKernel:CMWScheme On
-set FFMdx2dgxDipoleKernel:CMWScheme On
-set FFMux2ugxDipoleKernel:CMWScheme On
-set FFMcx2cgxDipoleKernel:CMWScheme On
-set FFMsx2sgxDipoleKernel:CMWScheme On
-set FFMbx2bgxDipoleKernel:CMWScheme On
-set FFMtx2tgxDipoleKernel:CMWScheme On
-set FFMgx2ddxDipoleKernel:CMWScheme On
-set FFMgx2uuxDipoleKernel:CMWScheme On
-set FFMgx2ccxDipoleKernel:CMWScheme On
-set FFMgx2ssxDipoleKernel:CMWScheme On
-set FFMgx2bbxDipoleKernel:CMWScheme On
-set FIgx2ggxDipoleKernel:CMWScheme On
-set FIqx2qgxDipoleKernel:CMWScheme On
-set FIgx2ddxDipoleKernel:CMWScheme On
-set FIgx2uuxDipoleKernel:CMWScheme On
-set FIgx2ccxDipoleKernel:CMWScheme On
-set FIgx2ssxDipoleKernel:CMWScheme On
-set FIgx2bbxDipoleKernel:CMWScheme On
-set FIMdx2dgxDipoleKernel:CMWScheme On
-set FIMux2ugxDipoleKernel:CMWScheme On
-set FIMcx2cgxDipoleKernel:CMWScheme On
-set FIMsx2sgxDipoleKernel:CMWScheme On
-set FIMbx2bgxDipoleKernel:CMWScheme On
-set FIMtx2tgxDipoleKernel:CMWScheme On
-set FIMgx2ddxDipoleKernel:CMWScheme On
-set FIMgx2uuxDipoleKernel:CMWScheme On
-set FIMgx2ccxDipoleKernel:CMWScheme On
-set FIMgx2ssxDipoleKernel:CMWScheme On
-set FIMgx2bbxDipoleKernel:CMWScheme On
-#set FIMgx2ttxDipoleKernel:CMWScheme On
-set IFgx2ggxDipoleKernel:CMWScheme On
-set IFqx2qgxDipoleKernel:CMWScheme On
-set IFqx2gqxDipoleKernel:CMWScheme On
-set IFgx2ddbarxDipoleKernel:CMWScheme On
-set IFgx2dbardxDipoleKernel:CMWScheme On
-set IFgx2uubarxDipoleKernel:CMWScheme On
-set IFgx2ubaruxDipoleKernel:CMWScheme On
-set IFgx2ccbarxDipoleKernel:CMWScheme On
-set IFgx2cbarcxDipoleKernel:CMWScheme On
-set IFgx2ssbarxDipoleKernel:CMWScheme On
-set IFgx2sbarsxDipoleKernel:CMWScheme On
-set IFMgx2ggxDipoleKernel:CMWScheme On
-set IFMqx2qgxDipoleKernel:CMWScheme On
-set IFMqx2gqxDipoleKernel:CMWScheme On
-set IFMgx2ddbarxDipoleKernel:CMWScheme On
-set IFMgx2dbardxDipoleKernel:CMWScheme On
-set IFMgx2uubarxDipoleKernel:CMWScheme On
-set IFMgx2ubaruxDipoleKernel:CMWScheme On
-set IFMgx2ccbarxDipoleKernel:CMWScheme On
-set IFMgx2cbarcxDipoleKernel:CMWScheme On
-set IFMgx2ssbarxDipoleKernel:CMWScheme On
-set IFMgx2sbarsxDipoleKernel:CMWScheme On
-set IIgx2ggxDipoleKernel:CMWScheme On
-set IIqx2qgxDipoleKernel:CMWScheme On
-set IIqx2gqxDipoleKernel:CMWScheme On
-set IIgx2ddbarxDipoleKernel:CMWScheme On
-set IIgx2dbardxDipoleKernel:CMWScheme On
-set IIgx2uubarxDipoleKernel:CMWScheme On
-set IIgx2ubaruxDipoleKernel:CMWScheme On
-set IIgx2ccbarxDipoleKernel:CMWScheme On
-set IIgx2cbarcxDipoleKernel:CMWScheme On
-set IIgx2ssbarxDipoleKernel:CMWScheme On
-set IIgx2sbarsxDipoleKernel:CMWScheme On
-
-
 
 set /Herwig/Cuts/Cuts:Fuzzy NULL
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
+
+
+##################################################
+## CMW - Scheme
+##################################################
+
+### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
+### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
+read Merging/FactorCMWScheme.in
+
+### Linear CMW multiplication:
+### alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )
+# read Merging/LinearCMWScheme.in
+
+### Same for 4 flavours
+# read Merging/FactorCMWScheme_4fl.in
+# read Merging/LinearCMWScheme_4fl.in
 
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode

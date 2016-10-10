@@ -9,7 +9,7 @@
 ##################################################
 
 read Matchbox/EECollider.in
-read Matchbox/Merging.in
+read Merging/Merging.in
 
 ##################################################
 ## Beam energy sqrt(s)
@@ -110,6 +110,22 @@ set /Herwig/Merging/MergingFactory:ScaleChoice SHatScale
 # read Matchbox/MuQUp.in
 
 ##################################################
+## CMW - Scheme
+##################################################
+
+### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
+### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
+read Matchbox/FactorCMWScheme.in
+
+### Linear CMW multiplication:
+### alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )
+# read Matchbox/LinearCMWScheme.in
+
+### Same for 4 flavours
+# read Matchbox/FactorCMWScheme_4fl.in
+# read Matchbox/LinearCMWScheme_4fl.ins
+
+##################################################
 ## Analyses
 ##################################################
 
@@ -117,7 +133,7 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-read Matchbox/LEP91-Analysis.in
+read Merging/LEP91-Analysis.in
 
 
 ##################################################

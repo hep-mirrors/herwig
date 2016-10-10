@@ -58,13 +58,7 @@ MCatNLO-Dipole-HardAlphaSTune.in \
 MCatNLO-Dipole-ShowerAlphaSTune.in \
 StandardModelLike.in \
 DiagonalCKM.in \
-NonDiagonalCKM.in \
-Merging.in \
-LEP91-Analysis.in \
-LHC7-Z-Analysis.in \
-LHC7-W-Analysis.in \
-LHC7-J-Analysis.in \
-LHC7-T-Analysis.in
+NonDiagonalCKM.in
 
 dist_Matchbox_DATA = $(INPUTFILES)
 
