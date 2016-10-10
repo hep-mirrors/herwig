@@ -512,7 +512,8 @@ double Merger::cmwAlphaS(Energy q)const{
     // cmw-scheme as factor in argument.
   else if(theCMWScheme==2){
     double kg=exp(-(67.-3.*sqr(pi)-10/3*Nf(q))
-                  /(33.-2.*Nf(q)));
+                  /(     2.     *(33.-2.*Nf(q))));
+    //Note factor 2 since we here dealing with Energy
     
     alphas = as(max(kg*q,1_GeV));
   }else{

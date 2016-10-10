@@ -128,7 +128,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     }else if(theCMWScheme==2){
       double kg=exp(-(67.-3.*sqr(Constants::pi)-10/3*alphaS()->Nf(rScale))
                     /(33.-2.*alphaS()->Nf(rScale)));
-      Energy2 cmwscale2=max(sqr(kg)*rScale, sqr(renormalizationScaleFreeze()) );
+      Energy2 cmwscale2=max(kg*rScale, sqr(renormalizationScaleFreeze()) );
       alphas = alphaS()->value(cmwscale2);
       
     }else{
