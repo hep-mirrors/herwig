@@ -9,7 +9,7 @@
 #ifndef SRC_HERWIG_H
 #define SRC_HERWIG_H
 
-#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/EventGenerator.fh"
 
 namespace Herwig {
 

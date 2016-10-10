@@ -10,6 +10,7 @@
 #define SRC_HERWIG_CLI_H
 
 #include "Herwig/API/HerwigUI.h"
+#include <iostream>
 
 namespace Herwig {
 
