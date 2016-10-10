@@ -1,6 +1,7 @@
 // -*- C++ -*-
 //
-// DipoleSplittingKernel.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// DipoleSplittingKernel.cc is a part of Herwig - 
+// A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig is licenced under version 2 of the GPL, see COPYING for details.
@@ -38,7 +39,6 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theCMWScheme(0),
     presampling(false) {}
 
-
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
 
@@ -47,7 +47,8 @@ DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
 
 void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
-  os << theAlphaS << ounit(theScreeningScale,GeV) << theSplittingKinematics << thePDFRatio
+  os << theAlphaS << ounit(theScreeningScale,GeV)
+     << theSplittingKinematics << thePDFRatio
      << thePresamplingPoints << theMaxtry << theFreezeGrid << theDetuning
      << theFlavour << theMCCheck << theStrictLargeN
      << theFactorizationScaleFactor
@@ -58,7 +59,8 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
-  is >> theAlphaS >> iunit(theScreeningScale,GeV) >> theSplittingKinematics >> thePDFRatio
+  is >> theAlphaS >> iunit(theScreeningScale,GeV) 
+     >> theSplittingKinematics >> thePDFRatio
      >> thePresamplingPoints >> theMaxtry >> theFreezeGrid >> theDetuning
      >> theFlavour >> theMCCheck >> theStrictLargeN
      >> theFactorizationScaleFactor
@@ -166,16 +168,9 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     theAlphaSCache[rScaleFactor] = alphas;
   }
 
-  double ret = pdf;
-
-  if(!split.calcFixedExpansion()){
-    ret *= alphas / (2.*Constants::pi);
-  }else{
-    ret *=1.; 
-  }
-  
-
-
+  double ret = pdf*
+               (split.calcFixedExpansion()?
+                1.:(alphas / (2.*Constants::pi)));
 
   if ( ret < 0. )
     ret = 0.;
@@ -194,8 +189,10 @@ void DipoleSplittingKernel::accept(const DipoleSplittingInfo& split,
   for ( map<string,ShowerVariation>::const_iterator var =
 	  ShowerHandler::currentHandler()->showerVariations().begin();
 	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
-    if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
-	 ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() 
+	   && var->second.firstInteraction ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() 
+           && var->second.secondaryInteractions ) ) {
       double varied = alphaPDF(split,ZERO,
 			       var->second.renormalizationScaleFactor,
 			       var->second.factorizationScaleFactor);
@@ -224,8 +221,10 @@ void DipoleSplittingKernel::veto(const DipoleSplittingInfo& split,
   for ( map<string,ShowerVariation>::const_iterator var =
 	  ShowerHandler::currentHandler()->showerVariations().begin();
 	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
-    if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
-	 ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() 
+           && var->second.firstInteraction ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() 
+           && var->second.secondaryInteractions ) ) {
       double varied = alphaPDF(split,ZERO,
 			       var->second.renormalizationScaleFactor,
 			       var->second.factorizationScaleFactor);
@@ -240,7 +239,8 @@ void DipoleSplittingKernel::veto(const DipoleSplittingInfo& split,
   }
 }
 
-AbstractClassDescription<DipoleSplittingKernel> DipoleSplittingKernel::initDipoleSplittingKernel;
+AbstractClassDescription<DipoleSplittingKernel> 
+DipoleSplittingKernel::initDipoleSplittingKernel;
 // Definition of the static class description member.
 
 void DipoleSplittingKernel::Init() {
@@ -262,7 +262,8 @@ void DipoleSplittingKernel::Init() {
      false, false, Interface::lowerlim);
 
 
-  static Reference<DipoleSplittingKernel,DipoleSplittingKinematics> interfaceSplittingKinematics
+  static Reference<DipoleSplittingKernel,DipoleSplittingKinematics> 
+     interfaceSplittingKinematics
     ("SplittingKinematics",
      "The splitting kinematics to be used by this splitting kernel.",
      &DipoleSplittingKernel::theSplittingKinematics, false, false, true, false, false);
@@ -331,7 +332,7 @@ void DipoleSplittingKernel::Init() {
    "Linear CMW multiplication: alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )",1);
   static SwitchOption interfaceCMWSchemeFactor
   (interfaceCMWScheme,"Factor",
-   "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(k_g*q) with kfac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",2);
+   "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(k_g*q) with  kfac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",2);
 
   static Parameter<DipoleSplittingKernel,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",
@@ -352,7 +353,8 @@ void DipoleSplittingKernel::Init() {
   static Parameter<DipoleSplittingKernel,Energy> interfaceRenormalizationScaleFreeze
     ("RenormalizationScaleFreeze",
      "The freezing scale for the renormalization scale.",
-     &DipoleSplittingKernel::theRenormalizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     &DipoleSplittingKernel::theRenormalizationScaleFreeze, 
+      GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
   static Parameter<DipoleSplittingKernel,Energy> interfaceFactorizationScaleFreeze

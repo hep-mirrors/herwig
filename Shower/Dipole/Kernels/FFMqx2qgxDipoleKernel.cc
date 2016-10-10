@@ -73,22 +73,32 @@ tcPDPtr FFMqx2qgxDipoleKernel::spectator(const DipoleIndex& ind) const {
 double FFMqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   
   double ret = alphaPDF(split);
-  
-  // masses
-  double muQ2 = sqr( split.emitterData()->mass() / split.scale() );
-  double muj2 = sqr( split.spectatorData()->mass() / split.scale() );
 
+  // These are the physical variables as used in the standard 
+  // form of the kernel (i.e. do not redefine variables or kernel)
   double z = split.lastZ();
-  double y = ( sqr(split.lastPt()/split.scale()) + muQ2*sqr(1.-z) ) /
-    (z*(1.-z)) / (1.-muQ2-muj2);
+  Energy pt = split.lastPt();
 
-  double vijk = sqrt( sqr(2.*muj2+(1.-muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muQ2-muj2)*(1.-y));
-  double vbar = sqrt( 1.+sqr(muQ2)+sqr(muj2)-2.*(muQ2+muj2+muQ2*muj2) ) / (1.-muQ2-muj2);
+  // Need zPrime to calculate y, 
+  // TODO: Should just store y in the dipole splitting info everywhere anyway!!!
+  // The only value stored in dInfo.lastSplittingParameters() should be zPrime
+  //assert(split.lastSplittingParameters().size() == 1 );
+  double zPrime = split.lastSplittingParameters()[0];
 
-  ret *= (4./3.)*( 2./(1.-z*(1.-y)) - vbar/vijk*( 1.+z + muQ2*2./(y*(1.-muQ2-muj2)) ) );
-  
+  // Construct mass squared variables
+  double mui2 = sqr(split.emitterData()->mass() / split.scale());
+  double muj2 = sqr(split.spectatorData()->mass() / split.scale());
+  double bar = 1. - mui2 - muj2;
+
+  // Calculate y
+  double y = (sqr(pt)/sqr(split.scale()) + sqr(1.-zPrime)*mui2) / (bar*zPrime*(1.-zPrime));
+
+  double vijk = sqrt( sqr(2.*muj2 + bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
+  double vbar = sqrt( 1.+sqr(mui2)+sqr(muj2)-2.*(mui2+muj2+mui2*muj2) ) / bar;
+
+  ret *= (!strictLargeN() ? 4./3. : 3./2.)*( 2./(1.-z*(1.-y)) - vbar/vijk*( 1.+z + mui2*2./(y*(1.-mui2-muj2)) ) );
   return ret > 0. ? ret : 0.;
-  
+
 }
 
 // If needed, insert default implementations of  function defined

@@ -67,14 +67,28 @@ tcPDPtr FFMgx2ggxDipoleKernel::spectator(const DipoleIndex& ind) const {
 double FFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   
   double ret = alphaPDF(split);
-  
-  // masses
-  double muj2 = sqr( split.spectatorData()->mass() / split.scale() );
-  
-  double z = split.lastZ();
-  double y = sqr(split.lastPt() / split.scale()) / (z*(1.-z)) / (1.-muj2);
 
-  double vijk = sqrt( sqr(2.*muj2+(1.-muj2)*(1.-y))-4.*muj2 ) / ((1.-muj2)*(1.-y));
+  // These are the physical variables as used in the 
+  // standard form of the kernel (i.e. do not redefine variables or kernel)
+  const double z = split.lastZ();
+  const Energy pt = split.lastPt();
+
+  // Need zPrime to calculate y, 
+  // TODO: Should just store y in the dipole splitting info everywhere anyway!!!
+  // The only value stored in dInfo.lastSplittingParameters() should be zPrime
+
+  const double zPrime = split.lastSplittingParameters()[0];
+  
+  // Construct mass squared variables
+
+  // Construct mass squared variables
+  double muj2 = sqr(split.spectatorData()->mass() / split.scale());
+  double bar = 1. - muj2;
+
+  // Calculate y
+  double y = sqr(pt)/sqr(split.scale()) / (bar*zPrime*(1.-zPrime));
+
+  double vijk = sqrt( sqr(2.*muj2+bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
   double viji = 1.;
 
   double zp = 0.5*(1.+viji*vijk);

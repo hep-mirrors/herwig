@@ -1264,22 +1264,22 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
   
     // Perform the powheg emission
   if ( powhegEmission ) {
-    
+
     if ( decayMode ) {
-      
-      HwDecayerBasePtr decayer;
-      decayer = dynamic_ptr_cast<HwDecayerBasePtr>(decayMode->decayer());
-      
-      if ( decayer->hasPOWHEGCorrection() ) {
-        
-          // Construct a real emission process and populate its
-          // incoming and outcoming prior to any powheg emission
-        RealEmissionProcessPtr born = new_ptr( RealEmissionProcess() );
-        born->bornIncoming().push_back( incoming );
-        
-        for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-          born->bornOutgoing().push_back(process->outgoing()[ix].first);
-        }
+
+    HwDecayerBasePtr decayer;
+    decayer = dynamic_ptr_cast<HwDecayerBasePtr>(decayMode->decayer());
+
+    if ( decayer->hasPOWHEGCorrection() ) {
+
+      // Construct a real emission process and populate its
+      // incoming and outcoming prior to any powheg emission
+      RealEmissionProcessPtr born = new_ptr( RealEmissionProcess() );
+      born->bornIncoming().push_back( incoming );
+
+      for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
+	born->bornOutgoing().push_back(process->outgoing()[ix].first);
+      }
         
           // Generate any powheg emission, returning 'real'
         RealEmissionProcessPtr real = decayer->generateHardest( born );

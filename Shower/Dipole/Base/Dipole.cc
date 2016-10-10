@@ -66,13 +66,13 @@ void Dipole::update() {
 				 theDecaying.first,theDecaying.second);
   theIndices.second = theIndices.first;
   theIndices.second.swap();
-  assert(DipolePartonSplitter::colourConnected(theParticles.first,theParticles.second));
+  assert(DipolePartonSplitter::colourConnected(theParticles.first,
+                                               theParticles.second));
 }
 
 pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
-				  bool colourSpectator) const {
-
-  // check contracts
+				  bool colourSpectator) const {  
+ // check contracts
   assert(dsplit.splittingKinematics());
   assert(dsplit.emitterData() && dsplit.emissionData() && dsplit.spectatorData());
   if ( !colourSpectator ) {
@@ -82,16 +82,17 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   } else {
     assert(emitterX(dsplit.configuration()) == dsplit.emitterX());
     assert(emitterPDF(dsplit.configuration()) == dsplit.index().emitterPDF());
-    assert((dsplit.configuration().first ? theParticles.first->dataPtr() : theParticles.second->dataPtr())
+    assert((dsplit.configuration().first ? 
+            theParticles.first->dataPtr() : 
+            theParticles.second->dataPtr())
 	   == dsplit.index().emitterData());
   }
 
-
-
   // generate full kinematics
-  dsplit.splittingKinematics()->generateKinematics(emitter(dsplit.configuration())->momentum(),
-						   spectator(dsplit.configuration())->momentum(),
-						   dsplit);
+  dsplit.splittingKinematics()->generateKinematics(
+                       emitter(dsplit.configuration())->momentum(),
+		       spectator(dsplit.configuration())->momentum(),
+		       dsplit);
 
 
   // Treat the case of decay splittings as backward evolution.
@@ -106,9 +107,12 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   // get a new spectator
   if ( !colourSpectator ) {
     newSpectator = 
-      dsplit.spectatorData()->produceParticle(dsplit.splittingKinematics()->lastSpectatorMomentum());
+      dsplit.spectatorData()->produceParticle(
+		dsplit.splittingKinematics()->lastSpectatorMomentum());
 
-    DipolePartonSplitter::change(oldSpectator,newSpectator,spectatorPDF(dsplit.configuration()).pdf(), spectator_decay);
+    DipolePartonSplitter::change(oldSpectator,
+				 newSpectator,
+	 spectatorPDF(dsplit.configuration()).pdf(), spectator_decay);
 
     dsplit.spectator(oldSpectator);
     dsplit.splitSpectator(newSpectator);
@@ -119,16 +123,18 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   // perform the splitting
   tPPtr oldEmitter = emitter(dsplit.configuration());
   PPtr newEmitter = 
-    dsplit.emitterData()->produceParticle(dsplit.splittingKinematics()->lastEmitterMomentum());
+    dsplit.emitterData()->produceParticle(
+               dsplit.splittingKinematics()->lastEmitterMomentum());
   PPtr newEmission = 
-    dsplit.emissionData()->produceParticle(dsplit.splittingKinematics()->lastEmissionMomentum());
+    dsplit.emissionData()->produceParticle(
+               dsplit.splittingKinematics()->lastEmissionMomentum());
 
   newEmitter->scale(sqr(dsplit.lastPt()));
   newEmission->scale(sqr(dsplit.lastPt()));
   newSpectator->scale(oldSpectator->scale());
 
   DipolePartonSplitter::split(oldEmitter,newEmitter,newEmission,
-			oldSpectator,emitterPDF(dsplit.configuration()).pdf());
+           oldSpectator,emitterPDF(dsplit.configuration()).pdf(), emitter_decay);
 
   dsplit.emitter(oldEmitter);
   dsplit.splitEmitter(newEmitter);
@@ -284,8 +290,8 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
 
   Energy scale = dsplit.lastPt();
 
-  return make_pair(Dipole(left_particles,left_pdfs,left_fractions,left_decays,pair<Energy,Energy>(scale,scale)),
-		   Dipole(right_particles,right_pdfs,right_fractions,right_decays,pair<Energy,Energy>(scale,scale)));
+  return { Dipole(left_particles,left_pdfs,left_fractions,left_decays,{scale,scale}),
+	   Dipole(right_particles,right_pdfs,right_fractions,right_decays,{scale,scale})};
 
 }
 
@@ -328,15 +334,21 @@ void Dipole::recoil (DipoleSplittingInfo& dsplit) {
   // check contracts
   assert(dsplit.splittingKinematics());
   assert(dsplit.spectatorData());
-  assert(spectatorX(dsplit.spectatorConfiguration()) == dsplit.spectatorX());
-  assert(spectatorPDF(dsplit.spectatorConfiguration()) == dsplit.index().spectatorPDF());
-  assert((dsplit.spectatorConfiguration().first ? theParticles.first->dataPtr() : theParticles.second->dataPtr())
+  assert(spectatorX(dsplit.spectatorConfiguration()) 
+                 == dsplit.spectatorX());
+  assert(spectatorPDF(dsplit.spectatorConfiguration()) 
+                   == dsplit.index().spectatorPDF());
+  assert((dsplit.spectatorConfiguration().first ? 
+			theParticles.first->dataPtr() : 
+   			theParticles.second->dataPtr())
 	 == dsplit.index().spectatorData());
 
   tPPtr oldSpectator = spectator(dsplit.spectatorConfiguration());
   PPtr newSpectator = 
-      dsplit.spectatorData()->produceParticle(dsplit.splittingKinematics()->lastSpectatorMomentum());
-  DipolePartonSplitter::change(oldSpectator,newSpectator,spectatorPDF(dsplit.spectatorConfiguration()).pdf());
+      dsplit.spectatorData()->produceParticle(
+			dsplit.splittingKinematics()->lastSpectatorMomentum());
+  DipolePartonSplitter::change(oldSpectator,newSpectator,
+                  spectatorPDF(dsplit.spectatorConfiguration()).pdf());
 
   newSpectator->scale(sqr(dsplit.lastPt()));
 
@@ -359,10 +371,9 @@ void Dipole::print(ostream& os) const {
   // Check for decays first
   if ( theDecaying.first || theDecaying.second) {
     assert(!(theDecaying.first && theDecaying.second));
-    // TODO: No longer treat Decay IF case explicitly, tidyup for this
     if ( theDecaying.first && !theDecaying.second )
       os << "Decay IF";
-    else 
+    else if ( theDecaying.second && !theDecaying.first )
       os << "Decay FI";
   }
   else if ( !thePDFs.first.pdf() && !thePDFs.second.pdf() )

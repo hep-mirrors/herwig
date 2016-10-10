@@ -66,7 +66,9 @@ public:
   /**
    * Return the splitting kinematics object
    */
-  Ptr<DipoleSplittingKinematics>::tptr splittingKinematics() const { return theSplittingKinematics; }
+  Ptr<DipoleSplittingKinematics>::tptr splittingKinematics() const {
+      return theSplittingKinematics; 
+  }
 
   /**
    * Return the mc check object
@@ -76,7 +78,9 @@ public:
   /**
    * Set the splitting kinematics object
    */
-  void splittingKinematics(Ptr<DipoleSplittingKinematics>::tptr sp) { theSplittingKinematics = sp; }
+  void splittingKinematics(Ptr<DipoleSplittingKinematics>::tptr sp) { 
+    theSplittingKinematics = sp; 
+  }
 
   /**
    * Return the PDFRatio object
@@ -264,7 +268,9 @@ public:
    * DipoleSplittingInfo object to equal
    * the given value.
    */
-  virtual double invertOverestimateIntegral(const DipoleSplittingInfo&, double) const { return -1.; }
+  virtual double invertOverestimateIntegral(const DipoleSplittingInfo&, double) const {
+	 return -1.; 
+  }
 
 public:
 

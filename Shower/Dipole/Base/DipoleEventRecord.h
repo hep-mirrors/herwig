@@ -288,8 +288,7 @@ public:
              DipoleChain*& firstChain, DipoleChain*& secondChain,
              bool colourSpectator = true);
 
-  DipoleSplittingInfo lastSpliting(){return lastspliting;}
-  
+
   /**
    * Let the given dipole take the recoil of 
    * the indicated splitting.
@@ -338,7 +337,8 @@ public:
    */
   const map<PPtr,PPtr>& prepare(tSubProPtr subpro,
                                 tStdXCombPtr xc,
-                                const pair<PDF,PDF>& pdf,tPPair beam,
+                                const pair<PDF,PDF>& pdf,
+				tPPair beam,
                                 bool dipoles = true);
   /**
    * Prepare the event record for the given
@@ -484,11 +484,6 @@ private:
    * Storage of the particles which need to be decayed
    */
   map<PPtr,PerturbativeProcessPtr> theDecays;
-
- /**
-   * Get information about the last splitting.
-   */
-  DipoleSplittingInfo lastspliting;
 
   /**
    *

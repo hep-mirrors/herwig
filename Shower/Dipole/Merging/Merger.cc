@@ -541,7 +541,7 @@ double Merger::alphaReweight(){
   const auto Q_qed=history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED();
   const auto Oew=history[0].node->nodeME()->orderInAlphaEW();
   const auto Oqcd=history[0].node->nodeME()->orderInAlphaS();
-  const auto glfac=3.*( 67./18.-1./6.*pi*pi );
+
   if (!history[0].node->children().empty()) {
     assert(Oqcd!=0);
   }
