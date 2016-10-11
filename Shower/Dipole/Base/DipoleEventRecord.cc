@@ -18,7 +18,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 
-#include <boost/utility.hpp>
+#include <iterator>
 
 #include <algorithm>
 
@@ -312,7 +312,7 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 	 p != ordered.end(); ++p) {
 
       PList::const_iterator next_it =
-	p != --ordered.end() ? boost::next(p) : ordered.begin();
+	p != --ordered.end() ? std::next(p) : ordered.begin();
 
       if (!DipolePartonSplitter::colourConnected(*p,*next_it)) {
 	// it may have happened that we need to close the chain due to another
