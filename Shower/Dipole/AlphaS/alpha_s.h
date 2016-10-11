@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <boost/array.hpp>
+#include <array>
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/StandardModel/AlphaSBase.h"
@@ -299,11 +299,10 @@ namespace matchbox {
 
     double scale_factor_;
 
-    boost::array<Energy2,7> quark_masses_squared_;
-    boost::array<Energy2,7> lambda_squared_;
-      
+    std::array<Energy2,7> quark_masses_squared_;
+    std::array<Energy2,7> lambda_squared_;
     vector<Energy2> nfvector=vector<Energy2>(6);
-
+  
     double alpha_s_in_;
     Energy scale_in_;
 

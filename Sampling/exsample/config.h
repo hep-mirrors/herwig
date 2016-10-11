@@ -24,7 +24,6 @@
 #include <numeric>
 #include <limits>
 
-#include <boost/utility.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/scoped_ptr.hpp>
 

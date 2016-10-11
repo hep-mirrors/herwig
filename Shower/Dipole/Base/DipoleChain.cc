@@ -14,7 +14,7 @@
 #include "DipoleChain.h"
 #include "Herwig/Shower/Dipole/Utility/DipolePartonSplitter.h"
 
-#include <boost/utility.hpp>
+#include <iterator>
 
 using namespace Herwig;
 
@@ -82,7 +82,7 @@ list<Dipole>::iterator DipoleChain::rightNeighbourIterator(list<Dipole>::iterato
 }
 
 void DipoleChain::check() {
-  if ( theDipoles.begin() == boost::prior(theDipoles.end()) ) {
+  if ( theDipoles.begin() == std::prev(theDipoles.end()) ) {
     if ( theDipoles.front().leftParticle()->hasColour() &&
 	 theDipoles.front().leftParticle()->hasAntiColour() ) {
       assert(theDipoles.front().rightParticle()->hasColour() &&
@@ -173,7 +173,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       *emittingDipole = children.second;
       childIterators.second = emittingDipole;
       assert(emittingDipole != dipoles().begin());
-      childIterators.first = boost::prior(emittingDipole);
+      childIterators.first = std::prev(emittingDipole);
       return emittingDipole;
     }
 
@@ -195,7 +195,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       miss.update();
       dipoles().push_back(miss);
       childIterators.first = dipoles().begin();
-      childIterators.second = boost::prior(dipoles().end());
+      childIterators.second = std::prev(dipoles().end());
       return dipoles().end();
     }
 
@@ -203,7 +203,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
     if ( emittingDipole == dipoles().begin() )
       childIterators.first = --dipoles().end();
     else
-      childIterators.first = boost::prior(emittingDipole);
+      childIterators.first = std::prev(emittingDipole);
 
     if ( emittingDipole == dipoles().begin() )
       return dipoles().end();
@@ -226,8 +226,8 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       *emittingDipole = children.first;
       childIterators.first = emittingDipole;
       assert(emittingDipole != --dipoles().end());
-      childIterators.second = boost::next(emittingDipole);
-      return boost::next(emittingDipole);
+      childIterators.second = std::next(emittingDipole);
+      return std::next(emittingDipole);
     }
 
     *emittingDipole = children.first;
@@ -248,7 +248,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
       miss.update();
       dipoles().push_front(miss);
       childIterators.first = dipoles().begin();
-      childIterators.second = boost::prior(dipoles().end());
+      childIterators.second = std::prev(dipoles().end());
       return dipoles().end();
     }
 
@@ -256,12 +256,12 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
     if ( emittingDipole == --dipoles().end() )
       childIterators.second = dipoles().begin();
     else
-      childIterators.second = boost::next(emittingDipole);
+      childIterators.second = std::next(emittingDipole);
 
     if ( emittingDipole == --dipoles().end() )
       return dipoles().end();
 
-    dipoles().splice(dipoles().begin(),dipoles(),boost::next(emittingDipole),dipoles().end());
+    dipoles().splice(dipoles().begin(),dipoles(),std::next(emittingDipole),dipoles().end());
 
     // explicitly fix iterators in case the splice implementation
     // at hand does invalidate iterators (the SGI docu says, it doesn't,

@@ -1,24 +1,55 @@
-noinst_LTLIBRARIES = libHwStandardModel.la
-libHwStandardModel_la_SOURCES = \
-	StandardModel.fh StandardModel.h StandardModel.cc\
-	RunningMassBase.h RunningMassBase.cc \
-	RunningMass.h RunningMass.cc\
-	StandardCKM.h StandardCKM.cc \
-        O2AlphaS.h O2AlphaS.cc \
-        AlphaEM.h AlphaEM.cc  \
-        SMFFGVertex.cc SMFFGVertex.h \
-        SMFFHVertex.cc SMFFHVertex.h \
-        SMFFPVertex.cc SMFFPVertex.h \
-        SMFFWVertex.cc SMFFWVertex.h \
-        SMFFZVertex.cc SMFFZVertex.h \
-        SMGGGGVertex.cc SMGGGGVertex.h \
-        SMGGGVertex.cc SMGGGVertex.h \
-        SMWWHVertex.cc SMWWHVertex.h \
-        SMWWWVertex.cc SMWWWVertex.h \
-        SMWWWWVertex.cc SMWWWWVertex.h \
-	SMHGGVertex.cc SMHGGVertex.h \
-	SMHPPVertex.cc SMHPPVertex.h\
-	SMHHHVertex.cc SMHHHVertex.h \
-	SMWWHHVertex.cc SMWWHHVertex.h \
-	GenericSVVVertex.cc GenericSVVVertex.h \
-	GenericVVVVertex.cc GenericVVVVertex.h
+BUILT_SOURCES  = SM__all.cc
+DISTCLEANFILES = SM__all.cc
+
+SM__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+StandardModel.fh StandardModel.h \
+RunningMassBase.h \
+RunningMass.h \
+StandardCKM.h \
+O2AlphaS.h \
+AlphaEM.h \
+SMFFGVertex.h \
+SMFFHVertex.h \
+SMFFPVertex.h \
+SMFFWVertex.h \
+SMFFZVertex.h \
+SMGGGGVertex.h \
+SMGGGVertex.h \
+SMWWHVertex.h \
+SMWWWVertex.h \
+SMWWWWVertex.h \
+SMHGGVertex.h \
+SMHPPVertex.h\
+SMHHHVertex.h \
+SMWWHHVertex.h \
+GenericSVVVertex.h \
+GenericVVVVertex.h
+
+ALL_CC_FILES = \
+StandardModel.cc\
+RunningMassBase.cc \
+RunningMass.cc\
+StandardCKM.cc \
+O2AlphaS.cc \
+AlphaEM.cc  \
+SMFFGVertex.cc \
+SMFFHVertex.cc \
+SMFFPVertex.cc \
+SMFFWVertex.cc \
+SMFFZVertex.cc \
+SMGGGGVertex.cc \
+SMGGGVertex.cc \
+SMWWHVertex.cc \
+SMWWWVertex.cc \
+SMWWWWVertex.cc \
+SMHGGVertex.cc \
+SMHPPVertex.cc \
+SMHHHVertex.cc \
+SMWWHHVertex.cc \
+GenericSVVVertex.cc \
+GenericVVVVertex.cc 

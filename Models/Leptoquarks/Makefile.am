@@ -1,10 +1,19 @@
-if WANT_BSM
-pkglib_LTLIBRARIES = HwLeptoquarkModel.la
-endif
-HwLeptoquarkModel_la_SOURCES = \
-LeptoquarkModel.cc  LeptoquarkModel.h LeptoquarkModel.fh \
-LeptoquarkModelSLQSLQGGVertex.h LeptoquarkModelSLQSLQGGVertex.cc \
-LeptoquarkModelSLQFFVertex.h	LeptoquarkModelSLQFFVertex.cc   \
-LeptoquarkModelSLQSLQGVertex.h 	LeptoquarkModelSLQSLQGVertex.cc
+BUILT_SOURCES  = Leptoquark__all.cc
+DISTCLEANFILES = Leptoquark__all.cc
 
-HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
+Leptoquark__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+LeptoquarkModel.h LeptoquarkModel.fh \
+LeptoquarkModelSLQSLQGGVertex.h \
+LeptoquarkModelSLQFFVertex.h	\
+LeptoquarkModelSLQSLQGVertex.h 	
+
+ALL_CC_FILES = \
+LeptoquarkModel.cc  \
+LeptoquarkModelSLQSLQGGVertex.cc \
+LeptoquarkModelSLQFFVertex.cc   \
+LeptoquarkModelSLQSLQGVertex.cc

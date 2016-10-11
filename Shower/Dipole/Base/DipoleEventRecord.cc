@@ -21,7 +21,7 @@
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include <boost/utility.hpp>
 #include <algorithm>
-
+#include <iterator>
 
 using namespace Herwig;
 
@@ -311,8 +311,8 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
          p != ordered.end(); ++p) {
       
       PList::const_iterator next_it =
-      p != --ordered.end() ? boost::next(p) : ordered.begin();
-      
+	p != --ordered.end() ? std::next(p) : ordered.begin();
+
       if (!DipolePartonSplitter::colourConnected(*p,*next_it)) {
           // it may have happened that we need to close the chain due to another
           // chain starting right now; see the above global comment for this fix

@@ -1,12 +1,27 @@
-if WANT_BSM
-pkglib_LTLIBRARIES = HwRSModel.la
-endif
-HwRSModel_la_SOURCES = RSModel.fh RSModel.cc  RSModel.h  \
-RSModelFFGRVertex.cc  RSModelFFGRVertex.h  \
-RSModelFFGGRVertex.cc RSModelFFGGRVertex.h \
-RSModelFFWGRVertex.cc RSModelFFWGRVertex.h \
-RSModelSSGRVertex.cc  RSModelSSGRVertex.h  \
-RSModelVVGRVertex.cc  RSModelVVGRVertex.h \
-RSModelWWWGRVertex.cc RSModelWWWGRVertex.h\
-RSModelGGGGRVertex.cc RSModelGGGGRVertex.h
-HwRSModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
+BUILT_SOURCES  = RS__all.cc
+DISTCLEANFILES = RS__all.cc
+
+RS__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+RSModel.fh RSModel.h \
+RSModelFFGRVertex.h  \
+RSModelFFGGRVertex.h \
+RSModelFFWGRVertex.h \
+RSModelSSGRVertex.h  \
+RSModelVVGRVertex.h  \
+RSModelWWWGRVertex.h \
+RSModelGGGGRVertex.h
+
+ALL_CC_FILES = \
+RSModel.cc  \
+RSModelFFGRVertex.cc  \
+RSModelFFGGRVertex.cc \
+RSModelFFWGRVertex.cc \
+RSModelSSGRVertex.cc  \
+RSModelVVGRVertex.cc  \
+RSModelWWWGRVertex.cc \
+RSModelGGGGRVertex.cc 
