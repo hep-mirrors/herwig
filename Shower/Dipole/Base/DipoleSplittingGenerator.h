@@ -131,23 +131,18 @@ public:
    */
   const DipoleSplittingInfo& lastSplitting() const { return generatedSplitting; }
   
- /**
-   * Sample the Sudakov in monte carlo fashion
-   */
+ 
+    /// Sample the Sudakov in monte carlo fashion.
   double sudakov(const DipoleSplittingInfo&,Energy down);
-
+    /// do the actiual calculation of the sudakov exponent.
   double dosudakov(const DipoleSplittingInfo&,Energy down);
-
+    /// wrapper for sudakovExpansion for identical dipoles.
   double wrappedSudakov(DipoleSplittingInfo& split,Energy down);
-  
-  /**
-   * Sample the Sudakov exponent for sudakovExpansion weights
-   */
-
+    /// Sample the Sudakov exponent for sudakovExpansion weights
   double sudakovExpansion(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
-
+    /// do the actual calculation for the sudakov expansion.
   double dosudakovExpansion(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
-
+    /// wrapper for sudakovExpansion
   double wrappedSudakovExpansion(DipoleSplittingInfo& split,Energy down,Energy fixedScale);
 
 

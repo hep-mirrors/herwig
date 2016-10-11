@@ -478,7 +478,12 @@ private:
   Energy muPt;
   
   
-    //TODO!!
+  /**
+   * The merging helper takes care of merging multiple LO and NLO
+   * cross sections. Here we need to check if an emission would 
+   * radiate in the matrix element region of an other multipicity.
+   * If so, the emission is vetoed.
+   */
   Ptr<MergerBase>::ptr theMergingHelper;
   
   

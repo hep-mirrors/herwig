@@ -50,28 +50,32 @@ public:
    * The destructor.
    */
   virtual ~MergerBase();
-    //define the ME region for a particle vector.
+    /// define the ME region for a particle vector.
   virtual bool matrixElementRegion(PVector incoming,
                                    PVector outcoming,
                                    Energy winnerScale,
                                    Energy cutscale) const = 0;
-    // cross section of as given by the merging
+    /// cross section of as given by the merging
   virtual CrossSection MergingDSigDR()  = 0;
-    // set the current xcomb, called from ME
+    /// set the current xcomb, called from ME
   virtual void setXComb( tStdXCombPtr) = 0;
-   // set the current ME
+    /// set the current ME
   virtual void setME(Ptr<MatchboxMEBase>::ptr) = 0;
-    // set kinematics, called from ME
+    /// set kinematics, called from ME
   virtual void setKinematics() = 0;
-  //  clear kinematics, called from ME
+    ///  clear kinematics, called from ME
   virtual void clearKinematics() = 0;
-    // generate kinematics, called from ME
+    /// generate kinematics, called from ME
   virtual bool generateKinematics( const double * ) = 0;
-    // flush all chaches, called  from ME
+    /**
+     * flush all chaches of the subleading nodes.
+     * Note: this is called not from the ME but before the first 
+     * kinematics is generated.
+     **/
   virtual void flushCaches() = 0;
-    // return the current maximum legs, the shower should veto
+    /// return the current maximum legs, the shower should veto
   virtual size_t maxLegs() const = 0;
-    // return the current merging scale,
+    /// return the current merging scale,
   virtual Energy mergingScale() const = 0;
 
   //@}
