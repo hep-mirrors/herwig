@@ -21,11 +21,6 @@
 #include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
-namespace {
-  inline Energy  timesGeV (double x) { return x * GeV; }
-  inline Energy2 timesGeV2(double x) { return x * GeV2; }
-}
-
 using namespace Herwig;
 
 DescribeClass<ThreePionCLEOCurrent,ThreeMesonCurrentBase>
@@ -150,13 +145,13 @@ ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
     vector<double> tmp1(a1widthin,a1widthin+200);
     std::transform(tmp1.begin(), tmp1.end(),
 		   back_inserter(_a1runwidth),
-		   timesGeV);
+		   [](double x){return x*GeV;});
     
     vector<double> tmp2(a1q2in,a1q2in+200);
     _a1runq2.clear();
     std::transform(tmp2.begin(), tmp2.end(),
 		   back_inserter(_a1runq2),
-		   timesGeV2);
+		   [](double x){return x*GeV2;});
   }
   // zero parameters which will be calculated later to avoid problems
   _pf2cc=ZERO; 

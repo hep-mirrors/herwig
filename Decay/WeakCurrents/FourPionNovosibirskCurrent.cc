@@ -39,11 +39,6 @@ HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent2,double,Energy)
 
 HERWIG_INTERPOLATOR_CLASSDESC(FourPionNovosibirskCurrent3,double,Energy2)
 
-namespace {
-  inline Energy  timesGeV (double x) { return x * GeV; }
-  inline Energy2 timesGeV2(double x) { return x * GeV2; }
-}
- 
 IBPtr FourPionNovosibirskCurrent::clone() const {
   return new_ptr(*this);
 }
@@ -319,13 +314,13 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
   _a1runwidth.clear();
   std::transform(tmp1.begin(), tmp1.end(),
 		 back_inserter(_a1runwidth),
-		 timesGeV);
+		 [](double x){return x*GeV;});
   
   vector<double> tmp2(a1q2in,a1q2in+200);
   _a1runq2.clear();
   std::transform(tmp2.begin(), tmp2.end(),
 		 back_inserter(_a1runq2),
-		 timesGeV2);
+		 [](double x){return x*GeV2;});
 
   _maxmass=ZERO;
   _maxcalc=ZERO;

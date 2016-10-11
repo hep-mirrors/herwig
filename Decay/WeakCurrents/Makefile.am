@@ -1,20 +1,41 @@
-pkglib_LTLIBRARIES = HwWeakCurrents.la
+
 noinst_LTLIBRARIES = libHwWeakCurrent.la
 libHwWeakCurrent_la_SOURCES = \
 WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h\
 LeptonNeutrinoCurrent.cc LeptonNeutrinoCurrent.fh \
 LeptonNeutrinoCurrent.h
 
-HwWeakCurrents_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
-HwWeakCurrents_la_SOURCES = \
-FourPionNovosibirskCurrent.cc FourPionNovosibirskCurrent.h \
-ScalarMesonCurrent.cc ScalarMesonCurrent.h\
-ThreeMesonCurrentBase.cc ThreeMesonCurrentBase.h \
-ThreeMesonDefaultCurrent.cc ThreeMesonDefaultCurrent.h\
-ThreePionCLEOCurrent.cc ThreePionCLEOCurrent.h\
-TwoMesonRhoKStarCurrent.cc TwoMesonRhoKStarCurrent.h\
-TwoPionPhotonCurrent.cc TwoPionPhotonCurrent.h\
-VectorMesonCurrent.cc VectorMesonCurrent.h\
-FivePionCurrent.cc FivePionCurrent.h \
-KPiCurrent.cc KPiCurrent.h\
-KaonThreeMesonCurrent.cc KaonThreeMesonCurrent.h
+BUILT_SOURCES  = WeakCurrents__all.cc
+DISTCLEANFILES = WeakCurrents__all.cc
+
+WeakCurrents__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+FourPionNovosibirskCurrent.h \
+ScalarMesonCurrent.h\
+ThreeMesonCurrentBase.h \
+ThreeMesonDefaultCurrent.h\
+ThreePionCLEOCurrent.h\
+TwoMesonRhoKStarCurrent.h\
+TwoPionPhotonCurrent.h\
+VectorMesonCurrent.h\
+FivePionCurrent.h \
+KPiCurrent.h\
+KaonThreeMesonCurrent.h
+
+
+ALL_CC_FILES = \
+FourPionNovosibirskCurrent.cc \
+ScalarMesonCurrent.cc \
+ThreeMesonCurrentBase.cc \
+ThreeMesonDefaultCurrent.cc \
+ThreePionCLEOCurrent.cc \
+TwoMesonRhoKStarCurrent.cc \
+TwoPionPhotonCurrent.cc \
+VectorMesonCurrent.cc \
+FivePionCurrent.cc \
+KPiCurrent.cc \
+KaonThreeMesonCurrent.cc 

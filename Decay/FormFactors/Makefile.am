@@ -1,6 +1,4 @@
 noinst_LTLIBRARIES = libHwFormFactor.la
-pkglib_LTLIBRARIES = HwFormFactors.la
-
 libHwFormFactor_la_SOURCES = \
 BaryonFormFactor.cc BaryonFormFactor.fh \
 BaryonFormFactor.h \
@@ -9,23 +7,51 @@ ScalarFormFactor.h \
 BtoSGammaHadronicMass.h \
 BtoSGammaHadronicMass.cc BtoSGammaHadronicMass.fh
 
-HwFormFactors_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:1:0
-HwFormFactors_la_SOURCES = \
-BallZwickyScalarFormFactor.cc BallZwickyScalarFormFactor.h \
-BallZwickyVectorFormFactor.cc BallZwickyVectorFormFactor.h \
-BaryonSimpleFormFactor.cc     BaryonSimpleFormFactor.h \
-BaryonThreeQuarkModelFormFactor.cc BaryonThreeQuarkModelFormFactor.h \
-ChengHeavyBaryonFormFactor.cc ChengHeavyBaryonFormFactor.h \
-ISGW2FormFactor.cc ISGW2FormFactor.h \
-ISGWFormFactor.cc ISGWFormFactor.h \
-LambdabExcitedLambdacSumRuleFormFactor.cc \
+
+
+
+BUILT_SOURCES  = Formfactor__all.cc
+DISTCLEANFILES = Formfactor__all.cc
+
+Formfactor__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+BallZwickyScalarFormFactor.h \
+BallZwickyVectorFormFactor.h \
+BaryonSimpleFormFactor.h \
+BaryonThreeQuarkModelFormFactor.h \
+ChengHeavyBaryonFormFactor.h \
+ISGW2FormFactor.h \
+ISGWFormFactor.h \
 LambdabExcitedLambdacSumRuleFormFactor.h \
-LightBaryonQuarkModelFormFactor.cc LightBaryonQuarkModelFormFactor.h \
-SingletonFormFactor.cc SingletonFormFactor.h\
-WSBFormFactor.cc WSBFormFactor.h\
-KiselevBcFormFactor.cc KiselevBcFormFactor.h\
-MelikhovFormFactor.cc MelikhovFormFactor.h \
-MelikhovStechFormFactor.cc MelikhovStechFormFactor.h \
-BtoSGammaFlatEnergy.h BtoSGammaFlatEnergy.cc \
-BtoSGammaKagan.h BtoSGammaKagan.cc\
-HQETFormFactor.h HQETFormFactor.cc
+LightBaryonQuarkModelFormFactor.h \
+SingletonFormFactor.h \
+WSBFormFactor.h \
+KiselevBcFormFactor.h \
+MelikhovFormFactor.h \
+MelikhovStechFormFactor.h \
+BtoSGammaFlatEnergy.h \
+BtoSGammaKagan.h \
+HQETFormFactor.h
+
+ALL_CC_FILES = \
+BallZwickyScalarFormFactor.cc \
+BallZwickyVectorFormFactor.cc \
+BaryonSimpleFormFactor.cc \
+BaryonThreeQuarkModelFormFactor.cc \
+ChengHeavyBaryonFormFactor.cc \
+ISGW2FormFactor.cc \
+ISGWFormFactor.cc \
+LambdabExcitedLambdacSumRuleFormFactor.cc \
+LightBaryonQuarkModelFormFactor.cc \
+SingletonFormFactor.cc \
+WSBFormFactor.cc \
+KiselevBcFormFactor.cc \
+MelikhovFormFactor.cc \
+MelikhovStechFormFactor.cc \
+BtoSGammaFlatEnergy.cc \
+BtoSGammaKagan.cc \
+HQETFormFactor.cc

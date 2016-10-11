@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef HERWIG_IFgx2qqxDipoleKernel_H
-#define HERWIG_IFgx2qqxDipoleKernel_H
+#ifndef HERWIG_IFMgx2qqxDipoleKernel_H
+#define HERWIG_IFMgx2qqxDipoleKernel_H
 //
 // This is the declaration of the IFgx2qqxDipoleKernel class.
 //
