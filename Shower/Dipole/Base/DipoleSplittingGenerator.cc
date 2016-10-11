@@ -60,8 +60,10 @@ void DipoleSplittingGenerator::resetVariations() {
 void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
   double factor = 1.;
   if ( splittingReweight() ) {
-    if ( ( ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->firstInteraction() ) ||
-	 ( !ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->secondaryInteractions() ) ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
+          splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
+      splittingReweight()->secondaryInteractions() ) ) {
       factor = splittingReweight()->evaluate(generatedSplitting);
       theSplittingWeight *= (r-factor*p)/(r-p);
     }
@@ -72,8 +74,10 @@ void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
 void DipoleSplittingGenerator::accept(const vector<double>&, double p, double r) {
   double factor = 1.;
   if ( splittingReweight() ) {
-    if ( ( ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->firstInteraction() ) ||
-	 ( !ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->secondaryInteractions() ) ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
+          splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
+      splittingReweight()->secondaryInteractions() ) ) {
       factor = splittingReweight()->evaluate(generatedSplitting);
       theSplittingWeight *= factor;
     }
@@ -134,7 +138,8 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
   // the scale is fixed but the mass of the recoil 
   // system is not so sample over recoilMass(),
   // so the parameter is related to recoilMass()
-  if (generatedSplitting.index().incomingDecayEmitter() || generatedSplitting.index().incomingDecaySpectator() ) {
+  if (generatedSplitting.index().incomingDecayEmitter() ||
+      generatedSplitting.index().incomingDecaySpectator() ) {
     generatedSplitting.recoilMass(sp.recoilMass());
     parameters[3] = sp.recoilMass()/generator()->maximumCMEnergy();
   }
@@ -179,7 +184,9 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
   }
 
   if ( splittingKernel()->nDimAdditional() )
-    copy(sp.lastSplittingParameters().begin(),sp.lastSplittingParameters().end(),parameters.begin()+shift);
+    copy(sp.lastSplittingParameters().begin(),
+         sp.lastSplittingParameters().end(),
+         parameters.begin()+shift);
 
   if ( sp.emitter() )
     generatedSplitting.emitter(sp.emitter());
@@ -368,7 +375,11 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 						    *splittingKernel()));
   }
 
-  if ( ! split.splittingKinematics()->generateSplitting(point[0],point[1],point[2],split,*splittingKernel()) ) {
+  if ( ! split.splittingKinematics()->generateSplitting(point[0],
+                                                        point[1],
+                                                        point[2],
+                                                        split,
+                                                        *splittingKernel()) ) {
     split.lastValue(0.);
     return 0.;
   }
@@ -392,13 +403,15 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
        !presampling ) {
     Energy hard = ShowerHandler::currentHandler()->hardScale();
     if ( hard > ZERO )
-      kernel *= ShowerHandler::currentHandler()->profileScales()->hardScaleProfile(hard,split.lastPt());
+      kernel *= ShowerHandler::currentHandler()->profileScales()->
+                hardScaleProfile(hard,split.lastPt());
   }
 
   split.lastValue( abs(jac) * kernel );
 
   if ( ! isfinite(split.lastValue()) ) {
-    generator()->log() << "DipoleSplittingGenerator:evaluate(): problematic splitting kernel encountered for "
+    generator()->log() << "DipoleSplittingGenerator:evaluate():"
+               <<"problematic splitting kernel encountered for "
 		       << splittingKernel()->name() << "\n" << flush;
     split.lastValue(0.0);
   }
@@ -494,7 +507,8 @@ Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split,
 
 }
 
-double DipoleSplittingGenerator::sudakovExpansion(const DipoleSplittingInfo& split,Energy down,Energy fixedScale){
+double DipoleSplittingGenerator::sudakovExpansion(const DipoleSplittingInfo& split,
+                                                  Energy down,Energy fixedScale){
   fixParameters(split);
   if ( wrapping() ) {
     return theOtherGenerator->wrappedSudakovExpansion( generatedSplitting, down,fixedScale);
@@ -512,15 +526,17 @@ double DipoleSplittingGenerator::sudakov(const DipoleSplittingInfo& split,Energy
 
 
 
-double DipoleSplittingGenerator::dosudakovExpansion(const DipoleSplittingInfo& ,Energy down,Energy fixedScale){
+double DipoleSplittingGenerator::dosudakovExpansion(const DipoleSplittingInfo& ,
+                                                    Energy down,Energy fixedScale){
     assert(down > splittingKinematics()->IRCutoff());
   
-  double optKappaCutoffd = splittingKinematics()->ptToRandom(down,
-                                                             generatedSplitting.scale(),
-                                                             generatedSplitting.emitterX(),
-                                                             generatedSplitting.spectatorX(),
-                                                             generatedSplitting.index(),
-                                                             *splittingKernel());
+  double optKappaCutoffd =
+      splittingKinematics()->ptToRandom(down,
+                                        generatedSplitting.scale(),
+                                        generatedSplitting.emitterX(),
+                                        generatedSplitting.spectatorX(),
+                                        generatedSplitting.index(),
+                                        *splittingKernel());
   
   
   double optKappaCutoffu = splittingKinematics()->ptToRandom(generatedSplitting.hardPt(),

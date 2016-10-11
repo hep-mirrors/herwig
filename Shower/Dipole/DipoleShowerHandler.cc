@@ -177,7 +177,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
           // Decay the particle / sort out its pert proc
         Energy showerScale = eventRecord().decay(incoming, powhegEmission);
         
-          // Following the decay, the bool powheg emission is updated to indicate whether or not an emission occurred
+          // Following the decay, the bool powheg emission is updated
+          // to indicate whether or not an emission occurred
         if ( powhegEmission )
         nEmitted += 1;
         
@@ -204,7 +205,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
           doCascade(nEmitted,optHardPt,optCutoff,true);
           
             // Do the constituent mass shell reshuffling
-          decayConstituentReshuffle(eventRecord().currentDecay(), false);
+          decayConstituentReshuffle(eventRecord().currentDecay());
           
         }
         
@@ -225,7 +226,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
       throw ShowerTriesVeto(maxtry());
       
       eventRecord().clear();
-      eventRecord().prepare(sub,dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()),pdfs(),ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
+      eventRecord().prepare(sub,dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()),
+                            pdfs(),
+                            ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
       
       continue;
       
@@ -275,7 +278,9 @@ void DipoleShowerHandler::constituentReshuffle() {
   for(auto const & dec : decays) {
     
     PPtr unstable = dec.first;
-    PList::iterator pos = find(eventRecord().intermediates().begin(),eventRecord().intermediates().end(),dec.first);
+    PList::iterator pos = find(eventRecord().intermediates().begin(),
+                               eventRecord().intermediates().end(),
+                               dec.first);
     
       // Update the PPtr in theDecays
     if(pos!=eventRecord().intermediates().end()) {
@@ -315,20 +320,12 @@ void DipoleShowerHandler::constituentReshuffle() {
 
 
   // Reshuffle outgoing partons from a decay process onto their constituent mass shells
-void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decayProc, const bool test) {
+void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decayProc) {
   
-  if ( !test ) {
-      // decayReshuffle updates both the event record and the decay perturbative process
-    if ( constituentReshuffler ) {
-      constituentReshuffler->decayReshuffle(decayProc,
-                                            eventRecord().outgoing(),
-                                            eventRecord().hard(),
-                                            eventRecord().intermediates());
-    }
-    return;
-  }
   
-  if ( test ) {
+  
+  if ( Debug::level  > 2  ){
+  
       // Test this function by comparing the
       // invariant mass of the outgoing decay
       // systems before and after reshuffling
@@ -366,10 +363,23 @@ void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decay
     assert( abs(testInvMassBefore-testInvMassAfter)/GeV < 1e-5);
     
     
+  }else{
+      // decayReshuffle updates both the event record and the decay perturbative process
+    if ( constituentReshuffler ) {
+      constituentReshuffler->decayReshuffle(decayProc,
+                                            eventRecord().outgoing(),
+                                            eventRecord().hard(),
+                                            eventRecord().intermediates());
+    }
+    return;
   }
+  
 }
 
-  // Sets the scale of each particle in the dipole chains by finding the smallest of several upper bound energy scales: the CMEnergy of the event, the transverse mass of outgoing particles, the hardScale (maxPT or maxQ) calculated for each dipole (in both configurations) and the veto scale for each particle
+  // Sets the scale of each particle in the dipole chains by finding the smallest
+  //of several upper bound energy scales: the CMEnergy of the event,
+  //the transverse mass of outgoing particles, the hardScale (maxPT or maxQ)
+  //calculated for each dipole (in both configurations) and the veto scale for each particle
 void DipoleShowerHandler::hardScales(Energy2 muf)  {
   
     // Initalise maximum pt as max CMEnergy of the event
@@ -415,7 +425,8 @@ void DipoleShowerHandler::hardScales(Energy2 muf)  {
       Energy maxSecond = ZERO;
       
         // Loop over the kernels for the given dipole.
-        // For each dipole configuration, calculate ptMax (or QMax if virtuality ordering) for each kernel and find the maximum
+        // For each dipole configuration, calculate ptMax (or QMax if virtuality ordering)
+        // for each kernel and find the maximum
       for ( auto const & k : kernels) {
         
         pair<bool,bool> conf = {true,false};
@@ -470,7 +481,10 @@ void DipoleShowerHandler::hardScales(Energy2 muf)  {
       
     }
     
-      // if the smallest veto scale (i.e. from all of the dipoles) is smaller than the scale calculated for a particular particle in a particular dipole, replace the scale with the veto scale
+      // if the smallest veto scale (i.e. from all of the dipoles)
+      // is smaller than the scale calculated for a particular
+      // particle in a particular dipole,
+      // replace the scale with the veto scale
     if ( !evolutionOrdering()->independentDipoles() &&
         chainOrderVetoScales &&
         minVetoScale >= ZERO ) {
@@ -620,7 +634,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     }
     
     gen->second->generate(candidate,currentWeights(),optHardPt,optCutoff);
-    Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
+    Energy nextScale = evolutionOrdering()->evolutionScale(
+                      gen->second->lastSplitting(),*(gen->second->splittingKernel()));
     
     if ( nextScale > winnerScale ) {
       winner.fill(candidate);
@@ -657,12 +672,6 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   DipoleSplittingInfo winner;
   DipoleSplittingInfo dipoleWinner;
   
-    //TODO: find a better solution
-  size_t currentMultiplicity=0;
-  for(auto i : eventHandler()->currentStep()->getFinalState() )
-  if (i->id()!=82)currentMultiplicity++;
-  
-  currentMultiplicity+=2;
   
   while ( eventRecord().haveChain() ) {
     
@@ -728,7 +737,9 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       // otherwise perform the splitting
     
     if (theMergingHelper&&eventHandler()->currentCollision()&&!decay) {
-      if (theMergingHelper->maxLegs()>currentMultiplicity){
+      if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+
+                                      eventRecord().hard().size()
+                                      +2){//incoming
         if (theMergingHelper->mergingScale()<winnerScale){
           const bool transparent=true;
           if (transparent) {
@@ -737,10 +748,15 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
             DipoleChain* tmpfirstChain = nullptr;
             DipoleChain* tmpsecondChain = nullptr;
             
-            auto New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
+            auto New=eventRecord().tmpsplit(winnerDip,tmpwinner,
+                                            tmpchildren,tmpfirstChain,
+                                            tmpsecondChain);
             
             
-            if (theMergingHelper->matrixElementRegion(New.first,New.second,winnerScale,theMergingHelper->mergingScale())) {
+            if (theMergingHelper->matrixElementRegion(New.first,
+                                                      New.second,
+                                                      winnerScale,
+                                                      theMergingHelper->mergingScale())) {
               optHardPt=winnerScale;
               continue;
             }
@@ -772,7 +788,6 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     winner.isDecayProc( true );
     
     eventRecord().split(winnerDip,winner,children,firstChain,secondChain);
-    currentMultiplicity++;
     assert(firstChain && secondChain);
     evolutionOrdering()->setEvolutionScale(winnerScale,winner,*firstChain,children);
     if ( !secondChain->dipoles().empty() )

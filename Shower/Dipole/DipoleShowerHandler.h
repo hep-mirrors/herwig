@@ -165,7 +165,7 @@ protected:
   /**
    * Reshuffle to constituent mass shells
    */
-  void decayConstituentReshuffle( PerturbativeProcessPtr decayProc, const bool test = false);
+  void decayConstituentReshuffle( PerturbativeProcessPtr decayProc);
 
   /**
    * Access the generator map

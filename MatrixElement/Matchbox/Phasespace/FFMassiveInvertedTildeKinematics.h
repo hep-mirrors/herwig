@@ -80,12 +80,12 @@ public:
    * For generated pt and z, check if this point is
    * kinematically allowed
    */
-  /*virtual*/ bool ptzAllowed(pair<Energy,double>) const;
+  /*virtual*/ bool ptzAllowed(pair<Energy,double> ptz, vector<double>* values ) const;
 
   /**
    * Generate pt and z
    */
-  virtual pair<Energy,double> generatePtZ(double& jac, const double * r) const;
+  virtual pair<Energy,double> generatePtZ(double& jac, const double * r, vector<double>* values) const;
 
 public:
   

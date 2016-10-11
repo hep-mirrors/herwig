@@ -367,8 +367,6 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
       if (decay) {
         decayed_parton.first = (*p == currentDecay()->incoming()[0].first);
         decayed_parton.second = (*next_it == currentDecay()->incoming()[0].first);
-          // Should only ever have one incoming parton to a decay process
-          //assert(!(decayed_parton.first && decayed_parton.second));
       }
       
       current_chain.dipoles().push_back(Dipole({*p,*next_it},pdf,xs,decayed_parton));
@@ -426,8 +424,6 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
     if (decay) {
       decayed_parton.first = (ordered.front() == currentDecay()->incoming()[0].first);
       decayed_parton.second = (ordered.back() == currentDecay()->incoming()[0].first);
-        // Should only ever have one incoming parton to a decay process
-        //assert(!(decayed_parton.first && decayed_parton.second));
     }
     
     current_chain.dipoles().push_back(Dipole({ordered.front(),ordered.back()},pdf,xs,decayed_parton));
@@ -456,7 +452,6 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   theCurrentDecay = PerturbativeProcessPtr();
     // extract incoming particles
   PPair in = subpro->incoming();
-    // get the beam
     // get the incoming momentum fractions
     // don't take these from the XComb as it may be null
   pair<double,double> xs;
@@ -522,20 +517,20 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   
   
     // sort out the decays
-  for(DecayProcessMap::const_iterator it=decay.begin();it!=decay.end();++it) {
+  for(auto const & dec : decay) {
     
       // If the decay particle is in original it needs
       // to be added to the decays and the decay needs to be
       // changed to the copied particles.
-    if ( theOriginals.find(it->second->incoming()[0].first) != theOriginals.end() ) {
-      theDecays[theOriginals[it->second->incoming()[0].first]] = it->second;
-      PerturbativeProcessPtr decayProc = theDecays[theOriginals[it->second->incoming()[0].first]];
+    if ( theOriginals.find(dec.second->incoming()[0].first) != theOriginals.end() ) {
+      theDecays[theOriginals[dec.second->incoming()[0].first]] = dec.second;
+      PerturbativeProcessPtr decayProc = theDecays[theOriginals[dec.second->incoming()[0].first]];
       separateDecay(decayProc);
     }
     
     else {
-      assert( find( copies.begin(), copies.end(), it->second->incoming()[0].first ) != copies.end() );
-      theDecays[it->second->incoming()[0].first] = it->second;
+      assert( find( copies.begin(), copies.end(), dec.second->incoming()[0].first ) != copies.end() );
+      theDecays[dec.second->incoming()[0].first] = dec.second;
     }
   }
   
@@ -604,15 +599,14 @@ void DipoleEventRecord::slimprepare(tSubProPtr subpro,
 void DipoleEventRecord::fillFromDecays(PerturbativeProcessPtr decayProc, vector<PPtr>& original) {
   
     // Loop over the outgoing of the given perturbative process
-  for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outIt = decayProc->outgoing().begin();
-       outIt != decayProc->outgoing().end(); ++outIt ) {
+  for ( auto const & outIt : decayProc->outgoing() ) {
     
       // Add the outgoing particle to the vector of original particles
-    original.push_back(outIt->first);
+    original.push_back(outIt.first);
     
       // Iterate through the outgoing
-    if ( outIt->second )
-    fillFromDecays( outIt->second, original);
+    if ( outIt.second )
+    fillFromDecays( outIt.second, original);
   }
 }
 
@@ -621,23 +615,21 @@ void DipoleEventRecord::separateDecay(PerturbativeProcessPtr decayProc) {
   
     // Iteratively replace all entries in the incoming
     // with their copies.
-  for ( vector<pair<PPtr,tPerturbativeProcessPtr> >::iterator inIt = decayProc->incoming().begin();
-       inIt != decayProc->incoming().end(); ++inIt ) {
+  for ( auto  & inIt : decayProc->incoming() ) {
     
-    if ( theOriginals.find( inIt->first ) != theOriginals.end() )
-    inIt->first = theOriginals[inIt->first];
+    if ( theOriginals.find( inIt.first ) != theOriginals.end() )
+    inIt.first = theOriginals[inIt.first];
   }
   
     // Iteratively replace all entries in the outgoing
     // with their copies.
-  for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outIt = decayProc->outgoing().begin();
-       outIt!=decayProc->outgoing().end(); ++outIt ) {
+  for ( auto  & outIt : decayProc->outgoing()) {
     
-    if ( theOriginals.find( outIt->first ) != theOriginals.end() )
-    outIt->first = theOriginals[outIt->first];
+    if ( theOriginals.count( outIt.first ) )
+       outIt.first = theOriginals[outIt.first];
     
-    if ( outIt->second )
-    separateDecay(outIt->second);
+    if ( outIt.second )
+    separateDecay(outIt.second);
   }
 }
 
@@ -770,17 +762,10 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
   }
   
     // Handle updates related to decays
-    //if ( !decays().empty() ) {
-  
-    // Update decays() while showering the hard process
-    // NOTE - Actually this is done in constituentRecoil()
-
-  
     // Showering of decay processes
     // Treat the evolution of the incoming
     // decayed particle as in backward evolution
-  
-    //else {
+
   if ( dsplit.isDecayProc() ) {
     
       // Create a pointer to the decay process
@@ -793,15 +778,19 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
     const bool decayedSpec = dsplit.index().incomingDecaySpectator();
     
     
-      // ******************************************************************
-      // In the current implementation, **following the hard process** all particles in theDecays evolve independently
-      // e.g. if we have W -> XYZ where all X, Y and Z need to be showered and decayed, we only identify them as needing decaying (and hence put them in theDecays) AFTER showering the decay of W. Hence, XYZ are not even in theDecays until W has been fully showered and then they are decayed and showered completely independently
-      // KEY POINT - Never need to update other entries of theDecays
+      /*
+       In the current implementation, **following the hard process**
+       all particles in theDecays evolve independently
+       e.g. if we have W -> XYZ where all X, Y and Z need to be
+       showered and decayed, we only identify them as needing decaying
+       (and hence put them in theDecays) AFTER showering the decay of W.
+       Hence, XYZ are not even in theDecays until W has been fully
+       showered and then they are decayed and showered completely independently
+       KEY POINT - Never need to update other entries of theDecays
     
-      // Note: The PPtr in theDecays should remain unchanged and all changes
-      // should be made to the relative PerturbativeProcess.
-      // *********************************************************************
-    
+       Note: The PPtr in theDecays should remain unchanged and all changes
+       should be made to the relative PerturbativeProcess.
+      */
     
       // Splittings from dipoles in the decay process which
       // do not have the decayed parton as emitter or spectator.
@@ -813,14 +802,14 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       bool decayProcEm = false;
       bool decayProcSp = false;
       
-      for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outIt = decayProc->outgoing().begin(); outIt!=decayProc->outgoing().end(); ++outIt ) {
-        if ( !decayProcEm && outIt->first == dsplit.emitter() ) {
-          *outIt = {dsplit.splitEmitter(), PerturbativeProcessPtr()};
+      for ( auto  & outIt : decayProc->outgoing() ) {
+        if ( !decayProcEm && outIt.first == dsplit.emitter() ) {
+          outIt = {dsplit.splitEmitter(), PerturbativeProcessPtr()};
           decayProcEm = true;
         }
         
-        if ( !decayProcSp && outIt->first == dsplit.spectator() ) {
-          *outIt = {dsplit.splitSpectator(), PerturbativeProcessPtr() };
+        if ( !decayProcSp && outIt.first == dsplit.spectator() ) {
+          outIt = {dsplit.splitSpectator(), PerturbativeProcessPtr() };
           decayProcSp = true;
         }
         
@@ -829,7 +818,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       }
       
         // Test that nothing strange is happening
-        //assert( (decayProcEm && decayProcSp) );
+        assert( (decayProcEm && decayProcSp) );
       
       return;
     }
@@ -847,23 +836,19 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       
         // Update the decay process outgoing
         // Replace the old emitter with the new emitter
-      vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outEmtrIt = decayProc->outgoing().end();
-      for ( outEmtrIt = decayProc->outgoing().begin();
-           outEmtrIt != decayProc->outgoing().end(); ++outEmtrIt ) {
-        if ( outEmtrIt->first == dsplit.emitter() ){
-          *outEmtrIt = {dsplit.splitEmitter(), PerturbativeProcessPtr() };
+      for ( auto & outEmtrIt : decayProc->outgoing() ) {
+        if ( outEmtrIt.first == dsplit.emitter() ){
+          outEmtrIt = {dsplit.splitEmitter(), PerturbativeProcessPtr() };
           break;
         }
       }
       
         // Perform the recoil transformation
-        //assert(dsplit.splittingKinematics()->isDecay());
-      
         // Find all particles in the recoil system
       PList recoilSystem;
-      for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outIt = decayProc->outgoing().begin(); outIt!=decayProc->outgoing().end(); ++outIt ) {
-        if ( outIt->first != dsplit.splitEmitter() && outIt->first != dsplit.emission() ) {
-          recoilSystem.push_back(outIt->first);
+      for ( auto const & outIt : decayProc->outgoing() ) {
+        if ( outIt.first != dsplit.splitEmitter() && outIt.first != dsplit.emission() ) {
+          recoilSystem.push_back(outIt.first);
         }
       }
       dsplit.splittingKinematics()->decayRecoil( recoilSystem );
@@ -889,23 +874,20 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       
         // Update the decay process outgoing
         // Replace the old spectator with the new spectator
-      vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outSpecIt = decayProc->outgoing().end();
-      for ( outSpecIt = decayProc->outgoing().begin();
-           outSpecIt!= decayProc->outgoing().end(); ++outSpecIt ) {
-        if ( outSpecIt->first == dsplit.spectator() ){
-          *outSpecIt = { dsplit.splitSpectator(), PerturbativeProcessPtr() };
+      for (auto & outSpecIt : decayProc->outgoing() ) {
+        if ( outSpecIt.first == dsplit.spectator() ){
+          outSpecIt = { dsplit.splitSpectator(), PerturbativeProcessPtr() };
           break;
         }
       }
-      assert(outSpecIt != decayProc->outgoing().end());
       
         // Perform the recoil transformation
       assert(dsplit.splittingKinematics()->isDecay());
         // Find all particles in the recoil system
       PList recoilSystem;
-      for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outIt = decayProc->outgoing().begin(); outIt!=decayProc->outgoing().end(); ++outIt ) {
-        if ( outIt->first != dsplit.splitSpectator() && outIt->first != dsplit.emission() ) {
-          recoilSystem.push_back(outIt->first);
+      for ( auto const & outIt : decayProc->outgoing() ) {
+        if ( outIt.first != dsplit.splitSpectator() && outIt.first != dsplit.emission() ) {
+          recoilSystem.push_back(outIt.first);
         }
       }
       dsplit.splittingKinematics()->decayRecoil( recoilSystem );
@@ -1100,18 +1082,17 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     // Update the intermediates of the step
   step->addIntermediates(intermediates().begin(),intermediates().end());
   
-  for (PList::const_iterator p = outgoing().begin();
-       p != outgoing().end(); ++p)
-  step->addDecayProduct(*p);
+  for (auto const & p : outgoing())
+      step->addDecayProduct( p );
   
-  for (PList::const_iterator p = theHard.begin();
-       p != theHard.end(); ++p)
-  step->addDecayProduct(*p);
+  for (auto const  p : theHard)
+    step->addDecayProduct( p );
   
   if ( firstInteraction &&
       (incoming().first->coloured() ||
        incoming().second->coloured() ) ) {
-        ShowerHandler::currentHandler()->lastExtractor()->newRemnants(subProcess()->incoming(),incoming(),step);
+        ShowerHandler::currentHandler()->lastExtractor()
+        ->newRemnants(subProcess()->incoming(),incoming(),step);
       }
   
   step->addIntermediate(incoming().first);
@@ -1127,9 +1108,9 @@ bool DipoleEventRecord::prepareDecay( PerturbativeProcessPtr decayProc ) {
     // Create objects containing the incoming and outgoing partons,
     // required as inputs for colourOrdered.
   PList out;
-  for( unsigned int ix = 0; ix<decayProc->outgoing().size(); ++ix) {
-    if(decayProc->outgoing()[ix].first->coloured()) {
-      out.push_back(decayProc->outgoing()[ix].first);
+  for( auto const & dec : decayProc->outgoing()) {
+    if(dec.first->coloured()) {
+      out.push_back(dec.first);
     }
   }
   
@@ -1179,18 +1160,19 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
     if(incoming->antiColourLine())
     cmap[process->incoming()[0].first->antiColourLine()] = incoming->antiColourLine();
       // fix colours of outgoing
-    for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-      map<tColinePtr,tColinePtr>::iterator it = cmap.find(process->outgoing()[ix].first->colourLine());
+    for(auto const & outg : process->outgoing()) {
+      map<tColinePtr,tColinePtr>::iterator it =
+      cmap.find(outg.first->colourLine());
       if(it!=cmap.end()) {
-        ColinePtr c1=process->outgoing()[ix].first->colourLine();
-        c1->removeColoured(process->outgoing()[ix].first);
-        it->second->addColoured(process->outgoing()[ix].first);
+        ColinePtr c1=outg.first->colourLine();
+        c1->removeColoured(outg.first);
+        it->second->addColoured(outg.first);
       }
-      it = cmap.find(process->outgoing()[ix].first->antiColourLine());
+      it = cmap.find(outg.first->antiColourLine());
       if(it!=cmap.end()) {
-        ColinePtr c1=process->outgoing()[ix].first->antiColourLine();
-        c1->removeAntiColoured(process->outgoing()[ix].first);
-        it->second->addAntiColoured(process->outgoing()[ix].first);
+        ColinePtr c1=outg.first->antiColourLine();
+        c1->removeAntiColoured(outg.first);
+        it->second->addAntiColoured(outg.first);
       }
     }
       // swap the incoming
@@ -1210,8 +1192,8 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
   Energy2 decayScaleSqr = sqr( showerScale );
   process->incoming()[0].first->scale( decayScaleSqr );
   
-  for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-    process->outgoing()[ix].first->scale( decayScaleSqr );
+  for(auto & outg : process->outgoing()) {
+    outg.first->scale( decayScaleSqr );
   }
   
     // Update the decaying particle in the process and the event
@@ -1231,8 +1213,8 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
   intermediates().push_back(process->incoming()[0].first);
   
     // Populate the children of the incoming
-  for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-    PPtr outgoing = process->outgoing()[ix].first;
+  for(auto const & outg : process->outgoing()) {
+    PPtr outgoing = outg.first;
     process->incoming()[0].first->addChild(outgoing);
   }
   
@@ -1245,8 +1227,8 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
     
       // Must use OrderedParticles for a tag search
     ShowerHandler::OrderedParticles decayOut;
-    for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-      decayOut.insert(process->outgoing()[ix].first->dataPtr());
+    for(auto const & outg : process->outgoing()) {
+      decayOut.insert(outg.first->dataPtr());
     }
     
       // Construct the tag
@@ -1277,8 +1259,8 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
       RealEmissionProcessPtr born = new_ptr( RealEmissionProcess() );
       born->bornIncoming().push_back( incoming );
 
-      for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-	born->bornOutgoing().push_back(process->outgoing()[ix].first);
+      for(auto const & outg : process->outgoing()) {
+	     born->bornOutgoing().push_back(outg.first);
       }
         
           // Generate any powheg emission, returning 'real'
@@ -1374,11 +1356,11 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
   
     // Copy the outgoing from the decay
     // process to the event record
-  for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
-    if ( process->outgoing()[ix].first->coloured() )
-    outgoing().push_back(process->outgoing()[ix].first);
+  for(auto const & outg : process->outgoing()) {
+    if ( outg.first->coloured() )
+    outgoing().push_back(outg.first);
     else
-    hard().push_back(process->outgoing()[ix].first);
+    hard().push_back(outg.first);
   }
   
   return showerScale;

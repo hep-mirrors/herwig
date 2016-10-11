@@ -70,8 +70,8 @@ Energy FFMassiveKinematics::ptMax(Energy dScale,
   double mui = split.emitter(ind)->mass() / dScale;
   double mu  = split.emission(ind)->mass() / dScale;
   double muj = split.spectator(ind)->mass() / dScale;
-  double mui2 = sqr( mui ), mu2  = sqr( mu ), muj2 = sqr( muj );
-  return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*sqrt(muj2) ) * dScale;
+  double mui2 = sqr( mui ), mu2  = sqr( mu );
+  return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*muj ) * dScale;
 }
 
 Energy FFMassiveKinematics::QMax(Energy dScale, 
