@@ -207,6 +207,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Doc/HerwigDefaults.in
 		Looptools/Makefile
 		Analysis/Makefile
+		API/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in

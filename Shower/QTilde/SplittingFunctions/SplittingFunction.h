@@ -77,7 +77,8 @@ public:
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true) {}
+      angularOrdered_(true), scaleChoice_(2) {}
+
 public:
 
   /**
@@ -255,6 +256,13 @@ public:
   bool angularOrdered() const {return angularOrdered_;}
 
   /**
+   *  Scale choice
+   */
+  bool pTScale() const {
+    return scaleChoice_ == 2 ? angularOrdered_ : scaleChoice_ == 0;
+  }
+
+  /**
    *  Functions to state scales after branching happens
    */
   //@{
@@ -364,6 +372,12 @@ private:
    *  Whether or not this interaction is angular-ordered
    */
   bool angularOrdered_;
+
+  /**
+   *  The choice of scale
+   */
+  unsigned int scaleChoice_;
+
 };
 
 }

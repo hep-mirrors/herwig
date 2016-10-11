@@ -339,7 +339,7 @@ make=" "
 fortanfiles=glob.glob('*/*/*.f')+glob.glob('*/*/*/*.f')
 
 for i in fortanfiles:
-  if "check_sa" not in i:
+  if "check_sa" not in i and "f2py_wrapper" not in i:
     if not os.path.islink(i):
        make += " "+i+"\\\n                  "
 
@@ -386,7 +386,10 @@ if Virtlist!=[]:
   replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig-scratch/MG_tmp/'")
 
 os.system("make")
-
+if not os.path.isfile("InterfaceMadGraph.so"):
+   print "Second trial to make MadGraph Interface. "
+   print "Needed if new .mod files are produced by make." 
+   os.system("make")
 
 build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
 

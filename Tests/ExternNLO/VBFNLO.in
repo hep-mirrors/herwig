@@ -1,0 +1,131 @@
+##################################################
+## Herwig++/Matchbox input file
+##################################################
+
+##################################################
+## Collider type
+##################################################
+
+read Matchbox/PPCollider.in
+set /Herwig/EventHandlers/EventHandler:Weighted On
+
+cd /Herwig/Generators
+set EventGenerator:MaxErrors 0
+set EventGenerator:IntermediateOutput Yes
+set EventGenerator:RandomNumberGenerator:Seed 47110815
+set EventGenerator:NumberOfEvents 4000000
+
+##################################################
+## Beam energy sqrt(s)
+##################################################
+
+cd /Herwig/EventHandlers
+set EventHandler:LuminosityFunction:Energy 13000*GeV
+
+##################################################
+## Process selection
+##################################################
+
+cd /Herwig/MatrixElements/Matchbox
+set Factory:OrderInAlphaS 0
+set Factory:OrderInAlphaEW 4
+
+do Factory:Process p p j j e+ nu_e
+
+
+# split off PK Operators in hard matrix element
+cd /Herwig/MatrixElements/Matchbox
+set Factory:IndependentVirtuals On
+set Factory:IndependentPKOperators On
+
+read Matchbox/VBFNLO.in
+read Matchbox/VBFDiagramsOnly.in
+
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+
+# switch on random helicity summation for VBFNLO
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+set VBFNLO:RandomHelicitySummation True
+
+
+##################################################
+## Cut selection
+##################################################
+
+cd /Herwig/Cuts
+
+read Matchbox/DefaultPPJets.in
+
+## Cuts on jets
+insert JetCuts:JetRegions 0 FirstJet
+insert JetCuts:JetRegions 1 SecondJet
+#insert JetCuts:JetRegions 2 ThirdJet
+
+##################################################
+## Scale choice
+##################################################
+
+# max jet p_T
+cd /Herwig/MatrixElements/Matchbox
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale
+
+
+##################################################
+## Matching and shower selection
+##################################################
+
+read Matchbox/NLO-NoShower.in
+
+##################################################
+## Scale uncertainties
+##################################################
+
+
+##################################################
+## Shower scale uncertainties
+##################################################
+
+
+##################################################
+## PDF choice
+##################################################
+
+read Matchbox/FourFlavourScheme.in
+read Matchbox/IdentifiedBs.in
+
+##################################################
+## Analyses
+##################################################
+
+
+##################################################
+## Phasespace 
+##################################################
+
+read Matchbox/VBFNLOPhasespace.in
+
+##################################################
+## Sampler 
+##################################################
+
+# Use Monaco sampler
+
+cd /Herwig/Samplers
+set Sampler:Verbose On
+set MonacoSampler:InitialPoints 1000
+set MonacoSampler:NIterations 4
+set MonacoSampler:EnhancementFactor 1.2
+set MonacoSampler:RandomNumbers RanDist
+set Sampler:BinSampler MonacoSampler
+
+
+##################################################
+## Save the generator
+##################################################
+
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+
+cd /Herwig/Generators
+saverun VBFNLO EventGenerator

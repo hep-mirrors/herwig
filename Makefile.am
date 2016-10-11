@@ -2,7 +2,7 @@ SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
 	UnderlyingEvent Analysis Looptools Sampling \
-	lib src Doc Contrib Tests
+	API lib src Doc Contrib Tests
 
 EXTRA_DIST = GUIDELINES
 

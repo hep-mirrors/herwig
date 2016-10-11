@@ -17,11 +17,7 @@
 
 namespace Herwig {
 
-using std::string;
-using std::list;
-
 /**
- * \ingroup Matchbox
  * \author Simon Platzer
  *
  * \brief Handle directories for external library and grid storage.
@@ -34,17 +30,17 @@ public:
   /**
    * Set a prefix for storing details of this run.
    */
-  static void prefix(string p);
+  static void prefix(std::string p);
 
   /**
    * Return the prefix for storing details of this run.
    */
-  static const string& prefix();
+  static const std::string& prefix();
 
   /**
    * Return the name (and possibly create) a storage for build data
    */
-  static const string& buildStorage();
+  static const std::string& buildStorage();
 
   /**
    * Return true, if no run directories have been pushed yet
@@ -54,18 +50,18 @@ public:
   /**
    * Push a run identifier onto the run directories stack.
    */
-  static void pushRunId(string);
+  static void pushRunId(std::string);
 
   /**
    * Return (and possibly create) the top of the run directory stack
    * to be used for storage.
    */
-  static const string& runStorage();
+  static const std::string& runStorage();
 
   /**
    * Return the storage to be used for interface order/contract files.
    */
-  static const string& interfaceStorage();
+  static const std::string& interfaceStorage();
 
 public:
 
@@ -88,29 +84,29 @@ public:
    * Return the next run directory to be considered and pop it from
    * the stack.
    */
-  string nextRunStorage();
+  std::string nextRunStorage();
 
 private:
 
   /**
    * The prefix for storing details of this run.
    */
-  static string& thePrefix();
+  static std::string& thePrefix();
 
   /**
    * The build storage.
    */
-  static string& theBuildStorage();
+  static std::string& theBuildStorage();
 
   /**
    * The list of run storage directories to be considered.
    */
-  static list<string>& theRunDirectories();
+  static std::list<std::string>& theRunDirectories();
 
   /**
    * The current run directory stack under consideration
    */
-  list<string> directoriesLeft;
+  std::list<std::string> directoriesLeft;
 
 };
 
