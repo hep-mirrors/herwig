@@ -37,7 +37,7 @@ ALL_H_FILES = \
 	IFMgx2ggxDipoleKernel.h \
 	IFMgx2qqxDipoleKernel.h 
 
-ALL_CC_FILES = \	
+ALL_CC_FILES = \
     DipoleSplittingKernel.cc \
 	FFMqx2qgxDipoleKernel.cc \
 	FFMgx2ggxDipoleKernel.cc \
