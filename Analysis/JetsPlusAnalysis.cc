@@ -278,12 +278,12 @@ void JetsPlusAnalysis::dofinish() {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
 	  theThreeJetProperties.begin(); h != theThreeJetProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
 	  theFourJetProperties.begin(); h != theFourJetProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }

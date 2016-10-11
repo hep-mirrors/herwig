@@ -21,7 +21,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <sstream>
 #include <iostream>
 
@@ -516,8 +515,8 @@ void FxFxFileReader::open() {
 	++ws;
       } while (isc);
       // cout << scaleinfo.first << "\t" << scaleinfo.second << endl;
-      std::string xmuRs = boost::lexical_cast<std::string>(muR);
-      std::string xmuFs = boost::lexical_cast<std::string>(muF);
+      std::string xmuRs = std::to_string(muR);
+      std::string xmuFs = std::to_string(muF);
       string scinfo = "SC " + xmuRs + " " + xmuFs;
       scalemap[scalename] = scinfo.c_str();
       boost::erase_all(scalename, "id=");

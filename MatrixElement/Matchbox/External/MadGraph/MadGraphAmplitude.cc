@@ -23,7 +23,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <cstdlib>
 #include <dlfcn.h>
@@ -325,7 +324,7 @@ int MadGraphAmplitude::externalId(const cPDVector& proc) {
   string amp="";
   int k=0;
   for (cPDVector::const_iterator it=proc.begin();it!=proc.end();it++,k++){
-    amp+=boost::lexical_cast<string>( (*it)->id())+" ";if (k==1)amp+=" > ";
+    amp+=std::to_string( (*it)->id())+" ";if (k==1)amp+=" > ";
   }
   
   
@@ -381,7 +380,7 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
   string amp="";
   int k=0;
   for (PDVector::const_iterator it=p.begin();it!=p.end();it++,k++){
-    amp+=boost::lexical_cast<string>( (*it)->id())+" ";if (k==1)amp+=" > ";
+    amp+=std::to_string( (*it)->id())+" ";if (k==1)amp+=" > ";
   }
    if (virt && factory->highestVirt()>=p.size()){
     VirtAmplitudes.push_back(amp);

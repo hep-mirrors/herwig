@@ -11,7 +11,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include <boost/asio.hpp>
+#include <unistd.h>
 
 using namespace Herwig;
 
@@ -20,7 +20,16 @@ ParallelRunAnalysis::ParallelRunAnalysis() {}
 void ParallelRunAnalysis::doinitrun() {
   string logfilename = generator()->runName() + ".parallel";
   ofstream log(logfilename.c_str(),ofstream::app);
-  log << "hostname> " << boost::asio::ip::host_name() << "\n" << flush;
+
+  string hostname;
+  {
+  	char tmp[256];
+  	const int err = gethostname(tmp, 256);
+  	tmp[255] = '\0';
+  	hostname =
+	   ( err == 0 ) ? tmp : "[unknown host]";
+  }
+  log << "hostname> " << hostname << "\n" << flush;
   log.close();
 }
 
