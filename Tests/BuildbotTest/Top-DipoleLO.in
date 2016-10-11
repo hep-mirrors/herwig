@@ -32,7 +32,7 @@ read Matchbox/DiagonalCKM.in
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 2
-set Factory:OrderInAlphaEW 2
+set Factory:OrderInAlphaEW 0
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
@@ -41,6 +41,7 @@ do Factory:Process p p -> t tbar
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
 read Matchbox/OnShellTopProduction.in
+#read Matchbox/PQCDLevel.in
 ## enable for on-shell W, Z or h production
 # read Matchbox/OnShellWProduction.in
 # read Matchbox/OnShellZProduction.in
