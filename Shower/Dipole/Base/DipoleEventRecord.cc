@@ -1233,7 +1233,7 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
     
     // Construct the tag
     for(auto const & dec : decayOut) {
-      if(dec=*decayOut.begin()) tag += ",";
+      if( dec==*decayOut.begin() ) tag += ",";
       tag +=dec->name();
     }
     tag += ";";
