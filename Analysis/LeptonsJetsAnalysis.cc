@@ -466,22 +466,22 @@ void LeptonsJetsAnalysis::dofinish() {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theThreeJetProperties.begin(); h != theThreeJetProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theJetPairEWIDTripleProperties.begin(); h != theJetPairEWIDTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theJetPairChargedLeptonTripleProperties.begin(); h != theJetPairChargedLeptonTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theJetPairNeutrinoTripleProperties.begin(); h != theJetPairNeutrinoTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
@@ -491,32 +491,32 @@ void LeptonsJetsAnalysis::dofinish() {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theJetPairHiggsTripleProperties.begin(); h != theJetPairHiggsTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theThreeEWIDProperties.begin(); h != theThreeEWIDProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theThreeChargedLeptonProperties.begin(); h != theThreeChargedLeptonProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
 	  theFourJetProperties.begin(); h != theFourJetProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
 	  theFourEWIDProperties.begin(); h != theFourEWIDProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+  for ( map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
 	  theFourChargedLeptonProperties.begin(); h != theFourChargedLeptonProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
