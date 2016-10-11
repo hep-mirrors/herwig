@@ -31,19 +31,19 @@ read Matchbox/DiagonalCKM.in
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
-set Factory:OrderInAlphaS 2
-set Factory:OrderInAlphaEW 0
+set Factory:OrderInAlphaS 0
+set Factory:OrderInAlphaEW 3
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> t tbar
+do Factory:Process p p -> W+ j j
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
-read Matchbox/OnShellTopProduction.in
+#read Matchbox/OnShellTopProduction.in
 #read Matchbox/PQCDLevel.in
 ## enable for on-shell W, Z or h production
-# read Matchbox/OnShellWProduction.in
+ read Matchbox/OnShellWProduction.in
 # read Matchbox/OnShellZProduction.in
 # read Matchbox/OnShellHProduction.in
 # Special settings for the VBF approximation
@@ -77,11 +77,11 @@ set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
 set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
 
 ## cuts on additional jets
+ 
+ read Matchbox/DefaultPPJets.in
 
-# read Matchbox/DefaultPPJets.in
-
-# insert JetCuts:JetRegions 0 FirstJet
-# insert JetCuts:JetRegions 1 SecondJet
+ insert JetCuts:JetRegions 0 FirstJet
+ insert JetCuts:JetRegions 1 SecondJet
 # insert JetCuts:JetRegions 2 ThirdJet
 # insert JetCuts:JetRegions 3 FourthJet
 
@@ -91,7 +91,7 @@ set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox
-set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMassScale
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
 ##################################################
 ## Matching and shower selection
@@ -144,8 +144,9 @@ read Matchbox/MMHT2014.in
 ##################################################
 
 cd /Herwig/Analysis
-insert Rivet:Analyses 0 MC_TTBAR
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+insert Rivet:Analyses 0 MC_WINC
+insert Rivet:Analyses 0 MC_WJETS
+ insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
 ##################################################
@@ -155,4 +156,4 @@ insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 cd /Herwig/Generators
-saverun Top-DipoleLO EventGenerator
+saverun VBF-DipoleLO EventGenerator
