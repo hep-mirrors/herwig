@@ -1,5 +1,4 @@
 noinst_LTLIBRARIES = libHwDecRad.la
-pkglib_LTLIBRARIES = HwSOPHTY.la
 
 libHwDecRad_la_SOURCES = \
 DecayRadiationGenerator.cc  DecayRadiationGenerator.h  \
@@ -7,9 +6,25 @@ DecayRadiationGenerator.fh \
 QEDRadiationHandler.cc  QEDRadiationHandler.fh\
 QEDRadiationHandler.h
 
-HwSOPHTY_la_SOURCES = \
-SOPHTY.h SOPHTY.cc \
-FFDipole.cc  FFDipole.fh  FFDipole.h \
-IFDipole.cc  IFDipole.fh  IFDipole.h \
-YFSFormFactors.cc  YFSFormFactors.h
-HwSOPHTY_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+
+
+
+BUILT_SOURCES  = Sophty__all.cc
+DISTCLEANFILES = Sophty__all.cc
+
+Sophty__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+SOPHTY.h \
+FFDipole.fh  FFDipole.h \
+IFDipole.fh  IFDipole.h \
+YFSFormFactors.h
+
+ALL_CC_FILES = \
+SOPHTY.cc \
+FFDipole.cc \
+IFDipole.cc \
+YFSFormFactors.cc
