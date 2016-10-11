@@ -1,44 +1,39 @@
 cd /Herwig/Merging
 
+# Setting up to use the merging factory instead of the Matchbox Factory
 clear /Herwig/EventHandlers/EventHandler:SubProcessHandlers
 insert /Herwig/EventHandlers/EventHandler:SubProcessHandlers[0] MergingFactory
 set /Herwig/Cuts/MatchboxJetMatcher:Factory MergingFactory
 set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
-
-
 set MergingFactory:Cuts /Herwig/Cuts/Cuts
 set Merger:MergingFactory MergingFactory
 set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
 set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
-set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 set MergingFactory:MergingHelper Merger
 
 
-### Dont apply restrictions on the z-boundaries while clustering.
+### Don't apply restrictions on the z-boundaries while clustering.
 set /Herwig/Merging/Merger:OpenInitialStateZ Yes
 
-
+# Set up the rivet analysis to use.
 cd /Herwig/Analysis
 create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
 
-
-set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+# Switch of the profiles of the Shower
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
+# We switch of the pdfs for e+/e- beams.
+# This can be turned on again if needed.
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
-
-
+# Set the alpha_s value for the run.
 set /Herwig/Couplings/NLOAlphaS:min_active_flavours 3
 set /Herwig/Couplings/NLOAlphaS:max_active_flavours 5
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
 set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
-
-
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
 set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
-
 
 
 
@@ -47,8 +42,13 @@ set EventGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShower
 
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
-create Herwig::MonacoSampler /Herwig/Samplers/Monaco
-set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/Monaco
+
+
+##########################
+######
+######  Tuning Parameters.
+######
+##########################
 
 
 cd /Herwig/Particles
@@ -127,15 +127,30 @@ set HadronSelector:SngWt                         1.0
 set HadronSelector:DecWt                         1.0
 
 
+
+
+
+
+####################################
+####               Sampler.
+####################################
+
+
+
+
+
 cd /Herwig/Samplers
 
+create Herwig::MonacoSampler Monaco
+set /Herwig/Samplers/Sampler:BinSampler Monaco
+
 set Monaco:EnhancementFactor 1.2
-set Monaco:InitialPoints 5000
+set Monaco:InitialPoints 50000
 set Monaco:LuminosityMapperBins 8
 set Monaco:NIterations 4
 set Monaco:RemapChannelDimension Yes
 set Monaco:RemapperMinSelection 0.0001
-set Monaco:RemapperPoints 10000
+set Monaco:RemapperPoints 100000
 set Monaco:UseAllIterations No
 
 set Sampler:UpdateAfter 1000

@@ -38,13 +38,21 @@ set MergingFactory:OrderInAlphaEW 2
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
+## The j (jets) in the brackets are the additional LO jets 
+
 do MergingFactory:Process p p -> e+ e- [ j j ]
 
+# Here you can specify how many NLO contributions should be merged.
 set MergingFactory:NLOProcesses 0
 
+# The merging scale rho_0 defines the Matrixelement region.
 set Merger:MergingScale 10.*GeV
+# Smear the merging scale rho= rho_0 (1- MergingScaleSmearing*(0.5-rnd()))
 set Merger:MergingScaleSmearing 0.1
-set Merger:gamma 1.
+
+## Here we can use a preweighter to bias the event generation for
+## e.g. large Ht/Pts. It results in non-unit weights but the cross sections
+## are not changed. (Default: no preweight.)
 
 set MPreWeight:HTPower 0
 set MPreWeight:MaxPTPower 0

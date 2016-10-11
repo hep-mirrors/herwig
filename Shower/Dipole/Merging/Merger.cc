@@ -99,7 +99,7 @@ CrossSection Merger::MergingDSigDRVirtualStandard( ){
   double w2 = -sumAlphaSReweightExpansion();
   double w3 = -sumFillHistoryExpansion();
     // put together the expansion weights.
-  CrossSection expansionweight  = ( w1+w2+w3 )
+  CrossSection expansionweight  = ( w1+w2+w3 )*(theShowerExpansionWeights?1.:0.)
   *bornWeight
   *SM().alphaS()/( 2.*ThePEG::Constants::pi );
     // [ DEBUG ]
@@ -214,7 +214,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubReal(  ){
   
   for( auto const & child : currentNode()->children() ){
     if ( child->allAbove( mergePt() ) ){
-      if( ( child )->pT()>mergePt()/3. )//TODO: this is a dynamical cutoff( see below )
+      if( ( child )->pT()>mergePt()/theRealSubtractionRatio )
       sumPS += child->calcPs( startscale* currentME()->renFac() );
       else
       sumPS += child->calcDip( startscale* currentME()->renFac() );
@@ -238,7 +238,7 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( ){
   
   if( currentNode()->children().empty() )return ZERO;
   NodePtr CLNode =  currentNode()->randomChild();
-  if( CLNode->pT()<mergePt()/3. )return ZERO;//TODO: this is a dynamical cutoff( see above )
+  if( CLNode->pT()<mergePt()/theRealSubtractionRatio )return ZERO;
   
   if ( !CLNode->children().empty() ) {
     auto inOutPair = CLNode->getInOut( );
@@ -927,7 +927,7 @@ double Merger::alphasExpansion( Energy next , Energy fixedScale ) const {
   double betaZero = ( 11./6. )*SM().Nc() - ( 1./3. )*Nf( history[0].scale );
   // TODO factorize the return statement, turn ?: into if
   return ( betaZero*log( sqr( fixedScale/next ) ) )+
-  ( theCMWScheme?( 3.*( 67./18.-1./6.*Constants::pi*Constants::pi )
+  ( theCMWScheme>0?( 3.*( 67./18.-1./6.*Constants::pi*Constants::pi )
                    -5./9.*Nf( history[0].scale ) ):0. );
 }
 
@@ -988,12 +988,12 @@ bool Merger::dosudakov( NodePtr node , Energy running , Energy next , double& su
   return true;
 }
 
-bool Merger::doHistExpansion( NodePtr node , Energy  running , Energy next , Energy fixedScale , double& HistExpansion ) {
+bool Merger::doHistExpansion( NodePtr node , Energy  running , Energy next , Energy fixedScale , double& histExpansion ) {
   CKKW_PrepareSudakov( node , running );
   for( DipoleChain const & chain : DSH()->eventRecord().chains() ){
     for( Dipole const & dip : chain.dipoles() ){
-      HistExpansion += singleHistExpansion( dip , next , running , fixedScale , { true , false } );;
-      HistExpansion += singleHistExpansion( dip , next , running , fixedScale , { false , true } );
+      histExpansion += singleHistExpansion( dip , next , running , fixedScale , { true , false } );;
+      histExpansion += singleHistExpansion( dip , next , running , fixedScale , { false , true } );
     }
   }
   cleanup( node );
@@ -1127,63 +1127,9 @@ bool Merger::generateKinematics( const double * r ){
   return currentNode()->firstgenerateKinematics( r , ! currentNode()->subtractedReal() );
 }
 
-  //#include "fastjet/ClusterSequence.hh"
 bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy winnerScale , Energy cutscale )const{
   
-    //generator()->log() << "\nparticles s" << particles.size() << " " << particles[0] << " " << particles[1] << flush;
-  /*
-   if ( defMERegionByJetAlg && !particles[0]->coloured()&& !particles[1]->coloured() ) {
-   assert( false );
-   vector<fastjet::PseudoJet> input_particles;
-   for( size_t em = 2; em < particles.size();em++ ){
-   input_particles.push_back( fastjet::PseudoJet( em->momentum().x()/GeV , 
-   em->momentum().y()/GeV , 
-   em->momentum().z()/GeV , 
-   em->momentum().e()/GeV ) );
-   }
-   fastjet::JetDefinition jet_def( fastjet::ee_kt_algorithm );
-   fastjet::ClusterSequence clust_seq( input_particles , jet_def );
-   size_t n = particles.size()-2;
-   vector<fastjet::PseudoJet> exclusive_jets = clust_seq.exclusive_jets_ycut( ee_ycut );
-   return n == exclusive_jets.size();
-   }
-   
-   
-   if ( defMERegionByJetAlg ) {
-   assert( false );
-   size_t noncol = 0;
-   vector<fastjet::PseudoJet> input_particles;
-   for( size_t em = 2; em < particles.size();em++ ){
-   if ( em->coloured() )
-   input_particles.push_back( fastjet::PseudoJet( em->momentum().x()/GeV , 
-   em->momentum().y()/GeV , 
-   em->momentum().z()/GeV , 
-   em->momentum().e()/GeV ) );
-   else
-   noncol++;
-   }
-   double Rparam = 1.0;
-   fastjet::Strategy strategy = fastjet::Best;
-   fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
-   fastjet::JetDefinition jet_def( fastjet::kt_algorithm , Rparam , recomb_scheme , strategy );
-   
-   fastjet::ClusterSequence clust_seq( input_particles , jet_def );
-   size_t n = particles.size()-2-noncol;
-   vector<fastjet::PseudoJet> exclusive_jets = clust_seq.exclusive_jets( pp_dcut );
-   
-   // generator()->log() << "\nn =  " << n << " jets =  " << exclusive_jets.size();
-   //for ( size_t i = 0; i<exclusive_jets.size(); i++ ) {
-   //generator()->log() << "\nn =  " << n << " jetspt =  " << exclusive_jets[i].perp();
-   //}
-   
-   return n == exclusive_jets.size();
-   }
-   
-   */
-  
-  
-  
-  
+
   Energy ptx = Constants::MaxEnergy;
   bool foundwinnerpt = false;
   using namespace boost;
@@ -1196,15 +1142,15 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
         if ( !( em->id() == -emm->id()||emm->id()>6 ) )continue;
         
         Energy pt = ZERO;
-        if ( em->momentum().m()<= 1_MeV &&
-            emm->momentum().m()<= 1_MeV &&
-            spe->momentum().m()<= 1_MeV  ) {
+        if ( em->momentum().m()<= 10_MeV &&
+            emm->momentum().m()<= 10_MeV &&
+            spe->momentum().m()<= 10_MeV  ) {
           pt = FFLTK->lastPt( em->momentum() , emm->momentum() , spe->momentum() );
         }else{
           pt = FFMTK->lastPt( em->momentum() , emm->momentum() , spe->momentum() );
         }
         
-        if ( abs( pt-winnerScale ) < 1_MeV  ) {
+        if ( abs( pt-winnerScale ) < 10_MeV  ) {
           foundwinnerpt = true;
         }
         ptx  = min( ptx , pt );
@@ -1221,16 +1167,16 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
         
 
         Energy pt = ZERO;
-        if ( em->momentum().m()<= 1_MeV &&
-            emm->momentum().m()<= 1_MeV &&
-            spe->momentum().m()<= 1_MeV  ) {
+        if ( em->momentum().m()<= 10_MeV &&
+            emm->momentum().m()<= 10_MeV &&
+            spe->momentum().m()<= 10_MeV  ) {
           pt = FILTK->lastPt( em->momentum() , emm->momentum() , spe->momentum() );
         }else{
           pt = FIMTK->lastPt( em->momentum() , emm->momentum() , spe->momentum() );
         }
         
         
-        if ( abs( pt-winnerScale )<1_MeV  ) {
+        if ( abs( pt-winnerScale )<10_MeV  ) {
           foundwinnerpt = true;
         }
         
@@ -1249,9 +1195,9 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
         
         Energy pt = ZERO;
         
-        if ( em->momentum().m()<= 1_MeV &&
-             emm->momentum().m()<= 1_MeV &&
-             spe->momentum().m()<= 1_MeV  ) {
+        if ( em->momentum().m()<= 10_MeV &&
+             emm->momentum().m()<= 10_MeV &&
+             spe->momentum().m()<= 10_MeV  ) {
             //massless
           pt = IFLTK->lastPt( em->momentum() , emm->momentum() , spe->momentum()  );
         }else{
@@ -1344,34 +1290,31 @@ void Merger::debugReal(string realstr, double weight,
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 void Merger::persistentOutput( PersistentOStream & os ) const {
-  os << ShowerExpansionWeights << theCMWScheme << projected <<
-  isUnitarized << isNLOUnitarized << defMERegionByJetAlg <<
+  os << theShowerExpansionWeights << theCMWScheme << projected <<
+  isUnitarized << isNLOUnitarized  <<
   theOpenInitialStateZ << theChooseHistory <<
   theN0 << theOnlyN   << weight <<
-  weightCB << theGamma << ee_ycut << pp_dcut <<
-  theSmearing <<  ounit( theIRSafePT , GeV ) <<
-  ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV ) <<
-  theMergingJetFinder << theLargeNBasis << FFLTK << FILTK <<
+  weightCB << theGamma << theSmearing <<  ounit( theIRSafePT , GeV ) <<
+  ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV )
+  << theLargeNBasis << FFLTK << FILTK <<
   IFLTK << IILTK << FFMTK << FIMTK << IFMTK <<
-  theDipoleShowerHandler << theTreeFactory << theFirstNodeMap;
+  theDipoleShowerHandler << theTreeFactory << theFirstNodeMap<<theRealSubtractionRatio;
   
 }
 #include "ThePEG/Persistency/PersistentIStream.h"
 void Merger::persistentInput( PersistentIStream & is , int ) {
-  is >> ShowerExpansionWeights >> theCMWScheme >> projected >>
+  is >> theShowerExpansionWeights >> theCMWScheme >> projected >>
   isUnitarized >> isNLOUnitarized >>
-  defMERegionByJetAlg >> theOpenInitialStateZ >>
+  theOpenInitialStateZ >>
   theChooseHistory >> theN0 >> theOnlyN >>
   weight >> weightCB >>
-  theGamma >> ee_ycut >> pp_dcut >>
-  theSmearing >>  iunit( theIRSafePT , GeV ) >>
+  theGamma >>   theSmearing >>  iunit( theIRSafePT , GeV ) >>
   iunit( theMergePt , GeV ) >>
-  iunit( theCentralMergePt , GeV ) >>
-  theMergingJetFinder >> theLargeNBasis >>
+  iunit( theCentralMergePt , GeV ) >> theLargeNBasis >>
   FFLTK >> FILTK >> IFLTK >>
   IILTK >> FFMTK >> FIMTK >>
   IFMTK >> theDipoleShowerHandler >>
-  theTreeFactory >> theFirstNodeMap ;
+  theTreeFactory >> theFirstNodeMap>>theRealSubtractionRatio ;
 }
 
   // *** Attention *** The following static variable is needed for the type
@@ -1394,57 +1337,73 @@ describeHerwigMerger( "Herwig::Merger" , "HwDipoleShower.so" );
 void Merger::Init() {
   
   static ClassDocumentation<Merger> documentation
-  ( "Merger." );
-  
+  ( "The Merger class takes care of merging multiple LO & NLO cross sections." );
   
   
   static Reference<Merger , DipoleShowerHandler> interfaceShowerHandler
   ( "DipoleShowerHandler" , 
-   "" , 
-   &Merger::theDipoleShowerHandler , false , false , true , true , false );
-  
-  
+   "Set the pointer to the Dipole Shower Handler" ,
+   &Merger::theDipoleShowerHandler ,
+   false , false ,
+   true , true , false );
   
   static Switch<Merger , bool>
-  interfaceShowerExpansionWeights ( "ShowerExpansionWeights" , "" , &Merger::ShowerExpansionWeights , false , false , false );
-  static SwitchOption interfaceShowerExpansionWeightsYes
-  ( interfaceShowerExpansionWeights , "Yes" , "" , true );
-  static SwitchOption interfaceShowerExpansionWeightsNo
-  ( interfaceShowerExpansionWeights , "No" , "" , false );
+  interfaceShowerExpansionWeights
+  ( "ShowerExpansionWeights" ,
+   "Calculate the expansions of the shower history to be NLO accurate" ,
+   &Merger::theShowerExpansionWeights ,
+   true , false , false );
+  
+  static SwitchOption
+  interfaceShowerExpansionWeightsYes
+  ( interfaceShowerExpansionWeights ,
+   "Yes" ,
+   "Calculate shower expansions" ,
+   true );
+  static SwitchOption
+  interfaceShowerExpansionWeightsNo
+  ( interfaceShowerExpansionWeights ,
+   "No" ,
+   "Do not calculate expansions" ,
+   false );
   
   static Switch<Merger , unsigned int>
-  interfacetheCMWScheme ( "CMWScheme" , "" , &Merger::theCMWScheme , 0 , false , false );
+  interfacetheCMWScheme
+  ( "CMWScheme" ,
+   "Use CMW-Scheme to calculate the alpha_s for the shower expressions." ,
+   &Merger::theCMWScheme ,
+   0 ,
+   false , false );
   static SwitchOption interfacetheCMWSchemeOff
-  (interfacetheCMWScheme,"Off","No CMW-Scheme", 0);
+  (interfacetheCMWScheme,
+   "Off",
+   "No CMW-Scheme",
+   0);
   static SwitchOption interfacetheCMWSchemeLinear
-  (interfacetheCMWScheme,"Linear",
-   "Linear CMW multiplication: alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )",1);
+  (interfacetheCMWScheme,
+   "Linear",
+   "Linear CMW multiplication: alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )",
+   1);
   static SwitchOption interfacetheCMWSchemeFactor
-  (interfacetheCMWScheme,"Factor",
-   "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q) with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",2);
+  (interfacetheCMWScheme,
+   "Factor",
+   "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q) with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",
+   2);
   
   static Parameter<Merger , Energy> interfaceMergerScale
   ( "MergingScale" , 
    "The MergingScale." , 
-   &Merger::theCentralMergePt , GeV , 20.0*GeV , 0.0*GeV , 0*GeV , 
+   &Merger::theCentralMergePt ,
+   GeV , 20.0*GeV , 0.0*GeV , 0*GeV ,
    false , false , Interface::lowerlim );
   
   static Reference<Merger , MergingFactory> interfaceMergerHelper
   ( "MergingFactory" , 
-   "" , 
-   &Merger::theTreeFactory , false , false , true , true , false );
+   "Set a pointer to the MergingFactory" ,
+   &Merger::theTreeFactory ,
+   false , false ,
+   true , true , false );
   
-  static Parameter<Merger , double> interfacedcut
-  ( "pp_dcut" , 
-   "The MergingScale." , 
-   &Merger::pp_dcut , 5.0 , 0.0 , 0 , 
-   false , false , Interface::lowerlim );
-  
-  static Parameter<Merger , double> interfaceycut
-  ( "ee_ycut" , 
-   "The MergingScale." , 
-   &Merger::ee_ycut , 0.2 , 0.0 , 0 , 
-   false , false , Interface::lowerlim );
   
   static Parameter<Merger , double> interfacegamma
   ( "gamma" , 
@@ -1452,31 +1411,13 @@ void Merger::Init() {
    &Merger::theGamma , 1.0 , 0.0 , 0 , 
    false , false , Interface::lowerlim );
   
-  static Reference<Merger , JetFinder> interfaceMergingJetFinder
-  ( "MergingJetFinder" , 
-   "A reference to the jet finder used in Merging." , 
-   &Merger::theMergingJetFinder , false , false , true , false , false );
-  
-  
   
   static Reference<Merger , ColourBasis> interfaceLargeNBasis
   ( "LargeNBasis" , 
    "Set the large-N colour basis implementation." , 
-   &Merger::theLargeNBasis , false , false , true , true , false );
-  
-  
-  
-  
-  
-  
-  static Switch<Merger , bool>
-  interfacedefMERegionByJetAlg
-  ( "MERegionByJetAlg" , "" , &Merger::defMERegionByJetAlg , false , false , false );
-  
-  static SwitchOption interfacedefMERegionByJetAlgYes
-  ( interfacedefMERegionByJetAlg , "Yes" , "" , true );
-  static SwitchOption interfacedefMERegionByJetAlgNo
-  ( interfacedefMERegionByJetAlg , "No" , "" , false );
+   &Merger::theLargeNBasis ,
+   false , false ,
+   true , true , false );
   
   
   static Switch<Merger , bool>
@@ -1489,36 +1430,43 @@ void Merger::Init() {
   ( interfaceOpenInitialSateZ , "No" , "" , false );
   
   
-  
-  
-  
-  
-  
-  
   static Parameter<Merger , Energy>
   interfaceIRSafePT
-  ( "IRSafePT" , "Set the pt for which a matrixelement should be treated as IR-safe." , 
-   
-   &Merger::theIRSafePT , 
-   GeV , 0.0 * GeV , ZERO , Constants::MaxEnergy , true , false , Interface::limited );
+  ( "IRSafePT" ,
+  "Set the pt for which a matrixelement should be treated as IR-safe." ,
+  &Merger::theIRSafePT ,
+  GeV , 0.0 * GeV , ZERO , Constants::MaxEnergy ,
+  true , false , Interface::limited );
+  
   interfaceIRSafePT.setHasDefault( false );
   
   
-  
-  static Parameter<Merger , double> interfacemergePtsmearing( "MergingScaleSmearing" , "Set the percentage the merging pt should be smeared." , 
-                                                            &Merger::theSmearing , 0. , 0. , 
-                                                            0.0 , 0.5 , true , false , Interface::limited );
-  
-  
-  
-  static Parameter<Merger , int> interfacechooseHistory( "chooseHistory" , "different ways of choosing the history" , &Merger::theChooseHistory , 3 , -1 , 0 , 
-                                                       false , false , Interface::lowerlim );
+  static Parameter<Merger , double>
+  interfacemergePtsmearing(
+  "MergingScaleSmearing" ,
+  "Set the percentage the merging pt should be smeared." ,
+  &Merger::theSmearing ,
+  0. , 0. ,  0.0 , 0.5 ,
+  true , false , Interface::limited );
   
   
+  static Parameter<Merger , int>
+  interfacechooseHistory(
+  "chooseHistory" ,
+  "different ways of choosing the history" ,
+  &Merger::theChooseHistory ,
+  3 , -1 , 0 ,
+  false , false , Interface::lowerlim );
   
   
-  
-  
+  static Parameter<Merger , double>
+  interfacetheRealSubtractionRatio(
+  "RealSubtractionRatio" ,
+  "Set the percentage the merging pt should be smeared." ,
+  &Merger::theRealSubtractionRatio , 0. , 0. ,
+  1. , 10.0 ,
+  true , false , Interface::limited );
+
 }
 
 

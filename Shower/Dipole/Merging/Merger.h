@@ -238,9 +238,6 @@ namespace Herwig {
     int chooseHistory()const {return theChooseHistory;}
       /// the smearing factor for the merging scale
     double smear()const{return theSmearing;}
-      /// flag to tell if ME region shoulcd be defined by jet algorithm
-      /// currently not implemented
-    bool MERegionByJetAlg()const{return defMERegionByJetAlg;}
       /// return the large-N colour basis
     void largeNBasis(Ptr<ColourBasis>::ptr x){theLargeNBasis=x;}
       /// helper function to check the only multi condition.
@@ -257,7 +254,7 @@ namespace Herwig {
   private:
     
       /// calculate the history expansion
-    bool ShowerExpansionWeights = true;
+    bool theShowerExpansionWeights = true;
       /// use CMW scheme
     unsigned int theCMWScheme = 0;
       /// true if current point should be projected
@@ -266,8 +263,6 @@ namespace Herwig {
     bool isUnitarized = true;
       /// true if NLO contributions should be unitarised
     bool isNLOUnitarized = true;
-      /// define ME region by jet algorithm
-    bool defMERegionByJetAlg = false;
       /// no z-restricions on initial state emissions in clustering
     bool theOpenInitialStateZ = false;
       /// history weight choice
@@ -283,10 +278,6 @@ namespace Herwig {
     double weightCB = 1.0;
       /// subtract the dipole contribution above a given gamma
     double theGamma = 1.0;
-      /// if ME region defined by jet algorithm, this is the y cut for ee
-    double ee_ycut = -1;
-      /// if ME region defined by jet algorithm, this is the d cut for pp
-    double pp_dcut = -1;
       /// smearing factor for merging scale
     double theSmearing = 0.;
       /// cutoff for real emission contribution
@@ -295,13 +286,13 @@ namespace Herwig {
     Energy theMergePt = 4_GeV;
       /// central merging scale
     Energy theCentralMergePt = 4_GeV;
+      /// below mergingscale/theRealSubtractionRatio the dipoles are used to subtract.
+      /// above the shower approximation is in use.
+    double theRealSubtractionRatio=3.;
       /// current cluster histoy including sudakov weights
     History history;
-      /// if ME region defined by jet algorithm, this is the jetfinder
-    Ptr<JetFinder>::ptr theMergingJetFinder;
       /// pointer to the large-N basis
     Ptr<ColourBasis>::ptr theLargeNBasis;
-    
       /// current Node
     NodePtr theCurrentNode;
       /// current ME

@@ -39,7 +39,11 @@ set MergingFactory:OrderInAlphaEW 2
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 ## Please mind the spaces between *j , j* in the brackets.
 
+## The j (jets) in the brackets are the additional LO jets
+
 do MergingFactory:Process e- e+ -> j j [ j j ]
+
+# Here you can specify how many NLO contributions should be merged.
 
 set MergingFactory:NLOProcesses 2
 

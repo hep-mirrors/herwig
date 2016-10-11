@@ -439,6 +439,12 @@ void MergingFactory::setup() {
     for ( int i = 0 ; i <= MH()->N() ; ++i )  prepare_R(i);
     
     
+    if (MH()->N()<=MH()->M()) {
+      throw InitException() << "Merging: The number of NLOs need to be"
+                            << "\nsmaller than the number of LO processes.\n";
+    }
+    
+    
     orderOLPs();
     
       // start creating matrix elements
