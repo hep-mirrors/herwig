@@ -13,12 +13,11 @@
 #include "Poly_matr.h"
 #include <list>
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace ColorFull {
 
-using boost::shared_ptr;
-
+using std::shared_ptr;
 
 /// Library class containing functions for index contraction and
 /// numerical evaluation.
@@ -109,7 +108,7 @@ int  leading_Nc_pow( const Poly_vec & Pv ) const;
 
 /// Function for finding the leading power of Nc in a
 /// vector of pointer to Polynomials.
-int  leading_Nc_pow( std::vector< boost::shared_ptr<Polynomial> > Pvp) const;
+int  leading_Nc_pow( std::vector< shared_ptr<Polynomial> > Pvp) const;
 
 /// Takes the leading Nc terms of a Polynonmial, i.e. Monomials with highest
 /// power of Nc+CF. If full_CF is false (default), CF is replaced by TR Nc.
@@ -138,13 +137,13 @@ Poly_matr leading( const Poly_matr & Pm ) const;
 /// Take the leading part of a Poly_vec, given a vector of pointers to the Polynomials.
 /// Keeps only Monomials with maximal power of CF + Nc.
 // Currently never used
-Poly_vec leading( std::vector<boost::shared_ptr<Polynomial> > Pvp) const;
+Poly_vec leading( std::vector<shared_ptr<Polynomial> > Pvp) const;
 
 /// Take the leading part of a Poly_matr, given a vector of vector of pointers to the Polynomials.
 /// Loops over Monomials in all Polynomials
 /// and keeps only those with maximal power of CF + Nc.
 // used only by scalar_product_matrix_mem in Col_functions
-dmatr leading( std::vector< std::vector< boost::shared_ptr<Polynomial> > > Pm ) const;
+dmatr leading( std::vector< std::vector< shared_ptr<Polynomial> > > Pm ) const;
 
 /// To keep only leading terms in a map.
 // used only on Col_functions by scalar product_matrix_mem_2 and radiation_amplitude_matrix
@@ -157,7 +156,7 @@ std::map< std::string, Polynomial > leading( std::map< std::string, Polynomial >
 // would be messy.
 
 /// To take the numerical value of a map.
-std::map< std::string, double > double_num( std::map< std::string, boost::shared_ptr<Polynomial> > mem_map ) const;
+std::map< std::string, double > double_num( std::map< std::string, shared_ptr<Polynomial> > mem_map ) const;
 
 /// Numerically evaluates a Monomial using the Nc and CF variables;
 cnum cnum_num( const Monomial & Mon ) const;
@@ -178,10 +177,10 @@ std::map< std::string, double > double_num(std::map< std::string, Polynomial > m
 dvec double_num( const Poly_vec & Pv ) const;
 
 /// Returns a double value. The argument is a vector of pointers to Polynomials.
-dvec double_num( const std::vector<boost::shared_ptr<Polynomial> > & Pv ) const;
+dvec double_num( const std::vector<shared_ptr<Polynomial> > & Pv ) const;
 
 /// Returns a double value. The argument is a vector of vector of pointers to Polynomials.
-dmatr double_num( const std::vector<std::vector<boost::shared_ptr<Polynomial> > > & Pm ) const;
+dmatr double_num( const std::vector<std::vector<shared_ptr<Polynomial> > > & Pm ) const;
 
 /// Numerically evaluates a Polynomial for Nc=3,
 /// and stores in the format of a Polynomial with only one term with only a numerical part.

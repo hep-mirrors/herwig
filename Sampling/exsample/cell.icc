@@ -447,7 +447,7 @@ namespace exsample {
   inline cell::cell()
     : split_dimension_(0), split_point_(0.),
       integral_(0.), missing_events_(0),
-      cell_info_(0) {}
+      cell_info_(nullptr) {}
 
   inline cell::cell(const std::vector<double>& ll,
 		    const std::vector<double>& ur,
@@ -469,7 +469,7 @@ namespace exsample {
       split_point_(x.split_point_),
       integral_(x.integral_), 
       missing_events_(x.missing_events_),
-      cell_info_(0) {
+      cell_info_(nullptr) {
     if (x.cell_info_)
       cell_info_.reset(new cell_info(*x.cell_info_));
   }      
