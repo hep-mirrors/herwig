@@ -1,13 +1,26 @@
-if WANT_BSM
-pkglib_LTLIBRARIES = HwSextetModel.la
-endif
-HwSextetModel_la_SOURCES = SextetParticles.h \
-SextetModel.cc      SextetModel.h SextetModel.fh \
-SextetGSSVertex.cc  SextetGSSVertex.h  \
-SextetGGSSVertex.cc SextetGGSSVertex.h \
-SextetGVVVertex.cc  SextetGVVVertex.h  \
-SextetGGVVVertex.cc SextetGGVVVertex.h \
-SextetFFSVertex.cc  SextetFFSVertex.h \
-SextetFFVVertex.cc  SextetFFVVertex.h
+BUILT_SOURCES  = Sextet__all.cc
+DISTCLEANFILES = Sextet__all.cc
 
-HwSextetModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+Sextet__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+SextetParticles.h \
+SextetModel.h SextetModel.fh \
+SextetGSSVertex.h  \
+SextetGGSSVertex.h \
+SextetGVVVertex.h  \
+SextetGGVVVertex.h \
+SextetFFSVertex.h \
+SextetFFVVertex.h
+
+ALL_CC_FILES = \
+SextetModel.cc      \
+SextetGSSVertex.cc  \
+SextetGGSSVertex.cc \
+SextetGVVVertex.cc  \
+SextetGGVVVertex.cc \
+SextetFFSVertex.cc  \
+SextetFFVVertex.cc  

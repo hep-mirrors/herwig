@@ -25,26 +25,6 @@ using std::stringstream;
 
 using namespace Herwig;
 
-namespace {
-  // Helper functor for find_if in duplicate function.
-  class SameIncomingAs {
-  public:
-    SameIncomingAs(tPDPair in) : a(in.first->id()), b(in.second->id())  {}
-    bool operator()(tPDPair ppair) const {
-      long id1(ppair.first->id()), id2(ppair.second->id());
-      return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
-    }
-  private:
-    long a, b;
-  };
-
-  bool duplicateIncoming(tPDPair ppair, const vector<tPDPair> & incPairs ) {
-    vector<tPDPair>::const_iterator it = 
-      find_if( incPairs.begin(), incPairs.end(), SameIncomingAs(ppair) );
-    return it != incPairs.end(); 
-  }
-}
-
 TwoToTwoProcessConstructor::TwoToTwoProcessConstructor() : 
   Nout_(0), nv_(0), allDiagrams_(true),
   processOption_(0), scaleChoice_(0), scaleFactor_(1.) 
@@ -80,7 +60,7 @@ void TwoToTwoProcessConstructor::doinit() {
 	   inc.first->id() < inc.second->id()) )
 	swap(inc.first, inc.second);
 
-      if( !duplicateIncoming(inc,incPairs_) ) {
+      if( !HPC_helper::duplicateIncoming(inc,incPairs_) ) {
 	incPairs_.push_back(inc);
       }
     }
@@ -212,19 +192,6 @@ void TwoToTwoProcessConstructor::Init() {
      "Vertices which are not included in the 2 -> 2 scatterings",
      &TwoToTwoProcessConstructor::excludedVertexVector_, -1, false, false, true, true, false);
 
-}
-
-namespace {
-  // Helper functor for find_if below.
-  class SameProcessAs {
-  public:
-    SameProcessAs(const HPDiagram & diag) : a(diag) {}
-    bool operator()(const HPDiagram & b) const {
-      return a.sameProcess(b);
-    }
-  private:
-    HPDiagram a;
-  };
 }
 
 void TwoToTwoProcessConstructor::constructDiagrams() {

@@ -14,28 +14,9 @@
 #include "Herwig/Models/StandardModel/StandardCKM.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "RPVhelper.h"
 
 using namespace Herwig;
-
-namespace {
-
-  unsigned int neutralinoIndex(long id) {
-    if(id> 1000000) {
-      return id<1000025 ? id-1000022 : (id-1000005)/10;
-    }
-    else if(abs(id)<=16) {
-      return (abs(id)-4)/2;
-    }
-    else {
-      return id-13;
-    }
-  }
-  
-  unsigned int charginoIndex(long id) {
-    return abs(id)>1000000 ? (abs(id)-1000024)/13 : (abs(id)-7)/2;
-  }
-
-}
 
 RPVFFWVertex::RPVFFWVertex() : _diagonal(false), _ckm(3,vector<Complex>(3,0.0)),
 			       _sw(0.), _couplast(0.), _q2last(ZERO), 
@@ -255,8 +236,8 @@ void RPVFFWVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       if(cha != _id1last || neu != _id2last) {
         _id1last = cha;
         _id2last = neu;
-	unsigned int eigc = charginoIndex(cha);
-	unsigned int eign = neutralinoIndex(neu);
+	unsigned int eigc = RPV_helper::charginoIndex(cha);
+	unsigned int eign = RPV_helper::neutralinoIndex(neu);
 	_leftlast = (*_theN)(eign, 1)*conj((*_theV)(eigc, 0)) - 
 	  ( (*_theN)(eign, 3)*conj((*_theV)(eigc, 1))/sqrt(2));
 	_rightlast = conj((*_theN)(eign, 1))*(*_theU)(eigc, 0) +
