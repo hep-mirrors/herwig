@@ -80,7 +80,7 @@ pair<DipoleIndex,DipoleIndex> DipoleIndex::split(tcPDPtr emm) const {
   DipoleIndex first(emitterData(),emm,emitterPDF(),PDF());
   DipoleIndex second(emm,spectatorData(),PDF(),spectatorPDF());
 
-  return make_pair(first,second);
+  return {first,second};
 
 }
 

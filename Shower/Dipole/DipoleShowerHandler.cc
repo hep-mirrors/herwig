@@ -269,7 +269,7 @@ void DipoleShowerHandler::constituentReshuffle() {
     // as this is not done in reshuffle
   vector<pair<PPtr,PerturbativeProcessPtr> > decays;
   for(auto const & dec : eventRecord().decays() )
-  decays.push_back(make_pair(dec.first,dec.second));
+  decays.push_back({dec.first,dec.second});
   
   
   for(auto const & dec : decays) {
@@ -418,7 +418,7 @@ void DipoleShowerHandler::hardScales(Energy2 muf)  {
         // For each dipole configuration, calculate ptMax (or QMax if virtuality ordering) for each kernel and find the maximum
       for ( auto const & k : kernels) {
         
-        pair<bool,bool> conf = make_pair(true,false);
+        pair<bool,bool> conf = {true,false};
         
         if ( k->canHandle(dip.index(conf)) ) {
             // Look in DipoleChainOrdering for this
@@ -429,7 +429,7 @@ void DipoleShowerHandler::hardScales(Energy2 muf)  {
           maxFirst = max(maxFirst,scale);
         }
         
-        conf = make_pair(false,true);
+        conf = {false,true};
         
         if ( k->canHandle(dip.index(conf)) ) {
           Energy scale =
@@ -463,10 +463,10 @@ void DipoleShowerHandler::hardScales(Energy2 muf)  {
       
         // Set the emitterScale for both members of each dipole
       maxFirst = min(maxPt,maxFirst);
-      dip.emitterScale(make_pair(true,false),maxFirst);
+      dip.emitterScale({true,false},maxFirst);
       
       maxSecond = min(maxPt,maxSecond);
-      dip.emitterScale(make_pair(false,true),maxSecond);
+      dip.emitterScale({false,true},maxSecond);
       
     }
     
@@ -678,14 +678,14 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     for ( list<Dipole>::iterator dip = eventRecord().currentChain().dipoles().begin();
          dip != eventRecord().currentChain().dipoles().end(); ++dip ) {
       
-      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false),optHardPt,optCutoff);
+      nextLeftScale = getWinner(dipoleWinner,*dip,{true,false},optHardPt,optCutoff);
       if ( nextLeftScale > winnerScale ) {
         winnerScale = nextLeftScale;
         winner = dipoleWinner;
         winnerDip = dip;
       }
       
-      nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true),optHardPt,optCutoff);
+      nextRightScale = getWinner(dipoleWinner,*dip,{false,true},optHardPt,optCutoff);
       if ( nextRightScale > winnerScale ) {
         winnerScale = nextRightScale;
         winner = dipoleWinner;
@@ -980,7 +980,7 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       dummy.index(ind);
       nGenerator->prepare(dummy);
       
-      generators().insert(make_pair(ind,nGenerator));
+      generators().insert({ind,nGenerator});
       
     }
   }

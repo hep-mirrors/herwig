@@ -371,7 +371,7 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
           //assert(!(decayed_parton.first && decayed_parton.second));
       }
       
-      current_chain.dipoles().push_back(Dipole(make_pair(*p,*next_it),pdf,xs,decayed_parton));
+      current_chain.dipoles().push_back(Dipole({*p,*next_it},pdf,xs,decayed_parton));
       
       if ( onceMore ) {
         next_it = theStart;
@@ -430,7 +430,7 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
         //assert(!(decayed_parton.first && decayed_parton.second));
     }
     
-    current_chain.dipoles().push_back(Dipole(make_pair(ordered.front(),ordered.back()),pdf,xs,decayed_parton));
+    current_chain.dipoles().push_back(Dipole({ordered.front(),ordered.back()},pdf,xs,decayed_parton));
     
   }
   
@@ -707,7 +707,7 @@ pair<PVector,PVector> DipoleEventRecord::tmpupdate(DipoleSplittingInfo& dsplit) 
     }
     out.push_back(ou);
   }
-  return make_pair(inc,out);
+  return {inc,out};
 }
 
 
@@ -787,7 +787,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
     PerturbativeProcessPtr decayProc = currentDecay();
     
       // Add the emission to the outgoing of the decay process
-    decayProc->outgoing().push_back( make_pair(dsplit.emission(), PerturbativeProcessPtr() ));
+    decayProc->outgoing().push_back( {dsplit.emission(), PerturbativeProcessPtr() });
       // Bools to be used throughout
     const bool decayedEmtr = dsplit.index().incomingDecayEmitter();
     const bool decayedSpec = dsplit.index().incomingDecaySpectator();
@@ -815,12 +815,12 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       
       for ( vector<pair<PPtr,PerturbativeProcessPtr> >::iterator outIt = decayProc->outgoing().begin(); outIt!=decayProc->outgoing().end(); ++outIt ) {
         if ( !decayProcEm && outIt->first == dsplit.emitter() ) {
-          *outIt = make_pair(dsplit.splitEmitter(), PerturbativeProcessPtr() );
+          *outIt = {dsplit.splitEmitter(), PerturbativeProcessPtr()};
           decayProcEm = true;
         }
         
         if ( !decayProcSp && outIt->first == dsplit.spectator() ) {
-          *outIt = make_pair(dsplit.splitSpectator(), PerturbativeProcessPtr() );
+          *outIt = {dsplit.splitSpectator(), PerturbativeProcessPtr() };
           decayProcSp = true;
         }
         
@@ -843,7 +843,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       
         // Update the the decayProcess incoming
       decayProc->incoming().clear();
-      decayProc->incoming().push_back(make_pair(dsplit.splitSpectator(),decayProc));
+      decayProc->incoming().push_back({dsplit.splitSpectator(),decayProc});
       
         // Update the decay process outgoing
         // Replace the old emitter with the new emitter
@@ -851,7 +851,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       for ( outEmtrIt = decayProc->outgoing().begin();
            outEmtrIt != decayProc->outgoing().end(); ++outEmtrIt ) {
         if ( outEmtrIt->first == dsplit.emitter() ){
-          *outEmtrIt = make_pair( dsplit.splitEmitter(), PerturbativeProcessPtr() );
+          *outEmtrIt = {dsplit.splitEmitter(), PerturbativeProcessPtr() };
           break;
         }
       }
@@ -885,7 +885,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       
         // Update the the decayProcess incoming
       decayProc->incoming().clear();
-      decayProc->incoming().push_back(make_pair(dsplit.splitEmitter(),decayProc));
+      decayProc->incoming().push_back({dsplit.splitEmitter(),decayProc});
       
         // Update the decay process outgoing
         // Replace the old spectator with the new spectator
@@ -893,7 +893,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       for ( outSpecIt = decayProc->outgoing().begin();
            outSpecIt!= decayProc->outgoing().end(); ++outSpecIt ) {
         if ( outSpecIt->first == dsplit.spectator() ){
-          *outSpecIt = make_pair( dsplit.splitSpectator(), PerturbativeProcessPtr() );
+          *outSpecIt = { dsplit.splitSpectator(), PerturbativeProcessPtr() };
           break;
         }
       }
@@ -1005,7 +1005,7 @@ DipoleEventRecord::inDipoles() {
       for ( list<Dipole>::iterator dit = theChains.front().dipoles().begin();
            dit != theChains.front().dipoles().end(); ++dit ) {
         if ( dit->leftPDF().pdf() || dit->rightPDF().pdf() ) {
-          res.push_back(make_pair(dit,theChains.begin()));
+          res.push_back({dit,theChains.begin()});
         }
       }
     }
@@ -1351,7 +1351,7 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
           }
           
             // Add the emitted to the outgoing of the decay process
-          process->outgoing().push_back( make_pair( emitted, PerturbativeProcessPtr() ) );
+          process->outgoing().push_back( { emitted, PerturbativeProcessPtr() } );
         }
         
         
@@ -1476,7 +1476,7 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
       // Deal with any outgoing which need to be decayed
     else if ( ShowerHandler::currentHandler()->decaysInShower(outIt->first->id()) ) {
       PerturbativeProcessPtr newDecay=new_ptr(PerturbativeProcess());
-      newDecay->incoming().push_back(make_pair(outIt->first,decayProc));
+      newDecay->incoming().push_back({ outIt->first , decayProc } );
       theDecays[outIt->first] = newDecay;
       
     }

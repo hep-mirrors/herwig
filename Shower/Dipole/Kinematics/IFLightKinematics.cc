@@ -71,7 +71,7 @@ pair<double,double> IFLightKinematics::zBoundaries(Energy pt,
             openInitialState()?
             (dInfo.scale() * sqrt((1.-x)/x) /2.)
             :dInfo.hardPt())));
-  return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
+  return {0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s)};
 }
 
 

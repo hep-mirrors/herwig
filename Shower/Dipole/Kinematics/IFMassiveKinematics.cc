@@ -38,7 +38,7 @@ IBPtr IFMassiveKinematics::fullclone() const {
 }
 
 pair<double,double> IFMassiveKinematics::kappaSupport(const DipoleSplittingInfo&) const {
-  return make_pair(0.0,1.0);
+  return {0.0,1.0};
 }
 
 pair<double,double> IFMassiveKinematics::xiSupport(const DipoleSplittingInfo& split) const {
@@ -48,18 +48,18 @@ pair<double,double> IFMassiveKinematics::xiSupport(const DipoleSplittingInfo& sp
   if ( split.index().emitterData()->id() == ParticleID::g ) {
     if ( split.emitterData()->id() == ParticleID::g ) {
       double b = log((1.+c)/(1.-c));
-      return make_pair(-b,b);
+      return {-b,b};
     } else {
-      return make_pair(log(0.5*(1.-c)),log(0.5*(1.+c)));
+      return {log(0.5*(1.-c)),log(0.5*(1.+c))};
     }
   }
 
   if ( split.index().emitterData()->id() != ParticleID::g &&
        split.emitterData()->id() != ParticleID::g ) {
-    return make_pair(-log(0.5*(1.+c)),-log(0.5*(1.-c)));
+    return {-log(0.5*(1.+c)),-log(0.5*(1.-c))};
   }
 
-  return make_pair(0.5*(1.-c),0.5*(1.+c));
+  return {0.5*(1.-c),0.5*(1.+c)};
 
 }
 

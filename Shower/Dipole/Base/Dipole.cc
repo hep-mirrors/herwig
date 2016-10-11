@@ -195,8 +195,8 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   pair<double,double> right_fractions;
 
   // Pairs containing indicators for decayed particles
-  pair<bool,bool> left_decays = make_pair(false,false);
-  pair<bool,bool> right_decays = make_pair(false,false);
+  pair<bool,bool> left_decays = {false,false};
+  pair<bool,bool> right_decays = {false,false};
 
   switch (left) {
 

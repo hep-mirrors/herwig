@@ -63,7 +63,7 @@ namespace Herwig {
      * cuoff is assumed to correspond to the infrared cutoff.
      */
     virtual pair<double,double> kappaSupport(const DipoleSplittingInfo&) const {
-      return make_pair(0.0,1.0);
+      return {0.0,1.0};
     }
 
     /**
@@ -71,7 +71,7 @@ namespace Herwig {
      * fraction random number is to be sampled.
      */
     virtual pair<double,double> xiSupport(const DipoleSplittingInfo&) const {
-      return make_pair(0.0,1.0);
+      return {0.0,1.0};
     }
 
     /**

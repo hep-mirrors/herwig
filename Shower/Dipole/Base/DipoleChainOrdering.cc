@@ -70,11 +70,11 @@ void DipoleChainOrdering::setEvolutionScale(Energy scale,
   for ( list<Dipole>::iterator dip = chain.dipoles().begin();
 	dip != chain.dipoles().end(); ++dip ) {
 
-    if ( dip->emitterScale(make_pair(true,false)) > scale )
-      dip->emitterScale(make_pair(true,false),scale);
+    if ( dip->emitterScale({true,false}) > scale )
+      dip->emitterScale({true,false},scale);
 
-    if ( dip->emitterScale(make_pair(false,true)) > scale )
-      dip->emitterScale(make_pair(false,true),scale);
+    if ( dip->emitterScale({false,true}) > scale )
+      dip->emitterScale({false,true},scale);
 
   }
 
@@ -88,11 +88,11 @@ void DipoleChainOrdering::setEvolutionScale(Energy scale,
   for ( list<Dipole>::iterator dip = chain.dipoles().begin();
 	dip != chain.dipoles().end(); ++dip ) {
 
-    if ( dip->emitterScale(make_pair(true,false)) > scale )
-      dip->emitterScale(make_pair(true,false),scale);
+    if ( dip->emitterScale({true,false}) > scale )
+       dip->emitterScale({true,false},scale);
 
-    if ( dip->emitterScale(make_pair(false,true)) > scale )
-      dip->emitterScale(make_pair(false,true),scale);
+    if ( dip->emitterScale({false,true}) > scale )
+       dip->emitterScale({false,true},scale);
 
   }
 

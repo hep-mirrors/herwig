@@ -39,7 +39,7 @@ IBPtr IFMassiveDecayKinematics::fullclone() const {
 }
 
 pair<double,double> IFMassiveDecayKinematics::kappaSupport(const DipoleSplittingInfo&) const {
-  return make_pair(0.0,1.0);
+  return {0.0,1.0};
 }
 
 pair<double,double> IFMassiveDecayKinematics::xiSupport(const DipoleSplittingInfo& split) const {
@@ -48,11 +48,11 @@ pair<double,double> IFMassiveDecayKinematics::xiSupport(const DipoleSplittingInf
 
   if ( split.index().emitterData()->id() == ParticleID::g ) {
     if ( split.emissionData()->id() != ParticleID::g ){
-      return make_pair(0.5*(1.-c),0.5*(1.+c));}
+      return {0.5*(1.-c),0.5*(1.+c)};}
     double b = log((1.+c)/(1.-c));
-    return make_pair(-b,b);
+    return {-b,b};
   }
-  return make_pair(-log(0.5*(1.+c)),-log(0.5*(1.-c)));
+    return {-log(0.5*(1.+c)),-log(0.5*(1.-c))};
 }
 
 Energy IFMassiveDecayKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,

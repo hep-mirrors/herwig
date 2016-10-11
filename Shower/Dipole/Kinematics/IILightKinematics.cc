@@ -75,7 +75,7 @@ pair<double,double> IILightKinematics::zBoundaries(Energy pt,
                          openInitialState()?
                          ((1.-x) *dInfo.scale()/(2.*sqrt(x)))
                          :dInfo.hardPt())));
-  return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
+  return {0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s)};
 }
 
 bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,

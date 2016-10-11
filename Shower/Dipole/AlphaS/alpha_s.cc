@@ -186,8 +186,7 @@ void alpha_s::match_thresholds () {
 
   lambda_squared_[active_at_input] =
     MeV2 *
-    input_solver.solve(make_pair(lambda_range_.first/MeV2,
-				      lambda_range_.second/MeV2));
+  input_solver.solve({lambda_range_.first/MeV2,lambda_range_.second/MeV2});
 
   // get lambdas down to min active flavours
   unsigned int below = active_at_input;
@@ -200,8 +199,7 @@ void alpha_s::match_thresholds () {
     gsl::bisection_root_solver<solve_lambda_below<alpha_s>,100> match_solver(match_equation);
     lambda_squared_[below-1] =
       MeV2 *
-      match_solver.solve(make_pair(lambda_range_.first/MeV2,
-					lambda_range_.second/MeV2));
+    match_solver.solve({lambda_range_.first/MeV2,lambda_range_.second/MeV2});
 
     --below;
   }
@@ -215,9 +213,7 @@ void alpha_s::match_thresholds () {
 						quark_masses_squared_[above+1]);
     gsl::bisection_root_solver<solve_lambda_above<alpha_s>,100> match_solver(match_equation);
     lambda_squared_[above+1] =
-      MeV2 *
-      match_solver.solve(make_pair(lambda_range_.first/MeV2,
-					lambda_range_.second/MeV2));
+      MeV2 *match_solver.solve({lambda_range_.first/MeV2,lambda_range_.second/MeV2});
     ++above;
   }
 

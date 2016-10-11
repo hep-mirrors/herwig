@@ -111,7 +111,7 @@ double nlo_alpha_s::operator () (Energy2 scale,
       (1. - (beta1/sqr(beta0)) * log(slog)/slog +
        sqr(beta1/(sqr(beta0)*slog)) * (sqr(log(slog)-.5) - 5./4.));
 
-    return rg_solver().solve(make_pair(.5*center,1.5*center));
+    return rg_solver().solve({.5*center,1.5*center});
 
   } else {
 
