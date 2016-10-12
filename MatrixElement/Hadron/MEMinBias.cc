@@ -9,7 +9,7 @@
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 //#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-
+#include "ThePEG/Interface/Parameter.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -75,17 +75,13 @@ bool MEMinBias::generateKinematics(const double *) {
   meMomenta()[2].rescaleEnergy();
   meMomenta()[3].rescaleEnergy();
 
-  //jacobian(1.0);
-  jacobian(sqr(generator()->maximumCMEnergy())/GeV2);
+  jacobian(1.0);
   return true;
 }
 
 double MEMinBias::me2() const {
-  //return 1.0;
-  //return 1.068*0.263*20*100.0; //for xmin = 0.33
-  return 8.14*0.56; //for xmin = 0.11
-  //return 0.171*8.14*0.56; //for xmin = 0.0634
-  //return 0.6967*0.171*8.14*0.56;
+  //tuned so it gives the correct normalization for xmin = 0.11
+  return 4.5584*(sqr(generator()->maximumCMEnergy())/GeV2);
 }
 
 CrossSection MEMinBias::dSigHatDR() const {
@@ -93,11 +89,11 @@ CrossSection MEMinBias::dSigHatDR() const {
 }
 
 unsigned int MEMinBias::orderInAlphaS() const {
-  return 0;
+  return 2;
 }
 
 unsigned int MEMinBias::orderInAlphaEW() const {
-  return 2;
+  return 0;
 }
 
 Selector<MEBase::DiagramIndex>
@@ -145,10 +141,24 @@ IBPtr MEMinBias::fullclone() const {
 ClassDescription<MEMinBias> MEMinBias::initMEMinBias;
 // Definition of the static class description member.
 
+void MEMinBias::persistentOutput(PersistentOStream & os) const {
+  os << theme2;
+}
+
+void MEMinBias::persistentInput(PersistentIStream & is, int) {
+  is >> theme2;
+}
+
 void MEMinBias::Init() {
 
   static ClassDocumentation<MEMinBias> documentation
     ("There is no documentation for the MEMinBias class");
-
+     
+    static Parameter<MEMinBias,double> interfaceme2
+    ("MinBiasAmplitude",
+     "The square of the min-bias amplitude used to determine the "
+     "cross section.",
+     &MEMinBias::theme2, 1.0, 0.00001, 10000.0,
+     false, false, Interface::limited);	
 }
 

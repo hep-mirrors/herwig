@@ -1035,25 +1035,21 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   Lorentz5Momentum g1, g2, q1, q2;
   //new
   Lorentz5Momentum gint1, gint2;
-  //PPair firstrems = softRems_;
   PPair oldgluons;
   vector< pair<Lorentz5Momentum,Lorentz5Momentum> > gluonMomPairs;
   
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   unsigned int tries(1), i(0);
-
+  
   for(i=0; i<N; i++){
     //check how often this scattering has been regenerated
-    //if(tries > maxtrySoft_) break;
-    if(tries > maxtrySoft_) return;
+    if(tries > maxtrySoft_) break;
     	
     if(dbg){
       cerr << "new try \n" << *softRems_.first << *softRems_.second << endl;
     }
 
     try{
-      //softKinematics(r1, r2, g1, g2);
-      //new
       if(i==0){
       	quarkPair_ = true;
       	//first splitting: remnant -> remnant + quark
@@ -1088,11 +1084,11 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       continue;
     }
   
-
+     
     //reset counter
     tries = 1;
   }
-  
+  if(gluonMomPairs.size()==0) return;
   if(dbg)
     cerr << "generated " << i << "th soft scatters\n";
     				      
