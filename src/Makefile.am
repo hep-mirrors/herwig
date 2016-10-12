@@ -18,10 +18,6 @@ Herwig_LDADD = $(THEPEGLIB) -ldl \
 $(top_builddir)/API/libHerwigAPI.la \
 $(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
 
-Herwig_CPPFLAGS = $(AM_CPPFLAGS) \
--DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
--DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
--DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \
