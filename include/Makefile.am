@@ -12,7 +12,8 @@ DIRLINKS = $(top_srcdir)/Analysis \
            $(top_srcdir)/Shower \
            $(top_srcdir)/Sampling \
            $(top_srcdir)/UnderlyingEvent \
-           $(top_srcdir)/Utilities
+           $(top_srcdir)/Utilities \
+           $(top_srcdir)/API
 
 LOOPTOOLHEADERS = $(top_srcdir)/Looptools/include/clooptools.h
 

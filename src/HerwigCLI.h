@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
-// Herwig.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2015 The Herwig Collaboration
+// HerwigCLI.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2016 The Herwig Collaboration
 //
 // Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -9,7 +9,8 @@
 #ifndef SRC_HERWIG_CLI_H
 #define SRC_HERWIG_CLI_H
 
-#include "HerwigUI.h"
+#include "Herwig/API/HerwigUI.h"
+#include <iostream>
 
 namespace Herwig {
 
@@ -67,6 +68,15 @@ public:
   void quitWithHelp() const;
 
   void quit() const;
+
+   /// Return the standard out stream to be used
+  virtual std::ostream& outStream() const { return std::cout; }
+
+   /// Return the standard err stream to be used
+  virtual std::ostream& errStream() const { return std::cerr; }
+
+  /// Return the standard in stream to be used
+  virtual std::istream& inStream() const { return std::cin; }
 
 private:
 

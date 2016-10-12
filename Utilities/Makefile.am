@@ -1,6 +1,6 @@
 SUBDIRS = XML Statistics
 noinst_LTLIBRARIES = libHwUtils.la
-pkglib_LTLIBRARIES = libHwRunDirectories.la
+
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
 Interpolator.tcc Interpolator.h \
@@ -31,11 +31,6 @@ hgstamp.inc: update_hgstamp
 libHwUtils_la_LIBADD = \
 XML/libHwXML.la \
 Statistics/libHwStatistics.la
-
-
-libHwRunDirectories_la_SOURCES = \
-RunDirectories.h RunDirectories.cc
-libHwRunDirectories_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0
 
 
 check_PROGRAMS = utilities_test

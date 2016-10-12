@@ -30,7 +30,7 @@
 #include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
-#include "Herwig/Utilities/RunDirectories.h"
+#include "Herwig/API/RunDirectories.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 

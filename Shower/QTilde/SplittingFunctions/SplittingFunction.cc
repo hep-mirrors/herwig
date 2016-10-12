@@ -107,18 +107,38 @@ void SplittingFunction::Init() {
      "Interaction isn't angular ordered",
      false);
 
+  static Switch<SplittingFunction,unsigned int> interfaceScaleChoice
+    ("ScaleChoice",
+     "The scale choice to be used",
+     &SplittingFunction::scaleChoice_, 2, false, false);
+  static SwitchOption interfaceScaleChoicepT
+    (interfaceScaleChoice,
+     "pT",
+     "pT of the branching",
+     0);
+  static SwitchOption interfaceScaleChoiceQ2
+    (interfaceScaleChoice,
+     "Q2",
+     "Q2 of the branching",
+     1);
+  static SwitchOption interfaceScaleChoiceFromAngularOrdering
+    (interfaceScaleChoice,
+     "FromAngularOrdering",
+     "If angular order use pT, otherwise Q2",
+     2);
+
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {
    os << oenum(_interactionType) << _interactionOrder 
       << oenum(_colourStructure) << _colourFactor
-      << angularOrdered_;
+      << angularOrdered_ << scaleChoice_;
 }
 
 void SplittingFunction::persistentInput(PersistentIStream & is, int) {
   is >> ienum(_interactionType) >> _interactionOrder 
      >>	ienum(_colourStructure) >> _colourFactor
-     >> angularOrdered_;
+     >> angularOrdered_ >> scaleChoice_;
 }
 
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,

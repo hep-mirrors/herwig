@@ -16,6 +16,9 @@
 using namespace ThePEG;
 using namespace Herwig;
 
+using std::string;
+using std::list;
+
 void RunDirectories::prefix(string p) {
   if ( *p.rbegin() != '/' )
     p += "/";

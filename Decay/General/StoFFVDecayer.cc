@@ -139,7 +139,7 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	calculateWaveFunctions(_outspin[ix].first,decay[ix],Helicity::outgoing);
       _outspin[ix].second.resize(2);
       // Need a ubar and a v spinor
-      if(_outspin[ix].first[0].wave().Type() == u_spinortype) {
+      if(_outspin[ix].first[0].wave().Type() == SpinorType::u) {
 	for(unsigned int iy = 0; iy < 2; ++iy) {
 	  _outspin[ix].second[iy] = _outspin[ix].first[iy].bar();
 	  _outspin[ix].first[iy].conjugate();

@@ -26,7 +26,7 @@
 #include "ThePEG/Handlers/SamplerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
-#include "Herwig/Utilities/RunDirectories.h"
+#include "Herwig/API/RunDirectories.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>

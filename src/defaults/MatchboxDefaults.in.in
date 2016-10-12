@@ -601,6 +601,14 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/TTHVertex
 cp /Herwig/Vertices/FFHVertex /Herwig/Vertices/BBHVertex
 set /Herwig/Vertices/BBHVertex:Fermion 5
 
+cp /Herwig/Vertices/FFHVertex /Herwig/Vertices/TauTauHVertex
+set /Herwig/Vertices/TauTauHVertex:Fermion 15
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/TauTauHVertex
+
+cp /Herwig/Vertices/FFHVertex /Herwig/Vertices/MuMuHVertex
+set /Herwig/Vertices/MuMuHVertex:Fermion 13
+
 create Herwig::ProcessData ProcessData
 
 set /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator DiagramGenerator

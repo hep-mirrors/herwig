@@ -23,8 +23,6 @@
 
 using namespace Herwig;
 
-using ThePEG::Helicity::u_spinortype;
-using ThePEG::Helicity::v_spinortype;
 using ThePEG::Helicity::VectorWaveFunction;
 using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
@@ -97,14 +95,14 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
       SpinorWaveFunction   ::calculateWaveFunctions(_wave,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-      if(_wave[0].wave().Type() != u_spinortype)
+      if(_wave[0].wave().Type() != SpinorType::u)
 	for(unsigned int ix = 0; ix < 2; ++ix) _wave   [ix].conjugate();
     }
     else {
       SpinorBarWaveFunction::calculateWaveFunctions(_wavebar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-      if(_wavebar[0].wave().Type() != v_spinortype)
+      if(_wavebar[0].wave().Type() != SpinorType::v)
 	for(unsigned int ix = 0; ix < 2; ++ix) _wavebar[ix].conjugate();
     }
   }

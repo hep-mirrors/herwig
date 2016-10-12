@@ -110,13 +110,29 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 }
 
 void VBFNLOAmplitude::loadVBFNLO() {
-  if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
-	  DynamicLoader::load("libVBFNLO.so") ||
-	  DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.dylib") || 
-	  DynamicLoader::load("libVBFNLO.dylib") ) )
-    throw Exception() << "VBFNLOAmplitude: failed to load libVBFNLO.so/dylib\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::runerror;
+  if ( ! DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") ) {
+    string error1 = DynamicLoader::lastErrorMessage;
+    if ( ! DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.dylib") ) {
+      string error2 = DynamicLoader::lastErrorMessage;
+      if ( ! DynamicLoader::load("libVBFNLO.so") ) {
+        string error3 = DynamicLoader::lastErrorMessage;
+        if ( ! DynamicLoader::load("libVBFNLO.dylib") ) {
+          string error4 = DynamicLoader::lastErrorMessage;
+          throw Exception() << "VBFNLOAmplitude: failed to load libVBFNLO.so/dylib\n"
+                            << "Error messages are:\n\n"
+                            << "* " << VBFNLOlib_ << "/libVBFNLO.so:\n" 
+                            << error1 << "\n"
+                            << "* " << VBFNLOlib_ << "/libVBFNLO.dylib:\n" 
+                            << error2 << "\n"
+                            << "* libVBFNLO.so:\n" 
+                            << error3 << "\n"
+                            << "* libVBFNLO.dylib:\n" 
+                            << error4 << "\n"
+                            << Exception::runerror;
+        }
+      }
+    }
+  }
 }
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
