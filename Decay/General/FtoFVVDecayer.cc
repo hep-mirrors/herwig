@@ -108,18 +108,18 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       SpinorWaveFunction::
 	calculateWaveFunctions(_fwave,_rho,const_ptr_cast<tPPtr>(&inpart),
 			       Helicity::incoming);
-      if( _fwave[0].wave().Type() != u_spinortype )
+      if( _fwave[0].wave().Type() != SpinorType::u )
 	_fwave[0].conjugate();
-      if( _fwave[1].wave().Type() != u_spinortype )
+      if( _fwave[1].wave().Type() != SpinorType::u )
 	_fwave[1].conjugate();
     }
     else {
       SpinorBarWaveFunction::
 	calculateWaveFunctions(_fbwave, _rho, const_ptr_cast<tPPtr>(&inpart),
 			       Helicity::incoming);
-      if( _fbwave[0].wave().Type() != v_spinortype )
+      if( _fbwave[0].wave().Type() != SpinorType::v )
 	_fbwave[0].conjugate();
-      if( _fbwave[1].wave().Type() != v_spinortype )
+      if( _fbwave[1].wave().Type() != SpinorType::v )
 	_fbwave[1].conjugate();
     }
   }
@@ -173,17 +173,17 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       if( ferm ) {
 	SpinorBarWaveFunction::
 	  calculateWaveFunctions(_fbwave, p, Helicity::outgoing);
-	if( _fbwave[0].wave().Type() != u_spinortype )
+	if( _fbwave[0].wave().Type() != SpinorType::u )
 	  _fbwave[0].conjugate();
-	if( _fbwave[1].wave().Type() != u_spinortype )
+	if( _fbwave[1].wave().Type() != SpinorType::u )
 	  _fbwave[1].conjugate();
       }
       else {
 	SpinorWaveFunction::
 	  calculateWaveFunctions(_fwave, p, Helicity::outgoing);
-	if( _fwave[0].wave().Type() != v_spinortype )
+	if( _fwave[0].wave().Type() != SpinorType::v )
 	  _fwave[0].conjugate();
-	if( _fwave[1].wave().Type() != v_spinortype )
+	if( _fwave[1].wave().Type() != SpinorType::v )
 	  _fwave[1].conjugate();
       }
     }
