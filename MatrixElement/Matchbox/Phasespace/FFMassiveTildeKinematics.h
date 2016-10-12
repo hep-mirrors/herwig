@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief FFMassiveTildeKinematics implements the 'tilde' kinematics for
  * a final-final subtraction dipole.

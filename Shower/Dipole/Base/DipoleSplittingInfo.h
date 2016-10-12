@@ -25,7 +25,7 @@ class DipoleSplittingKinematics;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief DipoleIndex is used to index splitting generators
  * for a particular dipole.

@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief FFMassiveInvertedTildeKinematics inverts the final-final tilde
  * kinematics.

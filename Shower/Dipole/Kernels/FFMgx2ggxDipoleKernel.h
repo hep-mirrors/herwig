@@ -13,7 +13,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer, Martin Stoll
+ * \author Simon Platzer, Martin Stoll, Stephen Webster
  *
  * \brief FFMgx2ggxDipoleKernel implements the g -> gg
  * splitting off a final-final dipole

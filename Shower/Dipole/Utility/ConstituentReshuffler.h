@@ -22,7 +22,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  * 
  * \brief The ConstituentReshuffler class implements reshuffling
  * of partons on their nominal mass shell to their constituent 

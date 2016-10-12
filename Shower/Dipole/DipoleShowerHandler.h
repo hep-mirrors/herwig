@@ -33,7 +33,7 @@ using namespace ThePEG;
 
 /** 
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief The DipoleShowerHandler class manages the showering using
  * the dipole shower algorithm.

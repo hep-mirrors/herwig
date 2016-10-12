@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief The Dipole class is used by the dipole shower to
  * represent a dipole of two coloured partons.
