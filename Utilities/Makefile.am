@@ -41,5 +41,5 @@ tests/utilitiesTestMaths.h \
 tests/utilitiesTestsStatistic.h
 utilities_test_LDADD = $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) $(THEPEGLIB) -ldl libHwUtils.la
 utilities_test_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(THEPEGLDFLAGS)
-utilities_test_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" -DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
+utilities_test_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) 
 TESTS = utilities_test
