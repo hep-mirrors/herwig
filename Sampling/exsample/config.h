@@ -24,9 +24,6 @@
 #include <numeric>
 #include <limits>
 
-#include <boost/scoped_array.hpp>
-#include <boost/scoped_ptr.hpp>
-
 #define EXSAMPLE_has_ThePEG
 
 #ifdef EXSAMPLE_has_ThePEG

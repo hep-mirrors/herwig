@@ -34,7 +34,6 @@
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 
-#include <boost/foreach.hpp>
 #include <cctype>
 
 #include <iterator>
@@ -1491,7 +1490,7 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   if ( initVerbose() ) {
     ostringstream fname_strm;
     // only allow alphanumeric, / and _ in filename
-    BOOST_FOREACH (const char c, name()) {
+    for (const char c : name()) {
         switch (c) {
           case '+' : fname_strm << "+"; break;
           case '-' : fname_strm << "-"; break;

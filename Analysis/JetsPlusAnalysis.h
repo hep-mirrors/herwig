@@ -11,9 +11,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig/Utilities/Statistics/Histogram.h"
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-
 namespace Herwig {
 
 using namespace ThePEG;
@@ -457,12 +454,12 @@ private:
   /**
    * Trijet properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties> theThreeJetProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties> theThreeJetProperties;
 
   /**
    * Fourjet properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourJetProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourJetProperties;
 
 protected:
 
@@ -612,13 +609,13 @@ protected:
    */
   ObjectProperties& threeJetProperties(const unsigned int id1, const unsigned int id2,
 				       const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theThreeJetProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theThreeJetProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theThreeJetProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << id3;
-    return theThreeJetProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theThreeJetProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -627,13 +624,13 @@ protected:
    */
   ObjectProperties& fourJetProperties(const unsigned int id1, const unsigned int id2,
 				      const unsigned int id3, const unsigned int id4) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theFourJetProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theFourJetProperties.find(std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
     if ( it != theFourJetProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << id3 << id4;
-    return theFourJetProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+    return theFourJetProperties[std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }  
 

@@ -340,21 +340,6 @@ void ShowerHandler::cascade() {
   tcPDFPtr first  = PDFA_ ? tcPDFPtr(PDFA_) : firstPDF().pdf();
   tcPDFPtr second = PDFB_ ? tcPDFPtr(PDFB_) : secondPDF().pdf();
   resetPDFs(make_pair(first,second));
- 
-  if(didRunCascade()){
-    tPVector finalstate=eventHandler()->currentStep()->getFinalState();
-    bool issecondshower=false;
-    for(tPVector::iterator it=finalstate.begin();it!=finalstate.end();++it){
-     if((decaysInShower((**it).id())&&!(**it).dataPtr()->stable())){
-       issecondshower=true;
-       break;
-     }
-    }
-    if (issecondshower) cascade(finalstate);   
-    return; 
-  }
-  
-  
   // set the PDFs for the remnant
   if( ! rempdfs_.first)
     rempdfs_.first  = PDFARemnant_ ? PDFPtr(PDFARemnant_) : const_ptr_cast<PDFPtr>(first);

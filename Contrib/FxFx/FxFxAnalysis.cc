@@ -24,8 +24,6 @@
 #include "HepMC/IO_AsciiParticles.h"
 #include "HepMC/IO_GenEvent.h"
 #include "ThePEG/Utilities/XSecStat.h"
-#include <boost/lexical_cast.hpp>
-//#include <config.h>
 
 using namespace ThePEG;
 
@@ -153,7 +151,7 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
   HepMC::GenEvent * hepmcMULTIi;
   if(useoptweights) { 
     for(int rr = 0; rr < _numweights; rr++) {
-      double xsrr = optxsec[boost::lexical_cast<string>(OptWeights[rr].first)]/picobarn;
+      double xsrr = optxsec[std::to_string(OptWeights[rr].first)]/picobarn;
       //cout << "xsec = " << xsec/picobarn << endl;
       //cout << "OptWeights[rr].second = " << OptWeights[rr].second << endl;
       //cout << "xsrr = " << xsrr << endl;
@@ -314,13 +312,13 @@ void FxFxAnalysis::dofinish() {
     for(int rr = 0; rr < _numweights; rr++) {
       cout << (OptWeights[rr].first)  << ", cross section = " << OptXS[rr] << endl;
       if( _nevent > 0 && _rivetMULTI[rr] ) {
-	double xsrr = optxsec[boost::lexical_cast<string>(OptWeights[rr].first)]/picobarn;
+	double xsrr = optxsec[std::to_string(OptWeights[rr].first)]/picobarn;
 	//      _rivetMULTI[rr]->setCrossSection(OptXS[rr]);
 	_rivetMULTI[rr]->setCrossSection(xsrr);
 	_rivetMULTI[rr]->finalize();
 	
 	string fname = filename;
-	fname = generator()->runName() + "_" + boost::lexical_cast<string>(OptWeights[rr].first) + ".yoda";
+	fname = generator()->runName() + "_" + std::to_string(OptWeights[rr].first) + ".yoda";
 	
 	_rivetMULTI[rr]->writeData(fname);
       }
