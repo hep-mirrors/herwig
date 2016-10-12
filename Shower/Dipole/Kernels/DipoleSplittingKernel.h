@@ -271,6 +271,13 @@ public:
   virtual double invertOverestimateIntegral(const DipoleSplittingInfo&, double) const {
 	 return -1.; 
   }
+  
+  /**
+   * .
+   */
+  bool useThisKernel() const {
+    return theUseThisKernel;
+  }
 
 public:
 
@@ -451,6 +458,12 @@ private:
    */
   bool presampling;
 
+  /**
+   * True, if the kernel should be used
+   */
+  bool theUseThisKernel = true;
+
+  
 private:
 
   /**

@@ -77,8 +77,6 @@ set IIgx2ccbarxDipoleKernel:CMWScheme Factor
 set IIgx2cbarcxDipoleKernel:CMWScheme Factor
 set IIgx2ssbarxDipoleKernel:CMWScheme Factor
 set IIgx2sbarsxDipoleKernel:CMWScheme Factor
-
-## bs from five flavournobmass scheme
 set IFgx2bbbarxDipoleKernel:CMWScheme Factor
 set IFgx2bbarbxDipoleKernel:CMWScheme Factor
 set IFMgx2bbbarxDipoleKernel:CMWScheme Factor

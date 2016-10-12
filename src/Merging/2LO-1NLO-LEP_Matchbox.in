@@ -200,10 +200,6 @@ read Merging/FactorCMWScheme.in
 ### alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )
 # read Merging/LinearCMWScheme.in
 
-### Same for 4 flavours
-# read Merging/FactorCMWScheme_4fl.in
-# read Merging/LinearCMWScheme_4fl.in
-
 
 
 

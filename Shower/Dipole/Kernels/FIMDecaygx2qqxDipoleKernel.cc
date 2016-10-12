@@ -29,6 +29,7 @@ IBPtr FIMDecaygx2qqxDipoleKernel::fullclone() const {
 
 bool FIMDecaygx2qqxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+  useThisKernel() &&
     ind.incomingDecaySpectator() && !ind.incomingDecayEmitter() &&
     ind.emitterData()->id() == ParticleID::g &&
     !(ind.spectatorData()->mass() == ZERO) &&

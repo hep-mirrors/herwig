@@ -55,7 +55,7 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << theRenormalizationScaleFactor
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theVirtualitySplittingScale<<theCMWScheme;
+     << theVirtualitySplittingScale<<theCMWScheme<<theUseThisKernel;
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -67,7 +67,7 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> theRenormalizationScaleFactor
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theVirtualitySplittingScale>>theCMWScheme;
+     >> theVirtualitySplittingScale>>theCMWScheme>>theUseThisKernel;
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
@@ -379,10 +379,27 @@ void DipoleSplittingKernel::Init() {
      false);
 
   static Parameter<DipoleSplittingKernel,double> interfaceDetuning
-    ("Detuning",
-     "A value to detune the overestimate kernel.",
-     &DipoleSplittingKernel::theDetuning, 1.0, 1.0, 0,
-     false, false, Interface::lowerlim);
+  ("Detuning",
+   "A value to detune the overestimate kernel.",
+   &DipoleSplittingKernel::theDetuning, 1.0, 1.0, 0,
+   false, false, Interface::lowerlim);
+  
+  
+  static Switch<DipoleSplittingKernel,bool> interfaceUseThisKernel
+  ("UseKernel",
+   "Turn On and of the Kernel.",
+   &DipoleSplittingKernel::theUseThisKernel, true, false, false);
+  static SwitchOption interfaceUseThisKernelOn
+  (interfaceUseThisKernel,
+   "On",
+   "Use this Kernel.",
+   true);
+  static SwitchOption interfaceUseThisKernelOff
+  (interfaceUseThisKernel,
+   "Off",
+   "Dont use this Kernel.",
+   false);
+  
 
 }
 

@@ -74,3 +74,20 @@ set bbar:NominalMass 0*GeV
 set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
 
+
+cd /Herwig/DipoleShower/Kernels
+
+set IFgx2bbbarxDipoleKernel:UseKernel On
+set IFgx2bbarbxDipoleKernel:UseKernel On
+set IFMgx2bbbarxDipoleKernel:UseKernel Off
+set IFMgx2bbarbxDipoleKernel:UseKernel Off
+set IIgx2bbbarxDipoleKernel:UseKernel On
+set IIgx2bbarbxDipoleKernel:UseKernel On
+set IFgx2bbbarxDipoleKernel:UseKernel On
+set IFgx2bbarbxDipoleKernel:UseKernel On
+set IFMgx2bbbarxDipoleKernel:UseKernel Off
+set IFMgx2bbarbxDipoleKernel:UseKernel Off
+set IIgx2bbbarxDipoleKernel:UseKernel On
+set IIgx2bbarbxDipoleKernel:UseKernel On
+
+
