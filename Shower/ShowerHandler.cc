@@ -36,6 +36,8 @@
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 
 using namespace Herwig;
 
@@ -995,7 +997,8 @@ void ShowerHandler::createDecayProcess(PPtr in,PerturbativeProcessPtr hard, Deca
 }
 
 tDMPtr ShowerHandler::decay(PerturbativeProcessPtr process,
-			  DecayProcessMap & decayMap) const {
+			    DecayProcessMap & decayMap,
+			    bool radPhotons ) const {
   PPtr parent = process->incoming()[0].first;
   assert(parent);
   if(parent->spinInfo()) parent->spinInfo()->decay(true);
@@ -1025,6 +1028,14 @@ tDMPtr ShowerHandler::decay(PerturbativeProcessPtr process,
       children = dm->decayer()->decay(*dm, *parent);
       // if no children have another go
       if(children.empty()) continue;
+
+      if(radPhotons){
+	// generate radiation in the decay
+	tDecayIntegratorPtr hwdec=dynamic_ptr_cast<tDecayIntegratorPtr>(dm->decayer());
+	if (hwdec && hwdec->canGeneratePhotons())
+	  children = hwdec->generatePhotons(*parent,children);
+      }
+
       // set up parent
       parent->decayMode(dm);
       // add children

@@ -123,10 +123,14 @@ public:
 			DecayProcessMap & decay) const;
 
   /**
-   *  Decay a particle
+   *  Decay a particle.
+   *  radPhotons switches the generation of photon
+   *  radiation on/off.
+   *  Required for Dipole Shower but not QTilde Shower.
    */
   tDMPtr decay(PerturbativeProcessPtr,
-	      DecayProcessMap & decay) const;
+	       DecayProcessMap & decay,
+	       bool radPhotons = false) const;
 
   
   /**

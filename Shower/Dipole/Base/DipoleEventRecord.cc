@@ -1147,7 +1147,7 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
     process->incoming()[0].first = incoming;
     DecayProcessMap decay;
     // Decay the particle, returning a pointer to the decay mode
-    decayMode = ShowerHandler::currentHandler()->decay(process,decay);
+    decayMode = ShowerHandler::currentHandler()->decay(process,decay,true);
   }
   
   
