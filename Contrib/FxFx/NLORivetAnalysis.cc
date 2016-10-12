@@ -386,9 +386,9 @@ void NLORivetAnalysis::dofinish() {
       
       string fname = filename;
 #if ThePEG_RIVET_VERSION == 1
-      if ( fname.empty() ) fname = generator()->runName() + "_" + boost::lexical_cast<string>(OptWeights[rr].first) + ".aida";
+      if ( fname.empty() ) fname = generator()->runName() + "_" + std::to_string(OptWeights[rr].first) + ".aida";
 #elif ThePEG_RIVET_VERSION > 1
-      if ( fname.empty() ) fname = generator()->runName() + "_" + boost::lexical_cast<string>(OptWeights[rr].first) + ".yoda";
+      if ( fname.empty() ) fname = generator()->runName() + "_" + std::to_string(OptWeights[rr].first) + ".yoda";
 #else
 #error "Unknown ThePEG_RIVET_VERSION"
 #endif

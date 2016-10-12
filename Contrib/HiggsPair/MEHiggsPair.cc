@@ -37,7 +37,7 @@ using namespace Herwig;
 
 
 MEHiggsPair::MEHiggsPair()
-  : _selfcoupling(1.0),_hhHcoupling(1.0), _process(0), _mh(), _wh(), _cH(0.0), _c6(0.0), _ct1(0.0),  _cb1(0.0), _ct2(0.0),  _cb2(0.0), _cg1(0.0), _cg2(0.0), _EFTScale(1000*GeV),  _fixedalphaS(0), _alphasfixedvalue(0.1), _alphascale(90.0*GeV), _basescale(125.0*GeV), _fixedscale(0), _scalemultiplier(1.0)   {
+  : _selfcoupling(1.0),_hhHcoupling(1.0), _process(0), _mh(), _wh(), _cH(0.0), _c6(0.0), _ct1(0.0),  _cb1(0.0), _ct2(0.0),  _cb2(0.0), _cg1(0.0), _cg2(0.0), _EFTScale(1000*GeV),  _fixedalphaS(0), _alphasfixedvalue(0.1), _alphascale(90.0*GeV), _basescale(125.0*GeV), _fixedscale(0), _scalemultiplier(1.0), _yH(1.0), _yh(1.0), _ybH(1.0), _ybh(1.0)   {
   massOption(vector<unsigned int>(2,0));
 }
 
@@ -93,11 +93,11 @@ IBPtr MEHiggsPair::fullclone() const {
   }
 
 void MEHiggsPair::persistentOutput(PersistentOStream & os) const {
-  os << _selfcoupling << _hhHcoupling << _process << _higgs << ounit(_topmass,GeV) << ounit(_bottommass,GeV) << ounit(_zmass,GeV) << ounit(_m1,GeV) << ounit(_m2,GeV) << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass << _cH << _c6 << _ct1 << _cb1 << _ct2 << _cb2 << _cg1 << _cg2 << ounit(_EFTScale,GeV) << _fixedalphaS << _alphasfixedvalue << ounit(_heavyHmass,GeV) << ounit(_heavyHwidth,GeV) << ounit(_basescale,GeV) << ounit(_alphascale,GeV) << _fixedscale << _scalemultiplier;
+  os << _selfcoupling << _hhHcoupling << _process << _higgs << ounit(_topmass,GeV) << ounit(_bottommass,GeV) << ounit(_zmass,GeV) << ounit(_m1,GeV) << ounit(_m2,GeV) << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass << _cH << _c6 << _ct1 << _cb1 << _ct2 << _cb2 << _cg1 << _cg2 << ounit(_EFTScale,GeV) << _fixedalphaS << _alphasfixedvalue << ounit(_heavyHmass,GeV) << ounit(_heavyHwidth,GeV) << ounit(_basescale,GeV) << ounit(_alphascale,GeV) << _fixedscale << _scalemultiplier << _yH << _yh << _ybH << _ybh;
 }
 
 void MEHiggsPair::persistentInput(PersistentIStream & is, int) {
-  is >> _selfcoupling >> _hhHcoupling >> _process >> _higgs >> iunit(_topmass,GeV) >> iunit(_bottommass,GeV) >> iunit(_zmass,GeV) >> iunit(_m1,GeV) >> iunit(_m2,GeV) >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass >> _cH >> _c6 >> _ct1 >> _cb1 >> _ct2 >> _cb2 >> _cg1 >> _cg2 >> iunit(_EFTScale,GeV) >>  _fixedalphaS >> _alphasfixedvalue >> iunit(_heavyHmass,GeV) >> iunit(_heavyHwidth,GeV) >> iunit(_basescale,GeV) >> iunit(_alphascale,GeV) >> _fixedscale >> _scalemultiplier;
+  is >> _selfcoupling >> _hhHcoupling >> _process >> _higgs >> iunit(_topmass,GeV) >> iunit(_bottommass,GeV) >> iunit(_zmass,GeV) >> iunit(_m1,GeV) >> iunit(_m2,GeV) >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass >> _cH >> _c6 >> _ct1 >> _cb1 >> _ct2 >> _cb2 >> _cg1 >> _cg2 >> iunit(_EFTScale,GeV) >>  _fixedalphaS >> _alphasfixedvalue >> iunit(_heavyHmass,GeV) >> iunit(_heavyHwidth,GeV) >> iunit(_basescale,GeV) >> iunit(_alphascale,GeV) >> _fixedscale >> _scalemultiplier >> _yH >> _yh >> _ybH >> _ybh;
 
 }
 
@@ -168,6 +168,31 @@ static Parameter<MEHiggsPair, double> interfacecg2
      "Effective theory coefficient cg2",
      &MEHiggsPair::_cg2, 0.0, -1000000.0, 1000000.0,
      false, false, Interface::limited);
+
+  static Parameter<MEHiggsPair, double> interfacecyytHeavy
+    ("ytH",
+     "Multiplier for Heavy Higgs-top Yukawa",
+     &MEHiggsPair::_yH, 1.0, -1000000.0, 1000000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEHiggsPair, double> interfacecyytLight
+    ("yth",
+     "Multiplier for Light Higgs-top Yukawa",
+     &MEHiggsPair::_yh, 1.0, -1000000.0, 1000000.0,
+     false, false, Interface::limited);
+
+   static Parameter<MEHiggsPair, double> interfacecyybHeavy
+    ("ybH",
+     "Multiplier for Heavy Higgs-top Yukawa",
+     &MEHiggsPair::_ybH, 1.0, -1000000.0, 1000000.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEHiggsPair, double> interfacecyybLight
+    ("ybh",
+     "Multiplier for Light Higgs-top Yukawa",
+     &MEHiggsPair::_ybh, 1.0, -1000000.0, 1000000.0,
+     false, false, Interface::limited);
+
 
 
  static Parameter<MEHiggsPair, Energy> interfaceEFTScale
@@ -535,8 +560,8 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
   //vacuum expectation value, self-coupling, top and bottom Yukawas
   double V =  1./sqrt(sqrt(2) * SM().fermiConstant()*GeV*GeV);
   double GHHH =  _selfcoupling * 3.*sqr(AMH) / V;
-  double GHT=AMT/V;
-  double GHB=AMB/V;
+  double GHT=_yh*AMT/V;
+  double GHB=_ybh*AMB/V;
 
   double ALPS=SM().alphaS(scale());
   if(_fixedalphaS==1) { ALPS = _alphasfixedvalue; }
@@ -559,7 +584,11 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
   }
   //Heavy Higgs
   double AMHEAVY = _heavyHmass/GeV;
-  double GAMHEAVY = _heavyHwidth/GeV;			      
+  double GAMHEAVY = _heavyHwidth/GeV;
+  double GHTHEAVY=_yH*AMT/V;
+  double GHBHEAVY=_ybH*AMB/V;
+
+
   double FACHEAVY = 1.;
   PROHEAVY = Complex(S-sqr(AMHEAVY),AMHEAVY*GAMHEAVY*FACHEAVY);
   double GHhh = _hhHcoupling * 3.*sqr(AMHEAVY) / V;  // Hhh coupling (for _process == 3)
@@ -693,7 +722,7 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
     D0BAC[0] = ScalFacs[7];
     D0ACB[0] = ScalFacs[8];
     formfac_(amq, ss, tt, uu, m1, m2, C0AB, C0AC, C0AD, C0BC, C0BD, C0CD, D0ABC, D0BAC, D0ACB);
-    F1 = F1 + (form_.H1*(GHT*GHhh/PROHEAVY));
+    F1 = F1 + (form_.H1*(GHTHEAVY*GHhh/PROHEAVY));
     ScalFacs = iniscal(AMB, S, T, U, M1, M2);
     amq[0] = AMB;
     C0AB[0] = ScalFacs[0];
@@ -706,7 +735,7 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
     D0BAC[0] = ScalFacs[7];
     D0ACB[0] = ScalFacs[8];
     formfac_(amq, ss, tt, uu, m1, m2, C0AB, C0AC, C0AD, C0BC, C0BD, C0CD, D0ABC, D0BAC, D0ACB);
-    F1 = F1 + (form_.H1*(GHB*GHhh/PROHEAVY));
+    F1 = F1 + (form_.H1*(GHBHEAVY*GHhh/PROHEAVY));
   }
   
   //square

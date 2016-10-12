@@ -1,20 +1,13 @@
-This subdirectory is based on version 2.6 of the Looptools package available at
+This subdirectory is based on version 2.13 of the Looptools package available at
 http://www.feynarts.de/looptools/
 
-From their website, it seems that Looptools is licensed under the LGPL, 
-although the tarball itself does not contain a reference to it.
-
-For reference, we have added the LGPL in the file COPYING.Looptools.
-Note that this licence only applies to the Looptools subdirectory.
-
-Our changes to LoopTools-2.6.tar.gz are listed here:
+Our changes to LoopTools-2.13.tar.gz are listed here:
 
 * removed unused 'tools' and 'frontend' directories
 * include/clooptools.h modified: definitions and 'extern' declarations moved to 
   Herwig's clooptools.cc
-* fixed 64bit int -> long problem in cache.c
 * added Makefile.am; creates libHwLooptools.la to be linked into Herwig.so
 * added tester.cc: a quick test whether c++ linking works
 
 -- 
-2011-01-17 David Grellscheid <david.grellscheid@durham.ac.uk>
+2016-09-08 David Grellscheid <david.grellscheid@durham.ac.uk>

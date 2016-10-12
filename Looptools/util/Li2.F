@@ -3,17 +3,19 @@
 * this file is part of LoopTools
 * last modified 13 Apr 06 th
 
+#include "externals.h"
+#include "types.h"
 #include "defs.h"
 
 
-	double complex function XLi2(x)
+	ComplexType function XLi2(x)
 	implicit none
 	DVAR x
 
-	double precision pi12
+	RealType pi12
 	parameter (pi12 = .822467033424113218236207583323D0)
 
-	double complex res, dummy
+	ComplexType res, dummy
 	integer ier, ipi12
 
 	ier = 0
@@ -30,10 +32,10 @@
 
 	subroutine XLi2sub(res, x)
 	implicit none
-	double complex res
+	ComplexType res
 	DVAR x
 
-	double complex XLi2
+	ComplexType XLi2
 	external XLi2
 
 	res = XLi2(x)

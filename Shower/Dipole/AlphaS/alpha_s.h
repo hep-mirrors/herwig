@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <boost/array.hpp>
+#include <array>
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/StandardModel/AlphaSBase.h"
@@ -129,8 +129,8 @@ namespace matchbox {
      * flavours changes from <code>i</code> to <code>i+1</code>.
      */
     virtual inline vector<Energy2> flavourThresholds() const {
-      vector<Energy2> res (7);
-      copy(quark_masses_squared_.begin(),quark_masses_squared_.end(),res.begin());
+      vector<Energy2> res (6);
+      copy(quark_masses_squared_.begin()+1,quark_masses_squared_.end(),res.begin());
       return res;
     }
 
@@ -298,8 +298,8 @@ namespace matchbox {
 
     double scale_factor_;
 
-    boost::array<Energy2,7> quark_masses_squared_;
-    boost::array<Energy2,7> lambda_squared_;
+    std::array<Energy2,7> quark_masses_squared_;
+    std::array<Energy2,7> lambda_squared_;
 
     double alpha_s_in_;
     Energy scale_in_;

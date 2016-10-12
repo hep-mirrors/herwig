@@ -14,8 +14,6 @@
 
 namespace ExSample {
 
-using std::isnan;
-using std::isinf;
 
   /**
    * \brief A simple cell grid providing basic adaption and sampling
@@ -251,7 +249,7 @@ using std::isinf;
       for ( std::size_t k = 0; k < nPoints; ++k ) {
 	sampleFlatPoint(point,rnd);
 	double w = f.evaluate(point);
-	if ( isnan(w) || isinf(w) ) {
+	if ( ! std::isfinite(w) ) {
 	  ++nanPoints;
 	  continue;
 	}

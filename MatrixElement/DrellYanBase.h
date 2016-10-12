@@ -72,7 +72,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
-						 ShowerInteraction::Type);
+						 ShowerInteraction);
 
   /**
    * Set the typed and momenta of the incoming and outgoing partons to

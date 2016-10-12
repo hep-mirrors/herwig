@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/MatrixElement/ReweightBase.h"
-#include <boost/array.hpp>
+#include <array>
 
 namespace Herwig {
 
@@ -115,11 +115,7 @@ private:
   /**
    * The table of K factors to be read from file 
    */
-
-  // tab[40000][5];
-
-  boost::array<boost::array<double,6>,40001> tab;
-  //  boost::array<boost::array<double,6>,250001> tab;
+  std::array<std::array<double,6>,40001> tab;
 
   /**
    *  EW K factor filename

@@ -764,7 +764,7 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
 }
 
 RealEmissionProcessPtr MEPP2Higgs::generateHardest(RealEmissionProcessPtr born,
-						   ShowerInteraction::Type inter) {
+						   ShowerInteraction inter) {
   if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
   useMe();
   // get the particles to be showered

@@ -48,4 +48,4 @@ clean:
 	FxFx.so FxFxHandler.so FxFxAnalysis.so 
 
 install:
-        cp *.so $(HERWIGINSTALL)/lib/Herwig
+	cp *.so $(HERWIGINSTALL)/lib/Herwig

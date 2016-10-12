@@ -64,7 +64,7 @@ double YFSFormFactors::ReBIF(Energy  m0      ,Energy  m1      , Energy2 t       
   }
   if(includegamma){output=-_alpha*charge/pi*((Anu-1.)*log(sqr(mgamma)/mprod)+vfinite);}
   else            {output=-_alpha*charge/pi*((Anu-1.)*log(MeV2/mprod)+vfinite);}
-  //  assert(!isnan(output) && !isinf(output));
+  //  assert(isfinite(output));
   return output;
 }
 
@@ -85,7 +85,7 @@ double YFSFormFactors::ReBFF(Energy m1,Energy m2,Energy2 s,double  charge,
   double Anu(log(prod/mprod)/rho),output;
   if(includegamma){output=-_alpha*charge/pi*((Anu-1.)*log(sqr(mgamma)/mprod)+vfinite);}
   else            {output=-_alpha*charge/pi*((Anu-1.)*log(MeV2/mprod)+vfinite);}
-  //  assert(!isnan(output) && !isinf(output));
+  //  assert(isfinite(output));
   return output;
 }
 
@@ -108,7 +108,7 @@ double YFSFormFactors::BtildeIF(double  beta0   ,double  ombeta0 ,
   // finite piece
   double rfinite(-0.5*A4single(beta0,ombeta0)-0.5*A4single(beta1,ombeta1)
 		 +nu*A4IF(beta0,ombeta0,beta1,ombeta1,en0,en1,m0,m1,t));
-  //  assert(!isnan(rfinite) && !isinf(rfinite));
+  //  assert(isfinite(rfinite));
   // return the answer
   double output; 
   if(includegamma) {
@@ -117,7 +117,7 @@ double YFSFormFactors::BtildeIF(double  beta0   ,double  ombeta0 ,
   else {
     output=-_alpha*charge/pi*((Anu-1.)*2.*log(2.*emin/MeV)+rfinite);
   }
-  //  assert(!isnan(output) && !isinf(output));
+  //  assert(isfinite(output));
   return output;
 }
 
@@ -141,7 +141,7 @@ double YFSFormFactors::BtildeFF(double  beta1   ,double  ombeta1 ,
   double output; 
   if(includegamma){output=-_alpha*charge/pi*((Anu-1.)*2.*log(2.*emin/mgamma)+rfinite);}
   else            {output=-_alpha*charge/pi*((Anu-1.)*2.*log(2.*emin/MeV)+rfinite);}
-  //  assert(!isnan(output) && !isinf(output));
+  //  assert(isfinite(output));
   return output;
 }
 

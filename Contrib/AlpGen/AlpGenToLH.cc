@@ -32,6 +32,9 @@ inline int nInt(double x) {
 
 int ndnsToLHAPDF(int ndns);
 
+string ndnsToLHAPDF_str(int ndns);
+
+
 double parstrToparval(string varName,
 		      vector<string> * parstrPtr,
 		      vector<double> * parvalPtr);
@@ -686,6 +689,132 @@ int ndnsToLHAPDF(int ndns) {
 }
 
 
+string ndnsToLHAPDF_str(int ndns) {
+  // The information in this function is based on 
+  // subroutine PRNTSF from alplib/alppdf.f, LHAPDF's 
+  // PDFsets.index and, finally, the .stat output that
+  // results when the relevant ndns value is entered
+  // in the input file.
+  string Set("no PDF set found");
+  double Lambda_4(0),Lambda_5_2loop(0);
+  string Scheme("no PDF scheme");
+  int    LHAPDFindex(-999);
+  string tmpString("");
+  string lhastring("");
+
+  if(ndns==1) {
+    Set = "CTEQ4M"       ; Lambda_4 = 0.298 ; Lambda_5_2loop = 0.202 ; Scheme = "MS" ;
+    LHAPDFindex =  19150;
+    lhastring = "cteq6m";
+  } else if(ndns==2) {
+    Set = "CTEQ4L"       ; Lambda_4 = 0.298 ; Lambda_5_2loop = 0.202 ; Scheme = "MS" ;
+    LHAPDFindex =  19170;
+    lhastring = "cteq4l";
+  } else if(ndns==3) {
+    Set = "CTEQ4HJ"      ; Lambda_4 = 0.298 ; Lambda_5_2loop = 0.202 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "cteq4hj";    
+  } else if(ndns==4) {
+    Set = "CTEQ5M"       ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex =  19050;
+    lhastring = "cteq5m";
+  } else if(ndns==5) {
+    Set = "CTEQ5L"       ; Lambda_4 = 0.192 ; Lambda_5_2loop = 0.144 ; Scheme = "MS" ;
+    LHAPDFindex =  19070;
+    lhastring = "cteq5l";
+
+  } else if(ndns==6) {
+    Set = "CTEQ5HJ"      ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "cteq5hj";       
+  } else if(ndns==7) {
+    Set = "CTEQ6M"       ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex=   10050;
+    lhastring = "cteq6m";
+  } else if(ndns==8) {
+    Set = "CTEQ6L"       ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex =  10041;
+    lhastring = "cteq6l";
+  } else if(ndns==9) {
+    Set = "CTEQ6L1"      ; Lambda_4 = 0.215 ; Lambda_5_2loop = 0.167 ; Scheme = "MS" ;
+    LHAPDFindex =  10042;
+    lhastring = "cteq6l1";
+  } else if(ndns>=10&&ndns<=50) {
+    Set = "CTEQ6xx"      ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex =  10150+(ndns-10);
+    lhastring = "cteq6xx";
+  } else if(ndns==101) {
+    Set = "MRST99"       ; Lambda_4 = 0.321 ; Lambda_5_2loop = 0.220 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "mrst99";
+  } else if(ndns==102) {
+    Set = "MRST01"       ; Lambda_4 = 0.342 ; Lambda_5_2loop = 0.239 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "mrst01";
+  } else if(ndns==103) {
+    Set = "MRST01"       ; Lambda_4 = 0.310 ; Lambda_5_2loop = 0.214 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+  } else if(ndns==104) {
+    Set = "MRST01"       ; Lambda_4 = 0.378 ; Lambda_5_2loop = 0.267 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "mrst01";
+  } else if(ndns==105) {
+    Set = "MRST01J"      ; Lambda_4 = 0.378 ; Lambda_5_2loop = 0.267 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "mrst01j";
+  } else if(ndns==106) {
+    Set = "MRST02LO"     ; Lambda_4 = 0.215 ; Lambda_5_2loop = 0.167 ; Scheme = "MS" ;
+    LHAPDFindex = -99999;
+    lhastring = "mrst02lo";
+  } else if(ndns==201) {
+    Set = "MSTW2008lo"   ; Lambda_4 = 0.322 ; Lambda_5_2loop = 0.255 ; Scheme = "MS" ;
+    LHAPDFindex =  21000;
+  } else if(ndns==202) {
+    Set = "MSTW2008nlo"  ; Lambda_4 = 0.365 ; Lambda_5_2loop = 0.255 ; Scheme = "MS" ;
+    LHAPDFindex =  21100;
+    lhastring = "mstw2008nlo";
+  } else if(ndns>=203&&ndns<=242) {
+    Set = "MSTW2008lo68cl"; Lambda_4 = 0.322 ; Lambda_5_2loop = 0.255 ; Scheme = "MS" ;
+    LHAPDFindex =  21000+(ndns-202);
+    lhastring = "mstw2008lo68cl";
+  } else if(ndns==243) {
+    Set = "MRST LO*" ; Lambda_4 = 0.365 ; Lambda_5_2loop = 0.255 ; Scheme = "MS" ;
+    LHAPDFindex =  20650;
+    lhastring = "MRST2007lomod";
+  } else if(ndns==244) {
+    Set = "MRST LO**" ; Lambda_4 = 0.280 ; Lambda_5_2loop = 0.190 ; Scheme = "MS" ;
+    LHAPDFindex =  20651;
+    lhastring = "MRSTMCal";
+
+  } else if(ndns==301 ) {
+    Set = "CTQ6.6" ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex =  10550;
+    lhastring = "cteq66";
+  } else if(ndns>=302&&ndns<=345) {
+    Set = "CTQ66" ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex =  10550+(ndns-301);
+    lhastring = "cteq66";
+  } else if(ndns==346) {
+    Set = "CT09MC1" ; Lambda_4 = 0.215 ; Lambda_5_2loop = 0.167 ; Scheme = "MS" ;
+    LHAPDFindex =  10771;
+    lhastring = "CT09MC1";
+  } else if(ndns==347) {
+    Set = "CT09MC2" ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
+    LHAPDFindex =  10772;
+    lhastring = "CT09MC2";
+  }
+
+  cout << "-------------------------------\n";
+  cout << "ndnsToLHAPDF found: \n";
+  cout << "PDF set      = " << Set << "\n";
+  cout << "ndns index   = " << ndns << "\n";
+  cout << "LHAPDF index = " << LHAPDFindex << "\n";
+  cout << "-------------------------------\n\n";
+  return lhastring;
+
+}
+
+
 double parstrToparval(string varName,
 		      vector<string> * parstrPtr,
 		      vector<double> * parvalPtr) {
@@ -807,24 +936,24 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# light of some bad experience with MPI we prefer to set \n";
   hwpp << "# these here manually rather than read try to read that .in. \n";
   if(idbmup0 == 2212 && idbmup1 == -2212) {
-    hwpp << "set /Herwig/UnderlyingEvent/KtCut:MinKT 2.26 \n";
-    hwpp << "set /Herwig/UnderlyingEvent/UECuts:MHatMin 4.52 \n";
-    hwpp << "set /Herwig/Shower/Evolver:IntrinsicPtGaussian 1.9*GeV \n";
+    hwpp << "#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.26 \n";
+    hwpp << "#set /Herwig/UnderlyingEvent/UECuts:MHatMin 4.52 \n";
+    hwpp << "#set /Herwig/Shower/Evolver:IntrinsicPtGaussian 1.9*GeV \n";
   } else {
-    hwpp << "set /Herwig/UnderlyingEvent/KtCut:MinKT 2.752 \n";
-    hwpp << "set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.504 \n";
-    hwpp << "set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.34*GeV \n";
+    hwpp << "#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.752 \n";
+    hwpp << "#set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.504 \n";
+    hwpp << "#set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.34*GeV \n";
   }
   hwpp << "# Colour reconnection (re)settings \n";
-  hwpp << "set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes \n";
-  hwpp << "set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.61\n";
+  hwpp << "#set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes \n";
+  hwpp << "#set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.61\n";
   hwpp << "# Colour Disrupt settings \n";
-  hwpp << "set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.75 \n";
+  hwpp << "#set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.75 \n";
   hwpp << "# Inverse hadron radius \n";
-  hwpp << "set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.35 \n";
-  hwpp << "set /Herwig/UnderlyingEvent/MPIHandler:softInt Yes \n";
-  hwpp << "set /Herwig/UnderlyingEvent/MPIHandler:twoComp Yes \n";
-  hwpp << "set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2 \n";
+  hwpp << "#set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.35 \n";
+  hwpp << "#set /Herwig/UnderlyingEvent/MPIHandler:softInt Yes \n";
+  hwpp << "#set /Herwig/UnderlyingEvent/MPIHandler:twoComp Yes \n";
+  hwpp << "#set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2 \n";
   hwpp << "\n";
   hwpp << "#############################################################\n";
   hwpp << "# Set up kinematics reconstructor (relevant only to mc@nlo) #\n";
@@ -848,8 +977,8 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# apply one boost from old CMS to new CMS. Both options \n";
   hwpp << "# should work with Powheg but probably it's best to use the \n";
   hwpp << "# defaults in that case by simply commenting this setting. \n";
-  hwpp << "set KinematicsReconstructor:ReconstructionOption General \n";
-  hwpp << "set KinematicsReconstructor:InitialInitialBoostOption LongTransBoost\n";
+  hwpp << "#set KinematicsReconstructor:ReconstructionOption General \n";
+  hwpp << "#set KinematicsReconstructor:InitialInitialBoostOption LongTransBoost\n";
   hwpp << "\n";
   hwpp << "#############################################################\n";
   hwpp << "# Set up the AlpGenHandler ...                              #\n";
@@ -963,7 +1092,9 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# Don't try and find PDF index out from the LH file ...\n";
   hwpp << "set /Herwig/EventHandlers/theLHReader:InitPDFs false\n";
   hwpp << "# Instead set them explicitly here:\n";
+  //  hwpp << "set thePDFset:PDFNumber       " << lhapdf << "\n";
   hwpp << "set thePDFset:PDFNumber       " << lhapdf << "\n";
+
   hwpp << "set thePDFset:RemnantHandler  HadronRemnants\n";
   hwpp << "set /Herwig/EventHandlers/theLHReader:PDFA thePDFset\n";
   hwpp << "set /Herwig/EventHandlers/theLHReader:PDFB thePDFset\n";
@@ -1023,10 +1154,10 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "######################################################### \n";
   hwpp << "cd /Herwig/EventHandlers \n";
   hwpp << "# set theLesHouchesHandler:CascadeHandler        NULL \n";
-  hwpp << "set theLesHouchesHandler:HadronizationHandler  NULL \n";
-  hwpp << "set theLesHouchesHandler:DecayHandler          NULL \n";
+  hwpp << "#set theLesHouchesHandler:HadronizationHandler  NULL \n";
+  hwpp << "#set theLesHouchesHandler:DecayHandler          NULL \n";
   hwpp << "# The handler for multiple parton interactions \n";
-  hwpp << "set /Herwig/Shower/AlpGenHandler:MPIHandler       NULL \n";
+  hwpp << "#set /Herwig/Shower/AlpGenHandler:MPIHandler       NULL \n";
   hwpp << "\n\n";
   hwpp << "######################################################### \n";
   hwpp << "# Recommended key MLM merging parameters below - change # \n";

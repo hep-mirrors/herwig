@@ -437,7 +437,7 @@ InvEnergy SMTopDecayer::threeBodydGammads(const int imode, const Energy2 mt2,
 						*mode(imode)->externalParticles(2));
   }
   // final spin average
-  assert(!isnan(width*GeV));
+  assert(!std::isnan(double(width*MeV)));
   return 0.5*width;
 }
 
@@ -859,7 +859,7 @@ double SMTopDecayer::xab(double xgb, double kt, int toggle) {
             )/2./(xgb-1.);
     }
   }
-  if(isnan(xab)) {
+  if(std::isnan(xab)) {
     double ktmktrpktmktrm = ( sqr(xgb*kt-2.*(xgb-_g))
 			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
 			      *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
@@ -872,7 +872,7 @@ double SMTopDecayer::xab(double xgb, double kt, int toggle) {
 			 ktmktrpktmktrm);
     xab = (0.5/(kt-xgb+_g))*(kt*(1.+_a-_c+_g-xgb)-lambda)
       + (0.5/(kt+xgb*(1.-kt)-_g))*(kt*(1.+_a-_c+_g-xgb)+lambda);
-    if(isnan(xab)) 
+    if(std::isnan(xab)) 
 	throw Exception() << "TopMECorrection::xab complex x_a value.\n"
 			  << "  xgb    = " << xgb    << "\n"
 			  << "  xab    = " << xab    << "\n"
@@ -981,7 +981,7 @@ double SMTopDecayer::xginvc0(double xg , double kt) {
     output = sinh(log((u+sqrt(4.*v3+u2))/(2.*sqrt(v3)))/3.);
     output *= 2.*sqrt(v);
   }
-  if(isnan(output)||isinf(output)) {
+  if(!isfinite(output)) {
       throw Exception() << "TopMECorrection::xginvc0:\n"
 	  << "possible numerical instability detected.\n"
 	  << "\n v = " <<  v << "   u = " << u << "\n4.*v3+u2 = " << 4.*v3+u2

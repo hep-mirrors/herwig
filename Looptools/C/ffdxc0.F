@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffdxc0:
@@ -52,8 +53,8 @@
 *
 	integer ipi12(16),isoort(16),ilogi(6),npoin,ier
 	logical ldel2s
-	DOUBLE COMPLEX cs3(160),clogi(6)
-	DOUBLE PRECISION xqi(10),qiDqj(10,10),
+	ComplexType cs3(160),clogi(6)
+	RealType xqi(10),qiDqj(10,10),
      +		xpi(6,3:4),dpipj(6,6,3:4),piDpj(6,6,3:4),
      +		sdel2,del2s(3,3:4),etalam(3:4),etami(6,3:4),alph(3),
      +		ddel2s(2:3),delpsi(3,3:4)
@@ -62,13 +63,13 @@
 *
 	integer i,j,k,l,ip,ier0,ii,ifirst,ieri(12),idone(6)
 	logical lcompl
-	DOUBLE COMPLEX c,csom,cs(5),csdeli(3,3:4),csdel2,
+	ComplexType c,csom,cs(5),csdeli(3,3:4),csdel2,
      +		cy(4,3:4,3),cz(4,3:4,3),cdyz(2,2,3:4,3),cd2yzz(3:4,3),
      +		cpi(6,3:4),cpiDpj(6,6,3:4),cdyzzy(4,3),cdyyzz(2,3)
-	DOUBLE PRECISION sdel2i(3,3:4),s(5),som,smax,absc,dfflo1,
+	RealType sdel2i(3,3:4),s(5),som,smax,absc,dfflo1,
      +		y(4,3:4,3),z(4,3:4,3),dyz(2,2,3:4,3),d2yzz(3:4,3),
      +		dy2z(4,3:4,3),dyzzy(4,3),dsdel2,xmax
-	DOUBLE COMPLEX zxfflg,zfflo1
+	ComplexType zxfflg,zfflo1
 	external dfflo1,zxfflg,zfflo1
 *
 *	common blocks:
@@ -77,7 +78,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ get y,z-roots:
 	lcompl = .FALSE.
@@ -108,7 +109,7 @@
 	else
 *	    complex case
 	    sdel2i(i,k) = sqrt(del2s(i,k))
-	    csdeli(i,k) = DCMPLX(0D0,sdel2i(i,k))
+	    csdeli(i,k) = ToComplex(0D0,sdel2i(i,k))
 	    lcompl = .TRUE.
 	    call ffcxyz(cy(1,k,i),cz(1,k,i),cdyz(1,1,k,i),cd2yzz(k,i),i,
      +		sdel2,sdel2i(i,k),etami(1,k),delpsi(i,k),xpi(
@@ -187,7 +188,7 @@
 		isoort(9) = isoort(9) - 10
 	    endif
 	    do 120 k=1,4
-		cdyzzy(k,1) = DBLE(som)*cz(k,3,1)
+		cdyzzy(k,1) = Re(som)*cz(k,3,1)
 		if ( k .gt. 2 ) cdyzzy(k,1) = -cdyzzy(k,1)
   120	    continue
 	    cdyyzz(1,1) = som
@@ -272,36 +273,36 @@
 *		    one of the roots is really real
 *
 		    if ( ifirst .le. 0 ) then
-			csdel2=DBLE(ddel2s(2))/(csdeli(2,3)+csdeli(2,4))
+			csdel2=Re(ddel2s(2))/(csdeli(2,3)+csdeli(2,4))
 		    endif
 		    if ( ifirst .le. 1 ) then
 			if ( j .eq. 1 .neqv. ldel2s ) then
 			    if ( .not.ldel2s ) then
 				cs(1)=xqi(6)*qiDqj(7,4)*qiDqj(5,4)/sdel2
-				cs(2) = -DBLE(qiDqj(7,4))*csdeli(2,3)
-				cs(3) = +DBLE(qiDqj(6,4))*csdel2
+				cs(2) = -Re(qiDqj(7,4))*csdeli(2,3)
+				cs(3) = +Re(qiDqj(6,4))*csdel2
 			    else
 				cs(1)=-xqi(3)*qiDqj(5,10)*qiDqj(7,2)/
      +								sdel2
-				cs(2) = -DBLE(qiDqj(7,2))*csdeli(2,3)
-				cs(3) = -DBLE(qiDqj(6,3))*csdel2
+				cs(2) = -Re(qiDqj(7,2))*csdeli(2,3)
+				cs(3) = -Re(qiDqj(6,3))*csdel2
 			    endif
 			else
 			    cs(1) = xqi(ip)*qiDqj(7,2)*qiDqj(5,2)/sdel2
-			    cs(2) = -DBLE(qiDqj(7,2))*csdeli(2,3)
-			    cs(3) = +DBLE(qiDqj(ip,2))*csdel2
+			    cs(2) = -Re(qiDqj(7,2))*csdeli(2,3)
+			    cs(3) = +Re(qiDqj(ip,2))*csdel2
 			endif
 		    endif
 		    if ( ifirst .le. 0 ) then
 			ifirst = 2
 			if ( .not.ldel2s ) then
-			    cs(4) = -DBLE(qiDqj(5,10)*qiDqj(7,4)/sdel2)*
+			    cs(4) = -Re(qiDqj(5,10)*qiDqj(7,4)/sdel2)*
      +				csdeli(2,3)
 			else
-			    cs(4) = -DBLE(qiDqj(5,3)*qiDqj(7,2)/sdel2)*
+			    cs(4) = -Re(qiDqj(5,3)*qiDqj(7,2)/sdel2)*
      +				csdeli(2,3)
 			endif
-			cs(5) = DBLE(delpsi(2,3)/sdel2)*csdel2
+			cs(5) = Re(delpsi(2,3)/sdel2)*csdel2
 		    endif
 		else
 *
@@ -309,36 +310,36 @@
 *
 		    if ( ifirst .eq. 0 ) then
 			dsdel2 = -ddel2s(2)/(sdel2i(2,3)+sdel2i(2,4))
-			csdel2 = DCMPLX(0D0,dsdel2)
+			csdel2 = ToComplex(0D0,dsdel2)
 		    endif
 		    if ( ifirst .le. 1 ) then
 			if ( j .eq. 1 .neqv. ldel2s ) then
 			    if ( .not.ldel2s ) then
 			      cs(1)=xqi(6)*qiDqj(7,4)*qiDqj(5,4)/sdel2
-			      cs(2)=-DCMPLX(0D0,qiDqj(7,4)*sdel2i(2,3))
-			      cs(3)=+DCMPLX(0D0,qiDqj(6,3)*dsdel2)
+			      cs(2)=-ToComplex(0D0,qiDqj(7,4)*sdel2i(2,3))
+			      cs(3)=+ToComplex(0D0,qiDqj(6,3)*dsdel2)
 			    else
 			      cs(1)=-xqi(3)*qiDqj(5,10)*qiDqj(7,2)/
      +								sdel2
-			      cs(2)=-DCMPLX(0D0,qiDqj(7,2)*sdel2i(2,3))
-			      cs(3)=-DCMPLX(0D0,qiDqj(6,3)*dsdel2)
+			      cs(2)=-ToComplex(0D0,qiDqj(7,2)*sdel2i(2,3))
+			      cs(3)=-ToComplex(0D0,qiDqj(6,3)*dsdel2)
 			    endif
 			else
 			    cs(1) = xqi(ip)*qiDqj(7,2)*qiDqj(5,2)/sdel2
-			    cs(2) = -DCMPLX(0D0,qiDqj(7,2)*sdel2i(2,3))
-			    cs(3) = +DCMPLX(0D0,qiDqj(ip,2)*dsdel2)
+			    cs(2) = -ToComplex(0D0,qiDqj(7,2)*sdel2i(2,3))
+			    cs(3) = +ToComplex(0D0,qiDqj(ip,2)*dsdel2)
 			endif
 		    endif
 		    if ( ifirst .eq. 0 ) then
 			ifirst = 2
 			if ( .not.ldel2s ) then
-			    cs(4) = -DCMPLX(0D0,qiDqj(5,10)*qiDqj(7,4)*
+			    cs(4) = -ToComplex(0D0,qiDqj(5,10)*qiDqj(7,4)*
      +						sdel2i(2,3)/sdel2)
 			else
-			    cs(4) = -DCMPLX(0D0,qiDqj(5,3)*qiDqj(7,2)*
+			    cs(4) = -ToComplex(0D0,qiDqj(5,3)*qiDqj(7,2)*
      +						sdel2i(2,3)/sdel2)
 			endif
-			cs(5) = DCMPLX(0D0,delpsi(2,3)*dsdel2/sdel2)
+			cs(5) = ToComplex(0D0,delpsi(2,3)*dsdel2/sdel2)
 		    endif
 		endif
 		if ( k .eq. 1 ) then
@@ -349,7 +350,7 @@
 		smax = max(absc(cs(1)),absc(cs(2)),absc(cs(3)),
      +			absc(cs(4)),absc(cs(5)))/xqi(ip)**2
 		if ( smax .lt. xmax ) then
-		    cdyzzy(ii,2) = csom/DBLE(xqi(ip))**2
+		    cdyzzy(ii,2) = csom/Re(xqi(ip))**2
 		    xmax = smax
 		endif
   170	    continue
@@ -363,13 +364,13 @@
 		if ( ifirst .le. 0 ) then
 		    if ( mod(isoort( 3),10).ne.0 .or.
      +			 mod(isoort(11),10).ne.0 ) then
-			csdel2=DBLE(ddel2s(2))/(csdeli(2,3)+csdeli(2,4))
+			csdel2=Re(ddel2s(2))/(csdeli(2,3)+csdeli(2,4))
 		    else
 			dsdel2 = -ddel2s(2)/(sdel2i(2,3)+sdel2i(2,4))
-			csdel2 = DCMPLX(0D0,dsdel2)
+			csdel2 = ToComplex(0D0,dsdel2)
 		    endif
 		endif
-		cs(2) = csdel2/DBLE(xqi(3))
+		cs(2) = csdel2/Re(xqi(3))
 		cs(1) = qiDqj(5,3)*qiDqj(7,2)/(sdel2*xqi(3))
 		if ( j .eq. 1 ) then
 		    csom = cs(1) + cs(2)
@@ -469,41 +470,41 @@
 *		    one of the roots is really real
 *
 		    if ( ifirst .le. 0 ) then
-			csdel2=DBLE(ddel2s(3))/(csdeli(3,3)+csdeli(3,4))
+			csdel2=Re(ddel2s(3))/(csdeli(3,3)+csdeli(3,4))
 		    endif
 		    if ( ifirst .le. 1 ) then
 			if ( j .eq. 1 ) then
 			    cs(1) = xqi(ip)*qiDqj(7,1)*qiDqj(5,1)/sdel2
-			    cs(2) = +DBLE(qiDqj(7,1))*csdeli(3,3)
+			    cs(2) = +Re(qiDqj(7,1))*csdeli(3,3)
 			    if ( .not.ldel2s ) then
-				cs(3) = +DBLE(qiDqj(9,1))*csdel2
+				cs(3) = +Re(qiDqj(9,1))*csdel2
 			    else
-				cs(3) = +DBLE(qiDqj(3,1))*csdel2
+				cs(3) = +Re(qiDqj(3,1))*csdel2
 			    endif
 			else
 			    if ( .not.ldel2s ) then
 				cs(1) = xqi(ip)*qiDqj(7,4)*qiDqj(5,4)/
      +								sdel2
-				cs(2) = DBLE(qiDqj(7,4))*csdeli(3,3)
+				cs(2) = Re(qiDqj(7,4))*csdeli(3,3)
 			    else
 				cs(1) = xqi(ip)*qiDqj(7,1)*qiDqj(5,9)/
      +								sdel2
-				cs(2) = DBLE(qiDqj(7,1))*csdeli(3,3)
+				cs(2) = Re(qiDqj(7,1))*csdeli(3,3)
 			    endif
-			    cs(3) = +DBLE(qiDqj(9,3))*csdel2
+			    cs(3) = +Re(qiDqj(9,3))*csdel2
 			endif
 			if ( ldel2s ) cs(3) = -cs(3)
 		    endif
 		    if ( ifirst .le. 0 ) then
 			ifirst = 2
 			if ( .not.ldel2s ) then
-			    cs(4) = -DBLE(qiDqj(5,9)*qiDqj(7,1)/sdel2)*
+			    cs(4) = -Re(qiDqj(5,9)*qiDqj(7,1)/sdel2)*
      +				csdeli(3,3)
 			else
-			    cs(4) = DBLE(qiDqj(5,4)*qiDqj(7,1)/sdel2)*
+			    cs(4) = Re(qiDqj(5,4)*qiDqj(7,1)/sdel2)*
      +				csdeli(3,3)
 			endif
-			cs(5) = DBLE(delpsi(3,3)/sdel2)*csdel2
+			cs(5) = Re(delpsi(3,3)/sdel2)*csdel2
 		    endif
 		else
 *
@@ -511,41 +512,41 @@
 *
 		    if ( ifirst .eq. 0 ) then
 			dsdel2 = -ddel2s(3)/(sdel2i(3,3)+sdel2i(3,4))
-			csdel2 = DCMPLX(0D0,dsdel2)
+			csdel2 = ToComplex(0D0,dsdel2)
 		    endif
 		    if ( ifirst .le. 1 ) then
 			if ( j .eq. 1 ) then
 			    cs(1) = xqi(ip)*qiDqj(7,1)*qiDqj(5,1)/sdel2
-			    cs(2) = +DCMPLX(0D0,qiDqj(7,1)*sdel2i(3,3))
+			    cs(2) = +ToComplex(0D0,qiDqj(7,1)*sdel2i(3,3))
 			    if ( .not.ldel2s ) then
-				cs(3) = +DCMPLX(0D0,qiDqj(9,1)*dsdel2)
+				cs(3) = +ToComplex(0D0,qiDqj(9,1)*dsdel2)
 			    else
-				cs(3) = +DCMPLX(0D0,qiDqj(3,1)*dsdel2)
+				cs(3) = +ToComplex(0D0,qiDqj(3,1)*dsdel2)
 			    endif
 			else
 			    if ( .not.ldel2s ) then
 			      cs(1)= xqi(ip)*qiDqj(7,4)*qiDqj(5,4)/
      +								sdel2
-			      cs(2)=DCMPLX(0D0,qiDqj(7,4)*sdel2i(3,3))
+			      cs(2)=ToComplex(0D0,qiDqj(7,4)*sdel2i(3,3))
 			    else
 			      cs(1)= xqi(ip)*qiDqj(7,1)*qiDqj(5,9)/
      +								sdel2
-			      cs(2)=DCMPLX(0D0,qiDqj(7,1)*sdel2i(3,3))
+			      cs(2)=ToComplex(0D0,qiDqj(7,1)*sdel2i(3,3))
 			    endif
-			    cs(3) = +DCMPLX(0D0,qiDqj(9,3)*dsdel2)
+			    cs(3) = +ToComplex(0D0,qiDqj(9,3)*dsdel2)
 			endif
 			if ( ldel2s ) cs(3) = -cs(3)
 		    endif
 		    if ( ifirst .le. 0 ) then
 			ifirst = 2
 			if ( .not.ldel2s ) then
-			    cs(4) = -DCMPLX(0D0,qiDqj(5,9)*qiDqj(7,1)*
+			    cs(4) = -ToComplex(0D0,qiDqj(5,9)*qiDqj(7,1)*
      +						sdel2i(3,3)/sdel2)
 			else
-			    cs(4) = DCMPLX(0D0,qiDqj(5,4)*qiDqj(7,1)*
+			    cs(4) = ToComplex(0D0,qiDqj(5,4)*qiDqj(7,1)*
      +						sdel2i(3,3)/sdel2)
 			endif
-			cs(5) = DCMPLX(0D0,delpsi(3,3)*dsdel2/sdel2)
+			cs(5) = ToComplex(0D0,delpsi(3,3)*dsdel2/sdel2)
 		    endif
 		endif
 		if ( k .eq. 1 ) then
@@ -556,7 +557,7 @@
 		smax =max(absc(cs(1)),absc(cs(2)),absc(cs(3)),
      +			absc(cs(4)),absc(cs(5)))/xqi(ip)**2
 		if ( smax .lt. xmax ) then
-		    cdyzzy(ii,3) = csom/DBLE(xqi(ip))**2
+		    cdyzzy(ii,3) = csom/Re(xqi(ip))**2
 		    xmax = smax
 		endif
   230	    continue
@@ -570,13 +571,13 @@
 		if ( ifirst .le. 0 ) then
 		    if ( mod(isoort( 5),10).ne.0 .or.
      +			 mod(isoort(13),10).ne.0 ) then
-			csdel2=DBLE(ddel2s(3))/(csdeli(3,3)+csdeli(3,4))
+			csdel2=Re(ddel2s(3))/(csdeli(3,3)+csdeli(3,4))
 		    else
 			dsdel2 = -ddel2s(3)/(sdel2i(3,3)+sdel2i(3,4))
-			csdel2 = DCMPLX(0D0,dsdel2)
+			csdel2 = ToComplex(0D0,dsdel2)
 		    endif
 		endif
-		cs(2) = -csdel2/DBLE(xqi(3))
+		cs(2) = -csdel2/Re(xqi(3))
 		cs(1) = qiDqj(5,3)*qiDqj(7,1)/(sdel2*xqi(3))
 		if ( j .eq. 1 ) then
 		    csom = cs(1) + cs(2)
@@ -654,36 +655,36 @@
 *		(this may have to be improved to 8*pi/4...)
 *
 		ier0 = 0
-		if ( DBLE(cdyz(2,1,k,i)) .gt. abs(DIMAG(cdyz(2,1,k,i))))
+		if ( Re(cdyz(2,1,k,i)) .gt. abs(Im(cdyz(2,1,k,i))))
      +								then
-		    som =2*atan2(DIMAG(cdyz(2,1,k,i)),DBLE(
+		    som =2*atan2(Im(cdyz(2,1,k,i)),Re(
      +							cdyz(2,1,k,i)))
-		    clogi(ii) = DCMPLX(0D0,som)
-		    if ( DIMAG(cdyz(2,1,k,i)) .gt. 0 ) then
+		    clogi(ii) = ToComplex(0D0,som)
+		    if ( Im(cdyz(2,1,k,i)) .gt. 0 ) then
 			ilogi(ii) = -1
 		    else
 			ilogi(ii) = +1
 		    endif
 
-		elseif ( DBLE(cdyz(2,1,k,i)) .lt.
-     +			-abs(DIMAG(cdyz(2,1,k,i))) ) then
-		    if ( DIMAG(cdyz(2,1,k,i)) .eq. 0 ) then
+		elseif ( Re(cdyz(2,1,k,i)) .lt.
+     +			-abs(Im(cdyz(2,1,k,i))) ) then
+		    if ( Im(cdyz(2,1,k,i)) .eq. 0 ) then
 			call fferr(82,ier)
 			print *,'isoort = ',isoort(l),isoort(l+1)
 		    endif
-		    som = 2*atan2(-DIMAG(cdyz(2,1,k,i)),-DBLE(
+		    som = 2*atan2(-Im(cdyz(2,1,k,i)),-Re(
      +							cdyz(2,1,k,i)))
-		    clogi(ii) = DCMPLX(0D0,som)
-		    if ( DIMAG(cdyz(2,1,k,i)) .gt. 0 ) then
+		    clogi(ii) = ToComplex(0D0,som)
+		    if ( Im(cdyz(2,1,k,i)) .gt. 0 ) then
 			ilogi(ii) = +1
 		    else
 			ilogi(ii) = -1
 		    endif
 		else
-		    s(1) = -DBLE(cdyz(2,1,k,i))
-		    s(2) = DIMAG(cdyz(2,1,k,i))
+		    s(1) = -Re(cdyz(2,1,k,i))
+		    s(2) = Im(cdyz(2,1,k,i))
 		    som = 2*atan2(s(1),s(2))
-		    clogi(ii) = DCMPLX(0D0,som)
+		    clogi(ii) = ToComplex(0D0,som)
 		    ilogi(ii) = 0
 		endif
 		idone(ii) = 1

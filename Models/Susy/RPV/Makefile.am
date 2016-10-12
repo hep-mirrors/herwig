@@ -1,15 +1,32 @@
-if WANT_BSM
-pkglib_LTLIBRARIES = HwRPV.la
-endif
-HwRPV_la_SOURCES =  \
-RPV.cc  RPV.h RPV.fh \
-RPVLLEVertex.h RPVLLEVertex.cc\
-RPVLQDVertex.h RPVLQDVertex.cc\
-RPVUDDVertex.h RPVUDDVertex.cc\
-RPVFFZVertex.h RPVFFZVertex.cc\
-RPVFFWVertex.h RPVFFWVertex.cc\
-RPVWSSVertex.h RPVWSSVertex.cc\
-RPVFFSVertex.h RPVFFSVertex.cc\
-RPVWWHVertex.h RPVWWHVertex.cc\
-RPVSSSVertex.h RPVSSSVertex.cc
-HwRPV_la_LDFLAGS =  $(AM_LDFLAGS) -module -version-info 2:0:0
+BUILT_SOURCES  = RPV__all.cc
+DISTCLEANFILES = RPV__all.cc
+
+RPV__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+RPV.h RPV.fh \
+RPVhelper.h \
+RPVLLEVertex.h \
+RPVLQDVertex.h \
+RPVUDDVertex.h \
+RPVFFZVertex.h \
+RPVFFWVertex.h \
+RPVWSSVertex.h \
+RPVFFSVertex.h \
+RPVWWHVertex.h \
+RPVSSSVertex.h 
+
+ALL_CC_FILES = \
+RPV.cc  \
+RPVLLEVertex.cc\
+RPVLQDVertex.cc\
+RPVUDDVertex.cc\
+RPVFFZVertex.cc\
+RPVFFWVertex.cc\
+RPVWSSVertex.cc\
+RPVFFSVertex.cc\
+RPVWWHVertex.cc\
+RPVSSSVertex.cc

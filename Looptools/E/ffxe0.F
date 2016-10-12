@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *	$Id: ffxe0.f,v 1.4 1996/01/10 15:36:51 gj Exp $
@@ -33,15 +34,15 @@
 *
 *	arguments
 *
-	DOUBLE PRECISION xpi(20)
-	DOUBLE COMPLEX ce0,cd0i(5)
+	RealType xpi(20)
+	ComplexType ce0,cd0i(5)
 	integer ier
 *
 *	local variables
 *
 	integer i,j,NMIN,NMAX,ier0,i6,i7,i8,i9
 	parameter(NMIN=15,NMAX=20)
-	DOUBLE PRECISION dpipj(NMIN,NMAX),xmax
+	RealType dpipj(NMIN,NMAX),xmax
 	logical lp5(NMAX-NMIN)
 *
 *	common blocks:
@@ -129,16 +130,16 @@
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX ce0,cd0i(5)
-	DOUBLE PRECISION xpi(20),dpipj(15,20)
+	ComplexType ce0,cd0i(5)
+	RealType xpi(20),dpipj(15,20)
 *
 *	local variables
 *
 	integer i,j,ii(10),ii4(6),ieri(5),ier0,imin,itype,ndiv,idone,
      +		ier1
 	logical ldel2s
-	DOUBLE COMPLEX c,cfac,cs,csum
-	DOUBLE PRECISION dl5s,dl4p,xpi4(13),dpipj4(10,13),piDpj4(10,10),
+	ComplexType c,cfac,cs,csum
+	RealType dl5s,dl4p,xpi4(13),dpipj4(10,13),piDpj4(10,10),
      +		absc,xmax,piDpj(15,15),xqi4(13),dqiqj4(10,13),
      +		qiDqj4(10,10),del2s,xmx5(5),dl4ri(5)
 	save ii4
@@ -149,7 +150,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	data
 *
@@ -268,22 +269,22 @@
 	imin = 1
 	do 200 i=1,5
 	    imin = -imin
-	    csum = csum + imin*DBLE(dl4ri(i))*cd0i(i)
+	    csum = csum + imin*Re(dl4ri(i))*cd0i(i)
 	    if ( ieri(i) .gt. 50 ) then
 		ieri(i) = mod(ieri(i),50)
 	    endif
-	    xmax = max(xmax,dl4ri(i)*xmx5(i)*DBLE(10)**mod(ieri(i),50))
+	    xmax = max(xmax,dl4ri(i)*xmx5(i)*Re(10)**mod(ieri(i),50))
   200	continue
 *
 *	If the imaginary part is very small it most likely is zero
 *	(can be removed, just esthetically more pleasing)
 *
-	if ( abs(DIMAG(csum)) .lt. precc*abs(DBLE(csum)) )
-     +		csum = DCMPLX(DBLE(csum))
+	if ( abs(Im(csum)) .lt. precc*abs(Re(csum)) )
+     +		csum = ToComplex(Re(csum))
 *
 *	Finally ...
 *
-	ce0 = csum*(1/DBLE(2*dl5s))
+	ce0 = csum*(1/Re(2*dl5s))
 *
 *  #] add all up:
 *###] ffxe0a:
@@ -317,14 +318,14 @@
 *
 *	arguments
 *
-	DOUBLE COMPLEX ce0,cd0i(5)
-	DOUBLE PRECISION dl4ri(5),xpi(20),piDpj(15,15)
+	ComplexType ce0,cd0i(5)
+	RealType dl4ri(5),xpi(20),piDpj(15,15)
 *
 *	local variables
 *
 	integer i,ii(10),imin
-	DOUBLE COMPLEX c,csum
-	DOUBLE PRECISION dl5s,dl4p,absc,xmax
+	ComplexType c,csum
+	RealType dl5s,dl4p,absc,xmax
 *
 *	common blocks:
 *
@@ -332,7 +333,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ initialisations:
 *
@@ -361,19 +362,19 @@
 	imin = 1
 	do 200 i=1,5
 	    imin = -imin
-	    csum = csum + imin*DBLE(dl4ri(i))*cd0i(i)
+	    csum = csum + imin*Re(dl4ri(i))*cd0i(i)
 	    xmax = max(xmax,abs(dl4ri(i))*absc(cd0i(i)))
   200	continue
 *
 *	If the imaginary part is very small it most likely is zero
 *	(can be removed, just esthetically more pleasing)
 *
-	if ( abs(DIMAG(csum)) .lt. precc*abs(DBLE(csum)) )
-     +		csum = DCMPLX(DBLE(csum))
+	if ( abs(Im(csum)) .lt. precc*abs(Re(csum)) )
+     +		csum = ToComplex(Re(csum))
 *
 *	Finally ...
 *
-	ce0 = csum*(1/DBLE(2*dl5s))
+	ce0 = csum*(1/Re(2*dl5s))
 *
 *  #] add all up:
 *###] ffxe00:
@@ -395,7 +396,7 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xpi(20),dpipj(15,20),piDpj(15,15)
+	RealType xpi(20),dpipj(15,20),piDpj(15,15)
 *
 *	local variables
 *
@@ -686,7 +687,7 @@
 *	arguments
 *
 	integer inum
-	DOUBLE PRECISION xpi(20),dpipj(15,20),piDpj(15,15),xpi4(13),
+	RealType xpi(20),dpipj(15,20),piDpj(15,15),xpi4(13),
      +		dpipj4(10,13),piDpj4(10,10)
 *
 *	local variables
@@ -760,8 +761,8 @@
 	implicit none
 	integer ier,nrot
 	parameter(nrot=12)
-	DOUBLE PRECISION xpi(20),xqi(20)
-	DOUBLE COMPLEX ce0,cd0i(5),ce0p,cd0ip(5),cd0ipp(5)
+	RealType xpi(20),xqi(20)
+	ComplexType ce0,cd0i(5),ce0p,cd0ip(5),cd0ipp(5)
 	integer inew(20,nrot),irota,ier1,i,j,k,icon,ialsav,init
 	logical lcon
 	parameter (icon=3)

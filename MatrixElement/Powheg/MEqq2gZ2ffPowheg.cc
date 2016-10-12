@@ -222,7 +222,7 @@ double MEqq2gZ2ffPowheg::NLOweight() const {
   //trick to try and reduce neg wgt contribution
   if(_xt<1.-_eps)
     wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
-  assert(!isinf(wgt)&&!isnan(wgt));
+  assert(isfinite(wgt));
   // return the answer
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }

@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffdel3:
@@ -23,14 +24,14 @@
 *
 *	arguments:
 *
-	DOUBLE PRECISION del3,piDpj(6,6)
+	RealType del3,piDpj(6,6)
 *
 *	local variables:
 *
 	integer mem,nperm
 	parameter(mem=10,nperm=16)
 	integer i,jj(6),iperm(3,nperm),imem,memarr(mem,3),memind,inow
-	DOUBLE PRECISION s(6),xmax,del3p,xmaxp
+	RealType s(6),xmax,del3p,xmaxp
 	save iperm,memind,memarr,inow
 *
 *	common blocks:
@@ -143,7 +144,7 @@
 *	arguments:
 *
 	integer ii(6,2),ns
-	DOUBLE PRECISION dl3s,piDpj(ns,ns)
+	RealType dl3s,piDpj(ns,ns)
 *
 *	local variables:
 *
@@ -151,7 +152,7 @@
 	parameter(mem=10,nperm=16)
 	integer i,jj(6),jsgn,iperm(3,nperm),imem,memarr(mem,3),
      +		memind,inow
-	DOUBLE PRECISION s(6),xmax,dl3sp,xmaxp
+	RealType s(6),xmax,dl3sp,xmaxp
 	save iperm,memind,memarr,inow
 *
 *	common blocks:

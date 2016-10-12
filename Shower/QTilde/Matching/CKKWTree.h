@@ -22,7 +22,7 @@ public:
   /**
    * The default constructor.
    */
-  CKKWTree(vector<HardBranchingPtr>, vector<HardBranchingPtr>, ShowerInteraction::Type);
+  CKKWTree(vector<HardBranchingPtr>, vector<HardBranchingPtr>, ShowerInteraction);
 
 public:
 

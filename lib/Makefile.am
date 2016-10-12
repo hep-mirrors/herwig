@@ -5,12 +5,12 @@ Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 19:0:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
-$(top_builddir)/Models/StandardModel/libHwStandardModel.la \
+$(top_builddir)/Models/libHwStandardModel.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
 $(top_builddir)/Decay/Radiation/libHwDecRad.la \
 $(top_builddir)/Utilities/libHwUtils.la \
-$(top_builddir)/Models/General/libHwModelGenerator.la \
+$(top_builddir)/Models/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \

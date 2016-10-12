@@ -245,7 +245,7 @@ public:
   /**
    *  The type of interaction
    */
-  inline ShowerInteraction::Type interactionType() const 
+  inline ShowerInteraction interactionType() const 
   {return splittingFn_->interactionType();}
   //@}
 

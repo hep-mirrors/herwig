@@ -652,7 +652,7 @@ double MEPP2VVPowheg::NLOweight() const {
   // If restricting to qg, gqb channels then subtract the LO contribution:
   if(channels_==2) wgt -= 1.;
 
-  if(isnan(wgt)||isinf(wgt)) {
+  if(!isfinite(wgt)) {
     cout << "MEPP2VVPowheg:: NLO weight " 
 	 << "is bad: wgt = " << wgt << endl;
     cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
@@ -3749,7 +3749,7 @@ double MEPP2VVPowheg::lo_me() const {
 }
 
 RealEmissionProcessPtr MEPP2VVPowheg::generateHardest(RealEmissionProcessPtr born,
-						      ShowerInteraction::Type inter) {
+						      ShowerInteraction inter) {
   if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
   // Now we want to set these data vectors according to the particles we've
   // received from the current 2->2 hard collision:
@@ -5073,7 +5073,7 @@ bool MEPP2VVPowheg::isotropicDecayer() {
   Energy m4(children_[1]->data().constituentMass());
   Energy p34(triangleFn(sqr(m1),sqr(m3),sqr(m4))
 	     /2./m1);
-  if(isnan(p34/GeV)||cth>1.||cth<-1.) return false;
+  if(std::isnan(double(p34/MeV))||cth>1.||cth<-1.) return false;
   Energy pT34(p34*sqrt(1.-cth)*sqrt(1.+cth));
   Lorentz5Momentum k3(pT34*sin(phi),pT34*cos(phi),p34 *cth,
 		      sqrt(p34*p34+sqr(m3)),m3);
@@ -5094,7 +5094,7 @@ bool MEPP2VVPowheg::isotropicDecayer() {
   Energy m6(children_[3]->data().constituentMass());
   Energy p56(triangleFn(sqr(m2),sqr(m5),sqr(m6))
 	     /2./m2);
-  if(isnan(p56/GeV)||cth>1.||cth<-1.) return false;
+  if(std::isnan(double(p56/MeV))||cth>1.||cth<-1.) return false;
   Energy pT56(p56*sqrt(1.-cth)*sqrt(1.+cth));
   Lorentz5Momentum k5(pT56*sin(phi),pT56*cos(phi),p56*cth,
 		      sqrt(p56*p56+sqr(m5)),m5);

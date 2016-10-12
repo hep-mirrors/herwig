@@ -61,6 +61,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2002_S4869273
 # PDG hadron multiplicities and ratios
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+# OPAL from gluon paper
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
 ##################################################
 # unvalidated 
 ##################################################

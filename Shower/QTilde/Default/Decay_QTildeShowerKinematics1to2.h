@@ -53,7 +53,7 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType::Type partnerType,
+			       ShowerPartnerType partnerType,
 			       bool massVeto) const;
 
   /**
@@ -83,7 +83,7 @@ public:
    */
   virtual void updateParent(const tShowerParticlePtr parent,
 			    const ShowerParticleVector & children,
-			    ShowerPartnerType::Type partnerType) const;
+			    ShowerPartnerType partnerType) const;
 
   //@}
 

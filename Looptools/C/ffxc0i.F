@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *--#[ log:
@@ -36,15 +37,15 @@ c
 *	arguments
 *
 	integer ier
-	DOUBLE COMPLEX cc0
-	DOUBLE PRECISION xpi(6),dpipj(6,6)
+	ComplexType cc0
+	RealType xpi(6),dpipj(6,6)
 *
 *	local variables
 *
 	integer init,ipi12,i,ilogi(3),irota,n
 	integer j,inew(6,6)
-	DOUBLE COMPLEX cs(15),csum,c,clogi(3)
-	DOUBLE PRECISION xqi(6),dqiqj(6,6),qiDqj(6,6),sdel2,xmax,absc,
+	ComplexType cs(15),csum,c,clogi(3)
+	RealType xqi(6),dqiqj(6,6),qiDqj(6,6),sdel2,xmax,absc,
      +		dum66(6,6),del2,m1,m2
 	save init,inew,ilogi
 *
@@ -65,7 +66,7 @@ c
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *
 *	initialisations
 *
@@ -193,8 +194,8 @@ c
 	    csum = csum + cs(i)
 	    xmax = max(xmax,absc(csum))
 	enddo
-	csum = csum + ipi12*DBLE(pi12)
-	cc0 = -csum*DBLE(1/(2*sdel2))
+	csum = csum + ipi12*Re(pi12)
+	cc0 = -csum*Re(1/(2*sdel2))
 *  #] sum:
 *###] ffxc0i:
 	end
@@ -215,16 +216,16 @@ c
 *	arguments
 *
 	integer ipi12,ilogi(3),npoin,ier
-	DOUBLE COMPLEX cs(15),clogi(3)
-	DOUBLE PRECISION xpi(6),dpipj(6,6),piDpj(6,6),lamsq,sdel2i
+	ComplexType cs(15),clogi(3)
+	RealType xpi(6),dpipj(6,6),piDpj(6,6),lamsq,sdel2i
 *
 *	local variables
 *
 	integer i,ieps,ieps1,n,ier0
-	DOUBLE COMPLEX clog1,clog2,cdum(2),cel3,cdyzm,cdyzp,cli,chulp,
+	ComplexType clog1,clog2,cdum(2),cel3,cdyzm,cdyzp,cli,chulp,
      +		carg1,carg2,chulp1
-	DOUBLE COMPLEX zfflog,zxfflg,cc
-	DOUBLE PRECISION del2,zm,zp,zm1,zp1,sdel2,hulp,dum(3),
+	ComplexType zfflog,zxfflg,cc
+	RealType del2,zm,zp,zm1,zp1,sdel2,hulp,dum(3),
      +		dfflo1,dyzp,dyzm,wm,wp,absc,arg1,arg2,del3
 	external dfflo1,zfflog,zxfflg
 *
@@ -234,22 +235,22 @@ c
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *
 *  #] declarations:
 *  #[ get determinants, roots, ieps:
 *
 	if ( lsmug ) then
-	    del3 = (- DBLE(xpi(1))*DBLE(cmipj(2,2))**2
-     +		    - DBLE(xpi(2))*DBLE(cmipj(1,3))**2
-     +		    + 2*DBLE(piDpj(1,2))*DBLE(cmipj(2,2))*
-     +				DBLE(cmipj(1,3)) )/4
+	    del3 = (- Re(xpi(1))*Re(cmipj(2,2))**2
+     +		    - Re(xpi(2))*Re(cmipj(1,3))**2
+     +		    + 2*Re(piDpj(1,2))*Re(cmipj(2,2))*
+     +				Re(cmipj(1,3)) )/4
 	    if ( nschem .ge. 3 ) then
-		cel3 = (- DBLE(xpi(1))*cmipj(2,2)**2
-     +			- DBLE(xpi(2))*cmipj(1,3)**2
-     +			+ 2*DBLE(piDpj(1,2))*cmipj(2,2)*cmipj(1,3) )/4
+		cel3 = (- Re(xpi(1))*cmipj(2,2)**2
+     +			- Re(xpi(2))*cmipj(1,3)**2
+     +			+ 2*Re(piDpj(1,2))*cmipj(2,2)*cmipj(1,3) )/4
 	    else
-		cel3 = DBLE(del3)
+		cel3 = Re(del3)
 	    endif
 	endif
 	del2 = -sdel2i**2
@@ -314,20 +315,20 @@ c
 *
 *	    checked 4-aug-1992, but found Yet Another Bug 30-sep-1992
 *
-	    cdyzm = cel3*DBLE(1/(-2*sdel2*del2))
+	    cdyzm = cel3*Re(1/(-2*sdel2*del2))
 	     dyzm = del3/(-2*sdel2*del2)
-	    carg1 = +cdyzm*DBLE(1/zm)
+	    carg1 = +cdyzm*Re(1/zm)
 	     arg1 = +dyzm/zm
-	    clog1 = zfflog(-carg1,+ieps,DCMPLX(DBLE(zm),DBLE(0)),ier)
-	    if (DIMAG(cdyzm) .lt. 0 .and. arg1 .gt. 0 ) then
+	    clog1 = zfflog(-carg1,+ieps,ToComplex(Re(zm),Re(0)),ier)
+	    if (Im(cdyzm) .lt. 0 .and. arg1 .gt. 0 ) then
 		clog1 = clog1 - c2ipi
 *		ier = ier + 50
 	    endif
 	    cs(8) = -clog1**2/2
-	    carg2 = -cdyzm*DBLE(1/zm1)
+	    carg2 = -cdyzm*Re(1/zm1)
 	     arg2 = -dyzm/zm1
-	    clog2 = zfflog(-carg2,ieps,DCMPLX(DBLE(-zm1),DBLE(0)),ier)
-	    if ( DIMAG(cdyzm) .lt. 0 .and. arg2 .gt. 0 ) then
+	    clog2 = zfflog(-carg2,ieps,ToComplex(Re(-zm1),Re(0)),ier)
+	    if ( Im(cdyzm) .lt. 0 .and. arg2 .gt. 0 ) then
 		clog2 = clog2 + c2ipi
 	    endif
 	    cs(9) = +clog2**2/2
@@ -356,7 +357,7 @@ c
 			print *,'Please regularize with a small mass'
 			stop
 		    endif
-		    chulp = -cdyzm*DBLE(1/dyzp)
+		    chulp = -cdyzm*Re(1/dyzp)
 		    chulp1 = 1+chulp
 		    if ( absc(chulp1) .lt. xloss )
      +			call ffwarn(129,ier,absc(chulp1),1D0)
@@ -416,22 +417,22 @@ c
 *
 *	    the im sign
 *
-	    if ( -DBLE(cmipj(1,3)) .gt. 0 ) then
+	    if ( -Re(cmipj(1,3)) .gt. 0 ) then
 		ieps = -1
 	    else
 		ieps = +1
 	    endif
 *
-	    if ( nschem .lt. 3 .or. DIMAG(cmipj(1,3)).eq.0 .and.
-     +			DIMAG(cmipj(2,2)).eq.0 ) then
+	    if ( nschem .lt. 3 .or. Im(cmipj(1,3)).eq.0 .and.
+     +			Im(cmipj(2,2)).eq.0 ) then
 *  #[		real case:
 *
 *		first z-,z+
 *
-		dyzp = -DBLE(cmipj(1,3))*DBLE(wm)/(2*DBLE(xpi(6))) -
-     +			DBLE(cmipj(2,2))/(2*DBLE(sdel2))
-		dyzm = -DBLE(cmipj(1,3))*DBLE(wp)/(2*DBLE(xpi(6))) -
-     +			DBLE(cmipj(2,2))/(2*DBLE(sdel2))
+		dyzp = -Re(cmipj(1,3))*Re(wm)/(2*Re(xpi(6))) -
+     +			Re(cmipj(2,2))/(2*Re(sdel2))
+		dyzm = -Re(cmipj(1,3))*Re(wp)/(2*Re(xpi(6))) -
+     +			Re(cmipj(2,2))/(2*Re(sdel2))
 *
 *		the (di)logs
 *
@@ -455,15 +456,15 @@ c
 *
 		if ( npoin.eq.4 ) then
 		    if ( ilogi(3) .eq. -999 ) then
-			if ( DBLE(cmipj(1,3)) .eq. 0 ) then
+			if ( Re(cmipj(1,3)) .eq. 0 ) then
 			    chulp = -1
 			    chulp1 = 0
 			elseif ( dyzp .lt. dyzm ) then
 			    chulp = -dyzm/dyzp
-			    chulp1 = +DBLE(cmipj(1,3))/DBLE(xpi(6)*dyzp)
+			    chulp1 = +Re(cmipj(1,3))/Re(xpi(6)*dyzp)
 			else
 			    chulp = -dyzp/dyzm
-			    chulp1 = -DBLE(cmipj(1,3))/DBLE(xpi(6)*dyzm)
+			    chulp1 = -Re(cmipj(1,3))/Re(xpi(6)*dyzm)
 			endif
 			call ffxclg(clogi(3),ilogi(3),chulp,chulp1,dyzp,
      +				ier)
@@ -475,10 +476,10 @@ c
 *
 *		first z+
 *
-		cdyzp = -cmipj(1,3)*DBLE(wm)/(2*DBLE(xpi(6))) -
-     +			cmipj(2,2)/(2*DBLE(sdel2))
+		cdyzp = -cmipj(1,3)*Re(wm)/(2*Re(xpi(6))) -
+     +			cmipj(2,2)/(2*Re(sdel2))
 		clog1 = zfflog(-cdyzp,-ieps,cone,ier)
-		if ( ieps*DIMAG(cdyzp).lt.0.and.DBLE(cdyzp).gt.0 ) then
+		if ( ieps*Im(cdyzp).lt.0 .and. Re(cdyzp).gt.0 ) then
 		    clog1 = clog1 - ieps*c2ipi
 		endif
 		cs(10) = -clog1**2/2
@@ -486,10 +487,10 @@ c
 *
 *		now z-
 *
-		cdyzm = -cmipj(1,3)*DBLE(wp)/(2*DBLE(xpi(6))) -
-     +			cmipj(2,2)/(2*DBLE(sdel2))
+		cdyzm = -cmipj(1,3)*Re(wp)/(2*Re(xpi(6))) -
+     +			cmipj(2,2)/(2*Re(sdel2))
 		clog2 = zfflog(-cdyzm,+ieps,cone,ier)
-		if ( ieps*DIMAG(cdyzm).gt.0.and.DBLE(cdyzm).gt.0 ) then
+		if ( ieps*Im(cdyzm).gt.0 .and. Re(cdyzm).gt.0 ) then
 		    clog2 = clog2 + ieps*c2ipi
 		endif
 		cs(11) = -clog2**2/2
@@ -498,18 +499,18 @@ c
 *		the dilog
 *
 		chulp = cdyzp/cdyzm
-		hulp = DBLE(cdyzp)/DBLE(cdyzm)
-		if ( DBLE(cdyzp) .lt. 0 ) then
+		hulp = Re(cdyzp)/Re(cdyzm)
+		if ( Re(cdyzp) .lt. 0 ) then
 		    ieps1 = -ieps
 		else
 		    ieps1 = +ieps
 		endif
-		if ( DIMAG(chulp) .eq. 0 ) then
-		    hulp = DBLE(chulp)
+		if ( Im(chulp) .eq. 0 ) then
+		    hulp = Re(chulp)
 		    call ffzxdl(cli,i,cdum(1),hulp,+ieps1,ier)
 		else
 		    call ffzzdl(cli,i,cdum(1),chulp,ier)
-		    if ( hulp.gt.1 .and. ieps1*DIMAG(chulp).lt.0 ) then
+		    if ( hulp.gt.1 .and. ieps1*Im(chulp).lt.0 ) then
 		      cli = cli + ieps1*c2ipi*zfflog(chulp,0,czero,ier)
 		    endif
 		endif
@@ -523,14 +524,14 @@ c
 			if ( cmipj(1,3) .eq. 0 ) then
 			    chulp = -1
 			    chulp1 = 0
-			elseif ( DBLE(cdyzp) .lt. DBLE(cdyzm) ) then
+			elseif ( Re(cdyzp) .lt. Re(cdyzm) ) then
 			    chulp = -cdyzm/cdyzp
-			    chulp1 = +cmipj(1,3)/cdyzp*DBLE(1/xpi(6))
+			    chulp1 = +cmipj(1,3)/cdyzp*Re(1/xpi(6))
 			else
 			    chulp = -cdyzp/cdyzm
-			    chulp1 = -cmipj(1,3)/cdyzm*DBLE(1/xpi(6))
+			    chulp1 = -cmipj(1,3)/cdyzm*Re(1/xpi(6))
 			endif
-			dyzp = DBLE(cdyzp)
+			dyzp = Re(cdyzp)
 			call ffxclg(clogi(3),ilogi(3),chulp,chulp1,dyzp,
      +				ier)
 		    endif
@@ -542,7 +543,7 @@ c
 *
 *	    the im sign
 *
-	    if ( -DBLE(cmipj(2,2)) .gt. 0 ) then
+	    if ( -Re(cmipj(2,2)) .gt. 0 ) then
 		ieps = -1
 	    else
 		ieps = +1
@@ -553,16 +554,16 @@ c
 *
 *		first z-
 *
-		dyzm = -DBLE(cmipj(2,2))*DBLE(wp)/(2*DBLE(xpi(5))) -
-     +			DBLE(cmipj(1,3))/(2*DBLE(sdel2))
+		dyzm = -Re(cmipj(2,2))*Re(wp)/(2*Re(xpi(5))) -
+     +			Re(cmipj(1,3))/(2*Re(sdel2))
 		clog1 = zxfflg(+dyzm,-ieps,1D0,ier)
 		cs(13) = +clog1**2/2
 		ipi12 = ipi12 + 4
 *
 *		now z+
 *
-		dyzp = -DBLE(cmipj(2,2))*DBLE(wm)/(2*DBLE(xpi(5))) -
-     +			DBLE(cmipj(1,3))/(2*DBLE(sdel2))
+		dyzp = -Re(cmipj(2,2))*Re(wm)/(2*Re(xpi(5))) -
+     +			Re(cmipj(1,3))/(2*Re(sdel2))
 		clog2 = zxfflg(+dyzp,+ieps,1D0,ier)
 		cs(14) = +clog2**2/2
 		ipi12 = ipi12 + 2
@@ -580,15 +581,15 @@ c
 *
 		if ( npoin.eq.4 ) then
 		    if ( ilogi(2) .eq. -999 ) then
-			if ( DBLE(cmipj(2,2)) .eq. 0 ) then
+			if ( Re(cmipj(2,2)) .eq. 0 ) then
 			    chulp = -1
 			    chulp1 = 0
 			elseif ( dyzp .lt. dyzm ) then
 			    chulp = -dyzm/dyzp
-			    chulp1 = +DBLE(cmipj(2,2))/DBLE(xpi(5)*dyzp)
+			    chulp1 = +Re(cmipj(2,2))/Re(xpi(5)*dyzp)
 			elseif ( dyzp .gt. dyzm ) then
 			    chulp = -dyzp/dyzm
-			    chulp1 = -DBLE(cmipj(2,2))/DBLE(xpi(5)*dyzm)
+			    chulp1 = -Re(cmipj(2,2))/Re(xpi(5)*dyzm)
 			endif
 			call ffxclg(clogi(2),ilogi(2),chulp,chulp1,dyzp,
      +				ier)
@@ -600,10 +601,10 @@ c
 *
 *		first z-
 *
-		cdyzm = -cmipj(2,2)*DBLE(wp)/(2*DBLE(xpi(5))) -
-     +			cmipj(1,3)/(2*DBLE(sdel2))
+		cdyzm = -cmipj(2,2)*Re(wp)/(2*Re(xpi(5))) -
+     +			cmipj(1,3)/(2*Re(sdel2))
 		clog1 = zfflog(+cdyzm,-ieps,cone,ier)
-		if ( DBLE(cdyzm).lt.0.and.ieps*DIMAG(cdyzm).gt.0 ) then
+		if ( Re(cdyzm).lt.0.and.ieps*Im(cdyzm).gt.0 ) then
 		    clog1 = clog1 - ieps*c2ipi
 		endif
 		cs(13) = +clog1**2/2
@@ -611,10 +612,10 @@ c
 *
 *		now z+
 *
-		cdyzp = -cmipj(2,2)*DBLE(wm)/(2*DBLE(xpi(5))) -
-     +			cmipj(1,3)/(2*DBLE(sdel2))
+		cdyzp = -cmipj(2,2)*Re(wm)/(2*Re(xpi(5))) -
+     +			cmipj(1,3)/(2*Re(sdel2))
 		clog2 = zfflog(+cdyzp,+ieps,cone,ier)
-		if ( DBLE(cdyzp).lt.0.and.ieps*DIMAG(cdyzp).lt.0 ) then
+		if ( Re(cdyzp).lt.0.and.ieps*Im(cdyzp).lt.0 ) then
 		    clog2 = clog2 + ieps*c2ipi
 		endif
 		cs(14) = +clog2**2/2
@@ -623,18 +624,18 @@ c
 *		and ghe dilog
 *		
 		chulp = cdyzm/cdyzp
-		hulp = DBLE(dyzm)/DBLE(dyzp)
-		if ( DBLE(cdyzm) .lt. 0 ) then
+		hulp = Re(dyzm)/Re(dyzp)
+		if ( Re(cdyzm) .lt. 0 ) then
 		    ieps1 = -ieps
 		else
 		    ieps1 = +ieps
 		endif
-		if ( DIMAG(chulp ) .eq. 0 ) then
-		    hulp = DBLE(chulp)
+		if ( Im(chulp ) .eq. 0 ) then
+		    hulp = Re(chulp)
 		    call ffzxdl(cli,i,cdum(1),hulp,-ieps1,ier)
 		else
 		    call ffzzdl(cli,i,cdum(1),chulp,ier)
-		    if ( hulp.gt.1 .and. ieps1*DIMAG(chulp).gt.0 ) then
+		    if ( hulp.gt.1 .and. ieps1*Im(chulp).gt.0 ) then
 		      cli = cli - ieps1*c2ipi*zfflog(chulp,0,czero,ier)
 		    endif
 		endif
@@ -648,14 +649,14 @@ c
 			if ( cmipj(2,2) .eq. 0 ) then
 			    chulp = -1
 			    chulp1 = 0
-			elseif ( DBLE(cdyzp) .lt. DBLE(cdyzm) ) then
+			elseif ( Re(cdyzp) .lt. Re(cdyzm) ) then
 			    chulp = -cdyzm/cdyzp
-			    chulp1 = +cmipj(2,2)/cdyzp*DBLE(1/xpi(5))
-			elseif ( DBLE(cdyzp) .gt. DBLE(cdyzm) ) then
+			    chulp1 = +cmipj(2,2)/cdyzp*Re(1/xpi(5))
+			elseif ( Re(cdyzp) .gt. Re(cdyzm) ) then
 			    chulp = -cdyzp/cdyzm
-			    chulp1 = -cmipj(2,2)/cdyzm*DBLE(1/xpi(5))
+			    chulp1 = -cmipj(2,2)/cdyzm*Re(1/xpi(5))
 			endif
-			dyzp = DBLE(cdyzp)
+			dyzp = Re(cdyzp)
 			call ffxclg(clogi(2),ilogi(2),chulp,chulp1,dyzp,
      +				ier)
 		    endif
@@ -707,13 +708,13 @@ c
 *	arguments
 *
 	integer ilg,ier
-	DOUBLE PRECISION dyzp
-	DOUBLE COMPLEX clg,chulp,chulp1
+	RealType dyzp
+	ComplexType clg,chulp,chulp1
 *
 *	local variables
 *
-	DOUBLE PRECISION hulp,hulp1,dfflo1
-	DOUBLE COMPLEX zxfflg,zfflog,zfflo1
+	RealType hulp,hulp1,dfflo1
+	ComplexType zxfflg,zfflog,zfflo1
 	external dfflo1,zxfflg,zfflog,zfflo1
 *
 *	common blocks
@@ -723,11 +724,11 @@ c
 *  #] declarations:
 *  #[ work:
 *
-	if ( DIMAG(chulp) .eq. 0 ) then
-	    hulp = DBLE(chulp)
-	    hulp1 = DBLE(chulp1)
+	if ( Im(chulp) .eq. 0 ) then
+	    hulp = Re(chulp)
+	    hulp1 = Re(chulp1)
 	    if ( abs(hulp1) .lt. xloss ) then
-		clg = DBLE(dfflo1(hulp1,ier))
+		clg = Re(dfflo1(hulp1,ier))
 	    else
 		clg = zxfflg(abs(hulp),0,0D0,ier)
 	    endif
@@ -744,16 +745,16 @@ c
 *
 *	    may have to be improved
 *
-	    if ( abs(DBLE(chulp1))+abs(DIMAG(chulp1)) .lt. xloss ) then
+	    if ( abs(Re(chulp1))+abs(Im(chulp1)) .lt. xloss ) then
 		clg = zfflo1(chulp1,ier)
 	    else
 		clg = zfflog(chulp,0,czero,ier)
 	    endif
 	    ilg = 0
-	    if ( DBLE(chulp) .lt. 0 ) then
-		if ( dyzp.lt.0 .and. DIMAG(clg).lt.0 ) then
+	    if ( Re(chulp) .lt. 0 ) then
+		if ( dyzp.lt.0 .and. Im(clg).lt.0 ) then
 		    ilg = +2
-		elseif ( dyzp.gt.0 .and. DIMAG(clg).gt.0 ) then
+		elseif ( dyzp.gt.0 .and. Im(clg).gt.0 ) then
 		    ilg = -2
 		endif
 	    endif

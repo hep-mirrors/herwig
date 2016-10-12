@@ -16,27 +16,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "RPVhelper.h"
+
 using namespace Herwig;
-
-namespace {
-
-  unsigned int neutralinoIndex(long id) {
-    if(id> 1000000) {
-      return id<1000025 ? id-1000022 : (id-1000005)/10;
-    }
-    else if(abs(id)<=16) {
-      return (abs(id)-4)/2;
-    }
-    else {
-      return id-13;
-    }
-  }
-  
-  unsigned int charginoIndex(long id) {
-    return abs(id)>1000000 ? (abs(id)-1000024)/13 : (abs(id)-7)/2;
-  }
-
-}
 
 RPVFFZVertex::RPVFFZVertex()  : _sw(0.), _cw(0.), _id1last(0), 
 				_id2last(0), _q2last(), _couplast(0.),
@@ -236,8 +218,8 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	  _rightlast = -_gl[iferm];
 	}
 	else {
-	  ic1 = charginoIndex(iferm1);
-	  unsigned int ic2 = charginoIndex(iferm2);
+	  ic1 = RPV_helper::charginoIndex(iferm1);
+	  unsigned int ic2 = RPV_helper::charginoIndex(iferm2);
 	  _leftlast = -(*_theV)(ic1, 0)*conj((*_theV)(ic2, 0)) - 
 	    0.5*(*_theV)(ic1, 1)*conj((*_theV)(ic2, 1));
 	  _rightlast = -conj((*_theU)(ic1, 0))*(*_theU)(ic2, 0) - 
@@ -287,8 +269,8 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	if(ic1 != _id1last || ic2 != _id2last) {
 	  _id1last = ic1;
 	  _id2last = ic2;
-	  unsigned int neu1 = neutralinoIndex(ic1);
-	  unsigned int neu2 = neutralinoIndex(ic2);
+	  unsigned int neu1 = RPV_helper::neutralinoIndex(ic1);
+	  unsigned int neu2 = RPV_helper::neutralinoIndex(ic2);
 	  _leftlast = 0.5*( (*_theN)(neu1, 3)*conj((*_theN)(neu2, 3)) -
 			    (*_theN)(neu1, 2)*conj((*_theN)(neu2, 2)) );
 	  if(_theN->size().first>4) {

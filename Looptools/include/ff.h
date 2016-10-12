@@ -81,8 +81,8 @@
 *	fid3ij:	ier of dl3ij (is not included in F0)
 *	fidl4i:	ier of dl4i (is not included in F0)
 *
-	DOUBLE PRECISION xloss,precx,precc,xalogm,xclogm,xalog2,xclog2,
-     &		reqprc,pi,pi6,pi12,xlg2,bf(20),
+	RealType xloss,precx,precc,xalogm,xclogm,xalog2,xclog2,
+     &		reqprc,pi,pi6,pi12,xlg2,sqrt2,bf(20),
      &		xninv(30),xn2inv(30),xinfac(30),
      &		fpij2(3,3),fpij3(6,6),fpij4(10,10),fpij5(15,15),
      &		fpij6(21,21),fdel2,fdel3,fdel4s,fdel4,fdl3i(5),
@@ -101,7 +101,7 @@
 *	ca1:	(internal only) complex A1
 *	csdl2p: (internal only) complex transformed sqrt(del2)
 *
-	DOUBLE COMPLEX cI,czero,chalf,cone,c2ipi,cipi2,
+	ComplexType cI,czero,chalf,cone,c2ipi,cipi2,
      &		cfpij2(3,3),cfpij3(6,6),cfpij4(10,10),cfpij5(15,15),
      &		cfpij6(21,21),cmipj(3,3),c2sisj(4,4),cfdl4s,ca1
 *
@@ -130,7 +130,7 @@
      &		12),isgrot(10,12),irota3,irota4,irota5,irota6
 	integer idum93(2)
 *
-	DOUBLE PRECISION acc, eps
+	ComplexType cIeps
 *
 *	parameters
 *
@@ -145,8 +145,8 @@
      &		pi6 = 1.644934066848226436472415166646D0,
      &		pi12 = .822467033424113218236207583323D0,
      &		xlg2 = .6931471805599453094172321214581D0,
-     &          acc = 1D-12,
-     &          eps = 1D-25 )
+     &          sqrt2 = 1.4142135623730950488016887242096981D0,
+     &          cIeps = (0D0,1D-50) )
 *
 *	common
 *
@@ -168,12 +168,18 @@
 *
 *	regularization parameters
 *
-	DOUBLE PRECISION mudim,delta,lambda,minmass
-	common /ltregul/ mudim,delta,lambda,minmass
+	ComplexType mudimc
+	RealType delta, uvdiv, lambda, minmass
+	RealType diffeps, zeroeps
+	common /ltregul/ mudimc, delta, uvdiv, lambda, minmass,
+     &    diffeps, zeroeps
+
+	RealType mudim
+	equivalence (mudimc, mudim)
 *
 *	nan is used for undefined values and is supposed to
 *	"poison" a result, much as the IEEE NaN, which is just
 *	too unportable in Fortran
 *
-	DOUBLE COMPLEX nan
+	ComplexType nan
 	parameter (nan = (1D123, 1D123))

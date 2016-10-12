@@ -63,11 +63,11 @@ using namespace ThePEG;
    */
   typedef vector<tcPDPtr> IdList;
   
-  inline ShowerInteraction::Type convertInteraction(ShowerPartnerType::Type partner) {
-    if(partner==ShowerPartnerType::QCDColourLine ||
-       partner==ShowerPartnerType::QCDAntiColourLine)
+  inline ShowerInteraction convertInteraction(ShowerPartnerType partner) {
+    if (partner==ShowerPartnerType::QCDColourLine ||
+        partner==ShowerPartnerType::QCDAntiColourLine)
       return ShowerInteraction::QCD;
-    else if(ShowerPartnerType::QED)
+    else if (partner==ShowerPartnerType::QED)
       return ShowerInteraction::QED;
     else
       return ShowerInteraction::UNDEFINED;

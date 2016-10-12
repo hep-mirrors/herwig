@@ -30,7 +30,7 @@ default : LeptonME.so
 
 LeptonME.so: MEee2Higgs2SM.o MEee2Z.o
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
-	MEee2Higgs2SM.o MEee2Z.o $(SHARED_FLAG) $(LDFLAGS) -o LeptonME.so
+	MEee2Z.o $(SHARED_FLAG) $(LDFLAGS) -o LeptonME.so
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.o) LeptonME.so

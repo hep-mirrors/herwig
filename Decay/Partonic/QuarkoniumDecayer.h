@@ -12,7 +12,7 @@
 // This is the declaration of the QuarkoniumDecayer class.
 //
 
-#include <PartonicDecayerBase.h>
+#include "PartonicDecayerBase.h"
 
 namespace Herwig {
 using namespace ThePEG;

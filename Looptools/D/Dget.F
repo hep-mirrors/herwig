@@ -2,12 +2,44 @@
 * retrieve the four-point tensor coefficients
 * this file is part of LoopTools
 * improvements by M. Rauch
-* last modified 28 Sep 10 th
+* last modified 20 Jan 16 th
 
+#include "externals.h"
+#include "types.h"
+
+#define npoint 4
 #include "defs.h"
 
 
-	integer function XDget(p1, p2, p3, p4, p1p2, p2p3,
+	subroutine XDpara(para, p1, p2, p3, p4, p1p2, p2p3,
+     &    m1, m2, m3, m4)
+	implicit none
+	DVAR para(1,*)
+	DVAR p1, p2, p3, p4, p1p2, p2p3
+	DVAR m1, m2, m3, m4
+
+#include "lt.h"
+
+	P(1) = p1
+	P(2) = p2
+	P(3) = p3
+	P(4) = p4
+	P(5) = p1p2
+	P(6) = p2p3
+
+	M(1) = m1
+	if( abs(M(1)) .lt. minmass ) M(1) = 0
+	M(2) = m2
+	if( abs(M(2)) .lt. minmass ) M(2) = 0
+	M(3) = m3
+	if( abs(M(3)) .lt. minmass ) M(3) = 0
+	M(4) = m4
+	if( abs(M(4)) .lt. minmass ) M(4) = 0
+	end
+
+************************************************************************
+
+	memindex function XDget(p1, p2, p3, p4, p1p2, p2p3,
      &    m1, m2, m3, m4)
 	implicit none
 	DVAR p1, p2, p3, p4, p1p2, p2p3
@@ -15,32 +47,97 @@
 
 #include "lt.h"
 
-	integer cachelookup
-	external cachelookup, XDcoeff
+	memindex cacheindex
+	external cacheindex, XDcoefx
 
-	DVAR para(Pdd)
+#ifdef COMPLEXPARA
+	memindex Dget
+	external Dget
+#endif
 
-	para(1) = p1
-	para(2) = p2
-	para(3) = p3
-	para(4) = p4
-	para(5) = p1p2
-	para(6) = p2p3
-	para(7) = m1
-	if( abs(para(7)) .lt. minmass ) para(7) = 0
-	para(8) = m2
-	if( abs(para(8)) .lt. minmass ) para(8) = 0
-	para(9) = m3
-	if( abs(para(9)) .lt. minmass ) para(9) = 0
-	para(10) = m4
-	if( abs(para(10)) .lt. minmass ) para(10) = 0
+	DVAR para(1,Pdd+3)
 
-	XDget = cachelookup(para, Dval(1,0), XDcoeff, RC*Pdd, Ndd)
+#ifdef COMPLEXPARA
+	if( abs(Im(p1)) + abs(Im(p2)) +
+     &      abs(Im(p3)) + abs(Im(p4)) +
+     &      abs(Im(p1p2)) + abs(Im(p2p3)) .gt. 0 )
+     &    print *, "Complex momenta not implemented"
+	if( abs(Im(m1)) + abs(Im(m2)) +
+     &      abs(Im(m3)) + abs(Im(m4)) .eq. 0 ) then
+	  XDget = Dget(p1, p2, p3, p4, p1p2, p2p3,
+     &      m1, m2, m3, m4) - offsetC
+	  return
+	endif
+#endif
+
+	call XDpara(para, p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
+	XDget = cacheindex(para, Dval(1,0), XDcoefx, RC*Pdd, Ndd, Dno)
 	end
 
 ************************************************************************
 
-	double complex function XD0i(i, p1, p2, p3, p4, p1p2, p2p3,
+	subroutine XDput(res, p1, p2, p3, p4, p1p2, p2p3,
+     &    m1, m2, m3, m4)
+	implicit none
+	ComplexType res(*)
+	DVAR p1, p2, p3, p4, p1p2, p2p3
+	DVAR m1, m2, m3, m4
+
+#include "lt.h"
+
+	external XDcoefx
+
+	DVAR para(1,Pdd+3)
+
+#ifdef COMPLEXPARA
+	if( abs(Im(p1)) + abs(Im(p2)) +
+     &      abs(Im(p3)) + abs(Im(p4)) +
+     &      abs(Im(p1p2)) + abs(Im(p2p3)) .gt. 0 )
+     &    print *, "Complex momenta not implemented"
+	if( abs(Im(m1)) + abs(Im(m2)) +
+     &      abs(Im(m3)) + abs(Im(m4)) .eq. 0 ) then
+	  call Dput(res, p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
+	  return
+	endif
+#endif
+
+	call XDpara(para, p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
+	call cachecopy(res, para, Dval(1,0), XDcoefx, RC*Pdd, Ndd, Dno)
+	end
+
+************************************************************************
+
+	subroutine XD0nocache(res, p1, p2, p3, p4, p1p2, p2p3,
+     &    m1, m2, m3, m4)
+	implicit none
+	ComplexType res(*)
+	DVAR p1, p2, p3, p4, p1p2, p2p3
+	DVAR m1, m2, m3, m4
+
+#include "lt.h"
+
+	DVAR para(1,Pdd+3)
+
+#ifdef COMPLEXPARA
+	if( abs(Im(p1)) + abs(Im(p2)) +
+     &      abs(Im(p3)) + abs(Im(p4)) +
+     &      abs(Im(p1p2)) + abs(Im(p2p3)) .gt. 0 )
+     &    print *, "Complex momenta not implemented"
+	if( abs(Im(m1)) + abs(Im(m2)) +
+     &      abs(Im(m3)) + abs(Im(m4)) .eq. 0 ) then
+	  call D0nocache(res, p1, p2, p3, p4, p1p2, p2p3,
+     &      m1, m2, m3, m4)
+	  return
+	endif
+#endif
+
+	call XDpara(para, p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
+	call XD0func(res, para)
+	end
+
+************************************************************************
+
+	ComplexType function XD0i(i, p1, p2, p3, p4, p1p2, p2p3,
      &    m1, m2, m3, m4)
 	implicit none
 	integer i
@@ -49,391 +146,415 @@
 
 #include "lt.h"
 
-	integer XDget
+	memindex XDget
 	external XDget
 
-	integer b
+	memindex b
 
 	b = XDget(p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
-	XD0i = Dval(i,b)
+	XD0i = Dval(i+epsi,b)
 	end
 
 ************************************************************************
 
-	subroutine XDcoeff(para, D, ldpara)
+	ComplexType function XD0(p1, p2, p3, p4, p1p2, p2p3,
+     &    m1, m2, m3, m4)
 	implicit none
-	integer ldpara
-	DVAR para(ldpara,Pdd)
-	double complex D(Ndd)
+	DVAR p1, p2, p3, p4, p1p2, p2p3
+	DVAR m1, m2, m3, m4
 
 #include "lt.h"
 
-	integer XCget
-	double complex XD0
-	external XCget, XD0
+	ComplexType XD0i
+	external XD0i
+
+	XD0 = XD0i(dd0, p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
+	end
+
+************************************************************************
+
+	subroutine XDcoefx(D, para)
+	implicit none
+	ComplexType D(*)
+	DVAR para(1,*)
+
+#include "lt.h"
+
+	memindex c234, c134, c124, c123
+
+	memindex XCget
+	external XCget
+
+	c234 = XCget(P(2), P(3), P(6), M(2), M(3), M(4))
+	c134 = XCget(P(5), P(3), P(4), M(1), M(3), M(4))
+	c124 = XCget(P(1), P(6), P(4), M(1), M(2), M(4))
+	c123 = XCget(P(1), P(2), P(5), M(1), M(2), M(3))
+
+	call XDcoeff(D, para,
+     &    Cval(1,c234), Cval(1,c134), Cval(1,c124), Cval(1,c123))
+	end
+
+************************************************************************
+
+	subroutine XDcoeff(D, para, C234, C134, C124, C123)
+	implicit none
+	ComplexType D(*), C234(*), C134(*), C124(*), C123(*)
+	DVAR para(1,*)
+
+#include "lt.h"
 
 	DVAR p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4
 	DVAR f1, f2, f3
 	QVAR G(3,3)
-	double complex c0sum, c1sum, c2sum, csum
-	double complex c00sum, c11sum, c12sum, c22sum
-	double complex in(3)
-	integer C234, C134, C124, C123
+	ComplexType c0sum(0:2), c1sum(0:2), c2sum(0:2), csum(0:2)
+	ComplexType c00sum(0:2), c11sum(0:2), c12sum(0:2), c22sum(0:2)
+	ComplexType in(0:2,3)
 	logical dump
 
 #ifdef SOLVE_EIGEN
 	QVAR Ginv(3,3)
+#define IN(i) in(:,i)
 #define SOLVE_SETUP XInverse(3, G,3, Ginv,3)
-#define SOLVE(b) XSolve(3, G,3, Ginv,3, b)
+#define SOLVER(b) XSolve(3, G,3, Ginv,3, b)
 #else
 	integer perm(3)
-#define IN(i) in(perm(i))
+#define IN(i) in(:,perm(i))
 #define SOLVE_SETUP XDecomp(3, G,3, perm)
-#define SOLVE(b) XSolve(3, G,3, b)
+#define SOLVER(b) XSolve(3, G,3, b)
 #endif
+#define OUT(i) in(:,i)
 
-#ifdef COMPLEXPARA
-	if( abs(DIMAG(para(1,1))) +
-     &      abs(DIMAG(para(1,2))) +
-     &      abs(DIMAG(para(1,3))) +
-     &      abs(DIMAG(para(1,4))) +
-     &      abs(DIMAG(para(1,5))) +
-     &      abs(DIMAG(para(1,6))) .gt. 0 )
-     &    print *, "Warning: complex momenta not implemented"
-	if( abs(DIMAG(para(1,7))) +
-     &      abs(DIMAG(para(1,8))) +
-     &      abs(DIMAG(para(1,9))) +
-     &      abs(DIMAG(para(1,10))) .eq. 0 ) then
-	  call Dcoeff(para, D, 2)
-	  return
-	endif
-#endif
-
-	p1 = para(1,1)
-	p2 = para(1,2)
-	p3 = para(1,3)
-	p4 = para(1,4)
-	p1p2 = para(1,5)
-	p2p3 = para(1,6)
-	m1 = para(1,7)
-	m2 = para(1,8)
-	m3 = para(1,9)
-	m4 = para(1,10)
-
-	C234 = XCget(p2, p3, p2p3, m2, m3, m4)
-	C134 = XCget(p1p2, p3, p4, m1, m3, m4)
-	C124 = XCget(p1, p2p3, p4, m1, m2, m4)
-	C123 = XCget(p1, p2, p1p2, m1, m2, m3)
+	integer finite(0:2)
+	data finite /1, 0, 0/
 
 	serial = serial + 1
 	dump = ibits(debugkey, DebugD, 1) .ne. 0 .and.
      &    serial .ge. debugfrom .and. serial .le. debugto
-	if( dump ) call XDumpPara(4, para, ldpara, "Dcoeff")
+	if( dump ) call XDumpPara(4, para, "Dcoeff")
 
-	f1 = QPREC(m2) - QPREC(m1) - QPREC(p1)
-	f2 = QPREC(m3) - QPREC(m1) - QPREC(p1p2)
-	f3 = QPREC(m4) - QPREC(m1) - QPREC(p4)
+	m1 = M(1)
+	m2 = M(2)
+	m3 = M(3)
+	m4 = M(4)
+	p1 = P(1)
+	p2 = P(2)
+	p3 = P(3)
+	p4 = P(4)
+	p1p2 = P(5)
+	p2p3 = P(6)
 
-	G(1,1) = 2*QPREC(p1)
-	G(2,2) = 2*QPREC(p1p2)
-	G(3,3) = 2*QPREC(p4)
-	G(1,2) = QPREC(p1) + QPREC(p1p2) - QPREC(p2)
+	f1 = m2
+	  f1 = f1 - m1
+	  f1 = f1 - p1
+	f2 = m3
+	  f2 = f2 - m1
+	  f2 = f2 - p1p2
+	f3 = m4
+	  f3 = f3 - m1
+	  f3 = f3 - p4
+
+	G(1,1) = 2*p1
+	G(2,2) = 2*p1p2
+	G(3,3) = 2*p4
+	G(1,2) = p1
+	  G(1,2) = G(1,2) + p1p2
+	  G(1,2) = G(1,2) - p2
 	G(2,1) = G(1,2)
-	G(1,3) = QPREC(p1) + QPREC(p4) - QPREC(p2p3)
+	G(1,3) = p1
+	  G(1,3) = G(1,3) + p4
+	  G(1,3) = G(1,3) - p2p3
 	G(3,1) = G(1,3)
-	G(2,3) = QPREC(p1p2) - QPREC(p3) + QPREC(p4)
+	G(2,3) = p1p2
+	  G(2,3) = G(2,3) - p3
+	  G(2,3) = G(2,3) + p4
 	G(3,2) = G(2,3)
 	call SOLVE_SETUP
 
-	c0sum = Cval(cc0,C234) + Cval(cc1,C234) + Cval(cc2,C234)
-	c1sum = Cval(cc1,C234) + Cval(cc11,C234) + Cval(cc12,C234)
-	c2sum = Cval(cc2,C234) + Cval(cc12,C234) + Cval(cc22,C234)
+	c0sum = C234(CC0) + C234(CC1) + C234(CC2)
+	c1sum = C234(CC1) + C234(CC11) + C234(CC12)
+	c2sum = C234(CC2) + C234(CC12) + C234(CC22)
 	csum = c0sum + c1sum + c2sum
 
-	c00sum = Cval(cc00,C234) +
-     &    Cval(cc001,C234) + Cval(cc002,C234)
-	c11sum = Cval(cc11,C234) +
-     &    Cval(cc111,C234) + Cval(cc112,C234)
-	c12sum = Cval(cc12,C234) +
-     &    Cval(cc112,C234) + Cval(cc122,C234)
-	c22sum = Cval(cc22,C234) +
-     &    Cval(cc122,C234) + Cval(cc222,C234)
+	c00sum = C234(CC00) + C234(CC001) + C234(CC002)
+	c11sum = C234(CC11) + C234(CC111) + C234(CC112)
+	c12sum = C234(CC12) + C234(CC112) + C234(CC122)
+	c22sum = C234(CC22) + C234(CC122) + C234(CC222)
 
-	D(dd0) = XD0(p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)
+	call XD0func(D(DD0), para)
 
-	IN(1) = f1*D(dd0) - Cval(cc0,C234) + Cval(cc0,C134)
-	IN(2) = f2*D(dd0) - Cval(cc0,C234) + Cval(cc0,C124)
-	IN(3) = f3*D(dd0) - Cval(cc0,C234) + Cval(cc0,C123)
-	call SOLVE(in)
-	D(dd1) = in(1)
-	D(dd2) = in(2)
-	D(dd3) = in(3)
+	IN(1) = f1*D(DD0) - C234(CC0) + C134(CC0)
+	IN(2) = f2*D(DD0) - C234(CC0) + C124(CC0)
+	IN(3) = f3*D(DD0) - C234(CC0) + C123(CC0)
+	call SOLVER(in)
+	D(DD1) = OUT(1)
+	D(DD2) = OUT(2)
+	D(DD3) = OUT(3)
 
-	D(dd00) = m1*D(dd0) - .5D0*
-     &    (D(dd1)*f1 + D(dd2)*f2 + D(dd3)*f3 - Cval(cc0,C234))
+	D(DD00) = m1*D(DD0) - .5D0*
+     &    (D(DD1)*f1 + D(DD2)*f2 + D(DD3)*f3 - C234(CC0))
 
-	IN(1) = f1*D(dd1) + c0sum - 2*D(dd00)
-	IN(2) = f2*D(dd1) + c0sum + Cval(cc1,C124)
-	IN(3) = f3*D(dd1) + c0sum + Cval(cc1,C123)
-	call SOLVE(in)
-	D(dd11) = in(1)
-	D(dd12) = in(2)
-	D(dd13) = in(3)
+	IN(1) = f1*D(DD1) + c0sum - 2*D(DD00)
+	IN(2) = f2*D(DD1) + c0sum + C124(CC1)
+	IN(3) = f3*D(DD1) + c0sum + C123(CC1)
+	call SOLVER(in)
+	D(DD11) = OUT(1)
+	D(DD12) = OUT(2)
+	D(DD13) = OUT(3)
 
-	IN(1) = f1*D(dd2) - Cval(cc1,C234) + Cval(cc1,C134)
-	IN(2) = f2*D(dd2) - Cval(cc1,C234) - 2*D(dd00)
-	IN(3) = f3*D(dd2) - Cval(cc1,C234) + Cval(cc2,C123)
-	call SOLVE(in)
-	D(dd12) = .5D0*(D(dd12) + in(1))
-	D(dd22) = in(2)
-	D(dd23) = in(3)
+	IN(1) = f1*D(DD2) - C234(CC1) + C134(CC1)
+	IN(2) = f2*D(DD2) - C234(CC1) - 2*D(DD00)
+	IN(3) = f3*D(DD2) - C234(CC1) + C123(CC2)
+	call SOLVER(in)
+	D(DD12) = .5D0*(D(DD12) + OUT(1))
+	D(DD22) = OUT(2)
+	D(DD23) = OUT(3)
 
-	IN(1) = f1*D(dd3) - Cval(cc2,C234) + Cval(cc2,C134)
-	IN(2) = f2*D(dd3) - Cval(cc2,C234) + Cval(cc2,C124)
-	IN(3) = f3*D(dd3) - Cval(cc2,C234) - 2*D(dd00)
-	call SOLVE(in)
-	D(dd13) = .5D0*(D(dd13) + in(1))
-	D(dd23) = .5D0*(D(dd23) + in(2))
-	D(dd33) = in(3)
+	IN(1) = f1*D(DD3) - C234(CC2) + C134(CC2)
+	IN(2) = f2*D(DD3) - C234(CC2) + C124(CC2)
+	IN(3) = f3*D(DD3) - C234(CC2) - 2*D(DD00)
+	call SOLVER(in)
+	D(DD13) = .5D0*(D(DD13) + OUT(1))
+	D(DD23) = .5D0*(D(DD23) + OUT(2))
+	D(DD33) = OUT(3)
 
-	IN(1) = f1*D(dd00) - Cval(cc00,C234) + Cval(cc00,C134)
-	IN(2) = f2*D(dd00) - Cval(cc00,C234) + Cval(cc00,C124)
-	IN(3) = f3*D(dd00) - Cval(cc00,C234) + Cval(cc00,C123)
-	call SOLVE(in)
-	D(dd001) = in(1)
-	D(dd002) = in(2)
-	D(dd003) = in(3)
+	IN(1) = f1*D(DD00) - C234(CC00) + C134(CC00)
+	IN(2) = f2*D(DD00) - C234(CC00) + C124(CC00)
+	IN(3) = f3*D(DD00) - C234(CC00) + C123(CC00)
+	call SOLVER(in)
+	D(DD001) = OUT(1)
+	D(DD002) = OUT(2)
+	D(DD003) = OUT(3)
 
-	IN(1) = f1*D(dd11) - csum - 4*D(dd001)
-	IN(2) = f2*D(dd11) - csum + Cval(cc11,C124)
-	IN(3) = f3*D(dd11) - csum + Cval(cc11,C123)
-	call SOLVE(in)
-	D(dd111) = in(1)
-	D(dd112) = in(2)
-	D(dd113) = in(3)
+	IN(1) = f1*D(DD11) - csum - 4*D(DD001)
+	IN(2) = f2*D(DD11) - csum + C124(CC11)
+	IN(3) = f3*D(DD11) - csum + C123(CC11)
+	call SOLVER(in)
+	D(DD111) = OUT(1)
+	D(DD112) = OUT(2)
+	D(DD113) = OUT(3)
 
-	IN(1) = f1*D(dd22) - Cval(cc11,C234) + Cval(cc11,C134)
-	IN(2) = f2*D(dd22) - Cval(cc11,C234) - 4*D(dd002)
-	IN(3) = f3*D(dd22) - Cval(cc11,C234) + Cval(cc22,C123)
-	call SOLVE(in)
-	D(dd122) = in(1)
-	D(dd222) = in(2)
-	D(dd223) = in(3)
+	IN(1) = f1*D(DD22) - C234(CC11) + C134(CC11)
+	IN(2) = f2*D(DD22) - C234(CC11) - 4*D(DD002)
+	IN(3) = f3*D(DD22) - C234(CC11) + C123(CC22)
+	call SOLVER(in)
+	D(DD122) = OUT(1)
+	D(DD222) = OUT(2)
+	D(DD223) = OUT(3)
 
-	IN(1) = f1*D(dd33) - Cval(cc22,C234) + Cval(cc22,C134)
-	IN(2) = f2*D(dd33) - Cval(cc22,C234) + Cval(cc22,C124)
-	IN(3) = f3*D(dd33) - Cval(cc22,C234) - 4*D(dd003)
-	call SOLVE(in)
-	D(dd133) = in(1)
-	D(dd233) = in(2)
-	D(dd333) = in(3)
+	IN(1) = f1*D(DD33) - C234(CC22) + C134(CC22)
+	IN(2) = f2*D(DD33) - C234(CC22) + C124(CC22)
+	IN(3) = f3*D(DD33) - C234(CC22) - 4*D(DD003)
+	call SOLVER(in)
+	D(DD133) = OUT(1)
+	D(DD233) = OUT(2)
+	D(DD333) = OUT(3)
 
-	IN(1) = f1*D(dd13) + c2sum - 2*D(dd003)
-	IN(2) = f2*D(dd13) + c2sum + Cval(cc12,C124)
-	IN(3) = f3*D(dd13) + c2sum - 2*D(dd001)
-	call SOLVE(in)
-	D(dd113) = .5D0*(D(dd113) + in(1))
-	D(dd123) = in(2)
-	D(dd133) = .5D0*(D(dd133) + in(3))
+	IN(1) = f1*D(DD13) + c2sum - 2*D(DD003)
+	IN(2) = f2*D(DD13) + c2sum + C124(CC12)
+	IN(3) = f3*D(DD13) + c2sum - 2*D(DD001)
+	call SOLVER(in)
+	D(DD113) = .5D0*(D(DD113) + OUT(1))
+	D(DD123) = OUT(2)
+	D(DD133) = .5D0*(D(DD133) + OUT(3))
 
-	D(dd0000) = 1/3D0*(m1*D(dd00) -
-     &    .5D0*(f1*D(dd001) + f2*D(dd002) + f3*D(dd003) -
-     &      Cval(cc00,C234) - 1/6D0))
-	D(dd0011) = 1/3D0*(m1*D(dd11) -
-     &    .5D0*(f1*D(dd111) + f2*D(dd112) + f3*D(dd113) - csum))
-	D(dd0012) = 1/3D0*(m1*D(dd12) -
-     &    .5D0*(f1*D(dd112) + f2*D(dd122) + f3*D(dd123) + c1sum))
-	D(dd0013) = 1/3D0*(m1*D(dd13) -
-     &    .5D0*(f1*D(dd113) + f2*D(dd123) + f3*D(dd133) + c2sum))
-	D(dd0022) = 1/3D0*(m1*D(dd22) -
-     &    .5D0*(f1*D(dd122) + f2*D(dd222) + f3*D(dd223) -
-     &      Cval(cc11,C234)))
-	D(dd0023) = 1/3D0*(m1*D(dd23) -
-     &    .5D0*(f1*D(dd123) + f2*D(dd223) + f3*D(dd233) -
-     &      Cval(cc12,C234)))
-	D(dd0033) = 1/3D0*(m1*D(dd33) -
-     &    .5D0*(f1*D(dd133) + f2*D(dd233) + f3*D(dd333) -
-     &      Cval(cc22,C234)))
+	D(DD0000) = 1/3D0*(m1*D(DD00) -
+     &    .5D0*(f1*D(DD001) + f2*D(DD002) + f3*D(DD003) -
+     &      C234(CC00) - finite/6D0))
+	D(DD0011) = 1/3D0*(m1*D(DD11) -
+     &    .5D0*(f1*D(DD111) + f2*D(DD112) + f3*D(DD113) - csum))
+	D(DD0012) = 1/3D0*(m1*D(DD12) -
+     &    .5D0*(f1*D(DD112) + f2*D(DD122) + f3*D(DD123) + c1sum))
+	D(DD0013) = 1/3D0*(m1*D(DD13) -
+     &    .5D0*(f1*D(DD113) + f2*D(DD123) + f3*D(DD133) + c2sum))
+	D(DD0022) = 1/3D0*(m1*D(DD22) -
+     &    .5D0*(f1*D(DD122) + f2*D(DD222) + f3*D(DD223) -
+     &      C234(CC11)))
+	D(DD0023) = 1/3D0*(m1*D(DD23) -
+     &    .5D0*(f1*D(DD123) + f2*D(DD223) + f3*D(DD233) -
+     &      C234(CC12)))
+	D(DD0033) = 1/3D0*(m1*D(DD33) -
+     &    .5D0*(f1*D(DD133) + f2*D(DD233) + f3*D(DD333) -
+     &      C234(CC22)))
 
 	c1sum = c1sum + c11sum + c12sum
 	c2sum = c2sum + c12sum + c22sum
 	csum = csum + c1sum + c2sum
 
-	IN(1) = f1*D(dd111) + csum - 6*D(dd0011)
-	IN(2) = f2*D(dd111) + csum + Cval(cc111,C124)
-	IN(3) = f3*D(dd111) + csum + Cval(cc111,C123)
-	call SOLVE(in)
-	D(dd1111) = in(1)
-	D(dd1112) = in(2)
-	D(dd1113) = in(3)
+	IN(1) = f1*D(DD111) + csum - 6*D(DD0011)
+	IN(2) = f2*D(DD111) + csum + C124(CC111)
+	IN(3) = f3*D(DD111) + csum + C123(CC111)
+	call SOLVER(in)
+	D(DD1111) = OUT(1)
+	D(DD1112) = OUT(2)
+	D(DD1113) = OUT(3)
 
-	IN(1) = f1*D(dd113) - c2sum - 4*D(dd0013)
-	IN(2) = f2*D(dd113) - c2sum + Cval(cc112,C124)
-	IN(3) = f3*D(dd113) - c2sum - 2*D(dd0011)
-	call SOLVE(in)
-	D(dd1113) = .5D0*(D(dd1113) + in(1))
-	D(dd1123) = in(2)
-	D(dd1133) = in(3)
+	IN(1) = f1*D(DD113) - c2sum - 4*D(DD0013)
+	IN(2) = f2*D(DD113) - c2sum + C124(CC112)
+	IN(3) = f3*D(DD113) - c2sum - 2*D(DD0011)
+	call SOLVER(in)
+	D(DD1113) = .5D0*(D(DD1113) + OUT(1))
+	D(DD1123) = OUT(2)
+	D(DD1133) = OUT(3)
 
-	IN(1) = f1*D(dd122) + c11sum - 2*D(dd0022)
-	IN(2) = f2*D(dd122) + c11sum - 4*D(dd0012)
-	IN(3) = f3*D(dd122) + c11sum + Cval(cc122,C123)
-	call SOLVE(in)
-	D(dd1122) = in(1)
-	D(dd1222) = in(2)
-	D(dd1223) = in(3)
+	IN(1) = f1*D(DD122) + c11sum - 2*D(DD0022)
+	IN(2) = f2*D(DD122) + c11sum - 4*D(DD0012)
+	IN(3) = f3*D(DD122) + c11sum + C123(CC122)
+	call SOLVER(in)
+	D(DD1122) = OUT(1)
+	D(DD1222) = OUT(2)
+	D(DD1223) = OUT(3)
 
-	IN(1) = f1*D(dd222) - Cval(cc111,C234) + Cval(cc111,C134)
-	IN(2) = f2*D(dd222) - Cval(cc111,C234) - 6*D(dd0022)
-	IN(3) = f3*D(dd222) - Cval(cc111,C234) + Cval(cc222,C123)
-	call SOLVE(in)
-	D(dd1222) = .5D0*(D(dd1222) + in(1))
-	D(dd2222) = in(2)
-	D(dd2223) = in(3)
+	IN(1) = f1*D(DD222) - C234(CC111) + C134(CC111)
+	IN(2) = f2*D(DD222) - C234(CC111) - 6*D(DD0022)
+	IN(3) = f3*D(DD222) - C234(CC111) + C123(CC222)
+	call SOLVER(in)
+	D(DD1222) = .5D0*(D(DD1222) + OUT(1))
+	D(DD2222) = OUT(2)
+	D(DD2223) = OUT(3)
 
-	IN(1) = f1*D(dd233) - Cval(cc122,C234) + Cval(cc122,C134)
-	IN(2) = f2*D(dd233) - Cval(cc122,C234) - 2*D(dd0033)
-	IN(3) = f3*D(dd233) - Cval(cc122,C234) - 4*D(dd0023)
-	call SOLVE(in)
-	D(dd1233) = in(1)
-	D(dd2233) = in(2)
-	D(dd2333) = in(3)
+	IN(1) = f1*D(DD233) - C234(CC122) + C134(CC122)
+	IN(2) = f2*D(DD233) - C234(CC122) - 2*D(DD0033)
+	IN(3) = f3*D(DD233) - C234(CC122) - 4*D(DD0023)
+	call SOLVER(in)
+	D(DD1233) = OUT(1)
+	D(DD2233) = OUT(2)
+	D(DD2333) = OUT(3)
 
-	IN(1) = f1*D(dd333) - Cval(cc222,C234) + Cval(cc222,C134)
-	IN(2) = f2*D(dd333) - Cval(cc222,C234) + Cval(cc222,C124)
-	IN(3) = f3*D(dd333) - Cval(cc222,C234) - 6*D(dd0033)
-	call SOLVE(in)
-	D(dd1333) = in(1)
-	D(dd2333) = .5D0*(D(dd2333) + in(2))
-	D(dd3333) = in(3)
+	IN(1) = f1*D(DD333) - C234(CC222) + C134(CC222)
+	IN(2) = f2*D(DD333) - C234(CC222) + C124(CC222)
+	IN(3) = f3*D(DD333) - C234(CC222) - 6*D(DD0033)
+	call SOLVER(in)
+	D(DD1333) = OUT(1)
+	D(DD2333) = .5D0*(D(DD2333) + OUT(2))
+	D(DD3333) = OUT(3)
 
 	c00sum = c00sum +
-     &    Cval(cc001,C234) + Cval(cc0011,C234) + Cval(cc0012,C234) +
-     &    Cval(cc002,C234) + Cval(cc0012,C234) + Cval(cc0022,C234)
+     &    C234(CC001) + C234(CC0011) + C234(CC0012) +
+     &    C234(CC002) + C234(CC0012) + C234(CC0022)
 	c11sum = c11sum +
-     &    Cval(cc111,C234) + Cval(cc1111,C234) + Cval(cc1112,C234) +
-     &    Cval(cc112,C234) + Cval(cc1112,C234) + Cval(cc1122,C234)
+     &    C234(CC111) + C234(CC1111) + C234(CC1112) +
+     &    C234(CC112) + C234(CC1112) + C234(CC1122)
 	c12sum = c12sum +
-     &    Cval(cc112,C234) + Cval(cc1112,C234) + Cval(cc1122,C234) +
-     &    Cval(cc122,C234) + Cval(cc1122,C234) + Cval(cc1222,C234)
+     &    C234(CC112) + C234(CC1112) + C234(CC1122) +
+     &    C234(CC122) + C234(CC1122) + C234(CC1222)
 	c22sum = c22sum +
-     &    Cval(cc122,C234) + Cval(cc1122,C234) + Cval(cc1222,C234) +
-     &    Cval(cc222,C234) + Cval(cc1222,C234) + Cval(cc2222,C234)
+     &    C234(CC122) + C234(CC1122) + C234(CC1222) +
+     &    C234(CC222) + C234(CC1222) + C234(CC2222)
 	c1sum = c1sum + c11sum + c12sum
 	c2sum = c2sum + c12sum + c22sum
 	csum = csum + c1sum + c2sum
 
-	IN(1) = f1*D(dd0000) - Cval(cc0000,C234) + Cval(cc0000,C134)
-	IN(2) = f2*D(dd0000) - Cval(cc0000,C234) + Cval(cc0000,C124)
-	IN(3) = f3*D(dd0000) - Cval(cc0000,C234) + Cval(cc0000,C123)
-	call SOLVE(in)
-	D(dd00001) = in(1)
-	D(dd00002) = in(2)
-	D(dd00003) = in(3)
+	IN(1) = f1*D(DD0000) - C234(CC0000) + C134(CC0000)
+	IN(2) = f2*D(DD0000) - C234(CC0000) + C124(CC0000)
+	IN(3) = f3*D(DD0000) - C234(CC0000) + C123(CC0000)
+	call SOLVER(in)
+	D(DD00001) = OUT(1)
+	D(DD00002) = OUT(2)
+	D(DD00003) = OUT(3)
 
-	IN(1) = f1*D(dd0011) - c00sum - 4*D(dd00001)
-	IN(2) = f2*D(dd0011) - c00sum + Cval(cc0011,C124)
-	IN(3) = f3*D(dd0011) - c00sum + Cval(cc0011,C123)
-	call SOLVE(in)
-	D(dd00111) = in(1)
-	D(dd00112) = in(2)
-	D(dd00113) = in(3)
+	IN(1) = f1*D(DD0011) - c00sum - 4*D(DD00001)
+	IN(2) = f2*D(DD0011) - c00sum + C124(CC0011)
+	IN(3) = f3*D(DD0011) - c00sum + C123(CC0011)
+	call SOLVER(in)
+	D(DD00111) = OUT(1)
+	D(DD00112) = OUT(2)
+	D(DD00113) = OUT(3)
 
-	IN(1) = f1*D(dd0022) - Cval(cc0011,C234) + Cval(cc0011,C134)
-	IN(2) = f2*D(dd0022) - Cval(cc0011,C234) - 4*D(dd00002)
-	IN(3) = f3*D(dd0022) - Cval(cc0011,C234) + Cval(cc0022,C123)
-	call SOLVE(in)
-	D(dd00122) = in(1)
-	D(dd00222) = in(2)
-	D(dd00223) = in(3)
+	IN(1) = f1*D(DD0022) - C234(CC0011) + C134(CC0011)
+	IN(2) = f2*D(DD0022) - C234(CC0011) - 4*D(DD00002)
+	IN(3) = f3*D(DD0022) - C234(CC0011) + C123(CC0022)
+	call SOLVER(in)
+	D(DD00122) = OUT(1)
+	D(DD00222) = OUT(2)
+	D(DD00223) = OUT(3)
 
-	IN(1) = f1*D(dd0033) - Cval(cc0022,C234) + Cval(cc0022,C134)
-	IN(2) = f2*D(dd0033) - Cval(cc0022,C234) + Cval(cc0022,C124)
-	IN(3) = f3*D(dd0033) - Cval(cc0022,C234) - 4*D(dd00003)
-	call SOLVE(in)
-	D(dd00133) = in(1)
-	D(dd00233) = in(2)
-	D(dd00333) = in(3)
+	IN(1) = f1*D(DD0033) - C234(CC0022) + C134(CC0022)
+	IN(2) = f2*D(DD0033) - C234(CC0022) + C124(CC0022)
+	IN(3) = f3*D(DD0033) - C234(CC0022) - 4*D(DD00003)
+	call SOLVER(in)
+	D(DD00133) = OUT(1)
+	D(DD00233) = OUT(2)
+	D(DD00333) = OUT(3)
 
-	IN(1) = f1*D(dd0023) - Cval(cc0012,C234) + Cval(cc0012,C134)
-	IN(2) = f2*D(dd0023) - Cval(cc0012,C234) - 2*D(dd00003)
-	IN(3) = f3*D(dd0023) - Cval(cc0012,C234) - 2*D(dd00002)
-	call SOLVE(in)
-	D(dd00123) = in(1)
-	D(dd00223) = .5D0*(D(dd00223) + in(2))
-	D(dd00233) = .5D0*(D(dd00233) + in(3))
+	IN(1) = f1*D(DD0023) - C234(CC0012) + C134(CC0012)
+	IN(2) = f2*D(DD0023) - C234(CC0012) - 2*D(DD00003)
+	IN(3) = f3*D(DD0023) - C234(CC0012) - 2*D(DD00002)
+	call SOLVER(in)
+	D(DD00123) = OUT(1)
+	D(DD00223) = .5D0*(D(DD00223) + OUT(2))
+	D(DD00233) = .5D0*(D(DD00233) + OUT(3))
 
-	IN(1) = f1*D(dd1111) - csum - 8*D(dd00111)
-	IN(2) = f2*D(dd1111) - csum + Cval(cc1111,C124)
-	IN(3) = f3*D(dd1111) - csum + Cval(cc1111,C123)
-	call SOLVE(in)
-	D(dd11111) = in(1)
-	D(dd11112) = in(2)
-	D(dd11113) = in(3)
+	IN(1) = f1*D(DD1111) - csum - 8*D(DD00111)
+	IN(2) = f2*D(DD1111) - csum + C124(CC1111)
+	IN(3) = f3*D(DD1111) - csum + C123(CC1111)
+	call SOLVER(in)
+	D(DD11111) = OUT(1)
+	D(DD11112) = OUT(2)
+	D(DD11113) = OUT(3)
 
-	IN(1) = f1*D(dd2222) - Cval(cc1111,C234) + Cval(cc1111,C134)
-	IN(2) = f2*D(dd2222) - Cval(cc1111,C234) - 8*D(dd00222)
-	IN(3) = f3*D(dd2222) - Cval(cc1111,C234) + Cval(cc2222,C123)
-	call SOLVE(in)
-	D(dd12222) = in(1)
-	D(dd22222) = in(2)
-	D(dd22223) = in(3)
+	IN(1) = f1*D(DD2222) - C234(CC1111) + C134(CC1111)
+	IN(2) = f2*D(DD2222) - C234(CC1111) - 8*D(DD00222)
+	IN(3) = f3*D(DD2222) - C234(CC1111) + C123(CC2222)
+	call SOLVER(in)
+	D(DD12222) = OUT(1)
+	D(DD22222) = OUT(2)
+	D(DD22223) = OUT(3)
 
-	IN(1) = f1*D(dd3333) - Cval(cc2222,C234) + Cval(cc2222,C134)
-	IN(2) = f2*D(dd3333) - Cval(cc2222,C234) + Cval(cc2222,C124)
-	IN(3) = f3*D(dd3333) - Cval(cc2222,C234) - 8*D(dd00333)
-	call SOLVE(in)
-	D(dd13333) = in(1)
-	D(dd23333) = in(2)
-	D(dd33333) = in(3)
+	IN(1) = f1*D(DD3333) - C234(CC2222) + C134(CC2222)
+	IN(2) = f2*D(DD3333) - C234(CC2222) + C124(CC2222)
+	IN(3) = f3*D(DD3333) - C234(CC2222) - 8*D(DD00333)
+	call SOLVER(in)
+	D(DD13333) = OUT(1)
+	D(DD23333) = OUT(2)
+	D(DD33333) = OUT(3)
 
-	IN(1) = f1*D(dd1122) - c11sum - 4*D(dd00122)
-	IN(2) = f2*D(dd1122) - c11sum - 4*D(dd00112)
-	IN(3) = f3*D(dd1122) - c11sum + Cval(cc1122,C123)
-	call SOLVE(in)
-	D(dd11122) = in(1)
-	D(dd11222) = in(2)
-	D(dd11223) = in(3)
+	IN(1) = f1*D(DD1122) - c11sum - 4*D(DD00122)
+	IN(2) = f2*D(DD1122) - c11sum - 4*D(DD00112)
+	IN(3) = f3*D(DD1122) - c11sum + C123(CC1122)
+	call SOLVER(in)
+	D(DD11122) = OUT(1)
+	D(DD11222) = OUT(2)
+	D(DD11223) = OUT(3)
 
-	IN(1) = f1*D(dd1133) - c22sum - 4*D(dd00133)
-	IN(2) = f2*D(dd1133) - c22sum + Cval(cc1122,C124)
-	IN(3) = f3*D(dd1133) - c22sum - 4*D(dd00113)
-	call SOLVE(in)
-	D(dd11133) = in(1)
-	D(dd11233) = in(2)
-	D(dd11333) = in(3)
+	IN(1) = f1*D(DD1133) - c22sum - 4*D(DD00133)
+	IN(2) = f2*D(DD1133) - c22sum + C124(CC1122)
+	IN(3) = f3*D(DD1133) - c22sum - 4*D(DD00113)
+	call SOLVER(in)
+	D(DD11133) = OUT(1)
+	D(DD11233) = OUT(2)
+	D(DD11333) = OUT(3)
 
-	IN(1) = f1*D(dd2233) - Cval(cc1122,C234) + Cval(cc1122,C134)
-	IN(2) = f2*D(dd2233) - Cval(cc1122,C234) - 4*D(dd00233)
-	IN(3) = f3*D(dd2233) - Cval(cc1122,C234) - 4*D(dd00223)
-	call SOLVE(in)
-	D(dd12233) = in(1)
-	D(dd22233) = in(2)
-	D(dd22333) = in(3)
+	IN(1) = f1*D(DD2233) - C234(CC1122) + C134(CC1122)
+	IN(2) = f2*D(DD2233) - C234(CC1122) - 4*D(DD00233)
+	IN(3) = f3*D(DD2233) - C234(CC1122) - 4*D(DD00223)
+	call SOLVER(in)
+	D(DD12233) = OUT(1)
+	D(DD22233) = OUT(2)
+	D(DD22333) = OUT(3)
 
-	IN(1) = f1*D(dd1123) - c12sum - 4*D(dd00123)
-	IN(2) = f2*D(dd1123) - c12sum - 2*D(dd00113)
-	IN(3) = f3*D(dd1123) - c12sum - 2*D(dd00112)
-	call SOLVE(in)
-	D(dd11123) = in(1)
-	D(dd11223) = .5D0*(D(dd11223) + in(2))
-	D(dd11233) = .5D0*(D(dd11233) + in(3))
+	IN(1) = f1*D(DD1123) - c12sum - 4*D(DD00123)
+	IN(2) = f2*D(DD1123) - c12sum - 2*D(DD00113)
+	IN(3) = f3*D(DD1123) - c12sum - 2*D(DD00112)
+	call SOLVER(in)
+	D(DD11123) = OUT(1)
+	D(DD11223) = .5D0*(D(DD11223) + OUT(2))
+	D(DD11233) = .5D0*(D(DD11233) + OUT(3))
 
-	IN(1) = f1*D(dd2223) - Cval(cc1112,C234) + Cval(cc1112,C134)
-	IN(2) = f2*D(dd2223) - Cval(cc1112,C234) - 6*D(dd00223)
-	IN(3) = f3*D(dd2223) - Cval(cc1112,C234) - 2*D(dd00222)
-	call SOLVE(in)
-	D(dd12223) = in(1)
-	D(dd22223) = .5D0*(D(dd22223) + in(2))
-	D(dd22233) = .5D0*(D(dd22233) + in(3))
+	IN(1) = f1*D(DD2223) - C234(CC1112) + C134(CC1112)
+	IN(2) = f2*D(DD2223) - C234(CC1112) - 6*D(DD00223)
+	IN(3) = f3*D(DD2223) - C234(CC1112) - 2*D(DD00222)
+	call SOLVER(in)
+	D(DD12223) = OUT(1)
+	D(DD22223) = .5D0*(D(DD22223) + OUT(2))
+	D(DD22233) = .5D0*(D(DD22233) + OUT(3))
 
-	IN(1) = f1*D(dd2333) - Cval(cc1222,C234) + Cval(cc1222,C134)
-	IN(2) = f2*D(dd2333) - Cval(cc1222,C234) - 2*D(dd00333)
-	IN(3) = f3*D(dd2333) - Cval(cc1222,C234) - 6*D(dd00233)
-	call SOLVE(in)
-	D(dd12333) = in(1)
-	D(dd22333) = .5D0*(D(dd22333) + in(2))
-	D(dd23333) = .5D0*(D(dd23333) + in(3))
+	IN(1) = f1*D(DD2333) - C234(CC1222) + C134(CC1222)
+	IN(2) = f2*D(DD2333) - C234(CC1222) - 2*D(DD00333)
+	IN(3) = f3*D(DD2333) - C234(CC1222) - 6*D(DD00233)
+	call SOLVER(in)
+	D(DD12333) = OUT(1)
+	D(DD22333) = .5D0*(D(DD22333) + OUT(2))
+	D(DD23333) = .5D0*(D(DD23333) + OUT(3))
 
 	if( dump ) call XDumpCoeff(4, D)
 	end

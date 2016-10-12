@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *--#[ log:
@@ -50,13 +51,13 @@ c
 *	arguments:
 *
 	integer irota,ier,ii,itype
-	DOUBLE PRECISION del2,xpi(13),dpipj(10,13),piDpj(10,10),
+	RealType del2,xpi(13),dpipj(10,13),piDpj(10,10),
      +		xqi(13),dqiqj(10,13),qiDqj(10,10)
 *
 *	local variables
 *
 	integer i,j,izero,ier0,init
-	DOUBLE COMPLEX chulp(4,4)
+	ComplexType chulp(4,4)
 	save init
 *
 *	common blocks
@@ -124,7 +125,7 @@ c
 *	    the nasty case wants xpi(1)=0, xpi(2) real:
 *
 	    if ( lnasty ) then
-		if ( xpi(iold(1,irota)).ne.0 .or. DIMAG(
+		if ( xpi(iold(1,irota)).ne.0 .or. Im(
      +			c2sisj(iold(1,irota),iold(2,irota))).ne.0 ) then
 		    print *,'no good: nasty but s1!=0 or s2 not real'
 		    goto 40
@@ -233,11 +234,11 @@ c
 *	arguments:
 *
 	integer ns,i1,i2,i3
-	DOUBLE PRECISION xlam,xpi(ns),dpipj(ns,ns)
+	RealType xlam,xpi(ns),dpipj(ns,ns)
 *
 *	local variables
 *
-	DOUBLE PRECISION s1,s2
+	RealType s1,s2
 *
 *	common blocks
 *
@@ -285,9 +286,9 @@ c
 *  #[ declarations:
 	implicit none
 	integer ns,ier
-	DOUBLE PRECISION xpi(13),dpipj(10,13),piDpj(10,10)
+	RealType xpi(13),dpipj(10,13),piDpj(10,10)
 	integer is1,is2,is3,ip1,ip2,ip3,i,j,ier0,ier1
-	DOUBLE PRECISION xmax,som,xmxp
+	RealType xmax,som,xmxp
 #include "ff.h"
 *  #] declarations:
 *  #[ check input:
@@ -616,13 +617,13 @@ c
 *
 *	arguments
 *
-	DOUBLE PRECISION piDpj(10,10),xpip(13),dpipjp(10,13),xpi(13)
+	RealType piDpj(10,10),xpip(13),dpipjp(10,13),xpi(13)
 	integer ier
 *
 *	local variables
 *
 	integer i,j,ii(6)
-	DOUBLE PRECISION dl3p
+	RealType dl3p
 *
 *	common blocks:
 *

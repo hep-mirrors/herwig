@@ -1,56 +1,68 @@
 noinst_LTLIBRARIES = libHwMatchboxPhasespace.la
 
-libHwMatchboxPhasespace_la_SOURCES = \
-FFLightInvertedTildeKinematics.cc \
+libHwMatchboxPhasespace_la_SOURCES = $(ALL_H_FILES) Phasespace__all.cc
+
+BUILT_SOURCES  = Phasespace__all.cc
+DISTCLEANFILES = Phasespace__all.cc
+
+Phasespace__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_CC_FILES)
+
+ALL_H_FILES = \
 FFLightInvertedTildeKinematics.h \
-FFLightTildeKinematics.cc \
 FFLightTildeKinematics.h \
-FFMassiveInvertedTildeKinematics.cc \
 FFMassiveInvertedTildeKinematics.h \
-FFMassiveTildeKinematics.cc \
 FFMassiveTildeKinematics.h \
-FILightInvertedTildeKinematics.cc \
 FILightInvertedTildeKinematics.h \
-FILightTildeKinematics.cc \
 FILightTildeKinematics.h \
-FIMassiveInvertedTildeKinematics.cc \
 FIMassiveInvertedTildeKinematics.h \
-FIMassiveTildeKinematics.cc \
 FIMassiveTildeKinematics.h \
-IFLightInvertedTildeKinematics.cc \
 IFLightInvertedTildeKinematics.h \
-IFLightTildeKinematics.cc \
 IFLightTildeKinematics.h \
-IFMassiveInvertedTildeKinematics.cc \
 IFMassiveInvertedTildeKinematics.h \
-IFMassiveTildeKinematics.cc \
 IFMassiveTildeKinematics.h \
-IILightInvertedTildeKinematics.cc \
 IILightInvertedTildeKinematics.h \
-IILightTildeKinematics.cc \
 IILightTildeKinematics.h \
-InvertedTildeKinematics.cc \
 InvertedTildeKinematics.fh \
 InvertedTildeKinematics.h \
-MatchboxPhasespace.cc \
 MatchboxPhasespace.h \
-MatchboxRambo.cc \
 MatchboxRambo.h \
-PhasespaceHelpers.cc \
 PhasespaceHelpers.h \
 RandomHelpers.h \
-TildeKinematics.cc \
 TildeKinematics.fh \
 TildeKinematics.h \
-TreePhasespace.cc \
 TreePhasespace.h \
-TreePhasespaceChannels.cc \
 TreePhasespaceChannels.h \
 MatchboxReference.h \
-MatchboxReference.cc \
 FlatInvertiblePhasespace.h \
-FlatInvertiblePhasespace.cc \
 FlatInvertibleLabframePhasespace.h \
+PhasespaceCouplings.h 
+
+ALL_CC_FILES = \
+FFLightInvertedTildeKinematics.cc \
+FFLightTildeKinematics.cc \
+FFMassiveInvertedTildeKinematics.cc \
+FFMassiveTildeKinematics.cc \
+FILightInvertedTildeKinematics.cc \
+FILightTildeKinematics.cc \
+FIMassiveInvertedTildeKinematics.cc \
+FIMassiveTildeKinematics.cc \
+IFLightInvertedTildeKinematics.cc \
+IFLightTildeKinematics.cc \
+IFMassiveInvertedTildeKinematics.cc \
+IFMassiveTildeKinematics.cc \
+IILightInvertedTildeKinematics.cc \
+IILightTildeKinematics.cc \
+InvertedTildeKinematics.cc \
+MatchboxPhasespace.cc \
+MatchboxRambo.cc \
+PhasespaceHelpers.cc \
+TildeKinematics.cc \
+TreePhasespace.cc \
+TreePhasespaceChannels.cc \
+MatchboxReference.cc \
+FlatInvertiblePhasespace.cc \
 FlatInvertibleLabframePhasespace.cc \
-PhasespaceCouplings.h \
 PhasespaceCouplings.cc

@@ -51,8 +51,8 @@ public:
 	       const vector<ArgT> & x, 
 	       unsigned int order) 
     : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
-      _funit(TypeTraits<ValT>::baseunit), 
-      _xunit(TypeTraits<ArgT>::baseunit),
+      _funit(TypeTraits<ValT>::baseunit()), 
+      _xunit(TypeTraits<ArgT>::baseunit()),
       _copyx(order+2),_copyfun(order+2) {
     assert(_order>0);
     assert(x.size() == f.size());

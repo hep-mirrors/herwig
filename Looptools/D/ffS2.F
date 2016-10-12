@@ -13,24 +13,25 @@
 * Oct 28 2008
 
 #include "externals.h"
+#include "types.h"
 
 
-	double complex function ffS2(ra, cb, cc, signc, ier)
+	ComplexType function ffS2(ra, cb, cc, signc, ier)
 	implicit none
-	double precision ra, signc
-	double complex cb, cc
+	RealType ra, signc
+	ComplexType cb, cc
 	integer ier
 
 #include "ff.h"
 
-	double complex crdisc, cza, czb
-	double precision sza, szb, sy1, sy2, sc
+	ComplexType crdisc, cza, czb
+	RealType sza, szb, sy1, sy2, sc
 
-	double complex ffS2_linr, zfflog
+	ComplexType ffS2_linr, zfflog
 	integer nffet1
 	external ffS2_linr, zfflog, nffet1
 
-	sc = DIMAG(cc)
+	sc = Im(cc)
 	if( sc .eq. 0 ) sc = signc
 
 	if( abs(ra) .lt. precx ) then
@@ -41,26 +42,26 @@
 	      ffS2 = 0
 	      return
 	    endif
-	    ffS2 = zfflog(cc, 1, DCMPLX(signc), ier)
+	    ffS2 = zfflog(cc, 1, ToComplex(signc), ier)
 	    return
 	  endif
 
 * 1 root:
 	  cza = -cc/cb
-	  sza = -signc*DBLE(cb)
+	  sza = -signc*Re(cb)
 	  if( sza .eq. 0 ) sza = -signc
 
-	  ffS2 = zfflog(cb, 1, DCMPLX(sc), ier) +
+	  ffS2 = zfflog(cb, 1, ToComplex(sc), ier) +
      &      ffS2_linr(cza, sza, ier)
 
-	  if( abs(DIMAG(cb)) .lt. precx ) return
+	  if( abs(Im(cb)) .lt. precx ) return
 
 * complex b
-	  szb = DIMAG(cza)
+	  szb = Im(cza)
 	  if( szb .eq. 0 ) szb = sza
 
 	  ffS2 = ffS2 +
-     &      c2ipi*nffet1(cb, DCMPLX(0D0, -szb), DCMPLX(0D0, sc), ier)
+     &      c2ipi*nffet1(cb, ToComplex(0D0, -szb), ToComplex(0D0, sc), ier)
 	  return
 	endif
 
@@ -81,21 +82,21 @@
 
 * calculate the sign of im(cza) and im(czb) which are related to ieps
 	sza = signc/ra
-	if( abs(DBLE(crdisc)) .gt. precx ) sza = sza/DBLE(crdisc)
+	if( abs(Re(crdisc)) .gt. precx ) sza = sza/Re(crdisc)
 	szb = -sza
 
-	sy1 = DIMAG(cza)
+	sy1 = Im(cza)
 	if( sy1 .eq. 0 ) sy1 = sza
-	sy2 = DIMAG(czb)
+	sy2 = Im(czb)
 	if( sy2 .eq. 0 ) sy2 = szb
 
 * calculate the log and etas
 * ieps=1 to choose the cut along the real axis
 
 	ffS2 =
-     &    zfflog(DCMPLX(ra), 1, DCMPLX(sc), ier) +
-     &    c2ipi*nffet1(DCMPLX(0D0, -sy1), DCMPLX(0D0, -sy2),
-     &      DCMPLX(0D0, sc/ra), ier) +
+     &    zfflog(ToComplex(ra), 1, ToComplex(sc), ier) +
+     &    c2ipi*nffet1(ToComplex(0D0, -sy1), ToComplex(0D0, -sy2),
+     &      ToComplex(0D0, sc/ra), ier) +
      &    ffS2_linr(cza, sza, ier) +
      &    ffS2_linr(czb, szb, ier)
 	end
@@ -106,25 +107,25 @@
 * input: cz, signz = sign(im(z)) in case z is real.
 * remarks: ieps is needed.
 
-	double complex function ffS2_linr(cz, signz, ier)
+	ComplexType function ffS2_linr(cz, signz, ier)
 	implicit none
-	double complex cz
-	double precision signz
+	ComplexType cz
+	RealType signz
 	integer ier
 
 #include "ff.h"
 
-	double complex zfflog
+	ComplexType zfflog
 	external zfflog
 
 	if( abs(cz) .lt. precx ) then
 	  ffS2_linr = -1
 	else if( abs(cz - 1) .lt. precx ) then
-	  ffS2_linr = zfflog(-cz, 1, DCMPLX(-signz), ier) - 1
+	  ffS2_linr = zfflog(-cz, 1, ToComplex(-signz), ier) - 1
 	else
 	  ffS2_linr =
-     &      zfflog(1 - cz, 1, DCMPLX(-signz), ier)*(1 - cz) +
-     &      zfflog(-cz, 1, DCMPLX(-signz), ier)*cz - 1
+     &      zfflog(1 - cz, 1, ToComplex(-signz), ier)*(1 - cz) +
+     &      zfflog(-cz, 1, ToComplex(-signz), ier)*cz - 1
 	endif
 	end
 

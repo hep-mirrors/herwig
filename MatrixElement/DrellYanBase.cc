@@ -548,7 +548,7 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
 }
 
 RealEmissionProcessPtr DrellYanBase::generateHardest(RealEmissionProcessPtr born,
-						      ShowerInteraction::Type inter) {
+						      ShowerInteraction inter) {
   if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
   useMe();
   // get the particles to be showered

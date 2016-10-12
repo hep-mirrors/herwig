@@ -285,7 +285,7 @@ bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
   return false;
 }
 
-RealEmissionProcessPtr HwMEBase::generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type) {
+RealEmissionProcessPtr HwMEBase::generateHardest(RealEmissionProcessPtr,ShowerInteraction) {
   assert(false);
   return RealEmissionProcessPtr();
 }

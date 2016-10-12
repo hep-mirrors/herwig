@@ -13,15 +13,14 @@
 #include "ThePEG/Config/Unitsystem.h"
 
 struct FixGlobal1 {
-  FixGlobal1() {
+  FixGlobal1() : randomNumberStandardGenerator(), dummy(&randomNumberStandardGenerator) {
     BOOST_TEST_MESSAGE( "setup global fixture for utilitiesTest" ); 
-    
-    // Initialize randomNumberGenerator
-    ThePEG::StandardRandom* randomNumberStandardGenerator = new ThePEG::StandardRandom();
-    new ThePEG::UseRandom(randomNumberStandardGenerator);
   }
   
   ~FixGlobal1()  { BOOST_TEST_MESSAGE( "teardown global fixture for utilitiesTest" ); }
+
+  ThePEG::StandardRandom randomNumberStandardGenerator;
+  ThePEG::UseRandom dummy;
 };
 
 BOOST_GLOBAL_FIXTURE(FixGlobal1);

@@ -2,18 +2,30 @@ pkglib_LTLIBRARIES = HwMatchboxCuts.la
 
 HwMatchboxCuts_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
 
-HwMatchboxCuts_la_SOURCES = \
-IdentifiedParticleCut.cc \
+HwMatchboxCuts_la_SOURCES = $(ALL_H_FILES) Cuts__all.cc
+
+BUILT_SOURCES  = Cuts__all.cc
+DISTCLEANFILES = Cuts__all.cc
+
+Cuts__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_CC_FILES)
+
+ALL_H_FILES = \
 IdentifiedParticleCut.h \
-MatchboxDeltaRCut.cc \
 MatchboxDeltaRCut.h \
-MissingPtCut.cc \
 MissingPtCut.h \
-FrixionePhotonSeparationCut.cc \
 FrixionePhotonSeparationCut.h \
-InvariantMassCut.cc \
 InvariantMassCut.h \
-PairPtCut.cc \
 PairPtCut.h \
-PairRapidityCut.cc \
 PairRapidityCut.h
+
+ALL_CC_FILES = \
+IdentifiedParticleCut.cc \
+MatchboxDeltaRCut.cc \
+MissingPtCut.cc \
+FrixionePhotonSeparationCut.cc \
+InvariantMassCut.cc \
+PairPtCut.cc \
+PairRapidityCut.cc

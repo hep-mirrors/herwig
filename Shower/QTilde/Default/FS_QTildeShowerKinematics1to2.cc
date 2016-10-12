@@ -54,7 +54,7 @@ updateParameters(tShowerParticlePtr theParent,
 void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType,
+	       ShowerPartnerType partnerType,
 	       bool massVeto) const {
   assert(children.size()==2);
   // calculate the scales
@@ -158,7 +158,7 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
 
 void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						 const ShowerParticleVector & children,
-						 ShowerPartnerType::Type) const {
+						 ShowerPartnerType) const {
   IdList ids(3);
   ids[0] = parent->dataPtr();
   ids[1] = children[0]->dataPtr();

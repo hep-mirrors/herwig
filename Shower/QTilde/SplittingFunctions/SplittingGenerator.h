@@ -91,7 +91,7 @@ public:
    */
   Branching chooseForwardBranching(ShowerParticle & particle,
 				   double enhance,
-				   ShowerInteraction::Type type) const; 
+				   ShowerInteraction type) const; 
 
   /**
    * Select the next branching of a particles for the initial-state shower
@@ -106,7 +106,7 @@ public:
   Branching chooseDecayBranching(ShowerParticle & particle, 
 				 const ShowerParticle::EvolutionScales & maxScales,
 				 Energy minmass,double enhance,
-				 ShowerInteraction::Type type) const; 
+				 ShowerInteraction type) const; 
 
   /**
    * Choose a new backward branching for a space-like particle.
@@ -134,7 +134,7 @@ public:
 			  PPtr beamparticle,
 			  double enhance,
 			  Ptr<BeamParticleData>::transient_const_pointer beam,
-			  ShowerInteraction::Type type,
+			  ShowerInteraction type,
 			  tcPDFPtr , Energy ) const;
   //@}
 

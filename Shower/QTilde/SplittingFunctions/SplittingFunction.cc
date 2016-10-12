@@ -78,7 +78,7 @@ void SplittingFunction::Init() {
      "q -> 0 q",
      ChargedNeutralCharged);
 
-  static Switch<SplittingFunction,ShowerInteraction::Type> 
+  static Switch<SplittingFunction,ShowerInteraction> 
     interfaceInteractionType
     ("InteractionType",
      "Type of the interaction",
@@ -107,26 +107,44 @@ void SplittingFunction::Init() {
      "Interaction isn't angular ordered",
      false);
 
+  static Switch<SplittingFunction,unsigned int> interfaceScaleChoice
+    ("ScaleChoice",
+     "The scale choice to be used",
+     &SplittingFunction::scaleChoice_, 2, false, false);
+  static SwitchOption interfaceScaleChoicepT
+    (interfaceScaleChoice,
+     "pT",
+     "pT of the branching",
+     0);
+  static SwitchOption interfaceScaleChoiceQ2
+    (interfaceScaleChoice,
+     "Q2",
+     "Q2 of the branching",
+     1);
+  static SwitchOption interfaceScaleChoiceFromAngularOrdering
+    (interfaceScaleChoice,
+     "FromAngularOrdering",
+     "If angular order use pT, otherwise Q2",
+     2);
+
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {
-  using namespace ShowerInteraction;
    os << oenum(_interactionType) << _interactionOrder 
       << oenum(_colourStructure) << _colourFactor
-      << angularOrdered_;
+      << angularOrdered_ << scaleChoice_;
 }
 
 void SplittingFunction::persistentInput(PersistentIStream & is, int) {
-  using namespace ShowerInteraction;
   is >> ienum(_interactionType) >> _interactionOrder 
      >>	ienum(_colourStructure) >> _colourFactor
-     >> angularOrdered_;
+     >> angularOrdered_ >> scaleChoice_;
 }
 
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,
                                          tShowerParticlePtr first,
                                          tShowerParticlePtr second,
-					 ShowerPartnerType::Type partnerType, 
+					 ShowerPartnerType partnerType, 
                                          const bool back) const {
   if(_colourStructure==TripletTripletOctet) {
     if(!back) {
@@ -597,7 +615,7 @@ namespace {
   
 }
 
-void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partnerType,
+void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
 						 Energy scale, double z,
 						 tShowerParticlePtr parent,
 						 tShowerParticlePtr emitter,
@@ -724,7 +742,7 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
   }
 }
 
-void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type partnerType,
+void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType,
 						   Energy scale, double z,
 						   tShowerParticlePtr parent,
 						   tShowerParticlePtr spacelike,
@@ -832,7 +850,7 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type partn
   }
 }
 
-void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
+void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
 					    Energy scale, double z,
 					    tShowerParticlePtr parent,
 					    tShowerParticlePtr spacelike,

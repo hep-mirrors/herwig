@@ -69,7 +69,6 @@ HERWIG_CHECK_GSL
 HERWIG_CHECK_THEPEG
 
 BOOST_REQUIRE([1.41])
-BOOST_FIND_HEADER([boost/array.hpp])
 BOOST_FIND_HEADER([boost/numeric/ublas/io.hpp])
 BOOST_FIND_HEADER([boost/numeric/ublas/matrix.hpp])
 BOOST_FIND_HEADER([boost/numeric/ublas/matrix_proxy.hpp])
@@ -78,9 +77,6 @@ BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
 BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
 BOOST_FIND_HEADER([boost/operators.hpp])
 BOOST_FIND_HEADER([boost/progress.hpp])
-BOOST_FIND_HEADER([boost/scoped_array.hpp])
-BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
-BOOST_FIND_HEADER([boost/utility.hpp])
 BOOST_FILESYSTEM([mt])
 BOOST_TEST()
 
@@ -106,8 +102,6 @@ HERWIG_LOOPTOOLS
 HERWIG_PDF_PATH
 
 FASTJET_CHECK_FASTJET
-
-HERWIG_CHECK_ABS_BUG
 
 HERWIG_ENABLE_MODELS
 
@@ -174,7 +168,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Cuts/Makefile
                 MatrixElement/Matchbox/Scales/Makefile
-                MatrixElement/Matchbox/Scales/MatchboxScale.cc
                 MatrixElement/Matchbox/ColorFull/Makefile
                 MatrixElement/Matchbox/CVolver/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
@@ -214,6 +207,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Doc/HerwigDefaults.in
 		Looptools/Makefile
 		Analysis/Makefile
+		API/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in

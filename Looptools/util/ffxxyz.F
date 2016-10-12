@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxxyz:
@@ -39,15 +40,15 @@
 *
 	integer ivert,ns,ier,isoort(2)
 	logical ldel2s
-	DOUBLE PRECISION y(4),z(4),dyz(2,2),d2yzz,dy2z(4),
+	RealType y(4),z(4),dyz(2,2),d2yzz,dy2z(4),
      +		sdel2p,sdel2s,etalam,etami(6),delps,xpi(ns),
      +		dpipj(ns,ns),piDpj(ns,ns)
 *
 *	local variables:
 *
 	integer i,j,n,ip1,ip2,ip3,is1,is2,is3,iwarn,ier1
-	DOUBLE PRECISION disc,hulp,s,smax,som(51),xmax
-	DOUBLE PRECISION t1,t2,t4,t5,t8,t3,t7,t9,t12,t14,t21,t23,t24,
+	RealType disc,hulp,s,smax,som(51),xmax
+	RealType t1,t2,t4,t5,t8,t3,t7,t9,t12,t14,t21,t23,t24,
      +	t28,t6,t35,t44,t42,t36,t55,t41,t19,t59,t25,t69,t82,t75,t84,t92,
      +	t31,t98,t74,t101,t89,t106,t112,t113,t13,t117,t126,t127,t129,
      +	t130,t133,t128,t132,t134,t137,t139,t146,t148,t149,t153,t131,
@@ -663,13 +664,13 @@
 *	arguments:
 *
 	integer i1,j1,l,ns,ier
-	DOUBLE PRECISION dwz(2,2),z(4)
-	DOUBLE PRECISION alpha,alph1,xpi(ns),dpipj(ns,ns),piDpj(ns,ns),
+	RealType dwz(2,2),z(4)
+	RealType alpha,alph1,xpi(ns),dpipj(ns,ns),piDpj(ns,ns),
      +		sdel2i(3)
 *
 *	local variables:
 *
-	DOUBLE PRECISION s(8),sum,fac,xmax
+	RealType s(8),ssum,fac,xmax
 	integer i
 *
 *	common blocks:
@@ -697,22 +698,22 @@
 		s(6) = -piDpj(4,3)*piDpj(6,3)*fac
 		s(7) = xpi(3)*dpipj(5,6)*fac
 		if ( i1 .eq. 1 ) then
-		    sum = s(1)+s(2)+s(3)+s(4) - (s(5)+s(6)+s(7))
+		    ssum = s(1)+s(2)+s(3)+s(4) - (s(5)+s(6)+s(7))
 		else
-		    sum = s(1)+s(2)+s(3)+s(4) + s(5)+s(6)+s(7)
+		    ssum = s(1)+s(2)+s(3)+s(4) + s(5)+s(6)+s(7)
 		endif
 		xmax = abs(s(1))
 		do 10 i=2,7
 		    xmax = max(xmax,abs(s(i)))
    10		continue
-		if ( abs(sum) .lt. xloss*xmax ) then
+		if ( abs(ssum) .lt. xloss*xmax ) then
 *		    this result is not used if it is not accurate (see
 *		    ffxc0p)
 		    ier = ier + 1
 		    xmax = xmax/abs(alpha*xpi(5))
-		    dwz(i1,j1) = sum/(alpha*xpi(5))
+		    dwz(i1,j1) = ssum/(alpha*xpi(5))
 		else
-		    dwz(i1,j1) = sum/(alpha*xpi(5))
+		    dwz(i1,j1) = ssum/(alpha*xpi(5))
 		endif
 	    else
 		ier = ier + 100

@@ -30,8 +30,8 @@ using namespace Herwig;
 
 namespace {
 
-bool checkInteraction(ShowerInteraction::Type allowed,
-		      ShowerInteraction::Type splitting) {
+bool checkInteraction(ShowerInteraction allowed,
+		      ShowerInteraction splitting) {
   if(allowed==ShowerInteraction::Both)
     return true;
   else if(allowed == splitting)
@@ -213,12 +213,12 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance,
-						     ShowerInteraction::Type type) const {
+						     ShowerInteraction type) const {
   RhoDMatrix rho;
   bool rhoCalc(false);
   Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
-  ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
+  ShowerPartnerType partnerType(ShowerPartnerType::Undefined);
   SudakovPtr sudakov   = SudakovPtr();
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
@@ -238,7 +238,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     // whether or not this interaction should be angular ordered
     bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
-    ShowerPartnerType::Type type;
+    ShowerPartnerType type;
     IdList particles = particle.id()!=cit->first ? cit->second.conjugateParticles : cit->second.particles;
     // work out which starting scale we need
     if(cit->second.sudakov->interactionType()==ShowerInteraction::QED) {
@@ -329,12 +329,12 @@ Branching SplittingGenerator::
 chooseDecayBranching(ShowerParticle &particle,
 		     const ShowerParticle::EvolutionScales & stoppingScales,
 		     Energy minmass, double enhance,
-		     ShowerInteraction::Type interaction) const {
+		     ShowerInteraction interaction) const {
   RhoDMatrix rho(particle.dataPtr()->iSpin());
   Energy newQ = Constants::MaxEnergy;
   ShoKinPtr kinematics;
   SudakovPtr sudakov;
-  ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
+  ShowerPartnerType partnerType(ShowerPartnerType::Undefined);
   IdList ids;
   // First, find the eventual branching, corresponding to the lowest scale.
   long index = abs(particle.data().id());
@@ -352,7 +352,7 @@ chooseDecayBranching(ShowerParticle &particle,
     bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
     IdList particles = particle.id()!=cit->first ? cit->second.conjugateParticles : cit->second.particles;
-    ShowerPartnerType::Type type;
+    ShowerPartnerType type;
     // work out which starting scale we need
     if(cit->second.sudakov->interactionType()==ShowerInteraction::QED) {
       type = ShowerPartnerType::QED;
@@ -440,13 +440,13 @@ Branching SplittingGenerator::
 chooseBackwardBranching(ShowerParticle &particle,PPtr ,
 			double enhance,
 			Ptr<BeamParticleData>::transient_const_pointer beam,
-			ShowerInteraction::Type type,
+			ShowerInteraction type,
 			tcPDFPtr pdf, Energy freeze) const {
   RhoDMatrix rho;
   bool rhoCalc(false);
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
-  ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
+  ShowerPartnerType partnerType(ShowerPartnerType::Undefined);
   SudakovPtr sudakov;
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
@@ -470,7 +470,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr ,
     bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
     IdList particles = particle.id()!=cit->first ? cit->second.conjugateParticles : cit->second.particles;
-    ShowerPartnerType::Type type;
+    ShowerPartnerType type;
     if(cit->second.sudakov->interactionType()==ShowerInteraction::QED) {
       type = ShowerPartnerType::QED;
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;

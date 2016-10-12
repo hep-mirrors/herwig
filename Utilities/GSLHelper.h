@@ -56,12 +56,12 @@ public:
   /**
    * Value type
    */
-  virtual V vUnit() const {return TypeTraits<V>::baseunit;}
+  virtual V vUnit() const {return TypeTraits<V>::baseunit();}
 
   /**
    * Agrument type
    */
-  virtual T aUnit() const {return TypeTraits<T>::baseunit;}
+  virtual T aUnit() const {return TypeTraits<T>::baseunit();}
 
 private:
 

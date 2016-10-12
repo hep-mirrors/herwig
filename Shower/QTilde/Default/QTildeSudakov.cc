@@ -127,7 +127,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
     }
     while(PSVeto(t,maxQ2) ||
         SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
-        alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+        alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
   else {
     bool alphaRew(true),PSRew(true),SplitRew(true);
@@ -136,8 +136,8 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
       PSRew=PSVeto(t,maxQ2);
       if (PSRew) continue;
       SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning);
-      alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
-      double factor=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
+      alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
+      double factor=alphaSVetoRatio(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
                     SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
 
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
@@ -154,7 +154,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
           if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
 	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
 
-                double newfactor = alphaSVetoRatio(splittingFn()->angularOrdered() ?
+                double newfactor = alphaSVetoRatio(splittingFn()->pTScale() ?
                                         sqr(z()*(1.-z()))*t :
                                         z()*(1.-z())*t,var->second.renormalizationScaleFactor)
 		  * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho,detuning);
@@ -219,7 +219,7 @@ generateNextSpaceBranching(const Energy startingQ,
     while(pt2 < pT2min()||
         z() > zLimits().second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
-        alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t)||
+        alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,ids[0],ids[1],beam));
   }
   // shower variations
@@ -233,10 +233,10 @@ generateNextSpaceBranching(const Energy startingQ,
       zRew=z() > zLimits().second;
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
-      alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t);
+      alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t);
       PDFRew=PDFVeto(t,x,ids[0],ids[1],beam);
       double factor=PDFVetoRatio(t,x,ids[0],ids[1],beam,1.)*
-                    alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
+                    alphaSVetoRatio(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
 	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
 
       tShowerHandlerPtr ch = ShowerHandler::currentHandler();
@@ -256,7 +256,7 @@ generateNextSpaceBranching(const Energy startingQ,
 
 
             double newfactor = PDFVetoRatio(t,x,ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
-                           alphaSVetoRatio(splittingFn()->angularOrdered() ?
+                           alphaSVetoRatio(splittingFn()->pTScale() ?
                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
 	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,rho,detuning);
 
@@ -327,7 +327,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t ) ||
+	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
@@ -445,7 +445,7 @@ namespace {
 
 tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
 					  bool forward,
-					  ShowerInteraction::Type inter) {
+					  ShowerInteraction inter) {
   tPPtr child = &particle;
   tShowerParticlePtr mother;
   if(forward) {

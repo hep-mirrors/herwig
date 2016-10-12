@@ -7,7 +7,7 @@ defaultsdir = ${pkgdatadir}/defaults
 bin_PROGRAMS = Herwig
 
 Herwig_SOURCES = \
-HerwigMain.cc Herwig.h Herwig.cc HerwigCLI.cc HerwigCLI.h HerwigUI.h \
+HerwigMain.cc HerwigCLI.cc HerwigCLI.h \
 herwigopts.c herwigopts.h
 
 BUILT_SOURCES = herwigopts.c herwigopts.h
@@ -15,13 +15,9 @@ BUILT_SOURCES = herwigopts.c herwigopts.h
 Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
 $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
 Herwig_LDADD = $(THEPEGLIB) -ldl \
-$(top_builddir)/Utilities/libHwRunDirectories.la \
+$(top_builddir)/API/libHerwigAPI.la \
 $(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
 
-Herwig_CPPFLAGS = $(AM_CPPFLAGS) \
--DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
--DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
--DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \

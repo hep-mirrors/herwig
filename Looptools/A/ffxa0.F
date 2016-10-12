@@ -5,6 +5,7 @@
 * last modified 7 Dec 10 th
 
 #include "externals.h"
+#include "types.h"
 
 * Input:	xm	(real) mass2,
 * Output:	ca0	(complex) A0, the one-point function,
@@ -12,13 +13,13 @@
 
 	subroutine ffxa0(ca0, xm, ier)
 	implicit none
-	double complex ca0
-	double precision xm
+	ComplexType ca0
+	RealType xm
 	integer ier
 
 #include "ff.h"
 
-	double precision xmu, xlogm
+	RealType xmu, xlogm
 
 	xmu = xm
 	if( mudim .ne. 0 ) xmu = xmu/mudim

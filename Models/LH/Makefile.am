@@ -1,16 +1,33 @@
-if WANT_BSM
-pkglib_LTLIBRARIES = HwLHModel.la
-endif
-HwLHModel_la_SOURCES = \
-LHModel.h LHModel.fh LHModel.cc  \
-LHFFZVertex.h  LHFFZVertex.cc  \
-LHFFPVertex.h  LHFFPVertex.cc  \
-LHFFGVertex.h  LHFFGVertex.cc  \
-LHFFWVertex.h  LHFFWVertex.cc  \
-LHWWWVertex.h  LHWWWVertex.cc  \
-LHWWWWVertex.h LHWWWWVertex.cc  \
-LHFFHVertex.h  LHFFHVertex.cc  \
-LHWWHVertex.h  LHWWHVertex.cc  \
-LHWHHVertex.h  LHWHHVertex.cc  \
-LHWWHHVertex.h LHWWHHVertex.cc
-HwLHModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
+BUILT_SOURCES  = LH__all.cc
+DISTCLEANFILES = LH__all.cc
+
+LH__all.cc : $(ALL_CC_FILES)
+	$(top_srcdir)/cat_with_cpplines $^ > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+ALL_H_FILES = \
+LHModel.h LHModel.fh \
+LHFFZVertex.h  \
+LHFFPVertex.h  \
+LHFFGVertex.h  \
+LHFFWVertex.h  \
+LHWWWVertex.h  \
+LHWWWWVertex.h \
+LHFFHVertex.h  \
+LHWWHVertex.h  \
+LHWHHVertex.h  \
+LHWWHHVertex.h 
+
+ALL_CC_FILES = \
+LHModel.cc  \
+LHFFZVertex.cc  \
+LHFFPVertex.cc  \
+LHFFGVertex.cc  \
+LHFFWVertex.cc  \
+LHWWWVertex.cc  \
+LHWWWWVertex.cc  \
+LHFFHVertex.cc  \
+LHWWHVertex.cc  \
+LHWHHVertex.cc  \
+LHWWHHVertex.cc

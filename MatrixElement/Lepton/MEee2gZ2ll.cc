@@ -325,7 +325,7 @@ IVector MEee2gZ2ll::getReferences() {
 }
 
 RealEmissionProcessPtr MEee2gZ2ll::generateHardest(RealEmissionProcessPtr born,
-						   ShowerInteraction::Type inter) {
+						   ShowerInteraction inter) {
   // check if QED switched on
   if(inter==ShowerInteraction::QCD) return RealEmissionProcessPtr();
   // generate the momenta for the hard emission

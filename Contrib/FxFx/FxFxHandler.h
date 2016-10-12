@@ -5,10 +5,10 @@
 // This is the declaration of the FxFxHandler class.
 //
 
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "ThePEG/Config/Pointers.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "ThePEG/Utilities/CompSelector.h"
@@ -35,7 +35,7 @@ using namespace ThePEG;
  * @see \ref FxFxHandlerInterfaces "The interfaces"
  * defined for FxFxHandler.
  */
-class FxFxHandler: public ShowerHandler {
+class FxFxHandler: public QTildeShowerHandler {
 
   /**
    * FxFxHandler should have access to our private parts.
@@ -489,6 +489,13 @@ private:
    */
   bool vetoIsTurnedOff_;
 
+
+  /*
+   * Allows the vetoing on heavy quark decay products to be turned off. 
+   */
+  bool vetoHeavyQ_;
+
+  
   /* 
    * Veto if there exist softer unmatched jets than matched
    */
@@ -576,7 +583,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::FxFxHandler,1> {
   /** Typedef of the first base class of FxFxHandler. */
-  typedef Herwig::ShowerHandler NthBase;
+  typedef Herwig::QTildeShowerHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

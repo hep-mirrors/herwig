@@ -1,78 +1,76 @@
 * ffd0c.F
 * the scalar four-point function with complex masses
 * this file is part of LoopTools
-* last modified 8 Dec 10 th
+* last modified 26 Jan 14 th
 
 * Written by Le Duc Ninh, MPI, Munich (2008).     
 * Spence, log and eta functions are taken from FF.
-* Please cite arXiV:0902.0325 [hep-ph] if you use this function.
+* Please cite arXiv:0902.0325 [hep-ph] if you use this function.
 
 #include "externals.h"
+#include "types.h"
 
 
 	subroutine ffd0c(cd0c, cpi, key, ier)
 	implicit none
-	double complex cd0c, cpi(10)
+	ComplexType cd0c, cpi(10)
 	integer key, ier
 
 #include "ff.h"
+#include "perm.h"
 
 	integer o
-	double precision ra, rb, rg, rc, rh, rj
-	double precision d, a
-	double complex cd, ce, ck, cfx
+	RealType ra, rb, rg, rc, rh, rj
+	RealType d, a
+	ComplexType cd, ce, ck, cfx
 
-	double precision signf
+	RealType signf
 	parameter (signf = -1)
 
-	double complex ffT13, ffTn
+	ComplexType ffT13, ffTn
 	external ffT13, ffTn
 
-#define PP(i) DBLE(cpi(i+4))
+#define PP(i) Re(cpi(i+4))
 #define LightLike(i) abs(PP(i)) .lt. precx
 
 * 2 lightlike momenta
 
 	if( LightLike(1) .and.
      &      LightLike(3) ) then
-	  o = O'1234561234'
+	  o = p1234
 	else if( LightLike(2) .and.
      &           LightLike(4) ) then
-	  o = O'4123654123'
+	  o = p4123
 	else if( LightLike(5) .and.
      &           LightLike(6) ) then
-	  o = O'5361421342'
+	  o = p1342
 	else if( LightLike(1) .and.
      &           LightLike(2) ) then
-	  o = O'1234561234'
+	  o = p1234
 	else if( LightLike(2) .and.
      &           LightLike(3) ) then
-	  o = O'2341652341'
+	  o = p2341
 	else if( LightLike(3) .and.
      &           LightLike(4) ) then
-	  o = O'3412563412'
+	  o = p3412
 	else if( LightLike(4) .and.
      &           LightLike(1) ) then
-	  o = O'4123654123'
+	  o = p4123
 
 * 1 lightlike momentum
 
 	else if( LightLike(1) ) then
-	  o = O'1234561234'
+	  o = p1234
 	else if( LightLike(2) ) then
-	  o = O'2341652341'
+	  o = p2341
 	else if( LightLike(3) ) then
-	  o = O'3412563412'
+	  o = p3412
 	else if( LightLike(4) ) then
-	  o = O'4123654123'
+	  o = p4123
 	else if( LightLike(5) ) then
-c WRONG?  8 Jan 10 th
-c	  o = O'5361422413'
-	  o = O'5361421342'
+	  o = p1342
 	else if( LightLike(6) ) then
-c WRONG?  8 Jan 10 th
-c	  o = O'6452132431'
-	  o = O'6452132413'
+	  o = p2413
 
 * kallen(pi, pj, pk) >= 0
 
@@ -81,19 +79,19 @@ c	  o = O'6452132431'
 	else if( SIDE(5,1) +
      &           SIDE(1,2) +
      &           SIDE(2,5) .ge. 0 ) then
-	  o = O'1234561234'
+	  o = p1234
 	else if( SIDE(6,2) +
      &           SIDE(2,3) +
      &           SIDE(3,6) .ge. 0 ) then
-	  o = O'2341652341'
+	  o = p2341
 	else if( SIDE(5,3) +
      &           SIDE(3,4) +
      &           SIDE(4,5) .ge. 0 ) then
-	  o = O'3412563412'
+	  o = p3412
 	else if( SIDE(6,4) +
      &           SIDE(4,1) +
      &           SIDE(1,6) .ge. 0 ) then
-	  o = O'4123654123'
+	  o = p4123
 
 	else
 	  call fferr(103, ier)

@@ -29,11 +29,10 @@
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
-#include "Herwig/Utilities/RunDirectories.h"
+#include "Herwig/API/RunDirectories.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 
-#include <boost/foreach.hpp>
 #include <cctype>
 
 #include <iterator>
@@ -779,8 +778,7 @@ MatchboxMEBase::AccuracyHistogram::AccuracyHistogram(double low,
 }
 
 void MatchboxMEBase::AccuracyHistogram::book(double a, double b) {
-  if ( isnan(a) || isnan(b) ||
-       isinf(a) || isinf(b) ) {
+  if ( ! (isfinite(a) && isfinite(b)) ) {
     ++nans;
     return;
   }
@@ -1472,7 +1470,7 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   if ( initVerbose() ) {
     ostringstream fname_strm;
     // only allow alphanumeric, / and _ in filename
-    BOOST_FOREACH (const char c, name()) {
+    for (const char c : name()) {
         switch (c) {
           case '+' : fname_strm << "+"; break;
           case '-' : fname_strm << "-"; break;

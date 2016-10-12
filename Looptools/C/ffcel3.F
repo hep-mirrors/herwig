@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcel3:
@@ -20,15 +21,15 @@
 *
 *	arguments:
 *
-	DOUBLE COMPLEX del3,piDpj(6,6)
+	ComplexType del3,piDpj(6,6)
 *
 *	local variables:
 *
 	integer mem,nperm
 	parameter(mem=10,nperm=16)
 	integer i,jj(6),iperm(3,nperm),imem,memarr(mem,3),memind,inow
-	DOUBLE COMPLEX s(6),del3p,cc
-	DOUBLE PRECISION xmax,xmaxp,absc
+	ComplexType s(6),del3p,cc
+	RealType xmax,xmaxp,absc
 	save iperm,memind,memarr,inow
 *
 *	common blocks:
@@ -37,7 +38,7 @@
 *
 *	statement function
 *
-	absc(cc) = abs(DBLE(cc)) + abs(DIMAG(cc))
+	absc(cc) = abs(Re(cc)) + abs(Im(cc))
 *  #] declarations:
 *  #[ data:
 	data memind /0/
