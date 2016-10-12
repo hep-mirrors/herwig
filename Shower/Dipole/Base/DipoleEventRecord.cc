@@ -802,7 +802,7 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       bool decayProcEm = false;
       bool decayProcSp = false;
       
-      for ( auto  & outIt : decayProc->outgoing() ) {
+      for ( auto & outIt : decayProc->outgoing() ) {
         if ( !decayProcEm && outIt.first == dsplit.emitter() ) {
           outIt = {dsplit.splitEmitter(), PerturbativeProcessPtr()};
           decayProcEm = true;
@@ -1085,7 +1085,7 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   for (auto const & p : outgoing())
     step->addDecayProduct( p );
   
-  for (auto const  p : theHard)
+  for (auto const & p : theHard)
     step->addDecayProduct( p );
   
   if ( firstInteraction &&
@@ -1237,11 +1237,9 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
       tag +=dec->name();
     }
     tag += ";";
-    std::cerr << "tag = " << tag << "\n";
     
     // Find the decay mode
     decayMode = ShowerHandler::currentHandler()->findDecayMode(tag);
-    std::cerr << "decayMode = " << decayMode << "\n";
   }
   
   
@@ -1376,8 +1374,8 @@ void DipoleEventRecord::updateDecayMom( PPtr decayParent, PerturbativeProcessPtr
   
   // Create a list of the children to update their momenta
   PList children;
-  for ( auto const & out : decayProc->outgoing() ) {
-    children.push_back( out.first );
+  for ( auto const & outg : decayProc->outgoing() ) {
+    children.push_back( outg.first );
   }
   
   // Boost the children
@@ -1396,22 +1394,22 @@ void DipoleEventRecord::updateDecayChainMom( PPtr decayParent, PerturbativeProce
   updateDecayMom( decayParent, decayProc );
   
   // Iteratively update the momenta of the rest of the decay chain
-  for ( auto & out : decayProc->outgoing() ) {
+  for ( auto & outg : decayProc->outgoing() ) {
 
     // If a child has a corresponding pert proc
     // then it has decay products
-    if ( out.second ) {
+    if ( outg.second ) {
 
       for ( auto & dec : theDecays ) {
-        if(dec.second==out.second) {
-          dec.first->setMomentum(out.first->momentum());
+        if(dec.second==outg.second) {
+          dec.first->setMomentum(outg.first->momentum());
           break;
         }
       }
       
       // Iteratively update any decay products
-      if ( !out.second->outgoing().empty() )
-	updateDecayChainMom( out.first, out.second );
+      if ( !outg.second->outgoing().empty() )
+	updateDecayChainMom( outg.first, outg.second );
     }
   }
 }
@@ -1426,17 +1424,17 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
   // With iterate = true, this updates the rest of the decay chain.
   
   // Loop over the outgoing from this decay
-  for ( auto & out : decayProc->outgoing() ) {
-        if ( out.second && !out.second->outgoing().empty() ) {
+  for ( auto & outg : decayProc->outgoing() ) {
+        if ( outg.second && !outg.second->outgoing().empty() ) {
       // Outgoing particles which have already been decayed
-      PPtr newDecayed = out.first;
-      PerturbativeProcessPtr newDecayProc = out.second;
+      PPtr newDecayed = outg.first;
+      PerturbativeProcessPtr newDecayProc = outg.second;
       
       // Update the outgoing momenta from this decay
       updateDecayMom( newDecayed, newDecayProc);
       
       // If this decay is already in theDecays then erase it
-      for ( auto & dec : theDecays ) {
+      for ( auto const & dec : theDecays ) {
         if(dec.second==newDecayProc) {
           theDecays.erase(dec.first);
           break;
@@ -1450,13 +1448,13 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
       if ( iterate ) 
 	updateDecays( newDecayProc );
       
-    }
+	}
     
     // Deal with any outgoing which need to be decayed
-    else if ( ShowerHandler::currentHandler()->decaysInShower(out.first->id()) ) {
+    else if ( ShowerHandler::currentHandler()->decaysInShower(outg.first->id()) ) {
       PerturbativeProcessPtr newDecay=new_ptr(PerturbativeProcess());
-      newDecay->incoming().push_back({ out.first , decayProc } );
-      theDecays[out.first] = newDecay;
+      newDecay->incoming().push_back({ outg.first , decayProc } );
+      theDecays[outg.first] = newDecay;
       
     }
   }
