@@ -12,6 +12,7 @@
 #define EXSAMPLE_utility_h_included
 
 #include "config.h"
+#include <memory>
 
 namespace exsample {
 
