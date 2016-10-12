@@ -1233,13 +1233,15 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
     
     // Construct the tag
     for(auto const & dec : decayOut) {
-      if( dec==*decayOut.begin() ) tag += ",";
+      if( dec!=*decayOut.begin() ) tag += ",";
       tag +=dec->name();
     }
     tag += ";";
+    std::cerr << "tag = " << tag << "\n";
     
     // Find the decay mode
     decayMode = ShowerHandler::currentHandler()->findDecayMode(tag);
+    std::cerr << "decayMode = " << decayMode << "\n";
   }
   
   
@@ -1394,16 +1396,15 @@ void DipoleEventRecord::updateDecayChainMom( PPtr decayParent, PerturbativeProce
   updateDecayMom( decayParent, decayProc );
   
   // Iteratively update the momenta of the rest of the decay chain
-  for ( auto const & out : decayProc->outgoing() ) {
+  for ( auto & out : decayProc->outgoing() ) {
 
     // If a child has a corresponding pert proc
     // then it has decay products
     if ( out.second ) {
-      
-      for(map<PPtr,PerturbativeProcessPtr>::iterator it=theDecays.begin();
-          it!=theDecays.end();++it) {
-        if(it->second==out.second) {
-          it->first->setMomentum(out.first->momentum());
+
+      for ( auto & dec : theDecays ) {
+        if(dec.second==out.second) {
+          dec.first->setMomentum(out.first->momentum());
           break;
         }
       }
@@ -1425,9 +1426,8 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
   // With iterate = true, this updates the rest of the decay chain.
   
   // Loop over the outgoing from this decay
-  for ( auto const & out : decayProc->outgoing() ) {
-    
-    if ( out.second && !out.second->outgoing().empty() ) {
+  for ( auto & out : decayProc->outgoing() ) {
+        if ( out.second && !out.second->outgoing().empty() ) {
       // Outgoing particles which have already been decayed
       PPtr newDecayed = out.first;
       PerturbativeProcessPtr newDecayProc = out.second;
@@ -1436,10 +1436,9 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
       updateDecayMom( newDecayed, newDecayProc);
       
       // If this decay is already in theDecays then erase it
-      for(map<PPtr,PerturbativeProcessPtr>::const_iterator it=theDecays.begin();
-          it!=theDecays.end();++it) {
-        if(it->second==out.second) {
-          theDecays.erase(it->first);
+      for ( auto & dec : theDecays ) {
+        if(dec.second==newDecayProc) {
+          theDecays.erase(dec.first);
           break;
         }
       }
