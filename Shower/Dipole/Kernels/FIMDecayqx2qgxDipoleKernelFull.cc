@@ -27,7 +27,8 @@ IBPtr FIMDecayqx2qgxDipoleKernelFull::fullclone() const {
 
 bool FIMDecayqx2qgxDipoleKernelFull::canHandle(const DipoleIndex& ind) const {
   return
-    ind.incomingDecaySpectator() && !ind.incomingDecayEmitter() && 
+  useThisKernel() &&
+    ind.incomingDecaySpectator() && !ind.incomingDecayEmitter() &&
     abs(ind.emitterData()->id()) < 7  &&
     // This line matches to the kernel declared in a .in file for the given emitter flavour
     abs(ind.emitterData()->id()) == abs(flavour()->id()) &&

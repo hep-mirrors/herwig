@@ -55,8 +55,6 @@ cd /Herwig/Particles
 
 do c:UnsetHardProcessMass
 do cbar:UnsetHardProcessMass
-#do b:UnsetHardProcessMass
-#do bbar:UnsetHardProcessMass
 set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
 

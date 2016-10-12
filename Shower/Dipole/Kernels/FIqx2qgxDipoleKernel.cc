@@ -28,6 +28,7 @@ IBPtr FIqx2qgxDipoleKernel::fullclone() const {
 
 bool FIqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+  useThisKernel() &&
     abs(ind.emitterData()->id()) < 6 &&
     ind.emitterData()->mass() == ZERO &&
     ind.spectatorData()->mass() == ZERO &&

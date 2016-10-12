@@ -75,3 +75,22 @@ insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
 insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
 insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
 do MergingFactory:EndParticleGroup
+
+
+
+
+cd /Herwig/DipoleShower/Kernels
+
+set IFgx2bbbarxDipoleKernel:UseKernel Off
+set IFgx2bbarbxDipoleKernel:UseKernel Off
+set IFMgx2bbbarxDipoleKernel:UseKernel Off
+set IFMgx2bbarbxDipoleKernel:UseKernel Off
+set IIgx2bbbarxDipoleKernel:UseKernel Off
+set IIgx2bbarbxDipoleKernel:UseKernel Off
+set IFgx2bbbarxDipoleKernel:UseKernel Off
+set IFgx2bbarbxDipoleKernel:UseKernel Off
+set IFMgx2bbbarxDipoleKernel:UseKernel Off
+set IFMgx2bbarbxDipoleKernel:UseKernel Off
+set IIgx2bbbarxDipoleKernel:UseKernel Off
+set IIgx2bbarbxDipoleKernel:UseKernel Off
+

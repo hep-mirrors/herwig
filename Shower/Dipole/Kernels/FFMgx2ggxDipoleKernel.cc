@@ -29,6 +29,7 @@ IBPtr FFMgx2ggxDipoleKernel::fullclone() const {
 
 bool FFMgx2ggxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+    useThisKernel() &&
     ind.emitterData()->id() == ParticleID::g &&
     ind.spectatorData()->mass() != ZERO &&
     !ind.initialStateEmitter() && !ind.initialStateSpectator() &&

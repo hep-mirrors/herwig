@@ -77,8 +77,6 @@ set IIgx2ccbarxDipoleKernel:CMWScheme Linear
 set IIgx2cbarcxDipoleKernel:CMWScheme Linear
 set IIgx2ssbarxDipoleKernel:CMWScheme Linear
 set IIgx2sbarsxDipoleKernel:CMWScheme Linear
-
-## bs from five flavournobmass scheme
 set IFgx2bbbarxDipoleKernel:CMWScheme Linear
 set IFgx2bbarbxDipoleKernel:CMWScheme Linear
 set IFMgx2bbbarxDipoleKernel:CMWScheme Linear
