@@ -23,6 +23,8 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 
+#include "ThePEG/Utilities/ColourOutput.h"
+
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -157,8 +159,8 @@ void GeneralSampler::initialize() {
       << "Wrote " << jobCount << " integration jobs\n"
       << "Please submit integration jobs with the\nintegrate --jobid=x\ncommand for job ids "
       << "from 0 to " << (jobCount-1) << "\n\n"
-      << "e.g.:\n\n"
-      << "\e[93m for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done \e[0m \n\n"
+      << "e.g.:\n\n" << Colour::yellow
+      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done \n\n" << Colour::reset
       << "---------------------------------------------------\n"
       << flush;
 

@@ -15,6 +15,8 @@
 #include "MergingFactory.h"
 #include "Node.h"
 
+#include "ThePEG/Utilities/ColourOutput.h"
+
 using namespace Herwig;
 using std::ostream_iterator;
 
@@ -488,11 +490,11 @@ void MergingFactory::setup() {
     
     onlysubcounter = 0;
     
-    generator()->log() << "\e[31mPreparing Merging:" << flush;
-    generator()->log() << "\e[32m "<<numb<<" x Born \e[31m" << flush;
+    generator()->log() << Colour::red << "Preparing Merging: ";
+    generator()->log() << Colour::green << numb << " x Born " << Colour::red;
     if (MH()->M()>-1) {
-      generator()->log() << "\e[93m"<<numv<<" x Virtual " << flush;
-      generator()->log() << "\e[34m"<<numr<<" x Real \e[31m" << flush;
+      generator()->log() << Colour::yellow << numv << " x Virtual ";
+      generator()->log() << Colour::blue << numr << " x Real " << Colour::red << flush;
     }
     
     boost::progress_display * progressBar = new boost::progress_display(numb+numv+numr,generator()->log());
@@ -503,9 +505,9 @@ void MergingFactory::setup() {
                ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber)){
               pushB(born, i);
               onlysubcounter++;
-              generator()->log() << "\e[32m";
+              generator()->log() << Colour::green;
               ++(*progressBar);
-              generator()->log() << "\e[0m";
+              generator()->log() << Colour::reset;
             }
           }
         }
@@ -521,7 +523,7 @@ void MergingFactory::setup() {
          ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
       pushV(virt, i);
       onlysubcounter++;
-       generator()->log() << "\e[93m";
+       generator()->log() << Colour::yellow;
       ++(*progressBar);
     }
     
@@ -532,14 +534,14 @@ void MergingFactory::setup() {
          ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
       pushR(real, i);
       onlysubcounter++;
-      generator()->log() << "\e[34m";
+      generator()->log() << Colour::blue;
       ++(*progressBar);
     }
-    generator()->log() << "\e[0m";
+    generator()->log() << Colour::reset;
     delete progressBar;
     
     if ( !externalAmplitudes().empty() ) {
-      generator()->log() << "Initializing external amplitudes.\n" << flush;
+      generator()->log() << "Initializing external amplitudes." << endl;
       boost::progress_display * progressBar =
       new boost::progress_display(externalAmplitudes().size(),generator()->log());
       for ( const auto ext : externalAmplitudes()) {
@@ -551,13 +553,12 @@ void MergingFactory::setup() {
       }
       delete progressBar;
       generator()->log()
-      << "---------------------------------------------------\n"
-  << flush;
+      << "---------------------------------------------------" << endl;
     }
     
     
     if ( !olpProcesses().empty() ) {
-      generator()->log() << "Initializing one-loop provider(s).\n" << flush;
+      generator()->log() << "Initializing one-loop provider(s)." << endl;
       map<Ptr<MatchboxAmplitude>::tptr, map<pair<Process, int>, int> > olps;
       for (const auto oit : olpProcesses()) {
         olps[oit.first] = oit.second;
@@ -580,11 +581,11 @@ void MergingFactory::setup() {
     generator()->log()
     << "---------------------------------------------------\n" << flush;
     
-    generator()->log() <<"\n\n\e[31m"
+    generator()->log() <<"\n\n" << Colour::red
                         <<"Note: Due to the unitarization of the higher  "
                        <<"\nmultiplicities, the individual cross sections "
                        <<"\ngiven in the integration and run step are not"
-                       <<"\nmeaningful without merging.\e[0m\n"<<flush;
+                       <<"\nmeaningful without merging." << Colour::reset << endl;
     ransetup=true;
     
   }

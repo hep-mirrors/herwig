@@ -19,6 +19,8 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/Repository.h"
 
+#include "ThePEG/Utilities/ColourOutput.h"
+
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 
@@ -179,7 +181,7 @@ void BinSampler::fillRemappers(bool progress) {
 
   boost::progress_display* progressBar = 0;
   if ( progress ) {
-    Repository::clog() << "warming up \e[31m" << process()<<"\e[0m";
+    Repository::clog() << "warming up " << Colour::red << process() << Colour::reset;
     progressBar = new boost::progress_display(theRemapperPoints,Repository::clog());
   }
 
@@ -390,7 +392,7 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
 
   boost::progress_display* progressBar = 0;
   if ( progress ) {
-    Repository::clog() << "integrating \e[31m" << process()<<"\e[0m , iteration "
+    Repository::clog() << "integrating " << Colour::red << process()<< Colour::reset << ", iteration "
 		       << (iterations().size() + 1);
     progressBar = new boost::progress_display(points,Repository::clog());
   }
@@ -442,9 +444,9 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
   }
 
   if ( progress ) {
-    Repository::clog() << "integrated ( \e[93m"
+    Repository::clog() << "integrated ( " << Colour::yellow 
 		       << averageWeight() << " +/- " << sqrt(averageWeightVariance())
-		       << "\e[0m ) nb\nepsilon = "
+		       << Colour::reset << " ) nb\nepsilon = "
 		       << (abs(maxWeight()) != 0. ? averageAbsWeight()/abs(maxWeight()) : 0.);
     if ( !iterations().empty() )
       Repository::clog() << " chi2 = " << chi2();
