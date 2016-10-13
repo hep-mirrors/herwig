@@ -317,7 +317,7 @@ void FxFxHandler::doinit() {
 }
 
 // Throws a veto according to MLM strategy ... when we finish writing it.
-bool FxFxHandler::showerHardProcessVeto() {
+bool FxFxHandler::showerHardProcessVeto() const {
   int debug_mode = 0;
   if(vetoIsTurnedOff_) return false;
 
@@ -669,7 +669,7 @@ bool FxFxHandler::showerHardProcessVeto() {
 
 /* Function that returns the R distance
    between a particle and a jet. */
-double FxFxHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) { 
+double FxFxHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) const { 
   LorentzMomentum partonmom(partonptr->momentum());
   // Calculate DY, DPhi and then DR
   double DY(partonmom.eta()-jetmom.eta());
@@ -679,7 +679,7 @@ double FxFxHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jet
   return DR;
 }
 
-double FxFxHandler::partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2) { 
+double FxFxHandler::partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2) const { 
   // Calculate DY, DPhi and then DR
   double DY(jetmom1.eta()-jetmom2.eta());
   double DPhi(jetmom1.phi()-jetmom2.phi());
@@ -689,7 +689,7 @@ double FxFxHandler::partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jet
 }
 
 // Get FastJets
-void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) {
+void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) const {
 
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int ipar=0; ipar<particlesToCluster_.size(); ipar++) { 
@@ -772,7 +772,7 @@ void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) {
 }
 
 // Get FastJets from partonsToMatch_
-void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) {
+void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) const {
 
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int ipar=0; ipar<partonsToMatch_.size(); ipar++) { 
@@ -839,7 +839,7 @@ void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) 
 // decay products, Higgs bosons, photons as well as _primary_, i.e.
 // present in the lowest multiplicity process, heavy quarks and
 // any related decay products.
-void FxFxHandler::getDescendents(PPtr theParticle) {
+void FxFxHandler::getDescendents(PPtr theParticle) const {
   ParticleVector theChildren(theParticle->children());
   for (unsigned int ixx=0; ixx<theChildren.size(); ixx++)
     if(theChildren[ixx]->children().size()==0)
@@ -848,7 +848,7 @@ void FxFxHandler::getDescendents(PPtr theParticle) {
       getDescendents(theChildren[ixx]);
   return;
 }
-void FxFxHandler::caldel_m() {
+void FxFxHandler::caldel_m() const {
 
 
   preshowerFSPsToDelete_.clear();
@@ -1198,7 +1198,7 @@ void FxFxHandler::caldel_m() {
 
 // This looks for all descendents of a top up to but not including
 // the W and b children.
-void FxFxHandler::getTopRadiation(PPtr theParticle) {
+void FxFxHandler::getTopRadiation(PPtr theParticle) const {
   ParticleVector theChildren(theParticle->children());
   for (unsigned int ixx=0; ixx<theChildren.size(); ixx++)
     if(theChildren[ixx]->children().size()==0)
@@ -1209,7 +1209,7 @@ void FxFxHandler::getTopRadiation(PPtr theParticle) {
       getTopRadiation(theChildren[ixx]);
   return;
 }
-void FxFxHandler::caldel_hvq() {
+void FxFxHandler::caldel_hvq() const {
 
   // Fill partonsToMatch_ with only those pre-shower partons intended to
   // be used in heavy-quark-jet matching and fill particlesToCluster_ using
@@ -1330,7 +1330,7 @@ void FxFxHandler::caldel_hvq() {
 }
 
 // get npLO_ and npNLO_ 
-void FxFxHandler::getnpFxFx() {
+void FxFxHandler::getnpFxFx() const {
   split_vector_type SplitVec; 
   // pull the optional weights from the current event
   map<string,double> optionalEventWeights = eventHandler()->currentEvent()->optionalWeights();
@@ -1347,7 +1347,7 @@ void FxFxHandler::getnpFxFx() {
   return;
 }
 
-void FxFxHandler::getPreshowerParticles() {
+void FxFxHandler::getPreshowerParticles() const {
   // LH file initial-state partons:
   preshowerISPs_ = lastXCombPtr()->subProcess()->incoming();
   // LH file final-state partICLEs:
@@ -1355,7 +1355,7 @@ void FxFxHandler::getPreshowerParticles() {
   return;
 }
 
-void FxFxHandler::getShoweredParticles() {
+void FxFxHandler::getShoweredParticles() const {
   // Post-shower initial-state hadrons:
   showeredISHs_ = eventHandler()->currentEvent()->incoming();
 
@@ -1397,7 +1397,7 @@ void FxFxHandler::getShoweredParticles() {
   return;
 }
 
-void FxFxHandler::doSanityChecks(int debugLevel) {
+void FxFxHandler::doSanityChecks(int debugLevel) const {
 
   // When checking momentum conservation in the form 
   // p_in - p_out, any momentum component bigger / less
@@ -1520,6 +1520,6 @@ void FxFxHandler::printMomVec(vector<Lorentz5Momentum> momVec) {
 
 }
 
-Energy FxFxHandler::etclusran_(double petc) { 
+Energy FxFxHandler::etclusran_(double petc) const { 
   return (((2 * epsetclus_)/M_PI) * asin(2 * petc - 1) + etclusmean_);
 }

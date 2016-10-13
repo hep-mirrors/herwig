@@ -77,7 +77,7 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto() { return false; }
+  virtual bool showerHardProcessVeto() const { return false; }
   
   /**
    *  Generate hard emissions for CKKW etc

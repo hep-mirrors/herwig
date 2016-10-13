@@ -276,7 +276,7 @@ void AlpGenHandler::doinit() {
 }
 
 // Throws a veto according to MLM strategy ... when we finish writing it.
-bool AlpGenHandler::showerHardProcessVeto() {
+bool AlpGenHandler::showerHardProcessVeto() const {
   if(vetoIsTurnedOff_) return false;
   // Skip veto for processes in which merging is not implemented:
   if(ihrd_==7||ihrd_==8||ihrd_==13) {
