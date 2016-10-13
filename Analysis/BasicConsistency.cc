@@ -21,6 +21,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Utilities/EnumParticles.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "ThePEG/Utilities/ColourOutput.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -299,7 +300,9 @@ void BasicConsistency::Init() {
 void BasicConsistency::dofinish() {
   AnalysisHandler::dofinish();
   cout << "\nBasicConsistency: maximum 4-momentum violation: " 
-       << _epsmom/MeV << " MeV\n";
+       << ANSI::blue
+       << _epsmom/MeV << " MeV\n"
+       << ANSI::reset;
 }
 
 void BasicConsistency::doinitrun() {
