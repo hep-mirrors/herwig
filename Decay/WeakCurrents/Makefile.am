@@ -11,7 +11,7 @@ CLEANFILES = WeakCurrents__all.cc
 WeakCurrents__all.cc : $(ALL_CC_FILES) Makefile
 	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES) Makefile
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 ALL_H_FILES = \
 FourPionNovosibirskCurrent.h \
