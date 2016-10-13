@@ -308,7 +308,7 @@ void FxFxHandler::dofinish() {
 void FxFxHandler::doinit() {
 
   //print error if HardProcID is not set in input file
-  if(ihrd_ == -999) { cout << "Error: FxFxHandler:ihrd not set!" << endl; exit(1); }
+  if(ihrd_ == -999 && !hpdetect_) { cout << "Error: FxFxHandler:ihrd not set and FxFx:HardProcessDetection set to Manual!" << endl; exit(1); }
   QTildeShowerHandler::doinit();
 
   // Compute calorimeter edges in rapidity for GetJet algorithm.
@@ -318,7 +318,6 @@ void FxFxHandler::doinit() {
 
 // Throws a veto according to MLM strategy ... when we finish writing it.
 bool FxFxHandler::showerHardProcessVeto() {
-
   int debug_mode = 0;
   if(vetoIsTurnedOff_) return false;
 
