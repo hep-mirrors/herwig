@@ -76,9 +76,9 @@ void GeneralSampler::initialize() {
   if ( theParallelIntegration &&
        runLevel() == ReadMode )
     throw Exception()
-      << "\n---------------------------------------------------\n\n"
+      << "\n----------------------------------------------------\n\n"
       << "Parallel integration is only supported\n in the build/integrate/run mode\n\n"
-      << "---------------------------------------------------\n"
+      << "----------------------------------------------------\n"
       << Exception::abortnow;
 
   if ( runLevel() == ReadMode ||
@@ -106,7 +106,7 @@ void GeneralSampler::initialize() {
     ofstream* jobList = 0;
 
     generator()->log() 
-      << "---------------------------------------------------\n"
+      << "----------------------------------------------------\n"
       << "preparing integration jobs ...\n" << flush;
 
     vector<int> randomized;
@@ -268,23 +268,28 @@ void GeneralSampler::initialize() {
 
   if ( missingGrid && runLevel() == RunMode )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Warning:No grid file could be found at the start of this run.\n\n"
-      << "* For a read/run setup intented to be used with --setupfile please consider\n"
-      << "  using the build/integrate/run setup.\n"
-      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
-      << "  that the same setupfile is provided to both the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+    << "\n----------------------------------------------------\n\n"
+    << "Warning:No grid file could be found at the start of\n"
+    << "this run.\n\n"
+    << "* For a read/run setup intented to be used with \n"
+    << "  --setupfile \n"
+    << "  please consider using the build/integrate/run setup.\n"
+    << "* For a build/integrate/run setup to be used with\n"
+    << "  --setupfile\n"
+    << "  please ensure that the same setupfile is provided\n"
+    << "  to both the integrate and run steps.\n\n"
+    << "---------------------------------------------------\n" << flush;
 
   if ( runLevel() == ReadMode ||
        runLevel() == IntegrationMode ) {
     if ( reuseGrid )
       Repository::clog()
-        << "--------------------------------------------------------------------------------\n\n"
-        << "Re-using an existing grid as starting point for grid optimization. \n"
-        << "Please consider removing the grid files and re-running the grid adaption\n"
-        << "when there have been significant changes to parameters, cuts, etc.\n\n"
-        << "--------------------------------------------------------------------------------\n"
+        << "----------------------------------------------------\n\n"
+        << "Re-using an existing grid as starting point for grid\n"
+        << "optimization. Please consider removing the grid files \n"
+        << "and re-running the grid adaption when there have\n"
+        << "been significant changes to parameters, cuts, etc.\n\n"
+        << "----------------------------------------------------\n"
         << flush;
   }
 
@@ -719,13 +724,17 @@ void GeneralSampler::doinitrun() {
     missingGrid = missingGrid || ( ! s->second->existsGrid() );
   if ( missingGrid && !didReadGrids )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Warning:No grid file could be found at the start of this run.\n\n"
-      << "* For a read/run setup intented to be used with --setupfile please consider\n"
-      << "  using the build/integrate/run setup.\n"
-      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
-      << "  that the same setupfile is provided to both the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+      << "\n----------------------------------------------------\n\n"
+      << "Warning:No grid file could be found at the start of\n"
+      << "this run.\n\n"
+      << "* For a read/run setup intented to be used with \n"
+      << "  --setupfile \n"
+      << "  please consider using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with\n"
+      << "  --setupfile\n"
+      << "  please ensure that the same setupfile is provided\n"
+      << "  to both the integrate and run steps.\n\n"
+      << "---------------------------------------------------\n" << flush;
 
   isSampling = true;
   SamplerBase::doinitrun();
