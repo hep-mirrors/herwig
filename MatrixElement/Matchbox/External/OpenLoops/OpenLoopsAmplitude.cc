@@ -74,8 +74,14 @@ void OpenLoopsAmplitude::doinitrun() {
   MatchboxOLPME::doinitrun();
 }
 
+vector<int> OpenLoopsAmplitude::idpair=vector<int>();
+
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
+
+        
+
 	string tempcontract=contract;
+       
 
 	if ( ! (DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.so") ||
 		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.so") ||
@@ -127,7 +133,13 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 }
 
 void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
-	string orderFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
+	
+	string orderFileName =
+      optionalContractFile().empty() ?
+      factory()->buildStorage() + name() + ".OLPContract.lh" :
+      optionalContractFile();
+
+
 	ofstream orderFile(orderFileName.c_str());
 	size_t asPower = 100;
 	size_t minlegs = 100;
@@ -227,11 +239,14 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 			}
 		}
 	}
-	string ids = factory()->buildStorage() + "OpenLoops.ids.dat";
+	string ids = factory()->runStorage() + "OpenLoops.ids.dat";
 	ofstream IDS(ids.c_str());
 
+        idpair.clear();
+        for (int i=0;i<processmap.size();i++)idpair.push_back(-1);
+        idpair.push_back(-1);
 	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
-	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
+	    idpair[(*p).second.HID()]=(*p).second.GID();
 	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
@@ -240,18 +255,24 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 }
 
 void OpenLoopsAmplitude::getids() const{
-	string line = factory()->buildStorage() + "OpenLoops.ids.dat";
+        assert(false);
+	string line = factory()->runStorage() + "OpenLoops.ids.dat";
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
-	while (std::getline(infile, line)) {
-	   istringstream(line) >> hid>>gid;
-	   idpair.insert ( std::pair<int,int>(hid,gid) );
-	}
+	//while (std::getline(infile, line)) {
+	//   istringstream(line) >> hid>>gid;
+	//   idpair.insert ( std::pair<int,int>(hid,gid) );
+	//}
 }
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName =  factory()->buildStorage() + name() + ".OLPAnswer.lh";
-	string orderFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
+
+        string orderFileName =
+        optionalContractFile().empty() ?
+        factory()->buildStorage() + name() + ".OLPContract.lh" :
+        optionalContractFile();
+
 	fillOrderFile(procs);
  	int status = -1;
 	startOLP(orderFileName, status);
@@ -287,9 +308,8 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 		}
 		
     }
-  
-
-	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
+ 
+	OLP_EvalSubProcess2(&idpair[id], olpMomenta(), &scale, out,&acc );
   
   
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
@@ -327,7 +347,7 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 
 	int id = olpId()[ProcessType::colourCorrelatedME2];
 
-	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, &colourCorrelatorResults[0],&acc );
+	OLP_EvalSubProcess2(&idpair[id], olpMomenta(), &scale, &colourCorrelatorResults[0],&acc );
 	for ( int i = 0 ; i < n ; ++i ){
 	    for ( int j = i + 1 ; j < n ; ++j ) {
 			lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
@@ -364,7 +384,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 		}
 		
 	}
-	int id = (*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second;
+	int id =idpair[olpId()[ProcessType::spinColourCorrelatedME2]];
 	//double * outx =new double[n];
 	spinColourCorrelatorResults.resize(n);
         double polvec[4];

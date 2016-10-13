@@ -833,7 +833,13 @@ CrossSection Merger::MergingDSigDR() {
   
   history.clear();
   assert(currentNode()==theFirstNodeMap[ currentME()]);
-  
+
+  if(DSH()->doesSplitHardProcess()){
+	throw Exception()
+  	<< "Merger: The splithardprocess option is currently not supported."
+  	<< Exception::abortnow;	
+  } 
+ 
   DSH()->eventHandler( generator()->eventHandler() );
   
   CrossSection res = ZERO;

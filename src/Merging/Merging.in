@@ -9,6 +9,8 @@ set MergingFactory:Cuts /Herwig/Cuts/Cuts
 set Merger:MergingFactory MergingFactory
 set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
 set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
+set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
+
 set MergingFactory:MergingHelper Merger
 
 

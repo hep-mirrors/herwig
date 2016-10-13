@@ -123,6 +123,11 @@ public:
 			DecayProcessMap & decay) const;
 
   /**
+   * Information if the Showerhandler splits the hard process. 
+   */
+  bool doesSplitHardProcess()const {return splitHardProcess_;}
+
+  /**
    *  Decay a particle.
    *  radPhotons switches the generation of photon
    *  radiation on/off.
