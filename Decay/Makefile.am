@@ -14,12 +14,12 @@ nodist_libHwDecay_la_SOURCES =  \
 hwdecay__all.cc
 
 BUILT_SOURCES  = hwdecay__all.cc
-DISTCLEANFILES = hwdecay__all.cc
+CLEANFILES = hwdecay__all.cc
 
-hwdecay__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+hwdecay__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES) Makefile
 
 ALL_H_FILES = \
 DecayIntegrator.fh DecayIntegrator.h \

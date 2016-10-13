@@ -1,10 +1,10 @@
 BUILT_SOURCES  = ModelGenerator__all.cc
-DISTCLEANFILES = ModelGenerator__all.cc
+CLEANFILES = ModelGenerator__all.cc
 
-ModelGenerator__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+ModelGenerator__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES) Makefile
 
 ALL_H_FILES = \
 ModelGenerator.h ModelGenerator.fh \

@@ -1,10 +1,10 @@
 BUILT_SOURCES  = Partonic__all.cc
-DISTCLEANFILES = Partonic__all.cc
+CLEANFILES = Partonic__all.cc
 
-Partonic__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+Partonic__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES) Makefile
 
 ALL_H_FILES = \
 QuarkoniumDecayer.h   \

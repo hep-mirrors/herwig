@@ -1,10 +1,10 @@
 BUILT_SOURCES  = UED__all.cc
-DISTCLEANFILES = UED__all.cc
+CLEANFILES = UED__all.cc
 
-UED__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+UED__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES) Makefile
 
 ALL_H_FILES = \
 UEDBase.h UEDBase.fh \

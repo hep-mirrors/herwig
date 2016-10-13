@@ -1,10 +1,10 @@
 BUILT_SOURCES  = LH__all.cc
-DISTCLEANFILES = LH__all.cc
+CLEANFILES = LH__all.cc
 
-LH__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+LH__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES) Makefile
 
 ALL_H_FILES = \
 LHModel.h LHModel.fh \
