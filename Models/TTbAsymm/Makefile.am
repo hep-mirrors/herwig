@@ -1,8 +1,8 @@
 BUILT_SOURCES  = TTbA__all.cc
-DISTCLEANFILES = TTbA__all.cc
+CLEANFILES = TTbA__all.cc
 
-TTbA__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+TTbA__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
 EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 

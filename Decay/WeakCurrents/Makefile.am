@@ -6,10 +6,10 @@ LeptonNeutrinoCurrent.cc LeptonNeutrinoCurrent.fh \
 LeptonNeutrinoCurrent.h
 
 BUILT_SOURCES  = WeakCurrents__all.cc
-DISTCLEANFILES = WeakCurrents__all.cc
+CLEANFILES = WeakCurrents__all.cc
 
-WeakCurrents__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+WeakCurrents__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
 EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 

@@ -1,8 +1,8 @@
 BUILT_SOURCES  = Perturbative__all.cc
-DISTCLEANFILES = Perturbative__all.cc
+CLEANFILES = Perturbative__all.cc
 
-Perturbative__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+Perturbative__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
 EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
@@ -28,10 +28,10 @@ ALL_CC_FILES = \
 
 
 BUILT_SOURCES  += PerturbativeHiggs__all.cc
-DISTCLEANFILES += PerturbativeHiggs__all.cc
+CLEANFILES += PerturbativeHiggs__all.cc
 
-PerturbativeHiggs__all.cc : $(ALL_CC_FILES_2)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+PerturbativeHiggs__all.cc : $(ALL_CC_FILES_2) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES_2) > $@
 
 EXTRA_DIST += $(ALL_H_FILES_2) $(ALL_CC_FILES_2)
 

@@ -1,14 +1,15 @@
 noinst_LTLIBRARIES = libHwMatchboxDipoles.la
 
-libHwMatchboxDipoles_la_SOURCES = $(ALL_H_FILES) Dipole__all.cc
+nodist_libHwMatchboxDipoles_la_SOURCES = \
+Dipole__all.cc
 
 BUILT_SOURCES  = Dipole__all.cc
-DISTCLEANFILES = Dipole__all.cc
+CLEANFILES = Dipole__all.cc
 
-Dipole__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+Dipole__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 ALL_H_FILES = \
 FFggxDipole.h \

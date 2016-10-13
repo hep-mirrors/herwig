@@ -11,10 +11,10 @@ BtoSGammaHadronicMass.cc BtoSGammaHadronicMass.fh
 
 
 BUILT_SOURCES  = Formfactor__all.cc
-DISTCLEANFILES = Formfactor__all.cc
+CLEANFILES = Formfactor__all.cc
 
-Formfactor__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+Formfactor__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
 EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 

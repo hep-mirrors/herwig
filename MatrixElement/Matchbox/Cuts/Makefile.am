@@ -1,16 +1,18 @@
 pkglib_LTLIBRARIES = HwMatchboxCuts.la
 
-HwMatchboxCuts_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwMatchboxCuts_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 2:0:0
 
-HwMatchboxCuts_la_SOURCES = $(ALL_H_FILES) Cuts__all.cc
+nodist_HwMatchboxCuts_la_SOURCES = \
+Cuts__all.cc
 
 BUILT_SOURCES  = Cuts__all.cc
-DISTCLEANFILES = Cuts__all.cc
+CLEANFILES = Cuts__all.cc
 
-Cuts__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+Cuts__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 ALL_H_FILES = \
 IdentifiedParticleCut.h \

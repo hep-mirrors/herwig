@@ -135,35 +135,28 @@ protected:
   //@}
 
 private:
+
+  /*
+   * whether a heavy quark has been found in the merging
+   */
+  bool hvqfound = false;
   
   /* 
    * Run MLM jet-parton matching on the 'extra' jets.
    */
-  
   bool lightJetPartonVeto();
   
   /* 
    * Function that calculates deltaR between a parton and a jet
    */
-
   double partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom);
-  double partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2);
-  
-  /**
-   * c++ translation of subroutine of same name from alpsho.f.
-   * Initialize calorimeter for calsim_m and getjet_m. Note that
-   * because initialization is separte calsim_m can be called more
-   * than once to simulate pileup of several events.
-   */
-  void calini_m();
-  
- 
-  /**
-   * c++ translation of subroutine of same name from alpsho.f.
-   * Simple calorimeter simulation - assume uniform Y and phi bins.
-   */
-  void calsim_m();
 
+    
+  /* 
+   * Function that calculates deltaR between two jets
+   */
+  double partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2);
+ 
  /**
    * Find jets using the FastJet package on particlesToCluster_.
    */
@@ -173,17 +166,6 @@ private:
    * Find jets using the FastJet package on particlesToCluster_.
    */
   void getFastJetsToMatch(double rjet, Energy ejcut, double etajcut);
-  
-
-  /**
-   * c++ translation of subroutine of same name from alpsho.f.
-   * Simple jet-finding algorithm (similar to UA1). Find highest
-   * remaining cell > ETSTOP and sum surrounding cells with --
-   * DELTA(Y)**2+DELTA(PHI)**2 < RJET**2 , ET>ECCUT.
-   * Keep sets with ET>EJCUT and ABS(ETA)<ETACUT. The UA1
-   * parameters are RJET=1.0 and EJCUT=5.0.
-   */
-  void getjet_m(double rjet, Energy ejcut, double etajcut);
 
   /**
    * Deletes particles from partonsToMatch_ and particlesToCluster_
@@ -211,9 +193,6 @@ private:
    * get the information required for FxFx merging
    */
   void getnpFxFx();
-
-  
-  
 
   /**
    * Get the particles from lastXCombPtr filling the pair
@@ -440,6 +419,12 @@ private:
    */
   double rclusfactor_;
 
+ /*
+  * Determines whether to detect the hard process or to manually determine which particles 
+  * to include in the merging. If False, then the ihrd code below is used.
+  */
+  bool hpdetect_;
+  
   /*
    * The AlpGen hard process code. Relation to the AlpGen process names:
    * 1: wqq, 2: zqq, 3: wjet, 4: zjet, 5: vbjet, 6: 2Q, 8: QQh, 9: Njet, 
@@ -485,6 +470,11 @@ private:
   int jetAlgorithm_;
 
   /*
+   * The merging mode (FxFx vs tree-level) used. 
+   */
+  int mergemode_;
+
+  /*
    * Allows the vetoing to be turned off completely - just for convenience.
    */
   bool vetoIsTurnedOff_;
@@ -494,6 +484,12 @@ private:
    * Allows the vetoing on heavy quark decay products to be turned off. 
    */
   bool vetoHeavyQ_;
+
+  /* 
+   * Allows vetoing of heavy flavour 
+   */
+
+  bool vetoHeavyFlavour_;
 
   
   /* 

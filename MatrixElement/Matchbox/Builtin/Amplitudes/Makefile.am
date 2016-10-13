@@ -1,16 +1,18 @@
 pkglib_LTLIBRARIES = HwMatchboxBuiltin.la
 
-HwMatchboxBuiltin_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+HwMatchboxBuiltin_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 3:0:0
 
-HwMatchboxBuiltin_la_SOURCES = $(ALL_H_FILES) Amplitudes__all.cc
+nodist_HwMatchboxBuiltin_la_SOURCES = \
+Amplitudes__all.cc
 
 BUILT_SOURCES  = Amplitudes__all.cc
-DISTCLEANFILES = Amplitudes__all.cc
+CLEANFILES = Amplitudes__all.cc
 
-Amplitudes__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+Amplitudes__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
-EXTRA_DIST = $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 ALL_H_FILES = \
 MatchboxCurrents.h \

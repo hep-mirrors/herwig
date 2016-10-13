@@ -1,8 +1,8 @@
 BUILT_SOURCES  = NMSSM__all.cc
-DISTCLEANFILES = NMSSM__all.cc
+CLEANFILES = NMSSM__all.cc
 
-NMSSM__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+NMSSM__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
 EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 

@@ -1,8 +1,8 @@
 BUILT_SOURCES  = LHTP__all.cc
-DISTCLEANFILES = LHTP__all.cc
+CLEANFILES = LHTP__all.cc
 
-LHTP__all.cc : $(ALL_CC_FILES)
-	$(top_srcdir)/cat_with_cpplines $^ > $@
+LHTP__all.cc : $(ALL_CC_FILES) Makefile
+	$(top_srcdir)/cat_with_cpplines $(ALL_CC_FILES) > $@
 
 EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
