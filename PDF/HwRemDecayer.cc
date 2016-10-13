@@ -1017,8 +1017,6 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   } while( p > L);
   N=k-1;
   
-  //N = avgN;
-  
   valOfN_=N;
   if(N == 0) return;
   
