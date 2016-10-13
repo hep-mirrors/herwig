@@ -1,7 +1,7 @@
 noinst_LTLIBRARIES = libHwDipoleShowerKernels.la
 
-libHwDipoleShowerKernels_la_SOURCES = \
-$(ALL_H_FILES) DipoleKernels__all.cc
+nodist_libHwDipoleShowerKernels_la_SOURCES = \
+DipoleKernels__all.cc
 
 BUILT_SOURCES  = DipoleKernels__all.cc
 DISTCLEANFILES = DipoleKernels__all.cc
@@ -9,7 +9,7 @@ DISTCLEANFILES = DipoleKernels__all.cc
 DipoleKernels__all.cc : $(ALL_CC_FILES)
 	$(top_srcdir)/cat_with_cpplines $^ > $@
 
-EXTRA_DIST = $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 ALL_H_FILES = \
 	DipoleSplittingKernel.h \

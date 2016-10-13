@@ -10,7 +10,7 @@ noinst_LTLIBRARIES = libHwDecay.la
 libHwDecay_la_LIBADD = \
 $(top_builddir)/PDT/libHwPDT.la
 
-libHwDecay_la_SOURCES =  \
+nodist_libHwDecay_la_SOURCES =  \
 hwdecay__all.cc
 
 BUILT_SOURCES  = hwdecay__all.cc
@@ -74,7 +74,7 @@ pkglib_LTLIBRARIES += HwFormFactors.la
 HwFormFactors_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 9:1:0
 
-HwFormFactors_la_SOURCES = \
+nodist_HwFormFactors_la_SOURCES = \
 FormFactors/Formfactor__all.cc
 
 ##################
@@ -97,7 +97,7 @@ $(AM_LDFLAGS) -module -version-info 8:0:0
 HwBaryonDecay_la_LIBADD = \
 $(top_builddir)/PDT/libHwBaryonWidth.la
 
-HwBaryonDecay_la_SOURCES = \
+nodist_HwBaryonDecay_la_SOURCES = \
 Baryon/BaryonDecayer__all.cc
 
 ##################
@@ -107,7 +107,7 @@ pkglib_LTLIBRARIES += HwVMDecay.la
 HwVMDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 8:0:0
 
-HwVMDecay_la_SOURCES = \
+nodist_HwVMDecay_la_SOURCES = \
 VectorMeson/VMDecayer__all.cc
 
 ##################
@@ -117,7 +117,7 @@ pkglib_LTLIBRARIES += HwPerturbativeDecay.la
 HwPerturbativeDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 9:0:0
 
-HwPerturbativeDecay_la_SOURCES = \
+nodist_HwPerturbativeDecay_la_SOURCES = \
 Perturbative/Perturbative__all.cc
 
 ##################
@@ -127,7 +127,7 @@ pkglib_LTLIBRARIES += HwPerturbativeHiggsDecay.la
 HwPerturbativeHiggsDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 9:0:0
 
-HwPerturbativeHiggsDecay_la_SOURCES = \
+nodist_HwPerturbativeHiggsDecay_la_SOURCES = \
 Perturbative/PerturbativeHiggs__all.cc
 
 ##################
@@ -137,7 +137,7 @@ pkglib_LTLIBRARIES += HwWeakCurrents.la
 HwWeakCurrents_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 9:0:0
 
-HwWeakCurrents_la_SOURCES = \
+nodist_HwWeakCurrents_la_SOURCES = \
 WeakCurrents/WeakCurrents__all.cc
 
 ##################
@@ -147,7 +147,7 @@ pkglib_LTLIBRARIES += HwSMDecay.la
 HwSMDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 10:0:0
 
-HwSMDecay_la_SOURCES = \
+nodist_HwSMDecay_la_SOURCES = \
 ScalarMeson/SMDecayer__all.cc
 
 ##################
@@ -157,7 +157,7 @@ pkglib_LTLIBRARIES += HwTMDecay.la
 HwTMDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 8:0:0
 
-HwTMDecay_la_SOURCES = \
+nodist_HwTMDecay_la_SOURCES = \
 TensorMeson/TMDecayer__all.cc
 
 ##################
@@ -167,7 +167,7 @@ pkglib_LTLIBRARIES += HwPartonicDecay.la
 HwPartonicDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 9:0:0
 
-HwPartonicDecay_la_SOURCES = \
+nodist_HwPartonicDecay_la_SOURCES = \
 Partonic/Partonic__all.cc
 
 ##################
@@ -177,7 +177,7 @@ pkglib_LTLIBRARIES += HwSOPHTY.la
 HwSOPHTY_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 3:0:0
 
-HwSOPHTY_la_SOURCES = \
+nodist_HwSOPHTY_la_SOURCES = \
 Radiation/Sophty__all.cc
 
 ##################

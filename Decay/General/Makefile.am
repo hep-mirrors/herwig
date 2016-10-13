@@ -6,8 +6,10 @@ GeneralThreeBodyDecayer.cc \
 GeneralCurrentDecayer.h GeneralCurrentDecayer.fh GeneralCurrentDecayer.cc \
 GeneralFourBodyDecayer.h GeneralFourBodyDecayer.fh \
 GeneralFourBodyDecayer.cc \
-StoFFFFDecayer.h StoFFFFDecayer.cc \
-GeneralDecayer__all.cc $(ALL_H_FILES)
+StoFFFFDecayer.h StoFFFFDecayer.cc
+
+nodist_libHwGeneralDecay_la_SOURCES = \
+GeneralDecayer__all.cc 
 
 BUILT_SOURCES  = GeneralDecayer__all.cc
 DISTCLEANFILES = GeneralDecayer__all.cc
@@ -15,7 +17,7 @@ DISTCLEANFILES = GeneralDecayer__all.cc
 GeneralDecayer__all.cc : $(ALL_CC_FILES)
 	$(top_srcdir)/cat_with_cpplines $^ > $@
 
-EXTRA_DIST = $(ALL_CC_FILES)
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 ALL_H_FILES = \
 FFSDecayer.h \
