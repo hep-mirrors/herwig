@@ -159,8 +159,8 @@ void GeneralSampler::initialize() {
       << "Wrote " << jobCount << " integration jobs\n"
       << "Please submit integration jobs with the\nintegrate --jobid=x\ncommand for job ids "
       << "from 0 to " << (jobCount-1) << "\n\n"
-      << "e.g.:\n\n" << Colour::yellow
-      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done \n\n" << Colour::reset
+      << "e.g.:\n\n" << ANSI::yellow
+      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done \n\n" << ANSI::reset
       << "---------------------------------------------------\n"
       << flush;
 

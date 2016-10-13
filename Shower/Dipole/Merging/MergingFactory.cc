@@ -490,11 +490,11 @@ void MergingFactory::setup() {
     
     onlysubcounter = 0;
     
-    generator()->log() << Colour::red << "Preparing Merging: ";
-    generator()->log() << Colour::green << numb << " x Born " << Colour::red;
+    generator()->log() << ANSI::red << "Preparing Merging: ";
+    generator()->log() << ANSI::green << numb << " x Born " << ANSI::red;
     if (MH()->M()>-1) {
-      generator()->log() << Colour::yellow << numv << " x Virtual ";
-      generator()->log() << Colour::blue << numr << " x Real " << Colour::red << flush;
+      generator()->log() << ANSI::yellow << numv << " x Virtual ";
+      generator()->log() << ANSI::blue << numr << " x Real " << ANSI::red << flush;
     }
     
     boost::progress_display * progressBar = new boost::progress_display(numb+numv+numr,generator()->log());
@@ -505,9 +505,9 @@ void MergingFactory::setup() {
                ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber)){
               pushB(born, i);
               onlysubcounter++;
-              generator()->log() << Colour::green;
+              generator()->log() << ANSI::green;
               ++(*progressBar);
-              generator()->log() << Colour::reset;
+              generator()->log() << ANSI::reset;
             }
           }
         }
@@ -523,7 +523,7 @@ void MergingFactory::setup() {
          ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
       pushV(virt, i);
       onlysubcounter++;
-       generator()->log() << Colour::yellow;
+       generator()->log() << ANSI::yellow;
       ++(*progressBar);
     }
     
@@ -534,10 +534,10 @@ void MergingFactory::setup() {
          ||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
       pushR(real, i);
       onlysubcounter++;
-      generator()->log() << Colour::blue;
+      generator()->log() << ANSI::blue;
       ++(*progressBar);
     }
-    generator()->log() << Colour::reset;
+    generator()->log() << ANSI::reset;
     delete progressBar;
     
     if ( !externalAmplitudes().empty() ) {
@@ -581,11 +581,11 @@ void MergingFactory::setup() {
     generator()->log()
     << "---------------------------------------------------\n" << flush;
     
-    generator()->log() <<"\n\n" << Colour::red
+    generator()->log() <<"\n\n" << ANSI::red
                         <<"Note: Due to the unitarization of the higher  "
                        <<"\nmultiplicities, the individual cross sections "
                        <<"\ngiven in the integration and run step are not"
-                       <<"\nmeaningful without merging." << Colour::reset << endl;
+                       <<"\nmeaningful without merging." << ANSI::reset << endl;
     ransetup=true;
     
   }

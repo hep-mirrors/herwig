@@ -181,7 +181,7 @@ void BinSampler::fillRemappers(bool progress) {
 
   boost::progress_display* progressBar = 0;
   if ( progress ) {
-    Repository::clog() << "warming up " << Colour::red << process() << Colour::reset;
+    Repository::clog() << "warming up " << ANSI::red << process() << ANSI::reset;
     progressBar = new boost::progress_display(theRemapperPoints,Repository::clog());
   }
 
@@ -392,7 +392,7 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
 
   boost::progress_display* progressBar = 0;
   if ( progress ) {
-    Repository::clog() << "integrating " << Colour::red << process()<< Colour::reset << ", iteration "
+    Repository::clog() << "integrating " << ANSI::red << process()<< ANSI::reset << ", iteration "
 		       << (iterations().size() + 1);
     progressBar = new boost::progress_display(points,Repository::clog());
   }
@@ -444,9 +444,9 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
   }
 
   if ( progress ) {
-    Repository::clog() << "integrated ( " << Colour::yellow 
+    Repository::clog() << "integrated ( " << ANSI::yellow 
 		       << averageWeight() << " +/- " << sqrt(averageWeightVariance())
-		       << Colour::reset << " ) nb\nepsilon = "
+		       << ANSI::reset << " ) nb\nepsilon = "
 		       << (abs(maxWeight()) != 0. ? averageAbsWeight()/abs(maxWeight()) : 0.);
     if ( !iterations().empty() )
       Repository::clog() << " chi2 = " << chi2();
