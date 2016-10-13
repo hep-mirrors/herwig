@@ -107,7 +107,7 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
 
   presampledSplitting = generatedSplitting;
 
-  prepared =  true;
+  prepared = true;
 
   parameters.resize(nDim());
 

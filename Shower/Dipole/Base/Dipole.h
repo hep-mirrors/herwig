@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer, Stephen Webster
+ * \author Simon Platzer, Stephen Webster, Johannes Bellm
  *
  * \brief The Dipole class is used by the dipole shower to
  * represent a dipole of two coloured partons.
@@ -252,7 +252,9 @@ public:
 			     bool colourSpectator) const;
 
   /**
-   * As split without spliting
+   * As split, but without touching the event record.
+   * Needed to produce a phase space point as it would 
+   * be after calling split.
    */
   void tmpsplit (DipoleSplittingInfo& dsplit,
                              bool colourSpectator) const;

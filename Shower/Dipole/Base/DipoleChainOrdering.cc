@@ -42,7 +42,6 @@ Energy DipoleChainOrdering::hardScale(tPPtr emitter, tPPtr spectator,
     split.splittingKinematics()->dipoleScale(emitter->momentum(),
 					     spectator->momentum());
 
-
   if ( !index.incomingDecaySpectator() && !index.incomingDecayEmitter() ) {
   return 
     virtualityOrdering ?

@@ -574,7 +574,7 @@ public:
   virtual CrossSection dSigHatDR() const;
 
   /**
-   * Always same prefactor
+   * Same prefactor for all dSigHat
    **/
   CrossSection prefactor()const;
 
@@ -1000,7 +1000,6 @@ public:
   /**
    * Clone the dependencies, using a given prefix.
    */
-      
   void cloneDependencies(const std::string& prefix = "",bool slim = false );
 
   /**
@@ -1188,7 +1187,8 @@ private:
   mutable bool checkedPDFs;
   
   /**
-   * The first cluster node
+   * The merging helper to be used. 
+   * Only the head ME has a pointer to this helper.
    */
 
   MergerBasePtr theMerger;

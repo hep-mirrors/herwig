@@ -24,7 +24,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer, Stephen Webster
+ * \author Simon Platzer, Stephen Webster, Johannes Bellm
  *
  * \brief Generalized dipole splitting info to deal with subleading-N
  * splittings.

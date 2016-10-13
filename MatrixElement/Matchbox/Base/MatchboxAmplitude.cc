@@ -51,7 +51,7 @@ void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
      << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints
      << theTrivialColourLegs << theReshuffleMasses.size();
   if ( !theReshuffleMasses.empty() ) {
-    for (auto  & r : theReshuffleMasses )
+    for (auto const & r : theReshuffleMasses )
       os << r.first << ounit(r.second,GeV);
   }
 }

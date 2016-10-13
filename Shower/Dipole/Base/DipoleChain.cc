@@ -92,8 +92,6 @@ void DipoleChain::check() {
   }
 }
 
-
-
 list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emittingDipole,
 						    pair<Dipole,Dipole> children,
 						    pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators) {
@@ -106,7 +104,7 @@ list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emitt
   if (hasLeftNeighbour(emittingDipole)) {
 
     list<Dipole>::iterator theLeftNeighbour =
-      leftNeighbourIterator(emittingDipole);  
+      leftNeighbourIterator(emittingDipole);
 
     theLeftNeighbour->rightParticle(children.first.leftParticle());
     if ( children.first.leftParticle()->scale() < sqr(theLeftNeighbour->rightScale()) )
