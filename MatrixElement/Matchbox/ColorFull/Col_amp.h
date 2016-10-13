@@ -172,7 +172,7 @@ public:
 
 	/// Function for contracting the (anti-)quarks in Ca1 with those
 	/// in Ca2. The results is saved in this Col_amp.
-	void contract_quarks( const Col_amp Ca1, const Col_amp Ca2 );
+	void contract_quarks( const Col_amp & Ca1, const Col_amp & Ca2 );
 
 private:
 

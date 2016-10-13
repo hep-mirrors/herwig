@@ -594,7 +594,7 @@ void Col_amp::contract_Quark_line_gluons( ) {
 	}
 }
 
-void Col_amp::contract_quarks( const Col_amp Ca1, const Col_amp Ca2 ) {
+void Col_amp::contract_quarks( const Col_amp & Ca1, const Col_amp & Ca2 ) {
 
 	if( !ca.empty() or (Scalar.size()==!1 or Scalar.at(0).int_part!=0 ) ){
 		std::cerr
