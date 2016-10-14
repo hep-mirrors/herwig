@@ -189,10 +189,13 @@ private:
   /* The mass of the constituent diquark */
   Energy mqq() const {return Energy(0.650*GeV);}
   
+  /* The proton-pomeron slope */
   double theprotonPomeronSlope;
   
+  /* The soft pomeron intercept */
   double thesoftPomeronIntercept;
   
+  /* The soft pomeron slope */
   double thesoftPomeronSlope;
  
   
@@ -201,7 +204,6 @@ private:
    */
   pair<pair<Energy2,Energy2>,Energy2> diffractiveMassAndMomentumTransfer() const;
   
-  //pair<pair<Energy2,Energy2>,Energy2> doublediffractiveMassAndMomentumTransfer() const;
 
   /**
    * Random value for the diffractive mass squared M2 according to (M2/s0)^(-intercept)
@@ -219,25 +221,49 @@ private:
   
   Energy2 doublediffrandomt(Energy2 M12, Energy2 M22) const;
   
+  
+  /**
+   * Returns the momenta of the two-body decay of momentum pp
+   */
   pair<Lorentz5Momentum,Lorentz5Momentum> twoBodyDecayMomenta(Lorentz5Momentum pp) const;
 
-  InvEnergy2 protonPomeronSlope() const; //{return 8.1/GeV2;} // 15.0 GeV2
-    
-  double softPomeronIntercept() const; //{return 1.01;} // 1.1 as usual
+  /**
+   * Returns the proton-pomeron slope
+   */
+  InvEnergy2 protonPomeronSlope() const; 
+  
+  /**
+   * Returns the soft pomeron intercept
+   */  
+  double softPomeronIntercept() const; 
  
   //M12 and M22 are masses squared of 
   //outgoing particles
   
+  /**
+   * Returns the minimal possible value of momentum transfer t given the center
+   * of mass energy and diffractive masses
+   */
   Energy2 tminfun(Energy2 s, Energy2 M12, Energy2 M22) const;
-
+ 
+  /**
+   * Returns the maximal possible value of momentum transfer t given the center
+   * of mass energy and diffractive masses
+   */
   Energy2 tmaxfun(Energy2 s , Energy2 M12, Energy2 M22) const; 
 
-  //Energy2 M2min() const{return sqr(0.938+2*0.2)*GeV2;}
+  /**
+   * Returns the minimal possible value of diffractive mass
+   */
+  //lowest possible mass given the constituent masses of quark and diquark
   Energy2 M2min() const{return sqr(0.938+0.325+2*0.65)*GeV2;}
-
+  
+  /**
+   * Returns the maximal possible value of diffractive mass
+   */
   Energy2 M2max() const{return sqr(generator()->maximumCMEnergy()-1*GeV);}//TODO:modify to get proper parameters
 
-  InvEnergy2 softPomeronSlope() const;// { return 0.2 / GeV2; }
+  InvEnergy2 softPomeronSlope() const;
   
    
 

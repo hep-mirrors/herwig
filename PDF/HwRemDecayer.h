@@ -71,6 +71,7 @@ public:
 		   colourDisrupt_(1.0),
 		   ladderMult_(1.0),
 		   ladderbFactor_(1.0),
+		   gaussWidth_(0.1),
 		   valOfN_(0), 
 		   initTotRap_(0),
 		   _kinCutoff(0.75*GeV), 
@@ -576,6 +577,13 @@ private:
    multiperipheral ladder multiplicity.
    */
   double ladderbFactor_;
+  
+  /**
+   * Variable to store the gaussian width of the 
+   * fluctuation of the longitudinal momentum
+   * fraction.
+   */
+  double gaussWidth_;
   
   /**
    * Variable to store the current total multiplicity 

@@ -821,7 +821,7 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   double x1max = (r1.e()+abs(r1.z()))/(P1.e() + abs(P1.z()));
   double x2max = (r2.e()+abs(r2.z()))/(P2.e() + abs(P2.z()));
   double x1;
-  //modified
+  
   if(!multiPeriph_){
   	//now generate according to 1/x
   	x_g1 = xmin * exp(UseRandom::rnd(log(x1max/xmin)));
@@ -832,7 +832,7 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   	double param = (1/(2*valOfN_+1))*initTotRap_;
   	do{
   		// need 1-x instead of x to get the proper final momenta
-    		x1 = UseRandom::rndGauss(0.03, 1 - (exp(param)-1)/exp(param));
+    		x1 = UseRandom::rndGauss(gaussWidth_, 1 - (exp(param)-1)/exp(param));
     	}while(x1 < 0 || x1>=1.0);
   	x_g1 = x1max*x1;
   	x_g2 = x2max*x1;
@@ -872,14 +872,14 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
       cerr << "EXCEPTION not enough energy...." << endl;
     throw ExtraSoftScatterVeto();
   }
-  //modified
+  
   if(!multiPeriph_){
   	if(UseRandom::rndbool())
     		pz = sqrt(pz2);
   	else
     		pz = -sqrt(pz2);
   }else{
-  	pz = pz2/GeV2 > 0 ? sqrt(pz2) : sqrt(0.0*GeV2);
+  	pz = pz2 > ZERO ? sqrt(pz2) : ZERO;
   }
   
 
@@ -998,16 +998,16 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
 
 void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {	
   if(N == 0) return;
-  ///////////////////////
   int Nmpi = N;
-  if(N==0) return;
-  int j(0);
-  for(j=0;j<Nmpi;j++){
+  for(int j=0;j<Nmpi;j++){
   ///////////////////////
-  int avgN = floor(ladderMult_*log((softRems_.first->momentum()+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
-  initTotRap_ = abs(softRems_.first->momentum().rapidity())+abs(softRems_.second->momentum().rapidity());
+  // Average number of partons in the ladder
+  int avgN = floor(ladderMult_*log((softRems_.first->momentum()
+  		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
+  initTotRap_ = abs(softRems_.first->momentum().rapidity())
+  		+abs(softRems_.second->momentum().rapidity());
     
-  //generate poisson distribution	
+  //generate the poisson distribution with mean avgN
   double L = exp(-double(avgN));
   int k = 0;
   double p = 1;
@@ -1031,16 +1031,21 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
                       << Exception::runerror; 
 
   Lorentz5Momentum g1, g2, q1, q2;
-  //new
+  //intermediate gluons; erased in if there is 
+  //another step
   Lorentz5Momentum gint1, gint2;
-  PPair oldgluons;
+ 
+  //momenta of the gluon pair generated in 
+  //each step
   vector< pair<Lorentz5Momentum,Lorentz5Momentum> > gluonMomPairs;
-  
+  //momenta of remnants
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
-  unsigned int tries(1), i(0);
   
-  for(i=0; i<N; i++){
+  unsigned int tries(1), i(0);
+  //generate the momenta of particles in the ladder
+  for(i = 0; i < N; i++){
     //check how often this scattering has been regenerated
+    //and break if exeeded maximal number
     if(tries > maxtrySoft_) break;
     	
     if(dbg){
@@ -1049,13 +1054,17 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
     try{
       if(i==0){
+      	//generated partons in the ladder are quark-antiquark
       	quarkPair_ = true;
       	//first splitting: remnant -> remnant + quark
       	softKinematics(r1, r2, q1, q2);
       }else if(i==1){
-        //second splitting; quark -> quark + gluon
+        
+        //generated pair is gluon-gluon
       	quarkPair_ = false;
+      	//second splitting; quark -> quark + gluon
       	softKinematics(q1, q2, g1, g2);
+      	//record generated gluon pair
       	gluonMomPairs.push_back(make_pair(g1,g2));
       	
       }else{
@@ -1081,21 +1090,27 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       i--;
       continue;
     }
-  
-     
     //reset counter
     tries = 1;
   }
+  //if no gluons discard the ladder
   if(gluonMomPairs.size()==0) return;
+  
   if(dbg)
     cerr << "generated " << i << "th soft scatters\n";
-    				      
-  PPair quarks;
-  pair<bool, bool> anti_q;
   
-  for(i=0; i<=gluonMomPairs.size(); i++){
-    
+  //gluons from previous step
+  PPair oldgluons;  				      
+  //quark-antiquark pair
+  PPair quarks;
+  //colour direction of quark-antiquark (true if anticolour)
+  pair<bool, bool> anti_q;
+  //generate particles (quark-antiquark and gluons) in the 
+  //ladder from momenta generated above
+  for(i = 0; i <= gluonMomPairs.size(); i++){
+    //remnants before splitting
     PPair oldrems = softRems_;
+    //current gluon pair
     PPair gluons;
     
     //add quarks
@@ -1110,8 +1125,10 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     
     if(i>0){
     	
-    	gluons = make_pair(addParticle(softRems_.first, ParticleID::g, gluonMomPairs[i-1].first), 
-			     addParticle(softRems_.second, ParticleID::g, gluonMomPairs[i-1].second));
+    	gluons = make_pair(addParticle(softRems_.first, ParticleID::g, 
+    				gluonMomPairs[i-1].first), 
+			     addParticle(softRems_.second, ParticleID::g, 
+			     	gluonMomPairs[i-1].second));
     }
     
     //now reset the remnants with the new ones
@@ -1119,7 +1136,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     softRems_.second = addParticle(softRems_.second, softRems_.second->id(), r2);
     
     
-    //do the colour connections
+    //colour direction of remnats
     pair<bool, bool> anti = make_pair(oldrems.first->hasAntiColour(),
     				      oldrems.second->hasAntiColour());
     
@@ -1127,19 +1144,24 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     
     ColinePtr cl1 = new_ptr(ColourLine());
     ColinePtr cl2 = new_ptr(ColourLine());
-    //new
+    //first colour connect remnants and if no 
+    //gluons the quark-antiquark pair 
       if(i==0){
-      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
+      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, 
+      								anti.first);
+      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, 
+      								anti.second);
       		if(gluonMomPairs.size()==0){
       			ColinePtr clq = new_ptr(ColourLine());
       			clq->addColoured(quarks.first, anti_q.first);
       			clq->addColoured(quarks.second, anti_q.second);
       		}	
-      }
+      }//colour connect remnants from previous step and gluons to quarks or gluons
       if(i!=0){
-      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
+      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, 
+      								anti.first);
+      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, 
+      								anti.second);
       		if(i==1){
       			cl1->addColoured(quarks.first, anti_q.first);
       			cl1->addColoured(gluons.first, !anti_q.first);
@@ -1152,7 +1174,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       			cl2->addColoured(gluons.second, !anti_q.second);
       		}
       		
-      } 
+      } //last step; connect last gluons 
       if(i > 0 && i == gluonMomPairs.size()){
       		ColinePtr clg = new_ptr(ColourLine());
       		clg->addColoured(gluons.first, anti_q.first);
@@ -1160,7 +1182,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       }
       
       
-    
+      //save gluons for the next step	    
       if(i < gluonMomPairs.size()) oldgluons = gluons;
   }
   
@@ -1401,6 +1423,13 @@ void HwRemDecayer::Init() {
      "The additive factor in the multiperipheral ladder multiplicity.",
      &HwRemDecayer::ladderbFactor_, 
      1.0, 0.0, 10.0, 
+     false, false, Interface::limited);   
+
+  static Parameter<HwRemDecayer,double> interfacegaussWidth
+    ("gaussWidth",
+     "The gaussian width of the fluctuation of longitudinal momentum fraction.",
+     &HwRemDecayer::gaussWidth_, 
+     0.1, 0.0, 1.0, 
      false, false, Interface::limited);   
 
 

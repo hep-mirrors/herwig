@@ -27,22 +27,14 @@ using namespace Herwig;
 MEDiffraction::MEDiffraction()
 : HwMEBase(),
   deltaOnly(false),	 
-  //theme2(1.0),
-  //thesoftPomeronIntercept(1.05),
-  //thesoftPomeronSlope(0.25),
-  //theprotonPomeronSlope(10.1),
   isInRunPhase(false) {}
 
 
 void MEDiffraction::getDiagrams() const {
     //incoming particles
-    //PPair incomingHardons = generator()->currentEvent()->primarySubProcess()->incoming();
     cPDPair incomingHardons = generator()->eventHandler()->incoming();
-    //cout<<incomingHardons.first->id()<<" "<<incomingHardons.second->id()<<endl;    
     	
-    //TODO: only works for proton-proton and proton-antiproton collisions.
     tcPDPtr pom = getParticleData(990);
-    //tcPDPtr prt1 = getParticleData(2212);
     
     //get incoming particles
     tcPDPtr prt11 = getParticleData(incomingHardons.first->id());
@@ -52,7 +44,6 @@ void MEDiffraction::getDiagrams() const {
     int sign1=0, sign2=0;
     sign1 = (incomingHardons.first->id() > 0) ? 1 : -1;
     sign2 = (incomingHardons.second->id() > 0) ? 1 : -1;
-    //cout<<sign1<<" "<<sign2<<endl;
     
     tcPDPtr prt21 = getParticleData(sign1*2214);//Delta+
     tcPDPtr prt22 = getParticleData(sign2*2214);//Delta+    
@@ -100,37 +91,27 @@ void MEDiffraction::getDiagrams() const {
     		{
     			//switch between direction of dissociated proton for single diffraction or 
     			//double diffraction 
-    			/////////////////Cases with ud_1 commented out, because of HadronSelector////////////////
     			switch (diffDirection){
     			case 0: //left
     				//u -- ud_0
     				add(new_ptr((Tree2toNDiagram(4), prt11, q11, pom, prt12, 3, prt12, 1, dq11, 2, q11, -1)));
-    				//u -- ud_1
-    				//add(new_ptr((Tree2toNDiagram(4), prt1, q1, pom, prt1, 3, prt1, 1, dq11, 2, q1, -2)));
     				//d -- uu_1
     				add(new_ptr((Tree2toNDiagram(4), prt11, q21, pom, prt12, 3, prt12, 1, dq21, 2, q21, -3)));
     				break;
     			case 1:	//right
     				//u -- ud_0
     				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q12, prt12, 1, prt11, 3, dq12, 2, q12, -1)));
-    				//u -- ud_1
-    				//add(new_ptr((Tree2toNDiagram(4), prt1, pom, q1, prt1, 1, prt1, 3, dq11, 2, q1, -2)));
+    				
     				//d -- uu_1
     				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q22, prt12, 1, prt11, 3, dq22, 2, q22, -3)));
     				break;
     			case 2:	//double
     				//u -- ud_0 left u -- ud_0 right	
     				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q12, prt12, 1, dq11, 2, q11, 3, q12, 4, dq12, -1)));
-    				//u -- ud_0 left u -- ud_1 right
-    				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q1, prt1, 1, dq1, 2, q1, 3, q1, 4, dq11, -2)));
+    				
     				//u -- ud_0 left d -- uu_1 right
     				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q22, prt12, 1, dq11, 2, q11, 3, q22, 4, dq22, -3)));
-    				//u -- ud_1 left u -- ud_0 right
-    				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q1, prt1, 1, dq11, 2, q1, 3, q1, 4, dq1, -4)));
-    				//u -- ud_1 left u -- ud_1 right
-    				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q1, prt1, 1, dq11, 2, q1, 3, q1, 4, dq11, -5)));
-    				//u -- ud_1 left d -- uu_1 right
-    				//add(new_ptr((Tree2toNDiagram(5), prt1, q1, pom, q2, prt1, 1, dq11, 2, q1, 3, q2, 4, dq2, -6)));
+    				
     				//d -- uu_1 left u -- ud_0 right
     				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q12, prt12, 1,dq21, 2, q21, 3, q12, 4, dq12, -7)));
     				//d -- uu_1 left u -- ud_1 right
@@ -248,11 +229,10 @@ bool MEDiffraction::generateKinematics(const double * ) {
   //check if we want only delta for the excited state
   
   //new boost vectors
-  const Boost p3boost = p3.findBoostToCM();
-  const Boost p4boost = p4.findBoostToCM();
-  Axis norm;
-  //Axis rotaxis, rotaxis1;
-  //double angle, angle1;
+  //const Boost p3boost = p3.findBoostToCM();
+  //const Boost p4boost = p4.findBoostToCM();
+  //Axis norm;
+  
   //pair of momenta for double decay for a two cluster case
   pair<Lorentz5Momentum,Lorentz5Momentum> momPair, momPair1;
   //fraction of momenta
@@ -269,9 +249,6 @@ bool MEDiffraction::generateKinematics(const double * ) {
   			
   			//aligned with outgoing dissociated proton
   			const double costhetaprime = costheta;
-  			
-  			//along z axis
-  			//const double costhetaprime = 1;
   			
   			const double sinthetaprime=sqrt(1-sqr(costhetaprime));
   			//axis along which diquark from associated proton is aligned
@@ -429,12 +406,6 @@ bool MEDiffraction::generateKinematics(const double * ) {
   				meMomenta()[7].setMass(mqq());
   				
   				
-  				//do{}
-  				//while(!Kinematics::threeBodyDecay(p3,meMomenta()[2],meMomenta()[3],meMomenta()[4]));
-  				
-  				//do{}
-  				//while(!Kinematics::threeBodyDecay(p4,meMomenta()[5],meMomenta()[6],meMomenta()[7]));
-  				
   				//two body decay of the outgoing dissociation proton
   				do{}
     				while(!Kinematics::twoBodyDecay(p3,mqq()+mq(),getParticleData(21)->constituentMass(),
@@ -522,15 +493,14 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
     			thet = doublediffrandomt(theM12,theM22);
     			break;	
     	}
-    	//theM12=m2;
-    	//theM22=m2;
+
     }else{
     	switch (diffDirection){
     	case 0:
     		M2=randomM2();
     		thet = randomt(M2);
     		theM12=M2;
-    		//theM12=randomM2();
+    		
     		theM22=m2;
     		
     		break;
@@ -539,22 +509,22 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
     		theM12=m2;
     		M2=randomM2();
     		thet = randomt(M2);
-    		//theM22=randomM2();
+    		
     		
     		theM22=M2; 
     		break;
-    	case 2://TODO: choose M2
+    	case 2:
     		theM12=randomM2();
     		theM22=randomM2();
     		M2=(theM12>theM22) ? theM12: theM22;
-    		//thet = randomt(M2);
+    		
     		thet = doublediffrandomt(theM12,theM22);
     		
     		break;
     	}
     }
     count++;
-  //} while(count < 100 && UseRandom::rnd() > pow(M2max()/M2, 2*softPomeronSlope()*thet));
+  
   const Energy cmEnergy = generator()->maximumCMEnergy();
   const Energy2 s = sqr(cmEnergy);
   InvEnergy2 slope;
@@ -566,14 +536,8 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   }
 
   
-  //const double deltaP = 1-softPomeronIntercept();  
   const double expmax = exp(slope*tmaxfun(s,m2,M2));
   const double expmin = exp(slope*tminfun(s,m2,M2));
-  
-  //(1-M2/s) added to smear the result for large M2.
-  //condition = UseRandom::rnd()>(1-M2/s)*(1+(2*sqr(2*GeV))/(sqr(2*GeV)+M2))*(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2);
-  //condition = (UseRandom::rnd()>(1-M2/s)*(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2))
-  //		||((theM12/GeV2)*(theM22/GeV2)>=(sqr(cmEnergy)/GeV2)/(softPomeronSlope()*GeV2));
   
   
   //without (1-M2/s) constraint
@@ -589,8 +553,6 @@ pair<Lorentz5Momentum,Lorentz5Momentum> MEDiffraction::twoBodyDecayMomenta(Loren
 	//Decay of the excited proton
   	const Energy2 Mx2(sqr(pp.mass())),mq2(sqr(mq())),mqq2(sqr(mqq()));
   	
-  	//const Energy2 psq = sqr(Mx2+mqq2-mq2)/(4*Mx2) - mqq2;
-	//cout<<diffDirection<<" "<<pp.mass()/GeV<<endl;
         const Energy2 psq = ((Mx2-sqr(mq()+mqq()))*(Mx2-sqr(mq()-mqq())))/(4*Mx2);  	
 
   	assert(psq/GeV2>0);
@@ -623,12 +585,9 @@ Energy2 MEDiffraction::randomt(Energy2 M2) const {
   const Energy cmEnergy = generator()->maximumCMEnergy();
   const Energy2 ttmin = tminfun(sqr(cmEnergy),m2,M2);
   const Energy2 ttmax = tmaxfun(sqr(cmEnergy),m2,M2);
-//  const InvEnergy2 slope = protonPomeronSlope()
-//                         + 2*softPomeronSlope()*log( pow<2,1>(cmEnergy)/M2max() );
+
   const InvEnergy2 slope = protonPomeronSlope()
                          + 2*softPomeronSlope()*log(sqr(cmEnergy)/M2);
-//  return log( exp(slope*tmin(sqr(cmEnergy),m2,M2)) +
-//              UseRandom::rnd()*(exp(slope*tmax(sqr(cmEnergy),m2,M2)) - exp(slope*tmin(sqr(cmEnergy),m2,M2))) ) / slope;
     return log( exp(slope*ttmin) +
               UseRandom::rnd()*(exp(slope*ttmax) - exp(slope*ttmin)) ) / slope;
 }
@@ -636,27 +595,21 @@ Energy2 MEDiffraction::randomt(Energy2 M2) const {
 Energy2 MEDiffraction::doublediffrandomt(Energy2 M12, Energy2 M22) const {
   
   const Energy cmEnergy = generator()->maximumCMEnergy();
-  //const InvEnergy2 slope = 2*softPomeronSlope()*log( (pow<2,1>(cmEnergy)*pow<-1,1>(softPomeronSlope()))/pow<2,1>(M2max()) );
-  //softPomeronSlope() chosen as the scale s0
+  
   const double shift = 0.1;
   const InvEnergy2 slope = 2*softPomeronSlope()*log(shift+(sqr(cmEnergy)/softPomeronSlope())/(M12*M22));
-  //cout<<"slope: "<<slope*GeV2<<endl;
+  
   const Energy2 ttmin = tminfun(sqr(cmEnergy),M12,M22);
   const Energy2 ttmax = tmaxfun(sqr(cmEnergy),M12,M22);
-  //return log( exp(slope*ttmin) +
-  //            UseRandom::rnd()*(exp(slope*ttmax) - 
-  //            exp(slope*ttmin)) )/ slope;
+  
   return log( exp(slope*ttmin) +
               UseRandom::rnd()*(exp(slope*ttmax) - exp(slope*ttmin)) ) / slope;
 }
 
 Energy2 MEDiffraction::randomM2() const {
   const double tmp = 1 - softPomeronIntercept();
-  //const Energy2 s0 = GeV2;
+  
   const Energy cmEnergy = generator()->maximumCMEnergy();
-//  return s0 * pow( pow(M2min()/s0,tmp) +
-//                   UseRandom::rnd() * (pow(M2max()/s0,tmp) - pow(M2min()/s0,tmp)),
-//                   1.0/tmp );
   return sqr(cmEnergy) * pow( pow(M2min()/sqr(cmEnergy),tmp) +
                    UseRandom::rnd() * (pow(M2max()/sqr(cmEnergy),tmp) - pow(M2min()/sqr(cmEnergy),tmp)),
                    1.0/tmp );
@@ -664,13 +617,13 @@ Energy2 MEDiffraction::randomM2() const {
 
 Energy2 MEDiffraction::tminfun(Energy2 s, Energy2 M12, Energy2 M22) const {
 	const Energy2 m2 = sqr( getParticleData(2212)->mass() );
-	//return (1/(2*s))*(-sqrt(kallen(s, M12, M12)*kallen(s, M12, M22))-sqr(s)+3*s*M12+s*M22);
+	
 	return (1/(2*s))*(-sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
 }
 
 Energy2 MEDiffraction::tmaxfun(Energy2 s, Energy2 M12, Energy2 M22) const  {
 	const Energy2 m2 = sqr( getParticleData(2212)->mass() );
-	//return (1/(2*s))*(sqrt(kallen(s, M12, M12)*kallen(s, M12, M22))-sqr(s)+3*s*M12+s*M22);
+	
 	return (1/(2*s))*(sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
 }
 
@@ -688,32 +641,18 @@ unsigned int MEDiffraction::orderInAlphaS() const {
 }
 
 unsigned int MEDiffraction::orderInAlphaEW() const {
-  return 2;
+  return 0;
 }
 
 Selector<MEBase::DiagramIndex>
-MEDiffraction::diagrams(const DiagramVector & diags) const {
+MEDiffraction::diagrams(const DiagramVector & ) const {
   Selector<DiagramIndex> sel;
-  //for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-    //sel.insert(1.0, i);
-    /////////////////Cases with ud_1 commented out, because of HadronSelector////////////////
+  
     if(!deltaOnly){
     	if(diffDirection<2){
-    		//sel.insert(1/2,0);
-    		//sel.insert(1/6,1);
-    		//sel.insert(1/3,2);
     		sel.insert(2/3,0);
     		sel.insert(1/3,1);
     	}else{
-    		//sel.insert(1/4,0);
-    		//sel.insert(1/12,1);
-    		//sel.insert(1/6,2);
-    		//sel.insert(1/12,3);
-    		//sel.insert(1/36,4);
-    		//sel.insert(1/18,5);
-    		//sel.insert(1/6,6);
-    		//sel.insert(1/18,7);
-    		//sel.insert(1/9,8);
     		
     		sel.insert(4/9,0);
     		sel.insert(2/9,1);
@@ -723,7 +662,7 @@ MEDiffraction::diagrams(const DiagramVector & diags) const {
     }else{
     	sel.insert(1.0,0);
     }	 
-  //}
+  
   return sel;
 }
 
@@ -740,9 +679,7 @@ MEDiffraction::colourGeometries(tcDiagPtr ) const {
   		if(!deltaOnly)
   		{	
   			if(diffDirection!=2){
-  				//static ColourLines dqq("-6 7");
-  				//TODO: only works for proton-proton and proton-antiproton collisions.
-  				//ColourLines dqq("");
+  				
   				if (diffDirection == 0){
   					if(sign1>0){
   						static ColourLines dqq0=ColourLines("-6 2 7");
@@ -763,10 +700,9 @@ MEDiffraction::colourGeometries(tcDiagPtr ) const {
   						sel.insert(1.0,&dqq1);
   					}
   				}
-  				//sel.insert(1.0, &dqq);
+  				
   			}else{
-  				//static ColourLines dqq("-6 7, -8 9");
-  				//sel.insert(1.0, &dqq);
+  				
   				if(sign1>0 && sign2>0){
   					static ColourLines ddqq0=ColourLines("-6 2 7, -9 4 8");
   					sel.insert(1.0,&ddqq0);
@@ -787,7 +723,7 @@ MEDiffraction::colourGeometries(tcDiagPtr ) const {
   		}else
   		{
 			static ColourLines cl("");
-			//Selector<const ColourLines *> sel;
+			
 			sel.insert(1.0, &cl);    
   		}
   		break;

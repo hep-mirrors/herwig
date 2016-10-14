@@ -141,24 +141,12 @@ IBPtr MEMinBias::fullclone() const {
 ClassDescription<MEMinBias> MEMinBias::initMEMinBias;
 // Definition of the static class description member.
 
-void MEMinBias::persistentOutput(PersistentOStream & os) const {
-  os << theme2;
-}
 
-void MEMinBias::persistentInput(PersistentIStream & is, int) {
-  is >> theme2;
-}
 
 void MEMinBias::Init() {
 
   static ClassDocumentation<MEMinBias> documentation
     ("There is no documentation for the MEMinBias class");
      
-    static Parameter<MEMinBias,double> interfaceme2
-    ("MinBiasAmplitude",
-     "The square of the min-bias amplitude used to determine the "
-     "cross section.",
-     &MEMinBias::theme2, 1.0, 0.00001, 10000.0,
-     false, false, Interface::limited);	
 }
 
