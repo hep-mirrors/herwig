@@ -65,9 +65,15 @@ public:
   /**
    * The default constructor.
    */
-  HwRemDecayer() : allowTop_(false),ptmin_(-1.*GeV), beta_(ZERO),
+  HwRemDecayer() : allowTop_(false),//quarkPair_(false),multiPeriph_(false),
+                   ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
-		   colourDisrupt_(1.0), 
+		   colourDisrupt_(1.0),
+		   ladderMult_(1.0),
+		   ladderbFactor_(1.0),
+		   gaussWidth_(0.1),
+		   valOfN_(0), 
+		   initTotRap_(0),
 		   _kinCutoff(0.75*GeV), 
 		   _forcedSplitScale(2.5*GeV),
 		   _range(1.1), _zbin(0.05),_ybin(0.),
@@ -435,7 +441,23 @@ private:
   /**
    * Create N soft gluon interactions
    */
-  void doSoftInteractions(unsigned int N);
+  void doSoftInteractions(unsigned int N){
+  	if(!multiPeriph_){
+  		doSoftInteractions_old(N);}
+  	else{
+  		doSoftInteractions_multiPeriph(N);
+  	}
+  }
+  
+  /**
+   * Create N soft gluon interactions (old version)
+   */
+  void doSoftInteractions_old(unsigned int N);
+  
+  /**
+   * Create N soft gluon interactions - multiperhpheral kinematics
+   */
+  void doSoftInteractions_multiPeriph(unsigned int N);
 
   /**
    * Method to add a particle to the step
@@ -503,6 +525,16 @@ private:
    *  Switch to control handling of top quarks in proton
    */
   bool allowTop_;
+  
+  /**
+   *  Switch to control using multiperipheral kinemaics
+   */
+  bool multiPeriph_;
+  
+  /**
+   *  True if kinematics is to be calculated for quarks
+   */
+  bool quarkPair_;
 
   /** @name Soft interaction variables. */
   //@{
@@ -533,6 +565,37 @@ private:
    * connections to additional soft subprocesses.
    */
   double colourDisrupt_;
+  
+  /**
+   * Variable to store the multiplicity factor of the 
+   multiperipheral ladder.
+   */
+  double ladderMult_;
+  
+  /**
+   * Variable to store the additive factor of the 
+   multiperipheral ladder multiplicity.
+   */
+  double ladderbFactor_;
+  
+  /**
+   * Variable to store the gaussian width of the 
+   * fluctuation of the longitudinal momentum
+   * fraction.
+   */
+  double gaussWidth_;
+  
+  /**
+   * Variable to store the current total multiplicity 
+   of a ladder.
+   */
+  double valOfN_;
+  
+  /**
+   * Variable to store the initial total rapidity between 
+   of the remnants.
+   */
+  double initTotRap_;
 
   //@}
 
