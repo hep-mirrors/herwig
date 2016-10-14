@@ -8,28 +8,8 @@ create ThePEG::ParticleData boxon
 setup boxon 99926 boxon 0.0 0.0 0.0 0.0 0 0 0 0
 create ThePEG::ParticleData triangon
 setup triangon 99927 triangon 0.0 0.0 0.0 0.0 0 0 0 0
-create ThePEG::ParticleData h0
-setup h0 25 h0 125 0.003196 0.03196 0 0 0 1 0 
 create ThePEG::ParticleData H
 setup H 35 H 700 0.01 0.1 0 0 0 1 0 
-create ThePEG::ParticleData t
-setup t 6 t 174.2 1.4 14 0 2 3 2 0 
-create ThePEG::ParticleData tbar
-setup tbar -6 tbar 174.2 1.4 14 0 -2 -3 2 0 
-makeanti tbar t
-create ThePEG::ConstituentParticleData b
-setup b 5 b 4.7 0.  0 0 -1 3 2 1  5
-create ThePEG::ConstituentParticleData bbar
-setup bbar -5 bbar 4.7 0.  0 0 1 -3 2 1  5
-makeanti bbar b
-create ThePEG::ParticleData Z0
-setup Z0 23 Z0 91.1876 2.5097 24.952 0 0 0 3 0 
-create ThePEG::ParticleData W+
-setup W+ 24 W+ 80.399 2.0997 21.41 0 3 0 3 0 
-create ThePEG::ParticleData W-
-setup W- -24 W- 80.399 2.0997 21.41 0 -3 0 3 0 
-makeanti W- W+
-
 
 #############################################################
 # Create an AlpGenHandlerOL (set up & assigned below) ...     #
@@ -37,62 +17,8 @@ makeanti W- W+
 cd /Herwig/Shower
 library AlpGenHandlerOL.so
 create Herwig::AlpGenHandlerOL AlpGenHandlerOL
-
-cd /Herwig/EventHandlers
-set LHCHandler:CascadeHandler /Herwig/Shower/AlpGenHandlerOL
-#set LHCHandler:CascadeHandler NULL
-#set LHCHandler:HadronizationHandler NULL
-#set LHCHandler:DecayHandler NULL 
-set /Herwig/Shower/SplittingGenerator:ISR Yes
-set /Herwig/Shower/SplittingGenerator:FSR Yes
-
-#############################################################
-# Set up the Evolver    #
-#############################################################
-cd /Herwig/Shower
-# MaxTry 100 sets the maximum number of times to try 
-# showering a given shower tree to 100. 
-# HardVetoMode Yes to veto emissions with pT greater than pT_max.
-# HardVetoScaleSource Read means pT_max comes from hepeup.SCALUP.
-# This is what you need to set _along_with_ HardVetoMode Yes in 
-# the case of Powheg external events _AND_ mc@nlo (we know this 
-# from looking at the *MCinput file that mc@nlo generates). 
-# MeCorrMode No turns off ME corrs. IntrinsicPtGaussian  2.2*GeV 
-# is the RMS of intrinsic pT of Gaussian distribution: 
-# 2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS) 
-set Evolver:MaxTry               100
-set Evolver:HardVetoMode         Yes
-set Evolver:HardVetoScaleSource  Read
-set Evolver:HardVetoReadOption   PrimaryCollision
-set Evolver:MECorrMode           No
-#Schofield-Seymour
-#set Evolver:ColourEvolutionMethod 1
-#set PartnerFinder:PartnerMethod 1
-#set GtoGGSplitFn:SplittingColourMethod 1
-# Intrinsic pT etc should be set as part of a tune i.e. it 
-# should either be left alone (default) or set by reading in 
-# one of the tunes before theGenerator is created by copying 
-# LHCGenerator (second line of this file). The following 
-# settings were extracted from LHC-UE-EE-3-CTEQ6L1.in - In 
-# light of some bad experience with MPI we prefer to set 
-# these here manually rather than read try to read that .in. 
-set /Herwig/UnderlyingEvent/KtCut:MinKT 2.752 
-set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.504 
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.34*GeV 
-# Colour reconnection (re)settings 
-set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes 
-set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.61
-# Colour Disrupt settings 
-set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.75 
-# Inverse hadron radius 
-set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.35 
-set /Herwig/UnderlyingEvent/MPIHandler:softInt Yes 
-set /Herwig/UnderlyingEvent/MPIHandler:twoComp Yes 
-set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2 
-
-# Evolver new options
-#set /Herwig/Shower/Evolver:LimitEmissions OneEmission
-
+set /Herwig/Shower/AlpGenHandlerOL:ShowerModel /Herwig/Shower/ShowerModel
+set /Herwig/Shower/AlpGenHandlerOL:SplittingGenerator /Herwig/Shower/SplittingGenerator
 
 #############################################################
 # Set up the AlpGenHandlerOL ...                              #
@@ -100,7 +26,7 @@ set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2
 cd /Herwig/Shower
 set AlpGenHandlerOL:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set AlpGenHandlerOL:RemDecayer  /Herwig/Partons/RemnantDecayer
-set AlpGenHandlerOL:Evolver     Evolver
+#set AlpGenHandlerOL:Evolver     Evolver
 set AlpGenHandlerOL:ShowerAlpha  AlphaQCD
 # Calorimeter granularity settings used by GetJet algorithm
 set AlpGenHandlerOL:NoCellsInRapidity 100
@@ -125,11 +51,28 @@ set AlpGenHandlerOL:nph         -999
 cd /Herwig/Shower
 # turn off vetoing 
 set AlpGenHandlerOL:VetoIsTurnedOff VetoingIsOff
+# Select OpenLoops Handler type
+set AlpGenHandlerOL:VetoType OpenLoops
+# Highest number of jets included
+set AlpGenHandlerOL:highestNjets 0
+# Jet ET cut to apply in jet clustering in merging.
+set AlpGenHandlerOL:ETClus 60*GeV
+# Cone size used in clustering in merging.
+set AlpGenHandlerOL:RClus 0.35
+# Max |eta| for jets in clustering in merging.
+set AlpGenHandlerOL:EtaClusMax 6.0
+# Default 1.5 factor used to decide if a jet matches a ssssparton
+# in merging: if DR(parton,jet)<rclusfactor*rclus the parton 
+# and jet are said to have been matched.
+set AlpGenHandlerOL:RClusFactor 1.5
+# Vary ETClus 
+set AlpGenHandlerOL:ETClusFixed 0
+set AlpGenHandlerOL:EpsilonETClus 30*GeV
+set AlpGenHandlerOL:SmoothingType Sine
 
 cd /Herwig/Partons
 #create ThePEG::LHAPDF thePDFset ThePEGLHAPDF.so
-#set thePDFset:PDFName MSTW2008lo68cl
-#set thePDFset:Member 0
+#set thePDFset:PDFName MSTW2008nlo68cl.LHgrid
 #set thePDFset:RemnantHandler  HadronRemnants
 #set /Herwig/Particles/p+:PDF thePDFset
 #set /Herwig/Particles/pbar-:PDF thePDFset
@@ -156,7 +99,7 @@ set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL # comment out to en
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+#set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
 cd /Herwig/Cuts
 set JetKtCut:MinKT 25.0*GeV
@@ -169,8 +112,8 @@ cd /Herwig/NewPhysics
 library HiggsPair.so
 create Herwig::HiggsPair HiggsPair HiggsPair.so
 set HiggsPair:ModelGenerator NewModel
-set HiggsPair:QCD/RunningAlphaS /Herwig/AlphaS
-set HiggsPair:EW/RunningAlphaEM /Herwig/AlphaEM
+set HiggsPair:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set HiggsPair:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
 set HiggsPair:EW/CKM /Herwig/CKM
 set HiggsPair:RunningMass /Herwig/RunningMass
 set HiggsPair:Vertex/FFZ /Herwig/Vertices/FFZVertex
@@ -197,13 +140,9 @@ set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/HiggsPair
 ##################################################
 cd /Herwig/MatrixElements/
 
-# add LO 
+# add LO
 create Herwig::MEHiggsPairOL MEHiggsPairOL HiggsPair.so
 insert SimpleQCD:MatrixElements[0] MEHiggsPairOL
-
-# we are doing LO + shower so remove merged samples
-#create Herwig::MEHiggsPairJet MEHiggsPairJet HiggsPair.so
-#insert SimpleQCD:MatrixElements[0] MEHiggsPairJet
 
 set /Herwig/NewPhysics/HiggsPair:Process All
 
