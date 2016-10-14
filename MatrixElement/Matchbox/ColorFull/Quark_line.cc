@@ -367,7 +367,7 @@ void Quark_line::append( int p ){
 }
 
 
-void Quark_line::append( std::vector <int> in_ql ){
+void Quark_line::append(  const std::vector<int> & in_ql ){
 	for (uint j=0; j<in_ql.size(); j++ ){
 		ql.push_back( in_ql.at(j) );
 	}
@@ -379,7 +379,7 @@ void Quark_line::prepend( int p){
 }
 
 
-void Quark_line::prepend(std::vector <int> in_ql){
+void Quark_line::prepend( std::vector<int> in_ql ){
 	for (uint j=0; j<ql.size(); j++ ){
 		in_ql.push_back(ql.at(j));
 	}

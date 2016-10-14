@@ -42,7 +42,7 @@ int  Col_functions::leading_Nc_pow( const Poly_vec & Pv ) const{
 	return leading_pow;
 }
 
-int  Col_functions::leading_Nc_pow( std::vector< shared_ptr<Polynomial> > Pvp) const{
+int  Col_functions::leading_Nc_pow( const std::vector< shared_ptr<Polynomial> > & Pvp) const{
 	int leading_pow=leading_Nc_pow( *(Pvp.at(0)) );
 
 	// Loop over Polynomials
@@ -171,7 +171,7 @@ Poly_matr Col_functions::leading( const Poly_matr & Pm )  const{
 }
 
 
-Poly_vec Col_functions::leading( std::vector<shared_ptr<Polynomial> >  Pvp )  const{
+Poly_vec Col_functions::leading( const std::vector<shared_ptr<Polynomial> >  & Pvp )  const{
 	Poly_vec Pv_res;
 
 	// Loop over entries in vector (Poly_vecs), and take the leading part of each Polynomial
@@ -197,7 +197,7 @@ Poly_vec Col_functions::leading( std::vector<shared_ptr<Polynomial> >  Pvp )  co
 }
 
 
-dmatr Col_functions::leading( std::vector< std::vector< shared_ptr<Polynomial> > >  Ppm ) const {
+dmatr Col_functions::leading( const std::vector< std::vector< shared_ptr<Polynomial> > > & Ppm ) const {
 
 	// To contain the result as a matrix of double
 	dmatr res;
@@ -229,22 +229,19 @@ dmatr Col_functions::leading( std::vector< std::vector< shared_ptr<Polynomial> >
 	return res;
 }
 
-std::map< std::string, Polynomial > Col_functions::leading( std::map< std::string, Polynomial > mem_map  )  const{
+std::map< std::string, Polynomial > Col_functions::leading( const std::map< std::string, Polynomial > & mem_map  )  const{
 
 	// To contain (string, leading(Polynomial))
 	std::map< std::string, Polynomial > res;
 
-	// Iterator for looping
-	std::map< std::string, Polynomial >::iterator iter=mem_map.begin();
-
     // Find the highest power of Nc+CF
-    int pow_cand=leading_Nc_pow( (iter->second) );
-    for( iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter ) {
+    int pow_cand=leading_Nc_pow( mem_map.begin()->second );
+    for( auto iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter ) {
     	Polynomial Poly= (iter->second);
     	if( leading_Nc_pow(Poly) > pow_cand ) pow_cand=leading_Nc_pow(Poly);
     }
 
-    for( iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter ) {
+    for( auto iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter ) {
 
     	// Insert pair of string and the leading versions of the Polynomial
     	Polynomial lead_Poly= leading( (iter->second) );
@@ -1209,14 +1206,11 @@ Col_amp Col_functions::contract_quarks( Col_amp Ca1, Col_amp Ca2 ) const{
 }
 */
 
-std::map< std::string, double > Col_functions::double_num( std::map< std::string, Polynomial > mem_map )  const{
+std::map< std::string, double > Col_functions::double_num( const std::map< std::string, Polynomial > & mem_map )  const{
 
 	std::map< std::string, double > res;
 
-	// Loop over entries
-	std::map< std::string, Polynomial >::iterator iter=mem_map.begin();
-
-	for( iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter) {
+	for( auto iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter) {
 		// Insert pair of string and the leading versions of the Polynomial
 		double_num( (iter->second) );
 		res.insert(std::make_pair( iter->first, double_num((iter->second)) ));
@@ -1714,7 +1708,7 @@ col_str::iterator operator-( col_str::iterator x, int n ){
 }
 
 
-std::ostream& operator<<( std::ostream& out, std::vector<int> vec ){
+std::ostream& operator<<( std::ostream& out, const std::vector<int> & vec ){
   int max=vec.size();
   if(max==0)  out <<"{}";
   else{

@@ -73,7 +73,7 @@ public:
    * The default constructor.
    */
   FxFxEventHandler()
-    : theWeightOption(unitweight), theUnitTolerance(1.0e-6), warnPNum(true) 
+    : theWeightOption(unitweight), theUnitTolerance(1.0e-6), warnPNum(true), theNormWeight(0)
   {
     selector().tolerance(unitTolerance());
   }
@@ -372,6 +372,11 @@ private:
    * FxFxReader.
    */
   bool warnPNum;
+
+  /**
+   *  How to normalize the weights
+   */
+  unsigned int theNormWeight;
 
 
 

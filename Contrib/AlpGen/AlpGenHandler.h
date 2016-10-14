@@ -95,7 +95,7 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto();
+  virtual bool showerHardProcessVeto() const;
 
 
 protected:
