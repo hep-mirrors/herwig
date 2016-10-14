@@ -229,8 +229,10 @@ namespace {
       return eg;
     }
 
-    if ( prepareOnly )
+    if ( prepareOnly ) {
+      eg->initialize();
       return eg;
+    }
 
     if (ui.jobs() <= 1) {
 
