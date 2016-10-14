@@ -242,6 +242,18 @@ void MatchboxXCombData::flushCaches() {
     f->second = true;
   filledOLPMomenta = false;
   filledExternalMomenta = false;
+  theLastAmplitudes.clear();
+  theLastLargeNAmplitudes.clear();
+  theLastOneLoopAmplitudes.clear();
+  theColourCorrelators.clear();
+  theLargeNColourCorrelators.clear();
+  theColourSpinCorrelators.clear();
+  theSpinCorrelators.clear();
+  theAmplitudeRandomNumbers.clear();
+  theInsertionRandomNumbers.clear();
+  theDiagramWeights.clear();
+  theHelJamp.clear();
+  theLNHelJamp.clear();
 }
 
 void MatchboxXCombData::putCVector(PersistentOStream& os, const CVector& v) {

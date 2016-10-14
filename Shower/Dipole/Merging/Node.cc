@@ -102,6 +102,8 @@ bool Node::isInHistoryOf(NodePtr other) {
 
 
 void Node::flushCaches() {
+  if (didflush) return;
+  didflush=true;
   for ( auto const & ch: thechildren) {
     ch->xcomb()->clean();
     ch->nodeME()->flushCaches();
@@ -128,6 +130,7 @@ void Node::clearKinematics() {
 }
 
 bool Node::generateKinematics(const double *r, bool directCut) {
+  didflush=false;
   // If there are no children to the child process we are done.
   if(children().empty()) return true;
   
@@ -165,9 +168,13 @@ bool Node::generateKinematics(const double *r, bool directCut) {
 }
 
 bool Node::firstgenerateKinematics(const double *r, bool directCut) {
+  didflush=false;
     // This is called form the merging helper for the first node. So:
   assert(!parent());
   assert(xcomb());
+  
+   ///// This should not be needed!!!
+   ///// ( Warning inMerger::matrixElementRegion gets triggered.)
   flushCaches();
     //Set here the new merge Pt for the next phase space point.( Smearing!!!)
   MH()->smearMergePt();

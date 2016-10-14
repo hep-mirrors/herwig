@@ -34,11 +34,6 @@ namespace Herwig {
    * defined for Node.
    */
   
-  /**
-   * Define the SafeClusterMap type map< tuple<emitter, emission, spectator >
-   *                                    , pair<first-clustering, second-clustering> >
-   */
-  typedef map<  std::tuple<int, int, int> , pair<bool, bool> > SafeClusterMap;
   
   class Node : public Interfaced {
 		public:
@@ -170,6 +165,8 @@ namespace Herwig {
     Energy theRunningPt;
       /// The nodes of the projection stage.
     NodePtr theProjector;
+      /// flag not to enter infinite loop. (There should be a better solution...)
+    bool didflush=false;
     
   public:
     /** @name Functions used by the persistent I/O system. */

@@ -1239,7 +1239,7 @@ bool Merger::matrixElementRegion( PVector incoming , PVector outgoing , Energy w
   if( !foundwinnerpt ){
     generator()->logWarning( Exception()
                             << "Merger: Could not find winner with pt."
-                            << "Run with -d2 to get phase space points. "
+                            << "Run with -d3 to get phase space points. "
                             << Exception::warning );
     
     if( Debug::level > 2 ) {

@@ -1175,7 +1175,8 @@ double MatchboxMEBase::spinCorrelatedME2(pair<int,int> ij,
 }
 
 
-void MatchboxMEBase::flushCaches() { 
+void MatchboxMEBase::flushCaches() {
+  if ( theMerger )theMerger->flushCaches(); 
   MEBase::flushCaches();
   if ( matchboxAmplitude() )
     matchboxAmplitude()->flushCaches();
@@ -1183,8 +1184,6 @@ void MatchboxMEBase::flushCaches() {
     r->flushCaches();
   for ( auto const &  v : virtuals()) 
     v->flushCaches();
-  // The Merger cache is flushed in 
-  // generateKinematics
 }
 
 

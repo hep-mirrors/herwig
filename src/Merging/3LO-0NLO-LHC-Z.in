@@ -72,7 +72,7 @@ set /Herwig/Samplers/Sampler:BinSampler:Kappa 0.02
 ## specialized NLO package
 
 # read Matchbox/MadGraph-GoSam.in
-# read Matchbox/MadGraph-MadGraph.in
+ read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
 # read Matchbox/HJets.in
