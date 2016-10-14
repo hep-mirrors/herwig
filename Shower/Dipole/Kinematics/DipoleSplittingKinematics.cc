@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -31,16 +32,16 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters() {}
+    theLastSplittingParameters(),theOpenInitialStateZ(false) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck;
+  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenInitialStateZ;
 }
 
 void DipoleSplittingKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck;
+  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theOpenInitialStateZ;
 }
 
 void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
@@ -60,8 +61,23 @@ void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
   dInfo.lastSpectatorZ(lastSpectatorZ());
   dInfo.splittingParameters().resize(lastSplittingParameters().size());
   copy(lastSplittingParameters().begin(),lastSplittingParameters().end(),
-       dInfo.splittingParameters().begin());
-  
+       dInfo.splittingParameters().begin());  
+}
+
+
+Energy DipoleSplittingKinematics::ptMax(Energy dScale, 
+					double emX, double specX,
+					const DipoleSplittingInfo& dInfo,
+					const DipoleSplittingKernel& split) const {
+  return ptMax(dScale, emX, specX, dInfo.index(), split);
+} 
+
+
+Energy DipoleSplittingKinematics::QMax(Energy dScale, 
+				       double emX, double specX,
+				       const DipoleSplittingInfo& dInfo,
+				       const DipoleSplittingKernel& split) const {
+  return QMax(dScale, emX, specX, dInfo.index(), split);
 }
 
 Energy DipoleSplittingKinematics::generatePt(double r, Energy dScale,
@@ -269,6 +285,20 @@ void DipoleSplittingKinematics::Init() {
      &DipoleSplittingKinematics::theMCCheck, false, false, true, true, false);
 
   interfaceMCCheck.rank(-1);
+  
+  
+  static Switch<DipoleSplittingKinematics,bool> interfaceOpenInintialStateZ
+  ("OpenInitialStateZ",   "",
+   &DipoleSplittingKinematics::theOpenInitialStateZ, false, false, false);
+  static SwitchOption interfaceOpenInintialStateZYes
+  (interfaceOpenInintialStateZ,   "Yes",   "",   true);
+  static SwitchOption interfaceOpenInintialStateZNo
+  (interfaceOpenInintialStateZ,   "No",   "",   false);
+  
+  
+  
+  
+  
 
 }
 

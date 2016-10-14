@@ -278,21 +278,22 @@ bool SMTopPOWHEGDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   if (j==1) xw = (-B - sqrt(det))/(2.*A);  
   if (xw>(1. + w2_ - b2_) || xw<2.*w_) return false;
 
-  //Calculate xb
-  xb = 2. - xw - xg;     
-  if (xb>(1. + b2_ - w2_) || xb<2.*b_) return false;       
-
   //Calculate xb_z  
+  // Due to precision limitations, it is possible for
+  // sqr(xb)-4.*b2_-s to be very small
+  // and negative, set to 0 in this case
+  double xb_z_mod2 = std::max(sqr(xb) - 4.*b2_  - sqr(xT), 0.);
+
   double epsilon_p =  -sqrt(sqr(xw) - 4.*w2_) + xT*sinh(y) +
-                       sqrt(sqr(xb) - 4.*b2_  - sqr(xT));
+                       sqrt(xb_z_mod2);
   double epsilon_m =  -sqrt(sqr(xw) - 4.*w2_) + xT*sinh(y) - 
-                       sqrt(sqr(xb) - 4.*b2_  - sqr(xT));
+                       sqrt(xb_z_mod2);
 
   if (fabs(epsilon_p) < 1.e-10){
-    xb_z =  sqrt(sqr(xb) - 4.*b2_ - sqr(xT));
+    xb_z =  sqrt(xb_z_mod2);
   }
   else if (fabs(epsilon_m) < 1.e-10){
-    xb_z = -sqrt(sqr(xb) - 4.*b2_ - sqr(xT));
+    xb_z = -sqrt(xb_z_mod2);
   }
   else return false;
 

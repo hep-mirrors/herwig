@@ -7,6 +7,9 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 clear /Herwig/MatrixElements/Matchbox/Factory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 GoSam
 
+clear /Herwig/Merging/MergingFactory:Amplitudes
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 GoSam
+
 cd /Herwig/Particles
 
 do b:UnsetHardProcessMass

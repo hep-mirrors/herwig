@@ -389,10 +389,9 @@ void MatchboxPhasespace::fillDiagramWeights(double flatCut) {
 
   diagramWeights().clear();
 
-  for ( StandardXComb::DiagramVector::const_iterator d =
-	  lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
-    diagramWeights()[(**d).id()] = 
-      spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(**d),meMomenta()[0],0,flatCut);
+  for ( auto & d : lastXComb().diagrams() ) {
+    diagramWeights()[d->id()] =
+      spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(*d),meMomenta()[0],0,flatCut);
   }
 
 }

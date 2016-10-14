@@ -129,9 +129,8 @@ namespace matchbox {
      * flavours changes from <code>i</code> to <code>i+1</code>.
      */
     virtual inline vector<Energy2> flavourThresholds() const {
-      vector<Energy2> res (6);
-      copy(quark_masses_squared_.begin()+1,quark_masses_squared_.end(),res.begin());
-      return res;
+      assert(!nfvector.empty());
+      return nfvector;
     }
 
     /**
@@ -241,6 +240,8 @@ namespace matchbox {
      */
     virtual inline void doinit() throw(InitException) {
       match_thresholds();
+      copy(quark_masses_squared_.begin()+1,
+           quark_masses_squared_.end(),nfvector.begin());
       AlphaSBase::doinit();
     }
 
@@ -300,7 +301,8 @@ namespace matchbox {
 
     std::array<Energy2,7> quark_masses_squared_;
     std::array<Energy2,7> lambda_squared_;
-
+    vector<Energy2> nfvector=vector<Energy2>(6);
+  
     double alpha_s_in_;
     Energy scale_in_;
 

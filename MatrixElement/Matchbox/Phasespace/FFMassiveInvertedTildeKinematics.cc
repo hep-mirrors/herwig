@@ -46,98 +46,59 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   Lorentz5Momentum spectator = bornSpectatorMomentum();
 
   double mapping = 1.0;
-  pair<Energy,double> ptz = generatePtZ(mapping,r);
+  vector<double> values;
+    pair<Energy,double> ptz = generatePtZ(mapping,r, &values);
   if ( mapping == 0.0 ) {
     jacobian(0.0);
     return false;
   }
 
+  // pt and zPrime = qi.nk / (qi+qj).nk are the generated variables
   Energy pt = ptz.first;
-  double z = ptz.second;
+  Energy2 pt2 = sqr(pt);
+  double zPrime = ptz.second;
   
+
+  // Define the scale
   Energy scale = (emitter+spectator).m();
+  Energy2 Qijk = sqr(scale);
+
+  // Most of the required values have been calculated in ptzAllowed
+  double y = values[0];
+  double z = values[1];
+  double xk = values[3];
+  double xij = values[4];
+  double suijk = values[5];
+  double suijk2 = sqr(values[5]);
+
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
   double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
   double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   double Mui2 = sqr( bornEmitterData()->hardProcessMass() / scale );
   double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / scale );
-  
-  double y = ( sqr( pt / scale ) + sqr(1.-z)*mui2 + z*z*mu2 ) /
-      (z*(1.-z)*(1.-mui2-mu2-muj2));
-  
-  // now this is done in ptzAllowed!!
-  // check (y,z) phasespace boundary
-  // 2011-11-09: never occurred
-  /**
-  double bar = 1.-mui2-mu2-muj2;
-  double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
-  double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
-  double zm = ( (2.*mui2+bar*y)*(1.-y) - sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
-    ( 2.*(1.-y)*(mui2+mu2+bar*y) );
-  double zp = ( (2.*mui2+bar*y)*(1.-y) + sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
-    ( 2.*(1.-y)*(mui2+mu2+bar*y) );
-  if ( y<ym || y>yp || z<zm || z>zp ) {
-    cout << "A problem occurred in FFMassiveInvertedTildeKinematics::doMap: ";
-    if(y<ym) cout << "y<ym " << endl;
-    if(y>yp) cout << "y>yp " << endl;
-    if(z<zm) cout << "z<zm " << endl;
-    if(z>zp) cout << "z>zp " << endl;
-    jacobian(0.0);
-    return false;
-  }
-  **/
-      
-  mapping /= z*(1.-z);
-  jacobian( mapping*(1.-y)*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)) *
-    sqr(1.-mui2-mu2-muj2) / rootOfKallen(1.,Mui2,Muj2) );
 
+
+  // Construct reference momenta nk, nij, nt
+  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muj2) ) * (emitter - (Mui2/suijk)*spectator);
+  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muj2) ) * (spectator - (Muj2/suijk)*emitter);
+
+  // Following notation in notes, qt = sqrt(wt)*nt
   double phi = 2.*Constants::pi*r[2];
-  /* // not used ???
-  Lorentz5Momentum kt
-    = getKt(emitter,spectator,pt,phi);
-  */
+  Lorentz5Momentum qt = getKt(nij,nk,pt,phi);
 
-  subtractionParameters().resize(2);
-  subtractionParameters()[0] = y;
-  subtractionParameters()[1] = z;
-  
-  // kinematics from FFMassiveKinematics.cc
-  // updated 2011-08-23
-  // updated 2011-11-08
-  Energy2 sbar = sqr(scale) * (1.-mui2-mu2-muj2);
-  // CMF: particle energies
-  Energy Ei = ( sbar*(1.-(1.-z)*(1.-y)) + 2.*sqr(scale)*mui2 ) / (2.*scale);
-  Energy E  = ( sbar*(1.-    z *(1.-y)) + 2.*sqr(scale)*mu2  ) / (2.*scale);
-  Energy Ej = ( sbar*(1.-           y ) + 2.*sqr(scale)*muj2 ) / (2.*scale);
-  // CMF: momenta in z-direction (axis of pEmitter &pEmitter pSpectator)  
-  Energy qi3 = (2.*Ei*Ej-z*(1.-y)*sbar     ) / 2./sqrt(Ej*Ej-sqr(scale)*muj2);
-  Energy q3  = (2.*E *Ej-(1.-z)*(1.-y)*sbar) / 2./sqrt(Ej*Ej-sqr(scale)*muj2);
-  Energy qj3 = sqrt(   sqr(Ej) - sqr(scale)*muj2 );
-  // get z axis in the dipole's CMF which is parallel to pSpectator
-  Boost toCMF = (emitter+spectator).findBoostToCM();
-  Lorentz5Momentum pjAux = spectator; pjAux.boost(toCMF);
-  ThreeVector<double> pjAxis = pjAux.vect().unit();
-  // set the momenta in this special reference frame
-  // note that pt might in some cases differ from the physical pt!
-  Energy ptResc = sqrt( sqr(Ei)-sqr(scale)*mui2-sqr(qi3) );
-  Lorentz5Momentum em  ( ptResc*cos(phi), -ptResc*sin(phi), qi3, Ei );
-  Lorentz5Momentum emm ( -ptResc*cos(phi), ptResc*sin(phi), q3, E );
-  Lorentz5Momentum spe ( 0.*GeV, 0.*GeV, qj3, Ej );
-  // rotate back
-  em.rotateUz (pjAxis);
-  emm.rotateUz(pjAxis);
-  spe.rotateUz(pjAxis);
-  // boost back
-  em.boost (-toCMF);
-  emm.boost(-toCMF);
-  spe.boost(-toCMF);
-  // mass shells, rescale energy
-  em.setMass(scale*sqrt(mui2));
+  // Construct qij, qk, qi and qj
+  Lorentz5Momentum qij = xij*nij + (Mui2/(xij*suijk))*nk;
+  Lorentz5Momentum spe = xk*nk + (Muj2/(xk*suijk))*nij;
+
+  Lorentz5Momentum em = zPrime*qij + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
+  Lorentz5Momentum emm = (1.-zPrime)*qij + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
+
+  em.setMass(realEmitterData()->hardProcessMass());
   em.rescaleEnergy();
-  emm.setMass(scale*sqrt(mu2));
+  emm.setMass(realEmissionData()->hardProcessMass());
   emm.rescaleEnergy();
-  spe.setMass(scale*sqrt(muj2));
+  spe.setMass(realSpectatorData()->hardProcessMass());
   spe.rescaleEnergy();
 
   // book
@@ -145,9 +106,21 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   realEmissionMomentum() = emm;
   realSpectatorMomentum() = spe;
   
+  // Store the jacobian
+  mapping /= z*(1.-z);
+  jacobian( mapping*(1.-y)*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)) *
+    sqr(1.-mui2-mu2-muj2) / rootOfKallen(1.,Mui2,Muj2) );
+
+  // Store the parameters
+  subtractionParameters().resize(3);
+  subtractionParameters()[0] = y;
+  subtractionParameters()[1] = z;
+  subtractionParameters()[2] = zPrime;
+   
   return true;
 
 }
+
 
 Energy FFMassiveInvertedTildeKinematics::lastPt() const {
   
@@ -158,17 +131,17 @@ Energy FFMassiveInvertedTildeKinematics::lastPt() const {
   double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
   double y = subtractionParameters()[0];
-  double z = subtractionParameters()[1];
+  double zPrime = subtractionParameters()[2];
   
-  Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*mu2 );
+  Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * zPrime*(1.-zPrime) - sqr(1.-zPrime)*mui2 - sqr(zPrime)*mu2 );
 
   return ret;
 }
 
 double FFMassiveInvertedTildeKinematics::lastZ() const {
-  return subtractionParameters()[1];
-}
-    
+  return subtractionParameters()[2];
+}    
+
 Energy FFMassiveInvertedTildeKinematics::ptMax() const {
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
@@ -184,6 +157,7 @@ Energy FFMassiveInvertedTildeKinematics::ptMax() const {
 }
 
 // NOTE: bounds calculated at this step may be too loose
+// These apply to zPrime, which is stored in lastZ()
 pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
 
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
@@ -207,33 +181,65 @@ pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy 
   return make_pair(zm,zp);
 }
 
-bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz) const {
+bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz, vector<double>* values) const {
+
+  Energy pt = ptz.first;
+  Energy2 pt2 = sqr(pt);
+  double zPrime = ptz.second;
+
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
   double mu2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
   double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
+  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
+  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
   
-  Energy pt = ptz.first;
-  double z = ptz.second;
-  
-  double y = ( sqr( pt / lastScale() ) + sqr(1.-z)*mui2 + z*z*mu2 ) /
-      (z*(1.-z)*(1.-mui2-mu2-muj2));
+  // Calculate the scales that we need
+  Energy2 Qijk = sqr(lastScale());
+  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
+  double bar = 1.-mui2-mu2-muj2;
+
+  double y = ( pt2/Qijk + sqr(1.-zPrime)*mui2 + zPrime*zPrime*mu2 ) /
+      (zPrime*(1.-zPrime)*bar);
+
+  // Calculate A:=xij*w
+  double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
+
+  // Calculate the scaling factors, xk and xij
+  double lambdaK = 1. + (Muj2/suijk);
+  double lambdaIJ = 1. + (Mui2/suijk);
+  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
+  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
+
+  // Calculate z
+  double z = ( (zPrime*xij*xk*suijk/2.) + (Muj2/ ( 2.*xk*xij*suijk*zPrime))*(pt2/Qijk + mui2) ) /
+    ( (xij*xk*suijk/2.) + (Muj2/(2.*xk*xij))*(Mui2/suijk + A) );
   
   // check (y,z) phasespace boundary
   // TODO: is y boundary necessary?
-  double bar = 1.-mui2-mu2-muj2;
   double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
   double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
+  // These limits apply to z, not zPrime
   double zm = ( (2.*mui2+bar*y)*(1.-y) - sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
     ( 2.*(1.-y)*(mui2+mu2+bar*y) );
   double zp = ( (2.*mui2+bar*y)*(1.-y) + sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
     ( 2.*(1.-y)*(mui2+mu2+bar*y) );
   
   if ( y<ym || y>yp || z<zm || z>zp ) return false;
+
+  values->push_back(y);
+  values->push_back(z);
+  values->push_back(A);
+  values->push_back(xk);
+  values->push_back(xij);
+  values->push_back(suijk);
+      
   return true;
 }
 
-pair<Energy,double> FFMassiveInvertedTildeKinematics::generatePtZ(double& jac, const double * r) const {
+
+// This is used to generate pt and zPrime
+pair<Energy,double> FFMassiveInvertedTildeKinematics::generatePtZ(double& jac, const double * r, vector<double> * values) const {
 
   double kappaMin = 
     ptCut() != ZERO ?
@@ -271,7 +277,7 @@ pair<Energy,double> FFMassiveInvertedTildeKinematics::generatePtZ(double& jac, c
 
   jac *= sqr(ptMax()/lastScale());
   
-  if( !ptzAllowed(make_pair(pt,z)) ) jac = 0.;
+  if( !ptzAllowed(make_pair(pt,z), values )) jac = 0.;
 
   return make_pair(pt,z);
 

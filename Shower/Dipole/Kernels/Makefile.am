@@ -35,10 +35,13 @@ ALL_H_FILES = \
 	IFMqx2qgxDipoleKernel.h \
 	IFMqx2gqxDipoleKernel.h \
 	IFMgx2ggxDipoleKernel.h \
-	IFMgx2qqxDipoleKernel.h 
+	IFMgx2qqxDipoleKernel.h \
+	FIMDecaygx2qqxDipoleKernel.h \
+	FIMDecayqx2qgxDipoleKernelFull.h \
+	FIMDecaygx2ggxDipoleKernelFull.h
 
 ALL_CC_FILES = \
-    DipoleSplittingKernel.cc \
+    	DipoleSplittingKernel.cc \
 	FFMqx2qgxDipoleKernel.cc \
 	FFMgx2ggxDipoleKernel.cc \
 	FFMgx2qqxDipoleKernel.cc \
@@ -61,4 +64,8 @@ ALL_CC_FILES = \
 	IFMqx2qgxDipoleKernel.cc \
 	IFMqx2gqxDipoleKernel.cc \
 	IFMgx2ggxDipoleKernel.cc \
-	IFMgx2qqxDipoleKernel.cc
+	IFMgx2qqxDipoleKernel.cc \
+	FIMDecaygx2qqxDipoleKernel.cc \
+	FIMDecayqx2qgxDipoleKernelFull.cc \
+	FIMDecaygx2ggxDipoleKernelFull.cc
+

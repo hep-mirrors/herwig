@@ -68,6 +68,28 @@ Energy FILightTildeKinematics::lastPt() const {
 
 }
 
+Energy FILightTildeKinematics::lastPt(Lorentz5Momentum emitter,Lorentz5Momentum emission,Lorentz5Momentum spectator)const {
+
+  
+  Energy2 scale =  - (emitter+emission-spectator).m2();
+  
+  
+  double x =
+  (- emission*emitter + emission*spectator + emitter*spectator) /
+  (emitter*spectator + emission*spectator);
+  double z = emitter*spectator / (emitter*spectator + emission*spectator);
+  
+  return sqrt( z*(1.-z)*(1.-x)/x*scale ) ;
+}
+
+pair<double,double> FILightTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  if(pt>hardPt) return make_pair(0.5,0.5);
+  double s = sqrt(1.-sqr(pt/hardPt));
+  return make_pair(0.5*(1.-s),0.5*(1.+s));
+}
+
+
+
 double FILightTildeKinematics::lastZ() const {
   return subtractionParameters()[1];
 }

@@ -59,6 +59,16 @@ public:
    * Return the pt associated to the last merged splitting.
    */
   virtual Energy lastPt() const;
+  
+  /**
+   * Return the pt associated to emitter emission and sppectator momentum.
+   */
+  virtual Energy lastPt(Lorentz5Momentum,Lorentz5Momentum,Lorentz5Momentum) const ;
+
+  /**
+   * Given a pt, return the boundaries on z
+   */
+  virtual pair<double,double> zBounds(Energy pt, Energy hardPt ) const;
 
   /**
    * Return the momentum fraction associated to the last splitting.
@@ -66,6 +76,12 @@ public:
   virtual double lastZ() const;
 
 public:
+  /**
+   * Triangular / Kallen function
+   */
+  template <class T>
+  inline T rootOfKallen (T a, T b, T c) const {
+    return sqrt( a*a + b*b + c*c - 2.*( a*b+a*c+b*c ) ); }
 
   /** @name Functions used by the persistent I/O system. */
   //@{

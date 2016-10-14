@@ -11,8 +11,12 @@
 // functions of the ShowerKinematics class.
 //
 #include "ShowerKinematics.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeAbstractNoPIOClass<ShowerKinematics,Base>
+describeShowerKinematics("Herwig::ShowerKinematics","Herwig.so");
 
 void ShowerKinematics::updateChildren(const tShowerParticlePtr, 
 				      const ShowerParticleVector &,

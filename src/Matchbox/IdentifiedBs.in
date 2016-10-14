@@ -16,3 +16,18 @@ insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
 insert Factory:ParticleGroup 0 /Herwig/Particles/g
 do Factory:EndParticleGroup
 
+cd /Herwig/Merging
+
+do MergingFactory:StartParticleGroup j
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
+

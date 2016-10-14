@@ -1,0 +1,31 @@
+##################################################
+# select the analyses
+##################################################
+# General analysis
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZKTSPLITTINGS
+# ATLAS pT
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9131140
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1300647
+# ATLAS Z+jets
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I945498
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1230812
+# ATLAS phi*
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1204784
+# CMS Z + b-hadron
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1256943
+# CMS Z pt and y
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I941555
+# ATLAS Z + bjets
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1306294
+# ATLAS Z
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I928289_Z
+# CMS Z AFB
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1122847
+# CMS Z+jets
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2015_I1310737
+# ATLAS event shapes in Z events
+#insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2016_I1424838
+# ATLAS forwrd backward
+#insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2015_I1351916_EL

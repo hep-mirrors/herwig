@@ -381,7 +381,7 @@ protected:
   //@}
 
   /**
-   * Set/Get the current tree being evolverd for inheriting classes
+   * Set/Get the current tree being evolver for inheriting classes
    */
   //@{
   /**
@@ -849,4 +849,4 @@ private :
 
 }
 
-#endif /* Herwig_QTildeShowerHandler_H */
+#endif /* HERWIG_QTildeShowerHandler_H */

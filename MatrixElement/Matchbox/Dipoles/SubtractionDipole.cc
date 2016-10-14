@@ -70,7 +70,7 @@ void SubtractionDipole::clearBookkeeping() {
   theRealToBornDiagrams.clear();
 }
 
-void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo>& mergeInfo) {
+void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo>& mergeInfo,bool slim) {
 
   theMergingMap.clear();
   theSplittingMap.clear();
@@ -178,6 +178,14 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
     theBornToRealDiagrams[*bd] = mit->first;
     theRealToBornDiagrams[mit->first] = *bd;
 
+  }
+  
+  
+  if (slim) {
+    theIndexMap.clear();
+    theSplittingMap.clear();
+    theBornToRealDiagrams.clear();
+    theRealEmissionDiagrams.clear();
   }
 
   if ( theSplittingMap.empty() )
@@ -505,14 +513,13 @@ bool SubtractionDipole::generateKinematics(const double * r) {
     lastXCombPtr()->didGenerateKinematics();
     return true;
   }
-  if ( !generateTildeKinematics() )
-    return false;
+  if ( !generateTildeKinematics() ){ return false;}
   if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
     return false;
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
-    return false;
+      return false;
   // need to have the scale and x's available for checking shower phase space
   if ( showerApproximation() &&
        lastXCombPtr()->willPassCuts() )
@@ -814,6 +821,65 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   return lastMECrossSection();
 }
+
+
+bool SubtractionDipole::aboveAlpha() const{return theTildeKinematics->aboveAlpha();}
+
+
+
+CrossSection SubtractionDipole::prefactor(Energy2 factorizationScale)const{
+  
+  const double jac = jacobian();
+  assert( factorizationScale != ZERO );
+  assert (! splitting());
+  double pdfweight = 1.;
+  if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
+  if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
+
+  
+  return sqr(hbarc) * jac * pdfweight /  (2. * realEmissionME()->lastXComb().lastSHat());
+  
+}
+
+
+
+
+CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
+
+  double ccme2 =underlyingBornME()->me2()*
+                underlyingBornME()->
+                largeNColourCorrelatedME2(
+                  make_pair(bornEmitter(),bornSpectator()),largeNBasis)/
+                underlyingBornME()->largeNME2(largeNBasis);
+  
+  return prefactor(factorizationScale) * me2Avg(ccme2);
+}
+
+
+
+
+pair<CrossSection,CrossSection> SubtractionDipole::dipandPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
+  
+  CrossSection  factor= prefactor(factorizationScale);
+
+  double ccme2 =underlyingBornME()->me2()*
+                underlyingBornME()->
+                largeNColourCorrelatedME2(
+                              make_pair(bornEmitter(),bornSpectator()),largeNBasis)/
+                underlyingBornME()->largeNME2(largeNBasis);
+
+  double ps = me2Avg(ccme2);
+  double dip = me2();
+  
+  return make_pair(factor*dip,factor*ps);
+}
+
+CrossSection SubtractionDipole::dip(Energy2 factorizationScale) const {
+  CrossSection  factor= prefactor(factorizationScale);
+  double dip = me2();
+  return factor*dip;
+}
+
 
 void SubtractionDipole::print(ostream& os) const {
 
@@ -1117,7 +1183,7 @@ void SubtractionDipole::doinitrun() {
   }
 }
 
-void SubtractionDipole::cloneDependencies(const std::string& prefix) {
+void SubtractionDipole::cloneDependencies(const std::string& prefix,bool slim) {
 
   if ( underlyingBornME() ) {
     Ptr<MatchboxMEBase>::ptr myUnderlyingBornME = underlyingBornME()->cloneMe();
@@ -1125,11 +1191,11 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     pname << (prefix == "" ? fullName() : prefix) << "/" << myUnderlyingBornME->name();
     if ( ! (generator()->preinitRegister(myUnderlyingBornME,pname.str()) ) )
       throw Exception() << "SubtractionDipole::cloneDependencies(): Matrix element " << pname.str() << " already existing." << Exception::runerror;
-    myUnderlyingBornME->cloneDependencies(pname.str());
+    myUnderlyingBornME->cloneDependencies(pname.str(),slim);
     underlyingBornME(myUnderlyingBornME);
   }
 
-  if ( realEmissionME() ) {
+  if ( realEmissionME()&& !slim ) {
     Ptr<MatchboxMEBase>::ptr myRealEmissionME = realEmissionME()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
@@ -1149,7 +1215,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     tildeKinematics(myTildeKinematics);
   }
 
-  if ( invertedTildeKinematics() ) {
+  if ( invertedTildeKinematics()&& !slim ) {
     Ptr<InvertedTildeKinematics>::ptr myInvertedTildeKinematics = invertedTildeKinematics()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myInvertedTildeKinematics->name();

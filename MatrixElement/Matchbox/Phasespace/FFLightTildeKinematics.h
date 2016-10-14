@@ -59,11 +59,27 @@ public:
    * Return the pt associated to the last merged splitting.
    */
   virtual Energy lastPt() const;
+  
+  /**
+   * Return the pt associated to emitter emission and sppectator momentum.
+   */
+  virtual Energy lastPt(Lorentz5Momentum,Lorentz5Momentum,Lorentz5Momentum) const ;
 
+  /**
+   * Given a pt, return the boundaries on z
+   */
+  virtual pair<double,double> zBounds(Energy pt, Energy hardPt ) const;
+  
   /**
    * Return the momentum fraction associated to the last splitting.
    */
   virtual double lastZ() const;
+
+  /*
+   * True if phase space point is above the alpha cut for this dipole.
+   */
+
+  bool aboveAlpha() const {return dipole()->alpha()<subtractionParameters()[0];}
 
 public:
 

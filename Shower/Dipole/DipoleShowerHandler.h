@@ -17,7 +17,6 @@
 #include "Herwig/Shower/Dipole/DipoleShowerHandler.fh"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingInfo.h"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingReweight.h"
-
 #include "Herwig/Shower/Dipole/Kernels/DipoleSplittingKernel.h"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingGenerator.h"
 #include "Herwig/Shower/Dipole/Base/DipoleEventRecord.h"
@@ -25,6 +24,7 @@
 #include "Herwig/Shower/Dipole/Base/DipoleEventReweight.h"
 #include "Herwig/Shower/Dipole/Utility/ConstituentReshuffler.h"
 #include "Herwig/Shower/Dipole/Utility/IntrinsicPtGenerator.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
@@ -33,7 +33,7 @@ using namespace ThePEG;
 
 /** 
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief The DipoleShowerHandler class manages the showering using
  * the dipole shower algorithm.
@@ -42,6 +42,9 @@ using namespace ThePEG;
  * defined for DipoleShowerHandler.
  */
 class DipoleShowerHandler: public ShowerHandler {
+
+
+ friend class Merger;
 
 public:
 
@@ -60,6 +63,9 @@ public:
 
 public:
 
+
+  inline void colourPrint();
+
   /**
    * Indicate a problem in the shower.
    */
@@ -76,6 +82,9 @@ public:
    * Reset the alpha_s for all splitting kernels.
    */
   void resetAlphaS(Ptr<AlphaSBase>::tptr);
+  
+  
+  virtual void cascade(tPVector); 
 
   /**
    * Reset the splitting reweight for all splitting kernels.
@@ -100,6 +109,18 @@ public:
   virtual Energy hardScale() const {
     return muPt;
   }
+  
+  /**
+   * Calculate the alpha_s value the shower uses for Q.
+   */
+  
+  double as(Energy Q)const{return theGlobalAlphaS->value(sqr(Q));}
+  
+  /**
+   *
+   */
+
+  double Nf(Energy Q)const{return theGlobalAlphaS->Nf(sqr(Q));}
 
 protected:
 
@@ -108,14 +129,14 @@ protected:
   /**
    * The main method which manages the showering of a subprocess.
    */
-  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb) {
+  virtual tPPair cascade(tSubProPtr sub, XCombPtr xcomb) {
     return cascade(sub,xcomb,ZERO,ZERO);
   }
 
   /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub, XCPtr xcomb, 
+  tPPair cascade(tSubProPtr sub, XCombPtr xcomb, 
 		 Energy optHardPt, Energy optCutoff);
 
   /**
@@ -124,7 +145,7 @@ protected:
    */
   void getGenerators(const DipoleIndex&,
 		     Ptr<DipoleSplittingReweight>::tptr rw =
-		     Ptr<DipoleSplittingReweight>::tptr());
+  		     Ptr<DipoleSplittingReweight>::tptr());
 
   /**
    * Setup the hard scales.
@@ -140,6 +161,11 @@ protected:
    * Reshuffle to constituent mass shells
    */
   void constituentReshuffle();
+
+  /**
+   * Reshuffle to constituent mass shells
+   */
+  void decayConstituentReshuffle( PerturbativeProcessPtr decayProc);
 
   /**
    * Access the generator map
@@ -169,14 +195,20 @@ protected:
    */
   bool realign();
 
-private:
+protected:
 
   /**
    * Perform the cascade.
    */
   void doCascade(unsigned int& emDone,
 		 Energy optHardPt = ZERO,
-		 Energy optCutoff = ZERO);
+		 Energy optCutoff = ZERO,
+		 const bool decay = false);
+  /**
+   * Set the number of emissions 
+   **/
+  void setNEmissions(unsigned int n){nEmissions=n;}
+  
 
   /**
    * Get the winning splitting for the
@@ -332,6 +364,11 @@ private:
   bool firstMCatNLOEmission;
 
   /**
+   * True if powheg style emissions are to be used in the decays
+   */
+  bool thePowhegDecayEmission;
+
+  /**
    * The realignment scheme
    */
   int realignmentScheme;
@@ -439,6 +476,17 @@ private:
    * The shower hard scale for the last event encountered
    */
   Energy muPt;
+  
+  
+  /**
+   * The merging helper takes care of merging multiple LO and NLO
+   * cross sections. Here we need to check if an emission would 
+   * radiate in the matrix element region of an other multipicity.
+   * If so, the emission is vetoed.
+   */
+  Ptr<MergerBase>::ptr theMergingHelper;
+  
+  
 
 private:
 

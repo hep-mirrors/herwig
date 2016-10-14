@@ -14,6 +14,7 @@
 
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Utilities/Exception.h"
+#include "Herwig/Shower/PerturbativeProcess.h"
 
 namespace Herwig {
 
@@ -21,7 +22,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  * 
  * \brief The ConstituentReshuffler class implements reshuffling
  * of partons on their nominal mass shell to their constituent 
@@ -57,7 +58,72 @@ public:
    */
   void reshuffle(PList& out,
 		 PPair& in,
-		 PList& intermediates);
+		 PList& intermediates,
+		 const bool decay,
+		 PList& decayPartons,
+		 PList& decayRecoilers);
+
+  /**
+   * Reshuffle the outgoing partons to constituent
+   * masses. Optionally, incoming partons are given
+   * to absorb recoils. Add the non-reshuffled partons
+   * to the intermediates list. Throw ConstituentReshufflerProblem
+   * if a numerical problem prevents the solution of
+   * the reshuffling equation.
+   */
+  void reshuffle(PList& out,
+		 PPair& in,
+		 PList& intermediates,
+		 const bool decay=false) {
+
+    PList decayPartons;
+    PList decayRecoilers;
+
+    reshuffle(out,
+	      in,
+	      intermediates,
+	      decay,
+	      decayPartons,
+	      decayRecoilers);
+  }
+
+
+  /**
+   * Reshuffle the outgoing partons following the showering
+   * of the initial hard interaction to constituent masses,
+   * for the case of outgoing decaying particles.
+   * Throw ConstituentReshufflerProblem
+   * if a numerical problem prevents the solution of
+   * the reshuffling equation.
+   */
+  void hardProcDecayReshuffle(PList& decaying,
+			      PList& eventOutgoing,
+			      PList& eventHard,
+			      PPair& eventIncoming,
+			      PList& eventIntermediates) ;
+
+  /**
+   * Reshuffle the outgoing partons following the showering
+   * of a particle decay to constituent masses. 
+   * Throw ConstituentReshufflerProblem
+   * if a numerical problem prevents the solution of
+   * the reshuffling equation.
+   */
+  void decayReshuffle(PerturbativeProcessPtr& decayProc,
+		      PList& eventOutgoing,
+		      PList& eventHard,
+		      PList& eventIntermediates) ;
+
+  /**
+   * Update the dipole event record and, if appropriate,
+   * the relevant decay process.
+   **/
+  void updateEvent( PList& intermediates,
+		    PList& eventIntermediates,
+		    PList& out,
+		    PList& eventOutgoing,
+		    PList& eventHard,
+		    PerturbativeProcessPtr decayProc = PerturbativeProcessPtr() ) ;
 
 protected:
 
@@ -86,6 +152,39 @@ protected:
     PList::iterator p_end;
 
   };
+
+  /**
+   * The function object defining the equation
+   * to be solved in the case of separate recoilers
+   * TODO - refine the whole implementation of separate partons and recoilers
+   */
+  struct DecayReshuffleEquation {
+
+    DecayReshuffleEquation (Energy q,
+			    PList::iterator m_begin,
+			    PList::iterator m_end,
+			    PList::iterator n_begin,
+			    PList::iterator n_end)
+      : w(q), p_begin(m_begin), p_end(m_end), r_begin(n_begin), r_end(n_end) {}
+
+    typedef double ArgType;
+    typedef double ValType;
+
+    static double aUnit();
+    static double vUnit();
+
+    double operator() (double xi) const;
+
+    Energy w;
+
+    PList::iterator p_begin;
+    PList::iterator p_end;
+
+    PList::iterator r_begin;
+    PList::iterator r_end;
+  };
+
+
 
 public:
 

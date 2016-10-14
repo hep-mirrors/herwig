@@ -46,6 +46,8 @@ double PDFRatio::operator() (const PDF& pdf,
   if ( x/z > 1.0 )
     return 0.0;
 
+  if(z==1)return 1.0;
+
   if ( scale < sqr(theFreezingScale) )
     scale = sqr(theFreezingScale);
 

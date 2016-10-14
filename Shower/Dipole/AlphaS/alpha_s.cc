@@ -31,7 +31,9 @@ void alpha_s::persistentOutput(PersistentOStream & os) const {
   for (size_t f = 0; f < 7; ++f)
     os << ounit(quark_masses_squared_[f],MeV2)
        << ounit(lambda_squared_[f],MeV2);
-  os << alpha_s_in_ << ounit(scale_in_,GeV) 
+  for (size_t f = 0; f < 6; ++f)
+    os << ounit(nfvector[f],MeV2);
+  os << alpha_s_in_ << ounit(scale_in_,GeV)
      << ounit(lambda_range_.first,MeV2) << ounit(lambda_range_.second,MeV2)
      << fixed_;
 }
@@ -41,7 +43,9 @@ void alpha_s::persistentInput(PersistentIStream & is, int) {
   for (size_t f = 0; f < 7; ++f)
     is >> iunit(quark_masses_squared_[f],MeV2)
        >> iunit(lambda_squared_[f],MeV2);
-  is >> alpha_s_in_ >> iunit(scale_in_,GeV) 
+  for (size_t f = 0; f < 6; ++f)
+     is >> iunit(nfvector[f],MeV2);
+  is >> alpha_s_in_ >> iunit(scale_in_,GeV)
      >> iunit(lambda_range_.first,MeV2) >> iunit(lambda_range_.second,MeV2)
      >> fixed_;
 }
@@ -123,19 +127,19 @@ string alpha_s::check (string args) {
   string fname;
   argin >> fname;
 
-  cout << "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
+  generator()->log() <<  "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
 	    << n_steps << " steps.\nResults are written to " << fname << "\n";
 
   double step_width = (Q_high-Q_low)/n_steps;
 
   match_thresholds();
 
-  cout << "threshold matching results:\n"
+  generator()->log() <<  "threshold matching results:\n"
 	    << "(m_Q^2 -> Lambda^2) / GeV^2 for dynamic flavours in range ["
 	    << min_active_flavours_ << "," << max_active_flavours_ << "]\n";
 
   for (size_t f = 0; f < 7; ++f) {
-    cout << (quark_masses_squared_[f]/GeV2) << " " 
+    generator()->log() <<  (quark_masses_squared_[f]/GeV2) << " " 
 	      << (lambda_squared_[f]/GeV2) << "\n";
   }
 
@@ -182,8 +186,7 @@ void alpha_s::match_thresholds () {
 
   lambda_squared_[active_at_input] =
     MeV2 *
-    input_solver.solve(make_pair(lambda_range_.first/MeV2,
-				      lambda_range_.second/MeV2));
+  input_solver.solve({lambda_range_.first/MeV2,lambda_range_.second/MeV2});
 
   // get lambdas down to min active flavours
   unsigned int below = active_at_input;
@@ -196,8 +199,7 @@ void alpha_s::match_thresholds () {
     gsl::bisection_root_solver<solve_lambda_below<alpha_s>,100> match_solver(match_equation);
     lambda_squared_[below-1] =
       MeV2 *
-      match_solver.solve(make_pair(lambda_range_.first/MeV2,
-					lambda_range_.second/MeV2));
+    match_solver.solve({lambda_range_.first/MeV2,lambda_range_.second/MeV2});
 
     --below;
   }
@@ -211,9 +213,7 @@ void alpha_s::match_thresholds () {
 						quark_masses_squared_[above+1]);
     gsl::bisection_root_solver<solve_lambda_above<alpha_s>,100> match_solver(match_equation);
     lambda_squared_[above+1] =
-      MeV2 *
-      match_solver.solve(make_pair(lambda_range_.first/MeV2,
-					lambda_range_.second/MeV2));
+      MeV2 *match_solver.solve({lambda_range_.first/MeV2,lambda_range_.second/MeV2});
     ++above;
   }
 

@@ -1,5 +1,11 @@
 // -*- C++ -*-
 //
+// QTildeShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the QTildeShowerHandler class.
 //
@@ -21,6 +27,7 @@
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
@@ -32,42 +39,6 @@
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
-
-namespace {
-
-  /**
-   *  A struct to order the particles in the same way as in the DecayMode's
-   */
-  struct ParticleOrdering {
-    /**
-     *  Operator for the ordering
-     * @param p1 The first ParticleData object
-     * @param p2 The second ParticleData object
-     */
-    bool operator() (tcPDPtr p1, tcPDPtr p2) {
-      return abs(p1->id()) > abs(p2->id()) ||
-	( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
-	( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
-    }
-  };
-  typedef multiset<tcPDPtr,ParticleOrdering> OrderedParticles;
-
-  /**
-   * Cached lookup of decay modes.
-   * Generator::findDecayMode() is not efficient.
-   */
-  tDMPtr findDecayMode(const string & tag) {
-    static map<string,DMPtr> cache;
-    map<string,DMPtr>::const_iterator pos = cache.find(tag);
-
-    if ( pos != cache.end() ) 
-    	return pos->second;
-
-    tDMPtr dm = CurrentGenerator::current().findDecayMode(tag);
-    cache[tag] = dm;
-    return dm;
-  }
-}
 
 bool QTildeShowerHandler::_hardEmissionWarn = true;
 bool QTildeShowerHandler::_missingTruncWarn = true;
@@ -484,6 +455,12 @@ tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
       resetWeights();
       ++countFailures;
     }
+    catch ( ... ) {
+      hard_=ShowerTreePtr();
+      decay_.clear();
+      done_.clear();
+      throw;
+    }
   }
   // if loop exited because of too many tries, throw event away
   if (countFailures >= maxtry()) {
@@ -492,7 +469,7 @@ tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
     decay_.clear();
     done_.clear();
     throw Exception() << "Too many tries for main while loop "
-		      << "in ShowerHandler::cascade()." 
+		      << "in QTildeShowerHandler::cascade()." 
 		      << Exception::eventerror; 	
   }
   //enter the particles in the event record

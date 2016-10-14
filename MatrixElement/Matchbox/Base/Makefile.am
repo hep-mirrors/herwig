@@ -15,4 +15,6 @@ MatchboxMEBase.h \
 MatchboxReweightBase.cc \
 MatchboxReweightBase.h \
 SubtractedME.cc \
-SubtractedME.h
+SubtractedME.h \
+MergerBase.h \
+MergerBase.cc

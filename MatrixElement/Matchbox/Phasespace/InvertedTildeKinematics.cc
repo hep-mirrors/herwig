@@ -110,7 +110,7 @@ Energy InvertedTildeKinematics::lastScale() const {
 }
 
 pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const double * r,
-							 double pow) const {
+							 double pow, vector<double>* ) const {
 
   double kappaMin = 
     ptCut() != ZERO ?

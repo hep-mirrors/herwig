@@ -103,42 +103,42 @@ public:
    * the light flavours, which are contained in the
    * jet particle group.
    */
-  vector<int> nLightJetVec() const { return theNLightJetVec; }
+  vector<long> nLightJetVec() const { return theNLightJetVec; }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the light flavours, which are contained in the
    * jet particle group.
    */
-  void nLightJetVec(int n) { theNLightJetVec.push_back(n); }
+  void nLightJetVec(long n) { theNLightJetVec.push_back(n); }
 
   /**
    * Return the vector that contains the PDG ids of 
    * the heavy flavours, which are contained in the
    * jet particle group.
    */
-  vector<int> nHeavyJetVec() const { return theNHeavyJetVec; }
+  vector<long> nHeavyJetVec() const { return theNHeavyJetVec; }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the heavy flavours, which are contained in the
    * jet particle group.
    */
-  void nHeavyJetVec(int n) { theNHeavyJetVec.push_back(n); }
+  void nHeavyJetVec(long n) { theNHeavyJetVec.push_back(n); }
 
   /**
    * Return the vector that contains the PDG ids of 
    * the light flavours, which are contained in the
    * proton particle group.
    */
-  vector<int> nLightProtonVec() const { return theNLightProtonVec; }
+  vector<long> nLightProtonVec() const { return theNLightProtonVec; }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the light flavours, which are contained in the
    * proton particle group.
    */
-  void nLightProtonVec(int n) { theNLightProtonVec.push_back(n); }
+  void nLightProtonVec(long n) { theNLightProtonVec.push_back(n); }
 
   /**
    * Return the order in \f$\alpha_S\f$.
@@ -159,6 +159,21 @@ public:
    * Set the order in \f$\alpha_{EM}\f$.
    */
   void orderInAlphaEW(unsigned int o) { theOrderInAlphaEW = o; }
+ 
+  /**
+   * The multiplicity of legs with virtual contributions.
+   */
+  size_t highestVirt() const {return theHighestVirtualSize;}
+
+  /**
+   * Set the highest 
+   **/
+  void setHighestVirt(size_t n){theHighestVirtualSize=n;}
+ 
+  /**
+   * Access the processes vector.
+   */
+   const vector<vector<string> > getProcesses() const {return processes;}
 
   /**
    * Return true, if all processes up to a maximum order are considered
@@ -766,7 +781,7 @@ public:
   /**
    *  set the alpha parameter (needed for massive PK-Operator)
    */
-  void setAlphaParameter(double a) { theAlphaParameter = a; }
+  void setAlphaParameter(double a)const { theAlphaParameter = a; }
   
   //@}
 
@@ -865,19 +880,19 @@ private:
    * Vector with the PDG ids of the light quark flavours,
    * which are contained in the jet particle group.
    */
-  vector<int> theNLightJetVec;
+  vector<long> theNLightJetVec;
 
   /**
    * Vector with the PDG ids of the heavy quark flavours,
    * which are contained in the jet particle group.
    */
-  vector<int> theNHeavyJetVec;
+  vector<long> theNHeavyJetVec;
 
   /**
    * Vector with the PDG ids of the light quark flavours,
    * which are contained in the proton particle group.
    */
-  vector<int> theNLightProtonVec;
+  vector<long> theNLightProtonVec;
 
   /**
    * The order in \f$\alpha_S\f$.
@@ -888,6 +903,11 @@ private:
    * The order in \f$\alpha_{EM}\f$.
    */
   unsigned int theOrderInAlphaEW;
+
+  /**
+   * The maximum number of legs with virtual corrections.
+   **/
+  unsigned int theHighestVirtualSize;
 
   /**
    * Switch on or off Born contributions
@@ -1080,11 +1100,15 @@ private:
    */
   string endParticleGroup(string);
 
+protected:
+  
   /**
    * Parse a process description
    */
-  vector<string> parseProcess(string);
+  virtual vector<string> parseProcess(string);
 
+private:
+  
   /**
    * Command to set the process.
    */
@@ -1110,6 +1134,9 @@ private:
    */
   set<PDVector> makeSubProcesses(const vector<string>&) const;
 
+ 
+public: 
+  
   /**
    * Generate matrix element objects for the given process.
    */
@@ -1117,6 +1144,8 @@ private:
 					   unsigned int orderas,
 					   bool virt);
 
+  
+private:
   /**
    * The shower approximation.
    */
@@ -1233,8 +1262,10 @@ private:
 
   /**
    * The alpha parameter to be used for the dipole subtraction
+   * JB: The parameter is muatble, since we need to be able to change it 
+   * while calculating the difference of IPK with and without alpha.
    */  
-  double theAlphaParameter;
+  mutable double theAlphaParameter;
 
   /**
    * Wether or not charge conservation should be enforced for the processes

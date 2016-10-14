@@ -3,6 +3,7 @@
 cd /Herwig/MatrixElements/Matchbox
 
 clear Factory:Amplitudes
+clear /Herwig/Merging/MergingFactory:Amplitudes
 library HJets.so
 read HJetsProcesses.in
 

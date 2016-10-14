@@ -37,7 +37,7 @@ struct DipolePartonSplitter {
    * new incoming parton.
    */
   static void split(tPPtr parent, tPPtr firstChild, tPPtr secondChild, 
-		    bool initialState);
+		    bool initialState, bool decayedEmitter=false);
 
   /**
    * Fix up relations for splitting the first
@@ -50,14 +50,14 @@ struct DipolePartonSplitter {
    * colour connected parent-ref pair raidated as a dipole.
    */
   static void split(tPPtr parent, tPPtr firstChild, tPPtr secondChild, 
-		    tPPtr ref, bool initialState);
+		    tPPtr ref, bool initialState, bool decayedEmitter=false);
 
   /**
    * Fix up relations for the case that
    * the new parton instance exists only
    * due to changes in e.g. kinematics.
    */
-  static void change(tPPtr parent, tPPtr child, bool initialState);
+  static void change(tPPtr parent, tPPtr child, bool initialState, bool decayedSpec=false);
 
   /**
    * Return true, if the given partons are colour connected.

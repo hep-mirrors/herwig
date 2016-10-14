@@ -86,6 +86,16 @@ bool DipoleIOperator::apply(tcPDPtr pd) const {
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
+
+void DipoleIOperator::setAlpha(double alpha)const{
+  factory()->setAlphaParameter(alpha);
+  const double lga=log(alpha);
+  KQuark = (7./2.-sqr(pi)/6.)*CF;
+  KQuark +=-CF*sqr(lga)+gammaQuark*(alpha-1-lga);
+  KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
+  KGluon +=-CA*sqr(lga)+gammaGluon*(alpha-1-lga);
+}
+
 void DipoleIOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
@@ -103,8 +113,8 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
       // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
     KGluon +=-CA*sqr(log(alpha))+gammaGluon*(alpha-1-log(alpha));
-                                            
-                                            
+  
+  
     if ( isDR() ) {
       gammaQuark -= CF/2.;
       gammaGluon -= CA/6.;

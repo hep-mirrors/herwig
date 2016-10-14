@@ -20,6 +20,7 @@
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
@@ -186,21 +187,21 @@ public:
    * the light flavours, which are contained in the
    * jet particle group.
    */
-  virtual vector<int> getNLightJetVec() const;
+  virtual vector<long> getNLightJetVec() const;
 
   /**
    * Return the vector that contains the PDG ids of 
    * the heavy flavours, which are contained in the
    * jet particle group.
    */
-  virtual vector<int> getNHeavyJetVec() const;
+  virtual vector<long> getNHeavyJetVec() const;
 
   /**
    * Return the vector that contains the PDG ids of 
    * the light flavours, which are contained in the
    * proton particle group.
    */
-  virtual vector<int> getNLightProtonVec() const;
+  virtual vector<long> getNLightProtonVec() const;
 
   /**
    * Return true, if this matrix element is handled by a BLHA one-loop provider
@@ -313,6 +314,21 @@ public:
   virtual bool generateKinematics(const double * r);
 
   /**
+   * Set the typed and momenta of the incoming and outgoing partons to
+   * be used in subsequent calls to me() and colourGeometries()
+   * according to the associated XComb object. If the function is
+   * overridden in a sub class the new function must call the base
+   * class one first.
+   */
+  virtual void setKinematics();
+
+  /**
+   * Clear the information previously provided by a call to
+   * setKinematics(...).
+   */
+  virtual void clearKinematics();
+
+  /**
    * The number of internal degreed of freedom used in the matrix
    * element.
    */
@@ -357,6 +373,13 @@ public:
    * Access the meMomenta.
    */
   vector<Lorentz5Momentum>& lastMEMomenta() { return meMomenta(); }
+  
+  
+  /**
+   * leg size
+   */
+  
+  int legsize() const {return int(meMomenta().size());}
 
   //@}
 
@@ -376,7 +399,7 @@ public:
   /**
    * Set scales and alphaS
    */
-  void setScale() const;
+  void setScale(Energy2 ren=ZERO,Energy2 fac=ZERO) const;
 
   /**
    * Indicate that this matrix element is running alphas by itself.
@@ -411,6 +434,12 @@ public:
    * Get the factorization scale factor
    */
   virtual double factorizationScaleFactor() const;
+      
+      
+  /**
+    * Get the factorization scale factor
+    */
+  virtual double facFac() const{return factorizationScaleFactor();}
 
   /**
    * Return the (QCD) renormalization scale for the last generated phasespace point.
@@ -421,6 +450,12 @@ public:
    * Get the renormalization scale factor
    */
   virtual double renormalizationScaleFactor() const;
+      
+      
+  /**
+   * Get the renormalization scale factor
+   */
+  virtual double renFac() const{return renormalizationScaleFactor();}
 
   /**
    * Return the QED renormalization scale for the last generated phasespace point.
@@ -537,6 +572,34 @@ public:
    * given by the last call to generateKinematics().
    */
   virtual CrossSection dSigHatDR() const;
+
+  /**
+   * Same prefactor for all dSigHat
+   **/
+  CrossSection prefactor()const;
+
+  /**
+   * Born part of the cross section
+   **/
+  CrossSection dSigHatDRB() const ;
+      
+  /**
+   * Virtual corrections of the cross section
+   **/
+  CrossSection dSigHatDRV() const ;
+      
+  /**
+   * Insertion operators of the cross section
+   **/
+  CrossSection dSigHatDRI() const ;
+      
+  /**
+   * If diffAlpha is not 1 and the matrix element has insertion operators 
+   * this routine adds the difference between the insertion operator calculated 
+   * with an alpha-Parameter to the insertion operator without alpha-parameter.
+   */ 
+  CrossSection dSigHatDRAlphaDiff(double alpha) const ;
+      
 
   //@}
 
@@ -712,6 +775,12 @@ public:
    * Instruct this matrix element to include one-loop corrections
    */
   void doOneLoop() { theOneLoop = true; }
+      
+  /**
+   * Instruct this matrix element not to include one-loop corrections
+   */
+      
+  void noOneLoop() { theOneLoop = false; }
 
   /**
    * Return true, if this matrix element includes one-loop corrections
@@ -723,6 +792,8 @@ public:
    * no Born contributions
    */
   void doOneLoopNoBorn() { theOneLoop = true; theOneLoopNoBorn = true; }
+      
+  void noOneLoopNoBorn() { theOneLoop = false; theOneLoopNoBorn = false; }
 
   /**
    * Return true, if this matrix element includes one-loop corrections
@@ -756,8 +827,9 @@ public:
    */
   vector<Ptr<SubtractionDipole>::ptr> 
   getDipoles(const vector<Ptr<SubtractionDipole>::ptr>&,
-	     const vector<Ptr<MatchboxMEBase>::ptr>&) const;
+	     const vector<Ptr<MatchboxMEBase>::ptr>&,bool slim=false) const;
 
+  
   /**
    * If this matrix element is considered a real emission matrix
    * element, but actually neglecting a subclass of the contributing
@@ -890,6 +962,21 @@ public:
    */
   vector<Ptr<MatchboxReweightBase>::ptr>& reweights() { return theReweights; }
 
+  /**
+   * Return the theMerger.
+   */
+  const MergerBasePtr merger() const;
+    
+  /**
+   * Return the theMerger.
+   */
+  MergerBasePtr merger() ;
+      
+  /**
+   * Set the theMerger.
+   */
+  void merger(MergerBasePtr v);
+  
   //@}
 
   /** @name Methods used to setup MatchboxMEBase objects */
@@ -913,7 +1000,7 @@ public:
   /**
    * Clone the dependencies, using a given prefix.
    */
-  void cloneDependencies(const std::string& prefix = "");
+  void cloneDependencies(const std::string& prefix = "",bool slim = false );
 
   /**
    * Prepare an xcomb
@@ -1100,20 +1187,12 @@ private:
   mutable bool checkedPDFs;
   
   /**
-  * Diagnostic Diagram for TreePhaseSpace
-  */
-  
-  void bookMEoverDiaWeight(double x) const;
-  
-  mutable map<double,double > MEoverDiaWeight;
-  
-  mutable int Nevents;
-  
-  /**
-   * Range of diagram weight verbosity
+   * The merging helper to be used. 
+   * Only the head ME has a pointer to this helper.
    */
-  mutable double theDiagramWeightVerboseDown, theDiagramWeightVerboseUp;
-  
+
+  MergerBasePtr theMerger;
+
 
 private:
 

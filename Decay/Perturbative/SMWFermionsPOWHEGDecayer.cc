@@ -501,6 +501,9 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   unsigned int ispect = iemit == 0 ? 1 : 0;
   double muk = iemit == 0 ? mu2_ : mu1_;
   double muk2 = sqr(muk);
+  double muj = iemit == 0 ? mu1_ : mu2_;
+  double muj2 = sqr(muj);
+  double xT2 = sqr(2./mW_*pT_);
   // Find the boost from the lab to the c.o.m with the spectator 
   // along the -z axis, and then invert it.
   LorentzRotation eventFrame( ( quark_[0] + quark_[1] ).findBoostToCM() );
@@ -519,8 +522,12 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   gauge_.setY( pT_*sin(phi) );
   gauge_.setZ( pT_*sinh(y)  );
   gauge_.setMass(ZERO);
-  // emitter reconstructed from gluon & spectator
-  quark_[iemit] = -gauge_ - quark_[ispect];
+  // emitter
+  quark_[iemit].setX( -pT_*cos(phi) );
+  quark_[iemit].setY( -pT_*sin(phi) );
+  quark_[iemit].setZ(  0.5*mW_*sqrt(sqr(x1)-xT2-4.*muj2) );
+  if(sqrt(0.25*mw2_*x2*x2-mw2_*muk2)-pT_*sinh(y)<ZERO)
+    quark_[iemit].setZ(-quark_[iemit].z());
   quark_[iemit].setT( 0.5*mW_*x1 );
   // boost constructed vectors into the event frame
   quark_[0] = eventFrame * quark_[0];

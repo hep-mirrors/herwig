@@ -10,4 +10,5 @@ DipoleMIOperator.h \
 DipoleMPKOperator.cc \
 DipoleMPKOperator.h \
 MatchboxInsertionOperator.cc \
-MatchboxInsertionOperator.h
+MatchboxInsertionOperator.h \
+MatchboxInsertionOperator.fh

@@ -5,7 +5,7 @@
 // This is the declaration of the MatchingHandler class.
 //
 
-#include "Herwig/Shower/ShowerHandler.h"
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"

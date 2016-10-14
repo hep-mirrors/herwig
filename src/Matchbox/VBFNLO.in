@@ -4,6 +4,10 @@ cd /Herwig/MatrixElements/Matchbox
 clear Factory:Amplitudes
 insert Factory:Amplitudes 0 /Herwig/MatrixElements/Matchbox/Amplitudes/VBFNLO
 
+
+clear /Herwig/Merging/MergingFactory:Amplitudes
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 /Herwig/MatrixElements/Matchbox/Amplitudes/VBFNLO
+
 cd /Herwig/Particles
 
 set b:HardProcessMass 0*GeV

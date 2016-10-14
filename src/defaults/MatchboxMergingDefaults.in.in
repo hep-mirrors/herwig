@@ -1,0 +1,277 @@
+################################################################################
+#
+# Default setup for Matchbox matrix element generation.
+# You do not need to make any change in here; processes of
+# interest can be chosen in the standard input files.
+#
+################################################################################
+
+
+################################################################################
+# Integration/sampling
+################################################################################
+
+cd /Herwig/Samplers
+
+set FlatBinSampler:InitialPoints 10000
+set Sampler:BinSampler FlatBinSampler
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted Off
+set Sampler:RunCombinationData Off
+set Sampler:WriteGridsOnFinish No
+set Sampler:MaxEnhancement 1.1
+
+################################################################################
+# Setup the factory object for merging
+################################################################################
+
+mkdir /Herwig/Merging
+cd /Herwig/Merging
+
+
+create Herwig::MergingFactory MergingFactory HwDipoleShower.so 
+
+do MergingFactory:StartParticleGroup p
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/b
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup pbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/b
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup j
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/b
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup b
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/b
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup bbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup t
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/t
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup tbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/tbar
+do MergingFactory:EndParticleGroup
+
+
+do MergingFactory:StartParticleGroup g
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup gamma
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/gamma
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup h0
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/h0
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup W+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/W+
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup W-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/W-
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup Z0
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/Z0
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup e+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/e+
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup e-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/e-
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup mu+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/mu+
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup mu-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/mu-
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup tau+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/tau+
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup tau-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/tau-
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup l
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/e+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/mu+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/e-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/mu-
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup nu
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_e
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_mu
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_ebar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/nu_mubar
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup l+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/e+
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/mu+
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup l-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/e-
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/mu-
+do MergingFactory:EndParticleGroup
+
+################################################################################
+# Setup amplitudes
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin
+
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudellbarqqbar
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudellbarqqbarg
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudellbarqqbargg
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudellbarqqbarqqbar
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudelnuqqbarqqbar
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudehgg
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudehggg
+
+################################################################################
+# Setup utilities for process generation
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+cd Utility
+set /Herwig/Merging/MergingFactory:DiagramGenerator DiagramGenerator
+set /Herwig/Merging/MergingFactory:ProcessData ProcessData 
+
+################################################################################
+# Setup phasespace generators
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+cd Phasespace
+set /Herwig/Merging/MergingFactory:Phasespace TreePhasespace
+
+################################################################################
+# Setup scale choices
+################################################################################
+
+cd /Herwig/Merging
+
+create Herwig::Merger Merger
+create Herwig::MergingReweight MPreWeight HwDipoleShower.so
+insert MergingFactory:Preweighters 0  MPreWeight
+
+create Herwig::SimpleColourBasis  LargeNColourBasis
+set LargeNColourBasis:LargeN On
+set Merger:LargeNBasis LargeNColourBasis
+
+
+################################################################################
+# Factories for different colliders
+################################################################################
+
+
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+
+
+cp MergingFactory EEMergingFactory
+set EEMergingFactory:PartonExtractor /Herwig/Partons/EEExtractor
+set EEMergingFactory:Cuts /Herwig/Cuts/EECuts
+set EEMergingFactory:FirstPerturbativePDF No
+set EEMergingFactory:SecondPerturbativePDF No
+
+cp MergingFactory DISMergingFactory
+
+set DISMergingFactory:PartonExtractor /Herwig/Partons/DISExtractor
+set DISMergingFactory:Cuts /Herwig/Cuts/DISCuts
+set DISMergingFactory:FirstPerturbativePDF No
+set DISMergingFactory:SecondPerturbativePDF Yes
+
+cp MergingFactory PPMergingFactory
+set PPMergingFactory:PartonExtractor /Herwig/Partons/QCDExtractor
+set PPMergingFactory:Cuts /Herwig/Cuts/QCDCuts
+set PPMergingFactory:FirstPerturbativePDF Yes
+set PPMergingFactory:SecondPerturbativePDF Yes
+
+cd /
+

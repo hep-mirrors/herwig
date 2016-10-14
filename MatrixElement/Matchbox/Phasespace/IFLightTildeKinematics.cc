@@ -68,6 +68,28 @@ Energy IFLightTildeKinematics::lastPt() const {
 
 }
 
+Energy IFLightTildeKinematics::lastPt(Lorentz5Momentum emitter,Lorentz5Momentum emission,Lorentz5Momentum spectator)const {
+
+  
+  double x =
+  (- emission*spectator + emitter*spectator + emitter*emission) /
+  (emitter*emission + emitter*spectator);
+  double u = emitter*emission / (emitter*emission + emitter*spectator);
+  
+  Energy scale = sqrt(2.*(emission*emitter-emission*spectator+emitter*spectator));
+  
+  return scale * sqrt(u*(1.-u)*(1.-x)/x);
+}
+
+pair<double,double> IFLightTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  if(pt>hardPt) return make_pair(0.5,0.5);
+  double s = sqrt(1.-sqr(pt/hardPt));
+  double x = emitterX();
+  return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
+}
+
+
+
 double IFLightTildeKinematics::lastZ() const {
   double x = subtractionParameters()[0];
   double u = subtractionParameters()[1];

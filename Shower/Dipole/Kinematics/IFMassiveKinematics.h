@@ -66,7 +66,7 @@ public:
   virtual pair<double,double> zBoundaries(Energy,
 					  const DipoleSplittingInfo&,
 					  const DipoleSplittingKernel&) const {
-    return make_pair(0.0,1.0);
+    return {0.0,1.0};
   }
 
   /**

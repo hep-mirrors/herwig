@@ -286,7 +286,7 @@ private:
   /**
    * first is the olp id from herwig, second the answer from openloops
    */
-  mutable map< int , int > idpair;
+  static vector< int > idpair;
 
   
   /**

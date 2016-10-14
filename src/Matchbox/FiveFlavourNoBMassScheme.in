@@ -30,36 +30,64 @@ insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
 insert Factory:ParticleGroup 0 /Herwig/Particles/g
 do Factory:EndParticleGroup
 
+
+cd /Herwig/Merging/
+
+
+
+do MergingFactory:StartParticleGroup p
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/b
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
+do MergingFactory:StartParticleGroup pbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/b
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/bbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/c
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/cbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/s
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/sbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/d
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/dbar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/u
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/ubar
+insert MergingFactory:ParticleGroup 0 /Herwig/Particles/g
+do MergingFactory:EndParticleGroup
+
 cd /Herwig/Particles
 
 do b:UnsetHardProcessMass
 do bbar:UnsetHardProcessMass
+do c:UnsetHardProcessMass
+do cbar:UnsetHardProcessMass
 set b:NominalMass 0*GeV
 set bbar:NominalMass 0*GeV
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+
 
 cd /Herwig/DipoleShower/Kernels
 
-cp IFgx2qqxDipoleKernel IFgx2bbbarxDipoleKernel
-set IFgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbbarxDipoleKernel
+set IFgx2bbbarxDipoleKernel:UseKernel On
+set IFgx2bbarbxDipoleKernel:UseKernel On
+set IFMgx2bbbarxDipoleKernel:UseKernel Off
+set IFMgx2bbarbxDipoleKernel:UseKernel Off
+set IIgx2bbbarxDipoleKernel:UseKernel On
+set IIgx2bbarbxDipoleKernel:UseKernel On
+set IFgx2bbbarxDipoleKernel:UseKernel On
+set IFgx2bbarbxDipoleKernel:UseKernel On
+set IFMgx2bbbarxDipoleKernel:UseKernel Off
+set IFMgx2bbarbxDipoleKernel:UseKernel Off
+set IIgx2bbbarxDipoleKernel:UseKernel On
+set IIgx2bbarbxDipoleKernel:UseKernel On
 
-cp IFgx2qqxDipoleKernel IFgx2bbarbxDipoleKernel
-set IFgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbarbxDipoleKernel
-
-cp IFMgx2qqxDipoleKernel IFMgx2bbbarxDipoleKernel
-set IFMgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2bbbarxDipoleKernel
-
-cp IFMgx2qqxDipoleKernel IFMgx2bbarbxDipoleKernel
-set IFMgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2bbarbxDipoleKernel
-
-cp IIgx2qqxDipoleKernel IIgx2bbbarxDipoleKernel
-set IIgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbbarxDipoleKernel
-
-cp IIgx2qqxDipoleKernel IIgx2bbarbxDipoleKernel
-set IIgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbarbxDipoleKernel
 

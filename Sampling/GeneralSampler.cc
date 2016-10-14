@@ -23,6 +23,8 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 
+#include "ThePEG/Utilities/ColourOutput.h"
+
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -74,9 +76,9 @@ void GeneralSampler::initialize() {
   if ( theParallelIntegration &&
        runLevel() == ReadMode )
     throw Exception()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Parallel integration is only supported in the build/integrate/run mode\n\n"
-      << "--------------------------------------------------------------------------------\n"
+      << "\n----------------------------------------------------\n\n"
+      << "Parallel integration is only supported\n in the build/integrate/run mode\n\n"
+      << "----------------------------------------------------\n"
       << Exception::abortnow;
 
   if ( runLevel() == ReadMode ||
@@ -104,7 +106,7 @@ void GeneralSampler::initialize() {
     ofstream* jobList = 0;
 
     generator()->log() 
-      << "--------------------------------------------------------------------------------\n"
+      << "----------------------------------------------------\n"
       << "preparing integration jobs ...\n" << flush;
 
     vector<int> randomized;
@@ -131,12 +133,12 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	string prefix = RunDirectories::buildStorage();
+	string prefix = RunDirectories::runStorage();
 	if ( prefix.empty() )
 	  prefix = "./";
 	else if ( *prefix.rbegin() != '/' )
 	  prefix += "/";
-	name << prefix << "integrationJob" << jobCount;
+	name << prefix << "integrationJob" << jobCount<<"List";
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
@@ -153,13 +155,13 @@ void GeneralSampler::initialize() {
     theIntegrationJobsCreated = jobCount;
 
     generator()->log() 
-      << "--------------------------------------------------------------------------------\n\n"
+      << "---------------------------------------------------\n\n"
       << "Wrote " << jobCount << " integration jobs\n"
       << "Please submit integration jobs with the\nintegrate --jobid=x\ncommand for job ids "
       << "from 0 to " << (jobCount-1) << "\n\n"
-      << "e.g.:\n\n"
-      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done\n\n"
-      << "--------------------------------------------------------------------------------\n"
+      << "e.g.:\n\n" << ANSI::yellow
+      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done \n\n" << ANSI::reset
+      << "---------------------------------------------------\n"
       << flush;
 
     if ( jobList ) {
@@ -198,12 +200,10 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
-    string prefix = RunDirectories::buildStorage();
-    if ( prefix.empty() )
-      prefix = "./";
-    else if ( *prefix.rbegin() != '/' )
-      prefix += "/";
-    string fname = prefix + integrationList();
+    string prefix = RunDirectories::runStorage();
+    assert ( !prefix.empty() );
+    string fname = prefix.substr(0, prefix.size()-1) + "List";
+
     ifstream jobList(fname.c_str());
     if ( jobList ) {
       int b = 0;
@@ -212,7 +212,7 @@ void GeneralSampler::initialize() {
     } else {
       Repository::clog() 
 	<< "Job list '"
-	<< integrationList() << "' not found.\n"
+	<< fname << "' not found.\n"
 	<< "Assuming empty integration job\n" << flush;
       return;
     }
@@ -268,23 +268,28 @@ void GeneralSampler::initialize() {
 
   if ( missingGrid && runLevel() == RunMode )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Warning:No grid file could be found at the start of this run.\n\n"
-      << "* For a read/run setup intented to be used with --setupfile please consider\n"
-      << "  using the build/integrate/run setup.\n"
-      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
-      << "  that the same setupfile is provided to both the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+    << "\n----------------------------------------------------\n\n"
+    << "Warning:No grid file could be found at the start of\n"
+    << "this run.\n\n"
+    << "* For a read/run setup intented to be used with \n"
+    << "  --setupfile \n"
+    << "  please consider using the build/integrate/run setup.\n"
+    << "* For a build/integrate/run setup to be used with\n"
+    << "  --setupfile\n"
+    << "  please ensure that the same setupfile is provided\n"
+    << "  to both the integrate and run steps.\n\n"
+    << "---------------------------------------------------\n" << flush;
 
   if ( runLevel() == ReadMode ||
        runLevel() == IntegrationMode ) {
     if ( reuseGrid )
       Repository::clog()
-        << "--------------------------------------------------------------------------------\n\n"
-        << "Re-using an existing grid as starting point for grid optimization. \n"
-        << "Please consider removing the grid files and re-running the grid adaption\n"
-        << "when there have been significant changes to parameters, cuts, etc.\n\n"
-        << "--------------------------------------------------------------------------------\n"
+        << "----------------------------------------------------\n\n"
+        << "Re-using an existing grid as starting point for grid\n"
+        << "optimization. Please consider removing the grid files \n"
+        << "and re-running the grid adaption when there have\n"
+        << "been significant changes to parameters, cuts, etc.\n\n"
+        << "----------------------------------------------------\n"
         << flush;
   }
 
@@ -580,13 +585,13 @@ void GeneralSampler::doinit() {
     missingGrid = missingGrid || ( ! s->second->existsGrid() );
   if ( missingGrid && runLevel() == RunMode )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
+      << "\n---------------------------------------------------\n\n"
       << "Warning: No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+      << "---------------------------------------------------\n" << flush;
   if ( samplers().empty() && runLevel() == RunMode )
     justAfterIntegrate = true;
   SamplerBase::doinit();
@@ -719,13 +724,17 @@ void GeneralSampler::doinitrun() {
     missingGrid = missingGrid || ( ! s->second->existsGrid() );
   if ( missingGrid && !didReadGrids )
     generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Warning:No grid file could be found at the start of this run.\n\n"
-      << "* For a read/run setup intented to be used with --setupfile please consider\n"
-      << "  using the build/integrate/run setup.\n"
-      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
-      << "  that the same setupfile is provided to both the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
+      << "\n----------------------------------------------------\n\n"
+      << "Warning:No grid file could be found at the start of\n"
+      << "this run.\n\n"
+      << "* For a read/run setup intented to be used with \n"
+      << "  --setupfile \n"
+      << "  please consider using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with\n"
+      << "  --setupfile\n"
+      << "  please ensure that the same setupfile is provided\n"
+      << "  to both the integrate and run steps.\n\n"
+      << "---------------------------------------------------\n" << flush;
 
   isSampling = true;
   SamplerBase::doinitrun();
