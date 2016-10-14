@@ -497,7 +497,7 @@ bool AlpGenHandler::showerHardProcessVeto() const {
 
 /* Function that returns the R distance
    between a particle and a jet. */
-double AlpGenHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) { 
+double AlpGenHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) const { 
   LorentzMomentum partonmom(partonptr->momentum());
   // Calculate DY, DPhi and then DR
   double DY(partonmom.eta()-jetmom.eta());
@@ -511,7 +511,7 @@ double AlpGenHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum j
 // Initialize calorimeter for calsim_m and getjet_m. Note that
 // because initialization is separte calsim_m can be called more
 // than once to simulate pileup of several events.
-void AlpGenHandler::calini_m() {
+void AlpGenHandler::calini_m() const {
 
   // Making sure arrays are clear before filling;
   cphcal_.clear();  sphcal_.clear();
@@ -537,7 +537,7 @@ void AlpGenHandler::calini_m() {
 }
 
 // Get FastJets
-void AlpGenHandler::getFastJets(double rjet, Energy ejcut, double etajcut) {
+void AlpGenHandler::getFastJets(double rjet, Energy ejcut, double etajcut) const {
 
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int ipar=0; ipar<particlesToCluster_.size(); ipar++) { 
@@ -621,7 +621,7 @@ void AlpGenHandler::getFastJets(double rjet, Energy ejcut, double etajcut) {
 
 
 // Simple calorimeter simulation - assume uniform Y and phi bins.
-void AlpGenHandler::calsim_m() {
+void AlpGenHandler::calsim_m() const {
   // Reset transverse energies of all calorimter cells ready for new fill.
   for(unsigned int ixx=0; ixx<et_.size(); ixx++)
     for(unsigned int iyy=0; iyy<et_[ixx].size(); iyy++)
@@ -649,7 +649,7 @@ void AlpGenHandler::calsim_m() {
 // Find highest remaining cell > etstop and sum surrounding cells
 // with -- delta(y)^2+delta(phi)^2 < Rjet^2 , ET>eccut. Keep sets
 // with ET>ejcut and abs(eta)<etacut. 
-void AlpGenHandler::getjet_m(double rjet, Energy ejcut, double etajcut) {
+void AlpGenHandler::getjet_m(double rjet, Energy ejcut, double etajcut) const {
 
   // Minimum ET the calorimeter can "see".
   Energy eccut(0.1*GeV);
@@ -779,7 +779,7 @@ void AlpGenHandler::getjet_m(double rjet, Energy ejcut, double etajcut) {
 // decay products, Higgs bosons, photons as well as _primary_, i.e.
 // present in the lowest multiplicity process, heavy quarks and
 // any related decay products.
-void AlpGenHandler::getDescendents(PPtr theParticle) {
+void AlpGenHandler::getDescendents(PPtr theParticle) const {
   ParticleVector theChildren(theParticle->children());
   for (unsigned int ixx=0; ixx<theChildren.size(); ixx++)
     if(theChildren[ixx]->children().size()==0)
@@ -788,7 +788,7 @@ void AlpGenHandler::getDescendents(PPtr theParticle) {
       getDescendents(theChildren[ixx]);
   return;
 }
-void AlpGenHandler::caldel_m() {
+void AlpGenHandler::caldel_m() const {
 
 
   preshowerFSPsToDelete_.clear();
@@ -1081,7 +1081,7 @@ void AlpGenHandler::caldel_m() {
 
 // This looks for all descendents of a top up to but not including
 // the W and b children.
-void AlpGenHandler::getTopRadiation(PPtr theParticle) {
+void AlpGenHandler::getTopRadiation(PPtr theParticle) const {
   ParticleVector theChildren(theParticle->children());
   for (unsigned int ixx=0; ixx<theChildren.size(); ixx++)
     if(theChildren[ixx]->children().size()==0)
@@ -1092,7 +1092,7 @@ void AlpGenHandler::getTopRadiation(PPtr theParticle) {
       getTopRadiation(theChildren[ixx]);
   return;
 }
-void AlpGenHandler::caldel_hvq() {
+void AlpGenHandler::caldel_hvq() const {
 
   // Fill partonsToMatch_ with only those pre-shower partons intended to
   // be used in heavy-quark-jet matching and fill particlesToCluster_ using
@@ -1212,7 +1212,7 @@ void AlpGenHandler::caldel_hvq() {
   return;
 }
 
-void AlpGenHandler::getPreshowerParticles() {
+void AlpGenHandler::getPreshowerParticles() const {
   // LH file initial-state partons:
   preshowerISPs_ = lastXCombPtr()->subProcess()->incoming();
 
@@ -1222,7 +1222,7 @@ void AlpGenHandler::getPreshowerParticles() {
   return;
 }
 
-void AlpGenHandler::getShoweredParticles() {
+void AlpGenHandler::getShoweredParticles() const {
   // Post-shower initial-state hadrons:
   showeredISHs_ = eventHandler()->currentEvent()->incoming();
 
@@ -1264,7 +1264,7 @@ void AlpGenHandler::getShoweredParticles() {
   return;
 }
 
-void AlpGenHandler::doSanityChecks(int debugLevel) {
+void AlpGenHandler::doSanityChecks(int debugLevel) const {
 
   // When checking momentum conservation in the form 
   // p_in - p_out, any momentum component bigger / less
@@ -1387,6 +1387,6 @@ void AlpGenHandler::printMomVec(vector<Lorentz5Momentum> momVec) {
 
 }
 
-Energy AlpGenHandler::etclusran_(double petc) { 
+Energy AlpGenHandler::etclusran_(double petc) const { 
   return (((2 * epsetclus_)/M_PI) * asin(2 * petc - 1) + etclusmean_);
 }
