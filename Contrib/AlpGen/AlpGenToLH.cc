@@ -76,7 +76,7 @@ void doIndividualHardProcessAssignments(int ihrd                , double * nup,
 //*****************************//
 
 void writeHWPPinFile(string prefix, int ihrd, int unwev,
-		     int lhapdf, int idbmup0, int idbmup1, int idwtup,
+		     int lhapdf, string lhapdfstr, int idbmup0, int idbmup1, int idwtup,
 		     double aqcdup, int nloop,
 		     vector<double> * massesPtr,
 		     vector<double> * parvalPtr,
@@ -272,6 +272,7 @@ int main(int argc, char *argv[]) {
   // LHAPDF index: (note in POWHEG-BOX it is set to just -1).
   pdfsup[0]=ndnsToLHAPDF(int(parstrToparval("ndns",&parstr,&parval))); 
   pdfsup[1]=pdfsup[0];
+  string lhastring = ndnsToLHAPDF_str(int(parstrToparval("ndns",&parstr,&parval))); 
   // LH accord flag defining weight scheme:
   // N.B. AlpGen alpsho.f UPINIT uses idwtup = 3 (this is likely better from the
   // point of view of combining events of diff multiplicity together in real life
@@ -372,7 +373,7 @@ int main(int argc, char *argv[]) {
   cout << "aqedup [inverse] from stat file: " << 1/aqedup << "\n";
   cout << "\n";
 
-  writeHWPPinFile(prefix,ihrd,unwev,pdfsup[0], idbmup[0], idbmup[1], idwtup,
+  writeHWPPinFile(prefix,ihrd,unwev,pdfsup[0],lhastring, idbmup[0], idbmup[1], idwtup,
 		  aqcdup,nloop,
 		  &alpgenParticleMasses,
 		  &parval,&parstr);
@@ -678,12 +679,12 @@ int ndnsToLHAPDF(int ndns) {
     LHAPDFindex =  10772;
   }
 
-  cout << "-------------------------------\n";
+  /*cout << "-------------------------------\n";
   cout << "ndnsToLHAPDF found: \n";
   cout << "PDF set      = " << Set << "\n";
   cout << "ndns index   = " << ndns << "\n";
   cout << "LHAPDF index = " << LHAPDFindex << "\n";
-  cout << "-------------------------------\n\n";
+  cout << "-------------------------------\n\n";*/
   return LHAPDFindex;
 
 }
@@ -705,36 +706,36 @@ string ndnsToLHAPDF_str(int ndns) {
   if(ndns==1) {
     Set = "CTEQ4M"       ; Lambda_4 = 0.298 ; Lambda_5_2loop = 0.202 ; Scheme = "MS" ;
     LHAPDFindex =  19150;
-    lhastring = "cteq6m";
+    lhastring = "cteq6";
   } else if(ndns==2) {
     Set = "CTEQ4L"       ; Lambda_4 = 0.298 ; Lambda_5_2loop = 0.202 ; Scheme = "MS" ;
     LHAPDFindex =  19170;
-    lhastring = "cteq4l";
+    lhastring = "cteq6l1";
   } else if(ndns==3) {
     Set = "CTEQ4HJ"      ; Lambda_4 = 0.298 ; Lambda_5_2loop = 0.202 ; Scheme = "MS" ;
     LHAPDFindex = -99999;
-    lhastring = "cteq4hj";    
+    lhastring = "cteq6l1";    
   } else if(ndns==4) {
     Set = "CTEQ5M"       ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
     LHAPDFindex =  19050;
-    lhastring = "cteq5m";
+    lhastring = "cteq6l1";
   } else if(ndns==5) {
     Set = "CTEQ5L"       ; Lambda_4 = 0.192 ; Lambda_5_2loop = 0.144 ; Scheme = "MS" ;
     LHAPDFindex =  19070;
-    lhastring = "cteq5l";
+    lhastring = "cteq6l1";
 
   } else if(ndns==6) {
     Set = "CTEQ5HJ"      ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
     LHAPDFindex = -99999;
-    lhastring = "cteq5hj";       
+    lhastring = "cteq6l1";       
   } else if(ndns==7) {
     Set = "CTEQ6M"       ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
     LHAPDFindex=   10050;
-    lhastring = "cteq6m";
+    lhastring = "cteq6";
   } else if(ndns==8) {
     Set = "CTEQ6L"       ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
     LHAPDFindex =  10041;
-    lhastring = "cteq6l";
+    lhastring = "cteq6l1";
   } else if(ndns==9) {
     Set = "CTEQ6L1"      ; Lambda_4 = 0.215 ; Lambda_5_2loop = 0.167 ; Scheme = "MS" ;
     LHAPDFindex =  10042;
@@ -742,7 +743,7 @@ string ndnsToLHAPDF_str(int ndns) {
   } else if(ndns>=10&&ndns<=50) {
     Set = "CTEQ6xx"      ; Lambda_4 = 0.326 ; Lambda_5_2loop = 0.226 ; Scheme = "MS" ;
     LHAPDFindex =  10150+(ndns-10);
-    lhastring = "cteq6xx";
+    lhastring = "cteq6l1";
   } else if(ndns==101) {
     Set = "MRST99"       ; Lambda_4 = 0.321 ; Lambda_5_2loop = 0.220 ; Scheme = "MS" ;
     LHAPDFindex = -99999;
@@ -809,6 +810,7 @@ string ndnsToLHAPDF_str(int ndns) {
   cout << "PDF set      = " << Set << "\n";
   cout << "ndns index   = " << ndns << "\n";
   cout << "LHAPDF index = " << LHAPDFindex << "\n";
+  cout << "WARNING: YOU MAY HAVE TO ENTER THE PDF NAME MANUALLY IN THE INPUT FILES!" << endl;
   cout << "-------------------------------\n\n";
   return lhastring;
 
@@ -834,7 +836,7 @@ string trim(string theString) {
 }
 
 void writeHWPPinFile(string prefix, int ihrd, int unwev,
-		     int lhapdf, int idbmup0, int idbmup1, int idwtup,
+		     int lhapdf, string lhapdfstr, int idbmup0, int idbmup1, int idwtup,
 		     double aqcdup, int nloop,
 		     vector<double> * massesPtr,
 		     vector<double> * parvalPtr,
@@ -862,8 +864,6 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# Create a LH reader (set up & assigned below) ...          #\n";
   hwpp << "#############################################################\n";
   hwpp << "cd /Herwig/EventHandlers\n";
-  hwpp << "#library BasicLesHouchesFileReader.so\n";
-  hwpp << "#create Herwig::BasicLesHouchesFileReader theLHReader\n";
   hwpp << "library LesHouches.so\n";
   hwpp << "create ThePEG::LesHouchesFileReader theLHReader\n";
   hwpp << "\n";
@@ -873,6 +873,8 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "cd /Herwig/Shower\n";
   hwpp << "library AlpGenHandler.so\n";
   hwpp << "create Herwig::AlpGenHandler AlpGenHandler\n";
+  hwpp << "set /Herwig/Shower/AlpGenHandler:ShowerModel /Herwig/Shower/ShowerModel\n";
+  hwpp << "set /Herwig/Shower/AlpGenHandler:SplittingGenerator /Herwig/Shower/SplittingGenerator\n";
   hwpp << "\n";
   hwpp << "#############################################################\n";
   hwpp << "# Create an LHAPDF (set up & assigned below) ...            #\n";
@@ -909,7 +911,7 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "set theLesHouchesHandler:DecayHandler "
        << "/Herwig/Decays/DecayHandler\n";
   hwpp << "\n";
-  hwpp << "#############################################################\n";
+  /* hwpp << "#############################################################\n";
   hwpp << "# Set up the Evolver to veto hard emissions > scalup ...    #\n";
   hwpp << "#############################################################\n";
   hwpp << "cd /Herwig/Shower\n";
@@ -923,12 +925,12 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# MeCorrMode No turns off ME corrs. IntrinsicPtGaussian  2.2*GeV \n";
   hwpp << "# is the RMS of intrinsic pT of Gaussian distribution: \n";
   hwpp << "# 2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS) \n";
-  hwpp << "set Evolver:MaxTry               100\n";
-  hwpp << "set Evolver:HardVetoMode         Yes\n";
-  hwpp << "set Evolver:HardVetoScaleSource  Read\n";
-  hwpp << "set Evolver:HardVetoReadOption   PrimaryCollision\n";
-  hwpp << "set Evolver:MECorrMode           No\n";
-  hwpp << "# Intrinsic pT etc should be set as part of a tune i.e. it \n";
+  //  hwpp << "set Evolver:MaxTry               100\n";
+  // hwpp << "set Evolver:HardVetoMode         Yes\n";
+  // hwpp << "set Evolver:HardVetoScaleSource  Read\n";
+  // hwpp << "set Evolver:HardVetoReadOption   PrimaryCollision\n";
+  // hwpp << "set Evolver:MECorrMode           No\n";
+   hwpp << "# Intrinsic pT etc should be set as part of a tune i.e. it \n";
   hwpp << "# should either be left alone (default) or set by reading in \n";
   hwpp << "# one of the tunes before theGenerator is created by copying \n";
   hwpp << "# LHCGenerator (second line of this file). The following \n";
@@ -938,13 +940,13 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   if(idbmup0 == 2212 && idbmup1 == -2212) {
     hwpp << "#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.26 \n";
     hwpp << "#set /Herwig/UnderlyingEvent/UECuts:MHatMin 4.52 \n";
-    hwpp << "#set /Herwig/Shower/Evolver:IntrinsicPtGaussian 1.9*GeV \n";
+    hwpp << "#set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 1.9*GeV \n";
   } else {
     hwpp << "#set /Herwig/UnderlyingEvent/KtCut:MinKT 2.752 \n";
     hwpp << "#set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.504 \n";
     hwpp << "#set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.34*GeV \n";
-  }
-  hwpp << "# Colour reconnection (re)settings \n";
+    }
+   hwpp << "# Colour reconnection (re)settings \n";
   hwpp << "#set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes \n";
   hwpp << "#set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.61\n";
   hwpp << "# Colour Disrupt settings \n";
@@ -979,16 +981,27 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# defaults in that case by simply commenting this setting. \n";
   hwpp << "#set KinematicsReconstructor:ReconstructionOption General \n";
   hwpp << "#set KinematicsReconstructor:InitialInitialBoostOption LongTransBoost\n";
-  hwpp << "\n";
+  hwpp << "\n";*/
   hwpp << "#############################################################\n";
   hwpp << "# Set up the AlpGenHandler ...                              #\n";
   hwpp << "#############################################################\n";
   hwpp << "cd /Herwig/Shower\n";
   hwpp << "set AlpGenHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler\n";
   hwpp << "set AlpGenHandler:RemDecayer  /Herwig/Partons/RemnantDecayer\n";
-  hwpp << "set AlpGenHandler:Evolver     Evolver\n";
-  hwpp << "set AlphaQCD:AlphaMZ       " << aqcdup << "\n";
-  hwpp << "set AlphaQCD:NumberOfLoops " << nloop << "\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes\n"; 
+  hwpp << "set /Herwig/Shower/ShowerHandler:RestrictPhasespace On\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:MaxTry               100\n";
+  hwpp << "set /Herwig/Shower/PartnerFinder:PartnerMethod Random\n";
+  hwpp << "set /Herwig/Shower/PartnerFinder:ScaleChoice Partner\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:Interactions QCD\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:SpinCorrelations No\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:SoftCorrelations No\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:ReconstructionOption CutOff\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:Interactions QCD\n";
+
+  // hwpp << "set AlpGenHandler:Evolver     Evolver\n";
+  //  hwpp << "set AlphaQCD:AlphaMZ       " << aqcdup << "\n";
+  // hwpp << "set AlphaQCD:NumberOfLoops " << nloop << "\n";
   hwpp << "set AlpGenHandler:ShowerAlpha  AlphaQCD\n";
   hwpp << "# Calorimeter granularity settings used by GetJet algorithm\n"; 
   hwpp << "set AlpGenHandler:NoCellsInRapidity 100\n"; 
@@ -1093,7 +1106,7 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "set /Herwig/EventHandlers/theLHReader:InitPDFs false\n";
   hwpp << "# Instead set them explicitly here:\n";
   //  hwpp << "set thePDFset:PDFNumber       " << lhapdf << "\n";
-  hwpp << "set thePDFset:PDFNumber       " << lhapdf << "\n";
+  hwpp << "set thePDFset:PDFName       " << lhapdfstr << "\n";
 
   hwpp << "set thePDFset:RemnantHandler  HadronRemnants\n";
   hwpp << "set /Herwig/EventHandlers/theLHReader:PDFA thePDFset\n";
