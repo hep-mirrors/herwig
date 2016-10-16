@@ -20,6 +20,9 @@ if len(args) != 1:
 
 name=args[0]
 
+# settings for four flavour scheme
+fourFlavour="read Matchbox/FourFlavourScheme.in\ndo /Herwig/MatrixElements/Matchbox/Factory:StartParticleGroup bjet\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/b\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/bbar\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/c\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/cbar\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/s\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/sbar\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/d\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/dbar\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/u\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/ubar\ninsert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/g\ndo /Herwig/MatrixElements/Matchbox/Factory:EndParticleGroup\nset /Herwig/Cuts/MatchboxJetMatcher:Group bjet\n"
+
 collider=""
 # select the template to load
 # collider
@@ -1060,7 +1063,7 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/JetPairMass:MassMin 90.*GeV\n"
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
-            parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
+            parameters["bscheme"]=fourFlavour
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\n"
             process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
@@ -1278,7 +1281,7 @@ elif(collider=="LHC") :
             process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
             process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
         elif(parameterName.find("Z-bb")>=0) :
-            parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
+            parameters["bscheme"]=fourFlavour
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b bbar\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
@@ -1303,7 +1306,7 @@ elif(collider=="LHC") :
             process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
             process+="set  /Herwig/Cuts/FirstJet:PtMin 15.*GeV\n"
         elif(parameterName.find("W-b")>=0) :
-            parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
+            parameters["bscheme"]=fourFlavour
             process += "set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu b bbar\ndo Factory:Process p p e- nu b bbar\n"
             process += "set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
