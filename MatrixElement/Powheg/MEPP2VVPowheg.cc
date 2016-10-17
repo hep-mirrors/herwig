@@ -24,8 +24,8 @@
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;

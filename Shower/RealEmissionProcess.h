@@ -15,7 +15,7 @@
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Config/Pointers.h"
 #include "RealEmissionProcess.fh"
-#include "Herwig/Shower/QTilde/ShowerInteraction.h"
+#include "Herwig/Shower/Core/ShowerInteraction.h"
 
 namespace Herwig {
 using namespace ThePEG;

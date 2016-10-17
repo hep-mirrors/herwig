@@ -12,9 +12,9 @@
 // This is the declaration of the ShowerKinematics class.
 //
 
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/Core/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
+#include "Herwig/Shower/Core/Base/SudakovFormFactor.h"
 #include "ShowerKinematics.fh"
 
 namespace Herwig {

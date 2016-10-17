@@ -22,7 +22,7 @@
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/Core/SplittingFunctions/SplittingFunction.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/Utilities/DescribeClass.h"

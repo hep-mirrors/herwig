@@ -8,7 +8,7 @@
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 

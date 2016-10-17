@@ -14,7 +14,7 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "KinematicsReconstructor.fh"
 #include "PartnerFinder.fh"
-#include "SudakovFormFactor.fh"
+#include "Herwig/Shower/Core/Base/SudakovFormFactor.fh"
 #include "ShowerModel.fh"
 
 namespace Herwig {

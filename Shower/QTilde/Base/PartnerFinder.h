@@ -11,7 +11,7 @@
 //
 // This is the declaration of the PartnerFinder class.
 //
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/Core/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "PartnerFinder.fh"
 

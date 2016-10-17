@@ -14,9 +14,9 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerVeto.fh"
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
-#include "ShowerParticle.fh"
-#include "ShowerProgenitor.fh"
+#include "Herwig/Shower/Core/ShowerConfig.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 
 namespace Herwig {
 

@@ -20,7 +20,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>

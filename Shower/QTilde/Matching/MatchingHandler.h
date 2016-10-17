@@ -10,7 +10,7 @@
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig/Shower/QTilde/Base/HardBranching.h"
+#include "Herwig/Shower/Core/Base/HardBranching.h"
 #include "ProtoTree.h"
 #include "PotentialTree.h"
 

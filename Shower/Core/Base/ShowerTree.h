@@ -14,8 +14,8 @@
 #include "Herwig/Shower/PerturbativeProcess.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Shower/ShowerEventRecord.h"
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/ShowerConfig.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include "ShowerProgenitor.h"
 #include "ThePEG/EventRecord/Step.h"
 #include <cassert>

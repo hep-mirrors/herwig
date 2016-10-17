@@ -25,9 +25,9 @@
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/Utilities/Maths.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 
 using namespace Herwig;
 

@@ -7,7 +7,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "FullShowerVeto.fh"
-#include "ShowerTree.h"
+#include "Herwig/Shower/Core/Base/ShowerTree.h"
 
 namespace Herwig {
 

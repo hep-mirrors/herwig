@@ -7,7 +7,7 @@
 
 #include "ShowerBasis.fh"
 #include "ShowerParticle.fh"
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/Core/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 

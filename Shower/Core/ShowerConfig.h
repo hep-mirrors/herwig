@@ -13,8 +13,8 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.fh"
+#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Core/Base/SudakovFormFactor.fh"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ShowerInteraction.h"

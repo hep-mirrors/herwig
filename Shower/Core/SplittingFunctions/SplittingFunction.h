@@ -13,10 +13,10 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/Core/ShowerConfig.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "Herwig/Decay/DecayMatrixElement.h"
-#include "Herwig/Shower/QTilde/Base/ShowerKinematics.fh"
+#include "Herwig/Shower/Core/Base/ShowerKinematics.fh"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SplittingFunction.fh"
