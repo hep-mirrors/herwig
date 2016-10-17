@@ -188,8 +188,8 @@ Partonic/Partonic__all.cc
 noinst_LTLIBRARIES += libHwDecRad.la
 
 libHwDecRad_la_SOURCES = \
-DecayRadiationGenerator.cc \
-QEDRadiationHandler.cc
+Radiation/DecayRadiationGenerator.cc \
+Radiation/QEDRadiationHandler.cc
 
 
 pkglib_LTLIBRARIES += HwSOPHTY.la
