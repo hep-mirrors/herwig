@@ -1,14 +1,3 @@
-noinst_LTLIBRARIES = libHwDecRad.la
-
-libHwDecRad_la_SOURCES = \
-DecayRadiationGenerator.cc  DecayRadiationGenerator.h  \
-DecayRadiationGenerator.fh \
-QEDRadiationHandler.cc  QEDRadiationHandler.fh\
-QEDRadiationHandler.h
-
-
-
-
 BUILT_SOURCES  = Sophty__all.cc
 CLEANFILES = Sophty__all.cc
 
@@ -21,7 +10,12 @@ ALL_H_FILES = \
 SOPHTY.h \
 FFDipole.fh  FFDipole.h \
 IFDipole.fh  IFDipole.h \
-YFSFormFactors.h
+YFSFormFactors.h \
+DecayRadiationGenerator.h \
+DecayRadiationGenerator.fh \
+QEDRadiationHandler.fh \
+QEDRadiationHandler.h
+
 
 ALL_CC_FILES = \
 SOPHTY.cc \

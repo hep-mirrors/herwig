@@ -7,8 +7,8 @@ Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/libHwStandardModel.la \
 $(top_builddir)/Decay/libHwDecay.la \
-$(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
-$(top_builddir)/Decay/Radiation/libHwDecRad.la \
+$(top_builddir)/Decay/libHwFormFactor.la \
+$(top_builddir)/Decay/libHwDecRad.la \
 $(top_builddir)/Utilities/libHwUtils.la \
 $(top_builddir)/Models/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
@@ -16,7 +16,7 @@ $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/MatrixElement/Reweighters/libHwReweighters.la \
 $(top_builddir)/MatrixElement/Matchbox/libHwMatchbox.la \
-$(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
+$(top_builddir)/Decay/libHwWeakCurrent.la \
 $(top_builddir)/Looptools/libHwLooptools.la \
 $(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) $(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS) -ldl

@@ -69,6 +69,13 @@ MamboDecayer.h MamboDecayer.cc
 
 ##################
 
+noinst_LTLIBRARIES += libHwFormFactor.la
+
+libHwFormFactor_la_SOURCES = \
+FormFactors/BaryonFormFactor.cc \
+FormFactors/ScalarFormFactor.cc \
+FormFactors/BtoSGammaHadronicMass.cc 
+
 pkglib_LTLIBRARIES += HwFormFactors.la
 
 HwFormFactors_la_LDFLAGS = \
@@ -132,6 +139,12 @@ Perturbative/PerturbativeHiggs__all.cc
 
 ##################
 
+noinst_LTLIBRARIES += libHwWeakCurrent.la
+libHwWeakCurrent_la_SOURCES = \
+WeakCurrents/WeakDecayCurrent.cc \
+WeakCurrents/LeptonNeutrinoCurrent.cc 
+
+
 pkglib_LTLIBRARIES += HwWeakCurrents.la
 
 HwWeakCurrents_la_LDFLAGS = \
@@ -171,6 +184,13 @@ nodist_HwPartonicDecay_la_SOURCES = \
 Partonic/Partonic__all.cc
 
 ##################
+
+noinst_LTLIBRARIES += libHwDecRad.la
+
+libHwDecRad_la_SOURCES = \
+DecayRadiationGenerator.cc \
+QEDRadiationHandler.cc
+
 
 pkglib_LTLIBRARIES += HwSOPHTY.la
 

@@ -1,15 +1,3 @@
-noinst_LTLIBRARIES = libHwFormFactor.la
-libHwFormFactor_la_SOURCES = \
-BaryonFormFactor.cc BaryonFormFactor.fh \
-BaryonFormFactor.h \
-ScalarFormFactor.cc ScalarFormFactor.fh \
-ScalarFormFactor.h \
-BtoSGammaHadronicMass.h \
-BtoSGammaHadronicMass.cc BtoSGammaHadronicMass.fh
-
-
-
-
 BUILT_SOURCES  = Formfactor__all.cc
 CLEANFILES = Formfactor__all.cc
 
@@ -35,7 +23,14 @@ MelikhovFormFactor.h \
 MelikhovStechFormFactor.h \
 BtoSGammaFlatEnergy.h \
 BtoSGammaKagan.h \
-HQETFormFactor.h
+HQETFormFactor.h \
+BaryonFormFactor.fh \
+BaryonFormFactor.h \
+ScalarFormFactor.fh \
+ScalarFormFactor.h \
+BtoSGammaHadronicMass.h \
+BtoSGammaHadronicMass.fh
+
 
 ALL_CC_FILES = \
 BallZwickyScalarFormFactor.cc \

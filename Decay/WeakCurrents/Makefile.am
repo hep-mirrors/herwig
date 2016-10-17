@@ -1,10 +1,3 @@
-
-noinst_LTLIBRARIES = libHwWeakCurrent.la
-libHwWeakCurrent_la_SOURCES = \
-WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h\
-LeptonNeutrinoCurrent.cc LeptonNeutrinoCurrent.fh \
-LeptonNeutrinoCurrent.h
-
 BUILT_SOURCES  = WeakCurrents__all.cc
 CLEANFILES = WeakCurrents__all.cc
 
@@ -24,7 +17,10 @@ TwoPionPhotonCurrent.h\
 VectorMesonCurrent.h\
 FivePionCurrent.h \
 KPiCurrent.h\
-KaonThreeMesonCurrent.h
+KaonThreeMesonCurrent.h \
+WeakDecayCurrent.fh WeakDecayCurrent.h \
+LeptonNeutrinoCurrent.fh \
+LeptonNeutrinoCurrent.h
 
 
 ALL_CC_FILES = \
