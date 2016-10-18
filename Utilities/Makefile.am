@@ -19,8 +19,6 @@ nodist_libHwUtils_la_SOURCES = hgstamp.inc
 BUILT_SOURCES = hgstamp.inc
 CLEANFILES = hgstamp.inc
 
-AUTOMAKE_OPTIONS = -Wno-portability
-
 HGVERSION := $(shell hg -R $(top_srcdir) parents --template '"Herwig {node|short} ({branch})"' 2> /dev/null || echo \"$(PACKAGE_STRING)\" || true )
 
 .PHONY: update_hgstamp

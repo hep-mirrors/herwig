@@ -1,7 +1,5 @@
 SUBDIRS = defaults snippets Matchbox Merging
 
-AUTOMAKE_OPTIONS = -Wno-portability
-
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig

@@ -1,10 +1,24 @@
 noinst_LTLIBRARIES  = libHwLooptoolsXFC.la libHwLooptoolsCFC.la 
 noinst_LTLIBRARIES += libHwLooptools.la
 
-EXTRA_DIST = include/lt.h include/ftypes.h include/ff.h include/ffwarn.h \
-  include/fferr.h include/defs.h include/looptools.h include/ffperm5.h \
-  include/clooptools.h include/cexternals.h include/externals.h \
-  util/solve-LU.F util/solve-LU.h util/solve-Eigen.F
+EXTRA_DIST = \
+include/cexternals.h \
+include/clooptools.h \
+include/defs.h \
+include/externals.h \
+include/fferr.h \
+include/ff.h \
+include/ffperm5.h \
+include/ffwarn.h \
+include/ftypes.h \
+include/looptools.h \
+include/lt.h \
+include/ltnames.h \
+include/perm.h \
+include/types.h \
+util/solve-LU.F \
+util/solve-LU.h \
+util/solve-Eigen.F
 
 theXFCSOURCES = \
 A/Aget.F     A/ffxa0.F   A/ffca0.F \

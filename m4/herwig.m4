@@ -819,7 +819,7 @@ case "${ax_cv_cxx_compiler_vendor}" in
         AM_CXXFLAGS="-pedantic -Wall -W"
         ;;
      clang)
-        AM_CXXFLAGS="-pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function"
+        AM_CXXFLAGS="-pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function -Wno-unused-parameter"
 dnl  -Wno-unneeded-internal-declaration
         ;;
      intel)
