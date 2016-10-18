@@ -126,10 +126,10 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
 ##################################################
 
 cd /Herwig/Analysis
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+#insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-insert /Herwig/Analysis/Rivet:Analyses 0 Clustermass
+#insert /Herwig/Analysis/Rivet:Analyses 0 Clustermass
 
 ##################################################
 ## Do not apply profile scales for LEP as hard

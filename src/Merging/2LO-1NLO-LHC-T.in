@@ -38,15 +38,15 @@ set MergingFactory:OrderInAlphaEW 0
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
-do MergingFactory:Process p p -> j j [ ]
+do MergingFactory:Process p p -> t tbar [ j]
 
-set MergingFactory:NLOProcesses 0
+set MergingFactory:NLOProcesses 1
 
-set Merger:MergingScale 10.*GeV
+set Merger:MergingScale 15.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
-set MPreWeight:HTPower 1
+set MPreWeight:HTPower 0
 set MPreWeight:MaxPTPower 0
 set MPreWeight:OnlyColoured False
 
@@ -56,7 +56,7 @@ read Matchbox/PQCDLevel.in
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
-# read Matchbox/OnShellTopProduction.in
+read Matchbox/OnShellTopProduction.in
 ## enable for on-shell W, Z or h production
 # read Matchbox/OnShellWProduction.in
 # read Matchbox/OnShellZProduction.in
@@ -72,8 +72,7 @@ read Matchbox/PQCDLevel.in
 ## specialized NLO package
 
 # read Matchbox/MadGraph-GoSam.in
-read Matchbox/MadGraph-MadGraph.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath jj
+# read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
 # read Matchbox/HJets.in
@@ -97,9 +96,9 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 ## cuts on additional jets
 
-read Matchbox/DefaultPPJets.in
+# read Matchbox/DefaultPPJets.in
 
-insert JetCuts:JetRegions 0 FirstJet
+# insert JetCuts:JetRegions 0 FirstJet
 # insert JetCuts:JetRegions 1 SecondJet
 # insert JetCuts:JetRegions 2 ThirdJet
 # insert JetCuts:JetRegions 3 FourthJet
@@ -110,7 +109,7 @@ insert JetCuts:JetRegions 0 FirstJet
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MergingFactory:ScaleChoice MaxJetPtScale
+set /Herwig/Merging/MergingFactory:ScaleChoice TopPairMassScale
 
 ##################################################
 ## Scale uncertainties
@@ -153,7 +152,7 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-read Merging/LHC7-J-Analysis.in
+read Merging/LHC7-T-Analysis.in
 
 
 ##################################################
@@ -166,4 +165,4 @@ set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 
 cd /Herwig/Generators
 
-saverun 1LO-0NLO-LHC-J EventGenerator
+saverun 2LO-1NLO-LHC-T EventGenerator

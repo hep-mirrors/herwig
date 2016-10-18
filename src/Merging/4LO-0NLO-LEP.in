@@ -8,7 +8,7 @@
 ## Collider type
 ##################################################
 
-read Matchbox/PPCollider.in
+read Matchbox/EECollider.in
 read Merging/Merging.in
 
 ##################################################
@@ -16,7 +16,7 @@ read Merging/Merging.in
 ##################################################
 
 cd /Herwig/EventHandlers
-set EventHandler:LuminosityFunction:Energy 7000*GeV
+set EventHandler:LuminosityFunction:Energy 91.2*GeV
 
 ##################################################
 ## Process selection
@@ -32,26 +32,22 @@ read Matchbox/DiagonalCKM.in
 
 ## Set the order of the couplings
 cd /Herwig/Merging
-set MergingFactory:OrderInAlphaS 2
-set MergingFactory:OrderInAlphaEW 0
+set MergingFactory:OrderInAlphaS 0
+set MergingFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
-do MergingFactory:Process p p -> j j [ ]
+do MergingFactory:Process e- e+ -> j j [ j j j ]
 
 set MergingFactory:NLOProcesses 0
 
-set Merger:MergingScale 10.*GeV
+set Merger:MergingScale 4.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
-set MPreWeight:HTPower 1
-set MPreWeight:MaxPTPower 0
-set MPreWeight:OnlyColoured False
-
-read Matchbox/PQCDLevel.in
-
+cd /Herwig/MatrixElements/Matchbox/Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 
 ## Special settings required for on-shell production of unstable particles
@@ -61,8 +57,6 @@ read Matchbox/PQCDLevel.in
 # read Matchbox/OnShellWProduction.in
 # read Matchbox/OnShellZProduction.in
 # read Matchbox/OnShellHProduction.in
-# Special settings for the VBF approximation
-# read Matchbox/VBFDiagramsOnly.in
 
 ##################################################
 ## Matrix element library selection
@@ -70,14 +64,14 @@ read Matchbox/PQCDLevel.in
 
 ## Select a generic tree/loop combination or a
 ## specialized NLO package
-
+ 
 # read Matchbox/MadGraph-GoSam.in
-read Matchbox/MadGraph-MadGraph.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath jj
+ read Matchbox/MadGraph-MadGraph.in
+
+set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath eejjjjj
+
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
-# read Matchbox/HJets.in
-# read Matchbox/VBFNLO.in
 
 ## Uncomment this to use ggh effective couplings
 ## currently only supported by MadGraph-GoSam
@@ -89,20 +83,11 @@ set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath jj
 ## See the documentation for more options
 ##################################################
 
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
-
-cd /Herwig/MatrixElements/Matchbox/Utility
-insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
-
 ## cuts on additional jets
 
-read Matchbox/DefaultPPJets.in
+# read Matchbox/DefaultEEJets.in
 
-insert JetCuts:JetRegions 0 FirstJet
-# insert JetCuts:JetRegions 1 SecondJet
-# insert JetCuts:JetRegions 2 ThirdJet
-# insert JetCuts:JetRegions 3 FourthJet
+# set NJetsCut:NJetsMin 3
 
 ##################################################
 ## Scale choice
@@ -110,7 +95,7 @@ insert JetCuts:JetRegions 0 FirstJet
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MergingFactory:ScaleChoice MaxJetPtScale
+set /Herwig/Merging/MergingFactory:ScaleChoice SHatScale
 
 ##################################################
 ## Scale uncertainties
@@ -125,13 +110,6 @@ set /Herwig/Merging/MergingFactory:ScaleChoice MaxJetPtScale
 
 # read Matchbox/MuQDown.in
 # read Matchbox/MuQUp.in
-
-##################################################
-## PDF choice
-##################################################
-
-read Matchbox/FiveFlavourNoBMassScheme.in
-read Matchbox/MMHT2014.in
 
 ##################################################
 ## CMW - Scheme
@@ -153,8 +131,16 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-read Merging/LHC7-J-Analysis.in
+read Merging/LEP91-Analysis.in
 
+
+##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+
+set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
 ##################################################
 ## Save the generator
@@ -162,8 +148,5 @@ read Merging/LHC7-J-Analysis.in
 
 do /Herwig/Merging/MergingFactory:ProductionMode
 
-set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
-
 cd /Herwig/Generators
-
-saverun 1LO-0NLO-LHC-J EventGenerator
+saverun 4LO-0NLO-LEP EventGenerator

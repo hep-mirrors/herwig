@@ -4,55 +4,71 @@ Matchboxdir = ${pkgdatadir}/Merging
 
 INPUTFILES = \
 Merging.in \
+\
 LEP91-Analysis.in \
 LHC7-Z-Analysis.in \
 LHC7-W-Analysis.in \
 LHC7-J-Analysis.in \
 LHC7-T-Analysis.in \
+LHC8-H-Analysis.in \
+\
 FactorCMWScheme.in \
 LinearCMWScheme.in \
-1LO-0NLO-LEP.in \
+\
+1LO-0NLO-LEP_light.in \
 1LO-0NLO-LEP_Qt.in \
 1LO-0NLO-LEP_Matchbox.in \
 1LO-0NLO-LEP_FixedOrder.in \
+\
+1LO-0NLO-LEP.in \
 1LO-0NLO-LHC-W.in \
 1LO-0NLO-LHC-Z.in \
+1LO-0NLO-LHC-J.in \
+1LO-0NLO-LHC-T.in \
+1LO-0NLO-LHC-H.in \
+1LO-0NLO-LHC-Hjets.in \
+\
 2LO-0NLO-LEP.in \
 2LO-0NLO-LHC-W.in \
 2LO-0NLO-LHC-Z.in \
+2LO-0NLO-LHC-J.in \
+2LO-0NLO-LHC-J_only0.in \
+2LO-0NLO-LHC-J_only1.in \
+2LO-0NLO-LHC-T.in \
+2LO-0NLO-LHC-H.in \
+2LO-0NLO-LHC-Hjets.in \
+\
 2LO-1NLO-LEP.in \
 2LO-1NLO-LEP_Matchbox.in \
 2LO-1NLO-LHC-Z.in \
 2LO-1NLO-LHC-W.in \
+2LO-1NLO-LHC-H.in \
+2LO-1NLO-LHC-T.in \
+\
 3LO-0NLO-LEP.in \
 3LO-0NLO-LEP_only0.in \
 3LO-0NLO-LEP_only1.in \
 3LO-0NLO-LEP_only2.in \
 3LO-0NLO-LHC-W.in \
 3LO-0NLO-LHC-Z.in \
+3LO-0NLO-LHC-H.in \
+3LO-0NLO-LHC-T.in \
+3LO-0NLO-LHC-Hjets.in \
+3LO-0NLO-LHC-Zfull.in \
+\
 3LO-1NLO-LEP.in \
 3LO-1NLO-LHC-Z.in \
-3LO-1NLO-LHC-W.in \
+\
 3LO-2NLO-LEP.in \
-3LO-2NLO-LEP_light.in \
 3LO-2NLO-LHC-Z.in \
 3LO-2NLO-LHC-W.in \
+3LO-2NLO-LHC-H.in \
+\
 4LO-0NLO-LHC-Z.in \
-1LO-0NLO-LHC-Z_OISZ.in \
-2LO-0NLO-LHC-Z_OISZ.in \
-3LO-0NLO-LHC-Z_OISZ.in \
-1LO-0NLO-LHC-J.in \
-1LO-0NLO-LHC-T.in \
-1LO-0NLO-LHC-T_QtDecay.in \
-1LO-0NLO-LHC-J_OISZ.in \
-2LO-0NLO-LHC-J.in \
-2LO-0NLO-LHC-J_only0.in \
-2LO-0NLO-LHC-J_only1.in \
-2LO-0NLO-LHC-T.in \
-2LO-0NLO-LHC-T_QtDecay.in \
-3LO-0NLO-LHC-T.in \
-2LO-0NLO-LHC-J_OISZ.in 
-#2LO-0NLO-LHC-J_OISZIC.in
+4LO-0NLO-LHC-H.in \
+\
+4LO-3NLO-LHC-H.in \
+4LO-3NLO-LHC-Z.in
 
  
 dist_Matchbox_DATA = $(INPUTFILES)

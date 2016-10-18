@@ -73,6 +73,7 @@ read Matchbox/OnShellTopProduction.in
 
 # read Matchbox/MadGraph-GoSam.in
 read Matchbox/MadGraph-MadGraph.in
+set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Tjj
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
 # read Matchbox/HJets.in
@@ -165,4 +166,4 @@ set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 
 cd /Herwig/Generators
 
-saverun 2LO-0NLO-LHC-T EventGenerator
+saverun 3LO-0NLO-LHC-T EventGenerator

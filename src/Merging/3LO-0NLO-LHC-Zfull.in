@@ -32,13 +32,13 @@ read Matchbox/DiagonalCKM.in
 
 ## Set the order of the couplings
 cd /Herwig/Merging
-set MergingFactory:OrderInAlphaS 2
-set MergingFactory:OrderInAlphaEW 0
+set MergingFactory:OrderInAlphaS 0
+set MergingFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
-do MergingFactory:Process p p -> j j [ ]
+do MergingFactory:Process p p -> e+ e- [ j j]
 
 set MergingFactory:NLOProcesses 0
 
@@ -50,9 +50,9 @@ set MPreWeight:HTPower 1
 set MPreWeight:MaxPTPower 0
 set MPreWeight:OnlyColoured False
 
-read Matchbox/PQCDLevel.in
+#read Matchbox/PQCDLevel.in
 
-
+set /Herwig/Samplers/Sampler:BinSampler:Kappa 0.05
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
@@ -72,8 +72,7 @@ read Matchbox/PQCDLevel.in
 ## specialized NLO package
 
 # read Matchbox/MadGraph-GoSam.in
-read Matchbox/MadGraph-MadGraph.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath jj
+# read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
 # read Matchbox/HJets.in
@@ -97,9 +96,9 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 ## cuts on additional jets
 
-read Matchbox/DefaultPPJets.in
+# read Matchbox/DefaultPPJets.in
 
-insert JetCuts:JetRegions 0 FirstJet
+# insert JetCuts:JetRegions 0 FirstJet
 # insert JetCuts:JetRegions 1 SecondJet
 # insert JetCuts:JetRegions 2 ThirdJet
 # insert JetCuts:JetRegions 3 FourthJet
@@ -110,7 +109,7 @@ insert JetCuts:JetRegions 0 FirstJet
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-set /Herwig/Merging/MergingFactory:ScaleChoice MaxJetPtScale
+set /Herwig/Merging/MergingFactory:ScaleChoice LeptonPairMassScale
 
 ##################################################
 ## Scale uncertainties
@@ -134,18 +133,6 @@ read Matchbox/FiveFlavourNoBMassScheme.in
 read Matchbox/MMHT2014.in
 
 ##################################################
-## CMW - Scheme
-##################################################
-
-### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
-### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
-read Merging/FactorCMWScheme.in
-
-### Linear CMW multiplication:
-### alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )
-# read Merging/LinearCMWScheme.in
-
-##################################################
 ## Analyses
 ##################################################
 
@@ -153,7 +140,7 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-read Merging/LHC7-J-Analysis.in
+read Merging/LHC7-Z-Analysis.in
 
 
 ##################################################
@@ -166,4 +153,6 @@ set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 
 cd /Herwig/Generators
 
-saverun 1LO-0NLO-LHC-J EventGenerator
+saverun 3LO-0NLO-LHC-Zfull EventGenerator
+
+

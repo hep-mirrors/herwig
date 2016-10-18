@@ -75,6 +75,7 @@ read Matchbox/PQCDLevel.in
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
 read Matchbox/MadGraph-OpenLoops.in
+set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Zjjj
 # read Matchbox/HJets.in
 # read Matchbox/VBFNLO.in
 

@@ -82,10 +82,10 @@ create Herwig::MonacoSampler Monaco
 set /Herwig/Samplers/Sampler:BinSampler Monaco
 
 set Monaco:EnhancementFactor 1.2
-set Monaco:InitialPoints 10000
+set Monaco:InitialPoints 50000
 set Monaco:LuminosityMapperBins 8
 set Monaco:NIterations 4
-set Monaco:RemapChannelDimension Yes
+set Monaco:RemapChannelDimension No
 set Monaco:RemapperMinSelection 0.0001
 set Monaco:RemapperPoints 10000
 set Monaco:UseAllIterations No
