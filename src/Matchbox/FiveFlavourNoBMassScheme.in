@@ -79,14 +79,12 @@ cd /Herwig/DipoleShower/Kernels
 
 set IFgx2bbbarxDipoleKernel:UseKernel On
 set IFgx2bbarbxDipoleKernel:UseKernel On
-set IFMgx2bbbarxDipoleKernel:UseKernel Off
-set IFMgx2bbarbxDipoleKernel:UseKernel Off
-set IIgx2bbbarxDipoleKernel:UseKernel On
-set IIgx2bbarbxDipoleKernel:UseKernel On
-set IFgx2bbbarxDipoleKernel:UseKernel On
-set IFgx2bbarbxDipoleKernel:UseKernel On
-set IFMgx2bbbarxDipoleKernel:UseKernel Off
-set IFMgx2bbarbxDipoleKernel:UseKernel Off
+
+## Even though the b-quarks are massless in this scheme,
+## the spectator can be massive.
+set IFMgx2bbbarxDipoleKernel:UseKernel On
+set IFMgx2bbarbxDipoleKernel:UseKernel On
+
 set IIgx2bbbarxDipoleKernel:UseKernel On
 set IIgx2bbarbxDipoleKernel:UseKernel On
 
