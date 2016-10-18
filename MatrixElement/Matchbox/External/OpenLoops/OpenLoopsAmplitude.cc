@@ -45,8 +45,7 @@ using namespace Herwig;
 #endif
 
 OpenLoopsAmplitude::OpenLoopsAmplitude() :
-  theHiggsEff(false), use_cms(true), psp_tolerance(12),
-  OpenLoopsLibs_(OPENLOOPSLIBS), OpenLoopsPrefix_(OPENLOOPSPREFIX) {
+  theHiggsEff(false), use_cms(true), psp_tolerance(12){
 }
 
 OpenLoopsAmplitude::~OpenLoopsAmplitude() {
@@ -239,32 +238,18 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 			}
 		}
 	}
-	string ids = factory()->runStorage() + "OpenLoops.ids.dat";
-	ofstream IDS(ids.c_str());
-
-        idpair.clear();
-        for (int i=0;i<processmap.size();i++)idpair.push_back(-1);
+  
+    idpair.clear();
+    for (size_t i=0;i<processmap.size();i++)idpair.push_back(-1);
         idpair.push_back(-1);
 	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
 	    idpair[(*p).second.HID()]=(*p).second.GID();
-	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
-	IDS << flush;
 	return 1;
 }
 
-void OpenLoopsAmplitude::getids() const{
-        assert(false);
-	string line = factory()->runStorage() + "OpenLoops.ids.dat";
-	ifstream infile(line.c_str());
-	int hid;
-	int gid;
-	//while (std::getline(infile, line)) {
-	//   istringstream(line) >> hid>>gid;
-	//   idpair.insert ( std::pair<int,int>(hid,gid) );
-	//}
-}
+
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName =  factory()->buildStorage() + name() + ".OLPAnswer.lh";
 
@@ -300,14 +285,7 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
 
-	if ( idpair.size() == 0 ) {
-		getids();
-		if ( Debug::level > 1 ) {
-		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-		  OLP_PrintParameter(parfile.c_str());
-		}
-		
-    }
+    assert ( idpair.size() != 0 );
  
 	OLP_EvalSubProcess2(&idpair[id], olpMomenta(), &scale, out,&acc );
   
@@ -335,14 +313,7 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	int n = lastXComb().meMomenta().size();
 
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
-	if ( idpair.size() == 0 ) {
-		getids();
-		if ( Debug::level > 1 ) {
-		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-		  OLP_PrintParameter(parfile.c_str());
-		}
-		
-	}
+  assert ( idpair.size() != 0 );
 
 
 	int id = olpId()[ProcessType::colourCorrelatedME2];
@@ -376,14 +347,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	int emitter=ij.first+1;
 	int n = lastXComb().meMomenta().size();
 
-	if ( idpair.size() == 0 ) {
-		getids();
-		if ( Debug::level > 1 ) {
-		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-		  OLP_PrintParameter(parfile.c_str());
-		}
-		
-	}
+    assert ( idpair.size() != 0 ) ;
 	int id =idpair[olpId()[ProcessType::spinColourCorrelatedME2]];
 	//double * outx =new double[n];
 	spinColourCorrelatorResults.resize(n);
@@ -417,6 +381,25 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 
 
+
+
+string OpenLoopsAmplitude::OpenLoopsLibs_=OPENLOOPSLIBS;
+string OpenLoopsAmplitude::OpenLoopsPrefix_=OPENLOOPSPREFIX;
+
+void OpenLoopsAmplitude::setOpenLoopsLibs(string p){
+  OpenLoopsLibs_=p;
+}
+string OpenLoopsAmplitude::getOpenLoopsLibs() const{
+  return OpenLoopsLibs_;
+}
+
+
+void OpenLoopsAmplitude::setOpenLoopsPrefix(string p){
+  OpenLoopsPrefix_=p;
+}
+string OpenLoopsAmplitude::getOpenLoopsPrefix() const{
+  return OpenLoopsPrefix_;
+}
 
 
 // If needed, insert default implementations of virtual function defined
@@ -488,14 +471,18 @@ void OpenLoopsAmplitude::Init() {
   static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsLibs
     ("OpenLoopsLibs",
      "The location of OpenLoops libraries",
-     &OpenLoopsAmplitude::OpenLoopsLibs_, string(OPENLOOPSLIBS),
-     false, false);
+     0, string(OPENLOOPSLIBS),
+     false, false,
+     &OpenLoopsAmplitude::setOpenLoopsLibs,
+     &OpenLoopsAmplitude::getOpenLoopsLibs);
     
   static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsPrefix
     ("OpenLoopsPrefix",
      "The location of OpenLoops libraries",
-     &OpenLoopsAmplitude::OpenLoopsPrefix_, string(OPENLOOPSPREFIX),
-     false, false);
+     0, string(OPENLOOPSPREFIX),
+     false, false,
+     &OpenLoopsAmplitude::setOpenLoopsPrefix,
+     &OpenLoopsAmplitude::getOpenLoopsPrefix);
   
 }
 
