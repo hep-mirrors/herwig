@@ -13,3 +13,10 @@ HwDipoleShower_la_LIBADD = \
 
 HwDipoleShower_la_SOURCES =  \
 	DipoleShowerHandler.h DipoleShowerHandler.fh DipoleShowerHandler.cc
+
+
+pkglib_LTLIBRARIES += HwKrknloEventReweight.la
+HwKrknloEventReweight_la_SOURCES = \
+	KrknloEventReweight.h KrknloEventReweight.cc
+
+HwKrknloEventReweight_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
