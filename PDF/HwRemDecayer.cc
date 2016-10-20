@@ -1046,8 +1046,10 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   for(i = 0; i < N; i++){
     //check how often this scattering has been regenerated
     //and break if exeeded maximal number
-    if(tries > maxtrySoft_) break;
-    	
+    if(tries > maxtrySoft_){
+    	if(quarkPair_)return;
+     	break;
+    }
     if(dbg){
       cerr << "new try \n" << *softRems_.first << *softRems_.second << endl;
     }
@@ -1094,7 +1096,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     tries = 1;
   }
   //if no gluons discard the ladder
-  if(gluonMomPairs.size()==0) return;
+  //if(gluonMomPairs.size()==0) return;
   
   if(dbg)
     cerr << "generated " << i << "th soft scatters\n";
