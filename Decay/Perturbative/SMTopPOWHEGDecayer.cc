@@ -277,6 +277,10 @@ bool SMTopPOWHEGDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   if (j==0) xw = (-B + sqrt(det))/(2.*A);
   if (j==1) xw = (-B - sqrt(det))/(2.*A);  
   if (xw>(1. + w2_ - b2_) || xw<2.*w_) return false;
+  
+  //Calculate xb
+  xb = 2. - xw - xg;     
+  if (xb>(1. + b2_ - w2_) || xb<2.*b_) return false;       
 
   //Calculate xb_z  
   // Due to precision limitations, it is possible for
