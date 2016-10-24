@@ -84,8 +84,43 @@ set IFgx2bbarbxDipoleKernel:UseKernel On
 ## the spectator can be massive.
 set IFMgx2bbbarxDipoleKernel:UseKernel On
 set IFMgx2bbarbxDipoleKernel:UseKernel On
-
 set IIgx2bbbarxDipoleKernel:UseKernel On
 set IIgx2bbarbxDipoleKernel:UseKernel On
+
+
+
+## First remove the bbar splittings.
+
+cd /Herwig/Shower
+do SplittingGenerator:DeleteInitialSplitting b->b,g; QtoQGSudakov
+do SplittingGenerator:DeleteInitialSplitting b->b,gamma; QtoQGammaSudakov
+do SplittingGenerator:DeleteInitialSplitting t->t,gamma; QtoQGammaSudakov
+do SplittingGenerator:DeleteInitialSplitting g->b,bbar; GtobbbarSudakov
+do SplittingGenerator:DeleteInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
+do SplittingGenerator:DeleteInitialSplitting b->g,b; QtoGQSudakov
+do SplittingGenerator:DeleteInitialSplitting bbar->g,bbar; QtoGQSudakov
+do SplittingGenerator:DeleteInitialSplitting b->gamma,b; QtoGammaQSudakov
+do SplittingGenerator:DeleteInitialSplitting bbar->gamma,bbar; QtoGammaQSudakov
+
+
+## Now insert the bbar splittings.
+
+do SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
+do SplittingGenerator:AddInitialSplitting gamma->b,bbar; GammatoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting b->gamma,b; QtoGammaQSudakov
+do SplittingGenerator:AddInitialSplitting bbar->gamma,bbar; QtoGammaQSudakov
+
+
+cd /Herwig/UnderlyingEvent
+set MEQCD2to2Fast:MaximumFlavour 5
+
+
+
+
 
 

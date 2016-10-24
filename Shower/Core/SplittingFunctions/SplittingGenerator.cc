@@ -172,17 +172,37 @@ string SplittingGenerator::deleteSplitting(string arg, bool final) {
 
 void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool final) {
   if(!final) {
-    _bbranchings.insert(BranchingInsert(abs(ids[1]->id()),BranchingElement(s,ids)));
+      // search if the branching was already included.
+    auto binsert =BranchingInsert(abs(ids[1]->id()),BranchingElement(s,ids));
+      // get the range of already inserted splittings.
+    auto eqrange=_bbranchings.equal_range(binsert.first);
+    for(auto it = eqrange.first; it != eqrange.second; ++it){
+      if((*it).second == binsert.second)
+        throw Exception()<<"SplittingGenerator: Trying to insert existing splitting.\n"
+        << Exception::setuperror;
+    }
+    _bbranchings.insert(binsert);
     s->addSplitting(ids);
   }
   else {
-    _fbranchings.insert(BranchingInsert(abs(ids[0]->id()),BranchingElement(s,ids)));
+      // search if the branching was already included.
+    auto binsert =BranchingInsert(abs(ids[0]->id()),BranchingElement(s,ids));
+      // get the range of already inserted splittings.
+    auto eqrange=_fbranchings.equal_range(binsert.first);
+    for(auto it = eqrange.first; it != eqrange.second; ++it){
+      if((*it).second ==binsert.second)
+        throw Exception()<<"SplittingGenerator: Trying to insert existing splitting.\n"
+        << Exception::setuperror;
+    }
+    
+    _fbranchings.insert(binsert);
     s->addSplitting(ids);
   }
 }
 
 void SplittingGenerator::deleteFromMap(const IdList &ids, 
 				       const SudakovPtr &s, bool final) {
+  bool didRemove=false;
   if(!final) {
     pair<BranchingList::iterator,BranchingList::iterator> 
       range = _bbranchings.equal_range(abs(ids[1]->id()));
@@ -192,6 +212,7 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 	BranchingList::iterator it2=it;
 	--it;
 	_bbranchings.erase(it2);
+    didRemove=true;
       }
     }
     s->removeSplitting(ids);
@@ -205,10 +226,14 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 	BranchingList::iterator it2 = it;
 	--it;
 	_fbranchings.erase(it2);
+    didRemove=true;
       }
     }
     s->removeSplitting(ids);
   }
+  if (!didRemove)
+    throw Exception()<<"SplittingGenerator: Try to remove non existing splitting.\n"
+                      << Exception::setuperror;
 }
 
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,

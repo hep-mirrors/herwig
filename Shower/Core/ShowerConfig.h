@@ -107,6 +107,16 @@ using namespace ThePEG;
      *  Access to the charge conjugate particles
      */
     IdList conjugateParticles;
+    
+    /**
+     * Compare two BranchingElements
+     **/
+    bool operator == (const BranchingElement& x) const{
+      return
+      sudakov == x.sudakov &&
+      particles == x.particles &&
+      conjugateParticles == x.conjugateParticles;
+    }
   };
 
   /**
