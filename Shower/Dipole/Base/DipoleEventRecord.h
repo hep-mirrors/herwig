@@ -24,7 +24,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer, Stephen Webster, Johannes Bellm
+ * \author Simon Platzer, Johannes Bellm
  *
  * \brief Generalized dipole splitting info to deal with subleading-N
  * splittings.
@@ -121,7 +121,7 @@ private:
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief The DipoleEventRecord class is 
  * used internally by the dipole shower.
