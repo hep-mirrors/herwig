@@ -1130,7 +1130,6 @@ bool DipoleEventRecord::prepareDecay( PerturbativeProcessPtr decayProc ) {
 }
 
 Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
-  
   // get the process
   PerturbativeProcessPtr process = theDecays[incoming];
   assert(process);
@@ -1347,7 +1346,6 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
     else
       powhegEmission = false;
   }
-  
   
   // Copy the outgoing from the decay
   // process to the event record

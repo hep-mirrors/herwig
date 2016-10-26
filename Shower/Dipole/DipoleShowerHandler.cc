@@ -172,7 +172,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
         eventRecord().currentDecay(decayIt->second);
         
           // Use this to record if an emission actually happens
-        bool powhegEmission = thePowhegDecayEmission;
+        bool powhegEmission = !( nEmissions && nEmitted==nEmissions) ? thePowhegDecayEmission : false;
         
           // Decay the particle / sort out its pert proc
         Energy showerScale = eventRecord().decay(incoming, powhegEmission);
@@ -666,8 +666,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
                                     const bool decay) {
   
   if ( nEmissions )
-  if ( emDone == nEmissions )
-  return;
+    if ( emDone == nEmissions )
+      return;
   
   DipoleSplittingInfo winner;
   DipoleSplittingInfo dipoleWinner;
