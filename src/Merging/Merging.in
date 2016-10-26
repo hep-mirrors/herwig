@@ -4,6 +4,7 @@ cd /Herwig/Merging
 clear /Herwig/EventHandlers/EventHandler:SubProcessHandlers
 insert /Herwig/EventHandlers/EventHandler:SubProcessHandlers[0] MergingFactory
 set /Herwig/Cuts/MatchboxJetMatcher:Factory MergingFactory
+# This is not used but its better to set this rather than the Factory
 set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
 set MergingFactory:Cuts /Herwig/Cuts/Cuts
 set Merger:MergingFactory MergingFactory

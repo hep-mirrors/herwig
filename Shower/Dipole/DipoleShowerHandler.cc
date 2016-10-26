@@ -736,7 +736,10 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     
       // otherwise perform the splitting
     
-    if (theMergingHelper&&eventHandler()->currentCollision()&&!decay) {
+    if (   theMergingHelper
+	&& eventHandler()->currentCollision()
+	&& !decay
+	&& firstInteraction() ) {
       if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+
                                       eventRecord().hard().size()
                                       +2){//incoming

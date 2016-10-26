@@ -178,8 +178,8 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
   					<< pname 
   					<< " already existing.";
   
-  
-  getVirtuals(bornme,false);
+  if (MH()->gamma()!=1.)
+    getVirtuals(bornme,false);
   
   
   NodePtr clusternode = new_ptr(Node(bornme, 0, MH()));
@@ -198,10 +198,6 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
     for ( auto tmp : current ){//j
       tmp->birth(thePureMEsMap[i - k]);
       for ( auto tmpchild : tmp->children() ) {//m
-        if ( i <= MH()->M() ) {
-        	getVirtuals(tmpchild->nodeME(),true);
-          tmpchild->nodeME()->noOneLoop();
-        }
         children.push_back(tmpchild);
       }
     }

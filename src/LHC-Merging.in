@@ -161,9 +161,10 @@ insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
 read Merging/LHC7-Z-Analysis.in
-read Merging/LHC7-W-Analysis.in
+#read Merging/LHC7-W-Analysis.in
 #read Merging/LHC7-J-Analysis.in
 #read Merging/LHC7-T-Analysis.in
+#read Merging/LHC8-H-Analysis.in
 
 ##################################################
 ## Save the generator

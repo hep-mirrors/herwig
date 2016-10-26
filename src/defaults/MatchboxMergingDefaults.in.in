@@ -245,33 +245,7 @@ create Herwig::SimpleColourBasis  LargeNColourBasis
 set LargeNColourBasis:LargeN On
 set Merger:LargeNBasis LargeNColourBasis
 
-
-################################################################################
-# Factories for different colliders
-################################################################################
-
-
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-
-
-cp MergingFactory EEMergingFactory
-set EEMergingFactory:PartonExtractor /Herwig/Partons/EEExtractor
-set EEMergingFactory:Cuts /Herwig/Cuts/EECuts
-set EEMergingFactory:FirstPerturbativePDF No
-set EEMergingFactory:SecondPerturbativePDF No
-
-cp MergingFactory DISMergingFactory
-
-set DISMergingFactory:PartonExtractor /Herwig/Partons/DISExtractor
-set DISMergingFactory:Cuts /Herwig/Cuts/DISCuts
-set DISMergingFactory:FirstPerturbativePDF No
-set DISMergingFactory:SecondPerturbativePDF Yes
-
-cp MergingFactory PPMergingFactory
-set PPMergingFactory:PartonExtractor /Herwig/Partons/QCDExtractor
-set PPMergingFactory:Cuts /Herwig/Cuts/QCDCuts
-set PPMergingFactory:FirstPerturbativePDF Yes
-set PPMergingFactory:SecondPerturbativePDF Yes
 
 cd /
 

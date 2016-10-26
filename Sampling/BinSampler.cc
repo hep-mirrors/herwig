@@ -81,7 +81,13 @@ string BinSampler::process() const {
   ostringstream os("");
   const StandardEventHandler& eh = *theEventHandler;
   const StandardXComb& xc = *eh.xCombs()[theBin];
-  os << xc.matrixElement()->name();
+  os << xc.matrixElement()->name() << " : ";
+  os << xc.mePartonData()[0]->PDGName() << " "
+     << xc.mePartonData()[1]->PDGName() << " -> ";
+  for ( cPDVector::const_iterator pid =
+	  xc.mePartonData().begin() + 2;
+	pid != xc.mePartonData().end(); ++pid )
+    os << (**pid).PDGName() << " ";
   return os.str();
 }
 
