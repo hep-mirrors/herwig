@@ -98,7 +98,17 @@ public:
    * Get the PDF freezing scale
    */
   Energy pdfFreezingScale() const { return pdfFreezingScale_; }
-
+  
+  /**
+   * Get the local PDFs.
+   */
+  PDFPtr getPDFA() const {return PDFA_;}
+  
+  /**
+   * Get the local PDFs.
+   */
+  PDFPtr getPDFB() const {return PDFB_;}
+  
   /**
    * Return true if currently the primary subprocess is showered.
    */

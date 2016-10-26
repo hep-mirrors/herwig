@@ -606,7 +606,7 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
     double var=10.;
     double varx=10.;
     int k=0;
-  while (((k<40.||var>0.5)&&k<50000)){
+  while (((k<40.||var>0.01)&&k<50000)){
     k+=1.;
     RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
     RN[1]=UseRandom::rnd(); //Z
@@ -616,11 +616,10 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
     res+= tmp;
     resq+=pow(tmp,2.);
     varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
-    if(k%20==0.)var=  (exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx))*exp(-res/(1.0*k));
+    if(k%20==0.)var=  (exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx))/exp(-res/(1.0*k));
     
   }
-  
-  
+ 
   
     return exp(-res/(1.0*k));
     

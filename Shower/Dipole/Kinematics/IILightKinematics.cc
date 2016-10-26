@@ -71,10 +71,16 @@ pair<double,double> IILightKinematics::zBoundaries(Energy pt,
     !theCollinearScheme ?
     dInfo.emitterX()*dInfo.spectatorX() :
     dInfo.emitterX();
-  double s = sqrt(1.-sqr(pt/(
-                         openInitialState()?
-                         ((1.-x) *dInfo.scale()/(2.*sqrt(x)))
-                         :dInfo.hardPt())));
+
+
+  Energy hard=dInfo.hardPt();
+  if(openInitialState()==1)hard=(1.-x) *dInfo.scale()/(2.*sqrt(x));
+  if(openInitialState()==2)hard=min(dInfo.scale(),(1.-x) *dInfo.scale()/(2.*sqrt(x)));
+  if(hard<pt)return {0.5*(1.+x),0.5*(1.+x)};
+
+  double s = sqrt(1.-sqr(pt/hard));
+
+            
   return {0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s)};
 }
 

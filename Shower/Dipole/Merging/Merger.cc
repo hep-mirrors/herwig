@@ -428,8 +428,15 @@ CrossSection Merger::MergingDSigDRBornCheapME( ){
 
 CrossSection Merger::TreedSigDR( Energy startscale , double diffAlpha ){
   
-   currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
+  currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
   CrossSection res =  currentME()->dSigHatDRB();
+  bool useDipolesForME=false;
+  if (useDipolesForME && !currentNode()->children().empty()){
+	res=ZERO;
+	for (auto const & child : currentNode()->children() )
+	    res-=child->dipole()->dSigHatDR(sqr( startscale ));	
+  }
+
   if ( diffAlpha != 1. ) {
     res +=  currentME()->dSigHatDRAlphaDiff( diffAlpha );
   }
@@ -469,22 +476,61 @@ Energy Merger::fillProjector( int pjs ){
 }
 
 double Merger::pdfReweight(){ // TODO factorization scale inside
+  
   double res = 1.;
-  double facfactor = ( history[0].node->legsize() == N0()? currentME()->renFac():DSH()->facFac() );
+  // consider both sides.
   for( int side : {0 , 1} ){
+    // The side scale defines the scale that the leg is changig thou the history.
+    // We start reweighting at the seed process.
+    // We only need to calculate the pdf if the emission whould change the leg,
+    // otherwise the leg remains the same.
+    // If no emission is prduced from this leg the pdf ratios from this leg are always 1.
+    Energy sidescale=history[0].scale*(
+		       history[0].node->legsize() == N0()  ?
+                       currentME()->facFac():
+                       DSH()->facFac());
+    bool sidechanged=false;
+    // only if the incoming parton is coloured.
     if( history[0].node->xcomb()->mePartonData()[side]->coloured() ){
+      // go though the history.
       for ( auto const & hs : history ){
           //pdf-ratio only to the last step
-        if( !hs.node->parent() )continue;
-        if ( hs.node == history.back().node )continue;
-        if( !hs.node->dipole() ){
-          throw Exception() << "\nMerger: pdfReweight: history step has no dipol. "<< Exception::abortnow;
+        if ( !hs.node->parent() ) continue;
+        if ( hs.node == history.back().node ) continue;
+        if ( !hs.node->dipole() ){
+          throw Exception()
+          << "\nMerger: pdfReweight: history step has no dipol. "
+          << Exception::abortnow;
           return 0.;
         }
-        res *= pdfratio( hs.node , facfactor*hs.scale , DSH()->facFac()*( hs.node->pT() ) , side );
-        facfactor = DSH()->facFac();
+	// if the emitter is the side the emission changes the momentum fraction.
+	if(!(hs.node->dipole()->bornEmitter()==side||
+	// II dipoles dont change the momentum fraction of the spectator only FI
+	   ( hs.node->dipole()->bornSpectator()==side &&  hs.node->dipole()->bornEmitter()>1)))
+		continue;
+        const bool fromIsME = false;
+        const bool toIsME   = history[0].node == hs.node;
+        res *= pdfratio( hs.node,
+              		 //numerator
+	                 sidescale,
+			 // denominator
+                         DSH()->facFac()*hs.node->pT(),
+                         side,
+                         fromIsME,
+                         toIsME);
+	sidescale= DSH()->facFac()*hs.node->pT();
+        sidechanged=true;
       }
-      res *= pdfratio( history.back().node , facfactor*history.back().scale  , history[0].scale* currentME()->renFac() , side );
+
+      const bool fromIsME = true;
+      const bool toIsME   = !sidechanged && history[0].node->legsize() == N0();
+
+      res *= pdfratio( history.back().node,
+                       sidescale,
+                       history[0].scale * currentME()->facFac(),
+                       side,
+                       fromIsME,
+                       toIsME );
     }
   }
   if ( std::isnan( res ) )
@@ -514,7 +560,6 @@ double Merger::cmwAlphaS(Energy q)const{
     double kg=exp(-(67.-3.*sqr(pi)-10/3*Nf(q))
                   /(     2.     *(33.-2.*Nf(q))));
     //Note factor 2 since we here dealing with Energy
-    
     alphas = as(max(kg*q,1_GeV));
   }else{
     throw Exception()
@@ -893,7 +938,14 @@ void Merger::CKKW_PrepareSudakov( NodePtr node , Energy running ){
     //cleanup( node );
   tSubProPtr sub = node->xcomb()->construct();
   const auto pb=node->xcomb()->partonBins();
-  DSH()->resetPDFs( {pb.first->pdf(),pb.second->pdf() },pb );
+  
+    //get the PDF's (from ShowerHandler.cc)
+  tcPDFPtr first  = DSH()->getPDFA() ?
+                tcPDFPtr(DSH()->getPDFA()) : DSH()->firstPDF().pdf();
+  tcPDFPtr second = DSH()->getPDFB() ?
+                tcPDFPtr(DSH()->getPDFB()) : DSH()->secondPDF().pdf();
+  
+  DSH()->resetPDFs( {first,second },pb );
   
   DSH()->setCurrentHandler();
   
@@ -908,13 +960,22 @@ void Merger::CKKW_PrepareSudakov( NodePtr node , Energy running ){
 
 
 Energy Merger::CKKW_StartScale( NodePtr node ) const {
-  Energy res = generator()->maximumCMEnergy();;
+  Energy res = generator()->maximumCMEnergy();
+  const int N=node->legsize();
+  const auto & data=node->nodeME()->mePartonData();
+  const auto & momenta=node->nodeME()->lastMEMomenta();
   if( !node->children().empty() ){
-    for ( int i = 0;i<node->legsize();i++ ){
-      if ( !node->nodeME()->mePartonData()[i]->coloured() )continue;
-      for ( int j = i+1;j<node->legsize();j++ ){
-        if ( i == j||!node->nodeME()->mePartonData()[j]->coloured() )continue;
-        res =  min( res , sqrt( 2.*node->nodeME()->lastMEMomenta()[i]*node->nodeME()->lastMEMomenta()[j] ) );
+    for ( int i = 0; i<N ; i++ ){ if ( !data[i]->coloured() )continue;
+      for ( int j = 2; j<N ; j++ ){ if ( i == j||!data[j]->coloured() )continue;
+	for ( int k = 0; k<N ; k++ ){ if ( !data[k]->coloured() || i == k || j == k )continue;
+	  if(i<2){
+	    if(k<2) res =  min( res , IILTK->lastPt( momenta[i] , momenta[j] , momenta[k] )); 
+	    else    res =  min( res , IFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	  }else{
+	    if(k<2) res =  min( res , FILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	    else    res =  min( res , FFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	  }
+	}
       }
     }
   }else{
@@ -938,7 +999,12 @@ double Merger::alphasExpansion( Energy next , Energy fixedScale ) const {
 }
 
 
-double Merger::pdfratio( NodePtr  node , Energy  numerator_scale , Energy denominator_scale , int side ){
+double Merger::pdfratio( NodePtr  node ,
+                         Energy  numerator_scale ,
+                         Energy denominator_scale ,
+                         int side ,
+                         bool fromIsME,
+                         bool toIsME ){
   
   StdXCombPtr bXc = node->xcomb();
   if( !bXc->mePartonData()[side]->coloured() )
@@ -947,13 +1013,31 @@ double Merger::pdfratio( NodePtr  node , Energy  numerator_scale , Energy denomi
   << Exception::abortnow;
   
   
-  double from , to;
+  double from = 1.; 
+  double to   = 1.;
   if ( side == 0 ){
-    if ( denominator_scale == numerator_scale ) {
+    if ( denominator_scale == numerator_scale && fromIsME==toIsME ) {
       return 1.;
     }
-    from = node->nodeME()->pdf1( sqr( denominator_scale ) );
-    to   = node->nodeME()->pdf1( sqr( numerator_scale ) );
+
+
+    if (fromIsME) {
+      from = node->nodeME()->pdf1( sqr( denominator_scale ) );
+    }else{
+      from = DSH()->firstPDF().xfx(node->xcomb()->lastPartons().first->dataPtr(),
+                                  sqr( denominator_scale ),
+                                  node->xcomb()->lastX1())/node->xcomb()->lastX1();
+    }
+
+
+    if (toIsME) {
+      to = node->nodeME()->pdf1( sqr( numerator_scale ) );
+    }else{
+      to = DSH()->firstPDF().xfx(node->xcomb()->lastPartons().first->dataPtr(),
+                                  sqr( numerator_scale ),
+                                  node->xcomb()->lastX1())/node->xcomb()->lastX1();
+    }
+    
     if ( ( to < 1e-8||from < 1e-8 )&&( to/from>10000000. ) ){
       generator()->logWarning(Exception()
                               << "Merger: pdfratio to = " << to << " from = " << from
@@ -962,14 +1046,31 @@ double Merger::pdfratio( NodePtr  node , Energy  numerator_scale , Energy denomi
     }
   }
   else{
-    if ( denominator_scale == numerator_scale ) {
+    if ( denominator_scale == numerator_scale && fromIsME==toIsME ) {
       return 1.;
     }
-    from = node->nodeME()->pdf2( sqr( denominator_scale ) );
-    to   = node->nodeME()->pdf2( sqr( numerator_scale ) );
+    
+    if (fromIsME) {
+      from = node->nodeME()->pdf2( sqr( denominator_scale ) );
+    }else{
+      from =DSH()->secondPDF().xfx(node->xcomb()->lastPartons().second->dataPtr(),
+                                  sqr( denominator_scale ),
+                                  node->xcomb()->lastX2())/node->xcomb()->lastX2();
+    }
+
+
+    if (toIsME) {
+      to = node->nodeME()->pdf2( sqr( numerator_scale ) );
+    }else{
+      to = DSH()->secondPDF().xfx(node->xcomb()->lastPartons().second->dataPtr(),
+                                sqr( numerator_scale ),
+                                node->xcomb()->lastX2())/node->xcomb()->lastX2();
+    }
+    
     if ( ( to < 1e-8||from < 1e-8 )&&( to/from>10000000. ) ){
       generator()->logWarning(Exception()
-                              << "Merger: pdfratio to = " << to << " from = " << from
+                              << "Merger: pdfratio to = "
+                              << to << " from = " << from
                               << Exception::warning);
       return 0.;}
   }

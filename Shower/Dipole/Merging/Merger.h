@@ -203,7 +203,7 @@ namespace Herwig {
       /// fill the history, including calculation of sudakov supression
     void   fillHistory(Energy, NodePtr, NodePtr );
       /// calculate the pdf ratio for the given clusternode
-    double pdfratio(NodePtr, Energy, Energy, int);
+    double pdfratio(NodePtr, Energy, Energy, int, bool fromIsME, bool toIsME);
       /// return the pdf-ratio reweight for the history
     double pdfReweight();
       /// return the alpha_s reweight for the history

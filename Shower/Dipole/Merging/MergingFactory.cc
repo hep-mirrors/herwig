@@ -320,7 +320,9 @@ void MergingFactory::pushR(MatchboxMEBasePtr born, int i) {
     children.clear();
     ++k;
   }
-
+  if(clusternode->children().empty()){
+ 	return;
+  }
   
   if ( MH()->N() > i )
 	  bornme->needsCorrelations();

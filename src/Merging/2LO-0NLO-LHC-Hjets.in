@@ -110,7 +110,8 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
 
-set /Herwig/Merging/MergingFactory:ScaleChoice HTPrimeScale
+set /Herwig/Merging/MergingFactory:ScaleChoice FixedScale 
+#HTPrimeScale
 
 ##################################################
 ## Scale uncertainties

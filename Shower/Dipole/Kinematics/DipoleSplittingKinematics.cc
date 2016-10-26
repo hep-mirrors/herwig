@@ -32,7 +32,7 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters(),theOpenInitialStateZ(false) {}
+    theLastSplittingParameters(),theOpenInitialStateZ(0) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
@@ -116,6 +116,11 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
 					    double& weight) const {
 
   pair<double,double> zLims = zBoundaries(pt,dInfo,split);
+
+  if(zLims.first==zLims.second){  
+	weight = 0.0;
+      	return 0.0;
+  }
 
   using namespace RandomHelpers;
 
@@ -287,13 +292,15 @@ void DipoleSplittingKinematics::Init() {
   interfaceMCCheck.rank(-1);
   
   
-  static Switch<DipoleSplittingKinematics,bool> interfaceOpenInintialStateZ
-  ("OpenInitialStateZ",   "",
-   &DipoleSplittingKinematics::theOpenInitialStateZ, false, false, false);
-  static SwitchOption interfaceOpenInintialStateZYes
-  (interfaceOpenInintialStateZ,   "Yes",   "",   true);
-  static SwitchOption interfaceOpenInintialStateZNo
-  (interfaceOpenInintialStateZ,   "No",   "",   false);
+  static Switch<DipoleSplittingKinematics,int> interfaceOpenInintialStateZ
+  ("OpenInitialStateZ", "",
+   &DipoleSplittingKinematics::theOpenInitialStateZ, 0, false, false);
+  static SwitchOption interfaceOpenInintialStateZhardScale
+  (interfaceOpenInintialStateZ,   "Hard",   "",   0);
+  static SwitchOption interfaceOpenInintialStateZfull
+  (interfaceOpenInintialStateZ,   "Full",   "",   1);
+  static SwitchOption interfaceOpenInintialStateZDipoleScale
+  (interfaceOpenInintialStateZ,   "DipoleScale",   "",   2);
   
   
   
