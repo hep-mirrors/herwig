@@ -27,7 +27,7 @@ if HAVE_VBFNLO
 pkglib_LTLIBRARIES += HwMatchboxVBFNLO.la
 endif
 
-HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:1:0
+HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:2:0
 HwMatchboxVBFNLO_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)
 HwMatchboxVBFNLO_la_CPPFLAGS += -DVBFNLOLIB=$(VBFNLOLIB)
@@ -76,7 +76,7 @@ if HAVE_MADGRAPH
 pkglib_LTLIBRARIES += HwMatchboxMadGraph.la
 endif
 
-HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:1:0
 
 HwMatchboxMadGraph_la_SOURCES = \
 MadGraph/MadGraphAmplitude.cc
