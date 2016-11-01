@@ -1,6 +1,34 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.0.4 release: 2016-10-24
+
+** API
+   The high level API is now properly available as a library, providing an alternative to the Herwig main program. 
+
+** Dipole shower
+   Added nloops() function to the AlphaS classes to return the number of loops in the running coupling
+
+** Matchbox
+   Improved error handling and clearer messages
+
+** BSM models
+   Initialize W mass correctly from SLHA file. Improved reading in of decay modes if they already exist.
+
+** Sampling
+   Introduced option to reduce reference weight in AlmostUnweighted mode by Kappa factor. Useful for processes where full unweighting is infeasible. 
+
+** Qtilde shower
+   Better control of scale in splitting functions using the SplittingFunction:ScaleChoice interface.
+
+** Tests
+   New NLO fixed-order input files for testing Matchbox in Tests/ExternNLO. 
+
+** Input files
+   Set diagonal CKM options consistently. Added TauTauHVertex and MuMuHVertex to MatchboxDefaults.
+
+
+
 * Herwig 7.0.3 release: 2016-07-21
 
 ** subprocess generation filters
