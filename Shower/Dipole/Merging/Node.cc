@@ -190,7 +190,7 @@ bool Node::firstgenerateKinematics(const double *r, bool directCut) {
 
     NodePtr rc = randomChild();
     rc->dipole()->setXComb(rc->xcomb());
-    if ( !rc->dipole()->generateKinematics(r) ) { assert(false); }
+    if ( !rc->dipole()->generateKinematics(r) ) { return false; }
     rc->nodeME()->setXComb(rc->xcomb());
     
     if(MH()->gamma() == 1.){
@@ -211,7 +211,7 @@ bool Node::firstgenerateKinematics(const double *r, bool directCut) {
         for (auto const & ch: thechildren) {
           ch->dipole()->setXComb(ch->xcomb());
           if ( !ch->dipole()->generateKinematics(r) )
-          assert(false);
+            return false;
           MH()->treefactory()->setAlphaParameter( MH()->gamma() );
           inAlphaPS |= ch->dipole()->aboveAlpha();
           MH()->treefactory()->setAlphaParameter( 1. );
@@ -356,7 +356,7 @@ NodePtr Node::getHistory(bool normal, double hardScaleFactor) {
   Selector<NodePtr> subprosel;
   while (temp.size() != 0) {
     minpt = Constants::MaxEnergy;
-    subprosel.clear();
+    subprosel.clear();    
     for (NodePtr const &  child : temp) {
       if( child->dipole()->underlyingBornME()->largeNColourCorrelatedME2(
                              {child->dipole()->bornEmitter(),
@@ -364,14 +364,21 @@ NodePtr Node::getHistory(bool normal, double hardScaleFactor) {
                               deepHead()->MH()->largeNBasis()) != 0.
          ) {
         
-        double weight = abs(child->dipole()->dSigHatDR()/nanobarn);
+        double weight = 1.;
+	if ( deepHead()->MH()->chooseHistory() == 0 )
+	   weight = abs(child->dipole()->dSigHatDR()/nanobarn);
+	else if ( deepHead()->MH()->chooseHistory() == 1  )
+	   weight = abs(child->dipole()->dSigHatDR()/child->nodeME()->dSigHatDRB());
+	else if ( deepHead()->MH()->chooseHistory() == 2  )
+	   weight = 1.;
+        else if ( deepHead()->MH()->chooseHistory() == 3  )
+	   weight = 1_GeV/child->pT();
+	else 
+	   assert(false);
         if(weight != 0.) {
           subprosel.insert(weight , child);
           minpt = min(minpt, child->pT());
         }
-          //TODO choosehistories
-        
-        
       }
     }
     if (subprosel.empty())

@@ -430,11 +430,19 @@ CrossSection Merger::TreedSigDR( Energy startscale , double diffAlpha ){
   
   currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
   CrossSection res =  currentME()->dSigHatDRB();
-  bool useDipolesForME=false;
+  bool useDipolesForME=true;
   if (useDipolesForME && !currentNode()->children().empty()){
 	res=ZERO;
 	for (auto const & child : currentNode()->children() )
 	    res-=child->dipole()->dSigHatDR(sqr( startscale ));	
+  }
+  if ( projected && emitDipoleMEDiff ) {
+    CrossSection resDip=ZERO;
+    for (auto const & child : currentNode()->children() )
+      resDip-=child->dipole()->dSigHatDR(sqr( startscale ));
+      setEmissionProbability(1.-min(resDip/res,res/resDip));
+  }else{
+    setEmissionProbability(0.);	
   }
 
   if ( diffAlpha != 1. ) {
@@ -593,7 +601,7 @@ double Merger::alphaReweight(){
   
   res *= pow( SM().alphaEMME( Q_qed )/ SM().alphaEMMZ() , Oew );
   
-  res *= pow( cmwAlphaS(Q_R) / SM().alphaS() , Oqcd );
+  res *= pow( as(Q_R) / SM().alphaS() , Oqcd );
   
 
   
@@ -874,6 +882,18 @@ void Merger::doinit(){
 }
 
 
+namespace{
+void setXCombScales(StdXCombPtr xc,Energy2 scale){
+    xc->lastShowerScale                       ( scale );
+    xc->lastCentralScale                      ( scale );
+    xc->lastScale                             ( scale );
+    xc->partonBinInstances().first->scale     ( scale );
+    xc->partonBinInstances().second->scale    ( scale );
+    xc->lastPartons().first->scale            ( scale );
+    xc->lastPartons().second->scale           ( scale );
+}
+}
+
 CrossSection Merger::MergingDSigDR() {
   
   history.clear();
@@ -883,7 +903,21 @@ CrossSection Merger::MergingDSigDR() {
 	throw Exception()
   	<< "Merger: The splithardprocess option is currently not supported."
   	<< Exception::abortnow;	
-  } 
+  }
+
+
+      //get the PDF's (from ShowerHandler.cc)
+  if (!DSH()->getPDFA()||!DSH()->firstPDF().particle()){
+     tSubProPtr sub = currentNode()->xcomb()->construct();
+     const auto pb=currentNode()->xcomb()->partonBins();
+     tcPDFPtr first  = DSH()->getPDFA() ?
+          tcPDFPtr(DSH()->getPDFA()) : DSH()->firstPDF().pdf();
+     tcPDFPtr second = DSH()->getPDFB() ?
+          tcPDFPtr(DSH()->getPDFB()) : DSH()->secondPDF().pdf();
+     DSH()->resetPDFs( {first,second },pb );
+  }
+
+ 
  
   DSH()->eventHandler( generator()->eventHandler() );
   
@@ -903,12 +937,13 @@ CrossSection Merger::MergingDSigDR() {
   }
   
   auto lxc= currentME()->lastXCombPtr();
-  lxc->lastShowerScale( sqr( currentNode()->runningPt() ) );
-  
+  setXCombScales(lxc,sqr( currentNode()->runningPt()));
+
+
   auto lp= currentME()->lastXCombPtr()->lastProjector();
-  if( lp ){
-    lp->lastShowerScale( sqr( currentNode()->runningPt() ) );
-  }
+  
+  if( lp )
+    setXCombScales( lp, sqr( currentNode()->runningPt()));
   
   if ( res == ZERO ){
     history.clear();
@@ -933,19 +968,17 @@ CrossSection Merger::MergingDSigDR() {
 }
 
 
+
+
 #include "Herwig/PDF/HwRemDecayer.h"
 void Merger::CKKW_PrepareSudakov( NodePtr node , Energy running ){
     //cleanup( node );
+  node->xcomb()->lastPartons().first->scale(sqr(running));
+  node->xcomb()->lastPartons().second->scale(sqr(running));
+  node->xcomb()->partonBinInstances().first->scale(sqr(running));
+  node->xcomb()->partonBinInstances().second->scale(sqr(running));
   tSubProPtr sub = node->xcomb()->construct();
   const auto pb=node->xcomb()->partonBins();
-  
-    //get the PDF's (from ShowerHandler.cc)
-  tcPDFPtr first  = DSH()->getPDFA() ?
-                tcPDFPtr(DSH()->getPDFA()) : DSH()->firstPDF().pdf();
-  tcPDFPtr second = DSH()->getPDFB() ?
-                tcPDFPtr(DSH()->getPDFB()) : DSH()->secondPDF().pdf();
-  
-  DSH()->resetPDFs( {first,second },pb );
   
   DSH()->setCurrentHandler();
   
@@ -969,11 +1002,11 @@ Energy Merger::CKKW_StartScale( NodePtr node ) const {
       for ( int j = 2; j<N ; j++ ){ if ( i == j||!data[j]->coloured() )continue;
 	for ( int k = 0; k<N ; k++ ){ if ( !data[k]->coloured() || i == k || j == k )continue;
 	  if(i<2){
-	    if(k<2) res =  min( res , IILTK->lastPt( momenta[i] , momenta[j] , momenta[k] )); 
-	    else    res =  min( res , IFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	    if(k<2) {res =  min( res , IILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
+	    else    {res =  min( res , IFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
 	  }else{
-	    if(k<2) res =  min( res , FILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
-	    else    res =  min( res , FFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	    if(k<2) {res =  min( res , FILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
+	    else    {res =  min( res , FFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
 	  }
 	}
       }
@@ -1005,7 +1038,6 @@ double Merger::pdfratio( NodePtr  node ,
                          int side ,
                          bool fromIsME,
                          bool toIsME ){
-  
   StdXCombPtr bXc = node->xcomb();
   if( !bXc->mePartonData()[side]->coloured() )
   throw Exception()
@@ -1405,7 +1437,8 @@ void Merger::persistentOutput( PersistentOStream & os ) const {
   ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV )
   << theLargeNBasis << FFLTK << FILTK <<
   IFLTK << IILTK << FFMTK << FIMTK << IFMTK <<
-  theDipoleShowerHandler << theTreeFactory << theFirstNodeMap<<theRealSubtractionRatio;
+  theDipoleShowerHandler << theTreeFactory << 
+  theFirstNodeMap<<theRealSubtractionRatio << emitDipoleMEDiff;
   
 }
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -1420,8 +1453,8 @@ void Merger::persistentInput( PersistentIStream & is , int ) {
   iunit( theCentralMergePt , GeV ) >> theLargeNBasis >>
   FFLTK >> FILTK >> IFLTK >>
   IILTK >> FFMTK >> FIMTK >>
-  IFMTK >> theDipoleShowerHandler >>
-  theTreeFactory >> theFirstNodeMap>>theRealSubtractionRatio ;
+  IFMTK >> theDipoleShowerHandler >>  theTreeFactory >> 
+  theFirstNodeMap >> theRealSubtractionRatio >> emitDipoleMEDiff;
 }
 
   // *** Attention *** The following static variable is needed for the type
@@ -1536,7 +1569,17 @@ void Merger::Init() {
   static SwitchOption interfaceOpenInitialSateZNo
   ( interfaceOpenInitialSateZ , "No" , "" , false );
   
-  
+ 
+  static Switch<Merger , bool>
+  interfaceemitDipoleMEDiff
+  ( "emitDipoleMEDiff" , "Allow emissions of the unitarisation contribution with prob. 1-min(B_n/sum Dip_n,sum Dip_n/B_n)" , 
+  &Merger::emitDipoleMEDiff , false , false , false );
+  static SwitchOption interfaceemitDipoleMEDiffYes
+  ( interfaceemitDipoleMEDiff , "Yes" , "" , true );
+  static SwitchOption interfaceemitDipoleMEDiffNo
+  ( interfaceemitDipoleMEDiff , "No" , "" , false );
+
+ 
   static Parameter<Merger , Energy>
   interfaceIRSafePT
   ( "IRSafePT" ,
@@ -1556,11 +1599,11 @@ void Merger::Init() {
   0. , 0. ,  0.0 , 0.5 ,
   true , false , Interface::limited );
   
-  
+ 
   static Parameter<Merger , int>
   interfacechooseHistory(
   "chooseHistory" ,
-  "different ways of choosing the history" ,
+  "Various   ways of choosing the history weights: 0(default):dipole xs, 1:dipole/born, 2:flat, 3: 1/pt_dip" ,
   &Merger::theChooseHistory ,
   3 , -1 , 0 ,
   false , false , Interface::lowerlim );

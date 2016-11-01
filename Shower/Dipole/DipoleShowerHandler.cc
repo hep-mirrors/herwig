@@ -735,7 +735,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     }
     
       // otherwise perform the splitting
-    
+      // but first see if the emission would produce a configuration in the ME region.
     if (   theMergingHelper
 	&& eventHandler()->currentCollision()
 	&& !decay
@@ -743,7 +743,12 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+
                                       eventRecord().hard().size()
                                       +2){//incoming
-        if (theMergingHelper->mergingScale()<winnerScale){
+        
+	if (theMergingHelper->mergingScale()<winnerScale && 
+            theMergingHelper->emissionProbability() < UseRandom::rnd()) {
+            
+          theMergingHelper->setEmissionProbability(0.);
+
           const bool transparent=true;
           if (transparent) {
             pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
@@ -771,7 +776,10 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
         }
       }
     }
-    
+    if(theMergingHelper)
+       optHardPt=ZERO;  
+  
+   
     
     didRadiate = true;
     

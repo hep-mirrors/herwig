@@ -213,6 +213,7 @@ insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudelnuqqbargg
 insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudelnuqqbarqqbar
 insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudehgg
 insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudehggg
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 Amplitudehqqbarg
 
 ################################################################################
 # Setup utilities for process generation

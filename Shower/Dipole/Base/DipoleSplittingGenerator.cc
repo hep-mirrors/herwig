@@ -547,6 +547,8 @@ double DipoleSplittingGenerator::dosudakovExpansion(const DipoleSplittingInfo& ,
                                                              *splittingKernel());
   
   
+  pair<double,double> xSupport =
+    generatedSplitting.splittingKinematics()->xiSupport(generatedSplitting);
 
   
     vector<double> RN;
@@ -559,17 +561,19 @@ double DipoleSplittingGenerator::dosudakovExpansion(const DipoleSplittingInfo& ,
     generatedSplitting.setCalcFixedExpansion(true);
     generatedSplitting.fixedScale(fixedScale);
     
-    while ( k<500. && k<50000 ){
+    while ( k<100. && k<50000 ){
       k+=1.;
       RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
-      RN[1]= UseRandom::rnd(); //Z
+      RN[1]=xSupport.first+UseRandom::rnd()*(xSupport.second-xSupport.first); //
       RN[2]= UseRandom::rnd(); //PHI
-      double tmp=(optKappaCutoffu-optKappaCutoffd)*evaluate(RN);
+      double tmp=(xSupport.second-xSupport.first)*
+		 (optKappaCutoffu-optKappaCutoffd)*
+                 evaluate(RN);
       res+= tmp;
       resq+=pow(tmp,2.);
       if(k%50==0.){
-	varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
-        if(varx<0.05)break;
+	varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)))/(res/(1.0*k));
+        if(varx<theSudakovAccuracy)break;
       }
     }
     generatedSplitting.setCalcFixedExpansion(false);
@@ -597,7 +601,18 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
                                                             generatedSplitting.spectatorX(),
                                                             generatedSplitting.index(),
                                                             *splittingKernel());
-  
+ 
+
+
+  pair<double,double> kSupport =
+    generatedSplitting.splittingKinematics()->kappaSupport(generatedSplitting);
+
+  assert(kSupport.first==0&&kSupport.second==1);
+
+  pair<double,double> xSupport =
+    generatedSplitting.splittingKinematics()->xiSupport(generatedSplitting);
+
+ 
     vector<double> RN;
     RN.resize(3);
   
@@ -606,18 +621,22 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
     double var=10.;
     double varx=10.;
     int k=0;
-  while (((k<40.||var>0.01)&&k<50000)){
+  while (((k<40.||var>theSudakovAccuracy)&&k<50000)){
     k+=1.;
     RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
-    RN[1]=UseRandom::rnd(); //Z
+    RN[1]=xSupport.first+UseRandom::rnd()*(xSupport.second-xSupport.first); //Z
     RN[2]=UseRandom::rnd(); //PHI
-    double tmp=(optKappaCutoffu-optKappaCutoffd)*evaluate(RN);
+    double tmp=(xSupport.second-xSupport.first)*
+	       (optKappaCutoffu-optKappaCutoffd)*
+               evaluate(RN);
     
     res+= tmp;
     resq+=pow(tmp,2.);
-    varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
-    if(k%20==0.)var=  (exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx))/exp(-res/(1.0*k));
-    
+    if(k%20==0.){
+      varx=sqrt((resq/pow(1.*k,2)-pow(res,2)/pow(1.*k,3)));
+      var=  (exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx))/exp(-res/(1.0*k));
+    }      
+
   }
  
   

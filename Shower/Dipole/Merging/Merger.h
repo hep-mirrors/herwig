@@ -111,7 +111,12 @@ namespace Herwig {
       assert(theFirstNodeMap.count(theCurrentME));
       theCurrentNode=theFirstNodeMap[theCurrentME];
     }
-    
+      /// allow emissions with a given probability.in the ME region
+    double emissionProbability() const{ return theEmissionProbability; }
+      /// set a probability of allowed emission into ME region.
+    void setEmissionProbability(double x){theEmissionProbability=x;}
+
+
   protected:
       /// the merging factory needs to set the legsize of the production process
     void N0(int n){ theN0=n;}
@@ -280,6 +285,14 @@ namespace Herwig {
     double theGamma = 1.0;
       /// smearing factor for merging scale
     double theSmearing = 0.;
+
+     /** 
+      * Allow emissions for the unitarising LO contributions 
+      *  according to the prob 1-min(B_n/sum Dip_n,Dip_n/B_n)
+      */
+    bool emitDipoleMEDiff = false;
+      /// The conditional emission probability if emitDipoleMEDiff is true.
+    double theEmissionProbability = 0.;
       /// cutoff for real emission contribution
     Energy theIRSafePT = 1_GeV;
       /// current merging scale

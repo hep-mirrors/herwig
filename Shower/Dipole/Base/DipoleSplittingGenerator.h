@@ -450,6 +450,13 @@ private:
    */
   double theSplittingWeight;
 
+
+  /**
+   * Sudakov sampling accuracy
+   */
+  double theSudakovAccuracy=0.03;
+
+
 private:
 
   /**
