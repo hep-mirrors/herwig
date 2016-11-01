@@ -430,7 +430,7 @@ CrossSection Merger::TreedSigDR( Energy startscale , double diffAlpha ){
   
   currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
   CrossSection res =  currentME()->dSigHatDRB();
-  bool useDipolesForME=true;
+  bool useDipolesForME=false;
   if (useDipolesForME && !currentNode()->children().empty()){
 	res=ZERO;
 	for (auto const & child : currentNode()->children() )
