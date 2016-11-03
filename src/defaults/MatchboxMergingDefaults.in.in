@@ -7,22 +7,6 @@
 ################################################################################
 
 
-################################################################################
-# Integration/sampling
-################################################################################
-
-cd /Herwig/Samplers
-
-set FlatBinSampler:InitialPoints 10000
-set Sampler:BinSampler FlatBinSampler
-set Sampler:AddUpSamplers Off
-set Sampler:GlobalMaximumWeight Off
-set Sampler:FlatSubprocesses Off
-set Sampler:MinSelection 0.000001
-set Sampler:AlmostUnweighted Off
-set Sampler:RunCombinationData Off
-set Sampler:WriteGridsOnFinish No
-set Sampler:MaxEnhancement 1.1
 
 ################################################################################
 # Setup the factory object for merging
