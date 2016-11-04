@@ -81,7 +81,7 @@ bool MEMinBias::generateKinematics(const double *) {
 
 double MEMinBias::me2() const {
   //tuned so it gives the correct normalization for xmin = 0.11
-  return 4.5584*(sqr(generator()->maximumCMEnergy())/GeV2);
+  return csNorm_*(sqr(generator()->maximumCMEnergy())/GeV2);
 }
 
 CrossSection MEMinBias::dSigHatDR() const {
@@ -141,12 +141,24 @@ IBPtr MEMinBias::fullclone() const {
 ClassDescription<MEMinBias> MEMinBias::initMEMinBias;
 // Definition of the static class description member.
 
+void MEMinBias::persistentOutput(PersistentOStream & os) const {
+  os << csNorm_;
+}
 
+void MEMinBias::persistentInput(PersistentIStream & is, int) {
+  is >> csNorm_;
+}
 
 void MEMinBias::Init() {
 
   static ClassDocumentation<MEMinBias> documentation
     ("There is no documentation for the MEMinBias class");
      
+  static Parameter<MEMinBias,double> interfacecsNorm
+    ("csNorm",
+     "Normalization of the min-bias cross section.",
+     &MEMinBias::csNorm_, 
+     1.0, 0.0, 100.0, 
+     false, false, Interface::limited);
 }
 

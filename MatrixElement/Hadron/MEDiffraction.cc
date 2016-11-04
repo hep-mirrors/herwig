@@ -96,28 +96,27 @@ void MEDiffraction::getDiagrams() const {
     				//u -- ud_0
     				add(new_ptr((Tree2toNDiagram(4), prt11, q11, pom, prt12, 3, prt12, 1, dq11, 2, q11, -1)));
     				//d -- uu_1
-    				add(new_ptr((Tree2toNDiagram(4), prt11, q21, pom, prt12, 3, prt12, 1, dq21, 2, q21, -3)));
+    				add(new_ptr((Tree2toNDiagram(4), prt11, q21, pom, prt12, 3, prt12, 1, dq21, 2, q21, -2)));
     				break;
     			case 1:	//right
     				//u -- ud_0
     				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q12, prt12, 1, prt11, 3, dq12, 2, q12, -1)));
     				
     				//d -- uu_1
-    				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q22, prt12, 1, prt11, 3, dq22, 2, q22, -3)));
+    				add(new_ptr((Tree2toNDiagram(4), prt11, pom, q22, prt12, 1, prt11, 3, dq22, 2, q22, -2)));
     				break;
     			case 2:	//double
     				//u -- ud_0 left u -- ud_0 right	
     				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q12, prt12, 1, dq11, 2, q11, 3, q12, 4, dq12, -1)));
     				
     				//u -- ud_0 left d -- uu_1 right
-    				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q22, prt12, 1, dq11, 2, q11, 3, q22, 4, dq22, -3)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q11, pom, q22, prt12, 1, dq11, 2, q11, 3, q22, 4, dq22, -2)));
     				
     				//d -- uu_1 left u -- ud_0 right
-    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q12, prt12, 1,dq21, 2, q21, 3, q12, 4, dq12, -7)));
-    				//d -- uu_1 left u -- ud_1 right
-    				//add(new_ptr((Tree2toNDiagram(5), prt1, q2, pom, q1, prt1, 1, dq2, 2, q2, 3, q1, 4, dq11, -8)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q12, prt12, 1,dq21, 2, q21, 3, q12, 4, dq12, -3)));
+    				
     				//d -- uu_1 left d -- uu_1 right
-    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q22, prt12, 1, dq21, 2, q21, 3, q22, 4, dq22, -9)));
+    				add(new_ptr((Tree2toNDiagram(5), prt11, q21, pom, q22, prt12, 1, dq21, 2, q21, 3, q22, 4, dq22, -4)));
     			break;
         		}
     	
@@ -210,8 +209,7 @@ bool MEDiffraction::generateKinematics(const double * ) {
   /* decay dissociated proton into quark-diquark */
   //squares of constituent masses of quark and diquark
   const Energy2 mqq2(sqr(mqq())), mq2(sqr(mq()));
-  double sintheta = sqrt(1 - sqr(costheta));
-  Energy pqq;
+  
   Energy2 Mx2;
   switch(diffDirection){
   	case 0:
@@ -221,17 +219,11 @@ bool MEDiffraction::generateKinematics(const double * ) {
   		Mx2=M22;
   		break;
   }
-   //total momentum
-   pqq = ((Mx2-mq2+mqq2)*pprime*costheta+ sqrt((Mx2+sqr(pprime))*(kallen(Mx2,mq2,mqq2)
-   -4*mqq2*sqr(pprime)*sqr(sintheta))))/(2*Mx2+2*sqr(pprime)*sqr(sintheta)); 
+   
     
   /* Select between left/right single diffraction and double diffraction */
   //check if we want only delta for the excited state
   
-  //new boost vectors
-  //const Boost p3boost = p3.findBoostToCM();
-  //const Boost p4boost = p4.findBoostToCM();
-  //Axis norm;
   
   //pair of momenta for double decay for a two cluster case
   pair<Lorentz5Momentum,Lorentz5Momentum> momPair, momPair1;
@@ -645,19 +637,29 @@ unsigned int MEDiffraction::orderInAlphaEW() const {
 }
 
 Selector<MEBase::DiagramIndex>
-MEDiffraction::diagrams(const DiagramVector & ) const {
+MEDiffraction::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
-  
     if(!deltaOnly){
     	if(diffDirection<2){
-    		sel.insert(2/3,0);
-    		sel.insert(1/3,1);
-    	}else{
     		
-    		sel.insert(4/9,0);
-    		sel.insert(2/9,1);
-    		sel.insert(2/9,2);
-    		sel.insert(1/9,3);
+    		for(unsigned int i = 0; i < diags.size(); i++){
+    			if(diags[0]->id()==-1) 
+    				sel.insert(2./3.,i);
+    			else
+    				sel.insert(1./3.,i);	
+    		}
+    		
+    	}else{
+    		for(unsigned int i = 0; i < diags.size(); i++){
+    			if(diags[0]->id()==-1) 
+    				sel.insert(4./9.,i);
+    			else if(diags[0]->id()==-2)
+    				sel.insert(2./9.,i);	
+    			else if(diags[0]->id()==-3)
+    				sel.insert(2./9.,i);
+    			else
+    				sel.insert(1./9.,i);		
+    		}
     	}
     }else{
     	sel.insert(1.0,0);

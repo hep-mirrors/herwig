@@ -256,12 +256,14 @@ private:
    * Returns the minimal possible value of diffractive mass
    */
   //lowest possible mass given the constituent masses of quark and diquark
-  Energy2 M2min() const{return sqr(0.938+0.325+2*0.65)*GeV2;}
+  Energy2 M2min() const{return sqr(getParticleData(2212)->mass()+mq()+mqq());}
   
   /**
    * Returns the maximal possible value of diffractive mass
    */
-  Energy2 M2max() const{return sqr(generator()->maximumCMEnergy()-1*GeV);}//TODO:modify to get proper parameters
+  Energy2 M2max() const{
+  	return sqr(generator()->maximumCMEnergy()-getParticleData(2212)->mass());
+  }//TODO:modify to get proper parameters
 
   InvEnergy2 softPomeronSlope() const;
   
