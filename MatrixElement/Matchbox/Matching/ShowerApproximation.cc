@@ -392,6 +392,19 @@ double ShowerApproximation::channelWeight() const {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
+void ShowerApproximation::doinit() {
+  if ( profileScales() ) {
+    if ( profileScales()->unrestrictedPhasespace() &&
+	 restrictPhasespace() ) {
+      generator()->log()
+	<< "ShowerApproximation warning: The scale profile chosen requires an unrestricted phase space,\n"
+	<< "however, the phase space was set to be restricted. Will switch to unrestricted phase space.\n"
+	<< flush;
+      restrictPhasespace(false);
+    }
+  }
+  HandlerBase::doinit();
+}
 
 void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
   os << theLargeNBasis

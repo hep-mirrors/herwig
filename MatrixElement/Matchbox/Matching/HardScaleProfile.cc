@@ -64,6 +64,14 @@ double HardScaleProfile::hardScaleProfile(Energy hard, Energy soft) const {
   return 1.;
 }
 
+bool HardScaleProfile::unrestrictedPhasespace() const {
+  if ( theProfileType == theta ||
+       theProfileType == resummation ) {
+    return false;
+  }
+  return true;
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

@@ -104,7 +104,6 @@ void DipoleMatching::persistentInput(PersistentIStream & is, int) {
 }
 
 void DipoleMatching::doinit() {
-  ShowerApproximation::doinit();
   if ( theShowerHandler ) {
     hardScaleFactor(theShowerHandler->hardScaleFactor());
     factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
@@ -113,6 +112,8 @@ void DipoleMatching::doinit() {
     restrictPhasespace(theShowerHandler->restrictPhasespace());
     hardScaleIsMuF(theShowerHandler->hardScaleIsMuF());
   }
+  // need to fo this after for consistency checks
+  ShowerApproximation::doinit();
 }
 
 // *** Attention *** The following static variable is needed for the type
