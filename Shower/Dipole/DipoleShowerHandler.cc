@@ -1012,13 +1012,13 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
   }
   
   if ( !gotone ) {
-    generator()->logWarning(Exception()
-                            << "DipoleShowerHandler could not "
-                            << "find a splitting kernel which is able "
-                            << "to handle splittings off the dipole "
-                            << ind << ".\n"
-                            << "Please check the input files."
-                            << Exception::warning);
+    throw Exception()
+      << "DipoleShowerHandler could not "
+      << "find a splitting kernel which is able "
+      << "to handle splittings off the dipole "
+      << ind << ".\n"
+      << "Please check the input files."
+      << Exception::runerror;
   }
   
 }
