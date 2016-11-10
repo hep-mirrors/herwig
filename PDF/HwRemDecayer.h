@@ -62,24 +62,6 @@ public:
 
 public:
 
-  /**
-   * The default constructor.
-   */
-  HwRemDecayer() : allowTop_(false),//quarkPair_(false),multiPeriph_(false),
-                   ptmin_(-1.*GeV), beta_(ZERO),
-		   maxtrySoft_(10), 
-		   colourDisrupt_(1.0),
-		   ladderMult_(1.0),
-		   ladderbFactor_(1.0),
-		   gaussWidth_(0.1),
-		   valOfN_(0), 
-		   initTotRap_(0),
-		   _kinCutoff(0.75*GeV), 
-		   _forcedSplitScale(2.5*GeV),
-		   _range(1.1), _zbin(0.05),_ybin(0.),
-		   _nbinmax(100), DISRemnantOpt_(0),
-		   pomeronStructure_(0), mg_(ZERO) {}
-
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
@@ -228,7 +210,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HwRemDecayer & operator=(const HwRemDecayer &);
+  HwRemDecayer & operator=(const HwRemDecayer &) = delete;
 
 public:
   
@@ -524,17 +506,17 @@ private:
   /**
    *  Switch to control handling of top quarks in proton
    */
-  bool allowTop_;
+  bool allowTop_ = false;
   
   /**
    *  Switch to control using multiperipheral kinemaics
    */
-  bool multiPeriph_=false;
+  bool multiPeriph_ = false;
   
   /**
    *  True if kinematics is to be calculated for quarks
    */
-  bool quarkPair_=false;
+  bool quarkPair_ = false;
 
   /** @name Soft interaction variables. */
   //@{
@@ -547,55 +529,55 @@ private:
   /**
    * ptcut of the UE model
    */
-  Energy ptmin_;
+  Energy ptmin_ = -1_GeV;
 
   /**
    * slope of the soft pt-spectrum: dN/dp_T = N p_T exp(-beta*p_T^2)
    */
-  InvEnergy2 beta_;
+  InvEnergy2 beta_ = ZERO;
 
   /**
    *  Maximum number of attempts for the regeneration of an additional
    *  soft scattering, before the number of scatters is reduced.
    */
-  unsigned int maxtrySoft_;
+  unsigned int maxtrySoft_ = 10;
 
   /**
    * Variable to store the relative number of colour disrupted
    * connections to additional soft subprocesses.
    */
-  double colourDisrupt_;
+  double colourDisrupt_ = 1.0;
   
   /**
    * Variable to store the multiplicity factor of the 
    multiperipheral ladder.
    */
-  double ladderMult_;
+  double ladderMult_ = 1.0;
   
   /**
    * Variable to store the additive factor of the 
    multiperipheral ladder multiplicity.
    */
-  double ladderbFactor_;
+  double ladderbFactor_ = 1.0;
   
   /**
    * Variable to store the gaussian width of the 
    * fluctuation of the longitudinal momentum
    * fraction.
    */
-  double gaussWidth_;
+  double gaussWidth_ = 0.1;
   
   /**
    * Variable to store the current total multiplicity 
    of a ladder.
    */
-  double valOfN_;
+  double valOfN_ = 0.0;
   
   /**
    * Variable to store the initial total rapidity between 
    of the remnants.
    */
-  double initTotRap_;
+  double initTotRap_ = 0.0;
 
   //@}
 
@@ -605,32 +587,32 @@ private:
   /**
    *  The kinematic cut-off
    */
-  Energy _kinCutoff;
+  Energy _kinCutoff = 0.75_GeV;
   
   /**
    * The PDF freezing scale as set in ShowerHandler
    */
-  Energy _forcedSplitScale;
+  Energy _forcedSplitScale = 2.5_GeV;
 
   /**
    *  Range for emission
    */
-  double _range;
+  double _range = 1.1;
 
   /**
    *  Size of the bins in z for the interpolation
    */
-  double _zbin;
+  double _zbin = 0.05;
 
   /**
    *  Size of the bins in y for the interpolation
    */
-  double _ybin;
+  double _ybin = 0.0;
 
   /**
    *  Maximum number of bins for the z interpolation
    */
-  int _nbinmax;
+  int _nbinmax = 100;
 
   /**
    *  Pointer to the object calculating the QCD coupling
@@ -645,18 +627,18 @@ private:
   /**
    *  Option for the DIS remnant
    */
-  unsigned int DISRemnantOpt_;
+  unsigned int DISRemnantOpt_ = 0;
 
   /**
    *  Option for the treatment of the pomeron structure
    */
-  unsigned int pomeronStructure_;
+  unsigned int pomeronStructure_ = 0;
   //@}
 
   /**
    * The gluon constituent mass.
    */
-  Energy mg_;
+  Energy mg_ = ZERO;
 
 };
 
