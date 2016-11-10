@@ -57,6 +57,16 @@ void ShowerHandler::doinit() {
 				   inputparticlesDecayInShower_.end());
   ShowerTree::_vmin2 = vMin_;
   ShowerTree::_spaceTime = includeSpaceTime_;
+  if ( profileScales() ) {
+    if ( profileScales()->unrestrictedPhasespace() &&
+	 restrictPhasespace() ) {
+      generator()->log()
+	<< "ShowerApproximation warning: The scale profile chosen requires an unrestricted phase space,\n"
+	<< "however, the phase space was set to be restricted. Will switch to unrestricted phase space.\n"
+	<< flush;
+      restrictPhasespace_ = false;
+    }
+  }
 }
 
 IBPtr ShowerHandler::clone() const {
