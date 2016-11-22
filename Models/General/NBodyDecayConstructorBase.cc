@@ -363,11 +363,6 @@ void NBodyDecayConstructorBase::doinit() {
 
 namespace {
 
-double factorial(const int i) {
-  if(i>1) return i*factorial(i-1);
-  else    return 1.;
-}
-
 void constructIdenticalSwaps(unsigned int depth,
 			     vector<vector<unsigned int> > identical,
 			     vector<unsigned int> channelType,
