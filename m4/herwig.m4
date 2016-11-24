@@ -637,16 +637,14 @@ AS_IF([test "x$with_evtgen" != "xno"],
 AS_IF([test "x$with_evtgen" != "xno" -a "x$have_evtgen" = "xno"],
       [AC_CHECK_FILES(
       ${with_evtgen}/lib64/libEvtGenExternal.so,
-      [have_evtgen=lib64], [have_evtgen=no])],
-      [have_evtgen=no])
+      [have_evtgen=lib64], [have_evtgen=no])])
 
 AS_IF([test "x$with_evtgen" != "xno" -a "x$have_evtgen" = "xno" ],
       [AC_CHECK_FILES(
       ${with_evtgen}/lib/libEvtGenExternal.dylib,
-      [have_evtgen=lib], [have_evtgen=no])],
-      [have_evtgen=no])
+      [have_evtgen=lib], [have_evtgen=no])])
 
-AS_IF([test "x$have_evtgen" = "xlib"],
+AS_IF([test "x$have_evtgen" = "xlib" -o "x$have_evtgen" = "xlib64" ],
       [EVTGENPREFIX=${with_evtgen}
       AC_SUBST(EVTGENPREFIX)
       ])
