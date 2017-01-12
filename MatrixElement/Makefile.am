@@ -8,4 +8,5 @@ MEfftoVH.h MEfftoVH.cc \
 MEfftoffH.h MEfftoffH.cc \
 HardVertex.fh HardVertex.h HardVertex.cc \
 ProductionMatrixElement.h ProductionMatrixElement.cc \
-DrellYanBase.h DrellYanBase.cc
+DrellYanBase.h DrellYanBase.cc \
+BlobME.h BlobME.cc
