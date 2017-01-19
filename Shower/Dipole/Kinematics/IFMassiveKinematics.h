@@ -85,8 +85,8 @@ public:
    */
   virtual Energy ptMax(Energy dScale, 
 		       double emX, double specX,
-		       const DipoleIndex&,
-		       const DipoleSplittingKernel&) const;
+		       const DipoleIndex& ind,
+		       const DipoleSplittingKernel& split) const;
 
   /**
    * Return the maximum virtuality for the given dipole scale.
