@@ -171,6 +171,11 @@ private:
    */
   FFMassiveInvertedTildeKinematics & operator=(const FFMassiveInvertedTildeKinematics &);
 
+  /**
+   * Option to use the full jacobian, including the z->zprime jacobian.
+   **/
+  bool  theFullMapping;
+
 };
 
 }
