@@ -145,8 +145,8 @@ bool IFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian(weight*(1./z));
-
+    jacobian(weight*(1./(u+x-2.*u*x)));
+  
   lastPt(pt);
   lastZ(z);
   lastPhi(phi);

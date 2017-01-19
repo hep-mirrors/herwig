@@ -254,6 +254,10 @@ namespace Herwig {
      */
     FIMassiveDecayKinematics & operator=(const FIMassiveDecayKinematics &);
 
+    /**
+     * Option to use the full jacobian, including the z->zprime jacobian.
+     **/
+    bool  theFullJacobian;
   };
 
 }

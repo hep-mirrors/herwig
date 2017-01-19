@@ -29,7 +29,7 @@
 using namespace Herwig;
 
 FFMassiveKinematics::FFMassiveKinematics() 
-  : DipoleSplittingKinematics() {}
+  : DipoleSplittingKinematics(), theFullJacobian(false) {}
 
 FFMassiveKinematics::~FFMassiveKinematics() {}
 
@@ -95,15 +95,12 @@ Energy FFMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
   return sqrt(pt2);
 }
 
-// The name of this function is misleading
-// scale here is the transverse momentum
-// Q2 is sqr(qi+qj)
 // This is simply the inverse of PtFromQ
-Energy FFMassiveKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split) const {
+Energy FFMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
   double zPrime=split.lastSplittingParameters()[0];
   Energy mi = split.emitterData()->mass();
   Energy m = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(scale) + (1-zPrime)*sqr(mi) + zPrime*sqr(m))/(zPrime*(1.-zPrime));
+  Energy2 Q2 = (sqr(pt) + (1-zPrime)*sqr(mi) + zPrime*sqr(m))/(zPrime*(1.-zPrime));
   return sqrt(Q2);
 }
 
@@ -162,7 +159,8 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     zPrime = 1.-exp(-xi);
   }
 
-
+////////////////////////
+// TODO: Check that this is the same just using auxHardPt = info.hardPt() and no further if tests
   // Check limit on pt
   Energy ptmax1 = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
     ( 2.-2.*sqrt(muj2) ) * info.scale();
@@ -181,6 +179,8 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   // during sampling due to precision.
   // Have added a tolerance to deal with this.
   assert( abs(ptmax1 - info.hardPt()) <= 1e-8*GeV || ptmax1>=info.hardPt() );
+/////////////////////////////
+
 
   // new: 2011-08-31
   // 2011-11-08: this does happen
@@ -188,16 +188,15 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     jacobian(0.0);
     return false;
   }
+  double ptRatio = sqrt(1.-sqr(pt/auxHardPt));
   
   // These apply to zPrime
   // phasespace constraint to incorporate ptMax
   double zp1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
-		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
-		 sqrt( 1.-sqr(pt/auxHardPt) ) ) /
+		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
     ( 2.*sqr(1.-sqrt(muj2)) );
   double zm1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
-		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
-		 sqrt( 1.-sqr(pt/auxHardPt) ) ) /
+		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
     ( 2.*sqr(1.-sqrt(muj2)) );
 
   if ( zPrime > zp1 || zPrime < zm1 ) {
@@ -258,9 +257,20 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     mapZJacobian = 1.-z;
   }
 
-  jacobian( 2. * mapZJacobian * (1.-y) * 
-	    log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) *
-	    bar / rootOfKallen(1.,Mui2,Muj2) );
+// Compute and store the jacobian
+	if ( true ) {
+  double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );
+    double jacPt2 = 1. / ( 1. + sqr(1.-zPrime)*Qijk*mui2/pt2 + zPrime*zPrime*Qijk*mu2/pt2 );
+
+    jacobian( propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y) * jacPt2 *
+	      mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
+  }
+
+// TODO: Implement this:
+  // The full jacobian including the z->zprime jacobian
+  else if ( theFullJacobian ) {
+    assert(false);
+  }
 
   // Record the physical variables, as used by the CS kernel definitions
   lastPt(pt);
@@ -344,10 +354,10 @@ void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void FFMassiveKinematics::persistentOutput(PersistentOStream & ) const {
+void FFMassiveKinematics::persistentOutput(PersistentOStream &) const {
 }
 
-void FFMassiveKinematics::persistentInput(PersistentIStream & , int) {
+void FFMassiveKinematics::persistentInput(PersistentIStream &, int) {
 }
 
 ClassDescription<FFMassiveKinematics> FFMassiveKinematics::initFFMassiveKinematics;
