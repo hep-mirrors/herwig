@@ -63,7 +63,10 @@ bool FIMassiveInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
-  // no additional massive factors
+  // SW 05/12/2016: Checked this is correct
+  // This should appear to have a factor of 1/x relative
+  // to the dipole shower jacobian. It is cancelled by ratios of
+  // real and born cross sections in the units.
   mapping /= z*(1.-z);
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
