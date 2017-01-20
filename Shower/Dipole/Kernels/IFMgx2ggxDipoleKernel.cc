@@ -83,7 +83,6 @@ double IFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
     double muk2CS = x*muk2;
     ret *= 3. * ( 1./(1.-x+u) - 1. + x*(1.-x) + (1.-x)/x - muk2CS*u/(x*(1.-u)) );
 
-
   return ret > 0. ? ret : 0.;
 
 }

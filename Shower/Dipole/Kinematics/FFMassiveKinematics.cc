@@ -50,7 +50,7 @@ pair<double,double> FFMassiveKinematics::xiSupport(const DipoleSplittingInfo& sp
   double c = sqrt(1.-4.*sqr(IRCutoff()/generator()->maximumCMEnergy()));
   if ( split.index().emitterData()->id() == ParticleID::g ) {
     if ( split.emissionData()->id() != ParticleID::g )
-    return {0.5*(1.-c),0.5*(1.+c)};
+      return {0.5*(1.-c),0.5*(1.+c)};
     double b = log((1.+c)/(1.-c));
     return {-b,b};
   }
@@ -75,9 +75,9 @@ Energy FFMassiveKinematics::ptMax(Energy dScale,
 }
 
 Energy FFMassiveKinematics::QMax(Energy dScale, 
-			       double, double,
-			       const DipoleIndex& ind,
-				const DipoleSplittingKernel&) const {
+				 double, double,
+				 const DipoleIndex& ind,
+				 const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
   double Muj = ind.spectatorData()->mass() / dScale;
   return dScale * ( 1.-2.*Muj+sqr(Muj) );
@@ -159,39 +159,17 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     zPrime = 1.-exp(-xi);
   }
 
-////////////////////////
-// TODO: Check that this is the same just using auxHardPt = info.hardPt() and no further if tests
-  // Check limit on pt
-  Energy ptmax1 = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
-    ( 2.-2.*sqrt(muj2) ) * info.scale();
-  Energy auxHardPt = ptmax1 > info.hardPt() ? info.hardPt() : ptmax1;
-
-  // 24/05/2015: Moved this check from the zPrime limit checks
-  if ( pt > auxHardPt ){
-    jacobian(0.0);
-    return false;
-  }
-
-  // 2011-11-09
-  // assert(ptmax1>info.hardPt());
-  // 24/05/2015:
-  // The simple >= assert above is triggered 
-  // during sampling due to precision.
-  // Have added a tolerance to deal with this.
-  assert( abs(ptmax1 - info.hardPt()) <= 1e-8*GeV || ptmax1>=info.hardPt() );
-/////////////////////////////
-
-
   // new: 2011-08-31
   // 2011-11-08: this does happen
   if( sqrt(mui2)+sqrt(mu2)+sqrt(muj2) > 1. ){
     jacobian(0.0);
     return false;
   }
-  double ptRatio = sqrt(1.-sqr(pt/auxHardPt));
-  
+
   // These apply to zPrime
   // phasespace constraint to incorporate ptMax
+  Energy hard = info.hardPt();
+  double ptRatio = sqrt(1.-sqr(pt/hard));  
   double zp1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
 		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
     ( 2.*sqr(1.-sqrt(muj2)) );
@@ -243,7 +221,6 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 
   double phi = 2.*Constants::pi*rphi;
 
-  // TODO: This may need changing due to different definitions of z
   double mapZJacobian;
   if ( info.index().emitterData()->id() == ParticleID::g ) {
     if ( info.emissionData()->id() != ParticleID::g ) {
@@ -257,16 +234,16 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     mapZJacobian = 1.-z;
   }
 
-// Compute and store the jacobian
-	if ( true ) {
-  double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );
+  // Compute and store the jacobian
+  if ( true ) {
+    double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );
     double jacPt2 = 1. / ( 1. + sqr(1.-zPrime)*Qijk*mui2/pt2 + zPrime*zPrime*Qijk*mu2/pt2 );
 
     jacobian( propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y) * jacPt2 *
 	      mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
   }
 
-// TODO: Implement this:
+  // TODO: Implement this:
   // The full jacobian including the z->zprime jacobian
   else if ( theFullJacobian ) {
     assert(false);

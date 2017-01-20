@@ -20,24 +20,28 @@ set FIgx2ccxDipoleKernel:VirtualitySplittingScale Yes
 set FIgx2ssxDipoleKernel:VirtualitySplittingScale Yes
 set FIgx2bbxDipoleKernel:VirtualitySplittingScale Yes
 
-set IFgx2ggxDipoleKernel:VirtualitySplittingScale Yes
-set IFqx2gqxDipoleKernel:VirtualitySplittingScale Yes
-set IIgx2ggxDipoleKernel:VirtualitySplittingScale Yes
-set IIqx2gqxDipoleKernel:VirtualitySplittingScale Yes
+# set IFqx2gqxDipoleKernel:VirtualitySplittingScale Yes
+# set IIqx2gqxDipoleKernel:VirtualitySplittingScale Yes
 
+# Massive
 set FFMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
 
-# set FIMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
-# set FIMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
-# set FIMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
-# set FIMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
-# set FIMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
 
-# set IFMgx2ggxDipoleKernel:VirtualitySplittingScale Yes
+set FIMDecaygx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FIMDecaygx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FIMDecaygx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FIMDecaygx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FIMDecaygx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
 # set IFMqx2gqxDipoleKernel:VirtualitySplittingScale Yes
 
 ##################################################
@@ -74,6 +78,8 @@ set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff 1.12*GeV
 set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 1.12*GeV
 
 set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff  1.12*GeV
+
+set /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics:IRCutoff 1.12*GeV
 
 ## needs to be synchronized with settings above
 set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 1.12*GeV
