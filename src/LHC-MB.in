@@ -7,7 +7,7 @@
 # http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
 ################################################################################
 
-read snippets/PPColliderNew.in
+read snippets/PPCollider.in
 
 ##################################################
 # LHC physics parameters (override defaults here) 

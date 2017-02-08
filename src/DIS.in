@@ -5,7 +5,7 @@
 # usage: Herwig read DIS.in
 ##################################################
 
-read snippets/EPColliderNew.in
+read snippets/PECollider.in
 
 ##################################################
 # Technical parameters for this run

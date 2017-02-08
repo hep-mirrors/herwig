@@ -12,7 +12,7 @@
 # The second section contains the user settings.
 ###################################################
 
-read snippets/EEColliderNew.in
+read snippets/EECollider.in
 
 # Set emission to POWHEG for radiation in decays
 set /Herwig/Shower/ShowerHandler:HardEmission POWHEG

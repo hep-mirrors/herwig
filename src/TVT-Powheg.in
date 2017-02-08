@@ -11,7 +11,7 @@
 # for the differences
 ##################################################
 
-read snippets/PPColliderNew.in
+read snippets/PPCollider.in
 
 ##################################################
 # Technical parameters for this run

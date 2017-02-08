@@ -5,7 +5,7 @@
 # usage: Herwig read LHC.in
 ##################################################
 
-read snippets/PPColliderNew.in
+read snippets/PPCollider.in
 
 cd /Herwig/Particles
 create ThePEG::ParticleData graviton

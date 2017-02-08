@@ -5,7 +5,7 @@
 # usage: Herwig read LEP.in
 ##################################################
 
-read snippets/PPColliderNew.in
+read snippets/PPCollider.in
 
 ##################################################
 # Technical parameters for this run

@@ -101,6 +101,8 @@ create ThePEG::StandardEventHandler EventHandler
 newdef EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 newdef EventHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 newdef EventHandler:DecayHandler /Herwig/Decays/DecayHandler
+newdef EventHandler:Sampler /Herwig/ACDCSampler
+insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SubProcess
 
 mkdir /Herwig/Generators 
 cd /Herwig/Generators 

@@ -7,8 +7,8 @@
 ##################################################
 ## Collider type
 ##################################################
-
-read Matchbox/EECollider.in
+read snippets/Matchbox.in
+read snippets/EECollider.in
 
 ##################################################
 ## Beam energy sqrt(s)

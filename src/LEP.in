@@ -5,7 +5,7 @@
 # usage: Herwig read LEP.in
 ##################################################
 
-read snippets/EEColliderNew.in
+read snippets/EECollider.in
 
 ##################################################
 # Change settings for the ee->Z->qq matrix element

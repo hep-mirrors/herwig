@@ -89,13 +89,25 @@ newdef ChargedCurrentCut:Current Charged
 
 # create a cut of Q^2 for charged current DIS
 
+# Default Cuts object
+create ThePEG::Cuts Cuts
+newdef /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts
+newdef Cuts:MHatMin 20.*GeV
+
+# insert into hadron cuts (by defaults)
+insert Cuts:OneCuts[0] JetKtCut
+insert Cuts:OneCuts[1] PhotonKtCut
+insert Cuts:OneCuts[2] LeptonKtCut
+insert Cuts:OneCuts[3] TopKtCut
+insert Cuts:OneCuts[4] WBosonKtCut
+insert Cuts:OneCuts[5] ZBosonKtCut
+insert Cuts:OneCuts[6] HiggsBosonKtCut
+insert Cuts:OneCuts[7] ChargedLeptonKtCut
+insert Cuts:MultiCuts[0] MassCut
+
 # create diffrent cuts object for MinBias to avoid numerical problems
 create ThePEG::Cuts MinBiasCuts
 newdef MinBiasCuts:ScaleMin 2.0*GeV
 newdef MinBiasCuts:X1Min 0.055
 newdef MinBiasCuts:X2Min 0.055
 newdef MinBiasCuts:MHatMin 0.0*GeV
-
-# Default Cuts object
-create ThePEG::Cuts Cuts
-newdef /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts

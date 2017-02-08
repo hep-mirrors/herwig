@@ -7,18 +7,14 @@
 ##################################################
 ## Collider type
 ##################################################
-
-read Matchbox/EPCollider.in
+read snippets/Matchbox.in
+read snippets/PECollider.in
 
 ##################################################
 ## Beam energies
 ##################################################
 
 cd /Herwig/EventHandlers
-# no pdfs for leptons
-set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
-set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/Extractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 ## Process selection
@@ -39,7 +35,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process e+ p -> e+ j
+do Factory:Process p e- -> e- j
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
