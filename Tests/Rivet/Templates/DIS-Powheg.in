@@ -1,26 +1,21 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Example generator based on DIS parameters
 # usage: Herwig read DIS.in
 ##################################################
+read snippets/EPCollider.in
 read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-
-# switch off final-state electron/muon FSR
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
-set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
-
 ##################################################
 #  Need to use an NLO PDF
 ##################################################
 set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
-set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
-set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/MPIExtractor:SecondPDF  /Herwig/Partons/MPIPDF
+set /Herwig/Partons/Extractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 #  Setup the POWHEG shower
@@ -32,20 +27,15 @@ set ShowerHandler:HardEmission POWHEG
 cd /Herwig/MatrixElements/
 # Neutral current DIS
 
-insert SimpleDIS:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNC
+insert SubProcess:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNC
 ${process}
 cd /Herwig/Generators
-set DISGenerator:NumberOfEvents 10000000
-set DISGenerator:RandomNumberGenerator:Seed 31122001
-set DISGenerator:DebugLevel 0
-set DISGenerator:PrintEvent 10
-set DISGenerator:MaxErrors 1000000
+set EventGenerator:MaxErrors 1000000
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 cd /Herwig/Generators
 
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-mv /Herwig/Generators/DISGenerator /Herwig/Generators/EventGenerator
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
 read ${parameterFile}
 

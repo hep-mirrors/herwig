@@ -1,7 +1,9 @@
+# -*- ThePEG-repository -*-
 ##################################################
 ## Collider type
 ##################################################
-read Matchbox/EECollider.in
+read snippets/Matchbox.in
+read snippets/EECollider.in
 ##################################################
 ## Process selection
 ##################################################

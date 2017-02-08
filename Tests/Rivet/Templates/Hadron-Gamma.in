@@ -2,48 +2,45 @@
 ##################################################
 # Technical parameters for this run
 ##################################################
+read snippets/PPCollider.in
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 1000000
-set LHCGenerator:EventHandler:StatLevel Full
-set LHCGenerator:EventHandler:Sampler:Ntry 10000
-set /Herwig/Partons/QCDExtractor:FlatSHatY 0
+set EventGenerator:MaxErrors 1000000
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:Sampler:Ntry 10000
+set /Herwig/Partons/Extractor:FlatSHatY 0
 set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
 ##################################################
 # Change the proton PDFs to those for photon radiation
 ##################################################
 set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/BudnevPDF
-set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/Extractor:FirstPDF  /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/Extractor:SecondPDF /Herwig/Partons/BudnevPDF
 set /Herwig/Shower/ShowerHandler:PDFA NULL
 set /Herwig/Shower/ShowerHandler:PDFB NULL
 # No MPI
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 ##################################################
 #  Create the Herwig analysis
 ##################################################
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 set /Herwig/Analysis/RivetAnalysis:Debug No
 
 ##################################################
 #  Cuts
 ##################################################
 cd /Herwig/Cuts
-set QCDCuts:ScaleMin 0.0*GeV
-set QCDCuts:X1Min 0
-set QCDCuts:X2Min 0
-set QCDCuts:X1Max 1.
-set QCDCuts:X2Max 1.
-set QCDCuts:MHatMin 1.*GeV
-erase QCDCuts:MultiCuts 0
+set Cuts:ScaleMin 0.0*GeV
+set Cuts:X1Min 0
+set Cuts:X2Min 0
+set Cuts:X1Max 1.
+set Cuts:X2Max 1.
+set Cuts:MHatMin 1.*GeV
+erase Cuts:MultiCuts 0
 set LeptonKtCut:MinKT 3*GeV
 
-mv /Herwig/Generators/LHCGenerator /Herwig/Generators/EventGenerator
 cd /Herwig/MatrixElements
 ${process}
 

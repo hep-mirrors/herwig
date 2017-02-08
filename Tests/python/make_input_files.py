@@ -112,12 +112,12 @@ process=""
 if(collider=="BFactory") :
     if(simulation=="") :
         if(parameterName=="10.58-res") :
-            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
         elif(parameterName=="10.58") :
-            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
+            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
             process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
         else :
-            process+="insert  /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq\n"
+            process+="insert  /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq\n"
             process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
     elif(simulation=="Powheg") :
         process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
@@ -143,11 +143,11 @@ elif(collider=="LEP") :
     if(simulation=="") :
         if(parameterName.find("gg")>=0) :
             process ="create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n"
-            process+="insert /Herwig/MatrixElements/SimpleEE:MatrixElements[0] /Herwig/MatrixElements/MEee2Higgs2SM\n"
+            process+="insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEee2Higgs2SM\n"
             process+="set /Herwig/MatrixElements/MEee2Higgs2SM:Allowed Gluon\n"
 
         else :
-            process="insert  /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq\n"
+            process="insert  /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq\n"
             if(parameterName=="10") :
                 process+="set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
     elif(simulation=="Powheg") :
@@ -175,18 +175,18 @@ elif(collider=="TVT") :
 
     if(simulation=="") :
         if(parameterName.find("PromptPhoton")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaJet\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 15.\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGamma\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaGamma","")
         elif(parameterName.find("DiPhoton-GammaJet")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaJet\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaJet","")
         elif(parameterName.find("UE")>=0) :
-            process += "insert SimpleQCD:MatrixElements[0] MEMinBias\n"
+            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
             process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
             process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
@@ -194,7 +194,7 @@ elif(collider=="TVT") :
             process += "set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n"
             process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
         elif(parameterName.find("Jets")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
+            process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Run-II-Jets-10")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
@@ -256,44 +256,44 @@ elif(collider=="TVT") :
             elif(parameterName.find("900-Jets-1")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 10.\n"
         elif(parameterName.find("Run-I-WZ")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\ninsert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\ninsert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
-            process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
-            process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
-            process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
-            process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
     elif(simulation=="Powheg") :
         if(parameterName.find("Run-I-WZ")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\ninsert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\ninsert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGammaPowheg\n"
             process+="set MEGammaGammaPowheg:Process GammaGamma\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGamma\n"
             process+="set MEGammaGamma:Process gg\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaGamma","")
         elif(parameterName.find("DiPhoton-GammaJet")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGammaPowheg\n"
             process+="set MEGammaGammaPowheg:Process VJet\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
@@ -443,13 +443,13 @@ elif(collider=="Star" ) :
     process+= "set /Herwig/Cuts/QCDCuts:X2Min 0.01\n"
     if(simulation=="") :
         if(parameterName.find("UE")>=0) :
-            process += "insert SimpleQCD:MatrixElements[0] MEMinBias\n"
+            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
             process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
             process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
             process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
         else :
-            process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
+            process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Jets-1")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 2.\n"
@@ -487,7 +487,7 @@ elif(collider=="ISR" or collider =="SppS" ) :
     elif(parameterName.find("900")>=0) :
         process+="set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 900.0\n"
     if(simulation=="") :
-        process += "insert SimpleQCD:MatrixElements[0] MEMinBias\n"
+        process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
         process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
         process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
         process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
@@ -513,29 +513,29 @@ elif(collider=="LHC") :
         process="set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0\n"
     if(simulation=="") :
         if(parameterName.find("8-VBF")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2HiggsVBF\n"
         elif(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2HiggsVBF\n"
         elif(parameterName.find("ggHJet")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHiggsJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
         elif(parameterName.find("8-ggH")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEHiggs\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHiggsJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEHiggs\n"
+            process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
             process+="set MEHiggsJet:Process qqbar\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("ggH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHiggs\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHiggsJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEHiggs\n"
+            process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
             process+="set MEHiggsJet:Process qqbar\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("PromptPhoton")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaJet\n"
             if(parameterName.find("PromptPhoton-1")>=0) :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             elif(parameterName.find("PromptPhoton-2")>=0) :
@@ -545,31 +545,31 @@ elif(collider=="LHC") :
             elif(parameterName.find("PromptPhoton-4")>=0) :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 150.\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGamma\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaGamma","")
         elif(parameterName.find("DiPhoton-GammaJet")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaJet\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaJet","")
         elif(parameterName.find("8-WH")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2WH\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("8-ZH")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2ZH\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("WH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+; W+->nu_mu,mu+;\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2WH\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("ZH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+; Z0->mu-,mu+;\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2ZH\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
-            process += "insert SimpleQCD:MatrixElements[0] MEMinBias\n"
+            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
             process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
             process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
@@ -577,7 +577,7 @@ elif(collider=="LHC") :
             if(parameterName.find("Long")>=0) :
                 process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
         elif(parameterName.find("7-DiJets")>=0 or parameterName.find("8-DiJets")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
+            process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set MEQCD2to2:MaximumFlavour 5\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("-A")>=0) :
@@ -609,7 +609,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("DiJets-8")>=0) :
                 process+="set /Herwig/Cuts/QCDCuts:MHatMin 2750.*GeV\n"
         elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
+            process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set MEQCD2to2:MaximumFlavour 5\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Jets-10")>=0) :
@@ -639,11 +639,11 @@ elif(collider=="LHC") :
             if(parameterName.find("7-Bottom")>=0) :
                 process+="cp MEHeavyQuark MEBottom\n" 
                 process+="set MEBottom:QuarkType Bottom\n"
-                process+="insert SimpleQCD:MatrixElements[0] MEBottom\n"
+                process+="insert SubProcess:MatrixElements[0] MEBottom\n"
             else : 
                 process+="cp MEHeavyQuark MECharm\n" 
                 process+="set MECharm:QuarkType Charm\n"
-                process+="insert SimpleQCD:MatrixElements[0] MECharm\n"
+                process+="insert SubProcess:MatrixElements[0] MECharm\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("-0")>=0) :
                 if(parameterName.find("7-Bottom")>=0) :
@@ -670,13 +670,13 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/QCDCuts:MHatMin 500.*GeV\n"
         elif(parameterName.find("Top-L")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
+            process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("Top-SL")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
+            process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
             process+="set /Herwig/Particles/t:Synchronized Not_synchronized\n"
             process+="set /Herwig/Particles/tbar:Synchronized Not_synchronized\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
@@ -685,16 +685,16 @@ elif(collider=="LHC") :
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("Top-All")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
+            process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
         elif(parameterName.find("WZ")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WZ\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WZ\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WW-emu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
@@ -702,77 +702,77 @@ elif(collider=="LHC") :
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WW-ll")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-ll")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-lv")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("W-Z-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
         elif(parameterName.find("W-Z-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
         elif(parameterName.find("W-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
         elif(parameterName.find("W-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
         elif(parameterName.find("Z-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Z-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 20.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-Mass1")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass2")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass3")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass4")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("W-Jet")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEWJet\nset MEWJet:WDecay Electron\n"
+            process+="insert SubProcess:MatrixElements[0] MEWJet\nset MEWJet:WDecay Electron\n"
             if(parameterName.find("W-Jet-1-e")>=0) :
                 process+="set /Herwig/Cuts/WBosonKtCut:MinKT 100.0*GeV\n"
                 parameterName=parameterName.replace("W-Jet-1-e","W-Jet-e")
@@ -784,7 +784,7 @@ elif(collider=="LHC") :
                 parameterName=parameterName.replace("W-Jet-3-e","W-Jet-e")
         elif(parameterName.find("Z-Jet")>=0) :
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
+                process+="insert SubProcess:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
                 if(parameterName.find("Z-Jet-0-e")>=0) :
                     process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
                     parameterName=parameterName.replace("Z-Jet-0-e","Z-Jet-e")
@@ -798,11 +798,11 @@ elif(collider=="LHC") :
                     process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 270.0*GeV\n"
                     parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
             else :
-                process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Muon\n"
+                process+="insert SubProcess:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Muon\n"
                 process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
         elif(parameterName.find("WGamma")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 1\nset MEPP2VGamma:MassOption 1\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 1\nset MEPP2VGamma:MassOption 1\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
@@ -811,7 +811,7 @@ elif(collider=="LHC") :
             else :
                 process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_mu,mu+;\n"
         elif(parameterName.find("ZGamma")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
+            process+="insert SubProcess:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
             if(parameterName.find("-e")>=0) :
                 process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
@@ -822,35 +822,35 @@ elif(collider=="LHC") :
             sys.exit(1)
     elif(simulation=="Powheg") :
         if(parameterName.find("8-VBF")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
         elif(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
         elif(parameterName.find("ggHJet")>=0) :
             logging.error(" Process %s not supported for POWHEG matrix elements" % name)
             sys.exit(1)
         elif(parameterName.find("8-ggH")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEHiggs\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEHiggs\n"
         elif(parameterName.find("ggH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEHiggs\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEHiggs\n"
         elif(parameterName.find("8-WH")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2WH\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("8-ZH")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2ZH\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("WH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+; W+->nu_mu,mu+;\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2WH\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("ZH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+; Z0->mu-,mu+;\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2ZH\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
             logging.error(" Process %s not supported for powheg matrix elements" % name)
@@ -866,7 +866,7 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WZ\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WZ\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
@@ -883,7 +883,7 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
@@ -901,7 +901,7 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
@@ -916,7 +916,7 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
@@ -931,75 +931,75 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("W-Z-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
         elif(parameterName.find("W-Z-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
         elif(parameterName.find("W-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
         elif(parameterName.find("W-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Muon\n"
         elif(parameterName.find("Z-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Z-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 20.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-Mass1")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass2")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass3")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass4")>=0) :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
             if(parameterName.find("-e")>=0) :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             else :
-                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGammaPowheg\n"
             process+="set MEGammaGammaPowheg:Process GammaGamma\n"
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGamma\n"
             process+="set MEGammaGamma:Process gg\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaGamma","")
         elif(parameterName.find("DiPhoton-GammaJet")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="insert SubProcess:MatrixElements[0] MEGammaGammaPowheg\n"
             process+="set MEGammaGammaPowheg:Process VJet\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
@@ -1490,7 +1490,7 @@ elif(collider=="LHC-GammaGamma" ) :
         process="set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0\n"
     if(simulation=="") :
         if(parameterName.find("7")>=0) :
-            process += "insert SimpleQCD:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff\n"
+            process += "insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff\n"
             process += "set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
         else :
             logging.error(" Process %s not supported for default matrix elements" % name)
