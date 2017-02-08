@@ -1,0 +1,13 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/EventHandlers
+create ThePEG::FixedCMSLuminosity Luminosity FixedCMSLuminosity.so
+set Luminosity:Energy 13000.0
+set EventHandler:LuminosityFunction Luminosity
+set EventHandler:BeamA /Herwig/Particles/p+
+set EventHandler:BeamB /Herwig/Particles/p+
+
+insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleQCD
+set EventHandler:Sampler /Herwig/ACDCSampler
+
+cd /Herwig/Generators
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts

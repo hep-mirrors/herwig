@@ -11,20 +11,10 @@
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 100
-set LHCGenerator:MaxErrors 1000000
-
-set LHCGenerator:DebugLevel 0
-set LHCGenerator:DumpPeriod -1
-set LHCGenerator:DebugEvent 0
-
-
 ##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
@@ -39,8 +29,8 @@ set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
 ## Report the correct cross section
 cd /Herwig/Generators
 create Herwig::MPIXSecReweighter MPIXSecReweighter
-insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
-set LHCGenerator:EventHandler:CascadeHandler NULL
+insert EventGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+set EventGenerator:EventHandler:CascadeHandler NULL
 
 clear /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0]
 
@@ -61,7 +51,7 @@ cd /Herwig/Generators
 set /Herwig/Cuts/MinBiasCuts:X1Min 0.11
 set /Herwig/Cuts/MinBiasCuts:X2Min 0.11
 
-set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 
 set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.0
 set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes
@@ -195,7 +185,7 @@ create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
 
 cd /Herwig/Generators
 
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 RivetATLAS_2012_I1084540
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
@@ -227,9 +217,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
 
 set /Herwig/Analysis/Plot:EventNumber 54
 cd /Herwig/Generators
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 
-#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+#insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 #set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
 #set /Herwig/Analysis/HepMCFile:Format GenEvent
 #set /Herwig/Analysis/HepMCFile:Units GeV_mm
@@ -238,5 +228,5 @@ insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
-saverun LHC-MB-Soft LHCGenerator
+saverun LHC-MB-Soft EventGenerator
 

@@ -11,6 +11,8 @@
 # The second section contains the user settings.
 ###################################################
 
+read snippets/PPColliderNew.in
+
 # Set emission to POWHEG for radiation in decays
 set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 
@@ -56,10 +58,4 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 # Other parameters for run
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 0
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-
-saverun LHC-LH LHCGenerator
+saverun LHC-LH EventGenerator

@@ -1,0 +1,15 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/EventHandlers
+create ThePEG::FixedCMSLuminosity Luminosity FixedCMSLuminosity.so
+set EventHandler:LuminosityFunction Luminosity
+set Luminosity:Energy 91.2
+set EventHandler:BeamA /Herwig/Particles/e-
+set EventHandler:BeamB /Herwig/Particles/e+
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleEE
+set EventHandler:Sampler /Herwig/ACDCSampler
+cd /Herwig/Generators/
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF

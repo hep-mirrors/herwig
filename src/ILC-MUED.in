@@ -12,6 +12,8 @@
 # The second section contains the user settings.
 ###################################################
 
+read snippets/EEColliderNew.in
+
 # Set emission to POWHEG for radiation in decays
 set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 
@@ -48,15 +50,9 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/KK1_e_R-
 
 # Other parameters for run
 cd /Herwig/Generators
-set LEPGenerator:NumberOfEvents 100000000
-set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:PrintEvent 10
-set LEPGenerator:MaxErrors 10000
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0
-set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
+set EventGenerator:EventHandler:LuminosityFunction:Energy 800.0
 
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun ILC-MUED LEPGenerator
+saverun ILC-MUED EventGenerator

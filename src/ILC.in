@@ -5,9 +5,11 @@
 # usage: Herwig read ILC.in
 #
 # Since most parameters are identical to LEP,
-# we use the default LEPGenerator and adapt only
+# we use the default EventGenerator and adapt only
 # for the differences
 ##################################################
+
+read snippets/EEColliderNew.in
 
 ##################################################
 # Change settings for the ee->Z->qq matrix element
@@ -40,26 +42,20 @@ set MEee2gZ2qq:MaximumFlavour 6
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LEPGenerator:NumberOfEvents 100000000
-set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:PrintEvent 10
-set LEPGenerator:MaxErrors 10000
 
 ##################################################
 # ILC physics parameters (override defaults) 
 ##################################################
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
-set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
+set EventGenerator:EventHandler:LuminosityFunction:Energy 500.0
 
 ##################################################
 #  Useful analysis handlers for HepMC related output
 ##################################################
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
@@ -67,7 +63,7 @@ set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun ILC LEPGenerator
+saverun ILC EventGenerator
 
 ##################################################
 # uncomment this section for an example batch run
@@ -76,8 +72,8 @@ saverun ILC LEPGenerator
 # Note that a separate call of 'Herwig run' 
 # is not required
 ##################################################
-# set LEPGenerator:NumberOfEvents 100
-# run ILC-tt LEPGenerator
+# set EventGenerator:NumberOfEvents 100
+# run ILC-tt EventGenerator
 # set /Herwig/MatrixElements/MEee2gZ2qq:MinimumFlavour 5
 # set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 5
-# run ILC-bb LEPGenerator
+# run ILC-bb EventGenerator

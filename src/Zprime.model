@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Zprime models
 #
@@ -123,6 +125,4 @@ set Zprime/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Zprime/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Zprime/Model
-
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/Zprime/Model

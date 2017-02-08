@@ -5,15 +5,13 @@
 # usage: Herwig read LEP.in
 ##################################################
 
+read snippets/PPColliderNew.in
+
 ##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 100000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:EventHandler:Sampler:Ntry 10000
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:Sampler:Ntry 10000
 
 ##################################################
 # Choice of phase-space generation for PDFs
@@ -58,23 +56,9 @@ set /Herwig/MatrixElements/MEgg2ff:Process Muon
 # LHC physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-
-
-##################################################
-#  Useful analysis handlers for HepMC related output
-##################################################
-# Schematic overview of an event (requires --with-hepmc to be set at configure time
-# and the graphviz program 'dot' to produce a plot)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
-# A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-# set /Herwig/Analysis/HepMCFile:PrintEvent 100
-# set /Herwig/Analysis/HepMCFile:Format GenEvent
-# set /Herwig/Analysis/HepMCFile:Units GeV_mm
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 ###################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC-GammaGamma LHCGenerator
+saverun LHC-GammaGamma EventGenerator

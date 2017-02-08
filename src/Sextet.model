@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Sextet models
 #
@@ -197,5 +199,4 @@ set Sextet/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Sextet/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Sextet/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/Sextet/Model

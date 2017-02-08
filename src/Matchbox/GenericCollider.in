@@ -26,15 +26,12 @@ cd /Herwig/MatrixElements/Matchbox
 set MECorrectionHandler:Factory Factory
 set Factory:Cuts /Herwig/Cuts/Cuts
 
+
+
 cd /Herwig/EventHandlers
 
-create ThePEG::StandardEventHandler EventHandler
-
-set EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set EventHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set EventHandler:DecayHandler /Herwig/Decays/DecayHandler
+### EVENT HANDLER STUFF WAS HERE
 set EventHandler:Cuts /Herwig/Cuts/Cuts
-
 set EventHandler:Sampler /Herwig/Samplers/Sampler
 set EventHandler:Weighted Off
 set EventHandler:CollisionCuts Off
@@ -43,20 +40,7 @@ insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/Factor
 
 cd /Herwig/Generators
 
-create ThePEG::EventGenerator EventGenerator
-set EventGenerator:RandomNumberGenerator /Herwig/Random
-set EventGenerator:StandardModelParameters /Herwig/Model
-set EventGenerator:EventHandler /Herwig/EventHandlers/EventHandler
-set EventGenerator:Strategy DefaultStrategy
-set EventGenerator:DumpPeriod -1
-
-set EventGenerator:RandomNumberGenerator:Seed 31122001
-set EventGenerator:DebugLevel 1
-set EventGenerator:PrintEvent 10
-set EventGenerator:MaxErrors 10000
-set EventGenerator:NumberOfEvents 100000000
-
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Basics
+### EVENT GENERATOR STUFF WAS HERE
 
 cd /Herwig/Particles
 

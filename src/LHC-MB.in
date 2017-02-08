@@ -7,24 +7,12 @@
 # http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
 ################################################################################
 
-##################################################
-# Technical parameters for this run
-##################################################
-cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 1000000
-
-set LHCGenerator:DebugLevel 0
-set LHCGenerator:DumpPeriod -1
-set LHCGenerator:DebugEvent 0
-
+read snippets/PPColliderNew.in
 
 ##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
@@ -41,9 +29,9 @@ set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
 cd /Herwig/Generators
 
 # Change to have no pT cuts for MinBias
-set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 
-#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+#insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 #set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
 #set /Herwig/Analysis/HepMCFile:Format GenEvent
 #set /Herwig/Analysis/HepMCFile:Units GeV_mm
@@ -52,5 +40,4 @@ set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC-MB LHCGenerator
-
+saverun LHC-MB EventGenerator

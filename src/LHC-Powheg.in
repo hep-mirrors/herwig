@@ -7,14 +7,7 @@
 # usage: Herwig read LHC.in
 ##################################################
 
-##################################################
-# Technical parameters for this run
-##################################################
-cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
+read snippets/PPColliderNew.in
 
 ##################################################
 #  Need to use an NLO PDF
@@ -39,7 +32,7 @@ read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 # LHC physics parameters (override defaults here) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
@@ -86,16 +79,16 @@ cd /Herwig/Generators
 #  Useful analysis handlers for hadron-hadron physics
 ##################################################
 # analysis of W/Z events
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
 
 ##################################################
 #  Useful analysis handlers for HepMC related output
 ##################################################
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
@@ -103,17 +96,4 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC-Powheg LHCGenerator
-
-##################################################
-# uncomment this section for an example batch run
-# of two repeats with different parameters
-#
-# Note that a separate call of 'Herwig run' 
-# is not required in this case
-##################################################
-# set LHCGenerator:NumberOfEvents 10
-# run LHC-full LHCGenerator
-#
-# set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
-# run LHC-initial LHCGenerator
+saverun LHC-Powheg EventGenerator

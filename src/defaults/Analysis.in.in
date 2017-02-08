@@ -18,9 +18,7 @@ library HwAnalysis.so
 # (only analysis handler switched on by default)
 #
 create Herwig::BasicConsistency Basics
-insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 0 Basics
-insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Basics
-insert /Herwig/Generators/DISGenerator:AnalysisHandlers 0 Basics
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Basics
 
 #
 #  Analysis Handlers for hadron-hadron collisions

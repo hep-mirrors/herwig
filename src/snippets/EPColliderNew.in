@@ -1,0 +1,23 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/EventHandlers
+create ThePEG::LuminosityFunction Luminosity
+set EventHandler:BeamA /Herwig/Particles/p+
+set Luminosity:BeamEMaxA 920.*GeV
+set EventHandler:BeamB /Herwig/Particles/e-
+set Luminosity:BeamEMaxB 30.*GeV
+set EventHandler:LuminosityFunction Luminosity
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+
+insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleDIS
+set    EventHandler:Sampler /Herwig/ACDCSampler
+
+cd /Herwig/Generators
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
+
+# switch off final-state electron/muon FSR
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
