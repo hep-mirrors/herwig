@@ -7,6 +7,8 @@
 # http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
 ################################################################################
 
+read snippets/PPColliderNew.in
+
 ##################################################
 # Technical parameters for this run
 ##################################################
@@ -32,13 +34,13 @@ create Herwig::MPIXSecReweighter MPIXSecReweighter
 insert EventGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
 set EventGenerator:EventHandler:CascadeHandler NULL
 
-clear /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0]
+clear EventGenerator:EventHandler:SubProcessHandlers[0]
 
 ##################################################
 # Create separate SubProcessHandler for MinBias
 ##################################################
 cd /Herwig/MatrixElements/
-cp SimpleQCD QCDMinBias
+cp SubProcess QCDMinBias
 
 set QCDMinBias:CascadeHandler /Herwig/Shower/ShowerHandler
 set QCDMinBias:CascadeHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
@@ -71,7 +73,7 @@ set /Herwig/UnderlyingEvent/MPIHandler:Power 0.709107
 set /Herwig/Partons/RemnantDecayer:ladderMult 0.700985
 
 cd /Herwig/MatrixElements/
-insert /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0] QCDMinBias
+insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDMinBias
 
 ##################################################
 # Create separate SubProcessHandler for Diffraction
@@ -94,13 +96,13 @@ set MEDiffractionDouble:DiffDirection Both
 
 # Make a parton extractor for diffraction
 cd /Herwig/Partons
-cp QCDExtractor DiffQCDExtractor
+cp Extractor DiffQCDExtractor
 set DiffQCDExtractor:FirstPDF /Herwig/Partons/NoPDF
 set DiffQCDExtractor:SecondPDF /Herwig/Partons/NoPDF
 
 cd /Herwig/MatrixElements/
 # Create Diffraction  SubProcessHandler
-cp SimpleQCD QCDDiffraction
+cp SubProcess QCDDiffraction
 
 # Assign the PartonExtractor to the SubProcessHandler
 set QCDDiffraction:PartonExtractor /Herwig/Partons/DiffQCDExtractor
@@ -170,9 +172,9 @@ insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaDouble
 #set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
 
 set QCDDiffraction:CascadeHandler NULL
-set /Herwig/EventHandlers/LHCHandler:CascadeHandler NULL
+set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 
-insert /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0] QCDDiffraction
+insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDDiffraction
 ##########################################################################
 ##########################################################################
 

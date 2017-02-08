@@ -10,14 +10,26 @@ set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
 set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 
-insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleDIS
+insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SubProcess
 set    EventHandler:Sampler /Herwig/ACDCSampler
 
-cd /Herwig/Generators
-set EventGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
+# cuts for DIS
+set EventHandler:Cuts:ScaleMin 1.0*GeV
+set EventHandler:Cuts:X1Min 1.0e-5
+set EventHandler:Cuts:X2Min 1.0e-5
+set EventHandler:Cuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 0
+set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
+set /Herwig/Cuts/ChargedCurrentCut:MinW2 0
+set /Herwig/Cuts/ChargedCurrentCut:MaxW2 1e10
+insert EventHandler:Cuts:TwoCuts[0] /Herwig/Cuts/NeutralCurrentCut
+insert EventHandler:Cuts:TwoCuts[1] /Herwig/Cuts/ChargedCurrentCut
 
 # switch off final-state electron/muon FSR
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
+cd /Herwig/Partons
+set Extractor:FlatSHatY 1
+cd /Herwig/Generators/

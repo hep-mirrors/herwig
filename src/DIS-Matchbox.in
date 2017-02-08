@@ -15,14 +15,10 @@ read Matchbox/EPCollider.in
 ##################################################
 
 cd /Herwig/EventHandlers
-set EventHandler:BeamA /Herwig/Particles/e+
-set EventHandler:LuminosityFunction:BeamEMaxA 27.5.*GeV
-set EventHandler:BeamB /Herwig/Particles/p+
-set EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV
 # no pdfs for leptons
 set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
 set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/Extractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 ## Process selection

@@ -6,21 +6,8 @@ cd /Herwig/EventHandlers
 cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF Yes
-set Factory:PartonExtractor /Herwig/Partons/DISExtractor
+set Factory:PartonExtractor /Herwig/Partons/Extractor
 
 set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
 set /Herwig/Merging/MergingFactory:SecondPerturbativePDF Yes
-set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/DISExtractor
-cd /Herwig/Cuts
-
-set Cuts:ScaleMin 1.0*GeV
-set Cuts:X1Min 1.0e-5
-set Cuts:X2Min 1.0e-5
-set Cuts:MHatMin 0.0*GeV
-set NeutralCurrentCut:MinW2 0
-set NeutralCurrentCut:MaxW2 1e10
-set ChargedCurrentCut:MinW2 0
-set ChargedCurrentCut:MaxW2 1e10
-insert Cuts:TwoCuts[0] NeutralCurrentCut
-insert Cuts:TwoCuts[1] ChargedCurrentCut
-
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/Extractor

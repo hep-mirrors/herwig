@@ -27,7 +27,7 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 cd /Herwig/Cuts
 #set JetKtCut:MinKT 100.0*GeV
-set QCDCuts:MHatMin 4500*GeV
+set Cuts:MHatMin 4500*GeV
                                         
 
 ##################################################
@@ -36,7 +36,7 @@ set QCDCuts:MHatMin 4500*GeV
 cd /Herwig/MatrixElements/
 create Herwig::METRP2to2 METransplanck HwTransplanck.so
 
-insert SimpleQCD:MatrixElements[0] METransplanck
+insert SubProcess:MatrixElements[0] METransplanck
 #set METransplanck:Process 6
 set METransplanck:NumberExtraDimensions 6
 set METransplanck:PlanckMass 1500

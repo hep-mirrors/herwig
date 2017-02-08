@@ -21,9 +21,9 @@ set /Herwig/Shower/ShowerHandler:PDFB NULL
 cd /Herwig/MatrixElements
 
 # fermion-antifermion 
-insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
+insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
 # W+W-
-#insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEgg2WW
+#insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEgg2WW
 
 
 ##################################################

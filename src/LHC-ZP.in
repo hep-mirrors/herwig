@@ -98,8 +98,8 @@ set Basics:CheckQuark false
 # Cuts
 cd /Herwig/Cuts
 set JetKtCut:MinKT 0.0*GeV
-set QCDCuts:MHatMax 13000.0*GeV
-set EECuts:MHatMin 0.0*GeV
+set Cuts:MHatMax 13000.0*GeV
+set Cuts:MHatMin 0.0*GeV
 set PhotonKtCut:MinKT 0.0*GeV
 set PhotonKtCut:MinEta -10.
 set PhotonKtCut:MaxEta  10.

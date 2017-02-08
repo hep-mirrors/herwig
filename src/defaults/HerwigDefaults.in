@@ -98,9 +98,9 @@ cd /Herwig/EventHandlers
 
 # Create the EventHandler
 create ThePEG::StandardEventHandler EventHandler
-set EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set EventHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set EventHandler:DecayHandler /Herwig/Decays/DecayHandler
+newdef EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+newdef EventHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+newdef EventHandler:DecayHandler /Herwig/Decays/DecayHandler
 
 mkdir /Herwig/Generators 
 cd /Herwig/Generators 
@@ -125,16 +125,16 @@ insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Particles
 
 # The EventGenerator
 create ThePEG::EventGenerator EventGenerator
-set EventGenerator:RandomNumberGenerator /Herwig/Random
-set EventGenerator:StandardModelParameters /Herwig/Model
-set EventGenerator:EventHandler /Herwig/EventHandlers/EventHandler
-set EventGenerator:Strategy DefaultStrategy
-set EventGenerator:DumpPeriod -1
-set EventGenerator:RandomNumberGenerator:Seed 31122001
-set EventGenerator:DebugLevel 1
-set EventGenerator:PrintEvent 10
-set EventGenerator:MaxErrors 10000
-set EventGenerator:NumberOfEvents 100000000
+newdef EventGenerator:RandomNumberGenerator /Herwig/Random
+newdef EventGenerator:StandardModelParameters /Herwig/Model
+newdef EventGenerator:EventHandler /Herwig/EventHandlers/EventHandler
+newdef EventGenerator:Strategy DefaultStrategy
+newdef EventGenerator:DumpPeriod -1
+newdef EventGenerator:RandomNumberGenerator:Seed 31122001
+newdef EventGenerator:DebugLevel 1
+newdef EventGenerator:PrintEvent 10
+newdef EventGenerator:MaxErrors 10000
+newdef EventGenerator:NumberOfEvents 100000000
 
 ############################################
 # The default cuts

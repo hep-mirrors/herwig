@@ -24,22 +24,22 @@ read snippets/EEColliderNew.in
 ##################################################
 cd /Herwig/MatrixElements
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
-insert SimpleEE:MatrixElements 0 MEee2gZ2qq
+insert SubProcess:MatrixElements 0 MEee2gZ2qq
 # e+e- > l+l-
-# insert SimpleEE:MatrixElements[0] MEee2gZ2ll
+# insert SubProcess:MatrixElements[0] MEee2gZ2ll
 # e+e- > W+W- ZZ
-# insert SimpleEE:MatrixElements[0] MEee2VV
+# insert SubProcess:MatrixElements[0] MEee2VV
 # higgs+Z
-# insert SimpleEE:MatrixElements[0] MEee2ZH
+# insert SubProcess:MatrixElements[0] MEee2ZH
 # higgs+e+e-/nu_enu_ebar via VBF
-# insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
+# insert SubProcess:MatrixElements[0] MEee2HiggsVBF
 ##################################################
 # NLO powheg processes
 ##################################################
 #set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 #read Matchbox/Powheg-Default-ShowerAlphaSTune.in
-#insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
-#insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2ll
+#insert SubProcess:MatrixElements 0 PowhegMEee2gZ2qq
+#insert SubProcess:MatrixElements 0 PowhegMEee2gZ2ll
 
 
 ##################################################

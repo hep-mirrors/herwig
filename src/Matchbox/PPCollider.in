@@ -7,12 +7,12 @@ cd /Herwig/EventHandlers
 cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF Yes
 set Factory:SecondPerturbativePDF Yes
-set Factory:PartonExtractor /Herwig/Partons/QCDExtractor
+set Factory:PartonExtractor /Herwig/Partons/Extractor
 
 cd /Herwig/Merging
 set MergingFactory:FirstPerturbativePDF Yes
 set MergingFactory:SecondPerturbativePDF Yes
-set MergingFactory:PartonExtractor /Herwig/Partons/QCDExtractor
+set MergingFactory:PartonExtractor /Herwig/Partons/Extractor
 
 
 cd /Herwig/Cuts

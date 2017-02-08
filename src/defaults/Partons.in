@@ -20,13 +20,6 @@ newdef HadronRemnants:RemnantDecayer RemnantDecayer
 read PDF.in
 
 
-# Make particle extractors
-create ThePEG::PartonExtractor EEExtractor
-newdef EEExtractor:NoPDF NoPDF
-cp EEExtractor QCDExtractor
-newdef QCDExtractor:FlatSHatY 1
-newdef QCDExtractor:FirstPDF HardLOPDF
-newdef QCDExtractor:SecondPDF HardLOPDF
-cp EEExtractor DISExtractor
-newdef DISExtractor:FlatSHatY 1
-
+# Make particle extractor
+create ThePEG::PartonExtractor Extractor
+newdef Extractor:NoPDF NoPDF

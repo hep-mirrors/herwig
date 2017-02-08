@@ -26,16 +26,6 @@ create ThePEG::Matcher<HiggsBoson> HiggsBoson
 mkdir /Herwig/Cuts
 cd /Herwig/Cuts
 
-# create the cuts object for e+e-
-create ThePEG::Cuts EECuts
-newdef EECuts:MHatMin 22.36*GeV
-
-# create the cuts object for hadron collisions
-create ThePEG::Cuts QCDCuts
-newdef QCDCuts:ScaleMin 2.0*GeV
-newdef QCDCuts:X1Min 1.0e-5
-newdef QCDCuts:X2Min 1.0e-5
-newdef QCDCuts:MHatMin 20.*GeV
 
 # cut on jet pt 
 create ThePEG::SimpleKTCut JetKtCut SimpleKTCut.so
@@ -99,28 +89,13 @@ newdef ChargedCurrentCut:Current Charged
 
 # create a cut of Q^2 for charged current DIS
 
-# insert into hadron cuts
-insert QCDCuts:OneCuts[0] JetKtCut
-insert QCDCuts:OneCuts[1] PhotonKtCut
-insert QCDCuts:OneCuts[2] LeptonKtCut
-insert QCDCuts:OneCuts[3] TopKtCut
-insert QCDCuts:OneCuts[4] WBosonKtCut
-insert QCDCuts:OneCuts[5] ZBosonKtCut
-insert QCDCuts:OneCuts[6] HiggsBosonKtCut
-insert QCDCuts:OneCuts[7] ChargedLeptonKtCut
-insert QCDCuts:MultiCuts[0] MassCut
-
-# cuts for DIS
-create ThePEG::Cuts DISCuts
-newdef DISCuts:ScaleMin 1.0*GeV
-newdef DISCuts:X1Min 1.0e-5
-newdef DISCuts:X2Min 1.0e-5
-insert DISCuts:TwoCuts[0] NeutralCurrentCut
-insert DISCuts:TwoCuts[1] ChargedCurrentCut
-
 # create diffrent cuts object for MinBias to avoid numerical problems
 create ThePEG::Cuts MinBiasCuts
 newdef MinBiasCuts:ScaleMin 2.0*GeV
 newdef MinBiasCuts:X1Min 0.055
 newdef MinBiasCuts:X2Min 0.055
 newdef MinBiasCuts:MHatMin 0.0*GeV
+
+# Default Cuts object
+create ThePEG::Cuts Cuts
+newdef /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts

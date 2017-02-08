@@ -12,9 +12,9 @@ read snippets/EPColliderNew.in
 ##################################################
 cd /Herwig/Generators
 # no pdfs for leptons
-set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
-set /Herwig/Partons/MPIExtractor:SecondPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/QCDExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
+set /Herwig/Partons/Extractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 # DIS physics parameters (override defaults here) 
@@ -27,9 +27,9 @@ set /Herwig/Partons/QCDExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 cd /Herwig/MatrixElements/
 
 # Neutral current DIS
-insert SimpleDIS:MatrixElements[0] MEDISNC
+insert SubProcess:MatrixElements[0] MEDISNC
 # Charged current matrix element
-insert SimpleDIS:MatrixElements[0] MEDISCC
+insert SubProcess:MatrixElements[0] MEDISCC
 
 ##################################################
 # NLO IN POWHEG SCHEME
@@ -40,9 +40,7 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 ###################################################
 # set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
 # set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
-# set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
-# set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
-# set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+# set /Herwig/Partons/Extractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 #
 ###################################################
 ##  Setup the POWHEG shower
@@ -58,9 +56,9 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 #cd /Herwig/MatrixElements/
 #
 ## Neutral current DIS
-#insert SimpleDIS:MatrixElements[0] PowhegMEDISNC
+#insert SubProcess:MatrixElements[0] PowhegMEDISNC
 ## Charged current matrix element
-#insert SimpleDIS:MatrixElements[0] PowhegMEDISCC
+#insert SubProcess:MatrixElements[0] PowhegMEDISCC
 
 ##################################################
 # Save run for later usage with 'Herwig run'

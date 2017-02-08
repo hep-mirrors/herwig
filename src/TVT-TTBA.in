@@ -76,7 +76,7 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/tbar
 
 #This is available for comparison to the LO Hw++ result
 #cd /Herwig/MatrixElements	
-#insert SimpleQCD:MatrixElements[0] MEHeavyQuark
+#insert SubProcess:MatrixElements[0] MEHeavyQuark
 
 cd /Herwig/EventHandlers
 #set LHCHandler:CascadeHandler NULL                                         
