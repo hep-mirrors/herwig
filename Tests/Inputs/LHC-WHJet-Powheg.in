@@ -1,31 +1,33 @@
+# -*- ThePEG-repository -*-
+read snippets/PPCollider.in
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 100000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
-erase LHCGenerator:EventHandler:PostSubProcessHandlers 0
+set EventGenerator:NumberOfEvents 100000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
+erase EventGenerator:EventHandler:PostSubProcessHandlers 0
 set /Herwig/Analysis/Basics:CheckQuark 0
 set /Herwig/Particles/h0:Stable Stable
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
-insert SimpleQCD:MatrixElements[0] PowhegMEPP2WH
+insert SubProcess:MatrixElements[0] PowhegMEPP2WH
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO-old
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO-old
 create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
 cd /Herwig/Shower
 # use the general recon for now
 set KinematicsReconstructor:ReconstructionOption General
 # switch treatment of hardest emission
-set Evolver:HardEmissionMode POWHEG
+set ShowerHandler:HardEmission POWHEG
 cd /Herwig/Generators
 create Herwig::VHTest /Herwig/Analysis/VHTest HadronJetTest.so
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/VHTest
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/VHTest
 
 set /Herwig/Particles/W+/W+->bbar,c;:OnOff Off
 set /Herwig/Particles/W+/W+->c,dbar;:OnOff Off
@@ -54,5 +56,5 @@ set /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;:OnOff Off
 set /Herwig/Particles/Z0/Z0->s,sbar;:OnOff Off
 set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
 set /Herwig/Particles/Z0/Z0->u,ubar;:OnOff Off
-saverun LHC-WHJet-Powheg LHCGenerator
+saverun LHC-WHJet-Powheg EventGenerator
 

@@ -7,51 +7,30 @@ create Herwig::AlphaEM AlphaEM2
 set Model:EW/RunningAlphaEM AlphaEM2
 # Create GammaGammaHandler with photon beams
 cd /Herwig/EventHandlers
-create ThePEG::StandardEventHandler GammaGammaHandler 
-create ThePEG::FixedCMSLuminosity FixedGammaGammaLuminosity FixedCMSLuminosity.so
-set GammaGammaHandler:LuminosityFunction FixedGammaGammaLuminosity
-set FixedGammaGammaLuminosity:Energy 1000.
-set GammaGammaHandler:BeamA /Herwig/Particles/gamma
-set GammaGammaHandler:BeamB /Herwig/Particles/gamma
-set GammaGammaHandler:Sampler /Herwig/ACDCSampler
-set GammaGammaHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set GammaGammaHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set GammaGammaHandler:DecayHandler /Herwig/Decays/DecayHandler
-create ThePEG::SubProcessHandler /Herwig/MatrixElements/SimpleGammaGamma
-cp /Herwig/Partons/EEExtractor /Herwig/Partons/GammaGammaExtractor
-set /Herwig/MatrixElements/SimpleGammaGamma:PartonExtractor /Herwig/Partons/GammaGammaExtractor
-insert GammaGammaHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleGammaGamma
-# create the GammaGamma generator
-cd /Herwig/Generators
-create ThePEG::EventGenerator GammaGammaGenerator
-set GammaGammaGenerator:RandomNumberGenerator /Herwig/Random
-set GammaGammaGenerator:StandardModelParameters /Herwig/Model
-set GammaGammaGenerator:EventHandler /Herwig/EventHandlers/GammaGammaHandler
-set GammaGammaGenerator:Strategy DefaultStrategy
+set Luminosity:Energy 1000.
+set EventHandler:BeamA /Herwig/Particles/gamma
+set EventHandler:BeamB /Herwig/Particles/gamma
+set EventHandler:Sampler /Herwig/ACDCSampler
 # the cuts
 cd /Herwig/Cuts
-create ThePEG::Cuts GammaGammaCuts
-insert GammaGammaCuts:OneCuts[0] JetKtCut
-insert GammaGammaCuts:OneCuts[1] PhotonKtCut
-insert GammaGammaCuts:OneCuts[2] LeptonKtCut
-insert GammaGammaCuts:OneCuts[3] TopKtCut
-insert GammaGammaCuts:OneCuts[4] WBosonKtCut
-insert GammaGammaCuts:OneCuts[5] ZBosonKtCut
+insert Cuts:OneCuts[0] JetKtCut
+insert Cuts:OneCuts[1] PhotonKtCut
+insert Cuts:OneCuts[2] LeptonKtCut
+insert Cuts:OneCuts[3] TopKtCut
+insert Cuts:OneCuts[4] WBosonKtCut
+insert Cuts:OneCuts[5] ZBosonKtCut
 set JetKtCut:MinKT 10.
 set LeptonKtCut:MinKT 0.
 set WBosonKtCut:MinKT 0.
-cd /Herwig/Generators
-set GammaGammaGenerator:EventHandler:Cuts /Herwig/Cuts/GammaGammaCuts
-
 ##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set GammaGammaGenerator:NumberOfEvents 100000000
-set GammaGammaGenerator:RandomNumberGenerator:Seed 31122001
-set GammaGammaGenerator:DebugLevel 1
-set GammaGammaGenerator:PrintEvent 0
-set GammaGammaGenerator:MaxErrors 10000
-set GammaGammaGenerator:EventHandler:StatLevel Full
-set GammaGammaGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set EventGenerator:NumberOfEvents 100000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 1
+set EventGenerator:PrintEvent 0
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 cd /Herwig/Generators

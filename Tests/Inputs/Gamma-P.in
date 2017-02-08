@@ -1,11 +1,14 @@
+# -*- ThePEG-repository -*-
+read snippets/EECollider.in
 read GammaP.common
 cd /Herwig/MatrixElements
 create Herwig::MEGammaP2Jets MEgammaP2Jets HwMEGammaHadron.so
-insert SimpleGammaHadron:MatrixElements 0 /Herwig/MatrixElements/MEgammaP2Jets
+insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEgammaP2Jets
 cd /Herwig/Generators
-set GammaHadronGenerator:EventHandler:CascadeHandler NULL
-set GammaHadronGenerator:EventHandler:HadronizationHandler NULL
-set GammaHadronGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
 create Herwig::GammaPMETest TestP GammaTest.so
-insert GammaHadronGenerator:AnalysisHandlers 0 TestP
-saverun Gamma-P GammaHadronGenerator
+insert EventGenerator:AnalysisHandlers 0 TestP
+set /Herwig/Analysis/Basics:CheckQuark 0
+saverun Gamma-P EventGenerator

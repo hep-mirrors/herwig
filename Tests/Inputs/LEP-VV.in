@@ -1,21 +1,23 @@
+# -*- ThePEG-repository -*-
+read snippets/EECollider.in
 cd /Herwig/MatrixElements
-insert SimpleEE:MatrixElements[0] MEee2VV
+insert SubProcess:MatrixElements[0] MEee2VV
 
 read LEP.common
 
 cd /Herwig/Generators
 
-set LEPGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
 
-set LEPGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
 
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 200.0*GeV
+set EventGenerator:EventHandler:LuminosityFunction:Energy 200.0*GeV
 
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 
 create Herwig::VVTest VVTest LeptonTest.so
-insert LEPGenerator:AnalysisHandlers 0 VVTest
+insert EventGenerator:AnalysisHandlers 0 VVTest
 
 # parameters to make the same as fortran
 set /Herwig/Particles/W+:Stable 1
@@ -27,4 +29,4 @@ create Herwig::AlphaEM /Herwig/AlphaEM2
 set /Herwig/Model:EW/RunningAlphaEM /Herwig/AlphaEM2 
 set /Herwig/Model:EW/Sin2ThetaW 0.22254916
 
-saverun LEP-VV LEPGenerator
+saverun LEP-VV EventGenerator
