@@ -1,10 +1,10 @@
 # -*- ThePEG-repository -*-
 cd /Herwig/EventHandlers
 create ThePEG::LuminosityFunction Luminosity
-set EventHandler:BeamA /Herwig/Particles/p+
-set Luminosity:BeamEMaxA 920.*GeV
-set EventHandler:BeamB /Herwig/Particles/e-
-set Luminosity:BeamEMaxB 30.*GeV
+set EventHandler:BeamA /Herwig/Particles/e-
+set Luminosity:BeamEMaxA 30.*GeV
+set EventHandler:BeamB /Herwig/Particles/p+
+set Luminosity:BeamEMaxB 920.*GeV
 set EventHandler:LuminosityFunction Luminosity
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
@@ -39,14 +39,14 @@ set Factory:FirstPerturbativePDF Yes
 set Factory:SecondPerturbativePDF No
 set Factory:PartonExtractor /Herwig/Partons/Extractor
 
-set /Herwig/Merging/MergingFactory:FirstPerturbativePDF Yes
-set /Herwig/Merging/MergingFactory:SecondPerturbativePDF No
+set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
+set /Herwig/Merging/MergingFactory:SecondPerturbativePDF Yes
 set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/Extractor
 
 #  Erase the PDF for the lepton side (the one from Particle Data object is used)
-set /Herwig/Partons/Extractor:SecondPDF NULL
-set /Herwig/Shower/ShowerHandler:PDFB NULL
-set /Herwig/DipoleShower/DipoleShowerHandler:PDFB NULL
+set /Herwig/Partons/Extractor:FirstPDF NULL
+set /Herwig/Shower/ShowerHandler:PDFA NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
 
 cd /Herwig/Generators/
 

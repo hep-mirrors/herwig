@@ -8,7 +8,7 @@
 ## Collider type
 ##################################################
 read snippets/Matchbox.in
-read snippets/PECollider.in
+read snippets/EPCollider.in
 
 ##################################################
 ## Beam energies
@@ -35,7 +35,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p e- -> e- j
+do Factory:Process e- p -> e- j
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
