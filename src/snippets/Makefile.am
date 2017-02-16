@@ -8,7 +8,9 @@ DipoleShowerFourFlavours.in \
 Particles-SetLonglivedParticlesStable.in \
 PDF-CT10.in \
 PDF-NNPDF30NLO.in \
-EvtGenBDecays.in EvtGen.in
+EvtGenBDecays.in EvtGen.in \
+Makefile.in \
+EECollider.in EPCollider.in PPCollider.in
 
 dist_snippets_DATA = $(INPUTFILES)
 
