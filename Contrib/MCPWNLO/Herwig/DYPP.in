@@ -32,13 +32,13 @@ set Reader2:EBeamA 900.0
 set Reader2:EBeamB 900.0
 set Reader2:PDFA /Herwig/Partons/MRST
 set Reader2:PDFB /Herwig/Partons/MRST
-create ThePEG::Cuts QCDCuts
-set QCDCuts:ScaleMin 1.0*GeV
-set QCDCuts:X1Min 0.00001
-set QCDCuts:X2Min 0.00001
-set QCDCuts:MHatMin 20.*GeV
-set QCDCuts:X1Max 0.9
-set QCDCuts:X2Max 0.9
+create ThePEG::Cuts Cuts
+set Cuts:ScaleMin 1.0*GeV
+set Cuts:X1Min 0.00001
+set Cuts:X2Min 0.00001
+set Cuts:MHatMin 20.*GeV
+set Cuts:X1Max 0.9
+set Cuts:X2Max 0.9
 create ThePEG::LesHouchesEventHandler LesHouchesHandler
 insert LesHouchesHandler:LesHouchesReaders[0] Reader2
 set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
@@ -59,7 +59,7 @@ set MGGenerator:StandardModelParameters /Herwig/Model
 set MGGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
 
 cd /Herwig/Generators
-set MGGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
+set MGGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts
 
 cd /Herwig/Cuts
 set JetKtCut:MinKT 0.0*GeV
@@ -67,7 +67,7 @@ set JetKtCut:MinKT 0.0*GeV
 cd /Herwig/MatrixElements/
 
 # Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] MEqq2W2ff
+insert SubProcess:MatrixElements[0] MEqq2W2ff
 # Z boson production option
 #MEqq2gZ2ff
 
@@ -84,7 +84,7 @@ insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MySimpleAnalysis
 #, 3 (only FS emissions vetoed).
 # For MC@NLO set HardVetoMode = 0. For POWHEG set HardVetoMode = 1 or 2
 ##################################################################
-#set /Herwig/Shower/Evolver:HardVetoMode 0
+#set /Herwig/Shower/ShowerHandler:HardVetoMode 0
 ##################################################################
 ##################################################################
 # PHPartnerFinder = 1 for POWHEG
@@ -93,14 +93,14 @@ insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MySimpleAnalysis
 ##################################################################
 # HardVetoRead. Set to 1 for POWHEG.
 ##################################################################
-#set /Herwig/Shower/Evolver:HardVetoScaleSource 1
+#set /Herwig/Shower/ShowerHandler:HardVetoScaleSource 1
 ##################################################################
 # 1.9 GeV for Tevatron W/Z production.
 # 2.2 GeV for LHC W/Z production
 ##################################################################
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 1.9*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 1.9*GeV
 ##################################################################
-set /Herwig/Shower/Evolver:MECorrMode 0
+set /Herwig/Shower/ShowerHandler:MECorrMode 0
 ##################################################################
 cd /Herwig/Generators/
 set MGGenerator:NumberOfEvents 1000000

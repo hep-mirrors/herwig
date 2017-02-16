@@ -45,7 +45,7 @@ void PScalarVectorFermionsAnalysis::analyze(tPPtr part) {
   if(children[2]->id()==ParticleID::gamma) swap(children[0],children[2]);
   // and lepton next
   if(children[1]->id()<0) swap(children[1],children[2]);
-  int id[3]={children[0]->id(),children[1]->id(),
+  long id[3]={children[0]->id(),children[1]->id(),
 	     children[2]->id()};
   // id's of the fermions
   if(id[0]!=ParticleID::gamma) return;

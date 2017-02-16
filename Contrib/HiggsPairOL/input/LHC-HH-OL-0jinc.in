@@ -1,8 +1,9 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Example generator based on LHC parameters
 # usage: Herwig read LHC.in
 ##################################################
-
+read snippets/PPCollider.in
 cd /Herwig/Particles
 create ThePEG::ParticleData boxon
 setup boxon 99926 boxon 0.0 0.0 0.0 0.0 0 0 0 0
@@ -26,7 +27,7 @@ set /Herwig/Shower/AlpGenHandlerOL:SplittingGenerator /Herwig/Shower/SplittingGe
 cd /Herwig/Shower
 set AlpGenHandlerOL:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set AlpGenHandlerOL:RemDecayer  /Herwig/Partons/RemnantDecayer
-#set AlpGenHandlerOL:Evolver     Evolver
+#set AlpGenHandlerOL:ShowerHandler     ShowerHandler
 set AlpGenHandlerOL:ShowerAlpha  AlphaQCD
 # Calorimeter granularity settings used by GetJet algorithm
 set AlpGenHandlerOL:NoCellsInRapidity 100
@@ -85,25 +86,25 @@ cd /Herwig/Partons
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 1000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122002
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-set LHCGenerator:DebugLevel 1
-set LHCGenerator:EventHandler:Sampler:Ntry 100
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL # comment out to enable underlying event
+set EventGenerator:NumberOfEvents 1000000
+set EventGenerator:RandomNumberGenerator:Seed 31122002
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
+set EventGenerator:DebugLevel 1
+set EventGenerator:EventHandler:Sampler:Ntry 100
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL # comment out to enable underlying event
 
 ##################################################
 # LHC physics parameters and cuts (override defaults here) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
-#set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+#set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 cd /Herwig/Cuts
 set JetKtCut:MinKT 25.0*GeV
-set QCDCuts:MHatMin 250*GeV                  
+set Cuts:MHatMin 250*GeV                  
 
 ##################################################
 # Set-up the Higgs Pair production "Model"
@@ -132,8 +133,7 @@ set HiggsPair:Vertex/WWHH /Herwig/Vertices/WWHHVertex
 set HiggsPair:Vertex/HHH /Herwig/Vertices/HHHVertex
 set HiggsPair:Vertex/HPP /Herwig/Vertices/HPPVertex
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/HiggsPair
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/HiggsPair
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/HiggsPair
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -142,7 +142,7 @@ cd /Herwig/MatrixElements/
 
 # add LO
 create Herwig::MEHiggsPairOL MEHiggsPairOL HiggsPair.so
-insert SimpleQCD:MatrixElements[0] MEHiggsPairOL
+insert SubProcess:MatrixElements[0] MEHiggsPairOL
 
 set /Herwig/NewPhysics/HiggsPair:Process All
 
@@ -205,9 +205,9 @@ cd /Herwig/Generators
 ##################################################
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
@@ -215,4 +215,4 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC-HH-OL-0jinc LHCGenerator
+saverun LHC-HH-OL-0jinc EventGenerator

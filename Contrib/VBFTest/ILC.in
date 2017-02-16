@@ -1,12 +1,13 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Example generator based on ILC parameters
 # usage: Herwig read ILC.in
 #
-# Since most parameters are identical to LEP,
-# we use the default LEPGenerator and adapt only
+# Since most parameters are identical to Event,
+# we use the default EventGenerator and adapt only
 # for the differences
 ##################################################
-
+read snippets/EECollider.in
 ###################################################
 # Change settings for the ee->Z->qq matrix element
 # to produce only top quarks 
@@ -27,8 +28,7 @@ set Model:EW/Sin2ThetaW .2319
 create Herwig::AlphaEM AlphaEM2 
 set Model:EW/RunningAlphaEM AlphaEM2
 cd /Herwig/MatrixElements
-create Herwig::MEee2HiggsVBF MEee2HiggsVBF
-insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
+insert SubProcess:MatrixElements[0] MEee2HiggsVBF
 
 set MEee2HiggsVBF:Process ZZ
 set MEee2HiggsVBF:ShapeScheme OnShell
@@ -39,8 +39,8 @@ set /Herwig/Particles/h0:NominalMass 115
 set /Herwig/Particles/Z0:NominalMass 91.188
 set /Herwig/Particles/W+:NominalMass 80.42
 set /Herwig/Particles/W-:NominalMass 80.42
-set /Herwig/Masses/HiggsMass:HiggsShape 0
-#set /Herwig/Generators/LEPGenerator:EventHandler:BeamB /Herwig/Particles/e-
+set /Herwig/Masses/HiggsMass:BreitWignerShape 0
+#set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/e-
 
 
 
@@ -48,39 +48,39 @@ set /Herwig/Masses/HiggsMass:HiggsShape 0
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LEPGenerator:NumberOfEvents 100000000
-set LEPGenerator:RandomNumberGenerator:Seed 31122001
-set LEPGenerator:DebugLevel 1
-set LEPGenerator:PrintEvent 100
-set LEPGenerator:MaxErrors 10000
-set LEPGenerator:EventHandler:HadronizationHandler NULL
-set LEPGenerator:EventHandler:CascadeHandler NULL
-set LEPGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:NumberOfEvents 100000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 1
+set EventGenerator:PrintEvent 100
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
 set /Herwig/Analysis/Basics:CheckQuark 0
 ##################################################
 # ILC physics parameters (override defaults) 
 ##################################################
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 500.0
 
 ##################################################
 #  Useful analysis handlers for HepMC related output
 ##################################################
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
-create Herwig::QuickVBF /Herwig/Analysis/QuickVBF QuickVBF.so
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/QuickVBF
+create Herwig::QuickVBF /Herwig/Analysis/QuickVBF VBFAnalysis.so
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/QuickVBF
 
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-#saverun ILC LEPGenerator
+#saverun ILC EventGenerator
 
 ##################################################
 # uncomment this section for an example batch run
@@ -89,22 +89,22 @@ insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/QuickVBF
 # Note that a separate call of 'Herwig run' 
 # is not required
 ##################################################
-saverun ILC1 LEPGenerator
+saverun ILC1 EventGenerator
 set /Herwig/Particles/h0:NominalMass 300
-saverun ILC2 LEPGenerator
+saverun ILC2 EventGenerator
 set /Herwig/Particles/h0:NominalMass 115
-set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 1000
-saverun ILC3 LEPGenerator
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 1000
+saverun ILC3 EventGenerator
 set /Herwig/Particles/h0:NominalMass 300
-saverun ILC4 LEPGenerator
+saverun ILC4 EventGenerator
 set /Herwig/Particles/h0:NominalMass 115
-set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 500
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 500
 set /Herwig/MatrixElements/MEee2HiggsVBF:Process WW
-saverun ILC5 LEPGenerator
+saverun ILC5 EventGenerator
 set /Herwig/Particles/h0:NominalMass 300
-saverun ILC6 LEPGenerator
+saverun ILC6 EventGenerator
 set /Herwig/Particles/h0:NominalMass 115
-set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 1000
-saverun ILC7 LEPGenerator
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 1000
+saverun ILC7 EventGenerator
 set /Herwig/Particles/h0:NominalMass 300
-saverun ILC8 LEPGenerator
+saverun ILC8 EventGenerator

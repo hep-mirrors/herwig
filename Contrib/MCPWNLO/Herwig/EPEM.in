@@ -31,13 +31,13 @@ set Reader2:EBeamA 45.6
 set Reader2:EBeamB 45.6
 set Reader2:PDFA /Herwig/Partons/LeptonPDF
 set Reader2:PDFB /Herwig/Partons/LeptonPDF
-create ThePEG::Cuts QCDCuts
-set QCDCuts:ScaleMin 1.0*GeV
-set QCDCuts:X1Min 0.00001
-set QCDCuts:X2Min 0.00001
-set QCDCuts:MHatMin 20.*GeV
-set QCDCuts:X1Max 0.9
-set QCDCuts:X2Max 0.9
+create ThePEG::Cuts Cuts
+set Cuts:ScaleMin 1.0*GeV
+set Cuts:X1Min 0.00001
+set Cuts:X2Min 0.00001
+set Cuts:MHatMin 20.*GeV
+set Cuts:X1Max 0.9
+set Cuts:X2Max 0.9
 create ThePEG::LesHouchesEventHandler LesHouchesHandler
 insert LesHouchesHandler:LesHouchesReaders[0] Reader2
 set LesHouchesHandler:PartonExtractor /Herwig/Partons/EEExtractor
@@ -99,7 +99,7 @@ insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyLEPEvent
 #3 (only FS emissions vetoed).
 # HardVetoMode = 1 for POWHEG
 ##################################################################
-set /Herwig/Shower/Evolver:HardVetoMode 1
+set /Herwig/Shower/ShowerHandler:HardVetoMode 1
 ##################################################################
 # PHPartnerFinder = 1 for POWHEG
 ##################################################################
@@ -107,10 +107,10 @@ set /Herwig/Shower/PartnerFinder:PHPartnerFinder 1
 ##################################################################
 # HardVetoRead. Set to 1 for POWHEG.
 ##################################################################
-set /Herwig/Shower/Evolver:HardVetoScaleSource 1
+set /Herwig/Shower/ShowerHandler:HardVetoScaleSource 1
 ##################################################################
 
-set /Herwig/Shower/Evolver:MECorrMode 0
+set /Herwig/Shower/ShowerHandler:MECorrMode 0
 
 ##################################################################
 #For MC@NLO, use these settings...

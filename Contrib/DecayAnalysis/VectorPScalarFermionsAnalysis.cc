@@ -40,7 +40,7 @@ void VectorPScalarFermionsAnalysis::analyze(const tPVector & particles) {
 }
 
 void VectorPScalarFermionsAnalysis::analyze(tPPtr part) {
-  int id[3]={part->children()[0]->id(),part->children()[1]->id(),
+  long id[3]={part->children()[0]->id(),part->children()[1]->id(),
 	     part->children()[2]->id()};
   // id's of the fermions
   if(abs(id[1])!=abs(id[2])){return;}
