@@ -46,8 +46,8 @@ set PPFactory:RealContributions Off
 cd /Herwig/Cuts
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV
-set QCDCuts:JetFinder JetFinder
-insert QCDCuts:MultiCuts 0 JetCuts
+set Cuts:JetFinder JetFinder
+insert Cuts:MultiCuts 0 JetCuts
 #insert JetCuts:JetRegions 0 FirstJet
 # insert JetCuts:JetRegions 1 SecondJet
 
@@ -65,23 +65,23 @@ BUILDINinsert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 INTERFACE
 set /Herwig/Analysis/HepMCFile:Filename ../INTERFACE.hepmc
 
 cd /Herwig/Generators
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 set /Herwig/Analysis/HepMCFile:PrintEvent 1000
 
 cd /Herwig/EventHandlers
-set LHCHandler:Weighted On
-set LHCHandler:Sampler  /Herwig/Samplers/Sampler
+set EventHandler:Weighted On
+set EventHandler:Sampler  /Herwig/Samplers/Sampler
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
 set /Herwig/Samplers/Sampler:FlatSubprocesses On
-set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 8000.0*GeV
+set /Herwig/EventHandlers/EventHandler:LuminosityFunction:Energy 8000.0*GeV
 cd /Herwig/MatrixElements/Matchbox
-insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] PPFactory
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-set LHCGenerator:EventHandler:DecayHandler      NULL
-set LHCGenerator:EventHandler:HadronizationHandler      NULL
-set LHCGenerator:EventHandler:MultipleInteractionHandler      NULL
-set LHCGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set EventGenerator:EventHandler:DecayHandler      NULL
+set EventGenerator:EventHandler:HadronizationHandler      NULL
+set EventGenerator:EventHandler:MultipleInteractionHandler      NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
 # Note: If you want to calculate NLO corrections in the
 #       Higgs Effective Model (smehc) with GoSam virtual 
 #       Amplitudes and MadGraph TreeLevelAmplitude:
@@ -105,7 +105,7 @@ set cbar:NominalMass 0*GeV
 set b:NominalMass 0*GeV
 set bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/EventGenerator:EventHandler:CollisionCuts Off
 do /Herwig/MatrixElements/Matchbox/PPFactory:ProductionMode
 cd /Herwig/Generators 
-saverun INTERFACE LHCGenerator
+saverun INTERFACE EventGenerator
