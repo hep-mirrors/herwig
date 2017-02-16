@@ -5,7 +5,7 @@
 // This is the declaration of the NonBShowerVeto class.
 //
 
-#include "Herwig/Shower/Base/FullShowerVeto.h"
+#include "Herwig/Shower/QTilde/Base/FullShowerVeto.h"
 
 namespace Herwig {
 
