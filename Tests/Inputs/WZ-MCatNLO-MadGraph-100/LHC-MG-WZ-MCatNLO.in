@@ -55,7 +55,7 @@ set PPFactory:SubProcessGroups Off
 
 cd /Herwig/Cuts
 create ThePEG::V2LeptonsCut MassCut2 V2LeptonsCut.so
-insert QCDCuts:MultiCuts[1] MassCut2
+insert Cuts:MultiCuts[1] MassCut2
 cd /Herwig/MatrixElements/Matchbox
 
 set /Herwig/Cuts/MassCut:CComb Z
@@ -66,8 +66,8 @@ set /Herwig/Cuts/MassCut2:CComb W
 set /Herwig/Cuts/MassCut2:MinM 60*GeV
 set /Herwig/Cuts/MassCut2:MaxM 100*GeV
 
-set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
-insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder
+insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 set /Herwig/Model:EW/Scheme GMuScheme
 set /Herwig/Model:EW/RecalculateEW On

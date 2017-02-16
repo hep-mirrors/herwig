@@ -1,4 +1,4 @@
-erase /Herwig/EventHandlers/LEPHandler:PostSubProcessHandlers 0
+erase /Herwig/EventHandlers/EventHandler:PostSubProcessHandlers 0
 create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 3.5*GeV
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 8.*GeV

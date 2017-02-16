@@ -52,8 +52,8 @@ set /Herwig/Cuts/MassCut:CComb Z
 set /Herwig/Cuts/MassCut:MinM 66*GeV
 set /Herwig/Cuts/MassCut:MaxM 116*GeV
 
-set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
-insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder
+insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 set /Herwig/Model:EW/Scheme GMuScheme
 set /Herwig/Model:EW/RecalculateEW On
