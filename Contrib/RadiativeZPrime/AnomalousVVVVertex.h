@@ -73,6 +73,15 @@ public:
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3)=0;
 
+  /**
+   * Dummy setCouplings for a four point interaction 
+   * This method is virtual and must be implemented in 
+   * classes inheriting from this.
+   */
+  virtual void setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr,tcPDPtr) {
+    assert(false);
+  }
+
 public:
 
   /**
