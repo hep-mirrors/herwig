@@ -10,8 +10,8 @@ cd /Herwig/Partons
 
 set /Herwig/Particles/p+:PDF HardLOPDF
 set /Herwig/Particles/pbar-:PDF HardLOPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF HardLOPDF
-set /Herwig/Partons/QCDExtractor:SecondPDF HardLOPDF
+set /Herwig/Partons/Extractor:FirstPDF HardLOPDF
+set /Herwig/Partons/Extractor:SecondPDF HardLOPDF
 
 set /Herwig/Shower/ShowerHandler:PDFA ShowerLOPDF
 set /Herwig/Shower/ShowerHandler:PDFB ShowerLOPDF
