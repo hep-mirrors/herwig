@@ -2,16 +2,16 @@
 # Example generator based on LHC parameters
 # usage: Herwig++ read LHE.in
 ##################################################
-
+read snippets/PPCollider.in
 ##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 0
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
+set EventGenerator:NumberOfEvents 10000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 0
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
 ##################################################
 #   Create the Les Houches file handler and reader
 ##################################################
@@ -27,7 +27,7 @@ set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandl
 # set the weight option (e.g. for MC@NLO)
 set LesHouchesHandler:WeightOption VarNegWeight
 # set event hander as one to be used
-set /Herwig/Generators/LHCGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
+set /Herwig/Generators/EventGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
 # Set up an EMPTY CUTS object
 # Normally you will have imposed any cuts you want
 # when generating the event file and don't want any more
@@ -71,8 +71,6 @@ insert LesHouchesHandler:LesHouchesReaders 0 LesHouchesReader
 # to be used as a pT veto scale in the parton shower
 set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
 set /Herwig/Shower/ShowerHandler:RestrictPhasespace On
-set /Herwig/Shower/Evolver:HardVetoMode 1
-set /Herwig/Shower/Evolver:HardVetoScaleSource 1
 # Shower parameters
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random
@@ -86,7 +84,7 @@ set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
 #set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
 #set /Herwig/Shower/KinematicsReconstructor:FinalStateReconOption Default
 #set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
-#set /Herwig/Shower/Evolver:SpinCorrelations No
+#set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 ##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
@@ -96,4 +94,4 @@ set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHE LHCGenerator
+saverun LHE EventGenerator
