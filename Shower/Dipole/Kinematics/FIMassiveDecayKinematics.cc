@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 FIMassiveDecayKinematics::FIMassiveDecayKinematics() 
-  : DipoleSplittingKinematics() {}
+  : DipoleSplittingKinematics(), theFullJacobian(false) {}
 
 FIMassiveDecayKinematics::~FIMassiveDecayKinematics() {}
 
@@ -51,27 +51,27 @@ pair<double,double> FIMassiveDecayKinematics::xiSupport(const DipoleSplittingInf
       return {0.5*(1.-c),0.5*(1.+c)};
     }
     double b = log((1.+c)/(1.-c));
-      return {-b,b};
+    return {-b,b};
   }
-      return {-log(0.5*(1.+c)),-log(0.5*(1.-c))};
+  return {-log(0.5*(1.+c)),-log(0.5*(1.-c))};
 }
 
 Energy FIMassiveDecayKinematics::dipoleScale(const Lorentz5Momentum&,
-				       const Lorentz5Momentum& pSpectator) const {
+					     const Lorentz5Momentum& pSpectator) const {
   return pSpectator.m();
 }
 
 Energy FIMassiveDecayKinematics::recoilMassKin(const Lorentz5Momentum& pEmitter,
-					 const Lorentz5Momentum& pSpectator) const {
+					       const Lorentz5Momentum& pSpectator) const {
   Lorentz5Momentum pk = pSpectator - pEmitter;
   Energy pkmass = pk.m();
   return pkmass;
 }
 
 Energy FIMassiveDecayKinematics::ptMax(Energy dScale, 
-				 double, double,
-				 const DipoleSplittingInfo& dInfo,
-				 const DipoleSplittingKernel& split) const {
+				       double, double,
+				       const DipoleSplittingInfo& dInfo,
+				       const DipoleSplittingKernel& split) const {
 
 
   DipoleIndex ind = dInfo.index();
@@ -87,9 +87,9 @@ Energy FIMassiveDecayKinematics::ptMax(Energy dScale,
 }
 
 Energy FIMassiveDecayKinematics::QMax(Energy dScale, 
-				double, double,
-				const DipoleSplittingInfo& dInfo,
-				const DipoleSplittingKernel&) const {
+				      double, double,
+				      const DipoleSplittingInfo& dInfo,
+				      const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
   // Mass of recoil system
   double Muj2 = sqr( dInfo.recoilMass() / dScale );
@@ -110,29 +110,27 @@ Energy FIMassiveDecayKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo
   return sqrt(pt2);
 }
 
-// The name of this function is misleading
-// scale here is the transverse momentum
-// Q2 is sqr(qi+qj)
+
 // This is simply the inverse of PtFromQ
-Energy FIMassiveDecayKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split) const {
+Energy FIMassiveDecayKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
   double zPrime = split.lastSplittingParameters()[0];
   Energy mi = split.emitterData()->mass();
   Energy m = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(scale) + (1-zPrime)*sqr(mi) + zPrime*sqr(m))/(zPrime*(1.-zPrime));
+  Energy2 Q2 = (sqr(pt) + (1-zPrime)*sqr(mi) + zPrime*sqr(m))/(zPrime*(1.-zPrime));
   return sqrt(Q2);
 }
 
 double FIMassiveDecayKinematics::ptToRandom(Energy pt, Energy,
-				       double,double,
-				       const DipoleIndex&,
-				       const DipoleSplittingKernel&) const {
+					    double,double,
+					    const DipoleIndex&,
+					    const DipoleSplittingKernel&) const {
   return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
 }
 
 
 bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double rphi,
-					    DipoleSplittingInfo& info,
-					    const DipoleSplittingKernel&) {
+						 DipoleSplittingInfo& info,
+						 const DipoleSplittingKernel&) {
 
 
   // scaled masses
@@ -179,25 +177,6 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
     zPrime = 1.-exp(-xi);
   }
 
-  // Check limit on pt
-  Energy ptmax1 = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
-    ( 2.-2.*sqrt(muj2) ) * info.scale();
-  Energy auxHardPt = ptmax1 > info.hardPt() ? info.hardPt() : ptmax1;
-
-  // 24/05/2015: Moved this check from the zPrime limit checks
-  if ( pt > auxHardPt ){
-    jacobian(0.0);
-    return false;
-  }
-
-  // 2011-11-09
-  //assert(ptmax1>info.hardPt());
-  // 24/05/2015:
-  // The simple >= assert above is triggered 
-  // during sampling due to precision.
-  // Have added a tolerance to deal with this.
-  assert( abs(ptmax1 - info.hardPt()) <= 1e-8*GeV || ptmax1>=info.hardPt() );
-  
   // new: 2011-08-31
   // 2011-11-08: this does happen
   if( sqrt(mui2)+sqrt(mu2)+sqrt(muj2) > 1. ){
@@ -207,13 +186,13 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
   
   // Have derived and checked the equations for zp1 and zm1, these apply to zPrime
   // phasespace constraint to incorporate ptMax
+  Energy hard=info.hardPt();
+  double ptRatio = sqrt(1.-sqr(pt/hard));
   double zp1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
-		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
-		 sqrt( 1.-sqr(pt/auxHardPt) ) ) /
+		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
     ( 2.*sqr(1.-sqrt(muj2)) );
   double zm1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
-		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
-		 sqrt( 1.-sqr(pt/auxHardPt) ) ) /
+		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
     ( 2.*sqr(1.-sqrt(muj2)) );
   
   if ( zPrime > zp1 || zPrime < zm1 ) {
@@ -260,7 +239,6 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
 
   double phi = 2.*Constants::pi*rphi;
 
-  // TODO: This may need changing due to different definitions of z
   double mapZJacobian;
   if ( info.index().emitterData()->id() == ParticleID::g ) {
     if ( info.emissionData()->id() != ParticleID::g ) {
@@ -274,9 +252,20 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
     mapZJacobian = 1.-z;
   }
 
-  jacobian( 2. * mapZJacobian * (1.-y) * 
-	    log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) *
-	    bar / rootOfKallen(1.,Mui2,Muj2) );
+  // Compute and store the jacobian
+  if ( true ) {  
+    double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );
+    double jacPt2 = 1. / ( 1. + sqr(1.-zPrime)*Qijk*mui2/pt2 + zPrime*zPrime*Qijk*mu2/pt2 );
+
+    jacobian( propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y) * jacPt2 *
+	      mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
+  }
+
+  // TODO: Implement this:
+  // The full jacobian including the z->zprime jacobian
+  else if ( theFullJacobian ) {
+    assert(false);
+  }
 
   // Record the physical variables, as used by the CS kernel definitions
   lastPt(pt);
@@ -295,8 +284,8 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
 }
 
 void FIMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
-					    const Lorentz5Momentum& pSpectator,
-					    const DipoleSplittingInfo& dInfo) {
+						  const Lorentz5Momentum& pSpectator,
+						  const DipoleSplittingInfo& dInfo) {
 
 
   // The only value stored in dInfo.lastSplittingParameters() should be zPrime
@@ -323,7 +312,7 @@ void FIMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
   double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
   double suijk2 = sqr(suijk);
 
-// Calculate A:=xij*w
+  // Calculate A:=xij*w
   double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
 
   // Calculate the scaling factors, xk and xij
@@ -357,7 +346,7 @@ void FIMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
 }
 
 
-  // If needed, insert default implementations of function defined
+// If needed, insert default implementations of function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 

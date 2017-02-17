@@ -53,13 +53,19 @@ bool DipoleIndex::operator <(const DipoleIndex& x) const {
   if ( theEmitterData == x.theEmitterData ) {
     if ( theInitialStateEmitter == x.theInitialStateEmitter ) {
       if ( theEmitterPDF == x.theEmitterPDF ) {
-	if ( theSpectatorData == x.theSpectatorData ) {
-	  if ( theInitialStateSpectator == x.theInitialStateSpectator ) {
-	    return theSpectatorPDF < x.theSpectatorPDF;
+	if ( theIncomingDecayEmitter == x.theIncomingDecayEmitter ) {
+	  if ( theSpectatorData == x.theSpectatorData ) {
+	    if ( theInitialStateSpectator == x.theInitialStateSpectator ) {
+	      if ( theSpectatorPDF == x.theSpectatorPDF ) {
+		return theIncomingDecaySpectator < x.theIncomingDecaySpectator;
+	      }
+	      return theSpectatorPDF < x.theSpectatorPDF;
+	    }
+	    return theInitialStateSpectator < x.theInitialStateSpectator;
 	  }
-	  return theInitialStateSpectator < x.theInitialStateSpectator;
+	  return theSpectatorData < x.theSpectatorData;
 	}
-	return theSpectatorData < x.theSpectatorData;
+	return theIncomingDecayEmitter < x.theIncomingDecayEmitter;
       }
       return theEmitterPDF < x.theEmitterPDF;
     }

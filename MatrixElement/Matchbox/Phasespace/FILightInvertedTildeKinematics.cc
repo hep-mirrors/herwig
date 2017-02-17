@@ -60,6 +60,8 @@ bool FILightInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
+  // This should (and does) have a factor of 1/x relative to
+  // the dipole shower jacobian. 
   mapping /= z*(1.-z);
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 

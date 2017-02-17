@@ -83,7 +83,7 @@ CrossSection Merger::MergingDSigDRVirtualStandard( ){
   currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
     // the weight has three components to get shower history weight
   double ww1 = history.back().weight;
-  double ww2 = alphaReweight();
+  double ww2 = alphaReweight(true);
   double ww3 = pdfReweight();
   weight *= ww1*ww2*ww3;
     // If weight is zero return.
@@ -99,9 +99,23 @@ CrossSection Merger::MergingDSigDRVirtualStandard( ){
   double w2 = -sumAlphaSReweightExpansion();
   double w3 = -sumFillHistoryExpansion();
     // put together the expansion weights.
-  CrossSection expansionweight  = ( w1+w2+w3 )*(theShowerExpansionWeights?1.:0.)
-  *bornWeight
-  *SM().alphaS()/( 2.*ThePEG::Constants::pi );
+  CrossSection expansionweight  = 
+	bornWeight*SM().alphaS()/( 2.*ThePEG::Constants::pi );
+
+
+
+  if (theShowerExpansionWeights == 0){
+	expansionweight  *=0.;
+  }else if ( theShowerExpansionWeights == 1 ){
+	expansionweight  *=w1+w2+w3;
+  }else if ( theShowerExpansionWeights == 2 ){
+  	expansionweight  *=w1+w2+w3*pow(as( startscale*DSH()->renFac() )/SM().alphaS(),currentME()->orderInAlphaS())/ww2;
+  }else if ( theShowerExpansionWeights == 3 ){
+        expansionweight  *=(w1+w2+w3)*pow(as( startscale*DSH()->renFac() )/SM().alphaS(),currentME()->orderInAlphaS())/ww2;
+  }else if ( theShowerExpansionWeights == 4 ){
+        expansionweight  *= w1+w3+w2*pow(as( startscale*DSH()->renFac() )/SM().alphaS(),currentME()->orderInAlphaS())/ww2;
+  }else assert(false && theShowerExpansionWeights);
+
     // [ DEBUG ]
   if ( currentNode()->legsize() == 5 && Debug::level > 2 )
     debugVirt(weight,w1,w2,w3,matrixElement,ww1,ww2,ww3,productionNode,bornWeight);
@@ -153,12 +167,12 @@ CrossSection Merger::MergingDSigDRRealAllAbove( ){
   
     // first find the history for the acctual Node
   NodePtr productionNode =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
-    // check if the randomly choosen CLNode is part of the history.
     // If CLNode is not part of the history , dont calculate the Real contribution
     // else multiply the real contribution with N ( number of children ).
     // this returns the sudakov suppression according to
     // the clustering of the born parts.
   bool inhist = CLNode->isInHistoryOf( productionNode );
+  if(productionNode== currentNode())assert(!inhist);
     // get the history for the clustered Node.
   productionNode = CLNode-> getHistory( false , DSH()->hardScaleFactor() );
     // decide if to cluster
@@ -172,16 +186,16 @@ CrossSection Merger::MergingDSigDRRealAllAbove( ){
     // fill the projector -> return the scale of the last splitting
   currentNode()->runningPt( fillProjector( projected ? 2 : 1 ) );
     // the weight has three components to get shower history weight
-  weight *= history.back().weight*alphaReweight()*pdfReweight();
+  weight *= history.back().weight*alphaReweight(true)*pdfReweight();
   if( weight == 0. )return ZERO;
-    // The inhist flag produces the correct cluster sensity.
+    // The inhist flag produces the correct cluster density.
   CrossSection me = ( inhist?TreedSigDR( startscale ):ZERO );
     // calculate the dipole
   CrossSection dip = CLNode->calcDip( startscale* currentME()->renFac() );
   
-  
-  CrossSection res =  weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
-  currentNode()->children().size()*( me -dip );
+  CrossSection res =  	weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
+ 			currentNode()->children().size()*
+  		       	( me - dip );
     // [ DEBUG ]
   if ( currentNode()->legsize() == 6&&Debug::level > 2 )
      debugReal("RAA",weight,me,dip);
@@ -190,44 +204,68 @@ CrossSection Merger::MergingDSigDRRealAllAbove( ){
 }
 
 CrossSection Merger::MergingDSigDRRealBelowSubReal(  ){
+   // Choose a random child to produce history from. 
   NodePtr HistNode = currentNode()->randomChild();
+   // Check that this subleading point is in ME region.
   if ( !HistNode->children().empty() ) {
     auto inOutPair = HistNode->getInOut();
     NodePtr randomChild =  HistNode->randomChild(); // Here we make sure that clustering and splitting are invertible
     if( !matrixElementRegion( inOutPair.first , inOutPair.second , randomChild->pT() , theMergePt ) )return ZERO;
   }
   
+   // As the HistNode is now in ME region, we can cluster according to LO merging.
+   // In this clustering we do not require a orering for the last step to the currentNode.
   const NodePtr productionNode = HistNode-> getHistory( false , DSH()->hardScaleFactor() );
-  
+   // If the real emission contribution should be unitarised, we decide here if we cluster. 
+   // This applies to NLO corrections for the first emission w.r.t. the production process the first time.
   weight = decideClustering(productionNode,HistNode,projected);
-
-  if ( !productionNode->xcomb()->willPassCuts() )return ZERO;
-  
+   // The production node needs to fulfill the cut criterion of the production process.
+  if ( !productionNode->xcomb()->willPassCuts() && !currentNode()->xcomb()->willPassCuts() )return ZERO;
+   // Calculate the starting scale w.r.t. the production process.
   Energy startscale = CKKW_StartScale( productionNode );
+   // If the production process does not fullfill the cut criterion use the real emission point (DEBUG)
+  if (!productionNode->xcomb()->willPassCuts()) startscale = CKKW_StartScale( currentNode() );
+   // DEBUG trial
+  //currentNode()->xcomb()->lastProjector( productionNode->xcomb());
+   // Calculate the sudakov weights starting from the production node to the histNode
   fillHistory( startscale , productionNode , HistNode );
+   // Set the running Pt of the process as it is used in the vetoed parton shower.
   currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
-  weight *= history.back().weight*alphaReweight()*pdfReweight();
+  currentNode()->runningPt(max(HistNode->pT(),theMergePt));
+   // Calculate the alpha_S ratios and pdf ratios.
+   weight *= history.back().weight*alphaReweight(true)*pdfReweight();
   
   if( weight == 0. )return ZERO;
-  
+
+   // Start calculation of subtraction contribution. 
   CrossSection sumPS = ZERO;
-  
+
+   // Iterate over all subtraction contributions.
   for( auto const & child : currentNode()->children() ){
-    if ( child->allAbove( mergePt() ) ){
-      if( ( child )->pT()>mergePt()/theRealSubtractionRatio )
-      sumPS += child->calcPs( startscale* currentME()->renFac() );
-      else
-      sumPS += child->calcDip( startscale* currentME()->renFac() );
-    }else{
-      assert( child->pT()>mergePt() );
-    }
+    if ( child->allAbove( mergePt() ) && child->xcomb()->willPassCuts() ){
+      Energy relevantScale=child->children().empty()?CKKW_StartScale( child ):child->maxChildPt();
+      if( ( child )->pT()>mergePt()/theRealSubtractionRatio ){
+	if( child ->pT()<relevantScale&&(child->inShowerPS(relevantScale))){  //DEBUG: CKKW_StartScale( child);????
+          sumPS += child->calcPs( startscale* currentME()->renFac() );
+	}
+      }else{
+	if( child ->pT()<relevantScale){
+    	  sumPS += child->calcDip( startscale* currentME()->renFac() );
+        }
+      }
+     }
   }
   
-  CrossSection me = TreedSigDR( startscale );
-    // [ DEBUG ]
+  CrossSection me = ZERO;
+  if(currentNode()->xcomb()->willPassCuts()){
+    me = TreedSigDR( startscale );
+  } 
+
+
+   // [ DEBUG ]
   if ( currentNode()->legsize() == 6&&Debug::level > 2 )
       debugReal("RBSR",weight,me,sumPS);
-    //Here we subtract the PS ( and below the dynamical cutoff the Dip )
+   //Here we subtract the PS ( and below the dynamical cutoff the Dip )  
   return weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
   ( me-sumPS );
 }
@@ -261,19 +299,21 @@ CrossSection Merger::MergingDSigDRRealBelowSubInt( ){
   
   currentNode()->runningPt( fillProjector( projected ? 2 : 1 ) );
   
-  weight *= history.back().weight*alphaReweight()*pdfReweight();
-  
+  weight *= history.back().weight*alphaReweight(true)*pdfReweight();
+
   if( weight == 0. )return ZERO;
-  
-  
+    
   pair<CrossSection , CrossSection> DipAndPs =
   CLNode->calcDipandPS( startscale* currentME()->renFac() );
     // [ DEBUG ]
   if ( currentNode()->legsize() == 6&&Debug::level > 2 )
      debugReal("RBSI",weight,DipAndPs.second,DipAndPs.first);
+  
+  Energy relevantScale=CLNode->children().empty()?CKKW_StartScale( CLNode ):CLNode->maxChildPt();
+  bool calcPScontribution=CLNode->pT()<relevantScale&&(CLNode->inShowerPS(relevantScale));
     //Here we add the PS and subtrac the Dip ( only above the dynamical cutoff )
   return weight*as( startscale*DSH()->renFac() )/SM().alphaS()*
-  currentNode()->children().size()*( DipAndPs.second-DipAndPs.first );
+  currentNode()->children().size()*( (calcPScontribution?DipAndPs.second:ZERO)-DipAndPs.first );
 }
 
 
@@ -582,7 +622,7 @@ double Merger::cmwAlphaS(Energy q)const{
 
 
 
-double Merger::alphaReweight(){
+double Merger::alphaReweight(bool nocmw){
   double res = 1.;
   
   Energy Q_R = ( history[0].node->legsize() == N0()?
@@ -601,8 +641,7 @@ double Merger::alphaReweight(){
   
   res *= pow( SM().alphaEMME( Q_qed )/ SM().alphaEMMZ() , Oew );
   
-  res *= pow( as(Q_R) / SM().alphaS() , Oqcd );
-  
+  res *= pow( (nocmw?as(Q_R):cmwAlphaS(Q_R)) / SM().alphaS() , Oqcd );
 
   
   
@@ -668,11 +707,11 @@ double Merger::sumPdfReweightExpansion()const{
   double res = 0.;
   Energy beam1Scale = history[0].scale*
                     ( history[0].node->legsize() == N0()?
-                      currentME()->renFac():
+                      currentME()->facFac():
                       DSH()->facFac() );
   Energy beam2Scale = history[0].scale*
                     ( history[0].node->legsize() == N0()?
-                      currentME()->renFac():
+                      currentME()->facFac():
                       DSH()->facFac() );
   
   for ( auto const & hs : history ){
@@ -729,7 +768,7 @@ double Merger::sumPdfReweightExpansion()const{
   if ( currentNode()->xcomb()->mePartonData()[0]->coloured() ){
     res += pdfExpansion( history.back().node , 0 ,
                      beam1Scale , 
-                     history[0].scale* currentME()->renFac() , 
+                     history[0].scale* currentME()->facFac() , 
                      ( history.back() ).node->nodeME()->lastX1() , 
                      Nf( history[0].scale ) , 
                      history[0].scale );
@@ -738,7 +777,7 @@ double Merger::sumPdfReweightExpansion()const{
   if ( currentNode()->xcomb()->mePartonData()[1]->coloured() ) {
     res += pdfExpansion( history.back().node , 1 ,
                      beam2Scale , 
-                     history[0].scale* currentME()->renFac() , 
+                     history[0].scale* currentME()->facFac() , 
                      ( history.back() ).node->nodeME()->lastX2() , 
                      Nf( history[0].scale ) , 
                      history[0].scale );
@@ -843,11 +882,11 @@ double Merger::pdfExpansion( NodePtr node  ,
 
 double Merger::sumAlphaSReweightExpansion()const{
   double res = 0.;
-  if ( !( history[0].node->children().empty() ) ){
-    res += alphasExpansion( history[0].scale* DSH()->renFac() ,
+  const auto Oqcd=history[0].node->nodeME()->orderInAlphaS();
+  res += alphasExpansion( history[0].scale* DSH()->renFac() ,
                             history[0].scale* currentME()->renFac() )*
-                            int( history[0].node->legsize()-N0() );
-  }
+                            Oqcd;
+
     // dsig is calculated with fixed alpha_s
   for ( auto const & hs : history ){
       //expansion only to the last step
@@ -885,12 +924,8 @@ void Merger::doinit(){
 namespace{
 void setXCombScales(StdXCombPtr xc,Energy2 scale){
     xc->lastShowerScale                       ( scale );
-    xc->lastCentralScale                      ( scale );
-    xc->lastScale                             ( scale );
     xc->partonBinInstances().first->scale     ( scale );
     xc->partonBinInstances().second->scale    ( scale );
-    xc->lastPartons().first->scale            ( scale );
-    xc->lastPartons().second->scale           ( scale );
 }
 }
 
@@ -972,11 +1007,6 @@ CrossSection Merger::MergingDSigDR() {
 
 #include "Herwig/PDF/HwRemDecayer.h"
 void Merger::CKKW_PrepareSudakov( NodePtr node , Energy running ){
-    //cleanup( node );
-  node->xcomb()->lastPartons().first->scale(sqr(running));
-  node->xcomb()->lastPartons().second->scale(sqr(running));
-  node->xcomb()->partonBinInstances().first->scale(sqr(running));
-  node->xcomb()->partonBinInstances().second->scale(sqr(running));
   tSubProPtr sub = node->xcomb()->construct();
   const auto pb=node->xcomb()->partonBins();
   
@@ -1002,11 +1032,30 @@ Energy Merger::CKKW_StartScale( NodePtr node ) const {
       for ( int j = 2; j<N ; j++ ){ if ( i == j||!data[j]->coloured() )continue;
 	for ( int k = 0; k<N ; k++ ){ if ( !data[k]->coloured() || i == k || j == k )continue;
 	  if(i<2){
-	    if(k<2) {res =  min( res , IILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
-	    else    {res =  min( res , IFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
+	    if(k<2) {
+		res =  min( res , IILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	    }
+	    else    {
+
+                res =  min( res ,
+                (data[k]->mass()+data[j]->mass()+data[i]->mass()>ZERO)?
+                IFMTK->lastPt( momenta[i] , momenta[j] , momenta[k] ):
+                IFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+            }
 	  }else{
-	    if(k<2) {res =  min( res , FILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
-	    else    {res =  min( res , FFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));}
+	    if(k<2) {
+                res =  min( res ,
+                (data[k]->mass()+data[j]->mass()+data[i]->mass()>ZERO)?
+                FIMTK->lastPt( momenta[i] , momenta[j] , momenta[k] ):
+                FILTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+
+	    }
+	    else    {
+		res =  min( res , 
+		(data[k]->mass()+data[j]->mass()+data[i]->mass()>ZERO)?
+		FFMTK->lastPt( momenta[i] , momenta[j] , momenta[k] ):
+		FFLTK->lastPt( momenta[i] , momenta[j] , momenta[k] ));
+	    }
 	  }
 	}
       }
@@ -1025,10 +1074,8 @@ Energy Merger::CKKW_StartScale( NodePtr node ) const {
 
 double Merger::alphasExpansion( Energy next , Energy fixedScale ) const {
   double betaZero = ( 11./6. )*SM().Nc() - ( 1./3. )*Nf( history[0].scale );
-  // TODO factorize the return statement, turn ?: into if
-  return ( betaZero*log( sqr( fixedScale/next ) ) )+
-  ( theCMWScheme>0?( 3.*( 67./18.-1./6.*Constants::pi*Constants::pi )
-                   -5./9.*Nf( history[0].scale ) ):0. );
+  double K=3.*( 67./18.-1./6.*sqr(Constants::pi) ) -5./9.*Nf( history[0].scale);
+  return ( betaZero*log( sqr( fixedScale/next ) ) )+( theCMWScheme>0?K:0. );
 }
 
 
@@ -1431,7 +1478,7 @@ void Merger::debugReal(string realstr, double weight,
 void Merger::persistentOutput( PersistentOStream & os ) const {
   os << theShowerExpansionWeights << theCMWScheme << projected <<
   isUnitarized << isNLOUnitarized  <<
-  theOpenInitialStateZ << theChooseHistory <<
+  theOpenZBoundaries << theChooseHistory <<
   theN0 << theOnlyN   << weight <<
   weightCB << theGamma << theSmearing <<  ounit( theIRSafePT , GeV ) <<
   ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV )
@@ -1445,7 +1492,7 @@ void Merger::persistentOutput( PersistentOStream & os ) const {
 void Merger::persistentInput( PersistentIStream & is , int ) {
   is >> theShowerExpansionWeights >> theCMWScheme >> projected >>
   isUnitarized >> isNLOUnitarized >>
-  theOpenInitialStateZ >>
+  theOpenZBoundaries >>
   theChooseHistory >> theN0 >> theOnlyN >>
   weight >> weightCB >>
   theGamma >>   theSmearing >>  iunit( theIRSafePT , GeV ) >>
@@ -1487,26 +1534,46 @@ void Merger::Init() {
    false , false ,
    true , true , false );
   
-  static Switch<Merger , bool>
+  static Switch<Merger , unsigned int>
   interfaceShowerExpansionWeights
   ( "ShowerExpansionWeights" ,
-   "Calculate the expansions of the shower history to be NLO accurate" ,
+   "Calculate the expansions of the shower history to be NLO accurate, in different schemes." ,
    &Merger::theShowerExpansionWeights ,
-   true , false , false );
+   3 , false , false );
   
   static SwitchOption
-  interfaceShowerExpansionWeightsYes
+  interfaceShowerExpansionWeightsScheme0
   ( interfaceShowerExpansionWeights ,
-   "Yes" ,
-   "Calculate shower expansions" ,
-   true );
+   "NoWeights" ,
+   "Switch off the expansion." ,
+   0 );
   static SwitchOption
-  interfaceShowerExpansionWeightsNo
+  interfaceShowerExpansionWeightsScheme1
   ( interfaceShowerExpansionWeights ,
-   "No" ,
-   "Do not calculate expansions" ,
-   false );
-  
+   "FlatAndHistoryReweighted" ,
+   "Sum alphaS expansion and weight with same Historyweight as LO." ,
+   1 );
+  static SwitchOption
+  interfaceShowerExpansionWeightsScheme2
+  ( interfaceShowerExpansionWeights ,
+   "NoAlphaSReweightForSudakovExpansion" ,
+   "Switch off the expansion." ,
+   2 );
+  static SwitchOption
+  interfaceShowerExpansionWeightsScheme3
+  ( interfaceShowerExpansionWeights ,
+   "NoAlphaSReweightForAllExpansions" ,
+   "Switch off the expansion." ,
+   3 );
+  static SwitchOption
+  interfaceShowerExpansionWeightsScheme4
+  ( interfaceShowerExpansionWeights ,
+   "NoAlphaSReweightForAlphaSExpansion" ,
+   "Switch off the expansion." ,
+   4 ); 
+
+
+ 
   static Switch<Merger , unsigned int>
   interfacetheCMWScheme
   ( "CMWScheme" ,
@@ -1559,16 +1626,17 @@ void Merger::Init() {
    false , false ,
    true , true , false );
   
-  
-  static Switch<Merger , bool>
-  interfaceOpenInitialSateZ
-  ( "OpenInitialStateZ" , "" , &Merger::theOpenInitialStateZ , false , false , false );
-  
-  static SwitchOption interfaceOpenInitialSateZYes
-  ( interfaceOpenInitialSateZ , "Yes" , "" , true );
-  static SwitchOption interfaceOpenInitialSateZNo
-  ( interfaceOpenInitialSateZ , "No" , "" , false );
-  
+ 
+  static Switch<Merger,int> interfaceOpenZBoundariesM
+  ("OpenZBoundaries", "",
+   &Merger::theOpenZBoundaries, 0, false, false);
+  static SwitchOption interfaceOpenZBoundariesMhardScale
+  (interfaceOpenZBoundariesM,   "Hard",   "",   0);
+  static SwitchOption interfaceOpenZBoundariesMfull
+  (interfaceOpenZBoundariesM,   "Full",   "",   1);
+  static SwitchOption interfaceOpenZBoundariesMDipoleScale
+  (interfaceOpenZBoundariesM,   "DipoleScale",   "",   2);
+
  
   static Switch<Merger , bool>
   interfaceemitDipoleMEDiff

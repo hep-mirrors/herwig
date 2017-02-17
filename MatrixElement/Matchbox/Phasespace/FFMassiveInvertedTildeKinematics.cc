@@ -16,6 +16,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -23,7 +24,8 @@
 
 using namespace Herwig;
 
-FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() {}
+FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() 
+  : theFullMapping(false) {}
 
 FFMassiveInvertedTildeKinematics::~FFMassiveInvertedTildeKinematics() {}
 
@@ -107,11 +109,20 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   realSpectatorMomentum() = spe;
   
   // Store the jacobian
-  mapping /= z*(1.-z);
-  jacobian( mapping*(1.-y)*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)) *
-    sqr(1.-mui2-mu2-muj2) / rootOfKallen(1.,Mui2,Muj2) );
+  // The jacobian here corresponds to dpt2 / sqr(lastscale) NOT dpt2 / pt2.
+  // This jacobian is the one-particle phase space  
+  if ( true ) {
+    double bar = 1.-mui2-mu2-muj2;
+    mapping *= (1.-y)/(z*(1.-z));
+    jacobian( mapping*(sqr(lastScale())/sHat())*bar/rootOfKallen(1.,Mui2,Muj2) / (16.*sqr(Constants::pi)) );
+  }
 
-  // Store the parameters
+  // Todo: Switch for the full jacobian including the z->zPrime jacobian
+    else if ( theFullMapping ) {
+      assert ( false );
+    }
+    
+// Store the parameters
   subtractionParameters().resize(3);
   subtractionParameters()[0] = y;
   subtractionParameters()[1] = z;

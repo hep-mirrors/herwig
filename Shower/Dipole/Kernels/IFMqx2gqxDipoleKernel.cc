@@ -70,15 +70,14 @@ double IFMqx2gqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ret = alphaPDF(split);
 
   double z = split.lastZ();
-  double ratio = sqr(split.lastPt()/split.scale());
-  double alpha = 1. - 2.*sqr(split.spectatorData()->mass()/split.scale());
+  Energy pt = split.lastPt();
+  double ratio = sqr(pt/split.scale());
+  double muk2 = sqr(split.spectatorData()->mass()/split.scale());
   
-  if( (sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) )<0.)return 0.;
-  
-  double x = alpha == 1. ? ( z*(1.-z) - ratio ) / ( 1. - z - ratio ) :
-    ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) +
-      alpha*sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) ) ) /
-    (2.*(1.-alpha));
+// Calculate x
+    double rho = 1. - 4.*ratio*(1.-muk2)*z*(1.-z)/sqr(1.-z+ratio);
+    double x = 0.5*((1.-z+ratio)/(ratio*(1.-muk2))) * (1. - sqrt(rho));
+
 
   ret *= .5 * ( 1.-2.*x*(1.-x)  );
 

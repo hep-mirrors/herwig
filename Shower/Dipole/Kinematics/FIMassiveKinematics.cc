@@ -95,12 +95,12 @@ Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
   return sqrt(pt2);
 }
 
-Energy FIMassiveKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split) const {
+Energy FIMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
   // from Martin's thesis
   double z = split.lastZ();
   Energy mi = split.emitterData()->mass();
   Energy m = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(scale) + (1-z)*sqr(mi) + z*sqr(m))/(z*(1.-z));
+  Energy2 Q2 = (sqr(pt) + (1-z)*sqr(mi) + z*sqr(m))/(z*(1.-z));
   return sqrt(Q2);
 }
 
@@ -165,10 +165,30 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 		    ( sqr(pt) + (1.-z)*mi2 + z*m2 - z*(1.-z)*Mi2 ) /
 		    ( z*(1.-z)*s ) );
 
-  double zm1 = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) *
-		   sqrt( 1.-sqr(pt/info.hardPt()) ) );
-  double zp1 = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) *
-		   sqrt( 1.-sqr(pt/info.hardPt()) ) );
+
+
+  Energy hard=info.hardPt();
+
+
+  if(openZBoundaries()==1){
+	hard=.5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
+  }
+  Energy2 sdip = sqr(info.scale()) + Mi2;
+  if(openZBoundaries()==2){
+	hard=min(0.5*sqrt(s) * 
+		rootOfKallen( s/s, mi2/s, m2/s ) , 
+                     sqrt(sdip)  * 
+		rootOfKallen( sdip/sdip, mi2/sdip, m2/sdip ));
+ }
+
+
+  double ptRatio = sqrt(1.-sqr(pt/info.hardPt()));
+
+
+
+
+  double zm1 = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
+  double zp1 = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
 
   if ( // pt < IRCutoff() || 
        // pt > info.hardPt() ||
@@ -202,7 +222,10 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian( 2. * mapZJacobian * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
+// Compute and store the jacobian
+    Energy2 pt2 = sqr(pt);
+    double jacPt2 = 1. / ( 1. + sqr(1.-z)*mi2/pt2 + z*z*m2/pt2 );
+    jacobian( jacPt2 * mapZJacobian * 2.*log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
 
   lastPt(pt);
   lastZ(z);

@@ -220,6 +220,10 @@ private:
    */
   FFMassiveKinematics & operator=(const FFMassiveKinematics &);
 
+    /**
+     * Option to use the full jacobian, including the z->zprime jacobian.
+     **/
+    bool  theFullJacobian;
 };
 
 }

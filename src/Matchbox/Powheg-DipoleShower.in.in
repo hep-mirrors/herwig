@@ -11,6 +11,8 @@ set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
+# tunes
+read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so

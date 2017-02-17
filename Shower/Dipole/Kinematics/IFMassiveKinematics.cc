@@ -21,6 +21,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingInfo.h"
+#include "Herwig/Shower/Dipole/Kernels/DipoleSplittingKernel.h"
 
 using namespace Herwig;
 
@@ -65,15 +66,19 @@ pair<double,double> IFMassiveKinematics::xiSupport(const DipoleSplittingInfo& sp
 
 // sbar
 Energy IFMassiveKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
-				      const Lorentz5Momentum& pSpectator) const {
+					const Lorentz5Momentum& pSpectator) const {
   return sqrt(2.*(pEmitter*pSpectator));
 }
 
 Energy IFMassiveKinematics::ptMax(Energy dScale, 
-				double emX, double,
-				const DipoleIndex&,
-				const DipoleSplittingKernel&) const {
-  return dScale * sqrt(1.-emX) /2.;
+				  double emX, double,
+				  const DipoleIndex& ind,
+				  const DipoleSplittingKernel& split) const {
+
+  Energy2 A = sqr(dScale) * (1.-emX)/emX;
+  Energy2 mk2 = sqr(split.spectator(ind)->mass());
+  Energy ptMax = 0.5*A/sqrt(mk2+A);
+  return ptMax;
 }
 
 Energy IFMassiveKinematics::QMax(Energy, 
@@ -84,14 +89,14 @@ Energy IFMassiveKinematics::QMax(Energy,
   return 0.0*GeV;
 }
 
-Energy IFMassiveKinematics::PtFromQ(Energy, const DipoleSplittingInfo&) const {
-  assert(false && "add this");
-  return 0.0*GeV;
+Energy IFMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& split) const {
+  double z = split.lastZ();
+  return scale*sqrt(1.-z);
 }
 
-Energy IFMassiveKinematics::QFromPt(Energy, const DipoleSplittingInfo&) const {
-  assert(false && "add this");
-  return 0.0*GeV;
+Energy IFMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
+  double z = split.lastZ();
+  return pt/sqrt(1.-z);
 }
 
 
@@ -106,18 +111,25 @@ bool IFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 					    DipoleSplittingInfo& info,
 					    const DipoleSplittingKernel&) {
 
+  // Check emitter x against xmin
   if ( info.emitterX() < xMin() ) {
     jacobian(0.0);
     return false;
   }
 
+  // Generate pt and check it against max allowed
   Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
-
-  if ( sqr(pt) > sqr(info.hardPt())/(1.+4.*sqr(info.hardPt()/info.scale())) ) {
+  if ( pt < IRCutoff() || pt > info.hardPt() ) {
     jacobian(0.0);
     return false;
   }
 
+  // Compute scales required
+  Energy2 pt2 = sqr(pt);
+  Energy2 saj = sqr(info.scale());
+  Energy2 mk2 = sqr(info.spectatorData()->mass());
+
+  // Generate z
   double z = 0.;
   double mapZJacobian = 0.;
 
@@ -141,42 +153,60 @@ bool IFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     }
   }
 
-  double ratio = sqr(pt/info.scale());
-
-  double x = ( z*(1.-z) - ratio ) / ( 1. - z - ratio );
-  double u = ratio/(1.-z);
-
-  double up = (1.-x) /
-    ( 1.-x + x*sqr(info.spectatorData()->mass()/info.scale()) );
-
-  if ( x < 0. || x > 1. || u > up ) {
-    jacobian(0.0);
-    return false;
-  }
-
+  // Check limits on z
   double xe = info.emitterX();
-  double zmx = 0.5*(1.+xe-(1.-xe)*sqrt(1.-sqr(pt/info.hardPt())) );
-  double zpx = 0.5*(1.+xe+(1.-xe)*sqrt(1.-sqr(pt/info.hardPt())) );
+  Energy hard = info.hardPt();
 
-  double xq = sqr(pt/info.hardPt());
-  double zpq = 0.5*( 1.+ xq + (1.-xq)*sqrt(1.-sqr(2.*pt/info.scale())/(1.-xq) ) );
-  double zmq = 0.5*( 1.+ xq - (1.-xq)*sqrt(1.-sqr(2.*pt/info.scale())/(1.-xq) ) );
+  if(openZBoundaries()==1){
+        Energy2 A = saj*(1.-xe)/xe;
+        hard = 0.5*A/sqrt(mk2+A);          
+  }
+  if(openZBoundaries()==2){
+        Energy2 A = saj*min(1.,(1.-xe)/xe);
+        hard= 0.5*A/sqrt(mk2+A);
+	assert(pt2<=sqr(hard));
+  }
 
-  double zp = min(zpx,zpq);
-  double zm = max(zmx,zmq);
-
-  if ( pt < IRCutoff() || 
-       pt > info.hardPt() ||
-       z > zp || z < zm ||
-       x < xe ) {
+  double ptRatio = sqrt(1. - pt2/sqr(hard) );
+  double zp = 0.5*(1.+xe + (1.-xe)*ptRatio);
+  double zm = 0.5*(1.+xe - (1.-xe)*ptRatio);
+  
+  if ( z < zm || z > zp ) {
+    jacobian(0.0);
+    return false;
+  }
+    
+  // Calculate x and u in terms of z and pt
+  double r = pt2/saj;
+  double muk2 = mk2/saj;
+  double rho = 1. - 4.*r*(1.-muk2)*z*(1.-z)/sqr(1.-z+r);
+  if ( rho < 0.0 ) {
+    // This has never happened
     jacobian(0.0);
     return false;
   }
 
+  double x = 0.5*((1.-z+r)/(r*(1.-muk2))) * (1. - sqrt(rho));
+  double u = x*r / (1.-z);
+
+  // Check limits on x and u      
+  // Following Catani-Seymour paper
+  double muk2CS = x*muk2;
+  double up = (1.-x) / ( 1.-x + muk2CS );
+  if ( x < xe || x > 1. ||
+       u < 0. || u > up ) {
+    jacobian(0.0);
+    return false;
+  }
+
+
+  // Jacobian
+  // Jacobian for dpt2 dz -> dx du
+  Energy2 jac = saj*abs( (1.+x*(muk2-1.))*(-u*(1.-u)/sqr(x)) - (1.+u*(muk2-1.))*((1.-2.*u)*(1.-x)/x - 2.*u*muk2) );
+  jacobian( (pt2/(x*u*jac)) * mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
+    
+  // Log results
   double phi = 2.*Constants::pi*rphi;
-
-  jacobian(2. * mapZJacobian * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) * (1.-z-ratio)/sqr(z*(1.-z)-ratio) );
-
   lastPt(pt);
   lastZ(z);
   lastPhi(phi);
@@ -190,85 +220,102 @@ bool IFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 }
 
 void IFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
-					   const Lorentz5Momentum& pSpectator,
-					   const DipoleSplittingInfo& dInfo) {
-  Energy2 sbar = 2.*pEmitter*pSpectator;
-  Energy pt = dInfo.lastPt();
-  double ratio = pt*pt/sbar;
-  double z = dInfo.lastZ();
-  double x = (z*(1.-z)-ratio)/(1.-z-ratio);
-  double u = ratio / (1.-z);
+					     const Lorentz5Momentum& pSpectator,
+					     const DipoleSplittingInfo& dInfo) {
 
-  pt = sqrt(sbar*u*(1.-u)*(1.-x));
-  Energy magKt = 
-    sqrt(sbar*u*(1.-u)*(1.-x)/x - sqr(u*dInfo.spectatorData()->mass()));
-  Lorentz5Momentum kt =
-    getKt (pEmitter, pSpectator, magKt, dInfo.lastPhi(),true);
-
+  // Initialise the momenta
   Lorentz5Momentum em;
   Lorentz5Momentum emm;
   Lorentz5Momentum spe;
 
-  Energy2 mj2 = dInfo.spectatorData()->mass()*dInfo.spectatorData()->mass();
-  double alpha = 1. - 2.*mj2/sbar;
 
   // TODO: adjust phasespace boundary condition
-  if (!theCollinearScheme)
+  if (!theCollinearScheme) {
     assert(false);
-  if ( !theCollinearScheme &&
-       x > u && (1.-x)/(x-u) < 1. ) {
 
-    double fkt = sqrt(sqr(x-u)+4.*x*u*mj2/sbar);
+    Energy2 sbar = 2.*pEmitter*pSpectator;
+    Energy pt = dInfo.lastPt();
+    double ratio = pt*pt/sbar;
+    double z = dInfo.lastZ();
+    double x = (z*(1.-z)-ratio)/(1.-z-ratio);
+    double u = ratio / (1.-z);
 
-    //    em =
-    //      ((1.-u)/(x-u))*pEmitter + ((u/x)*(1.-x)/(x-u))*pSpectator - kt/(x-u);
-    Energy2 fa = (sbar*(x+u-2.*x*z)+2.*mj2*x*u) / sqrt(sqr(x-u)+4.*x*u*mj2/sbar);
-    double a = (-sbar+fa) / (2.*x*(sbar-mj2));
-    double ap = (sbar+alpha*fa) / (2.*x*(sbar-mj2));
-    em = ap*pEmitter + a*pSpectator - fkt*kt;
-    em.setMass(ZERO);
-    em.rescaleEnergy();
+    pt = sqrt(sbar*u*(1.-u)*(1.-x));
+    Energy magKt = 
+      sqrt(sbar*u*(1.-u)*(1.-x)/x - sqr(u*dInfo.spectatorData()->mass()));
+    Lorentz5Momentum kt =
+      getKt (pEmitter, pSpectator, magKt, dInfo.lastPhi(),true);
 
-    //    emm =
-    //      ((1.-x)/(x-u))*pEmitter + ((u/x)*(1.-u)/(x-u))*pSpectator - kt/(x-u);
-    Energy2 fb = abs(sbar*(u*(1.-u)-x*(1.-x))+2.*mj2*x*u) / sqrt(sqr(x-u)+4.*x*u*mj2/sbar);
-    double b = (-sbar*(1.-x-u)+fb) / (2.*x*(sbar-mj2));
-    double bp = (sbar*(1.-x-u)+alpha*fb) / (2.*x*(sbar-mj2));
-    emm = bp*pEmitter + b*pSpectator + fkt*kt;
-    emm.setMass(ZERO);
-    emm.rescaleEnergy();
+    Energy2 mj2 = dInfo.spectatorData()->mass()*dInfo.spectatorData()->mass();
+    double alpha = 1. - 2.*mj2/sbar;
 
-    //    spe =
-    //      (1.-u/x)*pSpectator;
-    Energy2 fc = sqrt(sqr(sbar*(x-u))+4.*sbar*mj2*x*u);
-    double c = (sbar*(x-u)-2.*x*mj2+fc) / (2.*x*(sbar-mj2));
-    double cp = (-sbar*(x-u)+2.*x*mj2+alpha*fc) / (2.*x*(sbar-mj2));
-    spe = cp*pEmitter + c*pSpectator;
-    spe.setMass(dInfo.spectatorData()->mass());
-    spe.rescaleEnergy();
+    if ( x > u && (1.-x)/(x-u) < 1. ) {
 
-  } else {
+      double fkt = sqrt(sqr(x-u)+4.*x*u*mj2/sbar);
 
-    em = (1./x)*pEmitter;
-    em.setMass(ZERO);
-    em.rescaleEnergy();
+      //    em =
+      //      ((1.-u)/(x-u))*pEmitter + ((u/x)*(1.-x)/(x-u))*pSpectator - kt/(x-u);
+      Energy2 fa = (sbar*(x+u-2.*x*z)+2.*mj2*x*u) / sqrt(sqr(x-u)+4.*x*u*mj2/sbar);
+      double a = (-sbar+fa) / (2.*x*(sbar-mj2));
+      double ap = (sbar+alpha*fa) / (2.*x*(sbar-mj2));
+      em = ap*pEmitter + a*pSpectator - fkt*kt;
 
-    emm = (-kt*kt-u*u*mj2)/(u*sbar)*pEmitter +
-      u*pSpectator - kt;
-    emm.setMass(ZERO);
-    emm.rescaleEnergy();
+      //    emm =
+      //      ((1.-x)/(x-u))*pEmitter + ((u/x)*(1.-u)/(x-u))*pSpectator - kt/(x-u);
+      Energy2 fb = abs(sbar*(u*(1.-u)-x*(1.-x))+2.*mj2*x*u) / sqrt(sqr(x-u)+4.*x*u*mj2/sbar);
+      double b = (-sbar*(1.-x-u)+fb) / (2.*x*(sbar-mj2));
+      double bp = (sbar*(1.-x-u)+alpha*fb) / (2.*x*(sbar-mj2));
+      emm = bp*pEmitter + b*pSpectator + fkt*kt;
 
-    spe = (-kt*kt + mj2*u*(2.-u))/((1.-u)*sbar)*pEmitter +
-      (1.-u)*pSpectator + kt;
-    spe.setMass(dInfo.spectatorData()->mass());
-    spe.rescaleEnergy();
+      //    spe =
+      //      (1.-u/x)*pSpectator;
+      Energy2 fc = sqrt(sqr(sbar*(x-u))+4.*sbar*mj2*x*u);
+      double c = (sbar*(x-u)-2.*x*mj2+fc) / (2.*x*(sbar-mj2));
+      double cp = (-sbar*(x-u)+2.*x*mj2+alpha*fc) / (2.*x*(sbar-mj2));
+      spe = cp*pEmitter + c*pSpectator;
 
+    }
   }
+
+  else {
+    
+    // Get z, pt and the relevant scales
+    double z = dInfo.lastZ();
+    Energy pt = dInfo.lastPt();
+    
+    Energy2 pt2 = sqr(pt);
+    Energy2 saj = 2.*pEmitter*pSpectator;
+
+    double muk2 = sqr(dInfo.spectatorData()->mass())/saj;
+    double r = pt2/saj;
+
+    // Calculate x and u
+    double rho = 1. - 4.*r*(1.-muk2)*z*(1.-z)/sqr(1.-z+r);
+    double x = 0.5*((1.-z+r)/(r*(1.-muk2))) * (1. - sqrt(rho));
+    double u = x*r / (1.-z);
+    
+    // Generate kt
+    Lorentz5Momentum kt = getKt (pEmitter, pSpectator, pt, dInfo.lastPhi(), true);
+ 
+    // Set the momenta  
+    em = (1./x)*pEmitter;
+    emm = ((1.-x)*(1.-u)/x - 2.*u*muk2)*pEmitter + u*pSpectator + kt;
+    spe = ((1.-x)*u/x + 2.*u*muk2)*pEmitter + (1.-u)*pSpectator - kt;
+    
+  }
+
+  em.setMass(ZERO);
+  em.rescaleEnergy();
+
+  emm.setMass(ZERO);
+  emm.rescaleEnergy();
+
+  spe.setMass(dInfo.spectatorData()->mass());
+  spe.rescaleEnergy();
 
   emitterMomentum(em);
   emissionMomentum(emm);
   spectatorMomentum(spe);
-
 }
 
 // If needed, insert default implementations of function defined
@@ -293,22 +340,22 @@ void IFMassiveKinematics::Init() {
      "off a initial-final dipole.");
 
   /*
-  static Switch<IFMassiveKinematics,bool> interfaceCollinearScheme
+    static Switch<IFMassiveKinematics,bool> interfaceCollinearScheme
     ("CollinearScheme",
-     "[experimental] Switch on or off the collinear scheme",
-     &IFMassiveKinematics::theCollinearScheme, false, false, false);
-  static SwitchOption interfaceCollinearSchemeOn
+    "[experimental] Switch on or off the collinear scheme",
+    &IFMassiveKinematics::theCollinearScheme, false, false, false);
+    static SwitchOption interfaceCollinearSchemeOn
     (interfaceCollinearScheme,
-     "On",
-     "Switch on the collinear scheme.",
-     true);
-  static SwitchOption interfaceCollinearSchemeOff
+    "On",
+    "Switch on the collinear scheme.",
+    true);
+    static SwitchOption interfaceCollinearSchemeOff
     (interfaceCollinearScheme,
-     "Off",
-     "Switch off the collinear scheme",
-     false);
+    "Off",
+    "Switch off the collinear scheme",
+    false);
 
-  interfaceCollinearScheme.rank(-1);
+    interfaceCollinearScheme.rank(-1);
   */
 
 }

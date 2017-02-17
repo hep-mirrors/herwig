@@ -89,6 +89,8 @@ namespace Herwig {
     NodePtr  randomChild();
       /// true if all children show scales above pt
     bool allAbove(Energy pt);
+      /// return maximum of all child pts.
+    Energy maxChildPt();  
       /// true if the node is in the history of other.
     bool isInHistoryOf(NodePtr other);
       /// legsize of the node ME
