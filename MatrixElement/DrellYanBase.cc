@@ -511,12 +511,12 @@ bool DrellYanBase::applyHard(ShowerParticleVector quarks,
     {
       pg     = Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(shat-mb2_)/mb,ZERO);
       Energy2 tp(that),up(uhat);
-      double zsign(-1.);
+      double zsign(quarkplus ? -1. : 1.);
       if(iemit==2)
 	{
 	  tp=uhat;
 	  up=that;
-	  zsign=1.;
+	  zsign *= -1.;
 	}
       pspect = Lorentz5Momentum(ZERO,ZERO,zsign*0.5*(mb2_-tp)/mb,
 				0.5*(mb2_-tp)/mb,ZERO);
@@ -526,10 +526,10 @@ bool DrellYanBase::applyHard(ShowerParticleVector quarks,
   else
     {
       pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(mb2_-uhat)/mb,ZERO);
-      double zsign(1.);
+      double zsign(quarkplus ? 1. : -1.);
       if(iemit==1)
 	{
-	  if(itype==1) zsign=-1.;
+	  if(itype==1) zsign *= -1.;
 	  pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(shat-mb2_)/mb,
 				  0.5*(shat-mb2_)/mb);
 	  Energy eemit=0.5*(mb2_-that)/mb;
@@ -537,14 +537,13 @@ bool DrellYanBase::applyHard(ShowerParticleVector quarks,
 	}
       else
 	{
-	  if(itype==2) zsign=-1.;
+	  if(itype==2) zsign *= -1.;
 	  pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(mb2_-that)/mb,
 				  0.5*(mb2_-that)/mb);
 	  Energy eemit=0.5*(shat-mb2_)/mb;
 	  cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
 	}
     }
-
   // rotate the gluon
   double sin3(sqrt(1.-sqr(cos3)));
   double phi(Constants::twopi*UseRandom::rnd());
@@ -958,10 +957,10 @@ bool DrellYanBase::getEvent(vector<Lorentz5Momentum> & pnew,
   if(emis_type==0) {
     pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(sh-m2)/_mass,ZERO);
     Energy2 tp(th),up(uh);
-    double zsign(-1.);
+    double zsign(_quarkplus ? -1. : 1.);
     if(iemit==2) {
       swap(tp,up);
-      zsign=1;
+      zsign *= -1.;
     }
     pspect = Lorentz5Momentum(ZERO,ZERO
 			      ,zsign*0.5*(m2-tp)/_mass,0.5*(m2-tp)/_mass,
@@ -971,15 +970,15 @@ bool DrellYanBase::getEvent(vector<Lorentz5Momentum> & pnew,
   }
   else {
     pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(m2-uh)/_mass,ZERO);
-    double zsign(1.);
+    double zsign(_quarkplus ? 1. : -1.);
     if(iemit==1) {
-      if(emis_type==1) zsign=-1.;
+      if(emis_type==1) zsign *= -1.;
       pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(sh-m2)/_mass,0.5*(sh-m2)/_mass);
       Energy eemit=0.5*(m2-th)/_mass;
       cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
     }
     else {
-      if(emis_type==2) zsign=-1.;
+      if(emis_type==2) zsign *= -1.;
       pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(m2-th)/_mass,0.5*(m2-th)/_mass);
       Energy eemit=0.5*(sh-m2)/_mass;
       cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
