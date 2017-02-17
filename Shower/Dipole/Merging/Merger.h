@@ -128,7 +128,7 @@ namespace Herwig {
     	theMergePt = factor * centralMergePt();
     }
       /// true if the phase space for initial emissions should not be restricted in z.
-    bool openInitialStateZ()const{return theOpenInitialStateZ;}
+    int openZBoundaries()const{return theOpenZBoundaries;}
       /// return the current ME
     MatchboxMEBasePtr currentME() const { return theCurrentME; }
       /// return the current Node
@@ -212,7 +212,7 @@ namespace Herwig {
       /// return the pdf-ratio reweight for the history
     double pdfReweight();
       /// return the alpha_s reweight for the history
-    double alphaReweight();
+    double alphaReweight(bool nocmw=false);
       /// max legssize the shower should veto for NLO
     size_t maxLegsNLO()const {return N0()+M();}
       /// calculate the virtual contribution.
@@ -259,7 +259,7 @@ namespace Herwig {
   private:
     
       /// calculate the history expansion
-    bool theShowerExpansionWeights = true;
+    unsigned int theShowerExpansionWeights = 2;
       /// use CMW scheme
     unsigned int theCMWScheme = 0;
       /// true if current point should be projected
@@ -269,7 +269,7 @@ namespace Herwig {
       /// true if NLO contributions should be unitarised
     bool isNLOUnitarized = true;
       /// no z-restricions on initial state emissions in clustering
-    bool theOpenInitialStateZ = false;
+    int theOpenZBoundaries = 0;
       /// history weight choice
     int theChooseHistory = 0;
       /// legsize of production process

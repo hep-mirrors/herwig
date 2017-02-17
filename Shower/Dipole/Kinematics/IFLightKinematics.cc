@@ -68,8 +68,8 @@ pair<double,double> IFLightKinematics::zBoundaries(Energy pt,
   double x = dInfo.emitterX();
 
   Energy hard=dInfo.hardPt();
-  if(openInitialState()==1)hard=dInfo.scale() * sqrt((1.-x)/x) /2.;
-  if(openInitialState()==2)hard=min(dInfo.scale(),dInfo.scale() * sqrt((1.-x)/x) /2.);
+  if(openZBoundaries()==1)hard=dInfo.scale() * sqrt((1.-x)/x) /2.;
+  if(openZBoundaries()==2)hard=dInfo.scale() * min(1.,sqrt((1.-x)/x) /2.);
   if(hard<pt)return {0.5*(1.+x),0.5*(1.+x)};
 
   double s = sqrt(1.-sqr(pt/hard));

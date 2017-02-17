@@ -157,6 +157,16 @@ bool IFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   double xe = info.emitterX();
   Energy hard = info.hardPt();
 
+  if(openZBoundaries()==1){
+        Energy2 A = saj*(1.-xe)/xe;
+        hard = 0.5*A/sqrt(mk2+A);          
+  }
+  if(openZBoundaries()==2){
+        Energy2 A = saj*min(1.,(1.-xe)/xe);
+        hard= 0.5*A/sqrt(mk2+A);
+	assert(pt2<=sqr(hard));
+  }
+
   double ptRatio = sqrt(1. - pt2/sqr(hard) );
   double zp = 0.5*(1.+xe + (1.-xe)*ptRatio);
   double zm = 0.5*(1.+xe - (1.-xe)*ptRatio);

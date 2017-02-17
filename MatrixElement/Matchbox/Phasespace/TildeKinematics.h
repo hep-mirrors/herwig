@@ -264,7 +264,7 @@ protected:
    */
   vector<double>& subtractionParameters() { return theDipole->subtractionParameters(); }
 
-  
+public: 
   /**
    * Return the momentum fraction of the emitter
    */

@@ -8,8 +8,9 @@
 ## Collider type
 ##################################################
 
-read Matchbox/PPCollider.in
-read Merging/Merging.in
+read snippets/DipoleMerging.in
+read snippets/PPCollider.in
+read snippets/MonacoSampler.in
 
 ##################################################
 ## Beam energy sqrt(s)
@@ -40,9 +41,9 @@ set MergingFactory:OrderInAlphaEW 2
 
 do MergingFactory:Process p p -> e+ e- [ j j ]
 
-set MergingFactory:NLOProcesses 0
+set MergingFactory:NLOProcesses 2
 
-set Merger:MergingScale 10.*GeV
+set Merger:MergingScale 15.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
@@ -136,6 +137,8 @@ read Matchbox/MMHT2014.in
 ## CMW - Scheme
 ##################################################
 
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
+
 ### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
 ### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
 read Merging/FactorCMWScheme.in
@@ -165,8 +168,6 @@ set /Herwig/Generators/EventGenerator:IntermediateOutput Yes
 
 cd /Herwig/Generators
 
-set /Herwig/DipoleShower/Kinematics/IFLightKinematics:OpenInitialStateZ Yes
-set /Herwig/DipoleShower/Kinematics/IILightKinematics:OpenInitialStateZ Yes
-set /Herwig/Merging/Merger:OpenInitialStateZ Yes
+saverun LHC-Z-Merging EventGenerator
 
-saverun 3LO-0NLO-LHC-Z_OISZ EventGenerator
+

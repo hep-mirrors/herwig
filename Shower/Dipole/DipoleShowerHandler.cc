@@ -776,7 +776,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
         }
       }
     }
-    if(theMergingHelper)
+    if(theMergingHelper&&firstInteraction())
        optHardPt=ZERO;  
   
    
