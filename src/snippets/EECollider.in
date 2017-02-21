@@ -16,8 +16,6 @@ clear EventHandler:Cuts:MultiCuts
 # setting for QED partners in qtilde shower
 set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 #  Erase the PDF for the leptons
-set /Herwig/Partons/Extractor:FirstPDF NULL
-set /Herwig/Partons/Extractor:SecondPDF NULL
 set /Herwig/Shower/ShowerHandler:PDFA NULL
 set /Herwig/Shower/ShowerHandler:PDFB NULL
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
@@ -28,11 +26,12 @@ cd /Herwig/MatrixElements/Matchbox
 
 set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF No
-set Factory:PartonExtractor /Herwig/Partons/Extractor
+set Factory:PartonExtractor /Herwig/Partons/EEExtractor
 
 set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
 set /Herwig/Merging/MergingFactory:SecondPerturbativePDF No
-set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/Extractor
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/EEExtractor
 
 cd /Herwig/Generators/
+set /Herwig/MatrixElements/SubProcess:PartonExtractor /Herwig/Partons/EEExtractor
 

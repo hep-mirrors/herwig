@@ -11,18 +11,17 @@ cd /Herwig/Cuts
 set Cuts:ScaleMin 2.0*GeV
 set Cuts:X1Min 1.0e-5
 set Cuts:X2Min 1.0e-5
-cd /Herwig/Partons
-set Extractor:FlatSHatY 1
 
 # Matchbox settings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF Yes
 set Factory:SecondPerturbativePDF Yes
-set Factory:PartonExtractor /Herwig/Partons/Extractor
+set Factory:PartonExtractor /Herwig/Partons/PPExtractor
 
 cd /Herwig/Merging
 set MergingFactory:FirstPerturbativePDF Yes
 set MergingFactory:SecondPerturbativePDF Yes
-set MergingFactory:PartonExtractor /Herwig/Partons/Extractor
+set MergingFactory:PartonExtractor /Herwig/Partons/PPExtractor
 
 cd /Herwig/Generators/
+set /Herwig/MatrixElements/SubProcess:PartonExtractor /Herwig/Partons/PPExtractor

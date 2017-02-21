@@ -14,7 +14,7 @@ cd /Herwig/Generators
 # no pdfs for leptons
 set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 set /Herwig/Partons/MPIExtractor:SecondPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/Extractor:SecondPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/EPExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 # DIS physics parameters (override defaults here) 
@@ -40,7 +40,7 @@ insert SubProcess:MatrixElements[0] MEDISCC
 ###################################################
 # set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
 # set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
-# set /Herwig/Partons/Extractor:SecondPDF  /Herwig/Partons/HardNLOPDF
+# set /Herwig/Partons/EPExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 #
 ###################################################
 ##  Setup the POWHEG shower

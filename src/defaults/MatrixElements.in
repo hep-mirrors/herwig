@@ -246,4 +246,4 @@ create Herwig::MEGammaP2Jets MEGammaP2Jets HwMEGammaHadron.so
 # Generic for all colliders
 ##########################################################
 create ThePEG::SubProcessHandler SubProcess
-newdef SubProcess:PartonExtractor /Herwig/Partons/Extractor
+newdef SubProcess:PartonExtractor /Herwig/Partons/PPExtractor

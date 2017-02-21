@@ -66,8 +66,9 @@ cd /Herwig/Partons
 
 set /Herwig/Particles/p+:PDF HardNLOPDF
 set /Herwig/Particles/pbar-:PDF HardNLOPDF
-set /Herwig/Partons/Extractor:FirstPDF HardNLOPDF
-set /Herwig/Partons/Extractor:SecondPDF HardNLOPDF
+set /Herwig/Partons/PPExtractor:FirstPDF HardNLOPDF
+set /Herwig/Partons/PPExtractor:SecondPDF HardNLOPDF
+set /Herwig/Partons/EPExtractor:SecondPDF HardNLOPDF
 
 set /Herwig/Shower/ShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/Shower/ShowerHandler:PDFB ShowerNLOPDF

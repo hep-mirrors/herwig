@@ -47,7 +47,7 @@ create ThePEG::Cuts   /Herwig/Cuts/NoCuts
 cd /Herwig/EventHandlers
 insert theLesHouchesHandler:FxFxReaders 0 theLHReader
 set theLesHouchesHandler:WeightOption VarNegWeight
-set theLesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set theLesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
 set theLesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
 set theLesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set theLesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler

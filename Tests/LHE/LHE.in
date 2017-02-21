@@ -22,7 +22,7 @@ set Cuts:X1Max 0.9
 set Cuts:X2Max 0.9
 create ThePEG::LesHouchesEventHandler LesHouchesHandler
 insert LesHouchesHandler:LesHouchesReaders[0] Reader2
-set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
 set LesHouchesHandler:StatLevel 2
 set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler

@@ -30,23 +30,20 @@ do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
-cd /Herwig/Partons
-set Extractor:FlatSHatY 1
-
 # Matchbox settings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF Yes
 set Factory:SecondPerturbativePDF No
-set Factory:PartonExtractor /Herwig/Partons/Extractor
+set Factory:PartonExtractor /Herwig/Partons/EPExtractor
 
 set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
 set /Herwig/Merging/MergingFactory:SecondPerturbativePDF Yes
-set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/Extractor
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/EPExtractor
 
 #  Erase the PDF for the lepton side (the one from Particle Data object is used)
-set /Herwig/Partons/Extractor:FirstPDF NULL
 set /Herwig/Shower/ShowerHandler:PDFA NULL
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
 
 cd /Herwig/Generators/
+set /Herwig/MatrixElements/SubProcess:PartonExtractor /Herwig/Partons/EPExtractor
 

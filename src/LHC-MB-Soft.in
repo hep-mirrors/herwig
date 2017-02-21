@@ -96,16 +96,16 @@ set MEDiffractionDouble:DiffDirection Both
 
 # Make a parton extractor for diffraction
 cd /Herwig/Partons
-cp Extractor DiffQCDExtractor
-set DiffQCDExtractor:FirstPDF /Herwig/Partons/NoPDF
-set DiffQCDExtractor:SecondPDF /Herwig/Partons/NoPDF
+cp Extractor DiffPPExtractor
+set DiffPPExtractor:FirstPDF /Herwig/Partons/NoPDF
+set DiffPPExtractor:SecondPDF /Herwig/Partons/NoPDF
 
 cd /Herwig/MatrixElements/
 # Create Diffraction  SubProcessHandler
 cp SubProcess QCDDiffraction
 
 # Assign the PartonExtractor to the SubProcessHandler
-set QCDDiffraction:PartonExtractor /Herwig/Partons/DiffQCDExtractor
+set QCDDiffraction:PartonExtractor /Herwig/Partons/DiffPPExtractor
 
 # Use only Delta as final excited state (Yes/No)
 set MEDiffractionLeft:DeltaOnly No

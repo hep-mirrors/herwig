@@ -24,8 +24,8 @@ cd /Herwig/Partons
 # Set the PDFs for the beams
 # This is for double diffractive, comment out either the first or second
 # for single diffractive
-set Extractor:FirstPDF  PomeronFlux
-set Extractor:SecondPDF PomeronFlux
+set PPExtractor:FirstPDF  PomeronFlux
+set PPExtractor:SecondPDF PomeronFlux
 
 ## Reggeon Structure Function #################################
 # MUST HAVE LHAPDF linked with ThePEG
@@ -49,7 +49,7 @@ set Extractor:SecondPDF PomeronFlux
 ##################################################
 # Choice of phase-space generation for PDFs
 ##################################################
-set Extractor:FlatSHatY 0
+set PPExtractor:FlatSHatY 0
 
 ##################################################
 #  Cuts

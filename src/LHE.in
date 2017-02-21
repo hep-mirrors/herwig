@@ -20,7 +20,7 @@ library LesHouches.so
 # create the event handler
 create ThePEG::LesHouchesEventHandler LesHouchesHandler
 # set the various step handlers
-set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
 set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
@@ -40,8 +40,8 @@ set /Herwig/Partons/LHAPDF:PDFName NAME_OF_PDF
 set /Herwig/Partons/LHAPDF:RemnantHandler /Herwig/Partons/HadronRemnants
 set /Herwig/Particles/p+:PDF /Herwig/Partons/LHAPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/LHAPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/LHAPDF
-set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/LHAPDF
+set /Herwig/Partons/PPExtractor:FirstPDF  /Herwig/Partons/LHAPDF
+set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/LHAPDF
 # We would recommend the shower uses the default PDFs with which it was tuned.
 # However it can be argued that the same set as for the sample should be used for
 # matched samples, i.e. MC@NLO (and less so POWHEG)
