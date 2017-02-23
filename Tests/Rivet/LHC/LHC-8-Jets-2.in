@@ -1,2 +1,4 @@
 # ATLAS tracks in jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419070
+# ATLAS jet charge
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1393758

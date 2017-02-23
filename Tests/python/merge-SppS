@@ -68,7 +68,7 @@ for file in yodafiles:
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:

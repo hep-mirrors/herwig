@@ -522,6 +522,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
+            process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
         elif(parameterName.find("8-ggH")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEHiggs\n"
             process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
@@ -608,7 +609,8 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/QCDCuts:MHatMin 2150.*GeV\n"
             elif(parameterName.find("DiJets-8")>=0) :
                 process+="set /Herwig/Cuts/QCDCuts:MHatMin 2750.*GeV\n"
-        elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0) :
+        elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0 or \
+             parameterName.find("13-Jets")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set MEQCD2to2:MaximumFlavour 5\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
@@ -1156,7 +1158,8 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/JetPairMass:MassMin 2150.*GeV\n"
             elif(parameterName.find("DiJets-8")>=0) :
                 process+="set /Herwig/Cuts/JetPairMass:MassMin 2750.*GeV\n"
-        elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0) :
+        elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0 or \
+             parameterName.find("13-Jets")>=0) :
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
             process+="do Factory:Process p p j j\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"

@@ -1,5 +1,5 @@
 ##################################################
 # select the analyses
 ##################################################
-# CMS charged particle rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
+# general analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1298807

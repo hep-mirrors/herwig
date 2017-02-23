@@ -1,8 +1,6 @@
 ##################################################
 # select the analyses
 ##################################################
-# CMS UE
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1384119
 # ATLAS UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419652
 # ATLAS UE
