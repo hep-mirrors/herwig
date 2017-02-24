@@ -295,7 +295,7 @@ namespace exsample {
 
     /// a pointer to the cell info object,
     /// if this is a leaf cell
-    boost::scoped_ptr<cell_info> cell_info_;
+    std::unique_ptr<cell_info> cell_info_;
 
 
   };

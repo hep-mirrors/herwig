@@ -20,37 +20,52 @@ using std::ostream_iterator;
 using namespace Herwig;
 
 DipoleIndex::DipoleIndex()
-  : theInitialStateEmitter(false), theInitialStateSpectator(false) {}
+  : theInitialStateEmitter(false), theIncomingDecayEmitter(false),
+    theInitialStateSpectator(false), theIncomingDecaySpectator(false) {}
 
 DipoleIndex::DipoleIndex(tcPDPtr newEmitter, tcPDPtr newSpectator,
-			 const PDF& newEmitterPDF, const PDF& newSpectatorPDF)
+			 const PDF& newEmitterPDF, const PDF& newSpectatorPDF,
+			 const bool decayingEmitter, const bool decayingSpectator)
   : theEmitterData(newEmitter), theInitialStateEmitter(newEmitterPDF.pdf()),
+    theIncomingDecayEmitter(decayingEmitter),
     theEmitterPDF(newEmitterPDF),
     theSpectatorData(newSpectator), theInitialStateSpectator(newSpectatorPDF.pdf()),
+    theIncomingDecaySpectator(decayingSpectator),
     theSpectatorPDF(newSpectatorPDF) {}
 
 
+// SW Note, this is used in DipoleShowerHandler.getWinner(),
+// not including the comparison of the decay booleans led to a bug which took a long time to fix
+// remember to update this function in case of new characteristics in DipoleIndex
 bool DipoleIndex::operator ==(const DipoleIndex& x) const {
   return
     theEmitterData == x.theEmitterData &&
     theInitialStateEmitter == x.theInitialStateEmitter &&
     theEmitterPDF == x.theEmitterPDF &&
+    theIncomingDecayEmitter == x.incomingDecayEmitter() &&
     theSpectatorData == x.theSpectatorData &&
     theInitialStateSpectator == x.theInitialStateSpectator &&
-    theSpectatorPDF == x.theSpectatorPDF;
+    theSpectatorPDF == x.theSpectatorPDF &&
+    theIncomingDecaySpectator == x.incomingDecaySpectator();
 }
 
 bool DipoleIndex::operator <(const DipoleIndex& x) const {
   if ( theEmitterData == x.theEmitterData ) {
     if ( theInitialStateEmitter == x.theInitialStateEmitter ) {
       if ( theEmitterPDF == x.theEmitterPDF ) {
-	if ( theSpectatorData == x.theSpectatorData ) {
-	  if ( theInitialStateSpectator == x.theInitialStateSpectator ) {
-	    return theSpectatorPDF < x.theSpectatorPDF;
+	if ( theIncomingDecayEmitter == x.theIncomingDecayEmitter ) {
+	  if ( theSpectatorData == x.theSpectatorData ) {
+	    if ( theInitialStateSpectator == x.theInitialStateSpectator ) {
+	      if ( theSpectatorPDF == x.theSpectatorPDF ) {
+		return theIncomingDecaySpectator < x.theIncomingDecaySpectator;
+	      }
+	      return theSpectatorPDF < x.theSpectatorPDF;
+	    }
+	    return theInitialStateSpectator < x.theInitialStateSpectator;
 	  }
-	  return theInitialStateSpectator < x.theInitialStateSpectator;
+	  return theSpectatorData < x.theSpectatorData;
 	}
-	return theSpectatorData < x.theSpectatorData;
+	return theIncomingDecayEmitter < x.theIncomingDecayEmitter;
       }
       return theEmitterPDF < x.theEmitterPDF;
     }
@@ -63,6 +78,7 @@ void DipoleIndex::swap() {
   std::swap(theEmitterData,theSpectatorData);
   std::swap(theInitialStateEmitter,theInitialStateSpectator);
   std::swap(theEmitterPDF,theSpectatorPDF);
+  std::swap(theIncomingDecayEmitter,theIncomingDecaySpectator);
 }
 
 pair<DipoleIndex,DipoleIndex> DipoleIndex::split(tcPDPtr emm) const {
@@ -70,7 +86,7 @@ pair<DipoleIndex,DipoleIndex> DipoleIndex::split(tcPDPtr emm) const {
   DipoleIndex first(emitterData(),emm,emitterPDF(),PDF());
   DipoleIndex second(emm,spectatorData(),PDF(),spectatorPDF());
 
-  return make_pair(first,second);
+  return {first,second};
 
 }
 
@@ -92,12 +108,12 @@ void DipoleIndex::print(ostream& os) const {
 DipoleSplittingInfo::DipoleSplittingInfo()
   : theConfiguration(false,false), 
     theSpectatorConfiguration(false,false),
-    theScale(0.0*GeV),
+    theScale(0.0*GeV),theIsDecayProc(false), theRecoilMass(0.0*GeV),
     theEmitterX(1.0), theSpectatorX(1.0), 
     theHardPt(0.0*GeV), theLastPt(0.0*GeV),
     theLastZ(0.0), theLastPhi(0.0), theLastEmitterZ(0.0),
     theLastSpectatorZ(0.0), theLastValue(0.0),
-    theStoppedEvolving(false) {}
+    theStoppedEvolving(false),theCalcFixedExpansion(false) {}
 
 void DipoleSplittingInfo::fill(const DipoleSplittingInfo& other) {
   *this = other;

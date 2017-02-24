@@ -1,6 +1,16 @@
 # -*- ThePEG-repository -*-
 
 set /Herwig/MatrixElements/Matchbox/Factory:QuarkFlavourDiagonal Yes
+set /Herwig/Merging/MergingFactory:QuarkFlavourDiagonal Yes
 
 set /Herwig/Vertices/FFWMatchboxVertex:Diagonal Yes
+
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin
+set Amplitudelnuqqbar:Diagonal Yes
+set Amplitudelnuqqbarg:Diagonal Yes
+set Amplitudelnuqqbargg:Diagonal Yes
+set Amplitudelnuqqbarqqbar:Diagonal Yes
+
+
 

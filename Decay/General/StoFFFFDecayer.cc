@@ -158,7 +158,7 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
     SpinorWaveFunction::
       calculateWaveFunctions(outwave_[ix].first,decay[ix],Helicity::outgoing);
     outwave_[ix].second.resize(2);
-    if(outwave_[ix].first[0].wave().Type() == u_spinortype) {
+    if(outwave_[ix].first[0].wave().Type() == SpinorType::u) {
       for(unsigned int iy = 0; iy < 2; ++iy) {
 	outwave_[ix].second[iy] = outwave_[ix].first[iy].bar();
 	outwave_[ix].first[iy].conjugate();

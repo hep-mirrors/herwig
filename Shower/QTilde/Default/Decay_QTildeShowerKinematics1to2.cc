@@ -13,18 +13,18 @@
 
 #include "Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include <cassert>
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
+#include "Herwig/Shower/Core/Base/ShowerVertex.h"
 
 using namespace Herwig;
 
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType,
+	       ShowerPartnerType partnerType,
 	       bool massVeto) const {
   assert(children.size() == 2);
   // calculate the scales
@@ -93,7 +93,7 @@ reconstructLast(const tShowerParticlePtr last, Energy mass) const {
 
 void Decay_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						    const ShowerParticleVector & children,
-						    ShowerPartnerType::Type) const {
+						    ShowerPartnerType) const {
   IdList ids(3);
   ids[0] = parent->dataPtr();
   ids[1] = children[0]->dataPtr();

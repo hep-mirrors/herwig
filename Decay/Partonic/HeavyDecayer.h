@@ -10,7 +10,7 @@
 #define HERWIG_HeavyDecayer_H
 // This is the declaration of the HeavyDecayer class.
 
-#include <PartonicDecayerBase.h>
+#include "PartonicDecayerBase.h"
 
 namespace Herwig {
 

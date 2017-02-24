@@ -16,7 +16,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.fh"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
   using namespace ThePEG;

@@ -11,9 +11,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig/Utilities/Statistics/Histogram.h"
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-
 namespace Herwig {
 
 using namespace ThePEG;
@@ -636,22 +633,22 @@ private:
   /**
    * Trijet properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeJetProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeJetProperties;
 
   /**
    * Jet-pair/electroweak triple properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairEWIDTripleProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairEWIDTripleProperties;
 
   /**
    * Jet-pair/charged lepton triple properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairChargedLeptonTripleProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairChargedLeptonTripleProperties;
 
   /**
    * Jet-pair/neutrino triple properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairNeutrinoTripleProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairNeutrinoTripleProperties;
 
   /**
    * Jet-pair/missing pT triple properties
@@ -661,32 +658,32 @@ private:
   /**
    * Jet-pair/Higgs triple properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairHiggsTripleProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairHiggsTripleProperties;
 
   /**
    * Triple electroweak properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeEWIDProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeEWIDProperties;
 
   /**
    * Triple charged lepton properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeChargedLeptonProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeChargedLeptonProperties;
 
   /**
    * Fourjet properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourJetProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourJetProperties;
 
   /**
    * Four electroweak properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourEWIDProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourEWIDProperties;
 
   /**
    * Four charged lepton properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourChargedLeptonProperties;
+  map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourChargedLeptonProperties;
 
 protected:
 
@@ -956,13 +953,13 @@ protected:
    */
   TripleProperties& threeJetProperties(const unsigned int id1, const unsigned int id2,
 				       const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theThreeJetProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theThreeJetProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theThreeJetProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << id3;
-    return theThreeJetProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theThreeJetProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -971,13 +968,13 @@ protected:
    */
   TripleProperties& jetPairEWIDTripleProperties(const unsigned int id1, const unsigned int id2,
 				              const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theJetPairEWIDTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theJetPairEWIDTripleProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theJetPairEWIDTripleProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << "EWID" << id3;
-    return theJetPairEWIDTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theJetPairEWIDTripleProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -986,13 +983,13 @@ protected:
    */
   TripleProperties& jetPairChargedLeptonTripleProperties(const unsigned int id1, const unsigned int id2,
 				              const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theJetPairChargedLeptonTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theJetPairChargedLeptonTripleProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theJetPairChargedLeptonTripleProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << "ChargedLepton" << id3;
-    return theJetPairChargedLeptonTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theJetPairChargedLeptonTripleProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -1001,13 +998,13 @@ protected:
    */
   TripleProperties& jetPairNeutrinoTripleProperties(const unsigned int id1, const unsigned int id2,
 				              const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theJetPairNeutrinoTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theJetPairNeutrinoTripleProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theJetPairNeutrinoTripleProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << "Neutrino" << id3;
-    return theJetPairNeutrinoTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theJetPairNeutrinoTripleProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -1030,13 +1027,13 @@ protected:
    */
   TripleProperties& jetPairHiggsTripleProperties(const unsigned int id1, const unsigned int id2,
 				              const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theJetPairHiggsTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theJetPairHiggsTripleProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theJetPairHiggsTripleProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << "Higgs" << id3;
-    return theJetPairHiggsTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theJetPairHiggsTripleProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -1045,13 +1042,13 @@ protected:
    */
   TripleProperties& threeEWIDProperties(const unsigned int id1, const unsigned int id2,
 				        const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theThreeEWIDProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theThreeEWIDProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theThreeEWIDProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "EWID" << id1 << id2 << id3;
-    return theThreeEWIDProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theThreeEWIDProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -1060,13 +1057,13 @@ protected:
    */
   TripleProperties& threeChargedLeptonProperties(const unsigned int id1, const unsigned int id2,
 				       const unsigned int id3) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theThreeChargedLeptonProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    map<std::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theThreeChargedLeptonProperties.find(std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
     if ( it != theThreeChargedLeptonProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "ChargedLepton" << id1 << id2 << id3;
-    return theThreeChargedLeptonProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    return theThreeChargedLeptonProperties[std::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -1075,13 +1072,13 @@ protected:
    */
   ObjectProperties& fourJetProperties(const unsigned int id1, const unsigned int id2,
 				      const unsigned int id3, const unsigned int id4) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theFourJetProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theFourJetProperties.find(std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
     if ( it != theFourJetProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "Jet" << id1 << id2 << id3 << id4;
-    return theFourJetProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+    return theFourJetProperties[std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }  
 
@@ -1090,13 +1087,13 @@ protected:
    */
   ObjectProperties& fourEWIDProperties(const unsigned int id1, const unsigned int id2,
 				      const unsigned int id3, const unsigned int id4) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theFourEWIDProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theFourEWIDProperties.find(std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
     if ( it != theFourEWIDProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "EWID" << id1 << id2 << id3 << id4;
-    return theFourEWIDProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+    return theFourEWIDProperties[std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }  
 
@@ -1105,13 +1102,13 @@ protected:
    */
   ObjectProperties& fourChargedLeptonProperties(const unsigned int id1, const unsigned int id2,
 				      const unsigned int id3, const unsigned int id4) {
-    map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theFourChargedLeptonProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    map<std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theFourChargedLeptonProperties.find(std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
     if ( it != theFourChargedLeptonProperties.end() )
       return it->second;
     ostringstream ids; 
     ids << "ChargedLepton" << id1 << id2 << id3 << id4;
-    return theFourChargedLeptonProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+    return theFourChargedLeptonProperties[std::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }  
 

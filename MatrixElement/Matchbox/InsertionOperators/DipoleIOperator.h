@@ -51,6 +51,11 @@ public:
    * element this class represents virtual corrections to.
    */
   virtual void setXComb(tStdXCombPtr xc);
+  
+  /**
+   * Set parameters for new alpha parameter.
+   */
+  virtual void setAlpha (double alpha)const;
 
   /**
    * Return true, if this virtual correction
@@ -184,12 +189,12 @@ private:
   /**
    * K_q
    */
-  double KQuark;
+  mutable double KQuark;
 
   /**
    * K_g
    */
-  double KGluon;
+  mutable double KGluon;
 
 private:
 

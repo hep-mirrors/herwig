@@ -1,6 +1,6 @@
 SUBDIRS = XML Statistics
 noinst_LTLIBRARIES = libHwUtils.la
-pkglib_LTLIBRARIES = libHwRunDirectories.la
+
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
 Interpolator.tcc Interpolator.h \
@@ -19,8 +19,6 @@ nodist_libHwUtils_la_SOURCES = hgstamp.inc
 BUILT_SOURCES = hgstamp.inc
 CLEANFILES = hgstamp.inc
 
-AUTOMAKE_OPTIONS = -Wno-portability
-
 HGVERSION := $(shell hg -R $(top_srcdir) parents --template '"Herwig {node|short} ({branch})"' 2> /dev/null || echo \"$(PACKAGE_STRING)\" || true )
 
 .PHONY: update_hgstamp
@@ -33,11 +31,6 @@ XML/libHwXML.la \
 Statistics/libHwStatistics.la
 
 
-libHwRunDirectories_la_SOURCES = \
-RunDirectories.h RunDirectories.cc
-libHwRunDirectories_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0
-
-
 check_PROGRAMS = utilities_test
 utilities_test_SOURCES = \
 tests/utilitiesTestsMain.cc \
@@ -47,5 +40,5 @@ tests/utilitiesTestMaths.h \
 tests/utilitiesTestsStatistic.h
 utilities_test_LDADD = $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) $(THEPEGLIB) -ldl libHwUtils.la
 utilities_test_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(THEPEGLDFLAGS)
-utilities_test_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" -DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
+utilities_test_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) 
 TESTS = utilities_test

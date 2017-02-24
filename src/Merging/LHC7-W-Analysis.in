@@ -1,0 +1,31 @@
+##################################################
+# select the analyses
+##################################################
+# general analysis
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WPOL
+# 2010
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2010_S8919674
+
+# 2011
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I925932
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9002537
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I928289_W
+
+# 2012
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1083318
+
+# 2013
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1217867
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1216670
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1219109_EL
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1219109_MU
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1272853
+
+# 2014
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490_EL
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490_MU
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1282447
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2014_I1303894
+

@@ -12,6 +12,7 @@
 #define EXSAMPLE_utility_h_included
 
 #include "config.h"
+#include <memory>
 
 namespace exsample {
 
@@ -174,7 +175,7 @@ namespace exsample {
 
     /// default constructor
     fast_small_histogram()
-      : depth(0), bins(0) {}
+      : depth(0), bins(nullptr) {}
 
     /// copy constructor
     fast_small_histogram(const fast_small_histogram& x)
@@ -191,7 +192,7 @@ namespace exsample {
       if (&x == this)
 	return *this;
       depth = x.depth;
-      bins.reset(0);
+      bins.reset(nullptr);
       if (x.bins) {
 	bins.reset(new Statistics[two_to(depth)]);
 	for(std::size_t k = 0; k < two_to(depth); ++k)
@@ -202,7 +203,7 @@ namespace exsample {
 
     /// construct from depth d, creating 2^d bins
     explicit fast_small_histogram(std::size_t d)
-      : depth(d), bins(0) {
+      : depth(d), bins(nullptr) {
       bins.reset(new Statistics[two_to(d)]);
     }
 
@@ -233,7 +234,7 @@ namespace exsample {
     std::size_t depth;
 
     /// the contained statistics objects
-    boost::scoped_array<Statistics> bins;
+    std::unique_ptr<Statistics[]> bins;
 
     /// put histogram to an ostream
     template<class OStream>

@@ -12,7 +12,7 @@
 // This is the declaration of the IS_QTildeShowerKinematics1to2 class.
 //
 
-#include "Herwig/Shower/QTilde/Base/ShowerKinematics.h"
+#include "Herwig/Shower/Core/Base/ShowerKinematics.h"
 
 namespace Herwig {
 
@@ -61,7 +61,7 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType::Type partnerType,
+			       ShowerPartnerType partnerType,
 			       bool massVeto) const;
 
   /**
@@ -74,7 +74,7 @@ public:
    */
   virtual void updateParent( const tShowerParticlePtr parent, 
 			     const ShowerParticleVector & children,
-			     ShowerPartnerType::Type partnerType) const;
+			     ShowerPartnerType partnerType) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics

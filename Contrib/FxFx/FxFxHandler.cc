@@ -42,11 +42,11 @@ FxFxHandler::FxFxHandler()
   : ncy_(100),ncphi_(60),ihvy_(-999),nph_(-999),nh_(-999),
     etclusmean_(20*GeV),rclus_(0.4),etaclmax_(5.0),rclusfactor_(1.5),
     ihrd_(-999),njets_(-999),drjmin_(-999), highestMultiplicity_(false),
-    ycmax_(5.4),ycmin_(-5.4),jetAlgorithm_(1),vetoIsTurnedOff_(false),vetoSoftThanMatched_(false), etclusfixed_(true),epsetclus_(2.5*GeV)
+    ycmax_(5.4),ycmin_(-5.4),jetAlgorithm_(1),vetoIsTurnedOff_(false),vetoSoftThanMatched_(false), etclusfixed_(true),epsetclus_(2.5*GeV), mergemode_(0), vetoHeavyQ_(true), hpdetect_(true), vetoHeavyFlavour_(false)
   {}
 
 void FxFxHandler::doinitrun() {
-  ShowerHandler::doinitrun();
+  QTildeShowerHandler::doinitrun();
   // et_ holds the ET deposited in the (ncy_ x ncphi_) calorimeter cells.
   et_.resize(ncy_);
   for(unsigned int ixx=0; ixx<et_.size(); ixx++) et_[ixx].resize(ncphi_);
@@ -54,7 +54,15 @@ void FxFxHandler::doinitrun() {
   // that the cell was clustered into.
   jetIdx_.resize(ncy_);
   for(unsigned int ixx=0; ixx<jetIdx_.size(); ixx++) jetIdx_[ixx].resize(ncphi_);
-
+  if(mergemode_ == 0) {
+    cout << "Merging mode is FxFx." << endl;
+  } else {
+    cout << "Merging mode is Tree." << endl;
+  }
+  if(hpdetect_) {
+    cout << "Automatic detection of hard process enabled. *experimental*" << endl;
+    ihrd_ = -999;
+  }
 }
 
 IBPtr FxFxHandler::clone() const {
@@ -71,7 +79,7 @@ void FxFxHandler::persistentOutput(PersistentOStream & os) const {
       << ounit(etclusmean_,GeV) << rclus_ << etaclmax_ << rclusfactor_
       << ihrd_ << njets_ << drjmin_ << highestMultiplicity_
       << ycmax_ << ycmin_ << jetAlgorithm_ << vetoIsTurnedOff_ << vetoSoftThanMatched_ << etclusfixed_
-      << cphcal_ << sphcal_ << cthcal_ << sthcal_ << ounit(epsetclus_,GeV);
+      << cphcal_ << sphcal_ << cthcal_ << sthcal_ << ounit(epsetclus_,GeV) << vetoHeavyQ_ << mergemode_ << hpdetect_ << vetoHeavyFlavour_;
 }
 
 void FxFxHandler::persistentInput(PersistentIStream & is, int) {
@@ -80,7 +88,7 @@ void FxFxHandler::persistentInput(PersistentIStream & is, int) {
       >> iunit(etclusmean_,GeV) >> rclus_ >> etaclmax_ >> rclusfactor_
       >> ihrd_ >> njets_ >> drjmin_ >> highestMultiplicity_
       >> ycmax_ >> ycmin_ >> jetAlgorithm_ >> vetoIsTurnedOff_ >> vetoSoftThanMatched_ >> etclusfixed_
-      >> cphcal_ >> sphcal_ >> cthcal_ >> sthcal_ >> iunit(epsetclus_,GeV);
+      >> cphcal_ >> sphcal_ >> cthcal_ >> sthcal_ >> iunit(epsetclus_,GeV) >> vetoHeavyQ_ >> mergemode_ >> hpdetect_ >> vetoHeavyFlavour_;
 }
 
 ClassDescription<FxFxHandler> FxFxHandler::initFxFxHandler;
@@ -142,7 +150,7 @@ void FxFxHandler::Init() {
 
   static Parameter<FxFxHandler,int> interfaceihrd
     ("ihrd",
-     "The AlpGen hard process code",
+     "The hard process code",
      &FxFxHandler::ihrd_, -999, 0, 10000,
      false, false, Interface::limited);
 
@@ -198,7 +206,37 @@ void FxFxHandler::Init() {
      "Kt",
      "The Kt jet algorithm.",
      1);
- 
+
+   static Switch<FxFxHandler,int> interfaceMergeMode
+    ("MergeMode",
+     "The choice of merging mode",
+     &FxFxHandler::mergemode_, 0, false, false);
+  static SwitchOption FxFx
+    (interfaceMergeMode,
+     "FxFx",
+     "FxFx merging.",
+     0);
+  static SwitchOption Tree
+    (interfaceMergeMode,
+     "Tree",
+     "Tree-level merging.",
+     1);
+
+     static Switch<FxFxHandler,bool> interfaceHardProcessDetection
+    ("HardProcessDetection",
+     "The choice of merging mode",
+     &FxFxHandler::hpdetect_, true, false, false);
+  static SwitchOption Automatic
+    (interfaceHardProcessDetection,
+     "Automatic",
+     "Automatically determine which particles to include in the merging.",
+     true);
+  static SwitchOption Manual
+    (interfaceHardProcessDetection,
+     "Manual",
+     "Use the ihrd code to determine which particles to include in the merging.",
+     false);
+
   static Switch<FxFxHandler,bool> interfaceVetoIsTurnedOff
     ("VetoIsTurnedOff",
      "Allows the vetoing mechanism to be switched off.",
@@ -213,6 +251,37 @@ void FxFxHandler::Init() {
      "VetoingIsOff",
      "The MLM merging veto mechanism is switched OFF.",
      true);
+
+
+  static Switch<FxFxHandler,bool> interfaceVetoHeavyFlavour
+    ("VetoHeavyFlavour",
+     "Allows the heavy flavour vetoing mechanism to be switched off.",
+     &FxFxHandler::vetoHeavyFlavour_, false, false, false);
+  static SwitchOption HeavyFVetoingIsOn
+    (interfaceVetoHeavyFlavour,
+     "On",
+     "The MLM merging veto mechanism for heavy flavour is switched ON.",
+     false);
+  static SwitchOption HeavyFVetoingIsOff
+    (interfaceVetoHeavyFlavour,
+     "Off",
+     "The MLM merging veto mechanism for heavy flavour is switched OFF.",
+     true);
+
+    static Switch<FxFxHandler,bool> interfaceHeavyQVeto
+    ("HeavyQVeto",
+     "Allows the vetoing mechanism on the heavy quark products to be switched off.",
+     &FxFxHandler::vetoHeavyQ_, false, false, false);
+  static SwitchOption HQVetoingIsOn
+    (interfaceHeavyQVeto,
+     "On",
+     "The MLM merging veto on Heavy quark decay produts mechanism is switched ON.",
+     true);
+  static SwitchOption HQVetoingIsOff
+    (interfaceHeavyQVeto,
+     "Off",
+     "The MLM merging veto on Heavy quark decay products mechanism is switched OFF.",
+     false);
 
     static Switch<FxFxHandler,bool> interfaceVetoSoftThanMatched
     ("VetoSoftThanMatched",
@@ -233,27 +302,26 @@ void FxFxHandler::Init() {
 }
 
 void FxFxHandler::dofinish() {
-  ShowerHandler::dofinish();
+  QTildeShowerHandler::dofinish();
 }
 
 void FxFxHandler::doinit() {
 
   //print error if HardProcID is not set in input file
-  if(ihrd_ == -999) { cout << "Error: FxFxHandler:ihrd not set!" << endl; exit(1); }
-  ShowerHandler::doinit();
+  if(ihrd_ == -999 && !hpdetect_) { cout << "Error: FxFxHandler:ihrd not set and FxFx:HardProcessDetection set to Manual!" << endl; exit(1); }
+  QTildeShowerHandler::doinit();
 
   // Compute calorimeter edges in rapidity for GetJet algorithm.
   ycmax_=etaclmax_+rclus_;
   ycmin_=-ycmax_;
-
-  // Initialise calorimeter.
-  calini_m();
 }
 
 // Throws a veto according to MLM strategy ... when we finish writing it.
-bool FxFxHandler::showerHardProcessVeto() {
-
+bool FxFxHandler::showerHardProcessVeto() const {
+  int debug_mode = 0;
   if(vetoIsTurnedOff_) return false;
+
+  //if(debug_mode) { cout << "debug_mode = " << 5 << endl; } 
 
   // Skip veto for processes in which merging is not implemented:
   if(ihrd_==7||ihrd_==8||ihrd_==13) {
@@ -274,16 +342,10 @@ bool FxFxHandler::showerHardProcessVeto() {
   // showeredFSPs_ particle pointer vector. 
   getShoweredParticles();
 
-  // Get npLO_ and npNLO_ for FxFx matching
-  getnpFxFx();
-
-  // print the npXLO_ values obtained 
-  //  cout << "HANDLER:\t\t\t\t" << npLO_ << "\t\t" << npNLO_ << endl; 
-
   // Turn on some screen output debugging: 0 = none ---> 5 = very verbose.
-  int debug_mode = 0;
   doSanityChecks(debug_mode);
-  
+
+   
   // Dimensions of each calorimter cell in y and phi.
   dely_ = (ycmax_-ycmin_)/double(ncy_);
   delphi_ = 2*M_PI/double(ncphi_);
@@ -298,7 +360,7 @@ bool FxFxHandler::showerHardProcessVeto() {
   // Filter out all but the 'extra' light-parton progenitors and their
   // associated final state particles.
   caldel_m();
-  
+ 
   double prob(1);
   //if etclusfixed_ then set the etclus_ to the fixed chosen value
   if(etclusfixed_) { 
@@ -310,135 +372,296 @@ bool FxFxHandler::showerHardProcessVeto() {
     etclus_ = etclusran_(prob);
   }  
   
-
   // Cluster particlesToCluster_ into jets with FastJet.
   getFastJets(rclus_,etclus_,etaclmax_);
 
-  //FxFx modifications start here. 
+  if(mergemode_ == 0) { 
+    
+    // Get npLO_ and npNLO_ for FxFx matching
+    getnpFxFx();
 
-  // Sort partonsToMatch_ from high to low pT.
-  sort(partonsToMatch_.begin(),partonsToMatch_.end(),pTsortFunction);
+    // print the npXLO_ values obtained 
+    //  cout << "HANDLER:\t\t\t\t" << npLO_ << "\t\t" << npNLO_ << endl;
 
-  // Count the number of jets.
-  int njets_found(pjet_.size());
+    //FxFx modifications start here. 
+
+    // Sort partonsToMatch_ from high to low pT.
+    sort(partonsToMatch_.begin(),partonsToMatch_.end(),pTsortFunction);
+
+    // Count the number of jets.
+    int njets_found(pjet_.size());
   
-  // If the number of jets found is not equal to the number of partons in the Born 
-  // (i.e., the number of partons in the S-event, or one less than the number of partons in an H-event), 
-  // the jets cannot be matched and the event has to be rejected. The number of partons in the Born is written in the event file with a name “npNLO” 
-  // if there are no jets to match and no jets have been found, do not veto. 
-  if(njets_found == 0 && npNLO_ == 0)  {  /*cout << "njets_found = " << njets_found << " and npNLO = " << npNLO_ << ", accepting" << endl;*/ return false; }
+    // If the number of jets found is not equal to the number of partons in the Born 
+    // (i.e., the number of partons in the S-event, or one less than the number of partons in an H-event), 
+    // the jets cannot be matched and the event has to be rejected. The number of partons in the Born is written in the event file with a name “npNLO” 
+    // if there are no jets to match and no jets have been found, do not veto. 
+    if(njets_found == 0 && npNLO_ == 0)  {  /*cout << "njets_found = " << njets_found << " and npNLO = " << npNLO_ << ", accepting" << endl;*/ return false; }
 
-  //if the number of jets is smaller than npNLO -> reject the event.
-  if(njets_found < npNLO_) { /*cout << "njets_found = " << njets_found << " and npNLO = " << npNLO_ << ", rejecting" << endl;*/ return true; }
-  // For the maximum-multiplicity sample, the number of jets obtained does not have to be exactly equal to npNLO, it may also be larger; 
-  if(njets_found > npNLO_ && npNLO_ != njets_) { /*cout << "njets_found = " << njets_found << " and npNLO = " << npNLO_ << ", rejecting" << endl;*/ return true; }
+    //if the number of jets is smaller than npNLO -> reject the event.
+    if(njets_found < npNLO_) { /*cout << "njets_found = " << njets_found << " and npNLO = " << npNLO_ << ", rejecting" << endl;*/ return true; }
+    // For the maximum-multiplicity sample, the number of jets obtained does not have to be exactly equal to npNLO, it may also be larger; 
+    if(njets_found > npNLO_ && npNLO_ != njets_) { /*cout << "njets_found = " << njets_found << " and npNLO = " << npNLO_ << ", rejecting" << endl;*/ return true; }
 
-  // Create the matrix-element jets.
-  // Cluster also the partons at the hard-matrix element level into jets with the same algorithm as above, 
-  // but without the requirement of a minimal pT on the jets (or set it very small). 
-  // By construction, for S-events you should find exactly npNLO jets, while for the H-events it is either npNLO or npNLO+1.
-  // Cluster partonsToMatch_ into jets with FastJet.
-  getFastJetsToMatch(rclus_,0*GeV,etaclmax_);
+    // Create the matrix-element jets.
+    // Cluster also the partons at the hard-matrix element level into jets with the same algorithm as above, 
+    // but without the requirement of a minimal pT on the jets (or set it very small). 
+    // By construction, for S-events you should find exactly npNLO jets, while for the H-events it is either npNLO or npNLO+1.
+    // Cluster partonsToMatch_ into jets with FastJet.
+    getFastJetsToMatch(rclus_,0*GeV,etaclmax_);
   
-  int me_njets_found(pjetME_.size());
+    int me_njets_found(pjetME_.size());
   
-  // cout << "number of ME jets found = " << me_njets_found << "partons to match: " << partonsToMatch_.size() << endl;
+    // cout << "number of ME jets found = " << me_njets_found << "partons to match: " << partonsToMatch_.size() << endl;
 
- // Match light progenitors to jets.
-  vector<int> jetToPartonMap(pjetME_.size(),-999);
-  Energy etmin(777e100*GeV);
+    // Match light progenitors to jets.
+    vector<int> jetToPartonMap(pjetME_.size(),-999);
+    Energy etmin(777e100*GeV);
 
-  // Match the jets.
-  // Try to match the “npNLO” hardest jets created post-shower with any of the jets pre-shower. Two jets are matched if the distance between them is smaller than 1.5*DeltaR. 
-  // If not all the npNLO hardest shower jets are matched the event has to be rejected.
-  // Note that if the current event does not belong to the maximum multiplicity sample, this means that all the shower jets need to be matched, because the requirement above already rejects 
-  // events that do not have npNLO shower jets.
-  // For those events, at the level of the matrix elements there can either be npNLO or npNLO+1 matrix-element jets, depending on S- or H-events and the kinematics of those partons.
-  // Still only the shower jets need to be matched, so an event should not be rejected if a matrix-element jet cannot be matched.
-  // For each parton, starting with the hardest one ...
-  for(unsigned int ixx=0; ixx<npNLO_; ixx++) {
-    // ... loop over all jets not already matched.
-    double DRmin(777e100);
-    int    jetIndexForDRmin(-999);
-    for(unsigned int jxx=0; jxx<pjetME_.size(); jxx++) {
-      // ... and tag closest of the remaining ones
-      double DRpartonJet(partonJetDeltaR(pjetME_[ixx],pjet_[jxx]));
-      if(jetToPartonMap[jxx]<0&&DRpartonJet<DRmin) {
-	DRmin=DRpartonJet;
-	jetIndexForDRmin=jxx;
+    // Match the jets.
+    // Try to match the “npNLO” hardest jets created post-shower with any of the jets pre-shower. Two jets are matched if the distance between them is smaller than 1.5*DeltaR. 
+    // If not all the npNLO hardest shower jets are matched the event has to be rejected.
+    // Note that if the current event does not belong to the maximum multiplicity sample, this means that all the shower jets need to be matched, because the requirement above already rejects 
+    // events that do not have npNLO shower jets.
+    // For those events, at the level of the matrix elements there can either be npNLO or npNLO+1 matrix-element jets, depending on S- or H-events and the kinematics of those partons.
+    // Still only the shower jets need to be matched, so an event should not be rejected if a matrix-element jet cannot be matched.
+    // For each parton, starting with the hardest one ...
+    for(unsigned int ixx=0; ixx<npNLO_; ixx++) {
+      // ... loop over all jets not already matched.
+      double DRmin(777e100);
+      int    jetIndexForDRmin(-999);
+      for(unsigned int jxx=0; jxx<pjetME_.size(); jxx++) {
+        // ... and tag closest of the remaining ones
+        double DRpartonJet(partonJetDeltaR(pjetME_[ixx],pjet_[jxx]));
+        if(jetToPartonMap[jxx]<0&&DRpartonJet<DRmin) {
+          DRmin=DRpartonJet;
+          jetIndexForDRmin=jxx;
+        }
       }
+      // If the parton-jet distance is less than the matching
+      // distance, the parton and jet match.
+      if(DRmin<rclus_*rclusfactor_&&jetIndexForDRmin>=0) {
+        jetToPartonMap[jetIndexForDRmin]=ixx;
+        if(ixx==0||etjet_[jetIndexForDRmin]<etmin)
+          etmin=etjet_[jetIndexForDRmin]; 
+        // Otherwise this parton is not matched so veto the event.
+      } else return true;
     }
-    // If the parton-jet distance is less than the matching
-    // distance, the parton and jet match.
-    if(DRmin<rclus_*rclusfactor_&&jetIndexForDRmin>=0) {
-      jetToPartonMap[jetIndexForDRmin]=ixx;
-      if(ixx==0||etjet_[jetIndexForDRmin]<etmin)
-	etmin=etjet_[jetIndexForDRmin]; 
-    // Otherwise this parton is not matched so veto the event.
-    } else return true;
-  }
 
-  // Veto events where matched jets are softer than non-matched ones,
-  // in the inclusive (highestMultiplicity_ = true) mode, unless we
-  // are dealing with NLO input events.
-  if(npNLO_ == njets_ && vetoSoftThanMatched_) {
-    //cout << "highest mult. event being tested for softer jets than matched..." << endl;
-    for(unsigned int iyy=0; iyy<pjet_.size(); iyy++) {
-      //cout << "etjet_[iyy] = " << etjet_[iyy]/GeV << endl;
-      if(jetToPartonMap[iyy]<0&&etmin<etjet_[iyy]) { /*cout << "VETO!" << endl;*/ return true; }
-    }
-  }
-
-  //end of FxFx part
-  // **************************************************************** //
-  // * Now look to the non-light partons for heavy quark processes. * //
-  // **************************************************************** //
-
-  if(ihrd_<=2||ihrd_==6||ihrd_==10||ihrd_==15||ihrd_==16) {
-
-    // Extract heavy quark progenitors and the radiation they
-    // produce and put it in the calorimeter.
-    caldel_hvq();
-    
-    // Cluster particlesToCluster_ into jets with FastJet.
-    getFastJets(rclus_,etclus_,etaclmax_);
-    
-    // If the radiation from the heavy quarks does not give rise
-    // to any jets we accept event.
-    if(pjet_.size() == 0) return false;
-
-    // If extra jets emerge from the jet clustering we only
-    // accept events where the jets formed by radiation from
-    // b and c quarks lies within drjmin_ of the heavy quark
-    // progenitor.
-    int nmjet(pjet_.size());
-    for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) {
-      for(unsigned int jxx=0; jxx<partonsToMatch_.size(); jxx++) {
-	if(!(abs(partonsToMatch_[jxx]->id())==4||abs(partonsToMatch_[jxx]->id())==5)) continue;
-	if(partonJetDeltaR(partonsToMatch_[jxx],pjet_[ixx])<drjmin_) {
-	  nmjet--;           // Decrease the number of unmatched jets.
-	  etjet_[ixx]=0*GeV; // Set jet ET to zero to indicate it is 'matched'.
-	}
+    // Veto events where matched jets are softer than non-matched ones,
+    // in the inclusive (highestMultiplicity_ = true) mode, unless we
+    // are dealing with NLO input events.
+    if(npNLO_ == njets_ && vetoSoftThanMatched_) {
+      //cout << "highest mult. event being tested for softer jets than matched..." << endl;
+      for(unsigned int iyy=0; iyy<pjet_.size(); iyy++) {
+        //cout << "etjet_[iyy] = " << etjet_[iyy]/GeV << endl;
+        if(jetToPartonMap[iyy]<0&&etmin<etjet_[iyy]) { /*cout << "VETO!" << endl;*/ return true; }
       }
     }
 
-    // If every jet matched to _at_least_one_ progenitor accept the event.
-    if(nmjet<=0) return false;
+  
+    if(!vetoHeavyQ_) {
+      //cout << "no heavy quark decay product veto!" << endl;
+      return false;
+    }
+  
+    //end of FxFx part
+    // **************************************************************** //
+    // * Now look to the non-light partons for heavy quark processes. * //
+    // **************************************************************** //
+
+    if( (ihrd_<=2||ihrd_==6||ihrd_==10||ihrd_==15||ihrd_==16) || (hpdetect_==true && hvqfound==true) ) {
+      // Extract heavy quark progenitors and the radiation they
+      // produce and put it in the calorimeter.
+      caldel_hvq();
     
-    //else {
+      // Cluster particlesToCluster_ into jets with FastJet.
+      getFastJets(rclus_,etclus_,etaclmax_);
+    
+      // If the radiation from the heavy quarks does not give rise
+      // to any jets we accept event.
+      if(pjet_.size() == 0) return false;
+
+      // If extra jets emerge from the jet clustering we only
+      // accept events where the jets formed by radiation from
+      // b and c quarks lies within drjmin_ of the heavy quark
+      // progenitor.
+      int nmjet(pjet_.size());
+      for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) {
+        for(unsigned int jxx=0; jxx<partonsToMatch_.size(); jxx++) {
+          if(!(abs(partonsToMatch_[jxx]->id())==4||abs(partonsToMatch_[jxx]->id())==5)) continue;
+          if(partonJetDeltaR(partonsToMatch_[jxx],pjet_[ixx])<drjmin_) {
+            nmjet--;           // Decrease the number of unmatched jets.
+            etjet_[ixx]=0*GeV; // Set jet ET to zero to indicate it is 'matched'.
+          }
+        }
+      }
+
+      // If every jet matched to _at_least_one_ progenitor accept the event.
+      if(nmjet<=0) return false;
+    
+      //else {
       // If unmatched jets remain, reject the event if highestMultiplicity_!=1
       //if(!highestMultiplicity_) return true;
       //else {
       // If unmatched jets remain and highestMultiplicity is true then check
       // that these are softer than all the matched ones (from the light-parton
       // matching round).
-    /*	Energy etmax(0.*GeV);
-	for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) etmax=max(etjet_[ixx],etmax);
-	if(etmax>etmin) return true;
+      /*	Energy etmax(0.*GeV);
+                for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) etmax=max(etjet_[ixx],etmax);
+                if(etmax>etmin) return true;
+                }
+      */
+
+    }
+  }
+
+   /*****
+   *****
+   ***** END of mergemode_ == 0 (i.e. FxFx MERGING BLOCK)
+   *****/
+
+
+  
+  if(mergemode_ == 1) {
+    
+    // determine whether event is of highest multiplicity or not
+    if(partonsToMatch_.size()==njets_) { highestMultiplicity_ = true; }
+    //  cout << "jet finding gives pjet_.size() = " << pjet_.size() << endl;
+    // If there are less jets than partons then parton-jet matching is
+    // bound to fail: reject the event already. Also, if the input is
+    // an NLO event file it will 99.5% of the time contain a number of
+    // light partons in the F.S. equal to that in the real emission
+    // process in the NLO calculation, moreover, it has already
+    // effectively merged njets_-1 and njets jet events. So in that
+    // case we do not reject events on the grounds they have jet
+    // multiplicity less than partonsToMatch_.size() but rather less
+    // jets than partonsToMatch.size()-1; such events are better
+    // described by the lower-by-one-unit (partonsToMatch_.size()-1)
+    // of multiplicity NLO event file, or the lower-by-two-units
+    // (partonsToMatch_.size()-2) of multiplicity LO event file. 
+
+    // If it is not jet production apply rejection criterion as above.
+    if(ihrd_!=9) {
+      if(pjet_.size() < partonsToMatch_.size()) return true;
+    }
+    // Otherwise, in the case of jet production allow the lowest
+    // contributing multiplicity process (just at NLO), namely,
+    // dijet production, to give rise to 1-jet and even 0-jet 
+    // events, since these can contribute to, for example, the
+    // inclusive jet cross section i.e. in this case the rejection
+    // is only applied in the case of the next-to-lowest multiplicity
+    // processes (>2 parton events at LO and >3 parton events at NLO).
+    else {
+      // KH - March 5th
+      // Removed the following line giving special treatment
+      // also to the LO events, to maintain consistency with
+      // the fortran algorithm, at least for now. So now jet
+      // production at LO is being treated the same as all 
+      // other processes.
+      //      if(partonsToMatch_.size()==2 && pjet_.size()<2) return false;
+      if(pjet_.size() < partonsToMatch_.size()) return true;
+    }
+    
+    // Sort partonsToMatch_ from high to low pT.
+    sort(partonsToMatch_.begin(),partonsToMatch_.end(),pTsortFunction);
+    
+    // Match light progenitors to jets.
+    vector<int> jetToPartonMap(pjet_.size(),-999);
+    Energy etmin(777e100*GeV);
+  
+    // For each parton, starting with the hardest one ...
+    for(unsigned int ixx=0; ixx<partonsToMatch_.size(); ixx++) {
+      // ... loop over all jets not already matched.
+      double DRmin(777e100);
+      int    jetIndexForDRmin(-999);
+      for(unsigned int jxx=0; jxx<pjet_.size(); jxx++) {
+	// ... and tag closest of the remaining ones
+	double DRpartonJet(partonJetDeltaR(partonsToMatch_[ixx],pjet_[jxx]));
+	if(jetToPartonMap[jxx]<0&&DRpartonJet<DRmin) {
+	  DRmin=DRpartonJet;
+	  jetIndexForDRmin=jxx;
+	}
       }
-    */
+      // If the parton-jet distance is less than the matching
+      // distance, the parton and jet match.
+      if(DRmin<rclus_*rclusfactor_&&jetIndexForDRmin>=0) {
+	jetToPartonMap[jetIndexForDRmin]=ixx;
+	if(ixx==0||etjet_[jetIndexForDRmin]<etmin)
+	  etmin=etjet_[jetIndexForDRmin]; 
+	// Otherwise this parton is not matched so veto the event.
+      } else return true;
+    }
+
+
+    // Veto events with larger jet multiplicity from exclusive sample.
+    if(!highestMultiplicity_&&pjet_.size()>partonsToMatch_.size()) return true; 
+ 
+    // Veto events where matched jets are softer than non-matched ones,
+    // in the inclusive (highestMultiplicity_ = true) mode, unless we
+    // are dealing with NLO input events.
+    if(highestMultiplicity_) {
+      for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) 
+	if(jetToPartonMap[ixx]<0&&etmin<etjet_[ixx]) return true;
+    }
+
+
+    if(!vetoHeavyQ_) {
+      //cout << "no heavy quark decay product veto!" << endl;
+      return false;
+    }
+  
+    
+    // **************************************************************** //
+    // * Now look to the non-light partons for heavy quark processes. * //
+    // **************************************************************** //
+  
+    if( (ihrd_<=2||ihrd_==6||ihrd_==10||ihrd_==15||ihrd_==16) || (hpdetect_==true && hvqfound==true))  {
+  
+      // Extract heavy quark progenitors and the radiation they
+      // produce and put it in the calorimeter.
+      caldel_hvq();
+    
+      // Cluster particlesToCluster_ into jets with FastJet.
+      getFastJets(rclus_,etclus_,etaclmax_);
+    
+      // If the radiation from the heavy quarks does not give rise
+      // to any jets we accept event.
+      if(pjet_.size() == 0) return false;
+
+      // If extra jets emerge from the jet clustering we only
+      // accept events where the jets formed by radiation from
+      // b and c quarks lies within drjmin_ of the heavy quark
+      // progenitor.
+      int nmjet(pjet_.size());
+      for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) {
+	for(unsigned int jxx=0; jxx<partonsToMatch_.size(); jxx++) {
+	  if(!(abs(partonsToMatch_[jxx]->id())==4||abs(partonsToMatch_[jxx]->id())==5)) continue;
+	  if(partonJetDeltaR(partonsToMatch_[jxx],pjet_[ixx])<drjmin_) {
+	    nmjet--;           // Decrease the number of unmatched jets.
+	    etjet_[ixx]=0*GeV; // Set jet ET to zero to indicate it is 'matched'.
+	  }
+	}
+      }
+
+      // If every jet matched to _at_least_one_ progenitor accept the event.
+      if(nmjet<=0) return false;
+      else {
+	// If unmatched jets remain, reject the event if highestMultiplicity_!=1
+	if(!highestMultiplicity_) return true;
+	else {
+	  // If unmatched jets remain and highestMultiplicity is true then check
+	  // that these are softer than all the matched ones (from the light-parton
+	  // matching round).
+	  Energy etmax(0.*GeV);
+	  for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) etmax=max(etjet_[ixx],etmax);
+	  if(etmax>etmin) return true;
+	}
+      }
+    }
 
   }
+
+  
   // Otherwise we accept the event ...
   return false;
 
@@ -446,7 +669,7 @@ bool FxFxHandler::showerHardProcessVeto() {
 
 /* Function that returns the R distance
    between a particle and a jet. */
-double FxFxHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) { 
+double FxFxHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) const { 
   LorentzMomentum partonmom(partonptr->momentum());
   // Calculate DY, DPhi and then DR
   double DY(partonmom.eta()-jetmom.eta());
@@ -456,7 +679,7 @@ double FxFxHandler::partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jet
   return DR;
 }
 
-double FxFxHandler::partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2) { 
+double FxFxHandler::partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2) const { 
   // Calculate DY, DPhi and then DR
   double DY(jetmom1.eta()-jetmom2.eta());
   double DPhi(jetmom1.phi()-jetmom2.phi());
@@ -465,37 +688,8 @@ double FxFxHandler::partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jet
   return DR;
 }
 
-
-// Initialize calorimeter for calsim_m and getjet_m. Note that
-// because initialization is separte calsim_m can be called more
-// than once to simulate pileup of several events.
-void FxFxHandler::calini_m() {
-
-  // Making sure arrays are clear before filling;
-  cphcal_.clear();  sphcal_.clear();
-  cthcal_.clear();  sthcal_.clear();
-
-  // Fill array holding phi values of calorimeter cell centres. 
-  double deltaPhi(2*M_PI/ncphi_);
-  for(unsigned int iphi=1; iphi<=ncphi_; iphi++) { 
-    double phi(deltaPhi*(iphi-0.5)); // Goes phi~=0 to phi~=2*pi        (iphi=0--->ncphi).
-    cphcal_.push_back(cos(phi));     // ==> goes from +1 ---> +1        (iphi=0--->ncphi).
-    sphcal_.push_back(sin(phi));     // ==> goes 0 -> 1 -> 0 -> -1 -> 0 (iphi=0--->ncphi).
-  }
-
-  // Fill array holding theta values of calorimeter cell centres in Y. 
-  double deltaY((ycmax_-ycmin_)/double(ncy_));
-  for(unsigned int iy=1; iy<=ncy_; iy++) { 
-    double Y(deltaY*(iy-0.5)+ycmin_);
-    double th(2*atan(exp(-Y))); // Goes bwds th~=pi to fwds th~=0  (iy=0--->ncy).
-    cthcal_.push_back(cos(th)); // ==> goes from -1 ---> +1        (iy=0--->ncy).
-    sthcal_.push_back(sin(th)); // ==> goes from  0 ---> +1 ---> 0 (iy=0--->ncy).
-  }
-  return;
-}
-
 // Get FastJets
-void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) {
+void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) const {
 
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int ipar=0; ipar<particlesToCluster_.size(); ipar++) { 
@@ -578,7 +772,7 @@ void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) {
 }
 
 // Get FastJets from partonsToMatch_
-void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) {
+void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) const {
 
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int ipar=0; ipar<partonsToMatch_.size(); ipar++) { 
@@ -629,163 +823,10 @@ void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) 
   pjetME_.resize(inclusiveJets.size());
   for(unsigned int ffj=0; ffj<pjetME_.size();ffj++) {
     pjetME_[ffj]  = Lorentz5Momentum(inclusiveJets[ffj].px()*GeV,
-				   inclusiveJets[ffj].py()*GeV,
-				   inclusiveJets[ffj].pz()*GeV,
-				   inclusiveJets[ffj].e()*GeV);
+                                     inclusiveJets[ffj].py()*GeV,
+                                     inclusiveJets[ffj].pz()*GeV,
+                                     inclusiveJets[ffj].e()*GeV);
     pjetME_[ffj].rescaleMass();
-  }
-
-  return;
-}
-
-
-// Simple calorimeter simulation - assume uniform Y and phi bins.
-void FxFxHandler::calsim_m() {
-  // Reset transverse energies of all calorimter cells ready for new fill.
-  for(unsigned int ixx=0; ixx<et_.size(); ixx++)
-    for(unsigned int iyy=0; iyy<et_[ixx].size(); iyy++)
-      et_[ixx][iyy]=0*GeV;
-
-  // Assign ET to each calorimeter cell (mostly 0's).
-  for(unsigned int ipar=0; ipar<particlesToCluster_.size(); ipar++) { 
-    double y(particlesToCluster_[ipar]->momentum().eta());
-    if(y>=ycmin_&&y<=ycmax_) { 
-      int absId(abs(particlesToCluster_[ipar]->id()));
-      // If it's not a lepton / top / photon it goes in the calorimeter.
-      if(!(absId>=11&&absId<=16) && absId!=6 && absId!=22) { 
-	double phi(atan2(particlesToCluster_[ipar]->momentum().y()/GeV,
-			 particlesToCluster_[ipar]->momentum().x()/GeV));
-	if(phi<0) phi+=2*M_PI;
-	unsigned int iy(int((y-ycmin_)/dely_));
-	unsigned int iphi(int(phi/delphi_));
-	et_[iy][iphi]+=particlesToCluster_[ipar]->momentum().e()*sthcal_[iy]; 
-      }
-    }
-  }
-  return;
-}
-
-// Find highest remaining cell > etstop and sum surrounding cells
-// with -- delta(y)^2+delta(phi)^2 < Rjet^2 , ET>eccut. Keep sets
-// with ET>ejcut and abs(eta)<etacut. 
-void FxFxHandler::getjet_m(double rjet, Energy ejcut, double etajcut) {
-
-  // Minimum ET the calorimeter can "see".
-  Energy eccut(0.1*GeV);
-  // So long as the cell remaining with the highest ET has
-  // ET < etstop we try to cluster the surrounding cells into
-  // it to potentially form a jet.
-  Energy etstop(1.5*GeV);
-  
-  // Reset the vector holding the jet-index each calo cell
-  // was clustered into.
-  for(unsigned int iy=0; iy<ncy_; iy++)
-    for(unsigned int iphi=0; iphi<ncphi_; iphi++)
-      jetIdx_[iy][iphi]=-777;
-
-  // Reset the vector that will hold the jet momenta.
-  pjet_.clear();
-
-  // # cells spanned by cone radius in phi dir., _rounded_down_.
-  unsigned int nphi1(rjet/delphi_);
-  // # cells spanned by cone radius in eta dir., _rounded_down_.
-  unsigned int ny1(rjet/dely_);
-
-  // Vector to hold the "ET" of each jet, where here ET really means
-  // the scalar sum of ETs in each calo cell clustered into the jet.
-  // Note that this is _not_ the same as the ET you would compute from
-  // the final momentum worked out for each jet.
-  etjet_.clear();
-
-  // The ET of the highest ET cell found.
-  Energy etmax(777e100*GeV);
-
-  // Counter for number of highest ET calo cells found.
-  unsigned int ipass(0);
-
-  // Start finding jets.
-  while(etmax>=etstop) {
-
-    // Find the cell with the highest ET from
-    // those not already assigned to a jet.
-    etmax=0*GeV;
-    int iymx(0), iphimx(0);
-    for(unsigned int iphi=0; iphi<ncphi_; iphi++)
-      for(unsigned int iy=0; iy<ncy_; iy++)
-	if(et_[iy][iphi]>etmax&&jetIdx_[iy][iphi]<0) {
-	  etmax  = et_[iy][iphi];
-	  iymx   = iy;
-	  iphimx = iphi;
-       	}
-
-    // If the remaining cell with the highest ET has ET < etstop, stop.
-    if(etmax<etstop) break;
-
-    // You cannot have more cells with the highest ET
-    // so far than you have cells in the calorimeter.
-    ipass++;
-    if(ipass>(ncy_*ncphi_)) {
-      cout << "FxFxHandler::getjet_m() - Fatal error." << endl;
-      cout << "We found " << ipass << " calo cells with the highest ET so"
-	   << "far\nbut the calorimeter only has " << ncy_*ncphi_ << " "
-	   << "cells in it!" << endl;
-      exit(10);
-    }
-
-    // Add a jet vector (may get deleted if jet fails ET / eta cuts).
-    etjet_.push_back(0*GeV);
-    pjet_.push_back(Lorentz5Momentum(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV));
-
-    // Loop over all calo cells in range iphimx +/- nphi1 (inclusive)
-    // wrapping round in azimuth if required.
-    for(unsigned int iphi1=0; iphi1<=2*nphi1; iphi1++) {
-      int iphix(iphimx-nphi1+iphi1);
-      if(iphix<0)            iphix += ncphi_;
-      if(iphix>=int(ncphi_)) iphix -= ncphi_;
-      // Loop over all calo cells in range iymx +/- ny1 (inclusive).
-      for(unsigned int iy1=0; iy1<=2*ny1; iy1++) {
-	int iyx(iymx-ny1+iy1);
-	// If the cell is outside the calorimeter OR if it was already
-	// associated to a jet then skip to the next loop.
-	if(iyx>=0&&iyx<int(ncy_)&&jetIdx_[iyx][iphix]<0) {
-	  // N.B. iyx-iymx = iy1-ny1 and iphix-iphimx = iphi1-nphi1
-	  //      hence the following is the distance in R between the
-	  //      centre of the cell we are looking at and the one
-	  //      with the highest ET.
-	  double r2(sqr(  dely_*(double(iy1)  -double(ny1)  ))
-		   +sqr(delphi_*(double(iphi1)-double(nphi1))));
-	  if(r2<sqr(rjet)&&et_[iyx][iphix]>=eccut) {
-	    Energy ECell(et_[iyx][iphix]/sthcal_[iyx]);
-	    pjet_.back()+=LorentzMomentum(ECell*sthcal_[iyx]*cphcal_[iphix], // px
-					  ECell*sthcal_[iyx]*sphcal_[iphix], // py
-					  ECell*cthcal_[iyx],ECell);         // pz, E.
-	    // N.B. This is the same reln as in ThePEG between phi and x,y.
-	    etjet_.back()+=et_[iyx][iphix];
-	    jetIdx_[iyx][iphix] = pjet_.size()-1; // Identify cell with this jet.
-	  }
-	}
-      }
-    }
-
-    // Compute the current jet's mass.
-    pjet_.back().rescaleMass();
-
-    // Throw the jet away if it's ET is less than ejcut.
-    if(etjet_.back()<ejcut||fabs(pjet_.back().eta())>etajcut) {
-      pjet_.pop_back();
-      etjet_.pop_back();
-    }
-
-  }
-
-  // Sort jets from high to low ET.
-  vector<pair<Energy, Lorentz5Momentum> > etjet_pjet;
-  for(unsigned int ixx=0; ixx<etjet_.size(); ixx++)
-    etjet_pjet.push_back(make_pair(etjet_[ixx],pjet_[ixx]));
-  sort(etjet_pjet.begin(),etjet_pjet.end(),ETsortFunction);
-  for(unsigned int ixx=0; ixx<etjet_.size(); ixx++) {
-    etjet_[ixx]=etjet_pjet[ixx].first;
-    pjet_[ixx]=etjet_pjet[ixx].second;
   }
 
   return;
@@ -798,7 +839,7 @@ void FxFxHandler::getjet_m(double rjet, Energy ejcut, double etajcut) {
 // decay products, Higgs bosons, photons as well as _primary_, i.e.
 // present in the lowest multiplicity process, heavy quarks and
 // any related decay products.
-void FxFxHandler::getDescendents(PPtr theParticle) {
+void FxFxHandler::getDescendents(PPtr theParticle) const {
   ParticleVector theChildren(theParticle->children());
   for (unsigned int ixx=0; ixx<theChildren.size(); ixx++)
     if(theChildren[ixx]->children().size()==0)
@@ -807,272 +848,326 @@ void FxFxHandler::getDescendents(PPtr theParticle) {
       getDescendents(theChildren[ixx]);
   return;
 }
-void FxFxHandler::caldel_m() {
+void FxFxHandler::caldel_m() const {
 
 
   preshowerFSPsToDelete_.clear();
   showeredFSPsToDelete_.clear();
 
-  for(unsigned int ixx=0; ixx<preshowerFSPs_.size(); ixx++) {
-  tmpList_.clear();
-  if(ihrd_<=2) {
-    /* wqq... , zqq... */
-    /* Exclude the heavy quarks and any children they may
-       have produced as well as the v.boson and any children
-       it may have produced from the jet parton matching. */
-    if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
-       abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    if(abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx<2) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=4) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "wqq / zqq process should have 4 particles to omit from"
-	<< "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
-    }
-  } else if(ihrd_<=4)  {
-    /* zjet... */
-    /* Exclude the v.boson and any children
-       it may have produced from the jet parton matching. */
-    if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
-       abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    /*if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=2) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "zjet process should have 2 particles to omit from"
-	<< "jet-parton matching." << Exception::eventerror;
-	}*/
-  } else if(ihrd_==5)  {
-    /* vbjet... */
-    /* Exclude the v.bosons and any children they may
-       have produced from the jet parton matching. */
-    if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
-       abs(preshowerFSPs_[ixx]->parents()[0]->id())==24||
-       abs(preshowerFSPs_[ixx]->id())==22||
-       abs(preshowerFSPs_[ixx]->id())==25) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-  } else if(ihrd_==6)  {
-    /* 2Q... */
-    /* Exclude the heavy quarks and any children
-       they may have produced from the jet parton matching. */
-    if(ihvy_==6) {
-      if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==6||
-	 abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-	preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      }
+  hvqfound = false;
+  
+  if(hpdetect_) {
+    for(unsigned int ixx=0; ixx<preshowerFSPs_.size(); ixx++) {
+      tmpList_.clear();
+      /* Exclude the top quarks and any children
+         they may have produced from the jet parton matching. */
+
+     
       if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==6) {
-	getDescendents(preshowerFSPs_[ixx]->parents()[0]);
-	for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	  showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        hvqfound = true;
+        // cout << "preshowerFSPs_[ixx]->id() = " << preshowerFSPs_[ixx]->id() << " " << preshowerFSPs_[ixx]->momentum().perp2() << endl;
+        preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+        getDescendents(preshowerFSPs_[ixx]->parents()[0]);
+        for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++) {
+          // cout << "tmpList_[jxx]->id() = " << tmpList_[jxx]->id() << " " <<  tmpList_[jxx]->momentum().perp2() << endl;
+          showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        }
+        continue; 
       }
-      if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=6) {
-	throw Exception()
-	  << "FxFxHandler::caldel_m() - ERROR!\n"
-	  << "2Q process should have 6 particles to omit from"
-	  << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+             
+      /* Exclude the v.bosons and any children they may
+         have produced from the jet parton matching. */
+      if( (abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
+         abs(preshowerFSPs_[ixx]->parents()[0]->id())==24||
+         abs(preshowerFSPs_[ixx]->id())==22||
+           abs(preshowerFSPs_[ixx]->id())==25) && (abs(preshowerFSPs_[ixx]->parents()[0]->id())!=6))  {
+        preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+        getDescendents(preshowerFSPs_[ixx]);
+        for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+          showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        continue;
       }
-    } else {
-      if(abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx<2) {
-	preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-	getDescendents(preshowerFSPs_[ixx]);
-	for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	  showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-      if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=2) {
-	throw Exception()
-	  << "FxFxHandler::caldel_m() - ERROR!\n"
-	  << "2Q process should have 2 particles to omit from"
-	  << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
-      }
-    }
-  } else if(ihrd_==7)  {
-    /* 4Q... */
-    /* There are no light jets for this process, so nothing to match. */
-  } else if(ihrd_==9)  {
-    /* Njet... */
-  } else if(ihrd_==10) {
-    /* wcjet... */
-    /* Exclude the charm quark and any children it may 
-       have produced as well as the v.boson and any children
-       it may have produced from the jet parton matching. */
-    if((abs(preshowerFSPs_[ixx]->id())==4&&ixx<1)||
-       abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=3) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "wcjet process should have 3 particles to omit from"
-	<< "jet-parton matching." << Exception::eventerror;
-    }
-  } else if(ihrd_==11) {
-    /* phjet... */
-    /* Exclude the hard photons from the jet parton matching. */
-    if(abs(preshowerFSPs_[ixx]->id())==22) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    unsigned int tmpUnsignedInt(nph_);
-    if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "phjet process should have " << nph_ << " particles to omit from"
-	<< "jet-parton matching." << Exception::eventerror;
-    }
-  } else if(ihrd_==12) {
-    /* hjet... */
-    /* Exclude the higgs and any children it may have
-       produced from the jet parton matching. */
-    if(abs(preshowerFSPs_[ixx]->id())==25) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=1) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "hjet process should have 1 particle to omit from"
-	<< "jet-parton matching." << Exception::eventerror;
-    }
-  } else if(ihrd_==14) {
-    /* wphjet... */
-    /* Exclude the v.boson and any children it may have
-       produced from the jet parton matching. */
-    // AND WHAT ABOUT THE PHOTON? <--- CHECK THIS WITH AlpGen GUYs.
-    if(abs(preshowerFSPs_[ixx]->id())==22||
-       abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    unsigned int tmpUnsignedInt(2+nph_);
-    if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "wphjet process should have " << 2+nph_ << " particles to omit from"
-	<< "jet-parton matching." << Exception::eventerror;
-    }
-  } else if(ihrd_==15) {
-    /* wphqq... <--- N.B. if q = top, it is not decayed. */
-    /* Exclude the heavy quarks and any children they may
-       have produced as well as the v.boson and any children
-       it may have produced from the jet parton matching. */
-    // AND WHAT ABOUT THE PHOTON? <--- CHECK THIS WITH AlpGen GUYs.
-    if(abs(preshowerFSPs_[ixx]->id())==22||
-       (abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx==(preshowerFSPs_.size()-(2+nph_+1)))||
-       (abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx==(preshowerFSPs_.size()-(2+nph_+2)))||
-       abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-      preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-      getDescendents(preshowerFSPs_[ixx]);
-      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-    }
-    unsigned int tmpUnsignedInt(4+nph_);
-    if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
-      throw Exception()
-	<< "FxFxHandler::caldel_m() - ERROR!\n"
-	<< "wphjet process should have " << 4+nph_ << " particles to omit from"
-	<< "jet-parton matching." << Exception::eventerror;
-    }
-  } else if(ihrd_==16) {
-    /* 2Qph... <--- if Q is a top it will decay. */
-    /* Exclude the hard photons and any children they
-       may have produced from the jet parton matching
-       as well as the heavy quarks and any children it
-       may have produced. */
-    // AND WHAT ABOUT THE PHOTON?
-    if(ihvy_==6) {
-      if(abs(preshowerFSPs_[ixx]->id())==22||
-	 abs(preshowerFSPs_[ixx]->parents()[0]->id())==6||
-	 abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
-	preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-	getDescendents(preshowerFSPs_[ixx]);
-	for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	  showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-      }
-      unsigned int tmpUnsignedInt(6+nph_);
-      if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
-	throw Exception()
-	  << "FxFxHandler::caldel_m() - ERROR!\n"
-	  << "wphjet process should have " << 6+nph_ << " particles to omit from"
-	  << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
-      }
-    } else {
-      if(abs(preshowerFSPs_[ixx]->id())==22||
-	 (abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx<2)) {
-	preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
-	getDescendents(preshowerFSPs_[ixx]);
-	for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
-	  showeredFSPsToDelete_.push_back(tmpList_[jxx]);
-      }
-      unsigned int tmpUnsignedInt(2+nph_);
-      if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
-	throw Exception()
-	  << "FxFxHandler::caldel_m() - ERROR!\n"
-	  << "wphjet process should have " << 2+nph_ << " particles to omit from"
-	  << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+      /* Exclude the bottom quarks and any children
+         they may have produced from the jet parton matching. */
+      if(abs(preshowerFSPs_[ixx]->id())==5&&ixx<2) {
+        hvqfound = true;   
+        preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+        getDescendents(preshowerFSPs_[ixx]);
+        for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+          showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        continue;
       }
     }
   }
-  }
-  // cout << "partonsToMatch_.size()= " << partonsToMatch_.size() << " preshowerFSPsToDelete_.size() = " << preshowerFSPsToDelete_.size() << endl;
-  for(unsigned int ixx=0; ixx<preshowerFSPsToDelete_.size(); ixx++) {
-    for(unsigned int jxx=0; jxx<partonsToMatch_.size(); jxx++) {
-      if(preshowerFSPsToDelete_[ixx]==partonsToMatch_[jxx]) {
-	partonsToMatch_.erase(partonsToMatch_.begin()+jxx);
-	break;
-      }
+  if(!hpdetect_) { 
+    for(unsigned int ixx=0; ixx<preshowerFSPs_.size(); ixx++) {
+      tmpList_.clear();
+      if(ihrd_<=2) {
+        /* wqq... , zqq... */
+        /* Exclude the heavy quarks and any children they may
+           have produced as well as the v.boson and any children
+           it may have produced from the jet parton matching. */
+        if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
+           abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+          preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+          getDescendents(preshowerFSPs_[ixx]);
+          for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+            showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        }
+        if(abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx<2) {
+          preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+          getDescendents(preshowerFSPs_[ixx]);
+          for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+            showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        }
+        if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=4) {
+          throw Exception()
+            << "FxFxHandler::caldel_m() - ERROR!\n"
+            << "wqq / zqq process should have 4 particles to omit from"
+            << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+        }
+      } else if(ihrd_<=4)  {
+        /* zjet... */
+        /* Exclude the v.boson and any children
+           it may have produced from the jet parton matching. */
+        if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
+           abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+          preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+          getDescendents(preshowerFSPs_[ixx]);
+          for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+            showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        }
+        /*if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=2) {
+          throw Exception()
+          << "FxFxHandler::caldel_m() - ERROR!\n"
+          << "zjet process should have 2 particles to omit from"
+          << "jet-parton matching." << Exception::eventerror;
+          }*/
+      } else if(ihrd_==5)  {
+        /* vbjet... */
+        /* Exclude the v.bosons and any children they may
+           have produced from the jet parton matching. */
+        if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
+           abs(preshowerFSPs_[ixx]->parents()[0]->id())==24||
+           abs(preshowerFSPs_[ixx]->id())==22||
+           abs(preshowerFSPs_[ixx]->id())==25) {
+          preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+          getDescendents(preshowerFSPs_[ixx]);
+          for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+            showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+        }
+      } else if(ihrd_==6)  {
+        /* 2Q... */
+        /* Exclude the heavy quarks and any children
+           they may have produced from the jet parton matching. */
+        if(ihvy_==6) {
+          if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==6||
+             abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+         //   cout << "preshowerFSPs_[ixx]->id() = " << preshowerFSPs_[ixx]->id() << " " << preshowerFSPs_[ixx]->momentum().perp2() << endl;
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+          }
+          if(abs(preshowerFSPs_[ixx]->parents()[0]->id())==6) {
+            getDescendents(preshowerFSPs_[ixx]->parents()[0]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++) {
+           //   cout << "tmpList_[jxx]->id() = " << tmpList_[jxx]->id() << " " <<  tmpList_[jxx]->momentum().perp2() << endl;
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+            }
+          }
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=6) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "2Q process should have 6 particles to omit from"
+              << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+          }
+        } else {
+          if(abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx<2) {
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+            getDescendents(preshowerFSPs_[ixx]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+          }
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=2) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "2Q process should have 2 particles to omit from"
+              << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+          }
+          }
+      } else if(ihrd_==7)  {
+          /* 4Q... */
+          /* There are no light jets for this process, so nothing to match. */
+        } else if(ihrd_==9)  {
+          /* Njet... */
+        } else if(ihrd_==10) {
+          /* wcjet... */
+          /* Exclude the charm quark and any children it may 
+             have produced as well as the v.boson and any children
+             it may have produced from the jet parton matching. */
+          if((abs(preshowerFSPs_[ixx]->id())==4&&ixx<1)||
+             abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+            getDescendents(preshowerFSPs_[ixx]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+          }
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=3) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "wcjet process should have 3 particles to omit from"
+              << "jet-parton matching." << Exception::eventerror;
+          }
+        } else if(ihrd_==11) {
+          /* phjet... */
+          /* Exclude the hard photons from the jet parton matching. */
+          if(abs(preshowerFSPs_[ixx]->id())==22) {
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+            getDescendents(preshowerFSPs_[ixx]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+          }
+          unsigned int tmpUnsignedInt(nph_);
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "phjet process should have " << nph_ << " particles to omit from"
+              << "jet-parton matching." << Exception::eventerror;
+          }
+        } else if(ihrd_==12) {
+          /* hjet... */
+          /* Exclude the higgs and any children it may have
+             produced from the jet parton matching. */
+          if(abs(preshowerFSPs_[ixx]->id())==25) {
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+            getDescendents(preshowerFSPs_[ixx]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+          }
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=1) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "hjet process should have 1 particle to omit from"
+              << "jet-parton matching." << Exception::eventerror;
+          }
+        } else if(ihrd_==14) {
+          /* wphjet... */
+          /* Exclude the v.boson and any children it may have
+             produced from the jet parton matching. */
+          // AND WHAT ABOUT THE PHOTON? <--- CHECK THIS WITH AlpGen GUYs.
+          if(abs(preshowerFSPs_[ixx]->id())==22||
+             abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+            getDescendents(preshowerFSPs_[ixx]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+          }
+          unsigned int tmpUnsignedInt(2+nph_);
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "wphjet process should have " << 2+nph_ << " particles to omit from"
+              << "jet-parton matching." << Exception::eventerror;
+          }
+        } else if(ihrd_==15) {
+          /* wphqq... <--- N.B. if q = top, it is not decayed. */
+          /* Exclude the heavy quarks and any children they may
+             have produced as well as the v.boson and any children
+             it may have produced from the jet parton matching. */
+          // AND WHAT ABOUT THE PHOTON? <--- CHECK THIS WITH AlpGen GUYs.
+          if(abs(preshowerFSPs_[ixx]->id())==22||
+             (abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx==(preshowerFSPs_.size()-(2+nph_+1)))||
+             (abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx==(preshowerFSPs_.size()-(2+nph_+2)))||
+             abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+            preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+            getDescendents(preshowerFSPs_[ixx]);
+            for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+              showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+          }
+          unsigned int tmpUnsignedInt(4+nph_);
+          if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
+            throw Exception()
+              << "FxFxHandler::caldel_m() - ERROR!\n"
+              << "wphjet process should have " << 4+nph_ << " particles to omit from"
+              << "jet-parton matching." << Exception::eventerror;
+          }
+        } else if(ihrd_==16) {
+          /* 2Qph... <--- if Q is a top it will decay. */
+          /* Exclude the hard photons and any children they
+             may have produced from the jet parton matching
+             as well as the heavy quarks and any children it
+             may have produced. */
+          // AND WHAT ABOUT THE PHOTON?
+          if(ihvy_==6) {
+            if(abs(preshowerFSPs_[ixx]->id())==22||
+               abs(preshowerFSPs_[ixx]->parents()[0]->id())==6||
+               abs(preshowerFSPs_[ixx]->parents()[0]->id())==24) {
+              preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+              getDescendents(preshowerFSPs_[ixx]);
+              for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+                showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+            }
+            unsigned int tmpUnsignedInt(6+nph_);
+            if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
+              throw Exception()
+                << "FxFxHandler::caldel_m() - ERROR!\n"
+                << "wphjet process should have " << 6+nph_ << " particles to omit from"
+                << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+            }
+          } else {
+            if(abs(preshowerFSPs_[ixx]->id())==22||
+               (abs(preshowerFSPs_[ixx]->id())==ihvy_&&ixx<2)) {
+              preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
+              getDescendents(preshowerFSPs_[ixx]);
+              for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+                showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+            }
+            unsigned int tmpUnsignedInt(2+nph_);
+            if(ixx==preshowerFSPs_.size()-1&&preshowerFSPsToDelete_.size()!=tmpUnsignedInt) {
+              throw Exception()
+                << "FxFxHandler::caldel_m() - ERROR!\n"
+                << "wphjet process should have " << 2+nph_ << " particles to omit from"
+                << "jet-parton matching for ihvy=" << ihvy_ << "." << Exception::eventerror;
+            }
+          }
+        }
     }
   }
-  //cout << "partonsToMatch_.size() (AFTER) = " << partonsToMatch_.size() << endl;
+    //  cout << "partonsToMatch_.size()= " << partonsToMatch_.size() << " preshowerFSPsToDelete_.size() = " << preshowerFSPsToDelete_.size() << endl;
+    // cout << "deleting preshowerFSPs" << endl;
+    for(unsigned int ixx=0; ixx<preshowerFSPsToDelete_.size(); ixx++) {
+      for(unsigned int jxx=0; jxx<partonsToMatch_.size(); jxx++) {
+        if(preshowerFSPsToDelete_[ixx]==partonsToMatch_[jxx]) {
+          //    cout << "deleting " << preshowerFSPsToDelete_[ixx]->id() << " with parent " << preshowerFSPsToDelete_[ixx]->parents()[0]->id() << endl; // " energy = " << preshowerFSPsToDelete_[ixx]->momentum().e()*GeV << endl;
+          partonsToMatch_.erase(partonsToMatch_.begin()+jxx);
+          break;
+        }
+      }
+    }
+//cout << "partonsToMatch_.size() (AFTER) = " << partonsToMatch_.size() << endl;
 
-  for(unsigned int ixx=0; ixx<showeredFSPsToDelete_.size(); ixx++) {
-    for(unsigned int jxx=0; jxx<particlesToCluster_.size(); jxx++) {
-      if(showeredFSPsToDelete_[ixx]==particlesToCluster_[jxx]) {
-	particlesToCluster_.erase(particlesToCluster_.begin()+jxx);
-	break;
+    //cout << "deleting showeredFSPs" << endl;
+    for(unsigned int ixx=0; ixx<showeredFSPsToDelete_.size(); ixx++) {
+      for(unsigned int jxx=0; jxx<particlesToCluster_.size(); jxx++) {
+        if(showeredFSPsToDelete_[ixx]==particlesToCluster_[jxx]) {
+          //   cout << "deleting " << showeredFSPsToDelete_[ixx]->id() << " with parent " << showeredFSPsToDelete_[ixx]->parents()[0]->id() << endl; //" energy = " << preshowerFSPsToDelete_[ixx]->momentum().e()*GeV << endl;
+          particlesToCluster_.erase(particlesToCluster_.begin()+jxx);
+          break;
+        }
       }
     }
-  }
 
-  // Sanity check!
-  if(partonsToMatch_.size()>particlesToCluster_.size()) {
-    throw Exception()
-      << "FxFxHandler::caldel_m() - ERROR!\n"
-      << "No. of ME level partons to be matched to jets = "
-      << partonsToMatch_.size() << "\n"
-      << "No. of showered particles to build jets from  = "
-      << particlesToCluster_.size() << "\n"
-      << "There should be at least as many partons to\n"
-      << "cluster as there are partons to match to.\n"
-      << Exception::eventerror;
-  }
-  //  cout << "partonsToMatch_.size() (AFTER2) = " << partonsToMatch_.size() << endl;
+    // Sanity check!
+    if(partonsToMatch_.size()>particlesToCluster_.size()) {
+      throw Exception()
+        << "FxFxHandler::caldel_m() - ERROR!\n"
+        << "No. of ME level partons to be matched to jets = "
+        << partonsToMatch_.size() << "\n"
+        << "No. of showered particles to build jets from  = "
+        << particlesToCluster_.size() << "\n"
+        << "There should be at least as many partons to\n"
+        << "cluster as there are partons to match to.\n"
+        << Exception::eventerror;
+    }
+    //  cout << "partonsToMatch_.size() (AFTER2) = " << partonsToMatch_.size() << endl;
 
 
   // Acid test.
@@ -1103,7 +1198,7 @@ void FxFxHandler::caldel_m() {
 
 // This looks for all descendents of a top up to but not including
 // the W and b children.
-void FxFxHandler::getTopRadiation(PPtr theParticle) {
+void FxFxHandler::getTopRadiation(PPtr theParticle) const {
   ParticleVector theChildren(theParticle->children());
   for (unsigned int ixx=0; ixx<theChildren.size(); ixx++)
     if(theChildren[ixx]->children().size()==0)
@@ -1114,7 +1209,7 @@ void FxFxHandler::getTopRadiation(PPtr theParticle) {
       getTopRadiation(theChildren[ixx]);
   return;
 }
-void FxFxHandler::caldel_hvq() {
+void FxFxHandler::caldel_hvq() const {
 
   // Fill partonsToMatch_ with only those pre-shower partons intended to
   // be used in heavy-quark-jet matching and fill particlesToCluster_ using
@@ -1235,13 +1330,10 @@ void FxFxHandler::caldel_hvq() {
 }
 
 // get npLO_ and npNLO_ 
-void FxFxHandler::getnpFxFx() {
-  
+void FxFxHandler::getnpFxFx() const {
   split_vector_type SplitVec; 
-
   // pull the optional weights from the current event
   map<string,double> optionalEventWeights = eventHandler()->currentEvent()->optionalWeights();
-  
   // loop over the optional weights and find np values
   for (map<string,double>::const_iterator it=optionalEventWeights.begin(); it!=optionalEventWeights.end(); ++it){
     // split the line 
@@ -1255,17 +1347,15 @@ void FxFxHandler::getnpFxFx() {
   return;
 }
 
-void FxFxHandler::getPreshowerParticles() {
+void FxFxHandler::getPreshowerParticles() const {
   // LH file initial-state partons:
   preshowerISPs_ = lastXCombPtr()->subProcess()->incoming();
-
   // LH file final-state partICLEs:
   preshowerFSPs_ = lastXCombPtr()->subProcess()->outgoing();
-
   return;
 }
 
-void FxFxHandler::getShoweredParticles() {
+void FxFxHandler::getShoweredParticles() const {
   // Post-shower initial-state hadrons:
   showeredISHs_ = eventHandler()->currentEvent()->incoming();
 
@@ -1307,7 +1397,7 @@ void FxFxHandler::getShoweredParticles() {
   return;
 }
 
-void FxFxHandler::doSanityChecks(int debugLevel) {
+void FxFxHandler::doSanityChecks(int debugLevel) const {
 
   // When checking momentum conservation in the form 
   // p_in - p_out, any momentum component bigger / less
@@ -1430,6 +1520,6 @@ void FxFxHandler::printMomVec(vector<Lorentz5Momentum> momVec) {
 
 }
 
-Energy FxFxHandler::etclusran_(double petc) { 
+Energy FxFxHandler::etclusran_(double petc) const { 
   return (((2 * epsetclus_)/M_PI) * asin(2 * petc - 1) + etclusmean_);
 }

@@ -1,34 +1,74 @@
 SUBDIRS = NMSSM RPV
-if WANT_BSM
-pkglib_LTLIBRARIES = HwSusy.la
-endif
-HwSusy_la_SOURCES = SusyBase.cc  SusyBase.h SusyBase.fh \
-MSSM.cc  MSSM.h MSSM.fh\
-MixingMatrix.h MixingMatrix.fh MixingMatrix.cc\
-SSCFSVertex.cc    SSCFSVertex.h    \
-SSGFSVertex.cc    SSGFSVertex.h    \
-SSHSFSFVertex.cc  SSHSFSFVertex.h  \
-SSNFSVertex.cc    SSNFSVertex.h    \
-SSWSSVertex.cc    SSWSSVertex.h    \
-SSWGSSVertex.cc   SSWGSSVertex.h   \
-SSGSSVertex.cc    SSGSSVertex.h    \
-SSGGSQSQVertex.cc SSGGSQSQVertex.h \
-SSGSGSGVertex.cc  SSGSGSGVertex.h  \
-SSNNZVertex.cc    SSNNZVertex.h    \
-SSCCZVertex.cc    SSCCZVertex.h    \
-SSCNWVertex.cc    SSCNWVertex.h    \
-SSFFHVertex.cc    SSFFHVertex.h    \
-SSGOGOHVertex.cc  SSGOGOHVertex.h  \
-SSWWHVertex.cc    SSWWHVertex.h    \
-SSWWHHVertex.cc   SSWWHHVertex.h   \
-SSWHHVertex.cc    SSWHHVertex.h    \
-SSHHHVertex.cc    SSHHHVertex.h    \
-SSHGGVertex.cc    SSHGGVertex.h    \
-SSHPPVertex.cc    SSHPPVertex.h    \
-SSNNPVertex.h SSNNPVertex.cc \
-SSGNGVertex.h SSGNGVertex.cc \
-SSNCTVertex.h SSNCTVertex.cc \
-SSGVNHVertex.h SSGVNHVertex.cc\
-SSGVNVVertex.h SSGVNVVertex.cc\
-SSGVFSVertex.h SSGVFSVertex.cc
-HwSusy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:0:0
+
+BUILT_SOURCES  = Susy__all.cc
+CLEANFILES = Susy__all.cc
+
+Susy__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+SusyBase.h SusyBase.fh \
+MSSM.h MSSM.fh\
+MixingMatrix.h MixingMatrix.fh \
+SSCFSVertex.h    \
+SSGFSVertex.h    \
+SSHSFSFVertex.h  \
+SSNFSVertex.h    \
+SSWSSVertex.h    \
+SSWGSSVertex.h   \
+SSGSSVertex.h    \
+SSGGSQSQVertex.h \
+SSGSGSGVertex.h  \
+SSNNZVertex.h    \
+SSCCZVertex.h    \
+SSCNWVertex.h    \
+SSFFHVertex.h    \
+SSGOGOHVertex.h  \
+SSWWHVertex.h    \
+SSWWHHVertex.h   \
+SSWHHVertex.h    \
+SSHHHVertex.h    \
+SSHGGVertex.h    \
+SSHPPVertex.h    \
+SSNNPVertex.h \
+SSGNGVertex.h \
+SSNCTVertex.h \
+SSGVNHVertex.h \
+SSGVNVVertex.h \
+SSGVFSVertex.h 
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+SusyBase.cc  \
+MSSM.cc  \
+MixingMatrix.cc\
+SSCFSVertex.cc    \
+SSGFSVertex.cc    \
+SSHSFSFVertex.cc  \
+SSNFSVertex.cc    \
+SSWSSVertex.cc    \
+SSWGSSVertex.cc   \
+SSGSSVertex.cc    \
+SSGGSQSQVertex.cc \
+SSGSGSGVertex.cc  \
+SSNNZVertex.cc    \
+SSCCZVertex.cc    \
+SSCNWVertex.cc    \
+SSFFHVertex.cc    \
+SSGOGOHVertex.cc  \
+SSWWHVertex.cc    \
+SSWWHHVertex.cc   \
+SSWHHVertex.cc    \
+SSHHHVertex.cc    \
+SSHGGVertex.cc    \
+SSHPPVertex.cc    \
+SSNNPVertex.cc \
+SSGNGVertex.cc \
+SSNCTVertex.cc \
+SSGVNHVertex.cc\
+SSGVNVVertex.cc\
+SSGVFSVertex.cc

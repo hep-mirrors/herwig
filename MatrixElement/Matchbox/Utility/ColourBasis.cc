@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Handlers/SamplerBase.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -915,7 +916,7 @@ double ColourBasis::interference(const cPDVector& sub,
     res += 2.*real(inner_prod(boost::numeric::ublas::conj(a->second),prod(sp,b->second)));
   }
 
-  assert(!isnan(res));
+  assert(!std::isnan(res));
 
   return res;
 
@@ -1067,8 +1068,11 @@ void ColourBasis::writeBasis(const string& prefix) const {
   for ( set<vector<PDT::Colour> >::const_iterator known = legs.begin();
 	known != legs.end(); ++known ) {
     string fname = searchPath + prefix + file(*known) + ".cdat";
-    ifstream check(fname.c_str());
-    if ( check ) continue;
+    if ( !( SamplerBase::runLevel() == SamplerBase::ReadMode ||
+            SamplerBase::runLevel() == SamplerBase::BuildMode ) ) {
+      ifstream check(fname.c_str());
+      if ( check ) continue;
+    }
     ofstream out(fname.c_str());
     if ( !out )
       throw Exception() << "ColourBasis: Failed to open "
@@ -1215,7 +1219,7 @@ void ColourBasis::read(compressed_matrix<double>& m, istream& is,
 void ColourBasis::doinit() {
   HandlerBase::doinit();
   if ( theSearchPath.empty() && factory() )
-    theSearchPath = factory()->buildStorage();
+    theSearchPath = factory()->runStorage();
   readBasis();
 }
 
@@ -1227,7 +1231,7 @@ void ColourBasis::dofinish() {
 void ColourBasis::doinitrun() {
   HandlerBase::doinitrun();
   if ( theSearchPath.empty() && factory() )
-    theSearchPath = factory()->buildStorage();
+    theSearchPath = factory()->runStorage();
   readBasis();
 }
 

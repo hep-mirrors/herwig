@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffxli2:
@@ -24,14 +25,14 @@
 *	arguments
 *
 	integer ier
-	DOUBLE PRECISION xdilog,xlog,x
+	RealType xdilog,xlog,x
 *
 *	local variables
 *
 	integer ipi12
-	DOUBLE PRECISION dfflo1,u,u2,a,ffbnd,
+	RealType dfflo1,u,u2,a,ffbnd,
      +		xprec,bdn02,bdn05,bdn10,bdn15
-	DOUBLE COMPLEX zxdilo,zlog
+	ComplexType zxdilo,zlog
 	external ffbnd,dfflo1
 	save xprec,bdn02,bdn05,bdn10,bdn15
 *
@@ -52,11 +53,11 @@
 *  #[ if the argument is too large...
 	if ( x .lt. -1.5 .or. x .gt. .75 ) then
 	    call ffzxdl(zxdilo,ipi12,zlog,x,0,ier)
-	    if ( DIMAG(zxdilo) .ne. 0 ) then
+	    if ( Im(zxdilo) .ne. 0 ) then
 	    	call fferr(52,ier)
 	    endif
-	    xdilog = DBLE(zxdilo) + ipi12*pi12
-	    xlog = DBLE(zlog)
+	    xdilog = Re(zxdilo) + ipi12*pi12
+	    xlog = Re(zlog)
 	    return
 	endif
 *  #] if the argument is too large...
@@ -135,15 +136,15 @@
 *	arguments
 *
 	integer ipi12,ieps,ier
-	DOUBLE PRECISION x
-	DOUBLE COMPLEX zxdilo,zlog
+	RealType x
+	ComplexType zxdilo,zlog
 *
 *	local variables
 *
 	integer jsgn
-	DOUBLE PRECISION fact,u,u2,dfflo1,ffbnd,a,xdilo,
+	RealType fact,u,u2,dfflo1,ffbnd,a,xdilo,
      +		xprec,bdn02,bdn05,bdn10,bdn15
-	DOUBLE COMPLEX cy,cfact
+	ComplexType cy,cfact
 	external ffbnd,dfflo1
 	save xprec,bdn02,bdn05,bdn10,bdn15
 *
@@ -204,7 +205,7 @@
 	    else
 		zlog = log(1-x)
 	    endif
-	    u = -DBLE(zlog)
+	    u = -Re(zlog)
 	    jsgn = 1
 	elseif ( x .le. 2 ) then
 	    u = -log(x)
@@ -212,23 +213,23 @@
 		cy = 0
 	    elseif ( x .lt. 1 ) then
 		zlog = log(1-x)
-		cy = DBLE(u)*zlog
+		cy = Re(u)*zlog
 	    elseif ( ieps .gt. 0 ) then
-		zlog = DCMPLX(log(x-1),-pi)
-		cy = DBLE(u)*zlog
+		zlog = ToComplex(log(x-1),-pi)
+		cy = Re(u)*zlog
 	    else
-		zlog = DCMPLX(log(x-1),+pi)
-		cy = DBLE(u)*zlog
+		zlog = ToComplex(log(x-1),+pi)
+		cy = Re(u)*zlog
 	    endif
 	    ipi12 = 2
 	    jsgn = -1
 	else
 	    if ( ieps .gt. 0 ) then
-		cfact = DCMPLX(log(x),-pi)
-		zlog = DCMPLX(log(x-1),-pi)
+		cfact = ToComplex(log(x),-pi)
+		zlog = ToComplex(log(x-1),-pi)
 	    else
-		cfact = DCMPLX(log(x),+pi)
-		zlog = DCMPLX(log(x-1),+pi)
+		cfact = ToComplex(log(x),+pi)
+		zlog = ToComplex(log(x-1),+pi)
 	    endif
 	    cy = - cfact**2/2
 	    ipi12 = -2
@@ -267,9 +268,9 @@
 	xdilo = u + u2*(bf(1) + u*(bf(2) + xdilo))
 	endif
 	if(jsgn.eq.1)then
-	    zxdilo =  DBLE(xdilo) + cy
+	    zxdilo =  Re(xdilo) + cy
 	else
-	    zxdilo = -DBLE(xdilo) + cy
+	    zxdilo = -Re(xdilo) + cy
 	endif
 *  #] calculate dilog:
 *###] ffzxdl:
@@ -277,7 +278,7 @@
 
 
 *###[ zxfflg:
-	DOUBLE COMPLEX function zxfflg(x,ieps,y,ier)
+	ComplexType function zxfflg(x,ieps,y,ier)
 ***#[*comment:***********************************************************
 *									*
 *	Calculate the complex logarithm of x.  The following cases	*
@@ -293,11 +294,11 @@
 *
 	implicit none
 	integer ieps,ier
-	DOUBLE PRECISION x,y
+	RealType x,y
 *
 *	local variables
 *
-	DOUBLE PRECISION xlog
+	RealType xlog
 *
 *	common blocks
 *
@@ -313,17 +314,17 @@
 *	    checked imaginary parts 19-May-1988
 	    if ( abs(ieps) .eq. 1 ) then
 		if ( y*ieps .lt. 0 ) then
-		    zxfflg = DCMPLX(xlog,-pi)
+		    zxfflg = ToComplex(xlog,-pi)
 		else
-		    zxfflg = DCMPLX(xlog,pi)
+		    zxfflg = ToComplex(xlog,pi)
 		endif
 	    elseif ( ieps .eq. 2 ) then
-		zxfflg = DCMPLX(xlog,-pi)
+		zxfflg = ToComplex(xlog,-pi)
 	    elseif ( ieps .eq. -2 ) then
-		zxfflg = DCMPLX(xlog,+pi)
+		zxfflg = ToComplex(xlog,+pi)
 	    else
 		call fferr(52,ier)
-		zxfflg = DCMPLX(xlog,pi)
+		zxfflg = ToComplex(xlog,pi)
 	    endif
 	endif
 *  #] calculations:
@@ -332,7 +333,7 @@
 
 
 *###[ dfflo1:
-	DOUBLE PRECISION function dfflo1(x,ier)
+	RealType function dfflo1(x,ier)
 ***#[*comment:***************************************************
 *	calculates log(1-x) for |x|<.14 in a faster way to ~15	*
 *	significant figures.					*
@@ -340,9 +341,9 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE PRECISION x,bdn01,bdn05,bdn10,bdn15,bdn19,xprec,
+	RealType x,bdn01,bdn05,bdn10,bdn15,bdn19,xprec,
      +		xa,ffbnd
-	DOUBLE COMPLEX zxfflg
+	ComplexType zxfflg
 	external ffbnd,zxfflg
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn19
 #include "ff.h"
@@ -362,7 +363,7 @@
 *  #[ calculations:
 	xa = abs(x)
 	if ( xa .gt. bdn19 ) then
-	    dfflo1 = DBLE(zxfflg(1-x,0,0D0,ier))
+	    dfflo1 = Re(zxfflg(1-x,0,0D0,ier))
 	    return
 	endif
 	if ( xa .gt. bdn15 ) then
@@ -390,7 +391,7 @@
 
 
 *###[ dfflo2:
-	DOUBLE PRECISION function dfflo2(x,ier)
+	RealType function dfflo2(x,ier)
 ***#[*comment:***************************************************
 *	calculates log(1-x)+x for |x|<.14 in a faster way to	*
 *	~15 significant figures.				*
@@ -398,7 +399,7 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE PRECISION x,bdn01,bdn05,bdn10,bdn15,bdn18,xprec,
+	RealType x,bdn01,bdn05,bdn10,bdn15,bdn18,xprec,
      +		xa,ffbnd,dfflo1
 	external ffbnd,dfflo1
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn18
@@ -447,7 +448,7 @@
 
 
 *###[ dfflo3:
-	DOUBLE PRECISION function dfflo3(x,ier)
+	RealType function dfflo3(x,ier)
 ***#[*comment:***************************************************
 *	calculates log(1-x)+x+x^2/2 for |x|<.14 in a faster 	*
 *	way to ~15 significant figures.				*
@@ -455,7 +456,7 @@
 *  #[ declarations:
 	implicit none
 	integer ier
-	DOUBLE PRECISION x,bdn01,bdn05,bdn10,bdn15,xprec,
+	RealType x,bdn01,bdn05,bdn10,bdn15,xprec,
      +		xa,ffbnd,dfflo2
 	external ffbnd,dfflo2
 	save xprec,bdn01,bdn05,bdn10,bdn15
@@ -507,7 +508,7 @@
 *  #[ declarations:
 	implicit none
 	integer ier,init
-	DOUBLE PRECISION xl22,x,bdn01,bdn05,bdn10,bdn15,bdn20,bdn25,
+	RealType xl22,x,bdn01,bdn05,bdn10,bdn15,bdn20,bdn25,
      +		xprec,xa,ffbnd,dilog2(29)
 	external ffbnd
 	save xprec,bdn01,bdn05,bdn10,bdn15,bdn20,bdn25,init,dilog2

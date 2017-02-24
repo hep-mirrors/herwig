@@ -134,26 +134,6 @@ void ResonantProcessConstructor::doinit() {
       << Exception::runerror;
 }
 
-namespace {
-  // Helper functor for find_if in duplicate function.
-  class SameIncomingAs {
-  public:
-    SameIncomingAs(tPDPair in) : a(in.first->id()), b(in.second->id())  {}
-    bool operator()(tPDPair ppair) const {
-      long id1(ppair.first->id()), id2(ppair.second->id());
-      return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
-    }
-  private:
-    long a, b;
-  };
-
-  bool duplicateIncoming(tPDPair ppair,const vector<tPDPair> &incPairs) {
-    vector<tPDPair>::const_iterator it = 
-      find_if( incPairs.begin(), incPairs.end(), SameIncomingAs(ppair) );
-    return it != incPairs.end(); 
-  }
-}
-
 void ResonantProcessConstructor::constructDiagrams() {
   size_t ninc = incoming_.size() , ninter = intermediates_.size();
   if(ninc == 0 || ninter == 0  || !subProcess() ) return;
@@ -166,7 +146,7 @@ void ResonantProcessConstructor::constructDiagrams() {
 	  (inc.first->iSpin() == inc.second->iSpin() &&
 	   inc.first->id() < inc.second->id()) )
 	swap(inc.first, inc.second);
-      if( !duplicateIncoming(inc,incPairs) ) {
+      if( !HPC_helper::duplicateIncoming(inc,incPairs) ) {
 	incPairs.push_back(inc);
       }
     }

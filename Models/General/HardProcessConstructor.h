@@ -192,6 +192,26 @@ private:
 
 };
 
+namespace HPC_helper {
+  // Helper functor for find_if in duplicate function.
+  class SameIncomingAs {
+  public:
+    SameIncomingAs(tPDPair in) : a(in.first->id()), b(in.second->id())  {}
+    bool operator()(tPDPair ppair) const {
+      long id1(ppair.first->id()), id2(ppair.second->id());
+      return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
+    }
+  private:
+    long a, b;
+  };
+
+  inline bool duplicateIncoming(tPDPair ppair,const vector<tPDPair> &incPairs) {
+    vector<tPDPair>::const_iterator it = 
+      find_if( incPairs.begin(), incPairs.end(), SameIncomingAs(ppair) );
+    return it != incPairs.end(); 
+  }
+}
+
 }
 
 #include "ThePEG/Utilities/ClassTraits.h"

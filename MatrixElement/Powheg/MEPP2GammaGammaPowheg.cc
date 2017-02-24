@@ -1628,7 +1628,7 @@ void MEPP2GammaGammaPowheg::doinit() {
 
 RealEmissionProcessPtr MEPP2GammaGammaPowheg::
 generateHardest(RealEmissionProcessPtr born,
-		ShowerInteraction::Type inter) {
+		ShowerInteraction inter) {
   beams_.clear();
   partons_.clear();
   bool QCDAllowed(false),QEDAllowed(false);

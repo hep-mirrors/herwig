@@ -14,13 +14,13 @@
 #include "IS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
-#include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
+#include "Herwig/Shower/Core/Base/ShowerVertex.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -28,7 +28,7 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & children,
-		ShowerPartnerType::Type,
+		ShowerPartnerType,
 		bool massVeto) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();
@@ -56,7 +56,7 @@ updateChildren( const tShowerParticlePtr theParent,
 void IS_QTildeShowerKinematics1to2::
 updateParent(const tShowerParticlePtr parent, 
 	     const ShowerParticleVector & children,
-	     ShowerPartnerType::Type partnerType) const {
+	     ShowerPartnerType partnerType) const {
   // calculate the scales
   splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
 					    children[0],children[1]);

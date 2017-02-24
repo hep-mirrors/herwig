@@ -17,7 +17,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Utilities/Debug.h"
@@ -131,7 +131,7 @@ void PartnerFinder::Init() {
 
 void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
 					      const bool isDecayCase,
-					      ShowerInteraction::Type type,
+					      ShowerInteraction type,
 					      const bool setPartners) {
   // clear the existing partners
   for(ShowerParticleVector::const_iterator cit = particles.begin();
@@ -167,7 +167,8 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
       generator()->log() << "Primary partner: " << *(**cit).partner() << "\n";
       for(vector<ShowerParticle::EvolutionPartner>::const_iterator it= (**cit).partners().begin();
 	  it!=(**cit).partners().end();++it) {
-	generator()->log() << it->type << " " << it->weight << " " 
+	generator()->log() << static_cast<long>(it->type) << " "
+			   << it->weight << " " 
 			   << it->scale/GeV << " " 
  			   << *(it->partner) 
 			   << "\n";
@@ -204,7 +205,7 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       // Skip colourless particles
       if(!(*cit)->data().coloured()) continue;
       // find the partners
-      vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners = 
+      vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners = 
 	findQCDPartners(*cit,particles);
       // must have a partner
       if(partners.empty()) {
@@ -291,7 +292,7 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
       // Skip colourless particles
       if(!(*cit)->data().coloured()) continue;
       // find the partners
-      vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners = 
+      vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners = 
 	findQCDPartners(*cit,particles);
       // must have a partner
       if(partners.empty()) {
@@ -423,10 +424,10 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
     return calculateInitialInitialScales(particlePair);
 }
 
-vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> >
+vector< pair<ShowerPartnerType, tShowerParticlePtr> > 
 PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles) {
-  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners;
+  vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners;
   ShowerParticleVector::const_iterator cjt;
   for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
     if(!(*cjt)->data().coloured() || particle==*cjt) continue;

@@ -30,7 +30,7 @@ typedef pair<unsigned int, double> CFPair;
 
 
 /**
- *  A struct to order the particles in the same way as in the DecayMode's
+ *  A struct to order the particles in the same way as in the DecayModes
  */
 struct ParticleOrdering {
   /**
@@ -38,7 +38,7 @@ struct ParticleOrdering {
    * @param p1 The first ParticleData object
    * @param p2 The second ParticleData object
    */
-  bool operator() (PDPtr p1, PDPtr p2) {
+  bool operator() (tcPDPtr p1, tcPDPtr p2) {
     return abs(p1->id()) > abs(p2->id()) ||
       ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
       ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );

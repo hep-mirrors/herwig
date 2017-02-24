@@ -23,9 +23,9 @@
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 

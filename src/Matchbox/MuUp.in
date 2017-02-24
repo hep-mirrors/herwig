@@ -5,6 +5,9 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:RenormalizationScaleFactor 2.0
 set Factory:FactorizationScaleFactor 2.0
 
+set /Herwig/Merging/MergingFactory:RenormalizationScaleFactor 2.0
+set /Herwig/Merging/MergingFactory:FactorizationScaleFactor 2.0
+
 set MEMatching:RenormalizationScaleFactor 2.0
 set MEMatching:FactorizationScaleFactor 2.0
 

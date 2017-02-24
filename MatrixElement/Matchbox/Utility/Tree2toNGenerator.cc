@@ -45,14 +45,12 @@ generate(const PDVector& legs,
 
   vector<Ptr<Tree2toNDiagram>::ptr> res;
 
-  list<vector<Vertex> > prog =
-    clusterAll(legs,orderInGs,orderInGem);
+  list<vector<Vertex> > prog = clusterAll(legs,orderInGs,orderInGem);
 
   int count = 1;
-  for ( list<vector<Vertex> >::iterator d =
-	  prog.begin(); d != prog.end(); ++d ) {
-    assert(d->size() == 1);
-    Tree2toNDiagram diag = d->front().generate(count);
+  for ( auto  & d : prog ) {
+    assert(d.size() == 1);
+    Tree2toNDiagram diag = d.front().generate(count);
 
 
     if ( !spaceLikeAllowed.empty() ) {
@@ -64,20 +62,17 @@ generate(const PDVector& legs,
 	  counts[diag.allPartons()[k]] += 1;
 	}
       }
-      for ( vector<LineMatcher>::iterator m = spaceLikeAllowed.begin();
-	    m != spaceLikeAllowed.end(); ++m ) {
-	m->reset();
-	for ( map<tcPDPtr,int>::const_iterator c = counts.begin();
-	      c != counts.end(); ++c )
-	  m->add(c->first,c->second);
+      for (  LineMatcher  m : spaceLikeAllowed ) {
+	    m.reset();
+        for ( auto const & c : counts )
+	      m.add(c.first,c.second);
       }
       bool failed = false;
-      for ( vector<LineMatcher>::iterator m = spaceLikeAllowed.begin();
-	    m != spaceLikeAllowed.end(); ++m ) {
-	if ( !m->check() ) {
-	  failed = true;
-	  break;
-	}
+      for ( LineMatcher m : spaceLikeAllowed) {
+	     if ( !m.check() ) {
+	       failed = true;
+	       break;
+	     }
       }
       if ( failed )
 	continue;
@@ -95,17 +90,14 @@ generate(const PDVector& legs,
 	  counts[diag.allPartons()[k]] += 1;
 	}
       }
-      for ( vector<LineMatcher>::iterator m = timeLikeAllowed.begin();
-	    m != timeLikeAllowed.end(); ++m ) {
-	m->reset();
-	for ( map<tcPDPtr,int>::const_iterator c = counts.begin();
-	      c != counts.end(); ++c )
-	  m->add(c->first,c->second);
+      for ( auto  & m : timeLikeAllowed ) {
+	    m.reset();
+        for ( auto const & c : counts )
+	       m.add(c.first,c.second);
       }
       bool failed = false;
-      for ( vector<LineMatcher>::iterator m = timeLikeAllowed.begin();
-	    m != timeLikeAllowed.end(); ++m ) {
-	if ( !m->check() ) {
+      for ( auto const &  m : timeLikeAllowed ) {
+	if ( !m.check() ) {
 	  failed = true;
 	  break;
 	}
@@ -134,14 +126,12 @@ generate(const PDVector& legs,
     if ( internalVeto )
       continue;
     bool gotit = false;
-    for ( vector<Ptr<Tree2toNDiagram>::ptr>::const_iterator
-	    d = res.begin(); d != res.end(); ++d ) {
+    for ( auto const & d : res) {
       map<int,int> checkPermutation;
-      if ( diag.isSame(*d,checkPermutation) ) {
+      if ( diag.isSame(d,checkPermutation) ) {
 	gotit = true;
-	for ( map<int,int>::const_iterator p = checkPermutation.begin();
-	      p != checkPermutation.end(); ++p )
-	  if ( p->first != p->second )
+        for ( auto const & p : checkPermutation )
+	  if ( p.first != p.second )
 	    gotit = false;
 	if ( gotit )
 	  break;
@@ -167,17 +157,16 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
   bool externalCluster = children[1].externalId != -1;
 
   if ( children.size() == 3 ) {
-      for ( VertexVector::const_iterator v = theVertices.begin();
-	    v != theVertices.end(); ++v ) {
-	if ( (**v).getNpoint() != 3 )
+    for ( auto const & v : theVertices ) {
+	if ( v->getNpoint() != 3 )
 	  continue;
-	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), v) !=
 	     theExcludeVertices.end() )
 	  continue;
 	bool noMatch =
-	  (**v).orderInGs() != orderInGs ||
-	  (**v).orderInGem() != orderInGem ||
-	  !(**v).isIncoming(children[0].parent);
+	  v->orderInGs() != orderInGs ||
+	  v->orderInGem() != orderInGem ||
+	  !v->isIncoming(children[0].parent);
 	long idij = children[0].parent->id();
 	long idi  = children[2].parent->id();
 	long idj  = children[1].parent->id();
@@ -187,19 +176,19 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	  idij = -idij;
 	if ( !externalCluster )
 	  noMatch |=
-	    !(**v).isOutgoing(children[1].parent) ||
-	    !(**v).isOutgoing(children[2].parent);
+	    !v->isOutgoing(children[1].parent) ||
+	    !v->isOutgoing(children[2].parent);
 	else
 	  noMatch |=
-	    !(**v).isIncoming(children[1].parent) ||
-	    !(**v).isOutgoing(children[2].parent);
+	    !v->isIncoming(children[1].parent) ||
+	    !v->isOutgoing(children[2].parent);
 	noMatch |=
-	  !( (**v).allowed(idij,idi,idj) ||
-	     (**v).allowed(idj,idij,idi) ||
-	     (**v).allowed(idi,idj,idij) ||
-	     (**v).allowed(idij,idj,idi) ||
-	     (**v).allowed(idi,idij,idj) ||
-	     (**v).allowed(idj,idi,idij) );
+	  !( v->allowed(idij,idi,idj) ||
+	     v->allowed(idj,idij,idi) ||
+	     v->allowed(idi,idj,idij) ||
+	     v->allowed(idij,idj,idi) ||
+	     v->allowed(idi,idij,idj) ||
+	     v->allowed(idj,idi,idij) );
 	if ( noMatch )
 	  continue;
 	Vertex last;
@@ -217,25 +206,24 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 
   // spacelike clusterings (cluster on second one)
   for ( size_t i = 2; i < children.size(); ++i ) {
-    for ( VertexVector::const_iterator v = theVertices.begin();
-	  v != theVertices.end(); ++v ) {
-      if ( (**v).getNpoint() != 3 )
+    for ( auto const & v : theVertices ) {
+      if ( v->getNpoint() != 3 )
 	continue;
-      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), v) !=
 	   theExcludeVertices.end() )
 	continue;
       bool noMatch = false;
       noMatch |=
-	(**v).orderInGs() != orderInGs ||
-	(**v).orderInGem() != orderInGem;
+	v->orderInGs() != orderInGs ||
+	v->orderInGem() != orderInGem;
       if ( !externalCluster )
 	noMatch |=
-	  !(**v).isOutgoing(children[1].parent) ||
-	  !(**v).isOutgoing(children[i].parent);
+	  !v->isOutgoing(children[1].parent) ||
+	  !v->isOutgoing(children[i].parent);
       else
 	noMatch |=
-	  !(**v).isIncoming(children[1].parent) ||
-	  !(**v).isOutgoing(children[i].parent);
+	  !v->isIncoming(children[1].parent) ||
+	  !v->isOutgoing(children[i].parent);
       if ( noMatch )
 	continue;
       long idi = children[i].parent->id();
@@ -243,14 +231,14 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
       if ( externalCluster && children[1].parent->CC() )
 	idj = -idj;
       for ( set<tPDPtr>::const_iterator pij =
-	      (**v).outgoing().begin(); pij != (**v).outgoing().end() ; ++pij ) {
+	      v->outgoing().begin(); pij != v->outgoing().end() ; ++pij ) {
 	long idij = (**pij).id();
-	if ( (**v).allowed(idij,idi,idj) ||
-	     (**v).allowed(idj,idij,idi) ||
-	     (**v).allowed(idi,idj,idij) ||
-	     (**v).allowed(idij,idj,idi) ||
-	     (**v).allowed(idi,idij,idj) ||
-	     (**v).allowed(idj,idi,idij) ) {
+	if ( v->allowed(idij,idi,idj) ||
+	     v->allowed(idj,idij,idi) ||
+	     v->allowed(idi,idj,idij) ||
+	     v->allowed(idij,idj,idi) ||
+	     v->allowed(idi,idij,idj) ||
+	     v->allowed(idj,idi,idij) ) {
 	  PDPtr dij = (**pij).CC() ? (**pij).CC() : *pij;      
 	  vector<Vertex> cled;
 	  for ( size_t k = 0; k < children.size(); ++k ) {
@@ -276,29 +264,28 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
   // timelike clusterings
   for ( size_t i = 2; i < children.size(); ++i ) {
     for ( size_t j = i+1; j < children.size(); ++j ) {
-      for ( VertexVector::const_iterator v = theVertices.begin();
-	    v != theVertices.end(); ++v ) {
-	if ( (**v).getNpoint() != 3 )
+      for ( auto const & v : theVertices ) {
+	if ( v->getNpoint() != 3 )
 	  continue;
-	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), v) !=
 	     theExcludeVertices.end() )
 	  continue;
-	if ( (**v).orderInGs() != orderInGs ||
-	     (**v).orderInGem() != orderInGem ||
-	     !(**v).isOutgoing(children[i].parent) ||
-	     !(**v).isOutgoing(children[j].parent) )
+	if ( v->orderInGs() != orderInGs ||
+	     v->orderInGem() != orderInGem ||
+	     !v->isOutgoing(children[i].parent) ||
+	     !v->isOutgoing(children[j].parent) )
 	  continue;
 	long idi = children[i].parent->id();
 	long idj = children[j].parent->id();
 	for ( set<tPDPtr>::const_iterator pij =
-		(**v).outgoing().begin(); pij != (**v).outgoing().end() ; ++pij ) {
+		v->outgoing().begin(); pij != v->outgoing().end() ; ++pij ) {
 	  long idij = (**pij).id();
-	  if ( (**v).allowed(idij,idi,idj) ||
-	       (**v).allowed(idj,idij,idi) ||
-	       (**v).allowed(idi,idj,idij) ||
-	       (**v).allowed(idij,idj,idi) ||
-	       (**v).allowed(idi,idij,idj) ||
-	       (**v).allowed(idj,idi,idij) ) {
+	  if ( v->allowed(idij,idi,idj) ||
+	       v->allowed(idj,idij,idi) ||
+	       v->allowed(idi,idj,idij) ||
+	       v->allowed(idij,idj,idi) ||
+	       v->allowed(idi,idij,idj) ||
+	       v->allowed(idj,idi,idij) ) {
 	    PDPtr dij = (**pij).CC() ? (**pij).CC() : *pij;
 	    vector<Vertex> cled;
 	    for ( size_t k = 0; k < children.size(); ++k ) {
@@ -363,23 +350,20 @@ clusterAll(const PDVector& external,
 	   unsigned int orderInGem) {
 
   if ( !prepared ) {
-    for ( VertexVector::iterator v = theVertices.begin();
-	  v != theVertices.end(); ++v ) {
-      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+    for ( auto & v : theVertices ) {
+      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), v) !=
 	   theExcludeVertices.end() )
 	continue;
-      (**v).init();
-      maxOrderGs = max(maxOrderGs,(**v).orderInGs());
-      maxOrderGem = max(maxOrderGem,(**v).orderInGem());
+      v->init();
+      maxOrderGs = max(maxOrderGs,v->orderInGs());
+      maxOrderGem = max(maxOrderGem,v->orderInGem());
     }
-    for ( vector<LineMatcher>::iterator m = spaceLikeAllowed.begin();
-	  m != spaceLikeAllowed.end(); ++m ) {
-      m->rebind(this);
-    }
-    for ( vector<LineMatcher>::iterator m = timeLikeAllowed.begin();
-	  m != timeLikeAllowed.end(); ++m ) {
-      m->rebind(this);
-    }
+    for ( auto & m : spaceLikeAllowed)
+      m.rebind(this);
+    
+    for ( auto & m : timeLikeAllowed )
+      m.rebind(this);
+    
     prepared = true;
   }
 

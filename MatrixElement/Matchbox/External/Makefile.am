@@ -1,22 +1,95 @@
-SUBDIRS = \
-BLHAGeneric
+SUBDIRS = BLHAGeneric VBFNLO NJet GoSam OpenLoops MadGraph
 
-if HAVE_VBFNLO
-SUBDIRS += VBFNLO
-endif
 
-if HAVE_NJET
-SUBDIRS += NJet
-endif
+pkglib_LTLIBRARIES =
+
+##############
 
 if HAVE_GOSAM
-SUBDIRS += GoSam
+pkglib_LTLIBRARIES += HwMatchboxGoSam.la
 endif
+
+HwMatchboxGoSam_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 13:0:0
+
+HwMatchboxGoSam_la_CPPFLAGS = $(AM_CPPFLAGS) \
+-DHERWIG_BINDIR="\"$(bindir)\"" \
+-DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
+-DGOSAM_PREFIX="\"$(GOSAMPREFIX)\""
+
+HwMatchboxGoSam_la_SOURCES = \
+GoSam/GoSamAmplitude.cc
+
+
+###############
+
+if HAVE_VBFNLO
+pkglib_LTLIBRARIES += HwMatchboxVBFNLO.la
+endif
+
+HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:2:0
+HwMatchboxVBFNLO_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)
+HwMatchboxVBFNLO_la_CPPFLAGS += -DVBFNLOLIB=$(VBFNLOLIB)
+
+HwMatchboxVBFNLO_la_SOURCES = \
+VBFNLO/VBFNLOAmplitude.cc \
+VBFNLO/VBFNLOPhasespace.cc
+
+
+###############
 
 if HAVE_OPENLOOPS
-SUBDIRS += OpenLoops
+pkglib_LTLIBRARIES += HwMatchboxOpenLoops.la
 endif
 
-if HAVE_MADGRAPH
-SUBDIRS += MadGraph
+HwMatchboxOpenLoops_la_SOURCES = \
+OpenLoops/OpenLoopsAmplitude.cc
+
+HwMatchboxOpenLoops_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 12:0:0
+
+HwMatchboxOpenLoops_la_CPPFLAGS = $(AM_CPPFLAGS) \
+-DOPENLOOPSLIBS="\"$(OPENLOOPSLIBS)\"" \
+-DOPENLOOPSPREFIX="\"$(OPENLOOPSPREFIX)\""
+
+##############
+
+
+if HAVE_NJET
+pkglib_LTLIBRARIES += HwMatchboxNJet.la
 endif
+
+HwMatchboxNJet_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 12:0:0
+
+HwMatchboxNJet_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(NJETINCLUDEPATH) \
+-DNJET_PREFIX="\"$(NJETPREFIX)\"" \
+-DNJET_LIBS="\"$(NJETLIBPATH)\""
+
+HwMatchboxNJet_la_SOURCES = \
+NJet/NJetsAmplitude.cc
+
+
+
+##############
+
+if HAVE_MADGRAPH
+pkglib_LTLIBRARIES += HwMatchboxMadGraph.la
+endif
+
+HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:1:0
+
+HwMatchboxMadGraph_la_SOURCES = \
+MadGraph/MadGraphAmplitude.cc
+
+HwMatchboxMadGraph_la_CPPFLAGS = $(AM_CPPFLAGS) \
+-DHERWIG_BINDIR="\"$(bindir)\"" \
+-DHERWIG_INCLUDEDIR="\"$(includedir)\"" \
+-DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
+-DMADGRAPH_PREFIX="\"$(MADGRAPHPREFIX)\""
+
+
+
+
+
+
+

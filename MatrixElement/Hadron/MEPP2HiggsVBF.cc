@@ -17,8 +17,8 @@
 #include "Herwig/Utilities/Maths.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -355,7 +355,7 @@ void MEPP2HiggsVBF::Init() {
 }
 
 RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(RealEmissionProcessPtr born,
-						      ShowerInteraction::Type inter) {
+						      ShowerInteraction inter) {
   // check if generating QCD radiation
   if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
      inter!=ShowerInteraction::ALL)

@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
 using namespace Herwig;
 
@@ -28,9 +29,7 @@ Ptr<MatchboxFactory>::tptr MatchboxInsertionOperator::factory() const { return t
 void MatchboxInsertionOperator::factory(Ptr<MatchboxFactory>::tptr f) { theFactory = f; }
 
 MatchboxInsertionOperator::MatchboxInsertionOperator() 
-  : HandlerBase(),
-    theUseDRbar(false),
-    theUseDR(false), theUseCS(false), theUseBDK(false), theUseExpanded(false) {}
+  : HandlerBase() {}
 
 MatchboxInsertionOperator::~MatchboxInsertionOperator() {}
 
@@ -44,14 +43,37 @@ CrossSection MatchboxInsertionOperator::dSigHatDR() const {
     (2.*lastSHat());
 }
 
+Ptr<MatchboxMEBase>::tptr MatchboxInsertionOperator::lastBorn() const {
+    if(lastMatchboxXComb()->matchboxME()) return lastMatchboxXComb()->matchboxME();
+     else{
+       assert(lastMatchboxXComb()->subtractionDipole());
+       return lastMatchboxXComb()->subtractionDipole()->underlyingBornME();
+     }
+}
+
+
+
+bool MatchboxInsertionOperator::isDRbar() const { return lastBorn()->isDRbar(); }
+
+bool MatchboxInsertionOperator::isDR() const { return lastBorn()->isDR(); }
+
+bool MatchboxInsertionOperator::isCS() const { return lastBorn()->isCS(); }
+
+bool MatchboxInsertionOperator::isBDK() const { return lastBorn()->isBDK(); }
+
+bool MatchboxInsertionOperator::isExpanded() const { return lastBorn()->isExpanded(); }
+
+
+
+
+
+
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theFactory << theUseDRbar
-     << theUseDR << theUseCS << theUseBDK << theUseExpanded;
+  os << theLastXComb << theFactory ;
 }
 
 void MatchboxInsertionOperator::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theFactory >> theUseDRbar
-     >> theUseDR >> theUseCS >> theUseBDK >> theUseExpanded;
+  is >> theLastXComb >> theFactory ;
   lastMatchboxXComb(theLastXComb);
 }
 

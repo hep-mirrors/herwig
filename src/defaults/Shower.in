@@ -50,7 +50,7 @@ newdef ShowerModel:PartnerFinder PartnerFinder
 newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
 newdef ShowerHandler:ShowerModel ShowerModel
 newdef ShowerHandler:SplittingGenerator SplittingGenerator
-newdef ShowerHandler:Interaction QEDQCD
+newdef ShowerHandler:Interactions QEDQCD
 newdef ShowerHandler:SpinCorrelations Yes
 newdef ShowerHandler:SoftCorrelations Singular
 
@@ -87,7 +87,7 @@ newdef PowhegShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
 newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 newdef PowhegShowerHandler:ShowerModel ShowerModel
 newdef PowhegShowerHandler:SplittingGenerator SplittingGenerator
-newdef PowhegShowerHandler:Interaction QEDQCD
+newdef PowhegShowerHandler:Interactions QEDQCD
 newdef PowhegShowerHandler:SpinCorrelations Yes
 newdef PowhegShowerHandler:SoftCorrelations Singular
 newdef PowhegShowerHandler:IntrinsicPtGaussian 1.3*GeV

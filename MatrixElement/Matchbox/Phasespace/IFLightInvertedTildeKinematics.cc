@@ -69,6 +69,7 @@ bool IFLightInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
+  // This jacobian is (1/x^2)*dx*du
   mapping *= (1.-x)/((1.-z)*(z*(1.-z)+sqr(x-z)));
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 

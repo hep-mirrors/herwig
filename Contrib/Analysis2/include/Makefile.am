@@ -1,7 +1,5 @@
 BUILT_SOURCES = done-all-links
 
-AUTOMAKE_OPTIONS = -Wno-portability
-
 DIRLINKS = \
 $(top_srcdir)/Histogram2 \
 $(top_srcdir)/Analysis2

@@ -1,30 +1,56 @@
-noinst_LTLIBRARIES = libHwModelGenerator.la
-libHwModelGenerator_la_SOURCES = \
-ModelGenerator.h ModelGenerator.fh ModelGenerator.cc\
-DecayConstructor.cc DecayConstructor.h DecayConstructor.fh  \
-NBodyDecayConstructorBase.cc NBodyDecayConstructorBase.h \
+BUILT_SOURCES  = ModelGenerator__all.cc
+CLEANFILES = ModelGenerator__all.cc
+
+ModelGenerator__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+ModelGenerator.h ModelGenerator.fh \
+DecayConstructor.h DecayConstructor.fh  \
+NBodyDecayConstructorBase.h \
 NBodyDecayConstructorBase.fh \
-TwoBodyDecayConstructor.cc TwoBodyDecayConstructor.h \
+TwoBodyDecayConstructor.h \
 TwoToTwoProcessConstructor.h TwoToTwoProcessConstructor.fh \
-TwoToTwoProcessConstructor.cc \
 HardProcessConstructor.h HardProcessConstructor.fh \
-HardProcessConstructor.cc \
 HiggsVectorBosonProcessConstructor.h \
-HiggsVectorBosonProcessConstructor.cc \
 HiggsVBFProcessConstructor.h \
-HiggsVBFProcessConstructor.cc \
 QQHiggsProcessConstructor.h \
-QQHiggsProcessConstructor.cc \
 HPDiagram.h \
-ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.cc \
-FourBodyDecayConstructor.h  FourBodyDecayConstructor.cc \
-WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.cc \
-ResonantProcessConstructor.cc ResonantProcessConstructor.h \
+ThreeBodyDecayConstructor.h \
+FourBodyDecayConstructor.h  \
+WeakCurrentDecayConstructor.h \
+ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
-VVSLoopVertex.fh VVSLoopVertex.h VVSLoopVertex.cc \
-GenericHGGVertex.h GenericHGGVertex.cc \
-GenericHPPVertex.h GenericHPPVertex.cc \
-BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
-PrototypeVertex.h PrototypeVertex.cc \
+VVSLoopVertex.fh VVSLoopVertex.h \
+GenericHGGVertex.h \
+GenericHPPVertex.h \
+BSMWidthGenerator.h BSMWidthGenerator.fh \
+PrototypeVertex.h \
 TBDiagram.h TwoBodyDecay.h\
-BSMModel.h BSMModel.cc
+BSMModel.h 
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+ModelGenerator.cc\
+DecayConstructor.cc \
+NBodyDecayConstructorBase.cc \
+TwoBodyDecayConstructor.cc \
+TwoToTwoProcessConstructor.cc \
+HardProcessConstructor.cc \
+HiggsVectorBosonProcessConstructor.cc \
+HiggsVBFProcessConstructor.cc \
+QQHiggsProcessConstructor.cc \
+ThreeBodyDecayConstructor.cc \
+FourBodyDecayConstructor.cc \
+WeakCurrentDecayConstructor.cc \
+ResonantProcessConstructor.cc \
+VVSLoopVertex.cc \
+GenericHGGVertex.cc \
+GenericHPPVertex.cc \
+BSMWidthGenerator.cc \
+PrototypeVertex.cc \
+BSMModel.cc

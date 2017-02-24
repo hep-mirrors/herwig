@@ -4,10 +4,17 @@
 #ifndef HERWIG_DipoleShowerHandler_FH
 #define HERWIG_DipoleShowerHandler_FH
 
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
+
 namespace Herwig {
 
 class DipoleShowerHandler;
 
+  using namespace ThePEG;
+  
+  ThePEG_DECLARE_POINTERS(DipoleShowerHandler , DipoleShowerHandlerPtr );
+  
 }
 
 #endif // HERWIG_DipoleShowerHandler_FH

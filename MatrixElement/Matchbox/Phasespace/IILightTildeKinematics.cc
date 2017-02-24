@@ -78,6 +78,18 @@ Energy IILightTildeKinematics::lastPt() const {
 
 }
 
+
+Energy IILightTildeKinematics::lastPt(Lorentz5Momentum ,Lorentz5Momentum emission,Lorentz5Momentum )const {
+  return emission.perp();
+}
+
+pair<double,double> IILightTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  if(pt>hardPt) return make_pair(0.5,0.5);
+  double root = (1.-emitterX())*sqrt(1.-sqr(pt/hardPt));
+  return make_pair(0.5*( 1.+emitterX() - root),0.5*( 1.+emitterX() + root));
+}
+
+
 double IILightTildeKinematics::lastZ() const {
   double x = subtractionParameters()[0];
   double v = subtractionParameters()[1];

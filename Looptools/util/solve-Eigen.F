@@ -6,6 +6,8 @@
 * this file is part of LoopTools
 * last modified 9 Dec 10 th
 
+#include "externals.h"
+#include "types.h"
 #include "defs.h"
 
 
@@ -231,10 +233,10 @@
 	implicit none
 	integer n, ldA, ldAinv
 	QVAR A(ldA,*), Ainv(ldAinv,*)
-	double complex b(*)
+	ComplexType b(*)
 
 	integer i, j
-	double complex x(MAXDIM)
+	ComplexType x(MAXDIM)
 
 #if defined(QUAD) && !defined(COMPLEXPARA)
 
@@ -244,15 +246,15 @@
 	  tr = 0
 	  ti = 0
 	  do j = 1, n
-	    tr = tr + Ainv(i,j)*DBLE(b(j))
-	    ti = ti + Ainv(i,j)*DIMAG(b(j))
+	    tr = tr + Ainv(i,j)*Re(b(j))
+	    ti = ti + Ainv(i,j)*Im(b(j))
 	  enddo
-	  x(i) = DCMPLX(tr, ti)
+	  x(i) = ToComplex(tr, ti)
 	enddo
 
 #else
 
-	double complex delta(MAXDIM), t
+	ComplexType delta(MAXDIM), t
 
 	do i = 1, n
 	  t = 0

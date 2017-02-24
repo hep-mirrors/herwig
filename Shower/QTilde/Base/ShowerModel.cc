@@ -19,7 +19,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
-#include "SudakovFormFactor.h"
+#include "Herwig/Shower/Core/Base/SudakovFormFactor.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;

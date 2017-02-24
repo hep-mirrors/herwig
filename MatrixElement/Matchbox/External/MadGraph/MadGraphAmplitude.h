@@ -286,12 +286,12 @@ protected:
   /**
    * The path for the process libraries.
    */
-  string theProcessPath;
+  static string theProcessPath;
   
   /**
    * The path to generate amplitudes in.
    */
-  string theMGmodel;
+  static string theMGmodel;
   
   bool keepinputtopmass;
 
@@ -329,22 +329,41 @@ protected:
   /**
    *   Location of the installed executables
    */
-  string bindir_;
+  static string bindir_;
 
   /**
    *   Location of the installed include files
    */
-  string includedir_;
+  static string includedir_;
 
   /**
    *   Location of the data files
    */
-  string pkgdatadir_;
+  static string pkgdatadir_;
 
   /**
    *  Location of MADGRAPH
    */
-  string madgraphPrefix_;
+  static string madgraphPrefix_;
+      
+  /**
+   *  Helper functions to make long strings static
+   */
+      
+  void setProcessPath(string );
+  string getProcessPath() const;
+      
+  void setBinDir(string p);
+  string getBinDir() const;
+      
+  void setDataDir(string p);
+  string getDataDir() const;
+     
+  void setModel(string p);
+  string getModel() const;
+      
+  void setMadgraphPrefix(string p);
+  string getMadgraphPrefix() const ;
 
 private:
 

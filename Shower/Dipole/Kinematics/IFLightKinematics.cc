@@ -66,8 +66,15 @@ pair<double,double> IFLightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingInfo& dInfo,
 						   const DipoleSplittingKernel&) const {
   double x = dInfo.emitterX();
-  double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
-  return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
+
+  Energy hard=dInfo.hardPt();
+  if(openInitialState()==1)hard=dInfo.scale() * sqrt((1.-x)/x) /2.;
+  if(openInitialState()==2)hard=min(dInfo.scale(),dInfo.scale() * sqrt((1.-x)/x) /2.);
+  if(hard<pt)return {0.5*(1.+x),0.5*(1.+x)};
+
+  double s = sqrt(1.-sqr(pt/hard));
+
+  return {0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s)};
 }
 
 
@@ -138,8 +145,8 @@ bool IFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian(weight*(1./z));
-
+    jacobian(weight*(1./(u+x-2.*u*x)));
+  
   lastPt(pt);
   lastZ(z);
   lastPhi(phi);

@@ -97,7 +97,7 @@ public:
 	void append( int p );
 
 	/// Function for adding a whole quark_line to the quark_line.
-	void append( std::vector<int> in_ql );
+	void append( const std::vector<int> & in_ql );
 
 	/// Function for prepending parton p to the quark_line.
 	void prepend( int p );

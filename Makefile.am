@@ -2,18 +2,18 @@ SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
 	UnderlyingEvent Analysis Looptools Sampling \
-	lib src Doc Contrib Tests
+	API lib src Doc Contrib Tests
 
-EXTRA_DIST = GUIDELINES
+EXTRA_DIST = GUIDELINES cat_with_cpplines
 
-## DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH) --with-gsl=$(GSLPATH)
+## DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH) --with-gsl=$(GSLPATH) --with-boost=/mt/data1/herwig
 
 ACLOCAL_AMFLAGS = -I m4
 
 DISTCLEANFILES = config.herwig
 
 libclean:
-	find . -name '*.la' -print0 | xargs -0 rm -rf
+	find . -name '*.la' -delete
 	cd lib && $(MAKE) $(AM_MAKEFLAGS) clean
 	cd src && $(MAKE) $(AM_MAKEFLAGS) clean
 

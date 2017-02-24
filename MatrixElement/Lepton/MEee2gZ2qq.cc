@@ -22,13 +22,13 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig/MatrixElement/HardVertex.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 
 
 using namespace Herwig;
@@ -387,10 +387,10 @@ RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(RealEmission
 }
 
 RealEmissionProcessPtr MEee2gZ2qq::calculateRealEmission(RealEmissionProcessPtr born, bool veto,
-							 ShowerInteraction::Type inter) {
+							 ShowerInteraction inter) {
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
-  pair<Energy,ShowerInteraction::Type> output =
+  pair<Energy,ShowerInteraction> output =
     generateHard(born,emission,iemit,ispect,veto,inter);
   if(emission.empty()) {
     if(inter!=ShowerInteraction::QCD) born->pT()[ShowerInteraction::QED] = pTminQED_;
@@ -403,7 +403,7 @@ RealEmissionProcessPtr MEee2gZ2qq::calculateRealEmission(RealEmissionProcessPtr 
     if(inter!=ShowerInteraction::QED) born->pT()[ShowerInteraction::QCD] = pTveto;
   }
   // generate the momenta for the hard emission
-  ShowerInteraction::Type force = output.second;
+  ShowerInteraction force = output.second;
   born->interaction(force);
   // get the quark and antiquark
   ParticleVector qq;
@@ -550,18 +550,18 @@ double MEee2gZ2qq::PS(double x, double xbar) {
   return brack/den;
 }
 
-pair<Energy,ShowerInteraction::Type>
+pair<Energy,ShowerInteraction>
 MEee2gZ2qq::generateHard(RealEmissionProcessPtr born, 
 			 vector<Lorentz5Momentum> & emmision,
 			 unsigned int & iemit, unsigned int & ispect,
-			 bool applyVeto,ShowerInteraction::Type type) {
-  vector<ShowerInteraction::Type> interactions;
-  if(type==ShowerInteraction::QCD)
+			 bool applyVeto,ShowerInteraction inter) {
+  vector<ShowerInteraction> interactions;
+  if(inter==ShowerInteraction::QCD)
     interactions.push_back(ShowerInteraction::QCD);
-  else if(type==ShowerInteraction::QED)
+  else if(inter==ShowerInteraction::QED)
     interactions.push_back(ShowerInteraction::QED);
-  else if(type==ShowerInteraction::QEDQCD ||
-	  type==ShowerInteraction::ALL) {
+  else if(inter==ShowerInteraction::QEDQCD ||
+	  inter==ShowerInteraction::ALL) {
     interactions.push_back(ShowerInteraction::QCD);
     interactions.push_back(ShowerInteraction::QED);
   }
@@ -813,14 +813,14 @@ MEee2gZ2qq::generateHard(RealEmissionProcessPtr born,
 }
 
 RealEmissionProcessPtr MEee2gZ2qq::generateHardest(RealEmissionProcessPtr born,
-						   ShowerInteraction::Type inter) {
+						   ShowerInteraction inter) {
   return calculateRealEmission(born,false,inter);
 }
 
 double MEee2gZ2qq::meRatio(vector<cPDPtr> partons, 
 			   vector<Lorentz5Momentum> momenta,
 			   unsigned int iemitter,
-			   ShowerInteraction::Type inter,
+			   ShowerInteraction inter,
 			   bool subtract) const {
   Lorentz5Momentum q = momenta[2]+momenta[3]+momenta[4];
   Energy2 Q2=q.m2();
@@ -910,7 +910,7 @@ double MEee2gZ2qq::loME(const vector<cPDPtr> & partons,
 
 InvEnergy2 MEee2gZ2qq::realME(const vector<cPDPtr> & partons, 
 			      const vector<Lorentz5Momentum> & momenta,
-			      ShowerInteraction::Type inter) const {
+			      ShowerInteraction inter) const {
   // compute the spinors
   vector<SpinorWaveFunction> fin,aout;
   vector<SpinorBarWaveFunction>  ain,fout;

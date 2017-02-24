@@ -1,4 +1,3 @@
-AUTOMAKE_OPTIONS = -Wno-portability
 AM_LDFLAGS += -module -avoid-version -rpath /dummy/path/not/used
 
 EXTRA_DIST = Inputs python Rivet 
@@ -205,8 +204,9 @@ Rivet-ISR-% : Rivet/ISR-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
-Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
+Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
                   $(shell echo Rivet/LEP{,-Powheg,-Matchbox-Powheg}-14.in) \
+	          $(shell echo Rivet/LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{10.52,10.52-sym,10.54,10.45}.in) \
                   $(shell echo Rivet/BFactory-{Upsilon,Upsilon2,Upsilon4,Tau,10.58-res}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Matchbox-Powheg}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
@@ -219,7 +219,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Po
                   $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-7-DiJets-{1..7}-{A,B,C}.in ) \
                   $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-{7,8}-Jets-{0..10}.in ) \
 	          $(shell echo Rivet/LHC-{900,2360,2760,7,8,13}-UE.in ) \
-	          $(shell echo Rivet/LHC-{900,7}-UE-Long.in ) \
+	          $(shell echo Rivet/LHC-{900,7}-UE-{Short,Long}.in ) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-7-Charm-{1..5}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-7-Bottom-{0..8}.in) \
 		  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg}-7-Top-{L,SL,All}.in) \
@@ -237,7 +237,8 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Po
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole}-ggHJet.in)
 #                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) $(shell echo Rivet/SppS-{53,63}-UE.in )
 
-Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi})
+Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
+	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg)
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
@@ -295,7 +296,7 @@ Rivet-TVT-Jets:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}} 
 Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-DiJets-{1..7}-{A,B,C} ) \
 	        $(shell echo Rivet-LHC-{7,8}-Jets-{0..10} ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8,13}-UE ) \
-	        $(shell echo Rivet-LHC-{900,7}-UE-Long ) \
+	        $(shell echo Rivet-LHC-{900,7}-UE-{Short,Long} ) \
 		$(shell echo Rivet-LHC-7-Charm-{1..5}) \
 		$(shell echo Rivet-LHC-7-Bottom-{0..8}) \
 		$(shell echo Rivet-LHC-7-Top-{L,SL,All})\
@@ -320,9 +321,9 @@ Rivet-LHC-EW: $(shell echo Rivet-LHC{,-Matchbox,-Powheg,-Dipole}-{13-Z-{e,mu},8-
 	      $(shell echo Rivet-LHC{-Matchbox,-Dipole}-{Z-b,Z-bb,W-b,8-Z-jj}) \
               $(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}) \
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda LHC-7-{W,Z}Gamma-{e,mu}.yoda -o LHC-EW.yoda;
-	python/merge-LHC-EW LHC-Matchbox-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
-	python/merge-LHC-EW LHC-Dipole-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda LHC-Dipole-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Dipole-EW.yoda;
+	python/merge-LHC-EW LHC-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda LHC-7-{W,Z}Gamma-{e,mu}.yoda -o LHC-EW.yoda;
+	python/merge-LHC-EW LHC-Matchbox-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
+	python/merge-LHC-EW LHC-Dipole-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda LHC-Dipole-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Dipole-EW.yoda;
 	python/merge-LHC-EW LHC-Powheg-{W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv}}.yoda -o LHC-Powheg-EW.yoda;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.yoda:Hw++ LHC-Powheg-EW.yoda:Hw++-Powheg LHC-Matchbox-EW.yoda:Hw++-Matchbox LHC-Matchbox-Z-b.yoda:Hw++-Matchbox-Zb \
                                      LHC-Matchbox-Z-bb.yoda:Hw++-Matchbox-Zbb LHC-Matchbox-W-b.yoda:Hw++-Matchbox-W-bb LHC-Dipole-EW.yoda:Hw++-Dipole \

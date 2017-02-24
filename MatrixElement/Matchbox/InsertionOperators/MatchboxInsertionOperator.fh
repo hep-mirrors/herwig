@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the MatchboxInsertionOperator class
+
+#ifndef HERWIG_MatchboxInsertionOperator_FH
+#define HERWIG_MatchboxInsertionOperator_FH
+
+namespace Herwig {
+
+class MatchboxInsertionOperator;
+
+}
+
+#endif // HERWIG_MatchboxInsertionOperator_FH

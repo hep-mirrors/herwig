@@ -12,7 +12,7 @@ using namespace Herwig;
 
 CKKWTree::CKKWTree(vector<HardBranchingPtr> branchings,
 		   vector<HardBranchingPtr> spacelike,
-		   ShowerInteraction::Type type) : HardTree(branchings,spacelike,type),
+		   ShowerInteraction type) : HardTree(branchings,spacelike,type),
 						   lowestpTMomentum_(ZERO),
 						   totalpT_(ZERO), ordered_(false)
 {}

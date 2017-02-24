@@ -7,12 +7,12 @@ cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
-insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler
-
 set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
+# tunes
+read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so

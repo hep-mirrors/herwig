@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief FFMassiveInvertedTildeKinematics inverts the final-final tilde
  * kinematics.
@@ -80,12 +80,12 @@ public:
    * For generated pt and z, check if this point is
    * kinematically allowed
    */
-  /*virtual*/ bool ptzAllowed(pair<Energy,double>) const;
+  /*virtual*/ bool ptzAllowed(pair<Energy,double> ptz, vector<double>* values ) const;
 
   /**
    * Generate pt and z
    */
-  virtual pair<Energy,double> generatePtZ(double& jac, const double * r) const;
+  virtual pair<Energy,double> generatePtZ(double& jac, const double * r, vector<double>* values) const;
 
 public:
   
@@ -170,6 +170,11 @@ private:
    * In fact, it should not even be implemented.
    */
   FFMassiveInvertedTildeKinematics & operator=(const FFMassiveInvertedTildeKinematics &);
+
+  /**
+   * Option to use the full jacobian, including the z->zprime jacobian.
+   **/
+  bool  theFullMapping;
 
 };
 

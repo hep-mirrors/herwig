@@ -91,6 +91,12 @@ bool DipolePKOperator::apply(tcPDPtr pd) const {
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
+
+void DipolePKOperator::setAlpha(double alpha)const{
+  factory()->setAlphaParameter(alpha);
+}
+
+
 void DipolePKOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {

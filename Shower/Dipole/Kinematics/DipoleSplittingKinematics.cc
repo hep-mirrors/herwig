@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -31,16 +32,16 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters() {}
+    theLastSplittingParameters(),theOpenInitialStateZ(0) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck;
+  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenInitialStateZ;
 }
 
 void DipoleSplittingKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck;
+  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theOpenInitialStateZ;
 }
 
 void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
@@ -60,8 +61,23 @@ void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
   dInfo.lastSpectatorZ(lastSpectatorZ());
   dInfo.splittingParameters().resize(lastSplittingParameters().size());
   copy(lastSplittingParameters().begin(),lastSplittingParameters().end(),
-       dInfo.splittingParameters().begin());
-  
+       dInfo.splittingParameters().begin());  
+}
+
+
+Energy DipoleSplittingKinematics::ptMax(Energy dScale, 
+					double emX, double specX,
+					const DipoleSplittingInfo& dInfo,
+					const DipoleSplittingKernel& split) const {
+  return ptMax(dScale, emX, specX, dInfo.index(), split);
+} 
+
+
+Energy DipoleSplittingKinematics::QMax(Energy dScale, 
+				       double emX, double specX,
+				       const DipoleSplittingInfo& dInfo,
+				       const DipoleSplittingKernel& split) const {
+  return QMax(dScale, emX, specX, dInfo.index(), split);
 }
 
 Energy DipoleSplittingKinematics::generatePt(double r, Energy dScale,
@@ -100,6 +116,11 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
 					    double& weight) const {
 
   pair<double,double> zLims = zBoundaries(pt,dInfo,split);
+
+  if(zLims.first==zLims.second){  
+	weight = 0.0;
+      	return 0.0;
+  }
 
   using namespace RandomHelpers;
 
@@ -269,6 +290,22 @@ void DipoleSplittingKinematics::Init() {
      &DipoleSplittingKinematics::theMCCheck, false, false, true, true, false);
 
   interfaceMCCheck.rank(-1);
+  
+  
+  static Switch<DipoleSplittingKinematics,int> interfaceOpenInintialStateZ
+  ("OpenInitialStateZ", "",
+   &DipoleSplittingKinematics::theOpenInitialStateZ, 0, false, false);
+  static SwitchOption interfaceOpenInintialStateZhardScale
+  (interfaceOpenInintialStateZ,   "Hard",   "",   0);
+  static SwitchOption interfaceOpenInintialStateZfull
+  (interfaceOpenInintialStateZ,   "Full",   "",   1);
+  static SwitchOption interfaceOpenInintialStateZDipoleScale
+  (interfaceOpenInintialStateZ,   "DipoleScale",   "",   2);
+  
+  
+  
+  
+  
 
 }
 

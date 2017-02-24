@@ -5,10 +5,10 @@
 // This is the declaration of the FxFxHandler class.
 //
 
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "ThePEG/Config/Pointers.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "ThePEG/Utilities/CompSelector.h"
@@ -35,7 +35,7 @@ using namespace ThePEG;
  * @see \ref FxFxHandlerInterfaces "The interfaces"
  * defined for FxFxHandler.
  */
-class FxFxHandler: public ShowerHandler {
+class FxFxHandler: public QTildeShowerHandler {
 
   /**
    * FxFxHandler should have access to our private parts.
@@ -106,13 +106,13 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto();
+  virtual bool showerHardProcessVeto() const;
 
  /**
    * information for FxFx merging
    */
-  int npLO_;
-  int npNLO_;
+  mutable int npLO_;
+  mutable int npNLO_;
 
 
 
@@ -135,55 +135,37 @@ protected:
   //@}
 
 private:
+
+  /*
+   * whether a heavy quark has been found in the merging
+   */
+  mutable bool hvqfound = false;
   
   /* 
    * Run MLM jet-parton matching on the 'extra' jets.
    */
-  
   bool lightJetPartonVeto();
   
   /* 
    * Function that calculates deltaR between a parton and a jet
    */
+  double partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom) const;
 
-  double partonJetDeltaR(ThePEG::tPPtr partonptr, LorentzMomentum jetmom);
-  double partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2);
-  
-  /**
-   * c++ translation of subroutine of same name from alpsho.f.
-   * Initialize calorimeter for calsim_m and getjet_m. Note that
-   * because initialization is separte calsim_m can be called more
-   * than once to simulate pileup of several events.
+    
+  /* 
+   * Function that calculates deltaR between two jets
    */
-  void calini_m();
-  
+  double partonJetDeltaR(LorentzMomentum jetmom1, LorentzMomentum jetmom2) const;
  
-  /**
-   * c++ translation of subroutine of same name from alpsho.f.
-   * Simple calorimeter simulation - assume uniform Y and phi bins.
-   */
-  void calsim_m();
-
  /**
    * Find jets using the FastJet package on particlesToCluster_.
    */
-  void getFastJets(double rjet, Energy ejcut, double etajcut);
+  void getFastJets(double rjet, Energy ejcut, double etajcut) const;
 
   /**
    * Find jets using the FastJet package on particlesToCluster_.
    */
-  void getFastJetsToMatch(double rjet, Energy ejcut, double etajcut);
-  
-
-  /**
-   * c++ translation of subroutine of same name from alpsho.f.
-   * Simple jet-finding algorithm (similar to UA1). Find highest
-   * remaining cell > ETSTOP and sum surrounding cells with --
-   * DELTA(Y)**2+DELTA(PHI)**2 < RJET**2 , ET>ECCUT.
-   * Keep sets with ET>EJCUT and ABS(ETA)<ETACUT. The UA1
-   * parameters are RJET=1.0 and EJCUT=5.0.
-   */
-  void getjet_m(double rjet, Energy ejcut, double etajcut);
+  void getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) const;
 
   /**
    * Deletes particles from partonsToMatch_ and particlesToCluster_
@@ -194,7 +176,7 @@ private:
    * present in the lowest multiplicity process, heavy quarks and
    * any related decay products.
    */
-  void caldel_m();
+  void caldel_m() const;
 
   /**  
    * c++ translation of subroutine of same name from alpsho.f.
@@ -205,28 +187,25 @@ private:
    * daughters of vetoed heavy-quark mothers: jets complementary
    * to those reconstructed by caldel.
    */
-  void caldel_hvq();
+  void caldel_hvq() const;
 
   /**
    * get the information required for FxFx merging
    */
-  void getnpFxFx();
-
-  
-  
+  void getnpFxFx() const;
 
   /**
    * Get the particles from lastXCombPtr filling the pair
    * preshowerISPs_ and particle pointer vector preshowerFSPs_.
    */
-  void getPreshowerParticles();
+  void getPreshowerParticles() const;
 
   /**
    * Get the particles from eventHandler()->currentEvent()->...
    * filling the particle pairs showeredISHs_, showeredISPs_,
    * showeredRems_ and the particle pointer vector showeredFSPs_.
    */
-  void getShoweredParticles();
+  void getShoweredParticles() const;
 
   /**
    * Allows printing of debug output and sanity checks like
@@ -234,19 +213,19 @@ private:
    * debugLevel = -1, 0, ...5 
    *            = no debugging, minimal debugging, ... verbose.
    */
-  void doSanityChecks(int debugLevel);
+  void doSanityChecks(int debugLevel) const;
 
   /**
    * Given a pointer to a particle this finds all its final state
    * descendents.
    */
-  void getDescendents(PPtr theParticle);
+  void getDescendents(PPtr theParticle) const;
 
   /**
    * Accumulates all descendents of tops down to the b and W
    * but not including them.
    */
-  void getTopRadiation(PPtr theParticle);
+  void getTopRadiation(PPtr theParticle) const;
 
   /** 
    * Sorts a given vector of particles by descending pT or ETJET
@@ -264,7 +243,7 @@ private:
   /* 
    * A probability function for varying etclus_ about the mean value
    */
-  Energy etclusran_(double petc);
+  Energy etclusran_(double petc) const;
 
 private:
   
@@ -287,13 +266,13 @@ private:
    *  Initial-state incoming partons prior to showering
    *  (i.e. from lastXCombPtr).
    */
-  PPair preshowerISPs_;
+  mutable PPair preshowerISPs_;
 
   /**
    *  Final-state outgoing partICLEs prior to showering
    *  (i.e. from lastXCombPtr).
    */
-  ParticleVector preshowerFSPs_;
+  mutable ParticleVector preshowerFSPs_;
 
   /**
    *  Final-state outgoing partICLEs prior to showering _to_be_removed_
@@ -301,25 +280,25 @@ private:
    *  step. This same list is the starting point for determining 
    *  partonsToMatch_ for the case of merging in heavy quark production.
    */
-  ParticleVector preshowerFSPsToDelete_;
+  mutable ParticleVector preshowerFSPsToDelete_;
 
   /**
    *  Initial-state incoming hadrons after shower of hard process
    *  (eventHandler()->currentEvent()->incoming()).
    */
-  PPair showeredISHs_;
+  mutable PPair showeredISHs_;
 
   /**
    *  Initial-state incoming partons after shower of hard process
    *  (look for partonic children of showeredISHs_).
    */
-  PPair showeredISPs_;
+  mutable PPair showeredISPs_;
 
   /**
    *  Final-state outgoing partICLEs after shower of hard process
    *  (eventHandler()->currentEvent()->getFinalState()).
    */
-  tPVector showeredFSPs_;
+  mutable tPVector showeredFSPs_;
 
   /**
    *  Final-state outgoing partICLEs after shower of hard process
@@ -328,32 +307,32 @@ private:
    *  starting point for determining particlesToCluster_ for the
    *  case of merging in heavy quark production.
    */
-  ParticleVector showeredFSPsToDelete_;
+  mutable ParticleVector showeredFSPsToDelete_;
 
   /**
    *  ONLY the final-state partons from preshowerFSPs_ that are
    *  supposed to enter the jet-parton matching.
    */
-  ParticleVector partonsToMatch_;
+  mutable ParticleVector partonsToMatch_;
  
   /*
    * The shower progenitors
    */
 
-  PPtr theProgenitor;
-  PPtr theLastProgenitor;
+  mutable PPtr theProgenitor;
+  mutable PPtr theLastProgenitor;
 
   /**
    *  ONLY the final-state particles from showeredFSPs_ (and maybe
    *  also showeredRems_) that are supposed to go for jet clustering.
    */
-  tPVector particlesToCluster_;
+  mutable tPVector particlesToCluster_;
 
   /**
    *  Final-state remnants after shower of hard process
    *  (look for remnants initially in showeredFSPs_).
    */
-  PPair showeredRems_;
+  mutable PPair showeredRems_;
 
   /**
    *  Pointer to the object calculating the strong coupling
@@ -409,7 +388,7 @@ private:
   /*
    * Jet ET cut to apply in jet clustering (in merging).
    */
-  Energy etclus_;
+  mutable Energy etclus_;
 
   /*
    * Mean Jet ET cut to apply in jet clustering (in merging).
@@ -440,6 +419,12 @@ private:
    */
   double rclusfactor_;
 
+ /*
+  * Determines whether to detect the hard process or to manually determine which particles 
+  * to include in the merging. If False, then the ihrd code below is used.
+  */
+  bool hpdetect_;
+  
   /*
    * The AlpGen hard process code. Relation to the AlpGen process names:
    * 1: wqq, 2: zqq, 3: wjet, 4: zjet, 5: vbjet, 6: 2Q, 8: QQh, 9: Njet, 
@@ -462,7 +447,7 @@ private:
    * This flags that the highest multiplicity ME-level process is
    * being processed.
    */
-  bool highestMultiplicity_;
+  mutable bool highestMultiplicity_;
 
   /*
    * This flags whether the etclus_ (merging scale) should be fixed or variable according to a prob. distribution around the mean
@@ -485,10 +470,28 @@ private:
   int jetAlgorithm_;
 
   /*
+   * The merging mode (FxFx vs tree-level) used. 
+   */
+  int mergemode_;
+
+  /*
    * Allows the vetoing to be turned off completely - just for convenience.
    */
   bool vetoIsTurnedOff_;
 
+
+  /*
+   * Allows the vetoing on heavy quark decay products to be turned off. 
+   */
+  bool vetoHeavyQ_;
+
+  /* 
+   * Allows vetoing of heavy flavour 
+   */
+
+  bool vetoHeavyFlavour_;
+
+  
   /* 
    * Veto if there exist softer unmatched jets than matched
    */
@@ -539,27 +542,27 @@ private:
   /*
    * Vector holding the Lorentz 5 momenta of each jet.
    */
-  vector<Lorentz5Momentum> pjet_;
+  mutable vector<Lorentz5Momentum> pjet_;
 
   /*
    * Vector holding the Lorentz 5 momenta of each jet from ME partons
    */
-  vector<Lorentz5Momentum> pjetME_;
+  mutable vector<Lorentz5Momentum> pjetME_;
 
 
   /*
    * Vector holding the list of FS particles resulting from 
    * the particle input to getDescendents.
    */
-  ParticleVector tmpList_;
+  mutable ParticleVector tmpList_;
 
   /*
    * Variables for the C++ translation of the calini_m(), calsim_m(),
    * getjet_m(...) and caldel_m() functions 
    */
-  vector<Energy> etjet_;
+  mutable vector<Energy> etjet_;
   vector<Energy> etjetME_;
-  double dely_, delphi_;
+  mutable double dely_, delphi_;
   
 };
 
@@ -576,7 +579,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::FxFxHandler,1> {
   /** Typedef of the first base class of FxFxHandler. */
-  typedef Herwig::ShowerHandler NthBase;
+  typedef Herwig::QTildeShowerHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

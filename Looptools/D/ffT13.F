@@ -4,6 +4,7 @@
 * last modified 8 Dec 10 th
 
 #include "externals.h"
+#include "types.h"
 
 
 * T13 = \int_0^1 dx \int_0^x dy
@@ -14,21 +15,21 @@
 * No extra term is needed.
 * Nov 11 2008
 
-	double complex function ffT13(ra, rc, rg, rh,
+	ComplexType function ffT13(ra, rc, rg, rh,
      &    cd, ce, cf, signf, cj, ier)
 	implicit none
-	double precision ra, rc, rg, rh, signf
-	double complex cd, ce, cf, cj
+	RealType ra, rc, rg, rh, signf
+	ComplexType cd, ce, cf, cj
 	integer ier
 
 #include "ff.h"
 
-	double complex ck, cl, cn, cy(2), crdetq4
-	double complex cbj(4), ccj(4)
-	double complex ffS3nAll1, ffS3nAll2
-	double precision sn, scj, sy(2), raj(4)
+	ComplexType ck, cl, cn, cy(2), crdetq4
+	ComplexType cbj(4), ccj(4)
+	ComplexType ffS3nAll1, ffS3nAll2
+	RealType sn, scj, sy(2), raj(4)
 
-	double complex ffS2, ffS3n
+	ComplexType ffS2, ffS3n
 	external ffS2, ffS3n
 
 * the coefficients of the 4 log arguments
@@ -83,7 +84,7 @@
 * the case ny = 1, (S V - T U) = L y + N
 	  cy(1) = -cn/cl
 * ieps for this root
-	  sy(1) = -sn*DBLE(cl)
+	  sy(1) = -sn*Re(cl)
 	  if( sy(1) .eq. 0 ) sy(1) = signf
 
 	  ffS3nAll1 =
@@ -106,7 +107,7 @@
 	endif
 
 * calculate the signs of img(cy1) and img(cy2) which are related to ieps
-	sy(1) = sn*DBLE(crdetq4)
+	sy(1) = sn*Re(crdetq4)
 	if( sy(1) .eq. 0 ) sy(1) = signf
 	sy(2) = -sy(1)
 

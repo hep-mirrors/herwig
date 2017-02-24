@@ -28,10 +28,12 @@ IBPtr FFMgx2qqxDipoleKernel::fullclone() const {
 
 bool FFMgx2qqxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+    useThisKernel() &&
     ind.emitterData()->id() == ParticleID::g &&
     !( ind.spectatorData()->mass() == ZERO &&
        flavour()->mass() == ZERO ) &&
-    !ind.initialStateEmitter() && !ind.initialStateSpectator();
+    !ind.initialStateEmitter() && !ind.initialStateSpectator() &&
+    !ind.incomingDecayEmitter() && !ind.incomingDecaySpectator();
 }
 
 bool FFMgx2qqxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
@@ -65,31 +67,34 @@ tcPDPtr FFMgx2qqxDipoleKernel::spectator(const DipoleIndex& ind) const {
   return ind.spectatorData();
 }
 
-/*
- * TODO: remove unnecessary if statement
- */
 double FFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   
   double ret = alphaPDF(split);
-  
-  // masses
-  double muQ2 = sqr( split.emitterData()->mass() / split.scale() );
-  double muj2 = sqr( split.spectatorData()->mass() / split.scale() );
 
+    // These are the physical variables as used in the 
+    //standard form of the kernel (i.e. do not redefine variables or kernel)
   double z = split.lastZ();
-  double y = ( sqr(split.lastPt()/split.scale()) + muQ2*(1.-2.*z+2.*z*z) ) /
-    (z*(1.-z)) / (1.-2.*muQ2-muj2);
-  
-  // new: 2011-08-31
-  // 2011-11-06: so far never happened
-  if( sqr(2.*muj2+(1.-2.*muQ2-muj2)*(1.-y))-4.*muj2 < 0. ){
-    cout << "error in FFMgx2qqxDipoleKernel::evaluate1 -- " <<
-      "muj2 " << muj2 << "  muQ2 " << muQ2 << "  y " << y << endl;
-    return 0.0;
-  }
-  
-  double vijk = sqrt( sqr(2.*muj2+(1.-2.*muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-2.*muQ2-muj2)*(1.-y));
-  double viji = sqrt( sqr((1.-2.*muQ2-muj2)*y)-4.*sqr(muQ2) ) / ((1.-2.*muQ2-muj2)*y+2.*muQ2);
+  Energy pt = split.lastPt();
+
+  // Need zPrime to calculate y, 
+  // TODO: Should just store y in the dipole splitting info everywhere anyway!!!
+  // The only value stored in dInfo.lastSplittingParameters() should be zPrime
+  //assert(split.lastSplittingParameters().size() == 1 );
+  double zPrime = split.lastSplittingParameters()[0];
+
+  // Construct mass squared variables
+  double mui2 = sqr(split.emitterData()->mass() / split.scale());
+  double mu2 = mui2;
+  double muj2 = sqr(split.spectatorData()->mass() / split.scale());
+  double bar = 1. - mui2 - mu2 - muj2;
+
+  // Calculate y
+  double y = (sqr(pt)/sqr(split.scale()) 
+             + sqr(1.-zPrime)*mui2 + sqr(zPrime)*mu2) 
+             / (bar*zPrime*(1.-zPrime));
+
+  double vijk = sqrt( sqr(2.*muj2+bar*(1.-y))-4.*muj2 ) / (bar*(1.-y)); 
+  double viji = sqrt( sqr(bar*y)-4.*sqr(mui2) ) / (bar*y+2.*mui2);
 
   double zp = 0.5*(1.+viji*vijk);
   double zm = 0.5*(1.-viji*vijk);
@@ -98,7 +103,8 @@ double FFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double kappa = 0.;
 
   ret *= 0.25 / vijk *
-    ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm - kappa*muQ2/(2*muQ2+(1.-2*muQ2-muj2)*y) ) );
+    ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm 
+                - kappa*mui2/(2.*mui2+(1.-2.*mui2-muj2)*y) ) );
     
   return ret > 0. ? ret : 0.;
   
@@ -114,7 +120,8 @@ void FFMgx2qqxDipoleKernel::persistentOutput(PersistentOStream & ) const {
 void FFMgx2qqxDipoleKernel::persistentInput(PersistentIStream & , int) {
 }
 
-ClassDescription<FFMgx2qqxDipoleKernel> FFMgx2qqxDipoleKernel::initFFMgx2qqxDipoleKernel;
+ClassDescription<FFMgx2qqxDipoleKernel> 
+FFMgx2qqxDipoleKernel::initFFMgx2qqxDipoleKernel;
 // Definition of the static class description member.
 
 void FFMgx2qqxDipoleKernel::Init() {

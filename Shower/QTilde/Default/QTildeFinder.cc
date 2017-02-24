@@ -18,7 +18,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
 

@@ -7,6 +7,15 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 clear /Herwig/MatrixElements/Matchbox/Factory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 MadGraph
 
+
+clear /Herwig/Merging/MergingFactory:Amplitudes
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 MadGraph
+
+
+create ColorFull::TraceBasis  /Herwig/Merging/LargeNColourBasis2
+set /Herwig/Merging/LargeNColourBasis2:LargeN On
+set /Herwig/Merging/Merger:LargeNBasis /Herwig/Merging/LargeNColourBasis2
+
 cd /Herwig/Particles
 
 do b:UnsetHardProcessMass

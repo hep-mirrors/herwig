@@ -50,6 +50,12 @@ public:
    */
   virtual double hardScaleProfile(Energy hard, Energy soft) const;
 
+  /**
+   * Return true, if this hard scale profile requires an unrestricted
+   * radiation phase space.
+   */
+  virtual bool unrestrictedPhasespace() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

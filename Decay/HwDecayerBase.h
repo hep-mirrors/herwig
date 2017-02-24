@@ -13,8 +13,8 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/RealEmissionProcess.fh"
 #include "HwDecayerBase.fh"
 

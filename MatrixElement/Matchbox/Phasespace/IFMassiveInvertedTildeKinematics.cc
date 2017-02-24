@@ -39,10 +39,12 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
+  // Compute dipole scale
   Lorentz5Momentum emitter = bornEmitterMomentum();
   Lorentz5Momentum spectator = bornSpectatorMomentum();
   Energy2 scale = 2.*(spectator*emitter);
 
+  // Generate pt and z
   double mapping = 1.0;
   pair<Energy,double> ptz = generatePtZ(mapping,r);
   if ( mapping == 0.0 ){
@@ -52,76 +54,87 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
 
   Energy pt = ptz.first;
   double z = ptz.second;
-  double ratio = sqr(pt)/scale;
+ 
+    // Compute x and u
+    double ratio = sqr(pt)/scale;
+    double muk2 = sqr(bornSpectatorData()->hardProcessMass())/scale;
+    double rho = 1. - 4.*ratio*(1.-muk2)*z*(1.-z)/sqr(1.-z+ratio);
 
-  // x
-  double u = ratio/(1.-z);
-  double x = (z*(1.-z)-ratio)/(1.-z-ratio);
-  double up = (1.-x) / (1.-x+(x*sqr(bornSpectatorData()->hardProcessMass())/scale));
+    double x = 0.5*((1.-z+ratio)/(ratio*(1.-muk2))) * (1. - sqrt(rho));
+    double u = x*ratio / (1.-z);
+      
+    // Following Catani-Seymour paper
+    double muk2CS = x*muk2;
+    double up = (1.-x) /
+      ( 1.-x + muk2CS );
+      
+    if ( x < emitterX() || x > 1. ||
+	 u < 0. || u > up ) {
+      jacobian(0.0);
+      return false;
+    }
+   
 
-  if ( x < emitterX() || x > 1. || u > up) {
-    jacobian(0.0);
-    return false;
+    // Store x and u
+    subtractionParameters().resize(2);
+    subtractionParameters()[0] = x;
+    subtractionParameters()[1] = u;
+    
+    // The jacobian here is the single particle phasespace
+    // saj*(1./x^2)*dx*du
+    // Note - lastScale() is not equal to scale!!!!!!!
+    double jac = abs( (1.+x*(muk2-1.))*(-u*(1.-u)/sqr(x)) - (1.+u*(muk2-1.))*((1.-2.*u)*(1.-x)/x - 2.*u*muk2) );
+    mapping /= x*x*jac;
+    jacobian( mapping*(sqr(lastScale())/sHat()) / (16.*sqr(Constants::pi)) );
+
+    // Compute the new momenta
+    double phi = 2.*Constants::pi*r[2];
+    Lorentz5Momentum kt = getKt(emitter,spectator,pt,phi,true);
+    
+    realEmitterMomentum() = (1./x)*emitter;
+    realEmissionMomentum() = ((1.-x)*(1.-u)/x - 2.*u*muk2)*emitter + u*spectator + kt;
+    realSpectatorMomentum() = ((1.-x)*u/x + 2.*u*muk2)*emitter + (1.-u)*spectator - kt;
+
+    realEmitterMomentum().setMass(ZERO);
+    realEmitterMomentum().rescaleEnergy();
+    realEmissionMomentum().setMass(ZERO);
+    realEmissionMomentum().rescaleEnergy();
+    realSpectatorMomentum().setMass(bornSpectatorData()->hardProcessMass());
+    realSpectatorMomentum().rescaleEnergy();
+    return true;
+    
   }
 
-  pt = sqrt(scale*u*(1.-u)*(1.-x));  
-  Energy magKt = sqrt(scale*u*(1.-u)*(1.-x)/x - sqr(u*bornSpectatorData()->hardProcessMass()));
-
-  // TODO: why not mapping /= sqr(z*(1.-z)-ratio)/(1.-z) ? (see phd thesis, (5.74))
-  mapping /= sqr(z*(1.-z)-ratio)/(1.-z-ratio);
-  // mapping *= (1.-u)/(1.-2.*u+u*u*alpha)/x;
-  jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
-
-  double phi = 2.*Constants::pi*r[2];
-  Lorentz5Momentum kt = getKt(emitter,spectator,magKt,phi,true);
-  subtractionParameters().resize(2);
-  subtractionParameters()[0] = x;
-  subtractionParameters()[1] = u;
-  
-  realEmitterMomentum() = (1./x)*emitter;
-  realEmissionMomentum() = (-kt*kt-u*u*sqr(bornSpectatorData()->hardProcessMass()))/(u*scale)*emitter +  
-    u*spectator - kt;
-  realSpectatorMomentum() = (-kt*kt+sqr(bornSpectatorData()->hardProcessMass())*u*(2.-u))/((1.-u)*scale)*emitter + 
-    (1.-u)*spectator + kt;
-
-  realEmitterMomentum().setMass(ZERO);
-  realEmitterMomentum().rescaleEnergy();
-  realEmissionMomentum().setMass(ZERO);
-  realEmissionMomentum().rescaleEnergy();
-  realSpectatorMomentum().setMass(bornSpectatorData()->hardProcessMass());
-  realSpectatorMomentum().rescaleEnergy();
-  return true;
-
-}
-
 Energy IFMassiveInvertedTildeKinematics::lastPt() const {
-  Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
-  double x = subtractionParameters()[0];
-  double u = subtractionParameters()[1];
-  // TODO: can't make sense of the following comment
-  // there was no factor 1/x in massless case >> check
-  //  return scale * sqrt(u*(1.-u)*(1.-x)/x);
-  return sqrt(scale*u*(1.-u)*(1.-x));
+    Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
+    double muk2 = sqr(bornSpectatorData()->hardProcessMass())/scale;
+    double x = subtractionParameters()[0];
+    double u = subtractionParameters()[1];
+    return sqrt(scale * ( u*(1.-u)*(1.-x)/x - u*u*muk2 ));
 }
 
 double IFMassiveInvertedTildeKinematics::lastZ() const {
-  double x = subtractionParameters()[0];
-  double u = subtractionParameters()[1];
-  return 1. - (1.-x)*(1.-u);
+    Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
+    double muk2 = sqr(bornSpectatorData()->hardProcessMass())/scale;
+    double x = subtractionParameters()[0];
+    double u = subtractionParameters()[1];  
+    return u + x + u*x*(muk2-1.);
 }
 
 Energy IFMassiveInvertedTildeKinematics::ptMax() const {
-  Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
-  double x = emitterX();
-  return sqrt(scale*(1.-x))/2.;
+    double xe = emitterX();
+    Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
+    Energy2 A = scale*(1.-xe)/xe;
+    Energy2 mk2 = sqr(bornSpectatorData()->hardProcessMass());
+    return 0.5*A/sqrt(mk2+A);
 }
 
 pair<double,double> IFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
   if(pt>hardPt) return make_pair(0.5,0.5);
   double s = sqrt(1.-sqr(pt/hardPt));
-  double x = emitterX();
-  return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
+  double xe = emitterX();
+  return make_pair(0.5*(1.+xe-(1.-xe)*s),0.5*(1.+xe+(1.-xe)*s));
 }
 
 

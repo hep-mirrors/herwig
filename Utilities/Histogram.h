@@ -111,7 +111,7 @@ public:
    *  Function to add a weighted point to the histogram
    */
   void addWeighted(double input, double weight) {
-    if(isnan(input)) return;
+    if(std::isnan(input)) return;
     unsigned int ibin;
     for(ibin=1; ibin<_bins.size(); ++ibin) {
       if(input<_bins[ibin].limit)

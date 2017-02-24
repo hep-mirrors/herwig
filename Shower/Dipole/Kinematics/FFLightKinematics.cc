@@ -64,7 +64,7 @@ pair<double,double> FFLightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingInfo& dInfo,
 						   const DipoleSplittingKernel&) const {
   double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
-  return make_pair(0.5*(1.-s),0.5*(1.+s));
+  return {0.5*(1.-s),0.5*(1.+s)};
 }
 
 bool FFLightKinematics::generateSplitting(double kappa, double xi, double rphi,

@@ -2,33 +2,41 @@
    clooptools.h
    the C/C++ header file with all definitions for LoopTools
    this file is part of LoopTools
-   last modified 9 Dec 10 th
+   last modified 2 Sep 14 th
    dgrell 2011-01-21 for Herwig: moved definitions and extern declarations to our clooptools.cc
+   dgrell 2016-09-08 for Herwig: update to Looptols-2.13
 */
 
 
 #ifndef HERWIG_clooptools_h_
 #define HERWIG_clooptools_h_
 
+#include <complex>
+
+/****************************************************************/
+
+// Adapted version of ftypes.h
+
+
+typedef double RealType;
+typedef double REAL;
+
+typedef int INTEGER;
+typedef const REAL CREAL;
+
+struct COMPLEX { REAL re, im; };
+typedef const COMPLEX CCOMPLEX;
+
+typedef std::complex<RealType> ComplexType;
+
+typedef const RealType cRealType;
+typedef const ComplexType cComplexType;
+
 //#define cachelookup_ ljcachelookup_
 
-/** complex defn for Looptools
- */
-struct DOUBLE_COMPLEX {
-  /** 
-   * Real part
-   */
-  double re;
+// typedef const COMPLEX CCOMPLEX;
 
-  /**
-   * Imaginary part
-   */ 
-  double im; 
-};
-typedef const DOUBLE_COMPLEX CDOUBLE_COMPLEX;
-
-#include <complex>
-typedef std::complex<double> double_complex;
+typedef long long int memindex;
 
 /****************************************************************/
 
@@ -45,13 +53,21 @@ typedef std::complex<double> double_complex;
     t(p1p2), t(p2p3), t(p3p4), t(p4p5), t(p5p1),	\
     t(m1), t(m2), t(m3), t(m4), t(m5)
 
-#define _Cr_(v) const double v
-#define _Cc_(v) const double_complex v
-#define _Fr_(v) const double *v
-#define _Fc_(v) CDOUBLE_COMPLEX *v
-#define _Frp_(v) &v
-#define _Fcp_(v) (CDOUBLE_COMPLEX *)&v
-#define _Id_(v) v
+/****************************************************************/
+
+#define _lt_Cr_(v) cRealType v
+#define _lt_Cc_(v) cComplexType v
+#define _lt_Fr_(v) CREAL *v
+#define _lt_Fc_(v) CCOMPLEX *v
+#define _lt_Id_(v) v
+#define _lt_Frp_(v) &v
+#define _lt_Fcp_(v) (CCOMPLEX *)&v
+#define _lt_Fap_(v) (COMPLEX *)v
+
+// #define _lt_Frd_(f)
+// #define _lt_Fcd_(f)
+// #define _lt_Fad_(v,n)
+// #define _lt_Fax_(v,n)
 
 /****************************************************************/
 
@@ -59,43 +75,224 @@ namespace Herwig {
   namespace Looptools {
 
     enum {
-      bb0, bb1, bb00, bb11, bb001, bb111, dbb0, dbb1, dbb00, dbb11,
-      Nbb
+      aa0 = 0, 
+      aa00 = 3, 
+      Naa = 6
     };
 
     enum {
-      cc0, cc1, cc2, cc00, cc11, cc12, cc22, cc001, cc002, cc111, cc112,
-      cc122, cc222, cc0000, cc0011, cc0012, cc0022, cc1111, cc1112, cc1122,
-      cc1222, cc2222,
-      Ncc
+      bb0 = 0,
+      bb1 = 3,
+      bb00 = 6,
+      bb11 = 9,
+      bb001 = 12,
+      bb111 = 15,
+      dbb0 = 18,
+      dbb1 = 21,
+      dbb00 = 24,
+      dbb11 = 27,
+      dbb001 = 30,
+      Nbb = 33
     };
 
     enum {
-      dd0, dd1, dd2, dd3, dd00, dd11, dd12, dd13, dd22, dd23, dd33,
-      dd001, dd002, dd003, dd111, dd112, dd113, dd122, dd123, dd133, dd222,
-      dd223, dd233, dd333, dd0000, dd0011, dd0012, dd0013, dd0022, dd0023,
-      dd0033, dd1111, dd1112, dd1113, dd1122, dd1123, dd1133, dd1222, 
-      dd1223, dd1233, dd1333, dd2222, dd2223, dd2233, dd2333, dd3333, 
-      dd00001, dd00002, dd00003, dd00111, dd00112, dd00113, dd00122, 
-      dd00123, dd00133, dd00222, dd00223, dd00233, dd00333, dd11111, 
-      dd11112, dd11113, dd11122, dd11123, dd11133, dd11222, dd11223, 
-      dd11233, dd11333, dd12222, dd12223, dd12233, dd12333, dd13333, 
-      dd22222, dd22223, dd22233, dd22333, dd23333, dd33333,
-      Ndd
+      cc0 = 0,
+      cc1 = 3,
+      cc2 = 6,
+      cc00 = 9,
+      cc11 = 12,
+      cc12 = 15,
+      cc22 = 18,
+      cc001 = 21,
+      cc002 = 24,
+      cc111 = 27,
+      cc112 = 30,
+      cc122 = 33,
+      cc222 = 36,
+      cc0000 = 39,
+      cc0011 = 42,
+      cc0012 = 45,
+      cc0022 = 48,
+      cc1111 = 51,
+      cc1112 = 54,
+      cc1122 = 57,
+      cc1222 = 60,
+      cc2222 = 63,
+      Ncc = 66
     };
 
     enum {
-      ee0, ee1, ee2, ee3, ee4, ee00, ee11, ee12, ee13, ee14, ee22, ee23, 
-      ee24, ee33, ee34, ee44, ee001, ee002, ee003, ee004, ee111, ee112, 
-      ee113, ee114, ee122, ee123, ee124, ee133, ee134, ee144, ee222,
-      ee223, ee224, ee233, ee234, ee244, ee333, ee334, ee344, ee444,
-      ee0000, ee0011, ee0012, ee0013, ee0014, ee0022, ee0023, ee0024,
-      ee0033, ee0034, ee0044, ee1111, ee1112, ee1113, ee1114, ee1122, 
-      ee1123, ee1124, ee1133, ee1134, ee1144, ee1222, ee1223, ee1224,
-      ee1233, ee1234, ee1244, ee1333, ee1334, ee1344, ee1444, ee2222,
-      ee2223, ee2224, ee2233, ee2234, ee2244, ee2333, ee2334, ee2344,
-      ee2444, ee3333, ee3334, ee3344, ee3444, ee4444,
-      Nee
+      dd0 = 0,
+      dd1 = 3,
+      dd2 = 6,
+      dd3 = 9,
+      dd00 = 12,
+      dd11 = 15,
+      dd12 = 18,
+      dd13 = 21,
+      dd22 = 24,
+      dd23 = 27,
+      dd33 = 30,
+      dd001 = 33,
+      dd002 = 36,
+      dd003 = 39,
+      dd111 = 42,
+      dd112 = 45,
+      dd113 = 48,
+      dd122 = 51,
+      dd123 = 54,
+      dd133 = 57,
+      dd222 = 60,
+      dd223 = 63,
+      dd233 = 66,
+      dd333 = 69,
+      dd0000 = 72,
+      dd0011 = 75,
+      dd0012 = 78,
+      dd0013 = 81,
+      dd0022 = 84,
+      dd0023 = 87,
+      dd0033 = 90,
+      dd1111 = 93,
+      dd1112 = 96,
+      dd1113 = 99,
+      dd1122 = 102,
+      dd1123 = 105,
+      dd1133 = 108,
+      dd1222 = 111,
+      dd1223 = 114,
+      dd1233 = 117,
+      dd1333 = 120,
+      dd2222 = 123,
+      dd2223 = 126,
+      dd2233 = 129,
+      dd2333 = 132,
+      dd3333 = 135,
+      dd00001 = 138,
+      dd00002 = 141,
+      dd00003 = 144,
+      dd00111 = 147,
+      dd00112 = 150,
+      dd00113 = 153,
+      dd00122 = 156,
+      dd00123 = 159,
+      dd00133 = 162,
+      dd00222 = 165,
+      dd00223 = 168,
+      dd00233 = 171,
+      dd00333 = 174,
+      dd11111 = 177,
+      dd11112 = 180,
+      dd11113 = 183,
+      dd11122 = 186,
+      dd11123 = 189,
+      dd11133 = 192,
+      dd11222 = 195,
+      dd11223 = 198,
+      dd11233 = 201,
+      dd11333 = 204,
+      dd12222 = 207,
+      dd12223 = 210,
+      dd12233 = 213,
+      dd12333 = 216,
+      dd13333 = 219,
+      dd22222 = 222,
+      dd22223 = 225,
+      dd22233 = 228,
+      dd22333 = 231,
+      dd23333 = 234,
+      dd33333 = 237,
+      Ndd = 240
+    };
+
+    enum {
+      ee0 = 0,
+      ee1 = 3,
+      ee2 = 6,
+      ee3 = 9,
+      ee4 = 12,
+      ee00 = 15,
+      ee11 = 18,
+      ee12 = 21,
+      ee13 = 24,
+      ee14 = 27,
+      ee22 = 30,
+      ee23 = 33,
+      ee24 = 36,
+      ee33 = 39,
+      ee34 = 42,
+      ee44 = 45,
+      ee001 = 48,
+      ee002 = 51,
+      ee003 = 54,
+      ee004 = 57,
+      ee111 = 60,
+      ee112 = 63,
+      ee113 = 66,
+      ee114 = 69,
+      ee122 = 72,
+      ee123 = 75,
+      ee124 = 78,
+      ee133 = 81,
+      ee134 = 84,
+      ee144 = 87,
+      ee222 = 90,
+      ee223 = 93,
+      ee224 = 96,
+      ee233 = 99,
+      ee234 = 102,
+      ee244 = 105,
+      ee333 = 108,
+      ee334 = 111,
+      ee344 = 114,
+      ee444 = 117,
+      ee0000 = 120,
+      ee0011 = 123,
+      ee0012 = 126,
+      ee0013 = 129,
+      ee0014 = 132,
+      ee0022 = 135,
+      ee0023 = 138,
+      ee0024 = 141,
+      ee0033 = 144,
+      ee0034 = 147,
+      ee0044 = 150,
+      ee1111 = 153,
+      ee1112 = 156,
+      ee1113 = 159,
+      ee1114 = 162,
+      ee1122 = 165,
+      ee1123 = 168,
+      ee1124 = 171,
+      ee1133 = 174,
+      ee1134 = 177,
+      ee1144 = 180,
+      ee1222 = 183,
+      ee1223 = 186,
+      ee1224 = 189,
+      ee1233 = 192,
+      ee1234 = 195,
+      ee1244 = 198,
+      ee1333 = 201,
+      ee1334 = 204,
+      ee1344 = 207,
+      ee1444 = 210,
+      ee2222 = 213,
+      ee2223 = 216,
+      ee2224 = 219,
+      ee2233 = 222,
+      ee2234 = 225,
+      ee2244 = 228,
+      ee2333 = 231,
+      ee2334 = 234,
+      ee2344 = 237,
+      ee2444 = 240,
+      ee3333 = 243,
+      ee3334 = 246,
+      ee3344 = 249,
+      ee3444 = 252,
+      ee4444 = 255,
+      Nee = 258
     };
 
     enum {
@@ -110,14 +307,15 @@ namespace Herwig {
     };
 
     enum {
-      DebugB = 1,
-      DebugC = 1<<1,
-      DebugD = 1<<2,
-      DebugE = 1<<3,
-      DebugAll = DebugB + DebugC + DebugD + DebugE
+      DebugA = 1,
+      DebugB = 1<<1,
+      DebugC = 1<<2,
+      DebugD = 1<<3,
+      DebugE = 1<<4,
+      DebugAll = DebugA + DebugB + DebugC + DebugD + DebugE
     };
 
-    double_complex ToComplex(DOUBLE_COMPLEX c);
+    ComplexType ToComplex(COMPLEX c);
 
     /**
      *  Looptools initialisation
@@ -129,171 +327,196 @@ namespace Herwig {
      */
     void ltexi(std::string logfilename = std::string("Looptools.log"));
 
+    /****************************************************************/
 
-    double_complex A0(AARGS(_Cr_));
-    double_complex A0C(AARGS(_Cc_));
-    double_complex A00(AARGS(_Cr_));
+    memindex Aget(AARGS(_lt_Cr_));
+    memindex AgetC(AARGS(_lt_Cc_));
 
-    double_complex A00C(AARGS(_Cc_));
+    void Aput(ComplexType *res, AARGS(_lt_Cr_));
+    void AputC(ComplexType *res, AARGS(_lt_Cc_));
+
+    void Aputnocache(ComplexType *res, AARGS(_lt_Cr_));
+    void AputnocacheC(ComplexType *res, AARGS(_lt_Cc_));
+
+    COMPLEX *Acache(const memindex integral);
+    COMPLEX *AcacheC(const memindex integral);
+
+    ComplexType Aval(const int i, const memindex integral);
+    ComplexType AvalC(const int i, const memindex integral);
+
+    ComplexType A0i(const int i, AARGS(_lt_Cr_));
+    ComplexType A0iC(const int i, AARGS(_lt_Cc_));
+
+    ComplexType A0(AARGS(_lt_Cr_));
+    ComplexType A00(AARGS(_lt_Cr_));
+
+    ComplexType A0C(AARGS(_lt_Cc_));
+    ComplexType A00C(AARGS(_lt_Cc_));
 
     /****************************************************************/
 
-    long Bget(BARGS(_Cr_));
-    long BgetC(BARGS(_Cc_));
-    DOUBLE_COMPLEX *Bcache(const long integral);
-    DOUBLE_COMPLEX *BcacheC(const long integral);
+    memindex Bget(BARGS(_lt_Cr_));
+    memindex BgetC(BARGS(_lt_Cc_));
 
-    double_complex Bval(const int i, const long integral);
+    void Bput(ComplexType *res, BARGS(_lt_Cr_));
+    void BputC(ComplexType *res, BARGS(_lt_Cc_));
 
-    double_complex BvalC(const int i, const long integral);
+    void Bputnocache(ComplexType *res, BARGS(_lt_Cr_));
+    void BputnocacheC(ComplexType *res, BARGS(_lt_Cc_));
 
-    double_complex B0i(const int i, BARGS(_Cr_));
+    COMPLEX *Bcache(const memindex integral);
+    COMPLEX *BcacheC(const memindex integral);
 
-    double_complex B0iC(const int i, BARGS(_Cc_));
+    ComplexType Bval(const int i, const memindex integral);
+    ComplexType BvalC(const int i, const memindex integral);
 
-    double_complex B0(BARGS(_Cr_));
-    double_complex B1(BARGS(_Cr_));
-    double_complex B00(BARGS(_Cr_));
-    double_complex B11(BARGS(_Cr_));
-    double_complex B001(BARGS(_Cr_));
-    double_complex B111(BARGS(_Cr_));
-    double_complex DB0(BARGS(_Cr_));
-    double_complex DB1(BARGS(_Cr_));
-    double_complex DB00(BARGS(_Cr_));
-    double_complex DB11(BARGS(_Cr_));
+    ComplexType B0i(const int i, BARGS(_lt_Cr_));
+    ComplexType B0iC(const int i, BARGS(_lt_Cc_));
 
-    double_complex B0C(BARGS(_Cc_));
-    double_complex B1C(BARGS(_Cc_));
-    double_complex B00C(BARGS(_Cc_));
-    double_complex B11C(BARGS(_Cc_));
-    double_complex B001C(BARGS(_Cc_));
-    double_complex B111C(BARGS(_Cc_));
-    double_complex DB0C(BARGS(_Cc_));
-    double_complex DB1C(BARGS(_Cc_));
-    double_complex DB00C(BARGS(_Cc_));
-    double_complex DB11C(BARGS(_Cc_));
+    ComplexType B0(BARGS(_lt_Cr_));
+    ComplexType B1(BARGS(_lt_Cr_));
+    ComplexType B00(BARGS(_lt_Cr_));
+    ComplexType B11(BARGS(_lt_Cr_));
+    ComplexType B001(BARGS(_lt_Cr_));
+    ComplexType B111(BARGS(_lt_Cr_));
+    ComplexType DB0(BARGS(_lt_Cr_));
+    ComplexType DB1(BARGS(_lt_Cr_));
+    ComplexType DB00(BARGS(_lt_Cr_));
+    ComplexType DB11(BARGS(_lt_Cr_));
 
-    /****************************************************************/
-
-    double_complex C0(CARGS(_Cr_));
-
-    double_complex C0C(CARGS(_Cc_));
-
-    long Cget(CARGS(_Cr_));
-
-    long CgetC(CARGS(_Cc_));
-
-    DOUBLE_COMPLEX *Ccache(const long integral);
-
-    DOUBLE_COMPLEX *CcacheC(const long integral);
-
-    double_complex Cval(const int i, const long integral);
-
-    double_complex CvalC(const int i, const long integral);
-
-    double_complex C0i(const int i, CARGS(_Cr_));
-
-    double_complex C0iC(const int i, CARGS(_Cc_));
+    ComplexType B0C(BARGS(_lt_Cc_));
+    ComplexType B1C(BARGS(_lt_Cc_));
+    ComplexType B00C(BARGS(_lt_Cc_));
+    ComplexType B11C(BARGS(_lt_Cc_));
+    ComplexType B001C(BARGS(_lt_Cc_));
+    ComplexType B111C(BARGS(_lt_Cc_));
+    ComplexType DB0C(BARGS(_lt_Cc_));
+    ComplexType DB1C(BARGS(_lt_Cc_));
+    ComplexType DB00C(BARGS(_lt_Cc_));
+    ComplexType DB11C(BARGS(_lt_Cc_));
 
     /****************************************************************/
 
-    double_complex D0(DARGS(_Cr_));
+    memindex Cget(CARGS(_lt_Cr_));
+    memindex CgetC(CARGS(_lt_Cc_));
 
-    double_complex D0C(DARGS(_Cc_));
+    void Cput(ComplexType *res, CARGS(_lt_Cr_));
+    void CputC(ComplexType *res, CARGS(_lt_Cc_));
 
-    long Dget(DARGS(_Cr_));
+    void C0nocache(ComplexType *res, CARGS(_lt_Cr_));
+    void C0nocacheC(ComplexType *res, CARGS(_lt_Cc_));
 
-    long DgetC(DARGS(_Cc_));
+    COMPLEX *Ccache(const memindex integral);
+    COMPLEX *CcacheC(const memindex integral);
 
-    DOUBLE_COMPLEX *Dcache(const long integral);
+    ComplexType Cval(const int i, const memindex integral);
+    ComplexType CvalC(const int i, const memindex integral);
 
-    DOUBLE_COMPLEX *DcacheC(const long integral);
+    ComplexType C0i(const int i, CARGS(_lt_Cr_));
+    ComplexType C0iC(const int i, CARGS(_lt_Cc_));
 
-    double_complex Dval(const int i, const long integral);
-
-    double_complex DvalC(const int i, const long integral);
-
-    double_complex D0i(const int i, DARGS(_Cr_));
-
-    double_complex D0iC(const int i, DARGS(_Cc_));
-
-    /****************************************************************/
-
-    double_complex E0(EARGS(_Cr_));
-
-    double_complex E0C(EARGS(_Cc_));
-
-    long Eget(EARGS(_Cr_));
-
-    long EgetC(EARGS(_Cc_));
-
-    DOUBLE_COMPLEX *Ecache(const long integral);
-
-    DOUBLE_COMPLEX *EcacheC(const long integral);
-
-    double_complex Eval(const int i, const long integral);
-
-    double_complex EvalC(const int i, const long integral);
-
-    double_complex E0i(const int i, EARGS(_Cr_));
-
-    double_complex E0iC(const int i, EARGS(_Cc_));
+    ComplexType C0(CARGS(_lt_Cr_));
+    ComplexType C0C(CARGS(_lt_Cc_));
 
     /****************************************************************/
 
-    double_complex Li2(const double x);
+    memindex Dget(DARGS(_lt_Cr_));
+    memindex DgetC(DARGS(_lt_Cc_));
 
-    double_complex Li2C(const double_complex x);
+    void Dput(ComplexType *res, DARGS(_lt_Cr_));
+    void DputC(ComplexType *res, DARGS(_lt_Cc_));
+
+    void D0nocache(ComplexType *res, DARGS(_lt_Cr_));
+    void D0nocacheC(ComplexType *res, DARGS(_lt_Cc_));
+
+    COMPLEX *Dcache(const memindex integral);
+    COMPLEX *DcacheC(const memindex integral);
+
+    ComplexType Dval(const int i, const memindex integral);
+    ComplexType DvalC(const int i, const memindex integral);
+
+    ComplexType D0i(const int i, DARGS(_lt_Cr_));
+    ComplexType D0iC(const int i, DARGS(_lt_Cc_));
+
+    ComplexType D0(DARGS(_lt_Cr_));
+    ComplexType D0C(DARGS(_lt_Cc_));
 
     /****************************************************************/
 
+    memindex Eget(EARGS(_lt_Cr_));
+    memindex EgetC(EARGS(_lt_Cc_));
 
-    void setmudim(const double mudim);
+    void Eput(ComplexType *res, EARGS(_lt_Cr_));
+    void EputC(ComplexType *res, EARGS(_lt_Cc_));
 
-    double getmudim();
+    void E0nocache(ComplexType *res, EARGS(_lt_Cr_));
+    void E0nocacheC(ComplexType *res, EARGS(_lt_Cc_));
 
+    COMPLEX *Ecache(const memindex integral);
+    COMPLEX *EcacheC(const memindex integral);
 
-    void setdelta(const double delta);
+    ComplexType Eval(const int i, const memindex integral);
+    ComplexType EvalC(const int i, const memindex integral);
 
-    double getdelta();
+    ComplexType E0i(const int i, EARGS(_lt_Cr_));
+    ComplexType E0iC(const int i, EARGS(_lt_Cc_));
 
+    ComplexType E0(EARGS(_lt_Cr_));
+    ComplexType E0C(EARGS(_lt_Cc_));
 
-    void setlambda(const double lambda);
-    double getlambda();
+    /****************************************************************/
 
+    ComplexType Li2(_lt_Cr_(x));
+    ComplexType Li2C(_lt_Cc_(x));
+    ComplexType Li2omx(_lt_Cr_(x));
+    ComplexType Li2omxC(_lt_Cc_(x));
 
-    void setminmass(const double minmass);
-    double getminmass();
-
-
-    void setmaxdev(const double maxdev);
-    double getmaxdev();
-
-
-    void setwarndigits(const long warndigits);
-    long getwarndigits();
-
-
-    void seterrdigits(const long errdigits);
-    long geterrdigits();
-
-
-    void setversionkey(const long versionkey);
-    long getversionkey();
-
-    void setdebugkey(const long debugkey);
-    long getdebugkey();
-
-
-    void setdebugrange(const long debugfrom, const long debugto);
-
-    void setcmpbits(const long cmpbits);
-
-    long getcmpbits();
+    /****************************************************************/
 
     void clearcache();
     void markcache();
     void restorecache();
+
+    void setmudim(cRealType mudim);
+    RealType getmudim();
+
+    void setdelta(cRealType delta);
+    RealType getdelta();
+
+    void setuvdiv(cRealType uvdiv);
+    RealType getuvdiv();
+
+    void setlambda(cRealType lambda);
+    RealType getlambda();
+
+    void setminmass(cRealType minmass);
+    RealType getminmass();
+
+    void setmaxdev(cRealType maxdev);
+    RealType getmaxdev();
+
+    void setwarndigits(const int warndigits);
+    int getwarndigits();
+
+    void seterrdigits(const int errdigits);
+    int geterrdigits();
+
+    void setversionkey(const int versionkey);
+    int getversionkey();
+
+    void setdebugkey(const int debugkey);
+    int getdebugkey();
+
+    void setdebugrange(const int debugfrom, const int debugto);
+
+    void setcmpbits(const int cmpbits);
+    int getcmpbits();
+
+    void setdiffeps(cRealType diffeps);
+    RealType getdiffeps();
+
+    void setzeroeps(cRealType zeroeps);
+    RealType getzeroeps();
 
   } // namespace Looptools
 } // namespace Herwig

@@ -1,15 +1,22 @@
-noinst_LTLIBRARIES = libHwDecRad.la
-pkglib_LTLIBRARIES = HwSOPHTY.la
+BUILT_SOURCES  = Sophty__all.cc
+CLEANFILES = Sophty__all.cc
 
-libHwDecRad_la_SOURCES = \
-DecayRadiationGenerator.cc  DecayRadiationGenerator.h  \
-DecayRadiationGenerator.fh \
-QEDRadiationHandler.cc  QEDRadiationHandler.fh\
-QEDRadiationHandler.h
+Sophty__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
 
-HwSOPHTY_la_SOURCES = \
-SOPHTY.h SOPHTY.cc \
-FFDipole.cc  FFDipole.fh  FFDipole.h \
-IFDipole.cc  IFDipole.fh  IFDipole.h \
-YFSFormFactors.cc  YFSFormFactors.h
-HwSOPHTY_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+SOPHTY.h \
+FFDipole.fh  FFDipole.h \
+IFDipole.fh  IFDipole.h \
+YFSFormFactors.h
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+SOPHTY.cc \
+FFDipole.cc \
+IFDipole.cc \
+YFSFormFactors.cc

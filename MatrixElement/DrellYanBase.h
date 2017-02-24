@@ -6,7 +6,7 @@
 //
 
 #include "HwMEBase.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -72,7 +72,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
-						 ShowerInteraction::Type);
+						 ShowerInteraction);
 
   /**
    * Set the typed and momenta of the incoming and outgoing partons to

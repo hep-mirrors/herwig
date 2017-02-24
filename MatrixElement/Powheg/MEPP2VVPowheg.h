@@ -9,7 +9,7 @@
 #include "Herwig/MatrixElement/Powheg/VVKinematics.h"
 #include "Herwig/Utilities/Maths.h"
 #include "Herwig/Models/StandardModel/StandardCKM.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -42,7 +42,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
-						 ShowerInteraction::Type inter);
+						 ShowerInteraction inter);
   //@}
 
 public:

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import logging
 import sys
+import math
 
 if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
@@ -127,15 +128,16 @@ yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda",
            "-8-Top-All.yoda"]
 
-for i in range(1,9) :
+for i in range(1,10) :
     yodafiles.append("-7-Jets-%1.1i.yoda" % i)
     yodafiles.append("-8-Jets-%1.1i.yoda" % i)
 
 if(opts.ue) :
-    yodafiles += ["-7-Jets-0.yoda","-8-Jets-0.yoda",
-                  "-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
-                  "-7-UE.yoda"     ,"-900-UE-Long.yoda","-8-UE.yoda",
-                  "-7-UE-Long.yoda","-13-UE.yoda"]
+    yodafiles += ["-7-Jets-0.yoda"    ,"-8-Jets-0.yoda" ,"-7-Jets-10.yoda",
+                  "-8-Jets-10.yoda"   ,"-900-UE.yoda"   ,"-2360-UE.yoda"    ,
+                  "-2760-UE.yoda"     ,"-7-UE.yoda"     ,"-900-UE-Long.yoda",
+                  "-900-UE-Short.yoda","-8-UE.yoda"     ,"-7-UE-Long.yoda",
+                  "-7-UE-Short.yoda"  ,"-7-UE-Long.yoda","-13-UE.yoda"]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}
@@ -163,6 +165,8 @@ for f in yodafiles:
         ptmin=0.
     elif(file.find("Jets-0")>0) :
         ptmin=4.
+    elif(file.find("Jets-10")>0) :
+        ptmin=1900.
     elif(file.find("Jets-1")>0) :
         if( not opts.ue) :
             ptmin = 10.
@@ -182,6 +186,8 @@ for f in yodafiles:
         ptmin=400.
     elif(file.find("Jets-8")>0) :
         ptmin=600.
+    elif(file.find("Jets-9")>0) :
+        ptmin=900.
     elif(file.find("Bottom-0")>0) :
         ptmin=0.
     elif(file.find("Bottom-1")>0 or file.find("Charm-1")>0) :
@@ -225,7 +231,7 @@ for f in yodafiles:
            aopath.find("I1307243")>0 or aopath.find("I1325553")>0 or
            aopath.find("I1298810")>0 or aopath.find("I1298811")>0 or
            aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
-           aopath.find("I1419070")>0 or
+           aopath.find("I1419070")>0 or aopath.find("I1394679")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -353,6 +359,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1298810"  )>0 or
         hpath.find("1307243"   )>0 or
         hpath.find("I1419070")>0 or
+        hpath.find("I1394679")>0 or
         hpath.find("CMS_2013_I1208923"   )>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
@@ -1295,7 +1302,46 @@ for i in range(1,13) :
         mergeByPt("/ATLAS_2016_I1419070/d0%s-x01-y01" % i, "8000")
     else :
         mergeByPt("/ATLAS_2016_I1419070/d%s-x01-y01"  % i, "8000")
+# remake differences and sums
+for ihist in range(1,4) :
+    h1 = outhistos["/ATLAS_2016_I1419070/d0%s-x01-y01" % ihist  ]
+    h2 = outhistos["/ATLAS_2016_I1419070/d0%s-x01-y01" % (ihist+3)]
+    sstring = "/ATLAS_2016_I1419070/d%s-x01-y01"  % (9+ihist)
+    dstring = "/ATLAS_2016_I1419070/d0%s-x01-y01" % (6+ihist)
+    hdiff = yoda.Scatter2D(dstring,dstring)
+    hsum  = yoda.Scatter2D(sstring,sstring)
+    outhistos[dstring]= hdiff
+    outhistos[sstring]= hsum
+    for nbin in range(0,h2.numBins) :
+        bsum  = h1.bins[nbin]+h2.bins[nbin]
+        ydiff = h2.bins[nbin].mean-h1.bins[nbin].mean
+        ysum  = bsum.mean
+        yerr  = math.sqrt(h1.bins[nbin].stdErr**2+h2.bins[nbin].stdErr**2)
+        x    = h1.bins[nbin].xMid
+        xerr = 0.5*h1.bins[nbin].xWidth
+        hdiff.addPoint(x,ydiff,xerr,yerr)
+        hsum.addPoint(x,ysum ,xerr,bsum.stdErr)
 
+logging.info("ATLAS_2015_I1394679")
+for i in range(1,5) :
+    mergeByPt("/ATLAS_2015_I1394679/d0%s-x01-y01" % i, "8000")
+for i in range(5,11) :
+    if(i<10) :
+        useOnePt( "/ATLAS_2015_I1394679/d0%s-x01-y01" % i,  "8000", "110" )
+    else :
+        useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % i,  "8000", "110" )
+
+for i in range(0,4) :
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (11+4*i),  "8000", "110" )
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (12+4*i),  "8000", "260" )
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (13+4*i),  "8000", "600" )
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (14+4*i),  "8000", "900" )
+
+for i in range(0,5) :
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (27+4*i),  "8000", "110" )
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (28+4*i),  "8000", "260" )
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (29+4*i),  "8000", "400" )
+    useOnePt( "/ATLAS_2015_I1394679/d%s-x01-y01" % (30+4*i),  "8000", "400" )
 
 logging.info("Processing CMS_2013_I1208923")
 for i in range(1,6) :

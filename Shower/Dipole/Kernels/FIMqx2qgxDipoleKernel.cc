@@ -28,6 +28,7 @@ IBPtr FIMqx2qgxDipoleKernel::fullclone() const {
 
 bool FIMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+  useThisKernel() &&
     abs(ind.emitterData()->id()) < 7 &&
     abs(ind.emitterData()->id())==abs(flavour()->id()) &&
     ind.emitterData()->mass() != ZERO &&
@@ -49,7 +50,6 @@ bool FIMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
     abs(sk.emitter(b)->id()) < 7 &&
     sk.emitter(b)->mass() == emitter(a)->mass() &&
     a.spectatorPDF() == b.spectatorPDF();
-       
 
 }
 

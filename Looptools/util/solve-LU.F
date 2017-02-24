@@ -2,12 +2,14 @@
 * Solution of the linear system A.x = B by LU decomposition
 * with partial pivoting
 * this file is part of LoopTools
-* last modified 14 Dec 10 th
+* last modified 26 Jan 14 th
 
 * Author: Michael Rauch, 7 Dec 2004
 * Reference: Folkmar Bornemann, lecture notes to
 * Numerische Mathematik 1, Technical University, Munich, Germany
 
+#include "externals.h"
+#include "types.h"
 #include "defs.h"
 
 #define EPS 2D0**(-51)
@@ -60,6 +62,7 @@
 
 * do L part (plus diagonal from U case)
 	  pabsA = -1
+	  pj = j
 	  do i = j, n
 	    tmp = 0
 	    do k = 1, j - 1
@@ -76,7 +79,7 @@
 	    endif
 	  enddo
 
-          perm(invperm(pj)) = j
+	  perm(invperm(pj)) = j
 
 * exchange rows
 	  if( pj .ne. j ) then
@@ -112,69 +115,29 @@
 	implicit none
 	integer n, ldA
 	QVAR A(ldA,*)
-	double complex b(*)
+	ComplexType b(0:2,*)
 
 	integer i, j
-	double complex tmp
+	ComplexType tmp(0:2)
 
 * forward substitution L.y = b
 	do i = 1, n
 	  tmp = 0
 	  do j = 1, i - 1
-	    tmp = tmp + A(i,j)*b(j)
+	    tmp = tmp + A(i,j)*b(:,j)
 	  enddo
-	  b(i) = b(i) - tmp
+	  b(:,i) = b(:,i) - tmp
 	enddo
 
 * backward substitution U.x = y
 	do i = n, 1, -1
 	  tmp = 0
 	  do j = i + 1, n
-	    tmp = tmp + A(i,j)*b(j)
+	    tmp = tmp + A(i,j)*b(:,j)
 	  enddo
-	  b(i) = (b(i) - tmp)/A(i,i)
+	  b(:,i) = (b(:,i) - tmp)/A(i,i)
 	enddo
 	end
-
-************************************************************************
-
-#ifdef COMPLEXPARA
-
-#undef RSolve
-#define RSolve XSolve
-
-#else
-
-* same as XSolve but for real vector b
-
-	subroutine RSolve(n, A,ldA, b)
-	implicit none
-	integer n, ldA
-	QVAR A(ldA,*), b(*)
-
-	integer i, j
-	QVAR tmp
-
-* forward substitution L.y = b
-	do i = 1, n
-	  tmp = 0
-	  do j = 1, i - 1
-	    tmp = tmp + A(i,j)*b(j)
-	  enddo
-	  b(i) = b(i) - tmp
-	enddo
-
-* backward substitution U.x = y
-	do i = n, 1, -1
-	  tmp = 0
-	  do j = i + 1, n
-	    tmp = tmp + A(i,j)*b(j)
-	  enddo
-	  b(i) = (b(i) - tmp)/A(i,i)
-	enddo
-	end
-
-#endif
 
 ************************************************************************
 * Det computes the determinant of a matrix.
@@ -224,7 +187,8 @@
 	integer n, ldA, ldAinv, perm(*)
 	QVAR A(ldA,*), Ainv(ldAinv,*)
 
-	integer i, j
+	integer i, j, k
+	QVAR tmp
 
 	call XDecomp(n, A,ldA, perm)
 	do i = 1, n
@@ -232,7 +196,24 @@
 	    Ainv(j,i) = 0
 	  enddo
 	  Ainv(perm(i),i) = 1
-	  call RSolve(n, A,ldA, Ainv(1,i))
+
+* forward substitution L.y = b
+	  do j = 1, n
+	    tmp = 0
+	    do k = 1, j - 1
+	      tmp = tmp + A(j,k)*Ainv(k,i)
+	    enddo
+	    Ainv(j,i) = Ainv(j,i) - tmp
+	  enddo
+
+* backward substitution U.x = y
+	  do j = n, 1, -1
+	    tmp = 0
+	    do k = j + 1, n
+	      tmp = tmp + A(j,k)*Ainv(k,i)
+	    enddo
+	    Ainv(j,i) = (Ainv(j,i) - tmp)/A(j,j)
+	  enddo
 	enddo
 	end
 

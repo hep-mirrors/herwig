@@ -6,10 +6,10 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/RealEmissionProcess.fh"
-#include "Herwig/Shower/QTilde/ShowerInteraction.h"
+#include "Herwig/Shower/Core/ShowerInteraction.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 
@@ -125,7 +125,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
-						 ShowerInteraction::Type);
+						 ShowerInteraction);
   //@}
 
 public:

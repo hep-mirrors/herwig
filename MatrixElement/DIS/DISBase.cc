@@ -23,8 +23,8 @@
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include <numeric>
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -769,7 +769,7 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
 }
 
 RealEmissionProcessPtr DISBase::generateHardest(RealEmissionProcessPtr born,
-						ShowerInteraction::Type inter) {
+						ShowerInteraction inter) {
   // check if generating QCD radiation
   if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
      inter!=ShowerInteraction::ALL)

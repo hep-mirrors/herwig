@@ -1,17 +1,54 @@
-pkglib_LTLIBRARIES = HwPerturbativeDecay.la HwPerturbativeHiggsDecay.la
+BUILT_SOURCES  = Perturbative__all.cc
+CLEANFILES = Perturbative__all.cc
 
-HwPerturbativeDecay_la_SOURCES = \
- SMWDecayer.cc  SMWDecayer.h\
- SMZDecayer.cc  SMZDecayer.h\
- SMTopDecayer.cc SMTopDecayer.h\
- SMTopPOWHEGDecayer.cc SMTopPOWHEGDecayer.h\
- SMZFermionsPOWHEGDecayer.cc  SMZFermionsPOWHEGDecayer.h\
- SMWFermionsPOWHEGDecayer.cc  SMWFermionsPOWHEGDecayer.h
-HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
+Perturbative__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
 
-HwPerturbativeHiggsDecay_la_SOURCES = \
- SMHiggsFermionsDecayer.cc SMHiggsFermionsDecayer.h \
- SMHiggsFermionsPOWHEGDecayer.cc SMHiggsFermionsPOWHEGDecayer.h \
- SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.h\
- SMHiggsWWDecayer.cc SMHiggsWWDecayer.h
-HwPerturbativeHiggsDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+ SMWDecayer.h\
+ SMZDecayer.h\
+ SMTopDecayer.h\
+ SMTopPOWHEGDecayer.h\
+ SMZFermionsPOWHEGDecayer.h\
+ SMWFermionsPOWHEGDecayer.h
+
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+ SMWDecayer.cc  \
+ SMZDecayer.cc  \
+ SMTopDecayer.cc \
+ SMTopPOWHEGDecayer.cc \
+ SMZFermionsPOWHEGDecayer.cc  \
+ SMWFermionsPOWHEGDecayer.cc  
+
+
+
+
+
+BUILT_SOURCES  += PerturbativeHiggs__all.cc
+CLEANFILES += PerturbativeHiggs__all.cc
+
+PerturbativeHiggs__all.cc : $(DIR_H_FILES_2) $(DIR_CC_FILES_2) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES_2) > $@
+
+EXTRA_DIST += $(ALL_H_FILES_2) $(ALL_CC_FILES_2)
+
+DIR_H_FILES_2 = $(addprefix $(srcdir)/,$(ALL_H_FILES_2))
+ALL_H_FILES_2 = \
+ SMHiggsFermionsDecayer.h \
+ SMHiggsFermionsPOWHEGDecayer.h \
+ SMHiggsGGHiggsPPDecayer.h\
+ SMHiggsWWDecayer.h
+
+DIR_CC_FILES_2 = $(addprefix $(srcdir)/,$(ALL_CC_FILES_2))
+ALL_CC_FILES_2 = \
+ SMHiggsFermionsDecayer.cc \
+ SMHiggsFermionsPOWHEGDecayer.cc \
+ SMHiggsGGHiggsPPDecayer.cc \
+ SMHiggsWWDecayer.cc 

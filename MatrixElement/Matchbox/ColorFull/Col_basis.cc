@@ -575,7 +575,7 @@ void Col_basis::scalar_product_matrix( bool save_P_spm, bool save_d_spm, bool us
 	}
 
 	// For remembering already calculated topologies
-	std::map<std::string, boost::shared_ptr<Polynomial> > mem_map;
+	std::map<std::string, std::shared_ptr<Polynomial> > mem_map;
 
 	// Loop over basis vectors in Basis
 	for( uint i=0; i < cb.size(); i++){
@@ -599,7 +599,7 @@ void Col_basis::scalar_product_matrix( bool save_P_spm, bool save_d_spm, bool us
 					for( uint Ca2i=0; Ca2i< cb.at(j).size(); Ca2i++){
 
 						// To contain the contribution to the ij-th entry if memoization is used
-						boost::shared_ptr<Polynomial> ijEntry_contr;
+						std::shared_ptr<Polynomial> ijEntry_contr;
 
 						// Rename indices, and make string of new col_strs, to use in map
 						// strip off Polynomial information to make the map minimal

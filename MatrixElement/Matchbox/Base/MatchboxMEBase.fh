@@ -4,10 +4,16 @@
 #ifndef HERWIG_MatchboxMEBase_FH
 #define HERWIG_MatchboxMEBase_FH
 
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
+
 namespace Herwig {
 
 class MatchboxMEBase;
 class MatchboxAmplitude;
+  
+ThePEG_DECLARE_POINTERS(MatchboxMEBase , MatchboxMEBasePtr );
+ThePEG_DECLARE_POINTERS(MatchboxAmplitude , MatchboxAmplitudePtr );
 
 }
 

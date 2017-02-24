@@ -278,8 +278,8 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
     res.first *= cit->second;
   }else{
     if(factory()->verboseDia())
-    cout<<"\n MatchboxPhasespace no coupling for (timelike) :" << vertexKey.get<0>()
-    <<" "<<vertexKey.get<1>()<<" " <<vertexKey.get<2>();
+    cout<<"\n MatchboxPhasespace no coupling for (timelike) :" <<  std::get<0>(vertexKey)
+    <<" "<< std::get<1>(vertexKey)<<" " << std::get<2>(vertexKey);
   }
 
   Energy2 mass2 = sqr(diag.allPartons()[branch]->hardProcessMass());
@@ -344,8 +344,8 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
     res.first *= cit->second;
   }else{
     if(factory()->verboseDia())
-    cout<<"\n MatchboxPhasespace no coupling for (space) :"<< vertexKey.get<0>()
-    <<" "<<vertexKey.get<1>()<<" " <<vertexKey.get<2>();
+    cout<<"\n MatchboxPhasespace no coupling for (space) :"<<  std::get<0>(vertexKey)
+    <<" "<< std::get<1>(vertexKey)<<" " << std::get<2>(vertexKey);
   }
   if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
@@ -389,10 +389,9 @@ void MatchboxPhasespace::fillDiagramWeights(double flatCut) {
 
   diagramWeights().clear();
 
-  for ( StandardXComb::DiagramVector::const_iterator d =
-	  lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
-    diagramWeights()[(**d).id()] = 
-      spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(**d),meMomenta()[0],0,flatCut);
+  for ( auto & d : lastXComb().diagrams() ) {
+    diagramWeights()[d->id()] =
+      spaceLikeWeight(dynamic_cast<const Tree2toNDiagram&>(*d),meMomenta()[0],0,flatCut);
   }
 
 }

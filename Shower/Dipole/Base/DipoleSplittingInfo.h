@@ -25,7 +25,7 @@ class DipoleSplittingKinematics;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief DipoleIndex is used to index splitting generators
  * for a particular dipole.
@@ -44,7 +44,8 @@ public:
    * The standard constructor
    */
   DipoleIndex(tcPDPtr newEmitter, tcPDPtr newSpectator,
-	      const PDF& newEmitterPDF = PDF(), const PDF& newSpectatorPDF = PDF());
+	      const PDF& newEmitterPDF = PDF(), const PDF& newSpectatorPDF = PDF(),
+	      const bool decayingEmitter = false, const bool decayingSpectator = false);
 
 public:
 
@@ -76,7 +77,7 @@ public:
   pair<DipoleIndex,DipoleIndex> split(tcPDPtr) const;
 
 public:
-
+  
   /**
    * Return the emitter particle data object.
    */
@@ -86,6 +87,11 @@ public:
    * Return true, if the emitter is an incoming parton
    */
   bool initialStateEmitter() const { return theInitialStateEmitter; }
+
+  /**
+   * Return true, if the emitter is incoming to a decay
+   */
+  bool incomingDecayEmitter() const { return theIncomingDecayEmitter; }
 
   /**
    * Return the PDF object associated with the emitter
@@ -101,6 +107,11 @@ public:
    * Return true, if the spectator is an incoming parton
    */
   bool initialStateSpectator() const { return theInitialStateSpectator; }
+
+  /**
+   * Return true, if the spectator is incoming to a decay
+   */
+  bool incomingDecaySpectator() const { return theIncomingDecaySpectator; }
 
   /**
    * Return the PDF object associated with the spectator
@@ -122,9 +133,14 @@ private:
   tcPDPtr theEmitterData;
 
   /**
-   * Wether or not the emitter is an incoming parton.
+   * Whether or not the emitter is an incoming parton.
    */
   bool theInitialStateEmitter;
+
+  /**
+   * Whether or not the emitter is incoming to a decay.
+   */
+  bool theIncomingDecayEmitter;
 
   /**
    * The PDF object for the emitter.
@@ -137,9 +153,14 @@ private:
   tcPDPtr theSpectatorData;
 
   /**
-   * Wether or not the spectator is an incoming parton.
+   * Whether or not the spectator is an incoming parton.
    */
   bool theInitialStateSpectator;
+
+  /**
+   * Whether or not the spectator is incoming to a decay.
+   */
+  bool theIncomingDecaySpectator;
 
   /**
    * The PDF object for the spectator.
@@ -174,6 +195,21 @@ public:
    * Destructor
    */
   virtual ~DipoleSplittingInfo() {}
+  
+
+  /**
+   * Standard constructor.
+   */
+  DipoleSplittingInfo(DipoleIndex ind,pair<bool,bool> conf,double emitX,
+                      double spectX,tPPtr emit,tPPtr spect){
+       	theIndex=ind;
+	theConfiguration=conf;
+	theEmitterX=emitX;
+       	theSpectatorX=spectX;
+	theEmitter=emit;
+	theSpectator=spect;
+  }
+  
 
 public:
 
@@ -241,6 +277,18 @@ public:
    * Return the dipole scale
    */
   Energy scale() const { return theScale; }
+
+  /**
+   * Return whether or not this dipole is 
+   * part of a decay process.
+   **/
+  bool isDecayProc() const { return theIsDecayProc; }
+
+  /**
+   * Return the mass of the recoil system
+   * in decay dipoles.
+   */
+  Energy recoilMass() const { return theRecoilMass; }
 
   /**
    * Return the pt below which this
@@ -324,6 +372,19 @@ public:
    * Set the dipole scale
    */
   void scale(Energy s) { theScale = s; }
+  
+  /**
+   * Set whether or not this dipole is 
+   * part of a decay process.
+   **/
+  void isDecayProc(bool isDecayProc) { theIsDecayProc = isDecayProc; }
+
+  /**
+   * Set the mass of the recoil system
+   * in decay dipoles
+   */
+  void recoilMass(Energy mass) { theRecoilMass = mass; }
+    
 
   /**
    * Set the emitter's momentum fraction
@@ -378,6 +439,26 @@ public:
    */
   void lastValue(double v) { theLastValue = v; }
 
+  /**
+   * Set the flag to calculate the Sudakov with fixed scales.
+   */
+  void setCalcFixedExpansion(bool c){theCalcFixedExpansion=c;}
+  
+  /**
+   * Flag to calculate the Sudakov with fixed scales.
+   */
+  bool calcFixedExpansion()const{ return theCalcFixedExpansion;}
+  
+ /**
+   * Fixed scale for Sudakov sampling with fixed scales.
+   */
+  Energy fixedScale() const{return theFixedScale;}
+  
+ /**
+   * Set the fixed scale.
+   */
+  void fixedScale(Energy fix){ theFixedScale=fix;}
+  
   /**
    * Set the last splitting parameters.
    */
@@ -519,6 +600,17 @@ private:
   Energy theScale;
 
   /**
+   * Whether or not this dipole comes from a decay process.
+   */
+  bool theIsDecayProc;
+
+  /**
+   * The mass of the recoil system in
+   * decay dipoles.
+   */
+  Energy theRecoilMass;
+
+  /**
    * The momentum fraction of the emitter.
    */
   double theEmitterX;
@@ -543,6 +635,14 @@ private:
    * The last generated momentum fraction.
    */
   double theLastZ;
+
+  /**
+   * The last calculated zPrime required for massive FF
+   * and decay kinematics dipoles.
+   * zPrime := qi.nk / (qi+qj).nk (qj = emission momentum)
+   */
+  // Note: Not required in current implementation
+  //double theLastZPrime;
 
   /**
    * The last generated azimuthal angle.
@@ -603,6 +703,19 @@ private:
    * A pointer to the emitted parton.
    */
   PPtr theEmission;
+
+  /**
+   * Flag to calculate Splitting kernels with a fixed scale
+   * and without alphas/2pi
+   **/
+  bool theCalcFixedExpansion;
+  
+  /**
+   * Fixed scale for Sudakov evaluation.
+   */
+  Energy theFixedScale;
+  
+  
 
 };
 

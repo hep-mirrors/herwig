@@ -33,7 +33,7 @@ boost::numeric::ublas::matrix<Complex> M_N(unsigned int suN) {
   return M;
 }
 
-#ifdef ThePEG_HAS_UNITS_CHECKING
+// #ifdef ThePEG_HAS_UNITS_CHECKING
 void axpy_prod_local(const boost::numeric::ublas::matrix<Complex>  & A,
 		     const boost::numeric::ublas::matrix<complex<InvEnergy2> > & B,
 		     boost::numeric::ublas::matrix<complex<InvEnergy2> > & C) {
@@ -63,15 +63,15 @@ void axpy_prod_local(const boost::numeric::ublas::matrix<complex<InvEnergy2> > &
     }
   }
 }
-#else
-void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> & A,
-		     const boost::numeric::ublas::matrix<Complex> & B,
-		     boost::numeric::ublas::matrix<Complex> & C) {
-  assert(A.size2()==B.size1());
-  C.resize(A.size1(),B.size2());
-  axpy_prod(A,B,C);
-}
-#endif
+// #else
+// void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> & A,
+// 		     const boost::numeric::ublas::matrix<Complex> & B,
+// 		     boost::numeric::ublas::matrix<Complex> & C) {
+//   assert(A.size2()==B.size1());
+//   C.resize(A.size1(),B.size2());
+//   axpy_prod(A,B,C);
+// }
+// #endif
 
 }
 

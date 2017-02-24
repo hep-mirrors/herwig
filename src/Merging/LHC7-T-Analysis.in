@@ -1,0 +1,6 @@
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_JETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_TTBAR
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1243871
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1304688 
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2015_I1345452

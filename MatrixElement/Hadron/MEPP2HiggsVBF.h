@@ -6,7 +6,7 @@
 //
 
 #include "Herwig/MatrixElement/MEfftoffH.h"
-#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -110,7 +110,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
-						 ShowerInteraction::Type);
+						 ShowerInteraction);
   //@}
 
 public:

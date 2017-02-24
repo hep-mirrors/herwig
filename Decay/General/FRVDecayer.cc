@@ -61,14 +61,14 @@ double FRVDecayer::me2(const int , const Particle & inpart,
       SpinorWaveFunction   ::calculateWaveFunctions(wave_,rho_,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-      if(wave_[0].wave().Type() != u_spinortype)
+      if(wave_[0].wave().Type() != SpinorType::u)
 	for(unsigned int ix = 0; ix < 2; ++ix) wave_   [ix].conjugate();
     }
     else {
       SpinorBarWaveFunction::calculateWaveFunctions(wavebar_,rho_,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-      if(wavebar_[0].wave().Type() != v_spinortype)
+      if(wavebar_[0].wave().Type() != SpinorType::v)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
   }

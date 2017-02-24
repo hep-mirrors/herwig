@@ -9,7 +9,7 @@
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 //#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-
+#include "ThePEG/Interface/Parameter.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -80,7 +80,8 @@ bool MEMinBias::generateKinematics(const double *) {
 }
 
 double MEMinBias::me2() const {
-  return 1.0;
+  //tuned so it gives the correct normalization for xmin = 0.11
+  return csNorm_*(sqr(generator()->maximumCMEnergy())/GeV2);
 }
 
 CrossSection MEMinBias::dSigHatDR() const {
@@ -88,11 +89,11 @@ CrossSection MEMinBias::dSigHatDR() const {
 }
 
 unsigned int MEMinBias::orderInAlphaS() const {
-  return 0;
+  return 2;
 }
 
 unsigned int MEMinBias::orderInAlphaEW() const {
-  return 2;
+  return 0;
 }
 
 Selector<MEBase::DiagramIndex>
@@ -140,10 +141,24 @@ IBPtr MEMinBias::fullclone() const {
 ClassDescription<MEMinBias> MEMinBias::initMEMinBias;
 // Definition of the static class description member.
 
+void MEMinBias::persistentOutput(PersistentOStream & os) const {
+  os << csNorm_;
+}
+
+void MEMinBias::persistentInput(PersistentIStream & is, int) {
+  is >> csNorm_;
+}
+
 void MEMinBias::Init() {
 
   static ClassDocumentation<MEMinBias> documentation
     ("There is no documentation for the MEMinBias class");
-
+     
+  static Parameter<MEMinBias,double> interfacecsNorm
+    ("csNorm",
+     "Normalization of the min-bias cross section.",
+     &MEMinBias::csNorm_, 
+     1.0, 0.0, 100.0, 
+     false, false, Interface::limited);
 }
 

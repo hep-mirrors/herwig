@@ -8,6 +8,6 @@
 
 set /Herwig/Samplers/Sampler:Verbose On
 set /Herwig/MatrixElements/Matchbox/Factory:InitVerbose On
-
+set /Herwig/Merging/MergingFactory:InitVerbose On
 cd /
 

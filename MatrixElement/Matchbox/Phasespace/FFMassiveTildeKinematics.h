@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief FFMassiveTildeKinematics implements the 'tilde' kinematics for
  * a final-final subtraction dipole.
@@ -59,6 +59,17 @@ public:
    * Return the pt associated to the last merged splitting.
    */
   virtual Energy lastPt() const;
+  
+  /**
+   * Given a pt, return the boundaries on z
+   */
+  virtual pair<double,double> zBounds(Energy pt, Energy hardPt ) const;
+  
+  /**
+   * Return the pt associated to emitter emission and sppectator momentum.
+   */
+  virtual Energy lastPt(Lorentz5Momentum,Lorentz5Momentum,Lorentz5Momentum) const ;
+
 
   /**
    * Return the momentum fraction associated to the last splitting.

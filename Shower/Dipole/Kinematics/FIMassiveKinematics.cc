@@ -39,18 +39,18 @@ IBPtr FIMassiveKinematics::fullclone() const {
 }
 
 pair<double,double> FIMassiveKinematics::kappaSupport(const DipoleSplittingInfo&) const {
-  return make_pair(0.0,1.0);
+  return {0.0,1.0};
 }
 
 pair<double,double> FIMassiveKinematics::xiSupport(const DipoleSplittingInfo& split) const {
   double c = sqrt(1.-4.*sqr(IRCutoff()/generator()->maximumCMEnergy()));
   if ( split.index().emitterData()->id() == ParticleID::g ) {
     if ( split.emissionData()->id() != ParticleID::g )
-      return make_pair(0.5*(1.-c),0.5*(1.+c));
+    return {0.5*(1.-c),0.5*(1.+c)};
     double b = log((1.+c)/(1.-c));
-    return make_pair(-b,b);
+        return {-b,b};
   }
-  return make_pair(-log(0.5*(1.+c)),-log(0.5*(1.-c)));
+    return {-log(0.5*(1.+c)),-log(0.5*(1.-c))};
 }
 
 // sbar
@@ -79,8 +79,8 @@ Energy FIMassiveKinematics::QMax(Energy dScale,
 			       double, double specX,
 			       const DipoleIndex&,
 				const DipoleSplittingKernel&) const {
+  generator()->log() << "FIMassiveKinematics::QMax called.\n" << flush;
   assert(false && "implementation missing");
-  cout << "FIMassiveKinematics::QMax called.\n" << flush;
   // this is sqrt( 2qi*q ) -> max;
   return dScale * sqrt((1.-specX)/specX);
 }
@@ -95,12 +95,12 @@ Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
   return sqrt(pt2);
 }
 
-Energy FIMassiveKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split) const {
+Energy FIMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
   // from Martin's thesis
   double z = split.lastZ();
   Energy mi = split.emitterData()->mass();
   Energy m = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(scale) + (1-z)*sqr(mi) + z*sqr(m))/(z*(1.-z));
+  Energy2 Q2 = (sqr(pt) + (1-z)*sqr(mi) + z*sqr(m))/(z*(1.-z));
   return sqrt(Q2);
 }
 
@@ -165,10 +165,11 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 		    ( sqr(pt) + (1.-z)*mi2 + z*m2 - z*(1.-z)*Mi2 ) /
 		    ( z*(1.-z)*s ) );
 
-  double zm1 = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) *
-		   sqrt( 1.-sqr(pt/info.hardPt()) ) );
-  double zp1 = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) *
-		   sqrt( 1.-sqr(pt/info.hardPt()) ) );
+
+double ptRatio = sqrt(1.-sqr(pt/info.hardPt()));
+
+  double zm1 = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
+  double zp1 = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
 
   if ( // pt < IRCutoff() || 
        // pt > info.hardPt() ||
@@ -202,7 +203,10 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian( 2. * mapZJacobian * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
+// Compute and store the jacobian
+    Energy2 pt2 = sqr(pt);
+    double jacPt2 = 1. / ( 1. + sqr(1.-z)*mi2/pt2 + z*z*m2/pt2 );
+    jacobian( jacPt2 * mapZJacobian * 2.*log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
 
   lastPt(pt);
   lastZ(z);

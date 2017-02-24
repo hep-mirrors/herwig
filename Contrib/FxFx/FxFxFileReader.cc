@@ -21,7 +21,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <sstream>
 #include <iostream>
 
@@ -516,8 +515,8 @@ void FxFxFileReader::open() {
 	++ws;
       } while (isc);
       // cout << scaleinfo.first << "\t" << scaleinfo.second << endl;
-      std::string xmuRs = boost::lexical_cast<std::string>(muR);
-      std::string xmuFs = boost::lexical_cast<std::string>(muF);
+      std::string xmuRs = std::to_string(muR);
+      std::string xmuFs = std::to_string(muF);
       string scinfo = "SC " + xmuRs + " " + xmuFs;
       scalemap[scalename] = scinfo.c_str();
       boost::erase_all(scalename, "id=");
@@ -674,9 +673,9 @@ bool FxFxFileReader::doReadEvent() {
 	          >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
         	  >> hepeup.VTIMUP[i] >> hepeup.SPINUP[i] ) )
       return false;
-    if(isnan(hepeup.PUP[i][0])||isnan(hepeup.PUP[i][1])||
-       isnan(hepeup.PUP[i][2])||isnan(hepeup.PUP[i][3])||
-       isnan(hepeup.PUP[i][4])) 
+    if(std::isnan(hepeup.PUP[i][0])||std::isnan(hepeup.PUP[i][1])||
+       std::isnan(hepeup.PUP[i][2])||std::isnan(hepeup.PUP[i][3])||
+       std::isnan(hepeup.PUP[i][4])) 
       throw Exception() 
 	<< "nan's as momenta in Les Houches file "
 	<< Exception::eventerror;

@@ -28,6 +28,7 @@ IBPtr IFMgx2qqxDipoleKernel::fullclone() const {
 
 bool IFMgx2qqxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+  useThisKernel() &&
     ind.emitterData()->id() == ParticleID::g &&
     ind.spectatorData()->mass() != ZERO &&
     flavour()->mass() == ZERO &&
@@ -74,23 +75,19 @@ double IFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ret = alphaPDF(split);
 
   double z = split.lastZ();
-  double ratio = sqr(split.lastPt()/split.scale());
-  double muj2 = sqr(split.spectatorData()->mass()/split.scale());
-  double alpha = 1. - 2.*muj2;
+  Energy pt = split.lastPt();
+  double ratio = sqr(pt/split.scale());
+  double muk2 = sqr(split.spectatorData()->mass()/split.scale());
   
-  
-  if (alpha != 1.&&( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) )<0.)return 0.;
-  
-  double x = alpha == 1. ? ( z*(1.-z) - ratio ) / ( 1. - z - ratio ) :
-    ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) +
-      alpha*sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) ) ) /
-    (2.*(1.-alpha));
-  double u = ( 1.-z + alpha*ratio -
-	       sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) ) ) /
-    (2.*(1.-z));
+// Calculate x and u
+  double rho = 1. - 4.*ratio*(1.-muk2)*z*(1.-z)/sqr(1.-z+ratio);
+  double x = 0.5*((1.-z+ratio)/(ratio*(1.-muk2))) * (1. - sqrt(rho));
+  double u = x*ratio / (1.-z);
 
-  ret *= 0.5 * (!strictLargeN() ? 4./3. : 3./2.) *
-    ( x + 2.*(1.-x)/x - 2.*muj2/x*u/(1.-u) );
+  // NOTE - The definition of muk used in the kinematics differs from that in CS
+    double muk2CS = x*muk2;
+    ret *= 0.5 * (!strictLargeN() ? 4./3. : 3./2.) *
+      ( x + 2.*(1.-x)/x - 2.*muk2CS/x*u/(1.-u) );
 
   return ret > 0. ? ret : 0.;
 

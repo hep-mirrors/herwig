@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer
+ * \author Simon Platzer, Stephen Webster
  *
  * \brief FFMassiveKinematics implements massive splittings
  * off a final-final dipole.
@@ -64,7 +64,7 @@ public:
   virtual pair<double,double> zBoundaries(Energy,
 					  const DipoleSplittingInfo&,
 					  const DipoleSplittingKernel&) const {
-    return make_pair(0.0,1.0);
+    return {0.0,1.0};
   }
 
   /**
@@ -220,6 +220,10 @@ private:
    */
   FFMassiveKinematics & operator=(const FFMassiveKinematics &);
 
+    /**
+     * Option to use the full jacobian, including the z->zprime jacobian.
+     **/
+    bool  theFullJacobian;
 };
 
 }

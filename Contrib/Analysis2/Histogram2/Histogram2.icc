@@ -2,11 +2,6 @@
 
 // (C) 2007-2009 Simon Plaetzer -- sp@particle.uni-karlsruhe.de
 
-// workaround for OS X bug where isnan() and isinf() are hidden
-// when <iostream> is included
-extern "C" int isnan(double) throw();
-extern "C" int isinf(double) throw();
-
 namespace Analysis2 {
 
 inline PersistentOStream& operator << (PersistentOStream& os, const HistogramChannel& h) {
@@ -72,7 +67,7 @@ inline HistogramChannel::HistogramChannel (const vector<pair<double,double> >& b
 {}
 
 inline void HistogramChannel::book (unsigned int bin, double weight) {
-  if (isnan(weight) || isinf(weight)) {
+  if (!isfinite(weight)) {
     ++_nanWeights[bin];
     return;
   }

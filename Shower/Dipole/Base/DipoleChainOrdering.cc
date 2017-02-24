@@ -42,13 +42,24 @@ Energy DipoleChainOrdering::hardScale(tPPtr emitter, tPPtr spectator,
     split.splittingKinematics()->dipoleScale(emitter->momentum(),
 					     spectator->momentum());
 
+  if ( !index.incomingDecaySpectator() && !index.incomingDecayEmitter() ) {
   return 
     virtualityOrdering ?
     split.splittingKinematics()->QMax(scale,emitterX,spectatorX,index,split) :
     split.splittingKinematics()->ptMax(scale,emitterX,spectatorX,index,split);
+  }
 
+  else {
+	DipoleSplittingInfo temp;
+	temp.index(index);
+	temp.recoilMass(split.splittingKinematics()->recoilMassKin(emitter->momentum(),
+								spectator->momentum()));
+	  return 
+    virtualityOrdering ?
+    split.splittingKinematics()->QMax(scale,emitterX,spectatorX,temp,split):
+    split.splittingKinematics()->ptMax(scale,emitterX,spectatorX,temp,split);
+  }
 }
-
 
 void DipoleChainOrdering::setEvolutionScale(Energy scale,
 					    const DipoleSplittingInfo&,
@@ -58,11 +69,11 @@ void DipoleChainOrdering::setEvolutionScale(Energy scale,
   for ( list<Dipole>::iterator dip = chain.dipoles().begin();
 	dip != chain.dipoles().end(); ++dip ) {
 
-    if ( dip->emitterScale(make_pair(true,false)) > scale )
-      dip->emitterScale(make_pair(true,false),scale);
+    if ( dip->emitterScale({true,false}) > scale )
+      dip->emitterScale({true,false},scale);
 
-    if ( dip->emitterScale(make_pair(false,true)) > scale )
-      dip->emitterScale(make_pair(false,true),scale);
+    if ( dip->emitterScale({false,true}) > scale )
+      dip->emitterScale({false,true},scale);
 
   }
 
@@ -76,11 +87,11 @@ void DipoleChainOrdering::setEvolutionScale(Energy scale,
   for ( list<Dipole>::iterator dip = chain.dipoles().begin();
 	dip != chain.dipoles().end(); ++dip ) {
 
-    if ( dip->emitterScale(make_pair(true,false)) > scale )
-      dip->emitterScale(make_pair(true,false),scale);
+    if ( dip->emitterScale({true,false}) > scale )
+       dip->emitterScale({true,false},scale);
 
-    if ( dip->emitterScale(make_pair(false,true)) > scale )
-      dip->emitterScale(make_pair(false,true),scale);
+    if ( dip->emitterScale({false,true}) > scale )
+       dip->emitterScale({false,true},scale);
 
   }
 
@@ -99,7 +110,7 @@ Energy DipoleChainOrdering::maxPt(Energy scale,
 				  const DipoleSplittingKernel& spkernel) const {
   return 
     virtualityOrdering ?
-    spkernel.splittingKinematics()->ptMax(scale,split.emitterX(),split.spectatorX(),split.index(),spkernel) :
+    spkernel.splittingKinematics()->ptMax(scale,split.emitterX(),split.spectatorX(),split,spkernel) :
     scale;
 }
 

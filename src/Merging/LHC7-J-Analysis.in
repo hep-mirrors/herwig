@@ -1,0 +1,16 @@
+
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_JETS
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_S8968497
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2011_S8950903
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2014_I1298810
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1208923
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2012_I1184941
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1326641
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1325553
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1307243
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1183818
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1094564
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9128077
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1273574
+  

@@ -8,4 +8,5 @@ libHwDipoleShowerKinematics_la_SOURCES = \
 	IFLightKinematics.h IFLightKinematics.cc \
 	IILightKinematics.h IILightKinematics.cc \
 	FIMassiveKinematics.h FIMassiveKinematics.cc \
-	IFMassiveKinematics.h IFMassiveKinematics.cc
+	IFMassiveKinematics.h IFMassiveKinematics.cc \
+	FIMassiveDecayKinematics.h FIMassiveDecayKinematics.cc

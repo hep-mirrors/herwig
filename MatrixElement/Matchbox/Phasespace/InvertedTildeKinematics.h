@@ -240,7 +240,7 @@ public:
    * Generate pt and z
    */
   virtual pair<Energy,double> generatePtZ(double& jac, const double * r,
-					  double power=1.) const;
+  					  double power=1., vector<double>* values = NULL) const;
 
   /**
    * Return the single particle phasespace weight in units

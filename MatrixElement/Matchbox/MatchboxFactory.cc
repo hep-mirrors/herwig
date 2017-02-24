@@ -26,7 +26,7 @@
 #include "ThePEG/Handlers/SamplerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
-#include "Herwig/Utilities/RunDirectories.h"
+#include "Herwig/API/RunDirectories.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -281,7 +281,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       me->amplitude(ap->first);
       me->matchboxAmplitude(ap->first);
       prepareME(me);
-      string pname = "ME" + ap->first->name() + pid(m->legs);
+      string pname = "ME" + pid(m->legs);
       if ( ! (generator()->preinitRegister(me,pname) ) )
 	throw Exception() << "MatchboxFactory: Matrix element " << pname << " already existing."
 			  << Exception::runerror;
@@ -302,7 +302,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 
   generator()->log() << "created "
 		     << procCount << " subprocesses.\n";
-  generator()->log() << "--------------------------------------------------------------------------------\n"
+  generator()->log() << "---------------------------------------------------\n"
 		     << flush;
 
   return res;
@@ -568,35 +568,11 @@ void MatchboxFactory::setup() {
 		= DipoleRepository::insertionIOperators(dipoleSet()).begin(); 
 	      virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
 	  (**virt).factory(this);
-	  if ( virtualsAreDRbar )
-	    (**virt).useDRbar();
-	  if ( virtualsAreDR )
-	    (**virt).useDR();
-	  else
-	    (**virt).useCDR();
-	  if ( virtualsAreCS )
-	    (**virt).useCS();
-	  if ( virtualsAreBDK )
-	    (**virt).useBDK();
-	  if ( virtualsAreExpanded )
-	    (**virt).useExpanded();
 	}
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
 		= DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
 	      virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
 	  (**virt).factory(this);
-	  if ( virtualsAreDRbar )
-	    (**virt).useDRbar();
-	  if ( virtualsAreDR )
-	    (**virt).useDR();
-	  else
-	    (**virt).useCDR();
-	  if ( virtualsAreCS )
-	    (**virt).useCS();
-	  if ( virtualsAreBDK )
-	    (**virt).useBDK();
-	  if ( virtualsAreExpanded )
-	    (**virt).useExpanded();
 	}
       }
 
@@ -823,7 +799,7 @@ void MatchboxFactory::setup() {
 
       delete progressBar;
 
-      generator()->log() << "--------------------------------------------------------------------------------\n"
+      generator()->log() << "---------------------------------------------------\n"
 			 << flush;
 
     }
@@ -981,7 +957,7 @@ void MatchboxFactory::setup() {
 
       delete progressBar;
 
-      generator()->log() << "--------------------------------------------------------------------------------\n"
+      generator()->log() << "---------------------------------------------------\n"
 			 << flush;
 
     }
@@ -1027,7 +1003,7 @@ void MatchboxFactory::setup() {
 			     << Exception::runerror;
 	}
       }
-      generator()->log() << "--------------------------------------------------------------------------------\n"
+      generator()->log() << "---------------------------------------------------\n"
 			 << flush;
     }
 
@@ -1045,7 +1021,7 @@ void MatchboxFactory::setup() {
 			    << Exception::runerror;
 	}
       }
-      generator()->log() << "--------------------------------------------------------------------------------\n"
+      generator()->log() << "---------------------------------------------------\n"
 			 << flush;
     }
 
@@ -1084,7 +1060,7 @@ void MatchboxFactory::SplittingChannel::print(ostream& os) const {
   os << " with dipole:\n";
   dipole->print(os);
 
-  os << "--------------------------------------------------------------------------------\n";
+  os << "---------------------------------------------------\n";
 
   os << flush;
 
@@ -1169,7 +1145,7 @@ MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
     }
 
     generator()->log()
-      << "-------------------------------------------------------------------------------------\n"
+      << "--------------------------------------------------------\n"
       << flush;
 
   }
@@ -1211,7 +1187,7 @@ void MatchboxFactory::print(ostream& os) const {
     os << " '" << (**sub).name() << "'\n";
   }
 
-  os << "--------------------------------------------------------------------------------\n";
+  os << "---------------------------------------------------\n";
 
   os << flush;
 
@@ -1223,7 +1199,7 @@ void MatchboxFactory::summary(ostream& os) const {
      << "================================================================================\n\n";
 
   os << " Electro-weak parameter summary:\n"
-     << "--------------------------------------------------------------------------------\n\n";
+     << "---------------------------------------------------\n\n";
 
   os << " Electro-weak scheme : ";
   switch ( SM().ewScheme() ) {
@@ -1279,7 +1255,7 @@ void MatchboxFactory::summary(ostream& os) const {
      << "\n\n";
 
   os << " Quark masses and widths are:\n"
-     << "--------------------------------------------------------------------------------\n\n"
+     << "---------------------------------------------------\n\n"
      << " m(u)/GeV       = " << getParticleData(ParticleID::u)->hardProcessMass()/GeV << "\n"
      << " m(d)/GeV       = " << getParticleData(ParticleID::d)->hardProcessMass()/GeV << "\n"
      << " m(c)/GeV       = " << getParticleData(ParticleID::c)->hardProcessMass()/GeV << "\n"
@@ -1289,7 +1265,7 @@ void MatchboxFactory::summary(ostream& os) const {
      << " m(b)/GeV       = " << getParticleData(ParticleID::b)->hardProcessMass()/GeV << "\n\n";
 
   os << " Lepton masses and widths are:\n"
-     << "--------------------------------------------------------------------------------\n\n"
+     << "---------------------------------------------------\n\n"
      << " m(n_e)/GeV     = " << getParticleData(ParticleID::nu_e)->hardProcessMass()/GeV << "\n"
      << " m(e)/GeV       = " << getParticleData(ParticleID::eminus)->hardProcessMass()/GeV << "\n"
      << " m(n_mu)/GeV    = " << getParticleData(ParticleID::nu_mu)->hardProcessMass()/GeV << "\n"
@@ -1299,7 +1275,7 @@ void MatchboxFactory::summary(ostream& os) const {
 
 
   os << " Strong coupling summary:\n"
-     << "--------------------------------------------------------------------------------\n\n";
+     << "---------------------------------------------------\n\n";
 
   os << " alphaS is";
   if ( !theFixedCouplings ) {

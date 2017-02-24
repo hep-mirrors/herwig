@@ -217,7 +217,7 @@ double MEPP2ZHPowheg::NLOweight() const {
   //  if(_xt<1.-_eps)
   //    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
   // return the answer
-  assert(!isinf(wgt)&&!isnan(wgt));
+  assert(isfinite(wgt));
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 

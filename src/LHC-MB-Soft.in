@@ -1,0 +1,242 @@
+# -*- ThePEG-repository -*-
+
+################################################################################
+# This file contains our best tune to UE data from ATLAS at 7 TeV. More recent
+# tunes and tunes for other centre-of-mass energies as well as more usage
+# instructions can be obtained from this Herwig++ wiki page:
+# http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
+################################################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 100
+set LHCGenerator:MaxErrors 1000000
+
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:DumpPeriod -1
+set LHCGenerator:DebugEvent 0
+
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000.0
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
+
+
+##################################################
+# MEMinBias Matrix Element
+##################################################
+# MPI model settings
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+
+## Report the correct cross section
+cd /Herwig/Generators
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert LHCGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+set LHCGenerator:EventHandler:CascadeHandler NULL
+
+clear /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0]
+
+##################################################
+# Create separate SubProcessHandler for MinBias
+##################################################
+cd /Herwig/MatrixElements/
+cp SimpleQCD QCDMinBias
+
+set QCDMinBias:CascadeHandler /Herwig/Shower/ShowerHandler
+set QCDMinBias:CascadeHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set QCDMinBias:DecayHandler /Herwig/Decays/DecayHandler
+
+insert QCDMinBias:MatrixElements[0] MEMinBias
+
+cd /Herwig/Generators
+# MinBias parameters used for the new kinematics of soft MPI
+set /Herwig/Cuts/MinBiasCuts:X1Min 0.11
+set /Herwig/Cuts/MinBiasCuts:X2Min 0.11
+
+set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
+
+set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.0
+set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes
+# Use multiperipheral kinematics
+set /Herwig/Partons/RemnantDecayer:MultiPeriph Yes
+# Set ladder multiplicity factor
+set /Herwig/Partons/RemnantDecayer:ladderbFactor 0.0
+# Set gaussian width of longitudinal momentum fraction
+# flucutuation
+set /Herwig/Partons/RemnantDecayer:gaussWidth 0.03
+
+# Tuned to min-bias data
+set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.445557
+set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.145333
+set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.101560
+set /Herwig/UnderlyingEvent/MPIHandler:Power 0.709107
+set /Herwig/Partons/RemnantDecayer:ladderMult 0.700985
+
+cd /Herwig/MatrixElements/
+insert /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0] QCDMinBias
+
+##################################################
+# Create separate SubProcessHandler for Diffraction
+##################################################
+
+cd /Herwig/MatrixElements
+create Herwig::MEDiffraction MEDiffractionLeft
+set MEDiffractionLeft:DiffDirection Left
+create Herwig::MEDiffraction MEDiffractionRight
+set MEDiffractionRight:DiffDirection Right
+create Herwig::MEDiffraction MEDiffractionDouble
+set MEDiffractionDouble:DiffDirection Both
+
+create Herwig::MEDiffraction MEDiffractionDeltaLeft
+set MEDiffractionDouble:DiffDirection Left
+create Herwig::MEDiffraction MEDiffractionDeltaRight
+set MEDiffractionDouble:DiffDirection Right
+create Herwig::MEDiffraction MEDiffractionDeltaDouble
+set MEDiffractionDouble:DiffDirection Both
+
+# Make a parton extractor for diffraction
+cd /Herwig/Partons
+cp QCDExtractor DiffQCDExtractor
+set DiffQCDExtractor:FirstPDF /Herwig/Partons/NoPDF
+set DiffQCDExtractor:SecondPDF /Herwig/Partons/NoPDF
+
+cd /Herwig/MatrixElements/
+# Create Diffraction  SubProcessHandler
+cp SimpleQCD QCDDiffraction
+
+# Assign the PartonExtractor to the SubProcessHandler
+set QCDDiffraction:PartonExtractor /Herwig/Partons/DiffQCDExtractor
+
+# Use only Delta as final excited state (Yes/No)
+set MEDiffractionLeft:DeltaOnly No
+set MEDiffractionRight:DeltaOnly No
+set MEDiffractionDouble:DeltaOnly No
+
+set MEDiffractionDeltaLeft:DeltaOnly Yes
+set MEDiffractionDeltaRight:DeltaOnly Yes
+set MEDiffractionDeltaDouble:DeltaOnly Yes
+
+
+# Set weight for Diffraction
+set MEDiffractionLeft:DiffractionAmplitude 12
+set MEDiffractionRight:DiffractionAmplitude 12
+set MEDiffractionDouble:DiffractionAmplitude 8
+
+set MEDiffractionDeltaLeft:DiffractionAmplitude 4
+set MEDiffractionDeltaRight:DiffractionAmplitude 4
+set MEDiffractionDeltaDouble:DiffractionAmplitude 2
+
+# Set soft diffraction paramters
+set MEDiffractionLeft:ProtonPomeronSlope 10.1
+set MEDiffractionLeft:SoftPomeronIntercept 1.08
+set MEDiffractionLeft:SoftPomeronSlope 0.25
+
+set MEDiffractionRight:ProtonPomeronSlope 10.1
+set MEDiffractionRight:SoftPomeronIntercept 1.08
+set MEDiffractionRight:SoftPomeronSlope 0.25
+
+set MEDiffractionDouble:ProtonPomeronSlope 10.1
+set MEDiffractionDouble:SoftPomeronIntercept 1.08
+set MEDiffractionDouble:SoftPomeronSlope 0.25
+
+set MEDiffractionDeltaLeft:ProtonPomeronSlope 10.1
+set MEDiffractionDeltaLeft:SoftPomeronIntercept 1.08
+set MEDiffractionDeltaLeft:SoftPomeronSlope 0.25
+
+set MEDiffractionDeltaRight:ProtonPomeronSlope 10.1
+set MEDiffractionDeltaRight:SoftPomeronIntercept 1.08
+set MEDiffractionDeltaRight:SoftPomeronSlope 0.25
+
+set MEDiffractionDeltaDouble:ProtonPomeronSlope 10.1
+set MEDiffractionDeltaDouble:SoftPomeronIntercept 1.08
+set MEDiffractionDeltaDouble:SoftPomeronSlope 0.25
+
+# Set number of clusters for dissociation
+set MEDiffractionLeft:DissociationDecay One
+set MEDiffractionRight:DissociationDecay One
+set MEDiffractionDouble:DissociationDecay One
+
+set MEDiffractionDeltaLeft:DissociationDecay One
+set MEDiffractionDeltaRight:DissociationDecay One
+set MEDiffractionDeltaDouble:DissociationDecay One
+
+# Insert matrix elements
+insert QCDDiffraction:MatrixElements[0] MEDiffractionLeft
+insert QCDDiffraction:MatrixElements[0] MEDiffractionRight
+insert QCDDiffraction:MatrixElements[0] MEDiffractionDouble
+
+insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaLeft
+insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaRight
+insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaDouble
+# No cluster fission
+#set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
+
+set QCDDiffraction:CascadeHandler NULL
+set /Herwig/EventHandlers/LHCHandler:CascadeHandler NULL
+
+insert /Herwig/EventHandlers/LHCHandler:SubProcessHandlers[0] QCDDiffraction
+##########################################################################
+##########################################################################
+
+
+
+
+
+cd /Herwig/Analysis
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+
+cd /Herwig/Generators
+
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 RivetATLAS_2012_I1084540
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
+# need to comment for -d1
+###insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1356998
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
+
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
+
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8591806
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1281685
+
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8894728
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8994773
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I894867
+##insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1124167
+##insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
+###insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8656010
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
+
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1193338
+##insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
+
+
+set /Herwig/Analysis/Plot:EventNumber 54
+cd /Herwig/Generators
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+#set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
+#set /Herwig/Analysis/HepMCFile:Format GenEvent
+#set /Herwig/Analysis/HepMCFile:Units GeV_mm
+#set /Herwig/Analysis/HepMCFile:Filename events.fifo
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun LHC-MB-Soft LHCGenerator
+

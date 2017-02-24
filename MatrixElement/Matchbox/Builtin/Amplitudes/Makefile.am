@@ -1,53 +1,72 @@
 pkglib_LTLIBRARIES = HwMatchboxBuiltin.la
 
-HwMatchboxBuiltin_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+HwMatchboxBuiltin_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 3:0:0
 
-HwMatchboxBuiltin_la_SOURCES = \
-MatchboxCurrents.h MatchboxCurrents.cc \
-MatchboxZGammaAmplitude.h MatchboxZGammaAmplitude.cc \
-MatchboxAmplitudellbarqqbar.cc \
-MatchboxAmplitudellbarqqbarg.cc \
-MatchboxAmplitudellbarqqbargg.cc \
+nodist_HwMatchboxBuiltin_la_SOURCES = \
+Amplitudes__all.cc
+
+BUILT_SOURCES  = Amplitudes__all.cc
+CLEANFILES = Amplitudes__all.cc
+
+Amplitudes__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+MatchboxCurrents.h \
+MatchboxZGammaAmplitude.h \
 MatchboxAmplitudellbarqqbargg.h \
 MatchboxAmplitudellbarqqbarg.h \
 MatchboxAmplitudellbarqqbar.h \
-MatchboxAmplitudellbarqqbarqqbar.cc \
 MatchboxAmplitudellbarqqbarqqbar.h \
-MatchboxAmplitudelnuqqbar.cc \
-MatchboxAmplitudelnuqqbarg.cc \
-MatchboxAmplitudelnuqqbargg.cc \
 MatchboxAmplitudelnuqqbargg.h \
 MatchboxAmplitudelnuqqbarg.h \
 MatchboxAmplitudelnuqqbar.h \
-MatchboxAmplitudelnuqqbarqqbar.cc \
 MatchboxAmplitudelnuqqbarqqbar.h \
-MatchboxAmplitudehbbbar.cc \
-MatchboxAmplitudehbbbarg.cc \
 MatchboxAmplitudehbbbarg.h \
 MatchboxAmplitudehbbbar.h \
-MatchboxAmplitudehgg.cc \
-MatchboxAmplitudehggg.cc \
 MatchboxAmplitudehggg.h \
 MatchboxAmplitudehgg.h \
-MatchboxAmplitudehqqbarg.cc \
 MatchboxAmplitudehqqbarg.h \
-MatchboxAmplitudeqqbarttbar.cc \
 MatchboxAmplitudeqqbarttbar.h \
-MatchboxAmplitudeqqbarttbarg.cc \
 MatchboxAmplitudeqqbarttbarg.h \
-MatchboxAmplitudeggttbar.cc \
 MatchboxAmplitudeggttbar.h \
-MatchboxAmplitudeggttbarg.cc \
 MatchboxAmplitudeggttbarg.h \
-HelAmps_sm.cc \
 HelAmps_sm.h \
-Parameters_sm.cc \
 Parameters_sm.h \
-MG_qqx2ttx.cc \
 MG_qqx2ttx.h \
-MG_qqx2ttxg.cc \
 MG_qqx2ttxg.h \
-MG_gg2ttx.cc \
 MG_gg2ttx.h \
-MG_gg2ttxg.cc \
 MG_gg2ttxg.h
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+MatchboxCurrents.cc \
+MatchboxZGammaAmplitude.cc \
+MatchboxAmplitudellbarqqbar.cc \
+MatchboxAmplitudellbarqqbarg.cc \
+MatchboxAmplitudellbarqqbargg.cc \
+MatchboxAmplitudellbarqqbarqqbar.cc \
+MatchboxAmplitudelnuqqbar.cc \
+MatchboxAmplitudelnuqqbarg.cc \
+MatchboxAmplitudelnuqqbargg.cc \
+MatchboxAmplitudelnuqqbarqqbar.cc \
+MatchboxAmplitudehbbbar.cc \
+MatchboxAmplitudehbbbarg.cc \
+MatchboxAmplitudehgg.cc \
+MatchboxAmplitudehggg.cc \
+MatchboxAmplitudehqqbarg.cc \
+MatchboxAmplitudeqqbarttbar.cc \
+MatchboxAmplitudeqqbarttbarg.cc \
+MatchboxAmplitudeggttbar.cc \
+MatchboxAmplitudeggttbarg.cc \
+HelAmps_sm.cc \
+Parameters_sm.cc \
+MG_qqx2ttx.cc \
+MG_qqx2ttxg.cc \
+MG_gg2ttx.cc \
+MG_gg2ttxg.cc

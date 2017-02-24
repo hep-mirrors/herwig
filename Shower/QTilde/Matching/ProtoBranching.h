@@ -100,14 +100,14 @@ public:
   /**
    *  Type of branching
    */
-  ShowerPartnerType::Type type() const {
+  ShowerPartnerType type() const {
     return type_;
   }
 
   /**
    *  Type of branching
    */
-  void type(ShowerPartnerType::Type in) {
+  void type(ShowerPartnerType in) {
     type_ = in;
     assert(type_!=ShowerPartnerType::Undefined);
   }
@@ -178,7 +178,7 @@ private:
   /**
    *  The type of branching
    */
-  ShowerPartnerType::Type type_;
+  ShowerPartnerType type_;
 
   /**
    *   Colour lines

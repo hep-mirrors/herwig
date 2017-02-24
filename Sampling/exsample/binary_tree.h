@@ -870,11 +870,11 @@ namespace exsample {
     binary_tree * parent_;
 
     /// the cell held by this node
-    boost::scoped_ptr<value_type> value_;
+    std::unique_ptr<value_type> value_;
 
     /// the children of this node
-    std::pair<boost::scoped_ptr<binary_tree>,
-	      boost::scoped_ptr<binary_tree> > children_;
+    std::pair<std::unique_ptr<binary_tree>,
+	      std::unique_ptr<binary_tree> > children_;
 
   };
 

@@ -1,23 +1,49 @@
-pkglib_LTLIBRARIES = HwBaryonDecay.la
+BUILT_SOURCES  = BaryonDecayer__all.cc
+CLEANFILES = BaryonDecayer__all.cc
 
-HwBaryonDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
-HwBaryonDecay_la_LIBADD = $(top_builddir)/PDT/libHwBaryonWidth.la
-HwBaryonDecay_la_SOURCES = \
-Baryon1MesonDecayerBase.cc             Baryon1MesonDecayerBase.h   \
-Baryon1MesonDecayerBase.fh\
-BaryonFactorizedDecayer.cc             BaryonFactorizedDecayer.h   \
-KornerKramerCharmDecayer.cc            KornerKramerCharmDecayer.h  \
-NonLeptonicHyperonDecayer.cc           NonLeptonicHyperonDecayer.h \
-RadiativeHyperonDecayer.cc             RadiativeHyperonDecayer.h \
-NonLeptonicOmegaDecayer.cc             NonLeptonicOmegaDecayer.h   \
-OmegaXiStarPionDecayer.cc              OmegaXiStarPionDecayer.h    \
-SemiLeptonicBaryonDecayer.cc           SemiLeptonicBaryonDecayer.h \
-StrongHeavyBaryonDecayer.cc            StrongHeavyBaryonDecayer.h  \
-SU3BaryonDecupletOctetPhotonDecayer.cc SU3BaryonDecupletOctetPhotonDecayer.h\
-SU3BaryonDecupletOctetScalarDecayer.cc SU3BaryonDecupletOctetScalarDecayer.h\
-SU3BaryonOctetDecupletScalarDecayer.cc SU3BaryonOctetDecupletScalarDecayer.h\
-SU3BaryonOctetOctetPhotonDecayer.cc    SU3BaryonOctetOctetPhotonDecayer.h   \
-SU3BaryonOctetOctetScalarDecayer.cc    SU3BaryonOctetOctetScalarDecayer.h   \
-SU3BaryonSingletOctetPhotonDecayer.cc  SU3BaryonSingletOctetPhotonDecayer.h \
-SU3BaryonSingletOctetScalarDecayer.cc  SU3BaryonSingletOctetScalarDecayer.h \
-RadiativeHeavyBaryonDecayer.cc RadiativeHeavyBaryonDecayer.h
+BaryonDecayer__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+Baryon1MesonDecayerBase.h   \
+Baryon1MesonDecayerBase.fh  \
+BaryonFactorizedDecayer.h   \
+KornerKramerCharmDecayer.h  \
+OmegaXiStarPionDecayer.h    \
+SemiLeptonicBaryonDecayer.h \
+StrongHeavyBaryonDecayer.h  \
+NonLeptonicHyperonDecayer.h \
+NonLeptonicOmegaDecayer.h   \
+RadiativeHyperonDecayer.h   \
+RadiativeHeavyBaryonDecayer.h \
+SU3BaryonDecupletOctetPhotonDecayer.h\
+SU3BaryonDecupletOctetScalarDecayer.h\
+SU3BaryonOctetDecupletScalarDecayer.h\
+SU3BaryonOctetOctetPhotonDecayer.h   \
+SU3BaryonOctetOctetScalarDecayer.h   \
+SU3BaryonSingletOctetPhotonDecayer.h \
+SU3BaryonSingletOctetScalarDecayer.h
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+Baryon1MesonDecayerBase.cc   \
+BaryonFactorizedDecayer.cc   \
+KornerKramerCharmDecayer.cc  \
+OmegaXiStarPionDecayer.cc    \
+SemiLeptonicBaryonDecayer.cc \
+StrongHeavyBaryonDecayer.cc  \
+NonLeptonicHyperonDecayer.cc           \
+NonLeptonicOmegaDecayer.cc             \
+RadiativeHyperonDecayer.cc             \
+RadiativeHeavyBaryonDecayer.cc         \
+SU3BaryonDecupletOctetPhotonDecayer.cc \
+SU3BaryonDecupletOctetScalarDecayer.cc \
+SU3BaryonOctetDecupletScalarDecayer.cc \
+SU3BaryonOctetOctetPhotonDecayer.cc    \
+SU3BaryonOctetOctetScalarDecayer.cc    \
+SU3BaryonSingletOctetPhotonDecayer.cc  \
+SU3BaryonSingletOctetScalarDecayer.cc

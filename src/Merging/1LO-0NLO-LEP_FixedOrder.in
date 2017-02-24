@@ -1,0 +1,215 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+## Herwig/Matchbox example input file
+##################################################
+
+##################################################
+## Collider type
+##################################################
+
+read Matchbox/EECollider.in
+
+##################################################
+## Beam energy sqrt(s)
+##################################################
+
+cd /Herwig/EventHandlers
+set EventHandler:LuminosityFunction:Energy 91.2*GeV
+
+##################################################
+## Process selection
+##################################################
+
+## Note that event generation may fail if no matching matrix element has
+## been found.  Coupling orders are with respect to the Born process,
+## i.e. NLO QCD does not require an additional power of alphas.
+
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set Factory:OrderInAlphaS 0
+set Factory:OrderInAlphaEW 2
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do Factory:Process e- e+ -> j j
+
+
+cd /Herwig/MatrixElements/Matchbox/Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
+
+## Special settings required for on-shell production of unstable particles
+## enable for on-shell top production
+# read Matchbox/OnShellTopProduction.in
+## enable for on-shell W, Z or h production
+# read Matchbox/OnShellWProduction.in
+# read Matchbox/OnShellZProduction.in
+# read Matchbox/OnShellHProduction.in
+
+##################################################
+## Matrix element library selection
+##################################################
+
+## Select a generic tree/loop combination or a
+## specialized NLO package
+
+# read Matchbox/MadGraph-GoSam.in
+# read Matchbox/MadGraph-MadGraph.in
+# read Matchbox/MadGraph-NJet.in
+# read Matchbox/MadGraph-OpenLoops.in
+
+## Uncomment this to use ggh effective couplings
+## currently only supported by MadGraph-GoSam
+
+# read Matchbox/HiggsEffective.in
+
+##################################################
+## Cut selection
+## See the documentation for more options
+##################################################
+
+## cuts on additional jets
+
+# read Matchbox/DefaultEEJets.in
+
+# set NJetsCut:NJetsMin 3
+
+##################################################
+## Scale choice
+## See the documentation for more options
+##################################################
+
+cd /Herwig/MatrixElements/Matchbox
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
+
+##################################################
+## Matching and shower selection
+##################################################
+
+#read Matchbox/MCatNLO-DefaultShower.in
+# read Matchbox/Powheg-DefaultShower.in
+## use for strict LO/NLO comparisons
+# read Matchbox/MCatLO-DefaultShower.in
+## use for improved LO showering
+# read Matchbox/LO-DefaultShower.in
+
+# read Matchbox/MCatNLO-DipoleShower.in
+# read Matchbox/Powheg-DipoleShower.in
+## use for strict LO/NLO comparisons
+# read Matchbox/MCatLO-DipoleShower.in
+## use for improved LO showering
+#read Matchbox/LO-DipoleShower.in
+
+# read Matchbox/NLO-NoShower.in
+ read Matchbox/LO-NoShower.in
+
+##################################################
+## Scale uncertainties
+##################################################
+
+# read Matchbox/MuDown.in
+# read Matchbox/MuUp.in
+
+##################################################
+## Shower scale uncertainties
+##################################################
+
+# read Matchbox/MuQDown.in
+# read Matchbox/MuQUp.in
+
+##################################################
+## Analyses
+##################################################
+
+cd /Herwig/Analysis
+#insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+
+#insert /Herwig/Analysis/Rivet:Analyses 0 Clustermass
+
+##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+
+set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
+
+##################################################
+## Save the generator
+##################################################
+
+
+set /Herwig/Couplings/NLOAlphaS:min_active_flavours 4
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
+set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
+
+
+
+
+create Herwig::MonacoSampler /Herwig/Samplers/Monaco
+set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/Monaco
+
+cd /Herwig/Particles
+
+do c:UnsetHardProcessMass
+do cbar:UnsetHardProcessMass
+do b:UnsetHardProcessMass
+do bbar:UnsetHardProcessMass
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+
+
+cd /Herwig/Samplers
+
+set Monaco:EnhancementFactor 1.2
+set Monaco:InitialPoints 10000
+set Monaco:LuminosityMapperBins 8
+set Monaco:NIterations 4
+set Monaco:RemapChannelDimension Yes
+set Monaco:RemapperMinSelection 0.0001
+set Monaco:RemapperPoints 10000
+set Monaco:UseAllIterations No
+
+set Sampler:UpdateAfter 1000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted On
+set Sampler:BinSampler:Kappa 1.
+set Sampler:RunCombinationData Off
+set Sampler:Verbose On
+
+
+set /Herwig/Cuts/Cuts:Fuzzy NULL
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+
+
+
+##################################################
+## CMW - Scheme
+##################################################
+
+### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
+### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
+read Merging/FactorCMWScheme.in
+
+### Linear CMW multiplication:
+### alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )
+# read Merging/LinearCMWScheme.in
+
+
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+
+cd /Herwig/Generators
+saverun 1LO-0NLO-LEP_FixedOrder EventGenerator

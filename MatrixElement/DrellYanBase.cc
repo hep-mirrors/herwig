@@ -12,9 +12,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -548,7 +548,7 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
 }
 
 RealEmissionProcessPtr DrellYanBase::generateHardest(RealEmissionProcessPtr born,
-						      ShowerInteraction::Type inter) {
+						      ShowerInteraction inter) {
   // check if generating QCD radiation
   if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
      inter!=ShowerInteraction::ALL)

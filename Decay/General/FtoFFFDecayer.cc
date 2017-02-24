@@ -100,7 +100,7 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
       calculateWaveFunctions(_inwave.first,_rho,const_ptr_cast<tPPtr>(&inpart),
 			    Helicity::incoming);
     _inwave.second.resize(2);
-    if(_inwave.first[0].wave().Type() == u_spinortype) {
+    if(_inwave.first[0].wave().Type() == SpinorType::u) {
       for(unsigned int ix = 0; ix < 2; ++ix) {
 	_inwave.second[ix] = _inwave.first[ix].bar();
 	_inwave.second[ix].conjugate();
@@ -135,7 +135,7 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
     SpinorWaveFunction::
       calculateWaveFunctions(_outwave[ix].first,decay[ix],Helicity::outgoing);
     _outwave[ix].second.resize(2);
-    if(_outwave[ix].first[0].wave().Type() == u_spinortype) {
+    if(_outwave[ix].first[0].wave().Type() == SpinorType::u) {
       for(unsigned int iy = 0; iy < 2; ++iy) {
 	_outwave[ix].second[iy] = _outwave[ix].first[iy].bar();
 	_outwave[ix].first[iy].conjugate();

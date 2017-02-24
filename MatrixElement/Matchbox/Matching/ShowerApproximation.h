@@ -475,6 +475,19 @@ public:
   static void Init();
 
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 

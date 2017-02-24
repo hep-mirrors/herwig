@@ -325,7 +325,7 @@ IVector MEee2gZ2ll::getReferences() {
 }
 
 RealEmissionProcessPtr MEee2gZ2ll::generateHardest(RealEmissionProcessPtr born,
-						   ShowerInteraction::Type inter) {
+						   ShowerInteraction inter) {
   // check if generating QCD radiation
   if(inter!=ShowerInteraction::QED && inter!=ShowerInteraction::QEDQCD &&
      inter!=ShowerInteraction::ALL)

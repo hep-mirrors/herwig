@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *--#[ log:
@@ -48,7 +49,7 @@ c
 *		isoort(6)(integer)	returns kind of action taken	*
 *		ier	(integer)	0=ok 1=inaccurate 2=error	*
 *									*
-*	calls:	ffcrr,ffcxr,real/dble,DCMPLX,log,ffadd1,ffadd2,ffadd3	*
+*	calls:	ffcrr,ffcxr,real/dble,ToComplex,log,ffadd1,ffadd2,ffadd3	*
 *									*
 ***#]*comment:***********************************************************
 *  #[ declarations:
@@ -56,8 +57,8 @@ c
 *
 *	arguments
 *
-	DOUBLE COMPLEX cs3(100)
-	DOUBLE PRECISION y(4,3:4),z(4,3:4),dyz(2,2,3:4),d2yzz(3:4),
+	ComplexType cs3(100)
+	RealType y(4,3:4),z(4,3:4),dyz(2,2,3:4),d2yzz(3:4),
      +		dy2z(4,3:4),dyzzy(4),xpi(6,3:4),piDpj(6,6,3:4)
 	integer ipi12(10),ii,ns,isoort(10),ier
 *
@@ -65,7 +66,7 @@ c
 *
 	integer i,j,k,l,m,iepsi(4),iepsj(2,2)
 	logical normal
-	DOUBLE PRECISION yy,zz,yy1,zz1,dyyzz,hulp3,hulp4,x00(3)
+	RealType yy,zz,yy1,zz1,dyyzz,hulp3,hulp4,x00(3)
 	save iepsi
 *
 *	common blocks
@@ -125,7 +126,7 @@ c
 		    if ( mod(isoort(9),10) .eq. 2 ) then
 *			we use that l still contains the correct value
 			do 105 m=1,7
-			    cs3(10*(l-1)+m) = 2*DBLE(cs3(10*(l-1)+m))
+			    cs3(10*(l-1)+m) = 2*Re(cs3(10*(l-1)+m))
   105			continue
 			ipi12(l) = 2*ipi12(l)
 			goto 110
@@ -202,8 +203,8 @@ c
 *
 *	arguments
 *
-	DOUBLE COMPLEX cs3(100)
-	DOUBLE COMPLEX cy(4,3:4),cz(4,3:4),cdyz(2,2,3:4),cd2yzz(3:4),
+	ComplexType cs3(100)
+	ComplexType cy(4,3:4),cz(4,3:4),cdyz(2,2,3:4),cd2yzz(3:4),
      +		cdyzzy(4),cdyyzz(2),cpi(6,3:4),cpiDpj(6,6,3:4)
 	integer ipi12(10),ii,ns,isoort(10),ier
 *
@@ -211,9 +212,9 @@ c
 *
 	integer i,j,k,l,m,n,ieps,ni(4,3:4),ntot(3:4),
      +		n1a,nffeta,nffet1,ip
-	DOUBLE COMPLEX c,cc,clogy,zfflog,
+	ComplexType c,cc,clogy,zfflog,
      +		zfflo1,cmip,yy,zz,yy1,zz1,dyyzz,hulp3,hulp4
-	DOUBLE PRECISION absc
+	RealType absc
 	external nffeta,nffet1,zfflo1,zfflog
 *
 *	common blocks
@@ -222,7 +223,7 @@ c
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) +abs(DIMAG(c))
+	absc(c) = abs(Re(c)) +abs(Im(c))
 *
 *	check constants
 *  #] declarations:
@@ -260,7 +261,7 @@ c
 *		now the remaining logs.  take care to get the ieps
 *		correct!
 *
-		if ( i.eq.1 .eqv. DBLE(cy(2*i,3)).gt.0 ) then
+		if ( i.eq.1 .eqv. Re(cy(2*i,3)).gt.0 ) then
 		    ieps = -3
 		else
 		    ieps = +3
@@ -277,7 +278,7 @@ c
 		if ( mod(isoort(1),5).eq.0 .and. mod(isoort(9),5).eq.0
      +								) then
 		    do 130 j=81,83
-			cs3(j) = 2*DBLE(cs3(j))
+			cs3(j) = 2*Re(cs3(j))
   130		    continue
 		    ipi12(9) = 2*ipi12(9)
 		else
@@ -312,7 +313,7 @@ c
 *
 *			we use that l still contains the correct value
 			do 150 m=1,9
-			    cs3(10*(l-1)+m) = 2*DBLE(cs3(10*(l-1)+m))
+			    cs3(10*(l-1)+m) = 2*Re(cs3(10*(l-1)+m))
   150			continue
 			ipi12(l) = 2*ipi12(l)
 			goto 180
@@ -347,7 +348,7 @@ c
 *		    of the imag. part of the argument of the dilog, not
 *		    y-z.
 *
-		    if ( i.eq.1 .eqv. j.eq.1 .eqv. DBLE(cy(2*i,3)).gt.0
+		    if ( i.eq.1 .eqv. j.eq.1 .eqv. Re(cy(2*i,3)).gt.0
      +								) then
 			ieps = -3
 		    else
@@ -360,8 +361,8 @@ c
 *
 		    do 170 m=3,4
 *			no eta terms in the real case
-			if ( DIMAG(cz(k,m)) .eq. 0 .and.
-     +			     DIMAG(cdyz(2,j,m)) .eq. 0 ) then
+			if ( Im(cz(k,m)) .eq. 0 .and.
+     +			     Im(cdyz(2,j,m)) .eq. 0 ) then
 			    ni(k,m) = 0
 			elseif ( i .eq. 1 ) then
 			    ni(k,m) = nffeta(-cz(k,m),1/cdyz(2,j,m),ier)
@@ -433,7 +434,7 @@ c
 	ip = ii+3
 	do 740 k=3,4
 	l = 8*(k-3) + 1
-	if ( DIMAG(cpi(ip,k)) .eq. 0 ) then
+	if ( Im(cpi(ip,k)) .eq. 0 ) then
 *
 *	complex because of a complex root in y or z
 *
@@ -446,8 +447,8 @@ c
 *	    isoort = -10:   y is real, z is complex
 *	    isoort = -5,-6: y,z both real
 *
-	    cmip = DCMPLX(0D0,-DBLE(cpi(ip,k)))
-	    if ( DIMAG(cz(1,k)) .eq. 0 ) then
+	    cmip = ToComplex(0D0,-Re(cpi(ip,k)))
+	    if ( Im(cz(1,k)) .eq. 0 ) then
 		ni(1,k) = 0
 	    else
 		ni(1,k) = nffet1(-cz(1,k),-cz(2,k),cmip,ier)
@@ -455,18 +456,18 @@ c
 		if ( i .ne. ni(1,k) ) call fferr(53,ier)
 	    endif
 	    ni(2,k) = 0
-	    if ( DBLE(cd2yzz(k)).eq.0 .and. ( DIMAG(cz(1,k)).eq.0 .and.
-     +		 DIMAG(cz(2,k)).eq.0 .or. DBLE(cdyz(2,1,k)).eq.0 .and.
-     +		 DBLE(cdyz(2,2,k)) .eq. 0 ) ) then
+	    if ( Re(cd2yzz(k)).eq.0 .and. ( Im(cz(1,k)).eq.0 .and.
+     +		 Im(cz(2,k)).eq.0 .or. Re(cdyz(2,1,k)).eq.0 .and.
+     +		 Re(cdyz(2,2,k)) .eq. 0 ) ) then
 *		follow the i*epsilon prescription as (y-z-)(y-z+) real
-		if ( DBLE(cpi(ip,k)) .lt. 0 ) then
+		if ( Re(cpi(ip,k)) .lt. 0 ) then
 		    ni(3,k) = -1
 		else
 		    ni(3,k) = 0
 		endif
 		ni(4,k) = -nffet1(cdyz(2,1,k),cdyz(2,2,k),cmip,ier)
 	    else
-		if ( DBLE(cpi(ip,k)) .lt. 0 .and. DIMAG(cdyz(2,1,k)*
+		if ( Re(cpi(ip,k)) .lt. 0 .and. Im(cdyz(2,1,k)*
      +			cdyz(2,2,k)) .lt. 0 ) then
 		    ni(3,k) = -1
 		else
@@ -477,12 +478,12 @@ c
 	elseif ( (mod(isoort(l),10).eq.-1 .or. mod(isoort(l),10).eq.-3)
      +		.and. isoort(l+1).eq.0 ) then
 	    ni(1,k) = 0
-	    if ( DIMAG(cz(1,k)) .ne. 0 ) then
-		ni(2,k) = nffet1(-cpiDpj(ii,ip,k),-cz(1,k),DCMPLX(DBLE(0
-     +			),DBLE(-1)),ier)
+	    if ( Im(cz(1,k)) .ne. 0 ) then
+		ni(2,k) = nffet1(-cpiDpj(ii,ip,k),-cz(1,k),ToComplex(Re(0
+     +			),Re(-1)),ier)
 	    else
-		ni(2,k) = nffet1(-cpiDpj(ii,ip,k),DCMPLX(DBLE(0),
-     +			DBLE(1)),DCMPLX(DBLE(0),DBLE(-1)),ier)
+		ni(2,k) = nffet1(-cpiDpj(ii,ip,k),ToComplex(Re(0),
+     +			Re(1)),ToComplex(Re(0),Re(-1)),ier)
 	    endif
 	    ni(3,k) = 0
 	    ni(4,k) = -nffeta(-cpiDpj(ii,ip,k),cdyz(2,1,k),ier)
@@ -544,14 +545,14 @@ c
 *
 *	arguments
 *
-	DOUBLE COMPLEX cs3(3),cdyz3,cdyz4,cdyyzz
+	ComplexType cs3(3),cdyz3,cdyz4,cdyyzz
 	integer ieps,ier
 *
 *	local variables
 *
 	integer n1,nffeta,nffet1,ipi3,ipi4
-	DOUBLE COMPLEX c,cc,clog3,clog4,clog1,zfflo1,cipi
-	DOUBLE PRECISION absc
+	ComplexType c,cc,clog3,clog4,clog1,zfflo1,cipi
+	RealType absc
 	external nffeta,nffet1,zfflo1
 *
 *	common blocks
@@ -560,31 +561,31 @@ c
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations:
-	cipi = DCMPLX(0D0,pi)
-	if ( DBLE(cdyz3) .lt. 0 ) then
+	cipi = ToComplex(0D0,pi)
+	if ( Re(cdyz3) .lt. 0 ) then
 	    clog3 = log(-cdyz3)
 	    ipi3 = 0
 	else
 	    clog3 = log(cdyz3)
-	    if ( DIMAG(cdyz3) .gt. 0 ) then
+	    if ( Im(cdyz3) .gt. 0 ) then
 		ipi3 = -1
-	    elseif ( DIMAG(cdyz3) .lt. 0 ) then
+	    elseif ( Im(cdyz3) .lt. 0 ) then
 		ipi3 = +1
 	    else
 		ipi3 = sign(1,-ieps)
 	    endif
 	endif
-	if ( DBLE(cdyz4) .lt. 0 ) then
+	if ( Re(cdyz4) .lt. 0 ) then
 	    clog4 = log(-cdyz4)
 	    ipi4 = 0
 	else
 	    clog4 = log(cdyz4)
-	    if ( DIMAG(cdyz4) .gt. 0 ) then
+	    if ( Im(cdyz4) .gt. 0 ) then
 		ipi4 = -1
-	    elseif ( DIMAG(cdyz4) .lt. 0 ) then
+	    elseif ( Im(cdyz4) .lt. 0 ) then
 		ipi4 = +1
 	    else
 		ipi4 = sign(1,-ieps)
@@ -601,11 +602,11 @@ c
 *	    notice that zfflog return log(a-ieps) (for compatibility
 *	    with the dilog)		   ^
 *
-	    if ( DIMAG(cdyz3) .eq. 0 ) then
-		n1 = nffet1(DCMPLX(DBLE(0),DBLE(-ieps)),-1/cdyz4,-c,
+	    if ( Im(cdyz3) .eq. 0 ) then
+		n1 = nffet1(ToComplex(Re(0),Re(-ieps)),-1/cdyz4,-c,
      +			ier)
-	    elseif ( DIMAG(cdyz3) .eq. 0 ) then
-		n1 = nffet1(-cdyz3,DCMPLX(DBLE(0),DBLE(ieps)),-c,ier)
+	    elseif ( Im(cdyz3) .eq. 0 ) then
+		n1 = nffet1(-cdyz3,ToComplex(Re(0),Re(ieps)),-c,ier)
 	    else
 		n1 = nffeta(-cdyz3,-1/cdyz4,ier)
 	    endif

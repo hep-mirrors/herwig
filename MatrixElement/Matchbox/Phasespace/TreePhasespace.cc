@@ -58,11 +58,10 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
 
   if ( lastChannelsIterator == channelMap().end() ) {
     map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> > channels;
-    for ( StandardXComb::DiagramVector::const_iterator d =
-	    lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
+    for ( auto const & d : lastXComb().diagrams()) {
       PhasespaceTree tree;
       Ptr<Tree2toNDiagram>::ptr diag =
-	dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d);
+	dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(d);
       tree.setup(*diag);
       PhasespaceTree treeMirror;
       treeMirror.setupMirrored(*diag, diag->nSpace() - 1);
@@ -115,16 +114,13 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   fillDiagramWeights(flatCut);
 
   double sum = 0.;
-  for ( map<Ptr<Tree2toNDiagram>::ptr,
-	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::const_iterator d
-	  = lastChannels().begin(); d != lastChannels().end(); ++d )
-    sum += diagramWeight(*(d->first));
+  for ( auto const & d : lastChannels())
+    sum += diagramWeight(*(d.first));
 
   double piWeight = pow(2.*Constants::pi,(double)(3*(momenta.size()-2)-4));
 
-  for ( vector<Lorentz5Momentum>::iterator k = momenta.begin();
-	k != momenta.end(); ++k )
-    k->rescaleRho();
+  for ( auto & k : momenta )
+    k.rescaleRho();
 
   return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
 

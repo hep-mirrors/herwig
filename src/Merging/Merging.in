@@ -1,0 +1,103 @@
+cd /Herwig/Merging
+
+# Setting up to use the merging factory instead of the Matchbox Factory
+clear /Herwig/EventHandlers/EventHandler:SubProcessHandlers
+insert /Herwig/EventHandlers/EventHandler:SubProcessHandlers[0] MergingFactory
+set /Herwig/Cuts/MatchboxJetMatcher:Factory MergingFactory
+# This is not used but its better to set this rather than the Factory
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
+set MergingFactory:Cuts /Herwig/Cuts/Cuts
+set Merger:MergingFactory MergingFactory
+set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
+set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
+
+set MergingFactory:MergingHelper Merger
+
+
+### Don't apply restrictions on the z-boundaries while clustering.
+set /Herwig/Merging/Merger:OpenInitialStateZ Yes
+
+# Set up the rivet analysis to use.
+cd /Herwig/Analysis
+create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+
+# Switch of the profiles of the Shower
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
+
+# We switch of the pdfs for e+/e- beams.
+# This can be turned on again if needed.
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+
+# Set the alpha_s value for the run.
+set /Herwig/Couplings/NLOAlphaS:min_active_flavours 3
+set /Herwig/Couplings/NLOAlphaS:max_active_flavours 5
+set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+
+
+
+cd /Herwig/Generators
+set EventGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
+
+
+
+##########################
+##
+##  Tuning Parameters.
+##  
+##  Use the usual QTilde shower parameters, 
+##  except of:
+## 
+##########################
+
+set /Herwig/DipoleShower/Kernels/FFMgx2bbxDipoleKernel:RenormalizationScaleFreeze 8.4*GeV
+
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff   0.8367
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff   0.8928
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.1191
+
+
+
+##########################
+##
+##  intrinsic pt
+##  Needs retuning ?
+##########################
+
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.0*GeV
+
+##########################
+##  Sampler.
+##########################
+
+
+cd /Herwig/Samplers
+
+create Herwig::MonacoSampler Monaco
+set /Herwig/Samplers/Sampler:BinSampler Monaco
+
+set Monaco:EnhancementFactor 1.2
+set Monaco:InitialPoints 50000
+set Monaco:LuminosityMapperBins 8
+set Monaco:NIterations 4
+set Monaco:RemapChannelDimension No
+set Monaco:RemapperMinSelection 0.0001
+set Monaco:RemapperPoints 10000
+set Monaco:UseAllIterations No
+
+set Sampler:UpdateAfter 1000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted On
+set Sampler:BinSampler:Kappa 1.
+set Sampler:RunCombinationData Off
+set Sampler:Verbose On
+

@@ -266,7 +266,7 @@ Histogram2::Histogram2 (const string& dataFile, const string& dataName) {
 void Histogram2::book (const string& name, double event, double weight) {
   map<string,HistogramChannel>::iterator c = _channels.find(name);
   if (c != _channels.end()) {
-    if (isnan(event) || isinf(event)) c->second.nanEvent();
+    if (!isfinite(event)) c->second.nanEvent();
     else {
       if (event < range().first) {
 	c->second.bookUnderflow(weight);

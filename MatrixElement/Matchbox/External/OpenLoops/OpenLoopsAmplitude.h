@@ -162,7 +162,6 @@ public:
    * Start the one loop provider, if appropriate
    */
   virtual void startOLP(const string&, int& status);
-  virtual void getids() const ;
 
   /**
    * Return the value of the dimensional regularization
@@ -286,7 +285,7 @@ private:
   /**
    * first is the olp id from herwig, second the answer from openloops
    */
-  mutable map< int , int > idpair;
+  static vector< int > idpair;
 
   
   /**
@@ -324,12 +323,27 @@ private:
   /**
    *   Location of the OpenLoops libraries
    */
-  string OpenLoopsLibs_;
+  static string OpenLoopsLibs_;
 
   /**
    *   Location of the OpenLoops
    */
-  string OpenLoopsPrefix_;
+  static string OpenLoopsPrefix_;
+  
+  
+  /**
+   *  Helper functions to make long strings static
+   */
+  
+  void setOpenLoopsLibs(string p);
+  string getOpenLoopsLibs() const;
+  
+  void setOpenLoopsPrefix(string p);
+  string getOpenLoopsPrefix() const;
+
+  
+  
+  
 };
 
 }

@@ -3,5 +3,7 @@
 cd /Herwig/MatrixElements/Matchbox/Phasespace
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace VBFNLOPhasespace
 
+insert /Herwig/Merging/MergingFactory:Phasespace VBFNLOPhasespace
+
 set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Phasespace InvertibleLabframePhasespace
 

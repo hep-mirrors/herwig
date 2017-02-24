@@ -45,8 +45,7 @@ using namespace Herwig;
 #endif
 
 OpenLoopsAmplitude::OpenLoopsAmplitude() :
-  theHiggsEff(false), use_cms(true), psp_tolerance(12),
-  OpenLoopsLibs_(OPENLOOPSLIBS), OpenLoopsPrefix_(OPENLOOPSPREFIX) {
+  theHiggsEff(false), use_cms(true), psp_tolerance(12){
 }
 
 OpenLoopsAmplitude::~OpenLoopsAmplitude() {
@@ -74,15 +73,21 @@ void OpenLoopsAmplitude::doinitrun() {
   MatchboxOLPME::doinitrun();
 }
 
+vector<int> OpenLoopsAmplitude::idpair=vector<int>();
+
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
+
+        
+
 	string tempcontract=contract;
+       
 
 	if ( ! (DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.so") ||
 		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.so") ||
 		DynamicLoader::load("libopenloops.so") ||
 		DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.dylib") ||
-		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.dylib") ||
-		DynamicLoader::load("libopenloops.dylib") ) ) {
+                DynamicLoader::load("libopenloops.dylib")||
+		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.dylib")  ) ) {
 	  throw Exception() << "OpenLoopsAmplitude::startOLP(): Failed to load libopenloops.so/dylib\n"
 			    << DynamicLoader::lastErrorMessage
 			    << Exception::runerror;
@@ -127,7 +132,13 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 }
 
 void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
-	string orderFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
+	
+	string orderFileName =
+      optionalContractFile().empty() ?
+      factory()->buildStorage() + name() + ".OLPContract.lh" :
+      optionalContractFile();
+
+
 	ofstream orderFile(orderFileName.c_str());
 	size_t asPower = 100;
 	size_t minlegs = 100;
@@ -227,31 +238,26 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 			}
 		}
 	}
-	string ids = factory()->buildStorage() + "OpenLoops.ids.dat";
-	ofstream IDS(ids.c_str());
-
+  
+    idpair.clear();
+    for (size_t i=0;i<processmap.size();i++)idpair.push_back(-1);
+        idpair.push_back(-1);
 	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
-	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
-	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    idpair[(*p).second.HID()]=(*p).second.GID();
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
-	IDS << flush;
 	return 1;
 }
 
-void OpenLoopsAmplitude::getids() const{
-	string line = factory()->buildStorage() + "OpenLoops.ids.dat";
-	ifstream infile(line.c_str());
-	int hid;
-	int gid;
-	while (std::getline(infile, line)) {
-	   istringstream(line) >> hid>>gid;
-	   idpair.insert ( std::pair<int,int>(hid,gid) );
-	}
-}
+
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName =  factory()->buildStorage() + name() + ".OLPAnswer.lh";
-	string orderFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
+
+        string orderFileName =
+        optionalContractFile().empty() ?
+        factory()->buildStorage() + name() + ".OLPContract.lh" :
+        optionalContractFile();
+
 	fillOrderFile(procs);
  	int status = -1;
 	startOLP(orderFileName, status);
@@ -279,17 +285,9 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
 
-	if ( idpair.size() == 0 ) {
-		getids();
-		if ( Debug::level > 1 ) {
-		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-		  OLP_PrintParameter(parfile.c_str());
-		}
-		
-    }
-  
-
-	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
+    assert ( idpair.size() != 0 );
+ 
+	OLP_EvalSubProcess2(&idpair[id], olpMomenta(), &scale, out,&acc );
   
   
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
@@ -315,19 +313,12 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	int n = lastXComb().meMomenta().size();
 
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
-	if ( idpair.size() == 0 ) {
-		getids();
-		if ( Debug::level > 1 ) {
-		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-		  OLP_PrintParameter(parfile.c_str());
-		}
-		
-	}
+  assert ( idpair.size() != 0 );
 
 
 	int id = olpId()[ProcessType::colourCorrelatedME2];
 
-	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, &colourCorrelatorResults[0],&acc );
+	OLP_EvalSubProcess2(&idpair[id], olpMomenta(), &scale, &colourCorrelatorResults[0],&acc );
 	for ( int i = 0 ; i < n ; ++i ){
 	    for ( int j = i + 1 ; j < n ; ++j ) {
 			lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
@@ -356,15 +347,8 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	int emitter=ij.first+1;
 	int n = lastXComb().meMomenta().size();
 
-	if ( idpair.size() == 0 ) {
-		getids();
-		if ( Debug::level > 1 ) {
-		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-		  OLP_PrintParameter(parfile.c_str());
-		}
-		
-	}
-	int id = (*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second;
+    assert ( idpair.size() != 0 ) ;
+	int id =idpair[olpId()[ProcessType::spinColourCorrelatedME2]];
 	//double * outx =new double[n];
 	spinColourCorrelatorResults.resize(n);
         double polvec[4];
@@ -397,6 +381,25 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 
 
+
+
+string OpenLoopsAmplitude::OpenLoopsLibs_=OPENLOOPSLIBS;
+string OpenLoopsAmplitude::OpenLoopsPrefix_=OPENLOOPSPREFIX;
+
+void OpenLoopsAmplitude::setOpenLoopsLibs(string p){
+  OpenLoopsLibs_=p;
+}
+string OpenLoopsAmplitude::getOpenLoopsLibs() const{
+  return OpenLoopsLibs_;
+}
+
+
+void OpenLoopsAmplitude::setOpenLoopsPrefix(string p){
+  OpenLoopsPrefix_=p;
+}
+string OpenLoopsAmplitude::getOpenLoopsPrefix() const{
+  return OpenLoopsPrefix_;
+}
 
 
 // If needed, insert default implementations of virtual function defined
@@ -468,14 +471,18 @@ void OpenLoopsAmplitude::Init() {
   static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsLibs
     ("OpenLoopsLibs",
      "The location of OpenLoops libraries",
-     &OpenLoopsAmplitude::OpenLoopsLibs_, string(OPENLOOPSLIBS),
-     false, false);
+     0, string(OPENLOOPSLIBS),
+     false, false,
+     &OpenLoopsAmplitude::setOpenLoopsLibs,
+     &OpenLoopsAmplitude::getOpenLoopsLibs);
     
   static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsPrefix
     ("OpenLoopsPrefix",
      "The location of OpenLoops libraries",
-     &OpenLoopsAmplitude::OpenLoopsPrefix_, string(OPENLOOPSPREFIX),
-     false, false);
+     0, string(OPENLOOPSPREFIX),
+     false, false,
+     &OpenLoopsAmplitude::setOpenLoopsPrefix,
+     &OpenLoopsAmplitude::getOpenLoopsPrefix);
   
 }
 

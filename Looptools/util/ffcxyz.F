@@ -1,4 +1,5 @@
 #include "externals.h"
+#include "types.h"
 
 
 *###[ ffcxyz:
@@ -37,21 +38,21 @@
 *
 	integer ivert,isoort(2),ns,ier
 	logical ldel2s
-	DOUBLE COMPLEX cy(4),cz(4),cdyz(2,2),cd2yzz
-	DOUBLE PRECISION sdelpp,sdelps,etami(6),delps,xpi(ns),
+	ComplexType cy(4),cz(4),cdyz(2,2),cd2yzz
+	RealType sdelpp,sdelps,etami(6),delps,xpi(ns),
      +		piDpj(ns,ns)
 *
 *	local variables:
 *
 	integer ip1,is1,is2,is3
-	DOUBLE COMPLEX c
-	DOUBLE PRECISION absc,y(4)
-	DOUBLE PRECISION disc,hulp
+	ComplexType c
+	RealType absc,y(4)
+	RealType disc,hulp
 *
 *	common blocks:
 *
 #include "ff.h"
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ set up pointers:
 	if ( ldel2s .and. ivert .ne. 1 ) goto 100
@@ -68,8 +69,8 @@
 *  #] set up pointers:
 *  #[ get cypm,czpm:
 	hulp = sdelps/xpi(ip1)
-	cz(1) = DCMPLX(piDpj(ip1,is2)/xpi(ip1),-hulp)
-	cz(2) = DCMPLX(piDpj(ip1,is2)/xpi(ip1),+hulp)
+	cz(1) = ToComplex(piDpj(ip1,is2)/xpi(ip1),-hulp)
+	cz(2) = ToComplex(piDpj(ip1,is2)/xpi(ip1),+hulp)
 	disc = delps/sdelpp
 	call ffroot(y(1),y(2),xpi(ip1),piDpj(ip1,is2),etami(is2),disc,
      +								ier)
@@ -86,8 +87,8 @@
 	    cz(3) = 1 - cz(1)
 	    cz(4) = 1 - cz(2)
 	    if ( absc(cz(3)).lt.xloss .or. absc(cz(4)).lt.xloss ) then
-		cz(3) =DCMPLX(-piDpj(ip1,is1)/xpi(ip1),+hulp)
-		cz(4) =DCMPLX(-piDpj(ip1,is1)/xpi(ip1),-hulp)
+		cz(3) =ToComplex(-piDpj(ip1,is1)/xpi(ip1),+hulp)
+		cz(4) =ToComplex(-piDpj(ip1,is1)/xpi(ip1),-hulp)
 	    endif
 	    y(3) = 1 - y(1)
 	    y(4) = 1 - y(2)
@@ -100,8 +101,8 @@
 	endif
 *  #] get cypm1,czpm1:
 *  #[ get cdypzp, cdypzm:
-	cdyz(2,1) = DCMPLX(disc/xpi(ip1),+hulp)
-	cdyz(2,2) = DCMPLX(disc/xpi(ip1),-hulp)
+	cdyz(2,1) = ToComplex(disc/xpi(ip1),+hulp)
+	cdyz(2,2) = ToComplex(disc/xpi(ip1),-hulp)
 	cdyz(1,1) = -cdyz(2,2)
 	cdyz(1,2) = -cdyz(2,1)
 	cd2yzz = 2*disc/xpi(ip1)
@@ -130,8 +131,8 @@
 	    hulp = -hulp
 	    disc = -disc
 	endif
-	cz(1) = DCMPLX(piDpj(is1,3)/xpi(3),-hulp)
-	cz(2) = DCMPLX(piDpj(is1,3)/xpi(3),+hulp)
+	cz(1) = ToComplex(piDpj(is1,3)/xpi(3),-hulp)
+	cz(2) = ToComplex(piDpj(is1,3)/xpi(3),+hulp)
 	call ffroot(y(1),y(2),xpi(3),piDpj(is1,3),etami(is1),disc,ier)
 	cy(1) = y(1)
 	cy(2) = y(2)
@@ -141,11 +142,11 @@
 	cz(4) = 1 - cz(2)
 	if ( absc(cz(3)).lt.xloss .or. absc(cz(4)).lt.xloss ) then
 	    if ( ivert.eq.2 ) then
-		cz(3) =DCMPLX(piDpj(ip1,3)/xpi(3),+hulp)
-		cz(4) =DCMPLX(piDpj(ip1,3)/xpi(3),-hulp)
+		cz(3) =ToComplex(piDpj(ip1,3)/xpi(3),+hulp)
+		cz(4) =ToComplex(piDpj(ip1,3)/xpi(3),-hulp)
 	    else
-		cz(3) =DCMPLX(-piDpj(ip1,3)/xpi(3),+hulp)
-		cz(4) =DCMPLX(-piDpj(ip1,3)/xpi(3),-hulp)
+		cz(3) =ToComplex(-piDpj(ip1,3)/xpi(3),+hulp)
+		cz(4) =ToComplex(-piDpj(ip1,3)/xpi(3),-hulp)
 	    endif
 	endif
 	y(3) = 1 - y(1)
@@ -163,8 +164,8 @@
 	cy(4) = y(4)
 *  #] get cypm1,czpm1:
 *  #[ get cdypzp, cdypzm:
-	cdyz(2,1) = DCMPLX(disc/xpi(3),+hulp)
-	cdyz(2,2) = DCMPLX(disc/xpi(3),-hulp)
+	cdyz(2,1) = ToComplex(disc/xpi(3),+hulp)
+	cdyz(2,2) = ToComplex(disc/xpi(3),-hulp)
 	cdyz(1,1) = -cdyz(2,2)
 	cdyz(1,2) = -cdyz(2,1)
 	cd2yzz = 2*disc/xpi(3)
@@ -188,14 +189,14 @@
 *	arguments:
 *
 	integer i1,j1,l,ns,ier
-	DOUBLE COMPLEX cdwz(2,2),cz(4),calpha,calph1,cpi(ns)
-	DOUBLE COMPLEX cdpipj(ns,ns),cpiDpj(ns,ns),csdeli(3),csdel2
+	ComplexType cdwz(2,2),cz(4),calpha,calph1,cpi(ns)
+	ComplexType cdpipj(ns,ns),cpiDpj(ns,ns),csdeli(3),csdel2
 *
 *	local variables:
 *
 	integer i,n
-	DOUBLE COMPLEX cs(8),csum,cfac,c,cddel
-	DOUBLE PRECISION xmax,absc,afac
+	ComplexType cs(8),csum,cfac,c,cddel
+	RealType xmax,absc,afac
 *
 *	common blocks:
 *
@@ -203,7 +204,7 @@
 *
 *	statement function
 *
-	absc(c) = abs(DBLE(c)) + abs(DIMAG(c))
+	absc(c) = abs(Re(c)) + abs(Im(c))
 *  #] declarations:
 *  #[ calculations:
 	if ( l .eq. 1 ) then
@@ -250,10 +251,10 @@
 		if ( cdwz(i1,j1) .eq. 0 .and. csum .ne. 0 ) then
 		    print *,'?#$&!! cdwz = 0 but csum != 0, try again'
 		    afac = 1/absc(csum)
-		    csum = csum*DBLE(afac)
+		    csum = csum*Re(afac)
 		    cdwz(i1,j1) = csum/calph1/cpi(4)/cpi(5)
 		    afac = 1/afac
-		    cdwz(i1,j1) = cdwz(i1,j1)*DBLE(afac)
+		    cdwz(i1,j1) = cdwz(i1,j1)*Re(afac)
 		endif
 	    else
 		ier = ier + 100

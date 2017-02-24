@@ -12,7 +12,7 @@
 // This is the declaration of the ShowerAlphaQED class.
 //
 
-#include "ShowerAlpha.h"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 

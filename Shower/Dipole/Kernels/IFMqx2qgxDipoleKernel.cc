@@ -28,6 +28,7 @@ IBPtr IFMqx2qgxDipoleKernel::fullclone() const {
 
 bool IFMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
+  useThisKernel() &&
     abs(ind.emitterData()->id()) < 6  &&
     ind.emitterData()->mass() == ZERO &&
     ind.spectatorData()->mass() != ZERO &&
@@ -69,22 +70,18 @@ double IFMqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ret = alphaPDF(split);
 
   double z = split.lastZ();
-  double ratio = sqr(split.lastPt()/split.scale());
-  double alpha = 1. - 2.*sqr(split.spectatorData()->mass()/split.scale());
-  double root  = sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z);
-  if(root < 0. && root > -1e-10)
-    root = 0.;
-  else if(root < 0.)
-    return 0.;
-  root = sqrt(root);
+  Energy pt = split.lastPt();
+  double ratio = sqr(pt/split.scale());
+  double muk2 = sqr(split.spectatorData()->mass()/split.scale());
 
-  double x = alpha == 1. ? ( z*(1.-z) - ratio ) / ( 1. - z - ratio ) :
-    ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) + alpha*root ) /
-    (2.*(1.-alpha));
-  double u = ( 1.-z + alpha*ratio - root ) /
-    (2.*(1.-z));
-
-  ret *= (!strictLargeN() ? 4./3. : 3./2.) * ( 2./(1.-x+u) - (1.+x) + u*(1.+3.*x*(1.-u) ) );
+// Calculate x and u
+    double rho = 1. - 4.*ratio*(1.-muk2)*z*(1.-z)/sqr(1.-z+ratio);
+    double x = 0.5*((1.-z+ratio)/(ratio*(1.-muk2))) * (1. - sqrt(rho));
+    double u = x*ratio / (1.-z);
+  
+// 19/01/2017 - SW: Removed finite term as its effect on
+// the ratio of -ve/+ve kernels is small
+    ret *= (!strictLargeN() ? 4./3. : 3./2.) * ( 2./(1.-x+u) - (1.+x) );
 
   return ret > 0. ? ret : 0.;
 

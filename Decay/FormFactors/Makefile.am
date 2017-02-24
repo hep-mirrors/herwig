@@ -1,31 +1,48 @@
-noinst_LTLIBRARIES = libHwFormFactor.la
-pkglib_LTLIBRARIES = HwFormFactors.la
+BUILT_SOURCES  = Formfactor__all.cc
+CLEANFILES = Formfactor__all.cc
 
-libHwFormFactor_la_SOURCES = \
-BaryonFormFactor.cc BaryonFormFactor.fh \
-BaryonFormFactor.h \
-ScalarFormFactor.cc ScalarFormFactor.fh \
-ScalarFormFactor.h \
-BtoSGammaHadronicMass.h \
-BtoSGammaHadronicMass.cc BtoSGammaHadronicMass.fh
+Formfactor__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
 
-HwFormFactors_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:1:0
-HwFormFactors_la_SOURCES = \
-BallZwickyScalarFormFactor.cc BallZwickyScalarFormFactor.h \
-BallZwickyVectorFormFactor.cc BallZwickyVectorFormFactor.h \
-BaryonSimpleFormFactor.cc     BaryonSimpleFormFactor.h \
-BaryonThreeQuarkModelFormFactor.cc BaryonThreeQuarkModelFormFactor.h \
-ChengHeavyBaryonFormFactor.cc ChengHeavyBaryonFormFactor.h \
-ISGW2FormFactor.cc ISGW2FormFactor.h \
-ISGWFormFactor.cc ISGWFormFactor.h \
-LambdabExcitedLambdacSumRuleFormFactor.cc \
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+BallZwickyScalarFormFactor.h \
+BallZwickyVectorFormFactor.h \
+BaryonSimpleFormFactor.h \
+BaryonThreeQuarkModelFormFactor.h \
+ChengHeavyBaryonFormFactor.h \
+ISGW2FormFactor.h \
+ISGWFormFactor.h \
 LambdabExcitedLambdacSumRuleFormFactor.h \
-LightBaryonQuarkModelFormFactor.cc LightBaryonQuarkModelFormFactor.h \
-SingletonFormFactor.cc SingletonFormFactor.h\
-WSBFormFactor.cc WSBFormFactor.h\
-KiselevBcFormFactor.cc KiselevBcFormFactor.h\
-MelikhovFormFactor.cc MelikhovFormFactor.h \
-MelikhovStechFormFactor.cc MelikhovStechFormFactor.h \
-BtoSGammaFlatEnergy.h BtoSGammaFlatEnergy.cc \
-BtoSGammaKagan.h BtoSGammaKagan.cc\
-HQETFormFactor.h HQETFormFactor.cc
+LightBaryonQuarkModelFormFactor.h \
+SingletonFormFactor.h \
+WSBFormFactor.h \
+KiselevBcFormFactor.h \
+MelikhovFormFactor.h \
+MelikhovStechFormFactor.h \
+BtoSGammaFlatEnergy.h \
+BtoSGammaKagan.h \
+HQETFormFactor.h
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+BallZwickyScalarFormFactor.cc \
+BallZwickyVectorFormFactor.cc \
+BaryonSimpleFormFactor.cc \
+BaryonThreeQuarkModelFormFactor.cc \
+ChengHeavyBaryonFormFactor.cc \
+ISGW2FormFactor.cc \
+ISGWFormFactor.cc \
+LambdabExcitedLambdacSumRuleFormFactor.cc \
+LightBaryonQuarkModelFormFactor.cc \
+SingletonFormFactor.cc \
+WSBFormFactor.cc \
+KiselevBcFormFactor.cc \
+MelikhovFormFactor.cc \
+MelikhovStechFormFactor.cc \
+BtoSGammaFlatEnergy.cc \
+BtoSGammaKagan.cc \
+HQETFormFactor.cc

@@ -1,17 +1,40 @@
-pkglib_LTLIBRARIES = HwVMDecay.la
+BUILT_SOURCES  = VMDecayer__all.cc
+CLEANFILES = VMDecayer__all.cc
 
-HwVMDecay_la_SOURCES = \
-a1ThreePionCLEODecayer.cc            a1ThreePionCLEODecayer.h \
-a1SimpleDecayer.cc                   a1SimpleDecayer.h\
-a1ThreePionDecayer.cc                a1ThreePionDecayer.h \
-PVectorMesonVectorPScalarDecayer.cc  PVectorMesonVectorPScalarDecayer.h \
-VectorMeson2FermionDecayer.cc        VectorMeson2FermionDecayer.h \
-VectorMeson2MesonDecayer.cc          VectorMeson2MesonDecayer.h \
-VectorMeson3PionDecayer.cc           VectorMeson3PionDecayer.h \
-VectorMesonPScalarFermionsDecayer.cc VectorMesonPScalarFermionsDecayer.h \
-VectorMesonPVectorPScalarDecayer.cc  VectorMesonPVectorPScalarDecayer.h \
-VectorMesonVectorPScalarDecayer.cc   VectorMesonVectorPScalarDecayer.h  \
-VectorMesonVectorScalarDecayer.cc    VectorMesonVectorScalarDecayer.h  \
-VectorMesonVectorVectorDecayer.cc    VectorMesonVectorVectorDecayer.h  \
-OniumToOniumPiPiDecayer.cc           OniumToOniumPiPiDecayer.h
-HwVMDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
+VMDecayer__all.cc : $(DIR_H_FILES) $(DIR_CC_FILES) Makefile
+	@echo "Concatenating .cc files into $@"
+	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES) > $@
+
+EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
+
+DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
+ALL_H_FILES = \
+a1ThreePionCLEODecayer.h \
+a1SimpleDecayer.h\
+a1ThreePionDecayer.h \
+PVectorMesonVectorPScalarDecayer.h \
+VectorMeson2FermionDecayer.h \
+VectorMeson2MesonDecayer.h \
+VectorMeson3PionDecayer.h \
+VectorMesonPScalarFermionsDecayer.h \
+VectorMesonPVectorPScalarDecayer.h \
+VectorMesonVectorPScalarDecayer.h  \
+VectorMesonVectorScalarDecayer.h  \
+VectorMesonVectorVectorDecayer.h  \
+OniumToOniumPiPiDecayer.h
+
+DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
+ALL_CC_FILES = \
+a1ThreePionCLEODecayer.cc            \
+a1SimpleDecayer.cc                   \
+a1ThreePionDecayer.cc                \
+PVectorMesonVectorPScalarDecayer.cc  \
+VectorMeson2FermionDecayer.cc        \
+VectorMeson2MesonDecayer.cc          \
+VectorMeson3PionDecayer.cc           \
+VectorMesonPScalarFermionsDecayer.cc \
+VectorMesonPVectorPScalarDecayer.cc  \
+VectorMesonVectorPScalarDecayer.cc   \
+VectorMesonVectorScalarDecayer.cc    \
+VectorMesonVectorVectorDecayer.cc    \
+OniumToOniumPiPiDecayer.cc

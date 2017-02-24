@@ -13,10 +13,10 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "ShowerParticle.h"
-#include "ShowerProgenitor.h"
-#include "ShowerTree.h"
-#include "HardTree.h"
+#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/ShowerTree.h"
+#include "Herwig/Shower/Core/Base/HardTree.h"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
 
@@ -70,7 +70,7 @@ public:
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
 				   pair<Energy,double> > & pt,
-				   ShowerInteraction::Type type,
+				   ShowerInteraction type,
 				   bool switchRecon) const=0;
 
   /**
@@ -82,7 +82,7 @@ public:
    * hard subprocess system.
    */
   virtual bool reconstructDecayJets(ShowerTreePtr decay,
-				    ShowerInteraction::Type type) const=0;
+				    ShowerInteraction type) const=0;
   //@}
 
   /**
@@ -98,14 +98,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower for a decay process
    */
-  virtual bool deconstructDecayJets(HardTreePtr decay,ShowerInteraction::Type) const=0;
+  virtual bool deconstructDecayJets(HardTreePtr decay,ShowerInteraction) const=0;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr hard,ShowerInteraction::Type) const=0;
+  virtual bool deconstructHardJets(HardTreePtr hard,ShowerInteraction) const=0;
   //@}
 
 public:

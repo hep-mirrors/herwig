@@ -54,7 +54,7 @@ void Orthogonal_basis::diagonal_scalar_product_matrix( bool save_P_diagonal_spm,
 	}
 
 	// For remembering already calculated topologies
-	std::map<std::string, boost::shared_ptr<Polynomial> > mem_map;
+	std::map<std::string, std::shared_ptr<Polynomial> > mem_map;
 
 	// Loop over basis vectors in Basis
 	for( uint i=0; i < cb.size(); i++){
@@ -72,7 +72,7 @@ void Orthogonal_basis::diagonal_scalar_product_matrix( bool save_P_diagonal_spm,
 				for( uint Ca2i=0; Ca2i< cb.at(i).size(); Ca2i++){
 
 					// To contain the contribution to the ii-th entry if memoization is used
-					boost::shared_ptr<Polynomial> iiEntry_contr;
+					std::shared_ptr<Polynomial> iiEntry_contr;
 
 					// Rename indices, and make string of new col_strs, to use in map
 					// strip off Polynomial information to make the map minimal

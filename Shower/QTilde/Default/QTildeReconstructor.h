@@ -135,7 +135,7 @@ public:
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
 				   pair<Energy,double> > & pt,
-				   ShowerInteraction::Type type,
+				   ShowerInteraction type,
 				   bool switchRecon) const;
 
   /**
@@ -147,7 +147,7 @@ public:
    * hard subprocess system.
    */
   virtual bool reconstructDecayJets(ShowerTreePtr decay,
-				    ShowerInteraction::Type type) const;
+				    ShowerInteraction type) const;
   //@}
 
   /**
@@ -163,14 +163,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr,ShowerInteraction::Type) const;
+  virtual bool deconstructDecayJets(HardTreePtr,ShowerInteraction) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr,ShowerInteraction::Type) const;
+  virtual bool deconstructHardJets(HardTreePtr,ShowerInteraction) const;
   //@}
 
 public:
@@ -278,7 +278,7 @@ protected:
    *  Reconstruction based on colour singlet systems
    */
   void reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
-				 ShowerInteraction::Type type) const;
+				 ShowerInteraction type) const;
 
   /**
    *  Perform the reconstruction of a system with only final-state
@@ -303,7 +303,7 @@ protected:
 				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
-				   ShowerInteraction::Type) const;
+				   ShowerInteraction) const;
   
   /**
    *  Perform the inverse reconstruction of a system with only initial-state
@@ -314,7 +314,7 @@ protected:
 				       LorentzRotation & fromRest,
 				       HardTreePtr,
 				       vector<HardBranchingPtr>,
-				       ShowerInteraction::Type ) const;
+				       ShowerInteraction ) const;
 
   /**
    *  Perform the inverse reconstruction of a system with only initial-state
@@ -322,16 +322,16 @@ protected:
    */
   void deconstructInitialFinalSystem(HardTreePtr,
 				     vector<HardBranchingPtr>,
-				     ShowerInteraction::Type ) const;
+				     ShowerInteraction ) const;
 
   bool deconstructGeneralSystem(HardTreePtr,
-				ShowerInteraction::Type) const;
+				ShowerInteraction) const;
 
   bool deconstructColourSinglets(HardTreePtr,
-				 ShowerInteraction::Type) const;
+				 ShowerInteraction) const;
 
   bool deconstructColourPartner(HardTreePtr,
-				ShowerInteraction::Type) const;
+				ShowerInteraction) const;
   //@}
 
   /**
