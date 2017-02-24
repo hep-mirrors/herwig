@@ -160,11 +160,11 @@ Complex MatchboxAmplitudelnuqqbarqqbar::evaluate(size_t a, const vector<int>& he
       amplitudePartonData()[1]->id() < 0:
       amplitudePartonData()[0]->id() < 0;
     pair<int,int> tmp23(
-      SU2Helper::family(amplitudePartonData()[2]),
-      SU2Helper::family(amplitudePartonData()[3]));
+      SU2Helper::family(amplitudePartonData()[2])-1,
+      SU2Helper::family(amplitudePartonData()[3])-1);
     pair<int,int> tmp45(
-      SU2Helper::family(amplitudePartonData()[4]),
-      SU2Helper::family(amplitudePartonData()[5]));
+      SU2Helper::family(amplitudePartonData()[4])-1,
+      SU2Helper::family(amplitudePartonData()[5])-1);
     if ( amplitudePartonData()[3]->id() < 0 ) swap(tmp23.first,tmp23.second);
     if ( amplitudePartonData()[5]->id() < 0 ) swap(tmp45.first,tmp45.second);
     ckmelement23 = theCKM[tmp23.first][tmp23.second];
