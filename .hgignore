@@ -74,6 +74,7 @@ Makefile\.in$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
+^Tests/Herwig-scratch$
 ^Tests/Rivet/(LEP|DIS|LHC|TVT|Star|BFactory|ISR|SppS)-.*\.in$
 ^Tests/plots$
 ^Tests/Herwig$
