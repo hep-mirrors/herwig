@@ -481,36 +481,36 @@ insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbarbxDipoleKerne
 # q -> qg + t -> tg 
 ################################################################################
 
-create Herwig::FIMDecayqx2qgxDipoleKernelFull FIMDecayqx2qgxDipoleKernelFull
-set FIMDecayqx2qgxDipoleKernelFull:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
+create Herwig::FIMDecayqx2qgxDipoleKernel FIMDecayqx2qgxDipoleKernel
+set FIMDecayqx2qgxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
 
-cp FIMDecayqx2qgxDipoleKernelFull FIMDecaybx2bgxDipoleKernelFull
-set FIMDecaybx2bgxDipoleKernelFull:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaybx2bgxDipoleKernelFull
+cp FIMDecayqx2qgxDipoleKernel FIMDecaybx2bgxDipoleKernel
+set FIMDecaybx2bgxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaybx2bgxDipoleKernel
 
-cp FIMDecayqx2qgxDipoleKernelFull FIMDecaydx2dgxDipoleKernelFull
-set FIMDecaydx2dgxDipoleKernelFull:Flavour /Herwig/Particles/d
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaydx2dgxDipoleKernelFull
+cp FIMDecayqx2qgxDipoleKernel FIMDecaydx2dgxDipoleKernel
+set FIMDecaydx2dgxDipoleKernel:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaydx2dgxDipoleKernel
 
-cp FIMDecayqx2qgxDipoleKernelFull FIMDecayux2ugxDipoleKernelFull
-set FIMDecayux2ugxDipoleKernelFull:Flavour /Herwig/Particles/u
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecayux2ugxDipoleKernelFull
+cp FIMDecayqx2qgxDipoleKernel FIMDecayux2ugxDipoleKernel
+set FIMDecayux2ugxDipoleKernel:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecayux2ugxDipoleKernel
 
-cp FIMDecayqx2qgxDipoleKernelFull FIMDecaysx2sgxDipoleKernelFull
-set FIMDecaysx2sgxDipoleKernelFull:Flavour /Herwig/Particles/s
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaysx2sgxDipoleKernelFull
+cp FIMDecayqx2qgxDipoleKernel FIMDecaysx2sgxDipoleKernel
+set FIMDecaysx2sgxDipoleKernel:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaysx2sgxDipoleKernel
 
-cp FIMDecayqx2qgxDipoleKernelFull FIMDecaycx2cgxDipoleKernelFull
-set FIMDecaycx2cgxDipoleKernelFull:Flavour /Herwig/Particles/c
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaycx2cgxDipoleKernelFull
+cp FIMDecayqx2qgxDipoleKernel FIMDecaycx2cgxDipoleKernel
+set FIMDecaycx2cgxDipoleKernel:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaycx2cgxDipoleKernel
 
 ################################################################################
 ## g -> gg + t -> tg
 ################################################################################
 
-create Herwig::FIMDecaygx2ggxDipoleKernelFull FIMDecaygx2ggxDipoleKernelFull
-set FIMDecaygx2ggxDipoleKernelFull:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2ggxDipoleKernelFull
+create Herwig::FIMDecaygx2ggxDipoleKernel FIMDecaygx2ggxDipoleKernel
+set FIMDecaygx2ggxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FIMassiveDecayKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIMDecaygx2ggxDipoleKernel
 
 #############
 ## g -> qq ##
