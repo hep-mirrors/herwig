@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_FIMDecaygx2ggxDipoleKernelFull_H
-#define HERWIG_FIMDecaygx2ggxDipoleKernelFull_H
+#ifndef HERWIG_FIMDecaygx2ggxDipoleKernel_H
+#define HERWIG_FIMDecaygx2ggxDipoleKernel_H
 //
-// This is the declaration of the FIMDecaygx2ggxDipoleKernelFull class.
+// This is the declaration of the FIMDecaygx2ggxDipoleKernel class.
 //
 
 #include "DipoleSplittingKernel.h"
@@ -15,12 +15,12 @@ using namespace ThePEG;
  * \ingroup DipoleShower
  * \author Stephen Webster
  *
- * \brief FIMDecaygx2ggxDipoleKernelFull implements the g -> gg
+ * \brief FIMDecaygx2ggxDipoleKernel implements the g -> gg
  * splitting off a final-initial decay dipole and includes the
  * contribution from the splitting of the intial / decay particle
  *
  */
-class FIMDecaygx2ggxDipoleKernelFull: public DipoleSplittingKernel {
+class FIMDecaygx2ggxDipoleKernel: public DipoleSplittingKernel {
 
 public:
 
@@ -29,12 +29,12 @@ public:
   /**
    * The default constructor.
    */
-  FIMDecaygx2ggxDipoleKernelFull();
+  FIMDecaygx2ggxDipoleKernel();
 
   /**
    * The destructor.
    */
-  virtual ~FIMDecaygx2ggxDipoleKernelFull();
+  virtual ~FIMDecaygx2ggxDipoleKernel();
   //@}
 
 public:
@@ -138,13 +138,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<FIMDecaygx2ggxDipoleKernelFull> initFIMDecaygx2ggxDipoleKernelFull;
+  static ClassDescription<FIMDecaygx2ggxDipoleKernel> initFIMDecaygx2ggxDipoleKernel;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FIMDecaygx2ggxDipoleKernelFull & operator=(const FIMDecaygx2ggxDipoleKernelFull &);
+  FIMDecaygx2ggxDipoleKernel & operator=(const FIMDecaygx2ggxDipoleKernel &);
 
 };
 
@@ -157,24 +157,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of FIMDecaygx2ggxDipoleKernelFull. */
+ *  base classes of FIMDecaygx2ggxDipoleKernel. */
 template <>
-struct BaseClassTrait<Herwig::FIMDecaygx2ggxDipoleKernelFull,1> {
-  /** Typedef of the first base class of FIMDecaygx2ggxDipoleKernelFull. */
+struct BaseClassTrait<Herwig::FIMDecaygx2ggxDipoleKernel,1> {
+  /** Typedef of the first base class of FIMDecaygx2ggxDipoleKernel. */
   typedef Herwig::DipoleSplittingKernel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the FIMDecaygx2ggxDipoleKernelFull class and the shared object where it is defined. */
+ *  the FIMDecaygx2ggxDipoleKernel class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::FIMDecaygx2ggxDipoleKernelFull>
-  : public ClassTraitsBase<Herwig::FIMDecaygx2ggxDipoleKernelFull> {
+struct ClassTraits<Herwig::FIMDecaygx2ggxDipoleKernel>
+  : public ClassTraitsBase<Herwig::FIMDecaygx2ggxDipoleKernel> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::FIMDecaygx2ggxDipoleKernelFull"; }
+  static string className() { return "Herwig::FIMDecaygx2ggxDipoleKernel"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * FIMDecaygx2ggxDipoleKernelFull is implemented. It may also include several, space-separated,
-   * libraries if the class FIMDecaygx2ggxDipoleKernelFull depends on other classes (base classes
+   * FIMDecaygx2ggxDipoleKernel is implemented. It may also include several, space-separated,
+   * libraries if the class FIMDecaygx2ggxDipoleKernel depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -185,4 +185,4 @@ struct ClassTraits<Herwig::FIMDecaygx2ggxDipoleKernelFull>
 
 }
 
-#endif /* HERWIG_FIMDecaygx2ggxDipoleKernelFull_H */
+#endif /* HERWIG_FIMDecaygx2ggxDipoleKernel_H */

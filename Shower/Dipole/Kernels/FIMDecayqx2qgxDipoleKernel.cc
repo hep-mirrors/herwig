@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the FIMDecayqx2qgxDipoleKernelFull class.
+// functions of the FIMDecayqx2qgxDipoleKernel class.
 //
 
-#include "FIMDecayqx2qgxDipoleKernelFull.h"
+#include "FIMDecayqx2qgxDipoleKernel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 
@@ -13,19 +13,19 @@
 
 using namespace Herwig;
 
-FIMDecayqx2qgxDipoleKernelFull::FIMDecayqx2qgxDipoleKernelFull() : DipoleSplittingKernel() {}
+FIMDecayqx2qgxDipoleKernel::FIMDecayqx2qgxDipoleKernel() : DipoleSplittingKernel() {}
 
-FIMDecayqx2qgxDipoleKernelFull::~FIMDecayqx2qgxDipoleKernelFull() {}
+FIMDecayqx2qgxDipoleKernel::~FIMDecayqx2qgxDipoleKernel() {}
 
-IBPtr FIMDecayqx2qgxDipoleKernelFull::clone() const {
+IBPtr FIMDecayqx2qgxDipoleKernel::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr FIMDecayqx2qgxDipoleKernelFull::fullclone() const {
+IBPtr FIMDecayqx2qgxDipoleKernel::fullclone() const {
   return new_ptr(*this);
 }
 
-bool FIMDecayqx2qgxDipoleKernelFull::canHandle(const DipoleIndex& ind) const {
+bool FIMDecayqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
   useThisKernel() &&
     ind.incomingDecaySpectator() && !ind.incomingDecayEmitter() &&
@@ -37,7 +37,7 @@ bool FIMDecayqx2qgxDipoleKernelFull::canHandle(const DipoleIndex& ind) const {
     !ind.initialStateEmitter() && !ind.initialStateSpectator();
 }
 
-bool FIMDecayqx2qgxDipoleKernelFull::canHandleEquivalent(const DipoleIndex& a,
+bool FIMDecayqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 						     const DipoleSplittingKernel& sk,
 						     const DipoleIndex& b) const {
   
@@ -54,7 +54,7 @@ bool FIMDecayqx2qgxDipoleKernelFull::canHandleEquivalent(const DipoleIndex& a,
 
 }
 
-tcPDPtr FIMDecayqx2qgxDipoleKernelFull::emitter(const DipoleIndex& ind) const {
+tcPDPtr FIMDecayqx2qgxDipoleKernel::emitter(const DipoleIndex& ind) const {
 
   assert(flavour());
   assert(abs(flavour()->id()) < 7);
@@ -64,17 +64,17 @@ tcPDPtr FIMDecayqx2qgxDipoleKernelFull::emitter(const DipoleIndex& ind) const {
 }
 
 
-tcPDPtr FIMDecayqx2qgxDipoleKernelFull::emission(const DipoleIndex&) const {
+tcPDPtr FIMDecayqx2qgxDipoleKernel::emission(const DipoleIndex&) const {
   return getParticleData(ParticleID::g);
 }
 
 
-tcPDPtr FIMDecayqx2qgxDipoleKernelFull::spectator(const DipoleIndex& ind) const {
+tcPDPtr FIMDecayqx2qgxDipoleKernel::spectator(const DipoleIndex& ind) const {
   return ind.spectatorData();
 }
 
 
-double FIMDecayqx2qgxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split) const {
+double FIMDecayqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   
   double ret = alphaPDF(split);
 
@@ -100,7 +100,7 @@ double FIMDecayqx2qgxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
 
   if( sqr(2.*muj2+bar*(1.-y))-4.*muj2 < 0. ){
     generator()->logWarning( Exception()
-    << "error in FIMDecayqx2qgxDipoleKernelFull::evaluate -- " <<
+    << "error in FIMDecayqx2qgxDipoleKernel::evaluate -- " <<
     "muj2 " << muj2 << "  mui2 " << mui2 << "  y " << y << Exception::warning );
     return 0.0;
   }
@@ -108,8 +108,8 @@ double FIMDecayqx2qgxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
   double vijk = sqrt( sqr(2.*muj2 + bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
   double vbar = sqrt( 1.+sqr(mui2)+sqr(muj2)-2.*(mui2+muj2+mui2*muj2) ) / bar;
 
-  ret *= (!strictLargeN() ? 4./3. : 3./2.)* ( ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*((1.+z) + 2.*mui2/(y*bar)) )     +     (y/(1.-z*(1.-y))) *( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) ) );
-
+  ret *=  (!strictLargeN() ? 4./3. : 3./2.) * ( ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*((1.+z) + 2.*mui2/(y*bar)) ) + y/(1.-z*(1.-y)) * ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) ) );
+  
   return ret > 0. ? ret : 0.;
   
 }
@@ -118,19 +118,19 @@ double FIMDecayqx2qgxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void FIMDecayqx2qgxDipoleKernelFull::persistentOutput(PersistentOStream & ) const {
+void FIMDecayqx2qgxDipoleKernel::persistentOutput(PersistentOStream & ) const {
 }
 
-void FIMDecayqx2qgxDipoleKernelFull::persistentInput(PersistentIStream & , int) {
+void FIMDecayqx2qgxDipoleKernel::persistentInput(PersistentIStream & , int) {
 }
 
-ClassDescription<FIMDecayqx2qgxDipoleKernelFull> FIMDecayqx2qgxDipoleKernelFull::initFIMDecayqx2qgxDipoleKernelFull;
+ClassDescription<FIMDecayqx2qgxDipoleKernel> FIMDecayqx2qgxDipoleKernel::initFIMDecayqx2qgxDipoleKernel;
 // Definition of the static class description member.
 
-void FIMDecayqx2qgxDipoleKernelFull::Init() {
+void FIMDecayqx2qgxDipoleKernel::Init() {
 
-  static ClassDocumentation<FIMDecayqx2qgxDipoleKernelFull> documentation
-    ("FIMDecayqx2qgxDipoleKernelFull");
+  static ClassDocumentation<FIMDecayqx2qgxDipoleKernel> documentation
+    ("FIMDecayqx2qgxDipoleKernel");
 
 }
 

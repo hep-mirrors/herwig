@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the FIMDecaygx2ggxDipoleKernelFull class.
+// functions of the FIMDecaygx2ggxDipoleKernel class.
 //
 
-#include "FIMDecaygx2ggxDipoleKernelFull.h"
+#include "FIMDecaygx2ggxDipoleKernel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 
@@ -14,20 +14,20 @@
 
 using namespace Herwig;
 
-FIMDecaygx2ggxDipoleKernelFull::FIMDecaygx2ggxDipoleKernelFull() 
+FIMDecaygx2ggxDipoleKernel::FIMDecaygx2ggxDipoleKernel() 
   : DipoleSplittingKernel(),theSymmetryFactor(0.5){}
 
-FIMDecaygx2ggxDipoleKernelFull::~FIMDecaygx2ggxDipoleKernelFull() {}
+FIMDecaygx2ggxDipoleKernel::~FIMDecaygx2ggxDipoleKernel() {}
 
-IBPtr FIMDecaygx2ggxDipoleKernelFull::clone() const {
+IBPtr FIMDecaygx2ggxDipoleKernel::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr FIMDecaygx2ggxDipoleKernelFull::fullclone() const {
+IBPtr FIMDecaygx2ggxDipoleKernel::fullclone() const {
   return new_ptr(*this);
 }
 
-bool FIMDecaygx2ggxDipoleKernelFull::canHandle(const DipoleIndex& ind) const {
+bool FIMDecaygx2ggxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
   useThisKernel() &&
     ind.incomingDecaySpectator() && !ind.incomingDecayEmitter() &&
@@ -37,7 +37,7 @@ bool FIMDecaygx2ggxDipoleKernelFull::canHandle(const DipoleIndex& ind) const {
     !ind.initialStateEmitter() && !ind.initialStateSpectator();
 }
 
-bool FIMDecaygx2ggxDipoleKernelFull::canHandleEquivalent(const DipoleIndex& a,
+bool FIMDecaygx2ggxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 					       const DipoleSplittingKernel& sk,
 					       const DipoleIndex& b) const {
 
@@ -54,19 +54,19 @@ bool FIMDecaygx2ggxDipoleKernelFull::canHandleEquivalent(const DipoleIndex& a,
 }
 
 
-tcPDPtr FIMDecaygx2ggxDipoleKernelFull::emitter(const DipoleIndex&) const {
+tcPDPtr FIMDecaygx2ggxDipoleKernel::emitter(const DipoleIndex&) const {
   return getParticleData(ParticleID::g);
 }
 
-tcPDPtr FIMDecaygx2ggxDipoleKernelFull::emission(const DipoleIndex&) const {
+tcPDPtr FIMDecaygx2ggxDipoleKernel::emission(const DipoleIndex&) const {
   return getParticleData(ParticleID::g);
 }
 
-tcPDPtr FIMDecaygx2ggxDipoleKernelFull::spectator(const DipoleIndex& ind) const {
+tcPDPtr FIMDecaygx2ggxDipoleKernel::spectator(const DipoleIndex& ind) const {
   return ind.spectatorData();
 }
 
-double FIMDecaygx2ggxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split) const {
+double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
     double ret = alphaPDF(split);
 
@@ -81,9 +81,9 @@ double FIMDecaygx2ggxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
   double zPrime = split.lastSplittingParameters()[0];
 
   // Construct mass squared variables
+  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
   // Recoil system mass
   double muj2 = sqr(split.recoilMass() / split.scale());
-  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
   double bar = 1. - muj2;
 
 // Calculate y
@@ -91,7 +91,7 @@ double FIMDecaygx2ggxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
 
   if( sqr(2.*muj2+bar*(1.-y))-4.*muj2 < 0. ){
     generator()->logWarning( Exception()
-                            << "error in FIMDecaygx2ggxDipoleKernelFull::evaluate -- " <<
+                            << "error in FIMDecaygx2ggxDipoleKernel::evaluate -- " <<
                             "muj2 " << muj2 << "  y " << y << Exception::warning );
 
     return 0.0;
@@ -107,37 +107,44 @@ double FIMDecaygx2ggxDipoleKernelFull::evaluate(const DipoleSplittingInfo& split
   // how to choose kappa?
   double kappa = 0.;
 
-  ret *= theSymmetryFactor* ( 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) ) +       (!strictLargeN() ? 4./3. : 3./2.)*( (y/(1.-z*(1.-y)))*( 2.*( 2.*y + 1.)/ ((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) ) +  (y/(1.-(1.-z)*(1.-y)))*( 2.*( 2.*y + 1.)/ ((1.+y)-(1.-z)*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-(1.-z)*(1.-y))*bar)) ) ) ) ;
-
+  ret *= theSymmetryFactor * 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) )
+    +
+    (!strictLargeN() ? 4./3. : 3./2.) 
+    * (
+       y/(1.-z*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + theSymmetryFactor*2.*mua2/((1.-z*(1.-y))*bar)) )
+       +
+       y/(1.-(1.-z)*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) - (vbar/vijk)*(2. + theSymmetryFactor*2.*mua2/((1.-(1.-z)*(1.-y))*bar)) )
+       );
+ 
   return ret > 0. ? ret : 0.;
-
+  
 }
 
 // If needed, insert default implementations of  function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void FIMDecaygx2ggxDipoleKernelFull::persistentOutput(PersistentOStream & os) const {
+void FIMDecaygx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
 
   os<<theSymmetryFactor;
 }
 
-void FIMDecaygx2ggxDipoleKernelFull::persistentInput(PersistentIStream & is, int) {
+void FIMDecaygx2ggxDipoleKernel::persistentInput(PersistentIStream & is, int) {
 
   is>>theSymmetryFactor;
 }
 
-ClassDescription<FIMDecaygx2ggxDipoleKernelFull> FIMDecaygx2ggxDipoleKernelFull::initFIMDecaygx2ggxDipoleKernelFull;
+ClassDescription<FIMDecaygx2ggxDipoleKernel> FIMDecaygx2ggxDipoleKernel::initFIMDecaygx2ggxDipoleKernel;
 // Definition of the static class description member.
 
-void FIMDecaygx2ggxDipoleKernelFull::Init() {
+void FIMDecaygx2ggxDipoleKernel::Init() {
 
-  static ClassDocumentation<FIMDecaygx2ggxDipoleKernelFull> documentation
-    ("FIMDecaygx2ggxDipoleKernelFull");
+  static ClassDocumentation<FIMDecaygx2ggxDipoleKernel> documentation
+    ("FIMDecaygx2ggxDipoleKernel");
 
-  static Parameter<FIMDecaygx2ggxDipoleKernelFull,double> interfaceSymmetryFactor
+  static Parameter<FIMDecaygx2ggxDipoleKernel,double> interfaceSymmetryFactor
     ("SymmetryFactor",
      "The symmetry factor for final state gluon splittings.",
-     &FIMDecaygx2ggxDipoleKernelFull::theSymmetryFactor, 1.0, 0.0, 0,
+     &FIMDecaygx2ggxDipoleKernel::theSymmetryFactor, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 }
