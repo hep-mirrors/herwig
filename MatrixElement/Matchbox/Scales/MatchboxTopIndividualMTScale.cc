@@ -28,7 +28,7 @@
 using namespace Herwig;
 
 MatchboxTopIndividualMTScale::MatchboxTopIndividualMTScale() :
-  theShowerScaleMode(1), theFactor(1.) {}
+  theShowerScaleMode(1), theFactor(1.), theTopOrAntitop(1) {}
 
 MatchboxTopIndividualMTScale::~MatchboxTopIndividualMTScale() {}
 
@@ -65,10 +65,19 @@ Energy2 MatchboxTopIndividualMTScale::renormalizationScale() const {
     throw Exception() << "MatchboxTopIndividualMTScale: Could not find a top-antitop-pair in the final state!\n"
 		      << Exception::runerror;
   }
+
+  Energy scale = ZERO;
   
   // Not using .mt() as this is signed and not what we want.
-  Energy topMt = sqrt(meMomenta()[top].mt2());
-  return sqr(topMt*theFactor);
+
+  if ( theTopOrAntitop == 1 )
+    scale = sqrt(meMomenta()[top].mt2());
+  else {
+    assert ( theTopOrAntitop == 2);
+    scale = sqrt(meMomenta()[antitop].mt2());
+  }
+  
+  return sqr(scale*theFactor);
 
 }
 
@@ -137,11 +146,11 @@ Energy2 MatchboxTopIndividualMTScale::showerScale() const {
 
 
 void MatchboxTopIndividualMTScale::persistentOutput(PersistentOStream & os) const {
-  os << theShowerScaleMode << theFactor;
+  os << theShowerScaleMode << theFactor << theTopOrAntitop;
 }
 
 void MatchboxTopIndividualMTScale::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerScaleMode >> theFactor;
+  is >> theShowerScaleMode >> theFactor << theTopOrAntitop;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -166,11 +175,22 @@ void MatchboxTopIndividualMTScale::Init() {
   static SwitchOption MeanMT2
     (interfaceShowerScaleMode,"MeanMT2","Use the mean squared transverse mass of the outgoing particles.", 2);
 
+  
   static Parameter<MatchboxTopIndividualMTScale,double> interfaceMultiplicationFactor
     ("MultiplicationFactor",
      "Set a multiplicative factor to include in the scale choice definition.",
      &MatchboxTopIndividualMTScale::theFactor, 1., 0., 0,
      false, false, Interface::lowerlim);
 
+
+  static Switch<MatchboxTopIndividualMTScale, unsigned int> interfaceTopOrAntitop
+    ("TopOrAntitop",
+     "Choose which quark transverse mass to use.",
+     &MatchboxTopIndividualMTScale::theTopOrAntitop, 1, false, false);
+  static SwitchOption Top
+    (interfaceTopOrAntitop,"Top","Use the top quark transverse mass.", 1);
+  static SwitchOption Antitop
+    (interfaceTopOrAntitop,"Antitop","Use the top antiquark transverse mass.", 2);
+  
 }
 

@@ -119,8 +119,14 @@ private:
   
   /**
    * Multiplicative factor for the scale definition
-   **/
+   */
   double theFactor;
+
+  /**
+   * Switch to choose which top quark/antiquak to use to 
+   * compute the scale.
+   */
+  unsigned int theTopOrAntitop;
 
   /**
    * The assignment operator is private and must never be called.
