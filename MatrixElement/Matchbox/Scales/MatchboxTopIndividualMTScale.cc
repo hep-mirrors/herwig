@@ -150,7 +150,7 @@ void MatchboxTopIndividualMTScale::persistentOutput(PersistentOStream & os) cons
 }
 
 void MatchboxTopIndividualMTScale::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerScaleMode >> theFactor << theTopOrAntitop;
+  is >> theShowerScaleMode >> theFactor >> theTopOrAntitop;
 }
 
 // *** Attention *** The following static variable is needed for the type
