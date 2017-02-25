@@ -76,7 +76,6 @@ Energy2 MatchboxTopMassScale::factorizationScale() const {
   return(renormalizationScale());
 }
 
-
 Energy2 MatchboxTopMassScale::showerScale() const {
   
   if ( theShowerScaleMode == 1 )
@@ -132,8 +131,6 @@ Energy2 MatchboxTopMassScale::showerScale() const {
       return (1./3.)*(meMomenta()[top].mt2()+meMomenta()[antitop].mt2() + meMomenta()[emission].mt2());
   }
 }
-
-
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

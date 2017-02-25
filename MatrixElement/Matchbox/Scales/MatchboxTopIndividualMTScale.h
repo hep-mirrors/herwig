@@ -20,10 +20,10 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Daniel Rauch
+ * \author Stephen Webster
  *
- * \brief MatchboxTopIndividualMTScale implements a scale choice related to the quadratic
- *        sum of transverse masses of a top and antitop quark.
+ * \brief MatchboxTopIndividualMTScale implements the scale as 
+ *        the transverse masses of the top quark in a top-pair process.
  *
  */
 class MatchboxTopIndividualMTScale: public MatchboxScaleChoice {
@@ -54,6 +54,11 @@ public:
    * Return the factorization scale.
    */
   virtual Energy2 factorizationScale() const;
+
+  /**
+   * Return the shower hard scale.
+   */
+  virtual Energy2 showerScale() const;
 
 public:
 
@@ -107,6 +112,11 @@ private:
 
 private:
 
+  /**
+   * Switch to choose the definition of the shower hard scale.
+   */
+  unsigned int theShowerScaleMode;
+  
   /**
    * Multiplicative factor for the scale definition
    **/
