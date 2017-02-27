@@ -40,7 +40,7 @@ set MergingFactory:OrderInAlphaEW 2
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 
-do MergingFactory:Process e- e+ -> j j [ j , j ]
+do MergingFactory:Process e- e+ -> j j [ j  j ]
 
 set MergingFactory:NLOProcesses 2
 

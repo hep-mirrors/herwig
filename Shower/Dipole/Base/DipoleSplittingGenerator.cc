@@ -561,7 +561,7 @@ double DipoleSplittingGenerator::dosudakovExpansion(const DipoleSplittingInfo& ,
     generatedSplitting.setCalcFixedExpansion(true);
     generatedSplitting.fixedScale(fixedScale);
     
-    while (  k<5000 ){
+    while (  k<1000 ){
       k+=1.;
       RN[0]= optKappaCutoffd+(optKappaCutoffu-optKappaCutoffd)*UseRandom::rnd(); //PT
       RN[1]=xSupport.first+UseRandom::rnd()*(xSupport.second-xSupport.first); //
