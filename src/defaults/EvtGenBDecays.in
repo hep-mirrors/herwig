@@ -4,7 +4,7 @@
 #  EvtGen decay model for weakly decaying B mesons
 #
 #
-# switch off internal modes
+# switch off current modes
 do B0:SelectDecayModes none
 do Bbar0:SelectDecayModes none
 do B+:SelectDecayModes none
@@ -21,7 +21,7 @@ decaymode B_sbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
 #
 #  EvtGen decay model for weakly decaying D mesons
 #
-# switch off internal modes
+# switch off current modes
 do D0:SelectDecayModes none
 do Dbar0:SelectDecayModes none
 do D+:SelectDecayModes none
