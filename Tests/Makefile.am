@@ -283,12 +283,13 @@ Rivet-TVT-Photon: $(shell echo Rivet-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-Ga
 Rivet-TVT-Jets:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}} ) \
 	         $(shell echo Rivet-TVT-{630-Jets-{1..3},300-Jets-1,900-Jets-1} ) \
                  $(shell echo Rivet-TVT-{Run-I,Run-II,300,630,900}-UE)
-	#python/merge-TVT-Energy TVT
-	#rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.yoda TVT-900-Energy.yoda TVT-1960-Energy.yoda
-	#flat2yoda RatioPlots.dat -o TVT-RatioPlots.yoda
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw
+
+#python/merge-TVT-Energy TVT
+#rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.yoda TVT-900-Energy.yoda TVT-1960-Energy.yoda
+#flat2yoda RatioPlots.dat -o TVT-RatioPlots.yoda
 
 Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-DiJets-{1..7}-{A,B,C} ) \
 	        $(shell echo Rivet-LHC-{7,8,13}-Jets-{0..10} ) \
