@@ -198,10 +198,10 @@ elif(collider=="TVT") :
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Run-II-Jets-10")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 500.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 500.*GeV\n"
             elif(parameterName.find("Run-II-Jets-11")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 900.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 900.*GeV\n"
             elif(parameterName.find("Run-I-Jets-1")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
             elif(parameterName.find("Run-I-Jets-2")>=0) :
@@ -214,13 +214,13 @@ elif(collider=="TVT") :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 160.\n"
             elif(parameterName.find("Run-I-Jets-6")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 100.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 100.*GeV\n"
             elif(parameterName.find("Run-I-Jets-7")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 400.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 400.*GeV\n"
             elif(parameterName.find("Run-I-Jets-8")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 700.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 700.*GeV\n"
             elif(parameterName.find("Run-II-Jets-0")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 15.\n"
             elif(parameterName.find("Run-II-Jets-1")>=0) :
@@ -239,10 +239,10 @@ elif(collider=="TVT") :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 250.\n"
             elif(parameterName.find("Run-II-Jets-8")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 100.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 100.*GeV\n"
             elif(parameterName.find("Run-II-Jets-9")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 300.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 300.*GeV\n"
             elif(parameterName.find("900-Jets-1")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 10.\n"
             elif(parameterName.find("300-Jets-1")>=0) :
@@ -440,7 +440,7 @@ elif(collider=="Star" ) :
     process+= "set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     process+= "set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/p+\n"
     process+= "set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 200.0\n"
-    process+= "set /Herwig/Cuts/QCDCuts:X2Min 0.01\n"
+    process+= "set /Herwig/Cuts/Cuts:X2Min 0.01\n"
     if(simulation=="") :
         if(parameterName.find("UE")>=0) :
             process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
@@ -594,21 +594,21 @@ elif(collider=="LHC") :
                process+="set /Herwig/Cuts/JetKtCut:MinEta -4.8\n"
                process+="set /Herwig/Cuts/JetKtCut:MaxEta  4.8\n"
             if(parameterName.find("DiJets-1")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 90.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 90.*GeV\n"
             elif(parameterName.find("DiJets-2")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 200.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 200.*GeV\n"
             elif(parameterName.find("DiJets-3")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 450.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 450.*GeV\n"
             elif(parameterName.find("DiJets-4")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 750.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 750.*GeV\n"
             elif(parameterName.find("DiJets-5")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 950.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 950.*GeV\n"
             elif(parameterName.find("DiJets-6")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 1550.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 1550.*GeV\n"
             elif(parameterName.find("DiJets-7")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 2150.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 2150.*GeV\n"
             elif(parameterName.find("DiJets-8")>=0) :
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 2750.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 2750.*GeV\n"
         elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0 or \
              parameterName.find("13-Jets")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
@@ -663,13 +663,13 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 110.\n"
             elif(parameterName.find("-6")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 90.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 90.*GeV\n"
             elif(parameterName.find("-7")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 340.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 340.*GeV\n"
             elif(parameterName.find("-8")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 30.\n"
-                process+="set /Herwig/Cuts/QCDCuts:MHatMin 500.*GeV\n"
+                process+="set /Herwig/Cuts/Cuts:MHatMin 500.*GeV\n"
         elif(parameterName.find("Top-L")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
@@ -734,15 +734,15 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 20.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 20.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-Mass1")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -750,7 +750,7 @@ elif(collider=="LHC") :
             else :
                 process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass2")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -758,7 +758,7 @@ elif(collider=="LHC") :
             else :
                 process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass3")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -766,7 +766,7 @@ elif(collider=="LHC") :
             else :
                 process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass4")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -953,15 +953,15 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 20.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 20.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("Z-Mass1")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -969,7 +969,7 @@ elif(collider=="LHC") :
             else :
                 process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass2")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -977,7 +977,7 @@ elif(collider=="LHC") :
             else :
                 process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass3")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
             if(parameterName.find("-e")>=0) :
@@ -985,7 +985,7 @@ elif(collider=="LHC") :
             else :
                 process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("Z-Mass4")>=0) :
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
+            process+="set /Herwig/Cuts/Cuts:MHatMin 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
             if(parameterName.find("-e")>=0) :
