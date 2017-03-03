@@ -96,7 +96,7 @@ set MEDiffractionDouble:DiffDirection Both
 
 # Make a parton extractor for diffraction
 cd /Herwig/Partons
-cp Extractor DiffPPExtractor
+cp PPExtractor DiffPPExtractor
 set DiffPPExtractor:FirstPDF /Herwig/Partons/NoPDF
 set DiffPPExtractor:SecondPDF /Herwig/Partons/NoPDF
 

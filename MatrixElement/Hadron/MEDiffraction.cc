@@ -27,7 +27,9 @@ using namespace Herwig;
 MEDiffraction::MEDiffraction()
 : HwMEBase(),
   deltaOnly(false),	 
-  isInRunPhase(false) {}
+  isInRunPhase(false),
+  theProtonMass(0.93827203*GeV)
+{}
 
 
 void MEDiffraction::getDiagrams() const {
@@ -185,7 +187,7 @@ bool MEDiffraction::generateKinematics(const double * ) {
   const Energy2 s = sqr(cmEnergy);
   
   //proton mass
-  const Energy2 m2 = sqr( getParticleData(2212)->mass() );
+  const Energy2 m2 = sqr( theProtonMass );
   
   const Energy E3 = (s - M22 + M12) / (2.*cmEnergy);
   const Energy E4 = (s + M22 - M12) / (2.*cmEnergy);
@@ -455,7 +457,7 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   Energy2 theM12(ZERO),theM22(ZERO), thet(ZERO);
   int count = 0;
   //proton mass squared
-  const Energy2 m2 = sqr(getParticleData(2212)->mass());
+  const Energy2 m2 = sqr(theProtonMass);
   //delta mass squared
   const Energy2 md2 = sqr(getParticleData(2214)->mass());
   Energy2 M2;
@@ -463,8 +465,7 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   do {	
     
     //check if we want only delta 
-    if(deltaOnly)
-    {
+    if(deltaOnly) {
     	switch(diffDirection){
     		case 0:
     			theM12 = md2;
@@ -486,7 +487,8 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
     			break;	
     	}
 
-    }else{
+    }
+    else {
     	switch (diffDirection){
     	case 0:
     		M2=randomM2();
@@ -519,6 +521,10 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   
   const Energy cmEnergy = generator()->maximumCMEnergy();
   const Energy2 s = sqr(cmEnergy);
+    if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+      condition = true;
+    }
+    else {
   InvEnergy2 slope;
   if(diffDirection==2){
   	slope = 2*softPomeronSlope()*log(.1+(sqr(cmEnergy)/softPomeronSlope())/(theM12*theM22));
@@ -535,7 +541,9 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
   //without (1-M2/s) constraint
   condition = (UseRandom::rnd()>(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2))
   		||((theM12/GeV2)*(theM22/GeV2)>=(sqr(cmEnergy)/GeV2)/(softPomeronSlope()*GeV2));
-  }while(condition);
+    }
+  }
+  while(condition);
   
   return make_pair (make_pair(theM12,theM22),thet);
 }
@@ -573,7 +581,7 @@ pair<Lorentz5Momentum,Lorentz5Momentum> MEDiffraction::twoBodyDecayMomenta(Loren
 Energy2 MEDiffraction::randomt(Energy2 M2) const {
   assert(protonPomeronSlope()*GeV2 > 0);
   //proton mass
-  const Energy2 m2 = sqr( getParticleData(2212)->mass() );
+  const Energy2 m2 = sqr( theProtonMass );
   const Energy cmEnergy = generator()->maximumCMEnergy();
   const Energy2 ttmin = tminfun(sqr(cmEnergy),m2,M2);
   const Energy2 ttmax = tmaxfun(sqr(cmEnergy),m2,M2);
@@ -593,9 +601,15 @@ Energy2 MEDiffraction::doublediffrandomt(Energy2 M12, Energy2 M22) const {
   
   const Energy2 ttmin = tminfun(sqr(cmEnergy),M12,M22);
   const Energy2 ttmax = tmaxfun(sqr(cmEnergy),M12,M22);
-  
-  return log( exp(slope*ttmin) +
-              UseRandom::rnd()*(exp(slope*ttmax) - exp(slope*ttmin)) ) / slope;
+  double r = UseRandom::rnd();
+  Energy2 newVal;
+  if(slope*ttmax>slope*ttmin) {
+    newVal = ttmax + log( r + (1.-r)*exp(slope*(ttmin-ttmax)) ) / slope;
+  }
+  else {
+    newVal = ttmin + log( 1. - r + r*exp(slope*(ttmax-ttmin))) / slope;
+  }
+  return newVal;
 }
 
 Energy2 MEDiffraction::randomM2() const {
@@ -608,15 +622,14 @@ Energy2 MEDiffraction::randomM2() const {
 }
 
 Energy2 MEDiffraction::tminfun(Energy2 s, Energy2 M12, Energy2 M22) const {
-	const Energy2 m2 = sqr( getParticleData(2212)->mass() );
-	
-	return (1/(2*s))*(-sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
+  const Energy2 m2 = sqr( theProtonMass );
+  return 0.5/s*(-sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
 }
 
 Energy2 MEDiffraction::tmaxfun(Energy2 s, Energy2 M12, Energy2 M22) const  {
-	const Energy2 m2 = sqr( getParticleData(2212)->mass() );
+  const Energy2 m2 = sqr( theProtonMass );
 	
-	return (1/(2*s))*(sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
+  return 0.5/s*(sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
 }
 
 
@@ -750,6 +763,11 @@ MEDiffraction::colourGeometries(tcDiagPtr ) const {
   return sel;
 }
 
+void MEDiffraction::doinit() {
+  HwMEBase::doinit();
+  theProtonMass = getParticleData(2212)->mass();
+}
+
 void MEDiffraction::doinitrun() {
   HwMEBase::doinitrun();
   isInRunPhase = true;
@@ -769,12 +787,14 @@ ClassDescription<MEDiffraction> MEDiffraction::initMEDiffraction;
 
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope
-     << thesoftPomeronIntercept << thesoftPomeronSlope << dissociationDecay;
+     << thesoftPomeronIntercept << thesoftPomeronSlope << dissociationDecay
+     << ounit(theProtonMass,GeV);
 }
 
 void MEDiffraction::persistentInput(PersistentIStream & is, int) {
   is >> theme2 >> deltaOnly >> diffDirection >> theprotonPomeronSlope
-     >> thesoftPomeronIntercept >> thesoftPomeronSlope >> dissociationDecay;
+     >> thesoftPomeronIntercept >> thesoftPomeronSlope >> dissociationDecay
+     >> iunit(theProtonMass,GeV);
 }
 
 InvEnergy2 MEDiffraction::protonPomeronSlope() const{
