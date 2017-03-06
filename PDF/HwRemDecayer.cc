@@ -1003,18 +1003,17 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   ///////////////////////
   // Average number of partons in the ladder
   
-  // Parameterize the ladder multiplicity to: ladderMult = (s/sqrt(mg))^-0.08 s in TeV 
-  // E.g : (7^2/sqrt(mg))^-0.08... for sqrt(s)= 7 TeV.
-  // with the two parameters ladderNorm_ and ladderPower_
+  // Parameterize the ladder multiplicity to: ladderMult_ = A_0 * (s/1TeV^2)^alpha  
+  // with the two tunable parameters A_0 =ladderNorm_ and alpha = ladderPower_
 
   // Get the collision energy
   Energy energy(generator()->maximumCMEnergy());
 
-  Energy2 reference = sqr(energy);
+  double reference = sqr(energy/TeV);
+  double ladderMult_;
 
-  // ladderMult_ is still implemented as a changable parameter but can be changed
   // Parametrization of the ladder multiplicity
-  ladderMult_ = pow((reference/sqrt(ladderNorm_)),ladderPower_);
+  ladderMult_ = ladderNorm_ * pow( ( reference ) , ladderPower_ );
  
   int avgN = floor(ladderMult_*log((softRems_.first->momentum()
   		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
@@ -1326,7 +1325,7 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_kinCutoff, GeV) << _range << _zbin << _ybin 
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
-     << maxtrySoft_ << colourDisrupt_ << ladderMult_ << ladderPower_<< ounit(ladderNorm_,pow<4,1>(TeV)) << ladderbFactor_ << pomeronStructure_
+     << maxtrySoft_ << colourDisrupt_ << ladderPower_<< ladderNorm_ << ladderbFactor_ << pomeronStructure_
      << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV))
      << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_;
 }
@@ -1334,7 +1333,7 @@ void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_kinCutoff, GeV) >> _range >> _zbin >> _ybin 
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
-     >> maxtrySoft_ >> colourDisrupt_ >> ladderMult_ >> ladderPower_ >> iunit(ladderNorm_,pow<4,1>(TeV)) >> ladderbFactor_ >> pomeronStructure_
+     >> maxtrySoft_ >> colourDisrupt_ >> ladderPower_ >> ladderNorm_ >> ladderbFactor_ >> pomeronStructure_
      >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV))
      >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_;
 }
@@ -1424,13 +1423,6 @@ void HwRemDecayer::Init() {
      1.0, 0.0, 1.0, 
      false, false, Interface::limited);
   
-  static Parameter<HwRemDecayer,double> interfaceladderMult
-    ("ladderMult",
-     "The multiplicity factor in the multiperipheral ladder.",
-     &HwRemDecayer::ladderMult_, 
-     1.0, 0.0, 10.0, 
-     false, false, Interface::limited);
-
   static Parameter<HwRemDecayer,double> interaceladderPower
     ("ladderPower",
      "The power factor in the ladder parameterization.",
@@ -1438,13 +1430,13 @@ void HwRemDecayer::Init() {
      1.0, -5.0, 10.0, 
      false, false, Interface::limited);
 
-  static Parameter<HwRemDecayer,Energy4> interfaceladderNorm
+  static Parameter<HwRemDecayer,double> interfaceladderNorm
     ("ladderNorm",
      "The normalization factor in the ladder parameterization",
-     &HwRemDecayer::ladderNorm_, pow<4,1>(TeV), 1.0*pow<4,1>(TeV), 0.0*pow<4,1>(TeV), 10.0*pow<4,1>(TeV),
+     &HwRemDecayer::ladderNorm_,
+     1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-     
   
   static Parameter<HwRemDecayer,double> interfaceladderbFactor
     ("ladderbFactor",

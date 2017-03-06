@@ -69,10 +69,9 @@ public:
                    ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0),
-		   ladderMult_(1.0),
 		   ladderbFactor_(1.0),
 		   ladderPower_(-0.08),
-		   ladderNorm_(1.0*pow<4,1>(TeV)),
+		   ladderNorm_(1.0),
 		   gaussWidth_(0.1),
 		   valOfN_(0), 
 		   initTotRap_(0),
@@ -569,12 +568,6 @@ private:
   double colourDisrupt_;
   
   /**
-   * Variable to store the multiplicity factor of the 
-   multiperipheral ladder.
-   */
-  double ladderMult_;
-  
-  /**
    * Variable to store the additive factor of the 
    multiperipheral ladder multiplicity.
    */
@@ -588,7 +581,7 @@ private:
   /**
    * Variable of the parameterization of the ladder multiplicity.
    */
-  Energy4 ladderNorm_;
+  double ladderNorm_;
 
   /**
    * Variable to store the gaussian width of the 
