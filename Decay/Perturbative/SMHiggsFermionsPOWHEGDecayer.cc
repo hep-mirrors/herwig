@@ -61,9 +61,9 @@ void SMHiggsFermionsPOWHEGDecayer::Init() {
 
 RealEmissionProcessPtr SMHiggsFermionsPOWHEGDecayer::
 generateHardest(RealEmissionProcessPtr born) {
-  assert(born->bornOutgoing().size()==2);
   // check coloured
   if(!born->bornOutgoing()[0]->dataPtr()->coloured()) return RealEmissionProcessPtr();
+  assert(born->bornOutgoing().size()==2);
   // extract required info
   higgs_ = born->bornIncoming()[0];
   partons_.resize(2);
