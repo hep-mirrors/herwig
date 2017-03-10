@@ -69,30 +69,7 @@ Energy2 MatchboxLeptonPtScale::factorizationScale() const {
 }
 
 Energy2 MatchboxLeptonPtScale::renormalizationScaleQED() const {
-
-  int firstLepton = -1;
-  int secondLepton = -1;
-
-  for ( size_t k = 2; k < mePartonData().size(); ++k ) {
-    if ( abs(mePartonData()[k]->id()) > 10 && 
-	 abs(mePartonData()[k]->id()) < 17 ) {
-      if ( firstLepton < 0 ) {
-	firstLepton = k;
-      } else if ( secondLepton < 0 ) {
-	secondLepton = k;
-      } else break;
-    }
-  }
-
-  if ( firstLepton < 0 || secondLepton < 0 )
-    throw Exception() << "MatchboxLeptonPtScale::renormalizationScaleQED(): "
-		      << "No lepton pair could be found. Check your setup."
-		      << Exception::runerror;
-
-  return
-    (meMomenta()[firstLepton] +
-     meMomenta()[secondLepton]).perp2();
-
+  return renormalizationScale();
 }
 
 // If needed, insert default implementations of virtual function defined
