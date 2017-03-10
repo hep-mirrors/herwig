@@ -91,7 +91,7 @@ Energy2 MatchboxLeptonPtScale::renormalizationScaleQED() const {
 
   return
     (meMomenta()[firstLepton] +
-     meMomenta()[secondLepton]).m2();
+     meMomenta()[secondLepton]).perp2();
 
 }
 
