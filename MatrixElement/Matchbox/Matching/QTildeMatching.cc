@@ -491,16 +491,19 @@ void QTildeMatching::Init() {
     ("QTildeFinder",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeFinder, false, false, true, false, false);
+  interfaceQTildeFinder.rank(-1);
 
   static Reference<QTildeMatching,QTildeSudakov> interfaceQTildeSudakov
     ("QTildeSudakov",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeSudakov, false, false, true, false, false);
+  interfaceQTildeSudakov.rank(-1);
 
   static Reference<QTildeMatching,ShowerHandler> interfaceShowerHandler
     ("ShowerHandler",
-     "",
+     "The QTilde shower handler to use.",
      &QTildeMatching::theShowerHandler, false, false, true, true, false);
+  interfaceShowerHandler.rank(-1);
 
   static Switch<QTildeMatching,bool> interfaceCorrectForXZMismatch
     ("CorrectForXZMismatch",
@@ -516,6 +519,7 @@ void QTildeMatching::Init() {
      "No",
      "Do not include the correction factor.",
      false);
+  interfaceCorrectForXZMismatch.rank(-1);
 
 }
 

@@ -478,23 +478,23 @@ void ShowerApproximationGenerator::Init() {
     ("ShowerApproximationGenerator generates emissions according to a "
      "shower approximation entering a NLO matching.");
 
-
   static Reference<ShowerApproximationGenerator,ShowerApproximation> interfaceShowerApproximation
     ("ShowerApproximation",
      "Set the shower approximation to sample.",
      &ShowerApproximationGenerator::theShowerApproximation, false, false, true, false, false);
-
+  interfaceShowerApproximation.rank(-1);
 
   static Reference<ShowerApproximationGenerator,MatchboxPhasespace> interfacePhasespace
     ("Phasespace",
      "The phase space generator to use.",
      &ShowerApproximationGenerator::thePhasespace, false, false, true, false, false);
-
+  interfacePhasespace.rank(-1);
 
   static Reference<ShowerApproximationGenerator,MatchboxFactory> interfaceFactory
     ("Factory",
      "The factory object to use.",
      &ShowerApproximationGenerator::theFactory, false, false, true, false, false);
+  interfaceFactory.rank(-1);
 
   static Parameter<ShowerApproximationGenerator,unsigned long> interfacePresamplingPoints
     ("PresamplingPoints",
