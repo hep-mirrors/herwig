@@ -261,12 +261,7 @@ public:
    * is constructed from the data provided by the
    * head matrix element.
    */
-  bool subProcessGroups() const { return theSubProcessGroups; }
-
-  /**
-   * Switch on or off producing subprocess groups.
-   */
-  void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
+  bool subProcessGroups() const { return !showerApproximation(); }
 
   /**
    * Return true, if subtraction scales should be caluclated from real emission kinematics
@@ -618,17 +613,6 @@ public:
    */
   void setVerbose(bool on = true) { theVerbose = on; }
   
-  
-  /**
-   * Return true, if diagram weight is verbose
-   */
-  bool verboseDia() const { return theDiagramWeightVerbose; }
-  /**
-   * Number of bins for diagram weight verbosity
-   */
-  int diagramWeightVerboseNBins() const {return theDiagramWeightVerboseNBins;}
-  
-  
   /**
    * Return true, if verbose while initializing
    */
@@ -935,14 +919,6 @@ private:
   bool theIndependentPKs;
 
   /**
-   * True, if SubProcessGroups should be
-   * setup from this MEGroup. If not, a single SubProcess
-   * is constructed from the data provided by the
-   * head matrix element.
-   */
-  bool theSubProcessGroups;
-
-  /**
    * The phase space generator to be used.
    */
   Ptr<MatchboxPhasespace>::ptr thePhasespace;
@@ -1027,17 +1003,6 @@ private:
    * Switch on or off verbosity
    */
   bool theVerbose;
-  
-  /**
-   * Switch on or off diagram weight verbosity
-   */
-  bool theDiagramWeightVerbose;  
-  
-  /**
-   * Number of bins for diagram weight verbosity
-   */
-  int theDiagramWeightVerboseNBins;
-
   
   /**
    * True, if verbose while initializing

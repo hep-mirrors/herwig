@@ -36,7 +36,7 @@ using namespace Herwig;
 SubtractedME::SubtractedME() 
   : MEGroup(), 
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
-    theLoopSimSubtraction(false), theSubProcessGroups(false) {}
+    theLoopSimSubtraction(false) {}
 
 SubtractedME::~SubtractedME() {}
 
@@ -47,7 +47,7 @@ void SubtractedME::factory(Ptr<MatchboxFactory>::tcptr f) { theFactory = f; }
 bool SubtractedME::subProcessGroups() const { 
   return 
     (factory()->subProcessGroups() && !showerApproximation()) ||
-    factory()->subtractionData() != "" || theSubProcessGroups;
+    factory()->subtractionData() != "";
 }
 
 Ptr<ShowerApproximation>::tptr SubtractedME::showerApproximation() const { return factory()->showerApproximation(); }
@@ -763,8 +763,7 @@ void SubtractedME::persistentOutput(PersistentOStream & os) const {
      << collinearHistograms << softHistograms 
      << fnamesSoftSubtraction
      << theRealShowerSubtraction << theVirtualShowerSubtraction
-     << theLoopSimSubtraction
-     << theSubProcessGroups;
+     << theLoopSimSubtraction;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
@@ -772,8 +771,7 @@ void SubtractedME::persistentInput(PersistentIStream & is, int) {
      >> collinearHistograms >> softHistograms 
      >> fnamesSoftSubtraction
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction
-     >> theLoopSimSubtraction
-     >> theSubProcessGroups;
+     >> theLoopSimSubtraction;
   lastMatchboxXComb(theLastXComb);
 }
 

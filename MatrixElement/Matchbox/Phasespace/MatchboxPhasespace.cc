@@ -276,10 +276,6 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
   if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
-  }else{
-    if(factory()->verboseDia())
-    cout<<"\n MatchboxPhasespace no coupling for (timelike) :" <<  std::get<0>(vertexKey)
-    <<" "<< std::get<1>(vertexKey)<<" " << std::get<2>(vertexKey);
   }
 
   Energy2 mass2 = sqr(diag.allPartons()[branch]->hardProcessMass());
@@ -342,10 +338,6 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
   if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
-  }else{
-    if(factory()->verboseDia())
-    cout<<"\n MatchboxPhasespace no coupling for (space) :"<<  std::get<0>(vertexKey)
-    <<" "<< std::get<1>(vertexKey)<<" " << std::get<2>(vertexKey);
   }
   if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
