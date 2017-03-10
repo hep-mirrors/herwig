@@ -23,7 +23,7 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Simon Platzer, Ken Arnold
  *
- * \brief TreePhasespace is a multichannel phasespace generator
+ * \brief TreePhasespace is a multi-channel phase space generator
  * adapting to singularity structures as determined from the matrix
  * elements diagrams.
  *
@@ -161,7 +161,7 @@ private:
   lastChannelsIterator;
 
   /**
-   * The phasespace info object to be used.
+   * The phase space info object to be used.
    */
   PhasespaceHelpers::PhasespaceInfo lastPhasespaceInfo;
 
@@ -190,7 +190,7 @@ private:
   Energy Mc;
 
   /**
-   * Choose whether to also use mirrored phasespace generation
+   * Choose whether to also use mirrored phase space generation
    */
   bool theIncludeMirrored;
        

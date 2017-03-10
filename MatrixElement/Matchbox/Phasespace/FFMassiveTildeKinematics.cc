@@ -216,7 +216,7 @@ void FFMassiveTildeKinematics::Init() {
 
   static ClassDocumentation<FFMassiveTildeKinematics> documentation
     ("FFMassiveTildeKinematics implements the 'tilde' kinematics for "
-     "a final-final subtraction dipole.");
+     "a final-final subtraction dipole involving a massive particle.");
 
 }
 

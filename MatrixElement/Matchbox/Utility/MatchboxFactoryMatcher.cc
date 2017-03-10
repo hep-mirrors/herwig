@@ -90,7 +90,7 @@ DescribeClass<MatchboxFactoryMatcher,ThePEG::MatcherBase>
 void MatchboxFactoryMatcher::Init() {
 
   static ClassDocumentation<MatchboxFactoryMatcher> documentation
-    ("MatchboxFactoryMatcher matches particles according to MatchboxFatory particle groups");
+    ("MatchboxFactoryMatcher matches particles according to MatchboxFactory particle groups");
 
   static Reference<MatchboxFactoryMatcher,MatchboxFactory> interfaceFactory
     ("Factory",

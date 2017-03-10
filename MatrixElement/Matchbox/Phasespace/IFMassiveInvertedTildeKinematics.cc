@@ -80,7 +80,7 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
     subtractionParameters()[0] = x;
     subtractionParameters()[1] = u;
     
-    // The jacobian here is the single particle phasespace
+    // The jacobian here is the single particle phase space
     // saj*(1./x^2)*dx*du
     // Note - lastScale() is not equal to scale!!!!!!!
     double jac = abs( (1.+x*(muk2-1.))*(-u*(1.-u)/sqr(x)) - (1.+u*(muk2-1.))*((1.-2.*u)*(1.-x)/x - 2.*u*muk2) );
@@ -153,7 +153,7 @@ void IFMassiveInvertedTildeKinematics::Init() {
 
   static ClassDocumentation<IFMassiveInvertedTildeKinematics> documentation
     ("IFMassiveInvertedTildeKinematics inverts the initial-final tilde "
-     "kinematics.");
+     "kinematics involving a massive particle.");
 
 }
 

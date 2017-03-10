@@ -243,7 +243,7 @@ public:
   					  double power=1., vector<double>* values = NULL) const;
 
   /**
-   * Return the single particle phasespace weight in units
+   * Return the single particle phase space weight in units
    * of sHat() for the last selected configuration.
    */
   double jacobian() const { return theJacobian; }
@@ -322,7 +322,7 @@ protected:
   vector<double>& subtractionParameters() { return theDipole->subtractionParameters(); }
 
   /**
-   * Set the single particle phasespace weight in units
+   * Set the single particle phase space weight in units
    * of sHat() for the last selected configuration.
    */
   void jacobian(double w) { theJacobian = w; }
@@ -424,7 +424,7 @@ private:
   Lorentz5Momentum theRealSpectatorMomentum;
 
   /**
-   * Return the single particle phasespace weight in units
+   * Return the single particle phase space weight in units
    * of sHat() for the last selected configuration.
    */
   double theJacobian;

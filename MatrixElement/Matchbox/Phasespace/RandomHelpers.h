@@ -18,7 +18,7 @@ using namespace ThePEG;
 /**
  * \ingroup Matchbox
  * \author Simon Platzer
- * \brief Phasespace generation utilities.
+ * \brief Phase space generation utilities.
  */
 namespace RandomHelpers {
 

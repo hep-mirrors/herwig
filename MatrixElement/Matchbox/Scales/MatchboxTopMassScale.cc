@@ -156,7 +156,7 @@ DescribeClass<MatchboxTopMassScale,MatchboxScaleChoice>
 void MatchboxTopMassScale::Init() {
 
   static ClassDocumentation<MatchboxTopMassScale> documentation
-    ("MatchboxTopMassScale implements invariant mass of top-antitop pair as scale choice.");
+    ("MatchboxTopMassScale implements the invariant mass of the top-antitop pair as scale choice.");
 
 
   static Switch<MatchboxTopMassScale, unsigned int> interfaceShowerScaleMode

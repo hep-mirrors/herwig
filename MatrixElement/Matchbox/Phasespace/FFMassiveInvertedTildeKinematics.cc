@@ -226,7 +226,7 @@ bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz, vecto
   double z = ( (zPrime*xij*xk*suijk/2.) + (Muj2/ ( 2.*xk*xij*suijk*zPrime))*(pt2/Qijk + mui2) ) /
     ( (xij*xk*suijk/2.) + (Muj2/(2.*xk*xij))*(Mui2/suijk + A) );
   
-  // check (y,z) phasespace boundary
+  // check (y,z) phase space boundary
   // TODO: is y boundary necessary?
   double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
   double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
@@ -308,7 +308,7 @@ void FFMassiveInvertedTildeKinematics::Init() {
 
   static ClassDocumentation<FFMassiveInvertedTildeKinematics> documentation
     ("FFMassiveInvertedTildeKinematics inverts the final-final tilde "
-     "kinematics.");
+     "kinematics involving a massive particle.");
 
 }
 

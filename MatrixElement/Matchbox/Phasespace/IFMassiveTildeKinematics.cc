@@ -111,7 +111,7 @@ void IFMassiveTildeKinematics::Init() {
 
   static ClassDocumentation<IFMassiveTildeKinematics> documentation
     ("IFMassiveTildeKinematics implements the 'tilde' kinematics for "
-     "a initial-final subtraction dipole.");
+     "a initial-final subtraction dipole involving a massive particle.");
 
 }
 

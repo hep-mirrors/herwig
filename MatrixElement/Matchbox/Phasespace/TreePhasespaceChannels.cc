@@ -83,7 +83,7 @@ DescribeClass<TreePhasespaceChannels,HandlerBase>
 void TreePhasespaceChannels::Init() {
 
   static ClassDocumentation<TreePhasespaceChannels> documentation
-    ("Store channels for the tree phasespace.");
+    ("Store channels for the tree phase space.");
 
 }
 

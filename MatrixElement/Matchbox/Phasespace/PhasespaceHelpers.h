@@ -26,7 +26,7 @@ using namespace ThePEG;
     /**
      * \ingroup Matchbox
      * \author Simon Platzer
-     * \brief General information for phasespace generation
+     * \brief General information for phase space generation
      */
     struct PhasespaceInfo {
 
@@ -41,7 +41,7 @@ using namespace ThePEG;
       Energy sqrtSHat;
 
       /**
-       * The phasespace weight.
+       * The phase space weight.
        */
       double weight;
 
@@ -92,7 +92,7 @@ using namespace ThePEG;
     /**
      * \ingroup Matchbox
      * \author Simon Platzer, Ken Arnold
-     * \brief A phasespace tree.
+     * \brief A phase space tree.
      */
     struct PhasespaceTree {
 
@@ -166,12 +166,12 @@ using namespace ThePEG;
 			      vector<Lorentz5Momentum>&);
 
       /**
-       * Write phasespace tree to ostream
+       * Write phase space tree to ostream
        */
       void put(PersistentOStream&) const;
 
       /**
-       * Read phasespace tree from istream
+       * Read phase space tree from istream
        */
       void get(PersistentIStream&);
 
