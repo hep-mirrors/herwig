@@ -2,6 +2,8 @@
 
 cd /Herwig/Cuts
 
+# Set up cuts for Merging
+
 set Cuts:Fuzzy FuzzyTheta
 
 clear Cuts:OneCuts
@@ -23,24 +25,23 @@ insert Cuts:MultiCuts[0] PhotonIsolationCut
 insert Cuts:MultiCuts[1] MissingPtCut
 set Cuts:MHatMin 0.0*GeV
 set JetKtCut:MinKT 0.0*GeV
-
+# The Jet matcher need to use the same jet definition as the factory 
 set MatchboxJetMatcher:Factory /Herwig/Merging/MergingFactory
 
 
-
-set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
-set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+# Set up the alphas for merging
+set /Herwig/Model:QCD/RunningAlphaS                                             /Herwig/Couplings/NLOAlphaS
+set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS                       /Herwig/Couplings/NLOAlphaS
 set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
 
 
 cd /Herwig/Merging
 set MergingFactory:Cuts /Herwig/Cuts/Cuts
-set Merger:MergingFactory MergingFactory
-set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
-set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
-set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
 set MergingFactory:MergingHelper Merger
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
+set MergingFactory:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+
+
+
 
 
 
@@ -58,33 +59,28 @@ set EventHandler:SubProcessHandlers[0] /Herwig/Merging/MergingFactory
 
 cd /Herwig/Particles
 
-set d:NominalMass 0*GeV
-set dbar:NominalMass 0*GeV
-set u:NominalMass 0*GeV
-set ubar:NominalMass 0*GeV
-set s:NominalMass 0*GeV
-set sbar:NominalMass 0*GeV
-
-set c:HardProcessMass 0*GeV
-set cbar:HardProcessMass 0*GeV
-set b:HardProcessMass 0*GeV
-set bbar:HardProcessMass 0*GeV
-
-set e+:HardProcessMass 0*GeV
-set e-:HardProcessMass 0*GeV
-set mu+:HardProcessMass 0*GeV
-set mu-:HardProcessMass 0*GeV
-
-set nu_e:HardProcessMass 0*GeV
-set nu_ebar:HardProcessMass 0*GeV
-set nu_mu:HardProcessMass 0*GeV
-set nu_mubar:HardProcessMass 0*GeV
-set nu_tau:HardProcessMass 0*GeV
-set nu_taubar:HardProcessMass 0*GeV
-
+set d:NominalMass                0*GeV
+set dbar:NominalMass             0*GeV
+set u:NominalMass                0*GeV
+set ubar:NominalMass             0*GeV
+set s:NominalMass                0*GeV
+set sbar:NominalMass             0*GeV
+set c:HardProcessMass            0*GeV
+set cbar:HardProcessMass         0*GeV
+#set b:HardProcessMass            0*GeV
+#set bbar:HardProcessMass         0*GeV
+set e+:HardProcessMass           0*GeV
+set e-:HardProcessMass           0*GeV
+set mu+:HardProcessMass          0*GeV
+set mu-:HardProcessMass          0*GeV
+set nu_e:HardProcessMass         0*GeV
+set nu_ebar:HardProcessMass      0*GeV
+set nu_mu:HardProcessMass        0*GeV
+set nu_mubar:HardProcessMass     0*GeV
+set nu_tau:HardProcessMass       0*GeV
+set nu_taubar:HardProcessMass    0*GeV
 
 cd /Herwig/Partons
-
 set /Herwig/Particles/p+:PDF HardNLOPDF
 set /Herwig/Particles/pbar-:PDF HardNLOPDF
 set /Herwig/Partons/PPExtractor:FirstPDF HardNLOPDF
@@ -95,8 +91,6 @@ set /Herwig/Shower/ShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/Shower/ShowerHandler:PDFB ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFB ShowerNLOPDF
-
-
 
 ### Don't apply restrictions on the z-boundaries while clustering.
 set /Herwig/Merging/Merger:OpenZBoundaries DipoleScale
@@ -112,13 +106,18 @@ set FFMassiveKinematics:OpenZBoundaries Hard
 # Switch of the profiles of the Shower
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
-
 # Set up the rivet analysis to use.
 cd /Herwig/Analysis
 create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
 
 
 
+cd /Herwig/Merging
+# In fact we are not using this for now.
+set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
+# Currently we do not splitt the hard process for merged processes.
+set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
+ 
 
 
 

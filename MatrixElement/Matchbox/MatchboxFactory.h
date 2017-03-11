@@ -261,7 +261,7 @@ public:
    * is constructed from the data provided by the
    * head matrix element.
    */
-  bool subProcessGroups() const { return !showerApproximation(); }
+  virtual bool subProcessGroups() const { return !showerApproximation(); }
 
   /**
    * Return true, if subtraction scales should be caluclated from real emission kinematics

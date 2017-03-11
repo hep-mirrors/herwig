@@ -27,14 +27,13 @@ namespace Herwig {
    * \author Johannes Bellm
    *
    * \brief MergingFactory automatically sets up a NLO
-   * QCD merging carried out in dipole subtraction.
+   * QCD merging.
    *
    * @see \ref MergingFactoryInterfaces "The interfaces"
    * defined for MergeboxFactory.
    */
   class MergingFactory : public MatchboxFactory {
   public:
-    
       /// main method to setup the ME vector
     virtual void setup();
       /// fill all amplitudes, stored in pureMEsMap
@@ -53,17 +52,15 @@ namespace Herwig {
     void orderOLPs();
       /// Debugging: push only multiplicities to the ME vector
       /// in range of specified mulltiplicity.
-     int onlymulti()const {
+    int onlymulti()const {
        return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());
-     }
-      /// calculate only unlops weights.
-    bool onlyUnlopsweights() const {return theonlyUnlopsweights;}
+    }
       /// pointer to the merging helper.
     MergerPtr MH() {return theMergingHelper;}
       /// maximal NLO mulitplicity: 0=NLO corrections to the productio process.
     int M() const {return theM-1;}
       /// leg size of highest multiplicity.
-     int N() const {return theN;}
+    int N() const {return theN;}
      /// Return the Map of matrix elements to be considered
      /// (the Key is the number of additional jets)
     const map<int, vector<MatchboxMEBasePtr> >& pureMEsMap() const {
@@ -78,7 +75,9 @@ namespace Herwig {
     virtual vector<string> parseProcess(string);
       // fill the virtuals vector (these are IPK-operators)
     void getVirtuals(MatchboxMEBasePtr nlo, bool clone );
-    
+      // In the merged setup we only produce single phase space points. 
+    bool subProcessGroups() const { return false;}
+ 
   public:
     
     /** @name Functions used by the persistent I/O system. */
@@ -99,8 +98,6 @@ namespace Herwig {
     
     static void Init();
     
-    
-
   protected:
     
     /** @name Standard Interfaced functions. */
@@ -134,50 +131,24 @@ namespace Herwig {
     
   private:
     
-      /// Calculate only virtual and real contributions.
-    bool theonlyNLOParts = false;
-      /// Calculate only virtual contributions.
-    bool theonlyvirtualNLOParts = false;
-      /// Calculate only real contributions.
-    bool theonlyrealNLOParts = false;
-      /// Calculate only expanded histories contributions.
-    bool theonlyUnlopsweights = false;
-      /// unitarize virtual and real contributions.
-    bool theunitarizeNLOParts = true;
-      /// Calculate born contributions.
-    bool calc_born = true;
-      /// Calculate virtual contributions.
-    bool calc_virtual = true;
-      /// Calculate real contributions.
-    bool calc_real = true;
       /// unitarise the LO contributions.
     bool unitarized = true;
-      /// unitarise the NLO contributions.
-    bool NLOunitarized = true;
       /// did run setup.
     bool ransetup = false;
       /// Debugging: push only multiplicities to the ME vector
       /// in range of specified mulltiplicity.
     int theonlymulti = -1;
-      /// calculate only the specified subprocess with no.
-    int theonlysub = -1;
-      /// cut the subprocesses in equal size pieces.
-    int divideSub = -1;
-      /// interface to calculate every # subprocess.
-    int divideSubNumber = -1;
       /// maximal legsize for NLO corrections.
     int theM = -1;
       /// maximal legsize for LO contributions.
     int theN = -1;
-      /// Prefix for subtraction data.
-    string theSubtractionData;
       /// map for processes.
     map< int, vector<string> > processMap;
       //The matrix elements: int = number of additional jets
     map< int, vector<MatchboxMEBasePtr> > thePureMEsMap;
       /// the merging helper
     MergerPtr theMergingHelper;
-    
+  
     /**
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.

@@ -1283,10 +1283,4 @@ void DipoleShowerHandler::Init() {
   static SwitchOption interfacePowhegDecayEmissionNo
   (interfacePowhegDecayEmission,"No","Powheg decay emission off", false);
   
-  
-  static Reference<DipoleShowerHandler,MergerBase> interfaceMergingHelper
-  ("MergingHelper",
-   "",
-   &DipoleShowerHandler::theMergingHelper, false, false, true, true, false);
-  
 }

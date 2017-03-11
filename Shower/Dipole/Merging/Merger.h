@@ -171,8 +171,6 @@ namespace Herwig {
   private:
       /// calculate the history weighted born cross section
     CrossSection MergingDSigDRBornStandard();
-      /// calculate the history weighted born cross section
-    CrossSection MergingDSigDRBornCheapME();
       /**
        * calculate the history weighted born cross section
        * add the difference of IPK with and without alpha parameter
@@ -233,7 +231,11 @@ namespace Herwig {
     double singleHistExpansion(Dipole, Energy, Energy, Energy, pair<bool, bool>);
       //alpha_s as given in the shower
     double as(Energy q)const{return DSH()->as(q);}
-    //   //return the dipole shower handler
+      // set the pointer to the Mergingfactory.
+    void setFactory(MergingFactoryPtr f){theTreeFactory=f;}
+      // set the pointer to the DipoleShower.
+    void setDipoleShower(DipoleShowerHandlerPtr dsh){theDipoleShowerHandler=dsh;}
+      //return the dipole shower handler
     DipoleShowerHandlerPtr DSH(){return theDipoleShowerHandler;}
       //return the const dipole shower handler
     cDipoleShowerHandlerPtr DSH()const{return theDipoleShowerHandler;}

@@ -399,88 +399,27 @@ CrossSection Merger::MergingDSigDRBornGamma( ){
     
     res += diff;
   }
-  
-  
   return res;
 }
 
 
 
 
-
-  /// calculate the history weighted born cross section
-#include "ThePEG/Handlers/SamplerBase.h"
-CrossSection Merger::MergingDSigDRBornCheapME( ){
-    // Check if phase space poing is in ME region
-  if ( !currentNode()->children().empty() ) {
-    auto const & inOutPair = currentNode()->getInOut();
-    NodePtr randomChild =  currentNode()->randomChild(); // Here we make sure that clustering and splitting are invertible
-    if( !matrixElementRegion( inOutPair.first , inOutPair.second , randomChild->pT() , theMergePt ) )return ZERO;
-  }
-  
-  CrossSection meweight=(SamplerBase::runLevel() == SamplerBase::RunMode)?TreedSigDR( 60.*GeV, 1. ):1.*nanobarn;
-  
-  if (SamplerBase::runLevel() == SamplerBase::RunMode && theHighMeWeightMap.count(currentNode()) ) {
-    if (abs(meweight)>abs(theHighMeWeightMap[currentNode()])) {
-      theHighMeWeightMap[currentNode()]=abs(meweight);
-    }else{
-      if (meweight/theHighMeWeightMap[currentNode()]<UseRandom::rnd()) {
-        return ZERO;
-      }
-    }
-  }else{
-    theHighMeWeightMap.insert({currentNode(),abs(meweight)});
-  }
-  
-  
-  
-    // get the history for the process
-  const NodePtr productionNode =  currentNode()-> getHistory( true , DSH()->hardScaleFactor() );
-  
-    // decide if to cluster
-  weight = decideClustering(productionNode,currentNode(),projected);
-  
-  if ( treefactory()->onlymulti() != -1&&
-      treefactory()->onlymulti() != int( currentNode()->legsize()-( projected ? 1 : 0 ) ) )
-  return ZERO;
-    // Check for cuts on the production proces.
-  if ( !productionNode->xcomb()->willPassCuts() )return ZERO;
-    // calculate the staring scale
-  Energy startscale = CKKW_StartScale( productionNode );
-  
-    // fill history with caluclation of sudakov supression
-  fillHistory( startscale , productionNode , currentNode() );
-    // fill the projector -> return the scale of the last splitting
-  currentNode()->runningPt( fillProjector( projected ? 1 : 0 ) );
-    // the weight has three components to get shower history weight
-  weight *= history.back().weight*alphaReweight()*pdfReweight();
-  if( weight == 0. )return ZERO;
-    //calculate the cross section
-  return weight*TreedSigDR( startscale , 1. )*theHighMeWeightMap[currentNode()]/meweight;
-}
-
-
-
-
-
-
-
-
 CrossSection Merger::TreedSigDR( Energy startscale , double diffAlpha ){
-  
   currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
   CrossSection res =  currentME()->dSigHatDRB();
-  bool useDipolesForME=false;
+  /*bool useDipolesForME=false;
   if (useDipolesForME && !currentNode()->children().empty()){
 	res=ZERO;
 	for (auto const & child : currentNode()->children() )
 	    res-=child->dipole()->dSigHatDR(sqr( startscale ));	
   }
+  */
   if ( projected && emitDipoleMEDiff ) {
     CrossSection resDip=ZERO;
     for (auto const & child : currentNode()->children() )
       resDip-=child->dipole()->dSigHatDR(sqr( startscale ));
-      setEmissionProbability(1.-min(resDip/res,res/resDip));
+    setEmissionProbability(1.-min(resDip/res,res/resDip));
   }else{
     setEmissionProbability(0.);	
   }
@@ -499,8 +438,8 @@ CrossSection Merger::TreedSigDR( Energy startscale , double diffAlpha ){
 CrossSection Merger::LoopdSigDR( Energy startscale ){
    currentME()->setScale( sqr( startscale ) , sqr( startscale ) );
    currentME()->doOneLoopNoBorn();
-  CrossSection res =  currentME()->dSigHatDRV()+
-                      currentME()->dSigHatDRI();
+   CrossSection res =  currentME()->dSigHatDRV()+
+                       currentME()->dSigHatDRI();
    currentME()->noOneLoopNoBorn();
   return res;
 }
@@ -591,32 +530,29 @@ double Merger::pdfReweight(){ // TODO factorization scale inside
 
 
 double Merger::cmwAlphaS(Energy q)const{
-  double alphas=1.;
   using Constants::pi;
     // No cmw-scheme
-  if (theCMWScheme==0) {
-    alphas = as( q );
-  }
+  if (theCMWScheme==0) 
+    return as( q );
     // Linear cmw-scheme
   else if(theCMWScheme==1){
-    alphas = as( q );
-    alphas *=1.+(3.*(67./18.-1./6.*sqr(pi))
-                 -5./9.*Nf(q))* alphas/2./pi;
+    double als=as( q );
+    return als *
+           (1.+(3.*(67./18.-1./6.*sqr(pi))
+                 -5./9.*Nf(q))* als/2./pi);
   }
     // cmw-scheme as factor in argument.
   else if(theCMWScheme==2){
     double kg=exp(-(67.-3.*sqr(pi)-10/3*Nf(q))
                   /(     2.     *(33.-2.*Nf(q))));
     //Note factor 2 since we here dealing with Energy
-    alphas = as(max(kg*q,1_GeV));
+    return as(max(kg*q,1_GeV));
   }else{
     throw Exception()
     << "This CMW-Scheme is not implemented."
     << Exception::abortnow;
-    
   }
-  return alphas;
-
+  return -1;
 }
 
 
@@ -1009,12 +945,8 @@ CrossSection Merger::MergingDSigDR() {
 void Merger::CKKW_PrepareSudakov( NodePtr node , Energy running ){
   tSubProPtr sub = node->xcomb()->construct();
   const auto pb=node->xcomb()->partonBins();
-  
   DSH()->setCurrentHandler();
-  
-  DSH()->currentHandler()->generator()->currentEventHandler( 
-                       currentNode()->xcomb()->eventHandlerPtr() );
-  
+  DSH()->currentHandler()->generator()->currentEventHandler(currentNode()->xcomb()->eventHandlerPtr() );
   DSH()->currentHandler()->remnantDecayer()->setHadronContent( currentNode()->xcomb()->lastParticles() );
   DSH()->eventRecord().clear();
   DSH()->eventRecord().slimprepare( sub , dynamic_ptr_cast<tStdXCombPtr>( node->xcomb() ) , DSH()->pdfs() , currentNode()->xcomb()->lastParticles() );
@@ -1480,7 +1412,7 @@ void Merger::persistentOutput( PersistentOStream & os ) const {
   isUnitarized << isNLOUnitarized  <<
   theOpenZBoundaries << theChooseHistory <<
   theN0 << theOnlyN   << weight <<
-  weightCB << theGamma << theSmearing <<  ounit( theIRSafePT , GeV ) <<
+  theGamma << theSmearing <<  ounit( theIRSafePT , GeV ) <<
   ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV )
   << theLargeNBasis << FFLTK << FILTK <<
   IFLTK << IILTK << FFMTK << FIMTK << IFMTK <<
@@ -1494,7 +1426,7 @@ void Merger::persistentInput( PersistentIStream & is , int ) {
   isUnitarized >> isNLOUnitarized >>
   theOpenZBoundaries >>
   theChooseHistory >> theN0 >> theOnlyN >>
-  weight >> weightCB >>
+  weight >> 
   theGamma >>   theSmearing >>  iunit( theIRSafePT , GeV ) >>
   iunit( theMergePt , GeV ) >>
   iunit( theCentralMergePt , GeV ) >> theLargeNBasis >>
@@ -1526,13 +1458,7 @@ void Merger::Init() {
   static ClassDocumentation<Merger> documentation
   ( "The Merger class takes care of merging multiple LO & NLO cross sections." );
   
-  
-  static Reference<Merger , DipoleShowerHandler> interfaceShowerHandler
-  ( "DipoleShowerHandler" , 
-   "Set the pointer to the Dipole Shower Handler" ,
-   &Merger::theDipoleShowerHandler ,
-   false , false ,
-   true , true , false );
+ ////////////////////////////////////////////////// 
   
   static Switch<Merger , unsigned int>
   interfaceShowerExpansionWeights
@@ -1572,6 +1498,7 @@ void Merger::Init() {
    "Switch off the expansion." ,
    4 ); 
 
+ /////////////////////////////////////////////////////////////////////7
 
  
   static Switch<Merger , unsigned int>
@@ -1597,19 +1524,13 @@ void Merger::Init() {
    "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q) with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",
    2);
   
+
   static Parameter<Merger , Energy> interfaceMergerScale
-  ( "MergingScale" , 
-   "The MergingScale." , 
+  ( "MergingScale" ,  "The MergingScale." , 
    &Merger::theCentralMergePt ,
    GeV , 20.0*GeV , 0.0*GeV , 0*GeV ,
    false , false , Interface::lowerlim );
   
-  static Reference<Merger , MergingFactory> interfaceMergerHelper
-  ( "MergingFactory" , 
-   "Set a pointer to the MergingFactory" ,
-   &Merger::theTreeFactory ,
-   false , false ,
-   true , true , false );
   
   
   static Parameter<Merger , double> interfacegamma
@@ -1617,7 +1538,7 @@ void Merger::Init() {
    "gamma parameter." , 
    &Merger::theGamma , 1.0 , 0.0 , 0 , 
    false , false , Interface::lowerlim );
-  
+   interfacegamma.rank(-1); 
   
   static Reference<Merger , ColourBasis> interfaceLargeNBasis
   ( "LargeNBasis" , 
@@ -1625,6 +1546,7 @@ void Merger::Init() {
    &Merger::theLargeNBasis ,
    false , false ,
    true , true , false );
+  interfaceLargeNBasis.rank(-1);
   
  
   static Switch<Merger,int> interfaceOpenZBoundariesM
@@ -1636,31 +1558,33 @@ void Merger::Init() {
   (interfaceOpenZBoundariesM,   "Full",   "",   1);
   static SwitchOption interfaceOpenZBoundariesMDipoleScale
   (interfaceOpenZBoundariesM,   "DipoleScale",   "",   2);
-
+ 
+ 
  
   static Switch<Merger , bool>
   interfaceemitDipoleMEDiff
-  ( "emitDipoleMEDiff" , "Allow emissions of the unitarisation contribution with prob. 1-min(B_n/sum Dip_n,sum Dip_n/B_n)" , 
+  ( "emitDipoleMEDiff" , 
+  "Allow emissions of the unitarisation contribution with prob. 1-min(B_n/sum Dip_n,sum Dip_n/B_n)" , 
   &Merger::emitDipoleMEDiff , false , false , false );
   static SwitchOption interfaceemitDipoleMEDiffYes
   ( interfaceemitDipoleMEDiff , "Yes" , "" , true );
   static SwitchOption interfaceemitDipoleMEDiffNo
   ( interfaceemitDipoleMEDiff , "No" , "" , false );
-
+  interfaceemitDipoleMEDiff.rank(-1);
  
-  static Parameter<Merger , Energy>
-  interfaceIRSafePT
+  
+
+
+  static Parameter<Merger , Energy>  interfaceIRSafePT
   ( "IRSafePT" ,
   "Set the pt for which a matrixelement should be treated as IR-safe." ,
   &Merger::theIRSafePT ,
   GeV , 0.0 * GeV , ZERO , Constants::MaxEnergy ,
   true , false , Interface::limited );
-  
   interfaceIRSafePT.setHasDefault( false );
   
   
-  static Parameter<Merger , double>
-  interfacemergePtsmearing(
+  static Parameter<Merger , double>  interfacemergePtsmearing(
   "MergingScaleSmearing" ,
   "Set the percentage the merging pt should be smeared." ,
   &Merger::theSmearing ,
@@ -1668,8 +1592,7 @@ void Merger::Init() {
   true , false , Interface::limited );
   
  
-  static Parameter<Merger , int>
-  interfacechooseHistory(
+  static Parameter<Merger , int>  interfacechooseHistory(
   "chooseHistory" ,
   "Various   ways of choosing the history weights: 0(default):dipole xs, 1:dipole/born, 2:flat, 3: 1/pt_dip" ,
   &Merger::theChooseHistory ,
@@ -1677,10 +1600,9 @@ void Merger::Init() {
   false , false , Interface::lowerlim );
   
   
-  static Parameter<Merger , double>
-  interfacetheRealSubtractionRatio(
+  static Parameter<Merger , double>  interfacetheRealSubtractionRatio(
   "RealSubtractionRatio" ,
-  "Set the percentage the merging pt should be smeared." ,
+  "If the pt of the Dipole divided by the merging scale is lower than the ratio, the dipole is used to subtract the real emission. Otherwise the shower approximation is used, " ,
   &Merger::theRealSubtractionRatio , 0. , 0. ,
   1. , 10.0 ,
   true , false , Interface::limited );
