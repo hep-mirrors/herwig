@@ -227,7 +227,8 @@ void MatchboxHybridAmplitude::Init() {
 
   static Switch<MatchboxHybridAmplitude,bool> interfaceUseOLPCorrelators
     ("UseOLPCorrelators",
-     "",
+     "Obtain correlated matrix elements from the OLP instead of "
+     "the tree-level amplitude.",
      &MatchboxHybridAmplitude::theUseOLPCorrelators, false, false, false);
   static SwitchOption interfaceUseOLPCorrelatorsYes
     (interfaceUseOLPCorrelators,
@@ -239,6 +240,7 @@ void MatchboxHybridAmplitude::Init() {
      "No",
      "",
      false);
+  interfaceUseOLPCorrelators.rank(-1);
 
 }
 

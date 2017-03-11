@@ -13,10 +13,6 @@
 
 #include "SubtractedME.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h"
-#include "ThePEG/Interface/RefVector.h"
-#include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Repository/EventGenerator.h"
