@@ -228,23 +228,19 @@ void MatchboxXCombData::flushCaches() {
   theCalculateLargeNME2 = true;
   theCalculateOneLoopInterference = true;
   theCalculateOneLoopPoles = true;
-  for ( map<pair<int,int>,bool>::iterator f = theCalculateColourCorrelators.begin();
-	f != theCalculateColourCorrelators.end(); ++f )
-    f->second = true;
-  for ( map<pair<int,int>,bool>::iterator f = theCalculateLargeNColourCorrelators.begin();
-	f != theCalculateLargeNColourCorrelators.end(); ++f )
-    f->second = true;
-  for ( map<pair<int,int>,bool>::iterator f = theCalculateColourSpinCorrelators.begin();
-	f != theCalculateColourSpinCorrelators.end(); ++f )
-    f->second = true;
-  for ( map<pair<int,int>,bool>::iterator f = theCalculateSpinCorrelators.begin();
-	f != theCalculateSpinCorrelators.end(); ++f )
-    f->second = true;
+  for ( auto & f : theCalculateColourCorrelators )
+    f.second = true;
+  for ( auto & f : theCalculateLargeNColourCorrelators )
+    f.second = true;
+  for ( auto & f : theCalculateColourSpinCorrelators )
+    f.second = true;
+  for ( auto & f : theCalculateSpinCorrelators )
+    f.second = true;
   filledOLPMomenta = false;
   filledExternalMomenta = false;
-  theLastAmplitudes.clear();
-  theLastLargeNAmplitudes.clear();
-  theLastOneLoopAmplitudes.clear();
+    //theLastAmplitudes.clear();
+    //theLastLargeNAmplitudes.clear();
+    //theLastOneLoopAmplitudes.clear();
   theColourCorrelators.clear();
   theLargeNColourCorrelators.clear();
   theColourSpinCorrelators.clear();
