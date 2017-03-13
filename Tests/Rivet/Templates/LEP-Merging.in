@@ -1,0 +1,62 @@
+# -*- ThePEG-repository -*-
+##################################################
+## Collider type
+##################################################
+read snippets/DipoleMerging.in
+read snippets/EECollider.in
+read snippets/MonacoSampler.in
+##################################################
+## Process selection
+##################################################
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+## Set the order of the couplings
+cd /Herwig/Merging/
+set MergingFactory:OrderInAlphaS 0
+set MergingFactory:OrderInAlphaEW 2
+##################################################
+## Matrix element library selection
+##################################################
+read Matchbox/MadGraph-OpenLoops.in
+##################################################
+## Scale choice
+## See the documentation for more options
+##################################################
+cd /Herwig/Merging/
+set MergingFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
+##################################################
+## PDF and AlphaS choice
+##################################################
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
+read Merging/FactorCMWScheme.in
+##################################################
+#  Switch off ISR
+##################################################
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
+##################################################
+## Save the generator
+##################################################
+do /Herwig/Merging/MergingFactory:ProductionMode
+
+## Select the process
+cd /Herwig/Merging/
+set Merger:MergingScale 5.*GeV
+${process}
+
+read ${parameterFile}
+
+cd /Herwig/Generators
+set EventGenerator:MaxErrors 1000000
+saverun ${runname} EventGenerator

@@ -12,6 +12,83 @@ if __name__ == "__main__":
     from optparse import OptionParser, OptionGroup
     parser = OptionParser(usage="%prog name [...]")
 
+
+def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
+    res ="set "+thefactory+":OrderInAlphaS "+Oas+"\n"
+    res+="set "+thefactory+":OrderInAlphaEW "+Oew+"\n"
+    res+="do "+thefactory+":Process "+theProcess+" "
+    if ( mergedlegs != 0 ):
+      res+="["
+      for j in range(mergedlegs):
+        res+=" j "
+      res+="]"
+    res+="\n"
+    if (NLOprocesses!=0):
+       res+="set MergingFactory:NLOProcesses %s \n" % NLOprocesses
+    if ( scale != "" ):
+      res+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/"+scale+"\n"
+    return res
+
+
+def addLeptonPairCut(minmass,maxmass):
+    return "set /Herwig/Cuts/LeptonPairMassCut:MinMass "+minmass+"*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass "+maxmass+"*GeV\n"
+
+didaddfirstjet=False
+def addFirstJet(ptcut):
+    global didaddfirstjet
+    if(didaddfirstjet):
+      logging.error("Can only add jetcut once.")
+      sys.exit(1)
+  
+    res="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
+    res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
+    res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+    if(ptcut!=""):
+        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+".*GeV\n"
+    didaddfirstjet=True
+    return res
+
+
+
+didaddsecondjet=False
+def addSecondJet(ptcut):
+    global didaddsecondjet
+    if(didaddsecondjet):
+      logging.error("Can only add second jetcut once.")
+      sys.exit(1)
+    res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
+    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+".*GeV\n"
+    didaddsecondjet=True
+    return res
+
+
+didaddjetpair=False
+def addJetPairCut(minmass):
+  global didaddjetpair
+  if(didaddjetpair):
+      logging.error("Can only add second jetcut once.")
+      sys.exit(1)
+  res="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
+  res+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
+  res+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
+  res+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
+  res+="set /Herwig/Cuts/JetPairMass:MassMin "+minmass+".*GeV\n"
+  didaddjetpair=True
+  return res
+
+def addBRReweighter():
+  res="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+  res+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+  return res
+
+def setHardProcessWidthToZero(list1):
+  res=""
+  for i in list1:
+    res+="set /Herwig/Particles/"+i+":HardProcessWidth 0.\n"
+  return res
+
+
+
 (opts, args) = parser.parse_args()
 ## Check args
 if len(args) != 1:
@@ -46,6 +123,8 @@ elif(name.find("SppS")==0) :
 elif(name.find("Star")==0) :
     collider="Star"
 simulation=""
+thefactory="Factory"
+
 istart = 1
 print name
 if(name.find("Matchbox-Powheg")>0) :
@@ -63,6 +142,10 @@ elif(name.find("Dipole")>0) :
 elif(name.find("Powheg")>0) :
     istart = 2
     simulation="Powheg"
+elif(name.find("Merging")>0) :
+    istart = 2
+    simulation="Merging"
+    thefactory="MergingFactory"
 
 if(simulation=="Matchbox") :
     parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
@@ -70,6 +153,7 @@ if(simulation=="Matchbox") :
         parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
     if(collider.find("DIS")<0) :
         parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
+
 
 if(collider=="") :
     logging.error("Can\'t find collider")
@@ -122,7 +206,14 @@ if(collider=="BFactory") :
     elif(simulation=="Powheg") :
         process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
     elif(simulation=="Matchbox" ) :
-        process = "do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\n"
+        process =addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0)
+        process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
+        process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
+        process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
+    elif(simulation=="Merging" ) :
+        logging.warning("BFactory not explicitly tested for %s " % simulation)
+        sys.exit(0)
+
 # DIS
 elif(collider=="DIS") :
     if(simulation=="") :
@@ -134,10 +225,16 @@ elif(collider=="DIS") :
     elif(simulation=="Powheg") :
         process = ""
     elif(simulation=="Matchbox" ) :
+      if(parameterName.find("e-")>=0) :
+            process=addProcess(thefactory,"e- p -> e- j","0","2","",0,0)
+      else :
+            process=addProcess(thefactory,"e+ p -> e+ j","0","2","",0,0)
+    elif(simulation=="Merging" ) :
         if(parameterName.find("e-")>=0) :
-            process="do Factory:Process e- p -> e- j"
+            process=addProcess(thefactory,"e- p -> e- j","0","2","",2,2)
         else :
-            process="do Factory:Process e+ p -> e+ j"
+            process=addProcess(thefactory,"e+ p -> e+ j","0","2","",2,2)
+
 # LEP
 elif(collider=="LEP") :
     if(simulation=="") :
@@ -156,9 +253,21 @@ elif(collider=="LEP") :
             process="set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4"
     elif(simulation=="Matchbox" ) :
         if(parameterName=="10") :
-            process="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"
+            process =addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0)
+            process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
+            process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
+            process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
         else :
-            process="do Factory:Process e- e+ -> j j"
+            process=addProcess(thefactory,"e- e+ -> j j","0","2","",0,0)
+
+    elif(simulation=="Merging" ) :
+        if(parameterName=="10") :
+          process=addProcess(thefactory,"e- e+ -> u ubar","0","2","",1,1)
+          process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",1,1)
+          process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",1,1)
+          process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",1,1)
+        else :
+          process=addProcess(thefactory,"e- e+ -> j j","0","2","",1,1)
 # TVT
 elif(collider=="TVT") :
     process="set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n"
@@ -263,10 +372,10 @@ elif(collider=="TVT") :
             process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
             process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            process+=addLeptonPairCut("25","70")
         elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
             process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
+            process+=addLeptonPairCut("150","600")
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process +="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
     elif(simulation=="Powheg") :
@@ -278,10 +387,10 @@ elif(collider=="TVT") :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            process+=addLeptonPairCut("25","70")
         elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
+            process+=addLeptonPairCut("150","600")
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
@@ -298,142 +407,128 @@ elif(collider=="TVT") :
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaJet","")
-    elif(simulation=="Matchbox" ) :
+    elif(simulation=="Matchbox" or simulation=="Merging" ) :
         if(parameterName.find("Jets")>=0) :
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p j j\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
-            process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p -> j j","2","0","MaxJetPtScale",1,0)
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Run-II-Jets-10")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 500.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("500")
             elif(parameterName.find("Run-II-Jets-11")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 900.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("900")
             elif(parameterName.find("Run-II-Jets-12")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 300.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("300")
             elif(parameterName.find("Run-I-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
+                process+=addFirstJet("20")
             elif(parameterName.find("Run-I-Jets-2")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 40.\n"
+                process+=addFirstJet("40")
             elif(parameterName.find("Run-I-Jets-3")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 65.\n"
+                process+=addFirstJet("65")
             elif(parameterName.find("Run-I-Jets-4")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 90.\n"
+                process+=addFirstJet("90")
             elif(parameterName.find("Run-I-Jets-5")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 160.\n"
+                process+=addFirstJet("160")
             elif(parameterName.find("Run-I-Jets-6")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 100.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("100")
             elif(parameterName.find("Run-I-Jets-7")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 400.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("400")
             elif(parameterName.find("Run-I-Jets-8")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 700.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("700")
             elif(parameterName.find("Run-II-Jets-0")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 15.\n"
+                process+=addFirstJet("15")
             elif(parameterName.find("Run-II-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 25.\n"
+                process+=addFirstJet("25")
             elif(parameterName.find("Run-II-Jets-2")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 40.\n"
+                process+=addFirstJet("40")
             elif(parameterName.find("Run-II-Jets-3")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 60.\n"
+                process+=addFirstJet("60")
             elif(parameterName.find("Run-II-Jets-4")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 85.\n"
+                process+=addFirstJet("85")
             elif(parameterName.find("Run-II-Jets-5")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 110.\n"
+                process+=addFirstJet("110")
             elif(parameterName.find("Run-II-Jets-6")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 160.\n"
+                process+=addFirstJet("160")
             elif(parameterName.find("Run-II-Jets-7")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 250.\n"
+                process+=addFirstJet("250")
             elif(parameterName.find("Run-II-Jets-8")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 100.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("100")
             elif(parameterName.find("Run-II-Jets-9")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 300.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("300")
             elif(parameterName.find("900-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
+                process+=addFirstJet("10")
             elif(parameterName.find("300-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 6.\n"
+                process+=addFirstJet("6")
             elif(parameterName.find("630-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
+                process+=addFirstJet("20")
             elif(parameterName.find("630-Jets-2")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 40.\n"
+                process+=addFirstJet("40")
             elif(parameterName.find("630-Jets-3")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 75.\n"
+                process+=addFirstJet("75")
             elif(parameterName.find("900-Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
+                process+=addFirstJet("10")
+            else :
+                logging.error("Exit 00007")
+                sys.exit(1)
         elif(parameterName.find("Run-I-WZ")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",2,2)
+                process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",2,2)
+                process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",2,2)
+                process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p pbar mu+ mu-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p pbar mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("25","70")
         elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150.*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p pbar mu+ mu-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p pbar mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("150","600")
         elif(parameterName.find("Run-II-Z-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p pbar mu+ mu-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p pbar mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
 # Star
 elif(collider=="Star" ) :
     process = "set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n"
@@ -674,8 +769,8 @@ elif(collider=="LHC") :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("Top-SL")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
@@ -683,8 +778,8 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/tbar:Synchronized Not_synchronized\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("Top-All")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
@@ -693,31 +788,31 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("WW-emu")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("WW-ll")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("W-Z-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
@@ -806,8 +901,8 @@ elif(collider=="LHC") :
         elif(parameterName.find("WGamma")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 1\nset MEPP2VGamma:MassOption 1\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
             if(parameterName.find("-e")>=0) :
                 process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+;\n"
             else :
@@ -872,8 +967,8 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("WW-emu")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -890,8 +985,8 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("WW-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -905,8 +1000,8 @@ elif(collider=="LHC") :
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -920,8 +1015,8 @@ elif(collider=="LHC") :
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -935,8 +1030,8 @@ elif(collider=="LHC") :
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("W-Z-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
@@ -1010,476 +1105,548 @@ elif(collider=="LHC") :
             logging.error(" Process %s not supported for internal POWHEG matrix elements" % name)
             sys.exit(1)
             
-    elif(simulation=="Matchbox" ) :
+    elif( simulation=="Matchbox" or simulation=="Merging" ) :
         if(parameterName.find("8-VBF")>=0) :
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma\n"
-            process+="do Factory:DiagramGenerator:TimeLikeRange 0 0\n"
-            process+="do Factory:Process p p h0 j j\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+                process+="cd /Herwig/Merging/"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma\n"
+            process+="do "+thefactory+":DiagramGenerator:TimeLikeRange 0 0\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,0)
+            process+=setHardProcessWidthToZero(["h0"])
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
-               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+               process+=addBRReweighter()
+               
         elif(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
-            process+="insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma\n"
-            process+="do Factory:DiagramGenerator:TimeLikeRange 0 0\n"
-            process+="do Factory:Process p p h0 j j\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+                process+="cd /Herwig/Merging/"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
+            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma\n"
+            process+="do "+thefactory+":DiagramGenerator:TimeLikeRange 0 0\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,0)
+            process+=setHardProcessWidthToZero(["h0"])
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
         elif(parameterName.find("ggHJet")>=0) :
+            if(simulation=="Merging"):
+               logging.warning("ggHJet not explicitly tested for %s " % simulation)
+               sys.exit(0)
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="set Factory:OrderInAlphaS 3\nset Factory:OrderInAlphaEW 1\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p h0 j\n"
-            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
-            process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
-            process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
-            process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            process+=setHardProcessWidthToZero(["h0"])
+            process+=addProcess(thefactory,"p p h0 j","3","1","FixedScale",0,0)
+            process+=addFirstJet("20")
+            process+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
         elif(parameterName.find("8-ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 1\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p h0\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+                process+= "read Matchbox/MadGraph-OpenLoops.in\nread Matchbox/HiggsEffective.in\n"
+                process+="cd /Herwig/Merging/"
+            process+=setHardProcessWidthToZero(["h0"])
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p h0","2","1","FixedScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p h0","2","1","FixedScale",2,2)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
-               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+               process+=addBRReweighter()
+               
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
+            if(simulation=="Merging"):
+                process+= "read Matchbox/MadGraph-OpenLoops.in\nread Matchbox/HiggsEffective.in\n"
+                process+="cd /Herwig/Merging/"
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 1\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p h0\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            process+=setHardProcessWidthToZero(["h0"])
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p h0","2","1","FixedScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p h0","2","1","FixedScale",2,2)
+
+            process+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
         elif(parameterName.find("8-WH")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p W+ h0\n"
-            process+="do Factory:Process p p W- h0\n"
-            process+="set /Herwig/Particles/W+:HardProcessWidth 0.\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+              logging.warning("8-WH not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=setHardProcessWidthToZero(["h0","W+","W-"])
+            process+=addProcess(thefactory,"p p W+ h0","0","2","FixedScale",0,0)
+            process+=addProcess(thefactory,"p p W- h0","2","1","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
-               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+               process+=addBRReweighter()
+               
         elif(parameterName.find("8-ZH")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="set /Herwig/Particles/Z0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p Z0 h0\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+              logging.warning("8-ZH not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=setHardProcessWidthToZero(["h0","Z0"])
+            process+=addProcess(thefactory,"p p Z0 h0","0","2","FixedScale",0,0)
+            process+=addProcess(thefactory,"p p Z0 h0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
-               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+               process+=addBRReweighter()
+               
         elif(parameterName.find("WH")>=0) :
+            if(simulation=="Merging"):
+              logging.warning("WH not explicitly tested for %s " % simulation)
+              sys.exit(0)
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p e+ nu h0\n"
-            process+="do Factory:Process p p e- nu h0\n"
-            process+="do Factory:Process p p mu+ nu h0\n"
-            process+="do Factory:Process p p mu- nu h0\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=setHardProcessWidthToZero(["h0"])
+            process+=addProcess(thefactory,"p p e+ nu h0","0","3","LeptonPairMassScale",0,0)
+            process+=addProcess(thefactory,"p p e- nu h0","0","3","LeptonPairMassScale",0,0)
+            process+=addProcess(thefactory,"p p mu+ nu h0","0","3","LeptonPairMassScale",0,0)
+            process+=addProcess(thefactory,"p p mu- nu h0","0","3","LeptonPairMassScale",0,0)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("ZH")>=0) :
+            if(simulation=="Merging"):
+              logging.warning("ZH not explicitly tested for %s " % simulation)
+              sys.exit(0)
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
-            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
-            process+="do Factory:Process p p e+ e- h0\n"
-            process+="do Factory:Process p p mu+ mu- h0\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=setHardProcessWidthToZero(["h0"])
+            process+=addProcess(thefactory,"p p e+ e- h0","0","3","LeptonPairMassScale",0,0)
+            process+=addProcess(thefactory,"p p mu+ mu- h0","0","3","LeptonPairMassScale",0,0)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("UE")>=0) :
             logging.error(" Process %s not supported for Matchbox matrix elements" % name)
             sys.exit(1)
         elif(parameterName.find("7-DiJets")>=0 or parameterName.find("8-DiJets")>=0) :
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p j j\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
-            process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+            if(simulation=="Matchbox"):
+              process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",0,0)
+            elif(simulation=="Merging"):
+              process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",1,0)
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-            process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-            process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-            process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-            process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
             if(parameterName.find("-A")>=0) :
-               process+="set /Herwig/Cuts/FirstJet:PtMin 45.*GeV\n"
-               process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
-               process+="set /Herwig/Cuts/FirstJet:YRange  -3. 3.\n"
-               process+="set /Herwig/Cuts/SecondJet:YRange -3. 3.\n"
+                 process+=addFirstJet("45")
+                 process+=addSecondJet("25")
+                 process+="set /Herwig/Cuts/FirstJet:YRange  -3. 3.\n"
+                 process+="set /Herwig/Cuts/SecondJet:YRange -3. 3.\n"
             elif(parameterName.find("-B")>=0) :
-                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                 process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
+                 process+=addFirstJet("20")
+                 process+=addSecondJet("15")
                  process+="set /Herwig/Cuts/FirstJet:YRange  -2.7 2.7\n"
                  process+="set /Herwig/Cuts/SecondJet:YRange -2.7 2.7\n"
             elif(parameterName.find("-C")>=0) :
-                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                 process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
+                 process+=addFirstJet("20")
+                 process+=addSecondJet("15")
                  process+="set /Herwig/Cuts/FirstJet:YRange  -4.8 4.8\n"
                  process+="set /Herwig/Cuts/SecondJet:YRange -4.8 4.8\n"
+            else :
+                 logging.error("Exit 00001")
+                 sys.exit(1)
             if(parameterName.find("DiJets-1")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 90.*GeV\n"
+                process+=addJetPairCut("90")
             elif(parameterName.find("DiJets-2")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 200.*GeV\n"
+                process+=addJetPairCut("200")
             elif(parameterName.find("DiJets-3")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 450.*GeV\n"
+                process+=addJetPairCut("450")
             elif(parameterName.find("DiJets-4")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 750.*GeV\n"
+                process+=addJetPairCut("750")
             elif(parameterName.find("DiJets-5")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 950.*GeV\n"
+                process+=addJetPairCut("950")
             elif(parameterName.find("DiJets-6")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 1550.*GeV\n"
+                process+=addJetPairCut("1550")
             elif(parameterName.find("DiJets-7")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 2150.*GeV\n"
+                process+=addJetPairCut("2150")
             elif(parameterName.find("DiJets-8")>=0) :
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 2750.*GeV\n"
+                process+=addJetPairCut("2750")
+            else :
+                logging.error("Exit 00002")
+                sys.exit(1)
+
+
         elif(parameterName.find("7-Jets")>=0 or parameterName.find("8-Jets")>=0 or \
              parameterName.find("13-Jets")>=0) :
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p j j\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
-            process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",1,0)
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Jets-10")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 1800.\n"
+                process+=addFirstJet("1800")
             elif(parameterName.find("Jets-0")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 5.\n"
+                process+=addFirstJet("5")
             elif(parameterName.find("Jets-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
+                process+=addFirstJet("10")
             elif(parameterName.find("Jets-2")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
+                process+=addFirstJet("20")
             elif(parameterName.find("Jets-3")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 40.\n"
+                process+=addFirstJet("40")
             elif(parameterName.find("Jets-4")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 70.\n"
+                process+=addFirstJet("70")
             elif(parameterName.find("Jets-5")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 150.\n"
+                process+=addFirstJet("150")
             elif(parameterName.find("Jets-6")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 200.\n"
+                process+=addFirstJet("200")
             elif(parameterName.find("Jets-7")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 300.\n"
+                process+=addFirstJet("300")
             elif(parameterName.find("Jets-8")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 500.\n"
+                process+=addFirstJet("500")
             elif(parameterName.find("Jets-9")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 800.\n"
+                process+=addFirstJet("800")
+            else :
+                logging.error("Exit 00003")
+                sys.exit(1)
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
             parameters["bscheme"]=fourFlavour
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\n"
             process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
+            
+            
             if(parameterName.find("7-Bottom")>=0) :
-                process+="do Factory:Process p p b bbar\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p b bbar","2","0","MaxJetPtScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p b bbar","2","0","MaxJetPtScale",1,0)
             else:
-                process+="do Factory:Process p p c cbar\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
-            process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p c cbar","2","0","MaxJetPtScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p c cbar","2","0","MaxJetPtScale",1,0)
+
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("-0")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 0.\n"
+                process+=addFirstJet("0")
             elif(parameterName.find("-1")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 5.\n"
+                process+=addFirstJet("5")
             elif(parameterName.find("-2")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
+                process+=addFirstJet("20")
             elif(parameterName.find("-3")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 50.\n"
+                process+=addFirstJet("50")
             elif(parameterName.find("-4")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 80.\n"
+                process+=addFirstJet("80")
             elif(parameterName.find("-5")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 110.\n"
+                process+=addFirstJet("110")
             elif(parameterName.find("-6")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 90.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("90")
             elif(parameterName.find("-7")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 340.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("340")
             elif(parameterName.find("-8")>=0) :
-                process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 30.\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 25.\n"
-                process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
-                process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
-                process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
-                process+="insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass\n"
-                process+="set /Herwig/Cuts/JetPairMass:MassMin 500.*GeV\n"
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("500")
+            else :
+                logging.error("Exit 00004")
+                sys.exit(1)
+                  
         elif(parameterName.find("Top-L")>=0) :
-            process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p t tbar\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMTScale\n"
+            process+=setHardProcessWidthToZero(["t","tbar"])
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",2,2)
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("Top-SL")>=0) :
-            process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p t tbar\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMTScale\n"
+            process+=setHardProcessWidthToZero(["t","tbar"])
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",2,2)
             process+="set /Herwig/Particles/t:Synchronized Not_synchronized\n"
             process+="set /Herwig/Particles/tbar:Synchronized Not_synchronized\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+=addBRReweighter()
+            
         elif(parameterName.find("Top-All")>=0) :
-            process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
-            process+="do Factory:Process p p t tbar\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMTScale\n"
+            process+=setHardProcessWidthToZero(["t","tbar"])
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",2,2)
         elif(parameterName.find("WZ")>=0) :
-            process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p W+ Z0\ndo Factory:Process p p W- Z0\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 171.6*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
+            if(simulation=="Merging"):
+              logging.warning("WZ not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=setHardProcessWidthToZero(["W+","W-","Z0"])
+            process+=addProcess(thefactory,"p p W+ Z0","0","2","FixedScale",0,0)
+            process+=addProcess(thefactory,"p p W- Z0","0","2","FixedScale",0,0)
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 171.6*GeV\n\n"
+            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;    /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+;      /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
+            process+=addBRReweighter()
+            
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("WW-emu")>=0) :
-            process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p W+ W-\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+              logging.warning("WW-emu not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            
+            process+=setHardProcessWidthToZero(["W+","W-","Z0"])
+            process+=addProcess(thefactory,"p p W+ W-","0","2","FixedScale",0,0)
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addBRReweighter()
+            
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("WW-ll")>=0) :
-            process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p W+ W-\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+              logging.warning("WW-ll not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=setHardProcessWidthToZero(["W+","W-","Z0"])
+            process+=addProcess(thefactory,"p p W+ W-","0","2","FixedScale",0,0)
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addBRReweighter()
+            
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("ZZ-ll")>=0) :
-            process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p Z0 Z0\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+              logging.warning("ZZ-ll not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=setHardProcessWidthToZero(["W+","W-","Z0"])
+            process+=addProcess(thefactory,"p p Z0 Z0","0","2","FixedScale",0,0)
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addBRReweighter()
+            
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("ZZ-lv")>=0) :
-            process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
-            process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p Z0 Z0\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            if(simulation=="Merging"):
+              logging.warning("ZZ-lv not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=setHardProcessWidthToZero(["W+","W-","Z0"])
+            process+=addProcess(thefactory,"p p Z0 Z0","0","2","FixedScale",0,0)
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addBRReweighter()
+            
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("W-Z-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
-            process+="do Factory:Process p p e+ e-\ndo Factory:Process p p e+ nu\ndo Factory:Process p p e- nu\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+              process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+              process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
+              process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+              process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+              process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",2,2)
+              process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("W-Z-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
-            process+="do Factory:Process p p mu+ mu-\ndo Factory:Process p p mu+ nu\ndo Factory:Process p p mu- nu\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+              process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+              process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
+              process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+              process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+              process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",2,2)
+              process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("W-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu\ndo Factory:Process p p e- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",2,2)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
+
         elif(parameterName.find("W-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ nu\ndo Factory:Process p p mu- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
+                process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",2,2)
+                process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
+
         elif(parameterName.find("Z-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Z-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Z-jj")>=0) :
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\n"
-            process+="do Factory:Process p p e+ e- j j\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-            process+="set /Herwig/Cuts/FirstJet:PtMin 40.*GeV\n"
-            process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(simulation=="Merging"):
+              logging.warning("Z-jj not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+=addProcess(thefactory,"p p e+ e- j j","2","2","LeptonPairMassScale",0,0)
+            process+=addFirstJet("40")
+            process+=addSecondJet("30")
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Z-LowMass-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 20*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            if(simulation=="Matchbox"):
+               process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+               process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("20","70")
         elif(parameterName.find("Z-MedMass-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 40*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 130*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("40","130")
         elif(parameterName.find("Z-LowMass-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            if(simulation=="Matchbox"):
+                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+            elif(simulation=="Merging"):
+                process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+            process+=addLeptonPairCut("10","70")
         elif(parameterName.find("Z-Mass1")>=0) :
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 35*GeV\n"
+            process+=addLeptonPairCut("10","35")
             if(parameterName.find("-e")>=0) :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
             else :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif(parameterName.find("Z-Mass2")>=0) :
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            process+=addLeptonPairCut("25","70")
             if(parameterName.find("-e")>=0) :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
             else :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif(parameterName.find("Z-Mass3")>=0) :
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addLeptonPairCut("60","120")
             if(parameterName.find("-e")>=0) :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
             else :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+                if(simulation=="Matchbox"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                    process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif(parameterName.find("Z-Mass4")>=0) :
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 115*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 8000*GeV\n"
+            process+=addLeptonPairCut("115","8000")
             if(parameterName.find("-e")>=0) :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+                if(simulation=="Matchbox"):
+                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
             else :
-                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+                if(simulation=="Matchbox"):
+                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif(parameterName.find("W-Jet")>=0) :
-            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu j\ndo Factory:Process p p e- nu j\n\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
-            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
-            process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
-            process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
+            if(simulation=="Merging"):
+              logging.warning("W-Jet not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            
+            process+=addProcess(thefactory,"p p e+ nu j","1","2","HTScale",0,0)
+            process+=addProcess(thefactory,"p p e- nu j","1","2","HTScale",0,0)
+            
+            process+=addLeptonPairCut("60","120")
             if(parameterName.find("W-Jet-1-e")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 100.*GeV\n"
+                process+=addFirstJet("100")
                 parameterName=parameterName.replace("W-Jet-1-e","W-Jet-e")
             elif(parameterName.find("W-Jet-2-e")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 190.0*GeV\n"
+                process+=addFirstJet("190")
                 parameterName=parameterName.replace("W-Jet-2-e","W-Jet-e")
             elif(parameterName.find("W-Jet-3-e")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 270.0*GeV\n"
+                process+=addFirstJet("270")
                 parameterName=parameterName.replace("W-Jet-3-e","W-Jet-e")
+            else :
+                logging.error("Exit 00005")
+                sys.exit(1)
         elif(parameterName.find("Z-Jet")>=0) :
-            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\n"
+            if(simulation=="Merging"):
+              logging.warning("Z-Jet not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            
+            
             if(parameterName.find("-e")>=0) :
-                process+="do Factory:Process p p e+ e- j\n"
+                process+=addProcess(thefactory,"p p e+ e- j","1","2","HTScale",0,0)
                 if(parameterName.find("Z-Jet-0-e")>=0) :
-                    process+="set /Herwig/Cuts/FirstJet:PtMin 35.*GeV\n"
+                    process+=addFirstJet("35")
                     parameterName=parameterName.replace("Z-Jet-0-e","Z-Jet-e")
                 elif(parameterName.find("Z-Jet-1-e")>=0) :
-                    process+="set /Herwig/Cuts/FirstJet:PtMin 100.*GeV\n"
+                    process+=addFirstJet("100")
                     parameterName=parameterName.replace("Z-Jet-1-e","Z-Jet-e")
                 elif(parameterName.find("Z-Jet-2-e")>=0) :
-                    process+="set /Herwig/Cuts/FirstJet:PtMin 190.0*GeV\n"
+                    process+=addFirstJet("190")
                     parameterName=parameterName.replace("Z-Jet-2-e","Z-Jet-e")
                 elif(parameterName.find("Z-Jet-3-e")>=0) :
-                    process+="set /Herwig/Cuts/FirstJet:PtMin 270.0*GeV\n"
+                    process+=addFirstJet("270")
                     parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
+                else :
+                    logging.error("Exit 00006")
+                    sys.exit(1)
             else :
-                process+="do Factory:Process p p mu+ mu- j\n"
-                process+="set /Herwig/Cuts/FirstJet:PtMin 35.*GeV\n"
+                process+=addProcess(thefactory,"p p mu+ mu- j","1","2","HTScale",0,0)
+                process+=addFirstJet("35")
                 parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
-            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"
-            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
-            process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
-            process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Z-bb")>=0) :
+            if(simulation=="Merging"):
+              logging.warning("Z-bb not explicitly tested for %s " % simulation)
+              sys.exit(0)
             parameters["bscheme"]=fourFlavour
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b bbar\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 66*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 116*GeV\n"
-            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-            process+="set  /Herwig/Cuts/FirstJet:PtMin 18.*GeV\n"
-            process+="set  /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addProcess(thefactory,"p p e+ e- b bbar","2","2","FixedScale",0,0)
+            process+=addLeptonPairCut("66","116")
+            process+=addFirstJet("18")
+            process+=addSecondJet("15")
+            process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Z-b")>=0) :
-            process+="do Factory:StartParticleGroup bjet\n"
+            if(simulation=="Merging"):
+              logging.warning("Z-b not explicitly tested for %s " % simulation)
+              sys.exit(0)
+            process+="do "+thefactory+":StartParticleGroup bjet\n"
             process+="insert Factory:ParticleGroup 0 /Herwig/Particles/b\n"
             process+="insert Factory:ParticleGroup 0 /Herwig/Particles/bbar\n"
-            process+="do Factory:EndParticleGroup\n"
-            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- bjet\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
-            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-            process+="set  /Herwig/Cuts/FirstJet:PtMin 15.*GeV\n"
+            process+="do "+thefactory+":EndParticleGroup\n"
+            process+=addProcess(thefactory,"p p e+ e- bjet","1","2","FixedScale",0,0)
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\n"
+            process+=addLeptonPairCut("60","120")
+            process+=addFirstJet("15")
         elif(parameterName.find("W-b")>=0) :
+            if(simulation=="Merging"):
+              logging.warning("W-b not explicitly tested for %s " % simulation)
+              sys.exit(0)
             parameters["bscheme"]=fourFlavour
             process += "set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\n"
-            process += "do Factory:Process p p e+  nu b bbar\ndo Factory:Process p p e-  nu b bbar\n"
-            process += "do Factory:Process p p mu+ nu b bbar\ndo Factory:Process p p mu- nu b bbar\n"
-            process += "set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
-            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
-            process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
-            process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
-            process+="set  /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            process+=addProcess(thefactory,"p p e-  nu b bbar","2","2","FixedScale",0,0)
+            process+=addProcess(thefactory,"p p mu+ nu b bbar","2","2","FixedScale",0,0)
+            process += "set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV\n"
+            process+=addFirstJet("30")
+            process+=addLeptonPairCut("60","120")
         else :
             logging.error(" Process %s not supported for Matchbox matrix elements" % name)
             sys.exit(1)
@@ -1508,11 +1675,8 @@ parameters['runname'] = name
 parameters['process'] = process
 
 # write the file
-if(simulation=="Matchbox" ) :
-    with open(os.path.join("Rivet",name+".in") ,'w') as f:
-        f.write( template.substitute(parameters))
-else :
-    with open(os.path.join("Rivet",name+".in") ,'w') as f:
+
+with open(os.path.join("Rivet",name+".in") ,'w') as f:
         f.write( template.substitute(parameters))
 
 
