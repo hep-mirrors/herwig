@@ -565,7 +565,7 @@ DescribeClass<LeptonsJetsAnalysis,AnalysisHandler>
 void LeptonsJetsAnalysis::Init() {
 
   static ClassDocumentation<LeptonsJetsAnalysis> documentation
-    ("There is no documentation for the LeptonsJetsAnalysis class");
+    ("General-purpose analysis for processes with jets and leptons");
 
   static Reference<LeptonsJetsAnalysis,JetFinder> interfaceJetFinder
     ("JetFinder",
