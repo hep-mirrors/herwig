@@ -63,7 +63,7 @@ void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
           splittingReweight()->firstInteraction() ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
-      splittingReweight()->secondaryInteractions() ) ) {
+	   splittingReweight()->secondaryInteractions() ) ) {
       factor = splittingReweight()->evaluate(generatedSplitting);
       theSplittingWeight *= (r-factor*p)/(r-p);
     }
@@ -77,7 +77,7 @@ void DipoleSplittingGenerator::accept(const vector<double>&, double p, double r)
     if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
           splittingReweight()->firstInteraction() ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
-      splittingReweight()->secondaryInteractions() ) ) {
+	   splittingReweight()->secondaryInteractions() ) ) {
       factor = splittingReweight()->evaluate(generatedSplitting);
       theSplittingWeight *= factor;
     }
@@ -441,13 +441,22 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
 
   resetVariations();
   theSplittingWeight = 1.;
+  double enhance = 2.;
+  if ( splittingReweight() ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
+          splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
+	   splittingReweight()->secondaryInteractions() ) ) {
+      enhance = splittingReweight()->hint(generatedSplitting);
+    }
+  }
 
   while (true) {
     try {
       if ( optKappaCutoff == 0.0 ) {
-	res = theExponentialGenerator->generate();
+	res = theExponentialGenerator->generate(enhance);
       } else {
-	res = theExponentialGenerator->generate(optKappaCutoff);
+	res = theExponentialGenerator->generate(optKappaCutoff,enhance);
       }
     } catch (exsample::exponential_regenerate&) {
       resetVariations();

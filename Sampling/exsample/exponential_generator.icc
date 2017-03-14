@@ -216,14 +216,14 @@ namespace exsample {
 	}
 	double scaling;
 	if (it != last_cell_) {
-	  if (old_int > std::numeric_limits<double>::epsilon() &&							   
+	  if (old_int > std::numeric_limits<double>::epsilon() &&
 	      new_int > std::numeric_limits<double>::epsilon())
 	    scaling = ((old_norm * new_int) /
 		       (new_norm * old_int)) - 1.;
 	  else
 	    scaling = 0.;
 	} else {
-	  if (old_int > std::numeric_limits<double>::epsilon() &&							   
+	  if (old_int > std::numeric_limits<double>::epsilon() &&
 	      new_int > std::numeric_limits<double>::epsilon())
 	    scaling = ((last_value_ * old_norm * new_int) /
 		       (old_oe * new_norm * old_int)) - 1.;
@@ -242,7 +242,7 @@ namespace exsample {
   }
 
   template<class Function, class Random>
-  double exponential_generator<Function,Random>::generate () {
+  double exponential_generator<Function,Random>::generate(double enhance) {
     if (compensating_) {
       compensating_ = false;
       for (binary_tree<cell>::iterator it = root_cell_.begin();
@@ -264,7 +264,8 @@ namespace exsample {
     get_exponent();
     while (true) {
       n_select = 0;
-      minus_log_r = -std::log(rnd_gen_()) + last_exponent_->second(last_point_[evolution_variable_]);
+      minus_log_r = -std::log(rnd_gen_())/enhance +
+	last_exponent_->second(last_point_[evolution_variable_]);
       if (!last_exponent_->second.invertible(minus_log_r)) {
 	return 0.;
       }
@@ -310,11 +311,11 @@ namespace exsample {
 	}
       }
       if (last_value_/last_cell_->info().overestimate() > rnd_gen_()) {
-	function_->accept(last_point_,last_value_,last_cell_->info().overestimate());
+	function_->accept(last_point_,enhance*last_value_,enhance*last_cell_->info().overestimate());
 	break;
       }
       if ( last_value_ != 0.0 ) {
-	function_->veto(last_point_,last_value_,last_cell_->info().overestimate());
+	function_->veto(last_point_,enhance*last_value_,enhance*last_cell_->info().overestimate());
       }
       if(++n_hit_miss > adaption_info_.maxtry)
 	throw hit_and_miss_maxtry();

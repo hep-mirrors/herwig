@@ -77,6 +77,14 @@ public:
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
 
+  /**
+   * Return an enhancement hint for the sampling of the un-reweighted
+   * splitting kernel
+   */
+  virtual double hint(const DipoleSplittingInfo&) const {
+    return 1.;
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
