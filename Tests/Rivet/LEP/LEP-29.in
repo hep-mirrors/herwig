@@ -1,0 +1,12 @@
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 29.0
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18502
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1987_I235694

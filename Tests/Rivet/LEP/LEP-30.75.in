@@ -1,0 +1,11 @@
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 30.75
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1980_I154270
