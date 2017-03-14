@@ -14,6 +14,7 @@
 
 #include "MergingFactory.h"
 #include "Node.h"
+#include "ThePEG/Repository/Repository.h"
 
 #include "ThePEG/Utilities/ColourOutput.h"
 
@@ -34,6 +35,20 @@ void MergingFactory::doinit(){
     throw InitException() << "There are no subprocess groups in merging!";
   }
 }
+
+void MergingFactory::productionMode() {
+  if(M()<=0)
+  for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
+         = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+        Repository::clog() << "One-loop contributions from '"
+        << (**amp).name()
+        << "' are not required and will be disabled.\n"
+        << flush;
+        (**amp).disableOneLoop();
+  }
+  MatchboxFactory::productionMode();
+}
+
 
 
 void MergingFactory::fillMEsMap() {
@@ -570,14 +585,14 @@ void MergingFactory::persistentOutput(PersistentOStream & os) const {
   os
   << theonlymulti
   << ransetup
-  << processMap << theMergingHelper <<theM<<theN;
+  << processMap << theMergingHelper <<theM<<theN<<theNonQCDCuts;
 }
 
 void MergingFactory::persistentInput(PersistentIStream & is, int) {
   is
   >> theonlymulti
   >> ransetup
-  >> processMap >> theMergingHelper >>theM>>theN;
+  >> processMap >> theMergingHelper >>theM>>theN>>theNonQCDCuts;
 }
 
 
@@ -616,6 +631,11 @@ void MergingFactory::Init() {
     static Parameter<MergingFactory, int> interfaceaddNLOLegs("NLOProcesses",
          "Set the number of virtual corrections to consider. 0 is default for no virtual correction.", 
 	 &MergingFactory::theM, 0, 0, 0, false, false, Interface::lowerlim);
+  
+  static Reference<MergingFactory, Cuts > interfaceNonQcdCuts("NonQCDCuts",
+        "Cut on non-QCD modified observables. Be carefull!",
+        &MergingFactory::theNonQCDCuts, false, false, true, true, false);
+  
  
 }
 

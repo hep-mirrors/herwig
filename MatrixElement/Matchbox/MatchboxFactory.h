@@ -585,7 +585,7 @@ public:
   /**
    * Check consistency and switch to porduction mode.
    */
-  void productionMode();
+  virtual void productionMode();
 
   /**
    * Setup everything

@@ -13,17 +13,30 @@ if __name__ == "__main__":
     parser = OptionParser(usage="%prog name [...]")
 
 
+simulation=""
+
+
+numberOfAddedProcesses=0
 def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
+    global numberOfAddedProcesses
+    global simulation
+    numberOfAddedProcesses+=1
     res ="set "+thefactory+":OrderInAlphaS "+Oas+"\n"
     res+="set "+thefactory+":OrderInAlphaEW "+Oew+"\n"
     res+="do "+thefactory+":Process "+theProcess+" "
     if ( mergedlegs != 0 ):
+      if simulation!="Merging":
+          print "simulation is not Merging, trying to add merged legs."
+          sys.exit(1)
       res+="["
       for j in range(mergedlegs):
         res+=" j "
       res+="]"
     res+="\n"
     if (NLOprocesses!=0):
+       if simulation!="Merging":
+          print "simulation is not Merging, trying to add NLOProcesses."
+          sys.exit(1)
        res+="set MergingFactory:NLOProcesses %s \n" % NLOprocesses
     if ( scale != "" ):
       res+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/"+scale+"\n"
@@ -138,7 +151,7 @@ elif(name.find("SppS")==0) :
     collider="SppS"
 elif(name.find("Star")==0) :
     collider="Star"
-simulation=""
+
 thefactory="Factory"
 
 istart = 1
@@ -278,10 +291,8 @@ elif(collider=="LEP") :
 
     elif(simulation=="Merging" ) :
         if(parameterName=="10") :
-          process=addProcess(thefactory,"e- e+ -> u ubar","0","2","",1,1)
-          process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",1,1)
-          process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",1,1)
-          process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",1,1)
+          process=addProcess(thefactory,"e- e+ -> j j","0","2","",1,1)
+          process+="read Matchbox/FourFlavourScheme.in"
         else :
           process=addProcess(thefactory,"e- e+ -> j j","0","2","",1,1)
 # TVT
@@ -509,17 +520,28 @@ elif(collider=="TVT") :
                 process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p pbar e+ e-","0","2","LeptonPairMassScale",2,2)
-                process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",2,2)
-                process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",2,2)
+                process+="do "+thefactory+":StartParticleGroup epm\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e+\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e-\n"
+                process+="do "+thefactory+":EndParticleGroup\n"
+                process+="do "+thefactory+":StartParticleGroup epmnu\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e+\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e-\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/nu_e\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/nu_ebar\n"
+                process+="do "+thefactory+":EndParticleGroup\n"
+                process+=addProcess(thefactory,"p pbar epm epmnu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",2,2)
-                process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",2,2)
+                process+="do "+thefactory+":StartParticleGroup epm\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e+\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e-\n"
+                process+="do "+thefactory+":EndParticleGroup\n"
+                process+=addProcess(thefactory,"p pbar epm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
             if(simulation=="Matchbox"):
@@ -1266,7 +1288,6 @@ elif(collider=="LHC") :
               sys.exit(0)
             process+=setHardProcessWidthToZero(["h0","Z0"])
             process+=addProcess(thefactory,"p p Z0 h0","0","2","FixedScale",0,0)
-            process+=addProcess(thefactory,"p p Z0 h0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
@@ -1530,9 +1551,17 @@ elif(collider=="LHC") :
               process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
               process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-              process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
-              process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",2,2)
-              process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",2,2)
+              process+="do "+thefactory+":StartParticleGroup epm\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e+\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e-\n"
+              process+="do "+thefactory+":EndParticleGroup\n"
+              process+="do "+thefactory+":StartParticleGroup epmnu\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e+\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e-\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/nu_e\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/nu_ebar\n"
+              process+="do "+thefactory+":EndParticleGroup\n"
+              process+=addProcess(thefactory,"p p epm epmnu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("W-Z-mu")>=0) :
             if(simulation=="Matchbox"):
@@ -1540,17 +1569,28 @@ elif(collider=="LHC") :
               process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
               process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-              process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
-              process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",2,2)
-              process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",2,2)
+              process+="do "+thefactory+":StartParticleGroup mupm\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/mu+\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/mu-\n"
+              process+="do "+thefactory+":EndParticleGroup\n"
+              process+="do "+thefactory+":StartParticleGroup mupmnu\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/mu+\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/mu-\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/nu_mu\n"
+              process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/nu_mubar\n"
+              process+="do "+thefactory+":EndParticleGroup\n"
+              process+=addProcess(thefactory,"p p mupm mupmnu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("W-e")>=0) :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
-                process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",2,2)
+                process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
-                process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",2,2)
+                process+="do "+thefactory+":StartParticleGroup epm\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e+\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/e-\n"
+                process+="do "+thefactory+":EndParticleGroup\n"
+                process+=addProcess(thefactory,"p p epm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
 
         elif(parameterName.find("W-mu")>=0) :
@@ -1558,8 +1598,11 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",2,2)
-                process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",2,2)
+                process+="do "+thefactory+":StartParticleGroup mupm\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/mu+\n"
+                process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/mu-\n"
+                process+="do "+thefactory+":EndParticleGroup\n"
+                process+=addProcess(thefactory,"p p mupm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
 
         elif(parameterName.find("Z-e")>=0) :
@@ -1713,8 +1756,8 @@ elif(collider=="LHC") :
               logging.warning("Z-b not explicitly tested for %s " % simulation)
               sys.exit(0)
             process+="do "+thefactory+":StartParticleGroup bjet\n"
-            process+="insert Factory:ParticleGroup 0 /Herwig/Particles/b\n"
-            process+="insert Factory:ParticleGroup 0 /Herwig/Particles/bbar\n"
+            process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/b\n"
+            process+="insert "+thefactory+":ParticleGroup 0 /Herwig/Particles/bbar\n"
             process+="do "+thefactory+":EndParticleGroup\n"
             process+=addProcess(thefactory,"p p e+ e- bjet","1","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\n"
@@ -1769,6 +1812,17 @@ if addedBRReweighter and not selecteddecaymode:
     logging.error("BRReweighter was added but no Decaymode was selected.")
     sys.exit(1)
 
+# check that we only add one process if in merging mode:
+
+if numberOfAddedProcesses > 1 and simulation =="Merging":
+    logging.error("In Merging only one process is allowed at the moment. See ticket #403.")
+    sys.exit(1)
+
+# Check if a process was added for Merging or Matchbox:
+
+if numberOfAddedProcesses == 0 and (simulation =="Merging" or simulation =="Matchbox"):
+    logging.error("No process was selected.")
+    sys.exit(1)
 
 # write the file
 

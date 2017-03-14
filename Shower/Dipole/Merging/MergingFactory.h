@@ -34,6 +34,8 @@ namespace Herwig {
    */
   class MergingFactory : public MatchboxFactory {
   public:
+      ///Check consistency and switch to porduction mode.
+    void productionMode();
       /// main method to setup the ME vector
     virtual void setup();
       /// fill all amplitudes, stored in pureMEsMap
@@ -77,6 +79,8 @@ namespace Herwig {
     void getVirtuals(MatchboxMEBasePtr nlo, bool clone );
       // In the merged setup we only produce single phase space points. 
     bool subProcessGroups() const { return false;}
+      // Cut on non-QCD observables. 
+    Ptr<Cuts>::ptr nonQCDCuts(){return theNonQCDCuts;}
  
   public:
     
@@ -148,12 +152,14 @@ namespace Herwig {
     map< int, vector<MatchboxMEBasePtr> > thePureMEsMap;
       /// the merging helper
     MergerPtr theMergingHelper;
-  
+      /// Cut on non-QCD modified observables. 
+    Ptr<Cuts>::ptr theNonQCDCuts;  
     /**
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
     MergingFactory & operator=(const MergingFactory &) = delete;
+
     
   };
   
