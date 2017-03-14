@@ -76,15 +76,31 @@ def addJetPairCut(minmass):
   didaddjetpair=True
   return res
 
+addedBRReweighter=False
 def addBRReweighter():
+  global addedBRReweighter
+  if(addedBRReweighter):
+    logging.error("Can only add BRReweighter once.")
+    sys.exit(1)
   res="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
   res+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+  addedBRReweighter=True
   return res
 
 def setHardProcessWidthToZero(list1):
   res=""
   for i in list1:
     res+="set /Herwig/Particles/"+i+":HardProcessWidth 0.\n"
+  return res
+
+selecteddecaymode=False
+def selectDecayMode(particle,decaymodes):
+  global selecteddecaymode
+  res="do /Herwig/Particles/"+particle+":SelectDecayModes"
+  for decay in decaymodes:
+    res+=" /Herwig/Particles/"+particle+"/"+decay
+  res+="\n"
+  selecteddecaymode=True
   return res
 
 
@@ -610,11 +626,13 @@ elif(collider=="LHC") :
         if(parameterName.find("8-VBF")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2HiggsVBF\n"
         elif(parameterName.find("VBF")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+="insert SubProcess:MatrixElements[0] MEPP2HiggsVBF\n"
         elif(parameterName.find("ggHJet")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 20.\n"
@@ -624,7 +642,8 @@ elif(collider=="LHC") :
             process+="set MEHiggsJet:Process qqbar\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("ggH")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+="insert SubProcess:MatrixElements[0] MEHiggs\n"
             process+="insert SubProcess:MatrixElements[0] MEHiggsJet\n"
@@ -655,13 +674,17 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("WH")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+; W+->nu_mu,mu+;\n"
+            process+=selectDecayMode("h0",["h0->b,bbar;"])
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;"])
+            process+=addBRReweighter()
             process+="insert SubProcess:MatrixElements[0] MEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("ZH")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+; Z0->mu-,mu+;\n"
+            process+=selectDecayMode("h0",["h0->b,bbar;"])
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;"])
+            process+=addBRReweighter()
             process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
@@ -768,7 +791,8 @@ elif(collider=="LHC") :
         elif(parameterName.find("Top-L")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
-            process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
+            process+=selectDecayMode("t",["t->nu_e,e+,b;",
+                                          "t->nu_mu,mu+,b;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("Top-SL")>=0) :
@@ -776,8 +800,12 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
             process+="set /Herwig/Particles/t:Synchronized Not_synchronized\n"
             process+="set /Herwig/Particles/tbar:Synchronized Not_synchronized\n"
-            process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
-            process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
+            process+=selectDecayMode("t",["t->nu_e,e+,b;","t->nu_mu,mu+,b;"])
+            process+=selectDecayMode("tbar",["tbar->b,bbar,cbar;",
+                                             "tbar->bbar,cbar,d;",
+                                             "tbar->bbar,cbar,s;",
+                                             "tbar->bbar,s,ubar;",
+                                             "tbar->bbar,ubar,d;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("Top-All")>=0) :
@@ -785,37 +813,48 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEHeavyQuark\n"
         elif(parameterName.find("WZ")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WZ\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
-            process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;"])
+            process+=selectDecayMode("W-",["W-->nu_ebar,e-;",
+                                           "W-->nu_mubar,mu-;"])
+            process+=selectDecayMode("W-",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("WW-emu")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
-            process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;"])
+            process+=selectDecayMode("W-",["W-->nu_mubar,mu-;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("WW-ll")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;","W+->nu_mu,mu+;","W+->nu_tau,tau+;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;",
+                                           "Z0->tau-,tau+;"])
             process+=addBRReweighter()
-            
+
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;",
+                                           "Z0->tau-,tau+;",
+                                           "Z0->nu_e,nu_ebar;",
+                                           "Z0->nu_mu,nu_mubar;",
+                                           "Z0->nu_tau,nu_taubar;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("W-Z-e")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
+
         elif(parameterName.find("W-Z-mu")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
             process+="insert SubProcess:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Muon\n"
@@ -901,19 +940,23 @@ elif(collider=="LHC") :
         elif(parameterName.find("WGamma")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 1\nset MEPP2VGamma:MassOption 1\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
-            process+=addBRReweighter()
+            
             
             if(parameterName.find("-e")>=0) :
-                process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+;\n"
+                process+=selectDecayMode("W+",["W+->nu_e,e+;"])
+                process+=addBRReweighter()
             else :
-                process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_mu,mu+;\n"
+                process+=selectDecayMode("W+",["W+->nu_mu,mu+;"])
+                process+=addBRReweighter()
         elif(parameterName.find("ZGamma")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
             if(parameterName.find("-e")>=0) :
-                process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
+                process+=selectDecayMode("Z0",["Z0->e-,e+;"])
+                process+=addBRReweighter()
             else :
-                process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->mu-,mu+;\n"
+                process+=selectDecayMode("Z0",["Z0->mu-,mu+;"])
+                process+=addBRReweighter()
         else :
             logging.error(" Process %s not supported for internal matrix elements" % name)
             sys.exit(1)
@@ -921,7 +964,8 @@ elif(collider=="LHC") :
         if(parameterName.find("8-VBF")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
         elif(parameterName.find("VBF")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
         elif(parameterName.find("ggHJet")>=0) :
@@ -930,7 +974,8 @@ elif(collider=="LHC") :
         elif(parameterName.find("8-ggH")>=0) :
             process+="insert SubProcess:MatrixElements[0] PowhegMEHiggs\n"
         elif(parameterName.find("ggH")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEHiggs\n"
         elif(parameterName.find("8-WH")>=0) :
@@ -940,13 +985,17 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("WH")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+; W+->nu_mu,mu+;\n"
+            process+=selectDecayMode("h0",["h0->b,bbar;"])
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;"])
+            process+=addBRReweighter()
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("ZH")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+; Z0->mu-,mu+;\n"
+            process+=selectDecayMode("h0",["h0->b,bbar;"])
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;"])
+            process+=addBRReweighter()
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
@@ -964,9 +1013,12 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WZ\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
-            process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;"])
+            process+=selectDecayMode("W-",["W-->nu_ebar,e-;",
+                                           "W-->nu_mubar,mu-;"])
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("WW-emu")>=0) :
@@ -983,8 +1035,8 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
-            process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;"])
+            process+=selectDecayMode("W-",["W-->nu_mubar,mu-;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("WW-ll")>=0) :
@@ -999,7 +1051,9 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;",
+                                           "W+->nu_tau,tau+;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("ZZ-ll")>=0) :
@@ -1014,7 +1068,9 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;",
+                                           "Z0->tau-,tau+;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("ZZ-lv")>=0) :
@@ -1029,7 +1085,12 @@ elif(collider=="LHC") :
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
             process+="insert SubProcess:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;",
+                                           "Z0->tau-,tau+;",
+                                           "Z0->nu_e,nu_ebar;",
+                                           "Z0->nu_mu,nu_mubar;",
+                                           "Z0->nu_tau,nu_taubar;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("W-Z-e")>=0) :
@@ -1122,10 +1183,12 @@ elif(collider=="LHC") :
             process+=setHardProcessWidthToZero(["h0"])
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
                
         elif(parameterName.find("VBF")>=0) :
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
             if(simulation=="Merging"):
@@ -1146,7 +1209,8 @@ elif(collider=="LHC") :
                logging.warning("ggHJet not explicitly tested for %s " % simulation)
                sys.exit(0)
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=setHardProcessWidthToZero(["h0"])
             process+=addProcess(thefactory,"p p h0 j","3","1","FixedScale",0,0)
@@ -1165,6 +1229,7 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p h0","2","1","FixedScale",2,2)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
                
         elif(parameterName.find("ggH")>=0) :
@@ -1172,7 +1237,8 @@ elif(collider=="LHC") :
             if(simulation=="Merging"):
                 process+= "read Matchbox/MadGraph-OpenLoops.in\nread Matchbox/HiggsEffective.in\n"
                 process+="cd /Herwig/Merging/"
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+            process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=setHardProcessWidthToZero(["h0"])
             if(simulation=="Matchbox"):
@@ -1191,6 +1257,7 @@ elif(collider=="LHC") :
             process+=addProcess(thefactory,"p p W- h0","2","1","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
                
         elif(parameterName.find("8-ZH")>=0) :
@@ -1202,13 +1269,15 @@ elif(collider=="LHC") :
             process+=addProcess(thefactory,"p p Z0 h0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
                
         elif(parameterName.find("WH")>=0) :
             if(simulation=="Merging"):
               logging.warning("WH not explicitly tested for %s " % simulation)
               sys.exit(0)
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
+            process+=selectDecayMode("h0",["h0->b,bbar;"])
+            process+=addBRReweighter()
             process+=setHardProcessWidthToZero(["h0"])
             process+=addProcess(thefactory,"p p e+ nu h0","0","3","LeptonPairMassScale",0,0)
             process+=addProcess(thefactory,"p p e- nu h0","0","3","LeptonPairMassScale",0,0)
@@ -1219,7 +1288,8 @@ elif(collider=="LHC") :
             if(simulation=="Merging"):
               logging.warning("ZH not explicitly tested for %s " % simulation)
               sys.exit(0)
-            process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
+            process+=selectDecayMode("h0",["h0->b,bbar;"])
+            process+=addBRReweighter()
             process+=setHardProcessWidthToZero(["h0"])
             process+=addProcess(thefactory,"p p e+ e- h0","0","3","LeptonPairMassScale",0,0)
             process+=addProcess(thefactory,"p p mu+ mu- h0","0","3","LeptonPairMassScale",0,0)
@@ -1357,7 +1427,8 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",0,0)
             elif(simulation=="Merging"):
                 process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",2,2)
-            process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
+            process+=selectDecayMode("t",["t->nu_e,e+,b;",
+                                          "t->nu_mu,mu+,b;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("Top-SL")>=0) :
@@ -1368,8 +1439,13 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p t tbar","2","0","TopPairMTScale",2,2)
             process+="set /Herwig/Particles/t:Synchronized Not_synchronized\n"
             process+="set /Herwig/Particles/tbar:Synchronized Not_synchronized\n"
-            process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
-            process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
+            process+=selectDecayMode("t",["t->nu_e,e+,b;",
+                                          "t->nu_mu,mu+,b;"])
+            process+=selectDecayMode("tbar",["tbar->b,bbar,cbar;",
+                                             "tbar->bbar,cbar,d;",
+                                             "tbar->bbar,cbar,s;",
+                                             "tbar->bbar,s,ubar;",
+                                             "tbar->bbar,ubar,d;"])
             process+=addBRReweighter()
             
         elif(parameterName.find("Top-All")>=0) :
@@ -1386,11 +1462,13 @@ elif(collider=="LHC") :
             process+=addProcess(thefactory,"p p W+ Z0","0","2","FixedScale",0,0)
             process+=addProcess(thefactory,"p p W- Z0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 171.6*GeV\n\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;    /Herwig/Particles/W+/W+->nu_mu,mu+;\n"
-            process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+;      /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;"])
+            process+=selectDecayMode("W-",["W-->nu_ebar,e-;",
+                                           "W-->nu_mubar,mu-;"])
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;"])
             process+=addBRReweighter()
-            
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("WW-emu")>=0) :
             if(simulation=="Merging"):
@@ -1402,8 +1480,8 @@ elif(collider=="LHC") :
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
-            process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;"])
+            process+=selectDecayMode("W-",["W-->nu_mubar,mu-;"])
             process+=addBRReweighter()
             
             process+=addLeptonPairCut("60","120")
@@ -1414,9 +1492,10 @@ elif(collider=="LHC") :
             process+=setHardProcessWidthToZero(["W+","W-","Z0"])
             process+=addProcess(thefactory,"p p W+ W-","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\n"
-            process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
+            process+=selectDecayMode("W+",["W+->nu_e,e+;",
+                                           "W+->nu_mu,mu+;",
+                                           "W+->nu_tau,tau+;"])
             process+=addBRReweighter()
-            
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("ZZ-ll")>=0) :
             if(simulation=="Merging"):
@@ -1425,9 +1504,10 @@ elif(collider=="LHC") :
             process+=setHardProcessWidthToZero(["W+","W-","Z0"])
             process+=addProcess(thefactory,"p p Z0 Z0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;",
+                                           "Z0->tau-,tau+;"])
             process+=addBRReweighter()
-            
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("ZZ-lv")>=0) :
             if(simulation=="Merging"):
@@ -1436,9 +1516,13 @@ elif(collider=="LHC") :
             process+=setHardProcessWidthToZero(["W+","W-","Z0"])
             process+=addProcess(thefactory,"p p Z0 Z0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\n"
-            process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
+                                           "Z0->mu-,mu+;",
+                                           "Z0->tau-,tau+;",
+                                           "Z0->nu_e,nu_ebar;",
+                                           "Z0->nu_mu,nu_mubar;",
+                                           "Z0->nu_tau,nu_taubar;"])
             process+=addBRReweighter()
-            
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("W-Z-e")>=0) :
             if(simulation=="Matchbox"):
@@ -1673,6 +1757,18 @@ elif(collider=="LHC-GammaGamma" ) :
 parameters['parameterFile'] = os.path.join(collider,collider+"-"+parameterName+".in")
 parameters['runname'] = name
 parameters['process'] = process
+
+
+#check if selecteddecaymode and addedBRReweighter is consistent
+
+if selecteddecaymode and not addedBRReweighter:
+    logging.error("Decaymode was selected but no BRReweighter was added.")
+    sys.exit(1)
+
+if addedBRReweighter and not selecteddecaymode:
+    logging.error("BRReweighter was added but no Decaymode was selected.")
+    sys.exit(1)
+
 
 # write the file
 
