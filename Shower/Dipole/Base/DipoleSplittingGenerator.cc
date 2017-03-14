@@ -441,7 +441,7 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
 
   resetVariations();
   theSplittingWeight = 1.;
-  double enhance = 2.;
+  double enhance = 1.;
   if ( splittingReweight() ) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
           splittingReweight()->firstInteraction() ) ||
