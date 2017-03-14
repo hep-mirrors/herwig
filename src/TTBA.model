@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Leptoquark models
 #
@@ -157,6 +159,4 @@ set TTbA/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/TTbA/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/TTbA/Model
-
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/TTbA/Model

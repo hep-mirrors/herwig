@@ -1,0 +1,49 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/EventHandlers
+create ThePEG::LuminosityFunction Luminosity
+set EventHandler:BeamA /Herwig/Particles/e-
+set Luminosity:BeamEMaxA 30.*GeV
+set EventHandler:BeamB /Herwig/Particles/p+
+set Luminosity:BeamEMaxB 920.*GeV
+set EventHandler:LuminosityFunction Luminosity
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+
+# cuts for DIS
+set EventHandler:Cuts:ScaleMin 1.0*GeV
+set EventHandler:Cuts:X1Min 1.0e-5
+set EventHandler:Cuts:X2Min 1.0e-5
+set EventHandler:Cuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 0
+set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
+set /Herwig/Cuts/ChargedCurrentCut:MinW2 0
+set /Herwig/Cuts/ChargedCurrentCut:MaxW2 1e10
+clear EventHandler:Cuts:OneCuts
+clear EventHandler:Cuts:TwoCuts
+clear EventHandler:Cuts:MultiCuts
+insert EventHandler:Cuts:TwoCuts[0] /Herwig/Cuts/NeutralCurrentCut
+insert EventHandler:Cuts:TwoCuts[1] /Herwig/Cuts/ChargedCurrentCut
+
+# switch off final-state electron/muon FSR
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
+# Matchbox settings
+cd /Herwig/MatrixElements/Matchbox
+set Factory:FirstPerturbativePDF Yes
+set Factory:SecondPerturbativePDF No
+set Factory:PartonExtractor /Herwig/Partons/EPExtractor
+
+set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
+set /Herwig/Merging/MergingFactory:SecondPerturbativePDF Yes
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/EPExtractor
+
+#  Erase the PDF for the lepton side (the one from Particle Data object is used)
+set /Herwig/Shower/ShowerHandler:PDFA NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
+
+cd /Herwig/Generators/
+set /Herwig/MatrixElements/SubProcess:PartonExtractor /Herwig/Partons/EPExtractor
+

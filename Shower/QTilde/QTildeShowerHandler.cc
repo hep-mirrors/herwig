@@ -320,9 +320,14 @@ void QTildeShowerHandler::Init() {
   static SwitchOption interfaceReconstructionOptionOffShell4
     (interfaceReconstructionOption,
      "OffShell4",
-     "Ass OffShell3 but with a restriction on the mass of final-state"
+     "As OffShell3 but with a restriction on the mass of final-state"
      " jets produced via backward evolution.",
      4);
+  static SwitchOption interfaceReconstructionOptionOffShell5
+    (interfaceReconstructionOption,
+     "OffShell5",
+     "Try and preserve q2 but if pt negative just zero it",
+     5);
 
   static Switch<QTildeShowerHandler,unsigned int> interfaceSpinCorrelations
     ("SpinCorrelations",
@@ -756,7 +761,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
       children = createTimeLikeChildren(particle,fb.ids);
       // update the children
       particle->showerKinematics()->
-	updateChildren(particle, children,fb.type,_reconOpt>=3);
+	updateChildren(particle, children,fb.type,_reconOpt==3 || _reconOpt==4);
       // update number of emissions
       ++_nfs;
       if(_limitEmissions!=0) {
@@ -771,48 +776,11 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
     fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
     // old default
-    if(_reconOpt==0) {
-      // shower the first  particle
-      if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
-      if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-      // shower the second particle
-      if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
-      if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+    if(_reconOpt==0||_reconOpt==5) {
       break;
     }
-    // Herwig default
-    else if(_reconOpt==1) {
-      // shower the first  particle
-      if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
-      if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-      // shower the second particle
-      if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
-      if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
-      // branching has happened
-      particle->showerKinematics()->updateParent(particle, children,fb.type);
-      // clean up the vetoed emission
-      if(particle->virtualMass()==ZERO) {
-   	particle->showerKinematics(ShoKinPtr());
-   	for(unsigned int ix=0;ix<children.size();++ix)
-   	  particle->abandonChild(children[ix]);
-   	children.clear();
-   	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
-	particle->vetoEmission(fb.type,fb.kinematics->scale());
-	// generate the new emission
-	fb = selectTimeLikeBranching(particle,type,HardBranchingPtr());
-	// no emission, return
-	if(!fb.kinematics) {
-	  if(particle->spinInfo()) particle->spinInfo()->develop();
-	  return false;
-	}
-	setupChildren = true;
-	continue;
-      }
-      else
-	break;
-    }
-    // veto children
-    else if(_reconOpt>=2) {
+    // all other options
+    else {
       // cut-off masses for the branching
       const vector<Energy> & virtualMasses = fb.sudakov->virtualMasses(fb.ids);
       // compute the masses of the children
@@ -833,10 +801,27 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
       double z = fb.kinematics->z();
       Energy2 pt2 = z*(1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0]))
    	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
-      if(pt2>=ZERO) {
-	break;
+      if(pt2>=ZERO) break;
+      // clean up the vetoed emission
+      if(_reconOpt==1) {
+	particle->showerKinematics(ShoKinPtr());
+	for(unsigned int ix=0;ix<children.size();++ix)
+	  particle->abandonChild(children[ix]);
+	children.clear();
+	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
+	// generate the new emission
+	fb = selectTimeLikeBranching(particle,type,HardBranchingPtr());
+	// no emission, return
+	if(!fb.kinematics) {
+	  if(particle->spinInfo()) particle->spinInfo()->develop();
+	  return false;
+	}
+	setupChildren = true;
+	continue;
       }
-      else {
+      // clean up vetoed children
+      else if(_reconOpt>=2) {
 	// reset the scales for the children
 	for(unsigned int ix=0;ix<2;++ix) {
 	  if(fc[ix].kinematics)
@@ -848,16 +833,15 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
       }
     }
   };
-  if(_reconOpt>=2) {
-    // shower the first  particle
-    if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
-    if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-    // shower the second particle
-    if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
-    if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
-    // branching has happened
-      particle->showerKinematics()->updateParent(particle, children,fb.type);
-  }
+  // shower the first  particle
+  if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
+  if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
+  // shower the second particle
+  if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
+  if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+  if(_reconOpt>=1)
+    particle->showerKinematics()->updateParent(particle, children,fb.type);
+  // branching has happened
   if(first&&!children.empty())
     particle->showerKinematics()->resetChildren(particle,children);
   if(particle->spinInfo()) particle->spinInfo()->develop();

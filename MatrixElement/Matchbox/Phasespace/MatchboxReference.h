@@ -61,7 +61,7 @@ public:
   }
 
   /**
-   * Return true, if this phasespace generator will generate incoming
+   * Return true, if this phase space generator will generate incoming
    * partons itself.
    */
   virtual bool haveX1X2() const { return true; }

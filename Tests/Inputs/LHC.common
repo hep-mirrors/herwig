@@ -1,13 +1,13 @@
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 100000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-set LHCGenerator:EventHandler:StatLevel Full
-set LHCGenerator:EventHandler:CascadeHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:NumberOfEvents 100000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 1
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
 set /Herwig/Analysis/Basics:CheckQuark 0
 
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0

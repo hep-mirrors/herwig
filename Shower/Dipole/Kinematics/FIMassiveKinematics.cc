@@ -166,7 +166,26 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 		    ( z*(1.-z)*s ) );
 
 
-double ptRatio = sqrt(1.-sqr(pt/info.hardPt()));
+
+  Energy hard=info.hardPt();
+
+
+  if(openZBoundaries()==1){
+	hard=.5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
+  }
+  Energy2 sdip = sqr(info.scale()) + Mi2;
+  if(openZBoundaries()==2){
+	hard=min(0.5*sqrt(s) * 
+		rootOfKallen( s/s, mi2/s, m2/s ) , 
+                     sqrt(sdip)  * 
+		rootOfKallen( sdip/sdip, mi2/sdip, m2/sdip ));
+ }
+
+
+  double ptRatio = sqrt(1.-sqr(pt/info.hardPt()));
+
+
+
 
   double zm1 = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
   double zp1 = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);

@@ -1,5 +1,7 @@
+# -*- ThePEG-repository -*-
+read snippets/EECollider.in
 cd /Herwig/MatrixElements
-insert SimpleEE:MatrixElements[0] MEee2gZ2qq
+insert SubProcess:MatrixElements[0] MEee2gZ2qq
 
 set /Herwig/Particles/t:Stable 1
 set /Herwig/Particles/tbar:Stable 1
@@ -8,17 +10,17 @@ read LEP.common
 
 cd /Herwig/Generators
 
-set LEPGenerator:EventHandler:CascadeHandler NULL
-set LEPGenerator:EventHandler:HadronizationHandler NULL
-set LEPGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
 
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
+set EventGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
 
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 create Herwig::FermionTest QuarksTest LeptonTest.so
-insert LEPGenerator:AnalysisHandlers 0 QuarksTest
+insert EventGenerator:AnalysisHandlers 0 QuarksTest
 set /Herwig/Analysis/Basics:CheckQuark 0
 
 # parameters to make the same as fortran
@@ -36,4 +38,4 @@ set Model:EW/RunningAlphaEM AlphaEM2
 set /Herwig/ACDCSampler:Ntry 100000
 
 cd /Herwig/Generators
-saverun LEP-Quarks LEPGenerator
+saverun LEP-Quarks EventGenerator

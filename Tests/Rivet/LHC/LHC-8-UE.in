@@ -3,3 +3,7 @@
 ##################################################
 # ATLAS jet shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMSTOTEM_2014_I1294140
+# tack bassed min bias
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1426695
+# diffraction
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOTEM_2014_I1328627

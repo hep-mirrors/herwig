@@ -931,7 +931,7 @@ void MatchboxAmplitude::Init() {
 
   static Switch<MatchboxAmplitude,bool> interfaceTrivialColourLegs
     ("TrivialColourLegs",
-     "Expert option",
+     "Assume the process considered has trivial colour correllations.",
      &MatchboxAmplitude::theTrivialColourLegs, false, false, false);
   static SwitchOption interfaceTrivialColourLegsYes
     (interfaceTrivialColourLegs,
@@ -943,6 +943,7 @@ void MatchboxAmplitude::Init() {
      "No",
      "",
      false);
+  interfaceTrivialColourLegs.rank(-1);
 
 }
 

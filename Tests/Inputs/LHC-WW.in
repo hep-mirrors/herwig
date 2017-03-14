@@ -1,10 +1,11 @@
+# -*- ThePEG-repository -*-
+read snippets/PPCollider.in
 read LHC.common
-erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+erase /Herwig/EventHandlers/EventHandler:PostSubProcessHandlers 0 
 cd /Herwig/Partons
 create ThePEG::LHAPDF LHAPDF ThePEGLHAPDF.so
-set LHAPDF:PType Nucleon
-set LHAPDF:PDFName cteq5l.LHgrid
-set LHAPDF:PDFNumber 19070
+set LHAPDF:PDFName cteq6l1
+set LHAPDF:Member 0
 set LHAPDF:RemnantHandler HadronRemnants
 set /Herwig/Particles/p+:PDF LHAPDF
 set /Herwig/Particles/pbar-:PDF LHAPDF
@@ -17,18 +18,17 @@ set CKM:theta_13 0
 set CKM:theta_23 0
 set CKM:delta 0
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:StatLevel Full
-set LHCGenerator:EventHandler:CascadeHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
 set /Herwig/Particles/Z0:Stable 1
 set /Herwig/Particles/W+:Stable 1
 set /Herwig/Particles/W-:Stable 1
 cd /Herwig/MatrixElements/
-create Herwig::MEPP2VV MEPP2VV HwMEHadron.so
-insert SimpleQCD:MatrixElements[0] MEPP2VV
+insert SubProcess:MatrixElements[0] MEPP2VV
 set MEPP2VV:Process WW
 cd /Herwig/Generators/
 create Herwig::HadronVVTest WWTest HadronTest.so
-insert LHCGenerator:AnalysisHandlers 0 WWTest
-saverun LHC-WW LHCGenerator
+insert EventGenerator:AnalysisHandlers 0 WWTest
+saverun LHC-WW EventGenerator

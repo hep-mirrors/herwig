@@ -131,8 +131,9 @@ void DipoleMatching::Init() {
 
   static Reference<DipoleMatching,ShowerHandler> interfaceShowerHandler
     ("ShowerHandler",
-     "",
+     "The dipole shower handler object to use.",
      &DipoleMatching::theShowerHandler, false, false, true, true, false);
+  interfaceShowerHandler.rank(-1);
 
 }
 

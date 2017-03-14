@@ -24,12 +24,15 @@ calculateDMatrix(const vector<RhoDMatrix> & rhoout) const {
   // rhomatrix to be returned
   RhoDMatrix output(inspin(), false);
   // loop over all helicity components of the matrix element
-  for(int ihel0=0;ihel0<inspin();++ihel0) {
-    for(int jhel0=0;jhel0<inspin();++jhel0) {
-      for(int ihel1=0;ihel1<outspin()[0];++ihel1) {
-	for(int jhel1=0;jhel1<outspin()[0];++jhel1) {
-	  for(int ihel2=0;ihel2<outspin()[1];++ihel2) {
-	    for(int jhel2=0;jhel2<outspin()[1];++jhel2) {
+  for(int ihel1=0;ihel1<outspin()[0];++ihel1) {
+    for(int jhel1=0;jhel1<outspin()[0];++jhel1) {
+      if(rhoout[0](ihel1,jhel1)==0.)continue;
+      for(int ihel2=0;ihel2<outspin()[1];++ihel2) {
+        for(int jhel2=0;jhel2<outspin()[1];++jhel2) {
+          if(rhoout[1](ihel2,jhel2)==0.)continue;
+  	  for(int ihel0=0;ihel0<inspin();++ihel0) {
+            for(int jhel0=0;jhel0<inspin();++jhel0) {
+      
 	      output(ihel0,jhel0) += 
 		     matrixElement_[ihel0][ihel1][ihel2]*
 		conj(matrixElement_[jhel0][jhel1][jhel2])*
@@ -56,27 +59,32 @@ calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
   if(id==0) {
     for(int ihel0=0;ihel0<inspin();++ihel0) {
       for(int jhel0=0;jhel0<inspin();++jhel0) {
-	for(int ihel1=0;ihel1<outspin()[0];++ihel1) {
-	  for(int jhel1=0;jhel1<outspin()[0];++jhel1) {
-	    for(int ihel2=0;ihel2<outspin()[1];++ihel2) {
-	      for(int jhel2=0;jhel2<outspin()[1];++jhel2) {
-		output(ihel1,jhel1) += 
-		  matrixElement_[ihel0][ihel1][ihel2]*
-		  conj(matrixElement_[jhel0][jhel1][jhel2])*
-		  rhoin(ihel0,jhel0)*
-		  rhoout[0](ihel2,jhel2);
-	      }
-	    }
-	  }
-	}
+        if (rhoin(ihel0,jhel0)==0.)continue;
+        for(int ihel2=0;ihel2<outspin()[1];++ihel2) {
+          for(int jhel2=0;jhel2<outspin()[1];++jhel2) {
+            if(rhoout[0](ihel2,jhel2)==0.)continue;
+            for(int ihel1=0;ihel1<outspin()[0];++ihel1) {
+              if(matrixElement_[ihel0][ihel1][ihel2]==0.)continue;
+              for(int jhel1=0;jhel1<outspin()[0];++jhel1) {
+                output(ihel1,jhel1) +=
+                matrixElement_[ihel0][ihel1][ihel2]*
+                conj(matrixElement_[jhel0][jhel1][jhel2])*
+                rhoin(ihel0,jhel0)*
+                rhoout[0](ihel2,jhel2);
+              }
+            }
+          }
+        }
       }
     }
   }
   else {
     for(int ihel0=0;ihel0<inspin();++ihel0) {
       for(int jhel0=0;jhel0<inspin();++jhel0) {
+        if (rhoin(ihel0,jhel0)==0.)continue;
 	for(int ihel1=0;ihel1<outspin()[0];++ihel1) {
 	  for(int jhel1=0;jhel1<outspin()[0];++jhel1) {
+            if (rhoout[0](ihel1,jhel1)==0.)continue;
 	    for(int ihel2=0;ihel2<outspin()[1];++ihel2) {
 	      for(int jhel2=0;jhel2<outspin()[1];++jhel2) {
 		output(ihel2,jhel2) += 

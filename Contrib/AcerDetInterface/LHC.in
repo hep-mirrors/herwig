@@ -1,24 +1,25 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Example generator based on LHC parameters
 # usage: Herwig read LHC.in
 ##################################################
-
+read snippets/PPCollider.in
 ##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
+set EventGenerator:NumberOfEvents 10000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
 
 ##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -26,28 +27,15 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 ##################################################
 cd /Herwig/MatrixElements/
 
-insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+insert SubProcess:MatrixElements[0] MEqq2gZ2ff
 set MEqq2gZ2ff:Process Electron
 cd /Herwig/Generators
 
 library HwAcerDet.so
 create Herwig::ZAnalysis /Herwig/Analysis/ZAnalysis ZAnalysis.so
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/ZAnalysis 
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/ZAnalysis 
 
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC LHCGenerator
-
-##################################################
-# uncomment this section for an example batch run
-# of two repeats with different parameters
-#
-# Note that a separate call of 'Herwig run' 
-# is not required in this case
-##################################################
-# set LHCGenerator:NumberOfEvents 10
-# run LHC-full LHCGenerator
-#
-# set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
-# run LHC-initial LHCGenerator
+saverun LHC EventGenerator

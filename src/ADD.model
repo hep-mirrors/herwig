@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Randall-Sundrum models
 #
@@ -94,5 +96,4 @@ set ADD/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/ADD/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/ADD/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/ADD/Model

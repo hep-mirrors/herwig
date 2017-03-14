@@ -1,11 +1,16 @@
+# -*- ThePEG-repository -*-
 ##################################################
 ## Collider type
 ##################################################
-read Matchbox/PPCollider.in
+read snippets/Matchbox.in
+read snippets/PPCollider.in
 
 ##################################################
 ## Matrix element library selection
 ##################################################
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
 ${nlo}
 ##################################################
 ## Matching and shower selection

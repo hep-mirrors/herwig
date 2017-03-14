@@ -1,0 +1,29 @@
+
+##########################
+##  Setup the MonacoSampler.
+##########################
+
+cd /Herwig/Samplers
+
+create Herwig::MonacoSampler Monaco
+set /Herwig/Samplers/Sampler:BinSampler Monaco
+
+set Monaco:EnhancementFactor 1.2
+set Monaco:InitialPoints 10000
+set Monaco:LuminosityMapperBins 0
+set Monaco:NIterations 4
+set Monaco:NonZeroInPresampling Yes
+set Monaco:RemapChannelDimension No
+set Monaco:RemapperMinSelection 0.0001
+set Monaco:RemapperPoints 10000
+set Monaco:UseAllIterations No
+
+set Sampler:UpdateAfter 1000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted On
+set Sampler:BinSampler:Kappa 1.
+set Sampler:RunCombinationData Off
+set Sampler:Verbose On

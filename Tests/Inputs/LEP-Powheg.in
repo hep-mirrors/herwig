@@ -1,24 +1,26 @@
+# -*- ThePEG-repository -*-
+read snippets/EECollider.in
 cd /Herwig/MatrixElements
 create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
-set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
-insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
+insert SubProcess:MatrixElements 0 PowhegMEee2gZ2qq
 
 read LEP.common
 
 cd /Herwig/Generators
 
-set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
 
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPMultiplicity
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPMultiplicity
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
 
-saverun LEP-Powheg LEPGenerator
+saverun LEP-Powheg EventGenerator

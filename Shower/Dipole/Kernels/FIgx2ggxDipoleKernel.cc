@@ -85,7 +85,8 @@ void FIgx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
   os<<theSymmetryFactor;
 }
 
-void FIgx2ggxDipoleKernel::persistentInput(PersistentIStream & , int) {
+void FIgx2ggxDipoleKernel::persistentInput(PersistentIStream & is, int) {
+  is>>theSymmetryFactor;
 }
 
 ClassDescription<FIgx2ggxDipoleKernel> FIgx2ggxDipoleKernel::initFIgx2ggxDipoleKernel;

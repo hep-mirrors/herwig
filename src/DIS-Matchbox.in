@@ -7,22 +7,14 @@
 ##################################################
 ## Collider type
 ##################################################
-
-read Matchbox/EPCollider.in
+read snippets/Matchbox.in
+read snippets/EPCollider.in
 
 ##################################################
 ## Beam energies
 ##################################################
 
 cd /Herwig/EventHandlers
-set EventHandler:BeamA /Herwig/Particles/e+
-set EventHandler:LuminosityFunction:BeamEMaxA 27.5.*GeV
-set EventHandler:BeamB /Herwig/Particles/p+
-set EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV
-# no pdfs for leptons
-set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
-set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 ## Process selection
@@ -43,7 +35,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process e+ p -> e+ j
+do Factory:Process e- p -> e- j
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production

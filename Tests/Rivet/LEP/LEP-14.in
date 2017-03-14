@@ -8,3 +8,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # tasso event shapes at various low energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I277658

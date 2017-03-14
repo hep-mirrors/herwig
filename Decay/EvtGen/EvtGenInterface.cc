@@ -100,7 +100,7 @@ void EvtGenInterface::Init() {
      "By default cerr and cout are redirected when EvtGen is running to"
      " allow us to catch errors, due to EvtGen's poor internal error "
      "handling. This can be a problem for debugging and so can be switched off.",
-     &EvtGenInterface::reDirect_, true, false, false, false);
+     &EvtGenInterface::reDirect_, true, false, false);
   static SwitchOption interfaceRedirectYes
     (interfaceRedirect,
      "Yes",

@@ -74,8 +74,8 @@ pair<double,double> IILightKinematics::zBoundaries(Energy pt,
 
 
   Energy hard=dInfo.hardPt();
-  if(openInitialState()==1)hard=(1.-x) *dInfo.scale()/(2.*sqrt(x));
-  if(openInitialState()==2)hard=min(dInfo.scale(),(1.-x) *dInfo.scale()/(2.*sqrt(x)));
+  if(openZBoundaries()==1)hard=(1.-x) *dInfo.scale()/(2.*sqrt(x));
+  if(openZBoundaries()==2)hard=min(dInfo.scale(),(1.-x) *dInfo.scale()/(2.*sqrt(x)));
   if(hard<pt)return {0.5*(1.+x),0.5*(1.+x)};
 
   double s = sqrt(1.-sqr(pt/hard));

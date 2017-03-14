@@ -1,0 +1,45 @@
+# -*- ThePEG-repository -*-
+##################################################
+## Collider type
+##################################################
+read snippets/DipoleMerging.in
+read snippets/PPCollider.in
+read snippets/MonacoSampler.in
+##################################################
+## Matrix element library selection
+##################################################
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+read Matchbox/MadGraph-OpenLoops.in
+
+##################################################
+## PDF and AlphaS choice
+##################################################
+read Matchbox/FiveFlavourNoBMassScheme.in
+read Matchbox/MMHT2014.in
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
+read Merging/FactorCMWScheme.in
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+set /Herwig/Analysis/RivetAnalysis:Debug No
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
+##################################################
+## Save the generator
+##################################################
+do /Herwig/Merging/MergingFactory:ProductionMode
+
+## Select the process
+cd /Herwig/Merging/
+set Merger:MergingScale 15.*GeV
+
+${process}
+
+read ${parameterFile}
+
+cd /Herwig/Generators
+set EventGenerator:MaxErrors 1000000
+saverun ${runname} EventGenerator

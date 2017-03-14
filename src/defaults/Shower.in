@@ -131,12 +131,12 @@ set GtoGGSplitFn:AngularOrdered Yes
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
-set GtoQQbarSplitFn:AngularOrdered No
+set GtoQQbarSplitFn:AngularOrdered Yes
 
 create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
 newdef GammatoQQbarSplitFn:InteractionType QED
 newdef GammatoQQbarSplitFn:ColourStructure NeutralChargedCharged
-set GammatoQQbarSplitFn:AngularOrdered No
+set GammatoQQbarSplitFn:AngularOrdered Yes
 
 create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
 newdef QtoGQSplitFn:InteractionType QCD
@@ -244,8 +244,8 @@ do SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; LtoLGammaSudakov
 do SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; LtoLGammaSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
-# that particle a is the particle given and we backward branch to
-# particle b which is initial state and particle c which is final state
+# that the current particle b is given and we backward branch to new
+# particle a which is initial state and new particle c which is final state
 #
 do SplittingGenerator:AddInitialSplitting u->u,g; QtoQGSudakov
 do SplittingGenerator:AddInitialSplitting d->d,g; QtoQGSudakov

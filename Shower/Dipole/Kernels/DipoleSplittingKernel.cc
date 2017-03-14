@@ -84,6 +84,11 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     scale = sqr(splittingKinematics()->QFromPt(pt,split)) + sqr(theScreeningScale);
   }
 
+
+ 
+  Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
+  fScale = max( fScale , sqr(factorizationScaleFreeze()) );
+
   if(split.calcFixedExpansion()){
     scale=sqr(split.fixedScale());
   }
@@ -91,8 +96,6 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   Energy2 rScale = sqr(theRenormalizationScaleFactor*rScaleFactor)*scale;
   rScale = max( rScale , sqr(renormalizationScaleFreeze()) );
 
-  Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
-  fScale = max( fScale , sqr(factorizationScaleFreeze()) );
 
   double alphas = 1.0;
   double pdf = 1.0;

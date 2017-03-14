@@ -71,7 +71,7 @@ DescribeClass<PhasespaceCouplings,HandlerBase>
 void PhasespaceCouplings::Init() {
 
   static ClassDocumentation<PhasespaceCouplings> documentation
-    ("Store couplings for the phasespace generator.");
+    ("Store couplings for the phase space generator.");
 
 }
 

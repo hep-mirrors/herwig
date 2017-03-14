@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for the MSSM
 #
@@ -361,8 +363,7 @@ set MSSM/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
 
 ###################################################
 #

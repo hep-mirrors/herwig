@@ -37,7 +37,7 @@ inline PersistentIStream& operator>>(PersistentIStream& is, LTriple& t) {
  * \ingroup Matchbox
  * \author Simon Platzer
  *
- * \brief Store couplings for the phasespace generator.
+ * \brief Store couplings for the phase space generator.
  *
  * @see \ref PhasespaceCouplingsInterfaces "The interfaces"
  * defined for PhasespaceCouplings.

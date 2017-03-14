@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for the RPV MSSM
 #
@@ -392,8 +394,7 @@ do SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/RPV/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/RPV/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/RPV/Model
 
 ###################################################
 #

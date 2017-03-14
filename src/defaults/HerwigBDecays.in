@@ -1,5 +1,12 @@
 # -*- ThePEG-repository -*-
 
+# switch off current modes
+do B0:SelectDecayModes none
+do Bbar0:SelectDecayModes none
+do B+:SelectDecayModes none
+do B-:SelectDecayModes none
+do B_s0:SelectDecayModes none
+do B_sbar0:SelectDecayModes none
 #
 #  Internal decay model for weakly decaying B mesons
 #
@@ -3463,6 +3470,13 @@ decaymode B_sbar0->phi,Kbar0; 2.0E-9 1 /Herwig/Decays/ISGW2Hadronic
 #
 #  Internal Model for charm decays
 #
+# switch off current modes
+do D0:SelectDecayModes none
+do Dbar0:SelectDecayModes none
+do D+:SelectDecayModes none
+do D-:SelectDecayModes none
+do D_s+:SelectDecayModes none
+do D_s-:SelectDecayModes none
 #
 decaymode D0->K-,pi+,pi0; 0.141 1 /Herwig/Decays/DKPiPiCLEO
 decaymode D0->K-,a_1+; 0.075 1 /Herwig/Decays/WSBHadronic

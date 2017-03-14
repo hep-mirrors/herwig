@@ -176,7 +176,7 @@ DescribeClass<TreePhasespace,MatchboxPhasespace>
 void TreePhasespace::Init() {
 
   static ClassDocumentation<TreePhasespace> documentation
-    ("TreePhasespace is a multichannel phasespace generator "
+    ("TreePhasespace is a multi-channel phase space generator "
      "adapting to singularity structures as determined from the matrix "
      "elements diagrams.");
 
@@ -185,6 +185,7 @@ void TreePhasespace::Init() {
     ("ChannelMap",
      "Set the object storing the channels.",
      &TreePhasespace::theChannelMap, false, false, true, false, false);
+  interfaceChannelMap.rank(-1);
 
 
   static Parameter<TreePhasespace,double> interfaceX0
@@ -227,6 +228,7 @@ void TreePhasespace::Init() {
      "False",
      "Use only unmirrored diagrams",
      false);
+  interfaceIncludeMirrored.rank(-1);
 
 }
 

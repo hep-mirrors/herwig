@@ -39,12 +39,12 @@ ALL_H_FILES = \
 	IFMgx2ggxDipoleKernel.h \
 	IFMgx2qqxDipoleKernel.h \
 	FIMDecaygx2qqxDipoleKernel.h \
-	FIMDecayqx2qgxDipoleKernelFull.h \
-	FIMDecaygx2ggxDipoleKernelFull.h
+	FIMDecayqx2qgxDipoleKernel.h \
+	FIMDecaygx2ggxDipoleKernel.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
-    	DipoleSplittingKernel.cc \
+	DipoleSplittingKernel.cc \
 	FFMqx2qgxDipoleKernel.cc \
 	FFMgx2ggxDipoleKernel.cc \
 	FFMgx2qqxDipoleKernel.cc \
@@ -69,6 +69,6 @@ ALL_CC_FILES = \
 	IFMgx2ggxDipoleKernel.cc \
 	IFMgx2qqxDipoleKernel.cc \
 	FIMDecaygx2qqxDipoleKernel.cc \
-	FIMDecayqx2qgxDipoleKernelFull.cc \
-	FIMDecaygx2ggxDipoleKernelFull.cc
+	FIMDecayqx2qgxDipoleKernel.cc \
+	FIMDecaygx2ggxDipoleKernel.cc
 

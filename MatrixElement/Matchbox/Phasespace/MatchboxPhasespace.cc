@@ -276,10 +276,6 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
   if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
-  }else{
-    if(factory()->verboseDia())
-    cout<<"\n MatchboxPhasespace no coupling for (timelike) :" <<  std::get<0>(vertexKey)
-    <<" "<< std::get<1>(vertexKey)<<" " << std::get<2>(vertexKey);
   }
 
   Energy2 mass2 = sqr(diag.allPartons()[branch]->hardProcessMass());
@@ -342,10 +338,6 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
   if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
-  }else{
-    if(factory()->verboseDia())
-    cout<<"\n MatchboxPhasespace no coupling for (space) :"<<  std::get<0>(vertexKey)
-    <<" "<< std::get<1>(vertexKey)<<" " << std::get<2>(vertexKey);
   }
   if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
@@ -502,6 +494,7 @@ void MatchboxPhasespace::Init() {
      "[debug] Cutoff below which a region is considered singular.",
      &MatchboxPhasespace::singularCutoff, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+  interfaceSingularCutoff.rank(-1);
 
   /*
   static Switch<MatchboxPhasespace,bool> interfaceUseMassGenerators
@@ -537,6 +530,7 @@ void MatchboxPhasespace::Init() {
      "in loop induced processes.",
      &MatchboxPhasespace::theLoopParticleIdMin, 200001, 0, 0,
      false, false, Interface::lowerlim);
+  interfaceLoopParticleIdMin.rank(-1);
 
   static Parameter<MatchboxPhasespace,int> interfaceLoopParticleIdMax
     ("LoopParticleIdMax",
@@ -545,12 +539,14 @@ void MatchboxPhasespace::Init() {
      "in loop induced processes.",
      &MatchboxPhasespace::theLoopParticleIdMax, 200100, 0, 0,
      false, false, Interface::lowerlim);
+  interfaceLoopParticleIdMax.rank(-1);
 
 
   static Reference<MatchboxPhasespace,PhasespaceCouplings> interfaceCouplingData
     ("CouplingData",
      "Set the storage for the couplings.",
      &MatchboxPhasespace::theCouplings, false, false, true, false, false);
+  interfaceCouplingData.rank(-1);
 
 }
 

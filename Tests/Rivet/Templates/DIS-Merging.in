@@ -1,0 +1,60 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+## Herwig/Matchbox example input file
+##################################################
+
+##################################################
+## Collider type
+##################################################
+read snippets/DipoleMerging.in
+read snippets/EPCollider.in
+read snippets/MonacoSampler.in
+
+##################################################
+## Process selection
+##################################################
+
+## Note that event generation may fail if no matching matrix element has
+## been found.  Coupling orders are with respect to the Born process,
+## i.e. NLO QCD does not require an additional power of alphas.
+
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+## Set the order of the couplings
+read Matchbox/MadGraph-OpenLoops.in
+
+set /Herwig/Merging/MergingFactory:OrderInAlphaS 0
+set /Herwig/Merging/MergingFactory:OrderInAlphaEW 2
+set /Herwig/Merging/MergingFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
+
+
+##################################################
+## PDF and AlphaS choice
+##################################################
+read Matchbox/FiveFlavourNoBMassScheme.in
+read Matchbox/MMHT2014.in
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
+read Merging/FactorCMWScheme.in
+
+do /Herwig/Merging/MergingFactory:ProductionMode
+
+# switch off initial state QED radiation
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+
+# create the Rivet analysis
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+
+read ${parameterFile}
+
+## Select the process
+cd /Herwig/Merging/
+set Merger:MergingScale 10.*GeV
+${process}
+
+cd /Herwig/Generators
+set EventGenerator:MaxErrors 1000000
+saverun ${runname} EventGenerator

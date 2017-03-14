@@ -90,8 +90,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   bool quark = true;
   // if the Herwig algorithm 
   if(_mode ==1) {
-    if(cluMass > massLightestBaryonPair(par1,par2) && 
-       UseRandom::rnd() > 1./(1.+pwtDIquark())) {
+    if(UseRandom::rnd() > 1./(1.+pwtDIquark())
+       &&cluMass > massLightestBaryonPair(par1,par2)) {
       diquark = true;
       quark = false;
     }

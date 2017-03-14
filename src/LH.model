@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Little Higgs models
 #
@@ -120,5 +122,4 @@ do SplittingGenerator:AddFinalSplitting T->T,g; QtoQGSudakov
 
 cd /Herwig/Generators
 # Choose Little Higgs over SM
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/LH/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/LH/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/LH/Model

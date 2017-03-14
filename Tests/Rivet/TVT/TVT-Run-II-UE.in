@@ -8,3 +8,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_NOTE_9936
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8233977
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2015_I1388868

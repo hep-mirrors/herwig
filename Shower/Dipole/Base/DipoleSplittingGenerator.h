@@ -454,7 +454,7 @@ private:
   /**
    * Sudakov sampling accuracy
    */
-  double theSudakovAccuracy=0.03;
+  double theSudakovAccuracy=0.05;
 
 
 private:

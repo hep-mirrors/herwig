@@ -6,12 +6,9 @@ INPUTFILES = \
 DefaultEEJets.in \
 DefaultEPJets.in \
 DefaultPPJets.in \
-EECollider.in \
-EPCollider.in \
 FiveFlavourScheme.in \
 FiveFlavourNoBMassScheme.in \
 FourFlavourScheme.in \
-GenericCollider.in \
 HiggsEffective.in \
 HJets.in \
 IdentifiedBs.in \
@@ -44,7 +41,6 @@ OnShellTopProduction.in \
 Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \
 Powheg.in \
-PPCollider.in \
 PQCDLevel.in \
 VBFNLO.in \
 VBFNLOPhasespace.in \

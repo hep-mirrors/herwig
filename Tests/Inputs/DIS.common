@@ -7,19 +7,19 @@
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set DISGenerator:NumberOfEvents 10000000
-set DISGenerator:RandomNumberGenerator:Seed 31122001
-set DISGenerator:DebugLevel 1
-set DISGenerator:PrintEvent 1000
-set DISGenerator:MaxErrors 10000
+set EventGenerator:NumberOfEvents 10000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 1
+set EventGenerator:PrintEvent 1000
+set EventGenerator:MaxErrors 10000
 set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 1000000.
 set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.
 set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1000000.
 set /Herwig/Cuts/ChargedCurrentCut:MaxQ2 1000000.
 set /Herwig/Cuts/ChargedCurrentCut:MinW2 0.
 set /Herwig/Cuts/ChargedCurrentCut:MaxW2 1000000.
-set /Herwig/Cuts/DISCuts:MHatMin 0.001
-set /Herwig/Cuts/DISCuts:X1Min 1e-10
-set /Herwig/Cuts/DISCuts:X2Min 1e-10
+set /Herwig/Cuts/Cuts:MHatMin 0.001
+set /Herwig/Cuts/Cuts:X1Min 1e-10
+set /Herwig/Cuts/Cuts:X2Min 1e-10
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF

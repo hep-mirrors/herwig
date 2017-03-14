@@ -23,8 +23,8 @@ mkdir /Herwig/NewPhysics/RadiativeZPrime
 cd /Herwig/NewPhysics/RadiativeZPrime
 create RadiativeZPrime::RadiativeZPrimeModel Model RadiativeZPrime.so
 # SM couplings
-set Model:QCD/RunningAlphaS /Herwig/AlphaS
-set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set Model:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 ###################################################
@@ -61,8 +61,6 @@ set Model:Vertex/GammaZPrimeZ /Herwig/Vertices/RadiativeZPrime/RZ_GammaZPrimeZVe
 #
 ###################################################
 cd /Herwig/NewPhysics
-insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
-insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
 # Set up the model framework
 set RadiativeZPrime/Model:ModelGenerator NewModel
 ###################################################
@@ -71,5 +69,4 @@ set RadiativeZPrime/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/RadiativeZPrime/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/RadiativeZPrime/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/RadiativeZPrime/Model

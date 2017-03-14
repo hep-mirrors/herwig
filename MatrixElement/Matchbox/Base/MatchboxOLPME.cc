@@ -313,6 +313,7 @@ void MatchboxOLPME::Init() {
           "Off",
           "Off",
           false);
+  interfaceSetMuToMuR.rank(-1);
 
   static Switch<MatchboxOLPME,bool> interfaceUseRunningAlphaS
          ("UseRunningAlphaS",
@@ -330,6 +331,7 @@ void MatchboxOLPME::Init() {
           "Off",
           "Off",
           false);
+  interfaceUseRunningAlphaS.rank(-1);
 
   static Switch<MatchboxOLPME,bool> interfaceUseRunningAlphaEW
          ("UseRunningAlphaEW",
@@ -347,6 +349,7 @@ void MatchboxOLPME::Init() {
           "Off",
           "Off",
           false);
+  interfaceUseRunningAlphaEW.rank(-1);
 
 }
 

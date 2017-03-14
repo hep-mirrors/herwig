@@ -28,9 +28,8 @@ read baryon_decays.in
 read boson_decays.in
 read lepton_decays.in
 read meson_decays.in
-# handling of B-decays, can switch to EvtGen if wanted
-read HerwigBDecays.in
-#@LOAD_EVTGEN_DECAYS@
+# handling of B-decays, EvtGEn the default if present
+@LOAD_EVTGEN_DECAYS@
 
 # these must be stable
 set /Herwig/Particles/mu-:Stable   Stable

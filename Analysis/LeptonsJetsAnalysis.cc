@@ -525,7 +525,7 @@ void LeptonsJetsAnalysis::dofinish() {
 
   elem.append(xhistos);
 
-  string fname = name() + ".xml";
+  string fname = generator()->filename() + string("-") + name() + string(".xml");
   ofstream runXML(fname.c_str());
   runXML << setprecision(16);
   XML::ElementIO::put(elem,runXML);
@@ -565,7 +565,7 @@ DescribeClass<LeptonsJetsAnalysis,AnalysisHandler>
 void LeptonsJetsAnalysis::Init() {
 
   static ClassDocumentation<LeptonsJetsAnalysis> documentation
-    ("There is no documentation for the LeptonsJetsAnalysis class");
+    ("General-purpose analysis for processes with jets and leptons");
 
   static Reference<LeptonsJetsAnalysis,JetFinder> interfaceJetFinder
     ("JetFinder",

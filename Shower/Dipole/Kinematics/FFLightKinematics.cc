@@ -63,7 +63,9 @@ Energy FFLightKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split
 pair<double,double> FFLightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingInfo& dInfo,
 						   const DipoleSplittingKernel&) const {
-  double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
+  Energy hard=dInfo.hardPt();
+  if(openZBoundaries()>0)hard=dInfo.scale()/2.;
+  const double s = sqrt(1.-sqr(pt/hard));
   return {0.5*(1.-s),0.5*(1.+s)};
 }
 
