@@ -189,7 +189,7 @@ namespace matchbox {
       unsigned int active = 0;
       if (scale > 0.*GeV2) {
 	while(quark_mass_squared(active) < scale) {
-	  if (++active == 7)
+	  if (++active == max_active_flavours_+1)
 	    break;
 	}
 	active -= 1;
