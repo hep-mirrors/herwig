@@ -291,10 +291,10 @@ elif(collider=="LEP") :
 
     elif(simulation=="Merging" ) :
         if(parameterName=="10") :
-          process=addProcess(thefactory,"e- e+ -> j j","0","2","",1,1)
+          process=addProcess(thefactory,"e- e+ -> j j","0","2","",2,2)
           process+="read Matchbox/FourFlavourScheme.in"
         else :
-          process=addProcess(thefactory,"e- e+ -> j j","0","2","",1,1)
+          process=addProcess(thefactory,"e- e+ -> j j","0","2","",2,2)
 # TVT
 elif(collider=="TVT") :
     process="set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n"
@@ -1201,7 +1201,7 @@ elif(collider=="LHC") :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,0)
+                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,1)
             process+=setHardProcessWidthToZero(["h0"])
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
@@ -1223,7 +1223,7 @@ elif(collider=="LHC") :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,0)
+                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,1)
             process+=setHardProcessWidthToZero(["h0"])
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
         elif(parameterName.find("ggHJet")>=0) :
@@ -1242,8 +1242,8 @@ elif(collider=="LHC") :
         elif(parameterName.find("8-ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             if(simulation=="Merging"):
-                process+= "read Matchbox/MadGraph-OpenLoops.in\nread Matchbox/HiggsEffective.in\n"
-                process+="cd /Herwig/Merging/"
+                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff On\nset MadGraph:Model heft\n"
+                process+="cd /Herwig/Merging/\n"
             process+=setHardProcessWidthToZero(["h0"])
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p h0","2","1","FixedScale",0,0)
@@ -1257,8 +1257,8 @@ elif(collider=="LHC") :
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             if(simulation=="Merging"):
-                process+= "read Matchbox/MadGraph-OpenLoops.in\nread Matchbox/HiggsEffective.in\n"
-                process+="cd /Herwig/Merging/"
+                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff On\nset MadGraph:Model heft\n"
+                process+="cd /Herwig/Merging/\n"
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
             process+=addBRReweighter()
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -1322,7 +1322,7 @@ elif(collider=="LHC") :
             if(simulation=="Matchbox"):
               process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",0,0)
             elif(simulation=="Merging"):
-              process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",1,0)
+              process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",1,1)
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("-A")>=0) :
                  process+=addFirstJet("45")
@@ -1368,7 +1368,7 @@ elif(collider=="LHC") :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",0,0)
             elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",1,0)
+                process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",1,1)
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if(parameterName.find("Jets-10")>=0) :
                 process+=addFirstJet("1800")

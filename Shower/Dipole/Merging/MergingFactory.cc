@@ -37,7 +37,7 @@ void MergingFactory::doinit(){
 }
 
 void MergingFactory::productionMode() {
-  if(M()<=0)
+  if(M()<0)
   for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
          = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
         Repository::clog() << "One-loop contributions from '"
