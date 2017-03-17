@@ -566,6 +566,7 @@ void ShowerHandler::cascade() {
   // unset the current ShowerHandler
   unSetCurrentHandler();
   getMPIHandler()->clean();
+  resetPDFs(make_pair(first,second));
 }
 
 void ShowerHandler::initializeWeights() {
