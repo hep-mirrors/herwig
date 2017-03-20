@@ -557,6 +557,8 @@ void ShowerApproximation::Init() {
      "Use the shower scale",
      showerScale);
 
+  interfaceRealEmissionScaleInSubtraction.rank(-1);
+
   static Switch<ShowerApproximation,int> interfaceBornScaleInSubtraction
     ("BornScaleInSubtraction",
      "Set the scale choice for the Born cross section in the matching subtraction.",
@@ -576,6 +578,8 @@ void ShowerApproximation::Init() {
      "ShowerScale",
      "Use the shower scale",
      showerScale);
+
+  interfaceBornScaleInSubtraction.rank(-1);
 
   static Switch<ShowerApproximation,int> interfaceEmissionScaleInSubtraction
     ("EmissionScaleInSubtraction",
@@ -597,6 +601,8 @@ void ShowerApproximation::Init() {
      "Use the shower scale",
      showerScale);
 
+  interfaceEmissionScaleInSubtraction.rank(-1);
+
   static Switch<ShowerApproximation,int> interfaceRealEmissionScaleInSplitting
     ("RealEmissionScaleInSplitting",
      "Set the scale choice for the real emission cross section in the splitting.",
@@ -616,6 +622,8 @@ void ShowerApproximation::Init() {
      "ShowerScale",
      "Use the shower scale",
      showerScale);
+
+  interfaceRealEmissionScaleInSplitting.rank(-1);
 
   static Switch<ShowerApproximation,int> interfaceBornScaleInSplitting
     ("BornScaleInSplitting",
@@ -637,6 +645,8 @@ void ShowerApproximation::Init() {
      "Use the shower scale",
      showerScale);
 
+  interfaceBornScaleInSplitting.rank(-1);
+
   static Switch<ShowerApproximation,int> interfaceEmissionScaleInSplitting
     ("EmissionScaleInSplitting",
      "Set the scale choice for the emission in the splitting.",
@@ -657,17 +667,23 @@ void ShowerApproximation::Init() {
      "Use the shower scale",
      showerScale);
 
+  interfaceEmissionScaleInSplitting.rank(-1);
+
   static Parameter<ShowerApproximation,Energy> interfaceRenormalizationScaleFreeze
     ("RenormalizationScaleFreeze",
      "The freezing scale for the renormalization scale.",
      &ShowerApproximation::theRenormalizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
+  interfaceRenormalizationScaleFreeze.rank(-1);
+
   static Parameter<ShowerApproximation,Energy> interfaceFactorizationScaleFreeze
     ("FactorizationScaleFreeze",
      "The freezing scale for the factorization scale.",
      &ShowerApproximation::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+
+  interfaceFactorizationScaleFreeze.rank(-1);
 
   static Reference<ShowerApproximation,HardScaleProfile> interfaceHardScaleProfile
     ("HardScaleProfile",
@@ -678,6 +694,8 @@ void ShowerApproximation::Init() {
     ("LargeNBasis",
      "Set the large-N colour basis implementation.",
      &ShowerApproximation::theLargeNBasis, false, false, true, true, false);
+
+  interfaceLargeNBasis.rank(-1);
 
   static Switch<ShowerApproximation,bool> interfaceMaxPtIsMuF
     ("MaxPtIsMuF",
