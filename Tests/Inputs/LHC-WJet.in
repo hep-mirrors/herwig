@@ -1,9 +1,11 @@
+# -*- ThePEG-repository -*-
+read snippets/PPCollider.in
 read LHC.common
-erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+erase /Herwig/EventHandlers/EventHandler:PostSubProcessHandlers 0 
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:CascadeHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
 cd /Herwig
 create Herwig::O2AlphaS AlphaS2 
 set Model:QCD/RunningAlphaS AlphaS2
@@ -16,7 +18,7 @@ set Model:EW/RunningAlphaEM AlphaEM2
 cd /Herwig/MatrixElements/
 set MEWJet:WDecay 3
 set MEWJet:Process 3
-insert SimpleQCD:MatrixElements[0] MEWJet
+insert SubProcess:MatrixElements[0] MEWJet
 set /Herwig/Cuts/WBosonKtCut:MinKT 20.0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 # cd /Herwig/Partons
@@ -28,5 +30,5 @@ set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 cd /Herwig/Generators
 cd /Herwig/Generators
 create Herwig::WJetTest WJetTest HadronTest.so
-insert LHCGenerator:AnalysisHandlers 0 WJetTest
-saverun LHC-WJet LHCGenerator
+insert EventGenerator:AnalysisHandlers 0 WJetTest
+saverun LHC-WJet EventGenerator

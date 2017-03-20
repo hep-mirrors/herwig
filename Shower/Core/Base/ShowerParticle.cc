@@ -233,13 +233,15 @@ RhoDMatrix ShowerParticle::extractRhoMatrix(bool forward) {
   inspin->decay();
   // get the spin density matrix
   RhoDMatrix rho = forward ? inspin->rhoMatrix() : inspin->DMatrix();
-  // map to the shower basis if needed
+  // map to the shower basis if needed  
   if(needMapping) {
     RhoDMatrix rhop(rho.iSpin(),false);
-    for(int ixa=0;ixa<rho.iSpin();++ixa) {
-  	for(int ixb=0;ixb<rho.iSpin();++ixb) {
-  	  for(int iya=0;iya<rho.iSpin();++iya) {
-  	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
+    for(int ixb=0;ixb<rho.iSpin();++ixb) {
+  	for(int iyb=0;iyb<rho.iSpin();++iyb) {
+  	  if(mapping(iyb,ixb)==0.)continue;
+	  for(int iya=0;iya<rho.iSpin();++iya) {
+            if(rho(iya,iyb)==0.)continue;
+	    for(int ixa=0;ixa<rho.iSpin();++ixa) {
   	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
   	    }
   	  }

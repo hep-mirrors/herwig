@@ -1,21 +1,23 @@
+# -*- ThePEG-repository -*-
+read snippets/EECollider.in
 cd /Herwig/MatrixElements
-insert SimpleEE:MatrixElements[0] MEee2ZH
+insert SubProcess:MatrixElements[0] MEee2ZH
 
 read LEP.common
 
 cd /Herwig/Generators
 
-set LEPGenerator:EventHandler:CascadeHandler NULL
-set LEPGenerator:EventHandler:HadronizationHandler NULL
-set LEPGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:CascadeHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
 
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
+set EventGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
 
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 create Herwig::VHTest VHTest LeptonTest.so
-insert LEPGenerator:AnalysisHandlers 0 VHTest
+insert EventGenerator:AnalysisHandlers 0 VHTest
 set /Herwig/Analysis/Basics:CheckQuark 0
 
 # parameters to make the same as fortran
@@ -30,7 +32,7 @@ set Model:EW/Sin2ThetaW 0.22254916
 create Herwig::AlphaEM AlphaEM2 
 set Model:EW/RunningAlphaEM AlphaEM2
 
-set /Herwig/Masses/HiggsMass:HiggsShape 0
+set /Herwig/Masses/HiggsMass:BreitWignerShape 0
 set /Herwig/Particles/h0:Stable Stable
 
 set /Herwig/Particles/Z0/Z0->d,dbar;:OnOff Off
@@ -49,4 +51,4 @@ set /Herwig/Particles/Z0:WidthCut 1000.
 set /Herwig/ACDCSampler:Ntry 100000
 
 cd /Herwig/Generators
-saverun LEP-VH LEPGenerator
+saverun LEP-VH EventGenerator

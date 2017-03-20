@@ -5,24 +5,16 @@
 # usage: Herwig read DIS.in
 ##################################################
 
+read snippets/EPCollider.in
+
 ##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-set DISGenerator:NumberOfEvents 10000000
-set DISGenerator:RandomNumberGenerator:Seed 31122001
-set DISGenerator:PrintEvent 10
-set DISGenerator:MaxErrors 10000
-set /Herwig/Shower/ShowerHandler:MPIHandler NULL
-# switch off final-state electron/muon FSR
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
-set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
 # no pdfs for leptons
 set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 set /Herwig/Partons/MPIExtractor:SecondPDF  /Herwig/Partons/MPIPDF
-set /Herwig/Partons/QCDExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/EPExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 # DIS physics parameters (override defaults here) 
@@ -35,9 +27,9 @@ set /Herwig/Partons/QCDExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 cd /Herwig/MatrixElements/
 
 # Neutral current DIS
-insert SimpleDIS:MatrixElements[0] MEDISNC
+insert SubProcess:MatrixElements[0] MEDISNC
 # Charged current matrix element
-insert SimpleDIS:MatrixElements[0] MEDISCC
+insert SubProcess:MatrixElements[0] MEDISCC
 
 ##################################################
 # NLO IN POWHEG SCHEME
@@ -48,9 +40,7 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 ###################################################
 # set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
 # set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
-# set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
-# set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
-# set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+# set /Herwig/Partons/EPExtractor:SecondPDF  /Herwig/Partons/HardNLOPDF
 #
 ###################################################
 ##  Setup the POWHEG shower
@@ -66,41 +56,12 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 #cd /Herwig/MatrixElements/
 #
 ## Neutral current DIS
-#insert SimpleDIS:MatrixElements[0] PowhegMEDISNC
+#insert SubProcess:MatrixElements[0] PowhegMEDISNC
 ## Charged current matrix element
-#insert SimpleDIS:MatrixElements[0] PowhegMEDISCC
-
-cd /Herwig/Generators
-
-##################################################
-#  Useful analysis handlers for lepton-hadron physics
-##################################################
-
-##################################################
-#  Useful analysis handlers for HepMC related output
-##################################################
-# Schematic overview of an event (requires --with-hepmc to be set at configure time
-# and the graphviz program 'dot' to produce a plot)
-# insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
-# A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-# set /Herwig/Analysis/HepMCFile:PrintEvent 100
-# set /Herwig/Analysis/HepMCFile:Format GenEvent
-# set /Herwig/Analysis/HepMCFile:Units GeV_mm
+#insert SubProcess:MatrixElements[0] PowhegMEDISCC
 
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun DIS DISGenerator
-
-##################################################
-# uncomment this section for an example batch run
-# of two repeats with different parameters
-#
-# Note that a separate call of 'Herwig run' 
-# is not required in this case
-##################################################
-# set DISGenerator:NumberOfEvents 10
-# run DIS-full DISGenerator
-#
-# run DIS-initial DISGenerator
+cd /Herwig/Generators
+saverun DIS EventGenerator

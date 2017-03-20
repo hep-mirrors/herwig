@@ -25,4 +25,8 @@ MatchboxTopSumMTScale.cc \
 MatchboxTopMinMTScale.h \
 MatchboxTopMinMTScale.cc \
 MatchboxTriVecScales.h \
-MatchboxTriVecScales.cc
+MatchboxTriVecScales.cc \
+MatchboxTopLinearSumMTScale.h \
+MatchboxTopLinearSumMTScale.cc \
+MatchboxTopIndividualMTScale.h \
+MatchboxTopIndividualMTScale.cc

@@ -1,10 +1,15 @@
+# -*- ThePEG-repository -*-
 ##################################################
 ## Collider type
 ##################################################
-read Matchbox/EECollider.in
+read snippets/Matchbox.in
+read snippets/EECollider.in
 ##################################################
 ## Process selection
 ##################################################
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0

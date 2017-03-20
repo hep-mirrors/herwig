@@ -243,19 +243,7 @@ create Herwig::MEGammaP2Jets MEGammaP2Jets HwMEGammaHadron.so
 ##########################################################
 # Set up the Subprocesses
 #
-# For e+e-
+# Generic for all colliders
 ##########################################################
-create ThePEG::SubProcessHandler SimpleEE
-newdef SimpleEE:PartonExtractor /Herwig/Partons/EEExtractor
-
-##########################################################
-# For hadron-hadron 
-##########################################################
-create ThePEG::SubProcessHandler SimpleQCD
-newdef SimpleQCD:PartonExtractor /Herwig/Partons/QCDExtractor
-
-##########################################################
-# For DIS 
-##########################################################
-create ThePEG::SubProcessHandler SimpleDIS
-newdef SimpleDIS:PartonExtractor /Herwig/Partons/DISExtractor
+create ThePEG::SubProcessHandler SubProcess
+newdef SubProcess:PartonExtractor /Herwig/Partons/PPExtractor

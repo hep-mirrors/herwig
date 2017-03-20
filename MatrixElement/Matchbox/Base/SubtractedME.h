@@ -115,11 +115,6 @@ public:
   virtual bool subProcessGroups() const;
 
   /**
-   * Switch on subprocess groups
-   */
-  void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
-
-  /**
    * Return true, if one of the dependent subprocesses should be
    * constructed in place of the one driven by the head matrix element
    * or a full subprocess group.
@@ -515,11 +510,6 @@ private:
    * True, if the loopsim matched virtual contribution should be subtracted.
    */
   bool theLoopSimSubtraction;
-
-  /**
-   * Switch on subprocess groups
-   */
-  bool theSubProcessGroups;
 
 private:
 

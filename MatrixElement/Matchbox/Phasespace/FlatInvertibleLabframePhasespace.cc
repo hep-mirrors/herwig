@@ -167,5 +167,7 @@ void FlatInvertibleLabframePhasespace::Init() {
     (interfaceLogSHat,
      "False", "Generate flat in \\f$\\hat{s}\\f$", false);
 
+  interfaceLogSHat.rank(-1);
+
 }
 

@@ -13,15 +13,15 @@
 #.................p+-- -- <<<<<<..................................................#
 #=================================================================================#
 
-set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 8000.0*GeV
-set /Herwig/Generators/LHCGenerator:NumberOfEvents 100
+set /Herwig/EventHandlers/EventHandler:LuminosityFunction:Energy 8000.0*GeV
+set /Herwig/Generators/EventGenerator:NumberOfEvents 100
 
 #==================================================================================
 #                    :::::MATRIX ELEMENT:::::
 #==================================================================================
 
 cd /Herwig/MatrixElements/Matchbox
-insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] PPFactory
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
@@ -52,8 +52,8 @@ set /Herwig/Cuts/MassCut:CComb Z
 set /Herwig/Cuts/MassCut:MinM 66*GeV
 set /Herwig/Cuts/MassCut:MaxM 116*GeV
 
-set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
-insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder
+insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 set /Herwig/Model:EW/Scheme GMuScheme
 set /Herwig/Model:EW/RecalculateEW On
@@ -69,7 +69,7 @@ do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig
 set PPFactory:ShowerApproximation MEMatching
 set MECorrectionHandler:Factory PPFactory
 cd /Herwig/Generators
-insert LHCGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
+insert EventGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 set /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS:LambdaQCD 203.6852*MeV
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 cd /Herwig/MatrixElements/Matchbox
@@ -118,10 +118,10 @@ set /Herwig/Particles/pbar-:PDF PDFSet
 
 cd /Herwig/EventHandlers
 
-set /Herwig/EventHandlers/LHCHandler:Weighted On
+set /Herwig/EventHandlers/EventHandler:Weighted On
 set /Herwig/Samplers/Sampler:Verbose On
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
-set /Herwig/EventHandlers/LHCHandler:Sampler /Herwig/Samplers/Sampler
+set /Herwig/EventHandlers/EventHandler:Sampler /Herwig/Samplers/Sampler
 
 #==================================================================================
 #                     :::::GENERATOR:::::
@@ -129,14 +129,14 @@ set /Herwig/EventHandlers/LHCHandler:Sampler /Herwig/Samplers/Sampler
 
 cd /Herwig/Generators
 
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 1
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 1
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
+erase /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers[0]
 
 create Herwig::VGammaTest VGammaTest HadronTest.so
-insert LHCGenerator:AnalysisHandlers 0 VGammaTest
+insert EventGenerator:AnalysisHandlers 0 VGammaTest
 
 #==================================================================================
 #                :::::DIPOLE SHOWER HADRONIZATION SETTINGS:::::
@@ -193,11 +193,11 @@ set /Herwig/Particles/cbar:NominalMass 0*GeV
 set /Herwig/Particles/b:NominalMass 0*GeV
 set /Herwig/Particles/bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/EventGenerator:EventHandler:CollisionCuts Off
 
 #==================================================================================
 #                     :::::SAVE THE GENERATOR:::::
 #==================================================================================
 
 cd /Herwig/Generators
-saverun LHC-MG-GammaZ-Powheg LHCGenerator
+saverun LHC-MG-GammaZ-Powheg EventGenerator

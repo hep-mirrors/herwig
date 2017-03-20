@@ -9,3 +9,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1370682
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1390114
 # ATLAS boosted t tbar
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1397637
+# CMS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1473674 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1397174
+# ATLAS l +jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1397635 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1404878

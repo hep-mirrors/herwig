@@ -136,7 +136,7 @@ void FIMassiveTildeKinematics::Init() {
 
   static ClassDocumentation<FIMassiveTildeKinematics> documentation
     ("FIMassiveTildeKinematics implements the 'tilde' kinematics for "
-     "a final-initial subtraction dipole.");
+     "a final-initial subtraction dipole involving a massive particle.");
 
 }
 

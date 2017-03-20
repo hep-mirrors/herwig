@@ -2,3 +2,4 @@
 # select the analyses
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2015_I1388868

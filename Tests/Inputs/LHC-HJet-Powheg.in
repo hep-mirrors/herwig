@@ -1,27 +1,29 @@
+# -*- ThePEG-repository -*-
+read snippets/PPCollider.in
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:NumberOfEvents 10000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set EventGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
 set /Herwig/Analysis/Basics:CheckQuark 0
 set /Herwig/Particles/h0:Stable Stable
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
-insert SimpleQCD:MatrixElements[0] PowhegMEHiggs
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+insert SubProcess:MatrixElements[0] PowhegMEHiggs
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO-old
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO-old
 create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
 cd /Herwig/Shower
 # use the general recon for now
 set KinematicsReconstructor:ReconstructionOption General
 # switch treatment of hardest emission
-set Evolver:HardEmissionMode POWHEG
+set ShowerHandler:HardEmission POWHEG
 cd /Herwig/Generators
 create Herwig::HTest HTest HadronJetTest.so
-insert LHCGenerator:AnalysisHandlers 0 HTest
-saverun LHC-HJet-Powheg LHCGenerator
+insert EventGenerator:AnalysisHandlers 0 HTest
+saverun LHC-HJet-Powheg EventGenerator

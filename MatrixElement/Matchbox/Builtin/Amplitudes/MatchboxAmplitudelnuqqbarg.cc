@@ -116,8 +116,8 @@ Complex MatchboxAmplitudelnuqqbarg::evaluate(size_t, const vector<int>& hel, Com
       amplitudePartonData()[1]->id() < 0:
       amplitudePartonData()[0]->id() < 0;
     pair<int,int> tmp(
-      SU2Helper::family(amplitudePartonData()[2]),
-      SU2Helper::family(amplitudePartonData()[3]));
+      SU2Helper::family(amplitudePartonData()[2])-1,
+      SU2Helper::family(amplitudePartonData()[3])-1);
     if ( amplitudePartonData()[3]->id() < 0 ) swap(tmp.first,tmp.second);
     ckmelement = theCKM[tmp.first][tmp.second];
     if ( !wPlus ) ckmelement = conj(ckmelement);
@@ -144,8 +144,8 @@ Complex MatchboxAmplitudelnuqqbarg::evaluateOneLoop(size_t, const vector<int>& h
       amplitudePartonData()[1]->id() < 0:
       amplitudePartonData()[0]->id() < 0;
     pair<int,int> tmp(
-      SU2Helper::family(amplitudePartonData()[2]),
-      SU2Helper::family(amplitudePartonData()[3]));
+      SU2Helper::family(amplitudePartonData()[2])-1,
+      SU2Helper::family(amplitudePartonData()[3])-1);
     if ( amplitudePartonData()[3]->id() < 0 ) swap(tmp.first,tmp.second);
     ckmelement = theCKM[tmp.first][tmp.second];
     if ( !wPlus ) ckmelement = conj(ckmelement);

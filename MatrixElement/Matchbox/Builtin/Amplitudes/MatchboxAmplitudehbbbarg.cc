@@ -132,7 +132,9 @@ Complex MatchboxAmplitudehbbbarg::evaluate(size_t, const vector<int>& hel, Compl
     case 4 : Mf = interfaceCMass; /*cout<<"c"<<ounit(Mf,GeV)<<endl;*/ break;
     case 5 : Mf = interfaceBMass; /*cout<<"b"<<ounit(Mf,GeV)<<endl;*/ break;
   }
-  if (Mf==0*GeV) cout<<"Check infile. The incoming particles need to be massive!"; 
+  if (Mf==0*GeV) 
+    throw Exception() << "Invalid settings in MatchboxAmplitudehbbbarg -- zero fermion mass."
+		      << Exception::runerror; 
   Complex c2= Complex(0.,gw*gs*Mf/MW/sqrt(2));
   
   //qghq Prozesse mit Quark als "Zwischenteilchen" aus qghq.nb
@@ -182,9 +184,9 @@ Complex MatchboxAmplitudehbbbarg::evaluate(size_t, const vector<int>& hel, Compl
 //      largeN = -c*minusProduct(q,g)*minusProduct(q,g)*plusProduct(q,qbar)/(invariant(q,qbar));
 //      return(largeN);
 //  }
-  cout<<"Error: unknown Helizity configuration"<<endl;
-  largeN=0;
-  return(largeN);
+  assert(false);
+
+  return 0;
 }
 
 /*Complex MatchboxAmplitudehbbbarg::evaluateOneLoop(size_t, const vector<int>& hel) {
@@ -217,27 +219,27 @@ void MatchboxAmplitudehbbbarg::Init() {
     ("MatchboxAmplitudehbbbarg");
   static Parameter<MatchboxAmplitudehbbbarg,Energy> interfaceUMass
     ("interfaceUMass",
-     "The up quark mass.",
+     "The up quark mass to be used in the amplitude.",
      &MatchboxAmplitudehbbbarg::interfaceUMass, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
   static Parameter<MatchboxAmplitudehbbbarg,Energy> interfaceDMass
     ("interfaceDMass",
-     "The down quark mass.",
+     "The down quark mass to be used in the amplitude.",
      &MatchboxAmplitudehbbbarg::interfaceDMass, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
   static Parameter<MatchboxAmplitudehbbbarg,Energy> interfaceSMass
     ("interfaceSMass",
-     "The strange quark mass.",
+     "The strange quark mass to be used in the amplitude.",
      &MatchboxAmplitudehbbbarg::interfaceSMass, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
   static Parameter<MatchboxAmplitudehbbbarg,Energy> interfaceCMass
     ("interfaceCMass",
-     "The charm quark mass.",
+     "The charm quark mass to be used in the amplitude.",
      &MatchboxAmplitudehbbbarg::interfaceCMass, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
   static Parameter<MatchboxAmplitudehbbbarg,Energy> interfaceBMass
     ("interfaceBMass",
-     "The bottom quark mass.",
+     "The bottom quark mass to be used in the amplitude.",
      &MatchboxAmplitudehbbbarg::interfaceBMass, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
   

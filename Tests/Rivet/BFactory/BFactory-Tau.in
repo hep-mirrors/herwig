@@ -1,4 +1,4 @@
-erase /Herwig/EventHandlers/LEPHandler:PostSubProcessHandlers 0
+erase /Herwig/EventHandlers/EventHandler:PostSubProcessHandlers 0
 create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 3.5*GeV
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 8.*GeV
@@ -7,7 +7,7 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 # Matrix elements
-set /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2ll
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2ll
 set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Tau 
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S7266081

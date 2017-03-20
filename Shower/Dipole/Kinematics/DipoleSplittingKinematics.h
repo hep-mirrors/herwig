@@ -437,7 +437,7 @@ namespace Herwig {
    * Use the Dipole scale instead of hardpt for z-boundaries.
    */
   
-  int openInitialState() const { return theOpenInitialStateZ; }
+  int openZBoundaries() const { return theOpenZBoundaries; }
   
 
 
@@ -563,7 +563,7 @@ namespace Herwig {
 
 
 
-    int theOpenInitialStateZ;
+    int theOpenZBoundaries;
 
   protected:
 

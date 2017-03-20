@@ -126,18 +126,18 @@ yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda",
-           "-8-Top-All.yoda"]
+           "-8-Top-All.yoda","-13-Top-All.yoda"]
 
 for i in range(1,10) :
-    yodafiles.append("-7-Jets-%1.1i.yoda" % i)
-    yodafiles.append("-8-Jets-%1.1i.yoda" % i)
+    for j in [7,8,13] :
+        yodafiles.append("-%1.1i-Jets-%1.1i.yoda" % (j,i))
 
 if(opts.ue) :
     yodafiles += ["-7-Jets-0.yoda"    ,"-8-Jets-0.yoda" ,"-7-Jets-10.yoda",
                   "-8-Jets-10.yoda"   ,"-900-UE.yoda"   ,"-2360-UE.yoda"    ,
                   "-2760-UE.yoda"     ,"-7-UE.yoda"     ,"-900-UE-Long.yoda",
-                  "-900-UE-Short.yoda","-8-UE.yoda"     ,"-7-UE-Long.yoda",
-                  "-7-UE-Short.yoda"  ,"-7-UE-Long.yoda","-13-UE.yoda"]
+                  "-900-UE-Short.yoda","-8-UE.yoda"     ,
+                  "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda"]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}
@@ -232,6 +232,8 @@ for f in yodafiles:
            aopath.find("I1298810")>0 or aopath.find("I1298811")>0 or
            aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
            aopath.find("I1419070")>0 or aopath.find("I1394679")>0 or
+           aopath.find("I929691" )>0 or aopath.find("I1393758")>0 or
+           aopath.find("I1459051")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -248,6 +250,11 @@ for f in yodafiles:
                 if(aopath.find("x01")>0 and file.find("-7-Top-L.yoda")>0 ) :
                     outhistos[aopath] = ao
                 elif(aopath.find("x02")>0 and file.find("-7-Top-SL.yoda")>0 ) :
+                    outhistos[aopath] = ao
+            elif(aopath.find("1467230")>0 or aopath.find("1419652")>0) :
+                if(aopath.find("y01")>0 and file.find("Long")>0 ) :
+                    outhistos[aopath] = ao
+                elif(aopath.find("y02")>0 and file.find("Long")<0 ) :
                     outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
@@ -360,7 +367,9 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1307243"   )>0 or
         hpath.find("I1419070")>0 or
         hpath.find("I1394679")>0 or
-        hpath.find("CMS_2013_I1208923"   )>0) :
+        hpath.find("CMS_2013_I1208923")>0 or
+        hpath.find("1393758")>0 or
+        hpath.find("1459051")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
@@ -1302,8 +1311,11 @@ for i in range(1,13) :
         mergeByPt("/ATLAS_2016_I1419070/d0%s-x01-y01" % i, "8000")
     else :
         mergeByPt("/ATLAS_2016_I1419070/d%s-x01-y01"  % i, "8000")
+
 # remake differences and sums
 for ihist in range(1,4) :
+    if not ("/ATLAS_2016_I1419070/d0%s-x01-y01" % ihist) in outhistos :
+        continue
     h1 = outhistos["/ATLAS_2016_I1419070/d0%s-x01-y01" % ihist  ]
     h2 = outhistos["/ATLAS_2016_I1419070/d0%s-x01-y01" % (ihist+3)]
     sstring = "/ATLAS_2016_I1419070/d%s-x01-y01"  % (9+ihist)
@@ -1362,6 +1374,28 @@ for x in range(1,6) :
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y03" % x,  "7000", "260" )
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y04" % x,  "7000", "260" )
     useOnePt( "/CMS_2014_I1305624/d01-x%02d-y05" % x,  "7000", "400" )
+
+logging.info("Processing ATLAS_2011_I929691")
+
+for x in range(0,3) :
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 1),  "7000", "20" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 2),  "7000", "40" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 3),  "7000", "40" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 4),  "7000", "80" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 5),  "7000", "110" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 6),  "7000", "110" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 7),  "7000", "210" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 8),  "7000", "260" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+ 9),  "7000", "260" )
+    useOnePt( "/ATLAS_2011_I929691/d%02d-x01-y01" % (10*x+10),  "7000", "400" )
+
+logging.info("Processing ATLAS_2015_I1393758")
+for i in range(1,13) :
+    mergeByPt("/ATLAS_2015_I1393758/d%02d-x01-y01" % i, "8000")
+
+logging.info("Processing CMS_2016_I1459051")
+for i in range(1,15) :
+    mergeByPt("/CMS_2016_I1459051/d%02d-x01-y01" % i, "13000")
 
 # Choose output file
 name = args[0]+"-Jets.yoda"

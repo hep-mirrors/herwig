@@ -55,20 +55,15 @@ generate(const PDVector& legs,
 
     if ( !spaceLikeAllowed.empty() ) {
       map<tcPDPtr,int> counts;
-      for ( int k = 1; k < diag.nSpace()-1; ++k ) {
-	if ( counts.find(diag.allPartons()[k]) != counts.end() ) {
-	  counts[diag.allPartons()[k]] += 1;
-	} else {
-	  counts[diag.allPartons()[k]] += 1;
-	}
-      }
-      for (  LineMatcher  m : spaceLikeAllowed ) {
+      for ( int k = 1; k < diag.nSpace()-1; ++k )
+	counts[diag.allPartons()[k]] += 1;
+      for ( auto & m : spaceLikeAllowed ) {
 	    m.reset();
         for ( auto const & c : counts )
 	      m.add(c.first,c.second);
       }
       bool failed = false;
-      for ( LineMatcher m : spaceLikeAllowed) {
+      for ( auto const & m : spaceLikeAllowed) {
 	     if ( !m.check() ) {
 	       failed = true;
 	       break;
@@ -84,11 +79,7 @@ generate(const PDVector& legs,
       for ( int k = diag.nSpace(); k < all; ++k ) {
 	if ( diag.children(k).first < 0 )
 	  continue;
-	if ( counts.find(diag.allPartons()[k]) != counts.end() ) {
-	  counts[diag.allPartons()[k]] += 1;
-	} else {
-	  counts[diag.allPartons()[k]] += 1;
-	}
+	counts[diag.allPartons()[k]] += 1;
       }
       for ( auto  & m : timeLikeAllowed ) {
 	    m.reset();

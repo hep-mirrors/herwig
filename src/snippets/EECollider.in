@@ -1,0 +1,37 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/EventHandlers
+create ThePEG::FixedCMSLuminosity Luminosity FixedCMSLuminosity.so
+set EventHandler:LuminosityFunction Luminosity
+set Luminosity:Energy 91.2
+set EventHandler:BeamA /Herwig/Particles/e-
+set EventHandler:BeamB /Herwig/Particles/e+
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+# create the cuts object for e+e-
+set EventHandler:Cuts:MHatMin 22.36*GeV
+clear EventHandler:Cuts:OneCuts
+clear EventHandler:Cuts:TwoCuts
+clear EventHandler:Cuts:MultiCuts
+# setting for QED partners in qtilde shower
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
+#  Erase the PDF for the leptons
+set /Herwig/Shower/ShowerHandler:PDFA NULL
+set /Herwig/Shower/ShowerHandler:PDFB NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFB NULL
+
+# Matchbox settings
+cd /Herwig/MatrixElements/Matchbox
+
+set Factory:FirstPerturbativePDF No
+set Factory:SecondPerturbativePDF No
+set Factory:PartonExtractor /Herwig/Partons/EEExtractor
+
+set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
+set /Herwig/Merging/MergingFactory:SecondPerturbativePDF No
+set /Herwig/Merging/MergingFactory:PartonExtractor /Herwig/Partons/EEExtractor
+
+cd /Herwig/Generators/
+set /Herwig/MatrixElements/SubProcess:PartonExtractor /Herwig/Partons/EEExtractor
+

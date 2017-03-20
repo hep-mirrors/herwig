@@ -7,6 +7,6 @@ set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.
 set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1e10
 set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 60.
 set /Herwig/Cuts/NeutralCurrentCut:MinQ2 2.5
-set /Herwig/Cuts/DISCuts:MHatMin 0.
+set /Herwig/Cuts/Cuts:MHatMin 0.
 # H1 energy flow analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2000_S4129130

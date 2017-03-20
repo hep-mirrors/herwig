@@ -8,7 +8,8 @@
 ## Collider type
 ##################################################
 
-read Matchbox/EPCollider.in
+read snippets/Matchbox.in
+read snippets/EPCollider.in
 
 ##################################################
 ## Process selection
@@ -18,6 +19,9 @@ read Matchbox/EPCollider.in
 ## been found.  Coupling orders are with respect to the Born process,
 ## i.e. NLO QCD does not require an additional power of alphas.
 
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
@@ -28,11 +32,6 @@ ${bscheme}
 read Matchbox/MMHT2014.in
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
-
-# switch off final-state electron/muon FSR
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
-do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
 
 # switch off initial state QED radiation
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF

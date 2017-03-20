@@ -246,7 +246,7 @@ void MatchboxRambo::Init() {
 
   static Switch<MatchboxRambo,bool> interfaceMakeReferenceSample
     ("MakeReferenceSample",
-     "Switch on generation of a reference sample of phasespace points.",
+     "Switch on generation of a reference sample of phase space points.",
      &MatchboxRambo::theMakeReferenceSample, false, false, false);
   static SwitchOption interfaceMakeReferenceSampleOn
     (interfaceMakeReferenceSample,
@@ -258,6 +258,7 @@ void MatchboxRambo::Init() {
      "Off",
      "Do not generate a reference sample.",
      false);
+  interfaceMakeReferenceSample.rank(-1);
 
 }
 

@@ -14,3 +14,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
 # PDG hadron multiplicities and ratios
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1983_I190818

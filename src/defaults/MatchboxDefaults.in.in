@@ -747,6 +747,9 @@ create Herwig::MatchboxLeptonPtScale LeptonPairPtScale
 create Herwig::MatchboxHtScale HTScale
 create Herwig::MatchboxTopMassScale TopPairMassScale
 create Herwig::MatchboxTopMTScale TopPairMTScale
+create Herwig::MatchboxTopLinearSumMTScale TopPairLinearMTScale
+create Herwig::MatchboxTopIndividualMTScale TopPairIndividualMTScale
+
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:IncludeMT No
 set HTScale:JetPtCut 15.*GeV
@@ -756,34 +759,6 @@ set HTPrimeScale:JetPtCut 15.*GeV
 cp LeptonPairMassScale LeptonQ2Scale
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonPairMassScale
-
-################################################################################
-# Factories for different colliders
-# only provided for backwards compatibility; refer to Matchbox/*.in input file
-# snippets for generic handling
-################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
-
-cp Factory EEFactory
-set EEFactory:PartonExtractor /Herwig/Partons/EEExtractor
-set EEFactory:Cuts /Herwig/Cuts/EECuts
-set EEFactory:FirstPerturbativePDF No
-set EEFactory:SecondPerturbativePDF No
-
-cp Factory DISFactory
-
-set DISFactory:PartonExtractor /Herwig/Partons/DISExtractor
-set DISFactory:Cuts /Herwig/Cuts/DISCuts
-set DISFactory:FirstPerturbativePDF No
-set DISFactory:SecondPerturbativePDF Yes
-
-cp Factory PPFactory
-
-set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
-set PPFactory:Cuts /Herwig/Cuts/QCDCuts
-set PPFactory:FirstPerturbativePDF Yes
-set PPFactory:SecondPerturbativePDF Yes
 
 cd /
 

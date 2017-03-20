@@ -99,7 +99,7 @@ yodafiles=["-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
            "-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
            "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
            "-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
-           "-630-Jets-3.yoda", "-300-Energy.yoda", "-900-Energy.yoda", "-1960-Energy.yoda",
+           "-630-Jets-3.yoda", "-300-UE.yoda", "-900-UE.yoda"
 #           "-RatioPlots.yoda"
            ]
 if(opts.ue) :
@@ -137,6 +137,12 @@ for f in yodafiles:
     elif(file.find("Run-II-Jets-7")>0) :
         sqrts=1960
         ptmin=265.
+    elif(file.find("300-UE")>0) :
+        sqrts=300
+        ptmin=0.
+    elif(file.find("900-UE")>0) :
+        sqrts=900
+        ptmin=0.
     elif(file.find("630-UE")>0) :
         sqrts=630
         ptmin=0.
@@ -167,7 +173,6 @@ for f in yodafiles:
     elif(file.find("Run-I-Jets-5")>0) :
         sqrts=1800
         ptmin=175.
-
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         continue
@@ -186,7 +191,7 @@ for f in yodafiles:
            aopath.find("7828950")>0 or aopath.find("4751469")>0 or
            aopath.find("5839831")>0 or aopath.find("4563131")>0 or
            aopath.find("4517016")>0 or aopath.find("3618439")>0 or
-           aopath.find("8591881")>0) :
+           aopath.find("8591881")>0 or aopath.find("1388868")>0) :
            if not inhistos.has_key(aopath):
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
@@ -209,9 +214,10 @@ for f in yodafiles:
             elif (aopath.find("NOTE10874")<0) :
                 outhistos[aopath] = ao
         else :
+            if(aopath.find("/_EVTCOUNT")>=0 or 
+               aopath.find("/_XSEC"    )>=0 ) : continue
             print aopath
             quit()
-
 yodafiles=["-Run-II-Jets-8.yoda","-Run-II-Jets-9.yoda","-Run-II-Jets-10.yoda","-Run-II-Jets-11.yoda",\
            "-Run-I-Jets-6.yoda","-Run-I-Jets-7.yoda","-Run-I-Jets-8.yoda"]
 
@@ -282,7 +288,8 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("4751469")>0 or hpath.find("5839831")>0 or
         hpath.find("4563131")>0 or hpath.find("4517016")>0 or
         hpath.find("3618439")>0 or hpath.find("4266730")>0 or
-        hpath.find("3418421")>0 or hpath.find("8591881")>0) :
+        hpath.find("3418421")>0 or hpath.find("8591881")>0 or
+        hpath.find("1388868")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
@@ -517,6 +524,17 @@ useOnePt("/D0_2009_S8320160/d07-x01-y01", "1960", "0.6" )
 useOnePt("/D0_2009_S8320160/d08-x01-y01", "1960", "0.6" )
 useOnePt("/D0_2009_S8320160/d09-x01-y01", "1960", "1.0" )
 useOnePt("/D0_2009_S8320160/d10-x01-y01", "1960", "1.0" )
+
+logging.info("Processing CDF_2015_I1388868")
+for d in range(1,4) :
+    if d == 1 :
+        energy="1960"
+    elif d ==2 :
+        energy = "900"
+    elif d==3 :
+        energy = "300"
+    for y in [1,2,3,4,6,7,8,9]:
+        useOnePt("/CDF_2015_I1388868/d0%s-x01-y0%s" % (d,y) , energy, "0" )
 
 # Choose output file
 name = args[0]+"-Jets.yoda"

@@ -169,7 +169,7 @@ void FIMassiveInvertedTildeKinematics::Init() {
 
   static ClassDocumentation<FIMassiveInvertedTildeKinematics> documentation
     ("FIMassiveInvertedTildeKinematics inverts the final-initial tilde "
-     "kinematics.");
+     "kinematics involving a massive particle.");
 
 }
 

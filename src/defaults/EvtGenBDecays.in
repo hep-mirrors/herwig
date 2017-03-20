@@ -1,0 +1,37 @@
+# -*- ThePEG-repository -*-
+
+#
+#  EvtGen decay model for weakly decaying B mesons
+#
+#
+# switch off current modes
+do B0:SelectDecayModes none
+do Bbar0:SelectDecayModes none
+do B+:SelectDecayModes none
+do B-:SelectDecayModes none
+do B_s0:SelectDecayModes none
+do B_sbar0:SelectDecayModes none
+# create EvtGen ones
+decaymode B0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode Bbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B+->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B-->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B_s0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B_sbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+#
+#  EvtGen decay model for weakly decaying D mesons
+#
+# switch off current modes
+do D0:SelectDecayModes none
+do Dbar0:SelectDecayModes none
+do D+:SelectDecayModes none
+do D-:SelectDecayModes none
+do D_s+:SelectDecayModes none
+do D_s-:SelectDecayModes none
+# create EvtGen ones
+decaymode D0->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode Dbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D+->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D-->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D_s+->*MatchAny;  1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D_s-->*MatchAny;  1. 1 /Herwig/Decays/EvtGenDecayer

@@ -32,16 +32,16 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters(),theOpenInitialStateZ(0) {}
+    theLastSplittingParameters(),theOpenZBoundaries(0) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenInitialStateZ;
+  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenZBoundaries;
 }
 
 void DipoleSplittingKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theOpenInitialStateZ;
+  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theOpenZBoundaries;
 }
 
 void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
@@ -292,15 +292,15 @@ void DipoleSplittingKinematics::Init() {
   interfaceMCCheck.rank(-1);
   
   
-  static Switch<DipoleSplittingKinematics,int> interfaceOpenInintialStateZ
-  ("OpenInitialStateZ", "",
-   &DipoleSplittingKinematics::theOpenInitialStateZ, 0, false, false);
-  static SwitchOption interfaceOpenInintialStateZhardScale
-  (interfaceOpenInintialStateZ,   "Hard",   "",   0);
-  static SwitchOption interfaceOpenInintialStateZfull
-  (interfaceOpenInintialStateZ,   "Full",   "",   1);
-  static SwitchOption interfaceOpenInintialStateZDipoleScale
-  (interfaceOpenInintialStateZ,   "DipoleScale",   "",   2);
+  static Switch<DipoleSplittingKinematics,int> interfaceOpenZBoundaries
+  ("OpenZBoundaries", "",
+   &DipoleSplittingKinematics::theOpenZBoundaries, 0, false, false);
+  static SwitchOption interfaceOpenZBoundarieshardScale
+  (interfaceOpenZBoundaries,   "Hard",   "",   0);
+  static SwitchOption interfaceOpenZBoundariesfull
+  (interfaceOpenZBoundaries,   "Full",   "",   1);
+  static SwitchOption interfaceOpenZBoundariesDipoleScale
+  (interfaceOpenZBoundaries,   "DipoleScale",   "",   2);
   
   
   

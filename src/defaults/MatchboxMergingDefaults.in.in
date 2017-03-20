@@ -230,7 +230,5 @@ create Herwig::SimpleColourBasis  LargeNColourBasis
 set LargeNColourBasis:LargeN On
 set Merger:LargeNBasis LargeNColourBasis
 
-set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-
 cd /
 

@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Leptoquark models
 #
@@ -235,8 +237,7 @@ set Leptoquark/Model:ModelGenerator NewModel
 #
 ###################################################
 cd /Herwig/Generators
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
 
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9911561
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9921551

@@ -13,7 +13,7 @@ set Basics:CheckQuark No
 
 cd /Herwig/MatrixElements/Matchbox
 
-set Factory:SubProcessGroups On
+set Factory:ShowerApproximation NULL
 
 cd /Herwig/Analysis
 

@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# general analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1298807

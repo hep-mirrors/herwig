@@ -32,16 +32,16 @@ set Reader2:EBeamA 250.0
 set Reader2:EBeamB 250.0
 set Reader2:PDFA /Herwig/Partons/LeptonPDF
 set Reader2:PDFB /Herwig/Partons/LeptonPDF
-create ThePEG::Cuts QCDCuts
-set QCDCuts:ScaleMin 1.0*GeV
-set QCDCuts:X1Min 0.00001
-set QCDCuts:X2Min 0.00001
-set QCDCuts:MHatMin 20.*GeV
-set QCDCuts:X1Max 0.9
-set QCDCuts:X2Max 0.9
+create ThePEG::Cuts Cuts
+set Cuts:ScaleMin 1.0*GeV
+set Cuts:X1Min 0.00001
+set Cuts:X2Min 0.00001
+set Cuts:MHatMin 20.*GeV
+set Cuts:X1Max 0.9
+set Cuts:X2Max 0.9
 create ThePEG::LesHouchesEventHandler LesHouchesHandler
 insert LesHouchesHandler:LesHouchesReaders[0] Reader2
-#set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+#set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
 set LesHouchesHandler:PartonExtractor /Herwig/Partons/EEExtractor
 set LesHouchesHandler:StatLevel 2
 set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
@@ -73,7 +73,7 @@ create Herwig::MyVHAnalysis MyVHAnalysis MyVHAnalysis.so
 insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyVHAnalysis
 
 ##################################################################
-set /Herwig/Shower/Evolver:MECorrMode 0
+set /Herwig/Shower/ShowerHandler:MECorrMode 0
 ##################################################################
 
 cd /Herwig/Generators/

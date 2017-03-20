@@ -143,11 +143,14 @@ void MatchboxAmplitudehgg::Init() {
 
   static ClassDocumentation<MatchboxAmplitudehgg> documentation
     ("MatchboxAmplitudehgg");
+
+  /* // not used guess leftover from validation (mu2() variation)
   static Parameter<MatchboxAmplitudehgg,Energy> interfaceTHooft
     ("interfaceTHooft",
      "The THooft Mass.",
      &MatchboxAmplitudehgg::interfaceTHooft, GeV, 115.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+  */
 
 }
 

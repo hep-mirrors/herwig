@@ -23,6 +23,13 @@ class MEMinBias: public HwMEBase {
 
 public:
 
+  /**
+   * The default constructor.
+   */
+  MEMinBias() : csNorm_(1.) {}
+
+public:
+
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**

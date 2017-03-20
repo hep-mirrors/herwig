@@ -1,12 +1,12 @@
 
 #############################################################
-# Create an event generator taking the default LHCGenerator #
+# Create an event generator taking the default EventGenerator #
 # as the starting point ...                                 #
 #############################################################
 cd /Herwig/Generators
-# Copy the default LHCGenerator with its settings to a new 
+# Copy the default EventGenerator with its settings to a new 
 # which will be the basis of the one we use for showering: 
-cp LHCGenerator theGenerator
+cp EventGenerator theGenerator
 
 #############################################################
 # Create a LH event handler (set up & assigned below) ...   #
@@ -47,7 +47,7 @@ create ThePEG::Cuts   /Herwig/Cuts/NoCuts
 cd /Herwig/EventHandlers
 insert theLesHouchesHandler:FxFxReaders 0 theLHReader
 set theLesHouchesHandler:WeightOption VarNegWeight
-set theLesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set theLesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
 set theLesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
 set theLesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set theLesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
@@ -85,7 +85,7 @@ set /Herwig/Particles/W-/W-->d,cbar;:OnOff Off
 set /Herwig/Particles/W-/W-->b,cbar;:OnOff Off
 
 #############################################################
-# Set up the Evolver to veto hard emissions > scalup ...    #
+# Set up the ShowerHandler to veto hard emissions > scalup ...    #
 #############################################################
 cd /Herwig/Shower
 # MaxTry 100 sets the maximum number of times to try 
@@ -98,21 +98,21 @@ cd /Herwig/Shower
 # MeCorrMode No turns off ME corrs. IntrinsicPtGaussian  2.2*GeV 
 # is the RMS of intrinsic pT of Gaussian distribution: 
 # 2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS) 
-set Evolver:MaxTry               100
-set Evolver:HardVetoMode         Yes
-set Evolver:HardVetoScaleSource  Read
-set Evolver:HardVetoReadOption   PrimaryCollision
-set Evolver:MECorrMode           No
+set ShowerHandler:MaxTry               100
+set ShowerHandler:HardVetoMode         Yes
+set ShowerHandler:HardVetoScaleSource  Read
+set ShowerHandler:HardVetoReadOption   PrimaryCollision
+set ShowerHandler:MECorrMode           No
 # Intrinsic pT etc should be set as part of a tune i.e. it 
 # should either be left alone (default) or set by reading in 
 # one of the tunes before theGenerator is created by copying 
-# LHCGenerator (second line of this file). The following 
+# EventGenerator (second line of this file). The following 
 # settings were extracted from LHC-UE-EE-3-CTEQ6L1.in - In 
 # light of some bad experience with MPI we prefer to set 
 # these here manually rather than read try to read that .in. 
 set /Herwig/UnderlyingEvent/KtCut:MinKT 2.752 
 set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.504 
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.34*GeV 
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.34*GeV 
 # Colour reconnection (re)settings 
 set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes 
 set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.61
@@ -155,7 +155,7 @@ set KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 cd /Herwig/Shower
 set FxFxHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set FxFxHandler:RemDecayer  /Herwig/Partons/RemnantDecayer
-set FxFxHandler:Evolver     Evolver
+set FxFxHandler:ShowerHandler     ShowerHandler
 set AlphaQCD:AlphaMZ       0.118000
 set AlphaQCD:NumberOfLoops 2
 set FxFxHandler:ShowerAlpha  AlphaQCD

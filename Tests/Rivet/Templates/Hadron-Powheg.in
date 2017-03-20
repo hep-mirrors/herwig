@@ -1,11 +1,10 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Technical parameters for this run
 ##################################################
+read snippets/PPCollider.in
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 1000000
+set EventGenerator:MaxErrors 1000000
 set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
 ##################################################
 #  Need to use an NLO PDF
@@ -16,8 +15,8 @@ set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
 set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
 set /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MPIPDF
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
-set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/PPExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 
 ##################################################
 #  Setup the POWHEG shower
@@ -32,9 +31,7 @@ read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 ##################################################
 cd /Herwig/Generators
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-
-mv /Herwig/Generators/LHCGenerator /Herwig/Generators/EventGenerator
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
 cd /Herwig/MatrixElements
 ${process}

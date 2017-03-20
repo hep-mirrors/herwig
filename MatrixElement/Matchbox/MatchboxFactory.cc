@@ -43,12 +43,9 @@ MatchboxFactory::MatchboxFactory()
     theBornContributions(true), theVirtualContributions(true),
     theRealContributions(true), theIndependentVirtuals(false),
     theIndependentPKs(false),
-    theSubProcessGroups(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
-    theDipoleSet(0), theVerbose(false), theDiagramWeightVerbose(false),
-    theDiagramWeightVerboseNBins(200),
-    theInitVerbose(false), 
+    theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
     theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
@@ -1351,16 +1348,13 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
      << theRealContributions << theIndependentVirtuals << theIndependentPKs
-     << theSubProcessGroups
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
      << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs << theLoopInducedMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
-     << theVerbose<<theDiagramWeightVerbose
-     <<theDiagramWeightVerboseNBins
-     << theInitVerbose << theSubtractionData << theSubtractionPlotType
+     << theVerbose << theInitVerbose << theSubtractionData << theSubtractionPlotType
      << theSubtractionScatterPlot << thePoleData
      << theParticleGroups << processes << loopInducedProcesses << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
@@ -1383,16 +1377,13 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
      >> theRealContributions >> theIndependentVirtuals >> theIndependentPKs
-     >> theSubProcessGroups
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
      >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs >> theLoopInducedMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
-     >> theVerbose >> theDiagramWeightVerbose
-     >> theDiagramWeightVerboseNBins
-     >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType
+     >> theVerbose >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType
      >> theSubtractionScatterPlot >> thePoleData
      >> theParticleGroups >> processes >> loopInducedProcesses >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
@@ -1612,11 +1603,13 @@ void MatchboxFactory::Init() {
     ("DiagramGenerator",
      "Set the diagram generator.",
      &MatchboxFactory::theDiagramGenerator, false, false, true, true, false);
+  interfaceDiagramGenerator.rank(-1);
 
   static Reference<MatchboxFactory,ProcessData> interfaceProcessData
     ("ProcessData",
      "Set the process data object to be used.",
      &MatchboxFactory::theProcessData, false, false, true, true, false);
+  interfaceProcessData.rank(-1);
 
   static Parameter<MatchboxFactory,unsigned int> interfaceOrderInAlphaS
     ("OrderInAlphaS",
@@ -1626,7 +1619,7 @@ void MatchboxFactory::Init() {
 
   static Parameter<MatchboxFactory,unsigned int> interfaceOrderInAlphaEW
     ("OrderInAlphaEW",
-     "The order in alpha_EW",
+     "The order in alpha_EW to consider.",
      &MatchboxFactory::theOrderInAlphaEW, 2, 0, 0,
      false, false, Interface::lowerlim);
 
@@ -1705,21 +1698,6 @@ void MatchboxFactory::Init() {
      "Switch off PK operators as separate subprocesses.",
      false);
 
-  static Switch<MatchboxFactory,bool> interfaceSubProcessGroups
-    ("SubProcessGroups",
-     "Switch on or off production of sub-process groups.",
-     &MatchboxFactory::theSubProcessGroups, false, false, false);
-  static SwitchOption interfaceSubProcessGroupsOn
-    (interfaceSubProcessGroups,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceSubProcessGroupsOff
-    (interfaceSubProcessGroups,
-     "Off",
-     "Off",
-     false);
-
   static Reference<MatchboxFactory,MatchboxPhasespace> interfacePhasespace
     ("Phasespace",
      "Set the phasespace generator.",
@@ -1756,6 +1734,7 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+  interfaceFixedCouplings.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceFixedQEDCouplings
     ("FixedQEDCouplings",
@@ -1771,7 +1750,10 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+  interfaceFixedQEDCouplings.rank(-1);
 
+  // @TDOO SP to remove this in the code as well
+  /*
   static Switch<MatchboxFactory,bool> interfaceVetoScales
     ("VetoScales",
      "Switch on or setting veto scales.",
@@ -1786,42 +1768,12 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+  */
 
   static RefVector<MatchboxFactory,MatchboxAmplitude> interfaceAmplitudes
     ("Amplitudes",
      "The amplitude objects.",
      &MatchboxFactory::theAmplitudes, -1, false, false, true, true, false);
-
-  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceBornMEs
-    ("BornMEs",
-     "The Born matrix elements to be used",
-     &MatchboxFactory::theBornMEs, -1, false, false, true, true, false);
-
-
-  static RefVector<MatchboxFactory,MatchboxInsertionOperator> interfaceVirtuals
-    ("Virtuals",
-     "The virtual corrections to include",
-     &MatchboxFactory::theVirtuals, -1, false, false, true, true, false);
-
-  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceRealEmissionMEs
-    ("RealEmissionMEs",
-     "The RealEmission matrix elements to be used",
-     &MatchboxFactory::theRealEmissionMEs, -1, false, false, true, true, false);
-
-  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceBornVirtuals
-    ("BornVirtualMEs",
-     "The generated Born/virtual contributions",
-     &MatchboxFactory::theBornVirtualMEs, -1, false, true, true, true, false);
-
-  static RefVector<MatchboxFactory,SubtractedME> interfaceSubtractedMEs
-    ("SubtractedMEs",
-     "The generated subtracted real emission contributions",
-     &MatchboxFactory::theSubtractedMEs, -1, false, true, true, true, false);
-
-  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceFiniteRealMEs
-    ("FiniteRealMEs",
-     "The generated finite real contributions",
-     &MatchboxFactory::theFiniteRealMEs, -1, false, true, true, true, false);
 
   static Switch<MatchboxFactory,bool> interfaceVerbose
     ("Verbose",
@@ -1837,34 +1789,8 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+  interfaceVerbose.rank(-1);
     
-    
-  static Switch<MatchboxFactory,bool> interfaceVerboseDia
-    ("DiagramWeightVerbose",
-     "Print full infomation on each evaluated phase space point.",
-     &MatchboxFactory::theDiagramWeightVerbose, false, false, false);
-  static SwitchOption interfaceVerboseDiaOn
-    (interfaceVerboseDia,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceVerboseDiaOff
-    (interfaceVerboseDia,
-     "Off",
-     "Off",
-     false);
-    
-    
-  static Parameter<MatchboxFactory,int> interfaceVerboseDiaNbins
-    ("DiagramWeightVerboseNBins",
-     "No. of Bins for DiagramWeightVerbose Diagrams.",
-     &MatchboxFactory::theDiagramWeightVerboseNBins, 200, 0, 0,
-     false, false, Interface::lowerlim); 
-    
-    
-    
-    
-
   static Switch<MatchboxFactory,bool> interfaceInitVerbose
     ("InitVerbose",
      "Print setup information.",
@@ -1879,6 +1805,7 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+  interfaceInitVerbose.rank(-1);
 
   static Parameter<MatchboxFactory,string> interfaceSubtractionData
     ("SubtractionData",
@@ -1933,7 +1860,6 @@ void MatchboxFactory::Init() {
      "End a particle group.",
      &MatchboxFactory::endParticleGroup, false);
 
-
   static Command<MatchboxFactory> interfaceProcess
     ("Process",
      "Set the process(es) to consider.",
@@ -1968,6 +1894,7 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+  interfaceRealEmissionScales.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceAllProcesses
     ("AllProcesses",
@@ -1983,6 +1910,7 @@ void MatchboxFactory::Init() {
      "No",
      "Only consider processes matching the exact order in the couplings.",
      false);
+  interfaceAllProcesses.rank(-1);
 
   static RefVector<MatchboxFactory,MatchboxAmplitude> interfaceSelectAmplitudes
     ("SelectAmplitudes",
@@ -2003,6 +1931,7 @@ void MatchboxFactory::Init() {
      "CataniSeymour",
      "Use default Catani-Seymour dipoles.",
      0);
+  interfaceDipoleSet.rank(-1);
 
   static RefVector<MatchboxFactory,ReweightBase> interfaceReweighters
     ("Reweighters",
@@ -2058,6 +1987,7 @@ void MatchboxFactory::Init() {
      "No",
      "",
      false);
+  interfaceFirstPerturbativePDF.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceSecondPerturbativePDF
     ("SecondPerturbativePDF",
@@ -2073,6 +2003,7 @@ void MatchboxFactory::Init() {
      "No",
      "",
      false);
+  interfaceSecondPerturbativePDF.rank(-1);
 
   static Command<MatchboxFactory> interfaceProductionMode
     ("ProductionMode",
@@ -2095,11 +2026,10 @@ void MatchboxFactory::Init() {
      false);
   
   static Parameter<MatchboxFactory,double> interfaceAlphaParameter
-  ("AlphaParameter",
-   "Nagy-AlphaParameter.",
-   &MatchboxFactory::theAlphaParameter, 1.0, 0.0, 0,
-   false, false, Interface::lowerlim);
-
+    ("AlphaParameter",
+     "Nagy-AlphaParameter.",
+     &MatchboxFactory::theAlphaParameter, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
 
   static Switch<MatchboxFactory,bool> interfaceEnforceChargeConservation
     ("EnforceChargeConservation",
@@ -2115,6 +2045,7 @@ void MatchboxFactory::Init() {
      "No",
      "Do not enforce charge conservation.",
      false);
+  interfaceEnforceChargeConservation.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceEnforceColourConservation
     ("EnforceColourConservation",
@@ -2130,6 +2061,7 @@ void MatchboxFactory::Init() {
      "No",
      "Do not enforce colour conservation.",
      false);
+  interfaceEnforceColourConservation.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceEnforceLeptonNumberConservation
     ("EnforceLeptonNumberConservation",
@@ -2145,6 +2077,7 @@ void MatchboxFactory::Init() {
      "No",
      "Do not enforce lepton number conservation.",
      false);
+  interfaceEnforceLeptonNumberConservation.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceEnforceQuarkNumberConservation
     ("EnforceQuarkNumberConservation",
@@ -2160,6 +2093,7 @@ void MatchboxFactory::Init() {
      "No",
      "Do not enforce quark number conservation.",
      false);
+  interfaceEnforceQuarkNumberConservation.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceLeptonFlavourDiagonal
     ("LeptonFlavourDiagonal",
@@ -2175,6 +2109,7 @@ void MatchboxFactory::Init() {
      "No",
      "Do not assume that lepton interactions are flavour diagonal.",
      false);
+  interfaceLeptonFlavourDiagonal.rank(-1);
 
   static Switch<MatchboxFactory,bool> interfaceQuarkFlavourDiagonal
     ("QuarkFlavourDiagonal",
@@ -2190,6 +2125,7 @@ void MatchboxFactory::Init() {
      "No",
      "Do not assume that quark interactions are flavour diagonal.",
      false);
+  interfaceQuarkFlavourDiagonal.rank(-1);
 
 }
 

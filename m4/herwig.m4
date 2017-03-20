@@ -634,7 +634,17 @@ AS_IF([test "x$with_evtgen" != "xno"],
       [have_evtgen=lib], [have_evtgen=no])],
       [have_evtgen=no])
 
-AS_IF([test "x$have_evtgen" = "xlib"],
+AS_IF([test "x$with_evtgen" != "xno" -a "x$have_evtgen" = "xno"],
+      [AC_CHECK_FILES(
+      ${with_evtgen}/lib64/libEvtGenExternal.so,
+      [have_evtgen=lib64], [have_evtgen=no])])
+
+AS_IF([test "x$with_evtgen" != "xno" -a "x$have_evtgen" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_evtgen}/lib/libEvtGenExternal.dylib,
+      [have_evtgen=lib], [have_evtgen=no])])
+
+AS_IF([test "x$have_evtgen" = "xlib" -o "x$have_evtgen" = "xlib64" ],
       [EVTGENPREFIX=${with_evtgen}
       AC_SUBST(EVTGENPREFIX)
       ])
@@ -642,12 +652,18 @@ AS_IF([test "x$have_evtgen" = "xlib"],
 AS_IF([test "x$with_evtgen" != "xno"  -a "x$have_evtgen" = "xno"],
       [AC_MSG_ERROR([EvtGen requested but not found])])
 
+AC_SUBST([EVTGENINCLUDE],[-I$EVTGENPREFIX/include])
+
 AM_CONDITIONAL(HAVE_EVTGEN,[test "x$have_evtgen" = "xlib" ])
 
 if test "x$have_evtgen" = "xlib"  ; then
      	LOAD_EVTGEN_DECAYS="read EvtGenBDecays.in"
      	LOAD_EVTGEN_DECAYER="read EvtGenDecayer.in"
 	EVTGENLIBS="-L$with_evtgen/lib -lEvtGen -lEvtGenExternal"
+elif test "x$have_evtgen" = "xlib64"  ; then
+      LOAD_EVTGEN_DECAYS="read EvtGenBDecays.in"
+      LOAD_EVTGEN_DECAYER="read EvtGenDecayer.in"
+  EVTGENLIBS="-L$with_evtgen/lib64 -lEvtGen -lEvtGenExternal"
 else
      	LOAD_EVTGEN_DECAYS="read HerwigBDecays.in"
      	LOAD_EVTGEN_DECAYER="#read EvtGenDecayer.in"

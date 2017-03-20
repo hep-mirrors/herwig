@@ -172,16 +172,17 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
     - sqr(children[1]->virtualMass())*    z() ;
   if(ids[0]->id()!=ParticleID::g) pt2 += z()*(1.-z())*sqr(virtualMasses[0]);
   if(pt2>ZERO) {
-    Energy2 q2 = 
-      sqr(children[0]->virtualMass())/z() + 
-      sqr(children[1]->virtualMass())/(1.-z()) +
-      pt2/z()/(1.-z());
-    parent->virtualMass(sqrt(q2));
     pT(sqrt(pt2));
   }
   else {
-    parent->virtualMass(ZERO);
+    pt2=ZERO;
+    pT(ZERO);
   }
+  Energy2 q2 = 
+    sqr(children[0]->virtualMass())/z() + 
+    sqr(children[1]->virtualMass())/(1.-z()) +
+    pt2/z()/(1.-z());
+  parent->virtualMass(sqrt(q2));
 }
 
 void FS_QTildeShowerKinematics1to2::

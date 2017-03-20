@@ -59,7 +59,7 @@ void CrossSectionAnalysis::dofinish() {
 
   elem.append(xhistos);
 
-  string fname = name() + ".xml";
+  string fname = generator()->filename() + string("-") + name() + string(".xml");
   ofstream runXML(fname.c_str());
   runXML << setprecision(16);
   XML::ElementIO::put(elem,runXML);

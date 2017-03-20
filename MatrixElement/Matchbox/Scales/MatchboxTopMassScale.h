@@ -55,6 +55,12 @@ public:
    */
   virtual Energy2 factorizationScale() const;
 
+  /**
+   * Return the shower hard scale.
+   */
+  virtual Energy2 showerScale() const;
+
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -100,6 +106,10 @@ protected:
 
 private:
 
+  /**
+   * Switch to choose the definition of the shower hard scale.
+   */
+  unsigned int theShowerScaleMode;
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).

@@ -56,17 +56,18 @@ namespace exsample {
     /// generate an event, returning
     /// the sign of the weight or zero
     /// for an event below the evolution cutoff
-    double generate();
+    double generate(double enhance = 1.);
 
     /// generate an event, returning
     /// the sign of the weight or zero
     /// for an event below the evolution cutoff
-    double generate(double cutoff) {
+    double generate(double cutoff,
+		    double enhance) {
       double oldcut = evolution_cutoff_;
       evolution_cutoff_ = cutoff;
       double w = 0.0;
       try {
-	w = generate();
+	w = generate(enhance);
       } catch(...) {
 	evolution_cutoff_ = oldcut;
 	throw;

@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Higgs Boson pair production at LO incl. D=6 EFT
 # and heavy intermediate Higgs bosons
@@ -8,7 +9,7 @@
 # usage: Herwig read LHC-HH.in
 # Herwig run LHC-HH.run -NXXX
 ##################################################
-
+read snippets/PPCollider.in
 # set particle parameters 
 # do not touch the "boxon" or "triangon", as they are fake particles)
 
@@ -67,9 +68,9 @@ set /Herwig/Particles/Omega_bbar+:Stable Stable
 cd /Herwig/EventHandlers
 create ThePEG::Cuts   /Herwig/Cuts/NoCuts
 
-#set LHCHandler:CascadeHandler NULL
-#set LHCHandler:HadronizationHandler NULL # this disables the hadronization
-#set LHCHandler:DecayHandler NULL 
+#set EventHandler:CascadeHandler NULL
+#set EventHandler:HadronizationHandler NULL # this disables the hadronization
+#set EventHandler:DecayHandler NULL 
 
 # pick the PDF you wish to use (need to have LHAPDF installed for this)
 cd /Herwig/Partons
@@ -90,13 +91,13 @@ cd /Herwig
 
 
 cd /Herwig/Generators
-set LHCGenerator:DebugLevel 1
-set LHCGenerator:NumberOfEvents 1000000
-set LHCGenerator:RandomNumberGenerator:Seed 12345
-set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 10000
-set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL # this disables the Multiple Parton Interactions
-set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/NoCuts
+set EventGenerator:DebugLevel 1
+set EventGenerator:NumberOfEvents 1000000
+set EventGenerator:RandomNumberGenerator:Seed 12345
+set EventGenerator:PrintEvent 10
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL # this disables the Multiple Parton Interactions
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/NoCuts
 
 
 ##################################################
@@ -104,12 +105,12 @@ set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/NoCuts
 ##################################################
 
 # set the LHC energy
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 
 # set some cuts 
 cd /Herwig/Cuts
 #set JetKtCut:MinKT 100.0*GeV
-#set QCDCuts:MHatMin 250*GeV                  
+#set Cuts:MHatMin 250*GeV                  
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -119,7 +120,7 @@ cd /Herwig/Cuts
 cd /Herwig/MatrixElements/
 create Herwig::MEHiggsPair MEHiggsPair MEHiggsPair.so
 
-insert SimpleQCD:MatrixElements[0] MEHiggsPair
+insert SubProcess:MatrixElements[0] MEHiggsPair
 
 # select the process: 
 #set MEHiggsPair:Process ggToHTohh # intermediate heavy Higgs
@@ -160,9 +161,9 @@ cd /Herwig/Generators
 ##################################################
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
@@ -170,4 +171,4 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC-HH LHCGenerator
+saverun LHC-HH EventGenerator

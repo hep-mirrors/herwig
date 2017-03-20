@@ -117,10 +117,20 @@ public:
   double as(Energy Q)const{return theGlobalAlphaS->value(sqr(Q));}
   
   /**
-   *
+   * Return the number of scale dependent active flavours from 
+   * the alpha_s object.
    */
 
   double Nf(Energy Q)const{return theGlobalAlphaS->Nf(sqr(Q));}
+
+
+  /**
+   * Set the pointer to the Merging Helper.
+   * Used by the merging factory.
+   */
+  void setMerger(Ptr<MergerBase>::ptr mh){theMergingHelper=mh;}
+
+
 
 protected:
 

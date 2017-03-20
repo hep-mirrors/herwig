@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Common setup for Little Higgs models with T-parity
 #
@@ -219,8 +221,7 @@ do SplittingGenerator:AddFinalSplitting TpT->TpT,g; QtoQGSudakov
 
 cd /Herwig/Generators
 # Choose Little Higgs over SM
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
 
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  32
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  33

@@ -157,7 +157,7 @@ void MatchboxTriVecScales::Init() {
 
   static ClassDocumentation<MatchboxTriVecScales> documentation
     ("MatchboxTriVecScales implements scale choices related to transverse momenta and transverse energies for"
-     "events with up to three vector bosons in the final state, plus additional jets, where the vector bosons"
+     "events with up to three vector bosons in the final state plus additional jets, where the vector bosons"
      "are associated to lepton pairs of distinct families.");
 
   static Reference<MatchboxTriVecScales,JetFinder> interfaceJetFinder
@@ -178,14 +178,14 @@ void MatchboxTriVecScales::Init() {
     (interfaceTriVecScaleChoice,
      "HtPrimeModScale",
      "Sum of the transverse energies of the lepton pairs and the transverse momenta of the jets." 
-     "Each transverse jet momenta is thereby suppressed by an exponential of the rapidity difference to the average rapidity of the two hardest jets."
-     "This scale choice is of benefit only for two or more jets in the event.",
+     "Each transverse jet momentum is thereby suppressed by an exponential of the rapidity difference to the average rapidity of the two hardest jets."
+     "This scale choice is defined only for two or more jets in the event.",
      2);
   static SwitchOption interfaceTriVecScaleChoice3
     (interfaceTriVecScaleChoice,
      "EtScale",
      "Sum of the transverse energies of the lepton pairs and the transverse energies of the jets."
-     "This scale choice is of benefit only for two or more jets in the event.",
+     "This scale choice is defined only for two or more jets in the event.",
      3);
 
 }
