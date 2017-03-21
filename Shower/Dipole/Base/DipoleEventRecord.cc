@@ -288,6 +288,10 @@ void DipoleEventRecord::splitSubleading(SubleadingSplittingInfo& dsplit,
 
 void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
 
+  // All uses of findChains should guarantee
+  // a non-empty list of particles
+  assert( !ordered.empty() );
+  
   theChains.clear();
   theDoneChains.clear();
 
