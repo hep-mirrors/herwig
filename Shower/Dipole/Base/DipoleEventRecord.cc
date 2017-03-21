@@ -509,7 +509,8 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 
   if ( dipoles ) {
     PList cordered = colourOrdered(incoming(),outgoing());
-    findChains(cordered,false);
+    if ( !cordered.empty() )
+      findChains(cordered,false);
   }
   
   
@@ -588,7 +589,8 @@ void DipoleEventRecord::slimprepare(tSubProPtr subpro,
   
   if ( dipoles ) {
     PList cordered = colourOrdered(incoming(),outgoing());
-    findChains(cordered,false);
+    if ( !cordered.empty() )
+      findChains(cordered,false);
   }
   
 }
