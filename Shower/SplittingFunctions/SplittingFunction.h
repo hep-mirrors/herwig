@@ -114,7 +114,10 @@ public:
       }
       else {
 	tPDPtr part=getParticleData(ids[1]);
-	return sqr(double(part->iCharge())/3.);
+	double fact = sqr(double(part->iCharge())/3.);
+	if(part->coloured())
+	  fact *= double(part->iColour());
+	return fact;
       }
     }
     else
