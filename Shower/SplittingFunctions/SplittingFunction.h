@@ -116,7 +116,7 @@ public:
 	tPDPtr part=getParticleData(ids[1]);
 	double fact = sqr(double(part->iCharge())/3.);
 	if(part->coloured())
-	  fact *= double(part->iColour());
+	  fact *= abs(double(part->iColour()));
 	return fact;
       }
     }
