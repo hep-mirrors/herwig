@@ -38,7 +38,7 @@ read Matchbox/MMHT2014.in
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
 read Merging/FactorCMWScheme.in
 
-do /Herwig/Merging/MergingFactory:ProductionMode
+
 
 # switch off initial state QED radiation
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
@@ -54,6 +54,8 @@ read ${parameterFile}
 cd /Herwig/Merging/
 set Merger:MergingScale 10.*GeV
 ${process}
+
+do /Herwig/Merging/MergingFactory:ProductionMode
 
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 1000000

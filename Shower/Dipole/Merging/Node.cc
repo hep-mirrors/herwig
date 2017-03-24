@@ -178,6 +178,20 @@ bool Node::firstgenerateKinematics(const double *r, bool directCut) {
   assert(!parent());
   assert(xcomb());
   
+  
+  if(MH()->treefactory()->nonQCDCuts()){
+  tcPDVector outdata(xcomb()->mePartonData().begin()+2,
+                     xcomb()->mePartonData().end());
+  vector<LorentzMomentum> outmomenta(xcomb()->meMomenta().begin()+2,
+                                     xcomb()->meMomenta().end());
+  
+
+  if ( !MH()->treefactory()->nonQCDCuts()->passCuts(outdata,outmomenta,
+                         xcomb()->mePartonData()[0],
+                         xcomb()->mePartonData()[1]) )
+    return false;
+  }
+  
    ///// This should not be needed!!!
    ///// ( Warning inMerger::matrixElementRegion gets triggered.)
   flushCaches();

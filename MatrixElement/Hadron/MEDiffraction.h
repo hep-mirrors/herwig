@@ -267,7 +267,7 @@ private:
    * Returns the maximal possible value of diffractive mass
    */
   Energy2 M2max() const{
-  	return sqr(generator()->maximumCMEnergy()-getParticleData(2212)->mass());
+    return sqr(generator()->maximumCMEnergy()-getParticleData(2212)->mass());
   }//TODO:modify to get proper parameters
 
   InvEnergy2 softPomeronSlope() const;

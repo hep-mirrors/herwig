@@ -45,10 +45,7 @@ insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Riv
 ## scale coincides with kinematic limit
 ##################################################
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
-##################################################
-## Save the generator
-##################################################
-do /Herwig/Merging/MergingFactory:ProductionMode
+
 
 ## Select the process
 cd /Herwig/Merging/
@@ -56,6 +53,11 @@ set Merger:MergingScale 5.*GeV
 ${process}
 
 read ${parameterFile}
+
+##################################################
+## Save the generator
+##################################################
+do /Herwig/Merging/MergingFactory:ProductionMode
 
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 1000000

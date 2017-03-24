@@ -826,7 +826,7 @@ PPtr findParent(PPtr original, bool & isHard,
 }
 
 void ShowerHandler::findDecayProducts(PPtr in,PerturbativeProcessPtr hard,
-				      DecayProcessMap decay) const {
+				      DecayProcessMap & decay) const {
   ParticleVector children=in->children();
   for(ParticleVector::const_iterator it=children.begin(); it!=children.end();++it) {
     // if decayed or should be decayed in shower make the PerturbaitveProcess
@@ -857,7 +857,7 @@ void ShowerHandler::findDecayProducts(PPtr in,PerturbativeProcessPtr hard,
     }
     else if(!(**it).children().empty()||
  	    (decaysInShower((**it).id())&&!(**it).dataPtr()->stable())) {
-      createDecayProcess(in,hard,decay);
+      createDecayProcess(*it,hard,decay);
     }
     else {
       hard->outgoing().push_back(make_pair(*it,PerturbativeProcessPtr()));

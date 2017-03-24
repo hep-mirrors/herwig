@@ -156,12 +156,18 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
 	orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
 	orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
-	if (theHiggsEff)
+	if (theCollierLib) { 
+		orderFile << "extra preset 2 "<<"\n";
+	   if(theHiggsEff){
+	        orderFile << "extra stability_mode 14\n";
+		orderFile << "extra redlib1 1\n";	
+	   }
+	}
+	if (theHiggsEff){
 		orderFile << "model heft\n";
+	}
 	orderFile << "\n";
 
-	if (extraOpenLoopsPath!="")
-	    orderFile << "Extra OpenLoopsPath  " << extraOpenLoopsPath << "\n";
 	for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
 		std::stringstream Processstr;
 		std::stringstream Typestr;
@@ -406,11 +412,11 @@ string OpenLoopsAmplitude::getOpenLoopsPrefix() const{
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << idpair << OpenLoopsLibs_ << OpenLoopsPrefix_;
+  os << idpair << theHiggsEff << use_cms << theCollierLib << OpenLoopsLibs_ << OpenLoopsPrefix_;
 }
 
 void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> idpair >> OpenLoopsLibs_ >> OpenLoopsPrefix_;
+  is >> idpair >> theHiggsEff >> use_cms >> theCollierLib  >> OpenLoopsLibs_ >> OpenLoopsPrefix_;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -461,7 +467,23 @@ void OpenLoopsAmplitude::Init() {
    "False",
    "False for no Complex Masses.",
    false);
-  
+ 
+  static Switch<OpenLoopsAmplitude,bool> interfaceCollier
+         ("UseCollier",
+          "Switch On/Off for using the Collier Lib (arXiv:1604.06792).",
+          &OpenLoopsAmplitude::theCollierLib, true, false, false);
+  static SwitchOption interfaceCollierOn
+         (interfaceCollier,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceCollierOff
+         (interfaceCollier,
+          "Off",
+          "Off",
+          false);
+
+ 
   static Parameter<OpenLoopsAmplitude,int> interfacepsp_tolerance
   ("PSP_tolerance",
    "(Debug)Phase Space Tolerance. Better use e.g.: set OpenLoops:Massless 13",
