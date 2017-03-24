@@ -457,7 +457,7 @@ protected:
    * @param hard  The hard process
    * @param decay The decay processes
    */
-  void findDecayProducts(PPtr parent, PerturbativeProcessPtr hard, DecayProcessMap decay) const;
+  void findDecayProducts(PPtr parent, PerturbativeProcessPtr hard, DecayProcessMap & decay) const;
 
   /**
    * Find decay products from the hard process and create decay processes
