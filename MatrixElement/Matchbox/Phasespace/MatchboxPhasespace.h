@@ -198,6 +198,13 @@ public:
   void fillDiagramWeights(double flatCut = 0.0);
 
   /**
+   * Clear the diagram weights.
+   */
+  void clearDiagramWeights() {
+    diagramWeights().clear();
+  }
+
+  /**
    * Clone this phase space generator.
    */
   Ptr<MatchboxPhasespace>::ptr cloneMe() const {

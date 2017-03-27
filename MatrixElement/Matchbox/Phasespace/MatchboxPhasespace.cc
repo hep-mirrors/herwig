@@ -45,6 +45,8 @@ Ptr<ProcessData>::tptr MatchboxPhasespace::processData() const {
 double MatchboxPhasespace::generateKinematics(const double* r,
 					      vector<Lorentz5Momentum>& momenta) {
 
+  diagramWeights().clear();
+
   cPDVector::const_iterator pd = mePartonData().begin() + 2;
   vector<Lorentz5Momentum>::iterator p = momenta.begin() + 2;
 
@@ -103,6 +105,8 @@ double MatchboxPhasespace::generateKinematics(const double* r,
     generateTwoToNKinematics(r,momenta) : 
     generateTwoToOneKinematics(r,momenta);
 
+  fillDiagramWeights();
+
   return weight*massJacobian;
 
 }
@@ -140,8 +144,6 @@ double MatchboxPhasespace::generateTwoToOneKinematics(const double* r,
 
   lastXCombPtr()->lastX1X2({x1,x2});
   lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
-
-  fillDiagramWeights();
 
   return -4.*Constants::pi*ltau;
 
@@ -389,7 +391,8 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 
 void MatchboxPhasespace::fillDiagramWeights(double flatCut) {
 
-  diagramWeights().clear();
+  if ( !diagramWeights().empty() )
+    return;
 
   for ( auto & d : lastXComb().diagrams() ) {
     diagramWeights()[d->id()] =

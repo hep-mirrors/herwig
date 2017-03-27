@@ -82,27 +82,20 @@ double FlatInvertiblePhasespace::bisect(double v, double n,
 
 }
 
-static double flatWeights[7] = {
-
-  -1.,-1.,
-  0.039788735772973833942,
-  0.00012598255637968550463,
-  1.3296564302788840628E-7,
-  7.0167897579949011130E-11,
-  2.2217170114046130768E-14
-
-};
-
 double FlatInvertiblePhasespace::generateIntermediates(vector<Energy>& K,
 						       const double* r) const {
 
   size_t n = K.size() + 1;
+
+  
   for ( size_t i = 2; i <= n-1; ++i ) {
     double u = bisect(r[i-2],n-1-i);
     K[i-1] = sqrt(u*sqr(K[i-2]));
   } 
-
-  return flatWeights[n];
+  
+  int kap = K.size() + 1;
+  
+  return flatWeights(kap);
 
 }
 
@@ -115,7 +108,8 @@ double FlatInvertiblePhasespace::invertIntermediates(const vector<Energy>& K,
     r[i-2] = (n+1-i)*pow(u,(double)(n-i)) - (n-i)*pow(u,(double)(n+1-i));
   } 
 
-  return flatWeights[n];
+  int kap = K.size() + 1;
+  return flatWeights(kap);
 
 }
 
@@ -145,7 +139,7 @@ double FlatInvertiblePhasespace::generateIntermediates(vector<Energy>& M,
   }
 
   weight *= pow(K[0]/M[0],2.*n-4.);
-
+  
   return weight;
 
 }
@@ -274,11 +268,14 @@ double FlatInvertiblePhasespace::generateTwoToNKinematics(const double* r,
 							  vector<Lorentz5Momentum>& momenta) {
 
   double weight = generateKinematics(momenta,sqrt(lastXCombPtr()->lastSHat()),r);
-
-  fillDiagramWeights();
-
   return weight;
 
+}
+
+long double FlatInvertiblePhasespace::flatWeights(int k) const{
+  using Constants::pi;
+  if(k<2) { return -1;
+  } else return pow((pi/2),(k-1)) * pow((2*pi),(4-3*k))/factorial(k-1)/factorial(k-2);
 }
 
 // If needed, insert default implementations of virtual function defined
