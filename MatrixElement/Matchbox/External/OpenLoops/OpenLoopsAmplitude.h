@@ -296,12 +296,6 @@ private:
   
   
   /**
-   * Extra argument of BLHA2 to tell the Amplitude which OpenLoops installation to use.
-   */
-
-  mutable string extraOpenLoopsPath;
-  
-  /**
    * Interface for Higgs Effective
    */
   bool theHiggsEff;
@@ -312,7 +306,12 @@ private:
   
   bool use_cms;
   
-  
+ 
+  /**
+   * Use of Collier Lib (arXiv:1604.06792), available since OpenLoops 1.3.0.
+   */
+  bool theCollierLib=true; 
+ 
   /**
    * parameter to set Phase space tolerance for massiv particles.
    * Should not be used. Better: set Openloops:Massless 11

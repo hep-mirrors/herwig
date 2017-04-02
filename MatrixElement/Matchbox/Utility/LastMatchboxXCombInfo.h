@@ -505,9 +505,11 @@ protected:
    * Set the XComb pointer cast to MatchboxXComb
    */
   void lastMatchboxXComb(tStdXCombPtr xc) {
-    theLastMatchboxXComb = xc ? &dynamic_cast<MatchboxXCombData&>(*xc) : 0;
+    theLastMatchboxXComb = xc ?
+      dynamic_cast<MatchboxXCombData*>(PtrTraits<tStdXCombPtr>::barePointer(xc)) : 0;
     theLastHeadMatchboxXComb = 
-      xc && xc->head() ? &dynamic_cast<MatchboxXCombData&>(*xc->head()) : 0;
+      xc && xc->head() ? 
+      dynamic_cast<MatchboxXCombData*>(PtrTraits<tStdXCombPtr>::barePointer(xc->head())) : 0;
   }
 
   /**

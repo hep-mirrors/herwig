@@ -8,4 +8,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 197
 # OPAL event shapes and multiplicities at different energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_S6132243
 # OPAL from gluon paper
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738

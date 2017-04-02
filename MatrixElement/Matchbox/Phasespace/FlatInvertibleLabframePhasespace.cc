@@ -122,8 +122,6 @@ double FlatInvertibleLabframePhasespace::generateTwoToNKinematics(const double* 
           momenta.begin()+2; pit != momenta.end(); ++pit )
     pit->boost(-boostinitial);
 
-  fillDiagramWeights();
-
   return weight;
 
 }

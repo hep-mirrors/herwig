@@ -435,6 +435,7 @@ Selector<MEBase::DiagramIndex> SubtractionDipole::diagrams(const DiagramVector &
     underlyingBornME();
   if ( me->phasespace() ) {
     me->phasespace()->setXComb(lastXCombPtr());
+    me->phasespace()->clearDiagramWeights();
     me->phasespace()->fillDiagramWeights();
   }
   return 

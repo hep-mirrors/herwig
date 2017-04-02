@@ -75,8 +75,6 @@ double MatchboxReference::generateTwoToNKinematics(const double*,
   lastXCombPtr()->lastX1X2(make_pair(x1,x2));
   lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
 
-  fillDiagramWeights();
-
   return weight;
 
 }

@@ -131,6 +131,16 @@ private:
 			  Energy Ecm,
 			  double* r) const;
 
+  /** 
+   * Return the appropriate phase space weight, 
+   * Eq. 11 in 1308.2922
+   * with the factor (2 pi)^4/(2 pi)^(3n) included 
+   * and the SHat of the process divided out to have everything expressed in the units of the ThePEG conventions, i.e. 
+   * without the Q^2 factor
+   */ 
+
+  long double flatWeights(int n) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

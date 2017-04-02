@@ -112,7 +112,10 @@ public:
 	return sqr(double(ids[0]->iCharge())/3.);
       }
       else if(_colourStructure==NeutralChargedCharged) {
-	return sqr(double(ids[1]->iCharge())/3.);
+	double fact = sqr(double(ids[1]->iCharge())/3.);
+	if(ids[1]->coloured())
+	  fact *= abs(double(ids[1]->iColour()));
+	return fact;
       }
       else if(_colourStructure==EW) {
 	return 1.;

@@ -45,6 +45,8 @@ Ptr<ProcessData>::tptr MatchboxPhasespace::processData() const {
 double MatchboxPhasespace::generateKinematics(const double* r,
 					      vector<Lorentz5Momentum>& momenta) {
 
+  diagramWeights().clear();
+
   cPDVector::const_iterator pd = mePartonData().begin() + 2;
   vector<Lorentz5Momentum>::iterator p = momenta.begin() + 2;
 
@@ -103,6 +105,8 @@ double MatchboxPhasespace::generateKinematics(const double* r,
     generateTwoToNKinematics(r,momenta) : 
     generateTwoToOneKinematics(r,momenta);
 
+  fillDiagramWeights();
+
   return weight*massJacobian;
 
 }
@@ -112,26 +116,34 @@ double MatchboxPhasespace::generateTwoToOneKinematics(const double* r,
 
   double tau = momenta[2].mass2()/lastXCombPtr()->lastS();
   double ltau = log(tau)/2.;
-  double y = ltau - 2.*r[0]*ltau;
-  double x1 = sqrt(tau)*exp(y);
-  double x2 = sqrt(tau)*exp(-y);
+  //old:  y = ltau - 2.*r[0]*ltau; x1 = sqrt(tau)*exp(y); x2 = sqrt(tau)*exp(-y);
+  double x1=pow(tau,1.-r[0]);
+  double x2=pow(tau,r[0]);
 
-  ThreeVector<Energy> p1 =
-    x1*(lastXCombPtr()->lastParticles().first->momentum().vect());
+  // Due to the proton mass and P1.e() + P2.e() == lastS() we multiply here 
+  // with the correction factor abs(P1.e()/P1.z()) to produce incoming 
+  // p1/2 = (e1/2,0,0,+/- e1/2)  
+  Lorentz5Momentum P1 = lastXCombPtr()->lastParticles().first->momentum();
+  ThreeVector<Energy> p1 =  x1 * (P1.vect()) * abs(P1.e()/P1.z());
 
-  ThreeVector<Energy> p2 =
-    x2*(lastXCombPtr()->lastParticles().second->momentum().vect());
+  Lorentz5Momentum P2 = lastXCombPtr()->lastParticles().second->momentum();
+  ThreeVector<Energy> p2 =  x2 * (P2.vect()) * abs(P2.e()/P2.z());
 
   ThreeVector<Energy> q = p1 + p2;
 
   momenta[0] = Lorentz5Momentum(momenta[0].mass(),p1);
   momenta[1] = Lorentz5Momentum(momenta[1].mass(),p2);
   momenta[2] = Lorentz5Momentum(momenta[2].mass(),q);
+  
+  // check for energy conservation:
+  if ((momenta[0]+momenta[1]-momenta[2]).e()>pow(10,-9)*GeV)
+    generator()->log() 
+    << "Warning: Momentum conservation in generateTwoToOneKinematics not precise.\n"
+    << flush;
+  
 
-  lastXCombPtr()->lastX1X2(make_pair(x1,x2));
+  lastXCombPtr()->lastX1X2({x1,x2});
   lastXCombPtr()->lastSHat((momenta[0]+momenta[1]).m2());
-
-  fillDiagramWeights();
 
   return -4.*Constants::pi*ltau;
 
@@ -379,7 +391,8 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 
 void MatchboxPhasespace::fillDiagramWeights(double flatCut) {
 
-  diagramWeights().clear();
+  if ( !diagramWeights().empty() )
+    return;
 
   for ( auto & d : lastXComb().diagrams() ) {
     diagramWeights()[d->id()] =

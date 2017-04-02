@@ -204,8 +204,6 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   weight /= pow(thisSHat/GeV2,momenta.size()-4); 
   weight /= x1*x2;
 
-  fillDiagramWeights();
-
   return weight;
 
 }

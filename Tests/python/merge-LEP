@@ -14,7 +14,6 @@ import os, yoda, copy
 def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
         if(desthisto.numPoints!=1) :
-            print desthisto.numPoints
             logging.error("Must have one bin for a specific sqrt(s) for %s" % desthisto.path)
             sys.exit(1)
         for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
@@ -22,6 +21,14 @@ def fillAbove(desthisto, sourcehistosbysqrts):
                 continue
             if(desthisto.points[0].x != h.points[0].x) :
                 desthisto.addPoint(h.points[0])
+
+    elif(type(desthisto)==yoda.core.Profile1D) :
+        for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
+            for i in range(0,h.numBins) :
+                if(sqrts>=h.bins[i].xMin and \
+                   sqrts<=h.bins[i].xMax) :
+                    desthisto.bins[i] += h.bins[i]
+                    break
     else :
         logging.error("Unknown analysis object" + desthisto.path)
         sys.exit(1)
@@ -75,7 +82,10 @@ yodafiles=["-130","-133","-136","-177","-192",
            "-196","-202","-206","-91" ,"-91-nopi" ,\
            "-161","-183","-197","-35" ,"-172",\
            "-189","-200","-44","-14","-22","-10",\
-           "-12.8","-26.8","-48.0","-93.0" ]
+           "-12.8","-26.8","-48.0","-93.0",\
+           "-12","-13","-17","-27.6","-29","-30.2","-30.75",\
+           "-30.7","-30","-31.3","-34.8","-43.6","-50","-52",\
+           "-55","-56","-57","-60.8","-60","-61.4","-9.4" ]
 # add gg if needed
 if(opts.gg) :
     yodafiles += ["-10.5-gg","-12.8-gg","-16.86-gg","-26.8-gg",\
@@ -86,72 +96,7 @@ inhistos = {}
 outhistos={}
 for f in yodafiles:
     file = args[0]+f+".yoda"
-    if(file.find("10.5")>0) :
-        sqrts=10.5
-    elif(file.find("10")>0) :
-        sqrts=10
-    elif(file.find("11.96")>0) :
-        sqrts=11.96
-    elif(file.find("12.8")>0) :
-        sqrts=12.8
-    elif(file.find("13.96")>0) :
-        sqrts=13.96
-    elif(file.find("14")>0) :
-        sqrts=14
-    elif(file.find("16.86")>0) :
-        sqrts=16.86
-    elif(file.find("21.84")>0) :
-        sqrts=21.84
-    elif(file.find("22")>0) :
-        sqrts=22
-    elif(file.find("26.8")>0) :
-        sqrts=26.8
-    elif(file.find("28.48")>0) :
-        sqrts=28.48
-    elif(file.find("35")>0) :
-        sqrts=35
-    elif(file.find("44")>0) :
-        sqrts=44
-    elif(file.find("48.0")>0) :
-        sqrts=48.0
-    elif(file.find("91")>0) :
-        sqrts=91
-    elif(file.find("93.0")>0) :
-        sqrts=93
-    elif(file.find("97.0")>0) :
-        sqrts=97
-    elif(file.find("130")>0) :
-        sqrts=130
-    elif(file.find("133")>0) :
-        sqrts=133
-    elif(file.find("136")>0) :
-        sqrts=136
-    elif(file.find("161")>0) :
-        sqrts=161
-    elif(file.find("172")>0) :
-        sqrts=172
-    elif(file.find("177")>0) :
-        sqrts=177
-    elif(file.find("183")>0) :
-        sqrts=183
-    elif(file.find("189")>0) :
-        sqrts=189
-    elif(file.find("192")>0) :
-        sqrts=192
-    elif(file.find("196")>0) :
-        sqrts=196
-    elif(file.find("197")>0) :
-        sqrts=197
-    elif(file.find("200")>0) :
-        sqrts=200
-    elif(file.find("202")>0) :
-        sqrts=202
-    elif(file.find("206")>0) :
-        sqrts=206
-    else :
-        print file
-        quit()
-
+    sqrts=float(file.split("-")[1].replace(".yoda",""))
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         continue
@@ -166,7 +111,10 @@ for f in yodafiles:
         if(aopath.find("4300807")>0 or aopath.find("6132243")>0 or
            aopath.find("5765862")>0 or aopath.find("3612880")>0 or
            aopath.find("4328825")>0 or aopath.find("5361494")>0 or
-           aopath.find("2148048")>0 or aopath.find("MULTIPLICITIES")>0 ) :
+           aopath.find("2148048")>0 or aopath.find("295160")>0  or
+           aopath.find("190818" )>0 or aopath.find("154270")>0 or
+           aopath.find("277658")>0 or
+           aopath.find("MULTIPLICITIES")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
             if not inhistos[aopath].has_key(sqrts):
@@ -186,8 +134,10 @@ for f in yodafiles:
 # ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
     if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or 
-        hpath.find("5765862")>0 or
-        hpath.find("4328825")>0 or hpath.find("5361494")>0) :
+        hpath.find("5765862")>0 or hpath.find("295160")>0 or
+        hpath.find("4328825")>0 or hpath.find("5361494")>0 or
+        hpath.find("190818")>0 or hpath.find("154270")>0 or
+        hpath.find("277658")>0) :
         # workhisto = copy.deepcopy(hsets.values()[0])
         # outhistos[hpath] = workhisto
         outhistos[hpath] = hsets.values()[0]
@@ -909,7 +859,27 @@ useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d03-x01-y04","177")
 useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d04-x01-y04","177")
 useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y04","177")
 useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y04","177")
+# AMY analysis
+useOne("/AMY_1990_I295160/d01-x01-y01","50")
+useOne("/AMY_1990_I295160/d01-x01-y02","52")
+useOne("/AMY_1990_I295160/d01-x01-y03","55")
+useOne("/AMY_1990_I295160/d01-x01-y04","56")
+useOne("/AMY_1990_I295160/d01-x01-y05","57")
+useOne("/AMY_1990_I295160/d01-x01-y06","60")
+useOne("/AMY_1990_I295160/d01-x01-y07","60.8")
+useOne("/AMY_1990_I295160/d01-x01-y08","61.4")
+useOne("/AMY_1990_I295160/d01-x01-y09","57")
+useOne("/AMY_1990_I295160/d02-x02-y01","57")
+merge("/AMY_1990_I295160/d02-x01-y01")
+merge("/JADE_1983_I190818/d01-x01-y01")
+useOne("/PLUTO_1980_I154270/d01-x02-y01","30.75")
+merge("/PLUTO_1980_I154270/d01-x01-y01")
 
+merge("/TASSO_1989_I277658/d02-x01-y01")
+useOne("/TASSO_1989_I277658/d05-x01-y01","14")
+useOne("/TASSO_1989_I277658/d05-x01-y02","22")
+useOne("/TASSO_1989_I277658/d05-x01-y03","34.8")
+useOne("/TASSO_1989_I277658/d05-x01-y04","43.6")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
