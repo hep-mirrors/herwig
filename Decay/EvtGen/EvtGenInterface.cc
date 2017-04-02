@@ -50,6 +50,13 @@ EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/share/DECAY_2010.DEC"),
 				     p8Data_(p8data)
 {}
 
+EvtGenInterface::EvtGenInterface(const EvtGenInterface & x)
+  : Interfaced(x), decayName_(x.decayName_), pdtName_(x.pdtName_),
+    userDecays_(x.userDecays_), reDirect_(x.reDirect_),
+    checkConv_(x.checkConv_), convID_(x.convID_),
+    p8Data_(x.p8Data_), evtrnd_(x.evtrnd_),evtgen_(x.evtgen_)
+{}
+
 EvtGenInterface::~EvtGenInterface() {}
 
 IBPtr EvtGenInterface::clone() const {
@@ -152,15 +159,16 @@ void EvtGenInterface::doinitrun() {
   Interfaced::doinitrun();
   // redirect cerr and cout if needed
   std::streambuf *temp[2]={cout.rdbuf(),cerr.rdbuf()};
-  if(reDirect_) {
-    std::streambuf *psbuf = generator()->log().rdbuf();
+  if(reDirect_ && ! generator()->useStdOut() ) {
+    logFile_.open("EvtGen.log");
+    std::streambuf *psbuf = logFile_.rdbuf();
     cout.rdbuf(psbuf);
     cerr.rdbuf(psbuf);
   }
   // output the EvtGen initialization info to the log file
-  generator()->log() << "Initializing EvtGen \n";
+  cout << "Initializing EvtGen \n";
   // set up the random number generator for EvtGen
-  generator()->log() << "Setting EvtGen random number generator"
+  cout << "Setting EvtGen random number generator"
   		     << " to the Herwig one.\n";
   evtrnd_ = new EvtGenRandom(const_ptr_cast<Ptr<RandomGenerator>::pointer>
   			     (&(UseRandom::current())));
@@ -184,21 +192,26 @@ void EvtGenInterface::doinitrun() {
     outputEvtGenDecays(convID_[ix]);
   }
   // that's the lot
-  generator()->log() << "Finished initialisation of EvtGen \n";
-  if(reDirect_) {
+  cout << "Finished initialisation of EvtGen \n";
+  if(reDirect_  && ! generator()->useStdOut() ) {
     cout.rdbuf(temp[0]);
     cerr.rdbuf(temp[1]);
   }
 }
 
+void EvtGenInterface::dofinish() {
+  Interfaced::dofinish();
+  if(logFile_.is_open())
+    logFile_.close();
+}
 
 ParticleVector EvtGenInterface::decay(const Particle &parent,
 				      bool recursive, const DecayMode & dm) const {
   // redirect cout to the log file
   ostringstream stemp;
   std::streambuf *temp[2]={cout.rdbuf(),cerr.rdbuf()};
-  if(reDirect_) {
-    std::streambuf *psbuf[2] ={generator()->log().rdbuf(),stemp.rdbuf()};
+  if(reDirect_ && ! generator()->useStdOut() ) {
+    std::streambuf *psbuf[2] ={logFile_.rdbuf(),stemp.rdbuf()};
     cout.rdbuf(psbuf[0]);
     cerr.rdbuf(psbuf[1]);
   }
@@ -290,14 +303,14 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
   }
   catch ( ... ) {
     // change stream back
-    if(reDirect_) {
+    if(reDirect_ && ! generator()->useStdOut() ) {
       cout.rdbuf(temp[0]);
       cerr.rdbuf(temp[1]);
     }
     throw;
   }
   // change stream back
-  if(reDirect_) {
+  if(reDirect_ && ! generator()->useStdOut() ) {
     cout.rdbuf(temp[0]);
     cerr.rdbuf(temp[1]);
     string stemp2=stemp.str();
@@ -824,58 +837,58 @@ void EvtGenInterface::checkConversion() const {
   // check the translation of particles from ThePEG to EvtGen.
   ParticleMap::const_iterator pit  = generator()->particles().begin();
   ParticleMap::const_iterator pend = generator()->particles().end();
-  generator()->log() << "Testing conversion of particles from ThePEG to EvtGen\n";
+  cout << "Testing conversion of particles from ThePEG to EvtGen\n";
   EvtId etemp;
   for(;pit!=pend;++pit) {
-    generator()->log() << pit->first << "     ";
+    cout << pit->first << "     ";
     etemp=EvtGenID(pit->first,false);
     Energy mass = pit->second->mass();
     Energy width = pit->second->width();
     if(etemp.getAlias()>=0) {
-      generator()->log() << pit->second->PDGName() << "\t becomes " 
+      cout << pit->second->PDGName() << "\t becomes " 
 			 << EvtPDL::name(etemp) << "\t " 
 			 << EvtPDL::getStdHep(etemp);
       if(ThePEGID(etemp,false)-pit->first!=0) {
-	generator()->log() << " and converting back to ThePEG fails";
+	cout << " and converting back to ThePEG fails";
       }
       double mass2  = EvtPDL::getMeanMass(etemp);
       double width2 = EvtPDL::getWidth(etemp);
       if(mass!=ZERO) {
 	double delta = (mass-mass2*GeV)/mass;
 	if(abs(delta)>1e-6)
-	  generator()->log() << " Mass Difference " << mass/GeV-mass2;
+	  cout << " Mass Difference " << mass/GeV-mass2;
       }
       if(width>ZERO) {
 	double delta = (width-width2*GeV)/width;
 	if(abs(delta)>1e-6)
-	  generator()->log() << " Width Difference " << width/GeV-width2;
+	  cout << " Width Difference " << width/GeV-width2;
       }
-      generator()->log() << "\n";
+      cout << "\n";
     }
     else {
-      generator()->log() << pit->second->PDGName()  
+      cout << pit->second->PDGName()  
 			 << " has no match in EvtGen \n";
     }
   }
   // test the conversion the other way
-  generator()->log() << "Testing conversion of particles from EvtGen to ThePEG\n";
+  cout << "Testing conversion of particles from EvtGen to ThePEG\n";
   int idtemp;
   tcPDPtr ptemp;
   for(unsigned int ix=0;ix<EvtPDL::entries();++ix) {
-    generator()->log() << EvtPDL::getStdHep(EvtPDL::getEntry(ix)) << "     "
+    cout << EvtPDL::getStdHep(EvtPDL::getEntry(ix)) << "     "
 		       << EvtPDL::name(EvtPDL::getEntry(ix));
     idtemp=ThePEGID(EvtPDL::getEntry(ix),false);
     ptemp=getParticleData(idtemp);
     if(ptemp) {
-      generator()->log() << " becomes " << ptemp->PDGName()  << "   "
+      cout << " becomes " << ptemp->PDGName()  << "   "
 			 << ptemp->id();
       if(EvtGenID(ptemp->id(),false)!=EvtPDL::getEntry(ix)) {
-	generator()->log() << " and converting back to EvtGEN fails ";
+	cout << " and converting back to EvtGEN fails ";
       }
-      generator()->log() << "\n";
+      cout << "\n";
     }
     else {
-      generator()->log() << " has no match in ThePEG \n";
+      cout << " has no match in ThePEG \n";
     }
   }
 }
@@ -884,7 +897,7 @@ void EvtGenInterface::outputEvtGenDecays(long parentid) const {
   // output the decay modes from EvtGen so we can read them in
   EvtId parent(EvtGenID(parentid));
   // get evtids for children
-  generator()->log() << "Outputting decays for " 
+  cout << "Outputting decays for " 
 		     << getParticleData(parentid)->PDGName() << "\n";
   for(int ix=0;ix<EvtDecayTable::getInstance()->getNMode(parent.getAlias());++ix) {
     EvtDecayBase* decayer=EvtDecayTable::getInstance()->getDecay(parent.getAlias(),ix);
@@ -894,15 +907,15 @@ void EvtGenInterface::outputEvtGenDecays(long parentid) const {
     }
     for(unsigned int iy=pegid.size();iy<7;++iy) pegid.push_back(0);
     double br=decayer->getBranchingFraction();
-    generator()->log() 
+    cout 
       << "insert into decay_modes (incomingID,BR,decayon,star,outgoingID1,"
       << "outgoingID2,outgoingID3,outgoingID4,outgoingID5,outgoingID6,outgoingID7,"
       << "description,decayer) values (" << parentid << "," << br << ",'on','*',";
     for(int iy=0;iy<7;++iy) {
-      generator()->log() << pegid[iy] << ",";
+      cout << pegid[iy] << ",";
     }
-    generator()->log() << "'Decay of %name% with branching "
-		       << "ratio taken from EvtGen.',3);\n";
+    cout << "'Decay of %name% with branching "
+	     << "ratio taken from EvtGen.',3);\n";
   }
 }
 
