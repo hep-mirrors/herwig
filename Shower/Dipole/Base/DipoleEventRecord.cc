@@ -1266,20 +1266,23 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
 	// Generate any powheg emission, returning 'real'
         RealEmissionProcessPtr real = decayer->generateHardest( born );
         
-	// If no emission is generated the new incoming and
-	// outgoing containers will be empty.
-	// Only do something if an emission is generated.
-        if ( real && real->incoming().size() != 0 ) {
-          assert ( real->incoming().size() == 1 );
-          
-	  // Update the decay process
-	  // Note: Do not use the new incoming particle
-          PPtr oldEmitter;
-          PPtr newEmitter;
-          
-	  // Use the name recoiler to avoid confusion with
-	  // the spectator in the POWHEGDecayer
-	  // i.e. the recoiler can be coloured or non-coloured
+	// If an emission has been attempted
+	// (Note if the emission fails, a null ptr is returned)
+        if ( real ) {
+	  
+          showerScale = real->pT()[ShowerInteraction::QCD];
+
+	  // If an emission is generated sort out the particles
+	  if ( !real->outgoing().empty() ) {
+	    
+	    // Update the decay process
+	    // Note: Do not use the new incoming particle
+	    PPtr oldEmitter;
+	    PPtr newEmitter;
+	    
+	    // Use the name recoiler to avoid confusion with
+	    // the spectator in the POWHEGDecayer
+	    // i.e. the recoiler can be coloured or non-coloured
           PPtr oldRecoiler;
           PPtr newRecoiler;
           
@@ -1301,7 +1304,6 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
 	  // Update the scales
           newRecoiler->scale(oldRecoiler->scale());
           
-          showerScale = real->pT()[ShowerInteraction::QCD];
           newEmitter->scale(sqr(showerScale));
           emitted->scale(sqr(showerScale));
           
@@ -1334,9 +1336,19 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
           
 	  // Add the emitted to the outgoing of the decay process
           process->outgoing().push_back( { emitted, PerturbativeProcessPtr() } );
-        }
-        
-        
+	  }
+
+
+	  // Else, if no emission above pTmin, set particle scales
+	  else {
+	    for(auto & outg : process->outgoing()) {
+	      outg.first->scale( sqr(showerScale) );
+	    }
+	    powhegEmission = false;
+	  }
+
+	}
+	
 	// No powheg emission occurred:
         else
 	  powhegEmission = false;
