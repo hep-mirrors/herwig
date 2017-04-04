@@ -222,9 +222,9 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 
   double phi = 2.*Constants::pi*rphi;
 
-// Compute and store the jacobian
+  // Compute and store the jacobian
     Energy2 pt2 = sqr(pt);
-    double jacPt2 = 1. / ( 1. + sqr(1.-z)*mi2/pt2 + z*z*m2/pt2 );
+    double jacPt2 = 1. / ( 1. + (1.-z)*mi2/pt2 + z*m2/pt2 - z*(1.-z)*Mi2/pt2 );
     jacobian( jacPt2 * mapZJacobian * 2.*log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
 
   lastPt(pt);
