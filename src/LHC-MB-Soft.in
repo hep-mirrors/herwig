@@ -23,8 +23,8 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
-# MPI model
-read snippets/MPI.in
+# Minimum Bias
+read snippets/MB.in
 
 # Diffraction model
 read snippets/Diffraction.in

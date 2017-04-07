@@ -12,7 +12,8 @@ Matchbox.in \
 MonacoSampler.in \
 DipoleMerging.in \
 EECollider.in EPCollider.in PPCollider.in \
-MPI.in \
+MB.in \
+SoftModel.in \
 Diffraction.in
 
 dist_snippets_DATA = $(INPUTFILES)
