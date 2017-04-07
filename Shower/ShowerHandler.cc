@@ -443,7 +443,7 @@ void ShowerHandler::cascade() {
   // only one, but who knows...)
   for(unsigned int i=1; i <= getMPIHandler()->additionalHardProcs(); i++){
     //counter for regeneration
-    unsigned int multSecond = 0;
+	unsigned int multSecond = 0;
     // generate the additional scatters
     while( multSecond < getMPIHandler()->multiplicity(i) ) {
       // generate the hard scatter 
