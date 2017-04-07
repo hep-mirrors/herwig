@@ -11,7 +11,9 @@ PDF-NNPDF30NLO.in \
 Matchbox.in \
 MonacoSampler.in \
 DipoleMerging.in \
-EECollider.in EPCollider.in PPCollider.in
+EECollider.in EPCollider.in PPCollider.in \
+MPI.in \
+Diffraction.in
 
 dist_snippets_DATA = $(INPUTFILES)
 
