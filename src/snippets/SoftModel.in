@@ -12,6 +12,6 @@ set /Herwig/Partons/RemnantDecayer:gaussWidth 0.03
 set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.677921
 set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.068890
 set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.386754
-set /Herwig/UnderlyingEvent/MPIHandler:Power 0.709107
+set /Herwig/UnderlyingEvent/MPIHandler:Power 0.367906
 set /Herwig/Partons/RemnantDecayer:ladderPower -0.367906
 set /Herwig/Partons/RemnantDecayer:ladderNorm 1.022621
