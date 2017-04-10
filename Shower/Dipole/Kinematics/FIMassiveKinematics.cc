@@ -63,15 +63,13 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
 				double, double specX,
 				const DipoleIndex& ind,
 				const DipoleSplittingKernel& split) const {
-  Energy mi = split.emitter(ind)->mass(), m = split.emission(ind)->mass();
-  Energy2 mi2 = sqr(mi), m2  = sqr(m);
-  // Energy2 Mi2 = split.emitter(int)->id() + split.emission(int)->id() == 0 ?
-  //   0.*GeV2 : mi2;
-  Energy2 Mi2 = mi2 == m2 ? 0.*GeV2 : mi2;
+  Energy mi = split.emitter(ind)->mass(), mj = split.emission(ind)->mass();
+  Energy2 mi2 = sqr(mi), mj2 = sqr(mj);
+  Energy2 mij2 = split.emitter(ind)->id() + split.emission(ind)->id() == 0 ?
+    0.*GeV2 : mi2;
 
-  // s^star/x
-  Energy2 s = sqr(dScale) * (1.-specX)/specX + Mi2;
-  return .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
+  Energy2 sPrime = sqr(dScale) * (1.-specX)/specX + mij2;
+  return .5 * sqrt(sPrime) * rootOfKallen( sPrime/sPrime, mi2/sPrime, mj2/sPrime );
 }
 
 // what is this? in FF it is given by y+*dScale = sqrt( 2qi*q / bar )->max
@@ -89,8 +87,8 @@ Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
   // from Martin's thesis
   double z = split.lastZ();
   Energy mi = split.emitterData()->mass();
-  Energy m = split.emissionData()->mass();
-  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1-z)*sqr(mi) - z*sqr(m);
+  Energy mj = split.emissionData()->mass();
+  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1-z)*sqr(mi) - z*sqr(mj);
   assert(pt2 >= ZERO);
   return sqrt(pt2);
 }
@@ -99,8 +97,8 @@ Energy FIMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split)
   // from Martin's thesis
   double z = split.lastZ();
   Energy mi = split.emitterData()->mass();
-  Energy m = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(pt) + (1-z)*sqr(mi) + z*sqr(m))/(z*(1.-z));
+  Energy mj = split.emissionData()->mass();
+  Energy2 Q2 = (sqr(pt) + (1-z)*sqr(mi) + z*sqr(mj))/(z*(1.-z));
   return sqrt(Q2);
 }
 
@@ -143,89 +141,97 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
     mapZJacobian = 1.-z;
   }
 
-  // double s = z*(1.-z);
-
-  // double xs = info.spectatorX();
-
-  // double x = 1. / ( 1. + sqr(pt/info.scale()) / s );
-
-  // double zp = 0.5*(1.+sqrt(1.-sqr(pt/info.hardPt())));
-  // double zm = 0.5*(1.-sqrt(1.-sqr(pt/info.hardPt())));
-
+  // Construct mass squared variables
   Energy2 mi2 = sqr(info.emitterData()->mass());
-  Energy2 m2  = sqr(info.emissionData()->mass());
-  Energy2 Mi2 = info.emitterData()->id()+info.emissionData()->id() == 0 ?
+  Energy2 mj2  = sqr(info.emissionData()->mass());
+  Energy2 mij2 = info.emitterData()->id()+info.emissionData()->id() == 0 ?
     0.*GeV2 : mi2;
+  Energy2 pt2 = sqr(pt);
 
-  // s^star/x
-  Energy2 s = sqr(info.scale()) * (1.-info.spectatorX())/info.spectatorX() + Mi2;
+  
+  // 2 pij.pb
+  Energy2 sbar = sqr(info.scale());
 
-  double xs = info.spectatorX();
+  // Compute x
   double x = 1. / ( 1. +
-		    ( sqr(pt) + (1.-z)*mi2 + z*m2 - z*(1.-z)*Mi2 ) /
-		    ( z*(1.-z)*s ) );
+		    ( pt2 + (1.-z)*mi2 + z*mj2 - z*(1.-z)*mij2 ) /
+		    ( z*(1.-z)*sbar ) );
 
-
-
-  Energy hard=info.hardPt();
-
-
-  if(openZBoundaries()==1){
-	hard=.5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
-  }
-  Energy2 sdip = sqr(info.scale()) + Mi2;
-  if(openZBoundaries()==2){
-	hard=min(0.5*sqrt(s) * 
-		rootOfKallen( s/s, mi2/s, m2/s ) , 
-                     sqrt(sdip)  * 
-		rootOfKallen( sdip/sdip, mi2/sdip, m2/sdip ));
- }
-
-
-  double ptRatio = sqrt(1.-sqr(pt/info.hardPt()));
-
-
-
-
-  double zm1 = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
-  double zp1 = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) * ptRatio);
-
-  if ( // pt < IRCutoff() || 
-       // pt > info.hardPt() ||
-       z > zp1 || z < zm1 ||
-       x < xs ) {
+  // Check the limit on x
+  double xs = info.spectatorX();
+  
+  if ( x < xs ) {
     jacobian(0.0);
     return false;
   }
 
-  // additional purely kinematic constraints
-  double mui2 = x*mi2/sqr(info.scale());
-  double mu2  = x*m2/sqr(info.scale());
-  double Mui2 = x*Mi2/sqr(info.scale());
-  double xp = 1. + Mui2 - sqr(sqrt(mui2)+sqrt(mu2));
-  double root = sqr(1.-x+Mui2-mui2-mu2)-4.*mui2*mu2;
-  if( root < 0. && root>-1e-10 )
+
+  // Compute and check the z limits
+  Energy2 sPrime = sbar * (1.-xs)/xs + mij2;
+  Energy hard=info.hardPt();
+
+  if(openZBoundaries()==1){
+    hard=.5 * sqrt(sPrime) * rootOfKallen( sPrime/sPrime, mi2/sPrime, mj2/sPrime );
+  }
+
+  if(openZBoundaries()==2){
+    Energy2 s = mij2 - sbar;
+	hard=min(0.5*sqrt(sPrime) * 
+		rootOfKallen( sPrime/sPrime, mi2/sPrime, mj2/sPrime ) , 
+		 0.5*sqrt(s)  * 
+		 rootOfKallen( s/s, mi2/s, mj2/s ));
+ }
+
+  double ptRatio = sqrt(1.-sqr(pt/hard));
+
+  double zm1 = .5*( 1.+(mi2-mj2)/sPrime - rootOfKallen(sPrime/sPrime,mi2/sPrime,mj2/sPrime) * ptRatio);
+  double zp1 = .5*( 1.+(mi2-mj2)/sPrime + rootOfKallen(sPrime/sPrime,mi2/sPrime,mj2/sPrime) * ptRatio);
+
+  if ( z > zp1 || z < zm1 ) {
+    jacobian(0.0);
+    return false;
+  }
+
+  // additional purely kinematic constraints from
+  // the integration limits in Catani-Seymour
+  double mui2CS = x*mi2/sbar;
+  double muj2CS  = x*mj2/sbar;
+  double muij2CS = x*mij2/sbar;
+
+  // Limit on x
+  double xp = 1. + muij2CS - sqr(sqrt(mui2CS)+sqrt(muj2CS));  
+  if (x > xp ) {
+    jacobian(0.0);
+    return false;
+  }
+
+  // Limit on z
+  double root = sqr(1.-x+muij2CS-mui2CS-muj2CS)-4.*mui2CS*muj2CS;
+
+  if( root < 0. && root>-1e-10 ) {
+    //    assert(false);
     root = 0.;
+  }
   else if (root <0. ) {
     jacobian(0.0);
     return false;
   }
 
   root = sqrt(root);
-  double zm = .5*( 1.-x+Mui2+mui2-mui2 - root ) / (1.-x+Mui2);
-  double zp = .5*( 1.-x+Mui2+mui2-mui2 + root ) / (1.-x+Mui2);
-  if (x > xp ||
-      z > zp || z < zm ) {
+  double zm2 = .5*( 1.-x+muij2CS+mui2CS-mui2CS - root ) / (1.-x+muij2CS);
+  double zp2 = .5*( 1.-x+muij2CS+mui2CS-mui2CS + root ) / (1.-x+muij2CS);
+
+  if ( z > zp2 || z < zm2 ) {
     jacobian(0.0);
     return false;
   }
 
+  // Store the splitting variables
   double phi = 2.*Constants::pi*rphi;
-
+  
   // Compute and store the jacobian
-    Energy2 pt2 = sqr(pt);
-    double jacPt2 = 1. / ( 1. + (1.-z)*mi2/pt2 + z*m2/pt2 - z*(1.-z)*Mi2/pt2 );
-    jacobian( jacPt2 * mapZJacobian * 2.*log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
+  double jacPt2 = 1. / ( 1. + (1.-z)*mi2/pt2 + z*mj2/pt2 - z*(1.-z)*mij2/pt2 );
+  jacobian( jacPt2 * mapZJacobian * 2.*log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
 
   lastPt(pt);
   lastZ(z);
@@ -243,29 +249,34 @@ void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,
 					   const DipoleSplittingInfo& dInfo) {
 
+  // Get splitting variables
   Energy pt = dInfo.lastPt();
   double z = dInfo.lastZ();
 
+  // Compute sqr scales
+  Energy2 pt2 = sqr(pt);
+  Energy2 sbar = sqr(dInfo.scale());
+  
   Lorentz5Momentum kt =
     getKt (pSpectator, pEmitter, pt, dInfo.lastPhi(),true);
 
   Energy2 mi2 = sqr(dInfo.emitterData()->mass());
-  Energy2 m2  = sqr(dInfo.emissionData()->mass());
-  Energy2 Mi2 = dInfo.emitterData()->id() + dInfo.emissionData()->id() == 0 ?
+  Energy2 mj2  = sqr(dInfo.emissionData()->mass());
+  Energy2 mij2 = dInfo.emitterData()->id() + dInfo.emissionData()->id() == 0 ?
     0.*GeV2 : mi2;
 
   double xInv = ( 1. +
-		  (pt*pt+(1.-z)*mi2+z*m2-z*(1.-z)*Mi2) /
-		  (z*(1.-z)*sqr(dInfo.scale())) );
+		  (pt2+(1.-z)*mi2+z*mj2-z*(1.-z)*mij2) /
+		  (z*(1.-z)*sbar) );
 
   Lorentz5Momentum em = z*pEmitter +
-    (sqr(pt)+mi2-z*z*Mi2)/(z*sqr(dInfo.scale()))*pSpectator + kt;
+    (pt2+mi2-z*z*mij2)/(z*sbar)*pSpectator + kt;
   em.setMass(sqrt(mi2));
   em.rescaleEnergy();
 
   Lorentz5Momentum emm = (1.-z)*pEmitter +
-    (pt*pt+m2-sqr(1.-z)*Mi2)/((1.-z)*sqr(dInfo.scale()))*pSpectator - kt;
-  emm.setMass(sqrt(m2));
+    (pt2+mj2-sqr(1.-z)*mij2)/((1.-z)*sbar)*pSpectator - kt;
+  emm.setMass(sqrt(mj2));
   emm.rescaleEnergy();
 
   Lorentz5Momentum spe = xInv*pSpectator;
