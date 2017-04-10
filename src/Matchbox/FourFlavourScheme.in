@@ -87,12 +87,6 @@ set IFMgx2bbbarxDipoleKernel:UseKernel Off
 set IFMgx2bbarbxDipoleKernel:UseKernel Off
 set IIgx2bbbarxDipoleKernel:UseKernel Off
 set IIgx2bbarbxDipoleKernel:UseKernel Off
-set IFgx2bbbarxDipoleKernel:UseKernel Off
-set IFgx2bbarbxDipoleKernel:UseKernel Off
-set IFMgx2bbbarxDipoleKernel:UseKernel Off
-set IFMgx2bbarbxDipoleKernel:UseKernel Off
-set IIgx2bbbarxDipoleKernel:UseKernel Off
-set IIgx2bbarbxDipoleKernel:UseKernel Off
 
 cd /Herwig/Shower
 do SplittingGenerator:DeleteInitialSplitting b->b,g; QtoQGSudakov
