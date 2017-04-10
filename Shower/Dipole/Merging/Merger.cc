@@ -1540,14 +1540,6 @@ void Merger::Init() {
    false , false , Interface::lowerlim );
    interfacegamma.rank(-1); 
   
-  static Reference<Merger , ColourBasis> interfaceLargeNBasis
-  ( "LargeNBasis" , 
-   "Set the large-N colour basis implementation." , 
-   &Merger::theLargeNBasis ,
-   false , false ,
-   true , true , false );
-  interfaceLargeNBasis.rank(-1);
-  
  
   static Switch<Merger,int> interfaceOpenZBoundariesM
   ("OpenZBoundaries", "",

@@ -11,12 +11,6 @@ set GenericProcesses:OneLoopAmplitude GoSam
 clear /Herwig/Merging/MergingFactory:Amplitudes
 insert /Herwig/Merging/MergingFactory:Amplitudes 0 GenericProcesses
 
-
-create ColorFull::TraceBasis /Herwig/Merging/LargeNColourBasis2
-set /Herwig/Merging/LargeNColourBasis2:LargeN On
-set /Herwig/Merging/Merger:LargeNBasis LargeNColourBasis2
-
-
 cd /Herwig/Particles
 
 do b:UnsetHardProcessMass

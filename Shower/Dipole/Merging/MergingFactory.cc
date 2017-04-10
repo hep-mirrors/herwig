@@ -390,7 +390,6 @@ void MergingFactory::setup() {
   if(! dsh  )throw InitException() << "The showerhandlerfor the MergingFactory must be the DipoleShower. ";
   
   dsh->setMerger(MH());
-  MH()->largeNBasis()->factory(this);
   MH()->setFactory(this);
   MH()->setDipoleShower(dsh); 
 
@@ -436,8 +435,21 @@ void MergingFactory::setup() {
     
     for ( auto & amp: amplitudes() ) amp->factory(this);
     
-      //fill the amplitudes
+      // fill the amplitudes
     if ( !amplitudes().empty() )  fillMEsMap();
+    
+      // Use the colour basis of the first element of amplitudes
+      // to set the large N colour basis for the MergingHelper
+    assert(!amplitudes().empty() );
+    if ( !amplitudes()[0]->colourBasis() )
+        throw Exception() << "MergingFactory::setup(): Expecting a colour basis object."
+        << Exception::runerror;
+    auto largeNBasis =
+    amplitudes()[0]->colourBasis()->cloneMe();
+    largeNBasis->clear();
+    largeNBasis->doLargeN();
+    MH()->largeNBasis(largeNBasis);
+    MH()->largeNBasis()->factory(this);
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);
