@@ -92,7 +92,7 @@ insert QCDDiffraction:MatrixElements[0] MEDiffractionDouble
 insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaLeft
 insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaRight
 insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaDouble
-# No cluster fission
+# No cluster fission (set to E/2, if needed. Here E=7TeV.)
 #set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
 
 set QCDDiffraction:CascadeHandler NULL

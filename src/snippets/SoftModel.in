@@ -1,11 +1,12 @@
-# Parameetrs for soft interactions
+# Parameters for soft interactions
 
 set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.0
 set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes
+
 # Use multiperipheral kinematics
 set /Herwig/Partons/RemnantDecayer:MultiPeriph Yes
-# Set gaussian width of longitudinal momentum fraction
-# Flucutuation
+
+# Set gaussian width of longitudinal momentum fraction fluctuation
 set /Herwig/Partons/RemnantDecayer:gaussWidth 0.03
 
 # Tuned to min-bias data
