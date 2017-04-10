@@ -16,66 +16,9 @@ library JetCuts.so
 library FastJetFinder.so
 library HwMatchboxScales.so
 library HwMatchboxCuts.so
-library HwSampling.so
 library HwColorFull.so
 library HwMatchboxBuiltin.so
 
-################################################################################
-# Integration/sampling
-################################################################################
-
-mkdir /Herwig/Samplers
-cd /Herwig/Samplers
-
-create Herwig::BinSampler FlatBinSampler
-set FlatBinSampler:InitialPoints 1000
-set FlatBinSampler:UseAllIterations No
-
-create Herwig::CellGridSampler CellGridSampler
-set CellGridSampler:InitialPoints 10000
-set CellGridSampler:ExplorationPoints 500
-set CellGridSampler:ExplorationSteps 4
-set CellGridSampler:Gain 0.3
-set CellGridSampler:Epsilon 1.0
-set CellGridSampler:MinimumSelection 0.000001
-set CellGridSampler:NIterations 1
-set CellGridSampler:EnhancementFactor 1
-set CellGridSampler:UseAllIterations No
-
-set CellGridSampler:RemapperPoints 50000
-set CellGridSampler:RemapperMinSelection 0.00001
-set CellGridSampler:RemapChannelDimension Yes
-set CellGridSampler:LuminosityMapperBins 20
-set CellGridSampler:GeneralMapperBins 0
-
-set CellGridSampler:HalfPoints No
-set CellGridSampler:MaxNewMax 30
-set CellGridSampler:NonZeroInPresampling Yes
-
-create Herwig::MonacoSampler MonacoSampler
-set MonacoSampler:InitialPoints 15000
-set MonacoSampler:NIterations 4
-set MonacoSampler:EnhancementFactor 1.2
-set MonacoSampler:UseAllIterations No
-set MonacoSampler:RemapChannelDimension No
-set MonacoSampler:LuminosityMapperBins 0
-set MonacoSampler:HalfPoints No
-set MonacoSampler:MaxNewMax 30
-set MonacoSampler:NonZeroInPresampling Yes
-
-create Herwig::GeneralSampler Sampler
-set Sampler:UpdateAfter 1000
-
-set Sampler:BinSampler CellGridSampler
-
-set Sampler:AddUpSamplers Off
-set Sampler:GlobalMaximumWeight Off
-set Sampler:FlatSubprocesses Off
-set Sampler:MinSelection 0.000001
-set Sampler:AlmostUnweighted Off
-set Sampler:RunCombinationData Off
-set Sampler:WriteGridsOnFinish No
-set Sampler:MaxEnhancement 1.1
 
 ################################################################################
 # Setup the factory object
