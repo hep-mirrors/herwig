@@ -321,35 +321,51 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
   if ( ( p->hasColour() && q->hasAntiColour() ) ||
        ( p->hasAntiColour() && q->hasColour() ) ) {
 
-    // old simple option
-    if(_octetOption==0) {
-      if ( !p->parents().empty() && !q->parents().empty() ) {
-	// true if p and q are originated from a colour octet
-	octet = ( p->parents()[0] == q->parents()[0] ) &&
-	  ( p->parents()[0]->data().iColour() == PDT::Colour8 );
-      }
+    // true if p and q are originated from a colour octet
+    if ( !p->parents().empty() && !q->parents().empty() ) {
+        octet = ( p->parents()[0] == q->parents()[0] ) &&
+          ( p->parents()[0]->data().iColour() == PDT::Colour8 );
     }
-    // new option handling more octets
+
+    // (Final) option: check if same colour8 parent
+    // or already found an octet.
+    if(_octetOption==0||octet) return octet;
+
+    // (All) option handling more octets
+    // by browsing particle history/colour lines.
+    tColinePtr cline,aline;
+
+    // Get colourlines form final states.
+    if(p->hasColour() && q->hasAntiColour()) {
+      cline  = p->    colourLine();
+      aline  = q->antiColourLine();
+    }
     else {
-      tColinePtr cline,aline;
-      if(p->hasColour() && q->hasAntiColour()) {
-	cline  = p->    colourLine();
-	aline  = q->antiColourLine();
-      }
-      else {
-	cline  = q->    colourLine();
-	aline  = p->antiColourLine();
-      }
-      if ( !p->parents().empty() ) {
-	tPPtr parent = p->parents()[0];
-	while (parent) {
-	  if(parent->data().iColour() == PDT::Colour8) {
-	    octet = (parent->    colourLine()==cline &&
-		     parent->antiColourLine()==aline);
-	  }
-	  if(octet||parent->parents().empty()) break;
-	  parent = parent->parents()[0];
-	}
+      cline  = q->    colourLine();
+      aline  = p->antiColourLine();
+    }
+    
+    // Follow the colourline of p.
+    if ( !p->parents().empty() ) {
+      tPPtr parent = p->parents()[0];
+      while (parent) {
+        if(parent->data().iColour() == PDT::Colour8) {
+            // Coulour8 particles should have a colour 
+            // and an anticolour line. Currently the 
+            // remnant has none of those. Since the children 
+            // of the remnant are not allowed to emit currently, 
+            // the colour octet remnant is handled by the return 
+            // statement above. The assert also catches other 
+            // colour octets without clines. If the children of 
+            // a remnant should be allowed to emit, the remnant 
+            // should get appropriate colour lines and 
+            // colour states.
+          assert(parent->colourLine()&&parent->antiColourLine());
+          octet = (parent->    colourLine()==cline &&
+                   parent->antiColourLine()==aline);
+        }
+        if(octet||parent->parents().empty()) break;
+        parent = parent->parents()[0];
       }
     }
   }

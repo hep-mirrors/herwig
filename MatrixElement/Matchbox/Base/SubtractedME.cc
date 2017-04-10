@@ -607,7 +607,10 @@ dump(const std::string& prefix,
   ofstream out((prefix+fname.str()+".dat").c_str());
   for ( map<double,pair<double,double> >::const_iterator b = bins.begin();
 	b != bins.end(); ++b ) {
-    map<double,pair<double,double> >::const_iterator bp = b; --bp;
+    map<double,pair<double,double> >::const_iterator bp = b; 
+    if (bp== bins.begin())continue;
+    --bp;
+
     if ( b->second.first != Constants::MaxDouble ||
 	 b->second.second != 0.0 ) {
       if ( b != bins.begin() ){
