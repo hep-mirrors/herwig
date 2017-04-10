@@ -629,9 +629,9 @@ void MergingFactory::Init() {
   static Switch<MergingFactory, bool> interface_Unitarized("Unitarized", 
 	 "Unitarize the cross section (default is unitarised. NLO merging must be unitarised).", 
 	 &MergingFactory::unitarized, true, false, false);
-  static SwitchOption interface_UnitarizedOn(interface_Unitarized, "On", 
+  static SwitchOption interface_UnitarizedYes(interface_Unitarized, "Yes", 
 	 "Switch on the unitarized cross section.", true);
-  static SwitchOption interface_UnitarizedOff(interface_Unitarized, "Off", 
+  static SwitchOption interface_UnitarizedNo(interface_Unitarized, "No", 
 	 "Switch off the unitarized cross section.", false);
   
 

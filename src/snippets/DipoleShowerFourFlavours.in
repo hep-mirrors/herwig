@@ -15,9 +15,9 @@ set cbar:HardProcessMass 0*GeV
 
 cd /Herwig/DipoleShower/Kernels
 
-set IFgx2bbbarxDipoleKernel:UseKernel Off
-set IFgx2bbarbxDipoleKernel:UseKernel Off
-set IFMgx2bbbarxDipoleKernel:UseKernel Off
-set IFMgx2bbarbxDipoleKernel:UseKernel Off
-set IIgx2bbbarxDipoleKernel:UseKernel Off
-set IIgx2bbarbxDipoleKernel:UseKernel Off
+set IFgx2bbbarxDipoleKernel:UseKernel No
+set IFgx2bbarbxDipoleKernel:UseKernel No
+set IFMgx2bbbarxDipoleKernel:UseKernel No
+set IFMgx2bbarbxDipoleKernel:UseKernel No
+set IIgx2bbbarxDipoleKernel:UseKernel No
+set IIgx2bbarbxDipoleKernel:UseKernel No

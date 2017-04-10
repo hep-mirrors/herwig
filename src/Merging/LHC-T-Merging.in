@@ -48,7 +48,7 @@ set Merger:MergingScaleSmearing 0.1
 
 set MPreWeight:HTPower 0
 set MPreWeight:MaxPTPower 0
-set MPreWeight:OnlyColoured False
+set MPreWeight:OnlyColoured No
 
 read Matchbox/PQCDLevel.in
 

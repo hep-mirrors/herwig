@@ -1145,16 +1145,16 @@ void DipoleShowerHandler::Init() {
   
   static Switch<DipoleShowerHandler,bool> interfaceChainOrderVetoScales
   ("ChainOrderVetoScales",
-   "[experimental] Switch on or off the chain ordering for veto scales.",
+   "[experimental] Switch the chain ordering for veto scales on or off.",
    &DipoleShowerHandler::chainOrderVetoScales, true, false, false);
-  static SwitchOption interfaceChainOrderVetoScalesOn
+  static SwitchOption interfaceChainOrderVetoScalesYes
   (interfaceChainOrderVetoScales,
-   "On",
+   "Yes",
    "Switch on chain ordering for veto scales.",
    true);
-  static SwitchOption interfaceChainOrderVetoScalesOff
+  static SwitchOption interfaceChainOrderVetoScalesNo
   (interfaceChainOrderVetoScales,
-   "Off",
+   "No",
    "Switch off chain ordering for veto scales.",
    false);
   
@@ -1174,14 +1174,14 @@ void DipoleShowerHandler::Init() {
   ("DiscardNoEmissions",
    "[debug option] Discard events without radiation.",
    &DipoleShowerHandler::discardNoEmissions, false, false, false);
-  static SwitchOption interfaceDiscardNoEmissionsOn
+  static SwitchOption interfaceDiscardNoEmissionsYes
   (interfaceDiscardNoEmissions,
-   "On",
+   "Yes",
    "Discard events without radiation.",
    true);
-  static SwitchOption interfaceDiscardNoEmissionsOff
+  static SwitchOption interfaceDiscardNoEmissionsNo
   (interfaceDiscardNoEmissions,
-   "Off",
+   "No",
    "Do not discard events without radiation.",
    false);
   
@@ -1191,15 +1191,15 @@ void DipoleShowerHandler::Init() {
   ("FirstMCatNLOEmission",
    "[debug option] Only perform the first MC@NLO emission.",
    &DipoleShowerHandler::firstMCatNLOEmission, false, false, false);
-  static SwitchOption interfaceFirstMCatNLOEmissionOn
+  static SwitchOption interfaceFirstMCatNLOEmissionYes
   (interfaceFirstMCatNLOEmission,
-   "On",
-   "",
+   "Yes",
+   "Perform only the first MC@NLO emission.",
    true);
-  static SwitchOption interfaceFirstMCatNLOEmissionOff 
+  static SwitchOption interfaceFirstMCatNLOEmissionNo
   (interfaceFirstMCatNLOEmission,
-   "Off",
-   "",
+   "No",
+   "Produce all emissions.",
    false);
   
   interfaceFirstMCatNLOEmission.rank(-1);

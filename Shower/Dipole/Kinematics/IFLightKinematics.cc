@@ -245,14 +245,14 @@ void IFLightKinematics::Init() {
     ("CollinearScheme",
      "[experimental] Switch on or off the collinear scheme",
      &IFLightKinematics::theCollinearScheme, false, false, false);
-  static SwitchOption interfaceCollinearSchemeOn
+  static SwitchOption interfaceCollinearSchemeYes
     (interfaceCollinearScheme,
-     "On",
+     "Yes",
      "Switch on the collinear scheme.",
      true);
-  static SwitchOption interfaceCollinearSchemeOff
+  static SwitchOption interfaceCollinearSchemeNo
     (interfaceCollinearScheme,
-     "Off",
+     "No",
      "Switch off the collinear scheme",
      false);
 

@@ -100,14 +100,14 @@ void MergingReweight::Init() {
     ("OnlyColoured",
      "Only consider coloured particles in the SubProcess when finding the minimum transverse momentum.",
      &MergingReweight::onlyColoured, false, true, false);
-  static SwitchOption interfaceOnlyColouredTrue
+  static SwitchOption interfaceOnlyColouredYes
     (interfaceOnlyColoured,
-     "True",
+     "Yes",
      "Use only coloured particles.",
      true);
-  static SwitchOption interfaceOnlyColouredFalse
+  static SwitchOption interfaceOnlyColouredNo
     (interfaceOnlyColoured,
-     "False",
+     "No",
      "Use all particles.",
      false);
 

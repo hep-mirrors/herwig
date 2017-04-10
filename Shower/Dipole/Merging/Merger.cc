@@ -1508,9 +1508,9 @@ void Merger::Init() {
    &Merger::theCMWScheme ,
    0 ,
    false , false );
-  static SwitchOption interfacetheCMWSchemeOff
+  static SwitchOption interfacetheCMWSchemeNo
   (interfacetheCMWScheme,
-   "Off",
+   "No",
    "No CMW-Scheme",
    0);
   static SwitchOption interfacetheCMWSchemeLinear

@@ -311,14 +311,14 @@ void DipoleSplittingKernel::Init() {
     ("StrictLargeN",
      "Work in a strict large-N limit.",
      &DipoleSplittingKernel::theStrictLargeN, false, false, false);
-  static SwitchOption interfaceStrictLargeNOn
+  static SwitchOption interfaceStrictLargeNYes
     (interfaceStrictLargeN,
-     "On",
+     "Yes",
      "Replace C_F -> C_A/2 where present",
      true);
-  static SwitchOption interfaceStrictLargeNOff
+  static SwitchOption interfaceStrictLargeNNo
     (interfaceStrictLargeN,
-     "Off",
+     "No",
      "Keep C_F=4/3",
      false);
 
@@ -328,8 +328,8 @@ void DipoleSplittingKernel::Init() {
     ("CMWScheme",
      "Use the CMW Scheme related Kg expression to the splitting",
     &DipoleSplittingKernel::theCMWScheme, 0, false, false);
-  static SwitchOption interfaceCMWSchemeOff
-    (interfaceCMWScheme,"Off","No CMW-Scheme", 0);
+  static SwitchOption interfaceCMWSchemeNo
+    (interfaceCMWScheme,"No","No CMW-Scheme", 0);
   static SwitchOption interfaceCMWSchemeLinear
   (interfaceCMWScheme,"Linear",
    "Linear CMW multiplication: alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )",1);
@@ -392,14 +392,14 @@ void DipoleSplittingKernel::Init() {
   ("UseKernel",
    "Turn On and of the Kernel.",
    &DipoleSplittingKernel::theUseThisKernel, true, false, false);
-  static SwitchOption interfaceUseThisKernelOn
+  static SwitchOption interfaceUseThisKernelYes
   (interfaceUseThisKernel,
-   "On",
+   "Yes",
    "Use this Kernel.",
    true);
-  static SwitchOption interfaceUseThisKernelOff
+  static SwitchOption interfaceUseThisKernelNo
   (interfaceUseThisKernel,
-   "Off",
+   "No",
    "Dont use this Kernel.",
    false);
   
