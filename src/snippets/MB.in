@@ -35,8 +35,5 @@ set /Herwig/MatrixElements/MEMinBias:csNorm 4.5584
 
 set EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 
-# Read in parameters to use the soft model
-read snippets/SoftModel.in
-
 cd /Herwig/MatrixElements/
 insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDMinBias
