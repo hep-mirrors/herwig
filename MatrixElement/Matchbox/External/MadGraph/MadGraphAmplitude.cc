@@ -440,7 +440,8 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
       return Complex(0.0);
     }
   } else {
-    set<vector<size_t> > a = colourOrdering(i);
+    set<vector<size_t> > a ;
+    if(lastMatchboxXComb()->colourBasisDim()>0)a=colourOrdering(i);
     int ncol=-1;
     MG_NCol(&xx,&ncol);
     assert(ncol!=-1);

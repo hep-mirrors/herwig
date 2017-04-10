@@ -120,9 +120,6 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
   map<Process,set<Ptr<MatchboxAmplitude>::ptr> > procAmps;
   set<PDVector> processes = makeSubProcesses(proc);
 
-  // TODO Fix me for 3.0.x
-  // At the moment we got troubles with processes with no coloured
-  // legs so they will not be supported
   set<PDVector> colouredProcesses;
   for ( set<PDVector>::const_iterator pr = processes.begin();
 	pr != processes.end(); ++pr ) {
@@ -134,18 +131,16 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       }
     }
   }
-  if ( colouredProcesses.size() != processes.size() ) {
-    generator()->log()
-      << "Some or all of the generated subprocesses do not contain coloured legs.\n"
-      << "Processes of this kind are currently not supported.\n" << flush;
+  if ( colouredProcesses.size() != processes.size() &&
+      (virtualContributions() || realContributions()) ) {
+      // NLO not working for non coloured legs
+    throw Exception()
+    << "Found processes without coloured legs.\n"
+    << "We currently do not support NLO corrections for those processes.\n"
+    << "Please switch to a setup for LO production."
+    << Exception::runerror;
   }
-  if ( colouredProcesses.empty() ) {
-    throw Exception() << "MatchboxFactory::makeMEs(): No processes with coloured legs have been found. "
-		      << "This run will be aborted." << Exception::runerror;
-  }
-  processes = colouredProcesses;
-  // end unsupported processes
-
+  
   // detect external particles with non-zero width for the hard process
   bool trouble = false;
   string troubleMaker;
@@ -1531,7 +1526,7 @@ makeSubProcesses(const vector<string>& proc) const {
       pass &= (charge == 0);
 
     if ( theEnforceColourConservation )
-      pass &= (colour % 8 == 0) && (ncolour > 1);
+      pass &= (colour % 8 == 0);
 
     if ( theEnforceLeptonNumberConservation ) {
       pass &= (nleptons == 0);
