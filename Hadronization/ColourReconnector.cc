@@ -360,7 +360,8 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
             // a remnant should be allowed to emit, the remnant 
             // should get appropriate colour lines and 
             // colour states.
-          assert(parent->colourLine()&&parent->antiColourLine());
+          //  See Ticket: #407 
+	  //  assert(parent->colourLine()&&parent->antiColourLine());
           octet = (parent->    colourLine()==cline &&
                    parent->antiColourLine()==aline);
         }
