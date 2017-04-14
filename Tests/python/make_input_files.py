@@ -710,11 +710,9 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
-            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-            process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-            process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-            process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+            process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"
+            process+="read snippets/MB.in\n"
+            process+="read snippets/Diffraction.in\n"
             if(parameterName.find("Long")>=0) :
                 process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
         elif(parameterName.find("7-DiJets")>=0 or parameterName.find("8-DiJets")>=0) :
@@ -839,7 +837,7 @@ elif(collider=="LHC") :
                                            "W+->nu_mu,mu+;"])
             process+=selectDecayMode("W-",["W-->nu_ebar,e-;",
                                            "W-->nu_mubar,mu-;"])
-            process+=selectDecayMode("W-",["Z0->e-,e+;",
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;"])
             process+=addBRReweighter()
             
