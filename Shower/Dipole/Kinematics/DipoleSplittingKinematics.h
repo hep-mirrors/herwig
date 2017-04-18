@@ -84,6 +84,8 @@ namespace Herwig {
      */
     virtual Energy dipoleScale(const Lorentz5Momentum& pEmitter,
 			       const Lorentz5Momentum& pSpectator) const {
+	// MEMinBias produces non-zero zeros.
+      if(abs(pEmitter*pSpectator)<0.0000001*GeV2)return ZERO;
       assert(pEmitter*pSpectator >= ZERO);
       return sqrt(2.*pEmitter*pSpectator);
     }

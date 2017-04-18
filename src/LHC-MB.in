@@ -87,5 +87,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1281685
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
-saverun LHC-MB-Soft EventGenerator
+saverun LHC-MB EventGenerator
 

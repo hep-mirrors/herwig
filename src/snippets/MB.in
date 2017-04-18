@@ -23,6 +23,10 @@ set QCDMinBias:CascadeHandler /Herwig/Shower/ShowerHandler
 set QCDMinBias:CascadeHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 set QCDMinBias:DecayHandler /Herwig/Decays/DecayHandler
 
+# Due to numerics the pomeron could be seen as timelike.
+set /Herwig/Shower/ShowerHandler:SplitHardProcess No
+set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
+
 insert QCDMinBias:MatrixElements[0] MEMinBias
 
 cd /Herwig/Generators
