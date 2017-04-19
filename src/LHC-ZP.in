@@ -24,39 +24,39 @@ set /Herwig/Particles/t:Synchronized Not_synchronized
 set /Herwig/Particles/tbar:Synchronized Not_synchronized
 
 
-#set /Herwig/Particles/t/t->b,bbar,c;:YesNo Yes
-#set /Herwig/Particles/t/t->b,c,dbar;:YesNo Yes
-#set /Herwig/Particles/t/t->b,c,sbar;:YesNo Yes
-#set /Herwig/Particles/t/t->b,sbar,u;:YesNo Yes
-#set /Herwig/Particles/t/t->b,u,dbar;:YesNo Yes
-#set /Herwig/Particles/t/t->nu_e,e+,b;:YesNo No
-#set /Herwig/Particles/t/t->nu_mu,mu+,b;:YesNo No
-#set /Herwig/Particles/t/t->nu_tau,tau+,b;:YesNo No
-#set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:YesNo No
-#set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:YesNo No
-#set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:YesNo No
-#set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:YesNo No
-#set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:YesNo No
-#set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:YesNo Yes
-#set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:YesNo Yes
-#set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:YesNo No
+#set /Herwig/Particles/t/t->b,bbar,c;:Active Yes
+#set /Herwig/Particles/t/t->b,c,dbar;:Active Yes
+#set /Herwig/Particles/t/t->b,c,sbar;:Active Yes
+#set /Herwig/Particles/t/t->b,sbar,u;:Active Yes
+#set /Herwig/Particles/t/t->b,u,dbar;:Active Yes
+#set /Herwig/Particles/t/t->nu_e,e+,b;:Active No
+#set /Herwig/Particles/t/t->nu_mu,mu+,b;:Active No
+#set /Herwig/Particles/t/t->nu_tau,tau+,b;:Active No
+#set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:Active No
+#set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:Active No
+#set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:Active No
+#set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:Active No
+#set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:Active No
+#set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:Active Yes
+#set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:Active Yes
+#set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:Active No
 
-set /Herwig/Particles/t/t->b,bbar,c;:YesNo No
-set /Herwig/Particles/t/t->b,c,dbar;:YesNo No
-set /Herwig/Particles/t/t->b,c,sbar;:YesNo No
-set /Herwig/Particles/t/t->b,sbar,u;:YesNo No
-set /Herwig/Particles/t/t->b,u,dbar;:YesNo No
-set /Herwig/Particles/t/t->nu_e,e+,b;:YesNo Yes
-set /Herwig/Particles/t/t->nu_mu,mu+,b;:YesNo Yes
-set /Herwig/Particles/t/t->nu_tau,tau+,b;:YesNo No
-set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:YesNo Yes
-set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:YesNo Yes
-set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:YesNo Yes
-set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:YesNo Yes
-set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:YesNo Yes
-set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:YesNo No
-set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:YesNo No
-set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:YesNo No
+set /Herwig/Particles/t/t->b,bbar,c;:Active No
+set /Herwig/Particles/t/t->b,c,dbar;:Active No
+set /Herwig/Particles/t/t->b,c,sbar;:Active No
+set /Herwig/Particles/t/t->b,sbar,u;:Active No
+set /Herwig/Particles/t/t->b,u,dbar;:Active No
+set /Herwig/Particles/t/t->nu_e,e+,b;:Active Yes
+set /Herwig/Particles/t/t->nu_mu,mu+,b;:Active Yes
+set /Herwig/Particles/t/t->nu_tau,tau+,b;:Active No
+set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:Active Yes
+set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:Active No
+set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:Active No
+set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:Active No
 
 ##################################################
 #

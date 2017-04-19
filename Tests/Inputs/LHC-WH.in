@@ -30,21 +30,21 @@ insert SubProcess:MatrixElements[0] MEPP2WH
 set /Herwig/Particles/h0:NominalMass 115.
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Masses/HiggsMass:BreitWignerShape 0
-set /Herwig/Particles/W+/W+->u,dbar;:YesNo No
-set /Herwig/Particles/W+/W+->c,sbar;:YesNo No
-set /Herwig/Particles/W+/W+->nu_mu,mu+;:YesNo No
-set /Herwig/Particles/W+/W+->nu_tau,tau+;:YesNo No
-set /Herwig/Particles/W+/W+->sbar,u;:YesNo No
-set /Herwig/Particles/W+/W+->c,dbar;:YesNo No
-set /Herwig/Particles/W+/W+->bbar,c;:YesNo No
+set /Herwig/Particles/W+/W+->u,dbar;:Active No
+set /Herwig/Particles/W+/W+->c,sbar;:Active No
+set /Herwig/Particles/W+/W+->nu_mu,mu+;:Active No
+set /Herwig/Particles/W+/W+->nu_tau,tau+;:Active No
+set /Herwig/Particles/W+/W+->sbar,u;:Active No
+set /Herwig/Particles/W+/W+->c,dbar;:Active No
+set /Herwig/Particles/W+/W+->bbar,c;:Active No
 #
-set /Herwig/Particles/W-/W-->ubar,d;:YesNo No
-set /Herwig/Particles/W-/W-->cbar,s;:YesNo No
-set /Herwig/Particles/W-/W-->nu_mubar,mu-;:YesNo No
-set /Herwig/Particles/W-/W-->nu_taubar,tau-;:YesNo No
-set /Herwig/Particles/W-/W-->s,ubar;:YesNo No
-set /Herwig/Particles/W-/W-->cbar,d;:YesNo No
-set /Herwig/Particles/W-/W-->b,cbar;:YesNo No
+set /Herwig/Particles/W-/W-->ubar,d;:Active No
+set /Herwig/Particles/W-/W-->cbar,s;:Active No
+set /Herwig/Particles/W-/W-->nu_mubar,mu-;:Active No
+set /Herwig/Particles/W-/W-->nu_taubar,tau-;:Active No
+set /Herwig/Particles/W-/W-->s,ubar;:Active No
+set /Herwig/Particles/W-/W-->cbar,d;:Active No
+set /Herwig/Particles/W-/W-->b,cbar;:Active No
 set /Herwig/Decays/WDecayer:Initialize 1
 cd /Herwig/Generators
 set EventGenerator:EventHandler:CascadeHandler       NULL

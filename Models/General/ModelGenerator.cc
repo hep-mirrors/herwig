@@ -349,7 +349,7 @@ void ModelGenerator::doinit() {
     for(DecaySet::const_iterator it=parent->decayModes().begin();
 	it!=parent->decayModes().end();++it) {
       if( _theDecayConstructor->disableDecayMode((**it).tag()) )
-	generator()->preinitInterface(*it, "YesNo", "set", "No");
+	generator()->preinitInterface(*it, "Active", "set", "No");
     }
     // output the modes if needed
     if( !parent->decaySelector().empty() ) {
@@ -402,7 +402,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 	     << "will be switched off and the branching fractions of the "
 	     << "remaining modes rescaled.\n";
       rescalebrat = true;
-      generator()->preinitInterface(*dit, "YesNo", "set", "No");
+      generator()->preinitInterface(*dit, "Active", "set", "No");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
       DecayIntegratorPtr decayer = dynamic_ptr_cast<DecayIntegratorPtr>((**dit).decayer());

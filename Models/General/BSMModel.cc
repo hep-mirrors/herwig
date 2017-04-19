@@ -100,7 +100,7 @@ void BSMModel::decayRead() {
   DecaySet::const_iterator dend = h0->decayModes().end();
   for( ; dit != dend; ++dit ) {
     generator()->preinitInterface(*dit, "BranchingRatio", "set", "0.");
-    generator()->preinitInterface(*dit, "YesNo", "set", "No");
+    generator()->preinitInterface(*dit, "Active", "set", "No");
   }
   // if taking the top modes from the file
   // delete the SM stuff
@@ -112,7 +112,7 @@ void BSMModel::decayRead() {
     DecaySet::const_iterator dend = top->decayModes().end();
     for( ; dit != dend; ++dit ) {
       generator()->preinitInterface(*dit, "BranchingRatio", "set", "0.");
-      generator()->preinitInterface(*dit, "YesNo", "set", "No");
+      generator()->preinitInterface(*dit, "Active", "set", "No");
     }
   }
   // read first line and check if this is a Les Houches event file
@@ -272,12 +272,12 @@ void BSMModel::readDecay(CFileLineReader & cfile,
 	     << "are used, this may have unintended consequences\n";
 	for(DecaySet::iterator it=inpart->decayModes().begin();
 	    it!=inpart->decayModes().end();++it) {
-	  generator()->preinitInterface(*it, "YesNo", "set", "No");
+	  generator()->preinitInterface(*it, "Active", "set", "No");
 	}
 	if(inpart->CC()) {
 	  for(DecaySet::iterator it=inpart->CC()->decayModes().begin();
 	      it!=inpart->CC()->decayModes().end();++it) {
-	    generator()->preinitInterface(*it, "YesNo", "set", "No");
+	    generator()->preinitInterface(*it, "Active", "set", "No");
 	  }
 	}
       }
@@ -370,13 +370,13 @@ void BSMModel::readDecay(CFileLineReader & cfile,
 void BSMModel::createDecayMode(string tag, double brat) const {
   tDMPtr dm = generator()->findDecayMode(tag);
   if(!dm) dm = generator()->preinitCreateDecayMode(tag);
-  generator()->preinitInterface(dm, "YesNo", "set", "Yes");
+  generator()->preinitInterface(dm, "Active", "set", "Yes");
   generator()->preinitInterface(dm, "Decayer", "set","/Herwig/Decays/Mambo");
   ostringstream brf;
   brf << setprecision(13)<< brat;
   generator()->preinitInterface(dm, "BranchingRatio","set", brf.str());
   if(dm->CC()) {
-    generator()->preinitInterface(dm->CC(), "YesNo", "set", "Yes");
+    generator()->preinitInterface(dm->CC(), "Active", "set", "Yes");
     generator()->preinitInterface(dm->CC(), "Decayer", "set","/Herwig/Decays/Mambo");
     generator()->preinitInterface(dm->CC(), "BranchingRatio","set", brf.str());
   }
