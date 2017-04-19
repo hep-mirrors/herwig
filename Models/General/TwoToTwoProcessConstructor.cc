@@ -110,12 +110,12 @@ void TwoToTwoProcessConstructor::Init() {
     ("IncludeEW",
      "Switch to decide which diagrams to include in ME calc.",
      &TwoToTwoProcessConstructor::allDiagrams_, true, false, false);
-  static SwitchOption interfaceIncludeAllDiagramsOff
+  static SwitchOption interfaceIncludeAllDiagramsNo
     (interfaceIncludeAllDiagrams,
      "No",
      "Only include QCD diagrams",
      false);
-  static SwitchOption interfaceIncludeAllDiagramsOn
+  static SwitchOption interfaceIncludeAllDiagramsYes
    (interfaceIncludeAllDiagrams,
      "Yes",
     "Include EW+QCD.",

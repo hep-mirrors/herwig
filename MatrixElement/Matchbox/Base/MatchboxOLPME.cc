@@ -303,12 +303,12 @@ void MatchboxOLPME::Init() {
           "to the value of the renormalization scale muR2. Default is Off. The restoration for the "
           "full renormalization scale dependence in the DipoleIOperator isn't needed in this case.",
           &MatchboxOLPME::theSetMuToMuR, false, false, false);
-  static SwitchOption interfaceSetMuToMuROn
+  static SwitchOption interfaceSetMuToMuRYes
          (interfaceSetMuToMuR,
           "On",
           "On",
           true);
-  static SwitchOption interfaceSetMuToMuROff
+  static SwitchOption interfaceSetMuToMuRNo
          (interfaceSetMuToMuR,
           "Off",
           "Off",
@@ -321,12 +321,12 @@ void MatchboxOLPME::Init() {
           "instead of to the value of the reference alpha_s. Default is Off. This also sets the value "
           "for hasRunningAlphaS() to true.",
           &MatchboxOLPME::theUseRunningAlphaS, false, false, false);
-  static SwitchOption interfaceUseRunningAlphaSOn
+  static SwitchOption interfaceUseRunningAlphaSYes
          (interfaceUseRunningAlphaS,
           "On",
           "On",
           true);
-  static SwitchOption interfaceUseRunningAlphaSOff
+  static SwitchOption interfaceUseRunningAlphaSNo
          (interfaceUseRunningAlphaS,
           "Off",
           "Off",
@@ -339,12 +339,12 @@ void MatchboxOLPME::Init() {
           "instead of to the value of the reference alpha_ew. Default is Off. This also sets the value "
           "for hasRunningAlphaEW() to true.",
           &MatchboxOLPME::theUseRunningAlphaEW, false, false, false);
-  static SwitchOption interfaceUseRunningAlphaEWOn
+  static SwitchOption interfaceUseRunningAlphaEWYes
          (interfaceUseRunningAlphaEW,
           "On",
           "On",
           true);
-  static SwitchOption interfaceUseRunningAlphaEWOff
+  static SwitchOption interfaceUseRunningAlphaEWNo
          (interfaceUseRunningAlphaEW,
           "Off",
           "Off",

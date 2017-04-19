@@ -72,7 +72,7 @@ void SudakovFormFactor::Init() {
     ("PDFFactor",
      "Include additional factors in the overestimate for the PDFs",
      &SudakovFormFactor::pdffactor_, 0, false, false);
-  static SwitchOption interfacePDFFactorOff
+  static SwitchOption interfacePDFFactorNo
     (interfacePDFFactor,
      "Off",
      "Don't include any factors",

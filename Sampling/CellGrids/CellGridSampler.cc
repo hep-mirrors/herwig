@@ -329,12 +329,12 @@ void CellGridSampler::Init() {
     ("AllChannelSplits",
      "",
      &CellGridSampler::theAllChannelSplits, false, false, false);
-  static SwitchOption interfaceAllChannelSplitsOn
+  static SwitchOption interfaceAllChannelSplitsYes
     (interfaceAllChannelSplits,
      "On",
      "",
      true);
-  static SwitchOption interfaceAllChannelSplitsOff
+  static SwitchOption interfaceAllChannelSplitsNo
     (interfaceAllChannelSplits,
      "Off",
      "",

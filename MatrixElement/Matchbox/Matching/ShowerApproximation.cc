@@ -502,12 +502,12 @@ void ShowerApproximation::Init() {
     ("RestrictPhasespace",
      "Switch on or off phasespace restrictions",
      &ShowerApproximation::theRestrictPhasespace, true, false, false);
-  static SwitchOption interfaceRestrictPhasespaceOn
+  static SwitchOption interfaceRestrictPhasespaceYes
     (interfaceRestrictPhasespace,
      "On",
      "Perform phasespace restrictions",
      true);
-  static SwitchOption interfaceRestrictPhasespaceOff
+  static SwitchOption interfaceRestrictPhasespaceNo
     (interfaceRestrictPhasespace,
      "Off",
      "Do not perform phasespace restrictions",

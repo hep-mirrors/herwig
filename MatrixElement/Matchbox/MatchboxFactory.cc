@@ -1622,12 +1622,12 @@ void MatchboxFactory::Init() {
     ("BornContributions",
      "Switch on or off the Born contributions.",
      &MatchboxFactory::theBornContributions, true, false, false);
-  static SwitchOption interfaceBornContributionsOn
+  static SwitchOption interfaceBornContributionsYes
     (interfaceBornContributions,
      "On",
      "Switch on Born contributions.",
      true);
-  static SwitchOption interfaceBornContributionsOff
+  static SwitchOption interfaceBornContributionsNo
     (interfaceBornContributions,
      "Off",
      "Switch off Born contributions.",
@@ -1637,12 +1637,12 @@ void MatchboxFactory::Init() {
     ("VirtualContributions",
      "Switch on or off the virtual contributions.",
      &MatchboxFactory::theVirtualContributions, true, false, false);
-  static SwitchOption interfaceVirtualContributionsOn
+  static SwitchOption interfaceVirtualContributionsYes
     (interfaceVirtualContributions,
      "On",
      "Switch on virtual contributions.",
      true);
-  static SwitchOption interfaceVirtualContributionsOff
+  static SwitchOption interfaceVirtualContributionsNo
     (interfaceVirtualContributions,
      "Off",
      "Switch off virtual contributions.",
@@ -1652,12 +1652,12 @@ void MatchboxFactory::Init() {
     ("RealContributions",
      "Switch on or off the real contributions.",
      &MatchboxFactory::theRealContributions, true, false, false);
-  static SwitchOption interfaceRealContributionsOn
+  static SwitchOption interfaceRealContributionsYes
     (interfaceRealContributions,
      "On",
      "Switch on real contributions.",
      true);
-  static SwitchOption interfaceRealContributionsOff
+  static SwitchOption interfaceRealContributionsNo
     (interfaceRealContributions,
      "Off",
      "Switch off real contributions.",
@@ -1667,12 +1667,12 @@ void MatchboxFactory::Init() {
     ("IndependentVirtuals",
      "Switch on or off virtual contributions as separate subprocesses.",
      &MatchboxFactory::theIndependentVirtuals, true, false, false);
-  static SwitchOption interfaceIndependentVirtualsOn
+  static SwitchOption interfaceIndependentVirtualsYes
     (interfaceIndependentVirtuals,
      "On",
      "Switch on virtual contributions as separate subprocesses.",
      true);
-  static SwitchOption interfaceIndependentVirtualsOff
+  static SwitchOption interfaceIndependentVirtualsNo
     (interfaceIndependentVirtuals,
      "Off",
      "Switch off virtual contributions as separate subprocesses.",
@@ -1682,12 +1682,12 @@ void MatchboxFactory::Init() {
     ("IndependentPKOperators",
      "Switch on or off PK oeprators as separate subprocesses.",
      &MatchboxFactory::theIndependentPKs, true, false, false);
-  static SwitchOption interfaceIndependentPKsOn
+  static SwitchOption interfaceIndependentPKsYes
     (interfaceIndependentPKs,
      "On",
      "Switch on PK operators as separate subprocesses.",
      true);
-  static SwitchOption interfaceIndependentPKsOff
+  static SwitchOption interfaceIndependentPKsNo
     (interfaceIndependentPKs,
      "Off",
      "Switch off PK operators as separate subprocesses.",
@@ -1719,12 +1719,12 @@ void MatchboxFactory::Init() {
     ("FixedCouplings",
      "Switch on or off fixed couplings.",
      &MatchboxFactory::theFixedCouplings, true, false, false);
-  static SwitchOption interfaceFixedCouplingsOn
+  static SwitchOption interfaceFixedCouplingsYes
     (interfaceFixedCouplings,
      "On",
      "On",
      true);
-  static SwitchOption interfaceFixedCouplingsOff
+  static SwitchOption interfaceFixedCouplingsNo
     (interfaceFixedCouplings,
      "Off",
      "Off",
@@ -1735,12 +1735,12 @@ void MatchboxFactory::Init() {
     ("FixedQEDCouplings",
      "Switch on or off fixed QED couplings.",
      &MatchboxFactory::theFixedQEDCouplings, true, false, false);
-  static SwitchOption interfaceFixedQEDCouplingsOn
+  static SwitchOption interfaceFixedQEDCouplingsYes
     (interfaceFixedQEDCouplings,
      "On",
      "On",
      true);
-  static SwitchOption interfaceFixedQEDCouplingsOff
+  static SwitchOption interfaceFixedQEDCouplingsNo
     (interfaceFixedQEDCouplings,
      "Off",
      "Off",
@@ -1753,12 +1753,12 @@ void MatchboxFactory::Init() {
     ("VetoScales",
      "Switch on or setting veto scales.",
      &MatchboxFactory::theVetoScales, false, false, false);
-  static SwitchOption interfaceVetoScalesOn
+  static SwitchOption interfaceVetoScalesYes
     (interfaceVetoScales,
      "On",
      "On",
      true);
-  static SwitchOption interfaceVetoScalesOff
+  static SwitchOption interfaceVetoScalesNo
     (interfaceVetoScales,
      "Off",
      "Off",
@@ -1774,12 +1774,12 @@ void MatchboxFactory::Init() {
     ("Verbose",
      "Print full infomation on each evaluated phase space point.",
      &MatchboxFactory::theVerbose, false, false, false);
-  static SwitchOption interfaceVerboseOn
+  static SwitchOption interfaceVerboseYes
     (interfaceVerbose,
      "On",
      "On",
      true);
-  static SwitchOption interfaceVerboseOff
+  static SwitchOption interfaceVerboseNo
     (interfaceVerbose,
      "Off",
      "Off",
@@ -1790,12 +1790,12 @@ void MatchboxFactory::Init() {
     ("InitVerbose",
      "Print setup information.",
      &MatchboxFactory::theInitVerbose, false, false, false);
-  static SwitchOption interfaceInitVerboseOn
+  static SwitchOption interfaceInitVerboseYes
     (interfaceInitVerbose,
      "On",
      "On",
      true);
-  static SwitchOption interfaceInitVerboseOff
+  static SwitchOption interfaceInitVerboseNo
     (interfaceInitVerbose,
      "Off",
      "Off",
@@ -1827,10 +1827,10 @@ void MatchboxFactory::Init() {
     ("SubtractionScatterPlot",
      "Switch for controlling whether subtraction data should be plotted for each phase space point individually",
      &MatchboxFactory::theSubtractionScatterPlot, false, false, false);
-  static SwitchOption interfaceSubtractionScatterPlotOff
+  static SwitchOption interfaceSubtractionScatterPlotNo
     (interfaceSubtractionScatterPlot,
      "Off", "Switch off the scatter plot", false);
-  static SwitchOption interfaceSubtractionScatterPlotOn
+  static SwitchOption interfaceSubtractionScatterPlotYes
     (interfaceSubtractionScatterPlot,
      "On", "Switch on the scatter plot", true);
 
@@ -1879,12 +1879,12 @@ void MatchboxFactory::Init() {
     ("RealEmissionScales",
      "Switch on or off calculation of subtraction scales from real emission kinematics.",
      &MatchboxFactory::theRealEmissionScales, false, false, false);
-  static SwitchOption interfaceRealEmissionScalesOn
+  static SwitchOption interfaceRealEmissionScalesYes
     (interfaceRealEmissionScales,
      "On",
      "On",
      true);
-  static SwitchOption interfaceRealEmissionScalesOff
+  static SwitchOption interfaceRealEmissionScalesNo
     (interfaceRealEmissionScales,
      "Off",
      "Off",

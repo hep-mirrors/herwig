@@ -1300,12 +1300,12 @@ void ColourBasis::Init() {
     ("LargeN",
      "Switch on or off large-N evaluation.",
      &ColourBasis::theLargeN, false, false, false);
-  static SwitchOption interfaceLargeNOn
+  static SwitchOption interfaceLargeNYes
     (interfaceLargeN,
      "On",
      "Work in N=infinity",
      true);
-  static SwitchOption interfaceLargeNOff
+  static SwitchOption interfaceLargeNNo
     (interfaceLargeN,
      "Off",
      "Work in N=3",

@@ -66,7 +66,7 @@ void NBodyDecayConstructorBase::Init() {
     ("InitializeDecayers",
      "Initialize new decayers",
      &NBodyDecayConstructorBase::init_, true, false, false);
-  static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
+  static SwitchOption interfaceInitializeDecayersInitializeDecayersYes
     (interfaceInitializeDecayers,
      "Yes",
      "Initialize new decayers to find max weights",
@@ -93,12 +93,12 @@ void NBodyDecayConstructorBase::Init() {
     ("OutputInfo",
      "Whether to output information about the decayers",
      &NBodyDecayConstructorBase::info_, false, false, false);
-  static SwitchOption interfaceOutputInfoOff
+  static SwitchOption interfaceOutputInfoNo
     (interfaceOutputInfo,
      "No",
      "Do not output information regarding the created decayers",
      false);
-  static SwitchOption interfaceOutputInfoOn
+  static SwitchOption interfaceOutputInfoYes
     (interfaceOutputInfo,
      "Yes",
      "Output information regarding the decayers",
@@ -108,12 +108,12 @@ void NBodyDecayConstructorBase::Init() {
     ("CreateDecayModes",
      "Whether to create the ThePEG::DecayMode objects as well as the decayers",
      &NBodyDecayConstructorBase::createModes_, true, false, false);
-  static SwitchOption interfaceCreateDecayModesOn
+  static SwitchOption interfaceCreateDecayModesYes
     (interfaceCreateDecayModes,
      "Yes",
      "Create the ThePEG::DecayMode objects",
      true);
-  static SwitchOption interfaceCreateDecayModesOff
+  static SwitchOption interfaceCreateDecayModesNo
     (interfaceCreateDecayModes,
      "No",
      "Only create the Decayer objects",

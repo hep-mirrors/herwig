@@ -387,12 +387,12 @@ void LEPMultiplicityCount::Init() {
     ("Histograms",
      "Set to On if detailed histograms are required.",
      &LEPMultiplicityCount::_makeHistograms, false, true, false);
-  static SwitchOption interfaceHistogramsOn
+  static SwitchOption interfaceHistogramsYes
     (interfaceHistograms,
      "Yes",
      "Generate histograms of cluster mass dependence.",
      true);
-  static SwitchOption interfaceHistogramsOff
+  static SwitchOption interfaceHistogramsNo
     (interfaceHistograms,
      "No",
      "Do not generate histograms.",

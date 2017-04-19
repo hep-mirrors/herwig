@@ -888,12 +888,12 @@ void GoSamAmplitude::Init() {
          ("CodeExists",
           "Switch on or off if Code already exists/not exists.",
           &GoSamAmplitude::theCodeExists, true, false, false);
-  static SwitchOption interfaceCodeExistsOn
+  static SwitchOption interfaceCodeExistsYes
          (interfaceCodeExists,
           "True",
           "Switch True if Code already exists.",
           true);
-  static SwitchOption interfaceCodeExistsOff
+  static SwitchOption interfaceCodeExistsNo
          (interfaceCodeExists,
           "False",
           "Switch False if Code has to be build.",
@@ -903,12 +903,12 @@ void GoSamAmplitude::Init() {
          ("isDR",
           "Switch on or off DR.",
           &GoSamAmplitude::isitDR, false, false, false);
-  static SwitchOption interfaceisitDROn
+  static SwitchOption interfaceisitDRYes
          (interfaceisitDR,
           "True",
           "Switch True.",
           true);
-  static SwitchOption interfaceisitDROff
+  static SwitchOption interfaceisitDRNo
          (interfaceisitDR,
           "False",
           "Switch False.",
@@ -918,12 +918,12 @@ void GoSamAmplitude::Init() {
          ("FormOpt",
           "Switch On/Off formopt",
           &GoSamAmplitude::theFormOpt, true, false, false);
-  static SwitchOption interfaceFormOptOn
+  static SwitchOption interfaceFormOptYes
          (interfaceFormOpt,
           "On",
           "On",
           true);
-  static SwitchOption interfaceFormOptOff
+  static SwitchOption interfaceFormOptNo
          (interfaceFormOpt,
           "Off",
           "Off",
@@ -933,12 +933,12 @@ void GoSamAmplitude::Init() {
          ("Ninja",
           "Switch On/Off for reduction with Ninja. If Off then Samurai is used.",
           &GoSamAmplitude::theNinja, true, false, false);
-  static SwitchOption interfaceNinjaOn
+  static SwitchOption interfaceNinjaYes
          (interfaceNinja,
           "On",
           "On",
           true);
-  static SwitchOption interfaceNinjaOff
+  static SwitchOption interfaceNinjaNo
          (interfaceNinja,
           "Off",
           "Off",
@@ -948,12 +948,12 @@ void GoSamAmplitude::Init() {
          ("HiggsEff",
           "Switch On/Off for effective higgs model.",
           &GoSamAmplitude::theHiggsEff, false, false, false);
-  static SwitchOption interfaceHiggsEffOn
+  static SwitchOption interfaceHiggsEffYes
          (interfaceHiggsEff,
           "On",
           "On",
           true);
-  static SwitchOption interfaceHiggsEffOff
+  static SwitchOption interfaceHiggsEffNo
          (interfaceHiggsEff,
           "Off",
           "Off",

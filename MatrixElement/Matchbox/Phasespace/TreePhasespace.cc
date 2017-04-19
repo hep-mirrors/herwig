@@ -218,12 +218,12 @@ void TreePhasespace::Init() {
     ("IncludeMirrored",
      "Choose whether to include mirrored diagrams for PS generation",
      &TreePhasespace::theIncludeMirrored, true, true, false);
-  static SwitchOption interfaceIncludeMirroredTrue
+  static SwitchOption interfaceIncludeMirroredYes
     (interfaceIncludeMirrored,
      "True",
      "Use unmirrored and mirrored diagrams",
      true);
-  static SwitchOption interfaceIncludeMirroredFalse
+  static SwitchOption interfaceIncludeMirroredNo
     (interfaceIncludeMirrored,
      "False",
      "Use only unmirrored diagrams",

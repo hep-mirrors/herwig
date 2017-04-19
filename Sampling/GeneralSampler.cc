@@ -922,12 +922,12 @@ void GeneralSampler::Init() {
     ("Verbose",
      "",
      &GeneralSampler::theVerbose, false, false, false);
-  static SwitchOption interfaceVerboseOn
+  static SwitchOption interfaceVerboseYes
     (interfaceVerbose,
      "On",
      "",
      true);
-  static SwitchOption interfaceVerboseOff
+  static SwitchOption interfaceVerboseNo
     (interfaceVerbose,
      "Off",
      "",
@@ -937,12 +937,12 @@ void GeneralSampler::Init() {
     ("AddUpSamplers",
      "Calculate cross sections from adding up individual samplers.",
      &GeneralSampler::theAddUpSamplers, false, false, false);
-  static SwitchOption interfaceAddUpSamplersOn
+  static SwitchOption interfaceAddUpSamplersYes
     (interfaceAddUpSamplers,
      "On",
      "",
      true);
-  static SwitchOption interfaceAddUpSamplersOff
+  static SwitchOption interfaceAddUpSamplersNo
     (interfaceAddUpSamplers,
      "Off",
      "",
@@ -952,12 +952,12 @@ void GeneralSampler::Init() {
     ("GlobalMaximumWeight",
      "Use a global maximum weight instead of partial unweighting.",
      &GeneralSampler::theGlobalMaximumWeight, true, false, false);
-  static SwitchOption interfaceGlobalMaximumWeightOn
+  static SwitchOption interfaceGlobalMaximumWeightYes
     (interfaceGlobalMaximumWeight,
      "On",
      "",
      true);
-  static SwitchOption interfaceGlobalMaximumWeightOff
+  static SwitchOption interfaceGlobalMaximumWeightNo
     (interfaceGlobalMaximumWeight,
      "Off",
      "",
@@ -975,12 +975,12 @@ void GeneralSampler::Init() {
     ("FlatSubprocesses",
      "[debug] Perform a flat subprocess selection.",
      &GeneralSampler::theFlatSubprocesses, false, false, false);
-  static SwitchOption interfaceFlatSubprocessesOn
+  static SwitchOption interfaceFlatSubprocessesYes
     (interfaceFlatSubprocesses,
      "On",
      "",
      true);
-  static SwitchOption interfaceFlatSubprocessesOff
+  static SwitchOption interfaceFlatSubprocessesNo
     (interfaceFlatSubprocesses,
      "Off",
      "",
@@ -996,12 +996,12 @@ void GeneralSampler::Init() {
     ("RunCombinationData",
      "",
      &GeneralSampler::runCombinationData, false, false, false);
-  static SwitchOption interfaceRunCombinationDataOn
+  static SwitchOption interfaceRunCombinationDataYes
     (interfaceRunCombinationData,
      "On",
      "",
      true);
-  static SwitchOption interfaceRunCombinationDataOff
+  static SwitchOption interfaceRunCombinationDataNo
     (interfaceRunCombinationData,
      "Off",
      "",
@@ -1011,12 +1011,12 @@ void GeneralSampler::Init() {
     ("AlmostUnweighted",
      "",
      &GeneralSampler::theAlmostUnweighted, false, false, false);
-  static SwitchOption interfaceAlmostUnweightedOn
+  static SwitchOption interfaceAlmostUnweightedYes
     (interfaceAlmostUnweighted,
      "On",
      "",
      true);
-  static SwitchOption interfaceAlmostUnweightedOff
+  static SwitchOption interfaceAlmostUnweightedNo
     (interfaceAlmostUnweighted,
      "Off",
      "",

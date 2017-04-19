@@ -294,7 +294,7 @@ void QTildeShowerHandler::Init() {
      "Treatment of the reconstruction of the transverse momentum of "
      "a branching from the evolution scale.",
      &QTildeShowerHandler::_reconOpt, 0, false, false);
-  static SwitchOption interfaceReconstructionOptionCutOff
+  static SwitchOption interfaceReconstructionOptionCutNo
     (interfaceReconstructionOption,
      "CutOff",
      "Use the cut-off masses in the calculation",
@@ -333,7 +333,7 @@ void QTildeShowerHandler::Init() {
     ("SpinCorrelations",
      "Treatment of spin correlations in the parton shower",
      &QTildeShowerHandler::_spinOpt, 1, false, false);
-  static SwitchOption interfaceSpinCorrelationsOff
+  static SwitchOption interfaceSpinCorrelationsNo
     (interfaceSpinCorrelations,
      "No",
      "No spin correlations",

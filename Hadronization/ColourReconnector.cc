@@ -398,12 +398,12 @@ void ColourReconnector::Init() {
     ("ColourReconnection",
      "Colour reconnections",
      &ColourReconnector::_clreco, 0, true, false);
-  static SwitchOption interfaceColourReconnectionOff
+  static SwitchOption interfaceColourReconnectionNo
     (interfaceColourReconnection,
      "No",
      "Colour reconnections off",
      0);
-  static SwitchOption interfaceColourReconnectionOn
+  static SwitchOption interfaceColourReconnectionYes
     (interfaceColourReconnection,
      "Yes",
      "Colour reconnections on",

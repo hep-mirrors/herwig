@@ -265,12 +265,12 @@ void WeightAnalyzer::Init() {
          ("Gnuplot output",
           "Switch On/Off gnuplot",
           &WeightAnalyzer::gnuplot, true, false, false);
-  static SwitchOption interfacekeepinputtopmassTrue
+  static SwitchOption interfacekeepinputtopmassYes
          (interfacekeepinputtopmass,
           "On",
           "On",
           true);
-  static SwitchOption interfacekeepinputtopmassFalse
+  static SwitchOption interfacekeepinputtopmassNo
          (interfacekeepinputtopmass,
           "Off",
           "Off",

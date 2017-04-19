@@ -125,12 +125,12 @@ void MEQCD2to2Fast::Init() {
     ("StrictFlavourScheme",
      "Switch to not include massive initial state quarks.",
      &MEQCD2to2Fast::_strictFlavourScheme, false, false, false);
-  static SwitchOption interfaceStrictFlavourSchemeOn
+  static SwitchOption interfaceStrictFlavourSchemeYes
     (interfaceStrictFlavourScheme,
      "On",
      "Do not include massive initial states.",
      true);
-  static SwitchOption interfaceStrictFlavourSchemeOff
+  static SwitchOption interfaceStrictFlavourSchemeNo
     (interfaceStrictFlavourScheme,
      "Off",
      "Allow massive initial states.",

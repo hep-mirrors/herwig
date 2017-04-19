@@ -276,12 +276,12 @@ void ShowerHandler::Init() {
     ("RestrictPhasespace",
      "Switch on or off phasespace restrictions",
      &ShowerHandler::restrictPhasespace_, true, false, false);
-  static SwitchOption interfaceRestrictPhasespaceOn
+  static SwitchOption interfaceRestrictPhasespaceYes
     (interfaceRestrictPhasespace,
      "On",
      "Perform phasespace restrictions",
      true);
-  static SwitchOption interfaceRestrictPhasespaceOff
+  static SwitchOption interfaceRestrictPhasespaceNo
     (interfaceRestrictPhasespace,
      "Off",
      "Do not perform phasespace restrictions",
@@ -296,12 +296,12 @@ void ShowerHandler::Init() {
     ("DoFSR",
      "Switch on or off final state radiation.",
      &ShowerHandler::doFSR_, true, false, false);
-  static SwitchOption interfaceDoFSROn
+  static SwitchOption interfaceDoFSRYes
     (interfaceDoFSR,
      "Yes",
      "Switch on final state radiation.",
      true);
-  static SwitchOption interfaceDoFSROff
+  static SwitchOption interfaceDoFSRNo
     (interfaceDoFSR,
      "No",
      "Switch off final state radiation.",
@@ -311,12 +311,12 @@ void ShowerHandler::Init() {
     ("DoISR",
      "Switch on or off initial state radiation.",
      &ShowerHandler::doISR_, true, false, false);
-  static SwitchOption interfaceDoISROn
+  static SwitchOption interfaceDoISRYes
     (interfaceDoISR,
      "Yes",
      "Switch on initial state radiation.",
      true);
-  static SwitchOption interfaceDoISROff
+  static SwitchOption interfaceDoISRNo
     (interfaceDoISR,
      "No",
      "Switch off initial state radiation.",

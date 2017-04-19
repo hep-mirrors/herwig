@@ -442,12 +442,12 @@ void OpenLoopsAmplitude::Init() {
          ("HiggsEff",
           "Switch On/Off for effective higgs model.",
           &OpenLoopsAmplitude::theHiggsEff, false, false, false);
-  static SwitchOption interfaceHiggsEffOn
+  static SwitchOption interfaceHiggsEffYes
          (interfaceHiggsEff,
           "On",
           "On",
           true);
-  static SwitchOption interfaceHiggsEffOff
+  static SwitchOption interfaceHiggsEffNo
          (interfaceHiggsEff,
           "Off",
           "Off",
@@ -457,12 +457,12 @@ void OpenLoopsAmplitude::Init() {
   ("ComplexMassScheme",
    "Switch on or off if Complex Masses.",
    &OpenLoopsAmplitude::use_cms, true, false, false);
-  static SwitchOption interfaceUseComplMassOn
+  static SwitchOption interfaceUseComplMassYes
   (interfaceUseComplMass,
    "True",
    "True for Complex Masses.",
    true);
-  static SwitchOption interfaceUseComplMassOff
+  static SwitchOption interfaceUseComplMassNo
   (interfaceUseComplMass,
    "False",
    "False for no Complex Masses.",
@@ -472,12 +472,12 @@ void OpenLoopsAmplitude::Init() {
          ("UseCollier",
           "Switch On/Off for using the Collier Lib (arXiv:1604.06792).",
           &OpenLoopsAmplitude::theCollierLib, true, false, false);
-  static SwitchOption interfaceCollierOn
+  static SwitchOption interfaceCollierYes
          (interfaceCollier,
           "On",
           "On",
           true);
-  static SwitchOption interfaceCollierOff
+  static SwitchOption interfaceCollierNo
          (interfaceCollier,
           "Off",
           "Off",

@@ -867,12 +867,12 @@ void MadGraphAmplitude::Init() {
          ("KeepInputTopMass",
           "Switch On/Off formopt",
           &MadGraphAmplitude::keepinputtopmass, false, false, false);
-  static SwitchOption interfacekeepinputtopmassTrue
+  static SwitchOption interfacekeepinputtopmassYes
          (interfacekeepinputtopmass,
           "On",
           "On",
           true);
-  static SwitchOption interfacekeepinputtopmassFalse
+  static SwitchOption interfacekeepinputtopmassNo
          (interfacekeepinputtopmass,
           "Off",
           "Off",

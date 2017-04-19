@@ -159,11 +159,11 @@ void FlatInvertibleLabframePhasespace::Init() {
      "Generate a flat distribution in \\f$\\log(\\hat{s})\\f$.",
      &FlatInvertibleLabframePhasespace::theLogSHat, false, false, false);
 
-  static SwitchOption interfaceLogSHatOn
+  static SwitchOption interfaceLogSHatYes
     (interfaceLogSHat,
      "True", "Generate flat in \\f$\\log(\\hat{s})\\f$", true);
 
-  static SwitchOption interfaceLogSHatOff
+  static SwitchOption interfaceLogSHatNo
     (interfaceLogSHat,
      "False", "Generate flat in \\f$\\hat{s}\\f$", false);
 

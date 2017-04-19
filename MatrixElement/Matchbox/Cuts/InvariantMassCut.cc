@@ -169,12 +169,12 @@ void InvariantMassCut::Init() {
    ("SameFlavourOnly",
      "Whether cut works on fermion pairs of the same flavour only ",
      &InvariantMassCut::theSameFlavourOnly, true, false, false);
-  static SwitchOption interfaceSameFlavourOnlyTrue
+  static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
      "True",
      "True",
      true);
-  static SwitchOption interfaceSameFlavourOnlyFalse
+  static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
      "False",
      "False",
@@ -184,12 +184,12 @@ void InvariantMassCut::Init() {
    ("OppositeSignOnly",
      "Whether cut works on fermion pairs of opposite sign only ",
      &InvariantMassCut::theOppositeSignOnly, true, false, false);
-  static SwitchOption interfaceOppositeSignOnlyTrue
+  static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
      "True",
      "True",
      true);
-  static SwitchOption interfaceOppositeSignOnlyFalse
+  static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
      "False",
      "False",
