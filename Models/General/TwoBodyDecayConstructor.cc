@@ -254,7 +254,7 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 	if(!decayer) continue;
 	generator()->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
-	generator()->preinitInterface(ndm, "OnOff", "set", "On");
+	generator()->preinitInterface(ndm, "YesNo", "set", "Yes");
 	Energy width = 
 	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
 				make_pair(pb,pb->mass()) , 

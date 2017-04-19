@@ -255,7 +255,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 		   << Exception::warning;
 	generator()->preinitInterface(ndm, "Decayer", "set",
 				      decayer->fullName());
-	generator()->preinitInterface(ndm, "OnOff", "set", "On");
+	generator()->preinitInterface(ndm, "YesNo", "set", "Yes");
 	setBranchingRatio(ndm, pWidth);
 	particles[0]->stable(false);
 	if(ndm->brat()<decayConstructor()->minimumBR()) {
@@ -279,7 +279,7 @@ createDecayMode(vector<TwoBodyDecay> & decays) {
 					  "Initialize", "set","0");
 	    continue;
 	  }
-	  generator()->preinitInterface(dm, "OnOff", "set", "On");
+	  generator()->preinitInterface(dm, "YesNo", "set", "Yes");
 	  particles[0]->width(particles[0]->width()*(1.-dm->brat()));
 	  setBranchingRatio(dm, pWidth);
 	}
