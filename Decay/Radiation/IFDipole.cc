@@ -91,7 +91,7 @@ void IFDipole::Init() {
      &IFDipole::_maxwgt, 2.0, 0.0, 100.0,
      false, false, Interface::limited);
 
-  static Switch<IFDipole,unsigned int> interfaceEnergyCutNo
+  static Switch<IFDipole,unsigned int> interfaceEnergyCutOff
     ("EnergyCutOff",
      "The type of cut-off on the photon energy to apply",
      &IFDipole::_energyopt, 1, false, false);

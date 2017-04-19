@@ -115,7 +115,7 @@ void FFDipole::Init() {
      &FFDipole::_maxwgt, 7.0, 0.0, 100.0,
      false, false, Interface::limited);
 
-  static Switch<FFDipole,unsigned int> interfaceEnergyCutNo
+  static Switch<FFDipole,unsigned int> interfaceEnergyCutOff
     ("EnergyCutOff",
      "The type of cut-off on the photon energy to apply",
      &FFDipole::_energyopt, 1, false, false);

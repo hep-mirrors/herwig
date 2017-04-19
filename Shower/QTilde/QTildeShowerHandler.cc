@@ -294,7 +294,7 @@ void QTildeShowerHandler::Init() {
      "Treatment of the reconstruction of the transverse momentum of "
      "a branching from the evolution scale.",
      &QTildeShowerHandler::_reconOpt, 0, false, false);
-  static SwitchOption interfaceReconstructionOptionCutNo
+  static SwitchOption interfaceReconstructionOptionCutOff
     (interfaceReconstructionOption,
      "CutOff",
      "Use the cut-off masses in the calculation",
