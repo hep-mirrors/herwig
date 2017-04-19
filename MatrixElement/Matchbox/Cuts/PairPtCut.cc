@@ -171,13 +171,13 @@ void PairPtCut::Init() {
      &PairPtCut::theSameFlavourOnly, true, false, false);
   static SwitchOption interfaceSameFlavourOnlyTrue
     (interfaceSameFlavourOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceSameFlavourOnlyFalse
     (interfaceSameFlavourOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Switch<PairPtCut,bool> interfaceOppositeSignOnly
@@ -186,13 +186,13 @@ void PairPtCut::Init() {
      &PairPtCut::theOppositeSignOnly, true, false, false);
   static SwitchOption interfaceOppositeSignOnlyTrue
     (interfaceOppositeSignOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceOppositeSignOnlyFalse
     (interfaceOppositeSignOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Reference<PairPtCut,MatcherBase> interfaceFirstMatcher

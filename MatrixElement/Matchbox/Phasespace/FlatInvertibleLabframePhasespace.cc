@@ -161,11 +161,11 @@ void FlatInvertibleLabframePhasespace::Init() {
 
   static SwitchOption interfaceLogSHatYes
     (interfaceLogSHat,
-     "True", "Generate flat in \\f$\\log(\\hat{s})\\f$", true);
+     "Yes", "Generate flat in \\f$\\log(\\hat{s})\\f$", true);
 
   static SwitchOption interfaceLogSHatNo
     (interfaceLogSHat,
-     "False", "Generate flat in \\f$\\hat{s}\\f$", false);
+     "No", "Generate flat in \\f$\\hat{s}\\f$", false);
 
   interfaceLogSHat.rank(-1);
 

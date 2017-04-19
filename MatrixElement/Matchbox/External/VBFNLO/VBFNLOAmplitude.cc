@@ -450,12 +450,12 @@ void VBFNLOAmplitude::Init() {
       &VBFNLOAmplitude::theRanHelSum, false, false, false);
   static SwitchOption interfaceRandomHelicitySummationYes
     (interfaceRandomHelicitySummation, 
-     "True", 
+     "Yes", 
      "Perform random helicity summation", 
      true);
   static SwitchOption interfaceRandomHelicitySummationNo
     (interfaceRandomHelicitySummation, 
-     "False", 
+     "No", 
      "Sum over all helicity combinations", 
      false);
 
@@ -464,12 +464,12 @@ void VBFNLOAmplitude::Init() {
       &VBFNLOAmplitude::theAnomCoupl, false, false, false);
   static SwitchOption interfaceAnomalousCouplingsYes
     (interfaceAnomalousCouplings, 
-     "On", 
+     "Yes", 
      "Switch anomalous couplings on", 
      true);
   static SwitchOption interfaceAnomalousCouplingsNo
     (interfaceAnomalousCouplings, 
-     "Off", 
+     "No", 
      "Switch anomalous couplings off", 
      false);
 

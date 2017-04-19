@@ -305,13 +305,13 @@ void MatchboxOLPME::Init() {
           &MatchboxOLPME::theSetMuToMuR, false, false, false);
   static SwitchOption interfaceSetMuToMuRYes
          (interfaceSetMuToMuR,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfaceSetMuToMuRNo
          (interfaceSetMuToMuR,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
   interfaceSetMuToMuR.rank(-1);
 
@@ -323,13 +323,13 @@ void MatchboxOLPME::Init() {
           &MatchboxOLPME::theUseRunningAlphaS, false, false, false);
   static SwitchOption interfaceUseRunningAlphaSYes
          (interfaceUseRunningAlphaS,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfaceUseRunningAlphaSNo
          (interfaceUseRunningAlphaS,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
   interfaceUseRunningAlphaS.rank(-1);
 
@@ -341,13 +341,13 @@ void MatchboxOLPME::Init() {
           &MatchboxOLPME::theUseRunningAlphaEW, false, false, false);
   static SwitchOption interfaceUseRunningAlphaEWYes
          (interfaceUseRunningAlphaEW,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfaceUseRunningAlphaEWNo
          (interfaceUseRunningAlphaEW,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
   interfaceUseRunningAlphaEW.rank(-1);
 

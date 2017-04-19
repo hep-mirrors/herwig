@@ -890,12 +890,12 @@ void GoSamAmplitude::Init() {
           &GoSamAmplitude::theCodeExists, true, false, false);
   static SwitchOption interfaceCodeExistsYes
          (interfaceCodeExists,
-          "True",
+          "Yes",
           "Switch True if Code already exists.",
           true);
   static SwitchOption interfaceCodeExistsNo
          (interfaceCodeExists,
-          "False",
+          "No",
           "Switch False if Code has to be build.",
           false);
 
@@ -905,12 +905,12 @@ void GoSamAmplitude::Init() {
           &GoSamAmplitude::isitDR, false, false, false);
   static SwitchOption interfaceisitDRYes
          (interfaceisitDR,
-          "True",
+          "Yes",
           "Switch True.",
           true);
   static SwitchOption interfaceisitDRNo
          (interfaceisitDR,
-          "False",
+          "No",
           "Switch False.",
           false);
   
@@ -920,13 +920,13 @@ void GoSamAmplitude::Init() {
           &GoSamAmplitude::theFormOpt, true, false, false);
   static SwitchOption interfaceFormOptYes
          (interfaceFormOpt,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfaceFormOptNo
          (interfaceFormOpt,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
 
   static Switch<GoSamAmplitude,bool> interfaceNinja
@@ -935,13 +935,13 @@ void GoSamAmplitude::Init() {
           &GoSamAmplitude::theNinja, true, false, false);
   static SwitchOption interfaceNinjaYes
          (interfaceNinja,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfaceNinjaNo
          (interfaceNinja,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
  
   static Switch<GoSamAmplitude,bool> interfaceHiggsEff
@@ -950,13 +950,13 @@ void GoSamAmplitude::Init() {
           &GoSamAmplitude::theHiggsEff, false, false, false);
   static SwitchOption interfaceHiggsEffYes
          (interfaceHiggsEff,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfaceHiggsEffNo
          (interfaceHiggsEff,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
 
   static Parameter<GoSamAmplitude,string> interfaceBuildScript

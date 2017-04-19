@@ -869,13 +869,13 @@ void MadGraphAmplitude::Init() {
           &MadGraphAmplitude::keepinputtopmass, false, false, false);
   static SwitchOption interfacekeepinputtopmassYes
          (interfacekeepinputtopmass,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
   static SwitchOption interfacekeepinputtopmassNo
          (interfacekeepinputtopmass,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);  
   
     static Parameter<MadGraphAmplitude,string> interfaceMadgraphPrefix

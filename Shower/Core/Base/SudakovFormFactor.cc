@@ -74,7 +74,7 @@ void SudakovFormFactor::Init() {
      &SudakovFormFactor::pdffactor_, 0, false, false);
   static SwitchOption interfacePDFFactorNo
     (interfacePDFFactor,
-     "Off",
+     "No",
      "Don't include any factors",
      0);
   static SwitchOption interfacePDFFactorOverZ

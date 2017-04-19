@@ -171,13 +171,13 @@ void InvariantMassCut::Init() {
      &InvariantMassCut::theSameFlavourOnly, true, false, false);
   static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Switch<InvariantMassCut,bool> interfaceOppositeSignOnly
@@ -186,13 +186,13 @@ void InvariantMassCut::Init() {
      &InvariantMassCut::theOppositeSignOnly, true, false, false);
   static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Reference<InvariantMassCut,MatcherBase> interfaceFirstMatcher

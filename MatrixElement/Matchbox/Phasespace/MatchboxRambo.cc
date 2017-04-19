@@ -250,12 +250,12 @@ void MatchboxRambo::Init() {
      &MatchboxRambo::theMakeReferenceSample, false, false, false);
   static SwitchOption interfaceMakeReferenceSampleYes
     (interfaceMakeReferenceSample,
-     "On",
+     "Yes",
      "Generate a reference sample.",
      true);
   static SwitchOption interfaceMakeReferenceSampleNo
     (interfaceMakeReferenceSample,
-     "Off",
+     "No",
      "Do not generate a reference sample.",
      false);
   interfaceMakeReferenceSample.rank(-1);

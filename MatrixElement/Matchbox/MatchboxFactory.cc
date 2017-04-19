@@ -1624,12 +1624,12 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theBornContributions, true, false, false);
   static SwitchOption interfaceBornContributionsYes
     (interfaceBornContributions,
-     "On",
+     "Yes",
      "Switch on Born contributions.",
      true);
   static SwitchOption interfaceBornContributionsNo
     (interfaceBornContributions,
-     "Off",
+     "No",
      "Switch off Born contributions.",
      false);
 
@@ -1639,12 +1639,12 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theVirtualContributions, true, false, false);
   static SwitchOption interfaceVirtualContributionsYes
     (interfaceVirtualContributions,
-     "On",
+     "Yes",
      "Switch on virtual contributions.",
      true);
   static SwitchOption interfaceVirtualContributionsNo
     (interfaceVirtualContributions,
-     "Off",
+     "No",
      "Switch off virtual contributions.",
      false);
 
@@ -1654,12 +1654,12 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theRealContributions, true, false, false);
   static SwitchOption interfaceRealContributionsYes
     (interfaceRealContributions,
-     "On",
+     "Yes",
      "Switch on real contributions.",
      true);
   static SwitchOption interfaceRealContributionsNo
     (interfaceRealContributions,
-     "Off",
+     "No",
      "Switch off real contributions.",
      false);
 
@@ -1669,12 +1669,12 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theIndependentVirtuals, true, false, false);
   static SwitchOption interfaceIndependentVirtualsYes
     (interfaceIndependentVirtuals,
-     "On",
+     "Yes",
      "Switch on virtual contributions as separate subprocesses.",
      true);
   static SwitchOption interfaceIndependentVirtualsNo
     (interfaceIndependentVirtuals,
-     "Off",
+     "No",
      "Switch off virtual contributions as separate subprocesses.",
      false);
 
@@ -1684,12 +1684,12 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theIndependentPKs, true, false, false);
   static SwitchOption interfaceIndependentPKsYes
     (interfaceIndependentPKs,
-     "On",
+     "Yes",
      "Switch on PK operators as separate subprocesses.",
      true);
   static SwitchOption interfaceIndependentPKsNo
     (interfaceIndependentPKs,
-     "Off",
+     "No",
      "Switch off PK operators as separate subprocesses.",
      false);
 
@@ -1721,13 +1721,13 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theFixedCouplings, true, false, false);
   static SwitchOption interfaceFixedCouplingsYes
     (interfaceFixedCouplings,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceFixedCouplingsNo
     (interfaceFixedCouplings,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceFixedCouplings.rank(-1);
 
@@ -1737,13 +1737,13 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theFixedQEDCouplings, true, false, false);
   static SwitchOption interfaceFixedQEDCouplingsYes
     (interfaceFixedQEDCouplings,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceFixedQEDCouplingsNo
     (interfaceFixedQEDCouplings,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceFixedQEDCouplings.rank(-1);
 
@@ -1755,13 +1755,13 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theVetoScales, false, false, false);
   static SwitchOption interfaceVetoScalesYes
     (interfaceVetoScales,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceVetoScalesNo
     (interfaceVetoScales,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   */
 
@@ -1776,13 +1776,13 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theVerbose, false, false, false);
   static SwitchOption interfaceVerboseYes
     (interfaceVerbose,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceVerboseNo
     (interfaceVerbose,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceVerbose.rank(-1);
     
@@ -1792,13 +1792,13 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theInitVerbose, false, false, false);
   static SwitchOption interfaceInitVerboseYes
     (interfaceInitVerbose,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceInitVerboseNo
     (interfaceInitVerbose,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceInitVerbose.rank(-1);
 
@@ -1829,10 +1829,10 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theSubtractionScatterPlot, false, false, false);
   static SwitchOption interfaceSubtractionScatterPlotNo
     (interfaceSubtractionScatterPlot,
-     "Off", "Switch off the scatter plot", false);
+     "No", "Switch off the scatter plot", false);
   static SwitchOption interfaceSubtractionScatterPlotYes
     (interfaceSubtractionScatterPlot,
-     "On", "Switch on the scatter plot", true);
+     "Yes", "Switch on the scatter plot", true);
 
   static Parameter<MatchboxFactory,string> interfacePoleData
     ("PoleData",
@@ -1881,13 +1881,13 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theRealEmissionScales, false, false, false);
   static SwitchOption interfaceRealEmissionScalesYes
     (interfaceRealEmissionScales,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceRealEmissionScalesNo
     (interfaceRealEmissionScales,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceRealEmissionScales.rank(-1);
 

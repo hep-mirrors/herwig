@@ -127,12 +127,12 @@ void MEQCD2to2Fast::Init() {
      &MEQCD2to2Fast::_strictFlavourScheme, false, false, false);
   static SwitchOption interfaceStrictFlavourSchemeYes
     (interfaceStrictFlavourScheme,
-     "On",
+     "Yes",
      "Do not include massive initial states.",
      true);
   static SwitchOption interfaceStrictFlavourSchemeNo
     (interfaceStrictFlavourScheme,
-     "Off",
+     "No",
      "Allow massive initial states.",
      false);
 }

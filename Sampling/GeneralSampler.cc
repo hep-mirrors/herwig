@@ -924,12 +924,12 @@ void GeneralSampler::Init() {
      &GeneralSampler::theVerbose, false, false, false);
   static SwitchOption interfaceVerboseYes
     (interfaceVerbose,
-     "On",
+     "Yes",
      "",
      true);
   static SwitchOption interfaceVerboseNo
     (interfaceVerbose,
-     "Off",
+     "No",
      "",
      false);
 
@@ -939,12 +939,12 @@ void GeneralSampler::Init() {
      &GeneralSampler::theAddUpSamplers, false, false, false);
   static SwitchOption interfaceAddUpSamplersYes
     (interfaceAddUpSamplers,
-     "On",
+     "Yes",
      "",
      true);
   static SwitchOption interfaceAddUpSamplersNo
     (interfaceAddUpSamplers,
-     "Off",
+     "No",
      "",
      false);
 
@@ -954,12 +954,12 @@ void GeneralSampler::Init() {
      &GeneralSampler::theGlobalMaximumWeight, true, false, false);
   static SwitchOption interfaceGlobalMaximumWeightYes
     (interfaceGlobalMaximumWeight,
-     "On",
+     "Yes",
      "",
      true);
   static SwitchOption interfaceGlobalMaximumWeightNo
     (interfaceGlobalMaximumWeight,
-     "Off",
+     "No",
      "",
      false);
 
@@ -977,12 +977,12 @@ void GeneralSampler::Init() {
      &GeneralSampler::theFlatSubprocesses, false, false, false);
   static SwitchOption interfaceFlatSubprocessesYes
     (interfaceFlatSubprocesses,
-     "On",
+     "Yes",
      "",
      true);
   static SwitchOption interfaceFlatSubprocessesNo
     (interfaceFlatSubprocesses,
-     "Off",
+     "No",
      "",
      false);
 
@@ -998,12 +998,12 @@ void GeneralSampler::Init() {
      &GeneralSampler::runCombinationData, false, false, false);
   static SwitchOption interfaceRunCombinationDataYes
     (interfaceRunCombinationData,
-     "On",
+     "Yes",
      "",
      true);
   static SwitchOption interfaceRunCombinationDataNo
     (interfaceRunCombinationData,
-     "Off",
+     "No",
      "",
      false);
 
@@ -1013,12 +1013,12 @@ void GeneralSampler::Init() {
      &GeneralSampler::theAlmostUnweighted, false, false, false);
   static SwitchOption interfaceAlmostUnweightedYes
     (interfaceAlmostUnweighted,
-     "On",
+     "Yes",
      "",
      true);
   static SwitchOption interfaceAlmostUnweightedNo
     (interfaceAlmostUnweighted,
-     "Off",
+     "No",
      "",
      false);
 

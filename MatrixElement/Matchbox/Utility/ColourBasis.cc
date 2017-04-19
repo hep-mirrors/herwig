@@ -1302,12 +1302,12 @@ void ColourBasis::Init() {
      &ColourBasis::theLargeN, false, false, false);
   static SwitchOption interfaceLargeNYes
     (interfaceLargeN,
-     "On",
+     "Yes",
      "Work in N=infinity",
      true);
   static SwitchOption interfaceLargeNNo
     (interfaceLargeN,
-     "Off",
+     "No",
      "Work in N=3",
      false);
 

@@ -220,12 +220,12 @@ void TreePhasespace::Init() {
      &TreePhasespace::theIncludeMirrored, true, true, false);
   static SwitchOption interfaceIncludeMirroredYes
     (interfaceIncludeMirrored,
-     "True",
+     "Yes",
      "Use unmirrored and mirrored diagrams",
      true);
   static SwitchOption interfaceIncludeMirroredNo
     (interfaceIncludeMirrored,
-     "False",
+     "No",
      "Use only unmirrored diagrams",
      false);
   interfaceIncludeMirrored.rank(-1);

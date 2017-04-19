@@ -246,13 +246,13 @@ void PairRapidityCut::Init() {
      &PairRapidityCut::thePseudo, false, false, false);
   static SwitchOption interfacePseudoFalse
     (interfacePseudo,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
   static SwitchOption interfacePseudoTrue
     (interfacePseudo,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
 
   static Switch<PairRapidityCut,bool> interfaceSameFlavourOnly
@@ -261,13 +261,13 @@ void PairRapidityCut::Init() {
      &PairRapidityCut::theSameFlavourOnly, true, false, false);
   static SwitchOption interfaceSameFlavourOnlyTrue
     (interfaceSameFlavourOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceSameFlavourOnlyFalse
     (interfaceSameFlavourOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Switch<PairRapidityCut,bool> interfaceOppositeSignOnly
@@ -276,13 +276,13 @@ void PairRapidityCut::Init() {
      &PairRapidityCut::theOppositeSignOnly, true, false, false);
   static SwitchOption interfaceOppositeSignOnlyTrue
     (interfaceOppositeSignOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
   static SwitchOption interfaceOppositeSignOnlyFalse
     (interfaceOppositeSignOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Reference<PairRapidityCut,MatcherBase> interfaceFirstMatcher

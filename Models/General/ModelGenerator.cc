@@ -488,7 +488,7 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
       os << std::left << std::setw(40) << (**dit).tag() 
 	 << std::left << std::setw(20) << (**dit).brat()*parent->width()/GeV 
 	 << std::left << std::setw(20)  << (**dit).brat()
-	 << ((**dit).on() ? "On" : "Off" ) << '\n';
+	 << ((**dit).on() ? "Yes" : "No" ) << '\n';
     os << "#\n#";
   }
   else if(decayOutput_==2) {
