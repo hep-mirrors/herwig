@@ -244,12 +244,12 @@ void PairRapidityCut::Init() {
    ("Pseudo",
      "Use pseudo rapidity instead of rapidity ",
      &PairRapidityCut::thePseudo, false, false, false);
-  static SwitchOption interfacePseudoFalse
+  static SwitchOption interfacePseudoNo
     (interfacePseudo,
      "No",
      "No",
      false);
-  static SwitchOption interfacePseudoTrue
+  static SwitchOption interfacePseudoYes
     (interfacePseudo,
      "Yes",
      "Yes",
@@ -259,12 +259,12 @@ void PairRapidityCut::Init() {
    ("SameFlavourOnly",
      "Whether cut works on fermion pairs of the same flavour only ",
      &PairRapidityCut::theSameFlavourOnly, true, false, false);
-  static SwitchOption interfaceSameFlavourOnlyTrue
+  static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
      "Yes",
      "Yes",
      true);
-  static SwitchOption interfaceSameFlavourOnlyFalse
+  static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
      "No",
      "No",
@@ -274,12 +274,12 @@ void PairRapidityCut::Init() {
    ("OppositeSignOnly",
      "Whether cut works on fermion pairs of opposite sign only ",
      &PairRapidityCut::theOppositeSignOnly, true, false, false);
-  static SwitchOption interfaceOppositeSignOnlyTrue
+  static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
      "Yes",
      "Yes",
      true);
-  static SwitchOption interfaceOppositeSignOnlyFalse
+  static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
      "No",
      "No",

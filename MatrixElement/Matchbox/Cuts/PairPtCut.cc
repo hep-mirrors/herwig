@@ -169,12 +169,12 @@ void PairPtCut::Init() {
    ("SameFlavourOnly",
      "Whether cut works on fermion pairs of the same flavour only ",
      &PairPtCut::theSameFlavourOnly, true, false, false);
-  static SwitchOption interfaceSameFlavourOnlyTrue
+  static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
      "Yes",
      "Yes",
      true);
-  static SwitchOption interfaceSameFlavourOnlyFalse
+  static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
      "No",
      "No",
@@ -184,12 +184,12 @@ void PairPtCut::Init() {
    ("OppositeSignOnly",
      "Whether cut works on fermion pairs of opposite sign only ",
      &PairPtCut::theOppositeSignOnly, true, false, false);
-  static SwitchOption interfaceOppositeSignOnlyTrue
+  static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
      "Yes",
      "Yes",
      true);
-  static SwitchOption interfaceOppositeSignOnlyFalse
+  static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
      "No",
      "No",
