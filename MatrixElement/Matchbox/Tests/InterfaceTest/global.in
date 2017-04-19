@@ -88,8 +88,8 @@ set EventGenerator:EventHandler:CascadeHandler NULL
 # set GoSam:HiggsEff On
 # set MadGraph:Model heft
  cd /Herwig/MatrixElements/Matchbox
- set PPFactory:VirtualContributions Off
- set PPFactory:RealContributions Off
+ set PPFactory:VirtualContributions No
+ set PPFactory:RealContributions No
 ## Scale choice
 set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
 set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
