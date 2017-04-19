@@ -22,11 +22,11 @@
 #*                                                          *
 #************************************************************
 set group_subprocesses Auto
-set ignore_six_quark_processes False
-set loop_optimized_output True
-set loop_color_flows False
+set ignore_six_quark_processes No
+set loop_optimized_output Yes
+set loop_color_flows No
 set gauge unitary
-set complex_mass_scheme False
+set complex_mass_scheme No
 set max_npoint_for_channel 0
 import model sm
 define p = g u c d s u~ c~ d~ s~
