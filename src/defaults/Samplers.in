@@ -50,12 +50,12 @@ set Sampler:UpdateAfter 1000
 
 set Sampler:BinSampler CellGridSampler
 
-set Sampler:AddUpSamplers Off
-set Sampler:GlobalMaximumWeight Off
-set Sampler:FlatSubprocesses Off
+set Sampler:AddUpSamplers No
+set Sampler:GlobalMaximumWeight No
+set Sampler:FlatSubprocesses No
 set Sampler:MinSelection 0.000001
-set Sampler:AlmostUnweighted On
-set Sampler:RunCombinationData Off
+set Sampler:AlmostUnweighted Yes
+set Sampler:RunCombinationData No
 set Sampler:WriteGridsOnFinish No
 set Sampler:MaxEnhancement 1.1
 

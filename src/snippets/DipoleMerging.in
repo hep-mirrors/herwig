@@ -53,8 +53,8 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
 cd /Herwig/EventHandlers
 set EventHandler:Sampler /Herwig/Samplers/Sampler
-set EventHandler:Weighted Off
-set EventHandler:CollisionCuts Off
+set EventHandler:Weighted No
+set EventHandler:CollisionCuts No
 set EventHandler:SubProcessHandlers[0] /Herwig/Merging/MergingFactory
 
 cd /Herwig/Particles

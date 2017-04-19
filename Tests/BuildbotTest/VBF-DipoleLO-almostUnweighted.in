@@ -153,7 +153,7 @@ insert Rivet:Analyses 0 MC_WJETS
 ## Save the generator
 ##################################################
 
-set /Herwig/Samplers/Sampler:AlmostUnweighted On
+set /Herwig/Samplers/Sampler:AlmostUnweighted Yes
 
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode

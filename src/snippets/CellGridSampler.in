@@ -29,7 +29,7 @@ set CellGridSampler:GeneralMapperBins 0
 # If in the run step a weight larger than the
 # assumed maximum weight is found, the event
 # produced with the higher weight.
-set Sampler:AlmostUnweighted On
+set Sampler:AlmostUnweighted Yes
 
 # Unweight the events to kappa*MaxWeight.
 # Events with weight larger that kappa*MaxWeight are possible/likely.
@@ -37,5 +37,5 @@ set Sampler:BinSampler:Kappa 1.
 
 # write out additional information of the sampler to
 # combine runs.
-set Sampler:RunCombinationData Off
-set Sampler:Verbose On
+set Sampler:RunCombinationData No
+set Sampler:Verbose Yes

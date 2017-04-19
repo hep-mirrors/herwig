@@ -2,7 +2,7 @@
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
-set GoSam:HiggsEff On
-set OpenLoops:HiggsEff On
+set GoSam:HiggsEff Yes
+set OpenLoops:HiggsEff Yes
 set MadGraph:Model heft
 

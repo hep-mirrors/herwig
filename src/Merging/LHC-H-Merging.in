@@ -87,7 +87,7 @@ set /Herwig/Particles/h0:Stable Stable
 
 #read Matchbox/HiggsEffective.in
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
-set OpenLoops:HiggsEff On
+set OpenLoops:HiggsEff Yes
 set MadGraph:Model heft
 
 ##################################################

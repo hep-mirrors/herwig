@@ -7,7 +7,7 @@ cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
-set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
+set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
@@ -26,5 +26,5 @@ set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
 
 cd /Herwig/UnderlyingEvent
-set MEQCD2to2Fast:StrictFlavourScheme On
+set MEQCD2to2Fast:StrictFlavourScheme Yes
 

@@ -2,8 +2,8 @@
 
 cd /Herwig/MatrixElements/Matchbox
 
-set Factory:VirtualContributions Off
-set Factory:RealContributions Off
+set Factory:VirtualContributions No
+set Factory:RealContributions No
 set Factory:ShowerApproximation NULL
 
 cd /Herwig/Partons

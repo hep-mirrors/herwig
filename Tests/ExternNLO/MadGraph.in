@@ -56,9 +56,9 @@ insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 # This is for testing only
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
-set /Herwig/Samplers/Sampler:FlatSubprocesses On
-set /Herwig/Samplers/Sampler:Verbose On
-set /Herwig/EventHandlers/EventHandler:Weighted On
+set /Herwig/Samplers/Sampler:FlatSubprocesses Yes
+set /Herwig/Samplers/Sampler:Verbose Yes
+set /Herwig/EventHandlers/EventHandler:Weighted Yes
 
 cd /Herwig/Generators
 saverun MadGraph EventGenerator

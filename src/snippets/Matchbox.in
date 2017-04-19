@@ -32,8 +32,8 @@ set Factory:Cuts /Herwig/Cuts/Cuts
 cd /Herwig/EventHandlers
 
 set EventHandler:Sampler /Herwig/Samplers/Sampler
-set EventHandler:Weighted Off
-set EventHandler:CollisionCuts Off
+set EventHandler:Weighted No
+set EventHandler:CollisionCuts No
 set EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/Factory
 
 cd /Herwig/Particles

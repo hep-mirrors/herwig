@@ -344,7 +344,7 @@ set InvertiblePhasespace:CouplingData PhasespaceCouplings
 
 create Herwig::FlatInvertibleLabframePhasespace InvertibleLabframePhasespace
 set InvertibleLabframePhasespace:CouplingData PhasespaceCouplings
-set InvertibleLabframePhasespace:LogSHat False
+set InvertibleLabframePhasespace:LogSHat No
 
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
@@ -470,7 +470,7 @@ cd /Herwig/MatrixElements/Matchbox
 create Herwig::HardScaleProfile HardScaleProfile
 
 create Herwig::MEMatching MEMatching
-set MEMatching:RestrictPhasespace On
+set MEMatching:RestrictPhasespace Yes
 set MEMatching:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
 set MEMatching:BornScaleInSubtraction BornScale
 set MEMatching:RealEmissionScaleInSubtraction RealScale

@@ -70,7 +70,7 @@ insert LesHouchesHandler:LesHouchesReaders 0 LesHouchesReader
 # the scale supplied in the event files (SCALUP)
 # to be used as a pT veto scale in the parton shower
 set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
-set /Herwig/Shower/ShowerHandler:RestrictPhasespace On
+set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
 # Shower parameters
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random

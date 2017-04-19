@@ -40,8 +40,8 @@ do PPFactory:Process p p t tbar
 #do PPFactory:Process p p j j
 
 
-set PPFactory:VirtualContributions Off
-set PPFactory:RealContributions Off
+set PPFactory:VirtualContributions No
+set PPFactory:RealContributions No
 
 cd /Herwig/Cuts
 set MassCut:MinM 66*GeV
@@ -69,10 +69,10 @@ insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 set /Herwig/Analysis/HepMCFile:PrintEvent 1000
 
 cd /Herwig/EventHandlers
-set EventHandler:Weighted On
+set EventHandler:Weighted Yes
 set EventHandler:Sampler  /Herwig/Samplers/Sampler
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
-set /Herwig/Samplers/Sampler:FlatSubprocesses On
+set /Herwig/Samplers/Sampler:FlatSubprocesses Yes
 set /Herwig/EventHandlers/EventHandler:LuminosityFunction:Energy 8000.0*GeV
 cd /Herwig/MatrixElements/Matchbox
 insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] PPFactory
@@ -105,7 +105,7 @@ set cbar:NominalMass 0*GeV
 set b:NominalMass 0*GeV
 set bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-set /Herwig/Generators/EventGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/EventGenerator:EventHandler:CollisionCuts No
 do /Herwig/MatrixElements/Matchbox/PPFactory:ProductionMode
 cd /Herwig/Generators 
 saverun INTERFACE EventGenerator

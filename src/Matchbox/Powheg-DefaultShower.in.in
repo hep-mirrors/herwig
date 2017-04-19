@@ -8,7 +8,7 @@ set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption SofterFractio
 set /Herwig/Shower/PartnerFinder:PartnerMethod 0
 set /Herwig/Shower/PartnerFinder:ScaleChoice 0
 
-set /Herwig/Shower/PowhegShowerHandler:RestrictPhasespace On
+set /Herwig/Shower/PowhegShowerHandler:RestrictPhasespace Yes
 set /Herwig/Shower/PowhegShowerHandler:MaxPtIsMuF Yes
 set /Herwig/Shower/PowhegShowerHandler:HardScaleProfile NULL
 

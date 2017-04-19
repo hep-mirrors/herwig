@@ -7,7 +7,7 @@
 ##################################################
 
 read Matchbox/PPCollider.in
-set /Herwig/EventHandlers/EventHandler:Weighted On
+set /Herwig/EventHandlers/EventHandler:Weighted Yes
 
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 0
@@ -35,8 +35,8 @@ do Factory:Process p p j j e+ nu_e
 
 # split off PK Operators in hard matrix element
 cd /Herwig/MatrixElements/Matchbox
-set Factory:IndependentVirtuals On
-set Factory:IndependentPKOperators On
+set Factory:IndependentVirtuals Yes
+set Factory:IndependentPKOperators Yes
 
 read Matchbox/VBFNLO.in
 read Matchbox/VBFDiagramsOnly.in
@@ -47,7 +47,7 @@ read Matchbox/DiagonalCKM.in
 
 # switch on random helicity summation for VBFNLO
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
-set VBFNLO:RandomHelicitySummation True
+set VBFNLO:RandomHelicitySummation Yes
 
 
 ##################################################
@@ -113,7 +113,7 @@ read Matchbox/VBFNLOPhasespace.in
 # Use Monaco sampler
 
 cd /Herwig/Samplers
-set Sampler:Verbose On
+set Sampler:Verbose Yes
 set MonacoSampler:InitialPoints 1000
 set MonacoSampler:NIterations 4
 set MonacoSampler:EnhancementFactor 1.2
