@@ -89,6 +89,11 @@ public:
    */
   virtual void setXComb(tStdXCombPtr xc);
 
+  /**
+   * Return the phase space used
+   */
+  Ptr<MatchboxPhasespace>::tptr phasespace() const { return thePhasespace; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
