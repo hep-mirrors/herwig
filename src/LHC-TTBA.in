@@ -25,22 +25,22 @@ read TTBA.model
 set /Herwig/Particles/t:Synchronized Not_synchronized
 set /Herwig/Particles/tbar:Synchronized Not_synchronized
 
-set /Herwig/Particles/t/t->b,bbar,c;:OnOff Off
-set /Herwig/Particles/t/t->b,c,dbar;:OnOff Off
-set /Herwig/Particles/t/t->b,c,sbar;:OnOff Off
-set /Herwig/Particles/t/t->b,sbar,u;:OnOff Off
-set /Herwig/Particles/t/t->b,u,dbar;:OnOff Off
-set /Herwig/Particles/t/t->nu_e,e+,b;:OnOff On
-set /Herwig/Particles/t/t->nu_mu,mu+,b;:OnOff On
-set /Herwig/Particles/t/t->nu_tau,tau+,b;:OnOff Off
-set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:OnOff On
-set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:OnOff Off
-set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff Off
-set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
+set /Herwig/Particles/t/t->b,bbar,c;:YesNo No
+set /Herwig/Particles/t/t->b,c,dbar;:YesNo No
+set /Herwig/Particles/t/t->b,c,sbar;:YesNo No
+set /Herwig/Particles/t/t->b,sbar,u;:YesNo No
+set /Herwig/Particles/t/t->b,u,dbar;:YesNo No
+set /Herwig/Particles/t/t->nu_e,e+,b;:YesNo Yes
+set /Herwig/Particles/t/t->nu_mu,mu+,b;:YesNo Yes
+set /Herwig/Particles/t/t->nu_tau,tau+,b;:YesNo No
+set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:YesNo Yes
+set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:YesNo Yes
+set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:YesNo Yes
+set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:YesNo Yes
+set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:YesNo Yes
+set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:YesNo No
+set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:YesNo No
+set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:YesNo No
 
 cd /Herwig/Generators
 
