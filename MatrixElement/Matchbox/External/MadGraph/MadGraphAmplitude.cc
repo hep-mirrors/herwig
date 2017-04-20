@@ -240,7 +240,7 @@ bool MadGraphAmplitude::initializeExternal() {
       generator()->log()<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
       generator()->log()<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
       generator()->log()<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
-      generator()->log()<<"\n\n             set Madgraph:KeepInputTopMass True";
+      generator()->log()<<"\n\n             set Madgraph:KeepInputTopMass Yes";
       generator()->log()<<"\n\n         to your input file.";
       generator()->log()<<"\n---------------------------------------------------------------";
       generator()->log()<<"\n---------------------------------------------------------------\n";

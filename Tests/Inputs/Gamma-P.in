@@ -10,5 +10,5 @@ set EventGenerator:EventHandler:HadronizationHandler NULL
 set EventGenerator:EventHandler:DecayHandler NULL
 create Herwig::GammaPMETest TestP GammaTest.so
 insert EventGenerator:AnalysisHandlers 0 TestP
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 saverun Gamma-P EventGenerator

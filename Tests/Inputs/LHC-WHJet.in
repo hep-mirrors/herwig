@@ -9,7 +9,7 @@ set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 set EventGenerator:EventHandler:DecayHandler NULL
 set EventGenerator:EventHandler:HadronizationHandler NULL
 erase EventGenerator:EventHandler:PostSubProcessHandlers 0
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 set /Herwig/Particles/h0:Stable Stable
 set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV

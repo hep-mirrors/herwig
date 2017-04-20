@@ -14,7 +14,7 @@ set Model:EW/CKM:theta_23 0.
 set Model:EW/CKM:delta 0.
 create Herwig::AlphaEM AlphaEM2 
 set Model:EW/RunningAlphaEM AlphaEM2
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 cd /Herwig/Partons
 # create Herwig::MRST MRST2 HwMRST.so
 # setup MRST2 /home/richardn/montecarlo/c++/Herwig/trunk/Herwig/PDF/mrst/1998/lo05a.dat

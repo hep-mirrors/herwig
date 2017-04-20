@@ -11,7 +11,7 @@ set EventGenerator:EventHandler:Sampler:Ntry 100000
 cd /Herwig/MatrixElements/
 insert SubProcess:MatrixElements[0] MEHeavyQuark
 cd /Herwig/Generators
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 create Herwig::TTbarAnalysis TopTest HwAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 TopTest
 saverun LHC-Top EventGenerator

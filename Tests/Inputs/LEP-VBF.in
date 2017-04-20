@@ -11,7 +11,7 @@ cd /Herwig/Generators
 set EventGenerator:EventHandler:CascadeHandler NULL
 set EventGenerator:EventHandler:HadronizationHandler NULL
 set EventGenerator:EventHandler:DecayHandler NULL
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 
 set EventGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
 

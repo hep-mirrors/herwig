@@ -93,7 +93,7 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 
 cd /Herwig/Analysis
-set Basics:CheckQuark false
+set Basics:CheckQuark No
 
 # Cuts
 cd /Herwig/Cuts

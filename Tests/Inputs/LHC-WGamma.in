@@ -36,5 +36,5 @@ set /Herwig/Cuts/PhotonKtCut:MinKT 20
 cd /Herwig/Generators
 create Herwig::VGammaTest WGammaTest HadronTest.so
 insert EventGenerator:AnalysisHandlers 0 WGammaTest
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 saverun LHC-WGamma EventGenerator

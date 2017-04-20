@@ -18,7 +18,7 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 create Herwig::VHTest VHTest LeptonTest.so
 insert EventGenerator:AnalysisHandlers 0 VHTest
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 
 # parameters to make the same as fortran
 cd /Herwig
