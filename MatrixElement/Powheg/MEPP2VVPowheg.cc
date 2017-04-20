@@ -155,12 +155,12 @@ void MEPP2VVPowheg::Init() {
      &MEPP2VVPowheg::removebr_, 1, false, false);
   static SwitchOption interfaceProductionCrossSection
     (interfaceremovebr,
-     "true",
+     "Yes",
      "Do not multiply in the branching ratios (default running)",
      1);
   static SwitchOption interfaceIncludeBRs
     (interfaceremovebr,
-     "false",
+     "No",
      "Multiply by MCFM branching ratios for comparison/debugging purposes",
      0);
 

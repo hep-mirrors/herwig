@@ -638,7 +638,7 @@ void GeneralSampler::dofinish() {
 generator()->log() <<"This corresponds to a cross section difference between:\n"
 		<<"   UnitWeights:       "<< theMaxWeight*theSumWeights/theAttempts<<"nb\n"
                        <<"   AlmostUnweighted:  "<< theMaxWeight*correctWeights/theAttempts<< "nb\n"<<
-                      " use 'set Sampler:AlmostUnweighted On' to switch to non-unit weights.\n\n";
+                      " use 'set Sampler:AlmostUnweighted Yes' to switch to non-unit weights.\n\n";
 
     generator()->log() <<"The maximum weight determined in the read/integrate step has been enhanced by \n"<<
                          "   set /Herwig/Samplers/Sampler:MaxEnhancement "<< theMaxEnhancement<<

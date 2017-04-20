@@ -35,8 +35,8 @@ void PairPtCut::describe() const {
     << theFirstMatcher->name() << "' and '"
     << theSecondMatcher->name() << "':\n"
     << "pT = " << theMinPt/GeV << " .. " << theMaxPt/GeV << " GeV\n"
-    << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
-    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n\n";
+    << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
+    << "opposite sign only = " << (theOppositeSignOnly?"Yes":"No") << " \n\n";
 }
 
 IBPtr PairPtCut::clone() const {

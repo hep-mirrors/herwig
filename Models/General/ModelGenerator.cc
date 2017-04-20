@@ -482,7 +482,7 @@ void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
        << parent->width()/GeV << endl;
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
-       << std::left << std::setw(20) << "BR" << "On/Off\n";
+       << std::left << std::setw(20) << "BR" << "Yes/No\n";
     for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
 	dit!=modes.end();++dit)
       os << std::left << std::setw(40) << (**dit).tag() 

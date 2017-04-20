@@ -329,9 +329,9 @@ handle(EventHandler & eh, const tPVector &,
   theLastBornME = (**kernels.begin()).dipole()->underlyingBornME();
   if ( theLastBornME->phasespace()->wantCMS() != thePhasespace->wantCMS() ) {
     throw Exception() << "Mismatch in centre-of-mass-system requirements of hard matrix element phasespace ("
-                      << (theLastBornME->phasespace()->wantCMS()?"true":"false")
+                      << (theLastBornME->phasespace()->wantCMS()?"Yes":"No")
                       << ") and shower approximation phasespace ("
-                      << (thePhasespace->wantCMS()?"true":"false") << ")"
+                      << (thePhasespace->wantCMS()?"Yes":"No") << ")"
                       << Exception::abortnow;
   }
   theLastBornME->phasespace(thePhasespace);

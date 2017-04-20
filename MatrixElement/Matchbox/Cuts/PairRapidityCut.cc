@@ -48,10 +48,10 @@ void PairRapidityCut::describe() const {
       CurrentGenerator::log() << "y = " << r->first << " .. " << r->second << "\n";
     }
 
-//     << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
+//     << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
   CurrentGenerator::log()
-    << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
-    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n\n";
+    << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
+    << "opposite sign only = " << (theOppositeSignOnly?"Yes":"No") << " \n\n";
 }
 
 PairRapidityCut::PairRapidityCut() 
