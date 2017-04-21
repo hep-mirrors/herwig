@@ -14,10 +14,7 @@ read Matchbox/DiagonalCKM.in
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
 set Factory:OrderInAlphaEW 2
-##################################################
-## Matrix element library selection
-##################################################
-${nlo}
+
 ##################################################
 ## Scale choice
 ## See the documentation for more options
