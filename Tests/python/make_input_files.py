@@ -160,14 +160,29 @@ if(name.find("Matchbox-Powheg")>0) :
     istart = 3
     simulation="Matchbox"
     parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
+    
 elif(name.find("Matchbox")>0) :
     istart = 2
     simulation="Matchbox"
     parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
-elif(name.find("Dipole")>0) :
+    
+
+elif(name.find("Dipole-Powheg")>0) :
+    istart = 3
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
+    
+elif(name.find("Dipole-MCatNLO")>0) :
     istart = 2
     simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n"
+    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
+    
+elif(name.find("Dipole")>0) :
+    istart = 1
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n"
+    
+    
 elif(name.find("Powheg")>0) :
     istart = 2
     simulation="Powheg"
