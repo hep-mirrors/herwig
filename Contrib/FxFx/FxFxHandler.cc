@@ -56,11 +56,13 @@ void FxFxHandler::doinitrun() {
   for(unsigned int ixx=0; ixx<jetIdx_.size(); ixx++) jetIdx_[ixx].resize(ncphi_);
   if(mergemode_ == 0) {
     cout << "Merging mode is FxFx." << endl;
-  } else {
-    cout << "Merging mode is Tree." << endl;
+  } else if (mergemode_ == 1) {
+    cout << "Merging mode is Tree level." << endl;
+  } else if (mergemode_ == 2) {
+    cout << "Merging mode is Tree level, using MadGraph Les Houches information." << endl;
   }
-  if(hpdetect_) {
-    cout << "Automatic detection of hard process enabled. *experimental*" << endl;
+  if(hpdetect_ && mergemode_ != 2) {
+    cout << "Automatic detection of hard process enabled." << endl;
     ihrd_ = -999;
   }
 }
@@ -221,6 +223,12 @@ void FxFxHandler::Init() {
      "Tree",
      "Tree-level merging.",
      1);
+  static SwitchOption TreeMG
+    (interfaceMergeMode,
+     "TreeMG5",
+     "Tree-level merging using the MadGraph pt clustering information.",
+     2);
+
 
      static Switch<FxFxHandler,bool> interfaceHardProcessDetection
     ("HardProcessDetection",
@@ -261,12 +269,12 @@ void FxFxHandler::Init() {
     (interfaceVetoHeavyFlavour,
      "On",
      "The MLM merging veto mechanism for heavy flavour is switched ON.",
-     false);
+     true);
   static SwitchOption HeavyFVetoingIsOff
     (interfaceVetoHeavyFlavour,
      "Off",
      "The MLM merging veto mechanism for heavy flavour is switched OFF.",
-     true);
+     false);
 
     static Switch<FxFxHandler,bool> interfaceHeavyQVeto
     ("HeavyQVeto",
@@ -319,7 +327,10 @@ void FxFxHandler::doinit() {
 // Throws a veto according to MLM strategy ... when we finish writing it.
 bool FxFxHandler::showerHardProcessVeto() const {
   int debug_mode = 0;
-  if(vetoIsTurnedOff_) return false;
+  if(vetoIsTurnedOff_) {
+    //    cout << "Vetoing is turned OFF." << endl;
+    return false;
+  }
 
   //if(debug_mode) { cout << "debug_mode = " << 5 << endl; } 
 
@@ -359,7 +370,8 @@ bool FxFxHandler::showerHardProcessVeto() const {
 
   // Filter out all but the 'extra' light-parton progenitors and their
   // associated final state particles.
-  caldel_m();
+  if(mergemode_ == 0 || mergemode_ == 1) { caldel_m(); }
+  else if(mergemode_ == 2) { caldel_mg(); }  
  
   double prob(1);
   //if etclusfixed_ then set the etclus_ to the fixed chosen value
@@ -498,19 +510,6 @@ bool FxFxHandler::showerHardProcessVeto() const {
 
       // If every jet matched to _at_least_one_ progenitor accept the event.
       if(nmjet<=0) return false;
-    
-      //else {
-      // If unmatched jets remain, reject the event if highestMultiplicity_!=1
-      //if(!highestMultiplicity_) return true;
-      //else {
-      // If unmatched jets remain and highestMultiplicity is true then check
-      // that these are softer than all the matched ones (from the light-parton
-      // matching round).
-      /*	Energy etmax(0.*GeV);
-                for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) etmax=max(etjet_[ixx],etmax);
-                if(etmax>etmin) return true;
-                }
-      */
 
     }
   }
@@ -522,10 +521,11 @@ bool FxFxHandler::showerHardProcessVeto() const {
 
 
   
-  if(mergemode_ == 1) {
+  if(mergemode_ == 1 || mergemode_ == 2) {
     
     // determine whether event is of highest multiplicity or not
     if(partonsToMatch_.size()==njets_) { highestMultiplicity_ = true; }
+
     //  cout << "jet finding gives pjet_.size() = " << pjet_.size() << endl;
     // If there are less jets than partons then parton-jet matching is
     // bound to fail: reject the event already. Also, if the input is
@@ -603,7 +603,6 @@ bool FxFxHandler::showerHardProcessVeto() const {
       for(unsigned int ixx=0; ixx<pjet_.size(); ixx++) 
 	if(jetToPartonMap[ixx]<0&&etmin<etjet_[ixx]) return true;
     }
-
 
     if(!vetoHeavyQ_) {
       //cout << "no heavy quark decay product veto!" << endl;
@@ -848,15 +847,15 @@ void FxFxHandler::getDescendents(PPtr theParticle) const {
       getDescendents(theChildren[ixx]);
   return;
 }
+
 void FxFxHandler::caldel_m() const {
-
-
+  
   preshowerFSPsToDelete_.clear();
   showeredFSPsToDelete_.clear();
 
   hvqfound = false;
   
-  if(hpdetect_) {
+  if(hpdetect_ && mergemode_!=2) {
     for(unsigned int ixx=0; ixx<preshowerFSPs_.size(); ixx++) {
       tmpList_.clear();
       /* Exclude the top quarks and any children
@@ -880,7 +879,7 @@ void FxFxHandler::caldel_m() const {
       if( (abs(preshowerFSPs_[ixx]->parents()[0]->id())==23||
          abs(preshowerFSPs_[ixx]->parents()[0]->id())==24||
          abs(preshowerFSPs_[ixx]->id())==22||
-           abs(preshowerFSPs_[ixx]->id())==25) && (abs(preshowerFSPs_[ixx]->parents()[0]->id())!=6))  {
+           abs(preshowerFSPs_[ixx]->id())==25|| (abs(preshowerFSPs_[ixx]->id()) < 17 && abs(preshowerFSPs_[ixx]->id()) > 10)) && (abs(preshowerFSPs_[ixx]->parents()[0]->id())!=6))  {
         preshowerFSPsToDelete_.push_back(preshowerFSPs_[ixx]);
         getDescendents(preshowerFSPs_[ixx]);
         for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
@@ -1142,8 +1141,7 @@ void FxFxHandler::caldel_m() const {
         }
       }
     }
-//cout << "partonsToMatch_.size() (AFTER) = " << partonsToMatch_.size() << endl;
-
+    //cout << "partonsToMatch_.size() (AFTER) = " << partonsToMatch_.size() << endl;
     //cout << "deleting showeredFSPs" << endl;
     for(unsigned int ixx=0; ixx<showeredFSPsToDelete_.size(); ixx++) {
       for(unsigned int jxx=0; jxx<particlesToCluster_.size(); jxx++) {
@@ -1209,6 +1207,75 @@ void FxFxHandler::getTopRadiation(PPtr theParticle) const {
       getTopRadiation(theChildren[ixx]);
   return;
 }
+
+void FxFxHandler::caldel_mg() const {
+  
+  preshowerFSPsToDelete_.clear();
+  showeredFSPsToDelete_.clear();
+  /* 
+   * Get the MadGraph clustering information
+   * from the Les Houches event tags
+   */
+  ptclust_.clear();
+  getptclust();
+  
+  //for(unsigned int izz = 0; izz<ptclust_.size(); izz++) cout << "ptclust_[" << izz << "] = " << ptclust_[izz] << endl; 
+
+  /* 
+   * Get the COM energy of the colliding hadrons 
+   *
+   */
+  getECOM();
+  // cout << "ECOM_ = " << ECOM_ << endl;
+
+  for(unsigned int ixx=0; ixx<partonsToMatch_.size(); ixx++) {
+    if(ptclust_[ixx] == ECOM_){
+      preshowerFSPsToDelete_.push_back(partonsToMatch_[ixx]);
+      tmpList_.clear();
+      getDescendents(partonsToMatch_[ixx]);
+      for(unsigned int jxx=0; jxx<tmpList_.size(); jxx++)
+	showeredFSPsToDelete_.push_back(tmpList_[jxx]);
+    }
+  }
+
+  for(unsigned int ixx=0; ixx<preshowerFSPsToDelete_.size(); ixx++) {
+    for(unsigned int jxx=0; jxx<partonsToMatch_.size(); jxx++) {
+      if(preshowerFSPsToDelete_[ixx]==partonsToMatch_[jxx]) {
+        //cout << "deleting " << preshowerFSPsToDelete_[ixx]->id() << endl;
+        partonsToMatch_.erase(partonsToMatch_.begin()+jxx);
+        break;
+      }
+    }
+  }
+
+  for(unsigned int ixx=0; ixx<showeredFSPsToDelete_.size(); ixx++) {
+    for(unsigned int jxx=0; jxx<particlesToCluster_.size(); jxx++) {
+      if(showeredFSPsToDelete_[ixx]==particlesToCluster_[jxx]) {
+        //   cout << "deleting " << showeredFSPsToDelete_[ixx]->id() << " with parent " << showeredFSPsToDelete_[ixx]->parents()[0]->id() << endl; //" energy = " << preshowerFSPsToDelete_[ixx]->momentum().e()*GeV << endl;
+        particlesToCluster_.erase(particlesToCluster_.begin()+jxx);
+        break;
+      }
+    }
+  }
+
+  // Sanity check!
+  if(partonsToMatch_.size()>particlesToCluster_.size()) {
+    throw Exception()
+      << "FxFxHandler::caldel_m() - ERROR!\n"
+      << "No. of ME level partons to be matched to jets = "
+      << partonsToMatch_.size() << "\n"
+      << "No. of showered particles to build jets from  = "
+      << particlesToCluster_.size() << "\n"
+      << "There should be at least as many partons to\n"
+      << "cluster as there are partons to match to.\n"
+      << Exception::eventerror;
+  }
+
+
+
+}
+
+
 void FxFxHandler::caldel_hvq() const {
 
   // Fill partonsToMatch_ with only those pre-shower partons intended to
@@ -1343,6 +1410,62 @@ void FxFxHandler::getnpFxFx() const {
       npLO_ = atof(SplitVec[1].c_str());
       npNLO_ = atof(SplitVec[2].c_str());
     } 
+  }
+  return;
+}
+
+// get hadron COM energy
+void FxFxHandler::getECOM() const {
+  split_vector_type SplitVec; 
+  // pull the optional weights from the current event
+  map<string,double> optionalEventWeights = eventHandler()->currentEvent()->optionalWeights();
+  // loop over the optional weights and find np values
+  for (map<string,double>::const_iterator it=optionalEventWeights.begin(); it!=optionalEventWeights.end(); ++it){
+    // split the line 
+    boost::split( SplitVec, it->first, boost::is_any_of(" ") );	
+    // if np is found, store the information 
+    if(SplitVec[0] == "ecom") {
+      ECOM_ = it->second;
+    } 
+  }
+  return;
+}
+
+
+// get pt_clust information 
+void FxFxHandler::getptclust() const {
+  split_vector_type SplitVec; 
+  // pull the optional weights from the current event
+  map<string,double> optionalEventWeights = eventHandler()->currentEvent()->optionalWeights();
+  // loop over the optional weights and find np values
+  string str_eq = "=";
+  string str_quote = "\"";
+  int countptc_(0);
+  for (map<string,double>::const_iterator it=optionalEventWeights.begin(); it!=optionalEventWeights.end(); ++it){
+    // split the line
+    double wgtid = it->second;
+    //cout << "wgtdid = " << wgtid << endl;
+    if(wgtid == -333) {
+      //   cout << "it->first for -333 = " << it->first << endl;
+      boost::split( SplitVec, it->first, boost::is_any_of(" ") );	
+      // if np is found, store the information
+      double ptclust(0.);
+      string stringtohandle("");
+      for(unsigned int i_ = 0; i_ < SplitVec.size(); ++i_) {
+          if(SplitVec[i_].find("pt_clust_") != std::string::npos) {
+            //cout << "pt_clust_ found in " << SplitVec[i_] << endl;
+            countptc_++;
+            //  cout << "SplitVec[i_] = " << SplitVec[i_] << endl;
+            stringtohandle = SplitVec[i_];
+            stringtohandle.erase(0,10);
+            erase_substr(stringtohandle,str_eq);
+            erase_substr(stringtohandle,str_quote);
+            //            cout << "stringtohandle = " << stringtohandle << endl;
+            ptclust = atof(stringtohandle.c_str());
+            ptclust_.push_back(ptclust);
+          }
+      }
+    }
   }
   return;
 }
@@ -1522,4 +1645,12 @@ void FxFxHandler::printMomVec(vector<Lorentz5Momentum> momVec) {
 
 Energy FxFxHandler::etclusran_(double petc) const { 
   return (((2 * epsetclus_)/M_PI) * asin(2 * petc - 1) + etclusmean_);
+}
+
+
+void FxFxHandler::erase_substr(std::string& subject, const std::string& search) const {
+    size_t pos = 0;
+    while((pos = subject.find(search, pos)) != std::string::npos) {
+      subject.erase( pos, search.length() );
+    }
 }
