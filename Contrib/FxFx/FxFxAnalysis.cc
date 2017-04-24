@@ -109,7 +109,7 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
       string word;
       istringstream iss(first_piece, istringstream::in);
       while( iss >> word ) strs.push_back(word);
-      if(strs[0] == "PDF" || strs[0] == "SC") { _numweights++; }
+      if(strs[0] != "np") { _numweights++; }
       strs.clear();
     }
   }
@@ -119,7 +119,7 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
     _i = 0;//counter
     OptWeights.clear();
     for (map<string,double>::const_iterator it= event->optionalWeights().begin(); it!=event->optionalWeights().end(); ++it){
-      //    std::cout << it->first << " => " << it->second << '\n';
+      // std::cout << it->first << " => " << it->second << '\n';
       string first_piece = it->first;
       string word;
       istringstream iss(first_piece, istringstream::in);
@@ -127,7 +127,7 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
 	strs.push_back(word);
       }
       std::pair<int,double> OptWeightsTemp;
-      if(strs[0] == "PDF") {
+      /*      if(strs[0] == "PDF") {
 	OptWeightsTemp.first = atoi(strs[2].c_str());
 	OptWeightsTemp.second= it->second;
 	OptWeights.push_back(OptWeightsTemp);
@@ -137,9 +137,16 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
 	OptWeightsTemp.first = atoi(strs[3].c_str());
 	OptWeightsTemp.second = it->second;
         //        cout << "OptWeightsTemp.first = " << OptWeightsTemp.first << " OptWeightsTemp.second = " << OptWeightsTemp.second << endl;
-        if(OptWeightsTemp.first == 1001) { /*cout << "OptWeightsTemp.second = " << OptWeightsTemp.second << endl;*/ CentralWeight = OptWeightsTemp.second; } 
+        if(OptWeightsTemp.first == 1001) { /*cout << "OptWeightsTemp.second = " << OptWeightsTemp.second << endl;*/ /*CentralWeight = OptWeightsTemp.second; } 
 	OptWeights.push_back(OptWeightsTemp);
 	_i++;
+      }*/
+      if(strs[0] != "np") {
+        OptWeightsTemp.first = atoi((it->first).c_str());
+        OptWeightsTemp.second= it->second;
+        if(OptWeightsTemp.first == 1001) { /*cout << "OptWeightsTemp.second = " << OptWeightsTemp.second << endl;*/ CentralWeight = OptWeightsTemp.second; } 
+        OptWeights.push_back(OptWeightsTemp);
+        _i++;
       }
       strs.clear();
     }
@@ -152,9 +159,9 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
   if(useoptweights) { 
     for(int rr = 0; rr < _numweights; rr++) {
       double xsrr = optxsec[std::to_string(OptWeights[rr].first)]/picobarn;
-      //cout << "xsec = " << xsec/picobarn << endl;
-      //cout << "OptWeights[rr].second = " << OptWeights[rr].second << endl;
-      //cout << "xsrr = " << xsrr << endl;
+      /* cout << "xsec = " << xsec/picobarn << endl;
+      cout << "OptWeights[rr].second = " << OptWeights[rr].second << endl;
+      cout << "xsrr = " << xsrr << endl;*/
       hepmcMULTIi = makeEventW(event,sub,_nevent,eUnit,lUnit,xsrr*picobarn,xsecErr,OptWeights[rr].second, CentralWeight);
       hepmcMULTI.push_back(hepmcMULTIi); 
     }
@@ -358,6 +365,7 @@ void FxFxAnalysis::doinitrun() {
   _numweights = -999;
   AnalysisHandler::doinitrun();
   // create FxFx analysis handler
+  if(useoptweights) { cout << "Warning: Using optional weights launches multiple rivet analyses. This may slow down your run substantially!" << endl; }
   CurrentGenerator::Redirect stdout(cout);
   _rivet = new Rivet::AnalysisHandler; //(fname);
   _rivet->addAnalyses(_analyses);

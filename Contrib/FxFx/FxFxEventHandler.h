@@ -250,6 +250,8 @@ public:
    */
   tFxFxReaderPtr theCurrentReader;
 
+
+
 protected:
 
   /** @name Clone Methods. */
@@ -334,8 +336,6 @@ protected:
   map<string,XSecStat> opthistStats;
 
 
-
-
   /*
    * The weight identifiers for the events
    */ 
@@ -377,7 +377,6 @@ private:
    *  How to normalize the weights
    */
   unsigned int theNormWeight;
-
 
 
 public:

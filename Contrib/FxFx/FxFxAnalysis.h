@@ -188,13 +188,13 @@ private:
   /** 
    * Enable use of optional weights in analysis
    */  
-  bool useoptweights;
+  bool useoptweights = false;
 
    /** 
    * normalize optional weights to the central weight
    */  
 
-  bool normoptweights;
+  bool normoptweights = false;
   
   /**
    *  The FxFxAnalysisHandler
