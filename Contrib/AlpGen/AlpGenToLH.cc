@@ -845,13 +845,13 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp.open(string(prefix+".in").c_str());
 
   hwpp << "#############################################################\n";
-  hwpp << "# Create an event generator taking the default LHCGenerator #\n";
+  hwpp << "# Create an event generator taking the default EventGenerator #\n";
   hwpp << "# as the starting point ...                                 #\n";
   hwpp << "#############################################################\n";
   hwpp << "cd /Herwig/Generators\n";
-  hwpp << "# Copy the default LHCGenerator with its settings to a new \n";
+  hwpp << "# Copy the default EventGenerator with its settings to a new \n";
   hwpp << "# which will be the basis of the one we use for showering: \n";
-  hwpp << "cp LHCGenerator theGenerator\n";
+  hwpp << "cp EventGenerator theGenerator\n";
   hwpp << "\n";
   hwpp << "#############################################################\n";
   hwpp << "# Create a LH event handler (set up & assigned below) ...   #\n";
@@ -902,8 +902,10 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   } else {
     hwpp << "set theLesHouchesHandler:WeightOption VarNegWeight\n";
   }
-  hwpp << "set theLesHouchesHandler:PartonExtractor "
-       << "/Herwig/Partons/QCDExtractor\n";
+  //  hwpp << "set theLesHouchesHandler:PartonExtractor "
+  //     << "/Herwig/Partons/QCDExtractor\n";
+  hwpp << "set theLesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor\n";
+
   hwpp << "set theLesHouchesHandler:CascadeHandler "
        << "/Herwig/Shower/AlpGenHandler\n";
   hwpp << "set theLesHouchesHandler:HadronizationHandler "
@@ -933,7 +935,7 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
    hwpp << "# Intrinsic pT etc should be set as part of a tune i.e. it \n";
   hwpp << "# should either be left alone (default) or set by reading in \n";
   hwpp << "# one of the tunes before theGenerator is created by copying \n";
-  hwpp << "# LHCGenerator (second line of this file). The following \n";
+  hwpp << "# EventGenerator (second line of this file). The following \n";
   hwpp << "# settings were extracted from LHC-UE-EE-3-CTEQ6L1.in - In \n";
   hwpp << "# light of some bad experience with MPI we prefer to set \n";
   hwpp << "# these here manually rather than read try to read that .in. \n";
