@@ -160,14 +160,29 @@ if(name.find("Matchbox-Powheg")>0) :
     istart = 3
     simulation="Matchbox"
     parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
+    
 elif(name.find("Matchbox")>0) :
     istart = 2
     simulation="Matchbox"
     parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
+    
+
+elif(name.find("Dipole-Powheg")>0) :
+    istart = 3
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
+    
+elif(name.find("Dipole-MCatNLO")>0) :
+    istart = 3
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
+    
 elif(name.find("Dipole")>0) :
     istart = 2
     simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n"
+    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n"
+    
+    
 elif(name.find("Powheg")>0) :
     istart = 2
     simulation="Powheg"
@@ -180,7 +195,7 @@ if(simulation=="Matchbox") :
     parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
     if(parameters["shower"].find("Dipole")>=0) :
         parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
-    if(collider.find("DIS")<0) :
+    if(collider.find("DIS")<0 and collider.find("LEP")<0 ) :
         parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
 
@@ -1274,7 +1289,7 @@ elif(collider=="LHC") :
               sys.exit(0)
             process+=setHardProcessWidthToZero(["h0","W+","W-"])
             process+=addProcess(thefactory,"p p W+ h0","0","2","FixedScale",0,0)
-            process+=addProcess(thefactory,"p p W- h0","2","1","FixedScale",0,0)
+            process+=addProcess(thefactory,"p p W- h0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])

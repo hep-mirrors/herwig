@@ -9,10 +9,11 @@ set /Herwig/Partons/RemnantDecayer:MultiPeriph Yes
 # Set gaussian width of longitudinal momentum fraction fluctuation
 set /Herwig/Partons/RemnantDecayer:gaussWidth 0.03
 
-# Tuned to min-bias data
-set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.677921
-set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.068890
-set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.386754
-set /Herwig/UnderlyingEvent/MPIHandler:Power 0.367906
-set /Herwig/Partons/RemnantDecayer:ladderPower -0.367906
-set /Herwig/Partons/RemnantDecayer:ladderNorm 1.022621
+# Tuned to min-bias data (5B tune)
+set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.652710
+set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.568157
+set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.489997
+set /Herwig/UnderlyingEvent/MPIHandler:Power 0.420445
+set /Herwig/Partons/RemnantDecayer:ladderPower -0.088983
+set /Herwig/Partons/RemnantDecayer:ladderNorm 1.086029
+ 
