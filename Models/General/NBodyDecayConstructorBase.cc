@@ -71,7 +71,7 @@ void NBodyDecayConstructorBase::Init() {
      "Yes",
      "Initialize new decayers to find max weights",
      true);
-  static SwitchOption interfaceInitializeDecayersoff
+  static SwitchOption interfaceInitializeDecayersNo
     (interfaceInitializeDecayers,
      "No",
      "Use supplied weights for integration",
