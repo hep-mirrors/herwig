@@ -98,6 +98,7 @@ set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL # comment out to 
 # LHC physics parameters and cuts (override defaults here) 
 ##################################################
 set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set EventGenerator:EventHandler:CascadeHandler /Herwig/Shower/AlpGenHandlerOL
 
 # Intrinsic pT tune extrapolated to LHC energy
 #set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
