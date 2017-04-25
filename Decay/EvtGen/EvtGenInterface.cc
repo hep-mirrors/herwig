@@ -160,7 +160,8 @@ void EvtGenInterface::doinitrun() {
   // redirect cerr and cout if needed
   std::streambuf *temp[2]={cout.rdbuf(),cerr.rdbuf()};
   if(reDirect_ && ! generator()->useStdOut() ) {
-    logFile_.open("EvtGen.log");
+    const string f = generator()->filename() + "-EvtGen.log";
+    logFile_.open(f);
     std::streambuf *psbuf = logFile_.rdbuf();
     cout.rdbuf(psbuf);
     cerr.rdbuf(psbuf);
