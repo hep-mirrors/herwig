@@ -4,5 +4,7 @@
 
 cd /Herwig/Analysis
 create ThePEG::HepMCFile HepMC HepMCAnalysis.so
+set HepMC:PrintEvent 100000
+set HepMC:Format GenEvent
+set HepMC:Units GeV_mm
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
-
