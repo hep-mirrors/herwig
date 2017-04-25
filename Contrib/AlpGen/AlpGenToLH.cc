@@ -991,7 +991,7 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "set AlpGenHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler\n";
   hwpp << "set AlpGenHandler:RemDecayer  /Herwig/Partons/RemnantDecayer\n";
   hwpp << "set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes\n"; 
-  hwpp << "set /Herwig/Shower/ShowerHandler:RestrictPhasespace On\n";
+  hwpp << "set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes\n";
   hwpp << "set /Herwig/Shower/ShowerHandler:MaxTry               100\n";
   hwpp << "set /Herwig/Shower/PartnerFinder:PartnerMethod Random\n";
   hwpp << "set /Herwig/Shower/PartnerFinder:ScaleChoice Partner\n";

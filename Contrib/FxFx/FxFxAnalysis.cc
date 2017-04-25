@@ -137,7 +137,7 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
 	OptWeightsTemp.first = atoi(strs[3].c_str());
 	OptWeightsTemp.second = it->second;
         //        cout << "OptWeightsTemp.first = " << OptWeightsTemp.first << " OptWeightsTemp.second = " << OptWeightsTemp.second << endl;
-        if(OptWeightsTemp.first == 1001) { /*cout << "OptWeightsTemp.second = " << OptWeightsTemp.second << endl;*/ /*CentralWeight = OptWeightsTemp.second; } 
+        if(OptWeightsTemp.first == 1001) { cout << "OptWeightsTemp.second = " << OptWeightsTemp.second << endl; CentralWeight = OptWeightsTemp.second; } 
 	OptWeights.push_back(OptWeightsTemp);
 	_i++;
       }*/

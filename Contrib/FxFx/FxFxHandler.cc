@@ -267,12 +267,12 @@ void FxFxHandler::Init() {
      &FxFxHandler::vetoHeavyFlavour_, false, false, false);
   static SwitchOption HeavyFVetoingIsOn
     (interfaceVetoHeavyFlavour,
-     "On",
+     "Yes",
      "The MLM merging veto mechanism for heavy flavour is switched ON.",
      true);
   static SwitchOption HeavyFVetoingIsOff
     (interfaceVetoHeavyFlavour,
-     "Off",
+     "No",
      "The MLM merging veto mechanism for heavy flavour is switched OFF.",
      false);
 
@@ -282,12 +282,12 @@ void FxFxHandler::Init() {
      &FxFxHandler::vetoHeavyQ_, false, false, false);
   static SwitchOption HQVetoingIsOn
     (interfaceHeavyQVeto,
-     "On",
+     "Yes",
      "The MLM merging veto on Heavy quark decay produts mechanism is switched ON.",
      true);
   static SwitchOption HQVetoingIsOff
     (interfaceHeavyQVeto,
-     "Off",
+     "No",
      "The MLM merging veto on Heavy quark decay products mechanism is switched OFF.",
      false);
 
