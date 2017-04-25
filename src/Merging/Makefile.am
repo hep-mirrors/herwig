@@ -13,6 +13,7 @@ LHC8-H-Analysis.in \
 \
 FactorCMWScheme.in \
 LinearCMWScheme.in \
+Merging-Dipole-FactorCMWSchemeTune.in \
 \
 LEP-Merging.in \
 LHC-W-Merging.in \

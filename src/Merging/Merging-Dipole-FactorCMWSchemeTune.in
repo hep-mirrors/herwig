@@ -1,0 +1,73 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+## CMW Scheme with alpha_S=0.118
+##################################################
+
+read Merging/FactorCMWScheme.in
+
+
+##################################################
+## intrinsic pt
+##################################################
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale  1.67
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale      1.67
+
+##################################################
+## (two-loop) alpha_s
+##################################################
+set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s                 0.118
+set /Herwig/DipoleShower/NLOAlphaS:input_scale                  91.18*GeV
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s                    0.118
+set /Herwig/Couplings/NLOAlphaS:input_scale                     91.18*GeV
+
+
+##################################################
+## cutoffs
+##################################################
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 0.604
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff   0.604
+set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 0.604
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff   0.604
+set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 0.604
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff   0.604
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff   0.604
+
+##################################################
+## hadronization parameters
+##################################################
+
+set /Herwig/Particles/g:ConstituentMass                          0.80
+set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom             0.1
+set /Herwig/Hadronization/ClusterDecayer:ClSmrLight              0.26
+set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm              0.16
+
+set /Herwig/Hadronization/ClusterFissioner:ClPowBottom           0.7
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight            0.9
+set /Herwig/Hadronization/ClusterFissioner:ClPowCharm            0.7
+
+set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom           5.8
+set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm            2.9
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight            2.7
+
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight           1.0
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm           1.1
+set /Herwig/Hadronization/ClusterFissioner:PSplitBottom          0.9
+
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom 0.13
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm  0.0
+
+set /Herwig/Hadronization/HadronSelector:PwtUquark               0.65
+set /Herwig/Hadronization/HadronSelector:PwtDquark               0.65
+set /Herwig/Hadronization/HadronSelector:PwtSquark               0.74
+set /Herwig/Hadronization/HadronSelector:PwtCquark               0.30
+set /Herwig/Hadronization/HadronSelector:PwtBquark               0.40
+set /Herwig/Hadronization/HadronSelector:PwtDIquark              0.24
+set /Herwig/Hadronization/HadronSelector:SngWt                   0.59
+set /Herwig/Hadronization/HadronSelector:DecWt                   0.50
+
+set /Herwig/Particles/b:NominalMass                              5.3
+set /Herwig/Particles/b:ConstituentMass                          4.8
+
+
+cd /
