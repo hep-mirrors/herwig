@@ -1,0 +1,8 @@
+## snippet to set up a hepmc hook
+
+## this snippet is for all order ie WITH shower
+
+cd /Herwig/Analysis
+create ThePEG::HepMCFile HepMC HepMCAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+

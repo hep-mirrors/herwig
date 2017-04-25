@@ -1,0 +1,8 @@
+## snippet to set up a rivet analysis hook
+
+## this snippet is for all order ie WITH shower
+
+cd /Herwig/Analysis
+create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+
