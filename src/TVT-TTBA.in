@@ -83,6 +83,24 @@ cd /Herwig/EventHandlers
 #set EventHandler:HadronizationHandler NULL
 #set EventHandler:DecayHandler NULL
 
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMC.in
+#set HepMC:PrintEvent NNN
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running at fixed order (NO shower)
+##################################################
+#read snippets/RivetFixedOrder.in
+#insert RivetFixedOrder:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMCFixedOrder.in
+#set HepMCFixedOrder:PrintEvent NNN
+
 # Other parameters for run
 cd /Herwig/Generators
 saverun TVT-TTBA EventGenerator
