@@ -1205,7 +1205,7 @@ elif(collider=="LHC") :
         if(parameterName.find("8-VBF")>=0) :
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
             if(simulation=="Merging"):
-                process+="cd /Herwig/Merging/"
+                process+="cd /Herwig/Merging/\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
@@ -1227,7 +1227,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
             if(simulation=="Merging"):
-                process+="cd /Herwig/Merging/"
+                process+="cd /Herwig/Merging/\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
