@@ -82,8 +82,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
   return sub->incoming();
   
   eventRecord().clear();
-  eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), pdfs(),
-                        ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
+  eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), newStep(), pdfs(), 
+			ShowerHandler::currentHandler()->generator()->currentEvent()->incoming(),
+			firstInteraction());
   if ( eventRecord().outgoing().empty() && !doISR() )
   return sub->incoming();
   if ( !eventRecord().incoming().first->coloured() &&
@@ -160,7 +161,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
       
         // Decay and shower any particles that require decaying
       while ( !eventRecord().decays().empty() ) {
-        
+	
         map<PPtr,PerturbativeProcessPtr>::const_iterator decayIt = eventRecord().decays().begin();
           // find the decay to do, one with greatest width and parent showered
         while(find(eventRecord().outgoing().begin(),eventRecord().outgoing().end(),decayIt->first)==
@@ -226,9 +227,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
       throw ShowerTriesVeto(maxtry());
       
       eventRecord().clear();
-      eventRecord().prepare(sub,dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()),
-                            pdfs(),
-                            ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
+      eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), newStep(), pdfs(),
+                            ShowerHandler::currentHandler()->generator()->currentEvent()->incoming(),
+			    firstInteraction());
       
       continue;
       

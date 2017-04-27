@@ -337,17 +337,19 @@ public:
    */
   const map<PPtr,PPtr>& prepare(tSubProPtr subpro,
                                 tStdXCombPtr xc,
+				StepPtr step,
                                 const pair<PDF,PDF>& pdf,
 				tPPair beam,
+				bool firstInteraction,
                                 bool dipoles = true);
   /**
    * Prepare the event record for the given
    * subprocess.
    */
   void slimprepare(tSubProPtr subpro,
-                                tStdXCombPtr xc,
-                                const pair<PDF,PDF>& pdf,tPPair beam,
-                                bool dipoles = true);
+		   tStdXCombPtr xc,
+		   const pair<PDF,PDF>& pdf,tPPair beam,
+		   bool dipoles = true);
 
   /**
    * Clear the event record: Give up ownership
