@@ -11,10 +11,10 @@ AC_CANONICAL_HOST
 
 dnl === disable debug symbols by default =====
 if test "x$CXXFLAGS" = "x"; then
-   CXXFLAGS=-O3
+   CXXFLAGS=-O2
 fi
 if test "x$CFLAGS" = "x"; then
-   CFLAGS=-O3
+   CFLAGS=-O2
 fi
 
 AC_LANG([C++])
