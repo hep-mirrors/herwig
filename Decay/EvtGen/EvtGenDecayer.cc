@@ -217,12 +217,13 @@ bool EvtGenDecayer::rescale(const Particle & in,
     psum+=children[ix]->momentum();
   }
   // two dodgy cases from EvtGen
+  int flavour = ((abs(in.id())%1000)/10==44);
+  bool isBd = (abs(in.id())==ParticleID::Bplus || abs(in.id())==ParticleID::B0);
   // B -> 3pi
-  bool bDecay = ((abs(in.id())==ParticleID::Bplus || abs(in.id())==ParticleID::B0) &&
-		 npi==3 && children.size()==3);
-  bool jPsi   = ((abs(in.id())%1000)/10==44) && ngamma ==1;
+  bool bDecay = isBd && npi==3 && children.size()==3;
+  bool photon = (flavour==44 || flavour==55 || isBd || abs(in.id())==ParticleID::B_s0) && ngamma ==1;
   // not a dodgy case return
-  if(!bDecay && !jPsi) return false;
+  if(!bDecay && !photon) return false;
   // ensure in rest frame of system
   psum *=rot;
   LorentzRotation rotInv = rot.inverse();
