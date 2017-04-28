@@ -43,15 +43,29 @@ do MergingFactory:Process p p -> e+ e- [ j j ]
 
 set MergingFactory:NLOProcesses 2
 
+# Set the merging scale deviding the parton shower
+# from the matrix element region in phase space.
 set Merger:MergingScale 15.*GeV
 set Merger:MergingScaleSmearing 0.1
-set Merger:gamma 1.
 
+
+# The following lines control a preweighter,
+# that can be used to force more events in higher
+# HT or pt regions. The unweighted events are accepted
+# with a enhanced probability W, that is divided fron the
+# event weight once the event is accepted.
+# W = ((HT/scale)^HTPower + (pt_max/scale)^MaxPTPower)
+# with scale = MZ (can be changed)
+# Note that the weights will therefore differ from "1"
+# if the powers are not zero.
 set MPreWeight:HTPower 0
 set MPreWeight:MaxPTPower 0
 set MPreWeight:OnlyColoured No
 
-read Matchbox/PQCDLevel.in
+
+# The next line can switch of hadronization
+# and MPI modelling. Use with care!!
+# read Matchbox/PQCDLevel.in
 
 
 
@@ -80,7 +94,8 @@ read Matchbox/PQCDLevel.in
 # read Matchbox/VBFNLO.in
 
 ## Uncomment this to use ggh effective couplings
-## currently only supported by MadGraph-GoSam
+## currently only supported by MadGraph-GoSam and
+## MadGraph-Openloops
 
 # read Matchbox/HiggsEffective.in
 
@@ -155,6 +170,9 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
+
+# Here we collected a various Rivet analysis for Zs at LHC
+# at the 8 TeV. (The collection might not be complete.)
 read Merging/LHC7-Z-Analysis.in
 
 

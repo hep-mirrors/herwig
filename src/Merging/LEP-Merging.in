@@ -129,6 +129,9 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
+
+# Here we collected a various Rivet analysis for LEP
+# at the Z Mass. (The collection might not be complete.)
 read Merging/LEP91-Analysis.in
 
 
