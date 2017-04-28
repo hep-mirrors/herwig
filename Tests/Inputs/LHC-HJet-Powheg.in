@@ -14,8 +14,8 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
 insert SubProcess:MatrixElements[0] PowhegMEHiggs
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO-old
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO-old
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
 create Herwig::O2AlphaS O2AlphaS 
 set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
 cd /Herwig/Shower
