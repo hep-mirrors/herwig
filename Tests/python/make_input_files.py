@@ -15,7 +15,6 @@ if __name__ == "__main__":
 
 simulation=""
 
-
 numberOfAddedProcesses=0
 def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
     global numberOfAddedProcesses
@@ -156,48 +155,79 @@ thefactory="Factory"
 
 istart = 1
 print name
-if(name.find("Matchbox-Powheg")>0) :
-    istart = 3
-    simulation="Matchbox"
-    parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
-    
-elif(name.find("Matchbox")>0) :
-    istart = 2
-    simulation="Matchbox"
-    parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
-    
 
-elif(name.find("Dipole-Powheg")>0) :
-    istart = 3
+parameters["shower"]=""
+parameters["bscheme"]=""
+
+# Dipole shower with Matchbox Powheg
+if(name.find("Dipole-Matchbox-Powheg")>0) :
+    istart = 4
     simulation="Matchbox"
     parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
-    
+
+    # Dipole shower with internal Powheg - Todo: Finish modifying template files.
+    '''
+    elif(name.find("Dipole-Powheg")>0) :
+    istart = 3
+    simulation="Powheg"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    '''
+
+# Dipole shower with MCatNLO
 elif(name.find("Dipole-MCatNLO")>0) :
     istart = 3
     simulation="Matchbox"
     parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
-    
+
+# Dipole shower with Matchbox LO
+elif(name.find("Dipole-Matchbox-LO")>0) :
+    istart = 4
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n" 
+
+# Dipole shower with internal LO
 elif(name.find("Dipole")>0) :
     istart = 2
+    simulation=""
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    
+# AO shower with Matchbox Powheg
+elif(name.find("Matchbox-Powheg")>0) :
+    istart = 3
     simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n"
-    
-    
+    parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
+
+# AO shower with MCatNLO
+elif(name.find("Matchbox")>0) :
+    istart = 2
+    simulation="Matchbox"
+    parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
+
+# AO shower with inernal Powheg    
 elif(name.find("Powheg")>0) :
     istart = 2
     simulation="Powheg"
+
+# Dipole shower with merging    
 elif(name.find("Merging")>0) :
     istart = 2
     simulation="Merging"
     thefactory="MergingFactory"
-
+    
+# Flavour settings for Matchbox    
 if(simulation=="Matchbox") :
     parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
+    
     if(parameters["shower"].find("Dipole")>=0) :
         parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
+        
     if(collider.find("DIS")<0 and collider.find("LEP")<0 ) :
         parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
+# Flavour settings for dipole shower with internal ME
+if ( simulation == "" and parameters["shower"].find("Dipole")>=0 ) :
+    parameters["bscheme"] = "read snippets/DipoleShowerFiveFlavours.in"
+    
 
 if(collider=="") :
     logging.error("Can\'t find collider")

@@ -9,6 +9,15 @@ read snippets/EPCollider.in
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 
+##################################################
+## Shower and flavour scheme selection.
+## Should be empty unless using the Dipole Shower.
+##################################################
+${shower}
+${bscheme}
+
+
+
 cd /Herwig/MatrixElements/
 # Neutral current DIS
 insert SubProcess:MatrixElements[0] MEDISNC
@@ -17,8 +26,9 @@ ${process}
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 1000000
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
-cd /Herwig/Generators
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 
+cd /Herwig/Generators
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 

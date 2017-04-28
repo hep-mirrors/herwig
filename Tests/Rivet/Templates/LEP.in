@@ -15,9 +15,17 @@ set EventGenerator:MaxErrors 1000000
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 
+
+##################################################
+## Shower and scheme selection.
+## Should be empty unless using the Dipole Shower.
+##################################################
+${shower}
+
 ##################################################
 #  Create the Herwig analysis
 ##################################################
+cd /Herwig/Generators
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
