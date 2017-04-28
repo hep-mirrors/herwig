@@ -133,7 +133,7 @@ void EvtGenDecayer::Init() {
     (interfaceOption,
      "Parent",
      "EvtGen decays the particle and returns the decay products to be decayed by"
-     " Herwig++.",
+     " Herwig.",
      0);
   static SwitchOption interfaceOptionAll
     (interfaceOption,

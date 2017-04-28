@@ -137,7 +137,7 @@ void EvtGenInterface::Init() {
   static ParVector<EvtGenInterface,long> interfaceOutputModes
     ("OutputModes",
      "Particles for which to output the EvtGen decay modes"
-     " so they can be read into Herwig++",
+     " so they can be read into Herwig",
      &EvtGenInterface::convID_, -1, long(0), 0, 0,
      false, false, Interface::nolimits);
 
@@ -628,7 +628,7 @@ ParticleVector EvtGenInterface::decayProducts(EvtParticle *part, bool boost) con
     else {
       throw Exception() << "Tried to convert an unknown particle, PDG code = " << id 
   			<< " from EvtGen in EvtGen::decayproducts which is "
-  			<< " unknown to Herwig++. Killing event." 
+  			<< " unknown to Herwig. Killing event." 
   			<< Exception::eventerror;
     }
   }

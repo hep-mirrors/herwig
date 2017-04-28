@@ -14,9 +14,9 @@ using namespace ThePEG;
 
 /**
  * The EvtGenDecayer class is designed to allow the EvtGen decay package to be used
- * as a Decayer in the Herwig++ structure.
+ * as a Decayer in the Herwig structure.
  *
- * It is a simple wrapper which uses members of the Herwig++ EvtGen class to perform
+ * It is a simple wrapper which uses members of the Herwig EvtGen class to perform
  * the decay
  *
  * @see EvtGenInterface
