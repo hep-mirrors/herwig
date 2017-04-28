@@ -57,13 +57,15 @@ ParticleVector EvtGenDecayer::decay(const DecayMode & dm,
 	for (auto const & dec : output)
 	  generator()->log()<< dec->dataPtr()->PDGName()<<" ";
 	generator()->log() << " violates momentum conservation in"
-			   << " EvtGenDecayer::decay\n";
+			   << " EvtGenDecayer::decay in event "
+			   << generator()->currentEventNumber() << "\n";
       }
     }
     if(charge!=0) {
       generator()->log() << "Decay of " << parent.PDGName() 
 			 << " violates charge conservation in"
-			 << " EvtGenDecayer::decay\n";
+			 << " EvtGenDecayer::decay in event "
+			 << generator()->currentEventNumber() << "\n";
     }
   }
   return output;
@@ -149,20 +151,22 @@ void EvtGenDecayer::checkDecay(PPtr in) const {
     ptotal-=in->children()[ix]->momentum();
     charge-=in->children()[ix]->dataPtr()->iCharge();
   }
-  if(abs(ptotal.x())>MeV||abs(ptotal.y())>MeV||
-     abs(ptotal.z())>MeV||abs(ptotal.e())>MeV) {
+  if(abs(ptotal.x())>0.001*MeV||abs(ptotal.y())>0.001*MeV||
+     abs(ptotal.z())>0.001*MeV||abs(ptotal.e())>0.001*MeV) {
     if(check_==1 || !rescale(*in,in->children())) {
       generator()->log() 
 	<< "SubDecay of " << in->PDGName() <<" -> ";
       for (auto const & dec : in->children())
 	generator()->log()<< dec->dataPtr()->PDGName()<<" ";
       generator()->log() <<" violates momentum conservation"
-			 << " in EvtGenDecayer::checkDecay\n";
+			 << " in EvtGenDecayer::checkDecay in event "
+			 << generator()->currentEventNumber() << "\n";
     }
   }
   if(charge!=0) generator()->log() << "Decay of " << in->PDGName() 
 				   << " violates charge conservation in "
-				   << "EvtGenDecayer::checkDecay\n";
+				   << "EvtGenDecayer::checkDecay in event "
+				   << generator()->currentEventNumber() << "\n";
 }
 namespace {
 
@@ -217,7 +221,7 @@ bool EvtGenDecayer::rescale(const Particle & in,
     psum+=children[ix]->momentum();
   }
   // two dodgy cases from EvtGen
-  int flavour = ((abs(in.id())%1000)/10==44);
+  int flavour = (abs(in.id())%1000)/10;
   bool isBd = (abs(in.id())==ParticleID::Bplus || abs(in.id())==ParticleID::B0);
   // B -> 3pi
   bool bDecay = isBd && npi==3 && children.size()==3;
