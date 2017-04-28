@@ -1,13 +1,6 @@
-pkglib_LTLIBRARIES = HwMRST.la
-HwMRST_la_SOURCES = \
-MRST.cc MRST.h MRST.icc
-## add this to produce tests of the PDFs
-## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
-HwMRST_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
+EXTRA_DIST = diffraction
 
-EXTRA_DIST = mrst diffraction
-
-pkglib_LTLIBRARIES += HwPomeronPDF.la
+pkglib_LTLIBRARIES = HwPomeronPDF.la
 HwPomeronPDF_la_SOURCES = \
 PomeronPDF.cc PomeronPDF.h
 ## add this to produce tests of the PDFs
@@ -49,13 +42,7 @@ IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
 
 HwIncomingPhotonEvolver_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:0:0
 
-if WANT_LOCAL_PDF
 install-data-local:
-	for i in `find $(srcdir)/mrst -name '*.dat'`; \
-	do \
-	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
-	done
-
 	for i in `find $(srcdir)/diffraction -name '*.data'`; \
 	do \
 	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
@@ -63,8 +50,3 @@ install-data-local:
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(pkgdatadir)/PDF
-endif
-
-dist-hook:
-	rm -rf `find $(distdir)/mrst -name '.svn' -or -name '.cvsignore' -or -name 'CVS'`
-	rm -rf `find $(distdir)/diffraction -name '.svn' -or -name '.cvsignore' -or -name 'CVS'`

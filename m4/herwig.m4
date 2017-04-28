@@ -707,35 +707,6 @@ AC_SUBST(PYTHIA8DATA)
 
 dnl CHECK PYTHIA END
 
-dnl ##### PDF PATH #####
-AC_DEFUN([HERWIG_PDF_PATH],
-[
-AC_MSG_CHECKING([which Herwig++ PDF data to use])
-AC_ARG_WITH(pdf,
-        AC_HELP_STRING([--with-pdf=DIR],[installation path of Herwig++PDF data tarball]),
-        [],
-        [with_pdf=${prefix}]
-        )
-HERWIG_PDF_PREFIX=${with_pdf}/share/Herwig++PDF
-
-if test -f "${HERWIG_PDF_PREFIX}/mrst/2008/mrstMCal.dat"; then
-	AC_MSG_RESULT([$with_pdf])
-	localPDFneeded=false
-else
-	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_PREFIX=PDF
-	localPDFneeded=true
-fi
-HERWIG_PDF_DEFAULT=${HERWIG_PDF_PREFIX}/mrst/2008/mrstMCal.dat
-HERWIG_PDF_NLO=${HERWIG_PDF_PREFIX}/mrst/2002/mrst2002nlo.dat
-HERWIG_PDF_POMERON=${HERWIG_PDF_PREFIX}/diffraction/
-
-AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
-AC_SUBST(HERWIG_PDF_DEFAULT)
-AC_SUBST(HERWIG_PDF_NLO)
-AC_SUBST(HERWIG_PDF_POMERON)
-])
-
 dnl ###### GSL ######
 AC_DEFUN([HERWIG_CHECK_GSL],
 [

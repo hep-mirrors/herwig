@@ -21,10 +21,6 @@ set /Herwig/Particles/W+:NominalMass 80.42
 set /Herwig/Particles/W-:NominalMass 80.42
 set /Herwig/Masses/HiggsMass:BreitWignerShape 0
 
-cd /Herwig/Partons
-#setup MRST-old /usr/local/share/Herwig/PDF/mrst/1998/lo05a.dat
-#set MRST:Interpolation Linear
-
 ##################################################
 # Technical parameters for this run
 ##################################################
