@@ -10,7 +10,7 @@ dnl
 dnl If FastJet is found and functional, the variables FASTJET_CXXFLAGS
 dnl and FASTJET_LIBS are set
 dnl
-dnl modified for Herwig++ 2011-10-04 D.Grellscheid
+dnl modified for Herwig 2011-10-04 D.Grellscheid
 dnl
 AC_DEFUN([FASTJET_CHECK_FASTJET],
 [

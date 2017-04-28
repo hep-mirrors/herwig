@@ -170,13 +170,6 @@ check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
 THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 
-install-exec-local:
-	$(install_sh_SCRIPT) $(srcdir)/Herwig++ $(DESTDIR)$(bindir)/Herwig++
-	sed -e's!@BINDIR@!$(bindir)!' $(srcdir)/Herwig++ > $(DESTDIR)$(bindir)/Herwig++
-
-uninstall-local:
-	rm -f  $(DESTDIR)$(bindir)/Herwig++
-
 install-data-hook:
 	@echo Creating repository
 	@./Herwig init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) -i$(DESTDIR)$(pkgdatadir)/snippets $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
@@ -212,7 +205,7 @@ unregister-from-thepeg-repo:
 		-l$(DESTDIR)$(pkglibdir) ; \
 	fi
 
-EXTRA_DIST = herwigopts.ggo Herwig++
+EXTRA_DIST = herwigopts.ggo
 
 nodist_Herwig_SOURCES = hgstamp.inc
 BUILT_SOURCES += hgstamp.inc

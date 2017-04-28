@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHE.in
+# usage: Herwig read LHE.in
 ##################################################
 read snippets/PPCollider.in
 ##################################################
@@ -91,7 +91,7 @@ set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
 # e.g if different top mass used
 #set /Herwig/Particles/t:NominalMass 173.0
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun LHE EventGenerator

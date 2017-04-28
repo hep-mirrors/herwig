@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHE.in
+# usage: Herwig read LHE.in
 ##################################################
 read snippets/PPCollider.in
 ##################################################
@@ -100,7 +100,7 @@ library MultiWeight.so
 create Herwig::MultiWeight /Herwig/Analysis/MultiWeight
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/MultiWeight
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun LHE-MultiWeight EventGenerator

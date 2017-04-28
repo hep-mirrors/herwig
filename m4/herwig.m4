@@ -11,7 +11,7 @@ AC_ARG_WITH(thepeg,
 AC_MSG_RESULT([$with_thepeg])
 
 if test "x$with_thepeg" = "xno"; then
-	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG. Please set --with-thepeg.])
+	AC_MSG_ERROR([Cannot build Herwig without ThePEG. Please set --with-thepeg.])
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
@@ -28,7 +28,7 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
 fi
 
 if test "x$THEPEGHASLHAPDF" == "xno" ; then
-   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with lhapdf.])
+   AC_MSG_ERROR([Herwig requires ThePEG to be build with lhapdf.])
 fi
 
 THEPEGHASFASTJET="no"
@@ -43,7 +43,7 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
 fi
 
 if test "x$THEPEGHASFASTJET" == "xno" ; then
-   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with FastJet.])
+   AC_MSG_ERROR([Herwig requires ThePEG to be build with FastJet.])
 fi
 
 THEPEGPATH="${with_thepeg}"
@@ -72,7 +72,7 @@ AC_ARG_WITH([thepeg-headers],
 AC_MSG_RESULT([$with_thepeg_headers])
 
 if test "x$with_thepeg_headers" = "xno"; then
-	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG headers. Please set --with-thepeg-headers.])
+	AC_MSG_ERROR([Cannot build Herwig without ThePEG headers. Please set --with-thepeg-headers.])
 fi
 
 THEPEGINCLUDE="-I$with_thepeg_headers"
