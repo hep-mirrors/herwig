@@ -5,3 +5,4 @@ create Herwig::EvtGenInterface EvtGen
 create Herwig::EvtGenDecayer EvtGenDecayer
 newdef EvtGenDecayer:EvtGen EvtGen
 newdef EvtGenDecayer:Option All
+newdef EvtGenDecayer:Check Rescale

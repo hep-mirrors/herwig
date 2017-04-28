@@ -24,14 +24,24 @@ bool EvtGenDecayer::accept(const DecayMode &) const {
 
 ParticleVector EvtGenDecayer::decay(const DecayMode & dm,
 				    const Particle & parent) const {
+  unsigned int ntry=0;
   ParticleVector output;
-  if(evtOpt_==0)
-    output=evtgen_->decay(parent,false,dm);
-  else if(evtOpt_==1)
-    output=evtgen_->decay(parent, true,dm);
-  else
-    throw Exception() << "Unknown option in EvtGenDecayer::decay() " 
-		      << Exception::runerror;
+  do {
+    if(evtOpt_==0)
+      output=evtgen_->decay(parent,false,dm);
+    else if(evtOpt_==1)
+      output=evtgen_->decay(parent, true,dm);
+    else
+      throw Exception() << "Unknown option in EvtGenDecayer::decay() " 
+			<< Exception::runerror;
+    ++ntry;
+  }
+  while(output.empty()&&ntry<10);
+  if(output.empty()) {
+      throw Exception() << "EvtGenDecayer::decay() failed to decay"
+			<< parent
+			<< Exception::eventerror;
+  }
   if(check_) {
     Lorentz5Momentum ptotal=parent.momentum();
     int charge=parent.dataPtr()->iCharge();
@@ -42,16 +52,20 @@ ParticleVector EvtGenDecayer::decay(const DecayMode & dm,
     }
     if(abs(ptotal.x())>0.001*MeV||abs(ptotal.y())>0.001*MeV||
        abs(ptotal.z())>0.001*MeV||abs(ptotal.e())>0.001*MeV) {
-      generator()->log() << "Decay of " << parent.PDGName()<<" -> ";
-      for (auto const & dec : output)
-        generator()->log()<< dec->dataPtr()->PDGName()<<" ";
-      generator()->log() << " violates momentum conservation in"
-			 << " EvtGenDecayer::decay\n";
+      if(check_==1 || !rescale(parent,output)) {
+	generator()->log() << "Decay of " << parent.PDGName()<<" -> ";
+	for (auto const & dec : output)
+	  generator()->log()<< dec->dataPtr()->PDGName()<<" ";
+	generator()->log() << " violates momentum conservation in"
+			   << " EvtGenDecayer::decay in event "
+			   << generator()->currentEventNumber() << "\n";
+      }
     }
     if(charge!=0) {
       generator()->log() << "Decay of " << parent.PDGName() 
 			 << " violates charge conservation in"
-			 << " EvtGenDecayer::decay\n";
+			 << " EvtGenDecayer::decay in event "
+			 << generator()->currentEventNumber() << "\n";
     }
   }
   return output;
@@ -91,7 +105,7 @@ void EvtGenDecayer::Init() {
      "Pointer to the EvtGenInterface object which encapsulates the EvtGen decay package.",
      &EvtGenDecayer::evtgen_, false, false, true, false, false);
 
-  static Switch<EvtGenDecayer,bool> interfaceCheck
+  static Switch<EvtGenDecayer,unsigned int> interfaceCheck
     ("Check",
      "Perform some basic checks of the decay",
      &EvtGenDecayer::check_, false, false, false);
@@ -99,12 +113,17 @@ void EvtGenDecayer::Init() {
     (interfaceCheck,
      "Yes",
      "Perform the checks",
-     true);
+     1);
+  static SwitchOption interfaceCheckCheckRescale
+    (interfaceCheck,
+     "Rescale",
+     "Perform the checks and rescale if momentum violation",
+     2);
   static SwitchOption interfaceCheckNoCheck
     (interfaceCheck,
      "No",
      "Don't perform the checks",
-     false);
+     0);
 
   static Switch<EvtGenDecayer,unsigned int> interfaceOption
     ("Option",
@@ -132,17 +151,115 @@ void EvtGenDecayer::checkDecay(PPtr in) const {
     ptotal-=in->children()[ix]->momentum();
     charge-=in->children()[ix]->dataPtr()->iCharge();
   }
-  if(abs(ptotal.x())>MeV||abs(ptotal.y())>MeV||
-     abs(ptotal.z())>MeV||abs(ptotal.e())>MeV) {
-    generator()->log() 
-      << "SubDecay of " << in->PDGName() <<" -> ";
+  if(abs(ptotal.x())>0.001*MeV||abs(ptotal.y())>0.001*MeV||
+     abs(ptotal.z())>0.001*MeV||abs(ptotal.e())>0.001*MeV) {
+    if(check_==1 || !rescale(*in,in->children())) {
+      generator()->log() 
+	<< "SubDecay of " << in->PDGName() <<" -> ";
       for (auto const & dec : in->children())
-        generator()->log()<< dec->dataPtr()->PDGName()<<" ";
+	generator()->log()<< dec->dataPtr()->PDGName()<<" ";
       generator()->log() <<" violates momentum conservation"
-      << " in EvtGenDecayer::checkDecay\n";
+			 << " in EvtGenDecayer::checkDecay in event "
+			 << generator()->currentEventNumber() << "\n";
+    }
   }
   if(charge!=0) generator()->log() << "Decay of " << in->PDGName() 
 				   << " violates charge conservation in "
-				   << "EvtGenDecayer::checkDecay\n";
+				   << "EvtGenDecayer::checkDecay in event "
+				   << generator()->currentEventNumber() << "\n";
+}
+namespace {
+
+// momentum test function and derivative for N-R method
+pair<Energy,Energy> momTest(double lambda,
+			    const vector<Energy2> & p2,
+			    const vector<Energy2> & m2) {
+  pair<Energy,Energy> output;
+  for(unsigned int ix=0;ix<p2.size();++ix) {
+    Energy en = sqrt(lambda*p2[ix]+m2[ix]);
+    output.first  += en;
+    output.second += 0.5*p2[ix]/en;
+  }
+  return output;
 }
 
+// rescaling boost from qtilde shower
+LorentzRotation solveBoost(const Lorentz5Momentum & q, 
+			   const Lorentz5Momentum & p ) {
+  Energy modp = p.vect().mag();
+  Energy modq = q.vect().mag();
+  double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
+  assert( abs(betam)-1. < 0. );
+  Boost beta = -betam*q.vect().unit();
+  ThreeVector<Energy2> ax = p.vect().cross( q.vect() ); 
+  double delta = p.vect().angle( q.vect() );
+  LorentzRotation R;
+  using Constants::pi;
+  assert( beta.mag2() - 1. < 0. );
+  if ( ax.mag2()/GeV2/MeV2 > 1e-16 ) {
+    R.rotate( delta, unitVector(ax) ).boost( beta );
+  } 
+  else {
+    R.boost( beta );
+  } 
+  return R;
+}
+  
+}
+
+bool EvtGenDecayer::rescale(const Particle & in,
+			    const ParticleVector & children) const {
+  LorentzRotation rot(-in.momentum().boostVector());
+  unsigned int npi(0),ngamma(0);
+  Lorentz5Momentum psum;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    long id = children[ix]->id();
+    if(id==ParticleID::gamma)
+      ++ngamma;
+    else if(abs(id)==ParticleID::piplus || id==ParticleID::pi0)
+      ++npi;
+    psum+=children[ix]->momentum();
+  }
+  // two dodgy cases from EvtGen
+  int flavour = (abs(in.id())%1000)/10;
+  bool isBd = (abs(in.id())==ParticleID::Bplus || abs(in.id())==ParticleID::B0);
+  // B -> 3pi
+  bool bDecay = isBd && npi==3 && children.size()==3;
+  bool photon = (flavour==44 || flavour==55 || isBd || abs(in.id())==ParticleID::B_s0) && ngamma ==1;
+  // not a dodgy case return
+  if(!bDecay && !photon) return false;
+  // ensure in rest frame of system
+  psum *=rot;
+  LorentzRotation rotInv = rot.inverse();
+  rot.boost(-psum.boostVector());
+  // setup Newton-Raphson for rescaling
+  Lorentz5Momentum psum2;
+  vector<Lorentz5Momentum> pold;
+  vector<Energy2> p2,m2;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    pold.push_back(rot*children[ix]->momentum());
+    psum2+=pold.back();
+    p2.push_back(pold.back().vect().mag2());
+    m2.push_back(sqr(children[ix]->mass()));
+  }
+  // calculate the rescaling using N-R
+  double lambda = 1.;
+  pair<Energy,Energy> test = momTest(lambda,p2,m2);
+  test.first -=in.mass();
+  do {
+    lambda -= test.first/test.second;
+    test = momTest(lambda,p2,m2);
+    test.first -=in.mass();
+  }
+  while(abs(test.first/MeV)>1e-8);
+  lambda = sqrt(lambda);
+  // apply the rescaleing boost
+  Lorentz5Momentum ptest;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    Lorentz5Momentum pnew(lambda*pold[ix].x(),lambda*pold[ix].y(),
+			  lambda*pold[ix].z(),sqrt(sqr(lambda)*p2[ix]+m2[ix]),
+			  children[ix]->mass());
+    children[ix]->deepTransform(rotInv*solveBoost(pnew,pold[ix])*rot);
+  }
+  return true;
+}

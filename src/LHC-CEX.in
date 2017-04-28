@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig read LHC-diffractive.in
+# usage: Herwig read LHC-CEX.in
 ##################################################
 
 read snippets/PPCollider.in
@@ -22,8 +22,8 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 cd /Herwig/Partons
 # Set the PDFs for the beams
-# This is for double diffractive, comment out either the first or second
-# for single diffractive
+# This is for double CEX, comment out either the first or second
+# for single CEX
 set PPExtractor:FirstPDF  PomeronFlux
 set PPExtractor:SecondPDF PomeronFlux
 
@@ -66,7 +66,7 @@ set JetKtCut:MinKT 10.
 set LeptonKtCut:MinKT 1.
 
 ##################################################
-# Matrix Elements for diffractive collisions 
+# Matrix Elements for CEX collisions 
 # (by default on QCD 2->2 switched on)
 ##################################################
 cd /Herwig/MatrixElements/
@@ -100,7 +100,7 @@ set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 # Save run for later usage with 'Herwig run'
 ##################################################
 
-saverun LHC-diffractive EventGenerator
+saverun LHC-CEX EventGenerator
 
 
 
