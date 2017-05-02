@@ -1,7 +1,6 @@
 EXTRA_DIST = \
 AcerDetInterface \
 AlpGen \
-Analysis2 \
 AnomalousHVV \
 DecayAnalysis \
 FxFx \
