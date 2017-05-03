@@ -23,4 +23,4 @@ struct FixGlobal1 {
   ThePEG::UseRandom dummy;
 };
 
-BOOST_GLOBAL_FIXTURE(FixGlobal1)
+BOOST_GLOBAL_FIXTURE(FixGlobal1);
