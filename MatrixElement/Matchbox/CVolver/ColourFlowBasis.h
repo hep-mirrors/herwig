@@ -3,7 +3,7 @@
 // ColourFlowBasis.h is a part of CVolver
 // Copyright (C) 2013-2014 Simon Platzer
 //
-// CVolver is licenced under version 2 of the GPL, see COPYING for details.
+// CVolver is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef CVOLVER_ColourFlowBasis_H

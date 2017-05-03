@@ -3,7 +3,7 @@
 // ElementIO.cpp is a part of myXML
 // Copyright (C) 2012-2013 Simon Platzer
 //
-// myXML is licenced under version 2 of the GPL, see COPYING for details.
+// myXML is licenced under version 3 of the GPL, see COPYING for details.
 //
 
 #include "ElementIO.h"

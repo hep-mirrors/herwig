@@ -3,7 +3,7 @@
 // TraceBasis.h is a part of ColorFull
 // Copyright (C) 2010-2011 Simon Platzer & Malin Sjodahl
 //
-// ColorFull is licenced under version 2 of the GPL, see COPYING for details.
+// ColorFull is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef COLORFULL_TraceBasis_H

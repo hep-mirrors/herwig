@@ -3,7 +3,7 @@
 // Run.hpp is a part of myStatistics
 // Copyright (C) 2012-2013 Simon Platzer
 //
-// myStatistics is licenced under version 2 of the GPL, see COPYING for details.
+// myStatistics is licenced under version 3 of the GPL, see COPYING for details.
 //
 #ifndef MYSTATISTICS_Run_hpp_included
 #define MYSTATISTICS_Run_hpp_included

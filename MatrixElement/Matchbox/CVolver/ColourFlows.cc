@@ -2,7 +2,7 @@
 
 //
 // ColourFlowBasis.cpp is part of CVolver, (C) 2013 Simon Plätzer -- simon.plaetzer@desy.de
-// CVolver is licenced under version 2 of the GPL, see COPYING for details.
+// CVolver is licenced under version 3 of the GPL, see COPYING for details.
 //
 
 #include "ColourFlows.h"
