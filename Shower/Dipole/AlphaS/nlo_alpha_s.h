@@ -83,7 +83,7 @@ namespace matchbox {
      * EventGenerator to disk.
      * @throws InitException if object could not be initialized properly.
      */
-    virtual inline void doinit() throw(InitException) {
+    virtual inline void doinit() {
       freezing_scale_ *= scale_factor();
       alpha_s::doinit();
     }

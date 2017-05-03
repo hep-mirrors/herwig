@@ -103,7 +103,7 @@ void MEvv2tv::doinit() {
 	throw InitException() << "MEvv2tv:doinit() - Cannot find correct "
 			      << "s-channel from diagram. Vertex not cast! "
 			      << Exception::runerror;
-	vector_[i] = 
+      vector_[i] = 
 	  make_pair(dynamic_ptr_cast<AbstractVVVVertexPtr>(current.vertices.first ), 
 		    dynamic_ptr_cast<AbstractVVTVertexPtr>(current.vertices.second));
       

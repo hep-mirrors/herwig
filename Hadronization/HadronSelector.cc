@@ -52,7 +52,7 @@ namespace {
 
 }
 
-ostream & Herwig::operator<< (ostream & os, 
+ostream & operator<< (ostream & os, 
 		      const HadronSelector::HadronInfo & hi ) {
   os << std::scientific << std::showpoint
      << std::setprecision(4)

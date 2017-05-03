@@ -50,7 +50,7 @@ double ShowerAlphaQED::ratio(const Energy2,double ) const {
   return 1.;
 }
 
-void ShowerAlphaQED::doinit() throw(InitException) {
+void ShowerAlphaQED::doinit() {
   ShowerAlpha::doinit();
   _alpha=generator()->standardModel()->alphaEM();
 }

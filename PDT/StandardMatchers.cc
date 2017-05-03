@@ -18,8 +18,6 @@ using namespace ThePEG;
 
 namespace {
 
-void dummy() {
-
   static MatchPhoton m00;
   static MatchBottom m01;
   static MatchTop    m02;
@@ -28,6 +26,5 @@ void dummy() {
   static MatchZBoson m05;
   static MatchHiggsBoson m06;
   static MatchChargedLepton m07;
-}
 
 }

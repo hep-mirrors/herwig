@@ -108,7 +108,7 @@ void MPISampler::dofinish() {
       << "the run." << Exception::warning);
   
     
-    SamplerBase::dofinish();
+  SamplerBase::dofinish();
 }
 
 void MPISampler::doinitrun() {
