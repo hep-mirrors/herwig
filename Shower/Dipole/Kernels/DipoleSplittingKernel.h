@@ -269,7 +269,7 @@ public:
    * the given value.
    */
   virtual double invertOverestimateIntegral(const DipoleSplittingInfo&, double) const {
-	 return -1.; 
+    return -1.; 
   }
   
   /**

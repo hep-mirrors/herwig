@@ -281,7 +281,7 @@ bool DipoleSplittingGenerator::haveOverestimate() const {
 
 }
 
-bool DipoleSplittingGenerator::overestimate(const vector<double>& point) {
+double DipoleSplittingGenerator::overestimate(const vector<double>& point) {
 
   assert(!wrapping());
   assert(prepared);

@@ -249,7 +249,7 @@ public:
   /**
    * Return an overestimate to the sampled kernel.
    */
-  bool overestimate(const vector<double>&);
+  double overestimate(const vector<double>&);
 
   /**
    * Invert the integral over the overestimate to equal
