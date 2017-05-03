@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
 //
-// ColourFlowBasis.hpp is part of CVolver, (C) 2013 Simon Plätzer -- simon.plaetzer@desy.de
+// ColourFlowBasis.hpp is part of CVolver, (C) 2013 Simon Plätzer -- simon.plaetzer@desy.de, The Herwig Collaboration
 // CVolver is licenced under version 3 of the GPL, see COPYING for details.
 //
 
