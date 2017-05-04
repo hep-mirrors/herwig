@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // FlatInvertiblePhasespace.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -157,13 +157,13 @@ void FlatInvertibleLabframePhasespace::Init() {
      "Generate a flat distribution in \\f$\\log(\\hat{s})\\f$.",
      &FlatInvertibleLabframePhasespace::theLogSHat, false, false, false);
 
-  static SwitchOption interfaceLogSHatOn
+  static SwitchOption interfaceLogSHatYes
     (interfaceLogSHat,
-     "True", "Generate flat in \\f$\\log(\\hat{s})\\f$", true);
+     "Yes", "Generate flat in \\f$\\log(\\hat{s})\\f$", true);
 
-  static SwitchOption interfaceLogSHatOff
+  static SwitchOption interfaceLogSHatNo
     (interfaceLogSHat,
-     "False", "Generate flat in \\f$\\hat{s}\\f$", false);
+     "No", "Generate flat in \\f$\\hat{s}\\f$", false);
 
   interfaceLogSHat.rank(-1);
 

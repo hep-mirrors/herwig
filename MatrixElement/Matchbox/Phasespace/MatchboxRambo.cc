@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // MatchboxRambo.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -247,14 +247,14 @@ void MatchboxRambo::Init() {
     ("MakeReferenceSample",
      "Switch on generation of a reference sample of phase space points.",
      &MatchboxRambo::theMakeReferenceSample, false, false, false);
-  static SwitchOption interfaceMakeReferenceSampleOn
+  static SwitchOption interfaceMakeReferenceSampleYes
     (interfaceMakeReferenceSample,
-     "On",
+     "Yes",
      "Generate a reference sample.",
      true);
-  static SwitchOption interfaceMakeReferenceSampleOff
+  static SwitchOption interfaceMakeReferenceSampleNo
     (interfaceMakeReferenceSample,
-     "Off",
+     "No",
      "Do not generate a reference sample.",
      false);
   interfaceMakeReferenceSample.rank(-1);

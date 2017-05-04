@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // DipoleEventRecord.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleEventRecord_H
@@ -337,17 +337,19 @@ public:
    */
   const map<PPtr,PPtr>& prepare(tSubProPtr subpro,
                                 tStdXCombPtr xc,
+				StepPtr step,
                                 const pair<PDF,PDF>& pdf,
 				tPPair beam,
+				bool firstInteraction,
                                 bool dipoles = true);
   /**
    * Prepare the event record for the given
    * subprocess.
    */
   void slimprepare(tSubProPtr subpro,
-                                tStdXCombPtr xc,
-                                const pair<PDF,PDF>& pdf,tPPair beam,
-                                bool dipoles = true);
+		   tStdXCombPtr xc,
+		   const pair<PDF,PDF>& pdf,tPPair beam,
+		   bool dipoles = true);
 
   /**
    * Clear the event record: Give up ownership

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // HwRemDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2011 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_HwRemDecayer_H
@@ -69,7 +69,7 @@ public:
                    ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0),
-		   ladderbFactor_(1.0),
+		   ladderbFactor_(0.0),
 		   ladderPower_(-0.08),
 		   ladderNorm_(1.0),
 		   gaussWidth_(0.1),

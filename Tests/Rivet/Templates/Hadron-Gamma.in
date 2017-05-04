@@ -18,6 +18,8 @@ set /Herwig/Partons/PPExtractor:FirstPDF  /Herwig/Partons/BudnevPDF
 set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/BudnevPDF
 set /Herwig/Shower/ShowerHandler:PDFA NULL
 set /Herwig/Shower/ShowerHandler:PDFB NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFA NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFB NULL
 # No MPI
 set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
@@ -32,7 +34,7 @@ set /Herwig/Analysis/RivetAnalysis:Debug No
 #  Cuts
 ##################################################
 cd /Herwig/Cuts
-set Cuts:ScaleMin 0.0*GeV
+set Cuts:ScaleMin 0.0
 set Cuts:X1Min 0
 set Cuts:X2Min 0
 set Cuts:X1Max 1.

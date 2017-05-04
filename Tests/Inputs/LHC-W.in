@@ -13,7 +13,7 @@ set EventGenerator:EventHandler:Sampler:Ntry 100000
 cd /Herwig/MatrixElements/
 insert SubProcess:MatrixElements[0] MEqq2W2ff
 cd /Herwig/Generators
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 create Herwig::SimpleLHCAnalysis WTest HwAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 WTest
 saverun LHC-W EventGenerator

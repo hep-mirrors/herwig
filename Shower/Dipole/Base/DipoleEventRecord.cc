@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // DipoleEventRecord.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -442,8 +442,9 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
 const map<PPtr,PPtr>&
 DipoleEventRecord::prepare(tSubProPtr subpro,
                            tStdXCombPtr xc,
+			   StepPtr step,
                            const pair<PDF,PDF>& pdf,tPPair beam,
-                           bool dipoles) {
+			   bool firstInteraction, bool dipoles) {
   // set the subprocess
   subProcess(subpro);
   // clear the event record
@@ -467,9 +468,35 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   // use ShowerHandler to split up the hard process
   PerturbativeProcessPtr hard;
   DecayProcessMap decay;
-  ShowerHandler::currentHandler()->splitHardProcess(tPVector(subpro->outgoing().begin(),
-                                                             subpro->outgoing().end()),
-                                                    hard,decay);
+
+  // Special handling for the first interaction:
+  // If a post subprocess handler (e.g. QED radiation)
+  // is applied, there may be particles in the step object not
+  // present in the subprocess object (other than any remnants).
+  // These need to be included in any transformations due to
+  // II splittings in ::update.
+  if ( firstInteraction ) {
+
+    // Initialise a PVector for the outgoing
+    tPVector hardProcOutgoing;
+
+    // Include all outgoing particles that are not remnants
+    for ( auto & part : step->particles() )
+      if ( part->id() != 82 ) {
+	hardProcOutgoing.push_back(part);
+      }
+    ShowerHandler::currentHandler()->splitHardProcess(hardProcOutgoing,
+						      hard, decay);
+  }
+
+  // For secondary collisions we must use the
+  // subProcess object and not the step as the
+  // step stores all outgoing from the entire collision
+  else
+    ShowerHandler::currentHandler()->splitHardProcess(tPVector(subpro->outgoing().begin(),
+							       subpro->outgoing().end()),
+						      hard,decay);
+  
   // vectors for originals and copies of the particles
   vector<PPtr> original;
   vector<PPtr> copies;

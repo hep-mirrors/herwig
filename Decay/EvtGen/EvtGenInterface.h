@@ -327,7 +327,7 @@ protected:
   //@}
 
   /**
-   *  Check the conversion of particles between Herwig++ and EvtGen
+   *  Check the conversion of particles between Herwig and EvtGen
    */
   void checkConversion() const;
 

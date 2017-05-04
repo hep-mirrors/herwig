@@ -11,10 +11,10 @@ AC_CANONICAL_HOST
 
 dnl === disable debug symbols by default =====
 if test "x$CXXFLAGS" = "x"; then
-   CXXFLAGS=-O3
+   CXXFLAGS=-O2
 fi
 if test "x$CFLAGS" = "x"; then
-   CFLAGS=-O3
+   CFLAGS=-O2
 fi
 
 AC_LANG([C++])
@@ -99,8 +99,6 @@ HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
 
-HERWIG_PDF_PATH
-
 FASTJET_CHECK_FASTJET
 
 HERWIG_ENABLE_MODELS
@@ -140,50 +138,50 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/Baryon/Makefile
 		Decay/VectorMeson/Makefile
 		Decay/Perturbative/Makefile
-                Decay/ScalarMeson/Makefile
-                Decay/TensorMeson/Makefile
-                Decay/WeakCurrents/Makefile
+		Decay/ScalarMeson/Makefile
+		Decay/TensorMeson/Makefile
+		Decay/WeakCurrents/Makefile
 		Decay/Partonic/Makefile
 		Decay/General/Makefile	
 		Decay/Radiation/Makefile
 		Decay/EvtGen/Makefile
-                Doc/refman.conf
-                Doc/refman.h
+		Doc/refman.conf
+		Doc/refman.h
 		PDT/Makefile
 		PDF/Makefile
-                MatrixElement/Makefile
-                MatrixElement/General/Makefile
-                MatrixElement/Lepton/Makefile
-                MatrixElement/Hadron/Makefile
-                MatrixElement/DIS/Makefile
-                MatrixElement/Powheg/Makefile
-                MatrixElement/Gamma/Makefile
-                MatrixElement/Reweighters/Makefile
-                MatrixElement/Matchbox/Makefile
-                MatrixElement/Matchbox/Base/Makefile
-                MatrixElement/Matchbox/Utility/Makefile
-                MatrixElement/Matchbox/Phasespace/Makefile
-                MatrixElement/Matchbox/Dipoles/Makefile
-                MatrixElement/Matchbox/InsertionOperators/Makefile
-                MatrixElement/Matchbox/Matching/Makefile
-                MatrixElement/Matchbox/Cuts/Makefile
-                MatrixElement/Matchbox/Scales/Makefile
-                MatrixElement/Matchbox/ColorFull/Makefile
-                MatrixElement/Matchbox/CVolver/Makefile
-                MatrixElement/Matchbox/Builtin/Makefile
-                MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
-                MatrixElement/Matchbox/Tests/Makefile
-                MatrixElement/Matchbox/External/Makefile
-                MatrixElement/Matchbox/External/BLHAGeneric/Makefile
-                MatrixElement/Matchbox/External/VBFNLO/Makefile
-                MatrixElement/Matchbox/External/NJet/Makefile
+		MatrixElement/Makefile
+		MatrixElement/General/Makefile
+		MatrixElement/Lepton/Makefile
+		MatrixElement/Hadron/Makefile
+		MatrixElement/DIS/Makefile
+		MatrixElement/Powheg/Makefile
+		MatrixElement/Gamma/Makefile
+		MatrixElement/Reweighters/Makefile
+		MatrixElement/Matchbox/Makefile
+		MatrixElement/Matchbox/Base/Makefile
+		MatrixElement/Matchbox/Utility/Makefile
+		MatrixElement/Matchbox/Phasespace/Makefile
+		MatrixElement/Matchbox/Dipoles/Makefile
+		MatrixElement/Matchbox/InsertionOperators/Makefile
+		MatrixElement/Matchbox/Matching/Makefile
+		MatrixElement/Matchbox/Cuts/Makefile
+		MatrixElement/Matchbox/Scales/Makefile
+		MatrixElement/Matchbox/ColorFull/Makefile
+		MatrixElement/Matchbox/CVolver/Makefile
+		MatrixElement/Matchbox/Builtin/Makefile
+		MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
+		MatrixElement/Matchbox/Tests/Makefile
+		MatrixElement/Matchbox/External/Makefile
+		MatrixElement/Matchbox/External/BLHAGeneric/Makefile
+		MatrixElement/Matchbox/External/VBFNLO/Makefile
+		MatrixElement/Matchbox/External/NJet/Makefile
 		MatrixElement/Matchbox/External/GoSam/Makefile
-                MatrixElement/Matchbox/External/OpenLoops/Makefile
-                MatrixElement/Matchbox/External/MadGraph/Makefile
-                MatrixElement/Matchbox/External/MadGraph/mg2herwig.py
+		MatrixElement/Matchbox/External/OpenLoops/Makefile
+		MatrixElement/Matchbox/External/MadGraph/Makefile
+		MatrixElement/Matchbox/External/MadGraph/mg2herwig.py
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
-                Shower/Makefile
+		Shower/Makefile
 		Shower/QTilde/Makefile
 		Shower/QTilde/Matching/Makefile
 		Shower/Dipole/Makefile
@@ -192,10 +190,10 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Dipole/Kinematics/Makefile
 		Shower/Dipole/Utility/Makefile
 		Shower/Dipole/AlphaS/Makefile
-                Utilities/Makefile
-                Utilities/XML/Makefile
-                Utilities/Statistics/Makefile
-                Hadronization/Makefile
+		Utilities/Makefile
+		Utilities/XML/Makefile
+		Utilities/Statistics/Makefile
+		Hadronization/Makefile
 		lib/Makefile
 		include/Makefile
 		src/Makefile

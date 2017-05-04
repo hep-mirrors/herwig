@@ -32,7 +32,7 @@ set /Herwig/Shower/ShowerHandler:PDFB NULL
 #  Cuts
 ##################################################
 cd /Herwig/Cuts
-set Cuts:ScaleMin 0.0*GeV
+set Cuts:ScaleMin 0.0
 set Cuts:X1Min 0
 set Cuts:X2Min 0
 set Cuts:X1Max 1.
@@ -57,6 +57,24 @@ set /Herwig/MatrixElements/MEgg2ff:Process Muon
 ##################################################
 cd /Herwig/Generators
 set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMC.in
+#set HepMC:PrintEvent NNN
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running at fixed order (NO shower)
+##################################################
+#read snippets/RivetFixedOrder.in
+#insert RivetFixedOrder:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMCFixedOrder.in
+#set HepMCFixedOrder:PrintEvent NNN
 
 ###################################################
 # Save run for later usage with 'Herwig run'

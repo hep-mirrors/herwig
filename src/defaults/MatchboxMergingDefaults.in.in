@@ -226,9 +226,6 @@ create Herwig::Merger Merger
 create Herwig::MergingReweight MPreWeight HwDipoleShower.so
 insert MergingFactory:Preweighters 0  MPreWeight
 
-create Herwig::SimpleColourBasis  LargeNColourBasis
-set LargeNColourBasis:LargeN On
-set Merger:LargeNBasis LargeNColourBasis
 
 cd /
 

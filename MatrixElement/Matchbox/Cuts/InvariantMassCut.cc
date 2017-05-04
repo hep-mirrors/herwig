@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // InvariantMassCut.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -35,8 +35,8 @@ void InvariantMassCut::describe() const {
     << theFirstMatcher->name() << "' and '"
     << theSecondMatcher->name() << "':\n"
     << "M = " << theMinMass/GeV << " .. " << theMaxMass/GeV << " GeV\n"
-    << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
-    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n\n";
+    << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
+    << "opposite sign only = " << (theOppositeSignOnly?"Yes":"No") << " \n\n";
 }
 
 IBPtr InvariantMassCut::clone() const {
@@ -169,30 +169,30 @@ void InvariantMassCut::Init() {
    ("SameFlavourOnly",
      "Whether cut works on fermion pairs of the same flavour only ",
      &InvariantMassCut::theSameFlavourOnly, true, false, false);
-  static SwitchOption interfaceSameFlavourOnlyTrue
+  static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceSameFlavourOnlyFalse
+  static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Switch<InvariantMassCut,bool> interfaceOppositeSignOnly
    ("OppositeSignOnly",
      "Whether cut works on fermion pairs of opposite sign only ",
      &InvariantMassCut::theOppositeSignOnly, true, false, false);
-  static SwitchOption interfaceOppositeSignOnlyTrue
+  static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceOppositeSignOnlyFalse
+  static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Reference<InvariantMassCut,MatcherBase> interfaceFirstMatcher

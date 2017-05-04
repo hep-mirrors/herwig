@@ -151,6 +151,12 @@ cd /Herwig/Generators
 read Analysis.in
 
 ##########################################
+# setup additional samplers
+##########################################
+
+read Samplers.in
+
+##########################################
 # setup the matchbox framework
 ##########################################
 read MatchboxDefaults.in

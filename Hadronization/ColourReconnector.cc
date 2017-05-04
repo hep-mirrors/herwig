@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ColourReconnector.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2011 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -321,35 +321,52 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
   if ( ( p->hasColour() && q->hasAntiColour() ) ||
        ( p->hasAntiColour() && q->hasColour() ) ) {
 
-    // old simple option
-    if(_octetOption==0) {
-      if ( !p->parents().empty() && !q->parents().empty() ) {
-	// true if p and q are originated from a colour octet
-	octet = ( p->parents()[0] == q->parents()[0] ) &&
-	  ( p->parents()[0]->data().iColour() == PDT::Colour8 );
-      }
+    // true if p and q are originated from a colour octet
+    if ( !p->parents().empty() && !q->parents().empty() ) {
+        octet = ( p->parents()[0] == q->parents()[0] ) &&
+          ( p->parents()[0]->data().iColour() == PDT::Colour8 );
     }
-    // new option handling more octets
+
+    // (Final) option: check if same colour8 parent
+    // or already found an octet.
+    if(_octetOption==0||octet) return octet;
+
+    // (All) option handling more octets
+    // by browsing particle history/colour lines.
+    tColinePtr cline,aline;
+
+    // Get colourlines form final states.
+    if(p->hasColour() && q->hasAntiColour()) {
+      cline  = p->    colourLine();
+      aline  = q->antiColourLine();
+    }
     else {
-      tColinePtr cline,aline;
-      if(p->hasColour() && q->hasAntiColour()) {
-	cline  = p->    colourLine();
-	aline  = q->antiColourLine();
-      }
-      else {
-	cline  = q->    colourLine();
-	aline  = p->antiColourLine();
-      }
-      if ( !p->parents().empty() ) {
-	tPPtr parent = p->parents()[0];
-	while (parent) {
-	  if(parent->data().iColour() == PDT::Colour8) {
-	    octet = (parent->    colourLine()==cline &&
-		     parent->antiColourLine()==aline);
-	  }
-	  if(octet||parent->parents().empty()) break;
-	  parent = parent->parents()[0];
-	}
+      cline  = q->    colourLine();
+      aline  = p->antiColourLine();
+    }
+    
+    // Follow the colourline of p.
+    if ( !p->parents().empty() ) {
+      tPPtr parent = p->parents()[0];
+      while (parent) {
+        if(parent->data().iColour() == PDT::Colour8) {
+            // Coulour8 particles should have a colour 
+            // and an anticolour line. Currently the 
+            // remnant has none of those. Since the children 
+            // of the remnant are not allowed to emit currently, 
+            // the colour octet remnant is handled by the return 
+            // statement above. The assert also catches other 
+            // colour octets without clines. If the children of 
+            // a remnant should be allowed to emit, the remnant 
+            // should get appropriate colour lines and 
+            // colour states.
+          //  See Ticket: #407 
+	  //  assert(parent->colourLine()&&parent->antiColourLine());
+          octet = (parent->    colourLine()==cline &&
+                   parent->antiColourLine()==aline);
+        }
+        if(octet||parent->parents().empty()) break;
+        parent = parent->parents()[0];
       }
     }
   }
@@ -381,12 +398,12 @@ void ColourReconnector::Init() {
     ("ColourReconnection",
      "Colour reconnections",
      &ColourReconnector::_clreco, 0, true, false);
-  static SwitchOption interfaceColourReconnectionOff
+  static SwitchOption interfaceColourReconnectionNo
     (interfaceColourReconnection,
      "No",
      "Colour reconnections off",
      0);
-  static SwitchOption interfaceColourReconnectionOn
+  static SwitchOption interfaceColourReconnectionYes
     (interfaceColourReconnection,
      "Yes",
      "Colour reconnections on",

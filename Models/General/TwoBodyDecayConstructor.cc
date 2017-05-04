@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // TwoBodyDecayConstructor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2011 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -254,7 +254,7 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 	if(!decayer) continue;
 	generator()->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
-	generator()->preinitInterface(ndm, "OnOff", "set", "On");
+	generator()->preinitInterface(ndm, "Active", "set", "Yes");
 	Energy width = 
 	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
 				make_pair(pb,pb->mass()) , 

@@ -1,3 +1,0 @@
-.cvsignore .svn Makefile
-*.lo *.la .libs .deps
-Makefile.in

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // MatchboxOLPME.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -303,15 +303,15 @@ void MatchboxOLPME::Init() {
           "to the value of the renormalization scale muR2. Default is Off. The restoration for the "
           "full renormalization scale dependence in the DipoleIOperator isn't needed in this case.",
           &MatchboxOLPME::theSetMuToMuR, false, false, false);
-  static SwitchOption interfaceSetMuToMuROn
+  static SwitchOption interfaceSetMuToMuRYes
          (interfaceSetMuToMuR,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfaceSetMuToMuROff
+  static SwitchOption interfaceSetMuToMuRNo
          (interfaceSetMuToMuR,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
   interfaceSetMuToMuR.rank(-1);
 
@@ -321,15 +321,15 @@ void MatchboxOLPME::Init() {
           "instead of to the value of the reference alpha_s. Default is Off. This also sets the value "
           "for hasRunningAlphaS() to true.",
           &MatchboxOLPME::theUseRunningAlphaS, false, false, false);
-  static SwitchOption interfaceUseRunningAlphaSOn
+  static SwitchOption interfaceUseRunningAlphaSYes
          (interfaceUseRunningAlphaS,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfaceUseRunningAlphaSOff
+  static SwitchOption interfaceUseRunningAlphaSNo
          (interfaceUseRunningAlphaS,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
   interfaceUseRunningAlphaS.rank(-1);
 
@@ -339,15 +339,15 @@ void MatchboxOLPME::Init() {
           "instead of to the value of the reference alpha_ew. Default is Off. This also sets the value "
           "for hasRunningAlphaEW() to true.",
           &MatchboxOLPME::theUseRunningAlphaEW, false, false, false);
-  static SwitchOption interfaceUseRunningAlphaEWOn
+  static SwitchOption interfaceUseRunningAlphaEWYes
          (interfaceUseRunningAlphaEW,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfaceUseRunningAlphaEWOff
+  static SwitchOption interfaceUseRunningAlphaEWNo
          (interfaceUseRunningAlphaEW,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
   interfaceUseRunningAlphaEW.rank(-1);
 

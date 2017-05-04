@@ -137,7 +137,7 @@ void EvtGenInterface::Init() {
   static ParVector<EvtGenInterface,long> interfaceOutputModes
     ("OutputModes",
      "Particles for which to output the EvtGen decay modes"
-     " so they can be read into Herwig++",
+     " so they can be read into Herwig",
      &EvtGenInterface::convID_, -1, long(0), 0, 0,
      false, false, Interface::nolimits);
 
@@ -160,7 +160,8 @@ void EvtGenInterface::doinitrun() {
   // redirect cerr and cout if needed
   std::streambuf *temp[2]={cout.rdbuf(),cerr.rdbuf()};
   if(reDirect_ && ! generator()->useStdOut() ) {
-    logFile_.open("EvtGen.log");
+    const string f = generator()->filename() + "-EvtGen.log";
+    logFile_.open(f);
     std::streambuf *psbuf = logFile_.rdbuf();
     cout.rdbuf(psbuf);
     cerr.rdbuf(psbuf);
@@ -519,8 +520,6 @@ EvtId EvtGenInterface::EvtGenID(int id, bool exception) const {
      (absid>100100&&absid<100600&&(ispin==1||ispin==3))||
      // 1 3d1 goes to 3s in evtgen
      (absid>30100&&absid<30600&&ispin==3) ||
-     // 1 3p0 most same 
-     (absid>10100&&absid<10600&&ispin==1) ||
      // mixed kaons and diffractive states
      (absid>=100&&absid<=3000&&ispin==0)) {
     output = EvtPDL::evtIdFromStdHep(id);
@@ -528,13 +527,18 @@ EvtId EvtGenInterface::EvtGenID(int id, bool exception) const {
   // lowest baryon multiplets and diquarks are almost the same
   else if(absid>1000&&absid<6000&&ispin>=1&&ispin<=4) {
     output = EvtPDL::evtIdFromStdHep(id);
-  } 
+  }
   // 1 1P1 mesons are the same apart from D_s1
   else if(absid>10100&&absid<10600&&(ispin==3)) {
     if(absid==10433) output = EvtPDL::evtIdFromStdHep(isgn*20433);
     else             output = EvtPDL::evtIdFromStdHep(id);
   }
-  // 1 3P1 mesons are the sameapart from D_s1
+  // 1 3p0 same apart from f'0
+  else if (absid>10100&&absid<10600&&ispin==1) {
+    if(absid==10221) output = EvtPDL::evtIdFromStdHep(isgn*30221);
+    else             output = EvtPDL::evtIdFromStdHep(id);
+  }
+  // 1 3P1 mesons are the same apart from D_s1
   else if(absid>20100&&absid<20600&&(ispin==3)) {
     if(absid==20433) output = EvtPDL::evtIdFromStdHep(isgn*10433);
     else             output = EvtPDL::evtIdFromStdHep(id);
@@ -624,7 +628,7 @@ ParticleVector EvtGenInterface::decayProducts(EvtParticle *part, bool boost) con
     else {
       throw Exception() << "Tried to convert an unknown particle, PDG code = " << id 
   			<< " from EvtGen in EvtGen::decayproducts which is "
-  			<< " unknown to Herwig++. Killing event." 
+  			<< " unknown to Herwig. Killing event." 
   			<< Exception::eventerror;
     }
   }
@@ -760,6 +764,9 @@ int EvtGenInterface::ThePEGID(EvtId eid,bool exception) const {
     if(absid==20433) output=isgn*10433;
     else             output=id;
   }
+  // 1 3P0 special for f'0
+  else if(absid==30221)
+    output = 10221;
   // special for the virtual W (we don't distinguish so return W)
   else if(absid==89) return id/absid*24;
   // excited baryons

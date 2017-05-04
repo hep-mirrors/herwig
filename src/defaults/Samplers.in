@@ -1,0 +1,61 @@
+# -*- ThePEG-repository -*-
+
+################################################################################
+#
+# Default setup of various samplers..
+# You do not need to make any change in here; 
+# Change the parameters in the standard input files if needed.
+#
+################################################################################
+
+library HwSampling.so
+
+################################################################################
+# Integration/sampling
+################################################################################
+
+mkdir /Herwig/Samplers
+cd /Herwig/Samplers
+
+create Herwig::BinSampler FlatBinSampler
+set FlatBinSampler:InitialPoints 10000
+
+create Herwig::CellGridSampler CellGridSampler
+set CellGridSampler:InitialPoints 20000
+set CellGridSampler:ExplorationPoints 500
+set CellGridSampler:ExplorationSteps 4
+set CellGridSampler:Gain 0.3
+set CellGridSampler:Epsilon 1.0
+set CellGridSampler:MinimumSelection 0.000001
+set CellGridSampler:NIterations 4
+set CellGridSampler:EnhancementFactor 1.2
+set CellGridSampler:RemapperPoints 50000
+set CellGridSampler:RemapperMinSelection 0.00001
+set CellGridSampler:RemapChannelDimension Yes
+set CellGridSampler:LuminosityMapperBins 20
+set CellGridSampler:GeneralMapperBins 0
+set CellGridSampler:NonZeroInPresampling Yes
+
+create Herwig::MonacoSampler MonacoSampler
+set MonacoSampler:InitialPoints 20000
+set MonacoSampler:NIterations 4
+set MonacoSampler:EnhancementFactor 1.2
+set MonacoSampler:UseAllIterations No
+set MonacoSampler:RemapChannelDimension No
+set MonacoSampler:LuminosityMapperBins 0
+set MonacoSampler:NonZeroInPresampling Yes
+
+create Herwig::GeneralSampler Sampler
+set Sampler:UpdateAfter 1000
+
+set Sampler:BinSampler CellGridSampler
+
+set Sampler:AddUpSamplers No
+set Sampler:GlobalMaximumWeight No
+set Sampler:FlatSubprocesses No
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted Yes
+set Sampler:RunCombinationData No
+set Sampler:WriteGridsOnFinish No
+set Sampler:MaxEnhancement 1.1
+

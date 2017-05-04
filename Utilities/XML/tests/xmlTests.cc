@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // xmlTests.cc is a part of myXML
-// Copyright (C) 2015 Simon Plaetzer, Marco A. Harrendorf
+// Copyright (C) 2015 Simon Plaetzer, Marco A. Harrendorf, The Herwig Collaboration
 //
-// myXML is licenced under version 2 of the GPL, see COPYING for details.
+// myXML is licenced under version 3 of the GPL, see COPYING for details.
 //
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN

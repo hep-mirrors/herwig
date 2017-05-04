@@ -14,7 +14,7 @@ set Reader2:EBeamB 3500.0
 set Reader2:PDFA /Herwig/Partons/ShowerLOPDF
 set Reader2:PDFB /Herwig/Partons/ShowerLOPDF
 create ThePEG::Cuts Cuts
-set Cuts:ScaleMin 1.0*GeV
+set Cuts:ScaleMin 1.0*GeV2
 set Cuts:X1Min 0.00001
 set Cuts:X2Min 0.00001
 set Cuts:MHatMin 20.*GeV

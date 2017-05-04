@@ -62,14 +62,21 @@ set theLesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 # the scale supplied in the event files (SCALUP)
 # to be used as a pT veto scale in the parton shower
 set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
-set /Herwig/Shower/ShowerHandler:RestrictPhasespace On
+set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
 # Shower parameters
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random
 set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
-# fix issue before 7.0.4 
-set /Herwig/Shower/GtoQQbarSplitFn:AngularOrdered Yes
-set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
+# fix issue before 7.0.5 (not needed after this)
+#set /Herwig/Shower/GtoQQbarSplitFn:AngularOrdered Yes
+#set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
+# with MC@NLO these parameters are required for consistency of the subtraction terms
+# suggested parameters
+#set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
+#set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
+#set /Herwig/Shower/KinematicsReconstructor:FinalStateReconOption Default
+#set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
+#set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 ############################################################
 
 #############################################################
@@ -79,7 +86,7 @@ cd /Herwig/EventHandlers
 set theLHReader:WeightWarnings    false
 # Input event file name:
 # 10 k
-set theLHReader:FileName /Users/apapaefs/Documents/Projects/externmerge/z012_tree_1b.lhe
+set theLHReader:FileName unweighted_events.lhe.gz
 set theLHReader:MomentumTreatment      RescaleEnergy
 set theLHReader:Cuts  /Herwig/Cuts/NoCuts
 
@@ -113,12 +120,12 @@ set /Herwig/Shower/FxFxHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
 set /Herwig/Shower/FxFxHandler:RemDecayer  /Herwig/Partons/RemnantDecayer
 set /Herwig/Shower/FxFxHandler:ShowerAlpha  AlphaQCD
 # set the heavy quark decay product vetoing process on/off
-set FxFxHandler:HeavyQVeto On
+set FxFxHandler:HeavyQVeto Yes
 # Automatic detection of the hard process (experimental)
 set FxFxHandler:HardProcessDetection Automatic
 set FxFxHandler:ihrd        3
 # No. of light jets in maximum-multiplicity FxFx process
-set FxFxHandler:njetsmax      2 # Make sure this is set correctly!
+set FxFxHandler:njetsmax      1 # Make sure this is set correctly!
 # Mimimum parton-parton R-sep used for generation.
 set FxFxHandler:drjmin      0
 

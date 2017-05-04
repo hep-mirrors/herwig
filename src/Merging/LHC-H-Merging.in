@@ -43,16 +43,21 @@ do MergingFactory:Process p p -> h0 [ j  j ]
 
 set MergingFactory:NLOProcesses 2
 
+# Set the merging scale deviding the parton shower
+# from the matrix element region in phase space.
 set Merger:MergingScale 15.*GeV
 set Merger:MergingScaleSmearing 0.1
 
-set MPreWeight:HTPower 0
-set MPreWeight:MaxPTPower 0
-set MPreWeight:OnlyColoured False
 
+# The following line clear a preweighter
+# that is not working for Higgs as here
+# pt and HT are 0 before the shower.
+# See other merging files for more information.
 clear MergingFactory:Preweighters
 
-read Matchbox/PQCDLevel.in
+# The next line can switch of hadronization
+# and MPI modelling. Use with care!!
+# read Matchbox/PQCDLevel.in
 
 
 
@@ -83,11 +88,12 @@ set /Herwig/Particles/h0:Stable Stable
 # read Matchbox/VBFNLO.in
 
 ## Uncomment this to use ggh effective couplings
-## currently only supported by MadGraph-GoSam
+## currently only supported by MadGraph-GoSam and
+## MadGraph-Openloops
 
 #read Matchbox/HiggsEffective.in
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
-set OpenLoops:HiggsEff On
+set OpenLoops:HiggsEff Yes
 set MadGraph:Model heft
 
 ##################################################
@@ -135,17 +141,9 @@ set FixedScale:FixedScale 125.*GeV
 # read Matchbox/MuQUp.in
 
 ##################################################
-## PDF choice
-##################################################
-
-read Matchbox/FiveFlavourNoBMassScheme.in
-read Matchbox/MMHT2014.in
-
-##################################################
 ## CMW - Scheme
 ##################################################
-
-set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
+read Merging/Merging-Dipole-FactorCMWSchemeTune.in
 
 ### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
 ### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
@@ -155,6 +153,14 @@ read Merging/FactorCMWScheme.in
 ### alpha_s(q) -> alpha_s(q)(1+K_g*alpha_s(q)/2pi )
 # read Merging/LinearCMWScheme.in
 
+
+##################################################
+## PDF choice
+##################################################
+
+read Matchbox/FiveFlavourNoBMassScheme.in
+read Matchbox/MMHT2014.in
+
 ##################################################
 ## Analyses
 ##################################################
@@ -163,6 +169,9 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
+
+# Here we collected a various Rivet analysis for Higgs at LHC
+# at the 8 TeV. (The collection might not be complete.)
 read Merging/LHC8-H-Analysis.in
 
 

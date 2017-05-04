@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ShowerAlphaQED.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -50,7 +50,7 @@ double ShowerAlphaQED::ratio(const Energy2,double ) const {
   return 1.;
 }
 
-void ShowerAlphaQED::doinit() throw(InitException) {
+void ShowerAlphaQED::doinit() {
   ShowerAlpha::doinit();
   _alpha=generator()->standardModel()->alphaEM();
 }

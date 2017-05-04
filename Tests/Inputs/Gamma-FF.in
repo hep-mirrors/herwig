@@ -15,6 +15,6 @@ set /Herwig/Particles/t:Stable Stable
 set /Herwig/Particles/tbar:Stable Stable
 
 set /Herwig/ACDCSampler:Ntry 100000
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 saverun Gamma-FF EventGenerator
 

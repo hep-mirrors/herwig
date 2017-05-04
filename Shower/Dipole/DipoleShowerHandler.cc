@@ -1,9 +1,9 @@
   // -*- C++ -*-
   //
   // DipoleShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-  // Copyright (C) 2002-2007 The Herwig Collaboration
+  // Copyright (C) 2002-2017 The Herwig Collaboration
   //
-  // Herwig is licenced under version 2 of the GPL, see COPYING for details.
+  // Herwig is licenced under version 3 of the GPL, see COPYING for details.
   // Please respect the MCnet academic guidelines, see GUIDELINES for details.
   //
   //
@@ -82,8 +82,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
   return sub->incoming();
   
   eventRecord().clear();
-  eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), pdfs(),
-                        ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
+  eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), newStep(), pdfs(), 
+			ShowerHandler::currentHandler()->generator()->currentEvent()->incoming(),
+			firstInteraction());
   if ( eventRecord().outgoing().empty() && !doISR() )
   return sub->incoming();
   if ( !eventRecord().incoming().first->coloured() &&
@@ -160,7 +161,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
       
         // Decay and shower any particles that require decaying
       while ( !eventRecord().decays().empty() ) {
-        
+	
         map<PPtr,PerturbativeProcessPtr>::const_iterator decayIt = eventRecord().decays().begin();
           // find the decay to do, one with greatest width and parent showered
         while(find(eventRecord().outgoing().begin(),eventRecord().outgoing().end(),decayIt->first)==
@@ -226,9 +227,9 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
       throw ShowerTriesVeto(maxtry());
       
       eventRecord().clear();
-      eventRecord().prepare(sub,dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()),
-                            pdfs(),
-                            ShowerHandler::currentHandler()->generator()->currentEvent()->incoming());
+      eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), newStep(), pdfs(),
+                            ShowerHandler::currentHandler()->generator()->currentEvent()->incoming(),
+			    firstInteraction());
       
       continue;
       
@@ -1145,16 +1146,16 @@ void DipoleShowerHandler::Init() {
   
   static Switch<DipoleShowerHandler,bool> interfaceChainOrderVetoScales
   ("ChainOrderVetoScales",
-   "[experimental] Switch on or off the chain ordering for veto scales.",
+   "[experimental] Switch the chain ordering for veto scales on or off.",
    &DipoleShowerHandler::chainOrderVetoScales, true, false, false);
-  static SwitchOption interfaceChainOrderVetoScalesOn
+  static SwitchOption interfaceChainOrderVetoScalesYes
   (interfaceChainOrderVetoScales,
-   "On",
+   "Yes",
    "Switch on chain ordering for veto scales.",
    true);
-  static SwitchOption interfaceChainOrderVetoScalesOff
+  static SwitchOption interfaceChainOrderVetoScalesNo
   (interfaceChainOrderVetoScales,
-   "Off",
+   "No",
    "Switch off chain ordering for veto scales.",
    false);
   
@@ -1174,14 +1175,14 @@ void DipoleShowerHandler::Init() {
   ("DiscardNoEmissions",
    "[debug option] Discard events without radiation.",
    &DipoleShowerHandler::discardNoEmissions, false, false, false);
-  static SwitchOption interfaceDiscardNoEmissionsOn
+  static SwitchOption interfaceDiscardNoEmissionsYes
   (interfaceDiscardNoEmissions,
-   "On",
+   "Yes",
    "Discard events without radiation.",
    true);
-  static SwitchOption interfaceDiscardNoEmissionsOff
+  static SwitchOption interfaceDiscardNoEmissionsNo
   (interfaceDiscardNoEmissions,
-   "Off",
+   "No",
    "Do not discard events without radiation.",
    false);
   
@@ -1191,15 +1192,15 @@ void DipoleShowerHandler::Init() {
   ("FirstMCatNLOEmission",
    "[debug option] Only perform the first MC@NLO emission.",
    &DipoleShowerHandler::firstMCatNLOEmission, false, false, false);
-  static SwitchOption interfaceFirstMCatNLOEmissionOn
+  static SwitchOption interfaceFirstMCatNLOEmissionYes
   (interfaceFirstMCatNLOEmission,
-   "On",
-   "",
+   "Yes",
+   "Perform only the first MC@NLO emission.",
    true);
-  static SwitchOption interfaceFirstMCatNLOEmissionOff 
+  static SwitchOption interfaceFirstMCatNLOEmissionNo
   (interfaceFirstMCatNLOEmission,
-   "Off",
-   "",
+   "No",
+   "Produce all emissions.",
    false);
   
   interfaceFirstMCatNLOEmission.rank(-1);

@@ -295,7 +295,7 @@ createDecayMode(vector<NBDiagram> & mode,
     if(ndm) {
       generator()->preinitInterface(ndm, "Decayer", "set",
  				    decayer->fullName());
-      generator()->preinitInterface(ndm, "OnOff", "set", "On");
+      generator()->preinitInterface(ndm, "Active", "set", "Yes");
       if(!ndm->decayer()) {
 	generator()->log() << "Can't set the decayer for " 
 			   << tag << " so mode not created \n";

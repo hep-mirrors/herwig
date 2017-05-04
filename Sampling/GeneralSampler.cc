@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // GeneralSampler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -638,7 +638,7 @@ void GeneralSampler::dofinish() {
 generator()->log() <<"This corresponds to a cross section difference between:\n"
 		<<"   UnitWeights:       "<< theMaxWeight*theSumWeights/theAttempts<<"nb\n"
                        <<"   AlmostUnweighted:  "<< theMaxWeight*correctWeights/theAttempts<< "nb\n"<<
-                      " use 'set Sampler:AlmostUnweighted On' to switch to non-unit weights.\n\n";
+                      " use 'set Sampler:AlmostUnweighted Yes' to switch to non-unit weights.\n\n";
 
     generator()->log() <<"The maximum weight determined in the read/integrate step has been enhanced by \n"<<
                          "   set /Herwig/Samplers/Sampler:MaxEnhancement "<< theMaxEnhancement<<
@@ -922,14 +922,14 @@ void GeneralSampler::Init() {
     ("Verbose",
      "",
      &GeneralSampler::theVerbose, false, false, false);
-  static SwitchOption interfaceVerboseOn
+  static SwitchOption interfaceVerboseYes
     (interfaceVerbose,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfaceVerboseOff
+  static SwitchOption interfaceVerboseNo
     (interfaceVerbose,
-     "Off",
+     "No",
      "",
      false);
 
@@ -937,14 +937,14 @@ void GeneralSampler::Init() {
     ("AddUpSamplers",
      "Calculate cross sections from adding up individual samplers.",
      &GeneralSampler::theAddUpSamplers, false, false, false);
-  static SwitchOption interfaceAddUpSamplersOn
+  static SwitchOption interfaceAddUpSamplersYes
     (interfaceAddUpSamplers,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfaceAddUpSamplersOff
+  static SwitchOption interfaceAddUpSamplersNo
     (interfaceAddUpSamplers,
-     "Off",
+     "No",
      "",
      false);
 
@@ -952,14 +952,14 @@ void GeneralSampler::Init() {
     ("GlobalMaximumWeight",
      "Use a global maximum weight instead of partial unweighting.",
      &GeneralSampler::theGlobalMaximumWeight, true, false, false);
-  static SwitchOption interfaceGlobalMaximumWeightOn
+  static SwitchOption interfaceGlobalMaximumWeightYes
     (interfaceGlobalMaximumWeight,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfaceGlobalMaximumWeightOff
+  static SwitchOption interfaceGlobalMaximumWeightNo
     (interfaceGlobalMaximumWeight,
-     "Off",
+     "No",
      "",
      false);
 
@@ -975,14 +975,14 @@ void GeneralSampler::Init() {
     ("FlatSubprocesses",
      "[debug] Perform a flat subprocess selection.",
      &GeneralSampler::theFlatSubprocesses, false, false, false);
-  static SwitchOption interfaceFlatSubprocessesOn
+  static SwitchOption interfaceFlatSubprocessesYes
     (interfaceFlatSubprocesses,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfaceFlatSubprocessesOff
+  static SwitchOption interfaceFlatSubprocessesNo
     (interfaceFlatSubprocesses,
-     "Off",
+     "No",
      "",
      false);
 
@@ -996,14 +996,14 @@ void GeneralSampler::Init() {
     ("RunCombinationData",
      "",
      &GeneralSampler::runCombinationData, false, false, false);
-  static SwitchOption interfaceRunCombinationDataOn
+  static SwitchOption interfaceRunCombinationDataYes
     (interfaceRunCombinationData,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfaceRunCombinationDataOff
+  static SwitchOption interfaceRunCombinationDataNo
     (interfaceRunCombinationData,
-     "Off",
+     "No",
      "",
      false);
 
@@ -1011,14 +1011,14 @@ void GeneralSampler::Init() {
     ("AlmostUnweighted",
      "",
      &GeneralSampler::theAlmostUnweighted, false, false, false);
-  static SwitchOption interfaceAlmostUnweightedOn
+  static SwitchOption interfaceAlmostUnweightedYes
     (interfaceAlmostUnweighted,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfaceAlmostUnweightedOff
+  static SwitchOption interfaceAlmostUnweightedNo
     (interfaceAlmostUnweighted,
-     "Off",
+     "No",
      "",
      false);
 

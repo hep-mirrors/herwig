@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // CellGrid.cpp is a part of ExSample
-// Copyright (C) 2012-2013 Simon Platzer
+// Copyright (C) 2012-2017 Simon Platzer, The Herwig Collaboration
 //
-// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// ExSample is licenced under version 3 of the GPL, see COPYING for details.
 //
 
 #include "CellGrid.h"

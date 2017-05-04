@@ -169,7 +169,7 @@ createDecayMode(vector<NBDiagram> & diagrams,
     if(ndm) {
       string test = generator()->preinitInterface(ndm, "Decayer", "set",
 						  decayer->fullName());
-      generator()->preinitInterface(ndm, "OnOff", "set", "On");
+      generator()->preinitInterface(ndm, "Active", "set", "Yes");
       Energy width = 
 	decayer->partialWidth(inpart,outgoing);
       setBranchingRatio(ndm, width);

@@ -15,7 +15,6 @@ if __name__ == "__main__":
 
 simulation=""
 
-
 numberOfAddedProcesses=0
 def addProcess(thefactory,theProcess,Oas,Oew,scale,mergedlegs,NLOprocesses):
     global numberOfAddedProcesses
@@ -156,33 +155,79 @@ thefactory="Factory"
 
 istart = 1
 print name
-if(name.find("Matchbox-Powheg")>0) :
+
+parameters["shower"]=""
+parameters["bscheme"]=""
+
+# Dipole shower with Matchbox Powheg
+if(name.find("Dipole-Matchbox-Powheg")>0) :
+    istart = 4
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/Powheg-DipoleShower.in\n"
+
+    # Dipole shower with internal Powheg - Todo: Finish modifying template files.
+    '''
+    elif(name.find("Dipole-Powheg")>0) :
+    istart = 3
+    simulation="Powheg"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    '''
+
+# Dipole shower with MCatNLO
+elif(name.find("Dipole-MCatNLO")>0) :
+    istart = 3
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n" 
+
+# Dipole shower with Matchbox LO
+elif(name.find("Dipole-Matchbox-LO")>0) :
+    istart = 4
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/LO-DipoleShower.in\n" 
+
+# Dipole shower with internal LO
+elif(name.find("Dipole")>0) :
+    istart = 2
+    simulation=""
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    
+# AO shower with Matchbox Powheg
+elif(name.find("Matchbox-Powheg")>0) :
     istart = 3
     simulation="Matchbox"
     parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
+
+# AO shower with MCatNLO
 elif(name.find("Matchbox")>0) :
     istart = 2
     simulation="Matchbox"
     parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
-elif(name.find("Dipole")>0) :
-    istart = 2
-    simulation="Matchbox"
-    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n"
+
+# AO shower with inernal Powheg    
 elif(name.find("Powheg")>0) :
     istart = 2
     simulation="Powheg"
+
+# Dipole shower with merging    
 elif(name.find("Merging")>0) :
     istart = 2
     simulation="Merging"
     thefactory="MergingFactory"
-
+    
+# Flavour settings for Matchbox    
 if(simulation=="Matchbox") :
     parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
+    
     if(parameters["shower"].find("Dipole")>=0) :
         parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
-    if(collider.find("DIS")<0) :
+        
+    if(collider.find("DIS")<0 and collider.find("LEP")<0 ) :
         parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
+# Flavour settings for dipole shower with internal ME
+if ( simulation == "" and parameters["shower"].find("Dipole")>=0 ) :
+    parameters["bscheme"] = "read snippets/DipoleShowerFiveFlavours.in"
+    
 
 if(collider=="") :
     logging.error("Can\'t find collider")
@@ -710,11 +755,9 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
-            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-            process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-            process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-            process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+            process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"
+            process+="read snippets/MB.in\n"
+            process+="read snippets/Diffraction.in\n"
             if(parameterName.find("Long")>=0) :
                 process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
         elif(parameterName.find("7-DiJets")>=0 or parameterName.find("8-DiJets")>=0) :
@@ -839,7 +882,7 @@ elif(collider=="LHC") :
                                            "W+->nu_mu,mu+;"])
             process+=selectDecayMode("W-",["W-->nu_ebar,e-;",
                                            "W-->nu_mubar,mu-;"])
-            process+=selectDecayMode("W-",["Z0->e-,e+;",
+            process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;"])
             process+=addBRReweighter()
             
@@ -1192,7 +1235,7 @@ elif(collider=="LHC") :
         if(parameterName.find("8-VBF")>=0) :
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
             if(simulation=="Merging"):
-                process+="cd /Herwig/Merging/"
+                process+="cd /Herwig/Merging/\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
@@ -1214,7 +1257,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
             if(simulation=="Merging"):
-                process+="cd /Herwig/Merging/"
+                process+="cd /Herwig/Merging/\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
             process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
@@ -1276,7 +1319,7 @@ elif(collider=="LHC") :
               sys.exit(0)
             process+=setHardProcessWidthToZero(["h0","W+","W-"])
             process+=addProcess(thefactory,"p p W+ h0","0","2","FixedScale",0,0)
-            process+=addProcess(thefactory,"p p W- h0","2","1","FixedScale",0,0)
+            process+=addProcess(thefactory,"p p W- h0","0","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])

@@ -210,7 +210,7 @@ bool MEDiffraction::generateKinematics(const double * ) {
   
   /* decay dissociated proton into quark-diquark */
   //squares of constituent masses of quark and diquark
-  const Energy2 mqq2(sqr(mqq())), mq2(sqr(mq()));
+  const Energy2 mq2(sqr(mq()));
   
   Energy2 Mx2;
   switch(diffDirection){

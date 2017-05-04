@@ -1,9 +1,9 @@
   // -*- C++ -*-
   //
   // MergingReweight.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-  // Copyright (C) 2002-2007 The Herwig Collaboration
+  // Copyright (C) 2002-2017 The Herwig Collaboration
   //
-  // Herwig is licenced under version 2 of the GPL, see COPYING for details.
+  // Herwig is licenced under version 3 of the GPL, see COPYING for details.
   // Please respect the MCnet academic guidelines, see GUIDELINES for details.
   //
 #include "MergingReweight.h"
@@ -100,14 +100,14 @@ void MergingReweight::Init() {
     ("OnlyColoured",
      "Only consider coloured particles in the SubProcess when finding the minimum transverse momentum.",
      &MergingReweight::onlyColoured, false, true, false);
-  static SwitchOption interfaceOnlyColouredTrue
+  static SwitchOption interfaceOnlyColouredYes
     (interfaceOnlyColoured,
-     "True",
+     "Yes",
      "Use only coloured particles.",
      true);
-  static SwitchOption interfaceOnlyColouredFalse
+  static SwitchOption interfaceOnlyColouredNo
     (interfaceOnlyColoured,
-     "False",
+     "No",
      "Use all particles.",
      false);
 

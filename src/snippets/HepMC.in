@@ -1,0 +1,10 @@
+## snippet to set up a hepmc hook
+
+## this snippet is for all order ie WITH shower
+
+cd /Herwig/Analysis
+create ThePEG::HepMCFile HepMC HepMCAnalysis.so
+set HepMC:PrintEvent 10000
+set HepMC:Format GenEvent
+set HepMC:Units GeV_mm
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC

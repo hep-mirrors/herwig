@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// PairPtCut.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// PairPtCut.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -35,8 +35,8 @@ void PairPtCut::describe() const {
     << theFirstMatcher->name() << "' and '"
     << theSecondMatcher->name() << "':\n"
     << "pT = " << theMinPt/GeV << " .. " << theMaxPt/GeV << " GeV\n"
-    << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
-    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n\n";
+    << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
+    << "opposite sign only = " << (theOppositeSignOnly?"Yes":"No") << " \n\n";
 }
 
 IBPtr PairPtCut::clone() const {
@@ -169,30 +169,30 @@ void PairPtCut::Init() {
    ("SameFlavourOnly",
      "Whether cut works on fermion pairs of the same flavour only ",
      &PairPtCut::theSameFlavourOnly, true, false, false);
-  static SwitchOption interfaceSameFlavourOnlyTrue
+  static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceSameFlavourOnlyFalse
+  static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Switch<PairPtCut,bool> interfaceOppositeSignOnly
    ("OppositeSignOnly",
      "Whether cut works on fermion pairs of opposite sign only ",
      &PairPtCut::theOppositeSignOnly, true, false, false);
-  static SwitchOption interfaceOppositeSignOnlyTrue
+  static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceOppositeSignOnlyFalse
+  static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Reference<PairPtCut,MatcherBase> interfaceFirstMatcher

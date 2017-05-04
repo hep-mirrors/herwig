@@ -63,7 +63,7 @@ void HiggsVBFProcessConstructor::Init() {
      "MassGenerator",
      "Use the mass generator to give the shape",
      2);
-  static SwitchOption interfaceStandardShapeOn
+  static SwitchOption interfaceStandardShapeYes
     (interfaceShapeOption,
      "OnShell",
      "Produce the Higgs on-shell",

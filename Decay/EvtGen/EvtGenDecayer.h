@@ -14,9 +14,9 @@ using namespace ThePEG;
 
 /**
  * The EvtGenDecayer class is designed to allow the EvtGen decay package to be used
- * as a Decayer in the Herwig++ structure.
+ * as a Decayer in the Herwig structure.
  *
- * It is a simple wrapper which uses members of the Herwig++ EvtGen class to perform
+ * It is a simple wrapper which uses members of the Herwig EvtGen class to perform
  * the decay
  *
  * @see EvtGenInterface
@@ -30,7 +30,7 @@ public:
   /**
    * Standard constructors
    */
-  EvtGenDecayer() : check_(false) , evtOpt_(0)
+  EvtGenDecayer() : check_(0) , evtOpt_(0)
   {}
 
 public:
@@ -89,6 +89,13 @@ protected:
    */
   void checkDecay(PPtr parent) const;
 
+  /**
+   *  Method to rescale the momenta of the decay products if required to
+   *  conserve 4-momentum
+   */
+  bool rescale(const Particle & parent,
+	       const ParticleVector & children) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -124,7 +131,7 @@ private:
   /**
    *  Perform checks ?
    */
-  bool check_;
+  unsigned int check_;
 
   /**
    *  Option for how EvtGen is used

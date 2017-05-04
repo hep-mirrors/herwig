@@ -96,7 +96,8 @@ inhistos = {}
 outhistos={}
 for f in yodafiles:
     file = args[0]+f+".yoda"
-    sqrts=float(file.split("-")[1].replace(".yoda",""))
+    print f,file
+    sqrts=float(f.split("-")[1].replace(".yoda",""))
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         continue
@@ -883,5 +884,6 @@ useOne("/TASSO_1989_I277658/d05-x01-y04","43.6")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
+# print "Write yoda to ",name
 yoda.writeYODA(outhistos,name)
 sys.exit(0)

@@ -85,8 +85,8 @@ double FIMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   double muQ2 = x * mQ2/sqr(split.scale());
 
-  double zm = .5 * ( 1. - sqrt( 1. - 4.*sqr(muQ2/(1.-x)) ) );
-  double zp = .5 * ( 1. - sqrt( 1. - 4.*sqr(muQ2/(1.-x)) ) );
+  double zm = .5 * ( 1. - sqrt( 1. - 4.*muQ2/(1.-x) ) );
+  double zp = .5 * ( 1. + sqrt( 1. - 4.*muQ2/(1.-x) ) );
 
   ret *= .25 * (1.-2.*(zp-z)*(z-zm));
 
