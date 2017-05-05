@@ -13,6 +13,7 @@ MonacoSampler.in \
 DipoleMerging.in \
 EECollider.in EPCollider.in PPCollider.in \
 MB.in \
+MB-DipoleShower.in \
 SoftModel.in \
 Diffraction.in
 
