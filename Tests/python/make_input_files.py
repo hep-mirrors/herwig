@@ -367,11 +367,12 @@ elif(collider=="TVT") :
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaJet","")
         elif(parameterName.find("UE")>=0) :
-            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-            process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-            process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-            process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+            if (parameters["shower"].find("Dipole")>=0):
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="read snippets/MB.in\n"
+            process+="read snippets/Diffraction.in\n"
+                
             process += "set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n"
             process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
         elif(parameterName.find("Jets")>=0) :
@@ -621,11 +622,13 @@ elif(collider=="Star" ) :
     process+= "set /Herwig/Cuts/Cuts:X2Min 0.01\n"
     if(simulation=="") :
         if(parameterName.find("UE")>=0) :
-            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-            process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-            process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-            process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+            if (parameters["shower"].find("Dipole")>=0):
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="read snippets/MB.in\n"    
+            process+="read snippets/Diffraction.in\n"
+            
+            
         else :
             process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
@@ -755,8 +758,12 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
-            process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"
-            process+="read snippets/MB.in\n"
+            if (parameters["shower"].find("Dipole")>=0):
+                process+="set /Herwig/DipoleShower/DipoleShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"                
+                process+="read snippets/MB.in\n"
             process+="read snippets/Diffraction.in\n"
             if(parameterName.find("Long")>=0) :
                 process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
