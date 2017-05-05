@@ -1,0 +1,41 @@
+##########################
+##  Setup the CellGridSampler.
+##########################
+
+cd /Herwig/Samplers
+
+# set the Sampler to use the CellGridSampler.
+set /Herwig/Samplers/Sampler:BinSampler CellGridSampler
+
+# Perform the addaption in the read/integrate step with:
+set CellGridSampler:NIterations 4
+set CellGridSampler:InitialPoints 20000
+set CellGridSampler:ExplorationPoints 500
+set CellGridSampler:ExplorationSteps 4
+set CellGridSampler:Gain 0.3
+set CellGridSampler:Epsilon 1.0
+set CellGridSampler:EnhancementFactor 1.2
+
+# Only count non vanishing points for InitialPoints
+set CellGridSampler:NonZeroInPresampling Yes
+
+# Additional remappings
+set CellGridSampler:RemapperPoints 50000
+set CellGridSampler:RemapperMinSelection 0.00001
+set CellGridSampler:RemapChannelDimension Yes
+set CellGridSampler:LuminosityMapperBins 20
+set CellGridSampler:GeneralMapperBins 0
+
+# If in the run step a weight larger than the
+# assumed maximum weight is found, the event
+# produced with the higher weight.
+set Sampler:AlmostUnweighted Yes
+
+# Unweight the events to kappa*MaxWeight.
+# Events with weight larger that kappa*MaxWeight are possible/likely.
+set Sampler:BinSampler:Kappa 1.
+
+# write out additional information of the sampler to
+# combine runs.
+set Sampler:RunCombinationData No
+set Sampler:Verbose Yes

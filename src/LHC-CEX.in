@@ -1,0 +1,106 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig read LHC-CEX.in
+##################################################
+
+read snippets/PPCollider.in
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
+
+cd /Herwig/Partons
+# Set the PDFs for the beams
+# This is for double CEX, comment out either the first or second
+# for single CEX
+set PPExtractor:FirstPDF  PomeronFlux
+set PPExtractor:SecondPDF PomeronFlux
+
+## Reggeon Structure Function #################################
+# MUST HAVE LHAPDF linked with ThePEG
+#create ThePEG::LHAPDF PionPDF ThePEGLHAPDF.so
+#set PionPDF:PDFNumber 212
+#set PionPDF:PType PionOrVMD
+#set PionPDF:RangeException Freeze
+#
+#create ThePEG::SoftRemnantHandler PionRemnants
+#set PionRemnants:RemnantDecayer RemnantDecayer
+#set PionPDF:RemnantHandler /Herwig/Partons/PionRemnants
+#
+#create Herwig::ReggeonPDF ReggeonPDF HwReggeonPDF.so
+#set ReggeonPDF:PDF PionPDF 
+#set ReggeonPDF:RemnantHandler PionRemnants
+#set /Herwig/Particles/reggeon:PDF ReggeonPDF
+# uncomment to switch pomeron off if only reggeon required
+#set /Herwig/Particles/pomeron:PDF NULL
+#################################################################
+
+##################################################
+# Choice of phase-space generation for PDFs
+##################################################
+set PPExtractor:FlatSHatY 0
+
+##################################################
+#  Cuts
+##################################################
+cd /Herwig/Cuts
+set Cuts:MHatMin 1.
+set Cuts:MHatMax 20000
+set Cuts:X2Min 1.0e-7
+set Cuts:X2Max 1.
+set Cuts:X1Min 1.0e-7
+set Cuts:X1Max 1.
+
+set JetKtCut:MinKT 10.
+set LeptonKtCut:MinKT 1.
+
+##################################################
+# Matrix Elements for CEX collisions 
+# (by default on QCD 2->2 switched on)
+##################################################
+cd /Herwig/MatrixElements/
+
+insert SubProcess:MatrixElements[0] /Herwig/UnderlyingEvent/MEQCD2to2Fast
+
+cd /Herwig/Generators
+
+# MPI doesn't work
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMC.in
+#set HepMC:PrintEvent NNN
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running at fixed order (NO shower)
+##################################################
+#read snippets/RivetFixedOrder.in
+#insert RivetFixedOrder:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMCFixedOrder.in
+#set HepMCFixedOrder:PrintEvent NNN
+
+##################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+
+saverun LHC-CEX EventGenerator
+
+
+

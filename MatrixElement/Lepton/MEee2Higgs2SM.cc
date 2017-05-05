@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // MEee2Higgs2SM.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2011 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -291,6 +291,8 @@ void MEee2Higgs2SM::constructVertex(tSubProPtr sub) {
     vector<VectorWaveFunction> g1,g2;
     VectorWaveFunction(g1,hard[2],outgoing,true,true);
     VectorWaveFunction(g2,hard[3],outgoing,true,true);
+    g1[1]=g1[2];
+    g2[1]=g2[2];
     prodme=ggME(fin,ain,g1,g2,me);
   }
   // construct the vertex
@@ -338,8 +340,8 @@ ProductionMatrixElement MEee2Higgs2SM::ggME(vector<SpinorWaveFunction> fin,
       interh = FFHVertex_->evaluate(sHat(),1,h0_,fin[inhel1],ain[inhel2]);
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
-	  diag  = HGGVertex_->evaluate(sHat(),g1[outhel2],g2[outhel1],interh);
-	  output(inhel1,inhel2,outhel1,outhel2)=diag;
+	  diag  = HGGVertex_->evaluate(sHat(),g1[outhel1],g2[outhel2],interh);
+	  output(inhel1,inhel2,2*outhel1,2*outhel2)=diag;
 	  aver +=real(diag*conj(diag));
 	}
       }

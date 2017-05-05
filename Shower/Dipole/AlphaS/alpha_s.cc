@@ -102,14 +102,14 @@ void alpha_s::Init() {
     ("fixed",
      "",
      &alpha_s::fixed_, false, false, false);
-  static SwitchOption interfacefixedOn
+  static SwitchOption interfacefixedYes
     (interfacefixed,
-     "On",
+     "Yes",
      "",
      true);
-  static SwitchOption interfacefixedOff
+  static SwitchOption interfacefixedNo
     (interfacefixed,
-     "Off",
+     "No",
      "",
      false);
   

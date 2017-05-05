@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2011 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -276,14 +276,14 @@ void ShowerHandler::Init() {
     ("RestrictPhasespace",
      "Switch on or off phasespace restrictions",
      &ShowerHandler::restrictPhasespace_, true, false, false);
-  static SwitchOption interfaceRestrictPhasespaceOn
+  static SwitchOption interfaceRestrictPhasespaceYes
     (interfaceRestrictPhasespace,
-     "On",
+     "Yes",
      "Perform phasespace restrictions",
      true);
-  static SwitchOption interfaceRestrictPhasespaceOff
+  static SwitchOption interfaceRestrictPhasespaceNo
     (interfaceRestrictPhasespace,
-     "Off",
+     "No",
      "Do not perform phasespace restrictions",
      false);
 
@@ -296,12 +296,12 @@ void ShowerHandler::Init() {
     ("DoFSR",
      "Switch on or off final state radiation.",
      &ShowerHandler::doFSR_, true, false, false);
-  static SwitchOption interfaceDoFSROn
+  static SwitchOption interfaceDoFSRYes
     (interfaceDoFSR,
      "Yes",
      "Switch on final state radiation.",
      true);
-  static SwitchOption interfaceDoFSROff
+  static SwitchOption interfaceDoFSRNo
     (interfaceDoFSR,
      "No",
      "Switch off final state radiation.",
@@ -311,12 +311,12 @@ void ShowerHandler::Init() {
     ("DoISR",
      "Switch on or off initial state radiation.",
      &ShowerHandler::doISR_, true, false, false);
-  static SwitchOption interfaceDoISROn
+  static SwitchOption interfaceDoISRYes
     (interfaceDoISR,
      "Yes",
      "Switch on initial state radiation.",
      true);
-  static SwitchOption interfaceDoISROff
+  static SwitchOption interfaceDoISRNo
     (interfaceDoISR,
      "No",
      "Switch off initial state radiation.",
@@ -443,7 +443,7 @@ void ShowerHandler::cascade() {
   // only one, but who knows...)
   for(unsigned int i=1; i <= getMPIHandler()->additionalHardProcs(); i++){
     //counter for regeneration
-    unsigned int multSecond = 0;
+	unsigned int multSecond = 0;
     // generate the additional scatters
     while( multSecond < getMPIHandler()->multiplicity(i) ) {
       // generate the hard scatter 

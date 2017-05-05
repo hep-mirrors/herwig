@@ -6,8 +6,8 @@
 # Settings increase the verbosity of the Matchbox interface
 #=============================================================================
 
-set /Herwig/Samplers/Sampler:Verbose On
-set /Herwig/MatrixElements/Matchbox/Factory:InitVerbose On
-set /Herwig/Merging/MergingFactory:InitVerbose On
+set /Herwig/Samplers/Sampler:Verbose Yes
+set /Herwig/MatrixElements/Matchbox/Factory:InitVerbose Yes
+set /Herwig/Merging/MergingFactory:InitVerbose Yes
 cd /
 

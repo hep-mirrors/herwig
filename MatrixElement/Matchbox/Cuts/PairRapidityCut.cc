@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// PairRapidityCut.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// PairRapidityCut.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -48,10 +48,10 @@ void PairRapidityCut::describe() const {
       CurrentGenerator::log() << "y = " << r->first << " .. " << r->second << "\n";
     }
 
-//     << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
+//     << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
   CurrentGenerator::log()
-    << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
-    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n\n";
+    << "same flavour only = " << (theSameFlavourOnly?"Yes":"No") << " \n"
+    << "opposite sign only = " << (theOppositeSignOnly?"Yes":"No") << " \n\n";
 }
 
 PairRapidityCut::PairRapidityCut() 
@@ -244,45 +244,45 @@ void PairRapidityCut::Init() {
    ("Pseudo",
      "Use pseudo rapidity instead of rapidity ",
      &PairRapidityCut::thePseudo, false, false, false);
-  static SwitchOption interfacePseudoFalse
+  static SwitchOption interfacePseudoNo
     (interfacePseudo,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
-  static SwitchOption interfacePseudoTrue
+  static SwitchOption interfacePseudoYes
     (interfacePseudo,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
 
   static Switch<PairRapidityCut,bool> interfaceSameFlavourOnly
    ("SameFlavourOnly",
      "Whether cut works on fermion pairs of the same flavour only ",
      &PairRapidityCut::theSameFlavourOnly, true, false, false);
-  static SwitchOption interfaceSameFlavourOnlyTrue
+  static SwitchOption interfaceSameFlavourOnlyYes
     (interfaceSameFlavourOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceSameFlavourOnlyFalse
+  static SwitchOption interfaceSameFlavourOnlyNo
     (interfaceSameFlavourOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Switch<PairRapidityCut,bool> interfaceOppositeSignOnly
    ("OppositeSignOnly",
      "Whether cut works on fermion pairs of opposite sign only ",
      &PairRapidityCut::theOppositeSignOnly, true, false, false);
-  static SwitchOption interfaceOppositeSignOnlyTrue
+  static SwitchOption interfaceOppositeSignOnlyYes
     (interfaceOppositeSignOnly,
-     "True",
-     "True",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceOppositeSignOnlyFalse
+  static SwitchOption interfaceOppositeSignOnlyNo
     (interfaceOppositeSignOnly,
-     "False",
-     "False",
+     "No",
+     "No",
      false);
 
   static Reference<PairRapidityCut,MatcherBase> interfaceFirstMatcher

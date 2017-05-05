@@ -25,22 +25,22 @@ read TTBA.model
 set /Herwig/Particles/t:Synchronized Not_synchronized
 set /Herwig/Particles/tbar:Synchronized Not_synchronized
 
-set /Herwig/Particles/t/t->b,bbar,c;:OnOff Off
-set /Herwig/Particles/t/t->b,c,dbar;:OnOff Off
-set /Herwig/Particles/t/t->b,c,sbar;:OnOff Off
-set /Herwig/Particles/t/t->b,sbar,u;:OnOff Off
-set /Herwig/Particles/t/t->b,u,dbar;:OnOff Off
-set /Herwig/Particles/t/t->nu_e,e+,b;:OnOff On
-set /Herwig/Particles/t/t->nu_mu,mu+,b;:OnOff On
-set /Herwig/Particles/t/t->nu_tau,tau+,b;:OnOff Off
-set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:OnOff On
-set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:OnOff On
-set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:OnOff Off
-set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:OnOff Off
-set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:OnOff Off
+set /Herwig/Particles/t/t->b,bbar,c;:Active No
+set /Herwig/Particles/t/t->b,c,dbar;:Active No
+set /Herwig/Particles/t/t->b,c,sbar;:Active No
+set /Herwig/Particles/t/t->b,sbar,u;:Active No
+set /Herwig/Particles/t/t->b,u,dbar;:Active No
+set /Herwig/Particles/t/t->nu_e,e+,b;:Active Yes
+set /Herwig/Particles/t/t->nu_mu,mu+,b;:Active Yes
+set /Herwig/Particles/t/t->nu_tau,tau+,b;:Active No
+set /Herwig/Particles/tbar/tbar->b,bbar,cbar;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,cbar,d;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,cbar,s;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,s,ubar;:Active Yes
+set /Herwig/Particles/tbar/tbar->bbar,ubar,d;:Active Yes
+set /Herwig/Particles/tbar/tbar->nu_ebar,e-,bbar;:Active No
+set /Herwig/Particles/tbar/tbar->nu_mubar,mu-,bbar;:Active No
+set /Herwig/Particles/tbar/tbar->nu_taubar,tau-,bbar;:Active No
 
 cd /Herwig/Generators
 
@@ -83,6 +83,23 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/tbar
 #cd /Herwig/MatrixElements	
 #insert SubProcess:MatrixElements[0] MEHeavyQuark
 
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMC.in
+#set HepMC:PrintEvent NNN
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running at fixed order (NO shower)
+##################################################
+#read snippets/RivetFixedOrder.in
+#insert RivetFixedOrder:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMCFixedOrder.in
+#set HepMCFixedOrder:PrintEvent NNN
 
 # Other parameters for run
 cd /Herwig/Generators

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Distribution.hpp is a part of myStatistics
-// Copyright (C) 2012-2013 Simon Platzer
+// Copyright (C) 2012-2017 Simon Platzer, The Herwig Collaboration
 //
-// myStatistics is licenced under version 2 of the GPL, see COPYING for details.
+// myStatistics is licenced under version 3 of the GPL, see COPYING for details.
 //
 #ifndef MYSTATISTICS_Distribution_hpp_included
 #define MYSTATISTICS_Distribution_hpp_included

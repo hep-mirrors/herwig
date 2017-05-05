@@ -11,7 +11,7 @@ AC_ARG_WITH(thepeg,
 AC_MSG_RESULT([$with_thepeg])
 
 if test "x$with_thepeg" = "xno"; then
-	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG. Please set --with-thepeg.])
+	AC_MSG_ERROR([Cannot build Herwig without ThePEG. Please set --with-thepeg.])
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
@@ -28,7 +28,7 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
 fi
 
 if test "x$THEPEGHASLHAPDF" == "xno" ; then
-   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with lhapdf.])
+   AC_MSG_ERROR([Herwig requires ThePEG to be build with lhapdf.])
 fi
 
 THEPEGHASFASTJET="no"
@@ -43,7 +43,7 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
 fi
 
 if test "x$THEPEGHASFASTJET" == "xno" ; then
-   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with FastJet.])
+   AC_MSG_ERROR([Herwig requires ThePEG to be build with FastJet.])
 fi
 
 THEPEGPATH="${with_thepeg}"
@@ -72,7 +72,7 @@ AC_ARG_WITH([thepeg-headers],
 AC_MSG_RESULT([$with_thepeg_headers])
 
 if test "x$with_thepeg_headers" = "xno"; then
-	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG headers. Please set --with-thepeg-headers.])
+	AC_MSG_ERROR([Cannot build Herwig without ThePEG headers. Please set --with-thepeg-headers.])
 fi
 
 THEPEGINCLUDE="-I$with_thepeg_headers"
@@ -706,35 +706,6 @@ AC_SUBST(PYTHIA8DATA)
 ])
 
 dnl CHECK PYTHIA END
-
-dnl ##### PDF PATH #####
-AC_DEFUN([HERWIG_PDF_PATH],
-[
-AC_MSG_CHECKING([which Herwig++ PDF data to use])
-AC_ARG_WITH(pdf,
-        AC_HELP_STRING([--with-pdf=DIR],[installation path of Herwig++PDF data tarball]),
-        [],
-        [with_pdf=${prefix}]
-        )
-HERWIG_PDF_PREFIX=${with_pdf}/share/Herwig++PDF
-
-if test -f "${HERWIG_PDF_PREFIX}/mrst/2008/mrstMCal.dat"; then
-	AC_MSG_RESULT([$with_pdf])
-	localPDFneeded=false
-else
-	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_PREFIX=PDF
-	localPDFneeded=true
-fi
-HERWIG_PDF_DEFAULT=${HERWIG_PDF_PREFIX}/mrst/2008/mrstMCal.dat
-HERWIG_PDF_NLO=${HERWIG_PDF_PREFIX}/mrst/2002/mrst2002nlo.dat
-HERWIG_PDF_POMERON=${HERWIG_PDF_PREFIX}/diffraction/
-
-AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
-AC_SUBST(HERWIG_PDF_DEFAULT)
-AC_SUBST(HERWIG_PDF_NLO)
-AC_SUBST(HERWIG_PDF_POMERON)
-])
 
 dnl ###### GSL ######
 AC_DEFUN([HERWIG_CHECK_GSL],

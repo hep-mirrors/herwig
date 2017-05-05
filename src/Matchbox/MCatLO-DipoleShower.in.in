@@ -7,7 +7,7 @@ cd /Herwig/EventHandlers
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 
-set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
+set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
 
@@ -24,5 +24,5 @@ set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
 
 cd /Herwig/UnderlyingEvent
-set MEQCD2to2Fast:StrictFlavourScheme On
+set MEQCD2to2Fast:StrictFlavourScheme Yes
 

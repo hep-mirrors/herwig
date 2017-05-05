@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // DipoleSplittingKernel.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleSplittingKernel_H
@@ -269,7 +269,7 @@ public:
    * the given value.
    */
   virtual double invertOverestimateIntegral(const DipoleSplittingInfo&, double) const {
-	 return -1.; 
+    return -1.; 
   }
   
   /**

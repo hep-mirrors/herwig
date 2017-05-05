@@ -43,10 +43,10 @@ do PPFactory:Process p p  Z0 h0
 #                   :::::LO/NLO CALCULATIONS:::::
 #==================================================================================
 
-set PPFactory:BornContributions On
-set PPFactory:VirtualContributions On
-set PPFactory:RealContributions On
-set PPFactory:SubProcessGroups Off
+set PPFactory:BornContributions Yes
+set PPFactory:VirtualContributions Yes
+set PPFactory:RealContributions Yes
+set PPFactory:SubProcessGroups No
 
 #==================================================================================
 #                     :::::CUTS:::::
@@ -61,7 +61,7 @@ set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder
 insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 set /Herwig/Model:EW/Scheme GMuScheme
-set /Herwig/Model:EW/RecalculateEW On
+set /Herwig/Model:EW/RecalculateEW Yes
 
 do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;
 
@@ -122,8 +122,8 @@ set /Herwig/Particles/pbar-:PDF PDFSet
 
 cd /Herwig/EventHandlers
 
-set /Herwig/EventHandlers/EventHandler:Weighted On
-set /Herwig/Samplers/Sampler:Verbose On
+set /Herwig/EventHandlers/EventHandler:Weighted Yes
+set /Herwig/Samplers/Sampler:Verbose Yes
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
 set /Herwig/EventHandlers/EventHandler:Sampler /Herwig/Samplers/Sampler
 
@@ -197,7 +197,7 @@ set /Herwig/Particles/cbar:NominalMass 0*GeV
 set /Herwig/Particles/b:NominalMass 0*GeV
 set /Herwig/Particles/bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-set /Herwig/Generators/EventGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/EventGenerator:EventHandler:CollisionCuts No
 
 #==================================================================================
 #                     :::::SAVE THE GENERATOR:::::

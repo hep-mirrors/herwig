@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// EvtGenRandom.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// EvtGenRandom.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_EvtGenRandom_H
@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * The EvtGenRamdom class is a wrapper around the RandomGenerator class of ThePEG
- * so that when running Herwig++ with EvtGen the same random number generator is used
+ * so that when running Herwig with EvtGen the same random number generator is used
  * for both.
  */
 class EvtGenRandom : public EvtRandomEngine {

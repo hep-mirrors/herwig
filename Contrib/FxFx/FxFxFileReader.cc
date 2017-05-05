@@ -3,7 +3,7 @@
 // FxFxFileReader.cc is a part of ThePEG - Toolkit for HEP Event Generation
 // Copyright (C) 1999-2011 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,7 +20,6 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include <boost/algorithm/string.hpp>
 #include <sstream>
 #include <iostream>
 
@@ -34,6 +33,8 @@ FxFxFileReader(const FxFxFileReader & x)
     initAttributes(x.initAttributes), eventComments(x.eventComments),
     eventAttributes(x.eventAttributes),
     theFileName(x.theFileName), theQNumbers(x.theQNumbers),
+    theIncludeFxFxTags(x.theIncludeFxFxTags),
+    theIncludeCentral(x.theIncludeCentral),
     theDecayer(x.theDecayer) {}
 
 FxFxFileReader::~FxFxFileReader() {}
@@ -371,15 +372,6 @@ void FxFxFileReader::doinit() {
 	      if(inpart->massGenerator()) {
 		ok = false;
 		Throw<SetupException>()
-		  << inpart->PDGName() << " already has a MassGenerator set"
-		  << " this is incompatible with using QNUMBERS "
-		  << "Use\n"
-		  << "set " << inpart->fullName() << ":Mass_generator NULL\n"
-		  << "to fix this." << Exception::warning;
-	      }
-	      if(inpart->widthGenerator()) {
-		ok = false;
-		Throw<SetupException>()
 		  << inpart->PDGName() << " already has a WidthGenerator set"
 		  << " this is incompatible with using QNUMBERS "
 		  << "Use\n"
@@ -423,10 +415,10 @@ void FxFxFileReader::doinit() {
 	    ostringstream br;
 	    br << setprecision(13) << brat;
 	    generator()->preinitInterface(dm, "BranchingRatio", "set", br.str());
-	    generator()->preinitInterface(dm, "OnOff", "set", "On");
+	    generator()->preinitInterface(dm, "Active", "set", "Yes");
 	    if(dm->CC()) {
 	      generator()->preinitInterface(dm->CC(), "BranchingRatio", "set", br.str());
-	      generator()->preinitInterface(dm->CC(), "OnOff", "set", "On");
+	      generator()->preinitInterface(dm->CC(), "Active", "set", "Yes");
 	    }
 	    ++nmode;
 	  }
@@ -490,73 +482,84 @@ void FxFxFileReader::open() {
   bool readingInit = false;
   headerBlock = "";
   
-  char (cwgtinfo_weights_info[250][15]);
+//  char (cwgtinfo_weights_info[250][15]);
   string hs;
-  int cwgtinfo_nn(0);
-  while ( cfile.readline() ) {
-    if(cfile.find("<initrwgt>")) { break; }
-  }
-  cfile.readline();
-  string scalename = "";
-  if(cfile.find("<weightgroup type='scale_variation'")) { 
-    while ( cfile.readline() && !cfile.find("</weightgroup>") ) {   
-      hs = cfile.getline();
-      std::string xmuR = hs.substr(hs.find("muR")+4,hs.length());
-      xmuR = xmuR.substr(0,xmuR.find("muF")-1);
-      std::string xmuF = hs.substr(hs.find("muF")+4,hs.length());
-      xmuF = xmuF.substr(0,xmuF.find("</w")-1);
-      double muR = atof(xmuR.c_str());
-      double muF = atof(xmuF.c_str());
-      istringstream isc(hs);
-      int ws = 0;
-      do {
-	string sub; isc >> sub;
-	if(ws==1) { boost::erase_all(sub, ">"); scalename = sub; }
-	++ws;
-      } while (isc);
-      // cout << scaleinfo.first << "\t" << scaleinfo.second << endl;
-      std::string xmuRs = std::to_string(muR);
-      std::string xmuFs = std::to_string(muF);
-      string scinfo = "SC " + xmuRs + " " + xmuFs;
-      scalemap[scalename] = scinfo.c_str();
-      boost::erase_all(scalename, "id=");
-      boost::erase_all(scalename, "'");
-      optionalWeightsNames.push_back(scalename);
-    } 
-  }
-  cfile.readline();
-  //  cout << cfile.getline() << endl;
-  string pdfname = "";
-  if(cfile.find("<weightgroup type='PDF_variation'")) { 
-    while ( cfile.readline() && !cfile.find("</weightgroup>") ) {
-      hs = cfile.getline();
-      std::string PDF = hs.substr(hs.find("pdfset")+8,hs.length());
-      PDF = PDF.substr(0,PDF.find("</w")-1);
-      double iPDF = atof(PDF.c_str());
-      //store the plot label
-      istringstream isp(hs);
-      int wp = 0;
-      do {
-	string sub; isp >> sub;
-	if(wp==1) { boost::erase_all(sub, ">"); pdfname = sub; }
-	++wp;
-      } while (isp);
-      // cout << pdfinfo.first << "\t" << pdfinfo.second << endl;
-      string scinfo = "PDF " + PDF;
-      scalename = pdfname;
-      scalemap[scalename] = scinfo.c_str();
-      boost::erase_all(pdfname, "id=");
-      boost::erase_all(pdfname, "'");
-      optionalWeightsNames.push_back(pdfname);
-    }
-  }
+//  int cwgtinfo_nn(0);
 
-  /* for(int f = 0; f < optionalWeightsNames.size(); f++) {
-    cout << "optionalWeightsNames = " << optionalWeightsNames[f] << endl;
-    }*/
   // Loop over all lines until we hit the </init> tag.
-  while ( cfile.readline() && !cfile.find("</init>") ) {
+  bool readingInitWeights = false, readingInitWeights_sc = false;
+  string weightinfo;
+  while ( cfile.readline() ) {
+    
+    // found the init block for multiple weights
+    if(cfile.find("<initrwgt")) { /*cout << "reading weights" << endl;*/ readingInitWeights = true; }
+    
+     // found end of init block for multiple weights: end the while loop
+    if(cfile.find("</initrwgt")) { readingInitWeights = false; readingInitWeights_sc = false; continue;}
 
+    // found the end of init block
+    if(cfile.find("</init")) { readingInit = false; break; } 
+
+    /* read the weight information block 
+     * optionalWeightNames will contain information about the weights
+     * this will be appended to the weight information
+     */ 
+    if(readingInitWeights) {
+      string scalename = "";
+      if(cfile.find("<weightgroup")) {
+	/* we found a weight group
+	 * start reading the information 
+	 * within it
+	 */
+	readingInitWeights_sc = true;
+	weightinfo = cfile.getline();
+	/* to make it shorter, erase some stuff
+	 */
+	string str_weightgroup = "<weightgroup";
+	string str_arrow = ">";
+	string str_newline = "\n";
+	erase_substr(weightinfo, str_weightgroup);
+	erase_substr(weightinfo, str_arrow);
+	erase_substr(weightinfo, str_newline);
+      }
+      /* if we are reading a new weightgroup, go on 
+       * until we find the end of it
+       */
+      if(readingInitWeights_sc && !cfile.find("</weightgroup") && !cfile.find("<weightgroup")) {
+	hs = cfile.getline();
+	istringstream isc(hs);
+	int ws = 0;
+	/* get the name that will be used to identify the scale 
+	 */
+	do {
+	  string sub; isc >> sub;
+	  if(ws==1) { string str_arrow =  ">"; erase_substr(sub, str_arrow); scalename = sub; }
+	  ++ws;
+	} while (isc);
+	/* now get the relevant information
+	 * e.g. scales or PDF sets used
+	 */
+	string startDEL = ">"; //starting delimiter
+	string stopDEL = "</weight>"; //end delimiter
+	unsigned firstLim = hs.find(startDEL); //find start of delimiter
+//	unsigned lastLim = hs.find(stopDEL); //find end of delimitr
+	string scinfo = hs.substr(firstLim); //define the information for the scale
+
+	erase_substr(scinfo,stopDEL);
+	erase_substr(scinfo,startDEL);
+        scinfo = StringUtils::stripws(scinfo);
+	/* fill in the map 
+	 * indicating the information to be appended to each scale
+	 * i.e. scinfo for each scalname
+	 */
+	scalemap[scalename] = scinfo.c_str();
+	string str_id = "id=";
+	string str_prime = "'";
+	erase_substr(scalename, str_id);
+	erase_substr(scalename, str_prime);
+	optionalWeightsNames.push_back(scalename);
+      }
+    }
    
     if ( cfile.find("<header") ) {
       // We have hit the header block, so we should dump this and all
@@ -564,7 +567,8 @@ void FxFxFileReader::open() {
       readingHeader = true;
       headerBlock = cfile.getline() + "\n";
     }
-    else if ( cfile.find("<init ") || cfile.find("<init>") ) {
+    if ( (cfile.find("<init ") && !cfile.find("<initrwgt")) || cfile.find("<init>") ) {
+      //cout << "found init block" << endl;
       // We have hit the init block, so we should expect to find the
       // standard information in the following. But first check for
       // attributes.
@@ -581,7 +585,6 @@ void FxFxFileReader::open() {
 	return;
       }
       heprup.resize();
-
       for ( int i = 0; i < heprup.NPRUP; ++i ) {
 	cfile.readline();
 	if ( !( cfile >> heprup.XSECUP[i] >> heprup.XERRUP[i]
@@ -592,24 +595,24 @@ void FxFxFileReader::open() {
 	}
       }
     }
-    else if ( cfile.find("</header") ) {
+    if ( cfile.find("</header") ) {
       readingHeader = false;
       headerBlock += cfile.getline() + "\n";
     }
-    else if ( readingHeader ) {
-      // We are in the process of reading the header block. Dump the
-	// line to headerBlock.
+    if ( readingHeader ) {
+      /* We are in the process of reading the header block. Dump the
+	 line to headerBlock.*/
       headerBlock += cfile.getline() + "\n";
     }
-    else if ( readingInit ) {
+    if ( readingInit ) {
       // Here we found a comment line. Dump it to initComments.
       initComments += cfile.getline() + "\n";
     }
-    else {
-      // We found some other stuff outside the standard tags.
-      outsideBlock += cfile.getline() + "\n";
-    }
   }
+  string central = "central";
+  if (theIncludeCentral) optionalWeightsNames.push_back(central);
+
+  //  cout << "reading init finished" << endl;
   if ( !cfile ) {
     heprup.NPRUP = -42;
     LHFVersion = "";
@@ -637,7 +640,10 @@ bool FxFxFileReader::doReadEvent() {
 
   // We found an event. First scan for attributes.
   eventAttributes = StringUtils::xmlAttributes("event", cfile.getline());
-  
+
+  /* information necessary for FxFx merging:
+   * the npLO and npNLO tags
+   */
   istringstream ievat(cfile.getline());
   int we(0), npLO(-10), npNLO(-10);
   do {
@@ -646,15 +652,21 @@ bool FxFxFileReader::doReadEvent() {
     if(we==5) { npNLO = atoi(sub.c_str()); }
     ++we;
   } while (ievat);
-  //cout << "npLO, npNLO = " << npLO << ", " << npNLO << endl;
   optionalnpLO = npLO;
   optionalnpNLO = npNLO;
   std::stringstream npstringstream;
   npstringstream << "np " << npLO << " " << npNLO;
   std::string npstrings = npstringstream.str();
-  // cout << npstrings.c_str() << endl;
-  optionalWeights[npstrings.c_str()] = -999; 
+  /* the FxFx merging information 
+   * becomes part of the optionalWeights, labelled -999 
+   * for future reference
+   */
 
+  if(theIncludeFxFxTags) optionalWeights[npstrings.c_str()] = -999;
+
+  string ecomstring = "ecom";
+  optionalWeights[ecomstring.c_str()] = heprup.EBMUP.first+heprup.EBMUP.second;
+  
   if ( !cfile.readline()  ) return false;
 
   // The first line determines how many subsequent particle lines we
@@ -688,37 +700,108 @@ bool FxFxFileReader::doReadEvent() {
     } 
   }
 
-  // Now read any additional comments and named weights.
+ // Now read any additional comments and named weights.
   // read until the end of rwgt is found
-  while ( cfile.readline() && !cfile.find("</rwgt>")) {
-    if(!cfile.find("<wgt")) { continue; }
+  bool readingWeights = false, readingaMCFast = false, readingMG5ClusInfo = false;
+  while ( cfile.readline() && !cfile.find("</event>")) {
+    
+    if(cfile.find("</applgrid")) { readingaMCFast=false; } //aMCFast weights end
+    if(cfile.find("</rwgt")) { readingWeights=false; } //optional weights end
+    if(cfile.find("</clustering")) { readingMG5ClusInfo=false; } // mg5 mclustering scale info end
+    
+    /* reading of optional weights
+     */
+    if(readingWeights) { 
+      if(!cfile.find("<wgt")) { continue; }
       istringstream iss(cfile.getline());
       int wi = 0;
       double weightValue(0);
-      string weightName = ""; 
+      string weightName = "";
+      // we need to put the actual weight value into a double
       do {
 	string sub; iss >> sub;
-	if(wi==1) { boost::erase_all(sub, ">"); weightName = sub; }
+	if(wi==1) { string str_arrow = ">" ; erase_substr(sub, str_arrow); weightName = sub; }
 	if(wi==2) weightValue = atof(sub.c_str());
 	++wi;
       } while (iss);
       // store the optional weights found in the temporary map
       optionalWeightsTemp[weightName] = weightValue; 
+    }
+    
+    /* reading of aMCFast weights
+     */
+    if(readingaMCFast) {
+      std::stringstream amcfstringstream;
+      amcfstringstream << "aMCFast " << cfile.getline();
+      std::string amcfstrings = amcfstringstream.str();
+      string str_newline = "\n";
+      erase_substr(amcfstrings,str_newline);
+      optionalWeights[amcfstrings.c_str()] = -111; //for the aMCFast we give them a weight -111 for future identification
+    }
+
+    /* read additional MG5 Clustering information 
+     * used in LO merging
+     */
+    if(readingMG5ClusInfo) {
+      string hs = cfile.getline();
+      string startDEL = "<clus scale="; //starting delimiter
+      string stopDEL = "</clus>"; //end delimiter
+      unsigned firstLim = hs.find(startDEL); //find start of delimiter
+      //   unsigned lastLim = hs.find(stopDEL); //find end of delimitr
+      string mg5clusinfo = hs.substr(firstLim); //define the information for the scale
+      erase_substr(mg5clusinfo,stopDEL);
+      erase_substr(mg5clusinfo,startDEL);
+      string str_arrow = ">";
+      erase_substr(mg5clusinfo,str_arrow);
+      string str_quotation = "\"";
+      erase_substr(mg5clusinfo,str_quotation);
+      string str_newline= "\n";
+      erase_substr(mg5clusinfo,str_newline);
+      optionalWeights[mg5clusinfo.c_str()] = -222; //for the mg5 scale info weights we give them a weight -222 for future identification
+    }
+    
+    //store MG5 clustering information 
+    if(cfile.find("<scales")) {
+      string hs = cfile.getline();
+      string startDEL = "<scales"; //starting delimiter
+      string stopDEL = "</scales>"; //end delimiter
+      unsigned firstLim = hs.find(startDEL); //find start of delimiter
+      //    unsigned lastLim = hs.find(stopDEL); //find end of delimitr
+      string mg5scinfo = hs.substr(firstLim); //define the information for the scale
+      erase_substr(mg5scinfo,stopDEL);
+      erase_substr(mg5scinfo,startDEL);
+      string str_arrow = ">";
+      erase_substr(mg5scinfo,str_arrow);
+      string str_newline= "\n";
+      erase_substr(mg5scinfo,str_newline);
+      optionalWeights[mg5scinfo.c_str()] = -333; //for the mg5 scale info weights we give them a weight -333 for future identification
+    }
+
+    //determine start of aMCFast weights
+    if(cfile.find("<applgrid")) { readingaMCFast = true;}
+    //determine start of optional weights
+    if(cfile.find("<rwgt")) { readingWeights = true; }
+    //determine start of MG5 clustering scale information
+    if(cfile.find("<clustering")) { readingMG5ClusInfo = true;}
   }
-  // loop over the optional weights and add the extra information (pdf or scale)
+  // loop over the optional weights and add the extra information as found in the init
   for (map<string,double>::const_iterator it=optionalWeightsTemp.begin(); it!=optionalWeightsTemp.end(); ++it){
-    //std::cout << it->first << "  => " << it->second << '\n';
     for (map<string,string>::const_iterator it2=scalemap.begin(); it2!=scalemap.end(); ++it2){
       //find the scale id in the scale information and add this information
       if(it->first==it2->first) { 
-	string info = it2->second + " " + it->first;
-	boost::erase_all(info, "'");
-	boost::erase_all(info, "id=");
+        string info = it2->second;
+	string str_newline = "\n";
+	erase_substr(info, str_newline);
 	//set the optional weights
 	optionalWeights[info] = it->second;
       }
     }
   }
+  /* additionally, we set the "central" scale
+   * this is actually the default event weight 
+   */
+  string central = "central";
+  if (theIncludeCentral) optionalWeights[central] = hepeup.XWGTUP;
 
   if ( !cfile ) return false;
   return true;
@@ -732,13 +815,13 @@ void FxFxFileReader::close() {
 void FxFxFileReader::persistentOutput(PersistentOStream & os) const {
   os << neve << LHFVersion << outsideBlock << headerBlock << initComments
      << initAttributes << eventComments << eventAttributes << theFileName
-     << theQNumbers << theDecayer;
+     << theQNumbers << theIncludeFxFxTags << theIncludeCentral << theDecayer;
 }
 
 void FxFxFileReader::persistentInput(PersistentIStream & is, int) {
   is >> neve >> LHFVersion >> outsideBlock >> headerBlock >> initComments
      >> initAttributes >> eventComments >> eventAttributes >> theFileName
-     >> theQNumbers >> theDecayer;
+     >> theQNumbers >> theIncludeFxFxTags >> theIncludeCentral >> theDecayer;
   ieve = 0;
 }
 
@@ -783,6 +866,38 @@ void FxFxFileReader::Init() {
      "Don't use QNUMBERS",
      false);
 
+
+  static Switch<FxFxFileReader,bool> interfaceIncludeFxFxTags
+    ("IncludeFxFxTags",
+     "Include FxFx tags",
+     &FxFxFileReader::theIncludeFxFxTags, true, true, false);
+  static SwitchOption interfaceIncludeFxFxTagsYes
+    (interfaceIncludeFxFxTags,
+     "Yes",
+     "Use the FxFx tags",
+     true);
+  static SwitchOption interfaceIncludeFxFxTagsNo
+    (interfaceIncludeFxFxTags,
+     "No",
+     "Don't use the FxFx tags",
+     false);
+
+   static Switch<FxFxFileReader,bool> interfaceIncludeCentral
+    ("IncludeCentral",
+     "Include definition of central weight",
+     &FxFxFileReader::theIncludeCentral, false, true, false);
+  static SwitchOption interfaceIncludeCentralYes
+    (interfaceIncludeCentral,
+     "Yes",
+     "include definition of central weight",
+     true);
+  static SwitchOption interfaceIncludeCentralNo
+    (interfaceIncludeCentral,
+     "No",
+     "Don't include definition of central weight",
+     false);
+
+
   static Reference<FxFxFileReader,Decayer> interfaceDecayer
     ("Decayer",
      "Decayer to use for any decays read from the QNUMBERS Blocks",
@@ -790,3 +905,10 @@ void FxFxFileReader::Init() {
 
 }
 
+
+void FxFxFileReader::erase_substr(std::string& subject, const std::string& search) {
+    size_t pos = 0;
+    while((pos = subject.find(search, pos)) != std::string::npos) {
+      subject.erase( pos, search.length() );
+    }
+}

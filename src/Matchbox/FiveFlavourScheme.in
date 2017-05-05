@@ -73,19 +73,12 @@ set bbar:HardProcessMass 0*GeV
 
 cd /Herwig/DipoleShower/Kernels
 
-set IFgx2bbbarxDipoleKernel:UseKernel On
-set IFgx2bbarbxDipoleKernel:UseKernel On
-set IFMgx2bbbarxDipoleKernel:UseKernel On
-set IFMgx2bbarbxDipoleKernel:UseKernel On
-set IIgx2bbbarxDipoleKernel:UseKernel On
-set IIgx2bbarbxDipoleKernel:UseKernel On
-set IFgx2bbbarxDipoleKernel:UseKernel On
-set IFgx2bbarbxDipoleKernel:UseKernel On
-set IFMgx2bbbarxDipoleKernel:UseKernel On
-set IFMgx2bbarbxDipoleKernel:UseKernel On
-set IIgx2bbbarxDipoleKernel:UseKernel On
-set IIgx2bbarbxDipoleKernel:UseKernel On
-
+set IFgx2bbbarxDipoleKernel:UseKernel Yes
+set IFgx2bbarbxDipoleKernel:UseKernel Yes
+set IFMgx2bbbarxDipoleKernel:UseKernel Yes
+set IFMgx2bbarbxDipoleKernel:UseKernel Yes
+set IIgx2bbbarxDipoleKernel:UseKernel Yes
+set IIgx2bbarbxDipoleKernel:UseKernel Yes
 
 ## First remove the bbar splittings. In case someone read a FourFlavour snippet.
 cd /Herwig/Shower

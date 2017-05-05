@@ -11,7 +11,7 @@ set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
 set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 
 # cuts for DIS
-set EventHandler:Cuts:ScaleMin 1.0*GeV
+set EventHandler:Cuts:ScaleMin 1.0*GeV2
 set EventHandler:Cuts:X1Min 1.0e-5
 set EventHandler:Cuts:X2Min 1.0e-5
 set EventHandler:Cuts:MHatMin 0.0*GeV

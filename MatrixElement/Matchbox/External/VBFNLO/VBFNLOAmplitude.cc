@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // VBFNLOAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -448,28 +448,28 @@ void VBFNLOAmplitude::Init() {
   static Switch<VBFNLOAmplitude,bool> interfaceRandomHelicitySummation
     ("RandomHelicitySummation", "Switch for random helicity summation of leptons and photons",
       &VBFNLOAmplitude::theRanHelSum, false, false, false);
-  static SwitchOption interfaceRandomHelicitySummationTrue
+  static SwitchOption interfaceRandomHelicitySummationYes
     (interfaceRandomHelicitySummation, 
-     "True", 
+     "Yes", 
      "Perform random helicity summation", 
      true);
-  static SwitchOption interfaceRandomHelicitySummationFalse
+  static SwitchOption interfaceRandomHelicitySummationNo
     (interfaceRandomHelicitySummation, 
-     "False", 
+     "No", 
      "Sum over all helicity combinations", 
      false);
 
   static Switch<VBFNLOAmplitude,bool> interfaceAnomalousCouplings
     ("AnomalousCouplings", "Switch for anomalous couplings",
       &VBFNLOAmplitude::theAnomCoupl, false, false, false);
-  static SwitchOption interfaceAnomalousCouplingsTrue
+  static SwitchOption interfaceAnomalousCouplingsYes
     (interfaceAnomalousCouplings, 
-     "On", 
+     "Yes", 
      "Switch anomalous couplings on", 
      true);
-  static SwitchOption interfaceAnomalousCouplingsFalse
+  static SwitchOption interfaceAnomalousCouplingsNo
     (interfaceAnomalousCouplings, 
-     "Off", 
+     "No", 
      "Switch anomalous couplings off", 
      false);
 

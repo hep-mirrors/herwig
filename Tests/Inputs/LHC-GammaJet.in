@@ -11,7 +11,7 @@ set EventGenerator:EventHandler:Sampler:Ntry 100000
 cd /Herwig/MatrixElements/
 insert SubProcess:MatrixElements[0] MEGammaJet
 cd /Herwig/Generators
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 create Herwig::GammaJetAnalysis GammaJetTest HwAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 GammaJetTest
 saverun LHC-GammaJet EventGenerator

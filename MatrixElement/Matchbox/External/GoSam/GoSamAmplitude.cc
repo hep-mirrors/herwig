@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // GoSamAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -888,14 +888,14 @@ void GoSamAmplitude::Init() {
          ("CodeExists",
           "Switch on or off if Code already exists/not exists.",
           &GoSamAmplitude::theCodeExists, true, false, false);
-  static SwitchOption interfaceCodeExistsOn
+  static SwitchOption interfaceCodeExistsYes
          (interfaceCodeExists,
-          "True",
+          "Yes",
           "Switch True if Code already exists.",
           true);
-  static SwitchOption interfaceCodeExistsOff
+  static SwitchOption interfaceCodeExistsNo
          (interfaceCodeExists,
-          "False",
+          "No",
           "Switch False if Code has to be build.",
           false);
 
@@ -903,14 +903,14 @@ void GoSamAmplitude::Init() {
          ("isDR",
           "Switch on or off DR.",
           &GoSamAmplitude::isitDR, false, false, false);
-  static SwitchOption interfaceisitDROn
+  static SwitchOption interfaceisitDRYes
          (interfaceisitDR,
-          "True",
+          "Yes",
           "Switch True.",
           true);
-  static SwitchOption interfaceisitDROff
+  static SwitchOption interfaceisitDRNo
          (interfaceisitDR,
-          "False",
+          "No",
           "Switch False.",
           false);
   
@@ -918,45 +918,45 @@ void GoSamAmplitude::Init() {
          ("FormOpt",
           "Switch On/Off formopt",
           &GoSamAmplitude::theFormOpt, true, false, false);
-  static SwitchOption interfaceFormOptOn
+  static SwitchOption interfaceFormOptYes
          (interfaceFormOpt,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfaceFormOptOff
+  static SwitchOption interfaceFormOptNo
          (interfaceFormOpt,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
 
   static Switch<GoSamAmplitude,bool> interfaceNinja
          ("Ninja",
           "Switch On/Off for reduction with Ninja. If Off then Samurai is used.",
           &GoSamAmplitude::theNinja, true, false, false);
-  static SwitchOption interfaceNinjaOn
+  static SwitchOption interfaceNinjaYes
          (interfaceNinja,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfaceNinjaOff
+  static SwitchOption interfaceNinjaNo
          (interfaceNinja,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
  
   static Switch<GoSamAmplitude,bool> interfaceHiggsEff
          ("HiggsEff",
           "Switch On/Off for effective higgs model.",
           &GoSamAmplitude::theHiggsEff, false, false, false);
-  static SwitchOption interfaceHiggsEffOn
+  static SwitchOption interfaceHiggsEffYes
          (interfaceHiggsEff,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfaceHiggsEffOff
+  static SwitchOption interfaceHiggsEffNo
          (interfaceHiggsEff,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);
 
   static Parameter<GoSamAmplitude,string> interfaceBuildScript

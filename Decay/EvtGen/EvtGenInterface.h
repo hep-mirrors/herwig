@@ -49,6 +49,11 @@ public:
   EvtGenInterface();
 
   /**
+   * The copy constructor (explicit as cannot copy streams)
+   */
+  EvtGenInterface(const EvtGenInterface &);
+
+  /**
    * The destructor.
    */
   virtual ~EvtGenInterface();
@@ -322,7 +327,7 @@ protected:
   //@}
 
   /**
-   *  Check the conversion of particles between Herwig++ and EvtGen
+   *  Check the conversion of particles between Herwig and EvtGen
    */
   void checkConversion() const;
 
@@ -399,6 +404,12 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -462,6 +473,11 @@ private:
    * Main EvtGen object
    */
   EvtGen * evtgen_;
+
+  /**
+   *  File to output the log info to
+   */
+  mutable ofstream logFile_;
 
 };
 

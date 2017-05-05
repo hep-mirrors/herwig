@@ -22,7 +22,6 @@ library HwPowhegMELepton.so
 library JetCuts.so
 library SimpleKTCut.so
 library HwMPI.so
-library HwMRST.so
 library HwReggeonPDF.so
 library HwPomeronPDF.so
 library HwPomeronFlux.so

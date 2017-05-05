@@ -11,7 +11,7 @@ set EventGenerator:EventHandler:Sampler:Ntry 100000
 cd /Herwig/MatrixElements/
 insert SubProcess:MatrixElements[0] MEHiggs
 cd /Herwig/Generators
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 create Herwig::HiggsJetAnalysis HiggsTest HwAnalysis.so
 insert EventGenerator:AnalysisHandlers 0 HiggsTest
 saverun LHC-Higgs EventGenerator

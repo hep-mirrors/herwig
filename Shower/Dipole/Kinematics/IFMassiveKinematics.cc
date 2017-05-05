@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // IFMassiveKinematics.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -344,14 +344,14 @@ void IFMassiveKinematics::Init() {
     ("CollinearScheme",
     "[experimental] Switch on or off the collinear scheme",
     &IFMassiveKinematics::theCollinearScheme, false, false, false);
-    static SwitchOption interfaceCollinearSchemeOn
+    static SwitchOption interfaceCollinearSchemeYes
     (interfaceCollinearScheme,
-    "On",
+    "Yes",
     "Switch on the collinear scheme.",
     true);
-    static SwitchOption interfaceCollinearSchemeOff
+    static SwitchOption interfaceCollinearSchemeNo
     (interfaceCollinearScheme,
-    "Off",
+    "No",
     "Switch off the collinear scheme",
     false);
 

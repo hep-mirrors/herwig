@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // MatchboxFactory.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -120,9 +120,6 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
   map<Process,set<Ptr<MatchboxAmplitude>::ptr> > procAmps;
   set<PDVector> processes = makeSubProcesses(proc);
 
-  // TODO Fix me for 3.0.x
-  // At the moment we got troubles with processes with no coloured
-  // legs so they will not be supported
   set<PDVector> colouredProcesses;
   for ( set<PDVector>::const_iterator pr = processes.begin();
 	pr != processes.end(); ++pr ) {
@@ -134,18 +131,16 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       }
     }
   }
-  if ( colouredProcesses.size() != processes.size() ) {
-    generator()->log()
-      << "Some or all of the generated subprocesses do not contain coloured legs.\n"
-      << "Processes of this kind are currently not supported.\n" << flush;
+  if ( colouredProcesses.size() != processes.size() &&
+      (virtualContributions() || realContributions()) ) {
+      // NLO not working for non coloured legs
+    throw Exception()
+    << "Found processes without coloured legs.\n"
+    << "We currently do not support NLO corrections for those processes.\n"
+    << "Please switch to a setup for LO production."
+    << Exception::runerror;
   }
-  if ( colouredProcesses.empty() ) {
-    throw Exception() << "MatchboxFactory::makeMEs(): No processes with coloured legs have been found. "
-		      << "This run will be aborted." << Exception::runerror;
-  }
-  processes = colouredProcesses;
-  // end unsupported processes
-
+  
   // detect external particles with non-zero width for the hard process
   bool trouble = false;
   string troubleMaker;
@@ -1531,7 +1526,7 @@ makeSubProcesses(const vector<string>& proc) const {
       pass &= (charge == 0);
 
     if ( theEnforceColourConservation )
-      pass &= (colour % 8 == 0) && (ncolour > 1);
+      pass &= (colour % 8 == 0);
 
     if ( theEnforceLeptonNumberConservation ) {
       pass &= (nleptons == 0);
@@ -1627,14 +1622,14 @@ void MatchboxFactory::Init() {
     ("BornContributions",
      "Switch on or off the Born contributions.",
      &MatchboxFactory::theBornContributions, true, false, false);
-  static SwitchOption interfaceBornContributionsOn
+  static SwitchOption interfaceBornContributionsYes
     (interfaceBornContributions,
-     "On",
+     "Yes",
      "Switch on Born contributions.",
      true);
-  static SwitchOption interfaceBornContributionsOff
+  static SwitchOption interfaceBornContributionsNo
     (interfaceBornContributions,
-     "Off",
+     "No",
      "Switch off Born contributions.",
      false);
 
@@ -1642,14 +1637,14 @@ void MatchboxFactory::Init() {
     ("VirtualContributions",
      "Switch on or off the virtual contributions.",
      &MatchboxFactory::theVirtualContributions, true, false, false);
-  static SwitchOption interfaceVirtualContributionsOn
+  static SwitchOption interfaceVirtualContributionsYes
     (interfaceVirtualContributions,
-     "On",
+     "Yes",
      "Switch on virtual contributions.",
      true);
-  static SwitchOption interfaceVirtualContributionsOff
+  static SwitchOption interfaceVirtualContributionsNo
     (interfaceVirtualContributions,
-     "Off",
+     "No",
      "Switch off virtual contributions.",
      false);
 
@@ -1657,14 +1652,14 @@ void MatchboxFactory::Init() {
     ("RealContributions",
      "Switch on or off the real contributions.",
      &MatchboxFactory::theRealContributions, true, false, false);
-  static SwitchOption interfaceRealContributionsOn
+  static SwitchOption interfaceRealContributionsYes
     (interfaceRealContributions,
-     "On",
+     "Yes",
      "Switch on real contributions.",
      true);
-  static SwitchOption interfaceRealContributionsOff
+  static SwitchOption interfaceRealContributionsNo
     (interfaceRealContributions,
-     "Off",
+     "No",
      "Switch off real contributions.",
      false);
 
@@ -1672,14 +1667,14 @@ void MatchboxFactory::Init() {
     ("IndependentVirtuals",
      "Switch on or off virtual contributions as separate subprocesses.",
      &MatchboxFactory::theIndependentVirtuals, true, false, false);
-  static SwitchOption interfaceIndependentVirtualsOn
+  static SwitchOption interfaceIndependentVirtualsYes
     (interfaceIndependentVirtuals,
-     "On",
+     "Yes",
      "Switch on virtual contributions as separate subprocesses.",
      true);
-  static SwitchOption interfaceIndependentVirtualsOff
+  static SwitchOption interfaceIndependentVirtualsNo
     (interfaceIndependentVirtuals,
-     "Off",
+     "No",
      "Switch off virtual contributions as separate subprocesses.",
      false);
 
@@ -1687,14 +1682,14 @@ void MatchboxFactory::Init() {
     ("IndependentPKOperators",
      "Switch on or off PK oeprators as separate subprocesses.",
      &MatchboxFactory::theIndependentPKs, true, false, false);
-  static SwitchOption interfaceIndependentPKsOn
+  static SwitchOption interfaceIndependentPKsYes
     (interfaceIndependentPKs,
-     "On",
+     "Yes",
      "Switch on PK operators as separate subprocesses.",
      true);
-  static SwitchOption interfaceIndependentPKsOff
+  static SwitchOption interfaceIndependentPKsNo
     (interfaceIndependentPKs,
-     "Off",
+     "No",
      "Switch off PK operators as separate subprocesses.",
      false);
 
@@ -1724,15 +1719,15 @@ void MatchboxFactory::Init() {
     ("FixedCouplings",
      "Switch on or off fixed couplings.",
      &MatchboxFactory::theFixedCouplings, true, false, false);
-  static SwitchOption interfaceFixedCouplingsOn
+  static SwitchOption interfaceFixedCouplingsYes
     (interfaceFixedCouplings,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceFixedCouplingsOff
+  static SwitchOption interfaceFixedCouplingsNo
     (interfaceFixedCouplings,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceFixedCouplings.rank(-1);
 
@@ -1740,15 +1735,15 @@ void MatchboxFactory::Init() {
     ("FixedQEDCouplings",
      "Switch on or off fixed QED couplings.",
      &MatchboxFactory::theFixedQEDCouplings, true, false, false);
-  static SwitchOption interfaceFixedQEDCouplingsOn
+  static SwitchOption interfaceFixedQEDCouplingsYes
     (interfaceFixedQEDCouplings,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceFixedQEDCouplingsOff
+  static SwitchOption interfaceFixedQEDCouplingsNo
     (interfaceFixedQEDCouplings,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceFixedQEDCouplings.rank(-1);
 
@@ -1758,15 +1753,15 @@ void MatchboxFactory::Init() {
     ("VetoScales",
      "Switch on or setting veto scales.",
      &MatchboxFactory::theVetoScales, false, false, false);
-  static SwitchOption interfaceVetoScalesOn
+  static SwitchOption interfaceVetoScalesYes
     (interfaceVetoScales,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceVetoScalesOff
+  static SwitchOption interfaceVetoScalesNo
     (interfaceVetoScales,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   */
 
@@ -1779,15 +1774,15 @@ void MatchboxFactory::Init() {
     ("Verbose",
      "Print full infomation on each evaluated phase space point.",
      &MatchboxFactory::theVerbose, false, false, false);
-  static SwitchOption interfaceVerboseOn
+  static SwitchOption interfaceVerboseYes
     (interfaceVerbose,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceVerboseOff
+  static SwitchOption interfaceVerboseNo
     (interfaceVerbose,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceVerbose.rank(-1);
     
@@ -1795,15 +1790,15 @@ void MatchboxFactory::Init() {
     ("InitVerbose",
      "Print setup information.",
      &MatchboxFactory::theInitVerbose, false, false, false);
-  static SwitchOption interfaceInitVerboseOn
+  static SwitchOption interfaceInitVerboseYes
     (interfaceInitVerbose,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceInitVerboseOff
+  static SwitchOption interfaceInitVerboseNo
     (interfaceInitVerbose,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceInitVerbose.rank(-1);
 
@@ -1832,12 +1827,12 @@ void MatchboxFactory::Init() {
     ("SubtractionScatterPlot",
      "Switch for controlling whether subtraction data should be plotted for each phase space point individually",
      &MatchboxFactory::theSubtractionScatterPlot, false, false, false);
-  static SwitchOption interfaceSubtractionScatterPlotOff
+  static SwitchOption interfaceSubtractionScatterPlotNo
     (interfaceSubtractionScatterPlot,
-     "Off", "Switch off the scatter plot", false);
-  static SwitchOption interfaceSubtractionScatterPlotOn
+     "No", "Switch off the scatter plot", false);
+  static SwitchOption interfaceSubtractionScatterPlotYes
     (interfaceSubtractionScatterPlot,
-     "On", "Switch on the scatter plot", true);
+     "Yes", "Switch on the scatter plot", true);
 
   static Parameter<MatchboxFactory,string> interfacePoleData
     ("PoleData",
@@ -1884,15 +1879,15 @@ void MatchboxFactory::Init() {
     ("RealEmissionScales",
      "Switch on or off calculation of subtraction scales from real emission kinematics.",
      &MatchboxFactory::theRealEmissionScales, false, false, false);
-  static SwitchOption interfaceRealEmissionScalesOn
+  static SwitchOption interfaceRealEmissionScalesYes
     (interfaceRealEmissionScales,
-     "On",
-     "On",
+     "Yes",
+     "Yes",
      true);
-  static SwitchOption interfaceRealEmissionScalesOff
+  static SwitchOption interfaceRealEmissionScalesNo
     (interfaceRealEmissionScales,
-     "Off",
-     "Off",
+     "No",
+     "No",
      false);
   interfaceRealEmissionScales.rank(-1);
 

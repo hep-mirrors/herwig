@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ColourBasis.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -180,6 +180,9 @@ vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
   vector<PDT::Colour> allLegs = projectColour(sub);
   vector<PDT::Colour> legs = normalOrder(allLegs);
 
+    // if no coloured legs.
+  if(legs.empty())return legs;
+  
   if ( allLegs[0] == PDT::Colour3 )
     allLegs[0] = PDT::Colour3bar;
   else if ( allLegs[0] == PDT::Colour3bar )
@@ -229,6 +232,14 @@ size_t ColourBasis::prepare(const cPDVector& sub,
 
   if ( theNormalOrderedLegs.find(sub) == theNormalOrderedLegs.end() )
     theNormalOrderedLegs[sub] = legs;
+  
+    //if no coloured legs.
+  if(legs.empty()){
+    auto sp = symmetric_matrix<double,upper>(1,1);
+    sp(0,0)=1.;
+    theScalarProducts.insert({ legs , sp });
+    return 0;
+  }
   
   if ( theScalarProducts.find(legs) == theScalarProducts.end() )
     doPrepare = true;
@@ -367,6 +378,9 @@ vector<string> ColourBasis::makeFlows(Ptr<Tree2toNDiagram>::tcptr diag,
 				      size_t dim) const {
 
   vector<string> res(dim);
+
+   //if no coloured legs.
+  if(dim==0)return res;
 
   list<list<list<pair<int,bool> > > > fdata =
     colourFlows(diag);
@@ -756,6 +770,15 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
 
   Selector<const ColourLines *> sel;
   size_t dim = amps.begin()->second.size();
+  
+    // special treatment if no coloured legs.
+    // as in e.g. MEee2gZ2ll.cc
+  if (cl.empty()){
+    static ColourLines ctST(" ");
+    sel.insert(1.,&ctST);
+    return sel;
+  }
+  
   assert(dim == cl.size());
   double w = 0.;
   for ( size_t i = 0; i < dim; ++i ) {
@@ -1006,6 +1029,8 @@ vector<PDT::Colour> ColourBasis::projectColour(const cPDVector& sub) const {
 }
 
 vector<PDT::Colour> ColourBasis::normalOrder(const vector<PDT::Colour>& legs) const {
+    //if no coloured legs.
+  if (legs.empty())return legs;
   vector<PDT::Colour> crosslegs = legs;
   if ( crosslegs[0] == PDT::Colour3 )
     crosslegs[0] = PDT::Colour3bar;
@@ -1163,6 +1188,14 @@ void ColourBasis::readBasis() {
 	known != legs.end(); ++known ) {
     if ( theScalarProducts.find(*known) != theScalarProducts.end() )
       continue;
+    //if no coloured legs.
+    if(known->empty()){
+      auto sp = symmetric_matrix<double,upper>(1,1);
+      sp(0,0)=1.;
+      theScalarProducts.insert({ *known , sp });
+      continue;
+    }
+     
     string fname = searchPath + file(*known) + ".cdat";
     if ( !readBasis(*known) )
       throw Exception() << "ColourBasis: Failed to open "
@@ -1267,14 +1300,14 @@ void ColourBasis::Init() {
     ("LargeN",
      "Switch on or off large-N evaluation.",
      &ColourBasis::theLargeN, false, false, false);
-  static SwitchOption interfaceLargeNOn
+  static SwitchOption interfaceLargeNYes
     (interfaceLargeN,
-     "On",
+     "Yes",
      "Work in N=infinity",
      true);
-  static SwitchOption interfaceLargeNOff
+  static SwitchOption interfaceLargeNNo
     (interfaceLargeN,
-     "Off",
+     "No",
      "Work in N=3",
      false);
 

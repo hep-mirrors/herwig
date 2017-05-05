@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // DipoleSplittingKinematics.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleSplittingKinematics_H
@@ -84,6 +84,8 @@ namespace Herwig {
      */
     virtual Energy dipoleScale(const Lorentz5Momentum& pEmitter,
 			       const Lorentz5Momentum& pSpectator) const {
+	// MEMinBias produces non-zero zeros.
+      if(abs(pEmitter*pSpectator)<0.0000001*GeV2)return ZERO;
       assert(pEmitter*pSpectator >= ZERO);
       return sqrt(2.*pEmitter*pSpectator);
     }

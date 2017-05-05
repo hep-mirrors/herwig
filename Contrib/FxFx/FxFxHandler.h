@@ -114,8 +114,10 @@ public:
   mutable int npLO_;
   mutable int npNLO_;
 
-
-
+ /**
+   * information for tree-level merging
+   */
+  mutable vector<double> ptclust_;
 
 protected:
 
@@ -178,6 +180,14 @@ private:
    */
   void caldel_m() const;
 
+    /**
+   * Deletes particles from partonsToMatch_ and particlesToCluster_
+   * vectors so that these contain only the partons to match to the
+   * jets and the particles used to build jets respectively. The candidates 
+   * are chosen according to the information passed from madgraph. 
+   */
+  void caldel_mg() const;
+
   /**  
    * c++ translation of subroutine of same name from alpsho.f.
    * Label all particles with status between ISTLO and ISTHI 
@@ -190,9 +200,27 @@ private:
   void caldel_hvq() const;
 
   /**
-   * get the information required for FxFx merging
+   * get the MG5_aMC information required for FxFx merging
    */
   void getnpFxFx() const;
+
+  /**
+   * get the MG5_aMC information required for FxFx merging
+   */
+  void getECOM() const;
+
+
+  /**
+   * get the MG5_aMC information required for tree-level merging
+   */
+  void getptclust() const;
+
+  /** 
+   * Erases all occurences of a substring from a string 
+   */
+  
+  void erase_substr(std::string& subject, const std::string& search) const;
+
 
   /**
    * Get the particles from lastXCombPtr filling the pair
@@ -333,6 +361,12 @@ private:
    *  (look for remnants initially in showeredFSPs_).
    */
   mutable PPair showeredRems_;
+
+  /**
+   * the COM of the incoming hadrons
+   */
+  
+  mutable double ECOM_;
 
   /**
    *  Pointer to the object calculating the strong coupling

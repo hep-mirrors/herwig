@@ -3,7 +3,7 @@
 // FxFxFileReader.h is a part of ThePEG - Toolkit for HEP Event Generation
 // Copyright (C) 1999-2011 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_FxFxFileReader_H
@@ -44,7 +44,8 @@ public:
   /**
    * Default constructor.
    */
-  FxFxFileReader() : neve(0), ieve(0), theQNumbers(false) {}
+  FxFxFileReader() : neve(0), ieve(0), theQNumbers(false), theIncludeFxFxTags(true),
+			   theIncludeCentral(false) {}
 
   /**
    * Copy-constructor. Note that a file which is opened in the object
@@ -99,8 +100,15 @@ public:
      virtual vector<string> optWeightNamesFunc();*/
 
 
-
   virtual vector<string> optWeightsNamesFunc();
+
+  
+  /** 
+   * Erases all occurences of a substring from a string 
+   */
+  
+  void erase_substr(std::string& subject, const std::string& search);
+
 
 public:
 
@@ -228,6 +236,16 @@ private:
    *  Whether or not to search for QNUMBERS stuff
    */
   bool theQNumbers;
+  
+  /**
+   * Include/Read FxFx tags
+   */
+  bool theIncludeFxFxTags;
+
+  /**
+   * Include central weight (for backup use)
+   */
+  bool theIncludeCentral;
 
   /**
    *  Decayer for any decay modes read from the file

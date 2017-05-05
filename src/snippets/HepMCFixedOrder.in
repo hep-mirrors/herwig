@@ -1,0 +1,12 @@
+## snippet to set up a hepmc hook
+
+## this snippet is for fixed order ie NO shower
+
+cd /Herwig/Analysis
+create ThePEG::NLOHepMCFile HepMCFixedOrder HepMCAnalysis.so
+set HepMCFixedOrder:PrintEvent 10000
+set HepMCFixedOrder:Format GenEvent
+set HepMCFixedOrder:Units GeV_mm
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMCFixedOrder
+
+

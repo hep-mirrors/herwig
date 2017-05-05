@@ -1,9 +1,9 @@
   // -*- C++ -*-
   //
   // Merger.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-  // Copyright ( C ) 2002-2007 The Herwig Collaboration
+  // Copyright (C) 2002-2017 The Herwig Collaboration
   //
-  // Herwig is licenced under version 2 of the GPL , see COPYING for details.
+  // Herwig is licenced under version 3 of the GPL , see COPYING for details.
   // Please respect the MCnet academic guidelines , see GUIDELINES for details.
   //
   //
@@ -1508,9 +1508,9 @@ void Merger::Init() {
    &Merger::theCMWScheme ,
    0 ,
    false , false );
-  static SwitchOption interfacetheCMWSchemeOff
+  static SwitchOption interfacetheCMWSchemeNo
   (interfacetheCMWScheme,
-   "Off",
+   "No",
    "No CMW-Scheme",
    0);
   static SwitchOption interfacetheCMWSchemeLinear
@@ -1539,14 +1539,6 @@ void Merger::Init() {
    &Merger::theGamma , 1.0 , 0.0 , 0 , 
    false , false , Interface::lowerlim );
    interfacegamma.rank(-1); 
-  
-  static Reference<Merger , ColourBasis> interfaceLargeNBasis
-  ( "LargeNBasis" , 
-   "Set the large-N colour basis implementation." , 
-   &Merger::theLargeNBasis ,
-   false , false ,
-   true , true , false );
-  interfaceLargeNBasis.rank(-1);
   
  
   static Switch<Merger,int> interfaceOpenZBoundariesM

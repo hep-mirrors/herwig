@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // DipoleEventRecord.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -442,8 +442,9 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
 const map<PPtr,PPtr>&
 DipoleEventRecord::prepare(tSubProPtr subpro,
                            tStdXCombPtr xc,
+			   StepPtr step,
                            const pair<PDF,PDF>& pdf,tPPair beam,
-                           bool dipoles) {
+			   bool firstInteraction, bool dipoles) {
   // set the subprocess
   subProcess(subpro);
   // clear the event record
@@ -467,9 +468,35 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   // use ShowerHandler to split up the hard process
   PerturbativeProcessPtr hard;
   DecayProcessMap decay;
-  ShowerHandler::currentHandler()->splitHardProcess(tPVector(subpro->outgoing().begin(),
-                                                             subpro->outgoing().end()),
-                                                    hard,decay);
+
+  // Special handling for the first interaction:
+  // If a post subprocess handler (e.g. QED radiation)
+  // is applied, there may be particles in the step object not
+  // present in the subprocess object (other than any remnants).
+  // These need to be included in any transformations due to
+  // II splittings in ::update.
+  if ( firstInteraction ) {
+
+    // Initialise a PVector for the outgoing
+    tPVector hardProcOutgoing;
+
+    // Include all outgoing particles that are not remnants
+    for ( auto & part : step->particles() )
+      if ( part->id() != 82 ) {
+	hardProcOutgoing.push_back(part);
+      }
+    ShowerHandler::currentHandler()->splitHardProcess(hardProcOutgoing,
+						      hard, decay);
+  }
+
+  // For secondary collisions we must use the
+  // subProcess object and not the step as the
+  // step stores all outgoing from the entire collision
+  else
+    ShowerHandler::currentHandler()->splitHardProcess(tPVector(subpro->outgoing().begin(),
+							       subpro->outgoing().end()),
+						      hard,decay);
+  
   // vectors for originals and copies of the particles
   vector<PPtr> original;
   vector<PPtr> copies;
@@ -1266,20 +1293,23 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
 	// Generate any powheg emission, returning 'real'
         RealEmissionProcessPtr real = decayer->generateHardest( born );
         
-	// If no emission is generated the new incoming and
-	// outgoing containers will be empty.
-	// Only do something if an emission is generated.
-        if ( real && real->incoming().size() != 0 ) {
-          assert ( real->incoming().size() == 1 );
-          
-	  // Update the decay process
-	  // Note: Do not use the new incoming particle
-          PPtr oldEmitter;
-          PPtr newEmitter;
-          
-	  // Use the name recoiler to avoid confusion with
-	  // the spectator in the POWHEGDecayer
-	  // i.e. the recoiler can be coloured or non-coloured
+	// If an emission has been attempted
+	// (Note if the emission fails, a null ptr is returned)
+        if ( real ) {
+	  
+          showerScale = real->pT()[ShowerInteraction::QCD];
+
+	  // If an emission is generated sort out the particles
+	  if ( !real->outgoing().empty() ) {
+	    
+	    // Update the decay process
+	    // Note: Do not use the new incoming particle
+	    PPtr oldEmitter;
+	    PPtr newEmitter;
+	    
+	    // Use the name recoiler to avoid confusion with
+	    // the spectator in the POWHEGDecayer
+	    // i.e. the recoiler can be coloured or non-coloured
           PPtr oldRecoiler;
           PPtr newRecoiler;
           
@@ -1301,7 +1331,6 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
 	  // Update the scales
           newRecoiler->scale(oldRecoiler->scale());
           
-          showerScale = real->pT()[ShowerInteraction::QCD];
           newEmitter->scale(sqr(showerScale));
           emitted->scale(sqr(showerScale));
           
@@ -1334,9 +1363,19 @@ Energy DipoleEventRecord::decay(PPtr incoming, bool& powhegEmission) {
           
 	  // Add the emitted to the outgoing of the decay process
           process->outgoing().push_back( { emitted, PerturbativeProcessPtr() } );
-        }
-        
-        
+	  }
+
+
+	  // Else, if no emission above pTmin, set particle scales
+	  else {
+	    for(auto & outg : process->outgoing()) {
+	      outg.first->scale( sqr(showerScale) );
+	    }
+	    powhegEmission = false;
+	  }
+
+	}
+	
 	// No powheg emission occurred:
         else
 	  powhegEmission = false;

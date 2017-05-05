@@ -12,7 +12,7 @@ cd /Herwig/MatrixElements/
 insert SubProcess:MatrixElements[0] MEHeavyQuark
 set MEHeavyQuark:QuarkType Bottom
 cd /Herwig/Generators
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 create Herwig::GammaPMETest BottomTest GammaTest.so
 insert EventGenerator:AnalysisHandlers 0 BottomTest
 saverun LHC-Bottom EventGenerator

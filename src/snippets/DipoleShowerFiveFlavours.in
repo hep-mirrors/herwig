@@ -8,16 +8,18 @@ set u:NominalMass 0*GeV
 set ubar:NominalMass 0*GeV
 set s:NominalMass 0*GeV
 set sbar:NominalMass 0*GeV
-set c:HardProcessMass 0*GeV
-set cbar:HardProcessMass 0*GeV
-set b:HardProcessMass 0*GeV
-set bbar:HardProcessMass 0*GeV
+
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+set b:NominalMass 0*GeV
+set bbar:NominalMass 0*GeV
+
 
 cd /Herwig/DipoleShower/Kernels
 
-set IFgx2bbbarxDipoleKernel:UseKernel On
-set IFgx2bbarbxDipoleKernel:UseKernel On
-set IFMgx2bbbarxDipoleKernel:UseKernel On
-set IFMgx2bbarbxDipoleKernel:UseKernel On
-set IIgx2bbbarxDipoleKernel:UseKernel On
-set IIgx2bbarbxDipoleKernel:UseKernel On
+set IFgx2bbbarxDipoleKernel:UseKernel Yes
+set IFgx2bbarbxDipoleKernel:UseKernel Yes
+set IFMgx2bbbarxDipoleKernel:UseKernel Yes
+set IFMgx2bbarbxDipoleKernel:UseKernel Yes
+set IIgx2bbbarxDipoleKernel:UseKernel Yes
+set IIgx2bbarbxDipoleKernel:UseKernel Yes

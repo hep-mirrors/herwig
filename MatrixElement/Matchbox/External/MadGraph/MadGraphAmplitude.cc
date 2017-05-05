@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // MadGraphAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2012 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
-// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -240,7 +240,7 @@ bool MadGraphAmplitude::initializeExternal() {
       generator()->log()<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
       generator()->log()<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
       generator()->log()<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
-      generator()->log()<<"\n\n             set Madgraph:KeepInputTopMass True";
+      generator()->log()<<"\n\n             set Madgraph:KeepInputTopMass Yes";
       generator()->log()<<"\n\n         to your input file.";
       generator()->log()<<"\n---------------------------------------------------------------";
       generator()->log()<<"\n---------------------------------------------------------------\n";
@@ -440,7 +440,8 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
       return Complex(0.0);
     }
   } else {
-    set<vector<size_t> > a = colourOrdering(i);
+    set<vector<size_t> > a ;
+    if(lastMatchboxXComb()->colourBasisDim()>0)a=colourOrdering(i);
     int ncol=-1;
     MG_NCol(&xx,&ncol);
     assert(ncol!=-1);
@@ -866,15 +867,15 @@ void MadGraphAmplitude::Init() {
          ("KeepInputTopMass",
           "Switch On/Off formopt",
           &MadGraphAmplitude::keepinputtopmass, false, false, false);
-  static SwitchOption interfacekeepinputtopmassTrue
+  static SwitchOption interfacekeepinputtopmassYes
          (interfacekeepinputtopmass,
-          "On",
-          "On",
+          "Yes",
+          "Yes",
           true);
-  static SwitchOption interfacekeepinputtopmassFalse
+  static SwitchOption interfacekeepinputtopmassNo
          (interfacekeepinputtopmass,
-          "Off",
-          "Off",
+          "No",
+          "No",
           false);  
   
     static Parameter<MadGraphAmplitude,string> interfaceMadgraphPrefix

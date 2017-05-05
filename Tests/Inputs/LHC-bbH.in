@@ -24,7 +24,7 @@ set MEPP2bbbarH:ShapeScheme OnShell
 insert SubProcess:MatrixElements[0] MEPP2bbbarH
 set /Herwig/RunningMass:TopBottomCharmMass Pole
 cd /Herwig/Generators
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 create Herwig::QQHTest bbHTest HadronTest.so
 set bbHTest:QuarkFlavour Bottom
 insert EventGenerator:AnalysisHandlers 0 bbHTest

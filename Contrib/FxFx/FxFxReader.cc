@@ -3,7 +3,7 @@
 // FxFxReader.cc is a part of ThePEG - Toolkit for HEP Event Generation
 // Copyright (C) 1999-2011 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -234,13 +234,6 @@ void FxFxReader::initialize(FxFxEventHandler & eh) {
   outPDF = make_pair(partonExtractor()->getPDF(inData.first),
 		     partonExtractor()->getPDF(inData.second));
 
-  // SP: re-interpret 3/4 -> 1/2; see discussion w/ Leif and Keith at LH 2013
-
-  if ( abs(heprup.IDWTUP) == 3 )
-    heprup.IDWTUP = heprup.IDWTUP < 0 ? -1 : 1;
-
-  if ( abs(heprup.IDWTUP) == 4 )
-    heprup.IDWTUP = heprup.IDWTUP < 0 ? -2 : 2;
 
   close();
 
@@ -307,37 +300,45 @@ long FxFxReader::scan() {
     vector<double> newmax;
     vector<long> oldeve;
     vector<long> neweve;
+    vector<double> sumlprup;
+    vector<double> sumsqlprup;  
+    vector<long> nscanned;
     for ( int i = 0; ( maxScan() < 0 || i < maxScan() ) && readEvent(); ++i ) {
       if ( !checkPartonBin() ) Throw<FxFxInitError>()
-	<< "Found event in FxFxReader '" << name()
-	<< "' which cannot be handeled by the assigned PartonExtractor '"
-	<< partonExtractor()->name() << "'." << Exception::runerror;
+        << "Found event in LesHouchesReader '" << name()
+        << "' which cannot be handeled by the assigned PartonExtractor '"
+        << partonExtractor()->name() << "'." << Exception::runerror;
       vector<int>::iterator idit =
-	find(lprup.begin(), lprup.end(), hepeup.IDPRUP);
+        find(lprup.begin(), lprup.end(), hepeup.IDPRUP);
       int id = lprup.size();
       if ( idit == lprup.end() ) {
-	lprup.push_back(hepeup.IDPRUP);
-	newmax.push_back(0.0);
-	neweve.push_back(0);
-	oldeve.push_back(0);
+        lprup.push_back(hepeup.IDPRUP);
+        newmax.push_back(0.0);
+        neweve.push_back(0);
+        oldeve.push_back(0);
+        sumlprup.push_back(0.);
+        sumsqlprup.push_back(0.);
+        nscanned.push_back(0);
       } else {
-	id = idit - lprup.begin();
+        id = idit - lprup.begin();
       }
       ++neve;
       ++oldeve[id];
       oldsum += hepeup.XWGTUP;
+      sumlprup[id] += hepeup.XWGTUP;
+      sumsqlprup[id] += sqr(hepeup.XWGTUP);
+      ++nscanned[id];
       if ( cacheFile() ) {
- 	if ( eventWeight() == 0.0 ) {
- 	  ++cuteve;
-	  continue;
- 	}
-	cacheEvent();
+        if ( eventWeight() == 0.0 ) {
+          ++cuteve;
+          continue;
+        }
+        cacheEvent();
       }
       ++neweve[id];
       newmax[id] = max(newmax[id], abs(eventWeight()));
       if ( eventWeight() < 0.0 ) negw = true;
-    }
-    // std::cout << "eventWeight() = " << eventWeight() << endl;
+    } //end of scanning events
     xSecWeights.resize(oldeve.size(), 1.0);
     for ( int i = 0, N = oldeve.size(); i < N; ++i )
       if ( oldeve[i] ) xSecWeights[i] = double(neweve[i])/double(oldeve[i]);
@@ -346,18 +347,18 @@ long FxFxReader::scan() {
 
     if ( lprup.size() == heprup.LPRUP.size() ) {
       for ( int id = 0, N = lprup.size(); id < N; ++id ) {
-	vector<int>::iterator idit =
-	  find(heprup.LPRUP.begin(), heprup.LPRUP.end(), hepeup.IDPRUP);
-	if ( idit == heprup.LPRUP.end() ) {
-	  Throw<FxFxInitError>()
-	    << "When scanning events, the LesHouschesReader '" << name()
-	    << "' found undeclared processes."  << Exception::warning;
-	  heprup.NPRUP = 0;
-	  break;
-	}
-	int idh = idit - heprup.LPRUP.begin();
-	heprup.XMAXUP[idh] = newmax[id];
-      }	
+        vector<int>::iterator idit =
+          find(heprup.LPRUP.begin(), heprup.LPRUP.end(), hepeup.IDPRUP);
+        if ( idit == heprup.LPRUP.end() ) {
+          Throw<FxFxInitError>()
+            << "When scanning events, the LesHouschesReader '" << name()
+            << "' found undeclared processes."  << Exception::warning;
+          heprup.NPRUP = 0;
+          break;
+        }
+        int idh = idit - heprup.LPRUP.begin();
+        heprup.XMAXUP[idh] = newmax[id];
+      } 
     }
     if ( heprup.NPRUP == 0 ) {
       // No heprup block was supplied or something went wrong.
@@ -365,23 +366,51 @@ long FxFxReader::scan() {
       heprup.LPRUP.resize(lprup.size());
       heprup.XMAXUP.resize(lprup.size());
       for ( int id = 0, N = lprup.size(); id < N; ++id ) {
-	heprup.LPRUP[id] = lprup[id];
-	heprup.XMAXUP[id] = newmax[id];
+        heprup.LPRUP[id] = lprup[id];
+        heprup.XMAXUP[id] = newmax[id];
       }
-    } else if ( abs(heprup.IDWTUP) != 1 ) {
+    }
+    if ( abs(heprup.IDWTUP) != 1 ) {
       // Try to fix things if abs(heprup.IDWTUP) != 1.
       double sumxsec = 0.0;
-      for ( int id = 0; id < heprup.NPRUP; ++id ) sumxsec += heprup.XSECUP[id];
-      weightScale = picobarn*neve*sumxsec/oldsum;
+      if(abs(heprup.IDWTUP)==3) {
+	for ( int id = 0; id < heprup.NPRUP; ++id ) sumxsec += heprup.XSECUP[id];
+      }
+      else {
+	for ( int id = 0; id < heprup.NPRUP; ++id )  {
+	  //set the cross section directly from the event weights read
+	  heprup.XSECUP[id] = sumlprup[id]/nscanned[id];
+	  heprup.XERRUP[id] = (sumsqlprup[id]/nscanned[id] - sqr(sumlprup[id]/nscanned[id])) / nscanned[id];
+	  if(fabs(heprup.XERRUP[id]) < 1e-10) { heprup.XERRUP[id] = 0; }
+	  if(fabs(newmax[id]) < 1e-10) { newmax[id] = 0; }
+	  if(heprup.XERRUP[id] < 0.) {
+	    if( heprup.XERRUP[id]/(sumsqlprup[id]/nscanned[id])>-1e-10)
+	      heprup.XERRUP[id] = 0.;
+	    else {
+	      Throw<FxFxInitError>()
+		<< "Negative error when scanning events in LesHouschesReader '" << name()
+		<< Exception::warning;
+	      heprup.XERRUP[id] = 0.;
+	    }
+	  }
+	  heprup.XERRUP[id] = sqrt( heprup.XERRUP[id] );
+	  heprup.XMAXUP[id] = newmax[id];
+	  //cout << "heprup.XMAXUP[id] = " << heprup.XMAXUP[id]  << endl;
+	  sumxsec += heprup.XSECUP[id];
+	}
+      }
+      //cout << "sumxsec = " << sumxsec << endl;
+      //weightScale = picobarn*neve*sumxsec/oldsum;
+      weightScale = 1.0*picobarn; // temporary fix?
+      // cout << "weightscale = " << weightScale/picobarn << endl;
     }
   }
 
   if ( cacheFile() ) closeCacheFile();
 
   if ( negw ) heprup.IDWTUP = min(-abs(heprup.IDWTUP), -1);
-
+ 
   return neve;
-
 }
 
 void FxFxReader::setWeightScale(long) {}
@@ -566,9 +595,17 @@ double FxFxReader::getEvent() {
   ++position;
 
   double max = maxWeights[hepeup.IDPRUP]*maxFactor;
-  //cout << "max = " << max << endl;
-  //cout << "eventWeight() = " << eventWeight() << endl;
-  
+
+  // cout << "maxFactor = " << maxFactor << " maxWeights[hepeup.IDPRUP] = " <<  maxWeights[hepeup.IDPRUP] << endl;
+  // normalize all the weights to the max weight
+  for(map<string,double>::iterator it=optionalWeights.begin();
+      it!=optionalWeights.end();++it) {
+    if(it->first!="ecom" && it->second!=-999 && it->second!=-111 && it->second!=-222 && it->second!=-333) {
+      it->second = (max != 0.0) ? it->second/max : 0.0;
+    }
+  }
+  //cout << "hepeup.XWGTUP = " << hepeup.XWGTUP << endl;
+  //cout << "max = " << max << " " << eventWeight() << endl; 
   return max != 0.0? eventWeight()/max: 0.0;
 
 }
@@ -602,7 +639,6 @@ double FxFxReader::reweight() {
     CKKWHandler()->setXComb(lastXCombPtr());
     weight *= CKKWHandler()->reweightCKKW(minMultCKKW(), maxMultCKKW());
   }
-  std::cout << "weight = " << weight << endl;
   return weight;
 }
 
@@ -937,6 +973,7 @@ void FxFxReader::createParticles() {
       }
     }
   }
+  
   // might have source/sink
   if( unMatchedColour.size() + unMatchedAntiColour.size() != 0) {
     if(unMatchedColour.size() == 3 ) {
@@ -960,6 +997,7 @@ void FxFxReader::createParticles() {
  	<< hepeup << Exception::runerror;
     }
   }
+  
   // any subsequent decays
   for ( int i = 0, N = hepeup.IDUP.size(); i < N; ++i ) {
     if(hepeup.ISTUP[i] !=2 && hepeup.ISTUP[i] !=3) continue;
@@ -1147,7 +1185,7 @@ void FxFxReader::cacheEvent() const {
   pos = mwrite(pos, hepeup.SPINUP[0], hepeup.NUP);
   pos = mwrite(pos, lastweight);
   pos = mwrite(pos, optionalWeights);
-  for(int ff = 0; ff < optionalWeightsNames.size(); ff++) {
+  for(size_t ff = 0; ff < optionalWeightsNames.size(); ff++) {
     pos = mwrite(pos, optionalWeightsNames[ff]);
   }
   /*  for(int f = 0; f < optionalWeightsNames.size(); f++) {
@@ -1190,7 +1228,7 @@ bool FxFxReader::uncacheEvent() {
   pos = mread(pos, hepeup.SPINUP[0], hepeup.NUP);
   pos = mread(pos, lastweight);
   pos = mread(pos, optionalWeights);
-  for(int ff = 0; ff < optionalWeightsNames.size(); ff++) {
+  for(size_t ff = 0; ff < optionalWeightsNames.size(); ff++) {
     pos = mread(pos, optionalWeightsNames[ff]);
   }
   pos = mread(pos, optionalnpLO);

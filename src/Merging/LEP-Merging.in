@@ -71,7 +71,7 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 # read Matchbox/MadGraph-OpenLoops.in
 
 ## Uncomment this to use ggh effective couplings
-## currently only supported by MadGraph-GoSam
+## currently only supported by MadGraph-GoSam and MadGraph-OpenLoops
 
 # read Matchbox/HiggsEffective.in
 
@@ -83,7 +83,6 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 ## cuts on additional jets
 
 # read Matchbox/DefaultEEJets.in
-
 # set NJetsCut:NJetsMin 3
 
 ##################################################
@@ -112,7 +111,7 @@ set /Herwig/Merging/MergingFactory:ScaleChoice SHatScale
 ## CMW - Scheme
 ##################################################
 
-set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
+read Merging/Merging-Dipole-FactorCMWSchemeTune.in
 
 ### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
 ### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))
@@ -130,6 +129,9 @@ cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
+
+# Here we collected a various Rivet analysis for LEP
+# at the Z Mass. (The collection might not be complete.)
 read Merging/LEP91-Analysis.in
 
 

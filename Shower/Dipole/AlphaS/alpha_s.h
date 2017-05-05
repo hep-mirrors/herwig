@@ -238,7 +238,7 @@ namespace matchbox {
      * EventGenerator to disk.
      * @throws InitException if object could not be initialized properly.
      */
-    virtual inline void doinit() throw(InitException) {
+    virtual inline void doinit() {
       match_thresholds();
       copy(quark_masses_squared_.begin()+1,
            quark_masses_squared_.end(),nfvector.begin());

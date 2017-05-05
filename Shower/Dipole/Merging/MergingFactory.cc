@@ -1,9 +1,9 @@
   // -*- C++ -*-
   //
   // MergeboxFactory.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-  // Copyright (C) 2002-2012 The Herwig Collaboration
+  // Copyright (C) 2002-2017 The Herwig Collaboration
   //
-  // Herwig is licenced under version 2 of the GPL, see COPYING for details.
+  // Herwig is licenced under version 3 of the GPL, see COPYING for details.
   // Please respect the MCnet academic guidelines, see GUIDELINES for details.
   //
   //
@@ -390,7 +390,6 @@ void MergingFactory::setup() {
   if(! dsh  )throw InitException() << "The showerhandlerfor the MergingFactory must be the DipoleShower. ";
   
   dsh->setMerger(MH());
-  MH()->largeNBasis()->factory(this);
   MH()->setFactory(this);
   MH()->setDipoleShower(dsh); 
 
@@ -436,8 +435,21 @@ void MergingFactory::setup() {
     
     for ( auto & amp: amplitudes() ) amp->factory(this);
     
-      //fill the amplitudes
+      // fill the amplitudes
     if ( !amplitudes().empty() )  fillMEsMap();
+    
+      // Use the colour basis of the first element of amplitudes
+      // to set the large N colour basis for the MergingHelper
+    assert(!amplitudes().empty() );
+    if ( !amplitudes()[0]->colourBasis() )
+        throw Exception() << "MergingFactory::setup(): Expecting a colour basis object."
+        << Exception::runerror;
+    auto largeNBasis =
+    amplitudes()[0]->colourBasis()->cloneMe();
+    largeNBasis->clear();
+    largeNBasis->doLargeN();
+    MH()->largeNBasis(largeNBasis);
+    MH()->largeNBasis()->factory(this);
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);
@@ -617,9 +629,9 @@ void MergingFactory::Init() {
   static Switch<MergingFactory, bool> interface_Unitarized("Unitarized", 
 	 "Unitarize the cross section (default is unitarised. NLO merging must be unitarised).", 
 	 &MergingFactory::unitarized, true, false, false);
-  static SwitchOption interface_UnitarizedOn(interface_Unitarized, "On", 
+  static SwitchOption interface_UnitarizedYes(interface_Unitarized, "Yes", 
 	 "Switch on the unitarized cross section.", true);
-  static SwitchOption interface_UnitarizedOff(interface_Unitarized, "Off", 
+  static SwitchOption interface_UnitarizedNo(interface_Unitarized, "No", 
 	 "Switch off the unitarized cross section.", false);
   
 

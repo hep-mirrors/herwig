@@ -2,9 +2,9 @@
 //
 // statistics.h is part of ExSample -- A Library for Sampling Sudakov-Type Distributions
 //
-// Copyright (C) 2008-2011 Simon Platzer -- simon.plaetzer@desy.de
+// Copyright (C) 2008-2017 Simon Platzer -- simon.plaetzer@desy.de, The Herwig Collaboration
 //
-// ExSample is licenced under version 2 of the GPL, see COPYING for details.
+// ExSample is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //

@@ -8,7 +8,7 @@ set EventGenerator:MaxErrors 10000
 set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 set EventGenerator:EventHandler:DecayHandler NULL
 set EventGenerator:EventHandler:HadronizationHandler NULL
-set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Analysis/Basics:CheckQuark No
 set EventGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
