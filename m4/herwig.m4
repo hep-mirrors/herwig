@@ -351,12 +351,13 @@ AS_IF([test "x$have_gosam" = "xlib"],
 AS_IF([test "x$with_gosam" != "xno"  -a "x$have_gosam" = "xno"],
       [AC_MSG_ERROR([GoSam requested but not found])])
 
-AC_MSG_CHECKING([for GoSam version >= 2.0.4])
+AS_IF([test "x$with_gosam" != "xno"],
+[AC_MSG_CHECKING([for GoSam version >= 2.0.4])
 tmp_gosamversion=[$(${with_gosam}/bin/gosam.py --version | grep 'GoSam.*rev' | cut -d' ' -f2)]
 AX_COMPARE_VERSION([${tmp_gosamversion}],[lt],[2.0.4],
                    [AC_MSG_RESULT([no])
                     AC_MSG_ERROR([Herwig requires GoSam 2.0.4 or later, found ${tmp_gosamversion}])],
-                   [AC_MSG_RESULT([yes])])
+                   [AC_MSG_RESULT([yes])])])
 
 AM_CONDITIONAL(HAVE_GOSAM,[test "x$have_gosam" = "xlib" ])
 
