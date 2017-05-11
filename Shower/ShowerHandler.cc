@@ -816,10 +816,8 @@ PPtr findParent(PPtr original, bool & isHard,
   isHard |=(outgoingset.find(original) != outgoingset.end());
   if(!original->parents().empty()) {
     PPtr orig=original->parents()[0];
-    if(CurrentGenerator::current().currentEventHandler()->currentStep()->
-       find(orig)&&decayProduct(subProcess,orig)) {
+    if(decayProduct(subProcess,orig))
       parent=findParent(orig,isHard,outgoingset,subProcess);
-    }
   }
   return parent;
 }
@@ -891,7 +889,7 @@ void ShowerHandler::splitHardProcess(tPVector tagged, PerturbativeProcessPtr & h
  	   parent == subProcess_->incoming().second ) break;
  	isDecayProd = decayProduct(subProcess_,parent);
       }
-      if (isDecayProd) 
+      if (isDecayProd)
 	hardParticles.insert(findParent(parent,isHard,outgoingset,subProcess_));
     }
     if (!isDecayProd) 
