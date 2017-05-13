@@ -52,35 +52,36 @@ newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
 
 newdef ColourReconnector:ColourReconnection Yes
-newdef ColourReconnector:ReconnectionProbability 0.4276
+newdef ColourReconnector:ReconnectionProbability 0.652710
 newdef ColourReconnector:Algorithm Plain
 newdef ColourReconnector:InitialTemperature 0.01
 newdef ColourReconnector:AnnealingFactor 0.21
 newdef ColourReconnector:AnnealingSteps 10
 newdef ColourReconnector:TriesPerStepFactor 0.66
+newdef ColourReconnector:OctetTreatment All
 
 # Clustering parameters for light quarks
-newdef ClusterFissioner:ClMaxLight  3.26*GeV
-newdef ClusterFissioner:ClPowLight  1.61
-newdef ClusterFissioner:PSplitLight 0.81
+newdef ClusterFissioner:ClMaxLight  3.002538
+newdef ClusterFissioner:ClPowLight  1.424265
+newdef ClusterFissioner:PSplitLight 0.847541
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
-newdef ClusterFissioner:ClMaxBottom  3.75*GeV
-newdef ClusterFissioner:ClPowBottom  0.70
-newdef ClusterFissioner:PSplitBottom 0.92
+newdef ClusterFissioner:ClMaxBottom  3.91100
+newdef ClusterFissioner:ClPowBottom  .63750
+newdef ClusterFissioner:PSplitBottom .5306
 newdef ClusterDecayer:ClDirBottom 1
-newdef ClusterDecayer:ClSmrBottom 0.00
-newdef HadronSelector:SingleHadronLimitBottom 0.34
+newdef ClusterDecayer:ClSmrBottom 0.0204
+newdef HadronSelector:SingleHadronLimitBottom 0.0
 
 # Clustering parameters for c-quarks
-newdef ClusterFissioner:ClMaxCharm  3.55*GeV
-newdef ClusterFissioner:ClPowCharm  2.11
-newdef ClusterFissioner:PSplitCharm 1.20
+newdef ClusterFissioner:ClMaxCharm  3.638218
+newdef ClusterFissioner:ClPowCharm  2.331856
+newdef ClusterFissioner:PSplitCharm 1.233994
 newdef ClusterDecayer:ClDirCharm 1
 newdef ClusterDecayer:ClSmrCharm 0.
-newdef HadronSelector:SingleHadronLimitCharm 0.0
+newdef HadronSelector:SingleHadronLimitCharm 0.000000
 
 # Clustering parameters for exotic quarks
 # (e.g. hadronizing Susy particles)
@@ -94,10 +95,11 @@ newdef HadronSelector:SingleHadronLimitExotic 0.1
 # 
 newdef HadronSelector:PwtDquark  1.0
 newdef HadronSelector:PwtUquark  1.0
-newdef HadronSelector:PwtSquark  0.58
+newdef HadronSelector:PwtSquark  0.665563
 newdef HadronSelector:PwtCquark  1.0
 newdef HadronSelector:PwtBquark  1.0
-newdef HadronSelector:PwtDIquark 0.38
+newdef HadronSelector:PwtDIquark 0.439018
 newdef HadronSelector:SngWt      0.74
 newdef HadronSelector:DecWt      0.62
 newdef HadronSelector:Mode 1
+newdef HadronSelector:BelowThreshold All
