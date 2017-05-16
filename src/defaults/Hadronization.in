@@ -89,8 +89,8 @@ newdef ClusterFissioner:ClMaxExotic  2.7*GeV
 newdef ClusterFissioner:ClPowExotic  1.46
 newdef ClusterFissioner:PSplitExotic 1.00
 newdef ClusterDecayer:ClDirExotic 1
-newdef ClusterDecayer:ClSmrExotic 0.78
-newdef HadronSelector:SingleHadronLimitExotic 0.1
+newdef ClusterDecayer:ClSmrExotic 0.
+newdef HadronSelector:SingleHadronLimitExotic 0.
 
 # 
 newdef HadronSelector:PwtDquark  1.0
