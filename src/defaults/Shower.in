@@ -164,7 +164,6 @@ cp SudakovCommon QtoQGammaSudakov
 set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
 set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
-set QtoQGammaSudakov:pTmin 1.67*GeV
 
 cp QtoQGammaSudakov LtoLGammaSudakov
 
@@ -180,7 +179,6 @@ cp SudakovCommon GammatoQQbarSudakov
 newdef GammatoQQbarSudakov:SplittingFunction GammatoQQbarSplitFn
 set GammatoQQbarSudakov:Alpha AlphaQED
 newdef GammatoQQbarSudakov:PDFmax 120.0
-set GammatoQQbarSudakov:pTmin 1.67*GeV
 
 cp SudakovCommon GtobbbarSudakov
 newdef GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
@@ -195,7 +193,6 @@ newdef QtoGQSudakov:SplittingFunction QtoGQSplitFn
 
 cp SudakovCommon QtoGammaQSudakov
 newdef QtoGammaQSudakov:SplittingFunction QtoGammaQSplitFn
-set QtoGammaQSudakov:pTmin 1.67*GeV
 
 cp SudakovCommon utoGuSudakov
 newdef utoGuSudakov:SplittingFunction QtoGQSplitFn
