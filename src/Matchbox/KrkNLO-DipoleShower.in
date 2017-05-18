@@ -1,0 +1,43 @@
+# LO + Dipole Shower
+read Matchbox/LO-DipoleShower.in
+
+# KrkNLO Event Reweighter
+cd /Herwig/DipoleShower
+create Herwig::KrknloEventReweight KrkNLOEventReweight HwKrknloEventReweight.so
+set DipoleShowerHandler:EventReweight KrkNLOEventReweight
+
+set DipoleShowerHandler:RestrictPhasespace No
+set DipoleShowerHandler:MaxPtIsMuF No
+set DipoleShowerHandler:HardScaleProfile NULL
+set DipoleShowerHandler:IntrinsicPtGenerator NULL
+
+set DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+
+# Use pT for Dipole Kernels
+cd Kernels
+set FFgx2ddxDipoleKernel:VirtualitySplittingScale No
+set FFgx2uuxDipoleKernel:VirtualitySplittingScale No
+set FFgx2ccxDipoleKernel:VirtualitySplittingScale No
+set FFgx2ssxDipoleKernel:VirtualitySplittingScale No
+set FFgx2bbxDipoleKernel:VirtualitySplittingScale No
+
+set FIgx2ddxDipoleKernel:VirtualitySplittingScale No
+set FIgx2uuxDipoleKernel:VirtualitySplittingScale No
+set FIgx2ccxDipoleKernel:VirtualitySplittingScale No
+set FIgx2ssxDipoleKernel:VirtualitySplittingScale No
+set FIgx2bbxDipoleKernel:VirtualitySplittingScale No
+
+set IFgx2ggxDipoleKernel:VirtualitySplittingScale No
+set IFqx2gqxDipoleKernel:VirtualitySplittingScale No
+
+set IIgx2ggxDipoleKernel:VirtualitySplittingScale No
+set IIqx2gqxDipoleKernel:VirtualitySplittingScale No
+
+set FFMgx2ddxDipoleKernel:VirtualitySplittingScale No
+set FFMgx2uuxDipoleKernel:VirtualitySplittingScale No
+set FFMgx2ccxDipoleKernel:VirtualitySplittingScale No
+set FFMgx2ssxDipoleKernel:VirtualitySplittingScale No
+set FFMgx2bbxDipoleKernel:VirtualitySplittingScale No
+
+cd /
