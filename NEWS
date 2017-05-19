@@ -4,18 +4,27 @@ Herwig News							 -*- outline -*-
 * Herwig 7.1.0 release: 2017-05-19
 
 ** Major new release
-   A new release of the Monte Carlo event generator Herwig (version 7.1) is
-   now available. This version introduces a number of improvements (for a more
-   detailed overview and further references please see the release note
-   arXiv:1705.xxxx):
+   For a more detailed overview and further references please see the release note arXiv:1705.xxxx
 
 ** NLO multijet merging with the dipole shower
+
 ** A new soft model
+
 ** An interface to EvtGen
+
 ** Improved calculation of mass effects in the dipole shower
+
 ** Top decays in the dipole shower, and NLO corrections to the decay
+
 ** An implementation of the KrkNLO method for simple processes
+
+** Major restructuring and cleanup of default input files
+
 ** C++11 is now mandatory and heavily used in the code
+
+** Many smaller bugfixes and improvements
+
+
 
 * Herwig 7.0.4 release: 2016-10-24
 
