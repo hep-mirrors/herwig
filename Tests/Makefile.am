@@ -219,8 +219,8 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Bottom-{0..8}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Top-{L,SL}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{7,8,13}-Top-All.in) \
-                  $(shell echo Rivet/Star-{UE,Jets-{1..4}}.in ) \
-	          $(shell echo Rivet/SppS-{200,500,900,546}-UE.in ) \
+                  $(shell echo Rivet/Star{,-Dipole}-{UE,Jets-{1..4}}.in ) \
+	          $(shell echo Rivet/SppS{,-Dipole}-{200,500,900,546}-UE.in ) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{W-{e,mu},13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},8-ZZ-lv,W-Z-{e,mu}}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-7-{W,Z}Gamma-{e,mu}.in) \
 	          $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \

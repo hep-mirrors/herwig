@@ -1,5 +1,5 @@
 ================================================================================
-Herwig 7.0.4
+Herwig 7.1.0
 ================================================================================
 
 Please contact <herwig@projects.hepforge.org> for any queries.
@@ -11,7 +11,12 @@ Herwig is actively developed by:
 Johannes Bellm
 Stefan Gieseke
 David Grellscheid
+Patrick Kirchgaeßer
+Frashër Loshaj
+Graeme Nail
+Andreas Papaefstathiou
 Simon Plätzer
+Radek Podskubka
 Michael Rauch
 Christian Reuschle
 Peter Richardson
@@ -19,17 +24,7 @@ Peter Schichtel
 Mike Seymour
 Andrzej Siödmok
 Stephen Webster
-Alix Wilcock
 
---------------------------------------------------------------------------------
-With contributions by:
---------------------------------------------------------------------------------
-
-Nadine Fischer
-Marco A. Harrendorf
-Graeme Nail
-Andreas Papaefstathiou
-Daniel Rauch
 
 --------------------------------------------------------------------------------
 Former authors are:
@@ -39,8 +34,11 @@ Ken Arnold
 Manuel Bähr
 Luca d'Errico
 Martyn Gigg
+Nadine Fischer
 Keith Hamilton
+Marco A. Harrendorf
 Seyi Latunde-Dada
+Daniel Rauch
 Alberto Ribon
 Christian Röhr
 Pavel Růžička
@@ -52,6 +50,7 @@ Martin Stoll
 Louise Suter
 Jon Tully
 Bryan Webber
+Alix Wilcock
 David Winn
 Benedikt Zimmermann
 

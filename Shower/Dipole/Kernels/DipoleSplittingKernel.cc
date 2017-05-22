@@ -88,14 +88,14 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
  
   Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
   fScale = max( fScale , sqr(factorizationScaleFreeze()) );
-
-  if(split.calcFixedExpansion()){
-    scale=sqr(split.fixedScale());
-  }
  
   Energy2 rScale = sqr(theRenormalizationScaleFactor*rScaleFactor)*scale;
   rScale = max( rScale , sqr(renormalizationScaleFreeze()) );
 
+  if(split.calcFixedExpansion()){
+    fScale = max( sqr(split.fixedScale()) , sqr(factorizationScaleFreeze()) );
+    rScale = max( sqr(split.fixedScale()) , sqr(renormalizationScaleFreeze()) );
+  }
 
   double alphas = 1.0;
   double pdf = 1.0;
@@ -121,7 +121,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   }
 
   if ( evaluateAlphaS ){
-    if (theCMWScheme==0) {
+    if (theCMWScheme==0||split.calcFixedExpansion()) {
       alphas = alphaS()->value(rScale);
     }else if(theCMWScheme==1){
       

@@ -10,7 +10,7 @@ pkglib_LTLIBRARIES += HwMatchboxGoSam.la
 endif
 
 HwMatchboxGoSam_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 13:0:0
+$(AM_LDFLAGS) -module -version-info 14:0:0
 
 HwMatchboxGoSam_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_BINDIR="\"$(bindir)\"" \
@@ -27,7 +27,7 @@ if HAVE_VBFNLO
 pkglib_LTLIBRARIES += HwMatchboxVBFNLO.la
 endif
 
-HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:2:0
+HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 HwMatchboxVBFNLO_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)
 HwMatchboxVBFNLO_la_CPPFLAGS += -DVBFNLOLIB=$(VBFNLOLIB)
@@ -46,7 +46,7 @@ endif
 HwMatchboxOpenLoops_la_SOURCES = \
 OpenLoops/OpenLoopsAmplitude.cc
 
-HwMatchboxOpenLoops_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 12:0:0
+HwMatchboxOpenLoops_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:0:0
 
 HwMatchboxOpenLoops_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DOPENLOOPSLIBS="\"$(OPENLOOPSLIBS)\"" \
@@ -59,7 +59,7 @@ if HAVE_NJET
 pkglib_LTLIBRARIES += HwMatchboxNJet.la
 endif
 
-HwMatchboxNJet_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 12:0:0
+HwMatchboxNJet_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:0:0
 
 HwMatchboxNJet_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(NJETINCLUDEPATH) \
 -DNJET_PREFIX="\"$(NJETPREFIX)\"" \
@@ -76,7 +76,7 @@ if HAVE_MADGRAPH
 pkglib_LTLIBRARIES += HwMatchboxMadGraph.la
 endif
 
-HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:1:0
+HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
 
 HwMatchboxMadGraph_la_SOURCES = \
 MadGraph/MadGraphAmplitude.cc

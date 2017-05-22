@@ -1,0 +1,47 @@
+##################################################
+# MEMinBias Matrix Element
+##################################################
+
+### Note to users - Release 7.1:
+### This currently uses parameters tuned for the
+### default shower.
+
+# MPI model settings
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+
+## Report the correct cross section
+cd /Herwig/Generators
+create Herwig::MPIXSecReweighter MPIXSecReweighter
+insert EventGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+set EventGenerator:EventHandler:CascadeHandler NULL
+
+clear EventGenerator:EventHandler:SubProcessHandlers[0]
+
+##################################################
+# Create separate SubProcessHandler for MinBias
+##################################################
+cd /Herwig/MatrixElements/
+cp SubProcess QCDMinBias
+
+set QCDMinBias:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set QCDMinBias:CascadeHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set QCDMinBias:DecayHandler /Herwig/Decays/DecayHandler
+
+# Due to numerics the pomeron could be seen as timelike.
+set /Herwig/Shower/ShowerHandler:SplitHardProcess No
+set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
+
+insert QCDMinBias:MatrixElements[0] MEMinBias
+
+cd /Herwig/Generators
+# MinBias parameters used for the new kinematics of soft MPI
+set /Herwig/Cuts/MinBiasCuts:X1Min 0.11
+set /Herwig/Cuts/MinBiasCuts:X2Min 0.11
+
+# Needed to get the correct fraction of diffractive events
+set /Herwig/MatrixElements/MEMinBias:csNorm 4.5584
+
+set EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
+
+cd /Herwig/MatrixElements/
+insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDMinBias

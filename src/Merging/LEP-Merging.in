@@ -64,16 +64,14 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 ## Select a generic tree/loop combination or a
 ## specialized NLO package
+## As massive b-quarks are currently not supported by the 
+## build in ME an external ME-Provider is needed (e.g. MG+OL).
 
 # read Matchbox/MadGraph-GoSam.in
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
-# read Matchbox/MadGraph-OpenLoops.in
+read Matchbox/MadGraph-OpenLoops.in
 
-## Uncomment this to use ggh effective couplings
-## currently only supported by MadGraph-GoSam and MadGraph-OpenLoops
-
-# read Matchbox/HiggsEffective.in
 
 ##################################################
 ## Cut selection

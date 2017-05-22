@@ -788,6 +788,7 @@ double Merger::pdfExpansion( NodePtr node  ,
       double PDFxByzgluon = pdf->xfx( particle ,
                                       getParticleData( ParticleID::g ) ,
                                       sqr( fixedScale ) , x/z )*z/x;
+      // Pqg
       if ( z > x ){
         double factor = CF * ( 1. + sqr( 1.-z ) ) / sqr( z );
         for ( int f = -nlp; f <=  nlp; ++f ) {
@@ -797,7 +798,7 @@ double Merger::pdfExpansion( NodePtr node  ,
                               sqr( fixedScale ) , x/z )*z/x*factor;
         }
       }
-      
+      // Pgg 
       restmp += ( ( 11./6. ) * CA
                   - ( 1./3. )*Nf( history[0].scale )
                   + 2.*CA*log( 1.-x ) ) *PDFxparton;
@@ -807,8 +808,10 @@ double Merger::pdfExpansion( NodePtr node  ,
       }
       
     }
-    if ( PDFxparton<1e-8 )restmp =  0.;
-    res += 1*restmp*log( sqr( running/next ) )/PDFxparton*mapz;
+    if ( PDFxparton<1e-8 )
+	restmp =  0.;
+    else
+    	res += 1*restmp*log( sqr( running/next ) )/PDFxparton*mapz;
     
   }
   return res/number;
@@ -827,7 +830,7 @@ double Merger::sumAlphaSReweightExpansion()const{
   for ( auto const & hs : history ){
       //expansion only to the last step
     if( !hs.node->parent() )continue;
-    res += alphasExpansion( hs.node->pT()*DSH()->renFac()  , history[0].scale );
+    res += alphasExpansion( hs.node->pT()*DSH()->renFac()  ,currentME()->renFac()*history[0].scale );
   }
   return res;
 }

@@ -13,8 +13,10 @@ MonacoSampler.in \
 DipoleMerging.in \
 EECollider.in EPCollider.in PPCollider.in \
 MB.in \
+MB-DipoleShower.in \
 SoftModel.in \
-Diffraction.in
+Diffraction.in \
+SoftTune.in
 
 dist_snippets_DATA = $(INPUTFILES)
 

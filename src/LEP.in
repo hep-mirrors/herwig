@@ -50,32 +50,6 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
 
 cd /Herwig/Generators
 ##################################################
-#  Useful analysis handlers for LEP physics
-##################################################
-# particle multiplicities
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPMultiplicity
-# b multiplicities
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
-# b fragmentation functions
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
-# event shapes and single particle spectra
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
-# identified particle spectra
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
-# four jet analysis (needs Fastjet installed)
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
-# general jet analysis (needs Fastjet installed)
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
-
-##################################################
-#  Useful analysis handlers for B-factory physics
-##################################################
-# BELLE data on charm hadron spetra
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/BELLECharm
-# CLEO  data on charm meson spectra
-# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/CLEOCharm
-
-##################################################
 ## prepare for Rivet analysis or HepMC output
 ## when running with parton shower
 ##################################################

@@ -20,7 +20,8 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:ShowerApproximation QTildeMatching
 
 # tunes
-read Matchbox/MCatNLO-Default-HardAlphaSTune.in
+# As of release 7.1 we are using the default tune
+#read Matchbox/MCatNLO-Default-HardAlphaSTune.in
 
 cd /Herwig/Analysis
 

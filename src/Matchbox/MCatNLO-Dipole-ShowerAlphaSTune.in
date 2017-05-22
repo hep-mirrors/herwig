@@ -120,4 +120,8 @@ set HadronSelector:PwtDIquark                    0.46
 set HadronSelector:SngWt                         1.0
 set HadronSelector:DecWt                         1.0
 
+# These two options will be updated in the 7.1.1 tune
+set ColourReconnector:OctetTreatment 0
+set HadronSelector:BelowThreshold 0
+
 cd /
