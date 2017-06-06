@@ -8,7 +8,11 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 # Matrix elements
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2ll
-set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Tau 
-# BELLE charm hadron production
+set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Tau
+set /Herwig/Particles/pi0:Stable Stable
+# Babar three pion
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S7266081
+# BELLE pipi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I786560
+# ALEPH spectral functions
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2014_I1267648

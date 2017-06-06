@@ -9,3 +9,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2001_S4598261
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S6895344
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2003_I593379
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
