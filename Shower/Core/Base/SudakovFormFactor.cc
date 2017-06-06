@@ -65,7 +65,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 100000.0,
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 1000000.0,
      false, false, Interface::limited);
 
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
@@ -92,6 +92,16 @@ void SudakovFormFactor::Init() {
      "OverZOneMinusZ",
      "Include an additional factor of 1/z/(1-z)",
      3);
+  static SwitchOption interfacePDFFactorOverRootZ
+    (interfacePDFFactor,
+     "OverRootZ",
+     "Include an additional factor of 1/sqrt(z)",
+     4);
+  static SwitchOption interfacePDFFactorRootZ
+    (interfacePDFFactor,
+     "RootZ",
+     "Include an additional factor of sqrt(z)",
+     5);
 
 
   static Switch<SudakovFormFactor,unsigned int> interfaceCutOffOption
@@ -199,6 +209,8 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   double maxpdf = pdfmax_;
 
   switch (pdffactor_) {
+  case 0:
+    break;
   case 1:
     maxpdf /= z();
     break;
@@ -208,6 +220,16 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   case 3:
     maxpdf /= (z()*(1.-z()));
     break;
+  case 4:
+    maxpdf /= sqrt(z());
+    break;
+  case 5:
+    maxpdf *= sqrt(z());
+    break;
+  default :
+    throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
+		      << pdffactor_ << Exception::runerror;
+    
   }
 
   if (ratio > maxpdf) {

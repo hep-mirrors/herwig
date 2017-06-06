@@ -67,6 +67,10 @@ double OneHalfHalfSplitFn::integOverP(const double z, const IdList & ids,
     return -colourFactor(ids)*log(1.-z);
   case 3:
     return colourFactor(ids)*log(z/(1.-z));
+  case 4:
+    return colourFactor(ids)*2.*sqrt(z);
+  case 5:
+    return colourFactor(ids)*(2./3.)*z*sqrt(z);
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
@@ -85,6 +89,10 @@ double OneHalfHalfSplitFn::invIntegOverP(const double r,
     return 1.-exp(-r/colourFactor(ids));
   case 3:
     return 1./(1.+exp(-r/colourFactor(ids)));
+  case 4:
+    return 0.25*sqr(r/colourFactor(ids));
+  case 5:
+    return pow(1.5*r/colourFactor(ids),2./3.);
   default:
     throw Exception() << "OneHalfHalfSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
