@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS diphoton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1591327
