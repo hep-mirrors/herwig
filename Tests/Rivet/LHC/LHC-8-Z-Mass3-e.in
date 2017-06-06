@@ -5,3 +5,5 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516_EL
 # ATLAS high mass drell-yan
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467454_EL
+# ATLAS splittings
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844_EL
