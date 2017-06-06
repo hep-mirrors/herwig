@@ -8,7 +8,7 @@
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/Config/Pointers.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlphaQCD.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "ThePEG/Utilities/CompSelector.h"
