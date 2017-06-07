@@ -1256,6 +1256,9 @@ elif(collider=="LHC") :
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
                
         elif(parameterName.find("VBF")>=0) :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
@@ -1302,6 +1305,9 @@ elif(collider=="LHC") :
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
                
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
@@ -1330,6 +1336,9 @@ elif(collider=="LHC") :
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
                
         elif(parameterName.find("8-ZH")>=0) :
             if(simulation=="Merging"):
@@ -1340,6 +1349,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
                process+=addBRReweighter()
                
         elif(parameterName.find("WH")>=0) :
