@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# general analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1426515
