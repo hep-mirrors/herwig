@@ -3,19 +3,26 @@ BUILT_SOURCES = done-all-links
 snippetsdir = ${pkgdatadir}/snippets
 
 INPUTFILES = \
+CellGridSampler.in \
+Diffraction.in \
+DipoleMerging.in \
 DipoleShowerFiveFlavours.in \
 DipoleShowerFourFlavours.in \
+EECollider.in \
+EPCollider.in \
+HepMCFixedOrder.in \
+HepMC.in \
+Matchbox.in \
+MB-DipoleShower.in \
+MB.in \
+MonacoSampler.in \
 Particles-SetLonglivedParticlesStable.in \
 PDF-CT10.in \
 PDF-NNPDF30NLO.in \
-Matchbox.in \
-MonacoSampler.in \
-DipoleMerging.in \
-EECollider.in EPCollider.in PPCollider.in \
-MB.in \
-MB-DipoleShower.in \
+PPCollider.in \
+RivetFixedOrder.in \
+Rivet.in \
 SoftModel.in \
-Diffraction.in \
 SoftTune.in
 
 dist_snippets_DATA = $(INPUTFILES)
