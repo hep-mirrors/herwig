@@ -10,6 +10,8 @@ SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
 SplittingFunctions/ZeroZeroOneSplitFn.h SplittingFunctions/ZeroZeroOneSplitFn.cc\
 SplittingFunctions/OneHalfHalfSplitFn.h SplittingFunctions/OneHalfHalfSplitFn.cc\
 SplittingFunctions/HalfOneHalfSplitFn.h SplittingFunctions/HalfOneHalfSplitFn.cc\
+SplittingFunctions/CMWOneOneOneSplitFn.h SplittingFunctions/CMWOneOneOneSplitFn.cc\
+SplittingFunctions/CMWHalfHalfOneSplitFn.h SplittingFunctions/CMWHalfHalfOneSplitFn.cc\
 Default/QTildeSudakov.cc Default/QTildeSudakov.h\
 Default/QTildeModel.cc Default/QTildeModel.h\
 Default/Decay_QTildeShowerKinematics1to2.cc \

@@ -1,0 +1,71 @@
+#  Here we add the CMW kernels.
+
+
+
+
+cd /Herwig/Shower
+
+
+set AlphaQCD:AlphaMZ 0.118
+get AlphaQCD:AlphaMZ
+
+create Herwig::CMWHalfHalfOneSplitFn CMWQtoQGSplitFn
+set CMWQtoQGSplitFn:InteractionType QCD
+set CMWQtoQGSplitFn:ColourStructure TripletTripletOctet
+set CMWQtoQGSplitFn:AngularOrdered Yes
+set CMWQtoQGSplitFn:Alpha AlphaQCD
+
+
+create Herwig::CMWOneOneOneSplitFn CMWGtoGGSplitFn
+set CMWGtoGGSplitFn:InteractionType QCD
+set CMWGtoGGSplitFn:ColourStructure OctetOctetOctet
+set CMWGtoGGSplitFn:AngularOrdered Yes
+set CMWGtoGGSplitFn:Alpha AlphaQCD
+
+
+
+cp CMWGtoGGSplitFn CMWGtoGGSplitFnIS
+cp CMWQtoQGSplitFn CMWQtoQGSplitFnIS
+
+set CMWGtoGGSplitFnIS:isInititalState Yes
+set CMWQtoQGSplitFnIS:isInititalState Yes
+
+set CMWGtoGGSplitFn:isInititalState No
+set CMWQtoQGSplitFn:isInititalState No
+
+
+
+cp QtoQGSudakov CMWQtoQGSudakov
+cp QtoQGSudakov CMWQtoQGSudakovIS
+set CMWQtoQGSudakov:SplittingFunction CMWQtoQGSplitFn
+set CMWQtoQGSudakovIS:SplittingFunction CMWQtoQGSplitFnIS
+
+cp GtoGGSudakov CMWGtoGGSudakov
+cp GtoGGSudakov CMWGtoGGSudakovIS
+set CMWGtoGGSudakov:SplittingFunction CMWGtoGGSplitFn
+set CMWGtoGGSudakovIS:SplittingFunction CMWGtoGGSplitFnIS
+
+
+
+
+#
+# Now add the final splittings
+#
+do SplittingGenerator:AddFinalSplitting u->u,g; CMWQtoQGSudakov
+do SplittingGenerator:AddFinalSplitting d->d,g; CMWQtoQGSudakov
+do SplittingGenerator:AddFinalSplitting s->s,g; CMWQtoQGSudakov
+do SplittingGenerator:AddFinalSplitting c->c,g; CMWQtoQGSudakov
+do SplittingGenerator:AddFinalSplitting b->b,g; CMWQtoQGSudakov
+do SplittingGenerator:AddFinalSplitting t->t,g; CMWQtoQGSudakov
+#
+do SplittingGenerator:AddFinalSplitting g->g,g; CMWGtoGGSudakov
+#
+# Now add the initial splittings
+#
+do SplittingGenerator:AddInitialSplitting u->u,g; CMWQtoQGSudakovIS
+do SplittingGenerator:AddInitialSplitting d->d,g; CMWQtoQGSudakovIS
+do SplittingGenerator:AddInitialSplitting s->s,g; CMWQtoQGSudakovIS
+do SplittingGenerator:AddInitialSplitting c->c,g; CMWQtoQGSudakovIS
+do SplittingGenerator:AddInitialSplitting b->b,g; CMWQtoQGSudakovIS
+#
+do SplittingGenerator:AddInitialSplitting g->g,g; CMWGtoGGSudakovIS

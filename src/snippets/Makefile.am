@@ -11,12 +11,20 @@ PDF-NNPDF30NLO.in \
 Matchbox.in \
 MonacoSampler.in \
 DipoleMerging.in \
-EECollider.in EPCollider.in PPCollider.in \
+EECollider.in \
+EPCollider.in \
+PPCollider.in \
 MB.in \
 MB-DipoleShower.in \
 SoftModel.in \
 Diffraction.in \
-SoftTune.in
+SoftTune.in \
+Rivet.in \
+RivetFixedOrder.in \
+HepMC.in \
+HepMCFixedOrder.in \
+CMWinQtiledShower.in \
+CellGridSampler.in
 
 dist_snippets_DATA = $(INPUTFILES)
 
