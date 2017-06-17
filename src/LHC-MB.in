@@ -58,5 +58,6 @@ read snippets/Diffraction.in
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
+cd /Herwig/Generators
 saverun LHC-MB EventGenerator
 
