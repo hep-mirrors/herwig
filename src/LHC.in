@@ -34,7 +34,7 @@ cd /Herwig/MatrixElements/
 #  Electroweak boson W/Z processes
 #
 # Drell-Yan Z/gamma
-insert SubProcess:MatrixElements[0] MEqq2gZ2ff
+#insert SubProcess:MatrixElements[0] MEqq2gZ2ff
 #
 # Drell-Yan W
 # insert SubProcess:MatrixElements[0] MEqq2W2ff
@@ -86,10 +86,10 @@ insert SubProcess:MatrixElements[0] MEqq2gZ2ff
 #
 #
 # gg/qqbar -> Higgs (recommend including q qbar->Hg as not in ME correction)
-# insert SubProcess:MatrixElements[0] MEHiggs
-# insert SubProcess:MatrixElements[0] MEHiggsJet
-# set MEHiggsJet:Process qqbar
-# set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+insert SubProcess:MatrixElements[0] MEHiggs
+insert SubProcess:MatrixElements[0] MEHiggsJet
+set MEHiggsJet:Process qqbar
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 #
 # higgs+jet
 # insert SubProcess:MatrixElements[0] MEHiggsJet
@@ -150,4 +150,18 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig run'
 ##################################################
+
+
+
+
+decaymode h0->tau-,mu+; 0.5 1 /Herwig/Decays/Mambo
+decaymode h0->tau+,mu-; 0.5 1 /Herwig/Decays/Mambo
+
+do /Herwig/Particles/h0:SelectDecayModes h0->tau-,mu+; h0->tau+,mu-;
+set /Herwig/Particles/h0:Mass_generator NULL
+set /Herwig/Particles/h0:Width_generator NULL
+set /Herwig/MatrixElements/MEHiggs:ShapeScheme FixedBreitWigner
+set /Herwig/MatrixElements/MEHiggsJet:ShapeScheme FixedBreitWigner
+
+
 saverun LHC EventGenerator
