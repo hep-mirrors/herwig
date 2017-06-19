@@ -1,3 +1,5 @@
+read snippets/PPCollider.in
+
 read ${ModelName}.model
 
 cd /Herwig/NewPhysics
@@ -50,8 +52,6 @@ set HPConstructor:Processes SingleParticleInclusive
 ####################################
 ####################################
 ####################################
-
-read snippets/PPCollider.in
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
