@@ -61,6 +61,9 @@ set LesHouchesReader:MomentumTreatment RescaleEnergy
 # set the pdfs
 set LesHouchesReader:PDFA /Herwig/Partons/LHAPDF
 set LesHouchesReader:PDFB /Herwig/Partons/LHAPDF
+# if using BSM models with QNUMBER info
+#set LesHouchesReader:QNumbers Yes
+#set LesHouchesReader:Decayer /Herwig/Decays/Mambo
 # and add to handler
 insert LesHouchesHandler:LesHouchesReaders 0 LesHouchesReader
 ##################################################
