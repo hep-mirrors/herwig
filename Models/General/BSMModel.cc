@@ -26,15 +26,15 @@ using namespace Herwig;
 
 BSMModel::BSMModel() : decayFile_(), readDecays_(true),
 		       topModesFromFile_(false),
-		       tolerance_(1e-6)
+		       tolerance_(1e-6), allowedToResetSMWidths_(false)
 {}
 
 void BSMModel::persistentOutput(PersistentOStream & os) const {
-  os << decayFile_ << topModesFromFile_ << tolerance_;
+  os << decayFile_ << topModesFromFile_ << tolerance_ << allowedToResetSMWidths_;
 }
 
 void BSMModel::persistentInput(PersistentIStream & is, int) {
-  is >> decayFile_ >> topModesFromFile_ >> tolerance_;
+  is >> decayFile_ >> topModesFromFile_ >> tolerance_ >> allowedToResetSMWidths_;
 }
 
 DescribeAbstractClass<BSMModel,Herwig::StandardModel>
@@ -71,6 +71,21 @@ void BSMModel::Init() {
      "Tolerance for the sum of branching ratios to be difference from one.",
      &BSMModel::tolerance_, 1e-6, 1e-8, 0.01,
      false, false, Interface::limited);
+
+  static Switch<BSMModel,bool> interfaceAllowedToResetSMWidths
+    ("AllowedToResetSMWidths",
+     "Whether or not the widths of SM particles can be reset via the SLHA file",
+     &BSMModel::allowedToResetSMWidths_, false, false, false);
+  static SwitchOption interfaceAllowedToResetSMWidthsNo
+    (interfaceAllowedToResetSMWidths,
+     "No",
+     "Not allowed",
+     false);
+  static SwitchOption interfaceAllowedToResetSMWidthsYes
+    (interfaceAllowedToResetSMWidths,
+     "Yes",
+     "Allowed",
+     true);
 
 }
 
@@ -159,13 +174,6 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   string dummy;
   iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getBSMParticleData(parent);
-  // check this ain't a SM particle
-  if(abs(parent)<=5||abs(parent)==23||abs(parent)==24||
-     (abs(parent)>=11&&abs(parent)<=16))
-    cerr << "BSMModel::readDecay() Resetting width of " 
-	   << inpart->PDGName() << " using SLHA "
-	   << "file,\nthis can affect parts of the Standard Model simulation and"
-	   << " is strongly discouraged.\n";
   if(!topModesFromFile_&&abs(parent)==ParticleID::t) {
     cfile.readline();
     return;
@@ -175,9 +183,32 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   		 << "A ParticleData object with the PDG code "
   		 << parent << " does not exist. " 
   		 << Exception::runerror;
-  inpart->width(width);
-  if( width > ZERO ) inpart->cTau(hbarc/width);
-  inpart->widthCut(5.*width);
+  // check this ain't a SM particle
+  if(abs(parent)<=5||abs(parent)==23||abs(parent)==24||
+     (abs(parent)>=11&&abs(parent)<=16)) {
+    if(allowedToResetSMWidths_) {
+      cerr << "BSMModel::readDecay() Resetting width of " 
+	   << inpart->PDGName() << " using SLHA "
+	   << "file,\nthis can affect parts of the Standard Model simulation and"
+	   << " is strongly discouraged.\n";
+      inpart->width(width);
+      if( width > ZERO ) inpart->cTau(hbarc/width);
+      inpart->widthCut(5.*width);
+    }
+    else {
+      cerr << "BSMModel::readDecay() You have tried to Reset the width of " 
+	   << inpart->PDGName() << " using an SLHA "
+	   << "file,\nthis can affect parts of the Standard Model simulation and"
+	   << " is not allowed by default.\n If you really want to be this stupid"
+	   << " set AllowedToResetSMWidths to Yes for this model.\n";
+    }
+  }
+  else {
+    inpart->width(width);
+    if( width > ZERO ) inpart->cTau(hbarc/width);
+    inpart->widthCut(5.*width);
+  }
+  
   Energy inMass = inpart->mass();
   string prefix(inpart->name() + "->");
   double brsum(0.);
