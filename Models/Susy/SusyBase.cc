@@ -673,8 +673,12 @@ void SusyBase::resetRepositoryMasses() {
 	     << part->PDGName() << " using an SLHA "
 	     << "file,\nthis can affect parts of the Standard Model simulation and"
 	     << " is not allowed by default.\n If you really want to be this stupid"
-	     << "set AllowedToResetSMMasses to Yes for this model.\n";
+	     << " set AllowedToResetSMMasses to Yes for this model.\n";
       }
+    }
+    // reset the masses for not SM particles
+    else {
+      resetMass(it->first,it->second*GeV,part);
     }
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
