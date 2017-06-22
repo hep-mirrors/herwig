@@ -106,7 +106,7 @@ class ParticleConverter:
 
 
 
-def thepeg_particles(FR,parameters,modelname,modelparameters):
+def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
     plist = []
     antis = {}
     names = []
@@ -140,6 +140,10 @@ rm /Herwig/Masses/HiggsMass
 rm /Herwig/Widths/hWidth
 """
 )
+        if p.name in forbidden_names:
+            print 'RENAMING PARTICLE',p.name,'as ',p.name+'_UFO'
+            p.name +="_UFO"
+
         subs = ParticleConverter(p,parameters,modelparameters).subs()
         plist.append( particleT.substitute(subs) )
 
