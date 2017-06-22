@@ -285,6 +285,12 @@ void NBodyDecayConstructorBase::Init() {
 }
 
 void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
+  // if zero width just set BR to zero
+  if(pwidth==ZERO) {
+    generator()->preinitInterface(dm, "BranchingRatio","set", "0.");
+    generator()->preinitInterface(dm, "OnOff","set", "Off");
+    return;
+  }
   //Need width and branching ratios for all currently created decay modes
   PDPtr parent = const_ptr_cast<PDPtr>(dm->parent());
   DecaySet modes = parent->decayModes();
