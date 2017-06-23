@@ -353,7 +353,15 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         if any(map(gstest, gsnames)):
             vertex.herwig_skip_vertex = True
             break
-
+    # special for VVS vertices
+    if lorentztag == 'VVS' :
+        if( len(vertex.lorentz) != 1 ) :
+            vertex.herwig_skip_vertex = True
+        else :
+            lstruct = vertex.lorentz[0].structure
+            if(lstruct != "Metric(1,2)") :
+                vertex.herwig_skip_vertex = True
+        
     if vertex.herwig_skip_vertex: 
         continue
 
