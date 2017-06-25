@@ -567,7 +567,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     if lorentztag in ['VVS','SSS']:
         normcalc = 'Complex((%s) * GeV / UnitRemoval::E)' % normcalc
     elif lorentztag in ['GeneralVVS']:
-        normcalc = 'Complex((%s) * UnitRemoval::E / GeV )' % normcalc
+        normcalc = 'Complex(-(%s) * UnitRemoval::E / GeV )' % normcalc
     elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' ]:
         normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
     norm = 'norm(' + normcalc + ');'
