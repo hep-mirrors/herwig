@@ -1,6 +1,7 @@
 class ${ModelName}${classname}: public ${lorentztag}Vertex {
  public:
   ${ModelName}${classname}() {
+    kinematics(${kinematics});
     ${addToPlist}
   }
   void setCoupling(Energy2 ${couplingptrs}) {

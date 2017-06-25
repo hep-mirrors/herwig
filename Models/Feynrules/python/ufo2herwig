@@ -412,6 +412,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     coup_right = []
     coup_norm = []
     couplings_VVS = []
+    kinematics = "false"
     if ONE_EACH:
         items = vertex.couplings.iteritems()
     else:
@@ -543,6 +544,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
                     couplings_VVS[ix], sym = py2cpp(couplings_VVS[ix])
                     symbols |= sym
             lorentztag = 'GeneralVVS'
+            kinematics='true'
             # g_mu,nv piece of coupling 
             if(couplings_VVS[5]!=0.) :
                 left  = 'a00( %s + Complex(( %s )* GeV2/invariant(1,2)));' % ( couplings_VVS[0],couplings_VVS[5])
@@ -562,7 +564,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     normcalc, sym = py2cpp(normcontent)
     symbols |= sym
     # UFO is GeV by default (?)
-    if lorentztag in ['VVS','SSS','GeneralVVS']:
+    if lorentztag in ['VVS','SSS']:
         normcalc = 'Complex((%s) * GeV / UnitRemoval::E)' % normcalc
     elif lorentztag in ['GeneralVVS']:
         normcalc = 'Complex((%s) * UnitRemoval::E / GeV )' % normcalc
@@ -591,6 +593,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
              'spindirectory' : spindirectory(lorentztag),
              'ModelName' : modelname,
              'ordering' : ordering,
+             'kinematics' : kinematics
              }             # ok
 
     if args.verbose:
