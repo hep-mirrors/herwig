@@ -639,19 +639,4 @@ IVector SplittingGenerator::getReferences() {
   return ret;
 }
 
-void SplittingGenerator::factorizationScaleFactor(double f) {
-  BranchingList::iterator cit;
-  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
-    {(cit->second).sudakov->factorizationScaleFactor(f);}
-  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
-    {(cit->second).sudakov->factorizationScaleFactor(f);}
-}
-
-void SplittingGenerator::renormalizationScaleFactor(double f) {
-  BranchingList::iterator cit;
-  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
-    {(cit->second).sudakov->renormalizationScaleFactor(f);}
-  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
-    {(cit->second).sudakov->renormalizationScaleFactor(f);}
-}
 

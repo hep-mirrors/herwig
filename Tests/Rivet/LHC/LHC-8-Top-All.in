@@ -15,3 +15,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1397174
 # ATLAS l +jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1397635 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1404878
+# ATLAS charge asymmetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1449082
+# cms boosted top
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1454211

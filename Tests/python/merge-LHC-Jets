@@ -233,7 +233,7 @@ for f in yodafiles:
            aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
            aopath.find("I1419070")>0 or aopath.find("I1394679")>0 or
            aopath.find("I929691" )>0 or aopath.find("I1393758")>0 or
-           aopath.find("I1459051")>0 or
+           aopath.find("I1459051")>0 or aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -369,6 +369,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1394679")>0 or
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
+        hpath.find("ATLAS_2016_CONF_2016_092")>0 or
         hpath.find("1459051")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
@@ -1396,7 +1397,11 @@ for i in range(1,13) :
 logging.info("Processing CMS_2016_I1459051")
 for i in range(1,15) :
     mergeByPt("/CMS_2016_I1459051/d%02d-x01-y01" % i, "13000")
-
+    
+logging.info("Processing ATLAS_2016_CONF_2016_092")
+for i in range(1,7) :
+    mergeByPt("/ATLAS_2016_CONF_2016_092/d%02d-x01-y01" % i, "13000")
+aopath.find("")>0
 # Choose output file
 name = args[0]+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)

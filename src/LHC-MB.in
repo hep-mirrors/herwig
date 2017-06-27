@@ -26,53 +26,24 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 # Minimum Bias
 read snippets/MB.in
 
+# Read in parameters of the soft model recommended for MB/UE simulations
+read snippets/SoftTune.in
+
 # Diffraction model
 read snippets/Diffraction.in
 
+##################################################
 # Analyses
-cd /Herwig/Analysis
-create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+##################################################
 
-cd /Herwig/Generators
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+# cd /Herwig/Analysis
+# create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
 
-# ATLAS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8591806
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8894728
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8994773
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I894867
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1124167
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1426695
+# cd /Herwig/Generators
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
-# ATLAS 13 TeV
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467230
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419652
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_20XX_XXXXXXX
 
-
-# CMS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1356998
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8656010
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1193338
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
-
-
-# Alice
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8706239
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8909580
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8945144
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2014_I1300380
-
-# LHCb
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1281685
 
 #set /Herwig/Analysis/Plot:EventNumber 54
 #cd /Herwig/Generators

@@ -367,11 +367,12 @@ elif(collider=="TVT") :
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
             parameterName=parameterName.replace("-GammaJet","")
         elif(parameterName.find("UE")>=0) :
-            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-            process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-            process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-            process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+            if (parameters["shower"].find("Dipole")>=0):
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="read snippets/MB.in\n"
+            process+="read snippets/Diffraction.in\n"
+                
             process += "set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n"
             process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
         elif(parameterName.find("Jets")>=0) :
@@ -621,11 +622,13 @@ elif(collider=="Star" ) :
     process+= "set /Herwig/Cuts/Cuts:X2Min 0.01\n"
     if(simulation=="") :
         if(parameterName.find("UE")>=0) :
-            process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-            process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-            process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-            process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+            if (parameters["shower"].find("Dipole")>=0):
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="read snippets/MB.in\n"    
+            process+="read snippets/Diffraction.in\n"
+            
+            
         else :
             process+="insert SubProcess:MatrixElements[0] MEQCD2to2\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
@@ -665,11 +668,11 @@ elif(collider=="ISR" or collider =="SppS" ) :
     elif(parameterName.find("900")>=0) :
         process+="set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 900.0\n"
     if(simulation=="") :
-        process += "insert SubProcess:MatrixElements[0] MEMinBias\n"
-        process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-        process += "set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts\n"
-        process += "create Herwig::MPIXSecReweighter /Herwig/Generators/MPIXSecReweighter\n"
-        process += "insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/Generators/MPIXSecReweighter\n"
+        if (parameters["shower"].find("Dipole")>=0):
+            process+="read snippets/MB-DipoleShower.in\n"
+        else:
+            process+="read snippets/MB.in\n"
+        process+="read snippets/Diffraction.in\n"
     else :
         logging.error(" SppS and ISR not supported for %s " % simulation)
         sys.exit(1)
@@ -755,8 +758,11 @@ elif(collider=="LHC") :
             process+="insert SubProcess:MatrixElements[0] MEPP2ZH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
         elif(parameterName.find("UE")>=0) :
-            process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"
-            process+="read snippets/MB.in\n"
+            if (parameters["shower"].find("Dipole")>=0):
+                process+="read snippets/MB-DipoleShower.in\n"
+            else:
+                process+="set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV\n"                
+                process+="read snippets/MB.in\n"
             process+="read snippets/Diffraction.in\n"
             if(parameterName.find("Long")>=0) :
                 process += "set /Herwig/Decays/DecayHandler:MaxLifeTime 100*mm\n"
@@ -1250,6 +1256,9 @@ elif(collider=="LHC") :
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
                
         elif(parameterName.find("VBF")>=0) :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
@@ -1296,6 +1305,9 @@ elif(collider=="LHC") :
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
                
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
@@ -1324,6 +1336,9 @@ elif(collider=="LHC") :
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
                process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
                
         elif(parameterName.find("8-ZH")>=0) :
             if(simulation=="Merging"):
@@ -1334,6 +1349,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
             if(parameterName.find("GammaGamma")>=0) :
                process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               process+=addBRReweighter()
+            elif(parameterName.find("WW")>=0) :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
                process+=addBRReweighter()
                
         elif(parameterName.find("WH")>=0) :
@@ -1547,6 +1565,7 @@ elif(collider=="LHC") :
             process+=selectDecayMode("W+",["W+->nu_e,e+;"])
             process+=selectDecayMode("W-",["W-->nu_mubar,mu-;"])
             process+=addBRReweighter()
+            parameters["bscheme"] = "read Matchbox/FourFlavourScheme.in\n"
             
             process+=addLeptonPairCut("60","120")
         elif(parameterName.find("WW-ll")>=0) :
@@ -1561,6 +1580,8 @@ elif(collider=="LHC") :
                                            "W+->nu_tau,tau+;"])
             process+=addBRReweighter()
             process+=addLeptonPairCut("60","120")
+            parameters["bscheme"] = "read Matchbox/FourFlavourScheme.in\n"
+
         elif(parameterName.find("ZZ-ll")>=0) :
             if(simulation=="Merging"):
               logging.warning("ZZ-ll not explicitly tested for %s " % simulation)

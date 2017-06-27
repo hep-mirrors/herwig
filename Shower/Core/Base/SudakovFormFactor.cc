@@ -32,16 +32,14 @@ void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_
      << a_ << b_ << ounit(c_,GeV) << ounit(kinCutoffScale_,GeV) << cutOffOption_
      << ounit(vgcut_,GeV) << ounit(vqcut_,GeV) 
-     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2)
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor;
+     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_
      >> a_ >> b_ >> iunit(c_,GeV) >> iunit(kinCutoffScale_,GeV) >> cutOffOption_
      >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV) 
-     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2)
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor;
+     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
 }
 
 void SudakovFormFactor::Init() {
@@ -65,7 +63,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 100000.0,
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 1000000.0,
      false, false, Interface::limited);
 
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
@@ -92,6 +90,16 @@ void SudakovFormFactor::Init() {
      "OverZOneMinusZ",
      "Include an additional factor of 1/z/(1-z)",
      3);
+  static SwitchOption interfacePDFFactorOverRootZ
+    (interfacePDFFactor,
+     "OverRootZ",
+     "Include an additional factor of 1/sqrt(z)",
+     4);
+  static SwitchOption interfacePDFFactorRootZ
+    (interfacePDFFactor,
+     "RootZ",
+     "Include an additional factor of sqrt(z)",
+     5);
 
 
   static Switch<SudakovFormFactor,unsigned int> interfaceCutOffOption
@@ -166,7 +174,7 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 }
 
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
-  factor *= renormalizationScaleFactor();
+  factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
   return  ThePEG::Math::powi(alpha_->ratio(pt2, factor),
                                splittingFn_->interactionOrder());
 }
@@ -183,8 +191,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
         const tcPDPtr parton0, const tcPDPtr parton1,
         Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
   assert(pdf_);
-
-  Energy2 theScale = t * sqr(factorizationScaleFactor()*factor);
+  Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);
@@ -199,6 +206,8 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   double maxpdf = pdfmax_;
 
   switch (pdffactor_) {
+  case 0:
+    break;
   case 1:
     maxpdf /= z();
     break;
@@ -208,6 +217,16 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   case 3:
     maxpdf /= (z()*(1.-z()));
     break;
+  case 4:
+    maxpdf /= sqrt(z());
+    break;
+  case 5:
+    maxpdf *= sqrt(z());
+    break;
+  default :
+    throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
+		      << pdffactor_ << Exception::runerror;
+    
   }
 
   if (ratio > maxpdf) {

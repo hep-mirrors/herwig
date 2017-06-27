@@ -1,6 +1,6 @@
 SUBDIRS = Matching
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 23:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 24:0:0
 HwShower_la_SOURCES =  \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\
@@ -11,6 +11,8 @@ SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
 SplittingFunctions/ZeroZeroOneSplitFn.h SplittingFunctions/ZeroZeroOneSplitFn.cc\
 SplittingFunctions/OneHalfHalfSplitFn.h SplittingFunctions/OneHalfHalfSplitFn.cc\
 SplittingFunctions/HalfOneHalfSplitFn.h SplittingFunctions/HalfOneHalfSplitFn.cc\
+SplittingFunctions/CMWOneOneOneSplitFn.h SplittingFunctions/CMWOneOneOneSplitFn.cc\
+SplittingFunctions/CMWHalfHalfOneSplitFn.h SplittingFunctions/CMWHalfHalfOneSplitFn.cc\
 Default/QTildeSudakov.cc Default/QTildeSudakov.h\
 Default/QTildeModel.cc Default/QTildeModel.h\
 Default/Decay_QTildeShowerKinematics1to2.cc \

@@ -88,7 +88,8 @@ files=["-7-PromptPhoton-1.yoda","-7-PromptPhoton-2.yoda",
        "-7-PromptPhoton-3.yoda","-7-PromptPhoton-4.yoda",
        "-8-PromptPhoton-1.yoda","-8-PromptPhoton-2.yoda",
        "-8-PromptPhoton-3.yoda","-8-PromptPhoton-4.yoda",
-       "-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda"]
+       "-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda",
+       "-8-DiPhoton-GammaGamma.yoda","-8-DiPhoton-GammaJet.yoda","-GammaGamma-8.yoda"]
 
 ## Get histos
 inhistos = {}

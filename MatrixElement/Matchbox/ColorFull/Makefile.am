@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwColorFull.la
 
-HwColorFull_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwColorFull_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 
 HwColorFull_la_SOURCES = \
 Col_amp.cc \

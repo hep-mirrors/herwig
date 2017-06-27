@@ -1,33 +1,62 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.1.0 release: 2017-05-19
+
+** Major new release
+   For a more detailed overview and further references please see the release note arXiv:1705.06919
+
+** NLO multijet merging with the dipole shower
+
+** A new soft model
+
+** An interface to EvtGen
+
+** Improved calculation of mass effects in the dipole shower
+
+** Top decays in the dipole shower, and NLO corrections to the decay
+
+** An implementation of the KrkNLO method for simple processes
+
+** Major restructuring and cleanup of default input files
+
+** C++11 is now mandatory and heavily used in the code
+
+** Many smaller bugfixes and improvements
+
+
+
 * Herwig 7.0.4 release: 2016-10-24
 
 ** API
-   The high level API is now properly available as a library, providing an alternative to the Herwig main program. 
+   The high level API is now properly available as a library, providing an
+   alternative to the Herwig main program.
 
 ** Dipole shower
-   Added nloops() function to the AlphaS classes to return the number of loops in the running coupling
+   Added nloops() function to the AlphaS classes to return the number of loops
+   in the running coupling
 
 ** Matchbox
    Improved error handling and clearer messages
 
 ** BSM models
-   Initialize W mass correctly from SLHA file. Improved reading in of decay modes if they already exist.
+   Initialize W mass correctly from SLHA file. Improved reading in of decay
+   modes if they already exist.
 
 ** Sampling
-   Introduced option to reduce reference weight in AlmostUnweighted mode by Kappa factor. Useful for processes where full unweighting is infeasible. 
+   Introduced option to reduce reference weight in AlmostUnweighted mode by
+   Kappa factor. Useful for processes where full unweighting is infeasible.
 
 ** Qtilde shower
-   Better control of scale in splitting functions using the SplittingFunction:ScaleChoice interface.
+   Better control of scale in splitting functions using the
+   SplittingFunction:ScaleChoice interface.
 
 ** Tests
-   New NLO fixed-order input files for testing Matchbox in Tests/ExternNLO. 
+   New NLO fixed-order input files for testing Matchbox in Tests/ExternNLO.
 
 ** Input files
-   Set diagonal CKM options consistently. Added TauTauHVertex and MuMuHVertex to MatchboxDefaults.
-
-
+   Set diagonal CKM options consistently. Added TauTauHVertex and MuMuHVertex
+   to MatchboxDefaults.
 
 * Herwig 7.0.3 release: 2016-07-21
 
@@ -58,44 +87,41 @@ Herwig News							 -*- outline -*-
 ** BaryonThreeQuarkModelFormFactor
    A scaling bug in the form factor series expansion was fixed.
 
-
 * Herwig 7.0.2 release: 2016-04-29
 
 ** Event reweighting
-  New option of calculating the weights for the effect of varying the scale
-  used in both the default and dipole showers. The method is described in
-  arXiv:1605.08256
+   New option of calculating the weights for the effect of varying the scale
+   used in both the default and dipole showers. The method is described in
+   arXiv:1605.08256
 
 ** mergegrids mode
-  A main mode for the Herwig executable has been added which merges the
-  integration grids from parallel runs.
+   A main mode for the Herwig executable has been added which merges the
+   integration grids from parallel runs.
 
 ** NLO Diphoton production
-  The NLO matrix elements in the POWHEG approach for diphoton production as
-  described in JHEP 1202 (2012) 130, arXiv:1106.3939 have been included as
-  MEPP2GammaGammaPowheg.
+   The NLO matrix elements in the POWHEG approach for diphoton production as
+   described in JHEP 1202 (2012) 130, arXiv:1106.3939 have been included as
+   MEPP2GammaGammaPowheg.
 
 ** BSM Hard process constructor
-  A missing Feynman diagram with a t-channel vector boson has been added to
-  the matrix element for vv2ss
+   A missing Feynman diagram with a t-channel vector boson has been added to
+   the matrix element for vv2ss
 
 ** BSM Decay Modes calculation
-  The behaviour of the option to disable decay modes in BSM Models has been
-  changed so that the partial width for the ignored modes is now calculated
-  and included in the total width, but the branching ratio is set to
-  zero. This is more physical than the previous option where the mode was
-  totally ignored and hence not included in the calculation of the width.
+   The behaviour of the option to disable decay modes in BSM Models has been
+   changed so that the partial width for the ignored modes is now calculated
+   and included in the total width, but the branching ratio is set to
+   zero. This is more physical than the previous option where the mode was
+   t otally ignored and hence not included in the calculation of the width.
 
 ** Mass Generation
-  The behaviour of the GenericMassGenerator has been changed so that modes
-  which have been disabled are only included in the calculation of the total
-  width and not in the partial width used in the numerator of the weight used
-  to select the off-shell mass.
+   The behaviour of the GenericMassGenerator has been changed so that modes
+   which have been disabled are only included in the calculation of the total
+   width and not in the partial width used in the numerator of the weight used
+   to select the off-shell mass.
 
 ** Boost detection
-  Boost could not detect the compiler version for gcc-5.3 and gcc-6.1
-
-
+   Boost could not detect the compiler version for gcc-5.3 and gcc-6.1
 
 * Herwig 7.0.1 release: 2016-01-17
 

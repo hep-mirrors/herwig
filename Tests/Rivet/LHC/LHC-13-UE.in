@@ -5,5 +5,7 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1384119
 # ATLAS UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419652
-# ATLAS UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467230
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1509919
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1468167
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1511284

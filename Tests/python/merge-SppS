@@ -39,9 +39,9 @@ if __name__ == "__main__":
 
 #######################################
 
-yodafiles=["ISR-44-UE.yoda","ISR-62-UE.yoda","SppS-63-UE.yoda","ISR-30-UE.yoda", \
-           "ISR-53-UE.yoda","SppS-200-UE.yoda","SppS-500-UE.yoda","SppS-900-UE.yoda", \
-           "SppS-546-UE.yoda","SppS-53-UE.yoda"]
+yodafiles=["ISR-44-UE.yoda","ISR-62-UE.yoda",args[0]+"-63-UE.yoda","ISR-30-UE.yoda", \
+           "ISR-53-UE.yoda",args[0]+"-200-UE.yoda",args[0]+"-500-UE.yoda",args[0]+"-900-UE.yoda", \
+           args[0]+"-546-UE.yoda",args[0]+"-53-UE.yoda"]
            
 ## Get histos
 inhistos = {}

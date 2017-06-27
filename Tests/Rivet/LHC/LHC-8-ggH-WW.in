@@ -1,0 +1,7 @@
+##################################################
+# select the analyses
+##################################################
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1444991
+
+do /Herwig/Particles/h0:SelectDecayModes h0->W+,W-;

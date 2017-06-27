@@ -181,15 +181,6 @@ public:
   const BranchingList & initialStateBranchings() const { return _bbranchings; }
   //@}
 
-  /**
-   * Set the factorization scale factor
-   */
-  void factorizationScaleFactor(double f);
-
-  /**
-   * Set the renormalization scale factor
-   */
-  void renormalizationScaleFactor(double f);
 
 public:
 

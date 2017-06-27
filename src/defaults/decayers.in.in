@@ -4092,7 +4092,7 @@ create Herwig::SemiLeptonicScalarDecayer  ISGW
 newdef ISGW:Iteration 1
 newdef ISGW:Ntry 500
 newdef ISGW:Points 10000
-newdef ISGW:GenerateIntermediates 1 
+newdef ISGW:GenerateIntermediates 0
 insert ISGW:MaximumWeight 0 5.424e-05
 insert ISGW:MaximumWeight 1 5.41804e-05
 insert ISGW:MaximumWeight 2 3.893e-05
@@ -4950,7 +4950,7 @@ create Herwig::SemiLeptonicScalarDecayer  ISGW2
 newdef ISGW2:Iteration 1
 newdef ISGW2:Ntry 500
 newdef ISGW2:Points 10000
-newdef ISGW2:GenerateIntermediates 1 
+newdef ISGW2:GenerateIntermediates 0
 insert ISGW2:MaximumWeight 0 3.95005e-05
 insert ISGW2:MaximumWeight 1 3.94637e-05
 insert ISGW2:MaximumWeight 2 2.93349e-05
@@ -6966,7 +6966,7 @@ create Herwig::ScalarMesonFactorizedDecayer  ISGW2Hadronic
 newdef ISGW2Hadronic:Iteration 1
 newdef ISGW2Hadronic:Ntry 500
 newdef ISGW2Hadronic:Points 10000
-newdef ISGW2Hadronic:GenerateIntermediates 1 
+newdef ISGW2Hadronic:GenerateIntermediates 0
 newdef ISGW2Hadronic:a1Bottom 1.1
 newdef ISGW2Hadronic:a2Bottom -0.24
 newdef ISGW2Hadronic:a1Charm 1.3
@@ -12503,7 +12503,7 @@ create Herwig::SemiLeptonicBaryonDecayer  BaryonLight1
 newdef BaryonLight1:Iteration 1
 newdef BaryonLight1:Ntry 500
 newdef BaryonLight1:Points 10000
-newdef BaryonLight1:GenerateIntermediates 1 
+newdef BaryonLight1:GenerateIntermediates 0
 insert BaryonLight1:MaximumWeight 0 2.29031 
 insert BaryonLight1:MaximumWeight 1 3.98905e-05 
 insert BaryonLight1:MaximumWeight 2 0.000122986 
@@ -14352,7 +14352,7 @@ create Herwig::SemiLeptonicScalarDecayer  WSB
 newdef WSB:Iteration 1
 newdef WSB:Ntry 500
 newdef WSB:Points 10000
-newdef WSB:GenerateIntermediates 1 
+newdef WSB:GenerateIntermediates 0
 insert WSB:MaximumWeight 0 0.21439
 insert WSB:MaximumWeight 1 0.0902162
 insert WSB:MaximumWeight 2 2.29241e-14
@@ -17538,7 +17538,7 @@ create Herwig::SemiLeptonicScalarDecayer  BZVector
 newdef BZVector:Iteration 1
 newdef BZVector:Ntry 500
 newdef BZVector:Points 10000
-newdef BZVector:GenerateIntermediates 1 
+newdef BZVector:GenerateIntermediates 0
 insert BZVector:MaximumWeight 0 0.000599733
 insert BZVector:MaximumWeight 1 0.000579422
 insert BZVector:MaximumWeight 2 0.000339457
@@ -17874,7 +17874,7 @@ create Herwig::SemiLeptonicScalarDecayer  BZScalar
 newdef BZScalar:Iteration 1
 newdef BZScalar:Ntry 500
 newdef BZScalar:Points 10000
-newdef BZScalar:GenerateIntermediates 1 
+newdef BZScalar:GenerateIntermediates 0
 insert BZScalar:MaximumWeight 0 0.000172345
 insert BZScalar:MaximumWeight 1 0.00017204
 insert BZScalar:MaximumWeight 2 0.00012728
@@ -18027,7 +18027,7 @@ create Herwig::ScalarMesonFactorizedDecayer  WSBHadronic
 newdef WSBHadronic:Iteration 1
 newdef WSBHadronic:Ntry 500
 newdef WSBHadronic:Points 10000
-newdef WSBHadronic:GenerateIntermediates 1 
+newdef WSBHadronic:GenerateIntermediates 0
 newdef WSBHadronic:a1Bottom 1.1
 newdef WSBHadronic:a2Bottom -0.24
 newdef WSBHadronic:a1Charm 1.3
@@ -19661,7 +19661,7 @@ create Herwig::SemiLeptonicScalarDecayer  Melikhov
 newdef Melikhov:Iteration 1
 newdef Melikhov:Ntry 500
 newdef Melikhov:Points 10000
-newdef Melikhov:GenerateIntermediates 1 
+newdef Melikhov:GenerateIntermediates 0
 insert Melikhov:MaximumWeight 0 0.000574253
 insert Melikhov:MaximumWeight 1 0.000523847
 insert Melikhov:MaximumWeight 2 0.000240896
@@ -19739,7 +19739,7 @@ create Herwig::SemiLeptonicScalarDecayer  MelikhovStech
 newdef MelikhovStech:Iteration 1
 newdef MelikhovStech:Ntry 500
 newdef MelikhovStech:Points 10000
-newdef MelikhovStech:GenerateIntermediates 1 
+newdef MelikhovStech:GenerateIntermediates 0
 insert MelikhovStech:MaximumWeight 0 0.132629
 insert MelikhovStech:MaximumWeight 1 0.113122
 insert MelikhovStech:MaximumWeight 2 0.337711
@@ -21409,7 +21409,7 @@ create Herwig::SemiLeptonicBaryonDecayer  BaryonLight2
 newdef BaryonLight2:Iteration 1
 newdef BaryonLight2:Ntry 500
 newdef BaryonLight2:Points 10000
-newdef BaryonLight2:GenerateIntermediates 1 
+newdef BaryonLight2:GenerateIntermediates 0
 insert BaryonLight2:MaximumWeight 0 2.29013 
 insert BaryonLight2:MaximumWeight 1 4.14333e-05 
 insert BaryonLight2:MaximumWeight 2 0.00012764 
@@ -21546,7 +21546,7 @@ create Herwig::SemiLeptonicScalarDecayer  KiselevBc
 newdef KiselevBc:Iteration 1
 newdef KiselevBc:Ntry 500
 newdef KiselevBc:Points 10000
-newdef KiselevBc:GenerateIntermediates 1 
+newdef KiselevBc:GenerateIntermediates 0
 insert KiselevBc:MaximumWeight 0 0.175615
 insert KiselevBc:MaximumWeight 1 0.136474
 insert KiselevBc:MaximumWeight 2 0.137341
@@ -21877,7 +21877,7 @@ create Herwig::ScalarMesonFactorizedDecayer  BcHadronic
 newdef BcHadronic:Iteration 1
 newdef BcHadronic:Ntry 500
 newdef BcHadronic:Points 10000
-newdef BcHadronic:GenerateIntermediates 1 
+newdef BcHadronic:GenerateIntermediates 0
 newdef BcHadronic:a1Bottom 1.14
 newdef BcHadronic:a2Bottom -0.2
 newdef BcHadronic:a1Charm 1.2
@@ -24136,7 +24136,7 @@ create Herwig::SemiLeptonicScalarDecayer  HQET
 newdef HQET:Iteration 1
 newdef HQET:Ntry 500
 newdef HQET:Points 10000
-newdef HQET:GenerateIntermediates 1 
+newdef HQET:GenerateIntermediates 0
 insert HQET:MaximumWeight 0 0.0762401
 insert HQET:MaximumWeight 1 0.0723751
 insert HQET:MaximumWeight 2 0.0189018

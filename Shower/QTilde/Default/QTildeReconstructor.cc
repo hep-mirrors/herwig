@@ -1430,6 +1430,23 @@ bool QTildeReconstructor::addIntrinsicPt(vector<ShowerProgenitorPtr> jets) const
   return added;
 }
 
+namespace {
+
+double defaultSolveBoostGamma(const double & betam,const Energy2 & kps,
+			      const Energy2 & qs, const Energy2 & Q2,
+			      const Energy & kp,
+			      const Energy & q, const Energy & qE) {
+  if(betam<0.5) {
+    return 1./sqrt(1.-sqr(betam));
+  }
+  else {
+    return ( kps+ qs + Q2)/
+      sqrt(2.*kps*qs + kps*Q2 + qs*Q2 + sqr(Q2) + 2.*q*qE*kp*sqrt(kps + Q2));
+  }
+}
+
+}
+
 LorentzRotation QTildeReconstructor::
 solveBoost(const double k, const Lorentz5Momentum & newq, 
 	   const Lorentz5Momentum & oldp ) const {
@@ -1443,13 +1460,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   Boost beta = -betam*(k/kp)*oldp.vect();
   double gamma = 0.;
   if(Q2/sqr(oldp.e())>1e-4) {
-    if(betam<0.5) { 
-      gamma = 1./sqrt(1.-sqr(betam));
-    }
-    else {
-      gamma = ( kps+ qs + Q2)/
-	sqrt(2.*kps*qs + kps*Q2 + qs*Q2 + sqr(Q2) + 2.*q*newq.e()*kp*sqrt(kps + Q2));
-    }
+    gamma = defaultSolveBoostGamma(betam,kps,qs,Q2,kp,q,newq.e());
   }
   else {
     if(k>0) {
@@ -1461,6 +1472,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
     }
     if(gamma<=0.) throw KinematicsReconstructionVeto();
     gamma = 1./sqrt(gamma);
+    if(gamma>2.) gamma = defaultSolveBoostGamma(betam,kps,qs,Q2,kp,q,newq.e());
   }
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper.
   ThreeVector<Energy2> ax = newq.vect().cross( oldp.vect() );

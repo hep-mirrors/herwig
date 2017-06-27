@@ -185,14 +185,21 @@ void MPIHandler::initialize() {
 	softMu2_ = rootFinder.value(fs, 0.3*GeV2, 1.*GeV2);
 	softXSec_ = fs.softXSec();
       }catch(GSLBisection::IntervalError){
+        try{
+	// Very low energies (e.g. 200 GeV) need this.
+	// Very high energies (e.g. 100 TeV) produce issues with
+	// this choice. This is a temp. fix.  
+          softMu2_ = rootFinder.value(fs, 0.25*GeV2, 1.3*GeV2);
+          softXSec_ = fs.softXSec();
+        }catch(GSLBisection::IntervalError){
 	throw Exception() <<
-        "\n**********************************************************\n"
-	  "* Inconsistent MPI parameter choice for this beam energy *\n"
+        "\n**********************************************************\n"	  "* Inconsistent MPI parameter choice for this beam energy *\n"
 	  "**********************************************************\n"
 	  "MPIHandler parameter choice is unable to reproduce\n"
 	  "the total cross section. Please check arXiv:0806.2949\n"
 	  "for the allowed parameter space."
 			  << Exception::runerror;
+        }
       }
 
     }else{
@@ -236,9 +243,16 @@ void MPIHandler::initialize() {
     try{
       beta_ = rootFinder.value(fn2, -10/GeV2, 2/GeV2);
     }catch(GSLBisection::IntervalError){
+      try{
+	// Very low energies (e.g. 200 GeV) need this.
+	// Very high energies (e.g. 100 TeV) produce issues with
+	// this choice. This is a temp. fix.
+        beta_ = rootFinder.value(fn2, -5/GeV2, 8./GeV2);
+      }catch(GSLBisection::IntervalError){
       throw Exception() << "MPIHandler: slope of soft pt spectrum couldn't be "
 			<< "determined."
 			<< Exception::runerror;    
+      }
     }
   }
 

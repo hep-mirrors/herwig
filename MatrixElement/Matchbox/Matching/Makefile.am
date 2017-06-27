@@ -13,12 +13,12 @@ ShowerApproximationGenerator.cc \
 MEMatching.h \
 MEMatching.cc
 
-HwQTildeMatching_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwQTildeMatching_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 HwQTildeMatching_la_SOURCES = \
 QTildeMatching.h \
 QTildeMatching.cc
 
-HwDipoleMatching_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwDipoleMatching_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 HwDipoleMatching_la_SOURCES = \
 DipoleMatching.h \
 DipoleMatching.cc
