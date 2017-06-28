@@ -193,6 +193,7 @@ newdef QtoGQSudakov:SplittingFunction QtoGQSplitFn
 
 cp SudakovCommon QtoGammaQSudakov
 newdef QtoGammaQSudakov:SplittingFunction QtoGammaQSplitFn
+set QtoGammaQSudakov:Alpha AlphaQED
 
 cp SudakovCommon utoGuSudakov
 newdef utoGuSudakov:SplittingFunction QtoGQSplitFn
