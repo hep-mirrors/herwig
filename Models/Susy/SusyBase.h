@@ -695,6 +695,11 @@ private:
    */
   AbstractRFSVertexPtr GVFSVertex_;
   //@}
+
+  /**
+   *  Allow the resetting of Standard Model masses
+   */
+  bool allowedToResetSMMasses_;
 };
 
 }

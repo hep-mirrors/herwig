@@ -24,7 +24,6 @@ Block MINPAR   # SUSY breaking input parameters
 #  M_{GUT} =   0.23284798E+17
 Block MASS   # Scalar and gaugino mass spectrum
 #  PDG code   mass                 particle
-        24     8.04229965E+01   #  W^+
         25     1.10396233E+02   #  h^0            
         35     3.85971802E+02   #  H^0            
         36     3.83156494E+02   #  A^0            

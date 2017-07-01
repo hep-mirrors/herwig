@@ -610,3 +610,48 @@ def EWVVVVCouplings(vertex,L) :
                          vertex.particles[2].pdg_code,order[2],
                          vertex.particles[3].pdg_code,order[3] )
     return (ordering,factor)
+
+def VVSCouplings(vertex,coupling,prefactors,L,lorentztag) :
+    # split the structure into its different terms for analysis
+    ordering=""
+    structure1 = L.structure.split()
+    structures =[]
+    sign=''
+    # extract the lorentz structures
+    for struct in structure1 :
+        if(struct=='+') :
+            continue
+        elif(struct=='-') :
+            sign='-'
+        else :
+            structures.append(sign+struct.strip())
+            sign=''
+    couplings=[0.,0.,0.,0.,0.,0.]
+    terms=[['P(-1,1)','P(-1,2)','Metric(1,2)'],
+           ['P(1,1)','P(2,1)'],
+           ['P(1,1)','P(2,2)'],
+           ['P(1,2)','P(2,1)'],
+           ['P(1,2)','P(2,2)'],['Metric(1,2)']]
+    itype=-1
+    for term in terms:
+        itype+=1
+        for perm in itertools.permutations(term):
+            label = '*'.join(perm)
+            for istruct in range(0,len(structures)) :
+                if label in structures[istruct] :
+                    reminder = structures[istruct].replace(label,'1.',1)
+                    couplings[itype]+=eval(reminder, {'cmath':cmath} )
+                    structures[istruct]='Done'
+    # evaluate the prefactor
+    if type(coupling) is not list:
+        value = coupling.value
+    else:
+        value = "("
+        for coup in coupling :
+            value += '+(%s)' % coup.value
+        value +=")"
+    # aput it all together
+    for ic in range(0,len(couplings)) :
+        if(couplings[ic]!=0.) :
+            couplings[ic] = '(%s) * (%s) * (%s)' % (prefactors,value,couplings[ic])
+    return couplings

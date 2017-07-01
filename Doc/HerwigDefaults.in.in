@@ -8,8 +8,6 @@ library HwWeakCurrents.so
 library Hw64Decay.so
 library HwAnalysis.so
 library HwFormFactors.so
-library HwLEPAnalysis.so
-library HwTevatronAnalysis.so
 library HwMamboDecay.so
 library HwMEHadronFast.so
 library HwMEHadron.so
@@ -42,5 +40,4 @@ library HwIncomingPhotonEvolver.so
 ## @LOAD_DIPOLE_ALPHAS@
 ## @LOAD_MATCHBOX@
 ## @LOAD_DIPOLE@
-@LOAD_FASTJET@
 doxygendump Herwig:: AllInterfaces.h

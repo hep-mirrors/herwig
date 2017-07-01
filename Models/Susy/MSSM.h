@@ -31,6 +31,13 @@ class MSSM: public SusyBase {
 public:
 
   /**
+   *  Default constructor
+   */
+  MSSM() : createDiagonalMixing_(false) {}
+
+public:
+
+  /**
    * Value of Higgs mixing angle \f$\alpha\f$.
    */
   double higgsMixingAngle() const {return theAlpha;}
@@ -254,6 +261,11 @@ private:
    */
   MixingMatrixPtr HiggsPMix_;
   //@}
+
+  /**
+   *  Create diagonal the stop, bottom and stau mixing matrices if needed
+   */
+  bool createDiagonalMixing_;
 
 };
 

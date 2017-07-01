@@ -1353,7 +1353,7 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
     bool vetoed=false;
     for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
 	 v != _vetoes.end(); ++v) {
-      bool test = (**v).vetoTimeLike(_progenitor,particle,fb);
+      bool test = (**v).vetoTimeLike(_progenitor,particle,fb,currentTree());
       switch((**v).vetoType()) {
       case ShowerVeto::Emission:
 	vetoed |= test;
@@ -1400,7 +1400,7 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
     bool vetoed=false;
     for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
 	 v != _vetoes.end(); ++v) {
-      bool test = (**v).vetoSpaceLike(_progenitor,particle,bb);
+      bool test = (**v).vetoSpaceLike(_progenitor,particle,bb,currentTree());
       switch ((**v).vetoType()) {
       case ShowerVeto::Emission:
 	vetoed |= test;
@@ -1442,7 +1442,7 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
     bool vetoed=false;
     for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
 	 v != _vetoes.end(); ++v) {
-      bool test = (**v).vetoSpaceLike(_progenitor,particle,fb);
+      bool test = (**v).vetoSpaceLike(_progenitor,particle,fb,currentTree());
       switch((**v).vetoType()) {
       case ShowerVeto::Emission:
 	vetoed |= test;

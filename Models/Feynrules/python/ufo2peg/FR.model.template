@@ -88,5 +88,4 @@ cd /Herwig/Generators
 erase DefaultStrategy:DefaultParticlesDirs[0]
 insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/${ModelName}/Particles
 
-set LEPGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}
-set LHCGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}
+set EventGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}

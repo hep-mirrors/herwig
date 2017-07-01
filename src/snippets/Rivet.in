@@ -2,7 +2,6 @@
 
 ## this snippet is for all order ie WITH shower
 
-cd /Herwig/Analysis
-create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+create ThePEG::RivetAnalysis /Herwig/Analysis/Rivet RivetAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Rivet
 

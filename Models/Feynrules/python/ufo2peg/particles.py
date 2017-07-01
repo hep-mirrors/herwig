@@ -106,10 +106,11 @@ class ParticleConverter:
 
 
 
-def thepeg_particles(FR,parameters,modelname,modelparameters):
+def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
     plist = []
     antis = {}
     names = []
+    splittings = []
     for p in FR.all_particles:
         if p.spin == -1:
             continue
@@ -139,11 +140,14 @@ rm /Herwig/Masses/HiggsMass
 rm /Herwig/Widths/hWidth
 """
 )
+        if p.name in forbidden_names:
+            print 'RENAMING PARTICLE',p.name,'as ',p.name+'_UFO'
+            p.name +="_UFO"
+
         subs = ParticleConverter(p,parameters,modelparameters).subs()
         plist.append( particleT.substitute(subs) )
 
         pdg, name = subs['pdg_code'],  subs['name']
-
         names.append(name)
 
         if -pdg in antis:
@@ -177,7 +181,7 @@ rm /Herwig/Widths/hWidth
             if p.color in [3,6,8]: # which colors?
                 splitname = '{name}SplitFn'.format(name=p.name)
                 sudname = '{name}Sudakov'.format(name=p.name)
-                plist.append(
+                splittings.append(
 """
 create Herwig::{s}{s}OneSplitFn {name}
 set {name}:InteractionType QCD
@@ -198,5 +202,4 @@ insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
 insert /Herwig/{ModelName}/V_GenericHGG:Bosons 0 {pname}
 """.format(pname=p.name, ModelName=modelname)
             )
-
-    return ''.join(plist), names
+    return ''.join(plist)+''.join(splittings), names

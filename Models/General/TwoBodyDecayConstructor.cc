@@ -253,14 +253,14 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	if(!decayer) continue;
 	generator()->preinitInterface(ndm, "Decayer", "set",
-			     decayer->fullName());
+				      decayer->fullName());
 	generator()->preinitInterface(ndm, "Active", "set", "Yes");
 	Energy width = 
 	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
 				make_pair(pb,pb->mass()) , 
 				make_pair(pc,pc->mass()));
 	setBranchingRatio(ndm, width);
-	if(ndm->brat()<decayConstructor()->minimumBR()) {
+	if(width==ZERO || ndm->brat()<decayConstructor()->minimumBR()) {
 	  generator()->preinitInterface(decayer->fullName(),
 					"Initialize", "set","0");
 	}

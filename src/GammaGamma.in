@@ -40,18 +40,18 @@ cd /Herwig/Generators
 ## when running with parton shower
 ##################################################
 #read snippets/Rivet.in
-#insert Rivet:Analyses 0 XXX_2015_ABC123
+#insert /Herwig/Analysis/Rivet:Analyses 0 XXX_2015_ABC123
 #read snippets/HepMC.in
-#set HepMC:PrintEvent NNN
+#set /Herwig/Analysis/HepMC:PrintEvent NNN
 
 ##################################################
 ## prepare for Rivet analysis or HepMC output
 ## when running at fixed order (NO shower)
 ##################################################
 #read snippets/RivetFixedOrder.in
-#insert RivetFixedOrder:Analyses 0 XXX_2015_ABC123
+#insert /Herwig/Analysis/RivetFixedOrder:Analyses 0 XXX_2015_ABC123
 #read snippets/HepMCFixedOrder.in
-#set HepMCFixedOrder:PrintEvent NNN
+#set /Herwig/Analysis/HepMCFixedOrder:PrintEvent NNN
 
 ###################################################
 # Save run for later usage with 'Herwig run'

@@ -1,3 +1,5 @@
+read snippets/PPCollider.in
+
 read ${ModelName}.model
 
 cd /Herwig/NewPhysics
@@ -52,20 +54,21 @@ set HPConstructor:Processes SingleParticleInclusive
 ####################################
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 # disable default cuts if required
 # cd /Herwig/EventHandlers
 # create ThePEG::Cuts   /Herwig/Cuts/NoCuts
-# set /Herwig/EventHandlers/LHCHandler:Cuts /Herwig/Cuts/NoCuts
+# set EventHandler:Cuts /Herwig/Cuts/NoCuts
 
 # Other parameters for run
 cd /Herwig/Generators
-set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122001
-set LHCGenerator:DebugLevel 0
-set LHCGenerator:EventHandler:StatLevel Full
-set LHCGenerator:PrintEvent 100
-set LHCGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
+set EventGenerator:NumberOfEvents 10000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:DebugLevel 0
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:PrintEvent 100
+set EventGenerator:MaxErrors 10000
 
-saverun LHC-${ModelName} LHCGenerator
+saverun LHC-${ModelName} EventGenerator
