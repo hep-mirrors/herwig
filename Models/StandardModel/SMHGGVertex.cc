@@ -164,7 +164,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
     for ( int i = Qminloop; i <= Qmaxloop; ++i ) {
       tcPDPtr qrk = getParticleData(i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
-      loop += Af(sqr(mass)/q2);
+      loop += Af(sqr(mass)/invariant(0,0));
     }
     a00(loop);
     a11(0.0);
