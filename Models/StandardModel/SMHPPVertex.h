@@ -106,6 +106,25 @@ private:
    */
   SMHPPVertex & operator=(const SMHPPVertex &);
 
+private:
+  
+  /**
+   * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Af(const double lambda) const;
+
+  /**
+   * Loop calculations: A1 for spin-1 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Aw(const double lambda) const;
+
+  /**
+   * Loop calculations: W2 function (see details in NPB297,221)
+   */
+  Complex W2(double lambda) const;
+
+private:
+
   /**
    *Storage of couplings
    */
@@ -134,7 +153,7 @@ private:
   /**
    * define quark mass scheme (fixed/running)
    */
-  unsigned int massopt;
+  unsigned int _massopt;
 
   /**
    * The minimum flavour number in quark loops
@@ -145,21 +164,6 @@ private:
    * The maximum flavour number in quark loops
    */
   int _maxloop;
-
-  /**
-   * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
-   */
-  Complex Af(const double lambda) const;
-
-  /**
-   * Loop calculations: A1 for spin-1 particles (see details in ``Higgs Hunter's Guide'')
-   */
-  Complex Aw(const double lambda) const;
-
-  /**
-   * Loop calculations: W2 function (see details in NPB297,221)
-   */
-  Complex W2(double lambda) const;
 
   /**
    * Switch between two representations of coefficients (_a00,_a11,_a12,_a21,_a22,_aEp):
