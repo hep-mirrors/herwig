@@ -24132,6 +24132,19 @@ newdef HWW:GenerateIntermediates 0
 newdef HWW:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
+create Herwig::SMHiggsGGHiggsPPDecayer  HPP
+newdef HPP:MaxWeights 0 0.624291
+newdef HPP:MaxWeights 1 1.17718
+newdef HPP:MaxWeights 2 1.15963
+newdef HPP:SMHGGVertex /Herwig/Vertices/HGGVertex
+newdef HPP:SMHPPVertex /Herwig/Vertices/HPPVertex
+newdef HPP:SMHZPVertex /Herwig/Vertices/HZPVertex
+newdef HPP:Iteration 10
+newdef HPP:Ntry 500
+newdef HPP:Points 10000
+newdef HPP:GenerateIntermediates 0
+
+#
 create Herwig::SemiLeptonicScalarDecayer  HQET
 newdef HQET:Iteration 1
 newdef HQET:Ntry 500

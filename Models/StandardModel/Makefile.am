@@ -26,6 +26,7 @@ SMWWHVertex.h \
 SMWWWVertex.h \
 SMWWWWVertex.h \
 SMHGGVertex.h \
+SMHZPVertex.h\
 SMHPPVertex.h\
 SMHHHVertex.h \
 SMWWHHVertex.h \
@@ -51,6 +52,7 @@ SMWWHVertex.cc \
 SMWWWVertex.cc \
 SMWWWWVertex.cc \
 SMHGGVertex.cc \
+SMHZPVertex.cc \
 SMHPPVertex.cc \
 SMHHHVertex.cc \
 SMWWHHVertex.cc \
