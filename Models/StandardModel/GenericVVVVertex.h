@@ -129,31 +129,4 @@ private:
 
 // CLASSDOC OFF
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GenericVVVVertex. */
-template <>
-struct BaseClassTrait<Herwig::GenericVVVVertex,1> {
-  /** Typedef of the first base class of GenericVVVertex. */
-  typedef Helicity::VVVVertex  NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GenericVVVVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GenericVVVVertex>
-  : public ClassTraitsBase<Herwig::GenericVVVVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GenericVVVVertex"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_GenericVVVVertex_H */

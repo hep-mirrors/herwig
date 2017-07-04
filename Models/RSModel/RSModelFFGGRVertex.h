@@ -130,45 +130,4 @@ private:
 };
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of RSModelFFGGRVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::RSModelFFGGRVertex,1> {
-    /** Typedef of the base class of RSModelFFGGRVertex. */
-  typedef ThePEG::Helicity::FFVTVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::RSModelFFGGRVertex>
-  : public ClassTraitsBase<Herwig::RSModelFFGGRVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::RSModelFFGGRVertex"; }
-
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwRSModel.so"; }
-
-};
-
-/** @endcond */
-
-}
-
-
 #endif /* HERWIG_RSModelFFGGRVertex_H */

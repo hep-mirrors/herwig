@@ -12,6 +12,7 @@
 //
 
 #include "SSWWHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -69,8 +70,10 @@ void SSWWHVertex::persistentInput(PersistentIStream & is, int) {
      >> iunit(theh0Zfact,GeV) >> iunit(theH0Zfact,GeV);
 }
 
-ClassDescription<SSWWHVertex> SSWWHVertex::initSSWWHVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SSWWHVertex,VVSVertex>
+describeHerwigSSWWHVertex("Herwig::SSWWHVertex", "HwSusy.so");
 
 void SSWWHVertex::Init() {
 

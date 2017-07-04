@@ -5,6 +5,7 @@
 //
 
 #include "SSNCTVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -42,8 +43,10 @@ void SSNCTVertex::persistentInput(PersistentIStream & is, int) {
      >> leftlast_ >> rightlast_ >> idlast_ >> epsilon_;
 }
 
-ClassDescription<SSNCTVertex> SSNCTVertex::initSSNCTVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SSNCTVertex,Helicity::FFSVertex>
+describeHerwigSSNCTVertex("Herwig::SSNCTVertex", "HwSusy.so");
 
 void SSNCTVertex::Init() {
 

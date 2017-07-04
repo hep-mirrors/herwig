@@ -12,6 +12,7 @@
 //
 
 #include "GenericSVVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -65,8 +66,10 @@ void GenericSVVVertex::persistentInput(PersistentIStream & is, int) {
   is >> pids>>oas>>oaew;
 }
 
-ClassDescription<GenericSVVVertex> GenericSVVVertex::initGenericSVVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GenericSVVVertex,Helicity::GeneralVVSVertex>
+describeHerwigGenericSVVVertex("Herwig::GenericSVVVertex", "Herwig.so");
 
 void GenericSVVVertex::Init() {
   

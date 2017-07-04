@@ -199,31 +199,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of WeakCurrentDecayConstructor. */
-template <>
-struct BaseClassTrait<Herwig::WeakCurrentDecayConstructor,1> {
-  /** Typedef of the first base class of WeakCurrentDecayConstructor. */
-  typedef Herwig::NBodyDecayConstructorBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the WeakCurrentDecayConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::WeakCurrentDecayConstructor>
-  : public ClassTraitsBase<Herwig::WeakCurrentDecayConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::WeakCurrentDecayConstructor"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_WeakCurrentDecayConstructor_H */

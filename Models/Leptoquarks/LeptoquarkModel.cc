@@ -6,6 +6,7 @@
 //
 
 #include "LeptoquarkModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -104,8 +105,10 @@ void LeptoquarkModel::persistentInput(PersistentIStream & is, int) {
   
 }
 
-ClassDescription<LeptoquarkModel> LeptoquarkModel::initLeptoquarkModel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LeptoquarkModel,BSMModel>
+describeHerwigLeptoquarkModel("Herwig::LeptoquarkModel", "HwLeptoquarkModel.so");
 
 void LeptoquarkModel::Init() {
   

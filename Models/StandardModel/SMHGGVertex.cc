@@ -12,6 +12,7 @@
 //
 
 #include "SMHGGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -72,8 +73,10 @@ void SMHGGVertex::persistentInput(PersistentIStream & is, int) {
      >> _minloop >> _maxloop >> _CoefRepresentation;
 }
 
-ClassDescription<SMHGGVertex> SMHGGVertex::initSMHGGVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHGGVertex,VVSLoopVertex>
+describeHerwigSMHGGVertex("Herwig::SMHGGVertex", "Herwig.so");
 
 void SMHGGVertex::Init() {
   

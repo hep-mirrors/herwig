@@ -248,38 +248,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of LeptoquarkModelSLQFFVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::LeptoquarkModelSLQFFVertex,1> {
-  /** Typedef of the base class of LeptoquarkModelSLQFFVertex. */
-  typedef ThePEG::Helicity::FFSVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::LeptoquarkModelSLQFFVertex>
-  : public ClassTraitsBase<Herwig::LeptoquarkModelSLQFFVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::LeptoquarkModelSLQFFVertex"; }
-  
-};
-
-/** @endcond */
-  
-}
-
-
 #endif /* HERWIG_LeptoquarkModelSLQFFVertex_H */

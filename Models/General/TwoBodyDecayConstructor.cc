@@ -12,6 +12,7 @@
 //
 
 #include "TwoBodyDecayConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -44,9 +45,10 @@ IBPtr TwoBodyDecayConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<TwoBodyDecayConstructor> 
-TwoBodyDecayConstructor::initTwoBodyDecayConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<TwoBodyDecayConstructor,NBodyDecayConstructorBase>
+describeHerwigTwoBodyDecayConstructor("Herwig::TwoBodyDecayConstructor", "Herwig.so");
 
 void TwoBodyDecayConstructor::Init() {
 

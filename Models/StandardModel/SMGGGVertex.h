@@ -106,37 +106,4 @@ private:
 };
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMGGGVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::SMGGGVertex,1> {
-    /** Typedef of the base class of SMGGGVertex. */
-  typedef ThePEG::Helicity::VVVVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::SMGGGVertex>
-  : public ClassTraitsBase<Herwig::SMGGGVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::SMGGGVertex"; }
-
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_SMGGGVertex_H */

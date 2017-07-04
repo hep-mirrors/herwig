@@ -279,39 +279,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of NMSSMHHHVertex. */
-template <>
-struct BaseClassTrait<Herwig::NMSSMHHHVertex,1> {
-  /** Typedef of the first base class of NMSSMHHHVertex. */
-  typedef Helicity::SSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the NMSSMHHHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::NMSSMHHHVertex>
-  : public ClassTraitsBase<Herwig::NMSSMHHHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::NMSSMHHHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * NMSSMHHHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class NMSSMHHHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so HwNMSSM.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_NMSSMHHHVertex_H */

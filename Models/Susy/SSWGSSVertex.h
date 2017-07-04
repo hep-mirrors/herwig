@@ -175,39 +175,4 @@ private:
 };
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSWGSSVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSWGSSVertex,1> {
-  /** Typedef of the first base class of SSWGSSVertex. */
-  typedef ThePEG::Helicity::VVSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSWGSSVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSWGSSVertex>
-  : public ClassTraitsBase<Herwig::SSWGSSVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSWGSSVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSWGSSVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSWGSSVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_SSWGSSVertex_H */

@@ -12,6 +12,7 @@
 //
 
 #include "RunningMass.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
@@ -32,8 +33,10 @@ void RunningMass::persistentInput(PersistentIStream & is, int) {
      >> _theStandardModel >> _lightOption >> _heavyOption;
 }
 
-ClassDescription<RunningMass> RunningMass::initRunningMass;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<RunningMass,RunningMassBase>
+describeHerwigRunningMass("Herwig::RunningMass", "Herwig.so");
 
 void RunningMass::Init() {
 

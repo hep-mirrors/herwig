@@ -12,6 +12,7 @@
 //
 
 #include "SSHPPVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -65,8 +66,10 @@ void SSHPPVertex::persistentInput(PersistentIStream & is, int) {
      >> iunit(theSfmass, GeV) >> theU >> theV;
 }
 
-ClassDescription<SSHPPVertex> SSHPPVertex::initSSHPPVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SSHPPVertex,VVSLoopVertex>
+describeHerwigSSHPPVertex("Herwig::SSHPPVertex", "HwSusy.so");
 
 void SSHPPVertex::Init() {
   

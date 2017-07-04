@@ -5,6 +5,7 @@
 //
 
 #include "HardProcessConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -20,9 +21,10 @@ void HardProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> debug_ >> subProcess_ >> model_;
 }
 
-AbstractClassDescription<HardProcessConstructor> 
-HardProcessConstructor::initHardProcessConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<HardProcessConstructor,Interfaced>
+describeHerwigHardProcessConstructor("Herwig::HardProcessConstructor", "Herwig.so");
 
 void HardProcessConstructor::Init() {
 

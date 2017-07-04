@@ -166,31 +166,4 @@ private:
 
 // CLASSDOC OFF
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHGGVertex. */
-template <>
-struct BaseClassTrait<Herwig::SMHGGVertex,1> {
-  /** Typedef of the first base class of SMHGGVertex. */
-  typedef Herwig::VVSLoopVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHGGVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHGGVertex>
-  : public ClassTraitsBase<Herwig::SMHGGVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHGGVertex"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_SMHGGVertex_H */

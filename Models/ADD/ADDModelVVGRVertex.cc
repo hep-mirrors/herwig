@@ -12,6 +12,7 @@
 //
 
 #include "ADDModelVVGRVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -27,8 +28,10 @@ void ADDModelVVGRVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(kappa_,InvGeV) >> iunit(r_,GeV);
 }
 
-ClassDescription<ADDModelVVGRVertex> ADDModelVVGRVertex::initADDModelVVGRVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ADDModelVVGRVertex,VVTVertex>
+describeHerwigADDModelVVGRVertex("Herwig::ADDModelVVGRVertex", "HwADDModel.so");
 
 void ADDModelVVGRVertex::Init() {
  static ClassDocumentation<ADDModelVVGRVertex> documentation

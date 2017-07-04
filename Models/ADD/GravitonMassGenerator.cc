@@ -5,6 +5,7 @@
 //
 
 #include "GravitonMassGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -34,9 +35,10 @@ void GravitonMassGenerator::persistentInput(PersistentIStream & is, int) {
   is >> prefactor_ >> delta_ >> iunit(md_,GeV) >> iunit(mMin_,GeV);
 }
 
-ClassDescription<GravitonMassGenerator> 
-GravitonMassGenerator::initGravitonMassGenerator;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GravitonMassGenerator,GenericMassGenerator>
+describeHerwigGravitonMassGenerator("Herwig::GravitonMassGenerator", "HwADDModel.so");
 
 void GravitonMassGenerator::Init() {
 

@@ -137,39 +137,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GravitonMassGenerator. */
-template <>
-struct BaseClassTrait<Herwig::GravitonMassGenerator,1> {
-  /** Typedef of the first base class of GravitonMassGenerator. */
-  typedef Herwig::GenericMassGenerator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GravitonMassGenerator class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GravitonMassGenerator>
-  : public ClassTraitsBase<Herwig::GravitonMassGenerator> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GravitonMassGenerator"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * GravitonMassGenerator is implemented. It may also include several, space-separated,
-   * libraries if the class GravitonMassGenerator depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwADDModel.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_GravitonMassGenerator_H */

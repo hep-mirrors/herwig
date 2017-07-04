@@ -12,6 +12,7 @@
 //
 
 #include "ZprimeModelZPQQVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -99,9 +100,10 @@ void ZprimeModelZPQQVertex::persistentInput(PersistentIStream & is, int) {
 
 }
 
-ClassDescription<ZprimeModelZPQQVertex> 
-ZprimeModelZPQQVertex::initZprimeModelZPQQVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ZprimeModelZPQQVertex,FFVVertex>
+describeHerwigZprimeModelZPQQVertex("Herwig::ZprimeModelZPQQVertex", "Herwig.so");
 
 
 void ZprimeModelZPQQVertex::Init() {

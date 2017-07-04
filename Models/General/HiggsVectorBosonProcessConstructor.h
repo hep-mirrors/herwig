@@ -122,31 +122,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HiggsVectorBosonProcessConstructor. */
-template <>
-struct BaseClassTrait<Herwig::HiggsVectorBosonProcessConstructor,1> {
-  /** Typedef of the first base class of HiggsVectorBosonProcessConstructor. */
-  typedef Herwig::HardProcessConstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HiggsVectorBosonProcessConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HiggsVectorBosonProcessConstructor>
-  : public ClassTraitsBase<Herwig::HiggsVectorBosonProcessConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HiggsVectorBosonProcessConstructor"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_HiggsVectorBosonProcessConstructor_H */

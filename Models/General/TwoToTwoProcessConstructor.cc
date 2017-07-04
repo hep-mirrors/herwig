@@ -12,6 +12,7 @@
 //
 
 #include "TwoToTwoProcessConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -86,9 +87,10 @@ void TwoToTwoProcessConstructor::persistentInput(PersistentIStream & is, int) {
      >> excludedVertexVector_ >> excludedVertexSet_;
 }
 
-ClassDescription<TwoToTwoProcessConstructor> 
-TwoToTwoProcessConstructor::initTwoToTwoProcessConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TwoToTwoProcessConstructor,HardProcessConstructor>
+describeHerwigTwoToTwoProcessConstructor("Herwig::TwoToTwoProcessConstructor", "Herwig.so");
 
 void TwoToTwoProcessConstructor::Init() {
 

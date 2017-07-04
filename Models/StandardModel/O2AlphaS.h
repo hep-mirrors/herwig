@@ -173,31 +173,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of O2AlphaS. */
-template <>
-struct BaseClassTrait<Herwig::O2AlphaS,1> {
-  /** Typedef of the first base class of O2AlphaS. */
-  typedef AlphaSBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the O2AlphaS class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::O2AlphaS>
-  : public ClassTraitsBase<Herwig::O2AlphaS> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::O2AlphaS"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_O2AlphaS_H */

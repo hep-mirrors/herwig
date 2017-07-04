@@ -123,45 +123,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of LeptoquarkModelSLQSLQGVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::LeptoquarkModelSLQSLQGVertex,1> {
-  /** Typedef of the base class of LeptoquarkModelSLQSLQGVertex. */
-  typedef ThePEG::Helicity::VSSVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::LeptoquarkModelSLQSLQGVertex>
-  : public ClassTraitsBase<Herwig::LeptoquarkModelSLQSLQGVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::LeptoquarkModelSLQSLQGVertex"; }
-
-  /** 
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwLeptoquarkModel.so"; }
-
-};
-
-/** @endcond */
-  
-}
-
-
 #endif /* HERWIG_LeptoquarkModelSLQSLQGVertex_H */

@@ -316,31 +316,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of TwoToTwoProcessConstructor. */
-template <>
-struct BaseClassTrait<Herwig::TwoToTwoProcessConstructor,1> {
-  /** Typedef of the first base class of TwoToTwoProcessConstructor. */
-  typedef Herwig::HardProcessConstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the TwoToTwoProcessConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::TwoToTwoProcessConstructor>
-  : public ClassTraitsBase<Herwig::TwoToTwoProcessConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::TwoToTwoProcessConstructor"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_TwoToTwoProcessConstructor_H */

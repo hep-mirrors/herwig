@@ -150,45 +150,4 @@ private:
 };
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of ADDModelWWWGRVertex. 
- */
-template <>
-struct BaseClassTrait<Herwig::ADDModelWWWGRVertex,1> {
-    /** Typedef of the base class of ADDModelWWWGRVertex. */
-  typedef ThePEG::Helicity::VVVTVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::ADDModelWWWGRVertex>
-  : public ClassTraitsBase<Herwig::ADDModelWWWGRVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::ADDModelWWWGRVertex"; }
-
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwADDModel.so"; }
-
-};
-
-/** @endcond */
-
-}
-
-
 #endif /* HERWIG_ADDModelWWWGRVertex_H */

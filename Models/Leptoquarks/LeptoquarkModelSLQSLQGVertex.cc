@@ -12,6 +12,7 @@
 //
 
 #include "LeptoquarkModelSLQSLQGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -55,8 +56,10 @@ void LeptoquarkModelSLQSLQGVertex::persistentInput(PersistentIStream & is, int) 
    is >> _theModel;
 }
 
-ClassDescription<LeptoquarkModelSLQSLQGVertex> LeptoquarkModelSLQSLQGVertex::initLeptoquarkModelSLQSLQGVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LeptoquarkModelSLQSLQGVertex,VSSVertex>
+describeHerwigLeptoquarkModelSLQSLQGVertex("Herwig::LeptoquarkModelSLQSLQGVertex", "HwLeptoquarkModel.so");
 
 void LeptoquarkModelSLQSLQGVertex::Init() {
   static ClassDocumentation<LeptoquarkModelSLQSLQGVertex> documentation

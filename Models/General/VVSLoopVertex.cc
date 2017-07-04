@@ -5,6 +5,7 @@
 //
 
 #include "VVSLoopVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -34,8 +35,10 @@ void VVSLoopVertex::dofinish() {
   GeneralVVSVertex::dofinish();
 }
 
-ClassDescription<VVSLoopVertex> VVSLoopVertex::initVVSLoopVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<VVSLoopVertex,Helicity::GeneralVVSVertex>
+describeHerwigVVSLoopVertex("Herwig::VVSLoopVertex", "Herwig.so");
 
 void VVSLoopVertex::Init() {
 

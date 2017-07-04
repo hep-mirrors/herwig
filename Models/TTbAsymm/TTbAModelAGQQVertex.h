@@ -150,38 +150,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of TTbAModelAGQQVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::TTbAModelAGQQVertex,1> {
-  /** Typedef of the base class of TTbAModelAGQQVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::TTbAModelAGQQVertex>
-  : public ClassTraitsBase<Herwig::TTbAModelAGQQVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::TTbAModelAGQQVertex"; }
-  
-};
-
-/** @endcond */
-  
-}
-
-
 #endif /* HERWIG_TTbAModelAGQQVertex_H */

@@ -214,31 +214,4 @@ namespace HPC_helper {
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HardProcessConstructor. */
-template <>
-struct BaseClassTrait<Herwig::HardProcessConstructor,1> {
-  /** Typedef of the first base class of HardProcessConstructor. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HardProcessConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HardProcessConstructor>
-  : public ClassTraitsBase<Herwig::HardProcessConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HardProcessConstructor"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_HardProcessConstructor_H */

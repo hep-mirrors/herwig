@@ -12,6 +12,7 @@
 //
 
 #include "SMHPPVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -33,8 +34,10 @@ void SMHPPVertex::persistentInput(PersistentIStream & is, int) {
      >> _CoefRepresentation;
 }
 
-ClassDescription<SMHPPVertex> SMHPPVertex::initSMHPPVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHPPVertex,VVSLoopVertex>
+describeHerwigSMHPPVertex("Herwig::SMHPPVertex", "Herwig.so");
 
 void SMHPPVertex::Init() {
   

@@ -12,6 +12,7 @@
 //
 
 #include "UEDP0H1H1Vertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -30,8 +31,10 @@ void UEDP0H1H1Vertex::doinit() {
   VSSVertex::doinit();
 }
 
-NoPIOClassDescription<UEDP0H1H1Vertex> UEDP0H1H1Vertex::initUEDP0H1H1Vertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<UEDP0H1H1Vertex,VSSVertex>
+describeHerwigUEDP0H1H1Vertex("Herwig::UEDP0H1H1Vertex", "HwUED.so");
 
 void UEDP0H1H1Vertex::Init() {
 

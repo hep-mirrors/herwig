@@ -52,9 +52,10 @@ void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
 DescribeAbstractClass<NBodyDecayConstructorBase,Interfaced>
 describeThePEGNBodyDecayConstructorBase("Herwig::NBodyDecayConstructorBase", "Herwig.so");
 
-AbstractClassDescription<NBodyDecayConstructorBase> 
-NBodyDecayConstructorBase::initNBodyDecayConstructorBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<NBodyDecayConstructorBase,Interfaced>
+describeHerwigNBodyDecayConstructorBase("Herwig::NBodyDecayConstructorBase", "Herwig.so");
 
 void NBodyDecayConstructorBase::Init() {
 

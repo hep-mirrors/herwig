@@ -170,31 +170,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ThreeBodyDecayConstructor. */
-template <>
-struct BaseClassTrait<Herwig::ThreeBodyDecayConstructor,1> {
-  /** Typedef of the first base class of ThreeBodyDecayConstructor. */
-  typedef Herwig::NBodyDecayConstructorBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ThreeBodyDecayConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ThreeBodyDecayConstructor>
-  : public ClassTraitsBase<Herwig::ThreeBodyDecayConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ThreeBodyDecayConstructor"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_ThreeBodyDecayConstructor_H */

@@ -215,31 +215,4 @@ private:
 }
 
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ResonantProcessConstructor. */
-template <>
-struct BaseClassTrait<Herwig::ResonantProcessConstructor,1> {
-  /** Typedef of the first base class of ResonantProcessConstructor. */
-  typedef Herwig::HardProcessConstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ResonantProcessConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ResonantProcessConstructor>
-  : public ClassTraitsBase<Herwig::ResonantProcessConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ResonantProcessConstructor"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_ResonantProcessConstructor_H */

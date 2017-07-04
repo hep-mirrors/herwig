@@ -151,39 +151,4 @@ private:
 };
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of UEDF1F1W0Vertex. */
-template <>
-struct BaseClassTrait<Herwig::UEDF1F1W0Vertex,1> {
-  /** Typedef of the first base class of UEDF1F1W0Vertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the UEDF1F1W0Vertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::UEDF1F1W0Vertex>
-  : public ClassTraitsBase<Herwig::UEDF1F1W0Vertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::UEDF1F1W0Vertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * UEDF1F1W0Vertex is implemented. It may also include several, space-separated,
-   * libraries if the class UEDF1F1W0Vertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwUED.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_UEDF1F1W0Vertex_H */

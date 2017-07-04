@@ -12,6 +12,7 @@
 //
 
 #include "SMFFGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -20,9 +21,10 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-NoPIOClassDescription<SMFFGVertex> 
-SMFFGVertex::initSMFFGVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<SMFFGVertex,FFVVertex>
+describeHerwigSMFFGVertex("Herwig::SMFFGVertex", "Herwig.so");
 
 void SMFFGVertex::Init() {
 

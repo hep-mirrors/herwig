@@ -129,30 +129,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the base classes
- *  of StandardCKM. */
-template <>
-struct BaseClassTrait<Herwig::StandardCKM,1> {
-  /** Typedef of the first base class of StandardCKM. */
-  typedef CKMBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of the
- *  StandardCKM class and the shared object where it is
- *  defined. */
-template <>
-struct ClassTraits<Herwig::StandardCKM>: public ClassTraitsBase<Herwig::StandardCKM> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::StandardCKM"; }
-};
-
-/** @endcond */
-
-}
-
-
 #endif /* HERWIG_StandardCKM_H */

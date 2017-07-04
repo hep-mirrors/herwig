@@ -101,36 +101,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of RunningMassBase.
- */
-template <>
-struct BaseClassTrait<Herwig::RunningMassBase,1> {
-  /** Typedef of the base class of RunningMassBase. */
-  typedef Interfaced NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::RunningMassBase>
-  : public ClassTraitsBase<Herwig::RunningMassBase> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::RunningMassBase"; }
-};
-
-/** @endcond */
-  
-}
-
 #endif /* HERWIG_RunningMassBase_H */

@@ -151,38 +151,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMFFHVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::SMFFHVertex,1> {
-  /** Typedef of the base class of SMFFHVertex. */
-  typedef ThePEG::Helicity::FFSVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::SMFFHVertex>
-  : public ClassTraitsBase<Herwig::SMFFHVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::SMFFHVertex"; }
-  
-};
-
-/** @endcond */
-  
-}
-
-
 #endif /* HERWIG_SMFFHVertex_H */

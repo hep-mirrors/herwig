@@ -12,6 +12,7 @@
 //
 
 #include "ADDModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -49,8 +50,10 @@ void ADDModel::persistentInput(PersistentIStream & is, int) {
      >> GGGGRVertex_ >> WWWGRVertex_;
 }
 
-ClassDescription<ADDModel> ADDModel::initADDModel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ADDModel,BSMModel>
+describeHerwigADDModel("Herwig::ADDModel", "HwADDModel.so");
 
 void ADDModel::Init() {
   

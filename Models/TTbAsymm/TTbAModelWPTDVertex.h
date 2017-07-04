@@ -140,38 +140,4 @@ private:
 
 }
 
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of TTbAModelWPTDVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::TTbAModelWPTDVertex,1> {
-  /** Typedef of the base class of TTbAModelWPTDVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::TTbAModelWPTDVertex>
-  : public ClassTraitsBase<Herwig::TTbAModelWPTDVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::TTbAModelWPTDVertex"; }
-  
-};
-
-/** @endcond */
-  
-}
-
-
 #endif /* HERWIG_TTbAModelWPTDVertex_H */
