@@ -2640,7 +2640,14 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
 	if(hard) {
 	  // get the PDF
 	  setBeamParticle(_progenitor->beam());
-	  assert(beamParticle());
+	  if(!beamParticle()) {
+	    throw Exception() << "Incorrect type of beam particle in "
+			      << "QTildeShowerHandler::doShowering(). "
+			      << "This should not happen for conventional choices but may happen if you have used a"
+			      << " non-default choice and have not changed the create ParticleData line in the input files"
+			      << " for this particle to create BeamParticleData."
+			      << Exception::runerror;
+	  }
 	  // perform the shower
 	  // set the beam particle
 	  tPPtr beamparticle=progenitor()->original();
