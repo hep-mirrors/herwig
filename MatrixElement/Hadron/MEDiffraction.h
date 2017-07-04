@@ -306,39 +306,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEDiffraction. */
-template <>
-struct BaseClassTrait<Herwig::MEDiffraction,1> {
-  /** Typedef of the first base class of MEDiffraction. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEDiffraction class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEDiffraction>
-  : public ClassTraitsBase<Herwig::MEDiffraction> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEDiffraction"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEDiffraction is implemented. It may also include several, space-separated,
-   * libraries if the class MEDiffraction depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() {return "HwMEHadron.so";}
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEDiffraction_H */

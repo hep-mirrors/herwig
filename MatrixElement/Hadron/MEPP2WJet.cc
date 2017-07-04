@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2WJet.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -43,8 +44,10 @@ void MEPP2WJet::doinit() {
   _theQQGVertex = hwsm->vertexFFG();
 }
 
-ClassDescription<MEPP2WJet> MEPP2WJet::initMEPP2WJet;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2WJet,HwMEBase>
+describeHerwigMEPP2WJet("Herwig::MEPP2WJet", "HwMEHadron.so");
 
 void MEPP2WJet::Init() {
 

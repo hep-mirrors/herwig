@@ -5,6 +5,7 @@
 //
 
 #include "MEMinBias.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 //#include "ThePEG/Repository/EventGenerator.h"
@@ -138,8 +139,10 @@ IBPtr MEMinBias::fullclone() const {
 }
 
 
-ClassDescription<MEMinBias> MEMinBias::initMEMinBias;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEMinBias,HwMEBase>
+describeHerwigMEMinBias("Herwig::MEMinBias", "HwMEHadron.so");
 
 void MEMinBias::persistentOutput(PersistentOStream & os) const {
   os << csNorm_;

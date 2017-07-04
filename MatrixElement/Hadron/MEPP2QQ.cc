@@ -12,6 +12,7 @@
 //
 
 #include "MEPP2QQ.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -106,8 +107,10 @@ unsigned int MEPP2QQ::orderInAlphaEW() const {
   return 0;
 }
 
-ClassDescription<MEPP2QQ> MEPP2QQ::initMEPP2QQ;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2QQ,HwMEBase>
+describeHerwigMEPP2QQ("Herwig::MEPP2QQ", "HwMEHadron.so");
 
 void MEPP2QQ::Init() {
 

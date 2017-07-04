@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2HiggsVBF.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -316,8 +317,10 @@ void MEPP2HiggsVBF::persistentInput(PersistentIStream & is, int) {
      >> comptonInt_ >> bgfInt_ >> procProb_;
 }
 
-ClassDescription<MEPP2HiggsVBF> MEPP2HiggsVBF::initMEPP2HiggsVBF;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2HiggsVBF,MEfftoffH>
+describeHerwigMEPP2HiggsVBF("Herwig::MEPP2HiggsVBF", "HwMEHadron.so");
 
 void MEPP2HiggsVBF::Init() {
 

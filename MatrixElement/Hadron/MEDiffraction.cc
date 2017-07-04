@@ -5,6 +5,7 @@
 //
 
 #include "MEDiffraction.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -782,8 +783,10 @@ IBPtr MEDiffraction::fullclone() const {
 }
 
 
-ClassDescription<MEDiffraction> MEDiffraction::initMEDiffraction;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEDiffraction,HwMEBase>
+describeHerwigMEDiffraction("Herwig::MEDiffraction", "HwMEHadron.so");
 
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope

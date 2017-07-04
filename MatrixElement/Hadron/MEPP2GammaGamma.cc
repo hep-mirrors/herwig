@@ -12,6 +12,7 @@
 //
 
 #include "MEPP2GammaGamma.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -111,8 +112,10 @@ void MEPP2GammaGamma::persistentInput(PersistentIStream & is, int) {
   is >> _photonvertex >> _maxflavour >> _process >> scalePreFactor_;
 }
 
-ClassDescription<MEPP2GammaGamma> MEPP2GammaGamma::initMEPP2GammaGamma;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2GammaGamma,HwMEBase>
+describeHerwigMEPP2GammaGamma("Herwig::MEPP2GammaGamma", "HwMEHadron.so");
 
 void MEPP2GammaGamma::Init() {
 

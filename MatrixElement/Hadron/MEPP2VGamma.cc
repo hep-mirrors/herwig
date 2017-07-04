@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2VGamma.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -29,8 +30,10 @@ unsigned int MEPP2VGamma::orderInAlphaEW() const {
   return 2;
 }
 
-ClassDescription<MEPP2VGamma> MEPP2VGamma::initMEPP2VGamma;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2VGamma,HwMEBase>
+describeHerwigMEPP2VGamma("Herwig::MEPP2VGamma", "HwMEHadron.so");
 
 void MEPP2VGamma::Init() {
 

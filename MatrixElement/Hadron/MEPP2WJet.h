@@ -319,39 +319,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEPP2WJet. */
-template <>
-struct BaseClassTrait<Herwig::MEPP2WJet,1> {
-  /** Typedef of the first base class of MEPP2WJet. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEPP2WJet class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEPP2WJet>
-  : public ClassTraitsBase<Herwig::MEPP2WJet> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2WJet"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEPP2WJet is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2WJet depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEHadron.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEPP2WJet_H */

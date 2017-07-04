@@ -12,6 +12,7 @@
 //
 
 #include "MEPP2Higgs.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -48,8 +49,10 @@ MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
 			   spinCorrelations_(true)
 {}
 
-ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2Higgs,HwMEBase>
+describeHerwigMEPP2Higgs("Herwig::MEPP2Higgs", "HwMEHadron.so");
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
   os << HGGVertex_ << HFFVertex_ << shapeOption_ << processOption_

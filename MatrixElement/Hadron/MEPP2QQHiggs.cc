@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2QQHiggs.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -24,8 +25,10 @@ MEPP2QQHiggs::MEPP2QQHiggs() : quarkFlavour_(6), process_(0), shapeOpt_(2),
 			       mh_(), wh_(), alpha_(1.1)
 {}
 
-ClassDescription<MEPP2QQHiggs> MEPP2QQHiggs::initMEPP2QQHiggs;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2QQHiggs,HwMEBase>
+describeHerwigMEPP2QQHiggs("Herwig::MEPP2QQHiggs", "HwMEHadron.so");
 
 void MEPP2QQHiggs::Init() {
 

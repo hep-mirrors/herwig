@@ -464,39 +464,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEPP2HiggsVBF. */
-template <>
-struct BaseClassTrait<Herwig::MEPP2HiggsVBF,1> {
-  /** Typedef of the first base class of MEPP2HiggsVBF. */
-  typedef Herwig::MEfftoffH NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEPP2HiggsVBF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEPP2HiggsVBF>
-  : public ClassTraitsBase<Herwig::MEPP2HiggsVBF> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2HiggsVBF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEPP2HiggsVBF is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2HiggsVBF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEHadron.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEPP2HiggsVBF_H */

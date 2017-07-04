@@ -12,6 +12,7 @@
 //
 
 #include "MEQCD2to2.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -101,8 +102,10 @@ unsigned int MEQCD2to2::orderInAlphaEW() const {
   return 0;
 }
 
-ClassDescription<MEQCD2to2> MEQCD2to2::initMEQCD2to2;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEQCD2to2,HwMEBase>
+describeHerwigMEQCD2to2("Herwig::MEQCD2to2", "HwMEHadron.so");
 
 void MEQCD2to2::Init() {
 

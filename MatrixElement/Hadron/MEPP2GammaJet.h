@@ -266,39 +266,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEPP2GammaJet. */
-template <>
-struct BaseClassTrait<Herwig::MEPP2GammaJet,1> {
-  /** Typedef of the first base class of MEPP2GammaJet. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEPP2GammaJet class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEPP2GammaJet>
-  : public ClassTraitsBase<Herwig::MEPP2GammaJet> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2GammaJet"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEPP2GammaJet is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2GammaJet depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEHadron.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEPP2GammaJet_H */
