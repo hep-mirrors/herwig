@@ -172,6 +172,8 @@ MEvv2vs::vv2vsHeME(VBVector & vin1, VBVector & vin2,
 	    }
 	    else if(offshell->iSpin() == PDT::Spin1) {
 	      if(current.ordered.second) {
+		VectorWaveFunction interV = vector_[ix].
+		  first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
 		diag = vector_[ix].second->
 		  evaluate(q2, vin2[ihel2], interV, sd);
 	      }
