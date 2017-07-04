@@ -361,6 +361,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     lfactors = { 
         'FFV'  : '-complex(0,1)',  # ok
         'VVV'  : 'complex(0,1)',   # changed to fix ttbar
+        'VVVS' : 'complex(0,1)',   # should be as VVV
         'VVVV' : 'complex(0,1)',
         'VVS'  : '-complex(0,1)',
         'VSS'  : '-complex(0,1)', # changed to minus to fix dL ->x1 W- d
@@ -472,7 +473,10 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
                 elif lorentztag == 'VVV':
                     if len(pos[8]) != 3:
                         ordering = VVVordering(vertex)
-
+                elif lorentztag == 'VVVS' :
+                    if len(pos[8]) == 0 :
+                        ordering = VVVordering(vertex)
+                
                 if type(coupling) is not list:
                     value = coupling.value
                 else:
@@ -509,7 +513,8 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         couplingptrs[1] += ' p2'
     elif lorentztag == 'FFV':
         couplingptrs[0] += ' p1'
-    elif lorentztag == 'VVV' and ordering != '':
+    elif (lorentztag == 'VVV' or lorentztag == 'VVVS' ) \
+         and ordering != '':
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
@@ -568,7 +573,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         normcalc = 'Complex((%s) * GeV / UnitRemoval::E)' % normcalc
     elif lorentztag in ['GeneralVVS']:
         normcalc = 'Complex(-(%s) * UnitRemoval::E / GeV )' % normcalc
-    elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' ]:
+    elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
         normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
     norm = 'norm(' + normcalc + ');'
 

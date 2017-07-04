@@ -298,6 +298,12 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
        inb==PDT::Colour8&&outb==PDT::Colour8) {
       cfv.push_back(make_pair(1, -1.));
     }
+    else if((ina==PDT::Colour8&&outa==PDT::Colour8&&
+	     inb==PDT::Colour8&&outb==PDT::Colour0) ||
+	    (ina==PDT::Colour8&&outa==PDT::Colour0&&
+	     inb==PDT::Colour8&&outb==PDT::Colour8)) {
+      cfv[0] = make_pair(0,-1);
+    }
   } 
   else if(diag.intermediate->iColour() == PDT::Colour3 ||
 	  diag.intermediate->iColour() == PDT::Colour3bar) {
