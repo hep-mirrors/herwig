@@ -96,11 +96,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<LeptoquarkModelSLQSLQGGVertex> initLeptoquarkModelSLQSLQGGVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   LeptoquarkModelSLQSLQGGVertex & operator=(const LeptoquarkModelSLQSLQGGVertex &);

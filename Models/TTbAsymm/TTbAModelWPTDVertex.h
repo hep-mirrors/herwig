@@ -96,11 +96,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<TTbAModelWPTDVertex> initTTbAModelWPTDVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   TTbAModelWPTDVertex & operator=(const TTbAModelWPTDVertex &);

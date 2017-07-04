@@ -96,11 +96,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ZprimeModelZPQQVertex> initZprimeModelZPQQVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   ZprimeModelZPQQVertex & operator=(const ZprimeModelZPQQVertex &);

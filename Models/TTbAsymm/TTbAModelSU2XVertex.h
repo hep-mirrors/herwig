@@ -96,11 +96,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<TTbAModelSU2XVertex> initTTbAModelSU2XVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   TTbAModelSU2XVertex & operator=(const TTbAModelSU2XVertex &);

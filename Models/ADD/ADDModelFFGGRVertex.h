@@ -108,11 +108,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ADDModelFFGGRVertex> initADDModelFFGGRVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   ADDModelFFGGRVertex & operator=(const ADDModelFFGGRVertex &);

@@ -81,11 +81,6 @@ protected:
 private:
   
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractClassDescription<RunningMassBase> initRunningMassBase;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   RunningMassBase & operator=(const RunningMassBase &);

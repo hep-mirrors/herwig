@@ -96,11 +96,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMFFHVertex> initSMFFHVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   SMFFHVertex & operator=(const SMFFHVertex &);

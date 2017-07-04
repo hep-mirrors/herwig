@@ -106,11 +106,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ADDModelFFGRVertex> initADDModelFFGRVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   ADDModelFFGRVertex & operator=(const ADDModelFFGRVertex &);

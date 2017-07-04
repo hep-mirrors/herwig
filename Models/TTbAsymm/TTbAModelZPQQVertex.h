@@ -96,11 +96,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<TTbAModelZPQQVertex> initTTbAModelZPQQVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   TTbAModelZPQQVertex & operator=(const TTbAModelZPQQVertex &);

@@ -82,11 +82,6 @@ public:
 private:
   
   /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<HardVertex> initHardVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   HardVertex & operator=(const HardVertex &);

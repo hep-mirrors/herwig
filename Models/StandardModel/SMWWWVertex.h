@@ -102,11 +102,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMWWWVertex> initSMWWWVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   SMWWWVertex & operator=(const SMWWWVertex &);

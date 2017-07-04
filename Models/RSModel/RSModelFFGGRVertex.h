@@ -97,11 +97,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<RSModelFFGGRVertex> initRSModelFFGGRVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   RSModelFFGGRVertex & operator=(const RSModelFFGGRVertex &);

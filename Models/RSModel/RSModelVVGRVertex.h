@@ -93,11 +93,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<RSModelVVGRVertex> initRSModelVVGRVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   RSModelVVGRVertex & operator=(const RSModelVVGRVertex &);

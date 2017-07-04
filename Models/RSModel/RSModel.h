@@ -143,11 +143,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<RSModel> initRSModel;
-  
-    /**
      * Private and non-existent assignment operator.
      */
   RSModel & operator=(const RSModel &);

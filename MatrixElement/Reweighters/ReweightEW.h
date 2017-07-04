@@ -137,11 +137,6 @@ private:
 private:
 
   /**
-   * Describe a concrete base class with persistent data.
-   */
-  static ClassDescription<ReweightEW> initReweightEW;
-
-protected:
 
   /** @name Standard Interfaced functions. */
   //@{

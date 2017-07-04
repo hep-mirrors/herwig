@@ -116,11 +116,6 @@ private:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<StandardCKM> initStandardCKM;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   StandardCKM & operator=(const StandardCKM &);

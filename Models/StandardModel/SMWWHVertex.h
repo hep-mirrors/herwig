@@ -100,11 +100,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMWWHVertex> initSMWWHVertex;
-    /**
-   * Private and non-existent assignment operator.
    */
   SMWWHVertex & operator=(const SMWWHVertex &);
 

@@ -107,11 +107,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ADDModelWWWGRVertex> initADDModelWWWGRVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   ADDModelWWWGRVertex & operator=(const ADDModelWWWGRVertex &);

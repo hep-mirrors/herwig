@@ -101,11 +101,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<RunningMass> initRunningMass;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   RunningMass & operator=(const RunningMass &);

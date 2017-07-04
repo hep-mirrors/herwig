@@ -104,11 +104,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<ADDModelVVGRVertex> initADDModelVVGRVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   ADDModelVVGRVertex & operator=(const ADDModelVVGRVertex &);

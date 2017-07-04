@@ -349,11 +349,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<StandardModel> initStandardModel;
-  
-  /** 
    * Private and non-existent assignment operator.
    */
   StandardModel & operator=(const StandardModel &);

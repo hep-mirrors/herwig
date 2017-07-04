@@ -80,11 +80,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<SMGGGVertex> initSMGGGVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   SMGGGVertex & operator=(const SMGGGVertex &);

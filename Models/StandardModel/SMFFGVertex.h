@@ -81,11 +81,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<SMFFGVertex> initSMFFGVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   SMFFGVertex & operator=(const SMFFGVertex &);
