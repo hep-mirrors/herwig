@@ -12,6 +12,7 @@
 //
 
 #include "MEPP2VVPowheg.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -68,8 +69,10 @@ void MEPP2VVPowheg::persistentInput(PersistentIStream & is, int) {
      >> iunit( min_pT_, GeV );
 }
 
-ClassDescription<MEPP2VVPowheg> MEPP2VVPowheg::initMEPP2VVPowheg;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2VVPowheg,MEPP2VV>
+describeHerwigMEPP2VVPowheg("Herwig::MEPP2VVPowheg", "HwMEHadron.so HwPowhegMEHadron.so");
 
 void MEPP2VVPowheg::Init() {
 

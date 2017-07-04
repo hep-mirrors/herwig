@@ -376,35 +376,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEqq2W2ffPowheg. */
-template <>
-struct BaseClassTrait<Herwig::MEqq2W2ffPowheg,1> {
-  /** Typedef of the first base class of MEqq2W2ffPowheg. */
-  typedef Herwig::MEqq2W2ff NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEqq2W2ffPowheg class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEqq2W2ffPowheg>
-  : public ClassTraitsBase<Herwig::MEqq2W2ffPowheg> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEqq2W2ffPowheg"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEqq2W2ffPowheg class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEqq2W2ffPowheg_H */

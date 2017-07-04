@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2WHPowheg.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -25,8 +26,10 @@ MEPP2WHPowheg::MEPP2WHPowheg()
     _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
-ClassDescription<MEPP2WHPowheg> MEPP2WHPowheg::initMEPP2WHPowheg;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2WHPowheg,MEPP2WH>
+describeHerwigMEPP2WHPowheg("Herwig::MEPP2WHPowheg", "HwMEHadron.so HwPowhegMEHadron.so");
 
 void MEPP2WHPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         

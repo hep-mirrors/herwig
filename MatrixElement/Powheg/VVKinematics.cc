@@ -12,6 +12,7 @@
 //
 
 #include "VVKinematics.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
