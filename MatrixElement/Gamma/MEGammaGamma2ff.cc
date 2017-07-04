@@ -5,6 +5,7 @@
 //
 
 #include "MEGammaGamma2ff.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -166,8 +167,10 @@ void MEGammaGamma2ff::persistentInput(PersistentIStream & is, int) {
   is >> process_ >> vertex_;
 }
 
-ClassDescription<MEGammaGamma2ff> MEGammaGamma2ff::initMEGammaGamma2ff;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEGammaGamma2ff,HwMEBase>
+describeHerwigMEGammaGamma2ff("Herwig::MEGammaGamma2ff", "HwMEGammaGamma.so");
 
 void MEGammaGamma2ff::Init() {
 

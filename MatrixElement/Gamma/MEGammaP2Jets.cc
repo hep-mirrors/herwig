@@ -5,6 +5,7 @@
 //
 
 #include "MEGammaP2Jets.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -44,8 +45,10 @@ void MEGammaP2Jets::persistentInput(PersistentIStream & is, int) {
      >> _process >> _minflavour >> _maxflavour;
 }
 
-ClassDescription<MEGammaP2Jets> MEGammaP2Jets::initMEGammaP2Jets;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEGammaP2Jets,HwMEBase>
+describeHerwigMEGammaP2Jets("Herwig::MEGammaP2Jets", "HwMEGammaHadron.so");
 
 void MEGammaP2Jets::Init() {
 

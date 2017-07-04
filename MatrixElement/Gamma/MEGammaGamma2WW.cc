@@ -5,6 +5,7 @@
 //
 
 #include "MEGammaGamma2WW.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -81,8 +82,10 @@ IBPtr MEGammaGamma2WW::fullclone() const {
   return new_ptr(*this);
 }
 
-ClassDescription<MEGammaGamma2WW> MEGammaGamma2WW::initMEGammaGamma2WW;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEGammaGamma2WW,HwMEBase>
+describeHerwigMEGammaGamma2WW("Herwig::MEGammaGamma2WW", "HwMEGammaGamma.so");
 
 void MEGammaGamma2WW::Init() {
 
