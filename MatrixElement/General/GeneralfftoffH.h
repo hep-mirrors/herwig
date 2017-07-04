@@ -118,31 +118,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralfftoffH. */
-template <>
-struct BaseClassTrait<Herwig::GeneralfftoffH,1> {
-  /** Typedef of the first base class of GeneralfftoffH. */
-  typedef Herwig::MEfftoffH NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralfftoffH class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralfftoffH>
-  : public ClassTraitsBase<Herwig::GeneralfftoffH> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralfftoffH"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_GeneralfftoffH_H */

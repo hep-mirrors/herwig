@@ -366,31 +366,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralQQHiggs. */
-template <>
-struct BaseClassTrait<Herwig::GeneralQQHiggs,1> {
-  /** Typedef of the first base class of GeneralQQHiggs. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralQQHiggs class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralQQHiggs>
-  : public ClassTraitsBase<Herwig::GeneralQQHiggs> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralQQHiggs"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_GeneralQQHiggs_H */

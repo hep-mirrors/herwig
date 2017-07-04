@@ -160,39 +160,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEvv2vs. */
-template <>
-struct BaseClassTrait<Herwig::MEvv2vs,1> {
-  /** Typedef of the first base class of MEvv2vs. */
-  typedef Herwig::GeneralHardME NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEvv2vs class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEvv2vs>
-  : public ClassTraitsBase<Herwig::MEvv2vs> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEvv2vs"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEvv2vs is implemented. It may also include several, space-separated,
-   * libraries if the class MEvv2vs depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "MEvv2vs.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEvv2vs_H */

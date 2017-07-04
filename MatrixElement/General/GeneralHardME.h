@@ -492,31 +492,4 @@ class MEException : public Exception {};
   
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralHardME. */
-template <>
-struct BaseClassTrait<Herwig::GeneralHardME,1> {
-  /** Typedef of the first base class of GeneralHardME. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralHardME class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralHardME>
-  : public ClassTraitsBase<Herwig::GeneralHardME> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralHardME"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_GeneralHardME_H */

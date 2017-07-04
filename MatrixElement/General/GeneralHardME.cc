@@ -12,6 +12,7 @@
 //
 
 #include "GeneralHardME.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Utilities/EnumIO.h"
@@ -394,8 +395,10 @@ void GeneralHardME::persistentInput(PersistentIStream & is, int) {
      >> scaleChoice_ >> scaleFactor_;
 }
 
-AbstractClassDescription<GeneralHardME> GeneralHardME::initGeneralHardME;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<GeneralHardME,HwMEBase>
+describeHerwigGeneralHardME("Herwig::GeneralHardME", "Herwig.so");
 
 void GeneralHardME::Init() {
 
