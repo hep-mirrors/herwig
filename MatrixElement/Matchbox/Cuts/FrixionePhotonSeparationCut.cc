@@ -12,6 +12,7 @@
 //
 
 #include "FrixionePhotonSeparationCut.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -108,8 +109,10 @@ void FrixionePhotonSeparationCut::persistentInput(PersistentIStream & is, int) {
   is >> theDeltaZero >> theExponentn >> theEfficiency >> theCutType >> theMatcher;
 }
 
-ClassDescription<FrixionePhotonSeparationCut> FrixionePhotonSeparationCut::initFrixionePhotonSeparationCut;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<FrixionePhotonSeparationCut,MultiCutBase>
+describeHerwigFrixionePhotonSeparationCut("Herwig::FrixionePhotonSeparationCut", "HwMatchboxCuts.so");
 
 void FrixionePhotonSeparationCut::Init() {
 

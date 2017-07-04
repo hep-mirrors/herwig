@@ -308,31 +308,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of DrellYanBase. */
-template <>
-struct BaseClassTrait<Herwig::DrellYanBase,1> {
-  /** Typedef of the first base class of DrellYanBase. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the DrellYanBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::DrellYanBase>
-  : public ClassTraitsBase<Herwig::DrellYanBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::DrellYanBase"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_DrellYanBase_H */

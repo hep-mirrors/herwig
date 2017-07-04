@@ -5,6 +5,7 @@
 //
 
 #include "MEfftoffH.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -34,8 +35,10 @@ void MEfftoffH::persistentInput(PersistentIStream & is, int) {
      >> _maxflavour >> _minflavour;
 }
 
-AbstractClassDescription<MEfftoffH> MEfftoffH::initMEfftoffH;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<MEfftoffH,HwMEBase>
+describeHerwigMEfftoffH("Herwig::MEfftoffH", "Herwig.so");
 
 void MEfftoffH::Init() {
 

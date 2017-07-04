@@ -5,6 +5,7 @@
 //
 
 #include "DISBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
@@ -246,8 +247,10 @@ void DISBase::persistentInput(PersistentIStream & is, int) {
      >> iunit(muF_,GeV) >> scaleFact_ >> scaleOpt_ >> contrib_ >> power_;
 }
 
-AbstractClassDescription<DISBase> DISBase::initDISBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<DISBase,HwMEBase>
+describeHerwigDISBase("Herwig::DISBase", "HwMEDIS.so");
 
 void DISBase::Init() {
   

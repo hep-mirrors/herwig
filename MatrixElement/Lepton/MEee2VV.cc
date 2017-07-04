@@ -5,6 +5,7 @@
 //
 
 #include "MEee2VV.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -89,8 +90,10 @@ IBPtr MEee2VV::fullclone() const {
   return new_ptr(*this);
 }
 
-ClassDescription<MEee2VV> MEee2VV::initMEee2VV;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEee2VV,HwMEBase>
+describeHerwigMEee2VV("Herwig::MEee2VV", "HwMELepton.so");
 
 void MEee2VV::Init() {
 

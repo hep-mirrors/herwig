@@ -5,6 +5,7 @@
 //
 
 #include "DrellYanBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -36,8 +37,10 @@ void DrellYanBase::persistentInput(PersistentIStream & is, int) {
      >> _prefactor;
 }
 
-AbstractClassDescription<DrellYanBase> DrellYanBase::initDrellYanBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<DrellYanBase,HwMEBase>
+describeHerwigDrellYanBase("Herwig::DrellYanBase", "Herwig.so");
 
 void DrellYanBase::Init() {
 

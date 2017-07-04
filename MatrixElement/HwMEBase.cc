@@ -5,6 +5,7 @@
 //
 
 #include "HwMEBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -25,8 +26,10 @@ void HwMEBase::persistentInput(PersistentIStream & is, int) {
   is >> massOption_ >> rescaleOption_;
 }
 
-AbstractClassDescription<HwMEBase> HwMEBase::initHwMEBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<HwMEBase,MEBase>
+describeHerwigHwMEBase("Herwig::HwMEBase", "Herwig.so");
 
 void HwMEBase::Init() {
 

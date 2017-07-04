@@ -289,31 +289,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HwMEBase. */
-template <>
-struct BaseClassTrait<Herwig::HwMEBase,1> {
-  /** Typedef of the first base class of HwMEBase. */
-  typedef MEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HwMEBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HwMEBase>
-  : public ClassTraitsBase<Herwig::HwMEBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HwMEBase"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_HwMEBase_H */

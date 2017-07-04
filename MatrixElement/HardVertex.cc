@@ -14,13 +14,16 @@
 //
 
 #include "ThePEG/EventRecord/SpinInfo.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "HardVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 
-NoPIOClassDescription<HardVertex> HardVertex::initHardVertex;
-  // Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<HardVertex,HelicityVertex>
+describeHerwigHardVertex("Herwig::HardVertex", "Herwig.so");
     
 void HardVertex::Init() {
   

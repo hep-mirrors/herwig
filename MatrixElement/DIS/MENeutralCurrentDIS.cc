@@ -5,6 +5,7 @@
 //
 
 #include "MENeutralCurrentDIS.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
@@ -106,8 +107,10 @@ void MENeutralCurrentDIS::persistentInput(PersistentIStream & is, int) {
      >> _gamma >> _z0 >> _sinW >> _cosW >> iunit(_mz2,GeV2) ;
 }
 
-ClassDescription<MENeutralCurrentDIS> MENeutralCurrentDIS::initMENeutralCurrentDIS;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MENeutralCurrentDIS,DISBase>
+describeHerwigMENeutralCurrentDIS("Herwig::MENeutralCurrentDIS", "HwMEDIS.so");
 
 void MENeutralCurrentDIS::Init() {
 

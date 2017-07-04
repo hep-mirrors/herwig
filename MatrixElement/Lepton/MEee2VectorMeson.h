@@ -239,39 +239,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEee2VectorMeson. */
-template <>
-struct BaseClassTrait<Herwig::MEee2VectorMeson,1> {
-  /** Typedef of the first base class of MEee2VectorMeson. */
-  typedef MEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEee2VectorMeson class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEee2VectorMeson>
-  : public ClassTraitsBase<Herwig::MEee2VectorMeson> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2VectorMeson"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEee2VectorMeson is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2VectorMeson depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMELepton.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* THEPEG_MEee2VectorMeson_H */

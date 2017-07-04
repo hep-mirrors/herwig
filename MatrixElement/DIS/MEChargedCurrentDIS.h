@@ -225,39 +225,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEChargedCurrentDIS. */
-template <>
-struct BaseClassTrait<Herwig::MEChargedCurrentDIS,1> {
-  /** Typedef of the first base class of MEChargedCurrentDIS. */
-  typedef Herwig::DISBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEChargedCurrentDIS class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEChargedCurrentDIS>
-  : public ClassTraitsBase<Herwig::MEChargedCurrentDIS> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEChargedCurrentDIS"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEChargedCurrentDIS is implemented. It may also include several, space-separated,
-   * libraries if the class MEChargedCurrentDIS depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEDIS.so"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEChargedCurrentDIS_H */

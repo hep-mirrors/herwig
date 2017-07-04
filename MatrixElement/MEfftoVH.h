@@ -312,31 +312,4 @@ private:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEfftoVH. */
-template <>
-struct BaseClassTrait<Herwig::MEfftoVH,1> {
-  /** Typedef of the first base class of MEfftoVH. */
-  typedef Herwig::DrellYanBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEfftoVH class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEfftoVH>
-  : public ClassTraitsBase<Herwig::MEfftoVH> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEfftoVH"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HERWIG_MEfftoVH_H */
