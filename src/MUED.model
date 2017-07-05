@@ -232,6 +232,8 @@ set h0/h0->Z0,Z0;:Active No
 set h0/h0->Z0,Z0;:BranchingRatio 0.0
 set h0/h0->gamma,gamma;:Active No
 set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->Z0,gamma;:Active No
+set h0/h0->Z0,gamma;:BranchingRatio 0.0
 set h0/h0->mu-,mu+;:Active No
 set h0/h0->mu-,mu+;:BranchingRatio 0.0
 set h0/h0->t,tbar;:Active No
