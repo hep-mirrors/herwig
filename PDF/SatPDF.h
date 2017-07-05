@@ -140,12 +140,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SatPDF> initSatPDF;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -168,41 +162,6 @@ private:
   double theExp;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SatPDF. */
-template <>
-struct BaseClassTrait<Herwig::SatPDF,1> {
-  /** Typedef of the first base class of SatPDF. */
-  typedef PDFBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SatPDF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SatPDF>
-  : public ClassTraitsBase<Herwig::SatPDF> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SatPDF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SatPDF is implemented. It may also include several, space-separated,
-   * libraries if the class SatPDF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSatPDF.so"; }
-};
-
-/** @endcond */
 
 }
 

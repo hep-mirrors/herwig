@@ -5,6 +5,7 @@
 //
 
 #include "IncomingPhotonEvolver.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -312,8 +313,10 @@ void IncomingPhotonEvolver::persistentInput(PersistentIStream & is, int) {
      >> vetoTries_ >> virtualityTries_ >> photon_ >> partons_;
 }
 
-ClassDescription<IncomingPhotonEvolver> IncomingPhotonEvolver::initIncomingPhotonEvolver;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<IncomingPhotonEvolver,StepHandler>
+describeHerwigIncomingPhotonEvolver("Herwig::IncomingPhotonEvolver", "HwIncomingPhotonEvolver.so");
 
 void IncomingPhotonEvolver::Init() {
 

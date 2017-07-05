@@ -12,6 +12,7 @@
 //
 
 #include "MPIPDF.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -69,8 +70,10 @@ void MPIPDF::persistentInput(PersistentIStream & is, int) {
   is >> thePDF;
 }
 
-ClassDescription<MPIPDF> MPIPDF::initMPIPDF;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MPIPDF,PDFBase>
+describeHerwigMPIPDF("Herwig::MPIPDF", "HwShower.so");
 
 void MPIPDF::Init() {
 

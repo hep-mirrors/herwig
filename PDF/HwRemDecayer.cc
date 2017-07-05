@@ -12,6 +12,7 @@
 //
 
 #include "HwRemDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -1339,8 +1340,10 @@ void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
      >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_;
 }
 
-ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<HwRemDecayer,RemnantDecayer>
+describeHerwigHwRemDecayer("Herwig::HwRemDecayer", "HwShower.so");
 
 void HwRemDecayer::Init() {
 
