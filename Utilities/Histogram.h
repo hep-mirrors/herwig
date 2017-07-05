@@ -320,12 +320,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<Histogram> initHistogram;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -407,33 +401,6 @@ public:
   vector<Bin> bins() const { return _bins; }
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Histogram. */
-template <>
-struct BaseClassTrait<Herwig::Histogram,1> {
-  /** Typedef of the first base class of Histogram. */
-  typedef Herwig::Statistic NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Histogram class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Histogram>
-  : public ClassTraitsBase<Herwig::Histogram> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Histogram"; }
-};
-
-/** @endcond */
 
 }
 

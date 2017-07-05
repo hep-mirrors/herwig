@@ -12,6 +12,7 @@
 //
 
 #include "Histogram.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "HerwigStrategy.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -29,8 +30,10 @@ IBPtr Histogram::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<Histogram> Histogram::initHistogram;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<Histogram,Interfaced>
+describeHerwigHistogram("Herwig::Histogram", "Herwig.so");
 void Histogram::Init() {
 
   static ClassDocumentation<Histogram> documentation
