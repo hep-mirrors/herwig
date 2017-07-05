@@ -12,6 +12,7 @@
 //
 
 #include "SMHiggsFermionsDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -110,8 +111,10 @@ void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _maxwgt >> _hvertex;
 }
 
-ClassDescription<SMHiggsFermionsDecayer> SMHiggsFermionsDecayer::initSMHiggsFermionsDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHiggsFermionsDecayer,DecayIntegrator>
+describeHerwigSMHiggsFermionsDecayer("Herwig::SMHiggsFermionsDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsFermionsDecayer::Init() {
 

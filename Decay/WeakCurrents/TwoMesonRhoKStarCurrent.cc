@@ -14,6 +14,7 @@
 //
 
 #include "TwoMesonRhoKStarCurrent.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -164,8 +165,10 @@ void TwoMesonRhoKStarCurrent::persistentInput(PersistentIStream & is, int) {
      >> _hm2 >> _dparam;
 }
 
-ClassDescription<TwoMesonRhoKStarCurrent> TwoMesonRhoKStarCurrent::initTwoMesonRhoKStarCurrent;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TwoMesonRhoKStarCurrent,WeakDecayCurrent>
+describeHerwigTwoMesonRhoKStarCurrent("Herwig::TwoMesonRhoKStarCurrent", "HwWeakCurrents.so");
 
 void TwoMesonRhoKStarCurrent::Init() {
 

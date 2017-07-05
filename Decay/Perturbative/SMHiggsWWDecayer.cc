@@ -12,6 +12,7 @@
 //
 
 #include "SMHiggsWWDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -26,8 +27,10 @@
 using namespace Herwig;
 typedef Selector<tDMPtr> DecaySelector;
 
-ClassDescription<SMHiggsWWDecayer> SMHiggsWWDecayer::initSMHiggsWWDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHiggsWWDecayer,DecayIntegrator>
+describeHerwigSMHiggsWWDecayer("Herwig::SMHiggsWWDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsWWDecayer::Init() {
 

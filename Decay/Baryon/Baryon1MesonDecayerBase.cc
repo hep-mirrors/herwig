@@ -5,6 +5,7 @@
 //
 
 #include "Baryon1MesonDecayerBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig/Utilities/Kinematics.h"
@@ -20,9 +21,10 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-AbstractNoPIOClassDescription<Baryon1MesonDecayerBase> 
-Baryon1MesonDecayerBase::initBaryon1MesonDecayerBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<Baryon1MesonDecayerBase,DecayIntegrator>
+describeHerwigBaryon1MesonDecayerBase("Herwig::Baryon1MesonDecayerBase", "HwBaryonDecay.so");
 
 void Baryon1MesonDecayerBase::Init() {
 

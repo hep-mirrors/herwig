@@ -12,6 +12,7 @@
 //
 
 #include "DtoKPiPiCLEO.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -383,8 +384,10 @@ void DtoKPiPiCLEO::persistentInput(PersistentIStream & is, int) {
      >> _localparameters;
 }
 
-ClassDescription<DtoKPiPiCLEO> DtoKPiPiCLEO::initDtoKPiPiCLEO;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<DtoKPiPiCLEO,DecayIntegrator>
+describeHerwigDtoKPiPiCLEO("Herwig::DtoKPiPiCLEO", "HwSMDecay.so");
 
 void DtoKPiPiCLEO::Init() {
 

@@ -5,6 +5,7 @@
 //
 
 #include "SMHiggsFermionsPOWHEGDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -36,9 +37,10 @@ void SMHiggsFermionsPOWHEGDecayer::persistentInput(PersistentIStream & is, int) 
   is >> alphaS_ >> gluon_ >> iunit( pTmin_, GeV );
 }
 
-ClassDescription<SMHiggsFermionsPOWHEGDecayer> 
-SMHiggsFermionsPOWHEGDecayer::initSMHiggsFermionsPOWHEGDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHiggsFermionsPOWHEGDecayer,SMHiggsFermionsDecayer>
+describeHerwigSMHiggsFermionsPOWHEGDecayer("Herwig::SMHiggsFermionsPOWHEGDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsFermionsPOWHEGDecayer::Init() {
 

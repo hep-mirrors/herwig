@@ -5,6 +5,7 @@
 //
 
 #include "NonLeptonicOmegaDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -156,9 +157,10 @@ void NonLeptonicOmegaDecayer::persistentInput(PersistentIStream & is, int) {
      >> iunit(_a,1./GeV) >> iunit(_b,1./GeV) >> _maxweight;
 }
 
-ClassDescription<NonLeptonicOmegaDecayer> 
-NonLeptonicOmegaDecayer::initNonLeptonicOmegaDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<NonLeptonicOmegaDecayer,Baryon1MesonDecayerBase>
+describeHerwigNonLeptonicOmegaDecayer("Herwig::NonLeptonicOmegaDecayer", "HwBaryonDecay.so");
 
 void NonLeptonicOmegaDecayer::Init() {
 

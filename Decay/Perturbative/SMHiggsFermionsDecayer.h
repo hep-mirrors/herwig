@@ -139,12 +139,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMHiggsFermionsDecayer> initSMHiggsFermionsDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -182,37 +176,6 @@ private:
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHiggsFermionsDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMHiggsFermionsDecayer,1> {
-  /** Typedef of the first base class of SMHiggsFermionsDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHiggsFermionsDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
-  : public ClassTraitsBase<Herwig::SMHiggsFermionsDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHiggsFermionsDecayer"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the SMHiggsFermionsDecayer class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwPerturbativeHiggsDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

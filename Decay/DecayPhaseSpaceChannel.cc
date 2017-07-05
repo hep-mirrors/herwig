@@ -14,6 +14,7 @@
 // 
 
 #include "DecayPhaseSpaceChannel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -44,9 +45,10 @@ void DecayPhaseSpaceChannel::persistentInput(PersistentIStream & is, int) {
      >> _intdau1 >> _intdau2 >> _intext >> _mode;
 }
   
-ClassDescription<DecayPhaseSpaceChannel> 
-DecayPhaseSpaceChannel::initDecayPhaseSpaceChannel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<DecayPhaseSpaceChannel,Interfaced>
+describeHerwigDecayPhaseSpaceChannel("Herwig::DecayPhaseSpaceChannel", "Herwig.so");
 
 void DecayPhaseSpaceChannel::Init() {
     

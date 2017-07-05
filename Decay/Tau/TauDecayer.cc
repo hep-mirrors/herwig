@@ -14,6 +14,7 @@
 //
 
 #include "TauDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
@@ -155,8 +156,10 @@ void TauDecayer::persistentInput(PersistentIStream & is, int) {
      >> _wgtmax >> _weights >> _polOpt >> _tauMpol >> _tauPpol;
 }
 
-ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TauDecayer,DecayIntegrator>
+describeHerwigTauDecayer("Herwig::TauDecayer", "HwTauDecay.so");
 
 void TauDecayer::Init() {
 

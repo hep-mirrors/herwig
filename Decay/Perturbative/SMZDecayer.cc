@@ -12,6 +12,7 @@
 //
 
 #include "SMZDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
@@ -116,8 +117,10 @@ void SMZDecayer::persistentInput(PersistentIStream & is, int) {
   is >> FFZvertex_ >> FFPvertex_ >> quarkWeight_ >> leptonWeight_ >> alpha_;
 }
 
-ClassDescription<SMZDecayer> SMZDecayer::initSMZDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMZDecayer,DecayIntegrator>
+describeHerwigSMZDecayer("Herwig::SMZDecayer", "HwPerturbativeDecay.so");
 
 void SMZDecayer::Init() {
 

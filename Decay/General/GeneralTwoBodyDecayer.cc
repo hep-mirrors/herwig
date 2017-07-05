@@ -13,6 +13,7 @@
 //
 
 #include "GeneralTwoBodyDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -279,9 +280,10 @@ void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
      >> coupling_ >> incomingVertex_ >> outgoingVertices_ >> fourPointVertex_;
 }
 
-AbstractClassDescription<GeneralTwoBodyDecayer> 
-GeneralTwoBodyDecayer::initGeneralTwoBodyDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<GeneralTwoBodyDecayer,DecayIntegrator>
+describeHerwigGeneralTwoBodyDecayer("Herwig::GeneralTwoBodyDecayer", "Herwig.so");
 
 void GeneralTwoBodyDecayer::Init() {
 

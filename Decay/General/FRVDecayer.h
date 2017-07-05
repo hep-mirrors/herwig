@@ -121,12 +121,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<FRVDecayer> initFRVDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -176,33 +170,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of FRVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::FRVDecayer,1> {
-  /** Typedef of the first base class of FRVDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the FRVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::FRVDecayer>
-  : public ClassTraitsBase<Herwig::FRVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::FRVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_FRVDecayer_H */

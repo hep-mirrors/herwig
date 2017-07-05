@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<FtoFVVDecayer> initFtoFVVDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -158,33 +152,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of FtoFVVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::FtoFVVDecayer,1> {
-  /** Typedef of the first base class of FtoFVVDecayer. */
-  typedef Herwig::GeneralThreeBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the FtoFVVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::FtoFVVDecayer>
-  : public ClassTraitsBase<Herwig::FtoFVVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::FtoFVVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_FtoFVVDecayer_H */

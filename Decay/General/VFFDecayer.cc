@@ -12,6 +12,7 @@
 //
 
 #include "VFFDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -55,8 +56,10 @@ void VFFDecayer::persistentInput(PersistentIStream & is, int) {
      >> _abstractOutgoingVertex2;
 }
 
-ClassDescription<VFFDecayer> VFFDecayer::initVFFDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<VFFDecayer,GeneralTwoBodyDecayer>
+describeHerwigVFFDecayer("Herwig::VFFDecayer", "Herwig.so");
 
 void VFFDecayer::Init() {
 

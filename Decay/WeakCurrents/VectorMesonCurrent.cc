@@ -12,6 +12,7 @@
 //
 
 #include "VectorMesonCurrent.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -77,8 +78,10 @@ void VectorMesonCurrent::persistentInput(PersistentIStream & is, int) {
   is >> _id >> iunit(_decay_constant,GeV2);
 }
 
-ClassDescription<VectorMesonCurrent> VectorMesonCurrent::initVectorMesonCurrent;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<VectorMesonCurrent,WeakDecayCurrent>
+describeHerwigVectorMesonCurrent("Herwig::VectorMesonCurrent", "HwWeakCurrents.so");
 
 void VectorMesonCurrent::Init() {
 

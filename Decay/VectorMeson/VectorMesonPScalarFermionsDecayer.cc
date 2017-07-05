@@ -14,6 +14,7 @@
 //
 
 #include "VectorMesonPScalarFermionsDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -173,9 +174,10 @@ void VectorMesonPScalarFermionsDecayer::persistentInput(PersistentIStream & is, 
      >> iunit(_VMDwidth,GeV);
 }
 
-ClassDescription<VectorMesonPScalarFermionsDecayer> 
-VectorMesonPScalarFermionsDecayer::initVectorMesonPScalarFermionsDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<VectorMesonPScalarFermionsDecayer,DecayIntegrator>
+describeHerwigVectorMesonPScalarFermionsDecayer("Herwig::VectorMesonPScalarFermionsDecayer", "HwVMDecay.so");
 
 void VectorMesonPScalarFermionsDecayer::Init() {
 

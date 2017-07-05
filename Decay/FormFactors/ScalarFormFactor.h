@@ -379,11 +379,6 @@ protected:
 private:
 
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractClassDescription<ScalarFormFactor> initScalarFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   ScalarFormFactor & operator=(const ScalarFormFactor &);
@@ -426,37 +421,6 @@ private:
   unsigned int _numbermodes;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * ScalarFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::ScalarFormFactor,1> {
-  /** Typedef of the base class of ScalarFormFactor. */
-  typedef Interfaced NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * ScalarFormFactor class.
- */
-template <>
-struct ClassTraits<Herwig::ScalarFormFactor>
-  : public ClassTraitsBase<Herwig::ScalarFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::ScalarFormFactor"; }
-};
-
-/** @endcond */
 
 }
 

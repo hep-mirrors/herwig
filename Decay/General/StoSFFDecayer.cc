@@ -5,6 +5,7 @@
 //
 
 #include "StoSFFDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -32,8 +33,10 @@ void StoSFFDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _sca >> _fer >> _vec >> _ten;
 }
 
-ClassDescription<StoSFFDecayer> StoSFFDecayer::initStoSFFDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<StoSFFDecayer,GeneralThreeBodyDecayer>
+describeHerwigStoSFFDecayer("Herwig::StoSFFDecayer", "Herwig.so");
 
 void StoSFFDecayer::Init() {
 

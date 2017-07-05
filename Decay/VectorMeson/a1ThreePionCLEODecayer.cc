@@ -12,6 +12,7 @@
 //
 
 #include "a1ThreePionCLEODecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -430,9 +431,10 @@ void a1ThreePionCLEODecayer::persistentInput(PersistentIStream & is, int) {
      >> _zeromax >> _onemax >> _twomax >> _threemax;
 }
   
-ClassDescription<a1ThreePionCLEODecayer> 
-a1ThreePionCLEODecayer::inita1ThreePionCLEODecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<a1ThreePionCLEODecayer,DecayIntegrator>
+describeHerwiga1ThreePionCLEODecayer("Herwig::a1ThreePionCLEODecayer", "HwVMDecay.so");
   
 void a1ThreePionCLEODecayer::Init() {
   

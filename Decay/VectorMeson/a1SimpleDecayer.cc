@@ -12,6 +12,7 @@
 //
 
 #include "a1SimpleDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -189,8 +190,10 @@ void a1SimpleDecayer::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mpi,GeV);
 }
 
-ClassDescription<a1SimpleDecayer> a1SimpleDecayer::inita1SimpleDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<a1SimpleDecayer,DecayIntegrator>
+describeHerwiga1SimpleDecayer("Herwig::a1SimpleDecayer", "HwVMDecay.so");
 
 void a1SimpleDecayer::Init() {
 

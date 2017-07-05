@@ -12,6 +12,7 @@
 //
 
 #include "PartonicDecayerBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
@@ -105,9 +106,10 @@ void PartonicDecayerBase::persistentInput(PersistentIStream & is, int) {
     >> _inter;
 }
 
-AbstractClassDescription<PartonicDecayerBase> 
-PartonicDecayerBase::initPartonicDecayerBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<PartonicDecayerBase,HwDecayerBase>
+describeHerwigPartonicDecayerBase("Herwig::PartonicDecayerBase", "HwPartonicDecay.so");
 
 void PartonicDecayerBase::Init() {
 

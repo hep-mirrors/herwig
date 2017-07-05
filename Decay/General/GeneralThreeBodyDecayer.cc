@@ -5,6 +5,7 @@
 //
 
 #include "GeneralThreeBodyDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
@@ -24,9 +25,10 @@ void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
      >> _nflow >> _widthopt >> _reftag >> _reftagcc >> _intOpt >> _relerr;
 }
 
-AbstractClassDescription<GeneralThreeBodyDecayer> 
-GeneralThreeBodyDecayer::initGeneralThreeBodyDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<GeneralThreeBodyDecayer,DecayIntegrator>
+describeHerwigGeneralThreeBodyDecayer("Herwig::GeneralThreeBodyDecayer", "Herwig.so");
 
 void GeneralThreeBodyDecayer::Init() {
 

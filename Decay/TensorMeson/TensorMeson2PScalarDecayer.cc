@@ -12,6 +12,7 @@
 //
 
 #include "TensorMeson2PScalarDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
@@ -223,9 +224,10 @@ void TensorMeson2PScalarDecayer::persistentInput(PersistentIStream & is, int)  {
      >> iunit(_coupling,1/GeV);
 }
 
-ClassDescription<TensorMeson2PScalarDecayer> 
-TensorMeson2PScalarDecayer::initTensorMeson2PScalarDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TensorMeson2PScalarDecayer,DecayIntegrator>
+describeHerwigTensorMeson2PScalarDecayer("Herwig::TensorMeson2PScalarDecayer", "HwTMDecay.so");
 
 void TensorMeson2PScalarDecayer::Init() {
 

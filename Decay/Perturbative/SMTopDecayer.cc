@@ -12,6 +12,7 @@
 //
 
 #include "SMTopDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
@@ -126,8 +127,10 @@ void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
      >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2;
 }
   
-ClassDescription<SMTopDecayer> SMTopDecayer::initSMTopDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMTopDecayer,DecayIntegrator>
+describeHerwigSMTopDecayer("Herwig::SMTopDecayer", "HwPerturbativeDecay.so");
   
 void SMTopDecayer::Init() {
     

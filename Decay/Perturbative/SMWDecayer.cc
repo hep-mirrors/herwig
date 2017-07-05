@@ -12,6 +12,7 @@
 //
 
 #include "SMWDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
@@ -136,8 +137,10 @@ void SMWDecayer::persistentInput(PersistentIStream & is, int) {
   is >> FFWvertex_ >> quarkWeight_ >> leptonWeight_ >> alpha_;
 }
 
-ClassDescription<SMWDecayer> SMWDecayer::initSMWDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMWDecayer,DecayIntegrator>
+describeHerwigSMWDecayer("Herwig::SMWDecayer", "HwPerturbativeDecay.so");
 
 void SMWDecayer::Init() {
 

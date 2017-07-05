@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMZFermionsPOWHEGDecayer> initSMZFermionsPOWHEGDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -259,41 +253,6 @@ private:
   Energy2 mz2_;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMZFermionsPOWHEGDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMZFermionsPOWHEGDecayer,1> {
-  /** Typedef of the first base class of SMZFermionsPOWHEGDecayer. */
-  typedef Herwig::SMZDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMZFermionsPOWHEGDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMZFermionsPOWHEGDecayer>
-  : public ClassTraitsBase<Herwig::SMZFermionsPOWHEGDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMZFermionsPOWHEGDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SMZFermionsPOWHEGDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class SMZFermionsPOWHEGDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwPerturbativeDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -12,6 +12,7 @@
 //
 
 #include "WeakPartonicDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -409,8 +410,10 @@ void WeakPartonicDecayer::persistentInput(PersistentIStream & is, int) {
   is >> MECode >> _radprob >> _maxtry >> _threemax >> _fourmax;
 }
 
-ClassDescription<WeakPartonicDecayer> WeakPartonicDecayer::initWeakPartonicDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<WeakPartonicDecayer,PartonicDecayerBase>
+describeHerwigWeakPartonicDecayer("Herwig::WeakPartonicDecayer", "HwPartonicDecay.so");
 
 void WeakPartonicDecayer::Init() {
 

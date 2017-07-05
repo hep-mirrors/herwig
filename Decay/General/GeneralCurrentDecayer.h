@@ -149,12 +149,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<GeneralCurrentDecayer> initGeneralCurrentDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -214,33 +208,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralCurrentDecayer. */
-template <>
-struct BaseClassTrait<Herwig::GeneralCurrentDecayer,1> {
-  /** Typedef of the first base class of GeneralCurrentDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralCurrentDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralCurrentDecayer>
-  : public ClassTraitsBase<Herwig::GeneralCurrentDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralCurrentDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_GeneralCurrentDecayer_H */

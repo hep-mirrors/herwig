@@ -12,6 +12,7 @@
 //
 
 #include "ScalarScalarScalarDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -301,9 +302,10 @@ void ScalarScalarScalarDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_coupling,MeV) >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
 }
 
-ClassDescription<ScalarScalarScalarDecayer> 
-ScalarScalarScalarDecayer::initScalarScalarScalarDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ScalarScalarScalarDecayer,DecayIntegrator>
+describeHerwigScalarScalarScalarDecayer("Herwig::ScalarScalarScalarDecayer", "HwSMDecay.so");
 
 void ScalarScalarScalarDecayer::Init() {
 

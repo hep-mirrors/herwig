@@ -75,9 +75,6 @@ void SMHiggsGGHiggsPPDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _hggvertex >> _hppvertex >> _hzpvertex >> _h0wgt;
 }
 
-ClassDescription<SMHiggsGGHiggsPPDecayer>
-SMHiggsGGHiggsPPDecayer::initSMHiggsGGHiggsPPDecayer;
-
 void SMHiggsGGHiggsPPDecayer::Init() {
 
   static ClassDocumentation<SMHiggsGGHiggsPPDecayer> documentation

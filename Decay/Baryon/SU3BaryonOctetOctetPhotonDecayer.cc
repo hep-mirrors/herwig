@@ -5,6 +5,7 @@
 //
 
 #include "SU3BaryonOctetOctetPhotonDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -130,9 +131,10 @@ void SU3BaryonOctetOctetPhotonDecayer::persistentInput(PersistentIStream & is, i
      >> _incomingB >> _outgoingB >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
-ClassDescription<SU3BaryonOctetOctetPhotonDecayer> 
-SU3BaryonOctetOctetPhotonDecayer::initSU3BaryonOctetOctetPhotonDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SU3BaryonOctetOctetPhotonDecayer,Baryon1MesonDecayerBase>
+describeHerwigSU3BaryonOctetOctetPhotonDecayer("Herwig::SU3BaryonOctetOctetPhotonDecayer", "HwBaryonDecay.so");
 
 void SU3BaryonOctetOctetPhotonDecayer::Init() {
 

@@ -11,6 +11,7 @@
 // functions of the KiselevBcFormFactor class.
 //
 #include "KiselevBcFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -122,8 +123,10 @@ void KiselevBcFormFactor::persistentInput(PersistentIStream & is, int) {
      >> iunit(_MF0A,GeV) >> iunit(_MFpA,GeV) >> iunit(_MFmA,GeV);
 }
 
-ClassDescription<KiselevBcFormFactor> KiselevBcFormFactor::initKiselevBcFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<KiselevBcFormFactor,ScalarFormFactor>
+describeHerwigKiselevBcFormFactor("Herwig::KiselevBcFormFactor", "HwFormFactors.so");
 
 void KiselevBcFormFactor::Init() {
 

@@ -116,11 +116,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistant decay
-   */
-  static ClassDescription<QuarkoniumDecayer> initQuarkoniumDecayer;
-
-  /**
    *  Private and non-existent assignment operator.
    */
   const QuarkoniumDecayer & operator=(const QuarkoniumDecayer &);
@@ -132,40 +127,6 @@ private:
    */
   int MECode;
 };
-
-}
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * QuarkoniumDecayer.
- */
-template <>
-struct BaseClassTrait<Herwig::QuarkoniumDecayer,1> {
-  /** Typedef of the base class of QuarkoniumDecayer. */
-  typedef Herwig::PartonicDecayerBase NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * QuarkoniumDecayer class.
- */
-template <>
-struct ClassTraits<Herwig::QuarkoniumDecayer>: 
-    public ClassTraitsBase<Herwig::QuarkoniumDecayer> {
-  /** Return the class name. */
-  static string className() { return "Herwig::QuarkoniumDecayer"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwPartonicDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

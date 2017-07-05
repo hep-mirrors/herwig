@@ -12,6 +12,7 @@
 //
 
 #include "FFVDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -190,8 +191,10 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
   }
 }
 
-ClassDescription<FFVDecayer> FFVDecayer::initFFVDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<FFVDecayer,GeneralTwoBodyDecayer>
+describeHerwigFFVDecayer("Herwig::FFVDecayer", "Herwig.so");
 
 void FFVDecayer::Init() {
 

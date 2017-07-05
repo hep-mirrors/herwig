@@ -101,12 +101,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<StoFFVDecayer> initStoFFVDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -151,33 +145,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Herwig::StoFFVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::StoFFVDecayer,1> {
-  /** Typedef of the first base class of Herwig::StoFFVDecayer. */
-  typedef Herwig::GeneralThreeBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Herwig::StoFFVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::StoFFVDecayer>
-  : public ClassTraitsBase<Herwig::StoFFVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::StoFFVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* THEPEG_StoFFVDecayer_H */

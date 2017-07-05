@@ -5,6 +5,7 @@
 //
 
 #include "RadiativeHeavyBaryonDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -158,9 +159,10 @@ void RadiativeHeavyBaryonDecayer::persistentInput(PersistentIStream & is, int) {
      >> _incoming >> _outgoingB >> _modetype >> _maxweight;
 }
 
-ClassDescription<RadiativeHeavyBaryonDecayer> 
-RadiativeHeavyBaryonDecayer::initRadiativeHeavyBaryonDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<RadiativeHeavyBaryonDecayer,Baryon1MesonDecayerBase>
+describeHerwigRadiativeHeavyBaryonDecayer("Herwig::RadiativeHeavyBaryonDecayer", "HwBaryonDecay.so");
 
 void RadiativeHeavyBaryonDecayer::Init() {
 

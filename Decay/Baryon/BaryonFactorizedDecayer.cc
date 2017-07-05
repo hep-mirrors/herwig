@@ -5,6 +5,7 @@
 //
 
 #include "BaryonFactorizedDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -334,8 +335,10 @@ void BaryonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
      >> _theCKM;
 }
 
-ClassDescription<BaryonFactorizedDecayer> BaryonFactorizedDecayer::initBaryonFactorizedDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BaryonFactorizedDecayer,DecayIntegrator>
+describeHerwigBaryonFactorizedDecayer("Herwig::BaryonFactorizedDecayer", "HwBaryonDecay.so");
 
 void BaryonFactorizedDecayer::Init() {
 

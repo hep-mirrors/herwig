@@ -12,6 +12,7 @@
 //
 
 #include "SSVDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -73,8 +74,10 @@ void SSVDecayer::persistentInput(PersistentIStream & is, int) {
      >> _abstractOutgoingVertexV  >> _abstractFourPointVertex;
 }
 
-ClassDescription<SSVDecayer> SSVDecayer::initSSVDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SSVDecayer,GeneralTwoBodyDecayer>
+describeHerwigSSVDecayer("Herwig::SSVDecayer", "Herwig.so");
 
 void SSVDecayer::Init() {
 

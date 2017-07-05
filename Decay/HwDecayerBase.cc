@@ -12,6 +12,7 @@
 //
 
 #include "HwDecayerBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/Switch.h"
@@ -80,8 +81,10 @@ void HwDecayerBase::persistentInput(PersistentIStream & is, int) {
   is >> _initialize >> _dbOutput;
 }
 
-AbstractClassDescription<HwDecayerBase> HwDecayerBase::initHwDecayerBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<HwDecayerBase,Decayer>
+describeHerwigHwDecayerBase("Herwig::HwDecayerBase", "Herwig.so");
 
 void HwDecayerBase::Init() {
 

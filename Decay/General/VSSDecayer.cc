@@ -11,6 +11,7 @@
 //
 
 #include "VSSDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -52,8 +53,10 @@ void VSSDecayer::persistentInput(PersistentIStream & is, int) {
      >> _abstractOutgoingVertex2;
 }
 
-ClassDescription<VSSDecayer> VSSDecayer::initVSSDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<VSSDecayer,GeneralTwoBodyDecayer>
+describeHerwigVSSDecayer("Herwig::VSSDecayer", "Herwig.so");
 
 void VSSDecayer::Init() {
 

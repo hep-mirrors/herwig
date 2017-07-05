@@ -336,12 +336,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMTopDecayer> initSMTopDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -486,37 +480,6 @@ private:
   ShowerAlphaPtr _alpha;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMTopDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMTopDecayer,1> {
-  /** Typedef of the first base class of SMTopDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMTopDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMTopDecayer>
-  : public ClassTraitsBase<Herwig::SMTopDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMTopDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SMTopDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwPerturbativeDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

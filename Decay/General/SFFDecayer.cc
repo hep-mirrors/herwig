@@ -12,6 +12,7 @@
 //
 
 #include "SFFDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -54,8 +55,10 @@ void SFFDecayer::persistentInput(PersistentIStream & is, int) {
      >> _abstractOutgoingVertex2;
 }
 
-ClassDescription<SFFDecayer> SFFDecayer::initSFFDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SFFDecayer,GeneralTwoBodyDecayer>
+describeHerwigSFFDecayer("Herwig::SFFDecayer", "Herwig.so");
 
 void SFFDecayer::Init() {
 

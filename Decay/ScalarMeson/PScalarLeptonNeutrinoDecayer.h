@@ -133,11 +133,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<PScalarLeptonNeutrinoDecayer> initPScalarLeptonNeutrinoDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   PScalarLeptonNeutrinoDecayer & operator=(const PScalarLeptonNeutrinoDecayer &);
@@ -199,43 +194,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of PScalarLeptonNeutrinoDecayer.
- */
-struct BaseClassTrait<Herwig::PScalarLeptonNeutrinoDecayer,1> {
-    /** Typedef of the base class of PScalarLeptonNeutrinoDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::PScalarLeptonNeutrinoDecayer>
-  : public ClassTraitsBase<Herwig::PScalarLeptonNeutrinoDecayer> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::PScalarLeptonNeutrinoDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwSMDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_PScalarLeptonNeutrinoDecayer_H */

@@ -140,12 +140,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<KiselevBcFormFactor> initKiselevBcFormFactor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -214,37 +208,6 @@ private:
   vector<Energy> _MFmA;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of KiselevBcFormFactor. */
-template <>
- struct BaseClassTrait<Herwig::KiselevBcFormFactor,1> {
-  /** Typedef of the first base class of KiselevBcFormFactor. */
-   typedef Herwig::ScalarFormFactor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the KiselevBcFormFactor class and the shared object where it is defined. */
-template <>
- struct ClassTraits<Herwig::KiselevBcFormFactor>
-  : public ClassTraitsBase<Herwig::KiselevBcFormFactor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::KiselevBcFormFactor"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the KiselevBcFormFactor class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -336,11 +336,6 @@ protected:
 private:
 
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractClassDescription<BaryonFormFactor> initBaryonFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   BaryonFormFactor & operator=(const BaryonFormFactor &);
@@ -392,37 +387,6 @@ private:
    */
   unsigned int _numbermodes;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * BaryonFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::BaryonFormFactor,1> {
-  /** Typedef of the base class of BaryonFormFactor. */
-  typedef Interfaced NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * BaryonFormFactor class.
- */
-template <>
- struct ClassTraits<Herwig::BaryonFormFactor>
-  : public ClassTraitsBase<Herwig::BaryonFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::BaryonFormFactor"; }
-};
-
-/** @endcond */
 
 }
 

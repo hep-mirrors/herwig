@@ -78,49 +78,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<BtoSGammaFlatEnergy> initBtoSGammaFlatEnergy;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   BtoSGammaFlatEnergy & operator=(const BtoSGammaFlatEnergy &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of BtoSGammaFlatEnergy. */
-template <>
-struct BaseClassTrait<Herwig::BtoSGammaFlatEnergy,1> {
-  /** Typedef of the first base class of BtoSGammaFlatEnergy. */
-  typedef Herwig::BtoSGammaHadronicMass NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the BtoSGammaFlatEnergy class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::BtoSGammaFlatEnergy>
-  : public ClassTraitsBase<Herwig::BtoSGammaFlatEnergy> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::BtoSGammaFlatEnergy"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the BtoSGammaFlatEnergy class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

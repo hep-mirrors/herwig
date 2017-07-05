@@ -12,6 +12,7 @@
 //
 
 #include "DecayPhaseSpaceMode.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/PDT/GenericWidthGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -41,8 +42,10 @@ void DecayPhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
      >> _testOnShell;
 }
 
-ClassDescription<DecayPhaseSpaceMode> DecayPhaseSpaceMode::initDecayPhaseSpaceMode;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<DecayPhaseSpaceMode,Interfaced>
+describeHerwigDecayPhaseSpaceMode("Herwig::DecayPhaseSpaceMode", "Herwig.so");
 
 void DecayPhaseSpaceMode::Init() {
 

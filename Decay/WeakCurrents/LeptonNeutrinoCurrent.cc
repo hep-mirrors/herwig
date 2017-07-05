@@ -12,6 +12,7 @@
 //
 
 #include "LeptonNeutrinoCurrent.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -27,9 +28,10 @@ using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
-NoPIOClassDescription<LeptonNeutrinoCurrent> 
-LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<LeptonNeutrinoCurrent,WeakDecayCurrent>
+describeHerwigLeptonNeutrinoCurrent("Herwig::LeptonNeutrinoCurrent", "HwWeakCurrents.so");
 
 void LeptonNeutrinoCurrent::Init() {
 

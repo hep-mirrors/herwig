@@ -12,6 +12,7 @@
 //
 
 #include "IFDipole.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -35,8 +36,10 @@ void IFDipole::persistentInput(PersistentIStream & is, int) {
      >> _mode  >> _maxtry >> _energyopt  >> _betaopt;
 }
 
-ClassDescription<IFDipole> IFDipole::initIFDipole;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<IFDipole,Interfaced>
+describeHerwigIFDipole("Herwig::IFDipole", "Herwig.so");
 
 void IFDipole::Init() {
   static ClassDocumentation<IFDipole> documentation

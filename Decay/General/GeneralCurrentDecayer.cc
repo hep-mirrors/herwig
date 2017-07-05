@@ -12,6 +12,7 @@
 //
 
 #include "GeneralCurrentDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -33,8 +34,10 @@ void GeneralCurrentDecayer::persistentInput(PersistentIStream & is, int) {
      >> _mode >> _wgtloc >> _wgtmax >> _weights;
 }
 
-AbstractClassDescription<GeneralCurrentDecayer> GeneralCurrentDecayer::initGeneralCurrentDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<GeneralCurrentDecayer,DecayIntegrator>
+describeHerwigGeneralCurrentDecayer("Herwig::GeneralCurrentDecayer", "Herwig.so");
 
 void GeneralCurrentDecayer::Init() {
 

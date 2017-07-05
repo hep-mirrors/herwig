@@ -5,6 +5,7 @@
 //
 
 #include "BaryonFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -34,8 +35,10 @@ void BaryonFormFactor::persistentInput(PersistentIStream & is, int) {
      >> _spectator2 >> _inquark >> _outquark >> _numbermodes;
 }
 
-AbstractClassDescription<BaryonFormFactor> BaryonFormFactor::initBaryonFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<BaryonFormFactor,Interfaced>
+describeHerwigBaryonFormFactor("Herwig::BaryonFormFactor", "Herwig.so");
 
 void BaryonFormFactor::Init() {
 

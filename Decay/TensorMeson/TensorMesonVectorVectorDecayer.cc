@@ -12,6 +12,7 @@
 //
 
 #include "TensorMesonVectorVectorDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -157,9 +158,10 @@ void TensorMesonVectorVectorDecayer::persistentInput(PersistentIStream & is, int
   is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> iunit(_coupling,1/GeV);
 }
 
-ClassDescription<TensorMesonVectorVectorDecayer> 
-TensorMesonVectorVectorDecayer::initTensorMesonVectorVectorDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TensorMesonVectorVectorDecayer,DecayIntegrator>
+describeHerwigTensorMesonVectorVectorDecayer("Herwig::TensorMesonVectorVectorDecayer", "HwTMDecay.so");
 
 void TensorMesonVectorVectorDecayer::Init() {
 

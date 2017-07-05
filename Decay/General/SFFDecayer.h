@@ -140,12 +140,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SFFDecayer> initSFFDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -227,33 +221,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SFFDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SFFDecayer,1> {
-  /** Typedef of the first base class of SFFDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SFFDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SFFDecayer>
-  : public ClassTraitsBase<Herwig::SFFDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SFFDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_SFFDecayer_H */

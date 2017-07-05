@@ -12,6 +12,7 @@
 //
 
 #include "BtoSGammaFlatEnergy.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -21,9 +22,10 @@
 
 using namespace Herwig;
 
-NoPIOClassDescription<BtoSGammaFlatEnergy> 
-BtoSGammaFlatEnergy::initBtoSGammaFlatEnergy;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<BtoSGammaFlatEnergy,BtoSGammaHadronicMass>
+describeHerwigBtoSGammaFlatEnergy("Herwig::BtoSGammaFlatEnergy", "HwFormFactors.so");
 
 void BtoSGammaFlatEnergy::Init() {
 

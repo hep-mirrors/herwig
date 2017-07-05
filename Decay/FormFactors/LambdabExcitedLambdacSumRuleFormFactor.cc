@@ -5,6 +5,7 @@
 //
 
 #include "LambdabExcitedLambdacSumRuleFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -33,9 +34,10 @@ persistentInput(PersistentIStream & is, int) {
   is >> _xi1 >> _rho2;
 }
 
-ClassDescription<LambdabExcitedLambdacSumRuleFormFactor>
-LambdabExcitedLambdacSumRuleFormFactor::initLambdabExcitedLambdacSumRuleFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LambdabExcitedLambdacSumRuleFormFactor,BaryonFormFactor>
+describeHerwigLambdabExcitedLambdacSumRuleFormFactor("Herwig::LambdabExcitedLambdacSumRuleFormFactor", "HwFormFactors.so");
 
 void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 

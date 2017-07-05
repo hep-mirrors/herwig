@@ -12,6 +12,7 @@
 //
 
 #include "MelikhovFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -80,8 +81,10 @@ void MelikhovFormFactor::persistentInput(PersistentIStream & is, int) {
      >> _nV >> _R10 >> iunit(_M1,GeV) >> _n1 >> _R20 >> iunit(_M2,GeV) >> _n2; 
 }
 
-ClassDescription<MelikhovFormFactor> MelikhovFormFactor::initMelikhovFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MelikhovFormFactor,ScalarFormFactor>
+describeHerwigMelikhovFormFactor("Herwig::MelikhovFormFactor", "HwFormFactors.so");
 
 void MelikhovFormFactor::Init() {
 

@@ -313,11 +313,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMZDecayer> initSMZDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   SMZDecayer & operator=(const SMZDecayer &);
@@ -414,43 +409,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMZDecayer.
- */
-template <>
- struct BaseClassTrait<Herwig::SMZDecayer,1> {
-    /** Typedef of the base class of SMZDecayer. */
-   typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::SMZDecayer>
-  : public ClassTraitsBase<Herwig::SMZDecayer> {
-   /** Return the class name.*/
-  static string className() { return "Herwig::SMZDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwPerturbativeDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_SMZDecayer_H */

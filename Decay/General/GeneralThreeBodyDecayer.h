@@ -234,12 +234,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<GeneralThreeBodyDecayer> initGeneralThreeBodyDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -323,33 +317,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralThreeBodyDecayer. */
-template <>
-struct BaseClassTrait<Herwig::GeneralThreeBodyDecayer,1> {
-  /** Typedef of the first base class of GeneralThreeBodyDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralThreeBodyDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralThreeBodyDecayer>
-  : public ClassTraitsBase<Herwig::GeneralThreeBodyDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralThreeBodyDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_GeneralThreeBodyDecayer_H */

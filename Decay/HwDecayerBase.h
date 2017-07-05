@@ -207,12 +207,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<HwDecayerBase> initHwDecayerBase;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -230,33 +224,6 @@ private:
    */
   bool _dbOutput;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HwDecayerBase. */
-template <>
-struct BaseClassTrait<Herwig::HwDecayerBase,1> {
-  /** Typedef of the first base class of HwDecayerBase. */
-  typedef Decayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HwDecayerBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HwDecayerBase>
-  : public ClassTraitsBase<Herwig::HwDecayerBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HwDecayerBase"; }
-};
-
-/** @endcond */
 
 }
 

@@ -5,6 +5,7 @@
 //
 
 #include "FtoFFFDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -31,8 +32,10 @@ void FtoFFFDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _sca >> _vec >> _ten;
 }
 
-ClassDescription<FtoFFFDecayer> FtoFFFDecayer::initFtoFFFDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<FtoFFFDecayer,GeneralThreeBodyDecayer>
+describeHerwigFtoFFFDecayer("Herwig::FtoFFFDecayer", "Herwig.so");
 
 void FtoFFFDecayer::Init() {
 

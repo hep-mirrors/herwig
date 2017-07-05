@@ -141,12 +141,6 @@ protected:
 private:
   
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<VFFDecayer> initVFFDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -226,33 +220,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of VFFDecayer. */
-template <>
-struct BaseClassTrait<Herwig::VFFDecayer,1> {
-  /** Typedef of the first base class of VFFDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the VFFDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::VFFDecayer>
-  : public ClassTraitsBase<Herwig::VFFDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::VFFDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_VFFDecayer_H */

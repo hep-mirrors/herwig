@@ -5,6 +5,7 @@
 //
 
 #include "SMZFermionsPOWHEGDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include <numeric>
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
@@ -39,9 +40,10 @@ void SMZFermionsPOWHEGDecayer::persistentInput(PersistentIStream & is, int) {
   is >> FFGVertex_ >> FFZVertex_ >> gluon_ >> iunit( pTmin_, GeV );
 }
 
-ClassDescription<SMZFermionsPOWHEGDecayer> 
-SMZFermionsPOWHEGDecayer::initSMZFermionsPOWHEGDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMZFermionsPOWHEGDecayer,SMZDecayer>
+describeHerwigSMZFermionsPOWHEGDecayer("Herwig::SMZFermionsPOWHEGDecayer", "HwPerturbativeDecay.so");
 
 void SMZFermionsPOWHEGDecayer::Init() {
 
