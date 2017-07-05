@@ -333,12 +333,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<ProcessHandler> initProcessHandler;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -423,40 +417,6 @@ protected:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ProcessHandler. */
-template <>
-struct BaseClassTrait<Herwig::ProcessHandler,1> {
-  /** Typedef of the first base class of ProcessHandler. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ProcessHandler class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ProcessHandler>
-  : public ClassTraitsBase<Herwig::ProcessHandler> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ProcessHandler"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the ProcessHandler class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "JetCuts.so SimpleKTCut.so HwMPI.so"; }
-};
-
-/** @endcond */
-
-}
-
 #include "ProcessHandler.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ProcessHandler.tcc"
-#endif
 
 #endif /* HERWIG_ProcessHandler_H */

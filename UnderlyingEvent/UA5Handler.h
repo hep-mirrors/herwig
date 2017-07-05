@@ -316,12 +316,6 @@ private:
 private:
   
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<UA5Handler> initUA5Handler;
-  
-  /**
    * This is never defined and since it can never be called it isn't 
    * needed. The prototype is defined so the compiler doesn't use the 
    * default = operator.
@@ -437,36 +431,5 @@ private:
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of UA5Handler. */
-template<>
-struct BaseClassTrait<Herwig::UA5Handler,1> { 
-  /** Typedef of the first base class of UA5Handler. */
-  typedef HadronizationHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the UA5Handler class and the shared object where it is defined. */
-template<>
-struct ClassTraits<Herwig::UA5Handler> :
-  public ClassTraitsBase<Herwig::UA5Handler> {
-  /** Return a platform-independent class name */
-    static string className() { return "Herwig::UA5Handler"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the WeakPartonicDecayer class and every other class it uses
-   *  (except the base class). */
-    static string library() { return "HwUA5.so"; }
-};
-
-/** @endcond */
-
-}
-
-#include "UA5Handler.icc"
 
 #endif

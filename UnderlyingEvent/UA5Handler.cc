@@ -7,6 +7,7 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include <ThePEG/Repository/UseRandom.h>
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "UA5Handler.h"
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
@@ -52,7 +53,10 @@ void UA5Handler::persistentInput(PersistentIStream &is, int) {
 }
 
 // We must define this static member for ThePEG
-ClassDescription<UA5Handler> UA5Handler::initUA5Handler;
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<UA5Handler,HadronizationHandler>
+describeHerwigUA5Handler("Herwig::UA5Handler", "HwUA5.so");
 
 void UA5Handler::Init() {
 

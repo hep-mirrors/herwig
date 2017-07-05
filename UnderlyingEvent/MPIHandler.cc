@@ -12,7 +12,7 @@
 //
 
 #include "MPIHandler.h"
-
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/SubProcessHandler.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -669,9 +669,11 @@ void MPIHandler::clean() {
   }
 }
 
-
-ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MPIHandler,Interfaced>
+describeHerwigMPIHandler("Herwig::MPIHandler",
+			 "JetCuts.so SimpleKTCut.so HwMPI.so");
 
 void MPIHandler::Init() {
 
