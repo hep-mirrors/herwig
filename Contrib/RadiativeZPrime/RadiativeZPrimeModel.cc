@@ -5,6 +5,7 @@
 //
 
 #include "RadiativeZPrimeModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -28,8 +29,10 @@ void RadiativeZPrimeModel::persistentInput(PersistentIStream & is, int) {
      >> _ffZPrimeVertex >> _gammaZPrimeZVertex;
 }
 
-ClassDescription<RadiativeZPrimeModel> RadiativeZPrimeModel::initRadiativeZPrimeModel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<RadiativeZPrimeModel,Herwig::StandardModel>
+describeHerwigRadiativeZPrimeModel("RadiativeZPrime::RadiativeZPrimeModel", "RadiativeZPrime.so");
 
 void RadiativeZPrimeModel::Init() {
 

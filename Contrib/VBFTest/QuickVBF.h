@@ -91,12 +91,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<QuickVBF> initQuickVBF;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -111,41 +105,6 @@ private:
   HistogramPtr _cosep ,_eep ,_phiep ;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of QuickVBF. */
-template <>
-struct BaseClassTrait<Herwig::QuickVBF,1> {
-  /** Typedef of the first base class of QuickVBF. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the QuickVBF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::QuickVBF>
-  : public ClassTraitsBase<Herwig::QuickVBF> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::QuickVBF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * QuickVBF is implemented. It may also include several, space-separated,
-   * libraries if the class QuickVBF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "VBFAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

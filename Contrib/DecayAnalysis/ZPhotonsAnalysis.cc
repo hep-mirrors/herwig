@@ -5,6 +5,7 @@
 //
 
 #include "ZPhotonsAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -96,8 +97,10 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
   }
 }
 
-ClassDescription<ZPhotonsAnalysis> ZPhotonsAnalysis::initZPhotonsAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ZPhotonsAnalysis,AnalysisHandler>
+describeHerwigZPhotonsAnalysis("Herwig::ZPhotonsAnalysis", "HwDecayAnalysis.so");
 
 void ZPhotonsAnalysis::Init() {
 

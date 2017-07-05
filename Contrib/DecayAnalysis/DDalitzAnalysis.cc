@@ -5,6 +5,7 @@
 //
 
 #include "DDalitzAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -206,8 +207,10 @@ void DDalitzAnalysis::persistentOutput(PersistentOStream & ) const {
 void DDalitzAnalysis::persistentInput(PersistentIStream & , int) {
 }
 
-ClassDescription<DDalitzAnalysis> DDalitzAnalysis::initDDalitzAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<DDalitzAnalysis,AnalysisHandler>
+describeHerwigDDalitzAnalysis("Herwig::DDalitzAnalysis", "HwDecayAnalysis.so");
 
 void DDalitzAnalysis::Init() {
 

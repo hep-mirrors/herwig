@@ -91,12 +91,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<Upsilon4SMultiplicityCount> initUpsilon4SMultiplicityCount;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -110,41 +104,6 @@ private:
   map<long,MultiplicityInfo> _data;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Upsilon4SMultiplicityCount. */
-template <>
-struct BaseClassTrait<Herwig::Upsilon4SMultiplicityCount,1> {
-  /** Typedef of the first base class of Upsilon4SMultiplicityCount. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Upsilon4SMultiplicityCount class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Upsilon4SMultiplicityCount>
-  : public ClassTraitsBase<Herwig::Upsilon4SMultiplicityCount> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Upsilon4SMultiplicityCount"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * Upsilon4SMultiplicityCount is implemented. It may also include several, space-separated,
-   * libraries if the class Upsilon4SMultiplicityCount depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwDecayAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -5,6 +5,7 @@
 //
 
 #include "EtaDecayAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -123,8 +124,10 @@ void EtaDecayAnalysis::analyze(tPPtr part) {
   }
 }
 
-NoPIOClassDescription<EtaDecayAnalysis> EtaDecayAnalysis::initEtaDecayAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<EtaDecayAnalysis,AnalysisHandler>
+describeHerwigEtaDecayAnalysis("Herwig::EtaDecayAnalysis", "HwDecayAnalysis.so");
 
 void EtaDecayAnalysis::Init() {
 

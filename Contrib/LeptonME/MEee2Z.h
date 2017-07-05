@@ -188,12 +188,6 @@ private:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEee2Z> initMEee2Z;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -210,36 +204,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEee2Z. */
-template <>
-struct BaseClassTrait<Herwig::MEee2Z,1> {
-  /** Typedef of the first base class of MEee2Z. */
-  typedef MEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEee2Z class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEee2Z>
-  : public ClassTraitsBase<Herwig::MEee2Z> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2Z"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEee2Z class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "LeptonME.so"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_MEee2Z_H */

@@ -5,6 +5,7 @@
 //
 
 #include "SimpleZPrimeAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -43,8 +44,10 @@ void SimpleZPrimeAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
   *_massgammaem += (em->momentum()+gamma->momentum()).m()/GeV; 
 }
 
-NoPIOClassDescription<SimpleZPrimeAnalysis> SimpleZPrimeAnalysis::initSimpleZPrimeAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<SimpleZPrimeAnalysis,AnalysisHandler>
+describeHerwigSimpleZPrimeAnalysis("RadiativeZPrime::SimpleZPrimeAnalysis", "RadiativeZPrime.so");
 
 void SimpleZPrimeAnalysis::Init() {
 

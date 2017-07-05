@@ -5,6 +5,7 @@
 //
 
 #include "MEqq2ZPrime2ff.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -135,8 +136,10 @@ void MEqq2ZPrime2ff::persistentInput(PersistentIStream & is, int) {
      >> _gamma >> _maxflavour >> _gammaZ >> _process;
 }
 
-ClassDescription<MEqq2ZPrime2ff> MEqq2ZPrime2ff::initMEqq2ZPrime2ff;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEqq2ZPrime2ff,HwMEBase>
+describeHerwigMEqq2ZPrime2ff("RadiativeZPrime::MEqq2ZPrime2ff", "RadiativeZPrime.so");
 
 void MEqq2ZPrime2ff::Init() {
 

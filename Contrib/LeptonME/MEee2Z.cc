@@ -12,6 +12,7 @@
 //
 
 #include "MEee2Z.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
@@ -120,8 +121,10 @@ void MEee2Z::persistentInput(PersistentIStream & is, int) {
   is >> _theFFZVertex;
 }
 
-ClassDescription<MEee2Z> MEee2Z::initMEee2Z;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEee2Z,MEBase>
+describeHerwigMEee2Z("Herwig::MEee2Z", "LeptonME.so");
 
 void MEee2Z::Init() {
 

@@ -5,6 +5,7 @@
 //
 
 #include "FFZPrimeVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -20,8 +21,10 @@ void FFZPrimeVertex::persistentInput(PersistentIStream & is, int) {
   is >> _gl >> _gr;
 }
 
-ClassDescription<FFZPrimeVertex> FFZPrimeVertex::initFFZPrimeVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<FFZPrimeVertex,Helicity::FFVVertex>
+describeHerwigFFZPrimeVertex("RadiativeZPrime::FFZPrimeVertex", "RadiativeZPrime.so");
 
 void FFZPrimeVertex::Init() {
 

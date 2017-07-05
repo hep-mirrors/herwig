@@ -5,6 +5,7 @@
 //
 
 #include "VffGammaAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -108,8 +109,10 @@ void VffGammaAnalysis::analyze(tPPtr part) {
   *_nphoton[imode]+=mult;
 }
 
-NoPIOClassDescription<VffGammaAnalysis> VffGammaAnalysis::initVffGammaAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VffGammaAnalysis,AnalysisHandler>
+describeHerwigVffGammaAnalysis("Herwig::VffGammaAnalysis", "HwDecayAnalysis.so");
 
 void VffGammaAnalysis::Init() {
 

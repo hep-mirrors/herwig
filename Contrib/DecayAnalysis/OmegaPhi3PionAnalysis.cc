@@ -5,6 +5,7 @@
 //
 
 #include "OmegaPhi3PionAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -99,8 +100,10 @@ void OmegaPhi3PionAnalysis::analyze(tPPtr part) {
   }
 }
 
-NoPIOClassDescription<OmegaPhi3PionAnalysis> OmegaPhi3PionAnalysis::initOmegaPhi3PionAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<OmegaPhi3PionAnalysis,AnalysisHandler>
+describeHerwigOmegaPhi3PionAnalysis("Herwig::OmegaPhi3PionAnalysis", "HwDecayAnalysis.so");
 
 void OmegaPhi3PionAnalysis::Init() {
 

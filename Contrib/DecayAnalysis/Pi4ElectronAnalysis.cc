@@ -5,6 +5,7 @@
 //
 
 #include "Pi4ElectronAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include <ThePEG/EventRecord/Event.h>
@@ -65,8 +66,10 @@ void Pi4ElectronAnalysis::analyze(tPPtr part) {
   }
 }
 
-NoPIOClassDescription<Pi4ElectronAnalysis> Pi4ElectronAnalysis::initPi4ElectronAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<Pi4ElectronAnalysis,AnalysisHandler>
+describeHerwigPi4ElectronAnalysis("Herwig::Pi4ElectronAnalysis", "HwDecayAnalysis.so");
 
 void Pi4ElectronAnalysis::Init() {
 

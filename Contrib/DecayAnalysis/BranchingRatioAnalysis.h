@@ -122,12 +122,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<BranchingRatioAnalysis> initBranchingRatioAnalysis;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -151,41 +145,6 @@ private:
   vector<double> _total;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of BranchingRatioAnalysis. */
-template <>
-struct BaseClassTrait<Herwig::BranchingRatioAnalysis,1> {
-  /** Typedef of the first base class of BranchingRatioAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the BranchingRatioAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::BranchingRatioAnalysis>
-  : public ClassTraitsBase<Herwig::BranchingRatioAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::BranchingRatioAnalysis"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * BranchingRatioAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class BranchingRatioAnalysis depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwDecayAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

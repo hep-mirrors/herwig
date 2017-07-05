@@ -94,12 +94,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<TauTo4MesonAnalysis> initTauTo4MesonAnalysis;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -122,41 +116,6 @@ private:
    */
   vector<HistogramPtr> _mpipipipi;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of TauTo4MesonAnalysis. */
-template <>
-struct BaseClassTrait<Herwig::TauTo4MesonAnalysis,1> {
-  /** Typedef of the first base class of TauTo4MesonAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the TauTo4MesonAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::TauTo4MesonAnalysis>
-  : public ClassTraitsBase<Herwig::TauTo4MesonAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::TauTo4MesonAnalysis"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * TauTo4MesonAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class TauTo4MesonAnalysis depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwTauAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

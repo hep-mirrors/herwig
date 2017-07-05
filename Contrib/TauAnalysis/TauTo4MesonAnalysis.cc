@@ -5,6 +5,7 @@
 //
 
 #include "TauTo4MesonAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -79,8 +80,10 @@ void TauTo4MesonAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
   }
 }
 
-NoPIOClassDescription<TauTo4MesonAnalysis> TauTo4MesonAnalysis::initTauTo4MesonAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<TauTo4MesonAnalysis,AnalysisHandler>
+describeHerwigTauTo4MesonAnalysis("Herwig::TauTo4MesonAnalysis", "HwTauAnalysis.so");
 
 void TauTo4MesonAnalysis::Init() {
 

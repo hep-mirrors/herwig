@@ -5,6 +5,7 @@
 //
 
 #include "AnomalousWWHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -53,8 +54,10 @@ void AnomalousWWHVertex::persistentInput(PersistentIStream & is, int) {
   is >> interactionType_ >> iunit(mw_,GeV) >> zfact_ >> iunit(Lambda_,GeV);
 }
 
-ClassDescription<AnomalousWWHVertex> AnomalousWWHVertex::initAnomalousWWHVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<AnomalousWWHVertex,Helicity::GeneralVVSVertex>
+describeHerwigAnomalousWWHVertex("Herwig::AnomalousWWHVertex", "AnomalousHVV.so");
 
 void AnomalousWWHVertex::Init() {
 

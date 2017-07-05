@@ -5,6 +5,7 @@
 //
 
 #include "VectorPScalarFermionsAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -85,8 +86,10 @@ void VectorPScalarFermionsAnalysis::analyze(tPPtr part) {
   *_mPfbar[ix]+=ptemp.mass()/MeV;
 }
 
-NoPIOClassDescription<VectorPScalarFermionsAnalysis> VectorPScalarFermionsAnalysis::initVectorPScalarFermionsAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VectorPScalarFermionsAnalysis,AnalysisHandler>
+describeHerwigVectorPScalarFermionsAnalysis("Herwig::VectorPScalarFermionsAnalysis", "HwDecayAnalysis.so");
 
 void VectorPScalarFermionsAnalysis::Init() {
 

@@ -5,6 +5,7 @@
 //
 
 #include "GammaZPrimeZVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -20,8 +21,10 @@ void GammaZPrimeZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _coup;
 }
 
-ClassDescription<GammaZPrimeZVertex> GammaZPrimeZVertex::initGammaZPrimeZVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GammaZPrimeZVertex,AnomalousVVVVertex>
+describeHerwigGammaZPrimeZVertex("RadiativeZPrime::GammaZPrimeZVertex", "RadiativeZPrime.so");
 
 void GammaZPrimeZVertex::Init() {
 

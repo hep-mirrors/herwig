@@ -101,12 +101,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<AnomalousWWHVertex> initAnomalousWWHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -147,41 +141,6 @@ private:
   double zfact_;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of AnomalousWWHVertex. */
-template <>
-struct BaseClassTrait<Herwig::AnomalousWWHVertex,1> {
-  /** Typedef of the first base class of AnomalousWWHVertex. */
-  typedef Helicity::GeneralVVSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the AnomalousWWHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::AnomalousWWHVertex>
-  : public ClassTraitsBase<Herwig::AnomalousWWHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::AnomalousWWHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * AnomalousWWHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class AnomalousWWHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "AnomalousHVV.so"; }
-};
-
-/** @endcond */
 
 }
 

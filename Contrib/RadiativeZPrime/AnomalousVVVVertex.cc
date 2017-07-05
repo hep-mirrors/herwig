@@ -5,15 +5,17 @@
 //
 
 #include "AnomalousVVVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 using namespace RadiativeZPrime;
 
-AbstractNoPIOClassDescription<AnomalousVVVVertex> 
-AnomalousVVVVertex::initAnomalousVVVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<AnomalousVVVVertex,AbstractVVVVertex>
+describeHerwigAnomalousVVVVertex("RadiativeZPrime::AnomalousVVVVertex", "RadiativeZPrime.so");
 
 void AnomalousVVVVertex::Init() {
 
