@@ -12,6 +12,7 @@
 //
 
 #include "LEPEventShapes.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "EventShapes.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/Reference.h"
@@ -64,8 +65,10 @@ void LEPEventShapes::persistentInput(PersistentIStream & is, int) {
   is >> _shapes;
 }
 
-ClassDescription<LEPEventShapes> LEPEventShapes::initLEPEventShapes;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LEPEventShapes,AnalysisHandler>
+describeHerwigLEPEventShapes("Herwig::LEPEventShapes", "HwAnalysis.so HwLEPAnalysis.so");
 
 void LEPEventShapes::Init() {
 

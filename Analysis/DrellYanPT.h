@@ -115,53 +115,12 @@ private:
   Histogram _Wmpt;
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<DrellYanPT> initDrellYanPT;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   DrellYanPT & operator=(const DrellYanPT &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of DrellYanPT. */
-template <>
-struct BaseClassTrait<Herwig::DrellYanPT,1> {
-  /** Typedef of the first base class of DrellYanPT. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the DrellYanPT class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::DrellYanPT>
-  : public ClassTraitsBase<Herwig::DrellYanPT> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::DrellYanPT"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * DrellYanPT is implemented. It may also include several, space-separated,
-   * libraries if the class DrellYanPT depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

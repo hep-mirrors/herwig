@@ -5,6 +5,7 @@
 //
 
 #include "DrellYanPT.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -54,8 +55,10 @@ void DrellYanPT::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-NoPIOClassDescription<DrellYanPT> DrellYanPT::initDrellYanPT;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<DrellYanPT,AnalysisHandler>
+describeHerwigDrellYanPT("Herwig::DrellYanPT", "HwAnalysis.so");
 
 void DrellYanPT::Init() {
 

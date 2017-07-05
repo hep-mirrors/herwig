@@ -104,12 +104,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<HiggsJetAnalysis> initHiggsJetAnalysis;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -133,37 +127,6 @@ private:
   Histogram _phih;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HiggsJetAnalysis. */
-template <>
-struct BaseClassTrait<Herwig::HiggsJetAnalysis,1> {
-  /** Typedef of the first base class of HiggsJetAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HiggsJetAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HiggsJetAnalysis>
-  : public ClassTraitsBase<Herwig::HiggsJetAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HiggsJetAnalysis"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the HiggsJetAnalysis class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

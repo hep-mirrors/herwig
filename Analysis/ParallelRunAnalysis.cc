@@ -1,4 +1,5 @@
 #include <fstream>
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ParallelRunAnalysis.h"
 #include "ThePEG/Handlers/SamplerBase.h"
 #include "ThePEG/Repository/Repository.h"
@@ -59,8 +60,10 @@ void ParallelRunAnalysis::analyze(tEventPtr, long currev, int, int) {
   log.close();
 }
 
-NoPIOClassDescription<ParallelRunAnalysis> ParallelRunAnalysis::initParallelRunAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<ParallelRunAnalysis,AnalysisHandler>
+describeHerwigParallelRunAnalysis("Herwig::ParallelRunAnalysis", "HwAnalysis.so");
 
 void ParallelRunAnalysis::Init() {
 
