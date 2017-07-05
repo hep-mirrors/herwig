@@ -5,6 +5,7 @@
 //
 
 #include "BaryonWidthGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -23,8 +24,10 @@ void BaryonWidthGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _baryondecayers >> _modeloc;
 }
 
-ClassDescription<BaryonWidthGenerator> BaryonWidthGenerator::initBaryonWidthGenerator;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BaryonWidthGenerator,GenericWidthGenerator>
+describeHerwigBaryonWidthGenerator("Herwig::BaryonWidthGenerator", "HwBaryonDecay.so");
 
 void BaryonWidthGenerator::Init() {
 
