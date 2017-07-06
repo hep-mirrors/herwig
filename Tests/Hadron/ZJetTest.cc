@@ -5,6 +5,7 @@
 //
 
 #include "ZJetTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -65,8 +66,10 @@ void ZJetTest::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-NoPIOClassDescription<ZJetTest> ZJetTest::initZJetTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<ZJetTest,AnalysisHandler>
+describeHerwigZJetTest("Herwig::ZJetTest", "HadronTest.so");
 
 void ZJetTest::Init() {
 

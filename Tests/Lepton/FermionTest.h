@@ -84,12 +84,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<FermionTest> initFermionTest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -103,41 +97,6 @@ private:
   map<int,HistogramPtr> _cos,_phi,_y,_pt;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of FermionTest. */
-template <>
-struct BaseClassTrait<Herwig::FermionTest,1> {
-  /** Typedef of the first base class of FermionTest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the FermionTest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::FermionTest>
-  : public ClassTraitsBase<Herwig::FermionTest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::FermionTest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * FermionTest is implemented. It may also include several, space-separated,
-   * libraries if the class FermionTest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "LeptonTest.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -88,12 +88,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<DISTest> initDISTest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -104,41 +98,6 @@ private:
   HistogramPtr _q2,_ecmf, _nu,_x,_y,_phi;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of DISTest. */
-template <>
-struct BaseClassTrait<Herwig::DISTest,1> {
-  /** Typedef of the first base class of DISTest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the DISTest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::DISTest>
-  : public ClassTraitsBase<Herwig::DISTest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::DISTest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * DISTest is implemented. It may also include several, space-separated,
-   * libraries if the class DISTest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "DISTest.so"; }
-};
-
-/** @endcond */
 
 }
 

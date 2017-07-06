@@ -91,12 +91,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<HadronVVTest> initHadronVVTest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -113,41 +107,6 @@ private:
   HistogramPtr _mass;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HadronVVTest. */
-template <>
-struct BaseClassTrait<Herwig::HadronVVTest,1> {
-  /** Typedef of the first base class of HadronVVTest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HadronVVTest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HadronVVTest>
-  : public ClassTraitsBase<Herwig::HadronVVTest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HadronVVTest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * HadronVVTest is implemented. It may also include several, space-separated,
-   * libraries if the class HadronVVTest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HadronTest.so"; }
-};
-
-/** @endcond */
 
 }
 

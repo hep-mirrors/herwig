@@ -113,12 +113,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<QQHTest> initQQHTest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -138,41 +132,6 @@ private:
 
   int quarkFlavour_;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of QQHTest. */
-template <>
-struct BaseClassTrait<Herwig::QQHTest,1> {
-  /** Typedef of the first base class of QQHTest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the QQHTest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::QQHTest>
-  : public ClassTraitsBase<Herwig::QQHTest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::QQHTest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * QQHTest is implemented. It may also include several, space-separated,
-   * libraries if the class QQHTest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HadronTest.so"; }
-};
-
-/** @endcond */
 
 }
 

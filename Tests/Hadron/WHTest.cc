@@ -5,6 +5,7 @@
 //
 
 #include "WHTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -89,8 +90,10 @@ void WHTest::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-NoPIOClassDescription<WHTest> WHTest::initWHTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<WHTest,AnalysisHandler>
+describeHerwigWHTest("Herwig::WHTest", "HadronTest.so");
 
 void WHTest::Init() {
 

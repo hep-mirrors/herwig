@@ -5,6 +5,7 @@
 //
 
 #include "VHTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -63,8 +64,10 @@ void VHTest::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-NoPIOClassDescription<VHTest> VHTest::initVHTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VHTest,AnalysisHandler>
+describeHerwigVHTest("Herwig::VHTest", "LeptonTest.so");
 
 void VHTest::Init() {
 

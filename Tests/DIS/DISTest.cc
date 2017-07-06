@@ -5,6 +5,7 @@
 //
 
 #include "DISTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -57,8 +58,10 @@ void DISTest::analyze(tEventPtr event, long ieve, int loop, int state) {
   *_phi += kp.phi()+Constants::pi;
 }
 
-NoPIOClassDescription<DISTest> DISTest::initDISTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<DISTest,AnalysisHandler>
+describeHerwigDISTest("Herwig::DISTest", "DISTest.so");
 
 void DISTest::Init() {
 

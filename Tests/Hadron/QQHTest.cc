@@ -5,6 +5,7 @@
 //
 
 #include "QQHTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -80,8 +81,10 @@ void QQHTest::persistentInput(PersistentIStream & is, int) {
   is >> quarkFlavour_;
 }
 
-ClassDescription<QQHTest> QQHTest::initQQHTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<QQHTest,AnalysisHandler>
+describeHerwigQQHTest("Herwig::QQHTest", "HadronTest.so");
 
 void QQHTest::Init() {
 

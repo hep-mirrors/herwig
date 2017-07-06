@@ -91,12 +91,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<WHTest> initWHTest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -107,41 +101,6 @@ private:
   HistogramPtr _mH,_mW[3],_ptH,_ptW[3],_yH,_yW[3],_phiH,_phiW[3],_ptl[4],_yl[4],_phil[4];
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of WHTest. */
-template <>
-struct BaseClassTrait<Herwig::WHTest,1> {
-  /** Typedef of the first base class of WHTest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the WHTest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::WHTest>
-  : public ClassTraitsBase<Herwig::WHTest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::WHTest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * WHTest is implemented. It may also include several, space-separated,
-   * libraries if the class WHTest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HadronTest.so"; }
-};
-
-/** @endcond */
 
 }
 

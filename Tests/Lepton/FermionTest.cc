@@ -5,6 +5,7 @@
 //
 
 #include "FermionTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -45,8 +46,10 @@ IBPtr FermionTest::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<FermionTest> FermionTest::initFermionTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<FermionTest,AnalysisHandler>
+describeHerwigFermionTest("Herwig::FermionTest", "LeptonTest.so");
 
 void FermionTest::Init() {
 
