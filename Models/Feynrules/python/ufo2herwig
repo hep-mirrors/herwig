@@ -551,8 +551,8 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
             else :
                 left  = 'a00( %s );' % couplings_VVS[0]
             # other couplings
-            right = 'a11( %s );\n    a12( %s );\n    a21( %s );\n    a22( %s );' % \
-                   ( couplings_VVS[1],couplings_VVS[2],couplings_VVS[3],couplings_VVS[4] )
+            right = 'a11( %s );\n    a12( %s );\n    a21( %s );\n    a22( %s ); aEp( %s ); ' % \
+                   ( couplings_VVS[1],couplings_VVS[2],couplings_VVS[3],couplings_VVS[4],couplings_VVS[6] )
     else:
         left = ''
         right = ''

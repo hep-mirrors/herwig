@@ -611,6 +611,80 @@ def EWVVVVCouplings(vertex,L) :
                          vertex.particles[3].pdg_code,order[3] )
     return (ordering,factor)
 
+def changeSign(sign1,sign2) :
+    if((sign1=="+" and sign2=="+") or\
+       (sign1=="-" and sign2=="-")) :
+        return "+"
+    else :
+        return "-"
+
+def epsilonOrder(eps) :
+    terms = eps.strip("Epsilon(").strip(")").split(",")
+    sign=1.
+    for iy in range(0,len(terms)) :
+        for ix in range(-1,-len(terms)+iy,-1) :
+            swap = False
+            if(len(terms[ix])==1 and len(terms[ix-1])==1) :
+                swap = int(terms[ix])<int(terms[ix-1])
+            elif(len(terms[ix])==2 and len(terms[ix-1])==2) :
+                swap = int(terms[ix][1])<int(terms[ix-1][1])
+            elif(len(terms[ix])==1 and len(terms[ix-1])==2) :
+                swap = True
+            if(swap) :
+                sign *=-1.
+                terms[ix],terms[ix-1] = terms[ix-1],terms[ix]
+    return (sign,"Epsilon(%s,%s,%s,%s)" % (terms[0],terms[1],terms[2],terms[3]))
+
+    
+def VVSEpsilon(couplings,struct) :
+    if(struct.find("Epsilon")<0) :
+        return
+    fact=""
+    sign="+"
+    if(struct[-1]==")") :
+        fact=struct.split("(")[0]
+        if(fact.find("Epsilon")>=0) :
+            fact=""
+        else :
+            struct=struct.split("(",1)[1][:-1]
+            if(fact[0]=="-") :
+                sign="-"
+                fact=fact[1:]
+    split = struct.split("*")
+    # find the epsilon
+    eps=""
+    for piece in split :
+        if(piece.find("Epsilon")>=0) :
+            eps=piece
+            split.remove(piece)
+            break
+    # and any prefactors
+    for piece in split :
+        if(piece.find("P(")<0) :
+            split.remove(piece)
+            if(piece[0]=="+" or piece[0]=="-") :
+                sign=changeSign(sign,piece[0])
+                piece=piece[1:]
+            if(fact=="") :
+                fact=piece
+            else :
+                fact = "( %s ) * ( %s )" % (fact , piece) 
+    # now sort out the momenta
+    for piece in split :
+        terms=piece.split(",")
+        terms[0]=terms[0].strip("P(")
+        terms[1]=terms[1].strip(")")
+        eps=eps.replace(terms[0],"P%s"%terms[1])
+    (nsign,eps)=epsilonOrder(eps)
+    if(nsign<0) : sign=changeSign(sign,"-")
+    if(fact=="") : fact="1."
+    if(eps!="Epsilon(1,2,P1,P2)") :
+        return
+    if(couplings[6]==0.) :
+        couplings[6] = "( %s%s )" % (sign,fact)
+    else :
+        couplings[6] = "( %s ) + ( %s%s )" % (couplings[6],sign,fact)
+
 def VVSCouplings(vertex,coupling,prefactors,L,lorentztag) :
     # split the structure into its different terms for analysis
     ordering=""
@@ -626,7 +700,8 @@ def VVSCouplings(vertex,coupling,prefactors,L,lorentztag) :
         else :
             structures.append(sign+struct.strip())
             sign=''
-    couplings=[0.,0.,0.,0.,0.,0.]
+    # handle the scalar couplings
+    couplings=[0.,0.,0.,0.,0.,0.,0.]
     terms=[['P(-1,1)','P(-1,2)','Metric(1,2)'],
            ['P(1,1)','P(2,1)'],
            ['P(1,1)','P(2,2)'],
@@ -642,6 +717,10 @@ def VVSCouplings(vertex,coupling,prefactors,L,lorentztag) :
                     reminder = structures[istruct].replace(label,'1.',1)
                     couplings[itype]+=eval(reminder, {'cmath':cmath} )
                     structures[istruct]='Done'
+    # handle the pseudoscalar couplings
+    for struct in structures :
+        if(struct != "Done" ) :
+            VVSEpsilon(couplings,struct)
     # evaluate the prefactor
     if type(coupling) is not list:
         value = coupling.value
@@ -650,7 +729,7 @@ def VVSCouplings(vertex,coupling,prefactors,L,lorentztag) :
         for coup in coupling :
             value += '+(%s)' % coup.value
         value +=")"
-    # aput it all together
+    # put it all together
     for ic in range(0,len(couplings)) :
         if(couplings[ic]!=0.) :
             couplings[ic] = '(%s) * (%s) * (%s)' % (prefactors,value,couplings[ic])
