@@ -261,10 +261,14 @@ void HardProcessConstructor::assignToCF(HPDiagram & diag) {
 }
 
 void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
-  PDT::Colour ina  = getParticleData(diag.incoming.first )->iColour();
-  PDT::Colour inb  = getParticleData(diag.incoming.second)->iColour();
-  PDT::Colour outa = getParticleData(diag.outgoing.first )->iColour();
-  PDT::Colour outb = getParticleData(diag.outgoing.second)->iColour();
+  tcPDPtr ia = getParticleData(diag.incoming.first );
+  tcPDPtr ib = getParticleData(diag.incoming.second);
+  tcPDPtr oa = getParticleData(diag.outgoing.first );
+  tcPDPtr ob = getParticleData(diag.outgoing.second);
+  PDT::Colour ina  = ia->iColour();
+  PDT::Colour inb  = ib->iColour();
+  PDT::Colour outa = oa->iColour();
+  PDT::Colour outb = ob->iColour();
   vector<CFPair> cfv(1, make_pair(0, 1.));
   if(diag.intermediate->iColour() == PDT::Colour0) {
     if(ina==PDT::Colour0) {
@@ -298,10 +302,14 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
        inb==PDT::Colour8&&outb==PDT::Colour8) {
       cfv.push_back(make_pair(1, -1.));
     }
-    else if((ina==PDT::Colour8&&outa==PDT::Colour8&&
-	     inb==PDT::Colour8&&outb==PDT::Colour0) ||
-	    (ina==PDT::Colour8&&outa==PDT::Colour0&&
-	     inb==PDT::Colour8&&outb==PDT::Colour8)) {
+    else if(ina==PDT::Colour8&&outa==PDT::Colour0&&
+	    inb==PDT::Colour8&&outb==PDT::Colour8&&
+	    oa->iSpin()==PDT::Spin0) {
+      cfv[0] = make_pair(0,-1);
+    }
+    else if(ina==PDT::Colour8&&outa==PDT::Colour8&&
+	    inb==PDT::Colour8&&outb==PDT::Colour0&&
+	    ob->iSpin()==PDT::Spin0) {
       cfv[0] = make_pair(0,-1);
     }
   } 
