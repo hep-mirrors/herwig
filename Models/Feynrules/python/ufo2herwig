@@ -293,20 +293,6 @@ vertexConverter.convert()
 ##################################################
 ##################################################
 
-vertexline = """\
-create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
-insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
-"""
-
-def get_vertices():
-    vlist = ['library %s\n' % libname]
-    for v in vertexConverter.all_vertices:
-        if v.herwig_skip_vertex: continue
-        vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
-    if( not args.no_generic_loop_vertices) :
-        vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=modelname) )
-        vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=modelname) )
-    return ''.join(vlist)
 
 
 plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name)
@@ -320,7 +306,7 @@ particlelist[0] = particlelist[0][2:]
 particlelist = '\n'.join(particlelist)
 
 modelfilesubs = { 'plist' : plist,
-                  'vlist' : get_vertices(),
+                  'vlist' : vertexConverter.get_vertices(libname),
                   'setcouplings': '\n'.join(parmmodelconstr),
                   'ModelName': modelname
                   }

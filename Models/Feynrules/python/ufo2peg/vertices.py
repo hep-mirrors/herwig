@@ -39,6 +39,11 @@ VERTEXCLASS = getTemplate('Vertex_class')
 # template for the .cc file for vertices
 VERTEX = getTemplate('Vertex.cc')
 
+vertexline = """\
+create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
+insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
+"""
+
 class SkipThisVertex(Exception):
     pass
 
@@ -76,6 +81,7 @@ class VertexConverter:
         self.all_vertices= []
         self.modelname=""
         self.globalsign=self.global_sign()
+        self.no_generic_loop_vertices = False
 
     def global_sign(self):
         'Initial pass to find global sign at the moment does nothing'
@@ -95,7 +101,8 @@ class VertexConverter:
         self.ignore_skipped = args.ignore_skipped
         self.verbose        = args.verbose
         self.modelname = args.name
-        
+        self.no_generic_loop_vertices = args.no_generic_loop_vertices
+
     def should_print(self) :
         'Check if we should output the results'
         return not self.vertex_skipped or self.ignore_skipped
@@ -384,3 +391,13 @@ Herwig may not give correct results, though.
             pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
 
         return (False,VERTEXCLASS.substitute(subs),VERTEXHEADER.format(**subs))
+
+    def get_vertices(self,libname):
+        vlist = ['library %s\n' % libname]
+        for v in self.all_vertices:
+            if v.herwig_skip_vertex: continue
+            vlist.append( vertexline.format(modelname=self.modelname, vname=v.name) )
+        if( not self.no_generic_loop_vertices) :
+            vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname) )
+            vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname) )
+        return ''.join(vlist)
