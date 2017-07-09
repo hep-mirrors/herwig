@@ -6,7 +6,7 @@ from .converter import py2cpp
 
 ONE_EACH = True
 
-globalsign='crap'
+globalsign=False
 
 gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
 
@@ -42,6 +42,24 @@ VERTEXCLASS = getTemplate('Vertex_class')
 def should_print():
     return not vertex_skipped or ignore_skipped
 
+### initial pass to find global sign
+# at the moment does nothing
+def global_sign(FR):
+    global globalsign
+    globalsign=1.
+    # for v in FR.all_vertices:
+    #     pids = sorted([ p.pdg_code for p in v.particles ])
+    #     if pids != [-11,11,22]: continue
+    #     coup = v.couplings
+    #     assert( len(coup) == 1 )
+    #     val = coup.values()[0].value
+    #     val = evaluate(val)
+    #     assert( val.real == 0 )
+    #     if val.imag > 0 :
+    #         globalsign= 1.
+    #     else :
+    #         globalsign=-1.
+
 def checkGhostGoldstoneVertex(lorentztag,vertex) :
     # remove vertices involving ghost fields
     if 'U' in lorentztag:
@@ -59,6 +77,8 @@ def checkGhostGoldstoneVertex(lorentztag,vertex) :
 
 def processVertex(FR,modelname,vertexnumber,vertex) :
     global vertex_skipped
+    # set the global sign if required
+    if(not globalsign) : global_sign(FR)
     # get the Lorentz tag for the vertex
     lorentztag = unique_lorentztag(vertex)
     # check if we should skip the vertex
@@ -294,3 +314,4 @@ def processVertex(FR,modelname,vertexnumber,vertex) :
         pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
 
     return (False,VERTEXCLASS.substitute(subs),VERTEXHEADER.format(**subs))
+

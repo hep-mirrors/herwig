@@ -300,27 +300,12 @@ if args.verbose:
     labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
     pprint.pprint(labels)
 
-### initial pass to find global sign
-def global_sign():
-    return 1.0
-    for v in FR.all_vertices:
-        pids = sorted([ p.pdg_code for p in v.particles ])
-        if pids != [-11,11,22]: continue
-        coup = v.couplings
-        assert( len(coup) == 1 )
-        val = coup.values()[0].value
-        val = evaluate(val)
-        assert( val.real == 0 )
-        return 1 if val.imag > 0 else -1
-
 vertexclasses, vertexheaders = [], set()
 
 if processVertex.ONE_EACH:
     all_vertices = FR.all_vertices
 else:
     all_vertices = collapse_vertices(FR.all_vertices)
-
-processVertex.globalsign = global_sign()
 
 for vertexnumber,vertex in enumerate(all_vertices,1):
     # process the vertex and check it can be handled
