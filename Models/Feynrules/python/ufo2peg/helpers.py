@@ -135,8 +135,6 @@ def spindirectory(lt):
     return spin_directory
 
 
-class SkipThisVertex(Exception):
-    pass
 
 def colorpositions(struct):
     positions = { 

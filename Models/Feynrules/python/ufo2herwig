@@ -7,7 +7,6 @@ from string import strip, Template
 modulepath = os.path.join("@PKGLIBDIR@",'python')
 sys.path.append(modulepath)
 
-import ufo2peg.processVertex
 from ufo2peg import *
 
 # set up the option parser for command line input 
@@ -51,11 +50,9 @@ parser.add_argument(
     help="Add particle names not allowed as names in UFO models to avoid conflicts with"+\
     "Herwig internal particles, names will have _UFO appended"
 )
-
+# get the arguments
 args = parser.parse_args()
-
-processVertex.ignore_skipped = args.ignore_skipped
-
+# import the model
 import imp
 path,mod = os.path.split(os.path.abspath(args.ufodir))
 FR = imp.load_module(mod,*imp.find_module(mod,[path]))
@@ -285,67 +282,12 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
 ##################################################
 
 
-# get vertex template
-VERTEX = getTemplate('Vertex.cc')
-
-def write_vertex_file(subs):
-    newname = '%s_Vertices_%03d.cc' % (subs['ModelName'],subs['vertexnumber'])
-    subs['newname'] = newname
-    writeFile( newname, VERTEX.substitute(subs) )
-
-if args.verbose:
-    processVertex.verbose=True
-    print 'verbose mode on: printing all vertices'
-    print '-'*60
-    labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
-    pprint.pprint(labels)
-
-vertexclasses, vertexheaders = [], set()
-
-if processVertex.ONE_EACH:
-    all_vertices = FR.all_vertices
-else:
-    all_vertices = collapse_vertices(FR.all_vertices)
-
-for vertexnumber,vertex in enumerate(all_vertices,1):
-    # process the vertex and check it can be handled
-    (skip,vertexClass,vertexHeader) = \
-                    processVertex.processVertex(FR,modelname,vertexnumber,vertex)
-    if(skip) : continue
-        
-    vertexclasses.append(vertexClass)
-    vertexheaders.add(vertexHeader)
-
-    WRAP = 25
-    if vertexnumber % WRAP == 0:
-        write_vertex_file({'vertexnumber' : vertexnumber//WRAP,
-                           'vertexclasses' : '\n'.join(vertexclasses),
-                           'vertexheaders' : ''.join(vertexheaders),
-                           'ModelName' : modelname})
-        vertexclasses = []
-        vertexheaders = set()
 
 
-if not processVertex.should_print():
-    sys.stderr.write(
-"""
-Error: The conversion was unsuccessful, some vertices could not be
-       generated. If you think the missing vertices are not important 
-       and want to go ahead anyway, use --ignore-skipped. 
-       Herwig may not give correct results, though.
-
-"""
-    )
-    
-    sys.exit(1)
-        
-if vertexclasses:
-    write_vertex_file({'vertexnumber' : vertexnumber//WRAP + 1,
-                       'vertexclasses' : '\n'.join(vertexclasses),
-                       'vertexheaders' : ''.join(vertexheaders),
-                       'ModelName' : modelname})
-        
-print '='*60
+# set up the conversion of the vertices
+vertexConverter = VertexConverter(FR)
+vertexConverter.readArgs(args)
+vertexConverter.convert()
 
 ##################################################
 ##################################################
@@ -358,7 +300,7 @@ insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 
 def get_vertices():
     vlist = ['library %s\n' % libname]
-    for v in all_vertices:
+    for v in vertexConverter.all_vertices:
         if v.herwig_skip_vertex: continue
         vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
     if( not args.no_generic_loop_vertices) :
@@ -384,7 +326,7 @@ modelfilesubs = { 'plist' : plist,
                   }
 
 # write the files from templates according to the above subs
-if processVertex.should_print():
+if vertexConverter.should_print():
     MODEL_HWIN = getTemplate('LHC-FR.in')
     if(not args.split_model) :
         MODEL_CC = [getTemplate('Model.cc')]
