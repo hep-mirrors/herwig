@@ -1,10 +1,10 @@
 import sys,pprint
 
-from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,\
-    tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,def_from_model
+from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_model
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
+from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings
 
 # names of goldstone bosons
 gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
