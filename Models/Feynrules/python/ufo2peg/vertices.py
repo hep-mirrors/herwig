@@ -4,7 +4,7 @@ from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_m
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
-from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings
+from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,lorentzScalar
 
 # names of goldstone bosons
 gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
@@ -44,6 +44,22 @@ create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
 insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 """
 
+kinematicsline = """\
+long id [3]={{{id1},{id2},{id3}}};
+    long id2[3]={{p1->id(),p2->id(),p3->id()}};
+    unsigned int i[3];
+    for(unsigned int ix=0;ix<3;++ix) {{
+      for(unsigned int iy=0;iy<3;++iy) {{
+	if(id[ix]==id2[iy]) {{
+	  i[ix] = iy;
+	  id2[iy]=0;
+	  break;
+	}}
+      }}
+    }}
+    double kine1 = {kine};
+    norm(norm()*kine1);
+"""
 class SkipThisVertex(Exception):
     pass
 
@@ -435,12 +451,9 @@ Herwig may not give correct results, though.
             couplingptrs[1] += ' p2'
         elif lorentztag == 'FFV':
             couplingptrs[0] += ' p1'
-        elif (lorentztag == 'VVV' or lorentztag == 'VVVS' ) \
+        elif (lorentztag == 'VVV' or lorentztag == 'VVVS' or
+              lorentztag == "SSS" or lorentztag == "VVVT" ) \
              and ordering != '':
-            couplingptrs[0] += ' p1'
-            couplingptrs[1] += ' p2'
-            couplingptrs[2] += ' p3'
-        elif lorentztag == 'VVVT' and ordering != '':
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
             couplingptrs[2] += ' p3'
@@ -597,9 +610,18 @@ Herwig may not give correct results, though.
                 elif lorentztag == "SSS" or lorentztag == "SSSS" :
                     try :
                         val = int(L.structure)
+                        coup_norm.append('(%s) * (%s)' % (prefactors,value))
                     except :
-                        raise SkipThisVertex()
-                    coup_norm.append('(%s) * (%s)' % (prefactors,value))
+                        output = lorentzScalar(vertex,L)
+                        if( not output) :
+                            raise SkipThisVertex()
+                        else :
+                            coup_norm.append('(%s) * (%s)' % (prefactors,value))
+                            ordering = kinematicsline.format(id1=vertex.particles[0].pdg_code,
+                                                             id2=vertex.particles[1].pdg_code,
+                                                             id3=vertex.particles[2].pdg_code,
+                                                             kine=output)
+                            kinematics="true"
                 else:
                     if lorentztag == 'VSS':
                         if L.structure == 'P(1,3) - P(1,2)':

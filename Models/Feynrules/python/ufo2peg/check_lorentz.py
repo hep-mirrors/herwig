@@ -318,3 +318,44 @@ def VVSCouplings(vertex,coupling,prefactors,L,lorentztag) :
         if(couplings[ic]!=0.) :
             couplings[ic] = '(%s) * (%s) * (%s)' % (prefactors,value,couplings[ic])
     return couplings
+
+def getIndices(term) :
+    if(term[0:2]=="P(") :
+        indices = term.strip(")").strip("P(").split(",")
+        mom   = int(indices[1])
+        index = int(indices[0])
+        return (True,mom,index)
+    else :
+        return (False,0,0)
+    
+
+def lorentzScalar(vertex,L) :
+    dotProduct = """\
+0.5*(invariant( i[{i1}], i[{i2}] ) - invariant( i[{i1}], i[{i1}] ) -invariant( i[{i2}] , i[{i2}] ))/GeV2"""
+    structure = L.structure.split("*")
+    worked = False
+    mom=-1
+    output=""
+    while True :
+        term = structure[-1]
+        structure.pop()
+        (momentum,mom,index) = getIndices(term)
+        if( not momentum) : break
+        # look for the matching momenta
+        for term in structure :
+            (momentum,mom2,index2) = getIndices(term)
+            if(index2==index) :
+                structure.remove(term)
+                print { "i1" : mom, "i2" : mom2 }
+                dot = dotProduct.format(i1=mom-1,i2=mom2-1)
+                if(output=="") :
+                    output = dot
+                else :
+                    output = " ( %s) * ( %s ) " (output,dot)
+        if(len(structure)==0) :
+            worked = True
+            break
+    if( not worked ) :
+        return False
+    else :
+        return output
