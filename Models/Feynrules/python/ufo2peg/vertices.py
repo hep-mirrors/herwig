@@ -374,92 +374,10 @@ Herwig may not give correct results, though.
     
         ### classname
         classname = 'V_%s' % vertex.name
-
-        ### parse couplings
-        unique_qcd = CheckUnique()
-        unique_qed = CheckUnique()
-
-        coup_left  = []
-        coup_right = []
-        coup_norm = []
-        couplings_VVS = []
-        kinematics = "false"
-        if self.ONE_EACH:
-            items = vertex.couplings.iteritems()
-        else:
-            items = vertex.couplings
-
+        # try to extract the couplings
         try:
-            for (color_idx,lorentz_idx),coupling in items:
-
-                qcd, qed = qcd_qed_orders(vertex, coupling)
-                unique_qcd( qcd )
-                unique_qed( qed )
-                L = vertex.lorentz[lorentz_idx]
-                prefactors = '(%s) * (%s) * (%s)' \
-                                % (self.globalsign**(len(lorentztag)-2),lf,cf[color_idx])
-
-                ordering = ''
-                if lorentztag in ['FFS','FFV']:
-                    left,right = parse_lorentz(L.structure)
-                    if left:
-                        coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
-                    if right:
-                        coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
-                    if lorentztag == 'FFV':
-                        ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
-                                    % vertex.particles[0].pdg_code)
-                elif 'T' in lorentztag :
-                    all_coup, left_coup, right_coup, ordering = \
-                        tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos)
-                    coup_norm  += all_coup
-                    coup_left  += left_coup
-                    coup_right += right_coup
-                elif lorentztag == 'VVS' :
-                    tc = VVSCouplings(vertex,coupling,prefactors,L,lorentztag)
-                    if(len(couplings_VVS)==0) :
-                        couplings_VVS=tc
-                    else :
-                        for ix in range(0,len(couplings_VVS)) :
-                            if(tc[ix] == 0.) :
-                                continue
-                            elif(couplings_VVS[ix]==0.) :
-                                couplings_VVS[ix]=tc[ix]
-                            else :
-                                couplings_VVS[ix] = '(( %s ) + ( %s ) )' % (couplings_VVS[ix],tc[ix])
-                else:
-                    if lorentztag == 'VSS':
-                        if L.structure == 'P(1,3) - P(1,2)':
-                            prefactors += ' * (-1)'
-                        ordering = 'if(p2->id()!=%s){norm(-norm());}' \
-                                       % vertex.particles[1].pdg_code
-                    elif lorentztag == 'VVVV':
-                        if qcd==2:
-                            ordering = 'setType(1);\nsetOrder(0,1,2,3);'
-                        else:
-                            ordering, factor = EWVVVVCouplings(vertex,L)
-                            prefactors += ' * (%s)' % factor
-                    elif lorentztag == 'VVV':
-                        if len(pos[8]) != 3:
-                            ordering = VVVordering(vertex)
-                    elif lorentztag == 'VVVS' :
-                        if len(pos[8]) == 0 :
-                            ordering = VVVordering(vertex)
-                
-                    if type(coupling) is not list:
-                        value = coupling.value
-                    else:
-                        value = "("
-                        for coup in coupling :
-                            value += '+(%s)' % coup.value
-                        value +=")"
-                    coup_norm.append('(%s) * (%s)' % (prefactors,value))
-
-
-                #print 'Colour  :',vertex.color[color_idx]
-                #print 'Lorentz %s:'%L.name, L.spins, L.structure
-                #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
-                #print '---------------'
+            (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,ordering) = \
+            self.extractCouplings(lorentztag,pos,lf,cf,vertex)
         except SkipThisVertex:
             vertex.herwig_skip_vertex = True
             self.vertex_skipped=True
@@ -505,6 +423,7 @@ Herwig may not give correct results, though.
             left = 'left(' + leftcalc + ');'
             right = 'right(' + rightcalc + ');'
         elif lorentztag == 'VVS':
+            print couplings_VVS
             if(couplings_VVS[0]==0. and couplings_VVS[1]==0. and couplings_VVS[2]==0. and \
                couplings_VVS[3]==0. and couplings_VVS[4]==0. and couplings_VVS[5]!=0) :
                 normcontent  = couplings_VVS[5]
@@ -582,3 +501,91 @@ Herwig may not give correct results, though.
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname) )
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname) )
         return ''.join(vlist)
+
+
+    def extractCouplings(self,lorentztag,pos,lf,cf,vertex) :
+        coup_left  = []
+        coup_right = []
+        coup_norm = []
+        couplings_VVS = []
+        kinematics = "false"
+        qcd=0
+        qed=0
+        ordering=""
+        unique_qcd = CheckUnique()
+        unique_qed = CheckUnique()
+        if self.ONE_EACH:
+            items = vertex.couplings.iteritems()
+        else:
+            items = vertex.couplings
+        for (color_idx,lorentz_idx),coupling in items:
+            qcd, qed = qcd_qed_orders(vertex, coupling)
+            unique_qcd( qcd )
+            unique_qed( qed )
+            L = vertex.lorentz[lorentz_idx]
+            prefactors = '(%s) * (%s) * (%s)' \
+                            % (self.globalsign**(len(lorentztag)-2),lf,cf[color_idx])
+
+            ordering = ''
+            if lorentztag in ['FFS','FFV']:
+                left,right = parse_lorentz(L.structure)
+                if left:
+                    coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
+                if right:
+                    coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
+                if lorentztag == 'FFV':
+                    ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                                % vertex.particles[0].pdg_code)
+            elif 'T' in lorentztag :
+                all_coup, left_coup, right_coup, ordering = \
+                    tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos)
+                coup_norm  += all_coup
+                coup_left  += left_coup
+                coup_right += right_coup
+            elif lorentztag == 'VVS' :
+                tc = VVSCouplings(vertex,coupling,prefactors,L,lorentztag)
+                if(len(couplings_VVS)==0) :
+                    couplings_VVS=tc
+                else :
+                    for ix in range(0,len(couplings_VVS)) :
+                        if(tc[ix] == 0.) :
+                            continue
+                        elif(couplings_VVS[ix]==0.) :
+                            couplings_VVS[ix]=tc[ix]
+                        else :
+                            couplings_VVS[ix] = '(( %s ) + ( %s ) )' % (couplings_VVS[ix],tc[ix])
+                print 'testing got here ?',couplings_VVS
+            else:
+                if lorentztag == 'VSS':
+                    if L.structure == 'P(1,3) - P(1,2)':
+                        prefactors += ' * (-1)'
+                    ordering = 'if(p2->id()!=%s){norm(-norm());}' \
+                                   % vertex.particles[1].pdg_code
+                elif lorentztag == 'VVVV':
+                    if qcd==2:
+                        ordering = 'setType(1);\nsetOrder(0,1,2,3);'
+                    else:
+                        ordering, factor = EWVVVVCouplings(vertex,L)
+                        prefactors += ' * (%s)' % factor
+                elif lorentztag == 'VVV':
+                    if len(pos[8]) != 3:
+                        ordering = VVVordering(vertex)
+                elif lorentztag == 'VVVS' :
+                    if len(pos[8]) == 0 :
+                        ordering = VVVordering(vertex)
+            
+                if type(coupling) is not list:
+                    value = coupling.value
+                else:
+                    value = "("
+                    for coup in coupling :
+                        value += '+(%s)' % coup.value
+                    value +=")"
+                coup_norm.append('(%s) * (%s)' % (prefactors,value))
+
+
+            #print 'Colour  :',vertex.color[color_idx]
+            #print 'Lorentz %s:'%L.name, L.spins, L.structure
+            #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
+            #print '---------------'
+        return (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,ordering)
