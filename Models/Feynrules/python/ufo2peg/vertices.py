@@ -423,7 +423,6 @@ Herwig may not give correct results, though.
             left = 'left(' + leftcalc + ');'
             right = 'right(' + rightcalc + ');'
         elif lorentztag == 'VVS':
-            print couplings_VVS
             if(couplings_VVS[0]==0. and couplings_VVS[1]==0. and couplings_VVS[2]==0. and \
                couplings_VVS[3]==0. and couplings_VVS[4]==0. and couplings_VVS[5]!=0) :
                 normcontent  = couplings_VVS[5]
@@ -554,7 +553,6 @@ Herwig may not give correct results, though.
                             couplings_VVS[ix]=tc[ix]
                         else :
                             couplings_VVS[ix] = '(( %s ) + ( %s ) )' % (couplings_VVS[ix],tc[ix])
-                print 'testing got here ?',couplings_VVS
             else:
                 if lorentztag == 'VSS':
                     if L.structure == 'P(1,3) - P(1,2)':
