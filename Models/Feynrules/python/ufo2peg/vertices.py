@@ -250,6 +250,27 @@ def checkGhostGoldstoneVertex(lorentztag,vertex) :
             return True
     return False
 
+def calculatePrefactor(globalsign,lorentztag,lf,cf) :
+    if(globalsign!=1.) :
+        prefactors = '(%s) * (%s) * (%s)' \
+                     % (globalsign**(len(lorentztag)-2),lf,cf)
+    else :
+        prefactors = '(%s) * (%s)' \
+                     % (lf,cf)
+    return prefactors
+    # fact=[]
+    # if(globalsign!=1.) :
+    #     fact.append(globalsign**(len(lorentztag)-2))
+    # if(lf!="1") :
+    #     fact.append(lf)
+    # if(cf!="1") :
+    #     fact.append(cf)
+    # if(len(fact)==0) : return "1"
+    # prefactor = '(%s)' % fact[0]
+    # for ix in range(1,len(fact)) :
+    #     prefactor = '%s * (%s)' % (prefactor,fact[ix])
+    # return prefactor
+
 class VertexConverter:
     'Convert the vertices in a FR model to extract the information ThePEG needs.'
     def __init__(self,model) :
@@ -523,9 +544,7 @@ Herwig may not give correct results, though.
                 unique_qcd( qcd )
                 unique_qed( qed )
                 L = vertex.lorentz[lorentz_idx]
-                prefactors = '(%s) * (%s) * (%s)' \
-                             % (self.globalsign**(len(lorentztag)-2),lf,cf[color_idx])
-
+                prefactors = calculatePrefactor(self.globalsign,lorentztag,lf,cf[color_idx])
                 ordering = ''
                 if lorentztag in ['FFS','FFV']:
                     left,right = parse_lorentz(L.structure)
