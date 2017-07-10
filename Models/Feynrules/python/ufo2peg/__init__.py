@@ -1,7 +1,7 @@
 from .particles import thepeg_particles
 
 from .helpers import CheckUnique, getTemplate, writeFile, def_from_model
-from .helpers import spindirectory, add_brackets, typemap,VVVordering
+from .helpers import add_brackets, typemap,VVVordering
 from .converter import py2cpp
 
 

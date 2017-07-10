@@ -287,6 +287,7 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
 # set up the conversion of the vertices
 vertexConverter = VertexConverter(FR)
 vertexConverter.readArgs(args)
+# convert the vertices
 vertexConverter.convert()
 
 ##################################################

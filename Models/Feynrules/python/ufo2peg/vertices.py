@@ -1,7 +1,7 @@
 import sys,pprint
 
-from .helpers import CheckUnique,getTemplate,writeFile,unique_lorentztag,colors,colorfactor,qcd_qed_orders,\
-    tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,def_from_model,spindirectory
+from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,\
+    tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,def_from_model
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
@@ -46,6 +46,187 @@ insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 
 class SkipThisVertex(Exception):
     pass
+
+def get_lorentztag(spin):
+    """Produce a ThePEG spin tag for the given numeric FR spins."""
+    spins = { 1 : 'S', 2 : 'F', 3 : 'V', -1 : 'U', 5 : 'T' }
+    result = [ spins[s] for s in spin ]
+
+    def spinsort(a,b):
+        """Helper function for ThePEG's FVST spin tag ordering."""
+        if a == b: return 0
+        for letter in 'UFVST':
+            if a == letter: return -1
+            if b == letter: return  1
+
+    result = sorted(result, cmp=spinsort)
+    return ''.join(result)
+
+def unique_lorentztag(vertex):
+    """Check and return the Lorentz tag of the vertex."""
+    unique = CheckUnique()
+    for l in vertex.lorentz:
+        lorentztag = get_lorentztag(l.spins)
+        unique( lorentztag )
+        lname = l.name[:len(lorentztag)]
+        if sorted(lorentztag) != sorted(lname):
+            raise Exception("Lorentztags: %s is not %s in %s" 
+                            % (lorentztag,lname,vertex))
+#        if lorentztag != lname:
+#            sys.stderr.write("Warning: Lorentz tag ordering: %s is not %s in %s\n"
+#                             % (lorentztag,lname,vertex))
+
+    return lorentztag
+
+def colors(vertex) :
+    try:
+        unique = CheckUnique()
+        for pl in vertex.particles_list:
+            struct = [ p.color for p in pl ]
+            unique(struct)
+    except:
+        struct = [ p.color for p in vertex.particles ]
+    pos = colorpositions(struct)
+    L = len(struct)
+    return (L,pos)
+
+def colorfactor(vertex,L,pos):
+    def match(patterns):
+        result = [ p == t
+                   for p,t in zip(patterns,vertex.color) ]
+        return all(result)
+
+    label = None
+    l = lambda c: len(pos[c])
+    if l(1) == L:
+        label = ('1',)
+        if match(label): return ('1',)
+
+    elif l(3) == l(-3) == 1 and l(1) == L-2:
+        nums = [pos[3][0], pos[-3][0]]
+        label = ('Identity({0},{1})'.format(*sorted(nums)),)
+        if match(label): return ('1',)
+
+    elif l(6) == l(-6) == 1 and l(1) == L-2:
+        nums = [pos[6][0], pos[-6][0]]
+        label = ('Identity({0},{1})'.format(*sorted(nums)),)
+        if match(label): return ('1',)
+
+    elif l(6) == l(-6) == 2 and L==4:
+        sys.stderr.write(
+            'Warning: Unknown colour structure 6 6 6~ 6~ ( {ps} ) in {name}.\n'
+            .format(name=vertex.name, ps=' '.join(map(str,vertex.particles)))
+        )
+        raise SkipThisVertex()
+
+    elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
+        label = ('T({g},{q},{qb})'.format(g=pos[8][0],q=pos[3][0],qb=pos[-3][0]),)
+        if match(label): return ('1',)
+
+    elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
+        label = ('T6({g},{s},{sb})'.format(g=pos[8][0],s=pos[6][0],sb=pos[-6][0]),)
+        if match(label): return ('1',)
+
+    elif l(6) == 1 and l(-3) == 2 and L==3:
+        label = ('K6({s},{qb1},{qb2})'.format(s=pos[6][0],qb1=pos[-3][0],qb2=pos[-3][1]),)
+        if match(label): return ('1',)
+
+    elif l(-6) == 1 and l(3) == 2 and L==3:
+        label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
+        if match(label): return ('1',)
+
+    elif l(3) == L == 3:
+        label = ('Epsilon(1,2,3)',)
+        if match(label): return ('1',) # TODO check factor!
+
+    elif l(-3) == L == 3:
+        label = ('EpsilonBar(1,2,3)',)
+        if match(label): return ('1',) # TODO check factor!
+
+    elif l(8) == L == 3:
+        # if lorentz is FFV get extra minus sign
+        lorentztag = unique_lorentztag(vertex)
+        factor = '*(-1)' if lorentztag in ['FFV'] else ''
+        label = ('f(1,2,3)',)
+        if match(label): return ('-complex(0,1)%s'%factor,)
+        label = ('f(3,2,1)',)
+        if match(label): return ('complex(0,1)%s'%factor,)
+        label = ('f(2,1,3)',)
+        if match(label): return ('complex(0,1)%s'%factor,)
+
+    elif l(8) == L == 4:
+        label = ('f(-1,1,2)*f(3,4,-1)',
+                 'f(-1,1,3)*f(2,4,-1)',
+                 'f(-1,1,4)*f(2,3,-1)',
+             )
+        if match(label): return ('-1./3.','-1./3.','-1./3.')
+
+    elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
+        subs = {
+            'g1' : pos[8][0],
+            'g2' : pos[8][1],
+            'qq' : pos[3][0],
+            'qb' : pos[-3][0] 
+        }
+        label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
+                 'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
+        if match(label): return ('0.5','0.5')
+        
+    elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
+        subs = {
+            'g1' : pos[8][0],
+            'g2' : pos[8][1],
+            'qq' : pos[6][0],
+            'qb' : pos[-6][0] 
+        }
+        label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
+                 'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
+        if match(label): return ('0.5','0.5')
+
+    elif l(8) == 2 and l(8)+l(1)==L :
+        subs = { 'g1' : pos[8][0], 'g2' : pos[8][1] }
+        label = ('Identity({g1},{g2})'.format(**subs),)
+        if match(label) : return ('1.',)
+
+    elif l(8) == 3 and l(1)==1 and L==4 :
+        label = ('f(1,2,3)',)
+        if match(label): return ('-complex(0,1)',)
+        label = ('f(3,2,1)',)
+        if match(label): return ('complex(0,1)',)
+        label = ('f(2,1,3)',)
+        if match(label): return ('complex(0,1)',)
+
+    sys.stderr.write(
+        "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
+        .format(color = ' '.join(vertex.color), name = vertex.name,
+                ps = ' '.join(map(str,vertex.particles)))
+    )
+    raise SkipThisVertex()
+
+def colorpositions(struct):
+    positions = { 
+        1 : [],
+        3 : [],
+        -3 : [],
+        6 : [],
+        -6 : [],
+        8 : [],
+    }
+    for i,s in enumerate(struct,1):
+        positions[s].append(i)
+    return positions
+
+def spindirectory(lt):
+    """Return the spin directory name for a given Lorentz tag."""
+    if 'T' in lt:
+        spin_directory = 'Tensor'
+    elif 'S' in lt:
+        spin_directory = 'Scalar'
+    elif 'V' in lt:
+        spin_directory = 'Vector'
+    else:
+        raise Exception("Unknown Lorentz tag {lt}.".format(lt=lt))
+    return spin_directory
 
 def write_vertex_file(subs):
     'Write the .cc file for some vertices'
