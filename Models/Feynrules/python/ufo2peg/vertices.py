@@ -271,6 +271,16 @@ def calculatePrefactor(globalsign,lorentztag,lf,cf) :
     #     prefactor = '%s * (%s)' % (prefactor,fact[ix])
     # return prefactor
 
+def couplingValue(coupling) :
+    if type(coupling) is not list:
+        value = coupling.value
+    else:
+        value = "("
+        for coup in coupling :
+            value += '+(%s)' % coup.value
+            value +=")"
+    return value
+
 class VertexConverter:
     'Convert the vertices in a FR model to extract the information ThePEG needs.'
     def __init__(self,model) :
@@ -389,6 +399,10 @@ Herwig may not give correct results, though.
             L,pos = colors(vertex)
             cf = colorfactor(vertex,L,pos)
         except SkipThisVertex:
+            msg = 'Warning: Color structure for vertex ( {ps} ) in {name} ' \
+                  'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
+                                               ps=' '.join(map(str,vertex.particles)))
+            sys.stderr.write(msg)
             vertex.herwig_skip_vertex = True
             self.vertex_skipped=True
             return (True,"","")
@@ -400,6 +414,10 @@ Herwig may not give correct results, though.
             (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,ordering) = \
             self.extractCouplings(lorentztag,pos,lf,cf,vertex)
         except SkipThisVertex:
+            msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                  'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
+                                               ps=' '.join(map(str,vertex.particles)))
+            sys.stderr.write(msg)
             vertex.herwig_skip_vertex = True
             self.vertex_skipped=True
             return (True,"","")
@@ -546,12 +564,15 @@ Herwig may not give correct results, though.
                 L = vertex.lorentz[lorentz_idx]
                 prefactors = calculatePrefactor(self.globalsign,lorentztag,lf,cf[color_idx])
                 ordering = ''
+                # calculate the value of the coupling
+                value = couplingValue(coupling)
+                # handling of the different types of couplings
                 if lorentztag in ['FFS','FFV']:
                     left,right = parse_lorentz(L.structure)
                     if left:
-                        coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
+                        coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,value))
                     if right:
-                        coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
+                        coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,value))
                     if lorentztag == 'FFV':
                         ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
                                     % vertex.particles[0].pdg_code)
@@ -573,6 +594,12 @@ Herwig may not give correct results, though.
                                 couplings_VVS[ix]=tc[ix]
                             else :
                                 couplings_VVS[ix] = '(( %s ) + ( %s ) )' % (couplings_VVS[ix],tc[ix])
+                elif lorentztag == "SSS" or lorentztag == "SSSS" :
+                    try :
+                        val = int(L.structure)
+                    except :
+                        raise SkipThisVertex()
+                    coup_norm.append('(%s) * (%s)' % (prefactors,value))
                 else:
                     if lorentztag == 'VSS':
                         if L.structure == 'P(1,3) - P(1,2)':
@@ -591,13 +618,6 @@ Herwig may not give correct results, though.
                     elif lorentztag == 'VVVS' :
                         if len(pos[8]) == 0 :
                             ordering = VVVordering(vertex)
-                    if type(coupling) is not list:
-                        value = coupling.value
-                    else:
-                        value = "("
-                        for coup in coupling :
-                            value += '+(%s)' % coup.value
-                            value +=")"
                     coup_norm.append('(%s) * (%s)' % (prefactors,value))
 
 
