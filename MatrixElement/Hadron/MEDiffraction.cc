@@ -239,9 +239,9 @@ bool MEDiffraction::generateKinematics(const double * ) {
       {
     
         pair<Lorentz5Momentum,Lorentz5Momentum> decayMomenta;
-        pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;
-        const double phiprime = UseRandom::rnd() * Constants::twopi;
-        
+        pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;	
+ 	//absolute collinear dissociation of the hadron 
+        const double phiprime = phi; 
         //aligned with outgoing dissociated proton
         const double costhetaprime = costheta;
         
