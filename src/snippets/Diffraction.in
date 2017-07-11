@@ -11,11 +11,11 @@ create Herwig::MEDiffraction MEDiffractionDouble
 set MEDiffractionDouble:DiffDirection Both
 
 create Herwig::MEDiffraction MEDiffractionDeltaLeft
-set MEDiffractionDouble:DiffDirection Left
+set MEDiffractionDeltaLeft:DiffDirection Left
 create Herwig::MEDiffraction MEDiffractionDeltaRight
-set MEDiffractionDouble:DiffDirection Right
+set MEDiffractionDeltaRight:DiffDirection Right
 create Herwig::MEDiffraction MEDiffractionDeltaDouble
-set MEDiffractionDouble:DiffDirection Both
+set MEDiffractionDeltaDouble:DiffDirection Both
 
 # Make a parton extractor for diffraction
 cd /Herwig/Partons

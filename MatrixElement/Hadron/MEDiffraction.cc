@@ -318,10 +318,11 @@ bool MEDiffraction::generateKinematics(const double * ) {
       
       }else
       {
-            meMomenta()[2+diffDirection].setVect(p3.vect());
-            meMomenta()[2+diffDirection].setT(p3.t());
-            meMomenta()[3-diffDirection].setVect(p4.vect());
-            meMomenta()[3-diffDirection].setT(p4.t());
+            const auto tmp=diffDirection==1?1:0;
+            meMomenta()[2+tmp].setVect(p3.vect());
+            meMomenta()[2+tmp].setT(p3.t());
+            meMomenta()[3-tmp].setVect(p4.vect());
+            meMomenta()[3-tmp].setT(p4.t());
     
             meMomenta()[2].rescaleEnergy();
             meMomenta()[3].rescaleEnergy();
