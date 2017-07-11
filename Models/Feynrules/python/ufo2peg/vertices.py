@@ -4,7 +4,8 @@ from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_m
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
-from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,lorentzScalar
+from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,lorentzScalar,processTensorCouplings
+from .helpers import SkipThisVertex
 
 # names of goldstone bosons
 gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
@@ -60,8 +61,6 @@ long id [3]={{{id1},{id2},{id3}}};
     double kine1 = {kine};
     norm(norm()*kine1);
 """
-class SkipThisVertex(Exception):
-    pass
 
 def get_lorentztag(spin):
     """Produce a ThePEG spin tag for the given numeric FR spins."""
@@ -299,7 +298,7 @@ def couplingValue(coupling) :
 
 class VertexConverter:
     'Convert the vertices in a FR model to extract the information ThePEG needs.'
-    def __init__(self,model) :
+    def __init__(self,model,parmsubs) :
         'Initialize the parameters'
         self.ONE_EACH=True
         self.verbose=False
@@ -310,6 +309,7 @@ class VertexConverter:
         self.modelname=""
         self.globalsign=self.global_sign()
         self.no_generic_loop_vertices = False
+        self.parmsubs = parmsubs
 
     def global_sign(self):
         'Initial pass to find global sign at the moment does nothing'
@@ -567,9 +567,12 @@ Herwig may not give correct results, though.
         unique_qed = CheckUnique()
         maxColour=0
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
-            maxColour=max(maxColour,color_idx)
-        for colour in range(0,maxColour+1) : 
-            for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
+            maxColour=max(maxColour,color_idx)            
+        all_couplings=[]
+        for ix in range(0,maxColour+1) :
+            all_couplings.append([])
+        for colour in range(0,maxColour+1) :
+            for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
                 if(color_idx!=colour) : continue
                 qcd, qed = qcd_qed_orders(vertex, coupling)
                 unique_qcd( qcd )
@@ -590,11 +593,8 @@ Herwig may not give correct results, though.
                         ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
                                     % vertex.particles[0].pdg_code)
                 elif 'T' in lorentztag :
-                    all_coup, left_coup, right_coup, ordering = \
-                                                                tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos)
-                    coup_norm  += all_coup
-                    coup_left  += left_coup
-                    coup_right += right_coup
+                    ordering, all_couplings[color_idx] = tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos,
+                                                                         all_couplings[color_idx])
                 elif lorentztag == 'VVS' :
                     tc = VVSCouplings(vertex,coupling,prefactors,L,lorentztag)
                     if(len(couplings_VVS)==0) :
@@ -613,7 +613,7 @@ Herwig may not give correct results, though.
                         coup_norm.append('(%s) * (%s)' % (prefactors,value))
                     except :
                         output = lorentzScalar(vertex,L)
-                        if( not output) :
+                        if( not output ) :
                             raise SkipThisVertex()
                         else :
                             coup_norm.append('(%s) * (%s)' % (prefactors,value))
@@ -642,7 +642,10 @@ Herwig may not give correct results, though.
                             ordering = VVVordering(vertex)
                     coup_norm.append('(%s) * (%s)' % (prefactors,value))
 
-
+        # final processing of the couplings
+        if('T' in lorentztag) :
+            (coup_left,coup_right,coup_norm) = processTensorCouplings(lorentztag,vertex,self.model,
+                                                                      self.parmsubs,all_couplings)
             #print 'Colour  :',vertex.color[color_idx]
             #print 'Lorentz %s:'%L.name, L.spins, L.structure
             #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd

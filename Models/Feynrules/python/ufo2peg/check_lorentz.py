@@ -1,4 +1,5 @@
-import itertools,cmath
+import itertools,cmath,re
+from .helpers import SkipThisVertex
 
 # ordering for EW VVV vertices
 def VVVordering(vertex) :
@@ -16,7 +17,7 @@ def VVVordering(vertex) :
                         vertex.particles[0].pdg_code)
     return ordering
 
-def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
+def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos,all_couplings) :
     # split the structure into its different terms for analysis
     ordering=""
     structure1 = L.structure.split()
@@ -30,44 +31,56 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
         else :
             structures.append(sign+struct.strip())
             sign=''
-    lterms=[]
-    rterms=[]
     if(lorentztag == 'SST') :
         terms=[['P(1003,2)','P(2003,1)'],
                ['P(1003,1)','P(2003,2)'],
-               ['P(-1,1)','P(-1,2)','Metric(1003,2003)']]
-        signs=[1.,1.,-1.]
+               ['P(-1,1)','P(-1,2)','Metric(1003,2003)'],
+               ['Metric(1003,2003)']]
+        signs=[1.,1.,-1.,-1.]
+        new_couplings=[False]*len(terms)
     elif(lorentztag == 'FFT' ) :
         terms=[['P(2003,1)','Gamma(1003,2,1)'],
                ['P(2003,2)','Gamma(1003,2,1)'],
                ['P(1003,1)','Gamma(2003,2,1)'],
                ['P(1003,2)','Gamma(2003,2,1)'],
                ['P(-1,1)','Gamma(-1,2,1)','Metric(1003,2003)'],
-               ['P(-1,2)','Gamma(-1,2,1)','Metric(1003,2003)']]
-        signs=[1.,-1.,1.,-1.,-0.5,0.5]
+               ['P(-1,2)','Gamma(-1,2,1)','Metric(1003,2003)'],
+               ['Metric(1003,2003)']]
+        signs=[1.,-1.,1.,-1.,-0.5,0.5,1.]
+        new_couplings=[False]*3*len(terms)
     elif(lorentztag == 'VVT' ) :
-        terms=[['P(-1,1)','P(-1,2)','Metric(1,2003)','Metric(2,1003)'],
-               ['P(-1,1)','P(-1,2)','Metric(1,1003)','Metric(2,2003)'],
-               ['P(-1,1)','P(-1,2)','Metric(1,2)','Metric(1003,2003)'],
-               ['P(1,2)','P(2,1)','Metric(1003,2003)'],
-               ['P(1,2)','P(2003,1)','Metric(2,1003)'],
-               ['P(1,2)','P(1003,1)','Metric(2,2003)'],
-               ['P(2,1)','P(2003,2)','Metric(1,1003)'],
-               ['P(2,1)','P(1003,2)','Metric(1,2003)'],
-               ['P(1003,2)','P(2003,1)','Metric(1,2)'],
-               ['P(1003,1)','P(2003,2)','Metric(1,2)']]
-        signs=[1.,1.,-1.,1.,-1.,-1.,-1.,-1.,1.,1.]
+        terms=[['P(-1,1)','P(-1,2)','Metric(1,2003)','Metric(2,1003)'], # from C term
+               ['P(-1,1)','P(-1,2)','Metric(1,1003)','Metric(2,2003)'], # from C term
+               ['P(-1,1)','P(-1,2)','Metric(1,2)','Metric(1003,2003)'], # from C term
+               ['P(1,2)','P(2,1)','Metric(1003,2003)'], # from D term (sym)
+               ['P(1,2)','P(2003,1)','Metric(2,1003)'], # 1st term
+               ['P(1,2)','P(1003,1)','Metric(2,2003)'], # 1st swap
+               ['P(2,1)','P(2003,2)','Metric(1,1003)'], # 2nd term
+               ['P(2,1)','P(1003,2)','Metric(1,2003)'], # 2nd swap
+               ['P(1003,2)','P(2003,1)','Metric(1,2)'], # 3rd term 
+               ['P(1003,1)','P(2003,2)','Metric(1,2)'], # 3rd swap
+               ['Metric(1,2003)','Metric(2,1003)'], # from mass term
+               ['Metric(1,1003)','Metric(2,2003)'], # from mass term
+               ['Metric(1,2)','Metric(1003,2003)'], # from mass term
+               ['P(1,1)','P(2,1)','Metric(1003,2003)'], # gauge terms
+               ['P(1,2)','P(2,2)','Metric(1003,2003)'], # gauge terms
+               ['P(1,1)','P(2,2)','Metric(1003,2003)'], # gauge terms
+               ['P(1003,1)','P(1,1)','Metric(2,2003)'], # gauge terms
+               ['P(1003,2)','P(2,2)','Metric(1,2003)'], # gauge terms
+               ['P(2003,1)','P(1,1)','Metric(2,1003)'], # gauge terms
+               ['P(2003,2)','P(2,2)','Metric(1,1003)'], # gauge terms
+        ]
+        signs=[1.,1.,-1.,1.,-1.,-1.,-1.,-1.,1.,1.,1.,1.,-1.,1.,1.,0.25,-1.,-1.,-1.,-1.]
+        new_couplings=[False]*len(terms)
     elif(lorentztag == 'FFVT' ) :
         terms = [['Gamma(2004,2,1)','Metric(3,1004)'],
                  ['Gamma(1004,2,1)','Metric(3,2004)'],
-                 ['Gamma(3,2,1)','Metric(1004,2004)']]
-        lterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjM(-1,1)'],
-                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjM(-1,1)'],
-                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjM(-1,1)']]
-        rterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjP(-1,1)'],
-                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjP(-1,1)'],
-                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjP(-1,1)']]
-        signs=[1.,1.,-0.5]
+                 ['Gamma(3,2,1)','Metric(1004,2004)'],
+                 ['Gamma(2004,2,-1)','Metric(3,1004)'],
+                 ['Gamma(1004,2,-1)','Metric(3,2004)'],
+                 ['Gamma(3,2,-1)','Metric(1004,2004)']]
+        signs=[1.,1.,-0.5,1.,1.,-0.5]
+        new_couplings=[False]*3*len(terms)
     elif(lorentztag == 'VVVT' ) :
         # the F(mu nu,rho sigma lambda) terms first
         terms = [['P(2004,2)','Metric(1,1004)','Metric(2,3)'],['P(2004,3)','Metric(1,1004)','Metric(2,3)'],
@@ -87,38 +100,184 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
                  ['P(1,2)','Metric(2,3)','Metric(1004,2004)'],['P(1,3)','Metric(2,3)','Metric(1004,2004)']]
         signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
                  1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
-        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
-                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
+        new_couplings=[False]*len(terms)
         l = lambda c: len(pos[c])
         if l(8)!=3 :
             ordering = VVVordering(vertex)
     # unknown
     else :
         raise Exception('Unknown data type "%s".' % lorentztag)
-    sum   = [0.,0.,0.]
-    itype = 0
-    for types in (terms,lterms,rterms) :
-        i=0
-        for term in types:
-            for perm in itertools.permutations(term):
-                label = '*'.join(perm)
-                for struct in structures :
-                    if label in struct :
-                        reminder = struct.replace(label,'1.',1)
-                        sum[itype] += eval(reminder, {'cmath':cmath} )*signs[i]
-            i+=1
-        itype += 1
-    all_coup   = []
-    left_coup  = []
-    right_coup = []
-    if(len(lterms)==0) :
-        all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
+    iterm=0
+    for term in terms:
+        for perm in itertools.permutations(term):
+            label = '*'.join(perm)
+            for istruct in range(0,len(structures)) :
+                if label in structures[istruct] :
+                    reminder = structures[istruct].replace(label,'1.',1)
+                    loc=iterm
+                    if(reminder.find("ProjM")>=0) :
+                        reminder=re.sub("\*ProjM\(.*,.\)","",reminder)
+                        loc+=len(terms)
+                    elif(reminder.find("ProjP")>=0) :
+                        reminder=re.sub("\*ProjP\(.*,.\)","",reminder)
+                        loc+=2*len(terms)
+                    structures[istruct] = "Done"
+                    value = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                    if(new_couplings[loc]) :
+                        new_couplings[loc] += value
+                    else :
+                        new_couplings[loc] = value
+        iterm+=1
+    # check we've handled all the terms
+    for val in structures:
+        if(val!="Done") :
+            raise SkipThisVertex()
+    # special for FFVT
+    if(lorentztag=="FFVT") :
+        t_couplings=new_couplings
+        new_couplings=[False]*9
+        for i in range(0,9) :
+            j = i+3*(i/3)
+            k = i+3+3*(i/3)
+            if( not t_couplings[j]) :
+                new_couplings[i] = t_couplings[k]
+            else :
+                new_couplings[i] = t_couplings[j]
+    # set the couplings
+    for icoup in range(0,len(new_couplings)) :
+        if(new_couplings[icoup]) :
+            new_couplings[icoup] = '(%s) * (%s) *(%s)' % (new_couplings[icoup],prefactors,coupling.value)
+    if(len(all_couplings)==0) :
+        all_couplings=new_couplings
     else :
-        sum[1] += sum[0]
-        sum[2] += sum[0]
-        left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
-        right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
-    return (all_coup,left_coup,right_coup,ordering)
+        for icoup in range(0,len(new_couplings)) :
+            if(new_couplings[icoup] and all_couplings[icoup]) :
+                all_couplings[icoup] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[icoup],prefactors,coupling.value,all_couplings[icoup])
+            elif(new_couplings[icoup]) :
+                all_couplings[icoup] = new_couplings[icoup]
+    # return the results
+    return (ordering,all_couplings)
+
+def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
+    def evaluate(x):
+        import cmath
+        return eval(x, 
+                    {'cmath':cmath,
+                     'complexconjugate':model.function_library.complexconjugate}, 
+                    parmsubs)
+    # check for fermion vertices (i.e. has L/R couplings)
+    fermions = "FF" in lorentztag
+    # test and process the values of the couplings
+    tval  = [False]*3
+    value = [False]*3
+    # loop over the colours
+    for icolor in range(0,len(all_couplings)) :
+        lmax = len(all_couplings[icolor])
+        if(fermions) : lmax /=3
+        # loop over the different terms
+        for ix in range(0,lmax) :
+            test = [False]*3
+            # normal case
+            if( not fermions ) :
+                test[0] = all_couplings[icolor][ix]
+            else :
+                # first case vector but no L/R couplings
+                if( not all_couplings[icolor][lmax+ix]  and
+                    not all_couplings[icolor][2*lmax+ix] ) :
+                    test[0] = all_couplings[icolor][ix]
+                    # special for mass terms and massless particles
+                    if(not all_couplings[icolor][ix]) :
+                        code = abs(vertex.particles[0].pdg_code)
+                        if(ix==6 and code ==12 or code ==14 or code==16) :
+                            continue
+                        else :
+                            raise SkipThisVertex()
+                # second case L/R couplings
+                elif( not all_couplings[icolor][ix] ) :
+                    # L=R, replace with vector
+                    if(all_couplings[icolor][lmax+ix] ==
+                       all_couplings[icolor][2*lmax+ix]) :
+                        test[0]  = all_couplings[icolor][lmax+ix]
+                    else :
+                        test[1] = all_couplings[icolor][lmax+ix]
+                        test[2] = all_couplings[icolor][2*lmax+ix]
+                else :
+                    raise SkipThisVertex()
+            # special handling of mass terms
+            # scalar divide by m**2
+            if((ix==3 and lorentztag=="SST") or
+               ( ix>=10 and ix<=12 and lorentztag=="VVT" )) :
+                for i in range(0,len(test)) :
+                    if(test[i]) :
+                        test[i] = '(%s)/%s**2' % (test[i],vertex.particles[0].mass.value)
+            # fermions divide by 4*m
+            elif(ix==6 and lorentztag=="FFT" and
+                 float(vertex.particles[0].mass.value) != 0. ) :
+                for i in range(0,len(test)) :
+                    if(test[i]) :
+                        test[i] = '-(%s)/%s/4' % (test[i],vertex.particles[0].mass.value)
+            # set values on first pass
+            if(not tval[0] and not tval[1] and not tval[2]) :
+                value = test
+                for i in range(0,len(test)) :
+                    if(test[i]) : tval[i] = evaluate(test[i])
+            else :
+                for i in range(0,len(test)) :
+                    if(not test[i] and not tval[i]) :
+                        continue
+                    if(not test[i] or not tval[i]) :
+                        # special for mass terms and vectors
+                        if(lorentztag=="VVT" and ix >=10 and ix <=12 and
+                           float(vertex.particles[0].mass.value) == 0. ) :
+                            continue
+                        # special for vector gauge terms
+                        if(lorentztag=="VVT" and ix>=13) :
+                            continue
+                        raise SkipThisVertex()
+                    tval2 = evaluate(test[i])
+                    if(abs(tval[i]-tval2)>1e-6) :
+                        # special for fermion mass term if fermions massless
+                        if(lorentztag=="FFT" and ix ==6 and tval2 == 0. and
+                           float(vertex.particles[0].mass.value) == 0. ) :
+                            continue
+                        raise SkipThisVertex()
+    # simple clean up
+    for i in range(0,len(value)):
+        if(value[i]) :
+            value[i] = value[i].replace("(1.0) * ","").replace(" * (1)","")
+    # put everything together
+    coup_left  = []
+    coup_right = []
+    coup_norm  = []
+    if(lorentztag ==  "SST" or lorentztag == "VVT" or
+       lorentztag == "VVVT" or lorentztag == "FFT" ) :
+        coup_norm.append(value[0])
+        if(value[1] or value[2]) :
+            raise SkipThisVertex()
+    elif(lorentztag=="FFVT") :
+        if(not value[1] and not value[2]) :
+            coup_norm.append(value[0])
+            coup_left.append("1.")
+            coup_right.append("1.")
+        elif(not value[0]) :
+            coup_norm.append("1.")
+            if(value[1] and value[2]) :
+                coup_left.append(value[1])
+                coup_right.append(value[2])
+            elif(value[1]) :
+                coup_left.append(value[1])
+                coup_right.append("0.")
+            elif(value[2]) :
+                coup_left.append("0.")
+                coup_right.append(value[2])
+            else :
+                raise SkipThisVertex()
+        else :
+            raise SkipThisVertex()
+    else :
+        raise SkipThisVertex()
+    # return the answer
+    return (coup_left,coup_right,coup_norm)
 
 def EWVVVVCouplings(vertex,L) :
     terms=['Metric(1,2)*Metric(3,4)',
@@ -346,7 +505,6 @@ def lorentzScalar(vertex,L) :
             (momentum,mom2,index2) = getIndices(term)
             if(index2==index) :
                 structure.remove(term)
-                print { "i1" : mom, "i2" : mom2 }
                 dot = dotProduct.format(i1=mom-1,i2=mom2-1)
                 if(output=="") :
                     output = dot

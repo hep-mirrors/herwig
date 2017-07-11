@@ -228,3 +228,6 @@ if False:
             plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
         #print 'Conjugate vertex:', plistarray[1]
 
+
+class SkipThisVertex(Exception):
+    pass
