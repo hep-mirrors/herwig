@@ -239,7 +239,7 @@ bool MEDiffraction::generateKinematics(const double * ) {
     
         pair<Lorentz5Momentum,Lorentz5Momentum> decayMomenta;
         pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;
-        const double phiprime = UseRandom::rnd() * Constants::twopi;
+        const double phiprime = phi;
         
         //aligned with outgoing dissociated proton
         const double costhetaprime = costheta;
