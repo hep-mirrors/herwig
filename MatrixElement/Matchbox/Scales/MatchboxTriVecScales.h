@@ -49,21 +49,6 @@ public:
 public:
 
   /**
-   * Return the HtPrime scale.
-   */
-  virtual Energy2 HtPrimeScale() const;
-
-  /**
-   * Return the rapidity modified HtPrime scale.
-   */
-  virtual Energy2 HtPrimeModScale() const;
-
-  /**
-   * Return the Et scale.
-   */
-  virtual Energy2 EtScale() const;
-
-  /**
    * Return the renormalization scale. This default version returns
    * shat.
    */

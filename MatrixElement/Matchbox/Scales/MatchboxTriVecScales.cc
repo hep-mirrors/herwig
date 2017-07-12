@@ -39,8 +39,9 @@ IBPtr MatchboxTriVecScales::fullclone() const {
   return new_ptr(*this);
 }
 
-Energy2 MatchboxTriVecScales::HtPrimeScale() const {
+Energy2 MatchboxTriVecScales::renormalizationScale() const {
 
+  // calculate scales
   tcPDVector pd (mePartonData().begin() + 2, mePartonData().end());
   vector<LorentzMomentum> p (meMomenta().begin() + 2, meMomenta().end());
   tcPDPtr t1 = mePartonData()[0];
@@ -50,81 +51,81 @@ Energy2 MatchboxTriVecScales::HtPrimeScale() const {
   theJetFinder->cluster(pd, p, cuts, t1, t2);
 
   Energy sumpartpt = ZERO;
-  int foundpart = 0;
-  Energy vec1et = ZERO;
-  Energy vec2et = ZERO;
-  Energy vec3et = ZERO;
+  Energy vecet[3] = {ZERO,ZERO,ZERO};
   Energy sumvecet = ZERO;
   int foundlept[3] = {0,0,0}; // First entry for e-like, second entry for mu-like, third entry for tau-like
-  int ivec1 = 0;
-  int ivec2 = 0;
-  int ivec3 = 0;
+  int ivec[3] = {0,0,0};
   tcPDVector::const_iterator itpd = pd.begin();
   int ip = 2;
+
+  double avgy12 = 0;
+  if ( theTriVecScaleChoice==2 ) {
+    LorentzMomentum p1 = LorentzMomentum();
+    LorentzMomentum p2 = LorentzMomentum();
+    int njets = 0;
+    for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
+         itp != p.end(); ++itp, ++itpd, ++ip ) 
+      if ( (**itpd).coloured() ) {
+	++njets;
+        if ( itp->perp() > p1.perp() ) {
+	  p1 = *itp;
+	  p2 = p1;
+	} else if ( itp->perp() > p2.perp() ) 
+	  p2 = *itp;
+      }
+    if ( njets < 2 )
+      throw Exception() << "MatchboxTriVecScales: Not enough jets in event for HtPrimeModScale!"
+			<< Exception::runerror;
+    avgy12 = (p1.rapidity()+p2.rapidity())/2.;
+  }
+
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
        itp != p.end(); ++itp, ++itpd, ++ip ) {
     if ( (**itpd).coloured() ) {
-      sumpartpt += (*itp).perp();
-      foundpart++;
+      if ( theTriVecScaleChoice==2 ) 
+        sumpartpt += (*itp).perp()*exp(abs((*itp).rapidity()-avgy12));
+      else
+        sumpartpt += (*itp).perp();
     }
     if ( !(**itpd).coloured() ) {
       if ( abs((**itpd).id())==ParticleID::nu_e || abs((**itpd).id())==ParticleID::eminus ) {
-        if ( foundlept[0]==0 ) {
-          foundlept[0] +=1;
-          ivec1 = ip;
-	}
-        if ( foundlept[0]==1 ) {
-          vec1et = sqrt( (p[ivec1]+p[ip]).m2() + (p[ivec1]+p[ip]).perp2() );
-	}
+        if ( ++foundlept[0] == 1 )
+          ivec[0] = ip;
+	if ( foundlept[0] == 2 )
+          vecet[0] = sqrt( (p[ivec[0]]+p[ip]).m2() + (p[ivec[0]]+p[ip]).perp2() );
       }
       if ( abs((**itpd).id())==ParticleID::nu_mu || abs((**itpd).id())==ParticleID::muminus ) {
-        if ( foundlept[1]==0 ) {
-          foundlept[1] +=1;
-          ivec2 = ip;
-	}
-        if ( foundlept[1]==1 ) {
-          vec2et = sqrt( (p[ivec2]+p[ip]).m2() + (p[ivec2]+p[ip]).perp2() );
-	}
+        if ( ++foundlept[1] == 1 )
+          ivec[1] = ip;
+	if ( foundlept[1] == 2 )
+          vecet[1] = sqrt( (p[ivec[1]]+p[ip]).m2() + (p[ivec[1]]+p[ip]).perp2() );
       }
       if ( abs((**itpd).id())==ParticleID::nu_tau || abs((**itpd).id())==ParticleID::tauminus ) {
-        if ( foundlept[2]==0 ) {
-          foundlept[2] +=1;
-          ivec3 = ip;
-	}
-        if ( foundlept[2]==1 ) {
-          vec3et = sqrt( (p[ivec3]+p[ip]).m2() + (p[ivec3]+p[ip]).perp2() );
-	}
+        if ( ++foundlept[2] == 1 )
+          ivec[2] = ip;
+	if ( foundlept[2] == 2 )
+          vecet[2] = sqrt( (p[ivec[2]]+p[ip]).m2() + (p[ivec[2]]+p[ip]).perp2() );
       }
     }
   }
-  sumvecet = vec1et+vec2et+vec3et;
 
   // Check for consistency in number of lepton pairs and members therein
   for (int i = 0; i<3; ++i ) {
-    if (foundlept[i]>2 || foundlept[i]%2!=0) 
-      throw Exception() << "MatchboxTriVecScales::HtPrimeScale(): Inconsistency in number of lepton pairs and members therein!"
+    if ( foundlept[i] != 2 ) 
+      throw Exception() << "MatchboxTriVecScales: Inconsistency in number of lepton pairs and members therein!"
 			<< Exception::runerror;
   }
 
-  return sqr(sumpartpt+sumvecet);
+  sumvecet = vecet[0]+vecet[1]+vecet[2];
 
-}
-
-Energy2 MatchboxTriVecScales::HtPrimeModScale() const {
-  throw Exception() << "MatchboxTriVecScales::HtPrimeModScale(): Not yet implemented!" << Exception::runerror;
-}
-
-Energy2 MatchboxTriVecScales::EtScale() const {
-  throw Exception() << "MatchboxTriVecScales::EtScale(): Not yet implemented!" << Exception::runerror;
-}
-
-Energy2 MatchboxTriVecScales::renormalizationScale() const {
-//   if ( theTriVecScaleChoice==1 ) return 0.5*HtPrimeScale();
-//   else if ( theTriVecScaleChoice==2 ) return 0.5*HtPrimeModScale();
-//   else if ( theTriVecScaleChoice==3 ) return 0.5*EtScale();
-  if ( theTriVecScaleChoice==2 ) return 0.5*HtPrimeModScale();
-  if ( theTriVecScaleChoice==3 ) return 0.5*EtScale();
-  return 0.5*HtPrimeScale(); // The default is theTriVecScaleChoice==1
+  if ( theTriVecScaleChoice==1 || theTriVecScaleChoice==2 ) 
+    return sqr(0.5*(sumpartpt+sumvecet));
+  else if ( theTriVecScaleChoice==3 ) 
+    return sqr(0.5*sumvecet);
+  else
+    throw Exception() << "MatchboxTriVecScales: Scale choice out of range: " 
+	              << theTriVecScaleChoice
+                      << Exception::runerror;
 }
 
 Energy2 MatchboxTriVecScales::factorizationScale() const {
@@ -184,8 +185,7 @@ void MatchboxTriVecScales::Init() {
   static SwitchOption interfaceTriVecScaleChoice3
     (interfaceTriVecScaleChoice,
      "EtScale",
-     "Sum of the transverse energies of the lepton pairs and the transverse energies of the jets."
-     "This scale choice is defined only for two or more jets in the event.",
+     "Sum of the transverse energies of the lepton pairs.",
      3);
 
 }
