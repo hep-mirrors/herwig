@@ -4,8 +4,9 @@ from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_m
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
-from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,lorentzScalar,\
-    processTensorCouplings,scalarCouplings,processScalarCouplings
+from .check_lorentz import tensorCouplings,VVVordering,EWVVVVCouplings,lorentzScalar,\
+    processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
+    processScalarVectorCouplings
 from .helpers import SkipThisVertex
 
 # names of goldstone bosons
@@ -371,6 +372,26 @@ Herwig may not give correct results, though.
         
         print '='*60
 
+    def setCouplingPtrs(self,lorentztag,qcd,append,prepend) :
+        couplingptrs = [',tcPDPtr']*len(lorentztag)
+        if lorentztag == 'VSS':
+            couplingptrs[1] += ' p2'
+        elif lorentztag == 'FFV':
+            couplingptrs[0] += ' p1'
+        elif (lorentztag == 'VVV' or lorentztag == 'VVVS' or
+              lorentztag == "SSS" or lorentztag == "VVVT" ) \
+             and (append  or prepend ) :
+            couplingptrs[0] += ' p1'
+            couplingptrs[1] += ' p2'
+            couplingptrs[2] += ' p3'
+        elif (lorentztag == 'VVVV' and qcd != 2) or\
+             (lorentztag == "SSSS" and prepend ):
+            couplingptrs[0] += ' p1'
+            couplingptrs[1] += ' p2'
+            couplingptrs[2] += ' p3'
+            couplingptrs[3] += ' p4'
+        return couplingptrs
+
     def processVertex(self,vertexnumber,vertex) :
         # get the Lorentz tag for the vertex
         lorentztag = unique_lorentztag(vertex)
@@ -412,7 +433,7 @@ Herwig may not give correct results, though.
         classname = 'V_%s' % vertex.name
         # try to extract the couplings
         try:
-            (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,prepend,append) = \
+            (all_couplings,kinematics,qcd,qed,prepend,append) = \
             self.extractCouplings(lorentztag,pos,lf,cf,vertex)
         except SkipThisVertex:
             msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
@@ -423,34 +444,28 @@ Herwig may not give correct results, though.
             self.vertex_skipped=True
             return (True,"","")
 
-        leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
-        rightcontent = ' + '.join(coup_right) if coup_right else '0'
-        normcontent  = ' + '.join(coup_norm)  if coup_norm  else '1'
+        # set the coupling ptrs in the setCoupling call
+        couplingptrs = self.setCouplingPtrs(lorentztag,qcd,append != '',prepend != '')
 
-        #print 'Left:',leftcontent
-        #print 'Right:',rightcontent
-        #print 'Norm:',normcontent
-        #print '---------------'
-        couplingptrs = [',tcPDPtr']*len(lorentztag)
-        if lorentztag == 'VSS':
-            couplingptrs[1] += ' p2'
-        elif lorentztag == 'FFV':
-            couplingptrs[0] += ' p1'
-        elif (lorentztag == 'VVV' or lorentztag == 'VVVS' or
-              lorentztag == "SSS" or lorentztag == "VVVT" ) \
-             and (append != '' or prepend != '') :
-            couplingptrs[0] += ' p1'
-            couplingptrs[1] += ' p2'
-            couplingptrs[2] += ' p3'
-        elif (lorentztag == 'VVVV' and qcd != 2) or\
-             (lorentztag == "SSSS" and prepend !=''):
-            couplingptrs[0] += ' p1'
-            couplingptrs[1] += ' p2'
-            couplingptrs[2] += ' p3'
-            couplingptrs[3] += ' p4'
+        # final processing of the couplings
+        symbols = set()
+        if('T' in lorentztag) :
+            (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
+                                                                            self.parmsubs,all_couplings)
+        elif(lorentztag=="SSS" or lorentztag=="SSSS") :
+            normcontent = processScalarCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
+        elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
+            normcontent,append,lorentztag,kinematics,sym = \
+                processScalarVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,kinematics)
+            symbols |=sym
+        else :
+            normcontent = all_couplings[0]
+            leftcontent = all_couplings[1]
+            rightcontent = all_couplings[2]
+
+
         
         ### do we need left/right?
-        symbols = set()
         if 'FF' in lorentztag and lorentztag != "FFT":
             #leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
             #rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
@@ -460,27 +475,6 @@ Herwig may not give correct results, though.
             symbols |= sym
             left = 'left(' + leftcalc + ');'
             right = 'right(' + rightcalc + ');'
-        elif lorentztag == 'VVS':
-            if(couplings_VVS[0]==0. and couplings_VVS[1]==0. and couplings_VVS[2]==0. and \
-               couplings_VVS[3]==0. and couplings_VVS[4]==0. and couplings_VVS[5]!=0) :
-                normcontent  = couplings_VVS[5]
-                left=''
-                right=''
-            else :
-                for ix in range(0,len(couplings_VVS)) :
-                    if(couplings_VVS[ix] !=0.) :
-                        couplings_VVS[ix], sym = py2cpp(couplings_VVS[ix])
-                        symbols |= sym
-                lorentztag = 'GeneralVVS'
-                kinematics='true'
-                # g_mu,nv piece of coupling 
-                if(couplings_VVS[5]!=0.) :
-                    left  = 'a00( %s + Complex(( %s )* GeV2/invariant(1,2)));' % ( couplings_VVS[0],couplings_VVS[5])
-                else :
-                    left  = 'a00( %s );' % couplings_VVS[0]
-                # other couplings
-                right = 'a11( %s );\n    a12( %s );\n    a21( %s );\n    a22( %s ); aEp( %s ); ' % \
-                       ( couplings_VVS[1],couplings_VVS[2],couplings_VVS[3],couplings_VVS[4],couplings_VVS[6] )
         else:
             left = ''
             right = ''
@@ -497,7 +491,6 @@ Herwig may not give correct results, though.
         elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
             normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
         norm = 'norm(' + normcalc + ');'
-
         # define unkown symbols from the model
         symboldefs = [ def_from_model(self.model,s) for s in symbols ]
         ### assemble dictionary and fill template
@@ -545,7 +538,6 @@ Herwig may not give correct results, though.
         coup_left  = []
         coup_right = []
         coup_norm = []
-        couplings_VVS = []
         kinematics = "false"
         qcd=0
         qed=0
@@ -582,28 +574,15 @@ Herwig may not give correct results, though.
                 elif 'T' in lorentztag :
                     append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                                                                        all_couplings[color_idx])
-                elif lorentztag == 'VVS' :
-                    tc = VVSCouplings(vertex,coupling,prefactors,L,lorentztag)
-                    if(len(couplings_VVS)==0) :
-                        couplings_VVS=tc
-                    else :
-                        for ix in range(0,len(couplings_VVS)) :
-                            if(tc[ix] == 0.) :
-                                continue
-                            elif(couplings_VVS[ix]==0.) :
-                                couplings_VVS[ix]=tc[ix]
-                            else :
-                                couplings_VVS[ix] = '(( %s ) + ( %s ) )' % (couplings_VVS[ix],tc[ix])
+
+                elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
+                    all_couplings[color_idx] = scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                     all_couplings[color_idx],append,kinematics)
                 elif lorentztag == "SSS" or lorentztag == "SSSS" :
                     prepend, kinematics, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
                                                                                     all_couplings[color_idx],prepend,kinematics)
                 else:
-                    if lorentztag == 'VSS':
-                        if L.structure == 'P(1,3) - P(1,2)':
-                            prefactors += ' * (-1)'
-                            append = 'if(p2->id()!=%s){norm(-norm());}' \
-                                     % vertex.particles[1].pdg_code
-                    elif lorentztag == 'VVVV':
+                    if lorentztag == 'VVVV':
                         if qcd==2:
                             append = 'setType(1);\nsetOrder(0,1,2,3);'
                         else:
@@ -617,11 +596,15 @@ Herwig may not give correct results, though.
                             append = VVVordering(vertex)
                     coup_norm.append('(%s) * (%s)' % (prefactors,value))
 
-        # final processing of the couplings
-        if('T' in lorentztag) :
-            (coup_left,coup_right,coup_norm) = processTensorCouplings(lorentztag,vertex,self.model,
-                                                                      self.parmsubs,all_couplings)
-        elif(lorentztag=="SSS" or lorentztag=="SSSS") :
-            coup_norm = processScalarCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
-            # return the result
-        return (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,prepend,append)
+        # special for vertices still in old structure till they get moved
+        if( lorentztag=="FFV" or lorentztag == "FFS" or lorentztag=="VVV" or lorentztag =="VVVS" or lorentztag == "VVVV") :
+            leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
+            rightcontent = ' + '.join(coup_right) if coup_right else '0'
+            normcontent  = ' + '.join(coup_norm)  if coup_norm  else '1'
+            all_couplings=[]
+            all_couplings.append(normcontent)
+            all_couplings.append(leftcontent)
+            all_couplings.append(rightcontent)
+
+        # return the result
+        return (all_couplings,kinematics,qcd,qed,prepend,append)
