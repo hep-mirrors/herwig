@@ -91,6 +91,7 @@ def qcd_qed_orders(vertex, coupling):
 
 def def_from_model(FR,s):
     """Return a C++ line that defines parameter s as coming from the model file."""
+    if("hw_kine" in s) :return ""
     stype = typemap(getattr(FR.parameters,s).type)
     return '{t} {s} = model_->{s}();'.format(t=stype,s=s)
 

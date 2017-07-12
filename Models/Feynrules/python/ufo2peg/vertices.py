@@ -4,7 +4,8 @@ from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_m
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
-from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,lorentzScalar,processTensorCouplings
+from .check_lorentz import tensorCouplings,VVVordering,VVSCouplings,EWVVVVCouplings,lorentzScalar,\
+    processTensorCouplings,scalarCouplings,processScalarCouplings
 from .helpers import SkipThisVertex
 
 # names of goldstone bosons
@@ -45,22 +46,6 @@ create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
 insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 """
 
-kinematicsline = """\
-long id [3]={{{id1},{id2},{id3}}};
-    long id2[3]={{p1->id(),p2->id(),p3->id()}};
-    unsigned int i[3];
-    for(unsigned int ix=0;ix<3;++ix) {{
-      for(unsigned int iy=0;iy<3;++iy) {{
-	if(id[ix]==id2[iy]) {{
-	  i[ix] = iy;
-	  id2[iy]=0;
-	  break;
-	}}
-      }}
-    }}
-    double kine1 = {kine};
-    norm(norm()*kine1);
-"""
 
 def get_lorentztag(spin):
     """Produce a ThePEG spin tag for the given numeric FR spins."""
@@ -427,7 +412,7 @@ Herwig may not give correct results, though.
         classname = 'V_%s' % vertex.name
         # try to extract the couplings
         try:
-            (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,ordering) = \
+            (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,prepend,append) = \
             self.extractCouplings(lorentztag,pos,lf,cf,vertex)
         except SkipThisVertex:
             msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
@@ -453,11 +438,12 @@ Herwig may not give correct results, though.
             couplingptrs[0] += ' p1'
         elif (lorentztag == 'VVV' or lorentztag == 'VVVS' or
               lorentztag == "SSS" or lorentztag == "VVVT" ) \
-             and ordering != '':
+             and (append != '' or prepend != '') :
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
             couplingptrs[2] += ' p3'
-        elif lorentztag == 'VVVV' and qcd != 2:
+        elif (lorentztag == 'VVVV' and qcd != 2) or\
+             (lorentztag == "SSSS" and prepend !=''):
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
             couplingptrs[2] += ' p3'
@@ -532,7 +518,8 @@ Herwig may not give correct results, though.
                  'couplingptrs' : ''.join(couplingptrs),
                  'spindirectory' : spindirectory(lorentztag),
                  'ModelName' : self.modelname,
-                 'ordering' : ordering,
+                 'prepend' : prepend,
+                 'append' : append,
                  'kinematics' : kinematics
                  }             # ok
 
@@ -562,7 +549,8 @@ Herwig may not give correct results, though.
         kinematics = "false"
         qcd=0
         qed=0
-        ordering=""
+        prepend=""
+        append=""
         unique_qcd = CheckUnique()
         unique_qed = CheckUnique()
         maxColour=0
@@ -579,7 +567,6 @@ Herwig may not give correct results, though.
                 unique_qed( qed )
                 L = vertex.lorentz[lorentz_idx]
                 prefactors = calculatePrefactor(self.globalsign,lorentztag,lf,cf[color_idx])
-                ordering = ''
                 # calculate the value of the coupling
                 value = couplingValue(coupling)
                 # handling of the different types of couplings
@@ -590,11 +577,11 @@ Herwig may not give correct results, though.
                     if right:
                         coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,value))
                     if lorentztag == 'FFV':
-                        ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
                                     % vertex.particles[0].pdg_code)
                 elif 'T' in lorentztag :
-                    ordering, all_couplings[color_idx] = tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos,
-                                                                         all_couplings[color_idx])
+                    append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                       all_couplings[color_idx])
                 elif lorentztag == 'VVS' :
                     tc = VVSCouplings(vertex,coupling,prefactors,L,lorentztag)
                     if(len(couplings_VVS)==0) :
@@ -608,46 +595,33 @@ Herwig may not give correct results, though.
                             else :
                                 couplings_VVS[ix] = '(( %s ) + ( %s ) )' % (couplings_VVS[ix],tc[ix])
                 elif lorentztag == "SSS" or lorentztag == "SSSS" :
-                    try :
-                        val = int(L.structure)
-                        coup_norm.append('(%s) * (%s)' % (prefactors,value))
-                    except :
-                        output = lorentzScalar(vertex,L)
-                        if( not output ) :
-                            raise SkipThisVertex()
-                        else :
-                            coup_norm.append('(%s) * (%s)' % (prefactors,value))
-                            ordering = kinematicsline.format(id1=vertex.particles[0].pdg_code,
-                                                             id2=vertex.particles[1].pdg_code,
-                                                             id3=vertex.particles[2].pdg_code,
-                                                             kine=output)
-                            kinematics="true"
+                    prepend, kinematics, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                                    all_couplings[color_idx],prepend,kinematics)
                 else:
                     if lorentztag == 'VSS':
                         if L.structure == 'P(1,3) - P(1,2)':
                             prefactors += ' * (-1)'
-                            ordering = 'if(p2->id()!=%s){norm(-norm());}' \
-                                       % vertex.particles[1].pdg_code
+                            append = 'if(p2->id()!=%s){norm(-norm());}' \
+                                     % vertex.particles[1].pdg_code
                     elif lorentztag == 'VVVV':
                         if qcd==2:
-                            ordering = 'setType(1);\nsetOrder(0,1,2,3);'
+                            append = 'setType(1);\nsetOrder(0,1,2,3);'
                         else:
-                            ordering, factor = EWVVVVCouplings(vertex,L)
+                            append, factor = EWVVVVCouplings(vertex,L)
                             prefactors += ' * (%s)' % factor
                     elif lorentztag == 'VVV':
                         if len(pos[8]) != 3:
-                            ordering = VVVordering(vertex)
+                            append = VVVordering(vertex)
                     elif lorentztag == 'VVVS' :
                         if len(pos[8]) == 0 :
-                            ordering = VVVordering(vertex)
+                            append = VVVordering(vertex)
                     coup_norm.append('(%s) * (%s)' % (prefactors,value))
 
         # final processing of the couplings
         if('T' in lorentztag) :
             (coup_left,coup_right,coup_norm) = processTensorCouplings(lorentztag,vertex,self.model,
                                                                       self.parmsubs,all_couplings)
-            #print 'Colour  :',vertex.color[color_idx]
-            #print 'Lorentz %s:'%L.name, L.spins, L.structure
-            #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
-            #print '---------------'
-        return (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,ordering)
+        elif(lorentztag=="SSS" or lorentztag=="SSSS") :
+            coup_norm = processScalarCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
+            # return the result
+        return (coup_left,coup_right,coup_norm,couplings_VVS,kinematics,qcd,qed,prepend,append)

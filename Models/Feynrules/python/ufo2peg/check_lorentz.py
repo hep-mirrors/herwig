@@ -17,7 +17,7 @@ def VVVordering(vertex) :
                         vertex.particles[0].pdg_code)
     return ordering
 
-def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos,all_couplings) :
+def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings) :
     # split the structure into its different terms for analysis
     ordering=""
     structure1 = L.structure.split()
@@ -146,13 +146,13 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos,all_couplings) :
     # set the couplings
     for icoup in range(0,len(new_couplings)) :
         if(new_couplings[icoup]) :
-            new_couplings[icoup] = '(%s) * (%s) *(%s)' % (new_couplings[icoup],prefactors,coupling.value)
+            new_couplings[icoup] = '(%s) * (%s) *(%s)' % (new_couplings[icoup],prefactors,value)
     if(len(all_couplings)==0) :
         all_couplings=new_couplings
     else :
         for icoup in range(0,len(new_couplings)) :
             if(new_couplings[icoup] and all_couplings[icoup]) :
-                all_couplings[icoup] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[icoup],prefactors,coupling.value,all_couplings[icoup])
+                all_couplings[icoup] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[icoup],prefactors,value,all_couplings[icoup])
             elif(new_couplings[icoup]) :
                 all_couplings[icoup] = new_couplings[icoup]
     # return the results
@@ -517,3 +517,105 @@ def lorentzScalar(vertex,L) :
         return False
     else :
         return output
+
+kinematicsline = """\
+long id [3]={{{id1},{id2},{id3}}};
+    long id2[3]={{p1->id(),p2->id(),p3->id()}};
+    unsigned int i[3];
+    for(unsigned int ix=0;ix<3;++ix) {{
+      for(unsigned int iy=0;iy<3;++iy) {{
+	if(id[ix]==id2[iy]) {{
+	  i[ix] = iy;
+	  id2[iy]=0;
+	  break;
+	}}
+      }}
+    }}
+    double hw_kine1 = {kine};
+"""
+
+kinematicsline2 = """\
+long id [4]={{{id1},{id2},{id3},{id4}}};
+    long id2[4]={{p1->id(),p2->id(),p3->id(),p4->id()}};
+    unsigned int i[4];
+    for(unsigned int ix=0;ix<4;++ix) {{
+      for(unsigned int iy=0;iy<4;++iy) {{
+	if(id[ix]==id2[iy]) {{
+	  i[ix] = iy;
+	  id2[iy]=0;
+	  break;
+	}}
+      }}
+    }}
+    double hw_kine1 = {kine};
+"""
+
+kinematicsline3 ="""\
+    double hw_kine{i} = {kine};
+"""
+
+def scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                    all_couplings,ordering,kinematics) :
+    try :
+        val = int(L.structure)
+    except :
+        output = lorentzScalar(vertex,L)
+        if( not output ) :
+            raise SkipThisVertex()
+        else :
+            if(ordering=="") :
+                if(lorentztag=="SSS") :
+                    ordering = kinematicsline.format(id1=vertex.particles[0].pdg_code,
+                                                     id2=vertex.particles[1].pdg_code,
+                                                     id3=vertex.particles[2].pdg_code,
+                                                     kine=output)
+                else :
+                    ordering = kinematicsline2.format(id1=vertex.particles[0].pdg_code,
+                                                      id2=vertex.particles[1].pdg_code,
+                                                      id3=vertex.particles[2].pdg_code,
+                                                      id4=vertex.particles[2].pdg_code,
+                                                      kine=output)
+                value = "(%s) *(hw_kine1)" % value
+            else :
+                osplit=ordering.split("\n")
+                i=-1
+                while osplit[i]=="":
+                    i=i-1
+                ikin=int(osplit[i].split("=")[0].replace("double hw_kine",""))+1
+                ordering +=kinematicsline3.format(kine=output,i=ikin)
+                value = "(%s) *(hw_kine%s)" % (value,ikin)
+            kinematics="true"
+    if(len(all_couplings)==0) :
+        all_couplings.append('(%s) * (%s)' % (prefactors,value))
+    else :
+        all_couplings[0] = '(%s) * (%s) + (%s)' % (prefactors,value)
+    return (ordering, kinematics,all_couplings)
+
+def processScalarCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
+    def evaluate(x):
+        import cmath
+        return eval(x, 
+                    {'cmath':cmath,
+                     'complexconjugate':model.function_library.complexconjugate}, 
+                    parmsubs)
+    tval = False
+    value = False
+    for icolor in range(0,len(all_couplings)) :
+        if(len(all_couplings[icolor])!=1) :
+            raise SkipThisVertex
+        if(not value) :
+            value = all_couplings[icolor][0]
+        m = re.findall('hw_kine[0-9]*',  all_couplings[icolor][0])
+        if m:
+            for kine in m:
+                # bizarre number for checks, must be a better option
+                parmsubs[kine] = 987654321.
+        if(not tval) :
+            tval = evaluate(value)
+        else :
+            tval2 = evaluate(all_couplings[icolor][0])
+            if(abs(tval[i]-tval2)>1e-6) :
+                raise SkipThisVertex()
+    # cleanup and return the answer
+    value = value.replace("(1.0) * ","").replace(" * (1)","")
+    return [value]
