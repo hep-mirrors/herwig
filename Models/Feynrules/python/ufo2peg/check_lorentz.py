@@ -367,8 +367,7 @@ def VVSEpsilon(couplings,struct) :
         couplings[6] = "( %s ) + ( %s%s )" % (couplings[6],sign,fact)
 
 
-def scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                          all_couplings,append,header) :
+def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings) :
     # set up the types of term we are looking for
     if(lorentztag=="VVS") :
         couplings=[0.,0.,0.,0.,0.,0.,0.]
@@ -554,8 +553,8 @@ kinematicsline3 ="""\
     double hw_kine{i} = {kine};
 """
 
-def scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                    all_couplings,ordering,header) :
+def scalarCouplings(vertex,value,prefactors,L,lorentztag,
+                    all_couplings,prepend,header) :
     try :
         val = int(L.structure)
     except :
@@ -563,35 +562,35 @@ def scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
         if( not output ) :
             raise SkipThisVertex()
         else :
-            if(ordering=="") :
+            if(prepend=="") :
                 if(lorentztag=="SSS") :
-                    ordering = kinematicsline.format(id1=vertex.particles[0].pdg_code,
+                    prepend = kinematicsline.format(id1=vertex.particles[0].pdg_code,
                                                      id2=vertex.particles[1].pdg_code,
                                                      id3=vertex.particles[2].pdg_code,
                                                      kine=output)
                 else :
-                    ordering = kinematicsline2.format(id1=vertex.particles[0].pdg_code,
+                    prepend = kinematicsline2.format(id1=vertex.particles[0].pdg_code,
                                                       id2=vertex.particles[1].pdg_code,
                                                       id3=vertex.particles[2].pdg_code,
                                                       id4=vertex.particles[2].pdg_code,
                                                       kine=output)
                 value = "(%s) *(hw_kine1)" % value
             else :
-                osplit=ordering.split("\n")
+                osplit=prepend.split("\n")
                 i=-1
                 while osplit[i]=="":
                     i=i-1
                 ikin=int(osplit[i].split("=")[0].replace("double hw_kine",""))+1
-                ordering +=kinematicsline3.format(kine=output,i=ikin)
+                prepend +=kinematicsline3.format(kine=output,i=ikin)
                 value = "(%s) *(hw_kine%s)" % (value,ikin)
             header="kinematics(true);"
     if(len(all_couplings)==0) :
         all_couplings.append('(%s) * (%s)' % (prefactors,value))
     else :
         all_couplings[0] = '(%s) * (%s) + (%s)' % (prefactors,value)
-    return (ordering, header,all_couplings)
+    return (prepend, header,all_couplings)
 
-def processScalarCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
+def processScalarCouplings(model,parmsubs,all_couplings) :
     def evaluate(x):
         import cmath
         return eval(x, 
@@ -602,7 +601,7 @@ def processScalarCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
     value = False
     for icolor in range(0,len(all_couplings)) :
         if(len(all_couplings[icolor])!=1) :
-            raise SkipThisVertex
+            raise SkipThisVertex()
         if(not value) :
             value = all_couplings[icolor][0]
         m = re.findall('hw_kine[0-9]*',  all_couplings[icolor][0])

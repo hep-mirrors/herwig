@@ -456,7 +456,7 @@ Herwig may not give correct results, though.
             (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
                                                                             self.parmsubs,all_couplings)
         elif(lorentztag=="SSS" or lorentztag=="SSSS") :
-            normcontent = processScalarCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
+            normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
         elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
             normcontent,append,lorentztag,header,sym = \
                 processScalarVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,header)
@@ -573,11 +573,11 @@ Herwig may not give correct results, though.
                                                                        all_couplings[color_idx])
 
                 elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
-                    all_couplings[color_idx] = scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                     all_couplings[color_idx],append,header)
+                    all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,lorentztag,
+                                                                     all_couplings[color_idx])
                 elif lorentztag == "SSS" or lorentztag == "SSSS" :
-                    prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                                    all_couplings[color_idx],prepend,header)
+                    prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,
+                                                                                all_couplings[color_idx],prepend,header)
                 elif "VVV" in lorentztag :
                     all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                                                                       all_couplings[color_idx],append,qcd)
