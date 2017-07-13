@@ -1,12 +1,11 @@
 import sys,pprint
 
 from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_model
-from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
-    processScalarVectorCouplings,vectorCouplings,processVectorCouplings
+    processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings
 from .helpers import SkipThisVertex
 
 # names of goldstone bosons
@@ -449,7 +448,9 @@ Herwig may not give correct results, though.
 
         # final processing of the couplings
         symbols = set()
-        if('T' in lorentztag) :
+        if(lorentztag in ['FFS','FFV']) :
+            (normcontent,leftcontent,rightcontent) = processFermionCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
+        elif('T' in lorentztag) :
             (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
                                                                             self.parmsubs,all_couplings)
         elif(lorentztag=="SSS" or lorentztag=="SSSS") :
@@ -462,9 +463,7 @@ Herwig may not give correct results, though.
             normcontent,append,header =\
                 processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
         else :
-            normcontent = all_couplings[0]
-            leftcontent = all_couplings[1]
-            rightcontent = all_couplings[2]
+            skipThisVertex()
 
 
         
@@ -566,14 +565,8 @@ Herwig may not give correct results, though.
                 value = couplingValue(coupling)
                 # handling of the different types of couplings
                 if lorentztag in ['FFS','FFV']:
-                    left,right = parse_lorentz(L.structure)
-                    if left:
-                        coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,value))
-                    if right:
-                        coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,value))
-                    if lorentztag == 'FFV':
-                        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
-                                    % vertex.particles[0].pdg_code)
+                    append, all_couplings[color_idx] = fermionCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                        all_couplings[color_idx],append)
                 elif 'T' in lorentztag :
                     append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                                                                        all_couplings[color_idx])
@@ -589,16 +582,6 @@ Herwig may not give correct results, though.
                                                                       all_couplings[color_idx],append,qcd)
                 else:
                     raise SkipThisVertex()
-
-        # special for vertices still in old structure till they get moved
-        if( lorentztag=="FFV" or lorentztag == "FFS") :
-            leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
-            rightcontent = ' + '.join(coup_right) if coup_right else '0'
-            normcontent  = ' + '.join(coup_norm)  if coup_norm  else '1'
-            all_couplings=[]
-            all_couplings.append(normcontent)
-            all_couplings.append(leftcontent)
-            all_couplings.append(rightcontent)
 
         # return the result
         return (all_couplings,header,qcd,qed,prepend,append)

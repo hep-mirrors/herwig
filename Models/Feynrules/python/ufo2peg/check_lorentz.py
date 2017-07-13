@@ -1,6 +1,7 @@
 import itertools,cmath,re
 from .helpers import SkipThisVertex
 from .converter import py2cpp
+from .lorentzparser import parse_lorentz
 
 # ordering for EW VVV vertices
 def VVVordering(vertex) :
@@ -700,7 +701,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                     value = all_couplings[icolor][ix]
                     tval = evaluate(value)
                 else :
-                    tval2 = evaluate(value)
+                    tval2 = evaluate(all_couplings[icolor][ix])
                     if(abs(tval-tval2)>1e-6) :
                         raise SkipThisVertex()
     elif(lorentztag=="VVVV") :
@@ -814,3 +815,41 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
     # cleanup and return the answer
     value = value.replace("(1.0) * ","").replace(" * (1)","")
     return (value,append,header)
+
+def fermionCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,append) :
+    new_couplings=[False,False]
+    new_couplings[0],new_couplings[1] = parse_lorentz(L.structure)
+    for i in range(0,2) :
+        if new_couplings[i]:
+            new_couplings[i] = '(%s) * (%s) * (%s)' % (prefactors,new_couplings[i],value)
+    if lorentztag == 'FFV':
+        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                  % vertex.particles[0].pdg_code)
+    if(len(all_couplings)==0) :
+        all_couplings=new_couplings
+    else :
+        for i in range(0,len(new_couplings)) :
+            if(new_couplings[i] and all_couplings[i]) :
+                all_couplings[i] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[i],prefactors,value,all_couplings[i])
+            elif(new_couplings[i]) :
+                all_couplings[i] = new_couplings[i]
+    return (append,all_couplings)
+
+def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
+    def evaluate(x):
+        import cmath
+        return eval(x, 
+                    {'cmath':cmath,
+                     'complexconjugate':model.function_library.complexconjugate}, 
+                    parmsubs)
+    leftcontent  = all_couplings[0][0] if all_couplings[0][0] else "0."
+    rightcontent = all_couplings[0][1] if all_couplings[0][1] else "0."
+    tval=[evaluate( leftcontent),evaluate(rightcontent)]
+    for icolor in range(0,len(all_couplings)) :
+        # loop over the different terms
+        for ix in range(0,len(all_couplings[icolor])) :
+            tval2 = evaluate(all_couplings[icolor][ix]) if all_couplings[icolor][ix] else 0.
+            if(abs(tval[ix]-tval2)>1e-6) :
+                raise SkipThisVertex()
+    normcontent  = "1."
+    return normcontent,leftcontent,rightcontent
