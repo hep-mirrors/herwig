@@ -4,9 +4,9 @@ from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_m
 from .lorentzparser import parse_lorentz
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
-from .check_lorentz import tensorCouplings,VVVordering,EWVVVVCouplings,lorentzScalar,\
+from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
-    processScalarVectorCouplings
+    processScalarVectorCouplings,vectorCouplings,processVectorCouplings
 from .helpers import SkipThisVertex
 
 # names of goldstone bosons
@@ -160,7 +160,7 @@ def colorfactor(vertex,L,pos):
                  'f(-1,1,3)*f(2,4,-1)',
                  'f(-1,1,4)*f(2,3,-1)',
              )
-        if match(label): return ('-1./3.','-1./3.','-1./3.')
+        if match(label): return ('-1.','-1.','-1.')
 
     elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {
@@ -433,7 +433,7 @@ Herwig may not give correct results, though.
         classname = 'V_%s' % vertex.name
         # try to extract the couplings
         try:
-            (all_couplings,kinematics,qcd,qed,prepend,append) = \
+            (all_couplings,header,qcd,qed,prepend,append) = \
             self.extractCouplings(lorentztag,pos,lf,cf,vertex)
         except SkipThisVertex:
             msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
@@ -455,9 +455,12 @@ Herwig may not give correct results, though.
         elif(lorentztag=="SSS" or lorentztag=="SSSS") :
             normcontent = processScalarCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
         elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
-            normcontent,append,lorentztag,kinematics,sym = \
-                processScalarVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,kinematics)
+            normcontent,append,lorentztag,header,sym = \
+                processScalarVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,header)
             symbols |=sym
+        elif("VVV" in lorentztag) :
+            normcontent,append,header =\
+                processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
         else :
             normcontent = all_couplings[0]
             leftcontent = all_couplings[1]
@@ -513,7 +516,7 @@ Herwig may not give correct results, though.
                  'ModelName' : self.modelname,
                  'prepend' : prepend,
                  'append' : append,
-                 'kinematics' : kinematics
+                 'header' : header
                  }             # ok
 
         # print info if required
@@ -538,7 +541,7 @@ Herwig may not give correct results, though.
         coup_left  = []
         coup_right = []
         coup_norm = []
-        kinematics = "false"
+        header = ""
         qcd=0
         qed=0
         prepend=""
@@ -577,27 +580,18 @@ Herwig may not give correct results, though.
 
                 elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
                     all_couplings[color_idx] = scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                     all_couplings[color_idx],append,kinematics)
+                                                                     all_couplings[color_idx],append,header)
                 elif lorentztag == "SSS" or lorentztag == "SSSS" :
-                    prepend, kinematics, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                                    all_couplings[color_idx],prepend,kinematics)
+                    prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                                    all_couplings[color_idx],prepend,header)
+                elif "VVV" in lorentztag :
+                    all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                      all_couplings[color_idx],append,qcd)
                 else:
-                    if lorentztag == 'VVVV':
-                        if qcd==2:
-                            append = 'setType(1);\nsetOrder(0,1,2,3);'
-                        else:
-                            append, factor = EWVVVVCouplings(vertex,L)
-                            prefactors += ' * (%s)' % factor
-                    elif lorentztag == 'VVV':
-                        if len(pos[8]) != 3:
-                            append = VVVordering(vertex)
-                    elif lorentztag == 'VVVS' :
-                        if len(pos[8]) == 0 :
-                            append = VVVordering(vertex)
-                    coup_norm.append('(%s) * (%s)' % (prefactors,value))
+                    raise SkipThisVertex()
 
         # special for vertices still in old structure till they get moved
-        if( lorentztag=="FFV" or lorentztag == "FFS" or lorentztag=="VVV" or lorentztag =="VVVS" or lorentztag == "VVVV") :
+        if( lorentztag=="FFV" or lorentztag == "FFS") :
             leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
             rightcontent = ' + '.join(coup_right) if coup_right else '0'
             normcontent  = ' + '.join(coup_norm)  if coup_norm  else '1'
@@ -607,4 +601,4 @@ Herwig may not give correct results, though.
             all_couplings.append(rightcontent)
 
         # return the result
-        return (all_couplings,kinematics,qcd,qed,prepend,append)
+        return (all_couplings,header,qcd,qed,prepend,append)

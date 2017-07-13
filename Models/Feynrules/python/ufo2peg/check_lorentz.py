@@ -21,17 +21,7 @@ def VVVordering(vertex) :
 def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings) :
     # split the structure into its different terms for analysis
     ordering=""
-    structure1 = L.structure.split()
-    structures =[]
-    sign=''
-    for struct in structure1 :
-        if(struct=='+') :
-            continue
-        elif(struct=='-') :
-            sign='-'
-        else :
-            structures.append(sign+struct.strip())
-            sign=''
+    structures = extractStructures(L)
     if(lorentztag == 'SST') :
         terms=[['P(1003,2)','P(2003,1)'],
                ['P(1003,1)','P(2003,2)'],
@@ -123,11 +113,11 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings) :
                         reminder=re.sub("\*ProjP\(.*,.\)","",reminder)
                         loc+=2*len(terms)
                     structures[istruct] = "Done"
-                    value = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                    val = eval(reminder, {'cmath':cmath} )*signs[iterm]
                     if(new_couplings[loc]) :
-                        new_couplings[loc] += value
+                        new_couplings[loc] += val
                     else :
-                        new_couplings[loc] = value
+                        new_couplings[loc] = val
         iterm+=1
     # check we've handled all the terms
     for val in structures:
@@ -280,13 +270,8 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
     # return the answer
     return (coup_left,coup_right,coup_norm)
 
-def EWVVVVCouplings(vertex,L) :
-    terms=['Metric(1,2)*Metric(3,4)',
-           'Metric(1,3)*Metric(2,4)',
-           'Metric(1,4)*Metric(2,3)']
-
+def extractStructures(L) :
     structure1 = L.structure.split()
-
     structures =[]
     sign=''
     for struct in structure1 :
@@ -297,63 +282,9 @@ def EWVVVVCouplings(vertex,L) :
         else :
             structures.append(sign+struct.strip())
             sign=''
-    factors=[]
-    for term in terms:
-        for struct in structures :
-            if term in struct :
-                reminder = struct.replace(term,'1.',1)
-                try:
-                    factors.append(eval(reminder, {'cmath':cmath} ))
-                except NameError:
-                    name_error = True
-                else:
-                    name_error = False
-
-    if len(factors) != 3 or name_error:
-        sys.stderr.write(
-            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
-            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
-                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
-        )
-        raise SkipThisVertex()
-
-    factor=0.
-    order=[]
-    if(factors[0]==-2.*factors[1] and factors[0]==-2.*factors[2] ) :
-        order=[0,1,2,3]
-        factor = factors[0]/2.
-    elif(factors[1]==-2.*factors[0] and factors[1]==-2.*factors[2] ) :
-        order=[0,2,1,3]
-        factor = factors[1]/2.
-    elif(factors[2]==-2.*factors[0] and factors[2]==-2.*factors[1] ) :
-        order=[0,3,1,2]
-        factor = factors[2]/2.
-    else:
-        sys.stderr.write(
-            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
-            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
-                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
-        )
-        raise SkipThisVertex()
+    return structures
 
 
-    pattern = \
-        "bool done[4]={false,false,false,false};\n" + \
-        "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \
-        "    unsigned int iorder[4]={0,0,0,0};\n" + \
-        "    for(unsigned int ix=0;ix<4;++ix) {\n" + \
-        "       if(!done[0] && part[ix]->id()==%s) {done[0]=true; iorder[%s] = ix; continue;}\n" + \
-        "       if(!done[1] && part[ix]->id()==%s) {done[1]=true; iorder[%s] = ix; continue;}\n" + \
-        "       if(!done[2] && part[ix]->id()==%s) {done[2]=true; iorder[%s] = ix; continue;}\n" + \
-        "       if(!done[3] && part[ix]->id()==%s) {done[3]=true; iorder[%s] = ix; continue;}\n" + \
-        "    }\n" + \
-        "    setType(2);\n" + \
-        "    setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);"
-    ordering=pattern % ( vertex.particles[0].pdg_code,order[0],
-                         vertex.particles[1].pdg_code,order[1],
-                         vertex.particles[2].pdg_code,order[2],
-                         vertex.particles[3].pdg_code,order[3] )
-    return (ordering,factor)
 
 def changeSign(sign1,sign2) :
     if((sign1=="+" and sign2=="+") or\
@@ -362,8 +293,8 @@ def changeSign(sign1,sign2) :
     else :
         return "-"
 
-def epsilonOrder(eps) :
-    terms = eps.strip("Epsilon(").strip(")").split(",")
+def extractAntiSymmetricIndices(instring,funct) :
+    terms = instring.strip(funct).strip(")").split(",")
     sign=1.
     for iy in range(0,len(terms)) :
         for ix in range(-1,-len(terms)+iy,-1) :
@@ -377,6 +308,11 @@ def epsilonOrder(eps) :
             if(swap) :
                 sign *=-1.
                 terms[ix],terms[ix-1] = terms[ix-1],terms[ix]
+    return (terms,sign)
+    
+    
+def epsilonOrder(eps) :
+    terms,sign = extractAntiSymmetricIndices(eps,"Epsilon(")
     return (sign,"Epsilon(%s,%s,%s,%s)" % (terms[0],terms[1],terms[2],terms[3]))
 
     
@@ -431,7 +367,7 @@ def VVSEpsilon(couplings,struct) :
 
 
 def scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                          all_couplings,append,kinematics) :
+                          all_couplings,append,header) :
     # set up the types of term we are looking for
     if(lorentztag=="VVS") :
         couplings=[0.,0.,0.,0.,0.,0.,0.]
@@ -448,17 +384,7 @@ def scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
          couplings=[0.,0.]
          terms=[['P(1,3)'],['P(1,2)']]
     # extract the lorentz structures
-    structure1 = L.structure.split()
-    structures =[]
-    sign=''
-    for struct in structure1 :
-        if(struct=='+') :
-            continue
-        elif(struct=='-') :
-            sign='-'
-        else :
-            structures.append(sign+struct.strip())
-            sign=''
+    structures = extractStructures(L)
     # handle the scalar couplings
     itype=-1
     for term in terms:
@@ -494,7 +420,7 @@ def scalarVectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                 all_couplings[ic] = '(%s) * (%s) * (%s) ' % (prefactors,value,couplings[ic])
     return all_couplings
 
-def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,kinematics) :
+def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,header) :
     def evaluate(x):
         import cmath
         return eval(x, 
@@ -530,7 +456,7 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
                 else :
                     value[ix]=0.
             lorentztag = 'GeneralVVS'
-            kinematics='true'
+            header="kinematics(true);"
             # g_mu,nv piece of coupling 
             if(value[5]!=0.) :
                 append +='a00( %s + Complex(( %s )* GeV2/invariant(1,2)));\n' % ( value[0],value[5])
@@ -548,10 +474,8 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
         coup_norm = value[1]
         append = 'if(p2->id()!=%s){norm(-norm());}' \
                  % vertex.particles[1].pdg_code
-    # # cleanup and return the answer
-    # value = value.replace("(1.0) * ","").replace(" * (1)","")
-    # return [value]
-    return (coup_norm,append,lorentztag,kinematics,symbols)
+    # return the answer
+    return (coup_norm,append,lorentztag,header,symbols)
 
 def getIndices(term) :
     if(term[0:2]=="P(") :
@@ -630,7 +554,7 @@ kinematicsline3 ="""\
 """
 
 def scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                    all_couplings,ordering,kinematics) :
+                    all_couplings,ordering,header) :
     try :
         val = int(L.structure)
     except :
@@ -659,12 +583,12 @@ def scalarCouplings(vertex,value,prefactors,L,lorentztag,pos,
                 ikin=int(osplit[i].split("=")[0].replace("double hw_kine",""))+1
                 ordering +=kinematicsline3.format(kine=output,i=ikin)
                 value = "(%s) *(hw_kine%s)" % (value,ikin)
-            kinematics="true"
+            header="kinematics(true);"
     if(len(all_couplings)==0) :
         all_couplings.append('(%s) * (%s)' % (prefactors,value))
     else :
         all_couplings[0] = '(%s) * (%s) + (%s)' % (prefactors,value)
-    return (ordering, kinematics,all_couplings)
+    return (ordering, header,all_couplings)
 
 def processScalarCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
     def evaluate(x):
@@ -693,3 +617,200 @@ def processScalarCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
                 raise SkipThisVertex()
     # cleanup and return the answer
     return value.replace("(1.0) * ","").replace(" * (1)","")
+
+def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                    all_couplings,append,qcd) :
+    def evaluate(x):
+        import cmath
+        return eval(x, 
+                    {'cmath':cmath,
+                     'complexconjugate':model.function_library.complexconjugate}, 
+                    parmsubs)
+    structures=extractStructures(L)
+    terms=[]
+    signs=[]
+    if(lorentztag=="VVV") :
+        terms=[['P(3,1)','Metric(1,2)'],['P(3,2)','Metric(1,2)'],['P(2,1)','Metric(1,3)'],
+               ['P(2,3)','Metric(1,3)'],['P(1,2)','Metric(2,3)'],['P(1,3)','Metric(2,3)']]
+        signs=[1.,-1.,-1.,1.,1.,-1.]
+    elif(lorentztag=="VVVV") :
+        terms=[['Metric(1,4)','Metric(2,3)'],
+               ['Metric(1,3)','Metric(2,4)'],
+               ['Metric(1,2)','Metric(3,4)']]
+        signs=[1.,1.,1.]
+    elif(lorentztag=="VVVS") :
+        terms=[['P(3,1)','Metric(1,2)'],['P(3,2)','Metric(1,2)'],['P(2,1)','Metric(1,3)'],
+               ['P(2,3)','Metric(1,3)'],['P(1,2)','Metric(2,3)'],['P(1,3)','Metric(2,3)'],
+               ['Epsilon(1,2,3,-1)','P(-1,1)'],['Epsilon(1,2,3,-1)','P(-1,2)'],
+               ['Epsilon(1,2,3,-1)','P(-1,3)']]
+        signs=[1.,-1.,-1.,1.,1.,-1.,1.,1.,1.]
+
+    # extract the couplings
+    new_couplings  = [False]*len(terms)
+    iterm=0
+    for term in terms:
+        for perm in itertools.permutations(term):
+            label = '*'.join(perm)
+            for istruct in range(0,len(structures)) :
+                if label in structures[istruct] :
+                    reminder = structures[istruct].replace(label,'1.',1)
+                    structures[istruct] = "Done"
+                    value = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                    if(new_couplings[iterm]) :
+                        new_couplings[iterm] += value
+                    else :
+                        new_couplings[iterm] = value
+        iterm += 1
+    # check we've handled all the terms
+    for val in structures:
+        if(val!="Done") :
+            print 'not found',structures
+            raise SkipThisVertex()
+    # set the couplings
+    for icoup in range(0,len(new_couplings)) :
+        if(new_couplings[icoup]) :
+            new_couplings[icoup] = '(%s) * (%s) *(%s)' % (new_couplings[icoup],prefactors,value)
+    if(len(all_couplings)==0) :
+        all_couplings=new_couplings
+    else :
+        for icoup in range(0,len(new_couplings)) :
+            if(new_couplings[icoup] and all_couplings[icoup]) :
+                all_couplings[icoup] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[icoup],prefactors,value,all_couplings[icoup])
+            elif(new_couplings[icoup]) :
+                all_couplings[icoup] = new_couplings[icoup]
+    # ordering for VVV type vertices
+    if(len(pos[8]) != 3 and (lorentztag=="VVV" or lorentztag=="VVVS")) :
+        append = VVVordering(vertex)
+    return all_couplings,append
+
+def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append,header) :
+    def evaluate(x):
+        import cmath
+        return eval(x, 
+                    {'cmath':cmath,
+                     'complexconjugate':model.function_library.complexconjugate}, 
+                    parmsubs)
+    value = False
+    tval  = False
+    if(lorentztag=="VVV") :
+        for icolor in range(0,len(all_couplings)) :
+            # loop over the different terms
+            for ix in range(0,len(all_couplings[icolor])) :
+                if(not value) :
+                    value = all_couplings[icolor][ix]
+                    tval = evaluate(value)
+                else :
+                    tval2 = evaluate(value)
+                    if(abs(tval-tval2)>1e-6) :
+                        raise SkipThisVertex()
+    elif(lorentztag=="VVVV") :
+        order=[]
+        colours = vertex.color
+        if(len(colours)==1) :
+            tval=[]
+            for i in range(0,3) :
+                tval.append(evaluate(all_couplings[0][i]))
+            if(tval[2]==-2.*tval[1] and tval[2]==-2.*tval[0] ) :
+                order=[0,1,2,3]
+                value = "0.5*(%s)" % all_couplings[0][2]
+            elif(tval[1]==-2.*tval[2] and tval[1]==-2.*tval[0] ) :
+                order=[0,2,1,3]
+                value = "0.5*(%s)" % all_couplings[0][1]
+            elif(tval[0]==-2.*tval[2] and tval[0]==-2.*tval[1] ) :
+                order=[0,3,1,2]
+                value = "0.5*(%s)" % all_couplings[0][0]
+            else:
+                sys.stderr.write(
+                    'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
+                    .format(tag=unique_lorentztag(vertex), name=vertex.name, 
+                            lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
+                )
+                raise SkipThisVertex()
+            pattern = \
+                      "bool done[4]={false,false,false,false};\n" + \
+                    "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \
+                    "    unsigned int iorder[4]={0,0,0,0};\n" + \
+                    "    for(unsigned int ix=0;ix<4;++ix) {\n" + \
+                    "       if(!done[0] && part[ix]->id()==%s) {done[0]=true; iorder[%s] = ix; continue;}\n" + \
+                "       if(!done[1] && part[ix]->id()==%s) {done[1]=true; iorder[%s] = ix; continue;}\n" + \
+                "       if(!done[2] && part[ix]->id()==%s) {done[2]=true; iorder[%s] = ix; continue;}\n" + \
+                "       if(!done[3] && part[ix]->id()==%s) {done[3]=true; iorder[%s] = ix; continue;}\n" + \
+                "    }\n" + \
+                "    setType(2);\n" + \
+                "    setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);"
+            append = pattern % ( vertex.particles[0].pdg_code,order[0],
+                                 vertex.particles[1].pdg_code,order[1],
+                                 vertex.particles[2].pdg_code,order[2],
+                                 vertex.particles[3].pdg_code,order[3] )
+        else :
+            for icolor in range(0,len(all_couplings)) :
+                col=colours[icolor].split("*")
+                if(len(col)==2 and "f(" in col[0] and "f(" in col[1]) :
+                    sign = 1
+                    for i in range(0,2) :
+                        col[i],stemp = extractAntiSymmetricIndices(col[i],"f(")
+                        for ix in range(0,len(col[i])): col[i][ix]=int(col[i][ix])
+                        sign *=stemp
+                    if(col[0][0]>col[1][0]) : col[0],col[1] = col[1],col[0]
+                    # first flow
+                    if(col[0][0]==1 and col[0][1]==2 and col[1][0] ==3 and col[1][1] == 4) :
+                        if(all_couplings[icolor][2] or not all_couplings[icolor][0] or
+                           not all_couplings[icolor][1]) :
+                            raise SkipThisVertex()
+                        if(not value) :
+                            value = all_couplings[icolor][0]
+                            tval  = evaluate(value)
+                        tval2 = evaluate(all_couplings[icolor][0])
+                        tval3 = -evaluate(all_couplings[icolor][1])
+                    elif(col[0][0]==1 and col[0][1]==3 and col[1][0] ==2 and col[1][1] == 4) : 
+                        if(all_couplings[icolor][1] or not all_couplings[icolor][0] or
+                           not all_couplings[icolor][2]) :
+                            raise SkipThisVertex()
+                        if(not value) :
+                            value = all_couplings[icolor][0]
+                            tval  = evaluate(value)
+                        tval2 = evaluate(all_couplings[icolor][0])
+                        tval3 = -evaluate(all_couplings[icolor][2])
+                    elif(col[0][0]==1 and col[0][1]==4 and col[1][0] ==2 and col[1][1] == 3) : 
+                        if(all_couplings[icolor][0] or not all_couplings[icolor][1] or
+                           not all_couplings[icolor][2]) :
+                            raise SkipThisVertex()
+                        if(not value) :
+                            value = all_couplings[icolor][1]
+                            tval  = evaluate(value)
+                        tval2 = evaluate(all_couplings[icolor][1])
+                        tval3 = -evaluate(all_couplings[icolor][2])
+                    else :
+                        raise SkipThisVertex()
+                    if(abs(tval-tval2)>1e-6 or abs(tval-tval3)>1e-6 ) :
+                        raise SkipThisVertex()
+                    append = 'setType(1);\nsetOrder(0,1,2,3);'
+                else :
+                    print 'unknown colour structure for VVVV vertex'
+                    raise SkipThisVertex()
+    elif(lorentztag=="VVVS") :
+        try :
+            # two distinct cases 0-5 = , 6-8=
+            if(all_couplings[0][0]) :
+                imin=0
+                imax=6
+                header="scalar(true);"
+            else :
+                imin=6
+                imax=9
+                header="scalar(false);"
+            for icolor in range(0,len(all_couplings)) :
+                # loop over the different terms
+                for ix in range(imin,imax) :
+                    if(not value) :
+                        value = all_couplings[icolor][ix]
+                        tval = evaluate(value)
+                    else :
+                        tval2 = evaluate(value)
+                        if(abs(tval-tval2)>1e-6) :
+                            raise SkipThisVertex()
+        except :
+            SkipThisVertex()
+    # cleanup and return the answer
+    value = value.replace("(1.0) * ","").replace(" * (1)","")
+    return (value,append,header)
