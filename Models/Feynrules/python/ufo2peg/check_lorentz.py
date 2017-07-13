@@ -609,6 +609,8 @@ def processScalarCouplings(model,parmsubs,all_couplings) :
 
 def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                     all_couplings,append,qcd) :
+    print 'testing in vector',vertex.particles
+    print value,prefactors
     structures=extractStructures(L)
     terms=[]
     signs=[]
@@ -638,11 +640,11 @@ def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                 if label in structures[istruct] :
                     reminder = structures[istruct].replace(label,'1.',1)
                     structures[istruct] = "Done"
-                    value = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                    val = eval(reminder, {'cmath':cmath} )*signs[iterm]
                     if(new_couplings[iterm]) :
-                        new_couplings[iterm] += value
+                        new_couplings[iterm] += val
                     else :
-                        new_couplings[iterm] = value
+                        new_couplings[iterm] = val
         iterm += 1
     # check we've handled all the terms
     for val in structures:
