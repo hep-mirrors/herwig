@@ -3,6 +3,13 @@ from .helpers import SkipThisVertex
 from .converter import py2cpp
 from .lorentzparser import parse_lorentz
 
+def evaluate(x,model,parmsubs):
+    import cmath
+    return eval(x, 
+                {'cmath':cmath,
+                 'complexconjugate':model.function_library.complexconjugate}, 
+                parmsubs)
+
 # ordering for EW VVV vertices
 def VVVordering(vertex) :
     pattern = "if((p1->id()==%s&&p2->id()==%s&&p3->id()==%s)"+\
@@ -151,12 +158,6 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings) :
     return (ordering,all_couplings)
 
 def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
-    def evaluate(x):
-        import cmath
-        return eval(x, 
-                    {'cmath':cmath,
-                     'complexconjugate':model.function_library.complexconjugate}, 
-                    parmsubs)
     # check for fermion vertices (i.e. has L/R couplings)
     fermions = "FF" in lorentztag
     # test and process the values of the couplings
@@ -212,7 +213,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
             if(not tval[0] and not tval[1] and not tval[2]) :
                 value = test
                 for i in range(0,len(test)) :
-                    if(test[i]) : tval[i] = evaluate(test[i])
+                    if(test[i]) : tval[i] = evaluate(test[i],model,parmsubs)
             else :
                 for i in range(0,len(test)) :
                     if(not test[i] and not tval[i]) :
@@ -226,7 +227,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
                         if(lorentztag=="VVT" and ix>=13) :
                             continue
                         raise SkipThisVertex()
-                    tval2 = evaluate(test[i])
+                    tval2 = evaluate(test[i],model,parmsubs)
                     if(abs(tval[i]-tval2)>1e-6) :
                         # special for fermion mass term if fermions massless
                         if(lorentztag=="FFT" and ix ==6 and tval2 == 0. and
@@ -421,12 +422,6 @@ def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings) :
     return all_couplings
 
 def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,header) :
-    def evaluate(x):
-        import cmath
-        return eval(x, 
-                    {'cmath':cmath,
-                     'complexconjugate':model.function_library.complexconjugate}, 
-                    parmsubs)
     # check the values
     tval = [False]*len(all_couplings[0])
     value =[False]*len(all_couplings[0])
@@ -435,9 +430,9 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
             if(not value[ix]) :
                 value[ix] = all_couplings[icolor][ix]
             if(value[ix] and not tval[ix]) :
-                tval[ix] = evaluate(value[ix])
+                tval[ix] = evaluate(value[ix],model,parmsubs)
             elif(value[ix]) :
-                tval2 = evaluate(all_couplings[icolor][0])
+                tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
                 if(abs(tval[ix]-tval2)>1e-6) :
                     raise SkipThisVertex()
 
@@ -591,12 +586,6 @@ def scalarCouplings(vertex,value,prefactors,L,lorentztag,
     return (prepend, header,all_couplings)
 
 def processScalarCouplings(model,parmsubs,all_couplings) :
-    def evaluate(x):
-        import cmath
-        return eval(x, 
-                    {'cmath':cmath,
-                     'complexconjugate':model.function_library.complexconjugate}, 
-                    parmsubs)
     tval = False
     value = False
     for icolor in range(0,len(all_couplings)) :
@@ -610,9 +599,9 @@ def processScalarCouplings(model,parmsubs,all_couplings) :
                 # bizarre number for checks, must be a better option
                 parmsubs[kine] = 987654321.
         if(not tval) :
-            tval = evaluate(value)
+            tval = evaluate(value,model,parmsubs)
         else :
-            tval2 = evaluate(all_couplings[icolor][0])
+            tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
             if(abs(tval[i]-tval2)>1e-6) :
                 raise SkipThisVertex()
     # cleanup and return the answer
@@ -620,12 +609,6 @@ def processScalarCouplings(model,parmsubs,all_couplings) :
 
 def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                     all_couplings,append,qcd) :
-    def evaluate(x):
-        import cmath
-        return eval(x, 
-                    {'cmath':cmath,
-                     'complexconjugate':model.function_library.complexconjugate}, 
-                    parmsubs)
     structures=extractStructures(L)
     terms=[]
     signs=[]
@@ -684,12 +667,6 @@ def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
     return all_couplings,append
 
 def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append,header) :
-    def evaluate(x):
-        import cmath
-        return eval(x, 
-                    {'cmath':cmath,
-                     'complexconjugate':model.function_library.complexconjugate}, 
-                    parmsubs)
     value = False
     tval  = False
     if(lorentztag=="VVV") :
@@ -698,9 +675,9 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
             for ix in range(0,len(all_couplings[icolor])) :
                 if(not value) :
                     value = all_couplings[icolor][ix]
-                    tval = evaluate(value)
+                    tval = evaluate(value,model,parmsubs)
                 else :
-                    tval2 = evaluate(all_couplings[icolor][ix])
+                    tval2 = evaluate(all_couplings[icolor][ix],model,parmsubs)
                     if(abs(tval-tval2)>1e-6) :
                         raise SkipThisVertex()
     elif(lorentztag=="VVVV") :
@@ -709,7 +686,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
         if(len(colours)==1) :
             tval=[]
             for i in range(0,3) :
-                tval.append(evaluate(all_couplings[0][i]))
+                tval.append(evaluate(all_couplings[0][i],model,parmsubs))
             if(tval[2]==-2.*tval[1] and tval[2]==-2.*tval[0] ) :
                 order=[0,1,2,3]
                 value = "0.5*(%s)" % all_couplings[0][2]
@@ -759,27 +736,27 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                             raise SkipThisVertex()
                         if(not value) :
                             value = all_couplings[icolor][0]
-                            tval  = evaluate(value)
-                        tval2 = evaluate(all_couplings[icolor][0])
-                        tval3 = -evaluate(all_couplings[icolor][1])
+                            tval  = evaluate(value,model,parmsubs)
+                        tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
+                        tval3 = -evaluate(all_couplings[icolor][1],model,parmsubs)
                     elif(col[0][0]==1 and col[0][1]==3 and col[1][0] ==2 and col[1][1] == 4) : 
                         if(all_couplings[icolor][1] or not all_couplings[icolor][0] or
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
                         if(not value) :
                             value = all_couplings[icolor][0]
-                            tval  = evaluate(value)
-                        tval2 = evaluate(all_couplings[icolor][0])
-                        tval3 = -evaluate(all_couplings[icolor][2])
+                            tval  = evaluate(value,model,parmsubs)
+                        tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
+                        tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
                     elif(col[0][0]==1 and col[0][1]==4 and col[1][0] ==2 and col[1][1] == 3) : 
                         if(all_couplings[icolor][0] or not all_couplings[icolor][1] or
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
                         if(not value) :
                             value = all_couplings[icolor][1]
-                            tval  = evaluate(value)
-                        tval2 = evaluate(all_couplings[icolor][1])
-                        tval3 = -evaluate(all_couplings[icolor][2])
+                            tval  = evaluate(value,model,parmsubs)
+                        tval2 = evaluate(all_couplings[icolor][1],model,parmsubs)
+                        tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
                     else :
                         raise SkipThisVertex()
                     if(abs(tval-tval2)>1e-6 or abs(tval-tval3)>1e-6 ) :
@@ -804,9 +781,9 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                 for ix in range(imin,imax) :
                     if(not value) :
                         value = all_couplings[icolor][ix]
-                        tval = evaluate(value)
+                        tval = evaluate(value,model,parmsubs)
                     else :
-                        tval2 = evaluate(value)
+                        tval2 = evaluate(value,model,parmsubs)
                         if(abs(tval-tval2)>1e-6) :
                             raise SkipThisVertex()
         except :
@@ -832,19 +809,14 @@ def fermionCouplings(value,prefactors,L,all_couplings) :
     return all_couplings
 
 def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
-    def evaluate(x):
-        import cmath
-        return eval(x, 
-                    {'cmath':cmath,
-                     'complexconjugate':model.function_library.complexconjugate}, 
-                    parmsubs)
     leftcontent  = all_couplings[0][0] if all_couplings[0][0] else "0."
     rightcontent = all_couplings[0][1] if all_couplings[0][1] else "0."
-    tval=[evaluate( leftcontent),evaluate(rightcontent)]
+    tval=[evaluate( leftcontent,model,parmsubs),
+          evaluate(rightcontent,model,parmsubs)]
     for icolor in range(0,len(all_couplings)) :
         # loop over the different terms
         for ix in range(0,len(all_couplings[icolor])) :
-            tval2 = evaluate(all_couplings[icolor][ix]) if all_couplings[icolor][ix] else 0.
+            tval2 = evaluate(all_couplings[icolor][ix],model,parmsubs) if all_couplings[icolor][ix] else 0.
             if(abs(tval[ix]-tval2)>1e-6) :
                 raise SkipThisVertex()
     normcontent  = "1."
