@@ -449,7 +449,9 @@ Herwig may not give correct results, though.
         # final processing of the couplings
         symbols = set()
         if(lorentztag in ['FFS','FFV']) :
-            (normcontent,leftcontent,rightcontent) = processFermionCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings)
+            (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
+                                                                                    self.model,self.parmsubs,
+                                                                                    all_couplings)
         elif('T' in lorentztag) :
             (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
                                                                             self.parmsubs,all_couplings)
@@ -565,8 +567,7 @@ Herwig may not give correct results, though.
                 value = couplingValue(coupling)
                 # handling of the different types of couplings
                 if lorentztag in ['FFS','FFV']:
-                    append, all_couplings[color_idx] = fermionCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                        all_couplings[color_idx],append)
+                    all_couplings[color_idx] = fermionCouplings(value,prefactors,L,all_couplings[color_idx])
                 elif 'T' in lorentztag :
                     append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                                                                        all_couplings[color_idx])

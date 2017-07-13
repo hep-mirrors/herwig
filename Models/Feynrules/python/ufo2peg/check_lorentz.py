@@ -816,15 +816,12 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
     value = value.replace("(1.0) * ","").replace(" * (1)","")
     return (value,append,header)
 
-def fermionCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,append) :
+def fermionCouplings(value,prefactors,L,all_couplings) :
     new_couplings=[False,False]
     new_couplings[0],new_couplings[1] = parse_lorentz(L.structure)
     for i in range(0,2) :
         if new_couplings[i]:
             new_couplings[i] = '(%s) * (%s) * (%s)' % (prefactors,new_couplings[i],value)
-    if lorentztag == 'FFV':
-        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
-                  % vertex.particles[0].pdg_code)
     if(len(all_couplings)==0) :
         all_couplings=new_couplings
     else :
@@ -833,7 +830,7 @@ def fermionCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,appe
                 all_couplings[i] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[i],prefactors,value,all_couplings[i])
             elif(new_couplings[i]) :
                 all_couplings[i] = new_couplings[i]
-    return (append,all_couplings)
+    return all_couplings
 
 def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
     def evaluate(x):
@@ -852,4 +849,8 @@ def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
             if(abs(tval[ix]-tval2)>1e-6) :
                 raise SkipThisVertex()
     normcontent  = "1."
-    return normcontent,leftcontent,rightcontent
+    append=""
+    if lorentztag == 'FFV':
+        append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                  % vertex.particles[0].pdg_code)
+    return normcontent,leftcontent,rightcontent,append
