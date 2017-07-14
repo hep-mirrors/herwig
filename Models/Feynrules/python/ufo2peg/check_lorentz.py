@@ -244,7 +244,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
     coup_norm  = 0.
     if(lorentztag ==  "SST" or lorentztag == "VVT" or
        lorentztag == "VVVT" or lorentztag == "FFT" ) :
-        coup_norm.append(value[0])
+        coup_norm = value[0]
         if(value[1] or value[2]) :
             raise SkipThisVertex()
     elif(lorentztag=="FFVT") :
@@ -609,8 +609,6 @@ def processScalarCouplings(model,parmsubs,all_couplings) :
 
 def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                     all_couplings,append,qcd) :
-    print 'testing in vector',vertex.particles
-    print value,prefactors
     structures=extractStructures(L)
     terms=[]
     signs=[]
@@ -805,7 +803,7 @@ def fermionCouplings(value,prefactors,L,all_couplings) :
     else :
         for i in range(0,len(new_couplings)) :
             if(new_couplings[i] and all_couplings[i]) :
-                all_couplings[i] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[i],prefactors,value,all_couplings[i])
+                all_couplings[i] = '(%s) + (%s) ' % (new_couplings[i],all_couplings[i])
             elif(new_couplings[i]) :
                 all_couplings[i] = new_couplings[i]
     return all_couplings
