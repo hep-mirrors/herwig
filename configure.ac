@@ -70,11 +70,13 @@ HERWIG_CHECK_THEPEG
 
 BOOST_REQUIRE([1.41])
 BOOST_FIND_HEADER([boost/numeric/ublas/io.hpp])
-BOOST_FIND_HEADER([boost/numeric/ublas/matrix.hpp])
-BOOST_FIND_HEADER([boost/numeric/ublas/matrix_proxy.hpp])
-BOOST_FIND_HEADER([boost/numeric/ublas/matrix_sparse.hpp])
-BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
-BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
+dnl Boost 1.64 is missing a required header to make these work
+dnl we just assume they're there if io.hpp has been found OK above
+dnl BOOST_FIND_HEADER([boost/numeric/ublas/matrix.hpp])
+dnl BOOST_FIND_HEADER([boost/numeric/ublas/matrix_proxy.hpp])
+dnl BOOST_FIND_HEADER([boost/numeric/ublas/matrix_sparse.hpp])
+dnl BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
+dnl BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
 BOOST_FIND_HEADER([boost/operators.hpp])
 BOOST_FIND_HEADER([boost/progress.hpp])
 BOOST_FILESYSTEM([mt])
