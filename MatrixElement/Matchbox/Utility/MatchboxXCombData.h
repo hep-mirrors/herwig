@@ -12,6 +12,12 @@
 // This is the declaration of the MatchboxXCombData class.
 //
 
+// work around a Boost 1.64 bug where ublas headers would fail otherwise
+#include <boost/version.hpp>
+#if (BOOST_VERSION / 100 >= 1064)
+#include <boost/serialization/array_wrapper.hpp>
+#endif
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/numeric/ublas/symmetric.hpp>
