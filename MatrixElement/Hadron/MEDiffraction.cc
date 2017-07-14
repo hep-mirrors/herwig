@@ -28,7 +28,7 @@ MEDiffraction::MEDiffraction()
 : HwMEBase(),
   deltaOnly(false),  
   isInRunPhase(false),
-  theProtonMass(-1) // to be set in doinit
+  theProtonMass(-MeV) // to be set in doinit
 {}
 
 
