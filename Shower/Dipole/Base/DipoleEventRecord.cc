@@ -329,11 +329,13 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
 	  swap(next_it,theStart);
 	  onceMore = true;
 	} else {
-	  theStart = next_it;
-	  current_chain.check();
-	  theChains.push_back(current_chain);
-	  current_chain.dipoles().clear();
-	  continue;
+          theStart = next_it;
+          current_chain.check();
+          // Randomize the chains agains biasing of directions.
+          if(UseRandom::rndbool()) theChains.push_back(current_chain);
+	  else theChains.insert(theChains.begin(),current_chain);
+          current_chain.dipoles().clear();
+          continue;
 	}
       }
 
@@ -376,11 +378,13 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
       current_chain.dipoles().push_back(Dipole({*p,*next_it},pdf,xs,decayed_parton));
 
       if ( onceMore ) {
-	next_it = theStart;
-	current_chain.check();
-	theChains.push_back(current_chain);
-	current_chain.dipoles().clear();
-	onceMore = false;
+        next_it = theStart;
+        current_chain.check();
+        // Randomize the chains agains biasing of directions.
+        if(UseRandom::rndbool()) theChains.push_back(current_chain);
+        else theChains.insert(theChains.begin(),current_chain);
+        current_chain.dipoles().clear();
+        onceMore = false;
       }
 
     }
@@ -434,7 +438,9 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
 
   if (!current_chain.dipoles().empty()) {
     current_chain.check();
-    theChains.push_back(current_chain);
+    // Randomize the chains agains biasing of directions.
+    if(UseRandom::rndbool()) theChains.push_back(current_chain);
+    else theChains.insert(theChains.begin(),current_chain);
   }
 
 }
