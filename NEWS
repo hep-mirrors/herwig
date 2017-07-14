@@ -1,10 +1,31 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.1.1 release: 2017-07-14
+
+** Snippets are now all installed
+
+** Fixed broken ufo2herwig output and LHC-MB.in
+
+** UFO improvements
+*** More robust SLHA file handling
+*** option of creating diagonal mixing matrices, needed for ATLAS simplfied models
+*** Improved warnings about resetting standard model particles
+*** Fixed certain cases where the wrong lorentz structure was picked in VVS vertices
+
+** Improved error message for unhandled beam particles
+
+** Fix for Dipole Shower chain selection
+
+** Fixed crash in double diffractive delta resonances
+
+
+
 * Herwig 7.1.0 release: 2017-05-19
 
 ** Major new release
-   For a more detailed overview and further references please see the release note arXiv:1705.06919
+   For a more detailed overview and further references please see the 
+   release note arXiv:1705.06919
 
 ** NLO multijet merging with the dipole shower
 

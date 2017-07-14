@@ -20,7 +20,7 @@ MEPP2SingleTop.cc   MEPP2SingleTop.h  \
 MEMinBias.h MEMinBias.cc \
 MEDiffraction.h MEDiffraction.cc
 
-HwMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
+HwMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:1:0
 
 pkglib_LTLIBRARIES += HwMEHadronFast.la
 HwMEHadronFast_la_SOURCES = \
