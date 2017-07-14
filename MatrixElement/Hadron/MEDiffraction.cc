@@ -27,8 +27,7 @@ using namespace Herwig;
 MEDiffraction::MEDiffraction()
 : HwMEBase(),
   deltaOnly(false),  
-  isInRunPhase(false),
-  theProtonMass(0.93827203*GeV)
+  isInRunPhase(false)
 {}
 
 
