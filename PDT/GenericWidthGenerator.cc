@@ -270,7 +270,7 @@ void GenericWidthGenerator::doinit() {
     WidthCalculatorBasePtr widthptr;
     // get the list of decay modes as a decay selector
     DecayMap modes=particle_->decaySelector();
-    if ( Debug::level > 0 )
+    if ( Debug::level > 1 )
       Repository::cout() << "Width generator for "
 			 << particle_->PDGName() << endl;
     DecayMap::const_iterator start=modes.begin();
