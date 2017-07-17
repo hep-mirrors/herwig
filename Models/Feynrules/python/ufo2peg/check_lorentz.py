@@ -358,7 +358,7 @@ def VVSEpsilon(couplings,struct) :
         terms[1]=terms[1].strip(")")
         eps=eps.replace(terms[0],"P%s"%terms[1])
     (nsign,eps)=epsilonOrder(eps)
-    if(nsign<0) : sign=changeSign(sign,"-")
+    if(nsign>0) : sign=changeSign(sign,"-")
     if(fact=="") : fact="1."
     if(eps!="Epsilon(1,2,P1,P2)") :
         return
