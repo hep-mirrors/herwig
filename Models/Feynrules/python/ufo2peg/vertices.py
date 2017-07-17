@@ -170,7 +170,7 @@ def colorfactor(vertex,L,pos):
         }
         label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
                  'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
-        if match(label): return ('0.5','0.5')
+        if match(label): return ('1.','1.')
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
         subs = {
