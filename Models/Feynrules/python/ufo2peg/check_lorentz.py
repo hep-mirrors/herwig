@@ -483,8 +483,7 @@ def getIndices(term) :
     
 
 def lorentzScalar(vertex,L) :
-    dotProduct = """\
-0.5*(invariant( i[{i1}], i[{i2}] ) - invariant( i[{i1}], i[{i1}] ) -invariant( i[{i2}] , i[{i2}] ))/GeV2"""
+    dotProduct = """(invariant( i[{i1}], i[{i2}] )/GeV2)"""
     structure = L.structure.split("*")
     worked = False
     mom=-1
