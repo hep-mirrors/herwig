@@ -1,16 +1,17 @@
 class ${ModelName}${classname}: public ${lorentztag}Vertex {
  public:
   ${ModelName}${classname}() {
-    kinematics(${kinematics});
+    ${header}
     ${addToPlist}
   }
   void setCoupling(Energy2 ${couplingptrs}) {
     ${symbolrefs}
+    ${prepend}
     //    getParams(q2);
     ${norm}
     ${left}
     ${right}
-    ${ordering}
+    ${append}
   }
   void persistentOutput(PersistentOStream & os) const { os << model_; }
   void persistentInput(PersistentIStream & is, int) { is >> model_; }
