@@ -111,6 +111,7 @@ def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
     antis = {}
     names = []
     splittings = []
+    done_splitting=[]
     for p in FR.all_particles:
         if p.spin == -1:
             continue
@@ -149,7 +150,6 @@ rm /Herwig/Widths/hWidth
 
         pdg, name = subs['pdg_code'],  subs['name']
         names.append(name)
-
         if -pdg in antis:
             plist.append( 'makeanti %s %s\n' % (antis[-pdg], name) )
 
@@ -178,7 +178,8 @@ rm /Herwig/Widths/hWidth
             return cols[c]
 
         try:
-            if p.color in [3,6,8]: # which colors?
+            if p.color in [3,6,8] and abs(pdg) not in done_splitting: # which colors?
+                done_splitting.append(abs(pdg))
                 splitname = '{name}SplitFn'.format(name=p.name)
                 sudname = '{name}Sudakov'.format(name=p.name)
                 splittings.append(
