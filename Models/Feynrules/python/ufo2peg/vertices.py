@@ -181,7 +181,7 @@ def colorfactor(vertex,L,pos):
         }
         label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
                  'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
-        if match(label): return ('0.5','0.5')
+        if match(label): return ('1.','1.')
 
     elif l(8) == 2 and l(8)+l(1)==L :
         subs = { 'g1' : pos[8][0], 'g2' : pos[8][1] }
