@@ -413,6 +413,9 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       for(int ix=5; ix<8;++ix)
 	cfv.push_back(make_pair(ix,1.));
     }
+    else if(ina==PDT::Colour0 && inb==PDT::Colour0) {
+      cfv[0] = make_pair(0,1.);
+    }
   }
   else if( offshell == PDT::Colour0 ) {
     if(ina==PDT::Colour0) {
