@@ -150,13 +150,13 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
 		  ScalarWaveFunction interS = scalar_[ix].
-		    first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
+		    first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1]);
 		  diag = scalar_[ix].second->
 		    evaluate(q2, vin2[ihel2], vout2[ohel2], interS);
 		}
 		else {
 		  ScalarWaveFunction interS = scalar_[ix].first->
-		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
+		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1]);
 		  diag = scalar_[ix].second->
 		    evaluate(q2, vin1[ihel1], vout2[ohel2], interS);
 		}
@@ -186,13 +186,13 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	      else if(offshell->iSpin() == PDT::Spin2) {
 		if(current.ordered.second) {
 		  TensorWaveFunction interT = tensor_[ix].first->
-		    evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
+		    evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1]);
 		 diag = tensor_[ix].second->
 		   evaluate(q2, vin2[ihel2], vout2[ohel2], interT);
 		}
 		else {
 		  TensorWaveFunction interT = tensor_[ix].first->
-		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
+		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1]);
 		  diag = tensor_[ix].second->
 		    evaluate(q2, vin1[ihel1], vout2[ohel2], interT);
 		}
