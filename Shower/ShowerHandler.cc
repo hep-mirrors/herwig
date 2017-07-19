@@ -52,9 +52,10 @@ void ShowerHandler::doinit() {
   CascadeHandler::doinit();
   // copy particles to decay before showering from input vector to the 
   // set used in the simulation
-  if ( particlesDecayInShower_.empty() )
-    particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
-				   inputparticlesDecayInShower_.end());
+  if ( particlesDecayInShower_.empty() ) {
+    for(unsigned int ix=0;ix<inputparticlesDecayInShower_.size();++ix)
+      particlesDecayInShower_.insert(abs(inputparticlesDecayInShower_[ix]));
+  }
   ShowerTree::_vmin2 = vMin_;
   ShowerTree::_spaceTime = includeSpaceTime_;
   if ( profileScales() ) {
