@@ -95,7 +95,7 @@ def colors(vertex) :
     L = len(struct)
     return (L,pos)
 
-def colorfactor(vertex,L,pos):
+def colorfactor(vertex,L,pos,lorentztag):
     def match(patterns,color=vertex.color):
         result = [ p == t
                    for p,t in zip(patterns,color) ]
@@ -154,7 +154,6 @@ def colorfactor(vertex,L,pos):
             order,sign  = extractAntiSymmetricIndices(color,"f(")
             colors.append("f(%s,%s,%s)" % (order[0],order[1],order[2]))
         # if lorentz is FFV get extra minus sign
-        (lorentztag,order) = unique_lorentztag(vertex)
         if lorentztag in ['FFV'] : sign *=-1
         label = ('f(1,2,3)',)
         if match(label,colors): return ('-complex(0,1)*(%s)'%sign,)
@@ -177,9 +176,15 @@ def colorfactor(vertex,L,pos):
         colors=sorted(colors,cmp=coloursort)
         label = ('f(1,2,-1)*f(3,4,-1)',
                  'f(1,3,-1)*f(2,4,-1)',
-                 'f(1,4,-1)*f(2,3,-1)',
-             )
-        if match(label,colors): return ('-1.','-1.','-1.')
+                 'f(1,4,-1)*f(2,3,-1)')
+        nmatch=0
+        for c1 in label:
+            for  c2 in colors :
+                if(c1==c2) : nmatch+=1
+        if(nmatch==2 and lorentztag=="VVSS") :
+            return ('-1','-1')
+        elif(nmatch==3 and lorentztag=="VVVV") :
+            return ('-1.','-1.','-1.')
 
     elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {
@@ -438,7 +443,7 @@ Herwig may not give correct results, though.
         # parse the colour structure for the vertex
         try:
             L,pos = colors(vertex)
-            cf = colorfactor(vertex,L,pos)
+            cf = colorfactor(vertex,L,pos,lorentztag)
         except SkipThisVertex:
             msg = 'Warning: Color structure for vertex ( {ps} ) in {name} ' \
                   'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
