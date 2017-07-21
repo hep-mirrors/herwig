@@ -50,33 +50,38 @@ insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 def get_lorentztag(spin):
     """Produce a ThePEG spin tag for the given numeric FR spins."""
     spins = { 1 : 'S', 2 : 'F', 3 : 'V', -1 : 'U', 5 : 'T' }
-    result = [ spins[s] for s in spin ]
-
+    result=[]
+    for i in range(0,len(spin)) :
+        result.append((spins[spin[i]],i+1))
     def spinsort(a,b):
+        (a1,a2) = a
+        (b1,b2) = b
         """Helper function for ThePEG's FVST spin tag ordering."""
-        if a == b: return 0
+        if a1 == b1: return 0
         for letter in 'UFVST':
-            if a == letter: return -1
-            if b == letter: return  1
+            if a1 == letter: return -1
+            if b1 == letter: return  1
 
     result = sorted(result, cmp=spinsort)
-    return ''.join(result)
+    order=[]
+    output=""
+    for i in range(0,len(result)) :
+        (a,b) = result[i]
+        order.append(b)
+        output+=a
+    return (output,order)
 
 def unique_lorentztag(vertex):
     """Check and return the Lorentz tag of the vertex."""
     unique = CheckUnique()
     for l in vertex.lorentz:
-        lorentztag = get_lorentztag(l.spins)
+        (lorentztag,order) = get_lorentztag(l.spins)
         unique( lorentztag )
         lname = l.name[:len(lorentztag)]
         if sorted(lorentztag) != sorted(lname):
             raise Exception("Lorentztags: %s is not %s in %s" 
                             % (lorentztag,lname,vertex))
-#        if lorentztag != lname:
-#            sys.stderr.write("Warning: Lorentz tag ordering: %s is not %s in %s\n"
-#                             % (lorentztag,lname,vertex))
-
-    return lorentztag
+    return (lorentztag,order)
 
 def colors(vertex) :
     try:
@@ -145,7 +150,7 @@ def colorfactor(vertex,L,pos):
 
     elif l(8) == L == 3:
         # if lorentz is FFV get extra minus sign
-        lorentztag = unique_lorentztag(vertex)
+        (lorentztag,order) = unique_lorentztag(vertex)
         factor = '*(-1)' if lorentztag in ['FFV'] else ''
         label = ('f(1,2,3)',)
         if match(label): return ('-complex(0,1)%s'%factor,)
@@ -393,7 +398,7 @@ Herwig may not give correct results, though.
 
     def processVertex(self,vertexnumber,vertex) :
         # get the Lorentz tag for the vertex
-        lorentztag = unique_lorentztag(vertex)
+        lorentztag,order = unique_lorentztag(vertex)
         # check if we should skip the vertex
         vertex.herwig_skip_vertex = checkGhostGoldstoneVertex(lorentztag,vertex)
         if(vertex.herwig_skip_vertex) :
