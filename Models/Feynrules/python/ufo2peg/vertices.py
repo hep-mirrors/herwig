@@ -447,26 +447,35 @@ Herwig may not give correct results, though.
         couplingptrs = self.setCouplingPtrs(lorentztag,qcd,append != '',prepend != '')
 
         # final processing of the couplings
-        symbols = set()
-        if(lorentztag in ['FFS','FFV']) :
-            (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
-                                                                                    self.model,self.parmsubs,
-                                                                                    all_couplings)
-        elif('T' in lorentztag) :
-            (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
-                                                                            self.parmsubs,all_couplings)
-        elif(lorentztag=="SSS" or lorentztag=="SSSS") :
-            normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
-        elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
-            normcontent,append,lorentztag,header,sym = \
-                processScalarVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,header)
-            symbols |=sym
-        elif("VVV" in lorentztag) :
-            normcontent,append,header =\
-                processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
-        else :
-            skipThisVertex()
-
+        try :
+            symbols = set()
+            if(lorentztag in ['FFS','FFV']) :
+                (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
+                                                                                        self.model,self.parmsubs,
+                                                                                        all_couplings)
+            elif('T' in lorentztag) :
+                (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
+                                                                                self.parmsubs,all_couplings)
+            elif(lorentztag=="SSS" or lorentztag=="SSSS") :
+                normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
+            elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
+                normcontent,append,lorentztag,header,sym = \
+                                                           processScalarVectorCouplings(lorentztag,vertex,
+                                                                                        self.model,self.parmsubs,all_couplings,header)
+                symbols |=sym
+            elif("VVV" in lorentztag) :
+                normcontent,append,header =\
+                                            processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
+            else :
+                skipThisVertex()
+        except SkipThisVertex:
+            msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                  'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name,
+                                               ps=' '.join(map(str,vertex.particles)))
+            sys.stderr.write(msg)
+            vertex.herwig_skip_vertex = True
+            self.vertex_skipped=True
+            return (True,"","")
 
         
         ### do we need left/right?

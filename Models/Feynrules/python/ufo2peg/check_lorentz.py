@@ -1,4 +1,4 @@
-import itertools,cmath,re
+import itertools,cmath,re,sys
 from .helpers import SkipThisVertex
 from .converter import py2cpp
 from .lorentzparser import parse_lorentz
@@ -697,9 +697,8 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                 value = "0.5*(%s)" % all_couplings[0][0]
             else:
                 sys.stderr.write(
-                    'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
-                    .format(tag=unique_lorentztag(vertex), name=vertex.name, 
-                            lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
+                    'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n'
+                    .format(tag="VVVV", name=vertex.name, ps=' '.join(map(str,vertex.particles)))
                 )
                 raise SkipThisVertex()
             pattern = \
