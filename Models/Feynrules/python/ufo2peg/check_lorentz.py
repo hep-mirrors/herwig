@@ -1,7 +1,12 @@
 import itertools,cmath,re,sys
-from .helpers import SkipThisVertex
+from .helpers import SkipThisVertex,extractAntiSymmetricIndices
 from .converter import py2cpp
 from .lorentzparser import parse_lorentz
+
+def compare(a,b) :
+    num=abs(a-b)
+    den=abs(a+b)
+    return num/den<1e-10
 
 def evaluate(x,model,parmsubs):
     import cmath
@@ -26,7 +31,7 @@ def VVVordering(vertex) :
                         vertex.particles[0].pdg_code)
     return ordering
 
-def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings) :
+def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order) :
     # split the structure into its different terms for analysis
     ordering=""
     structures = extractStructures(L)
@@ -294,24 +299,6 @@ def changeSign(sign1,sign2) :
         return "+"
     else :
         return "-"
-
-def extractAntiSymmetricIndices(instring,funct) :
-    terms = instring.strip(funct).strip(")").split(",")
-    sign=1.
-    for iy in range(0,len(terms)) :
-        for ix in range(-1,-len(terms)+iy,-1) :
-            swap = False
-            if(len(terms[ix])==1 and len(terms[ix-1])==1) :
-                swap = int(terms[ix])<int(terms[ix-1])
-            elif(len(terms[ix])==2 and len(terms[ix-1])==2) :
-                swap = int(terms[ix][1])<int(terms[ix-1][1])
-            elif(len(terms[ix])==1 and len(terms[ix-1])==2) :
-                swap = True
-            if(swap) :
-                sign *=-1.
-                terms[ix],terms[ix-1] = terms[ix-1],terms[ix]
-    return (terms,sign)
-    
     
 def epsilonOrder(eps) :
     terms,sign = extractAntiSymmetricIndices(eps,"Epsilon(")
@@ -368,22 +355,30 @@ def VVSEpsilon(couplings,struct) :
         couplings[6] = "( %s ) + ( %s%s )" % (couplings[6],sign,fact)
 
 
-def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings) :
+def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings,order) :
     # set up the types of term we are looking for
     if(lorentztag=="VVS") :
         couplings=[0.,0.,0.,0.,0.,0.,0.]
-        terms=[['P(-1,1)','P(-1,2)','Metric(1,2)'],
-               ['P(1,1)','P(2,1)'],
-               ['P(1,1)','P(2,2)'],
-               ['P(1,2)','P(2,1)'],
-               ['P(1,2)','P(2,2)'],
-               ['Metric(1,2)']]
+        terms=[['P(-1,%s)' % order[0],
+                'P(-1,%s)' % order[1],
+                'Metric(%s,%s)' %(order[0],order[1])],
+               ['P(1,%s)' % order[0],
+                'P(2,%s)' % order[0]],
+               ['P(1,%s)' % order[0],
+                'P(2,%s)' % order[1]],
+               ['P(1,%s)' % order[1],
+                'P(2,%s)' % order[0]],
+               ['P(1,%s)' % order[1],
+                'P(2,%s)' % order[1]],
+               ['Metric(%s,%s)'%(order[0],order[1])]]
     elif(lorentztag=="VVSS") :
         couplings=[0.]
-        terms=[['Metric(1,2)']]
+        terms=[['Metric(%s,%s)' % (order[0],order[1])]]
     elif(lorentztag=="VSS"):
          couplings=[0.,0.]
-         terms=[['P(1,3)'],['P(1,2)']]
+         terms=[['P(%s,%s)' % (order[0],order[2])],
+                ['P(%s,%s)' % (order[0],order[1])]]
+#    print order,L.structure
     # extract the lorentz structures
     structures = extractStructures(L)
     # handle the scalar couplings
@@ -607,22 +602,30 @@ def processScalarCouplings(model,parmsubs,all_couplings) :
     return value.replace("(1.0) * ","").replace(" * (1)","")
 
 def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                    all_couplings,append,qcd) :
+                    all_couplings,append,qcd,order) :
     structures=extractStructures(L)
     terms=[]
     signs=[]
     if(lorentztag=="VVV") :
-        terms=[['P(3,1)','Metric(1,2)'],['P(3,2)','Metric(1,2)'],['P(2,1)','Metric(1,3)'],
-               ['P(2,3)','Metric(1,3)'],['P(1,2)','Metric(2,3)'],['P(1,3)','Metric(2,3)']]
+        terms=[['P(%s,%s)' % (order[2],order[0]),'Metric(%s,%s)' % (order[0],order[1])],
+               ['P(%s,%s)' % (order[2],order[1]),'Metric(%s,%s)' % (order[0],order[1])],
+               ['P(%s,%s)' % (order[1],order[0]),'Metric(%s,%s)' % (order[0],order[2])],
+               ['P(%s,%s)' % (order[1],order[2]),'Metric(%s,%s)' % (order[0],order[2])],
+               ['P(%s,%s)' % (order[0],order[1]),'Metric(%s,%s)' % (order[1],order[2])],
+               ['P(%s,%s)' % (order[0],order[2]),'Metric(%s,%s)' % (order[1],order[2])]]
         signs=[1.,-1.,-1.,1.,1.,-1.]
     elif(lorentztag=="VVVV") :
-        terms=[['Metric(1,4)','Metric(2,3)'],
-               ['Metric(1,3)','Metric(2,4)'],
-               ['Metric(1,2)','Metric(3,4)']]
+        terms=[['Metric(%s,%s)' % (order[0],order[3]),'Metric(%s,%s)' % (order[1],order[2])],
+               ['Metric(%s,%s)' % (order[0],order[2]),'Metric(%s,%s)' % (order[1],order[3])],
+               ['Metric(%s,%s)' % (order[0],order[1]),'Metric(%s,%s)' % (order[2],order[3])]]
         signs=[1.,1.,1.]
     elif(lorentztag=="VVVS") :
-        terms=[['P(3,1)','Metric(1,2)'],['P(3,2)','Metric(1,2)'],['P(2,1)','Metric(1,3)'],
-               ['P(2,3)','Metric(1,3)'],['P(1,2)','Metric(2,3)'],['P(1,3)','Metric(2,3)'],
+        terms=[['P(%s,%s)' % (order[2],order[0]),'Metric(%s,%s)' % (order[0],order[1])],
+               ['P(%s,%s)' % (order[2],order[1]),'Metric(%s,%s)' % (order[0],order[1])],
+               ['P(%s,%s)' % (order[1],order[0]),'Metric(%s,%s)' % (order[0],order[2])],
+               ['P(%s,%s)' % (order[1],order[2]),'Metric(%s,%s)' % (order[0],order[2])],
+               ['P(%s,%s)' % (order[0],order[1]),'Metric(%s,%s)' % (order[1],order[2])],
+               ['P(%s,%s)' % (order[0],order[2]),'Metric(%s,%s)' % (order[1],order[2])],
                ['Epsilon(1,2,3,-1)','P(-1,1)'],['Epsilon(1,2,3,-1)','P(-1,2)'],
                ['Epsilon(1,2,3,-1)','P(-1,3)']]
         signs=[1.,-1.,-1.,1.,1.,-1.,1.,1.,1.]
@@ -686,16 +689,22 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
             tval=[]
             for i in range(0,3) :
                 tval.append(evaluate(all_couplings[0][i],model,parmsubs))
-            if(tval[2]==-2.*tval[1] and tval[2]==-2.*tval[0] ) :
+            if(compare(tval[2],-2.*tval[1]) and
+               compare(tval[2],-2.*tval[0]) ) :
                 order=[0,1,2,3]
                 value = "0.5*(%s)" % all_couplings[0][2]
-            elif(tval[1]==-2.*tval[2] and tval[1]==-2.*tval[0] ) :
+            elif(compare(tval[1],-2.*tval[2]) and
+                 compare(tval[1],-2.*tval[0]) ) :
                 order=[0,2,1,3]
                 value = "0.5*(%s)" % all_couplings[0][1]
-            elif(tval[0]==-2.*tval[2] and tval[0]==-2.*tval[1] ) :
+            elif(compare(tval[0],-2.*tval[2]) and
+                 compare(tval[0],-2.*tval[1]) ) :
                 order=[0,3,1,2]
                 value = "0.5*(%s)" % all_couplings[0][0]
             else:
+                print vertex.lorentz
+                for s in vertex.lorentz:
+                    print s.structure
                 sys.stderr.write(
                     'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n'
                     .format(tag="VVVV", name=vertex.name, ps=' '.join(map(str,vertex.particles)))
@@ -790,7 +799,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
     value = value.replace("(1.0) * ","").replace(" * (1)","")
     return (value,append,header)
 
-def fermionCouplings(value,prefactors,L,all_couplings) :
+def fermionCouplings(value,prefactors,L,all_couplings,order) :
     new_couplings=[False,False]
     new_couplings[0],new_couplings[1] = parse_lorentz(L.structure)
     for i in range(0,2) :

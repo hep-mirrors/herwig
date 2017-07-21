@@ -232,3 +232,20 @@ if False:
 
 class SkipThisVertex(Exception):
     pass
+
+def extractAntiSymmetricIndices(instring,funct) :
+    terms = instring.strip(funct).strip(")").split(",")
+    sign=1.
+    for iy in range(0,len(terms)) :
+        for ix in range(-1,-len(terms)+iy,-1) :
+            swap = False
+            if(len(terms[ix])==1 and len(terms[ix-1])==1) :
+                swap = int(terms[ix])<int(terms[ix-1])
+            elif(len(terms[ix])==2 and len(terms[ix-1])==2) :
+                swap = int(terms[ix][1])<int(terms[ix-1][1])
+            elif(len(terms[ix])==1 and len(terms[ix-1])==2) :
+                swap = True
+            if(swap) :
+                sign *=-1.
+                terms[ix],terms[ix-1] = terms[ix-1],terms[ix]
+    return (terms,sign)

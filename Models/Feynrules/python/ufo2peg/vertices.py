@@ -6,7 +6,7 @@ from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
     processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings
-from .helpers import SkipThisVertex
+from .helpers import SkipThisVertex,extractAntiSymmetricIndices
 
 # names of goldstone bosons
 gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
@@ -54,9 +54,9 @@ def get_lorentztag(spin):
     for i in range(0,len(spin)) :
         result.append((spins[spin[i]],i+1))
     def spinsort(a,b):
+        """Helper function for ThePEG's FVST spin tag ordering."""
         (a1,a2) = a
         (b1,b2) = b
-        """Helper function for ThePEG's FVST spin tag ordering."""
         if a1 == b1: return 0
         for letter in 'UFVST':
             if a1 == letter: return -1
@@ -96,9 +96,9 @@ def colors(vertex) :
     return (L,pos)
 
 def colorfactor(vertex,L,pos):
-    def match(patterns):
+    def match(patterns,color=vertex.color):
         result = [ p == t
-                   for p,t in zip(patterns,vertex.color) ]
+                   for p,t in zip(patterns,color) ]
         return all(result)
 
     label = None
@@ -149,22 +149,37 @@ def colorfactor(vertex,L,pos):
         if match(label): return ('1',) # TODO check factor!
 
     elif l(8) == L == 3:
+        colors=[]
+        for color in vertex.color :
+            order,sign  = extractAntiSymmetricIndices(color,"f(")
+            colors.append("f(%s,%s,%s)" % (order[0],order[1],order[2]))
         # if lorentz is FFV get extra minus sign
         (lorentztag,order) = unique_lorentztag(vertex)
-        factor = '*(-1)' if lorentztag in ['FFV'] else ''
+        if lorentztag in ['FFV'] : sign *=-1
         label = ('f(1,2,3)',)
-        if match(label): return ('-complex(0,1)%s'%factor,)
-        label = ('f(3,2,1)',)
-        if match(label): return ('complex(0,1)%s'%factor,)
-        label = ('f(2,1,3)',)
-        if match(label): return ('complex(0,1)%s'%factor,)
+        if match(label,colors): return ('-complex(0,1)*(%s)'%sign,)
 
     elif l(8) == L == 4:
-        label = ('f(-1,1,2)*f(3,4,-1)',
-                 'f(-1,1,3)*f(2,4,-1)',
-                 'f(-1,1,4)*f(2,3,-1)',
+        colors=[]
+        for color in vertex.color :
+            f = color.split("*")
+            (o1,s1) = extractAntiSymmetricIndices(f[0],"f(")
+            (o2,s2) = extractAntiSymmetricIndices(f[1],"f(")
+            if(o2[0]<o1[0]) : o1,o2=o2,o1
+            colors.append("f(%s)*f(%s)" % (",".join(o1),",".join(o2)))
+        def coloursort(a,b) :
+            if a == b: return 0
+            i1=int(a[4])
+            i2=int(b[4])
+            if(i1==i2)  : return 0
+            elif(i1<i2) : return -1
+            else        : return 1
+        colors=sorted(colors,cmp=coloursort)
+        label = ('f(1,2,-1)*f(3,4,-1)',
+                 'f(1,3,-1)*f(2,4,-1)',
+                 'f(1,4,-1)*f(2,3,-1)',
              )
-        if match(label): return ('-1.','-1.','-1.')
+        if match(label,colors): return ('-1.','-1.','-1.')
 
     elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {
@@ -194,12 +209,12 @@ def colorfactor(vertex,L,pos):
         if match(label) : return ('1.',)
 
     elif l(8) == 3 and l(1)==1 and L==4 :
+        colors=[]
+        for color in vertex.color :
+            order,sign  = extractAntiSymmetricIndices(color,"f(")
+            colors.append("f(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('f(1,2,3)',)
-        if match(label): return ('-complex(0,1)',)
-        label = ('f(3,2,1)',)
-        if match(label): return ('complex(0,1)',)
-        label = ('f(2,1,3)',)
-        if match(label): return ('complex(0,1)',)
+        if match(label,colors): return ('-complex(0,1)*(%s)'%sign,)
 
     sys.stderr.write(
         "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
@@ -416,7 +431,7 @@ Herwig may not give correct results, though.
             return (True,"","")
         # get the ids of the particles at the vertex
         if self.ONE_EACH:
-            plistarray = [ ','.join([ str(p.pdg_code) for p in vertex.particles ]) ]
+            plistarray = [ ','.join([ str(vertex.particles[o-1].pdg_code) for o in order ]) ]
         else:
             plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
                            for pl in vertex.particles_list ]
@@ -438,7 +453,7 @@ Herwig may not give correct results, though.
         # try to extract the couplings
         try:
             (all_couplings,header,qcd,qed,prepend,append) = \
-            self.extractCouplings(lorentztag,pos,lf,cf,vertex)
+            self.extractCouplings(lorentztag,pos,lf,cf,vertex,order)
         except SkipThisVertex:
             msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
                   'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
@@ -552,7 +567,7 @@ Herwig may not give correct results, though.
         return ''.join(vlist)
 
 
-    def extractCouplings(self,lorentztag,pos,lf,cf,vertex) :
+    def extractCouplings(self,lorentztag,pos,lf,cf,vertex,order) :
         coup_left  = []
         coup_right = []
         coup_norm = []
@@ -581,20 +596,20 @@ Herwig may not give correct results, though.
                 value = couplingValue(coupling)
                 # handling of the different types of couplings
                 if lorentztag in ['FFS','FFV']:
-                    all_couplings[color_idx] = fermionCouplings(value,prefactors,L,all_couplings[color_idx])
+                    all_couplings[color_idx] = fermionCouplings(value,prefactors,L,all_couplings[color_idx],order)
                 elif 'T' in lorentztag :
                     append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                       all_couplings[color_idx])
+                                                                       all_couplings[color_idx],order)
 
                 elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
                     all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,lorentztag,
-                                                                     all_couplings[color_idx])
+                                                                     all_couplings[color_idx],order)
                 elif lorentztag == "SSS" or lorentztag == "SSSS" :
                     prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,
                                                                                 all_couplings[color_idx],prepend,header)
                 elif "VVV" in lorentztag :
                     all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                      all_couplings[color_idx],append,qcd)
+                                                                      all_couplings[color_idx],append,qcd,order)
                 else:
                     raise SkipThisVertex()
 
