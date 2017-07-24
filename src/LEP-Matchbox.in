@@ -69,7 +69,7 @@ do Factory:Process e- e+ -> j j
 ##################################################
 
 ## cuts on additional jets
-
+# cd /Herwig/Cuts
 # read Matchbox/DefaultEEJets.in
 
 # set NJetsCut:NJetsMin 3
