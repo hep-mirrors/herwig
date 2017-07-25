@@ -293,14 +293,17 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(inb==PDT::Colour8) {
-	cfv[0] = make_pair(5, 1);
+	cfv[0] = make_pair(7, 1);
       }
     }
   }
   else if(diag.intermediate->iColour() == PDT::Colour8) {
     if(ina==PDT::Colour8&&outa==PDT::Colour8&&
        inb==PDT::Colour8&&outb==PDT::Colour8) {
-      cfv.push_back(make_pair(1, -1.));
+      cfv[0]=make_pair(2,  2.);
+      cfv.push_back(make_pair(3, -2.));
+      cfv.push_back(make_pair(1, -2.));
+      cfv.push_back(make_pair(4,  2.));
     }
     else if(ina==PDT::Colour8&&outa==PDT::Colour0&&
 	    inb==PDT::Colour8&&outb==PDT::Colour8&&
@@ -384,8 +387,10 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       }
     }
     else if(outa==PDT::Colour8&&ina==PDT::Colour8) {
-      cfv[0]=make_pair(1, -1.);
-      cfv.push_back(make_pair(2, 1.));
+      cfv[0]=make_pair(4, 2.);
+      cfv.push_back(make_pair(5, -2.));
+      cfv.push_back(make_pair(0, -2.));
+      cfv.push_back(make_pair(2,  2.));
     }
   }
   else if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
@@ -440,7 +445,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(inb==PDT::Colour8) {
-	cfv[0] = make_pair(4, 1);
+	cfv[0] = make_pair(8, 1);
       }
     }
   }
@@ -498,9 +503,10 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	    (outa        == PDT::Colour3   && outb        == PDT::Colour3bar) )
 	  prefact = -1;
 	if(incol && outcol) {
-	  cfv[0].first = 0;
-	  cfv[0].second = -prefact;
-	  cfv.push_back(make_pair(2, prefact));
+	  cfv[0] = make_pair(0, -2.);
+	  cfv.push_back(make_pair(1,  2.));
+	  cfv.push_back(make_pair(3,  2.));
+	  cfv.push_back(make_pair(5,  -2.));
 	}
 	else if(incol && outsex) {
 	  cfv[0].first = 4;
@@ -564,7 +570,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(outa==PDT::Colour8) {
-	cfv[0] = make_pair(3, 1);
+	cfv[0] = make_pair(6, 1);
       }
     }
   }

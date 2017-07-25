@@ -169,27 +169,55 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     colour_[1][2] = colour_[2][1] = 4.;
     numberOfFlows_ = 3;
     break;
-  case Colour88to88:
-    colour_ = vector<DVector>(6, DVector(6, 0.));
-    colour_[0][0] = colour_[1][1] = colour_[2][2]=92./3.;
-    colour_[0][1] = colour_[1][0] = -16./3.;
-    colour_[0][2] = colour_[2][0] = -16./3.;
-    colour_[2][1] = colour_[1][2] = -16./3.;
-    colour_[0][3] = colour_[3][0] =  64./3.;
-    colour_[0][4] = colour_[4][0] =  64./3.;
-    colour_[0][5] = colour_[5][0] = - 8./3.;
-    colour_[1][3] = colour_[3][1] = - 8./3.;
-    colour_[1][4] = colour_[4][1] =  64./3.;
-    colour_[1][5] = colour_[5][1] =  64./3.;
-    colour_[2][3] = colour_[3][2] =  64./3.;
-    colour_[2][4] = colour_[4][2] = - 8./3.;
-    colour_[2][5] = colour_[5][2] =  64./3.;
-    colour_[3][3] = colour_[4][4] = colour_[5][5] = 64.;
-    colour_[3][4] = colour_[4][3] = 8.;
-    colour_[3][5] = colour_[5][3] = 8.;
-    colour_[4][5] = colour_[5][4] = 8.;
-    numberOfFlows_ = 6;
+  case Colour88to88: {
+    colour_ = vector<DVector>(9, DVector(9, 0.));
+    double on1=19./6.,on2=64.;
+    double off1=-1./3.,off2=2./3.,off3=8.,off4=16./3.,off5=-2./3.;
+    // octet exchange
+    colour_[0][0] = colour_[1][1] = colour_[2][2]=on1;
+    colour_[3][3] = colour_[4][4] = colour_[5][5]=on1;
+    colour_[0][1] = colour_[1][0] = off1;
+    colour_[0][2] = colour_[2][0] = off1;
+    colour_[0][3] = colour_[3][0] = off1;
+    colour_[0][4] = colour_[4][0] = off1;
+    colour_[0][5] = colour_[5][0] = off2;
+    colour_[1][2] = colour_[2][1] = off1;
+    colour_[1][3] = colour_[3][1] = off2;
+    colour_[1][4] = colour_[4][1] = off1;
+    colour_[1][5] = colour_[5][1] = off1;
+    colour_[2][3] = colour_[3][2] = off1;
+    colour_[2][4] = colour_[4][2] = off2;
+    colour_[2][5] = colour_[5][2] = off1;
+    colour_[3][4] = colour_[4][3] = off1;
+    colour_[3][5] = colour_[5][3] = off1;
+    colour_[4][5] = colour_[5][4] = off1;
+    // singlet exchange
+    colour_[6][6] = colour_[7][7] = colour_[8][8] = on2;
+    colour_[6][7] = colour_[7][6] = off3;
+    colour_[6][8] = colour_[8][6] = off3;
+    colour_[7][8] = colour_[8][7] = off3;
+    // octet singlet interference
+    colour_[0][6] = colour_[6][0] = off4;
+    colour_[1][6] = colour_[6][1] = off4;
+    colour_[2][6] = colour_[6][2] = off5;
+    colour_[3][6] = colour_[6][3] = off4;
+    colour_[4][6] = colour_[6][4] = off5;
+    colour_[5][6] = colour_[6][5] = off4;
+    colour_[0][7] = colour_[7][0] = off5;
+    colour_[1][7] = colour_[7][1] = off4;
+    colour_[2][7] = colour_[7][2] = off4;
+    colour_[3][7] = colour_[7][3] = off4;
+    colour_[4][7] = colour_[7][4] = off4;
+    colour_[5][7] = colour_[7][5] = off5;
+    colour_[0][8] = colour_[8][0] = off4;
+    colour_[1][8] = colour_[8][1] = off5;
+    colour_[2][8] = colour_[8][2] = off4;
+    colour_[3][8] = colour_[8][3] = off5;
+    colour_[4][8] = colour_[8][4] = off4;
+    colour_[5][8] = colour_[8][5] = off4;
+    numberOfFlows_ = 9;
     break;
+  }
   case Colour33barto18   : case Colour33barto81   : 
   case Colour38to13      : case Colour38to31      :
   case Colour3bar8to13bar: case Colour3bar8to3bar1:
@@ -558,70 +586,42 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
       sel.insert(1.,&f88to33bar[4]);
     break;
   case Colour88to88:
-    static ColourLines f88to88[15]={ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5"),
+    static ColourLines f88to88s[9]={ColourLines("-1 2, 1 3 5, -5 4, -2 -3 -4"),
 				    ColourLines("-1 2, 1 3 4, -4 5, -2 -3 -5"),
+				    ColourLines(""),
+				    ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5"),
+				    ColourLines(""),
 				    ColourLines("1 -2, -1 -3 -5, 5 -4, 2 3 4"),
-				    ColourLines("-1 2, 1 3 5, -5 4, -2 -3 -4"),
-				    ColourLines("1 4, -1 -2 3, -3 -5, -4 2 5"),
+				    ColourLines("1 -2, 2 -1, 4 -5, 5 -4"),
+				    ColourLines(""),
+				    ColourLines("")};
+    static ColourLines f88to88t[9]={ColourLines(""),
+				    ColourLines("1 4, -1 -2 3, -2 -5, -3 2 5"),
+				    ColourLines("-1 -4, 1 2 5, -3 -5, 3 -2 4"),
 				    ColourLines("-1 -4, 1 2 -3, 3 5, 4 -2 -5"),
 				    ColourLines("1 4, -1 -2 -5, 3 5, -3 2 -4"),
-				    ColourLines("-1 -4, 1 2 5, -3 -5, 3 -2 4"),
-				    ColourLines("1 5, -1 -2 3, -3 -4, -5 2 4"),
-				    ColourLines("-1 -5, 1 2 -3, 3 4, 5 -2 -4"),
-				    ColourLines("1 5, -1 -2 -4, 3 4, -3 2 -5"),
-				    ColourLines("-1 -5, 1 2 4, -3 -4, 3 -2 5"),
-				    ColourLines("1 -2, 2 -1, 4 -5, 5 -4"),
+				    ColourLines(""),
+				    ColourLines(""),
 				    ColourLines("1 4, -1 -4, 3 5, -5 -3"),
+				    ColourLines("")};
+    static ColourLines f88to88u[9]={ColourLines("1 4, -1 -2 3, -3 -5, -4 2 5"),
+				    ColourLines(""),
+				    ColourLines("1 5, -1 -2 -4, 3 4, -3 2 -5"),
+				    ColourLines(""),
+				    ColourLines("-1 -5, 1 2 4, -3 -4, 3 -2 5"),
+				    ColourLines("-1 -5, 1 2 -3, 3 4, 5 -2 -4"),
+				    ColourLines(""),
+				    ColourLines(""),
 				    ColourLines("1 5, -1 -5, 3 4, -3 -4")};
     if(current.channelType == HPDiagram::sChannel) {
-      if(current.intermediate->iColour() == PDT::Colour8) {
-	if(flow_==0) {
-	  sel.insert(0.5, &f88to88[0]);
-	  sel.insert(0.5, &f88to88[1]);
-	}
-	else if(flow_==2) {
-	  sel.insert(0.5, &f88to88[2]);
-	  sel.insert(0.5, &f88to88[3]);
-	}
-	else
-	  assert(false);
-      }
-      else {
-	sel.insert(1., &f88to88[12]);
-      }
+      sel.insert(1., &f88to88s[flow_]);
     }
     else if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) {
-	if(current.intermediate->iColour() == PDT::Colour8) {
-	  if(flow_==0) {
-	    sel.insert(0.25, &f88to88[4]);
-	    sel.insert(0.25, &f88to88[5]);
-	  }
-	  else if(flow_==1) {
-	    sel.insert(0.25, &f88to88[6]);
-	    sel.insert(0.25, &f88to88[7]);
-	  }
-	  else
-	    assert(false);
-	}
-	else 
-	  sel.insert(1., &f88to88[13]);
+	sel.insert(1., &f88to88t[flow_]);
       }
       else {
-	if(current.intermediate->iColour() == PDT::Colour8) {
-	  if(flow_==2) {
-	    sel.insert(0.25, &f88to88[8]);
-	    sel.insert(0.25, &f88to88[9]);
-	  }
-	  else if(flow_==1) {
-	    sel.insert(0.25, &f88to88[10]);
-	    sel.insert(0.25, &f88to88[11]);
-	  }
-	  else
-	    assert(false);
-	}
-	else
-	  sel.insert(1., &f88to88[14]);
+	sel.insert(1., &f88to88u[flow_]);
       }
     }
     break;
