@@ -93,8 +93,6 @@ Energy VVSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
-    double vn = norm(_perturbativeVertex->norm());
-    if(vn == ZERO) return ZERO;
     Energy2 scale(sqr(inpart.second));
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
@@ -107,6 +105,8 @@ Energy VVSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				       outb.first, outa.first);
       swap(mu1sq, mu2sq);
     }
+    double vn = norm(_perturbativeVertex->norm());
+    if(vn == ZERO || mu1sq == ZERO) return ZERO;
     double me2 = 2. + 0.25*sqr(1. + mu1sq - mu2sq)/mu1sq;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
