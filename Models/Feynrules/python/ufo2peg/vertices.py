@@ -182,7 +182,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             for  c2 in colors :
                 if(c1==c2) : nmatch+=1
         if(nmatch==2 and lorentztag=="VVSS") :
-            return ('-1','-1')
+            return ('1','1')
         elif(nmatch==3 and lorentztag=="VVVV") :
             return ('-1.','-1.','-1.')
 

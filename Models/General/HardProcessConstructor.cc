@@ -634,10 +634,13 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
   }
   else if(noct==4) {
     // flows for SSVV, VVVV is handled in me class
-    vector<CFPair> cfv(3);
-    cfv[0] = make_pair(0, 1.);
-    cfv[1] = make_pair(1,-2.);
-    cfv[2] = make_pair(2, 1.);
+    vector<CFPair> cfv(6);
+    cfv[0] = make_pair(0, -2.);
+    cfv[1] = make_pair(1, -2.);
+    cfv[2] = make_pair(2, +4.);
+    cfv[3] = make_pair(3, -2.);
+    cfv[4] = make_pair(4, +4.);
+    cfv[5] = make_pair(5, -2.);
     diag.colourFlow = cfv;
   }
   else if(ntri==2&&noct==2) {
