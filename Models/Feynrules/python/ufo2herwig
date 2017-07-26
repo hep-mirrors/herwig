@@ -150,7 +150,7 @@ for p in FR.all_parameters:
         assert( value.imag < 1.0e-16 )
         value = value.real
         if p.nature == 'external':
-            if p.name not in massnames and p.name not in widthnames:
+            if p not in massnames and p not in widthnames:
                 interfaceDecls.append( 
                     interfacedecl_T.format(modelname=modelname,
                                            pname=p.name,
@@ -161,19 +161,19 @@ for p in FR.all_parameters:
                 interfaceDecls.append('\n// no interface for %s. Use particle definition instead.\n' % p.name)
             if hasattr(p,'lhablock'):
                 lhalabel = '{lhablock}_{lhacode}'.format( lhablock=p.lhablock.upper(), lhacode='_'.join(map(str,p.lhacode)) )
-                if p.name not in massnames and p.name not in widthnames:
+                if p not in massnames and p not in widthnames:
                     parmmodelconstr.append('set %s:%s ${%s}' % (modelname, p.name, lhalabel))
                 else:
                     parmmodelconstr.append('# %s is taken from the particle setup' % p.name)
                 modelparameters[lhalabel] = value
                 parmsubs[p.name] = lhalabel
             else:
-                if p.name not in massnames and p.name not in widthnames:
+                if p not in massnames and p not in widthnames:
                     parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
                 else:
                     parmmodelconstr.append('# %s is taken from the particle setup' % p.name)
                 parmsubs[p.name] = value
-            if p.name not in massnames and p.name not in widthnames:
+            if p not in massnames and p not in widthnames:
                 parmconstr.append('%s_(%s)' % (p.name, value))
             else:
                 parmconstr.append('%s_()' % p.name)
@@ -210,19 +210,19 @@ for p in FR.all_parameters:
         text = add_brackets(expression, symbols)
         text=text.replace('()()','()')
         doinit.append('   %s_ = %s;'  % (p.name, text) )
-        if p.name in massnames:
-            doinit.append('   getParticleData(%s)->mass(%s_ * GeV);'  % (massnames[p.name], p.name) )
-        elif p.name in widthnames:
-            doinit.append('   getParticleData(%s)->width(%s_ * GeV);' % (widthnames[p.name], p.name) )
-            doinit.append('   getParticleData(%s)->cTau (%s_ == 0.0 ? ZERO : hbarc/(%s_*GeV));' % (widthnames[p.name], p.name, p.name) )
-            doinit.append('   getParticleData(%s)->widthCut(10. * %s_ * GeV);' % (widthnames[p.name], p.name) )
+        if p in massnames:
+            doinit.append('   resetMass(%s,%s_ * GeV);'  % (massnames[p], p.name) )
+        elif p in widthnames:
+            doinit.append('   getParticleData(%s)->width(%s_ * GeV);' % (widthnames[p], p.name) )
+            doinit.append('   getParticleData(%s)->cTau (%s_ == 0.0 ? ZERO : hbarc/(%s_*GeV));' % (widthnames[p], p.name, p.name) )
+            doinit.append('   getParticleData(%s)->widthCut(10. * %s_ * GeV);' % (widthnames[px], p.name) )
 
 
     elif p.nature == 'external':
-        if p.name in massnames:
-            doinit.append('   %s_ = getParticleData(%s)->mass()  / GeV;'  % (p.name, massnames[p.name]) )
-        elif p.name in widthnames:
-            doinit.append('   %s_ = getParticleData(%s)->width() / GeV;'  % (p.name, widthnames[p.name]) )
+        if p in massnames:
+            doinit.append('   %s_ = getParticleData(%s)->mass()  / GeV;'  % (p.name, massnames[p]) )
+        elif p in widthnames:
+            doinit.append('   %s_ = getParticleData(%s)->width() / GeV;'  % (p.name, widthnames[p]) )
 
     if args.verbose:
         pprint.pprint((p.name,p.value, value, p.nature))
