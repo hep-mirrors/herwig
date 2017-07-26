@@ -135,6 +135,9 @@ massnames = {}
 widthnames = {}
 
 for particle in FR.all_particles:
+    # skip ghosts and goldstones
+    if(isGhost(particle) or isGoldstone(particle)) :
+        continue
     if particle.mass != 'ZERO':
         massnames[particle.mass] = abs(particle.pdg_code)
 

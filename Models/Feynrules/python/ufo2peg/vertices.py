@@ -6,10 +6,7 @@ from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
     processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings
-from .helpers import SkipThisVertex,extractAntiSymmetricIndices
-
-# names of goldstone bosons
-gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
+from .helpers import SkipThisVertex,extractAntiSymmetricIndices,isGoldstone
 
 # prefactors for vertices
 lfactors = { 
@@ -266,12 +263,7 @@ def checkGhostGoldstoneVertex(lorentztag,vertex) :
         return True
     # remove vertices involving goldstones
     for p in vertex.particles:
-        def gstest(name):
-            try:
-                return getattr(p,name)
-            except AttributeError:
-                return False
-        if any(map(gstest, gsnames)):
+        if(isGoldstone(p)):
             return True
     return False
 

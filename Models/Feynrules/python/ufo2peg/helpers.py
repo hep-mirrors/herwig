@@ -249,3 +249,25 @@ def extractAntiSymmetricIndices(instring,funct) :
                 sign *=-1.
                 terms[ix],terms[ix-1] = terms[ix-1],terms[ix]
     return (terms,sign)
+
+def isGoldstone(p) :
+    """check if particle is a Goldstone"""
+    def gstest(name):
+        try:
+            return getattr(p,name)
+        except AttributeError:
+            return False
+    # names of goldstone bosons
+    gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
+    if any(map(gstest, gsnames)):
+        return True
+    return False
+
+def isGhost(p) :
+    """Check if particle is a ghost"""
+    try:
+        getattr(p,'GhostNumber')
+    except AttributeError:
+        return False
+    return p.GhostNumber != 0
+    
