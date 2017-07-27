@@ -144,8 +144,8 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     // 5
     colour_[5][6] = colour_[6][5] = 3./16.;
     colour_[5][7] = colour_[7][5] = 9./16.;
-    colour_[5][8] = colour_[8][3] = 3./8.;
-    colour_[5][9] = colour_[9][3] = 9./8.;
+    colour_[5][8] = colour_[8][5] = 3./8.;
+    colour_[5][9] = colour_[9][5] = 9./8.;
     //6
     colour_[6][7] = colour_[7][6] = 9./16.;
     colour_[6][8] = colour_[8][6] = 3./8.;
