@@ -499,14 +499,16 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 			      ColourLines("-1 -2 -4, -3 2 -5"),
 			      ColourLines("-1 -4, -3 -5"),
 			      ColourLines("-1 -5, -3 -4")};
-    static ColourLines f3bar3barto3bar3bars[2]
-      ={ColourLines("-1 -3:1 -4, -2 -3:2 -5"),
-	ColourLines("-1 -3:2 -4, -2 -3:1 -5")};
+    static ColourLines f3bar3barto3bar3bars[4]=
+      {ColourLines("-1 -3:1 -4, -2 -3:2 -5"),
+       ColourLines("-1 -3:2 -4, -2 -3:1 -5"),
+       ColourLines("-1 -3:1 -5, -2 -3:2 -4"),
+       ColourLines("-1 -3:2 -5, -2 -3:1 -4")};
     if(current.intermediate->iColour() == PDT::Colour8)
       sel.insert(1.,current.ordered.second ? 
 		 &f3bar3barto3bar3bar[0] : &f3bar3barto3bar3bar[1]);
     else if(current.intermediate->iColour() == PDT::Colour6bar) {
-      sel.insert(1., &f3bar3barto3bar3bars[flow_]);
+      sel.insert(1., &f3bar3barto3bar3bars[2*(flow_-2)+UseRandom::irnd(0,2)]);
     }
     else
       sel.insert(1.,current.ordered.second ? 
