@@ -420,6 +420,6 @@ void FFMassiveKinematics::Init() {
      "No",
      "Do not use the full jacobian.",
      false);
-
+  interfaceFullJacobian.rank(-1);
 }
 

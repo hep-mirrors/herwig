@@ -174,7 +174,7 @@ private:
   /**
    * Option to use the full jacobian, including the z->zprime jacobian.
    **/
-  bool  theFullMapping;
+  bool  theFullJacobian;
 
 };
 
