@@ -96,6 +96,12 @@ void ResonantProcessConstructor::Init() {
      "Inclusive",
      "Generate all modes which are allowed for the on-shell intermediate particle",
      3);
+  static SwitchOption interfaceProcessesVeryExclusive
+    (interfaceProcesses,
+     "VeryExclusive",
+     "Require that both the incoming and outgoing particles in the hard processes are in the"
+     " list of outgoing particles in every hard process",
+     4);
 
   static Switch<ResonantProcessConstructor,unsigned int> interfaceScaleChoice
     ("ScaleChoice",
@@ -128,10 +134,17 @@ void ResonantProcessConstructor::Init() {
 
 void ResonantProcessConstructor::doinit() {
   HardProcessConstructor::doinit();
-  if(processOption_==2&&outgoing_.size()!=2)
+  if((processOption_==2 || processOption_==4) &&
+     outgoing_.size()!=2)
     throw InitException() 
       << "Exclusive processes require exactly"
       << " two outgoing particles but " << outgoing_.size()
+      << "have been inserted in ResonantProcessConstructor::doinit()."
+      << Exception::runerror;
+  if(processOption_==4 && incoming_.size()!=2)
+    throw InitException() 
+      << "Exclusive processes require exactly"
+      << " two incoming particles but " << incoming_.size()
       << "have been inserted in ResonantProcessConstructor::doinit()."
       << Exception::runerror;
 }
@@ -248,12 +261,19 @@ makeResonantDiagram(IDPair in, PDPtr offshell, long outa, long outb,
 		getParticleData(newdiag.outgoing.second));
     if(loc==outgoing_.end()) return;
   }
-  else if(processOption_==2) {
+  else if(processOption_==2 || processOption_==4 ) {
     if(!((newdiag.outgoing. first==outgoing_[0]->id()&&
 	  newdiag.outgoing.second==outgoing_[1]->id())||
 	 (newdiag.outgoing. first==outgoing_[1]->id()&&
 	  newdiag.outgoing.second==outgoing_[0]->id())))
       return;
+    if(processOption_==4) {
+      if(!((newdiag.incoming. first==incoming_[0]->id()&&
+	    newdiag.incoming.second==incoming_[1]->id())||
+	   (newdiag.incoming. first==incoming_[1]->id()&&
+	    newdiag.incoming.second==incoming_[0]->id())))
+	return;
+    }
   }
   // add to the list
   diagrams_.push_back(newdiag);

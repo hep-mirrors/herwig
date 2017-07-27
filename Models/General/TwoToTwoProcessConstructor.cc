@@ -41,10 +41,17 @@ IBPtr TwoToTwoProcessConstructor::fullclone() const {
 
 void TwoToTwoProcessConstructor::doinit() {
   HardProcessConstructor::doinit();
-  if(processOption_==2&&outgoing_.size()!=2)
+  if((processOption_==2 || processOption_==4) &&
+     outgoing_.size()!=2)
     throw InitException() 
       << "Exclusive processes require exactly"
       << " two outgoing particles but " << outgoing_.size()
+      << "have been inserted in TwoToTwoProcessConstructor::doinit()." 
+      << Exception::runerror;
+  if(processOption_==4 && incoming_.size()!=2)
+    throw InitException() 
+      << "Exclusive processes require exactly"
+      << " two incoming particles but " << incoming_.size()
       << "have been inserted in TwoToTwoProcessConstructor::doinit()." 
       << Exception::runerror;
   Nout_ = outgoing_.size();
@@ -145,6 +152,12 @@ void TwoToTwoProcessConstructor::Init() {
      "Require that both the particles in the hard processes are in the"
      " list of outgoing particles in every hard process",
      2);
+  static SwitchOption interfaceProcessesVeryExclusive
+    (interfaceProcesses,
+     "VeryExclusive",
+     "Require that both the incoming and outgoing particles in the hard processes are in the"
+     " list of outgoing particles in every hard process",
+     4);
 
   static Switch<TwoToTwoProcessConstructor,unsigned int> interfaceScaleChoice
     ("ScaleChoice",
@@ -281,7 +294,7 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       process.push_back(*itb);
     }
     // if inclusive enforce the exclusivity
-    if(processOption_==2) {
+    if(processOption_==2 || processOption_==4) {
       if(!((process[0].outgoing. first==outgoing_[0]->id()&&
 	    process[0].outgoing.second==outgoing_[1]->id())||
 	   (process[0].outgoing. first==outgoing_[1]->id()&&
@@ -289,6 +302,16 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 	process.clear();
 	it = range.second;
 	continue;
+      }
+      if(processOption_==4) {
+	if(!((process[0].incoming. first==incoming_[0]->id()&&
+	      process[0].incoming.second==incoming_[1]->id())||
+	     (process[0].incoming. first==incoming_[1]->id()&&
+	      process[0].incoming.second==incoming_[0]->id()))) {
+	  process.clear();
+	  it = range.second;
+	  continue;
+	}
       }
     }
     if(find(excludedExternal_.begin(),excludedExternal_.end(),
