@@ -156,7 +156,7 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
     else :
         for icoup in range(0,len(new_couplings)) :
             if(new_couplings[icoup] and all_couplings[icoup]) :
-                all_couplings[icoup] = '(%s) * (%s) *(%s) + (%s) ' % (new_couplings[icoup],prefactors,value,all_couplings[icoup])
+                all_couplings[icoup] = '(%s) + (%s) ' % (new_couplings[icoup],all_couplings[icoup])
             elif(new_couplings[icoup]) :
                 all_couplings[icoup] = new_couplings[icoup]
     # return the results
