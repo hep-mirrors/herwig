@@ -250,38 +250,15 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       }
     }
   }
-  //need to find all of the diagrams that relate to the same process
-  //first insert them into a map which uses the '<' operator 
-  //to sort the diagrams 
+  // need to find all of the diagrams that relate to the same process
+  // first insert them into a map which uses the '<' operator 
+  // to sort the diagrams 
   multiset<HPDiagram> grouped;
   HPDVector::iterator dit = processes_.begin();
   HPDVector::iterator dend = processes_.end();
-  bool abort=false;
   for( ; dit != dend; ++dit) {
-    // check for on-shell s-channel
-    tPDPtr out1 = getParticleData(dit->outgoing.first );
-    tPDPtr out2 = getParticleData(dit->outgoing.second);
-    if(dit->channelType == HPDiagram::sChannel && 
-       dit->intermediate->width()==ZERO &&
-       dit->intermediate->mass() > out1->mass()+ out2->mass()) {
-      tPDPtr in1 = getParticleData(dit->incoming.first );
-      tPDPtr in2 = getParticleData(dit->incoming.second);
-      generator()->log() << dit->intermediate->PDGName() 
-			 << " can be on-shell in the process "
-			 << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
-			 << out1->PDGName() << " " << out2->PDGName() 
-			 << " but has zero width.\nEither set the width, enable "
-			 << "calculation of its decays, and hence the width,\n"
-			 << "or disable it as a potential intermediate using\n"
-			 << "insert " << fullName() << ":Excluded 0 "
-			 << dit->intermediate->fullName() << "\n---\n";
-      abort = true;
-    }
     grouped.insert(*dit);
   }
-  if(abort) throw Exception() << "One or more processes with zero width"
-			      << " resonant intermediates"
-			      << Exception::runerror;
   assert( processes_.size() == grouped.size() );
   processes_.clear();
   typedef multiset<HPDiagram>::const_iterator set_iter;
@@ -314,6 +291,28 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 	}
       }
     }
+    // check no zero width s-channel intermediates
+    for( dit=process.begin(); dit != process.end(); ++dit) {
+      tPDPtr out1 = getParticleData(dit->outgoing.first );
+      tPDPtr out2 = getParticleData(dit->outgoing.second);
+      if(dit->channelType == HPDiagram::sChannel && 
+	 dit->intermediate->width()==ZERO &&
+	 dit->intermediate->mass() > out1->mass()+ out2->mass()) {
+	tPDPtr in1 = getParticleData(dit->incoming.first );
+	tPDPtr in2 = getParticleData(dit->incoming.second);
+	throw Exception() << "Process with zero width resonant intermediates\n"
+			  << dit->intermediate->PDGName() 
+			  << " can be on-shell in the process "
+			  << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
+			  << out1->PDGName() << " " << out2->PDGName() 
+			  << " but has zero width.\nEither set the width, enable "
+			  << "calculation of its decays, and hence the width,\n"
+			  << "or disable it as a potential intermediate using\n"
+			  << "insert " << fullName() << ":Excluded 0 "
+			  << dit->intermediate->fullName() << "\n---\n"
+			  << Exception::runerror;
+      }
+    }    
     if(find(excludedExternal_.begin(),excludedExternal_.end(),
 	    getParticleData(process[0].outgoing. first))!=excludedExternal_.end()) {
       process.clear();
