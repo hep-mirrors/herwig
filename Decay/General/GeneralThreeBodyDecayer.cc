@@ -170,7 +170,8 @@ void GeneralThreeBodyDecayer::doinit() {
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
     int jac = 0;
     double power = 0.0;
-    if ( _diagrams[ix].intermediate->mass() == ZERO ) {
+    if ( _diagrams[ix].intermediate->mass() == ZERO ||
+	 _diagrams[ix].intermediate->width() == ZERO ) {
       jac = 1;
       power = -2.0;
     }
