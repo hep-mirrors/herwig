@@ -110,13 +110,15 @@ Energy VVVDecayer::partialWidth(PMPair inpart, PMPair outa,
 				     outa.first, outb.first);
     double mu1(outa.second/inpart.second), mu1sq(sqr(mu1)),
       mu2(outb.second/inpart.second), mu2sq(sqr(mu2));
+    double vn = norm(_perturbativeVertex->norm());
+    if(vn == ZERO || mu1sq == ZERO || mu2sq == ZERO) return ZERO;
     double me2 = 
       (mu1 - mu2 - 1.)*(mu1 - mu2 + 1.)*(mu1 + mu2 - 1.)*(mu1 + mu2 + 1.)
       * (sqr(mu1sq) + sqr(mu2sq) + 10.*(mu1sq*mu2sq + mu1sq + mu2sq) + 1.)
       /4./mu1sq/mu2sq;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy pWidth = norm(_perturbativeVertex->norm())*me2*pcm/24./Constants::pi;
+    Energy pWidth = vn*me2*pcm/24./Constants::pi;
     // colour factor
     pWidth *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
