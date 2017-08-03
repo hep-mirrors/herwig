@@ -189,15 +189,15 @@ namespace Herwig {
      */
     cPDVector& amplitudePartonData() { return theAmplitudePartonData; }
 
-    /**
-     * The crossed momenta
-     */
-    const vector<Lorentz5Momentum>& amplitudeMomenta() const { return theAmplitudeMomenta; }
+    ///**
+    // * The crossed momenta
+    // */
+    //const vector<Lorentz5Momentum>& amplitudeMomenta() const { return theAmplitudeMomenta; }
 
-    /**
-     * The crossed momenta
-     */
-    vector<Lorentz5Momentum>& amplitudeMomenta() { return theAmplitudeMomenta; }
+    ///**
+    // * The crossed momenta
+    // */
+    //vector<Lorentz5Momentum>& amplitudeMomenta() { return theAmplitudeMomenta; }
 
     /**
      * True, if the the tree level amplitudes need to be calculated
@@ -859,10 +859,10 @@ namespace Herwig {
      */
     cPDVector theAmplitudePartonData;
 
-    /**
-     * The ccrossed momenta
-     */
-    vector<Lorentz5Momentum> theAmplitudeMomenta;
+    ///**
+    // * The ccrossed momenta
+    // */
+    //vector<Lorentz5Momentum> theAmplitudeMomenta;
 
     /**
      * True, if the the tree level amplitudes need to be calculated

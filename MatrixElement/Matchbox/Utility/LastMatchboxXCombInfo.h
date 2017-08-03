@@ -82,10 +82,10 @@ public:
    */
   const cPDVector& amplitudePartonData() const { return lastMatchboxXComb()->amplitudePartonData(); }
 
-  /**
-   * The crossed momenta
-   */
-  const vector<Lorentz5Momentum>& amplitudeMomenta() const { return lastMatchboxXComb()->amplitudeMomenta(); }
+  ///**
+  // * The crossed momenta
+  // */
+  //const vector<Lorentz5Momentum>& amplitudeMomenta() const { return lastMatchboxXComb()->amplitudeMomenta(); }
 
   /**
    * True, if the the tree level amplitudes need to be calculated
@@ -340,10 +340,10 @@ protected:
    */
   cPDVector& amplitudePartonData() { return lastMatchboxXComb()->amplitudePartonData(); }
 
-  /**
-   * The crossed momenta
-   */
-  vector<Lorentz5Momentum>& amplitudeMomenta() { return lastMatchboxXComb()->amplitudeMomenta(); }
+  ///**
+  // * The crossed momenta
+  // */
+  //vector<Lorentz5Momentum>& amplitudeMomenta() { return lastMatchboxXComb()->amplitudeMomenta(); }
 
   /**
    * True, if the the tree level amplitudes need to be calculated
