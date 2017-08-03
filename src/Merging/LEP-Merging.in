@@ -80,6 +80,7 @@ read Matchbox/MadGraph-OpenLoops.in
 
 ## cuts on additional jets
 
+cd /Herwig/Cuts
 # read Matchbox/DefaultEEJets.in
 # set NJetsCut:NJetsMin 3
 
@@ -125,7 +126,7 @@ read Merging/FactorCMWScheme.in
 
 cd /Herwig/Analysis
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
-# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMCFile
 
 
 # Here we collected a various Rivet analysis for LEP

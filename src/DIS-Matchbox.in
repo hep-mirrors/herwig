@@ -71,6 +71,7 @@ do Factory:Process e- p -> e- j
 
 ## cuts on additional jets
 
+cd /Herwig/Cuts
 # read Matchbox/DefaultEPJets.in
 
 # insert JetCuts:JetRegions 0 FirstJet
