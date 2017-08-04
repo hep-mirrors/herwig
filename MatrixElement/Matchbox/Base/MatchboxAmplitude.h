@@ -289,6 +289,11 @@ public:
    */
   void checkReshuffling(Ptr<MatchboxPhasespace>::tptr);
 
+  /**
+   * Return true, if this amplitude makes use of amplitudeMomenta
+   */
+  virtual bool hasAmplitudeMomenta() const { return false; }
+
   //@}
 
   /** @name Colour basis. */
