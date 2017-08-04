@@ -255,9 +255,9 @@ void MatchboxAmplitude::setXComb(tStdXCombPtr xc) {
   theLastXComb = xc;
   lastMatchboxXComb(xc);
   fillCrossingMap();
-  //if ( treeAmplitudes() || oneLoopAmplitudes() )
-  //  for ( size_t k = 0 ; k < meMomenta().size(); ++k )
-  //    amplitudeMomenta()[k] = amplitudeMomentum(k);
+  if ( treeAmplitudes() || oneLoopAmplitudes() )
+    for ( size_t k = 0 ; k < meMomenta().size(); ++k )
+      amplitudeMomenta()[k] = amplitudeMomentum(k);
 }
 
 void MatchboxAmplitude::fillCrossingMap(size_t shift) {
@@ -286,7 +286,7 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
   set<pair<tcPDPtr,int> > amplitudeLegs;
   crossingMap().resize(mePartonData().size());
   amplitudePartonData().resize(mePartonData().size());
-  //amplitudeMomenta().resize(mePartonData().size());
+  amplitudeMomenta().resize(mePartonData().size());
 
   int ampCount = 0;
 
