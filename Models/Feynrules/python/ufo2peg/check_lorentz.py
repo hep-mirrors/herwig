@@ -801,7 +801,10 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
 
 def fermionCouplings(value,prefactors,L,all_couplings,order) :
     new_couplings=[False,False]
-    new_couplings[0],new_couplings[1] = parse_lorentz(L.structure)
+    try :
+        new_couplings[0],new_couplings[1] = parse_lorentz(L.structure)
+    except :
+        raise SkipThisVertex()
     for i in range(0,2) :
         if new_couplings[i]:
             new_couplings[i] = '(%s) * (%s) * (%s)' % (prefactors,new_couplings[i],value)
