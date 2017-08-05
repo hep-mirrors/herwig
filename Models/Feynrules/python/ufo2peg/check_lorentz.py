@@ -835,3 +835,6 @@ def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
         append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
                   % vertex.particles[0].pdg_code)
     return normcontent,leftcontent,rightcontent,append
+
+def RSCouplings(value,prefactors,L,all_couplings,order) :
+    raise SkipThisVertex()

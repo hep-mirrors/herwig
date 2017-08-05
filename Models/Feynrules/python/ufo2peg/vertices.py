@@ -5,7 +5,8 @@ from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
-    processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings
+    processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings,\
+    RSCouplings
 from .helpers import SkipThisVertex,extractAntiSymmetricIndices,isGoldstone
 
 # prefactors for vertices
@@ -25,6 +26,8 @@ lfactors = {
     'SST'  : 'complex(0,2)',
     'FFT'  : '-complex(0,8)',
     'FFVT' : '-complex(0,4)',
+    'RFS'  : 'complex(0,1)',
+    'RFV'  : 'complex(0,1)',
 }
 
 # template for the header for a vertex
@@ -46,7 +49,7 @@ insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 
 def get_lorentztag(spin):
     """Produce a ThePEG spin tag for the given numeric FR spins."""
-    spins = { 1 : 'S', 2 : 'F', 3 : 'V', -1 : 'U', 5 : 'T' }
+    spins = { 1 : 'S', 2 : 'F', 3 : 'V', 4 : 'R', 5 : 'T', -1 : 'U' }
     result=[]
     for i in range(0,len(spin)) :
         result.append((spins[spin[i]],i+1))
@@ -55,7 +58,7 @@ def get_lorentztag(spin):
         (a1,a2) = a
         (b1,b2) = b
         if a1 == b1: return 0
-        for letter in 'UFVST':
+        for letter in 'URFVST':
             if a1 == letter: return -1
             if b1 == letter: return  1
 
@@ -484,7 +487,7 @@ Herwig may not give correct results, though.
                 normcontent,append,header =\
                                             processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
             else :
-                skipThisVertex()
+                SkipThisVertex()
         except SkipThisVertex:
             msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
                   'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name,
@@ -597,7 +600,8 @@ Herwig may not give correct results, though.
                 elif 'T' in lorentztag :
                     append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
                                                                        all_couplings[color_idx],order)
-
+                elif 'R' in lorentztag :
+                    all_couplings[color_idx] = RSCouplings(value,prefactors,L,all_couplings[color_idx],order)
                 elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
                     all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,lorentztag,
                                                                      all_couplings[color_idx],order)
