@@ -126,7 +126,6 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
-	      continue;
 	      if(current.intermediate->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].first->
 		  evaluate(q2, 1, offshell, sp[if1], sbar[if2]);
