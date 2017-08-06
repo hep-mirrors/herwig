@@ -69,8 +69,7 @@ public:
 			Colour33to83bar,Colour33to3bar8,
 			Colour3bar3barto13,Colour3bar3barto31,
 			Colour3bar3barto83,Colour3bar3barto38,
-			Colour38to3bar3bar,Colour83to3bar3bar,
-			Colour3bar8to33,Colour83barto33};
+			Colour38to3bar3bar,Colour3bar8to33};
 
 public:
 
