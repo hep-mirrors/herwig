@@ -141,10 +141,18 @@ def colorfactor(vertex,L,pos,lorentztag):
         if match(label): return ('1',)
 
     elif l(3) == L == 3:
+        colors=[]
+        for color in vertex.color :
+            order,sign  = extractAntiSymmetricIndices(color,"Epsilon(")
+            colors.append("Epsilon(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('Epsilon(1,2,3)',)
-        if match(label): return ('1',) # TODO check factor!
+        if match(label,colors): return ('1',) # TODO check factor!
 
     elif l(-3) == L == 3:
+        colors=[]
+        for color in vertex.color :
+            order,sign  = extractAntiSymmetricIndices(color,"EpsilonBar(")
+            colors.append("Epsilon(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('EpsilonBar(1,2,3)',)
         if match(label): return ('1',) # TODO check factor!
 
@@ -300,6 +308,33 @@ def couplingValue(coupling) :
             value += '+(%s)' % coup.value
             value +=")"
     return value
+
+def epsilonSign(vertex,couplingptrs,append) :
+    EPSSIGN = """\
+    double sign = {epssign};
+    if((p1->id()=={id1} && p2->id()=={id3} && p3->id()=={id2}) ||
+       (p1->id()=={id2} && p2->id()=={id1} && p3->id()=={id3}) ||
+       (p1->id()=={id3} && p2->id()=={id2} && p3->id()=={id1})) {{
+       sign *= -1.;
+    }}
+    norm(norm()*sign);
+"""
+    if(not "p1" in couplingptrs[0]) :
+        couplingptrs[0] += ' p1'
+    if(not "p2" in couplingptrs[1]) :
+        couplingptrs[1] += ' p2'
+    if(not "p3" in couplingptrs[2]) :
+        couplingptrs[2] += ' p3'
+    if("Bar" not in vertex.color[0]) :
+        order,sign = extractAntiSymmetricIndices(vertex.color[0],"Epsilon(")
+    else :
+        order,sign = extractAntiSymmetricIndices(vertex.color[0],"EpsilonBar(")
+    subs = {"id1" : vertex.particles[int(order[0])-1].pdg_code,
+            "id2" : vertex.particles[int(order[1])-1].pdg_code,
+            "id3" : vertex.particles[int(order[2])-1].pdg_code,
+            "epssign" : sign }
+    append+=EPSSIGN.format(**subs)
+    return couplingptrs,append
 
 class VertexConverter:
     'Convert the vertices in a FR model to extract the information ThePEG needs.'
@@ -524,6 +559,9 @@ Herwig may not give correct results, though.
         elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
             normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
         norm = 'norm(' + normcalc + ');'
+        # finally special handling for eps tensors
+        if(len(vertex.color)==1 and vertex.color[0].find("Epsilon")>=0) :
+            couplingptrs, append = epsilonSign(vertex,couplingptrs,append)
         # define unkown symbols from the model
         symboldefs = [ def_from_model(self.model,s) for s in symbols ]
         ### assemble dictionary and fill template

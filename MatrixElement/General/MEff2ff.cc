@@ -253,6 +253,7 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
+	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 1, offshell,spin_[3][ofhel2],sbar_[2][ofhel1]);
@@ -366,6 +367,7 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
+	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 1, offshell,spin_[3][ofhel2],sbar_[2][ofhel1]);
