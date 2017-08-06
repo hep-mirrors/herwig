@@ -89,7 +89,7 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   // or colour 33bar -> 33bar
   case Colour33to33: case Colour3bar3barto3bar3bar:
   case Colour33barto33bar:
-    colour_ = vector<DVector>(6, DVector(6, 0.));
+    colour_ = vector<DVector>(4, DVector(4, 0.));
     colour_[0][0] = colour_[1][1] = 2.; 
     colour_[2][2] = colour_[3][3] = 9.;
     colour_[0][1] = colour_[1][0] = -2./3.;
@@ -485,10 +485,15 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 				    ColourLines("1 3:2 4, 2 3:1 5"),
 				    ColourLines("1 3:1 5, 2 3:2 4"),
 				    ColourLines("1 3:2 5, 2 3:1 4")};
+    static ColourLines f33to33t[2]={ColourLines("1 4, 2 5"),
+				    ColourLines("1 5, 2 4")};
     if(current.intermediate->iColour() == PDT::Colour8)
       sel.insert(1.,current.ordered.second ? &f33to33[0] : &f33to33[1]);
     else if(current.intermediate->iColour() == PDT::Colour6) {
       sel.insert(1., &f33to33s[2*(flow_-2)+UseRandom::irnd(0,2)]);
+    }
+    else if(current.intermediate->iColour() == PDT::Colour3bar) {
+      sel.insert(1., &f33to33t[flow_-2]);
     }
     else
       sel.insert(1.,current.ordered.second ? &f33to33[2] : &f33to33[3]);
@@ -504,11 +509,18 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
        ColourLines("-1 -3:2 -4, -2 -3:1 -5"),
        ColourLines("-1 -3:1 -5, -2 -3:2 -4"),
        ColourLines("-1 -3:2 -5, -2 -3:1 -4")};
-    if(current.intermediate->iColour() == PDT::Colour8)
+    static ColourLines f3bar3barto3bar3bart[2]=
+      {ColourLines("-1 -4, -2 -5"),
+       ColourLines("-1 -5, -2 -4")};
+    if(current.intermediate->iColour() == PDT::Colour8) {
       sel.insert(1.,current.ordered.second ? 
 		 &f3bar3barto3bar3bar[0] : &f3bar3barto3bar3bar[1]);
+    }
     else if(current.intermediate->iColour() == PDT::Colour6bar) {
       sel.insert(1., &f3bar3barto3bar3bars[2*(flow_-2)+UseRandom::irnd(0,2)]);
+    }
+    else if(current.intermediate->iColour() == PDT::Colour3) {
+      sel.insert(1., &f3bar3barto3bar3bart[flow_-2]);
     }
     else
       sel.insert(1.,current.ordered.second ? 

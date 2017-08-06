@@ -580,6 +580,13 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       cfv[0] = make_pair(6, 1.);
       cfv.push_back(make_pair(7,1.));
     }
+    else if((ina  == PDT::Colour3    && inb  == PDT::Colour3    &&
+	     outa == PDT::Colour3    && outb == PDT::Colour3   ) ||
+	    (ina  == PDT::Colour3bar && inb  == PDT::Colour3bar &&
+	     outa == PDT::Colour3bar && outb == PDT::Colour3bar)) {
+      cfv[0]      = make_pair(2, 0.5);
+      cfv.push_back(make_pair(3,-0.5));
+    }
     else {
       if(outa == PDT::Colour0 || outb == PDT::Colour0)
 	cfv[0] = make_pair(0, 1);
