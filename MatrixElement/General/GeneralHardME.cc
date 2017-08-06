@@ -337,6 +337,22 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     colour_[6][7] = colour_[7][6] = 1.;
     numberOfFlows_ = 8;
     break;
+  case Colour33to13bar: case Colour33to3bar1:
+  case Colour3bar3barto13: case Colour3bar3barto31:
+    colour_ = vector<DVector>(1, DVector(1, 6.));
+    numberOfFlows_ = 1;
+    break;
+  case Colour33to83bar: case Colour33to3bar8:
+  case Colour3bar3barto83: case Colour3bar3barto38:
+  case Colour38to3bar3bar: case Colour83to3bar3bar:
+  case Colour3bar8to33: case Colour83barto33:
+    colour_ = vector<DVector>(3, DVector(3, 0.));
+    colour_[0][0]=colour_[1][1]=colour_[2][2]=8.;
+    colour_[0][1]=colour_[1][0]=-4.;
+    colour_[0][2]=colour_[2][0]=-4.;
+    colour_[1][2]=colour_[2][1]=-4.;
+    numberOfFlows_ = 3;
+    break;
   default:
     assert(false);
   }
@@ -993,6 +1009,213 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
         sel.insert(1., &f38to63bart[flow_]);
       else 
         sel.insert(1., &f38to63baru[flow_]);
+    }
+    break;
+  case Colour33to13bar:
+    static ColourLines f33to13bar[3]={ColourLines("1 -6, 2 -6, -5 -3 -6"),
+				      ColourLines("1 2 -6, 3 -6, -5 -6"),
+				      ColourLines("1 -6, 3 2 -6, -5 -6")};
+    if(current.channelType == HPDiagram::sChannel)
+      sel.insert(1., &f33to13bar[0]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second)
+        sel.insert(1., &f33to13bar[1]);
+      else
+        sel.insert(1., &f33to13bar[2]);
+    }
+    break;
+  case Colour33to3bar1:
+    static ColourLines f33to3bar1[3]={ColourLines("1 -6, 2 -6, -4 -3 -6"),
+				      ColourLines("1 -6, 3 2 -6, -4 -6"),
+				      ColourLines("1 2 -6, 3 -6, -4 -6")};
+    if(current.channelType == HPDiagram::sChannel)
+      sel.insert(1., &f33to3bar1[0]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second)
+        sel.insert(1., &f33to3bar1[1]);
+      else
+        sel.insert(1., &f33to3bar1[2]);
+    }
+    break;
+  case Colour3bar3barto13:
+    static ColourLines f3bar3barto13[3]={ColourLines("-1 6, -2 6, 5 3 6"),
+					 ColourLines("-1 2 6, -3 6, 5 6"),
+					 ColourLines("-1 6, -3 2 6, 5 6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      sel.insert(1., &f3bar3barto13[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+        sel.insert(1., &f3bar3barto13[1]);
+      }
+      else {
+        sel.insert(1., &f3bar3barto13[2]);
+      }
+    }
+    break;
+  case Colour3bar3barto31:
+    static ColourLines f3bar3barto31[3]={ColourLines("-1 6, -2 6, 4 3 6"),
+					 ColourLines("-1 6, -3 -2 6, 4 6"),
+					 ColourLines("-1 -2 6, -3 6, 4 6")};
+    if(current.channelType == HPDiagram::sChannel)
+      sel.insert(1., &f3bar3barto31[0]);
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second)
+        sel.insert(1., &f3bar3barto31[1]);
+      else
+        sel.insert(1., &f3bar3barto31[2]);
+    }
+    break;
+  case Colour33to83bar:
+    static ColourLines f33to83bar[3]={ColourLines("1 -6, 2 -6, -5 4, -4 -3 -6"),
+     				      ColourLines("1 4, -4 2 -6, 3 -6, -5 -6"),
+     				      ColourLines("1 -6, 3 4, -4 2 -6, -5 -6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f33to83bar[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f33to83bar[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f33to83bar[2]);
+      }
+    }
+    break;
+  case Colour33to3bar8:
+    static ColourLines f33to3bar8[3]={ColourLines("1 -6, 2 -6, -4 5, -5 -3 -6"),
+     				      ColourLines("1 -6, 3 5, -5 2 -6, -4 -6"),
+				      ColourLines("1 5, -5 2 -6, 3 -6, -4 -6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f33to3bar8[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f33to3bar8[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f33to3bar8[2]);
+      }
+    }
+    break;
+  case Colour3bar3barto83:
+    static ColourLines f3bar3barto83[3]={ColourLines("-1 6, -2 6, 5 -4, 4 3 6"),
+					 ColourLines("-1 -4, 4 2 6, -3 6, 5 6"),
+					 ColourLines("-1 6, -3 -4, 4 2 6, 5 6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f3bar3barto83[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f3bar3barto83[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f3bar3barto83[2]);
+      }
+    }
+    break;
+  case Colour3bar3barto38:
+    static ColourLines f3bar3barto38[3]={ColourLines("-1 6, -2 6, 4 -5, 5 3 6"),
+					 ColourLines("-1 6, -3 -5, 5 -2 6, 4 6"),
+					 ColourLines("-1 -5, 5 -2 6, -3 6, 4 6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f3bar3barto38[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f3bar3barto38[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f3bar3barto38[2]);
+      }
+    }
+    break;
+  case Colour38to3bar3bar:
+    static ColourLines f38to3bar3bar[3]={ColourLines("1 -2, 2 3 -6, -4 -6, -5 -6"),
+					 ColourLines("1 -6, 3 2 -6, -3 -5, -4 -6"),
+					 ColourLines("1 -6, 3 2 -6, -3 -4, -5 -6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f38to3bar3bar[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f38to3bar3bar[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f38to3bar3bar[2]);
+      }
+    }
+    break;
+  case Colour83to3bar3bar:
+    static ColourLines f83to3bar3bar[3]={ColourLines("2 -1, 1 3 -6, -4 -6, -5 -6"),
+					 ColourLines("3 -6, 1 2 -6, -1 -4, -5 -6"),
+					 ColourLines("3 -6, 1 2 -6, -1 -5, -4 -6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f83to3bar3bar[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f83to3bar3bar[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f83to3bar3bar[2]);
+      }
+    }
+    break;
+  case Colour3bar8to33:
+    static ColourLines f3bar8to33[3]={ColourLines("-1 2, -2 -3 6, 4 6, 5 6"),
+				      ColourLines("-1 6, -3 2 6, 3 5, 4 6"),
+				      ColourLines("-1 6, -3 2 6, 3 4, 5 6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f3bar8to33[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f3bar8to33[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f3bar8to33[2]);
+      }
+    }
+    break;
+  case Colour83barto33:
+    static ColourLines f83barto33[3]={ColourLines("-2 1, -1 -3 6, 4 6, 5 6"),
+				      ColourLines("-3 6, -1 2 6, 1 4, 5 6"),
+				      ColourLines("-3 6, -1 2 6, 1 5, 4 6")};
+    if(current.channelType == HPDiagram::sChannel) {
+      assert(flow_==0);
+      sel.insert(1., &f83barto33[0]);
+    }
+    else if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	assert(flow_==1);
+        sel.insert(1., &f83barto33[1]);
+      }
+      else {
+	assert(flow_==2);
+        sel.insert(1., &f83barto33[2]);
+      }
     }
     break;
   default:
