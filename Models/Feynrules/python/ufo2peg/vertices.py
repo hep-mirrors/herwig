@@ -626,8 +626,15 @@ Herwig may not give correct results, though.
             for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
                 if(color_idx!=colour) : continue
                 qcd, qed = qcd_qed_orders(vertex, coupling)
-                unique_qcd( qcd )
-                unique_qed( qed )
+                try :
+                    unique_qcd( qcd )
+                    unique_qed( qed )
+                except :
+                    msg = 'Different powers of QCD and QED couplings for the same vertex'\
+                          ' is not currently supported for {ps} in {name}.\n'.format(tag=lorentztag, name=vertex.name,
+                                                                                   ps=' '.join(map(str,vertex.particles)))
+                    sys.stderr.write(msg)
+                    raise SkipThisVertex()
                 L = vertex.lorentz[lorentz_idx]
                 prefactors = calculatePrefactor(self.globalsign,lorentztag,lf,cf[color_idx])
                 # calculate the value of the coupling

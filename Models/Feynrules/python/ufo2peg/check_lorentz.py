@@ -6,6 +6,8 @@ from .lorentzparser import parse_lorentz
 def compare(a,b) :
     num=abs(a-b)
     den=abs(a+b)
+    if(den == 0. and 1e-10) :
+        return True
     return num/den<1e-10
 
 def evaluate(x,model,parmsubs):
@@ -112,26 +114,29 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
     else :
         raise Exception('Unknown data type "%s".' % lorentztag)
     iterm=0
-    for term in terms:
-        for perm in itertools.permutations(term):
-            label = '*'.join(perm)
-            for istruct in range(0,len(structures)) :
-                if label in structures[istruct] :
-                    reminder = structures[istruct].replace(label,'1.',1)
-                    loc=iterm
-                    if(reminder.find("ProjM")>=0) :
-                        reminder=re.sub("\*ProjM\(.*,.\)","",reminder)
-                        loc+=len(terms)
-                    elif(reminder.find("ProjP")>=0) :
-                        reminder=re.sub("\*ProjP\(.*,.\)","",reminder)
-                        loc+=2*len(terms)
-                    structures[istruct] = "Done"
-                    val = eval(reminder, {'cmath':cmath} )*signs[iterm]
-                    if(new_couplings[loc]) :
-                        new_couplings[loc] += val
-                    else :
-                        new_couplings[loc] = val
-        iterm+=1
+    try :
+        for term in terms:
+            for perm in itertools.permutations(term):
+                label = '*'.join(perm)
+                for istruct in range(0,len(structures)) :
+                    if label in structures[istruct] :
+                        reminder = structures[istruct].replace(label,'1.',1)
+                        loc=iterm
+                        if(reminder.find("ProjM")>=0) :
+                            reminder=re.sub("\*ProjM\(.*,.\)","",reminder)
+                            loc+=len(terms)
+                        elif(reminder.find("ProjP")>=0) :
+                            reminder=re.sub("\*ProjP\(.*,.\)","",reminder)
+                            loc+=2*len(terms)
+                        structures[istruct] = "Done"
+                        val = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                        if(new_couplings[loc]) :
+                            new_couplings[loc] += val
+                        else :
+                            new_couplings[loc] = val
+            iterm+=1
+    except :
+        SkipThisVertex()
     # check we've handled all the terms
     for val in structures:
         if(val!="Done") :
@@ -383,15 +388,18 @@ def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings,order) :
     structures = extractStructures(L)
     # handle the scalar couplings
     itype=-1
-    for term in terms:
-        itype+=1
-        for perm in itertools.permutations(term):
-            label = '*'.join(perm)
-            for istruct in range(0,len(structures)) :
-                if label in structures[istruct] :
-                    reminder = structures[istruct].replace(label,'1.',1)
-                    couplings[itype]+=eval(reminder, {'cmath':cmath} )
-                    structures[istruct]='Done'
+    try :
+        for term in terms:
+            itype+=1
+            for perm in itertools.permutations(term):
+                label = '*'.join(perm)
+                for istruct in range(0,len(structures)) :
+                    if label in structures[istruct] :
+                        reminder = structures[istruct].replace(label,'1.',1)
+                        couplings[itype]+=eval(reminder, {'cmath':cmath} )
+                        structures[istruct]='Done'
+    except :
+        raise SkipThisVertex()
     # special for VVS and epsilon
     # handle the pseudoscalar couplings
     for struct in structures :
@@ -479,32 +487,40 @@ def getIndices(term) :
 
 def lorentzScalar(vertex,L) :
     dotProduct = """(invariant( i[{i1}], i[{i2}] )/GeV2)"""
-    structure = L.structure.split("*")
-    worked = False
-    mom=-1
-    output=""
-    while True :
-        term = structure[-1]
-        structure.pop()
-        (momentum,mom,index) = getIndices(term)
-        if( not momentum) : break
-        # look for the matching momenta
-        for term in structure :
-            (momentum,mom2,index2) = getIndices(term)
-            if(index2==index) :
-                structure.remove(term)
-                dot = dotProduct.format(i1=mom-1,i2=mom2-1)
-                if(output=="") :
-                    output = dot
-                else :
-                    output = " ( %s) * ( %s ) " (output,dot)
-        if(len(structure)==0) :
-            worked = True
-            break
-    if( not worked ) :
-        return False
-    else :
-        return output
+    structures=L.structure.split()
+    output="("
+    for struct in structures:
+        if(struct=="+" or struct=="-") :
+            output+=struct
+            continue
+        structure = struct.split("*")
+        worked = False
+        mom=-1
+        newTerm=""
+        while True :
+            term = structure[-1]
+            structure.pop()
+            (momentum,mom,index) = getIndices(term)
+            if( not momentum) : break
+            # look for the matching momenta
+            for term in structure :
+                (momentum,mom2,index2) = getIndices(term)
+                if(index2==index) :
+                    structure.remove(term)
+                    dot = dotProduct.format(i1=mom-1,i2=mom2-1)
+                    if(newTerm=="") :
+                        newTerm = dot
+                    else :
+                        newTerm = " ( %s) * ( %s ) " % (newTerm,dot)
+            if(len(structure)==0) :
+                worked = True
+                break
+        if(not worked) :
+            return False
+        else :
+            output+=newTerm
+    output+=")"
+    return output
 
 kinematicsline = """\
 long id [3]={{{id1},{id2},{id3}}};
@@ -576,7 +592,7 @@ def scalarCouplings(vertex,value,prefactors,L,lorentztag,
     if(len(all_couplings)==0) :
         all_couplings.append('(%s) * (%s)' % (prefactors,value))
     else :
-        all_couplings[0] = '(%s) * (%s) + (%s)' % (prefactors,value)
+        all_couplings[0] = '(%s) * (%s) + (%s)' % (prefactors,value,all_couplings[0])
     return (prepend, header,all_couplings)
 
 def processScalarCouplings(model,parmsubs,all_couplings) :
@@ -633,23 +649,25 @@ def vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
     # extract the couplings
     new_couplings  = [False]*len(terms)
     iterm=0
-    for term in terms:
-        for perm in itertools.permutations(term):
-            label = '*'.join(perm)
-            for istruct in range(0,len(structures)) :
-                if label in structures[istruct] :
-                    reminder = structures[istruct].replace(label,'1.',1)
-                    structures[istruct] = "Done"
-                    val = eval(reminder, {'cmath':cmath} )*signs[iterm]
-                    if(new_couplings[iterm]) :
-                        new_couplings[iterm] += val
-                    else :
-                        new_couplings[iterm] = val
-        iterm += 1
+    try :
+        for term in terms:
+            for perm in itertools.permutations(term):
+                label = '*'.join(perm)
+                for istruct in range(0,len(structures)) :
+                    if label in structures[istruct] :
+                        reminder = structures[istruct].replace(label,'1.',1)
+                        structures[istruct] = "Done"
+                        val = eval(reminder, {'cmath':cmath} )*signs[iterm]
+                        if(new_couplings[iterm]) :
+                            new_couplings[iterm] += val
+                        else :
+                            new_couplings[iterm] = val
+            iterm += 1
+    except :
+        raise SkipThisVertex()
     # check we've handled all the terms
     for val in structures:
         if(val!="Done") :
-            print 'not found',structures
             raise SkipThisVertex()
     # set the couplings
     for icoup in range(0,len(new_couplings)) :
@@ -702,9 +720,6 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                 order=[0,3,1,2]
                 value = "0.5*(%s)" % all_couplings[0][0]
             else:
-                print vertex.lorentz
-                for s in vertex.lorentz:
-                    print s.structure
                 sys.stderr.write(
                     'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n'
                     .format(tag="VVVV", name=vertex.name, ps=' '.join(map(str,vertex.particles)))
