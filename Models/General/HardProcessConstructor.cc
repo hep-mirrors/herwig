@@ -492,14 +492,13 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	      (outb==PDT::Colour8 && outa==PDT::Colour3))
 	cfv[0] = make_pair(2,1.);
     }
-    else if((ina==PDT::Colour3    && inb==PDT::Colour8) ||
-	    (ina==PDT::Colour3bar && inb==PDT::Colour8) ||
-	    (inb==PDT::Colour3    && ina==PDT::Colour8) ||
-	    (inb==PDT::Colour3bar && ina==PDT::Colour8) ) {
-      if(outa==PDT::Colour3    && outb==PDT::Colour3    ) 
-	cfv[0] = make_pair(2, 1.);
-      else if (outa==PDT::Colour3bar && outb==PDT::Colour3bar)
-	cfv[0] = make_pair(2,-1.);
+    else if(((ina==PDT::Colour3    && inb==PDT::Colour8) ||
+	     (ina==PDT::Colour3bar && inb==PDT::Colour8) ||
+	     (inb==PDT::Colour3    && ina==PDT::Colour8) ||
+	     (inb==PDT::Colour3bar && ina==PDT::Colour8)) &&
+	    ((outa==PDT::Colour3    && outb==PDT::Colour3    ) ||
+	     (outa==PDT::Colour3bar && outb==PDT::Colour3bar))) {
+      cfv[0] = make_pair(2, 1.);
     }
   }
   else if( offshell == PDT::Colour0 ) {

@@ -121,6 +121,7 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 		evaluate(q2, vecIn[ihel2], scaOut, interS);
 	    }
 	    else if( offshell->iSpin() == PDT::Spin1Half ) {
+	      if(offshell->CC()) offshell = offshell->CC();
 	      SpinorBarWaveFunction interFB = fermion_[ix].second->
 		evaluate(q2, 3, offshell,spbOut[ohel1],vecIn[ihel2]);
 	      diag = fermion_[ix].first->
