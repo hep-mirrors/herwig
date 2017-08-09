@@ -299,6 +299,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   PDT::Colour inb  = ib->iColour();
   PDT::Colour outa = oa->iColour();
   PDT::Colour outb = ob->iColour();
+  cerr << "testing in t channel\n";
   vector<CFPair> cfv(1, make_pair(0, 1.));
   if(diag.intermediate->iColour() == PDT::Colour0) {
     if(ina==PDT::Colour0) {
@@ -419,7 +420,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   diag.colourFlow = cfv;
 }
  
-void HardProcessConstructor::uChannelCF(HPDiagram & diag) { 
+void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   PDT::Colour offshell = diag.intermediate->iColour();
   PDT::Colour ina  = getParticleData(diag.incoming.first )->iColour();
   PDT::Colour inb  = getParticleData(diag.incoming.second)->iColour();
@@ -499,6 +500,11 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	    ((outa==PDT::Colour3    && outb==PDT::Colour3    ) ||
 	     (outa==PDT::Colour3bar && outb==PDT::Colour3bar))) {
       cfv[0] = make_pair(2, 1.);
+    }
+    else if(( ina==PDT::Colour3    &&  inb==PDT::Colour3bar && 
+	      outa==PDT::Colour3    && outb==PDT::Colour3bar)) {
+      cfv[0] = make_pair(2, 1.);
+      cfv.push_back(make_pair(3,-1.));
     }
   }
   else if( offshell == PDT::Colour0 ) {
