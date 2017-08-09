@@ -299,7 +299,6 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   PDT::Colour inb  = ib->iColour();
   PDT::Colour outa = oa->iColour();
   PDT::Colour outb = ob->iColour();
-  cerr << "testing in t channel\n";
   vector<CFPair> cfv(1, make_pair(0, 1.));
   if(diag.intermediate->iColour() == PDT::Colour0) {
     if(ina==PDT::Colour0) {
