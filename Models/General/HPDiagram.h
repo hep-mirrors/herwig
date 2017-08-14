@@ -99,14 +99,19 @@ struct HPDiagram {
     if( x.channelType != y.channelType ) return false;
     if( x.incoming == y.incoming && x.outgoing == y.outgoing &&
 	x.ordered == y.ordered ) {
-      if( !y.intermediate && !x.intermediate ) return true;
-      if(x.channelType==HPDiagram::tChannel) {
-	if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
-	  return true;
+      // 4 point
+      if(x.channelType==HPDiagram::fourPoint) {
+	// check vertex
+	return x.vertices.first==y.vertices.first;
       }
-      else if(x.channelType==HPDiagram::sChannel) {
-	if( y.intermediate->id() == x.intermediate->id() )
-	  return true;
+      // all others
+      else {
+	// check vertex
+	if(x.vertices.first  != y.vertices.first ||
+	   x.vertices.second != y.vertices.second )
+	  return false;
+	// check intermediate
+	return x.intermediate == y.intermediate;
       }
     }
     //diagram is also the same if the outgoing particles are
@@ -117,15 +122,30 @@ struct HPDiagram {
 	     x.outgoing.first == y.outgoing.second && 
 	     x.outgoing.second == y.outgoing.first &&
             x.channelType == y.channelType) {
-      if(x.channelType==HPDiagram::fourPoint) return true;
-      if(x.channelType==HPDiagram::tChannel&&
-        x.ordered.second != y.ordered.second) {
-       if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
-         return true;
+      // 4 point
+      if(x.channelType==HPDiagram::fourPoint) {
+	// check vertex
+	return x.vertices.first==y.vertices.first;
       }
-      if(x.channelType==HPDiagram::sChannel) {
-       if( y.intermediate->id() == x.intermediate->id() )
-         return true;
+      // t/u channel
+      else if(x.channelType==HPDiagram::tChannel) {
+	// check vertex
+	if(x.vertices.first  != y.vertices.second ||
+	   x.vertices.second != y.vertices.first )
+	    return false;
+	tPDPtr inter = x.intermediate;
+	if(inter->CC()) inter = inter->CC();
+	// check intermediate
+	return inter == y.intermediate;
+      }
+      // s-channel
+      else {
+	// check vertex
+	if(x.vertices.first  != y.vertices.first ||
+	   x.vertices.second != y.vertices.second )
+	  return false;
+	// check intermediate
+	return x.intermediate == y.intermediate;
       }
     }
     return false;
