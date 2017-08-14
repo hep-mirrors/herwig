@@ -78,7 +78,7 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
   double mu2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
+  //double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
   double Mui2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
   double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
 
