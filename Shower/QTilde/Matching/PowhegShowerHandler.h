@@ -58,10 +58,7 @@ public:
 
 public:
 
-  Ptr<MatchboxFactory>::ptr Factory(){return theFactory;}
-
-  Ptr<MatchboxFactory>::ptr Factory() const {return theFactory;}
-
+  Ptr<MatchboxFactory>::tptr Factory() const{return MatchboxFactory::currentFactory();}
 
   /**
    * Return true, if the shower handler can generate a truncated 
@@ -158,11 +155,6 @@ protected:
 
 
 private:
-
-   /**
-   * The factory object to fetch splitting channels from
-   */
-  Ptr<MatchboxFactory>::ptr theFactory;
 
  /**
    *  The matrix element for the core process

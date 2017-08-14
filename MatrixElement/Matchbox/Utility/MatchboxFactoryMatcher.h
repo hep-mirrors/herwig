@@ -123,11 +123,6 @@ protected:
 private:
 
   /**
-   * A pointer to the factory to be used
-   */
-  Ptr<MatchboxFactory>::ptr theFactory;
-
-  /**
    * The particle group to be matched
    */
   string theGroup;

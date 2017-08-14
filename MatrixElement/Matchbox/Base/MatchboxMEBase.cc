@@ -47,9 +47,9 @@ MatchboxMEBase::MatchboxMEBase()
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
-Ptr<MatchboxFactory>::tptr MatchboxMEBase::factory() const { return theFactory; }
-
-void MatchboxMEBase::factory(Ptr<MatchboxFactory>::tptr f) { theFactory = f; }
+Ptr<MatchboxFactory>::tptr MatchboxMEBase::factory() const {
+  return MatchboxFactory::currentFactory();
+}
 
 Ptr<Tree2toNGenerator>::tptr MatchboxMEBase::diagramGenerator() const { return factory()->diagramGenerator(); }
 
@@ -1025,7 +1025,6 @@ MatchboxMEBase::getDipoles(const vector<SubtractionDipolePtr>& dipoles,
 	      continue;
 	    // now get to work
 	    d->clearBookkeeping();
-	    d->factory(factory());
 	    d->realEmitter(emitter);
 	    d->realEmission(emission);
 	    d->realSpectator(spectator);
@@ -1553,7 +1552,7 @@ StdXCombPtr MatchboxMEBase::makeXComb(tStdXCombPtr newHead,
 }
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theFactory << thePhasespace 
+  os << theLastXComb << thePhasespace 
      << theAmplitude << theScaleChoice << theVirtuals 
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn << theOneLoopNoLoops
@@ -1564,7 +1563,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theFactory >> thePhasespace 
+  is >> theLastXComb >> thePhasespace 
      >> theAmplitude >> theScaleChoice >> theVirtuals 
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn >> theOneLoopNoLoops
