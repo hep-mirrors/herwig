@@ -6532,7 +6532,8 @@ newdef WDecayer:GenerateIntermediates 0
 newdef WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
-create Herwig::SMWFermionsPOWHEGDecayer WPowhegDecayer HwPerturbativeDecay.so
+create Herwig::SMWDecayer WPowhegDecayer
+newdef WPowhegDecayer:NLO Yes
 newdef WPowhegDecayer:Coupling /Herwig/Shower/AlphaQCD
 newdef WPowhegDecayer:QuarkMax 0 1.0
 newdef WPowhegDecayer:QuarkMax 1 0.05

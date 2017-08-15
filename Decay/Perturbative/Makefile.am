@@ -13,8 +13,7 @@ ALL_H_FILES = \
  SMZDecayer.h\
  SMTopDecayer.h\
  SMTopPOWHEGDecayer.h\
- SMZFermionsPOWHEGDecayer.h\
- SMWFermionsPOWHEGDecayer.h
+ SMZFermionsPOWHEGDecayer.h
 
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
@@ -23,8 +22,7 @@ ALL_CC_FILES = \
  SMZDecayer.cc  \
  SMTopDecayer.cc \
  SMTopPOWHEGDecayer.cc \
- SMZFermionsPOWHEGDecayer.cc  \
- SMWFermionsPOWHEGDecayer.cc  
+ SMZFermionsPOWHEGDecayer.cc  
 
 
 

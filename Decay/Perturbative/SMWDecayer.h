@@ -72,6 +72,22 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
+  
+  /**
+   *  Virtual members to be overridden by inheriting classes
+   *  which implement hard corrections 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
   //@}
 
 public:
@@ -244,6 +260,7 @@ protected:
    */
   double qbarWeightX(Energy qtilde, double z);
   //@}
+  
   /**
    * ????
    */
@@ -276,6 +293,61 @@ protected:
   ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
+protected:
+  
+  /**
+   *  Pointer to the fermion-antifermion W vertex
+   */
+  AbstractFFVVertexPtr FFWVertex() const {return FFWVertex_;}
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFGVertex() const {return FFGVertex_;}
+
+  /**
+   *  Real emission term, for use in generating the hardest emission
+   */
+  double calculateRealEmission(double x1, double x2, 
+			       vector<PPtr> hardProcess,
+			       double phi, double muj, double muk,
+			       int iemit, bool subtract) const;
+
+  /**
+   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
+   */
+  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT,
+		     double muj, double muk) const;
+
+  /**
+   *  Calculate the Jacobian
+   */
+  InvEnergy calculateJacobian(double x1, double x2, Energy pT,
+			      double muj, double muk) const;
+
+  /**
+   *  Calculate the ratio between NLO & LO ME
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemitter,bool subtract) const;
+  /**
+   *  Calculate the LO ME
+   */
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Calculate the NLO real emission piece of ME
+   */
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		  const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Generate a real emission event
+   */
+  bool getEvent(vector<PPtr> hardProcess);
+
 private:
 
   /**
@@ -285,10 +357,16 @@ private:
 
  private:
 
+
   /**
-   * Pointer to the W fermions vertex
+   *  Pointer to the fermion-antifermion W vertex
    */
-  FFVVertexPtr FFWvertex_;
+  AbstractFFVVertexPtr FFWVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
 
   /**
    * maximum weights for the different integrations
@@ -308,22 +386,22 @@ private:
   /**
    *  Spin density matrix for the decay
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decay
    */
-  mutable vector<VectorWaveFunction> _vectors;
+  mutable vector<VectorWaveFunction> vectors_;
 
   /**
    *  Spinors for the decay
    */
-  mutable vector<SpinorWaveFunction> _wave;
+  mutable vector<SpinorWaveFunction> wave_;
 
   /**
    *  Barred spinors for the decay
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 
 private:
 
@@ -366,6 +444,100 @@ private:
    *  Pointer to the coupling
    */
   ShowerAlphaPtr alpha_;
+
+private:
+
+  /**
+   *  The colour factor 
+   */
+  double CF_;
+
+  /**
+   *  The W mass
+   */
+  mutable Energy mW_;
+
+
+  // TODO: delete this
+  mutable double mu_;
+
+  /**
+   *  The reduced mass of particle 1
+   */
+  mutable double mu1_;
+  /**
+   *  The reduced mass of particle 1 squared
+   */
+  mutable double mu12_;
+
+  /**
+   *  The reduceed mass of particle 2
+   */
+  mutable double mu2_;
+
+  /**
+   *  The reduceed mass of particle 2 squared
+   */
+  mutable double mu22_;
+
+
+  /**
+   *  The strong coupling
+   */
+  mutable double aS_;
+
+  /**
+   * The scale
+   */
+  mutable Energy2 scale_;
+
+  /**
+   *  Stuff for the POWHEG correction
+   */
+  //@{
+  /**
+   *  ParticleData object for the gluon
+   */
+  tcPDPtr gluon_;
+
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  //  radiative variables (pt,y)
+  Energy pT_;
+
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> partons_;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> quark_;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum gauge_;
+
+  /**
+   *  The W boson
+   */
+  PPtr wboson_;
+
+  /**
+   *  W mass squared
+   */
+  Energy2 mw2_;
+  //@}
+
+  /**
+   *  Whether ro return the LO or NLO result
+   */
+  bool NLO_;
 };
 
 }
