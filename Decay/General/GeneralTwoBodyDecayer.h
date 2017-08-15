@@ -16,7 +16,6 @@
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -48,9 +47,8 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.), 
-			    pTmin_(GeV), pT_(ZERO), colour_(1,DVector(1,1.))
-{}
+  GeneralTwoBodyDecayer() : _maxweight(1.), colour_(1,DVector(1,1.))
+  {}
 
 
   /** @name Virtual functions required by the Decayer class. */
@@ -114,13 +112,6 @@ public:
    */
   virtual double brat(const DecayMode & dm, const Particle & p,
 		      double oldbrat) const;
-
-  /**
-   *  Member to generate the hardest emission in the POWHEG scheme
-   */
-  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
-
-
   //@}
 
   /**
@@ -177,11 +168,6 @@ protected:
 			 const ParticleVector & out) const;
 
   /**
-   * Type of dipole
-   */
-  enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
-
-  /**
    *  Compute the spin and colour factor
    */
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
@@ -191,62 +177,6 @@ protected:
    */
   double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
 			    const ParticleVector & decay3, MEOption meopt);
-
-  /**
-   *  Calculate momenta of all the particles
-   */
-  bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
-		   double& xs, double& xe, double& xe_z, 
-		   vector<Lorentz5Momentum>& particleMomenta);
-
-  /**
-   *  Check the calculated momenta are physical
-   */
-  bool psCheck(const double xg, const double xs);
-
-  /**
-   *  Return the momenta including the hard emission
-   */
-  vector<Lorentz5Momentum> hardMomenta(const PPtr &in, 
-				       const PPtr &emitter, 
-				       const PPtr &spectator, 
-				       const vector<dipoleType>  &dipoles, int i);
-
-  /**
-   * Return dipole corresponding to the dipoleType dipoleId
-   */
-  InvEnergy2 calculateDipole(const dipoleType & dipoleId,   const Particle & inpart,
-			     const ParticleVector & decay3, const dipoleType & emittingDipole);
-
-  /**
-   * Return contribution to dipole that depends on the spin of the emitter
-   */
-  double dipoleSpinFactor(const PPtr & emitter, double z);
-
-  /**
-   *  Work out the type of process
-   */
-  bool identifyDipoles(vector<dipoleType> & dipoles,
-		       PPtr & aProgenitor,
-		       PPtr & bProgenitor,
-		       PPtr & cProgenitor) const;
-  
-  /**
-   * Set up the colour lines
-   */
-  void getColourLines(RealEmissionProcessPtr real);
-
-
-  /**
-   *  Return the colour coefficient of the dipole
-   */
-  double colourCoeff(const PDT::Colour emitter, const PDT::Colour spectator,
-		     const PDT::Colour other);
-
-  /**
-   *  Coupling for the generation of hard radiation
-   */
-  ShowerAlphaPtr coupling() {return coupling_;}
   //@}
 
 public:
@@ -359,46 +289,6 @@ private:
    * Maximum weight for integration
    */
   double _maxweight;
-
-  /**
-   *  Mass of decaying particle
-   */
-  Energy mb_;
-
-  /**
-   *  Reduced mass of emitter child particle
-   */
-  double e_;
-
-  /**
-   * Reduced mass of spectator child particle
-   */
-  double s_;
-
-  /**
-   *  Reduced mass of emitter child particle squared
-   */
-  double e2_;
-
-  /**
-   * Reduced mass of spectator child particle squared
-   */
-  double s2_;
-
-  /**
-   *  Minimum \f$p_T\f$
-   */
-  Energy pTmin_;
-
-  /**
-   *  Transverse momentum of the emission
-   */
-  Energy pT_;
-
-  /**
-   *  Coupling for the generation of hard radiation
-   */
-  ShowerAlphaPtr coupling_;
 
   /**
    * Store colour factors for ME calc.
