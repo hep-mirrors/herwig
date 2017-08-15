@@ -71,6 +71,16 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
   //@}
 
 public:
@@ -333,6 +343,43 @@ protected:
    */
   ShowerAlphaPtr coupling() { return _alpha;}
 
+
+protected:
+ /**
+   *  check if event is in dead region
+   */
+  bool deadZoneCheck(double xw, double xg);
+
+protected:
+
+  /**
+   *  Calculate matrix element ratio B/R
+   */
+  double matrixElementRatio(vector<Lorentz5Momentum> particleMomenta);
+
+protected:
+
+  /**
+   *  Calculate momenta of t, b, W, g
+   */
+  bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
+		   double& xw, double& xb, double& xb_z, 
+		   vector<Lorentz5Momentum>& particleMomenta);
+
+protected:
+
+  /**
+   *  Check the calculated momenta are physical
+   */
+  bool psCheck(double xg, double xw);
+
+protected:
+
+  /**
+   *  Return the momenta including the hard emission
+   */
+  vector<Lorentz5Momentum> hardMomenta();
+
 private:
 
   /**
@@ -478,6 +525,44 @@ private:
    *  Pointer to the coupling
    */
   ShowerAlphaPtr _alpha;
+
+private:
+
+  /**
+   *  Top quark mass
+   */
+  Energy mt_;
+
+  /**
+   *  Reduced \f$W^\pm\f$ mass
+   */
+  double w_;
+
+  /**
+   * Reduced bottom mass
+   */
+  double b_;
+
+  /**
+   *  Reduced \f$W^\pm\f$ mass squared
+   */
+  double w2_;
+
+  /**
+   * Reduced bottom mass squared
+   */
+  double b2_;
+
+  /**
+   *  Minimum \f$p_T\f$
+   */
+  Energy pTmin_;
+
+  /**
+   *  Transverse momentum of the emission
+   */
+  Energy pT_;
+
 
 };
 

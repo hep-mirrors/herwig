@@ -12,7 +12,6 @@ ALL_H_FILES = \
  SMWDecayer.h\
  SMZDecayer.h\
  SMTopDecayer.h\
- SMTopPOWHEGDecayer.h\
  SMHiggsFermionsDecayer.h \
  SMHiggsGGHiggsPPDecayer.h\
  SMHiggsWWDecayer.h
@@ -23,7 +22,6 @@ ALL_CC_FILES = \
  SMWDecayer.cc  \
  SMZDecayer.cc  \
  SMTopDecayer.cc \
- SMTopPOWHEGDecayer.cc\
  SMHiggsFermionsDecayer.cc \
  SMHiggsGGHiggsPPDecayer.cc \
  SMHiggsWWDecayer.cc 
