@@ -38,13 +38,11 @@ EXTRA_DIST += $(ALL_H_FILES_2) $(ALL_CC_FILES_2)
 DIR_H_FILES_2 = $(addprefix $(srcdir)/,$(ALL_H_FILES_2))
 ALL_H_FILES_2 = \
  SMHiggsFermionsDecayer.h \
- SMHiggsFermionsPOWHEGDecayer.h \
  SMHiggsGGHiggsPPDecayer.h\
  SMHiggsWWDecayer.h
 
 DIR_CC_FILES_2 = $(addprefix $(srcdir)/,$(ALL_CC_FILES_2))
 ALL_CC_FILES_2 = \
  SMHiggsFermionsDecayer.cc \
- SMHiggsFermionsPOWHEGDecayer.cc \
  SMHiggsGGHiggsPPDecayer.cc \
  SMHiggsWWDecayer.cc 

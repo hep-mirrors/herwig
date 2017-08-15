@@ -15,6 +15,7 @@
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -72,6 +73,15 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
 
 public:
 
@@ -117,6 +127,46 @@ protected:
   //@}
 
 protected:
+  
+  /**
+   *  Calcluate the Kallen function
+   */
+  double calculateLambda(double x, double y, double z) const;
+
+  /**
+   *  Dipole subtraction term
+   */
+  InvEnergy2 dipoleSubtractionTerm(double x1, double x2) const;
+
+  /**
+   *  Real emission term
+   */
+  InvEnergy2 calculateRealEmission(double x1, double x2) const;
+
+  /**
+   *  Virtual term
+   */
+  double calculateVirtualTerm() const;
+
+  /**
+   *  Non-singlet term
+   */
+  double calculateNonSingletTerm(double beta, double L) const;
+
+  /**
+   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
+   */
+  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const;
+
+  /**
+   *  Calculate the Jacobian
+   */
+  InvEnergy calculateJacobian(double x1, double x2, Energy pT) const;
+
+  /**
+   *  Generate a real emission event
+   */
+  bool getEvent();
 
 protected:
 
@@ -175,6 +225,85 @@ private:
    *  Barred spinor wavefunction
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
+private:
+
+  /**
+   *  The colour factor 
+   */
+  double CF_;
+
+  /**
+   *  The Higgs mass
+   */
+  mutable Energy mHiggs_;
+
+  /**
+   *  The reduced mass
+   */
+  mutable double mu_;
+
+  /**
+   *  The square of the reduced mass
+   */
+  mutable double mu2_;
+
+  /**
+   *  The strong coupling
+   */
+  mutable double aS_;
+
+  /**
+   *  Stuff for the POWHEG correction
+   */
+  //@{
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr alphaS_;
+
+  /**
+   *  ParticleData object for the gluon
+   */
+  tcPDPtr gluon_;
+
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  //  radiative variables (pt,y)
+  Energy pT_;
+
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> partons_;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> quark_;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum gauge_;
+
+  /**
+   *  The Higgs boson
+   */
+  PPtr higgs_;
+
+  /**
+   *  Higgs mass squared
+   */
+  Energy2 mh2_;
+  //@}
+
+  /**
+   * LO or NLO ?
+   */
+  bool NLO_;
 };
 
 }

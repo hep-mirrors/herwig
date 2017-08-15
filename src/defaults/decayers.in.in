@@ -24104,7 +24104,8 @@ newdef Top:GenerateIntermediates 1
 newdef Top:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
-create Herwig::SMHiggsFermionsPOWHEGDecayer  Hff
+create Herwig::SMHiggsFermionsDecayer  Hff
+newdef Hff:NLO Yes
 newdef Hff:MaxWeights 0 2.116e-06
 newdef Hff:MaxWeights 1 4.47418e-07
 newdef Hff:MaxWeights 2 0.000763237
