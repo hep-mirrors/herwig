@@ -25,7 +25,6 @@ library HwPomeronPDF.so
 library HwPomeronFlux.so
 library HwPartonicDecay.so
 library HwPerturbativeDecay.so
-library HwPerturbativeHiggsDecay.so
 library HwShower.so
 library HwSMDecay.so
 library HwTauDecay.so

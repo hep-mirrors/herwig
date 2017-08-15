@@ -16,7 +16,6 @@ library HwMamboDecay.so
 library HwPerturbativeDecay.so
 library HwBaryonDecay.so
 library HwTauDecay.so
-library HwPerturbativeHiggsDecay.so
 #
 create Herwig::TauDecayer  Tau1Meson
 newdef Tau1Meson:Iteration 1

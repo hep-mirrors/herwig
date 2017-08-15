@@ -12,7 +12,10 @@ ALL_H_FILES = \
  SMWDecayer.h\
  SMZDecayer.h\
  SMTopDecayer.h\
- SMTopPOWHEGDecayer.h
+ SMTopPOWHEGDecayer.h\
+ SMHiggsFermionsDecayer.h \
+ SMHiggsGGHiggsPPDecayer.h\
+ SMHiggsWWDecayer.h
 
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
@@ -20,29 +23,7 @@ ALL_CC_FILES = \
  SMWDecayer.cc  \
  SMZDecayer.cc  \
  SMTopDecayer.cc \
- SMTopPOWHEGDecayer.cc
-
-
-
-
-
-BUILT_SOURCES  += PerturbativeHiggs__all.cc
-CLEANFILES += PerturbativeHiggs__all.cc
-
-PerturbativeHiggs__all.cc : $(DIR_H_FILES_2) $(DIR_CC_FILES_2) Makefile
-	@echo "Concatenating .cc files into $@"
-	@$(top_srcdir)/cat_with_cpplines $(DIR_CC_FILES_2) > $@
-
-EXTRA_DIST += $(ALL_H_FILES_2) $(ALL_CC_FILES_2)
-
-DIR_H_FILES_2 = $(addprefix $(srcdir)/,$(ALL_H_FILES_2))
-ALL_H_FILES_2 = \
- SMHiggsFermionsDecayer.h \
- SMHiggsGGHiggsPPDecayer.h\
- SMHiggsWWDecayer.h
-
-DIR_CC_FILES_2 = $(addprefix $(srcdir)/,$(ALL_CC_FILES_2))
-ALL_CC_FILES_2 = \
+ SMTopPOWHEGDecayer.cc\
  SMHiggsFermionsDecayer.cc \
  SMHiggsGGHiggsPPDecayer.cc \
  SMHiggsWWDecayer.cc 
