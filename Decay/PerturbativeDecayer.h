@@ -21,6 +21,13 @@ using namespace ThePEG;
 class PerturbativeDecayer: public DecayIntegrator {
 
 public:
+  
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return No;}
+
+public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -45,6 +52,14 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay, MEOption meopt);
 
 private:
 

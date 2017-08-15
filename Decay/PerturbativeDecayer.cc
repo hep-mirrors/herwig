@@ -10,8 +10,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -27,11 +25,20 @@ void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeAbstractClass<PerturbativeDecayer,DecayIntegrator>
-describeHerwigPerturbativeDecayer("Herwig::PerturbativeDecayer", "Herwig.so HwPerturbativeDecay.so");
+describeHerwigPerturbativeDecayer("Herwig::PerturbativeDecayer",
+				  "Herwig.so HwPerturbativeDecay.so");
 
 void PerturbativeDecayer::Init() {
 
   static ClassDocumentation<PerturbativeDecayer> documentation
     ("The PerturbativeDecayer class is the mase class for perturbative decays in Herwig");
 
+}
+
+double PerturbativeDecayer::threeBodyME(const int , const Particle &,
+					const ParticleVector &,MEOption) {
+  throw Exception() << "Base class  PerturbativeDecayer::threeBodyME() "
+		    << "called, should have an implementation in the inheriting class"
+		    << Exception::runerror;
+  return 0.;
 }

@@ -12,7 +12,7 @@
 // This is the declaration of the GeneralTwoBodyDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
@@ -25,7 +25,7 @@ using Helicity::VertexBasePtr;
 /** \ingroup Decay
  * The GeneralTwoBodyDecayer class is designed to be the base class 
  * for 2 body decays for some general model. It inherits from 
- * DecayIntegrator and implements the modeNumber() virtual function
+ * PerturbativeDecayer and implements the modeNumber() virtual function
  * that is the  same for all of the decays. A decayer for
  * a specific spin configuration should inherit from this and implement
  * the me2() and partialWidth() member functions. The colourConnections()
@@ -34,9 +34,9 @@ using Helicity::VertexBasePtr;
  *
  * @see \ref GeneralTwoBodyDecayerInterfaces "The interfaces"
  * defined for GeneralTwoBodyDecayer.
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  */
-class GeneralTwoBodyDecayer: public DecayIntegrator {
+class GeneralTwoBodyDecayer: public PerturbativeDecayer {
 
 public:
   
@@ -116,21 +116,11 @@ public:
 		      double oldbrat) const;
 
   /**
-   *  Has a POWHEG style correction
-   */
-  virtual POWHEGType hasPOWHEGCorrection() {return No;}
-
-  /**
    *  Member to generate the hardest emission in the POWHEG scheme
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
 
 
-  /**
-   *  Three-body matrix element including additional QCD radiation
-   */
-  virtual double threeBodyME(const int , const Particle & inpart,
-			     const ParticleVector & decay, MEOption meopt);
   //@}
 
   /**

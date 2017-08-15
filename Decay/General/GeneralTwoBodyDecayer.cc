@@ -44,7 +44,7 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 }
 
 void GeneralTwoBodyDecayer::doinit() {
-  DecayIntegrator::doinit();
+  PerturbativeDecayer::doinit();
   assert( vertex_ );
   assert( _incoming && _outgoing.size()==2);
   vertex_->init();
@@ -282,7 +282,7 @@ void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<GeneralTwoBodyDecayer,DecayIntegrator>
+DescribeAbstractClass<GeneralTwoBodyDecayer,PerturbativeDecayer>
 describeHerwigGeneralTwoBodyDecayer("Herwig::GeneralTwoBodyDecayer", "Herwig.so");
 
 void GeneralTwoBodyDecayer::Init() {
@@ -322,7 +322,7 @@ double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
 
 void GeneralTwoBodyDecayer::doinitrun() {
   vertex_->initrun();
-  DecayIntegrator::doinitrun();
+  PerturbativeDecayer::doinitrun();
   for(unsigned int ix=0;ix<numberModes();++ix) {
     double fact = pow(1.5,int(mode(ix)->externalParticles(0)->iSpin())-1);
     mode(ix)->setMaxWeight(fact*mode(ix)->maxWeight());
@@ -640,14 +640,6 @@ RealEmissionProcessPtr GeneralTwoBodyDecayer::generateHardest(RealEmissionProces
   // return the tree
   born->interaction(ShowerInteraction::QCD);
   return born;
-}
-
-double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle &,
-					  const ParticleVector &,MEOption) {
-  throw Exception() << "Base class  GeneralTwoBodyDecayer::threeBodyME() "
-		    << "called, should have an implementation in the inheriting class"
-		    << Exception::runerror;
-  return 0.;
 }
 
 vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const PPtr &in, 
