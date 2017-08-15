@@ -69,6 +69,16 @@ public:
    */
   virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
+    
+  /**
+   *  Has a POWHEG style correction
+   */
+    virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
   //@}
 
 public:
@@ -309,6 +319,58 @@ protected:
    */
   ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
+  
+protected:
+
+  /**
+   *  Real emission term, for use in generating the hardest emission
+   */
+  double calculateRealEmission(double x1, double x2, 
+			       vector<PPtr> hardProcess,
+			       double phi,
+			       bool subtract,
+			       int emitter) const;
+
+  /**
+   *  Real emission term, for use in generating the hardest emission
+   */
+  double calculateRealEmission(double x1, double x2, 
+			       vector<PPtr> hardProcess,
+			       double phi,
+			       bool subtract) const;
+
+  /**
+   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
+   */
+  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const;
+
+  /**
+   *  Calculate the Jacobian
+   */
+  InvEnergy calculateJacobian(double x1, double x2, Energy pT) const;
+
+  /**
+   *  Calculate the ratio between NLO & LO ME
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemitter,bool subtract) const;
+  /**
+   *  Calculate the LO ME
+   */
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Calculate the NLO real emission piece of ME
+   */
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		  const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Generate a real emission event
+   */
+  bool getEvent(vector<PPtr> hardProcess);
 
 private:
 
@@ -319,15 +381,22 @@ private:
 
 private:
 
-  /**
-   * Pointer to the Z vertex
-   */
-  FFVVertexPtr FFZvertex_;
 
+
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  FFVVertexPtr FFZVertex_;
+  
   /**
    * Pointer to the photon vertex
    */
-  AbstractFFVVertexPtr FFPvertex_;
+  AbstractFFVVertexPtr FFPVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
 
   /**
    * maximum weights for the different integrations
@@ -405,6 +474,86 @@ private:
    *  Pointer to the coupling
    */
   ShowerAlphaPtr alpha_;
+
+private:
+
+  /**
+   *  The colour factor 
+   */
+  double CF_;
+
+  /**
+   *  The Z mass
+   */
+  mutable Energy mZ_;
+
+  /**
+   *  The reduced mass
+   */
+  mutable double mu_;
+
+  /**
+   *  The square of the reduced mass
+   */
+  mutable double mu2_;
+
+  /**
+   *  The strong coupling
+   */
+  mutable double aS_;
+
+  /**
+   * The scale
+   */
+  mutable Energy2 scale_;
+
+  /**
+   *  Stuff for the POWHEG correction
+   */
+  //@{
+  /**
+   *  ParticleData object for the gluon
+   */
+  tcPDPtr gluon_;
+
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy pTmin_;
+
+  //  radiative variables (pt,y)
+  Energy pT_;
+
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> partons_;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> quark_;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum gauge_;
+
+  /**
+   *  The Z boson
+   */
+  PPtr zboson_;
+
+  /**
+   *  Higgs mass squared
+   */
+  Energy2 mz2_;
+  //@}
+
+  /**
+   *  Whether or not to give an LO or NLO normalisation
+   */
+  bool NLO_;
 };
 
 }
