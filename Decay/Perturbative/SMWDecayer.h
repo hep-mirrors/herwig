@@ -11,7 +11,7 @@
 //
 // This is the declaration of the SMWDecayer class.
 //
-#include "PerturbativeDecayer.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"

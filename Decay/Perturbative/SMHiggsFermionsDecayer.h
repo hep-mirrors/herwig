@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsFermionsDecayer class.
 //
 
-#include "PerturbativeDecayer.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"

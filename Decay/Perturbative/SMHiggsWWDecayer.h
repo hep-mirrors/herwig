@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsWWDecayer class.
 //
 
-#include "PerturbativeDecayer.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"

@@ -33,7 +33,8 @@ DecayVertex.fh DecayVertex.h \
 DecayMatrixElement.fh DecayMatrixElement.h \
 TwoBodyDecayMatrixElement.h \
 GeneralDecayMatrixElement.fh GeneralDecayMatrixElement.h \
-BranchingRatioReweighter.h 
+BranchingRatioReweighter.h\
+PerturbativeDecayer.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -46,9 +47,8 @@ DecayVertex.cc \
 DecayMatrixElement.cc \
 TwoBodyDecayMatrixElement.cc \
 GeneralDecayMatrixElement.cc \
-BranchingRatioReweighter.cc
-
-
+BranchingRatioReweighter.cc\
+PerturbativeDecayer.cc
 
 ##################
 

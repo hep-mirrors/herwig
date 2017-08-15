@@ -12,7 +12,7 @@
 // This is the declaration of the SMTopDecayer class.
 //
 
-#include "PerturbativeDecayer.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"

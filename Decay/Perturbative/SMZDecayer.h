@@ -11,7 +11,7 @@
 //
 // This is the declaration of the SMZDecayer class.
 //
-#include "PerturbativeDecayer.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
