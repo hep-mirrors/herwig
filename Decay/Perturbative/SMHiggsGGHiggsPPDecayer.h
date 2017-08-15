@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsGGHiggsPPDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
@@ -26,9 +26,9 @@ using namespace ThePEG::Helicity;
  * of a Standard Model Higgs boson to:  a pair
  * of photons or a pair of gluons, or a \f$Z^0\f$ boson and a photon.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  */ 
-class SMHiggsGGHiggsPPDecayer: public DecayIntegrator {
+class SMHiggsGGHiggsPPDecayer: public PerturbativeDecayer {
   
 public:
 

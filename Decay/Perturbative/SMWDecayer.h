@@ -11,7 +11,7 @@
 //
 // This is the declaration of the SMWDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
@@ -27,10 +27,10 @@ using namespace ThePEG::Helicity;
  *  W boson to the Standard Model fermions, including the first order
  *  electroweak corrections.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  * 
  */
-class SMWDecayer: public DecayIntegrator {
+class SMWDecayer: public PerturbativeDecayer {
 
 public:
 

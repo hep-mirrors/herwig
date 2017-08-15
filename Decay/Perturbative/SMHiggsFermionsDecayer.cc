@@ -48,7 +48,7 @@ SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() :
 }
 
 void SMHiggsFermionsDecayer::doinit() {
-  DecayIntegrator::doinit();
+  PerturbativeDecayer::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm)
@@ -165,7 +165,7 @@ void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMHiggsFermionsDecayer,DecayIntegrator>
+DescribeClass<SMHiggsFermionsDecayer,PerturbativeDecayer>
 describeHerwigSMHiggsFermionsDecayer("Herwig::SMHiggsFermionsDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsFermionsDecayer::Init() {
@@ -311,18 +311,18 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & part,
 
 void SMHiggsFermionsDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
+  // parameters for the PerturbativeDecayer base class
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     os << "newdef " << name() << ":MaxWeights " << ix << " "
 	   << _maxwgt[ix] << "\n";
   }
-  DecayIntegrator::dataBaseOutput(os,false);
+  PerturbativeDecayer::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" 
 		<< fullName() << "\";" << endl;
 }
 
 void SMHiggsFermionsDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  PerturbativeDecayer::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       _maxwgt[ix] = mode(ix)->maxWeight();

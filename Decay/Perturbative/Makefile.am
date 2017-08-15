@@ -9,6 +9,7 @@ EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
+ PerturbativeDecayer.h\
  SMWDecayer.h\
  SMZDecayer.h\
  SMTopDecayer.h\
@@ -19,6 +20,7 @@ ALL_H_FILES = \
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
+ PerturbativeDecayer.cc\
  SMWDecayer.cc  \
  SMZDecayer.cc  \
  SMTopDecayer.cc \

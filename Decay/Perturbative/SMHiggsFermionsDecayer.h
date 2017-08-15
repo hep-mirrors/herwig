@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsFermionsDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
@@ -24,9 +24,9 @@ using namespace ThePEG;
  * The SMHiggsFermionsDecayer class is designed to decay the Standard Model Higgs
  * to the Standard Model fermions.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  */
-class SMHiggsFermionsDecayer: public DecayIntegrator {
+class SMHiggsFermionsDecayer: public PerturbativeDecayer {
 
 public:
 

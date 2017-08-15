@@ -133,7 +133,7 @@ void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
   
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMTopDecayer,DecayIntegrator>
+DescribeClass<SMTopDecayer,PerturbativeDecayer>
 describeHerwigSMTopDecayer("Herwig::SMTopDecayer", "HwPerturbativeDecay.so");
   
 void SMTopDecayer::Init() {
@@ -308,7 +308,7 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
 }
 
 void SMTopDecayer::doinit() {
-  DecayIntegrator::doinit();
+  PerturbativeDecayer::doinit();
   //get vertices from SM object
   tcHwSMPtr hwsm = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) throw InitException() << "Must have Herwig::StandardModel in "
@@ -364,7 +364,7 @@ void SMTopDecayer::doinit() {
 
 void SMTopDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
+  // parameters for the PerturbativeDecayer base class
   for(unsigned int ix=0;ix<_wquarkwgt.size();++ix) {
     os << "newdef " << name() << ":QuarkWeights " << ix << " "
 	   << _wquarkwgt[ix] << "\n";
@@ -373,12 +373,12 @@ void SMTopDecayer::dataBaseOutput(ofstream & os,bool header) const {
     os << "newdef " << name() << ":LeptonWeights " << ix << " "
 	   << _wleptonwgt[ix] << "\n";
   }
-  DecayIntegrator::dataBaseOutput(os,false);
+  PerturbativeDecayer::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
 void SMTopDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  PerturbativeDecayer::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       if(ix<3) _wleptonwgt[ix  ] = mode(ix)->maxWeight();

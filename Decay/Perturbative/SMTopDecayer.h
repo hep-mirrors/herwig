@@ -12,7 +12,7 @@
 // This is the declaration of the SMTopDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
@@ -29,7 +29,7 @@ namespace Herwig {
  * the bottom quark and qqbar pairs or to the bottom quark and lepton 
  * neutrino pairs via W boson exchange.
  */
-class SMTopDecayer: public DecayIntegrator {
+class SMTopDecayer: public PerturbativeDecayer {
 
 public:
 

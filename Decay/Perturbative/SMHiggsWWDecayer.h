@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsWWDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
@@ -32,7 +32,7 @@ using namespace ThePEG::Helicity;
  * @see \ref SMHiggsWWDecayerInterfaces "The interfaces"
  * defined for SMHiggsWWDecayer.
  */
-class SMHiggsWWDecayer: public DecayIntegrator {
+class SMHiggsWWDecayer: public PerturbativeDecayer {
 
 public:
 

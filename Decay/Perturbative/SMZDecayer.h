@@ -11,7 +11,7 @@
 //
 // This is the declaration of the SMZDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
@@ -26,10 +26,10 @@ using namespace ThePEG::Helicity;
  *  Z boson to the Standard Model fermions. In principle it can also
  *  be used for these decays in any model.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  * 
  */
-class SMZDecayer: public DecayIntegrator {
+class SMZDecayer: public PerturbativeDecayer {
 
 public:
 
