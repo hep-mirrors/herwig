@@ -1028,13 +1028,13 @@ void PowhegShowerHandler::doinit() {
 }
 
 void PowhegShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << theFactory << allowedInitial_ << allowedFinal_
+  os << allowedInitial_ << allowedFinal_
      << subtractionIntegral_ << enforceColourConsistency_ << forcePartners_
      << decayRadiation_;
 }
 
 void PowhegShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> theFactory >> allowedInitial_ >> allowedFinal_
+  is >> allowedInitial_ >> allowedFinal_
      >> subtractionIntegral_ >> enforceColourConsistency_ >> forcePartners_
      >> decayRadiation_;
 }
@@ -1049,11 +1049,6 @@ void PowhegShowerHandler::Init() {
 
   static ClassDocumentation<PowhegShowerHandler> documentation
     ("The PowhegShowerHandler class");
-
-  static Reference<PowhegShowerHandler,MatchboxFactory> interfaceFactory
-    ("Factory",
-     "The factory object to use.",
-     &PowhegShowerHandler::theFactory, false, false, true, false, false);
 
   static Switch<PowhegShowerHandler,bool> interfaceEnforceColourConsistency
     ("EnforceColourConsistency",

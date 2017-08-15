@@ -96,8 +96,11 @@ struct HPDiagram {
    * Test whether two diagrams are identical.
    */
   inline bool operator==(const HPDiagram & x, const HPDiagram & y)  {
+    // check incoming
+    if( x.incoming != y.incoming) return false;
+    // check type of diagram
     if( x.channelType != y.channelType ) return false;
-    if( x.incoming == y.incoming && x.outgoing == y.outgoing &&
+    if( x.outgoing == y.outgoing &&
 	x.ordered == y.ordered ) {
       // 4 point
       if(x.channelType==HPDiagram::fourPoint) {
@@ -116,8 +119,7 @@ struct HPDiagram {
     }
     //diagram is also the same if the outgoing particles are
     //swapped and the ordering is opposite
-    else if( x.incoming == y.incoming &&
-	     x.outgoing.first != x.outgoing.second &&
+    else if( x.outgoing.first != x.outgoing.second &&
 	     y.outgoing.first != y.outgoing.second &&
 	     x.outgoing.first == y.outgoing.second && 
 	     x.outgoing.second == y.outgoing.first &&
@@ -130,8 +132,8 @@ struct HPDiagram {
       // t/u channel
       else if(x.channelType==HPDiagram::tChannel) {
 	// check vertex
-	if(x.vertices.first  != y.vertices.second ||
-	   x.vertices.second != y.vertices.first )
+	if(x.vertices.first  != y.vertices.first  ||
+	   x.vertices.second != y.vertices.second)
 	    return false;
 	tPDPtr inter = x.intermediate;
 	if(inter->CC()) inter = inter->CC();

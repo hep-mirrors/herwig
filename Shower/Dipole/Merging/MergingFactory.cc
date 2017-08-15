@@ -130,12 +130,6 @@ void MergingFactory::prepare_BV(int i) {
 	<< MH()->M()
   	<< " NLO corrections requested,\n"
   	<< "but no virtual contributions are found.";
-  
-  for ( auto & virt : DipoleRepository::insertionIOperators(dipoleSet()) )
-    virt->factory(this);
-  
-  for ( auto & virt : DipoleRepository::insertionPKOperators(dipoleSet()) )
-    virt->factory(this);
 }
 
 void MergingFactory::prepare_R(int i) {
@@ -186,7 +180,6 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
   
   clusternode->deepHead(clusternode);
   MH()->firstNodeMap(bornme,clusternode);
-  bornme->factory(this);
   bornme->merger(MH());
 
   
@@ -433,8 +426,6 @@ void MergingFactory::setup() {
       if ( pip->id() > 0 && pip->id() < 7 && pip->hardProcessMass() == ZERO )
         nLightProtonVec( pip->id() );
     
-    for ( auto & amp: amplitudes() ) amp->factory(this);
-    
       // fill the amplitudes
     if ( !amplitudes().empty() )  fillMEsMap();
     
@@ -449,7 +440,6 @@ void MergingFactory::setup() {
     largeNBasis->clear();
     largeNBasis->doLargeN();
     MH()->largeNBasis(largeNBasis);
-    MH()->largeNBasis()->factory(this);
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);

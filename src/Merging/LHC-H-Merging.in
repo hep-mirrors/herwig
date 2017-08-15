@@ -126,7 +126,7 @@ cd /Herwig/MatrixElements/Matchbox/Scales/
 
 set /Herwig/Merging/MergingFactory:ScaleChoice FixedScale
 set FixedScale:FixedScale 125.*GeV
-#set HTPrimeScale:Factory /Herwig/Merging/MergingFactory
+
 ##################################################
 ## Scale uncertainties
 ##################################################

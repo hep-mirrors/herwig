@@ -47,7 +47,7 @@ MatchboxAmplitude::MatchboxAmplitude()
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis << theFactory 
+  os << theLastXComb << theColourBasis 
      << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints
      << theTrivialColourLegs << theReshuffleMasses.size();
   if ( !theReshuffleMasses.empty() ) {
@@ -58,7 +58,7 @@ void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
   size_t reshuffleSize;
-  is >> theLastXComb >> theColourBasis >> theFactory 
+  is >> theLastXComb >> theColourBasis 
      >> theCleanupAfter >> treeLevelHelicityPoints >> oneLoopHelicityPoints
      >> theTrivialColourLegs >> reshuffleSize;
   theReshuffleMasses.clear();
@@ -72,17 +72,12 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
 }
 
 Ptr<MatchboxFactory>::tptr MatchboxAmplitude::factory() const {
-  return theFactory;
-}
-
-void MatchboxAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
-  theFactory = f;
+  return MatchboxFactory::currentFactory();
 }
 
 void MatchboxAmplitude::doinit() {
   Amplitude::doinit();
   if ( colourBasis() ) {
-    colourBasis()->factory(factory());
     colourBasis()->init();
   }
 }

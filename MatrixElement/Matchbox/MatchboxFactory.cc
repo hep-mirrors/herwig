@@ -57,6 +57,8 @@ MatchboxFactory::MatchboxFactory()
 
 MatchboxFactory::~MatchboxFactory() {}
 
+Ptr<MatchboxFactory>::tptr MatchboxFactory::theCurrentFactory = Ptr<MatchboxFactory>::tptr();
+
 bool& MatchboxFactory::theIsMatchboxRun() {
   static bool flag = false;
   return flag;
@@ -75,8 +77,6 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) {
   Ptr<MatchboxAmplitude>::ptr amp =
     dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>((*me).amplitude());
   me->matchboxAmplitude(amp);
-
-  me->factory(this);
 
   if ( phasespace() && !me->phasespace() )
     me->phasespace(phasespace());
@@ -387,10 +387,6 @@ void MatchboxFactory::setup() {
     bool needTrueVirtuals =
       virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections();
 
-    for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
-	    = amplitudes().begin(); amp != amplitudes().end(); ++amp )
-      (**amp).factory(this);
-
     if ( bornMEs().empty() ) {
 
       if ( particleGroups().find("j") == particleGroups().end() )
@@ -551,20 +547,6 @@ void MatchboxFactory::setup() {
 	     (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
 	  throw Exception() << "MatchboxFactory: Virtual corrections use inconsistent conventions on finite terms.\n"
 			    << Exception::runerror;
-	}
-      }
-
-      // prepare dipole insertion operators
-      if ( virtualContributions() ) {
-	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionIOperators(dipoleSet()).begin(); 
-	      virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
-	  (**virt).factory(this);
-	}
-	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
-	      virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
-	  (**virt).factory(this);
 	}
       }
 
@@ -867,8 +849,6 @@ void MatchboxFactory::setup() {
 	if ( ! (generator()->preinitRegister(sub,pname) ) )
 	  throw Exception() << "MatchboxFactory: Subtracted ME " << pname << " already existing."
 			    << Exception::runerror;
-
-	sub->factory(this);
 
 	(**real).needsNoCorrelations();
 
@@ -1299,6 +1279,7 @@ void MatchboxFactory::summary(ostream& os) const {
 
 void MatchboxFactory::doinit() {
   theIsMatchboxRun() = true;
+  theCurrentFactory = Ptr<MatchboxFactory>::tptr(this);
   if ( RunDirectories::empty() )
     RunDirectories::pushRunId(generator()->runName());
   setup();
@@ -1319,6 +1300,7 @@ void MatchboxFactory::doinit() {
 
 void MatchboxFactory::doinitrun() {
   theIsMatchboxRun() = true;
+  theCurrentFactory = Ptr<MatchboxFactory>::tptr(this);
   if ( theShowerApproximation )
     theShowerApproximation->initrun();
   Ptr<StandardEventHandler>::tptr eh =

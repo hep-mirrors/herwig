@@ -811,11 +811,6 @@ namespace Herwig {
   private:
 
     /**
-     * The factory
-     */
-    Ptr<MatchboxFactory>::tcptr theFactory;
-
-    /**
      * The matrix element
      */
     Ptr<MatchboxMEBase>::tptr theMatchboxME;

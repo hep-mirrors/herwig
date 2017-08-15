@@ -3,7 +3,6 @@
 cd /Herwig/MatrixElements/Matchbox
 
 set Factory:ShowerApproximation MEMatching
-set MECorrectionHandler:Factory Factory
 cd /Herwig/EventHandlers
 insert EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 

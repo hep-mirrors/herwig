@@ -25,8 +25,6 @@ insert Cuts:MultiCuts[0] PhotonIsolationCut
 insert Cuts:MultiCuts[1] MissingPtCut
 set Cuts:MHatMin 0.0*GeV
 set JetKtCut:MinKT 0.0*GeV
-# The Jet matcher need to use the same jet definition as the factory 
-set MatchboxJetMatcher:Factory /Herwig/Merging/MergingFactory
 
 
 # Set up the alphas for merging
@@ -113,8 +111,6 @@ create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
 
 
 cd /Herwig/Merging
-# In fact we are not using this for now.
-set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
 # Currently we do not splitt the hard process for merged processes.
 set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
  

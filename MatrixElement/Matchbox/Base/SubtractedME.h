@@ -57,11 +57,6 @@ public:
    */
   Ptr<MatchboxFactory>::tcptr factory() const;
 
-  /**
-   * Set the factory which produced this matrix element
-   */
-  void factory(Ptr<MatchboxFactory>::tcptr f);
-
   /** @name Phasespace and subprocess information */
   //@{
 
@@ -448,11 +443,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The factory which produced this matrix element
-   */
-  Ptr<MatchboxFactory>::tcptr theFactory;
 
   /**
    * The underlying born matrix elements, overriding the ones

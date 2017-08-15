@@ -46,11 +46,7 @@ using boost::numeric::ublas::column;
 using boost::numeric::ublas::prod;
 
 Ptr<MatchboxFactory>::tptr ColourBasis::factory() const {
-  return theFactory;
-}
-
-void ColourBasis::factory(Ptr<MatchboxFactory>::tptr f) {
-  theFactory = f;
+  return MatchboxFactory::currentFactory();
 }
 
 ColourBasis::ColourBasis() 
@@ -1271,14 +1267,14 @@ void ColourBasis::doinitrun() {
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
   os << theLargeN << theNormalOrderedLegs
      << theIndexMap << theFlowMap << theOrderingStringIdentifiers 
-     << theOrderingIdentifiers << theFactory << theSearchPath;
+     << theOrderingIdentifiers << theSearchPath;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
   is >> theLargeN >> theNormalOrderedLegs
      >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers
-     >> theOrderingIdentifiers >> theFactory >> theSearchPath;
+     >> theOrderingIdentifiers >> theSearchPath;
 }
 
 
