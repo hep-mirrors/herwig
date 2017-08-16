@@ -141,6 +141,42 @@ protected:
    */
   void getColourLines(RealEmissionProcessPtr real);
 
+protected:
+
+  /**
+   *  Access to the kinematics for inheriting classes
+   */
+  //@{
+  /**
+   *  Transverse momentum of the emission
+   */
+  const Energy & pT() const { return pT_;}
+
+  /**
+   *  Mass of decaying particle
+   */
+  const Energy & mb() const {return mb_;}
+
+  /**
+   *  Reduced mass of emitter child particle
+   */
+  const double & e() const {return e_;}
+
+  /**
+   * Reduced mass of spectator child particle
+   */
+  const double & s() const {return s_;}
+
+  /**
+   *  Reduced mass of emitter child particle squared
+   */
+  const double & e2() const {return e2_;}
+
+  /**
+   * Reduced mass of spectator child particle squared
+   */
+  const double & s2() const {return s2_;}
+  //@}
 private:
 
   /**
