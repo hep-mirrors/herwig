@@ -15,7 +15,6 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -473,14 +472,6 @@ private:
    *  ParticleData object for the gluon
    */
   tcPDPtr gluon_;
-
-  /**
-   *  The cut off on pt, assuming massless quarks.
-   */
-  Energy pTmin_;
-
-  //  radiative variables (pt,y)
-  Energy pT_;
 
   /**
    *  The ParticleData objects for the fermions

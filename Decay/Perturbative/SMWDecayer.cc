@@ -38,7 +38,8 @@ using namespace ThePEG::Helicity;
 const double SMWDecayer::EPS_=0.00000001;
 
 SMWDecayer::SMWDecayer()
-  : quarkWeight_(6,0.), leptonWeight_(3,0.), CF_(4./3.), pTmin_(1.*GeV), NLO_(false) {
+  : quarkWeight_(6,0.), leptonWeight_(3,0.), CF_(4./3.),
+    NLO_(false) {
   quarkWeight_[0]  = 1.01596;
   quarkWeight_[1]  = 0.0537308;
   quarkWeight_[2]  = 0.0538085;
@@ -135,12 +136,12 @@ int SMWDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 void SMWDecayer::persistentOutput(PersistentOStream & os) const {
   os << FFWVertex_ << quarkWeight_ << leptonWeight_
-  << FFGVertex_ << gluon_ << ounit( pTmin_, GeV ) << NLO_;  
+  << FFGVertex_ << gluon_ << NLO_;  
 }
 
 void SMWDecayer::persistentInput(PersistentIStream & is, int) {
   is >> FFWVertex_ >> quarkWeight_ >> leptonWeight_
-  >> FFGVertex_ >> gluon_ >> iunit( pTmin_, GeV ) >> NLO_;
+  >> FFGVertex_ >> gluon_ >> NLO_;
 }
 
 // The following static variable is needed for the type
@@ -164,12 +165,6 @@ void SMWDecayer::Init() {
      "The maximum weight for the decay of the W to leptons",
      &SMWDecayer::leptonWeight_,
      0, 0, 0, -10000, 10000, false, false, true);
-
-  static Parameter<SMWDecayer, Energy> interfacePtMin
-    ("minpT",
-     "The pt cut on hardest emision generation",
-     &SMWDecayer::pTmin_, GeV, 1.*GeV, 0*GeV, 100000.0*GeV,
-     false, false, Interface::limited);
 
   static Switch<SMWDecayer,bool> interfaceNLO
     ("NLO",

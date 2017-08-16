@@ -14,7 +14,6 @@
 #include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -73,12 +72,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-    virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
-
-  /**
-   *  Apply the POWHEG style correction
-   */
-  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
   //@}
 
 public:
@@ -313,11 +307,6 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
-
-  /**
-   *  Access to the strong coupling
-   */
-  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
   
 protected:
@@ -355,6 +344,13 @@ protected:
   double meRatio(vector<cPDPtr> partons, 
 		 vector<Lorentz5Momentum> momenta,
 		 unsigned int iemitter,bool subtract) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt);
+  
   /**
    *  Calculate the LO ME
    */
@@ -470,11 +466,6 @@ private:
    */
   static const double EPS_;
 
-  /**
-   *  Pointer to the coupling
-   */
-  ShowerAlphaPtr alpha_;
-
 private:
 
   /**
@@ -515,14 +506,6 @@ private:
    *  ParticleData object for the gluon
    */
   tcPDPtr gluon_;
-
-  /**
-   *  The cut off on pt, assuming massless quarks.
-   */
-  Energy pTmin_;
-
-  //  radiative variables (pt,y)
-  Energy pT_;
 
   /**
    *  The ParticleData objects for the fermions
