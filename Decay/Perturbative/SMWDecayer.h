@@ -82,12 +82,6 @@ public:
    *  Has a POWHEG style correction
    */
   virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
-
-
-  /**
-   *  Apply the POWHEG style correction
-   */
-  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
   //@}
 
 public:
@@ -286,11 +280,6 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
-
-  /**
-   *  Access to the strong coupling
-   */
-  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
 protected:
@@ -314,23 +303,18 @@ protected:
 			       int iemit, bool subtract) const;
 
   /**
-   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
-   */
-  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT,
-		     double muj, double muk) const;
-
-  /**
-   *  Calculate the Jacobian
-   */
-  InvEnergy calculateJacobian(double x1, double x2, Energy pT,
-			      double muj, double muk) const;
-
-  /**
    *  Calculate the ratio between NLO & LO ME
    */
   double meRatio(vector<cPDPtr> partons, 
 		 vector<Lorentz5Momentum> momenta,
 		 unsigned int iemitter,bool subtract) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt);
+  
   /**
    *  Calculate the LO ME
    */
@@ -342,11 +326,6 @@ protected:
    */
   InvEnergy2 realME(const vector<cPDPtr> & partons, 
 		  const vector<Lorentz5Momentum> & momenta) const;
-
-  /**
-   *  Generate a real emission event
-   */
-  bool getEvent(vector<PPtr> hardProcess);
 
 private:
 
@@ -439,11 +418,6 @@ private:
    *  Cut-off parameter
    */
   static const double EPS_;
-
-  /**
-   *  Pointer to the coupling
-   */
-  ShowerAlphaPtr alpha_;
 
 private:
 

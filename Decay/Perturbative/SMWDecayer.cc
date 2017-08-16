@@ -134,12 +134,12 @@ int SMWDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
 
 void SMWDecayer::persistentOutput(PersistentOStream & os) const {
-  os << FFWVertex_ << quarkWeight_ << leptonWeight_ << alpha_
+  os << FFWVertex_ << quarkWeight_ << leptonWeight_
   << FFGVertex_ << gluon_ << ounit( pTmin_, GeV ) << NLO_;  
 }
 
 void SMWDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> FFWVertex_ >> quarkWeight_ >> leptonWeight_ >> alpha_
+  is >> FFWVertex_ >> quarkWeight_ >> leptonWeight_
   >> FFGVertex_ >> gluon_ >> iunit( pTmin_, GeV ) >> NLO_;
 }
 
@@ -164,11 +164,6 @@ void SMWDecayer::Init() {
      "The maximum weight for the decay of the W to leptons",
      &SMWDecayer::leptonWeight_,
      0, 0, 0, -10000, 10000, false, false, true);
-
-  static Reference<SMWDecayer,ShowerAlpha> interfaceCoupling
-    ("Coupling",
-     "Pointer to the object to calculate the coupling for the correction",
-     &SMWDecayer::alpha_, false, false, true, false, false);
 
   static Parameter<SMWDecayer, Energy> interfacePtMin
     ("minpT",
@@ -279,13 +274,13 @@ double SMWDecayer::me2(const int, const Particle & part,
     hardProcess[0] = const_ptr_cast<PPtr>(&part);
     hardProcess[1] = decay[0];
     hardProcess[2] = decay[1];
-    realFact = 0.25*jac*sqr(1.-muj2-muk2)/
+    realFact += 0.25*jac*sqr(1.-muj2-muk2)/
       sqrt((1.-sqr(muj-muk))*(1.-sqr(muj+muk)))/Constants::twopi
       *2.*CF_*aS_*calculateRealEmission(x1, x2, hardProcess, phi, 
-  					muj, muk, iemit, true);
+					muj, muk, iemit, true);
   }
   // the born + virtual + real
-  output = output*(1. + virt + realFact);
+  output *= (1. + virt + realFact);
   return output;
 }
 
@@ -548,7 +543,7 @@ double SMWDecayer::getHard(double &x1, double &x2) {
   }
   // alpha and colour factors
   Energy2 pt2 = sqr(d_Q_)*(1.-x1)*(1.-x2);
-  w *= 1./3./Constants::pi*alpha_->value(pt2); 
+  w *= 1./3./Constants::pi*coupling()->value(pt2); 
   return w; 
 }
 
@@ -715,88 +710,40 @@ double SMWDecayer::PS(double x, double xbar) {
   return brack/den;
 }
 
-RealEmissionProcessPtr SMWDecayer::
-generateHardest(RealEmissionProcessPtr born) {
-  assert(born->bornOutgoing().size()==2);
-  // check coloured
-  if(!born->bornOutgoing()[0]->dataPtr()->coloured()) return RealEmissionProcessPtr();
-  // extract required info
-  partons_.resize(2);
-  quark_.resize(2);
-  vector<PPtr> hardProcess;
-  wboson_ = born->bornIncoming()[0];
-  hardProcess.push_back(wboson_);
-  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
-    partons_[ix] = born->bornOutgoing()[ix]->dataPtr();
-    quark_[ix]   = born->bornOutgoing()[ix]->momentum();
-    quark_[ix].setMass(partons_[ix]->mass());
-    hardProcess.push_back(born->bornOutgoing()[ix]);
+double SMWDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				      const ParticleVector & decay3, MEOption) {
+  // extract partons and LO momentas
+  vector<cPDPtr> partons(1,inpart.dataPtr());
+  vector<Lorentz5Momentum> lomom(1,inpart.momentum());
+  for(unsigned int ix=0;ix<2;++ix) {
+    partons.push_back(decay2[ix]->dataPtr());
+    lomom.push_back(decay2[ix]->momentum());
   }
-  bool order = partons_[0]->id()<0;
-  if(order) {
-    swap(partons_[0]   ,partons_[1]   );
-    swap(quark_[0]     ,quark_[1]     );
-    swap(hardProcess[1],hardProcess[2]);
+  vector<Lorentz5Momentum> realmom(1,inpart.momentum());
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==2) partons.push_back(decay3[ix]->dataPtr());
+    realmom.push_back(decay3[ix]->momentum());
   }
-  gauge_.setMass(0.*MeV);
-  // Get the W boson mass.
-  mw2_ = (quark_[0] + quark_[1]).m2();
-  // Generate emission and set _quark[0,1] and _gauge to be the 
-  // momenta of q, qbar and g after the hardest emission:
-  if(!getEvent(hardProcess)) {
-    born->pT()[ShowerInteraction::QCD] = pTmin_;
-    return born;
+  if(partons[0]->id()<0) {
+    swap(partons[1],partons[2]);
+    swap(lomom[1],lomom[2]);
+    swap(realmom[1],realmom[2]);
   }
-  // Ensure the energies are greater than the constituent masses:
-  for (int i=0; i<2; i++) {
-    if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
-  }
-  if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
-  // set masses
-  quark_[0].setMass( partons_[0]->mass() );
-  quark_[1].setMass( partons_[1]->mass() );
-  gauge_   .setMass( ZERO );
-  // // assign the emitter based on evolution scales
-  unsigned int iemitter   = quark_[0]*gauge_ > quark_[1]*gauge_ ? 2 : 1;
-  unsigned int ispectator = iemitter==1                         ? 1 : 2;
-  // create new partices and insert
-  PPtr wboson = wboson_->dataPtr()->produceParticle(wboson_->momentum());
-  born->incoming().push_back(wboson);
-  PPtr newq = partons_[0]->produceParticle(quark_[0]);
-  PPtr newa = partons_[1]->produceParticle(quark_[1]);
-  PPtr newg = gluon_->produceParticle(gauge_);
-  // make colour connections
-  newg->colourNeighbour(newq);
-  newa->colourNeighbour(newg);
-  // insert in output structure
-  if(!order) {
-    born->outgoing().push_back(newq);
-    born->outgoing().push_back(newa);
-  }
-  else {
-    born->outgoing().push_back(newa);
-    born->outgoing().push_back(newq);
-    swap(iemitter,ispectator);
-  }
-  born->outgoing().push_back(newg);
-  born->emitter  (iemitter  );
-  born->spectator(ispectator);
-  born->emitted  (3);
-  born->pT()[ShowerInteraction::QCD] = pT_;
-  // return process
-  born->interaction(ShowerInteraction::QCD);
-  return born;
+  double     lome = loME(partons,lomom);
+  InvEnergy2 reme = realME(partons,realmom);
+  double ratio = CF_*reme/lome*sqr(inpart.mass());
+  return ratio;
 }
 
 double SMWDecayer::meRatio(vector<cPDPtr> partons, 
-					 vector<Lorentz5Momentum> momenta,
-				 	 unsigned int iemitter, bool subtract) const {
+			   vector<Lorentz5Momentum> momenta,
+			   unsigned int iemitter, bool subtract) const {
   Lorentz5Momentum q = momenta[1]+momenta[2]+momenta[3];
   Energy2 Q2=q.m2();
   Energy2 lambda = sqrt((Q2-sqr(momenta[1].mass()+momenta[2].mass()))*
 			(Q2-sqr(momenta[1].mass()-momenta[2].mass())));
   InvEnergy2 D[2];
-  double lome[2];
+  double lome(0.);
   for(unsigned int iemit=0;iemit<2;++iemit) {
     unsigned int ispect = iemit==0 ? 1 : 0;    
     Energy2 pipj = momenta[3      ] * momenta[1+iemit ];
@@ -832,10 +779,10 @@ double SMWDecayer::meRatio(vector<cPDPtr> partons,
       lomom[2] = pijt;
       lomom[1] = pkt ;
     }
-    lome[iemit]  = loME(partons,lomom);
+    if(iemit==0) lome  = loME(partons,lomom);
   }
-  InvEnergy2 ratio = realME(partons,momenta)*abs(D[iemitter])
-    /(abs(D[0]*lome[0])+abs(D[1]*lome[1]));
+  InvEnergy2 ratio = realME(partons,momenta)/lome*abs(D[iemitter])
+    /(abs(D[0])+abs(D[1]));
   if(subtract)
     return Q2*(ratio-2.*D[iemitter]);
   else
@@ -928,245 +875,12 @@ InvEnergy2 SMWDecayer::realME(const vector<cPDPtr> & partons,
   // return the total
   return total*UnitRemoval::InvE2;
 }
-bool SMWDecayer::getEvent(vector<PPtr> hardProcess) {
-  vector<Energy> particleMass;
-  for(unsigned int ix=0;ix<hardProcess.size();++ix) {
-    if(abs(hardProcess[ix]->id())==ParticleID::Wplus) {
-      mW_ = hardProcess[ix]->mass();
-    }
-    else {
-      particleMass.push_back(hardProcess[ix]->mass());
-    }
-  }
-  if (particleMass.size()!=2)  {
-    throw Exception()
-      << "Number of outgoing particles is not equal to 2 in "
-      << "SMWFermionPOWHEGDecayer::getEvent()" 
-      << Exception::runerror;
-  }
-  // reduced mass
-  mu1_ = particleMass[0]/mW_;
-  mu2_ = particleMass[1]/mW_;
-  // scale
-  scale_ = sqr(mW_);
-  // max pT
-  Energy pTmax = 0.5*sqrt(mw2_);
-  if(pTmax<pTmin_) return false;
-  // Define over valued y_max & y_min according to the associated pt_min cut.
-  double ymax  =  acosh(pTmax/pTmin_);
-  double ymin  = -ymax;
-  // pt of the emmission
-  pT_ = pTmax;
-  // prefactor
-  double overEst = 4.;
-  double prefactor = overEst*alphaS()->overestimateValue()*CF_*
-    (ymax-ymin)/Constants::twopi;
-  // loop to generate the pt and rapidity
-  bool reject;  
-  //arrays to hold the temporary  probabilities whilst the for loop progresses
-  double probTemp[2][2]={{0.,0.},{0.,0.}};
-  probTemp[0][0]=probTemp[0][1]=probTemp[1][0]=probTemp[1][1]=0.;
-  double x1Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x2Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x3Solution[2]    = {0.,0.};
-  Energy pT[2]            = {pTmax,pTmax};
-  double yTemp[2]         = {0.,0.};
-  double phi              = 0.;
-  // do the competition
-  for(int i=0; i<2; i++) {
-    // set the emitter and the spectator
-    double muj  = i==0 ? mu1_ : mu2_;
-    double muk  = i==0 ? mu2_ : mu1_;
-    double muj2 = sqr(muj);
-    double muk2 = sqr(muk);
-    do {
-      // generation of phi
-      phi = UseRandom::rnd() * Constants::twopi;
-      // reject the emission
-      reject = true; 
-      // generate pt
-      pT[i] *= pow(UseRandom::rnd(),1./prefactor);
-      if(pT[i]<pTmin_) {
-        pT[i] = -GeV;
-        break;
-      }
-      // generate xT
-      double xT2 = sqr(2./mW_*pT[i]);
-      // generate y
-      yTemp[i] = ymin + UseRandom::rnd()*(ymax-ymin);
-      // generate x3 & x1 from pT & y
-      double x1Plus  = 1-muk2+muj2;
-      double x1Minus = 2.*muj;
-      x3Solution[i]  = 2.*pT[i]*cosh(yTemp[i])/mW_;
-      // prefactor
-      double weightPrefactor = 0.5/sqrt((1.-sqr(muj-muk))*(1.-sqr(muj+muk)))/overEst;
-      // calculate x1 & x2 solutions
-      double discrim2 = (-sqr(x3Solution[i])+xT2)*
-	(xT2*muk2+2.*x3Solution[i]-sqr(muj2)+2.*muk2+2.*muj2-sqr(x3Solution[i])-1.
-	 +2.*muj2*muk2-sqr(muk2)-2.*muk2*x3Solution[i]-2.*muj2*x3Solution[i]);
-      // check discrim2 is > 0
-      if( discrim2 < ZERO) continue;
-      double fact1 =2.*sqr(x3Solution[i])-4.*muk2-6.*x3Solution[i]+4.*muj2-xT2*x3Solution[i]
-	+2.*xT2-2.*muj2*x3Solution[i]+2.*muk2*x3Solution[i]+4.;
-      double fact2 = (4.-4.*x3Solution[i]+xT2);
-      double discriminant = sqrt(discrim2);
-      // two solns for x1
-      x1Solution[i][0] = (fact1 + 2.*discriminant)/fact2;
-      x1Solution[i][1] = (fact1 - 2.*discriminant)/fact2;
-      bool found = false;
-      for(unsigned int j=0;j<2;++j) {
-	// calculate x2
-	x2Solution[i][j] = 2.-x3Solution[i]-x1Solution[i][j];
-	// set limits on x2
-	double root = max(0.,sqr(x1Solution[i][j])-4.*muj2);
-	root = sqrt(root);
-	double x2Plus  = 1.+muk2-muj2
-	  -0.5*(1.-x1Solution[i][j]+muj2-muk2)/(1.-x1Solution[i][j]+muj2)
-	  *(x1Solution[i][j]-2.*muj2-root);
-	double x2Minus = 1.+muk2-muj2
-	  -0.5*(1.-x1Solution[i][j]+muj2-muk2)/(1.-x1Solution[i][j]+muj2)
-	  *(x1Solution[i][j]-2.*muj2+root);
-
-        if(x1Solution[i][j]>=x1Minus && x1Solution[i][j]<=x1Plus &&
-	   x2Solution[i][j]>=x2Minus && x2Solution[i][j]<=x2Plus &&
-           checkZMomenta(x1Solution[i][j], x2Solution[i][j], x3Solution[i], yTemp[i], pT[i], 
-			 muj, muk)) {
-          probTemp[i][j] = weightPrefactor*pT[i]*
-            calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i], muj, muk)*
-	    calculateRealEmission(x1Solution[i][j], x2Solution[i][j], 
-				  hardProcess, phi, muj, muk, i, false);
-          found = true;
-        }
-        else {
-          probTemp[i][j] = 0.;
-        }
-      }
-      if(!found) continue;
-      // alpha S piece
-      double wgt = (probTemp[i][0]+probTemp[i][1])*alphaS()->ratio(sqr(pT[i]));
-      // matrix element weight
-      reject = UseRandom::rnd()>wgt;
-    }
-    while(reject);
-  } // end of emitter for loop
-  // no emission
-  if(pT[0]<ZERO&&pT[1]<ZERO) return false;
-  //pick the spectator and x1 x2 values
-  double x1,x2,y;
-  // particle 1 emits, particle 2 spectates
-  unsigned int iemit=0;
-  if(pT[0]>pT[1]){ 
-    pT_ = pT[0];
-    y=yTemp[0];
-    if(probTemp[0][0]>UseRandom::rnd()*(probTemp[0][0]+probTemp[0][1])) {
-      x1 = x1Solution[0][0];
-      x2 = x2Solution[0][0];
-    }
-    else {
-      x1 = x1Solution[0][1];
-      x2 = x2Solution[0][1];
-    }
-  }
-  // particle 2 emits, particle 1 spectates
-  else {
-    iemit=1;
-    pT_ = pT[1];
-    y=yTemp[1];
-    if(probTemp[1][0]>UseRandom::rnd()*(probTemp[1][0]+probTemp[1][1])) {
-      x1 = x1Solution[1][0];
-      x2 = x2Solution[1][0];
-    }
-    else {
-      x1 = x1Solution[1][1];
-      x2 = x2Solution[1][1];
-    }
-  }
-  // find spectator
-  unsigned int ispect = iemit == 0 ? 1 : 0;
-  double muk = iemit == 0 ? mu2_ : mu1_;
-  double muk2 = sqr(muk);
-  double muj = iemit == 0 ? mu1_ : mu2_;
-  double muj2 = sqr(muj);
-  double xT2 = sqr(2./mW_*pT_);
-  // Find the boost from the lab to the c.o.m with the spectator 
-  // along the -z axis, and then invert it.
-  LorentzRotation eventFrame( ( quark_[0] + quark_[1] ).findBoostToCM() );
-  Lorentz5Momentum spectator = eventFrame*quark_[ispect];
-  eventFrame.rotateZ( -spectator.phi() );
-  eventFrame.rotateY( -spectator.theta() - Constants::pi );
-  eventFrame.invert();
-  // spectator
-  quark_[ispect].setT( 0.5*x2*mW_ );
-  quark_[ispect].setX( ZERO );
-  quark_[ispect].setY( ZERO );
-  quark_[ispect].setZ( -sqrt(0.25*mw2_*x2*x2-mw2_*muk2) );
-  // gluon
-  gauge_.setT( pT_*cosh(y)  );
-  gauge_.setX( pT_*cos(phi) );
-  gauge_.setY( pT_*sin(phi) );
-  gauge_.setZ( pT_*sinh(y)  );
-  gauge_.setMass(ZERO);
-  // emitter
-  quark_[iemit].setX( -pT_*cos(phi) );
-  quark_[iemit].setY( -pT_*sin(phi) );
-  quark_[iemit].setZ(  0.5*mW_*sqrt(sqr(x1)-xT2-4.*muj2) );
-  if(sqrt(0.25*mw2_*x2*x2-mw2_*muk2)-pT_*sinh(y)<ZERO)
-    quark_[iemit].setZ(-quark_[iemit].z());
-  quark_[iemit].setT( 0.5*mW_*x1 );
-  // boost constructed vectors into the event frame
-  quark_[0] = eventFrame * quark_[0];
-  quark_[1] = eventFrame * quark_[1];
-  gauge_    = eventFrame * gauge_;
-  // need to reset masses because for whatever reason the boost  
-  // touches the mass component of the five-vector and can make  
-  // zero mass objects acquire a floating point negative mass(!).
-  gauge_.setMass( ZERO );
-  quark_[iemit] .setMass(partons_[iemit ]->mass());
-  quark_[ispect].setMass(partons_[ispect]->mass());
-
-  return true;
-}
-
-InvEnergy SMWDecayer::calculateJacobian(double x1, double x2, Energy pT, 
-						      double muj, double muk) const{
-  double xPerp = abs(2.*pT/mW_);
-  Energy jac = mW_/xPerp*fabs((x2*sqr(muj)+2.*sqr(muk)*x1
-			       +sqr(muk)*x2-x1*x2-sqr(x2)+x2)/pow((sqr(x2)-4.*sqr(muk)),1.5));
-  
-  return 1./jac; //jacobian as defined is dptdy=jac*dx1dx2, therefore we have to divide by it
-}
-
-bool SMWDecayer::checkZMomenta(double x1, double x2, double x3, 
-					     double y, Energy pT, double muj,
-					     double muk) const {
-  double xPerp2 = 4.*pT*pT/mW_/mW_;
-  double root1 = sqrt(max(0.,sqr(x2)-4.*sqr(muk)));
-  double root2 = sqrt(max(0.,sqr(x1)-xPerp2 - 4.*sqr(muj)));
-  static double tolerance = 1e-6; 
-  bool isMomentaReconstructed = false;  
-
-  if(pT*sinh(y) > ZERO) {
-    if(abs(-root1 + sqrt(sqr(x3)-xPerp2)  + root2) <= tolerance ||
-       abs(-root1 + sqrt(sqr(x3)-xPerp2)  - root2)  <= tolerance)
-      isMomentaReconstructed=true;
-  }
-  else if(pT*sinh(y) < ZERO){
-    if(abs(-root1 - sqrt(sqr(x3)-xPerp2)  + root2) <= tolerance ||
-       abs(-root1 - sqrt(sqr(x3)-xPerp2)  - root2)  <= tolerance)
-	isMomentaReconstructed=true;
-  }
-  else 
-    if(abs(-root1+ sqrt(sqr(x1)-xPerp2 - 4.*(muj))) <= tolerance)
-      isMomentaReconstructed=true;
-      
-  return isMomentaReconstructed;
-}
 
 double SMWDecayer::calculateRealEmission(double x1, double x2, 
-						       vector<PPtr> hardProcess,
-						       double phi, double muj,
-						       double muk, int iemit, 
-						       bool subtract) const {
+					 vector<PPtr> hardProcess,
+					 double phi, double muj,
+					 double muk, int iemit, 
+					 bool subtract) const {
   // make partons data object for meRatio
   vector<cPDPtr> partons (3);
   for(int ix=0; ix<3; ++ix)
@@ -1189,9 +903,6 @@ double SMWDecayer::calculateRealEmission(double x1, double x2,
     pgluon.setZ(-pgluon.z());
   else if(abs(pspect.z()-pemit.z()+pgluon.z())/M<1e-6) 
     pemit .setZ(- pemit.z());
-  // loop over the possible emitting partons
-  double realwgt(0.);
-
   // boost and rotate momenta
   LorentzRotation eventFrame( ( hardProcess[1]->momentum() +
 				hardProcess[2]->momentum() ).findBoostToCM() );
@@ -1211,8 +922,8 @@ double SMWDecayer::calculateRealEmission(double x1, double x2,
   }
   momenta.push_back(eventFrame*pgluon);
   // calculate the weight
+  double realwgt(0.);
   if(1.-x1>1e-5 && 1.-x2>1e-5) 
-    realwgt += meRatio(partons,momenta,iemit,subtract);
-  
+    realwgt = meRatio(partons,momenta,iemit,subtract);
   return realwgt;
 }
