@@ -1082,7 +1082,7 @@ double SMZDecayer::matrixElementRatio(const Particle & inpart, const ParticleVec
   }
   double     lome = loME(partons,lomom);
   InvEnergy2 reme = realME(partons,realmom);
-  double ratio = CF_*reme/lome*sqr(inpart.mass());
+  double ratio = CF_*reme/lome*sqr(inpart.mass())*4.*Constants::pi;
   return ratio;
 }
 

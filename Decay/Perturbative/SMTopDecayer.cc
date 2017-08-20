@@ -1194,5 +1194,5 @@ double SMTopDecayer::matrixElementRatio(const Particle & inpart,
   		  (16. + 8./s2() + 8.*e2()/s2()) * ((PtPg/PbPg) + (PbPg/PtPg)) -
   		  (16./s2()) * (1. + e2())); 
 
-  return R/B;
+  return R/B*Constants::pi;
 }

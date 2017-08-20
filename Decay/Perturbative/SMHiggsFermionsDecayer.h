@@ -79,9 +79,10 @@ public:
   virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
 
   /**
-   *  Apply the POWHEG style correction
+   *  Calculate matrix element ratio R/B
    */
-  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt);
 
 public:
 
@@ -152,21 +153,6 @@ protected:
    *  Non-singlet term
    */
   double calculateNonSingletTerm(double beta, double L) const;
-
-  /**
-   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
-   */
-  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const;
-
-  /**
-   *  Calculate the Jacobian
-   */
-  InvEnergy calculateJacobian(double x1, double x2, Energy pT) const;
-
-  /**
-   *  Generate a real emission event
-   */
-  bool getEvent();
 
 protected:
 
