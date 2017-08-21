@@ -383,7 +383,6 @@ def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings,order) :
          couplings=[0.,0.]
          terms=[['P(%s,%s)' % (order[0],order[2])],
                 ['P(%s,%s)' % (order[0],order[1])]]
-#    print order,L.structure
     # extract the lorentz structures
     structures = extractStructures(L)
     # handle the scalar couplings
@@ -424,7 +423,7 @@ def scalarVectorCouplings(value,prefactors,L,lorentztag,all_couplings,order) :
                 all_couplings[ic] = '(%s) * (%s) * (%s) ' % (prefactors,value,couplings[ic])
     return all_couplings
 
-def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,header) :
+def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,header,order) :
     # check the values
     tval = [False]*len(all_couplings[0])
     value =[False]*len(all_couplings[0])
@@ -471,7 +470,7 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
             raise SkipThisVertex()
         coup_norm = value[1]
         append = 'if(p2->id()!=%s){norm(-norm());}' \
-                 % vertex.particles[1].pdg_code
+                 % vertex.particles[order[1]-1].pdg_code
     # return the answer
     return (coup_norm,append,lorentztag,header,symbols)
 

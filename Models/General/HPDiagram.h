@@ -131,14 +131,17 @@ struct HPDiagram {
       }
       // t/u channel
       else if(x.channelType==HPDiagram::tChannel) {
-	// check vertex
-	if(x.vertices.first  != y.vertices.first  ||
-	   x.vertices.second != y.vertices.second)
-	    return false;
+	// check vertex and intermediate
+	if(x.vertices.first  == y.vertices.first  &&
+	   x.vertices.second == y.vertices.second &&
+	   x.intermediate == y.intermediate )
+	    return true;
 	tPDPtr inter = x.intermediate;
 	if(inter->CC()) inter = inter->CC();
-	// check intermediate
-	return inter == y.intermediate;
+	if(x.vertices.first  == y.vertices.second &&
+	   x.vertices.second == y.vertices.first  &&
+	   inter == y.intermediate )
+	    return true;
       }
       // s-channel
       else {

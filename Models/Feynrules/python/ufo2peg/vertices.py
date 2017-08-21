@@ -514,9 +514,9 @@ Herwig may not give correct results, though.
             elif(lorentztag=="SSS" or lorentztag=="SSSS") :
                 normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
             elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
-                normcontent,append,lorentztag,header,sym = \
-                                                           processScalarVectorCouplings(lorentztag,vertex,
-                                                                                        self.model,self.parmsubs,all_couplings,header)
+                normcontent,append,lorentztag,header,sym = processScalarVectorCouplings(lorentztag,vertex,
+                                                                                        self.model,self.parmsubs,
+                                                                                        all_couplings,header,order)
                 symbols |=sym
             elif("VVV" in lorentztag) :
                 normcontent,append,header =\
