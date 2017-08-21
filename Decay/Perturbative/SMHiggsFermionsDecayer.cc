@@ -34,7 +34,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() :
-  CF_(4./3.), pTmin_(1.*GeV), NLO_(false) {
+  CF_(4./3.), NLO_(false) {
   _maxwgt.resize(9);
   _maxwgt[0]=0.;
   _maxwgt[1]=0;		
@@ -79,7 +79,6 @@ void SMHiggsFermionsDecayer::doinit() {
       }
     }
   }
-  gluon_ = getParticleData(ParticleID::g);
 //   Energy quarkMass = getParticleData(ParticleID::b )->mass();
 //   Energy higgsMass = getParticleData(ParticleID::h0)->mass();
 //   double mu = quarkMass/higgsMass;
@@ -154,13 +153,11 @@ ParticleVector SMHiggsFermionsDecayer::decay(const Particle & parent,
 
 
 void SMHiggsFermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _maxwgt << _hvertex << NLO_
-     << alphaS_ << gluon_ << ounit( pTmin_, GeV );
+  os << _maxwgt << _hvertex << NLO_;
 }
 
 void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _maxwgt >> _hvertex >> NLO_
-     >> alphaS_ >> gluon_ >> iunit( pTmin_, GeV );
+  is >> _maxwgt >> _hvertex >> NLO_;
 }
 
 // The following static variable is needed for the type
@@ -178,17 +175,6 @@ void SMHiggsFermionsDecayer::Init() {
     ("MaxWeights",
      "Maximum weights for the various decays",
      &SMHiggsFermionsDecayer::_maxwgt, 9, 1.0, 0.0, 10.0,
-     false, false, Interface::limited);
-  
-  static Reference<SMHiggsFermionsDecayer,ShowerAlpha> interfaceCoupling
-    ("Coupling",
-     "The object calculating the strong coupling constant",
-     &SMHiggsFermionsDecayer::alphaS_, false, false, true, false, false);
-
-  static Parameter<SMHiggsFermionsDecayer, Energy> interfacePtMin
-    ("minpT",
-     "The pt cut on hardest emision generation",
-     &SMHiggsFermionsDecayer::pTmin_, GeV, 1.*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
   
   static Switch<SMHiggsFermionsDecayer,bool> interfaceNLO

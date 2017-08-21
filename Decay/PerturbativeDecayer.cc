@@ -377,7 +377,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	particleMomenta[2].e()*particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);     
       // calculate weight
-      weight[j] = meRatio*fabs(sqr(pT)*J)*coupling()->ratio(pT*pT)/C/Constants::twopi; 
+      weight[j] = meRatio*fabs(sqr(pT)*J)*coupling()->ratio(pT*pT)/C/Constants::twopi;
     }
     // accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {

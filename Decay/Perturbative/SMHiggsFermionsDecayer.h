@@ -15,7 +15,6 @@
 #include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -242,24 +241,6 @@ private:
    *  Stuff for the POWHEG correction
    */
   //@{
-  /**
-   *  Pointer to the object calculating the strong coupling
-   */
-  ShowerAlphaPtr alphaS_;
-
-  /**
-   *  ParticleData object for the gluon
-   */
-  tcPDPtr gluon_;
-
-  /**
-   *  The cut off on pt, assuming massless quarks.
-   */
-  Energy pTmin_;
-
-  //  radiative variables (pt,y)
-  Energy pT_;
-
   /**
    *  The ParticleData objects for the fermions
    */

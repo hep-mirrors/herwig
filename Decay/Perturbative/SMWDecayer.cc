@@ -724,6 +724,7 @@ double SMWDecayer::matrixElementRatio(const Particle & inpart, const ParticleVec
     swap(lomom[1],lomom[2]);
     swap(realmom[1],realmom[2]);
   }
+  scale_ = sqr(inpart.mass());
   double     lome = loME(partons,lomom);
   InvEnergy2 reme = realME(partons,realmom);
   double ratio = CF_*reme/lome*sqr(inpart.mass())*4.*Constants::pi;
