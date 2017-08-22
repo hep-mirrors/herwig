@@ -440,7 +440,8 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	      outb == PDT::Colour3 && outa == PDT::Colour8) {
 	tPDPtr off = diag.intermediate;
 	if(off->CC()) off=off->CC();
-	if(diag.vertices.second->allowed(off->id(),diag.outgoing.first,diag.incoming.second)) {
+	if(off->iSpin()!=PDT::Spin1Half ||
+	   diag.vertices.second->allowed(off->id(),diag.outgoing.first,diag.incoming.second)) {
 	  cfv[0].first = 0;
 	  cfv.push_back(make_pair(1, -1.));
 	}
@@ -453,7 +454,8 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	      outb == PDT::Colour3bar && outa == PDT::Colour8) {
 	tPDPtr off = diag.intermediate;
 	if(off->CC()) off=off->CC();
-	if(diag.vertices.second->allowed(diag.outgoing.first,off->id(),diag.incoming.second)) {
+	if(off->iSpin()!=PDT::Spin1Half ||
+	   diag.vertices.second->allowed(diag.outgoing.first,off->id(),diag.incoming.second)) {
 	  cfv[0].first = 0;
 	  cfv.push_back(make_pair(1, -1.));
 	}
