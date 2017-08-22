@@ -318,10 +318,9 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
     particleMomenta.clear(); 
     return particleMomenta;
   }
-
-  while (pTmax >= pTmin_) {  
+  while (pTmax >= pTmin_) {
     // generate pT, y and phi values
-    Energy pT = pTmax*pow(UseRandom::rnd(),(1./A)); 
+    Energy pT = pTmax*pow(UseRandom::rnd(),(1./A));
     if (pT < pTmin_) {
       particleMomenta.clear(); 
       break;
@@ -329,7 +328,6 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 
     double phi = UseRandom::rnd()*Constants::twopi;
     double y   = ymin+UseRandom::rnd()*(ymax-ymin);
-
     double weight[2] = {0.,0.};
     double xs[2], xe[2], xe_z[2], xg;
  
@@ -361,7 +359,6 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   
       // calculate matrix element ratio R/B
       double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize);
-   
       // calculate dipole factor
       InvEnergy2 dipoleSum = ZERO;
       InvEnergy2 numerator = ZERO;
@@ -371,11 +368,10 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	if (k==i) numerator = dipole;
       }
       meRatio *= numerator/dipoleSum;
-      
       // calculate jacobian
       Energy2 denom = (mb_-particleMomenta[3].e())*particleMomenta[2].vect().mag() -
 	particleMomenta[2].e()*particleMomenta[3].z(); 
-      InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);     
+      InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);
       // calculate weight
       weight[j] = meRatio*fabs(sqr(pT)*J)*coupling()->ratio(pT*pT)/C/Constants::twopi;
     }
@@ -511,7 +507,7 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,
 	    (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
 	   (dipoleId==IFc && 
 	    (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
-    double z  = 1. - xg/(1.-s2_+e2_);    
+    double z  = 1. - xg/(1.-s2_+e2_);
     dipole = (-2.*e2_/sqr(1.-xs+s2_-e2_)/sqr(mb_) + (1./(1.-xs+s2_-e2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[0],z)));
 
@@ -531,16 +527,36 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,
 	   (dipoleId==FFc && 
 	    (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
     double z = 1. + ((xe-1.+s2_-e2_)/(xs-2.*s2_));
-    dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*((2./(1.-z))-dipoleSpinFactor(decay3[0],z)-
-					     (2.*e2_/(1.+s2_-e2_-xs)) );
+    double y = (1.-xs-e2_+s2_)/(1.-e2_-s2_);
+    double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-e2_-s2_);
+    double v  = sqrt(sqr(2.*s2_+(1.-e2_-s2_)*(1.-y))-4.*s2_)
+      /(1.-y)/(1.-e2_-s2_);
+    if(decay3[0]->dataPtr()->iSpin()!=PDT::Spin1) {
+      dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*
+	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(decay3[0],z)+(2.*e2_/(1.+s2_-e2_-xs))));
+    }
+    else {
+      dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*
+	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*e2_/(1.+s2_-e2_-xs)));
+    }
     dipole *= colourCoeff(decay3[0]->dataPtr()->iColour(), 
 			  decay3[1]->dataPtr()->iColour(),
 			  inpart.dataPtr()->iColour());
   }
   else if (dipoleId==FFa || dipoleId==FFc) { 
     double z = 1. + ((xs-1.+e2_-s2_)/(xe-2.*e2_));
-    dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*((2./(1.-z))-dipoleSpinFactor(decay3[1],z)-
-					     (2.*s2_/(1.+e2_-s2_-xe)) );
+    double y = (1.-xe-s2_+e2_)/(1.-e2_-s2_);
+    double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-e2_-s2_);
+    double v  = sqrt(sqr(2.*e2_+(1.-e2_-s2_)*(1.-y))-4.*e2_)
+      /(1.-y)/(1.-e2_-s2_);
+    if(decay3[1]->dataPtr()->iSpin()!=PDT::Spin1) {
+      dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*
+	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(decay3[1],z)+(2.*s2_/(1.+e2_-s2_-xe))));
+    }
+    else {
+      dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*
+	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*s2_/(1.+e2_-s2_-xe)));
+    }
     dipole *= colourCoeff(decay3[1]->dataPtr()->iColour(), 
 			  decay3[0]->dataPtr()->iColour(),
 			  inpart.dataPtr()->iColour());
@@ -557,7 +573,7 @@ double PerturbativeDecayer::dipoleSpinFactor(const PPtr & emitter, double z){
   else if (emitter->dataPtr()->iSpin()==PDT::Spin1Half)
     return (1. + z);
   else if (emitter->dataPtr()->iSpin()==PDT::Spin1)
-    return (2.*z*(1.-z) - 1./(1.-z) + 1./z -2.);
+    return -(z*(1.-z) - 1./(1.-z) + 1./z -2.);
   return 0.;
 }
 
