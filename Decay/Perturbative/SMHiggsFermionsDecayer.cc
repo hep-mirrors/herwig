@@ -388,6 +388,6 @@ double SMHiggsFermionsDecayer::matrixElementRatio(const Particle & inpart, const
   mu2_ = sqr(mu_);
   double x1 = 2.*decay3[0]->momentum().t()/mHiggs_;
   double x2 = 2.*decay3[1]->momentum().t()/mHiggs_;
-  double pre = inter==ShowerInteraction::QCD ? CF_ : 1.;
+  double pre = inter==ShowerInteraction::QCD ? CF_ : sqr(double(decay2[0]->dataPtr()->iCharge())/3.);
   return pre*calculateRealEmission(x1,x2)*4.*Constants::pi*sqr(mHiggs_);
 }
