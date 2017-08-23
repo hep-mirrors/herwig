@@ -118,12 +118,14 @@ ParticleVector SMTopDecayer::decay(const Particle & parent,
 }   
  
 void SMTopDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _wvertex << _wquarkwgt << _wleptonwgt << _wplus
+  os << FFWVertex_ << FFGVertex_ << FFPVertex_ << WWWVertex_
+     << _wquarkwgt << _wleptonwgt << _wplus
      << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2;
 }
   
 void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _wvertex >> _wquarkwgt >> _wleptonwgt >> _wplus
+  is >> FFWVertex_ >> FFGVertex_ >> FFPVertex_ >> WWWVertex_
+     >> _wquarkwgt >> _wleptonwgt >> _wplus
      >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2;
 }
   
@@ -257,12 +259,12 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
     unsigned int thel,bhel,fhel,afhel;
     for(thel = 0;thel<2;++thel){
       for(bhel = 0;bhel<2;++bhel){	  
-	inter = _wvertex->evaluate(scale,1,Wplus,_inHalf[thel],
+	inter = FFWVertex_->evaluate(scale,1,Wplus,_inHalf[thel],
 				   _inHalfBar[bhel]);
 	for(afhel=0;afhel<2;++afhel){
 	  for(fhel=0;fhel<2;++fhel){
 	    (*ME())(thel,bhel,afhel,fhel) = 
-	      _wvertex->evaluate(scale,_outHalf[afhel],
+	      FFWVertex_->evaluate(scale,_outHalf[afhel],
 				 _outHalfBar[fhel],inter);
 	  }
 	}
@@ -275,12 +277,12 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
     unsigned int tbhel,bbhel,afhel,fhel;
     for(tbhel = 0;tbhel<2;++tbhel){
       for(bbhel = 0;bbhel<2;++bbhel){
-	inter = _wvertex->
+	inter = FFWVertex_->
 	  evaluate(scale,1,Wminus,_inHalf[bbhel],_inHalfBar[tbhel]);
 	for(afhel=0;afhel<2;++afhel){
 	  for(fhel=0;fhel<2;++fhel){
 	    (*ME())(tbhel,bbhel,fhel,afhel) = 
-	      _wvertex->evaluate(scale,_outHalf[afhel],
+	      FFWVertex_->evaluate(scale,_outHalf[afhel],
 				 _outHalfBar[fhel],inter);
 	  }
 	}
@@ -298,9 +300,15 @@ void SMTopDecayer::doinit() {
   tcHwSMPtr hwsm = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) throw InitException() << "Must have Herwig::StandardModel in "
 				  << "SMTopDecayer::doinit()";
-  _wvertex = hwsm->vertexFFW();
+  FFWVertex_ = hwsm->vertexFFW();
+  FFGVertex_ = hwsm->vertexFFG();
+  FFPVertex_ = hwsm->vertexFFP();
+  WWWVertex_ = hwsm->vertexWWW();
   //initialise
-  _wvertex->init();
+  FFWVertex_->init();
+  FFGVertex_->init();
+  FFPVertex_->init();
+  WWWVertex_->init();
   //set up decay modes
   _wplus = getParticleData(ParticleID::Wplus);
   DecayPhaseSpaceModePtr mode;
@@ -326,7 +334,7 @@ void SMTopDecayer::doinit() {
   for(int ix=1;ix<6;ix+=2) {
     for(int iy=2;iy<6;iy+=2) {
       // check that the combination of particles is allowed
-      if(_wvertex->allowed(-ix,iy,ParticleID::Wminus)) {
+      if(FFWVertex_->allowed(-ix,iy,ParticleID::Wminus)) {
 	extpart[2] = getParticleData(-ix);
 	extpart[3] = getParticleData( iy);
 	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
@@ -1176,25 +1184,152 @@ bool SMTopDecayer::deadZoneCheck(double xw, double xg){
   return true;
 }
 
+double SMTopDecayer::loME(const Particle & inpart, const ParticleVector & decay) {
+  // spinors
+  vector<SpinorWaveFunction   > swave;
+  vector<SpinorBarWaveFunction> awave;
+  vector<VectorWaveFunction> vwave;
+  // spinors 
+  if(inpart.id()>0) {
+    SpinorWaveFunction   ::calculateWaveFunctions(swave,const_ptr_cast<tPPtr>(&inpart),
+						  incoming);
+    SpinorBarWaveFunction::calculateWaveFunctions(awave,decay[0],outgoing);
+  }
+  else {
+    SpinorBarWaveFunction::calculateWaveFunctions(awave,const_ptr_cast<tPPtr>(&inpart),
+						  incoming);
+    SpinorWaveFunction   ::calculateWaveFunctions(swave,decay[0],outgoing);
+  }
+  // polarization vectors
+  VectorWaveFunction::calculateWaveFunctions(vwave,decay[1],outgoing,false);
+  Energy2 scale(sqr(inpart.mass()));
+  double me=0.;
+  if(inpart.id() == ParticleID::t) {
+    for(unsigned int thel = 0; thel < 2; ++thel) {
+      for(unsigned int bhel = 0; bhel < 2; ++bhel) {
+	for(unsigned int whel = 0; whel < 3; ++whel) {
+	  Complex diag = FFWVertex_->evaluate(scale,swave[thel],awave[bhel],vwave[whel]);
+	  me += norm(diag);
+	}
+      }
+    }
+  }
+  else if(inpart.id() == ParticleID::tbar) {
+    for(unsigned int thel = 0; thel < 2; ++thel) {
+      for(unsigned int bhel = 0; bhel < 2; ++bhel){ 
+	for(unsigned int whel = 0; whel < 3; ++whel) {
+	  Complex diag = FFWVertex_->evaluate(scale,swave[bhel],awave[thel],vwave[whel]);
+	  me += norm(diag);
+ 	}
+      }
+    }
+  }
+  return me;
+}
+
+
+double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & decay,
+			    ShowerInteraction inter) {
+  // vertex for emission from fermions
+  AbstractFFVVertexPtr vertex = inter==ShowerInteraction::QCD ? FFGVertex_ : FFPVertex_;
+  // spinors
+  vector<SpinorWaveFunction   > swave;
+  vector<SpinorBarWaveFunction> awave;
+  vector<VectorWaveFunction> vwave,gwave;
+  // spinors 
+  if(inpart.id()>0) {
+    SpinorWaveFunction   ::calculateWaveFunctions(swave,const_ptr_cast<tPPtr>(&inpart),
+						  incoming);
+    SpinorBarWaveFunction::calculateWaveFunctions(awave,decay[0],outgoing);
+  }
+  else {
+    SpinorBarWaveFunction::calculateWaveFunctions(awave,const_ptr_cast<tPPtr>(&inpart),
+						  incoming);
+    SpinorWaveFunction   ::calculateWaveFunctions(swave,decay[0],outgoing);
+  }
+  // polarization vectors
+  VectorWaveFunction::calculateWaveFunctions(vwave,decay[1],outgoing,false);
+  VectorWaveFunction::calculateWaveFunctions(gwave,decay[2],outgoing,true );
+  Energy2 scale(sqr(inpart.mass()));
+  double me=0.;
+  vector<Complex> diag(3,0.);
+  if(inpart.id() == ParticleID::t) {
+    for(unsigned int thel = 0; thel < 2; ++thel) {
+      for(unsigned int bhel = 0; bhel < 2; ++bhel) {
+	for(unsigned int whel = 0; whel < 3; ++whel) {
+	  for(unsigned int ghel =0; ghel <3; ghel+=2) {
+	    // emission from top
+	    SpinorWaveFunction interF = vertex->evaluate(scale,3,inpart.dataPtr(),swave[thel],gwave[ghel]);
+	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[bhel],vwave[whel]);
+	    // emission from bottom
+	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,decay[0]->dataPtr(),awave[bhel],gwave[ghel]);
+	    diag[1] = FFWVertex_->evaluate(scale,swave[thel],interB,vwave[whel]);
+	    // emission from W
+	    if(inter==ShowerInteraction::QED) {
+	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr(),vwave[whel],gwave[ghel]);
+	      diag[1] = FFWVertex_->evaluate(scale,swave[thel],awave[bhel],interV);
+	    }
+	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
+	    me += norm(sum);
+	  }
+	}
+      }
+    }
+  }
+  else if(inpart.id() == ParticleID::tbar) {
+    for(unsigned int thel = 0; thel < 2; ++thel) {
+      for(unsigned int bhel = 0; bhel < 2; ++bhel){ 
+	for(unsigned int whel = 0; whel < 3; ++whel) {
+	  for(unsigned int ghel =0; ghel <3; ghel+=2) {
+	    // emission from top
+	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,inpart.dataPtr(),awave[thel],gwave[ghel]);
+	    diag[1] = FFWVertex_->evaluate(scale,swave[bhel],interB,vwave[whel]);
+	    // emission from bottom
+	    SpinorWaveFunction interF = vertex->evaluate(scale,3,decay[0]->dataPtr(),swave[bhel],gwave[ghel]);
+	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[thel],vwave[whel]);
+	    // emission from W
+	    if(inter==ShowerInteraction::QED) {
+	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr(),vwave[whel],gwave[ghel]);
+	      diag[1] = FFWVertex_->evaluate(scale,swave[bhel],awave[thel],interV);
+	    }
+	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
+	    me += norm(sum);
+	  }
+	}
+      }
+    }
+  }
+  // divide out the coupling
+  me /= norm(vertex->norm());
+  // return the total
+  return me;
+}
+
 double SMTopDecayer::matrixElementRatio(const Particle & inpart,
-					const ParticleVector & ,
+					const ParticleVector & decay2,
 					const ParticleVector & decay3,
 					MEOption ,
 					ShowerInteraction inter) {
-  if(inter==ShowerInteraction::QED) return 0.;
-  double f  = (1. + sqr(e2()) - 2.*sqr(s2()) + s2() + s2()*e2() - 2.*e2());
   double Nc = standardModel()->Nc();
   double Cf = (sqr(Nc) - 1.) / (2.*Nc);  
-  double B  = f/s2();
+  // if(inter==ShowerInteraction::QED) return 0.;
+  // double f  = (1. + sqr(e2()) - 2.*sqr(s2()) + s2() + s2()*e2() - 2.*e2());
+  // 
+  // 
+  // double B  = f/s2();
   
-  Energy2 PbPg = decay3[0]->momentum()*decay3[2]->momentum();
-  Energy2 PtPg = inpart.momentum()*decay3[2]->momentum();
-  Energy2 PtPb = inpart.momentum()*decay3[0]->momentum();
+  // Energy2 PbPg = decay3[0]->momentum()*decay3[2]->momentum();
+  // Energy2 PtPg = inpart.momentum()*decay3[2]->momentum();
+  // Energy2 PtPb = inpart.momentum()*decay3[0]->momentum();
 
-  double R = Cf *((-4.*sqr(mb())*f/s2()) * ((sqr(mb())*e2()/sqr(PbPg)) + 
-  		  (sqr(mb())/sqr(PtPg)) - 2.*(PtPb/(PtPg*PbPg))) +
-  		  (16. + 8./s2() + 8.*e2()/s2()) * ((PtPg/PbPg) + (PbPg/PtPg)) -
-  		  (16./s2()) * (1. + e2())); 
-
-  return R/B*Constants::pi;
+  // double R = Cf *((-4.*sqr(mb())*f/s2()) * ((sqr(mb())*e2()/sqr(PbPg)) + 
+  // 		  (sqr(mb())/sqr(PtPg)) - 2.*(PtPb/(PtPg*PbPg))) +
+  // 		  (16. + 8./s2() + 8.*e2()/s2()) * ((PtPg/PbPg) + (PbPg/PtPg)) -
+  // 		  (16./s2()) * (1. + e2()));
+  // return R/B*Constants::pi;
+  double Bnew = loME(inpart,decay2);
+  double Rnew = realME(inpart,decay3,inter);
+  double output = Rnew/Bnew*4.*Constants::pi*sqr(inpart.mass())*UnitRemoval::InvE2;
+  if(inter==ShowerInteraction::QCD) output *= Cf;
+  return output;
 }

@@ -14,6 +14,7 @@
 
 #include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
@@ -348,6 +349,17 @@ protected:
 				    const ParticleVector & decay3, MEOption meopt,
 				    ShowerInteraction inter);
 
+  /**
+   *  LO matrix element for \f$t\to b W^\pm\f$
+   */
+  double loME(const Particle & inpart, const ParticleVector & decay);
+
+  /**
+   *  LO matrix element for \f$t\to b W^\pm\f$
+   */
+  double realME(const Particle & inpart, const ParticleVector & decay,
+		ShowerInteraction inter);
+  
 private:
 
   /**
@@ -357,9 +369,24 @@ private:
   SMTopDecayer & operator=(const SMTopDecayer &);
   
   /**
-   *Pointer to the W vertex
+   * Pointer to the W vertex
    */
-  AbstractFFVVertexPtr _wvertex;
+  AbstractFFVVertexPtr FFWVertex_;
+  
+  /**
+   * Pointer to the gluon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
+  
+  /**
+   * Pointer to the photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+  
+  /**
+   * Pointer to the photon vertex
+   */
+  AbstractVVVVertexPtr WWWVertex_;
   
   /**
    * Max weight for integration
