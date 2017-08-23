@@ -62,9 +62,13 @@ void SMWDecayer::doinit() {
 				  << Exception::runerror;
   FFWVertex_ = hwsm->vertexFFW();
   FFGVertex_ = hwsm->vertexFFG();
+  WWWVertex_ = hwsm->vertexWWW();
+  FFPVertex_ = hwsm->vertexFFP();
   // make sure they are initialized
   FFGVertex_->init();
   FFWVertex_->init();
+  WWWVertex_->init();
+  FFPVertex_->init();
   // now set up the decay modes
   DecayPhaseSpaceModePtr mode;
   tPDVector extpart(3);
@@ -136,12 +140,14 @@ int SMWDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 void SMWDecayer::persistentOutput(PersistentOStream & os) const {
   os << FFWVertex_ << quarkWeight_ << leptonWeight_
-  << FFGVertex_ << gluon_ << NLO_;  
+     << FFGVertex_ << gluon_ << NLO_
+     << WWWVertex_ << FFPVertex_;  
 }
 
 void SMWDecayer::persistentInput(PersistentIStream & is, int) {
   is >> FFWVertex_ >> quarkWeight_ >> leptonWeight_
-  >> FFGVertex_ >> gluon_ >> NLO_;
+     >> FFGVertex_ >> gluon_ >> NLO_
+     >> WWWVertex_ >> FFPVertex_;
 }
 
 // The following static variable is needed for the type
@@ -154,6 +160,7 @@ void SMWDecayer::Init() {
   static ClassDocumentation<SMWDecayer> documentation
     ("The SMWDecayer class is the implementation of the decay"
      " of the W boson to the Standard Model fermions.");
+
   static ParVector<SMWDecayer,double> interfaceWquarkMax
     ("QuarkMax",
      "The maximum weight for the decay of the W to quarks",
@@ -728,8 +735,9 @@ double SMWDecayer::matrixElementRatio(const Particle & inpart, const ParticleVec
   }
   scale_ = sqr(inpart.mass());
   double     lome = loME(partons,lomom);
-  InvEnergy2 reme = realME(partons,realmom);
-  double ratio = CF_*reme/lome*sqr(inpart.mass())*4.*Constants::pi;
+  InvEnergy2 reme = realME(partons,realmom,inter);
+  double ratio = reme/lome*sqr(inpart.mass())*4.*Constants::pi;
+  if(inter==ShowerInteraction::QCD) ratio *= CF_;
   return ratio;
 }
 
@@ -779,7 +787,7 @@ double SMWDecayer::meRatio(vector<cPDPtr> partons,
     }
     if(iemit==0) lome  = loME(partons,lomom);
   }
-  InvEnergy2 ratio = realME(partons,momenta)/lome*abs(D[iemitter])
+  InvEnergy2 ratio = realME(partons,momenta,ShowerInteraction::QCD)/lome*abs(D[iemitter])
     /(abs(D[0])+abs(D[1]));
   if(subtract)
     return Q2*(ratio-2.*D[iemitter]);
@@ -812,7 +820,7 @@ double SMWDecayer::loME(const vector<cPDPtr> & partons,
   for(unsigned int inhel=0;inhel<3;++inhel) {
     for(unsigned int outhel1=0;outhel1<2;++outhel1) {
       for(unsigned int outhel2=0;outhel2<2;++outhel2) {
-	Complex diag1 = FFWVertex()->evaluate(scale_,aout[outhel2],fout[outhel1],vin[inhel]);
+	Complex diag1 = FFWVertex_->evaluate(scale_,aout[outhel2],fout[outhel1],vin[inhel]);
 	total += norm(diag1);
       }
     }
@@ -822,7 +830,8 @@ double SMWDecayer::loME(const vector<cPDPtr> & partons,
 }
  
 InvEnergy2 SMWDecayer::realME(const vector<cPDPtr> & partons, 
-			      const vector<Lorentz5Momentum> & momenta) const {
+			      const vector<Lorentz5Momentum> & momenta,
+			      ShowerInteraction inter) const {
   // compute the spinors
   vector<VectorWaveFunction>     vin;
   vector<SpinorWaveFunction>     aout;
@@ -844,21 +853,30 @@ InvEnergy2 SMWDecayer::realME(const vector<cPDPtr> & partons,
     win.reset(ix);
     vin.push_back(win);
   }
-  vector<Complex> diag(2,0.);
+  vector<Complex> diag(3,0.);
 
   double total(0.);
+
+  AbstractFFVVertexPtr vertex = inter==ShowerInteraction::QCD ? FFGVertex_ : FFPVertex_;
+  
   for(unsigned int inhel1=0;inhel1<3;++inhel1) {
     for(unsigned int outhel1=0;outhel1<2;++outhel1) {
       for(unsigned int outhel2=0;outhel2<2;++outhel2) {
 	for(unsigned int outhel3=0;outhel3<2;++outhel3) {
 	  SpinorBarWaveFunction off1 =
-	    FFGVertex()->evaluate(scale_,3,partons[1],fout[outhel1],gout[outhel3]);
-	  diag[0] = FFWVertex()->evaluate(scale_,aout[outhel2],off1,vin[inhel1]);
-
+	    vertex->evaluate(scale_,3,partons[1],fout[outhel1],gout[outhel3]);
+	  diag[0] = FFWVertex_->evaluate(scale_,aout[outhel2],off1,vin[inhel1]);
+	  
 	  SpinorWaveFunction off2 = 
-	    FFGVertex()->evaluate(scale_,3,partons[2],aout[outhel2],gout[outhel3]);
-	  diag[1] = FFWVertex()->evaluate(scale_,off2,fout[outhel1],vin[inhel1]);
+	    vertex->evaluate(scale_,3,partons[2],aout[outhel2],gout[outhel3]);
+	  diag[1] = FFWVertex_->evaluate(scale_,off2,fout[outhel1],vin[inhel1]);
 
+	  if(inter==ShowerInteraction::QED) {
+	    VectorWaveFunction off3 =
+	      WWWVertex_->evaluate(scale_,3,partons[0],vin[inhel1],gout[outhel3]);
+	    diag[2] = FFWVertex_->evaluate(scale_,aout[outhel2],fout[outhel1],off3);
+	  }
+	  
 	  // sum of diagrams
 	  Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
 	  // me2
@@ -869,7 +887,7 @@ InvEnergy2 SMWDecayer::realME(const vector<cPDPtr> & partons,
   }
 
   // divide out the coupling
-  total /= norm(FFGVertex()->norm());
+  total /= norm(FFGVertex_->norm());
   // return the total
   return total*UnitRemoval::InvE2;
 }

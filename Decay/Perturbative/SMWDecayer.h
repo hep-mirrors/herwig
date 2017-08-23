@@ -282,16 +282,6 @@ protected:
   //@}
 
 protected:
-  
-  /**
-   *  Pointer to the fermion-antifermion W vertex
-   */
-  AbstractFFVVertexPtr FFWVertex() const {return FFWVertex_;}
-
-  /**
-   *  Pointer to the fermion-antifermion G vertex
-   */
-  AbstractFFVVertexPtr FFGVertex() const {return FFGVertex_;}
 
   /**
    *  Real emission term, for use in generating the hardest emission
@@ -325,7 +315,8 @@ protected:
    *  Calculate the NLO real emission piece of ME
    */
   InvEnergy2 realME(const vector<cPDPtr> & partons, 
-		  const vector<Lorentz5Momentum> & momenta) const;
+		    const vector<Lorentz5Momentum> & momenta,
+		    ShowerInteraction inter) const;
 
 private:
 
@@ -346,6 +337,16 @@ private:
    *  Pointer to the fermion-antifermion G vertex
    */
   AbstractFFVVertexPtr FFGVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractVVVVertexPtr WWWVertex_;
 
   /**
    * maximum weights for the different integrations
