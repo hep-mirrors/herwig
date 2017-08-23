@@ -7,6 +7,7 @@
 
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/Core/ShowerInteraction.h"
 
 namespace Herwig {
 
@@ -22,18 +23,35 @@ using namespace ThePEG;
 class PerturbativeDecayer: public DecayIntegrator {
 
 protected:
-
+  
   /**
    * Type of dipole
    */
   enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
+
+  /**
+   *  Type of dipole
+   */
+  struct DipoleType {
+
+    DipoleType() {}
+
+    DipoleType(dipoleType a, ShowerInteraction b)
+      : type(a), interaction(b)
+    {}
+    
+    dipoleType type;
+
+    ShowerInteraction interaction;
+  };
 
 public:
 
   /**
    * The default constructor.
    */
-  PerturbativeDecayer() : pTmin_(GeV), pT_(ZERO), mb_(ZERO),
+  PerturbativeDecayer() : inter_(ShowerInteraction::QCD),
+			  pTmin_(GeV), pT_(ZERO), mb_(ZERO),
 			  e_(0.), s_(0.), e2_(0.), s2_(0.)
   {}
 
@@ -90,22 +108,27 @@ protected:
   /**
    *  Work out the type of process
    */
-  bool identifyDipoles(vector<dipoleType> & dipoles,
+  bool identifyDipoles(vector<DipoleType> & dipoles,
 		       PPtr & aProgenitor,
 		       PPtr & bProgenitor,
 		       PPtr & cProgenitor) const;
 
   /**
-   *  Coupling for the generation of hard radiation
+   *  Coupling for the generation of hard QCD radiation
    */
-  ShowerAlphaPtr coupling() {return coupling_;}
+  ShowerAlphaPtr alphaS() {return alphaS_;}
+
+  /**
+   *  Coupling for the generation of hard QED radiation
+   */
+  ShowerAlphaPtr alphaEM() {return alphaEM_;}
 
   /**
    *  Return the momenta including the hard emission
    */
   vector<Lorentz5Momentum> hardMomenta(PPtr in, PPtr emitter, 
   				       PPtr spectator, 
-  				       const vector<dipoleType>  & dipoles, int i);
+  				       const vector<DipoleType>  & dipoles, int i);
 
   /**
    *  Calculate momenta of all the particles
@@ -120,10 +143,10 @@ protected:
   bool psCheck(const double xg, const double xs);
 
   /**
-   * Return dipole corresponding to the dipoleType dipoleId
+   * Return dipole corresponding to the DipoleType dipoleId
    */
-  InvEnergy2 calculateDipole(const dipoleType & dipoleId,   const Particle & inpart,
-			     const ParticleVector & decay3, const dipoleType & emittingDipole);
+  InvEnergy2 calculateDipole(const DipoleType & dipoleId,   const Particle & inpart,
+			     const ParticleVector & decay3, const DipoleType & emittingDipole);
 
   /**
    * Return contribution to dipole that depends on the spin of the emitter
@@ -192,9 +215,19 @@ private:
    */
   //@{
   /**
-   *  Coupling for the generation of hard radiation
+   *  Which types of radiation to generate
    */
-  ShowerAlphaPtr coupling_;
+  ShowerInteraction inter_;
+  
+  /**
+   *  Coupling for the generation of hard QCD radiation
+   */
+  ShowerAlphaPtr alphaS_;
+  
+  /**
+   *  Coupling for the generation of hard QED radiation
+   */
+  ShowerAlphaPtr alphaEM_;
 
   /**
    *  Minimum \f$p_T\f$

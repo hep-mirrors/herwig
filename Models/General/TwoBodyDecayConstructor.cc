@@ -217,7 +217,7 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
       << decay.children_.first ->PDGName() << " " 
       << decay.children_.second->PDGName() << Exception::runerror;
   // set the strong coupling for radiation
-  generator()->preinitInterface(decayer, "Coupling", "set", showerAlpha_);
+  generator()->preinitInterface(decayer, "AlphaS", "set", showerAlpha_);
  
   // get the vertices for radiation from the external legs
   VertexBasePtr inRad = radiationVertex(decay.parent_);

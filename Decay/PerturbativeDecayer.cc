@@ -14,15 +14,17 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Utilities/EnumIO.h"
 
 using namespace Herwig;
 
 void PerturbativeDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(pTmin_,GeV) << coupling_; 
+  os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_; 
 }
 
 void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(pTmin_,GeV) >> coupling_; 
+  is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_; 
 }
 
 
@@ -43,10 +45,37 @@ void PerturbativeDecayer::Init() {
      &PerturbativeDecayer::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Reference<PerturbativeDecayer,ShowerAlpha> interfaceCoupling
-    ("Coupling",
-     "Object for the coupling in the generation of hard radiation",
-     &PerturbativeDecayer::coupling_, false, false, true, true, false);
+  
+  static Switch<PerturbativeDecayer,ShowerInteraction> interfaceInteractions
+    ("Interactions",
+     "which interactions to include for the hard corrections",
+     &PerturbativeDecayer::inter_, ShowerInteraction::QCD, false, false);
+  static SwitchOption interfaceInteractionsQCD
+    (interfaceInteractions,
+     "QCD",
+     "QCD Only",
+     ShowerInteraction::QCD);
+  static SwitchOption interfaceInteractionsQED
+    (interfaceInteractions,
+     "QED",
+     "QED only",
+     ShowerInteraction::QED);
+  static SwitchOption interfaceInteractionsQCDandQED
+    (interfaceInteractions,
+     "QCDandQED",
+     "Both QCD and QED",
+     ShowerInteraction::Both);
+
+
+  static Reference<PerturbativeDecayer,ShowerAlpha> interfaceAlphaS
+    ("AlphaS",
+     "Object for the coupling in the generation of hard QCD radiation",
+     &PerturbativeDecayer::alphaS_, false, false, true, true, false);
+
+  static Reference<PerturbativeDecayer,ShowerAlpha> interfaceAlphaEM
+    ("AlphaEM",
+     "Object for the coupling in the generation of hard QED radiation",
+     &PerturbativeDecayer::alphaEM_, false, false, true, true, false);
 
 }
 
@@ -96,7 +125,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   PPtr bProgenitor = born->bornIncoming()[0];
 
   // identify which dipoles are required
-  vector<dipoleType> dipoles;
+  vector<DipoleType> dipoles;
   if(!identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor)) {
     return RealEmissionProcessPtr();
   }
@@ -107,16 +136,16 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   vector<Lorentz5Momentum> trialMomenta(4);
   PPtr finalEmitter, finalSpectator;
   PPtr trialEmitter, trialSpectator;
-  dipoleType finalType(FFa);
+  DipoleType finalType(FFa,ShowerInteraction::QCD);
 
   for (int i=0; i<int(dipoles.size()); ++i){
 
     // assign emitter and spectator based on current dipole
-    if (dipoles[i]==FFc || dipoles[i]==IFc || dipoles[i]==IFbc){
+    if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc){
       trialEmitter   = cProgenitor;
       trialSpectator = aProgenitor;
     }
-    else if (dipoles[i]==FFa || dipoles[i]==IFa || dipoles[i]==IFba){
+    else if (dipoles[i].type==FFa || dipoles[i].type==IFa || dipoles[i].type==IFba){
       trialEmitter   = aProgenitor;
       trialSpectator = cProgenitor;
     }
@@ -143,7 +172,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
       finalSpectator = trialSpectator;
       finalType      = dipoles[i];
 
-      if (dipoles[i]==FFc || dipoles[i]==FFa ) {
+      if (dipoles[i].type==FFc || dipoles[i].type==FFa ) {
       	if((momenta[3]+momenta[1]).m2()-momenta[1].m2()>
 	   (momenta[3]+momenta[2]).m2()-momenta[2].m2()) {
       	  swap(finalEmitter,finalSpectator);
@@ -194,7 +223,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   }
   born->outgoing().push_back(gauge);
   if(!spectator->dataPtr()->coloured() ||
-     (finalType != FFa && finalType!=FFc) ) ispect = 0;
+     (finalType.type != FFa && finalType.type!=FFc) ) ispect = 0;
   born->emitter(iemit);
   born->spectator(ispect);
   born->emitted(3);
@@ -205,7 +234,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   return born;
 }
 
-bool PerturbativeDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
+bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 					  PPtr & aProgenitor,
 					  PPtr & bProgenitor,
 					  PPtr & cProgenitor) const {
@@ -219,72 +248,72 @@ bool PerturbativeDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
     if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
 	(cColour==PDT::Colour3bar && aColour==PDT::Colour3)    ||
 	(cColour==PDT::Colour8    && aColour==PDT::Colour8)){
-      dipoles.push_back(FFa);
-      dipoles.push_back(FFc);
+      dipoles.push_back(DipoleType(FFa,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFc,ShowerInteraction::QCD));
     }
   }
   // decaying colour triplet
   else if (bColour==PDT::Colour3 ) {
     if (cColour==PDT::Colour3 && aColour==PDT::Colour0){
-      dipoles.push_back(IFbc);
-      dipoles.push_back(IFc );
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
     }
     else if (cColour==PDT::Colour0 && aColour==PDT::Colour3){
-      dipoles.push_back(IFba);
-      dipoles.push_back(IFa );
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
     }
     else if (cColour==PDT::Colour8 && aColour==PDT::Colour3){
-      dipoles.push_back(IFbc);
-      dipoles.push_back(IFc );
-      dipoles.push_back(FFc );
-      dipoles.push_back(FFa );
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
     }
     else if (cColour==PDT::Colour3 && aColour==PDT::Colour8){
-      dipoles.push_back(IFba);
-      dipoles.push_back(IFa );
-      dipoles.push_back(FFc );
-      dipoles.push_back(FFa );
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
     }
   }
   // decaying colour anti-triplet 
   else if (bColour==PDT::Colour3bar) {
     if ((cColour==PDT::Colour3bar && aColour==PDT::Colour0)){
-      dipoles.push_back(IFbc);
-      dipoles.push_back(IFc );
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
     }
     else if ((cColour==PDT::Colour0 && aColour==PDT::Colour3bar)){
-      dipoles.push_back(IFba);
-      dipoles.push_back(IFa );      
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));      
     }
     else if (cColour==PDT::Colour8 && aColour==PDT::Colour3bar){
-      dipoles.push_back(IFbc);
-      dipoles.push_back(IFc );
-      dipoles.push_back(FFc );
-      dipoles.push_back(FFa );
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
     }
     else if (cColour==PDT::Colour3bar && aColour==PDT::Colour8){
-      dipoles.push_back(IFba);
-      dipoles.push_back(IFa );
-      dipoles.push_back(FFc );
-      dipoles.push_back(FFa );
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
     }
   }
   // decaying colour octet
   else if (bColour==PDT::Colour8){
     if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
 	(cColour==PDT::Colour3bar && aColour==PDT::Colour3)){
-      dipoles.push_back(IFba);
-      dipoles.push_back(IFbc);
-      dipoles.push_back(IFa);
-      dipoles.push_back(IFc);
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
     }
     else if (cColour==PDT::Colour8 && aColour==PDT::Colour0){
-      dipoles.push_back(IFbc);
-      dipoles.push_back(IFc);
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
     }
     else if (cColour==PDT::Colour0 && aColour==PDT::Colour8){
-      dipoles.push_back(IFba);
-      dipoles.push_back(IFa);
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+      dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
     }
   }
   // check colour structure is allowed
@@ -293,7 +322,7 @@ bool PerturbativeDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
 
 vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter, 
 							   PPtr spectator, 
-							   const vector<dipoleType>  &dipoles, 
+							   const vector<DipoleType>  &dipoles, 
 							   int i) {
   double C    = 6.3;
   double ymax = 10.;
@@ -310,7 +339,12 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   Energy2 lambda = sqr(mb_)*sqrt(1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_);    
 
   // calculate A
-  double A = (ymax-ymin)*C*(coupling()->overestimateValue()/(2.*Constants::pi)); 
+  double A = (ymax-ymin)*C/Constants::twopi;
+  if(dipoles[i].interaction==ShowerInteraction::QCD)
+    A *= alphaS() ->overestimateValue();
+  else
+    A *= alphaEM()->overestimateValue();
+  
   Energy pTmax = mb_*(sqr(1.-s_)-e2_)/(2.*(1.-s_));
 
   // if no possible branching return
@@ -373,7 +407,11 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	particleMomenta[2].e()*particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);
       // calculate weight
-      weight[j] = meRatio*fabs(sqr(pT)*J)*coupling()->ratio(pT*pT)/C/Constants::twopi;
+      weight[j] = meRatio*fabs(sqr(pT)*J)/C/Constants::twopi;
+      if(dipoles[i].interaction==ShowerInteraction::QCD)
+	weight[j] *= alphaS() ->ratio(pT*pT);
+      else
+	weight[j] *= alphaEM()->ratio(pT*pT);
     }
     // accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {
@@ -484,29 +522,27 @@ bool PerturbativeDecayer::psCheck(const double xg, const double xs) {
   return true;
 }
 
-InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,  
+InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,  
 						const Particle & inpart,
 						const ParticleVector & decay3, 
-						const dipoleType & emittingDipole) {
+						const DipoleType & emittingDipole) {
   // calculate dipole for decay b->ac
   InvEnergy2 dipole = ZERO;
   double xe = 2.*decay3[0]->momentum().e()/mb_;
   double xs = 2.*decay3[1]->momentum().e()/mb_;
   double xg = 2.*decay3[2]->momentum().e()/mb_;
-  double coeff = 8.*Constants::pi*coupling()->value(mb_*mb_); 
 
   // radiation from b with initial-final connection 
-  if (dipoleId==IFba || dipoleId==IFbc){
+  if (dipoleId.type==IFba || dipoleId.type==IFbc){
     dipole  = -2./sqr(mb_*xg);
     dipole *= colourCoeff(inpart.dataPtr()->iColour(), decay3[0]->dataPtr()->iColour(),
 			  decay3[1]->dataPtr()->iColour());
   }
-
   // radiation from a/c with initial-final connection
-  else if ((dipoleId==IFa && 
-	    (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
-	   (dipoleId==IFc && 
-	    (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
+  else if ((dipoleId.type==IFa && 
+	    (emittingDipole.type==IFba || emittingDipole.type==IFa || emittingDipole.type==FFa)) || 
+	   (dipoleId.type==IFc && 
+	    (emittingDipole.type==IFbc || emittingDipole.type==IFc || emittingDipole.type==FFc))){
     double z  = 1. - xg/(1.-s2_+e2_);
     dipole = (-2.*e2_/sqr(1.-xs+s2_-e2_)/sqr(mb_) + (1./(1.-xs+s2_-e2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[0],z)));
@@ -514,7 +550,7 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,
     dipole *= colourCoeff(decay3[0]->dataPtr()->iColour(),inpart.dataPtr()->iColour(), 
 			  decay3[1]->dataPtr()->iColour());
   }
-  else if (dipoleId==IFa || dipoleId==IFc){
+  else if (dipoleId.type==IFa || dipoleId.type==IFc){
     double z  = 1. - xg/(1.-e2_+s2_);
     dipole = (-2.*s2_/sqr(1.-xe+e2_-s2_)/sqr(mb_)+(1./(1.-xe+e2_-s2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[1],z)));
@@ -522,10 +558,10 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,
 			  decay3[0]->dataPtr()->iColour());  
   }
   // radiation from a/c with final-final connection
-  else if ((dipoleId==FFa && 
-	    (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
-	   (dipoleId==FFc && 
-	    (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
+  else if ((dipoleId.type==FFa && 
+	    (emittingDipole.type==IFba || emittingDipole.type==IFa || emittingDipole.type==FFa)) || 
+	   (dipoleId.type==FFc && 
+	    (emittingDipole.type==IFbc || emittingDipole.type==IFc || emittingDipole.type==FFc))){
     double z = 1. + ((xe-1.+s2_-e2_)/(xs-2.*s2_));
     double y = (1.-xs-e2_+s2_)/(1.-e2_-s2_);
     double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-e2_-s2_);
@@ -543,7 +579,7 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,
 			  decay3[1]->dataPtr()->iColour(),
 			  inpart.dataPtr()->iColour());
   }
-  else if (dipoleId==FFa || dipoleId==FFc) { 
+  else if (dipoleId.type==FFa || dipoleId.type==FFc) { 
     double z = 1. + ((xs-1.+e2_-s2_)/(xe-2.*e2_));
     double y = (1.-xe-s2_+e2_)/(1.-e2_-s2_);
     double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-e2_-s2_);
@@ -561,8 +597,13 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const dipoleType & dipoleId,
 			  decay3[0]->dataPtr()->iColour(),
 			  inpart.dataPtr()->iColour());
   }
-
-  dipole *= coeff;
+  // coupling prefactors
+  dipole *= 8.*Constants::pi;
+  if(dipoleId.interaction==ShowerInteraction::QCD)
+    dipole *= alphaS()->value(mb_*mb_);
+  else
+    dipole *= alphaS()->value(mb_*mb_);
+  // return the answer
   return dipole;
 }
 

@@ -899,7 +899,7 @@ double SMZDecayer::getHard(double &x1, double &x2) {
   }
   // alpha and colour factors
   Energy2 pt2 = sqr(d_Q_)*(1.-x1)*(1.-x2);
-  w *= 1./3./Constants::pi*coupling()->value(pt2); 
+  w *= 1./3./Constants::pi*alphaS()->value(pt2); 
   return w; 
 }
 

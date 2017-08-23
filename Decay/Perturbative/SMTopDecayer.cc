@@ -686,7 +686,7 @@ double SMTopDecayer::getHard(double ktb, double ktc) {
   double weight = volume_factor*me(_xa,_xg)*(1.+_a-_c-_xa); 
   // Alpha_S and colour factors - this hard wired Alpha_S needs removing.
   weight *= (4./3.)/Constants::pi
-    *(coupling()->value(_mt*_mt*_xg*(1.-_xa+_a-_c)/(2.-_xg-_xa-_c)));
+    *(alphaS()->value(_mt*_mt*_xg*(1.-_xa+_a-_c)/(2.-_xg-_xa-_c)));
   return weight; 
 }
 
