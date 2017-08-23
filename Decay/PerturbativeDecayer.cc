@@ -424,7 +424,9 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       // calculate dipole factor
       InvEnergy2 dipoleSum = ZERO;
       InvEnergy2 numerator = ZERO;
-      for (int k=0; k<int(dipoles.size()); ++k){
+      for (int k=0; k<int(dipoles.size()); ++k) {
+	// skip dipoles which are not of the interaction being considered
+	if(dipoles[k].interaction!=dipoles[i].interaction) continue;
 	InvEnergy2 dipole = abs(calculateDipole(dipoles[k],*inpart,decay3,dipoles[i]));
 	dipoleSum += dipole;
 	if (k==i) numerator = dipole;
@@ -563,8 +565,8 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
   // radiation from b with initial-final connection 
   if (dipoleId.type==IFba || dipoleId.type==IFbc){
     dipole  = -2./sqr(mb_*xg);
-    dipole *= colourCoeff(inpart.dataPtr()->iColour(), decay3[0]->dataPtr()->iColour(),
-			  decay3[1]->dataPtr()->iColour());
+    dipole *= colourCoeff(inpart.dataPtr(), decay3[0]->dataPtr(),
+			  decay3[1]->dataPtr(),dipoleId);
   }
   // radiation from a/c with initial-final connection
   else if ((dipoleId.type==IFa && 
@@ -575,15 +577,15 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
     dipole = (-2.*e2_/sqr(1.-xs+s2_-e2_)/sqr(mb_) + (1./(1.-xs+s2_-e2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[0],z)));
 
-    dipole *= colourCoeff(decay3[0]->dataPtr()->iColour(),inpart.dataPtr()->iColour(), 
-			  decay3[1]->dataPtr()->iColour());
+    dipole *= colourCoeff(decay3[0]->dataPtr(),inpart.dataPtr(), 
+			  decay3[1]->dataPtr(),dipoleId);
   }
   else if (dipoleId.type==IFa || dipoleId.type==IFc){
     double z  = 1. - xg/(1.-e2_+s2_);
     dipole = (-2.*s2_/sqr(1.-xe+e2_-s2_)/sqr(mb_)+(1./(1.-xe+e2_-s2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[1],z)));
-    dipole *= colourCoeff(decay3[1]->dataPtr()->iColour(),inpart.dataPtr()->iColour(), 
-			  decay3[0]->dataPtr()->iColour());  
+    dipole *= colourCoeff(decay3[1]->dataPtr(),inpart.dataPtr(), 
+			  decay3[0]->dataPtr(),dipoleId);  
   }
   // radiation from a/c with final-final connection
   else if ((dipoleId.type==FFa && 
@@ -603,9 +605,9 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
       dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*
 	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*e2_/(1.+s2_-e2_-xs)));
     }
-    dipole *= colourCoeff(decay3[0]->dataPtr()->iColour(), 
-			  decay3[1]->dataPtr()->iColour(),
-			  inpart.dataPtr()->iColour());
+    dipole *= colourCoeff(decay3[0]->dataPtr(), 
+			  decay3[1]->dataPtr(),
+			  inpart.dataPtr(),dipoleId);
   }
   else if (dipoleId.type==FFa || dipoleId.type==FFc) { 
     double z = 1. + ((xs-1.+e2_-s2_)/(xe-2.*e2_));
@@ -621,9 +623,9 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
       dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*
 	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*s2_/(1.+e2_-s2_-xe)));
     }
-    dipole *= colourCoeff(decay3[1]->dataPtr()->iColour(), 
-			  decay3[0]->dataPtr()->iColour(),
-			  inpart.dataPtr()->iColour());
+    dipole *= colourCoeff(decay3[1]->dataPtr(), 
+			  decay3[0]->dataPtr(),
+			  inpart.dataPtr(),dipoleId);
   }
   // coupling prefactors
   dipole *= 8.*Constants::pi;
@@ -646,29 +648,49 @@ double PerturbativeDecayer::dipoleSpinFactor(const PPtr & emitter, double z){
   return 0.;
 }
 
-double PerturbativeDecayer::colourCoeff(const PDT::Colour emitter,
-					const PDT::Colour spectator,
-					const PDT::Colour other){
-
-  // calculate the colour factor of the dipole
-  double numerator=1.;
-  double denominator=1.;
-  if (emitter!=PDT::Colour0 && spectator!=PDT::Colour0 && other!=PDT::Colour0){
-    if      (emitter  ==PDT::Colour3 || emitter  ==PDT::Colour3bar) numerator=-4./3;
-    else if (emitter  ==PDT::Colour8)                               numerator=-3. ;
-    denominator=-1.*numerator;
-    if      (spectator==PDT::Colour3 || spectator==PDT::Colour3bar) numerator-=4./3;
-    else if (spectator==PDT::Colour8)                               numerator-=3. ;
-    if      (other    ==PDT::Colour3 || other    ==PDT::Colour3bar) numerator+=4./3;
-    else if (other    ==PDT::Colour8)                               numerator+=3. ;
-    numerator*=(-1./2.);				  
+double PerturbativeDecayer::colourCoeff(tcPDPtr emitter,
+					tcPDPtr spectator,
+					tcPDPtr other,
+					DipoleType dipole) {
+  if(dipole.interaction==ShowerInteraction::QCD) {
+    // calculate the colour factor of the dipole
+    double numerator=1.;
+    double denominator=1.;
+    if (emitter->iColour()!=PDT::Colour0 &&
+	spectator->iColour()!=PDT::Colour0 &&
+	other->iColour()!=PDT::Colour0) {
+      if      (emitter->iColour()  ==PDT::Colour3 ||
+	       emitter->iColour()  ==PDT::Colour3bar) numerator=-4./3;
+      else if (emitter->iColour()  ==PDT::Colour8)    numerator=-3.  ;
+      denominator=-1.*numerator;
+      if      (spectator->iColour()==PDT::Colour3 ||
+	       spectator->iColour()==PDT::Colour3bar) numerator-=4./3;
+      else if (spectator->iColour()==PDT::Colour8)    numerator-=3.  ;
+      if      (other->iColour()    ==PDT::Colour3 ||
+	       other->iColour()    ==PDT::Colour3bar) numerator+=4./3;
+      else if (other->iColour()    ==PDT::Colour8)    numerator+=3.  ;
+      numerator*=(-1./2.);				  
+    }
+    
+    if      (emitter->iColour()==PDT::Colour3 ||
+	     emitter->iColour()==  PDT::Colour3bar) numerator*=4./3.;
+    else if (emitter->iColour()==PDT::Colour8 &&
+	     spectator->iColour()!=PDT::Colour8)    numerator*=3.;
+    else if (emitter->iColour()==PDT::Colour8 &&
+	     spectator->iColour()==PDT::Colour8)    numerator*=6.;
+    
+    return (numerator/denominator);
   }
-
-  if      (emitter==PDT::Colour3 || emitter==  PDT::Colour3bar) numerator*=4./3.;
-  else if (emitter==PDT::Colour8 && spectator!=PDT::Colour8)    numerator*=3.;
-  else if (emitter==PDT::Colour8 && spectator==PDT::Colour8)    numerator*=6.;
-  
-  return (numerator/denominator);
+  else {
+    double val =  double(emitter->iCharge()*spectator->iCharge())/9.;
+    // FF dipoles
+    if(dipole.type==FFa || dipole.type == FFc) {
+      return val;
+    }
+    else {
+      return -val;
+    }
+  }
 }
 
 void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {

@@ -157,8 +157,8 @@ protected:
   /**
    *  Return the colour coefficient of the dipole
    */
-  double colourCoeff(const PDT::Colour emitter, const PDT::Colour spectator,
-		     const PDT::Colour other);
+  double colourCoeff(tcPDPtr emitter, tcPDPtr spectator,
+		     tcPDPtr other, DipoleType dipole);
   
   /**
    * Set up the colour lines
