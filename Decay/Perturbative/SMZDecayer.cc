@@ -1062,7 +1062,9 @@ double SMZDecayer::PS(double x, double xbar) {
 }
 
 double SMZDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
-				      const ParticleVector & decay3, MEOption) {
+				      const ParticleVector & decay3, MEOption,
+				      ShowerInteraction inter) {
+  if(inter==ShowerInteraction::QED) return 0.;
   // extract partons and LO momentas
   vector<cPDPtr> partons(1,inpart.dataPtr());
   vector<Lorentz5Momentum> lomom(1,inpart.momentum());

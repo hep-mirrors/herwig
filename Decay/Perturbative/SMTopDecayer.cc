@@ -1179,7 +1179,9 @@ bool SMTopDecayer::deadZoneCheck(double xw, double xg){
 double SMTopDecayer::matrixElementRatio(const Particle & inpart,
 					const ParticleVector & ,
 					const ParticleVector & decay3,
-					MEOption ) {
+					MEOption ,
+					ShowerInteraction inter) {
+  if(inter==ShowerInteraction::QED) return 0.;
   double f  = (1. + sqr(e2()) - 2.*sqr(s2()) + s2() + s2()*e2() - 2.*e2());
   double Nc = standardModel()->Nc();
   double Cf = (sqr(Nc) - 1.) / (2.*Nc);  

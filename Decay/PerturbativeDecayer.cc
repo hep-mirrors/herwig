@@ -90,7 +90,8 @@ double PerturbativeDecayer::threeBodyME(const int , const Particle &,
 double PerturbativeDecayer::matrixElementRatio(const Particle & , 
 					       const ParticleVector & ,
 					       const ParticleVector & , 
-					       MEOption ) {
+					       MEOption ,
+					       ShowerInteraction ) {
   throw Exception() << "Base class PerturbativeDecayer::matrixElementRatio() "
 		    << "called, should have an implementation in the inheriting class"
 		    << Exception::runerror;
@@ -101,11 +102,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   // check one incoming
   assert(born->bornIncoming().size()==1);
   // check exactly two outgoing particles
-  assert(born->bornOutgoing().size()==2);
-  // // ignore effective vertices
-  // if (vertex_ && (vertex_->orderInGem()+vertex_->orderInGs())>1) 
-  //   return RealEmissionProcessPtr();
-  // search for coloured particles
+  assert(born->bornOutgoing().size()==2);  // search for coloured particles
   bool colouredParticles=born->bornIncoming()[0]->dataPtr()->coloured();
   if(!colouredParticles) {
     for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
@@ -116,20 +113,18 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
     }
   }
   // if no coloured particles return
-  if ( !colouredParticles ) return RealEmissionProcessPtr();
+  if ( !colouredParticles && inter_==ShowerInteraction::QCD ) return RealEmissionProcessPtr();
   // for decay b -> a c 
   // set progenitors
   PPtr cProgenitor = born->bornOutgoing()[0];
   PPtr aProgenitor = born->bornOutgoing()[1];
   // get the decaying particle
   PPtr bProgenitor = born->bornIncoming()[0];
-
   // identify which dipoles are required
   vector<DipoleType> dipoles;
   if(!identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor)) {
     return RealEmissionProcessPtr();
   }
-
   Energy trialpT = pTmin_;
   LorentzRotation eventFrame;
   vector<Lorentz5Momentum> momenta;
@@ -137,8 +132,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   PPtr finalEmitter, finalSpectator;
   PPtr trialEmitter, trialSpectator;
   DipoleType finalType(FFa,ShowerInteraction::QCD);
-
-  for (int i=0; i<int(dipoles.size()); ++i){
+  for (int i=0; i<int(dipoles.size()); ++i) {
 
     // assign emitter and spectator based on current dipole
     if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc){
@@ -149,7 +143,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
       trialEmitter   = aProgenitor;
       trialSpectator = cProgenitor;
     }
-
+    
     // find rotation from lab to frame with the spectator along -z
     LorentzRotation trialEventFrame(bProgenitor->momentum().findBoostToCM());
     Lorentz5Momentum pspectator = (trialEventFrame*trialSpectator->momentum());
@@ -157,12 +151,10 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
     trialEventFrame.rotateY( -pspectator.theta() - Constants::pi );
     // invert it
     trialEventFrame.invert();
-
     // try to generate an emission
     pT_ = pTmin_;
     vector<Lorentz5Momentum> trialMomenta 
       = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
-  
     // select dipole which gives highest pT emission
     if(pT_>trialpT) {
       trialpT        = pT_;
@@ -171,7 +163,6 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
       finalEmitter   = trialEmitter;
       finalSpectator = trialSpectator;
       finalType      = dipoles[i];
-
       if (dipoles[i].type==FFc || dipoles[i].type==FFa ) {
       	if((momenta[3]+momenta[1]).m2()-momenta[1].m2()>
 	   (momenta[3]+momenta[2]).m2()-momenta[2].m2()) {
@@ -184,7 +175,10 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   pT_ = trialpT;
   // if no emission return
   if(momenta.empty()) {
-    born->pT()[ShowerInteraction::QCD] = pTmin_;
+    if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QCD)
+      born->pT()[ShowerInteraction::QCD] = pTmin_;
+    if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QED)
+      born->pT()[ShowerInteraction::QED] = pTmin_;
     return born;
   }
 
@@ -194,18 +188,23 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   }
  
   // set maximum pT for subsequent branchings
-  born->pT()[ShowerInteraction::QCD] = pT_;
+  if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QCD)
+    born->pT()[ShowerInteraction::QCD] = pT_;
+  if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QED)
+    born->pT()[ShowerInteraction::QED] = pT_;
 
   // get ParticleData objects
   tcPDPtr b = bProgenitor   ->dataPtr();
   tcPDPtr e = finalEmitter  ->dataPtr();
   tcPDPtr s = finalSpectator->dataPtr();
-  tcPDPtr gluon  = getParticleData(ParticleID::g);
+  
+  tcPDPtr boson  = getParticleData(finalType.interaction==ShowerInteraction::QCD ?
+				   ParticleID::g : ParticleID::gamma);
 
   // create new ShowerParticles
   PPtr emitter   = e    ->produceParticle(momenta[1]);
   PPtr spectator = s    ->produceParticle(momenta[2]);
-  PPtr gauge     = gluon->produceParticle(momenta[3]);
+  PPtr gauge     = boson->produceParticle(momenta[3]);
   PPtr incoming  = b    ->produceParticle(bProgenitor->momentum());
 
   // insert the particles
@@ -230,7 +229,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   // set up colour lines
   getColourLines(born);
   // return the tree
-  born->interaction(ShowerInteraction::QCD);
+  born->interaction(finalType.interaction);
   return born;
 }
 
@@ -238,82 +237,106 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 					  PPtr & aProgenitor,
 					  PPtr & bProgenitor,
 					  PPtr & cProgenitor) const {
-  
-  PDT::Colour bColour = bProgenitor->dataPtr()->iColour();
-  PDT::Colour cColour = cProgenitor->dataPtr()->iColour();
-  PDT::Colour aColour = aProgenitor->dataPtr()->iColour();
-
-  // decaying colour singlet
-  if    (bColour==PDT::Colour0 ) {
-    if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
-	(cColour==PDT::Colour3bar && aColour==PDT::Colour3)    ||
-	(cColour==PDT::Colour8    && aColour==PDT::Colour8)){
-      dipoles.push_back(DipoleType(FFa,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFc,ShowerInteraction::QCD));
+  // identify any QCD dipoles
+  if(inter_==ShowerInteraction::QCD ||
+     inter_==ShowerInteraction::Both) {
+    PDT::Colour bColour = bProgenitor->dataPtr()->iColour();
+    PDT::Colour cColour = cProgenitor->dataPtr()->iColour();
+    PDT::Colour aColour = aProgenitor->dataPtr()->iColour();
+    
+    // decaying colour singlet
+    if    (bColour==PDT::Colour0 ) {
+      if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
+	  (cColour==PDT::Colour3bar && aColour==PDT::Colour3)    ||
+	  (cColour==PDT::Colour8    && aColour==PDT::Colour8)){
+	dipoles.push_back(DipoleType(FFa,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc,ShowerInteraction::QCD));
+      }
+    }
+    // decaying colour triplet
+    else if (bColour==PDT::Colour3 ) {
+      if (cColour==PDT::Colour3 && aColour==PDT::Colour0){
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+      }
+      else if (cColour==PDT::Colour0 && aColour==PDT::Colour3){
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
+      }
+      else if (cColour==PDT::Colour8 && aColour==PDT::Colour3){
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
+      }
+      else if (cColour==PDT::Colour3 && aColour==PDT::Colour8){
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
+      }
+    }
+    // decaying colour anti-triplet 
+    else if (bColour==PDT::Colour3bar) {
+      if ((cColour==PDT::Colour3bar && aColour==PDT::Colour0)){
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+      }
+      else if ((cColour==PDT::Colour0 && aColour==PDT::Colour3bar)){
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));      
+      }
+      else if (cColour==PDT::Colour8 && aColour==PDT::Colour3bar){
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
+      }
+      else if (cColour==PDT::Colour3bar && aColour==PDT::Colour8){
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
+      }
+    }
+    // decaying colour octet
+    else if (bColour==PDT::Colour8){
+      if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
+	  (cColour==PDT::Colour3bar && aColour==PDT::Colour3)){
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
+      }
+      else if (cColour==PDT::Colour8 && aColour==PDT::Colour0){
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
+      }
+      else if (cColour==PDT::Colour0 && aColour==PDT::Colour8){
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+      }
     }
   }
-  // decaying colour triplet
-  else if (bColour==PDT::Colour3 ) {
-    if (cColour==PDT::Colour3 && aColour==PDT::Colour0){
-      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
+  // QED dipoles
+  if(inter_==ShowerInteraction::Both ||
+     inter_==ShowerInteraction::QED) {
+    const bool & bCharged = bProgenitor->dataPtr()->charged();
+    const bool & cCharged = cProgenitor->dataPtr()->charged();
+    const bool & aCharged = aProgenitor->dataPtr()->charged();
+    // initial-final
+    if(bCharged && aCharged) {
+      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QED));
+      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QED));
     }
-    else if (cColour==PDT::Colour0 && aColour==PDT::Colour3){
-      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
+    if(bCharged && cCharged) {
+      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QED));
+      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QED));
     }
-    else if (cColour==PDT::Colour8 && aColour==PDT::Colour3){
-      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
-    }
-    else if (cColour==PDT::Colour3 && aColour==PDT::Colour8){
-      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
-    }
-  }
-  // decaying colour anti-triplet 
-  else if (bColour==PDT::Colour3bar) {
-    if ((cColour==PDT::Colour3bar && aColour==PDT::Colour0)){
-      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
-    }
-    else if ((cColour==PDT::Colour0 && aColour==PDT::Colour3bar)){
-      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));      
-    }
-    else if (cColour==PDT::Colour8 && aColour==PDT::Colour3bar){
-      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFc ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
-    }
-    else if (cColour==PDT::Colour3bar && aColour==PDT::Colour8){
-      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFa ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
-    }
-  }
-  // decaying colour octet
-  else if (bColour==PDT::Colour8){
-    if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
-	(cColour==PDT::Colour3bar && aColour==PDT::Colour3)){
-      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
-    }
-    else if (cColour==PDT::Colour8 && aColour==PDT::Colour0){
-      dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
-    }
-    else if (cColour==PDT::Colour0 && aColour==PDT::Colour8){
-      dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
-      dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+    // final-state
+    if(aCharged && cCharged) {
+      dipoles.push_back(DipoleType(FFa,ShowerInteraction::QED));
+      dipoles.push_back(DipoleType(FFc,ShowerInteraction::QED));
     }
   }
   // check colour structure is allowed
@@ -380,8 +403,12 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       ParticleVector decay3;
       decay3.push_back(emitter  ->dataPtr()->produceParticle(particleMomenta[1]));
       decay3.push_back(spectator->dataPtr()->produceParticle(particleMomenta[2]));
-      decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(particleMomenta[3]));
-   
+      if(dipoles[i].interaction==ShowerInteraction::QCD)
+	decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(particleMomenta[3]));
+      else
+	decay3.push_back(getParticleData(ParticleID::gamma)->produceParticle(particleMomenta[3]));
+
+	
       // decay products for 2 body decay
       Lorentz5Momentum p1(ZERO,ZERO, lambda/2./mb_,(mb_/2.)*(1.+e2_-s2_),mb_*e_);
       Lorentz5Momentum p2(ZERO,ZERO,-lambda/2./mb_,(mb_/2.)*(1.+s2_-e2_),mb_*s_);
@@ -392,7 +419,8 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	  decay2[1]->dataPtr()->iSpin()==PDT::Spin1Half) swap(decay2[0], decay2[1]);
   
       // calculate matrix element ratio R/B
-      double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize);
+      double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize,dipoles[i].interaction);
+      
       // calculate dipole factor
       InvEnergy2 dipoleSum = ZERO;
       InvEnergy2 numerator = ZERO;

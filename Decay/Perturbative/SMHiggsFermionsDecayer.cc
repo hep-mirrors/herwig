@@ -284,7 +284,7 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & part,
   //calculate real
   Energy2 realPrefactor = 0.25*sqr(mHiggs_)*sqr(1.-2.*mu2_)
     /sqrt(calculateLambda(1,mu2_,mu2_))/sqr(Constants::twopi);
-  InvEnergy2 realEmission = 4.*Constants::pi*aS_*calculateRealEmission( x1, x2);
+  InvEnergy2 realEmission = 4.*Constants::pi*aS_*CF_*calculateRealEmission( x1, x2);
   // calculate the virtual
   double virtualTerm = calculateVirtualTerm();
   // running mass correction
@@ -336,7 +336,7 @@ dipoleSubtractionTerm(double x1, double x2) const{
 //return ME for real emission
 InvEnergy2 SMHiggsFermionsDecayer::
 calculateRealEmission(double x1, double x2) const {
-  InvEnergy2 prefactor = 2.*CF_/sqr(mHiggs_)/(1.-4.*mu2_);
+  InvEnergy2 prefactor = 2./sqr(mHiggs_)/(1.-4.*mu2_);
   return prefactor*(2. + (1.-x1)/(1.-x2) + (1.-x2)/(1.-x1) 
                     + 2.*(1.-2.*mu2_)*(1.-4.*mu2_)/(1.-x1)/(1.-x2)
                     - 2.*(1.-4.*mu2_)*(1./(1.-x2)+1./(1.-x1)) 
@@ -381,11 +381,13 @@ calculateNonSingletTerm(double beta, double L) const {
 }
 
 double SMHiggsFermionsDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
-						  const ParticleVector & decay3, MEOption) {
+						  const ParticleVector & decay3, MEOption,
+						  ShowerInteraction inter) {
   mHiggs_ = inpart.mass();
   mu_ = decay2[0]->mass()/mHiggs_;
   mu2_ = sqr(mu_);
   double x1 = 2.*decay3[0]->momentum().t()/mHiggs_;
   double x2 = 2.*decay3[1]->momentum().t()/mHiggs_;
-  return calculateRealEmission(x1,x2)*4.*Constants::pi*sqr(mHiggs_);
+  double pre = inter==ShowerInteraction::QCD ? CF_ : 1.;
+  return pre*calculateRealEmission(x1,x2)*4.*Constants::pi*sqr(mHiggs_);
 }

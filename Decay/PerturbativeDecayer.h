@@ -103,7 +103,8 @@ protected:
    *  Calculate matrix element ratio \f$\frac{M^2}{\alpha_S}\frac{|\overline{\rm{ME}}_3|}{|\overline{\rm{ME}}_2|}\f$
    */
   virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
-				    const ParticleVector & decay3, MEOption meopt);
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
 
   /**
    *  Work out the type of process

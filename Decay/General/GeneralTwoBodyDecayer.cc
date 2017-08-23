@@ -497,7 +497,9 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart, 
 						 const ParticleVector & decay2,
 						 const ParticleVector & decay3, 
-						 MEOption meopt) {
+						 MEOption meopt,
+						 ShowerInteraction inter) {
+  if(inter!=ShowerInteraction::QCD) return 0.;
   // calculate R/B
   double B = me2        (0, inpart, decay2, meopt);    
   double R = threeBodyME(0, inpart, decay3, meopt);

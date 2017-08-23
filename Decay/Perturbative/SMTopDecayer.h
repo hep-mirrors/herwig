@@ -345,7 +345,8 @@ protected:
    *  Calculate matrix element ratio R/B
    */
   virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
-				    const ParticleVector & decay3, MEOption meopt);
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
 
 private:
 
