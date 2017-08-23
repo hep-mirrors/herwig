@@ -362,7 +362,8 @@ protected:
    *  Calculate the NLO real emission piece of ME
    */
   InvEnergy2 realME(const vector<cPDPtr> & partons, 
-		  const vector<Lorentz5Momentum> & momenta) const;
+		    const vector<Lorentz5Momentum> & momenta,
+		    ShowerInteraction inter) const;
 
   /**
    *  Generate a real emission event

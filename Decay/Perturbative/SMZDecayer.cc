@@ -168,7 +168,6 @@ void SMZDecayer::Init() {
 
 }
 
-
 // return the matrix element squared
 double SMZDecayer::me2(const int, const Particle & part,
 			const ParticleVector & decay,
@@ -1064,7 +1063,6 @@ double SMZDecayer::PS(double x, double xbar) {
 double SMZDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
 				      const ParticleVector & decay3, MEOption,
 				      ShowerInteraction inter) {
-  if(inter==ShowerInteraction::QED) return 0.;
   // extract partons and LO momentas
   vector<cPDPtr> partons(1,inpart.dataPtr());
   vector<Lorentz5Momentum> lomom(1,inpart.momentum());
@@ -1084,8 +1082,9 @@ double SMZDecayer::matrixElementRatio(const Particle & inpart, const ParticleVec
   }
   scale_ = sqr(inpart.mass());
   double     lome = loME(partons,lomom);
-  InvEnergy2 reme = realME(partons,realmom);
-  double ratio = CF_*reme/lome*sqr(inpart.mass())*4.*Constants::pi;
+  InvEnergy2 reme = realME(partons,realmom,inter);
+  double ratio = reme/lome*sqr(inpart.mass())*4.*Constants::pi;
+  if(inter==ShowerInteraction::QCD) ratio *= CF_;
   return ratio;
 }
 
@@ -1135,7 +1134,7 @@ double SMZDecayer::meRatio(vector<cPDPtr> partons,
     }
     lome[iemit]  = loME(partons,lomom);
   }
-  InvEnergy2 ratio = realME(partons,momenta)*abs(D[iemitter])
+  InvEnergy2 ratio = realME(partons,momenta,ShowerInteraction::QCD)*abs(D[iemitter])
     /(abs(D[0]*lome[0])+abs(D[1]*lome[1]));
   if(subtract)
     return Q2*(ratio-2.*D[iemitter]);
@@ -1178,7 +1177,10 @@ double SMZDecayer::loME(const vector<cPDPtr> & partons,
 }
  
 InvEnergy2 SMZDecayer::realME(const vector<cPDPtr> & partons, 
-			      const vector<Lorentz5Momentum> & momenta) const {
+			      const vector<Lorentz5Momentum> & momenta,
+			      ShowerInteraction inter) const {
+  AbstractFFVVertexPtr vertex = inter==ShowerInteraction::QCD ?
+    FFGVertex_ : FFPVertex_;
   // compute the spinors
   vector<VectorWaveFunction>     vin;
   vector<SpinorWaveFunction>     aout;
@@ -1208,11 +1210,11 @@ InvEnergy2 SMZDecayer::realME(const vector<cPDPtr> & partons,
       for(unsigned int outhel2=0;outhel2<2;++outhel2) {
 	for(unsigned int outhel3=0;outhel3<2;++outhel3) {
 	  SpinorBarWaveFunction off1 =
-	    FFGVertex_->evaluate(scale_,3,partons[1],fout[outhel1],gout[outhel3]);
+	    vertex->evaluate(scale_,3,partons[1],fout[outhel1],gout[outhel3]);
 	  diag[0] = FFZVertex_->evaluate(scale_,aout[outhel2],off1,vin[inhel1]);
 
 	  SpinorWaveFunction off2 = 
-	    FFGVertex_->evaluate(scale_,3,partons[2],aout[outhel2],gout[outhel3]);
+	    vertex->evaluate(scale_,3,partons[2],aout[outhel2],gout[outhel3]);
 	  diag[1] = FFZVertex_->evaluate(scale_,off2,fout[outhel1],vin[inhel1]);
 
 	  // sum of diagrams
@@ -1225,7 +1227,7 @@ InvEnergy2 SMZDecayer::realME(const vector<cPDPtr> & partons,
   }
 
   // divide out the coupling
-  total /= norm(FFGVertex_->norm());
+  total /= norm(vertex->norm());
   // return the total
   return total*UnitRemoval::InvE2;
 }
