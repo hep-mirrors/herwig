@@ -66,7 +66,6 @@ void PerturbativeDecayer::Init() {
      "Both QCD and QED",
      ShowerInteraction::Both);
 
-
   static Reference<PerturbativeDecayer,ShowerAlpha> interfaceAlphaS
     ("AlphaS",
      "Object for the coupling in the generation of hard QCD radiation",
@@ -226,10 +225,11 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   born->emitter(iemit);
   born->spectator(ispect);
   born->emitted(3);
+  // set the interaction
+  born->interaction(finalType.interaction);
   // set up colour lines
   getColourLines(born);
   // return the tree
-  born->interaction(finalType.interaction);
   return born;
 }
 
@@ -389,11 +389,10 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
     double xs[2], xe[2], xe_z[2], xg;
  
     for (unsigned int j=0; j<2; j++) {
-
       // check if the momenta are physical
       if (!calcMomenta(j, pT, y, phi, xg, xs[j], xe[j], xe_z[j], particleMomenta)) 
 	continue;
-   
+
       // check if point lies within phase space
       if (!psCheck(xg, xs[j])) 
 	continue;
@@ -415,9 +414,11 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       ParticleVector decay2;
       decay2.push_back(emitter  ->dataPtr()->produceParticle(p1));
       decay2.push_back(spectator->dataPtr()->produceParticle(p2));
-      if (decay2[0]->dataPtr()->iSpin()!=PDT::Spin1Half &&
-	  decay2[1]->dataPtr()->iSpin()==PDT::Spin1Half) swap(decay2[0], decay2[1]);
-  
+      if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc){
+	swap(decay2[0],decay2[1]);
+	swap(decay3[0],decay3[1]);
+      }
+      
       // calculate matrix element ratio R/B
       double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize,dipoles[i].interaction);
       
@@ -427,7 +428,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       for (int k=0; k<int(dipoles.size()); ++k) {
 	// skip dipoles which are not of the interaction being considered
 	if(dipoles[k].interaction!=dipoles[i].interaction) continue;
-	InvEnergy2 dipole = abs(calculateDipole(dipoles[k],*inpart,decay3,dipoles[i]));
+	InvEnergy2 dipole = abs(calculateDipole(dipoles[k],*inpart,decay3));
 	dipoleSum += dipole;
 	if (k==i) numerator = dipole;
       }
@@ -554,96 +555,66 @@ bool PerturbativeDecayer::psCheck(const double xg, const double xs) {
 
 InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,  
 						const Particle & inpart,
-						const ParticleVector & decay3, 
-						const DipoleType & emittingDipole) {
+						const ParticleVector & decay3) {
   // calculate dipole for decay b->ac
   InvEnergy2 dipole = ZERO;
-  double xe = 2.*decay3[0]->momentum().e()/mb_;
-  double xs = 2.*decay3[1]->momentum().e()/mb_;
+  double x1 = 2.*decay3[0]->momentum().e()/mb_;
+  double x2 = 2.*decay3[1]->momentum().e()/mb_;
   double xg = 2.*decay3[2]->momentum().e()/mb_;
-
+  double mu12 = sqr(decay3[0]->mass()/mb_);
+  double mu22 = sqr(decay3[1]->mass()/mb_);
+  tcPDPtr part[3] = {inpart.dataPtr(),decay3[0]->dataPtr(),decay3[1]->dataPtr()};
+  if(dipoleId.type==FFc || dipoleId.type == IFc || dipoleId.type == IFbc) {
+    swap(part[1],part[2]);
+    swap(x1,x2);
+    swap(mu12,mu22);
+  }
   // radiation from b with initial-final connection 
-  if (dipoleId.type==IFba || dipoleId.type==IFbc){
+  if (dipoleId.type==IFba || dipoleId.type==IFbc) {
     dipole  = -2./sqr(mb_*xg);
-    dipole *= colourCoeff(inpart.dataPtr(), decay3[0]->dataPtr(),
-			  decay3[1]->dataPtr(),dipoleId);
+    dipole *= colourCoeff(part[0],part[1],part[2],dipoleId);
   }
   // radiation from a/c with initial-final connection
-  else if ((dipoleId.type==IFa && 
-	    (emittingDipole.type==IFba || emittingDipole.type==IFa || emittingDipole.type==FFa)) || 
-	   (dipoleId.type==IFc && 
-	    (emittingDipole.type==IFbc || emittingDipole.type==IFc || emittingDipole.type==FFc))){
-    double z  = 1. - xg/(1.-s2_+e2_);
-    dipole = (-2.*e2_/sqr(1.-xs+s2_-e2_)/sqr(mb_) + (1./(1.-xs+s2_-e2_)/sqr(mb_))*
-	      (2./(1.-z)-dipoleSpinFactor(decay3[0],z)));
-
-    dipole *= colourCoeff(decay3[0]->dataPtr(),inpart.dataPtr(), 
-			  decay3[1]->dataPtr(),dipoleId);
-  }
-  else if (dipoleId.type==IFa || dipoleId.type==IFc){
-    double z  = 1. - xg/(1.-e2_+s2_);
-    dipole = (-2.*s2_/sqr(1.-xe+e2_-s2_)/sqr(mb_)+(1./(1.-xe+e2_-s2_)/sqr(mb_))*
-	      (2./(1.-z)-dipoleSpinFactor(decay3[1],z)));
-    dipole *= colourCoeff(decay3[1]->dataPtr(),inpart.dataPtr(), 
-			  decay3[0]->dataPtr(),dipoleId);  
+  else if (dipoleId.type==IFa || dipoleId.type==IFc) {
+    double z  = 1. - xg/(1.-mu22+mu12);
+    dipole = (-2.*mu12/sqr(1.-x2+mu22-mu12)/sqr(mb_) + (1./(1.-x2+mu22-mu12)/sqr(mb_))*
+	      (2./(1.-z)-dipoleSpinFactor(part[1],z))); 
+    dipole *= colourCoeff(part[1],part[0],part[2],dipoleId);
   }
   // radiation from a/c with final-final connection
-  else if ((dipoleId.type==FFa && 
-	    (emittingDipole.type==IFba || emittingDipole.type==IFa || emittingDipole.type==FFa)) || 
-	   (dipoleId.type==FFc && 
-	    (emittingDipole.type==IFbc || emittingDipole.type==IFc || emittingDipole.type==FFc))){
-    double z = 1. + ((xe-1.+s2_-e2_)/(xs-2.*s2_));
-    double y = (1.-xs-e2_+s2_)/(1.-e2_-s2_);
-    double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-e2_-s2_);
-    double v  = sqrt(sqr(2.*s2_+(1.-e2_-s2_)*(1.-y))-4.*s2_)
-      /(1.-y)/(1.-e2_-s2_);
-    if(decay3[0]->dataPtr()->iSpin()!=PDT::Spin1) {
-      dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*
-	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(decay3[0],z)+(2.*e2_/(1.+s2_-e2_-xs))));
+  else if (dipoleId.type==FFa || dipoleId.type==FFc) {
+    double z = 1. + ((x1-1.+mu22-mu12)/(x2-2.*mu22));
+    double y = (1.-x2-mu12+mu22)/(1.-mu12-mu22);
+    double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-mu12-mu22);
+    double v  = sqrt(sqr(2.*mu22+(1.-mu12-mu22)*(1.-y))-4.*mu22)
+      /(1.-y)/(1.-mu12-mu22);
+    if(part[1]->iSpin()!=PDT::Spin1) {
+      dipole = (1./(1.-x2+mu22-mu12)/sqr(mb_))*
+	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(part[1],z)+(2.*mu12/(1.+mu22-mu12-x2))));
     }
     else {
-      dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*
-	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*e2_/(1.+s2_-e2_-xs)));
+      dipole = (1./(1.-x2+mu22-mu12)/sqr(mb_))*
+	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*mu12/(1.+mu22-mu12-x2)));
     }
-    dipole *= colourCoeff(decay3[0]->dataPtr(), 
-			  decay3[1]->dataPtr(),
-			  inpart.dataPtr(),dipoleId);
-  }
-  else if (dipoleId.type==FFa || dipoleId.type==FFc) { 
-    double z = 1. + ((xs-1.+e2_-s2_)/(xe-2.*e2_));
-    double y = (1.-xe-s2_+e2_)/(1.-e2_-s2_);
-    double vt = sqrt((1.-sqr(e_+s_))*(1.-sqr(e_-s_)))/(1.-e2_-s2_);
-    double v  = sqrt(sqr(2.*e2_+(1.-e2_-s2_)*(1.-y))-4.*e2_)
-      /(1.-y)/(1.-e2_-s2_);
-    if(decay3[1]->dataPtr()->iSpin()!=PDT::Spin1) {
-      dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*
-	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(decay3[1],z)+(2.*s2_/(1.+e2_-s2_-xe))));
-    }
-    else {
-      dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*
-	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*s2_/(1.+e2_-s2_-xe)));
-    }
-    dipole *= colourCoeff(decay3[1]->dataPtr(), 
-			  decay3[0]->dataPtr(),
-			  inpart.dataPtr(),dipoleId);
+    dipole *= colourCoeff(part[1],part[2],part[0],dipoleId);
   }
   // coupling prefactors
   dipole *= 8.*Constants::pi;
   if(dipoleId.interaction==ShowerInteraction::QCD)
-    dipole *= alphaS()->value(mb_*mb_);
+    dipole *= alphaS() ->value(mb_*mb_);
   else
-    dipole *= alphaS()->value(mb_*mb_);
+    dipole *= alphaEM()->value(mb_*mb_);
   // return the answer
   return dipole;
 }
 
-double PerturbativeDecayer::dipoleSpinFactor(const PPtr & emitter, double z){
+double PerturbativeDecayer::dipoleSpinFactor(tcPDPtr part, double z){
   // calculate the spin dependent component of the dipole  
-  if      (emitter->dataPtr()->iSpin()==PDT::Spin0)
+  if      (part->iSpin()==PDT::Spin0)
     return 2.;
-  else if (emitter->dataPtr()->iSpin()==PDT::Spin1Half)
+  else if (part->iSpin()==PDT::Spin1Half)
     return (1. + z);
-  else if (emitter->dataPtr()->iSpin()==PDT::Spin1)
+  else if (part->iSpin()==PDT::Spin1)
     return -(z*(1.-z) - 1./(1.-z) + 1./z -2.);
   return 0.;
 }
@@ -682,7 +653,7 @@ double PerturbativeDecayer::colourCoeff(tcPDPtr emitter,
     return (numerator/denominator);
   }
   else {
-    double val =  double(emitter->iCharge()*spectator->iCharge())/9.;
+    double val = double(emitter->iCharge()*spectator->iCharge())/9.;
     // FF dipoles
     if(dipole.type==FFa || dipole.type == FFc) {
       return val;
@@ -697,8 +668,9 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   // extract the particles
   vector<PPtr> branchingPart;
   branchingPart.push_back(real->incoming()[0]);
-  for(unsigned int ix=0;ix<real->outgoing().size();++ix)
+  for(unsigned int ix=0;ix<real->outgoing().size();++ix) {
     branchingPart.push_back(real->outgoing()[ix]);
+  }
 
   vector<unsigned int> sing,trip,atrip,oct;
   for (size_t ib=0;ib<branchingPart.size()-1;++ib) {
@@ -711,39 +683,60 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour0) {
     // 0 -> 3 3bar
     if (trip.size()==1 && atrip.size()==1) {
-      branchingPart[atrip[0]]->colourConnect(branchingPart[   3   ]);
-      branchingPart[    3   ]->colourConnect(branchingPart[trip[0]]);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	branchingPart[atrip[0]]->colourConnect(branchingPart[   3   ]);
+	branchingPart[    3   ]->colourConnect(branchingPart[trip[0]]);
+      }
+      else {
+	branchingPart[atrip[0]]->colourConnect(branchingPart[trip[0]]);
+      }
     }
     // 0 -> 8 8
     else if (oct.size()==2 ) {
-      bool col = UseRandom::rndbool();
-      branchingPart[oct[0]]->colourConnect(branchingPart[   3  ],col);
-      branchingPart[   3  ]->colourConnect(branchingPart[oct[1]],col);
-      branchingPart[oct[1]]->colourConnect(branchingPart[oct[0]],col);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	bool col = UseRandom::rndbool();
+	branchingPart[oct[0]]->colourConnect(branchingPart[   3  ],col);
+	branchingPart[   3  ]->colourConnect(branchingPart[oct[1]],col);
+	branchingPart[oct[1]]->colourConnect(branchingPart[oct[0]],col);
+      }
+      else {
+	branchingPart[oct[0]]->colourConnect(branchingPart[oct[1]]);
+	branchingPart[oct[1]]->colourConnect(branchingPart[oct[0]]);
+      }
     }
     else 
-      assert(false);
+      assert(real->interaction()==ShowerInteraction::QED);
   }
   // decaying colour triplet
   else if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour3 ){
     // 3 -> 3 0
     if (trip.size()==2 && sing.size()==1) {
-      branchingPart[3]->incomingColour(branchingPart[trip[0]]);
-      branchingPart[3]-> colourConnect(branchingPart[trip[1]]);
-    }
-    // 3 -> 3 8
-    else if (trip.size()==2 && oct.size()==1) {
-      // 8 emit incoming partner
-      if(real->emitter()==oct[0]&&real->spectator()==0) {
-	branchingPart[  3   ]->incomingColour(branchingPart[trip[0]]);
-	branchingPart[  3   ]-> colourConnect(branchingPart[oct[0] ]);
-	branchingPart[oct[0]]-> colourConnect(branchingPart[trip[1]]);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	branchingPart[3]->incomingColour(branchingPart[trip[0]]);
+	branchingPart[3]-> colourConnect(branchingPart[trip[1]]);
       }
-      // 8 emit final spectator or vice veras
+      else {
+	branchingPart[trip[1]]->incomingColour(branchingPart[trip[0]]);
+      }
+    }    // 3 -> 3 8
+    else if (trip.size()==2 && oct.size()==1) {
+      if(real->interaction()==ShowerInteraction::QCD) {
+	// 8 emit incoming partner
+	if(real->emitter()==oct[0]&&real->spectator()==0) {
+	  branchingPart[  3   ]->incomingColour(branchingPart[trip[0]]);
+	  branchingPart[  3   ]-> colourConnect(branchingPart[oct[0] ]);
+	  branchingPart[oct[0]]-> colourConnect(branchingPart[trip[1]]);
+	}
+	// 8 emit final spectator or vice veras
+	else {
+	  branchingPart[oct[0]]->incomingColour(branchingPart[trip[0]]);
+	  branchingPart[oct[0]]-> colourConnect(branchingPart[   3   ]);
+	  branchingPart[   3  ]-> colourConnect(branchingPart[trip[1]]);
+	}
+      }
       else {
 	branchingPart[oct[0]]->incomingColour(branchingPart[trip[0]]);
-	branchingPart[oct[0]]-> colourConnect(branchingPart[   3   ]);
-	branchingPart[   3  ]-> colourConnect(branchingPart[trip[1]]);
+	branchingPart[oct[0]]-> colourConnect(branchingPart[trip[1]]);
       }
     }
     else
@@ -752,23 +745,36 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   // decaying colour anti-triplet
   else if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour3bar) {
     // 3bar -> 3bar 0
-    if (atrip.size()==2 && sing.size()==1) {      
-      branchingPart[3]->incomingColour(branchingPart[atrip[0]],true);
-      branchingPart[3]-> colourConnect(branchingPart[atrip[1]],true);
+    if (atrip.size()==2 && sing.size()==1) {
+      if(real->interaction()==ShowerInteraction::QCD) {
+	branchingPart[3]->incomingColour(branchingPart[atrip[0]],true);
+	branchingPart[3]-> colourConnect(branchingPart[atrip[1]],true);
+      }
+      else {
+	branchingPart[atrip[1]]->incomingColour(branchingPart[atrip[0]],true);
+      }
     }
     // 3 -> 3 8
     else if (atrip.size()==2 && oct.size()==1){
-      // 8 emit incoming partner
-      if(real->emitter()==oct[0]&&real->spectator()==0) {
-	branchingPart[   3  ]->incomingColour(branchingPart[atrip[0]],true);
-	branchingPart[   3  ]-> colourConnect(branchingPart[oct[0]  ],true);
-	branchingPart[oct[0]]-> colourConnect(branchingPart[atrip[1]],true);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	// 8 emit incoming partner
+	if(real->emitter()==oct[0]&&real->spectator()==0) {
+	  branchingPart[   3  ]->incomingColour(branchingPart[atrip[0]],true);
+	  branchingPart[   3  ]-> colourConnect(branchingPart[oct[0]  ],true);
+	  branchingPart[oct[0]]-> colourConnect(branchingPart[atrip[1]],true);
+	}
+	// 8 emit final spectator or vice veras
+	else {
+	  if(real->interaction()==ShowerInteraction::QCD) {
+	    branchingPart[oct[0]]->incomingColour(branchingPart[atrip[0]],true);
+	    branchingPart[oct[0]]-> colourConnect(branchingPart[   3    ],true);
+	    branchingPart[3]-> colourConnect(branchingPart[atrip[1]]     ,true);
+	  }
+	}
       }
-      // 8 emit final spectator or vice veras
       else {
 	branchingPart[oct[0]]->incomingColour(branchingPart[atrip[0]],true);
-	branchingPart[oct[0]]-> colourConnect(branchingPart[   3    ],true);
-	branchingPart[3]-> colourConnect(branchingPart[atrip[1]]     ,true);
+	branchingPart[oct[0]]-> colourConnect(branchingPart[atrip[1]],true);
       }
     }
     else
@@ -778,25 +784,37 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   else if(branchingPart[0]->dataPtr()->iColour()==PDT::Colour8 ) {
     // 8 -> 3 3bar
     if (trip.size()==1 && atrip.size()==1) {
-      // 3 emits
-      if(trip[0]==real->emitter()) {
-	branchingPart[3]       ->incomingColour(branchingPart[oct[0]] );
-	branchingPart[3]       -> colourConnect(branchingPart[trip[0]]);
-	branchingPart[atrip[0]]->incomingColour(branchingPart[oct[0]],true);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	// 3 emits
+	if(trip[0]==real->emitter()) {
+	  branchingPart[3]       ->incomingColour(branchingPart[oct[0]] );
+	  branchingPart[3]       -> colourConnect(branchingPart[trip[0]]);
+	  branchingPart[atrip[0]]->incomingColour(branchingPart[oct[0]],true);
+	}
+	// 3bar emits
+	else {
+	  branchingPart[3]       ->incomingColour(branchingPart[oct[0]]  ,true);
+	  branchingPart[3]       -> colourConnect(branchingPart[atrip[0]],true);
+	  branchingPart[trip[0]]->incomingColour(branchingPart[oct[0]]  );
+	}
       }
-      // 3bar emits
       else {
-	branchingPart[3]       ->incomingColour(branchingPart[oct[0]]  ,true);
-	branchingPart[3]       -> colourConnect(branchingPart[atrip[0]],true);
-	branchingPart[trip[0]]->incomingColour(branchingPart[oct[0]]  );
+	branchingPart[trip[0]]->incomingColour(branchingPart[oct[0]] );
+	branchingPart[atrip[0]]->incomingColour(branchingPart[oct[0]],true);
       }
     }
     // 8 -> 8 0 
     else if (sing.size()==1 && oct.size()==2) {
-      bool col = UseRandom::rndbool();
-      branchingPart[   3  ]->colourConnect (branchingPart[oct[1]], col);
-      branchingPart[   3  ]->incomingColour(branchingPart[oct[0]], col);
-      branchingPart[oct[1]]->incomingColour(branchingPart[oct[0]],!col);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	bool col = UseRandom::rndbool();
+	branchingPart[   3  ]->colourConnect (branchingPart[oct[1]], col);
+	branchingPart[   3  ]->incomingColour(branchingPart[oct[0]], col);
+	branchingPart[oct[1]]->incomingColour(branchingPart[oct[0]],!col);
+      }
+      else {
+	branchingPart[oct[1]]->incomingColour(branchingPart[oct[0]]);
+	branchingPart[oct[1]]->incomingColour(branchingPart[oct[0]],true);
+      }
     }
     else
       assert(false);

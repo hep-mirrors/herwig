@@ -6474,7 +6474,8 @@ newdef ISGW2:FormFactor ISGW2FormFactor
 
 #
 create Herwig::SMZDecayer  ZDecayer HwPerturbativeDecay.so
-newdef ZDecayer:Coupling /Herwig/Shower/AlphaQCD
+newdef ZDecayer:AlphaS  /Herwig/Shower/AlphaQCD
+newdef ZDecayer:AlphaEM /Herwig/Shower/AlphaQED
 newdef ZDecayer:QuarkMax 0 0.43
 newdef ZDecayer:QuarkMax 1 0.30
 newdef ZDecayer:QuarkMax 2 0.43
@@ -6492,30 +6493,11 @@ newdef ZDecayer:Points 10000
 newdef ZDecayer:GenerateIntermediates 0 
 newdef ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
-#
-create Herwig::SMZDecayer ZPowhegDecayer
-newdef ZPowhegDecayer:NLO Yes
-newdef ZPowhegDecayer:Coupling /Herwig/Shower/AlphaQCD
-newdef ZPowhegDecayer:QuarkMax 0 0.43
-newdef ZPowhegDecayer:QuarkMax 1 0.30
-newdef ZPowhegDecayer:QuarkMax 2 0.43
-newdef ZPowhegDecayer:QuarkMax 3 0.30
-newdef ZPowhegDecayer:QuarkMax 4 0.43
-newdef ZPowhegDecayer:LeptonMax 0 0.1
-newdef ZPowhegDecayer:LeptonMax 1 0.2
-newdef ZPowhegDecayer:LeptonMax 2 0.1
-newdef ZPowhegDecayer:LeptonMax 3 0.2
-newdef ZPowhegDecayer:LeptonMax 4 0.1
-newdef ZPowhegDecayer:LeptonMax 5 0.2
-newdef ZPowhegDecayer:Iteration 1
-newdef ZPowhegDecayer:Ntry 500
-newdef ZPowhegDecayer:Points 10000
-newdef ZPowhegDecayer:GenerateIntermediates 0 
-newdef ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMWDecayer  WDecayer HwPerturbativeDecay.so
-newdef WDecayer:Coupling /Herwig/Shower/AlphaQCD
+newdef WDecayer:AlphaS  /Herwig/Shower/AlphaQCD
+newdef WDecayer:AlphaEM /Herwig/Shower/AlphaQED
 newdef WDecayer:QuarkMax 0 1.0
 newdef WDecayer:QuarkMax 1 0.05
 newdef WDecayer:QuarkMax 2 0.05
@@ -6530,25 +6512,6 @@ newdef WDecayer:Ntry 500
 newdef WDecayer:Points 10000
 newdef WDecayer:GenerateIntermediates 0 
 newdef WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
-
-#
-create Herwig::SMWDecayer WPowhegDecayer
-newdef WPowhegDecayer:NLO Yes
-newdef WPowhegDecayer:Coupling /Herwig/Shower/AlphaQCD
-newdef WPowhegDecayer:QuarkMax 0 1.0
-newdef WPowhegDecayer:QuarkMax 1 0.05
-newdef WPowhegDecayer:QuarkMax 2 0.05
-newdef WPowhegDecayer:QuarkMax 3 1.0
-newdef WPowhegDecayer:QuarkMax 4 2.e-05
-newdef WPowhegDecayer:QuarkMax 5 0.0016
-newdef WPowhegDecayer:LeptonMax 0 0.33
-newdef WPowhegDecayer:LeptonMax 1 0.33
-newdef WPowhegDecayer:LeptonMax 2 0.33
-newdef WPowhegDecayer:Iteration 1
-newdef WPowhegDecayer:Ntry 500
-newdef WPowhegDecayer:Points 10000
-newdef WPowhegDecayer:GenerateIntermediates 0 
-newdef WPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::PVectorMesonVectorPScalarDecayer  PVectorVP
@@ -24086,7 +24049,8 @@ newdef BtosgammaKagan:HadronicMass BtosgammaMass
 
 #
 create Herwig::SMTopDecayer  Top
-newdef Top:Coupling /Herwig/Shower/AlphaQCD
+newdef Top:AlphaS  /Herwig/Shower/AlphaQCD
+newdef Top:AlphaEM /Herwig/Shower/AlphaQED
 newdef Top:QuarkWeights 0 5.
 newdef Top:QuarkWeights 1 5.
 newdef Top:QuarkWeights 2 5.
@@ -24118,7 +24082,8 @@ newdef Hff:Iteration 1
 newdef Hff:Ntry 500
 newdef Hff:Points 10000
 newdef Hff:GenerateIntermediates 0 
-newdef Hff:Coupling /Herwig/Shower/AlphaQCD
+newdef Hff:AlphaS  /Herwig/Shower/AlphaQCD
+newdef Hff:AlphaEM /Herwig/Shower/AlphaQED
 newdef Hff:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #

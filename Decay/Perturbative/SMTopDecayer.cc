@@ -1266,7 +1266,7 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
 	    diag[1] = FFWVertex_->evaluate(scale,swave[thel],interB,vwave[whel]);
 	    // emission from W
 	    if(inter==ShowerInteraction::QED) {
-	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr(),vwave[whel],gwave[ghel]);
+	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr()->CC(),vwave[whel],gwave[ghel]);
 	      diag[1] = FFWVertex_->evaluate(scale,swave[thel],awave[bhel],interV);
 	    }
 	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
@@ -1289,7 +1289,7 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
 	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[thel],vwave[whel]);
 	    // emission from W
 	    if(inter==ShowerInteraction::QED) {
-	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr(),vwave[whel],gwave[ghel]);
+	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr()->CC(),vwave[whel],gwave[ghel]);
 	      diag[1] = FFWVertex_->evaluate(scale,swave[bhel],awave[thel],interV);
 	    }
 	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));

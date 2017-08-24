@@ -147,12 +147,12 @@ protected:
    * Return dipole corresponding to the DipoleType dipoleId
    */
   InvEnergy2 calculateDipole(const DipoleType & dipoleId,   const Particle & inpart,
-			     const ParticleVector & decay3, const DipoleType & emittingDipole);
+			     const ParticleVector & decay3);
 
   /**
    * Return contribution to dipole that depends on the spin of the emitter
    */
-  double dipoleSpinFactor(const PPtr & emitter, double z);
+  double dipoleSpinFactor(tcPDPtr emitter, double z);
 
   /**
    *  Return the colour coefficient of the dipole
