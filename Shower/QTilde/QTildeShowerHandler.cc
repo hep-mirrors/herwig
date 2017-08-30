@@ -997,6 +997,12 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   const ShowerParticle::EvolutionScales & maxScales,
 				   Energy minmass,ShowerInteraction type,
 				   Branching fb) {
+  // don't do anything if not needed
+  if(_limitEmissions == 1 || hardOnly() || 
+     ( _limitEmissions == 3 && _nis != 0) ||
+     ( _limitEmissions == 4 && _nfs + _nis != 0) ) {
+    return false;
+  }
   // too many tries
   if(_nFSR>=_maxTryFSR) {
     ++_nFailedFSR;
@@ -1047,6 +1053,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
     fc[1] = selectTimeLikeBranching      (children[1],type,HardBranchingPtr());
     // old default
     if(_reconOpt==0) {
+      ++_nis;
       // shower the first  particle
       _currenttree->updateInitialStateShowerProduct(_progenitor,children[0]);
       _currenttree->addInitialStateBranching(particle,children[0],children[1]);
@@ -1085,8 +1092,10 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
   	setupChildren = true;
    	continue;
       }
-      else
+      else {
+	++_nis;
    	break;
+      }
     }
     else if(_reconOpt>=2) {
       // cut-off masses for the branching
@@ -1110,6 +1119,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
       double z = fb.kinematics->z();
       Energy2 pt2 = (1.-z)*(z*sqr(masses[0])-sqr(masses[1])-z/(1.-z)*sqr(masses[2]));
       if(pt2>=ZERO) {
+	++_nis;
   	break;
       }
       else {
