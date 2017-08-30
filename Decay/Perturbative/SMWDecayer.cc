@@ -884,9 +884,25 @@ InvEnergy2 SMWDecayer::realME(const vector<cPDPtr> & partons,
       }
     }
   }
-
   // divide out the coupling
   total /= norm(vertex->norm());
+  // double g = sqrt(2.)*abs(FFWVertex_->norm());
+  // double xg = 2.*momenta[3].t()/momenta[0].mass();
+  // double xe,mue2;
+  // if(abs(partons[1]->id())==ParticleID::eminus) {
+  //   xe = 2.*momenta[1].t()/momenta[0].mass();
+  //   mue2 = sqr(momenta[1].mass()/momenta[0].mass());
+  // }
+  // else {
+  //   xe = 2.*momenta[2].t()/momenta[0].mass();
+  //   mue2 = sqr(momenta[2].mass()/momenta[0].mass());
+  // }
+  // double cg = -4. * g * g * (-pow(mue2, 3.) / 2. + (xg * xg / 4. + (xe / 2. + 1.) * xg + 5. / 2. * xe - 2.) * mue2 * mue2
+  // 			     + (pow(xg, 3.) / 4. + (xe / 4. - 5. / 4.) * xg * xg + (-7. / 2. * xe + 3.) * xg - 3. * xe * xe
+  // 				+ 11. / 2. * xe - 7. / 2.) * mue2 + (xg * xg / 2. + (xe - 2.) * xg + xe * xe - 2. * xe + 2.) * (-1. + xg + xe)) * (xe - mue2 - 1.) *
+  //   pow(xg, -2.) * pow(-1. + xg + xe - mue2, -2.);
+  
+  // cerr << "real " << cg/total << "\n";
   // return the total
   return total*UnitRemoval::InvE2;
 }
