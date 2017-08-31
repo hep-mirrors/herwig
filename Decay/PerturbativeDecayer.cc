@@ -98,21 +98,28 @@ double PerturbativeDecayer::matrixElementRatio(const Particle & ,
 }
 
 RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessPtr born) {
+  return getHardEvent(born,false,inter_);
+}
+
+RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr born,
+							 bool inDeadZone,
+							 ShowerInteraction inter) {
   // check one incoming
   assert(born->bornIncoming().size()==1);
   // check exactly two outgoing particles
   assert(born->bornOutgoing().size()==2);  // search for coloured particles
   bool colouredParticles=born->bornIncoming()[0]->dataPtr()->coloured();
-  if(!colouredParticles) {
-    for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
-      if(born->bornOutgoing()[ix]->dataPtr()->coloured()) {
-  	colouredParticles=true;
-  	break;
-      }
-    }
+  bool chargedParticles=born->bornIncoming()[0]->dataPtr()->charged();
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(born->bornOutgoing()[ix]->dataPtr()->coloured())
+      colouredParticles=true;
+    if(born->bornOutgoing()[ix]->dataPtr()->charged())
+      chargedParticles=true;
   }
-  // if no coloured particles return
-  if ( !colouredParticles && inter_==ShowerInteraction::QCD ) return RealEmissionProcessPtr();
+  // if no coloured/charged particles return
+  if ( !colouredParticles && !chargedParticles ) return RealEmissionProcessPtr();
+  if ( !colouredParticles && inter==ShowerInteraction::QCD ) return RealEmissionProcessPtr();
+  if ( ! chargedParticles && inter==ShowerInteraction::QED ) return RealEmissionProcessPtr();
   // for decay b -> a c 
   // set progenitors
   PPtr cProgenitor = born->bornOutgoing()[0];
@@ -121,7 +128,7 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   PPtr bProgenitor = born->bornIncoming()[0];
   // identify which dipoles are required
   vector<DipoleType> dipoles;
-  if(!identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor)) {
+  if(!identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor,inter)) {
     return RealEmissionProcessPtr();
   }
   Energy trialpT = pTmin_;
@@ -153,7 +160,8 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
     // try to generate an emission
     pT_ = pTmin_;
     vector<Lorentz5Momentum> trialMomenta 
-      = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
+      = hardMomenta(bProgenitor, trialEmitter, trialSpectator,
+		    dipoles, i, inDeadZone);
     // select dipole which gives highest pT emission
     if(pT_>trialpT) {
       trialpT        = pT_;
@@ -174,9 +182,9 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   pT_ = trialpT;
   // if no emission return
   if(momenta.empty()) {
-    if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QCD)
+    if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QCD)
       born->pT()[ShowerInteraction::QCD] = pTmin_;
-    if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QED)
+    if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QED)
       born->pT()[ShowerInteraction::QED] = pTmin_;
     return born;
   }
@@ -187,9 +195,9 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   }
  
   // set maximum pT for subsequent branchings
-  if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QCD)
+  if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QCD)
     born->pT()[ShowerInteraction::QCD] = pT_;
-  if(inter_==ShowerInteraction::Both || inter_==ShowerInteraction::QED)
+  if(inter==ShowerInteraction::Both || inter==ShowerInteraction::QED)
     born->pT()[ShowerInteraction::QED] = pT_;
 
   // get ParticleData objects
@@ -236,10 +244,11 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
 bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 					  PPtr & aProgenitor,
 					  PPtr & bProgenitor,
-					  PPtr & cProgenitor) const {
+					  PPtr & cProgenitor,
+					  ShowerInteraction inter) const {
   // identify any QCD dipoles
-  if(inter_==ShowerInteraction::QCD ||
-     inter_==ShowerInteraction::Both) {
+  if(inter==ShowerInteraction::QCD ||
+     inter==ShowerInteraction::Both) {
     PDT::Colour bColour = bProgenitor->dataPtr()->iColour();
     PDT::Colour cColour = cProgenitor->dataPtr()->iColour();
     PDT::Colour aColour = aProgenitor->dataPtr()->iColour();
@@ -319,8 +328,8 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
     }
   }
   // QED dipoles
-  if(inter_==ShowerInteraction::Both ||
-     inter_==ShowerInteraction::QED) {
+  if(inter==ShowerInteraction::Both ||
+     inter==ShowerInteraction::QED) {
     const bool & bCharged = bProgenitor->dataPtr()->charged();
     const bool & cCharged = cProgenitor->dataPtr()->charged();
     const bool & aCharged = aProgenitor->dataPtr()->charged();
@@ -346,7 +355,7 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter, 
 							   PPtr spectator, 
 							   const vector<DipoleType>  &dipoles, 
-							   int i) {
+							   int i, bool inDeadZone) {
   double C    = 6.3;
   double ymax = 10.;
   double ymin = -ymax;
@@ -396,7 +405,10 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       // check if point lies within phase space
       if (!psCheck(xg, xs[j])) 
 	continue;
-
+      // check if point lies within the dead-zone (if required)
+      if(inDeadZone) {
+	if(!inTotalDeadZone(xg,xs[j],dipoles,i)) continue;
+      }
       // decay products for 3 body decay
       PPtr inpart   = in        ->dataPtr()->produceParticle(particleMomenta[0]);     
       ParticleVector decay3;
@@ -819,4 +831,118 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
     else
       assert(false);
   }
+}
+
+PerturbativeDecayer::phaseSpaceRegion
+PerturbativeDecayer::inInitialFinalDeadZone(double xg, double xa,
+					    double a, double c) const {
+  double lam    = sqrt(1.+a*a+c*c-2.*a-2.*c-2.*a*c);
+  double kappab = 1.+0.5*(1.-a+c+lam);
+  double kappac = kappab-1.+c;
+  double kappa(0.);
+  // check whether or not in the region for emission from c
+  double r = 0.5;
+  if(c!=0.) r += 0.5*c/(1.+a-xa);
+  double pa = sqrt(sqr(xa)-4.*a);
+  double z = ((2.-xa)*(1.-r)+r*pa-xg)/pa;
+  if(z<1. && z>0.) {
+    kappa = (1.+a-c-xa)/(z*(1.-z));
+    if(kappa<kappac)
+      return emissionFromC;
+  }
+  // check in region for emission from b (T1)
+  double cq = sqr(1.+a-c)-4*a;
+  double bq = -2.*kappab*(1.-a-c);
+  double aq = sqr(kappab)-4.*a*(kappab-1);
+  double dis = sqr(bq)-4.*aq*cq;
+  z=1.-(-bq-sqrt(dis))/2./aq;
+  double w = 1.-(1.-z)*(kappab-1.);
+  double xgmax = (1.-z)*kappab;
+  // possibly in T1 region
+  if(xg<xgmax) {
+    z = 1.-xg/kappab;
+    kappa=kappab;
+  }
+  // possibly in T2 region
+  else {
+    aq = 4.*a;
+    bq = -4.*a*(2.-xg);
+    cq = sqr(1.+a-c-xg);
+    dis = sqr(bq)-4.*aq*cq;
+    z = (-bq-sqrt(dis))/2./aq;
+    kappa = xg/(1.-z);
+  }
+  // compute limit on xa
+  double u = 1.+a-c-(1.-z)*kappa;
+  w = 1.-(1.-z)*(kappa-1.);
+  double v = sqr(u)-4.*z*a*w;
+  if(v<0. && v>-1e-10) v= 0.;
+  v = sqrt(v);
+  if(xa<0.5*((u+v)/w+(u-v)/z))
+    return xg<xgmax ? emissionFromA1 : emissionFromA2;
+  else
+    return deadZone;
+}
+
+PerturbativeDecayer::phaseSpaceRegion
+PerturbativeDecayer::inFinalFinalDeadZone(double xb, double xc,
+					  double b, double c) const {
+  // basic kinematics
+  double lam = sqrt(1.+b*b+c*c-2.*b-2.*c-2.*b*c);
+  // check whether or not in the region for emission from b
+  double r = 0.5;
+  if(b!=0.) r+=0.5*b/(1.+c-xc);
+  double pc = sqrt(sqr(xc)-4.*c);
+  double z = -((2.-xc)*r-r*pc-xb)/pc;
+  if(z<1. and z>0.) {
+    if((1.-b+c-xc)/(z*(1.-z))<0.5*(1.+b-c+lam)) return emissionFromB;
+  }
+  // check whether or not in the region for emission from c
+  r = 0.5;
+  if(c!=0.) r+=0.5*c/(1.+b-xb);
+  double pb = sqrt(sqr(xb)-4.*b);
+  z = -((2.-xb)*r-r*pb-xc)/pb;
+  if(z<1. and z>0.) {
+    if((1.-c+b-xb)/(z*(1.-z))<0.5*(1.-b+c+lam)) return emissionFromC;
+  }
+  return deadZone;
+}
+
+bool PerturbativeDecayer::inTotalDeadZone(double xg, double xs,
+					  const vector<DipoleType>  & dipoles,
+					  int i) {
+  double xb,xc,b,c;
+  if(dipoles[i].type==FFa || dipoles[i].type == IFa || dipoles[i].type == IFba) {
+    xc = xs;
+    xb = 2.-xg-xs;
+    b = e2_;
+    c = s2_;
+  }
+  else {
+    xb = xs;
+    xc = 2.-xg-xs;
+    b = s2_;
+    c = e2_;
+  }
+  for(unsigned int ix=0;ix<dipoles.size();++ix) {
+    if(dipoles[ix].interaction!=dipoles[i].interaction)
+      continue;
+    // should also remove negative QED dipoles but shouldn't be an issue unless we
+    // support QED ME corrections
+    switch (dipoles[ix].type) {
+    case FFa :
+      if(inFinalFinalDeadZone(xb,xc,b,c)!=deadZone) return false;
+      break;
+    case FFc :
+      if(inFinalFinalDeadZone(xc,xb,c,b)!=deadZone) return false;
+      break;
+    case IFa : case IFba:
+      if(inInitialFinalDeadZone(xg,xc,c,b)!=deadZone) return false;
+      break;
+    case IFc : case IFbc:
+      if(inInitialFinalDeadZone(xg,xb,b,c)!=deadZone) return false;
+      break;
+    }
+  }
+  return true;
 }

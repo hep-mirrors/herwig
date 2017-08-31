@@ -30,6 +30,11 @@ protected:
   enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
 
   /**
+   *   Phase-space region for an emission (assumes \f$a\to b,c\f$
+   */
+  enum phaseSpaceRegion {emissionFromB,emissionFromC,emissionFromA1,emissionFromA2,deadZone};
+
+  /**
    *  Type of dipole
    */
   struct DipoleType {
@@ -112,7 +117,8 @@ protected:
   bool identifyDipoles(vector<DipoleType> & dipoles,
 		       PPtr & aProgenitor,
 		       PPtr & bProgenitor,
-		       PPtr & cProgenitor) const;
+		       PPtr & cProgenitor,
+		       ShowerInteraction inter) const;
 
   /**
    *  Coupling for the generation of hard QCD radiation
@@ -129,7 +135,8 @@ protected:
    */
   vector<Lorentz5Momentum> hardMomenta(PPtr in, PPtr emitter, 
   				       PPtr spectator, 
-  				       const vector<DipoleType>  & dipoles, int i);
+  				       const vector<DipoleType>  & dipoles,
+				       int i, bool inDeadZone);
 
   /**
    *  Calculate momenta of all the particles
@@ -164,6 +171,30 @@ protected:
    * Set up the colour lines
    */
   void getColourLines(RealEmissionProcessPtr real);
+
+  /**
+   *  Generate a hard emission
+   */
+  RealEmissionProcessPtr getHardEvent(RealEmissionProcessPtr born,
+				      bool inDeadZone,
+				      ShowerInteraction inter);
+
+  /**
+   *  Is the \f$x_g,x_s\f$ point in the dead-zone for all the dipoles
+   */
+  bool inTotalDeadZone(double xg, double xs,
+		       const vector<DipoleType>  & dipoles,
+		       int i);
+
+  /**
+   *  Is the \f$x_g,x_a\f$ point in the dead-zone for an initial-final colour connection
+   */
+  phaseSpaceRegion inInitialFinalDeadZone(double xg, double xa, double a, double c) const;
+
+  /**
+   *  Is the \f$x_b,x_c\f$ point in the dead-zone for a final-final colour connection
+   */
+  phaseSpaceRegion inFinalFinalDeadZone(double xb, double xc, double b, double c) const;
 
 protected:
 

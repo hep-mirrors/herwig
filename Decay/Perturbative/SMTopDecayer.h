@@ -335,12 +335,6 @@ protected:
   double me(double xw, double xg);
 
 protected:
- /**
-   *  check if event is in dead region
-   */
-  bool deadZoneCheck(double xw, double xg);
-
-protected:
 
   /**
    *  Calculate matrix element ratio R/B

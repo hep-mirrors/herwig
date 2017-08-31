@@ -1145,45 +1145,6 @@ LorentzRotation SMTopDecayer::rotateToZ(Lorentz5Momentum v) {
   return trans;
 }
 
-bool SMTopDecayer::deadZoneCheck(double xw, double xg){
-
-  //veto events not in the dead cone 
-  double Lambda = sqrt(1. + sqr(s2()) + sqr(e2()) - 2.*s2() - 2.*e2() - 2.*s2()*e2());
-  double kappa = e2() + 0.5*(1. - s2() + e2() + Lambda);
-  //invert xw for z values
-  double A =  1.;
-  double B = -1.;
-  double C =  (1.+s2()-e2()-xw)/kappa;
-  if((sqr(B) - 4.*A*C) >= 0.){
-    double z[2];
-    z[0] = (-B + sqrt(sqr(B) - 4.*A*C))/(2.*A);
-    z[1] = (-B - sqrt(sqr(B) - 4.*A*C))/(2.*A);
-    double r = 0.5*(1. + e2()/(1. + s2()- xw));
-    double xg_lims [2];
-    xg_lims[0] = (2. - xw)*(1.-r) - (z[0]-r)*sqrt(sqr(xw) - 4.*s2());
-    xg_lims[1] = (2. - xw)*(1.-r) - (z[1]-r)*sqrt(sqr(xw) - 4.*s2());
-    double xg_low_lim = min(xg_lims[0], xg_lims[1]);
-    double xg_upp_lim = max(xg_lims[0], xg_lims[1]);
-    if (xg>=xg_low_lim && xg<=xg_upp_lim) return false;
-  }
-
-  double kappa_t = 1. + 0.5*(1. - s2() + e2() + Lambda);
-  double z = 1. - xg/kappa_t; 
-  double u = 1. + s2() - e2() - (1.-z)*kappa_t;
-  double y = 1. - (1.-z)*(kappa_t-1.);
-  if (sqr(u) - 4.*s2()*y*z >= 0.){
-    double v = sqrt(sqr(u) - 4.*s2()*y*z);
-    double xw_lim = (u + v) / (2.*y) + (u - v) / (2.*z);
-    if (xw <= xw_lim) return false;
-  }
-  else if (sqr(u) - 4.*s2()*y*z < 0.){
-    double xg_lim = (8.*s2() -2.*xw*(1-e2()+s2()))/(4.*s2()-2.*xw);
-    if (xg>=xg_lim) return false;
-  }
-
-  return true;
-}
-
 double SMTopDecayer::loME(const Particle & inpart, const ParticleVector & decay) {
   // spinors
   vector<SpinorWaveFunction   > swave;
