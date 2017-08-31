@@ -57,11 +57,6 @@ public:
 				      double & );
 
   /**
-   *  Apply the hard matrix element correction to a given hard process or decay
-   */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
-
-  /**
    * Apply the soft matrix element correction
    * @param initial The particle from the hard process which started the 
    * shower
@@ -171,16 +166,6 @@ protected:
   //@}
 
 protected:
-
-  /**
-   *  Apply the hard matrix element
-   */
-  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
-
-  /**
-   *  Get the weight for hard emission
-   */
-  double getHard(double &, double &);
 
   /**
    *  Set the \f$\rho\f$ parameter

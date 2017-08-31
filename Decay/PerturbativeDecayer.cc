@@ -101,6 +101,10 @@ RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessP
   return getHardEvent(born,false,inter_);
 }
 
+RealEmissionProcessPtr PerturbativeDecayer::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
+  return getHardEvent(born,true,ShowerInteraction::QCD);
+}
+
 RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr born,
 							 bool inDeadZone,
 							 ShowerInteraction inter) {

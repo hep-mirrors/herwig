@@ -70,6 +70,11 @@ public:
    */
   virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
 
+  /**
+   *  Apply the hard matrix element correction to a given hard process or decay
+   */
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

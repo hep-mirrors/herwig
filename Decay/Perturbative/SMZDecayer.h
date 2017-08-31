@@ -52,11 +52,6 @@ public:
    */
   virtual void initializeMECorrection(RealEmissionProcessPtr , double & ,
 				      double & );
-  
-  /**
-   *  Apply the hard matrix element correction to a given hard process or decay
-   */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -200,16 +195,6 @@ protected:
   //@}
 
 protected:
-
-  /**
-   *  Apply the hard matrix element
-   */
-  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
-
-  /**
-   *  Get the weight for hard emission
-   */
-  double getHard(double &, double &);
 
   /**
    *  Set the \f$\rho\f$ parameter
