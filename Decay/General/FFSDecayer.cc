@@ -45,13 +45,19 @@ void FFSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(inV.at(inter));
-    if (outV[0].at(inter)->getName()==VertexType::FFV){
-      outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[0].at(inter));
-      outgoingVertexS_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
+    outgoingVertexF_[inter] = AbstractFFVVertexPtr();
+    outgoingVertexS_[inter] = AbstractVSSVertexPtr();
+    if(outV[0].at(inter)) {
+      if (outV[0].at(inter)->getName()==VertexType::FFV)
+	outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[0].at(inter));
+      else
+	outgoingVertexS_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
     }
-    else {
-      outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[1].at(inter));
-      outgoingVertexS_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
+    if(outV[1].at(inter)) {
+      if (outV[1].at(inter)->getName()==VertexType::FFV)
+	outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[1].at(inter));
+      else
+	outgoingVertexS_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
     }
   }
 }

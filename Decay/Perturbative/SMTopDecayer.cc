@@ -640,19 +640,21 @@ double SMTopDecayer::loME(const Particle & inpart, const ParticleVector & decay)
   vector<SpinorWaveFunction   > swave;
   vector<SpinorBarWaveFunction> awave;
   vector<VectorWaveFunction> vwave;
+  tPPtr Wboson = abs(decay[0]->id())==ParticleID::Wplus ? decay[0] : decay[1];
+  tPPtr bquark = abs(decay[0]->id())==ParticleID::Wplus ? decay[1] : decay[0];
   // spinors 
   if(inpart.id()>0) {
     SpinorWaveFunction   ::calculateWaveFunctions(swave,const_ptr_cast<tPPtr>(&inpart),
 						  incoming);
-    SpinorBarWaveFunction::calculateWaveFunctions(awave,decay[0],outgoing);
+    SpinorBarWaveFunction::calculateWaveFunctions(awave,bquark,outgoing);
   }
   else {
     SpinorBarWaveFunction::calculateWaveFunctions(awave,const_ptr_cast<tPPtr>(&inpart),
 						  incoming);
-    SpinorWaveFunction   ::calculateWaveFunctions(swave,decay[0],outgoing);
+    SpinorWaveFunction   ::calculateWaveFunctions(swave,bquark,outgoing);
   }
   // polarization vectors
-  VectorWaveFunction::calculateWaveFunctions(vwave,decay[1],outgoing,false);
+  VectorWaveFunction::calculateWaveFunctions(vwave,Wboson,outgoing,false);
   Energy2 scale(sqr(inpart.mass()));
   double me=0.;
   if(inpart.id() == ParticleID::t) {
@@ -687,19 +689,21 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
   vector<SpinorWaveFunction   > swave;
   vector<SpinorBarWaveFunction> awave;
   vector<VectorWaveFunction> vwave,gwave;
+  tPPtr Wboson = abs(decay[0]->id())==ParticleID::Wplus ? decay[0] : decay[1];
+  tPPtr bquark = abs(decay[0]->id())==ParticleID::Wplus ? decay[1] : decay[0];
   // spinors 
   if(inpart.id()>0) {
     SpinorWaveFunction   ::calculateWaveFunctions(swave,const_ptr_cast<tPPtr>(&inpart),
 						  incoming);
-    SpinorBarWaveFunction::calculateWaveFunctions(awave,decay[0],outgoing);
+    SpinorBarWaveFunction::calculateWaveFunctions(awave,bquark,outgoing);
   }
   else {
     SpinorBarWaveFunction::calculateWaveFunctions(awave,const_ptr_cast<tPPtr>(&inpart),
 						  incoming);
-    SpinorWaveFunction   ::calculateWaveFunctions(swave,decay[0],outgoing);
+    SpinorWaveFunction   ::calculateWaveFunctions(swave,bquark,outgoing);
   }
   // polarization vectors
-  VectorWaveFunction::calculateWaveFunctions(vwave,decay[1],outgoing,false);
+  VectorWaveFunction::calculateWaveFunctions(vwave,Wboson,outgoing,false);
   VectorWaveFunction::calculateWaveFunctions(gwave,decay[2],outgoing,true );
   Energy2 scale(sqr(inpart.mass()));
   double me=0.;
@@ -713,11 +717,11 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
 	    SpinorWaveFunction interF = vertex->evaluate(scale,3,inpart.dataPtr(),swave[thel],gwave[ghel]);
 	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[bhel],vwave[whel]);
 	    // emission from bottom
-	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,decay[0]->dataPtr(),awave[bhel],gwave[ghel]);
+	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,bquark->dataPtr(),awave[bhel],gwave[ghel]);
 	    diag[1] = FFWVertex_->evaluate(scale,swave[thel],interB,vwave[whel]);
 	    // emission from W
 	    if(inter==ShowerInteraction::QED) {
-	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr()->CC(),vwave[whel],gwave[ghel]);
+	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,Wboson->dataPtr()->CC(),vwave[whel],gwave[ghel]);
 	      diag[1] = FFWVertex_->evaluate(scale,swave[thel],awave[bhel],interV);
 	    }
 	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
@@ -736,11 +740,11 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
 	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,inpart.dataPtr(),awave[thel],gwave[ghel]);
 	    diag[1] = FFWVertex_->evaluate(scale,swave[bhel],interB,vwave[whel]);
 	    // emission from bottom
-	    SpinorWaveFunction interF = vertex->evaluate(scale,3,decay[0]->dataPtr(),swave[bhel],gwave[ghel]);
+	    SpinorWaveFunction interF = vertex->evaluate(scale,3,bquark->dataPtr(),swave[bhel],gwave[ghel]);
 	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[thel],vwave[whel]);
 	    // emission from W
 	    if(inter==ShowerInteraction::QED) {
-	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,decay[1]->dataPtr()->CC(),vwave[whel],gwave[ghel]);
+	      VectorWaveFunction interV = WWWVertex_->evaluate(scale,3,Wboson->dataPtr()->CC(),vwave[whel],gwave[ghel]);
 	      diag[1] = FFWVertex_->evaluate(scale,swave[bhel],awave[thel],interV);
 	    }
 	    Complex sum = std::accumulate(diag.begin(),diag.end(),Complex(0.));

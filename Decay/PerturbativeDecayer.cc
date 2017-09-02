@@ -229,6 +229,19 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   born->emitter(iemit);
   born->spectator(ispect);
   born->emitted(3);
+  // boost if being use as ME correction
+  if(inDeadZone) {
+    if(finalType.type==IFa || finalType.type==IFba) {
+      LorentzRotation trans(cProgenitor->momentum().findBoostToCM());
+      trans.boost(spectator->momentum().boostVector());
+      born->transformation(trans);
+    }
+    else if(finalType.type==IFc || finalType.type==IFbc) {
+      LorentzRotation trans(bProgenitor->momentum().findBoostToCM());
+      trans.boost(spectator->momentum().boostVector());
+      born->transformation(trans);
+    }
+  }
   // set the interaction
   born->interaction(finalType.interaction);
   // set up colour lines
@@ -422,7 +435,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       ParticleVector decay2;
       decay2.push_back(emitter  ->dataPtr()->produceParticle(p1));
       decay2.push_back(spectator->dataPtr()->produceParticle(p2));
-      if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc){
+      if (dipoles[i].type==FFa || dipoles[i].type==IFa || dipoles[i].type==IFba) {
 	swap(decay2[0],decay2[1]);
 	swap(decay3[0],decay3[1]);
       }

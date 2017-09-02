@@ -45,13 +45,19 @@ void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
   for(auto & inter : itemp) {
     incomingVertex_[inter]  = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
     fourPointVertex_[inter] = dynamic_ptr_cast<AbstractVVSSVertexPtr>(fourV.at(inter));
-    if (outV[0].at(inter)->getName()==VertexType::VSS){
-      outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
-      outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
+    outgoingVertexS_[inter] = AbstractVSSVertexPtr();
+    outgoingVertexV_[inter] = AbstractVVVVertexPtr();  
+    if(outV[0].at(inter)) {
+      if (outV[0].at(inter)->getName()==VertexType::VSS)
+	outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
+      else
+	outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[0].at(inter));
     }
-    else {
-      outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
-      outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[0].at(inter));
+    if(outV[1].at(inter)) {
+      if (outV[1].at(inter)->getName()==VertexType::VSS)
+	outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
+      else 
+	outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
     }
   }
 }

@@ -692,19 +692,8 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
   }  
   else {
     inconsistent4PV = false;
-    retval = &init;  
+    retval = &fpflow;  
   }
- 
-  // // if a 4 point vertex exists, add a colour flow for it
-  // if ( fourPointVertex_.find(ShowerInteraction::QCD)!=fourPointVertex_.end() ) {
-  //   if ( inconsistent4PV )   
-  //     throw Exception() << "Unknown colour flows for 4 point vertex in "
-  // 			<< "GeneralTwoBodyDecayer::colourFlows()"
-  // 			<< Exception::runerror;
-  //   else {
-  //     retval = &fpflow;
-  //   }
-  // }
 
   return *retval;
 }

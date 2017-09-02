@@ -45,13 +45,17 @@ void FFVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(inV.at(inter));
-    if (outV[0].at(inter)->getName()==VertexType::FFV){
-      outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[0].at(inter));
-      outgoingVertexV_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
+    if(outV[0].at(inter)) {
+      if (outV[0].at(inter)->getName()==VertexType::FFV)
+	outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[0].at(inter));
+      else
+	outgoingVertexV_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[0].at(inter));
     }
-    else {
-      outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[1].at(inter));
-      outgoingVertexV_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[0].at(inter));
+    if(outV[1].at(inter)) {
+      if (outV[1].at(inter)->getName()==VertexType::FFV)
+	outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[1].at(inter));
+      else
+	outgoingVertexV_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
     }
   }
 }
@@ -75,10 +79,10 @@ double FFVDecayer::me2(const int , const Particle & inpart,
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
   // type of process
   int itype[2];
-  if(inpart.dataPtr()->CC())        itype[0] = inpart.id() > 0 ? 0 : 1;
-  else                              itype[0] = 2;
+  if(inpart.dataPtr()->CC())    itype[0] = inpart.id() > 0 ? 0 : 1;
+  else                          itype[0] = 2;
   if(decay[0]->dataPtr()->CC()) itype[1] = decay[0]->id() > 0 ? 0 : 1;
-  else                              itype[1] = 2;  
+  else                          itype[1] = 2;  
   //Need to use different barred or unbarred spinors depending on 
   //whether particle is cc or not.
   bool ferm(itype[0] == 0 || itype[1] == 0 || (itype[0] == 2 && itype[1] == 2));
