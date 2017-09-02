@@ -237,6 +237,32 @@ set Model:Vertex/NCT    /Herwig/Vertices/MSSM/MSSM_NCT
 set Model:Vertex/GVNH   /Herwig/Vertices/MSSM/MSSM_GVNH
 set Model:Vertex/GVFS   /Herwig/Vertices/MSSM/MSSM_GVFS
 set Model:Vertex/GVNV   /Herwig/Vertices/MSSM/MSSM_GVNV
+# Switch off the SM Higgs decays
+cd /Herwig/Particles
+
+set h0:Width_generator NULL
+set h0:Mass_generator NULL
+
+set h0/h0->b,bbar;:Active No
+set h0/h0->b,bbar;:BranchingRatio 0.0
+set h0/h0->W+,W-;:Active No
+set h0/h0->W+,W-;:BranchingRatio 0.0
+set h0/h0->tau-,tau+;:Active No 
+set h0/h0->tau-,tau+;:BranchingRatio 0.0 
+set h0/h0->g,g;:Active No 
+set h0/h0->g,g;:BranchingRatio 0.0 
+set h0/h0->c,cbar;:Active No
+set h0/h0->c,cbar;:BranchingRatio 0.0
+set h0/h0->Z0,Z0;:Active No
+set h0/h0->Z0,Z0;:BranchingRatio 0.0
+set h0/h0->gamma,gamma;:Active No
+set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->Z0,gamma;:Active No
+set h0/h0->Z0,gamma;:BranchingRatio 0.0
+set h0/h0->mu-,mu+;:Active No
+set h0/h0->mu-,mu+;:BranchingRatio 0.0
+set h0/h0->t,tbar;:Active No
+set h0/h0->t,tbar;:BranchingRatio 0.0
 ###################################################
 #
 #  Set up spin correlation Decayers
