@@ -34,45 +34,38 @@ IBPtr FFVDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void FFVDecayer::doinit() {
-  perturbativeVertex_     = dynamic_ptr_cast<FFVVertexPtr>        (vertex());
-  abstractVertex_         = dynamic_ptr_cast<AbstractFFVVertexPtr>(vertex());
-  abstractIncomingVertex_ = dynamic_ptr_cast<AbstractFFVVertexPtr>(incomingVertex());
-
-  if (outgoingVertices()[0]){
-    if (outgoingVertices()[0]->getName()==VertexType::FFV){
-      abstractOutgoingVertexF_   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[1]);
+void FFVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> & inV,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
+			      map<ShowerInteraction,VertexBasePtr> ) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractFFVVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<FFVVertexPtr>        (vertex);
+  vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
+  for(auto & inter : itemp) {
+    incomingVertex_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(inV.at(inter));
+    if (outV[0].at(inter)->getName()==VertexType::FFV){
+      outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[0].at(inter));
+      outgoingVertexV_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
     }
     else {
-      abstractOutgoingVertexF_   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[0]);
+      outgoingVertexF_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[1].at(inter));
+      outgoingVertexV_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[0].at(inter));
     }
   }
-  else if (outgoingVertices()[1]){
-    if (outgoingVertices()[1]->getName()==VertexType::FFV){
-      abstractOutgoingVertexF_   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[0]);
-    }
-    else {
-      abstractOutgoingVertexF_   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[1]);
-    }
-  }
-
-  GeneralTwoBodyDecayer::doinit();
 }
 
 void FFVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_           << perturbativeVertex_
-     << abstractIncomingVertex_   << abstractOutgoingVertexF_
-     << abstractOutgoingVertexV_;
+  os << vertex_           << perturbativeVertex_
+     << incomingVertex_   << outgoingVertexF_
+     << outgoingVertexV_;
 }
 
 void FFVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_           >> perturbativeVertex_
-     >> abstractIncomingVertex_   >> abstractOutgoingVertexF_
-     >> abstractOutgoingVertexV_;
+  is >> vertex_           >> perturbativeVertex_
+     >> incomingVertex_   >> outgoingVertexF_
+     >> outgoingVertexV_;
 }
 
 double FFVDecayer::me2(const int , const Particle & inpart,
@@ -138,10 +131,10 @@ double FFVDecayer::me2(const int , const Particle & inpart,
 	if(massless && vhel == 1) ++vhel;
 	if(ferm)
 	  (*ME())(if1, if2,vhel) = 
-	    abstractVertex_->evaluate(scale,wave_[if1],wavebar_[if2],vector_[vhel]);
+	    vertex_->evaluate(scale,wave_[if1],wavebar_[if2],vector_[vhel]);
 	else
 	  (*ME())(if2, if1, vhel) = 
-	    abstractVertex_->evaluate(scale,wave_[if1],wavebar_[if2],vector_[vhel]);
+	    vertex_->evaluate(scale,wave_[if1],wavebar_[if2],vector_[vhel]);
       }
     }
   }
@@ -204,7 +197,8 @@ void FFVDecayer::Init() {
 }
 
 double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
-				const ParticleVector & decay, MEOption meopt) {
+				const ParticleVector & decay,
+				ShowerInteraction inter, MEOption meopt) {
 
   int iferm (0), ivect (1), iglu (2);
   // get location of outgoing lepton/vector
@@ -221,7 +215,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 
   // no emissions from massive vectors
   bool massless = decay[ivect]->dataPtr()->mass()==ZERO;
-  if (abstractOutgoingVertexV_ && (! massless))
+  if (outgoingVertexV_[inter] && (! massless))
     throw Exception()
       << "No dipoles available for massive vectors in FFVDecayer::threeBodyME"
       << Exception::runerror;
@@ -284,8 +278,8 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   //   }
   // }
 
-  if (! ((abstractIncomingVertex_  && (abstractOutgoingVertexF_  || abstractOutgoingVertexV_)) ||
-	 (abstractOutgoingVertexF_ &&  abstractOutgoingVertexV_)))
+  if (! ((incomingVertex_[inter]  && (outgoingVertexF_[inter]  || outgoingVertexV_[inter])) ||
+	 (outgoingVertexF_[inter] &&  outgoingVertexV_[inter])))
     throw Exception()
       << "Invalid vertices for QCD radiation in FFV decay in FFVDecayer::threeBodyME"
       << Exception::runerror;
@@ -312,11 +306,11 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	for(unsigned int ig = 0; ig < 2; ++ig) {
 	  // radiation from the incoming fermion
 	  if(inpart.dataPtr()->coloured()) {
-	    assert(abstractIncomingVertex_);
-	    double gs = abstractIncomingVertex_->strongCoupling(scale);	  
+	    assert(incomingVertex_[inter]);
+	    double gs = incomingVertex_[inter]->strongCoupling(scale);	  
 	    if (ferm){
 	      SpinorWaveFunction spinorInter =
-		abstractIncomingVertex_->evaluate(scale,3,inpart.dataPtr(),wave3_[ifi],
+		incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),wave3_[ifi],
 						  gluon_[2*ig],inpart.mass());
 	      
 	      if (wave3_[ifi].particle()->PDGName()!=spinorInter.particle()->PDGName())
@@ -324,11 +318,11 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		  << wave3_[ifi].particle()->PDGName()  << " was changed to " 
 		  << spinorInter.particle()->PDGName()  << " in FFVDecayer::threeBodyME"
 		  << Exception::runerror;
-	      diag = abstractVertex_->evaluate(scale,spinorInter,wavebar3_[ifo],vector3_[iv])/gs;
+	      diag = vertex_->evaluate(scale,spinorInter,wavebar3_[ifo],vector3_[iv])/gs;
 	    }
 	    else {
 	      SpinorBarWaveFunction spinorBarInter = 
-		abstractIncomingVertex_->evaluate(scale,3,inpart.dataPtr(),wavebar3_[ifi],
+		incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),wavebar3_[ifi],
 						  gluon_[2*ig],inpart.mass());
 	      
 	      if (wavebar3_[ifi].particle()->PDGName()!=spinorBarInter.particle()->PDGName())
@@ -336,7 +330,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		  << wavebar3_[ifi].particle()->PDGName()  << " was changed to " 
 		  << spinorBarInter.particle()->PDGName()  << " in FFVDecayer::threeBodyME"
 		  << Exception::runerror;
-	      diag = abstractVertex_->evaluate(scale,wave3_[ifo], spinorBarInter,vector3_[iv])/gs;
+	      diag = vertex_->evaluate(scale,wave3_[ifo], spinorBarInter,vector3_[iv])/gs;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	      (*ME[colourFlow[0][ix].first])(ifi, ifo, iv, ig) += 
@@ -346,15 +340,15 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 
 	  // radiation from outgoing fermion
 	  if(decay[iferm]->dataPtr()->coloured()) {
-	    assert(abstractOutgoingVertexF_);
+	    assert(outgoingVertexF_[inter]);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[iferm]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    
-	    double gs = abstractOutgoingVertexF_->strongCoupling(scale);	  	  
+	    double gs = outgoingVertexF_[inter]->strongCoupling(scale);	  	  
 	    if (ferm) {	    
 	      SpinorBarWaveFunction spinorBarInter = 
-		abstractOutgoingVertexF_->evaluate(scale,3,off,wavebar3_[ifo],
+		outgoingVertexF_[inter]->evaluate(scale,3,off,wavebar3_[ifo],
 						   gluon_[2*ig],decay[iferm]->mass());
 	      
 	      if(wavebar3_[ifo].particle()->PDGName()!=spinorBarInter.particle()->PDGName())
@@ -362,11 +356,11 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		  << wavebar3_[ifo].particle()->PDGName() << " was changed to " 
 		  << spinorBarInter.particle()->PDGName() << " in FFVDecayer::threeBodyME"
 		  << Exception::runerror;
-	      diag = abstractVertex_->evaluate(scale,wave3_[ifi],spinorBarInter,vector3_[iv])/gs;
+	      diag = vertex_->evaluate(scale,wave3_[ifi],spinorBarInter,vector3_[iv])/gs;
 	    }
 	    else {
 	      SpinorWaveFunction spinorInter = 
-		abstractOutgoingVertexF_->evaluate(scale,3,off,wave3_[ifo],
+		outgoingVertexF_[inter]->evaluate(scale,3,off,wave3_[ifo],
 						   gluon_[2*ig],decay[iferm]->mass());
 		
 	      if(wave3_[ifo].particle()->PDGName()!=spinorInter.particle()->PDGName())
@@ -374,7 +368,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		  << wave3_[ifo].particle()->PDGName() << " was changed to " 
 		  << spinorInter.particle()->PDGName() << " in FFVDecayer::threeBodyME"
 		  << Exception::runerror;
-	      diag = abstractVertex_->evaluate(scale,spinorInter,wavebar3_[ifi],vector3_[iv])/gs;
+	      diag = vertex_->evaluate(scale,spinorInter,wavebar3_[ifi],vector3_[iv])/gs;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[F].size();++ix) {
 	      (*ME[colourFlow[F][ix].first])(ifi, ifo, iv, ig) += 
@@ -384,15 +378,15 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	  
 	  // radiation from outgoing vector
 	  if(decay[ivect]->dataPtr()->coloured()) {
-	    assert(abstractOutgoingVertexV_);
+	    assert(outgoingVertexV_[inter]);
 	    // ensure you get correct ougoing particle from first vertex
 	    tcPDPtr off = decay[ivect]->dataPtr();
 	    if(off->CC()) off = off->CC();
 
 	    double sign  = decay[iferm]->id()>0 ? -1:1;
-	    double gs    = abstractOutgoingVertexV_->strongCoupling(scale);
+	    double gs    = outgoingVertexV_[inter]->strongCoupling(scale);
 	    VectorWaveFunction  vectorInter = 
-	      abstractOutgoingVertexV_->evaluate(scale,3,off,gluon_[2*ig],
+	      outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
 						 vector3_[iv],decay[ivect]->mass());
 	    
 	    if(vector3_[iv].particle()->PDGName()!=vectorInter.particle()->PDGName())
@@ -401,10 +395,10 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		<< vectorInter. particle()->PDGName() << " in FFVDecayer::threeBodyME"
 		<< Exception::runerror; 
 	    if (ferm){
-	      diag = sign*abstractVertex_->evaluate(scale,wave3_[ifi],wavebar3_[ifo],vectorInter)/gs;
+	      diag = sign*vertex_->evaluate(scale,wave3_[ifi],wavebar3_[ifo],vectorInter)/gs;
 	    }
 	    else {
-	      diag = sign*abstractVertex_->evaluate(scale,wave3_[ifo],wavebar3_[ifi],vectorInter)/gs;
+	      diag = sign*vertex_->evaluate(scale,wave3_[ifo],wavebar3_[ifi],vectorInter)/gs;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	      (*ME[colourFlow[V][ix].first])(ifi, ifo, iv, ig) += 

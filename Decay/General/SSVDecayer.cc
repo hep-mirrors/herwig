@@ -33,45 +33,39 @@ IBPtr SSVDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void SSVDecayer::doinit() {
-  perturbativeVertex_      = dynamic_ptr_cast<VSSVertexPtr>         (vertex());
-  abstractVertex_          = dynamic_ptr_cast<AbstractVSSVertexPtr> (vertex());
-  abstractIncomingVertex_  = dynamic_ptr_cast<AbstractVSSVertexPtr> (incomingVertex());
-  abstractFourPointVertex_ = dynamic_ptr_cast<AbstractVVSSVertexPtr>(getFourPointVertex());
-
-  if (outgoingVertices()[0]){
-    if (outgoingVertices()[0]->getName()==VertexType::VSS){
-      abstractOutgoingVertexS_   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[1]);
+void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> & inV,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
+			      map<ShowerInteraction,VertexBasePtr> fourV) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractVSSVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<VSSVertexPtr>        (vertex);
+  vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
+  for(auto & inter : itemp) {
+    incomingVertex_[inter]  = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
+    fourPointVertex_[inter] = dynamic_ptr_cast<AbstractVVSSVertexPtr>(fourV.at(inter));
+    if (outV[0].at(inter)->getName()==VertexType::VSS){
+      outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
+      outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[1].at(inter));
     }
     else {
-      abstractOutgoingVertexS_   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[0]);
+      outgoingVertexS_[inter]   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
+      outgoingVertexV_[inter]   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outV[0].at(inter));
     }
   }
-  else if (outgoingVertices()[1]){
-    if (outgoingVertices()[1]->getName()==VertexType::VSS){
-      abstractOutgoingVertexS_   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[0]);
-    }
-    else {
-      abstractOutgoingVertexS_   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
-      abstractOutgoingVertexV_   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[1]);
-    }
-  }
-  GeneralTwoBodyDecayer::doinit();
 }
 
 void SSVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_           << perturbativeVertex_
-     << abstractIncomingVertex_   << abstractOutgoingVertexS_
-     << abstractOutgoingVertexV_  << abstractFourPointVertex_;
+  os << vertex_           << perturbativeVertex_
+     << incomingVertex_   << outgoingVertexS_
+     << outgoingVertexV_  << fourPointVertex_;
 }
 
 void SSVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_           >> perturbativeVertex_
-     >> abstractIncomingVertex_   >> abstractOutgoingVertexS_
-     >> abstractOutgoingVertexV_  >> abstractFourPointVertex_;
+  is >> vertex_           >> perturbativeVertex_
+     >> incomingVertex_   >> outgoingVertexS_
+     >> outgoingVertexV_  >> fourPointVertex_;
 }
 
 // The following static variable is needed for the type
@@ -118,11 +112,11 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   double output(0.);
   if(ivec == 0) {
     for(unsigned int ix = 0; ix < 3; ++ix)
-      (*ME())(0, ix, 0) = abstractVertex_->evaluate(scale,vector_[ix],sca, swave_);
+      (*ME())(0, ix, 0) = vertex_->evaluate(scale,vector_[ix],sca, swave_);
   }
   else {
     for(unsigned int ix = 0; ix < 3; ++ix)
-      (*ME())(0, 0, ix) = abstractVertex_->evaluate(scale,vector_[ix],sca,swave_);
+      (*ME())(0, 0, ix) = vertex_->evaluate(scale,vector_[ix],sca,swave_);
   }
   output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
@@ -166,14 +160,15 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
 
 
 double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
-				const ParticleVector & decay, MEOption meopt) {
+				const ParticleVector & decay,
+				ShowerInteraction inter, MEOption meopt) {
 
   int iscal (0), ivect (1), iglu (2);
   // get location of outgoing scalar/vector
   if(decay[1]->dataPtr()->iSpin()==PDT::Spin0) swap(iscal,ivect);
 
   // no emissions from massive vectors
-  if (abstractOutgoingVertexV_ && decay[ivect]->dataPtr()->mass()!=ZERO)
+  if (outgoingVertexV_[inter] && decay[ivect]->dataPtr()->mass()!=ZERO)
     throw Exception()
       << "No dipoles available for massive vectors in SSVDecayer::threeBodyME"
       << Exception::runerror;
@@ -219,8 +214,8 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   // }
 
 
-  if (! ((abstractIncomingVertex_  && (abstractOutgoingVertexS_ || abstractOutgoingVertexV_)) ||
-	 (abstractOutgoingVertexS_ &&  abstractOutgoingVertexV_)))
+  if (! ((incomingVertex_[inter]  && (outgoingVertexS_[inter] || outgoingVertexV_[inter])) ||
+	 (outgoingVertexS_[inter] &&  outgoingVertexV_[inter])))
     throw Exception()
       << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
       << Exception::runerror;
@@ -244,9 +239,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
     for(unsigned int ig = 0; ig < 2; ++ig) {
       // radiation from the incoming scalar
       if(inpart.dataPtr()->coloured()) {
-	assert(abstractIncomingVertex_);
+	assert(incomingVertex_[inter]);
 	ScalarWaveFunction scalarInter = 
-	  abstractIncomingVertex_->evaluate(scale,3,inpart.dataPtr(),
+	  incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
 					    gluon_[2*ig],swave3_,inpart.mass());
 	
 	if (swave3_.particle()->PDGName()!=scalarInter.particle()->PDGName())
@@ -255,9 +250,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	    << scalarInter.particle()->PDGName() << " in SSVDecayer::threeBodyME"
 	    << Exception::runerror;
 	
-	double gs    = abstractIncomingVertex_->strongCoupling(scale);
+	double gs    = incomingVertex_[inter]->strongCoupling(scale);
 	double sign  = 1.;//inpart.dataPtr()->id()>0 ? 1:-1;	
-	Complex diag = sign * abstractVertex_->evaluate(scale,vector3_[iv],scal_,scalarInter)/gs;
+	Complex diag = sign * vertex_->evaluate(scale,vector3_[iv],scal_,scalarInter)/gs;
 	for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	  (*ME[colourFlow[0][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[0][ix].second*diag; 
@@ -265,12 +260,12 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       }
       // radiation from the outgoing scalar
       if(decay[iscal]->dataPtr()->coloured()) {
-	assert(abstractOutgoingVertexS_);
+	assert(outgoingVertexS_[inter]);
 	// ensure you get correct outgoing particle from first vertex
 	tcPDPtr off = decay[iscal]->dataPtr();
 	if(off->CC()) off = off->CC();
 	ScalarWaveFunction scalarInter = 
-	  abstractOutgoingVertexS_->evaluate(scale,3,off,gluon_[2*ig],scal_,decay[iscal]->mass());
+	  outgoingVertexS_[inter]->evaluate(scale,3,off,gluon_[2*ig],scal_,decay[iscal]->mass());
 	
 	if (scal_.particle()->PDGName()!=scalarInter.particle()->PDGName())
 	  throw Exception()
@@ -278,9 +273,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	    << scalarInter.particle()->PDGName() << " in SSVDecayer::threeBodyME"
 	    << Exception::runerror;
 
-	double gs    = abstractOutgoingVertexS_->strongCoupling(scale);
+	double gs    = outgoingVertexS_[inter]->strongCoupling(scale);
 	double sign  = 1.;//decay[iscal]->dataPtr()->id()>0 ? -1:1;
-	Complex diag = sign*abstractVertex_->evaluate(scale,vector3_[iv],scalarInter,swave3_)/gs;
+	Complex diag = sign*vertex_->evaluate(scale,vector3_[iv],scalarInter,swave3_)/gs;
 	for(unsigned int ix=0;ix<colourFlow[S].size();++ix) {
 	  (*ME[colourFlow[S][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[S][ix].second*diag;
@@ -289,12 +284,12 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 
       // radiation from outgoing vector
       if(decay[ivect]->dataPtr()->coloured()) {
-	assert(abstractOutgoingVertexV_);
+	assert(outgoingVertexV_[inter]);
 	// ensure you get correct outgoing particle from first vertex
 	tcPDPtr off = decay[ivect]->dataPtr();
 	if(off->CC()) off = off->CC();
 	VectorWaveFunction  vectorInter = 
-	  abstractOutgoingVertexV_->evaluate(scale,3,off,gluon_[2*ig],
+	  outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
 					     vector3_[iv],decay[ivect]->mass());
 	    
 	if(vector3_[iv].particle()->PDGName()!=vectorInter.particle()->PDGName())
@@ -304,18 +299,18 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	    << Exception::runerror; 
 
 	double sign  =  1.;//decay[iscal]->id()>0 ? -1:1;
-	double gs    = abstractOutgoingVertexV_->strongCoupling(scale);	
-	Complex diag =  sign*abstractVertex_->evaluate(scale,vectorInter,scal_,swave3_)/gs;
+	double gs    = outgoingVertexV_[inter]->strongCoupling(scale);	
+	Complex diag =  sign*vertex_->evaluate(scale,vectorInter,scal_,swave3_)/gs;
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[V][ix].second*diag;
 	}
       }
       // radiation from 4 point vertex
-      if (abstractFourPointVertex_){
-	double gs    = abstractFourPointVertex_->strongCoupling(scale);
+      if (fourPointVertex_[inter]){
+	double gs    = fourPointVertex_[inter]->strongCoupling(scale);
 	double sign  =  decay[iscal]->id()>0 ? -1:-1;
-	Complex diag =  sign*abstractFourPointVertex_->evaluate(scale, gluon_[2*ig], vector3_[iv],
+	Complex diag =  sign*fourPointVertex_[inter]->evaluate(scale, gluon_[2*ig], vector3_[iv],
 							       scal_, swave3_)/gs;
 	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) += 

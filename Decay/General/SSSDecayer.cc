@@ -31,26 +31,32 @@ IBPtr SSSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void SSSDecayer::doinit() {
-  perturbativeVertex_      = dynamic_ptr_cast<SSSVertexPtr>        (vertex());
-  abstractVertex_          = dynamic_ptr_cast<AbstractSSSVertexPtr>(vertex());
-  abstractIncomingVertex_  = dynamic_ptr_cast<AbstractVSSVertexPtr>(incomingVertex());
-  abstractOutgoingVertex1_ = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
-  abstractOutgoingVertex2_ = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
-
-  GeneralTwoBodyDecayer::doinit();
+void SSSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> & inV,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
+			      map<ShowerInteraction,VertexBasePtr> ) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractSSSVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<SSSVertexPtr>        (vertex);
+  vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
+  for(auto & inter : itemp) {
+    incomingVertex_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
+    outgoingVertex1_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[0].at(inter));
+    outgoingVertex2_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(outV[1].at(inter));
+  }
 }
 
 void SSSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_           << perturbativeVertex_
-     << abstractIncomingVertex_   << abstractOutgoingVertex1_
-     << abstractOutgoingVertex2_;
+  os << vertex_           << perturbativeVertex_
+     << incomingVertex_   << outgoingVertex1_
+     << outgoingVertex2_;
 }
 
 void SSSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_           >> perturbativeVertex_
-     >> abstractIncomingVertex_   >> abstractOutgoingVertex1_
-     >> abstractOutgoingVertex2_;
+  is >> vertex_           >> perturbativeVertex_
+     >> incomingVertex_   >> outgoingVertex1_
+     >> outgoingVertex2_;
 }
 
 // The following static variable is needed for the type
@@ -85,7 +91,7 @@ double SSSDecayer::me2(const int , const Particle & inpart,
   ScalarWaveFunction s1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
   ScalarWaveFunction s2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
-  (*ME())(0,0,0) = abstractVertex_->evaluate(scale,s1,s2,swave_);
+  (*ME())(0,0,0) = vertex_->evaluate(scale,s1,s2,swave_);
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
@@ -115,7 +121,8 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
 }
 
 double SSSDecayer::threeBodyME(const int , const Particle & inpart,
-			       const ParticleVector & decay, MEOption meopt) {
+			       const ParticleVector & decay,
+			       ShowerInteraction inter, MEOption meopt) {
 
   // work out which is the scalar and anti scalar
   int ianti(0), iscal(1), iglu(2);
@@ -172,9 +179,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
   //   }
   // }
 
-  AbstractVSSVertexPtr abstractOutgoingVertexS;
-  AbstractVSSVertexPtr abstractOutgoingVertexA;
-  identifyVertices(iscal, ianti, inpart, decay, abstractOutgoingVertexS, abstractOutgoingVertexA);
+  AbstractVSSVertexPtr outgoingVertexS;
+  AbstractVSSVertexPtr outgoingVertexA;
+  identifyVertices(iscal, ianti, inpart, decay, outgoingVertexS, outgoingVertexA,inter);
 
   Energy2 scale(sqr(inpart.mass()));
 
@@ -184,9 +191,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
   for(unsigned int ig = 0; ig < 2; ++ig) {
     // radiation from the incoming scalar
     if(inpart.dataPtr()->coloured()) {
-      assert(abstractIncomingVertex_);
+      assert(incomingVertex_[inter]);
       ScalarWaveFunction scalarInter = 
-	abstractIncomingVertex_->evaluate(scale,3,inpart.dataPtr(),
+	incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
 					  gluon_[2*ig],swave3_,inpart.mass());
 
       if (swave3_.particle()->PDGName()!=scalarInter.particle()->PDGName())
@@ -195,8 +202,8 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 	  << scalarInter.particle()->PDGName() << " in SSSDecayer::threeBodyME"
 	  << Exception::runerror;
 
-      double gs    = abstractIncomingVertex_->strongCoupling(scale);
-      Complex diag = abstractVertex_->evaluate(scale,scal,anti,scalarInter)/gs;
+      double gs    = incomingVertex_[inter]->strongCoupling(scale);
+      Complex diag = vertex_->evaluate(scale,scal,anti,scalarInter)/gs;
       for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	(*ME[colourFlow[0][ix].first])(0, 0, 0, ig) += 
 	   colourFlow[0][ix].second*diag; 
@@ -204,12 +211,12 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
     }
     // radiation from the outgoing scalar
     if(decay[iscal]->dataPtr()->coloured()) {
-      assert(abstractOutgoingVertexS);
+      assert(outgoingVertexS);
       // ensure you get correct outgoing particle from first vertex
       tcPDPtr off = decay[iscal]->dataPtr();
       if(off->CC()) off = off->CC();
       ScalarWaveFunction scalarInter = 
-	abstractOutgoingVertexS->evaluate(scale,3,off,gluon_[2*ig],scal,decay[iscal]->mass());
+	outgoingVertexS->evaluate(scale,3,off,gluon_[2*ig],scal,decay[iscal]->mass());
 
       if (scal.particle()->PDGName()!=scalarInter.particle()->PDGName())
 	throw Exception()
@@ -217,8 +224,8 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 	  << scalarInter.particle()->PDGName() << " in SSSDecayer::threeBodyME"
 	  << Exception::runerror;
 
-      double gs    =  abstractOutgoingVertexS->strongCoupling(scale);
-      Complex diag = abstractVertex_->evaluate(scale,swave3_,anti,scalarInter)/gs;
+      double gs    =  outgoingVertexS->strongCoupling(scale);
+      Complex diag = vertex_->evaluate(scale,swave3_,anti,scalarInter)/gs;
       for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	(*ME[colourFlow[1][ix].first])(0, 0, 0, ig) += 
 	   colourFlow[1][ix].second*diag;
@@ -226,12 +233,12 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
     }
     // radiation from the outgoing anti scalar
     if(decay[ianti]->dataPtr()->coloured()) {
-      assert(abstractOutgoingVertexA);
+      assert(outgoingVertexA);
       // ensure you get correct outgoing particle from first vertex
       tcPDPtr off = decay[ianti]->dataPtr();
       if(off->CC()) off = off->CC();
       ScalarWaveFunction scalarInter = 
-	abstractOutgoingVertexA->evaluate(scale,3,off, gluon_[2*ig],anti,decay[ianti]->mass());
+	outgoingVertexA->evaluate(scale,3,off, gluon_[2*ig],anti,decay[ianti]->mass());
 
       if (anti.particle()->PDGName()!=scalarInter.particle()->PDGName())
 	throw Exception()
@@ -239,8 +246,8 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 	  << scalarInter.particle()->PDGName() << " in SSSDecayer::threeBodyME"
 	  << Exception::runerror;
 
-      double gs    =  abstractOutgoingVertexA->strongCoupling(scale);
-      Complex diag = abstractVertex_->evaluate(scale,swave3_,scal,scalarInter)/gs;
+      double gs    =  outgoingVertexA->strongCoupling(scale);
+      Complex diag = vertex_->evaluate(scale,swave3_,scal,scalarInter)/gs;
       for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	(*ME[colourFlow[2][ix].first])(0, 0, 0, ig) += 
 	  colourFlow[2][ix].second*diag;
@@ -264,8 +271,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
 void SSSDecayer::identifyVertices(const int iscal, const int ianti,
 				  const Particle & inpart, const ParticleVector & decay, 
-				  AbstractVSSVertexPtr & abstractOutgoingVertexS, 
-				  AbstractVSSVertexPtr & abstractOutgoingVertexA){
+				  AbstractVSSVertexPtr & outgoingVertexS, 
+				  AbstractVSSVertexPtr & outgoingVertexA,
+				  ShowerInteraction inter){
 
   // work out which scalar each outgoing vertex corresponds to 
   // two outgoing vertices
@@ -274,75 +282,75 @@ void SSSDecayer::identifyVertices(const int iscal, const int ianti,
       decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
      (decay[iscal]->dataPtr()->iColour()==PDT::Colour8     &&
       decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
-    if(abstractOutgoingVertex1_==abstractOutgoingVertex2_){
-      abstractOutgoingVertexS = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
+      outgoingVertexS = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[iscal]->id()))){
-      abstractOutgoingVertexS = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+      outgoingVertexS = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex2_->isIncoming(getParticleData(decay[iscal]->id()))){
-      abstractOutgoingVertexS = abstractOutgoingVertex2_;
-      abstractOutgoingVertexA = abstractOutgoingVertex1_;
+    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+      outgoingVertexS = outgoingVertex2_[inter];
+      outgoingVertexA = outgoingVertex1_[inter];
     }
   }
   else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
 	  decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&
 	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-    if(abstractOutgoingVertex1_==abstractOutgoingVertex2_){
-      abstractOutgoingVertexS = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
+      outgoingVertexS = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[iscal]->id()))){
-      abstractOutgoingVertexS = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+      outgoingVertexS = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex2_->isIncoming(getParticleData(decay[iscal]->id()))){
-      abstractOutgoingVertexS = abstractOutgoingVertex2_;
-      abstractOutgoingVertexA = abstractOutgoingVertex1_;
+    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+      outgoingVertexS = outgoingVertex2_[inter];
+      outgoingVertexA = outgoingVertex1_[inter];
     }
   }
   // one outgoing vertex
   else if(inpart.dataPtr()    ->iColour()==PDT::Colour3){ 
     if(decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&  
        decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
-      if     (abstractOutgoingVertex1_) abstractOutgoingVertexS = abstractOutgoingVertex1_;
-      else if(abstractOutgoingVertex2_) abstractOutgoingVertexS = abstractOutgoingVertex2_; 
+      if     (outgoingVertex1_[inter]) outgoingVertexS = outgoingVertex1_[inter];
+      else if(outgoingVertex2_[inter]) outgoingVertexS = outgoingVertex2_[inter]; 
     }
     else if (decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&  
 	     decay[ianti]->dataPtr()->iColour()==PDT::Colour8){
-      if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
-	abstractOutgoingVertexS = abstractOutgoingVertex2_;
-	abstractOutgoingVertexA = abstractOutgoingVertex1_;
+      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
+	outgoingVertexS = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
       }
       else {
-	abstractOutgoingVertexS = abstractOutgoingVertex1_;
-	abstractOutgoingVertexA = abstractOutgoingVertex2_;
+	outgoingVertexS = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
       }
     }
   }
   else if(inpart.dataPtr()    ->iColour()==PDT::Colour3bar){
     if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
        decay[iscal]->dataPtr()->iColour()==PDT::Colour0){
-      if     (abstractOutgoingVertex1_) abstractOutgoingVertexA = abstractOutgoingVertex1_;
-      else if(abstractOutgoingVertex2_) abstractOutgoingVertexA = abstractOutgoingVertex2_;
+      if     (outgoingVertex1_[inter]) outgoingVertexA = outgoingVertex1_[inter];
+      else if(outgoingVertex2_[inter]) outgoingVertexA = outgoingVertex2_[inter];
     }
     else if (decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
 	     decay[iscal]->dataPtr()->iColour()==PDT::Colour8){
-      if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[iscal]->dataPtr()->id()))){
-	abstractOutgoingVertexS = abstractOutgoingVertex1_;
-	abstractOutgoingVertexA = abstractOutgoingVertex2_;
+      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->dataPtr()->id()))){
+	outgoingVertexS = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
       }
       else {
-	abstractOutgoingVertexS = abstractOutgoingVertex2_;
-	abstractOutgoingVertexA = abstractOutgoingVertex1_;
+	outgoingVertexS = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
       }
     }
   }
       
-  if (! ((abstractIncomingVertex_  && (abstractOutgoingVertexS || abstractOutgoingVertexA)) ||
-	 ( abstractOutgoingVertexS &&  abstractOutgoingVertexA)))
+  if (! ((incomingVertex_[inter]  && (outgoingVertexS || outgoingVertexA)) ||
+	 ( outgoingVertexS &&  outgoingVertexA)))
     throw Exception()
       << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::identifyVertices"
       << Exception::runerror;

@@ -44,9 +44,7 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 
 void GeneralTwoBodyDecayer::doinit() {
   PerturbativeDecayer::doinit();
-  assert( vertex_ );
   assert( incoming_ && outgoing_.size()==2);
-  vertex_->init();
   //create phase space mode
   tPDVector extpart(3);
   extpart[0] = incoming_;
@@ -270,13 +268,11 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << vertex_ << incoming_ << outgoing_ << maxWeight_ 
-     << incomingVertex_ << outgoingVertices_ << fourPointVertex_;
+  os << incoming_ << outgoing_ << maxWeight_;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> vertex_ >> incoming_ >> outgoing_ >> maxWeight_
-     >> incomingVertex_ >> outgoingVertices_ >> fourPointVertex_;
+  is >> incoming_ >> outgoing_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -309,7 +305,6 @@ double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
 }
 
 void GeneralTwoBodyDecayer::doinitrun() {
-  vertex_->initrun();
   PerturbativeDecayer::doinitrun();
   for(unsigned int ix=0;ix<numberModes();++ix) {
     double fact = pow(1.5,int(mode(ix)->externalParticles(0)->iSpin())-1);
@@ -479,19 +474,11 @@ Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   return me/(8.*Constants::pi)*pcm;
 }
 
-void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
-					 VertexBasePtr vertex, VertexBasePtr inV,
-					 const vector<VertexBasePtr> & outV,
-					 VertexBasePtr fourV) {
+void GeneralTwoBodyDecayer::decayInfo(PDPtr incoming, PDPair outgoing) {
   incoming_=incoming;
   outgoing_.clear();
   outgoing_.push_back(outgoing.first );
   outgoing_.push_back(outgoing.second);
-  vertex_ = vertex;
-  incomingVertex_ = inV;
-  outgoingVertices_ = outV;
-  fourPointVertex_ = fourV;
-
 }
 
 double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart, 
@@ -499,10 +486,9 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 						 const ParticleVector & decay3, 
 						 MEOption meopt,
 						 ShowerInteraction inter) {
-  if(inter!=ShowerInteraction::QCD) return 0.;
   // calculate R/B
   double B = me2        (0, inpart, decay2, meopt);    
-  double R = threeBodyME(0, inpart, decay3, meopt);
+  double R = threeBodyME(0, inpart, decay3, inter, meopt);
   return R/B;
   
 }
@@ -709,16 +695,25 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
     retval = &init;  
   }
  
-  // if a 4 point vertex exists, add a colour flow for it
-  if ( fourPointVertex_ ) {
-    if ( inconsistent4PV )   
-      throw Exception() << "Unknown colour flows for 4 point vertex in "
-			<< "GeneralTwoBodyDecayer::colourFlows()"
-			<< Exception::runerror;
-    else {
-      retval = &fpflow;
-    }
-  }
+  // // if a 4 point vertex exists, add a colour flow for it
+  // if ( fourPointVertex_.find(ShowerInteraction::QCD)!=fourPointVertex_.end() ) {
+  //   if ( inconsistent4PV )   
+  //     throw Exception() << "Unknown colour flows for 4 point vertex in "
+  // 			<< "GeneralTwoBodyDecayer::colourFlows()"
+  // 			<< Exception::runerror;
+  //   else {
+  //     retval = &fpflow;
+  //   }
+  // }
 
   return *retval;
+}
+
+double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle &,
+					  const ParticleVector &,
+					  ShowerInteraction, MEOption) {
+  throw Exception() << "Base class PerturbativeDecayer::threeBodyME() "
+		    << "called, should have an implementation in the inheriting class"
+		    << Exception::runerror;
+  return 0.;
 }

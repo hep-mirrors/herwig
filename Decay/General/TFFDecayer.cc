@@ -34,26 +34,32 @@ IBPtr TFFDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void TFFDecayer::doinit() {
-  perturbativeVertex_        = dynamic_ptr_cast<FFTVertexPtr>         (vertex());
-  abstractVertex_            = dynamic_ptr_cast<AbstractFFTVertexPtr> (vertex());
-  abstractOutgoingVertex1_   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[0]);
-  abstractOutgoingVertex2_   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[1]);
-  abstractFourPointVertex_   = dynamic_ptr_cast<AbstractFFVTVertexPtr>(getFourPointVertex());
-
-  GeneralTwoBodyDecayer::doinit();
+void TFFDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> &,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
+			      map<ShowerInteraction,VertexBasePtr> fourV) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractFFTVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<FFTVertexPtr>        (vertex);
+  vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
+  for(auto & inter : itemp) {
+    fourPointVertex_[inter] = dynamic_ptr_cast<AbstractFFVTVertexPtr>(fourV.at(inter));
+    outgoingVertex1_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr> (outV[0].at(inter));
+    outgoingVertex2_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr> (outV[1].at(inter));
+  }
 }
 
 void TFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_          << perturbativeVertex_
-     << abstractOutgoingVertex1_ << abstractOutgoingVertex2_
-     << abstractFourPointVertex_;
+  os << vertex_          << perturbativeVertex_
+     << outgoingVertex1_ << outgoingVertex2_
+     << fourPointVertex_;
 }
 
 void TFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_          >> perturbativeVertex_
-     >> abstractOutgoingVertex1_ >> abstractOutgoingVertex2_
-     >> abstractFourPointVertex_;
+  is >> vertex_          >> perturbativeVertex_
+     >> outgoingVertex1_ >> outgoingVertex2_
+     >> fourPointVertex_;
 }
 
 // The following static variable is needed for the type
@@ -78,12 +84,12 @@ double TFFDecayer::me2(const int , const Particle & inpart,
   if(decay[0]->id()>=0) swap(iferm,ianti);
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(ten_sors,rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(ten_sors,const_ptr_cast<tPPtr>(&inpart),
+      constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&inpart),
 			incoming,true,false);
     SpinorBarWaveFunction::
       constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
@@ -102,13 +108,13 @@ double TFFDecayer::me2(const int , const Particle & inpart,
       for(ahel=0;ahel<2;++ahel) {
 	if(iferm > ianti) {
 	  (*ME())(thel,fhel,ahel) = 
-	    abstractVertex_->evaluate(scale,wave_[ahel],
-				      wavebar_[fhel],ten_sors[thel]);
+	    vertex_->evaluate(scale,wave_[ahel],
+				      wavebar_[fhel],tensors_[thel]);
 	}
 	else {
 	  (*ME())(thel,ahel,fhel) = 
-	    abstractVertex_->evaluate(scale,wave_[ahel],
-				      wavebar_[fhel],ten_sors[thel]);
+	    vertex_->evaluate(scale,wave_[ahel],
+				      wavebar_[fhel],tensors_[thel]);
 	}
       }
     }
@@ -146,7 +152,8 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 
 
 double TFFDecayer::threeBodyME(const int , const Particle & inpart,
-			       const ParticleVector & decay, MEOption meopt) {
+			       const ParticleVector & decay,
+			       ShowerInteraction inter, MEOption meopt) {
   
   // work out which is the fermion and antifermion
   int ianti(0), iferm(1), iglu(2);
@@ -207,18 +214,18 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
   // }
 
 
-  if (! (abstractOutgoingVertex1_ && abstractOutgoingVertex2_))
+  if (! (outgoingVertex1_[inter] && outgoingVertex2_[inter]))
     throw Exception()
       << "Invalid vertices for QCD radiation in TFF decay in TFFDecayer::threeBodyME"
       << Exception::runerror;
 
   // identify fermion and/or anti-fermion vertex
-  AbstractFFVVertexPtr abstractOutgoingVertexF = abstractOutgoingVertex1_;
-  AbstractFFVVertexPtr abstractOutgoingVertexA = abstractOutgoingVertex2_;
+  AbstractFFVVertexPtr outgoingVertexF = outgoingVertex1_[inter];
+  AbstractFFVVertexPtr outgoingVertexA = outgoingVertex2_[inter];
 
-  if(abstractOutgoingVertex1_!=abstractOutgoingVertex2_ &&
-     abstractOutgoingVertex1_->isIncoming(getParticleData(decay[ianti]->id())))
-    swap (abstractOutgoingVertexF, abstractOutgoingVertexA);  
+  if(outgoingVertex1_[inter]!=outgoingVertex2_[inter] &&
+     outgoingVertex1_[inter]->isIncoming(getParticleData(decay[ianti]->id())))
+    swap (outgoingVertexF, outgoingVertexA);  
   
   if(! (inpart.dataPtr()->iColour()==PDT::Colour0)){
     throw Exception()
@@ -238,12 +245,12 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 
 	  // radiation from outgoing fermion
 	  if(decay[iferm]->dataPtr()->coloured()) {
-	    assert(abstractOutgoingVertexF);
+	    assert(outgoingVertexF);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[iferm]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    SpinorBarWaveFunction interS = 
-	      abstractOutgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
+	      outgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
 						gluon_[2*ig],decay[iferm]->mass());
 	  
 	    if(wavebar3_[ifm].particle()->PDGName()!=interS.particle()->PDGName())
@@ -252,8 +259,8 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 		<< interS        .particle()->PDGName() << " in TFFDecayer::threeBodyME"
 		<< Exception::runerror;
 
-	    double gs    =  abstractOutgoingVertexF->strongCoupling(scale);
-	    Complex diag = abstractVertex_->evaluate(scale,wave3_[ia], interS,tensors3_[it])/gs;
+	    double gs    =  outgoingVertexF->strongCoupling(scale);
+	    Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	      (*ME[colourFlow[1][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[1][ix].second*diag;
@@ -262,12 +269,12 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 
 	  // radiation from outgoing antifermion
 	  if(decay[ianti]->dataPtr()->coloured()) {
-	    assert(abstractOutgoingVertexA);
+	    assert(outgoingVertexA);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[ianti]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    SpinorWaveFunction  interS = 
-	      abstractOutgoingVertexA->evaluate(scale,3,off,wave3_[ia],
+	      outgoingVertexA->evaluate(scale,3,off,wave3_[ia],
 						gluon_[2*ig],decay[ianti]->mass());
 	    
 	    if(wave3_[ia].particle()->PDGName()!=interS.particle()->PDGName())
@@ -276,8 +283,8 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 		<< interS    .particle()->PDGName() << " in TFFDecayer::threeBodyME"
 		<< Exception::runerror;
 	    
-	    double gs    =  abstractOutgoingVertexA->strongCoupling(scale);
-	    Complex diag = abstractVertex_->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it])/gs;
+	    double gs    =  outgoingVertexA->strongCoupling(scale);
+	    Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	      (*ME[colourFlow[2][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[2][ix].second*diag;
@@ -285,10 +292,10 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	  }
 
 	  // radiation from 4 point vertex
-	  if (abstractFourPointVertex_){
-	    double gs    = abstractFourPointVertex_->strongCoupling(scale);
-	    Complex diag = abstractFourPointVertex_->evaluate(scale, wave3_[ia], wavebar3_[ifm],
-							      gluon_[2*ig], tensors3_[it])/gs;
+	  if (fourPointVertex_[inter]){
+	    double gs    = fourPointVertex_[inter]->strongCoupling(scale);
+	    Complex diag = fourPointVertex_[inter]->evaluate(scale, wave3_[ia], wavebar3_[ifm],
+						      gluon_[2*ig], tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	      (*ME[colourFlow[3][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[3][ix].second*diag;

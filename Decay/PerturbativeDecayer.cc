@@ -78,14 +78,6 @@ void PerturbativeDecayer::Init() {
 
 }
 
-double PerturbativeDecayer::threeBodyME(const int , const Particle &,
-					const ParticleVector &,MEOption) {
-  throw Exception() << "Base class PerturbativeDecayer::threeBodyME() "
-		    << "called, should have an implementation in the inheriting class"
-		    << Exception::runerror;
-  return 0.;
-}
-
 double PerturbativeDecayer::matrixElementRatio(const Particle & , 
 					       const ParticleVector & ,
 					       const ParticleVector & , 

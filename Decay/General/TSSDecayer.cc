@@ -33,18 +33,24 @@ IBPtr TSSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void TSSDecayer::doinit() {
-  GeneralTwoBodyDecayer::doinit();
-  perturbativeVertex_ = dynamic_ptr_cast<SSTVertexPtr>        (vertex());
-  abstractVertex_     = dynamic_ptr_cast<AbstractSSTVertexPtr>(vertex());
+
+void TSSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> & ,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > & ,
+			      map<ShowerInteraction,VertexBasePtr> ) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractSSTVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<SSTVertexPtr>        (vertex);
 }
 
+
 void TSSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_ << perturbativeVertex_;
+  os << vertex_ << perturbativeVertex_;
 }
 
 void TSSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_ >> perturbativeVertex_;
+  is >> vertex_ >> perturbativeVertex_;
 }
 
 // The following static variable is needed for the type
@@ -67,12 +73,12 @@ double TSSDecayer::me2(const int , const Particle & inpart,
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(ten_sors,rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(ten_sors,const_ptr_cast<tPPtr>(&inpart),
+      constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&inpart),
 			incoming,true,false);
     for(unsigned int ix=0;ix<2;++ix)
       ScalarWaveFunction::
@@ -83,7 +89,7 @@ double TSSDecayer::me2(const int , const Particle & inpart,
   ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int thel=0;thel<5;++thel) {
-    (*ME())(thel,0,0) =abstractVertex_->evaluate(scale,sca1,sca2,ten_sors[thel]); 
+    (*ME())(thel,0,0) = vertex_->evaluate(scale,sca1,sca2,tensors_[thel]); 
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors

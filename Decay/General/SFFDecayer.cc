@@ -34,25 +34,32 @@ IBPtr SFFDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void SFFDecayer::doinit() {
-  perturbativeVertex_        = dynamic_ptr_cast<FFSVertexPtr>        (vertex());
-  abstractVertex_            = dynamic_ptr_cast<AbstractFFSVertexPtr>(vertex());
-  abstractIncomingVertex_    = dynamic_ptr_cast<AbstractVSSVertexPtr>(incomingVertex());
-  abstractOutgoingVertex1_   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
-  abstractOutgoingVertex2_   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
-  GeneralTwoBodyDecayer::doinit();
+void SFFDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> & inV,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
+			      map<ShowerInteraction,VertexBasePtr> ) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractFFSVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<FFSVertexPtr>        (vertex);
+  vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
+  for(auto & inter : itemp) {
+    incomingVertex_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
+    outgoingVertex1_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[0].at(inter));
+    outgoingVertex2_[inter] = dynamic_ptr_cast<AbstractFFVVertexPtr>(outV[1].at(inter));
+  }
 }
 
 void SFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_           << perturbativeVertex_ 
-     << abstractIncomingVertex_   << abstractOutgoingVertex1_
-     << abstractOutgoingVertex2_;
+  os << vertex_           << perturbativeVertex_ 
+     << incomingVertex_   << outgoingVertex1_
+     << outgoingVertex2_;
 }
 
 void SFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_           >> perturbativeVertex_ 
-     >> abstractIncomingVertex_   >> abstractOutgoingVertex1_
-     >> abstractOutgoingVertex2_;
+  is >> vertex_           >> perturbativeVertex_ 
+     >> incomingVertex_   >> outgoingVertex1_
+     >> outgoingVertex2_;
 }
 
 // The following static variable is needed for the type
@@ -102,11 +109,11 @@ double SFFDecayer::me2(const int , const Particle & inpart,
   for(unsigned int ifm = 0; ifm < 2; ++ifm){
     for(unsigned int ia = 0; ia < 2; ++ia) {
       if(iferm > ianti){
-	(*ME())(0, ia, ifm) = abstractVertex_->evaluate(scale,wave_[ia],
+	(*ME())(0, ia, ifm) = vertex_->evaluate(scale,wave_[ia],
 						     wavebar_[ifm],swave_);
       }
       else {
-	(*ME())(0, ifm, ia) = abstractVertex_->evaluate(scale,wave_[ia],
+	(*ME())(0, ifm, ia) = vertex_->evaluate(scale,wave_[ia],
 						     wavebar_[ifm],swave_);	
       }
     }
@@ -145,7 +152,8 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 }
 
 double SFFDecayer::threeBodyME(const int , const Particle & inpart,
-			       const ParticleVector & decay, MEOption meopt) {
+			       const ParticleVector & decay,
+			       ShowerInteraction inter, MEOption meopt) {
   
   // work out which is the fermion and antifermion
   int ianti(0), iferm(1), iglu(2);
@@ -207,9 +215,10 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   // }
 
   // identify fermion and/or anti-fermion vertex
-  AbstractFFVVertexPtr abstractOutgoingVertexF;
-  AbstractFFVVertexPtr abstractOutgoingVertexA;
-  identifyVertices(iferm, ianti, inpart, decay, abstractOutgoingVertexF, abstractOutgoingVertexA);
+  AbstractFFVVertexPtr outgoingVertexF;
+  AbstractFFVVertexPtr outgoingVertexA;
+  identifyVertices(iferm, ianti, inpart, decay, outgoingVertexF, outgoingVertexA,
+		   inter);
 
   const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
@@ -220,10 +229,10 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
       for(unsigned int ig = 0; ig < 2; ++ig) {
 	// radiation from the incoming scalar
 	if(inpart.dataPtr()->coloured()) {
-	  assert(abstractIncomingVertex_);
+	  assert(incomingVertex_[inter]);
 
 	  ScalarWaveFunction scalarInter = 
-	    abstractIncomingVertex_->evaluate(scale,3,inpart.dataPtr(),
+	    incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
 					      gluon_[2*ig],swave3_,inpart.mass());
 
 	  if (swave3_.particle()->PDGName()!=scalarInter.particle()->PDGName())
@@ -232,8 +241,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << scalarInter.particle()->PDGName() << " in SFFDecayer::threeBodyME"
 	      << Exception::runerror;
 
-	  double gs    = abstractIncomingVertex_->strongCoupling(scale);
-	  Complex diag = abstractVertex_->evaluate(scale,wave3_[ia], wavebar3_[ifm],
+	  double gs    = incomingVertex_[inter]->strongCoupling(scale);
+	  Complex diag = vertex_->evaluate(scale,wave3_[ia], wavebar3_[ifm],
 							  scalarInter)/gs;
 	  for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	    (*ME[colourFlow[0][ix].first])(0, ia, ifm, ig) += 
@@ -243,12 +252,12 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 
 	// radiation from outgoing fermion
 	if(decay[iferm]->dataPtr()->coloured()) {
-	  assert(abstractOutgoingVertexF);
+	  assert(outgoingVertexF);
 	  // ensure you get correct outgoing particle from first vertex
 	  tcPDPtr off = decay[iferm]->dataPtr();
 	  if(off->CC()) off = off->CC();
 	  SpinorBarWaveFunction interS = 
-	    abstractOutgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
+	    outgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
 					       gluon_[2*ig],decay[iferm]->mass());
 	  
 	  if(wavebar3_[ifm].particle()->PDGName()!=interS.particle()->PDGName())
@@ -257,8 +266,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << interS        .particle()->PDGName() << " in SFFDecayer::threeBodyME"
 	      << Exception::runerror;
 
-	  double gs    =  abstractOutgoingVertexF->strongCoupling(scale);
-	  Complex diag = abstractVertex_->evaluate(scale,wave3_[ia], interS,swave3_)/gs;
+	  double gs    =  outgoingVertexF->strongCoupling(scale);
+	  Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,swave3_)/gs;
 	  for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	    (*ME[colourFlow[1][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[1][ix].second*diag;
@@ -267,12 +276,12 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 
 	// radiation from outgoing antifermion
 	if(decay[ianti]->dataPtr()->coloured()) {
-	  assert(abstractOutgoingVertexA);
+	  assert(outgoingVertexA);
 	  // ensure you get correct outgoing particle from first vertex
 	  tcPDPtr off = decay[ianti]->dataPtr();
 	  if(off->CC()) off = off->CC();
 	  SpinorWaveFunction  interS = 
-	    abstractOutgoingVertexA->evaluate(scale,3,off,wave3_[ia],
+	    outgoingVertexA->evaluate(scale,3,off,wave3_[ia],
 					      gluon_[2*ig],decay[ianti]->mass());
 
 	  if(wave3_[ia].particle()->PDGName()!=interS.particle()->PDGName())
@@ -281,8 +290,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << interS    .particle()->PDGName() << " in SFFDecayer::threeBodyME"
 	      << Exception::runerror;
 
-	  double gs    =  abstractOutgoingVertexA->strongCoupling(scale);
-	  Complex diag = abstractVertex_->evaluate(scale,interS,wavebar3_[ifm],swave3_)/gs;
+	  double gs    =  outgoingVertexA->strongCoupling(scale);
+	  Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],swave3_)/gs;
 	  for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	    (*ME[colourFlow[2][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[2][ix].second*diag;
@@ -307,8 +316,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 
 void SFFDecayer::identifyVertices(const int iferm, const int ianti,
 				  const Particle & inpart, const ParticleVector & decay, 
-				  AbstractFFVVertexPtr & abstractOutgoingVertexF, 
-				  AbstractFFVVertexPtr & abstractOutgoingVertexA){
+				  AbstractFFVVertexPtr & outgoingVertexF, 
+				  AbstractFFVVertexPtr & outgoingVertexA,
+				  ShowerInteraction inter) {
 
   // work out which fermion each outgoing vertex corresponds to 
   // two outgoing vertices
@@ -317,33 +327,33 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
       decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
      (decay[iferm]->dataPtr()->iColour()==PDT::Colour8     &&
       decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
-    if(abstractOutgoingVertex1_==abstractOutgoingVertex2_){
-      abstractOutgoingVertexF = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
+      outgoingVertexF = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[iferm]->id()))){
-      abstractOutgoingVertexF = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
+      outgoingVertexF = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex2_->isIncoming(getParticleData(decay[iferm]->id()))){
-      abstractOutgoingVertexF = abstractOutgoingVertex2_;
-      abstractOutgoingVertexA = abstractOutgoingVertex1_;
+    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
+      outgoingVertexF = outgoingVertex2_[inter];
+      outgoingVertexA = outgoingVertex1_[inter];
     }
   }
   else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
 	  decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
 	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-    if(abstractOutgoingVertex1_==abstractOutgoingVertex2_){
-      abstractOutgoingVertexF = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
+      outgoingVertexF = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[iferm]->id()))){
-      abstractOutgoingVertexF = abstractOutgoingVertex1_;
-      abstractOutgoingVertexA = abstractOutgoingVertex2_;
+    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
+      outgoingVertexF = outgoingVertex1_[inter];
+      outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (abstractOutgoingVertex2_->isIncoming(getParticleData(decay[iferm]->id()))){
-      abstractOutgoingVertexF = abstractOutgoingVertex2_;
-      abstractOutgoingVertexA = abstractOutgoingVertex1_;
+    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
+      outgoingVertexF = outgoingVertex2_[inter];
+      outgoingVertexA = outgoingVertex1_[inter];
     }
   }
 
@@ -351,42 +361,42 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
   else if(inpart.dataPtr()->iColour()==PDT::Colour3){
     if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&  
        decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
-      if     (abstractOutgoingVertex1_) abstractOutgoingVertexF = abstractOutgoingVertex1_;
-      else if(abstractOutgoingVertex2_) abstractOutgoingVertexF = abstractOutgoingVertex2_;
+      if     (outgoingVertex1_[inter]) outgoingVertexF = outgoingVertex1_[inter];
+      else if(outgoingVertex2_[inter]) outgoingVertexF = outgoingVertex2_[inter];
     }
     else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
 	     decay[ianti]->dataPtr()->iColour()==PDT::Colour8){
-      if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
-	abstractOutgoingVertexF = abstractOutgoingVertex2_;
-	abstractOutgoingVertexA = abstractOutgoingVertex1_;
+      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
+	outgoingVertexF = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
       }
       else {
-	abstractOutgoingVertexF = abstractOutgoingVertex1_;
-	abstractOutgoingVertexA = abstractOutgoingVertex2_;
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
       }
     }
   }
   else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
     if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
        decay[iferm]->dataPtr()->iColour()==PDT::Colour0){
-      if     (abstractOutgoingVertex1_) abstractOutgoingVertexA = abstractOutgoingVertex1_;
-      else if(abstractOutgoingVertex2_) abstractOutgoingVertexA = abstractOutgoingVertex2_;
+      if     (outgoingVertex1_[inter]) outgoingVertexA = outgoingVertex1_[inter];
+      else if(outgoingVertex2_[inter]) outgoingVertexA = outgoingVertex2_[inter];
     }
     else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour8 &&
 	     decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-      if (abstractOutgoingVertex1_->isIncoming(getParticleData(decay[iferm]->dataPtr()->id()))){
-	abstractOutgoingVertexF = abstractOutgoingVertex1_;
-	abstractOutgoingVertexA = abstractOutgoingVertex2_;
+      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iferm]->dataPtr()->id()))){
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
       }
       else {
-	abstractOutgoingVertexF = abstractOutgoingVertex2_;
-	abstractOutgoingVertexA = abstractOutgoingVertex1_;
+	outgoingVertexF = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
       }
     }
   }
   
-  if (! ((abstractIncomingVertex_  && (abstractOutgoingVertexF  || abstractOutgoingVertexA)) ||
-	 ( abstractOutgoingVertexF &&  abstractOutgoingVertexA)))
+  if (! ((incomingVertex_[inter]  && (outgoingVertexF  || outgoingVertexA)) ||
+	 ( outgoingVertexF &&  outgoingVertexA)))
     throw Exception()
     << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
     << Exception::runerror;

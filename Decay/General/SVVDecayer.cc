@@ -34,23 +34,22 @@ IBPtr SVVDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void SVVDecayer::doinit() {
-  GeneralTwoBodyDecayer::doinit();
-  abstractVertex_     = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex());
-  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr        >(vertex());
-}
-
-void SVVDecayer::doinitrun() {
-  vertex()->initrun();
-  GeneralTwoBodyDecayer::doinitrun();
+void SVVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> &,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			      map<ShowerInteraction,VertexBasePtr> ) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr>        (vertex);
 }
 
 void SVVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_ << perturbativeVertex_;
+  os << vertex_ << perturbativeVertex_;
 }
 
 void SVVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_ >> perturbativeVertex_;
+  is >> vertex_ >> perturbativeVertex_;
 }
 
 // The following static variable is needed for the type
@@ -96,8 +95,8 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     if( photon[1] && iv2 == 1 ) ++iv2;
     for(iv1=0;iv1<3;++iv1) {
       if( photon[0] && iv1 == 1) ++iv1;
-      (*ME())(0, iv1, iv2) = abstractVertex_->evaluate(scale,vectors_[0][iv1],
-						    vectors_[1][iv2],swave_);
+      (*ME())(0, iv1, iv2) = vertex_->evaluate(scale,vectors_[0][iv1],
+					       vectors_[1][iv2],swave_);
     }
   }
   double output = ME()->contract(rho_).real()/scale*UnitRemoval::E2;

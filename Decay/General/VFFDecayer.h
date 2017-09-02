@@ -72,7 +72,8 @@ public:
    *  Three-body matrix element including additional QCD radiation
    */
   virtual double threeBodyME(const int , const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt);
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
 
   /**
    * Indentify outgoing vertices for the fermion and antifermion
@@ -80,7 +81,16 @@ public:
   void identifyVertices(const int iferm, const int ianti,
 			const Particle & inpart, const ParticleVector & decay,
 			AbstractFFVVertexPtr & abstractOutgoingVertexF, 
-			AbstractFFVVertexPtr & abstractOutgoingVertexA);
+			AbstractFFVVertexPtr & abstractOutgoingVertexA,
+			ShowerInteraction inter);
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
   //@}
 
 public:
@@ -126,18 +136,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
   
   /**
@@ -151,7 +149,7 @@ private:
   /**
    *  Abstract pointer to AbstractFFVVertex
    */
-  AbstractFFVVertexPtr abstractVertex_;
+  AbstractFFVVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
@@ -161,17 +159,17 @@ private:
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from incoming vector
    */
-  AbstractVVVVertexPtr abstractIncomingVertex_;
+  map<ShowerInteraction,AbstractVVVVertexPtr> incomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr abstractOutgoingVertex1_;
+  map<ShowerInteraction,AbstractFFVVertexPtr> outgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr abstractOutgoingVertex2_;
+  map<ShowerInteraction,AbstractFFVVertexPtr> outgoingVertex2_;
 
   /**
    *  Spin density matrix 

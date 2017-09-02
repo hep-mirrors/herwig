@@ -220,12 +220,16 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
   generator()->preinitInterface(decayer, "AlphaS", "set", showerAlpha_);
  
   // get the vertices for radiation from the external legs
-  VertexBasePtr inRad = radiationVertex(decay.parent_);
-  vector<VertexBasePtr> outRad;  
-  outRad.push_back(radiationVertex(decay.children_.first ));
-  outRad.push_back(radiationVertex(decay.children_.second));
-  // get any contributing 4 point vertices
-  VertexBasePtr fourRad = radiationVertex(decay.parent_, decay.children_);
+  map<ShowerInteraction,VertexBasePtr> inRad,fourRad;
+  vector<map<ShowerInteraction,VertexBasePtr> > outRad(2);
+  vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
+  for(auto & inter : itemp) {
+    inRad[inter] = radiationVertex(decay.parent_,inter);
+    outRad[0][inter] = radiationVertex(decay.children_.first ,inter);
+    outRad[1][inter] = radiationVertex(decay.children_.second,inter);
+    // get any contributing 4 point vertices
+    fourRad[inter]   = radiationVertex(decay.parent_,inter, decay.children_);
+  }
 
   // set info on decay
   decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_,
@@ -305,13 +309,15 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 }
 
 
-VertexBasePtr TwoBodyDecayConstructor::radiationVertex(tPDPtr particle, tPDPair children) {
+VertexBasePtr TwoBodyDecayConstructor::radiationVertex(tPDPtr particle,
+						       ShowerInteraction inter,
+						       tPDPair children) {
   tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
   map<tPDPtr,VertexBasePtr>::iterator rit = radiationVertices_.find(particle);
   tPDPtr cc = particle->CC() ? particle->CC() : particle;
   if(children==tPDPair() && rit!=radiationVertices_.end()) return rit->second;
   unsigned int nv(model->numberOfVertices());
-  tPDPtr gluon = getParticleData(ParticleID::g);
+  tPDPtr gluon = getParticleData(inter==ShowerInteraction::QCD ? ParticleID::g : ParticleID::gamma);
 
   // look for radiation vertices for incoming and outgoing particles
   for(unsigned int iv=0;iv<nv;++iv) {

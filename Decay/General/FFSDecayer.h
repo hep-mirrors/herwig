@@ -71,7 +71,16 @@ public:
    *  Three-body matrix element including additional QCD radiation
    */
   virtual double threeBodyME(const int , const Particle & inpart,
-		       const ParticleVector & decay,MEOption meopt);
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
   //@}
 
 public:
@@ -117,18 +126,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-   /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
 
   /**
@@ -142,7 +139,7 @@ private:
   /**
    *  Abstract pointer to AbstractFFSVertex
    */
-  AbstractFFSVertexPtr abstractVertex_;
+  AbstractFFSVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
@@ -152,17 +149,17 @@ private:
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from incoming (anti)fermion
    */
-  AbstractFFVVertexPtr abstractIncomingVertex_;
+  map<ShowerInteraction,AbstractFFVVertexPtr> incomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr abstractOutgoingVertexF_;
+  map<ShowerInteraction,AbstractFFVVertexPtr> outgoingVertexF_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr abstractOutgoingVertexS_;
+  map<ShowerInteraction,AbstractVSSVertexPtr> outgoingVertexS_;
 
   /**
    *  Spin density matrix

@@ -117,41 +117,15 @@ public:
   /**
    *  Set the information on the decay
    */
-  void setDecayInfo(PDPtr incoming,PDPair outgoing,
-		    VertexBasePtr,VertexBasePtr,
-		    const vector<VertexBasePtr> &,
-		    VertexBasePtr);
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>) =0;
 
 protected:
   
   /** @name Functions used by inheriting decayers. */
   //@{
-  
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex
-   */
-  VertexBasePtr vertex() const { return vertex_; }
-
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex for QCD radiation off the decaying particle
-   */
-  VertexBasePtr incomingVertex() const { return  incomingVertex_; }
-
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex for QCD radiation off the decay products
-   */
-  vector<VertexBasePtr> outgoingVertices() const { return outgoingVertices_; }
-
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex for QCD radiation from 4 point vertex
-   */
-  VertexBasePtr getFourPointVertex() const { return fourPointVertex_; }
-
-
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
@@ -178,6 +152,11 @@ protected:
   double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
 			    const ParticleVector & decay3, MEOption meopt,
 			    ShowerInteraction inter);
+
+  /**
+   *  Set the information on the decay
+   */
+  void decayInfo(PDPtr incoming, PDPair outgoing);
   //@}
 
 public:
@@ -243,6 +222,13 @@ protected:
   const CFlow & colourFlows(const Particle & inpart,
 			    const ParticleVector & decay);
 
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
+
   //@}
 
 private:
@@ -264,27 +250,6 @@ private:
    *  Outgoing particles
    */
   vector<PDPtr> outgoing_;
-  
-  /**
-   * Pointer to vertex
-   */
-  VertexBasePtr vertex_;
-
-  /**
-   *  Pointer to vertex for radiation from the incoming particle
-   */
-  VertexBasePtr incomingVertex_;
-
-  /**
-   *  Pointer to the vertices for radiation from the outgoing particles
-   */
-  vector<VertexBasePtr> outgoingVertices_; 
-
-  /**
-   *  Pointer to vertex for radiation coming from 4 point vertex
-   */
-  VertexBasePtr fourPointVertex_;
-
 
   /**
    * Maximum weight for integration
@@ -298,6 +263,43 @@ private:
 
 };
 
+
+/**
+ * Write a map with ShowerInteraction as the key
+ */
+template<typename T, typename Cmp, typename A>
+inline PersistentOStream & operator<<(PersistentOStream & os,
+				      const map<ShowerInteraction,T,Cmp,A> & m) {
+  os << m.size();
+  if(m.find(ShowerInteraction::QCD)!=m.end()) {
+    os << 0 << m.at(ShowerInteraction::QCD);
+  }
+  if(m.find(ShowerInteraction::QED)!=m.end()) {
+    os << 1 << m.at(ShowerInteraction::QED);
+  }
+  return os;
+}
+
+/**
+ * Read a map with ShowerInteraction as the key
+ */
+template <typename T, typename Cmp, typename A>
+inline PersistentIStream & operator>>(PersistentIStream & is, map<ShowerInteraction,T,Cmp,A> & m) {
+  m.clear();
+  long size;
+  int k;
+  is >> size;
+  while ( size-- && is ) {
+    is >> k;
+    if(k==0)
+      is >> m[ShowerInteraction::QCD];
+    else if(k==1)
+      is >> m[ShowerInteraction::QED];
+    else
+      assert(false);
+  }
+  return is;
+}
 }
 
 #endif /* HERWIG_GeneralTwoBodyDecayer_H */

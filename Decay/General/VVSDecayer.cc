@@ -21,19 +21,22 @@ IBPtr VVSDecayer::clone() const {
 IBPtr VVSDecayer::fullclone() const {
   return new_ptr(*this);
 }
-
-void VVSDecayer::doinit() {
-  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr>        (vertex());
-  abstractVertex_     = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex());
-  GeneralTwoBodyDecayer::doinit();
+void VVSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> &,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			      map<ShowerInteraction,VertexBasePtr>) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr>        (vertex);
 }
 
 void VVSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_ << perturbativeVertex_;
+  os << vertex_ << perturbativeVertex_;
 }
 
 void VVSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_ >> perturbativeVertex_;
+  is >> vertex_ >> perturbativeVertex_;
 }
 
 // The following static variable is needed for the type
@@ -78,7 +81,7 @@ double VVSDecayer::me2(const int , const Particle & inpart,
     for(unsigned int out=0;out<3;++out) {
       if(massless&&out==1) ++out;
       (*ME())(in,out,0) = 
-	abstractVertex_->evaluate(scale,vectors_[0][in],vectors_[1][out],sca);
+	vertex_->evaluate(scale,vectors_[0][in],vectors_[1][out],sca);
     }
   }
   double output=(ME()->contract(rho_)).real()/scale*UnitRemoval::E2;

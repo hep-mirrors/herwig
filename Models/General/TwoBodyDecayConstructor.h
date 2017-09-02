@@ -122,7 +122,8 @@ private:
   /**
    * Get the vertex for QCD radiation
    */
-  VertexBasePtr radiationVertex(tPDPtr particle,tPDPair children = tPDPair ());
+  VertexBasePtr radiationVertex(tPDPtr particle,ShowerInteraction inter,
+				tPDPair children = tPDPair ());
 
 private:
 

@@ -70,7 +70,16 @@ public:
    *  Three-body matrix element including additional QCD radiation
    */
   virtual double threeBodyME(const int , const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt);
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
 
   //@}
   
@@ -117,18 +126,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
 
   /**
@@ -142,7 +139,7 @@ private:
   /**
    *  Abstract pointer to AbstractVVTVertex
    */
-  AbstractVVTVertexPtr abstractVertex_;
+  AbstractVVTVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
@@ -152,17 +149,17 @@ private:
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr abstractOutgoingVertex1_;
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr abstractOutgoingVertex2_;
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex2_;
 
   /**
    *  Abstract pointer to AbstractVVVTVertex for QCD radiation from 4 point vertex
    */
-  AbstractVVVTVertexPtr abstractFourPointVertex_;
+  map<ShowerInteraction,AbstractVVVTVertexPtr> fourPointVertex_;
 
   /**
    *  Spin density matrix
@@ -172,7 +169,7 @@ private:
   /**
    *  Polarization tensors of decaying particle
    */
-  mutable vector<Helicity::TensorWaveFunction> ten_sors;
+  mutable vector<Helicity::TensorWaveFunction> tensors_;
 
   /**
    *  Polarization vectors of outgoing vector bosons

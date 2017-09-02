@@ -34,18 +34,22 @@ IBPtr FRSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void FRSDecayer::doinit() {
-  perturbativeVertex_ = dynamic_ptr_cast<RFSVertexPtr>        (vertex());
-  abstractVertex_     = dynamic_ptr_cast<AbstractRFSVertexPtr>(vertex());
-  GeneralTwoBodyDecayer::doinit();
+void FRSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> &,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			      map<ShowerInteraction,VertexBasePtr>) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractRFSVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<RFSVertexPtr>        (vertex);
 }
 
 void FRSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << perturbativeVertex_ << abstractVertex_;
+  os << perturbativeVertex_ << vertex_;
 }
 
 void FRSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> perturbativeVertex_ >> abstractVertex_;
+  is >> perturbativeVertex_ >> vertex_;
 }
 
 // The following static variable is needed for the type
@@ -110,9 +114,9 @@ double FRSDecayer::me2(const int , const Particle & inpart,
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 4; ++if2) {
       if(ferm) (*ME())(if1, if2, 0) = 
-		 abstractVertex_->evaluate(scale,wave_[if1],RSwavebar_[if2],scal);
+		 vertex_->evaluate(scale,wave_[if1],RSwavebar_[if2],scal);
       else     (*ME())(if1, if2, 0) = 
-		 abstractVertex_->evaluate(scale,RSwave_[if2],wavebar_[if1],scal);
+		 vertex_->evaluate(scale,RSwave_[if2],wavebar_[if1],scal);
     }
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;

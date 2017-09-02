@@ -63,6 +63,14 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
   //@}
 
 public:
@@ -108,24 +116,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-  //@}
-
 private:
 
   /**
@@ -139,7 +129,7 @@ private:
   /**
    *  Abstract pointer to general VVS vertex
    */
-  AbstractVVSVertexPtr abstractVertex_;
+  AbstractVVSVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative form

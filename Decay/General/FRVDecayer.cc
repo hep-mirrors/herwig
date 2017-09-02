@@ -34,18 +34,22 @@ IBPtr FRVDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void FRVDecayer::doinit() {
-  perturbativeVertex_ = dynamic_ptr_cast<RFVVertexPtr>        (vertex());
-  abstractVertex_     = dynamic_ptr_cast<AbstractRFVVertexPtr>(vertex());
-  GeneralTwoBodyDecayer::doinit();
+void FRVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
+			      VertexBasePtr vertex,
+			      map<ShowerInteraction,VertexBasePtr> &,
+			      const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			      map<ShowerInteraction,VertexBasePtr>) {
+  decayInfo(incoming,outgoing);
+  vertex_             = dynamic_ptr_cast<AbstractRFVVertexPtr>(vertex);
+  perturbativeVertex_ = dynamic_ptr_cast<RFVVertexPtr>        (vertex);
 }
 
 void FRVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << abstractVertex_ << perturbativeVertex_;
+  os << vertex_ << perturbativeVertex_;
 }
 
 void FRVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> abstractVertex_ >> perturbativeVertex_;
+  is >> vertex_ >> perturbativeVertex_;
 }
 
 double FRVDecayer::me2(const int , const Particle & inpart,
@@ -106,13 +110,12 @@ double FRVDecayer::me2(const int , const Particle & inpart,
 	if(massless && vhel == 1) ++vhel;
 	if(ferm)
 	  (*ME())(if1, if2,vhel) = 
-	    abstractVertex_->evaluate(scale,wave_[if1],
-				      RSwavebar_[if2],vector_[vhel]);
+	    vertex_->evaluate(scale,wave_[if1],
+			      RSwavebar_[if2],vector_[vhel]);
 	else
 	  (*ME())(if1, if2, vhel) = 
-	    abstractVertex_->evaluate(scale,RSwave_[if2],
-				      wavebar_[if1],vector_[vhel]);
-	
+	    vertex_->evaluate(scale,RSwave_[if2],
+			      wavebar_[if1],vector_[vhel]);
       }
     }
   }
