@@ -131,19 +131,19 @@ protected:
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  VertexBasePtr getVertex() const { return vertex_; }
+  VertexBasePtr vertex() const { return vertex_; }
 
   /**
    * Get vertex pointer
    * @return a pointer to the vertex for QCD radiation off the decaying particle
    */
-  VertexBasePtr getIncomingVertex() const { return  incomingVertex_; }
+  VertexBasePtr incomingVertex() const { return  incomingVertex_; }
 
   /**
    * Get vertex pointer
    * @return a pointer to the vertex for QCD radiation off the decay products
    */
-  vector<VertexBasePtr> getOutgoingVertices() const { return outgoingVertices_; }
+  vector<VertexBasePtr> outgoingVertices() const { return outgoingVertices_; }
 
   /**
    * Get vertex pointer

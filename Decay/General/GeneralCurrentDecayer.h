@@ -144,7 +144,7 @@ protected:
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr vertex() const { return _theVertex; }
 
 private:
 

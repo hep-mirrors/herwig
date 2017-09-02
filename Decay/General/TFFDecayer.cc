@@ -35,10 +35,10 @@ IBPtr TFFDecayer::fullclone() const {
 }
 
 void TFFDecayer::doinit() {
-  _perturbativeVertex        = dynamic_ptr_cast<FFTVertexPtr>         (getVertex());
-  _abstractVertex            = dynamic_ptr_cast<AbstractFFTVertexPtr> (getVertex());
-  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractFFVVertexPtr> (getOutgoingVertices()[0]);
-  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractFFVVertexPtr> (getOutgoingVertices()[1]);
+  _perturbativeVertex        = dynamic_ptr_cast<FFTVertexPtr>         (vertex());
+  _abstractVertex            = dynamic_ptr_cast<AbstractFFTVertexPtr> (vertex());
+  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[0]);
+  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[1]);
   _abstractFourPointVertex   = dynamic_ptr_cast<AbstractFFVTVertexPtr>(getFourPointVertex());
 
   GeneralTwoBodyDecayer::doinit();

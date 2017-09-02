@@ -35,11 +35,11 @@ IBPtr SFFDecayer::fullclone() const {
 }
 
 void SFFDecayer::doinit() {
-  _perturbativeVertex        = dynamic_ptr_cast<FFSVertexPtr>        (getVertex());
-  _abstractVertex            = dynamic_ptr_cast<AbstractFFSVertexPtr>(getVertex());
-  _abstractIncomingVertex    = dynamic_ptr_cast<AbstractVSSVertexPtr>(getIncomingVertex());
-  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
-  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
+  _perturbativeVertex        = dynamic_ptr_cast<FFSVertexPtr>        (vertex());
+  _abstractVertex            = dynamic_ptr_cast<AbstractFFSVertexPtr>(vertex());
+  _abstractIncomingVertex    = dynamic_ptr_cast<AbstractVSSVertexPtr>(incomingVertex());
+  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
+  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
   GeneralTwoBodyDecayer::doinit();
 }
 

@@ -36,12 +36,12 @@ IBPtr SVVDecayer::fullclone() const {
 
 void SVVDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
-  _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(getVertex());
-  _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr        >(getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex());
+  _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr        >(vertex());
 }
 
 void SVVDecayer::doinitrun() {
-  getVertex()->initrun();
+  vertex()->initrun();
   GeneralTwoBodyDecayer::doinitrun();
 }
 

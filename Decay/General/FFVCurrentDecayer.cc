@@ -40,7 +40,7 @@ IBPtr FFVCurrentDecayer::fullclone() const {
 }
 
 void FFVCurrentDecayer::doinit() {
-  _theFFVPtr = dynamic_ptr_cast<FFVVertexPtr>(getVertex());
+  _theFFVPtr = dynamic_ptr_cast<FFVVertexPtr>(vertex());
   GeneralCurrentDecayer::doinit();
 }
 

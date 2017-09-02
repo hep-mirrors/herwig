@@ -36,11 +36,11 @@ IBPtr VFFDecayer::fullclone() const {
 }
 
 void VFFDecayer::doinit() {
-  _perturbativeVertex      = dynamic_ptr_cast<FFVVertexPtr>        (getVertex());
-  _abstractVertex          = dynamic_ptr_cast<AbstractFFVVertexPtr>(getVertex());
-  _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVVVVertexPtr>(getIncomingVertex());
-  _abstractOutgoingVertex1 = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
-  _abstractOutgoingVertex2 = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
+  _perturbativeVertex      = dynamic_ptr_cast<FFVVertexPtr>        (vertex());
+  _abstractVertex          = dynamic_ptr_cast<AbstractFFVVertexPtr>(vertex());
+  _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVVVVertexPtr>(incomingVertex());
+  _abstractOutgoingVertex1 = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
+  _abstractOutgoingVertex2 = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
   GeneralTwoBodyDecayer::doinit();
 }
 

@@ -33,11 +33,11 @@ IBPtr VSSDecayer::fullclone() const {
 }
 
 void VSSDecayer::doinit() {
-  _perturbativeVertex      = dynamic_ptr_cast<VSSVertexPtr>        (getVertex());
-  _abstractVertex          = dynamic_ptr_cast<AbstractVSSVertexPtr>(getVertex());
-  _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVVVVertexPtr>(getIncomingVertex());
-  _abstractOutgoingVertex1 = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
-  _abstractOutgoingVertex2 = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
+  _perturbativeVertex      = dynamic_ptr_cast<VSSVertexPtr>        (vertex());
+  _abstractVertex          = dynamic_ptr_cast<AbstractVSSVertexPtr>(vertex());
+  _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVVVVertexPtr>(incomingVertex());
+  _abstractOutgoingVertex1 = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
+  _abstractOutgoingVertex2 = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
   GeneralTwoBodyDecayer::doinit();
 }
 

@@ -34,29 +34,29 @@ IBPtr SSVDecayer::fullclone() const {
 }
 
 void SSVDecayer::doinit() {
-  _perturbativeVertex      = dynamic_ptr_cast<VSSVertexPtr>         (getVertex());
-  _abstractVertex          = dynamic_ptr_cast<AbstractVSSVertexPtr> (getVertex());
-  _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVSSVertexPtr> (getIncomingVertex());
+  _perturbativeVertex      = dynamic_ptr_cast<VSSVertexPtr>         (vertex());
+  _abstractVertex          = dynamic_ptr_cast<AbstractVSSVertexPtr> (vertex());
+  _abstractIncomingVertex  = dynamic_ptr_cast<AbstractVSSVertexPtr> (incomingVertex());
   _abstractFourPointVertex = dynamic_ptr_cast<AbstractVVSSVertexPtr>(getFourPointVertex());
 
-  if (getOutgoingVertices()[0]){
-    if (getOutgoingVertices()[0]->getName()==VertexType::VSS){
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
-      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+  if (outgoingVertices()[0]){
+    if (outgoingVertices()[0]->getName()==VertexType::VSS){
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[1]);
     }
     else {
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
-      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[0]);
     }
   }
-  else if (getOutgoingVertices()[1]){
-    if (getOutgoingVertices()[1]->getName()==VertexType::VSS){
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
-      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[0]);
+  else if (outgoingVertices()[1]){
+    if (outgoingVertices()[1]->getName()==VertexType::VSS){
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[0]);
     }
     else {
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
-      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(getOutgoingVertices()[1]);
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
+      _abstractOutgoingVertexV   = dynamic_ptr_cast<AbstractVVVVertexPtr>(outgoingVertices()[1]);
     }
   }
   GeneralTwoBodyDecayer::doinit();

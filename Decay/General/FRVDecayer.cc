@@ -35,8 +35,8 @@ IBPtr FRVDecayer::fullclone() const {
 }
 
 void FRVDecayer::doinit() {
-  perturbativeVertex_ = dynamic_ptr_cast<RFVVertexPtr>        (getVertex());
-  abstractVertex_     = dynamic_ptr_cast<AbstractRFVVertexPtr>(getVertex());
+  perturbativeVertex_ = dynamic_ptr_cast<RFVVertexPtr>        (vertex());
+  abstractVertex_     = dynamic_ptr_cast<AbstractRFVVertexPtr>(vertex());
   GeneralTwoBodyDecayer::doinit();
 }
 

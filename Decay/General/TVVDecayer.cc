@@ -36,10 +36,10 @@ IBPtr TVVDecayer::fullclone() const {
 
 void TVVDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
-  _perturbativeVertex        = dynamic_ptr_cast<VVTVertexPtr>         (getVertex());
-  _abstractVertex            = dynamic_ptr_cast<AbstractVVTVertexPtr> (getVertex());
-  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractVVVVertexPtr> (getOutgoingVertices()[0]);
-  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractVVVVertexPtr> (getOutgoingVertices()[1]);
+  _perturbativeVertex        = dynamic_ptr_cast<VVTVertexPtr>         (vertex());
+  _abstractVertex            = dynamic_ptr_cast<AbstractVVTVertexPtr> (vertex());
+  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractVVVVertexPtr> (outgoingVertices()[0]);
+  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractVVVVertexPtr> (outgoingVertices()[1]);
   _abstractFourPointVertex   = dynamic_ptr_cast<AbstractVVVTVertexPtr>(getFourPointVertex());
 
 }

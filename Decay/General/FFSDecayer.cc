@@ -35,28 +35,28 @@ IBPtr FFSDecayer::fullclone() const {
 }
 
 void FFSDecayer::doinit() {
-  _perturbativeVertex        = dynamic_ptr_cast<FFSVertexPtr>        (getVertex());
-  _abstractVertex            = dynamic_ptr_cast<AbstractFFSVertexPtr>(getVertex());
-  _abstractIncomingVertex    = dynamic_ptr_cast<AbstractFFVVertexPtr>(getIncomingVertex());
+  _perturbativeVertex        = dynamic_ptr_cast<FFSVertexPtr>        (vertex());
+  _abstractVertex            = dynamic_ptr_cast<AbstractFFSVertexPtr>(vertex());
+  _abstractIncomingVertex    = dynamic_ptr_cast<AbstractFFVVertexPtr>(incomingVertex());
 
-  if (getOutgoingVertices()[0]){
-    if (getOutgoingVertices()[0]->getName()==VertexType::FFV){
-      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
+  if (outgoingVertices()[0]){
+    if (outgoingVertices()[0]->getName()==VertexType::FFV){
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
     }
     else {
-      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
     }
   }
-  else if (getOutgoingVertices()[1]){
-    if (getOutgoingVertices()[1]->getName()==VertexType::FFV){
-      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[1]);
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[0]);
+  else if (outgoingVertices()[1]){
+    if (outgoingVertices()[1]->getName()==VertexType::FFV){
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[1]);
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[0]);
     }
     else {
-      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(getOutgoingVertices()[0]);
-      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(getOutgoingVertices()[1]);
+      _abstractOutgoingVertexF   = dynamic_ptr_cast<AbstractFFVVertexPtr>(outgoingVertices()[0]);
+      _abstractOutgoingVertexS   = dynamic_ptr_cast<AbstractVSSVertexPtr>(outgoingVertices()[1]);
     }
   }
   GeneralTwoBodyDecayer::doinit();
