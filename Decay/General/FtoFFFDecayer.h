@@ -109,32 +109,32 @@ private:
   /**
    * Store the vector of FFSVertex pairs
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
    * Store the vector of FFVVertex pairs
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
    * Store the vector of FFTVertex pairs
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > _ten;
+  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > ten_;
 
   /**
    *  Spin density matrix 
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinors for incoming particle
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _inwave;
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > inwave_;
 
   /**
    *  Spinors for outgoing particles
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outwave[3];
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outwave_[3];
 };
 
 }

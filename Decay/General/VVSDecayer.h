@@ -123,22 +123,22 @@ private:
   /**
    *  Abstract pointer to AbstractVVSVertex
    */
-  AbstractVVSVertexPtr _abstractVertex;
+  AbstractVVSVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  VVSVertexPtr _perturbativeVertex;
+  VVSVertexPtr perturbativeVertex_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Vector wavefunctions
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors_[2];
 };
 
 }

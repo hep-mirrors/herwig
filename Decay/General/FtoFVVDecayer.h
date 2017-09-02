@@ -113,42 +113,42 @@ private:
   /**
    * Store the vector of scalar intermediates
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVVSVertexPtr> > _sca;
+  vector<pair<AbstractFFSVertexPtr, AbstractVVSVertexPtr> > sca_;
 
   /**
    * Store the vector for fermion intermediates
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > _fer;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fer_;
 
   /**
    * Store the vector for gauge boson intermediates
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > _vec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vec_;
 
   /**
    * Store the vector of tensor intermediates
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractVVTVertexPtr> > _ten;
+  vector<pair<AbstractFFTVertexPtr, AbstractVVTVertexPtr> > ten_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinor wavefunctions
    */
-  mutable vector<SpinorWaveFunction> _fwave;
+  mutable vector<SpinorWaveFunction> fwave_;
 
   /**
    *  Barred spinor wavefunctions
    */
-  mutable vector<SpinorBarWaveFunction> _fbwave;
+  mutable vector<SpinorBarWaveFunction> fbwave_;
 
   /**
    *  Vector wavefunctions
    */
-  mutable pair<vector<VectorWaveFunction>, vector<VectorWaveFunction> > _vwave;
+  mutable pair<vector<VectorWaveFunction>, vector<VectorWaveFunction> > vwave_;
 };
 
 }

@@ -35,25 +35,25 @@ IBPtr TFFDecayer::fullclone() const {
 }
 
 void TFFDecayer::doinit() {
-  _perturbativeVertex        = dynamic_ptr_cast<FFTVertexPtr>         (vertex());
-  _abstractVertex            = dynamic_ptr_cast<AbstractFFTVertexPtr> (vertex());
-  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[0]);
-  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[1]);
-  _abstractFourPointVertex   = dynamic_ptr_cast<AbstractFFVTVertexPtr>(getFourPointVertex());
+  perturbativeVertex_        = dynamic_ptr_cast<FFTVertexPtr>         (vertex());
+  abstractVertex_            = dynamic_ptr_cast<AbstractFFTVertexPtr> (vertex());
+  abstractOutgoingVertex1_   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[0]);
+  abstractOutgoingVertex2_   = dynamic_ptr_cast<AbstractFFVVertexPtr> (outgoingVertices()[1]);
+  abstractFourPointVertex_   = dynamic_ptr_cast<AbstractFFVTVertexPtr>(getFourPointVertex());
 
   GeneralTwoBodyDecayer::doinit();
 }
 
 void TFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _abstractVertex          << _perturbativeVertex
-     << _abstractOutgoingVertex1 << _abstractOutgoingVertex2
-     << _abstractFourPointVertex;
+  os << abstractVertex_          << perturbativeVertex_
+     << abstractOutgoingVertex1_ << abstractOutgoingVertex2_
+     << abstractFourPointVertex_;
 }
 
 void TFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _abstractVertex          >> _perturbativeVertex
-     >> _abstractOutgoingVertex1 >> _abstractOutgoingVertex2
-     >> _abstractFourPointVertex;
+  is >> abstractVertex_          >> perturbativeVertex_
+     >> abstractOutgoingVertex1_ >> abstractOutgoingVertex2_
+     >> abstractFourPointVertex_;
 }
 
 // The following static variable is needed for the type
@@ -78,23 +78,23 @@ double TFFDecayer::me2(const int , const Particle & inpart,
   if(decay[0]->id()>=0) swap(iferm,ianti);
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(ten_sors,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+      constructSpinInfo(ten_sors,const_ptr_cast<tPPtr>(&inpart),
 			incoming,true,false);
     SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+      constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
     SpinorWaveFunction::
-      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+      constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
     return 0.;
   }
   SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+    calculateWaveFunctions(wavebar_,decay[iferm],outgoing);
   SpinorWaveFunction::
-    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
+    calculateWaveFunctions(wave_   ,decay[ianti],outgoing);
   Energy2 scale(sqr(inpart.mass()));
   unsigned int thel,fhel,ahel;
   for(thel=0;thel<5;++thel) {
@@ -102,18 +102,18 @@ double TFFDecayer::me2(const int , const Particle & inpart,
       for(ahel=0;ahel<2;++ahel) {
 	if(iferm > ianti) {
 	  (*ME())(thel,fhel,ahel) = 
-	    _abstractVertex->evaluate(scale,_wave[ahel],
-				      _wavebar[fhel],_tensors[thel]);
+	    abstractVertex_->evaluate(scale,wave_[ahel],
+				      wavebar_[fhel],ten_sors[thel]);
 	}
 	else {
 	  (*ME())(thel,ahel,fhel) = 
-	    _abstractVertex->evaluate(scale,_wave[ahel],
-				      _wavebar[fhel],_tensors[thel]);
+	    abstractVertex_->evaluate(scale,wave_[ahel],
+				      wavebar_[fhel],ten_sors[thel]);
 	}
       }
     }
   }
-  double output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -124,16 +124,16 @@ double TFFDecayer::me2(const int , const Particle & inpart,
 Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(_perturbativeVertex) {
+  if(perturbativeVertex_) {
     Energy2 scale = sqr(inpart.second);
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    _perturbativeVertex->setCoupling(scale, in, outa.first, outb.first);
+    perturbativeVertex_->setCoupling(scale, in, outa.first, outb.first);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1- 4.*musq);
     double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/(8.*Constants::pi);
+    Energy output = norm(perturbativeVertex_->norm())*me2*pcm/(8.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
@@ -165,18 +165,18 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
   if(meopt==Initialize) {
     // create tensor wavefunction for decaying particle
     TensorWaveFunction::
-      calculateWaveFunctions(_tensors3, _rho3, const_ptr_cast<tPPtr>(&inpart), incoming, false);
+      calculateWaveFunctions(tensors3_, rho3_, const_ptr_cast<tPPtr>(&inpart), incoming, false);
   }
   // setup spin information when needed
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(_tensors3, const_ptr_cast<tPPtr>(&inpart),incoming,true, false);
+      constructSpinInfo(tensors3_, const_ptr_cast<tPPtr>(&inpart),incoming,true, false);
     SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar3 ,decay[iferm],outgoing,true);
+      constructSpinInfo(wavebar3_ ,decay[iferm],outgoing,true);
     SpinorWaveFunction::
-      constructSpinInfo(_wave3    ,decay[ianti],outgoing,true);
+      constructSpinInfo(wave3_    ,decay[ianti],outgoing,true);
     VectorWaveFunction::
-      constructSpinInfo(_gluon    ,decay[iglu ],outgoing,true,false);
+      constructSpinInfo(gluon_    ,decay[iglu ],outgoing,true,false);
     return 0.;
   }
 
@@ -189,35 +189,35 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 								       PDT::Spin1Half, PDT::Spin1)));
   // create wavefunctions
   SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar3, decay[iferm],outgoing);
+    calculateWaveFunctions(wavebar3_, decay[iferm],outgoing);
   SpinorWaveFunction::
-    calculateWaveFunctions(_wave3   , decay[ianti],outgoing);
+    calculateWaveFunctions(wave3_   , decay[ianti],outgoing);
   VectorWaveFunction::
-    calculateWaveFunctions(_gluon   , decay[iglu ],outgoing,true);
+    calculateWaveFunctions(gluon_   , decay[iglu ],outgoing,true);
 
   // // gauge invariance test
-  // _gluon.clear();
+  // gluon_.clear();
   // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
   //   else {
-  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
   // 				          decay[iglu ]->dataPtr(),10,
   // 					  outgoing));
   //   }
   // }
 
 
-  if (! (_abstractOutgoingVertex1 && _abstractOutgoingVertex2))
+  if (! (abstractOutgoingVertex1_ && abstractOutgoingVertex2_))
     throw Exception()
       << "Invalid vertices for QCD radiation in TFF decay in TFFDecayer::threeBodyME"
       << Exception::runerror;
 
   // identify fermion and/or anti-fermion vertex
-  AbstractFFVVertexPtr abstractOutgoingVertexF = _abstractOutgoingVertex1;
-  AbstractFFVVertexPtr abstractOutgoingVertexA = _abstractOutgoingVertex2;
+  AbstractFFVVertexPtr abstractOutgoingVertexF = abstractOutgoingVertex1_;
+  AbstractFFVVertexPtr abstractOutgoingVertexA = abstractOutgoingVertex2_;
 
-  if(_abstractOutgoingVertex1!=_abstractOutgoingVertex2 &&
-     _abstractOutgoingVertex1->isIncoming(getParticleData(decay[ianti]->id())))
+  if(abstractOutgoingVertex1_!=abstractOutgoingVertex2_ &&
+     abstractOutgoingVertex1_->isIncoming(getParticleData(decay[ianti]->id())))
     swap (abstractOutgoingVertexF, abstractOutgoingVertexA);  
   
   if(! (inpart.dataPtr()->iColour()==PDT::Colour0)){
@@ -243,17 +243,17 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    tcPDPtr off = decay[iferm]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    SpinorBarWaveFunction interS = 
-	      abstractOutgoingVertexF->evaluate(scale,3,off,_wavebar3[ifm],
-						_gluon[2*ig],decay[iferm]->mass());
+	      abstractOutgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
+						gluon_[2*ig],decay[iferm]->mass());
 	  
-	    if(_wavebar3[ifm].particle()->PDGName()!=interS.particle()->PDGName())
+	    if(wavebar3_[ifm].particle()->PDGName()!=interS.particle()->PDGName())
 	      throw Exception()
-		<< _wavebar3[ifm].particle()->PDGName() << " was changed to " 
+		<< wavebar3_[ifm].particle()->PDGName() << " was changed to " 
 		<< interS        .particle()->PDGName() << " in TFFDecayer::threeBodyME"
 		<< Exception::runerror;
 
 	    double gs    =  abstractOutgoingVertexF->strongCoupling(scale);
-	    Complex diag = _abstractVertex->evaluate(scale,_wave3[ia], interS,_tensors3[it])/gs;
+	    Complex diag = abstractVertex_->evaluate(scale,wave3_[ia], interS,tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	      (*ME[colourFlow[1][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[1][ix].second*diag;
@@ -267,17 +267,17 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    tcPDPtr off = decay[ianti]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    SpinorWaveFunction  interS = 
-	      abstractOutgoingVertexA->evaluate(scale,3,off,_wave3[ia],
-						_gluon[2*ig],decay[ianti]->mass());
+	      abstractOutgoingVertexA->evaluate(scale,3,off,wave3_[ia],
+						gluon_[2*ig],decay[ianti]->mass());
 	    
-	    if(_wave3[ia].particle()->PDGName()!=interS.particle()->PDGName())
+	    if(wave3_[ia].particle()->PDGName()!=interS.particle()->PDGName())
 	      throw Exception()
-		<< _wave3[ia].particle()->PDGName() << " was changed to " 
+		<< wave3_[ia].particle()->PDGName() << " was changed to " 
 		<< interS    .particle()->PDGName() << " in TFFDecayer::threeBodyME"
 		<< Exception::runerror;
 	    
 	    double gs    =  abstractOutgoingVertexA->strongCoupling(scale);
-	    Complex diag = _abstractVertex->evaluate(scale,interS,_wavebar3[ifm],_tensors3[it])/gs;
+	    Complex diag = abstractVertex_->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	      (*ME[colourFlow[2][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[2][ix].second*diag;
@@ -285,10 +285,10 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	  }
 
 	  // radiation from 4 point vertex
-	  if (_abstractFourPointVertex){
-	    double gs    = _abstractFourPointVertex->strongCoupling(scale);
-	    Complex diag = _abstractFourPointVertex->evaluate(scale, _wave3[ia], _wavebar3[ifm],
-							      _gluon[2*ig], _tensors3[it])/gs;
+	  if (abstractFourPointVertex_){
+	    double gs    = abstractFourPointVertex_->strongCoupling(scale);
+	    Complex diag = abstractFourPointVertex_->evaluate(scale, wave3_[ia], wavebar3_[ifm],
+							      gluon_[2*ig], tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	      (*ME[colourFlow[3][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[3][ix].second*diag;
@@ -303,7 +303,7 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],_rho3)).real();
+      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
   output*=(4.*Constants::pi);

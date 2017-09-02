@@ -25,11 +25,11 @@ IBPtr FtoFVVDecayer::fullclone() const {
 }
 
 void FtoFVVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _sca << _fer << _vec << _ten;
+  os << sca_ << fer_ << vec_ << ten_;
 }
 
 void FtoFVVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _sca >> _fer >> _vec >> _ten;
+  is >> sca_ >> fer_ >> vec_ >> ten_;
 }
 
 // The following static variable is needed for the type
@@ -48,10 +48,10 @@ void FtoFVVDecayer::Init() {
 void FtoFVVDecayer::doinit() {
   GeneralThreeBodyDecayer::doinit();
   unsigned int ndiags = getProcessInfo().size();
-  _sca.resize(ndiags);
-  _fer.resize(ndiags);
-  _vec.resize(ndiags);
-  _ten.resize(ndiags);
+  sca_.resize(ndiags);
+  fer_.resize(ndiags);
+  vec_.resize(ndiags);
+  ten_.resize(ndiags);
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
@@ -63,7 +63,7 @@ void FtoFVVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a scalar diagram in FtoFVVDecayer::doinit()"
 	<< Exception::runerror;
-      _sca[ix] = make_pair(vert1, vert2);
+      sca_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1Half) {
       AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
@@ -73,7 +73,7 @@ void FtoFVVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a scalar diagram in FtoFVVDecayer::doinit()"
 	<< Exception::runerror;
-      _fer[ix] = make_pair(vert1, vert2);
+      fer_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1) {
       AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
@@ -83,7 +83,7 @@ void FtoFVVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a vector diagram in FtoFVVDecayer::doinit()"
 	<< Exception::runerror;
-      _vec[ix] = make_pair(vert1, vert2);
+      vec_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin2) {
       AbstractFFTVertexPtr vert1 = dynamic_ptr_cast<AbstractFFTVertexPtr>
@@ -93,7 +93,7 @@ void FtoFVVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a tensor diagram in FtoFVVDecayer::doinit()"
 	<< Exception::runerror;
-      _ten[ix] = make_pair(vert1, vert2);
+      ten_[ix] = make_pair(vert1, vert2);
     }
   }
 }
@@ -109,32 +109,32 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
   if(meopt==Initialize) {
     if( ferm ) {
       SpinorWaveFunction::
-	calculateWaveFunctions(_fwave,_rho,const_ptr_cast<tPPtr>(&inpart),
+	calculateWaveFunctions(fwave_,rho_,const_ptr_cast<tPPtr>(&inpart),
 			       Helicity::incoming);
-      if( _fwave[0].wave().Type() != SpinorType::u )
-	_fwave[0].conjugate();
-      if( _fwave[1].wave().Type() != SpinorType::u )
-	_fwave[1].conjugate();
+      if( fwave_[0].wave().Type() != SpinorType::u )
+	fwave_[0].conjugate();
+      if( fwave_[1].wave().Type() != SpinorType::u )
+	fwave_[1].conjugate();
     }
     else {
       SpinorBarWaveFunction::
-	calculateWaveFunctions(_fbwave, _rho, const_ptr_cast<tPPtr>(&inpart),
+	calculateWaveFunctions(fbwave_, rho_, const_ptr_cast<tPPtr>(&inpart),
 			       Helicity::incoming);
-      if( _fbwave[0].wave().Type() != SpinorType::v )
-	_fbwave[0].conjugate();
-      if( _fbwave[1].wave().Type() != SpinorType::v )
-	_fbwave[1].conjugate();
+      if( fbwave_[0].wave().Type() != SpinorType::v )
+	fbwave_[0].conjugate();
+      if( fbwave_[1].wave().Type() != SpinorType::v )
+	fbwave_[1].conjugate();
     }
   }
   // setup spin info when needed
   if(meopt==Terminate) {
     // for the decaying particle
     if(ferm)
-      SpinorWaveFunction::constructSpinInfo(_fwave,
+      SpinorWaveFunction::constructSpinInfo(fwave_,
 					    const_ptr_cast<tPPtr>(&inpart),
 					    Helicity::incoming,true);
     else
-      SpinorBarWaveFunction::constructSpinInfo(_fbwave,
+      SpinorBarWaveFunction::constructSpinInfo(fbwave_,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       Helicity::incoming,true);
     int ivec(-1);
@@ -144,22 +144,22 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
 	if( ferm ) {
 	  SpinorBarWaveFunction::
-	    constructSpinInfo(_fbwave, p, Helicity::outgoing,true);
+	    constructSpinInfo(fbwave_, p, Helicity::outgoing,true);
 	}
 	else {
 	  SpinorWaveFunction::
-	    constructSpinInfo(_fwave , p, Helicity::outgoing,true);
+	    constructSpinInfo(fwave_ , p, Helicity::outgoing,true);
 	}
       }
       else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
 	if( ivec < 0 ) {
 	  ivec = ix;
 	  VectorWaveFunction::
-	    constructSpinInfo(_vwave.first , p, Helicity::outgoing, true, false);
+	    constructSpinInfo(vwave_.first , p, Helicity::outgoing, true, false);
 	}
 	else {
 	  VectorWaveFunction::
-	    constructSpinInfo(_vwave.second, p, Helicity::outgoing, true, false);
+	    constructSpinInfo(vwave_.second, p, Helicity::outgoing, true, false);
 	}
       }
     }
@@ -175,19 +175,19 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       isp = ix;
       if( ferm ) {
 	SpinorBarWaveFunction::
-	  calculateWaveFunctions(_fbwave, p, Helicity::outgoing);
-	if( _fbwave[0].wave().Type() != SpinorType::u )
-	  _fbwave[0].conjugate();
-	if( _fbwave[1].wave().Type() != SpinorType::u )
-	  _fbwave[1].conjugate();
+	  calculateWaveFunctions(fbwave_, p, Helicity::outgoing);
+	if( fbwave_[0].wave().Type() != SpinorType::u )
+	  fbwave_[0].conjugate();
+	if( fbwave_[1].wave().Type() != SpinorType::u )
+	  fbwave_[1].conjugate();
       }
       else {
 	SpinorWaveFunction::
-	  calculateWaveFunctions(_fwave, p, Helicity::outgoing);
-	if( _fwave[0].wave().Type() != SpinorType::v )
-	  _fwave[0].conjugate();
-	if( _fwave[1].wave().Type() != SpinorType::v )
-	  _fwave[1].conjugate();
+	  calculateWaveFunctions(fwave_, p, Helicity::outgoing);
+	if( fwave_[0].wave().Type() != SpinorType::v )
+	  fwave_[0].conjugate();
+	if( fwave_[1].wave().Type() != SpinorType::v )
+	  fwave_[1].conjugate();
       }
     }
     else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
@@ -195,12 +195,12 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       if( ivec < 0 ) {
 	ivec = ix;
 	VectorWaveFunction::
-	  calculateWaveFunctions(_vwave.first , p, Helicity::outgoing, massless);
+	  calculateWaveFunctions(vwave_.first , p, Helicity::outgoing, massless);
 	mass.first = massless;
       }
       else {
 	VectorWaveFunction::
-	  calculateWaveFunctions(_vwave.second, p, Helicity::outgoing, massless);
+	  calculateWaveFunctions(vwave_.second, p, Helicity::outgoing, massless);
 	mass.second = massless;
       }
     }
@@ -245,58 +245,58 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 	    // Make sure we connect the correct particles 
 	    VectorWaveFunction vw1, vw2;
 	    if( (*dit).channelType == TBDiagram::channel23 ) {
-	      vw1 = _vwave.first[iv1];
-	      vw2 = _vwave.second[iv2];
+	      vw1 = vwave_.first[iv1];
+	      vw2 = vwave_.second[iv2];
 	    }
 	    else if( (*dit).channelType == TBDiagram::channel12 ) {
-	      vw1 = _vwave.second[iv2];
-	      vw2 = _vwave.first[iv1];
+	      vw1 = vwave_.second[iv2];
+	      vw2 = vwave_.first[iv1];
 	    }
 	    else {
 	      if( ivec < isp ) {
-		vw1 = _vwave.second[iv2];
-		vw2 = _vwave.first[iv1];
+		vw1 = vwave_.second[iv2];
+		vw2 = vwave_.first[iv1];
 	      }
 	      else {
-		vw1 = _vwave.first[iv1];
-		vw2 = _vwave.second[iv2];
+		vw1 = vwave_.first[iv1];
+		vw2 = vwave_.second[iv2];
 	      }
 	    }
 	    if( ferm ) {
 	      SpinorWaveFunction inters = 
-		_fer[idiag].first->evaluate(scale, widthOption(), offshell,
-					    _fwave[if1], vw1);
-	      diag = _fer[idiag].second->evaluate(scale, inters, _fbwave[if2],
+		fer_[idiag].first->evaluate(scale, widthOption(), offshell,
+					    fwave_[if1], vw1);
+	      diag = fer_[idiag].second->evaluate(scale, inters, fbwave_[if2],
 						  vw2);
 	    }
 	    else {
 	      SpinorBarWaveFunction inters = 
-		_fer[idiag].first->evaluate(scale, widthOption(), offshell,
-					    _fbwave[if2], vw1);
-	      diag = _fer[idiag].second->evaluate(scale, _fwave[if1], inters, 
+		fer_[idiag].first->evaluate(scale, widthOption(), offshell,
+					    fbwave_[if2], vw1);
+	      diag = fer_[idiag].second->evaluate(scale, fwave_[if1], inters, 
 						  vw2);
 	    }
 	  }
 	  else if( offshell->iSpin() == PDT::Spin0 ) {
 	    ScalarWaveFunction inters = 
-	      _sca[idiag].first->evaluate(scale, widthOption(), offshell, 
-					  _fwave[if1], _fbwave[if2]);
-	    diag = _sca[idiag].second->evaluate(scale, _vwave.first[iv1],
-						_vwave.second[iv2], inters);
+	      sca_[idiag].first->evaluate(scale, widthOption(), offshell, 
+					  fwave_[if1], fbwave_[if2]);
+	    diag = sca_[idiag].second->evaluate(scale, vwave_.first[iv1],
+						vwave_.second[iv2], inters);
 	  }
 	  else if( offshell->iSpin() == PDT::Spin1 ) {
 	    VectorWaveFunction interv = 
-	      _vec[idiag].first->evaluate(scale, widthOption(), offshell, 
-					  _fwave[if1], _fbwave[if2]);
-	    diag = _vec[idiag].second->evaluate(scale, _vwave.first[iv1],
-						_vwave.second[iv2], interv);
+	      vec_[idiag].first->evaluate(scale, widthOption(), offshell, 
+					  fwave_[if1], fbwave_[if2]);
+	    diag = vec_[idiag].second->evaluate(scale, vwave_.first[iv1],
+						vwave_.second[iv2], interv);
 	  } 
 	  else if( offshell->iSpin() == PDT::Spin2 ) {
 	    TensorWaveFunction intert = 
-	      _ten[idiag].first->evaluate(scale, widthOption(), offshell, 
-					  _fwave[if1], _fbwave[if2]);
-	    diag = _ten[idiag].second->evaluate(scale, _vwave.first[iv1],
-						_vwave.second[iv2], intert);
+	      ten_[idiag].first->evaluate(scale, widthOption(), offshell, 
+					  fwave_[if1], fbwave_[if2]);
+	    diag = ten_[idiag].second->evaluate(scale, vwave_.first[iv1],
+						vwave_.second[iv2], intert);
 	  }
 	  else 
 	    throw Exception()
@@ -360,10 +360,10 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],_rho)).real();
+	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],rho_)).real();
 	me2 += con;
 	if(ix==iy) {
-	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],_rho)).real();
+	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],rho_)).real();
 	  pflows[ix] += con;
 	}
       }
@@ -381,7 +381,7 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],_rho)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],rho_)).real();
   }
   // return the matrix element squared
   return me2;

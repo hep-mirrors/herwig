@@ -35,16 +35,16 @@ IBPtr TSSDecayer::fullclone() const {
 
 void TSSDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
-  _perturbativeVertex = dynamic_ptr_cast<SSTVertexPtr>        (vertex());
-  _abstractVertex     = dynamic_ptr_cast<AbstractSSTVertexPtr>(vertex());
+  perturbativeVertex_ = dynamic_ptr_cast<SSTVertexPtr>        (vertex());
+  abstractVertex_     = dynamic_ptr_cast<AbstractSSTVertexPtr>(vertex());
 }
 
 void TSSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _abstractVertex << _perturbativeVertex;
+  os << abstractVertex_ << perturbativeVertex_;
 }
 
 void TSSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _abstractVertex >> _perturbativeVertex;
+  is >> abstractVertex_ >> perturbativeVertex_;
 }
 
 // The following static variable is needed for the type
@@ -67,12 +67,12 @@ double TSSDecayer::me2(const int , const Particle & inpart,
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(ten_sors,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+      constructSpinInfo(ten_sors,const_ptr_cast<tPPtr>(&inpart),
 			incoming,true,false);
     for(unsigned int ix=0;ix<2;++ix)
       ScalarWaveFunction::
@@ -83,9 +83,9 @@ double TSSDecayer::me2(const int , const Particle & inpart,
   ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int thel=0;thel<5;++thel) {
-    (*ME())(thel,0,0) =_abstractVertex->evaluate(scale,sca1,sca2,_tensors[thel]); 
+    (*ME())(thel,0,0) =abstractVertex_->evaluate(scale,sca1,sca2,ten_sors[thel]); 
   }
-  double output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -97,16 +97,16 @@ double TSSDecayer::me2(const int , const Particle & inpart,
 Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(_perturbativeVertex) {
+  if(perturbativeVertex_) {
     Energy2 scale(sqr(inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, in);
+    perturbativeVertex_->setCoupling(scale, outa.first, outb.first, in);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1. - 4.*musq);
     double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/(8.*Constants::pi);
+    Energy output = norm(perturbativeVertex_->norm())*me2*pcm/(8.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer

@@ -143,72 +143,72 @@ private:
   /**
    *  Abstract pointer to AbstractFFVVertex
    */
-  AbstractVSSVertexPtr _abstractVertex;
+  AbstractVSSVertexPtr abstractVertex_;
   
   /**
    * Pointer to the perturbative vertex
    */
-  VSSVertexPtr _perturbativeVertex;
+  VSSVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar
    */
-  AbstractVSSVertexPtr _abstractIncomingVertex;
+  AbstractVSSVertexPtr abstractIncomingVertex_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertexS;
+  AbstractVSSVertexPtr abstractOutgoingVertexS_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertexV;
+  AbstractVVVVertexPtr abstractOutgoingVertexV_;
 
   /**
    *  Abstract pointer to AbstractVVSSVertex for QCD radiation from 4 point vertex
    */
-  AbstractVVSSVertexPtr _abstractFourPointVertex;
+  AbstractVVSSVertexPtr abstractFourPointVertex_;
 
   /**
    *  Spinor density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunction
    */
-  mutable Helicity::ScalarWaveFunction _swave;
+  mutable Helicity::ScalarWaveFunction swave_;
 
   /**
    *  Vector wavefunction
    */
-  mutable vector<Helicity::VectorWaveFunction> _vector;
+  mutable vector<Helicity::VectorWaveFunction> vector_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Scalar wavefunction for 3 body decay
    */
-  mutable Helicity::ScalarWaveFunction _swave3;
+  mutable Helicity::ScalarWaveFunction swave3_;
 
   /**
    *  Scalar wavefunction for 3 body decay
    */
-  mutable Helicity::ScalarWaveFunction _scal;
+  mutable Helicity::ScalarWaveFunction scal_;
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _vector3;
+  mutable vector<Helicity::VectorWaveFunction> vector3_;
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _gluon;
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
 
 };
 

@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.), colour_(1,DVector(1,1.))
+  GeneralTwoBodyDecayer() : maxWeight_(1.), colour_(1,DVector(1,1.))
   {}
 
 
@@ -156,7 +156,7 @@ protected:
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  void setWeight(double wgt) { _maxweight = wgt; }
+  void setWeight(double wgt) { maxWeight_ = wgt; }
 
   /**
    * Set colour connections
@@ -258,12 +258,12 @@ private:
   /**
    *  Store the incoming particle
    */
-  PDPtr _incoming;
+  PDPtr incoming_;
 
   /**
    *  Outgoing particles
    */
-  vector<PDPtr> _outgoing;
+  vector<PDPtr> outgoing_;
   
   /**
    * Pointer to vertex
@@ -289,7 +289,7 @@ private:
   /**
    * Maximum weight for integration
    */
-  double _maxweight;
+  double maxWeight_;
 
   /**
    * Store colour factors for ME calc.

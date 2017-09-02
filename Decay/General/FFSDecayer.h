@@ -142,67 +142,67 @@ private:
   /**
    *  Abstract pointer to AbstractFFSVertex
    */
-  AbstractFFSVertexPtr _abstractVertex;
+  AbstractFFSVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  FFSVertexPtr _perturbativeVertex;
+  FFSVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from incoming (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractIncomingVertex;
+  AbstractFFVVertexPtr abstractIncomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertexF;
+  AbstractFFVVertexPtr abstractOutgoingVertexF_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertexS;
+  AbstractVSSVertexPtr abstractOutgoingVertexS_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinor wavefunctions
    */
-  mutable vector<SpinorWaveFunction>    _wave   ;
+  mutable vector<SpinorWaveFunction>    wave_   ;
 
   /**
    *  Barred spinor wavefunctions
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Scalar wavefunction for 3 body decay
    */
-  mutable ScalarWaveFunction _swave3;
+  mutable ScalarWaveFunction swave3_;
 
   /**
    *  Spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorWaveFunction> _wave3;
+  mutable vector<SpinorWaveFunction> wave3_;
 
   /**
    *  Barred spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar3;
+  mutable vector<SpinorBarWaveFunction> wavebar3_;
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<VectorWaveFunction> _gluon;
+  mutable vector<VectorWaveFunction> gluon_;
 
 };
 

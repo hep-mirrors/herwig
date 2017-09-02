@@ -25,11 +25,11 @@ IBPtr FtoFFFDecayer::fullclone() const {
 }
 
 void FtoFFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _sca << _vec << _ten;
+  os << sca_ << vec_ << ten_;
 }
 
 void FtoFFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _sca >> _vec >> _ten;
+  is >> sca_ >> vec_ >> ten_;
 }
 
 // The following static variable is needed for the type
@@ -48,9 +48,9 @@ void FtoFFFDecayer::Init() {
 void FtoFFFDecayer::doinit() {
   GeneralThreeBodyDecayer::doinit();
   unsigned int ndiags = getProcessInfo().size();
-  _sca.resize(ndiags);
-  _vec.resize(ndiags);
-  _ten.resize(ndiags);
+  sca_.resize(ndiags);
+  vec_.resize(ndiags);
+  ten_.resize(ndiags);
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
@@ -63,7 +63,7 @@ void FtoFFFDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a scalar diagram in FtoFFFDecayer::doinit()"
 	<< Exception::runerror;
-      _sca[ix] = make_pair(vert1, vert2);
+      sca_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1) {
       AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
@@ -73,7 +73,7 @@ void FtoFFFDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a vector diagram in FtoFFFDecayer::doinit()"
 	<< Exception::runerror;
-      _vec[ix] = make_pair(vert1, vert2);
+      vec_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin2) {
       AbstractFFTVertexPtr vert1 = dynamic_ptr_cast<AbstractFFTVertexPtr>
@@ -83,7 +83,7 @@ void FtoFFFDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a tensor diagram in FtoFFFDecayer::doinit()"
 	<< Exception::runerror;
-      _ten[ix] = make_pair(vert1, vert2);
+      ten_[ix] = make_pair(vert1, vert2);
     }
   }
 }
@@ -100,19 +100,19 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   if(meopt==Initialize) {
     SpinorWaveFunction::
-      calculateWaveFunctions(_inwave.first,_rho,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(inwave_.first,rho_,const_ptr_cast<tPPtr>(&inpart),
 			    Helicity::incoming);
-    _inwave.second.resize(2);
-    if(_inwave.first[0].wave().Type() == SpinorType::u) {
+    inwave_.second.resize(2);
+    if(inwave_.first[0].wave().Type() == SpinorType::u) {
       for(unsigned int ix = 0; ix < 2; ++ix) {
-	_inwave.second[ix] = _inwave.first[ix].bar();
-	_inwave.second[ix].conjugate();
+	inwave_.second[ix] = inwave_.first[ix].bar();
+	inwave_.second[ix].conjugate();
       }
     }
     else {
       for(unsigned int ix = 0; ix < 2; ++ix) {
-	_inwave.second[ix] = _inwave.first[ix].bar();
-	_inwave.first[ix].conjugate();
+	inwave_.second[ix] = inwave_.first[ix].bar();
+	inwave_.first[ix].conjugate();
       }
     }
   }
@@ -120,34 +120,34 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
   if(meopt==Terminate) {
     // for the decaying particle
     if(inpart.id()<0) 
-      SpinorWaveFunction::constructSpinInfo(_inwave.first,
+      SpinorWaveFunction::constructSpinInfo(inwave_.first,
 					    const_ptr_cast<tPPtr>(&inpart),
 					    Helicity::incoming,true);
     else
-      SpinorBarWaveFunction::constructSpinInfo(_inwave.second,
+      SpinorBarWaveFunction::constructSpinInfo(inwave_.second,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       Helicity::incoming,true);
     // outgoing particles
     for(unsigned int ix = 0; ix < 3; ++ix) {
       SpinorWaveFunction::
-      constructSpinInfo(_outwave[ix].first,decay[ix],Helicity::outgoing,true);
+      constructSpinInfo(outwave_[ix].first,decay[ix],Helicity::outgoing,true);
     }
   }
   // outgoing particles
   for(unsigned int ix = 0; ix < 3; ++ix) {
     SpinorWaveFunction::
-      calculateWaveFunctions(_outwave[ix].first,decay[ix],Helicity::outgoing);
-    _outwave[ix].second.resize(2);
-    if(_outwave[ix].first[0].wave().Type() == SpinorType::u) {
+      calculateWaveFunctions(outwave_[ix].first,decay[ix],Helicity::outgoing);
+    outwave_[ix].second.resize(2);
+    if(outwave_[ix].first[0].wave().Type() == SpinorType::u) {
       for(unsigned int iy = 0; iy < 2; ++iy) {
-	_outwave[ix].second[iy] = _outwave[ix].first[iy].bar();
-	_outwave[ix].first[iy].conjugate();
+	outwave_[ix].second[iy] = outwave_[ix].first[iy].bar();
+	outwave_[ix].first[iy].conjugate();
       }
     }
     else {
       for(unsigned int iy = 0; iy < 2; ++iy) {
-	_outwave[ix].second[iy] = _outwave[ix].first[iy].bar();
-	_outwave[ix].second[iy].conjugate();
+	outwave_[ix].second[iy] = outwave_[ix].first[iy].bar();
+	outwave_[ix].second[iy].conjugate();
       }
     }
   }
@@ -185,43 +185,43 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 	    SpinorBarWaveFunction w1,w2;
 	    // incoming wavefunction
 	    if(ferm) {
-	      w0 = _inwave.first [ihel[0]];
-	      w1 = _outwave[dit->channelType].second[ihel[dit->channelType+1]];
+	      w0 = inwave_.first [ihel[0]];
+	      w1 = outwave_[dit->channelType].second[ihel[dit->channelType+1]];
 	    }
 	    else {
-	      w0 = _outwave[dit->channelType].first [ihel[dit->channelType+1]];
-	      w1 = _inwave.second[ihel[0]];
+	      w0 = outwave_[dit->channelType].first [ihel[dit->channelType+1]];
+	      w1 = inwave_.second[ihel[0]];
 	    }
 	    if(decay[out2[dit->channelType]]->id()<0&&
 	       decay[out3[dit->channelType]]->id()>0) {
-	      w2 = _outwave[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
-	      w3 = _outwave[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
+	      w2 = outwave_[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
+	      w3 = outwave_[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
 	      sign *= -1.;
 	    }
 	    else {
-	      w2 = _outwave[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
-	      w3 = _outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
+	      w2 = outwave_[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
+	      w3 = outwave_[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
 	    tcPDPtr offshell = dit->intermediate;
 	    if(cc&&offshell->CC()) offshell=offshell->CC();
 	    Complex diag(0.);
 	    // intermediate scalar
 	    if     (offshell->iSpin() == PDT::Spin0) { 
-	      ScalarWaveFunction inters = _sca[idiag].first->
+	      ScalarWaveFunction inters = sca_[idiag].first->
 		evaluate(scale, widthOption(), offshell, w0, w1);
-	      diag = _sca[idiag].second->evaluate(scale,w3,w2,inters);
+	      diag = sca_[idiag].second->evaluate(scale,w3,w2,inters);
 	    }
 	    // intermediate vector
 	    else if(offshell->iSpin() == PDT::Spin1) {
-	      VectorWaveFunction interv = _vec[idiag].first->
+	      VectorWaveFunction interv = vec_[idiag].first->
 		evaluate(scale, widthOption(), offshell, w0, w1);
-	      diag = _vec[idiag].second->evaluate(scale,w3,w2,interv);
+	      diag = vec_[idiag].second->evaluate(scale,w3,w2,interv);
 	    }
 	    // intermediate tensor
 	    else if(offshell->iSpin() == PDT::Spin2) {
-	      TensorWaveFunction intert = _ten[idiag].first->
+	      TensorWaveFunction intert = ten_[idiag].first->
 		evaluate(scale, widthOption(), offshell, w0, w1);
-	      diag = _ten[idiag].second->evaluate(scale,w3,w2,intert);
+	      diag = ten_[idiag].second->evaluate(scale,w3,w2,intert);
 	    }
 	    // unknown
 	    else throw Exception()
@@ -268,10 +268,10 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],_rho)).real();
+	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],rho_)).real();
 	me2 += con;
 	if(ix==iy) {
-	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],_rho)).real();
+	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],rho_)).real();
 	  pflows[ix] += con;
 	}
       }
@@ -289,7 +289,7 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],_rho)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],rho_)).real();
   }
   // return the matrix element squared
   return me2;

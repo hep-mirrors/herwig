@@ -139,27 +139,27 @@ private:
   /**
    *  Abstract pointer to general VVS vertex
    */
-  AbstractVVSVertexPtr _abstractVertex;
+  AbstractVVSVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative form
    */
-  VVSVertexPtr _perturbativeVertex; 
+  VVSVertexPtr perturbativeVertex_; 
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunction
    */
-  mutable Helicity::ScalarWaveFunction _swave;
+  mutable Helicity::ScalarWaveFunction swave_;
 
   /**
    *  Vector wavefunctions
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors_[2];
 };
 
 }

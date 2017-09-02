@@ -36,24 +36,24 @@ IBPtr TVVDecayer::fullclone() const {
 
 void TVVDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
-  _perturbativeVertex        = dynamic_ptr_cast<VVTVertexPtr>         (vertex());
-  _abstractVertex            = dynamic_ptr_cast<AbstractVVTVertexPtr> (vertex());
-  _abstractOutgoingVertex1   = dynamic_ptr_cast<AbstractVVVVertexPtr> (outgoingVertices()[0]);
-  _abstractOutgoingVertex2   = dynamic_ptr_cast<AbstractVVVVertexPtr> (outgoingVertices()[1]);
-  _abstractFourPointVertex   = dynamic_ptr_cast<AbstractVVVTVertexPtr>(getFourPointVertex());
+  perturbativeVertex_        = dynamic_ptr_cast<VVTVertexPtr>         (vertex());
+  abstractVertex_            = dynamic_ptr_cast<AbstractVVTVertexPtr> (vertex());
+  abstractOutgoingVertex1_   = dynamic_ptr_cast<AbstractVVVVertexPtr> (outgoingVertices()[0]);
+  abstractOutgoingVertex2_   = dynamic_ptr_cast<AbstractVVVVertexPtr> (outgoingVertices()[1]);
+  abstractFourPointVertex_   = dynamic_ptr_cast<AbstractVVVTVertexPtr>(getFourPointVertex());
 
 }
 
 void TVVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _abstractVertex          << _perturbativeVertex
-     << _abstractOutgoingVertex1 << _abstractOutgoingVertex2
-     << _abstractFourPointVertex;
+  os << abstractVertex_          << perturbativeVertex_
+     << abstractOutgoingVertex1_ << abstractOutgoingVertex2_
+     << abstractFourPointVertex_;
 }
 
 void TVVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _abstractVertex          >> _perturbativeVertex
-     >> _abstractOutgoingVertex1 >> _abstractOutgoingVertex2
-     >> _abstractFourPointVertex;
+  is >> abstractVertex_          >> perturbativeVertex_
+     >> abstractOutgoingVertex1_ >> abstractOutgoingVertex2_
+     >> abstractFourPointVertex_;
 }
 
 // The following static variable is needed for the type
@@ -78,36 +78,36 @@ double TVVDecayer::me2(const int , const Particle & inpart,
     photon[ix] = decay[ix]->mass()==ZERO;
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(ten_sors,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+      constructSpinInfo(ten_sors,const_ptr_cast<tPPtr>(&inpart),
 			incoming,true,false);
     for(unsigned int ix=0;ix<2;++ix)
       VectorWaveFunction::
-	constructSpinInfo(_vectors[ix],decay[ix],outgoing,true,photon[ix]);
+	constructSpinInfo(vectors_[ix],decay[ix],outgoing,true,photon[ix]);
     return 0.;
   }
   for(unsigned int ix=0;ix<2;++ix)
     VectorWaveFunction::
-      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
+      calculateWaveFunctions(vectors_[ix],decay[ix],outgoing,photon[ix]);
   Energy2 scale(sqr(inpart.mass()));
   unsigned int thel,v1hel,v2hel;
   for(thel=0;thel<5;++thel) {
     for(v1hel=0;v1hel<3;++v1hel) {
       for(v2hel=0;v2hel<3;++v2hel) {
-	(*ME())(thel,v1hel,v2hel) = _abstractVertex->evaluate(scale,
-							   _vectors[0][v1hel],
-							   _vectors[1][v2hel],
-							   _tensors[thel]);
+	(*ME())(thel,v1hel,v2hel) = abstractVertex_->evaluate(scale,
+							   vectors_[0][v1hel],
+							   vectors_[1][v2hel],
+							   ten_sors[thel]);
 	if(photon[1]) ++v2hel;
       }
       if(photon[0]) ++v1hel;
     }
   }
-  double output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -118,10 +118,10 @@ double TVVDecayer::me2(const int , const Particle & inpart,
 Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(_perturbativeVertex) {
+  if(perturbativeVertex_) {
     Energy2 scale(sqr(inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, in);
+    perturbativeVertex_->setCoupling(scale, outa.first, outb.first, in);
     double mu2 = sqr(outa.second/inpart.second);
     double b = sqrt(1 - 4.*mu2);
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
@@ -132,7 +132,7 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     else 
       me2 = scale/10.;
     
-    Energy output = norm(_perturbativeVertex->norm())*me2*pcm
+    Energy output = norm(perturbativeVertex_->norm())*me2*pcm
       /(8.*Constants::pi)*UnitRemoval::InvE2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
@@ -161,17 +161,17 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   if(meopt==Initialize) {
     // create tensor wavefunction for decaying particle
     TensorWaveFunction::
-      calculateWaveFunctions(_tensors3, _rho3, const_ptr_cast<tPPtr>(&inpart), incoming, false);
+      calculateWaveFunctions(tensors3_, rho3_, const_ptr_cast<tPPtr>(&inpart), incoming, false);
   }
   // setup spin information when needed
   if(meopt==Terminate) {
     TensorWaveFunction::
-      constructSpinInfo(_tensors3, const_ptr_cast<tPPtr>(&inpart),incoming,true, false);
+      constructSpinInfo(tensors3_, const_ptr_cast<tPPtr>(&inpart),incoming,true, false);
     for(unsigned int ix=0;ix<2;++ix)
       VectorWaveFunction::
-	constructSpinInfo(_vectors3[ix],decay[ix   ],outgoing,true, massless[ix]);
+	constructSpinInfo(vectors3_[ix],decay[ix   ],outgoing,true, massless[ix]);
     VectorWaveFunction::
-        constructSpinInfo(_gluon       ,decay[iglu ],outgoing,true,false);
+        constructSpinInfo(gluon_       ,decay[iglu ],outgoing,true,false);
     return 0.;
   }
 
@@ -185,16 +185,16 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   // create wavefunctions
   for(unsigned int ix=0;ix<2;++ix)
     VectorWaveFunction::
-      calculateWaveFunctions(_vectors3[ix],decay[ix   ],outgoing,massless[ix]);
+      calculateWaveFunctions(vectors3_[ix],decay[ix   ],outgoing,massless[ix]);
   VectorWaveFunction::
-      calculateWaveFunctions(_gluon       ,decay[iglu ],outgoing,true);
+      calculateWaveFunctions(gluon_       ,decay[iglu ],outgoing,true);
 
   // // gauge test
-  // _gluon.clear();
+  // gluon_.clear();
   // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
   //   else {
-  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
   // 				          decay[iglu ]->dataPtr(),10,
   // 					  outgoing));
   //   }
@@ -202,11 +202,11 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 
   
   // work out which vector each outgoing vertex corresponds to 
-  if(_abstractOutgoingVertex1!=_abstractOutgoingVertex2 &&
-     _abstractOutgoingVertex1->isIncoming(getParticleData(decay[1]->id())))
-    swap(_abstractOutgoingVertex1, _abstractOutgoingVertex2);
+  if(abstractOutgoingVertex1_!=abstractOutgoingVertex2_ &&
+     abstractOutgoingVertex1_->isIncoming(getParticleData(decay[1]->id())))
+    swap(abstractOutgoingVertex1_, abstractOutgoingVertex2_);
   
-  if (! (_abstractOutgoingVertex1 && _abstractOutgoingVertex2))
+  if (! (abstractOutgoingVertex1_ && abstractOutgoingVertex2_))
     throw Exception()
       << "Invalid vertices for QCD radiation in TVV decay in TVVDecayer::threeBodyME"
       << Exception::runerror;
@@ -229,23 +229,23 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 
 	  // radiation from first outgoing vector
 	  if(decay[0]->dataPtr()->coloured()) {
-	    assert(_abstractOutgoingVertex1);
+	    assert(abstractOutgoingVertex1_);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[0]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    VectorWaveFunction vectInter = 
-	      _abstractOutgoingVertex1->evaluate(scale,3,off,_gluon[2*ig],
-						 _vectors3[0][iv0],decay[0]->mass());
+	      abstractOutgoingVertex1_->evaluate(scale,3,off,gluon_[2*ig],
+						 vectors3_[0][iv0],decay[0]->mass());
 	  
-	    if(_vectors3[0][iv0].particle()->PDGName()!=vectInter.particle()->PDGName())
+	    if(vectors3_[0][iv0].particle()->PDGName()!=vectInter.particle()->PDGName())
 	      throw Exception()
-		<< _vectors3[0][iv0].particle()->PDGName() << " was changed to " 
+		<< vectors3_[0][iv0].particle()->PDGName() << " was changed to " 
 		<< vectInter        .particle()->PDGName() << " in TVVDecayer::threeBodyME"
 		<< Exception::runerror;
 
-	    double gs    =  _abstractOutgoingVertex1->strongCoupling(scale);
-	    Complex diag = _abstractVertex->evaluate(scale,_vectors3[1][iv1], 
-						     vectInter,_tensors3[it])/gs;
+	    double gs    =  abstractOutgoingVertex1_->strongCoupling(scale);
+	    Complex diag = abstractVertex_->evaluate(scale,vectors3_[1][iv1], 
+						     vectInter,tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	      (*ME[colourFlow[1][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[1][ix].second*diag;
@@ -254,23 +254,23 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 
 	  // radiation from second outgoing vector
 	  if(decay[1]->dataPtr()->coloured()) {
-	    assert(_abstractOutgoingVertex2);
+	    assert(abstractOutgoingVertex2_);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[1]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    VectorWaveFunction  vectInter = 
-	      _abstractOutgoingVertex2->evaluate(scale,3,off,_vectors3[1][iv1],
-						_gluon[2*ig],decay[1]->mass());
+	      abstractOutgoingVertex2_->evaluate(scale,3,off,vectors3_[1][iv1],
+						gluon_[2*ig],decay[1]->mass());
 	    
-	    if(_vectors3[1][iv1].particle()->PDGName()!=vectInter.particle()->PDGName())
+	    if(vectors3_[1][iv1].particle()->PDGName()!=vectInter.particle()->PDGName())
 	      throw Exception()
-		<< _vectors3[1][iv1].particle()->PDGName() << " was changed to " 
+		<< vectors3_[1][iv1].particle()->PDGName() << " was changed to " 
 		<< vectInter        .particle()->PDGName() << " in TVVDecayer::threeBodyME"
 		<< Exception::runerror;
 	    
-	    double gs    =  _abstractOutgoingVertex2->strongCoupling(scale);
-	    Complex diag = _abstractVertex->evaluate(scale,vectInter,_vectors3[0][iv0],
-						     _tensors3[it])/gs;
+	    double gs    =  abstractOutgoingVertex2_->strongCoupling(scale);
+	    Complex diag = abstractVertex_->evaluate(scale,vectInter,vectors3_[0][iv0],
+						     tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	      (*ME[colourFlow[2][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[2][ix].second*diag;
@@ -278,11 +278,11 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 	  }
 
 	  // radiation from 4 point vertex
-	  if (_abstractFourPointVertex){
-	    double gs    = _abstractFourPointVertex->strongCoupling(scale);
-	    Complex diag = _abstractFourPointVertex->evaluate(scale, _vectors3[0][iv0],
-							      _vectors3[1][iv1],_gluon[2*ig], 
-							      _tensors3[it])/gs;
+	  if (abstractFourPointVertex_){
+	    double gs    = abstractFourPointVertex_->strongCoupling(scale);
+	    Complex diag = abstractFourPointVertex_->evaluate(scale, vectors3_[0][iv0],
+							      vectors3_[1][iv1],gluon_[2*ig], 
+							      tensors3_[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	      (*ME[colourFlow[3][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[3][ix].second*diag;
@@ -299,7 +299,7 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],_rho3)).real();
+      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
   output*=(4.*Constants::pi); 

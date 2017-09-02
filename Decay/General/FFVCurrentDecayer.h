@@ -141,22 +141,22 @@ private:
   /**
    * Pointer to FFVVertex
    */
-  FFVVertexPtr _theFFVPtr;
+  FFVVertexPtr FFVPtr_;
 
   /**
    *  Spinr density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinor wavefunction
    */
-  mutable vector<SpinorWaveFunction>    _wave   ;
+  mutable vector<SpinorWaveFunction>    wave_   ;
 
   /**
    *  Barred spinor wavefunction
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 };
 
 }

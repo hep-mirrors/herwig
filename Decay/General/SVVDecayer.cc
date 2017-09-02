@@ -36,8 +36,8 @@ IBPtr SVVDecayer::fullclone() const {
 
 void SVVDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
-  _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex());
-  _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr        >(vertex());
+  abstractVertex_     = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex());
+  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr        >(vertex());
 }
 
 void SVVDecayer::doinitrun() {
@@ -46,11 +46,11 @@ void SVVDecayer::doinitrun() {
 }
 
 void SVVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _abstractVertex << _perturbativeVertex;
+  os << abstractVertex_ << perturbativeVertex_;
 }
 
 void SVVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _abstractVertex >> _perturbativeVertex;
+  is >> abstractVertex_ >> perturbativeVertex_;
 }
 
 // The following static variable is needed for the type
@@ -75,19 +75,19 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     photon[ix] = decay[ix]->mass()==ZERO;
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
+    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::
       constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
     for(unsigned int ix=0;ix<2;++ix)
       VectorWaveFunction::
-	constructSpinInfo(_vectors[ix],decay[ix],outgoing,true,photon[ix]);
+	constructSpinInfo(vectors_[ix],decay[ix],outgoing,true,photon[ix]);
   }
   for(unsigned int ix=0;ix<2;++ix)
     VectorWaveFunction::
-      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
+      calculateWaveFunctions(vectors_[ix],decay[ix],outgoing,photon[ix]);
   
   
   Energy2 scale(sqr(inpart.mass()));
@@ -96,11 +96,11 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     if( photon[1] && iv2 == 1 ) ++iv2;
     for(iv1=0;iv1<3;++iv1) {
       if( photon[0] && iv1 == 1) ++iv1;
-      (*ME())(0, iv1, iv2) = _abstractVertex->evaluate(scale,_vectors[0][iv1],
-						    _vectors[1][iv2],_swave);
+      (*ME())(0, iv1, iv2) = abstractVertex_->evaluate(scale,vectors_[0][iv1],
+						    vectors_[1][iv2],swave_);
     }
   }
-  double output = ME()->contract(_rho).real()/scale*UnitRemoval::E2;
+  double output = ME()->contract(rho_).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -111,10 +111,10 @@ double SVVDecayer::me2(const int , const Particle & inpart,
 Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(_perturbativeVertex) {
+  if(perturbativeVertex_) {
     Energy2 scale(sqr(inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    _perturbativeVertex->setCoupling(scale, outa.first , 
+    perturbativeVertex_->setCoupling(scale, outa.first , 
 				    outb.first, in);
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
@@ -129,7 +129,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->norm())*
+    Energy output = norm(perturbativeVertex_->norm())*
       me2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);

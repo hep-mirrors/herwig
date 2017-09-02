@@ -131,22 +131,22 @@ private:
   /**
    *  Abstract pointer to AbstractSSTVertex
    */
-  AbstractSSTVertexPtr _abstractVertex;
+  AbstractSSTVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  SSTVertexPtr _perturbativeVertex;
+  SSTVertexPtr perturbativeVertex_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization tensors of the decaying particle
    */
-  mutable vector<Helicity::TensorWaveFunction> _tensors;
+  mutable vector<Helicity::TensorWaveFunction> ten_sors;
 };
 
 }

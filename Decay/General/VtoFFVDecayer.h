@@ -113,47 +113,47 @@ private:
   /**
    * Store the vertices for scalar intrermediate
    */
-  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
    * Store the vertices for fermion intrermediate
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > _fer;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fer_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > _ten;
+  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > ten_;
 
   /**
    *  Spinr density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decaying particle
    */
-  mutable vector<VectorWaveFunction> _inVector;
+  mutable vector<VectorWaveFunction> inVector_;
 
   /**
    *  Scalar wavefunction for the decay products
    */
-  mutable ScalarWaveFunction _swave;
+  mutable ScalarWaveFunction swave_;
 
   /**
    *  Polarization vectors for the decay products
    */
-  mutable vector<VectorWaveFunction> _outVector;
+  mutable vector<VectorWaveFunction> outVector_;
 
   /**
    *  Spinors for the decay products
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outspin_[3];
 };
 
 }

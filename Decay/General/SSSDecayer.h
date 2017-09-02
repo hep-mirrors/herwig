@@ -149,52 +149,52 @@ private:
   /**
    *  Abstract pointer to AbstractSSSVertex
    */
-  AbstractSSSVertexPtr _abstractVertex;
+  AbstractSSSVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  SSSVertexPtr _perturbativeVertex;
+  SSSVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar
    */
-  AbstractVSSVertexPtr _abstractIncomingVertex;
+  AbstractVSSVertexPtr abstractIncomingVertex_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertex1;
+  AbstractVSSVertexPtr abstractOutgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertex2;
+  AbstractVSSVertexPtr abstractOutgoingVertex2_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunctions
    */
-  mutable Helicity::ScalarWaveFunction _swave;
+  mutable Helicity::ScalarWaveFunction swave_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Scalar wavefunction for 3 body decay
    */
-  mutable Helicity::ScalarWaveFunction _swave3;
+  mutable Helicity::ScalarWaveFunction swave3_;
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _gluon;
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
 
 };
 

@@ -45,14 +45,14 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 void GeneralTwoBodyDecayer::doinit() {
   PerturbativeDecayer::doinit();
   assert( vertex_ );
-  assert( _incoming && _outgoing.size()==2);
+  assert( incoming_ && outgoing_.size()==2);
   vertex_->init();
   //create phase space mode
   tPDVector extpart(3);
-  extpart[0] = _incoming;
-  extpart[1] = _outgoing[0];
-  extpart[2] = _outgoing[1];
-  addMode(new_ptr(DecayPhaseSpaceMode(extpart, this)), _maxweight, vector<double>());
+  extpart[0] = incoming_;
+  extpart[1] = outgoing_[0];
+  extpart[2] = outgoing_[1];
+  addMode(new_ptr(DecayPhaseSpaceMode(extpart, this)), maxWeight_, vector<double>());
 }
 
 int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
@@ -61,17 +61,17 @@ int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent,
   long id1 = children[0]->id();
   long id2 = children[1]->id();
   cc = false;
-  long out1 = _outgoing[0]->id();
-  long out2 = _outgoing[1]->id();
-  if( parentID == _incoming->id() && 
+  long out1 = outgoing_[0]->id();
+  long out2 = outgoing_[1]->id();
+  if( parentID == incoming_->id() && 
       ((id1 == out1 && id2 == out2) || 
        (id1 == out2 && id2 == out1)) ) {
     return 0;
   }
-  else if(_incoming->CC() && parentID == _incoming->CC()->id()) {
+  else if(incoming_->CC() && parentID == incoming_->CC()->id()) {
     cc = true;
-    if( _outgoing[0]->CC()) out1 = _outgoing[0]->CC()->id();
-    if( _outgoing[1]->CC()) out2 = _outgoing[1]->CC()->id();
+    if( outgoing_[0]->CC()) out1 = outgoing_[0]->CC()->id();
+    if( outgoing_[1]->CC()) out2 = outgoing_[1]->CC()->id();
     if((id1 == out1 && id2 == out2) || 
        (id1 == out2 && id2 == out1)) return 0;
   }
@@ -249,12 +249,12 @@ colourConnections(const Particle & parent,
 
 bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 					  double & coupling) const {
-  assert(dm.parent()->id() == _incoming->id());
+  assert(dm.parent()->id() == incoming_->id());
   ParticleMSet::const_iterator pit = dm.products().begin();
   long id1 = (*pit)->id();
   ++pit;
   long id2 = (*pit)->id();
-  long id1t(_outgoing[0]->id()), id2t(_outgoing[1]->id());
+  long id1t(outgoing_[0]->id()), id2t(outgoing_[1]->id());
   mecode = -1;
   coupling = 1.;
   if( id1 == id1t && id2 == id2t ) {
@@ -270,12 +270,12 @@ bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 
 
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << vertex_ << _incoming << _outgoing << _maxweight 
+  os << vertex_ << incoming_ << outgoing_ << maxWeight_ 
      << incomingVertex_ << outgoingVertices_ << fourPointVertex_;
 }
 
 void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> vertex_ >> _incoming >> _outgoing >> _maxweight
+  is >> vertex_ >> incoming_ >> outgoing_ >> maxWeight_
      >> incomingVertex_ >> outgoingVertices_ >> fourPointVertex_;
 }
 
@@ -483,10 +483,10 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 					 VertexBasePtr vertex, VertexBasePtr inV,
 					 const vector<VertexBasePtr> & outV,
 					 VertexBasePtr fourV) {
-  _incoming=incoming;
-  _outgoing.clear();
-  _outgoing.push_back(outgoing.first );
-  _outgoing.push_back(outgoing.second);
+  incoming_=incoming;
+  outgoing_.clear();
+  outgoing_.push_back(outgoing.first );
+  outgoing_.push_back(outgoing.second);
   vertex_ = vertex;
   incomingVertex_ = inV;
   outgoingVertices_ = outV;

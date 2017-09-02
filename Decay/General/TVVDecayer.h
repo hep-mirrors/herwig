@@ -142,62 +142,62 @@ private:
   /**
    *  Abstract pointer to AbstractVVTVertex
    */
-  AbstractVVTVertexPtr _abstractVertex;
+  AbstractVVTVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  VVTVertexPtr _perturbativeVertex;
+  VVTVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertex1;
+  AbstractVVVVertexPtr abstractOutgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertex2;
+  AbstractVVVVertexPtr abstractOutgoingVertex2_;
 
   /**
    *  Abstract pointer to AbstractVVVTVertex for QCD radiation from 4 point vertex
    */
-  AbstractVVVTVertexPtr _abstractFourPointVertex;
+  AbstractVVVTVertexPtr abstractFourPointVertex_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization tensors of decaying particle
    */
-  mutable vector<Helicity::TensorWaveFunction> _tensors;
+  mutable vector<Helicity::TensorWaveFunction> ten_sors;
 
   /**
    *  Polarization vectors of outgoing vector bosons
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors_[2];
 
   /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Tensor wavefunction for 3 body decay
    */
-  mutable vector<Helicity::TensorWaveFunction> _tensors3;
+  mutable vector<Helicity::TensorWaveFunction> tensors3_;
 
   /**
    *  Polarization vectors of outgoing vector bosons
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors3[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors3_[2];
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _gluon;
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
 
 };
 

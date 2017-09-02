@@ -143,72 +143,72 @@ private:
   /**
    *  Abstract pointer to AbstractFFVVertex
    */
-  AbstractFFVVertexPtr _abstractVertex;
+  AbstractFFVVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  FFVVertexPtr _perturbativeVertex;
+  FFVVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from incoming (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractIncomingVertex;
+  AbstractFFVVertexPtr abstractIncomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertexF;
+  AbstractFFVVertexPtr abstractOutgoingVertexF_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertexV;
+  AbstractVVVVertexPtr abstractOutgoingVertexV_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinor wavefunction
    */
-  mutable vector<SpinorWaveFunction>    _wave   ;
+  mutable vector<SpinorWaveFunction>    wave_   ;
 
   /**
    *  Barred spinor wavefunction
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 
   /**
    *  Polarization vectors
    */
-  mutable vector<VectorWaveFunction> _vector;
+  mutable vector<VectorWaveFunction> vector_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  vector wavefunction for 3 body decay
    */
-  mutable vector<VectorWaveFunction> _vector3;
+  mutable vector<VectorWaveFunction> vector3_;
 
   /**
    *  Spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorWaveFunction> _wave3;
+  mutable vector<SpinorWaveFunction> wave3_;
 
   /**
    *  Barred spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar3;
+  mutable vector<SpinorBarWaveFunction> wavebar3_;
 
     /**
    *  Vector wavefunction for gluon in 3 body decay
    */
-  mutable vector<VectorWaveFunction> _gluon;
+  mutable vector<VectorWaveFunction> gluon_;
 
 };
 

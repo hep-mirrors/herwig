@@ -26,11 +26,11 @@ IBPtr StoFFVDecayer::fullclone() const {
 }
 
 void StoFFVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _sca << _fer << _vec;
+  os << sca_ << fer_ << vec_;
 }
 
 void StoFFVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _sca >> _fer >> _vec;
+  is >> sca_ >> fer_ >> vec_;
 }
 
 // The following static variable is needed for the type
@@ -61,9 +61,9 @@ threeBodyMEIntegrator(const DecayMode & ) const {
 void StoFFVDecayer::doinit() {
   GeneralThreeBodyDecayer::doinit(); 
   unsigned int ndiags = getProcessInfo().size();
-  _sca.resize(ndiags);
-  _fer.resize(ndiags);
-  _vec.resize(ndiags);
+  sca_.resize(ndiags);
+  fer_.resize(ndiags);
+  vec_.resize(ndiags);
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
@@ -76,7 +76,7 @@ void StoFFVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a scalar diagram in StoFFVDecayer::doinit()"
 	<< Exception::runerror;
-      _sca[ix] = make_pair(vert1, vert2);
+      sca_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1Half) {
       AbstractFFSVertexPtr vert1 = dynamic_ptr_cast<AbstractFFSVertexPtr>
@@ -86,7 +86,7 @@ void StoFFVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a fermion diagram in StoFFVDecayer::doinit()"
 	<< Exception::runerror;
-      _fer[ix] = make_pair(vert1, vert2);
+      fer_[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1) {
       AbstractVVSVertexPtr vert1 = dynamic_ptr_cast<AbstractVVSVertexPtr>
@@ -96,7 +96,7 @@ void StoFFVDecayer::doinit() {
       if(!vert1||!vert2) throw Exception() 
 	<< "Invalid vertices for a vector diagram in StoFFVDecayer::doinit()"
 	<< Exception::runerror;
-      _vec[ix] = make_pair(vert1, vert2);
+      vec_[ix] = make_pair(vert1, vert2);
     }
   }
 }
@@ -108,9 +108,9 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
   // special handling or first/last call
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),
 			     Helicity::incoming);
-    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
+    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
 				Helicity::incoming);
   }
   if(meopt==Terminate) {
@@ -119,12 +119,12 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			Helicity::incoming,true);
     for(unsigned int ix=0;ix<decay.size();++ix) {
       if(decay[ix]->dataPtr()->iSpin()==PDT::Spin1) {
-	VectorWaveFunction::constructSpinInfo(_outVector,decay[ix],
+	VectorWaveFunction::constructSpinInfo(outVector_,decay[ix],
 					      Helicity::outgoing,true,false);
       }
       else {
 	SpinorWaveFunction::
-	  constructSpinInfo(_outspin[ix].first,decay[ix],Helicity::outgoing,true);
+	  constructSpinInfo(outspin_[ix].first,decay[ix],Helicity::outgoing,true);
       }
     }
   }
@@ -135,23 +135,23 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
       ivec = ix;
       massless = decay[ivec]->mass()==ZERO;
       VectorWaveFunction::
-	calculateWaveFunctions(_outVector, decay[ix], Helicity::outgoing,massless);
+	calculateWaveFunctions(outVector_, decay[ix], Helicity::outgoing,massless);
     }
     else {
       SpinorWaveFunction::
-	calculateWaveFunctions(_outspin[ix].first,decay[ix],Helicity::outgoing);
-      _outspin[ix].second.resize(2);
+	calculateWaveFunctions(outspin_[ix].first,decay[ix],Helicity::outgoing);
+      outspin_[ix].second.resize(2);
       // Need a ubar and a v spinor
-      if(_outspin[ix].first[0].wave().Type() == SpinorType::u) {
+      if(outspin_[ix].first[0].wave().Type() == SpinorType::u) {
 	for(unsigned int iy = 0; iy < 2; ++iy) {
-	  _outspin[ix].second[iy] = _outspin[ix].first[iy].bar();
-	  _outspin[ix].first[iy].conjugate();
+	  outspin_[ix].second[iy] = outspin_[ix].first[iy].bar();
+	  outspin_[ix].first[iy].conjugate();
 	}
       }
       else {
 	for(unsigned int iy = 0; iy < 2; ++iy) {
-	  _outspin[ix].second[iy] = _outspin[ix].first[iy].bar();
-	  _outspin[ix].second[iy].conjugate();
+	  outspin_[ix].second[iy] = outspin_[ix].first[iy].bar();
+	  outspin_[ix].second[iy].conjugate();
 	}
       }
     }
@@ -195,19 +195,19 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	  double sign = (o3 < o2) ? 1. : -1.;
 	  // intermediate scalar
 	  if(offshell->iSpin() == PDT::Spin0) {
-	    ScalarWaveFunction inters = _sca[idiag].first->
-	      evaluate(scale, widthOption(), offshell, _outVector[v1], _swave);
+	    ScalarWaveFunction inters = sca_[idiag].first->
+	      evaluate(scale, widthOption(), offshell, outVector_[v1], swave_);
 	    unsigned int h1(s1),h2(s2);
 	    if(o2 > o3) swap(h1, h2);
 	    if(decay[o2]->id() < 0 &&  decay[o3]->id() > 0) {
-	      diag = -sign*_sca[idiag].second->
-		evaluate(scale,_outspin[o2].first[h1],
-			 _outspin[o3].second[h2],inters);
+	      diag = -sign*sca_[idiag].second->
+		evaluate(scale,outspin_[o2].first[h1],
+			 outspin_[o3].second[h2],inters);
 	    }
 	    else {
-	      diag = sign*_sca[idiag].second->
-		evaluate(scale, _outspin[o3].first [h2],
-			 _outspin[o2].second[h1],inters);
+	      diag = sign*sca_[idiag].second->
+		evaluate(scale, outspin_[o3].first [h2],
+			 outspin_[o2].second[h1],inters);
 	    }
 	  }
 	  // intermediate fermion
@@ -219,35 +219,35 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	    sign = iferm < dit->channelType ? 1. : -1.;
 	    if((decay[dit->channelType]->id() < 0 && decay[iferm]->id() > 0 ) ||
 	       (decay[dit->channelType]->id()*offshell->id()>0)) {
-	      SpinorWaveFunction inters = _fer[idiag].first->
+	      SpinorWaveFunction inters = fer_[idiag].first->
 		evaluate(scale,widthOption(),offshell,
-			 _outspin[dit->channelType].first[h1], _swave);
-	      diag = -sign*_fer[idiag].second->
-		evaluate(scale,inters,_outspin[iferm].second[h2], _outVector[v1]);
+			 outspin_[dit->channelType].first[h1], swave_);
+	      diag = -sign*fer_[idiag].second->
+		evaluate(scale,inters,outspin_[iferm].second[h2], outVector_[v1]);
 	    }
 	    else {
-	      SpinorBarWaveFunction inters = _fer[idiag].first->
+	      SpinorBarWaveFunction inters = fer_[idiag].first->
 		evaluate(scale,widthOption(),offshell,
-			 _outspin[dit->channelType].second[h1],_swave);
-	      diag =  sign*_fer[idiag].second->
-		evaluate(scale,_outspin[iferm].first [h2],inters, _outVector[v1]);
+			 outspin_[dit->channelType].second[h1],swave_);
+	      diag =  sign*fer_[idiag].second->
+		evaluate(scale,outspin_[iferm].first [h2],inters, outVector_[v1]);
 	    }
 	  }
 	  // intermediate vector
 	  else if(offshell->iSpin() == PDT::Spin1) {
-	    VectorWaveFunction interv = _vec[idiag].first->
-	      evaluate(scale, widthOption(), offshell, _outVector[v1], _swave);
+	    VectorWaveFunction interv = vec_[idiag].first->
+	      evaluate(scale, widthOption(), offshell, outVector_[v1], swave_);
 	    unsigned int h1(s1),h2(s2);
 	    if(o2 > o3) swap(h1,h2);
 	    if(decay[o2]->id() < 0 && decay[o3]->id() > 0) {
-	      diag =-sign*_vec[idiag].second->
-		evaluate(scale, _outspin[o2].first[h1],
-			 _outspin[o3].second[h2], interv);
+	      diag =-sign*vec_[idiag].second->
+		evaluate(scale, outspin_[o2].first[h1],
+			 outspin_[o3].second[h2], interv);
 	    }
 	    else {
-	      diag = sign*_vec[idiag].second->
-		evaluate(scale, _outspin[o3].first[h2],
-			 _outspin[o2].second[h1], interv);
+	      diag = sign*vec_[idiag].second->
+		evaluate(scale, outspin_[o3].first[h2],
+			 outspin_[o2].second[h1], interv);
 	    }
 	  }
 	  // unknown
@@ -303,10 +303,10 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],_rho)).real();
+	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],rho_)).real();
 	me2 += con;
 	if(ix == iy) {
-	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],_rho)).real();
+	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],rho_)).real();
 	  pflows[ix] += con;
 	}
       }
@@ -324,7 +324,7 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],_rho)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],rho_)).real();
   }
   // return the matrix element squared
   return me2;

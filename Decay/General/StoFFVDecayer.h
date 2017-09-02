@@ -111,37 +111,37 @@ private:
   /**
    * Store the vertices for fermion intrermediate
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > _fer;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fer_;
 
   /**
    * Store the vertices for scalar intrermediate
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractVSSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVVSVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractVVSVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunction
    */
-  mutable ScalarWaveFunction _swave;
+  mutable ScalarWaveFunction swave_;
 
   /**
    *  Vector wavefunction
    */
-  mutable vector<VectorWaveFunction> _outVector;
+  mutable vector<VectorWaveFunction> outVector_;
 
   /**
    *  Spinor wavefunctions
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outspin_[3];
 };
 
 }

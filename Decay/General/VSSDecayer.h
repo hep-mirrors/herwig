@@ -149,52 +149,52 @@ private:
   /**
    *  Abstract pointer to AbstractVSSVertex
    */
-  AbstractVSSVertexPtr _abstractVertex;
+  AbstractVSSVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  VSSVertexPtr _perturbativeVertex;
+  VSSVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from incoming vector
    */
-  AbstractVVVVertexPtr _abstractIncomingVertex;
+  AbstractVVVVertexPtr abstractIncomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertex1;
+  AbstractVSSVertexPtr abstractOutgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing scalar
    */
-  AbstractVSSVertexPtr _abstractOutgoingVertex2;
+  AbstractVSSVertexPtr abstractOutgoingVertex2_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decaying particle
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors;
+  mutable vector<Helicity::VectorWaveFunction> vectors_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _vector3;
+  mutable vector<Helicity::VectorWaveFunction> vector3_;
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _gluon;
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
 
 };
 

@@ -150,72 +150,72 @@ private:
   /**
    *  Abstract pointer to AbstractFFSVertex
    */
-  AbstractFFSVertexPtr _abstractVertex;
+  AbstractFFSVertexPtr abstractVertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  FFSVertexPtr _perturbativeVertex;
+  FFSVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar
    */
-  AbstractVSSVertexPtr _abstractIncomingVertex;
+  AbstractVSSVertexPtr abstractIncomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertex1;
+  AbstractFFVVertexPtr abstractOutgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertex2;
+  AbstractFFVVertexPtr abstractOutgoingVertex2_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunction
    */
-  mutable ScalarWaveFunction _swave;
+  mutable ScalarWaveFunction swave_;
 
   /**
    *  Spinor wavefunction
    */
-  mutable vector<SpinorWaveFunction> _wave;
+  mutable vector<SpinorWaveFunction> wave_;
 
   /**
    *  Barred spinor wavefunction
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Scalar wavefunction for 3 body decay
    */
-  mutable ScalarWaveFunction _swave3;
+  mutable ScalarWaveFunction swave3_;
 
   /**
    *  Spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorWaveFunction> _wave3;
+  mutable vector<SpinorWaveFunction> wave3_;
 
   /**
    *  Barred spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar3;
+  mutable vector<SpinorBarWaveFunction> wavebar3_;
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<VectorWaveFunction> _gluon;
+  mutable vector<VectorWaveFunction> gluon_;
 
   
 };

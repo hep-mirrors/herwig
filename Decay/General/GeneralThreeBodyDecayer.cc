@@ -16,13 +16,13 @@
 using namespace Herwig;
 
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _diagrams << _diagmap << _colour << _colourLargeNC
-     << _nflow << _widthopt << _reftag << _reftagcc << _intOpt << _relerr;
+  os << incoming_ << outgoing_ << diagrams_ << diagmap_ << colour_ << colourLargeNC_
+     << nflow_ << widthOpt_ << refTag_ << refTagCC_ << intOpt_ << relerr_;
 }
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _diagrams >> _diagmap >> _colour >> _colourLargeNC
-     >> _nflow >> _widthopt >> _reftag >> _reftagcc >> _intOpt >> _relerr;
+  is >> incoming_ >> outgoing_ >> diagrams_ >> diagmap_ >> colour_ >> colourLargeNC_
+     >> nflow_ >> widthOpt_ >> refTag_ >> refTagCC_ >> intOpt_ >> relerr_;
 }
 
 // The following static variable is needed for the type
@@ -39,7 +39,7 @@ void GeneralThreeBodyDecayer::Init() {
   static Switch<GeneralThreeBodyDecayer,unsigned int> interfaceWidthOption
     ("WidthOption",
      "Option for the treatment of the widths of the intermediates",
-     &GeneralThreeBodyDecayer::_widthopt, 1, false, false);
+     &GeneralThreeBodyDecayer::widthOpt_, 1, false, false);
   static SwitchOption interfaceWidthOptionFixed
     (interfaceWidthOption,
      "Fixed",
@@ -59,7 +59,7 @@ void GeneralThreeBodyDecayer::Init() {
   static Switch<GeneralThreeBodyDecayer,unsigned int> interfacePartialWidthIntegration
     ("PartialWidthIntegration",
      "Switch to control the partial width integration",
-     &GeneralThreeBodyDecayer::_intOpt, 0, false, false);
+     &GeneralThreeBodyDecayer::intOpt_, 0, false, false);
   static SwitchOption interfacePartialWidthIntegrationAllPoles
     (interfacePartialWidthIntegration,
      "AllPoles",
@@ -74,7 +74,7 @@ void GeneralThreeBodyDecayer::Init() {
   static Parameter<GeneralThreeBodyDecayer,double> interfaceRelativeError
     ("RelativeError",
      "The relative error for the GQ integration of the partial width",
-     &GeneralThreeBodyDecayer::_relerr, 1e-2, 1e-10, 1.,
+     &GeneralThreeBodyDecayer::relerr_, 1e-2, 1e-10, 1.,
      false, false, Interface::limited);
 
 }
@@ -99,9 +99,9 @@ ParticleVector GeneralThreeBodyDecayer::decay(const Particle & parent,
 
 int  GeneralThreeBodyDecayer::
 modeNumber(bool & cc, tcPDPtr in, const tPDVector & outin) const {
-  assert( !_reftag.empty() && !_reftagcc.empty() );
+  assert( !refTag_.empty() && !refTagCC_.empty() );
   // check number of outgoing particles
-  if( outin.size() != 3 || abs(in->id()) != abs(_incoming->id()) ) return -1;
+  if( outin.size() != 3 || abs(in->id()) != abs(incoming_->id()) ) return -1;
   OrderedParticles testmode(outin.begin(), outin.end());
   OrderedParticles::const_iterator dit = testmode.begin();
   string testtag(in->name() + "->");
@@ -109,11 +109,11 @@ modeNumber(bool & cc, tcPDPtr in, const tPDVector & outin) const {
     testtag += (**dit).name();
     if( i != 3 ) testtag += string(",");
   }
-  if( testtag == _reftag ) {
+  if( testtag == refTag_ ) {
     cc = false;
     return 0;
   }
-  else if ( testtag == _reftagcc ) {
+  else if ( testtag == refTagCC_ ) {
     cc = true;
     return 0;
   }
@@ -125,31 +125,31 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 					   const vector<TBDiagram> & process,
 					   double symfac) {
   // set the member variables from the info supplied
-  _incoming        = incoming;
-  _outgoing        = outgoing;
-  _diagrams        = process;
-  assert( _outgoing.size() == 3 );
+  incoming_        = incoming;
+  outgoing_        = outgoing;
+  diagrams_        = process;
+  assert( outgoing_.size() == 3 );
   // Construct reference tags for testing in modeNumber function
-  OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
+  OrderedParticles refmode(outgoing_.begin(), outgoing_.end());
   OrderedParticles::const_iterator dit = refmode.begin();
-  _reftag = _incoming->name() + "->";
+  refTag_ = incoming_->name() + "->";
   for( unsigned int i = 1; dit != refmode.end(); ++dit, ++i) {
-    _reftag += (**dit).name();
-    if( i != 3 )  _reftag += string(",");
+    refTag_ += (**dit).name();
+    if( i != 3 )  refTag_ += string(",");
   }
   //CC-mode
   refmode.clear();
-  _reftagcc = _incoming->CC() ? _incoming->CC()->name() : 
-    _incoming->name();
-  _reftagcc += "->";
+  refTagCC_ = incoming_->CC() ? incoming_->CC()->name() : 
+    incoming_->name();
+  refTagCC_ += "->";
   for( unsigned int i = 0;  i < 3; ++i ) {
-    if( _outgoing[i]->CC() ) refmode.insert( _outgoing[i]->CC() );
-    else refmode.insert( _outgoing[i] );
+    if( outgoing_[i]->CC() ) refmode.insert( outgoing_[i]->CC() );
+    else refmode.insert( outgoing_[i] );
   }
   dit = refmode.begin();
   for( unsigned int i = 1; dit != refmode.end(); ++dit , ++i) {
-    _reftagcc += (**dit).name();
-    if( i != 3 ) _reftagcc += string(",");
+    refTagCC_ += (**dit).name();
+    if( i != 3 ) refTagCC_ += string(",");
   }
   // set the colour factors and return the answer
   return setColourFactors(symfac);
@@ -158,38 +158,38 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 void GeneralThreeBodyDecayer::doinit() {
   DecayIntegrator::doinit();
   // create the phase space integrator
-  tPDVector extpart(1,_incoming);
-  extpart.insert(extpart.end(),_outgoing.begin(),_outgoing.end());
+  tPDVector extpart(1,incoming_);
+  extpart.insert(extpart.end(),outgoing_.begin(),outgoing_.end());
   // create the integration channels for the decay
   DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this,true)));
   DecayPhaseSpaceChannelPtr newchannel;
   // create the phase-space channels for the integration
   unsigned int nmode(0);
-  for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-    if(_diagrams[ix].channelType==TBDiagram::fourPoint||
-       _diagrams[ix].channelType==TBDiagram::UNDEFINED) continue;
+  for(unsigned int ix=0;ix<diagrams_.size();++ix) {
+    if(diagrams_[ix].channelType==TBDiagram::fourPoint||
+       diagrams_[ix].channelType==TBDiagram::UNDEFINED) continue;
     // create the new channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
     int jac = 0;
     double power = 0.0;
-    if ( _diagrams[ix].intermediate->mass() == ZERO ||
-	 _diagrams[ix].intermediate->width() == ZERO ) {
+    if ( diagrams_[ix].intermediate->mass() == ZERO ||
+	 diagrams_[ix].intermediate->width() == ZERO ) {
       jac = 1;
       power = -2.0;
     }
-    if(_diagrams[ix].channelType==TBDiagram::channel23) {
+    if(diagrams_[ix].channelType==TBDiagram::channel23) {
       newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-      newchannel->addIntermediate(_diagrams[ix].intermediate,jac,power, 2,3);
+      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 2,3);
     }
-    else if(_diagrams[ix].channelType==TBDiagram::channel13) {
+    else if(diagrams_[ix].channelType==TBDiagram::channel13) {
       newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
-      newchannel->addIntermediate(_diagrams[ix].intermediate,jac,power, 1,3);
+      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 1,3);
     }
-    else if(_diagrams[ix].channelType==TBDiagram::channel12) {
+    else if(diagrams_[ix].channelType==TBDiagram::channel12) {
       newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
-      newchannel->addIntermediate(_diagrams[ix].intermediate,jac,power, 1,2);
+      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 1,2);
     }
-    _diagmap.push_back(ix);
+    diagmap_.push_back(ix);
     mode->addChannel(newchannel);
     ++nmode;
   }
@@ -257,14 +257,14 @@ Energy GeneralThreeBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
 					     PMPair outb, PMPair outc) const {
   if(inpart.second<outa.second+outb.second+outc.second) return ZERO;
   // create the object to calculate the width if it doesn't all ready exist
-  if(!_widthcalc) {
-    string tag = _incoming->name() + "->";
-    tag += _outgoing[0]->name() + "," + _outgoing[1]->name() + ","
-      + _outgoing[2]->name() + ";";
+  if(!widthCalc_) {
+    string tag = incoming_->name() + "->";
+    tag += outgoing_[0]->name() + "," + outgoing_[1]->name() + ","
+      + outgoing_[2]->name() + ";";
     DMPtr dm = generator()->findDecayMode(tag);
-    _widthcalc = threeBodyMEIntegrator(*dm);
+    widthCalc_ = threeBodyMEIntegrator(*dm);
   }
-  return _widthcalc->partialWidth(sqr(inpart.second));
+  return widthCalc_->partialWidth(sqr(inpart.second));
 }
 
 void GeneralThreeBodyDecayer::
@@ -285,7 +285,7 @@ colourConnections(const Particle & parent,
       else                            inter = out[ix];
     }
     outgoing.resize(3);
-    switch(_diagrams[idiag].channelType) {
+    switch(diagrams_[idiag].channelType) {
     case TBDiagram::channel23:
       outgoing[0] = child;
       outgoing[1] = inter->children()[0];
@@ -622,8 +622,8 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 			    vector<double> & inweights) const {
   // check if any intermediate photons
   bool hasPhoton=false;
-  for(unsigned int iy=0;iy<_diagmap.size();++iy) {
-    unsigned int ix=_diagmap[iy];
+  for(unsigned int iy=0;iy<diagmap_.size();++iy) {
+    unsigned int ix=diagmap_[iy];
     if(getProcessInfo()[ix].intermediate->id()==ParticleID::gamma)
       hasPhoton = true;
   }
@@ -634,8 +634,8 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
   Energy absmin = -1e20*GeV;
   int minType   = -1;
-  for(unsigned int iy=0;iy<_diagmap.size();++iy) {
-    unsigned int ix=_diagmap[iy];
+  for(unsigned int iy=0;iy<diagmap_.size();++iy) {
+    unsigned int ix=diagmap_[iy];
     if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
     Energy dm1(min-getProcessInfo()[ix].intermediate->mass());
     Energy dm2(getProcessInfo()[ix].intermediate->mass());
@@ -687,7 +687,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
     return;
   }
   // use shallowest pole
-  else if(_intOpt==1&&minType>0&&getProcessInfo()[imin[minType].first].intermediate->id()!=ParticleID::gamma) {
+  else if(intOpt_==1&&minType>0&&getProcessInfo()[imin[minType].first].intermediate->id()!=ParticleID::gamma) {
     intype.push_back(minType);
     inpow.push_back(0.);
     inmass.push_back(getProcessInfo()[imin[minType].first].intermediate->mass());
@@ -715,11 +715,11 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 }
 
 bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
-  string name = _incoming->PDGName() + "->";
+  string name = incoming_->PDGName() + "->";
   vector<int> sng,trip,atrip,oct;
   unsigned int iloc(0);
-  for(vector<PDPtr>::const_iterator it = _outgoing.begin();
-      it != _outgoing.end();++it) {
+  for(vector<PDPtr>::const_iterator it = outgoing_.begin();
+      it != outgoing_.end();++it) {
     name += (**it).PDGName() + " ";
     if     ((**it).iColour() == PDT::Colour0    ) sng.push_back(iloc) ;
     else if((**it).iColour() == PDT::Colour3    ) trip.push_back(iloc) ;
@@ -728,46 +728,46 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     ++iloc;
   }
   // colour neutral decaying particle
-  if     ( _incoming->iColour() == PDT::Colour0) {
+  if     ( incoming_->iColour() == PDT::Colour0) {
     // options are all neutral or triplet/antitriplet+ neutral
     if(sng.size()==3) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,1.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,1.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,1.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,1.));
     }
     else if(sng.size()==1&&trip.size()==1&&atrip.size()==1) {
-      _nflow = 1;
-      _colour         = vector<DVector>(1,DVector(1,3.));
-      _colourLargeNC  = vector<DVector>(1,DVector(1,3.));
+      nflow_ = 1;
+      colour_         = vector<DVector>(1,DVector(1,3.));
+      colourLargeNC_  = vector<DVector>(1,DVector(1,3.));
     }
     else if(trip.size()==1&&atrip.size()==1&&oct.size()==1) {
-      _nflow = 1;
-      _colour         = vector<DVector>(1,DVector(1,4.));
-      _colourLargeNC  = vector<DVector>(1,DVector(1,4.));
+      nflow_ = 1;
+      colour_         = vector<DVector>(1,DVector(1,4.));
+      colourLargeNC_  = vector<DVector>(1,DVector(1,4.));
     }
     else if( trip.size() == 3 || atrip.size() == 3 ) {
-      _nflow = 1;
-      _colour         = vector<DVector>(1,DVector(1,6.));
-      _colourLargeNC  = vector<DVector>(1,DVector(1,6.));
-      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-	tPDPtr inter = _diagrams[ix].intermediate;
+      nflow_ = 1;
+      colour_         = vector<DVector>(1,DVector(1,6.));
+      colourLargeNC_  = vector<DVector>(1,DVector(1,6.));
+      for(unsigned int ix=0;ix<diagrams_.size();++ix) {
+	tPDPtr inter = diagrams_[ix].intermediate;
 	if(inter->CC()) inter = inter->CC();
 	unsigned int io[2]={1,2};
-	double sign = _diagrams[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
+	double sign = diagrams_[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
 	for(unsigned int iy=0;iy<3;++iy) {
 	  if     (iy==1) io[0]=0;
 	  else if(iy==2) io[1]=1;
-	  tPDVector decaylist = _diagrams[ix].vertices.second->search(iy, inter);
+	  tPDVector decaylist = diagrams_[ix].vertices.second->search(iy, inter);
 	  if(decaylist.empty()) continue;
 	  bool found=false;
 	  for(unsigned int iz=0;iz<decaylist.size();iz+=3) {	    
-	    if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.first &&
-	       decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.second) {
+	    if(decaylist[iz+io[0]]->id()==diagrams_[ix].outgoingPair.first &&
+	       decaylist[iz+io[1]]->id()==diagrams_[ix].outgoingPair.second) {
 	      sign *= 1.;
 	      found = true;
 	    }
-	    else if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.second &&
-		    decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.first ) {
+	    else if(decaylist[iz+io[0]]->id()==diagrams_[ix].outgoingPair.second &&
+		    decaylist[iz+io[1]]->id()==diagrams_[ix].outgoingPair.first ) {
 	      sign *= -1.;
 	      found = true;
 	    }
@@ -777,8 +777,8 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
 	    break;
 	  }
 	}
-	_diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,sign));
-	_diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,sign));
+	diagrams_[ix].       colourFlow = vector<CFPair>(1,make_pair(1,sign));
+	diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,sign));
       }
     }
     else {
@@ -790,48 +790,48 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     }
   }
   // colour triplet decaying particle
-  else if( _incoming->iColour() == PDT::Colour3) {
+  else if( incoming_->iColour() == PDT::Colour3) {
     if(sng.size()==2&&trip.size()==1) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,1.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,1.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,1.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,1.));
     }
     else if(trip.size()==2&&atrip.size()==1) {
-      _nflow = 2;
-      _colour.clear();
-      _colour.resize(2,DVector(2,0.));
-      _colour[0][0] = 3.; _colour[0][1] = 1.;
-      _colour[1][0] = 1.; _colour[1][1] = 3.;
-      _colourLargeNC.clear();
-      _colourLargeNC.resize(2,DVector(2,0.));
-      _colourLargeNC[0][0] = 3.; _colourLargeNC[1][1] = 3.;
+      nflow_ = 2;
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
+      colour_[0][0] = 3.; colour_[0][1] = 1.;
+      colour_[1][0] = 1.; colour_[1][1] = 3.;
+      colourLargeNC_.clear();
+      colourLargeNC_.resize(2,DVector(2,0.));
+      colourLargeNC_[0][0] = 3.; colourLargeNC_[1][1] = 3.;
       // sort out the contribution of the different diagrams to the colour
       // flows
-      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+      for(unsigned int ix=0;ix<diagrams_.size();++ix) {
 	// colour singlet intermediate
-	if(_diagrams[ix].intermediate->iColour()==PDT::Colour0) {
-	  if(_diagrams[ix].channelType==trip[0]) {
-	    _diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
-	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
+	if(diagrams_[ix].intermediate->iColour()==PDT::Colour0) {
+	  if(diagrams_[ix].channelType==trip[0]) {
+	    diagrams_[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
+	    diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
 	  }
 	  else {
-	    _diagrams[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
-	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
+	    diagrams_[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
+	    diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
 	  }
 	}
 	// colour octet intermediate
-	else if(_diagrams[ix].intermediate->iColour()==PDT::Colour8) {
-	  if(_diagrams[ix].channelType==trip[0]) {
+	else if(diagrams_[ix].intermediate->iColour()==PDT::Colour8) {
+	  if(diagrams_[ix].channelType==trip[0]) {
 	    vector<CFPair> flow(1,make_pair(2, 0.5  ));
-	    _diagrams[ix].largeNcColourFlow = flow;
+	    diagrams_[ix].largeNcColourFlow = flow;
 	    flow.push_back(       make_pair(1,-1./6.));
-	    _diagrams[ix].colourFlow=flow;
+	    diagrams_[ix].colourFlow=flow;
 	  }
 	  else {
 	    vector<CFPair> flow(1,make_pair(1, 0.5  ));
-	    _diagrams[ix].largeNcColourFlow = flow;
+	    diagrams_[ix].largeNcColourFlow = flow;
 	    flow.push_back(       make_pair(2,-1./6.));
-	    _diagrams[ix].colourFlow=flow;
+	    diagrams_[ix].colourFlow=flow;
 	  }
 	}
 	else {
@@ -844,14 +844,14 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       }
     }
     else if(trip.size()==1&&oct.size()==1&&sng.size()==1) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,4./3.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,4./3.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,4./3.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,4./3.));
     }
     else if(sng.size()==1&&atrip.size()==2) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,2.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,2.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,2.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,2.));
     }
     else {
       generator()->log() << "Unknown colour structure for "
@@ -862,48 +862,48 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     }
   }
   // colour antitriplet decaying particle
-  else if( _incoming->iColour() == PDT::Colour3bar) {
+  else if( incoming_->iColour() == PDT::Colour3bar) {
     if(sng.size()==2&&atrip.size()==1) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,1.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,1.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,1.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,1.));
     }
     else if(atrip.size()==2&&trip.size()==1) {
-      _nflow = 2;
-      _colour.clear();
-      _colour.resize(2,DVector(2,0.));
-      _colour[0][0] = 3.; _colour[0][1] = 1.;
-      _colour[1][0] = 1.; _colour[1][1] = 3.;
-      _colourLargeNC.clear();
-      _colourLargeNC.resize(2,DVector(2,0.));
-      _colourLargeNC[0][0] = 3.; _colourLargeNC[1][1] = 3.;
+      nflow_ = 2;
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
+      colour_[0][0] = 3.; colour_[0][1] = 1.;
+      colour_[1][0] = 1.; colour_[1][1] = 3.;
+      colourLargeNC_.clear();
+      colourLargeNC_.resize(2,DVector(2,0.));
+      colourLargeNC_[0][0] = 3.; colourLargeNC_[1][1] = 3.;
       // sort out the contribution of the different diagrams to the colour
       // flows
-      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+      for(unsigned int ix=0;ix<diagrams_.size();++ix) {
 	// colour singlet intermediate
-	if(_diagrams[ix].intermediate->iColour()==PDT::Colour0) {
-	  if(_diagrams[ix].channelType==atrip[0]) {
-	    _diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
-	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
+	if(diagrams_[ix].intermediate->iColour()==PDT::Colour0) {
+	  if(diagrams_[ix].channelType==atrip[0]) {
+	    diagrams_[ix].       colourFlow = vector<CFPair>(1,make_pair(1,1.));
+	    diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,1.));
 	  }
 	  else {
-	    _diagrams[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
-	    _diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
+	    diagrams_[ix].colourFlow        = vector<CFPair>(1,make_pair(2,1.));
+	    diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(2,1.));
 	  }
 	}
 	// colour octet intermediate
-	else if(_diagrams[ix].intermediate->iColour()==PDT::Colour8) {
-	  if(_diagrams[ix].channelType==atrip[0]) {
+	else if(diagrams_[ix].intermediate->iColour()==PDT::Colour8) {
+	  if(diagrams_[ix].channelType==atrip[0]) {
 	    vector<CFPair> flow(1,make_pair(2, 0.5  ));
-	    _diagrams[ix].largeNcColourFlow = flow;
+	    diagrams_[ix].largeNcColourFlow = flow;
 	    flow.push_back(       make_pair(1,-1./6.));
-	    _diagrams[ix].colourFlow=flow;
+	    diagrams_[ix].colourFlow=flow;
 	  }
 	  else {
 	    vector<CFPair> flow(1,make_pair(1, 0.5  ));
-	    _diagrams[ix].largeNcColourFlow = flow;
+	    diagrams_[ix].largeNcColourFlow = flow;
 	    flow.push_back(       make_pair(2,-1./6.));
-	    _diagrams[ix].colourFlow=flow;
+	    diagrams_[ix].colourFlow=flow;
 	  }
 	}
 	else {
@@ -916,14 +916,14 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       }
     }
     else if(atrip.size()==1&&oct.size()==1&&sng.size()==1) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,4./3.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,4./3.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,4./3.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,4./3.));
     }
     else if(sng.size()==1&&trip.size()==2) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,2.));
-      _colourLargeNC = vector<DVector>(1,DVector(1,2.));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,2.));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,2.));
     }
     else {
       generator()->log() << "Unknown colour antitriplet decay in "
@@ -933,44 +933,44 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     }
   }
   // colour octet particle
-  else if( _incoming->iColour() == PDT::Colour8) {
+  else if( incoming_->iColour() == PDT::Colour8) {
     // triplet antitriplet
     if(trip.size() == 1 && atrip.size() == 1 && sng.size() == 1) {
-      _nflow = 1;
-      _colour        = vector<DVector>(1,DVector(1,0.5));
-      _colourLargeNC = vector<DVector>(1,DVector(1,0.5));
+      nflow_ = 1;
+      colour_        = vector<DVector>(1,DVector(1,0.5));
+      colourLargeNC_ = vector<DVector>(1,DVector(1,0.5));
     }
     // three (anti)triplets
     else if(trip.size()==3||atrip.size()==3) {
-      _nflow = 3;
-      _colour        = vector<DVector>(3,DVector(3,0.));
-      _colourLargeNC = vector<DVector>(3,DVector(3,0.));
-      _colour[0][0] = 1.; _colour[1][1] = 1.; _colour[2][2] = 1.;
-      _colour[0][1] = -0.5; _colour[1][0] = -0.5;
-      _colour[0][2] = -0.5; _colour[2][0] = -0.5;
-      _colour[1][2] = -0.5; _colour[2][1] = -0.5;
-      _colourLargeNC = vector<DVector>(3,DVector(3,0.));
-      _colourLargeNC[0][0] = 1.; _colourLargeNC[1][1] = 1.; _colourLargeNC[2][2] = 1.;
+      nflow_ = 3;
+      colour_        = vector<DVector>(3,DVector(3,0.));
+      colourLargeNC_ = vector<DVector>(3,DVector(3,0.));
+      colour_[0][0] = 1.; colour_[1][1] = 1.; colour_[2][2] = 1.;
+      colour_[0][1] = -0.5; colour_[1][0] = -0.5;
+      colour_[0][2] = -0.5; colour_[2][0] = -0.5;
+      colour_[1][2] = -0.5; colour_[2][1] = -0.5;
+      colourLargeNC_ = vector<DVector>(3,DVector(3,0.));
+      colourLargeNC_[0][0] = 1.; colourLargeNC_[1][1] = 1.; colourLargeNC_[2][2] = 1.;
       // sett the factors for the diagrams
-      for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-	tPDPtr inter = _diagrams[ix].intermediate;
+      for(unsigned int ix=0;ix<diagrams_.size();++ix) {
+	tPDPtr inter = diagrams_[ix].intermediate;
 	if(inter->CC()) inter = inter->CC();
 	unsigned int io[2]={1,2};
-	double sign = _diagrams[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
+	double sign = diagrams_[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
 	for(unsigned int iy=0;iy<3;++iy) {
 	  if     (iy==1) io[0]=0;
 	  else if(iy==2) io[1]=1;
-	  tPDVector decaylist = _diagrams[ix].vertices.second->search(iy, inter);
+	  tPDVector decaylist = diagrams_[ix].vertices.second->search(iy, inter);
 	  if(decaylist.empty()) continue;
 	  bool found=false;
 	  for(unsigned int iz=0;iz<decaylist.size();iz+=3) {	    
-	    if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.first &&
-	       decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.second) {
+	    if(decaylist[iz+io[0]]->id()==diagrams_[ix].outgoingPair.first &&
+	       decaylist[iz+io[1]]->id()==diagrams_[ix].outgoingPair.second) {
 	      sign *= 1.;
 	      found = true;
 	    }
-	    else if(decaylist[iz+io[0]]->id()==_diagrams[ix].outgoingPair.second &&
-		    decaylist[iz+io[1]]->id()==_diagrams[ix].outgoingPair.first ) {
+	    else if(decaylist[iz+io[0]]->id()==diagrams_[ix].outgoingPair.second &&
+		    decaylist[iz+io[1]]->id()==diagrams_[ix].outgoingPair.first ) {
 	      sign *= -1.;
 	      found = true;
 	    }
@@ -980,8 +980,8 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
 	    break;
 	  }
 	}
-	_diagrams[ix].       colourFlow = vector<CFPair>(1,make_pair(_diagrams[ix].channelType+1,sign));
-	_diagrams[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(_diagrams[ix].channelType+1,sign));
+	diagrams_[ix].       colourFlow = vector<CFPair>(1,make_pair(diagrams_[ix].channelType+1,sign));
+	diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(diagrams_[ix].channelType+1,sign));
       }
     }
     // unknown
@@ -992,40 +992,40 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       return false;
     }
   }
-  else if (_incoming->iColour() == PDT::Colour6 ) {
+  else if (incoming_->iColour() == PDT::Colour6 ) {
     generator()->log() << "Unknown colour sextet decay in "
 		       << "GeneralThreeBodyDecayer::setColourFactors()"
 		       << " for " << name << " omitting decay\n";
     return false;
   }
-  else if (_incoming->iColour() == PDT::Colour6bar ) {
+  else if (incoming_->iColour() == PDT::Colour6bar ) {
     generator()->log() << "Unknown colour anti-sextet decay in "
 		       << "GeneralThreeBodyDecayer::setColourFactors()"
 		       << " for " << name << " omitting decay\n";
     return false;
   }
 
-  assert(_nflow != 999);
+  assert(nflow_ != 999);
 
-  for(unsigned int ix=0;ix<_nflow;++ix) {
-    for(unsigned int iy=0;iy<_nflow;++iy) {
-      _colour       [ix][iy] /= symfac;
-      _colourLargeNC[ix][iy] /= symfac;
+  for(unsigned int ix=0;ix<nflow_;++ix) {
+    for(unsigned int iy=0;iy<nflow_;++iy) {
+      colour_       [ix][iy] /= symfac;
+      colourLargeNC_[ix][iy] /= symfac;
     }
   }
   if( Debug::level > 1 ) {
     generator()->log() << "Mode: " << name << " has colour factors\n";
-    for(unsigned int ix=0;ix<_nflow;++ix) {
-      for(unsigned int iy=0;iy<_nflow;++iy) {
-	generator()->log() << _colour[ix][iy] << " ";
+    for(unsigned int ix=0;ix<nflow_;++ix) {
+      for(unsigned int iy=0;iy<nflow_;++iy) {
+	generator()->log() << colour_[ix][iy] << " ";
       }
       generator()->log() << "\n";
     }
-    for(unsigned int ix=0;ix<_diagrams.size();++ix) {
+    for(unsigned int ix=0;ix<diagrams_.size();++ix) {
       generator()->log() << "colour flow for diagram : " << ix;
-      for(unsigned int iy=0;iy<_diagrams[ix].colourFlow.size();++iy)
-	generator()->log() << "(" << _diagrams[ix].colourFlow[iy].first  << "," 
-			   << _diagrams[ix].colourFlow[iy].second << "); ";
+      for(unsigned int iy=0;iy<diagrams_[ix].colourFlow.size();++iy)
+	generator()->log() << "(" << diagrams_[ix].colourFlow[iy].first  << "," 
+			   << diagrams_[ix].colourFlow[iy].second << "); ";
       generator()->log() << "\n";
     }
   }
