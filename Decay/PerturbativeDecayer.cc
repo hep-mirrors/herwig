@@ -20,11 +20,11 @@
 using namespace Herwig;
 
 void PerturbativeDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_; 
+  os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_ << useMEforT2_; 
 }
 
 void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_; 
+  is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_ >> useMEforT2_; 
 }
 
 
@@ -75,6 +75,22 @@ void PerturbativeDecayer::Init() {
     ("AlphaEM",
      "Object for the coupling in the generation of hard QED radiation",
      &PerturbativeDecayer::alphaEM_, false, false, true, true, false);
+
+  static Switch<PerturbativeDecayer,bool> interfaceUseMEForT2
+    ("UseMEForT2",
+     "Use the matrix element correction, if available to fill the T2"
+     " region for the decay shower and don't fill using the shower",
+     &PerturbativeDecayer::useMEforT2_, true, false, false);
+  static SwitchOption interfaceUseMEForT2Shower
+    (interfaceUseMEForT2,
+     "Shower",
+     "Use the shower to fill the T2 region",
+     false);
+  static SwitchOption interfaceUseMEForT2ME
+    (interfaceUseMEForT2,
+     "ME",
+     "Use the Matrix element to fill the T2 region",
+     true);
 
 }
 
@@ -887,8 +903,14 @@ PerturbativeDecayer::inInitialFinalDeadZone(double xg, double xa,
   double v = sqr(u)-4.*z*a*w;
   if(v<0. && v>-1e-10) v= 0.;
   v = sqrt(v);
-  if(xa<0.5*((u+v)/w+(u-v)/z))
-    return xg<xgmax ? emissionFromA1 : emissionFromA2;
+  if(xa<0.5*((u+v)/w+(u-v)/z)) {
+    if(xg<xgmax)
+      return emissionFromA1;
+    else if(useMEforT2_)
+      return deadZone;
+    else
+      return emissionFromA2;
+  }
   else
     return deadZone;
 }

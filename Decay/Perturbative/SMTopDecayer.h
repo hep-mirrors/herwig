@@ -391,13 +391,6 @@ private:
    *  The enhancement factor for final-state radiation
    */
   double _finalenhance;
-
-  /**
-   *  This flag determines whether the T2 region in the decay shower
-   *  (JHEP12(2003)_045) is populated by the ME correction (true) or
-   *  the shower from the decaying particle.
-   */
-  bool _useMEforT2;
 };
 
 }

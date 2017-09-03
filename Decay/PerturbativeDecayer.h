@@ -56,8 +56,8 @@ public:
    * The default constructor.
    */
   PerturbativeDecayer() : inter_(ShowerInteraction::QCD),
-			  pTmin_(GeV), pT_(ZERO), mb_(ZERO),
-			  e_(0.), s_(0.), e2_(0.), s2_(0.)
+			  pTmin_(GeV), useMEforT2_(true), pT_(ZERO),
+			  mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.)
   {}
 
   /**
@@ -195,6 +195,11 @@ protected:
    */
   phaseSpaceRegion inFinalFinalDeadZone(double xb, double xc, double b, double c) const;
 
+  /**
+   *  For me corrections use the shower or me for the T2 region
+   */
+  bool useMEforT2() const {return useMEforT2_;}
+
 protected:
 
   /**
@@ -264,6 +269,13 @@ private:
    *  Minimum \f$p_T\f$
    */
   Energy pTmin_;
+
+  /**
+   *  This flag determines whether the T2 region in the decay shower
+   *  (JHEP12(2003)_045) is populated by the ME correction (true) or
+   *  the shower from the decaying particle.
+   */
+  bool useMEforT2_;
   //@}
 
 private:

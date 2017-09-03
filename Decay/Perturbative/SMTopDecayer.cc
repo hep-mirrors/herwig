@@ -34,7 +34,7 @@ using namespace ThePEG::Helicity;
 
 SMTopDecayer::SMTopDecayer() 
   : _wquarkwgt(6,0.),_wleptonwgt(3,0.), _xg_sampling(1.5), 
-    _initialenhance(1.),  _finalenhance(2.3), _useMEforT2(true) {
+    _initialenhance(1.),  _finalenhance(2.3) {
   _wleptonwgt[0] = 0.302583;
   _wleptonwgt[1] = 0.301024;
   _wleptonwgt[2] = 0.299548;
@@ -120,13 +120,13 @@ ParticleVector SMTopDecayer::decay(const Particle & parent,
 void SMTopDecayer::persistentOutput(PersistentOStream & os) const {
   os << FFWVertex_ << FFGVertex_ << FFPVertex_ << WWWVertex_
      << _wquarkwgt << _wleptonwgt << _wplus
-     << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2;
+     << _initialenhance << _finalenhance << _xg_sampling;
 }
   
 void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
   is >> FFWVertex_ >> FFGVertex_ >> FFPVertex_ >> WWWVertex_
      >> _wquarkwgt >> _wleptonwgt >> _wplus
-     >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2;
+     >> _initialenhance >> _finalenhance >> _xg_sampling;
 }
   
 // The following static variable is needed for the type
@@ -181,22 +181,6 @@ void SMTopDecayer::Init() {
      "to sample xg according to xg^-_xg_sampling",
      &SMTopDecayer::_xg_sampling, 1.5, 1.2, 2.0,
      false, false, Interface::limited);
-
-  static Switch<SMTopDecayer,bool> interfaceUseMEForT2
-    ("UseMEForT2",
-     "Use the matrix element correction, if available to fill the T2"
-     " region for the decay shower and don't fill using the shower",
-     &SMTopDecayer::_useMEforT2, true, false, false);
-  static SwitchOption interfaceUseMEForT2Shower
-    (interfaceUseMEForT2,
-     "Shower",
-     "Use the shower to fill the T2 region",
-     false);
-  static SwitchOption interfaceUseMEForT2ME
-    (interfaceUseMEForT2,
-     "ME",
-     "Use the Matrix element to fill the T2 region",
-     true);
 }
 
 double SMTopDecayer::me2(const int, const Particle & inpart,
@@ -546,7 +530,7 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	// This next `if' prevents the hardest emission from the 
 	// top shower ever entering the so-called T2 region of the
 	// phase space if that region is to be populated by the hard MEC.
-	if(_useMEforT2&&xg>xgbcut(_ktb)) wgt = 0.;
+	if(useMEforT2()&&xg>xgbcut(_ktb)) wgt = 0.;
 	if(wgt>1.) {
 	  generator()->log() << "Violation of maximum for initial-state "
 			     << " soft veto in "
