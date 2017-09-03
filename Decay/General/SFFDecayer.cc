@@ -154,7 +154,6 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
-  
   // work out which is the fermion and antifermion
   int ianti(0), iferm(1), iglu(2);
   int itype[2];
@@ -228,7 +227,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
     for(unsigned int ia = 0; ia < 2; ++ia) {
       for(unsigned int ig = 0; ig < 2; ++ig) {
 	// radiation from the incoming scalar
-	if(inpart.dataPtr()->coloured()) {
+	if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	   (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	  assert(incomingVertex_[inter]);
 
 	  ScalarWaveFunction scalarInter = 
@@ -319,86 +319,104 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
 				  AbstractFFVVertexPtr & outgoingVertexF, 
 				  AbstractFFVVertexPtr & outgoingVertexA,
 				  ShowerInteraction inter) {
-
-  // work out which fermion each outgoing vertex corresponds to 
-  // two outgoing vertices
-  if( inpart.dataPtr()       ->iColour()==PDT::Colour0     &&
-    ((decay[iferm]->dataPtr()->iColour()==PDT::Colour3     &&
-      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
-     (decay[iferm]->dataPtr()->iColour()==PDT::Colour8     &&
-      decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
-    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
-      outgoingVertexF = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
+  // QCD
+  if(inter==ShowerInteraction::QCD) {
+    // work out which fermion each outgoing vertex corresponds to 
+    // two outgoing vertices
+    if( inpart.dataPtr()       ->iColour()==PDT::Colour0     &&
+	((decay[iferm]->dataPtr()->iColour()==PDT::Colour3     &&
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
+	 (decay[iferm]->dataPtr()->iColour()==PDT::Colour8     &&
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour8))) {
+      if(outgoingVertex1_[inter]==outgoingVertex2_[inter]) {
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex2_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	outgoingVertexF = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
+      }
     }
-    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
-      outgoingVertexF = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
+    else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
+	    decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
+	    decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) {
+      if(outgoingVertex1_[inter]==outgoingVertex2_[inter]) {
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex2_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	outgoingVertexF = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
+      }
     }
-    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
-      outgoingVertexF = outgoingVertex2_[inter];
-      outgoingVertexA = outgoingVertex1_[inter];
-    }
-  }
-  else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
-	  decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
-	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
-      outgoingVertexF = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
-    }
-    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
-      outgoingVertexF = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
-    }
-    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iferm]->id()))){
-      outgoingVertexF = outgoingVertex2_[inter];
-      outgoingVertexA = outgoingVertex1_[inter];
-    }
-  }
-
-  // one outgoing vertex
-  else if(inpart.dataPtr()->iColour()==PDT::Colour3){
-    if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&  
-       decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
+    
+    // one outgoing vertex
+    else if(inpart.dataPtr()->iColour()==PDT::Colour3){
+      if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&  
+	 decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
       if     (outgoingVertex1_[inter]) outgoingVertexF = outgoingVertex1_[inter];
       else if(outgoingVertex2_[inter]) outgoingVertexF = outgoingVertex2_[inter];
-    }
-    else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
-	     decay[ianti]->dataPtr()->iColour()==PDT::Colour8){
-      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
-	outgoingVertexF = outgoingVertex2_[inter];
-	outgoingVertexA = outgoingVertex1_[inter];
       }
-      else {
-	outgoingVertexF = outgoingVertex1_[inter];
-	outgoingVertexA = outgoingVertex2_[inter];
-      }
-    }
-  }
-  else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
-    if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
-       decay[iferm]->dataPtr()->iColour()==PDT::Colour0){
-      if     (outgoingVertex1_[inter]) outgoingVertexA = outgoingVertex1_[inter];
-      else if(outgoingVertex2_[inter]) outgoingVertexA = outgoingVertex2_[inter];
-    }
-    else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour8 &&
-	     decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iferm]->dataPtr()->id()))){
-	outgoingVertexF = outgoingVertex1_[inter];
-	outgoingVertexA = outgoingVertex2_[inter];
-      }
-      else {
-	outgoingVertexF = outgoingVertex2_[inter];
-	outgoingVertexA = outgoingVertex1_[inter];
+      else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
+	       decay[ianti]->dataPtr()->iColour()==PDT::Colour8) {
+	if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[ianti]->dataPtr()))) {
+	  outgoingVertexF = outgoingVertex2_[inter];
+	  outgoingVertexA = outgoingVertex1_[inter];
+	}
+	else {
+	  outgoingVertexF = outgoingVertex1_[inter];
+	  outgoingVertexA = outgoingVertex2_[inter];
+	}
       }
     }
-  }
+    else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
+      if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
+	 decay[iferm]->dataPtr()->iColour()==PDT::Colour0){
+	if     (outgoingVertex1_[inter]) outgoingVertexA = outgoingVertex1_[inter];
+	else if(outgoingVertex2_[inter]) outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (decay[iferm]->dataPtr()->iColour()==PDT::Colour8 &&
+	       decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+	if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	  outgoingVertexF = outgoingVertex1_[inter];
+	  outgoingVertexA = outgoingVertex2_[inter];
+	}
+	else {
+	  outgoingVertexF = outgoingVertex2_[inter];
+	  outgoingVertexA = outgoingVertex1_[inter];
+	}
+      }
+    }
   
-  if (! ((incomingVertex_[inter]  && (outgoingVertexF  || outgoingVertexA)) ||
-	 ( outgoingVertexF &&  outgoingVertexA)))
-    throw Exception()
-    << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
-    << Exception::runerror;
-
+    if (! ((incomingVertex_[inter]  && (outgoingVertexF  || outgoingVertexA)) ||
+	   ( outgoingVertexF &&  outgoingVertexA)))
+      throw Exception()
+	<< "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
+	<< Exception::runerror;
+  }
+  // QED
+  else {
+    if(decay[iferm]->dataPtr()->charged()) {
+      if (outgoingVertex1_[inter] &&
+	  outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr())))
+	outgoingVertexF = outgoingVertex1_[inter];
+      else
+	outgoingVertexF = outgoingVertex2_[inter];
+    }
+    if(decay[ianti]->dataPtr()->charged()) {
+      if (outgoingVertex1_[inter] &&
+	  outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[ianti]->dataPtr())))
+	outgoingVertexA = outgoingVertex1_[inter];
+      else
+	outgoingVertexA = outgoingVertex2_[inter];
+    }
+  }
 }

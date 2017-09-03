@@ -196,7 +196,6 @@ Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
 double FFSDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
-
   int iscal (0), iferm (1), iglu (2);
   // get location of outgoing fermion/scalar
   if(decay[1]->dataPtr()->iSpin()==PDT::Spin0) swap(iscal,iferm);
@@ -266,7 +265,7 @@ double FFSDecayer::threeBodyME(const int , const Particle & inpart,
   // 					  outgoing));
   //   }
   // }
-
+  
   if (! ((incomingVertex_[inter]  && (outgoingVertexF_[inter] || outgoingVertexS_[inter])) ||
 	 (outgoingVertexF_[inter] &&  outgoingVertexS_[inter])))
     throw Exception()
@@ -294,7 +293,8 @@ double FFSDecayer::threeBodyME(const int , const Particle & inpart,
     for(unsigned int ifo = 0; ifo < 2; ++ifo) {
       for(unsigned int ig = 0; ig < 2; ++ig) {
    	// radiation from the incoming fermion
-   	if(inpart.dataPtr()->coloured()) {
+   	if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	   (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
    	  assert(incomingVertex_[inter]);
 	  double gs = incomingVertex_[inter]->strongCoupling(scale);	  
 	  if (ferm){

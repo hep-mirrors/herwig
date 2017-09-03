@@ -585,7 +585,7 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
   double mu12 = sqr(decay3[0]->mass()/mb_);
   double mu22 = sqr(decay3[1]->mass()/mb_);
   tcPDPtr part[3] = {inpart.dataPtr(),decay3[0]->dataPtr(),decay3[1]->dataPtr()};
-  if(dipoleId.type==FFc || dipoleId.type == IFc || dipoleId.type == IFbc) {
+  if(dipoleId.type==FFa || dipoleId.type == IFa || dipoleId.type == IFba) {
     swap(part[1],part[2]);
     swap(x1,x2);
     swap(mu12,mu22);

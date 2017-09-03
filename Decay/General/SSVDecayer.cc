@@ -174,10 +174,10 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   if(decay[1]->dataPtr()->iSpin()==PDT::Spin0) swap(iscal,ivect);
 
   // no emissions from massive vectors
-  if (outgoingVertexV_[inter] && decay[ivect]->dataPtr()->mass()!=ZERO)
-    throw Exception()
-      << "No dipoles available for massive vectors in SSVDecayer::threeBodyME"
-      << Exception::runerror;
+  // if (outgoingVertexV_[inter] && decay[ivect]->dataPtr()->mass()!=ZERO)
+  //   throw Exception()
+  //     << "No dipoles available for massive vectors in SSVDecayer::threeBodyME"
+  //     << Exception::runerror;
 
   if(meopt==Initialize) {
     // create scalar wavefunction for decaying particle

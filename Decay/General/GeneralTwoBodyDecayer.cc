@@ -495,7 +495,7 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 
 const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
 								const ParticleVector & decay,
-								unsigned int & nflow){  
+								unsigned int & nflow) {
   // calculate the colour factors for the three-body decay
   vector<int> sing,trip,atrip,oct;
   for(unsigned int it=0;it<decay.size();++it) {
@@ -504,8 +504,6 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     else if(decay[it]->dataPtr()->iColour() == PDT::Colour3bar ) atrip.push_back(it);
     else if(decay[it]->dataPtr()->iColour() == PDT::Colour8    ) oct.  push_back(it);
   }
-  // require at least one gluon
-  assert(oct.size()>=1);
 
   // identical particle symmetry factor
   double symFactor=1.;
@@ -513,11 +511,11 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       ( trip.size()==2 && decay[ trip[0]]->id()==decay[ trip[1]]->id()) ||
       (atrip.size()==2 && decay[atrip[0]]->id()==decay[atrip[1]]->id()) ||
       (  oct.size()==2 && decay[  oct[0]]->id()==decay[  oct[1]]->id()))
-    symFactor/=2.;
+    symFactor /= 2.;
   else if (oct.size()==3 && 
 	   decay[oct[0]]->id()==decay[oct[1]]->id() &&
 	   decay[oct[0]]->id()==decay[oct[2]]->id())
-    symFactor/=6.;
+    symFactor /= 6.;
   
   colour_ = vector<DVector>(1,DVector(1,symFactor*1.));
   
@@ -527,9 +525,17 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*4.));
     }
+    else if(trip.size()==1 && atrip.size()==1 && sing.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor*3.));
+    }
     else if (oct.size()==3){
-      nflow = 1.;
+      nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*24.));
+    }
+    else if(sing.size()==3) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor));
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -546,6 +552,10 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     if(trip.size()==1 && sing.size()==1 && oct.size()==1) {
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*4./3.));
+    }
+    else if(trip.size()==1 && sing.size()==2) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor));
     }
     else if(trip.size()==1 && oct.size()==2) {
       nflow = 2;
@@ -569,6 +579,10 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     if(atrip.size()==1 && sing.size()==1 && oct.size()==1) {
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*4./3.));
+    }
+    else if(atrip.size()==1 && sing.size()==2) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor));
     }
     else if(atrip.size()==1 && oct.size()==2){
       nflow = 2;
@@ -596,13 +610,17 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       colour_[0][0] =  symFactor*2./3. ; colour_[0][1] = -symFactor*1./12.;
       colour_[1][0] = -symFactor*1./12.; colour_[1][1] =  symFactor*2./3. ;
     }
+    else if (sing.size()==1 && trip.size()==1 && atrip.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor*0.5));
+    }
     else if (oct.size()==2 && sing.size()==1){
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*3.));
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
-			<< " for decay colour octet particle in "
+			<< " for a decaying colour octet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
@@ -669,9 +687,6 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
         case PDT::Colour6bar:          break;
     }
   }
-
-  // require a gluon
-  assert(oct>=1);
 
   const CFlow * retval = 0;
   bool inconsistent4PV = true;

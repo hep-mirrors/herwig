@@ -15,6 +15,7 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig/Decay/General/GeneralTwoBodyDecayer.fh"
+#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 #include "TwoBodyDecay.h"
 
 namespace Herwig {
@@ -40,7 +41,10 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor() : showerAlpha_("/Herwig/Shower/AlphaQCD") {}
+  TwoBodyDecayConstructor() : inter_(ShowerInteraction::Both) {
+    radiationVertices_[ShowerInteraction::QCD] = map<tPDPtr,VertexBasePtr>();
+    radiationVertices_[ShowerInteraction::QED] = map<tPDPtr,VertexBasePtr>();
+  }
 
   /**
    * Function used to determine allowed decaymodes
@@ -55,6 +59,22 @@ public:
 
   
 public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -120,7 +140,7 @@ private:
   //@}
 
   /**
-   * Get the vertex for QCD radiation
+   * Get the vertex for QED/QCD radiation
    */
   VertexBasePtr radiationVertex(tPDPtr particle,ShowerInteraction inter,
 				tPDPair children = tPDPair ());
@@ -131,12 +151,23 @@ private:
    *  Map of particles and the vertices which generate their QCD
    *  radiation
    */
-  map<tPDPtr,VertexBasePtr> radiationVertices_;
+  map<ShowerInteraction,map<tPDPtr,VertexBasePtr> > radiationVertices_;
 
   /**
-   *  Default choice for the strong coupling object for hard radiation
+   *  Default choice for the strong coupling object for hard QCD radiation
    */
-  string showerAlpha_;
+  ShowerAlphaPtr  alphaQCD_;
+
+  /**
+   *  Default choice for the strong coupling object for hard QED radiation
+   */
+  ShowerAlphaPtr  alphaQED_;
+
+  /**
+   *  Which type of corrections to the decays to include
+   */
+  ShowerInteraction inter_; 
+  
 };
   
 }

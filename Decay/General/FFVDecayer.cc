@@ -219,10 +219,10 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 
   // no emissions from massive vectors
   bool massless = decay[ivect]->dataPtr()->mass()==ZERO;
-  if (outgoingVertexV_[inter] && (! massless))
-    throw Exception()
-      << "No dipoles available for massive vectors in FFVDecayer::threeBodyME"
-      << Exception::runerror;
+  // if (outgoingVertexV_[inter] && (! massless))
+  //   throw Exception()
+  //     << "No dipoles available for massive vectors in FFVDecayer::threeBodyME"
+  //     << Exception::runerror;
 
   if(meopt==Initialize) {
     // create spinor (bar) for decaying particle
@@ -309,7 +309,8 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
       for(unsigned int iv = 0; iv < 3; ++iv) {
 	for(unsigned int ig = 0; ig < 2; ++ig) {
 	  // radiation from the incoming fermion
-	  if(inpart.dataPtr()->coloured()) {
+	  if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(incomingVertex_[inter]);
 	    double gs = incomingVertex_[inter]->strongCoupling(scale);	  
 	    if (ferm){

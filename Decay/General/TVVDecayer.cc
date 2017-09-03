@@ -158,11 +158,11 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   for(unsigned int ix=0;ix<2;++ix)
     massless[ix] = decay[ix]->mass()==ZERO; 
 
-  // no emissions from massive vectors
-  if (! (massless[0] && massless[1]))
-    throw Exception()
-      << "No dipoles available for massive vectors in TVVDecayer::threeBodyME"
-      << Exception::runerror;
+  // // no emissions from massive vectors
+  // if (! (massless[0] && massless[1]))
+  //   throw Exception()
+  //     << "No dipoles available for massive vectors in TVVDecayer::threeBodyME"
+  //     << Exception::runerror;
 
   int iglu(2);  
   if(meopt==Initialize) {
