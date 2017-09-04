@@ -223,6 +223,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
         = colourFlows(inpart, decay);
 
   Energy2 scale(sqr(inpart.mass()));
+  double gs(0.);
+  bool couplingSet(false);
   for(unsigned int ifm = 0; ifm < 2; ++ifm) {
     for(unsigned int ia = 0; ia < 2; ++ia) {
       for(unsigned int ig = 0; ig < 2; ++ig) {
@@ -235,63 +237,61 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
 					      gluon_[2*ig],swave3_,inpart.mass());
 
-	  if (swave3_.particle()->PDGName()!=scalarInter.particle()->PDGName())
-	    throw Exception()
-	      << swave3_    .particle()->PDGName() << " was changed to " 
-	      << scalarInter.particle()->PDGName() << " in SFFDecayer::threeBodyME"
-	      << Exception::runerror;
+	  assert(swave3_.particle()->id()==scalarInter.particle()->id());
 
-	  double gs    = incomingVertex_[inter]->strongCoupling(scale);
-	  Complex diag = vertex_->evaluate(scale,wave3_[ia], wavebar3_[ifm],
-							  scalarInter)/gs;
+	  if(!couplingSet) {
+	    gs = abs(incomingVertex_[inter]->norm());
+	    couplingSet = true;
+	  }
+	  Complex diag = vertex_->evaluate(scale,wave3_[ia],
+					   wavebar3_[ifm],scalarInter);
 	  for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	    (*ME[colourFlow[0][ix].first])(0, ia, ifm, ig) += 
-	       colourFlow[0][ix].second*diag;
+	      colourFlow[0][ix].second*diag;
 	  }
-	}	
-
+	}
 	// radiation from outgoing fermion
-	if(decay[iferm]->dataPtr()->coloured()) {
+	if((decay[iferm]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	   (decay[iferm]->dataPtr()->charged()  && inter==ShowerInteraction::QED)) {
 	  assert(outgoingVertexF);
 	  // ensure you get correct outgoing particle from first vertex
 	  tcPDPtr off = decay[iferm]->dataPtr();
 	  if(off->CC()) off = off->CC();
 	  SpinorBarWaveFunction interS = 
 	    outgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
-					       gluon_[2*ig],decay[iferm]->mass());
+				      gluon_[2*ig],decay[iferm]->mass());
 	  
-	  if(wavebar3_[ifm].particle()->PDGName()!=interS.particle()->PDGName())
-	    throw Exception()
-	      << wavebar3_[ifm].particle()->PDGName() << " was changed to " 
-	      << interS        .particle()->PDGName() << " in SFFDecayer::threeBodyME"
-	      << Exception::runerror;
-
-	  double gs    =  outgoingVertexF->strongCoupling(scale);
-	  Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,swave3_)/gs;
+	  assert(wavebar3_[ifm].particle()->id()==interS.particle()->id());
+	  
+	  if(!couplingSet) {
+	    gs = abs(outgoingVertexF->norm());
+	    couplingSet = true;
+	  }
+	  Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,swave3_);
 	  for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	    (*ME[colourFlow[1][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[1][ix].second*diag;
 	  }
 	}
-
+	
 	// radiation from outgoing antifermion
-	if(decay[ianti]->dataPtr()->coloured()) {
+	if((decay[ianti]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	   (decay[ianti]->dataPtr()->charged()  && inter==ShowerInteraction::QED)) {
 	  assert(outgoingVertexA);
 	  // ensure you get correct outgoing particle from first vertex
 	  tcPDPtr off = decay[ianti]->dataPtr();
 	  if(off->CC()) off = off->CC();
 	  SpinorWaveFunction  interS = 
 	    outgoingVertexA->evaluate(scale,3,off,wave3_[ia],
-					      gluon_[2*ig],decay[ianti]->mass());
+				      gluon_[2*ig],decay[ianti]->mass());
+	  
+	  assert(wave3_[ia].particle()->id()==interS.particle()->id());
 
-	  if(wave3_[ia].particle()->PDGName()!=interS.particle()->PDGName())
-	    throw Exception()
-	      << wave3_[ia].particle()->PDGName() << " was changed to " 
-	      << interS    .particle()->PDGName() << " in SFFDecayer::threeBodyME"
-	      << Exception::runerror;
-
-	  double gs    =  outgoingVertexA->strongCoupling(scale);
-	  Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],swave3_)/gs;
+	  if(!couplingSet) {
+	    gs = abs(outgoingVertexA->norm());
+	    couplingSet = true;
+	  }
+	  Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],swave3_);
 	  for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	    (*ME[colourFlow[2][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[2][ix].second*diag;
@@ -300,7 +300,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
       }
     }
   }
-
+  
   // contract matrices 
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
@@ -308,8 +308,8 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
-  output*=(4.*Constants::pi);
-
+  // divide by alpha(S,EM)
+  output *= (4.*Constants::pi)/sqr(gs);
   // return the answer
   return output;
 }
