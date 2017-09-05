@@ -60,7 +60,7 @@ void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     _couplast = strongCoupling(q2);
     _q2last = q2;
   }
-  if(part2->id()>0) 
+  if(part2->id()>0)
     norm(-_couplast);
   else
     norm( _couplast);

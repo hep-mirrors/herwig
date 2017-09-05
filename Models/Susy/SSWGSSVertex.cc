@@ -197,5 +197,5 @@ void SSWGSSVertex::setCoupling(Energy2 q2,   tcPDPtr part1,
     _emcouplast = electroMagneticCoupling(q2);
     _scouplast = strongCoupling(q2);
   }
-  norm(_emcouplast*_scouplast*_factlast);
+  norm(-_emcouplast*_scouplast*_factlast);
 }
