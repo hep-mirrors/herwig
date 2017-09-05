@@ -20,8 +20,8 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() : _q2last(ZERO),
-							       _couplast(0.) {
+LeptoquarkModelSLQSLQGVertex::LeptoquarkModelSLQSLQGVertex() : q2last_(ZERO),
+							       couplast_(0.) {
   orderInGs(1);
   orderInGem(0);
 }
@@ -48,17 +48,9 @@ void LeptoquarkModelSLQSLQGVertex::doinit() {
   VSSVertex::doinit();
 }
 
-void LeptoquarkModelSLQSLQGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel;
-}
-
-void LeptoquarkModelSLQSLQGVertex::persistentInput(PersistentIStream & is, int) {
-   is >> _theModel;
-}
-
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<LeptoquarkModelSLQSLQGVertex,VSSVertex>
+DescribeNoPIOClass<LeptoquarkModelSLQSLQGVertex,VSSVertex>
 describeHerwigLeptoquarkModelSLQSLQGVertex("Herwig::LeptoquarkModelSLQSLQGVertex", "HwLeptoquarkModel.so");
 
 void LeptoquarkModelSLQSLQGVertex::Init() {
@@ -68,11 +60,14 @@ void LeptoquarkModelSLQSLQGVertex::Init() {
   
 }
 
-void LeptoquarkModelSLQSLQGVertex::setCoupling(Energy2 q2,tcPDPtr ,tcPDPtr ,tcPDPtr ) { 
-   if(q2 != _q2last || _couplast == 0.) {
-     _couplast = strongCoupling(q2);
-     _q2last = q2;
-   }
-  norm(_couplast);
+void LeptoquarkModelSLQSLQGVertex::setCoupling(Energy2 q2,tcPDPtr ,tcPDPtr p2,tcPDPtr ) { 
+  if(q2 != q2last_ || couplast_ == 0.) {
+    couplast_ = strongCoupling(q2);
+    q2last_ = q2;
+  }
+  if(p2->id()<0)
+    norm( couplast_);
+  else
+    norm(-couplast_);
 }
 

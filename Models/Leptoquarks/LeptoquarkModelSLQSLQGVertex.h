@@ -34,22 +34,6 @@ public:
    * Default constructor.
    */
   LeptoquarkModelSLQSLQGVertex();
-    
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -99,20 +83,14 @@ private:
   LeptoquarkModelSLQSLQGVertex & operator=(const LeptoquarkModelSLQSLQGVertex &);
   
   /**
-   * Pointer to the model.
-   */
-  tcSMPtr _theModel;
-
-  
-  /**
    * The energy at which the coupling was last evaluated
    */
-  Energy2 _q2last;
+  Energy2 q2last_;
 
   /**
    * The coupling when it was last evaluated
    */
-  Complex _couplast;
+  Complex couplast_;
 
 };
 

@@ -14,15 +14,13 @@
 #include "LeptoquarkModelSLQSLQGGVertex.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 
 using namespace Herwig;
 using namespace ThePEG;
 
-LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() : _q2last(ZERO),
-								 _couplast(0.) {
+LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() : q2last_(ZERO),
+								 couplast_(0.) {
   orderInGs(2);
   orderInGem(0);
 }
@@ -50,21 +48,11 @@ void LeptoquarkModelSLQSLQGGVertex::doinit() {
   addToList(21,21,9901561,-9901561);
   addToList(21,21,9901661,-9901661);
   VVSSVertex::doinit();
-  //  _theModel = generator()->standardModel();
-  // tcHwLeptoquarkPtr hwLeptoquark=dynamic_ptr_cast<tcHwLeptoquarkPtr>(_theModel);
-}
-
-void LeptoquarkModelSLQSLQGGVertex::persistentOutput(PersistentOStream & os) const {
-   os << _theModel;
-}
-
-void LeptoquarkModelSLQSLQGGVertex::persistentInput(PersistentIStream & is, int) {
-   is >> _theModel;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<LeptoquarkModelSLQSLQGGVertex,VVSSVertex>
+DescribeNoPIOClass<LeptoquarkModelSLQSLQGGVertex,VVSSVertex>
 describeHerwigLeptoquarkModelSLQSLQGGVertex("Herwig::LeptoquarkModelSLQSLQGGVertex", "HwLeptoquarkModel.so");
 
 void LeptoquarkModelSLQSLQGGVertex::Init() {
@@ -75,10 +63,9 @@ void LeptoquarkModelSLQSLQGGVertex::Init() {
 }
 
 void LeptoquarkModelSLQSLQGGVertex::setCoupling(Energy2 q2,tcPDPtr ,tcPDPtr ,tcPDPtr, tcPDPtr ) {
-  if(q2 != _q2last || _couplast == 0.) {
-    _couplast = sqr(strongCoupling(q2));  
-    _q2last = q2;
+  if(q2 != q2last_ || couplast_ == 0.) {
+    couplast_ = sqr(strongCoupling(q2));  
+    q2last_ = q2;
   }
-  norm(_couplast);
+  norm(couplast_);
 }
-
