@@ -22,7 +22,6 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
-
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
@@ -153,17 +152,14 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
 double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
-
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    generator()->log() << *decay[ix] << "\n";
+#endif
   bool massless[2];
   for(unsigned int ix=0;ix<2;++ix)
-    massless[ix] = decay[ix]->mass()==ZERO; 
-
-  // // no emissions from massive vectors
-  // if (! (massless[0] && massless[1]))
-  //   throw Exception()
-  //     << "No dipoles available for massive vectors in TVVDecayer::threeBodyME"
-  //     << Exception::runerror;
-
+    massless[ix] = decay[ix]->mass()==ZERO;
   int iglu(2);  
   if(meopt==Initialize) {
     // create tensor wavefunction for decaying particle
@@ -196,17 +192,18 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::
       calculateWaveFunctions(gluon_       ,decay[iglu ],outgoing,true);
 
-  // // gauge test
-  // gluon_.clear();
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
-  //   else {
-  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 				          decay[iglu ]->dataPtr(),10,
-  // 					  outgoing));
-  //   }
-  // }
-
+  // gauge test
+#ifdef GAUGE_CHECK
+  gluon_.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) gluon_.push_back(VectorWaveFunction());
+    else {
+      gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  				          decay[iglu ]->dataPtr(),10,
+  					  outgoing));
+    }
+  }
+#endif
   
   // work out which vector each outgoing vertex corresponds to 
   if(outgoingVertex1_[inter]!=outgoingVertex2_[inter] &&
@@ -215,12 +212,13 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   
   if (! (outgoingVertex1_[inter] && outgoingVertex2_[inter]))
     throw Exception()
-      << "Invalid vertices for QCD radiation in TVV decay in TVVDecayer::threeBodyME"
+      << "Invalid vertices for radiation in TVV decay in TVVDecayer::threeBodyME"
       << Exception::runerror;
 
-  if( !(inpart.dataPtr()->iColour()==PDT::Colour0))
+  if( !(!inpart.dataPtr()->coloured() && inter ==ShowerInteraction::QCD) &&
+      !(!inpart.dataPtr()->charged()  && inter ==ShowerInteraction::QED))
     throw Exception()
-      << "Invalid vertices for QCD radiation in TVV decay in TVVDecayer::threeBodyME"
+      << "Invalid vertices for radiation in TVV decay in TVVDecayer::threeBodyME"
       << Exception::runerror;
 
 
@@ -228,14 +226,19 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 
   const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
-
+  double gs(0.);
+  bool couplingSet(false);
+#ifdef GAUGE_CHECK
+  double total=0.;
+#endif
   for(unsigned int it = 0; it < 5; ++it) {  
     for(unsigned int iv0 = 0; iv0 < 3; ++iv0) {
       for(unsigned int iv1 = 0; iv1 < 3; ++iv1) {
 	for(unsigned int ig = 0; ig < 2; ++ig) {
 
 	  // radiation from first outgoing vector
-	  if(decay[0]->dataPtr()->coloured()) {
+	  if((decay[0]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (decay[0]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(outgoingVertex1_[inter]);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[0]->dataPtr();
@@ -244,23 +247,26 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 	      outgoingVertex1_[inter]->evaluate(scale,3,off,gluon_[2*ig],
 						 vectors3_[0][iv0],decay[0]->mass());
 	  
-	    if(vectors3_[0][iv0].particle()->PDGName()!=vectInter.particle()->PDGName())
-	      throw Exception()
-		<< vectors3_[0][iv0].particle()->PDGName() << " was changed to " 
-		<< vectInter        .particle()->PDGName() << " in TVVDecayer::threeBodyME"
-		<< Exception::runerror;
+	    assert(vectors3_[0][iv0].particle()->PDGName()==vectInter.particle()->PDGName());
 
-	    double gs    =  outgoingVertex1_[inter]->strongCoupling(scale);
 	    Complex diag = vertex_->evaluate(scale,vectors3_[1][iv1], 
-					     vectInter,tensors3_[it])/gs;
+					     vectInter,tensors3_[it]);
+	    if(!couplingSet) {
+	      gs = abs(outgoingVertex1_[inter]->norm());
+	      couplingSet = true;
+	    }
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	      (*ME[colourFlow[1][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[1][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 
 	  // radiation from second outgoing vector
-	  if(decay[1]->dataPtr()->coloured()) {
+	  if((decay[1]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (decay[1]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(outgoingVertex2_[inter]);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[1]->dataPtr();
@@ -269,31 +275,35 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 	      outgoingVertex2_[inter]->evaluate(scale,3,off,vectors3_[1][iv1],
 						gluon_[2*ig],decay[1]->mass());
 	    
-	    if(vectors3_[1][iv1].particle()->PDGName()!=vectInter.particle()->PDGName())
-	      throw Exception()
-		<< vectors3_[1][iv1].particle()->PDGName() << " was changed to " 
-		<< vectInter        .particle()->PDGName() << " in TVVDecayer::threeBodyME"
-		<< Exception::runerror;
+	    assert(vectors3_[1][iv1].particle()->PDGName()==vectInter.particle()->PDGName());
 	    
-	    double gs    =  outgoingVertex2_[inter]->strongCoupling(scale);
 	    Complex diag = vertex_->evaluate(scale,vectInter,vectors3_[0][iv0],
-						     tensors3_[it])/gs;
+					     tensors3_[it]);
+	    if(!couplingSet) {
+	      gs = abs(outgoingVertex2_[inter]->norm());
+	      couplingSet = true;
+	    }
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	      (*ME[colourFlow[2][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[2][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 
 	  // radiation from 4 point vertex
-	  if (fourPointVertex_[inter]){
-	    double gs    = fourPointVertex_[inter]->strongCoupling(scale);
+	  if (fourPointVertex_[inter]) {
 	    Complex diag = fourPointVertex_[inter]->evaluate(scale, vectors3_[0][iv0],
-							      vectors3_[1][iv1],gluon_[2*ig], 
-							      tensors3_[it])/gs;
+							     vectors3_[1][iv1],gluon_[2*ig], 
+							     tensors3_[it]);
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	      (*ME[colourFlow[3][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[3][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 	}
 	if(massless[1]) ++iv1;
@@ -309,9 +319,11 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
-  output*=(4.*Constants::pi); 
-
+  // divide by alpha_(s,em)
+  output *= (4.*Constants::pi)/sqr(gs);
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+#endif
   // return the answer
   return output;
 }
-

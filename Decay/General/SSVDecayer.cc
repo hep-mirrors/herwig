@@ -21,7 +21,6 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
-
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
@@ -168,16 +167,15 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
 double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 				const ParticleVector & decay,
 				ShowerInteraction inter, MEOption meopt) {
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    generator()->log() << *decay[ix] << "\n";
+#endif
 
   int iscal (0), ivect (1), iglu (2);
   // get location of outgoing scalar/vector
   if(decay[1]->dataPtr()->iSpin()==PDT::Spin0) swap(iscal,ivect);
-
-  // no emissions from massive vectors
-  // if (outgoingVertexV_[inter] && decay[ivect]->dataPtr()->mass()!=ZERO)
-  //   throw Exception()
-  //     << "No dipoles available for massive vectors in SSVDecayer::threeBodyME"
-  //     << Exception::runerror;
 
   if(meopt==Initialize) {
     // create scalar wavefunction for decaying particle
@@ -207,23 +205,24 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   ScalarWaveFunction scal_(decay[iscal]->momentum(),  decay[iscal]->dataPtr(),outgoing);
   VectorWaveFunction::calculateWaveFunctions(vector3_,decay[ivect],outgoing,false);
   VectorWaveFunction::calculateWaveFunctions(gluon_,  decay[iglu ],outgoing,true );
-
-  // // gauge invariance test
-  // gluon_.clear();
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
-  //   else {
-  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 					  decay[iglu ]->dataPtr(),10,
-  // 					  outgoing));
-  //   }
-  // }
-
+ 
+  // gauge invariance test
+#ifdef GAUGE_CHECK
+  gluon_.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) gluon_.push_back(VectorWaveFunction());
+    else {
+      gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  					  decay[iglu ]->dataPtr(),10,
+  					  outgoing));
+    }
+  }
+#endif
 
   if (! ((incomingVertex_[inter]  && (outgoingVertexS_[inter] || outgoingVertexV_[inter])) ||
 	 (outgoingVertexS_[inter] &&  outgoingVertexV_[inter])))
     throw Exception()
-      << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
+      << "Invalid vertices for radiation in SSV decay in SSVDecayer::threeBodyME"
       << Exception::runerror;
 
 
@@ -240,32 +239,38 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 
   const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
-
+  double gs(0.);
+  bool couplingSet(false);
+#ifdef GAUGE_CHECK
+  double total=0.;
+#endif
   for(unsigned int iv = 0; iv < 3; ++iv) {
     for(unsigned int ig = 0; ig < 2; ++ig) {
       // radiation from the incoming scalar
-      if(inpart.dataPtr()->coloured()) {
+      if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	 (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	assert(incomingVertex_[inter]);
 	ScalarWaveFunction scalarInter = 
 	  incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
-					    gluon_[2*ig],swave3_,inpart.mass());
+					   gluon_[2*ig],swave3_,inpart.mass());
 	
-	if (swave3_.particle()->PDGName()!=scalarInter.particle()->PDGName())
-	  throw Exception()
-	    << swave3_    .particle()->PDGName() << " was changed to " 
-	    << scalarInter.particle()->PDGName() << " in SSVDecayer::threeBodyME"
-	    << Exception::runerror;
-	
-	double gs    = incomingVertex_[inter]->strongCoupling(scale);
-	double sign  = 1.;//inpart.dataPtr()->id()>0 ? 1:-1;	
-	Complex diag = sign * vertex_->evaluate(scale,vector3_[iv],scal_,scalarInter)/gs;
+	assert(swave3_.particle()->id()==scalarInter.particle()->id());
+	Complex diag = vertex_->evaluate(scale,vector3_[iv],scal_,scalarInter);
+	if(!couplingSet) {
+	  gs = abs(incomingVertex_[inter]->norm());
+	  couplingSet = true;
+	}
 	for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	  (*ME[colourFlow[0][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[0][ix].second*diag; 
 	}
+#ifdef GAUGE_CHECK
+	total+=norm(diag);
+#endif
       }
       // radiation from the outgoing scalar
-      if(decay[iscal]->dataPtr()->coloured()) {
+      if((decay[iscal]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	 (decay[iscal]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	assert(outgoingVertexS_[inter]);
 	// ensure you get correct outgoing particle from first vertex
 	tcPDPtr off = decay[iscal]->dataPtr();
@@ -273,23 +278,25 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	ScalarWaveFunction scalarInter = 
 	  outgoingVertexS_[inter]->evaluate(scale,3,off,gluon_[2*ig],scal_,decay[iscal]->mass());
 	
-	if (scal_.particle()->PDGName()!=scalarInter.particle()->PDGName())
-	  throw Exception()
-	    << scal_      .particle()->PDGName() << " was changed to " 
-	    << scalarInter.particle()->PDGName() << " in SSVDecayer::threeBodyME"
-	    << Exception::runerror;
+	assert(scal_.particle()->id()==scalarInter.particle()->id());
 
-	double gs    = outgoingVertexS_[inter]->strongCoupling(scale);
-	double sign  = 1.;//decay[iscal]->dataPtr()->id()>0 ? -1:1;
-	Complex diag = sign*vertex_->evaluate(scale,vector3_[iv],scalarInter,swave3_)/gs;
+	if(!couplingSet) {
+	  gs = abs(outgoingVertexS_[inter]->norm());
+	  couplingSet = true;
+	}
+	Complex diag = vertex_->evaluate(scale,vector3_[iv],scalarInter,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[S].size();++ix) {
 	  (*ME[colourFlow[S][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[S][ix].second*diag;
 	}
+#ifdef GAUGE_CHECK
+	total+=norm(diag);
+#endif
       }
 
       // radiation from outgoing vector
-      if(decay[ivect]->dataPtr()->coloured()) {
+      if((decay[ivect]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	 (decay[ivect]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	assert(outgoingVertexV_[inter]);
 	// ensure you get correct outgoing particle from first vertex
 	tcPDPtr off = decay[ivect]->dataPtr();
@@ -298,30 +305,33 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	  outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
 					     vector3_[iv],decay[ivect]->mass());
 	    
-	if(vector3_[iv].particle()->PDGName()!=vectorInter.particle()->PDGName())
-	  throw Exception()
-	    << vector3_[iv].particle()->PDGName() << " was changed to " 
-	    << vectorInter. particle()->PDGName() << " in SSVDecayer::threeBodyME"
-	    << Exception::runerror; 
-
-	double sign  =  1.;//decay[iscal]->id()>0 ? -1:1;
-	double gs    = outgoingVertexV_[inter]->strongCoupling(scale);	
-	Complex diag =  sign*vertex_->evaluate(scale,vectorInter,scal_,swave3_)/gs;
+	assert(vector3_[iv].particle()->id()==vectorInter.particle()->id());
+	
+	if(!couplingSet) {
+	  gs = abs(outgoingVertexV_[inter]->norm());
+	  couplingSet = true;
+	}	
+	Complex diag =  -vertex_->evaluate(scale,vectorInter,scal_,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[V][ix].second*diag;
 	}
+#ifdef GAUGE_CHECK
+	total+=norm(diag);
+#endif
       }
       // radiation from 4 point vertex
-      if (fourPointVertex_[inter]){
-	double gs    = fourPointVertex_[inter]->strongCoupling(scale);
+      if (fourPointVertex_[inter]) {
 	double sign  =  decay[iscal]->id()>0 ? -1:-1;
 	Complex diag =  sign*fourPointVertex_[inter]->evaluate(scale, gluon_[2*ig], vector3_[iv],
-							       scal_, swave3_)/gs;
+							       scal_, swave3_);
 	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) += 
 	     colourFlow[3][ix].second*diag;
 	}
+#ifdef GAUGE_CHECK
+	total+=norm(diag);
+#endif
       }
     }
   }
@@ -333,7 +343,11 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
-  output*=(4.*Constants::pi);
+  // divide by alpha_(S,EM)
+  output*=(4.*Constants::pi)/sqr(gs);
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+#endif
   // return the answer
   return output;
 }

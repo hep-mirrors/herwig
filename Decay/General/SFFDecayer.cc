@@ -154,6 +154,11 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    generator()->log() << *decay[ix] << "\n";
+#endif
   // work out which is the fermion and antifermion
   int ianti(0), iferm(1), iglu(2);
   int itype[2];
@@ -202,16 +207,18 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::
     calculateWaveFunctions(gluon_   , decay[iglu ],outgoing,true);
 
-  // // gauge invariance test
-  // gluon_.clear();
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
-  //   else {
-  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 				          decay[iglu ]->dataPtr(),10,
-  // 					  outgoing));
-  //   }
-  // }
+  // gauge invariance test
+#ifdef GAUGE_CHECK
+  gluon_.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) gluon_.push_back(VectorWaveFunction());
+    else {
+      gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  				          decay[iglu ]->dataPtr(),10,
+  					  outgoing));
+    }
+  }
+#endif
 
   // identify fermion and/or anti-fermion vertex
   AbstractFFVVertexPtr outgoingVertexF;
@@ -225,6 +232,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   double gs(0.);
   bool couplingSet(false);
+#ifdef GAUGE_CHECK
+  double total=0.;
+#endif
   for(unsigned int ifm = 0; ifm < 2; ++ifm) {
     for(unsigned int ia = 0; ia < 2; ++ia) {
       for(unsigned int ig = 0; ig < 2; ++ig) {
@@ -249,6 +259,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    (*ME[colourFlow[0][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[0][ix].second*diag;
 	  }
+#ifdef GAUGE_CHECK
+	  total+=norm(diag);
+#endif
 	}
 	// radiation from outgoing fermion
 	if((decay[iferm]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
@@ -272,6 +285,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    (*ME[colourFlow[1][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[1][ix].second*diag;
 	  }
+#ifdef GAUGE_CHECK
+	  total+=norm(diag);
+#endif
 	}
 	
 	// radiation from outgoing antifermion
@@ -296,6 +312,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    (*ME[colourFlow[2][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[2][ix].second*diag;
 	  }
+#ifdef GAUGE_CHECK
+	  total+=norm(diag);
+#endif
 	}
       }
     }
@@ -310,6 +329,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   }
   // divide by alpha(S,EM)
   output *= (4.*Constants::pi)/sqr(gs);
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+#endif
   // return the answer
   return output;
 }

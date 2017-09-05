@@ -25,7 +25,6 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-
 IBPtr TFFDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -154,7 +153,11 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
 double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
-  
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    generator()->log() << *decay[ix] << "\n";
+#endif
   // work out which is the fermion and antifermion
   int ianti(0), iferm(1), iglu(2);
   int itype[2];
@@ -202,18 +205,19 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::
     calculateWaveFunctions(gluon_   , decay[iglu ],outgoing,true);
 
-  // // gauge invariance test
-  // gluon_.clear();
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
-  //   else {
-  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 				          decay[iglu ]->dataPtr(),10,
-  // 					  outgoing));
-  //   }
-  // }
-
-
+  // gauge invariance test
+#ifdef GAUGE_CHECK
+  gluon_.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) gluon_.push_back(VectorWaveFunction());
+    else {
+      gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  				          decay[iglu ]->dataPtr(),10,
+  					  outgoing));
+    }
+  }
+#endif
+  
   if (! (outgoingVertex1_[inter] && outgoingVertex2_[inter]))
     throw Exception()
       << "Invalid vertices for QCD radiation in TFF decay in TFFDecayer::threeBodyME"
@@ -237,69 +241,81 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 
   const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
-
+  double gs(0.);
+  bool couplingSet(false);
+#ifdef GAUGE_CHECK
+  double total=0.;
+#endif
   for(unsigned int it = 0; it < 5; ++it) {  
     for(unsigned int ifm = 0; ifm < 2; ++ifm) {
       for(unsigned int ia = 0; ia < 2; ++ia) {
 	for(unsigned int ig = 0; ig < 2; ++ig) {
 
 	  // radiation from outgoing fermion
-	  if(decay[iferm]->dataPtr()->coloured()) {
+	  if((decay[iferm]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (decay[iferm]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(outgoingVertexF);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[iferm]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    SpinorBarWaveFunction interS = 
 	      outgoingVertexF->evaluate(scale,3,off,wavebar3_[ifm],
-						gluon_[2*ig],decay[iferm]->mass());
+					gluon_[2*ig],decay[iferm]->mass());
 	  
-	    if(wavebar3_[ifm].particle()->PDGName()!=interS.particle()->PDGName())
-	      throw Exception()
-		<< wavebar3_[ifm].particle()->PDGName() << " was changed to " 
-		<< interS        .particle()->PDGName() << " in TFFDecayer::threeBodyME"
-		<< Exception::runerror;
+	    assert(wavebar3_[ifm].particle()->id()==interS.particle()->id());
 
-	    double gs    =  outgoingVertexF->strongCoupling(scale);
-	    Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,tensors3_[it])/gs;
+	    Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,tensors3_[it]);
+	    if(!couplingSet) {
+	      gs = abs(outgoingVertexF->norm());
+	      couplingSet = true;
+	    }
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	      (*ME[colourFlow[1][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[1][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 
 	  // radiation from outgoing antifermion
-	  if(decay[ianti]->dataPtr()->coloured()) {
+	  if((decay[ianti]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (decay[ianti]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(outgoingVertexA);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[ianti]->dataPtr();
 	    if(off->CC()) off = off->CC();
 	    SpinorWaveFunction  interS = 
 	      outgoingVertexA->evaluate(scale,3,off,wave3_[ia],
-						gluon_[2*ig],decay[ianti]->mass());
+					gluon_[2*ig],decay[ianti]->mass());
 	    
-	    if(wave3_[ia].particle()->PDGName()!=interS.particle()->PDGName())
-	      throw Exception()
-		<< wave3_[ia].particle()->PDGName() << " was changed to " 
-		<< interS    .particle()->PDGName() << " in TFFDecayer::threeBodyME"
-		<< Exception::runerror;
-	    
-	    double gs    =  outgoingVertexA->strongCoupling(scale);
-	    Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it])/gs;
+	    assert(wave3_[ia].particle()->id()==interS.particle()->id());
+
+	    Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it]);
+	    if(!couplingSet) {
+	      gs = abs(outgoingVertexA->norm());
+	      couplingSet = true;
+	    }
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	      (*ME[colourFlow[2][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[2][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 
 	  // radiation from 4 point vertex
-	  if (fourPointVertex_[inter]){
-	    double gs    = fourPointVertex_[inter]->strongCoupling(scale);
+	  if (fourPointVertex_[inter]) {
 	    Complex diag = fourPointVertex_[inter]->evaluate(scale, wave3_[ia], wavebar3_[ifm],
-						      gluon_[2*ig], tensors3_[it])/gs;
+							     gluon_[2*ig], tensors3_[it]);
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	      (*ME[colourFlow[3][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[3][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 	}
       }
@@ -313,8 +329,11 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
-  output*=(4.*Constants::pi);
-
+  // divide by alpha_(s,em)
+  output *= (4.*Constants::pi)/sqr(gs);
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+#endif
   // return the answer
   return output;
 }

@@ -22,7 +22,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
-
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
@@ -196,13 +195,18 @@ describeHerwigFFVDecayer("Herwig::FFVDecayer", "Herwig.so");
 void FFVDecayer::Init() {
 
   static ClassDocumentation<FFVDecayer> documentation
-    ("There is no documentation for the FFVDecayer class");
+    ("The FFVDecayer class implements the decay of a fermion to a fermion and a vector boson");
 
 }
 
 double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 				const ParticleVector & decay,
 				ShowerInteraction inter, MEOption meopt) {
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    generator()->log() << *decay[ix] << "\n";
+#endif
 
   int iferm (0), ivect (1), iglu (2);
   // get location of outgoing lepton/vector
@@ -219,10 +223,6 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 
   // no emissions from massive vectors
   bool massless = decay[ivect]->dataPtr()->mass()==ZERO;
-  // if (outgoingVertexV_[inter] && (! massless))
-  //   throw Exception()
-  //     << "No dipoles available for massive vectors in FFVDecayer::threeBodyME"
-  //     << Exception::runerror;
 
   if(meopt==Initialize) {
     // create spinor (bar) for decaying particle
@@ -271,16 +271,18 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::calculateWaveFunctions(vector3_, decay[ivect],outgoing,massless);
   VectorWaveFunction::calculateWaveFunctions(gluon_,   decay[iglu ],outgoing,true );
 
-  // // gauge invariance test
-  // gluon_.clear();
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
-  //   else {
-  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 					  decay[iglu ]->dataPtr(),10,
-  // 					  outgoing));
-  //   }
-  // }
+  // gauge invariance test
+#ifdef GAUGE_CHECK
+  gluon_.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) gluon_.push_back(VectorWaveFunction());
+    else {
+      gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  					  decay[iglu ]->dataPtr(),10,
+  					  outgoing));
+    }
+  }
+#endif
 
   if (! ((incomingVertex_[inter]  && (outgoingVertexF_[inter]  || outgoingVertexV_[inter])) ||
 	 (outgoingVertexF_[inter] &&  outgoingVertexV_[inter])))
@@ -301,9 +303,12 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   Complex diag;
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer::CFlow & colourFlow
-        = colourFlows(inpart, decay);
-
+  const GeneralTwoBodyDecayer::CFlow & colourFlow = colourFlows(inpart, decay);
+  double gs(0.);
+  bool couplingSet(false);
+#ifdef GAUGE_CHECK
+  double total=0.;
+#endif
   for(unsigned int ifi = 0; ifi < 2; ++ifi) {
     for(unsigned int ifo = 0; ifo < 2; ++ifo) {
       for(unsigned int iv = 0; iv < 3; ++iv) {
@@ -312,103 +317,98 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	  if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
 	     (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(incomingVertex_[inter]);
-	    double gs = incomingVertex_[inter]->strongCoupling(scale);	  
 	    if (ferm){
 	      SpinorWaveFunction spinorInter =
 		incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),wave3_[ifi],
 						  gluon_[2*ig],inpart.mass());
 	      
-	      if (wave3_[ifi].particle()->PDGName()!=spinorInter.particle()->PDGName())
-		throw Exception()
-		  << wave3_[ifi].particle()->PDGName()  << " was changed to " 
-		  << spinorInter.particle()->PDGName()  << " in FFVDecayer::threeBodyME"
-		  << Exception::runerror;
-	      diag = vertex_->evaluate(scale,spinorInter,wavebar3_[ifo],vector3_[iv])/gs;
+	      assert(wave3_[ifi].particle()->id()==spinorInter.particle()->id());
+	      diag = vertex_->evaluate(scale,spinorInter,wavebar3_[ifo],vector3_[iv]);
 	    }
 	    else {
 	      SpinorBarWaveFunction spinorBarInter = 
 		incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),wavebar3_[ifi],
 						  gluon_[2*ig],inpart.mass());
 	      
-	      if (wavebar3_[ifi].particle()->PDGName()!=spinorBarInter.particle()->PDGName())
-		throw Exception()
-		  << wavebar3_[ifi].particle()->PDGName()  << " was changed to " 
-		  << spinorBarInter.particle()->PDGName()  << " in FFVDecayer::threeBodyME"
-		  << Exception::runerror;
-	      diag = vertex_->evaluate(scale,wave3_[ifo], spinorBarInter,vector3_[iv])/gs;
+	      assert(wavebar3_[ifi].particle()->id()==spinorBarInter.particle()->id());
+	      diag = vertex_->evaluate(scale,wave3_[ifo], spinorBarInter,vector3_[iv]);
+	    }
+	    if(!couplingSet) {
+	      gs = abs(incomingVertex_[inter]->norm());
+	      couplingSet = true;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	      (*ME[colourFlow[0][ix].first])(ifi, ifo, iv, ig) += 
 		colourFlow[0][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
-
 	  // radiation from outgoing fermion
-	  if(decay[iferm]->dataPtr()->coloured()) {
+	  if((decay[iferm]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (decay[iferm]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(outgoingVertexF_[inter]);
 	    // ensure you get correct outgoing particle from first vertex
 	    tcPDPtr off = decay[iferm]->dataPtr();
-	    if(off->CC()) off = off->CC();
-	    
-	    double gs = outgoingVertexF_[inter]->strongCoupling(scale);	  	  
+	    if(off->CC()) off = off->CC(); 
 	    if (ferm) {	    
 	      SpinorBarWaveFunction spinorBarInter = 
 		outgoingVertexF_[inter]->evaluate(scale,3,off,wavebar3_[ifo],
 						   gluon_[2*ig],decay[iferm]->mass());
 	      
-	      if(wavebar3_[ifo].particle()->PDGName()!=spinorBarInter.particle()->PDGName())
-		throw Exception()
-		  << wavebar3_[ifo].particle()->PDGName() << " was changed to " 
-		  << spinorBarInter.particle()->PDGName() << " in FFVDecayer::threeBodyME"
-		  << Exception::runerror;
-	      diag = vertex_->evaluate(scale,wave3_[ifi],spinorBarInter,vector3_[iv])/gs;
+	      assert(wavebar3_[ifo].particle()->id()==spinorBarInter.particle()->id());
+	      diag = vertex_->evaluate(scale,wave3_[ifi],spinorBarInter,vector3_[iv]);
 	    }
 	    else {
 	      SpinorWaveFunction spinorInter = 
 		outgoingVertexF_[inter]->evaluate(scale,3,off,wave3_[ifo],
 						   gluon_[2*ig],decay[iferm]->mass());
 		
-	      if(wave3_[ifo].particle()->PDGName()!=spinorInter.particle()->PDGName())
-		throw Exception()
-		  << wave3_[ifo].particle()->PDGName() << " was changed to " 
-		  << spinorInter.particle()->PDGName() << " in FFVDecayer::threeBodyME"
-		  << Exception::runerror;
-	      diag = vertex_->evaluate(scale,spinorInter,wavebar3_[ifi],vector3_[iv])/gs;
+	      assert(wave3_[ifo].particle()->id()==spinorInter.particle()->id());
+	      
+	      diag = vertex_->evaluate(scale,spinorInter,wavebar3_[ifi],vector3_[iv]);
+	    }
+	    if(!couplingSet) {
+	      gs = abs(outgoingVertexF_[inter]->norm());
+	      couplingSet = true;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[F].size();++ix) {
 	      (*ME[colourFlow[F][ix].first])(ifi, ifo, iv, ig) += 
 		 colourFlow[F][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 	  
 	  // radiation from outgoing vector
-	  if(decay[ivect]->dataPtr()->coloured()) {
+	  if((decay[ivect]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+	     (decay[ivect]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
 	    assert(outgoingVertexV_[inter]);
 	    // ensure you get correct ougoing particle from first vertex
 	    tcPDPtr off = decay[ivect]->dataPtr();
 	    if(off->CC()) off = off->CC();
-
-	    double sign  = decay[iferm]->id()>0 ? -1:1;
-	    double gs    = outgoingVertexV_[inter]->strongCoupling(scale);
 	    VectorWaveFunction  vectorInter = 
 	      outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
 						 vector3_[iv],decay[ivect]->mass());
 	    
-	    if(vector3_[iv].particle()->PDGName()!=vectorInter.particle()->PDGName())
-	      throw Exception()
-		<< vector3_[iv].particle()->PDGName() << " was changed to " 
-		<< vectorInter. particle()->PDGName() << " in FFVDecayer::threeBodyME"
-		<< Exception::runerror; 
-	    if (ferm){
-	      diag = sign*vertex_->evaluate(scale,wave3_[ifi],wavebar3_[ifo],vectorInter)/gs;
-	    }
-	    else {
-	      diag = sign*vertex_->evaluate(scale,wave3_[ifo],wavebar3_[ifi],vectorInter)/gs;
+	   assert(vector3_[iv].particle()->id()==vectorInter.particle()->id());
+	    if (ferm)
+	      diag = vertex_->evaluate(scale,wave3_[ifi],wavebar3_[ifo],vectorInter);
+	    else
+	      diag = vertex_->evaluate(scale,wave3_[ifo],wavebar3_[ifi],vectorInter);
+	    if(!couplingSet) {
+	      gs = abs(outgoingVertexV_[inter]->norm());
+	      couplingSet = true;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	      (*ME[colourFlow[V][ix].first])(ifi, ifo, iv, ig) += 
 		colourFlow[V][ix].second*diag;
 	    }
+#ifdef GAUGE_CHECK
+	    total+=norm(diag);
+#endif
 	  }
 	}
 	if(massless) ++iv;
@@ -423,8 +423,11 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
-  output*=(4.*Constants::pi);
-
+  // divide by alpha(S,eM)
+  output *= (4.*Constants::pi)/sqr(gs);
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+#endif
   // return the answer
   return output;
 }

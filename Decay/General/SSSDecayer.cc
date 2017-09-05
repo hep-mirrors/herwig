@@ -123,7 +123,11 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
 double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
-
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    generator()->log() << *decay[ix] << "\n";
+#endif
   // work out which is the scalar and anti scalar
   int ianti(0), iscal(1), iglu(2);
   int itype[2];
@@ -168,16 +172,18 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
   ScalarWaveFunction anti(decay[ianti]->momentum(), decay[ianti]->dataPtr(),outgoing);
   VectorWaveFunction::calculateWaveFunctions(gluon_,decay[iglu ],outgoing,true);
 
-  // // gauge invariance test
-  // gluon_.clear();
-  // for(unsigned int ix=0;ix<3;++ix) {
-  //   if(ix==1) gluon_.push_back(VectorWaveFunction());
-  //   else {
-  //     gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 					  decay[iglu ]->dataPtr(),10,
-  // 					  outgoing));
-  //   }
-  // }
+  // gauge invariance test
+#ifdef GAUGE_CHECK
+  gluon_.clear();
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1) gluon_.push_back(VectorWaveFunction());
+    else {
+      gluon_.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+					  decay[iglu ]->dataPtr(),10,
+					  outgoing));
+    }
+  }
+#endif
 
   AbstractVSSVertexPtr outgoingVertexS;
   AbstractVSSVertexPtr outgoingVertexA;
@@ -187,30 +193,38 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
   const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
-
+  double gs(0.);
+  bool couplingSet(false);
+#ifdef GAUGE_CHECK
+  double total=0.;
+#endif
   for(unsigned int ig = 0; ig < 2; ++ig) {
     // radiation from the incoming scalar
-    if(inpart.dataPtr()->coloured()) {
+    if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+       (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
       assert(incomingVertex_[inter]);
       ScalarWaveFunction scalarInter = 
 	incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),
 					  gluon_[2*ig],swave3_,inpart.mass());
 
-      if (swave3_.particle()->PDGName()!=scalarInter.particle()->PDGName())
-	throw Exception()
-	  << swave3_    .particle()->PDGName() << " was changed to " 
-	  << scalarInter.particle()->PDGName() << " in SSSDecayer::threeBodyME"
-	  << Exception::runerror;
+      assert(swave3_.particle()->id()==scalarInter.particle()->id());
 
-      double gs    = incomingVertex_[inter]->strongCoupling(scale);
-      Complex diag = vertex_->evaluate(scale,scal,anti,scalarInter)/gs;
+      Complex diag = vertex_->evaluate(scale,scal,anti,scalarInter);
+      if(!couplingSet) {
+	gs = abs(incomingVertex_[inter]->norm());
+	couplingSet = true;
+      }
       for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	(*ME[colourFlow[0][ix].first])(0, 0, 0, ig) += 
 	   colourFlow[0][ix].second*diag; 
       }
+#ifdef GAUGE_CHECK
+      total+=norm(diag);
+#endif
     }
     // radiation from the outgoing scalar
-    if(decay[iscal]->dataPtr()->coloured()) {
+    if((decay[iscal]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+       (decay[iscal]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
       assert(outgoingVertexS);
       // ensure you get correct outgoing particle from first vertex
       tcPDPtr off = decay[iscal]->dataPtr();
@@ -218,21 +232,24 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
       ScalarWaveFunction scalarInter = 
 	outgoingVertexS->evaluate(scale,3,off,gluon_[2*ig],scal,decay[iscal]->mass());
 
-      if (scal.particle()->PDGName()!=scalarInter.particle()->PDGName())
-	throw Exception()
-	  << scal       .particle()->PDGName() << " was changed to " 
-	  << scalarInter.particle()->PDGName() << " in SSSDecayer::threeBodyME"
-	  << Exception::runerror;
+      assert(scal.particle()->id()==scalarInter.particle()->id());
 
-      double gs    =  outgoingVertexS->strongCoupling(scale);
-      Complex diag = vertex_->evaluate(scale,swave3_,anti,scalarInter)/gs;
+      Complex diag = vertex_->evaluate(scale,swave3_,anti,scalarInter);
+      if(!couplingSet) {
+	gs = abs(outgoingVertexS->norm());
+	couplingSet = true;
+      }
       for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	(*ME[colourFlow[1][ix].first])(0, 0, 0, ig) += 
 	   colourFlow[1][ix].second*diag;
       }
+#ifdef GAUGE_CHECK
+      total+=norm(diag);
+#endif
     }
     // radiation from the outgoing anti scalar
-    if(decay[ianti]->dataPtr()->coloured()) {
+    if((decay[ianti]->dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
+       (decay[ianti]->dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
       assert(outgoingVertexA);
       // ensure you get correct outgoing particle from first vertex
       tcPDPtr off = decay[ianti]->dataPtr();
@@ -240,18 +257,20 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
       ScalarWaveFunction scalarInter = 
 	outgoingVertexA->evaluate(scale,3,off, gluon_[2*ig],anti,decay[ianti]->mass());
 
-      if (anti.particle()->PDGName()!=scalarInter.particle()->PDGName())
-	throw Exception()
-	  << anti       .particle()->PDGName() << " was changed to " 
-	  << scalarInter.particle()->PDGName() << " in SSSDecayer::threeBodyME"
-	  << Exception::runerror;
+      assert(anti.particle()->id()==scalarInter.particle()->id());
 
-      double gs    =  outgoingVertexA->strongCoupling(scale);
-      Complex diag = vertex_->evaluate(scale,swave3_,scal,scalarInter)/gs;
+      Complex diag = vertex_->evaluate(scale,swave3_,scal,scalarInter);
+      if(!couplingSet) {
+	gs = abs(outgoingVertexA->norm());
+	couplingSet = true;
+      }
       for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	(*ME[colourFlow[2][ix].first])(0, 0, 0, ig) += 
 	  colourFlow[2][ix].second*diag;
       }
+#ifdef GAUGE_CHECK
+      total+=norm(diag);
+#endif
     }
   }
 
@@ -262,8 +281,11 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],rho3_)).real();
     }
   }
-  output*=(4.*Constants::pi);
-
+  // divide by alpha_(S,EM)
+  output*=(4.*Constants::pi)/sqr(gs);
+#ifdef GAUGE_CHECK
+  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+#endif
   // return the answer
   return output;
 }
