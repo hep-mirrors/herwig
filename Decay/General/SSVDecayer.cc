@@ -205,7 +205,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   ScalarWaveFunction scal_(decay[iscal]->momentum(),  decay[iscal]->dataPtr(),outgoing);
   VectorWaveFunction::calculateWaveFunctions(vector3_,decay[ivect],outgoing,false);
   VectorWaveFunction::calculateWaveFunctions(gluon_,  decay[iglu ],outgoing,true );
- 
+
   // gauge invariance test
 #ifdef GAUGE_CHECK
   gluon_.clear();
@@ -322,9 +322,8 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       }
       // radiation from 4 point vertex
       if (fourPointVertex_[inter]) {
-	double sign  =  decay[iscal]->id()>0 ? -1:-1;
-	Complex diag =  sign*fourPointVertex_[inter]->evaluate(scale, gluon_[2*ig], vector3_[iv],
-							       scal_, swave3_);
+	Complex diag =  fourPointVertex_[inter]->evaluate(scale, gluon_[2*ig], vector3_[iv],
+							  scal_, swave3_);
 	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) += 
 	     colourFlow[3][ix].second*diag;
