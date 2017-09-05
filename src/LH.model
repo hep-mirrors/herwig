@@ -140,6 +140,15 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/Phi+
 insert NewModel:DecayParticles 0 /Herwig/Particles/Phi++
 insert NewModel:DecayParticles 0 /Herwig/Particles/h0
 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 32
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 33
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 34
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 8
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 35
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 36
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 37
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 38
+
 # Set up the model framework
 set LH/Model:ModelGenerator NewModel
 

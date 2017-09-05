@@ -81,6 +81,7 @@ set ThreeBodyDC:CreateDecayModes No
 set NewModel:WhichOffshell All
 # particles for which decays are included
 insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 39
 ###################################################
 # Set up the model framework
 ###################################################
