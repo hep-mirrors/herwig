@@ -176,6 +176,7 @@ create Herwig::SSCFSVertex MSSM_CFS
 create Herwig::SSGSSVertex MSSM_GSS
 create Herwig::SSGGSQSQVertex MSSM_GGSS
 create Herwig::SSWGSSVertex MSSM_WGSS
+create Herwig::SSWWSSVertex MSSM_WWSS
 create Herwig::SSGSGSGVertex MSSM_GGOGO
 create Herwig::SSNNZVertex MSSM_NNZ
 create Herwig::SSCCZVertex MSSM_CCZ
@@ -255,6 +256,7 @@ set Model:Vertex/HPP    /Herwig/Vertices/MSSM/MSSM_HPP
 #set Model:Vertex/CFSF   /Herwig/Vertices/RPV/RPV_CFS
 #set Model:Vertex/NFSF   /Herwig/Vertices/RPV/RPV_NFS
 set Model:Vertex/WSFSF  /Herwig/Vertices/RPV/RPV_WSS
+set Model:Vertex/WWSFSF /Herwig/Vertices/MSSM/MSSM_WWSS
 #set Model:Vertex/HSFSF  /Herwig/Vertices/RPV/RPV_HSS
 #set Model:Vertex/NNZ    /Herwig/Vertices/RPV/RPV_NNZ
 set Model:Vertex/CCZ    /Herwig/Vertices/RPV/RPV_CCZ

@@ -50,6 +50,7 @@ IBPtr SusyBase::fullclone() const {
 
 void SusyBase::doinit() {
   addVertex(WSFSFVertex_);
+  addVertex(WWSFSFVertex_);
   addVertex(NFSFVertex_);
   addVertex(GFSFVertex_);
   addVertex(HSFSFVertex_);
@@ -81,7 +82,7 @@ void SusyBase::doinit() {
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << readFile_ << gravitino_
-     << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
+     << NMix_ << UMix_ << VMix_ << WSFSFVertex_ << WWSFSFVertex_ 
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
      << GSFSFVertex_ << GGSQSQVertex_ << WGSQSQVertex_ << GSGSGVertex_ 
      << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
@@ -100,7 +101,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
   is >> readFile_  >> gravitino_
-     >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
+     >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ >> WWSFSFVertex_ 
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
      >> GSFSFVertex_ >> GGSQSQVertex_ >> WGSQSQVertex_ >> GSGSGVertex_ 
      >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
@@ -149,6 +150,11 @@ void SusyBase::Init() {
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",
      &SusyBase::WSFSFVertex_, false, false, true, false);
+  
+  static Reference<SusyBase,Helicity::AbstractVVSSVertex> interfaceVertexWWSS
+    ("Vertex/WWSFSF",
+     "Reference to Susy W W SF SF vertex",
+     &SusyBase::WWSFSFVertex_, false, false, true, false);
   
   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexNFSF
     ("Vertex/NFSF",
