@@ -34,14 +34,6 @@ public:
    */
   UEDF1F1P0Vertex();
 
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
   /** Calculate the coupling
    *@param q2 The scale at which to evaluate the coupling
    *@param part1 The first interacting particle 
@@ -50,6 +42,30 @@ public:
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3);
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
 
 protected:
 
@@ -94,27 +110,27 @@ private:
   /**
    * The value of the coupling when it was last evaluated .
    */
-  Complex theCoupLast;
+  Complex coupLast_;
 
   /**
    * The scale at which the coupling was last evaluated.
    */
-  Energy2 theq2Last;
+  Energy2 q2Last_;
 
   /**
    * The id of the last fermion that the vertex was evaluated for 
    */
-  long thefermLast;
+  long fermLast_;
 
   /**
    * The value of the left/right coupling when it was last evaluated.
    */
-  Complex theLRLast;
+  Complex LRLast_;
 
   /**
    * The charges of the fermions 
    */
-  vector<double> theCharges;  
+  vector<double> charges_;
 };
 }
 

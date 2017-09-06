@@ -21,11 +21,19 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
-				     thefermLast(0), theLRLast(0.0), 
-				     theCharges(3) {
+UEDF1F1P0Vertex::UEDF1F1P0Vertex() : coupLast_(0.0), q2Last_(ZERO),
+				     fermLast_(0), LRLast_(0.0), 
+				     charges_(3) {
   orderInGs(0);
   orderInGem(1);
+}
+
+void UEDF1F1P0Vertex::persistentOutput(PersistentOStream & os) const {
+  os << charges_;
+}
+
+void UEDF1F1P0Vertex::persistentInput(PersistentIStream & is, int) {
+  is >> charges_;
 }
 
 void UEDF1F1P0Vertex::doinit() {
@@ -51,14 +59,14 @@ void UEDF1F1P0Vertex::doinit() {
     throw InitException() << "UEDF1F1P0Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theCharges[0] = UEDBase->ee();
-  theCharges[1] = UEDBase->ed();
-  theCharges[2] = UEDBase->eu();
+  charges_[0] = UEDBase->ee();
+  charges_[1] = UEDBase->ed();
+  charges_[2] = UEDBase->eu();
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeNoPIOClass<UEDF1F1P0Vertex,FFVVertex>
+DescribeClass<UEDF1F1P0Vertex,FFVVertex>
 describeHerwigUEDF1F1P0Vertex("Herwig::UEDF1F1P0Vertex", "HwUED.so");
 
 void UEDF1F1P0Vertex::Init() {
@@ -70,46 +78,31 @@ void UEDF1F1P0Vertex::Init() {
 }
 
 
-void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr ,
+#ifndef NDEBUG
 				  tcPDPtr part3) {
-  long iferm;
-  if(part1->id() == ParticleID::gamma) 
-    iferm  = abs(part2->id());
-  else if(part2->id() == ParticleID::gamma)
-    iferm = abs(part1->id());
-  else if(part3->id() == ParticleID::gamma)
-    iferm = abs(part1->id());
-  else {
-    throw HelicityLogicalError() << "UEDF1F1P0Vertex::setCoupling - There is no "
-				 << "photon in this vertex!"
-				 << Exception::warning;
-    norm(0.0);
-    return;
+#else
+				  tcPDPtr ) {
+#endif
+  long iferm = abs(part1->id());
+  assert(part3->id()==ParticleID::gamma);
+  assert((iferm >= 5100001 && iferm <= 5100006) || 
+	 (iferm >= 5100011 && iferm <= 5100016) ||
+	 (iferm >= 6100001 && iferm <= 6100006) || 
+	 (iferm >= 6100011 && iferm <= 6100016));
+  if(q2 != q2Last_ || coupLast_ == 0. ) {
+    q2Last_ = q2;
+    coupLast_ = -electroMagneticCoupling(q2);
   }
-  if((iferm >= 5100001 && iferm <= 5100006) || 
-     (iferm >= 5100011 && iferm <= 5100016) ||
-     (iferm >= 6100001 && iferm <= 6100006) || 
-     (iferm >= 6100011 && iferm <= 6100016)) {
-    if(q2 != theq2Last || theCoupLast == 0. ) {
-      theq2Last = q2;
-      theCoupLast = electroMagneticCoupling(q2);
-    }
-    norm(theCoupLast);
-    if(iferm != thefermLast) {
-      thefermLast = iferm;
-      int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 5100000;
-      if(smtype >= 11) 
-	theLRLast = theCharges[0];
-      else
-	theLRLast = (smtype % 2 == 0) ? theCharges[2] : theCharges[1];
-    }
-    left(theLRLast);
-    right(theLRLast);
+  norm(coupLast_);
+  if(iferm != fermLast_) {
+    fermLast_ = iferm;
+    int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 5100000;
+    if(smtype >= 11) 
+      LRLast_ = charges_[0];
+    else
+      LRLast_ = (smtype % 2 == 0) ? charges_[2] : charges_[1];
   }
-  else {
-    throw HelicityLogicalError() << "UEDF1F1P0Vertex::setCoupling - There is an "
-				 << "unknown particle in this vertex " << iferm
-				 << Exception::warning;
-    norm(0.0);
-  }
+  left(LRLast_);
+  right(LRLast_);
 }
