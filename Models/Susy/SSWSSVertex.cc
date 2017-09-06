@@ -22,8 +22,8 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
-				  _ulast(0), _dlast(0), _gblast(0),
-				  _factlast(0.) {
+			   _ulast(0), _dlast(0), _gblast(0),
+			   _factlast(0.) {
   orderInGem(1);
   orderInGs(0);
 }
@@ -153,15 +153,10 @@ void SSWSSVertex::Init() {
 }
 
 void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-			      tcPDPtr part2,tcPDPtr part3){
+			      tcPDPtr part2,tcPDPtr part3) {
   long boson(abs(part1->id()));
-  if( boson != ParticleID::Wplus && boson != ParticleID::Z0 && 
-      boson != ParticleID::gamma ) {
-    throw HelicityConsistencyError()
-      << "SSWSSVertex::setCoupling() - The vector particle in this "
-      << "vertex is not a W/Z. " << boson << Exception::warning;
-    norm(0.);
-  }
+  assert( boson == ParticleID::Wplus || boson == ParticleID::Z0 ||
+	  boson == ParticleID::gamma );
   long sf1(abs(part2->id())),sf2(abs(part3->id()));
 
   assert( (sf1 >= 1000001 && sf1 <= 1000006) 
