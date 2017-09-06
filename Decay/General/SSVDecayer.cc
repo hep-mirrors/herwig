@@ -303,15 +303,15 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	if(off->CC()) off = off->CC();
 	VectorWaveFunction  vectorInter = 
 	  outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
-					     vector3_[iv],decay[ivect]->mass());
-	    
+					    vector3_[iv],decay[ivect]->mass());
+	
 	assert(vector3_[iv].particle()->id()==vectorInter.particle()->id());
 	
 	if(!couplingSet) {
 	  gs = abs(outgoingVertexV_[inter]->norm());
 	  couplingSet = true;
 	}	
-	Complex diag =  -vertex_->evaluate(scale,vectorInter,scal_,swave3_);
+	Complex diag = vertex_->evaluate(scale,vectorInter,scal_,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[V][ix].second*diag;

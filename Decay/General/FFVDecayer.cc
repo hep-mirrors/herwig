@@ -355,7 +355,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    if (ferm) {	    
 	      SpinorBarWaveFunction spinorBarInter = 
 		outgoingVertexF_[inter]->evaluate(scale,3,off,wavebar3_[ifo],
-						   gluon_[2*ig],decay[iferm]->mass());
+						  gluon_[2*ig],decay[iferm]->mass());
 	      
 	      assert(wavebar3_[ifo].particle()->id()==spinorBarInter.particle()->id());
 	      diag = vertex_->evaluate(scale,wave3_[ifi],spinorBarInter,vector3_[iv]);
@@ -363,7 +363,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    else {
 	      SpinorWaveFunction spinorInter = 
 		outgoingVertexF_[inter]->evaluate(scale,3,off,wave3_[ifo],
-						   gluon_[2*ig],decay[iferm]->mass());
+						  gluon_[2*ig],decay[iferm]->mass());
 		
 	      assert(wave3_[ifo].particle()->id()==spinorInter.particle()->id());
 	      
@@ -391,7 +391,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    if(off->CC()) off = off->CC();
 	    VectorWaveFunction  vectorInter = 
 	      outgoingVertexV_[inter]->evaluate(scale,3,off,gluon_[2*ig],
-						 vector3_[iv],decay[ivect]->mass());
+						vector3_[iv],decay[ivect]->mass());
 	    
 	   assert(vector3_[iv].particle()->id()==vectorInter.particle()->id());
 	    if (ferm)

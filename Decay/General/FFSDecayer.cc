@@ -211,9 +211,30 @@ double FFSDecayer::threeBodyME(const int , const Particle & inpart,
   if(decay[iferm]->dataPtr()->CC()) itype[1] = decay[iferm]->id() > 0 ? 0 : 1;
   else                              itype[1] = 2;
 
-  bool ferm(itype[0] == 0 || itype[1] == 0 || 
-	   (itype[0] == 2 && itype[1] == 2 && decay[iscal]->id() < 0));  
-
+  bool ferm(false);
+  if(itype[0] == itype[1] ) {
+    ferm = itype[0]==0 || (itype[0]==2 && decay[iscal]->id() < 0);
+  }
+  else if(itype[0] == 2) {
+    ferm = itype[1]==0;
+  }
+  else if(itype[1] == 2) {
+    ferm = itype[0]==0;
+  }
+  else if((itype[0] == 1 && itype[1] == 0) ||
+	  (itype[0] == 0 && itype[1] == 1)) {
+    if(abs(inpart.id())<=16) {
+      ferm = itype[0]==0;
+    }
+    else if(abs(decay[iferm]->id())<=16) {
+      ferm = itype[1]==0;
+    }
+    else {
+      ferm = true;
+    }
+  }
+  else
+    assert(false);
   if(meopt==Initialize) {
     // create spinor (bar) for decaying particle
     if(ferm) {
@@ -306,7 +327,7 @@ double FFSDecayer::threeBodyME(const int , const Particle & inpart,
    	if((inpart.dataPtr()->coloured() && inter==ShowerInteraction::QCD) ||
 	   (inpart.dataPtr()->charged()  && inter==ShowerInteraction::QED) ) {
    	  assert(incomingVertex_[inter]);
-	  if (ferm){
+	  if (ferm) {
 	    SpinorWaveFunction spinorInter =
 	      incomingVertex_[inter]->evaluate(scale,3,inpart.dataPtr(),wave3_[ifi],
 					       gluon_[2*ig],inpart.mass());
