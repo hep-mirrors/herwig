@@ -72,11 +72,7 @@ void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   norm(_couplast);
   // the left and right couplings
   int iferm=abs(aa->id());
-  if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-    left(_charge[iferm]);
-    right(_charge[iferm]);
-  }
-  else throw HelicityConsistencyError() << "SMGFFPVertex::setCoupling "
-					<< "Unknown particle in photon vertex" 
-					<< Exception::runerror;
+  assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
+  left(_charge[iferm]);
+  right(_charge[iferm]);
 }
