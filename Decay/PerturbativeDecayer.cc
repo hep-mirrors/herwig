@@ -151,7 +151,6 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   PPtr trialEmitter, trialSpectator;
   DipoleType finalType(FFa,ShowerInteraction::QCD);
   for (int i=0; i<int(dipoles.size()); ++i) {
-
     // assign emitter and spectator based on current dipole
     if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc){
       trialEmitter   = cProgenitor;
@@ -755,7 +754,8 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
       else {
 	branchingPart[trip[1]]->incomingColour(branchingPart[trip[0]]);
       }
-    }    // 3 -> 3 8
+    }
+    // 3 -> 3 8
     else if (trip.size()==2 && oct.size()==1) {
       if(real->interaction()==ShowerInteraction::QCD) {
 	// 8 emit incoming partner
@@ -774,6 +774,17 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
       else {
 	branchingPart[oct[0]]->incomingColour(branchingPart[trip[0]]);
 	branchingPart[oct[0]]-> colourConnect(branchingPart[trip[1]]);
+      }
+    }
+    // 3  -> 3bar 3bar
+    else if(trip.size() ==1 && atrip.size()==2) {
+      if(real->interaction()==ShowerInteraction::QCD)
+	assert(false);
+      else {
+	tColinePtr col[3] = {ColourLine::create(branchingPart[ trip[0]],false),
+			     ColourLine::create(branchingPart[atrip[0]],true ),
+			     ColourLine::create(branchingPart[atrip[1]],true)};
+	col[0]->setSinkNeighbours(col[1],col[2]);
       }
     }
     else
@@ -812,6 +823,17 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
       else {
 	branchingPart[oct[0]]->incomingColour(branchingPart[atrip[0]],true);
 	branchingPart[oct[0]]-> colourConnect(branchingPart[atrip[1]],true);
+      }
+    }
+    // 3bar  -> bar bar
+    else if(atrip.size() ==1 && trip.size()==2) {
+      if(real->interaction()==ShowerInteraction::QCD)
+	assert(false);
+      else {
+	tColinePtr col[3] = {ColourLine::create(branchingPart[atrip[0]],true ),
+			     ColourLine::create(branchingPart[ trip[0]],false),
+			     ColourLine::create(branchingPart[ trip[1]],false)};
+	col[0]->setSourceNeighbours(col[1],col[2]);
       }
     }
     else

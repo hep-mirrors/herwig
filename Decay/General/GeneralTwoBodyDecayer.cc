@@ -564,6 +564,10 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       colour_[0][0] =  symFactor*16./9.; colour_[0][1] = -symFactor*2./9.;
       colour_[1][0] = -symFactor*2./9.;  colour_[1][1] =  symFactor*16./9.;
     }
+    else if(atrip.size()==2 && sing.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor*2.));
+    }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour triplet particle in "
@@ -590,6 +594,10 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       colour_ .resize(2,DVector(2,0.));
       colour_[0][0] =  symFactor*16./9.; colour_[0][1] = -symFactor*2./9.;
       colour_[1][0] = -symFactor*2./9.;  colour_[1][1] =  symFactor*16./9.;
+    }
+    else if(trip.size()==2 && sing.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor*2.));
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
