@@ -948,11 +948,11 @@ InvEnergy2 MEee2gZ2qq::realME(const vector<cPDPtr> & partons,
 	for(unsigned int outhel2=0;outhel2<2;++outhel2) {
 	  for(unsigned int outhel3=0;outhel3<2;++outhel3) {
 	    SpinorBarWaveFunction off1 =
-	      vertex->evaluate(scale(),3,partons[2],fout[outhel1],gout[outhel3]);
+	      vertex->evaluate(scale(),3,partons[2]->CC(),fout[outhel1],gout[outhel3]);
 	    diag[0] = FFZVertex_->evaluate(scale(),aout[outhel2],off1,interZ);
 	    diag[1] = FFPVertex_->evaluate(scale(),aout[outhel2],off1,interG);
 	    SpinorWaveFunction    off2 = 
-	      vertex->evaluate(scale(),3,partons[3],aout[outhel2],gout[outhel3]);
+	      vertex->evaluate(scale(),3,partons[3]->CC(),aout[outhel2],gout[outhel3]);
 	    diag[2] = FFZVertex_->evaluate(scale(),off2,fout[outhel1],interZ);
 	    diag[3] = FFPVertex_->evaluate(scale(),off2,fout[outhel1],interG);
 	    // sum of diagrams
