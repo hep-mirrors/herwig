@@ -701,7 +701,7 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
 	    SpinorWaveFunction interF = vertex->evaluate(scale,3,inpart.dataPtr(),swave[thel],gwave[ghel]);
 	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[bhel],vwave[whel]);
 	    // emission from bottom
-	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,bquark->dataPtr(),awave[bhel],gwave[ghel]);
+	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,bquark->dataPtr()->CC(),awave[bhel],gwave[ghel]);
 	    diag[1] = FFWVertex_->evaluate(scale,swave[thel],interB,vwave[whel]);
 	    // emission from W
 	    if(inter==ShowerInteraction::QED) {
@@ -724,7 +724,7 @@ double SMTopDecayer::realME(const Particle & inpart, const ParticleVector & deca
 	    SpinorBarWaveFunction  interB = vertex->evaluate(scale,3,inpart.dataPtr(),awave[thel],gwave[ghel]);
 	    diag[1] = FFWVertex_->evaluate(scale,swave[bhel],interB,vwave[whel]);
 	    // emission from bottom
-	    SpinorWaveFunction interF = vertex->evaluate(scale,3,bquark->dataPtr(),swave[bhel],gwave[ghel]);
+	    SpinorWaveFunction interF = vertex->evaluate(scale,3,bquark->dataPtr()->CC(),swave[bhel],gwave[ghel]);
 	    diag[0] = FFWVertex_->evaluate(scale,interF,awave[thel],vwave[whel]);
 	    // emission from W
 	    if(inter==ShowerInteraction::QED) {

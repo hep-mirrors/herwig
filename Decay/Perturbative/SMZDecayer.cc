@@ -996,11 +996,11 @@ InvEnergy2 SMZDecayer::realME(const vector<cPDPtr> & partons,
       for(unsigned int outhel2=0;outhel2<2;++outhel2) {
 	for(unsigned int outhel3=0;outhel3<2;++outhel3) {
 	  SpinorBarWaveFunction off1 =
-	    vertex->evaluate(scale_,3,partons[1],fout[outhel1],gout[outhel3]);
+	    vertex->evaluate(scale_,3,partons[1]->CC(),fout[outhel1],gout[outhel3]);
 	  diag[0] = FFZVertex_->evaluate(scale_,aout[outhel2],off1,vin[inhel1]);
 
 	  SpinorWaveFunction off2 = 
-	    vertex->evaluate(scale_,3,partons[2],aout[outhel2],gout[outhel3]);
+	    vertex->evaluate(scale_,3,partons[2]->CC(),aout[outhel2],gout[outhel3]);
 	  diag[1] = FFZVertex_->evaluate(scale_,off2,fout[outhel1],vin[inhel1]);
 
 	  // sum of diagrams
