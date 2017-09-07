@@ -42,31 +42,22 @@ void UEDP0H1H1Vertex::Init() {
     ("This is the coupling of the SM photon to the level-1 charged higgs.");
 
 }
-
+#ifndef NDEBUG
 void UEDP0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-				  tcPDPtr part3) {
-  long kkhiggs(0);
-  if(part1->id() == ParticleID::gamma)
-    kkhiggs = abs(part2->id());
-  else if(part2->id() == ParticleID::gamma)
-    kkhiggs = abs(part1->id());
-  else if(part3->id() == ParticleID::gamma)
-    kkhiggs = abs(part1->id());
-  else {
-    throw HelicityLogicalError() << "UEDP0H1H1Vertex::setCoupling - There is no "
-				 << "SM photon in this vertex!." 
-				 << Exception::warning;
-    return;
+				  tcPDPtr ) {
+#else
+void UEDP0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr , tcPDPtr part2,
+				  tcPDPtr ) {
+#endif
+
+  assert(part1->id()==ParticleID::gamma);
+  assert(abs(part2->id()) == 5100037);
+  if(q2 != theq2Last || theCoupLast == 0.) {
+    theq2Last = q2;
+    theCoupLast = electroMagneticCoupling(q2);
   }
-  if(kkhiggs == 5100037) {
-    if(q2 != theq2Last || theCoupLast == 0.) {
-      theq2Last = q2;
-      theCoupLast = Complex(0., 1.)*electroMagneticCoupling(q2);
-    }
-    norm(theCoupLast);
-  }
+  if(part2->id()>0) 
+    norm(-theCoupLast);
   else
-    throw HelicityLogicalError() << "UEDP0H1H1Vertex::setCoupling - There is no "
-				 << "level-1 higgs in this vertex! " << kkhiggs
-				 << Exception::warning;
+    norm( theCoupLast);
 }

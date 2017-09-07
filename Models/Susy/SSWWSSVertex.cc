@@ -69,19 +69,19 @@ void SSWWSSVertex::doinit() {
 	addToList(ib1,ib2,ix,-ix);
       }
       // L/R mixing if Z
-      if(ib1==23&&ib2==23) {
+      if(ib2==23) {
 	//L-Rbar stau
-	addToList(23,23,1000015,-2000015);
+	addToList(ib1,ib2,1000015,-2000015);
 	//Lbar-R stau
-	addToList(23,23,-1000015,2000015);
+	addToList(ib1,ib2,-1000015,2000015);
 	//L-Rbar stop
-	addToList(23,23,1000006,-2000006);
+	addToList(ib1,ib2,1000006,-2000006);
 	//Lbar-R stop
-	addToList(23,23,-1000006,2000006);
+	addToList(ib1,ib2,-1000006,2000006);
 	//L-Rbar sbottom
-	addToList(23,23,1000005,-2000005);
+	addToList(ib1,ib2,1000005,-2000005);
 	//Lbar-R sbottom
-	addToList(23,23,-1000005,2000005);
+	addToList(ib1,ib2,-1000005,2000005);
       }
     }
     // W- gamma/Z0
@@ -248,12 +248,12 @@ void SSWWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	// photon Z
 	if(gblast1_ == ParticleID::gamma &&
 	   gblast2_ == ParticleID::Z0 ) {
-	  factlast_ *= ef1; 
+	  factlast_ *= 2.*ef1; 
 	}
 	// Z pairs
 	else if(gblast1_ == ParticleID::Z0 &&
 		gblast2_ == ParticleID::Z0 ) {
-	  factlast_ *= factlast_;
+	  factlast_ *= 2.*factlast_;
 	}
       }
     }
