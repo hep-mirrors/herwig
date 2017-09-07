@@ -152,11 +152,6 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
 double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 			       const ParticleVector & decay,
 			       ShowerInteraction inter, MEOption meopt) {
-#ifdef GAUGE_CHECK
-  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    generator()->log() << *decay[ix] << "\n";
-#endif
   bool massless[2];
   for(unsigned int ix=0;ix<2;++ix)
     massless[ix] = decay[ix]->mass()==ZERO;
@@ -322,7 +317,13 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   // divide by alpha_(s,em)
   output *= (4.*Constants::pi)/sqr(gs);
 #ifdef GAUGE_CHECK
-  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+  double ratio = output/total;
+  if(abs(ratio)>1e-20) {
+    generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      generator()->log() << *decay[ix] << "\n";
+    generator()->log() << "Test of gauge invariance " << ratio << "\n";
+  }
 #endif
   // return the answer
   return output;

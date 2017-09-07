@@ -167,12 +167,6 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
 double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 				const ParticleVector & decay,
 				ShowerInteraction inter, MEOption meopt) {
-#ifdef GAUGE_CHECK
-  generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    generator()->log() << *decay[ix] << "\n";
-#endif
-
   int iscal (0), ivect (1), iglu (2);
   // get location of outgoing scalar/vector
   if(decay[1]->dataPtr()->iSpin()==PDT::Spin0) swap(iscal,ivect);
@@ -345,7 +339,13 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   // divide by alpha_(S,EM)
   output*=(4.*Constants::pi)/sqr(gs);
 #ifdef GAUGE_CHECK
-  generator()->log() << "Test of gauge invariance " << output/total << "\n";
+  double ratio = output/total;
+  if(abs(ratio)>1e-20) {
+    generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      generator()->log() << *decay[ix] << "\n";
+    generator()->log() << "Test of gauge invariance " << ratio << "\n";
+  }
 #endif
   // return the answer
   return output;
