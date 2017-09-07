@@ -65,7 +65,9 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+  virtual POWHEGType hasPOWHEGCorrection()  {
+    return (vertex_->orderInGem()+vertex_->orderInGs())==1 ? FSR : No;
+  }
 
   /**
    *  Three-body matrix element including additional QCD radiation
