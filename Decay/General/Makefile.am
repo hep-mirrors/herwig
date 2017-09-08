@@ -8,6 +8,8 @@ GeneralFourBodyDecayer.h GeneralFourBodyDecayer.fh \
 GeneralFourBodyDecayer.cc \
 StoFFFFDecayer.h StoFFFFDecayer.cc
 
+#libHwGeneralDecay_la_CPPFLAGS= $(AM_CPPFLAGS) -DGAUGE_CHECK
+
 nodist_libHwGeneralDecay_la_SOURCES = \
 GeneralDecayer__all.cc 
 
