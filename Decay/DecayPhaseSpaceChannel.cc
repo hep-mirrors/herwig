@@ -234,7 +234,10 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       // factor for the kinematics
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[0]],
 				   intmass[idau[1]]);
-      wgt *= intmass[ix]*8.*pi*pi/pcm;
+      if(pcm!=ZERO)
+	wgt *= intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
     // only first off-shell
     else if(_intdau1[ix]<0) {
@@ -246,7 +249,10 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[0]],
 				   output[idau[1]].mass());
-      wgt *= intmass[ix]*8.*pi*pi/pcm;
+      if(pcm!=ZERO)
+	wgt *= intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
     // only second off-shell
     else if(_intdau2[ix]<0) {
@@ -258,7 +264,10 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[1]],
 				   output[idau[0]].mass());
-      wgt *=intmass[ix]*8.*pi*pi/pcm;
+      if(pcm!=ZERO)
+	wgt *=intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
     // both on-shell
     else {
