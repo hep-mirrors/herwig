@@ -685,8 +685,14 @@ MEee2gZ2qq::generateHard(RealEmissionProcessPtr born,
   	    -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12-root);
   	  if(x2[ix][iy]<x2min||x2[ix][iy]>x2max) continue;
   	  // check the z components
-  	  double z1 =  sqrt(sqr(x1[ix][iy])-4.*mu12-xT2);
-  	  double z2 = -sqrt(sqr(x2[ix][iy])-4.*mu22);
+  	  double z1 =  sqr(x1[ix][iy])-4.*mu12-xT2;
+	  if(z1<0. && z1>-1e-12) z1 = 0.;
+	  assert(z1>=0.);
+	  z1 = sqrt(z1);
+  	  double z2 = sqr(x2[ix][iy])-4.*mu22;
+	  if(z2<0. && z2>-1e-12) z2 = 0.;
+	  assert(z2>=0.);
+	  z2 = -sqrt(z2);
   	  double z3 =  pT[ix]*sinh(y[ix])*2./M;
   	  if(ix==1) z3 *=-1.;
   	  if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
