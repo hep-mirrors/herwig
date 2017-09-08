@@ -533,6 +533,8 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
   root = sqrt(root);
   double denom  = (-2.*A*B*C*D*c01 + A2*D2 + B2*C2);
   double denom2 = (-B*C*c01 + A*D);
+  if(denom==ZERO || denom2==0)
+    return make_pair(phi0,phi0+Constants::pi);
   double num    = B2*C*D*s012;
   return make_pair(atan2(B*s01*(-C*(num + root) / denom + D) / denom2, -(num + root ) / denom) + phi0,
 		   atan2(B*s01*(-C*(num - root) / denom + D) / denom2, -(num - root ) / denom) + phi0);
