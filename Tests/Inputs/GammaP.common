@@ -13,7 +13,7 @@ set Luminosity:Energy 1000.
 set EventHandler:BeamA /Herwig/Particles/gamma
 set EventHandler:BeamB /Herwig/Particles/p+
 set EventHandler:Sampler /Herwig/ACDCSampler
-set /Herwig/Partons/Extractor:FlatSHatY 1
+set /Herwig/Partons/PPExtractor:FlatSHatY 1
 # the cuts
 cd /Herwig/Cuts
 set Cuts:X1Min 1.0e-5
