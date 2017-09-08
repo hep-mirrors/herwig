@@ -254,11 +254,11 @@ double MEPP2QQ::gg2qqbarME(vector<VectorWaveFunction> &g1,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  //first t-channel diagram
-	  inters =_qqgvertex->evaluate(mt,3,qbar[ohel2].particle(),
+	  inters =_qqgvertex->evaluate(mt,3,qbar[ohel2].particle()->CC(),
 				       qbar[ohel2],g2[ihel2],mass);
 	  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
 	  //second t-channel diagram
-	  inters =_qqgvertex->evaluate(mt,3,qbar[ohel2].particle(),
+	  inters =_qqgvertex->evaluate(mt,3,qbar[ohel2].particle()->CC(),
 				       qbar[ohel2],g1[ihel1],mass);
 	  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
 	  // s-channel diagram

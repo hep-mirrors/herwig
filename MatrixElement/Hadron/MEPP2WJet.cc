@@ -732,7 +732,7 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
 	// intermediates for the diagrams
-	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[2],
+	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[2]->CC(),
 				       fout[ohel1],gin[ihel2]);
 	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);
