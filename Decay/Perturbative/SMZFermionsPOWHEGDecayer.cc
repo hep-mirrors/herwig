@@ -90,10 +90,10 @@ generateHardest(RealEmissionProcessPtr born) {
     return born;
   }
   // Ensure the energies are greater than the constituent masses:
-  for (int i=0; i<2; i++) {
-    if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
-  }
-  if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
+  // for (int i=0; i<2; i++) {
+  //   if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
+  // }
+  // if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
   // set masses
   quark_[0].setMass( partons_[0]->mass() );
   quark_[1].setMass( partons_[1]->mass() );
@@ -456,7 +456,8 @@ bool SMZFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   Energy pTmax = 0.5*sqrt(mz2_);
   if(pTmax<pTmin_) return false;
   // Define over valued y_max & y_min according to the associated pt_min cut.
-  double ymax  =  acosh(pTmax/pTmin_);
+  //double ymax  =  acosh(pTmax/pTmin_);
+  double ymax=10.;
   double ymin  = -ymax;
   // pt of the emmission
   pT_ = pTmax;
@@ -525,7 +526,7 @@ bool SMZFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
 	   x2Solution[i][j]>=x2Minus && x2Solution[i][j]<=x2Plus &&
            checkZMomenta(x1Solution[i][j], x2Solution[i][j], x3Solution[i], yTemp[i], pT[i])) {
           probTemp[i][j] = weightPrefactor*pT[i]*
-            calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i])*
+            abs(calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i]))*
 	    calculateRealEmission(x1Solution[i][j], x2Solution[i][j], 
 				  hardProcess, phi, false, i);
           found = true;

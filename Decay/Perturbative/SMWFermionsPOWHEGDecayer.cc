@@ -91,10 +91,10 @@ generateHardest(RealEmissionProcessPtr born) {
     return born;
   }
   // Ensure the energies are greater than the constituent masses:
-  for (int i=0; i<2; i++) {
-    if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
-  }
-  if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
+  // for (int i=0; i<2; i++) {
+  //   if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
+  // }
+  // if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
   // set masses
   quark_[0].setMass( partons_[0]->mass() );
   quark_[1].setMass( partons_[1]->mass() );
@@ -219,7 +219,7 @@ double SMWFermionsPOWHEGDecayer::meRatio(vector<cPDPtr> partons,
       /(1.-y)/(1.-sqr(muj)-sqr(muk));
     // dipole term
     D[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
-			 -vt/v*(2.-z+sqr(momenta[1+iemit].mass())/pipj));
+    			 -vt/v*(2.-z+sqr(momenta[1+iemit].mass())/pipj));
     // matrix element
     vector<Lorentz5Momentum> lomom(3);
     lomom[0] = momenta[0];
@@ -371,7 +371,8 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   Energy pTmax = 0.5*sqrt(mw2_);
   if(pTmax<pTmin_) return false;
   // Define over valued y_max & y_min according to the associated pt_min cut.
-  double ymax  =  acosh(pTmax/pTmin_);
+  //double ymax  =  acosh(pTmax/pTmin_);
+  double ymax  = 10.;
   double ymin  = -ymax;
   // pt of the emmission
   pT_ = pTmax;
@@ -444,14 +445,14 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
 	double x2Minus = 1.+muk2-muj2
 	  -0.5*(1.-x1Solution[i][j]+muj2-muk2)/(1.-x1Solution[i][j]+muj2)
 	  *(x1Solution[i][j]-2.*muj2+root);
-
+	
         if(x1Solution[i][j]>=x1Minus && x1Solution[i][j]<=x1Plus &&
 	   x2Solution[i][j]>=x2Minus && x2Solution[i][j]<=x2Plus &&
            checkZMomenta(x1Solution[i][j], x2Solution[i][j], x3Solution[i], yTemp[i], pT[i], 
 			 muj, muk)) {
-          probTemp[i][j] = weightPrefactor*pT[i]*
-            calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i], muj, muk)*
-	    calculateRealEmission(x1Solution[i][j], x2Solution[i][j], 
+	  probTemp[i][j] = weightPrefactor*pT[i]*
+	    abs(calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i], muj, muk))*
+	    calculateRealEmission(x1Solution[i][j], x2Solution[i][j],
 				  hardProcess, phi, muj, muk, i, false);
           found = true;
         }
