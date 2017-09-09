@@ -26,10 +26,10 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Utilities/HiggsLoopFunctions.h"
 
 using namespace Herwig;
-
-const Complex MEPP2HiggsJet::_epsi = Complex(0.,-1.e-20);
+using namespace Herwig::HiggsLoopFunctions;
 
 IBPtr MEPP2HiggsJet::clone() const {
   return new_ptr(*this);

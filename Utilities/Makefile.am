@@ -13,7 +13,8 @@ GaussianIntegrator.tcc \
 Statistic.h HerwigStrategy.cc HerwigStrategy.h \
 GSLIntegrator.h GSLIntegrator.tcc \
 GSLBisection.h GSLBisection.tcc GSLHelper.h \
-expm-1.h
+expm-1.h \
+HiggsLoopFunctions.h
 
 nodist_libHwUtils_la_SOURCES = hgstamp.inc
 BUILT_SOURCES = hgstamp.inc
