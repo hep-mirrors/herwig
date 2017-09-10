@@ -132,6 +132,17 @@ set Model:Vertex/FFVDQ    /Herwig/Vertices/Sextet/Sextet_FFVVertex
 ###################################################
 cd /Herwig/Shower
 
+insert ShowerHandler:DecayInShower 0 6000221
+insert ShowerHandler:DecayInShower 0 6000211
+insert ShowerHandler:DecayInShower 0 6000111
+insert ShowerHandler:DecayInShower 0 6001221
+insert ShowerHandler:DecayInShower 0 6001211
+insert ShowerHandler:DecayInShower 0 6001111
+insert ShowerHandler:DecayInShower 0 6000123
+insert ShowerHandler:DecayInShower 0 6000113
+insert ShowerHandler:DecayInShower 0 6000223
+insert ShowerHandler:DecayInShower 0 6000213
+
 create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSplitFn
 set SDiquarktoSDiquarkSplitFn:InteractionType QCD
 set SDiquarktoSDiquarkSplitFn:ColourStructure SextetSextetOctet
