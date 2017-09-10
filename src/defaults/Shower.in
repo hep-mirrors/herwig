@@ -128,6 +128,11 @@ newdef GtoGGSplitFn:InteractionType QCD
 newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 set GtoGGSplitFn:AngularOrdered Yes
 
+create Herwig::OneOneOneSplitFn WtoWGammaSplitFn
+newdef WtoWGammaSplitFn:InteractionType QED
+newdef WtoWGammaSplitFn:ColourStructure ChargedChargedNeutral
+set WtoWGammaSplitFn:AngularOrdered Yes
+
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
@@ -170,6 +175,9 @@ cp QtoQGammaSudakov LtoLGammaSudakov
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
 newdef GtoGGSudakov:PDFmax 2.0
+
+cp SudakovCommon WtoWGammaSudakov
+newdef WtoWGammaSudakov:SplittingFunction WtoWGammaSplitFn
 
 cp SudakovCommon GtoQQbarSudakov
 newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
@@ -244,6 +252,8 @@ do SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddFinalSplitting e-->e-,gamma; LtoLGammaSudakov
 do SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; LtoLGammaSudakov
 do SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; LtoLGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting W+->W+,gamma; WtoWGammaSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that the current particle b is given and we backward branch to new
