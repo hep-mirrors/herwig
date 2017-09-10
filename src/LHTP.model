@@ -236,6 +236,14 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/nu_taumT
 ###################################################
 cd /Herwig/Shower
 
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
+set PhitoPhiGammaSplitFn:InteractionType QED
+set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSplitFn:AngularOrdered Yes
+
+cp SudakovCommon PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+
 do SplittingGenerator:AddFinalSplitting dmT->dmT,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting umT->umT,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting smT->smT,g; QtoQGSudakov
@@ -244,6 +252,23 @@ do SplittingGenerator:AddFinalSplitting bmT->bmT,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting tmT->tmT,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting TmT->TmT,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting TpT->TpT,g; QtoQGSudakov
+
+do SplittingGenerator:AddFinalSplitting dmT->dmT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting umT->umT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting smT->smT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting cmT->cmT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting bmT->bmT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting tmT->tmT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting TmT->TmT,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting TpT->TpT,gamma; QtoQGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting emT-->emT-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting mumT-->mumT-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting taumT-->taumT-,gamma; LtoLGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting W_H+->W_H+,gamma; WtoWGammaSudakov
+do SplittingGenerator:AddFinalSplitting Phi+->Phi+,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting Phi++->Phi++,gamma; PhitoPhiGammaSudakov
 
 cd /Herwig/Generators
 # Choose Little Higgs over SM

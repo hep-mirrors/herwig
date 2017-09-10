@@ -154,8 +154,21 @@ set LH/Model:ModelGenerator NewModel
 
 # Shower stuff for coloured particles
 cd /Herwig/Shower
+
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
+set PhitoPhiGammaSplitFn:InteractionType QED
+set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSplitFn:AngularOrdered Yes
+
+cp SudakovCommon PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+
 do SplittingGenerator:AddFinalSplitting T->T,g; QtoQGSudakov
 
+do SplittingGenerator:AddFinalSplitting T->T,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting W_H+->W_H+,gamma; WtoWGammaSudakov
+do SplittingGenerator:AddFinalSplitting Phi+->Phi+,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting Phi++->Phi++,gamma; PhitoPhiGammaSudakov
 cd /Herwig/Generators
 # Choose Little Higgs over SM
 set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/LH/Model

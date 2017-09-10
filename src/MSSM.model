@@ -362,10 +362,6 @@ set PhitoPhiGammaSplitFn:InteractionType QED
 set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
 set PhitoPhiGammaSplitFn:AngularOrdered Yes
 
-create Herwig::HalfHalfOneSplitFn CharginotoCharginoGammaSplitFn
-set CharginotoCharginoGammaSplitFn:InteractionType QED
-set CharginotoCharginoGammaSplitFn:ColourStructure ChargedChargedNeutral
-set CharginotoCharginoGammaSplitFn:AngularOrdered Yes
 
 create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
 set GluinotoGluinoGSplitFn:InteractionType QCD
@@ -380,8 +376,6 @@ set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
 cp SudakovCommon GluinotoGluinoGSudakov
 set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
 
-cp SudakovCommon CharginotoCharginoGammaSudakov
-set CharginotoCharginoGammaSudakov:SplittingFunction CharginotoCharginoGammaSplitFn
 
 do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
@@ -418,8 +412,8 @@ do SplittingGenerator:AddFinalSplitting ~mu_R-->~mu_R-,gamma; PhitoPhiGammaSudak
 do SplittingGenerator:AddFinalSplitting ~tau_2-->~tau_2-,gamma; PhitoPhiGammaSudakov
 
 do SplittingGenerator:AddFinalSplitting   H+->H+,gamma; PhitoPhiGammaSudakov
-do SplittingGenerator:AddFinalSplitting ~chi_1+->~chi_1+,gamma; CharginotoCharginoGammaSudakov
-do SplittingGenerator:AddFinalSplitting ~chi_2+->~chi_2+,gamma; CharginotoCharginoGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~chi_1+->~chi_1+,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~chi_2+->~chi_2+,gamma; LtoLGammaSudakov
 ###################################################
 # Set up the bsm framework
 ###################################################
