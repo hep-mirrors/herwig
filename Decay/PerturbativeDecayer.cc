@@ -702,18 +702,20 @@ double PerturbativeDecayer::colourCoeff(tcPDPtr emitter,
 
 void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   // extract the particles
-  vector<PPtr> branchingPart;
+  vector<tPPtr> branchingPart;
   branchingPart.push_back(real->incoming()[0]);
   for(unsigned int ix=0;ix<real->outgoing().size();++ix) {
     branchingPart.push_back(real->outgoing()[ix]);
   }
 
-  vector<unsigned int> sing,trip,atrip,oct;
+  vector<unsigned int> sing,trip,atrip,oct,sex,asex;
   for (size_t ib=0;ib<branchingPart.size()-1;++ib) {
     if     (branchingPart[ib]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3   ) trip. push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3bar) atrip.push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour8   ) oct.  push_back(ib);
+    else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour6   ) sex.  push_back(ib);
+    else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour6bar) asex. push_back(ib);
   }
   // decaying colour singlet
   if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour0) {
@@ -878,6 +880,40 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
     else
       assert(false);
   }
+  // sextet
+  else if(branchingPart[0]->dataPtr()->iColour() == PDT::Colour6) {
+    if(trip.size()==2) {
+      assert(real->interaction()==ShowerInteraction::QED);
+      Ptr<MultiColour>::pointer parentColour = 
+      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+      	(branchingPart[0]->colourInfo());
+      for(unsigned int ix=0;ix<2;++ix) {
+	ColinePtr cline = new_ptr(ColourLine());
+	parentColour->colourLine(cline);
+	cline->addColoured(branchingPart[trip[ix]]);
+      }
+    }
+    else
+      assert(false);
+  }
+  // antisextet
+  else if(branchingPart[0]->dataPtr()->iColour() == PDT::Colour6bar) {
+    if(atrip.size()==2) {
+      assert(real->interaction()==ShowerInteraction::QED);
+      Ptr<MultiColour>::pointer parentColour = 
+      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+      	(branchingPart[0]->colourInfo());
+      for(unsigned int ix=0;ix<2;++ix) {
+	ColinePtr cline = new_ptr(ColourLine());
+	parentColour->antiColourLine(cline);
+	cline->addColoured(branchingPart[atrip[ix]],true);
+      }
+    }
+    else
+      assert(false);
+  }
+  else
+    assert(false);
 }
 
 PerturbativeDecayer::phaseSpaceRegion

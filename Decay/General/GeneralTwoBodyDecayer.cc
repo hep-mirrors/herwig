@@ -497,12 +497,14 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 								const ParticleVector & decay,
 								unsigned int & nflow) {
   // calculate the colour factors for the three-body decay
-  vector<int> sing,trip,atrip,oct;
+  vector<int> sing,trip,atrip,oct,sex,asex;
   for(unsigned int it=0;it<decay.size();++it) {
     if     (decay[it]->dataPtr()->iColour() == PDT::Colour0    ) sing. push_back(it);
     else if(decay[it]->dataPtr()->iColour() == PDT::Colour3    ) trip. push_back(it);
     else if(decay[it]->dataPtr()->iColour() == PDT::Colour3bar ) atrip.push_back(it);
     else if(decay[it]->dataPtr()->iColour() == PDT::Colour8    ) oct.  push_back(it);
+    else if(decay[it]->dataPtr()->iColour() == PDT::Colour6    ) sex.  push_back(it);
+    else if(decay[it]->dataPtr()->iColour() == PDT::Colour6bar ) asex. push_back(it);
   }
 
   // identical particle symmetry factor
@@ -622,13 +624,45 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*0.5));
     }
-    else if (oct.size()==2 && sing.size()==1){
+    else if (oct.size()==2 && sing.size()==1) {
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*3.));
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for a decaying colour octet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
+  }
+  // Sextet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour6) {
+    if(trip.size()==2 && sing.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor));
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for a decaying colour sextet particle in "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
+			<< inpart.   dataPtr()->PDGName() << " -> "
+			<< decay[0]->dataPtr()->PDGName() << " " 
+			<< decay[1]->dataPtr()->PDGName() << " "  
+			<< decay[2]->dataPtr()->PDGName()
+			<< Exception::runerror;
+  }
+  // anti Sextet
+  else if(inpart.dataPtr()->iColour() == PDT::Colour6bar) {
+    if(atrip.size()==2 && sing.size()==1) {
+      nflow = 1;
+      colour_ = vector<DVector>(1,DVector(1,symFactor));
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for a decaying colour anti-sextet particle in "
 			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
