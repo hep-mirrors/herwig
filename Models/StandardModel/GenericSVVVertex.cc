@@ -25,10 +25,8 @@ using namespace Herwig;
 using namespace ThePEG;  
 
 GenericSVVVertex::GenericSVVVertex()
-  :pids(ZERO),oas(0),oaew(0){
-  orderInGs(0);
-  orderInGem(0);
-}
+  :pids(ZERO),oas(0),oaew(0)
+{}
 
 void GenericSVVVertex::doinit() {
   //PDG codes for particles at vertices
