@@ -35,7 +35,8 @@ public:
   /**
    * The default constructor.
    */
-  SMHiggsGGHiggsPPDecayer() : _h0wgt(3,1.) {}
+  SMHiggsGGHiggsPPDecayer() : _h0wgt(3,1.), _minloop(6), _maxloop(6), _massopt(0)
+  {}
   
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -77,6 +78,18 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
   //@}
   
 public:
@@ -139,6 +152,19 @@ protected:
    */
   virtual void doinitrun();
   //@}
+
+protected:
+
+  /**
+   *  Calculate the NLO real emission piece of ME
+   */
+  double realME(const vector<cPDPtr> & partons, 
+		const vector<Lorentz5Momentum> & momenta) const;
+  
+  /**
+   *  Calculate the LO ME
+   */
+  Energy2 loME(Energy mh) const;
   
 private:
   
@@ -182,6 +208,28 @@ private:
    *  Vector wavefunctions
    */
   mutable vector<VectorWaveFunction> _vwave[2];
+
+private:
+
+  /**
+   *  Parameters for the real POWHEG correction
+   */
+  //@{
+  /**
+   *  Minimum flavour of quarks to include in the loops
+   */
+  int _minloop;
+
+  /**
+   *  Maximum flavour of quarks to include in the loops
+   */
+  int _maxloop;
+
+  /**
+   *  Option for treatment of the fermion loops
+   */
+  unsigned int _massopt;
+  //@}
 };
   
 }

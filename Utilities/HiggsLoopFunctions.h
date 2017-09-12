@@ -105,6 +105,15 @@ using namespace ThePEG;
    }
    
    /**
+    * The \f$A_1(m_h^2)\f$ function of NPB297 (1988) 221-243.
+    * @param mh2 The Higgs mass squared
+    * @param mf2 The fermion mass squared.
+    */
+   Complex A1(Energy2 mh2, Energy2 mf2) {
+     return mf2/mh2*(4.-W2(mh2,mf2)*(1.-4.*mf2/mh2));
+   }
+   
+   /**
     * The \f$A_2(s,t,u)\f$ function of NPB297 (1988) 221-243.
     * @param s   The \f$s\f$ invariant
     * @param t   The \f$t\f$ invariant
