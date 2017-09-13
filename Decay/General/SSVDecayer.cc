@@ -190,8 +190,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   }
   // calculate colour factors and number of colour flows
   unsigned int nflow;
-  vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);  
-  if(nflow==2) cfactors[0][1]=cfactors[1][0];
+  vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
   vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin0, PDT::Spin0,
 								       PDT::Spin1, PDT::Spin1)));
 

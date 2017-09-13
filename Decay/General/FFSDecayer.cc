@@ -265,7 +265,6 @@ double FFSDecayer::threeBodyME(const int , const Particle & inpart,
   // calulate colour factors and number of colour flows
   unsigned int nflow;
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
-  if(nflow==2) cfactors[0][1] = cfactors[1][0];
 
   vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half, PDT::Spin0,
 								       PDT::Spin1Half, PDT::Spin1)));

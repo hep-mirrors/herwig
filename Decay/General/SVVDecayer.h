@@ -14,8 +14,7 @@
 
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
@@ -71,6 +70,20 @@ public:
 			    map<ShowerInteraction,VertexBasePtr> &,
 			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
 			    map<ShowerInteraction,VertexBasePtr>);
+  
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection()  {
+    return (vertex_->orderInGem()+vertex_->orderInGs())==1 ? FSR : No;
+  }
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
   //@}
 
 public:
@@ -115,6 +128,16 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+  
+protected:
+
+  /**
+   *  Find the vertices for the decay
+   */
+  void identifyVertices(const Particle & inpart, const ParticleVector & decay, 
+			AbstractVVVVertexPtr & outgoingVertex1, 
+			AbstractVVVVertexPtr & outgoingVertex2,
+			ShowerInteraction inter);
 
 private:
 
@@ -134,7 +157,22 @@ private:
   /**
    * Pointer to the perturbative form
    */
-  VVSVertexPtr perturbativeVertex_; 
+  VVSVertexPtr perturbativeVertex_;
+
+  /**
+   *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar
+   */
+  map<ShowerInteraction,AbstractVSSVertexPtr> incomingVertex_;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   */
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex1_;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   */
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex2_;
 
   /**
    *  Spin density matrix
@@ -150,6 +188,33 @@ private:
    *  Vector wavefunctions
    */
   mutable vector<Helicity::VectorWaveFunction> vectors_[2];
+
+private:
+
+  /**
+   *  Member for the POWHEG correction
+   */
+  //@{
+  /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix rho3_;
+  
+  /**
+   *  Scalar wavefunction for 3 body decay
+   */
+  mutable ScalarWaveFunction swave3_;
+
+  /**
+   *  Vector wavefunctions
+   */
+  mutable vector<Helicity::VectorWaveFunction> vectors3_[2];
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
+  //@}
 };
 
 }

@@ -163,7 +163,6 @@ double VSSDecayer::threeBodyME(const int , const Particle & inpart,
   // calculate colour factors and number of colour flows
   unsigned int nflow;
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
-  if(nflow==2) cfactors[0][1]=cfactors[1][0];
   vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin1, PDT::Spin0,
 								       PDT::Spin0, PDT::Spin1)));
 
@@ -305,51 +304,51 @@ void VSSDecayer::identifyVertices(const int iscal, const int ianti,
 				  AbstractVSSVertexPtr & outgoingVertexS, 
 				  AbstractVSSVertexPtr & outgoingVertexA,
 				  ShowerInteraction inter){
-
-  // work out which scalar each outgoing vertex corresponds to 
-  // two outgoing vertices
-  if( inpart.dataPtr()       ->iColour()==PDT::Colour0     &&
-    ((decay[iscal]->dataPtr()->iColour()==PDT::Colour3     &&
-      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
-     (decay[iscal]->dataPtr()->iColour()==PDT::Colour8     &&
-      decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
-    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
-      outgoingVertexS = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
+  if(inter==ShowerInteraction::QCD) {
+    // work out which scalar each outgoing vertex corresponds to 
+    // two outgoing vertices
+    if( inpart.dataPtr()       ->iColour()==PDT::Colour0     &&
+	((decay[iscal]->dataPtr()->iColour()==PDT::Colour3     &&
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) ||
+	 (decay[iscal]->dataPtr()->iColour()==PDT::Colour8     &&
+	  decay[ianti]->dataPtr()->iColour()==PDT::Colour8))){
+      if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
+	outgoingVertexS = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+	outgoingVertexS = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+	outgoingVertexS = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
+      }
     }
-    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
-      outgoingVertexS = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
+    else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
+	    decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&
+	    decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+      if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
+	outgoingVertexS = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+	outgoingVertexS = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
+	outgoingVertexS = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
+      }
     }
-    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
-      outgoingVertexS = outgoingVertex2_[inter];
-      outgoingVertexA = outgoingVertex1_[inter];
-    }
-  }
-  else if(inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
-	  decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&
-	  decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-    if(outgoingVertex1_[inter]==outgoingVertex2_[inter]){
-      outgoingVertexS = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
-    }
-    else if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
-      outgoingVertexS = outgoingVertex1_[inter];
-      outgoingVertexA = outgoingVertex2_[inter];
-    }
-    else if (outgoingVertex2_[inter]->isIncoming(getParticleData(decay[iscal]->id()))){
-      outgoingVertexS = outgoingVertex2_[inter];
-      outgoingVertexA = outgoingVertex1_[inter];
-    }
-  }
-
-  // one outgoing vertex
-  else if(inpart.dataPtr()->iColour()==PDT::Colour3){
-    if(decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&  
-       decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
-      if     (outgoingVertex1_[inter]) outgoingVertexS = outgoingVertex1_[inter];
-      else if(outgoingVertex2_[inter]) outgoingVertexS = outgoingVertex2_[inter];
-    }
+    
+    // one outgoing vertex
+    else if(inpart.dataPtr()->iColour()==PDT::Colour3){
+      if(decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&  
+	 decay[ianti]->dataPtr()->iColour()==PDT::Colour0){
+	if     (outgoingVertex1_[inter]) outgoingVertexS = outgoingVertex1_[inter];
+	else if(outgoingVertex2_[inter]) outgoingVertexS = outgoingVertex2_[inter];
+      }
     else if (decay[iscal]->dataPtr()->iColour()==PDT::Colour3 &&
 	     decay[ianti]->dataPtr()->iColour()==PDT::Colour8){
       if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[ianti]->dataPtr()->id()))){
@@ -361,37 +360,46 @@ void VSSDecayer::identifyVertices(const int iscal, const int ianti,
 	outgoingVertexA = outgoingVertex2_[inter];
       }
     }
-  }
-  else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
-    if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
-       decay[iscal]->dataPtr()->iColour()==PDT::Colour0){
-      if     (outgoingVertex1_[inter]) outgoingVertexA = outgoingVertex1_[inter];
-      else if(outgoingVertex2_[inter]) outgoingVertexA = outgoingVertex2_[inter];
     }
-    else if (decay[iscal]->dataPtr()->iColour()==PDT::Colour8 &&
-	     decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
-      if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->dataPtr()->id()))){
+    else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
+      if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
+	 decay[iscal]->dataPtr()->iColour()==PDT::Colour0){
+	if     (outgoingVertex1_[inter]) outgoingVertexA = outgoingVertex1_[inter];
+	else if(outgoingVertex2_[inter]) outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else if (decay[iscal]->dataPtr()->iColour()==PDT::Colour8 &&
+	       decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar){
+	if (outgoingVertex1_[inter]->isIncoming(getParticleData(decay[iscal]->dataPtr()->id()))){
+	  outgoingVertexS = outgoingVertex1_[inter];
+	  outgoingVertexA = outgoingVertex2_[inter];
+	}
+	else {
+	  outgoingVertexS = outgoingVertex2_[inter];
+	  outgoingVertexA = outgoingVertex1_[inter];
+	}
+      }
+    }
+    
+    if (! ((incomingVertex_[inter]  && (outgoingVertexS  || outgoingVertexA)) ||
+	   ( outgoingVertexS &&  outgoingVertexA)))
+      throw Exception()
+	<< "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
+	<< Exception::runerror;
+  }
+  else {
+    if(decay[iscal]->dataPtr()->charged()) {
+      if (outgoingVertex1_[inter] &&
+	  outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iscal]->dataPtr())))
 	outgoingVertexS = outgoingVertex1_[inter];
-	outgoingVertexA = outgoingVertex2_[inter];
-      }
-      else {
+      else
 	outgoingVertexS = outgoingVertex2_[inter];
+    }
+    if(decay[ianti]->dataPtr()->charged()) {
+      if (outgoingVertex1_[inter] &&
+	  outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[ianti]->dataPtr())))
 	outgoingVertexA = outgoingVertex1_[inter];
-      }
+      else
+	outgoingVertexA = outgoingVertex2_[inter];
     }
   }
-
-  if (! ((incomingVertex_[inter]  && (outgoingVertexS  || outgoingVertexA)) ||
-	 ( outgoingVertexS &&  outgoingVertexA)))
-    throw Exception()
-      << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
-      << Exception::runerror;
-
-  // // prohibit all for now since all unchecked
-  // if (true)
-  //   throw Exception()
-  //     << "Invalid vertices for QCD radiation in VSS decay in VSSDecayer::identifyVertices"
-  //     << Exception::runerror;
-
 }
-
