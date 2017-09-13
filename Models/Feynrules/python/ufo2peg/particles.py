@@ -104,7 +104,16 @@ class ParticleConverter:
     def subs(self):
         return self.__dict__
 
-
+def check_effective_vertex(FR,p,ig) :
+    for vertex in FR.all_vertices:
+        if(len(vertex.particles) != 3) : continue
+        if(p not in vertex.particles ) : continue
+        ng=0
+        for part in vertex.particles :
+            if(part.pdg_code==ig) : ng+=1
+        if(ng==2) :
+            return False
+    return True
 
 def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
     plist = []
@@ -218,10 +227,17 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
             pass
 
         if p.charge == 0 and p.color == 1 and p.spin == 1:
-            plist.append(
+            if(check_effective_vertex(FR,p,21)) :
+                plist.append(
 """
-insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
 insert /Herwig/{ModelName}/V_GenericHGG:Bosons 0 {pname}
 """.format(pname=p.name, ModelName=modelname)
-            )
+                )
+            if(check_effective_vertex(FR,p,22)) :
+                plist.append(
+"""
+insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
+""".format(pname=p.name, ModelName=modelname)
+                )
+                
     return ''.join(plist)+''.join(splittings), names
