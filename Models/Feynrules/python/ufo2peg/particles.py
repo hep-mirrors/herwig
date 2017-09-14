@@ -104,14 +104,24 @@ class ParticleConverter:
     def subs(self):
         return self.__dict__
 
-
+def check_effective_vertex(FR,p,ig) :
+    for vertex in FR.all_vertices:
+        if(len(vertex.particles) != 3) : continue
+        if(p not in vertex.particles ) : continue
+        ng=0
+        for part in vertex.particles :
+            if(part.pdg_code==ig) : ng+=1
+        if(ng==2) :
+            return False
+    return True
 
 def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
     plist = []
     antis = {}
     names = []
     splittings = []
-    done_splitting=[]
+    done_splitting_QCD=[]
+    done_splitting_QED=[]
     for p in FR.all_particles:
         if p.spin == -1:
             continue
@@ -178,10 +188,11 @@ rm /Herwig/Widths/hWidth
             return cols[c]
 
         try:
-            if p.color in [3,6,8] and abs(pdg) not in done_splitting: # which colors?
-                done_splitting.append(abs(pdg))
-                splitname = '{name}SplitFn'.format(name=p.name)
-                sudname = '{name}Sudakov'.format(name=p.name)
+            # QCD splitting functions
+            if p.color in [3,6,8] and abs(pdg) not in done_splitting_QCD: # which colors?
+                done_splitting_QCD.append(abs(pdg))
+                splitname = '{name}SplitFnQCD'.format(name=p.name)
+                sudname = '{name}SudakovQCD'.format(name=p.name)
                 splittings.append(
 """
 create Herwig::{s}{s}OneSplitFn {name}
@@ -195,12 +206,38 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudn
                 )
         except SkipMe:
             pass
+        # QED splitting functions
+        try: 
+            if p.charge != 0 and abs(pdg) not in done_splitting_QED:
+                done_splitting_QED.append(abs(pdg))
+                splitname = '{name}SplitFnQED'.format(name=p.name)
+                sudname = '{name}SudakovQED'.format(name=p.name)
+                splittings.append(
+"""
+create Herwig::{s}{s}OneSplitFn {name}
+set {name}:InteractionType QED
+set {name}:ColourStructure ChargedChargedNeutral
+cp /Herwig/Shower/SudakovCommon {sudname}
+set {sudname}:SplittingFunction {name}
+set {sudname}:Alpha /Herwig/Shower/AlphaQED
+do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {sudname}
+""".format(s=spin_name(p.spin), name=splitname, pname=p.name, sudname=sudname)
+                )
+        except SkipMe:
+            pass
 
         if p.charge == 0 and p.color == 1 and p.spin == 1:
-            plist.append(
+            if(check_effective_vertex(FR,p,21)) :
+                plist.append(
 """
-insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
 insert /Herwig/{ModelName}/V_GenericHGG:Bosons 0 {pname}
 """.format(pname=p.name, ModelName=modelname)
-            )
+                )
+            if(check_effective_vertex(FR,p,22)) :
+                plist.append(
+"""
+insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
+""".format(pname=p.name, ModelName=modelname)
+                )
+                
     return ''.join(plist)+''.join(splittings), names

@@ -234,7 +234,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 
 Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{9.4,12,13,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
 	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg) \
-           $(shell echo Rivet-LEP{,-Powheg,-Matchbox-Powheg}-14.in)	
+           $(shell echo Rivet-LEP{,-Powheg,-Matchbox-Powheg}-14)	
 	rm -rf Rivet-LEP
 	python/merge-LEP --with-gg LEP
 	python/merge-LEP LEP-Powheg
