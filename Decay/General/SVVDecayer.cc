@@ -177,7 +177,7 @@ double SVVDecayer::threeBodyME(const int , const Particle & inpart,
 								       PDT::Spin1, PDT::Spin1)));
   bool massless[2];
   for(unsigned int ix=0;ix<2;++ix)
-    massless[ix] = decay[0]->mass()!=ZERO;
+    massless[ix] = decay[ix]->mass()!=ZERO;
   // create wavefunctions
   VectorWaveFunction::calculateWaveFunctions(vectors3_[0],decay[0],outgoing,massless[0]);
   VectorWaveFunction::calculateWaveFunctions(vectors3_[1],decay[1],outgoing,massless[1]);
@@ -305,12 +305,12 @@ double SVVDecayer::threeBodyME(const int , const Particle & inpart,
   output*=(4.*Constants::pi)/sqr(gs);
 #ifdef GAUGE_CHECK
   double ratio = output/total;
-  // if(abs(ratio)>1e-20) {
+  if(abs(ratio)>1e-20) {
     generator()->log() << "Test of gauge invariance in decay\n" << inpart << "\n";
     for(unsigned int ix=0;ix<decay.size();++ix)
       generator()->log() << *decay[ix] << "\n";
     generator()->log() << "Test of gauge invariance " << ratio << "\n";
-  // }
+  }
 #endif
   // return the answer
   return output;

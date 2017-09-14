@@ -76,7 +76,7 @@ public:
 			     ShowerInteraction inter, MEOption meopt);
 
   /**
-   * Indentify outgoing vertices for the fermion and antifermion
+   * Indentify outgoing vertices for the scalar and antiscalar
    */
   void identifyVertices(const int iscal, const int ianti,
 			const Particle & inpart, const ParticleVector & decay,

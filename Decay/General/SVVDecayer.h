@@ -165,12 +165,12 @@ private:
   map<ShowerInteraction,AbstractVSSVertexPtr> incomingVertex_;
 
   /**
-   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from the 1st outgoing vector
    */
   map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex1_;
 
   /**
-   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from the 2nd outgoing vector
    */
   map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex2_;
 
