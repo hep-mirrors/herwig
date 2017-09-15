@@ -92,8 +92,10 @@ void LHModel::Init() {
 }
 
 void LHModel::doinit() {
+  // additional vertices
+  if(WHHVertex_) addVertex(WHHVertex_);
   // stuff from the base class
-  StandardModel::doinit();
+  BSMModel::doinit();
   // compute the parameters of the model
   // W and Z masses
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
