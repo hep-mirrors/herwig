@@ -190,7 +190,7 @@ private:
 private:
 
   /**
-   *  Member for the POWHEG correction
+   *  Members for the POWHEG correction
    */
   //@{
   /**

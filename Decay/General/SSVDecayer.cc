@@ -195,7 +195,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 								       PDT::Spin1, PDT::Spin1)));
 
   // create wavefunctions
-  ScalarWaveFunction scal_(decay[iscal]->momentum(),  decay[iscal]->dataPtr(),outgoing);
+  ScalarWaveFunction scal(decay[iscal]->momentum(),  decay[iscal]->dataPtr(),outgoing);
   VectorWaveFunction::calculateWaveFunctions(vector3_,decay[ivect],outgoing,false);
   VectorWaveFunction::calculateWaveFunctions(gluon_,  decay[iglu ],outgoing,true );
 
@@ -248,7 +248,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 					   gluon_[2*ig],swave3_,inpart.mass());
 	
 	assert(swave3_.particle()->id()==scalarInter.particle()->id());
-	Complex diag = vertex_->evaluate(scale,vector3_[iv],scal_,scalarInter);
+	Complex diag = vertex_->evaluate(scale,vector3_[iv],scal,scalarInter);
 	if(!couplingSet) {
 	  gs = abs(incomingVertex_[inter]->norm());
 	  couplingSet = true;
@@ -269,9 +269,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	tcPDPtr off = decay[iscal]->dataPtr();
 	if(off->CC()) off = off->CC();
 	ScalarWaveFunction scalarInter = 
-	  outgoingVertexS_[inter]->evaluate(scale,3,off,gluon_[2*ig],scal_,decay[iscal]->mass());
+	  outgoingVertexS_[inter]->evaluate(scale,3,off,gluon_[2*ig],scal,decay[iscal]->mass());
 	
-	assert(scal_.particle()->id()==scalarInter.particle()->id());
+	assert(scal.particle()->id()==scalarInter.particle()->id());
 
 	if(!couplingSet) {
 	  gs = abs(outgoingVertexS_[inter]->norm());
@@ -304,7 +304,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	  gs = abs(outgoingVertexV_[inter]->norm());
 	  couplingSet = true;
 	}	
-	Complex diag = vertex_->evaluate(scale,vectorInter,scal_,swave3_);
+	Complex diag = vertex_->evaluate(scale,vectorInter,scal,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[V][ix].second*diag;
@@ -316,7 +316,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       // radiation from 4 point vertex
       if (fourPointVertex_[inter]) {
 	Complex diag =  fourPointVertex_[inter]->evaluate(scale, gluon_[2*ig], vector3_[iv],
-							  scal_, swave3_);
+							  scal, swave3_);
 	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
 	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) += 
 	     colourFlow[3][ix].second*diag;
