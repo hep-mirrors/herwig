@@ -767,7 +767,7 @@ namespace Herwig {
   /**
    *  Typedef for derivative of the length
    */
-  typedef Qty<1,-2,0> LengthDiff;
+  typedef decltype(mm/GeV2) LengthDiff;
 
   /**
    *  A struct for the integrand for the slope
