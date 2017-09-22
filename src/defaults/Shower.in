@@ -128,7 +128,7 @@ newdef GtoGGSplitFn:InteractionType QCD
 newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 set GtoGGSplitFn:AngularOrdered Yes
 
-create Herwig::OneOneOneSplitFn WtoWGammaSplitFn
+create Herwig::OneOneOneMassiveSplitFn WtoWGammaSplitFn
 newdef WtoWGammaSplitFn:InteractionType QED
 newdef WtoWGammaSplitFn:ColourStructure ChargedChargedNeutral
 set WtoWGammaSplitFn:AngularOrdered Yes
