@@ -55,8 +55,27 @@ RhoDMatrix ShowerVertex::getDMatrix(int) const {
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
     Dout.push_back(outgoing()[ix]->DMatrix());
   }
-  // calculate the spin density matrix and return the answer
-  return matrixElement_->calculateDMatrix(Dout);
+  // calculate the spin density matrix 
+  RhoDMatrix rho = matrixElement_->calculateDMatrix(Dout);
+  // map if needed
+  if(convertIn_) {
+    RhoDMatrix rhop(rho.iSpin(),false);
+    for(int ixb=0;ixb<rho.iSpin();++ixb) {
+  	for(int iyb=0;iyb<rho.iSpin();++iyb) {
+  	  if(inMatrix_(iyb,ixb)==0.)continue;
+	  for(int iya=0;iya<rho.iSpin();++iya) {
+            if(rho(iya,iyb)==0.)continue;
+	    for(int ixa=0;ixa<rho.iSpin();++ixa) {
+  	      rhop(ixa,ixb) += rho(iya,iyb)*std::conj(inMatrix_(iya,ixa))*inMatrix_(iyb,ixb);
+  	    }
+  	  }
+  	}
+    }
+    rhop.normalize();
+    rho = rhop;
+  }
+  // return the answer
+  return rho;
 }
 
 RhoDMatrix ShowerVertex::mapIncoming(RhoDMatrix rho) const {

@@ -116,17 +116,6 @@ RhoDMatrix bosonMapping(ShowerParticle & particle,
 	mapping(ix,iy)=conj(mapping(ix,iy));
     }
   }
-  // \todo need to fix this
-  mapping = RhoDMatrix(PDT::Spin1,false);
-  if(massless) {
-    mapping(0,0) = 1.;
-    mapping(2,2) = 1.;
-  }
-  else {
-    mapping(0,0) = 1.;
-    mapping(1,1) = 1.;
-    mapping(2,2) = 1.;
-  }
   return mapping;
 }
 

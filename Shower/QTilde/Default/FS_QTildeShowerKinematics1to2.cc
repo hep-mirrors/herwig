@@ -101,6 +101,10 @@ updateChildren(const tShowerParticlePtr parent,
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
   vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi(),true));
+  RhoDMatrix mapping;
+  SpinPtr inspin;
+  bool needMapping = parent->getMapping(inspin,mapping);
+  if(needMapping) vertex->incomingBasisTransform(mapping);
   // set the incoming particle for the vertex
   parent->spinInfo()->decayVertex(vertex);
   for(ShowerParticleVector::const_iterator pit=children.begin();
