@@ -275,10 +275,9 @@ private:
    
 
   /* Kallen function */
-  template<int L, int E, int Q, int DL, int DE, int DQ>
-  Qty<2*L,2*E,2*Q,DL,DE,DQ> kallen(Qty<L,E,Q,DL,DE,DQ> a,
-                                   Qty<L,E,Q,DL,DE,DQ> b,
-                                   Qty<L,E,Q,DL,DE,DQ> c) const {
+  template<typename A, typename B, typename C>
+  auto kallen(A a, B b, C c) const -> decltype(a*a)
+  {
     return a*a + b*b + c*c - 2.0*(a*b + b*c + c*a);
   }
   

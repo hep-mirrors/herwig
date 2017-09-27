@@ -56,11 +56,17 @@ public:
    */
   GaussianIntegrator(double abserr, double relerr, double binwidth,
 		     int maxint, int maxeval)
-    : _abserr(abserr), _relerr(relerr), _binwidth(binwidth), _maxint(maxint),
+    : _abserr(abserr), _relerr(relerr), 
+      _binwidth(binwidth), _maxint(maxint),
       _maxeval(maxeval) {
     // setup the weights and abscissae
     Init();
   }
+
+  /// helper type for the integration result
+  template <class T>
+  using ValT = decltype(std::declval<typename T::ValType>() 
+                      * std::declval<typename T::ArgType>());
 
   /**
    * The value of the integral
@@ -68,11 +74,9 @@ public:
    * @param upper The upper limit of integration.
    */
   template <class T>
-  inline typename BinaryOpTraits<typename T::ValType,
-				 typename T::ArgType>::MulT
-  value(const T &, 
-	const typename T::ArgType lower,
-	const typename T::ArgType upper) const;
+  inline ValT<T> value(const T &, 
+	               const typename T::ArgType lower,
+	               const typename T::ArgType upper) const;
 
 private:
 
