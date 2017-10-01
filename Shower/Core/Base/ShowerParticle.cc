@@ -97,13 +97,13 @@ RhoDMatrix bosonMapping(ShowerParticle & particle,
   // splitting basis
   vector<LorentzPolarizationVector> fbasis;
   bool massless(particle.id()==ParticleID::g||particle.id()==ParticleID::gamma);
-  VectorWaveFunction wave(porig,particle.dataPtr(),outgoing);
+  VectorWaveFunction wave(porig,particle.dataPtr(),incoming);
   for(unsigned int ix=0;ix<3;++ix) {
     if(massless&&ix==1) {
       fbasis.push_back(LorentzPolarizationVector());
     }
     else {
-      wave.reset(ix);
+      wave.reset(ix,vector_phase);
       fbasis.push_back(wave.wave());
     }
   }
@@ -111,7 +111,7 @@ RhoDMatrix bosonMapping(ShowerParticle & particle,
   RhoDMatrix mapping=RhoDMatrix(PDT::Spin1,false);
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      mapping(ix,iy)= sbasis[iy].dot(fbasis[ix].conjugate());
+      mapping(ix,iy)= -sbasis[iy].conjugate().dot(fbasis[ix]);
       if(particle.id()<0)
 	mapping(ix,iy)=conj(mapping(ix,iy));
     }
@@ -191,7 +191,7 @@ VectorSpinPtr createVectorSpinInfo(ShowerParticle & particle,
       basis = LorentzPolarizationVector();
     }
     else {
-      wave.reset(ix);
+      wave.reset(ix,vector_phase);
       basis = wave.wave();
     }
     basis *= rinv;
@@ -442,7 +442,7 @@ void ShowerParticle::constructSpinInfo(bool timeLike) {
   else if(spin==PDT::Spin1) {
     bool massless(id()==ParticleID::g||id()==ParticleID::gamma);
     vector<Helicity::LorentzPolarizationVector> vtemp;
-    VectorWaveFunction::calculateWaveFunctions(vtemp,this,outgoing,massless);
+    VectorWaveFunction::calculateWaveFunctions(vtemp,this,outgoing,massless,vector_phase);
     VectorWaveFunction::constructSpinInfo(vtemp,this,outgoing,timeLike,massless);
   }
   else {
