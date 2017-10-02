@@ -116,7 +116,7 @@ HalfOneHalfSplitFn::generatePhiBackward(const double z, const Energy2 t, const I
   vector<pair<int, Complex> > output;
   output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
   output.push_back(make_pair( 2, -rho(0,2)          * off/max)); 
-  output.push_back(make_pair(-2, -rho(2,0)          * off/max)); 
+  output.push_back(make_pair(-2, -rho(2,0)          * off/max));
   return output;
 }
 
@@ -130,7 +130,7 @@ DecayMEPtr HalfOneHalfSplitFn::matrixElement(const double z, const Energy2 t,
   double root = sqrt(1.-z*sqr(m)/(1.-z)/t);
   double romz = sqrt(1.-z); 
   double rz   = sqrt(z);
-  Complex phase = exp(Complex(0.,1.)*phi);
+  Complex phase = exp(-Complex(0.,1.)*phi);
   (*kernal)(0,0,0) = -root/rz/phase;
   (*kernal)(1,2,1) = -conj((*kernal)(0,0,0));
   (*kernal)(0,2,0) =  root/rz*(1.-z)*phase;

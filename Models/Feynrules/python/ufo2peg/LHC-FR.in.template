@@ -10,8 +10,17 @@ cd /Herwig/NewPhysics
 #
 ####################################
 
+insert HPConstructor:Incoming 0 /Herwig/Particles/d
+insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
 insert HPConstructor:Incoming 0 /Herwig/Particles/u
-insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 0 /Herwig/Particles/s
+insert HPConstructor:Incoming 0 /Herwig/Particles/sbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/c
+insert HPConstructor:Incoming 0 /Herwig/Particles/cbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/b
+insert HPConstructor:Incoming 0 /Herwig/Particles/bbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
 
 ${Particles}
 
@@ -21,8 +30,17 @@ set HPConstructor:Processes SingleParticleInclusive
 ## Additionally, you can use new particles as intermediates
 ## with the ResConstructor:
 #############################################################
+# insert ResConstructor:Incoming 0 /Herwig/Particles/d
+# insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
 # insert ResConstructor:Incoming 0 /Herwig/Particles/u
 # insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/s
+# insert ResConstructor:Incoming 0 /Herwig/Particles/sbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/c
+# insert ResConstructor:Incoming 0 /Herwig/Particles/cbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/b
+# insert ResConstructor:Incoming 0 /Herwig/Particles/bbar
+# insert ResConstructor:Incoming 0 /Herwig/Particles/g
 #
 # insert ResConstructor:Intermediates 0 [PARTICLE_NAME]
 #

@@ -66,7 +66,7 @@ namespace SpinorHelicity {
   template<class Value>
   struct SpinorMultiplicationTraits {
 
-    typedef typename BinaryOpTraits<Value,Value>::MulT ResultType;
+    typedef decltype(sqr(std::declval<Value>())) ResultType;
     typedef complex<ResultType> ComplexResultType;
     typedef LorentzVector<ComplexResultType> ComplexVectorResultType;
 
@@ -423,7 +423,8 @@ namespace SpinorHelicity {
    * Return |c|^2
    */
   template<class T>
-  typename BinaryOpTraits<T,T>::MulT abs2(const complex<T>& x) {
+  auto abs2(const complex<T>& x) -> decltype((x*conj(x)).real())
+  {
     return (x*conj(x)).real();
   }
 

@@ -117,7 +117,7 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
     bool massless(particle->id()==ParticleID::g||particle->id()==ParticleID::gamma);
     vector<Helicity::LorentzPolarizationVector> vtemp;
     VectorWaveFunction::calculateWaveFunctions(vtemp,particle,outgoing,massless);
-    VectorWaveFunction::constructSpinInfo(vtemp,particle,outgoing,timeLike,massless);
+    VectorWaveFunction::constructSpinInfo(vtemp,particle,outgoing,timeLike,massless,vector_phase);
   }
   else {
     throw Exception() << "Spins higher than 1 are not yet implemented in " 

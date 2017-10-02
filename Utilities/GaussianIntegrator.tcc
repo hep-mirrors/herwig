@@ -15,8 +15,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 template <class T>
-inline typename BinaryOpTraits<typename T::ValType,
-			       typename T::ArgType>::MulT
+inline GaussianIntegrator::ValT<T>
 GaussianIntegrator::value(const T & function, 
 			  const typename T::ArgType lower, 
 			  const typename T::ArgType upper) const {

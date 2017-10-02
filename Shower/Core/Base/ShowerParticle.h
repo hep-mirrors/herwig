@@ -379,8 +379,6 @@ public:
    */
   RhoDMatrix extractRhoMatrix(bool forward);
 
-protected:
-
   /**
    * For a particle which came from the hard process get the spin density and
    * the mapping required to the basis used in the Shower
