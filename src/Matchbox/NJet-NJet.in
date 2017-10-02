@@ -8,4 +8,4 @@ clear /Herwig/MatrixElements/Matchbox/Factory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 NJet
 
 clear /Herwig/Merging/MergingFactory:Amplitudes
-insert /Herwig/Merging/MergingFactory:Amplitudes 0 NJets
+insert /Herwig/Merging/MergingFactory:Amplitudes 0 NJet
