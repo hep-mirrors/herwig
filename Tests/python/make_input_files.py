@@ -1862,7 +1862,7 @@ elif(collider=="LHC-GammaGamma" ) :
 
 
 parameters['parameterFile'] = os.path.join(collider,collider+"-"+parameterName+".in")
-parameters['runname'] = name
+parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = process
 
 

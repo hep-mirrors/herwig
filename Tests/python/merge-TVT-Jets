@@ -31,6 +31,8 @@ def fillAbove(desthisto, sourcehistosbyptmin):
                 if(h.bins[i].xMin  >= ptlow and 
                    h.bins[i].xMin  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
+        elif(type(desthisto)==yoda.core.Counter) :
+                    desthisto += h
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
@@ -290,7 +292,10 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("3618439")>0 or hpath.find("4266730")>0 or
         hpath.find("3418421")>0 or hpath.find("8591881")>0 or
         hpath.find("1388868")>0) :
-        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
+        if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
+            outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
+                                                 hsets.values()[0].values()[0].title)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
         elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
