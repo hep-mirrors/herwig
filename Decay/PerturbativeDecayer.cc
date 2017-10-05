@@ -20,11 +20,13 @@
 using namespace Herwig;
 
 void PerturbativeDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_ << useMEforT2_; 
+  os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_
+     << useMEforT2_ << C_ << ymax_;
 }
 
 void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_ >> useMEforT2_; 
+  is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_
+     >> useMEforT2_ >> C_ >> ymax_;
 }
 
 
@@ -92,6 +94,18 @@ void PerturbativeDecayer::Init() {
      "Use the Matrix element to fill the T2 region",
      true);
 
+    static Parameter<PerturbativeDecayer,double> interfacePrefactor
+    ("Prefactor",
+     "The prefactor for the sampling of the powheg Sudakov",
+     &PerturbativeDecayer::C_, 6.3, 0.0, 1e10,
+     false, false, Interface::limited);
+
+  static Parameter<PerturbativeDecayer,double> interfaceYMax
+    ("YMax",
+     "The maximum value for the rapidity",
+     &PerturbativeDecayer::ymax_, 10., 0.0, 100.,
+     false, false, Interface::limited);
+
 }
 
 double PerturbativeDecayer::matrixElementRatio(const Particle & , 
@@ -152,11 +166,11 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   DipoleType finalType(FFa,ShowerInteraction::QCD);
   for (int i=0; i<int(dipoles.size()); ++i) {
     // assign emitter and spectator based on current dipole
-    if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc){
+    if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc) {
       trialEmitter   = cProgenitor;
       trialSpectator = aProgenitor;
     }
-    else if (dipoles[i].type==FFa || dipoles[i].type==IFa || dipoles[i].type==IFba){
+    else if (dipoles[i].type==FFa || dipoles[i].type==IFa || dipoles[i].type==IFba) {
       trialEmitter   = aProgenitor;
       trialSpectator = cProgenitor;
     }
@@ -199,7 +213,6 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
       born->pT()[ShowerInteraction::QED] = pTmin_;
     return born;
   }
-
   // rotate momenta back to the lab
   for(unsigned int ix=0;ix<momenta.size();++ix) {
     momenta[ix] *= eventFrame;
@@ -380,10 +393,6 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 							   PPtr spectator, 
 							   const vector<DipoleType>  &dipoles, 
 							   int i, bool inDeadZone) {
-  double C    = 6.3;
-  double ymax = 10.;
-  double ymin = -ymax;
-
   // get masses of the particles
   mb_  = in       ->momentum().mass();
   e_   = emitter  ->momentum().mass()/mb_;
@@ -395,7 +404,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   Energy2 lambda = sqr(mb_)*sqrt(1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_);    
 
   // calculate A
-  double A = (ymax-ymin)*C/Constants::twopi;
+  double A = 2.*ymax_*C_/Constants::twopi;
   if(dipoles[i].interaction==ShowerInteraction::QCD)
     A *= alphaS() ->overestimateValue();
   else
@@ -417,7 +426,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
     }
 
     double phi = UseRandom::rnd()*Constants::twopi;
-    double y   = ymin+UseRandom::rnd()*(ymax-ymin);
+    double y   = -ymax_+UseRandom::rnd()*2.*ymax_;
     double weight[2] = {0.,0.};
     double xs[2], xe[2], xe_z[2], xg;
  
@@ -457,7 +466,6 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       
       // calculate matrix element ratio R/B
       double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize,dipoles[i].interaction);
-      
       // calculate dipole factor
       InvEnergy2 dipoleSum = ZERO;
       InvEnergy2 numerator = ZERO;
@@ -474,7 +482,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	particleMomenta[2].e()*particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);
       // calculate weight
-      weight[j] = meRatio*fabs(sqr(pT)*J)/C/Constants::twopi;
+      weight[j] = meRatio*fabs(sqr(pT)*J)/C_/Constants::twopi;
       if(dipoles[i].interaction==ShowerInteraction::QCD)
 	weight[j] *= alphaS() ->ratio(pT*pT);
       else
@@ -522,7 +530,7 @@ bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 
   if (det<0.) return false;
   if (j==0) xs = (-B+sqrt(det))/(2.*A);
-  if (j==1) xs = (-B-sqrt(det))/(2.*A);  
+  if (j==1) xs = (-B-sqrt(det))/(2.*A);
   // check value of xs is physical
   if (xs>(1.+s2_-e2_) || xs<2.*s_) return false;
 
@@ -535,7 +543,6 @@ bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   double root1 = sqrt(max(0.,sqr(xs)-4.*s2_)), root2 = sqrt(max(0.,sqr(xe)-4.*e2_-sqr(xT)));
   double epsilon_p =  -root1+xT*sinh(y)+root2;
   double epsilon_m =  -root1+xT*sinh(y)-root2;
-
   // find direction of emitter
   if      (fabs(epsilon_p) < 1.e-10) xe_z =  sqrt(sqr(xe)-4.*e2_-sqr(xT));
   else if (fabs(epsilon_m) < 1.e-10) xe_z = -sqrt(sqr(xe)-4.*e2_-sqr(xT));
@@ -634,12 +641,10 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
     }
     dipole *= colourCoeff(part[1],part[2],part[0],dipoleId);
   }
+  else
+    assert(false);
   // coupling prefactors
   dipole *= 8.*Constants::pi;
-  if(dipoleId.interaction==ShowerInteraction::QCD)
-    dipole *= alphaS() ->value(mb_*mb_);
-  else
-    dipole *= alphaEM()->value(mb_*mb_);
   // return the answer
   return dipole;
 }
