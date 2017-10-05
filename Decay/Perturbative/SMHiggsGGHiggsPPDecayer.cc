@@ -302,6 +302,13 @@ double SMHiggsGGHiggsPPDecayer::matrixElementRatio(const Particle & inpart, cons
   Energy2 lome = loME(inpart.mass());
   double reme = realME(partons,realmom);
   double ratio = reme/lome*scale;
+  // // analytic value for mt -> infinity
+  // double x1 = 2.*decay3[0]->momentum().t()/inpart.mass();
+  // double x2 = 2.*decay3[1]->momentum().t()/inpart.mass();
+  // double x3 = 2.*decay3[2]->momentum().t()/inpart.mass();
+  // double test = 8.*Constants::pi*3.*(1.+pow(1-x1,4)+pow(1-x2,4)+pow(1-x3,4))
+  //   /(1.-x1)/(1.-x2)/(1.-x3);
+  // generator()->log() << "TESTING RATIO " << test << " " << ratio << " " << ratio/test << "\n";
   return ratio;
 }
 
