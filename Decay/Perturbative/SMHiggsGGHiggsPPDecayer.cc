@@ -309,7 +309,8 @@ double SMHiggsGGHiggsPPDecayer::matrixElementRatio(const Particle & inpart, cons
   // double test = 8.*Constants::pi*3.*(1.+pow(1-x1,4)+pow(1-x2,4)+pow(1-x3,4))
   //   /(1.-x1)/(1.-x2)/(1.-x3);
   // generator()->log() << "TESTING RATIO " << test << " " << ratio << " " << ratio/test << "\n";
-  return ratio;
+  // remember the symmetry factor
+  return ratio/3.;
 }
 
 double SMHiggsGGHiggsPPDecayer::realME(//const vector<cPDPtr> & partons, 

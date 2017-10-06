@@ -27,7 +27,7 @@ protected:
   /**
    * Type of dipole
    */
-  enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
+  enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc, FFg};
 
   /**
    *   Phase-space region for an emission (assumes \f$a\to b,c\f$
@@ -59,7 +59,7 @@ public:
 			  pTmin_(GeV), useMEforT2_(true),
 			  C_(6.3), ymax_(10.), phaseOpt_(0),
 			  pT_(ZERO),mb_(ZERO), e_(0.),
-			  s_(0.), e2_(0.), s2_(0.)
+			  s_(0.), e2_(0.), s2_(0.), enhance_(1.)
   {}
 
   /**
@@ -154,8 +154,9 @@ protected:
   /**
    * Return dipole corresponding to the DipoleType dipoleId
    */
-  double calculateDipole(const DipoleType & dipoleId,   const Particle & inpart,
-			 const ParticleVector & decay3);
+  pair<double,double> calculateDipole(const DipoleType & dipoleId,
+				      const Particle & inpart,
+				      const ParticleVector & decay3);
 
   /**
    * Return contribution to dipole that depends on the spin of the emitter
@@ -331,6 +332,11 @@ private:
    * Reduced mass of spectator child particle squared
    */
   double s2_;
+
+  /**
+   *  Enhancement prefactor for special cases
+   */
+  mutable double enhance_;
   //@}
 };
 

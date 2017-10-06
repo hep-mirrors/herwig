@@ -180,6 +180,7 @@ RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr 
   PPtr trialEmitter, trialSpectator;
   DipoleType finalType(FFa,ShowerInteraction::QCD);
   for (int i=0; i<int(dipoles.size()); ++i) {
+    if(dipoles[i].type==FFg) continue;
     // assign emitter and spectator based on current dipole
     if (dipoles[i].type==FFc || dipoles[i].type==IFc || dipoles[i].type==IFbc) {
       trialEmitter   = cProgenitor;
@@ -298,6 +299,7 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 					  PPtr & bProgenitor,
 					  PPtr & cProgenitor,
 					  ShowerInteraction inter) const {
+  enhance_ = 1.;
   // identify any QCD dipoles
   if(inter==ShowerInteraction::QCD ||
      inter==ShowerInteraction::Both) {
@@ -312,6 +314,11 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 	  (cColour==PDT::Colour8    && aColour==PDT::Colour8)){
 	dipoles.push_back(DipoleType(FFa,ShowerInteraction::QCD));
 	dipoles.push_back(DipoleType(FFc,ShowerInteraction::QCD));
+	if(aProgenitor->id()==ParticleID::g &&
+	   cProgenitor->id()==ParticleID::g ) {
+	  enhance_ = 1.5;
+	  dipoles.push_back(DipoleType(FFg,ShowerInteraction::QCD));
+	}
       }
     }
     // decaying colour triplet
@@ -500,9 +507,9 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       for (int k=0; k<int(dipoles.size()); ++k) {
 	// skip dipoles which are not of the interaction being considered
 	if(dipoles[k].interaction!=dipoles[i].interaction) continue;
-	double dipole = abs(calculateDipole(dipoles[k],*inpart,decay3));
-	dipoleSum += dipole;
-	if (k==i) numerator = dipole;
+	pair<double,double> dipole = calculateDipole(dipoles[k],*inpart,decay3);
+	dipoleSum += abs(dipole.first);
+	if (k==i) numerator = abs(dipole.second);
       }
       meRatio *= numerator/dipoleSum;
       // calculate jacobian
@@ -510,7 +517,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	particleMomenta[2].e()*particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);
       // calculate weight
-      weight[j] = meRatio*fabs(sqr(pT)*J)/C_/Constants::twopi;
+      weight[j] = enhance_*meRatio*fabs(sqr(pT)*J)/C_/Constants::twopi;
       if(dipoles[i].interaction==ShowerInteraction::QCD)
 	weight[j] *= alphaS() ->ratio(pT*pT);
       else
@@ -622,11 +629,11 @@ bool PerturbativeDecayer::psCheck(const double xg, const double xs) {
   return true;
 }
 
-double PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,  
-					    const Particle & inpart,
-					    const ParticleVector & decay3) {
+pair<double,double> PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
+							 const Particle & inpart,
+							 const ParticleVector & decay3) {
   // calculate dipole for decay b->ac
-  double dipole(0.);
+  pair<double,double> dipole = make_pair(0.,0.);
   double x1 = 2.*decay3[0]->momentum().e()/mb_;
   double x2 = 2.*decay3[1]->momentum().e()/mb_;
   double xg = 2.*decay3[2]->momentum().e()/mb_;
@@ -640,15 +647,15 @@ double PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
   }
   // radiation from b with initial-final connection 
   if (dipoleId.type==IFba || dipoleId.type==IFbc) {
-    dipole  = -2./sqr(xg);
-    dipole *= colourCoeff(part[0],part[1],part[2],dipoleId);
+    dipole.first  = -2./sqr(xg);
+    dipole.first *= colourCoeff(part[0],part[1],part[2],dipoleId);
   }
   // radiation from a/c with initial-final connection
   else if (dipoleId.type==IFa || dipoleId.type==IFc) {
     double z  = 1. - xg/(1.-mu22+mu12);
-    dipole = (-2.*mu12/sqr(1.-x2+mu22-mu12) + (1./(1.-x2+mu22-mu12))*
+    dipole.first = (-2.*mu12/sqr(1.-x2+mu22-mu12) + (1./(1.-x2+mu22-mu12))*
 	      (2./(1.-z)-dipoleSpinFactor(part[1],z))); 
-    dipole *= colourCoeff(part[1],part[0],part[2],dipoleId);
+    dipole.first *= colourCoeff(part[1],part[0],part[2],dipoleId);
   }
   // radiation from a/c with final-final connection
   else if (dipoleId.type==FFa || dipoleId.type==FFc) {
@@ -658,19 +665,31 @@ double PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
     double v  = sqrt(sqr(2.*mu22+(1.-mu12-mu22)*(1.-y))-4.*mu22)
       /(1.-y)/(1.-mu12-mu22);
     if(part[1]->iSpin()!=PDT::Spin1) {
-      dipole = (1./(1.-x2+mu22-mu12))*
+      dipole.first = (1./(1.-x2+mu22-mu12))*
 	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(part[1],z)+(2.*mu12/(1.+mu22-mu12-x2))));
     }
     else {
-      dipole = (1./(1.-x2+mu22-mu12))*
+      dipole.first  = (1./(1.-x2+mu22-mu12))*
 	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*mu12/(1.+mu22-mu12-x2)));
+      dipole.second = (1./(1.-x2+mu22-mu12))*
+	(2./(1.-z*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*mu12/(1.+mu22-mu12-x2)));
+    dipole.second   *= colourCoeff(part[1],part[2],part[0],dipoleId);
     }
-    dipole *= colourCoeff(part[1],part[2],part[0],dipoleId);
+    dipole.first *= colourCoeff(part[1],part[2],part[0],dipoleId);
+  }
+  // special for the case that all particles are gluons
+  else if(dipoleId.type==FFg) {
+    double z = (1.-x2)/xg;
+    double y = 1.-xg;
+    dipole.first = 1./(1.-xg)*(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.));
+    dipole.first *= colourCoeff(part[1],part[2],part[0],dipoleId);
   }
   else
     assert(false);
   // coupling prefactors
-  dipole *= 8.*Constants::pi;
+  if(dipole.second==0.) dipole.second=dipole.first;
+  dipole.first  *= 8.*Constants::pi;
+  dipole.second *= 8.*Constants::pi;
   // return the answer
   return dipole;
 }
@@ -1061,6 +1080,8 @@ bool PerturbativeDecayer::inTotalDeadZone(double xg, double xs,
       break;
     case IFc : case IFbc:
       if(inInitialFinalDeadZone(xg,xb,b,c)!=deadZone) return false;
+      break;
+    case FFg:
       break;
     }
   }
