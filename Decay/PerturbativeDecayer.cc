@@ -21,12 +21,12 @@ using namespace Herwig;
 
 void PerturbativeDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_
-     << useMEforT2_ << C_ << ymax_;
+     << useMEforT2_ << C_ << ymax_ << phaseOpt_;
 }
 
 void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_
-     >> useMEforT2_ >> C_ >> ymax_;
+     >> useMEforT2_ >> C_ >> ymax_ >> phaseOpt_;
 }
 
 
@@ -39,7 +39,8 @@ describeHerwigPerturbativeDecayer("Herwig::PerturbativeDecayer",
 void PerturbativeDecayer::Init() {
 
   static ClassDocumentation<PerturbativeDecayer> documentation
-    ("The PerturbativeDecayer class is the mase class for perturbative decays in Herwig");
+    ("The PerturbativeDecayer class is the mase class for "
+     "perturbative decays in Herwig");
 
   static Parameter<PerturbativeDecayer,Energy> interfacepTmin
     ("pTmin",
@@ -47,7 +48,6 @@ void PerturbativeDecayer::Init() {
      &PerturbativeDecayer::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  
   static Switch<PerturbativeDecayer,ShowerInteraction> interfaceInteractions
     ("Interactions",
      "which interactions to include for the hard corrections",
@@ -105,6 +105,21 @@ void PerturbativeDecayer::Init() {
      "The maximum value for the rapidity",
      &PerturbativeDecayer::ymax_, 10., 0.0, 100.,
      false, false, Interface::limited);
+
+  static Switch<PerturbativeDecayer,unsigned int> interfacePhaseSpaceOption
+    ("PhaseSpaceOption",
+     "Option for the phase-space sampling",
+     &PerturbativeDecayer::phaseOpt_, 0, false, false);
+  static SwitchOption interfacePhaseSpaceOptionFixedYLimits
+    (interfacePhaseSpaceOption,
+     "FixedYLimits",
+     "Use a fixed limit for the rapidity",
+     0);
+  static SwitchOption interfacePhaseSpaceOptionVariableYLimits
+    (interfacePhaseSpaceOption,
+     "VariableYLimits",
+     "Change limit for the rapidity with pT",
+     1);
 
 }
 
@@ -404,29 +419,43 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   Energy2 lambda = sqr(mb_)*sqrt(1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_);    
 
   // calculate A
-  double A = 2.*ymax_*C_/Constants::twopi;
+  double A = 2.*C_/Constants::twopi;
+  // factor due sampling choice
+  if(phaseOpt_==0) A *=ymax_;
+  // coupling factor
   if(dipoles[i].interaction==ShowerInteraction::QCD)
     A *= alphaS() ->overestimateValue();
   else
     A *= alphaEM()->overestimateValue();
-  
-  Energy pTmax = mb_*(sqr(1.-s_)-e2_)/(2.*(1.-s_));
+
+  Energy pTmax = 0.5*mb_*(1.-sqr(s_+e_));
 
   // if no possible branching return
   if ( pTmax < pTmin_ ) {
     particleMomenta.clear(); 
     return particleMomenta;
   }
-  while (pTmax >= pTmin_) {
-    // generate pT, y and phi values
-    Energy pT = pTmax*pow(UseRandom::rnd(),(1./A));
+  Energy pT=pTmax;
+  while (pT >= pTmin_) {
+    double ymax;
+    // overestimate with flat y limit
+    if(phaseOpt_==0) {
+      pT *= pow(UseRandom::rnd(),(1./A));
+      ymax=ymax_;
+    }
+    // pT sampling including tighter pT dependent y limit
+    else {
+      pT = 2.*pTmax*exp(-sqrt(-2.*log(UseRandom::rnd())/A+sqr(log(2.*pTmax/pT))));
+      // choice of limit overestimate ln(2*pTmax/pT) (true limit acosh(pTmax/pT))
+      ymax = log(2.*pTmax/pT);
+    }
     if (pT < pTmin_) {
       particleMomenta.clear(); 
       break;
     }
 
     double phi = UseRandom::rnd()*Constants::twopi;
-    double y   = -ymax_+UseRandom::rnd()*2.*ymax_;
+    double y   = ymax*(2.*UseRandom::rnd()-1.);
     double weight[2] = {0.,0.};
     double xs[2], xe[2], xe_z[2], xg;
  
@@ -467,12 +496,11 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       // calculate matrix element ratio R/B
       double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize,dipoles[i].interaction);
       // calculate dipole factor
-      InvEnergy2 dipoleSum = ZERO;
-      InvEnergy2 numerator = ZERO;
+      double dipoleSum(0.),numerator(0.);
       for (int k=0; k<int(dipoles.size()); ++k) {
 	// skip dipoles which are not of the interaction being considered
 	if(dipoles[k].interaction!=dipoles[i].interaction) continue;
-	InvEnergy2 dipole = abs(calculateDipole(dipoles[k],*inpart,decay3));
+	double dipole = abs(calculateDipole(dipoles[k],*inpart,decay3));
 	dipoleSum += dipole;
 	if (k==i) numerator = dipole;
       }
@@ -505,8 +533,6 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       pT_ = pT;
       break;   
     }
-    // if there's no branching lower the pT
-    pTmax = pT;  
   }
   return particleMomenta;
 }
@@ -596,11 +622,11 @@ bool PerturbativeDecayer::psCheck(const double xg, const double xs) {
   return true;
 }
 
-InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,  
-						const Particle & inpart,
-						const ParticleVector & decay3) {
+double PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,  
+					    const Particle & inpart,
+					    const ParticleVector & decay3) {
   // calculate dipole for decay b->ac
-  InvEnergy2 dipole = ZERO;
+  double dipole(0.);
   double x1 = 2.*decay3[0]->momentum().e()/mb_;
   double x2 = 2.*decay3[1]->momentum().e()/mb_;
   double xg = 2.*decay3[2]->momentum().e()/mb_;
@@ -614,13 +640,13 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
   }
   // radiation from b with initial-final connection 
   if (dipoleId.type==IFba || dipoleId.type==IFbc) {
-    dipole  = -2./sqr(mb_*xg);
+    dipole  = -2./sqr(xg);
     dipole *= colourCoeff(part[0],part[1],part[2],dipoleId);
   }
   // radiation from a/c with initial-final connection
   else if (dipoleId.type==IFa || dipoleId.type==IFc) {
     double z  = 1. - xg/(1.-mu22+mu12);
-    dipole = (-2.*mu12/sqr(1.-x2+mu22-mu12)/sqr(mb_) + (1./(1.-x2+mu22-mu12)/sqr(mb_))*
+    dipole = (-2.*mu12/sqr(1.-x2+mu22-mu12) + (1./(1.-x2+mu22-mu12))*
 	      (2./(1.-z)-dipoleSpinFactor(part[1],z))); 
     dipole *= colourCoeff(part[1],part[0],part[2],dipoleId);
   }
@@ -632,11 +658,11 @@ InvEnergy2 PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
     double v  = sqrt(sqr(2.*mu22+(1.-mu12-mu22)*(1.-y))-4.*mu22)
       /(1.-y)/(1.-mu12-mu22);
     if(part[1]->iSpin()!=PDT::Spin1) {
-      dipole = (1./(1.-x2+mu22-mu12)/sqr(mb_))*
+      dipole = (1./(1.-x2+mu22-mu12))*
 	((2./(1.-z*(1.-y)))-vt/v*(dipoleSpinFactor(part[1],z)+(2.*mu12/(1.+mu22-mu12-x2))));
     }
     else {
-      dipole = (1./(1.-x2+mu22-mu12)/sqr(mb_))*
+      dipole = (1./(1.-x2+mu22-mu12))*
 	(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))+(z*(1.-z)-2.)/v-vt/v*(2.*mu12/(1.+mu22-mu12-x2)));
     }
     dipole *= colourCoeff(part[1],part[2],part[0],dipoleId);

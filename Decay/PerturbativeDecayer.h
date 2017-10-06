@@ -57,9 +57,9 @@ public:
    */
   PerturbativeDecayer() : inter_(ShowerInteraction::QCD),
 			  pTmin_(GeV), useMEforT2_(true),
-			  C_(6.3), ymax_(10.),pT_(ZERO),
-			  mb_(ZERO), e_(0.), s_(0.), e2_(0.),
-			  s2_(0.)
+			  C_(6.3), ymax_(10.), phaseOpt_(0),
+			  pT_(ZERO),mb_(ZERO), e_(0.),
+			  s_(0.), e2_(0.), s2_(0.)
   {}
 
   /**
@@ -154,8 +154,8 @@ protected:
   /**
    * Return dipole corresponding to the DipoleType dipoleId
    */
-  InvEnergy2 calculateDipole(const DipoleType & dipoleId,   const Particle & inpart,
-			     const ParticleVector & decay3);
+  double calculateDipole(const DipoleType & dipoleId,   const Particle & inpart,
+			 const ParticleVector & decay3);
 
   /**
    * Return contribution to dipole that depends on the spin of the emitter
@@ -238,6 +238,7 @@ protected:
    */
   const double & s2() const {return s2_;}
   //@}
+ 
 private:
 
   /**
@@ -288,6 +289,11 @@ private:
    *   Maximum value for y
    */
   double ymax_;
+
+  /**
+   *  Option for phase-space sampling
+   */
+  unsigned int phaseOpt_;
   //@}
 
 private:
