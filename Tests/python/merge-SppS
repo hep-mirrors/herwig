@@ -47,6 +47,7 @@ yodafiles=["ISR-44-UE.yoda","ISR-62-UE.yoda",args[0]+"-63-UE.yoda","ISR-30-UE.yo
 inhistos = {}
 outhistos={}
 for file in yodafiles:
+    file = 'Rivet-'+file
     if(file.find("44")>0) :
         sqrts=44
     elif(file.find("63")>0) :

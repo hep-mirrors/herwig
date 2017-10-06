@@ -134,60 +134,6 @@ test-LHC-% : Inputs/LHC-%.in GammaTest.la $(HADLIBS)
 tests-Rivet : Rivet-LEP Rivet-BFactory Rivet-DIS Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets Rivet-LHC-Jets Rivet-Star Rivet-SppS Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
 
-##Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-##
-##Rivet-TVT-Matchbox-% : Rivet/TVT-Matchbox-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-##
-##Rivet-TVT-Dipole-% : Rivet/TVT-Dipole-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-##
-##Rivet-LHC-Dipole-% : Rivet/LHC-Dipole-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-##
-##
-##
-##
-##Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-##
-##Rivet-LEP-Dipole-% : Rivet/LEP-Dipole-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-##
-##Rivet-BFactory-Matchbox-% : Rivet/BFactory-Matchbox-%.in
-##	mkdir -p $@
-##	cd $@; echo `pwd`; \
-	##../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
-##	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-##	mv $(notdir $(subst .in,.yoda,$<)) ..
-
-
-
 
 Rivet-%.yoda : Rivet/%.in
 	$(HWREAD) $<
@@ -233,7 +179,11 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 #                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) $(shell echo Rivet/SppS-{53,63}-UE.in )
 
 
-Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{9.4,12,13,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
+
+Rivet-LEP : Rivet-LEP/done
+	touch $@
+
+Rivet-LEP/done : $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{9.4,12,13,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
 	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
            $(shell echo Rivet-LEP{,-Powheg,-Matchbox-Powheg}-14.yoda)	
 	rm -rf Rivet-LEP
@@ -244,7 +194,13 @@ Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{9.4,12,13,17,27.6
 	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw LEP-Powheg.yoda:Hw-Powheg LEP-Matchbox.yoda:Hw-Matchbox LEP-Dipole.yoda:Hw-Dipole
 	touch $@
 
-Rivet-BFactory: $(shell echo Rivet-BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,10.52-sym,10.54,10.45}.yoda) \
+
+
+
+Rivet-BFactory : Rivet-BFactory/done
+	touch $@
+
+Rivet-BFactory/done: $(shell echo Rivet-BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,10.52-sym,10.54,10.45}.yoda) \
                 $(shell echo Rivet-BFactory-{Upsilon,Upsilon2,Upsilon4,Tau,10.58-res,10.58}.yoda)
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
@@ -252,8 +208,14 @@ Rivet-BFactory: $(shell echo Rivet-BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,1
 	python/merge-BFactory BFactory-Matchbox
 	python/merge-BFactory BFactory-Dipole
 	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw BFactory-Powheg.yoda:Hw-Powheg BFactory-Matchbox.yoda:Hw-Matchbox BFactory-Dipole.yoda:Hw-Dipole
+	touch $@
 
-Rivet-DIS: $(shell echo Rivet-DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.yoda)
+
+
+Rivet-DIS : Rivet-DIS/done
+	touch $@
+
+Rivet-DIS/done: $(shell echo Rivet-DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.yoda)
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS 
 	python/merge-DIS DIS-Powheg
@@ -261,38 +223,95 @@ Rivet-DIS: $(shell echo Rivet-DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+
 	python/merge-DIS DIS-Matchbox
 	python/merge-DIS DIS-Dipole
 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw DIS-Powheg.yoda:Hw-Powheg DIS-NoME.yoda:Hw-NoME DIS-Matchbox.yoda:Hw-Matchbox DIS-Dipole.yoda:Hw-Dipole
+	touch $@
 
-Rivet-TVT-WZ:  $(shell echo Rivet-TVT{,-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-{e,{,LowMass-,HighMass-}mu},Run-II-W}.yoda)
+
+
+Rivet-TVT-WZ : Rivet-TVT-WZ/done
+	touch $@
+
+Rivet-TVT-WZ/done:  $(shell echo Rivet-TVT{,-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-{e,{,LowMass-,HighMass-}mu},Run-II-W}.yoda)
 	rm -rf Rivet-TVT-WZ
-	python/merge-TVT-EW TVT-Run-II-W.yoda TVT-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
-                            TVT-Run-I-{W,Z,WZ}.yoda -o TVT-WZ.yoda
-	python/merge-TVT-EW TVT-Powheg-Run-II-W.yoda   TVT-Powheg-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
-                            TVT-Powheg-Run-I-{W,Z,WZ}.yoda -o TVT-Powheg-WZ.yoda
-	python/merge-TVT-EW TVT-Matchbox-Run-II-W.yoda   TVT-Matchbox-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
-                            TVT-Matchbox-Run-I-{W,Z,WZ}.yoda -o TVT-Matchbox-WZ.yoda
-	python/merge-TVT-EW TVT-Dipole-Run-II-W.yoda   TVT-Dipole-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
-                            TVT-Dipole-Run-I-{W,Z,WZ}.yoda -o TVT-Dipole-WZ.yoda
+	python/merge-TVT-EW Rivet-TVT-Run-II-W.yoda Rivet-TVT-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
+                            Rivet-TVT-Run-I-{W,Z,WZ}.yoda -o TVT-WZ.yoda
+	python/merge-TVT-EW Rivet-TVT-Powheg-Run-II-W.yoda   Rivet-TVT-Powheg-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
+                            Rivet-TVT-Powheg-Run-I-{W,Z,WZ}.yoda -o TVT-Powheg-WZ.yoda
+	python/merge-TVT-EW Rivet-TVT-Matchbox-Run-II-W.yoda   Rivet-TVT-Matchbox-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
+                            Rivet-TVT-Matchbox-Run-I-{W,Z,WZ}.yoda -o TVT-Matchbox-WZ.yoda
+	python/merge-TVT-EW Rivet-TVT-Dipole-Run-II-W.yoda   Rivet-TVT-Dipole-Run-II-Z-{e,{,LowMass-,HighMass-}mu}.yoda\
+                            Rivet-TVT-Dipole-Run-I-{W,Z,WZ}.yoda -o TVT-Dipole-WZ.yoda
 	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw TVT-Powheg-WZ.yoda:Hw-Powheg TVT-Matchbox-WZ.yoda:Hw-Matchbox TVT-Dipole-WZ.yoda:Hw-Dipole
+	touch $@
 
-Rivet-TVT-Photon: $(shell echo Rivet-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.yoda) \
+
+
+Rivet-TVT-Photon : Rivet-TVT-Photon/done
+	touch $@
+
+Rivet-TVT-Photon/done: $(shell echo Rivet-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.yoda) \
                   $(shell echo Rivet-TVT-Powheg-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-TVT-Photon
 	python/merge-TVT-Photon TVT -o TVT-Photon.yoda
 	python/merge-TVT-Photon TVT-Powheg -o TVT-Powheg-Photon.yoda
 	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.yoda:Hw TVT-Powheg-Photon.yoda:Hw-Powheg
+	touch $@
 
-Rivet-TVT-Jets:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}}.yoda ) \
+
+
+Rivet-TVT-Jets : Rivet-TVT-Jets/done
+	touch $@
+
+Rivet-TVT-Jets/done:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}}.yoda ) \
 	         $(shell echo Rivet-TVT-{630-Jets-{1..3},300-Jets-1,900-Jets-1}.yoda ) \
                  $(shell echo Rivet-TVT-{Run-I,Run-II,300,630,900}-UE.yoda)
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw
+	touch $@
+
+
+
 
 #python/merge-TVT-Energy TVT
 #rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.yoda TVT-900-Energy.yoda TVT-1960-Energy.yoda
 #flat2yoda RatioPlots.dat -o TVT-RatioPlots.yoda
 
-Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-DiJets-{1..7}-{A,B,C}.yoda ) \
+
+
+
+
+Rivet-Star : Rivet-Star/done
+	touch $@
+
+Rivet-Star/done : $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) 
+	rm -rf Rivet-Star
+	python/merge-Star Star
+	## broken DVI? ## rivet-mkhtml -v -o Rivet-Star Star.yoda
+	touch $@
+
+
+
+Rivet-SppS : Rivet-SppS/done
+	touch $@
+
+## $(shell echo Rivet-ISR-{30,44,53,62}-UE.yoda ) \
+## {53,63,200,500,900,546}
+
+Rivet-SppS/done : $(shell echo Rivet-SppS-{200,500,900,546}-UE.yoda )
+	rm -rf Rivet-SppS
+	python/merge-SppS SppS
+	rivet-mkhtml -o Rivet-SppS SppS.yoda
+	touch $@
+
+
+
+
+
+
+Rivet-LHC-Jets : Rivet-LHC-Jets/done
+	touch $@
+
+Rivet-LHC-Jets/done : $(shell echo Rivet-LHC-7-DiJets-{1..7}-{A,B,C}.yoda ) \
 	        $(shell echo Rivet-LHC-{7,8,13}-Jets-{0..10}.yoda ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8,13}-UE.yoda ) \
 	        $(shell echo Rivet-LHC-{900,7,13}-UE-Long.yoda ) \
@@ -303,49 +322,63 @@ Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-DiJets-{1..7}-{A,B,C}.yoda ) \
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets LHC
 	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.yoda:Hw
+	touch $@
 
-Rivet-Star: $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) 
-	rm -rf Rivet-Star
-	python/merge-Star Star
-	rivet-mkhtml -o Rivet-Star Star.yoda
 
-Rivet-SppS: $(shell echo Rivet-ISR-{30,44,53,62}-UE.yoda ) \
-	    $(shell echo Rivet-SppS-{53,63,200,500,900,546}-UE.yoda )
-	rm -rf Rivet-SppS
-	python/merge-SppS SppS
-	rivet-mkhtml -o Rivet-SppS SppS.yoda
 
-Rivet-LHC-EW: $(shell echo Rivet-LHC{,-Matchbox,-Powheg,-Dipole}-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},8-ZZ-lv,,8-WW-llW-Z-{e,mu}}.yoda) \
+Rivet-LHC-EW : Rivet-LHC-EW/done
+	touch $@
+
+Rivet-LHC-EW/done: $(shell echo Rivet-LHC{,-Matchbox,-Powheg,-Dipole}-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},8-ZZ-lv,,8-WW-llW-Z-{e,mu}}.yoda) \
 	      $(shell echo Rivet-LHC{,-Matchbox,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.yoda) \
 	      $(shell echo Rivet-LHC{-Matchbox,-Dipole}-{Z-b,Z-bb,W-b,8-Z-jj}.yoda) \
-              $(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) \
+              $(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) 
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda LHC-7-{W,Z}Gamma-{e,mu}.yoda -o LHC-EW.yoda;
-	python/merge-LHC-EW LHC-Matchbox-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
-	python/merge-LHC-EW LHC-Dipole-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda LHC-Dipole-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Dipole-EW.yoda;
-	python/merge-LHC-EW LHC-Powheg-{W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda -o LHC-Powheg-EW.yoda;
+	python/merge-LHC-EW Rivet-LHC-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda Rivet-LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda -o LHC-EW.yoda;
+	python/merge-LHC-EW Rivet-LHC-Matchbox-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda Rivet-LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
+	python/merge-LHC-EW Rivet-LHC-Dipole-{13-Z-{e,mu},8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-Short},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda Rivet-LHC-Dipole-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Dipole-EW.yoda;
+	python/merge-LHC-EW Rivet-LHC-Powheg-{W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,W-Z-{e,mu},WW-{emu,ll},WZ,ZZ-{ll,lv},8-ZZ-lv,8-WW-ll}.yoda -o LHC-Powheg-EW.yoda;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.yoda:Hw LHC-Powheg-EW.yoda:Hw-Powheg LHC-Matchbox-EW.yoda:Hw-Matchbox LHC-Matchbox-Z-b.yoda:Hw-Matchbox-Zb \
                                      LHC-Matchbox-Z-bb.yoda:Hw-Matchbox-Zbb LHC-Matchbox-W-b.yoda:Hw-Matchbox-W-bb LHC-Dipole-EW.yoda:Hw-Dipole \
                                      LHC-Dipole-Z-b.yoda:Hw-Dipole-Zb LHC-Dipole-Z-bb.yoda:Hw-Dipole-Zbb LHC-Dipole-W-b.yoda:Hw-Dipole-W-bb \
                                      LHC-Z-mu-SOPHTY.yoda:Hw LHC-Powheg-Z-mu-SOPHTY.yoda:Hw-Powheg LHC-Matchbox-Z-mu-SOPHTY.yoda:Hw-Matchbox
-Rivet-LHC-Photon: $(shell echo Rivet-LHC-{7,8}-PromptPhoton-{1..4}.yoda) Rivet-LHC-GammaGamma-7.yoda \
+	touch $@
+
+
+
+
+Rivet-LHC-Photon : Rivet-LHC-Photon/done
+	touch $@
+
+Rivet-LHC-Photon/done: $(shell echo Rivet-LHC-{7,8}-PromptPhoton-{1..4}.yoda) Rivet-LHC-GammaGamma-7.yoda \
 	          $(shell echo Rivet-LHC{,-Powheg}-{7,8}-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-LHC-Photon
 	python/merge-LHC-Photon LHC -o LHC-Photon.yoda
 	python/merge-LHC-Photon LHC-Powheg -o LHC-Powheg-Photon.yoda
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.yoda:Hw LHC-Powheg-Photon.yoda:Hw-Powheg
+	touch $@
 
-Rivet-LHC-Higgs:  $(shell echo Rivet-LHC{,-Powheg}-{ggH,VBF,WH,ZH}.yoda)\
+
+
+
+Rivet-LHC-Higgs : Rivet-LHC-Higgs/done
+	touch $@
+
+Rivet-LHC-Higgs/done:  $(shell echo Rivet-LHC{,-Powheg}-{ggH,VBF,WH,ZH}.yoda)\
                   $(shell echo Rivet-LHC{,-Powheg}-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.yoda) Rivet-LHC-ggHJet.yoda
 	rm -rf Rivet-LHC-Higgs
 	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.yoda:gg-Powheg LHC-ggH.yoda:gg LHC-ggHJet.yoda:HJet \
                         LHC-Powheg-VBF.yoda:VBF-Powheg LHC-VBF.yoda:VBF LHC-WH.yoda:WH LHC-ZH.yoda:ZH \
                         LHC-Powheg-WH.yoda:WH-Powheg LHC-Powheg-ZH.yoda:ZH-Powheg
+	touch $@
+
+
+
 
 
 clean-local:
-	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in
+	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in 
+	rm -rf Rivet-*
 
 distclean-local:
-	rm -rf Rivet-*
 	rm -rf Herwig-scratch

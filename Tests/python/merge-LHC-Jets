@@ -144,7 +144,7 @@ inhistos_mass = {}
 outhistos={}
 weights = {}
 for f in yodafiles:
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     ptmin=0.
     sqrts=7000
     # CMS energy
