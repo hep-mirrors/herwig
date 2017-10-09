@@ -57,7 +57,7 @@ public:
    */
   PerturbativeDecayer() : inter_(ShowerInteraction::QCD),
 			  pTmin_(GeV), useMEforT2_(true),
-			  C_(6.3), ymax_(10.), phaseOpt_(0),
+			  C_(5.), ymax_(10.), phaseOpt_(1),
 			  pT_(ZERO),mb_(ZERO), e_(0.),
 			  s_(0.), e2_(0.), s2_(0.), enhance_(1.)
   {}
