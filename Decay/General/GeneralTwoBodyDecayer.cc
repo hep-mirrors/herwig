@@ -512,7 +512,9 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   if (( sing.size()==2 && decay[ sing[0]]->id()==decay[ sing[1]]->id()) ||
       ( trip.size()==2 && decay[ trip[0]]->id()==decay[ trip[1]]->id()) ||
       (atrip.size()==2 && decay[atrip[0]]->id()==decay[atrip[1]]->id()) ||
-      (  oct.size()==2 && decay[  oct[0]]->id()==decay[  oct[1]]->id()))
+      (  oct.size()==2 && decay[  oct[0]]->id()==decay[  oct[1]]->id()) ||
+      (  sex.size()==2 && decay[  sex[0]]->id()==decay[  sex[1]]->id()) ||
+      ( asex.size()==2 && decay[ asex[0]]->id()==decay[ asex[1]]->id()))
     symFactor /= 2.;
   else if (oct.size()==3 && 
 	   decay[oct[0]]->id()==decay[oct[1]]->id() &&
