@@ -426,20 +426,21 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   Energy2 lambda = sqr(mb_)*sqrt(1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_);    
 
   // calculate A
-  double A = 2.*C_/Constants::twopi;
+  double pre = C_;
   // multiply by the colour factor of the dipole
   // ISR
   if (dipoles[i].type==IFba || dipoles[i].type==IFbc) {
-    A *= colourCoeff(in->dataPtr(),emitter->dataPtr(),spectator->dataPtr(),dipoles[i]);
+    pre *= colourCoeff(in->dataPtr(),emitter->dataPtr(),spectator->dataPtr(),dipoles[i]);
   }
   // radiation from a/c with initial-final connection
   else if (dipoles[i].type==IFa || dipoles[i].type==IFc) {
-    A *= colourCoeff(emitter->dataPtr(),in->dataPtr(),spectator->dataPtr(),dipoles[i]);
+    pre *= colourCoeff(emitter->dataPtr(),in->dataPtr(),spectator->dataPtr(),dipoles[i]);
   }
   // radiation from a/c with final-final connection
   else if (dipoles[i].type==FFa || dipoles[i].type==FFc) {
-    A *= colourCoeff(emitter->dataPtr(),spectator->dataPtr(),in->dataPtr(),dipoles[i]);
+    pre *= colourCoeff(emitter->dataPtr(),spectator->dataPtr(),in->dataPtr(),dipoles[i]);
   }
+  double A = 2.*pre/Constants::twopi;
   // factor due sampling choice
   if(phaseOpt_==0) A *=ymax_;
   // coupling factor
@@ -530,7 +531,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	particleMomenta[2].e()*particleMomenta[3].z(); 
       InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);
       // calculate weight
-      weight[j] = enhance_*meRatio*fabs(sqr(pT)*J)/C_/Constants::twopi;
+      weight[j] = enhance_*meRatio*fabs(sqr(pT)*J)/pre/Constants::twopi;
       if(dipoles[i].interaction==ShowerInteraction::QCD)
 	weight[j] *= alphaS() ->ratio(pT*pT);
       else
