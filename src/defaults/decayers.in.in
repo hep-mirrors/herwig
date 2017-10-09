@@ -24109,6 +24109,7 @@ newdef HPP:SMHZPVertex /Herwig/Vertices/HZPVertex
 newdef HPP:Iteration 10
 newdef HPP:Ntry 500
 newdef HPP:Points 10000
+newdef HPP:AlphaS  /Herwig/Shower/AlphaQCD
 newdef HPP:GenerateIntermediates 0
 
 #
