@@ -978,6 +978,22 @@ elif(collider=="LHC") :
                 process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             else :
                 process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-HighMass1")>=0) :
+            process+="set /Herwig/Cuts/Cuts:MHatMin 116.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 116.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 400.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-HighMass2")>=0) :
+            process+="set /Herwig/Cuts/Cuts:MHatMin 400.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 400.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 7000.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SubProcess:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="insert SubProcess:MatrixElements[0] MEWJet\nset MEWJet:WDecay Electron\n"
             if(parameterName.find("W-Jet-1-e")>=0) :
@@ -1215,6 +1231,22 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/Cuts:MHatMin 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
             process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-HighMass1")>=0) :
+            process+="set /Herwig/Cuts/Cuts:MHatMin 116.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 116.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 400.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-HighMass2")>=0) :
+            process+="set /Herwig/Cuts/Cuts:MHatMin 400.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 400.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 7000.*GeV\n"
             if(parameterName.find("-e")>=0) :
                 process+="insert SubProcess:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             else :
@@ -1745,6 +1777,30 @@ elif(collider=="LHC") :
                     process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif(parameterName.find("Z-Mass4")>=0) :
             process+=addLeptonPairCut("115","8000")
+            if(parameterName.find("-e")>=0) :
+                if(simulation=="Matchbox"):
+                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+            else :
+                if(simulation=="Matchbox"):
+                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+        elif(parameterName.find("Z-HighMass1")>=0) :
+            process+=addLeptonPairCut("116","400")
+            if(parameterName.find("-e")>=0) :
+                if(simulation=="Matchbox"):
+                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                  process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",2,2)
+            else :
+                if(simulation=="Matchbox"):
+                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",0,0)
+                elif(simulation=="Merging"):
+                  process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
+        elif(parameterName.find("Z-HighMass2")>=0) :
+            process+=addLeptonPairCut("400","7000")
             if(parameterName.find("-e")>=0) :
                 if(simulation=="Matchbox"):
                   process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
