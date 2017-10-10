@@ -422,7 +422,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   e2_  = sqr(e_);
   s2_  = sqr(s_);
 
-  vector<Lorentz5Momentum> particleMomenta (4);
+  vector<Lorentz5Momentum> particleMomenta;
   Energy2 lambda = sqr(mb_)*sqrt(1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_);    
 
   // calculate A
@@ -452,57 +452,45 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   Energy pTmax = 0.5*mb_*(1.-sqr(s_+e_));
 
   // if no possible branching return
-  if ( pTmax < pTmin_ ) {
-    particleMomenta.clear(); 
-    return particleMomenta;
-  }
-  Energy pT=pTmax;
-  while (pT >= pTmin_) {
-    double ymax;
-    // overestimate with flat y limit
-    if(phaseOpt_==0) {
-      pT *= pow(UseRandom::rnd(),(1./A));
-      ymax=ymax_;
-    }
-    // pT sampling including tighter pT dependent y limit
-    else {
-      pT = 2.*pTmax*exp(-sqrt(-2.*log(UseRandom::rnd())/A+sqr(log(2.*pTmax/pT))));
-      // choice of limit overestimate ln(2*pTmax/pT) (true limit acosh(pTmax/pT))
-      ymax = log(2.*pTmax/pT);
-    }
-    if (pT < pTmin_) {
-      particleMomenta.clear(); 
-      break;
-    }
-
-    double phi = UseRandom::rnd()*Constants::twopi;
-    double y   = ymax*(2.*UseRandom::rnd()-1.);
-    double weight[2] = {0.,0.};
-    double xs[2], xe[2], xe_z[2], xg;
- 
-    for (unsigned int j=0; j<2; j++) {
-      // check if the momenta are physical
-      if (!calcMomenta(j, pT, y, phi, xg, xs[j], xe[j], xe_z[j], particleMomenta)) 
-	continue;
-
-      // check if point lies within phase space
-      if (!psCheck(xg, xs[j])) 
-	continue;
-      // check if point lies within the dead-zone (if required)
-      if(inDeadZone) {
-	if(!inTotalDeadZone(xg,xs[j],dipoles,i)) continue;
+  if ( pTmax < pTmin_ ) return particleMomenta;
+  // loop over the two regions
+  for(unsigned int j=0;j<2;++j) {
+    Energy pT=pTmax;
+    vector<Lorentz5Momentum> momenta(4);
+    while (pT >= pTmin_) {
+      double ymax;
+      // overestimate with flat y limit
+      if(phaseOpt_==0) {
+	pT *= pow(UseRandom::rnd(),(1./A));
+	ymax=ymax_;
       }
+      // pT sampling including tighter pT dependent y limit
+      else {
+	pT = 2.*pTmax*exp(-sqrt(-2.*log(UseRandom::rnd())/A+sqr(log(2.*pTmax/pT))));
+	// choice of limit overestimate ln(2*pTmax/pT) (true limit acosh(pTmax/pT))
+	ymax = log(2.*pTmax/pT);
+      }
+      if (pT < pTmin_) break;
+      double phi = UseRandom::rnd()*Constants::twopi;
+      double y   = ymax*(2.*UseRandom::rnd()-1.);
+      double xs, xe, xe_z, xg;
+      // check if the momenta are physical
+      if (!calcMomenta(j, pT, y, phi, xg, xs, xe,
+		       xe_z, momenta)) 
+	continue;
+      // check if point lies within phase space
+      if (!psCheck(xg, xs)) continue;
+      // check if point lies within the dead-zone (if required)
+      if(inDeadZone && !inTotalDeadZone(xg,xs,dipoles,i)) continue;
       // decay products for 3 body decay
-      PPtr inpart   = in        ->dataPtr()->produceParticle(particleMomenta[0]);
+      PPtr inpart   = in        ->dataPtr()->produceParticle(momenta[0]);
       ParticleVector decay3;
-      decay3.push_back(emitter  ->dataPtr()->produceParticle(particleMomenta[1]));
-      decay3.push_back(spectator->dataPtr()->produceParticle(particleMomenta[2]));
+      decay3.push_back(emitter  ->dataPtr()->produceParticle(momenta[1]));
+      decay3.push_back(spectator->dataPtr()->produceParticle(momenta[2]));
       if(dipoles[i].interaction==ShowerInteraction::QCD)
-	decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(particleMomenta[3]));
+	decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(momenta[3]));
       else
-	decay3.push_back(getParticleData(ParticleID::gamma)->produceParticle(particleMomenta[3]));
-
-	
+	decay3.push_back(getParticleData(ParticleID::gamma)->produceParticle(momenta[3]));
       // decay products for 2 body decay
       Lorentz5Momentum p1(ZERO,ZERO, lambda/2./mb_,(mb_/2.)*(1.+e2_-s2_),mb_*e_);
       Lorentz5Momentum p2(ZERO,ZERO,-lambda/2./mb_,(mb_/2.)*(1.+s2_-e2_),mb_*s_);
@@ -513,7 +501,6 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 	swap(decay2[0],decay2[1]);
 	swap(decay3[0],decay3[1]);
       }
-      
       // calculate matrix element ratio R/B
       double meRatio = matrixElementRatio(*inpart,decay2,decay3,Initialize,dipoles[i].interaction);
       // calculate dipole factor
@@ -527,48 +514,27 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
       }
       meRatio *= numerator/dipoleSum;
       // calculate jacobian
-      Energy2 denom = (mb_-particleMomenta[3].e())*particleMomenta[2].vect().mag() -
-	particleMomenta[2].e()*particleMomenta[3].z(); 
-      InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);
+      Energy2 denom = (mb_-momenta[3].e())*momenta[2].vect().mag() -
+	momenta[2].e()*momenta[3].z(); 
+      InvEnergy2  J  = (momenta[2].vect().mag2())/(lambda*denom);
       // calculate weight
-      weight[j] = enhance_*meRatio*fabs(sqr(pT)*J)/pre/Constants::twopi;
+      double weight = enhance_*meRatio*fabs(sqr(pT)*J)/pre/Constants::twopi; 
       if(dipoles[i].interaction==ShowerInteraction::QCD)
-	weight[j] *= alphaS() ->ratio(pT*pT);
+	weight *= alphaS() ->ratio(pT*pT);
       else
-	weight[j] *= alphaEM()->ratio(pT*pT);
-    }
-    // accept point if weight > R
-    if (weight[0] + weight[1] > 1.) {
-      generator()->log() << "WEIGHT PROBLEM " << fullName() << " " << weight[0]+weight[1] << "\n";
-      generator()->log() << weight[0] << " " << weight[1] << "\n";
-		
-      
-    }
-    if (weight[0] + weight[1] > UseRandom::rnd()) {
-      if (weight[0] > (weight[0] + weight[1])*UseRandom::rnd()) {
-	particleMomenta[1].setE( (mb_/2.)*xe  [0]);
-	particleMomenta[1].setZ( (mb_/2.)*xe_z[0]);
-	particleMomenta[2].setE( (mb_/2.)*xs  [0]);
-	particleMomenta[2].setZ(-(mb_/2.)*sqrt(sqr(xs[0])-4.*s2_));
-	if (weight[0] + weight[1] > 1.) {
-	  generator()->log() << xe[1] << " " << xs[1] << " " << xg << "\n";
+	weight *= alphaEM()->ratio(pT*pT);
+      // accept point if weight > R
+      if (pT > pT_ && weight > UseRandom::rnd()) {
+	particleMomenta=momenta;
+	if (weight > 1.) {
+	  generator()->log() << "WEIGHT PROBLEM " << fullName() << " " << weight << "\n";
+	  generator()->log() << xe << " " << xs << " " << xg << "\n";
 	  for(unsigned int ix=0;ix<particleMomenta.size();++ix)
 	    generator()->log() << particleMomenta[ix]/GeV << "\n";
 	}
+	pT_ = pT;
+	break;
       }
-      else {
-	particleMomenta[1].setE( (mb_/2.)*xe  [1]);
-	particleMomenta[1].setZ( (mb_/2.)*xe_z[1]);
-	particleMomenta[2].setE( (mb_/2.)*xs  [1]);
-	particleMomenta[2].setZ(-(mb_/2.)*sqrt(sqr(xs[1])-4.*s2_));
-	if (weight[0] + weight[1] > 1.) {
-	  generator()->log() << xe[1] << " " << xs[1] << " " << xg << "\n";
-	  for(unsigned int ix=0;ix<particleMomenta.size();++ix)
-	    generator()->log() << particleMomenta[ix]/GeV << "\n";
-	}
-      }
-      pT_ = pT;
-      break;   
     }
   }
   return particleMomenta;
