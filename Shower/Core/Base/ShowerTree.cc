@@ -789,7 +789,7 @@ void ShowerTree::constructTrees(ShowerTreePtr & hardTree,
   map<PerturbativeProcessPtr,ShowerTreePtr> treeMap;
   // convert the hard process
   if(hardTree) {
-    hardTree->update(hard);
+    if(hardTree->isDecay()) hardTree->update(hard);
   }
   else {
     hardTree = new_ptr(ShowerTree(hard));
