@@ -5,7 +5,7 @@
 // This is the declaration of the CKKWTree class.
 //
 
-#include "Herwig/Shower/Core/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "CKKWTree.fh"
 
 namespace Herwig {

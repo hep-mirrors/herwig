@@ -24,6 +24,9 @@ Base/KinematicsReconstructor.cc \
 Base/KinematicsReconstructor.h \
 Base/KinematicsReconstructor.fh \
 Base/ShowerModel.cc Base/ShowerModel.h Base/ShowerModel.fh \
+Base/HardTree.cc Base/HardTree.h Base/HardTree.fh \
+Base/HardBranching.h Base/HardBranching.fh Base/HardBranching.cc\
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \
 Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc \
-Base/FullShowerVeto.h Base/FullShowerVeto.fh Base/FullShowerVeto.cc
+Base/FullShowerVeto.h Base/FullShowerVeto.fh Base/FullShowerVeto.cc \
+Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc

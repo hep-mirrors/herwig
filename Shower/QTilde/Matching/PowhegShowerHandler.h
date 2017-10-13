@@ -15,7 +15,7 @@
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/Shower/Core/Base/HardBranching.h"
+#include "Herwig/Shower/QTilde/Base/HardBranching.h"
 
 #include "Herwig/Shower/QTilde/Matching/CKKWTree.h"
 #include "Herwig/Shower/QTilde/Matching/ProtoTree.h"
@@ -25,12 +25,12 @@
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig/Shower/Core/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 
 // #include "Herwig/Shower/Core/SplittingFunctions/SplittingGenerator.h"
 // #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 // #include "ThePEG/PDF/BeamParticleData.h"
-// #include "Herwig/Shower/Core/Base/ShowerTree.h"
+// #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 // #include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 // #include "Herwig/Shower/QTilde/QTildeShowerHandler.fh"
 // #include "Herwig/Shower/Core/Base/Branching.h"

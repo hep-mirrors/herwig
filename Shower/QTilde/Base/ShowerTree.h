@@ -16,7 +16,7 @@
 #include "Herwig/Shower/ShowerEventRecord.h"
 #include "Herwig/Shower/Core/ShowerConfig.h"
 #include "Herwig/Shower/Core/Base/ShowerParticle.h"
-#include "ShowerProgenitor.h"
+#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
 #include "ThePEG/EventRecord/Step.h"
 #include <cassert>
 #include "ShowerTree.fh"
@@ -39,7 +39,7 @@ using namespace ThePEG;
  */
 class ShowerTree : public ShowerEventRecord {
 
-  friend class ShowerHandler;
+  friend class QTildeShowerHandler;
 
 public:
 
