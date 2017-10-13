@@ -27,7 +27,7 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig/Shower/QTilde/Base/HardTree.h"
 
-// #include "Herwig/Shower/Core/SplittingFunctions/SplittingGenerator.h"
+// #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
 // #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 // #include "ThePEG/PDF/BeamParticleData.h"
 // #include "Herwig/Shower/QTilde/Base/ShowerTree.h"

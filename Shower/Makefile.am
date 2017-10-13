@@ -20,8 +20,6 @@ Core/Base/ShowerBasis.fh  Core/Base/ShowerBasis.h Core/Base/ShowerBasis.cc \
 Core/Base/ShowerProgenitor.fh Core/Base/ShowerProgenitor.h \
 Core/Base/SudakovFormFactor.cc Core/Base/SudakovFormFactor.h Core/Base/SudakovFormFactor.fh \
 Core/Couplings/ShowerAlpha.h Core/Couplings/ShowerAlpha.cc Core/Couplings/ShowerAlpha.fh\
-Core/SplittingFunctions/SplittingGenerator.cc Core/SplittingFunctions/SplittingGenerator.h\
-Core/SplittingFunctions/SplittingGenerator.fh \
 Core/SplittingFunctions/SplittingFunction.h Core/SplittingFunctions/SplittingFunction.fh \
 Core/SplittingFunctions/SplittingFunction.cc  \
 Core/Base/ShowerVertex.cc Core/Base/ShowerVertex.fh Core/Base/ShowerVertex.h

@@ -8,7 +8,7 @@
 #include "QTildeShowerHandler.fh"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/Core/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/QTilde/Base/HardTree.h"
