@@ -31,8 +31,6 @@
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Herwig/API/Filesystem.h"
 
-#include <boost/progress.hpp>
-
 #include <fstream>
 #include <sstream>
 #include <string>

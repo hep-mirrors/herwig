@@ -28,7 +28,7 @@
 #include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
 #include "Herwig/API/RunDirectories.h"
 
-#include <boost/progress.hpp>
+#include "Herwig/Utilities/Progress.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -203,8 +203,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 
   generator()->log() << "building matrix elements." << flush;
 
-  boost::progress_display * progressBar = 
-    new boost::progress_display(combinations,generator()->log());
+  progress_display progressBar{ combinations, generator()->log() };
 
   for ( unsigned int oas = lowestAsOrder; oas <= highestAsOrder; ++oas ) {
     for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
@@ -214,7 +213,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 	(**amp).orderInGem(oae);
 	for ( set<PDVector>::const_iterator p = processes.begin();
 	      p != processes.end(); ++p ) {
-	  ++(*progressBar);
+	  ++progressBar;
 	  if ( !(**amp).canHandle(*p,this,virt) )
 	    continue;
 	  if ( (**amp).isExternal() )
@@ -228,7 +227,6 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
     }
   }
 
-  delete progressBar;
   generator()->log() << flush;
 
   bool clash = false;
@@ -636,8 +634,7 @@ void MatchboxFactory::setup() {
 
       bornVirtualMEs().clear();
 
-      boost::progress_display * progressBar = 
-	new boost::progress_display(bornMEs().size(),generator()->log());
+      progress_display progressBar{ bornMEs().size(), generator()->log() };
 
       if ( thePoleData != "" )
 	if ( thePoleData[thePoleData.size()-1] != '/' )
@@ -766,11 +763,9 @@ void MatchboxFactory::setup() {
 
         }
 
-	++(*progressBar);
+	++progressBar;
 
       }
-
-      delete progressBar;
 
       generator()->log() << "---------------------------------------------------\n"
 			 << flush;
@@ -837,8 +832,7 @@ void MatchboxFactory::setup() {
 
       }
 
-      boost::progress_display * progressBar =
-	new boost::progress_display(realEmissionMEs().size(),generator()->log());
+      progress_display progressBar{ realEmissionMEs().size(), generator()->log() };
 
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	      = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
@@ -877,7 +871,7 @@ void MatchboxFactory::setup() {
 	    finiteRealMEs().push_back(fme);
 	  }
 	  sub->head(tMEPtr());
-	  ++(*progressBar);
+	  ++progressBar;
 	  continue;
 	}
 
@@ -922,11 +916,9 @@ void MatchboxFactory::setup() {
 	    }
 	}
 
-	++(*progressBar);
+	++progressBar;
 
       }
-
-      delete progressBar;
 
       generator()->log() << "---------------------------------------------------\n"
 			 << flush;

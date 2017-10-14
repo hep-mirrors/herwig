@@ -80,7 +80,6 @@ dnl BOOST_FIND_HEADER([boost/numeric/ublas/matrix_sparse.hpp])
 dnl BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
 dnl BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
 BOOST_FIND_HEADER([boost/operators.hpp])
-BOOST_FIND_HEADER([boost/progress.hpp])
 BOOST_TEST()
 
 HERWIG_CHECK_VBFNLO

@@ -5,6 +5,7 @@ libHwUtils_la_SOURCES = \
 EnumParticles.h \
 Interpolator.tcc Interpolator.h \
 Kinematics.cc Kinematics.h \
+Progress.h Progress.cc \
 Maths.h Maths.cc \
 StandardSelectors.cc StandardSelectors.h\
 Histogram.cc Histogram.fh Histogram.h \

@@ -29,7 +29,7 @@
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
-#include <boost/progress.hpp>
+#include "Herwig/Utilities/Progress.h"
 
 #include "CellGridSampler.h"
 #include "Herwig/Sampling/GeneralSampler.h"
@@ -155,10 +155,10 @@ void CellGridSampler::initialize(bool progress) {
 
   UseRandom rnd;
 
-  boost::progress_display* progressBar = 0;
+  progress_display* progressBar = nullptr;
   if ( progress ) {
     Repository::clog() << "exploring " << process();
-    progressBar = new boost::progress_display(theExplorationSteps,Repository::clog());
+    progressBar = new progress_display{ theExplorationSteps, Repository::clog() };
   }
   std::set<SimpleCellGrid*> newCells;
   
