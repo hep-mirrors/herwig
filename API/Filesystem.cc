@@ -9,6 +9,7 @@
 
 #include "Filesystem.h"
 #include <cstdio>
+#include <stack>
 
 #include <config.h>
 #ifdef HAVE_SYS_STAT_H
@@ -21,6 +22,19 @@
 #else
 #error "Need unistd.h"
 #endif
+
+#include <iostream>
+
+namespace {
+	std::string & strip_last_dir(std::string & s) {
+		size_t last = s.rfind('/');
+		if ( last != std::string::npos )
+			s.assign(s,0,last);
+		else
+			s.assign("");
+		return s;
+	}
+}
 
 namespace Herwig {
 
@@ -39,18 +53,40 @@ namespace filesystem {
 	}
 
 	/// Make a directory
-	bool create_directory(const std::string & path) {
-		const mode_t mode = 0755;
-		if (mkdir(path.c_str(), mode) == 0) {
-			return true;
-		}
-		else {
-			perror("Herwig::filesystem::mkdir()");
-			return false;
+	bool create_directory(std::string path) {
+		static const mode_t mode = 0755;
+		std::stack<std::string> dirs;
+		dirs.push(path);
+		while ( strip_last_dir(path) != "" ) {
+			dirs.push(path);
 		}
 
+		while ( !dirs.empty() ) {
+			const auto & top = dirs.top();
+
+			if ( is_directory(top) ) {
+				dirs.pop();
+				continue;
+			}
+			
+			if ( exists(top) ) {
+				std::cerr << "Path " << top << " exists, but isn't a directory" << '\n';
+				return false;
+			}
+
+			if ( mkdir(top.c_str(), mode) ) {
+				static const std::string msg = "Herwig::filesystem::mkdir("+path+")";
+				perror(msg.c_str());
+				return false;
+			}
+
+			dirs.pop();
+		}
+
+		return true;
 	}
 
 }
 
 }
+

@@ -20,7 +20,7 @@ namespace filesystem {
 	bool is_directory(const std::string & path);
 
 	/// Make a directory
-	bool create_directory(const std::string & path);
+	bool create_directory(std::string path);
 
 }
 
