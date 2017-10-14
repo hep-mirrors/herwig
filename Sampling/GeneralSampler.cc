@@ -32,11 +32,11 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 
 #include "Herwig/API/RunDirectories.h"
+#include "Herwig/API/Filesystem.h"
 
 #include "Herwig/Utilities/XML/ElementIO.h"
 
 #include <boost/progress.hpp>
-#include <boost/filesystem.hpp>
 #include <cstdlib>
 #include <sstream> 
 
@@ -815,7 +815,7 @@ void GeneralSampler::readGrids() {
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
     ostringstream currentProcessedIntegrationJob;
 	  currentProcessedIntegrationJob << directoryName << "integrationJob" << currentProcessedIntegrationJobNum << "/HerwigGrids.xml";
-	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob.str()))) {
+	  if(filesystem::exists(currentProcessedIntegrationJob.str())) {
 	    ifstream localGridFileIN(currentProcessedIntegrationJob.str().c_str());
 	    if(localGridFileIN) {
 	      theGrids = theGrids + XML::ElementIO::get(localGridFileIN);

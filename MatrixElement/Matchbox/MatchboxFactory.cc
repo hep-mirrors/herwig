@@ -29,7 +29,6 @@
 #include "Herwig/API/RunDirectories.h"
 
 #include <boost/progress.hpp>
-#include <boost/filesystem.hpp>
 
 #include <iterator>
 using std::ostream_iterator;

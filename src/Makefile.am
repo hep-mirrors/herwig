@@ -10,11 +10,9 @@ herwigopts.c herwigopts.h
 
 BUILT_SOURCES = herwigopts.c herwigopts.h
 
-Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
-$(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
+Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
 Herwig_LDADD = $(THEPEGLIB) -ldl \
-$(top_builddir)/API/libHerwigAPI.la \
-$(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
+$(top_builddir)/API/libHerwigAPI.la
 
 bin_SCRIPTS = herwig-config
 

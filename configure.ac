@@ -30,6 +30,8 @@ AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 dnl check for POSIX
 AC_CHECK_HEADER([unistd.h],[],
       [AC_MSG_ERROR([Herwig needs "unistd.h". Non-POSIX systems are not supported.])])
+AC_CHECK_HEADER([sys/stat.h],[],
+      [AC_MSG_ERROR([Herwig needs "sys/stat.h". Non-POSIX systems are not supported.])])
 
 dnl Checks for programs.
 AC_PROG_INSTALL
@@ -79,7 +81,6 @@ dnl BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
 dnl BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
 BOOST_FIND_HEADER([boost/operators.hpp])
 BOOST_FIND_HEADER([boost/progress.hpp])
-BOOST_FILESYSTEM([mt])
 BOOST_TEST()
 
 HERWIG_CHECK_VBFNLO

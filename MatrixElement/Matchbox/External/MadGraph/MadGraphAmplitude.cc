@@ -23,7 +23,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include <boost/filesystem.hpp>
+#include "Herwig/API/Filesystem.h"
 #include <cstdlib>
 #include <dlfcn.h>
 #include <errno.h>
@@ -104,7 +104,7 @@ bool MadGraphAmplitude::writeAmplitudesDat(){
   bool res=false;
 
   string born= mgProcLibPath()+"BornAmplitudes.dat";
-  if ( !boost::filesystem::exists(born) ) {
+  if ( !filesystem::exists(born) ) {
     ofstream borns(born.c_str());
     for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++)
       borns<<*amps<<endl;
@@ -112,7 +112,7 @@ bool MadGraphAmplitude::writeAmplitudesDat(){
     res=true;
   }
   string virt= mgProcLibPath()+"VirtAmplitudes.dat";
-  if ( !boost::filesystem::exists(virt) ) {
+  if ( !filesystem::exists(virt) ) {
     ofstream virts(virt.c_str());
     for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++)
       virts<<*amps<<endl;
@@ -129,7 +129,7 @@ bool MadGraphAmplitude::checkAmplitudes(){
   
   string born= mgProcLibPath()+"BornAmplitudes.dat";
   string virt= mgProcLibPath()+"VirtAmplitudes.dat";
-  assert ( boost::filesystem::exists(born)|| boost::filesystem::exists(virt));
+  assert ( filesystem::exists(born)|| filesystem::exists(virt));
   
   bool foundallborns=true;
   for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++){
@@ -180,25 +180,25 @@ bool MadGraphAmplitude::initializeExternal() {
 
 
   
-  if ( boost::filesystem::exists(mgProcLibPath()) ) {
-    if ( !boost::filesystem::is_directory(mgProcLibPath()) )
+  if ( filesystem::exists(mgProcLibPath()) ) {
+    if ( !filesystem::is_directory(mgProcLibPath()) )
       throw Exception() << "MadGraphAmplitude: MadGraph amplitude storage '"
 			<< mgProcLibPath() << "' existing but not a directory."
 			<< Exception::runerror;
   } else {
-    boost::filesystem::create_directories(mgProcLibPath());
+    filesystem::create_directory(mgProcLibPath());
   }
 
 
 
   string runAmplitudes = factory()->runStorage() + "/MadGraphAmplitudes";
-  if ( boost::filesystem::exists(runAmplitudes) ) {
-    if ( !boost::filesystem::is_directory(runAmplitudes) )
+  if ( filesystem::exists(runAmplitudes) ) {
+    if ( !filesystem::is_directory(runAmplitudes) )
       throw Exception() << "MadGraphAmplitude: MadGraph amplitude storage '"
 			<< runAmplitudes << "' existing but not a directory."
 			<< Exception::runerror;
   } else {
-    boost::filesystem::create_directories(runAmplitudes);
+    filesystem::create_directory(runAmplitudes);
   }
  
     
@@ -272,7 +272,7 @@ bool MadGraphAmplitude::initializeExternal() {
   // TODO move to boost::system
   writeAmplitudesDat();
 
-  if (boost::filesystem::exists(mgProcLibPath()+"InterfaceMadGraph.so") ){
+  if (filesystem::exists(mgProcLibPath()+"InterfaceMadGraph.so") ){
     //set the parameters
     
     checkAmplitudes();
@@ -313,7 +313,7 @@ bool MadGraphAmplitude::initializeExternal() {
 
   ranMadGraphInitializeExternal = true;
 
-  return boost::filesystem::exists(mgProcLibPath()+"InterfaceMadGraph.so");
+  return filesystem::exists(mgProcLibPath()+"InterfaceMadGraph.so");
 
 }
 
@@ -335,7 +335,7 @@ int MadGraphAmplitude::externalId(const cPDVector& proc) {
   
   string born= mgProcLibPath()+"BornAmplitudes.dat";
   string virt= mgProcLibPath()+"VirtAmplitudes.dat";
-  assert ( boost::filesystem::exists(born)|| boost::filesystem::exists(virt));
+  assert ( filesystem::exists(born)|| filesystem::exists(virt));
   
   
   ifstream borns(born.c_str());
