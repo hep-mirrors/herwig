@@ -30,7 +30,7 @@ const string& RunDirectories::prefix() {
 }
 
 string& RunDirectories::thePrefix() {
-  static string p = "./Herwig-scratch/";
+  static string p = "./Herwig-cache/";
   return p;
 }
 
@@ -44,7 +44,7 @@ const string& RunDirectories::buildStorage() {
     return theBuildStorage();
   theBuildStorage() = prefix();
   if ( theBuildStorage().empty() )
-    theBuildStorage() = "./Herwig-scratch/";
+    theBuildStorage() = "./Herwig-cache/";
   else if ( *theBuildStorage().rbegin() != '/' )
     theBuildStorage() += "/";
   theBuildStorage() += "Build/";

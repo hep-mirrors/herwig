@@ -18,7 +18,7 @@ C         print*, TRIM(file_card)
          REAL*8 momenta(0:40),virt(20)
          INTEGER proc
 
-MG_CalculateVIRTtxt
+{MG_CalculateVIRTtxt}
 
        END
 
@@ -31,7 +31,7 @@ MG_CalculateVIRTtxt
          REAL*8 momenta(0:40)
          INTEGER hel(0:10),proc
 
-MG_CalculateBORNtxt
+{MG_CalculateBORNtxt}
 
        END
 
@@ -44,7 +44,7 @@ MG_CalculateBORNtxt
          INTEGER    proc,color
          REAL*8 amp(0:1)
          COMPLEX*16 Jamp
-MG_Jamptxt
+{MG_Jamptxt}
 
          amp(0)=real(Jamp)
          amp(1)=aimag(Jamp)   
@@ -59,7 +59,7 @@ MG_Jamptxt
          INTEGER    proc,color
          REAL*8 amp(0:1)
          COMPLEX*16 Jamp
-MG_LNJamptxt
+{MG_LNJamptxt}
 
          amp(0)=real(Jamp)
          amp(1)=aimag(Jamp)   
@@ -73,7 +73,7 @@ MG_LNJamptxt
      $   bind(c, name="MG_NCol")
          IMPLICIT NONE
          INTEGER    proc,color
-MG_NColtxt
+{MG_NColtxt}
 
        END
 
@@ -83,10 +83,10 @@ MG_NColtxt
      $   bind(c, name="MG_Colour")
          IMPLICIT NONE
          INTEGER    proc,color,i,j
-MG_ColourMattxt
+{MG_ColourMattxt}
 
        END
 
 !///////////////////////////////////////////////////////////////////////
        
-MG_vxxxxxtxt
+{MG_vxxxxxtxt}

@@ -7,7 +7,6 @@
 ##################################################
 read snippets/Matchbox.in
 read snippets/PPCollider.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Herwig-scratch/${runname}-MGpath
 
 ##################################################
 ## Matrix element library selection

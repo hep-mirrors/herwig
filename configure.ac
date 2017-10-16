@@ -180,7 +180,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Matchbox/External/GoSam/Makefile
 		MatrixElement/Matchbox/External/OpenLoops/Makefile
 		MatrixElement/Matchbox/External/MadGraph/Makefile
-		MatrixElement/Matchbox/External/MadGraph/mg2herwig.py
+		MatrixElement/Matchbox/External/MadGraph/mg2herwig
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
 		Shower/Makefile

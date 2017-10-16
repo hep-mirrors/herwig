@@ -63,7 +63,7 @@ Makefile\.in$
 ^src/defaults/done-all-links$
 ^src/tune$
 ^src/Herwig$
-^src/Herwig-scratch$
+^src/Herwig-cache$
 ^src/tests/.*\.(time|mult|Bmult|chisq)$
 ^src/Merging/test/*yoda
 ^src/Merging/test/Herwig*
@@ -74,14 +74,14 @@ Makefile\.in$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
-^Tests/Herwig-scratch$
+^Tests/.cache$
 ^Tests/Rivet/(LEP|DIS|LHC|TVT|Star|BFactory|ISR|SppS)-.*\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
-^MatrixElement/Matchbox/External/MadGraph/mg2herwig.py$
+^MatrixElement/Matchbox/External/MadGraph/mg2herwig$
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
 ^Utilities/Statistics/herwig-combinedistributions$
 ^Utilities/Statistics/herwig-combineruns$

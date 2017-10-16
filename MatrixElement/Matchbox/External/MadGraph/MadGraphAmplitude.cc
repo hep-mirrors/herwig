@@ -24,6 +24,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig/API/Filesystem.h"
+#include "Herwig/API/RunDirectories.h"
 #include <cstdlib>
 #include <dlfcn.h>
 #include <errno.h>
@@ -263,6 +264,7 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
   cmd +=" --datadir "+pkgdatadir_;
   cmd +=" --includedir "+includedir_;
+  cmd +=" --cacheprefix "+RunDirectories::prefix();
   std::stringstream as,aem;
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
@@ -302,6 +304,7 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
   cmd +=" --datadir "+pkgdatadir_;  
+  cmd +=" --cacheprefix "+RunDirectories::prefix();
   as.clear();
   aem.clear();
   as << factory()->orderInAlphaS();

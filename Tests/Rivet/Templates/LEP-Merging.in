@@ -22,7 +22,6 @@ set MergingFactory:OrderInAlphaEW 2
 ## Matrix element library selection
 ##################################################
 read Matchbox/MadGraph-OpenLoops.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Herwig-scratch/${runname}-MGpath
 ##################################################
 ## Scale choice
 ## See the documentation for more options

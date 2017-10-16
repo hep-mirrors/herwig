@@ -27,7 +27,6 @@ read Matchbox/StandardModelLike.in
 read Matchbox/DiagonalCKM.in
 ## Set the order of the couplings
 read Matchbox/MadGraph-OpenLoops.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Herwig-scratch/${runname}-MGpath
 
 set /Herwig/Merging/MergingFactory:OrderInAlphaS 0
 set /Herwig/Merging/MergingFactory:OrderInAlphaEW 2
