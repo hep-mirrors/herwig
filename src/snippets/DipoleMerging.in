@@ -106,12 +106,6 @@ set FFMassiveKinematics:OpenZBoundaries Hard
 # Switch of the profiles of the Shower
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
-# Set up the rivet analysis to use.
-cd /Herwig/Analysis
-create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
-
-
-
 cd /Herwig/Merging
 # In fact we are not using this for now.
 set /Herwig/MatrixElements/Matchbox/MECorrectionHandler:Factory MergingFactory
