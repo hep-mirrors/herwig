@@ -68,8 +68,6 @@ set ThreeBodyDC:CreateDecayModes Yes
 # To set a minimum allowed branching fraction (the default is shown)
 #set NewModel:MinimumBR 1e-6
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 ## prepare for Rivet analysis or HepMC output

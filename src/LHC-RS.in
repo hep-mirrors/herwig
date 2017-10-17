@@ -43,8 +43,6 @@ insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
 # coupling
 set RS/Model:Lambda_pi 10000*GeV
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 ## prepare for Rivet analysis or HepMC output

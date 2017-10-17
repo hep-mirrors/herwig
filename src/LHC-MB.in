@@ -20,8 +20,6 @@ cd /Herwig/Generators
 ##################################################
 set EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 # Minimum Bias
 read snippets/MB.in

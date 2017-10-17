@@ -22,8 +22,6 @@ set EventGenerator:MaxErrors 10000
 ##################################################
 set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 cd /Herwig/Cuts
 #set JetKtCut:MinKT 100.0*GeV
