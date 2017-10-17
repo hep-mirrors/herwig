@@ -33,8 +33,6 @@ set ShowerHandler:HardEmission POWHEG
 cd /Herwig/Generators
 set EventGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 

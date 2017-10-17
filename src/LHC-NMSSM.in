@@ -54,8 +54,6 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 # spectrum file is an example using NMHDecay-1.2.1
 setup NMSSM/Model NMSSM.spc
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 ## prepare for Rivet analysis or HepMC output
