@@ -140,15 +140,13 @@ tests-Rivet : Rivet-LEP Rivet-BFactory Rivet-DIS Rivet-Star Rivet-SppS \
 
 
 Rivet-%.run : Rivet/%.in
-	$(HWBUILD) $<
+	$(HWBUILD) -c .cache/$(subst .run,,$@) $<
 
-Herwig-scratch/Rivet-%/HerwigGrids.xml : Rivet-%.run
-	$(HWINTEGRATE) $<
+Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run
+	$(HWINTEGRATE) -c .cache/$(subst .run,,$<) $<
+	$(HWRUN)       -c .cache/$(subst .run,,$<) $<
 
 Rivet-%.yoda : Rivet-%.run
-	$(HWRUN) $<
-
-Rivet-Matchbox-%.yoda : Rivet-Matchbox-%.run Herwig-scratch/Rivet-Matchbox-%/HerwigGrids.xml
 	$(HWRUN) $<
 
 Rivet/%.in :
@@ -399,4 +397,4 @@ clean-local:
 	rm -rf Rivet-*
 
 distclean-local:
-	rm -rf Herwig-scratch
+	rm -rf .cache

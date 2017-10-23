@@ -29,9 +29,7 @@
 #include "ThePEG/Utilities/StringUtils.h"
 
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
-
-#include <boost/progress.hpp>
-#include <boost/filesystem.hpp>
+#include "Herwig/API/Filesystem.h"
 
 #include <fstream>
 #include <sstream>
@@ -39,9 +37,9 @@
 #include <cstdlib>
 #include <exception>
 
-using namespace Herwig;
+namespace bfs = Herwig::filesystem;
 
-namespace bfs = boost::filesystem;
+using namespace Herwig;
 
 #ifndef HERWIG_BINDIR
 #error Makefile.am needs to define HERWIG_BINDIR

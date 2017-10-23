@@ -15,7 +15,6 @@ read snippets/MonacoSampler.in
 read Matchbox/StandardModelLike.in
 read Matchbox/DiagonalCKM.in
 read Matchbox/MadGraph-OpenLoops.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Herwig-scratch/${runname}-MGpath
 
 ##################################################
 ## PDF and AlphaS choice

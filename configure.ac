@@ -30,6 +30,8 @@ AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 dnl check for POSIX
 AC_CHECK_HEADER([unistd.h],[],
       [AC_MSG_ERROR([Herwig needs "unistd.h". Non-POSIX systems are not supported.])])
+AC_CHECK_HEADER([sys/stat.h],[],
+      [AC_MSG_ERROR([Herwig needs "sys/stat.h". Non-POSIX systems are not supported.])])
 
 dnl Checks for programs.
 AC_PROG_INSTALL
@@ -78,8 +80,6 @@ dnl BOOST_FIND_HEADER([boost/numeric/ublas/matrix_sparse.hpp])
 dnl BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
 dnl BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
 BOOST_FIND_HEADER([boost/operators.hpp])
-BOOST_FIND_HEADER([boost/progress.hpp])
-BOOST_FILESYSTEM([mt])
 BOOST_TEST()
 
 HERWIG_CHECK_VBFNLO
@@ -180,7 +180,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Matchbox/External/GoSam/Makefile
 		MatrixElement/Matchbox/External/OpenLoops/Makefile
 		MatrixElement/Matchbox/External/MadGraph/Makefile
-		MatrixElement/Matchbox/External/MadGraph/mg2herwig.py
+		MatrixElement/Matchbox/External/MadGraph/mg2herwig
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
 		Shower/Makefile

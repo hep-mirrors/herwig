@@ -32,11 +32,11 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 
 #include "Herwig/API/RunDirectories.h"
+#include "Herwig/API/Filesystem.h"
 
 #include "Herwig/Utilities/XML/ElementIO.h"
+#include "Herwig/Utilities/Progress.h"
 
-#include <boost/progress.hpp>
-#include <boost/filesystem.hpp>
 #include <cstdlib>
 #include <sstream> 
 
@@ -223,10 +223,10 @@ void GeneralSampler::initialize() {
       binsToIntegrate.insert(b);
   }
 
-  boost::progress_display* progressBar = 0;
+  progress_display* progressBar = nullptr;
   if ( !theVerbose && !justAfterIntegrate ) {
     Repository::clog() << "integrating subprocesses";
-    progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
+    progressBar = new progress_display{ binsToIntegrate.size(), Repository::clog() };
   }
 
   int count=0;
@@ -261,11 +261,9 @@ void GeneralSampler::initialize() {
     }
   }
 
-  if ( progressBar ) {
-    delete progressBar;
-    progressBar = 0;
-  }
-
+  delete progressBar;
+  progressBar = nullptr;
+  
   if ( missingGrid && runLevel() == RunMode )
     generator()->log()
     << "\n----------------------------------------------------\n\n"
@@ -815,7 +813,7 @@ void GeneralSampler::readGrids() {
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
     ostringstream currentProcessedIntegrationJob;
 	  currentProcessedIntegrationJob << directoryName << "integrationJob" << currentProcessedIntegrationJobNum << "/HerwigGrids.xml";
-	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob.str()))) {
+	  if(filesystem::exists(currentProcessedIntegrationJob.str())) {
 	    ifstream localGridFileIN(currentProcessedIntegrationJob.str().c_str());
 	    if(localGridFileIN) {
 	      theGrids = theGrids + XML::ElementIO::get(localGridFileIN);

@@ -24,8 +24,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include <boost/filesystem.hpp>
-
 #include "RunDirectories.h"
 
 using namespace ThePEG;
@@ -120,8 +118,7 @@ namespace {
 		      bool usePWD) {
     // Search path for read command uses CWD first
     if ( usePWD ) {
-      string cwd = boost::filesystem::current_path().string();
-      Repository::prependReadDir( cwd );
+      Repository::prependReadDir( "." );
     }
     // append command line choices for directories from which Herwig will read.
     Repository::appendReadDir(ui.appendReadDirectories());

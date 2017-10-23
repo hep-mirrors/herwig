@@ -6,7 +6,6 @@
 ## Collider type
 ##################################################
 read snippets/Matchbox.in
-set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath Herwig-scratch/${runname}-MGpath
 
 read snippets/EECollider.in
 ##################################################
