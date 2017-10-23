@@ -9,6 +9,7 @@
 
 #include "HerwigCLI.h"
 #include "herwigopts.h"
+#include "Herwig/API/RunDirectories.h"
 
 #include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/Debug.h>
@@ -98,6 +99,10 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
   // parallel jobs
   if ( args_info.jobs_given )
     jobs_ = args_info.jobs_arg;
+  
+  // Cache directory for Matchbox
+  if ( args_info.cachedir_given )
+    Herwig::RunDirectories::prefix(args_info.cachedir_arg);
   
   // Directories from which Herwig reads filesystemfor ( size_t i = 0; i < args_info.append_read_given; ++i )
   for ( size_t i = 0; i < args_info.append_read_given; ++i )

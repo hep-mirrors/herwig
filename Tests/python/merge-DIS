@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
 # #######################################
 
-yodafiles=["-e--LowQ2.yoda","-e+-LowQ2.yoda","-e+-HighQ2.yoda"]
+yodafiles=["-e--LowQ2","-e+-LowQ2","-e+-HighQ2"]
 
 ## Get histos
 inhistos = {}
@@ -65,7 +65,7 @@ outhistos={}
 weights = {}
 
 for f in yodafiles:
-    file = args[0]+f
+    file = "Rivet-%s%s.yoda" % (args[0], f)
     if(file.find("Low")> 0) :
         q2=0
     elif(file.find("High")>0) :

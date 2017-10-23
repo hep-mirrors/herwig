@@ -25,6 +25,11 @@ if __name__ == '__main__':
                       default='',
                       dest='tagName')
 
+    parser.add_option('-c', '--cachedir', type='string',
+                      help='Specify the cache directory which has been used.',
+                      default='Herwig-cache',
+                      dest='cacheDir')
+
     opts, args = parser.parse_args()
 
     if len(args) < 1:
@@ -41,7 +46,7 @@ if __name__ == '__main__':
     if tagName:
         runName = runName + '/' + tagName
 
-    gridId = 'Herwig-scratch/' + runName
+    gridId = os.path.join(opts.cacheDir,runName)
 
     # print 'Looking in ' + gridId
 

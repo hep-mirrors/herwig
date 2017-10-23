@@ -11,7 +11,7 @@
 
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/Handlers/SamplerBase.h"
-#include <boost/filesystem.hpp>
+#include "Filesystem.h"
 
 using namespace ThePEG;
 using namespace Herwig;
@@ -30,7 +30,7 @@ const string& RunDirectories::prefix() {
 }
 
 string& RunDirectories::thePrefix() {
-  static string p = "./Herwig-scratch/";
+  static string p = "./Herwig-cache/";
   return p;
 }
 
@@ -44,17 +44,17 @@ const string& RunDirectories::buildStorage() {
     return theBuildStorage();
   theBuildStorage() = prefix();
   if ( theBuildStorage().empty() )
-    theBuildStorage() = "./Herwig-scratch/";
+    theBuildStorage() = "./Herwig-cache/";
   else if ( *theBuildStorage().rbegin() != '/' )
     theBuildStorage() += "/";
   theBuildStorage() += "Build/";
-  if ( boost::filesystem::exists(theBuildStorage()) ) {
-    if ( !boost::filesystem::is_directory(theBuildStorage()) )
+  if ( filesystem::exists(theBuildStorage()) ) {
+    if ( !filesystem::is_directory(theBuildStorage()) )
       throw Exception() << "Herwig build storage '"
-			<< theBuildStorage() << "' existing but not a directory."
+			<< theBuildStorage() << "' exists but not a directory."
 			<< Exception::abortnow;
   } else {
-    boost::filesystem::create_directories(theBuildStorage());
+    filesystem::create_directory(theBuildStorage());
   }
   return theBuildStorage();
 }
@@ -72,13 +72,13 @@ const string& RunDirectories::runStorage() {
   if ( theRunDirectories().empty() )
     throw Exception() << "No run directory stack has been allocated."
 		      << Exception::abortnow;
-  if ( boost::filesystem::exists(theRunDirectories().front()) ) {
-    if ( !boost::filesystem::is_directory(theRunDirectories().front()) )
+  if ( filesystem::exists(theRunDirectories().front()) ) {
+    if ( !filesystem::is_directory(theRunDirectories().front()) )
       throw Exception() << "Herwig run storage '"
-			<< theRunDirectories().front() << "' existing but not a directory."
+			<< theRunDirectories().front() << "' exists but not a directory."
 			<< Exception::abortnow;
   } else {
-    boost::filesystem::create_directories(theRunDirectories().front());
+    filesystem::create_directory(theRunDirectories().front());
   }
   return theRunDirectories().front();
 }

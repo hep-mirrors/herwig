@@ -16,8 +16,6 @@ cd /Herwig/Generators
 # LHC physics parameters (override defaults here) 
 ##################################################
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ########################
 ## sqrt(s) = 13000 GeV ##

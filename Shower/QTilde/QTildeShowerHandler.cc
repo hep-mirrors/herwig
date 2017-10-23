@@ -26,8 +26,8 @@
 #include "Herwig/Shower/Core/Base/ShowerParticle.h"
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
-#include "Herwig/Shower/Core/Base/ShowerTree.h"
-#include "Herwig/Shower/Core/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
@@ -534,8 +534,16 @@ void QTildeShowerHandler::doinit() {
 		      << "we recommend the number of attempts is 10 times the number for reweighting\n"
 		      << Exception::runerror;
   }
+  ShowerTree::_vmin2 = vMin();
+  ShowerTree::_spaceTime = includeSpaceTime();
 }
 
+void QTildeShowerHandler::doinitrun() {
+  ShowerHandler::doinitrun();
+  ShowerTree::_vmin2 = vMin();
+  ShowerTree::_spaceTime = includeSpaceTime();
+}
+  
 void QTildeShowerHandler::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
   if ( !ipTon() || !doISR() ) return;

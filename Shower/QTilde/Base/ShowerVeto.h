@@ -17,7 +17,7 @@
 #include "Herwig/Shower/Core/ShowerConfig.h"
 #include "Herwig/Shower/Core/Base/ShowerParticle.fh"
 #include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
-#include "Herwig/Shower/Core/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
 
 namespace Herwig {
 

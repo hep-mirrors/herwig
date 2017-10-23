@@ -111,7 +111,7 @@ if(opts.ue) :
 inhistos = {}
 outhistos={}
 for f in yodafiles:
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     if(file.find("Run-II-UE")>0) :
         sqrts=1960
         ptmin=0.
@@ -224,7 +224,7 @@ yodafiles=["-Run-II-Jets-8.yoda","-Run-II-Jets-9.yoda","-Run-II-Jets-10.yoda","-
            "-Run-I-Jets-6.yoda","-Run-I-Jets-7.yoda","-Run-I-Jets-8.yoda"]
 
 for f in yodafiles:
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     if(file.find("Run-II-Jets-8")>0) :
         sqrts=1960
         ptmin=0.150

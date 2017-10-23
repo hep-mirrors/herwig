@@ -6,7 +6,6 @@
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#include "ShowerProgenitor.h"
 #include "ThePEG/EventRecord/MultiColour.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ShowerTree.h"

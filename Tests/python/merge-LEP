@@ -95,16 +95,15 @@ if(opts.gg) :
 inhistos = {}
 outhistos={}
 for f in yodafiles:
-    file = args[0]+f+".yoda"
-    print f,file
+    file = "Rivet-%s%s.yoda" % (args[0], f)
     sqrts=float(f.split("-")[1].replace(".yoda",""))
     if not os.access(file, os.R_OK):
-        logging.error("%s can not be read" % file)
+        logging.error("%s cannot be read" % file)
         continue
     try:
         aos = yoda.read(file)
     except:
-        logging.error("%s can not be parsed as yoda" % file)
+        logging.error("%s cannot be parsed as yoda" % file)
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :

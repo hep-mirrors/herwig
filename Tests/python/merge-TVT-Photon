@@ -39,7 +39,7 @@ files=["-Run-II-PromptPhoton.yoda",
 inhistos = {}
 outhistos={}
 for f in files:
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         continue

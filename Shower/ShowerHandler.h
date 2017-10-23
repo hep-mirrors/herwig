@@ -519,6 +519,23 @@ protected:
   unsigned int maxtry() const { return maxtry_; }
 
 protected:
+  
+  /**
+   *  Parameters for the space-time model
+   */
+  //@{
+  /**
+   *   Whether or not to include spa-cetime distances in the shower
+   */
+  bool includeSpaceTime() const {return includeSpaceTime_;}
+
+  /**
+   *  The minimum virtuality for the space-time model
+   */
+  Energy2 vMin() const {return vMin_;}
+  //@}
+
+protected:
 
   /** @name Clone Methods. */
   //@{

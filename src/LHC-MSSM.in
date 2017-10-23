@@ -63,8 +63,6 @@ setup MSSM/Model CMSSM40.1.1.slha
 #set NewModel:MinimumBR 1e-6
 
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 ## prepare for Rivet analysis or HepMC output

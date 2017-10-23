@@ -53,8 +53,6 @@ insert ResConstructor:Intermediates 0 /Herwig/Particles/Z_H
 insert ResConstructor:Outgoing 0 /Herwig/Particles/e-
 insert ResConstructor:Outgoing 0 /Herwig/Particles/mu-
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 ## prepare for Rivet analysis or HepMC output
