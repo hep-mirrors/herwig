@@ -440,9 +440,9 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
   else if (dipoles[i].type==FFa || dipoles[i].type==FFc) {
     pre *= colourCoeff(emitter->dataPtr(),spectator->dataPtr(),in->dataPtr(),dipoles[i]);
   }
-  double A = 2.*pre/Constants::twopi;
+  double A = 2.*abs(pre)/Constants::twopi;
   // factor due sampling choice
-  if(phaseOpt_==0) A *=ymax_;
+  if(phaseOpt_==0) A *= ymax_;
   // coupling factor
   if(dipoles[i].interaction==ShowerInteraction::QCD)
     A *= alphaS() ->overestimateValue();
