@@ -19,7 +19,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -132,9 +131,13 @@ void HwDecayerBase::dofinish() {
   }
 }
 
-bool HwDecayerBase::softMatrixElementVeto(ShowerProgenitorPtr,
-					  ShowerParticlePtr,
-					  Branching) {
+bool HwDecayerBase::softMatrixElementVeto(PPtr ,
+					  const long & ,
+					  const Energy & ,
+					  const vector<tcPDPtr> & ,
+					  const double & ,
+					  const Energy & ,
+					  const Energy & ) {
   return false;
 }
 

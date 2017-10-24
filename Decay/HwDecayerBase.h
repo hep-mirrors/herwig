@@ -13,8 +13,6 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/RealEmissionProcess.fh"
 #include "HwDecayerBase.fh"
 
@@ -102,15 +100,22 @@ public:
 
   /**
    * Apply the soft matrix element correction
-   * @param initial The particle from the hard process which started the 
-   * shower
    * @param parent The initial particle in the current branching
-   * @param br The branching struct
+   * @param id ID of the particle starting the shower
+   * @param highestpT The highest pT so far in the shower
+   * @param ids ids of the particles produced in the branching
+   * @param z The momentum fraction of the branching
+   * @param scale the evolution scale of the branching
+   * @param pT The transverse momentum of the branching
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
-				     ShowerParticlePtr parent,
-				     Branching br);
+  virtual bool softMatrixElementVeto(PPtr parent,
+				     const long & id,
+				     const Energy & highestpT,
+				     const vector<tcPDPtr> & ids,
+				     const double & z,
+				     const Energy & scale,
+				     const Energy & pT);
 
   /**
    *  Apply the POWHEG style correction

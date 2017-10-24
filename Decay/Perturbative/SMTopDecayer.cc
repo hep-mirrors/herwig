@@ -24,9 +24,6 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
@@ -498,23 +495,26 @@ void SMTopDecayer::initializeMECorrection(RealEmissionProcessPtr born, double & 
 }
 
 
-bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
-					 ShowerParticlePtr parent,Branching br) {
+bool SMTopDecayer::softMatrixElementVeto(PPtr parent,
+					 const long & id,
+					 const Energy & highestpT,
+					 const vector<tcPDPtr> &,
+					 const double & z,
+					 const Energy & scale,
+					 const Energy & pt) {
   // check if we need to apply the full correction
-  long id[2]={abs(initial->progenitor()->id()),abs(parent->id())};
   // the initial-state correction
-  if(id[0]==ParticleID::t&&id[1]==ParticleID::t) {
-    Energy pt=br.kinematics->pT();
+  if(abs(id)==ParticleID::t&&abs(parent->id())==ParticleID::t) {
     // check if hardest so far
     // if not just need to remove effect of enhancement
     bool veto(false);
     // if not hardest so far
-    if(pt<initial->highestpT())
+    if(pt<highestpT)
       veto=!UseRandom::rndbool(1./_initialenhance);
     // if hardest so far do calculation
     else {
       // values of kappa and z
-      double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
+      double kappa(sqr(scale/_mt));
       // parameters for the translation
       double w(1.-(1.-z)*(kappa-1.)),u(1.+_a-_c-(1.-z)*kappa),v(sqr(u)-4.*_a*w*z);
       // veto if outside phase space
@@ -542,25 +542,19 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	// compute veto from weight
 	veto = !UseRandom::rndbool(wgt);
       }
-      // if not vetoed reset max
-      if(!veto) initial->highestpT(pt);
     }
-    // if vetoing reset the scale
-    if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
     // return the veto
     return veto;
   }
   // final-state correction
-  else if(id[0]==ParticleID::b&&id[1]==ParticleID::b) {
-    Energy pt=br.kinematics->pT();
+  else if(abs(id)==ParticleID::b&&abs(parent->id())==ParticleID::b) {
     // check if hardest so far
     // if not just need to remove effect of enhancement
-    bool veto(false);
     // if not hardest so far
-    if(pt<initial->highestpT()) return !UseRandom::rndbool(1./_finalenhance);
+    if(pt<highestpT) return !UseRandom::rndbool(1./_finalenhance);
     // if hardest so far do calculation
     // values of kappa and z
-    double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
+    double kappa(sqr(scale/_mt));
     // momentum fractions
     double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a);
     if(root<0.) {
@@ -569,7 +563,6 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 			 << "\nz =  " << z  << "\nkappa = " << kappa
 			 << "\nxa = " << xa 
 			 << "\nroot^2= " << root;
-      parent->vetoEmission(br.type,br.kinematics->scale());
       return true;
     } 
     root=sqrt(root);
@@ -588,12 +581,8 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
 			 << "weight =  " << wgt << "\n";
       wgt=1.;
     }
-    // compute veto from weight
-    veto = !UseRandom::rndbool(wgt);
-    // if vetoing reset the scale
-    if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
-    // return the veto
-    return veto;
+    // compute veto from weight and return
+    return !UseRandom::rndbool(wgt);
   }
   // otherwise don't veto
   else return !UseRandom::rndbool(1./_finalenhance);

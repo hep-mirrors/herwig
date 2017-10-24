@@ -25,9 +25,6 @@
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include <numeric>
@@ -335,34 +332,30 @@ initializeMECorrection(RealEmissionProcessPtr born, double & initial,
   final  =1.;
 }
 
-bool SMWDecayer::
-softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br) {
+bool SMWDecayer::softMatrixElementVeto(PPtr parent,
+				       const long & id,
+				       const Energy & highestpT,
+				       const vector<tcPDPtr> & ids,
+				       const double & d_z,
+				       const Energy & d_qt,
+				       const Energy & ) {
   // check we should be applying the veto
-  if(parent->id()!=initial->progenitor()->id()||
-     br.ids[0]!=br.ids[1]||
-     br.ids[2]->id()!=ParticleID::g) return false;
+  if(parent->id()!=id||
+     ids[0]!=ids[1]||
+     ids[2]->id()!=ParticleID::g) return false;
   // calculate pt
-  double d_z = br.kinematics->z();
-  Energy d_qt = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
   Energy2 pPerp2 = sqr(d_z*d_qt) - d_m2;
-  if(pPerp2<ZERO) {
-    parent->vetoEmission(br.type,br.kinematics->scale());
-    return true;
-  }
+  if(pPerp2<ZERO) return true;
   Energy pPerp = (1.-d_z)*sqrt(pPerp2);
   // if not hardest so far don't apply veto
-  if(pPerp<initial->highestpT()) return false;
+  if(pPerp<highestpT) return false;
   // calculate the weight
   double weight = 0.;
   if(parent->id()>0) weight = qWeightX(d_qt, d_z);
   else weight = qbarWeightX(d_qt, d_z);
-  // compute veto from weight
-  bool veto = !UseRandom::rndbool(weight);
-  // if vetoing reset the scale
-  if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
-  // return the veto
-  return veto;
+  // compute veto from weight and return
+  return !UseRandom::rndbool(weight);
 }
 
 

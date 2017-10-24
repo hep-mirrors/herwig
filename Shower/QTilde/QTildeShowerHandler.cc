@@ -1360,7 +1360,12 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
 	return true;
     }
     else if(_decayme && _decayme->hasMECorrection()) {
-      if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+      if(_decayme->softMatrixElementVeto(particle,
+					 _progenitor->progenitor()->id(),
+					 _progenitor->highestpT(),
+					 fb.ids, fb.kinematics->z(),
+					 fb.kinematics->scale(),
+					 fb.kinematics->pT()))
 	return true;
     }
   }
@@ -1450,7 +1455,12 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
   ShowerInteraction type = convertInteraction(fb.type);
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
-    if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+    if(_decayme->softMatrixElementVeto(particle,
+				       _progenitor->progenitor()->id(),
+				       _progenitor->highestpT(),
+				       fb.ids, fb.kinematics->z(),
+				       fb.kinematics->scale(),
+				       fb.kinematics->pT()))
       return true;
   }
   // veto on hardest pt in the shower
