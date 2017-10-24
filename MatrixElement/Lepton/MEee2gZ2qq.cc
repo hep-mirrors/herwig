@@ -22,13 +22,10 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig/MatrixElement/HardVertex.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 
 
 using namespace Herwig;
@@ -459,19 +456,23 @@ RealEmissionProcessPtr MEee2gZ2qq::calculateRealEmission(RealEmissionProcessPtr 
   return born;
 }
 
-bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
-				       ShowerParticlePtr parent,Branching br) {
+bool MEee2gZ2qq::softMatrixElementVeto(PPtr parent,
+				       PPtr progenitor,
+				       const bool & ,
+				       const Energy & highestpT,
+				       const vector<tcPDPtr> & ids,
+				       const double & d_z,
+				       const Energy & d_qt,
+				       const Energy & ) {
   // check we should be applying the veto
-  if(parent->id()!=initial->progenitor()->id()||
-     br.ids[0]->id()!=br.ids[1]->id()||
-     br.ids[2]->id()!=ParticleID::g) return false;
+  if(parent->id()!=progenitor->id()||
+     ids[0]->id()!=ids[1]->id()||
+     ids[2]->id()!=ParticleID::g) return false;
   // calculate pt
-  double d_z   = br.kinematics->z();
-  Energy d_qt  = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
   Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
   // if not hardest so far don't apply veto
-  if(pPerp<initial->highestpT()) return false;
+  if(pPerp<highestpT) return false;
   // calculate x and xb
   double kti = sqr(d_qt/d_Q_);
   double w = sqr(d_v_) + kti*(-1. + d_z)*d_z*(2. + kti*(-1. + d_z)*d_z);
@@ -490,11 +491,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // always return one in the soft gluon region
   if(xg < EPS_) return false;
   // check it is in the phase space
-  if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) {
-    parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
-			 ShowerPartnerType::QCDColourLine,br.kinematics->scale());
-    return true;
-  }
+  if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) return true;
   double k1 = getKfromX(x, xb);
   double k2 = getKfromX(xb, x);
   double weight = 1.;
@@ -511,15 +508,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
     if(k1 < d_kt1_) weight *= 0.5;
   }
   // compute veto from weight
-  bool veto = !UseRandom::rndbool(weight);
-  // if not vetoed reset max
-  // if vetoing reset the scale
-  if(veto) {
-    parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
-			 ShowerPartnerType::QCDColourLine,br.kinematics->scale());
-  }
-  // return the veto
-  return veto;
+  return !UseRandom::rndbool(weight);
 }
 
 double MEee2gZ2qq::getKfromX(double x1, double x2) {

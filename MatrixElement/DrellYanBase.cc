@@ -13,9 +13,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -510,29 +507,33 @@ bool DrellYanBase::applyHard(ParticleVector & quarks,
   return true;
 }
 
-bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
-					 ShowerParticlePtr parent,Branching br) {
-  if(parent->isFinalState()) return false;
+bool DrellYanBase::softMatrixElementVeto(PPtr parent,
+					 PPtr progenitor,
+					 const bool & fs,
+					 const Energy & highestpT,
+					 const vector<tcPDPtr> & ids,
+					 const double & z,
+					 const Energy & scale,
+					 const Energy & pT) {
+  if(fs) return false;
   // check if me correction should be applied
-  long id[2]={initial->id(),parent->id()};
+  long id[2]={progenitor->id(),parent->id()};
   if(id[0]!=id[1]||id[1]==ParticleID::g) return false;
-  // get the pT
-  Energy pT=br.kinematics->pT();
   // check if hardest so far
-  if(pT<initial->highestpT()) return false;
+  if(pT<highestpT) return false;
   // compute the invariants
-  double kappa(sqr(br.kinematics->scale())/mb2_),z(br.kinematics->z());
+  double kappa(sqr(scale)/mb2_);
   Energy2 shat(mb2_/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*mb2_),uhat(-(1.-z)*shat);
   // check which type of process
   // g qbar 
   double wgt(1.);
-  if(id[0]>0&&br.ids[0]->id()==ParticleID::g)
+  if(id[0]>0&&ids[0]->id()==ParticleID::g)
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-that)+sqr(mb2_-shat))/(sqr(shat+uhat)+sqr(uhat));
-  else if(id[0]>0&&br.ids[0]->id()==id[0])
+  else if(id[0]>0&&ids[0]->id()==id[0])
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-uhat)+sqr(mb2_-that))/(sqr(shat)+sqr(shat+uhat));
-  else if(id[0]<0&&br.ids[0]->id()==ParticleID::g)
+  else if(id[0]<0&&ids[0]->id()==ParticleID::g)
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-that)+sqr(mb2_-shat))/(sqr(shat+uhat)+sqr(uhat));
-  else if(id[0]<0&&br.ids[0]->id()==id[0])
+  else if(id[0]<0&&ids[0]->id()==id[0])
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-uhat)+sqr(mb2_-that))/(sqr(shat)+sqr(shat+uhat));
   else 
     return false;
@@ -542,11 +543,8 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< " sbar = " << shat/mb2_ 
 					<< " tbar = " << that/mb2_ 
 					<< "weight = " << wgt << "\n";
-  // if not vetoed
-  if(UseRandom::rndbool(wgt)) return false;
-  // otherwise
-  parent->vetoEmission(br.type,br.kinematics->scale());
-  return true;
+  // return whether or not vetoed
+  return !UseRandom::rndbool(wgt);
 }
 
 RealEmissionProcessPtr DrellYanBase::generateHardest(RealEmissionProcessPtr born,

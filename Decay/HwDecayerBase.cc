@@ -131,8 +131,8 @@ void HwDecayerBase::dofinish() {
   }
 }
 
-bool HwDecayerBase::softMatrixElementVeto(PPtr ,
-					  const long & ,
+bool HwDecayerBase::softMatrixElementVeto(PPtr , PPtr,
+					  const bool &,
 					  const Energy & ,
 					  const vector<tcPDPtr> & ,
 					  const double & ,

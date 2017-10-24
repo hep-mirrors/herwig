@@ -24,8 +24,6 @@
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include <numeric>
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -588,21 +586,25 @@ RealEmissionProcessPtr DISBase::applyHardMatrixElementCorrection(RealEmissionPro
   return born;
 }
 
-bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
-				    ShowerParticlePtr parent, Branching br) {
-  bool veto = !UseRandom::rndbool(parent->isFinalState() ? 1./final_ : 1./initial_);
+bool DISBase::softMatrixElementVeto(PPtr parent,
+				    PPtr progenitor,
+				    const bool & fs,
+				    const Energy & highestpT,
+				    const vector<tcPDPtr> & ids,
+				    const double & z,
+				    const Energy & scale,
+				    const Energy & pT) {
+  bool veto = !UseRandom::rndbool(fs ? 1./final_ : 1./initial_);
   // check if me correction should be applied
-  long id[2]={initial->id(),parent->id()};
-  if(id[0]!=id[1]||id[1]==ParticleID::g) return veto;
-  // get the pT
-  Energy pT=br.kinematics->pT();
+  long id[2]={progenitor->id(),parent->id()};
+  if(id[0]!=id[1]||id[1]==ParticleID::g) return veto; 
   // check if hardest so far
-  if(pT<initial->highestpT()) return veto;
-  double kappa(sqr(br.kinematics->scale())/q2_),z(br.kinematics->z());
+  if(pT<highestpT) return veto;
+  double kappa(sqr(scale)/q2_);
   double zk((1.-z)*kappa);
   // final-state
   double wgt(0.);
-  if(parent->isFinalState()) {
+  if(fs) {
     double zp=z,xp=1./(1.+z*zk);
     double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     double x2 = 1.-(1.-zp)/xp;
@@ -625,7 +627,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;
     // compton
-    if(br.ids[0]->id()!=ParticleID::g) {
+    if(ids[0]->id()!=ParticleID::g) {
       vector<double> azicoeff = ComptonME(xp,x2,xperp,false);
       wgt = (azicoeff[0]+0.5*azicoeff[2])*xp*(1.-z)/(1.-xp)/(1.+sqr(z))/
 	(1.-zp+xp-2.*xp*(1.-zp));
@@ -647,11 +649,8 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					 Exception::warning) );
     }
   }
-  // if not vetoed
-  if(UseRandom::rndbool(wgt)) return false;
-  // otherwise
-  parent->vetoEmission(br.type,br.kinematics->scale());
-  return true;
+  // return whether or not vetoed
+  return !UseRandom::rndbool(wgt);
 }
 
 double DISBase::generateComptonPoint(double &xp, double & zp) {

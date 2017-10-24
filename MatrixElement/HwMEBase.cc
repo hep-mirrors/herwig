@@ -13,7 +13,6 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -282,8 +281,13 @@ double HwMEBase::getCosTheta(double ctmin, double ctmax, const double r) {
   return cth;
 }
 
-bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
-				     ShowerParticlePtr,Branching) {
+bool HwMEBase::softMatrixElementVeto(PPtr, PPtr,
+				     const bool &,
+				     const Energy & ,
+				     const vector<tcPDPtr> & ,
+				     const double & ,
+				     const Energy & ,
+				     const Energy & ) {
   assert(false);
   return false;
 }

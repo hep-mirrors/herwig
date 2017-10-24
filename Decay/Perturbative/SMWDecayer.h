@@ -59,7 +59,8 @@ public:
   /**
    * Apply the soft matrix element correction
    * @param parent The initial particle in the current branching
-   * @param id ID of the particle starting the shower
+   * @param progenitor The progenitor particle of the jet
+   * @param fs Whether the emission is initial or final-state
    * @param highestpT The highest pT so far in the shower
    * @param ids ids of the particles produced in the branching
    * @param z The momentum fraction of the branching
@@ -68,7 +69,8 @@ public:
    * @return If true the emission should be vetoed
    */
   virtual bool softMatrixElementVeto(PPtr parent,
-				     const long & id,
+				     PPtr progenitor,
+				     const bool & fs,
 				     const Energy & highestpT,
 				     const vector<tcPDPtr> & ids,
 				     const double & z,

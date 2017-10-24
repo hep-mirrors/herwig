@@ -26,9 +26,7 @@
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/Utilities/Maths.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -713,36 +711,40 @@ RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(RealEmission
   return born;
 }
 
-bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
-				       ShowerParticlePtr parent,Branching br) {
-  if(parent->isFinalState()) return false;
+bool MEPP2Higgs::softMatrixElementVeto(PPtr parent,
+				       PPtr progenitor,
+				       const bool & fs,
+				       const Energy & highestpT,
+				       const vector<tcPDPtr> & ids,
+				       const double & z,
+				       const Energy & scale,
+				       const Energy & pT) {
+  if(fs) return false;
   // check if me correction should be applied
-  long id[2]={initial->id(),parent->id()};
+  long id[2]={progenitor->id(),parent->id()};
   // must have started as a gluon
   if(id[0]!=ParticleID::g) return false;
   // must be a gluon going into the hard process
-  if(br.ids[1]->id()!=ParticleID::g) return false;
-  // get the pT
-  Energy pT=br.kinematics->pT();
+  if(ids[1]->id()!=ParticleID::g) return false;
   // check if hardest so far
-  if(pT<initial->highestpT()) return false;
+  if(pT<highestpT) return false;
   // compute the invariants
-  double kappa(sqr(br.kinematics->scale())/mh2_),z(br.kinematics->z());
+  double kappa(sqr(scale)/mh2_);
   Energy2 shat(mh2_/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*mh2_),uhat(-(1.-z)*shat);
   // check which type of process
   Energy2 me;
   // g g
-  if(br.ids[0]->id()==ParticleID::g&&br.ids[2]->id()==ParticleID::g) {
+  if(ids[0]->id()==ParticleID::g&&ids[2]->id()==ParticleID::g) {
     double split = 6.*(z/(1.-z)+(1.-z)/z+z*(1.-z));
     me = ggME(shat,that,uhat)/split;
   }
   // q g
-  else if(br.ids[0]->id() >=  1 && br.ids[0]->id() <=  5 && br.ids[2]->id()==br.ids[0]->id()) {
+  else if(ids[0]->id() >=  1 && ids[0]->id() <=  5 && ids[2]->id()==ids[0]->id()) {
     double split = 4./3./z*(1.+sqr(1.-z));
     me = qgME(shat,uhat,that)/split;
   }
   // qbar g
-  else if(br.ids[0]->id() <= -1 && br.ids[0]->id() >= -5 && br.ids[2]->id()==br.ids[0]->id()) {
+  else if(ids[0]->id() <= -1 && ids[0]->id() >= -5 && ids[2]->id()==ids[0]->id()) {
     double split = 4./3./z*(1.+sqr(1.-z));
     me = qbargME(shat,uhat,that)/split;
   }
@@ -757,13 +759,10 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< " sbar = " << shat/mh2_ 
 					<< " tbar = " << that/mh2_ 
 					<< "weight = " << wgt << " for "
-					<< br.ids[0]->id() << " " << br.ids[1]->id() << " "
-					<< br.ids[2]->id() << "\n";
-  // if not vetoed
-  if(UseRandom::rndbool(wgt)) return false;
-  // otherwise
-  parent->vetoEmission(br.type,br.kinematics->scale());
-  return true;
+					<< ids[0]->id() << " " << ids[1]->id() << " "
+					<< ids[2]->id() << "\n";
+  // return whether or not vetoed
+  return !UseRandom::rndbool(wgt);
 }
 
 RealEmissionProcessPtr MEPP2Higgs::generateHardest(RealEmissionProcessPtr born,

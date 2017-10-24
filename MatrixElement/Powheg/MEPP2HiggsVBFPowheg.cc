@@ -15,7 +15,6 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
 //ACDC test
 //#include "ThePEG/Repository/UseRandom.h"
 

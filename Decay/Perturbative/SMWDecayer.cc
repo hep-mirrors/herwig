@@ -333,14 +333,15 @@ initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 }
 
 bool SMWDecayer::softMatrixElementVeto(PPtr parent,
-				       const long & id,
+				       PPtr progenitor,
+				       const bool & ,
 				       const Energy & highestpT,
 				       const vector<tcPDPtr> & ids,
 				       const double & d_z,
 				       const Energy & d_qt,
 				       const Energy & ) {
   // check we should be applying the veto
-  if(parent->id()!=id||
+  if(parent->id()!=progenitor->id()||
      ids[0]!=ids[1]||
      ids[2]->id()!=ParticleID::g) return false;
   // calculate pt

@@ -1356,12 +1356,19 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
   // soft matrix element correction veto
   if( softMEC()) {
     if(_hardme && _hardme->hasMECorrection()) {
-      if(_hardme->softMatrixElementVeto(_progenitor,particle,fb))
+      if(_hardme->softMatrixElementVeto(particle,
+					_progenitor->progenitor(),
+					particle->isFinalState(),
+					_progenitor->highestpT(),
+					fb.ids, fb.kinematics->z(),
+					fb.kinematics->scale(),
+					fb.kinematics->pT()))
 	return true;
     }
     else if(_decayme && _decayme->hasMECorrection()) {
       if(_decayme->softMatrixElementVeto(particle,
-					 _progenitor->progenitor()->id(),
+					 _progenitor->progenitor(),
+					 particle->isFinalState(),
 					 _progenitor->highestpT(),
 					 fb.ids, fb.kinematics->z(),
 					 fb.kinematics->scale(),
@@ -1411,7 +1418,13 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
     return true;
   // apply the soft correction
   if( softMEC() && _hardme && _hardme->hasMECorrection() ) {
-    if(_hardme->softMatrixElementVeto(_progenitor,particle,bb))
+    if(_hardme->softMatrixElementVeto(particle,
+				      _progenitor->progenitor(),
+				      particle->isFinalState(),
+				      _progenitor->highestpT(),
+				      bb.ids, bb.kinematics->z(),
+				      bb.kinematics->scale(),
+				      bb.kinematics->pT()))
       return true;
   }
   // the more general vetos
@@ -1456,7 +1469,8 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
     if(_decayme->softMatrixElementVeto(particle,
-				       _progenitor->progenitor()->id(),
+				       _progenitor->progenitor(),
+				       particle->isFinalState(),
 				       _progenitor->highestpT(),
 				       fb.ids, fb.kinematics->z(),
 				       fb.kinematics->scale(),

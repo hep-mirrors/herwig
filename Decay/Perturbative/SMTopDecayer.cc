@@ -496,7 +496,8 @@ void SMTopDecayer::initializeMECorrection(RealEmissionProcessPtr born, double & 
 
 
 bool SMTopDecayer::softMatrixElementVeto(PPtr parent,
-					 const long & id,
+					 PPtr progenitor,
+					 const bool & ,
 					 const Energy & highestpT,
 					 const vector<tcPDPtr> &,
 					 const double & z,
@@ -504,7 +505,7 @@ bool SMTopDecayer::softMatrixElementVeto(PPtr parent,
 					 const Energy & pt) {
   // check if we need to apply the full correction
   // the initial-state correction
-  if(abs(id)==ParticleID::t&&abs(parent->id())==ParticleID::t) {
+  if(abs(progenitor->id())==ParticleID::t&&abs(parent->id())==ParticleID::t) {
     // check if hardest so far
     // if not just need to remove effect of enhancement
     bool veto(false);
@@ -547,7 +548,7 @@ bool SMTopDecayer::softMatrixElementVeto(PPtr parent,
     return veto;
   }
   // final-state correction
-  else if(abs(id)==ParticleID::b&&abs(parent->id())==ParticleID::b) {
+  else if(abs(progenitor->id())==ParticleID::b&&abs(parent->id())==ParticleID::b) {
     // check if hardest so far
     // if not just need to remove effect of enhancement
     // if not hardest so far
