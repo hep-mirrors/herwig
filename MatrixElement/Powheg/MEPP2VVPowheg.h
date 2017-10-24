@@ -9,7 +9,7 @@
 #include "Herwig/MatrixElement/Powheg/VVKinematics.h"
 #include "Herwig/Utilities/Maths.h"
 #include "Herwig/Models/StandardModel/StandardCKM.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;

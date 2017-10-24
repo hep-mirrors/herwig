@@ -4,8 +4,8 @@
 //
 // This is the declaration of the Branching struct.
 //
-#include "Herwig/Shower/Core/ShowerConfig.h"
-#include "Herwig/Shower/Core/Base/ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/Base/ShowerKinematics.h"
 
 namespace Herwig {
 

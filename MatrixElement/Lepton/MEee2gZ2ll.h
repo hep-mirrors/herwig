@@ -18,7 +18,7 @@
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 
 namespace Herwig {
 

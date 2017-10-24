@@ -13,8 +13,8 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Shower/Core/SplittingFunctions/SplittingFunction.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"

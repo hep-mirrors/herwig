@@ -24,7 +24,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 
 // include theses to have complete types
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
@@ -32,7 +32,7 @@
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/QTilde/Base/HardBranching.h"
 #include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "Herwig/MatrixElement/HwMEBase.h"

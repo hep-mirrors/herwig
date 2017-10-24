@@ -12,7 +12,7 @@
 // This is the declaration of the OneOneOneMassiveSplitFn class.
 //
 
-#include "Herwig/Shower/Core/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
 
 namespace Herwig {
 

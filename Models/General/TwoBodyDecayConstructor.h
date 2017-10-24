@@ -15,7 +15,7 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig/Decay/General/GeneralTwoBodyDecayer.fh"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 #include "TwoBodyDecay.h"
 
 namespace Herwig {

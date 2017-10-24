@@ -6,8 +6,8 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
-#include "Herwig/Shower/Core/ShowerInteraction.h"
+#include "Herwig/Shower/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerInteraction.h"
 
 namespace Herwig {
 

@@ -32,4 +32,14 @@ Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc \
 Base/FullShowerVeto.h Base/FullShowerVeto.fh Base/FullShowerVeto.cc \
 SplittingFunctions/SplittingGenerator.cc SplittingFunctions/SplittingGenerator.h\
 SplittingFunctions/SplittingGenerator.fh \
-Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc
+Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc \
+ShowerConfig.h ShowerConfig.cc \
+Base/Branching.h \
+Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
+Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \
+Base/ShowerBasis.fh  Base/ShowerBasis.h Base/ShowerBasis.cc \
+Base/ShowerProgenitor.fh Base/ShowerProgenitor.h \
+Base/SudakovFormFactor.cc Base/SudakovFormFactor.h Base/SudakovFormFactor.fh \
+SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
+SplittingFunctions/SplittingFunction.cc  \
+Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h

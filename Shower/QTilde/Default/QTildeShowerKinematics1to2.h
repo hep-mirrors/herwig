@@ -12,7 +12,7 @@
 // This is the declaration of the QTildeShowerKinematics1to2 class.
 //
 
-#include "Herwig/Shower/Core/Base/ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/Base/ShowerKinematics.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "QTildeShowerKinematics1to2.fh"
 

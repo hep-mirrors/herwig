@@ -7,7 +7,7 @@
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "Herwig/Shower/RealEmissionProcess.fh"
-#include "Herwig/Shower/Core/ShowerInteraction.h"
+#include "Herwig/Shower/ShowerInteraction.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 

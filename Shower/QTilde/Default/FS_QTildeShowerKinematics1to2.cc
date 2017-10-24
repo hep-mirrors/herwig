@@ -13,14 +13,14 @@
 
 #include "FS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/Core/SplittingFunctions/SplittingFunction.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
-#include "Herwig/Shower/Core/Base/ShowerVertex.h"
+#include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 
 using namespace Herwig;
 

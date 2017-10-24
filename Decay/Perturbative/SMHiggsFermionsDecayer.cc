@@ -28,7 +28,7 @@
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include "Herwig/Utilities/Maths.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

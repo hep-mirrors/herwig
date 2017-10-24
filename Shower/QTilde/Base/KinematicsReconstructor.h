@@ -13,8 +13,8 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "KinematicsReconstructor.fh"

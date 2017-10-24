@@ -13,8 +13,8 @@
 //
 
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig/Shower/Core/ShowerConfig.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ShowerProgenitor.fh"
 #include "ThePEG/PDF/BeamParticleData.h"
 

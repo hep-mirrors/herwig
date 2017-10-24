@@ -13,7 +13,7 @@
 
 #include "QTildeShowerKinematics1to2.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"

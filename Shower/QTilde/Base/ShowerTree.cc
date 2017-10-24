@@ -9,7 +9,7 @@
 #include "ThePEG/EventRecord/MultiColour.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ShowerTree.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
