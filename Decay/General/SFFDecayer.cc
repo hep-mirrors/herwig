@@ -398,6 +398,17 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
 	  outgoingVertexA = outgoingVertex2_[inter];
 	}
       }
+      else if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3bar &&
+	      decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar) {
+	if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	  outgoingVertexF = outgoingVertex1_[inter];
+	  outgoingVertexA = outgoingVertex2_[inter];
+	}
+	else {
+	  outgoingVertexF = outgoingVertex2_[inter];
+	  outgoingVertexA = outgoingVertex1_[inter];
+	}
+      }
     }
     else if(inpart.dataPtr()->iColour()==PDT::Colour3bar){
       if(decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar &&  
@@ -416,13 +427,36 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
 	  outgoingVertexA = outgoingVertex1_[inter];
 	}
       }
+      else if(decay[iferm]->dataPtr()->iColour()==PDT::Colour3 &&
+	      decay[ianti]->dataPtr()->iColour()==PDT::Colour3) {
+	if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	  outgoingVertexF = outgoingVertex1_[inter];
+	  outgoingVertexA = outgoingVertex2_[inter];
+	}
+	else {
+	  outgoingVertexF = outgoingVertex2_[inter];
+	  outgoingVertexA = outgoingVertex1_[inter];
+	}
+      }
+    }
+    else if(inpart.dataPtr()->iColour()==PDT::Colour6 ||
+	    inpart.dataPtr()->iColour()==PDT::Colour6bar) {
+      if (outgoingVertex1_[inter]->isIncoming(const_ptr_cast<tPDPtr>(decay[iferm]->dataPtr()))) {
+	outgoingVertexF = outgoingVertex1_[inter];
+	outgoingVertexA = outgoingVertex2_[inter];
+      }
+      else {
+	outgoingVertexF = outgoingVertex2_[inter];
+	outgoingVertexA = outgoingVertex1_[inter];
+      }
     }
   
     if (! ((incomingVertex_[inter]  && (outgoingVertexF  || outgoingVertexA)) ||
-	   ( outgoingVertexF &&  outgoingVertexA)))
+	   ( outgoingVertexF &&  outgoingVertexA))) {
       throw Exception()
 	<< "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
 	<< Exception::runerror;
+    }
   }
   // QED
   else {

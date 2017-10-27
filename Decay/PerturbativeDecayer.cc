@@ -343,6 +343,14 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
 	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
       }
+      else if(cColour==PDT::Colour3bar && aColour==PDT::Colour3bar) {
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
+      }
     }
     // decaying colour anti-triplet 
     else if (bColour==PDT::Colour3bar) {
@@ -366,6 +374,14 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
 	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
       }
+      else if(cColour==PDT::Colour3 && aColour==PDT::Colour3) {
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFc ,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(FFa ,ShowerInteraction::QCD));
+      }
     }
     // decaying colour octet
     else if (bColour==PDT::Colour8){
@@ -383,6 +399,24 @@ bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
       else if (cColour==PDT::Colour0 && aColour==PDT::Colour8){
 	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
 	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+      }
+    }
+    // decaying colour sextet
+    else if(bColour==PDT::Colour6) {
+      if (cColour==PDT::Colour3 && aColour==PDT::Colour3) {
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
+      }
+    }
+    // decaying colour antisextet
+    else if(bColour==PDT::Colour6bar) {
+      if (cColour==PDT::Colour3bar && aColour==PDT::Colour3bar) {
+	dipoles.push_back(DipoleType(IFba,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFbc,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFa,ShowerInteraction::QCD));
+	dipoles.push_back(DipoleType(IFc,ShowerInteraction::QCD));
       }
     }
   }
@@ -711,6 +745,8 @@ double colourCharge(PDT::Colour icol) {
     return 4./3.;
   case PDT::Colour8:
     return 3.;
+  case PDT::Colour6 : case PDT::Colour6bar :
+    return 10./3.;
   default :
     assert(false);
   }
@@ -744,7 +780,6 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   for(unsigned int ix=0;ix<real->outgoing().size();++ix) {
     branchingPart.push_back(real->outgoing()[ix]);
   }
-
   vector<unsigned int> sing,trip,atrip,oct,sex,asex;
   for (size_t ib=0;ib<branchingPart.size()-1;++ib) {
     if     (branchingPart[ib]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(ib);
@@ -783,7 +818,7 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
       assert(real->interaction()==ShowerInteraction::QED);
   }
   // decaying colour triplet
-  else if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour3 ){
+  else if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour3 ) {
     // 3 -> 3 0
     if (trip.size()==2 && sing.size()==1) {
       if(real->interaction()==ShowerInteraction::QCD) {
@@ -817,8 +852,22 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
     }
     // 3  -> 3bar 3bar
     else if(trip.size() ==1 && atrip.size()==2) {
-      if(real->interaction()==ShowerInteraction::QCD)
-	assert(false);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	if(real->emitter()==atrip[0]) {
+	  branchingPart[3]->colourConnect(branchingPart[atrip[0]],true);
+	  tColinePtr col[3] = {ColourLine::create(branchingPart[ trip[0]],false),
+			       ColourLine::create(branchingPart[       3],true ),
+			       ColourLine::create(branchingPart[atrip[1]],true)};
+	  col[0]->setSinkNeighbours(col[1],col[2]);
+	}
+	else {
+	  branchingPart[3]->colourConnect(branchingPart[atrip[1]],true);
+	  tColinePtr col[3] = {ColourLine::create(branchingPart[ trip[0]],false),
+			       ColourLine::create(branchingPart[atrip[0]],true ),
+			       ColourLine::create(branchingPart[       3],true)};
+	  col[0]->setSinkNeighbours(col[1],col[2]);
+	}
+      }
       else {
 	tColinePtr col[3] = {ColourLine::create(branchingPart[ trip[0]],false),
 			     ColourLine::create(branchingPart[atrip[0]],true ),
@@ -864,10 +913,24 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
 	branchingPart[oct[0]]-> colourConnect(branchingPart[atrip[1]],true);
       }
     }
-    // 3bar  -> bar bar
+    // 3bar  -> 3 3 
     else if(atrip.size() ==1 && trip.size()==2) {
-      if(real->interaction()==ShowerInteraction::QCD)
-	assert(false);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	if(real->emitter()==trip[0]) {
+	  branchingPart[3]->colourConnect(branchingPart[trip[0]],false);
+	  tColinePtr col[3] = {ColourLine::create(branchingPart[atrip[0]],true ),
+			       ColourLine::create(branchingPart[       3],false),
+			       ColourLine::create(branchingPart[ trip[1]],false)};
+	  col[0]->setSourceNeighbours(col[1],col[2]);
+	}
+	else {
+	  branchingPart[3]->colourConnect(branchingPart[trip[1]],false);
+	  tColinePtr col[3] = {ColourLine::create(branchingPart[atrip[0]],true ),
+			       ColourLine::create(branchingPart[ trip[0]],false),
+			       ColourLine::create(branchingPart[       3],false)};
+	  col[0]->setSourceNeighbours(col[1],col[2]);
+	}
+      }
       else {
 	tColinePtr col[3] = {ColourLine::create(branchingPart[atrip[0]],true ),
 			     ColourLine::create(branchingPart[ trip[0]],false),
@@ -920,14 +983,38 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   // sextet
   else if(branchingPart[0]->dataPtr()->iColour() == PDT::Colour6) {
     if(trip.size()==2) {
-      assert(real->interaction()==ShowerInteraction::QED);
-      Ptr<MultiColour>::pointer parentColour = 
-      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
-      	(branchingPart[0]->colourInfo());
-      for(unsigned int ix=0;ix<2;++ix) {
-	ColinePtr cline = new_ptr(ColourLine());
-	parentColour->colourLine(cline);
-	cline->addColoured(branchingPart[trip[ix]]);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	Ptr<MultiColour>::pointer parentColour = 
+	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+	  (branchingPart[0]->colourInfo());
+	if(trip[0]==real->emitter()) {
+	  ColinePtr cline = new_ptr(ColourLine());
+	  parentColour->colourLine(cline);
+	  cline->addColoured(branchingPart[3]);
+	  branchingPart[3]       -> colourConnect(branchingPart[trip[0]]);
+	  cline = new_ptr(ColourLine());
+	  parentColour->colourLine(cline);
+	  cline->addColoured(branchingPart[trip[1]]);
+	}
+	else {
+	  ColinePtr cline = new_ptr(ColourLine());
+	  parentColour->colourLine(cline);
+	  cline->addColoured(branchingPart[3]);
+	  branchingPart[3]       -> colourConnect(branchingPart[trip[1]]);
+	  cline = new_ptr(ColourLine());
+	  parentColour->colourLine(cline);
+	  cline->addColoured(branchingPart[trip[0]]);
+	}
+      }
+      else {
+	Ptr<MultiColour>::pointer parentColour = 
+	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+	  (branchingPart[0]->colourInfo());
+	for(unsigned int ix=0;ix<2;++ix) {
+	  ColinePtr cline = new_ptr(ColourLine());
+	  parentColour->colourLine(cline);
+	  cline->addColoured(branchingPart[trip[ix]]);
+	}
       }
     }
     else
@@ -936,14 +1023,38 @@ void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   // antisextet
   else if(branchingPart[0]->dataPtr()->iColour() == PDT::Colour6bar) {
     if(atrip.size()==2) {
-      assert(real->interaction()==ShowerInteraction::QED);
-      Ptr<MultiColour>::pointer parentColour = 
-      	dynamic_ptr_cast<Ptr<MultiColour>::pointer>
-      	(branchingPart[0]->colourInfo());
-      for(unsigned int ix=0;ix<2;++ix) {
-	ColinePtr cline = new_ptr(ColourLine());
-	parentColour->antiColourLine(cline);
-	cline->addColoured(branchingPart[atrip[ix]],true);
+      if(real->interaction()==ShowerInteraction::QCD) {
+	Ptr<MultiColour>::pointer parentColour = 
+	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+	  (branchingPart[0]->colourInfo());
+	if(atrip[0]==real->emitter()) {
+	  ColinePtr cline = new_ptr(ColourLine());
+	  parentColour->antiColourLine(cline);
+	  cline->addAntiColoured(branchingPart[3]);
+	  branchingPart[3]->antiColourConnect(branchingPart[atrip[0]]);
+	  cline = new_ptr(ColourLine());
+	  parentColour->antiColourLine(cline);
+	  cline->addAntiColoured(branchingPart[atrip[1]]);
+	}
+	else {
+	  ColinePtr cline = new_ptr(ColourLine());
+	  parentColour->antiColourLine(cline);
+	  cline->addAntiColoured(branchingPart[3]);
+	  branchingPart[3]->antiColourConnect(branchingPart[atrip[1]]);
+	  cline = new_ptr(ColourLine());
+	  parentColour->antiColourLine(cline);
+	  cline->addAntiColoured(branchingPart[trip[0]]);
+	}
+      }
+      else {
+	Ptr<MultiColour>::pointer parentColour = 
+	  dynamic_ptr_cast<Ptr<MultiColour>::pointer>
+	  (branchingPart[0]->colourInfo());
+	for(unsigned int ix=0;ix<2;++ix) {
+	  ColinePtr cline = new_ptr(ColourLine());
+	  parentColour->antiColourLine(cline);
+	  cline->addColoured(branchingPart[atrip[ix]],true);
+	}
       }
     }
     else

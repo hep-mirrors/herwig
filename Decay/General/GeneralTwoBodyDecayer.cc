@@ -572,6 +572,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*2.));
     }
+    else if(atrip.size()==2 && oct.size()==1) {
+      nflow = 2;
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
+      colour_[0][0] =  8./3.*symFactor; colour_[0][1] =-4./3.*symFactor;
+      colour_[1][0] = -4./3.*symFactor; colour_[1][1] = 8./3.*symFactor;
+    }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour triplet particle in "
@@ -602,6 +609,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     else if(trip.size()==2 && sing.size()==1) {
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor*2.));
+    }
+    else if(trip.size()==2 && oct.size()==1) {
+      nflow = 2;
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
+      colour_[0][0] =  8./3.*symFactor; colour_[0][1] =-4./3.*symFactor;
+      colour_[1][0] = -4./3.*symFactor; colour_[1][1] = 8./3.*symFactor;
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -646,6 +660,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor));
     }
+    else if(trip.size()==2 && oct.size()==1) {
+      nflow = 2;
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
+      colour_[0][0] =  4./3.*symFactor; colour_[0][1] = 1./3.*symFactor;
+      colour_[1][0] =  1./3.*symFactor; colour_[1][1] = 4./3.*symFactor;
+    }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for a decaying colour sextet particle in "
@@ -661,6 +682,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     if(atrip.size()==2 && sing.size()==1) {
       nflow = 1;
       colour_ = vector<DVector>(1,DVector(1,symFactor));
+    }
+    else if(atrip.size()==2 && oct.size()==1) {
+      nflow = 2;
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
+      colour_[0][0] =  4./3.*symFactor; colour_[0][1] = 1./3.*symFactor;
+      colour_[1][0] =  1./3.*symFactor; colour_[1][1] = 4./3.*symFactor;
     }
     else
       throw Exception() << "Unknown colour for the outgoing particles"
@@ -686,12 +714,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 const GeneralTwoBodyDecayer::CFlow & 
 GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
 				   const ParticleVector & decay) {
-
   // static initialization of commonly used colour structures
   static const CFlow init = CFlow(3, CFlowPairVec(1, make_pair(0, 1.)));
   static CFlow tripflow = init;
   static CFlow atripflow = init;
   static CFlow octflow = init;
+  static CFlow sexflow = init;
+  static CFlow epsflow = init;
   static const CFlow fpflow = CFlow(4, CFlowPairVec(1, make_pair(0, 1.)));
 
   static bool initialized = false;
@@ -712,28 +741,35 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
     octflow[0][1] = make_pair(1, 1.);
     octflow[2][0] = make_pair(1, 1.);
 
+    sexflow[0].resize(2, make_pair(0,1.));
+    sexflow[0][1] = make_pair(1,1.);
+    sexflow[2][0] = make_pair(1,1.);
+
+    epsflow[0].resize(2, make_pair(0,-1.));
+    epsflow[0][0] = make_pair(0,-1.);
+    epsflow[0][1] = make_pair(1,-1.);
+    epsflow[2][0] = make_pair(1,1.);
     initialized = true;
   }
   
 
   // main function body
-  int sing=0,trip=0,atrip=0,oct=0;
+  int sing=0,trip=0,atrip=0,oct=0,sex=0,asex=0;
   for (size_t it=0; it<decay.size(); ++it) {
     switch ( decay[it]->dataPtr()->iColour() ) {
-        case PDT::Colour0:     ++sing; break;
-        case PDT::Colour3:     ++trip; break;
-        case PDT::Colour3bar: ++atrip; break;
-        case PDT::Colour8:      ++oct; break;
-        /// @todo: handle these better
-        case PDT::ColourUndefined:     break;
-        case PDT::Coloured:            break;
-        case PDT::Colour6:             break;
-        case PDT::Colour6bar:          break;
+    case PDT::Colour0:     ++sing; break;
+    case PDT::Colour3:     ++trip; break;
+    case PDT::Colour3bar: ++atrip; break;
+    case PDT::Colour8:      ++oct; break;
+    case PDT::Colour6:      ++sex; break;
+    case PDT::Colour6bar:  ++asex; break;
+      /// @todo: handle these better
+    case PDT::ColourUndefined:     break;
+    case PDT::Coloured:            break;
     }
   }
 
   const CFlow * retval = 0;
-  bool inconsistent4PV = true;
   // decaying colour triplet
   if(inpart.dataPtr()->iColour() == PDT::Colour3 &&
      trip==1 && oct==2) {
@@ -748,9 +784,28 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
   else if(inpart.dataPtr()->iColour() == PDT::Colour8 &&
           oct==1 && trip==1 && atrip==1) {
     retval = &octflow;
-  }  
+  }
+  // decaying colour sextet
+  else if(inpart.dataPtr()->iColour() ==PDT::Colour6 &&
+	  oct==1 && trip==2) {
+    retval = &sexflow;
+  }
+  // decaying anti colour sextet
+  else if(inpart.dataPtr()->iColour() ==PDT::Colour6bar &&
+	  oct==1 && atrip==2) {
+    retval = &sexflow;
+  }
+  // decaying colour triplet (eps)
+  else if(inpart.dataPtr()->iColour() == PDT::Colour3 &&
+     atrip==2 && oct==1) {
+    retval = &epsflow;
+  }
+  // decaying colour anti-triplet (eps)
+  else if(inpart.dataPtr()->iColour() == PDT::Colour3bar &&
+	  trip==2 && oct==1){
+    retval = &epsflow;
+  }
   else {
-    inconsistent4PV = false;
     retval = &fpflow;  
   }
 
