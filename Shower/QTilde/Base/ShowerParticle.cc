@@ -87,7 +87,8 @@ LorentzRotation boostToShower(Lorentz5Momentum & porig, tShowerBasisPtr basis) {
 RhoDMatrix bosonMapping(ShowerParticle & particle,
 			const Lorentz5Momentum & porig,
 			VectorSpinPtr vspin,
-			const LorentzRotation & rot) {
+			const LorentzRotation & rot,
+			Helicity::Direction dir) {
   // rotate the original basis
   vector<LorentzPolarizationVector> sbasis;
   for(unsigned int ix=0;ix<3;++ix) {
@@ -97,7 +98,7 @@ RhoDMatrix bosonMapping(ShowerParticle & particle,
   // splitting basis
   vector<LorentzPolarizationVector> fbasis;
   bool massless(particle.id()==ParticleID::g||particle.id()==ParticleID::gamma);
-  VectorWaveFunction wave(porig,particle.dataPtr(),incoming);
+  VectorWaveFunction wave(porig,particle.dataPtr(),dir==outgoing ? incoming : outgoing);
   for(unsigned int ix=0;ix<3;++ix) {
     if(massless&&ix==1) {
       fbasis.push_back(LorentzPolarizationVector());
@@ -111,9 +112,10 @@ RhoDMatrix bosonMapping(ShowerParticle & particle,
   RhoDMatrix mapping=RhoDMatrix(PDT::Spin1,false);
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      mapping(ix,iy)= -sbasis[iy].conjugate().dot(fbasis[ix]);
-      if(particle.id()<0)
-	mapping(ix,iy)=conj(mapping(ix,iy));
+      mapping(ix,iy)= -conj(sbasis[ix].dot(fbasis[iy]));
+      if((particle.id()<0 && dir==outgoing) ||
+      	 (particle.id()>0 && dir==incoming) )
+      	mapping(ix,iy)=conj(mapping(ix,iy));
     }
   }
   return mapping;
@@ -306,7 +308,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
       // spin info exists get information from it
       if(vspin) {
 	output=vspin;
-	mapping = bosonMapping(*this,porig,vspin,rot);
+	mapping = bosonMapping(*this,porig,vspin,rot,outgoing);
 	return true; 
       }
       else {
@@ -354,7 +356,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
       // spinInfo exists map it
       if(vspin) {
 	output=vspin;
-	mapping = bosonMapping(*this,porig,vspin,rot);
+	mapping = bosonMapping(*this,porig,vspin,rot,incoming);
 	return true;
       }
       // create the spininfo
