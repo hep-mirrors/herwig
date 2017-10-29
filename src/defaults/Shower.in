@@ -178,6 +178,7 @@ newdef GtoGGSudakov:PDFmax 2.0
 
 cp SudakovCommon WtoWGammaSudakov
 newdef WtoWGammaSudakov:SplittingFunction WtoWGammaSplitFn
+set WtoWGammaSudakov:Alpha AlphaQED
 
 cp SudakovCommon GtoQQbarSudakov
 newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
