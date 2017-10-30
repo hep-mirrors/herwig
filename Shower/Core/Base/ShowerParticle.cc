@@ -113,9 +113,7 @@ RhoDMatrix bosonMapping(ShowerParticle & particle,
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
       mapping(ix,iy)= -conj(sbasis[ix].dot(fbasis[iy]));
-      if((particle.id()<0 && dir==outgoing) ||
-      	 (particle.id()>0 && dir==incoming) )
-      	mapping(ix,iy)=conj(mapping(ix,iy));
+      if(particle.id()<0) mapping(ix,iy)=conj(mapping(ix,iy));
     }
   }
   return mapping;
