@@ -1,6 +1,27 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+
+* Herwig 7.1.2 release: 2017-11-01
+
+** Inputfile changes due to new read mode in ThePEG.
+   ThePEG remains in current repo dir when reading input-file/snippet. 
+
+** Fix for shower scale variations in qtilde shower. 
+
+** All standard input files now use the tuned intrinsic pt.
+
+** Remove obsolete input files for various tunes.
+
+** Fix for Madgraph interface for NLO corrections with recent version.
+
+** Run file size reduction for processes using madgraph/openloops.
+
+** Fix in jacobian for massive dipole kinematics.
+
+** General improvements for UFO model handling.
+
+
 * Herwig 7.1.1 release: 2017-07-14
 
 ** Snippets are now all installed
