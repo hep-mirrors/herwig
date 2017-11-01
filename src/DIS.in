@@ -47,7 +47,6 @@ insert SubProcess:MatrixElements[0] MEDISCC
 ###################################################
 #cd /Herwig/Shower
 #set ShowerHandler:HardEmission POWHEG
-#read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 ###################################################
 ## NLO Matrix Elements for lepton-hadron collisions 
 ## in the POWHEG approach

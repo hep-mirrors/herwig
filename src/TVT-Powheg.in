@@ -34,7 +34,6 @@ set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 ##################################################
 cd /Herwig/Shower
 set ShowerHandler:HardEmission POWHEG
-read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################
 # Tevatron physics parameters (override defaults) 

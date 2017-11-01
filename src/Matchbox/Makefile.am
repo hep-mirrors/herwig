@@ -46,8 +46,6 @@ OnShellTopProduction.in \
 OnShellWProduction.in \
 OnShellZProduction.in \
 OpenLoops-OpenLoops.in \
-Powheg-Default-HardAlphaSTune.in \
-Powheg-Default-ShowerAlphaSTune.in \
 Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \
 Powheg.in \
