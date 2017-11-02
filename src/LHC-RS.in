@@ -53,15 +53,6 @@ set RS/Model:Lambda_pi 10000*GeV
 #read snippets/HepMC.in
 #set /Herwig/Analysis/HepMC:PrintEvent NNN
 
-##################################################
-## prepare for Rivet analysis or HepMC output
-## when running at fixed order (NO shower)
-##################################################
-#read snippets/RivetFixedOrder.in
-#insert /Herwig/Analysis/RivetFixedOrder:Analyses 0 XXX_2015_ABC123
-#read snippets/HepMCFixedOrder.in
-#set /Herwig/Analysis/HepMCFixedOrder:PrintEvent NNN
-
 # Other parameters for run
 cd /Herwig/Generators
 saverun LHC-RS EventGenerator

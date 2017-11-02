@@ -4,6 +4,8 @@ Herwig News							 -*- outline -*-
 
 * Herwig 7.1.2 release: 2017-11-01
 
+** Reduction of the default pt cut for QED radiation off leptons.
+
 ** Inputfile changes due to new read mode in ThePEG.
    ThePEG remains in current repo dir when reading input-file/snippet. 
 
