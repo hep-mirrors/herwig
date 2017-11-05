@@ -27,11 +27,8 @@ MadGraph-NJet.in \
 MadGraph-OpenLoops.in \
 MCatLO-DefaultShower.in \
 MCatLO-DipoleShower.in \
-MCatNLO-Default-HardAlphaSTune.in \
-MCatNLO-Default-ShowerAlphaSTune.in \
 MCatNLO-DefaultShower.in \
 MCatNLO-Dipole-HardAlphaSTune.in \
-MCatNLO-Dipole-ShowerAlphaSTune.in \
 MCatNLO-DipoleShower.in \
 MMHT2014.in \
 MuDown.in \
@@ -46,8 +43,6 @@ OnShellTopProduction.in \
 OnShellWProduction.in \
 OnShellZProduction.in \
 OpenLoops-OpenLoops.in \
-Powheg-Default-HardAlphaSTune.in \
-Powheg-Default-ShowerAlphaSTune.in \
 Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \
 Powheg.in \

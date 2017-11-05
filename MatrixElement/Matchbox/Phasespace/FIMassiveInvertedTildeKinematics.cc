@@ -87,9 +87,9 @@ bool FIMassiveInvertedTildeKinematics::doMap(const double * r) {
   double mu2  = x*m2/scale;
   double Mui2 = x*Mi2/scale;
   double xp = 1. + Mui2 - sqr(sqrt(mui2)+sqrt(mu2));
-  double zm = .5*( 1.-x+Mui2+mui2-mui2 -
+  double zm = .5*( 1.-x+Mui2+mui2-mu2 -
   		   sqrt( sqr(1.-x+Mui2-mui2-mu2)-4.*mui2*mu2 ) ) / (1.-x+Mui2);
-  double zp = .5*( 1.-x+Mui2+mui2-mui2 +
+  double zp = .5*( 1.-x+Mui2+mui2-mu2 +
   		   sqrt( sqr(1.-x+Mui2-mui2-mu2)-4.*mui2*mu2 ) ) / (1.-x+Mui2);
 
   if ( x > xp || z < zm || z > zp ) {

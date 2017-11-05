@@ -46,7 +46,7 @@ endif
 HwMatchboxOpenLoops_la_SOURCES = \
 OpenLoops/OpenLoopsAmplitude.cc
 
-HwMatchboxOpenLoops_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:0:0
+HwMatchboxOpenLoops_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:1:0
 
 HwMatchboxOpenLoops_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DOPENLOOPSLIBS="\"$(OPENLOOPSLIBS)\"" \
@@ -76,7 +76,7 @@ if HAVE_MADGRAPH
 pkglib_LTLIBRARIES += HwMatchboxMadGraph.la
 endif
 
-HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
+HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:1:0
 
 HwMatchboxMadGraph_la_SOURCES = \
 MadGraph/MadGraphAmplitude.cc

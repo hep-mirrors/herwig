@@ -19,10 +19,6 @@ cd /Herwig/MatrixElements/Matchbox
 
 set Factory:ShowerApproximation QTildeMatching
 
-# tunes
-# As of release 7.1 we are using the default tune
-#read Matchbox/MCatNLO-Default-HardAlphaSTune.in
-
 cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so
