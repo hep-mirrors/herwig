@@ -906,26 +906,31 @@ void MatchboxAmplitude::Init() {
      "The number of points after which helicity combinations are cleaned up.",
      &MatchboxAmplitude::theCleanupAfter, 20, 1, 0,
      false, false, Interface::lowerlim);
+  interfaceCleanupAfter.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceReshuffle
     ("Reshuffle",
      "Reshuffle the mass for the given PDG id to a different mass shell for amplitude evaluation.",
      &MatchboxAmplitude::doReshuffle, false);
+    interfaceReshuffle.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceMassless
     ("Massless",
      "Reshuffle the mass for the given PDG id to be massless for amplitude evaluation.",
      &MatchboxAmplitude::doMassless, false);
+    interfaceMassless.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceOnShell
     ("OnShell",
      "Reshuffle the mass for the given PDG id to be the on-shell mass for amplitude evaluation.",
      &MatchboxAmplitude::doOnShell, false);
+    interfaceOnShell.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceClearReshuffling
     ("ClearReshuffling",
      "Do not perform any reshuffling.",
      &MatchboxAmplitude::doClearReshuffling, false);
+    interfaceClearReshuffling.rank(-1);
 
   static Switch<MatchboxAmplitude,bool> interfaceTrivialColourLegs
     ("TrivialColourLegs",

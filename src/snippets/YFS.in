@@ -1,0 +1,18 @@
+
+# By default the QED radiation is now handled in the by interleaving 
+# QCD and QED radiation in the showering process.
+
+# If the old YFS formalism is required we have to insert the QEDRadiationHandler
+
+cd /Herwig/EventHandlers
+insert EventHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
+
+
+# And to prevent double-counting we also need to remove emissions from leptons.
+# Note that YFS here only adds photon radiation if the decaying particle is a W/Z boson.
+
+cd /Herwig/Shower/
+do SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; LtoLGammaSudakov
+do SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; LtoLGammaSudakov
+do SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; LtoLGammaSudakov
+

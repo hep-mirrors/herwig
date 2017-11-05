@@ -49,9 +49,9 @@ insert SubProcess:MatrixElements[0] MEqq2gZ2ff
 # Wgamma/Zgamma
 # insert SubProcess:MatrixElements[0] MEPP2VGamma
 #
-# add QED radiation off W/Z decay products using YFS formalism
-# cd /Herwig/EventHandlers
-# insert EventHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
+# Use old YFS formalism to add QED radiation off W/Z decay products.
+# Note: By default QED radiation is already included.
+# read snippets/YFS.in
 
 #
 #  QCD and gamma processes
@@ -135,15 +135,6 @@ cd /Herwig/Generators
 #insert /Herwig/Analysis/Rivet:Analyses 0 XXX_2015_ABC123
 #read snippets/HepMC.in
 #set /Herwig/Analysis/HepMC:PrintEvent NNN
-
-##################################################
-## prepare for Rivet analysis or HepMC output
-## when running at fixed order (NO shower)
-##################################################
-#read snippets/RivetFixedOrder.in
-#insert /Herwig/Analysis/RivetFixedOrder:Analyses 0 XXX_2015_ABC123
-#read snippets/HepMCFixedOrder.in
-#set /Herwig/Analysis/HepMCFixedOrder:PrintEvent NNN
 
 ##################################################
 # Save run for later usage with 'Herwig run'

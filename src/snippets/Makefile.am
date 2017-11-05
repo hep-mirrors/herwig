@@ -23,8 +23,10 @@ PPCollider.in \
 RivetFixedOrder.in \
 Rivet.in \
 SoftModel.in \
+SoftTune.in \
 CMWinQtiledShower.in \
-SoftTune.in
+YFS.in
+
 
 dist_snippets_DATA = $(INPUTFILES)
 

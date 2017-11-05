@@ -780,15 +780,52 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theOrderInGs << theOrderInGem << BornAmplitudes << VirtAmplitudes
-     << colourindex<<crossing << theProcessPath << theMGmodel << bindir_
+  os << theOrderInGs << theOrderInGem
+     << colourindex<<crossing;
+  
+    //Static variables need to be written only once.
+  os << theProcessPath << theMGmodel << bindir_
      << pkgdatadir_ << madgraphPrefix_;
+  theProcessPath.clear();
+  theMGmodel.clear();
+  bindir_.clear();
+  pkgdatadir_.clear();
+  madgraphPrefix_.clear();
+  
+  os << BornAmplitudes.size();
+  os << VirtAmplitudes.size();
+  for (auto amp : BornAmplitudes) os<<amp;
+  for (auto amp : VirtAmplitudes) os<<amp;
+  
+  BornAmplitudes.clear();
+  VirtAmplitudes.clear();
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theOrderInGs >> theOrderInGem >> BornAmplitudes >> VirtAmplitudes
-     >> colourindex>>crossing >> theProcessPath >> theMGmodel >> bindir_
-     >> pkgdatadir_ >> madgraphPrefix_;
+  is >> theOrderInGs >> theOrderInGem
+  >> colourindex>>crossing;
+  
+  string input=""; is>>input; if (!input.empty())theProcessPath=input;
+  input=""; is>>input; if (!input.empty())theMGmodel=input;
+  input=""; is>>input; if (!input.empty())bindir_=input;
+  input=""; is>>input; if (!input.empty())pkgdatadir_=input;
+  input=""; is>>input; if (!input.empty())madgraphPrefix_=input;
+  
+  int bs,vs;
+  is >> bs;
+  is >> vs;
+  string amp="";
+  for (int i=0;i<bs;i++){
+    is>>amp;
+    BornAmplitudes.push_back(amp);
+    amp="";
+  }
+  for (int i=0;i<vs;i++){
+    is>>amp;
+    VirtAmplitudes.push_back(amp);
+    amp="";
+  }
+  
 }
 
 

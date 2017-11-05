@@ -218,8 +218,8 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   }
 
   root = sqrt(root);
-  double zm2 = .5*( 1.-x+muij2CS+mui2CS-mui2CS - root ) / (1.-x+muij2CS);
-  double zp2 = .5*( 1.-x+muij2CS+mui2CS-mui2CS + root ) / (1.-x+muij2CS);
+  double zm2 = .5*( 1.-x+muij2CS+mui2CS-muj2CS - root ) / (1.-x+muij2CS);
+  double zp2 = .5*( 1.-x+muij2CS+mui2CS-muj2CS + root ) / (1.-x+muij2CS);
 
   if ( z > zp2 || z < zm2 ) {
     jacobian(0.0);

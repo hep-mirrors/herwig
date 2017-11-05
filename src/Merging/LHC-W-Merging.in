@@ -167,13 +167,16 @@ read Matchbox/MMHT2014.in
 ##################################################
 
 cd /Herwig/Analysis
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+## Write HepMC events. Modify the PrintEvent interface for your needs.
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMCFile
 
+## Setup the Rivet analysis:
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2017_ABC123
 
-# Here we collected a various Rivet analysis for Ws at LHC
-# at the 7 TeV. (The collection might not be complete.)
-read Merging/LHC7-W-Analysis.in
+## Here we collected a various Rivet analysis for Ws at LHC
+## at the 7 TeV. (The collection might not be complete.)
+# read Merging/LHC7-W-Analysis.in
 
 
 ##################################################

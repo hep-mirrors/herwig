@@ -125,13 +125,17 @@ read Merging/FactorCMWScheme.in
 ##################################################
 
 cd /Herwig/Analysis
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+## Write HepMC events. Modify the PrintEvent interface for your needs.
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMCFile
 
+## Setup the Rivet analysis:
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2017_ABC123
 
-# Here we collected a various Rivet analysis for LEP
-# at the Z Mass. (The collection might not be complete.)
-read Merging/LEP91-Analysis.in
+## Here we collected a various Rivet analysis for LEP
+## at the Z Mass. (The collection might not be complete.)
+
+# read Merging/LEP91-Analysis.in
 
 
 ##################################################

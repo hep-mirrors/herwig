@@ -171,6 +171,8 @@ set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
 
 cp QtoQGammaSudakov LtoLGammaSudakov
+# Technical parameter to stop evolution.
+set LtoLGammaSudakov:pTmin 0.000001
 
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
