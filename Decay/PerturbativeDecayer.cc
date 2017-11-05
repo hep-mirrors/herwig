@@ -576,44 +576,26 @@ vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter
 
 bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 					double& xg, double& xs, double& xe, double& xe_z,
-					vector<Lorentz5Momentum>& particleMomenta){
-
+					vector<Lorentz5Momentum>& particleMomenta) {
   // calculate xg
   xg = 2.*pT*cosh(y) / mb_;
   if (xg>(1. - sqr(e_ + s_)) || xg<0.) return false;
-
-  // calculate the two values of xs
+  // calculate the two values of zs
   double xT  = 2.*pT / mb_;
-  double A   = 4.-4.*xg+sqr(xT);
-  double B   = 4.*(3.*xg-2.+2.*e2_-2.*s2_-sqr(xg)-xg*e2_+xg*s2_);
-  double L   = 1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_;
-  double det = 16.*( -L*sqr(xT)+pow(xT,4)*s2_+2.*xg*sqr(xT)*(1.-s2_-e2_)+ 
-		      L*sqr(xg)-sqr(xg*xT)*(1.+s2_)+pow(xg,4)+ 
-		      2.*pow(xg,3)*(-1.+s2_+e2_) );
-
+  double zg = 2.*pT*sinh(y) / mb_;
+  double A = (sqr(xT) - 4. * xg + 4.);
+  double B = 2. * zg * (s2_ - e2_ - xg + 1.);
+  double det = -4. * (-sqr(s2_) + (2. * e2_ + sqr(xT) - 2. * xg + 2.) * s2_ - sqr(e2_ + xg - 1.)) * sqr(xg - 2.);
   if (det<0.) return false;
-  if (j==0) xs = (-B+sqrt(det))/(2.*A);
-  if (j==1) xs = (-B-sqrt(det))/(2.*A);
+  double zs= j==0 ? (-B+sqrt(det))/A : (-B-sqrt(det))/A;
+  xs = sqrt(sqr(zs)+4.*s2_);
   // check value of xs is physical
   if (xs>(1.+s2_-e2_) || xs<2.*s_) return false;
-
   // calculate xe
   xe = 2.-xs-xg;     
   // check value of xe is physical
   if (xe>(1.+e2_-s2_) || xe<2.*e_) return false;       
-
-  // calculate xe_z
-  double root1 = sqrt(max(0.,sqr(xs)-4.*s2_)), root2 = sqrt(max(0.,sqr(xe)-4.*e2_-sqr(xT)));
-  double epsilon_p =  -root1+xT*sinh(y)+root2;
-  double epsilon_m =  -root1+xT*sinh(y)-root2;
-  // find direction of emitter
-  if      (fabs(epsilon_p) < 1.e-10) xe_z =  sqrt(sqr(xe)-4.*e2_-sqr(xT));
-  else if (fabs(epsilon_m) < 1.e-10) xe_z = -sqrt(sqr(xe)-4.*e2_-sqr(xT));
-  else return false;
-
-  // check the emitter is on shell
-  if (fabs((sqr(xe)-sqr(xT)-sqr(xe_z)-4.*e2_))>1.e-10) return false;
-
+  xe_z = -zg-zs;
   // calculate 4 momenta
   particleMomenta[0].setE   ( mb_);
   particleMomenta[0].setX   ( ZERO);
@@ -630,7 +612,7 @@ bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   particleMomenta[2].setE   ( mb_*xs/2.);
   particleMomenta[2].setX   ( ZERO);
   particleMomenta[2].setY   ( ZERO);
-  particleMomenta[2].setZ   (-mb_*sqrt(sqr(xs)-4.*s2_)/2.);
+  particleMomenta[2].setZ   ( mb_*zs/2.);
   particleMomenta[2].setMass( mb_*s_);
 
   particleMomenta[3].setE   ( pT*cosh(y));
