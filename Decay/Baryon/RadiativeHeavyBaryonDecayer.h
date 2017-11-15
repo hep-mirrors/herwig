@@ -161,12 +161,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<RadiativeHeavyBaryonDecayer> initRadiativeHeavyBaryonDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -209,37 +203,6 @@ private:
    */
   unsigned int _initsize;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of RadiativeHeavyBaryonDecayer. */
-template <>
- struct BaseClassTrait<Herwig::RadiativeHeavyBaryonDecayer,1> {
-  /** Typedef of the first base class of RadiativeHeavyBaryonDecayer. */
-   typedef Herwig::Baryon1MesonDecayerBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the RadiativeHeavyBaryonDecayer class and the shared object where it is defined. */
-template <>
- struct ClassTraits<Herwig::RadiativeHeavyBaryonDecayer>
-  : public ClassTraitsBase<Herwig::RadiativeHeavyBaryonDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::RadiativeHeavyBaryonDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the RadiativeHeavyBaryonDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwBaryonDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

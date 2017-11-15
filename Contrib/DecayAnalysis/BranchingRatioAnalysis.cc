@@ -5,6 +5,7 @@
 //
 
 #include "BranchingRatioAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -63,9 +64,10 @@ void BranchingRatioAnalysis::persistentInput(PersistentIStream & is, int) {
   is >> _particle;
 }
 
-ClassDescription<BranchingRatioAnalysis> 
-BranchingRatioAnalysis::initBranchingRatioAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BranchingRatioAnalysis,AnalysisHandler>
+describeHerwigBranchingRatioAnalysis("Herwig::BranchingRatioAnalysis", "HwDecayAnalysis.so");
 
 void BranchingRatioAnalysis::Init() {
 

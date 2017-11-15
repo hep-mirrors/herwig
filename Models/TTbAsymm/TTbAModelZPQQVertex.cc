@@ -12,6 +12,7 @@
 //
 
 #include "TTbAModelZPQQVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -62,9 +63,10 @@ void TTbAModelZPQQVertex::persistentInput(PersistentIStream & is, int) {
   is >> _cZPTU_R >> _cZPTU_L >> _cZPUU_R >> _cZPUU_L >> _cZPCC_R >> _cZPCC_L >> _models;
 }
 
-ClassDescription<TTbAModelZPQQVertex> 
-TTbAModelZPQQVertex::initTTbAModelZPQQVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TTbAModelZPQQVertex,FFVVertex>
+describeHerwigTTbAModelZPQQVertex("Herwig::TTbAModelZPQQVertex", "Herwig.so");
 
 
 void TTbAModelZPQQVertex::Init() {

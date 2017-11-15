@@ -2,9 +2,8 @@
 
 ## this snippet is for all order ie WITH shower
 
-cd /Herwig/Analysis
-create ThePEG::HepMCFile HepMC HepMCAnalysis.so
-set HepMC:PrintEvent 10000
-set HepMC:Format GenEvent
-set HepMC:Units GeV_mm
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+create ThePEG::HepMCFile /Herwig/Analysis/HepMC HepMCAnalysis.so
+set /Herwig/Analysis/HepMC:PrintEvent 10000
+set /Herwig/Analysis/HepMC:Format GenEvent
+set /Herwig/Analysis/HepMC:Units GeV_mm
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMC

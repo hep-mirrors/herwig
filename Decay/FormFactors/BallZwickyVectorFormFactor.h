@@ -135,11 +135,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<BallZwickyVectorFormFactor> initBallZwickyVectorFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   BallZwickyVectorFormFactor & operator=(const BallZwickyVectorFormFactor &);
@@ -302,42 +297,6 @@ private:
    */
   Energy2 _cutoff;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * BallZwickyVectorFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::BallZwickyVectorFormFactor,1> {
-  /** Typedef of the base class of BallZwickyVectorFormFactor. */
-   typedef Herwig::ScalarFormFactor NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * BallZwickyVectorFormFactor class.
- */
-template <>
- struct ClassTraits<Herwig::BallZwickyVectorFormFactor>
-  : public ClassTraitsBase<Herwig::BallZwickyVectorFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::BallZwickyVectorFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

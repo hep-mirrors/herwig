@@ -71,53 +71,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<MEee2HiggsVBF> initMEee2HiggsVBF;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   MEee2HiggsVBF & operator=(const MEee2HiggsVBF &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEee2HiggsVBF. */
-template <>
-struct BaseClassTrait<Herwig::MEee2HiggsVBF,1> {
-  /** Typedef of the first base class of MEee2HiggsVBF. */
-  typedef Herwig::MEfftoffH NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEee2HiggsVBF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEee2HiggsVBF>
-  : public ClassTraitsBase<Herwig::MEee2HiggsVBF> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2HiggsVBF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEee2HiggsVBF is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2HiggsVBF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMELepton.so"; }
-};
-
-/** @endcond */
 
 }
 

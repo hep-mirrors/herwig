@@ -6,6 +6,7 @@
 //
 
 #include "TTbAModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -79,8 +80,10 @@ void TTbAModel::persistentInput(PersistentIStream & is, int) {
      >> _modelselect;
 }
 
-ClassDescription<TTbAModel> TTbAModel::initTTbAModel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TTbAModel,BSMModel>
+describeHerwigTTbAModel("Herwig::TTbAModel", "HwTTbAModel.so");
 
 void TTbAModel::Init() {
   

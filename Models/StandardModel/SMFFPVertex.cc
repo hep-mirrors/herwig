@@ -63,7 +63,11 @@ void SMFFPVertex::Init() {
 }
 
 // coupling for FFP vertex
+#ifndef NDEBUG
+void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr bb,tcPDPtr) {
+#else
 void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
+#endif
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -electroMagneticCoupling(q2);
@@ -72,11 +76,14 @@ void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   norm(_couplast);
   // the left and right couplings
   int iferm=abs(aa->id());
-  if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
+  assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
+  assert(aa->id()==-bb->id());
+  if(aa->id()<0) {
     left(_charge[iferm]);
     right(_charge[iferm]);
   }
-  else throw HelicityConsistencyError() << "SMGFFPVertex::setCoupling "
-					<< "Unknown particle in photon vertex" 
-					<< Exception::runerror;
+  else {
+    left(-_charge[iferm]);
+    right(-_charge[iferm]);
+  }
 }

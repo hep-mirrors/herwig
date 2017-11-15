@@ -145,11 +145,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent date/
-   */
-  static ClassDescription<HwDecayHandler> initHwDecayHandler;
-
-  /**
    *  Private and non-existent assignment operator.
    */
   HwDecayHandler & operator=(const HwDecayHandler &);
@@ -172,34 +167,6 @@ private:
   vector<PDPtr> _excludedVector;
 
 };
-}
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * Hw64Decayer.
- */
-template <>
-struct BaseClassTrait<Herwig::HwDecayHandler,1> {
-  /** Typedef of the base class of Hw64Decayer. */
-  typedef DecayHandler NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * Hw64Decayer class.
- */
-template <>
-struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDecayHandler> {
-  /** Return the class name. */
-  static string className() { return "Herwig::HwDecayHandler"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_HwDecayHandler_H */

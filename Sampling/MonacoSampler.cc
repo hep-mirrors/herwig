@@ -27,8 +27,6 @@
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
-#include <boost/progress.hpp>
-
 #include "MonacoSampler.h"
 #include "Herwig/Sampling/GeneralSampler.h"
 

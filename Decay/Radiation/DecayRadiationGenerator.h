@@ -58,45 +58,12 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with no persistent data.
-   */
-  static AbstractNoPIOClassDescription<DecayRadiationGenerator> initDecayRadiationGenerator;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   DecayRadiationGenerator & operator=(const DecayRadiationGenerator &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of DecayRadiationGenerator. */
-template <>
-struct BaseClassTrait<Herwig::DecayRadiationGenerator,1> {
-  /** Typedef of the first base class of DecayRadiationGenerator. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the DecayRadiationGenerator class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::DecayRadiationGenerator>
-  : public ClassTraitsBase<Herwig::DecayRadiationGenerator> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::DecayRadiationGenerator"; }
-};
-
-/** @endcond */
 
 }
 

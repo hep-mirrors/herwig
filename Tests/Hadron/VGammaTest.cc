@@ -5,6 +5,7 @@
 //
 
 #include "VGammaTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -66,8 +67,10 @@ IBPtr VGammaTest::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<VGammaTest> VGammaTest::initVGammaTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VGammaTest,AnalysisHandler>
+describeHerwigVGammaTest("Herwig::VGammaTest", "HadronTest.so");
 
 void VGammaTest::Init() {
 

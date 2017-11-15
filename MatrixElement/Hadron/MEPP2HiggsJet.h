@@ -239,129 +239,6 @@ private:
 private:
 
   /**
-   *  Members to calculate the functions for the loop diagrams
-   */
-  //@{
-  /**
-   *  The \f$W_1(s)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The invariant
-   * @param mf2 The fermion mass squared
-   */
-  Complex W1(Energy2 s,Energy2 mf2) const {
-    double root = sqrt(abs(1.-4.*mf2/s));
-    if(s<ZERO)     return 2.*root*asinh(0.5*sqrt(-s/mf2));
-    else if(s<4.*mf2) return 2.*root*asin(0.5*sqrt( s/mf2));
-    else              return root*(2.*acosh(0.5*sqrt(s/mf2))
-				   -Constants::pi*Complex(0.,1.));
-  }
-
-  /**
-   *  The \f$W_2(s)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The invariant
-   * @param mf2 The fermion mass squared
-   */
-  Complex W2(Energy2 s,Energy2 mf2) const {
-    double root=0.5*sqrt(abs(s)/mf2);
-    if(s<ZERO)     return 4.*sqr(asinh(root));
-    else if(s<4.*mf2) return -4.*sqr(asin(root));
-    else              return 4.*sqr(acosh(root))-sqr(Constants::pi)
-			-4.*Constants::pi*acosh(root)*Complex(0.,1.);
-  }
-
-  /**
-   * The \f$W_3(s,t,u,v)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param v   The \f$u\f$ invariant
-   * @param mf2 The fermion mass squared.
-   */
-  Complex W3(Energy2 s, Energy2 t, Energy2 u, Energy2 v, Energy2 mf2) const {
-    return I3(s,t,u,v,mf2)-I3(s,t,u,s,mf2)-I3(s,t,u,u,mf2);
-  }
-  
-  /**
-   * The \f$I_3(s,t,u,v)\f$ function of NPB297 (1988) 221-243.
-   * @param s The \f$s\f$ invariant
-   * @param t The \f$t\f$ invariant
-   * @param u The \f$u\f$ invariant
-   * @param v The \f$v\f$ invariant
-   * @param mf2 The fermion mass squared
-   */
-  Complex I3(Energy2 s, Energy2 t, Energy2 u, Energy2 v, Energy2 mf2) const {
-    double ratio=(4.*mf2*t/(u*s)),root(sqrt(1+ratio));
-    if(v==ZERO) return 0.;
-    Complex y=0.5*(1.+sqrt(1.-4.*(mf2+_epsi*MeV*MeV)/v));
-    Complex xp=0.5*(1.+root),xm=0.5*(1.-root);
-    Complex output = 
-      Math::Li2(xm/(xm-y))-Math::Li2(xp/(xp-y))+
-      Math::Li2(xm/(y-xp))-Math::Li2(xp/(y-xm))+
-      log(-xm/xp)*log(1.-_epsi-v/mf2*xp*xm);
-    return output*2./root;
-  }
-  
-  /**
-   * The \f$b_2(s,t,u)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param mf2 The fermion mass squared.
-   */
-  Complex b2(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const {
-    Energy2 mh2(s+u+t);
-    complex<Energy2> output=s*(u-s)/(s+u)+2.*u*t*(u+2.*s)/sqr(s+u)*(W1(t,mf2)-W1(mh2,mf2))
-      +(mf2-0.25*s)*(0.5*(W2(s,mf2)+W2(mh2,mf2))-W2(t,mf2)+W3(s,t,u,mh2,mf2))
-      +sqr(s)*(2.*mf2/sqr(s+u)-0.5/(s+u))*(W2(t,mf2)-W2(mh2,mf2))
-      +0.5*u*t/s*(W2(mh2,mf2)-2.*W2(t,mf2))
-      +0.125*(s-12.*mf2-4.*u*t/s)*W3(t,s,u,mh2,mf2);
-    return output*mf2/sqr(mh2);
-  }
-
-  /**
-   * The \f$b_2(s,t,u)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param mf2 The fermion mass squared.
-   */
-  Complex b4(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const {
-    Energy2 mh2(s+t+u);
-    return mf2/mh2*(-2./3.+(mf2/mh2-0.25)*(W2(t,mf2)-W2(mh2,mf2)+W3(s,t,u,mh2,mf2)));
-  }
-
-
-  /**
-   * The \f$A_2(s,t,u)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param mf2 The fermion mass squared.
-   */
-  Complex A2(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const {
-    return b2(s,t,u,mf2)+b2(s,u,t,mf2);
-  }
-
-  /**
-   * The \f$A_4(s,t,u)\f$ function of NPB297 (1988) 221-243.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param mf2 The fermion mass squared.
-   */
-  Complex A4(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const {
-    return b4(s,t,u,mf2)+b4(u,s,t,mf2)+b4(t,u,s,mf2);
-  }
-  //@}
-
-private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEPP2HiggsJet> initMEPP2HiggsJet;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -405,11 +282,6 @@ private:
   unsigned int _massopt;
 
   /**
-   *  Small complex number to regularize some integrals
-   */
-  static const Complex _epsi;
-
-  /**
    *  On-shell mass for the higgs
    */
   Energy _mh;
@@ -449,41 +321,6 @@ private:
    */
   mutable double _diagwgt[3];
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEPP2HiggsJet. */
-template <>
-struct BaseClassTrait<Herwig::MEPP2HiggsJet,1> {
-  /** Typedef of the first base class of MEPP2HiggsJet. */
-  typedef ME2to2Base NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEPP2HiggsJet class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEPP2HiggsJet>
-  : public ClassTraitsBase<Herwig::MEPP2HiggsJet> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2HiggsJet"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEPP2HiggsJet is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2HiggsJet depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEHadron.so"; }
-};
-
-/** @endcond */
 
 }
 

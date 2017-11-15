@@ -12,6 +12,7 @@
 //
 
 #include "MEee2VectorMeson.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -84,8 +85,10 @@ void MEee2VectorMeson::persistentInput(PersistentIStream & is, int) {
   is >> _coupling >> _vector >> _massgen >> _lineshape;
 }
 
-ClassDescription<MEee2VectorMeson> MEee2VectorMeson::initMEee2VectorMeson;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEee2VectorMeson,MEBase>
+describeHerwigMEee2VectorMeson("Herwig::MEee2VectorMeson", "HwMELepton.so");
 
 void MEee2VectorMeson::Init() {
 

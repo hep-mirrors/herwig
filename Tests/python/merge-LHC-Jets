@@ -33,6 +33,8 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
                 if(h.bins[i].xMin*scale  >= ptlow and 
                    h.bins[i].xMin*scale  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
+        elif(type(desthisto)==yoda.core.Counter) :
+                    desthisto += h
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
@@ -144,7 +146,7 @@ inhistos_mass = {}
 outhistos={}
 weights = {}
 for f in yodafiles:
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     ptmin=0.
     sqrts=7000
     # CMS energy
@@ -269,7 +271,7 @@ for i in range(1,8) :
 
 for f in yodafiles:
     print file
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     if(file.find("-7-Jets-1")>0) :
         sqrts=7000
         mass=0
@@ -371,7 +373,10 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
         hpath.find("1459051")>0) :
-        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
+        if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
+            outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
+                                                 hsets.values()[0].values()[0].title)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
         elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
@@ -393,7 +398,10 @@ for hpath,hsets in inhistos_pt.iteritems():
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_mass.iteritems():
     if(hpath.find("1268975")>0) :
-        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
+        if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
+            outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
+                                                 hsets.values()[0].values()[0].title)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
         elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
@@ -1327,13 +1335,24 @@ for ihist in range(1,4) :
     outhistos[sstring]= hsum
     for nbin in range(0,h2.numBins) :
         bsum  = h1.bins[nbin]+h2.bins[nbin]
-        ydiff = h2.bins[nbin].mean-h1.bins[nbin].mean
-        ysum  = bsum.mean
-        yerr  = math.sqrt(h1.bins[nbin].stdErr**2+h2.bins[nbin].stdErr**2)
+        try:
+          ydiff = h2.bins[nbin].mean-h1.bins[nbin].mean
+        except:
+          ydiff = 0
+        try:
+          ysum  = bsum.mean
+          bstderr = bsum.stdErr
+        except:
+          ysum  = 0
+          bstderr = 0
+        try:
+          yerr  = math.sqrt(h1.bins[nbin].stdErr**2+h2.bins[nbin].stdErr**2)
+        except:
+          yerr  = 0
         x    = h1.bins[nbin].xMid
         xerr = 0.5*h1.bins[nbin].xWidth
         hdiff.addPoint(x,ydiff,xerr,yerr)
-        hsum.addPoint(x,ysum ,xerr,bsum.stdErr)
+        hsum.addPoint(x,ysum ,xerr,bstderr)
 
 logging.info("ATLAS_2015_I1394679")
 for i in range(1,5) :

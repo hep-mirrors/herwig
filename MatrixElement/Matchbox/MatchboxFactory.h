@@ -57,6 +57,23 @@ public:
 public:
 
   /**
+   * Pointer to the current factory object
+   */
+  static const Ptr<MatchboxFactory>::tptr currentFactory() {
+    assert(theCurrentFactory);
+    return theCurrentFactory;
+  }
+
+private:
+
+  /**
+   * Pointer to the current factory object
+   */
+  static Ptr<MatchboxFactory>::tptr theCurrentFactory;
+
+public:
+
+  /**
    * Flag to indicate that at least one MatchboxFactory object is in action
    */
   static bool isMatchboxRun() {

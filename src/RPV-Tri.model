@@ -176,6 +176,7 @@ create Herwig::SSCFSVertex MSSM_CFS
 create Herwig::SSGSSVertex MSSM_GSS
 create Herwig::SSGGSQSQVertex MSSM_GGSS
 create Herwig::SSWGSSVertex MSSM_WGSS
+create Herwig::SSWWSSVertex MSSM_WWSS
 create Herwig::SSGSGSGVertex MSSM_GGOGO
 create Herwig::SSNNZVertex MSSM_NNZ
 create Herwig::SSCCZVertex MSSM_CCZ
@@ -255,6 +256,7 @@ set Model:Vertex/HPP    /Herwig/Vertices/MSSM/MSSM_HPP
 #set Model:Vertex/CFSF   /Herwig/Vertices/RPV/RPV_CFS
 #set Model:Vertex/NFSF   /Herwig/Vertices/RPV/RPV_NFS
 set Model:Vertex/WSFSF  /Herwig/Vertices/RPV/RPV_WSS
+set Model:Vertex/WWSFSF /Herwig/Vertices/MSSM/MSSM_WWSS
 #set Model:Vertex/HSFSF  /Herwig/Vertices/RPV/RPV_HSS
 #set Model:Vertex/NNZ    /Herwig/Vertices/RPV/RPV_NNZ
 set Model:Vertex/CCZ    /Herwig/Vertices/RPV/RPV_CCZ
@@ -280,6 +282,32 @@ set Model:Vertex/GVNV   /Herwig/Vertices/MSSM/MSSM_GVNV
 set Model:Vertex/LLE    /Herwig/Vertices/RPV/RPV_LLE
 set Model:Vertex/LQD    /Herwig/Vertices/RPV/RPV_LQD
 set Model:Vertex/UDD    /Herwig/Vertices/RPV/RPV_UDD
+# Switch off the SM Higgs decays
+cd /Herwig/Particles
+
+set h0:Width_generator NULL
+set h0:Mass_generator NULL
+
+set h0/h0->b,bbar;:Active No
+set h0/h0->b,bbar;:BranchingRatio 0.0
+set h0/h0->W+,W-;:Active No
+set h0/h0->W+,W-;:BranchingRatio 0.0
+set h0/h0->tau-,tau+;:Active No 
+set h0/h0->tau-,tau+;:BranchingRatio 0.0 
+set h0/h0->g,g;:Active No 
+set h0/h0->g,g;:BranchingRatio 0.0 
+set h0/h0->c,cbar;:Active No
+set h0/h0->c,cbar;:BranchingRatio 0.0
+set h0/h0->Z0,Z0;:Active No
+set h0/h0->Z0,Z0;:BranchingRatio 0.0
+set h0/h0->gamma,gamma;:Active No
+set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->Z0,gamma;:Active No
+set h0/h0->Z0,gamma;:BranchingRatio 0.0
+set h0/h0->mu-,mu+;:Active No
+set h0/h0->mu-,mu+;:BranchingRatio 0.0
+set h0/h0->t,tbar;:Active No
+set h0/h0->t,tbar;:BranchingRatio 0.0
 ###################################################
 # Set up the bsm framework
 ###################################################
@@ -364,6 +392,16 @@ create Herwig::ZeroZeroOneSplitFn PhitoPhiGSplitFn
 set PhitoPhiGSplitFn:InteractionType QCD
 set PhitoPhiGSplitFn:ColourStructure TripletTripletOctet
 
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
+set PhitoPhiGammaSplitFn:InteractionType QED
+set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSplitFn:AngularOrdered Yes
+
+create Herwig::HalfHalfOneSplitFn CharginotoCharginoGammaSplitFn
+set CharginotoCharginoGammaSplitFn:InteractionType QED
+set CharginotoCharginoGammaSplitFn:ColourStructure ChargedChargedNeutral
+set CharginotoCharginoGammaSplitFn:AngularOrdered Yes
+
 create Herwig::HalfHalfOneSplitFn GluinotoGluinoGSplitFn
 set GluinotoGluinoGSplitFn:InteractionType QCD
 set GluinotoGluinoGSplitFn:ColourStructure OctetOctetOctet
@@ -371,8 +409,14 @@ set GluinotoGluinoGSplitFn:ColourStructure OctetOctetOctet
 cp SudakovCommon PhitoPhiGSudakov
 set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
 
+cp SudakovCommon PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+
 cp SudakovCommon GluinotoGluinoGSudakov
 set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
+
+cp SudakovCommon CharginotoCharginoGammaSudakov
+set CharginotoCharginoGammaSudakov:SplittingFunction CharginotoCharginoGammaSplitFn
 
 do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
@@ -387,6 +431,30 @@ do SplittingGenerator:AddFinalSplitting ~c_R->~c_R,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
 do SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
+
+do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~s_L->~s_L,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~c_L->~c_L,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~b_1->~b_1,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~t_1->~t_1,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~u_R->~u_R,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~d_R->~d_R,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~s_R->~s_R,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~c_R->~c_R,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~b_2->~b_2,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~t_2->~t_2,gamma; PhitoPhiGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting ~e_L-->~e_L-,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~mu_L-->~mu_L-,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~tau_1-->~tau_1-,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~e_R-->~e_R-,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~mu_R-->~mu_R-,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~tau_2-->~tau_2-,gamma; PhitoPhiGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting   H+->H+,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~chi_1+->~chi_1+,gamma; CharginotoCharginoGammaSudakov
+do SplittingGenerator:AddFinalSplitting ~chi_2+->~chi_2+,gamma; CharginotoCharginoGammaSudakov
 
 ###################################################
 #

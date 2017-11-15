@@ -27,11 +27,8 @@ void MixingMatrix::persistentInput(PersistentIStream & is, int) {
   is >> mixingMatrix_ >> ids_ >> size_;
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<MixingMatrix,Interfaced>
 describeMixingMatrix("Herwig::MixingMatrix", "HwSusy.so");
 

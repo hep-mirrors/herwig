@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsWWDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
@@ -32,7 +32,7 @@ using namespace ThePEG::Helicity;
  * @see \ref SMHiggsWWDecayerInterfaces "The interfaces"
  * defined for SMHiggsWWDecayer.
  */
-class SMHiggsWWDecayer: public DecayIntegrator {
+class SMHiggsWWDecayer: public PerturbativeDecayer {
 
 public:
 
@@ -153,12 +153,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMHiggsWWDecayer> initSMHiggsWWDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -251,41 +245,6 @@ private:
    */
   mutable vector<SpinorBarWaveFunction> _fwave2;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHiggsWWDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMHiggsWWDecayer,1> {
-  /** Typedef of the first base class of SMHiggsWWDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHiggsWWDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHiggsWWDecayer>
-  : public ClassTraitsBase<Herwig::SMHiggsWWDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHiggsWWDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SMHiggsWWDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class SMHiggsWWDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwPerturbativeHiggsDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

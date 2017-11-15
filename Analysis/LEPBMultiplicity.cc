@@ -12,6 +12,7 @@
 //
 
 #include "LEPBMultiplicity.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -108,8 +109,10 @@ void LEPBMultiplicity::analyze(tEventPtr event, long , int , int ) {
   }
 }
 
-NoPIOClassDescription<LEPBMultiplicity> LEPBMultiplicity::initLEPBMultiplicity;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<LEPBMultiplicity,AnalysisHandler>
+describeHerwigLEPBMultiplicity("Herwig::LEPBMultiplicity", "HwAnalysis.so");
 
 void LEPBMultiplicity::Init() {
 

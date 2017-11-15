@@ -37,16 +37,6 @@ newdef ClusterHadHandler:MinVirtuality2 0.1*GeV2
 newdef ClusterHadHandler:MaxDisplacement 1.0e-10*millimeter
 newdef ClusterHadHandler:UnderlyingEventHandler NULL
 
-##################################################
-# The UA5 soft underlying event model
-# (disabled by default)
-##################################################
-create Herwig::UA5Handler UA5 HwUA5.so
-newdef UA5:ClusterFissioner ClusterFissioner
-newdef UA5:ClusterDecayer ClusterDecayer
-#set ClusterHadHandler:UnderlyingEventHandler UA5
-##################################################
-
 newdef ClusterFissioner:HadronSelector HadronSelector 
 newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector

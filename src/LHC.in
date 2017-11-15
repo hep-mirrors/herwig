@@ -16,8 +16,6 @@ cd /Herwig/Generators
 # LHC physics parameters (override defaults here) 
 ##################################################
 
-# Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ########################
 ## sqrt(s) = 13000 GeV ##
@@ -51,9 +49,9 @@ insert SubProcess:MatrixElements[0] MEqq2gZ2ff
 # Wgamma/Zgamma
 # insert SubProcess:MatrixElements[0] MEPP2VGamma
 #
-# add QED radiation off W/Z decay products using YFS formalism
-# cd /Herwig/EventHandlers
-# insert EventHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
+# Use old YFS formalism to add QED radiation off W/Z decay products.
+# Note: By default QED radiation is already included.
+# read snippets/YFS.in
 
 #
 #  QCD and gamma processes
@@ -134,18 +132,9 @@ cd /Herwig/Generators
 ## when running with parton shower
 ##################################################
 #read snippets/Rivet.in
-#insert Rivet:Analyses 0 XXX_2015_ABC123
+#insert /Herwig/Analysis/Rivet:Analyses 0 XXX_2015_ABC123
 #read snippets/HepMC.in
-#set HepMC:PrintEvent NNN
-
-##################################################
-## prepare for Rivet analysis or HepMC output
-## when running at fixed order (NO shower)
-##################################################
-#read snippets/RivetFixedOrder.in
-#insert RivetFixedOrder:Analyses 0 XXX_2015_ABC123
-#read snippets/HepMCFixedOrder.in
-#set HepMCFixedOrder:PrintEvent NNN
+#set /Herwig/Analysis/HepMC:PrintEvent NNN
 
 ##################################################
 # Save run for later usage with 'Herwig run'

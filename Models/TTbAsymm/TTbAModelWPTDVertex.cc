@@ -12,6 +12,7 @@
 //
 
 #include "TTbAModelWPTDVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -53,9 +54,10 @@ void TTbAModelWPTDVertex::persistentInput(PersistentIStream & is, int) {
   is >> _cWPTD_R >> _cWPTD_L >> _models; 
 }
 
-ClassDescription<TTbAModelWPTDVertex> 
-TTbAModelWPTDVertex::initTTbAModelWPTDVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TTbAModelWPTDVertex,FFVVertex>
+describeHerwigTTbAModelWPTDVertex("Herwig::TTbAModelWPTDVertex", "Herwig.so");
 
 
 void TTbAModelWPTDVertex::Init() {

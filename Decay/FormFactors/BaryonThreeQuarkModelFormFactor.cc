@@ -5,6 +5,7 @@
 //
 
 #include "BaryonThreeQuarkModelFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -266,9 +267,10 @@ void BaryonThreeQuarkModelFormFactor::persistentInput(PersistentIStream & is, in
      >> iunit(_LambdaQ,MeV) >> iunit(_Lambdaqq,MeV)
      >> iunit(_Lambdasq,MeV) >> iunit(_Lambdass,MeV) >> _C0 >> _C1 >> _C2;}
 
-ClassDescription<BaryonThreeQuarkModelFormFactor> 
-BaryonThreeQuarkModelFormFactor::initBaryonThreeQuarkModelFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BaryonThreeQuarkModelFormFactor,BaryonFormFactor>
+describeHerwigBaryonThreeQuarkModelFormFactor("Herwig::BaryonThreeQuarkModelFormFactor", "HwFormFactors.so");
 
 void BaryonThreeQuarkModelFormFactor::Init() {
 

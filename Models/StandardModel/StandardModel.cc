@@ -12,6 +12,7 @@
 //
 
 #include "StandardModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -90,8 +91,10 @@ void StandardModel::persistentInput(PersistentIStream & is, int) {
      >> runningMass_ >> vertexList_ >> extraVertices_ >> modelGenerator_;
 }
 
-ClassDescription<StandardModel> StandardModel::initStandardModel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<StandardModel,StandardModelBase>
+describeHerwigStandardModel("Herwig::StandardModel", "Herwig.so");
 
 void StandardModel::Init() {
 

@@ -1274,7 +1274,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << ounit(theLastSplittingPt,GeV) << theLastSubtractionZ
      << theLastSplittingZ << theShowerApproximation 
      << theRealShowerSubtraction << theVirtualShowerSubtraction 
-     << theLoopSimSubtraction << theRealEmissionScales << theFactory
+     << theLoopSimSubtraction << theRealEmissionScales
      << ounit(theShowerHardScale,GeV) << ounit(theShowerScale,GeV) 
      << theShowerParameters << theIsInShowerPhasespace << theIsAboveCutoff;
 }
@@ -1293,7 +1293,7 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> iunit(theLastSplittingPt,GeV) >> theLastSubtractionZ
      >> theLastSplittingZ >> theShowerApproximation 
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
-     >> theLoopSimSubtraction >> theRealEmissionScales >> theFactory
+     >> theLoopSimSubtraction >> theRealEmissionScales
      >> iunit(theShowerHardScale,GeV) >> iunit(theShowerScale,GeV) 
      >> theShowerParameters >> theIsInShowerPhasespace >> theIsAboveCutoff;
   lastMatchboxXComb(theLastXComb);
@@ -1306,13 +1306,8 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
 }
 
 Ptr<MatchboxFactory>::tptr SubtractionDipole::factory() const {
-  return theFactory;
+  return MatchboxFactory::currentFactory();
 }
-
-void SubtractionDipole::factory(Ptr<MatchboxFactory>::tptr f) {
-  theFactory = f;
-}
-
 
 void SubtractionDipole::Init() {
 

@@ -5,6 +5,7 @@
 //
 
 #include "ThreeBodyDecayConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -41,9 +42,10 @@ void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
       >> includeIntermediatePhotons_;
 }
 
-ClassDescription<ThreeBodyDecayConstructor> 
-ThreeBodyDecayConstructor::initThreeBodyDecayConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ThreeBodyDecayConstructor,NBodyDecayConstructorBase>
+describeHerwigThreeBodyDecayConstructor("Herwig::ThreeBodyDecayConstructor", "Herwig.so");
 
 void ThreeBodyDecayConstructor::Init() {
 

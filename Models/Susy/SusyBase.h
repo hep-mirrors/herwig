@@ -601,6 +601,11 @@ private:
   AbstractVSSVertexPtr WSFSFVertex_;
   
   /**
+   * Pointer to the gauge boson pair sfermion-sfermion vertex
+   */
+  AbstractVVSSVertexPtr WWSFSFVertex_;
+  
+  /**
    * Pointer to the neutralino-fermion-sfermion vertex
    */
   AbstractFFSVertexPtr NFSFVertex_;
@@ -695,6 +700,11 @@ private:
    */
   AbstractRFSVertexPtr GVFSVertex_;
   //@}
+
+  /**
+   *  Allow the resetting of Standard Model masses
+   */
+  bool allowedToResetSMMasses_;
 };
 
 }

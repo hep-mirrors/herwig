@@ -12,6 +12,7 @@
 //
 
 #include "BtoSGammaHadronicMass.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -27,9 +28,10 @@ void BtoSGammaHadronicMass::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_minMass,GeV) >> iunit(_maxMass,GeV);
 }
 
-AbstractClassDescription<BtoSGammaHadronicMass> 
-BtoSGammaHadronicMass::initBtoSGammaHadronicMass;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<BtoSGammaHadronicMass,Interfaced>
+describeHerwigBtoSGammaHadronicMass("Herwig::BtoSGammaHadronicMass", "Herwig.so");
 
 void BtoSGammaHadronicMass::Init() {
 

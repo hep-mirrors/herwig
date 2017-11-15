@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2ZJet.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -44,8 +45,10 @@ void MEPP2ZJet::doinit() {
   _theQQGVertex = hwsm->vertexFFG();
 }
 
-ClassDescription<MEPP2ZJet> MEPP2ZJet::initMEPP2ZJet;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2ZJet,HwMEBase>
+describeHerwigMEPP2ZJet("Herwig::MEPP2ZJet", "HwMEHadron.so");
 
 void MEPP2ZJet::Init() {
 
@@ -657,7 +660,7 @@ InvEnergy2 MEPP2ZJet::qgME(vector<SpinorWaveFunction> & fin,
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
 	// intermediates for the diagrams
-	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[2],
+	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[2]->CC(),
 				       fout[ohel1],gin[ihel2]);
 	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);
@@ -742,7 +745,7 @@ InvEnergy2 MEPP2ZJet::qbargME(vector<SpinorBarWaveFunction> & fin,
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
 	// intermediates for the diagrams
-	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[2],
+	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[2]->CC(),
 				       fout[ohel1],gin[ihel2]);
 	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);

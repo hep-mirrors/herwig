@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<StoSFFDecayer> initStoSFFDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -119,67 +113,39 @@ private:
   /**
    * Store the vertices for scalar intrermediate
    */
-  vector<pair<AbstractSSSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractSSSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
    * Store the vertices for fermion intrermediate
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > _fer;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > fer_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractVSSVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
    * Store the vertices for tensor intrermediate
    */
-  vector<pair<AbstractSSTVertexPtr, AbstractFFTVertexPtr> > _ten;
+  vector<pair<AbstractSSTVertexPtr, AbstractFFTVertexPtr> > ten_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunction
    */
-  mutable ScalarWaveFunction _swave;
+  mutable ScalarWaveFunction swave_;
 
   /**
    *  Spinor wavefunctions
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outspin_[3];
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Herwig::StoSFFDecayer. */
-template <>
-struct BaseClassTrait<Herwig::StoSFFDecayer,1> {
-  /** Typedef of the first base class of Herwig::StoSFFDecayer. */
-  typedef Herwig::GeneralThreeBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Herwig::StoSFFDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::StoSFFDecayer>
-  : public ClassTraitsBase<Herwig::StoSFFDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::StoSFFDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* THEPEG_StoSFFDecayer_H */

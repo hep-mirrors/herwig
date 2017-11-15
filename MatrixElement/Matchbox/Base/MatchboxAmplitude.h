@@ -142,11 +142,6 @@ public:
    */
   Ptr<MatchboxFactory>::tptr factory() const;
 
-  /**
-   * Set the factory which produced this matrix element
-   */
-  virtual void factory(Ptr<MatchboxFactory>::tptr f);
-
   /** @name Subprocess information */
   //@{
 
@@ -288,6 +283,11 @@ public:
    * Check if reshuffling is needed at all
    */
   void checkReshuffling(Ptr<MatchboxPhasespace>::tptr);
+
+  /**
+   * Return true, if this amplitude makes use of amplitudeMomenta
+   */
+  virtual bool hasAmplitudeMomenta() const { return false; }
 
   //@}
 
@@ -628,11 +628,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The factory which produced this matrix element
-   */
-  Ptr<MatchboxFactory>::tptr theFactory;
 
   /**
    * Recursively generate helicities

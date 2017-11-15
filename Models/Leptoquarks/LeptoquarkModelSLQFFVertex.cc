@@ -12,6 +12,7 @@
 //
 
 #include "LeptoquarkModelSLQFFVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -164,9 +165,10 @@ void LeptoquarkModelSLQFFVertex::persistentInput(PersistentIStream & is, int) {
      >> iunit(_derivscale,GeV);
 }
 
-ClassDescription<LeptoquarkModelSLQFFVertex> 
-LeptoquarkModelSLQFFVertex::initLeptoquarkModelSLQFFVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LeptoquarkModelSLQFFVertex,FFSVertex>
+describeHerwigLeptoquarkModelSLQFFVertex("Herwig::LeptoquarkModelSLQFFVertex", "Herwig.so");
 
 
 void LeptoquarkModelSLQFFVertex::Init() {

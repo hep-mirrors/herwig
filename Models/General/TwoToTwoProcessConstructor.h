@@ -114,12 +114,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<TwoToTwoProcessConstructor> initTwoToTwoProcessConstructor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -313,33 +307,6 @@ private:
       : Exception(str,sev) {}
 
   };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of TwoToTwoProcessConstructor. */
-template <>
-struct BaseClassTrait<Herwig::TwoToTwoProcessConstructor,1> {
-  /** Typedef of the first base class of TwoToTwoProcessConstructor. */
-  typedef Herwig::HardProcessConstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the TwoToTwoProcessConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::TwoToTwoProcessConstructor>
-  : public ClassTraitsBase<Herwig::TwoToTwoProcessConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::TwoToTwoProcessConstructor"; }
-};
-
-/** @endcond */
 
 }
 

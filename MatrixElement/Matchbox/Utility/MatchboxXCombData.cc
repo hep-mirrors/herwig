@@ -76,11 +76,6 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
   if ( !theMatchboxME && !theSubtractionDipole && subme )
     theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(subme->head());
   assert(theMatchboxME || theSubtractionDipole);
-  if ( theMatchboxME )
-    theFactory = theMatchboxME->factory();
-  else if ( theSubtractionDipole )
-    theFactory = theSubtractionDipole->realEmissionME()->factory();
-  assert(theFactory);
 }
 
 double MatchboxXCombData::ReshuffleEquation::operator() (double xi) const {
@@ -210,7 +205,7 @@ void MatchboxXCombData::fillExternalMomenta(const vector<Lorentz5Momentum>& memo
 }
 
 Ptr<MatchboxFactory>::tcptr MatchboxXCombData::factory() const {
-  return theFactory;
+  return MatchboxFactory::currentFactory();
 }
 
 Ptr<MatchboxMEBase>::tptr MatchboxXCombData::matchboxME() const {
@@ -286,7 +281,7 @@ void MatchboxXCombData::getAmplitudeMap(PersistentIStream& is, map<vector<int>,C
 }
 
 void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
-  os << theFactory << theMatchboxME << theSubtractionDipole << theCrossingMap 
+  os << theMatchboxME << theSubtractionDipole << theCrossingMap 
      << theAmplitudeToColourMap << theColourToAmplitudeMap 
      << theCrossingSign << theAmplitudePartonData << ounit(theAmplitudeMomenta,GeV) 
      << ounit(theLastRenormalizationScale,GeV2)
@@ -314,7 +309,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
 }
 
 void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
-  is >> theFactory >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
+  is >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
      >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
      >> theCrossingSign >> theAmplitudePartonData >> iunit(theAmplitudeMomenta,GeV)
      >> iunit(theLastRenormalizationScale,GeV2)

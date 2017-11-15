@@ -89,7 +89,7 @@ inhistos = {}
 outhistos={}
 weights = {}
 for f in yodafiles:
-    file=args[0]+f
+    file='Rivet-'+args[0]+f
     if(file.find("-UE")>0) :
         sqrts=200
         ptmin=0.

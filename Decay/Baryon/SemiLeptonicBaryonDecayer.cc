@@ -5,6 +5,7 @@
 //
 
 #include "SemiLeptonicBaryonDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -132,8 +133,10 @@ void SemiLeptonicBaryonDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _current >> _form >> _maxwgt >> _modemap;
 }
 
-ClassDescription<SemiLeptonicBaryonDecayer> SemiLeptonicBaryonDecayer::initSemiLeptonicBaryonDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SemiLeptonicBaryonDecayer,DecayIntegrator>
+describeHerwigSemiLeptonicBaryonDecayer("Herwig::SemiLeptonicBaryonDecayer", "HwBaryonDecay.so");
 
 void SemiLeptonicBaryonDecayer::Init() {
 

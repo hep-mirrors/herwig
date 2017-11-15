@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2QQHiggs.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -24,8 +25,10 @@ MEPP2QQHiggs::MEPP2QQHiggs() : quarkFlavour_(6), process_(0), shapeOpt_(2),
 			       mh_(), wh_(), alpha_(1.1)
 {}
 
-ClassDescription<MEPP2QQHiggs> MEPP2QQHiggs::initMEPP2QQHiggs;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2QQHiggs,HwMEBase>
+describeHerwigMEPP2QQHiggs("Herwig::MEPP2QQHiggs", "HwMEHadron.so");
 
 void MEPP2QQHiggs::Init() {
 
@@ -427,27 +430,27 @@ double MEPP2QQHiggs::ggME(vector<VectorWaveFunction> &g1,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       interv = GGGVertex_->evaluate(mt,5,gluon_,g1[ihel1],g2[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
-	Qoff = QQHVertex_->evaluate(mt,3,q[ohel1].particle(),
+	Qoff = QQHVertex_->evaluate(mt,3,q[ohel1].particle()->CC(),
 				    q[ohel1],hwave,mass);
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-	  QBoff = QQHVertex_->evaluate(mt,3,qbar[ohel2].particle(),
+	  QBoff = QQHVertex_->evaluate(mt,3,qbar[ohel2].particle()->CC(),
 				       qbar[ohel2],hwave,mass);
 	  // 1st diagram
-	  inters  = QQGVertex_->evaluate(mt,1,qbar[ohel2].particle(),
+	  inters  = QQGVertex_->evaluate(mt,1,qbar[ohel2].particle()->CC(),
 					 qbar[ohel2],g2[ihel2],mass);
 	  diag[0] = QQGVertex_->evaluate(mt,inters,Qoff,g1[ihel1]);
 	  // 2nd diagram
-	  intersb = QQGVertex_->evaluate(mt,1,q[ohel1].particle(),
+	  intersb = QQGVertex_->evaluate(mt,1,q[ohel1].particle()->CC(),
 					 q[ohel1],g1[ihel1],mass);
 	  diag[1] = QQHVertex_->evaluate(mt,inters,intersb,hwave);
 	  // 3rd diagram
 	  diag[2] = QQGVertex_->evaluate(mt,QBoff,intersb,g2[ihel2]);
 	  // 4th diagram
-	  inters  = QQGVertex_->evaluate(mt,1,qbar[ohel2].particle(),
+	  inters  = QQGVertex_->evaluate(mt,1,qbar[ohel2].particle()->CC(),
 					 qbar[ohel2],g1[ihel1],mass);
 	  diag[3] = QQGVertex_->evaluate(mt,inters,Qoff,g2[ihel2]);
 	  // 5th diagram
-	  intersb = QQGVertex_->evaluate(mt,1,q[ohel1].particle(),
+	  intersb = QQGVertex_->evaluate(mt,1,q[ohel1].particle()->CC(),
 					 q[ohel1],g2[ihel2],mass);
 	  diag[4] = QQHVertex_->evaluate(mt,inters,intersb,hwave);
 	  // 6th diagram
@@ -511,10 +514,10 @@ double MEPP2QQHiggs::qqME(vector<SpinorWaveFunction> & q1,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       interv = QQGVertex_->evaluate(mt,5,gluon_,q1[ihel1],q2[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
-	Qoff = QQHVertex_->evaluate(mt,3,q3[ohel1].particle(),
+	Qoff = QQHVertex_->evaluate(mt,3,q3[ohel1].particle()->CC(),
 				    q3[ohel1],hwave,mass);
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-	  QBoff = QQHVertex_->evaluate(mt,3,q4[ohel2].particle(),
+	  QBoff = QQHVertex_->evaluate(mt,3,q4[ohel2].particle()->CC(),
 				       q4[ohel2],hwave,mass);
 	  // 1st diagram
 	  diag[0] = QQGVertex_->evaluate(mt,q4[ohel2],Qoff,interv);

@@ -66,13 +66,24 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+  virtual POWHEGType hasPOWHEGCorrection()  {
+    return (vertex_->orderInGem()+vertex_->orderInGs())==1 ? FSR : No;
+  }
 
   /**
    *  Three-body matrix element including additional QCD radiation
    */
   virtual double threeBodyME(const int , const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt);
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
   //@}
 
 public:
@@ -118,25 +129,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<FFVDecayer> initFFVDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -149,103 +142,75 @@ private:
   /**
    *  Abstract pointer to AbstractFFVVertex
    */
-  AbstractFFVVertexPtr _abstractVertex;
+  AbstractFFVVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  FFVVertexPtr _perturbativeVertex;
+  FFVVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from incoming (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractIncomingVertex;
+  map<ShowerInteraction,AbstractFFVVertexPtr> incomingVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion
    */
-  AbstractFFVVertexPtr _abstractOutgoingVertexF;
+  map<ShowerInteraction,AbstractFFVVertexPtr> outgoingVertexF_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertexV;
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertexV_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinor wavefunction
    */
-  mutable vector<SpinorWaveFunction>    _wave   ;
+  mutable vector<SpinorWaveFunction>    wave_   ;
 
   /**
    *  Barred spinor wavefunction
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 
   /**
    *  Polarization vectors
    */
-  mutable vector<VectorWaveFunction> _vector;
+  mutable vector<VectorWaveFunction> vector_;
 
  /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  vector wavefunction for 3 body decay
    */
-  mutable vector<VectorWaveFunction> _vector3;
+  mutable vector<VectorWaveFunction> vector3_;
 
   /**
    *  Spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorWaveFunction> _wave3;
+  mutable vector<SpinorWaveFunction> wave3_;
 
   /**
    *  Barred spinor wavefunction for 3 body decay
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar3;
+  mutable vector<SpinorBarWaveFunction> wavebar3_;
 
     /**
    *  Vector wavefunction for gluon in 3 body decay
    */
-  mutable vector<VectorWaveFunction> _gluon;
+  mutable vector<VectorWaveFunction> gluon_;
 
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of FFVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::FFVDecayer,1> {
-  /** Typedef of the first base class of FFVDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the FFVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::FFVDecayer>
-  : public ClassTraitsBase<Herwig::FFVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::FFVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_FFVDecayer_H */

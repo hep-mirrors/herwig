@@ -64,13 +64,24 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+  virtual POWHEGType hasPOWHEGCorrection()  {
+    return (vertex_->orderInGem()+vertex_->orderInGs())==1 ? FSR : No;
+  }
 
   /**
    *  Three-body matrix element including additional QCD radiation
    */
   virtual double threeBodyME(const int , const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt);
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
 
   //@}
   
@@ -117,25 +128,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<TVVDecayer> initTVVDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -148,93 +141,65 @@ private:
   /**
    *  Abstract pointer to AbstractVVTVertex
    */
-  AbstractVVTVertexPtr _abstractVertex;
+  AbstractVVTVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  VVTVertexPtr _perturbativeVertex;
+  VVTVertexPtr perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertex1;
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex1_;
 
   /**
    *  Abstract pointer to AbstractVVVVertex for QCD radiation from outgoing vector
    */
-  AbstractVVVVertexPtr _abstractOutgoingVertex2;
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertex2_;
 
   /**
    *  Abstract pointer to AbstractVVVTVertex for QCD radiation from 4 point vertex
    */
-  AbstractVVVTVertexPtr _abstractFourPointVertex;
+  map<ShowerInteraction,AbstractVVVTVertexPtr> fourPointVertex_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization tensors of decaying particle
    */
-  mutable vector<Helicity::TensorWaveFunction> _tensors;
+  mutable vector<Helicity::TensorWaveFunction> tensors_;
 
   /**
    *  Polarization vectors of outgoing vector bosons
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors_[2];
 
   /**
    *  Spin density matrix for 3 body decay
    */
-  mutable RhoDMatrix _rho3;
+  mutable RhoDMatrix rho3_;
 
   /**
    *  Tensor wavefunction for 3 body decay
    */
-  mutable vector<Helicity::TensorWaveFunction> _tensors3;
+  mutable vector<Helicity::TensorWaveFunction> tensors3_;
 
   /**
    *  Polarization vectors of outgoing vector bosons
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors3[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors3_[2];
 
     /**
    *  Vector wavefunction for 3 body decay
    */
-  mutable vector<Helicity::VectorWaveFunction> _gluon;
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
 
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of TVVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::TVVDecayer,1> {
-  /** Typedef of the first base class of TVVDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the TVVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::TVVDecayer>
-  : public ClassTraitsBase<Herwig::TVVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::TVVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_TVVDecayer_H */

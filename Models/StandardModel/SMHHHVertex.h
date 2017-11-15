@@ -94,12 +94,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMHHHVertex> initSMHHHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -123,33 +117,6 @@ private:
   Energy2 q2last_;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHHHVertex. */
-template <>
-struct BaseClassTrait<Herwig::SMHHHVertex,1> {
-  /** Typedef of the first base class of SMHHHVertex. */
-  typedef Helicity::SSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHHHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHHHVertex>
-  : public ClassTraitsBase<Herwig::SMHHHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHHHVertex"; }
-};
-
-/** @endcond */
 
 }
 

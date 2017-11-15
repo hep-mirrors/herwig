@@ -12,6 +12,7 @@
 //
 
 #include "TTbarAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -133,8 +134,10 @@ void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-NoPIOClassDescription<TTbarAnalysis> TTbarAnalysis::initTTbarAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<TTbarAnalysis,AnalysisHandler>
+describeHerwigTTbarAnalysis("Herwig::TTbarAnalysis", "HwAnalysis.so");
 
 void TTbarAnalysis::Init() {
 

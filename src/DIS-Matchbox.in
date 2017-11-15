@@ -28,6 +28,13 @@ cd /Herwig/EventHandlers
 read Matchbox/StandardModelLike.in
 read Matchbox/DiagonalCKM.in
 
+## EP collider parameters
+cd /Herwig/EventHandlers
+set EventHandler:BeamA /Herwig/Particles/e-
+set Luminosity:BeamEMaxA 30.*GeV
+set EventHandler:BeamB /Herwig/Particles/p+
+set Luminosity:BeamEMaxB 920.*GeV
+
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
@@ -64,6 +71,7 @@ do Factory:Process e- p -> e- j
 
 ## cuts on additional jets
 
+cd /Herwig/Cuts
 # read Matchbox/DefaultEPJets.in
 
 # insert JetCuts:JetRegions 0 FirstJet

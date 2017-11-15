@@ -5,6 +5,7 @@
 //
 
 #include "SimpleVBFAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -46,8 +47,10 @@ IBPtr SimpleVBFAnalysis::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<SimpleVBFAnalysis> SimpleVBFAnalysis::initSimpleVBFAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<SimpleVBFAnalysis,AnalysisHandler>
+describeHerwigSimpleVBFAnalysis("Herwig::SimpleVBFAnalysis", "AnomalousHVV.so");
 
 void SimpleVBFAnalysis::Init() {
 

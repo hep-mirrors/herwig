@@ -197,12 +197,6 @@ protected:
 private:
 
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static ClassDescription<BaryonThreeQuarkModelFormFactor> 
-  initBaryonThreeQuarkModelFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   BaryonThreeQuarkModelFormFactor & operator=(const BaryonThreeQuarkModelFormFactor &);
@@ -288,42 +282,6 @@ private:
   int _N;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * BaryonThreeQuarkModelFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::BaryonThreeQuarkModelFormFactor,1> {
-  /** Typedef of the base class of BaryonThreeQuarkModelFormFactor. */
-   typedef Herwig::BaryonFormFactor NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * BaryonThreeQuarkModelFormFactor class.
- */
-template <>
- struct ClassTraits<Herwig::BaryonThreeQuarkModelFormFactor>
-  : public ClassTraitsBase<Herwig::BaryonThreeQuarkModelFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::BaryonThreeQuarkModelFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

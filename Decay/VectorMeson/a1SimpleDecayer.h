@@ -177,12 +177,6 @@ private:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<a1SimpleDecayer> inita1SimpleDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -261,41 +255,6 @@ private:
   mutable vector<Helicity::LorentzPolarizationVector> _vectors;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of a1SimpleDecayer. */
-template <>
-struct BaseClassTrait<Herwig::a1SimpleDecayer,1> {
-  /** Typedef of the first base class of a1SimpleDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the a1SimpleDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::a1SimpleDecayer>
-  : public ClassTraitsBase<Herwig::a1SimpleDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::a1SimpleDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * a1SimpleDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class a1SimpleDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwVMDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

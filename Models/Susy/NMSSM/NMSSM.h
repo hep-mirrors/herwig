@@ -143,12 +143,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<NMSSM> initNMSSM;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -196,41 +190,6 @@ private:
   Energy _MU2;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of NMSSM. */
-template <>
-struct BaseClassTrait<Herwig::NMSSM,1> {
-  /** Typedef of the first base class of NMSSM. */
-  typedef Herwig::MSSM NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the NMSSM class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::NMSSM>
-  : public ClassTraitsBase<Herwig::NMSSM> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::NMSSM"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * NMSSM is implemented. It may also include several, space-separated,
-   * libraries if the class NMSSM depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so HwNMSSM.so"; }
-};
-
-/** @endcond */
 
 }
 

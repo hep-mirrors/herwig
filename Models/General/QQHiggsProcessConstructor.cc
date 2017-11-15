@@ -5,6 +5,7 @@
 //
 
 #include "QQHiggsProcessConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -34,9 +35,10 @@ void QQHiggsProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> _process >> _quarkFlavour >> _higgs >> _shapeOpt;
 }
 
-ClassDescription<QQHiggsProcessConstructor> 
-QQHiggsProcessConstructor::initQQHiggsProcessConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<QQHiggsProcessConstructor,HardProcessConstructor>
+describeHerwigQQHiggsProcessConstructor("Herwig::QQHiggsProcessConstructor", "Herwig.so");
 
 void QQHiggsProcessConstructor::Init() {
 

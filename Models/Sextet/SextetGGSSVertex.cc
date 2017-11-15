@@ -26,11 +26,8 @@ IBPtr SextetGGSSVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeNoPIOClass<SextetGGSSVertex,VVSSVertex>
 describeSextetGGSSVertex("Herwig::SextetGGSSVertex", "HwSextetModel.so");
 

@@ -12,6 +12,7 @@
 //
 
 #include "WSBFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -254,8 +255,10 @@ void WSBFormFactor::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mS1,GeV) >> iunit(_mV0,GeV) >> iunit(_mV1,GeV) >> _thetaeta;
 }
 
-ClassDescription<WSBFormFactor> WSBFormFactor::initWSBFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<WSBFormFactor,ScalarFormFactor>
+describeHerwigWSBFormFactor("Herwig::WSBFormFactor", "HwFormFactors.so");
 
 void WSBFormFactor::Init() {
 

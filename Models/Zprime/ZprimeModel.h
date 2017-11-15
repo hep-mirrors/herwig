@@ -245,12 +245,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<ZprimeModel> initZprimeModel;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -424,41 +418,6 @@ private:
 
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ZprimeModel. */
-template <>
-struct BaseClassTrait<Herwig::ZprimeModel,1> {
-  /** Typedef of the first base class of ZprimeModel. */
-  typedef Herwig::StandardModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ZprimeModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ZprimeModel>
-  : public ClassTraitsBase<Herwig::ZprimeModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ZprimeModel"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ZprimeModel is implemented. It may also include several, space-separated,
-   * libraries if the class ZprimeModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwZprimeModel.so"; }
-};
-
-/** @endcond */
 
 }
 

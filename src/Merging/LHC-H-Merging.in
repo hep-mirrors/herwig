@@ -100,15 +100,16 @@ set MadGraph:Model heft
 ## Cut selection
 ## See the documentation for more options
 ##################################################
-
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
+cd /Herwig/Cuts/
+set ChargedLeptonPairMassCut:MinMass 60*GeV
+set ChargedLeptonPairMassCut:MaxMass 120*GeV
 
 cd /Herwig/MatrixElements/Matchbox/Utility
 insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 
 ## cuts on additional jets
 
+cd /Herwig/Cuts/
 # read Matchbox/DefaultPPJets.in
 
 # insert JetCuts:JetRegions 0 FirstJet
@@ -125,7 +126,7 @@ cd /Herwig/MatrixElements/Matchbox/Scales/
 
 set /Herwig/Merging/MergingFactory:ScaleChoice FixedScale
 set FixedScale:FixedScale 125.*GeV
-#set HTPrimeScale:Factory /Herwig/Merging/MergingFactory
+
 ##################################################
 ## Scale uncertainties
 ##################################################
@@ -166,13 +167,16 @@ read Matchbox/MMHT2014.in
 ##################################################
 
 cd /Herwig/Analysis
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
-# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+## Write HepMC events. Modify the PrintEvent interface for your needs.
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMCFile
 
+## Setup the Rivet analysis:
+#read snippets/Rivet.in
+#insert Rivet:Analyses 0 XXX_2017_ABC123
 
-# Here we collected a various Rivet analysis for Higgs at LHC
-# at the 8 TeV. (The collection might not be complete.)
-read Merging/LHC8-H-Analysis.in
+## Here we collected a various Rivet analysis for Higgs at LHC
+## at the 8 TeV. (The collection might not be complete.)
+# read Merging/LHC8-H-Analysis.in
 
 
 ##################################################

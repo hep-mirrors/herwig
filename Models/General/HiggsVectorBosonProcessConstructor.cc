@@ -5,6 +5,7 @@
 //
 
 #include "HiggsVectorBosonProcessConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -35,9 +36,10 @@ void HiggsVectorBosonProcessConstructor::persistentInput(PersistentIStream & is,
   is >> _vector >> _higgs >> _type >> _shapeOpt >> _alpha;
 }
 
-ClassDescription<HiggsVectorBosonProcessConstructor> 
-HiggsVectorBosonProcessConstructor::initHiggsVectorBosonProcessConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<HiggsVectorBosonProcessConstructor,HardProcessConstructor>
+describeHerwigHiggsVectorBosonProcessConstructor("Herwig::HiggsVectorBosonProcessConstructor", "Herwig.so");
 
 void HiggsVectorBosonProcessConstructor::Init() {
 

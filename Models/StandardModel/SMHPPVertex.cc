@@ -12,6 +12,7 @@
 //
 
 #include "SMHPPVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -24,19 +25,22 @@ using namespace Herwig;
 using namespace ThePEG;
 
 void SMHPPVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << ounit(_mw,GeV) << massopt << _minloop << _maxloop 
+  os << _theSM << ounit(_mw,GeV) << _massopt << _minloop << _maxloop 
      << _CoefRepresentation;
 }
 
 void SMHPPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw, GeV) >> massopt >> _minloop >> _maxloop 
+  is >> _theSM >> iunit(_mw, GeV) >> _massopt >> _minloop >> _maxloop 
      >> _CoefRepresentation;
 }
 
-ClassDescription<SMHPPVertex> SMHPPVertex::initSMHPPVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHPPVertex,VVSLoopVertex>
+describeHerwigSMHPPVertex("Herwig::SMHPPVertex", "Herwig.so");
 
 void SMHPPVertex::Init() {
+  
   static ClassDocumentation<SMHPPVertex> documentation
     ("This class implements the h0->gamma,gamma vertex.");
 
@@ -55,7 +59,7 @@ void SMHPPVertex::Init() {
   static Switch<SMHPPVertex,unsigned int> interfaceMassOption
     ("LoopMassScheme",
      "Switch for the treatment of the masses in the loops ",
-     &SMHPPVertex::massopt, 2, false, false);
+     &SMHPPVertex::_massopt, 2, false, false);
   static SwitchOption interfaceHeavyMass
     (interfaceMassOption,
      "PoleMasses",
@@ -107,22 +111,21 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     // quark loops
     for ( int i = Qminloop; i <= Qmaxloop; ++i ) {
       tcPDPtr qrk = getParticleData(i);
-      Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
+      Energy mass = (2 == _massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
       Charge charge = qrk->charge();
-      loop += 3.*sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
+      loop += 3.*sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/invariant(0,0));
     }
     // lepton loops
     int Lminloop = 3; // still fixed value
     int Lmaxloop = 3; // still fixed value
     for (int i = Lminloop; i <= Lmaxloop; ++i) {
       tcPDPtr lpt = getParticleData(9 + 2*i);
-      Energy mass = (2 == massopt) ? _theSM->mass(q2,lpt) : lpt->mass();
+      Energy mass = (2 == _massopt) ? _theSM->mass(q2,lpt) : lpt->mass();
       Charge charge = lpt->charge();
-      loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
+      loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/invariant(0,0));
     }
     // W loop
-    loop += Aw(sqr(_mw)/q2);
-    
+    loop += Aw(sqr(_mw)/invariant(0,0));
     a00(loop);
     a11(0.0);
     a12(0.0);
@@ -146,7 +149,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     for (int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;
-      masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();
+      masses[i] = (2 == _massopt) ? _theSM->mass(q2,q) : q->mass();
       double copl = -masses[i]*3.*sqr(q->iCharge()/3.)/_mw/2.;
       couplings.push_back(make_pair(copl, copl));
     }
@@ -199,7 +202,7 @@ Complex SMHPPVertex::W2(double lambda) const {
 }
 
 SMHPPVertex::SMHPPVertex() 
-  :_couplast(0.),_q2last(),_mw(),massopt(1),
+  :_couplast(0.),_q2last(),_mw(),_massopt(1),
    _minloop(6),_maxloop(6),_CoefRepresentation(1) {
   orderInGs(0);
   orderInGem(3);
@@ -262,14 +265,14 @@ void SMHPPVertex::doinit() {
 //   Complex I(0.);
 //   for(long ix=int(_minloop);ix<=int(_maxloop);++ix) {
 //     tcPDPtr qrk = getParticleData(ix);
-//     Energy mt = (2 == massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
+//     Energy mt = (2 == _massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
 //     double tau = sqr(2.*mt/mh);
 //     I += 3.*sqr(double(qrk->iCharge())/3.)*FHalf(tau,1.);
 //     cerr << "testing half " << FHalf(tau,1) << " " << Af(0.25*tau) << "\n";
 //   }
 //   for(long ix=15;ix<=15;++ix) {
 //     tcPDPtr qrk = getParticleData(ix);
-//     Energy mt = (2 == massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
+//     Energy mt = (2 == _massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
 //     double tau = sqr(2.*mt/mh);
 //     I += sqr(double(qrk->iCharge())/3.)*FHalf(tau,1.);
 //   }

@@ -135,12 +135,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LEPEventShapes> initLEPEventShapes;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -233,37 +227,6 @@ private:
    */
   EventShapesPtr _shapes;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LEPEventShapes. */
-template <>
-struct BaseClassTrait<Herwig::LEPEventShapes,1> {
-  /** Typedef of the first base class of LEPEventShapes. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LEPEventShapes class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LEPEventShapes>
-  : public ClassTraitsBase<Herwig::LEPEventShapes> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LEPEventShapes"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the LEPEventShapes class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwAnalysis.so HwLEPAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

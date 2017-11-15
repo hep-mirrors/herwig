@@ -101,12 +101,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<StoFFVDecayer> initStoFFVDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -117,67 +111,39 @@ private:
   /**
    * Store the vertices for fermion intrermediate
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > _fer;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fer_;
 
   /**
    * Store the vertices for scalar intrermediate
    */
-  vector<pair<AbstractVSSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractVSSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVVSVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractVVSVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Scalar wavefunction
    */
-  mutable ScalarWaveFunction _swave;
+  mutable ScalarWaveFunction swave_;
 
   /**
    *  Vector wavefunction
    */
-  mutable vector<VectorWaveFunction> _outVector;
+  mutable vector<VectorWaveFunction> outVector_;
 
   /**
    *  Spinor wavefunctions
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outspin_[3];
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Herwig::StoFFVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::StoFFVDecayer,1> {
-  /** Typedef of the first base class of Herwig::StoFFVDecayer. */
-  typedef Herwig::GeneralThreeBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Herwig::StoFFVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::StoFFVDecayer>
-  : public ClassTraitsBase<Herwig::StoFFVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::StoFFVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* THEPEG_StoFFVDecayer_H */

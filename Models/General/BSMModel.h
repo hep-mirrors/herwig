@@ -176,6 +176,11 @@ private:
    */
   map<long,long> idMap_;
 
+  /**
+   *  Whether or not to allow the width of SM particles to be reset
+   */
+  bool allowedToResetSMWidths_;
+
 };
 
 }

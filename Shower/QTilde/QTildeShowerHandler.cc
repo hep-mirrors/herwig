@@ -23,15 +23,15 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
-#include "Herwig/Shower/Core/Base/ShowerTree.h"
-#include "Herwig/Shower/Core/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
-#include "Herwig/Shower/Core/Base/ShowerVertex.h"
+#include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
@@ -544,8 +544,16 @@ void QTildeShowerHandler::doinit() {
 		      << "we recommend the number of attempts is 10 times the number for reweighting\n"
 		      << Exception::runerror;
   }
+  ShowerTree::_vmin2 = vMin();
+  ShowerTree::_spaceTime = includeSpaceTime();
 }
 
+void QTildeShowerHandler::doinitrun() {
+  ShowerHandler::doinitrun();
+  ShowerTree::_vmin2 = vMin();
+  ShowerTree::_spaceTime = includeSpaceTime();
+}
+  
 void QTildeShowerHandler::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
   if ( !ipTon() || !doISR() ) return;
@@ -1007,6 +1015,12 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   const ShowerParticle::EvolutionScales & maxScales,
 				   Energy minmass,ShowerInteraction type,
 				   Branching fb) {
+  // don't do anything if not needed
+  if(_limitEmissions == 1 || hardOnly() || 
+     ( _limitEmissions == 3 && _nis != 0) ||
+     ( _limitEmissions == 4 && _nfs + _nis != 0) ) {
+    return false;
+  }
   // too many tries
   if(_nFSR>=_maxTryFSR) {
     ++_nFailedFSR;
@@ -1057,6 +1071,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
     fc[1] = selectTimeLikeBranching      (children[1],type,HardBranchingPtr());
     // old default
     if(_reconOpt==0) {
+      ++_nis;
       // shower the first  particle
       _currenttree->updateInitialStateShowerProduct(_progenitor,children[0]);
       _currenttree->addInitialStateBranching(particle,children[0],children[1]);
@@ -1095,8 +1110,10 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
   	setupChildren = true;
    	continue;
       }
-      else
+      else {
+	++_nis;
    	break;
+      }
     }
     else if(_reconOpt>=2) {
       // cut-off masses for the branching
@@ -1120,6 +1137,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
       double z = fb.kinematics->z();
       Energy2 pt2 = (1.-z)*(z*sqr(masses[0])-sqr(masses[1])-z/(1.-z)*sqr(masses[2]));
       if(pt2>=ZERO) {
+	++_nis;
   	break;
       }
       else {
@@ -1351,11 +1369,23 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
   // soft matrix element correction veto
   if( softMEC()) {
     if(_hardme && _hardme->hasMECorrection()) {
-      if(_hardme->softMatrixElementVeto(_progenitor,particle,fb))
+      if(_hardme->softMatrixElementVeto(particle,
+					_progenitor->progenitor(),
+					particle->isFinalState(),
+					_progenitor->highestpT(),
+					fb.ids, fb.kinematics->z(),
+					fb.kinematics->scale(),
+					fb.kinematics->pT()))
 	return true;
     }
     else if(_decayme && _decayme->hasMECorrection()) {
-      if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+      if(_decayme->softMatrixElementVeto(particle,
+					 _progenitor->progenitor(),
+					 particle->isFinalState(),
+					 _progenitor->highestpT(),
+					 fb.ids, fb.kinematics->z(),
+					 fb.kinematics->scale(),
+					 fb.kinematics->pT()))
 	return true;
     }
   }
@@ -1366,7 +1396,7 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
     bool vetoed=false;
     for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
 	 v != _vetoes.end(); ++v) {
-      bool test = (**v).vetoTimeLike(_progenitor,particle,fb);
+      bool test = (**v).vetoTimeLike(_progenitor,particle,fb,currentTree());
       switch((**v).vetoType()) {
       case ShowerVeto::Emission:
 	vetoed |= test;
@@ -1401,7 +1431,13 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
     return true;
   // apply the soft correction
   if( softMEC() && _hardme && _hardme->hasMECorrection() ) {
-    if(_hardme->softMatrixElementVeto(_progenitor,particle,bb))
+    if(_hardme->softMatrixElementVeto(particle,
+				      _progenitor->progenitor(),
+				      particle->isFinalState(),
+				      _progenitor->highestpT(),
+				      bb.ids, bb.kinematics->z(),
+				      bb.kinematics->scale(),
+				      bb.kinematics->pT()))
       return true;
   }
   // the more general vetos
@@ -1413,7 +1449,7 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
     bool vetoed=false;
     for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
 	 v != _vetoes.end(); ++v) {
-      bool test = (**v).vetoSpaceLike(_progenitor,particle,bb);
+      bool test = (**v).vetoSpaceLike(_progenitor,particle,bb,currentTree());
       switch ((**v).vetoType()) {
       case ShowerVeto::Emission:
 	vetoed |= test;
@@ -1445,7 +1481,13 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
   ShowerInteraction type = convertInteraction(fb.type);
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
-    if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+    if(_decayme->softMatrixElementVeto(particle,
+				       _progenitor->progenitor(),
+				       particle->isFinalState(),
+				       _progenitor->highestpT(),
+				       fb.ids, fb.kinematics->z(),
+				       fb.kinematics->scale(),
+				       fb.kinematics->pT()))
       return true;
   }
   // veto on hardest pt in the shower
@@ -1455,7 +1497,7 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
     bool vetoed=false;
     for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
 	 v != _vetoes.end(); ++v) {
-      bool test = (**v).vetoSpaceLike(_progenitor,particle,fb);
+      bool test = (**v).vetoSpaceLike(_progenitor,particle,fb,currentTree());
       switch((**v).vetoType()) {
       case ShowerVeto::Emission:
 	vetoed |= test;
@@ -2653,7 +2695,14 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
 	if(hard) {
 	  // get the PDF
 	  setBeamParticle(_progenitor->beam());
-	  assert(beamParticle());
+	  if(!beamParticle()) {
+	    throw Exception() << "Incorrect type of beam particle in "
+			      << "QTildeShowerHandler::doShowering(). "
+			      << "This should not happen for conventional choices but may happen if you have used a"
+			      << " non-default choice and have not changed the create ParticleData line in the input files"
+			      << " for this particle to create BeamParticleData."
+			      << Exception::runerror;
+	  }
 	  // perform the shower
 	  // set the beam particle
 	  tPPtr beamparticle=progenitor()->original();

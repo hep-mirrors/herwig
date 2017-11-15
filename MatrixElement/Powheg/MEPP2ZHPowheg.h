@@ -226,12 +226,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEPP2ZHPowheg> initMEPP2ZHPowheg;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -384,41 +378,6 @@ private:
   mutable double _oldqbar;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEPP2ZHPowheg. */
-template <>
-struct BaseClassTrait<Herwig::MEPP2ZHPowheg,1> {
-  /** Typedef of the first base class of MEPP2ZHPowheg. */
-  typedef Herwig::MEPP2ZH NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEPP2ZHPowheg class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEPP2ZHPowheg>
-  : public ClassTraitsBase<Herwig::MEPP2ZHPowheg> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2ZHPowheg"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEPP2ZHPowheg is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2ZHPowheg depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
-};
-
-/** @endcond */
 
 }
 

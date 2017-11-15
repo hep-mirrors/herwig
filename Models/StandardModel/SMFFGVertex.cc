@@ -12,6 +12,7 @@
 //
 
 #include "SMFFGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -20,9 +21,10 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-NoPIOClassDescription<SMFFGVertex> 
-SMFFGVertex::initSMFFGVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<SMFFGVertex,FFVVertex>
+describeHerwigSMFFGVertex("Herwig::SMFFGVertex", "Herwig.so");
 
 void SMFFGVertex::Init() {
 
@@ -34,18 +36,22 @@ void SMFFGVertex::Init() {
 
 // coupling for FFG vertex
 #ifndef NDEBUG
-void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr bb,tcPDPtr) {
 #else
-void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,tcPDPtr) {
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
 #endif
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -strongCoupling(q2);
     _q2last=q2;
   }
-  norm(_couplast);
   // the left and right couplings
   assert( abs(aa->id()) >= 1 && abs(aa->id()) <= 6 );
+  assert( aa->id()==-bb->id());
+  if(aa->id()<0)
+    norm( _couplast);
+  else
+    norm(-_couplast);
   left(1.);
   right(1.);
 }

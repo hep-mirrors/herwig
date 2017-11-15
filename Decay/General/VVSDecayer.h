@@ -53,6 +53,28 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
+  
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection()  {
+    return (vertex_->orderInGem()+vertex_->orderInGs())==1 ? FSR : No;
+  }
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
   //@}
 
 public:
@@ -98,25 +120,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<VVSDecayer> initVVSDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -129,52 +133,61 @@ private:
   /**
    *  Abstract pointer to AbstractVVSVertex
    */
-  AbstractVVSVertexPtr _abstractVertex;
+  AbstractVVSVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  VVSVertexPtr _perturbativeVertex;
+  VVSVertexPtr perturbativeVertex_;
+
+  /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from incoming vector
+   */
+  map<ShowerInteraction,AbstractVVVVertexPtr> incomingVertex_;
+
+  /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from the first outgoing vector
+   */
+  map<ShowerInteraction,AbstractVVVVertexPtr> outgoingVertexV_;
+
+  /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from the second outgoing vector
+   */
+  map<ShowerInteraction,AbstractVSSVertexPtr> outgoingVertexS_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Vector wavefunctions
    */
-  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
+  mutable vector<Helicity::VectorWaveFunction> vectors_[2];
+  
+private:
+
+  /**
+   *  Members for the POWHEG correction
+   */
+  //@{
+  /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix rho3_;
+
+  /**
+   *  Vector wavefunctions
+   */
+  mutable vector<Helicity::VectorWaveFunction> vectors3_[2];
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::VectorWaveFunction> gluon_;
+  //@}
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of VVSDecayer. */
-template <>
-struct BaseClassTrait<VVSDecayer,1> {
-  /** Typedef of the first base class of VVSDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the VVSDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<VVSDecayer>
-  : public ClassTraitsBase<VVSDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::VVSDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* THEPEG_VVSDecayer_H */

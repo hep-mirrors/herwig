@@ -163,12 +163,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEGammaGamma2WW> initMEGammaGamma2WW;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -197,41 +191,6 @@ private:
   mutable ProductionMatrixElement me_;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEGammaGamma2WW. */
-template <>
-struct BaseClassTrait<Herwig::MEGammaGamma2WW,1> {
-  /** Typedef of the first base class of MEGammaGamma2WW. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEGammaGamma2WW class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEGammaGamma2WW>
-  : public ClassTraitsBase<Herwig::MEGammaGamma2WW> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEGammaGamma2WW"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEGammaGamma2WW is implemented. It may also include several, space-separated,
-   * libraries if the class MEGammaGamma2WW depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEGammaGamma.so"; }
-};
-
-/** @endcond */
 
 }
 

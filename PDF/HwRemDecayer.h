@@ -17,7 +17,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 #include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "HwRemDecayer.fh"
@@ -218,12 +218,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<HwRemDecayer> initHwRemDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -665,41 +659,6 @@ private:
 
 };
 
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HwRemDecayer. */
-template <>
-struct BaseClassTrait<Herwig::HwRemDecayer,1> {
-  /** Typedef of the first base class of HwRemDecayer. */
-  typedef RemnantDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HwRemDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HwRemDecayer>
-  : public ClassTraitsBase<Herwig::HwRemDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HwRemDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * HwRemDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class HwRemDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

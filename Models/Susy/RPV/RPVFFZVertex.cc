@@ -197,6 +197,11 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     _id2last = iferm2;
     _leftlast  = -1.;
     _rightlast = -1.;
+    if(iferm1>0) {
+      Complex temp = _leftlast;
+      _leftlast  = -_rightlast;
+      _rightlast = -temp;
+    }
   }
   // coupling to the Z
   else {

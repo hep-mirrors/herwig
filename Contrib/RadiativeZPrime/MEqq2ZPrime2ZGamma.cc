@@ -5,6 +5,7 @@
 //
 
 #include "MEqq2ZPrime2ZGamma.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -111,8 +112,10 @@ void MEqq2ZPrime2ZGamma::persistentInput(PersistentIStream & is, int) {
   is >> _theFFZPrimeVertex >> _theGammaZPrimeZVertex >> _zPrime >> _maxflavour;
 }
 
-ClassDescription<MEqq2ZPrime2ZGamma> MEqq2ZPrime2ZGamma::initMEqq2ZPrime2ZGamma;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEqq2ZPrime2ZGamma,HwMEBase>
+describeHerwigMEqq2ZPrime2ZGamma("RadiativeZPrime::MEqq2ZPrime2ZGamma", "RadiativeZPrime.so");
 
 void MEqq2ZPrime2ZGamma::Init() {
 

@@ -30,7 +30,7 @@
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
-#include <boost/progress.hpp>
+#include "Herwig/Utilities/Progress.h"
 
 #include "GeneralSampler.h"
 
@@ -185,10 +185,10 @@ void BinSampler::fillRemappers(bool progress) {
 
   unsigned long nanPoints = 0;
 
-  boost::progress_display* progressBar = 0;
+  progress_display* progressBar = nullptr;
   if ( progress ) {
     Repository::clog() << "warming up " << ANSI::red << process() << ANSI::reset;
-    progressBar = new boost::progress_display(theRemapperPoints,Repository::clog());
+    progressBar = new progress_display{ theRemapperPoints, Repository::clog() };
   }
 
   unsigned long countzero =0;
@@ -396,11 +396,11 @@ void BinSampler::setupRemappers(bool progress) {
 
 void BinSampler::runIteration(unsigned long points, bool progress) {
 
-  boost::progress_display* progressBar = 0;
+  progress_display* progressBar = 0;
   if ( progress ) {
     Repository::clog() << "integrating " << ANSI::red << process()<< ANSI::reset << ", iteration "
 		       << (iterations().size() + 1);
-    progressBar = new boost::progress_display(points,Repository::clog());
+    progressBar = new progress_display(points,Repository::clog());
   }
 
   double w=0.;

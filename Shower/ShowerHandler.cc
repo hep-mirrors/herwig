@@ -32,7 +32,6 @@
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig/Shower/Core/Base/ShowerTree.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -52,11 +51,10 @@ void ShowerHandler::doinit() {
   CascadeHandler::doinit();
   // copy particles to decay before showering from input vector to the 
   // set used in the simulation
-  if ( particlesDecayInShower_.empty() )
-    particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
-				   inputparticlesDecayInShower_.end());
-  ShowerTree::_vmin2 = vMin_;
-  ShowerTree::_spaceTime = includeSpaceTime_;
+  if ( particlesDecayInShower_.empty() ) {
+    for(unsigned int ix=0;ix<inputparticlesDecayInShower_.size();++ix)
+      particlesDecayInShower_.insert(abs(inputparticlesDecayInShower_[ix]));
+  }
   if ( profileScales() ) {
     if ( profileScales()->unrestrictedPhasespace() &&
 	 restrictPhasespace() ) {
@@ -102,8 +100,6 @@ void ShowerHandler::doinitrun(){
     if(MPIHandler_->softInt())
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
-  ShowerTree::_vmin2 = vMin_;
-  ShowerTree::_spaceTime = includeSpaceTime_;
 }
 
 void ShowerHandler::dofinish() {

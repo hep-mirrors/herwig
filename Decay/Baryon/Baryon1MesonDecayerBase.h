@@ -310,12 +310,6 @@ private:
 private:
 
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<Baryon1MesonDecayerBase> 
-  initBaryon1MesonDecayerBase;
-
-  /**
    * Private and non-existent assignment operator.
    */
   Baryon1MesonDecayerBase & operator=(const Baryon1MesonDecayerBase &);
@@ -355,43 +349,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of Baryon1MesonDecayerBase.
- */
-template <>
- struct BaseClassTrait<Herwig::Baryon1MesonDecayerBase,1> {
-    /** Typedef of the base class of Baryon1MesonDecayerBase. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::Baryon1MesonDecayerBase>
-  : public ClassTraitsBase<Herwig::Baryon1MesonDecayerBase> {
-  /** Return the class name. */
-  static string className() { return "Herwig::Baryon1MesonDecayerBase";}
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwBaryonDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_Baryon1MesonDecayerBase_H */

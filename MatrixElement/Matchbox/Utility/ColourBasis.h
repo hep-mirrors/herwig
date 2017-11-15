@@ -67,11 +67,6 @@ public:
   Ptr<MatchboxFactory>::tptr factory() const;
 
   /**
-   * Set the factory which produced this matrix element
-   */
-  void factory(Ptr<MatchboxFactory>::tptr f);
-
-  /**
    * Clone this colour basis.
    */
   Ptr<ColourBasis>::ptr cloneMe() const {
@@ -425,11 +420,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The factory which produced this matrix element
-   */
-  Ptr<MatchboxFactory>::tptr theFactory;
 
   typedef map<vector<PDT::Colour>,symmetric_matrix<double,upper> >
   ScalarProductMap;

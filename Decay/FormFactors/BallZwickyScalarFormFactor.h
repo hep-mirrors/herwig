@@ -130,11 +130,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<BallZwickyScalarFormFactor> initBallZwickyScalarFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   BallZwickyScalarFormFactor & operator=(const BallZwickyScalarFormFactor &);
@@ -215,42 +210,6 @@ private:
   double _thetaeta;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * BallZwickyScalarFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::BallZwickyScalarFormFactor,1> {
-  /** Typedef of the base class of BallZwickyScalarFormFactor. */
-   typedef Herwig::ScalarFormFactor NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * BallZwickyScalarFormFactor class.
- */
-template <>
- struct ClassTraits<Herwig::BallZwickyScalarFormFactor>
-  : public ClassTraitsBase<Herwig::BallZwickyScalarFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::BallZwickyScalarFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

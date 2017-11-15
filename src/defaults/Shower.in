@@ -132,6 +132,11 @@ newdef GtoGGSplitFn:InteractionType QCD
 newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 set GtoGGSplitFn:AngularOrdered Yes
 
+create Herwig::OneOneOneMassiveSplitFn WtoWGammaSplitFn
+newdef WtoWGammaSplitFn:InteractionType QED
+newdef WtoWGammaSplitFn:ColourStructure ChargedChargedNeutral
+set WtoWGammaSplitFn:AngularOrdered Yes
+
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
@@ -174,6 +179,8 @@ set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
 
 cp QtoQGammaSudakov LtoLGammaSudakov
+# Technical parameter to stop evolution.
+set LtoLGammaSudakov:pTmin 0.000001
 
 cp SudakovCommon QtoQWZSudakov
 set QtoQWZSudakov:SplittingFunction QtoQWZSplitFn
@@ -185,6 +192,10 @@ cp QtoQWZSudakov LtoLWZSudakov
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
 newdef GtoGGSudakov:PDFmax 2.0
+
+cp SudakovCommon WtoWGammaSudakov
+newdef WtoWGammaSudakov:SplittingFunction WtoWGammaSplitFn
+set WtoWGammaSudakov:Alpha AlphaQED
 
 cp SudakovCommon GtoQQbarSudakov
 newdef GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
@@ -208,6 +219,7 @@ newdef QtoGQSudakov:SplittingFunction QtoGQSplitFn
 
 cp SudakovCommon QtoGammaQSudakov
 newdef QtoGammaQSudakov:SplittingFunction QtoGammaQSplitFn
+set QtoGammaQSudakov:Alpha AlphaQED
 
 cp SudakovCommon utoGuSudakov
 newdef utoGuSudakov:SplittingFunction QtoGQSplitFn
@@ -258,6 +270,8 @@ do SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
 do SplittingGenerator:AddFinalSplitting e-->e-,gamma; LtoLGammaSudakov
 do SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; LtoLGammaSudakov
 do SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; LtoLGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting W+->W+,gamma; WtoWGammaSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that the current particle b is given and we backward branch to new

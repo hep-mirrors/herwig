@@ -12,6 +12,7 @@
 //
 
 #include "DtoKPiPiE691.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
@@ -256,8 +257,10 @@ void DtoKPiPiE691::persistentInput(PersistentIStream & is, int) {
      >> iunit(_wrhop ,GeV) >> _maxwgt >> _weights;
 }
 
-ClassDescription<DtoKPiPiE691> DtoKPiPiE691::initDtoKPiPiE691;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<DtoKPiPiE691,DecayIntegrator>
+describeHerwigDtoKPiPiE691("Herwig::DtoKPiPiE691", "HwSMDecay.so");
 
 void DtoKPiPiE691::Init() {
 

@@ -54,6 +54,9 @@ newdef /Herwig/Model:Vertex/HGG HGGVertex
 create Herwig::SMHPPVertex HPPVertex
 newdef /Herwig/Model:Vertex/HPP HPPVertex
 
+#create the standard model HZP vertex
+create Herwig::SMHZPVertex HZPVertex
+
 #create the standard model HHH vertex
 create Herwig::SMHHHVertex HHHVertex
 newdef /Herwig/Model:Vertex/HHH HHHVertex

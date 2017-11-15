@@ -5,6 +5,7 @@
 //
 
 #include "LightBaryonQuarkModelFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -114,9 +115,10 @@ void LightBaryonQuarkModelFormFactor::persistentInput(PersistentIStream & is, in
      >> iunit(_Lambdag1,GeV) >> iunit(_Lambdag2,GeV);
 }
 
-ClassDescription<LightBaryonQuarkModelFormFactor> 
-LightBaryonQuarkModelFormFactor::initLightBaryonQuarkModelFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LightBaryonQuarkModelFormFactor,BaryonFormFactor>
+describeHerwigLightBaryonQuarkModelFormFactor("Herwig::LightBaryonQuarkModelFormFactor", "HwFormFactors.so");
 
 void LightBaryonQuarkModelFormFactor::Init() {
 

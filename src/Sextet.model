@@ -99,8 +99,10 @@ mkdir /Herwig/Vertices/Sextet
 cd /Herwig/Vertices/Sextet
 library HwSextetModel.so
 create Herwig::SextetGSSVertex  Sextet_GSSVertex
+create Herwig::SextetPSSVertex  Sextet_PSSVertex
 create Herwig::SextetGGSSVertex Sextet_GGSSVertex
 create Herwig::SextetGVVVertex  Sextet_GVVVertex
+create Herwig::SextetPVVVertex  Sextet_PVVVertex
 create Herwig::SextetGGVVVertex Sextet_GGVVVertex
 create Herwig::SextetFFSVertex  Sextet_FFSVertex
 create Herwig::SextetFFVVertex  Sextet_FFVVertex
@@ -120,8 +122,10 @@ set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # Sextet model vertices
 set Model:Vertex/SDQSDQG  /Herwig/Vertices/Sextet/Sextet_GSSVertex
+set Model:Vertex/SDQSDQP  /Herwig/Vertices/Sextet/Sextet_PSSVertex
 set Model:Vertex/SDQSDQGG /Herwig/Vertices/Sextet/Sextet_GGSSVertex
 set Model:Vertex/VDQVDQG  /Herwig/Vertices/Sextet/Sextet_GVVVertex
+set Model:Vertex/VDQVDQP  /Herwig/Vertices/Sextet/Sextet_PVVVertex
 set Model:Vertex/VDQVDQGG /Herwig/Vertices/Sextet/Sextet_GGVVVertex
 set Model:Vertex/FFSDQ    /Herwig/Vertices/Sextet/Sextet_FFSVertex
 set Model:Vertex/FFVDQ    /Herwig/Vertices/Sextet/Sextet_FFVVertex
@@ -131,6 +135,17 @@ set Model:Vertex/FFVDQ    /Herwig/Vertices/Sextet/Sextet_FFVVertex
 #
 ###################################################
 cd /Herwig/Shower
+
+insert ShowerHandler:DecayInShower 0 6000221
+insert ShowerHandler:DecayInShower 0 6000211
+insert ShowerHandler:DecayInShower 0 6000111
+insert ShowerHandler:DecayInShower 0 6001221
+insert ShowerHandler:DecayInShower 0 6001211
+insert ShowerHandler:DecayInShower 0 6001111
+insert ShowerHandler:DecayInShower 0 6000123
+insert ShowerHandler:DecayInShower 0 6000113
+insert ShowerHandler:DecayInShower 0 6000223
+insert ShowerHandler:DecayInShower 0 6000213
 
 create Herwig::ZeroZeroOneSplitFn SDiquarktoSDiquarkSplitFn
 set SDiquarktoSDiquarkSplitFn:InteractionType QCD

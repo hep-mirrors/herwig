@@ -5,6 +5,7 @@
 //
 
 #include "QuickVBF.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -60,8 +61,10 @@ void QuickVBF::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-NoPIOClassDescription<QuickVBF> QuickVBF::initQuickVBF;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<QuickVBF,AnalysisHandler>
+describeHerwigQuickVBF("Herwig::QuickVBF", "VBFAnalysis.so");
 
 void QuickVBF::Init() {
 

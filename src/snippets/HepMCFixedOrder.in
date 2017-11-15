@@ -2,11 +2,10 @@
 
 ## this snippet is for fixed order ie NO shower
 
-cd /Herwig/Analysis
-create ThePEG::NLOHepMCFile HepMCFixedOrder HepMCAnalysis.so
-set HepMCFixedOrder:PrintEvent 10000
-set HepMCFixedOrder:Format GenEvent
-set HepMCFixedOrder:Units GeV_mm
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMCFixedOrder
+create ThePEG::NLOHepMCFile /Herwig/Analysis/HepMCFixedOrder HepMCAnalysis.so
+set /Herwig/Analysis/HepMCFixedOrder:PrintEvent 10000
+set /Herwig/Analysis/HepMCFixedOrder:Format GenEvent
+set /Herwig/Analysis/HepMCFixedOrder:Units GeV_mm
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFixedOrder
 
 

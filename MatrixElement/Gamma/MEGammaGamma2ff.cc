@@ -5,6 +5,7 @@
 //
 
 #include "MEGammaGamma2ff.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -102,11 +103,11 @@ double MEGammaGamma2ff::helicityME(vector<VectorWaveFunction> &p1,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  //first t-channel diagram
-	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle(),
+	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle()->CC(),
 				    fbar[ohel2],p2[ihel2]);
 	  diag[0]=vertex_->evaluate(mt,inters,f[ohel1],p1[ihel1]);
 	  //second t-channel diagram
-	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle(),
+	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle()->CC(),
 				    fbar[ohel2],p1[ihel1]);
 	  diag[1]=vertex_->evaluate(mt,inters,f[ohel1],p2[ihel2]);
 	  sumdiag[0] += norm(diag[0]);
@@ -166,8 +167,10 @@ void MEGammaGamma2ff::persistentInput(PersistentIStream & is, int) {
   is >> process_ >> vertex_;
 }
 
-ClassDescription<MEGammaGamma2ff> MEGammaGamma2ff::initMEGammaGamma2ff;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEGammaGamma2ff,HwMEBase>
+describeHerwigMEGammaGamma2ff("Herwig::MEGammaGamma2ff", "HwMEGammaGamma.so");
 
 void MEGammaGamma2ff::Init() {
 

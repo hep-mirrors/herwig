@@ -164,11 +164,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<StrongHeavyBaryonDecayer> initStrongHeavyBaryonDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   StrongHeavyBaryonDecayer & operator=(const StrongHeavyBaryonDecayer &);
@@ -274,43 +269,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of StrongHeavyBaryonDecayer.
- */
-template <>
- struct BaseClassTrait<Herwig::StrongHeavyBaryonDecayer,1> {
-    /** Typedef of the base class of StrongHeavyBaryonDecayer. */
-  typedef Herwig::Baryon1MesonDecayerBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::StrongHeavyBaryonDecayer>
-  : public ClassTraitsBase<Herwig::StrongHeavyBaryonDecayer> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::StrongHeavyBaryonDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwBaryonDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_StrongHeavyBaryonDecayer_H */

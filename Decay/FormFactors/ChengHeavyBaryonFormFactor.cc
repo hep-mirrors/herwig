@@ -5,6 +5,7 @@
 //
 
 #include "ChengHeavyBaryonFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h" 
@@ -178,8 +179,10 @@ void ChengHeavyBaryonFormFactor::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mAbs,MeV) >> iunit(_mAcs,MeV) >> iunit(_mAbd,MeV) >> iunit(_mAcu,MeV);
 }
 
-ClassDescription<ChengHeavyBaryonFormFactor> ChengHeavyBaryonFormFactor::initChengHeavyBaryonFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ChengHeavyBaryonFormFactor,BaryonFormFactor>
+describeHerwigChengHeavyBaryonFormFactor("Herwig::ChengHeavyBaryonFormFactor", "HwFormFactors.so");
 
 void ChengHeavyBaryonFormFactor::Init() {
 

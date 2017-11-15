@@ -12,6 +12,7 @@
 //
 
 #include "SMFFHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -70,9 +71,10 @@ void SMFFHVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> iunit(_mw,GeV) >> _fermion;
 }
 
-ClassDescription<SMFFHVertex> 
-SMFFHVertex::initSMFFHVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMFFHVertex,FFSVertex>
+describeHerwigSMFFHVertex("Herwig::SMFFHVertex", "Herwig.so");
 
 void SMFFHVertex::Init() {
 

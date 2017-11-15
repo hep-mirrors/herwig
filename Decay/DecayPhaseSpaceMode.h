@@ -376,11 +376,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<DecayPhaseSpaceMode> initDecayPhaseSpaceMode;
-
-  /**
    * Private and non-existent assignment operator.
    */
   DecayPhaseSpaceMode & operator=(const DecayPhaseSpaceMode &);
@@ -462,36 +457,5 @@ ostream & operator<<(ostream &, const DecayPhaseSpaceMode &);
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * base class of DecayPhaseSpaceMode.
- */
- struct BaseClassTrait<Herwig::DecayPhaseSpaceMode,1> {
-  /** Typedef of the base class of DecayPhaseSpaceMode. */
-  typedef Interfaced NthBase;
-};
-
-template <>
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
- struct ClassTraits<Herwig::DecayPhaseSpaceMode>
-  : public ClassTraitsBase<Herwig::DecayPhaseSpaceMode> {
-   /** Return the class name. */
-   static string className() { return "Herwig::DecayPhaseSpaceMode"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_DecayPhaseSpaceMode_H */

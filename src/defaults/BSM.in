@@ -18,6 +18,9 @@ create Herwig::DecayConstructor DecayConstructor
 newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
 set TwoBodyDC:ExcludeEffectiveVertices No
+set TwoBodyDC:AlphaQCD /Herwig/Shower/AlphaQCD
+set TwoBodyDC:AlphaQED /Herwig/Shower/AlphaQED
+set TwoBodyDC:Interactions QCDandQED
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 set ThreeBodyDC:RemoveFlavourChangingVertices Yes
 create Herwig::FourBodyDecayConstructor FourBodyDC

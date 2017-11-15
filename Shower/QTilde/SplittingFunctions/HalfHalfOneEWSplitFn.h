@@ -5,7 +5,7 @@
 // This is the declaration of the HalfHalfOneEWSplitFn class.
 //
 
-#include "Herwig/Shower/Core/SplittingFunctions/SplittingFunction.h"
+#include "SplittingFunction.h"
 
 namespace Herwig {
 

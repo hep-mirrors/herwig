@@ -173,12 +173,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEqq2W2ff> initMEqq2W2ff;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -231,37 +225,6 @@ private:
    */
   ProductionMatrixElement _me;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEqq2W2ff. */
-template <>
-struct BaseClassTrait<Herwig::MEqq2W2ff,1> {
-  /** Typedef of the first base class of MEqq2W2ff. */
-  typedef Herwig::DrellYanBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEqq2W2ff class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEqq2W2ff>
-  : public ClassTraitsBase<Herwig::MEqq2W2ff> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEqq2W2ff"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEqq2W2ff class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwMEHadron.so"; }
-};
-
-/** @endcond */
 
 }
 

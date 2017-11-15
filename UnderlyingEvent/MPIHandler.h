@@ -398,12 +398,6 @@ private:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MPIHandler> initMPIHandler;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -594,37 +588,6 @@ protected:
 
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MPIHandler. */
-template <>
-struct BaseClassTrait<Herwig::MPIHandler,1> {
-  /** Typedef of the first base class of MPIHandler. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MPIHandler class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MPIHandler>
-  : public ClassTraitsBase<Herwig::MPIHandler> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MPIHandler"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MPIHandler class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "JetCuts.so SimpleKTCut.so HwMPI.so"; }
-};
-
-/** @endcond */
-
-}
-
 namespace Herwig {
 
   /**
@@ -804,7 +767,7 @@ namespace Herwig {
   /**
    *  Typedef for derivative of the length
    */
-  typedef Qty<1,-2,0> LengthDiff;
+  typedef decltype(mm/GeV2) LengthDiff;
 
   /**
    *  A struct for the integrand for the slope
@@ -911,10 +874,5 @@ namespace Herwig {
 
   };
 }
-
-
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MPIHandler.tcc"
-#endif
 
 #endif /* HERWIG_MPIHandler_H */

@@ -139,12 +139,6 @@ private:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEvv2tv> initMEvv2tv;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -163,33 +157,6 @@ private:
   vector<AbstractVVVTVertexPtr> fourPoint_;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEvv2tv. */
-template <>
-struct BaseClassTrait<Herwig::MEvv2tv,1> {
-  /** Typedef of the first base class of MEvv2tv. */
-  typedef Herwig::GeneralHardME NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEvv2tv class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEvv2tv>
-  : public ClassTraitsBase<Herwig::MEvv2tv> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEvv2tv"; }
-};
-
-/** @endcond */
 
 }
 

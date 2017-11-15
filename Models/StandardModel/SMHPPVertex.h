@@ -95,16 +95,29 @@ protected:
 
 private:
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMHPPVertex> initSMHPPVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SMHPPVertex & operator=(const SMHPPVertex &);
+
+private:
+  
+  /**
+   * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Af(const double lambda) const;
+
+  /**
+   * Loop calculations: A1 for spin-1 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Aw(const double lambda) const;
+
+  /**
+   * Loop calculations: W2 function (see details in NPB297,221)
+   */
+  Complex W2(double lambda) const;
+
+private:
 
   /**
    *Storage of couplings
@@ -134,7 +147,7 @@ private:
   /**
    * define quark mass scheme (fixed/running)
    */
-  unsigned int massopt;
+  unsigned int _massopt;
 
   /**
    * The minimum flavour number in quark loops
@@ -147,21 +160,6 @@ private:
   int _maxloop;
 
   /**
-   * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
-   */
-  Complex Af(const double lambda) const;
-
-  /**
-   * Loop calculations: A1 for spin-1 particles (see details in ``Higgs Hunter's Guide'')
-   */
-  Complex Aw(const double lambda) const;
-
-  /**
-   * Loop calculations: W2 function (see details in NPB297,221)
-   */
-  Complex W2(double lambda) const;
-
-  /**
    * Switch between two representations of coefficients (_a00,_a11,_a12,_a21,_a22,_aEp):
    * suitable for the simplified H-g-g and H-gamma-gamma vertices and 
    * suitable for the Passarino-Veltman tensor reduction scheme
@@ -171,32 +169,5 @@ private:
 };
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHPPVertex. */
-template <>
-struct BaseClassTrait<Herwig::SMHPPVertex,1> {
-  /** Typedef of the first base class of SMHPPVertex. */
-  typedef Herwig::VVSLoopVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHPPVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHPPVertex>
-  : public ClassTraitsBase<Herwig::SMHPPVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHPPVertex"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_SMHPPVertex_H */

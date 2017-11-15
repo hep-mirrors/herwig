@@ -203,6 +203,8 @@ set Model:Vertex/SLQFF  /Herwig/Vertices/Leptoquark/Leptoquark_SLQFFVertex
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
+# missing QED vertices in mode so swithc off those corrections
+set TwoBodyDC:Interactions QCD
 set ThreeBodyDC:CreateDecayModes No
 
 # which particles get the off-shell treatment

@@ -204,11 +204,6 @@ protected:
 private:
 
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractClassDescription<WeakDecayCurrent> initWeakDecayCurrent;
-
-  /**
    * Private and non-existent assignment operator.
    */
   WeakDecayCurrent & operator=(const WeakDecayCurrent &);
@@ -234,36 +229,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of WeakDecayCurrent.
- */
-template <>
-struct BaseClassTrait<Herwig::WeakDecayCurrent,1> {
-  /** Typedef of the base class of WeakDecayCurrent. */
-  typedef Interfaced NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::WeakDecayCurrent>
-  : public ClassTraitsBase<Herwig::WeakDecayCurrent> {
-  /** Return the class name. */
-  static string className() { return "Herwig::WeakDecayCurrent"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_WeakDecayCurrent_H */

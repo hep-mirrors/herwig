@@ -18,13 +18,7 @@ set EventHandler:CascadeHandler /Herwig/Shower/PowhegShowerHandler
 
 cd /Herwig/Shower
 
-set PowhegShowerHandler:Factory /Herwig/MatrixElements/Matchbox/Factory
-
 set PowhegShowerHandler:HardEmission POWHEG
-
-# tunes
-# As of release 7.1 we are using the default tune
-#read Matchbox/Powheg-Default-HardAlphaSTune.in
 
 cd /Herwig/Analysis
 

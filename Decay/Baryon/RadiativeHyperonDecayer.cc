@@ -5,6 +5,7 @@
 //
 
 #include "RadiativeHyperonDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -115,9 +116,10 @@ void RadiativeHyperonDecayer::persistentInput(PersistentIStream & is, int) {
      >> maxweight_ >> initsize_;
 }
 
-ClassDescription<RadiativeHyperonDecayer> 
-RadiativeHyperonDecayer::initRadiativeHyperonDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<RadiativeHyperonDecayer,Baryon1MesonDecayerBase>
+describeHerwigRadiativeHyperonDecayer("Herwig::RadiativeHyperonDecayer", "HwBaryonDecay.so");
 
 void RadiativeHyperonDecayer::Init() {
 

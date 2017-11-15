@@ -5,6 +5,7 @@
 //
 
 #include "SemiLeptonicDPiAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -126,8 +127,10 @@ void SemiLeptonicDPiAnalysis::persistentOutput(PersistentOStream &) const {}
 
 void SemiLeptonicDPiAnalysis::persistentInput(PersistentIStream &, int) {}
 
-ClassDescription<SemiLeptonicDPiAnalysis> SemiLeptonicDPiAnalysis::initSemiLeptonicDPiAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SemiLeptonicDPiAnalysis,AnalysisHandler>
+describeHerwigSemiLeptonicDPiAnalysis("Herwig::SemiLeptonicDPiAnalysis", "HwDecayAnalysis.so");
 
 void SemiLeptonicDPiAnalysis::Init() {
 

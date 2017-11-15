@@ -6,7 +6,7 @@
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -56,14 +56,24 @@ public:
 
   /**
    * Apply the soft matrix element correction
-   * @param initial The particle from the hard process which started the 
-   * shower
    * @param parent The initial particle in the current branching
-   * @param br The branching struct
+   * @param progenitor The progenitor particle of the jet
+   * @param fs Whether the emission is initial or final-state
+   * @param highestpT The highest pT so far in the shower
+   * @param ids ids of the particles produced in the branching
+   * @param z The momentum fraction of the branching
+   * @param scale the evolution scale of the branching
+   * @param pT The transverse momentum of the branching
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
-				     ShowerParticlePtr,Branching);
+  virtual bool softMatrixElementVeto(PPtr parent,
+				     PPtr progenitor,
+				     const bool & fs,
+				     const Energy & highestpT,
+				     const vector<tcPDPtr> & ids,
+				     const double & z,
+				     const Energy & scale,
+				     const Energy & pT);
   //@}
 
   /**
@@ -154,12 +164,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<DISBase> initDISBase;
 
   /**
    * The assignment operator is private and must never be called.
@@ -428,41 +432,6 @@ private:
   double jac_;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of DISBase. */
-template <>
-struct BaseClassTrait<Herwig::DISBase,1> {
-  /** Typedef of the first base class of DISBase. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the DISBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::DISBase>
-  : public ClassTraitsBase<Herwig::DISBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::DISBase"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MENeutralCurrentDIS is implemented. It may also include several, space-separated,
-   * libraries if the class MENeutralCurrentDIS depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEDIS.so"; }
-};
-
-/** @endcond */
 
 }
 

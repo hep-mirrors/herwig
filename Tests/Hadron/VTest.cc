@@ -5,6 +5,7 @@
 //
 
 #include "VTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -100,8 +101,10 @@ void VTest::persistentOutput(PersistentOStream & ) const {
 void VTest::persistentInput(PersistentIStream & , int) {
 }
 
-ClassDescription<VTest> VTest::initVTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<VTest,AnalysisHandler>
+describeHerwigVTest("Herwig::VTest", "libfastjet.so HadronJetTest.so");
 
 void VTest::Init() {
 

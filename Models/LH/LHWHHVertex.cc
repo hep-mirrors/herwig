@@ -87,7 +87,7 @@ void LHWHHVertex::doinit() {
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) 
     throw InitException() << "Must be using the LHModel "
-			  << " in LHWWWWVertex::doinit()"
+			  << " in LHWHHVertex::doinit()"
 			  << Exception::runerror;
   double sw2(sin2ThetaW());
   double sw(sqrt(sw2)),cw(sqrt(1.-sw2));
@@ -126,7 +126,7 @@ void LHWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
 			      tcPDPtr particle2, tcPDPtr particle3) {
   if( q2 != q2last_ || couplast_==0.) {
     q2last_ = q2;
-    couplast_ = electroMagneticCoupling(q2);
+    couplast_ = -electroMagneticCoupling(q2);
   }
   int ibos = particle1->id();
   int isc1 = particle2->id();
@@ -143,7 +143,7 @@ void LHWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
     else
       assert(false);
   }
-  if(ibos==32) {
+  else if(ibos==32) {
     if(isc1==37) 
       norm(coup_[18]*couplast_);
     else if(isc1==38)
@@ -270,7 +270,7 @@ void LHWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       norm(conj(coup_[13])*couplast_);
     else if(isc1==36)
       norm(conj(coup_[14])*couplast_);
-    else if(isc1==37)
+    else if(isc1==-37)
       norm(conj(coup_[15])*couplast_);
     else if(isc2==25)
       norm(-conj(coup_[12])*couplast_);
@@ -278,7 +278,7 @@ void LHWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       norm(-conj(coup_[13])*couplast_);
     else if(isc2==36)
       norm(-conj(coup_[14])*couplast_);
-    else if(isc2==37)
+    else if(isc2==-37)
       norm(-conj(coup_[15])*couplast_);
     else
       assert(false);

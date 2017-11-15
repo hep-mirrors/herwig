@@ -152,12 +152,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEvv2ff> initMEvv2ff;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -187,33 +181,6 @@ private:
   vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > tensor_;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEvv2ff. */
-template <>
-struct BaseClassTrait<Herwig::MEvv2ff,1> {
-  /** Typedef of the first base class of MEvv2ff. */
-  typedef Herwig::GeneralHardME NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEvv2ff class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEvv2ff>
-  : public ClassTraitsBase<Herwig::MEvv2ff> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEvv2ff"; }
-};
-
-/** @endcond */
 
 }
 

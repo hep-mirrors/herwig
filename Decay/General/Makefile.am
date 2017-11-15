@@ -8,6 +8,9 @@ GeneralFourBodyDecayer.h GeneralFourBodyDecayer.fh \
 GeneralFourBodyDecayer.cc \
 StoFFFFDecayer.h StoFFFFDecayer.cc
 
+# check the gauge invariance of corrections (for testing ONLY)
+#libHwGeneralDecay_la_CPPFLAGS= $(AM_CPPFLAGS) -DGAUGE_CHECK
+
 nodist_libHwGeneralDecay_la_SOURCES = \
 GeneralDecayer__all.cc 
 

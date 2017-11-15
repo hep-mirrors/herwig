@@ -34,22 +34,6 @@ public:
    * Default constructor.
    */
   LeptoquarkModelSLQSLQGVertex();
-    
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -94,74 +78,22 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<LeptoquarkModelSLQSLQGVertex> initLeptoquarkModelSLQSLQGVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   LeptoquarkModelSLQSLQGVertex & operator=(const LeptoquarkModelSLQSLQGVertex &);
   
   /**
-   * Pointer to the model.
-   */
-  tcSMPtr _theModel;
-
-  
-  /**
    * The energy at which the coupling was last evaluated
    */
-  Energy2 _q2last;
+  Energy2 q2last_;
 
   /**
    * The coupling when it was last evaluated
    */
-  Complex _couplast;
+  Complex couplast_;
 
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of LeptoquarkModelSLQSLQGVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::LeptoquarkModelSLQSLQGVertex,1> {
-  /** Typedef of the base class of LeptoquarkModelSLQSLQGVertex. */
-  typedef ThePEG::Helicity::VSSVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::LeptoquarkModelSLQSLQGVertex>
-  : public ClassTraitsBase<Herwig::LeptoquarkModelSLQSLQGVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::LeptoquarkModelSLQSLQGVertex"; }
-
-  /** 
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwLeptoquarkModel.so"; }
-
-};
-
-/** @endcond */
-  
-}
-
 
 #endif /* HERWIG_LeptoquarkModelSLQSLQGVertex_H */

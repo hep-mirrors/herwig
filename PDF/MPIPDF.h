@@ -140,12 +140,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MPIPDF> initMPIPDF;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -156,41 +150,6 @@ private:
    */
   cPDFPtr thePDF;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MPIPDF. */
-template <>
-struct BaseClassTrait<Herwig::MPIPDF,1> {
-  /** Typedef of the first base class of MPIPDF. */
-  typedef PDFBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MPIPDF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MPIPDF>
-  : public ClassTraitsBase<Herwig::MPIPDF> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MPIPDF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MPIPDF is implemented. It may also include several, space-separated,
-   * libraries if the class MPIPDF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

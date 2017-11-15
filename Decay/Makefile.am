@@ -33,7 +33,8 @@ DecayVertex.fh DecayVertex.h \
 DecayMatrixElement.fh DecayMatrixElement.h \
 TwoBodyDecayMatrixElement.h \
 GeneralDecayMatrixElement.fh GeneralDecayMatrixElement.h \
-BranchingRatioReweighter.h 
+BranchingRatioReweighter.h\
+PerturbativeDecayer.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -46,9 +47,8 @@ DecayVertex.cc \
 DecayMatrixElement.cc \
 TwoBodyDecayMatrixElement.cc \
 GeneralDecayMatrixElement.cc \
-BranchingRatioReweighter.cc
-
-
+BranchingRatioReweighter.cc\
+PerturbativeDecayer.cc
 
 ##################
 
@@ -147,19 +147,6 @@ $(AM_CPPFLAGS) -I$(srcdir)/Perturbative
 
 nodist_HwPerturbativeDecay_la_SOURCES = \
 Perturbative/Perturbative__all.cc
-
-##################
-
-pkglib_LTLIBRARIES += HwPerturbativeHiggsDecay.la
-
-HwPerturbativeHiggsDecay_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 10:0:0
-
-HwPerturbativeHiggsDecay_la_CPPFLAGS = \
-$(AM_CPPFLAGS) -I$(srcdir)/Perturbative
-
-nodist_HwPerturbativeHiggsDecay_la_SOURCES = \
-Perturbative/PerturbativeHiggs__all.cc
 
 ##################
 

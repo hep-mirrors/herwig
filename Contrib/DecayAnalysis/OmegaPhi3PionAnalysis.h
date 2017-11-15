@@ -109,12 +109,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<OmegaPhi3PionAnalysis> initOmegaPhi3PionAnalysis;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -171,41 +165,6 @@ private:
    */
   unsigned int _nmax;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of OmegaPhi3PionAnalysis. */
-template <>
-struct BaseClassTrait<Herwig::OmegaPhi3PionAnalysis,1> {
-  /** Typedef of the first base class of OmegaPhi3PionAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the OmegaPhi3PionAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::OmegaPhi3PionAnalysis>
-  : public ClassTraitsBase<Herwig::OmegaPhi3PionAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::OmegaPhi3PionAnalysis"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * OmegaPhi3PionAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class OmegaPhi3PionAnalysis depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwDecayAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

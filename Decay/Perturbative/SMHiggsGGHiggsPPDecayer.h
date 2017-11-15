@@ -12,41 +12,31 @@
 // This is the declaration of the SMHiggsGGHiggsPPDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
-#include "Herwig/Models/StandardModel/SMHGGVertex.h"
-#include "Herwig/Models/StandardModel/SMHPPVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-
-/**
- * Typedef for the \f$H\to gg\f$ vertex
- */
-typedef Ptr<Herwig::SMHGGVertex>::pointer HGGPtr;
-
-/**
- * Typedef for the \f$H\to \gamma\gamma\f$ vertex
- */
-typedef Ptr<Herwig::SMHPPVertex>::pointer HPPPtr;
   
 /**
  * The <code>SMHiggsGGHiggsPPDecayer</code> class performs the
- * of a Standard Model Higgs boson to either a pair
- * of photons or a pair of gluons.
+ * of a Standard Model Higgs boson to:  a pair
+ * of photons or a pair of gluons, or a \f$Z^0\f$ boson and a photon.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  */ 
-class SMHiggsGGHiggsPPDecayer: public DecayIntegrator {
+class SMHiggsGGHiggsPPDecayer: public PerturbativeDecayer {
   
 public:
 
   /**
    * The default constructor.
    */
-  SMHiggsGGHiggsPPDecayer() : _h0wgt(2,1.) {}
+  SMHiggsGGHiggsPPDecayer() : _h0wgt(3,1.), _minloop(6), _maxloop(6), _massopt(0)
+  {}
   
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -81,6 +71,25 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const Particle & parent,const tPDVector & children) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
   //@}
   
 public:
@@ -143,15 +152,21 @@ protected:
    */
   virtual void doinitrun();
   //@}
-  
-private:
+
+protected:
+
+  /**
+   *  Calculate the NLO real emission piece of ME
+   */
+  double realME(const vector<cPDPtr> & partons, 
+		const vector<Lorentz5Momentum> & momenta) const;
   
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   *  Calculate the LO ME
    */
-  static ClassDescription<SMHiggsGGHiggsPPDecayer> 
-  initSMHiggsGGHiggsPPDecayer;
+  Energy2 loME(Energy mh) const;
+  
+private:
   
   /**
    * The assignment operator is private and must never be called.
@@ -162,12 +177,17 @@ private:
   /**
    * Pointer to h->gluon,gluon vertex
    */
-  HGGPtr _hggvertex;
+  AbstractVVSVertexPtr _hggvertex;
   
   /**
    * Pointer to h->gamma,gamma vertex
    */
-  HPPPtr _hppvertex;
+  AbstractVVSVertexPtr _hppvertex;
+  
+  /**
+   * Pointer to h->gamma,gamma vertex
+   */
+  AbstractVVSVertexPtr _hzpvertex;
   
   /**
    * Maximum weight for integration
@@ -188,39 +208,30 @@ private:
    *  Vector wavefunctions
    */
   mutable vector<VectorWaveFunction> _vwave[2];
+
+private:
+
+  /**
+   *  Parameters for the real POWHEG correction
+   */
+  //@{
+  /**
+   *  Minimum flavour of quarks to include in the loops
+   */
+  int _minloop;
+
+  /**
+   *  Maximum flavour of quarks to include in the loops
+   */
+  int _maxloop;
+
+  /**
+   *  Option for treatment of the fermion loops
+   */
+  unsigned int _massopt;
+  //@}
 };
   
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHiggsGGHiggsPPDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMHiggsGGHiggsPPDecayer,1> {
-  /** Typedef of the first base class of SMHiggsGGHiggsPPDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHiggsGGHiggsPPDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHiggsGGHiggsPPDecayer>
-  : public ClassTraitsBase<Herwig::SMHiggsGGHiggsPPDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHiggsGGHiggsPPDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SMHiggsGGHiggsPPDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwPerturbativeHiggsDecay.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SMHiggsGGHiggsPPDecayer_H */

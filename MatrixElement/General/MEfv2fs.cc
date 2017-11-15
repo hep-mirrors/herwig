@@ -12,6 +12,7 @@
 //
 
 #include "MEfv2fs.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -120,6 +121,7 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 		evaluate(q2, vecIn[ihel2], scaOut, interS);
 	    }
 	    else if( offshell->iSpin() == PDT::Spin1Half ) {
+	      if(offshell->CC()) offshell = offshell->CC();
 	      SpinorBarWaveFunction interFB = fermion_[ix].second->
 		evaluate(q2, 3, offshell,spbOut[ohel1],vecIn[ihel2]);
 	      diag = fermion_[ix].first->
@@ -249,8 +251,10 @@ void MEfv2fs::persistentInput(PersistentIStream & is, int) {
 			   PDT::Spin1Half, PDT::Spin0);
 }
 
-ClassDescription<MEfv2fs> MEfv2fs::initMEfv2fs;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEfv2fs,GeneralHardME>
+describeHerwigMEfv2fs("Herwig::MEfv2fs", "Herwig.so");
 
 void MEfv2fs::Init() {
 

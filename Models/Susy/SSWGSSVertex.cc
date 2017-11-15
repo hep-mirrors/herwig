@@ -12,6 +12,7 @@
 //
 
 #include "SSWGSSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -105,8 +106,10 @@ void SSWGSSVertex::persistentInput(PersistentIStream & is, int) {
 }
 
 
-ClassDescription<SSWGSSVertex> SSWGSSVertex::initSSWGSSVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SSWGSSVertex,VVSSVertex>
+describeHerwigSSWGSSVertex("Herwig::SSWGSSVertex", "HwSusy.so");
 
 
 void SSWGSSVertex::Init() {
@@ -194,5 +197,5 @@ void SSWGSSVertex::setCoupling(Energy2 q2,   tcPDPtr part1,
     _emcouplast = electroMagneticCoupling(q2);
     _scouplast = strongCoupling(q2);
   }
-  norm(_emcouplast*_scouplast*_factlast);
+  norm(-_emcouplast*_scouplast*_factlast);
 }

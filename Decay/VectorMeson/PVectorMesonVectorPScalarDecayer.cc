@@ -12,6 +12,7 @@
 //
 
 #include "PVectorMesonVectorPScalarDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -269,9 +270,10 @@ void PVectorMesonVectorPScalarDecayer::persistentInput(PersistentIStream & is, i
   is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> iunit(_coupling,1/GeV);
 }
 
-ClassDescription<PVectorMesonVectorPScalarDecayer> 
-PVectorMesonVectorPScalarDecayer::initPVectorMesonVectorPScalarDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<PVectorMesonVectorPScalarDecayer,DecayIntegrator>
+describeHerwigPVectorMesonVectorPScalarDecayer("Herwig::PVectorMesonVectorPScalarDecayer", "HwVMDecay.so");
 
 void PVectorMesonVectorPScalarDecayer::Init() {
 

@@ -14,6 +14,7 @@
 // 
 
 #include "DecayPhaseSpaceChannel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -44,9 +45,10 @@ void DecayPhaseSpaceChannel::persistentInput(PersistentIStream & is, int) {
      >> _intdau1 >> _intdau2 >> _intext >> _mode;
 }
   
-ClassDescription<DecayPhaseSpaceChannel> 
-DecayPhaseSpaceChannel::initDecayPhaseSpaceChannel;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<DecayPhaseSpaceChannel,Interfaced>
+describeHerwigDecayPhaseSpaceChannel("Herwig::DecayPhaseSpaceChannel", "Herwig.so");
 
 void DecayPhaseSpaceChannel::Init() {
     
@@ -232,7 +234,10 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       // factor for the kinematics
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[0]],
 				   intmass[idau[1]]);
-      wgt *= intmass[ix]*8.*pi*pi/pcm;
+      if(pcm!=ZERO)
+	wgt *= intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
     // only first off-shell
     else if(_intdau1[ix]<0) {
@@ -244,7 +249,10 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[0]],
 				   output[idau[1]].mass());
-      wgt *= intmass[ix]*8.*pi*pi/pcm;
+      if(pcm!=ZERO)
+	wgt *= intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
     // only second off-shell
     else if(_intdau2[ix]<0) {
@@ -256,7 +264,10 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[1]],
 				   output[idau[0]].mass());
-      wgt *=intmass[ix]*8.*pi*pi/pcm;
+      if(pcm!=ZERO)
+	wgt *=intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
     // both on-shell
     else {

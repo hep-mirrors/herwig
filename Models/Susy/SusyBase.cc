@@ -37,7 +37,7 @@ SusyBase::SusyBase() : readFile_(false), MPlanck_(2.4e18*GeV),
 		       mq1L_(ZERO),mq2L_(ZERO),mq3L_(ZERO),
 		       mdR_(ZERO),muR_(ZERO),msR_(ZERO),
 		       mcR_(ZERO),mbR_(ZERO),mtR_(ZERO),
-		       gluinoPhase_(1.) 
+		       gluinoPhase_(1.), allowedToResetSMMasses_(false)
 {}
 
 IBPtr SusyBase::clone() const {
@@ -50,6 +50,7 @@ IBPtr SusyBase::fullclone() const {
 
 void SusyBase::doinit() {
   addVertex(WSFSFVertex_);
+  addVertex(WWSFSFVertex_);
   addVertex(NFSFVertex_);
   addVertex(GFSFVertex_);
   addVertex(HSFSFVertex_);
@@ -81,7 +82,7 @@ void SusyBase::doinit() {
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << readFile_ << gravitino_
-     << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
+     << NMix_ << UMix_ << VMix_ << WSFSFVertex_ << WWSFSFVertex_ 
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
      << GSFSFVertex_ << GGSQSQVertex_ << WGSQSQVertex_ << GSGSGVertex_ 
      << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
@@ -95,12 +96,12 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << ounit(mq1L_,GeV) << ounit(mq2L_,GeV) << ounit(mq3L_,GeV) 
      << ounit(mdR_,GeV)  << ounit(muR_,GeV)  << ounit(msR_,GeV) 
      << ounit(mcR_,GeV)  << ounit(mbR_,GeV)  << ounit(mtR_,GeV)
-     << gluinoPhase_ << ounit(MPlanck_,GeV);
+     << gluinoPhase_ << ounit(MPlanck_,GeV) << allowedToResetSMMasses_;
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
   is >> readFile_  >> gravitino_
-     >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
+     >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ >> WWSFSFVertex_ 
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
      >> GSFSFVertex_ >> GGSQSQVertex_ >> WGSQSQVertex_ >> GSGSGVertex_ 
      >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
@@ -114,7 +115,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> iunit(mq1L_,GeV) >> iunit(mq2L_,GeV) >> iunit(mq3L_,GeV) 
      >> iunit(mdR_,GeV)  >> iunit(muR_,GeV)  >> iunit(msR_,GeV) 
      >> iunit(mcR_,GeV)  >> iunit(mbR_,GeV)  >> iunit(mtR_,GeV)
-     >> gluinoPhase_ >> iunit(MPlanck_,GeV);
+     >> gluinoPhase_ >> iunit(MPlanck_,GeV) >> allowedToResetSMMasses_;
 }
 
 // Static variable needed for the type description system in ThePEG.
@@ -149,6 +150,11 @@ void SusyBase::Init() {
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",
      &SusyBase::WSFSFVertex_, false, false, true, false);
+  
+  static Reference<SusyBase,Helicity::AbstractVVSSVertex> interfaceVertexWWSS
+    ("Vertex/WWSFSF",
+     "Reference to Susy W W SF SF vertex",
+     &SusyBase::WWSFSFVertex_, false, false, true, false);
   
   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexNFSF
     ("Vertex/NFSF",
@@ -270,6 +276,20 @@ void SusyBase::Init() {
      "Neutrinos are Dirac fermions",
      false);
 
+  static Switch<SusyBase,bool> interfaceAllowedToResetSMMasses
+    ("AllowedToResetSMMasses",
+     "Whether or not to allow SM masses to be reset via the SLHA file",
+     &SusyBase::allowedToResetSMMasses_, false, false, false);
+  static SwitchOption interfaceAllowedToResetSMMassesNo
+    (interfaceAllowedToResetSMMasses,
+     "No",
+     "Not allowed",
+     false);
+  static SwitchOption interfaceAllowedToResetSMMassesYes
+    (interfaceAllowedToResetSMMasses,
+     "Yes",
+     "Allowed",
+     true);
 }
 
 void SusyBase::readSetup(istream & is) {
@@ -645,14 +665,27 @@ void SusyBase::resetRepositoryMasses() {
       << "SusyBase::resetRepositoryMasses() - Particle with PDG code " << id  
       << " not found." << Exception::warning;
     if(abs(id)<=5||abs(id)==23||abs(id)==24||
-       (abs(id)>=11&&abs(id)<=16))
-      cerr << "SusyBase::resetRepositoryMasses() Resetting mass of " 
-	   << part->PDGName() << " using SLHA "
-	   << "file,\nthis can affect parts of the Standard Model simulation and"
-	   << " is strongly discouraged.\n";
-    // reset the masses
-    resetMass(it->first,it->second*GeV,part);
-
+       (abs(id)>=11&&abs(id)<=16)) {
+      if(allowedToResetSMMasses_) {
+	cerr << "SusyBase::resetRepositoryMasses() Resetting mass of " 
+	     << part->PDGName() << " using SLHA "
+	     << "file,\nthis can affect parts of the Standard Model simulation and"
+	     << " is strongly discouraged.\n";
+	// reset the masses
+	resetMass(it->first,it->second*GeV,part);
+      }
+      else {
+	cerr << "SusyBase::resetRepositoryMasses() You have tried to Reset the mass of " 
+	     << part->PDGName() << " using an SLHA "
+	     << "file,\nthis can affect parts of the Standard Model simulation and"
+	     << " is not allowed by default.\n If you really want to be this stupid"
+	     << " set AllowedToResetSMMasses to Yes for this model.\n";
+      }
+    }
+    // reset the masses for not SM particles
+    else {
+      resetMass(it->first,it->second*GeV,part);
+    }
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }

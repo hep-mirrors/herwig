@@ -232,6 +232,8 @@ set h0/h0->Z0,Z0;:Active No
 set h0/h0->Z0,Z0;:BranchingRatio 0.0
 set h0/h0->gamma,gamma;:Active No
 set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->Z0,gamma;:Active No
+set h0/h0->Z0,gamma;:BranchingRatio 0.0
 set h0/h0->mu-,mu+;:Active No
 set h0/h0->mu-,mu+;:BranchingRatio 0.0
 set h0/h0->t,tbar;:Active No
@@ -307,6 +309,15 @@ insert ShowerHandler:DecayInShower 24 5100024
 insert ShowerHandler:DecayInShower 25 5100025
 insert ShowerHandler:DecayInShower 26 5100036
 insert ShowerHandler:DecayInShower 27 5100037
+
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
+set PhitoPhiGammaSplitFn:InteractionType QED
+set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSplitFn:AngularOrdered Yes
+
+cp SudakovCommon PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+
 do SplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting KK1_s_L->KK1_s_L,g; QtoQGSudakov
@@ -319,6 +330,31 @@ do SplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
 do SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
+
+do SplittingGenerator:AddFinalSplitting KK1_g->KK1_g,g; GtoGGSudakov
+
+do SplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_s_L->KK1_s_L,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_c_L->KK1_c_L,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_b_1->KK1_b_1,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_t_1->KK1_t_1,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_u_R->KK1_u_R,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_d_R->KK1_d_R,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_e_L-->KK1_e_L-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_mu_L-->KK1_mu_L-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_tau_1-->KK1_tau_1-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_e_R-->KK1_e_R-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_mu_R-->KK1_mu_R-,gamma; LtoLGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_tau_2-->KK1_tau_2-,gamma; LtoLGammaSudakov
+
+do SplittingGenerator:AddFinalSplitting KK1_W+->KK1_W+,gamma; WtoWGammaSudakov
+do SplittingGenerator:AddFinalSplitting KK1_H+->KK1_H+,gamma; PhitoPhiGammaSudakov
+
 ###################################################
 # Set up the model framework
 ###################################################

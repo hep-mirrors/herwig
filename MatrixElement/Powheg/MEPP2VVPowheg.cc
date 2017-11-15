@@ -12,6 +12,7 @@
 //
 
 #include "MEPP2VVPowheg.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -24,8 +25,6 @@
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -68,8 +67,10 @@ void MEPP2VVPowheg::persistentInput(PersistentIStream & is, int) {
      >> iunit( min_pT_, GeV );
 }
 
-ClassDescription<MEPP2VVPowheg> MEPP2VVPowheg::initMEPP2VVPowheg;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2VVPowheg,MEPP2VV>
+describeHerwigMEPP2VVPowheg("Herwig::MEPP2VVPowheg", "HwMEHadron.so HwPowhegMEHadron.so");
 
 void MEPP2VVPowheg::Init() {
 

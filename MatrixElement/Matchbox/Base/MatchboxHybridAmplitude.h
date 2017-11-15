@@ -48,11 +48,6 @@ public:
 public:
 
   /**
-   * Set the factory which produced this matrix element
-   */
-  virtual void factory(Ptr<MatchboxFactory>::tptr f);
-
-  /**
    * Return the amplitude object to provide tree-level amplitudes.
    */
   Ptr<MatchboxAmplitude>::tptr treeLevelAmplitude() const { return theTreeLevelAmplitude; }

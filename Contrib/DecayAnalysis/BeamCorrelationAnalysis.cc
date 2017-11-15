@@ -5,6 +5,7 @@
 //
 
 #include "BeamCorrelationAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -43,9 +44,10 @@ void BeamCorrelationAnalysis::analyze(tEventPtr event, long ieve, int loop, int 
 			    event->weight());
 }
 
-NoPIOClassDescription<BeamCorrelationAnalysis> 
-BeamCorrelationAnalysis::initBeamCorrelationAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<BeamCorrelationAnalysis,AnalysisHandler>
+describeHerwigBeamCorrelationAnalysis("Herwig::BeamCorrelationAnalysis", "HwDecayAnalysis.so");
 
 void BeamCorrelationAnalysis::Init() {
 

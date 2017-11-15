@@ -13,8 +13,6 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/RealEmissionProcess.fh"
 #include "HwDecayerBase.fh"
 
@@ -102,15 +100,24 @@ public:
 
   /**
    * Apply the soft matrix element correction
-   * @param initial The particle from the hard process which started the 
-   * shower
    * @param parent The initial particle in the current branching
-   * @param br The branching struct
+   * @param progenitor The progenitor particle of the jet
+   * @param fs Whether the emission is initial or final-state
+   * @param highestpT The highest pT so far in the shower
+   * @param ids ids of the particles produced in the branching
+   * @param z The momentum fraction of the branching
+   * @param scale the evolution scale of the branching
+   * @param pT The transverse momentum of the branching
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
-				     ShowerParticlePtr parent,
-				     Branching br);
+  virtual bool softMatrixElementVeto(PPtr parent,
+				     PPtr progenitor,
+				     const bool & fs,
+				     const Energy & highestpT,
+				     const vector<tcPDPtr> & ids,
+				     const double & z,
+				     const Energy & scale,
+				     const Energy & pT);
 
   /**
    *  Apply the POWHEG style correction
@@ -207,12 +214,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<HwDecayerBase> initHwDecayerBase;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -230,33 +231,6 @@ private:
    */
   bool _dbOutput;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HwDecayerBase. */
-template <>
-struct BaseClassTrait<Herwig::HwDecayerBase,1> {
-  /** Typedef of the first base class of HwDecayerBase. */
-  typedef Decayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HwDecayerBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HwDecayerBase>
-  : public ClassTraitsBase<Herwig::HwDecayerBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HwDecayerBase"; }
-};
-
-/** @endcond */
 
 }
 

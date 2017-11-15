@@ -5,6 +5,7 @@
 //
 
 #include "OniumToOniumPiPiAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -100,8 +101,10 @@ void OniumToOniumPiPiAnalysis::analyze(tPPtr part) {
   }
 }
 
-NoPIOClassDescription<OniumToOniumPiPiAnalysis> OniumToOniumPiPiAnalysis::initOniumToOniumPiPiAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<OniumToOniumPiPiAnalysis,AnalysisHandler>
+describeHerwigOniumToOniumPiPiAnalysis("Herwig::OniumToOniumPiPiAnalysis", "HwDecayAnalysis.so");
 
 void OniumToOniumPiPiAnalysis::Init() {
 

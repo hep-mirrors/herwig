@@ -71,9 +71,9 @@ do Factory:Process p p -> e+ e-
 ## Cut selection
 ## See the documentation for more options
 ##################################################
-
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
+cd /Herwig/Cuts/
+set ChargedLeptonPairMassCut:MinMass 60*GeV
+set ChargedLeptonPairMassCut:MaxMass 120*GeV
 
 ## cuts on additional jets
 

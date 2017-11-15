@@ -12,6 +12,7 @@
 //
 
 #include "MEqq2gZ2ff.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -142,8 +143,10 @@ void MEqq2gZ2ff::persistentInput(PersistentIStream & is, int) {
      >> _gamma >> _z0 >> spinCorrelations_; 
 }
 
-ClassDescription<MEqq2gZ2ff> MEqq2gZ2ff::initMEqq2gZ2ff;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEqq2gZ2ff,DrellYanBase>
+describeHerwigMEqq2gZ2ff("Herwig::MEqq2gZ2ff", "HwMEHadron.so");
 
 void MEqq2gZ2ff::Init() {
 

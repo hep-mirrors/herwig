@@ -5,6 +5,7 @@
 //
 
 #include "GammaMETest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -45,8 +46,10 @@ IBPtr GammaMETest::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<GammaMETest> GammaMETest::initGammaMETest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<GammaMETest,AnalysisHandler>
+describeHerwigGammaMETest("Herwig::GammaMETest", "GammaTest.so");
 
 void GammaMETest::Init() {
 

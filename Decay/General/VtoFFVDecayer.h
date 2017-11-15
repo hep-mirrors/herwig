@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<VtoFFVDecayer> initVtoFFVDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -119,77 +113,49 @@ private:
   /**
    * Store the vertices for scalar intrermediate
    */
-  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
    * Store the vertices for fermion intrermediate
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > _fer;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fer_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
    * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > _ten;
+  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > ten_;
 
   /**
    *  Spinr density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decaying particle
    */
-  mutable vector<VectorWaveFunction> _inVector;
+  mutable vector<VectorWaveFunction> inVector_;
 
   /**
    *  Scalar wavefunction for the decay products
    */
-  mutable ScalarWaveFunction _swave;
+  mutable ScalarWaveFunction swave_;
 
   /**
    *  Polarization vectors for the decay products
    */
-  mutable vector<VectorWaveFunction> _outVector;
+  mutable vector<VectorWaveFunction> outVector_;
 
   /**
    *  Spinors for the decay products
    */
-  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outspin_[3];
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Herwig::VtoFFVDecayer. */
-template <>
-struct BaseClassTrait<Herwig::VtoFFVDecayer,1> {
-  /** Typedef of the first base class of Herwig::VtoFFVDecayer. */
-  typedef Herwig::GeneralThreeBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Herwig::VtoFFVDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::VtoFFVDecayer>
-  : public ClassTraitsBase<Herwig::VtoFFVDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::VtoFFVDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* THEPEG_VtoFFVDecayer_H */

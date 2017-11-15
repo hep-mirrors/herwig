@@ -84,12 +84,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<GammaMETest> initGammaMETest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -103,41 +97,6 @@ private:
   map<int,HistogramPtr> _cos,_phi,_y,_pt;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GammaMETest. */
-template <>
-struct BaseClassTrait<Herwig::GammaMETest,1> {
-  /** Typedef of the first base class of GammaMETest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GammaMETest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GammaMETest>
-  : public ClassTraitsBase<Herwig::GammaMETest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GammaMETest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * GammaMETest is implemented. It may also include several, space-separated,
-   * libraries if the class GammaMETest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "GammaTest.so"; }
-};
-
-/** @endcond */
 
 }
 

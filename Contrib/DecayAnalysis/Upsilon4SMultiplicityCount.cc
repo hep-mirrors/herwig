@@ -5,6 +5,7 @@
 //
 
 #include "Upsilon4SMultiplicityCount.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -60,8 +61,10 @@ void Upsilon4SMultiplicityCount::analyze(tEventPtr event, long ieve, int loop, i
   }
 }
 
-NoPIOClassDescription<Upsilon4SMultiplicityCount> Upsilon4SMultiplicityCount::initUpsilon4SMultiplicityCount;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<Upsilon4SMultiplicityCount,AnalysisHandler>
+describeHerwigUpsilon4SMultiplicityCount("Herwig::Upsilon4SMultiplicityCount", "HwDecayAnalysis.so");
 
 void Upsilon4SMultiplicityCount::Init() {
 

@@ -131,12 +131,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<FFVCurrentDecayer> initFFVCurrentDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -147,52 +141,24 @@ private:
   /**
    * Pointer to FFVVertex
    */
-  FFVVertexPtr _theFFVPtr;
+  FFVVertexPtr FFVPtr_;
 
   /**
    *  Spinr density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Spinor wavefunction
    */
-  mutable vector<SpinorWaveFunction>    _wave   ;
+  mutable vector<SpinorWaveFunction>    wave_   ;
 
   /**
    *  Barred spinor wavefunction
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of FFVCurrentDecayer. */
-template <>
-struct BaseClassTrait<Herwig::FFVCurrentDecayer,1> {
-  /** Typedef of the first base class of FFVCurrentDecayer. */
-  typedef Herwig::GeneralCurrentDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the FFVCurrentDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::FFVCurrentDecayer>
-  : public ClassTraitsBase<Herwig::FFVCurrentDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::FFVCurrentDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_FFVCurrentDecayer_H */

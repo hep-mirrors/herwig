@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+read snippets/EECollider.in
 cd /Herwig/MatrixElements
 insert SubProcess:MatrixElements[0] MEee2gZ2ll
 

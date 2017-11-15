@@ -12,6 +12,7 @@
 //
 
 #include "MEee2Higgs2SM.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -185,8 +186,10 @@ void MEee2Higgs2SM::persistentInput(PersistentIStream & is, int) {
   is >> FFHVertex_ >> HGGVertex_ >> h0_ >> allowed_;
 }
 
-ClassDescription<MEee2Higgs2SM> MEee2Higgs2SM::initMEee2Higgs2SM;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEee2Higgs2SM,ME2to2Base>
+describeHerwigMEee2Higgs2SM("Herwig::MEee2Higgs2SM", "HwMELepton.so");
 
 void MEee2Higgs2SM::Init() {
 

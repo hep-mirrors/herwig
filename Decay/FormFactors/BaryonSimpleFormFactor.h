@@ -115,11 +115,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<BaryonSimpleFormFactor> initBaryonSimpleFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   BaryonSimpleFormFactor & operator=(const BaryonSimpleFormFactor &);
@@ -177,42 +172,6 @@ private:
   vector<double> _g2;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * BaryonSimpleFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::BaryonSimpleFormFactor,1> {
-  /** Typedef of the base class of BaryonSimpleFormFactor. */
-  typedef Herwig::BaryonFormFactor NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * BaryonSimpleFormFactor class.
- */
-template <>
-struct ClassTraits<Herwig::BaryonSimpleFormFactor>
-  : public ClassTraitsBase<Herwig::BaryonSimpleFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::BaryonSimpleFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

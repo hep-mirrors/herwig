@@ -12,6 +12,7 @@
 //
 
 #include "ADDModelFFWGRVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -111,8 +112,10 @@ void ADDModelFFWGRVertex::persistentInput(PersistentIStream & is, int) {
   is >> charge_ >> gl_ >> gr_ >> iunit(kappa_,InvGeV) >> ckm_ >> iunit(r_,GeV);
 }
 
-ClassDescription<ADDModelFFWGRVertex> ADDModelFFWGRVertex::initADDModelFFWGRVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ADDModelFFWGRVertex,FFVTVertex>
+describeHerwigADDModelFFWGRVertex("Herwig::ADDModelFFWGRVertex", "HwADDModel.so");
 
 void ADDModelFFWGRVertex::Init() {
   static ClassDocumentation<ADDModelFFWGRVertex> documentation

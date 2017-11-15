@@ -12,6 +12,7 @@
 //
 
 #include "SSHSFSFVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -163,8 +164,10 @@ void SSHSFSFVertex::persistentInput(PersistentIStream & is, int) {
      >> iunit(theTriC,GeV);
 }
 
-ClassDescription<SSHSFSFVertex> SSHSFSFVertex::initSSHSFSFVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SSHSFSFVertex,SSSVertex>
+describeHerwigSSHSFSFVertex("Herwig::SSHSFSFVertex", "HwSusy.so");
 
 void SSHSFSFVertex::Init() {
 

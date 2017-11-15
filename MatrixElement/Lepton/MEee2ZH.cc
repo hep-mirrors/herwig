@@ -5,6 +5,7 @@
 //
 
 #include "MEee2ZH.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -15,8 +16,10 @@
 
 using namespace Herwig;
 
-NoPIOClassDescription<MEee2ZH> MEee2ZH::initMEee2ZH;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<MEee2ZH,MEfftoVH>
+describeHerwigMEee2ZH("Herwig::MEee2ZH", "HwMELepton.so");
 
 void MEee2ZH::Init() {
 

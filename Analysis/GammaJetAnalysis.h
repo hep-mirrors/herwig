@@ -99,12 +99,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<GammaJetAnalysis> initGammaJetAnalysis;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -133,37 +127,6 @@ private:
   Histogram _phig;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GammaJetAnalysis. */
-template <>
-struct BaseClassTrait<Herwig::GammaJetAnalysis,1> {
-  /** Typedef of the first base class of GammaJetAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GammaJetAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GammaJetAnalysis>
-  : public ClassTraitsBase<Herwig::GammaJetAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GammaJetAnalysis"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the GammaJetAnalysis class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

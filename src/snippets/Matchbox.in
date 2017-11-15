@@ -3,7 +3,6 @@
 cd /Herwig/Cuts
 
 set Cuts:Fuzzy FuzzyTheta
-set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
 
 clear Cuts:OneCuts
 insert Cuts:OneCuts[0] PhotonCut
@@ -26,7 +25,6 @@ set Cuts:MHatMin 0.0*GeV
 
 cd /Herwig/MatrixElements/Matchbox
 
-set MECorrectionHandler:Factory Factory
 set Factory:Cuts /Herwig/Cuts/Cuts
 
 cd /Herwig/EventHandlers

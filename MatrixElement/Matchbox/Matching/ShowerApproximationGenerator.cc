@@ -262,9 +262,9 @@ void ShowerApproximationGenerator::restore() {
 void ShowerApproximationGenerator::
 handle(EventHandler & eh, const tPVector &,
        const Hint &) {
-  theFactory->setHardTreeEmitter(-1);
-  theFactory->setHardTreeSpectator(-1);
-  theFactory->setHardTreeSubprocess(SubProPtr());
+  MatchboxFactory::currentFactory()->setHardTreeEmitter(-1);
+  MatchboxFactory::currentFactory()->setHardTreeSpectator(-1);
+  MatchboxFactory::currentFactory()->setHardTreeSubprocess(SubProPtr());
 
 
   lastIncomingXComb = dynamic_ptr_cast<tStdXCombPtr>(eh.lastXCombPtr());
@@ -286,7 +286,7 @@ handle(EventHandler & eh, const tPVector &,
 
   if ( kernelit == theKernelMap.end() ) {
     list<MatchboxFactory::SplittingChannel> channels =
-      theFactory->getSplittingChannels(lastIncomingXComb);
+      MatchboxFactory::currentFactory()->getSplittingChannels(lastIncomingXComb);
     set<Ptr<ShowerApproximationKernel>::ptr> newKernels;
     for ( list<MatchboxFactory::SplittingChannel>::const_iterator c =
 	    channels.begin(); c != channels.end(); ++c ) {
@@ -427,9 +427,9 @@ handle(EventHandler & eh, const tPVector &,
 							       newSub, eh.currentStep());
   }
   else{
-    theFactory->setHardTreeSubprocess(newSub);
-    theFactory->setHardTreeEmitter(winnerKernel->dipole()->bornEmitter()); 
-    theFactory->setHardTreeSpectator(winnerKernel->dipole()->bornSpectator()); 
+    MatchboxFactory::currentFactory()->setHardTreeSubprocess(newSub);
+    MatchboxFactory::currentFactory()->setHardTreeEmitter(winnerKernel->dipole()->bornEmitter()); 
+    MatchboxFactory::currentFactory()->setHardTreeSpectator(winnerKernel->dipole()->bornSpectator()); 
   }
 
 }
@@ -448,7 +448,7 @@ IBPtr ShowerApproximationGenerator::fullclone() const {
 
 
 void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) const {
-  os << theShowerApproximation << thePhasespace << theFactory 
+  os << theShowerApproximation << thePhasespace 
      << theKernelMap << thePresamplingPoints << theMaxTry << theFreezeGrid
      << lastIncomingXComb << theLastBornME << ounit(theLastMomenta,GeV) 
      << ounit(theLastPresamplingMomenta,GeV) << theLastRandomNumbers
@@ -456,7 +456,7 @@ void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) cons
 }
 
 void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerApproximation >> thePhasespace >> theFactory 
+  is >> theShowerApproximation >> thePhasespace 
      >> theKernelMap >> thePresamplingPoints >> theMaxTry >> theFreezeGrid
      >> lastIncomingXComb >> theLastBornME >> iunit(theLastMomenta,GeV) 
      >> iunit(theLastPresamplingMomenta,GeV) >> theLastRandomNumbers
@@ -489,12 +489,6 @@ void ShowerApproximationGenerator::Init() {
      "The phase space generator to use.",
      &ShowerApproximationGenerator::thePhasespace, false, false, true, false, false);
   interfacePhasespace.rank(-1);
-
-  static Reference<ShowerApproximationGenerator,MatchboxFactory> interfaceFactory
-    ("Factory",
-     "The factory object to use.",
-     &ShowerApproximationGenerator::theFactory, false, false, true, false, false);
-  interfaceFactory.rank(-1);
 
   static Parameter<ShowerApproximationGenerator,unsigned long> interfacePresamplingPoints
     ("PresamplingPoints",

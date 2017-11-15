@@ -54,16 +54,16 @@ if __name__ == "__main__":
 
 # #######################################
 
-yodafiles=["-10.52.yoda","-10.52-sym.yoda","-10.54.yoda",
-           "-10.58-res.yoda","-10.58.yoda","-Upsilon.yoda",
-           "-Upsilon2.yoda","-Upsilon4.yoda","-10.45.yoda","-Tau.yoda"]
+yodafiles=["-10.52","-10.52-sym","-10.54",
+           "-10.58-res","-10.58","-Upsilon",
+           "-Upsilon2","-Upsilon4","-10.45","-Tau"]
 
 ## Get histos
 inhistos = {}
 outhistos={}
 weights = {}
 for f in yodafiles:
-    file = args[0]+f
+    file = "Rivet-%s%s.yoda" % (args[0], f)
     if(file.find("10.45")>0) :
         sqrts=10.45
     elif(file.find("10.52")>0) :

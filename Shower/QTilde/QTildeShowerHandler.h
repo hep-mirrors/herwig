@@ -8,11 +8,11 @@
 #include "QTildeShowerHandler.fh"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/Core/SplittingFunctions/SplittingGenerator.h"
-#include "Herwig/Shower/Core/Base/ShowerTree.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
-#include "Herwig/Shower/Core/Base/HardTree.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVeto.h"
 #include "Herwig/Shower/QTilde/Base/FullShowerVeto.h"
 #include "Herwig/MatrixElement/HwMEBase.h"
@@ -583,15 +583,19 @@ protected:
   //@}
 
 protected:
-  
-  /** @name Standard Interfaced functions. */
-  //@{
+
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:

@@ -12,6 +12,7 @@
 //
 
 #include "WeakCurrentDecayConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -73,8 +74,10 @@ void WeakCurrentDecayConstructor::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_masscut,GeV) >> decayTags_ >> particles_ >> _norm >> _current;
 }
 
-ClassDescription<WeakCurrentDecayConstructor> WeakCurrentDecayConstructor::initWeakCurrentDecayConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<WeakCurrentDecayConstructor,NBodyDecayConstructorBase>
+describeHerwigWeakCurrentDecayConstructor("Herwig::WeakCurrentDecayConstructor", "Herwig.so");
 
 void WeakCurrentDecayConstructor::Init() {
 

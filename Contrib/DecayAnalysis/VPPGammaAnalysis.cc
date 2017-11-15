@@ -5,6 +5,7 @@
 //
 
 #include "VPPGammaAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -123,8 +124,10 @@ void VPPGammaAnalysis::analyze(tPPtr part) {
   *_nphoton[imode]+=mult;
 }
 
-NoPIOClassDescription<VPPGammaAnalysis> VPPGammaAnalysis::initVPPGammaAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VPPGammaAnalysis,AnalysisHandler>
+describeHerwigVPPGammaAnalysis("Herwig::VPPGammaAnalysis", "HwDecayAnalysis.so");
 
 void VPPGammaAnalysis::Init() {
 

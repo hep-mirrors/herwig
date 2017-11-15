@@ -5,6 +5,7 @@
 //
 
 #include "Upsilon4SSpectrumAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -61,9 +62,10 @@ void Upsilon4SSpectrumAnalysis::analyze(tEventPtr event, long ieve, int loop, in
   }
 }
 
-NoPIOClassDescription<Upsilon4SSpectrumAnalysis> 
-Upsilon4SSpectrumAnalysis::initUpsilon4SSpectrumAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<Upsilon4SSpectrumAnalysis,AnalysisHandler>
+describeHerwigUpsilon4SSpectrumAnalysis("Herwig::Upsilon4SSpectrumAnalysis", "HwDecayAnalysis.so");
 
 void Upsilon4SSpectrumAnalysis::Init() {
 

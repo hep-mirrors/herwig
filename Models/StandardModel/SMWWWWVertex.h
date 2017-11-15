@@ -100,11 +100,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMWWWWVertex> initSMWWWWVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   SMWWWWVertex & operator=(const SMWWWWVertex &);
@@ -166,39 +161,5 @@ private:
 };
  
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMWWWWVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::SMWWWWVertex,1> {
-  /** Typedef of the base class of SMWWWWVertex. */
-  typedef ThePEG::Helicity::VVVVVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::SMWWWWVertex>
-  : public ClassTraitsBase<Herwig::SMWWWWVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::SMWWWWVertex"; }
-  
-};
-
-/** @endcond */
-  
-}
-
 
 #endif /* HERWIG_SMWWWWVertex_H */

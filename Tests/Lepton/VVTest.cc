@@ -5,6 +5,7 @@
 //
 
 #include "VVTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -44,8 +45,10 @@ IBPtr VVTest::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<VVTest> VVTest::initVVTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VVTest,AnalysisHandler>
+describeHerwigVVTest("Herwig::VVTest", "LeptonTest.so");
 
 void VVTest::Init() {
 

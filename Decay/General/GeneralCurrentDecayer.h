@@ -36,7 +36,7 @@ public:
    * The default constructor.
    */
   GeneralCurrentDecayer() : 
-    _maxmass(5.*GeV), _wgtmax(0.) {}
+    maxmass_(5.*GeV), wgtmax_(0.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -133,26 +133,20 @@ protected:
    *  Access to the map between the number of the mode and the modes in
    *  the current
    */
-  unsigned int mode() const { return _mode; }
+  unsigned int mode() const { return mode_; }
 
   /**
    *  Access to the weak current
    */
-  WeakDecayCurrentPtr weakCurrent() const { return _current; }
+  WeakDecayCurrentPtr weakCurrent() const { return current_; }
 
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr vertex() const { return theVertex_; }
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<GeneralCurrentDecayer> initGeneralCurrentDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -165,82 +159,54 @@ private:
   /**
    * Pointer to vertex set in inheriting class
    */
-  VertexBasePtr _theVertex;
+  VertexBasePtr theVertex_;
   
   /**
    * Incoming particle
    **/
-  PDPtr _inpart;
+  PDPtr inpart_;
 
   /**
    * First outgoing particle
    */
-  PDPtr _outpart;
+  PDPtr outpart_;
 
   /**
    *  Outgoing particles from the current
    */
-  vector<tPDPtr> _currentOut; 
+  vector<tPDPtr> currentOut_; 
 
   /**
    * Pointer to the current
    */
-  WeakDecayCurrentPtr _current;
+  WeakDecayCurrentPtr current_;
 
   /**
    *  Maximum mass difference
    */
-  Energy _maxmass;
+  Energy maxmass_;
 
   /**
    * mapping of the modes to the currents
    */
-  unsigned int _mode;
+  unsigned int mode_;
 
   /**
    * location of the weights
    */
-  int _wgtloc;
+  int wgtloc_;
 
   /**
    * the maximum weight
    */
-  double _wgtmax;
+  double wgtmax_;
 
   /**
    *  The weights for the different channels
    */
-  vector<double> _weights;
+  vector<double> weights_;
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralCurrentDecayer. */
-template <>
-struct BaseClassTrait<Herwig::GeneralCurrentDecayer,1> {
-  /** Typedef of the first base class of GeneralCurrentDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralCurrentDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralCurrentDecayer>
-  : public ClassTraitsBase<Herwig::GeneralCurrentDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralCurrentDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_GeneralCurrentDecayer_H */

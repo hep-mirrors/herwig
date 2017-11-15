@@ -175,11 +175,6 @@ private:
   Ptr<MatchboxPhasespace>::ptr thePhasespace;
 
   /**
-   * The factory object to fetch splitting channels from
-   */
-  Ptr<MatchboxFactory>::ptr theFactory;
-
-  /**
    * Map hard processes to the respective kernels.
    */
   map<cPDVector,set<Ptr<ShowerApproximationKernel>::ptr> > theKernelMap;

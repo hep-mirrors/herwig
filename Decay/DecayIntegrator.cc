@@ -14,6 +14,7 @@
 // 
 
 #include "DecayIntegrator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -54,8 +55,10 @@ void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
   is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter;
 }
   
-AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<DecayIntegrator,HwDecayerBase>
+describeHerwigDecayIntegrator("Herwig::DecayIntegrator", "Herwig.so");
   
 void DecayIntegrator::Init() {
     

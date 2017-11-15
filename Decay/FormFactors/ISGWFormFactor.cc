@@ -12,6 +12,7 @@
 //
 
 #include "ISGWFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -229,8 +230,10 @@ void ISGWFormFactor::persistentInput(PersistentIStream & is, int) {
      >> _thetaeta >> iunit(_mquark,GeV) >> iunit(_betaS,GeV) >> iunit(_betaP,GeV);
 }
 
-ClassDescription<ISGWFormFactor> ISGWFormFactor::initISGWFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ISGWFormFactor,ScalarFormFactor>
+describeHerwigISGWFormFactor("Herwig::ISGWFormFactor", "HwFormFactors.so");
 
 void ISGWFormFactor::Init() {
 

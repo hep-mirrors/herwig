@@ -186,12 +186,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEff2ff> initMEff2ff;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -224,33 +218,6 @@ private:
    */
   mutable vector<vector<SpinorBarWaveFunction> > sbar_;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEff2ff. */
-template <>
-struct BaseClassTrait<Herwig::MEff2ff,1> {
-  /** Typedef of the first base class of MEff2ff. */
-  typedef Herwig::GeneralHardME NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEff2ff class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEff2ff>
-  : public ClassTraitsBase<Herwig::MEff2ff> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEff2ff"; }
-};
-
-/** @endcond */
 
 }
 

@@ -5,6 +5,7 @@
 //
 
 #include "BtoSGammaAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -63,8 +64,10 @@ void BtoSGammaAnalysis::analyze(tPPtr part) {
   *_spectrum[imode]+=pgamma.e()/MeV;
 }
 
-NoPIOClassDescription<BtoSGammaAnalysis> BtoSGammaAnalysis::initBtoSGammaAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<BtoSGammaAnalysis,AnalysisHandler>
+describeHerwigBtoSGammaAnalysis("Herwig::BtoSGammaAnalysis", "HwDecayAnalysis.so");
 
 void BtoSGammaAnalysis::Init() {
 

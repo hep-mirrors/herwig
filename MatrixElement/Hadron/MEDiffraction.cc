@@ -5,6 +5,7 @@
 //
 
 #include "MEDiffraction.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -28,7 +29,7 @@ MEDiffraction::MEDiffraction()
 : HwMEBase(),
   deltaOnly(false),  
   isInRunPhase(false),
-  theProtonMass(0.93827203*GeV)
+  theProtonMass(-MeV) // to be set in doinit
 {}
 
 
@@ -238,9 +239,9 @@ bool MEDiffraction::generateKinematics(const double * ) {
       {
     
         pair<Lorentz5Momentum,Lorentz5Momentum> decayMomenta;
-        pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;
-        const double phiprime = UseRandom::rnd() * Constants::twopi;
-        
+        pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;	
+ 	//absolute collinear dissociation of the hadron 
+        const double phiprime = phi; 
         //aligned with outgoing dissociated proton
         const double costhetaprime = costheta;
         
@@ -318,10 +319,11 @@ bool MEDiffraction::generateKinematics(const double * ) {
       
       }else
       {
-            meMomenta()[2+diffDirection].setVect(p3.vect());
-            meMomenta()[2+diffDirection].setT(p3.t());
-            meMomenta()[3-diffDirection].setVect(p4.vect());
-            meMomenta()[3-diffDirection].setT(p4.t());
+            const auto tmp=diffDirection==1?1:0;
+            meMomenta()[2+tmp].setVect(p3.vect());
+            meMomenta()[2+tmp].setT(p3.t());
+            meMomenta()[3-tmp].setVect(p4.vect());
+            meMomenta()[3-tmp].setT(p4.t());
     
             meMomenta()[2].rescaleEnergy();
             meMomenta()[3].rescaleEnergy();
@@ -782,8 +784,10 @@ IBPtr MEDiffraction::fullclone() const {
 }
 
 
-ClassDescription<MEDiffraction> MEDiffraction::initMEDiffraction;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEDiffraction,HwMEBase>
+describeHerwigMEDiffraction("Herwig::MEDiffraction", "HwMEHadron.so");
 
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope

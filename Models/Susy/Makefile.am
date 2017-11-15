@@ -19,6 +19,7 @@ SSGFSVertex.h    \
 SSHSFSFVertex.h  \
 SSNFSVertex.h    \
 SSWSSVertex.h    \
+SSWWSSVertex.h    \
 SSWGSSVertex.h   \
 SSGSSVertex.h    \
 SSGGSQSQVertex.h \
@@ -51,6 +52,7 @@ SSGFSVertex.cc    \
 SSHSFSFVertex.cc  \
 SSNFSVertex.cc    \
 SSWSSVertex.cc    \
+SSWWSSVertex.cc    \
 SSWGSSVertex.cc   \
 SSGSSVertex.cc    \
 SSGGSQSQVertex.cc \

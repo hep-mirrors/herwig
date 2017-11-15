@@ -59,6 +59,14 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
   //@}
 
 public:
@@ -104,25 +112,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-   /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SRFDecayer> initSRFDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -135,7 +125,7 @@ private:
   /**
    *  Abstract pointer to AbstractFFSVertex
    */
-  AbstractRFSVertexPtr abstractVertex_;
+  AbstractRFSVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
@@ -176,33 +166,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SRFDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SRFDecayer,1> {
-  /** Typedef of the first base class of SRFDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SRFDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SRFDecayer>
-  : public ClassTraitsBase<Herwig::SRFDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SRFDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_SRFDecayer_H */

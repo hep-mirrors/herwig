@@ -110,12 +110,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<AlphaEM> initAlphaEM;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -150,33 +144,6 @@ private:
   Energy2 _mtop;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of AlphaEM. */
-template <>
-struct BaseClassTrait<Herwig::AlphaEM,1> {
-  /** Typedef of the first base class of AlphaEM. */
-  typedef AlphaEMBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the AlphaEM class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::AlphaEM>
-  : public ClassTraitsBase<Herwig::AlphaEM> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::AlphaEM"; }
-};
-
-/** @endcond */
 
 }
 

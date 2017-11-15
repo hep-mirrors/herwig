@@ -12,6 +12,7 @@
 //
 
 #include "GenericVVVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -24,10 +25,8 @@ using namespace Herwig;
 using namespace ThePEG;  
 
 GenericVVVVertex::GenericVVVVertex()
-  :pids(ZERO),oas(0),oaew(0){
-  orderInGs(0);
-  orderInGem(0);
-}
+  :pids(ZERO),oas(0),oaew(0)
+{}
 
 void GenericVVVVertex::doinit() {
   //PDG codes for particles at vertices
@@ -65,8 +64,10 @@ void GenericVVVVertex::persistentInput(PersistentIStream & is, int) {
   is >> pids>>oas>>oaew;
 }
 
-ClassDescription<GenericVVVVertex> GenericVVVVertex::initGenericVVVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GenericVVVVertex,Helicity::VVVVertex>
+describeHerwigGenericVVVVertex("Herwig::GenericVVVVertex", "Herwig.so");
 
 void GenericVVVVertex::Init() {
   

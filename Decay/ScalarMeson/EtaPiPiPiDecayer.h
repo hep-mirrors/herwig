@@ -158,11 +158,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<EtaPiPiPiDecayer> initEtaPiPiPiDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   EtaPiPiPiDecayer & operator=(const EtaPiPiPiDecayer &);
@@ -227,43 +222,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of EtaPiPiPiDecayer.
- */
-template <>
-struct BaseClassTrait<Herwig::EtaPiPiPiDecayer,1> {
-    /** Typedef of the base class of  EtaPiPiPiDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::EtaPiPiPiDecayer>
-  : public ClassTraitsBase<Herwig::EtaPiPiPiDecayer> {
-  /** Return the class name. */
-  static string className() { return "Herwig::EtaPiPiPiDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwSMDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_EtaPiPiPiDecayer_H */

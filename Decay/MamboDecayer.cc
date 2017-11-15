@@ -12,6 +12,7 @@
 //
 
 #include "MamboDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -37,7 +38,10 @@ void MamboDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _maxweight >> _a0 >> _a1;
 }
 
-ClassDescription<MamboDecayer> MamboDecayer::initMamboDecayer;
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MamboDecayer,HwDecayerBase>
+describeHerwigMamboDecayer("Herwig::MamboDecayer", "HwMamboDecay.so");
 
 void MamboDecayer::Init() {
   

@@ -21,3 +21,7 @@ set IFMgx2bbbarxDipoleKernel:UseKernel No
 set IFMgx2bbarbxDipoleKernel:UseKernel No
 set IIgx2bbbarxDipoleKernel:UseKernel No
 set IIgx2bbarbxDipoleKernel:UseKernel No
+
+
+cd /Herwig/UnderlyingEvent
+set MEQCD2to2Fast:MaximumFlavour 4

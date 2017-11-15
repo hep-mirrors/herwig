@@ -13,7 +13,7 @@
 
 #include "QTildeShowerKinematics1to2.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -117,7 +117,7 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
     bool massless(particle->id()==ParticleID::g||particle->id()==ParticleID::gamma);
     vector<Helicity::LorentzPolarizationVector> vtemp;
     VectorWaveFunction::calculateWaveFunctions(vtemp,particle,outgoing,massless);
-    VectorWaveFunction::constructSpinInfo(vtemp,particle,outgoing,timeLike,massless);
+    VectorWaveFunction::constructSpinInfo(vtemp,particle,outgoing,timeLike,massless,vector_phase);
   }
   else {
     throw Exception() << "Spins higher than 1 are not yet implemented in " 

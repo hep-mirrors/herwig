@@ -28,8 +28,7 @@
 #include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
 #include "Herwig/API/RunDirectories.h"
 
-#include <boost/progress.hpp>
-#include <boost/filesystem.hpp>
+#include "Herwig/Utilities/Progress.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -57,6 +56,8 @@ MatchboxFactory::MatchboxFactory()
 
 MatchboxFactory::~MatchboxFactory() {}
 
+Ptr<MatchboxFactory>::tptr MatchboxFactory::theCurrentFactory = Ptr<MatchboxFactory>::tptr();
+
 bool& MatchboxFactory::theIsMatchboxRun() {
   static bool flag = false;
   return flag;
@@ -75,8 +76,6 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) {
   Ptr<MatchboxAmplitude>::ptr amp =
     dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>((*me).amplitude());
   me->matchboxAmplitude(amp);
-
-  me->factory(this);
 
   if ( phasespace() && !me->phasespace() )
     me->phasespace(phasespace());
@@ -204,8 +203,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 
   generator()->log() << "building matrix elements." << flush;
 
-  boost::progress_display * progressBar = 
-    new boost::progress_display(combinations,generator()->log());
+  progress_display progressBar{ combinations, generator()->log() };
 
   for ( unsigned int oas = lowestAsOrder; oas <= highestAsOrder; ++oas ) {
     for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
@@ -215,7 +213,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 	(**amp).orderInGem(oae);
 	for ( set<PDVector>::const_iterator p = processes.begin();
 	      p != processes.end(); ++p ) {
-	  ++(*progressBar);
+	  ++progressBar;
 	  if ( !(**amp).canHandle(*p,this,virt) )
 	    continue;
 	  if ( (**amp).isExternal() )
@@ -229,7 +227,6 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
     }
   }
 
-  delete progressBar;
   generator()->log() << flush;
 
   bool clash = false;
@@ -386,10 +383,6 @@ void MatchboxFactory::setup() {
 
     bool needTrueVirtuals =
       virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections();
-
-    for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
-	    = amplitudes().begin(); amp != amplitudes().end(); ++amp )
-      (**amp).factory(this);
 
     if ( bornMEs().empty() ) {
 
@@ -554,20 +547,6 @@ void MatchboxFactory::setup() {
 	}
       }
 
-      // prepare dipole insertion operators
-      if ( virtualContributions() ) {
-	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionIOperators(dipoleSet()).begin(); 
-	      virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
-	  (**virt).factory(this);
-	}
-	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
-	      virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
-	  (**virt).factory(this);
-	}
-      }
-
     }
 
     // prepare the real emission matrix elements
@@ -655,8 +634,7 @@ void MatchboxFactory::setup() {
 
       bornVirtualMEs().clear();
 
-      boost::progress_display * progressBar = 
-	new boost::progress_display(bornMEs().size(),generator()->log());
+      progress_display progressBar{ bornMEs().size(), generator()->log() };
 
       if ( thePoleData != "" )
 	if ( thePoleData[thePoleData.size()-1] != '/' )
@@ -785,11 +763,9 @@ void MatchboxFactory::setup() {
 
         }
 
-	++(*progressBar);
+	++progressBar;
 
       }
-
-      delete progressBar;
 
       generator()->log() << "---------------------------------------------------\n"
 			 << flush;
@@ -856,8 +832,7 @@ void MatchboxFactory::setup() {
 
       }
 
-      boost::progress_display * progressBar =
-	new boost::progress_display(realEmissionMEs().size(),generator()->log());
+      progress_display progressBar{ realEmissionMEs().size(), generator()->log() };
 
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	      = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
@@ -867,8 +842,6 @@ void MatchboxFactory::setup() {
 	if ( ! (generator()->preinitRegister(sub,pname) ) )
 	  throw Exception() << "MatchboxFactory: Subtracted ME " << pname << " already existing."
 			    << Exception::runerror;
-
-	sub->factory(this);
 
 	(**real).needsNoCorrelations();
 
@@ -898,7 +871,7 @@ void MatchboxFactory::setup() {
 	    finiteRealMEs().push_back(fme);
 	  }
 	  sub->head(tMEPtr());
-	  ++(*progressBar);
+	  ++progressBar;
 	  continue;
 	}
 
@@ -943,11 +916,9 @@ void MatchboxFactory::setup() {
 	    }
 	}
 
-	++(*progressBar);
+	++progressBar;
 
       }
-
-      delete progressBar;
 
       generator()->log() << "---------------------------------------------------\n"
 			 << flush;
@@ -1299,6 +1270,7 @@ void MatchboxFactory::summary(ostream& os) const {
 
 void MatchboxFactory::doinit() {
   theIsMatchboxRun() = true;
+  theCurrentFactory = Ptr<MatchboxFactory>::tptr(this);
   if ( RunDirectories::empty() )
     RunDirectories::pushRunId(generator()->runName());
   setup();
@@ -1319,6 +1291,7 @@ void MatchboxFactory::doinit() {
 
 void MatchboxFactory::doinitrun() {
   theIsMatchboxRun() = true;
+  theCurrentFactory = Ptr<MatchboxFactory>::tptr(this);
   if ( theShowerApproximation )
     theShowerApproximation->initrun();
   Ptr<StandardEventHandler>::tptr eh =

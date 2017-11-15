@@ -187,12 +187,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<TTbAModel> initTTbAModel;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -313,41 +307,6 @@ private:
 
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of TTbAModel. */
-template <>
-struct BaseClassTrait<Herwig::TTbAModel,1> {
-  /** Typedef of the first base class of TTbAModel. */
-  typedef Herwig::StandardModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the TTbAModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::TTbAModel>
-  : public ClassTraitsBase<Herwig::TTbAModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::TTbAModel"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * TTbAModel is implemented. It may also include several, space-separated,
-   * libraries if the class TTbAModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwTTbAModel.so"; }
-};
-
-/** @endcond */
 
 }
 

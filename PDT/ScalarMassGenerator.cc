@@ -12,6 +12,7 @@
 //
 
 #include "ScalarMassGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -30,8 +31,10 @@ void ScalarMassGenerator::persistentInput(PersistentIStream & is, int) {
      >> iunit(_m2plus,GeV2) >> iunit(_m2minus,GeV2);
 }
 
-ClassDescription<ScalarMassGenerator> ScalarMassGenerator::initScalarMassGenerator;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<ScalarMassGenerator,GenericMassGenerator>
+describeHerwigScalarMassGenerator("Herwig::ScalarMassGenerator", "Herwig.so");
 
 void ScalarMassGenerator::Init() {
 

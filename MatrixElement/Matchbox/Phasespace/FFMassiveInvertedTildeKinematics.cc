@@ -25,7 +25,7 @@
 using namespace Herwig;
 
 FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() 
-  : theFullMapping(false) {}
+  : theFullJacobian(true) {}
 
 FFMassiveInvertedTildeKinematics::~FFMassiveInvertedTildeKinematics() {}
 
@@ -39,6 +39,8 @@ IBPtr FFMassiveInvertedTildeKinematics::fullclone() const {
 
 bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
 
+  // todo - SW: Sort out all of the notation in the matchbox
+  // kinematics to match the manual, before manual release. 
   if ( ptMax() < ptCut() ) {
     jacobian(0.0);
     return false;
@@ -48,8 +50,8 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   Lorentz5Momentum spectator = bornSpectatorMomentum();
 
   double mapping = 1.0;
-  vector<double> values;
-    pair<Energy,double> ptz = generatePtZ(mapping,r, &values);
+  vector<double> values(6);
+  pair<Energy,double> ptz = generatePtZ(mapping, r, &values);
   if ( mapping == 0.0 ) {
     jacobian(0.0);
     return false;
@@ -62,28 +64,30 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   
 
   // Define the scale
-  Energy scale = (emitter+spectator).m();
-  Energy2 Qijk = sqr(scale);
+  Energy2 Qijk = sqr(lastScale());
 
   // Most of the required values have been calculated in ptzAllowed
   double y = values[0];
   double z = values[1];
+  double A = values[2];
   double xk = values[3];
   double xij = values[4];
   double suijk = values[5];
-  double suijk2 = sqr(values[5]);
-
+  double suijk2 = sqr(suijk);
+  
   // masses
-  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
-  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / scale );
-  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
+  //double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
+  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
+  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
 
 
   // Construct reference momenta nk, nij, nt
-  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muj2) ) * (emitter - (Mui2/suijk)*spectator);
-  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muj2) ) * (spectator - (Muj2/suijk)*emitter);
+  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muj2) )
+    * (emitter - (Mui2/suijk)*spectator);
+  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muj2) )
+    * (spectator - (Muj2/suijk)*emitter);
 
   // Following notation in notes, qt = sqrt(wt)*nt
   double phi = 2.*Constants::pi*r[2];
@@ -93,8 +97,10 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   Lorentz5Momentum qij = xij*nij + (Mui2/(xij*suijk))*nk;
   Lorentz5Momentum spe = xk*nk + (Muj2/(xk*suijk))*nij;
 
-  Lorentz5Momentum em = zPrime*qij + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
-  Lorentz5Momentum emm = (1.-zPrime)*qij + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
+  Lorentz5Momentum em = zPrime*qij
+    + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
+  Lorentz5Momentum emm = (1.-zPrime)*qij
+    + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
 
   em.setMass(realEmitterData()->hardProcessMass());
   em.rescaleEnergy();
@@ -108,21 +114,86 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   realEmissionMomentum() = emm;
   realSpectatorMomentum() = spe;
   
-  // Store the jacobian
+  // Compute and store the jacobian
   // The jacobian here corresponds to dpt2 / sqr(lastscale) NOT dpt2 / pt2.
-  // This jacobian is the one-particle phase space  
-  if ( true ) {
-    double bar = 1.-mui2-mu2-muj2;
-    mapping *= (1.-y)/(z*(1.-z));
-    jacobian( mapping*(sqr(lastScale())/sHat())*bar/rootOfKallen(1.,Mui2,Muj2) / (16.*sqr(Constants::pi)) );
+  // This jacobian is the one-particle phase space
+  
+  // jac s.t.: dy dz = jac* dpt2/sqr(lastScale()) dz
+  double jac = 0.0;
+
+  // SW - Change in notation here that needs to be fixed (j<->nothing<->k)
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 mj2 = sqr(realEmissionData()->hardProcessMass());
+  Energy2 mk2 = sqr(realSpectatorData()->hardProcessMass());
+  Energy2 mij2 = sqr(bornEmitterData()->hardProcessMass());
+  Energy2 sbar = Qijk - mi2 - mj2 -mk2;
+
+  if ( theFullJacobian && bornSpectatorData()->hardProcessMass() != ZERO ) {
+
+    Energy2 sijk = Qijk*suijk;
+
+    double lambdaK = 1. + (mk2/sijk);
+    double lambdaIJ = 1. + (mij2/sijk);
+    
+    // Compute dy/dzPrime and pt2* dy/dpt2
+    double dyBydzPrime = (1./sbar) *
+      ( -pt2*(1.-2.*zPrime)/sqr(zPrime*(1.-zPrime))
+	- mi2/sqr(zPrime) + mj2/sqr(1.-zPrime) );
+    InvEnergy2 dyBydpt2 = 1./(sbar*zPrime*(1.-zPrime));
+
+    // Compute dA/dzPrime and dA/dpt2
+    double dABydzPrime = (sbar/sijk) * dyBydzPrime;
+    InvEnergy2 dABydpt2 = (sbar/sijk) * dyBydpt2;
+
+    // Compute dxk/dzPrime, dxk/dpt2, dxij/dzPrime and dxij/dpt2
+    double factor = (0.5/lambdaK) *
+      (-1. 
+       - (1./sqrt( sqr(lambdaK + (mk2/sijk)*lambdaIJ - A)
+		 - 4.*lambdaK*lambdaIJ*mk2/sijk))
+       * (lambdaK + (mk2/sijk)*lambdaIJ - A) );
+    
+    double dxkBydzPrime = factor * dABydzPrime;
+    InvEnergy2 dxkBydpt2 = factor * dABydpt2;
+
+    double dxijBydzPrime = (mk2/sijk) * (1./sqr(xk)) * dxkBydzPrime;
+    InvEnergy2 dxijBydpt2 = (mk2/sijk) * (1./sqr(xk)) * dxkBydpt2;
+
+    Energy2 dqiDotqkBydzPrime = xij*xk*0.5*sijk
+      + zPrime*dxijBydzPrime*xk*0.5*sijk + zPrime*xij*dxkBydzPrime*0.5*sijk
+      + 0.5*(mk2/sijk)*(pt2 + mi2)
+      * (-1./(xk*xij*sqr(zPrime)) - dxkBydzPrime/(zPrime*xij*sqr(xk))
+	 - dxijBydzPrime/(zPrime*xk*sqr(xij)));
+
+    double dqiDotqkBydpt2 =  dxijBydpt2*zPrime*xk*0.5*sijk
+      + zPrime*xij*dxkBydpt2*0.5*sijk
+      + (0.5*mk2/sijk) * (1./(zPrime*xk*xij))
+      * (1. + (pt2+mi2)*(-dxkBydpt2/xk - dxijBydpt2/xij) );
+
+    
+    // Compute dzBydzPrime and dzBydpt2
+    Energy2 qiDotqk = (zPrime*xij*xk*sijk*0.5)
+      + (mk2/ ( 2.*xk*xij*sijk*zPrime))*(pt2 + mi2);
+
+    double dzBydzPrime = (1./sbar)
+      * ( 2.*qiDotqk*dyBydzPrime/sqr(1.-y) + (1./(1.-y))*2.*dqiDotqkBydzPrime );
+    InvEnergy2 dzBydpt2 = (1./sbar)
+      * ( 2.*qiDotqk*dyBydpt2/sqr(1.-y) + (1./(1.-y))*2.*dqiDotqkBydpt2 );
+
+    // Compute the jacobian    
+    jac = Qijk * abs(dzBydpt2*dyBydzPrime - dzBydzPrime*dyBydpt2);
+
   }
 
-  // Todo: Switch for the full jacobian including the z->zPrime jacobian
-    else if ( theFullMapping ) {
-      assert ( false );
-    }
-    
-// Store the parameters
+  // This is correct in the massless spectator case.
+  else {
+    jac = Qijk / (sbar*zPrime*(1.-zPrime));
+  }
+  
+  // Mapping includes only the variable changes/jacobians
+  mapping *= jac;
+  jacobian( (sqr(sbar)/rootOfKallen(Qijk,mij2,mk2)) * mapping*(1.-y)/(16.*sqr(Constants::pi)) / sHat() );
+  
+  // Store the parameters
   subtractionParameters().resize(3);
   subtractionParameters()[0] = y;
   subtractionParameters()[1] = z;
@@ -238,12 +309,13 @@ bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz, vecto
   
   if ( y<ym || y>yp || z<zm || z>zp ) return false;
 
-  values->push_back(y);
-  values->push_back(z);
-  values->push_back(A);
-  values->push_back(xk);
-  values->push_back(xij);
-  values->push_back(suijk);
+  assert( (*values).size() == 6);
+  (*values)[0] = y;
+  (*values)[1] = z;
+  (*values)[2] = A;
+  (*values)[3] = xk;
+  (*values)[4] = xij;
+  (*values)[5] = suijk;
       
   return true;
 }
@@ -301,7 +373,7 @@ pair<Energy,double> FFMassiveInvertedTildeKinematics::generatePtZ(double& jac, c
 void FFMassiveInvertedTildeKinematics::persistentOutput(PersistentOStream &) const {
 }
 
-void FFMassiveInvertedTildeKinematics::persistentInput(PersistentIStream &, int) {
+void FFMassiveInvertedTildeKinematics::persistentInput(PersistentIStream &, int) {  
 }
 
 void FFMassiveInvertedTildeKinematics::Init() {
@@ -309,7 +381,6 @@ void FFMassiveInvertedTildeKinematics::Init() {
   static ClassDocumentation<FFMassiveInvertedTildeKinematics> documentation
     ("FFMassiveInvertedTildeKinematics inverts the final-final tilde "
      "kinematics involving a massive particle.");
-
 }
 
 // *** Attention *** The following static variable is needed for the type

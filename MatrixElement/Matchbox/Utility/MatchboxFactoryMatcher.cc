@@ -52,26 +52,26 @@ bool MatchboxFactoryMatcher::check(const ParticleData & data) const {
 
 
 void MatchboxFactoryMatcher::persistentOutput(PersistentOStream & os) const {
-  os << theFactory << theGroup << theIds;
+  os << theGroup << theIds;
 }
 
 void MatchboxFactoryMatcher::persistentInput(PersistentIStream & is, int) {
-  is >> theFactory >> theGroup >> theIds;
+  is >> theGroup >> theIds;
 }
 
 void MatchboxFactoryMatcher::doinit() {
   if ( !MatchboxFactory::isMatchboxRun() )
     return;
-  if ( !theFactory )
+  if ( !MatchboxFactory::currentFactory() )
     throw Exception()
-      << "MatchboxFactoryMatcher::doinit(): No factory object has been set for the matcher '"
+      << "MatchboxFactoryMatcher::doinit(): No factory object is available in the matcher '"
       << name() << "'" << Exception::runerror;
   map<string,PDVector>::const_iterator grp
-    = theFactory->particleGroups().find(theGroup);
-  if ( grp == theFactory->particleGroups().end() )
+    = MatchboxFactory::currentFactory()->particleGroups().find(theGroup);
+  if ( grp == MatchboxFactory::currentFactory()->particleGroups().end() )
     throw Exception()
       << "MatchboxFactoryMatcher::doinit(): Particle group '" << theGroup << "' not defined in factory object '"
-      << theFactory->name() << "'" << Exception::runerror;
+      << MatchboxFactory::currentFactory()->name() << "'" << Exception::runerror;
   theIds.clear();
   for ( PDVector::const_iterator p = grp->second.begin();
 	p != grp->second.end(); ++p )
@@ -91,11 +91,6 @@ void MatchboxFactoryMatcher::Init() {
 
   static ClassDocumentation<MatchboxFactoryMatcher> documentation
     ("MatchboxFactoryMatcher matches particles according to MatchboxFactory particle groups");
-
-  static Reference<MatchboxFactoryMatcher,MatchboxFactory> interfaceFactory
-    ("Factory",
-     "Set the factory to query for particle groups.",
-     &MatchboxFactoryMatcher::theFactory, false, false, true, true, false);
 
   static Parameter<MatchboxFactoryMatcher,string> interfaceGroup
     ("Group",

@@ -692,6 +692,7 @@ create Herwig::MatchboxTopMassScale TopPairMassScale
 create Herwig::MatchboxTopMTScale TopPairMTScale
 create Herwig::MatchboxTopLinearSumMTScale TopPairLinearMTScale
 create Herwig::MatchboxTopIndividualMTScale TopPairIndividualMTScale
+create Herwig::MatchboxTriVecScales TriVecScale
 
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:IncludeMT No
@@ -699,6 +700,7 @@ set HTScale:JetPtCut 15.*GeV
 cp HTScale HTPrimeScale
 set HTPrimeScale:IncludeMT Yes
 set HTPrimeScale:JetPtCut 15.*GeV
+set TriVecScale:JetFinder /Herwig/Cuts/JetFinder
 cp LeptonPairMassScale LeptonQ2Scale
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonPairMassScale

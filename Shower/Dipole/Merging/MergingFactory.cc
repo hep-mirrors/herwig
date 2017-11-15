@@ -130,12 +130,6 @@ void MergingFactory::prepare_BV(int i) {
 	<< MH()->M()
   	<< " NLO corrections requested,\n"
   	<< "but no virtual contributions are found.";
-  
-  for ( auto & virt : DipoleRepository::insertionIOperators(dipoleSet()) )
-    virt->factory(this);
-  
-  for ( auto & virt : DipoleRepository::insertionPKOperators(dipoleSet()) )
-    virt->factory(this);
 }
 
 void MergingFactory::prepare_R(int i) {
@@ -186,7 +180,6 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
   
   clusternode->deepHead(clusternode);
   MH()->firstNodeMap(bornme,clusternode);
-  bornme->factory(this);
   bornme->merger(MH());
 
   
@@ -381,7 +374,7 @@ vector<string> MergingFactory::parseProcess(string in) {
 
 
 
-#include <boost/progress.hpp>
+#include "Herwig/Utilities/Progress.h"
 void MergingFactory::setup() {
   
   useMe();
@@ -433,8 +426,6 @@ void MergingFactory::setup() {
       if ( pip->id() > 0 && pip->id() < 7 && pip->hardProcessMass() == ZERO )
         nLightProtonVec( pip->id() );
     
-    for ( auto & amp: amplitudes() ) amp->factory(this);
-    
       // fill the amplitudes
     if ( !amplitudes().empty() )  fillMEsMap();
     
@@ -449,7 +440,6 @@ void MergingFactory::setup() {
     largeNBasis->clear();
     largeNBasis->doLargeN();
     MH()->largeNBasis(largeNBasis);
-    MH()->largeNBasis()->factory(this);
     
       // prepare the Born and virtual matrix elements
     for ( int i = 0 ; i <= max(0, MH()->N()) ; ++i ) prepare_BV(i);
@@ -503,13 +493,13 @@ void MergingFactory::setup() {
       generator()->log() << ANSI::blue << numr << " x Real " << ANSI::red << flush;
     }
     
-    boost::progress_display * progressBar = new boost::progress_display(numb+numv+numr,generator()->log());
+    progress_display progressBar{ numb+numv+numr, generator()->log() };
       for (int i = 0; i <= max(0, MH()->N()) ; ++i ){
         for ( auto born : thePureMEsMap[i]){
           if (bornContributions() ){
               pushB(born, i);
               generator()->log() << ANSI::green;
-              ++(*progressBar);
+              ++progressBar;
               generator()->log() << ANSI::reset;
           }
         }
@@ -523,7 +513,7 @@ void MergingFactory::setup() {
     if ( virtualContributions() && i <= MH()->M()){
       pushV(virt, i);
        generator()->log() << ANSI::yellow;
-      ++(*progressBar);
+      ++progressBar;
     }
     
     for (int i = 1; i <= max(0, MH()->N()) ; ++i )
@@ -531,23 +521,20 @@ void MergingFactory::setup() {
     if (realContributions()&& i <= MH()->M() + 1 ){
       pushR(real, i);
       generator()->log() << ANSI::blue;
-      ++(*progressBar);
+      ++progressBar;
     }
     generator()->log() << ANSI::reset;
-    delete progressBar;
     
     if ( !externalAmplitudes().empty() ) {
       generator()->log() << "Initializing external amplitudes." << endl;
-      boost::progress_display * progressBar =
-      new boost::progress_display(externalAmplitudes().size(),generator()->log());
-      for ( const auto ext : externalAmplitudes()) {
+      progress_display progressBar{ externalAmplitudes().size(), generator()->log() };
+      for ( const auto ext : externalAmplitudes() ) {
         if ( ! ext->initializeExternal() ) {
           throw InitException()
   << "error: failed to initialize amplitude '" << ext->name() << "'\n";
         }
-        ++(*progressBar);
+        ++progressBar;
       }
-      delete progressBar;
       generator()->log()
       << "---------------------------------------------------" << endl;
     }
@@ -559,14 +546,13 @@ void MergingFactory::setup() {
       for (const auto oit : olpProcesses()) {
         olps[oit.first] = oit.second;
       }
-      boost::progress_display * progressBar = new boost::progress_display(olps.size(), generator()->log());
+      progress_display progressBar{ olps.size(), generator()->log() };
       for ( const auto olpit : olps ) {
         if ( !olpit.first->startOLP(olpit.second) ) {
           throw InitException() << "error: failed to start OLP for amplitude '" << olpit.first->name() << "'\n";
         }
-        ++(*progressBar);
+        ++progressBar;
       }
-      delete progressBar;
       generator()->log()
       << "---------------------------------------------------\n" << flush;
     }

@@ -12,6 +12,7 @@
 //
 
 #include "TTbAModelAGQQVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -62,9 +63,10 @@ void TTbAModelAGQQVertex::persistentInput(PersistentIStream & is, int) {
   is >> _cAGQQ_R >> _cAGQQ_L >>_cAGTT_R >> _cAGTT_L >> _models;
 }
 
-ClassDescription<TTbAModelAGQQVertex> 
-TTbAModelAGQQVertex::initTTbAModelAGQQVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TTbAModelAGQQVertex,FFVVertex>
+describeHerwigTTbAModelAGQQVertex("Herwig::TTbAModelAGQQVertex", "Herwig.so");
 
 
 void TTbAModelAGQQVertex::Init() {

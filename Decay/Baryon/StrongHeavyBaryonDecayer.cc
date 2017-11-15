@@ -5,6 +5,7 @@
 //
 
 #include "StrongHeavyBaryonDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -425,9 +426,10 @@ int StrongHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-ClassDescription<StrongHeavyBaryonDecayer> 
-StrongHeavyBaryonDecayer::initStrongHeavyBaryonDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<StrongHeavyBaryonDecayer,Baryon1MesonDecayerBase>
+describeHerwigStrongHeavyBaryonDecayer("Herwig::StrongHeavyBaryonDecayer", "HwBaryonDecay.so");
 
 void StrongHeavyBaryonDecayer::Init() {
 

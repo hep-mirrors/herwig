@@ -5,6 +5,7 @@
 //
 
 #include "TopDecay.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -61,8 +62,10 @@ void TopDecay::persistentOutput(PersistentOStream & os) const {
 void TopDecay::persistentInput(PersistentIStream & is, int) {
 }
 
-ClassDescription<TopDecay> TopDecay::initTopDecay;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TopDecay,AnalysisHandler>
+describeHerwigTopDecay("Herwig::TopDecay", "libfastjet.so LeptonJetTest.so");
 
 void TopDecay::Init() {
 

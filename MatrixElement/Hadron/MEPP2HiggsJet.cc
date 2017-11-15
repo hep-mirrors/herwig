@@ -12,6 +12,7 @@
 //
 
 #include "MEPP2HiggsJet.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -25,10 +26,10 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Utilities/HiggsLoopFunctions.h"
 
 using namespace Herwig;
-
-const Complex MEPP2HiggsJet::_epsi = Complex(0.,-1.e-20);
+using namespace Herwig::HiggsLoopFunctions;
 
 IBPtr MEPP2HiggsJet::clone() const {
   return new_ptr(*this);
@@ -56,8 +57,10 @@ void MEPP2HiggsJet::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
 }
 
-ClassDescription<MEPP2HiggsJet> MEPP2HiggsJet::initMEPP2HiggsJet;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2HiggsJet,ME2to2Base>
+describeHerwigMEPP2HiggsJet("Herwig::MEPP2HiggsJet", "HwMEHadron.so");
 
 void MEPP2HiggsJet::Init() {
 

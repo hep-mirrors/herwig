@@ -193,12 +193,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEGammaP2Jets> initMEGammaP2Jets;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -237,41 +231,6 @@ private:
   ProductionMatrixElement _me;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEGammaP2Jets. */
-template <>
-struct BaseClassTrait<Herwig::MEGammaP2Jets,1> {
-  /** Typedef of the first base class of MEGammaP2Jets. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEGammaP2Jets class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEGammaP2Jets>
-  : public ClassTraitsBase<Herwig::MEGammaP2Jets> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEGammaP2Jets"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEGammaP2Jets is implemented. It may also include several, space-separated,
-   * libraries if the class MEGammaP2Jets depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwMEGammaHadron.so"; }
-};
-
-/** @endcond */
 
 }
 

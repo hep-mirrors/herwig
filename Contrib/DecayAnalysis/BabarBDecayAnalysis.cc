@@ -5,6 +5,7 @@
 //
 
 #include "BabarBDecayAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -68,8 +69,10 @@ void BabarBDecayAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
   }
 }
 
-NoPIOClassDescription<BabarBDecayAnalysis> BabarBDecayAnalysis::initBabarBDecayAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<BabarBDecayAnalysis,AnalysisHandler>
+describeHerwigBabarBDecayAnalysis("Herwig::BabarBDecayAnalysis", "HwDecayAnalysis.so");
 
 void BabarBDecayAnalysis::Init() {
 

@@ -11,10 +11,9 @@
 //
 // This is the declaration of the SMZDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -26,10 +25,10 @@ using namespace ThePEG::Helicity;
  *  Z boson to the Standard Model fermions. In principle it can also
  *  be used for these decays in any model.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  * 
  */
-class SMZDecayer: public DecayIntegrator {
+class SMZDecayer: public PerturbativeDecayer {
 
 public:
 
@@ -53,22 +52,32 @@ public:
    */
   virtual void initializeMECorrection(RealEmissionProcessPtr , double & ,
 				      double & );
-  
-  /**
-   *  Apply the hard matrix element correction to a given hard process or decay
-   */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
-   * @param initial The particle from the hard process which started the 
-   * shower
    * @param parent The initial particle in the current branching
-   * @param br The branching struct
+   * @param progenitor The progenitor particle of the jet
+   * @param fs Whether the emission is initial or final-state
+   * @param highestpT The highest pT so far in the shower
+   * @param ids ids of the particles produced in the branching
+   * @param z The momentum fraction of the branching
+   * @param scale the evolution scale of the branching
+   * @param pT The transverse momentum of the branching
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
-				     ShowerParticlePtr parent,Branching br);
+  virtual bool softMatrixElementVeto(PPtr parent,
+				     PPtr progenitor,
+				     const bool & fs,
+				     const Energy & highestpT,
+				     const vector<tcPDPtr> & ids,
+				     const double & z,
+				     const Energy & scale,
+				     const Energy & pT);
+    
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
   //@}
 
 public:
@@ -198,16 +207,6 @@ protected:
 protected:
 
   /**
-   *  Apply the hard matrix element
-   */
-  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
-
-  /**
-   *  Get the weight for hard emission
-   */
-  double getHard(double &, double &);
-
-  /**
    *  Set the \f$\rho\f$ parameter
    */
   void setRho(double);
@@ -303,19 +302,70 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
+  //@}
+  
+protected:
 
   /**
-   *  Access to the strong coupling
+   *  Real emission term, for use in generating the hardest emission
    */
-  ShowerAlphaPtr alphaS() const {return alpha_;}
-  //@}
+  double calculateRealEmission(double x1, double x2, 
+			       vector<PPtr> hardProcess,
+			       double phi,
+			       bool subtract,
+			       int emitter) const;
+
+  /**
+   *  Real emission term, for use in generating the hardest emission
+   */
+  double calculateRealEmission(double x1, double x2, 
+			       vector<PPtr> hardProcess,
+			       double phi,
+			       bool subtract) const;
+
+  /**
+   *  Check the sign of the momentum in the \f$z\f$-direction is correct.
+   */
+  bool checkZMomenta(double x1, double x2, double x3, double y, Energy pT) const;
+
+  /**
+   *  Calculate the Jacobian
+   */
+  InvEnergy calculateJacobian(double x1, double x2, Energy pT) const;
+
+  /**
+   *  Calculate the ratio between NLO & LO ME
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemitter,bool subtract) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
+  
+  /**
+   *  Calculate the LO ME
+   */
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Calculate the NLO real emission piece of ME
+   */
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		    const vector<Lorentz5Momentum> & momenta,
+		    ShowerInteraction inter) const;
+
+  /**
+   *  Generate a real emission event
+   */
+  bool getEvent(vector<PPtr> hardProcess);
 
 private:
-
-  /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMZDecayer> initSMZDecayer;
 
   /**
    * Private and non-existent assignment operator.
@@ -324,15 +374,22 @@ private:
 
 private:
 
-  /**
-   * Pointer to the Z vertex
-   */
-  FFVVertexPtr FFZvertex_;
 
+
+  /**
+   *  Pointer to the fermion-antifermion Z vertex
+   */
+  FFVVertexPtr FFZVertex_;
+  
   /**
    * Pointer to the photon vertex
    */
-  AbstractFFVVertexPtr FFPvertex_;
+  AbstractFFVVertexPtr FFPVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
 
   /**
    * maximum weights for the different integrations
@@ -406,51 +463,80 @@ private:
    */
   static const double EPS_;
 
+private:
+
   /**
-   *  Pointer to the coupling
+   *  The colour factor 
    */
-  ShowerAlphaPtr alpha_;
+  double CF_;
+
+  /**
+   *  The Z mass
+   */
+  mutable Energy mZ_;
+
+  /**
+   *  The reduced mass
+   */
+  mutable double mu_;
+
+  /**
+   *  The square of the reduced mass
+   */
+  mutable double mu2_;
+
+  /**
+   *  The strong coupling
+   */
+  mutable double aS_;
+
+  /**
+   * The scale
+   */
+  mutable Energy2 scale_;
+
+  /**
+   *  Stuff for the POWHEG correction
+   */
+  //@{
+  /**
+   *  ParticleData object for the gluon
+   */
+  tcPDPtr gluon_;
+
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> partons_;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> quark_;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum gauge_;
+
+  /**
+   *  The Z boson
+   */
+  PPtr zboson_;
+
+  /**
+   *  Higgs mass squared
+   */
+  Energy2 mz2_;
+  //@}
+
+  /**
+   *  Whether or not to give an LO or NLO normalisation
+   */
+  bool NLO_;
 };
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMZDecayer.
- */
-template <>
- struct BaseClassTrait<Herwig::SMZDecayer,1> {
-    /** Typedef of the base class of SMZDecayer. */
-   typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::SMZDecayer>
-  : public ClassTraitsBase<Herwig::SMZDecayer> {
-   /** Return the class name.*/
-  static string className() { return "Herwig::SMZDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwPerturbativeDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_SMZDecayer_H */

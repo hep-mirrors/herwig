@@ -99,7 +99,11 @@ if __name__ == "__main__":
             logging.error("%s can not be parsed as XML" % file)
             break
         mass=66
-        if(file.find("Mass1")>=0) :
+        if(file.find("HighMass1")>=0) :
+            mass = 116
+        elif(file.find("HighMass2")>=0) :
+            mass = 400
+        elif(file.find("Mass1")>=0) :
             mass = 12
         elif(file.find("Mass2")>=0) :
             mass = 30
@@ -252,12 +256,24 @@ if __name__ == "__main__":
                     tmpP[mass] = ao
                 else:
                     raise Exception("A set with mass = %s already exists" % ( mass))
+            elif (aopath.find("ATLAS_2013_I1234228")>=0) :
+                if not inhistos_mass.has_key(aopath):
+                    inhistos_mass[aopath] = {}
+                tmpE = inhistos_mass[aopath]
+                sqrts=7000
+                if not tmpE.has_key(sqrts):
+                    tmpE[sqrts] = {}
+                tmpP = tmpE[sqrts]
+                if not tmpP.has_key(mass):
+                    tmpP[mass] = ao
+                else:
+                    raise Exception("A set with mass = %s already exists" % ( mass))
             else :
                 outhistos[aopath] = ao
-
     for hpath,hsets in inhistos_mass.iteritems():
         if(hpath!="/ATLAS_2015_I1408516_EL/d41-x01-y01" and
-           hpath!="/ATLAS_2015_I1408516_MU/d41-x01-y02" ) :
+           hpath!="/ATLAS_2015_I1408516_MU/d41-x01-y02" and
+           hpath!="/ATLAS_2013_I1234228/d01-x01-y02" ) :
             continue
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
@@ -277,7 +293,7 @@ if __name__ == "__main__":
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
-    # sort out mass ibns for ATLAS Z-> e,mu at 8 TeV
+    # sort out mass bins for ATLAS Z-> e,mu at 8 TeV
     for ltype in ["EL","MU"] :
         if(ltype=="EL") :
             y = "y01"
@@ -369,6 +385,9 @@ if __name__ == "__main__":
             del outhistos["/ATLAS_2014_I1282447/d06-x01-y04_wminus"]
         del outhistos["/ATLAS_2014_I1282447/d06-x01-y01_winc"]
         del outhistos["/ATLAS_2014_I1282447/d06-x01-y02_winc"]
+
+        
+    mergeByMass("/ATLAS_2013_I1234228/d01-x01-y02", "7000")
     # Choose output file
     yoda.writeYODA(outhistos,opts.OUTFILE)
     sys.exit(0)

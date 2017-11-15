@@ -61,7 +61,15 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
-//@}
+
+  /**
+   *  Set the information on the decay
+   */
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>);
+  //@}
 
 public:
 
@@ -106,25 +114,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<TSSDecayer> initTSSDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -137,52 +127,24 @@ private:
   /**
    *  Abstract pointer to AbstractSSTVertex
    */
-  AbstractSSTVertexPtr _abstractVertex;
+  AbstractSSTVertexPtr vertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  SSTVertexPtr _perturbativeVertex;
+  SSTVertexPtr perturbativeVertex_;
 
   /**
    *  Spin density matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization tensors of the decaying particle
    */
-  mutable vector<Helicity::TensorWaveFunction> _tensors;
+  mutable vector<Helicity::TensorWaveFunction> tensors_;
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of TSSDecayer. */
-template <>
-struct BaseClassTrait<Herwig::TSSDecayer,1> {
-  /** Typedef of the first base class of TSSDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the TSSDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::TSSDecayer>
-  : public ClassTraitsBase<Herwig::TSSDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::TSSDecayer"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_TSSDecayer_H */

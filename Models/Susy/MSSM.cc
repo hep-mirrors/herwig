@@ -22,13 +22,13 @@ using namespace Herwig;
 void MSSM::persistentOutput(PersistentOStream & os) const {
   os << theStopMix << theSbotMix << theStauMix << theAlpha 
      << ounit(theAtop,GeV) << ounit(theAbottom,GeV) << ounit(theAtau,GeV) 
-     << theHiggsMix << HiggsAMix_ << HiggsPMix_;
+     << theHiggsMix << HiggsAMix_ << HiggsPMix_ << createDiagonalMixing_;
 }
 
 void MSSM::persistentInput(PersistentIStream & is, int) {
   is >> theStopMix >> theSbotMix >> theStauMix >> theAlpha 
      >> iunit(theAtop,GeV) >> iunit(theAbottom,GeV) >> iunit(theAtau,GeV) 
-     >> theHiggsMix >> HiggsAMix_ >> HiggsPMix_;
+     >> theHiggsMix >> HiggsAMix_ >> HiggsPMix_ >>  createDiagonalMixing_;
 }
 
 // The following static variable is needed for the type
@@ -56,6 +56,21 @@ void MSSM::Init() {
      "  %%CITATION = NUPHA,B272,1;%%\n"
     );
 
+  static Switch<MSSM,bool> interfaceCreateDiagonalMixingMatrices
+    ("CreateDiagonalMixingMatrices",
+     "Create diagonal stop, sbottom and stau mixings if not present.",
+     &MSSM::createDiagonalMixing_, false, false, false);
+  static SwitchOption interfaceCreateDiagonalMixingMatricesNo
+    (interfaceCreateDiagonalMixingMatrices,
+     "No",
+     "Don't create them",
+     false);
+  static SwitchOption interfaceCreateDiagonalMixingMatricesYes
+    (interfaceCreateDiagonalMixingMatrices,
+     "Yes",
+     "Create them if needed",
+     true);
+
 }
 
 void MSSM::createMixingMatrices() {
@@ -76,6 +91,27 @@ void MSSM::createMixingMatrices() {
     // Higgs mixing matrix in extended models
     else if (name == "nmhmix" || name == "rvhmix") {
       createMixingMatrix(theHiggsMix,name,it->second.second,it->second.first);
+    }
+  }
+  // create stop, sbottom and stau mixing if needed and absent
+  if(createDiagonalMixing_) {
+    // stop
+    if(!theStopMix) {
+      theStopMix = new_ptr(MixingMatrix(2,2));
+      (*theStopMix)(0,0) = 1.;
+      (*theStopMix)(1,1) = 1.;
+    }
+    // sbottom
+    if(!theSbotMix) {
+      theSbotMix = new_ptr(MixingMatrix(2,2));
+      (*theSbotMix)(0,0) = 1.;
+      (*theSbotMix)(1,1) = 1.;
+    }
+    // stau
+    if(!theStauMix) {
+      theStauMix = new_ptr(MixingMatrix(2,2));
+      (*theStauMix)(0,0) = 1.;
+      (*theStauMix)(1,1) = 1.;
     }
   }
   // neutral higgs mixing if not already set

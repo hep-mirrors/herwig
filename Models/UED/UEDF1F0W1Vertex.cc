@@ -12,6 +12,7 @@
 //
 
 #include "UEDF1F0W1Vertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -103,8 +104,10 @@ void UEDF1F0W1Vertex::persistentInput(PersistentIStream & is, int) {
      >> theSinWmO >> theCosWmO >> theCKM;
 }
 
-ClassDescription<UEDF1F0W1Vertex> UEDF1F0W1Vertex::initUEDF1F0W1Vertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<UEDF1F0W1Vertex,FFVVertex>
+describeHerwigUEDF1F0W1Vertex("Herwig::UEDF1F0W1Vertex", "HwUED.so");
 
 void UEDF1F0W1Vertex::Init() {
 

@@ -12,6 +12,7 @@
 //
 
 #include "QEDRadiationHandler.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -137,8 +138,10 @@ void QEDRadiationHandler::persistentInput(PersistentIStream & is, int) {
   is >> _generator >> _decayingParticles >> _decayProducts;
 }
 
-ClassDescription<QEDRadiationHandler> QEDRadiationHandler::initQEDRadiationHandler;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<QEDRadiationHandler,StepHandler>
+describeHerwigQEDRadiationHandler("Herwig::QEDRadiationHandler", "Herwig.so");
 
 void QEDRadiationHandler::Init() {
 

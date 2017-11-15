@@ -5,6 +5,7 @@
 //
 
 #include "PGSInterface.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -78,8 +79,10 @@ void PGSInterface::persistentInput(PersistentIStream & is, int) {
   is >> _pgs_param_file;
 }
 
-ClassDescription<PGSInterface> PGSInterface::initPGSInterface;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<PGSInterface,AnalysisHandler>
+describeHerwigPGSInterface("Herwig::PGSInterface", "HwPGSInterface.so");
 
 void PGSInterface::Init() {
 

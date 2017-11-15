@@ -103,12 +103,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<UEDW0A1H1Vertex> initUEDW0A1H1Vertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -143,40 +137,5 @@ private:
 };
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of UEDW0A1H1Vertex. */
-template <>
-struct BaseClassTrait<Herwig::UEDW0A1H1Vertex,1> {
-  /** Typedef of the first base class of UEDW0A1H1Vertex. */
-  typedef ThePEG::Helicity::VSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the UEDW0A1H1Vertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::UEDW0A1H1Vertex>
-  : public ClassTraitsBase<Herwig::UEDW0A1H1Vertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::UEDW0A1H1Vertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * UEDW0A1H1Vertex is implemented. It may also include several, space-separated,
-   * libraries if the class UEDW0A1H1Vertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwUED.so"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_UEDW0A1H1Vertex_H */

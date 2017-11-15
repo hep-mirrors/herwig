@@ -5,6 +5,7 @@
 //
 
 #include "MEGammaP2Jets.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -44,8 +45,10 @@ void MEGammaP2Jets::persistentInput(PersistentIStream & is, int) {
      >> _process >> _minflavour >> _maxflavour;
 }
 
-ClassDescription<MEGammaP2Jets> MEGammaP2Jets::initMEGammaP2Jets;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEGammaP2Jets,HwMEBase>
+describeHerwigMEGammaP2Jets("Herwig::MEGammaP2Jets", "HwMEGammaHadron.so");
 
 void MEGammaP2Jets::Init() {
 
@@ -261,12 +264,12 @@ double MEGammaP2Jets::gammagluonME(vector<VectorWaveFunction> & gmin,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // first diagram
-	  inter = _gluonvertex->evaluate(mt,5,aout[ohel2].particle(),
+	  inter = _gluonvertex->evaluate(mt,5,aout[ohel2].particle()->CC(),
 					 aout[ohel2],glin[ihel2]);
 	  diag[0] = _photonvertex->evaluate(0.*GeV2,inter,fout[ohel1],
 					    gmin[ihel1]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,aout[ohel2].particle(),
+	  inter = _photonvertex->evaluate(0.*GeV2,5,aout[ohel2].particle()->CC(),
 					  aout[ohel2],gmin[ihel1]);
 	  diag[1] = _gluonvertex->evaluate(mt,inter,fout[ohel1],glin[ihel2]);
 	  for(unsigned int ix=0;ix<2;++ix) me[ix] += norm(diag[ix]);
@@ -309,11 +312,11 @@ double MEGammaP2Jets::gammaquarkME(vector<VectorWaveFunction> & gmin,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // first diagram
-	  inter = _gluonvertex->evaluate(mt,5,fin[ihel2].particle(),
+	  inter = _gluonvertex->evaluate(mt,5,fin[ihel2].particle()->CC(),
 					 fin[ihel2],gout[ohel1]);
 	  diag[0] = _photonvertex->evaluate(0.*GeV2,inter,fout[ohel2],gmin[ihel1]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[ihel2].particle(),
+	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[ihel2].particle()->CC(),
 					  fin[ihel2],gmin[ihel1]);
 	  diag[1] = _gluonvertex->evaluate(mt,inter,fout[ohel2],gout[ohel1]);
 	  for(unsigned int ix=0;ix<2;++ix) me[ix] += norm(diag[ix]);
@@ -362,11 +365,11 @@ double MEGammaP2Jets::gammaantiquarkME(vector<VectorWaveFunction> & gmin,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
  	  // first diagram
- 	  inter = _gluonvertex->evaluate(mt,5,fin[ihel2].particle(),
+ 	  inter = _gluonvertex->evaluate(mt,5,fin[ihel2].particle()->CC(),
  					 fin[ihel2],gout[ohel1]);
  	  diag[0] = _photonvertex->evaluate(0.*GeV2,fout[ohel2],inter,gmin[ihel1]);
  	  // second diagram
- 	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[ihel2].particle(),
+ 	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[ihel2].particle()->CC(),
  					  fin[ihel2],gmin[ihel1]);
  	  diag[1] = _gluonvertex->evaluate(mt,fout[ohel2],inter,gout[ohel1]);
  	  for(unsigned int ix=0;ix<2;++ix) me[ix] += norm(diag[ix]);

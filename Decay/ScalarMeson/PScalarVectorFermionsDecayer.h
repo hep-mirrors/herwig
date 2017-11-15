@@ -164,11 +164,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<PScalarVectorFermionsDecayer> initPScalarVectorFermionsDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   PScalarVectorFermionsDecayer & operator=(const PScalarVectorFermionsDecayer &);
@@ -253,43 +248,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of PScalarVectorFermionsDecayer.
- */
-template <>
-struct BaseClassTrait<Herwig::PScalarVectorFermionsDecayer,1> {
-    /** Typedef of the base class of PScalarVectorFermionsDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::PScalarVectorFermionsDecayer>
-  : public ClassTraitsBase<Herwig::PScalarVectorFermionsDecayer> {
-   /** Return the class name.*/
-   static string className() { return "Herwig::PScalarVectorFermionsDecayer"; }
-   /**
-    * Return the name of the shared library to be loaded to get
-    * access to this class and every other class it uses
-    * (except the base class).
-    */
-   static string library() { return "HwSMDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* THEPEG_PScalarVectorFermionsDecayer_H */

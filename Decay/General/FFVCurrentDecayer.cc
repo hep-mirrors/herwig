@@ -12,6 +12,7 @@
 //
 
 #include "FFVCurrentDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -39,33 +40,35 @@ IBPtr FFVCurrentDecayer::fullclone() const {
 }
 
 void FFVCurrentDecayer::doinit() {
-  _theFFVPtr = dynamic_ptr_cast<FFVVertexPtr>(getVertex());
+  FFVPtr_ = dynamic_ptr_cast<FFVVertexPtr>(vertex());
   GeneralCurrentDecayer::doinit();
 }
 
 
 void FFVCurrentDecayer::rebind(const TranslationMap & trans)
   {
-  _theFFVPtr = trans.translate(_theFFVPtr);
+  FFVPtr_ = trans.translate(FFVPtr_);
   GeneralCurrentDecayer::rebind(trans);
 }
 
 IVector FFVCurrentDecayer::getReferences() {
   IVector ret = GeneralCurrentDecayer::getReferences();
-  ret.push_back(_theFFVPtr);
+  ret.push_back(FFVPtr_);
   return ret;
 }
 
 void FFVCurrentDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theFFVPtr;
+  os << FFVPtr_;
 }
 
 void FFVCurrentDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theFFVPtr;
+  is >> FFVPtr_;
 }
 
-ClassDescription<FFVCurrentDecayer> FFVCurrentDecayer::initFFVCurrentDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<FFVCurrentDecayer,GeneralCurrentDecayer>
+describeHerwigFFVCurrentDecayer("Herwig::FFVCurrentDecayer", "Herwig.so");
 
 void FFVCurrentDecayer::Init() {
 
@@ -92,18 +95,18 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   if(meopt==Initialize) {
     // spinors and rho
     if(ferm) {
-      SpinorWaveFunction   ::calculateWaveFunctions(_wave,_rho,
+      SpinorWaveFunction   ::calculateWaveFunctions(wave_,rho_,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-      if(_wave[0].wave().Type() != SpinorType::u)
-	for(unsigned int ix = 0; ix < 2; ++ix) _wave   [ix].conjugate();
+      if(wave_[0].wave().Type() != SpinorType::u)
+	for(unsigned int ix = 0; ix < 2; ++ix) wave_   [ix].conjugate();
     }
     else {
-      SpinorBarWaveFunction::calculateWaveFunctions(_wavebar,_rho,
+      SpinorBarWaveFunction::calculateWaveFunctions(wavebar_,rho_,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-      if(_wavebar[0].wave().Type() != SpinorType::v)
-	for(unsigned int ix = 0; ix < 2; ++ix) _wavebar[ix].conjugate();
+      if(wavebar_[0].wave().Type() != SpinorType::v)
+	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
   }
   // setup spin info when needed
@@ -111,13 +114,13 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
     // for the decaying particle
     if(ferm) {
       SpinorWaveFunction::
-	constructSpinInfo(_wave,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      SpinorBarWaveFunction::constructSpinInfo(_wavebar,decay[0],outgoing,true);
+	constructSpinInfo(wave_,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorBarWaveFunction::constructSpinInfo(wavebar_,decay[0],outgoing,true);
     }
     else {
       SpinorBarWaveFunction::
-	constructSpinInfo(_wavebar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      SpinorWaveFunction::constructSpinInfo(_wave,decay[0],outgoing,true);
+	constructSpinInfo(wavebar_,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorWaveFunction::constructSpinInfo(wave_,decay[0],outgoing,true);
     }
     weakCurrent()->current(mode(),ichan,q,hadpart,meopt);
     return 0.;
@@ -125,10 +128,10 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   if(ferm)
     SpinorBarWaveFunction::
-      calculateWaveFunctions(_wavebar,decay[0],outgoing);
+      calculateWaveFunctions(wavebar_,decay[0],outgoing);
   else
     SpinorWaveFunction::
-      calculateWaveFunctions(_wave   ,decay[0],outgoing);
+      calculateWaveFunctions(wave_   ,decay[0],outgoing);
   // calculate the hadron current
   vector<LorentzPolarizationVectorE> 
     hadron(weakCurrent()->current(mode(),ichan,q,hadpart,meopt));
@@ -164,7 +167,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
 	ihel[0]=if1;
 	ihel[1]=if2;
 	if(!ferm) swap(ihel[0],ihel[1]);
-	(*newME)(ihel) = _theFFVPtr->evaluate(scale,_wave[if1],_wavebar[if2],vWave);
+	(*newME)(ihel) = FFVPtr_->evaluate(scale,wave_[if1],wavebar_[if2],vWave);
       }
     }
   }
@@ -178,8 +181,8 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
     if(iq%2==0) ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);
     else        ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);
   }
-  pre /= 0.125*sqr(_theFFVPtr->weakCoupling(scale));
-  double output(0.5*pre*ckm*(ME()->contract(_rho)).real()*
+  pre /= 0.125*sqr(FFVPtr_->weakCoupling(scale));
+  double output(0.5*pre*ckm*(ME()->contract(rho_)).real()*
 		sqr(SM().fermiConstant()*UnitRemoval::E2));
   return output;
 }

@@ -161,11 +161,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<TensorMesonVectorVectorDecayer> initTensorMesonVectorVectorDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   TensorMesonVectorVectorDecayer & operator=(const TensorMesonVectorVectorDecayer &);
@@ -220,44 +215,6 @@ private:
 
 };
 
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of Herwig::TensorMesonVectorVectorDecayer.
- */
-template <>
-struct BaseClassTrait<Herwig::TensorMesonVectorVectorDecayer,1> {
-  /** Typedef of the base class of TensorMesonVectorVectorDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::TensorMesonVectorVectorDecayer>
-  : public ClassTraitsBase<Herwig::TensorMesonVectorVectorDecayer> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::TensorMesonVectorVectorDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwTMDecay.so"; }
-  
-};
-  
-/** @endcond */
-  
 }
 
 #endif /* HERWIG_TensorMesonVectorVectorDecayer_H */

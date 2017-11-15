@@ -143,11 +143,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<WSBFormFactor> initWSBFormFactor;
-
-  /**
    * Private and non-existent assignment operator.
    */
   WSBFormFactor & operator=(const WSBFormFactor &);
@@ -207,41 +202,6 @@ private:
    */
   double _thetaeta;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * WSBFormFactor.
- */
-template <>
- struct BaseClassTrait<Herwig::WSBFormFactor,1> {
-  /** Typedef of the base class of WSBFormFactor. */
-  typedef Herwig::ScalarFormFactor NthBase;
-};
-/**
- * This template specialization informs ThePEG about the name of the
- * WSBFormFactor class.
- */
-template <>
- struct ClassTraits<Herwig::WSBFormFactor>
-  : public ClassTraitsBase<Herwig::WSBFormFactor> {
-  /** Return the class name. */
-  static string className() { return "Herwig::WSBFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

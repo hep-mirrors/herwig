@@ -12,6 +12,7 @@
 //
 
 #include "BallZwickyScalarFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -151,8 +152,10 @@ void BallZwickyScalarFormFactor::persistentInput(PersistentIStream & is, int) {
      >> iunit(_m12T,GeV2) >> iunit(_mfit2T,GeV2) >> _thetaeta;
 }
 
-ClassDescription<BallZwickyScalarFormFactor> BallZwickyScalarFormFactor::initBallZwickyScalarFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BallZwickyScalarFormFactor,ScalarFormFactor>
+describeHerwigBallZwickyScalarFormFactor("Herwig::BallZwickyScalarFormFactor", "HwFormFactors.so");
 
 void BallZwickyScalarFormFactor::Init() {
 

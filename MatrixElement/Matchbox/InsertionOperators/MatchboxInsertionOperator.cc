@@ -24,9 +24,9 @@
 
 using namespace Herwig;
 
-Ptr<MatchboxFactory>::tptr MatchboxInsertionOperator::factory() const { return theFactory; }
-
-void MatchboxInsertionOperator::factory(Ptr<MatchboxFactory>::tptr f) { theFactory = f; }
+Ptr<MatchboxFactory>::tptr MatchboxInsertionOperator::factory() const {
+  return MatchboxFactory::currentFactory();
+}
 
 MatchboxInsertionOperator::MatchboxInsertionOperator() 
   : HandlerBase() {}
@@ -69,11 +69,11 @@ bool MatchboxInsertionOperator::isExpanded() const { return lastBorn()->isExpand
 
 
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theFactory ;
+  os << theLastXComb;
 }
 
 void MatchboxInsertionOperator::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theFactory ;
+  is >> theLastXComb ;
   lastMatchboxXComb(theLastXComb);
 }
 

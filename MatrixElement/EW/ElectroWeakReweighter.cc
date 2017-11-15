@@ -565,15 +565,14 @@ double ElectroWeakReweighter::reweightqqbargg() const {
       qw.dimensionedWave().rightCurrent(qbarw.dimensionedWave());
     for(unsigned int i1=0;i1<2;++i1) {
       complex<Energy> d31 = eps3[i1].dot(p1);
+      LorentzVector<complex<Energy2> >
+	temp = qw.dimensionedWave().slash(eps3[i1]).slash(p4-p2).vectorCurrent(qbarw.dimensionedWave());
       for(unsigned int i2=0;i2<2;++i2) {
-	// g1w.reset(2*i1);
-	// g2w.reset(2*i2);
 	boost::numeric::ublas::vector<complex<Energy2> > M(5);
 	Complex         d34 = eps3[i1].dot(eps4[i2]);
 	complex<Energy> d42 = eps4[i2].dot(p2);
 	// M0 in paper
-	M(0) = qw.dimensionedWave().slash(eps3[i1])
-	  .slash(p4-p2).vectorCurrent(qbarw.dimensionedWave()).dot(eps4[i2]);
+	M(0) = temp.dot(eps4[i2]);
 	// M4 in paper
 	M(2) =  current.dot(eps4[i2])*d31;
 	// M5 in paper
@@ -762,13 +761,15 @@ double ElectroWeakReweighter::reweightggqqbar() const {
       qw.dimensionedWave().rightCurrent(qbarw.dimensionedWave());
     for(unsigned int i1=0;i1<2;++i1) {
       complex<Energy> d31 = eps1[i1].dot(p3);
+      LorentzVector<complex<Energy2> > temp =
+	qw.dimensionedWave().slash(eps1[i1])
+	.slash(p2-p4).vectorCurrent(qbarw.dimensionedWave());
       for(unsigned int i2=0;i2<2;++i2) {
   	boost::numeric::ublas::vector<complex<Energy2> > M(5);
   	Complex         d34 = eps1[i1].dot(eps2[i2]);
   	complex<Energy> d42 = eps2[i2].dot(p4);
   	// M0 in paper
-  	M(0) = qw.dimensionedWave().slash(eps1[i1])
-  	  .slash(p2-p4).vectorCurrent(qbarw.dimensionedWave()).dot(eps2[i2]);
+  	M(0) = temp.dot(eps2[i2]);
   	// M4 in paper
   	M(2) =  current.dot(eps2[i2])*d31;
   	// M5 in paper
@@ -780,7 +781,7 @@ double ElectroWeakReweighter::reweightggqqbar() const {
   	// M1 final factor
   	M(1) *= d34;
   	// coefficient of different contributions
- 	boost::numeric::ublas::vector<Complex> Cborn(3),CEW(3);
+   	boost::numeric::ublas::vector<Complex> Cborn(3),CEW(3);
   	if(iq==0) {
   	  axpy_prod_local(bornQQGGweights,M,Cborn);
   	  axpy_prod_local(EWQQGGweights  ,M,CEW  );
@@ -789,7 +790,7 @@ double ElectroWeakReweighter::reweightggqqbar() const {
   	  axpy_prod_local(bornRRGGweights,M,Cborn);
   	  axpy_prod_local(EWRRGGweights  ,M,CEW  );
   	}
-	unsigned int ioff = (Cborn.size()==6 && q->id()%2!=0) ? 3 : 0;
+  	unsigned int ioff = (Cborn.size()==6 && q->id()%2!=0) ? 3 : 0;
   	for(unsigned int ix=0;ix<3;++ix) {
   	  for(unsigned int iy=0;iy<3;++iy) {
   	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
@@ -874,25 +875,27 @@ double ElectroWeakReweighter::reweightqgqg() const {
       qw.dimensionedWave().rightCurrent(qbarw.dimensionedWave());
     for(unsigned int i1=0;i1<2;++i1) {
       complex<Energy> d31 = eps3[i1].dot(p1);
+      LorentzVector<complex<Energy2 >> temp =
+	qw.dimensionedWave().slash(eps3[i1])
+	.slash(p2-p4).vectorCurrent(qbarw.dimensionedWave());
       for(unsigned int i2=0;i2<2;++i2) {
   	boost::numeric::ublas::vector<complex<Energy2> > M(5);
    	Complex         d34 = eps3[i1].dot(eps2[i2]);
    	complex<Energy> d42 = eps2[i2].dot(p4);
    	// M0 in paper
-  	M(0) = qw.dimensionedWave().slash(eps3[i1])
-   	  .slash(p2-p4).vectorCurrent(qbarw.dimensionedWave()).dot(eps2[i2]);
+  	M(0) = temp.dot(eps2[i2]);
   	// M4 in paper
   	M(2) =  current.dot(eps2[i2])*d31;
   	// M5 in paper
   	M(3) = -current.dot(eps3[i1])*d42;
   	// M1 in paper (missing factor)
   	M(1) =  current.dot(p2);
- 	// M6 in paper
- 	M(4) = M(1)*d31*d42/GeV2;
- 	// M1 final factor
- 	M(1) *= d34;
- 	// coefficient of different contributions
- 	boost::numeric::ublas::vector<Complex> Cborn(3),CEW(3);
+  	// M6 in paper
+  	M(4) = M(1)*d31*d42/GeV2;
+  	// M1 final factor
+  	M(1) *= d34;
+  	// coefficient of different contributions
+  	boost::numeric::ublas::vector<Complex> Cborn(3),CEW(3);
   	if(iq==0) {
   	  axpy_prod_local(bornQQGGweights,M,Cborn);
   	  axpy_prod_local(EWQQGGweights  ,M,CEW  );
@@ -984,13 +987,15 @@ double ElectroWeakReweighter::reweightqbargqbarg() const {
       qw.dimensionedWave().rightCurrent(qbarw.dimensionedWave());
     for(unsigned int i1=0;i1<2;++i1) {
       complex<Energy> d31 = eps1[i1].dot(p3);
+      LorentzVector<complex<Energy2> > temp =
+	qw.dimensionedWave().slash(eps1[i1])
+	.slash(p4-p2).vectorCurrent(qbarw.dimensionedWave());
       for(unsigned int i2=0;i2<2;++i2) {
    	boost::numeric::ublas::vector<complex<Energy2> > M(5);
    	Complex         d34 = eps1[i1].dot(eps4[i2]);
    	complex<Energy> d42 = eps4[i2].dot(p2);
   	// M0 in paper
-  	M(0) = qw.dimensionedWave().slash(eps1[i1])
-  	  .slash(p4-p2).vectorCurrent(qbarw.dimensionedWave()).dot(eps4[i2]);
+  	M(0) = temp.dot(eps4[i2]);
    	// M4 in paper
    	M(2) =  current.dot(eps4[i2])*d31;
   	// M5 in paper
@@ -1016,8 +1021,8 @@ double ElectroWeakReweighter::reweightqbargqbarg() const {
   	  for(unsigned int iy=0;iy<3;++iy) {
   	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
   	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
- 	  }
- 	}
+  	  }
+  	}
       }
     }
   }

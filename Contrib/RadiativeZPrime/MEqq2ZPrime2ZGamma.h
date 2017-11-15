@@ -168,12 +168,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEqq2ZPrime2ZGamma> initMEqq2ZPrime2ZGamma;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -217,41 +211,6 @@ private:
   ProductionMatrixElement _me;
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEqq2ZPrime2ZGamma. */
-template <>
-struct BaseClassTrait<RadiativeZPrime::MEqq2ZPrime2ZGamma,1> {
-  /** Typedef of the first base class of MEqq2ZPrime2ZGamma. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEqq2ZPrime2ZGamma class and the shared object where it is defined. */
-template <>
-struct ClassTraits<RadiativeZPrime::MEqq2ZPrime2ZGamma>
-  : public ClassTraitsBase<RadiativeZPrime::MEqq2ZPrime2ZGamma> {
-  /** Return a platform-independent class name */
-  static string className() { return "RadiativeZPrime::MEqq2ZPrime2ZGamma"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEqq2ZPrime2ZGamma is implemented. It may also include several, space-separated,
-   * libraries if the class MEqq2ZPrime2ZGamma depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "RadiativeZPrime.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -30,7 +30,8 @@ IBPtr SextetModel::fullclone() const {
 }
 
 void SextetModel::persistentOutput(PersistentOStream & os) const {
-  os << VVVVertex_ << VVVVVertex_ << VSSVertex_ << VVSSVertex_
+  os << GVVVertex_ << PVVVertex_ << VVVVVertex_
+     << GSSVertex_ << PSSVertex_ << VVSSVertex_
      << FFVVertex_ << FFSVertex_
      << g1L_ << g1R_ << g1pR_ << g1ppR_ << g2_ << g2p_ << g3L_
      << enableScalarSingletY43_ << enableScalarSingletY13_ 
@@ -39,7 +40,8 @@ void SextetModel::persistentOutput(PersistentOStream & os) const {
 }
 
 void SextetModel::persistentInput(PersistentIStream & is, int) {
-  is >> VVVVertex_ >> VVVVVertex_ >> VSSVertex_ >> VVSSVertex_
+  is >> GVVVertex_ >> PVVVertex_ >> VVVVVertex_
+     >> GSSVertex_ >> PSSVertex_ >> VVSSVertex_
      >> FFVVertex_ >> FFSVertex_
      >> g1L_ >> g1R_ >> g1pR_ >> g1ppR_ >> g2_ >> g2p_ >> g3L_
      >> enableScalarSingletY43_ >> enableScalarSingletY13_ 
@@ -48,11 +50,8 @@ void SextetModel::persistentInput(PersistentIStream & is, int) {
 }
 
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<SextetModel,StandardModel>
   describeSextetModel("Herwig::SextetModel", "HwSextetModel.so");
 
@@ -66,7 +65,13 @@ void SextetModel::Init() {
     interfaceVertexVDQVDQG
     ("Vertex/VDQVDQG",
      "The coupling of the gluon to two vector diquarks",
-     &SextetModel::VVVVertex_, false, false, true, false, false);
+     &SextetModel::GVVVertex_, false, false, true, false, false);
+
+  static Reference<SextetModel,ThePEG::Helicity::AbstractVVVVertex>
+    interfaceVertexVDQVDQP
+    ("Vertex/VDQVDQP",
+     "The coupling of the photon to two vector diquarks",
+     &SextetModel::PVVVertex_, false, false, true, false, false);
 
   static Reference<SextetModel,ThePEG::Helicity::AbstractVVVVVertex>
     interfaceVertexVDQVDQGG
@@ -78,7 +83,13 @@ void SextetModel::Init() {
     interfaceVertexSDQSDQG
     ("Vertex/SDQSDQG",
      "The coupling of the gluon to two scalar diquarks",
-     &SextetModel::VSSVertex_, false, false, true, false, false);
+     &SextetModel::GSSVertex_, false, false, true, false, false);
+
+  static Reference<SextetModel,ThePEG::Helicity::AbstractVSSVertex>
+    interfaceVertexSDQSDQP
+    ("Vertex/SDQSDQP",
+     "The coupling of the photon to two scalar diquarks",
+     &SextetModel::PSSVertex_, false, false, true, false, false);
 
   static Reference<SextetModel,ThePEG::Helicity::AbstractVVSSVertex>
     interfaceVertexSDQSDQGG
@@ -157,9 +168,11 @@ void SextetModel::doinit() {
 		       << "to specify the spin, weak isospin and weak hypercharge." 
 		       << Exception::runerror;
   }
-  addVertex(VVVVertex_);
+  addVertex(GVVVertex_);
+  addVertex(PVVVertex_);
   addVertex(VVVVVertex_);
-  addVertex(VSSVertex_);
+  addVertex(GSSVertex_);
+  addVertex(PSSVertex_);
   addVertex(VVSSVertex_);
   addVertex(FFVVertex_);
   addVertex(FFSVertex_);

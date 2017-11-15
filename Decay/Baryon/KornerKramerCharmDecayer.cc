@@ -5,6 +5,7 @@
 //
 
 #include "KornerKramerCharmDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -675,9 +676,10 @@ void KornerKramerCharmDecayer::persistentInput(PersistentIStream & is, int) {
      >> B1_ >> iunit(B2_,1./GeV) >> iunit(B3_,1./GeV2) >> initsize_;
 }
 
-ClassDescription<KornerKramerCharmDecayer> 
-KornerKramerCharmDecayer::initKornerKramerCharmDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<KornerKramerCharmDecayer,Baryon1MesonDecayerBase>
+describeHerwigKornerKramerCharmDecayer("Herwig::KornerKramerCharmDecayer", "HwBaryonDecay.so");
 
 void KornerKramerCharmDecayer::Init() {
 

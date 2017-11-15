@@ -12,6 +12,7 @@
 //
 
 #include "BtoSGammaDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -92,8 +93,10 @@ void BtoSGammaDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _hadronicmass;
 }
 
-ClassDescription<BtoSGammaDecayer> BtoSGammaDecayer::initBtoSGammaDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BtoSGammaDecayer,PartonicDecayerBase>
+describeHerwigBtoSGammaDecayer("Herwig::BtoSGammaDecayer", "HwPartonicDecay.so");
 
 void BtoSGammaDecayer::Init() {
 

@@ -349,11 +349,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<StandardModel> initStandardModel;
-  
-  /** 
    * Private and non-existent assignment operator.
    */
   StandardModel & operator=(const StandardModel &);
@@ -459,38 +454,5 @@ private:
 };
 
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of StandardModel.
- */
-template <>
-struct BaseClassTrait<Herwig::StandardModel,1> {
-    /** Typedef of the base class of StandardModel. */
-  typedef StandardModelBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::StandardModel>
-  : public ClassTraitsBase<Herwig::StandardModel> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::StandardModel"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_StandardModel_H */

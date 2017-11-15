@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2ZH.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -51,8 +52,10 @@ void MEPP2ZH::persistentOutput(PersistentOStream & ) const {
 void MEPP2ZH::persistentInput(PersistentIStream & , int) {
 }
 
-ClassDescription<MEPP2ZH> MEPP2ZH::initMEPP2ZH;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2ZH,MEfftoVH>
+describeHerwigMEPP2ZH("Herwig::MEPP2ZH", "HwMEHadron.so");
 
 void MEPP2ZH::Init() {
 

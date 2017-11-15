@@ -5,6 +5,7 @@
 //
 
 #include "HadronVVTest.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -60,8 +61,10 @@ IBPtr HadronVVTest::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<HadronVVTest> HadronVVTest::initHadronVVTest;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<HadronVVTest,AnalysisHandler>
+describeHerwigHadronVVTest("Herwig::HadronVVTest", "HadronTest.so");
 
 void HadronVVTest::Init() {
 

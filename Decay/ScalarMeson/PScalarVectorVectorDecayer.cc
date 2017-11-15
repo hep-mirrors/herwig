@@ -11,6 +11,7 @@
 // functions of the PScalarVectorVectorDecayer class.
 //
 #include "PScalarVectorVectorDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -121,9 +122,10 @@ void PScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_coupling,1/GeV) >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
 }
 
-ClassDescription<PScalarVectorVectorDecayer> 
-PScalarVectorVectorDecayer::initPScalarVectorVectorDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<PScalarVectorVectorDecayer,DecayIntegrator>
+describeHerwigPScalarVectorVectorDecayer("Herwig::PScalarVectorVectorDecayer", "HwSMDecay.so");
 
 void PScalarVectorVectorDecayer::Init() {
 

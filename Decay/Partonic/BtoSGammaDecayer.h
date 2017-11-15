@@ -100,12 +100,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<BtoSGammaDecayer> initBtoSGammaDecayer;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -118,37 +112,6 @@ private:
    */
   BtoSGammaHadronicMassPtr _hadronicmass;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of BtoSGammaDecayer. */
-template <>
-struct BaseClassTrait<Herwig::BtoSGammaDecayer,1> {
-  /** Typedef of the first base class of BtoSGammaDecayer. */
-  typedef Herwig::PartonicDecayerBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the BtoSGammaDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::BtoSGammaDecayer>
-  : public ClassTraitsBase<Herwig::BtoSGammaDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::BtoSGammaDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the BtoSGammaDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwPartonicDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

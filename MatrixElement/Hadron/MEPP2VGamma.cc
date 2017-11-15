@@ -5,6 +5,7 @@
 //
 
 #include "MEPP2VGamma.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -29,8 +30,10 @@ unsigned int MEPP2VGamma::orderInAlphaEW() const {
   return 2;
 }
 
-ClassDescription<MEPP2VGamma> MEPP2VGamma::initMEPP2VGamma;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEPP2VGamma,HwMEBase>
+describeHerwigMEPP2VGamma("Herwig::MEPP2VGamma", "HwMEHadron.so");
 
 void MEPP2VGamma::Init() {
 
@@ -256,10 +259,10 @@ double MEPP2VGamma::ZGammaME(vector<SpinorWaveFunction>    & f1,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
  	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
- 	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
+ 	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle()->CC(),
  					 f1[ihel1],v1[ohel1]);
  	  diag[0] = FFPvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
- 	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].particle(),
+ 	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].particle()->CC(),
  					 f1[ihel1] ,v2[ohel2]);
  	  diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
  	  // individual diagrams
@@ -303,7 +306,7 @@ double MEPP2VGamma::WGammaME(vector<SpinorWaveFunction>    & f1,
 	  inter   = FFWvertex_->evaluate(scale(),5,a1[ihel1].particle(),
 					 f1[ihel1],v1[ohel1]);
 	  diag[0] = FFPvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].particle(),
+	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].particle()->CC(),
 					 f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // s-channel diagram

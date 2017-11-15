@@ -5,6 +5,7 @@
 //
 
 #include "MEChargedCurrentDIS.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -122,8 +123,10 @@ void MEChargedCurrentDIS::persistentInput(PersistentIStream & is, int) {
   is >> _theFFWVertex >> _maxflavour >> _wp >> _wm >> _massopt;
 }
 
-ClassDescription<MEChargedCurrentDIS> MEChargedCurrentDIS::initMEChargedCurrentDIS;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEChargedCurrentDIS,DISBase>
+describeHerwigMEChargedCurrentDIS("Herwig::MEChargedCurrentDIS", "HwMEDIS.so");
 
 void MEChargedCurrentDIS::Init() {
 

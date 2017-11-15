@@ -201,12 +201,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<LeptoquarkModel> initLeptoquarkModel;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -315,41 +309,6 @@ private:
   
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of LeptoquarkModel. */
-template <>
-struct BaseClassTrait<Herwig::LeptoquarkModel,1> {
-  /** Typedef of the first base class of LeptoquarkModel. */
-  typedef Herwig::BSMModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the LeptoquarkModel class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::LeptoquarkModel>
-  : public ClassTraitsBase<Herwig::LeptoquarkModel> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::LeptoquarkModel"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * LeptoquarkModel is implemented. It may also include several, space-separated,
-   * libraries if the class LeptoquarkModel depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwLeptoquarkModel.so"; }
-};
-
-/** @endcond */
 
 }
 

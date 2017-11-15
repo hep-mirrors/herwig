@@ -169,12 +169,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MelikhovStechFormFactor> initMelikhovStechFormFactor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -356,37 +350,6 @@ private:
    */
   double _thetaeta;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MelikhovStechFormFactor. */
-template <>
- struct BaseClassTrait<Herwig::MelikhovStechFormFactor,1> {
-  /** Typedef of the first base class of MelikhovStechFormFactor. */
-  typedef Herwig::ScalarFormFactor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MelikhovStechFormFactor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MelikhovStechFormFactor>
-  : public ClassTraitsBase<Herwig::MelikhovStechFormFactor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MelikhovStechFormFactor"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the MelikhovStechFormFactor class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwFormFactors.so"; }
-};
-
-/** @endcond */
 
 }
 

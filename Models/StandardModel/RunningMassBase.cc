@@ -12,6 +12,7 @@
 //
 
 #include "RunningMassBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -27,8 +28,10 @@ void RunningMassBase::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_theMass, GeV);
 }
 
-AbstractClassDescription<RunningMassBase> RunningMassBase::initRunningMassBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<RunningMassBase,Interfaced>
+describeHerwigRunningMassBase("Herwig::RunningMassBase", "Herwig.so");
 
 void RunningMassBase::Init() {
  

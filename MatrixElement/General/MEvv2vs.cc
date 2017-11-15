@@ -5,6 +5,7 @@
 //
 
 #include "MEvv2vs.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -24,17 +25,19 @@ IBPtr MEvv2vs::fullclone() const {
 }
 
 void MEvv2vs::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << vector_;
+  os << scalar_ << vector_ << fourPointVertex_;
 }
 
 void MEvv2vs::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> vector_;
+  is >> scalar_ >> vector_ >> fourPointVertex_;
   initializeMatrixElements(PDT::Spin1, PDT::Spin1,
 			   PDT::Spin1, PDT::Spin0);
 }
 
-ClassDescription<MEvv2vs> MEvv2vs::initMEvv2vs;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEvv2vs,GeneralHardME>
+describeHerwigMEvv2vs("Herwig::MEvv2vs", "Herwig.so");
 
 void MEvv2vs::Init() {
 
@@ -53,8 +56,11 @@ void MEvv2vs::doinit() {
   for(size_t i = 0; i < numberOfDiags(); ++i) {
     HPDiagram diag = getProcessInfo()[i];
     tcPDPtr offshell = diag.intermediate;
-    assert(offshell);
-    if(offshell->iSpin() == PDT::Spin0) {
+    if(!offshell) {
+      fourPointVertex_ =
+	dynamic_ptr_cast<AbstractVVVSVertexPtr>(diag.vertices.first);
+    }
+    else if(offshell->iSpin() == PDT::Spin0) {
       AbstractVVSVertexPtr vert1;
       AbstractVSSVertexPtr vert2;
       if(diag.channelType == HPDiagram::sChannel ||
@@ -89,14 +95,14 @@ double MEvv2vs::me2() const {
   VBVector va(2), vb(2), vc(3);
   for(unsigned int i = 0; i < 2; ++i) {
     va[i] = VectorWaveFunction(rescaledMomenta()[0], mePartonData()[0], 2*i, 
-			       incoming);
+    			       incoming);
     vb[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*i, 
-			       incoming);
+    			       incoming);
   }
   //always 0 and 2 polarisations
   for(unsigned int i = 0; i < 2; ++i) {
     vc[2*i] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 2*i, 
-				 outgoing);
+    				 outgoing);
   }
   bool mc  = !(mePartonData()[2]->mass() > ZERO);
   //massive vector, also 1
@@ -129,68 +135,71 @@ MEvv2vs::vv2vsHeME(VBVector & vin1, VBVector & vin2,
 	  Complex diag(0.);
 	  const HPDiagram & current = getProcessInfo()[ix];
 	  tcPDPtr offshell = current.intermediate;
-	  if(!offshell) continue;
-	    if(current.channelType == HPDiagram::sChannel) {
-	      if(offshell->iSpin() == PDT::Spin0) {
-		ScalarWaveFunction interS = scalar_[ix].first->
-		  evaluate(q2, 1, offshell,vin1[ihel1], vin2[ihel2]);
-		diag = scalar_[ix].second->
-		  evaluate(q2, vout1[ohel1], sd, interS);
-	      }
-	      else if(offshell->iSpin() == PDT::Spin1) {
-		VectorWaveFunction interV = vector_[ix].first->
-		  evaluate(q2, 1, offshell, vin1[ihel1], vin2[ihel2]);
-		diag = vector_[ix].second->
-		  evaluate(q2, vout1[ohel1], interV, sd);
-	      }
-	      else 
-		assert(false);
+	  if(!offshell) {
+	    diag = fourPointVertex_->evaluate(q2, vin1[ihel1], vin2[ihel2],
+					      vout1[ohel1], sd);
+	  }
+	  else if(current.channelType == HPDiagram::sChannel) {
+	    if(offshell->iSpin() == PDT::Spin0) {
+	      ScalarWaveFunction interS = scalar_[ix].first->
+		evaluate(q2, 1, offshell,vin1[ihel1], vin2[ihel2]);
+	      diag = scalar_[ix].second->
+		evaluate(q2, vout1[ohel1], sd, interS);
 	    }
-	    else if(current.channelType == HPDiagram::tChannel) {
-	      if(offshell->iSpin() == PDT::Spin0) {
-		if(current.ordered.second) {
-		  ScalarWaveFunction interS = scalar_[ix].
-		    first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
-		  diag = scalar_[ix].second->
-		    evaluate(q2, vin2[ihel2], sd, interS);
-		}
-		else {
-		  ScalarWaveFunction interS = scalar_[ix].first->
-		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
-		  diag = scalar_[ix].second->
-		    evaluate(q2, vin1[ihel1], sd, interS);
-		}
-	      }
-	      else if(offshell->iSpin() == PDT::Spin1) {
-		if(current.ordered.second) {
-		  VectorWaveFunction interV = vector_[ix].
-		    first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
-		  diag = vector_[ix].second->
-		    evaluate(q2, vin2[ihel2], interV, sd);
-		}
-		else {
-		  VectorWaveFunction interV = vector_[ix].first->
-		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
-		  diag = vector_[ix].second->
-		    evaluate(q2, vin1[ihel1], interV, sd);
-		}
-	      }
-	      else 
-		assert(false);
+	    else if(offshell->iSpin() == PDT::Spin1) {
+	      VectorWaveFunction interV = vector_[ix].first->
+		evaluate(q2, 1, offshell, vin1[ihel1], vin2[ihel2]);
+	      diag = vector_[ix].second->
+		evaluate(q2, vout1[ohel1], interV, sd);
 	    }
-	    else
+	    else 
 	      assert(false);
-	    me[ix] += norm(diag);
-	    diagramME()[ix](2*ihel1, 2*ihel2, ohel1,0) = diag;
-	    //Compute flows
-	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
-	      assert(current.colourFlow[iy].first<flows.size());
-	      flows[current.colourFlow[iy].first] += 
-		current.colourFlow[iy].second * diag;
+	  }
+	  else if(current.channelType == HPDiagram::tChannel) {
+	    if(offshell->iSpin() == PDT::Spin0) {
+	      if(current.ordered.second) {
+		ScalarWaveFunction interS = scalar_[ix].
+		  first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
+		diag = scalar_[ix].second->
+		  evaluate(q2, vin2[ihel2], sd, interS);
+	      }
+	      else {
+		ScalarWaveFunction interS = scalar_[ix].first->
+		  evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
+		diag = scalar_[ix].second->
+		  evaluate(q2, vin1[ihel1], sd, interS);
+	      }
 	    }
+	    else if(offshell->iSpin() == PDT::Spin1) {
+	      if(current.ordered.second) {
+		VectorWaveFunction interV = vector_[ix].
+		  first->evaluate(q2, 3, offshell, vin1[ihel1],vout1[ohel1], mass);
+		diag = vector_[ix].second->
+		  evaluate(q2, vin2[ihel2], interV, sd);
+	      }
+	      else {
+		VectorWaveFunction interV = vector_[ix].first->
+		  evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
+		diag = vector_[ix].second->
+		  evaluate(q2, vin1[ihel1], interV, sd);
+	      }
+	    }
+	    else 
+	      assert(false);
+	  }
+	  else
+	    assert(false);
+	  me[ix] += norm(diag);
+	  diagramME()[ix](2*ihel1, 2*ihel2, ohel1,0) = diag;
+	  //Compute flows
+	  for(size_t iy = 0; iy < current.colourFlow.size(); ++iy) {
+	    assert(current.colourFlow[iy].first<flows.size());
+	    flows[current.colourFlow[iy].first] += 
+	      current.colourFlow[iy].second * diag;
+	  }
 	}
 	// MEs for the different colour flows
-	for(unsigned int iy = 0; iy < numberOfFlows(); ++iy) 
+	for(unsigned int iy = 0; iy < numberOfFlows(); ++iy)
 	  flowME()[iy](2*ihel1, 2*ihel2, ohel1, 0) = flows[iy];
 	//Now add flows to me2 with appropriate colour factors
 	for(size_t ii = 0; ii < numberOfFlows(); ++ii)

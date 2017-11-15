@@ -1,6 +1,6 @@
 from string import Template
 from os import path
-import sys,itertools,cmath
+import sys,cmath
 import re
 
 """
@@ -62,36 +62,6 @@ def writeFile(filename, text):
 
 
 
-def get_lorentztag(spin):
-    """Produce a ThePEG spin tag for the given numeric FR spins."""
-    spins = { 1 : 'S', 2 : 'F', 3 : 'V', -1 : 'U', 5 : 'T' }
-    result = [ spins[s] for s in spin ]
-
-    def spinsort(a,b):
-        """Helper function for ThePEG's FVST spin tag ordering."""
-        if a == b: return 0
-        for letter in 'UFVST':
-            if a == letter: return -1
-            if b == letter: return  1
-
-    result = sorted(result, cmp=spinsort)
-    return ''.join(result)
-
-def unique_lorentztag(vertex):
-    """Check and return the Lorentz tag of the vertex."""
-    unique = CheckUnique()
-    for l in vertex.lorentz:
-        lorentztag = get_lorentztag(l.spins)
-        unique( lorentztag )
-        lname = l.name[:len(lorentztag)]
-        if sorted(lorentztag) != sorted(lname):
-            raise Exception("Lorentztags: %s is not %s in %s" 
-                            % (lorentztag,lname,vertex))
-#        if lorentztag != lname:
-#            sys.stderr.write("Warning: Lorentz tag ordering: %s is not %s in %s\n"
-#                             % (lorentztag,lname,vertex))
-
-    return lorentztag
 
 
 def qcd_qed_orders(vertex, coupling):
@@ -118,167 +88,10 @@ def qcd_qed_orders(vertex, coupling):
         qed = len(vertex.particles) - qcd - 2
 
     return qcd, qed
-    
-
-
-
-def spindirectory(lt):
-    """Return the spin directory name for a given Lorentz tag."""
-    if 'T' in lt: 
-        spin_directory = 'Tensor'
-    elif 'S' in lt: 
-        spin_directory = 'Scalar'
-    elif 'V' in lt: 
-        spin_directory = 'Vector'
-    else:
-        raise Exception("Unknown Lorentz tag {lt}.".format(lt=lt))
-    return spin_directory
-
-
-class SkipThisVertex(Exception):
-    pass
-
-def colorpositions(struct):
-    positions = { 
-        1 : [],
-        3 : [],
-        -3 : [],
-        6 : [],
-        -6 : [],
-        8 : [],
-    }
-    for i,s in enumerate(struct,1):
-        positions[s].append(i)
-    return positions
-        
-def colors(vertex) :
-    try:
-        unique = CheckUnique()
-        for pl in vertex.particles_list:
-            struct = [ p.color for p in pl ]
-            unique(struct)
-    except:
-        struct = [ p.color for p in vertex.particles ]
-    pos = colorpositions(struct)
-    L = len(struct)
-    return (L,pos)
-
-def colorfactor(vertex,L,pos):
-    def match(patterns):
-        result = [ p == t
-                   for p,t in zip(patterns,vertex.color) ]
-        return all(result)
-
-    label = None
-    l = lambda c: len(pos[c])
-    if l(1) == L:
-        label = ('1',)
-        if match(label): return ('1',)
-
-    elif l(3) == l(-3) == 1 and l(1) == L-2:
-        nums = [pos[3][0], pos[-3][0]]
-        label = ('Identity({0},{1})'.format(*sorted(nums)),)
-        if match(label): return ('1',)
-
-    elif l(6) == l(-6) == 1 and l(1) == L-2:
-        nums = [pos[6][0], pos[-6][0]]
-        label = ('Identity({0},{1})'.format(*sorted(nums)),)
-        if match(label): return ('1',)
-
-    elif l(6) == l(-6) == 2 and L==4:
-        sys.stderr.write(
-            'Warning: Unknown colour structure 6 6 6~ 6~ ( {ps} ) in {name}.\n'
-            .format(name=vertex.name, ps=' '.join(map(str,vertex.particles)))
-        )
-        raise SkipThisVertex()
-
-    elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
-        label = ('T({g},{q},{qb})'.format(g=pos[8][0],q=pos[3][0],qb=pos[-3][0]),)
-        if match(label): return ('1',)
-
-    elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
-        label = ('T6({g},{s},{sb})'.format(g=pos[8][0],s=pos[6][0],sb=pos[-6][0]),)
-        if match(label): return ('1',)
-
-    elif l(6) == 1 and l(-3) == 2 and L==3:
-        label = ('K6({s},{qb1},{qb2})'.format(s=pos[6][0],qb1=pos[-3][0],qb2=pos[-3][1]),)
-        if match(label): return ('1',)
-
-    elif l(-6) == 1 and l(3) == 2 and L==3:
-        label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
-        if match(label): return ('1',)
-
-    elif l(3) == L == 3:
-        label = ('Epsilon(1,2,3)',)
-        if match(label): return ('1',) # TODO check factor!
-
-    elif l(-3) == L == 3:
-        label = ('EpsilonBar(1,2,3)',)
-        if match(label): return ('1',) # TODO check factor!
-
-    elif l(8) == L == 3:
-        # if lorentz is FFV get extra minus sign
-        lorentztag = unique_lorentztag(vertex)
-        factor = '*(-1)' if lorentztag in ['FFV'] else ''
-        label = ('f(1,2,3)',)
-        if match(label): return ('-complex(0,1)%s'%factor,)
-        label = ('f(3,2,1)',)
-        if match(label): return ('complex(0,1)%s'%factor,)
-        label = ('f(2,1,3)',)
-        if match(label): return ('complex(0,1)%s'%factor,)
-
-    elif l(8) == L == 4:
-        label = ('f(-1,1,2)*f(3,4,-1)',
-                 'f(-1,1,3)*f(2,4,-1)',
-                 'f(-1,1,4)*f(2,3,-1)',
-             )
-        if match(label): return ('-1./3.','-1./3.','-1./3.')
-
-    elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
-        subs = {
-            'g1' : pos[8][0],
-            'g2' : pos[8][1],
-            'qq' : pos[3][0],
-            'qb' : pos[-3][0] 
-        }
-        label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
-                 'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
-        if match(label): return ('0.5','0.5')
-        
-    elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
-        subs = {
-            'g1' : pos[8][0],
-            'g2' : pos[8][1],
-            'qq' : pos[6][0],
-            'qb' : pos[-6][0] 
-        }
-        label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
-                 'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
-        if match(label): return ('0.5','0.5')
-
-    elif l(8) == 2 and l(8)+l(1)==L :
-        subs = { 'g1' : pos[8][0], 'g2' : pos[8][1] }
-        label = ('Identity({g1},{g2})'.format(**subs),)
-        if match(label) : return ('1.',)
-
-    elif l(8) == 3 and l(1)==1 and L==4 :
-        label = ('f(1,2,3)',)
-        if match(label): return ('-complex(0,1)',)
-        label = ('f(3,2,1)',)
-        if match(label): return ('complex(0,1)',)
-        label = ('f(2,1,3)',)
-        if match(label): return ('complex(0,1)',)
-
-    sys.stderr.write(
-        "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
-        .format(color = ' '.join(vertex.color), name = vertex.name,
-                ps = ' '.join(map(str,vertex.particles)))
-    )
-    raise SkipThisVertex()
-
 
 def def_from_model(FR,s):
     """Return a C++ line that defines parameter s as coming from the model file."""
+    if("hw_kine" in s) :return ""
     stype = typemap(getattr(FR.parameters,s).type)
     return '{t} {s} = model_->{s}();'.format(t=stype,s=s)
 
@@ -416,197 +229,45 @@ if False:
             plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
         #print 'Conjugate vertex:', plistarray[1]
 
-# ordering for EW VVV vertices
-def VVVordering(vertex) :
-    pattern = "if((p1->id()==%s&&p2->id()==%s&&p3->id()==%s)"+\
-        "||(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)||"+\
-        "(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)) {norm(-norm());}"
-    ordering = pattern%(vertex.particles[1].pdg_code,
-                        vertex.particles[0].pdg_code,
-                        vertex.particles[2].pdg_code,
-                        vertex.particles[0].pdg_code,
-                        vertex.particles[2].pdg_code,
-                        vertex.particles[1].pdg_code,
-                        vertex.particles[2].pdg_code,
-                        vertex.particles[1].pdg_code,
-                        vertex.particles[0].pdg_code)
-    return ordering
 
-def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
-    # split the structure into its different terms for analysis
-    ordering=""
-    structure1 = L.structure.split()
-    structures =[]
-    sign=''
-    for struct in structure1 :
-        if(struct=='+') :
-            continue
-        elif(struct=='-') :
-            sign='-'
-        else :
-            structures.append(sign+struct.strip())
-            sign=''
-    lterms=[]
-    rterms=[]
-    if(lorentztag == 'SST') :
-        terms=[['P(1003,2)','P(2003,1)'],
-               ['P(1003,1)','P(2003,2)'],
-               ['P(-1,1)','P(-1,2)','Metric(1003,2003)']]
-        signs=[1.,1.,-1.]
-    elif(lorentztag == 'FFT' ) :
-        terms=[['P(2003,1)','Gamma(1003,2,1)'],
-               ['P(2003,2)','Gamma(1003,2,1)'],
-               ['P(1003,1)','Gamma(2003,2,1)'],
-               ['P(1003,2)','Gamma(2003,2,1)'],
-               ['P(-1,1)','Gamma(-1,2,1)','Metric(1003,2003)'],
-               ['P(-1,2)','Gamma(-1,2,1)','Metric(1003,2003)']]
-        signs=[1.,-1.,1.,-1.,-0.5,0.5]
-    elif(lorentztag == 'VVT' ) :
-        terms=[['P(-1,1)','P(-1,2)','Metric(1,2003)','Metric(2,1003)'],
-               ['P(-1,1)','P(-1,2)','Metric(1,1003)','Metric(2,2003)'],
-               ['P(-1,1)','P(-1,2)','Metric(1,2)','Metric(1003,2003)'],
-               ['P(1,2)','P(2,1)','Metric(1003,2003)'],
-               ['P(1,2)','P(2003,1)','Metric(2,1003)'],
-               ['P(1,2)','P(1003,1)','Metric(2,2003)'],
-               ['P(2,1)','P(2003,2)','Metric(1,1003)'],
-               ['P(2,1)','P(1003,2)','Metric(1,2003)'],
-               ['P(1003,2)','P(2003,1)','Metric(1,2)'],
-               ['P(1003,1)','P(2003,2)','Metric(1,2)']]
-        signs=[1.,1.,-1.,1.,-1.,-1.,-1.,-1.,1.,1.]
-    elif(lorentztag == 'FFVT' ) :
-        terms = [['Gamma(2004,2,1)','Metric(3,1004)'],
-                 ['Gamma(1004,2,1)','Metric(3,2004)'],
-                 ['Gamma(3,2,1)','Metric(1004,2004)']]
-        lterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjM(-1,1)'],
-                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjM(-1,1)'],
-                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjM(-1,1)']]
-        rterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjP(-1,1)'],
-                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjP(-1,1)'],
-                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjP(-1,1)']]
-        signs=[1.,1.,-0.5]
-    elif(lorentztag == 'VVVT' ) :
-        # the F(mu nu,rho sigma lambda) terms first
-        terms = [['P(2004,2)','Metric(1,1004)','Metric(2,3)'],['P(2004,3)','Metric(1,1004)','Metric(2,3)'],
-                 ['P(1004,2)','Metric(1,2004)','Metric(2,3)'],['P(1004,3)','Metric(1,2004)','Metric(2,3)'],
-                 ['P(2004,3)','Metric(1,3)','Metric(2,1004)'],['P(2004,1)','Metric(1,3)','Metric(2,1004)'],
-                 ['P(1004,3)','Metric(1,3)','Metric(2,2004)'],['P(1004,1)','Metric(1,3)','Metric(2,2004)'],
-                 ['P(2004,1)','Metric(1,2)','Metric(3,1004)'],['P(2004,2)','Metric(1,2)','Metric(3,1004)'],
-                 ['P(1004,1)','Metric(1,2)','Metric(3,2004)'],['P(1004,2)','Metric(1,2)','Metric(3,2004)'],
-                 ['P(3,1)','Metric(1,2004)','Metric(2,1004)'],['P(3,2)','Metric(1,2004)','Metric(2,1004)'], 
-                 ['P(3,1)','Metric(1,1004)','Metric(2,2004)'],['P(3,2)','Metric(1,1004)','Metric(2,2004)'],
-                 ['P(3,1)','Metric(1,2)','Metric(1004,2004)'],['P(3,2)','Metric(1,2)','Metric(1004,2004)'],
-                 ['P(2,3)','Metric(1,2004)','Metric(3,1004)'],['P(2,1)','Metric(1,2004)','Metric(3,1004)'],
-                 ['P(2,3)','Metric(1,1004)','Metric(3,2004)'],['P(2,1)','Metric(1,1004)','Metric(3,2004)'],
-                 ['P(2,3)','Metric(1,3)','Metric(1004,2004)'],['P(2,1)','Metric(1,3)','Metric(1004,2004)'],
-                 ['P(1,2)','Metric(2,2004)','Metric(3,1004)'],['P(1,3)','Metric(2,2004)','Metric(3,1004)'],
-                 ['P(1,2)','Metric(2,1004)','Metric(3,2004)'],['P(1,3)','Metric(2,1004)','Metric(3,2004)'],
-                 ['P(1,2)','Metric(2,3)','Metric(1004,2004)'],['P(1,3)','Metric(2,3)','Metric(1004,2004)']]
-        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
-                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
-        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
-                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
-        l = lambda c: len(pos[c])
-        if l(8)!=3 :
-            ordering = VVVordering(vertex)
-    # unknown
-    else :
-        raise Exception('Unknown data type "%s".' % lorentztag)
-    sum   = [0.,0.,0.]
-    itype = 0
-    for types in (terms,lterms,rterms) :
-        i=0
-        for term in types:
-            for perm in itertools.permutations(term):
-                label = '*'.join(perm)
-                for struct in structures :
-                    if label in struct :
-                        reminder = struct.replace(label,'1.',1)
-                        sum[itype] += eval(reminder, {'cmath':cmath} )*signs[i]
-            i+=1
-        itype += 1
-    all_coup   = []
-    left_coup  = []
-    right_coup = []
-    if(len(lterms)==0) :
-        all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
-    else :
-        sum[1] += sum[0]
-        sum[2] += sum[0]
-        left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
-        right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
-    return (all_coup,left_coup,right_coup,ordering)
+class SkipThisVertex(Exception):
+    pass
 
-def EWVVVVCouplings(vertex,L) :
-    terms=['Metric(1,2)*Metric(3,4)',
-           'Metric(1,3)*Metric(2,4)',
-           'Metric(1,4)*Metric(2,3)']
+def extractAntiSymmetricIndices(instring,funct) :
+    terms = instring.strip(funct).strip(")").split(",")
+    sign=1.
+    for iy in range(0,len(terms)) :
+        for ix in range(-1,-len(terms)+iy,-1) :
+            swap = False
+            if(len(terms[ix])==1 and len(terms[ix-1])==1) :
+                swap = int(terms[ix])<int(terms[ix-1])
+            elif(len(terms[ix])==2 and len(terms[ix-1])==2) :
+                swap = int(terms[ix][1])<int(terms[ix-1][1])
+            elif(len(terms[ix])==1 and len(terms[ix-1])==2) :
+                swap = True
+            if(swap) :
+                sign *=-1.
+                terms[ix],terms[ix-1] = terms[ix-1],terms[ix]
+    return (terms,sign)
 
-    structure1 = L.structure.split()
+def isGoldstone(p) :
+    """check if particle is a Goldstone"""
+    def gstest(name):
+        try:
+            return getattr(p,name)
+        except AttributeError:
+            return False
+    # names of goldstone bosons
+    gsnames = ['goldstone','goldstoneboson','GoldstoneBoson']
+    if any(map(gstest, gsnames)):
+        return True
+    return False
 
-    structures =[]
-    sign=''
-    for struct in structure1 :
-        if(struct=='+') :
-            continue
-        elif(struct=='-') :
-            sign='-'
-        else :
-            structures.append(sign+struct.strip())
-            sign=''
-    factors=[]
-    for term in terms:
-        for struct in structures :
-            if term in struct :
-                reminder = struct.replace(term,'1.',1)
-                try:
-                    factors.append(eval(reminder, {'cmath':cmath} ))
-                except NameError:
-                    name_error = True
-                else:
-                    name_error = False
-
-    if len(factors) != 3 or name_error:
-        sys.stderr.write(
-            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
-            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
-                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
-        )
-        raise SkipThisVertex()
-
-    factor=0.
-    order=[]
-    if(factors[0]==-2.*factors[1] and factors[0]==-2.*factors[2] ) :
-        order=[0,1,2,3]
-        factor = factors[0]/2.
-    elif(factors[1]==-2.*factors[0] and factors[1]==-2.*factors[2] ) :
-        order=[0,2,1,3]
-        factor = factors[1]/2.
-    elif(factors[2]==-2.*factors[0] and factors[2]==-2.*factors[1] ) :
-        order=[0,3,1,2]
-        factor = factors[2]/2.
-    else:
-        sys.stderr.write(
-            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
-            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
-                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
-        )
-        raise SkipThisVertex()
-
-
-    pattern = \
-        "bool done[4]={false,false,false,false};\n" + \
-        "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \
-        "    unsigned int iorder[4]={0,0,0,0};\n" + \
-        "    for(unsigned int ix=0;ix<4;++ix) {\n" + \
-        "       if(!done[0] && part[ix]->id()==%s) {done[0]=true; iorder[%s] = ix; continue;}\n" + \
-        "       if(!done[1] && part[ix]->id()==%s) {done[1]=true; iorder[%s] = ix; continue;}\n" + \
-        "       if(!done[2] && part[ix]->id()==%s) {done[2]=true; iorder[%s] = ix; continue;}\n" + \
-        "       if(!done[3] && part[ix]->id()==%s) {done[3]=true; iorder[%s] = ix; continue;}\n" + \
-        "    }\n" + \
-        "    setType(2);\n" + \
-        "    setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);"
-    ordering=pattern % ( vertex.particles[0].pdg_code,order[0],
-                         vertex.particles[1].pdg_code,order[1],
-                         vertex.particles[2].pdg_code,order[2],
-                         vertex.particles[3].pdg_code,order[3] )
-    return (ordering,factor)
+def isGhost(p) :
+    """Check if particle is a ghost"""
+    try:
+        getattr(p,'GhostNumber')
+    except AttributeError:
+        return False
+    return p.GhostNumber != 0
+    

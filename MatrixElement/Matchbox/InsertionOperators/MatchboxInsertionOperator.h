@@ -60,11 +60,6 @@ public:
    */
   Ptr<MatchboxFactory>::tptr factory() const;
 
-  /**
-   * Set the factory which produced this matrix element
-   */
-  void factory(Ptr<MatchboxFactory>::tptr f);
-
   /** @name Process and phasespace information */
   //@{
 
@@ -231,14 +226,6 @@ public:
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
-private:
-
-  /**
-   * The factory which produced this matrix element
-   */
-  Ptr<MatchboxFactory>::tptr theFactory;
-
 
 private:
 

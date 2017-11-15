@@ -137,16 +137,6 @@ private:
 private:
 
   /**
-   * Describe a concrete base class with persistent data.
-   */
-  static ClassDescription<ReweightEW> initReweightEW;
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.

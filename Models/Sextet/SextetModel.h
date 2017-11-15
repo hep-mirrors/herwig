@@ -194,7 +194,13 @@ private:
    *  Pointer to the object handling the strong coupling of a 
    *  vector sextet to one gluon
    */
-  AbstractVVVVertexPtr VVVVertex_;
+  AbstractVVVVertexPtr GVVVertex_;
+  
+  /**
+   *  Pointer to the object handling the EM coupling of a 
+   *  vector sextet to one photon
+   */
+  AbstractVVVVertexPtr PVVVertex_;
 
   /**
    *  Pointer to the object handling the strong coupling of a 
@@ -206,7 +212,13 @@ private:
    *  Pointer to the object handling the strong coupling of a 
    *  scalar sextet to one gluon
    */
-  AbstractVSSVertexPtr VSSVertex_;
+  AbstractVSSVertexPtr GSSVertex_;
+
+  /**
+   *  Pointer to the object handling the EM coupling of a 
+   *  scalar sextet to one photon
+   */
+  AbstractVSSVertexPtr PSSVertex_;
 
   /**
    *  Pointer to the object handling the strong coupling of a 

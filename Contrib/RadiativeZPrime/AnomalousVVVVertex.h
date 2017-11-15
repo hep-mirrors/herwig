@@ -95,53 +95,12 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class without persistent data.
-   */
-  static AbstractNoPIOClassDescription<AnomalousVVVVertex> initAnomalousVVVVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   AnomalousVVVVertex & operator=(const AnomalousVVVVertex &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of AnomalousVVVVertex. */
-template <>
-struct BaseClassTrait<RadiativeZPrime::AnomalousVVVVertex,1> {
-  /** Typedef of the first base class of AnomalousVVVVertex. */
-  typedef Helicity::AbstractVVVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the AnomalousVVVVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<RadiativeZPrime::AnomalousVVVVertex>
-  : public ClassTraitsBase<RadiativeZPrime::AnomalousVVVVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "RadiativeZPrime::AnomalousVVVVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * AnomalousVVVVertex is implemented. It may also include several, space-separated,
-   * libraries if the class AnomalousVVVVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "RadiativeZPrime.so"; }
-};
-
-/** @endcond */
 
 }
 

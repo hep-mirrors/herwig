@@ -12,6 +12,7 @@
 //
 
 #include "TwoToTwoProcessConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -40,10 +41,17 @@ IBPtr TwoToTwoProcessConstructor::fullclone() const {
 
 void TwoToTwoProcessConstructor::doinit() {
   HardProcessConstructor::doinit();
-  if(processOption_==2&&outgoing_.size()!=2)
+  if((processOption_==2 || processOption_==4) &&
+     outgoing_.size()!=2)
     throw InitException() 
       << "Exclusive processes require exactly"
       << " two outgoing particles but " << outgoing_.size()
+      << "have been inserted in TwoToTwoProcessConstructor::doinit()." 
+      << Exception::runerror;
+  if(processOption_==4 && incoming_.size()!=2)
+    throw InitException() 
+      << "Exclusive processes require exactly"
+      << " two incoming particles but " << incoming_.size()
       << "have been inserted in TwoToTwoProcessConstructor::doinit()." 
       << Exception::runerror;
   Nout_ = outgoing_.size();
@@ -86,9 +94,10 @@ void TwoToTwoProcessConstructor::persistentInput(PersistentIStream & is, int) {
      >> excludedVertexVector_ >> excludedVertexSet_;
 }
 
-ClassDescription<TwoToTwoProcessConstructor> 
-TwoToTwoProcessConstructor::initTwoToTwoProcessConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<TwoToTwoProcessConstructor,HardProcessConstructor>
+describeHerwigTwoToTwoProcessConstructor("Herwig::TwoToTwoProcessConstructor", "Herwig.so");
 
 void TwoToTwoProcessConstructor::Init() {
 
@@ -143,6 +152,12 @@ void TwoToTwoProcessConstructor::Init() {
      "Require that both the particles in the hard processes are in the"
      " list of outgoing particles in every hard process",
      2);
+  static SwitchOption interfaceProcessesVeryExclusive
+    (interfaceProcesses,
+     "VeryExclusive",
+     "Require that both the incoming and outgoing particles in the hard processes are in the"
+     " list of outgoing particles in every hard process",
+     4);
 
   static Switch<TwoToTwoProcessConstructor,unsigned int> interfaceScaleChoice
     ("ScaleChoice",
@@ -235,38 +250,15 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       }
     }
   }
-  //need to find all of the diagrams that relate to the same process
-  //first insert them into a map which uses the '<' operator 
-  //to sort the diagrams 
+  // need to find all of the diagrams that relate to the same process
+  // first insert them into a map which uses the '<' operator 
+  // to sort the diagrams 
   multiset<HPDiagram> grouped;
   HPDVector::iterator dit = processes_.begin();
   HPDVector::iterator dend = processes_.end();
-  bool abort=false;
   for( ; dit != dend; ++dit) {
-    // check for on-shell s-channel
-    tPDPtr out1 = getParticleData(dit->outgoing.first );
-    tPDPtr out2 = getParticleData(dit->outgoing.second);
-    if(dit->channelType == HPDiagram::sChannel && 
-       dit->intermediate->width()==ZERO &&
-       dit->intermediate->mass() > out1->mass()+ out2->mass()) {
-      tPDPtr in1 = getParticleData(dit->incoming.first );
-      tPDPtr in2 = getParticleData(dit->incoming.second);
-      generator()->log() << dit->intermediate->PDGName() 
-			 << " can be on-shell in the process "
-			 << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
-			 << out1->PDGName() << " " << out2->PDGName() 
-			 << " but has zero width.\nEither set the width, enable "
-			 << "calculation of its decays, and hence the width,\n"
-			 << "or disable it as a potential intermediate using\n"
-			 << "insert " << fullName() << ":Excluded 0 "
-			 << dit->intermediate->fullName() << "\n---\n";
-      abort = true;
-    }
     grouped.insert(*dit);
   }
-  if(abort) throw Exception() << "One or more processes with zero width"
-			      << " resonant intermediates"
-			      << Exception::runerror;
   assert( processes_.size() == grouped.size() );
   processes_.clear();
   typedef multiset<HPDiagram>::const_iterator set_iter;
@@ -279,7 +271,7 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       process.push_back(*itb);
     }
     // if inclusive enforce the exclusivity
-    if(processOption_==2) {
+    if(processOption_==2 || processOption_==4) {
       if(!((process[0].outgoing. first==outgoing_[0]->id()&&
 	    process[0].outgoing.second==outgoing_[1]->id())||
 	   (process[0].outgoing. first==outgoing_[1]->id()&&
@@ -288,7 +280,39 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 	it = range.second;
 	continue;
       }
+      if(processOption_==4) {
+	if(!((process[0].incoming. first==incoming_[0]->id()&&
+	      process[0].incoming.second==incoming_[1]->id())||
+	     (process[0].incoming. first==incoming_[1]->id()&&
+	      process[0].incoming.second==incoming_[0]->id()))) {
+	  process.clear();
+	  it = range.second;
+	  continue;
+	}
+      }
     }
+    // check no zero width s-channel intermediates
+    for( dit=process.begin(); dit != process.end(); ++dit) {
+      tPDPtr out1 = getParticleData(dit->outgoing.first );
+      tPDPtr out2 = getParticleData(dit->outgoing.second);
+      if(dit->channelType == HPDiagram::sChannel && 
+	 dit->intermediate->width()==ZERO &&
+	 dit->intermediate->mass() > out1->mass()+ out2->mass()) {
+	tPDPtr in1 = getParticleData(dit->incoming.first );
+	tPDPtr in2 = getParticleData(dit->incoming.second);
+	throw Exception() << "Process with zero width resonant intermediates\n"
+			  << dit->intermediate->PDGName() 
+			  << " can be on-shell in the process "
+			  << in1 ->PDGName() << " " <<  in2->PDGName() << " -> "
+			  << out1->PDGName() << " " << out2->PDGName() 
+			  << " but has zero width.\nEither set the width, enable "
+			  << "calculation of its decays, and hence the width,\n"
+			  << "or disable it as a potential intermediate using\n"
+			  << "insert " << fullName() << ":Excluded 0 "
+			  << dit->intermediate->fullName() << "\n---\n"
+			  << Exception::runerror;
+      }
+    }    
     if(find(excludedExternal_.begin(),excludedExternal_.end(),
 	    getParticleData(process[0].outgoing. first))!=excludedExternal_.end()) {
       process.clear();

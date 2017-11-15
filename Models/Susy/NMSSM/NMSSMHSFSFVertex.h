@@ -95,12 +95,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<NMSSMHSFSFVertex> initNMSSMHSFSFVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -248,40 +242,5 @@ private:
 };
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of NMSSMHSFSFVertex. */
-template <>
-struct BaseClassTrait<Herwig::NMSSMHSFSFVertex,1> {
-  /** Typedef of the first base class of NMSSMHSFSFVertex. */
-  typedef ThePEG::Helicity::SSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the NMSSMHSFSFVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::NMSSMHSFSFVertex>
-  : public ClassTraitsBase<Herwig::NMSSMHSFSFVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::NMSSMHSFSFVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * NMSSMHSFSFVertex is implemented. It may also include several, space-separated,
-   * libraries if the class NMSSMHSFSFVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so HwNMSSM.so"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_NMSSMHSFSFVertex_H */

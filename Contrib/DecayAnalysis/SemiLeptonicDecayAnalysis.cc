@@ -5,6 +5,7 @@
 //
 
 #include "SemiLeptonicDecayAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 
@@ -92,8 +93,10 @@ void SemiLeptonicDecayAnalysis::analyze(tPPtr part) {
   *_energy[ix] += ee/MeV;
 }
 
-NoPIOClassDescription<SemiLeptonicDecayAnalysis> SemiLeptonicDecayAnalysis::initSemiLeptonicDecayAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<SemiLeptonicDecayAnalysis,AnalysisHandler>
+describeHerwigSemiLeptonicDecayAnalysis("Herwig::SemiLeptonicDecayAnalysis", "HwDecayAnalysis.so");
 
 void SemiLeptonicDecayAnalysis::Init() {
 

@@ -12,6 +12,7 @@
 //
 
 #include "GammaGammaAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -114,8 +115,10 @@ void GammaGammaAnalysis::analyze(tEventPtr event, long, int, int) {
   }  
 }
 
-NoPIOClassDescription<GammaGammaAnalysis> GammaGammaAnalysis::initGammaGammaAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<GammaGammaAnalysis,AnalysisHandler>
+describeHerwigGammaGammaAnalysis("Herwig::GammaGammaAnalysis", "HwAnalysis.so");
 
 void GammaGammaAnalysis::Init() {
 

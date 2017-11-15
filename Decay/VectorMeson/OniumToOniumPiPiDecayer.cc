@@ -12,6 +12,7 @@
 //
 
 #include "OniumToOniumPiPiDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -172,8 +173,10 @@ void OniumToOniumPiPiDecayer::persistentInput(PersistentIStream & is, int) {
      >> iunit(_imC,1./GeV2) >> iunit(_cC,1./GeV2);
 }
 
-ClassDescription<OniumToOniumPiPiDecayer> OniumToOniumPiPiDecayer::initOniumToOniumPiPiDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<OniumToOniumPiPiDecayer,DecayIntegrator>
+describeHerwigOniumToOniumPiPiDecayer("Herwig::OniumToOniumPiPiDecayer", "HwVMDecay.so");
 
 void OniumToOniumPiPiDecayer::Init() {
 

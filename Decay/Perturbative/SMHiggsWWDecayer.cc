@@ -12,6 +12,7 @@
 //
 
 #include "SMHiggsWWDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -26,8 +27,10 @@
 using namespace Herwig;
 typedef Selector<tDMPtr> DecaySelector;
 
-ClassDescription<SMHiggsWWDecayer> SMHiggsWWDecayer::initSMHiggsWWDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SMHiggsWWDecayer,PerturbativeDecayer>
+describeHerwigSMHiggsWWDecayer("Herwig::SMHiggsWWDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsWWDecayer::Init() {
 
@@ -52,7 +55,7 @@ SMHiggsWWDecayer::SMHiggsWWDecayer() : _wmax(2,1.00), _zmax(2,1.00)
 {}
 
 void SMHiggsWWDecayer::doinit() {
-  DecayIntegrator::doinit();
+  PerturbativeDecayer::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) 
@@ -296,12 +299,12 @@ void SMHiggsWWDecayer::dataBaseOutput(ofstream & os,bool header) const {
     os << "newdef " << name() << ":WMaximum "    << ix << " " << _wmax[ix]  << "\n";
     os << "newdef " << name() << ":ZMaximum "    << ix << " " << _zmax[ix]  << "\n";
   }
-  DecayIntegrator::dataBaseOutput(os,false);
+  PerturbativeDecayer::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
 void SMHiggsWWDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  PerturbativeDecayer::doinitrun();
   for(unsigned int ix=0;ix<2;++ix) {
     _zmax[ix]=0.;
     _wmax[ix]=0.;

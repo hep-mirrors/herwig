@@ -2,7 +2,9 @@ pkglib_LTLIBRARIES = libHerwigAPI.la
 
 
 libHerwigAPI_la_SOURCES = \
-RunDirectories.h RunDirectories.cc HerwigAPI.h HerwigAPI.cc \
+Filesystem.h Filesystem.cc \
+RunDirectories.h RunDirectories.cc \
+HerwigAPI.h HerwigAPI.cc \
 HerwigUI.h
 
 libHerwigAPI_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:0:0

@@ -5,6 +5,7 @@
 //
 
 #include "OmegaXiStarPionDecayer.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -78,9 +79,10 @@ void OmegaXiStarPionDecayer::persistentInput(PersistentIStream & is, int) {
   is >> Acomm_ >> AP_ >> AS_ >> BP_ >> BS_ >> idin_ >> idout_ >>  wgtmax_;
 }
 
-ClassDescription<OmegaXiStarPionDecayer> 
-OmegaXiStarPionDecayer::initOmegaXiStarPionDecayer;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<OmegaXiStarPionDecayer,Baryon1MesonDecayerBase>
+describeHerwigOmegaXiStarPionDecayer("Herwig::OmegaXiStarPionDecayer", "HwBaryonDecay.so");
 
 void OmegaXiStarPionDecayer::Init() {
   

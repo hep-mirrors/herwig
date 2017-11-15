@@ -413,10 +413,14 @@ string OpenLoopsAmplitude::getOpenLoopsPrefix() const{
 
 void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
   os << idpair << theHiggsEff << use_cms << theCollierLib << OpenLoopsLibs_ << OpenLoopsPrefix_;
+  OpenLoopsLibs_.clear();
+  OpenLoopsPrefix_.clear();
 }
 
 void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> idpair >> theHiggsEff >> use_cms >> theCollierLib  >> OpenLoopsLibs_ >> OpenLoopsPrefix_;
+  is >> idpair >> theHiggsEff >> use_cms >> theCollierLib ;
+  string input=""; is>>input; if (!input.empty())OpenLoopsLibs_=input;
+  input=""; is>>input; if (!input.empty())OpenLoopsPrefix_=input;
 }
 
 // *** Attention *** The following static variable is needed for the type

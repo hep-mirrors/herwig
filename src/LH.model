@@ -100,6 +100,33 @@ set Model:Vertex/WWWW /Herwig/Vertices/LH/WWWWVertex
 set Model:Vertex/WHH  /Herwig/Vertices/LH/WHHVertex
 set Model:Vertex/WWHH /Herwig/Vertices/LH/WWHHVertex
 
+# Switch off the SM Higgs decays
+cd /Herwig/Particles
+
+set h0:Width_generator NULL
+set h0:Mass_generator NULL
+
+set h0/h0->b,bbar;:Active No
+set h0/h0->b,bbar;:BranchingRatio 0.0
+set h0/h0->W+,W-;:Active No
+set h0/h0->W+,W-;:BranchingRatio 0.0
+set h0/h0->tau-,tau+;:Active No 
+set h0/h0->tau-,tau+;:BranchingRatio 0.0 
+set h0/h0->g,g;:Active No 
+set h0/h0->g,g;:BranchingRatio 0.0 
+set h0/h0->c,cbar;:Active No
+set h0/h0->c,cbar;:BranchingRatio 0.0
+set h0/h0->Z0,Z0;:Active No
+set h0/h0->Z0,Z0;:BranchingRatio 0.0
+set h0/h0->gamma,gamma;:Active No
+set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->Z0,gamma;:Active No
+set h0/h0->Z0,gamma;:BranchingRatio 0.0
+set h0/h0->mu-,mu+;:Active No
+set h0/h0->mu-,mu+;:BranchingRatio 0.0
+set h0/h0->t,tbar;:Active No
+set h0/h0->t,tbar;:BranchingRatio 0.0
+
 cd /Herwig/NewPhysics
 
 # Set the particles to be decayed
@@ -113,13 +140,35 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/Phi+
 insert NewModel:DecayParticles 0 /Herwig/Particles/Phi++
 insert NewModel:DecayParticles 0 /Herwig/Particles/h0
 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 32
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 33
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 34
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 8
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 35
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 36
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 37
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0 38
+
 # Set up the model framework
 set LH/Model:ModelGenerator NewModel
 
 # Shower stuff for coloured particles
 cd /Herwig/Shower
+
+create Herwig::ZeroZeroOneSplitFn PhitoPhiGammaSplitFn
+set PhitoPhiGammaSplitFn:InteractionType QED
+set PhitoPhiGammaSplitFn:ColourStructure ChargedChargedNeutral
+set PhitoPhiGammaSplitFn:AngularOrdered Yes
+
+cp SudakovCommon PhitoPhiGammaSudakov
+set PhitoPhiGammaSudakov:SplittingFunction PhitoPhiGammaSplitFn
+
 do SplittingGenerator:AddFinalSplitting T->T,g; QtoQGSudakov
 
+do SplittingGenerator:AddFinalSplitting T->T,gamma; QtoQGammaSudakov
+do SplittingGenerator:AddFinalSplitting W_H+->W_H+,gamma; WtoWGammaSudakov
+do SplittingGenerator:AddFinalSplitting Phi+->Phi+,gamma; PhitoPhiGammaSudakov
+do SplittingGenerator:AddFinalSplitting Phi++->Phi++,gamma; PhitoPhiGammaSudakov
 cd /Herwig/Generators
 # Choose Little Higgs over SM
 set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/LH/Model

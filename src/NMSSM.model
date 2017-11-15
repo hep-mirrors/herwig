@@ -73,6 +73,7 @@ set Model:Vertex/WWW  /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 # MSSM feynman rules
 set Model:Vertex/WSFSF  /Herwig/Vertices/MSSM/MSSM_WSS
+set Model:Vertex/WWSFSF  /Herwig/Vertices/MSSM/MSSM_WWSS
 set Model:Vertex/NFSF   /Herwig/Vertices/MSSM/MSSM_NFS
 set Model:Vertex/GFSF   /Herwig/Vertices/MSSM/MSSM_GFS
 set Model:Vertex/CFSF   /Herwig/Vertices/MSSM/MSSM_CFS

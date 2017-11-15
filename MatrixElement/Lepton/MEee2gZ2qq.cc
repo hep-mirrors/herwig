@@ -22,13 +22,10 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig/MatrixElement/HardVertex.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Core/Base/Branching.h"
 
 
 using namespace Herwig;
@@ -459,19 +456,23 @@ RealEmissionProcessPtr MEee2gZ2qq::calculateRealEmission(RealEmissionProcessPtr 
   return born;
 }
 
-bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
-				       ShowerParticlePtr parent,Branching br) {
+bool MEee2gZ2qq::softMatrixElementVeto(PPtr parent,
+				       PPtr progenitor,
+				       const bool & ,
+				       const Energy & highestpT,
+				       const vector<tcPDPtr> & ids,
+				       const double & d_z,
+				       const Energy & d_qt,
+				       const Energy & ) {
   // check we should be applying the veto
-  if(parent->id()!=initial->progenitor()->id()||
-     br.ids[0]->id()!=br.ids[1]->id()||
-     br.ids[2]->id()!=ParticleID::g) return false;
+  if(parent->id()!=progenitor->id()||
+     ids[0]->id()!=ids[1]->id()||
+     ids[2]->id()!=ParticleID::g) return false;
   // calculate pt
-  double d_z   = br.kinematics->z();
-  Energy d_qt  = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
   Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
   // if not hardest so far don't apply veto
-  if(pPerp<initial->highestpT()) return false;
+  if(pPerp<highestpT) return false;
   // calculate x and xb
   double kti = sqr(d_qt/d_Q_);
   double w = sqr(d_v_) + kti*(-1. + d_z)*d_z*(2. + kti*(-1. + d_z)*d_z);
@@ -490,11 +491,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // always return one in the soft gluon region
   if(xg < EPS_) return false;
   // check it is in the phase space
-  if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) {
-    parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
-			 ShowerPartnerType::QCDColourLine,br.kinematics->scale());
-    return true;
-  }
+  if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) return true;
   double k1 = getKfromX(x, xb);
   double k2 = getKfromX(xb, x);
   double weight = 1.;
@@ -511,15 +508,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
     if(k1 < d_kt1_) weight *= 0.5;
   }
   // compute veto from weight
-  bool veto = !UseRandom::rndbool(weight);
-  // if not vetoed reset max
-  // if vetoing reset the scale
-  if(veto) {
-    parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
-			 ShowerPartnerType::QCDColourLine,br.kinematics->scale());
-  }
-  // return the veto
-  return veto;
+  return !UseRandom::rndbool(weight);
 }
 
 double MEee2gZ2qq::getKfromX(double x1, double x2) {
@@ -688,8 +677,14 @@ MEee2gZ2qq::generateHard(RealEmissionProcessPtr born,
   	    -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12-root);
   	  if(x2[ix][iy]<x2min||x2[ix][iy]>x2max) continue;
   	  // check the z components
-  	  double z1 =  sqrt(sqr(x1[ix][iy])-4.*mu12-xT2);
-  	  double z2 = -sqrt(sqr(x2[ix][iy])-4.*mu22);
+  	  double z1 =  sqr(x1[ix][iy])-4.*mu12-xT2;
+	  if(z1<0. && z1>-1e-12) z1 = 0.;
+	  assert(z1>=0.);
+	  z1 = sqrt(z1);
+  	  double z2 = sqr(x2[ix][iy])-4.*mu22;
+	  if(z2<0. && z2>-1e-12) z2 = 0.;
+	  assert(z2>=0.);
+	  z2 = -sqrt(z2);
   	  double z3 =  pT[ix]*sinh(y[ix])*2./M;
   	  if(ix==1) z3 *=-1.;
   	  if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
@@ -951,11 +946,11 @@ InvEnergy2 MEee2gZ2qq::realME(const vector<cPDPtr> & partons,
 	for(unsigned int outhel2=0;outhel2<2;++outhel2) {
 	  for(unsigned int outhel3=0;outhel3<2;++outhel3) {
 	    SpinorBarWaveFunction off1 =
-	      vertex->evaluate(scale(),3,partons[2],fout[outhel1],gout[outhel3]);
+	      vertex->evaluate(scale(),3,partons[2]->CC(),fout[outhel1],gout[outhel3]);
 	    diag[0] = FFZVertex_->evaluate(scale(),aout[outhel2],off1,interZ);
 	    diag[1] = FFPVertex_->evaluate(scale(),aout[outhel2],off1,interG);
 	    SpinorWaveFunction    off2 = 
-	      vertex->evaluate(scale(),3,partons[3],aout[outhel2],gout[outhel3]);
+	      vertex->evaluate(scale(),3,partons[3]->CC(),aout[outhel2],gout[outhel3]);
 	    diag[2] = FFZVertex_->evaluate(scale(),off2,fout[outhel1],interZ);
 	    diag[3] = FFPVertex_->evaluate(scale(),off2,fout[outhel1],interG);
 	    // sum of diagrams

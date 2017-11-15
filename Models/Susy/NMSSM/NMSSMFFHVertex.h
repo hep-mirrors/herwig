@@ -93,12 +93,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<NMSSMFFHVertex> initNMSSMFFHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -169,40 +163,5 @@ private:
 };
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of NMSSMFFHVertex. */
-template <>
-struct BaseClassTrait<Herwig::NMSSMFFHVertex,1> {
-  /** Typedef of the first base class of NMSSMFFHVertex. */
-  typedef ThePEG::Helicity::FFSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the NMSSMFFHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::NMSSMFFHVertex>
-  : public ClassTraitsBase<Herwig::NMSSMFFHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::NMSSMFFHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * NMSSMFFHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class NMSSMFFHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so HwNMSSM.so"; }
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_NMSSMFFHVertex_H */

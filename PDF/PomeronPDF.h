@@ -143,12 +143,6 @@ private:
   enum PDFFlavour {charm, gluon, singlet};
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<PomeronPDF> initPomeronPDF;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -226,38 +220,6 @@ private:
 
 
 };
-
-}
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of PomeronPDF. */
-template <>
-struct BaseClassTrait<Herwig::PomeronPDF,1> {
-  /** Typedef of the first base class of PomeronPDF. */
-  typedef PDFBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the PomeronPDF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::PomeronPDF>: public ClassTraitsBase<Herwig::PomeronPDF> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::PomeronPDF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * PomeronPDF is implemented. It may also include several, space-separated,
-   * libraries if the class PomeronPDF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwPomeronPDF.so"; }
-};
-
-/** @endcond */
 
 }
 

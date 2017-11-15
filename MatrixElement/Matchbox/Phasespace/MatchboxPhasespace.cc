@@ -35,7 +35,7 @@ MatchboxPhasespace::~MatchboxPhasespace() {}
 void MatchboxPhasespace::cloneDependencies(const std::string&) {}
 
 Ptr<MatchboxFactory>::tcptr MatchboxPhasespace::factory() const {
-  return lastMatchboxXComb()->factory();
+  return MatchboxFactory::currentFactory();
 }
 
 Ptr<ProcessData>::tptr MatchboxPhasespace::processData() const {

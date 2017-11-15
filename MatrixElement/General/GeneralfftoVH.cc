@@ -5,6 +5,7 @@
 //
 
 #include "GeneralfftoVH.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -158,8 +159,10 @@ void GeneralfftoVH::persistentInput(PersistentIStream & is, int) {
   is >> ienum(process_);
 }
 
-ClassDescription<GeneralfftoVH> GeneralfftoVH::initGeneralfftoVH;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GeneralfftoVH,MEfftoVH>
+describeHerwigGeneralfftoVH("Herwig::GeneralfftoVH", "Herwig.so");
 
 void GeneralfftoVH::Init() {
 

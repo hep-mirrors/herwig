@@ -5,6 +5,7 @@
 //
 
 #include "SingletonFormFactor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -114,8 +115,10 @@ void SingletonFormFactor::persistentInput(PersistentIStream & is, int) {
      >> _thetaxip >> iunit(_polemass,GeV) >> _xi >> _nmM >> iunit(_mquark,GeV);
 }
 
-ClassDescription<SingletonFormFactor> SingletonFormFactor::initSingletonFormFactor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SingletonFormFactor,BaryonFormFactor>
+describeHerwigSingletonFormFactor("Herwig::SingletonFormFactor", "HwFormFactors.so");
 
 void SingletonFormFactor::Init() {
 

@@ -94,12 +94,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<Tau5Pion> initTau5Pion;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -187,41 +181,6 @@ private:
   HistogramPtr _q3;
   //@}
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Tau5Pion. */
-template <>
-struct BaseClassTrait<Herwig::Tau5Pion,1> {
-  /** Typedef of the first base class of Tau5Pion. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Tau5Pion class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Tau5Pion>
-  : public ClassTraitsBase<Herwig::Tau5Pion> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Tau5Pion"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * Tau5Pion is implemented. It may also include several, space-separated,
-   * libraries if the class Tau5Pion depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwTauAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

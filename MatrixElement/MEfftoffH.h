@@ -245,12 +245,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<MEfftoffH> initMEfftoffH;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -349,33 +343,6 @@ private:
    */
   bool _swap;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEfftoffH. */
-template <>
-struct BaseClassTrait<Herwig::MEfftoffH,1> {
-  /** Typedef of the first base class of MEfftoffH. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEfftoffH class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEfftoffH>
-  : public ClassTraitsBase<Herwig::MEfftoffH> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEfftoffH"; }
-};
-
-/** @endcond */
 
 }
 

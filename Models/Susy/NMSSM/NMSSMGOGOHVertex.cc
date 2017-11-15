@@ -5,6 +5,7 @@
 //
 
 #include "NMSSMGOGOHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -126,8 +127,10 @@ void NMSSMGOGOHVertex::doinit() {
   FFSVertex::doinit();
 }
 
-ClassDescription<NMSSMGOGOHVertex> NMSSMGOGOHVertex::initNMSSMGOGOHVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<NMSSMGOGOHVertex,FFSVertex>
+describeHerwigNMSSMGOGOHVertex("Herwig::NMSSMGOGOHVertex", "HwSusy.so HwNMSSM.so");
 
 void NMSSMGOGOHVertex::Init() {
 

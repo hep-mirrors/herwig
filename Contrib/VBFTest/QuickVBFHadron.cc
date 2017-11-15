@@ -5,6 +5,7 @@
 //
 
 #include "QuickVBFHadron.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -187,8 +188,10 @@ IBPtr QuickVBFHadron::fullclone() const {
   return new_ptr(*this);
 }
 
-NoPIOClassDescription<QuickVBFHadron> QuickVBFHadron::initQuickVBFHadron;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<QuickVBFHadron,AnalysisHandler>
+describeHerwigQuickVBFHadron("Herwig::QuickVBFHadron", "VBFAnalysis.so");
 
 void QuickVBFHadron::Init() {
 

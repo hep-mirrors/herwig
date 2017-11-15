@@ -12,6 +12,7 @@
 //
 
 #include "SMGGGVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -30,8 +31,10 @@ void SMGGGVertex::doinit() {
   VVVVertex::doinit();
 }
 
-NoPIOClassDescription<SMGGGVertex> SMGGGVertex::initSMGGGVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<SMGGGVertex,Helicity::VVVVertex>
+describeHerwigSMGGGVertex("Herwig::SMGGGVertex", "Herwig.so");
 
 void SMGGGVertex::Init() {
  static ClassDocumentation<SMGGGVertex> documentation

@@ -12,6 +12,7 @@
 //
 
 #include "LEPMultiplicityCount.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -353,8 +354,10 @@ void LEPMultiplicityCount::dofinish() {
   AnalysisHandler::dofinish();
 }
 
-ClassDescription<LEPMultiplicityCount> LEPMultiplicityCount::initLEPMultiplicityCount;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<LEPMultiplicityCount,AnalysisHandler>
+describeHerwigLEPMultiplicityCount("Herwig::LEPMultiplicityCount", "HwAnalysis.so");
 
 void LEPMultiplicityCount::Init() {
 

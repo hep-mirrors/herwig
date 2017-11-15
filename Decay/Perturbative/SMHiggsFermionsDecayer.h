@@ -12,7 +12,7 @@
 // This is the declaration of the SMHiggsFermionsDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 
@@ -23,9 +23,9 @@ using namespace ThePEG;
  * The SMHiggsFermionsDecayer class is designed to decay the Standard Model Higgs
  * to the Standard Model fermions.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  */
-class SMHiggsFermionsDecayer: public DecayIntegrator {
+class SMHiggsFermionsDecayer: public PerturbativeDecayer {
 
 public:
 
@@ -72,6 +72,17 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
 
 public:
 
@@ -117,6 +128,31 @@ protected:
   //@}
 
 protected:
+  
+  /**
+   *  Calcluate the Kallen function
+   */
+  double calculateLambda(double x, double y, double z) const;
+
+  /**
+   *  Dipole subtraction term
+   */
+  InvEnergy2 dipoleSubtractionTerm(double x1, double x2) const;
+
+  /**
+   *  Real emission term
+   */
+  InvEnergy2 calculateRealEmission(double x1, double x2) const;
+
+  /**
+   *  Virtual term
+   */
+  double calculateVirtualTerm() const;
+
+  /**
+   *  Non-singlet term
+   */
+  double calculateNonSingletTerm(double beta, double L) const;
 
 protected:
 
@@ -137,12 +173,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMHiggsFermionsDecayer> initSMHiggsFermionsDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -181,38 +211,68 @@ private:
    *  Barred spinor wavefunction
    */
   mutable vector<SpinorBarWaveFunction> _wavebar;
+private:
+
+  /**
+   *  The colour factor 
+   */
+  double CF_;
+
+  /**
+   *  The Higgs mass
+   */
+  mutable Energy mHiggs_;
+
+  /**
+   *  The reduced mass
+   */
+  mutable double mu_;
+
+  /**
+   *  The square of the reduced mass
+   */
+  mutable double mu2_;
+
+  /**
+   *  The strong coupling
+   */
+  mutable double aS_;
+
+  /**
+   *  Stuff for the POWHEG correction
+   */
+  //@{
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> partons_;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> quark_;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum gauge_;
+
+  /**
+   *  The Higgs boson
+   */
+  PPtr higgs_;
+
+  /**
+   *  Higgs mass squared
+   */
+  Energy2 mh2_;
+  //@}
+
+  /**
+   * LO or NLO ?
+   */
+  bool NLO_;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMHiggsFermionsDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMHiggsFermionsDecayer,1> {
-  /** Typedef of the first base class of SMHiggsFermionsDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMHiggsFermionsDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
-  : public ClassTraitsBase<Herwig::SMHiggsFermionsDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMHiggsFermionsDecayer"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the SMHiggsFermionsDecayer class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwPerturbativeHiggsDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

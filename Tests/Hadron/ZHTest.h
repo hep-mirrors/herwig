@@ -91,12 +91,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<ZHTest> initZHTest;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -107,41 +101,6 @@ private:
   HistogramPtr _mH,_mZ,_ptH,_ptZ,_yH,_yZ,_phiH,_phiZ,_ptl[2],_yl[2],_phil[2];
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ZHTest. */
-template <>
-struct BaseClassTrait<Herwig::ZHTest,1> {
-  /** Typedef of the first base class of ZHTest. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ZHTest class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ZHTest>
-  : public ClassTraitsBase<Herwig::ZHTest> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ZHTest"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ZHTest is implemented. It may also include several, space-separated,
-   * libraries if the class ZHTest depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HadronTest.so"; }
-};
-
-/** @endcond */
 
 }
 

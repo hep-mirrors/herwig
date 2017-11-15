@@ -12,11 +12,10 @@
 // This is the declaration of the GeneralTwoBodyDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -25,7 +24,7 @@ using Helicity::VertexBasePtr;
 /** \ingroup Decay
  * The GeneralTwoBodyDecayer class is designed to be the base class 
  * for 2 body decays for some general model. It inherits from 
- * DecayIntegrator and implements the modeNumber() virtual function
+ * PerturbativeDecayer and implements the modeNumber() virtual function
  * that is the  same for all of the decays. A decayer for
  * a specific spin configuration should inherit from this and implement
  * the me2() and partialWidth() member functions. The colourConnections()
@@ -34,9 +33,9 @@ using Helicity::VertexBasePtr;
  *
  * @see \ref GeneralTwoBodyDecayerInterfaces "The interfaces"
  * defined for GeneralTwoBodyDecayer.
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  */
-class GeneralTwoBodyDecayer: public DecayIntegrator {
+class GeneralTwoBodyDecayer: public PerturbativeDecayer {
 
 public:
   
@@ -48,9 +47,8 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.), 
-			    pTmin_(GeV), pT_(ZERO), colour_(1,DVector(1,1.))
-{}
+  GeneralTwoBodyDecayer() : maxWeight_(1.), colour_(1,DVector(1,1.))
+  {}
 
 
   /** @name Virtual functions required by the Decayer class. */
@@ -114,68 +112,25 @@ public:
    */
   virtual double brat(const DecayMode & dm, const Particle & p,
 		      double oldbrat) const;
-
-  /**
-   *  Has a POWHEG style correction
-   */
-  virtual POWHEGType hasPOWHEGCorrection() {return No;}
-
-  /**
-   *  Member to generate the hardest emission in the POWHEG scheme
-   */
-  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
-
-
-  /**
-   *  Three-body matrix element including additional QCD radiation
-   */
-  virtual double threeBodyME(const int , const Particle & inpart,
-			     const ParticleVector & decay, MEOption meopt);
   //@}
 
   /**
    *  Set the information on the decay
    */
-  void setDecayInfo(PDPtr incoming,PDPair outgoing,
-		    VertexBasePtr,VertexBasePtr,
-		    const vector<VertexBasePtr> &,
-		    VertexBasePtr);
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+			    map<ShowerInteraction,VertexBasePtr> &,
+			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
+			    map<ShowerInteraction,VertexBasePtr>) =0;
 
 protected:
   
   /** @name Functions used by inheriting decayers. */
   //@{
-  
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex
-   */
-  VertexBasePtr getVertex() const { return vertex_; }
-
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex for QCD radiation off the decaying particle
-   */
-  VertexBasePtr getIncomingVertex() const { return  incomingVertex_; }
-
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex for QCD radiation off the decay products
-   */
-  vector<VertexBasePtr> getOutgoingVertices() const { return outgoingVertices_; }
-
-  /**
-   * Get vertex pointer
-   * @return a pointer to the vertex for QCD radiation from 4 point vertex
-   */
-  VertexBasePtr getFourPointVertex() const { return fourPointVertex_; }
-
-
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  void setWeight(double wgt) { _maxweight = wgt; }
+  void setWeight(double wgt) { maxWeight_ = wgt; }
 
   /**
    * Set colour connections
@@ -187,11 +142,6 @@ protected:
 			 const ParticleVector & out) const;
 
   /**
-   * Type of dipole
-   */
-  enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
-
-  /**
    *  Compute the spin and colour factor
    */
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
@@ -200,63 +150,13 @@ protected:
    *  Calculate matrix element ratio R/B
    */
   double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
-			    const ParticleVector & decay3, MEOption meopt);
+			    const ParticleVector & decay3, MEOption meopt,
+			    ShowerInteraction inter);
 
   /**
-   *  Calculate momenta of all the particles
+   *  Set the information on the decay
    */
-  bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
-		   double& xs, double& xe, double& xe_z, 
-		   vector<Lorentz5Momentum>& particleMomenta);
-
-  /**
-   *  Check the calculated momenta are physical
-   */
-  bool psCheck(const double xg, const double xs);
-
-  /**
-   *  Return the momenta including the hard emission
-   */
-  vector<Lorentz5Momentum> hardMomenta(const PPtr &in, 
-				       const PPtr &emitter, 
-				       const PPtr &spectator, 
-				       const vector<dipoleType>  &dipoles, int i);
-
-  /**
-   * Return dipole corresponding to the dipoleType dipoleId
-   */
-  InvEnergy2 calculateDipole(const dipoleType & dipoleId,   const Particle & inpart,
-			     const ParticleVector & decay3, const dipoleType & emittingDipole);
-
-  /**
-   * Return contribution to dipole that depends on the spin of the emitter
-   */
-  double dipoleSpinFactor(const PPtr & emitter, double z);
-
-  /**
-   *  Work out the type of process
-   */
-  bool identifyDipoles(vector<dipoleType> & dipoles,
-		       PPtr & aProgenitor,
-		       PPtr & bProgenitor,
-		       PPtr & cProgenitor) const;
-  
-  /**
-   * Set up the colour lines
-   */
-  void getColourLines(RealEmissionProcessPtr real);
-
-
-  /**
-   *  Return the colour coefficient of the dipole
-   */
-  double colourCoeff(const PDT::Colour emitter, const PDT::Colour spectator,
-		     const PDT::Colour other);
-
-  /**
-   *  Coupling for the generation of hard radiation
-   */
-  ShowerAlphaPtr coupling() {return coupling_;}
+  void decayInfo(PDPtr incoming, PDPair outgoing);
   //@}
 
 public:
@@ -322,15 +222,16 @@ protected:
   const CFlow & colourFlows(const Particle & inpart,
 			    const ParticleVector & decay);
 
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,
+			     ShowerInteraction inter, MEOption meopt);
+
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<GeneralTwoBodyDecayer> initGeneralTwoBodyDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -343,78 +244,17 @@ private:
   /**
    *  Store the incoming particle
    */
-  PDPtr _incoming;
+  PDPtr incoming_;
 
   /**
    *  Outgoing particles
    */
-  vector<PDPtr> _outgoing;
-  
-  /**
-   * Pointer to vertex
-   */
-  VertexBasePtr vertex_;
-
-  /**
-   *  Pointer to vertex for radiation from the incoming particle
-   */
-  VertexBasePtr incomingVertex_;
-
-  /**
-   *  Pointer to the vertices for radiation from the outgoing particles
-   */
-  vector<VertexBasePtr> outgoingVertices_; 
-
-  /**
-   *  Pointer to vertex for radiation coming from 4 point vertex
-   */
-  VertexBasePtr fourPointVertex_;
-
+  vector<PDPtr> outgoing_;
 
   /**
    * Maximum weight for integration
    */
-  double _maxweight;
-
-  /**
-   *  Mass of decaying particle
-   */
-  Energy mb_;
-
-  /**
-   *  Reduced mass of emitter child particle
-   */
-  double e_;
-
-  /**
-   * Reduced mass of spectator child particle
-   */
-  double s_;
-
-  /**
-   *  Reduced mass of emitter child particle squared
-   */
-  double e2_;
-
-  /**
-   * Reduced mass of spectator child particle squared
-   */
-  double s2_;
-
-  /**
-   *  Minimum \f$p_T\f$
-   */
-  Energy pTmin_;
-
-  /**
-   *  Transverse momentum of the emission
-   */
-  Energy pT_;
-
-  /**
-   *  Coupling for the generation of hard radiation
-   */
-  ShowerAlphaPtr coupling_;
+  double maxWeight_;
 
   /**
    * Store colour factors for ME calc.
@@ -423,34 +263,43 @@ private:
 
 };
 
+
+/**
+ * Write a map with ShowerInteraction as the key
+ */
+template<typename T, typename Cmp, typename A>
+inline PersistentOStream & operator<<(PersistentOStream & os,
+				      const map<ShowerInteraction,T,Cmp,A> & m) {
+  os << m.size();
+  if(m.find(ShowerInteraction::QCD)!=m.end()) {
+    os << 0 << m.at(ShowerInteraction::QCD);
+  }
+  if(m.find(ShowerInteraction::QED)!=m.end()) {
+    os << 1 << m.at(ShowerInteraction::QED);
+  }
+  return os;
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralTwoBodyDecayer. */
-template <>
-struct BaseClassTrait<Herwig::GeneralTwoBodyDecayer,1> {
-  /** Typedef of the first base class of GeneralTwoBodyDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralTwoBodyDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralTwoBodyDecayer>
-  : public ClassTraitsBase<Herwig::GeneralTwoBodyDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralTwoBodyDecayer"; }
-};
-
-/** @endcond */
-
+/**
+ * Read a map with ShowerInteraction as the key
+ */
+template <typename T, typename Cmp, typename A>
+inline PersistentIStream & operator>>(PersistentIStream & is, map<ShowerInteraction,T,Cmp,A> & m) {
+  m.clear();
+  long size;
+  int k;
+  is >> size;
+  while ( size-- && is ) {
+    is >> k;
+    if(k==0)
+      is >> m[ShowerInteraction::QCD];
+    else if(k==1)
+      is >> m[ShowerInteraction::QED];
+    else
+      assert(false);
+  }
+  return is;
 }
-
+}
 
 #endif /* HERWIG_GeneralTwoBodyDecayer_H */

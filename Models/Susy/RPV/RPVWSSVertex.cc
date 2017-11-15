@@ -432,5 +432,8 @@ void RPVWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     _q2last = q2;
     _couplast = electroMagneticCoupling(q2);
   }
-  norm(_couplast*_factlast);
+  if(part2->id()>0)
+    norm(-_couplast*_factlast);
+  else
+    norm(+_couplast*_factlast);
 }

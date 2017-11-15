@@ -12,11 +12,12 @@
 // This is the declaration of the SMTopDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
+#include "Herwig/Shower/ShowerAlpha.fh"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -29,7 +30,7 @@ namespace Herwig {
  * the bottom quark and qqbar pairs or to the bottom quark and lepton 
  * neutrino pairs via W boson exchange.
  */
-class SMTopDecayer: public DecayIntegrator {
+class SMTopDecayer: public PerturbativeDecayer {
 
 public:
 
@@ -55,22 +56,32 @@ public:
    */
   virtual void initializeMECorrection(RealEmissionProcessPtr , double & ,
 				      double & );
-
-  /**
-   *  Apply the hard matrix element correction to a given hard process or decay
-   */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
-
+  
   /**
    * Apply the soft matrix element correction
-   * @param initial The particle from the hard process which started the 
-   * shower
    * @param parent The initial particle in the current branching
-   * @param br The branching struct
+   * @param progenitor The progenitor particle of the jet
+   * @param fs Whether the emission is initial or final-state
+   * @param highestpT The highest pT so far in the shower
+   * @param ids ids of the particles produced in the branching
+   * @param z The momentum fraction of the branching
+   * @param scale the evolution scale of the branching
+   * @param pT The transverse momentum of the branching
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
-				     ShowerParticlePtr parent,Branching br);
+  virtual bool softMatrixElementVeto(PPtr parent,
+				     PPtr progenitor,
+				     const bool & fs,
+				     const Energy & highestpT,
+				     const vector<tcPDPtr> & ids,
+				     const double & z,
+				     const Energy & scale,
+				     const Energy & pT);
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
   //@}
 
 public:
@@ -208,33 +219,6 @@ protected:
 protected:
 
   /**
-   *  Apply the hard matrix element
-   */
-  vector<Lorentz5Momentum> applyHard(const ParticleVector &p,double,double);
-
-  /**
-   *  Get the weight for hard emission
-   */
-  double getHard(double, double);
-
-  /**
-   *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
-   */
-  double xgbr(int);
-
-  /**
-   *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
-   */
-  double ktr(double,int);
-
-  /**
-   *  This function determines \f$x_{a}\f$ as a function of \f$x_{g}\f$ 
-   *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
-   *  b.
-   */
-  double xab(double,double,int);
-
-  /**
    *  This function determines the point (\f$x_{g}\f$) where the condition that 
    *  \f$x_{a}\f$ be real supersedes that due to the external input 
    *  \f$\tilde{\kappa}\f$ where, again, \f$\kappa\f$ pertains to emissions from the 
@@ -243,103 +227,33 @@ protected:
   double xgbcut(double);
 
   /**
-   *  This function determines the minimum value of \f$x_{a}\f$ 
-   *  for a given \f$\tilde{\kappa}\f$ where \f$\kappa\f$ pertains to
-   *  emissions from the c.
-   */
-  double xaccut(double);
-
-  /**
-   *  This function is auxiliary to the function \f$x_{g}\f$ (hXGC).
-   */
-  double z(double,double,int,int); 
-
-  /**
-   *  This function determines \f$x_{g}\f$ as a function of \f$x_{a}\f$ 
-   *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
-   *  c. It is multivalued, one selects a branch according to the
-   *  second to last integer flag (+/-1). The last integer flag
-   *  is used to select whether (1) or not (0) you wish to have the 
-   *  function for the special case of the full phase space, in which
-   *  case the fifth argument \f$\kappa\f$ is irrelevant.
-   */
-  double xgc(double,double,int,int); 
-
-  /**
-   *  This function, \f$x_{g,c=0}^{-1}\f$, returns \f$x_{a}\f$ as a function 
-   *  of \f$x_{g}\f$ for the special case of c=0, for emissions from c 
-   *  (the b-quark). The third input is \f$\tilde{\kappa}\f$ which pertains 
-   *  to emissions from c.
-   */
-  double xginvc0(double,double); 
-
-  /**
-   *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
-   *  in the dead region.
-   */
-  double approxDeadMaxxa(double,double,double); 
-
-  /**
-   *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
-   *  in the dead region.
-   */
-  double approxDeadMinxa(double,double,double); 
-
-  /**
-   *  This function returns true or false according to whether the values
-   *  xg,xa are in the allowed region, the kinematically accessible phase 
-   *  space.
-   */
-  bool inTheAllowedRegion(double,double); 
-
-  /**
-   *  This function returns true or false according to whether the values
-   *  xg,xa are exactly in the approximate dead region.
-   */
-  bool inTheApproxDeadRegion(double,double,
-                                    double,double); 
-
-  /**
-   *  This function returns true or false according to whether the values
-   *  xg,xa are exactly in the dead region.
-   */
-  bool inTheDeadRegion(double,double,
-                              double,double); 
-
-  /**
-   *  This function returns values of (\f$x_{g}\f$,\f$x_{a}\f$) distributed 
-   *  according to \f$\left(1+a-x_{a}\right)^{-1}x_{g}^{-2}\f$ in the 
-   *  approximate dead region.  
-   */
-  double deadRegionxgxa(double,double); 
-
-  /**
-   *  This rotation takes a 5-momentum and returns a rotation matrix 
-   *  such that it acts on the input 5-momentum so as to
-   *  make it point in the +Z direction. Finally it performs a randomn
-   *  rotation about the z-axis.
-   */
-  LorentzRotation rotateToZ(Lorentz5Momentum);
-
-  /**
    *  Full matrix element with a factor of \f$\frac{\alpha_SC_F}{x_g^2\pi}\f$ removed.
    * @param xw The momentum fraction of the W boson
    * @param xg The momentum fraction of the gluon.
    */
   double me(double xw, double xg);
 
-  /**
-   *  Access to the strong coupling
-   */
-  ShowerAlphaPtr coupling() { return _alpha;}
+protected:
 
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
+
+  /**
+   *  LO matrix element for \f$t\to b W^\pm\f$
+   */
+  double loME(const Particle & inpart, const ParticleVector & decay);
+
+  /**
+   *  LO matrix element for \f$t\to b W^\pm\f$
+   */
+  double realME(const Particle & inpart, const ParticleVector & decay,
+		ShowerInteraction inter);
+  
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SMTopDecayer> initSMTopDecayer;
 
   /**
    * The assignment operator is private and must never be called.
@@ -348,9 +262,24 @@ private:
   SMTopDecayer & operator=(const SMTopDecayer &);
   
   /**
-   *Pointer to the W vertex
+   * Pointer to the W vertex
    */
-  AbstractFFVVertexPtr _wvertex;
+  AbstractFFVVertexPtr FFWVertex_;
+  
+  /**
+   * Pointer to the gluon vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
+  
+  /**
+   * Pointer to the photon vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+  
+  /**
+   * Pointer to the photon vertex
+   */
+  AbstractVVVVertexPtr WWWVertex_;
   
   /**
    * Max weight for integration
@@ -472,51 +401,7 @@ private:
    *  The enhancement factor for final-state radiation
    */
   double _finalenhance;
-
-  /**
-   *  This flag determines whether the T2 region in the decay shower
-   *  (JHEP12(2003)_045) is populated by the ME correction (true) or
-   *  the shower from the decaying particle.
-   */
-  bool _useMEforT2;
-
-  /**
-   *  Pointer to the coupling
-   */
-  ShowerAlphaPtr _alpha;
-
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SMTopDecayer. */
-template <>
-struct BaseClassTrait<Herwig::SMTopDecayer,1> {
-  /** Typedef of the first base class of SMTopDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SMTopDecayer class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SMTopDecayer>
-  : public ClassTraitsBase<Herwig::SMTopDecayer> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SMTopDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SMTopDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwPerturbativeDecay.so"; }
-};
-
-/** @endcond */
 
 }
 

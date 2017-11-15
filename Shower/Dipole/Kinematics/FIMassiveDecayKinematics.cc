@@ -22,11 +22,13 @@
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingInfo.h"
 #include "Herwig/Shower/Dipole/Kernels/DipoleSplittingKernel.h"
 
+#include "ThePEG/Interface/Switch.h"
+
 
 using namespace Herwig;
 
 FIMassiveDecayKinematics::FIMassiveDecayKinematics() 
-  : DipoleSplittingKinematics(), theFullJacobian(false) {}
+  : DipoleSplittingKinematics(), theFullJacobian(true) {}
 
 FIMassiveDecayKinematics::~FIMassiveDecayKinematics() {}
 
@@ -131,7 +133,6 @@ double FIMassiveDecayKinematics::ptToRandom(Energy pt, Energy,
 bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double rphi,
 						 DipoleSplittingInfo& info,
 						 const DipoleSplittingKernel&) {
-
 
   // scaled masses
   double mui2 = sqr( info.emitterData()->mass() / info.scale() );
@@ -252,20 +253,65 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
     mapZJacobian = 1.-z;
   }
 
+
   // Compute and store the jacobian
-  if ( true ) {  
-    double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );
-    double jacPt2 = 1. / ( 1. + sqr(1.-zPrime)*Qijk*mui2/pt2 + zPrime*zPrime*Qijk*mu2/pt2 );
+  double jac = 0.0;
+  double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );
 
-    jacobian( propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y) * jacPt2 *
-	      mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
-  }
-
-  // TODO: Implement this:
+  // TODO - SW - Tidy up notation everywhere alongside writing for the manual
   // The full jacobian including the z->zprime jacobian
-  else if ( theFullJacobian ) {
-    assert(false);
+  if ( theFullJacobian ) {
+
+    // Sort out variables
+    Energy2 sbar = Qijk*bar;
+    Energy2 sijk = Qijk*suijk;
+    Energy2 mi2 = Qijk*mui2;
+    Energy2 mj2 = Qijk*mu2;
+    Energy2 mk2 = Qijk*muj2;    
+    
+    // Compute dy/dzPrime and pt2* dy/dpt2
+    double dyBydzPrime = (1./sbar) * ( -pt2*(1.-2.*zPrime)/sqr(zPrime*(1.-zPrime)) - mi2/sqr(zPrime) + mj2/sqr(1.-zPrime) );
+    InvEnergy2 dyBydpt2 = 1./(sbar*zPrime*(1.-zPrime));
+
+    // Compute dA/dzPrime and dA/dpt2
+    double dABydzPrime = (sbar/sijk) * dyBydzPrime;
+    InvEnergy2 dABydpt2 = (sbar/sijk) * dyBydpt2;
+
+    // Compute dxk/dzPrime, dxk/dpt2, dxij/dzPrime and dxij/dpt2
+    double factor = (0.5/lambdaK) * (-1. - (1./sqrt( sqr(lambdaK + (mk2/sijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*mk2/sijk)) * (lambdaK + (mk2/sijk)*lambdaIJ - A));
+    
+    double dxkBydzPrime = factor * dABydzPrime;
+    InvEnergy2 dxkBydpt2 = factor * dABydpt2;
+
+    double dxijBydzPrime = (mk2/sijk) * (1./sqr(xk)) * dxkBydzPrime;
+    InvEnergy2 dxijBydpt2 = (mk2/sijk) * (1./sqr(xk)) * dxkBydpt2;
+
+    Energy2 dqiDotqkBydzPrime = xij*xk*0.5*sijk + zPrime*dxijBydzPrime*xk*0.5*sijk + zPrime*xij*dxkBydzPrime*0.5*sijk
+      + 0.5*(mk2/sijk)*(pt2 + mi2) * (-1./(xk*xij*sqr(zPrime)) - dxkBydzPrime/(zPrime*xij*sqr(xk)) - dxijBydzPrime/(zPrime*xk*sqr(xij)));
+
+    double dqiDotqkBydpt2 =  dxijBydpt2*zPrime*xk*0.5*sijk + zPrime*xij*dxkBydpt2*0.5*sijk
+      + (0.5*mk2/sijk) * (1./(zPrime*xk*xij)) * (1. + (pt2+mi2)*(-dxkBydpt2/xk - dxijBydpt2/xij) );
+
+    
+    // Compute dzBydzPrime and dzBydpt2
+    Energy2 qiDotqk = (zPrime*xij*xk*sijk*0.5) + (mk2/ ( 2.*xk*xij*sijk*zPrime))*(pt2 + mi2);
+
+    double dzBydzPrime = (1./sbar) * ( 2.*qiDotqk*dyBydzPrime/sqr(1.-y) + (1./(1.-y)) * 2.*dqiDotqkBydzPrime );
+    InvEnergy2 dzBydpt2    = (1./sbar) * ( 2.*qiDotqk*dyBydpt2/sqr(1.-y) + (1./(1.-y)) * 2.*dqiDotqkBydpt2 );
+
+    double pt2Jac = pt2*abs(dzBydpt2*dyBydzPrime - dzBydzPrime*dyBydpt2);
+
+    // Include the other terms and calculate the jacobian
+    jac = propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y)/y * pt2Jac;
   }
+  
+  else {
+    double jacPt2 = 1. / ( 1. + sqr(1.-zPrime)*Qijk*mui2/pt2 + zPrime*zPrime*Qijk*mu2/pt2 );
+    jac = propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y) * jacPt2;
+  }
+
+  jacobian(jac * mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
+
 
   // Record the physical variables, as used by the CS kernel definitions
   lastPt(pt);
@@ -349,11 +395,12 @@ void FIMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
 // If needed, insert default implementations of function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-
-void FIMassiveDecayKinematics::persistentOutput(PersistentOStream & ) const {
+void FIMassiveDecayKinematics::persistentOutput(PersistentOStream & os) const {
+  os << theFullJacobian;
 }
 
-void FIMassiveDecayKinematics::persistentInput(PersistentIStream & , int) {
+void FIMassiveDecayKinematics::persistentInput(PersistentIStream & is, int) {
+  is >> theFullJacobian;
 }
 
 ClassDescription<FIMassiveDecayKinematics> FIMassiveDecayKinematics::initFIMassiveDecayKinematics;
@@ -364,4 +411,21 @@ void FIMassiveDecayKinematics::Init() {
   static ClassDocumentation<FIMassiveDecayKinematics> documentation
     ("FIMassiveDecayKinematics implements implements massive splittings "
      "off a final-initial decay dipole.");
+
+  
+  static Switch<FIMassiveDecayKinematics,bool> interfaceFullJacobian
+    ("FullJacobian",
+     "Use the full jacobian expression for the FI Decay kinematics.",
+     &FIMassiveDecayKinematics::theFullJacobian, true, false, false);
+  static SwitchOption interfaceFullJacobianYes
+    (interfaceFullJacobian,
+     "Yes",
+     "Use the full jacobian.",
+     true);
+  static SwitchOption interfaceFullJacobianNo
+    (interfaceFullJacobian,
+     "No",
+     "Do not use the full jacobian.",
+     false);
+  interfaceFullJacobian.rank(-1);
 }

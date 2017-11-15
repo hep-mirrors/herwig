@@ -186,12 +186,6 @@ protected:
 private:
 
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SU3BaryonOctetOctetPhotonDecayer> 
-  initSU3BaryonOctetOctetPhotonDecayer;
-
-  /**
    * Private and non-existent assignment operator.
    */
   SU3BaryonOctetOctetPhotonDecayer & 
@@ -335,43 +329,5 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SU3BaryonOctetOctetPhotonDecayer.
- */
-template <>
- struct BaseClassTrait<Herwig::SU3BaryonOctetOctetPhotonDecayer,1> {
-    /** Typedef of the base class of SU3BaryonOctetOctetPhotonDecayer. */
-   typedef Herwig::Baryon1MesonDecayerBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::SU3BaryonOctetOctetPhotonDecayer>
-  : public ClassTraitsBase<Herwig::SU3BaryonOctetOctetPhotonDecayer> {
-   /** Return the class name.*/
-  static string className() { return "Herwig::SU3BaryonOctetOctetPhotonDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwBaryonDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_SU3BaryonOctetOctetPhotonDecayer_H */

@@ -47,7 +47,7 @@ MatchboxAmplitude::MatchboxAmplitude()
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis << theFactory 
+  os << theLastXComb << theColourBasis 
      << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints
      << theTrivialColourLegs << theReshuffleMasses.size();
   if ( !theReshuffleMasses.empty() ) {
@@ -58,7 +58,7 @@ void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
   size_t reshuffleSize;
-  is >> theLastXComb >> theColourBasis >> theFactory 
+  is >> theLastXComb >> theColourBasis 
      >> theCleanupAfter >> treeLevelHelicityPoints >> oneLoopHelicityPoints
      >> theTrivialColourLegs >> reshuffleSize;
   theReshuffleMasses.clear();
@@ -72,17 +72,12 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
 }
 
 Ptr<MatchboxFactory>::tptr MatchboxAmplitude::factory() const {
-  return theFactory;
-}
-
-void MatchboxAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
-  theFactory = f;
+  return MatchboxFactory::currentFactory();
 }
 
 void MatchboxAmplitude::doinit() {
   Amplitude::doinit();
   if ( colourBasis() ) {
-    colourBasis()->factory(factory());
     colourBasis()->init();
   }
 }
@@ -255,7 +250,8 @@ void MatchboxAmplitude::setXComb(tStdXCombPtr xc) {
   theLastXComb = xc;
   lastMatchboxXComb(xc);
   fillCrossingMap();
-  if ( treeAmplitudes() || oneLoopAmplitudes() )
+  if ( ( treeAmplitudes() || oneLoopAmplitudes() ) &&
+       hasAmplitudeMomenta() )
     for ( size_t k = 0 ; k < meMomenta().size(); ++k )
       amplitudeMomenta()[k] = amplitudeMomentum(k);
 }
@@ -286,7 +282,9 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
   set<pair<tcPDPtr,int> > amplitudeLegs;
   crossingMap().resize(mePartonData().size());
   amplitudePartonData().resize(mePartonData().size());
-  amplitudeMomenta().resize(mePartonData().size());
+
+  if ( hasAmplitudeMomenta() )
+    amplitudeMomenta().resize(mePartonData().size());
 
   int ampCount = 0;
 
@@ -908,26 +906,31 @@ void MatchboxAmplitude::Init() {
      "The number of points after which helicity combinations are cleaned up.",
      &MatchboxAmplitude::theCleanupAfter, 20, 1, 0,
      false, false, Interface::lowerlim);
+  interfaceCleanupAfter.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceReshuffle
     ("Reshuffle",
      "Reshuffle the mass for the given PDG id to a different mass shell for amplitude evaluation.",
      &MatchboxAmplitude::doReshuffle, false);
+    interfaceReshuffle.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceMassless
     ("Massless",
      "Reshuffle the mass for the given PDG id to be massless for amplitude evaluation.",
      &MatchboxAmplitude::doMassless, false);
+    interfaceMassless.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceOnShell
     ("OnShell",
      "Reshuffle the mass for the given PDG id to be the on-shell mass for amplitude evaluation.",
      &MatchboxAmplitude::doOnShell, false);
+    interfaceOnShell.rank(-1);
 
   static Command<MatchboxAmplitude> interfaceClearReshuffling
     ("ClearReshuffling",
      "Do not perform any reshuffling.",
      &MatchboxAmplitude::doClearReshuffling, false);
+    interfaceClearReshuffling.rank(-1);
 
   static Switch<MatchboxAmplitude,bool> interfaceTrivialColourLegs
     ("TrivialColourLegs",

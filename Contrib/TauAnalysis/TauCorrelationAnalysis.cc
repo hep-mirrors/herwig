@@ -5,6 +5,7 @@
 //
 
 #include "TauCorrelationAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include <ThePEG/PDT/EnumParticles.h>
@@ -113,8 +114,10 @@ void TauCorrelationAnalysis::analyze(tPPtr part) {
   analyzeRho(part,children);
 }
 
-NoPIOClassDescription<TauCorrelationAnalysis> TauCorrelationAnalysis::initTauCorrelationAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<TauCorrelationAnalysis,AnalysisHandler>
+describeHerwigTauCorrelationAnalysis("Herwig::TauCorrelationAnalysis", "HwTauAnalysis.so");
 
 void TauCorrelationAnalysis::Init() {
 

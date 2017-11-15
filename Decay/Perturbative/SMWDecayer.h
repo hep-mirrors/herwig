@@ -11,11 +11,10 @@
 //
 // This is the declaration of the SMWDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Shower/Core/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -27,10 +26,10 @@ using namespace ThePEG::Helicity;
  *  W boson to the Standard Model fermions, including the first order
  *  electroweak corrections.
  *
- * @see DecayIntegrator
+ * @see PerturbativeDecayer
  * 
  */
-class SMWDecayer: public DecayIntegrator {
+class SMWDecayer: public PerturbativeDecayer {
 
 public:
 
@@ -58,21 +57,30 @@ public:
 				      double & );
 
   /**
-   *  Apply the hard matrix element correction to a given hard process or decay
-   */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
-
-  /**
    * Apply the soft matrix element correction
-   * @param initial The particle from the hard process which started the 
-   * shower
    * @param parent The initial particle in the current branching
-   * @param br The branching struct
+   * @param progenitor The progenitor particle of the jet
+   * @param fs Whether the emission is initial or final-state
+   * @param highestpT The highest pT so far in the shower
+   * @param ids ids of the particles produced in the branching
+   * @param z The momentum fraction of the branching
+   * @param scale the evolution scale of the branching
+   * @param pT The transverse momentum of the branching
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
-				     ShowerParticlePtr parent,Branching br);
-  //@}
+  virtual bool softMatrixElementVeto(PPtr parent,
+				     PPtr progenitor,
+				     const bool & fs,
+				     const Energy & highestpT,
+				     const vector<tcPDPtr> & ids,
+				     const double & z,
+				     const Energy & scale,
+				     const Energy & pT);
+  
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
 
 public:
 
@@ -164,16 +172,6 @@ protected:
 protected:
 
   /**
-   *  Apply the hard matrix element
-   */
-  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
-
-  /**
-   *  Get the weight for hard emission
-   */
-  double getHard(double &, double &);
-
-  /**
    *  Set the \f$\rho\f$ parameter
    */
   void setRho(double);
@@ -244,6 +242,7 @@ protected:
    */
   double qbarWeightX(Energy qtilde, double z);
   //@}
+  
   /**
    * ????
    */
@@ -269,19 +268,46 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
-
-  /**
-   *  Access to the strong coupling
-   */
-  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
-private:
+protected:
 
   /**
-   * Describe a concrete class with persistent data.
+   *  Real emission term, for use in generating the hardest emission
    */
-  static ClassDescription<SMWDecayer> initSMWDecayer;
+  double calculateRealEmission(double x1, double x2, 
+			       vector<PPtr> hardProcess,
+			       double phi, double muj, double muk,
+			       int iemit, bool subtract) const;
+
+  /**
+   *  Calculate the ratio between NLO & LO ME
+   */
+  double meRatio(vector<cPDPtr> partons, 
+		 vector<Lorentz5Momentum> momenta,
+		 unsigned int iemitter,bool subtract) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  virtual double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+				    const ParticleVector & decay3, MEOption meopt,
+				    ShowerInteraction inter);
+  
+  /**
+   *  Calculate the LO ME
+   */
+  double loME(const vector<cPDPtr> & partons, 
+	      const vector<Lorentz5Momentum> & momenta) const;
+
+  /**
+   *  Calculate the NLO real emission piece of ME
+   */
+  InvEnergy2 realME(const vector<cPDPtr> & partons, 
+		    const vector<Lorentz5Momentum> & momenta,
+		    ShowerInteraction inter) const;
+
+private:
 
   /**
    * Private and non-existent assignment operator.
@@ -290,10 +316,26 @@ private:
 
  private:
 
+
   /**
-   * Pointer to the W fermions vertex
+   *  Pointer to the fermion-antifermion W vertex
    */
-  FFVVertexPtr FFWvertex_;
+  AbstractFFVVertexPtr FFWVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractFFVVertexPtr FFPVertex_;
+
+  /**
+   *  Pointer to the fermion-antifermion G vertex
+   */
+  AbstractVVVVertexPtr WWWVertex_;
 
   /**
    * maximum weights for the different integrations
@@ -313,22 +355,22 @@ private:
   /**
    *  Spin density matrix for the decay
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Polarization vectors for the decay
    */
-  mutable vector<VectorWaveFunction> _vectors;
+  mutable vector<VectorWaveFunction> vectors_;
 
   /**
    *  Spinors for the decay
    */
-  mutable vector<SpinorWaveFunction> _wave;
+  mutable vector<SpinorWaveFunction> wave_;
 
   /**
    *  Barred spinors for the decay
    */
-  mutable vector<SpinorBarWaveFunction> _wavebar;
+  mutable vector<SpinorBarWaveFunction> wavebar_;
 
 private:
 
@@ -367,51 +409,94 @@ private:
    */
   static const double EPS_;
 
+private:
+
   /**
-   *  Pointer to the coupling
+   *  The colour factor 
    */
-  ShowerAlphaPtr alpha_;
+  double CF_;
+
+  /**
+   *  The W mass
+   */
+  mutable Energy mW_;
+
+
+  // TODO: delete this
+  mutable double mu_;
+
+  /**
+   *  The reduced mass of particle 1
+   */
+  mutable double mu1_;
+  /**
+   *  The reduced mass of particle 1 squared
+   */
+  mutable double mu12_;
+
+  /**
+   *  The reduceed mass of particle 2
+   */
+  mutable double mu2_;
+
+  /**
+   *  The reduceed mass of particle 2 squared
+   */
+  mutable double mu22_;
+
+
+  /**
+   *  The strong coupling
+   */
+  mutable double aS_;
+
+  /**
+   * The scale
+   */
+  mutable Energy2 scale_;
+
+  /**
+   *  Stuff for the POWHEG correction
+   */
+  //@{
+  /**
+   *  ParticleData object for the gluon
+   */
+  tcPDPtr gluon_;
+
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> partons_;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> quark_;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum gauge_;
+
+  /**
+   *  The W boson
+   */
+  PPtr wboson_;
+
+  /**
+   *  W mass squared
+   */
+  Energy2 mw2_;
+  //@}
+
+  /**
+   *  Whether ro return the LO or NLO result
+   */
+  bool NLO_;
 };
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMWDecayer.
- */
-template <>
- struct BaseClassTrait<Herwig::SMWDecayer,1> {
-    /** Typedef of the base class of SMWDecayer. */
-   typedef Herwig::DecayIntegrator NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
- struct ClassTraits<Herwig::SMWDecayer>
-  : public ClassTraitsBase<Herwig::SMWDecayer> {
-   /** Return the class name.*/
-  static string className() { return "Herwig::SMWDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "HwPerturbativeDecay.so"; }
-
-};
-
-/** @endcond */
-
-}
 
 #endif /* HERWIG_SMWDecayer_H */

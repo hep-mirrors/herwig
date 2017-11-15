@@ -5,6 +5,7 @@
 //
 
 #include "ZAnalysis.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -76,8 +77,10 @@ IBPtr ZAnalysis::fullclone() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-NoPIOClassDescription<ZAnalysis> ZAnalysis::initZAnalysis;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<ZAnalysis,PGSInterface>
+describeHerwigZAnalysis("Herwig::ZAnalysis", "HwPGSInterface.so ZAnalysis.so");
 
 void ZAnalysis::Init() {
 

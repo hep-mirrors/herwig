@@ -125,12 +125,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static ClassDescription<ZPhotonsAnalysis> initZPhotonsAnalysis;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -173,41 +167,6 @@ private:
    */
   HistogramPtr _nphoton;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ZPhotonsAnalysis. */
-template <>
-struct BaseClassTrait<Herwig::ZPhotonsAnalysis,1> {
-  /** Typedef of the first base class of ZPhotonsAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ZPhotonsAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ZPhotonsAnalysis>
-  : public ClassTraitsBase<Herwig::ZPhotonsAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ZPhotonsAnalysis"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ZPhotonsAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class ZPhotonsAnalysis depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwDecayAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -14,9 +14,10 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerVeto.fh"
-#include "Herwig/Shower/Core/ShowerConfig.h"
-#include "Herwig/Shower/Core/Base/ShowerParticle.fh"
-#include "Herwig/Shower/Core/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
 
 namespace Herwig {
 
@@ -107,14 +108,14 @@ public:
    * particle and progenitor is vetoed.
    */
   virtual bool vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
-			     const Branching&) = 0;
+			     const Branching&,tcShowerTreePtr) = 0;
 
   /**
    * Return true, if the selected emission off the given
    * particle and progenitor is vetoed.
    */
   virtual bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
-			      const Branching&) = 0;
+			      const Branching&,tcShowerTreePtr) = 0;
 
 private:
 

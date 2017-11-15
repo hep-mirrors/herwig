@@ -5,6 +5,7 @@
 //
 
 #include "GeneralQQHiggs.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -24,8 +25,10 @@ GeneralQQHiggs::GeneralQQHiggs() : quarkFlavour_(6), process_(0), shapeOpt_(2),
 			       mh_(), wh_(), alpha_(1.1)
 {}
 
-ClassDescription<GeneralQQHiggs> GeneralQQHiggs::initGeneralQQHiggs;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<GeneralQQHiggs,HwMEBase>
+describeHerwigGeneralQQHiggs("Herwig::GeneralQQHiggs", "Herwig.so");
 
 void GeneralQQHiggs::Init() {
 

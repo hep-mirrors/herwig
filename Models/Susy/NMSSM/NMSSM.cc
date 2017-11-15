@@ -5,6 +5,7 @@
 //
 
 #include "NMSSM.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -24,8 +25,10 @@ void NMSSM::persistentInput(PersistentIStream & is, int) {
      >> iunit(_MQ3, GeV) >> iunit(_MU2, GeV);
 }
 
-ClassDescription<NMSSM> NMSSM::initNMSSM;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<NMSSM,MSSM>
+describeHerwigNMSSM("Herwig::NMSSM", "HwSusy.so HwNMSSM.so");
 
 void NMSSM::Init() {
 

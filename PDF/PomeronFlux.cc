@@ -5,6 +5,7 @@
 //
 
 #include "PomeronFlux.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/Maths.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -59,9 +60,10 @@ double PomeronFlux::xfvl(tcPDPtr, tcPDPtr, Energy2, double,
   return 0.0;
 }
 
-ClassDescription<PomeronFlux> 
-PomeronFlux::initPomeronFlux;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<PomeronFlux,PDFBase>
+describeHerwigPomeronFlux("Herwig::PomeronFlux", "HwPomeronFlux.so");
 
 void PomeronFlux::Init() {
 
