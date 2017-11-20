@@ -26,6 +26,7 @@ void MEfv2fs::doinit() {
   GeneralHardME::doinit();
   scalar_.resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
+  vector_.resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1, 
 			   PDT::Spin1Half, PDT::Spin0);
  for(size_t ix = 0; ix < numberOfDiags(); ++ix) {
@@ -38,13 +39,23 @@ void MEfv2fs::doinit() {
 	 dynamic_ptr_cast<AbstractVSSVertexPtr>(curr.vertices.second);
        scalar_[ix] =  make_pair(ffs, vss); 
      }
-     else {
+     else if ( curr.intermediate->iSpin() == PDT::Spin1Half ) {
        AbstractFFVVertexPtr ffv = 
 	 dynamic_ptr_cast<AbstractFFVVertexPtr>(curr.vertices.second);
        fermion_[ix] = make_pair(ffs, ffv);
      }
+     else if ( curr.intermediate->iSpin() == PDT::Spin1 ) {
+       AbstractFFVVertexPtr ffv = 
+	 dynamic_ptr_cast<AbstractFFVVertexPtr>(curr.vertices.first);
+       AbstractVVSVertexPtr vvs = 
+	 dynamic_ptr_cast<AbstractVVSVertexPtr>(curr.vertices.second);
+       vector_[ix] = make_pair(ffv, vvs);
+     }
+     else
+       assert(false);
    }
    else {
+     assert(curr.intermediate->iSpin() == PDT::Spin1Half );
      AbstractFFVVertexPtr ffv = 
        dynamic_ptr_cast<AbstractFFVVertexPtr>(curr.vertices.first);
      AbstractFFSVertexPtr ffs = 
@@ -127,7 +138,12 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 	      diag = fermion_[ix].first->
 		evaluate(q2, spIn[ihel1], interFB, scaOut);
 	    }
-	    else diag = 0.0;
+	    else {
+	      VectorWaveFunction interV = vector_[ix].first->
+		evaluate(q2,3,offshell,spIn[ihel1],spbOut[ohel1]);
+	      diag = vector_[ix].second->
+		evaluate(q2, vecIn[ihel2], interV, scaOut);
+	    }
 	  }
 	  else if( current.channelType == HPDiagram::sChannel ) {
 	    // check if take intermediate massless
@@ -138,7 +154,8 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 	    diag = fermion_[ix].first->
 	      evaluate(q2, interF, spbOut[ohel1], scaOut);
 	  }
-	  else diag = 0.0;
+	  else
+	    assert(false);
 	  me[ix] += norm(diag);
 	  diagramME()[ix](ihel1, 2*ihel2, ohel1, 0) = diag;
 	  //Compute flows
@@ -200,7 +217,14 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
 	      diag = fermion_[ix].second->
 		evaluate(q2, spOut[ohel1], interFB, vecIn[ihel2]);
 	    }
-	    else diag = 0.0;
+	    else if( offshell->iSpin() == PDT::Spin1 ) {
+	      VectorWaveFunction interV = vector_[ix].first->
+		evaluate(q2,3,offshell, spOut[ohel1], spbIn[ihel1]);
+	      diag = vector_[ix].second->
+		evaluate(q2, vecIn[ihel2], interV, scaOut);
+	    }
+	    else
+	      assert(false);
 	  }
 	  else if( current.channelType == HPDiagram::sChannel ) {
 	    // check if take intermediate massless
@@ -211,7 +235,8 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
 	    diag = fermion_[ix].first->
 	      evaluate(q2, spOut[ohel1], interFB, scaOut);
 	  }
-	  else diag = 0.0;
+	  else
+	    assert(false);
 	  me[ix] += norm(diag);
 	  diagramME()[ix](ihel1, 2*ihel2, ohel1, 0) = diag;
 	  //Compute flows
@@ -242,11 +267,11 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
 }
 
 void MEfv2fs::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << fermion_;
+  os << scalar_ << fermion_ << vector_;
 }
 
 void MEfv2fs::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> fermion_;
+  is >> scalar_ >> fermion_ >> vector_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1, 
 			   PDT::Spin1Half, PDT::Spin0);
 }

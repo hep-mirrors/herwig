@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -55,7 +56,7 @@ public:
   /**
    * The default constructor.
    */
-  MEfv2fs() : scalar_(0), fermion_(0) {}
+  MEfv2fs() : scalar_(0), fermion_(0), vector_(0) {}
 
 public:
 
@@ -197,6 +198,11 @@ private:
    * Store a pair of  FFSVertex and FFVVertex pointers  
    */
   vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fermion_;
+
+  /**
+   * Store a pair of  VVSVertex and FFVVertex pointers  
+   */
+  vector<pair<AbstractFFVVertexPtr,AbstractVVSVertexPtr> > vector_;
   
 };
 
