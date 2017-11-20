@@ -467,10 +467,20 @@ def processScalarVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,
         coup_norm = value[0]
     elif(lorentztag=="VSS") :
         if(abs(tval[0]+tval[1])>1e-6) :
-            raise SkipThisVertex()
-        coup_norm = value[1]
-        append = 'if(p2->id()!=%s){norm(-norm());}' \
-                 % vertex.particles[order[1]-1].pdg_code
+            for ix in range(0,len(value)) :
+                if(value[ix]) :
+                    value[ix], sym = py2cpp(value[ix])
+                    symbols |= sym
+                else :
+                    value[ix]=0.
+            coup_norm = "1."
+            append = 'if(p2->id()==%s) { a( %s ); b( %s);}\n else { a( %s ); b( %s);}' \
+                     % (vertex.particles[order[1]-1].pdg_code,
+                        value[0],value[1],value[1],value[0])
+        else :
+            coup_norm = value[1]
+            append = 'if(p2->id()!=%s){norm(-norm());}' \
+                     % vertex.particles[order[1]-1].pdg_code
     # return the answer
     return (coup_norm,append,lorentztag,header,symbols)
 
