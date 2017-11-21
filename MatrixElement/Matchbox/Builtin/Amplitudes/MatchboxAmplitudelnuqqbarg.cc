@@ -24,6 +24,8 @@ MatchboxAmplitudelnuqqbarg::~MatchboxAmplitudelnuqqbarg() {}
 
 void MatchboxAmplitudelnuqqbarg::doinit() {
   MatchboxAmplitude::doinit();
+  MZ = getParticleData(ParticleID::Z0)->hardProcessMass();
+  GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
   MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
   GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
@@ -34,6 +36,12 @@ void MatchboxAmplitudelnuqqbarg::doinit() {
 
 void MatchboxAmplitudelnuqqbarg::doinitrun() {
   MatchboxAmplitude::doinitrun();
+  MZ = getParticleData(ParticleID::Z0)->hardProcessMass();
+  GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
+  CA = SM().Nc();
+  CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
   nPoints(5);
 }
 
@@ -164,11 +172,11 @@ Complex MatchboxAmplitudelnuqqbarg::evaluateOneLoop(size_t, const vector<int>& h
 }
 
 void MatchboxAmplitudelnuqqbarg::persistentOutput(PersistentOStream & os) const {
-  os << theDiagonal << theCKM << ounit(MW,GeV) << ounit(GW,GeV) << CA << CF;
+  os << theDiagonal << theCKM ;
 }
 
 void MatchboxAmplitudelnuqqbarg::persistentInput(PersistentIStream & is, int) {
-  is >> theDiagonal >> theCKM >> iunit(MW,GeV) >> iunit(GW,GeV) >> CA >> CF;
+  is >> theDiagonal >> theCKM ;
 }
 
 DescribeClass<MatchboxAmplitudelnuqqbarg,MatchboxAmplitude>
