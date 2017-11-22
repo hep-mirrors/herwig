@@ -76,3 +76,6 @@ set /Herwig/DipoleShower/DipoleShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFB ShowerNLOPDF
 
 set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+
+set /Herwig/Shower/ShowerHandler:SplitHardProcess No
+set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
