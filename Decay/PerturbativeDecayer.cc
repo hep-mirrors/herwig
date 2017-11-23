@@ -588,6 +588,8 @@ bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   double det = -4. * (-sqr(s2_) + (2. * e2_ + sqr(xT) - 2. * xg + 2.) * s2_ - sqr(e2_ + xg - 1.)) * sqr(xg - 2.);
   if (det<0.) return false;
   double zs= j==0 ? (-B+sqrt(det))/A : (-B-sqrt(det))/A;
+  // zs must be negative
+  if(zs>0.) return false;
   xs = sqrt(sqr(zs)+4.*s2_);
   // check value of xs is physical
   if (xs>(1.+s2_-e2_) || xs<2.*s_) return false;
@@ -595,6 +597,7 @@ bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   xe = 2.-xs-xg;     
   // check value of xe is physical
   if (xe>(1.+e2_-s2_) || xe<2.*e_) return false;       
+  // calculate xe_z
   xe_z = -zg-zs;
   // calculate 4 momenta
   particleMomenta[0].setE   ( mb_);
