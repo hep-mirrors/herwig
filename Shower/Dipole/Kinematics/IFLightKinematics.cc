@@ -175,6 +175,7 @@ void IFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Lorentz5Momentum kt =
     getKt (pEmitter, pSpectator, pt, dInfo.lastPhi(),true);
 
+  // Initialise the momenta
   Lorentz5Momentum em;
   Lorentz5Momentum emm;
   Lorentz5Momentum spe;
@@ -184,35 +185,26 @@ void IFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 
     assert(false);
 
-    em =
-      ((1.-u)/(x-u))*pEmitter + ((u/x)*(1.-x)/(x-u))*pSpectator - kt/(x-u);
-    em.setMass(0.*GeV);
-    em.rescaleEnergy();
-
-    emm =
-      ((1.-x)/(x-u))*pEmitter + ((u/x)*(1.-u)/(x-u))*pSpectator - kt/(x-u);
-    emm.setMass(0.*GeV);
-    emm.rescaleEnergy();
-
-    spe =
-      (1.-u/x)*pSpectator;
-    spe.setMass(0.*GeV);
-    spe.rescaleEnergy();
+    em = ((1.-u)/(x-u))*pEmitter + ((u/x)*(1.-x)/(x-u))*pSpectator - kt/(x-u);
+    emm = ((1.-x)/(x-u))*pEmitter + ((u/x)*(1.-u)/(x-u))*pSpectator - kt/(x-u);
+    spe = (1.-u/x)*pSpectator;
 
   } else {
 
     em = (1./x)*pEmitter;
-
     emm = ((1.-x)*(1.-u)/x)*pEmitter + u*pSpectator + kt;
-    emm.setMass(0.*GeV);
-    emm.rescaleEnergy();
-
     spe = ((1.-x)*u/x)*pEmitter + (1.-u)*pSpectator - kt;
-    spe.setMass(0.*GeV);
-    spe.rescaleEnergy();
-
   }
-    
+
+  em.setMass(ZERO);
+  em.rescaleEnergy();
+
+  emm.setMass(ZERO);
+  emm.rescaleEnergy();
+
+  spe.setMass(ZERO);
+  spe.rescaleEnergy();
+  
   emitterMomentum(em);
   emissionMomentum(emm);
   spectatorMomentum(spe);

@@ -12,6 +12,7 @@
 //
 
 #include "DipoleEventRecord.h"
+#include "Herwig/Shower/Dipole/DipoleShowerHandler.h"
 #include "Herwig/Shower/Dipole/Utility/DipolePartonSplitter.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -286,8 +287,10 @@ void DipoleEventRecord::splitSubleading(SubleadingSplittingInfo& dsplit,
   }
 }
 
-void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
-
+void DipoleEventRecord::findChains(const PList& ordered, 
+				   const set<long>& offShellPartons,
+				   const bool decay) {
+  
   // All uses of findChains should guarantee
   // a non-empty list of particles
   assert( !ordered.empty() );
@@ -305,7 +308,8 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
   bool endIsTriplet =
     (ordered.back()->hasColour() && !ordered.back()->hasAntiColour()) ||
     (!ordered.back()->hasColour() && ordered.back()->hasAntiColour());
-  
+
+
   if (!( ordered.size() == 2 && startIsTriplet && endIsTriplet)) {
     
     PList::const_iterator theStart = ordered.begin();
@@ -374,9 +378,44 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
         decayed_parton.first = (*p == currentDecay()->incoming()[0].first);
         decayed_parton.second = (*next_it == currentDecay()->incoming()[0].first);
       }
-      
-      current_chain.dipoles().push_back(Dipole({*p,*next_it},pdf,xs,decayed_parton));
+     
+      // Identify if either parton can have an off-shell mass
+      // The first test for partons with zero nominal mass should
+      // avoid issues of e.g. non-zero mass gluons
+      pair<bool,bool> off_shell (false,false);
 
+      // Note we could do away with the offShellPartons set but,
+      // to be safe in the case of an off-shell parton with a mass
+      // *very* close to its on-shell mass, we would need to include tests on the
+      // offShell indicators in the DipoleIndex == and < operators AND
+      // in canHandle and canHandleEquivalent in each massive kernel.
+      // Testing these in every splitting will probably be more expensive
+      // than doing the following checks for each hard process and decay process
+
+      // Only do off-shell check if the nominal mass is non-zero
+      if ( (*p)->nominalMass() != ZERO ) {
+	if ( offShellPartons.find(abs((*p)->id())) != offShellPartons.end() )
+	  off_shell.first = true;
+	else 
+	  assert( abs((*p)->mass() - (*p)->nominalMass()) < (*p)->nominalMass()*1.e-5
+		  && "There is an off-shell coloured particle in the hard process or a decay"
+		  "which  needs to be added to DipoleShowerHandler:OffShellInShower." );
+      }
+     
+      if ( (*next_it)->nominalMass() != ZERO ) {
+	if ( offShellPartons.find(abs((*next_it)->id())) != offShellPartons.end() )
+	  off_shell.second = true;
+	else
+	  assert( abs((*next_it)->mass() - (*next_it)->nominalMass())
+		  < (*next_it)->nominalMass()*1.e-5
+		  && "There is an off-shell coloured particle in the hard process or a decay"
+		  "which  needs to be added to DipoleShowerHandler:OffShellInShower." );
+      }
+
+      
+      current_chain.dipoles().push_back(Dipole({*p,*next_it},pdf,xs,
+					       decayed_parton, off_shell));
+      
       if ( onceMore ) {
         next_it = theStart;
         current_chain.check();
@@ -386,10 +425,10 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
         current_chain.dipoles().clear();
         onceMore = false;
       }
-
+      
     }
   } else {
-
+    
     // treat 2 -> singlet, singlet -> 2 and 1 + singlet -> 1 + singlet special
     // to prevent duplicate dipole
 
@@ -431,8 +470,36 @@ void DipoleEventRecord::findChains(const PList& ordered, const bool decay) {
       decayed_parton.first = (ordered.front() == currentDecay()->incoming()[0].first);
       decayed_parton.second = (ordered.back() == currentDecay()->incoming()[0].first);
     }
+
     
-    current_chain.dipoles().push_back(Dipole({ordered.front(),ordered.back()},pdf,xs,decayed_parton));
+    // Identify if either parton can have an off-shell mass
+    // The first test for partons with zero nominal mass should
+    // avoid issues of e.g. non-zero mass gluons
+    pair<bool,bool> off_shell (false,false);
+
+    // Only do off-shell check if the nominal mass is non-zero
+    if ( ordered.front()->nominalMass() != ZERO ) {
+      if ( offShellPartons.find(abs(ordered.front()->id())) != offShellPartons.end() )
+	off_shell.first = true;
+      else
+	assert( abs(ordered.front()->mass() - ordered.front()->nominalMass())
+		< ordered.front()->nominalMass()*1.e-5
+		&& "There is an off-shell coloured particle in the hard process or a decay"
+		"which  needs to be added to DipoleShowerHandler:OffShellInShower." );
+    }
+   
+    if ( ordered.back()->nominalMass() != ZERO ) {
+      if ( offShellPartons.find(abs(ordered.back()->id())) != offShellPartons.end() )
+	off_shell.second = true;
+      else
+	assert( abs(ordered.back()->mass() - ordered.back()->nominalMass())
+		< ordered.back()->nominalMass()*1.e-5
+		&& "There is an off-shell coloured particle in the hard process or a decay"
+		"which  needs to be added to DipoleShowerHandler:OffShellInShower." );
+    }
+        
+    current_chain.dipoles().push_back(Dipole({ordered.front(),ordered.back()},
+					     pdf,xs, decayed_parton, off_shell));
     
   }
 
@@ -450,7 +517,9 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
                            tStdXCombPtr xc,
 			   StepPtr step,
                            const pair<PDF,PDF>& pdf,tPPair beam,
-			   bool firstInteraction, bool dipoles) {
+			   bool firstInteraction,
+			   const set<long>& offShellPartons,
+			   bool dipoles) {
   // set the subprocess
   subProcess(subpro);
   // clear the event record
@@ -547,7 +616,7 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   if ( dipoles ) {
     PList cordered = colourOrdered(incoming(),outgoing());
     if ( !cordered.empty() )
-      findChains(cordered,false);
+      findChains(cordered, offShellPartons, false);
   }
   
   
@@ -592,7 +661,8 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 
 void DipoleEventRecord::slimprepare(tSubProPtr subpro,
                                     tStdXCombPtr xc,
-                                    const pair<PDF,PDF>& pdf,tPPair beam,
+                                    const pair<PDF,PDF>& pdf,tPPair beam,			 
+				    const set<long>& offShellPartons,
                                     bool dipoles) {
   // set the subprocess
   subProcess(subpro);
@@ -627,7 +697,7 @@ void DipoleEventRecord::slimprepare(tSubProPtr subpro,
   if ( dipoles ) {
     PList cordered = colourOrdered(incoming(),outgoing());
     if ( !cordered.empty() )
-      findChains(cordered,false);
+      findChains(cordered, offShellPartons, false);
   }
   
 }
@@ -1137,7 +1207,8 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
 }
 
 
-bool DipoleEventRecord::prepareDecay( PerturbativeProcessPtr decayProc ) {
+ bool DipoleEventRecord::prepareDecay( PerturbativeProcessPtr decayProc,
+				       const set<long>& offShellPartons ) {
   
   // Create objects containing the incoming and outgoing partons,
   // required as inputs for colourOrdered.
@@ -1162,7 +1233,7 @@ bool DipoleEventRecord::prepareDecay( PerturbativeProcessPtr decayProc ) {
     cordered = colourOrdered(in,out);
     
     // Find the dipole chains for this decay
-    findChains(cordered,true);
+    findChains(cordered, offShellPartons, true);
     
     return true;
   }

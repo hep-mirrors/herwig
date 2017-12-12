@@ -73,11 +73,27 @@ Energy DipoleSplittingKinematics::ptMax(Energy dScale,
 } 
 
 
+Energy DipoleSplittingKinematics::ptMax(Energy dScale, 
+					double emX, double specX,
+					const DipoleIndex& dIndex,
+					const DipoleSplittingKernel& split,
+					tPPtr, tPPtr) const {
+  return ptMax(dScale, emX, specX, dIndex, split);
+} 
+
 Energy DipoleSplittingKinematics::QMax(Energy dScale, 
 				       double emX, double specX,
 				       const DipoleSplittingInfo& dInfo,
 				       const DipoleSplittingKernel& split) const {
   return QMax(dScale, emX, specX, dInfo.index(), split);
+}
+
+Energy DipoleSplittingKinematics::QMax(Energy dScale, 
+				       double emX, double specX,
+					const DipoleIndex& dIndex,
+					const DipoleSplittingKernel& split,
+					tPPtr, tPPtr) const {
+  return QMax(dScale, emX, specX, dIndex, split);
 }
 
 Energy DipoleSplittingKinematics::generatePt(double r, Energy dScale,

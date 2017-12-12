@@ -135,15 +135,16 @@ void FFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
     getKt(pEmitter, pSpectator, pt, dInfo.lastPhi());
 
   Lorentz5Momentum em = z*pEmitter + y*(1.-z)*pSpectator + kt;
-  em.setMass(0.*GeV);
+  Lorentz5Momentum emm = (1.-z)*pEmitter + z*y*pSpectator - kt;
+  Lorentz5Momentum spe = (1.-y)*pSpectator;
+  
+  em.setMass(ZERO);
   em.rescaleEnergy();
 
-  Lorentz5Momentum emm = (1.-z)*pEmitter + z*y*pSpectator - kt;
-  emm.setMass(0.*GeV);
+  emm.setMass(ZERO);
   emm.rescaleEnergy();
-
-  Lorentz5Momentum spe = (1.-y)*pSpectator;
-  spe.setMass(0.*GeV);
+  
+  spe.setMass(ZERO);
   spe.rescaleEnergy();
 
   emitterMomentum(em);

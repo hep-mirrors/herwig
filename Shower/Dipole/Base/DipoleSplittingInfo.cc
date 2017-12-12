@@ -21,16 +21,22 @@ using namespace Herwig;
 
 DipoleIndex::DipoleIndex()
   : theInitialStateEmitter(false), theIncomingDecayEmitter(false),
-    theInitialStateSpectator(false), theIncomingDecaySpectator(false) {}
+    theOffShellEmitter(false),
+    theInitialStateSpectator(false), theIncomingDecaySpectator(false),
+    theOffShellSpectator(false) {}
+
 
 DipoleIndex::DipoleIndex(tcPDPtr newEmitter, tcPDPtr newSpectator,
 			 const PDF& newEmitterPDF, const PDF& newSpectatorPDF,
-			 const bool decayingEmitter, const bool decayingSpectator)
+			 const bool decayingEmitter, const bool decayingSpectator,
+			 const bool offShellEmitter, const bool offShellSpectator) 
   : theEmitterData(newEmitter), theInitialStateEmitter(newEmitterPDF.pdf()),
     theIncomingDecayEmitter(decayingEmitter),
+    theOffShellEmitter(offShellEmitter),
     theEmitterPDF(newEmitterPDF),
     theSpectatorData(newSpectator), theInitialStateSpectator(newSpectatorPDF.pdf()),
     theIncomingDecaySpectator(decayingSpectator),
+    theOffShellSpectator(offShellSpectator),
     theSpectatorPDF(newSpectatorPDF) {}
 
 
@@ -79,10 +85,11 @@ void DipoleIndex::swap() {
   std::swap(theInitialStateEmitter,theInitialStateSpectator);
   std::swap(theEmitterPDF,theSpectatorPDF);
   std::swap(theIncomingDecayEmitter,theIncomingDecaySpectator);
+  std::swap(theOffShellEmitter, theOffShellSpectator);
 }
 
 pair<DipoleIndex,DipoleIndex> DipoleIndex::split(tcPDPtr emm) const {
-
+  assert(false);
   DipoleIndex first(emitterData(),emm,emitterPDF(),PDF());
   DipoleIndex second(emm,spectatorData(),PDF(),spectatorPDF());
 
@@ -109,6 +116,7 @@ DipoleSplittingInfo::DipoleSplittingInfo()
   : theConfiguration(false,false), 
     theSpectatorConfiguration(false,false),
     theScale(0.0*GeV),theIsDecayProc(false), theRecoilMass(0.0*GeV),
+    theEmitterMass(0.0*GeV), theSpectatorMass(0.0*GeV),
     theEmitterX(1.0), theSpectatorX(1.0), 
     theHardPt(0.0*GeV), theLastPt(0.0*GeV),
     theLastZ(0.0), theLastPhi(0.0), theLastEmitterZ(0.0),

@@ -114,7 +114,16 @@ namespace Herwig {
     virtual Energy ptMax(Energy dScale, 
 			 double emX, double specX,
 			 const DipoleSplittingInfo& dInfo,
-			 const DipoleSplittingKernel& split) const; 
+			 const DipoleSplittingKernel& split) const;
+    
+    /**
+     * Return the maximum pt for the given dipole scale.
+     */
+    virtual Energy ptMax(Energy dScale, 
+			 double emX, double specX,
+			 const DipoleIndex& dIndex,
+			 const DipoleSplittingKernel& split,
+			 tPPtr emitter, tPPtr spectator) const; 
 
     /**
      * Return the maximum virtuality for the given dipole scale.
@@ -132,6 +141,15 @@ namespace Herwig {
 			const DipoleSplittingInfo& dInfo,
 			const DipoleSplittingKernel& split) const;
 
+    /**
+     * Return the maximum virtuality for the given dipole scale.
+     */
+    virtual Energy QMax(Energy dScale, 
+			double emX, double specX,
+			const DipoleIndex& dIndex,
+			const DipoleSplittingKernel& split,
+			tPPtr emitter, tPPtr spectator) const;
+  
     /**
      * Return the pt given a virtuality.
      */

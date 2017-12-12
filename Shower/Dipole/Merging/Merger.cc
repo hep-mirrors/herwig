@@ -952,7 +952,8 @@ void Merger::CKKW_PrepareSudakov( NodePtr node , Energy running ){
   DSH()->currentHandler()->generator()->currentEventHandler(currentNode()->xcomb()->eventHandlerPtr() );
   DSH()->currentHandler()->remnantDecayer()->setHadronContent( currentNode()->xcomb()->lastParticles() );
   DSH()->eventRecord().clear();
-  DSH()->eventRecord().slimprepare( sub , dynamic_ptr_cast<tStdXCombPtr>( node->xcomb() ) , DSH()->pdfs() , currentNode()->xcomb()->lastParticles() );
+  DSH()->eventRecord().slimprepare( sub , dynamic_ptr_cast<tStdXCombPtr>( node->xcomb() ) , DSH()->pdfs() ,
+				    currentNode()->xcomb()->lastParticles(), DSH()->offShellPartons() );
   DSH()->hardScales( sqr( running ) );
 }
 

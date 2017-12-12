@@ -76,7 +76,7 @@ double FIMqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ret = alphaPDF(split);
 
   // Mi=mi=mQ, m=0, Mj=mj=0
-  Energy2 mQ2 = sqr(split.emitterData()->mass());
+  Energy2 mQ2 = sqr(split.emitterMass());
 
   double z = split.lastZ();
   double x = 1. / ( 1. + 

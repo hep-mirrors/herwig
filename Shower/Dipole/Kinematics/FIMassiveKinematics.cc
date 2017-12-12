@@ -60,23 +60,58 @@ Energy FIMassiveKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
 }
 
 Energy FIMassiveKinematics::ptMax(Energy dScale, 
-				double, double specX,
-				const DipoleIndex& ind,
-				const DipoleSplittingKernel& split) const {
-  Energy mi = split.emitter(ind)->mass(), mj = split.emission(ind)->mass();
-  Energy2 mi2 = sqr(mi), mj2 = sqr(mj);
-  Energy2 mij2 = split.emitter(ind)->id() + split.emission(ind)->id() == 0 ?
-    0.*GeV2 : mi2;
+				  double, double specX,
+				  const DipoleSplittingInfo& dInfo,				 
+				  const DipoleSplittingKernel& split) const {
+
+  DipoleIndex ind = dInfo.index();
+
+  Energy2 mij2 = sqr(dInfo.emitterMass());
+  Energy2 mi2 = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(split.emitter(ind)->id()) == abs(split.emission(ind)->id()) ) {
+    mi2 = sqr(split.emitter(ind)->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = mij2;
+  }
+
+  Energy2 mj2 = sqr(split.emission(ind)->mass());
 
   Energy2 sPrime = sqr(dScale) * (1.-specX)/specX + mij2;
   return .5 * sqrt(sPrime) * rootOfKallen( sPrime/sPrime, mi2/sPrime, mj2/sPrime );
 }
 
-// what is this? in FF it is given by y+*dScale = sqrt( 2qi*q / bar )->max
+
+Energy FIMassiveKinematics::ptMax(Energy dScale, 
+				  double, double specX,
+				  const DipoleIndex& ind,
+				  const DipoleSplittingKernel& split,
+				  tPPtr emitter, tPPtr) const {
+
+  Energy2 mij2 = sqr(emitter->mass());
+  Energy2 mi2 = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(split.emitter(ind)->id()) == abs(split.emission(ind)->id()) ) {
+    mi2 = sqr(split.emitter(ind)->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = mij2;
+  }
+  Energy2 mj2 = sqr(split.emission(ind)->mass());
+  
+  Energy2 sPrime = sqr(dScale) * (1.-specX)/specX + mij2;
+  return .5 * sqrt(sPrime) * rootOfKallen( sPrime/sPrime, mi2/sPrime, mj2/sPrime );
+}
+
+  
+
 Energy FIMassiveKinematics::QMax(Energy dScale, 
-			       double, double specX,
-			       const DipoleIndex&,
-				const DipoleSplittingKernel&) const {
+				 double, double specX,
+				 const DipoleSplittingInfo&,				 
+				 const DipoleSplittingKernel&) const {
   generator()->log() << "FIMassiveKinematics::QMax called.\n" << flush;
   assert(false && "implementation missing");
   // this is sqrt( 2qi*q ) -> max;
@@ -86,9 +121,19 @@ Energy FIMassiveKinematics::QMax(Energy dScale,
 Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& split) const {
   // from Martin's thesis
   double z = split.lastZ();
-  Energy mi = split.emitterData()->mass();
-  Energy mj = split.emissionData()->mass();
-  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1-z)*sqr(mi) - z*sqr(mj);
+
+  // masses
+  Energy2 mi2 = ZERO;;
+  if ( abs(split.emitterData()->id()) == abs(split.emissionData()->id()) ) {
+    mi2 = sqr(split.emitterData()->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = sqr(split.emitterMass());
+  }
+  Energy2 mj2 = sqr(split.emissionData()->mass());
+  
+  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1-z)*mi2 - z*mj2;
   assert(pt2 >= ZERO);
   return sqrt(pt2);
 }
@@ -96,9 +141,19 @@ Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
 Energy FIMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
   // from Martin's thesis
   double z = split.lastZ();
-  Energy mi = split.emitterData()->mass();
-  Energy mj = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(pt) + (1-z)*sqr(mi) + z*sqr(mj))/(z*(1.-z));
+  
+  // masses
+  Energy2 mi2 = ZERO;;
+  if ( abs(split.emitterData()->id()) == abs(split.emissionData()->id()) ) {
+    mi2 = sqr(split.emitterData()->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = sqr(split.emitterMass());
+  }
+  Energy2 mj2 = sqr(split.emissionData()->mass());
+  
+  Energy2 Q2 = (sqr(pt) + (1-z)*mi2 + z*mj2)/(z*(1.-z));
   return sqrt(Q2);
 }
 
@@ -142,10 +197,18 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   }
 
   // Construct mass squared variables
-  Energy2 mi2 = sqr(info.emitterData()->mass());
+  Energy2 mij2 = sqr(info.emitterMass());
+  Energy2 mi2 = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(info.emitterData()->id()) == abs(info.emissionData()->id()) ) {
+    mi2 = sqr(info.emitterData()->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = mij2;
+  }  
   Energy2 mj2  = sqr(info.emissionData()->mass());
-  Energy2 mij2 = info.emitterData()->id()+info.emissionData()->id() == 0 ?
-    0.*GeV2 : mi2;
+
   Energy2 pt2 = sqr(pt);
 
   
@@ -248,7 +311,7 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,
 					   const DipoleSplittingInfo& dInfo) {
-
+  
   // Get splitting variables
   Energy pt = dInfo.lastPt();
   double z = dInfo.lastZ();
@@ -260,29 +323,39 @@ void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Lorentz5Momentum kt =
     getKt (pSpectator, pEmitter, pt, dInfo.lastPhi(),true);
 
-  Energy2 mi2 = sqr(dInfo.emitterData()->mass());
+  // Construct mass squared variables
+  Energy2 mij2 = sqr(dInfo.emitterMass());
+  Energy mi = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(dInfo.emitterData()->id()) == abs(dInfo.emissionData()->id()) ) {
+    mi = dInfo.emitterData()->mass();
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi = dInfo.emitterMass();
+  }
+  Energy2 mi2 = sqr(mi);
   Energy2 mj2  = sqr(dInfo.emissionData()->mass());
-  Energy2 mij2 = dInfo.emitterData()->id() + dInfo.emissionData()->id() == 0 ?
-    0.*GeV2 : mi2;
-
+  
   double xInv = ( 1. +
 		  (pt2+(1.-z)*mi2+z*mj2-z*(1.-z)*mij2) /
 		  (z*(1.-z)*sbar) );
 
   Lorentz5Momentum em = z*pEmitter +
     (pt2+mi2-z*z*mij2)/(z*sbar)*pSpectator + kt;
-  em.setMass(sqrt(mi2));
-  em.rescaleEnergy();
-
   Lorentz5Momentum emm = (1.-z)*pEmitter +
     (pt2+mj2-sqr(1.-z)*mij2)/((1.-z)*sbar)*pSpectator - kt;
-  emm.setMass(sqrt(mj2));
-  emm.rescaleEnergy();
-
   Lorentz5Momentum spe = xInv*pSpectator;
+
+  em.setMass(mi);
+  em.rescaleEnergy();
+
+  emm.setMass(dInfo.emissionData()->mass());
+  emm.rescaleEnergy();
+  
   spe.setMass(ZERO);
   spe.rescaleEnergy();
-
+  
   emitterMomentum(em);
   emissionMomentum(emm);
   spectatorMomentum(spe);
