@@ -19,8 +19,9 @@ using namespace Herwig;
 Dipole::Dipole()
   : theParticles(), thePDFs(),
     theFractions(1.0,1.0), theIndices(),
-    theScales(0.0*GeV,0.0*GeV),
-    theDecaying(false,false) {}
+    theDecaying(false,false),
+    theOffShell(false,false),
+    theScales(0.0*GeV,0.0*GeV) {}
 
 
 Dipole::Dipole(const pair<PPtr,PPtr>& newParticles,
@@ -31,12 +32,14 @@ Dipole::Dipole(const pair<PPtr,PPtr>& newParticles,
   : theParticles(newParticles), 
     thePDFs(newPDFs),
     theFractions(newFractions), theIndices(),
-    theScales(newScales),
-    theDecaying(false,false) {
+    theDecaying(false,false),
+    theOffShell(false,false),
+    theScales(newScales) {
   theIndices.first = DipoleIndex(theParticles.first->dataPtr(),
 				 theParticles.second->dataPtr(),
 				 newPDFs.first,newPDFs.second,
-				 theDecaying.first,theDecaying.second);
+				 theDecaying.first,theDecaying.second,
+				 theOffShell.first,theOffShell.second);
   theIndices.second = theIndices.first;
   theIndices.second.swap();
 }
@@ -45,16 +48,19 @@ Dipole::Dipole(const pair<PPtr,PPtr>& newParticles,
 	       const pair<PDF,PDF>& newPDFs,
 	       pair<double,double> newFractions,
 	       pair<bool,bool> decaying,
+	       pair<bool,bool> offShell,
 	       pair<Energy,Energy> newScales)
   : theParticles(newParticles), 
     thePDFs(newPDFs),
     theFractions(newFractions), theIndices(),
-    theScales(newScales),
-    theDecaying(decaying) {
+    theDecaying(decaying),
+    theOffShell(offShell),
+    theScales(newScales) {
   theIndices.first = DipoleIndex(theParticles.first->dataPtr(),
 				 theParticles.second->dataPtr(),
 				 newPDFs.first,newPDFs.second,
-				 theDecaying.first,theDecaying.second);
+				 theDecaying.first,theDecaying.second,
+				 theOffShell.first,theOffShell.second);
   theIndices.second = theIndices.first;
   theIndices.second.swap();
     }
@@ -63,7 +69,8 @@ void Dipole::update() {
   theIndices.first = DipoleIndex(theParticles.first->dataPtr(),
 				 theParticles.second->dataPtr(),
 				 thePDFs.first,thePDFs.second,
-				 theDecaying.first,theDecaying.second);
+				 theDecaying.first,theDecaying.second,
+				 theOffShell.first,theOffShell.second);
   theIndices.second = theIndices.first;
   theIndices.second.swap();
   assert(DipolePartonSplitter::colourConnected(theParticles.first,
@@ -99,8 +106,10 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   // i.e. Put the new emitter and new emission or new spectator
   // and new emission respectively into the new dipoles.
   bool emitter_decay = dsplit.index().incomingDecayEmitter();
+  if ( emitter_decay )
+    assert(false);
   bool spectator_decay = dsplit.index().incomingDecaySpectator();
-
+  
   tPPtr oldSpectator = spectator(dsplit.configuration());
   PPtr newSpectator;
 
@@ -146,6 +155,13 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   PDF emitter_pdf = emitterPDF(dsplit.configuration());
   PDF spectator_pdf = spectatorPDF(dsplit.configuration());
 
+  // Communicate off-shell parton flags
+  // Note that as gluons aren't off-shell, the only possibility
+  // in qcd splittings is gluon emissions off an off-shell emitter
+  // -> off-shell emitter => off-shell new emitter
+  bool emitter_off_shell = dsplit.index().offShellEmitter();
+  bool spectator_off_shell = dsplit.index().offShellSpectator();  
+  
   // now check how we need to arrange the children
 
   // assignment is 0 = emitter, 1 = emission, 2 = spectator
@@ -198,6 +214,10 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   pair<bool,bool> left_decays = {false,false};
   pair<bool,bool> right_decays = {false,false};
 
+  // Pairs containing indicators for off-shell particles
+  pair<bool, bool> left_off_shells = {false,false};
+  pair<bool, bool> right_off_shells = {false,false};
+  
   switch (left) {
 
   case 0:
@@ -208,6 +228,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     left_particles.first = newEmitter;
     left_pdfs.first = emitter_pdf;
     left_fractions.first = emitter_x;
+    left_off_shells.first = emitter_off_shell;
 
     break;
 
@@ -216,6 +237,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     left_pdfs.first = PDF();
     left_fractions.first = 1.;
     left_decays.first = false;
+    left_off_shells.first = false;
     break;
 
   case 2:
@@ -223,8 +245,8 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     left_pdfs.first = spectator_pdf;
     left_fractions.first = spectator_x;
     left_decays.first = spectator_decay;
+    left_off_shells.first = spectator_off_shell;
     break;
-
   }
 
   switch (middle) {
@@ -237,6 +259,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     left_particles.second = newEmitter;
     left_pdfs.second = emitter_pdf;
     left_fractions.second = emitter_x;
+    left_off_shells.second = emitter_off_shell;
     break;
 
   case 1:
@@ -244,6 +267,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     left_pdfs.second = PDF();
     left_fractions.second = 1.;
     left_decays.second = false;
+    left_off_shells.second = false;
     break;
 
   case 2:
@@ -251,6 +275,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     left_particles.second = newSpectator;
     left_pdfs.second = spectator_pdf;
     left_fractions.second = spectator_x;
+    left_off_shells.second = spectator_off_shell;
     break;
 
   }
@@ -259,6 +284,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
   right_pdfs.first = left_pdfs.second;
   right_fractions.first = left_fractions.second;
   right_decays.first = left_decays.second;
+  right_off_shells.first = left_off_shells.second;
 
   switch (right) {
 
@@ -270,6 +296,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     right_particles.second = newEmitter;
     right_pdfs.second = emitter_pdf;
     right_fractions.second = emitter_x;
+    right_off_shells.second = emitter_off_shell;
     break;
 
   case 1:
@@ -277,6 +304,7 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     right_pdfs.second = PDF();
     right_fractions.second = 1.;
     right_decays.second = false;
+    right_off_shells.second = false;
     break;
 
   case 2:
@@ -284,14 +312,17 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
     right_pdfs.second = spectator_pdf;
     right_fractions.second = spectator_x;
     right_decays.second = spectator_decay;
+    right_off_shells.second = spectator_off_shell;
     break;
 
   }  
 
   Energy scale = dsplit.lastPt();
 
-  return { Dipole(left_particles,left_pdfs,left_fractions,left_decays,{scale,scale}),
-	   Dipole(right_particles,right_pdfs,right_fractions,right_decays,{scale,scale})};
+  return { Dipole(left_particles, left_pdfs, left_fractions,
+		  left_decays, left_off_shells, {scale,scale}),
+	   Dipole(right_particles, right_pdfs, right_fractions,
+		  right_decays, right_off_shells, {scale,scale})};
 
 }
 

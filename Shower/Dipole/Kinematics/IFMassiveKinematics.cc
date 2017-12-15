@@ -72,18 +72,30 @@ Energy IFMassiveKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
 
 Energy IFMassiveKinematics::ptMax(Energy dScale, 
 				  double emX, double,
-				  const DipoleIndex& ind,
-				  const DipoleSplittingKernel& split) const {
+				  const DipoleSplittingInfo& dInfo,	
+				  const DipoleSplittingKernel&) const {
 
   Energy2 A = sqr(dScale) * (1.-emX)/emX;
-  Energy2 mk2 = sqr(split.spectator(ind)->mass());
+  Energy2 mk2 = sqr(dInfo.spectatorMass());
+  Energy ptMax = 0.5*A/sqrt(mk2+A);
+  return ptMax;
+}
+
+Energy IFMassiveKinematics::ptMax(Energy dScale, 
+				  double emX, double,
+				  const DipoleIndex&,
+				  const DipoleSplittingKernel&,
+				  tPPtr, tPPtr spectator) const {
+
+  Energy2 A = sqr(dScale) * (1.-emX)/emX;
+  Energy2 mk2 = sqr(spectator->mass());
   Energy ptMax = 0.5*A/sqrt(mk2+A);
   return ptMax;
 }
 
 Energy IFMassiveKinematics::QMax(Energy, 
 				 double, double,
-				 const DipoleIndex&,
+				 const DipoleSplittingInfo&,
 				 const DipoleSplittingKernel&) const {
   assert(false && "add this");
   return 0.0*GeV;
@@ -127,7 +139,7 @@ bool IFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   // Compute scales required
   Energy2 pt2 = sqr(pt);
   Energy2 saj = sqr(info.scale());
-  Energy2 mk2 = sqr(info.spectatorData()->mass());
+  Energy2 mk2 = sqr(info.spectatorMass());
 
   // Generate z
   double z = 0.;
@@ -228,7 +240,6 @@ void IFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Lorentz5Momentum emm;
   Lorentz5Momentum spe;
 
-
   // TODO: adjust phasespace boundary condition
   if (!theCollinearScheme) {
     assert(false);
@@ -246,7 +257,7 @@ void IFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
     Lorentz5Momentum kt =
       getKt (pEmitter, pSpectator, magKt, dInfo.lastPhi(),true);
 
-    Energy2 mj2 = dInfo.spectatorData()->mass()*dInfo.spectatorData()->mass();
+    Energy2 mj2 = sqr(dInfo.spectatorMass());
     double alpha = 1. - 2.*mj2/sbar;
 
     if ( x > u && (1.-x)/(x-u) < 1. ) {
@@ -286,9 +297,9 @@ void IFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
     Energy2 pt2 = sqr(pt);
     Energy2 saj = 2.*pEmitter*pSpectator;
 
-    double muk2 = sqr(dInfo.spectatorData()->mass())/saj;
+    double muk2 = sqr(dInfo.spectatorMass())/saj;
     double r = pt2/saj;
-
+    
     // Calculate x and u
     double rho = 1. - 4.*r*(1.-muk2)*z*(1.-z)/sqr(1.-z+r);
     double x = 0.5*((1.-z+r)/(r*(1.-muk2))) * (1. - sqrt(rho));
@@ -303,14 +314,14 @@ void IFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
     spe = ((1.-x)*u/x + 2.*u*muk2)*pEmitter + (1.-u)*pSpectator - kt;
     
   }
-
+  
   em.setMass(ZERO);
   em.rescaleEnergy();
 
   emm.setMass(ZERO);
   emm.rescaleEnergy();
 
-  spe.setMass(dInfo.spectatorData()->mass());
+  spe.setMass(dInfo.spectatorMass());
   spe.rescaleEnergy();
 
   emitterMomentum(em);

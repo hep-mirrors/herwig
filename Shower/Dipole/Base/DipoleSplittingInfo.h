@@ -45,7 +45,8 @@ public:
    */
   DipoleIndex(tcPDPtr newEmitter, tcPDPtr newSpectator,
 	      const PDF& newEmitterPDF = PDF(), const PDF& newSpectatorPDF = PDF(),
-	      const bool decayingEmitter = false, const bool decayingSpectator = false);
+	      const bool decayingEmitter = false, const bool decayingSpectator = false,
+	      const bool offShellEmitter = false, const bool offShellSpectator = false);
 
 public:
 
@@ -94,6 +95,12 @@ public:
   bool incomingDecayEmitter() const { return theIncomingDecayEmitter; }
 
   /**
+   * Return true, if the emitter can be off-shell
+   */
+  bool offShellEmitter() const { return theOffShellEmitter; }
+  //bool offShellEmitter() const { return theEmitterData->width() != ZERO; }
+
+  /**
    * Return the PDF object associated with the emitter
    */
   const PDF& emitterPDF() const { return theEmitterPDF; }
@@ -112,6 +119,12 @@ public:
    * Return true, if the spectator is incoming to a decay
    */
   bool incomingDecaySpectator() const { return theIncomingDecaySpectator; }
+
+  /**
+   * Return true, if the spectator can be off-shell
+   */
+  bool offShellSpectator() const { return theOffShellSpectator; }
+  //bool offShellSpectator() const { return theSpectatorData->width() != ZERO; }
 
   /**
    * Return the PDF object associated with the spectator
@@ -143,6 +156,11 @@ private:
   bool theIncomingDecayEmitter;
 
   /**
+   * Can the emitter be off-shell?
+   */
+  bool theOffShellEmitter;
+  
+  /**
    * The PDF object for the emitter.
    */
   PDF theEmitterPDF;
@@ -161,6 +179,11 @@ private:
    * Whether or not the spectator is incoming to a decay.
    */
   bool theIncomingDecaySpectator;
+  
+  /**
+   * Can the spectator be off-shell?
+   */
+  bool theOffShellSpectator;
 
   /**
    * The PDF object for the spectator.
@@ -291,6 +314,18 @@ public:
   Energy recoilMass() const { return theRecoilMass; }
 
   /**
+   * Return the spectator mass
+   * (to cope with off-shell particles)
+   **/
+  Energy spectatorMass() const { return theSpectatorMass; }
+  
+  /**
+   * Return the emitter mass
+   * (to cope with off-shell particles)
+   **/
+  Energy emitterMass() const { return theEmitterMass; }
+  
+  /**
    * Return the pt below which this
    * splitting has been generated.
    */
@@ -384,8 +419,19 @@ public:
    * in decay dipoles
    */
   void recoilMass(Energy mass) { theRecoilMass = mass; }
-    
 
+  /**
+   * Set the spectator mass
+   * (to cope with off-shell particles)
+   **/
+  void spectatorMass(Energy mass){ theSpectatorMass = mass; }
+  
+  /**
+   * Set the emitter mass 
+   * (to cope with off-shell particles)
+   **/
+  void emitterMass(Energy mass){ theEmitterMass = mass; }
+  
   /**
    * Set the emitter's momentum fraction
    */
@@ -401,7 +447,7 @@ public:
    * splitting has been generated.
    */
   void hardPt(Energy p) { theHardPt = p; }
-
+  
   /**
    * Set the last generated pt
    */
@@ -609,6 +655,22 @@ private:
    * decay dipoles.
    */
   Energy theRecoilMass;
+
+
+  /**
+   * The mass of the emitter.
+   * (To account for off-shell).
+   */
+  Energy theEmitterMass;
+  
+  /**
+   * The mass of the spectator.
+   * (To account for off-shell).
+   */
+  Energy theSpectatorMass;
+
+
+  
 
   /**
    * The momentum fraction of the emitter.

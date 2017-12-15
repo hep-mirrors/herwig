@@ -71,7 +71,7 @@ double IFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double z = split.lastZ();
   Energy pt = split.lastPt();
   double ratio = sqr(pt/split.scale());
-  double muk2 = sqr(split.spectatorData()->mass()/split.scale());
+  double muk2 = sqr(split.spectatorMass()/split.scale());
 
 	// Calculate x and u
     double rho = 1. - 4.*ratio*(1.-muk2)*z*(1.-z)/sqr(1.-z+ratio);

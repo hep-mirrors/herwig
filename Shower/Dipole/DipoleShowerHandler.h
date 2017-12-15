@@ -200,6 +200,11 @@ protected:
   }
   
   /**
+   * Return the set of offshell parton ids.
+   **/
+  const set<long>& offShellPartons() { return theColouredOffShellInShower; }
+  
+  /**
    * Realign the event such as to have the incoming partons along thre
    * beam axes.
    */
@@ -250,7 +255,7 @@ protected:
 		   Energy startScale,
 		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
-
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -495,6 +500,19 @@ private:
    * If so, the emission is vetoed.
    */
   Ptr<MergerBase>::ptr theMergingHelper;
+
+
+  /**
+   *  PDG codes of the partons which can have an off-shell mass,
+   *  this is fast storage for use during running
+   */
+  set<long> theColouredOffShellInShower;
+
+  /**
+   *  PDG codes of the partons which can have an off-shell mass,
+   *  this is a vector that is interfaced so they can be changed
+   */
+  vector<long> theInputColouredOffShellInShower;
   
   
 

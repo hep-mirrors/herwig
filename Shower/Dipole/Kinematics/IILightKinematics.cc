@@ -196,50 +196,27 @@ void IILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Lorentz5Momentum kt =
     getKt (pEmitter, pSpectator, pt, dInfo.lastPhi());
 
+  // Initialise the momenta
+  Lorentz5Momentum em;
+  Lorentz5Momentum emm;
+  Lorentz5Momentum spe;
+  
   if ( !theCollinearScheme &&
        (1.-v-x)/(v+x) < 1. ) {
 
     assert(false);
 
-    Lorentz5Momentum em =
-      (1./(v+x))*pEmitter+(v*(1.-v-x)/(x*(x+v)))*pSpectator+kt/(x+v);
-    em.setMass(0.*GeV);
-    em.rescaleEnergy();
-
-    Lorentz5Momentum emm =
-      ((1.-v-x)/(v+x))*pEmitter+(v/(x*(x+v)))*pSpectator+kt/(x+v);
-    emm.setMass(0.*GeV);
-    emm.rescaleEnergy();
-
-    Lorentz5Momentum spe =
-      (1.+v/x)*pSpectator;
-    spe.setMass(0.*GeV);
-    spe.rescaleEnergy();
-
-    emitterMomentum(em);
-    emissionMomentum(emm);
-    spectatorMomentum(spe);
-
+    em = (1./(v+x))*pEmitter+(v*(1.-v-x)/(x*(x+v)))*pSpectator+kt/(x+v);
+    emm = ((1.-v-x)/(v+x))*pEmitter+(v/(x*(x+v)))*pSpectator+kt/(x+v);
+    spe = (1.+v/x)*pSpectator;
+    
     didCollinear = false;
 
   } else {
 
-    Lorentz5Momentum em =
-      (1./x)*pEmitter;
-    em.setMass(0.*GeV);
-    em.rescaleEnergy();
-
-    Lorentz5Momentum emm =
-      ((1.-x-v)/x)*pEmitter+v*pSpectator+kt;
-    emm.setMass(0.*GeV);
-    emm.rescaleEnergy();
-
-    Lorentz5Momentum spe =
-      pSpectator;
-
-    emitterMomentum(em);
-    emissionMomentum(emm);
-    spectatorMomentum(spe);
+    em = (1./x)*pEmitter;
+    emm = ((1.-x-v)/x)*pEmitter+v*pSpectator+kt;
+    spe = pSpectator;
 
     K = em + spe - emm;
     K2 = K.m2();
@@ -253,6 +230,20 @@ void IILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 
   }
 
+  
+  em.setMass(ZERO);
+  em.rescaleEnergy();
+  
+  emm.setMass(ZERO);
+  emm.rescaleEnergy();
+  
+  spe.setMass(ZERO);
+  spe.rescaleEnergy();
+  
+  emitterMomentum(em);
+  emissionMomentum(emm);
+  spectatorMomentum(spe);
+  
 }
 
 // If needed, insert default implementations of function defined
