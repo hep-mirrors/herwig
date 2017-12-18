@@ -87,9 +87,9 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
 
 
   // Construct mass squared variables
+  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
   double mui2 = sqr(split.emitterData()->mass() / split.scale());
   double mu2 = mui2;
-  double mua2 = sqr(split.spectatorMass() / split.scale());
   // Recoil system mass
   double muj2 = sqr(split.recoilMass() / split.scale());
   double bar = 1. - mui2 - mu2 - muj2;
@@ -115,8 +115,7 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   // how to choose kappa?
   double kappa = 0.;
 
-  ret *= 0.25 / vijk * ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm - kappa*mui2/(2*mui2+bar*y) ) )
-    + (!strictLargeN() ? 4./3. : 3./2.) * y/(1.-z*(1.-y)) * (-1.*(vbar/vijk)*2.*mua2/((1.-z*(1.-y))*bar) );
+  ret *= 0.25 / vijk * ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm - kappa*mui2/(2*mui2+bar*y) ) );
   
   return ret > 0. ? ret : 0.;
 

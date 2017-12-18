@@ -81,7 +81,7 @@ double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double zPrime = split.lastSplittingParameters()[0];
 
   // Construct mass squared variables
-  double mua2 = sqr( split.spectatorMass() / split.scale() );
+  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
   // Recoil system mass
   double muj2 = sqr(split.recoilMass() / split.scale());
   double bar = 1. - muj2;
@@ -107,13 +107,18 @@ double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   // how to choose kappa?
   double kappa = 0.;
 
-  ret *= theSymmetryFactor * 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) )
+  ret *=
+    theSymmetryFactor
+    * 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y))
+	   + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) )
     +
     (!strictLargeN() ? 4./3. : 3./2.) 
     * (
-       y/(1.-z*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + theSymmetryFactor*2.*mua2/((1.-z*(1.-y))*bar)) )
+       y/(1.-z*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-z*(1.-y))
+			   - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) )
        +
-       y/(1.-(1.-z)*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) - (vbar/vijk)*(2. + theSymmetryFactor*2.*mua2/((1.-(1.-z)*(1.-y))*bar)) )
+       y/(1.-(1.-z)*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-(1.-z)*(1.-y))
+				- (vbar/vijk)*(2. + 2.*mua2/((1.-(1.-z)*(1.-y))*bar)) )
        );
  
   return ret > 0. ? ret : 0.;
