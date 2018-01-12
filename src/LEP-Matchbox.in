@@ -56,7 +56,7 @@ do Factory:Process e- e+ -> j j
 # read Matchbox/MadGraph-GoSam.in
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
-read Matchbox/MadGraph-OpenLoops.in
+# read Matchbox/MadGraph-OpenLoops.in
 
 ## Uncomment this to use ggh effective couplings
 ## currently only supported by MadGraph-GoSam
