@@ -748,13 +748,15 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 
 void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
   // count the colours
-  unsigned int noct(0),ntri(0),nsng(0),nsex(0);
+  unsigned int noct(0),ntri(0),nsng(0),nsex(0),nf(0);
   for(unsigned int ix=0;ix<4;++ix) {
-    PDT::Colour col = getParticleData(diag.ids[ix])->iColour();
+    tcPDPtr pd = getParticleData(diag.ids[ix]);
+    PDT::Colour col = pd->iColour();
     if(col==PDT::Colour0)                            ++nsng;
     else if(col==PDT::Colour3||col==PDT::Colour3bar) ++ntri;
     else if(col==PDT::Colour8)                       ++noct;
     else if(col==PDT::Colour6||col==PDT::Colour6bar) ++nsex;
+    if(pd->iSpin()==2) nf+=1;
   }
   if(nsng==4 || (ntri==2&&nsng==2) || 
      (noct==3            && nsng==1) ||
@@ -777,6 +779,7 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
     vector<CFPair> cfv(2);
     cfv[0] = make_pair(0, 1);
     cfv[1] = make_pair(1, 1);
+    if(nf==2) cfv[1].second = -1.;
     diag.colourFlow = cfv;
   }
   else if(nsex==2&&noct==2) {
