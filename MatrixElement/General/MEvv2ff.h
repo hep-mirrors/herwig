@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -179,6 +180,11 @@ private:
    * Intermediate tensor
    */
   vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > tensor_;
+
+  /**
+   *  Four point vertices
+   */
+  vector<AbstractFFVVVertexPtr> four_;
   //@}
 };
 

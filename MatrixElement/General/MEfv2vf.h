@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -189,7 +190,12 @@ private:
    * A pair of FFVVertex, VVVertex pointers 
    */
   vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vector_;
-    //@}
+
+  /**
+   *  Four point vertices
+   */
+  vector<AbstractFFVVVertexPtr> four_;
+  //@}
 
 };
 
