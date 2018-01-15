@@ -6,7 +6,7 @@ from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
     processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings,\
-    RSCouplings
+    RSCouplings,convertLorentz,generateEvaluateFunction
 from .helpers import SkipThisVertex,extractAntiSymmetricIndices,isGoldstone
 
 # prefactors for vertices
@@ -30,13 +30,19 @@ lfactors = {
     'RFV'  : 'complex(0,1)',
 }
 
+genericVertices=['FFVV']
+
 # template for the header for a vertex
 VERTEXHEADER = """\
 #include "ThePEG/Helicity/Vertex/{spindirectory}/{lorentztag}Vertex.h"
 """
+GENERALVERTEXHEADER = """\
+#include "ThePEG/Helicity/Vertex/Abstract{lorentztag}Vertex.h"
+"""
 
 # template for the implmentation for a vertex
 VERTEXCLASS = getTemplate('Vertex_class')
+GENERALVERTEXCLASS = getTemplate('GeneralVertex_class')
 
 # template for the .cc file for vertices
 VERTEX = getTemplate('Vertex.cc')
@@ -105,17 +111,17 @@ def colorfactor(vertex,L,pos,lorentztag):
     l = lambda c: len(pos[c])
     if l(1) == L:
         label = ('1',)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(3) == l(-3) == 1 and l(1) == L-2:
         nums = [pos[3][0], pos[-3][0]]
         label = ('Identity({0},{1})'.format(*sorted(nums)),)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(6) == l(-6) == 1 and l(1) == L-2:
         nums = [pos[6][0], pos[-6][0]]
         label = ('Identity({0},{1})'.format(*sorted(nums)),)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(6) == l(-6) == 2 and L==4:
         sys.stderr.write(
@@ -126,19 +132,19 @@ def colorfactor(vertex,L,pos,lorentztag):
 
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
         label = ('T({g},{q},{qb})'.format(g=pos[8][0],q=pos[3][0],qb=pos[-3][0]),)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
         label = ('T6({g},{s},{sb})'.format(g=pos[8][0],s=pos[6][0],sb=pos[-6][0]),)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(6) == 1 and l(-3) == 2 and L==3:
         label = ('K6({s},{qb1},{qb2})'.format(s=pos[6][0],qb1=pos[-3][0],qb2=pos[-3][1]),)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(-6) == 1 and l(3) == 2 and L==3:
         label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
-        if match(label): return ('1',)
+        if match(label): return ('1.',)
 
     elif l(3) == L == 3:
         colors=[]
@@ -146,7 +152,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             order,sign  = extractAntiSymmetricIndices(color,"Epsilon(")
             colors.append("Epsilon(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('Epsilon(1,2,3)',)
-        if match(label,colors): return ('1',) # TODO check factor!
+        if match(label,colors): return ('1.',) # TODO check factor!
 
     elif l(-3) == L == 3:
         colors=[]
@@ -154,7 +160,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             order,sign  = extractAntiSymmetricIndices(color,"EpsilonBar(")
             colors.append("Epsilon(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('EpsilonBar(1,2,3)',)
-        if match(label): return ('1',) # TODO check factor!
+        if match(label): return ('1.',) # TODO check factor!
 
     elif l(8) == L == 3:
         colors=[]
@@ -164,7 +170,7 @@ def colorfactor(vertex,L,pos,lorentztag):
         # if lorentz is FFV get extra minus sign
         if lorentztag in ['FFV'] : sign *=-1
         label = ('f(1,2,3)',)
-        if match(label,colors): return ('-complex(0,1)*(%s)'%sign,)
+        if match(label,colors): return ('-complex(0,1.)*(%s)'%sign,)
 
     elif l(8) == L == 4:
         colors=[]
@@ -190,7 +196,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             for  c2 in colors :
                 if(c1==c2) : nmatch+=1
         if(nmatch==2 and lorentztag=="VVSS") :
-            return ('1','1')
+            return ('1.','1.')
         elif(nmatch==3 and lorentztag=="VVVV") :
             return ('-1.','-1.','-1.')
 
@@ -201,9 +207,13 @@ def colorfactor(vertex,L,pos,lorentztag):
             'qq' : pos[3][0],
             'qb' : pos[-3][0] 
         }
-        label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
-                 'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
-        if match(label): return ('1.','1.')
+        if(vertex.lorentz[0].spins.count(1)==2) :
+            label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
+                     'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
+            if match(label): return ('1.','1.')
+        elif(vertex.lorentz[0].spins.count(2)==2) :
+            label = ('f({g1},{g2},-1)*T(-1,{qq},{qb})'.format(**subs),)
+            if match(label): return ('complex(0.,1.)',)
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
         subs = {
@@ -227,7 +237,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             order,sign  = extractAntiSymmetricIndices(color,"f(")
             colors.append("f(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('f(1,2,3)',)
-        if match(label,colors): return ('-complex(0,1)*(%s)'%sign,)
+        if match(label,colors): return ('-complex(0.,1.)*(%s)'%sign,)
 
     sys.stderr.write(
         "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
@@ -278,26 +288,9 @@ def checkGhostGoldstoneVertex(lorentztag,vertex) :
             return True
     return False
 
-def calculatePrefactor(globalsign,lorentztag,lf,cf) :
-    if(globalsign!=1.) :
-        prefactors = '(%s) * (%s) * (%s)' \
-                     % (globalsign**(len(lorentztag)-2),lf,cf)
-    else :
-        prefactors = '(%s) * (%s)' \
-                     % (lf,cf)
-    return prefactors
-    # fact=[]
-    # if(globalsign!=1.) :
-    #     fact.append(globalsign**(len(lorentztag)-2))
-    # if(lf!="1") :
-    #     fact.append(lf)
-    # if(cf!="1") :
-    #     fact.append(cf)
-    # if(len(fact)==0) : return "1"
-    # prefactor = '(%s)' % fact[0]
-    # for ix in range(1,len(fact)) :
-    #     prefactor = '%s * (%s)' % (prefactor,fact[ix])
-    # return prefactor
+def calculatePrefactor(lf,cf) :
+    prefactor = '(%s) * (%s)' % (lf,cf)
+    return prefactor
 
 def couplingValue(coupling) :
     if type(coupling) is not list:
@@ -340,29 +333,14 @@ class VertexConverter:
     'Convert the vertices in a FR model to extract the information ThePEG needs.'
     def __init__(self,model,parmsubs) :
         'Initialize the parameters'
-        self.ONE_EACH=True
         self.verbose=False
         self.vertex_skipped=False
         self.ignore_skipped=False
         self.model=model
         self.all_vertices= []
         self.modelname=""
-        self.globalsign=self.global_sign()
         self.no_generic_loop_vertices = False
         self.parmsubs = parmsubs
-
-    def global_sign(self):
-        'Initial pass to find global sign at the moment does nothing'
-        return  1.0
-        # for v in self.model.all_vertices:
-        #     pids = sorted([ p.pdg_code for p in v.particles ])
-        #     if pids != [-11,11,22]: continue
-        #     coup = v.couplings
-        #     assert( len(coup) == 1 )
-        #     val = coup.values()[0].value
-        #     val = evaluate(val)
-        #     assert( val.real == 0 )
-        #     return 1 if val.imag > 0 else -1
         
     def readArgs(self,args) :
         'Extract the relevant command line arguments'
@@ -370,7 +348,7 @@ class VertexConverter:
         self.verbose        = args.verbose
         self.modelname = args.name
         self.no_generic_loop_vertices = args.no_generic_loop_vertices
-
+        self.include_generic = args.include_generic
     def should_print(self) :
         'Check if we should output the results'
         return not self.vertex_skipped or self.ignore_skipped
@@ -382,11 +360,8 @@ class VertexConverter:
             print '-'*60
             labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
             pprint.pprint(labels)
-        # check if we should merge vertices
-        if(self.ONE_EACH) :
-            self.all_vertices = self.model.all_vertices
-        else:
-            self.all_vertices = collapse_vertices(self.model.all_vertices)
+        # extract the vertices
+        self.all_vertices = self.model.all_vertices
         # convert the vertices
         vertexclasses, vertexheaders = [], set()
         for vertexnumber,vertex in enumerate(self.all_vertices,1) :
@@ -454,22 +429,23 @@ Herwig may not give correct results, though.
         if(vertex.herwig_skip_vertex) :
             return (True,"","")
         # get the factor for the vertex
+        generic = False
         try:
             lf = lfactors[lorentztag]
         except KeyError:
-            msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
-                  'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
-                                               ps=' '.join(map(str,vertex.particles)))
-            sys.stderr.write(msg)
-            vertex.herwig_skip_vertex = True
-            self.vertex_skipped=True
-            return (True,"","")
+            if(not self.include_generic) :
+                msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                      'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
+                                                   ps=' '.join(map(str,vertex.particles)))
+                sys.stderr.write(msg)
+                vertex.herwig_skip_vertex = True
+                self.vertex_skipped=True
+                return (True,"","")
+            else :
+                lf=1.
+                generic=True
         # get the ids of the particles at the vertex
-        if self.ONE_EACH:
-            plistarray = [ ','.join([ str(vertex.particles[o-1].pdg_code) for o in order ]) ]
-        else:
-            plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
-                           for pl in vertex.particles_list ]
+        plistarray = [ ','.join([ str(vertex.particles[o-1].pdg_code) for o in order ]) ]
         # parse the colour structure for the vertex
         try:
             L,pos = colors(vertex)
@@ -485,53 +461,54 @@ Herwig may not give correct results, though.
     
         ### classname
         classname = 'V_%s' % vertex.name
+        if(not generic) :
+            try :
+                return self.extractGeneric(vertex,order,lorentztag,classname,plistarray,pos,lf,cf)
+            except SkipThisVertex:
+                if(not self.include_generic) :
+                    msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                          'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
+                                                                                         ps=' '.join(map(str,vertex.particles)))
+                    
+                    sys.stderr.write(msg)
+                    vertex.herwig_skip_vertex = True
+                    self.vertex_skipped=True
+                    return (True,"","")
+                else :
+                    return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+        else :
+            return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+            
+            
+    def extractGeneric(self,vertex,order,lorentztag,classname,plistarray,pos,lf,cf) :
         # try to extract the couplings
-        try:
-            (all_couplings,header,qcd,qed,prepend,append) = \
+        (all_couplings,header,qcd,qed,prepend,append) = \
             self.extractCouplings(lorentztag,pos,lf,cf,vertex,order)
-        except SkipThisVertex:
-            msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
-                  'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
-                                               ps=' '.join(map(str,vertex.particles)))
-            sys.stderr.write(msg)
-            vertex.herwig_skip_vertex = True
-            self.vertex_skipped=True
-            return (True,"","")
 
         # set the coupling ptrs in the setCoupling call
         couplingptrs = self.setCouplingPtrs(lorentztag,qcd,append != '',prepend != '')
 
         # final processing of the couplings
-        try :
-            symbols = set()
-            if(lorentztag in ['FFS','FFV']) :
-                (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
-                                                                                        self.model,self.parmsubs,
-                                                                                        all_couplings)
-            elif('T' in lorentztag) :
-                (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
-                                                                                self.parmsubs,all_couplings)
-            elif(lorentztag=="SSS" or lorentztag=="SSSS") :
-                normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
-            elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
-                normcontent,append,lorentztag,header,sym = processScalarVectorCouplings(lorentztag,vertex,
-                                                                                        self.model,self.parmsubs,
-                                                                                        all_couplings,header,order)
-                symbols |=sym
-            elif("VVV" in lorentztag) :
-                normcontent,append,header =\
-                                            processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
-            else :
-                SkipThisVertex()
-        except SkipThisVertex:
-            msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
-                  'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name,
-                                               ps=' '.join(map(str,vertex.particles)))
-            sys.stderr.write(msg)
-            vertex.herwig_skip_vertex = True
-            self.vertex_skipped=True
-            return (True,"","")
-
+        symbols = set()
+        if(lorentztag in ['FFS','FFV']) :
+            (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
+                                                                                    self.model,self.parmsubs,
+                                                                                    all_couplings)
+        elif('T' in lorentztag) :
+            (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
+                                                                            self.parmsubs,all_couplings)
+        elif(lorentztag=="SSS" or lorentztag=="SSSS") :
+            normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
+        elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
+            normcontent,append,lorentztag,header,sym = processScalarVectorCouplings(lorentztag,vertex,
+                                                                                    self.model,self.parmsubs,
+                                                                                    all_couplings,header,order)
+            symbols |=sym
+        elif("VVV" in lorentztag) :
+            normcontent,append,header =\
+            processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
+        else :
+            SkipThisVertex()
         
         ### do we need left/right?
         if 'FF' in lorentztag and lorentztag != "FFT":
@@ -586,13 +563,56 @@ Herwig may not give correct results, though.
                  'append' : append,
                  'header' : header
                  }             # ok
-
         # print info if required
         if self.verbose:
             print '-'*60
             pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
 
         return (False,VERTEXCLASS.substitute(subs),VERTEXHEADER.format(**subs))
+
+    def extractGeneral(self,vertex,order,lorentztag,classname,plistarray,pos,cf) :
+        defns=[]
+        vertexEval=[]
+        values=[]
+        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+            if(color_idx!=0) :
+                vertex.herwig_skip_vertex = True
+                self.vertex_skipped=True
+                msg = 'Warning: General spin structure code currently only '\
+                      'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name, 
+                                                                                           ps=' '.join(map(str,vertex.particles)))
+                sys.stderr.write(msg)
+                return (True,"","")
+            # calculate the value of the coupling
+            values.append(couplingValue(coupling))
+            # now to convert the spin structures
+            for i in range(0,len(vertex.particles)+1) :
+                if(len(defns)<i+1) :
+                    defns.append({})
+                    vertexEval.append([])
+                convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,i,defns[i],vertexEval[i])
+
+        # we can now generate the evaluate member functions
+        headers=""
+        impls=""
+        imax = len(vertex.particles)+1
+        if lorentztag in genericVertices :
+           imax=1
+        for i in range(0,imax) :
+            (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf)
+            headers+="    "+evalHeader+";\n"
+            impls+=evalCC
+        impls=impls.replace("evaluate(", "FRModel%s::evaluate(" % classname)
+        ### assemble dictionary and fill template
+        subs = { 'lorentztag' : lorentztag,
+                 'classname'  : classname,
+                 'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
+                 'ModelName' : self.modelname,
+                 'evaldefs'  : headers,
+                 'evalimpls' : impls}
+        return (False,GENERALVERTEXCLASS.substitute(subs),GENERALVERTEXHEADER.format(**subs))
+
+
 
     def get_vertices(self,libname):
         vlist = ['library %s\n' % libname]
@@ -636,7 +656,7 @@ Herwig may not give correct results, though.
                     sys.stderr.write(msg)
                     raise SkipThisVertex()
                 L = vertex.lorentz[lorentz_idx]
-                prefactors = calculatePrefactor(self.globalsign,lorentztag,lf,cf[color_idx])
+                prefactors = calculatePrefactor(lf,cf[color_idx])
                 # calculate the value of the coupling
                 value = couplingValue(coupling)
                 # handling of the different types of couplings

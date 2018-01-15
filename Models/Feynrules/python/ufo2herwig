@@ -44,6 +44,11 @@ parser.add_argument(
     help="Don't include the automatically generated generic loop vertices for h->gg and h->gamma gamma"
 )
 parser.add_argument(
+    '--include-generic',
+    action="store_true",
+    help="Include support for generic spin structures (still experimental)"
+)
+parser.add_argument(
     '--forbidden-particle-name',
     action="append",
     default=["eta","phi"],
