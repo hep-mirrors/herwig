@@ -32,6 +32,8 @@ lfactors = {
 
 genericVertices=['FFVV']
 
+skipped5Point=False
+
 # template for the header for a vertex
 VERTEXHEADER = """\
 #include "ThePEG/Helicity/Vertex/{spindirectory}/{lorentztag}Vertex.h"
@@ -422,10 +424,18 @@ Herwig may not give correct results, though.
         return couplingptrs
 
     def processVertex(self,vertexnumber,vertex) :
+        global skipped5Point
         # get the Lorentz tag for the vertex
         lorentztag,order = unique_lorentztag(vertex)
         # check if we should skip the vertex
         vertex.herwig_skip_vertex = checkGhostGoldstoneVertex(lorentztag,vertex)
+        # check the order of the vertex and skipped 5 points
+        if(len(lorentztag)>=5) :
+            vertex.herwig_skip_vertex = True
+            if(not skipped5Point) :
+                skipped5Point = True
+                print "Skipping 5 point vertices which aren\'t used in Herwig7"
+        
         if(vertex.herwig_skip_vertex) :
             return (True,"","")
         # get the factor for the vertex
