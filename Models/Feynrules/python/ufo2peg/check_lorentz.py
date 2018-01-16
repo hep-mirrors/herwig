@@ -1341,30 +1341,31 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
                 print 'unknown spin',spin
                 quit()
             poff = ("Lorentz5Momentum P%s = " % (i+1) ) + poff
+            momenta.append([False,""])
         else :
             if(spin==1) :
                 decls.append("ScalarWaveFunction & scaW%s" % (i+1))
-                momenta.append("Lorentz5Momentum P%s = scaW%s.momentum();" % (i+1,i+1))
+                momenta.append([False,"Lorentz5Momentum P%s = scaW%s.momentum();" % (i+1,i+1)])
                 waves.append("Complex sca%s = scaW%s.wave();" % (i+1,i+1))
             elif(spin==2) :
                 if(iferm==0) :
                     decls.append("SpinorWaveFunction & sW%s" % (i+1))
-                    momenta.append("Lorentz5Momentum P%s = sW%s.momentum();" % (i+1,i+1))
+                    momenta.append([False,"Lorentz5Momentum P%s = sW%s.momentum();" % (i+1,i+1)])
                     waves.append("LorentzSpinor<double> s%s = sW%s.wave();" % (i+1,i+1))
                     fermionReplace.append("s%s"%(i+1))
                 else :
                     decls.append("SpinorBarWaveFunction & sbarW%s" % (i+1))
-                    momenta.append("Lorentz5Momentum P%s = sbarW%s.momentum();" % (i+1,i+1))
+                    momenta.append([False,"Lorentz5Momentum P%s = sbarW%s.momentum();" % (i+1,i+1)])
                     waves.append("LorentzSpinorBar<double> sbar%s = sbarW%s.wave();" % (i+1,i+1))
                     fermionReplace.append("sbar%s"%(i+1))
                 iferm +=1
             elif(spin==3) :
                 decls.append("VectorWaveFunction & vW%s" % (i+1))
-                momenta.append("Lorentz5Momentum P%s = vW%s.momentum();" % (i+1,i+1))
+                momenta.append([False,"Lorentz5Momentum P%s = vW%s.momentum();" % (i+1,i+1)])
                 waves.append("LorentzPolarizationVector E%s = vW%s.wave();" % (i+1,i+1))
             elif(spin==4) :
                 decls.append("TensorWaveFunction & tW%s" % (i+1))
-                momenta.append("Lorentz5Momentum P%s = tW%s.momentum();" % (i+1,i+1))
+                momenta.append([False,"Lorentz5Momentum P%s = tW%s.momentum();" % (i+1,i+1)])
                 waves.append("LorentzTensor t%s = tW%s.wave();" % (i+1,i+1))
             else :
                 print 'unknown spin',spin
@@ -1375,7 +1376,8 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
         sig="%s evaluate(Energy2, const %s)" % (offType,", const ".join(decls))
     else :
         sig="%s evaluate(Energy2, int iopt, tcPDPtr out, const %s, complex<Energy> mass=-GeV, complex<Energy> width=-GeV)" % (offType,", const ".join(decls))
-        momenta.append(poff+";")
+        momenta.append([True,poff+";"])
+        for i in range(0,len(momenta)) : momenta[i][0]=True
     # cat the definitions
     defString=""
     for (key,value) in defns.iteritems() :
@@ -1424,11 +1426,24 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
         elif(vertex.lorentz[0].spins[iloc-1] == 2 ) :
             result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n Lorentz%s<double> newSpin = fact*(%s);\n    return %s(-P%s,out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());" % \
                                                          (iloc,py2cpp(cf[0])[0],offType.replace("WaveFunction",""),result.replace( "M%s" % iloc, "mass" ),offType,iloc)
-            
+    # check if momenta defns needed to clean up compile of code
+    for (key,val) in defns.iteritems() :
+        if( isinstance(key, basestring)) :
+            if(key.find("vvP")==0) :
+                momenta[int(key[3])-1][0] = True
+        else :
+            if(key[0][0]=="P") :
+                momenta[int(key[0][1])-1][0] = True
+            if(key[1][0]=="P") :
+                momenta[int(key[1][1])-1][0] = True
+    momentastring=""
+    for i in range(0,len(momenta)) :
+        if(momenta[i][0] and momenta[i][1]!="")  :
+            momentastring+=momenta[i][1]+"\n    "
     header="virtual %s" % sig
     sig=sig.replace("=-GeV","")
     symboldefs = [ def_from_model(model,s) for s in symbols ]
-    function = evaluateTemplate.format(decl=sig,momenta="\n    ".join(momenta),defns=defString,
+    function = evaluateTemplate.format(decl=sig,momenta=momentastring,defns=defString,
                                        waves="\n    ".join(waves),symbols='\n    '.join(symboldefs),
                                        couplings="\n    ".join(localCouplings),
                                        result=result)
