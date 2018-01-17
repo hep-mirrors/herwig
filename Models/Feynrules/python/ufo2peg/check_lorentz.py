@@ -1082,13 +1082,21 @@ def computeUnit2(dimension,vDim) :
         if(totalDim>0) :
             if(totalDim==1) :
                 output = "1./GeV"
+            elif(totalDim==2) :
+                output = "1./GeV2"
             else :
-                output = "1./GeV%s" % totalDim
+                output="1."
+                for i in range(0,totalDim) :
+                    output +="/GeV"
         else :
             if(totalDim==-1) :
                 output = "GeV"
+            elif(totalDim==-2) :
+                output = "GeV2"
             else :
-                output = "GeV%s" % (-totalDim)
+                output="1."
+                for i in range(0,-totalDim) :
+                    output +="*GeV"
     expr=""
     # now remove the remaining dimensionality
     removal=dimension[1]-int(dimension[0])-vDim+4
@@ -1514,12 +1522,12 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
         localCouplings.append("Complex local_C%s = %s;\n" % (j,val))
         symbols |=sym
         if(result!="") :
-            if(iloc==0) :
+            if(iloc==0 or vertex.lorentz[0].spins[iloc-1]==1) :
                 result += " + (local_C%s)*Complex(%s)" % (j,expr)
             else :
                 result += " + (local_C%s)*(%s)" % (j,expr)
         else :
-            if(iloc==0) :
+            if(iloc==0 or vertex.lorentz[0].spins[iloc-1]==1) :
                 result += " (local_C%s)*Complex(%s) " % (j,expr)
             else :
                 result += " (local_C%s)*(%s) " % (j,expr)
@@ -1540,7 +1548,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
             result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n Lorentz%s<double> newSpin = fact*(%s);\n    return %s(-P%s,out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());" % \
                                                          (iloc,py2cpp(cf[0])[0],offType.replace("WaveFunction",""),result.replace( "M%s" % iloc, "mass" ),offType,iloc)
         elif(vertex.lorentz[0].spins[iloc-1] == 1 ) :
-            result = "if(mass.real()) < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n complex<double> output = fact*(%s);\n    return ScalarWaveFunction(-P%s,out,output);\n" % (iloc,py2cpp(cf[0])[0],result,iloc)
+            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n complex<double> output = fact*(%s);\n    return ScalarWaveFunction(-P%s,out,output);\n" % (iloc,py2cpp(cf[0])[0],result,iloc)
 
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.iteritems() :
@@ -1552,17 +1560,22 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
                 momenta[int(key[0][1])-1][0] = True
             if(key[1][0]=="P") :
                 momenta[int(key[1][1])-1][0] = True
+    sorder=swapOrder(vertex,iloc,momenta)
     momentastring=""
     for i in range(0,len(momenta)) :
         if(momenta[i][0] and momenta[i][1]!="")  :
             momentastring+=momenta[i][1]+"\n    "
+    # special for 4-point VVVV
+    if(vertex.lorentz[0].spins.count(3)==4 and iloc==0) :
+        sig=sig.replace("Energy2","Energy2,int")
+            
     header="virtual %s" % sig
     sig=sig.replace("=-GeV","")
     symboldefs = [ def_from_model(model,s) for s in symbols ]
     function = evaluateTemplate.format(decl=sig,momenta=momentastring,defns=defString,
                                        waves="\n    ".join(waves),symbols='\n    '.join(symboldefs),
                                        couplings="\n    ".join(localCouplings),
-                                       result=result,swap=swapOrder(vertex,iloc,momenta))
+                                       result=result,swap=sorder)
     return (header,function)
 
 
