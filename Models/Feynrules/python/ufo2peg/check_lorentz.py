@@ -1387,7 +1387,10 @@ def swapOrder(vertex,iloc,momenta) :
             output += "    long id%s = %sW%s.id();\n" % (sloc[j],names[i],sloc[j])
         for j in range(0,len(sloc)) :
             for k in range(j+1,len(sloc)) :
-                output += "    if(id%s!=%s) {\n" % (sloc[j],vertex.particles[sloc[j]-1].pdg_code)
+                code = vertex.particles[sloc[j]-1].pdg_code
+                if(vertex.particles[sloc[j]-1].name!=vertex.particles[sloc[j]-1].antiname) :
+                    code *= -1
+                output += "    if(id%s!=%s) {\n" % (sloc[j],code)
                 output += "        swap(id%s,id%s);\n" % (sloc[j],sloc[k])
                 output += "        swap(%s%s,%s%s);\n" % (waves[i],sloc[j],waves[i],sloc[k])
                 if(momenta[sloc[j]-1][0] or momenta[sloc[k]-1][0]) :
@@ -1570,7 +1573,10 @@ def multipleEvaluate(vertex,spin,defns) :
                               .replace("const  &","").replace("tcPDPtr","").replace("  "," ")
             if(iloc!=1) :
                 call = call.replace(waves[0],waves[iloc-1])
-            code += "   %sif(out->id()==%s) return %s;\n" % (el,vertex.particles[i].pdg_code,call)
+            pdgid = vertex.particles[i].pdg_code
+            if(vertex.particles[i].name!=vertex.particles[i].antiname) :
+                pdgid *= -1
+            code += "   %sif(out->id()==%s) return %s;\n" % (el,pdgid,call)
             iloc+=1
     code+="   else assert(false);\n"
     return (header,evaluateMultiple.format(decl=ccdefn,code=code))
