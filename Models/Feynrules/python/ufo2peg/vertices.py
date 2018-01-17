@@ -6,7 +6,7 @@ from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
     processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings,\
-    RSCouplings,convertLorentz,generateEvaluateFunction
+    RSCouplings,convertLorentz,generateEvaluateFunction,multipleEvaluate
 from .helpers import SkipThisVertex,extractAntiSymmetricIndices,isGoldstone
 
 # prefactors for vertices
@@ -584,6 +584,7 @@ Herwig may not give correct results, though.
         defns=[]
         vertexEval=[]
         values=[]
+        eps=False
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
             if(color_idx!=0) :
                 vertex.herwig_skip_vertex = True
@@ -600,7 +601,7 @@ Herwig may not give correct results, though.
                 if(len(defns)<i+1) :
                     defns.append({})
                     vertexEval.append([])
-                convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,i,defns[i],vertexEval[i])
+                eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,i,defns[i],vertexEval[i])
 
         # we can now generate the evaluate member functions
         headers=""
@@ -608,11 +609,28 @@ Herwig may not give correct results, though.
         imax = len(vertex.particles)+1
         if lorentztag in genericVertices :
            imax=1
+        spins=vertex.lorentz[0].spins
+        mult={}
+        for i in range(1,6) :
+            if( (spins.count(i)>1 and i!=2) or
+                (spins.count(i)>2 and i==2) ) : mult[i] = []
         for i in range(0,imax) :
             (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf)
+            if(i!=0 and spins[i-1] in mult) :
+                if(len(mult[spins[i-1]])==0) : mult[spins[i-1]].append(evalHeader)
+                evalHeader=evalHeader.replace("evaluate(","evaluate%s(" % i)
+                evalCC    =evalCC    .replace("evaluate(","evaluate%s(" % i)
+                mult[spins[i-1]].append(evalHeader)
             headers+="    "+evalHeader+";\n"
             impls+=evalCC
-        impls=impls.replace("evaluate(", "FRModel%s::evaluate(" % classname)
+        # combine the multiple defn if needed
+        for (key,val) in mult.iteritems() :
+            (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
+            headers+="    "+evalHeader+";\n"
+            impls+=evalCC
+            
+            
+        impls=impls.replace("evaluate", "FRModel%s::evaluate" % classname)
         ### assemble dictionary and fill template
         subs = { 'lorentztag' : lorentztag,
                  'classname'  : classname,
@@ -620,7 +638,9 @@ Herwig may not give correct results, though.
                  'ModelName' : self.modelname,
                  'evaldefs'  : headers,
                  'evalimpls' : impls}
-        return (False,GENERALVERTEXCLASS.substitute(subs),GENERALVERTEXHEADER.format(**subs))
+        header = GENERALVERTEXHEADER.format(**subs)
+        if(eps) : header +="#include \"ThePEG/Helicity/epsilon.h\"\n"
+        return (False,GENERALVERTEXCLASS.substitute(subs),header)
 
 
 

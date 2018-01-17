@@ -1020,8 +1020,10 @@ def contractLorentz(L,parsed,lorentztag,order) :
                 ll=1
                 found=False
                 for k in range(0,len(parsed[l])) :
-                    if(j==k) : continue
-                    for i in range(0,len(parsed[l][k].lorentz)) :
+                    if(j==k or parsed[l][k]=="" ) : continue
+                    imax = len(parsed[l][k].lorentz)
+                    if(parsed[l][k].name=="P") : imax=1
+                    for i in range(0,imax) :
                         if(parsed[l][k].lorentz[i]==parsed[l][j].lorentz[0]) :
                             parsed[l][k].lorentz[i] = "P%s" % parsed[l][j].lorentz[1]
                             if(parsed[l][k].name=="P") :
@@ -1043,7 +1045,10 @@ def contractLorentz(L,parsed,lorentztag,order) :
         parsed[l] = [x for x in parsed[l] if x != ""]
 
 def computeUnit(dimension) :
-    dtemp=dimension[1]+dimension[2]
+    if(isinstance(dimension,int)) :
+        dtemp = dimension
+    else :
+        dtemp=dimension[1]+dimension[2]
     if(dtemp==0) :
         unit="double"
     elif(dtemp==1) :
@@ -1090,6 +1095,7 @@ def computeUnit2(dimension,vDim) :
     else           : return "%s*%s" %(output,expr)
 
 def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
+    eps=False
     # various strings for matrixes
     I4 = "Matrix([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])"
     G5 = "Matrix([[-1,0,0,0],[0,-1,0,0],[0,0,1,0],[0,0,0,1]])"
@@ -1149,7 +1155,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                     output[i] += "*(%s)" % defns[(ind1,ind2)][0]
                     parsed[i][j]=""
                     if(ind1[0]=="P") : dimension[i][2] +=1
-                    if(ind1[1]=="P") : dimension[i][2] +=1
+                    if(ind2[0]=="P") : dimension[i][2] +=1
                     continue
                 # handle the product
                 name = "dot%s" % (len(defns)+1)
@@ -1178,6 +1184,50 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                     else :
                         defns[(ind1,ind2)] = [name,"complex<double> %s = %s*%s;" % (name,ind1,ind2)]
                         output[i] += "*(%s)" % name
+            elif(parsed[i][j]!="" and parsed[i][j].name=="Epsilon") :
+                if(not eps) : eps = True
+                offLoc = -1
+                indices=[]
+                dTemp=0
+                for ix in range(0,len(parsed[i][j].lorentz)) :
+                    if(parsed[i][j].lorentz[ix][0]=="E" and int(parsed[i][j].lorentz[ix][1])==iloc ) :
+                        offLoc = ix
+                        break
+                for ix in range(0,len(parsed[i][j].lorentz)) :
+                    if(parsed[i][j].lorentz[ix][0]=="P") : dTemp+=1
+                    if((offLoc<0 and ix != 0) or
+                       (offLoc>=0 and offLoc!=ix) ) :
+                        indices.append(parsed[i][j].lorentz[ix])
+                dimension[i][2] += dTemp
+                if(offLoc<0) :
+                    iTemp = (parsed[i][j].lorentz[0],parsed[i][j].lorentz[1],
+                             parsed[i][j].lorentz[2],parsed[i][j].lorentz[3])
+                    if(iTemp in defns) :
+                        output[i] += "*(%s)" % defns[iTemp][0]
+                        parsed[i][j]=""
+                    else :
+                        name = "dot%s" % (len(defns)+1)
+                        unit = computeUnit(dTemp)
+                        defns[iTemp] = [name,"complex<%s> %s = %s*epsilon(%s,%s,%s);" % (unit,name,parsed[i][j].lorentz[0],
+                                                                                        indices[0],indices[1],indices[2]) ]
+                        output[i] += "*(%s)" % name
+                else :
+                    iTemp = (indices[0],indices[1],indices[2])
+                    sign = ""
+                    if(offLoc%2!=0) : sign="-"
+                    if(iTemp in defns) :
+                        output[i] += "*(%s%s)" % (sign,defns[iTemp][0])
+                        parsed[i][j]=""
+                    else :
+                        name = "vec%s" % (len(defns)+1)
+                        output[i] += "*(%s%s)" % (sign,name)
+                        unit = computeUnit(dTemp)
+                        defns[iTemp] = [name,"LorentzVector<complex<%s> > %s = epsilon(%s,%s,%s);" % (unit,name,
+                                                                                                     indices[0],indices[1],indices[2]) ]
+            elif(parsed[i][j]!="") :
+                print 'problem',parsed[i][j]
+                print parsed[i][j].lorentz
+                quit()
     # remove any (now) empty elements
     for i in range (0,len(parsed)) :
         parsed[i] = [x for x in parsed[i] if x != ""]
@@ -1289,9 +1339,10 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                         output[i] += "*LorentzSpinorBar<%s >(%s,%s,%s,%s)" % (unit,temp["result"][0],temp["result"][1],
                                                                              temp["result"][2],temp["result"][3])
             dimension[i] = list(map(lambda x, y: x + y, dtemp, dimension[i]))
-    return (output,dimension)
+    return (output,dimension,eps)
             
 def convertLorentz(Lstruct,lorentztag,order,iloc,defns,evalVertex) :
+    eps = False
     # split the structure into individual terms
     structures=Lstruct.structure.split()
     parsed=[]
@@ -1300,18 +1351,51 @@ def convertLorentz(Lstruct,lorentztag,order,iloc,defns,evalVertex) :
     # convert lorentz contractions to dot products
     contractLorentz(Lstruct,parsed,lorentztag,order)
     # now in a position to generate the code
-    evalVertex.append(generateVertex(iloc,Lstruct,parsed,lorentztag,order,defns))
+    vals=generateVertex(iloc,Lstruct,parsed,lorentztag,order,defns)
+    evalVertex.append((vals[0],vals[1]))
+    if(vals[2]) : eps=True
+    return eps
 
 evaluateTemplate = """\
 {decl} {{
     {momenta}
     {waves}
-    {defns}
+{swap}
+{defns}
     {symbols}
     {couplings}
     {result}
 }}
 """
+
+def swapOrder(vertex,iloc,momenta) :
+    names=['','sca','sp','v']
+    waves=['','','','E']
+    output=""
+    for i in range(1,4) :
+        ns = vertex.lorentz[0].spins.count(i)
+        if((ns<=1 and i!=2) or (ns<=2 and i==2)) : continue
+        if(i!=3) :
+            print 'swap problem',i
+            quit()
+        sloc=[]
+        for j in range(0,len(vertex.lorentz[0].spins)) :
+            if(vertex.lorentz[0].spins[j]==i) : sloc.append(j+1)
+        if iloc in sloc : sloc.remove(iloc)
+        if(len(sloc)==1) : continue
+        for j in range(0,len(sloc)) :
+            output += "    long id%s = %sW%s.id();\n" % (sloc[j],names[i],sloc[j])
+        for j in range(0,len(sloc)) :
+            for k in range(j+1,len(sloc)) :
+                output += "    if(id%s!=%s) {\n" % (sloc[j],vertex.particles[sloc[j]-1].pdg_code)
+                output += "        swap(id%s,id%s);\n" % (sloc[j],sloc[k])
+                output += "        swap(%s%s,%s%s);\n" % (waves[i],sloc[j],waves[i],sloc[k])
+                if(momenta[sloc[j]-1][0] or momenta[sloc[k]-1][0]) :
+                    momenta[sloc[j]-1][0] = True
+                    momenta[sloc[k]-1][0] = True
+                    output += "        swap(P%s,P%s);\n" % (sloc[j],sloc[k])
+                output += "    };\n"
+    return output
     
 def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
     # first construct the signature of the function
@@ -1397,7 +1481,11 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
             else :
                 if(dimCheck[0]!=dim[i][0] or dimCheck[1]!=dim[i][1] or
                    dimCheck[2]!=dim[i][2]) :
-                    print "DIMENSION PROBLEM",dimCheck,dim[i],vertex
+                    print defns
+                    print vertex.lorentz[j]
+                    print vertex.lorentz[j].structure
+                    print "DIMENSION PROBLEM",i,j,dimCheck,dim[i],vertex,vals[i]
+                    print vals
                     quit()
                 expr += "(%s)" % vals[i]
         for rep in fermionReplace :
@@ -1446,5 +1534,43 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
     function = evaluateTemplate.format(decl=sig,momenta=momentastring,defns=defString,
                                        waves="\n    ".join(waves),symbols='\n    '.join(symboldefs),
                                        couplings="\n    ".join(localCouplings),
-                                       result=result)
+                                       result=result,swap=swapOrder(vertex,iloc,momenta))
     return (header,function)
+
+
+evaluateMultiple = """\
+{decl} {{
+{code}
+}}
+"""
+
+def multipleEvaluate(vertex,spin,defns) :
+    if(spin==1) :
+        name="scaW"
+    elif(spin==3) :
+        name="vW"
+    else :
+        quit()
+    header = defns[0]
+    ccdefn = header.replace("=-GeV","").replace("virtual ","").replace("Energy2","Energy2 q2")
+    code=""
+    spins=vertex.lorentz[0].spins
+    iloc=1
+    waves=[]
+    for i in range(0,len(spins)) :
+        if(spins[i]==spin) :
+            waves.append("%s%s" %(name,i+1))
+    for i in range(0,len(spins)) :
+        if(spins[i]==spin) :
+            if(iloc==1) : el=""
+            else        : el="else "
+            call = defns[iloc].replace("virtual","").replace("ScalarWaveFunction","").replace("SpinorWaveFunction","") \
+                              .replace("SpinorBarWaveFunction","").replace("VectorWaveFunction","").replace("TensorWaveFunction","") \
+                              .replace("Energy2","q2").replace("int","").replace("complex<Energy>","").replace("=-GeV","") \
+                              .replace("const  &","").replace("tcPDPtr","").replace("  "," ")
+            if(iloc!=1) :
+                call = call.replace(waves[0],waves[iloc-1])
+            code += "   %sif(out->id()==%s) return %s;\n" % (el,vertex.particles[i].pdg_code,call)
+            iloc+=1
+    code+="   else assert(false);\n"
+    return (header,evaluateMultiple.format(decl=ccdefn,code=code))
