@@ -30,7 +30,7 @@ lfactors = {
     'RFV'  : 'complex(0,1)',
 }
 
-genericVertices=['FFVV']
+genericVertices=['FFVV','FFSS','FFVS']
 
 skipped5Point=False
 
@@ -215,6 +215,8 @@ def colorfactor(vertex,L,pos,lorentztag):
             if match(label): return ('1.','1.')
         elif(vertex.lorentz[0].spins.count(2)==2) :
             label = ('f({g1},{g2},-1)*T(-1,{qq},{qb})'.format(**subs),)
+            if match(label): return ('complex(0.,1.)',)
+            label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),)
             if match(label): return ('complex(0.,1.)',)
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
@@ -626,8 +628,8 @@ Herwig may not give correct results, though.
         # combine the multiple defn if needed
         for (key,val) in mult.iteritems() :
             (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
-            headers+="    "+evalHeader+";\n"
-            impls+=evalCC
+            if(evalHeader!="") : headers += "    "+evalHeader+";\n"
+            if(evalCC!="")     : impls   += evalCC
             
             
         impls=impls.replace("evaluate", "FRModel%s::evaluate" % classname)

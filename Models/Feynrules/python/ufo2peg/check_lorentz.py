@@ -1224,10 +1224,6 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                         unit = computeUnit(dTemp)
                         defns[iTemp] = [name,"LorentzVector<complex<%s> > %s = epsilon(%s,%s,%s);" % (unit,name,
                                                                                                      indices[0],indices[1],indices[2]) ]
-            elif(parsed[i][j]!="") :
-                print 'problem',parsed[i][j]
-                print parsed[i][j].lorentz
-                quit()
     # remove any (now) empty elements
     for i in range (0,len(parsed)) :
         parsed[i] = [x for x in parsed[i] if x != ""]
@@ -1370,12 +1366,12 @@ evaluateTemplate = """\
 
 def swapOrder(vertex,iloc,momenta) :
     names=['','sca','sp','v']
-    waves=['','','','E']
+    waves=['','sca',''  ,'E']
     output=""
     for i in range(1,4) :
         ns = vertex.lorentz[0].spins.count(i)
         if((ns<=1 and i!=2) or (ns<=2 and i==2)) : continue
-        if(i!=3) :
+        if(i!=3 and i!=1) :
             print 'swap problem',i
             quit()
         sloc=[]
@@ -1505,9 +1501,22 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
         localCouplings.append("Complex local_C%s = %s;\n" % (j,val))
         symbols |=sym
         if(result!="") :
-            result += " + (local_C%s)*(%s)" % (j,expr)
+            if(iloc==0) :
+                result += " + (local_C%s)*Complex(%s)" % (j,expr)
+            else :
+                result += " + (local_C%s)*(%s)" % (j,expr)
         else :
-            result += " (local_C%s)*(%s) " % (j,expr)
+            if(iloc==0) :
+                result += " (local_C%s)*Complex(%s) " % (j,expr)
+            else :
+                result += " (local_C%s)*(%s) " % (j,expr)
+    # multiple by scalar wavefunctions
+    scalars=""
+    for i in range (0,len(vertex.lorentz[0].spins)) :
+        if(vertex.lorentz[0].spins[i]==1 and i+1!=iloc) :
+            scalars += "sca%s*" % (i+1)
+    if(scalars!="") :
+        result = "(%s)*(%s)" % (result,scalars[0:-1])
     if(iloc==0) :
         result = "return (%s)*(%s);\n" % (result,py2cpp(cf[0])[0])
     else :
@@ -1517,6 +1526,9 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
         elif(vertex.lorentz[0].spins[iloc-1] == 2 ) :
             result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n Lorentz%s<double> newSpin = fact*(%s);\n    return %s(-P%s,out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());" % \
                                                          (iloc,py2cpp(cf[0])[0],offType.replace("WaveFunction",""),result.replace( "M%s" % iloc, "mass" ),offType,iloc)
+        elif(vertex.lorentz[0].spins[iloc-1] == 1 ) :
+            result = "if(mass.real()) < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n complex<double> output = fact*(%s);\n    return ScalarWaveFunction(-P%s,out,output);\n" % (iloc,py2cpp(cf[0])[0],result,iloc)
+
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.iteritems() :
         if( isinstance(key, basestring)) :
@@ -1554,6 +1566,7 @@ def multipleEvaluate(vertex,spin,defns) :
         name="vW"
     else :
         quit()
+    if(len(defns)==0) : return ("","")
     header = defns[0]
     ccdefn = header.replace("=-GeV","").replace("virtual ","").replace("Energy2","Energy2 q2")
     code=""
