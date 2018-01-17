@@ -955,8 +955,21 @@ def parse_structure(structure) :
         output[0].name="int"
         output[0].value="1."+temp[1]
         output[0].value=float(eval(output[0].value))
+    # special handling for powers , assume only 2
+    power = False
+    if("**" in structure ) :
+        power = True
+        structure = structure.replace("**","^")
+    structures = structure.split("*")
+    if(power) :
+        for j in range(0,len(structures)):
+            if(structures[j].find("^")>=0) :
+                temp = structures[j].split("^")
+                structures[j] = temp[0]
+                for i in range(0,int(temp[1])-1) :
+                    structures.append(temp[0])
     # split up the structure
-    for struct in structure.split("*"):
+    for struct in structures:
         ind=extractIndices(struct)
         # different types of object
         # object with only spin indices
@@ -1565,6 +1578,7 @@ def multipleEvaluate(vertex,spin,defns) :
     elif(spin==3) :
         name="vW"
     else :
+        print 'testing evaluate multiple porblem',spin
         quit()
     if(len(defns)==0) : return ("","")
     header = defns[0]
