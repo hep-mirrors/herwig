@@ -103,6 +103,14 @@ def colors(vertex) :
     L = len(struct)
     return (L,pos)
 
+def coloursort(a,b) :
+    if a == b: return 0
+    i1=int(a[4])
+    i2=int(b[4])
+    if(i1==i2)  : return 0
+    elif(i1<i2) : return -1
+    else        : return 1
+    
 def colorfactor(vertex,L,pos,lorentztag):
     def match(patterns,color=vertex.color):
         result = [ p == t
@@ -182,13 +190,6 @@ def colorfactor(vertex,L,pos,lorentztag):
             (o2,s2) = extractAntiSymmetricIndices(f[1],"f(")
             if(o2[0]<o1[0]) : o1,o2=o2,o1
             colors.append("f(%s)*f(%s)" % (",".join(o1),",".join(o2)))
-        def coloursort(a,b) :
-            if a == b: return 0
-            i1=int(a[4])
-            i2=int(b[4])
-            if(i1==i2)  : return 0
-            elif(i1<i2) : return -1
-            else        : return 1
         colors=sorted(colors,cmp=coloursort)
         label = ('f(1,2,-1)*f(3,4,-1)',
                  'f(1,3,-1)*f(2,4,-1)',
@@ -587,15 +588,37 @@ Herwig may not give correct results, though.
         vertexEval=[]
         values=[]
         eps=False
+        # check the colour flows, two cases supported either 1 flow or 3 in gggg
+        cidx=-1
+        gluon4point = (len(pos[8])==4 and vertex.lorentz[0].spins.count(3)==4)
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
-            if(color_idx!=0) :
-                vertex.herwig_skip_vertex = True
-                self.vertex_skipped=True
-                msg = 'Warning: General spin structure code currently only '\
-                      'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name, 
-                                                                                           ps=' '.join(map(str,vertex.particles)))
-                sys.stderr.write(msg)
-                return (True,"","")
+            if(gluon4point) :
+                color =  vertex.color[color_idx]
+                f = color.split("*")
+                (o1,s1) = extractAntiSymmetricIndices(f[0],"f(")
+                (o2,s2) = extractAntiSymmetricIndices(f[1],"f(")
+                if(o2[0]<o1[0]) : o1,o2=o2,o1
+                color = "f(%s)*f(%s)" % (",".join(o1),",".join(o2))
+                label = 'f(1,2,-1)*f(3,4,-1)'
+                if(label==color) :
+                    cidx=color_idx
+            else :
+                cidx=color_idx
+                if(color_idx!=0) :
+                    vertex.herwig_skip_vertex = True
+                    self.vertex_skipped=True
+                    msg = 'Warning: General spin structure code currently only '\
+                          'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name,
+                                                                                               ps=' '.join(map(str,vertex.particles)))
+                    sys.stderr.write(msg)
+                    return (True,"","")
+        if(cidx<0) :
+            msg = 'Warning: General spin structure code currently only '\
+                  'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name,
+                                                                                       ps=' '.join(map(str,vertex.particles)))
+            sys.stderr.write(msg)
+        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+            if(color_idx != cidx) : continue
             # calculate the value of the coupling
             values.append(couplingValue(coupling))
             # now to convert the spin structures
