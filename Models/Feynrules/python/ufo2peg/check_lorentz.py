@@ -732,10 +732,6 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                 order=[0,3,1,2]
                 value = "0.5*(%s)" % all_couplings[0][0]
             else:
-                sys.stderr.write(
-                    'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n'
-                    .format(tag="VVVV", name=vertex.name, ps=' '.join(map(str,vertex.particles)))
-                )
                 raise SkipThisVertex()
             pattern = \
                       "bool done[4]={false,false,false,false};\n" + \
