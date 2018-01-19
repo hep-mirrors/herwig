@@ -23,6 +23,7 @@ class ${ModelName}${classname}: public Abstract${lorentztag}Vertex {
     model_ = dynamic_ptr_cast<tcHw${ModelName}Ptr>
 	     (generator()->standardModel());
     assert(model_);
+    ${couplingOrders}
     Abstract${lorentztag}Vertex::doinit();
   }
   

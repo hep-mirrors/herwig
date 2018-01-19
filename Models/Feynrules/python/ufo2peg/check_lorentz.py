@@ -1552,10 +1552,9 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
             if(key.find("vvP")==0) :
                 momenta[int(key[3])-1][0] = True
         else :
-            if(key[0][0]=="P") :
-                momenta[int(key[0][1])-1][0] = True
-            if(key[1][0]=="P") :
-                momenta[int(key[1][1])-1][0] = True
+            for vals in key :
+                if(vals[0]=="P") :
+                    momenta[int(vals[1])-1][0] = True
     sorder=swapOrder(vertex,iloc,momenta)
     momentastring=""
     for i in range(0,len(momenta)) :

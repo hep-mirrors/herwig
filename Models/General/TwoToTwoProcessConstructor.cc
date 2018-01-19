@@ -229,7 +229,6 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       long fs = outgoing_[os]->id();
       for(size_t iv = 0; iv < nv_; ++iv) {
 	tVertexBasePtr vertexA = vertices_[iv];
-
 	//This skips an effective vertex and the EW ones if 
 	// we only want the strong diagrams
 	if( !allDiagrams_ && vertexA->orderInGs() == 0 ) 
@@ -428,6 +427,7 @@ void TwoToTwoProcessConstructor::makeFourPointDiagrams(long parta, long partb,
     nhp.vertices = make_pair(vert, vert);
     nhp.channelType = HPDiagram::fourPoint;
     fixFSOrder(nhp);
+    if(!checkOrder(nhp)) continue;
     if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
   }
 }
@@ -453,6 +453,7 @@ TwoToTwoProcessConstructor::makeDiagrams(IDPair in, long out1, const tPDSet & ou
     nhp.channelType = chan;
     nhp.ordered = cross;
     fixFSOrder(nhp);
+    if(!checkOrder(nhp)) continue;
     if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
   }
 }

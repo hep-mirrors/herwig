@@ -1,6 +1,6 @@
 import sys,pprint
 
-from .helpers import CheckUnique,getTemplate,writeFile,qcd_qed_orders,def_from_model
+from .helpers import CheckUnique,getTemplate,writeFile,coupling_orders,def_from_model
 from .converter import py2cpp
 from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
@@ -50,10 +50,9 @@ GENERALVERTEXCLASS = getTemplate('GeneralVertex_class')
 VERTEX = getTemplate('Vertex.cc')
 
 vertexline = """\
-create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
-insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
+create Herwig::FRModel{classname} /Herwig/{modelname}/{classname}
+insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/{classname}
 """
-
 
 def get_lorentztag(spin):
     """Produce a ThePEG spin tag for the given numeric FR spins."""
@@ -343,6 +342,7 @@ class VertexConverter:
         self.ignore_skipped=False
         self.model=model
         self.all_vertices= []
+        self.vertex_names = {}
         self.modelname=""
         self.no_generic_loop_vertices = False
         self.parmsubs = parmsubs
@@ -418,7 +418,7 @@ Herwig may not give correct results, though.
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
             couplingptrs[2] += ' p3'
-        elif (lorentztag == 'VVVV' and qcd != 2) or\
+        elif (lorentztag == 'VVVV' and qcd < 2) or\
              (lorentztag == "SSSS" and prepend ):
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
@@ -432,7 +432,7 @@ Herwig may not give correct results, though.
         lorentztag,order = unique_lorentztag(vertex)
         # check if we should skip the vertex
         vertex.herwig_skip_vertex = checkGhostGoldstoneVertex(lorentztag,vertex)
-        # check the order of the vertex and skipped 5 points
+        # check the order of the vertex and skip 5 points
         if(len(lorentztag)>=5) :
             vertex.herwig_skip_vertex = True
             if(not skipped5Point) :
@@ -488,110 +488,180 @@ Herwig may not give correct results, though.
                     self.vertex_skipped=True
                     return (True,"","")
                 else :
-                    return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+                    try :
+                        return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+                    except SkipThisVertex:
+                        msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                              'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
+                                                                                             ps=' '.join(map(str,vertex.particles)))
+                    
+                        sys.stderr.write(msg)
+                        vertex.herwig_skip_vertex = True
+                        self.vertex_skipped=True
+                        return (True,"","")
         else :
-            return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+            try :
+                return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+            except SkipThisVertex:
+                msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                      'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
+                                                                                     ps=' '.join(map(str,vertex.particles)))
+                
+                sys.stderr.write(msg)
+                vertex.herwig_skip_vertex = True
+                self.vertex_skipped=True
+                return (True,"","")
             
             
     def extractGeneric(self,vertex,order,lorentztag,classname,plistarray,pos,lf,cf) :
-        # try to extract the couplings
-        (all_couplings,header,qcd,qed,prepend,append) = \
-            self.extractCouplings(lorentztag,pos,lf,cf,vertex,order)
-
-        # set the coupling ptrs in the setCoupling call
-        couplingptrs = self.setCouplingPtrs(lorentztag,qcd,append != '',prepend != '')
-
-        # final processing of the couplings
-        symbols = set()
-        if(lorentztag in ['FFS','FFV']) :
-            (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
-                                                                                    self.model,self.parmsubs,
-                                                                                    all_couplings)
-        elif('T' in lorentztag) :
-            (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
-                                                                            self.parmsubs,all_couplings)
-        elif(lorentztag=="SSS" or lorentztag=="SSSS") :
-            normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
-        elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
-            normcontent,append,lorentztag,header,sym = processScalarVectorCouplings(lorentztag,vertex,
-                                                                                    self.model,self.parmsubs,
-                                                                                    all_couplings,header,order)
-            symbols |=sym
-        elif("VVV" in lorentztag) :
-            normcontent,append,header =\
-            processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
-        else :
-            SkipThisVertex()
+        classes=""
+        headers=""
+        # identify the maximum colour flow and orders of the couplings
+        maxColour=0
+        couplingOrders=[]
+        self.vertex_names[vertex.name] = [classname]
+        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
+            maxColour=max(maxColour,color_idx)
+            orders = coupling_orders(vertex, coupling, self.model)
+            if(orders not in couplingOrders) : couplingOrders.append(orders)
+        # loop the order of the couplings
+        iorder = 0
+        for corder in couplingOrders :
+            iorder +=1
+            cname=classname
+            if(iorder!=1) :
+                cname= "%s_%s" % (classname,iorder)
+                self.vertex_names[vertex.name].append(cname)
+            header = ""
+            prepend=""
+            append=""
+            all_couplings=[]
+            for ix in range(0,maxColour+1) :
+                all_couplings.append([])
+            # loop over the colour structures
+            for colour in range(0,maxColour+1) :
+                for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+                    # check colour structure and coupling order
+                    if(color_idx!=colour) : continue
+                    if(coupling_orders(vertex, coupling, self.model)!=corder) : continue
+                    # get the prefactor for the lorentz structure
+                    L = vertex.lorentz[lorentz_idx]
+                    prefactors = calculatePrefactor(lf,cf[color_idx])
+                    # calculate the value of the coupling
+                    value = couplingValue(coupling)
+                    # handling of the different types of couplings
+                    if lorentztag in ['FFS','FFV']:
+                        all_couplings[color_idx] = fermionCouplings(value,prefactors,L,all_couplings[color_idx],order)
+                    elif 'T' in lorentztag :
+                        append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                           all_couplings[color_idx],order)
+                    elif 'R' in lorentztag :
+                        all_couplings[color_idx] = RSCouplings(value,prefactors,L,all_couplings[color_idx],order)
+                    elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
+                        all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,lorentztag,
+                                                                         all_couplings[color_idx],order)
+                    elif lorentztag == "SSS" or lorentztag == "SSSS" :
+                        prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,
+                                                                                    all_couplings[color_idx],prepend,header)
+                    elif "VVV" in lorentztag :
+                        all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
+                                                                          all_couplings[color_idx],append,corder["QCD"],order)
+                    else:
+                        raise SkipThisVertex()
+            # set the coupling ptrs in the setCoupling call
+            couplingptrs = self.setCouplingPtrs(lorentztag,corder["QCD"],append != '',prepend != '')
+            # final processing of the couplings
+            symbols = set()
+            if(lorentztag in ['FFS','FFV']) :
+                (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
+                                                                                        self.model,self.parmsubs,
+                                                                                        all_couplings)
+            elif('T' in lorentztag) :
+                (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
+                                                                                self.parmsubs,all_couplings)
+            elif(lorentztag=="SSS" or lorentztag=="SSSS") :
+                normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
+            elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
+                normcontent,append,lorentztag,header,sym = processScalarVectorCouplings(lorentztag,vertex,
+                                                                                        self.model,self.parmsubs,
+                                                                                        all_couplings,header,order)
+                symbols |=sym
+            elif("VVV" in lorentztag) :
+                normcontent,append,header =\
+                                            processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
+            else :
+                SkipThisVertex()
+            ### do we need left/right?
+            if 'FF' in lorentztag and lorentztag != "FFT":
+                #leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+                #rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+                leftcalc, sym = py2cpp(leftcontent)
+                symbols |= sym
+                rightcalc, sym = py2cpp(rightcontent)
+                symbols |= sym
+                left = 'left(' + leftcalc + ');'
+                right = 'right(' + rightcalc + ');'
+            else:
+                left = ''
+                right = ''
+                leftcalc = ''
+                rightcalc = ''
+                #normcalc = aStoStrongCoup(py2cpp(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+            normcalc, sym = py2cpp(normcontent)
+            symbols |= sym
+            # UFO is GeV by default
+            if lorentztag in ['VVS','SSS']:
+                normcalc = 'Complex((%s) * GeV / UnitRemoval::E)' % normcalc
+            elif lorentztag in ['GeneralVVS']:
+                normcalc = 'Complex(-(%s) * UnitRemoval::E / GeV )' % normcalc
+            elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
+                normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
+            norm = 'norm(' + normcalc + ');'
+            # finally special handling for eps tensors
+            if(len(vertex.color)==1 and vertex.color[0].find("Epsilon")>=0) :
+                couplingptrs, append = epsilonSign(vertex,couplingptrs,append)
+            # define unkown symbols from the model
+            symboldefs = [ def_from_model(self.model,s) for s in symbols ]
+            couplingOrder=""
+            for coupName,coupVal in corder.iteritems() :
+                couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
+            ### assemble dictionary and fill template
+            subs = { 'lorentztag' : lorentztag,                   # ok
+                     'classname'  : cname,            # ok
+                     'symbolrefs' : '\n    '.join(symboldefs),
+                     'left'       : left,                 # doesn't always exist in base
+                     'right'      : right,                 # doesn't always exist in base 
+                     'norm'      : norm,                 # needs norm, too
+                     'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
+                     'parameters' : '',
+                     'couplingOrders' : couplingOrder,
+                     'couplingptrs' : ''.join(couplingptrs),
+                     'spindirectory' : spindirectory(lorentztag),
+                     'ModelName' : self.modelname,
+                     'prepend' : prepend,
+                     'append' : append,
+                     'header' : header
+                   }             # ok
         
-        ### do we need left/right?
-        if 'FF' in lorentztag and lorentztag != "FFT":
-            #leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
-            #rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
-            leftcalc, sym = py2cpp(leftcontent)
-            symbols |= sym
-            rightcalc, sym = py2cpp(rightcontent)
-            symbols |= sym
-            left = 'left(' + leftcalc + ');'
-            right = 'right(' + rightcalc + ');'
-        else:
-            left = ''
-            right = ''
-            leftcalc = ''
-            rightcalc = ''
-            #normcalc = aStoStrongCoup(py2cpp(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
-        normcalc, sym = py2cpp(normcontent)
-        symbols |= sym
-        # UFO is GeV by default (?)
-        if lorentztag in ['VVS','SSS']:
-            normcalc = 'Complex((%s) * GeV / UnitRemoval::E)' % normcalc
-        elif lorentztag in ['GeneralVVS']:
-            normcalc = 'Complex(-(%s) * UnitRemoval::E / GeV )' % normcalc
-        elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' , 'VVVS' ]:
-            normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
-        norm = 'norm(' + normcalc + ');'
-        # finally special handling for eps tensors
-        if(len(vertex.color)==1 and vertex.color[0].find("Epsilon")>=0) :
-            couplingptrs, append = epsilonSign(vertex,couplingptrs,append)
-        # define unkown symbols from the model
-        symboldefs = [ def_from_model(self.model,s) for s in symbols ]
-        ### assemble dictionary and fill template
-        subs = { 'lorentztag' : lorentztag,                   # ok
-                 'classname'  : classname,            # ok
-                 'symbolrefs' : '\n    '.join(symboldefs),
-                 'left'       : left,                 # doesn't always exist in base
-                 'right'      : right,                 # doesn't always exist in base 
-                 'norm'      : norm,                 # needs norm, too
-
-                 #################### need survey which different setter methods exist in base classes
-
-                 'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
-                 'parameters' : '',
-                 'setCouplings' : '',
-                 'qedorder'   : qed,
-                 'qcdorder' : qcd,
-                 'couplingptrs' : ''.join(couplingptrs),
-                 'spindirectory' : spindirectory(lorentztag),
-                 'ModelName' : self.modelname,
-                 'prepend' : prepend,
-                 'append' : append,
-                 'header' : header
-                 }             # ok
-        # print info if required
-        if self.verbose:
-            print '-'*60
-            pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
-
-        return (False,VERTEXCLASS.substitute(subs),VERTEXHEADER.format(**subs))
+            # print info if required
+            if self.verbose:
+                print '-'*60
+                pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
+            headers+=VERTEXHEADER.format(**subs)
+            classes+=VERTEXCLASS.substitute(subs)
+        return (False,classes,headers)
 
     def extractGeneral(self,vertex,order,lorentztag,classname,plistarray,pos,cf) :
-        defns=[]
-        vertexEval=[]
-        values=[]
         eps=False
+        classes=""
+        headers=""
         # check the colour flows, two cases supported either 1 flow or 3 in gggg
         cidx=-1
         gluon4point = (len(pos[8])==4 and vertex.lorentz[0].spins.count(3)==4)
+        couplingOrders=[]
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+            orders = coupling_orders(vertex, coupling, self.model)
+            if(orders not in couplingOrders) : couplingOrders.append(orders)
             if(gluon4point) :
                 color =  vertex.color[color_idx]
                 f = color.split("*")
@@ -617,122 +687,81 @@ Herwig may not give correct results, though.
                   'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name,
                                                                                        ps=' '.join(map(str,vertex.particles)))
             sys.stderr.write(msg)
-        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
-            if(color_idx != cidx) : continue
-            # calculate the value of the coupling
-            values.append(couplingValue(coupling))
-            # now to convert the spin structures
-            for i in range(0,len(vertex.particles)+1) :
-                if(len(defns)<i+1) :
-                    defns.append({})
-                    vertexEval.append([])
-                eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,i,defns[i],vertexEval[i])
-
-        # we can now generate the evaluate member functions
-        headers=""
-        impls=""
-        imax = len(vertex.particles)+1
-        if lorentztag in genericVertices :
-           imax=1
-        spins=vertex.lorentz[0].spins
-        mult={}
-        for i in range(1,6) :
-            if( (spins.count(i)>1 and i!=2) or
-                (spins.count(i)>2 and i==2) ) : mult[i] = []
-        for i in range(0,imax) :
-            (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf)
-            if(i!=0 and spins[i-1] in mult) :
-                if(len(mult[spins[i-1]])==0) : mult[spins[i-1]].append(evalHeader)
-                evalHeader=evalHeader.replace("evaluate(","evaluate%s(" % i)
-                evalCC    =evalCC    .replace("evaluate(","evaluate%s(" % i)
-                mult[spins[i-1]].append(evalHeader)
-            headers+="    "+evalHeader+";\n"
-            impls+=evalCC
-        # combine the multiple defn if needed
-        for (key,val) in mult.iteritems() :
-            (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
-            if(evalHeader!="") : headers += "    "+evalHeader+";\n"
-            if(evalCC!="")     : impls   += evalCC
-            
-            
-        impls=impls.replace("evaluate", "FRModel%s::evaluate" % classname)
-        ### assemble dictionary and fill template
-        subs = { 'lorentztag' : lorentztag,
-                 'classname'  : classname,
-                 'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
-                 'ModelName' : self.modelname,
-                 'evaldefs'  : headers,
-                 'evalimpls' : impls}
-        header = GENERALVERTEXHEADER.format(**subs)
-        if(eps) : header +="#include \"ThePEG/Helicity/epsilon.h\"\n"
-        return (False,GENERALVERTEXCLASS.substitute(subs),header)
-
-
+        # loop over the different orders in the couplings
+        iorder=0
+        self.vertex_names[vertex.name]=[classname]
+        for corder in couplingOrders :
+            iorder +=1
+            cname=classname
+            if(iorder!=1) :
+                cname= "%s_%s" % (classname,iorder)
+                self.vertex_names[vertex.name].append(cname)
+            defns=[]
+            vertexEval=[]
+            values=[]
+            for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+                if(color_idx != cidx) : continue
+                if(coupling_orders(vertex, coupling, self.model)!=corder) : continue
+                # calculate the value of the coupling
+                values.append(couplingValue(coupling))
+                # now to convert the spin structures
+                for i in range(0,len(vertex.particles)+1) :
+                    if(len(defns)<i+1) :
+                        defns.append({})
+                        vertexEval.append([])
+                    eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,i,defns[i],vertexEval[i])
+            # we can now generate the evaluate member functions
+            header=""
+            impls=""
+            imax = len(vertex.particles)+1
+            if lorentztag in genericVertices :
+                imax=1
+            spins=vertex.lorentz[0].spins
+            mult={}
+            for i in range(1,6) :
+                if( (spins.count(i)>1 and i!=2) or
+                    (spins.count(i)>2 and i==2) ) : mult[i] = []
+            for i in range(0,imax) :
+                (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf)
+                if(i!=0 and spins[i-1] in mult) :
+                    if(len(mult[spins[i-1]])==0) : mult[spins[i-1]].append(evalHeader)
+                    evalHeader=evalHeader.replace("evaluate(","evaluate%s(" % i)
+                    evalCC    =evalCC    .replace("evaluate(","evaluate%s(" % i)
+                    mult[spins[i-1]].append(evalHeader)
+                header+="    "+evalHeader+";\n"
+                impls+=evalCC
+            # combine the multiple defn if needed
+            for (key,val) in mult.iteritems() :
+                (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
+                if(evalHeader!="") : header += "    "+evalHeader+";\n"
+                if(evalCC!="")     : impls   += evalCC
+            impls=impls.replace("evaluate", "FRModel%s::evaluate" % cname)
+            couplingOrder=""
+            for coupName,coupVal in corder.iteritems() :
+                couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
+            ### assemble dictionary and fill template
+            subs = { 'lorentztag' : lorentztag,
+                     'classname'  : cname,
+                     'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
+                     'ModelName' : self.modelname,
+                     'couplingOrders' : couplingOrder,
+                     'evaldefs'  : header,
+                     'evalimpls' : impls}
+            newHeader = GENERALVERTEXHEADER.format(**subs)
+            if(eps) : newHeader +="#include \"ThePEG/Helicity/epsilon.h\"\n"
+            headers+=newHeader
+            classes+=GENERALVERTEXCLASS.substitute(subs)
+        return (False,classes,headers)
 
     def get_vertices(self,libname):
         vlist = ['library %s\n' % libname]
         for v in self.all_vertices:
             if v.herwig_skip_vertex: continue
-            vlist.append( vertexline.format(modelname=self.modelname, vname=v.name) )
+            for name in self.vertex_names[v.name] :
+                vlist.append( vertexline.format(modelname=self.modelname, classname=name) )
         if( not self.no_generic_loop_vertices) :
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname) )
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname) )
         return ''.join(vlist)
 
 
-    def extractCouplings(self,lorentztag,pos,lf,cf,vertex,order) :
-        coup_left  = []
-        coup_right = []
-        coup_norm = []
-        header = ""
-        qcd=0
-        qed=0
-        prepend=""
-        append=""
-        unique_qcd = CheckUnique()
-        unique_qed = CheckUnique()
-        maxColour=0
-        for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
-            maxColour=max(maxColour,color_idx)            
-        all_couplings=[]
-        for ix in range(0,maxColour+1) :
-            all_couplings.append([])
-        for colour in range(0,maxColour+1) :
-            for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
-                if(color_idx!=colour) : continue
-                qcd, qed = qcd_qed_orders(vertex, coupling)
-                try :
-                    unique_qcd( qcd )
-                    unique_qed( qed )
-                except :
-                    msg = 'Different powers of QCD and QED couplings for the same vertex'\
-                          ' is not currently supported for {ps} in {name}.\n'.format(tag=lorentztag, name=vertex.name,
-                                                                                   ps=' '.join(map(str,vertex.particles)))
-                    sys.stderr.write(msg)
-                    raise SkipThisVertex()
-                L = vertex.lorentz[lorentz_idx]
-                prefactors = calculatePrefactor(lf,cf[color_idx])
-                # calculate the value of the coupling
-                value = couplingValue(coupling)
-                # handling of the different types of couplings
-                if lorentztag in ['FFS','FFV']:
-                    all_couplings[color_idx] = fermionCouplings(value,prefactors,L,all_couplings[color_idx],order)
-                elif 'T' in lorentztag :
-                    append, all_couplings[color_idx] = tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                       all_couplings[color_idx],order)
-                elif 'R' in lorentztag :
-                    all_couplings[color_idx] = RSCouplings(value,prefactors,L,all_couplings[color_idx],order)
-                elif lorentztag == 'VVS' or lorentztag == "VVSS" or lorentztag == "VSS" :
-                    all_couplings[color_idx] = scalarVectorCouplings(value,prefactors,L,lorentztag,
-                                                                     all_couplings[color_idx],order)
-                elif lorentztag == "SSS" or lorentztag == "SSSS" :
-                    prepend, header, all_couplings[color_idx] = scalarCouplings(vertex,value,prefactors,L,lorentztag,
-                                                                                all_couplings[color_idx],prepend,header)
-                elif "VVV" in lorentztag :
-                    all_couplings[color_idx],append = vectorCouplings(vertex,value,prefactors,L,lorentztag,pos,
-                                                                      all_couplings[color_idx],append,qcd,order)
-                else:
-                    raise SkipThisVertex()
-
-        # return the result
-        return (all_couplings,header,qcd,qed,prepend,append)

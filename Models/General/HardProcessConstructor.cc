@@ -760,7 +760,8 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
   }
   if(nsng==4 || (ntri==2&&nsng==2) || 
      (noct==3            && nsng==1) ||
-     (ntri==2 && noct==1 && nsng==1) ) {
+     (ntri==2 && noct==1 && nsng==1) ||
+     (noct == 2 && nsng == 2) ) {
     vector<CFPair> cfv(1,make_pair(0,1));
     diag.colourFlow = cfv;
   }
@@ -814,3 +815,21 @@ bool HardProcessConstructor::duplicate(const HPDiagram & diag,
     find_if(group.begin(), group.end(), SameDiagramAs(diag));
   return it != group.end();
 } 
+
+bool HardProcessConstructor::checkOrder(const HPDiagram & diag) const {
+  for(map<string,pair<unsigned int,unsigned int> >::const_iterator it=model_->couplings().begin();
+      it!=model_->couplings().end();++it) {
+    unsigned int order=0;
+    if(diag.vertices.first ) order += diag.vertices.first ->orderInCoupling(it->second.first);
+    if(diag.vertices.second&&diag.vertices.first->getNpoint()==3)
+      order += diag.vertices.second->orderInCoupling(it->second.first);
+    if(order>it->second.second) {
+      // cerr << "removing " << it->first << " " << it->second.second << " " << order << "\n";
+      // if(diag.vertices.first ) cerr << diag.vertices.first ->fullName() << "\n";
+      // if(diag.vertices.second) cerr << diag.vertices.second->fullName() << "\n";
+      // cerr << diag << "\n";
+      return false;
+    }
+  }
+  return true;
+}

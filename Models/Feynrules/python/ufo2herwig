@@ -136,6 +136,41 @@ static Parameter<{modelname}, {type}> interface{pname}
    false, false, Interface::nolimits);
 """
 
+# sort out the couplings
+couplingDefns=""
+ndefn=2
+couplingOrders=""
+for coupling in FR.all_orders:
+    name = coupling.name.upper()
+    # skip QED and QCD, should always be there
+    if(name== "QED") :
+        couplingOrders+="  setCouplings(\"%s\",make_pair(%s,%s));\n" %(name,1,coupling.expansion_order)
+        continue
+    elif(name == "QCD" ) :
+        couplingOrders+="  setCouplings(\"%s\",make_pair(%s,%s));\n" %(name,2,coupling.expansion_order)
+        continue
+    ndefn+=1
+    couplingDefns+="  const T %s = %s;\n" % (name,ndefn)
+    couplingOrders+="  setCouplings(\"%s\",make_pair(%s,%s));\n" %(name,ndefn,coupling.expansion_order)
+
+couplingTemplate= """\
+namespace ThePEG {{
+namespace Helicity {{
+namespace CouplingType {{
+  typedef unsigned T;
+  /**
+   *  Enums for couplings
+   */
+{coup}
+}}
+}}
+}}
+"""
+if(couplingDefns!="") :
+    couplingDefns = couplingTemplate.format(coup=couplingDefns)
+
+# sort out the particles
+
 massnames = {}
 widthnames = {}
 
@@ -281,7 +316,9 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'parmextinter': ''.join(interfaceDecls),
                  'ModelName': modelname,
                  'calcfunctions': '',
-                 'param_card_data': paramcard_output
+                 'param_card_data': paramcard_output,
+                 'couplings': couplingDefns,
+                 'couplingOrders' :couplingOrders
                  }
 
 ##################################################
