@@ -29,6 +29,7 @@ void MEff2ss::doinit() {
   scalar_ .resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
+  fourPoint_.resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
 			   PDT::Spin0    , PDT::Spin0    );
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
@@ -60,6 +61,9 @@ void MEff2ss::doinit() {
 	throw InitException() << "MEFF2ss:doinit() - s-channel"
 			      << " intermediate must be a vector or tensor "
 			      << Exception::runerror;
+    }
+    else if(current.channelType == HPDiagram::fourPoint) {
+      fourPoint_[i] = dynamic_ptr_cast<AbstractFFSSVertexPtr>(current.vertices.first);
     }
     else 
       throw InitException() << "MEFF2ss:doinit() - Cannot find correct "
@@ -158,6 +162,9 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 	    diag = tensor_[ix].second ->evaluate(q2, sca2, sca1, interT);
 	  }
 	}
+	else if(current.channelType == HPDiagram::fourPoint) {
+	  diag = fourPoint_[ix]->evaluate(q2,sp[if1], sbar[if2],sca1,sca2);
+	}
 	// diagram
 	me[ix] += norm(diag);
 	diagramME()[ix](if1,if2,0,0) = diag;
@@ -189,11 +196,11 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 
 
 void MEff2ss::persistentOutput(PersistentOStream & os) const {
-  os << fermion_ << scalar_ << vector_ << tensor_;
+  os << fermion_ << scalar_ << vector_ << tensor_ << fourPoint_;
 }
 
 void MEff2ss::persistentInput(PersistentIStream & is, int) {
-  is >> fermion_ >> scalar_ >> vector_ >> tensor_;
+  is >> fermion_ >> scalar_ >> vector_ >> tensor_ >> fourPoint_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
 			   PDT::Spin0    , PDT::Spin0    );
 }

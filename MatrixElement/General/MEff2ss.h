@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSSVertex.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -52,7 +53,7 @@ public:
   /**
    * The default constructor.
    */
-  MEff2ss() : fermion_(0), vector_(0), tensor_(0) {}
+  MEff2ss() : fermion_(0), vector_(0), tensor_(0), fourPoint_(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -188,6 +189,11 @@ private:
    * tensor
    */
   vector<pair<AbstractFFTVertexPtr, AbstractSSTVertexPtr> > tensor_;
+
+  /**
+   *  Storage for dynamically cast 4 point vertices
+   */
+  vector<AbstractFFSSVertexPtr> fourPoint_;
 };
 
 }
