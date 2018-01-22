@@ -26,6 +26,7 @@ void MEff2sv::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
+  four_.resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
 			   PDT::Spin0,PDT::Spin1);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
@@ -52,15 +53,18 @@ void MEff2sv::doinit() {
 		      dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first));
       }
     }
+    else if( current.channelType == HPDiagram::fourPoint) {
+      four_[i] = dynamic_ptr_cast<AbstractFFVSVertexPtr>(current.vertices.first);
+    }
   }
 }
 
 void MEff2sv::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << vector_ << fermion_;
+  os << scalar_ << vector_ << fermion_ << four_;
 }
 
 void MEff2sv::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> vector_ >> fermion_;
+  is >> scalar_ >> vector_ >> fermion_ >> four_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
 			   PDT::Spin0,PDT::Spin1);
 }
@@ -151,7 +155,12 @@ MEff2sv::ffb2svHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	      }
 	    }
 	  }
-	  else diag = 0.;
+	  else if( current.channelType == HPDiagram::fourPoint) {
+	    diag = four_[ix]->evaluate(m2,sp[ihel1], spbar[ihel2], vec[ovhel], sca);
+	  }
+	  else
+	    assert(false);
+	  
 	  me[ix] += norm(diag);
 	  diagramME()[ix](ihel1, ihel2, 0, ovhel) = diag;
 	  //Compute flows
