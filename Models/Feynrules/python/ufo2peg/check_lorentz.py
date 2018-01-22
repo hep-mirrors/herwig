@@ -1225,7 +1225,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                     else :
                         name = "dot%s" % (len(defns)+1)
                         unit = computeUnit(dTemp)
-                        defns[iTemp] = [name,"complex<%s> %s = %s*epsilon(%s,%s,%s);" % (unit,name,parsed[i][j].lorentz[0],
+                        defns[iTemp] = [name,"complex<%s> %s =-%s*epsilon(%s,%s,%s);" % (unit,name,parsed[i][j].lorentz[0],
                                                                                         indices[0],indices[1],indices[2]) ]
                         output[i] += "*(%s)" % name
                 else :
@@ -1239,7 +1239,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                         name = "vec%s" % (len(defns)+1)
                         output[i] += "*(%s%s)" % (sign,name)
                         unit = computeUnit(dTemp)
-                        defns[iTemp] = [name,"LorentzVector<complex<%s> > %s = epsilon(%s,%s,%s);" % (unit,name,
+                        defns[iTemp] = [name,"LorentzVector<complex<%s> > %s =-epsilon(%s,%s,%s);" % (unit,name,
                                                                                                      indices[0],indices[1],indices[2]) ]
     # remove any (now) empty elements
     for i in range (0,len(parsed)) :
@@ -1259,7 +1259,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
             # first piece of the expression we need to evaluate
             dtemp=[0,0,0]
             if(sind==iloc) :
-                expr = vslashM2.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind} )
+                expr = vslashM.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind} )
                 Symbols = vslashMS.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind} )
                 defns["vvP%s" % sind ] = ["vvP%s" % sind ,
                                           vslashD.substitute({ "var" : "Energy",
@@ -1312,7 +1312,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                     quit()
             # last piece of spin chain
             if(lind==iloc) :
-                expr += "*"+vslashM.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind} )
+                expr += "*"+vslashM2.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind} )
                 Symbols += vslashMS.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind} )
                 defns["vvP%s" % lind ] = ["vvP%s" % lind ,
                                           vslashD.substitute({ "var" : "Energy",
@@ -1440,37 +1440,37 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
             else :
                 print 'unknown spin',spin
                 quit()
-            poff = ("Lorentz5Momentum P%s = " % (i+1) ) + poff
             momenta.append([False,""])
         else :
             if(spin==1) :
                 decls.append("ScalarWaveFunction & scaW%s" % (i+1))
-                momenta.append([False,"Lorentz5Momentum P%s = scaW%s.momentum();" % (i+1,i+1)])
+                momenta.append([False,"Lorentz5Momentum P%s =-scaW%s.momentum();" % (i+1,i+1)])
                 waves.append("Complex sca%s = scaW%s.wave();" % (i+1,i+1))
             elif(spin==2) :
                 if(iferm==0) :
                     decls.append("SpinorWaveFunction & sW%s" % (i+1))
-                    momenta.append([False,"Lorentz5Momentum P%s = sW%s.momentum();" % (i+1,i+1)])
+                    momenta.append([False,"Lorentz5Momentum P%s =-sW%s.momentum();" % (i+1,i+1)])
                     waves.append("LorentzSpinor<double> s%s = sW%s.wave();" % (i+1,i+1))
                     fermionReplace.append("s%s"%(i+1))
                 else :
                     decls.append("SpinorBarWaveFunction & sbarW%s" % (i+1))
-                    momenta.append([False,"Lorentz5Momentum P%s = sbarW%s.momentum();" % (i+1,i+1)])
+                    momenta.append([False,"Lorentz5Momentum P%s =-sbarW%s.momentum();" % (i+1,i+1)])
                     waves.append("LorentzSpinorBar<double> sbar%s = sbarW%s.wave();" % (i+1,i+1))
                     fermionReplace.append("sbar%s"%(i+1))
                 iferm +=1
             elif(spin==3) :
                 decls.append("VectorWaveFunction & vW%s" % (i+1))
-                momenta.append([False,"Lorentz5Momentum P%s = vW%s.momentum();" % (i+1,i+1)])
+                momenta.append([False,"Lorentz5Momentum P%s =-vW%s.momentum();" % (i+1,i+1)])
                 waves.append("LorentzPolarizationVector E%s = vW%s.wave();" % (i+1,i+1))
             elif(spin==4) :
                 decls.append("TensorWaveFunction & tW%s" % (i+1))
-                momenta.append([False,"Lorentz5Momentum P%s = tW%s.momentum();" % (i+1,i+1)])
-                waves.append("LorentzTensor t%s = tW%s.wave();" % (i+1,i+1))
+                momenta.append([False,"Lorentz5Momentum P%s =-tW%s.momentum();" % (i+1,i+1)])
+                waves.append("LorentzTensor t%s = tW%s.wave()" % (i+1,i+1))
             else :
                 print 'unknown spin',spin
                 quit()
             poff += "-P%s" % (i+1)
+    poff = ("Lorentz5Momentum P%s = " % iloc ) + poff
     sig=""
     if(iloc==0) :
         sig="%s evaluate(Energy2, const %s)" % (offType,", const ".join(decls))
@@ -1539,12 +1539,12 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
     else :
         if(vertex.lorentz[0].spins[iloc-1] == 3 ) :
             result = "LorentzPolarizationVector vtemp = %s;\n" % result
-            result +="    Energy2 p2 = P%s.m2();\nComplex fact = -Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n    complex<Energy2> mass2 = sqr(mass);\n    if(mass.real()==ZERO) {\n vtemp =fact*vtemp;\n}\n    else {\ncomplex<Energy> dot = P%s*vtemp;\n vtemp = fact*(vtemp-dot/mass2*P%s);\n}\nreturn VectorWaveFunction(-P%s,out,vtemp.x(),vtemp.y(),vtemp.z(),vtemp.t());\n" % (iloc,py2cpp(cf[0])[0],iloc,iloc,iloc)
+            result +="    Energy2 p2 = P%s.m2();\nComplex fact = -Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n    complex<Energy2> mass2 = sqr(mass);\n    if(mass.real()==ZERO) {\n vtemp =fact*vtemp;\n}\n    else {\ncomplex<Energy> dot = P%s*vtemp;\n vtemp = fact*(vtemp-dot/mass2*P%s);\n}\nreturn VectorWaveFunction(P%s,out,vtemp.x(),vtemp.y(),vtemp.z(),vtemp.t());\n" % (iloc,py2cpp(cf[0])[0],iloc,iloc,iloc)
         elif(vertex.lorentz[0].spins[iloc-1] == 2 ) :
-            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n Lorentz%s<double> newSpin = fact*(%s);\n    return %s(-P%s,out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());" % \
+            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n Lorentz%s<double> newSpin = fact*(%s);\n    return %s(P%s,out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());" % \
                                                          (iloc,py2cpp(cf[0])[0],offType.replace("WaveFunction",""),result.replace( "M%s" % iloc, "mass" ),offType,iloc)
         elif(vertex.lorentz[0].spins[iloc-1] == 1 ) :
-            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n complex<double> output = fact*(%s);\n    return ScalarWaveFunction(-P%s,out,output);\n" % (iloc,py2cpp(cf[0])[0],result,iloc)
+            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n complex<double> output = fact*(%s);\n    return ScalarWaveFunction(P%s,out,output);\n" % (iloc,py2cpp(cf[0])[0],result,iloc)
 
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.iteritems() :
