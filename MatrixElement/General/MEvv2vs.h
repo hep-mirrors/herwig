@@ -154,7 +154,7 @@ private:
   /**
    * Store the dynamically casted VVVSVertex pointer
    */
-  AbstractVVVSVertexPtr fourPointVertex_;
+  vector<AbstractVVVSVertexPtr> four_;
 
 };
 

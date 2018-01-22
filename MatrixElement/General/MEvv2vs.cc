@@ -25,11 +25,11 @@ IBPtr MEvv2vs::fullclone() const {
 }
 
 void MEvv2vs::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << vector_ << fourPointVertex_;
+  os << scalar_ << vector_ << four_;
 }
 
 void MEvv2vs::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> vector_ >> fourPointVertex_;
+  is >> scalar_ >> vector_ >> four_;
   initializeMatrixElements(PDT::Spin1, PDT::Spin1,
 			   PDT::Spin1, PDT::Spin0);
 }
@@ -51,13 +51,14 @@ void MEvv2vs::doinit() {
   GeneralHardME::doinit();
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
+  four_.resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1, PDT::Spin1,
 			   PDT::Spin1, PDT::Spin0);
   for(size_t i = 0; i < numberOfDiags(); ++i) {
     HPDiagram diag = getProcessInfo()[i];
     tcPDPtr offshell = diag.intermediate;
     if(!offshell) {
-      fourPointVertex_ =
+      four_[i] =
 	dynamic_ptr_cast<AbstractVVVSVertexPtr>(diag.vertices.first);
     }
     else if(offshell->iSpin() == PDT::Spin0) {
@@ -136,8 +137,8 @@ MEvv2vs::vv2vsHeME(VBVector & vin1, VBVector & vin2,
 	  const HPDiagram & current = getProcessInfo()[ix];
 	  tcPDPtr offshell = current.intermediate;
 	  if(!offshell) {
-	    diag = fourPointVertex_->evaluate(q2, vin1[ihel1], vin2[ihel2],
-					      vout1[ohel1], sd);
+	    diag = four_[ix]->evaluate(q2, vin1[ihel1], vin2[ihel2],
+				       vout1[ohel1], sd);
 	  }
 	  else if(current.channelType == HPDiagram::sChannel) {
 	    if(offshell->iSpin() == PDT::Spin0) {
