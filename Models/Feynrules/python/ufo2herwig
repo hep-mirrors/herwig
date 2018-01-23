@@ -143,8 +143,10 @@ try :
         name = coupling.name.upper()
         couplingDefns[name]= coupling.expansion_order
 except:
-    pass
-
+    for coupling in FR.all_couplings:
+        for name,value in coupling.order.iteritems():
+            if(name not in couplingDefns) :
+                couplingDefns[name]=99
 
 # sort out the particles
 
@@ -307,7 +309,7 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
 vertexConverter = VertexConverter(FR,parmvalues,couplingDefns)
 vertexConverter.readArgs(args)
 # convert the vertices
-couplingDefns = vertexConverter.convert()
+vertexConverter.convert()
 cdefs=""
 couplingOrders=""
 ncount=2

@@ -406,7 +406,6 @@ Herwig may not give correct results, though.
                                'ModelName' : self.modelname})
         
         print '='*60
-        return self.couplingDefns
 
     def setCouplingPtrs(self,lorentztag,qcd,append,prepend) :
         couplingptrs = [',tcPDPtr']*len(lorentztag)
@@ -524,7 +523,7 @@ Herwig may not give correct results, though.
         self.vertex_names[vertex.name] = [classname]
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
             maxColour=max(maxColour,color_idx)
-            orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
+            orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
         # loop the order of the couplings
         iorder = 0
@@ -545,8 +544,7 @@ Herwig may not give correct results, though.
                 for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
                     # check colour structure and coupling order
                     if(color_idx!=colour) : continue
-                    orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
-                    if(orders!=corder) : continue
+                    if(coupling_orders(vertex, coupling, self.couplingDefns)!=corder) : continue
                     # get the prefactor for the lorentz structure
                     L = vertex.lorentz[lorentz_idx]
                     prefactors = calculatePrefactor(lf,cf[color_idx])
@@ -663,7 +661,7 @@ Herwig may not give correct results, though.
         gluon4point = (len(pos[8])==4 and vertex.lorentz[0].spins.count(3)==4)
         couplingOrders=[]
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
-            orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
+            orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
             if(gluon4point) :
                 color =  vertex.color[color_idx]
@@ -704,8 +702,7 @@ Herwig may not give correct results, though.
             values=[]
             for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
                 if(color_idx != cidx) : continue
-                orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
-                if(orders!=corder) : continue
+                if(coupling_orders(vertex, coupling, self.couplingDefns)!=corder) : continue
                 # calculate the value of the coupling
                 values.append(couplingValue(coupling))
                 # now to convert the spin structures
