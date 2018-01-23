@@ -823,13 +823,7 @@ bool HardProcessConstructor::checkOrder(const HPDiagram & diag) const {
     if(diag.vertices.first ) order += diag.vertices.first ->orderInCoupling(it->second.first);
     if(diag.vertices.second&&diag.vertices.first->getNpoint()==3)
       order += diag.vertices.second->orderInCoupling(it->second.first);
-    if(order>it->second.second) {
-      // cerr << "removing " << it->first << " " << it->second.second << " " << order << "\n";
-      // if(diag.vertices.first ) cerr << diag.vertices.first ->fullName() << "\n";
-      // if(diag.vertices.second) cerr << diag.vertices.second->fullName() << "\n";
-      // cerr << diag << "\n";
-      return false;
-    }
+    if(order>it->second.second) return false;
   }
   return true;
 }
