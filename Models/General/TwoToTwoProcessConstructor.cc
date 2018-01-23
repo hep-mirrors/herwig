@@ -210,7 +210,6 @@ void TwoToTwoProcessConstructor::Init() {
 }
 
 void TwoToTwoProcessConstructor::constructDiagrams() {
-  cerr << "testing in construct " << __LINE__ << "\n";
   if(incPairs_.empty() || outgoing_.empty() || !subProcess() ) return;
   nv_ = model()->numberOfVertices();
   //make sure  vertices are initialised
@@ -221,11 +220,9 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
     vertices_.push_back(vertex);
   }
   nv_ = vertices_.size();
-  cerr << "testing in construct " << __LINE__ << "\n";
   //Create necessary diagrams
   vector<tcPDPair>::size_type is;
   PDVector::size_type os;
-  cerr << "testing in construct " << __LINE__ << "\n";
   for(is = 0; is < incPairs_.size(); ++is) {
     tPDPair ppi = incPairs_[is]; 
     for(os = 0; os < Nout_; ++os) { 
@@ -239,26 +236,20 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 
 	if(vertexA->getNpoint() == 3) {
 	  //scattering diagrams
-	  cerr << "testing before t\n";
 	  createTChannels(ppi, fs, vertexA);
-	  cerr << "testing after  t\n";
 	  
 	  //resonance diagrams
 	  if( vertexA->isIncoming(ppi.first) &&  
 	      vertexA->isIncoming(ppi.second) )
 	    createSChannels(ppi, fs, vertexA);
-	  cerr << "testing after s\n";
 	}
 	else {
-	  cerr << "testing before 4\n";
 	  makeFourPointDiagrams(ppi.first->id(), ppi.second->id(),
 				fs, vertexA);
-	  cerr << "testing after 4\n";
 	}
       }
     }
   }
-  cerr << "testing in construct " << __LINE__ << "\n";
   // need to find all of the diagrams that relate to the same process
   // first insert them into a map which uses the '<' operator 
   // to sort the diagrams 
@@ -268,12 +259,10 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
   for( ; dit != dend; ++dit) {
     grouped.insert(*dit);
   }
-  cerr << "testing in construct " << __LINE__ << "\n";
   assert( processes_.size() == grouped.size() );
   processes_.clear();
   typedef multiset<HPDiagram>::const_iterator set_iter;
   set_iter it = grouped.begin(), iend = grouped.end();
-  cerr << "testing in construct " << __LINE__ << "\n";
   while( it != iend ) {
     pair<set_iter,set_iter> range = grouped.equal_range(*it);
     set_iter itb = range.first;
@@ -343,7 +332,6 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
     process.clear();
     it = range.second;
   }
-  cerr << "testing in construct " << __LINE__ << "\n";
 }
 
 void TwoToTwoProcessConstructor::
@@ -421,39 +409,28 @@ createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex) {
 
 void TwoToTwoProcessConstructor::makeFourPointDiagrams(long parta, long partb,
 						   long partc, VBPtr vert) {
-  cerr << "in make 4 " << __LINE__ << "\n";
   if(processOption_>=1) {
     PDVector::const_iterator loc = find(outgoing_.begin(),outgoing_.end(),
 					getParticleData(partc));
     if(loc==outgoing_.end()) return;
   }
-  cerr << "in make 4 " << __LINE__ << "\n";
   tPDSet ext = search(vert, parta, incoming, partb,incoming, partc, outgoing);
   if( ext.empty() ) return;
-  cerr << "in make 4 " << __LINE__ << "\n";
   IDPair in(parta, partb);
-  cerr << "in make 4 " << __LINE__ << "\n";
   for(tPDSet::const_iterator iter=ext.begin(); iter!=ext.end();
       ++iter) {
-    cerr << "in make 4 " << __LINE__ << "\n";
     if(processOption_>=1) {
       PDVector::const_iterator loc = find(outgoing_.begin(),outgoing_.end(),
 					  *iter);
       if(loc==outgoing_.end()) continue;
     }
-    cerr << "in make 4 " << __LINE__ << "\n";
     HPDiagram nhp(in,make_pair(partc, (*iter)->id()));
     nhp.vertices = make_pair(vert, vert);
     nhp.channelType = HPDiagram::fourPoint;
-    cerr << "in make 4 " << __LINE__ << "\n";
     fixFSOrder(nhp);
-    cerr << "in make 4 " << __LINE__ << "\n";
     if(!checkOrder(nhp)) continue;
-    cerr << "in make 4 " << __LINE__ << "\n";
     if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
-    cerr << "in make 4 " << __LINE__ << "\n";
   }
-  cerr << "in make 4 " << __LINE__ << "\n";
 }
 
 void 

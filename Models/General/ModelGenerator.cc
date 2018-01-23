@@ -243,7 +243,6 @@ namespace {
 
 void ModelGenerator::doinit() {
   useMe();
-  cerr << "testing in doinit " << __LINE__ << "\n";
   Interfaced::doinit();
   // make sure the model is initialized
   Ptr<Herwig::StandardModel>::pointer model 
@@ -262,7 +261,6 @@ void ModelGenerator::doinit() {
     _theDecayConstructor->createDecayers(particles_,brMin_);
   }
 
-  cerr << "testing in doinit " << __LINE__ << "\n";
   // write out decays with spin correlations
   ostream & os = CurrentGenerator::current().misc();
   ofstream ofs;
@@ -271,8 +269,6 @@ void ModelGenerator::doinit() {
       = CurrentGenerator::current().filename() + "-BR.spc";
     ofs.open(filename.c_str());
   }
-
-  cerr << "testing in doinit " << __LINE__ << "\n";
 
   if(decayOutput_!=0) {
     if(decayOutput_==1) {
@@ -311,7 +307,6 @@ void ModelGenerator::doinit() {
 	}
       }
     }
-    cerr << "testing in doinit " << __LINE__ << "\n";
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
     if( parent->decaySelector().empty() ) {
@@ -337,7 +332,6 @@ void ModelGenerator::doinit() {
       }
 
     }
-    cerr << "testing in doinit " << __LINE__ << "\n";
 
     if( parent->massGenerator() ) {
       Energy minMass = minimumMass(parent);
@@ -353,7 +347,6 @@ void ModelGenerator::doinit() {
     }
     if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
-  cerr << "testing in doinit " << __LINE__ << "\n";
   // loop again to initialise mass and width generators
   // switch off modes and write output
   for(PDVector::iterator pit = particles_.begin();
@@ -371,17 +364,13 @@ void ModelGenerator::doinit() {
 	writeDecayModes(os, parent);
     }
   }
-  cerr << "testing in doinit " << __LINE__ << "\n";
 
   //Now construct hard processes given that we know which
   //objects have running widths
   for(unsigned int ix=0;ix<hardProcessConstructors_.size();++ix) {
     hardProcessConstructors_[ix]->init();
-    cerr << "before construct " << ix << " " << hardProcessConstructors_[ix]->fullName() << "\n";
     hardProcessConstructors_[ix]->constructDiagrams();
-    cerr << "before construct " << ix << "\n";
   }
-  cerr << "testing in doinit " << __LINE__ << "\n";
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
