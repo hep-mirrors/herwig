@@ -43,7 +43,7 @@ void ${ModelName}::doinit() {
   BSMModel::doinit();
   ${addVertex}
   writeParamCard();
-  ${couplingOrders}
+${couplingOrders}
 }
 
 void ${ModelName}::doinitrun() {

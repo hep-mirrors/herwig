@@ -59,7 +59,7 @@ def writeFile(filename, text):
     with open(filename,'w') as f:
         f.write(text)
 
-def coupling_orders(vertex, coupling,model):
+def coupling_orders(vertex, coupling,model,defns):
     # if more  than one take QCD over QED and then lowest order in QED
     if type(coupling) is list:
         print 'not sure this happens'
@@ -78,12 +78,17 @@ def coupling_orders(vertex, coupling,model):
                     qed=qed1
     else:
         output={}
-        total=0
-        for ctype in model.all_orders :
-            output[ctype.name]=coupling.order.get(ctype.name,0)
-            total+=output[ctype.name]
-
-    return output
+        try :
+            for ctype in model.all_orders :
+                output[ctype.name]=coupling.order.get(ctype.name,0)
+                total+=output[ctype.name]
+        except :
+            for ctype,value in coupling.order.iteritems() :
+                output[ctype]=value
+                if(ctype not in defns) : defns[ctype]=99
+            if("QED" not in output) : output["QED"]=0
+            if("QCD" not in output) : output["QCD"]=0
+    return output,defns
 
 def def_from_model(FR,s):
     """Return a C++ line that defines parameter s as coming from the model file."""

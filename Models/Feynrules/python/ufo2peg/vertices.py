@@ -335,7 +335,7 @@ def epsilonSign(vertex,couplingptrs,append) :
 
 class VertexConverter:
     'Convert the vertices in a FR model to extract the information ThePEG needs.'
-    def __init__(self,model,parmsubs) :
+    def __init__(self,model,parmsubs,defns) :
         'Initialize the parameters'
         self.verbose=False
         self.vertex_skipped=False
@@ -346,6 +346,7 @@ class VertexConverter:
         self.modelname=""
         self.no_generic_loop_vertices = False
         self.parmsubs = parmsubs
+        self.couplingDefns = defns
         
     def readArgs(self,args) :
         'Extract the relevant command line arguments'
@@ -405,6 +406,7 @@ Herwig may not give correct results, though.
                                'ModelName' : self.modelname})
         
         print '='*60
+        return self.couplingDefns
 
     def setCouplingPtrs(self,lorentztag,qcd,append,prepend) :
         couplingptrs = [',tcPDPtr']*len(lorentztag)
@@ -522,7 +524,7 @@ Herwig may not give correct results, though.
         self.vertex_names[vertex.name] = [classname]
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems():
             maxColour=max(maxColour,color_idx)
-            orders = coupling_orders(vertex, coupling, self.model)
+            orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
         # loop the order of the couplings
         iorder = 0
@@ -543,7 +545,8 @@ Herwig may not give correct results, though.
                 for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
                     # check colour structure and coupling order
                     if(color_idx!=colour) : continue
-                    if(coupling_orders(vertex, coupling, self.model)!=corder) : continue
+                    orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
+                    if(orders!=corder) : continue
                     # get the prefactor for the lorentz structure
                     L = vertex.lorentz[lorentz_idx]
                     prefactors = calculatePrefactor(lf,cf[color_idx])
@@ -660,7 +663,7 @@ Herwig may not give correct results, though.
         gluon4point = (len(pos[8])==4 and vertex.lorentz[0].spins.count(3)==4)
         couplingOrders=[]
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
-            orders = coupling_orders(vertex, coupling, self.model)
+            orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
             if(gluon4point) :
                 color =  vertex.color[color_idx]
@@ -701,7 +704,8 @@ Herwig may not give correct results, though.
             values=[]
             for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
                 if(color_idx != cidx) : continue
-                if(coupling_orders(vertex, coupling, self.model)!=corder) : continue
+                orders, self.couplingDefns = coupling_orders(vertex, coupling, self.model, self.couplingDefns)
+                if(orders!=corder) : continue
                 # calculate the value of the coupling
                 values.append(couplingValue(coupling))
                 # now to convert the spin structures
