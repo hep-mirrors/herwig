@@ -200,7 +200,7 @@ def colorfactor(vertex,L,pos,lorentztag):
         if(nmatch==2 and lorentztag=="VVSS") :
             return ('1.','1.')
         elif(nmatch==3 and lorentztag=="VVVV") :
-            return ('-1.','-1.','-1.')
+            return ('1.','1.','1.')
 
     elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {
@@ -669,7 +669,7 @@ Herwig may not give correct results, though.
                 (o2,s2) = extractAntiSymmetricIndices(f[1],"f(")
                 if(o2[0]<o1[0]) : o1,o2=o2,o1
                 color = "f(%s)*f(%s)" % (",".join(o1),",".join(o2))
-                label = 'f(1,2,-1)*f(3,4,-1)'
+                label = 'f(1,3,-1)*f(2,4,-1)'
                 if(label==color) :
                     cidx=color_idx
             else :

@@ -765,7 +765,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                            not all_couplings[icolor][1]) :
                             raise SkipThisVertex()
                         if(not value) :
-                            value = all_couplings[icolor][0]
+                            value = all_couplings[icolor][1]
                             tval  = evaluate(value,model,parmsubs)
                         tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
                         tval3 = -evaluate(all_couplings[icolor][1],model,parmsubs)
@@ -774,7 +774,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
                         if(not value) :
-                            value = all_couplings[icolor][0]
+                            value = all_couplings[icolor][2]
                             tval  = evaluate(value,model,parmsubs)
                         tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
                         tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
@@ -783,7 +783,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
                         if(not value) :
-                            value = all_couplings[icolor][1]
+                            value = all_couplings[icolor][2]
                             tval  = evaluate(value,model,parmsubs)
                         tval2 = evaluate(all_couplings[icolor][1],model,parmsubs)
                         tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
