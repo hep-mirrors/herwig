@@ -174,7 +174,12 @@ private:
   /**
    * Store the dynamically casted VVVVVertex pointer
    */
-  AbstractVVVVVertexPtr fourPointVertex_;
+  vector<AbstractVVVVVertexPtr> four_;
+
+  /**
+   *   Four points for colour flows
+   */
+  map<unsigned int,vector<pair<unsigned int,double> > > fourFlow_;
   
 };
 
