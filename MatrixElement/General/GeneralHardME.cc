@@ -385,13 +385,15 @@ void GeneralHardME::getDiagrams() const {
   tcPDPtr inb = getParticleData(getIncoming().second);
   tcPDPtr outa = getParticleData(getOutgoing().first);
   tcPDPtr outb = getParticleData(getOutgoing().second);
-  
+
+  bool hasThreePoints = false;
   for(HPCount idx = 0; idx < numberOfDiagrams_; ++idx) {
     const HPDiagram & current = getProcessInfo()[idx];
     tcPDPtr offshell = current.intermediate;
     if(!offshell) continue;
     //t-channel
     if(current.channelType == HPDiagram::tChannel) {
+      hasThreePoints = true;
       if(offshell->id() < 0) offshell = offshell->CC();
       if(current.ordered.second)
 	add(new_ptr((Tree2toNDiagram(3), ina, offshell,
@@ -401,12 +403,18 @@ void GeneralHardME::getDiagrams() const {
 		     inb, 2, outa, 1, outb, -(idx+1))));
     }
     //s-channel
-    else if(current.channelType == HPDiagram::sChannel) 
+    else if(current.channelType == HPDiagram::sChannel) {
+      hasThreePoints = true;
       add(new_ptr((Tree2toNDiagram(2), ina, inb, 1, offshell,
 		   3, outa, 3, outb, -(idx+1))));
+    }
     else
       throw MEException() << "getDiagrams() - Unknown diagram in matrix element "
 			  << fullName() << Exception::runerror;			  
+  }
+  if(!hasThreePoints) {
+      add(new_ptr((Tree2toNDiagram(2), ina, inb, 1, outa,
+		   3, outa, 3, outb, -1)));
   }
 }
 
