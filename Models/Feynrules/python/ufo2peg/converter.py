@@ -36,6 +36,7 @@ class PyToCpp(ast.NodeVisitor):
         """Convert expression to C++ format."""
         self.result = []
         self.symbols = set()
+        expression=expression.replace("abs(","cmath.abs(")
         tree = ast.parse(expression)
         #print ast.dump(tree)
         return self.visit(tree)
