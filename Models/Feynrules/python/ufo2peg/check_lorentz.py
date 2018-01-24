@@ -896,7 +896,7 @@ class LorentzStructure:
 
 def LorentzCompare(a,b) :
     if(a.name=="int" and b.name=="int") :
-        return b.value-a.value
+        return int(b.value-a.value)
     elif(a.name=="int") :
         return -1
     elif(b.name=="int") :
@@ -929,28 +929,33 @@ def extractIndices(struct) :
 
 def parse_structure(structure) :
     output=[]
-    # signs between terms
-    if(structure=="+" or structure=="-") :
-        output.append(LorentzStructure())
-        output[0].name="sign"
-        output[0].value=structure[0]+"1."
-        output[0].value=float(output[0].value)
-        return output
-    # simple numeric pre/post factors
-    elif((structure[0]=="-" or structure[0]=="+") and
-       structure[-1]==")" and structure[1]=="(") :
-        output.append(LorentzStructure())
-        output[0].name="int"
-        output[0].value=structure[0]+"1."
-        output[0].value=float(output[0].value)
-        structure=structure[2:-1]
-    elif(structure[0]=="(") :
-        temp=structure.rsplit(")",1)
-        structure=temp[0][1:]
-        output.append(LorentzStructure())
-        output[0].name="int"
-        output[0].value="1."+temp[1]
-        output[0].value=float(eval(output[0].value))
+    found = True
+    while(found) :
+        found = False
+        # signs between terms
+        if(structure=="+" or structure=="-") :
+            output.append(LorentzStructure())
+            output[0].name="sign"
+            output[0].value=structure[0]+"1."
+            output[0].value=float(output[0].value)
+            return output
+        # simple numeric pre/post factors
+        elif((structure[0]=="-" or structure[0]=="+") and
+             structure[-1]==")" and structure[1]=="(") :
+            output.append(LorentzStructure())
+            output[-1].name="int"
+            output[-1].value=structure[0]+"1."
+            output[-1].value=float(output[-1].value)
+            structure=structure[2:-1]
+            found=True
+        elif(structure[0]=="(") :
+            temp=structure.rsplit(")",1)
+            structure=temp[0][1:]
+            output.append(LorentzStructure())
+            output[-1].name="int"
+            output[-1].value="1."+temp[1]
+            output[-1].value=float(eval(output[-1].value))
+            found=True
     # special handling for powers , assume only 2
     power = False
     if("**" in structure ) :
@@ -1012,7 +1017,7 @@ def parse_structure(structure) :
             try :
                 output.append(LorentzStructure())
                 output[-1].value=float(struct)
-                output[0].name="int"
+                output[-1].name="int"
             except :
                 print struct
                 quit()
