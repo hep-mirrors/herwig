@@ -20,6 +20,11 @@ def evaluate(x,model,parmsubs):
                  'complexconjugate':model.function_library.complexconjugate}, 
                 parmsubs)
 
+def pdgCC(particle) :
+    pdgid = particle.pdg_code
+    if(particle.name!=particle.antiname) :
+        pdgid *= -1
+    return pdgid
 # ordering for EW VVV vertices
 def VVVordering(vertex) :
     pattern = "if((p1->id()==%s&&p2->id()==%s&&p3->id()==%s)"+\
@@ -1132,6 +1137,8 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
     dirac=["Matrix([[0,0,1,0],[0,0,0,1],[1,0,0,0],[0,1,0,0]])","Matrix([[0,0,0,1],[0,0,1,0],[0,-1,0,0],[-1,0,0,0]])",
            "Matrix([[0,0,0,complex(0, -1)],[0,0,complex(0, 1),0],[0,complex(0, 1),0,0],[complex(0, -1),0,0,0]])",
            "Matrix([[0,0,1,0],[0,0,0,-1],[-1,0,0,0],[0,1,0,0]])"]
+    CC = "Matrix([[0,1,0,0],[-1,0,0,0],[0,0,0,-1],[0,0,1,0]])"
+    CD = "Matrix([[0,-1,0,0],[1,0,0,0],[0,0,0,1],[0,0,-1,0]])"
     # order the indices of a dot product
     def indSort(a,b) :
         if(a[0]==b[0]) :
@@ -1263,8 +1270,10 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
             lind=0
             # first piece of the expression we need to evaluate
             dtemp=[0,0,0]
+            expr=""
+            end=""
             if(sind==iloc) :
-                expr = vslashM.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind} )
+                start = vslashM.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind} )
                 Symbols = vslashMS.substitute({ "v" : "P%s" % sind, "m" : "M%s" % sind} )
                 defns["vvP%s" % sind ] = ["vvP%s" % sind ,
                                           vslashD.substitute({ "var" : "Energy",
@@ -1273,7 +1282,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                 dtemp[0]+=0.5
             else :
                 Symbols=Template("sbar${s}s1=Symbol(\"sbar${s}s1\")\nsbar${s}s2=Symbol(\"sbar${s}s2\")\nsbar${s}s3=Symbol(\"sbar${s}s3\")\nsbar${s}s4=Symbol(\"sbar${s}s4\")\n").substitute({'s' :parsed[i][0].spin[0]})
-                expr=Template("Matrix([[sbar${s}s1,sbar${s}s2,sbar${s}s3,sbar${s}s4]])").substitute({'s' : sind })
+                start=Template("Matrix([[sbar${s}s1,sbar${s}s2,sbar${s}s3,sbar${s}s4]])").substitute({'s' : sind })
                 dtemp[0]+=0.5
             # parse the remaining structures
             for j in range(0,len(parsed[i])) :
@@ -1317,7 +1326,7 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                     quit()
             # last piece of spin chain
             if(lind==iloc) :
-                expr += "*"+vslashM2.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind} )
+                end = vslashM2.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind} )
                 Symbols += vslashMS.substitute({ "v" : "P%s" % lind, "m" : "M%s" % lind} )
                 defns["vvP%s" % lind ] = ["vvP%s" % lind ,
                                           vslashD.substitute({ "var" : "Energy",
@@ -1325,37 +1334,60 @@ def generateVertex(iloc,L,parsed,lorentztag,order,defns) :
                 dtemp[1] += 1
                 dtemp[0] += 0.5
             else :
-                expr+=Template("*Matrix([[s${s}s1],[s${s}s2],[s${s}s3],[s${s}s4]])").substitute({'s' : lind})
+                end =Template("Matrix([[s${s}s1],[s${s}s2],[s${s}s3],[s${s}s4]])").substitute({'s' : lind})
                 Symbols+=Template("s${s}s1=Symbol(\"s${s}s1\")\ns${s}s2=Symbol(\"s${s}s2\")\ns${s}s3=Symbol(\"s${s}s3\")\ns${s}s4=Symbol(\"s${s}s4\")\n").substitute({'s' : lind})
                 dtemp[0] += 0.5
             parsed[i] = [x for x in parsed[i] if x != ""]
+            expr=expr[1:]
             if(len(parsed[i])!=0) :
                 print "ERROR"
                 quit()
             # off-shell vector
             if(expr.find("DUMMY")>=0) :
-                vtemp=[]
+                vtemp =[]
+                vtempT=[]
                 defns["I"] = ["I","static Complex I(0.,1.);"]
                 for matrix in dirac :
                     temp={}
-                    exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+expr.replace("DUMMY",matrix)) in temp
-                    vtemp.append(temp["result"][0,0])
+                    exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+
+                         ( "%s*%s*%s" %(start,expr.replace("DUMMY",matrix),end))) in temp
+                    tempT={}
+                    exec("import sympy\nfrom sympy import Symbol,Matrix,Transpose\n"+Symbols+"result="+
+                         ( "%s*%s*Transpose(%s)*%s*%s" %(start,CC,expr.replace("DUMMY",matrix),CD,end))) in tempT
+                    vtemp .append(temp ["result"][0,0])
+                    vtempT.append(tempT["result"][0,0])
                 unit = computeUnit(dtemp)
-                output[i] += "*LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (unit,vtemp[1],vtemp[2],vtemp[3],vtemp[0])
+                old = output[i]
+                output[i] = ["(%s)*LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (old,unit,vtemp [1],vtemp [2],vtemp [3],vtemp [0]),
+                             "(%s)*LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (old,unit,vtempT[1],vtempT[2],vtempT[3],vtempT[0]),
+                              (sind,lind)]
             else :
                 temp={}
+                exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+
+                     ( "%s*%s*%s" %(start,expr,end))) in temp
+                tempT={}
+                exec("import sympy\nfrom sympy import Symbol,Matrix,Transpose\n"+Symbols+"result="+
+                     ( "%s*%s*Transpose(%s)*%s*%s" %(start,CC,expr,CD,end))) in tempT
                 if(iloc==0 or (iloc!=sind and iloc!=lind)) :
-                    exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+expr) in temp
-                    output[i] += "*(%s)" % temp["result"][0,0]
+                    old = output[i]
+                    output[i] = [("%s*(%s)" % (old,temp ["result"][0,0])),
+                                 ("%s*(%s)" % (old,tempT["result"][0,0])),
+                                 (sind,lind)]
                 else :
-                    exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+expr) in temp
                     unit = computeUnit(dtemp)
+                    old = output[i]
                     if(iloc==sind) :
-                        output[i] += "*LorentzSpinor<%s>(%s,%s,%s,%s)" % (unit,temp["result"][0],temp["result"][1],
-                                                                          temp["result"][2],temp["result"][3])
+                        output[i] = ["(%s)*LorentzSpinor<%s>(%s,%s,%s,%s)" % (old,unit,temp["result"][0],temp["result"][1],
+                                                                              temp["result"][2],temp["result"][3]),
+                                     "(%s)*LorentzSpinor<%s>(%s,%s,%s,%s)" % (old,unit,tempT["result"][0],tempT["result"][1],
+                                                                              tempT["result"][2],tempT["result"][3]),
+                                     (sind,lind)]
                     else :
-                        output[i] += "*LorentzSpinorBar<%s >(%s,%s,%s,%s)" % (unit,temp["result"][0],temp["result"][1],
-                                                                             temp["result"][2],temp["result"][3])
+                        output[i] = ["(%s)*LorentzSpinorBar<%s>(%s,%s,%s,%s)" % (old,unit,temp["result"][0],temp["result"][1],
+                                                                                 temp["result"][2],temp["result"][3]),
+                                     "(%s)*LorentzSpinorBar<%s>(%s,%s,%s,%s)" % (old,unit,tempT["result"][0],tempT["result"][1],
+                                                                                 tempT["result"][2],tempT["result"][3]),
+                                     (sind,lind)]
             dimension[i] = list(map(lambda x, y: x + y, dtemp, dimension[i]))
     return (output,dimension,eps)
             
@@ -1491,14 +1523,19 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
     oval=""
     symbols=set()
     localCouplings=[]
-    result=""
+    result =""
+    resultT=""
+    hasTranspose = False
+    fermions=0
     for j in range(0,len(vertexEval)) :
         (vals,dim) = vertexEval[j]
-        expr=""
+        expr =""
+        exprT=""
         dimCheck=dim[0]
         for i in range(0,len(vals)) :
             if(vals[i]=="+" or vals[i]=="-") :
-                expr +=vals[i]
+                expr  +=vals[i]
+                exprT +=vals[i]
             else :
                 if(dimCheck[0]!=dim[i][0] or dimCheck[1]!=dim[i][1] or
                    dimCheck[2]!=dim[i][2]) :
@@ -1508,49 +1545,163 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf) :
                     print "DIMENSION PROBLEM",i,j,dimCheck,dim[i],vertex,vals[i]
                     print vals
                     quit()
-                expr += "(%s)" % vals[i]
+                if(isinstance(vals[i], basestring)) :
+                    expr  += "(%s)" % vals[i]
+                    exprT += "(%s)" % vals[i]
+                else :
+                    hasTranspose = True
+                    expr  += "(%s)" % vals[i][0]
+                    exprT += "(%s)" % vals[i][1]
+                    fermions=vals[i][2]
         for rep in fermionReplace :
             for i in range(1,5) :
                 oldVal = "%ss%s" % (rep,i)
                 newVal = "%s.s%s()" % (rep,i)
-                expr=expr.replace(oldVal,newVal)
+                expr =expr .replace(oldVal,newVal)
+                exprT=exprT.replace(oldVal,newVal)
         vDim = len(vertex.lorentz[0].spins)
 
         unit = computeUnit2(dimCheck,vDim)
         if(unit!="") :
-            expr = "(%s)*(%s)" % (expr,unit)  
+            expr  = "(%s)*(%s)" % (expr ,unit)  
+            exprT = "(%s)*(%s)" % (exprT,unit)  
         val, sym = py2cpp(values[j])
         localCouplings.append("Complex local_C%s = %s;\n" % (j,val))
         symbols |=sym
         if(result!="") :
             if(iloc==0 or vertex.lorentz[0].spins[iloc-1]==1) :
-                result += " + (local_C%s)*Complex(%s)" % (j,expr)
+                result  += " + (local_C%s)*Complex(%s)" % (j,expr )
+                resultT += " + (local_C%s)*Complex(%s)" % (j,exprT)
             else :
-                result += " + (local_C%s)*(%s)" % (j,expr)
+                result  += " + (local_C%s)*(%s)" % (j,expr )
+                resultT += " + (local_C%s)*(%s)" % (j,exprT)
         else :
             if(iloc==0 or vertex.lorentz[0].spins[iloc-1]==1) :
-                result += " (local_C%s)*Complex(%s) " % (j,expr)
+                result  += " (local_C%s)*Complex(%s) " % (j,expr )
+                resultT += " (local_C%s)*Complex(%s) " % (j,exprT)
             else :
-                result += " (local_C%s)*(%s) " % (j,expr)
+                result  += " (local_C%s)*(%s) " % (j,expr )
+                resultT += " (local_C%s)*(%s) " % (j,exprT)
     # multiple by scalar wavefunctions
     scalars=""
     for i in range (0,len(vertex.lorentz[0].spins)) :
         if(vertex.lorentz[0].spins[i]==1 and i+1!=iloc) :
             scalars += "sca%s*" % (i+1)
     if(scalars!="") :
-        result = "(%s)*(%s)" % (result,scalars[0:-1])
+        resultT = "(%s)*(%s)" % (result ,scalars[0:-1])
+        resultT = "(%s)*(%s)" % (resultT,scalars[0:-1])
+    vTemplateT="""\
+    if(sbarW{iloc}.id()=={id}) {{
+        return ({res})*({cf});
+    }}
+    else {{
+        return ({resT})*({cf});
+    }}
+"""
+    vecTemplate="""\
+    LorentzPolarizationVector vtemp = {res};
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = -Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    complex<Energy2> mass2 = sqr(mass);
+    if(mass.real()==ZERO) {{
+        vtemp =fact*vtemp;
+    }}
+    else {{
+        complex<Energy> dot = P{iloc}*vtemp;
+        vtemp = fact*(vtemp-dot/mass2*P{iloc});
+    }}
+    return VectorWaveFunction(P{iloc},out,vtemp.x(),vtemp.y(),vtemp.z(),vtemp.t());
+"""
+    vecTTemplate="""\
+    LorentzPolarizationVector vtemp;
+    if(sbarW{isp}.id()=={id}) {{
+       vtemp = {res};
+    }}
+    else {{
+       vtemp  = {resT};
+    }}
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = -Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    complex<Energy2> mass2 = sqr(mass);
+    if(mass.real()==ZERO) {{
+        vtemp =fact*vtemp;
+    }}
+    else {{
+        complex<Energy> dot = P{iloc}*vtemp;
+        vtemp = fact*(vtemp-dot/mass2*P{iloc});
+    }}
+    return VectorWaveFunction(P{iloc},out,vtemp.x(),vtemp.y(),vtemp.z(),vtemp.t());
+"""
+    sTemplate="""\
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    Lorentz{offTypeA}<double> newSpin = fact*({res});
+    return {offTypeB}(P{iloc},out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());
+"""
+    sTTemplate="""\
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    if(out->id()=={id}) {{
+        Lorentz{offTypeA}<double> newSpin = fact*({res});
+        return {offTypeB}(P{iloc},out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());
+    }}
+    else {{
+        Lorentz{offTypeA}<double> newSpin = fact*({resT});
+        return {offTypeB}(P{iloc},out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());
+    }}
+"""
+    scaTemplate="""\
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    complex<double> output = fact*({res});
+    return ScalarWaveFunction(P%s,out,output);
+"""
+    scaTTemplate="""\
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    complex<double> output = sbarW{isp}.id()=={id} ? fact*({res}) : fact*({resT});
+    }}
+    return ScalarWaveFunction(P%s,out,output);
+"""
+    # vertex, just return the answer
     if(iloc==0) :
-        result = "return (%s)*(%s);\n" % (result,py2cpp(cf[0])[0])
+        if(hasTranspose) :
+            result = vTemplateT.format(iloc=fermions[0],id=vertex.particles[fermions[0]-1].pdg_code,
+                                      cf=py2cpp(cf[0])[0],res=result,resT=resultT)
+        else :
+            result = "return (%s)*(%s);\n" % (result,py2cpp(cf[0])[0])
+    # off-shell particle
     else :
+        # off-shell vector
         if(vertex.lorentz[0].spins[iloc-1] == 3 ) :
-            result = "LorentzPolarizationVector vtemp = %s;\n" % result
-            result +="    Energy2 p2 = P%s.m2();\nComplex fact = -Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n    complex<Energy2> mass2 = sqr(mass);\n    if(mass.real()==ZERO) {\n vtemp =fact*vtemp;\n}\n    else {\ncomplex<Energy> dot = P%s*vtemp;\n vtemp = fact*(vtemp-dot/mass2*P%s);\n}\nreturn VectorWaveFunction(P%s,out,vtemp.x(),vtemp.y(),vtemp.z(),vtemp.t());\n" % (iloc,py2cpp(cf[0])[0],iloc,iloc,iloc)
+            if(hasTranspose) :
+                result = vecTTemplate.format(iloc=iloc,res=result,resT=resultT,isp=fermions[0],
+                                             id=vertex.particles[fermions[0]-1].pdg_code,
+                                             cf=py2cpp(cf[0])[0])
+            else :
+                result = vecTemplate.format(iloc=iloc,res=result,cf=py2cpp(cf[0])[0])
+        # off-shell fermion
         elif(vertex.lorentz[0].spins[iloc-1] == 2 ) :
-            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n Lorentz%s<double> newSpin = fact*(%s);\n    return %s(P%s,out,newSpin.s1(),newSpin.s2(),newSpin.s3(),newSpin.s4());" % \
-                                                         (iloc,py2cpp(cf[0])[0],offType.replace("WaveFunction",""),result.replace( "M%s" % iloc, "mass" ),offType,iloc)
+            if(hasTranspose) :
+                result = sTTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],offTypeA=offType.replace("WaveFunction",""),
+                                           res=result.replace( "M%s" % iloc, "mass" ),resT=resultT.replace( "M%s" % iloc, "mass" ),
+                                           offTypeB=offType,id=vertex.particles[iloc-1].pdg_code)
+            else :
+                result = sTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],offTypeA=offType.replace("WaveFunction",""),
+                                          res=result.replace( "M%s" % iloc, "mass" ),offTypeB=offType)
+        # off-shell scalar
         elif(vertex.lorentz[0].spins[iloc-1] == 1 ) :
-            result = "if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();\n     Energy2 p2 = P%s.m2();\n    Complex fact = Complex(0.,1.)*(%s)*propagator(iopt,p2,out,mass,width);\n complex<double> output = fact*(%s);\n    return ScalarWaveFunction(P%s,out,output);\n" % (iloc,py2cpp(cf[0])[0],result,iloc)
-
+            if(hasTranspose) :
+                result = scaTTemplate.format(iloc=iloc,res=result,resT=resultT,isp=fermions[0],
+                                             id=vertex.particles[fermions[0]-1].pdg_code,cf=py2cpp(cf[0])[0])
+            else :
+                result = scaTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],res=result)
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.iteritems() :
         if( isinstance(key, basestring)) :
@@ -1614,8 +1765,6 @@ def multipleEvaluate(vertex,spin,defns) :
             if(iloc!=1) :
                 call = call.replace(waves[0],waves[iloc-1])
             pdgid = vertex.particles[i].pdg_code
-            if(vertex.particles[i].name!=vertex.particles[i].antiname) :
-                pdgid *= -1
             code += "   %sif(out->id()==%s) return %s;\n" % (el,pdgid,call)
             iloc+=1
     code+="   else assert(false);\n"
