@@ -215,9 +215,9 @@ def colorfactor(vertex,L,pos,lorentztag):
             if match(label): return ('1.','1.')
         elif(vertex.lorentz[0].spins.count(2)==2) :
             label = ('f({g1},{g2},-1)*T(-1,{qq},{qb})'.format(**subs),)
-            if match(label): return ('complex(0.,1.)',)
+            if match(label): return ('-complex(0.,1.)',)
             label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),)
-            if match(label): return ('complex(0.,1.)',)
+            if match(label): return ('-complex(0.,1.)',)
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
         subs = {
@@ -441,6 +441,16 @@ Herwig may not give correct results, though.
                 print "Skipping 5 point vertices which aren\'t used in Herwig7"
         
         if(vertex.herwig_skip_vertex) :
+            return (True,"","")
+        # check if we support this at all
+        if( lorentztag not in lfactors and
+            lorentztag not in genericVertices) :
+            msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+                  'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
+                                               ps=' '.join(map(str,vertex.particles)))
+            sys.stderr.write(msg)
+            vertex.herwig_skip_vertex = True
+            self.vertex_skipped=True
             return (True,"","")
         # get the factor for the vertex
         generic = False
