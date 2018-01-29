@@ -817,9 +817,9 @@ bool HardProcessConstructor::duplicate(const HPDiagram & diag,
 } 
 
 bool HardProcessConstructor::checkOrder(const HPDiagram & diag) const {
-  for(map<string,pair<unsigned int,unsigned int> >::const_iterator it=model_->couplings().begin();
+  for(map<string,pair<unsigned int,int> >::const_iterator it=model_->couplings().begin();
       it!=model_->couplings().end();++it) {
-    unsigned int order=0;
+    int order=0;
     if(diag.vertices.first ) order += diag.vertices.first ->orderInCoupling(it->second.first);
     if(diag.vertices.second&&diag.vertices.first->getNpoint()==3)
       order += diag.vertices.second->orderInCoupling(it->second.first);

@@ -66,8 +66,8 @@ void MEvv2vv::doinit() {
     for(size_t i = 0; i < numberOfDiags(); ++i) {
       HPDiagram diag = getProcessInfo()[i];
       if(diag.intermediate) continue;
-      vector<unsigned int> order;
-      for(map<string,pair<unsigned int,unsigned int> >::const_iterator it=hwsm->couplings().begin();
+      vector<int> order;
+      for(map<string,pair<unsigned int,int> >::const_iterator it=hwsm->couplings().begin();
 	  it!=hwsm->couplings().end();++it) {
 	order.push_back(0);
 	if(diag.vertices.first ) order.back() += diag.vertices.first ->orderInCoupling(it->second.first);
@@ -83,9 +83,9 @@ void MEvv2vv::doinit() {
 	    diag2.intermediate->iColour()==PDT::Colour6bar)) continue;
 	unsigned int iloc(0);
 	bool match=true;
-	for(map<string,pair<unsigned int,unsigned int> >::const_iterator it=hwsm->couplings().begin();
+	for(map<string,pair<unsigned int,int> >::const_iterator it=hwsm->couplings().begin();
 	    it!=hwsm->couplings().end();++it) {
-	  unsigned int otemp(0);
+	  int otemp(0);
 	  if(diag2.vertices.first ) otemp += diag2.vertices.first ->orderInCoupling(it->second.first);
 	  if(diag2.vertices.second&&diag2.vertices.first->getNpoint()==3)
 	    otemp += diag2.vertices.second->orderInCoupling(it->second.first);

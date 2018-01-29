@@ -306,7 +306,7 @@ public:
   /**
    *  Set the couplings in the model
    */
-  const map<string,pair<unsigned int,unsigned int> > & couplings() const {
+  const map<string,pair<unsigned int,int> > & couplings() const {
     return couplings_;
   }
   
@@ -358,7 +358,7 @@ protected:
   /**
    *  Set the couplings in the model
    */
-  void setCouplings(string name,pair<unsigned int,unsigned int> vals) {
+  void setCouplings(string name,pair<unsigned int,int> vals) {
     couplings_[name] = vals;
   }
 
@@ -470,7 +470,7 @@ private:
   /**
    *  Couplings in the model
    */
-  map<string,pair<unsigned int,unsigned int> > couplings_;
+  map<string,pair<unsigned int,int> > couplings_;
 };
 
 }
