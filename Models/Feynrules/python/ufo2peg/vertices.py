@@ -431,6 +431,13 @@ Herwig may not give correct results, though.
         global skipped5Point
         # get the Lorentz tag for the vertex
         lorentztag,order = unique_lorentztag(vertex)
+        print "START OF VERTEX",vertex,lorentztag,order,vertex.particles
+        # temp=int(vertex.name.replace("V_",""))
+        # if(temp>1200 or temp==1107 or temp==1108) :
+        #     print 'skipping for debugging'
+        #     vertex.herwig_skip_vertex = True
+        #     self.vertex_skipped=True
+        #     return (True,"","")
         # check if we should skip the vertex
         vertex.herwig_skip_vertex = checkGhostGoldstoneVertex(lorentztag,vertex)
         # check the order of the vertex and skip 5 points
@@ -452,6 +459,9 @@ Herwig may not give correct results, though.
             vertex.herwig_skip_vertex = True
             self.vertex_skipped=True
             return (True,"","")
+        if(lorentztag.find("R")>=0) :
+            print "RS"
+#            quit()
         # get the factor for the vertex
         generic = False
         try:
@@ -586,10 +596,10 @@ Herwig may not give correct results, though.
             if(lorentztag in ['FFS','FFV']) :
                 (normcontent,leftcontent,rightcontent,append) = processFermionCouplings(lorentztag,vertex,
                                                                                         self.model,self.parmsubs,
-                                                                                        all_couplings)
+                                                                                        all_couplings,order)
             elif('T' in lorentztag) :
                 (leftcontent,rightcontent,normcontent) = processTensorCouplings(lorentztag,vertex,self.model,
-                                                                                self.parmsubs,all_couplings)
+                                                                                self.parmsubs,all_couplings,order)
             elif(lorentztag=="SSS" or lorentztag=="SSSS") :
                 normcontent = processScalarCouplings(self.model,self.parmsubs,all_couplings)
             elif(lorentztag=="VVS" or lorentztag =="VVSS" or lorentztag=="VSS") :
@@ -720,7 +730,8 @@ Herwig may not give correct results, though.
                     if(len(defns)<i+1) :
                         defns.append({})
                         vertexEval.append([])
-                    eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,i,defns[i],vertexEval[i])
+                    eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,vertex,
+                                          i,defns[i],vertexEval[i])
             # we can now generate the evaluate member functions
             header=""
             impls=""
@@ -733,7 +744,7 @@ Herwig may not give correct results, though.
                 if( (spins.count(i)>1 and i!=2) or
                     (spins.count(i)>2 and i==2) ) : mult[i] = []
             for i in range(0,imax) :
-                (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf)
+                (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf,order)
                 if(i!=0 and spins[i-1] in mult) :
                     if(len(mult[spins[i-1]])==0) : mult[spins[i-1]].append(evalHeader)
                     evalHeader=evalHeader.replace("evaluate(","evaluate%s(" % i)
