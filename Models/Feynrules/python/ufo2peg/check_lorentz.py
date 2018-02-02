@@ -295,7 +295,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                     test[0] = all_couplings[icolor][ix]
                     # special for mass terms and massless particles
                     if(not all_couplings[icolor][ix]) :
-                        code = abs(vertex.particles[order[0]].pdg_code)
+                        code = abs(vertex.particles[order[0]-1].pdg_code)
                         if(ix==6 and code ==12 or code ==14 or code==16) :
                             continue
                         else :
@@ -317,13 +317,13 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                ( ix>=10 and ix<=12 and lorentztag=="VVT" )) :
                 for i in range(0,len(test)) :
                     if(test[i]) :
-                        test[i] = '(%s)/%s**2' % (test[i],vertex.particles[order[0]].mass.value)
+                        test[i] = '(%s)/%s**2' % (test[i],vertex.particles[order[0]-1].mass.value)
             # fermions divide by 4*m
             elif(ix==6 and lorentztag=="FFT" and
-                 float(vertex.particles[order[0]].mass.value) != 0. ) :
+                 float(vertex.particles[order[0]-1].mass.value) != 0. ) :
                 for i in range(0,len(test)) :
                     if(test[i]) :
-                        test[i] = '-(%s)/%s/4' % (test[i],vertex.particles[order[0]].mass.value)
+                        test[i] = '-(%s)/%s/4' % (test[i],vertex.particles[order[0]-1].mass.value)
             # set values on first pass
             if(not tval[0] and not tval[1] and not tval[2]) :
                 value = test
@@ -336,7 +336,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                     if(not test[i] or not tval[i]) :
                         # special for mass terms and vectors
                         if(lorentztag=="VVT" and ix >=10 and ix <=12 and
-                           float(vertex.particles[order[0]].mass.value) == 0. ) :
+                           float(vertex.particles[order[0]-1].mass.value) == 0. ) :
                             continue
                         # special for vector gauge terms
                         if(lorentztag=="VVT" and ix>=13) :
@@ -346,7 +346,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                     if(abs(tval[i]-tval2)>1e-6) :
                         # special for fermion mass term if fermions massless
                         if(lorentztag=="FFT" and ix ==6 and tval2 == 0. and
-                           float(vertex.particles[order[0]].mass.value) == 0. ) :
+                           float(vertex.particles[order[0]-1].mass.value) == 0. ) :
                             continue
                         raise SkipThisVertex()
     # simple clean up
@@ -961,7 +961,7 @@ def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order
     append=""
     if lorentztag == 'FFV':
         append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
-                  % vertex.particles[order[0]].pdg_code)
+                  % vertex.particles[order[0]-1].pdg_code)
     return normcontent,leftcontent,rightcontent,append
 
 def RSCouplings(value,prefactors,L,all_couplings,order) :
@@ -1612,10 +1612,7 @@ def generateVertex(iloc,L,parsed,lorentztag,vertex,defns) :
             # deal with the simplest case first
             print "PARSED F ",i,iloc
             if len(unContracted) == 0 :
-                print 'DID OLD';
                 temp={}
-                print start,expr,end
-                print Symbols
                 exec("import sympy\nfrom sympy import Symbol,Matrix\n"+Symbols+"result="+
                      ( "%s*%s*%s" %(start,expr,end))) in temp
                 tempT={}
