@@ -29,6 +29,7 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
 			     theq2last(), theMassLast(make_pair(ZERO,ZERO)) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSFFHVertex::doinit() {

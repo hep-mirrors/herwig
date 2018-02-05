@@ -34,6 +34,7 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theID1Last(0), theID2Last(0), theq2last() {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSGOGOHVertex::doinit() {

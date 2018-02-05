@@ -25,6 +25,7 @@ NMSSMPPHVertex::NMSSMPPHVertex()
     _couplast(0.), _coup(0.), _hlast(0), _recalc(true) {
   orderInGem(3);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void NMSSMPPHVertex::doinit()  {

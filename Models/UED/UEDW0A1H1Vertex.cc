@@ -38,6 +38,7 @@ UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(),
 				     theq2Last(), theCoupLast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void UEDW0A1H1Vertex::persistentOutput(PersistentOStream & os) const {

@@ -27,6 +27,7 @@ SSWHHVertex::SSWHHVertex() :
   theq2last(ZERO), theElast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSWHHVertex::doinit() {

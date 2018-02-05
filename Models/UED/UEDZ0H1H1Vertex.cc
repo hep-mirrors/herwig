@@ -25,6 +25,7 @@ UEDZ0H1H1Vertex::UEDZ0H1H1Vertex() : theCosThetaW(0.), theCosTheta2W(0.), theMw2
 				     theR2(), theq2Last(ZERO), theCoupLast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void UEDZ0H1H1Vertex::doinit() {

@@ -22,6 +22,7 @@ NMSSMGGHVertex::NMSSMGGHVertex() : _sw(0.), _cw(0.), _mw(0.*MeV),
     _hlast(0), _recalc(true) {
   orderInGem(1);
   orderInGs(2);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void NMSSMGGHVertex::doinit()  {

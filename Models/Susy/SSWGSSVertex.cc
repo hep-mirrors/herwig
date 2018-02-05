@@ -22,8 +22,9 @@ using namespace Herwig;
 
 SSWGSSVertex::SSWGSSVertex() : _sw(0.), _cw(0.), _q2last(),_emcouplast(0.),
 			       _scouplast(0.), _ulast(0), _dlast(0),
-			       _gblast(0), _factlast(0.)  
-{}
+			       _gblast(0), _factlast(0.)  {
+  colourStructure(ColourStructure::SU3TFUND);
+}
 
 void SSWGSSVertex::doinit() {
   //W-

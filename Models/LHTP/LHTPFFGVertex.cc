@@ -36,6 +36,7 @@ LHTPFFGVertex::LHTPFFGVertex()
   : coupLast_(0.), q2Last_(0.*GeV2) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3TFUND);
 }
 
 void LHTPFFGVertex::doinit() {

@@ -59,6 +59,7 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
 SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3TFUND);
 }
   
 void SMFFGVertex::doinit() {

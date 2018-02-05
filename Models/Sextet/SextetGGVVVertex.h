@@ -24,7 +24,9 @@ public:
   /**
    * The default constructor.
    */
-  SextetGGVVVertex() {}
+  SextetGGVVVertex() {
+    colourStructure(ColourStructure::SU3TT6);
+  }
 
   /** Calculate the coupling
    *@param q2 The scale at which to evaluate the coupling

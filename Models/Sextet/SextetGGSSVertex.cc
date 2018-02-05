@@ -15,8 +15,9 @@
 
 using namespace Herwig;
 
-SextetGGSSVertex::SextetGGSSVertex() : q2last_(), couplast_()
-{}
+SextetGGSSVertex::SextetGGSSVertex() : q2last_(), couplast_() {
+  colourStructure(ColourStructure::SU3TT6);
+}
 
 IBPtr SextetGGSSVertex::clone() const {
   return new_ptr(*this);

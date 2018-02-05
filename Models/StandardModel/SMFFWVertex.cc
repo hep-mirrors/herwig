@@ -28,6 +28,7 @@ SMFFWVertex::SMFFWVertex() :
   _couplast(0.), _q2last(ZERO) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SMFFWVertex::persistentOutput(PersistentOStream & os) const {

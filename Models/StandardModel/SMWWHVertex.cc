@@ -23,6 +23,7 @@ SMWWHVertex::SMWWHVertex()
   : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SMWWHVertex::doinit() {

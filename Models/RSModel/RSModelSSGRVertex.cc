@@ -23,6 +23,7 @@ using namespace ThePEG;
 RSModelSSGRVertex::RSModelSSGRVertex() : kappa_(ZERO) {
   orderInGem(1);
   orderInGs (0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void RSModelSSGRVertex::doinit() {

@@ -19,6 +19,7 @@ using namespace Herwig;
 RPVWWHVertex::RPVWWHVertex() : coupLast_(ZERO), q2Last_(ZERO) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void RPVWWHVertex::doinit() {

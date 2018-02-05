@@ -21,6 +21,7 @@ SSNCTVertex::SSNCTVertex() : MX_(2.e16*GeV),
 			     epsilon_(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 IBPtr SSNCTVertex::clone() const {

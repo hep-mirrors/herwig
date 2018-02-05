@@ -24,7 +24,9 @@ public:
   /**
    * The default constructor.
    */
-  SextetPSSVertex() {}
+  SextetPSSVertex() {
+    colourStructure(ColourStructure::DELTA);
+  }
 
  /**
    * Calculate the couplings.

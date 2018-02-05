@@ -31,6 +31,7 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
 				     theKKlast(0), theSMlast(0) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void UEDF1F0W1Vertex::doinit() {

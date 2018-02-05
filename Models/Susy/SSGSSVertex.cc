@@ -24,6 +24,7 @@ using namespace Herwig;
 SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3TFUND);
 }
 
 void SSGSSVertex::doinit() {

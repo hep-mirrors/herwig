@@ -27,6 +27,7 @@ SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0),
 			     _leftlast(0.), _rightlast(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSNNZVertex::doinit() {

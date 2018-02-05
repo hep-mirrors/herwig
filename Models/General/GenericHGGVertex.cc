@@ -21,6 +21,7 @@ using namespace Herwig;
 GenericHGGVertex::GenericHGGVertex() : setup_(false), q2Last_(ZERO), coupLast_(0.), idLast_(0) {
   orderInGs(2);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 IBPtr GenericHGGVertex::clone() const {

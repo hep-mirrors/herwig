@@ -77,6 +77,7 @@ SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.),
 			     _q2last(sqr(Constants::MaxEnergy)) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SMWWWVertex::doinit() {

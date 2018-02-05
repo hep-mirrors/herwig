@@ -19,6 +19,7 @@ NMSSMWWHVertex::NMSSMWWHVertex()
   : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void NMSSMWWHVertex::doinit() {

@@ -47,6 +47,7 @@ void ADDModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
 ADDModelVVGRVertex::ADDModelVVGRVertex() : kappa_(ZERO), r_(ZERO) {
   orderInGem(1);
   orderInGs (0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void ADDModelVVGRVertex::doinit() {

@@ -30,7 +30,7 @@ lfactors = {
     'RFV'  : 'complex(0,1)',
 }
 
-genericVertices=['FFVV','FFSS','FFVS','VVVV']
+genericVertices=['FFFF','FFVV','FFSS','FFVS','VVVV']
 
 skipped5Point=False
 
@@ -120,17 +120,17 @@ def colorfactor(vertex,L,pos,lorentztag):
     l = lambda c: len(pos[c])
     if l(1) == L:
         label = ('1',)
-        if match(label): return ('1.',)
+        if match(label): return ("SINGLET",('1.',))
 
     elif l(3) == l(-3) == 1 and l(1) == L-2:
         nums = [pos[3][0], pos[-3][0]]
         label = ('Identity({0},{1})'.format(*sorted(nums)),)
-        if match(label): return ('1.',)
+        if match(label): return ("DELTA",('1.',))
 
     elif l(6) == l(-6) == 1 and l(1) == L-2:
         nums = [pos[6][0], pos[-6][0]]
         label = ('Identity({0},{1})'.format(*sorted(nums)),)
-        if match(label): return ('1.',)
+        if match(label): return ("DELTA",('1.',))
 
     elif l(6) == l(-6) == 2 and L==4:
         sys.stderr.write(
@@ -141,19 +141,19 @@ def colorfactor(vertex,L,pos,lorentztag):
 
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
         label = ('T({g},{q},{qb})'.format(g=pos[8][0],q=pos[3][0],qb=pos[-3][0]),)
-        if match(label): return ('1.',)
+        if match(label): return ("SU3TFUND",('1.',))
 
     elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
         label = ('T6({g},{s},{sb})'.format(g=pos[8][0],s=pos[6][0],sb=pos[-6][0]),)
-        if match(label): return ('1.',)
+        if match(label): return ("SU3T6",('1.',))
 
     elif l(6) == 1 and l(-3) == 2 and L==3:
         label = ('K6({s},{qb1},{qb2})'.format(s=pos[6][0],qb1=pos[-3][0],qb2=pos[-3][1]),)
-        if match(label): return ('1.',)
+        if match(label): return ("K6",('1.',))
 
     elif l(-6) == 1 and l(3) == 2 and L==3:
         label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
-        if match(label): return ('1.',)
+        if match(label): return ("K6",('1.',))
 
     elif l(3) == L == 3:
         colors=[]
@@ -161,7 +161,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             order,sign  = extractAntiSymmetricIndices(color,"Epsilon(")
             colors.append("Epsilon(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('Epsilon(1,2,3)',)
-        if match(label,colors): return ('1.',) # TODO check factor!
+        if match(label,colors): return ("EPS",('1.',)) # TODO check factor!
 
     elif l(-3) == L == 3:
         colors=[]
@@ -169,7 +169,7 @@ def colorfactor(vertex,L,pos,lorentztag):
             order,sign  = extractAntiSymmetricIndices(color,"EpsilonBar(")
             colors.append("Epsilon(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('EpsilonBar(1,2,3)',)
-        if match(label): return ('1.',) # TODO check factor!
+        if match(label): return ("EPS",('1.',)) # TODO check factor!
 
     elif l(8) == L == 3:
         colors=[]
@@ -179,7 +179,7 @@ def colorfactor(vertex,L,pos,lorentztag):
         # if lorentz is FFV get extra minus sign
         if lorentztag in ['FFV'] : sign *=-1
         label = ('f(1,2,3)',)
-        if match(label,colors): return ('-complex(0,1.)*(%s)'%sign,)
+        if match(label,colors): return ("SU3F",('-complex(0,1.)*(%s)'%sign,))
 
     elif l(8) == L == 4:
         colors=[]
@@ -198,9 +198,9 @@ def colorfactor(vertex,L,pos,lorentztag):
             for  c2 in colors :
                 if(c1==c2) : nmatch+=1
         if(nmatch==2 and lorentztag=="VVSS") :
-            return ('1.','1.')
+            return ("SU3TTFUND",('1.','1.'))
         elif(nmatch==3 and lorentztag=="VVVV") :
-            return ('1.','1.','1.')
+            return ("SU3FF",('1.','1.','1.'))
 
     elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {
@@ -212,12 +212,12 @@ def colorfactor(vertex,L,pos,lorentztag):
         if(vertex.lorentz[0].spins.count(1)==2) :
             label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
                      'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
-            if match(label): return ('1.','1.')
+            if match(label): return ("SU3TTFUNDS",('1.','1.'))
         elif(vertex.lorentz[0].spins.count(2)==2) :
             label = ('f({g1},{g2},-1)*T(-1,{qq},{qb})'.format(**subs),)
-            if match(label): return ('-complex(0.,1.)',)
+            if match(label): return ("SU3TTFUNDD",('-complex(0.,1.)',))
             label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),)
-            if match(label): return ('-complex(0.,1.)',)
+            if match(label): return ("SU3TTFUNDD",('-complex(0.,1.)',))
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
         subs = {
@@ -228,12 +228,12 @@ def colorfactor(vertex,L,pos,lorentztag):
         }
         label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
                  'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
-        if match(label): return ('1.','1.')
+        if match(label): return ("SU3TT6",('1.','1.'))
 
     elif l(8) == 2 and l(8)+l(1)==L :
         subs = { 'g1' : pos[8][0], 'g2' : pos[8][1] }
         label = ('Identity({g1},{g2})'.format(**subs),)
-        if match(label) : return ('1.',)
+        if match(label) : return ("DELTA",('1.',))
 
     elif l(8) == 3 and l(1)==1 and L==4 :
         colors=[]
@@ -241,8 +241,31 @@ def colorfactor(vertex,L,pos,lorentztag):
             order,sign  = extractAntiSymmetricIndices(color,"f(")
             colors.append("f(%s,%s,%s)" % (order[0],order[1],order[2]))
         label = ('f(1,2,3)',)
-        if match(label,colors): return ('-complex(0.,1.)*(%s)'%sign,)
+        if match(label,colors): return ("SU3F",('-complex(0.,1.)*(%s)'%sign,))
 
+    elif l(3)==2 and l(-3) == 2 and L==4  and lorentztag=="FFFF" :
+        labels=["Identity(1,2)*Identity(3,4)",
+                "Identity(1,4)*Identity(2,3)",
+                "T(-1,2,1)*T(-1,4,3)",
+                "T(-1,2,3)*T(-1,4,1)"]
+        cstruct=["SU3I12I34","SU3I14I23","SU3T21T43","SU3T23T41"]
+        oname=[]
+        ovalue=[]
+        for color in vertex.color :
+            for i in range(0,len(labels)) :
+                if labels[i]==color : break
+            if(i<len(labels)) :
+                oname.append(cstruct[i])
+                ovalue.append("1.")
+            else :
+                sys.stderr.write(
+                    "Warning: Unknown colour structure {color} ( {ps} ) in {name} for FFFF vertex.\n"
+                    .format(color = ' '.join(vertex.color), name = vertex.name,
+                            ps = ' '.join(map(str,vertex.particles)))
+                )
+                raise SkipThisVertex()
+        return(oname,ovalue)
+        
     sys.stderr.write(
         "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
         .format(color = ' '.join(vertex.color), name = vertex.name,
@@ -483,7 +506,7 @@ Herwig may not give correct results, though.
         # parse the colour structure for the vertex
         try:
             L,pos = colors(vertex)
-            cf = colorfactor(vertex,L,pos,lorentztag)
+            cs,cf = colorfactor(vertex,L,pos,lorentztag)
         except SkipThisVertex:
             msg = 'Warning: Color structure for vertex ( {ps} ) in {name} ' \
                   'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
@@ -497,7 +520,7 @@ Herwig may not give correct results, though.
         classname = 'V_%s' % vertex.name
         if(not generic) :
             try :
-                return self.extractGeneric(vertex,order,lorentztag,classname,plistarray,pos,lf,cf)
+                return self.extractGeneric(vertex,order,lorentztag,classname,plistarray,pos,lf,cf,cs)
             except SkipThisVertex:
                 if(not self.include_generic) :
                     msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
@@ -510,7 +533,7 @@ Herwig may not give correct results, though.
                     return (True,"","")
                 else :
                     try :
-                        return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+                        return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf,cs)
                     except SkipThisVertex:
                         msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
                               'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
@@ -522,7 +545,7 @@ Herwig may not give correct results, though.
                         return (True,"","")
         else :
             try :
-                return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf)
+                return self.extractGeneral(vertex,order,lorentztag,classname,plistarray,pos,cf,cs)
             except SkipThisVertex:
                 msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
                       'is not supported, may have a non-perturbative form.\n'.format(tag=lorentztag, name=vertex.name, 
@@ -534,7 +557,7 @@ Herwig may not give correct results, though.
                 return (True,"","")
             
             
-    def extractGeneric(self,vertex,order,lorentztag,classname,plistarray,pos,lf,cf) :
+    def extractGeneric(self,vertex,order,lorentztag,classname,plistarray,pos,lf,cf,cs) :
         classes=""
         headers=""
         # identify the maximum colour flow and orders of the couplings
@@ -656,6 +679,7 @@ Herwig may not give correct results, though.
                      'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
                      'parameters' : '',
                      'couplingOrders' : couplingOrder,
+                     'colourStructure' : cs,
                      'couplingptrs' : ''.join(couplingptrs),
                      'spindirectory' : spindirectory(lorentztag),
                      'ModelName' : self.modelname,
@@ -672,14 +696,19 @@ Herwig may not give correct results, though.
             classes+=VERTEXCLASS.substitute(subs)
         return (False,classes,headers)
 
-    def extractGeneral(self,vertex,order,lorentztag,classname,plistarray,pos,cf) :
+    def extractGeneral(self,vertex,order,lorentztag,classname,plistarray,pos,cf,cs) :
         eps=False
         classes=""
         headers=""
-        # check the colour flows, two cases supported either 1 flow or 3 in gggg
+        # check the colour flows, three cases supported either 1 flow or 3 in gggg
+        # or multiple wierd ones in FFFF
         cidx=-1
         gluon4point = (len(pos[8])==4 and vertex.lorentz[0].spins.count(3)==4)
+        FFFF        = (len(pos[3])==2 and len(pos[-3])==2 and vertex.lorentz[0].spins.count(2)==4)
         couplingOrders=[]
+        colours={}
+        
+        print cf,cs
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
             orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
@@ -693,6 +722,9 @@ Herwig may not give correct results, though.
                 label = 'f(1,3,-1)*f(2,4,-1)'
                 if(label==color) :
                     cidx=color_idx
+                    colours[cidx] = (cs,cf[cidx])
+            elif (FFFF) :
+                colours[color_idx] = (cs[color_idx],cf[color_idx])
             else :
                 cidx=color_idx
                 if(color_idx!=0) :
@@ -703,76 +735,94 @@ Herwig may not give correct results, though.
                                                                                                ps=' '.join(map(str,vertex.particles)))
                     sys.stderr.write(msg)
                     return (True,"","")
-        if(cidx<0) :
+                if(isinstance(cs,basestring)) :
+                    colours[cidx] = (cs,cf[cidx])
+                else :
+                    vertex.herwig_skip_vertex = True
+                    self.vertex_skipped=True
+                    msg = 'Warning: General spin structure code currently only '\
+                          'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name,
+                                                                                               ps=' '.join(map(str,vertex.particles)))
+                    sys.stderr.write(msg)
+                    return (True,"","")
+        if(len(colours)==0) :
             msg = 'Warning: General spin structure code currently only '\
                   'supports 1 colour structure for  {tag} ( {ps} ) in {name}\n'.format(tag=lorentztag, name=vertex.name,
                                                                                        ps=' '.join(map(str,vertex.particles)))
             sys.stderr.write(msg)
+            vertex.herwig_skip_vertex = True
+            self.vertex_skipped=True
+            return (True,"","")
         # loop over the different orders in the couplings
+        # and colour structures
         iorder=0
+        print "COLOURS",colours
         self.vertex_names[vertex.name]=[classname]
         for corder in couplingOrders :
-            iorder +=1
-            cname=classname
-            if(iorder!=1) :
-                cname= "%s_%s" % (classname,iorder)
-                self.vertex_names[vertex.name].append(cname)
-            defns=[]
-            vertexEval=[]
-            values=[]
-            for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
-                if(color_idx != cidx) : continue
-                if(coupling_orders(vertex, coupling, self.couplingDefns)!=corder) : continue
-                # calculate the value of the coupling
-                values.append(couplingValue(coupling))
-                # now to convert the spin structures
-                for i in range(0,len(vertex.particles)+1) :
-                    if(len(defns)<i+1) :
-                        defns.append({})
-                        vertexEval.append([])
-                    eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,vertex,
-                                          i,defns[i],vertexEval[i])
-            # we can now generate the evaluate member functions
-            header=""
-            impls=""
-            imax = len(vertex.particles)+1
-            if lorentztag in genericVertices :
-                imax=1
-            spins=vertex.lorentz[0].spins
-            mult={}
-            for i in range(1,6) :
-                if( (spins.count(i)>1 and i!=2) or
-                    (spins.count(i)>2 and i==2) ) : mult[i] = []
-            for i in range(0,imax) :
-                (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cf,order)
-                if(i!=0 and spins[i-1] in mult) :
-                    if(len(mult[spins[i-1]])==0) : mult[spins[i-1]].append(evalHeader)
-                    evalHeader=evalHeader.replace("evaluate(","evaluate%s(" % i)
-                    evalCC    =evalCC    .replace("evaluate(","evaluate%s(" % i)
-                    mult[spins[i-1]].append(evalHeader)
-                header+="    "+evalHeader+";\n"
-                impls+=evalCC
-            # combine the multiple defn if needed
-            for (key,val) in mult.iteritems() :
-                (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
-                if(evalHeader!="") : header += "    "+evalHeader+";\n"
-                if(evalCC!="")     : impls   += evalCC
-            impls=impls.replace("evaluate", "FRModel%s::evaluate" % cname)
-            couplingOrder=""
-            for coupName,coupVal in corder.iteritems() :
-                couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
-            ### assemble dictionary and fill template
-            subs = { 'lorentztag' : lorentztag,
-                     'classname'  : cname,
-                     'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
-                     'ModelName' : self.modelname,
-                     'couplingOrders' : couplingOrder,
-                     'evaldefs'  : header,
-                     'evalimpls' : impls}
-            newHeader = GENERALVERTEXHEADER.format(**subs)
-            if(eps) : newHeader +="#include \"ThePEG/Helicity/epsilon.h\"\n"
-            headers+=newHeader
-            classes+=GENERALVERTEXCLASS.substitute(subs)
+            for (cidx,(cstruct,cfactor)) in colours.iteritems() :
+                iorder +=1
+                cname=classname
+                if(iorder!=1) :
+                    cname= "%s_%s" % (classname,iorder)
+                    self.vertex_names[vertex.name].append(cname)
+                defns=[]
+                vertexEval=[]
+                values=[]
+                imax = len(vertex.particles)+1
+                if lorentztag in genericVertices :
+                    imax=1
+                for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
+                    # only the colour structre and coupling order we want
+                    if(color_idx != cidx) : continue
+                    if(coupling_orders(vertex, coupling, self.couplingDefns)!=corder) : continue
+                    # calculate the value of the coupling
+                    values.append(couplingValue(coupling))
+                    # now to convert the spin structures
+                    for i in range(0,imax) :
+                        if(len(defns)<i+1) :
+                            defns.append({})
+                            vertexEval.append([])
+                        print vertex.lorentz[lorentz_idx]
+                        eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,vertex,
+                                              i,defns[i],vertexEval[i])
+                # we can now generate the evaluate member functions
+                header=""
+                impls=""
+                spins=vertex.lorentz[0].spins
+                mult={}
+                for i in range(1,6) :
+                    if( spins.count(i)>1 and i!=2) : mult[i] = []
+                for i in range(0,imax) :
+                    (evalHeader,evalCC) = generateEvaluateFunction(self.model,vertex,i,values,defns[i],vertexEval[i],cfactor,order)
+                    if(i!=0 and spins[i-1] in mult) :
+                        if(len(mult[spins[i-1]])==0) : mult[spins[i-1]].append(evalHeader)
+                        evalHeader=evalHeader.replace("evaluate(","evaluate%s(" % i)
+                        evalCC    =evalCC    .replace("evaluate(","evaluate%s(" % i)
+                        mult[spins[i-1]].append(evalHeader)
+                    header+="    "+evalHeader+";\n"
+                    impls+=evalCC
+                # combine the multiple defn if needed
+                for (key,val) in mult.iteritems() :
+                    (evalHeader,evalCC) = multipleEvaluate(vertex,key,val)
+                    if(evalHeader!="") : header += "    "+evalHeader+";\n"
+                    if(evalCC!="")     : impls   += evalCC
+                impls=impls.replace("evaluate", "FRModel%s::evaluate" % cname)
+                couplingOrder=""
+                for coupName,coupVal in corder.iteritems() :
+                    couplingOrder+="    orderInCoupling(CouplingType::%s,%s);\n" %(coupName,coupVal)
+                ### assemble dictionary and fill template
+                subs = { 'lorentztag' : lorentztag,
+                         'classname'  : cname,
+                         'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
+                         'ModelName' : self.modelname,
+                        'couplingOrders' : couplingOrder,
+                         'colourStructure' : cstruct,
+                         'evaldefs'  : header,
+                         'evalimpls' : impls}
+                newHeader = GENERALVERTEXHEADER.format(**subs)
+                if(eps) : newHeader +="#include \"ThePEG/Helicity/epsilon.h\"\n"
+                headers+=newHeader
+                classes+=GENERALVERTEXCLASS.substitute(subs)
         return (False,classes,headers)
 
     def get_vertices(self,libname):

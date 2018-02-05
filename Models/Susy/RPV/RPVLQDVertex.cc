@@ -18,6 +18,7 @@ using namespace Herwig;
 RPVLQDVertex::RPVLQDVertex() {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 IBPtr RPVLQDVertex::clone() const {

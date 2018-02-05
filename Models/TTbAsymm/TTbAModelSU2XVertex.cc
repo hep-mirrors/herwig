@@ -50,7 +50,7 @@ TTbAModelSU2XVertex::TTbAModelSU2XVertex()  {
   addToList(-2,6,-71);
   addToList(2,-6,-71);
 
-
+  colourStructure(ColourStructure::DELTA);
 }
 
 void TTbAModelSU2XVertex::doinit() {

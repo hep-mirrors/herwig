@@ -20,6 +20,7 @@ LHFFWVertex::LHFFWVertex()
   // order of vertex in couplings
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LHFFWVertex::persistentOutput(PersistentOStream & os) const {

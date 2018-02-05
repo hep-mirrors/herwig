@@ -28,6 +28,7 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 			      yukawa_(1) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSNFSVertex::persistentOutput(PersistentOStream & os) const {

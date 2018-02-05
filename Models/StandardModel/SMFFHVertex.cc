@@ -40,6 +40,7 @@ SMFFHVertex::SMFFHVertex()  {
   _fermion = 0;
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SMFFHVertex::doinit() {

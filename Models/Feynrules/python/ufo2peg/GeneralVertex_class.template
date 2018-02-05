@@ -1,6 +1,7 @@
 class ${ModelName}${classname}: public Abstract${lorentztag}Vertex {
  public:
   ${ModelName}${classname}() {
+    colourStructure(ColourStructure::${colourStructure});
     ${addToPlist}
   }
 

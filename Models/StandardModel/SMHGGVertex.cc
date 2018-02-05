@@ -28,6 +28,7 @@ SMHGGVertex::SMHGGVertex()
    _maxloop(6),_CoefRepresentation(1) {
   orderInGs(2);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SMHGGVertex::doinit() {

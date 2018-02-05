@@ -44,6 +44,7 @@ SSGNGVertex::SSGNGVertex() : _includeOnShell(false), _realIntegral(false),
 			     _initLoops(false) {
   orderInGem(1);
   orderInGs(2);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSGNGVertex::doinit() {

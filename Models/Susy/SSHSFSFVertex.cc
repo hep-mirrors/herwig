@@ -32,6 +32,7 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theSF2Last(0) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSHSFSFVertex::doinit() {

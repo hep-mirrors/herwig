@@ -38,6 +38,7 @@ LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
   // set order in the couplings
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LHFFZVertex::doinit() {

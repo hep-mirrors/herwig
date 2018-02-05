@@ -47,6 +47,7 @@ void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
 RSModelFFGRVertex::RSModelFFGRVertex() : kappa_(ZERO) {
   orderInGem(1);
   orderInGs (0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void RSModelFFGRVertex::doinit() {

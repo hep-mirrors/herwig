@@ -23,6 +23,7 @@ RPVWSSVertex::RPVWSSVertex() :_sw(0.), _cw(0.), _s2w(0.), _c2w(0.),
 			      _factlast(0.), _couplast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }				 
 
 IBPtr RPVWSSVertex::clone() const {

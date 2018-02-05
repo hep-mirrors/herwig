@@ -52,6 +52,7 @@ LHTPFFZVertex::LHTPFFZVertex()
     coupLast_(0.0), q2Last_(0.*GeV2) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LHTPFFZVertex::doinit() {

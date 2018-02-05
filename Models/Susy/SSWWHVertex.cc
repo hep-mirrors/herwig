@@ -29,6 +29,7 @@ SSWWHVertex::SSWWHVertex() : theh0Wfact(ZERO), theH0Wfact(ZERO),
 			     theGBlast(0) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSWWHVertex::doinit() {

@@ -27,6 +27,7 @@ ADDModelFFWGRVertex::ADDModelFFWGRVertex()
     q2last_(ZERO), kappa_(ZERO), r_(ZERO) {
   orderInGem(2);
   orderInGs (0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void ADDModelFFWGRVertex::doinit() {
