@@ -19,8 +19,8 @@ vTemplateT="""\
 """
 
 vTemplate4="""\
-    if(sbarW{iloc1}.id()=={id1}) {{
-        if(sbarW{iloc2}.id()=={id2}) {{
+    if(id{iloc1}=={id1}) {{
+        if(id{iloc2}=={id2}) {{
           return ({res1})*({cf});
         }}
         else {{
@@ -28,7 +28,7 @@ vTemplate4="""\
         }}
     }}
     else {{
-        if(sbarW{iloc2}.id()=={id2}) {{
+        if(id{iloc2}=={id2}) {{
           return ({res3})*({cf});
         }}
         else {{
@@ -2031,10 +2031,10 @@ evaluateTemplate = """\
 }}
 """
 
-def swapOrder(vertex,iloc,momenta) :
+def swapOrder(vertex,iloc,momenta,fIndex) :
     # special for 4 fermion case
     if(vertex.lorentz[0].spins.count(2)==4) :
-        return swapOrderFFFF()
+        return swapOrderFFFF(vertex,iloc,momenta,fIndex)
 
     
     names=['','sca','sp','v']
@@ -2056,8 +2056,6 @@ def swapOrder(vertex,iloc,momenta) :
         for j in range(0,len(sloc)) :
             for k in range(j+1,len(sloc)) :
                 code = vertex.particles[sloc[j]-1].pdg_code
-                if(vertex.particles[sloc[j]-1].name!=vertex.particles[sloc[j]-1].antiname) :
-                    code *= -1
                 output += "    if(id%s!=%s) {\n" % (sloc[j],code)
                 output += "        swap(id%s,id%s);\n" % (sloc[j],sloc[k])
                 output += "        swap(%s%s,%s%s);\n" % (waves[i],sloc[j],waves[i],sloc[k])
@@ -2068,10 +2066,29 @@ def swapOrder(vertex,iloc,momenta) :
                 output += "    };\n"
     return output
 
-def swapOrderFFFF() :
-    print 'in swap FFFF'
+def swapOrderFFFF(vertex,iloc,momenta,fIndex) :
+    output=""
+    for j in range(0,len(fIndex)) :
+        if(j%2==0) :
+            output += "    long id%s = sW%s.id();\n" % (fIndex[j],fIndex[j])
+        else :
+            output += "    long id%s = sbarW%s.id();\n" % (fIndex[j],fIndex[j])
 
-    return ""
+    for j in range(0,2) :
+        code = vertex.particles[fIndex[j]-1].pdg_code
+        # if(vertex.particles[fIndex[j]-1].name!=vertex.particles[fIndex[j]-1].antiname) :
+        #     code *= -1
+        output += "    if(id%s!=%s) {\n" % (fIndex[j],code)
+        output += "        swap(id%s,id%s);\n" % (fIndex[j],fIndex[j+2])
+        wave="s"
+        if(j==1) : wave = "sbar"
+        output += "        swap(%s%s,%s%s);\n" % (wave,fIndex[j],wave,fIndex[j+2])
+        if(momenta[fIndex[j]-1][0] or momenta[fIndex[j+2]-1][0]) :
+            momenta[fIndex[j]-1][0] = True
+            momenta[fIndex[j+2]-1][0] = True
+            output += "        swap(P%s,P%s);\n" % (fIndex[j],fIndex[j+2])
+        output += "    };\n"
+    return output
     
 def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order) :
     RS = "R" in vertex.lorentz[0].name
@@ -2079,7 +2096,10 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
     print 'START OF FUNCTION WRITE',RS,vertex,iloc,order
     print vertexEval
     # extract the start and end of the spin chains
-    if( RS or FM ) : fIndex = vertexEval[0][0][0][2]
+    if( RS or FM ) :
+        fIndex = vertexEval[0][0][0][2]
+    else :
+        fIndex=0
     # first construct the signature of the function
     decls=[]
     offType="Complex"
@@ -2373,7 +2393,6 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                     for (key,val) in expr[ii].iteritems() :
                         result[ii][key] += " + (local_C%s)*Complex(%s) " % (j,val)
     # final defns for more complicated types
-    print "TESTING RESULT !!!",result
     if(not isinstance(result[0],basestring)) :
         subs=[]
         for ii in range(0,len(result)) :
@@ -2390,18 +2409,14 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             subsT["type"] = sbtype
             resultT = Template("${type}<double>(${outxs1},\n${outxs2},\n${outxs3},\n${outxs4},\n${outys1},\n${outys2},\n${outys3},\n${outys4},\n${outzs1},\n${outzs2},\n${outzs3},\n${outzs4},\n${outts1},\n${outts2},\n${outts3},\n${outts4})").substitute(subsT)
         elif("s1" in result[0]) :
-            print 'test a',result
             stype  = "LorentzSpinor"
             sbtype = "LorentzSpinorBar"
             if(offType.find("Bar")>0) : (stype,sbtype)=(sbtype,stype)
             if(not RS) : sbtype=stype
-            print "TESTING !!! ",offType,stype,sbtype
             subs[0]["type"] = stype
             result[0]  = Template("${type}<double>(${outs1},\n${outs2},\n${outs3},\n${outs4})").substitute(subs[0])
             subs[1]["type"] = sbtype
             result[1]  = Template("${type}<double>(${outs1},\n${outs2},\n${outs3},\n${outs4})").substitute(subs[1])
-            print result
-            #quit()
         else :
             print result
             print 'type problem'
@@ -2429,11 +2444,6 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             result = "return (%s)*(%s);\n" % (result[0],py2cpp(cf[0])[0])
         if(RS) :
             result[1] = "return (%s)*(%s);\n" % (result[1],py2cpp(cf[0])[0])
-        # #### TESTING KLUDGE HERE
-        # if(vertex.lorentz[0].name.count("F")==4) :
-        #     print 'GOT TO KLUDGE'
-        #     print result
-        #     quit()
     # off-shell particle
     else :
         # off-shell scalar
@@ -2487,7 +2497,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             for vals in key :
                 if(vals[0]=="P") :
                     momenta[int(vals[1])-1][0] = True
-    sorder=swapOrder(vertex,iloc,momenta)
+    sorder=swapOrder(vertex,iloc,momenta,fIndex)
     momentastring=""
     for i in range(0,len(momenta)) :
         if(momenta[i][0] and momenta[i][1]!="")  :
