@@ -747,16 +747,18 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 }
 
 void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
+  using namespace ThePEG::Helicity;
   // count the colours
   unsigned int noct(0),ntri(0),nsng(0),nsex(0),nf(0);
+  vector<tcPDPtr> particles;
   for(unsigned int ix=0;ix<4;++ix) {
-    tcPDPtr pd = getParticleData(diag.ids[ix]);
-    PDT::Colour col = pd->iColour();
+    particles.push_back(getParticleData(diag.ids[ix]));
+    PDT::Colour col = particles.back()->iColour();
     if(col==PDT::Colour0)                            ++nsng;
     else if(col==PDT::Colour3||col==PDT::Colour3bar) ++ntri;
     else if(col==PDT::Colour8)                       ++noct;
     else if(col==PDT::Colour6||col==PDT::Colour6bar) ++nsex;
-    if(pd->iSpin()==2) nf+=1;
+    if(particles.back()->iSpin()==2) nf+=1;
   }
   if(nsng==4 || (ntri==2&&nsng==2) || 
      (noct==3            && nsng==1) ||
@@ -791,8 +793,109 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
       cfv.push_back(make_pair(4+ix,1.));
     diag.colourFlow = cfv;
   }
-  else
+  else if(ntri==4) {
+    // get the order from the vertex
+    vector<long> temp;
+    for(unsigned int ix=0;ix<4;++ix) {
+      temp = diag.vertices.first->search(ix,diag.outgoing.first);
+      if(!temp.empty()) break;
+    }
+    // compute the mapping
+    vector<long> ids;
+    ids.push_back( particles[0]->CC() ? -diag.incoming.first  : diag.incoming.first );
+    ids.push_back( particles[1]->CC() ? -diag.incoming.second : diag.incoming.second);
+    ids.push_back(  diag.outgoing.first );
+    ids.push_back(  diag.outgoing.second);
+    vector<unsigned int> order = {0,1,2,3};
+    vector<bool> matched(4,false);
+    for(unsigned int ix=0;ix<temp.size();++ix) {
+      for(unsigned int iy=0;iy<ids.size();++iy) {
+	if(matched[iy]) continue;
+	if(temp[ix]==ids[iy]) {
+	  matched[iy] = true;
+	  order[ix]=iy;
+	  break;
+	}
+      }
+    }
+    // 3 3 -> 3 3
+    if((particles[0]->iColour()==PDT::Colour3 &&
+	particles[1]->iColour()==PDT::Colour3) ||
+       (particles[0]->iColour()==PDT::Colour3bar &&
+	particles[1]->iColour()==PDT::Colour3bar) ) {
+      if(diag.vertices.first->colourStructure()==ColourStructure::SU3I12I34) {
+	if( (order[0]==0 && order[1]==2) || (order[2]==0 && order[3]==2) ||
+	    (order[0]==2 && order[1]==0) || (order[2]==2 && order[3]==0))
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(2,1.));
+      	else
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(3,1.));
+      }
+      else if(diag.vertices.first->colourStructure()==ColourStructure::SU3I14I23) {
+      	if( (order[0]==0 && order[3]==2) || (order[1]==0 && order[2]==2) ||
+      	    (order[0]==2 && order[3]==0) || (order[1]==2 && order[2]==0))
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(2,1.));
+      	else
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(3,1.));
+      }
+      else if(diag.vertices.first->colourStructure()==ColourStructure::SU3T21T43) {
+	if( (order[1]==0 && order[0]==2) || (order[3]==0 && order[2]==2) ||
+	    (order[1]==2 && order[0]==0) || (order[3]==2 && order[2]==0))
+	  diag.colourFlow = vector<CFPair>(1,make_pair(0,1.));
+	else
+	  diag.colourFlow = vector<CFPair>(1,make_pair(1,1.));
+      }
+      else if(diag.vertices.first->colourStructure()==ColourStructure::SU3T23T41) {
+	if( (order[1]==0 && order[2]==2) || (order[3]==0 && order[0]==2) ||
+	    (order[1]==2 && order[2]==0) || (order[3]==2 && order[0]==0))
+	  diag.colourFlow = vector<CFPair>(1,make_pair(0,1.));
+	else
+	  diag.colourFlow = vector<CFPair>(1,make_pair(1,1.));
+      }
+      else
+	assert(false);
+    }
+    else if((particles[0]->iColour()==PDT::Colour3 &&
+	     particles[1]->iColour()==PDT::Colour3bar) |
+	    (particles[0]->iColour()==PDT::Colour3bar &&
+	     particles[1]->iColour()==PDT::Colour3)) {
+      if(diag.vertices.first->colourStructure()==ColourStructure::SU3I12I34) {
+      	if( (order[0]==0 && order[1]==1) || (order[2]==0 && order[3]==0) ||
+      	    (order[0]==1 && order[1]==0) || (order[2]==1 && order[3]==1))
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(3,1.));
+      	else
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(2,1.));
+      }
+      else if(diag.vertices.first->colourStructure()==ColourStructure::SU3I14I23) {
+      	if( (order[0]==0 && order[3]==1) || (order[0]==2 && order[3]==3) ||
+      	    (order[0]==1 && order[3]==0) || (order[0]==3 && order[3]==2))
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(3,1.));
+      	else
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(2,1.));
+      }
+      else if(diag.vertices.first->colourStructure()==ColourStructure::SU3T21T43) {
+       	if( (order[1]==0 && order[0]==1) || (order[3]==0 && order[2]==1) ||
+      	    (order[1]==1 && order[0]==0) || (order[3]==1 && order[2]==0))
+       	  diag.colourFlow = vector<CFPair>(1,make_pair(1,1.));
+      	else
+      	  diag.colourFlow = vector<CFPair>(1,make_pair(0,1.));
+      }
+      else if(diag.vertices.first->colourStructure()==ColourStructure::SU3T23T41) {
+	if( (order[1]==0 && order[2]==1) || (order[1]==1 && order[2]==0) ||
+	    (order[1]==3 && order[2]==2) || (order[1]==2 && order[2]==3))
+	  diag.colourFlow = vector<CFPair>(1,make_pair(1,1.));
+	else
+	  diag.colourFlow = vector<CFPair>(1,make_pair(2,1.));
+      }
+      else
+	assert(false);
+    }
+    else {
+      assert(false);
+    }
+  }
+  else {
     assert(false);
+  }
 }
 
 namespace {
