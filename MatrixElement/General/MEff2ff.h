@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFFFVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -207,6 +208,11 @@ private:
    * Store the vector of FFTVertex pairs
    */
   vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > tensor_;
+
+  /**
+   *  Store any 4-point vertices
+   */
+  vector<AbstractFFFFVertexPtr> four_;
 
   /**
    *  Spinors
