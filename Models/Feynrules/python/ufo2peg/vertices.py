@@ -30,7 +30,7 @@ lfactors = {
     'RFV'  : 'complex(0,1)',
 }
 
-genericVertices=['FFFF','FFVV','FFSS','FFVS','VVVV']
+genericVertices=['FFFF','FFVV','FFSS','FFVS','VVVV','VVVT','FFVT','VVSS']
 
 skipped5Point=False
 
@@ -480,7 +480,7 @@ Herwig may not give correct results, though.
         generic = False
         try:
             lf = lfactors[lorentztag]
-            if "SST" in lorentztag :
+            if "SST" in lorentztag or "VVT" in lorentztag :
                 raise KeyError
         except KeyError:
             if(not self.include_generic) :

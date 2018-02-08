@@ -1353,7 +1353,6 @@ def computeUnit2(dimension,vDim) :
 
 # order the indices of a dot product
 def indSort(a,b) :
-    print 'in sort',a,b
     if(not isinstance(a,LorentzIndex) or
        not isinstance(b,LorentzIndex)) :
        quit()
@@ -1467,9 +1466,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns) :
     for j in range(0,len(parsed)) :
         if(parsed[j]=="") : continue
         if(parsed[j].name=="Metric") :
-            print 'before sort',parsed[j].lorentz[0],parsed[j].lorentz[1]
             (ind1,ind2) = sorted((parsed[j].lorentz[0],parsed[j].lorentz[1]),cmp=indSort)
-            print "after sort ",ind1,ind2
             # this product already dealt with ?
             if((ind1,ind2) in defns) :
                 output += "*(%s)" % defns[(ind1,ind2)][0]
@@ -1589,23 +1586,19 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns) :
                         name = "dot%s" % (len(defns)+1)
                         defns[iTemp] = [name,"complex<%s> %s = T%s.preDot(%s)*%s;" % (unit,name,parsed[j].value,con[0],con[1])]
                         output += "*(%s)" % name
-                        parsed[j]=""
+                    parsed[j]=""
                 elif(len(con)==1 and len(uncon)==1) :
                     print 'uncon'
                 else :
                     print "can't happen"
                     quit()
-                
-                print 'tensor  on-shell'
             else :
-                print 'off-shell tensor'
                 dtemp=0
                 for li in parsed[j].lorentz :
                     if(li.type=="P") : dtemp+=1
                 dimension[2]+=dtemp
         elif(parsed[j].name.find("Proj")>=0 or
              parsed[j].name.find("Gamma")>=0) :
-            print 'skip gamma'
             continue
         else :
             print 'not handled',parsed[j]
@@ -1620,15 +1613,58 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
     if(len(parsed)==0) :
        return (output,dimension)
     elif(len(parsed)!=1) :
-        print "summation can't be handled",parsed
-        raise skipThisVertex()
+        print "summation can't be handled",parsed,iloc,output
+        quit()
+        raise SkipThisVertex()
     if(parsed[0].name=="Tensor") :
-        tensor = tensorPropagator(parsed[0],defns)
-        if(output=="") : output="1."
-        output = [output,tensor,()]
+        # contracted with off-shell vector
+        if(parsed[0].value!=iloc) :
+            found = False
+            for ll in parsed[0].lorentz :
+                if(ll.type=="E" and ll.value==iloc) :
+                    found = True
+                else :
+                    lo=ll
+            if(found) :
+                unit="double"
+                if(lo.type=="P") :
+                    dimension[2]+=1
+                    unit="Energy"
+                if(lo==parsed[0].lorentz[0]) :
+                    name="T%s%sF" % (parsed[0].value,lo)
+                    defns[name] = [name,"LorentzVector<complex<%s> > %s = T%s.preDot(%s);" % (unit,name,parsed[0].value,lo)]
+                else :
+                    name="T%s%sS" % (parsed[0].value,lo)
+                    defns[name] = [name,"LorentzVector<complex<%s> > %s = T%s.postDot(%s);" % (unit,name,parsed[0].value,lo)]
+                parsed[0]=""
+                if(output=="") : output="1."
+                output = "(%s)*(%s)" %(output,name)
+            else :
+                print 'problem with tensor',iloc
+                print parsed
+                quit()
+        # off-shell tensor
+        else :
+            tensor = tensorPropagator(parsed[0],defns)
+            if(output=="") : output="1."
+            output = [output,tensor,()]
+    elif(parsed[0].name=="Metric") :
+        found = False
+        for ll in parsed[0].lorentz :
+            if(ll.type=="E" and ll.value==iloc) :
+                found = True
+            else :
+                lo=ll
+        if(found) :
+            parsed[0]=""
+            if(lo.type=="P") :
+                dimension[2]+=1
+            if(output=="") : output="1."
+            output = "(%s)*(%s)" %(output,lo)
     else :
-        print "structure can't be handled",parsed
-        raise skipThisVertex()
+        print "structure can't be handled",parsed,iloc
+        quit()
+        raise SkipThisVertex()
     return (output,dimension)
     
 def tensorPropagator(struct,defns) :
@@ -1690,7 +1726,7 @@ def tensorPropagator(struct,defns) :
         terms.append(("-2./3.*"+d3,i0,i0))
         terms.append(("2./3.*OM%s*%s*%s"%(struct.value,d1,d2),i0,i0))
         terms.append(("2./3.*OM%s*%s"%(struct.value,d3),ip,ip))
-        terms.append(("4./3.*OM3*OM%s*%s*%s"%(struct.value,d1,d2),ip,ip))
+        terms.append(("4./3.*OM%s*OM%s*%s*%s"%(struct.value,struct.value,d1,d2),ip,ip))
     # compute the output as a dict
     output={}
     for i1 in imap:
@@ -1713,7 +1749,7 @@ def tensorPropagator(struct,defns) :
                                     
                             
                 else :
-                    val += "%s*%s.%s()*%s.%s()" % (pre,term[1],i1,term[1],i2)
+                    val += "%s*%s.%s()*%s.%s()" % (pre,term[1],i1,term[2],i2)
             output["%s%s" % (i1,i2) ] = val.replace("+1*","+").replace("-1*","-")
     return output
         
@@ -2540,9 +2576,17 @@ def constructSignature(vertex,order,iloc,decls,momenta,waves,fermionReplace,fInd
     sig=""
     if(iloc==0) :
         sig="%s evaluate(Energy2, const %s)" % (offType,", const ".join(decls))
+        # special for VVT vertex
+        if(len(vertex.lorentz[0].spins)==3 and vertex.lorentz[0].spins.count(3)==2 and
+           vertex.lorentz[0].spins.count(5)==1) :
+            sig = sig[0:-1] + ", Energy vmass=-GeV)"
     else :
         sig="%s evaluate(Energy2, int iopt, tcPDPtr out, const %s, complex<Energy> mass=-GeV, complex<Energy> width=-GeV)" % (offType,", const ".join(decls))
         momenta.append([True,poff+";"])
+        # special for VVT vertex
+        if(len(vertex.lorentz[0].spins)==3 and vertex.lorentz[0].spins.count(3)==2 and
+           vertex.lorentz[0].spins.count(5)==1 and vertex.lorentz[0].spins[iloc-1]==5) :
+            sig=sig.replace("complex<Energy> mass=-GeV","Energy vmass=-GeV, complex<Energy> mass=-GeV")
         for i in range(0,len(momenta)) : momenta[i][0]=True
     return offType,nf,poff,sig
 
@@ -2561,9 +2605,7 @@ def combineResult(res,nf,ispin,fermionReplace,vertex) :
         if( "t" in vals[0][1] ) :
             otype={'t':"",'x':"",'y':"",'z':""}
         else :
-            print vals
-            print 'spin problem',ispin
-            quit()
+            otype={"res":""}
     # off-shell tensors
     elif(ispin==5) :
         otype={}
@@ -2591,8 +2633,9 @@ def combineResult(res,nf,ispin,fermionReplace,vertex) :
         if(dimCheck[0]!=dim[i][0] or dimCheck[1]!=dim[i][1] or
            dimCheck[2]!=dim[i][2]) :
             print vertex.lorentz
-            print "DIMENSION PROBLEM",i,dimCheck,dim,vertex,vals
-            print vals
+            for i in range(0,len(vals)) :
+                print dim[i],vals[i]
+            print "DIMENSION PROBLEM",i,dimCheck,dim,vertex
             quit()
         # simplest case 
         if(isinstance(vals[i], basestring)) :
@@ -2829,15 +2872,18 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
         localCouplings.append("Complex local_C%s = %s;\n" % (j,val))
         symbols |=sym
         # put them together
+        vtype="Complex"
+        if("res" in expr[0] and offType=="VectorWaveFunction") :
+            vtype="LorentzPolarizationVector"
         if(len(result)==0) :
             for ii in range(0,len(expr)) :
                 result.append({})
                 for (key,val) in expr[ii].iteritems() :
-                    result[ii][key] = " (local_C%s)*Complex(%s) " % (j,val)
+                    result[ii][key] = " %s((local_C%s)*(%s)) " % (vtype,j,val)
         else :
             for ii in range(0,len(expr)) :
                 for (key,val) in expr[ii].iteritems(): 
-                    result[ii][key] += " + (local_C%s)*Complex(%s) " % (j,val)
+                    result[ii][key] += " + %s((local_C%s)*(%s)) " % (vtype,j,val)
     # for more complex types merge the spin/lorentz components
     combineComponents(result,offType,RS)
     # multiple by scalar wavefunctions
@@ -2860,7 +2906,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                                            id2=vertex.particles[fIndex[3]-1].pdg_code,
                                            cf=py2cpp(cf)[0],res1=result[0],res2=result[1],res3=result[2],res4=result[3])
         else :
-            result = "return (%s)*(%s);\n" % (result[0],py2cpp(cf[0])[0])
+            result = "return (%s)*(%s);\n" % (result[0],py2cpp(cf)[0])
         if(RS) :
             result[1] = "return (%s)*(%s);\n" % (result[1],py2cpp(cf[0])[0])
     # off-shell particle
@@ -2897,7 +2943,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                                              id=vertex.particles[fIndex[1]-1].pdg_code,
                                              cf=py2cpp(cf[0])[0])
             else :
-                result = vecTemplate.format(iloc=iloc,res=result[0],cf=py2cpp(cf[0])[0])
+                result = vecTemplate.format(iloc=iloc,res=result[0],cf=py2cpp(cf)[0])
         elif(vertex.lorentz[0].spins[iloc-1] == 4 ) :
             if(offType.find("Bar")>0) :
                 offTypeT=offType.replace("Bar","")
@@ -2916,7 +2962,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                 result = tenTTemplate.format(iloc=iloc,res=result[0],resT=result[1],isp=fIndex[1],
                                              id=vertex.particles[fIndex[1]-1].pdg_code,cf=py2cpp(cf[0])[0])
             else :
-                result = tenTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],res=result[0])
+                result = tenTemplate.format(iloc=iloc,cf=py2cpp(cf)[0],res=result[0])
         else :
             print 'unknown spin for off-shell particle',vertex.lorentz[0].spins[iloc-1]
             quit()
@@ -3027,7 +3073,7 @@ def multipleEvaluate(vertex,spin,defns) :
             else        : el="else "
             call = defns[iloc].replace("virtual","").replace("ScalarWaveFunction","").replace("SpinorWaveFunction","") \
                               .replace("SpinorBarWaveFunction","").replace("VectorWaveFunction","").replace("TensorWaveFunction","") \
-                              .replace("Energy2","q2").replace("int","").replace("complex<Energy>","").replace("=-GeV","") \
+                              .replace("Energy2","q2").replace("int","").replace("complex<Energy>","").replace("Energy","").replace("=-GeV","") \
                               .replace("const  &","").replace("tcPDPtr","").replace("  "," ")
             if(iloc!=1) :
                 call = call.replace(waves[0],waves[iloc-1])
