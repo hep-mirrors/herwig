@@ -122,6 +122,24 @@ scaTTemplate="""\
     return ScalarWaveFunction(P{iloc},out,output);
 """
 
+tenTemplate="""\
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    InvEnergy2 OM{iloc} = mass.real()==ZERO ? InvEnergy2(ZERO) : 1./sqr(mass.real()); 
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    LorentzTensor<double> output = fact*({res});
+    return TensorWaveFunction(P{iloc},out,output);
+"""
+
+tenTTemplate="""\
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
+    InvEnergy2 OM{iloc} = mass.real()==ZERO ? InvEnergy2(ZERO) : 1./sqr(mass); 
+    Energy2 p2 = P{iloc}.m2();
+    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    LorentzTensor<double> output = sbarW{isp}.id()=={id} ? fact*({res}) : fact*({resT});
+    return TensorWaveFunction(P{iloc},out,output);
+"""
+
 # various strings for matrixes
 I4 = "Matrix([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])"
 G5 = "Matrix([[-1,0,0,0],[0,-1,0,0],[0,0,1,0],[0,0,0,1]])"
@@ -915,8 +933,8 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                         if(not value) :
                             value = all_couplings[icolor][1]
                             tval  = evaluate(value,model,parmsubs)
-                        tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
-                        tval3 = -evaluate(all_couplings[icolor][1],model,parmsubs)
+                        tval2 = -evaluate(all_couplings[icolor][0],model,parmsubs)
+                        tval3 =  evaluate(all_couplings[icolor][1],model,parmsubs)
                     elif(col[0][0]==1 and col[0][1]==3 and col[1][0] ==2 and col[1][1] == 4) : 
                         if(all_couplings[icolor][1] or not all_couplings[icolor][0] or
                            not all_couplings[icolor][2]) :
@@ -924,8 +942,8 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                         if(not value) :
                             value = all_couplings[icolor][2]
                             tval  = evaluate(value,model,parmsubs)
-                        tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
-                        tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
+                        tval2 = -evaluate(all_couplings[icolor][0],model,parmsubs)
+                        tval3 =  evaluate(all_couplings[icolor][2],model,parmsubs)
                     elif(col[0][0]==1 and col[0][1]==4 and col[1][0] ==2 and col[1][1] == 3) : 
                         if(all_couplings[icolor][0] or not all_couplings[icolor][1] or
                            not all_couplings[icolor][2]) :
@@ -933,8 +951,8 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                         if(not value) :
                             value = all_couplings[icolor][2]
                             tval  = evaluate(value,model,parmsubs)
-                        tval2 = evaluate(all_couplings[icolor][1],model,parmsubs)
-                        tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
+                        tval2 = -evaluate(all_couplings[icolor][1],model,parmsubs)
+                        tval3 =  evaluate(all_couplings[icolor][2],model,parmsubs)
                     else :
                         raise SkipThisVertex()
                     if(abs(tval-tval2)>1e-6 or abs(tval-tval3)>1e-6 ) :
@@ -1010,14 +1028,54 @@ def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order
 def RSCouplings(value,prefactors,L,all_couplings,order) :
     raise SkipThisVertex()
 
+class LorentzIndex :
+    """ A simple classs to store a Lorentz index """
+    type=""
+    value=0
+    def __repr__(self):
+        return "%s%s" % (self.type,self.value)
+
+    def __init__(self,val) :
+        if(isinstance(val,int)) :
+            if(val<0) :
+                self.type="D"
+                self.value = val
+            elif(val>0 and val/1000==0) :
+                self.type="E"
+                self.value = val
+            elif(val>0 and val/1000==1) :
+                self.type="T1"
+                self.value = val%1000
+            elif(val>0 and val/1000==2) :
+                self.type="T2"
+                self.value = val%1000
+            else :
+                print "INDEX",val
+                quit()
+        else :
+            print 'unknown value in lorentz index',val
+            quit()
+            
+    def __eq__(self,other):
+        return ( (self.type, self.value) 
+                 == (other.type, other.value) )
+
+    def __hash__(self) :
+        return hash((self.type,self.value))
+
+# def indexEqual(i1,i2):
+#     return ( (i1.type, i1.value) == (i2.type, i2.value) )
+
 class LorentzStructure:
-    """A simple example class to store a Lorentz structures"""
+    """A simple class to store a Lorentz structures"""
     name=""
-    value=0.
+    value=0
     lorentz=[]
     spin=[]
     def __repr__(self):
         output = self.name
+        if((self.name=="P" or self.name=="Tensor") and self.value!=0) :
+            output += "%s" % self.value
         if(self.name=="int" or self.name=="sign") :
             output += "=%s" % self.value
         elif(len(self.spin)==0) :
@@ -1127,40 +1185,51 @@ def parse_structure(structure) :
                     structures.append(temp[0])
     # split up the structure
     for struct in structures:
-        ind=extractIndices(struct)
+        ind = extractIndices(struct)
         # different types of object
         # object with only spin indices
         if(struct.find("Identity")==0 or
            struct.find("Proj")==0 or
            struct.find("Gamma5")==0) :
+            print 'found proj'
             output.append(LorentzStructure())
             output[-1].spin=ind
             output[-1].name=struct.split("(")[0]
-            output[-1].value=1.
+            output[-1].value=0
             if(len(struct.replace("%s(%s,%s)" % (output[-1].name,ind[0],ind[1]),""))!=0) :
-                print "problem A"
-                quit()
+                print "Problem handling %s structure " % output[-1].name
+                raise SkipThisVertex()
         # objects with 2 lorentz indices
-        elif(struct.find("Metric")==0 or struct.find("P(")==0) :
+        elif(struct.find("Metric")==0) :
             output.append(LorentzStructure())
-            output[-1].lorentz=ind
+            output[-1].lorentz=[LorentzIndex(ind[0]),LorentzIndex(ind[1])]
             output[-1].name=struct.split("(")[0]
-            output[-1].value=1.
+            output[-1].value=0
             if(len(struct.replace("%s(%s,%s)" % (output[-1].name,ind[0],ind[1]),""))!=0) :
-                print "problem B"
-                quit()
+                print "Problem handling %s structure " % output[-1].name
+                raise SkipThisVertex()
+        elif(struct.find("P(")==0) :
+            output.append(LorentzStructure())
+            output[-1].lorentz=[LorentzIndex(ind[0])]
+            output[-1].name=struct.split("(")[0]
+            output[-1].value=ind[1]
+            if(len(struct.replace("%s(%s,%s)" % (output[-1].name,ind[0],ind[1]),""))!=0) :
+                print "Problem handling %s structure " % output[-1].name
+                raise SkipThisVertex()
         # 1 lorentz and 1 spin index
         elif(struct.find("Gamma")==0) :
             output.append(LorentzStructure())
-            output[-1].lorentz=[ind[0]]
+            output[-1].lorentz=[LorentzIndex(ind[0])]
             output[-1].spin=[ind[1],ind[2]]
             output[-1].name=struct.split("(")[0]
-            output[-1].value=1.
+            output[-1].value=1
             if(len(struct.replace("%s(%s,%s,%s)" % (output[-1].name,ind[0],ind[1],ind[2]),""))!=0) :
-                print "problem C",struct
-                quit()
+                print "problem parsing gamma matrix",struct
+                raise SkipThisVertex()
         # objects with 4 lorentz indices
         elif(struct.find("Epsilon")==0) :
+            print 'eps'
+            quit()
             output.append(LorentzStructure())
             output[-1].lorentz=ind
             output[-1].name=struct.split("(")[0]
@@ -1185,40 +1254,44 @@ def parse_structure(structure) :
                     quit()
     # now do the sorting
     if(len(output)==1) : return output
-    return sorted(output,cmp=LorentzCompare)
+    output = sorted(output,cmp=LorentzCompare)
+    print output
+    return output
 
-def contractLorentz(L,parsed,lorentztag,order) :
-    for l in range(0,len(parsed)) :
-        for j in range(0,len(parsed[l])) :
-            # replace indices with polarization vectors
-            ll = len(parsed[l][j].lorentz)
-            if(parsed[l][j].name=="P") :
-                ll=1
-                found=False
-                for k in range(0,len(parsed[l])) :
-                    if(j==k or parsed[l][k]=="" ) : continue
-                    imax = len(parsed[l][k].lorentz)
-                    if(parsed[l][k].name=="P") : imax=1
-                    for i in range(0,imax) :
-                        if(parsed[l][k].lorentz[i]==parsed[l][j].lorentz[0]) :
-                            parsed[l][k].lorentz[i] = "P%s" % parsed[l][j].lorentz[1]
-                            if(parsed[l][k].name=="P") :
-                                parsed[l][k].lorentz[1] = "P%s" % parsed[l][k].lorentz[1]
-                                parsed[l][k].name="Metric"
-                            found=True
-                            break
+def contract(parsed) :
+    print "!!!!!!!!!!!!!!!!!!!!!!!!! IN CONTRACT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    print parsed
+    for j in range(0,len(parsed)) :
+        if(parsed[j]=="") : continue
+        if(parsed[j].name=="P") :
+            # simplest case
+            if(parsed[j].lorentz[0].type=="E" or
+               parsed[j].lorentz[0].type=="P") :
+                newIndex = LorentzIndex(parsed[j].value)
+                newIndex.type="P"
+                parsed[j].name="Metric"
+                parsed[j].lorentz.append(newIndex)
+                parsed[j].lorentz = sorted(parsed[j].lorentz,cmp=indSort)
+                continue
+            ll=1
+            found=False
+            for k in range(0,len(parsed)) :
+                if(j==k or parsed[k]=="" ) : continue
+                for i in range(0,len(parsed[k].lorentz)) :
+                    if(parsed[k].lorentz[i] == parsed[j].lorentz[0]) :
+                        parsed[k].lorentz[i].type="P"
+                        parsed[k].lorentz[i].value = parsed[j].value
+                        if(parsed[k].name=="P") :
+                            parsed[k].lorentz.append(LorentzIndex(parsed[k].value))
+                            parsed[k].lorentz[1].type="P"
+                            parsed[k].name="Metric"
+                            parsed[k].value = 0
+                        found=True
+                        break
                 if(found) :
-                    parsed[l][j]=''
-                    ll=0
-            for i in range(0,ll) :
-                if(parsed[l][j]!="" and parsed[l][j].lorentz[i]>=0
-                   and isinstance(parsed[l][j].lorentz[i],(int,long)) and
-                   L.spins[parsed[l][j].lorentz[i]-1] in [3,4] ) :
-                    parsed[l][j].lorentz[i]=  "E%s" % parsed[l][j].lorentz[i]
-                    if(parsed[l][j].name=="P") :
-                        parsed[l][j].lorentz[1] = "P%s" % parsed[l][j].lorentz[1]
-                        parsed[l][j].name="Metric"
-        parsed[l] = [x for x in parsed[l] if x != ""]
+                    parsed[j]=""
+                    break
+    return [x for x in parsed if x != ""]
 
 def computeUnit(dimension) :
     if(isinstance(dimension,int)) :
@@ -1278,135 +1351,396 @@ def computeUnit2(dimension,vDim) :
     elif(expr=="") : return output
     else           : return "%s*%s" %(output,expr)
 
+# order the indices of a dot product
+def indSort(a,b) :
+    print 'in sort',a,b
+    if(not isinstance(a,LorentzIndex) or
+       not isinstance(b,LorentzIndex)) :
+       quit()
+    if(a.type==b.type) :
+        i1=a.value
+        i2=b.value
+        if(i1>i2) :
+            return 1
+        elif(i1<i2) :
+            return -1
+        else :
+            return 0
+    else :
+        if(a.type=="E") :
+            return 1
+        else :
+            return -1
+
+
+def finishParsing(parsed,dimension,lorentztag,iloc,defns) :
+    output=1.
+    # replace signs
+    if(len(parsed)==1 and parsed[0].name=="sign") :
+        if(parsed[0].value>0) :
+            output="+"
+        else :
+            output="-"
+        parsed=[]
+        return (output,parsed,dimension)
+    # replace integers (really lorentz scalars)
+    print parsed
+    for j in range(0,len(parsed)) :
+        if(parsed[j]!="" and parsed[j].name=="int") :
+            print output,parsed[j]
+            output *= parsed[j].value
+            parsed[j]=""
+    # bracket this for safety
+    if(output!="") : output = "(%s)" % output
+    # special for tensor indices
+    if("T" in lorentztag) :
+        for j in range(0,len(parsed)) :
+            if(parsed[j]=="") :continue
+            print "!!!!!!!!!",parsed[j]
+            # check for tensor index
+            found=False
+            for li in parsed[j].lorentz :
+                if(li.type[0]=="T") : 
+                    index = li
+                    found=True
+                    break
+            if(not found) : continue
+            # workout the other index for the tensor
+            index2 = LorentzIndex(li.value)
+            if(index.type=="T1") :
+                index2.type="T2"
+            else :
+                index2.type="T1"
+            print index,index2
+            # special is tensor contracted with itself
+            if(parsed[j].name=="Metric" and index2 == parsed[j].lorentz[1]) :
+                parsed[j].name = "Tensor"
+                parsed[j].value = index.value
+                parsed[j].lorentz = []
+                if(iloc!=index.value) : 
+                    name= "traceT%s" % parsed[j].value
+                    if( name  in defns ) :
+                        output += "*(%s)" % defns[name][0]
+                    else :
+                        defns[name] = [name,"Complex %s = T%s.trace();" % (name,parsed[j].value)]
+                        output += "*(%s)" % defns[name][0]
+                    parsed[j]=""
+                continue
+            # otherwise search for the match
+            for k in range(j+1,len(parsed)) :
+                print parsed[k]
+                found = False
+                for li in parsed[k].lorentz :
+                    if(li == index2) : 
+                        found=True
+                        break
+                if(not found) : continue
+                if(parsed[j].name=="P") :
+                    newIndex1 = LorentzIndex(parsed[j].value)
+                    newIndex1.type="P"
+                elif(parsed[j].name=="Metric") :
+                    for li in parsed[j].lorentz :
+                        if(li != index) :
+                            newIndex1=li
+                            break
+                else :
+                    print 'unknown type'
+                    print parsed[j]
+                    quit()
+                if(parsed[k].name=="P") :
+                    newIndex2 = LorentzIndex(parsed[k].value)
+                    newIndex2.type="P"
+                elif(parsed[k].name=="Metric") :
+                    for li in parsed[k].lorentz :
+                        if(li != index) :
+                            newIndex2=li
+                            break
+                else :
+                    print 'unknown type'
+                    print parsed[j]
+                    quit()
+                parsed[j].name = "Tensor"
+                parsed[j].value= int(index.value)
+                parsed[j].lorentz= [newIndex1,newIndex2]
+                parsed[k]=""
+    # main handling of lorentz structures
+    for j in range(0,len(parsed)) :
+        if(parsed[j]=="") : continue
+        if(parsed[j].name=="Metric") :
+            print 'before sort',parsed[j].lorentz[0],parsed[j].lorentz[1]
+            (ind1,ind2) = sorted((parsed[j].lorentz[0],parsed[j].lorentz[1]),cmp=indSort)
+            print "after sort ",ind1,ind2
+            # this product already dealt with ?
+            if((ind1,ind2) in defns) :
+                output += "*(%s)" % defns[(ind1,ind2)][0]
+                parsed[j]=""
+                if(ind1.type=="P") : dimension[2] +=1
+                if(ind2.type=="P") : dimension[2] +=1
+                continue
+            # handle the product
+            name = "dot%s" % (len(defns)+1)
+            if(ind1.type=="P") :
+                # dot product of two momenta
+                if(ind2.type=="P") :
+                    dimension[2] +=2
+                    defns[(ind1,ind2)] = [name,"Energy2 %s = %s*%s;" % (name,ind1,ind2)]
+                    output += "*(%s)" % name
+                    parsed[j]=""
+                elif(ind2.type=="E") :
+                    if(ind2.value!=iloc) :
+                        dimension[2] += 1
+                        defns[(ind1,ind2)] = [name,"complex<Energy> %s = %s*%s;" % (name,ind1,ind2)]
+                        output += "*(%s)" % name
+                        parsed[j]=""
+        #                 
+        #                 if(int(ind2[1])==iloc) :
+        #                     output += "*(%s)" % ind1
+        #                 else :
+        #                     
+        #                     
+            elif(ind1.type=="E") :
+                if(ind2.type!="E") :
+                    print "EE problem",ind1,ind2
+                    quit()
+                elif(ind1.value!=iloc and ind2.value!=iloc) :
+                    defns[(ind1,ind2)] = [name,"complex<double> %s = %s*%s;" % (name,ind1,ind2)]
+                    output += "*(%s)" % name
+                    parsed[j]=""
+                    
+        #             if(int(ind1[1])==iloc) :
+        #                 output += "*(%s)" % ind2
+        #             elif(int(ind2[1])==iloc) :
+        #                 output += "*(%s)" % ind1
+        #             else :
+        #                 
+        #                 
+        #     elif(parsed[j].name=="Epsilon") :
+        #         if(not eps) : eps = True
+        #         offLoc = -1
+        #         indices=[]
+        #         dTemp=0
+        #         for ix in range(0,len(parsed[j].lorentz)) :
+        #             if(isinstance(parsed[j].lorentz[ix],int)) :
+        #                 offLoc = ix
+        #                 break
+        #             elif(parsed[j].lorentz[ix][0]=="E" and int(parsed[j].lorentz[ix][1])==iloc ) :
+        #                 offLoc = ix
+        #                 break
+        #         for ix in range(0,len(parsed[j].lorentz)) :
+        #             if(isinstance(parsed[j].lorentz[ix],basestring) and
+        #                parsed[j].lorentz[ix][0]=="P") : dTemp+=1
+        #             if((offLoc<0 and ix != 0) or
+        #                (offLoc>=0 and offLoc!=ix) ) :
+        #                 indices.append(parsed[j].lorentz[ix])
+        #         dimension[2] += dTemp
+        #         if(offLoc<0) :
+        #             iTemp = (parsed[j].lorentz[0],parsed[j].lorentz[1],
+        #                      parsed[j].lorentz[2],parsed[j].lorentz[3])
+        #             if(iTemp in defns) :
+        #                 output += "*(%s)" % defns[iTemp][0]
+        #                 parsed[j]=""
+        #             else :
+        #                 name = "dot%s" % (len(defns)+1)
+        #                 unit = computeUnit(dTemp)
+        #                 defns[iTemp] = [name,"complex<%s> %s =-%s*epsilon(%s,%s,%s);" % (unit,name,parsed[j].lorentz[0],
+        #                                                                                 indices[0],indices[1],indices[2]) ]
+        #                 output += "*(%s)" % name
+        #         else :
+        #             iTemp = (indices[0],indices[1],indices[2])
+        #             sign = ""
+        #             if(offLoc%2!=0) : sign="-"
+        #             print iTemp
+        #             if(iTemp in defns) :
+        #                 output += "*(%s%s)" % (sign,defns[iTemp][0])
+        #                 parsed[j]=""
+        #             else :
+        #                 name = "vec%s" % (len(defns)+1)
+        #                 output += "*(%s%s)" % (sign,name)
+        #                 unit = computeUnit(dTemp)
+        #                 defns[iTemp] = [name,"LorentzVector<complex<%s> > %s =-epsilon(%s,%s,%s);" % (unit,name,
+        #                                                                                              indices[0],indices[1],indices[2]) ]
+        elif(parsed[j].name=="Tensor") :
+            # not an exteral tensor
+            if(parsed[j].value!=iloc) :
+                # now check the lorentz indices
+                con=[]
+                uncon=[]
+                dtemp=0
+                for li in parsed[j].lorentz :
+                    if(li.type=="P") :
+                        con.append(li)
+                        dtemp+=1
+                    elif(li.type=="E") :
+                        if(li.value!=iloc) :
+                            con.append(li)
+                        else :
+                            uncon.append(li)
+                    else :
+                        print 'need to handle ',li,'in tensor',parsed[j]
+                        print li
+                        quit()
+                if(len(con)==2) :
+                    iTemp = ("T%s%s%s"% (parsed[j].value,con[0],con[1]))
+                    dimension[2]+=dtemp
+                    if(iTemp in defns) :
+                        output += "*(%s)" % defns[iTemp][0]
+                    else :
+                        unit=computeUnit(dtemp)
+                        name = "dot%s" % (len(defns)+1)
+                        defns[iTemp] = [name,"complex<%s> %s = T%s.preDot(%s)*%s;" % (unit,name,parsed[j].value,con[0],con[1])]
+                        output += "*(%s)" % name
+                        parsed[j]=""
+                elif(len(con)==1 and len(uncon)==1) :
+                    print 'uncon'
+                else :
+                    print "can't happen"
+                    quit()
+                
+                print 'tensor  on-shell'
+            else :
+                print 'off-shell tensor'
+                dtemp=0
+                for li in parsed[j].lorentz :
+                    if(li.type=="P") : dtemp+=1
+                dimension[2]+=dtemp
+        elif(parsed[j].name.find("Proj")>=0 or
+             parsed[j].name.find("Gamma")>=0) :
+            print 'skip gamma'
+            continue
+        else :
+            print 'not handled',parsed[j]
+            quit()
+    # remove leading *
+    if(output!="" and output[0]=="*") : output = output[1:]
+    # remove any (now) empty elements
+    parsed = [x for x in parsed if x != ""]
+    return (output,parsed,dimension)
+
+def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
+    if(len(parsed)==0) :
+       return (output,dimension)
+    elif(len(parsed)!=1) :
+        print "summation can't be handled",parsed
+        raise skipThisVertex()
+    if(parsed[0].name=="Tensor") :
+        tensor = tensorPropagator(parsed[0],defns)
+        if(output=="") : output="1."
+        output = [output,tensor,()]
+    else :
+        print "structure can't be handled",parsed
+        raise skipThisVertex()
+    return (output,dimension)
+    
+def tensorPropagator(struct,defns) :
+    # dummy index
+    i0 = LorentzIndex(-1000)
+    # index for momentum of propagator
+    ip = LorentzIndex(struct.value)
+    ip.type="P"
+    # the metric tensor
+    terms=[]
+    if(len(struct.lorentz)==0) :
+        iTemp=(ip,ip)
+        if(iTemp in defns) :
+            dp = defns[iTemp][0]
+        else :
+            dp = "dot%s" % (len(defns)+1)
+            defns[iTemp] = [dp,"Energy2 %s = %s*%s;" % (dp,ip,ip)]
+        pre = "2./3.*(1.-%s*OM%s)" % (dp,struct.value)
+        terms.append(("-"+pre,i0,i0))
+        terms.append(("%s*OM%s" %(pre,struct.value),ip,ip))
+    else :
+        # indices of the tensor
+        ind1 = struct.lorentz[0]
+        ind2 = struct.lorentz[1]
+        # the dot products we need
+        iTemp = tuple(sorted((ind1,ip),cmp=indSort))
+        if(iTemp in defns) :
+            d1 = defns[iTemp][0]
+        else :
+            d1 = "dot%s" % (len(defns)+1)
+            unit = "Energy"
+            if(ind1.type=="P") : unit="Energy2"
+            defns[iTemp] = [d1,"complex<%s> %s = %s*%s;" % (unit,d1,ind1,ip)]
+        iTemp = tuple(sorted((ind2,ip),cmp=indSort))
+        if(iTemp in defns) :
+            d2 = defns[iTemp][0]
+        else :
+            d2 = "dot%s" % (len(defns)+1)
+            unit = "Energy"
+            if(ind2.type=="P") : unit="Energy2"
+            defns[iTemp] = [d2,"complex<%s> %s = %s*%s;" % (unit,d2,ind2,ip)]
+        iTemp = tuple(sorted((ind1,ind2),cmp=indSort))
+        if(iTemp in defns) :
+            d3 = defns[iTemp][0]
+        else :
+            d3 = "dot%s" % (len(defns)+1)
+            dtemp=0
+            if(ind1.type=="P") : dtemp+=1
+            if(ind2.type=="P") : dtemp+=1
+            unit=computeUnit(dtemp)
+            defns[iTemp] = [d3,"complex<%s> %s = %s*%s;" % (unit,d3,ind1,ind2)]
+        # various terms in the propagator
+        terms.append(("1",ind1,ind2))
+        terms.append(("-OM%s*%s"%(struct.value,d1),ip,ind2))
+        terms.append(("-OM%s*%s"%(struct.value,d2),ind1,ip))
+        terms.append(("1",ind2,ind1))
+        terms.append(("-OM%s*%s"%(struct.value,d2),ip,ind1))
+        terms.append(("-OM%s*%s"%(struct.value,d1),ind2,ip))
+        terms.append(("-2./3.*"+d3,i0,i0))
+        terms.append(("2./3.*OM%s*%s*%s"%(struct.value,d1,d2),i0,i0))
+        terms.append(("2./3.*OM%s*%s"%(struct.value,d3),ip,ip))
+        terms.append(("4./3.*OM3*OM%s*%s*%s"%(struct.value,d1,d2),ip,ip))
+    # compute the output as a dict
+    output={}
+    for i1 in imap:
+        for i2 in imap :
+            val=""
+            for term in terms:
+                if(term[0][0]!="-") :
+                    pre = "+"+term[0]
+                else :
+                    pre = term[0]
+                if(term[1]==i0) :
+                    if(i1==i2) :
+                        if(i1=="t") :
+                            val += pre
+                        else :
+                            if(pre[0]=="+") :
+                                val +="-"+pre[1:]
+                            else :
+                                val +="+"+pre[1:]
+                                    
+                            
+                else :
+                    val += "%s*%s.%s()*%s.%s()" % (pre,term[1],i1,term[1],i2)
+            output["%s%s" % (i1,i2) ] = val.replace("+1*","+").replace("-1*","-")
+    return output
+        
 def generateVertex(iloc,L,parsed,lorentztag,vertex,defns) :
     eps=False
-    # order the indices of a dot product
-    def indSort(a,b) :
-        if(a[0]==b[0]) :
-            i1=int(a[1])
-            i2=int(b[1])
-            if(i1>i2) :
-                return 1
-            elif(i1<i2) :
-                return -1
-            else :
-                return 0
-        else :
-            if(a[0]=="E") :
-                return 1
-            else :
-                return -1
     # parse the lorentz structures
     output    = [1.]*len(parsed)
     dimension=[]
     for i in range(0,len(parsed)) :
         dimension.append([0,0,0])
     for i in range (0,len(parsed)) :
-        # replace signs
-        if(len(parsed[i])==1 and parsed[i][0].name=="sign") :
-            if(parsed[i][0].value>0) :
-                output[i]="+"
-            else :
-                output[i]="-"
-            parsed[i][0]=''
-            continue
-        # replace integers
-        for j in range(0,len(parsed[i])) :
-            if(parsed[i][j]!="" and parsed[i][j].name=="int") :
-                output[i] *= parsed[i][j].value
-                parsed[i][j]=""
-                continue
-        output[i] = "(%s)" % output[i]
-        for j in range(0,len(parsed[i])) :
-            if(parsed[i][j]!="" and parsed[i][j].name=="Metric") :
-                (ind1,ind2) = sorted((parsed[i][j].lorentz[0],parsed[i][j].lorentz[1]),cmp=indSort)
-                # this product already dealt with ?
-                if((ind1,ind2) in defns) :
-                    output[i] += "*(%s)" % defns[(ind1,ind2)][0]
-                    parsed[i][j]=""
-                    if(ind1[0]=="P") : dimension[i][2] +=1
-                    if(ind2[0]=="P") : dimension[i][2] +=1
-                    continue
-                # handle the product
-                name = "dot%s" % (len(defns)+1)
-                parsed[i][j]=""
-                if(ind1[0]=="P") :
-                    # dot product of two momenta
-                    if(ind2[0]=="P") :
-                        dimension[i][2] +=2
-                        defns[(ind1,ind2)] = [name,"Energy2 %s = %s*%s;" % (name,ind1,ind2)]
-                        output[i] += "*(%s)" % name
-                    elif(ind2[0]=="E") :
-                        dimension[i][2] +=1
-                        if(int(ind2[1])==iloc) :
-                            output[i] += "*(%s)" % ind1
-                        else :
-                            defns[(ind1,ind2)] = [name,"complex<Energy> %s = %s*%s;" % (name,ind1,ind2)]
-                            output[i] += "*(%s)" % name
-                elif(ind1[0]=="E") :
-                    if(ind2[0]!="E") :
-                        print "EE problem"
-                        quit()
-                    if(int(ind1[1])==iloc) :
-                        output[i] += "*(%s)" % ind2
-                    elif(int(ind2[1])==iloc) :
-                        output[i] += "*(%s)" % ind1
-                    else :
-                        defns[(ind1,ind2)] = [name,"complex<double> %s = %s*%s;" % (name,ind1,ind2)]
-                        output[i] += "*(%s)" % name
-            elif(parsed[i][j]!="" and parsed[i][j].name=="Epsilon") :
-                if(not eps) : eps = True
-                offLoc = -1
-                indices=[]
-                dTemp=0
-                for ix in range(0,len(parsed[i][j].lorentz)) :
-                    if(isinstance(parsed[i][j].lorentz[ix],int)) :
-                        offLoc = ix
-                        break
-                    elif(parsed[i][j].lorentz[ix][0]=="E" and int(parsed[i][j].lorentz[ix][1])==iloc ) :
-                        offLoc = ix
-                        break
-                for ix in range(0,len(parsed[i][j].lorentz)) :
-                    if(isinstance(parsed[i][j].lorentz[ix],basestring) and
-                       parsed[i][j].lorentz[ix][0]=="P") : dTemp+=1
-                    if((offLoc<0 and ix != 0) or
-                       (offLoc>=0 and offLoc!=ix) ) :
-                        indices.append(parsed[i][j].lorentz[ix])
-                dimension[i][2] += dTemp
-                if(offLoc<0) :
-                    iTemp = (parsed[i][j].lorentz[0],parsed[i][j].lorentz[1],
-                             parsed[i][j].lorentz[2],parsed[i][j].lorentz[3])
-                    if(iTemp in defns) :
-                        output[i] += "*(%s)" % defns[iTemp][0]
-                        parsed[i][j]=""
-                    else :
-                        name = "dot%s" % (len(defns)+1)
-                        unit = computeUnit(dTemp)
-                        defns[iTemp] = [name,"complex<%s> %s =-%s*epsilon(%s,%s,%s);" % (unit,name,parsed[i][j].lorentz[0],
-                                                                                        indices[0],indices[1],indices[2]) ]
-                        output[i] += "*(%s)" % name
-                else :
-                    iTemp = (indices[0],indices[1],indices[2])
-                    sign = ""
-                    if(offLoc%2!=0) : sign="-"
-                    print iTemp
-                    if(iTemp in defns) :
-                        output[i] += "*(%s%s)" % (sign,defns[iTemp][0])
-                        parsed[i][j]=""
-                    else :
-                        name = "vec%s" % (len(defns)+1)
-                        output[i] += "*(%s%s)" % (sign,name)
-                        unit = computeUnit(dTemp)
-                        defns[iTemp] = [name,"LorentzVector<complex<%s> > %s =-epsilon(%s,%s,%s);" % (unit,name,
-                                                                                                     indices[0],indices[1],indices[2]) ]
-    # remove any (now) empty elements
-    for i in range (0,len(parsed)) :
-        parsed[i] = [x for x in parsed[i] if x != ""]
+        (output[i],parsed[i],dimension[i]) = finishParsing(parsed[i],dimension[i],lorentztag,iloc,defns)
     # still need to process gamma matrix strings for fermions
     if(lorentztag[0] in ["F","R"] ) :
         return convertDirac(output,dimension,eps,iloc,L,parsed,lorentztag,vertex,defns)
     # return the answer
     else :
+        handled=True
+        for i in range (0,len(parsed)) :
+            if(len(parsed[i])!=0) :
+                handled = False
+                break
+        if(not handled) :
+            print 'in NOT HANDLED',parsed,output
+            for i in range (0,len(parsed)) :
+                (output[i],dimension[i]) = finalContractions(output[i],parsed[i],dimension[i],lorentztag,iloc,defns)
+                print output[i]
         return (output,dimension,eps)
 
 def convertDirac(output,dimension,eps,iloc,L,parsed,lorentztag,vertex,defns) :
@@ -1437,25 +1771,27 @@ def convertMatrix(structure,expr,spins,unContracted,Symbols,dtemp,iloc,defns) :
         expr += "*%s" % PP
         structure=""
     elif(structure.name=="Gamma") :
+        print structure
         # lorentz matrix contracted with the propagator
-        if(isinstance(structure.lorentz[0],int) and structure.lorentz[0]<0) :
-            if(abs(structure.lorentz[0]) not in unContracted) :
-                unContracted.append(abs(structure.lorentz[0]))
-            expr += "*U%s" % abs(structure.lorentz[0])
+        if(structure.lorentz[0].type=="D") :
+            if(abs(structure.lorentz[0].value) not in unContracted) :
+                unContracted.append(abs(structure.lorentz[0].value))
+            expr += "*U%s" % abs(structure.lorentz[0].value)
             structure=""
-        elif(structure.lorentz[0][0]=="E" and
-             spins[int(structure.lorentz[0][1])-1]==4) :
+        elif(structure.lorentz[0].type=="E" and
+             spins[structure.lorentz[0].value-1]==4) :
             expr += "*R%s" % structure.lorentz[0][1]
             unContracted.append("R%s" % structure.lorentz[0][1])
             structure=""
-        elif(structure.lorentz[0] == ("E%s" % iloc ) ) :
+        elif(structure.lorentz[0].type  == "E" and
+             structure.lorentz[0].value == iloc ) :
             expr += "*V%s" % iloc
             unContracted.append("V%s" % iloc)
             structure=""
         else :
             expr += "*"+vslash.substitute({ "v" : structure.lorentz[0]})
             Symbols += vslashS.substitute({ "v" : structure.lorentz[0]})
-            if(structure.lorentz[0][0]=="P") :
+            if(structure.lorentz[0].type=="P") :
                 dtemp[2] += 1
                 variable="Energy"
             else :
@@ -1711,13 +2047,31 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
         else :
             print 'At most one R-S spinor allowed in a vertex'
             raise SkipThisVertex()
+    # remove leading *
+    for i in range(0,nchain) : expr[i]=expr[i][1:]
     # check we've dealt with everything
     parsed = [x for x in parsed if x != ""]
     if(len(parsed)!=0) :
-        print "Can't parse ",parsed
-        raise SkipThisVertex()
-    # remove leading *
-    for i in range(0,nchain) : expr[i]=expr[i][1:]
+        for i in range(0,len(parsed)) :
+            if(parsed[i].name=="Metric") :
+                found = False
+                for ll in parsed[i].lorentz :
+                    if(ll.type=="E" and ll.value==iloc) :
+                        found = True
+                    else :
+                        lo=ll
+                if(found) :
+                    parsed[i]=""
+                    for i in range(0,nchain) :
+                        expr[i]+="*%s(V%s)" % (lo,iloc)
+                    unContracted.append("V%s" % iloc)
+                    if(lo.type=="P") : dimension[2]+=1
+        parsed = [x for x in parsed if x != ""]
+        if(len(parsed)!=0) :
+            print expr
+            print "Can't parse ",parsed,iloc
+            quit()
+            raise SkipThisVertex()
     sVal ={}
     # deal with the simplest case first
     if len(unContracted) == 0 :
@@ -1801,7 +2155,17 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                                 fTemp[ichain]  =  fTemp[ichain].replace(eta,replace)
                                 fTTemp[ichain] = fTTemp[ichain].replace(eta,replace)
                     elif(unContracted[j][0]=="V") :
-                        eTemp[ichain]   = eTemp[ichain].replace(unContracted[j],dirac[unI[j]])
+                        print unContracted[j][0]
+                        print eTemp[ichain]
+                        loc = eTemp[ichain].find("(%s)"%unContracted[j])
+                        if(loc>=0) :
+                            vec=eTemp[ichain][loc-2:loc]
+                            Symbols += momCom.substitute({"v":vec})
+                            print "!!!!!!",vec
+                            eTemp[ichain]   = eTemp[ichain].replace("(%s)"%unContracted[j],imap[unI[j]]) 
+                        else :
+                           eTemp[ichain]   = eTemp[ichain].replace(unContracted[j],dirac[unI[j]])
+                        print eTemp[ichain]
                     else :
                         print 'uknown type of uncontracted index',unContracted[j]
                         raise SkipThisVertex()
@@ -1856,8 +2220,6 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
             # and add it to the output
             # 1 spin chain
             if(nchain==1) :
-                print "PROBLEM???",rTemp[0][0].shape
-                print "PROBLEM???",rTemp[1][0].shape
                 for ii in range(0,2) :
                     if(rTemp[ii][0].shape[0]==1) :
                         if(rTemp[ii][0].shape[1]==1) :
@@ -1922,7 +2284,7 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
             elif(len(res)==4) :
                 for k in range(0,4) :
                     sVal[ "s%s"  % (k+1) ] = res[0][k]
-                    sVal[ "sT%s" % (k+1) ] = res[0][k]
+                    sVal[ "sT%s" % (k+1) ] = res[1][k]
             break
         # uncontracted indices
         else :
@@ -1934,7 +2296,6 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                 print unContracted
                 print unI
                 quit()
-            print res
             sVal[istring]     = res[0]
             sVal[istring+"T"] = res[1]
             ii = len(unI)-1
@@ -1950,10 +2311,14 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
     if( "t" in sVal ) :
         # deal with pure vectors
         if(len(sVal)==8 and "t" in sVal and len(sVal["t"])==1) :
-            unit = computeUnit(dtemp)
-            sVal   = { "s"  : "LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (unit,sVal["x" ][0],sVal["y" ][0],sVal["z" ][0],sVal["t" ][0]),
-                       "sT" : "LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (unit,sVal["xT"][0],sVal["yT"][0],sVal["zT"][0],sVal["tT"][0]) }
-            print sVal
+            for key in sVal:
+                sVal[key] = sVal[key][0]
+
+            
+            # unit = computeUnit(dtemp)
+            # sVal   = { "s"  : "LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (unit,sVal["x" ][0],sVal["y" ][0],sVal["z" ][0],sVal["t" ][0]),
+            #            "sT" : "LorentzVector<complex<%s> >(%s,%s,%s,%s)" % (unit,sVal["xT"][0],sVal["yT"][0],sVal["zT"][0],sVal["tT"][0]) }
+            # print sVal
         else :
             print 'val problrm A'
             quit()
@@ -1985,7 +2350,6 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
     #             #                     #         exprT["s"] += "%s*LorentzVector<complex<%s> >(%s,%s,%s,%s)" % \
     #             #                     #                      (pre,unit,vals[i][2]["x"],vals[i][2]["y"],vals[i][2]["z"],vals[i][2]["t"])
     #             #                     # print 'CCCCC',len(vals[i])
-#        quit()
     old = output
     if(nchain==1) :
         print "SETTING UP THE OUTPUT ",old
@@ -2012,11 +2376,19 @@ def convertLorentz(Lstruct,lorentztag,order,vertex,iloc,defns,evalVertex) :
         print struct
         parsed.append(parse_structure(struct))
     # convert lorentz contractions to dot products
-    contractLorentz(Lstruct,parsed,lorentztag,order)
+    print "before loop ",  Lstruct.structure
+    print parsed
+    for l in range(0,len(parsed)) :
+        parsed[l] = contract(parsed[l])
+    print 'after loop',parsed
     # now in a position to generate the code
     vals=generateVertex(iloc,Lstruct,parsed,lorentztag,vertex,defns)
+    print iloc,Lstruct,lorentztag
+    print vals
     evalVertex.append((vals[0],vals[1]))
     if(vals[2]) : eps=True
+    print "END OF CONVERT LORENTZ",Lstruct,iloc,len(evalVertex)
+    print evalVertex
     return eps
 
 evaluateTemplate = """\
@@ -2076,8 +2448,6 @@ def swapOrderFFFF(vertex,iloc,momenta,fIndex) :
 
     for j in range(0,2) :
         code = vertex.particles[fIndex[j]-1].pdg_code
-        # if(vertex.particles[fIndex[j]-1].name!=vertex.particles[fIndex[j]-1].antiname) :
-        #     code *= -1
         output += "    if(id%s!=%s) {\n" % (fIndex[j],code)
         output += "        swap(id%s,id%s);\n" % (fIndex[j],fIndex[j+2])
         wave="s"
@@ -2089,25 +2459,11 @@ def swapOrderFFFF(vertex,iloc,momenta,fIndex) :
             output += "        swap(P%s,P%s);\n" % (fIndex[j],fIndex[j+2])
         output += "    };\n"
     return output
-    
-def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order) :
-    RS = "R" in vertex.lorentz[0].name
-    FM = "F" in vertex.lorentz[0].name
-    print 'START OF FUNCTION WRITE',RS,vertex,iloc,order
-    print vertexEval
-    # extract the start and end of the spin chains
-    if( RS or FM ) :
-        fIndex = vertexEval[0][0][0][2]
-    else :
-        fIndex=0
-    # first construct the signature of the function
-    decls=[]
-    offType="Complex"
-    momenta=[]
-    waves=[]
-    poff=""
-    fermionReplace=[]
+
+def constructSignature(vertex,order,iloc,decls,momenta,waves,fermionReplace,fIndex) :
     nf=0
+    poff=""
+    offType="Complex"
     for i in order : 
         spin = vertex.lorentz[0].spins[i-1]
         if(i==iloc) :
@@ -2175,7 +2531,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             elif(spin==5) :
                 decls.append("TensorWaveFunction & tW%s" % (i))
                 momenta.append([False,"Lorentz5Momentum P%s =-tW%s.momentum();" % (i,i)])
-                waves.append("LorentzTensor t%s = tW%s.wave()" % (i,i))
+                waves.append("LorentzTensor<double> T%s = tW%s.wave();" % (i,i))
             else :
                 print 'unknown spin',spin
                 quit()
@@ -2188,239 +2544,302 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
         sig="%s evaluate(Energy2, int iopt, tcPDPtr out, const %s, complex<Energy> mass=-GeV, complex<Energy> width=-GeV)" % (offType,", const ".join(decls))
         momenta.append([True,poff+";"])
         for i in range(0,len(momenta)) : momenta[i][0]=True
-    # cat the definitions
-    defString=""
-    for (key,value) in defns.iteritems() :
-        defString+="    %s\n" %value[1]
-    oval=""
-    symbols=set()
-    localCouplings=[]
-    result=[]
-    hasTranspose = False
-    fermions=0
-    for j in range(0,len(vertexEval)) :
-        (vals,dim) = vertexEval[j]
-        if(nf>0) :
-            expr =[""]*nf
-        else :
-            expr=[""]
-        print expr
-        dimCheck=dim[0]
-        for i in range(0,len(vals)) :
-            if(vals[i]=="+" or vals[i]=="-") :
-                if(isinstance(expr[0],basestring)) :
-                    for ii in range(0,len(expr)) : expr[ii] +=vals[i]
-                else :
-                    for ii in range(0,len(expr)) :
-                        for(key,val) in expr[ii].iteritems() :
-                            expr[ii][key] = expr[ii][key]+vals[i]
-            else :
-                # check the dimensions
-                if(dimCheck[0]!=dim[i][0] or dimCheck[1]!=dim[i][1] or
-                   dimCheck[2]!=dim[i][2]) :
-                    print defns
-                    print vertex.lorentz[j]
-                    print vertex.lorentz[j].structure
-                    print "DIMENSION PROBLEM",i,j,dimCheck,dim[i],vertex,vals[i]
-                    print vals
-                    quit()
-                # simplest case 
-                if(isinstance(vals[i], basestring)) :
-                    for ii in range(0,len(expr)) : expr[ii] += "(%s)" % vals[i]
-                else :
-                    hasTranspose = True
-                    pre = vals[i][0]
-                    if(pre=="(1.0)") : pre=""
-                    fermions=vals[i][2]
-                    print '!!!!!',pre,fermions
-                    if(not isinstance(vals[i][1],dict)) :
-                        print 'must be a dict here'
-                        raise SkipThisVertex()
-                    
-                    print vals[i][1]
-                    # standard fermion vertex case
-                    if(len(vals[i][1])==2 and "s" in vals[i][1] and "sT" in vals[i][1]) :
-                        if(pre=="") :
-                            expr[0] += "(%s)" % vals[i][1]["s"]
-                            expr[1] += "(%s)" % vals[i][1]["sT"]
-                        else :
-                            expr[0] += "%s*(%s)" % (pre,vals[i][1]["s"])
-                            expr[1] += "%s*(%s)" % (pre,vals[i][1]["sT"])
-                    # 4 fermion vertex case
-                    elif(len(vals[i][1])==4 and "sT12" in vals[i][1]) :
-                        if(pre=="") :
-                            expr[0] += "(%s)" % vals[i][1]["s"]
-                            expr[1] += "(%s)" % vals[i][1]["sT2"]
-                            expr[2] += "(%s)" % vals[i][1]["sT1"]
-                            expr[3] += "(%s)" % vals[i][1]["sT12"]
-                        else :
-                            expr[0] += "%s*(%s)" % (pre,vals[i][1]["s"])
-                            expr[1] += "%s*(%s)" % (pre,vals[i][1]["sT2"])
-                            expr[2] += "(%s)" % vals[i][1]["sT1"]
-                            expr[3] += "(%s)" % vals[i][1]["sT12"]
-                    # spinor case
-                    elif(len(vals[i][1])==8 and "s1" in vals[i][1]) :
-                        if(expr[0]=="") :
-                            expr[0]={}
-                            expr[1]={}
-                            for jj in range(1,5) :
-                                if(pre=="") :
-                                    expr[0]["s%s" % jj] = "(%s)" % vals[i][1]["s%s"  % jj]
-                                    expr[1]["s%s" % jj] = "(%s)" % vals[i][1]["sT%s" % jj]
-                                else :
-                                    expr[0]["s%s" % jj] = "%s*(%s)" % (pre,vals[i][1]["s%s"  % jj])
-                                    expr[1]["s%s" % jj] = "%s*(%s)" % (pre,vals[i][1]["sT%s" % jj])
-                        else :
-                            for jj in range(1,5) :
-                                if(pre=="") :
-                                    expr[0]["s%s" % jj] += "(%s)" % vals[i][1]["s%s"  % jj]
-                                    expr[1]["s%s" % jj] += "(%s)" % vals[i][1]["sT%s" % jj]
-                                else :
-                                    expr[0]["s%s" % jj] += "%s*(%s)" % (pre,vals[i][1]["s%s"  % jj])
-                                    expr[1]["s%s" % jj] += "%s*(%s)" % (pre,vals[i][1]["sT%s" % jj])
-                        print 'spinor case',expr
-                    # unknown
-                    else :
-                        print 'unrecongnised case',vals[i]
-                        quit()
-                        #     elif(len(vals[i][1])==4 and "t" in vals[i][1]) :
-                        #         # two cases, either already a 'simple' vector
-                        #         # or its an RS spinor
-                        #         # RS first
-                        #         if(len(vals[i][1]["t"])==4) :
-                        #             if(expr=="") :
-                        #                 expr ={}
-                        #                 exprT={}
-                        #                 for jj in range(0,4) :
-                        #                     for k in range(1,5) :
-                        #                         if(pre=="") :
-                        #                             expr ["%ss%s" % (imap[jj],k)] = "(%s)" % vals[i][1][imap[jj]][k-1]
-                        #                             exprT["%ss%s" % (imap[jj],k)] = "(%s)" % vals[i][2][imap[jj]][k-1]
-                        #                         else :
-                        #                             expr ["%ss%s" % (imap[jj],k)] = "%s*(%s)" % (pre,vals[i][1][imap[jj]][k-1])
-                        #                             exprT["%ss%s" % (imap[jj],k)] = "%s*(%s)" % (pre,vals[i][2][imap[jj]][k-1])
-                        #             else :
-                        #                 for jj in range(0,4) :
-                        #                     for k in range(1,5) :
-                        #                         if(pre=="") :
-                        #                             expr ["%ss%s" % (imap[jj],k)] += "(%s)" % vals[i][1][imap[jj]][k-1]
-                        #                             exprT["%ss%s" % (imap[jj],k)] += "(%s)" % vals[i][2][imap[jj]][k-1]
-                        #                         else :
-                        #                             expr ["%ss%s" % (imap[jj],k)] += "%s*(%s)" % (pre,vals[i][1][imap[jj]][k-1])
-                        #                             exprT["%ss%s" % (imap[jj],k)] += "%s*(%s)" % (pre,vals[i][2][imap[jj]][k-1])
-                        #         # simple vector
-                        #         else :
-                        #             print 'vector case'
-                        #             print vals[i]
-                        #             print expr
-                        #             quit()
+    return offType,nf,poff,sig
 
-                        #     else :
-                        #         print "AAAAAAA"
-                        #         print vertex,len(vals[i][1])
-                        #         quit()
-
-        # tidy up fermion defns
-        for rep in fermionReplace :
-            for i in range(1,5) :
-                kmax=1
-                if(rep[0]=="R") : kmax=4
-                for k in range(0,kmax) :
-                    if(rep[0]=="R") :
-                        oldVal = "%s%ss%s" % (rep,imap[k],i)
-                        newVal = "%s.%ss%s()" % (rep,imap[k],i)
-                    else :
-                        oldVal = "%ss%s" % (rep,i)
-                        newVal = "%s.s%s()" % (rep,i)
-                    if(isinstance(expr[0],basestring)) :
-                        for ii in range (0,len(expr)) :
-                            expr[ii]=expr[ii].replace(oldVal,newVal)
-                    else :
-                        for ii in range (0,len(expr)) :
-                            for (key,val) in expr[ii].iteritems() :
-                                expr[ii][key]  = val.replace(oldVal,newVal)
-        # # of particles in the vertex
-        vDim = len(vertex.lorentz[0].spins)
-        # and momentum components
-        for i in range(1,vDim+1) :
-            for k in range(0,4) :
-                oldVal = "P%s%s*" % (i,imap[k])
-                newVal = "P%s.%s()*" % (i,imap[k])
-                if(isinstance(expr[0],basestring)) :
-                    for ii in range(0,len(expr)) :
-                        expr[ii]=expr[ii].replace(oldVal,newVal)
-                else :
-                    for ii in range(0,len(expr)) :
-                        for (key,val) in expr[ii].iteritems() :
-                            expr[ii][key]  = val.replace(oldVal,newVal)
-        print dimCheck
-        unit = computeUnit2(dimCheck,vDim)
-        if(unit!="") :
-            if(isinstance(expr[0],basestring)) :
-                for ii in range(0,len(expr)) :
-                    expr[ii]  = "(%s)*(%s)" % (expr[ii],unit)
-            else :
-                for ii in range(0,len(expr)) :
-                    for (key,val) in expr[ii].iteritems() :
-                        expr[ii][key]  = "(%s)*(%s)" % (val,unit)
-        # get the coupling for this bit
-        val, sym = py2cpp(values[j])
-        localCouplings.append("Complex local_C%s = %s;\n" % (j,val))
-        symbols |=sym
-        if(len(result)==0) :
-            if(isinstance(expr[0],basestring)) :
-                if(iloc==0 or vertex.lorentz[0].spins[iloc-1]==1) :
-                    for ii in range(0,len(expr)) :
-                        result.append(" (local_C%s)*Complex(%s) " % (j,expr[ii]))
-                else :
-                    for ii in range(0,len(expr)) :
-                        result.append(" (local_C%s)*(%s) " % (j,expr[ii]))
-            else :
-                for ii in range(0,len(expr)) :
-                    result.append({})
-                    for (key,val) in expr[ii].iteritems() :
-                        result[ii][key] = " (local_C%s)*Complex(%s) " % (j,val)
+def combineResult(res,nf,ispin,fermionReplace,vertex) :
+    # extract the vals and dimensions
+    (vals,dim) = res
+    # construct the output structure
+    # vertex and off-shell scalars
+    if(ispin<=1) :
+        otype={'res':""}
+    # spins
+    elif(ispin==2) :
+        otype={'s1':"",'s2':"",'s3':"",'s4':""}
+    # vectors
+    elif(ispin==3) :
+        if( "t" in vals[0][1] ) :
+            otype={'t':"",'x':"",'y':"",'z':""}
         else :
-            if(isinstance(expr[0],basestring)) :
-                if(iloc==0 or vertex.lorentz[0].spins[iloc-1]==1) :
-                    for ii in range(0,len(expr)) :
-                        result[ii] += " + (local_C%s)*Complex(%s)" % (j,expr[ii])
-                else :
-                    for ii in range(0,len(expr)) :
-                        result[ii] += " + (local_C%s)*(%s)" % (j,expr[ii] )
+            print vals
+            print 'spin problem',ispin
+            quit()
+    # off-shell tensors
+    elif(ispin==5) :
+        otype={}
+        for i1 in imap :
+            for i2 in imap :
+                otype["%s%s"%(i1,i2)]=""
+    else :
+                
+        print vals
+        print 'spin problem',ispin
+        quit()
+    expr=[otype]
+    for i in range(0,nf-1) :
+        expr.append(copy.copy(otype))
+    # dimension for checking
+    dimCheck=dim[0]
+    for i in range(0,len(vals)) :
+        # simple signs
+        if(vals[i]=="+" or vals[i]=="-") :
+            for ii in range(0,len(expr)) :
+                for(key,val) in expr[ii].iteritems() :
+                    expr[ii][key] = expr[ii][key]+vals[i]
+            continue
+        # check the dimensions
+        if(dimCheck[0]!=dim[i][0] or dimCheck[1]!=dim[i][1] or
+           dimCheck[2]!=dim[i][2]) :
+            print vertex.lorentz
+            print "DIMENSION PROBLEM",i,dimCheck,dim,vertex,vals
+            print vals
+            quit()
+        # simplest case 
+        if(isinstance(vals[i], basestring)) :
+            for ii in range(0,len(expr)) :
+                for(key,val) in expr[ii].iteritems() :
+                    expr[ii][key] = expr[ii][key]+vals[i]
+            continue
+        # more complex structures
+        pre = vals[i][0]
+        if(pre=="(1.0)") : pre=""
+        if(not isinstance(vals[i][1],dict)) :
+            print 'must be a dict here'
+            raise SkipThisVertex()
+        # tensors
+        if("tt" in vals[i][1]) :
+            for i1 in imap :
+                for i2 in imap :
+                    key="%s%s"%(i1,i2)
+                    if(pre=="") :
+                        expr[0][key] += "(%s)" % vals[i][1][key]
+                    else :
+                        expr[0][key] += "%s*(%s)" % (pre,vals[i][1][key])
+                    if(len(expr)==2) :
+                        if(pre=="") :
+                            expr[1][key] +="(%s)" % vals[i][1][key+"T"]
+                        else :
+                            expr[1][key] +="%s*(%s)" % (pre,vals[i][1][key+"T"])
+        # standard fermion vertex case
+        elif(len(vals[i][1])==2 and "s" in vals[i][1] and "sT" in vals[i][1]) :
+            print expr
+            if(pre=="") :
+                expr[0]["res"] += "(%s)" % vals[i][1]["s"]
+                expr[1]["res"] += "(%s)" % vals[i][1]["sT"]
             else :
-                for ii in range(0,len(expr)) :
+                expr[0]["res"] += "%s*(%s)" % (pre,vals[i][1]["s"])
+                expr[1]["res"] += "%s*(%s)" % (pre,vals[i][1]["sT"])
+        # spinor case
+        elif(len(vals[i][1])==8 and "s1" in vals[i][1]) :
+            for jj in range(1,5) :
+                if(pre=="") :
+                    expr[0]["s%s" % jj] += "(%s)" % vals[i][1]["s%s"  % jj]
+                    expr[1]["s%s" % jj] += "(%s)" % vals[i][1]["sT%s" % jj]
+                else :
+                    expr[0]["s%s" % jj] += "%s*(%s)" % (pre,vals[i][1]["s%s"  % jj])
+                    expr[1]["s%s" % jj] += "%s*(%s)" % (pre,vals[i][1]["sT%s" % jj])
+        # vector
+        elif(len(vals[i][1])%4==0 and "t" in vals[i][1]) :
+            for i1 in imap :
+                if(pre=="") :
+                    expr[0][i1] += "(%s)" % vals[i][1][i1]
+                else :
+                    expr[0][i1] += "%s*(%s)" % (pre,vals[i][1][i1])
+                if(len(expr)==2) :
+                    if(pre=="") :
+                        expr[1][i1] +="(%s)" % vals[i][1][i1+"T"]
+                    else :
+                        expr[1][i1] +="%s*(%s)" % (pre,vals[i][1][i1+"T"])
+        # 4 fermion vertex case
+        elif(len(vals[i][1])==4 and "sT12" in vals[i][1]) :
+            if(pre=="") :
+                expr[0]["res"] += "(%s)" % vals[i][1]["s"]
+                expr[1]["res"] += "(%s)" % vals[i][1]["sT2"]
+                expr[2]["res"] += "(%s)" % vals[i][1]["sT1"]
+                expr[3]["res"] += "(%s)" % vals[i][1]["sT12"]
+            else :
+                expr[0]["res"] += "%s*(%s)" % (pre,vals[i][1]["s"])
+                expr[1]["res"] += "%s*(%s)" % (pre,vals[i][1]["sT2"])
+                expr[2]["res"] += "(%s)" % vals[i][1]["sT1"]
+                expr[3]["res"] += "(%s)" % vals[i][1]["sT12"]
+        else :
+            print vals[i]
+            print 'problem with type'
+            quit()
+        #             # unknown
+        #             else :
+        #                 print 'unrecongnised case',vals[i]
+        #                 quit()
+        #                 #     elif(len(vals[i][1])==4 and "t" in vals[i][1]) :
+        #                 #         # two cases, either already a 'simple' vector
+        #                 #         # or its an RS spinor
+        #                 #         # RS first
+        #                 #         if(len(vals[i][1]["t"])==4) :
+        #                 #             if(expr=="") :
+        #                 #                 expr ={}
+        #                 #                 exprT={}
+        #                 #                 for jj in range(0,4) :
+        #                 #                     for k in range(1,5) :
+        #                 #                         if(pre=="") :
+        #                 #                             expr ["%ss%s" % (imap[jj],k)] = "(%s)" % vals[i][1][imap[jj]][k-1]
+        #                 #                             exprT["%ss%s" % (imap[jj],k)] = "(%s)" % vals[i][2][imap[jj]][k-1]
+        #                 #                         else :
+        #                 #                             expr ["%ss%s" % (imap[jj],k)] = "%s*(%s)" % (pre,vals[i][1][imap[jj]][k-1])
+        #                 #                             exprT["%ss%s" % (imap[jj],k)] = "%s*(%s)" % (pre,vals[i][2][imap[jj]][k-1])
+        #                 #             else :
+        #                 #                 for jj in range(0,4) :
+        #                 #                     for k in range(1,5) :
+        #                 #                         if(pre=="") :
+        #                 #                             expr ["%ss%s" % (imap[jj],k)] += "(%s)" % vals[i][1][imap[jj]][k-1]
+        #                 #                             exprT["%ss%s" % (imap[jj],k)] += "(%s)" % vals[i][2][imap[jj]][k-1]
+        #                 #                         else :
+        #                 #                             expr ["%ss%s" % (imap[jj],k)] += "%s*(%s)" % (pre,vals[i][1][imap[jj]][k-1])
+        #                 #                             exprT["%ss%s" % (imap[jj],k)] += "%s*(%s)" % (pre,vals[i][2][imap[jj]][k-1])
+        #                 #         # simple vector
+        #                 #         else :
+        #                 #             print 'vector case'
+        #                 #             print vals[i]
+        #                 #             print expr
+        #                 #             quit()
+
+        #                 #     else :
+        #                 #         print "AAAAAAA"
+        #                 #         print vertex,len(vals[i][1])
+        #                 #         quit()
+
+
+    # tidy up fermion defns
+    for rep in fermionReplace :
+        for i in range(1,5) :
+            kmax=1
+            if(rep[0]=="R") : kmax=4
+            for k in range(0,kmax) :
+                if(rep[0]=="R") :
+                    oldVal = "%s%ss%s" % (rep,imap[k],i)
+                    newVal = "%s.%ss%s()" % (rep,imap[k],i)
+                else :
+                    oldVal = "%ss%s" % (rep,i)
+                    newVal = "%s.s%s()" % (rep,i)
+                for ii in range (0,len(expr)) :
                     for (key,val) in expr[ii].iteritems() :
-                        result[ii][key] += " + (local_C%s)*Complex(%s) " % (j,val)
-    # final defns for more complicated types
+                        expr[ii][key]  = val.replace(oldVal,newVal)
+    # no of particles in the vertex
+    vDim = len(vertex.lorentz[0].spins)
+    # tidy up momentum components
+    for i in range(1,vDim+1) :
+        for k in range(0,4) :
+            oldVal = "P%s%s*" % (i,imap[k])
+            newVal = "P%s.%s()*" % (i,imap[k])
+            for ii in range(0,len(expr)) :
+                for (key,val) in expr[ii].iteritems() :
+                    expr[ii][key]  = val.replace(oldVal,newVal)
+    
+    unit = computeUnit2(dimCheck,vDim)
+    if(unit!="") :
+        for ii in range(0,len(expr)) :
+            for (key,val) in expr[ii].iteritems() :
+                expr[ii][key]  = "(%s)*(%s)" % (val,unit)
+    return expr
+
+def combineComponents(result,offType,RS) :
+    # simplest case, just a value
+    if(len(result[0])==1 and "res" in result[0]) :
+        for i in range(0,len(result)) :
+            result[i] = result[i]["res"]
+        return
+    # calculate the substitutions
     if(not isinstance(result[0],basestring)) :
         subs=[]
         for ii in range(0,len(result)) :
             subs.append({})
             for (key,val) in result[ii].iteritems() :
                 subs[ii]["out%s" % key]= val
+    # spinors
+    if("s1" in result[0]) :
+        stype  = "LorentzSpinor"
+        sbtype = "LorentzSpinorBar"
+        if(offType.find("Bar")>0) : (stype,sbtype)=(sbtype,stype)
+        if(not RS) : sbtype=stype
+        subs[0]["type"] = stype
+        result[0]  = Template("${type}<double>(${outs1},\n${outs2},\n${outs3},\n${outs4})").substitute(subs[0])
+        subs[1]["type"] = sbtype
+        result[1]  = Template("${type}<double>(${outs1},\n${outs2},\n${outs3},\n${outs4})").substitute(subs[1])
+    # tensors
+    elif("tt" in result[0]) :
+        for ii in range(0,len(result)) :
+            result[ii] = Template("LorentzTensor<double>(${outxx},\n${outxy},\n${outxz},\n${outxt},\n${outyx},\n${outyy},\n${outyz},\n${outyt},\n${outzx},\n${outzy},\n${outzz},\n${outzt},\n${outtx},\n${outty},\n${outtz},\n${outtt})").substitute(subs[ii])
+            result[ii]=result[ii].replace("(+","(")
+    # vectors
+    elif("t" in result[0]) :
+        for ii in range(0,len(result)) :
+            result[ii] = Template("LorentzVector<Complex>(${outx},\n${outy},\n${outz},\n${outt})").substitute(subs[ii])
+            result[ii]=result[ii].replace("(+","(")
+    else :
+        
+        print subs[0]
+        print result
+        print 'type not implemented'
+        quit()
+    
+    # # final defns for more complicated types
                 
-        if("ts1" in result) :
-            stype  = "LorentzRSSpinor"
-            sbtype = "LorentzRSSpinorBar"
-            if(offType.find("Bar")>0) : (stype,sbtype)=(sbtype,stype)
-            subs["type"] = stype      
-            result  = Template("${type}<double>(${outxs1},\n${outxs2},\n${outxs3},\n${outxs4},\n${outys1},\n${outys2},\n${outys3},\n${outys4},\n${outzs1},\n${outzs2},\n${outzs3},\n${outzs4},\n${outts1},\n${outts2},\n${outts3},\n${outts4})").substitute(subs)
-            subsT["type"] = sbtype
-            resultT = Template("${type}<double>(${outxs1},\n${outxs2},\n${outxs3},\n${outxs4},\n${outys1},\n${outys2},\n${outys3},\n${outys4},\n${outzs1},\n${outzs2},\n${outzs3},\n${outzs4},\n${outts1},\n${outts2},\n${outts3},\n${outts4})").substitute(subsT)
-        elif("s1" in result[0]) :
-            stype  = "LorentzSpinor"
-            sbtype = "LorentzSpinorBar"
-            if(offType.find("Bar")>0) : (stype,sbtype)=(sbtype,stype)
-            if(not RS) : sbtype=stype
-            subs[0]["type"] = stype
-            result[0]  = Template("${type}<double>(${outs1},\n${outs2},\n${outs3},\n${outs4})").substitute(subs[0])
-            subs[1]["type"] = sbtype
-            result[1]  = Template("${type}<double>(${outs1},\n${outs2},\n${outs3},\n${outs4})").substitute(subs[1])
+    #     if("ts1" in result) :
+    #         stype  = "LorentzRSSpinor"
+    #         sbtype = "LorentzRSSpinorBar"
+    #         if(offType.find("Bar")>0) : (stype,sbtype)=(sbtype,stype)
+    #         subs["type"] = stype      
+    #         result  = Template("${type}<double>(${outxs1},\n${outxs2},\n${outxs3},\n${outxs4},\n${outys1},\n${outys2},\n${outys3},\n${outys4},\n${outzs1},\n${outzs2},\n${outzs3},\n${outzs4},\n${outts1},\n${outts2},\n${outts3},\n${outts4})").substitute(subs)
+    #         subsT["type"] = sbtype
+    #         resultT = Template("${type}<double>(${outxs1},\n${outxs2},\n${outxs3},\n${outxs4},\n${outys1},\n${outys2},\n${outys3},\n${outys4},\n${outzs1},\n${outzs2},\n${outzs3},\n${outzs4},\n${outts1},\n${outts2},\n${outts3},\n${outts4})").substitute(subsT)
+    #     else :
+    #         print result
+    #         print 'type problem'
+    #         quit()
+
+
+
+def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order) :
+    RS = "R" in vertex.lorentz[0].name
+    FM = "F" in vertex.lorentz[0].name
+    # extract the start and end of the spin chains
+    if( RS or FM ) :
+        fIndex = vertexEval[0][0][0][2]
+    else :
+        fIndex=0
+    # first construct the signature of the function
+    decls=[]
+    momenta=[]
+    waves=[]
+    fermionReplace=[]
+    offType,nf,poff,sig = constructSignature(vertex,order,iloc,decls,momenta,waves,fermionReplace,fIndex)
+    # combine the different terms in the result
+    symbols=set()
+    localCouplings=[]
+    result=[]
+    ispin = 0
+    if(iloc!=0) :
+        ispin = vertex.lorentz[0].spins[iloc-1]
+    # put the lorentz structures and couplings together
+    for j in range(0,len(vertexEval)) :
+        # get the lorentz structure piece
+        print 'calling combine',j,vertex.lorentz[j]
+        expr = combineResult(vertexEval[j],nf,ispin,fermionReplace,vertex)
+        # get the coupling for this bit
+        val, sym = py2cpp(values[j])
+        localCouplings.append("Complex local_C%s = %s;\n" % (j,val))
+        symbols |=sym
+        # put them together
+        if(len(result)==0) :
+            for ii in range(0,len(expr)) :
+                result.append({})
+                for (key,val) in expr[ii].iteritems() :
+                    result[ii][key] = " (local_C%s)*Complex(%s) " % (j,val)
         else :
-            print result
-            print 'type problem'
-            quit()
+            for ii in range(0,len(expr)) :
+                for (key,val) in expr[ii].iteritems(): 
+                    result[ii][key] += " + (local_C%s)*Complex(%s) " % (j,val)
+    # for more complex types merge the spin/lorentz components
+    combineComponents(result,offType,RS)
     # multiple by scalar wavefunctions
     scalars=""
     for i in range (0,len(vertex.lorentz[0].spins)) :
@@ -2431,14 +2850,14 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             result[ii]  = "(%s)*(%s)" % (result[ii],scalars[0:-1])
     # vertex, just return the answer
     if(iloc==0) :
-        if(hasTranspose and not RS) :
+        if(FM and not RS) :
             if(nf!=4) :
-                result = vTemplateT.format(iloc=fermions[1],id=vertex.particles[fermions[1]-1].pdg_code,
+                result = vTemplateT.format(iloc=fIndex[1],id=vertex.particles[fIndex[1]-1].pdg_code,
                                            cf=py2cpp(cf)[0],res=result[0],resT=result[1])
             else :
-                result = vTemplate4.format(iloc1=fermions[1],iloc2=fermions[3],
-                                           id1=vertex.particles[fermions[1]-1].pdg_code,
-                                           id2=vertex.particles[fermions[3]-1].pdg_code,
+                result = vTemplate4.format(iloc1=fIndex[1],iloc2=fIndex[3],
+                                           id1=vertex.particles[fIndex[1]-1].pdg_code,
+                                           id2=vertex.particles[fIndex[3]-1].pdg_code,
                                            cf=py2cpp(cf)[0],res1=result[0],res2=result[1],res3=result[2],res4=result[3])
         else :
             result = "return (%s)*(%s);\n" % (result[0],py2cpp(cf[0])[0])
@@ -2450,9 +2869,9 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
         if(vertex.lorentz[0].spins[iloc-1] == 1 ) :
             if(RS) :
                 resultT = scaTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],res=result[1])
-            if(hasTranspose and not RS) :
-                result = scaTTemplate.format(iloc=iloc,res=result[0],resT=result[1],isp=fermions[1],
-                                             id=vertex.particles[fermions[1]-1].pdg_code,cf=py2cpp(cf[0])[0])
+            if(FM and not RS) :
+                result = scaTTemplate.format(iloc=iloc,res=result[0],resT=result[1],isp=fIndex[1],
+                                             id=vertex.particles[fIndex[1]-1].pdg_code,cf=py2cpp(cf[0])[0])
             else :
                 result = scaTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],res=result[0])
         # off-shell fermion
@@ -2464,7 +2883,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                     offTypeT=offType.replace("Spinor","SpinorBar")
                 resultT = sTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],offTypeA=offTypeT.replace("WaveFunction",""),
                                            res=result[1].replace( "M%s" % iloc, "mass" ),offTypeB=offTypeT)
-            if(hasTranspose and not RS) :
+            if(FM and not RS) :
                 result = sTTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],offTypeA=offType.replace("WaveFunction",""),
                                            res=result[0].replace( "M%s" % iloc, "mass" ),resT=result[1].replace( "M%s" % iloc, "mass" ),
                                            offTypeB=offType,id=vertex.particles[iloc-1].pdg_code)
@@ -2473,9 +2892,9 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                                           res=result[0].replace( "M%s" % iloc, "mass" ),offTypeB=offType)
         # off-shell vector
         elif(vertex.lorentz[0].spins[iloc-1] == 3 ) :
-            if(hasTranspose and not RS) :
-                result = vecTTemplate.format(iloc=iloc,res=result[0],resT=result[1],isp=fermions[1],
-                                             id=vertex.particles[fermions[1]-1].pdg_code,
+            if(FM and not RS) :
+                result = vecTTemplate.format(iloc=iloc,res=result[0],resT=result[1],isp=fIndex[1],
+                                             id=vertex.particles[fIndex[1]-1].pdg_code,
                                              cf=py2cpp(cf[0])[0])
             else :
                 result = vecTemplate.format(iloc=iloc,res=result[0],cf=py2cpp(cf[0])[0])
@@ -2488,6 +2907,19 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                                         res=result[1].replace( "M%s" % iloc, "mass" ),offTypeB=offTypeT)
             result = RSTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],offTypeA=offType.replace("WaveFunction",""),
                                        res=result[0].replace( "M%s" % iloc, "mass" ),offTypeB=offType)
+        # tensors
+        elif(vertex.lorentz[0].spins[iloc-1]) :
+            if(RS) :
+                print "RS spinors and tensors not handled"
+                quit()
+            if(FM) :
+                result = tenTTemplate.format(iloc=iloc,res=result[0],resT=result[1],isp=fIndex[1],
+                                             id=vertex.particles[fIndex[1]-1].pdg_code,cf=py2cpp(cf[0])[0])
+            else :
+                result = tenTemplate.format(iloc=iloc,cf=py2cpp(cf[0])[0],res=result[0])
+        else :
+            print 'unknown spin for off-shell particle',vertex.lorentz[0].spins[iloc-1]
+            quit()
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.iteritems() :
         if( isinstance(key, basestring)) :
@@ -2495,8 +2927,12 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                 momenta[int(key[3])-1][0] = True
         else :
             for vals in key :
-                if(vals[0]=="P") :
-                    momenta[int(vals[1])-1][0] = True
+                if(vals.type=="P") :
+                    momenta[vals.value-1][0] = True
+    # cat the definitions
+    defString=""
+    for (key,value) in defns.iteritems() :
+        defString+="    %s\n" %value[1]
     sorder=swapOrder(vertex,iloc,momenta,fIndex)
     momentastring=""
     for i in range(0,len(momenta)) :
@@ -2514,8 +2950,8 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                                        couplings="\n    ".join(localCouplings),
                                        result=result,swap=sorder)
 
-    # special for tgranspose in the RS case
-    if(hasTranspose and RS) :
+    # special for transpose in the RS case
+    if(FM and RS) :
         htemp = header.split(",")
         irs=-1
         isp=-1

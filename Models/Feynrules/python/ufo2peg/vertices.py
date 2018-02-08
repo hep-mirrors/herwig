@@ -455,12 +455,6 @@ Herwig may not give correct results, though.
         # get the Lorentz tag for the vertex
         lorentztag,order = unique_lorentztag(vertex)
         print "START OF VERTEX",vertex,lorentztag,order,vertex.particles
-        # temp=int(vertex.name.replace("V_",""))
-        # if(temp>1200 or temp==1107 or temp==1108) :
-        #     print 'skipping for debugging'
-        #     vertex.herwig_skip_vertex = True
-        #     self.vertex_skipped=True
-        #     return (True,"","")
         # check if we should skip the vertex
         vertex.herwig_skip_vertex = checkGhostGoldstoneVertex(lorentztag,vertex)
         # check the order of the vertex and skip 5 points
@@ -482,13 +476,12 @@ Herwig may not give correct results, though.
             vertex.herwig_skip_vertex = True
             self.vertex_skipped=True
             return (True,"","")
-        if(lorentztag.find("R")>=0) :
-            print "RS"
-#            quit()
         # get the factor for the vertex
         generic = False
         try:
             lf = lfactors[lorentztag]
+            if "SST" in lorentztag :
+                raise KeyError
         except KeyError:
             if(not self.include_generic) :
                 msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
@@ -515,7 +508,6 @@ Herwig may not give correct results, though.
             vertex.herwig_skip_vertex = True
             self.vertex_skipped=True
             return (True,"","")
-    
         ### classname
         classname = 'V_%s' % vertex.name
         if(not generic) :
@@ -708,7 +700,6 @@ Herwig may not give correct results, though.
         couplingOrders=[]
         colours={}
         
-        print cf,cs
         for (color_idx,lorentz_idx),coupling in vertex.couplings.iteritems() :
             orders = coupling_orders(vertex, coupling, self.couplingDefns)
             if(orders not in couplingOrders) : couplingOrders.append(orders)
@@ -756,7 +747,6 @@ Herwig may not give correct results, though.
         # loop over the different orders in the couplings
         # and colour structures
         iorder=0
-        print "COLOURS",colours
         self.vertex_names[vertex.name]=[classname]
         for corder in couplingOrders :
             for (cidx,(cstruct,cfactor)) in colours.iteritems() :
@@ -782,7 +772,6 @@ Herwig may not give correct results, though.
                         if(len(defns)<i+1) :
                             defns.append({})
                             vertexEval.append([])
-                        print vertex.lorentz[lorentz_idx]
                         eps |= convertLorentz(vertex.lorentz[lorentz_idx],lorentztag,order,vertex,
                                               i,defns[i],vertexEval[i])
                 # we can now generate the evaluate member functions
