@@ -2519,6 +2519,14 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     Symbols += momCom.substitute({"v":li.value})
                     for ichain in range(0,nchain) :
                         eTemp[ichain].append("%s%s"% (li.value,imap[index]) )
+                elif(li.name=="Epsilon") :
+                    value=""
+                    for index in li.lorentz :
+                        if(index in contracted) :
+                            print 'contracted',index
+                        elif(index in unContracted) :
+                            print 'uncontracted',index
+                    quit()
                 # unknown
                 else :
                     print 'unknown expression in lorentz loop'
