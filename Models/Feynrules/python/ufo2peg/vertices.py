@@ -463,7 +463,10 @@ Herwig may not give correct results, though.
             if(not skipped5Point) :
                 skipped5Point = True
                 print "Skipping 5 point vertices which aren\'t used in Herwig7"
-        
+
+        if(vertexnumber<=1100) :
+            vertex.herwig_skip_vertex = True
+            
         if(vertex.herwig_skip_vertex) :
             return (True,"","")
         # check if we support this at all
@@ -480,8 +483,7 @@ Herwig may not give correct results, though.
         generic = False
         try:
             lf = lfactors[lorentztag]
-            if "SST" in lorentztag or "VVT" in lorentztag :
-                raise KeyError
+            if "T" in lorentztag : raise KeyError
         except KeyError:
             if(not self.include_generic) :
                 msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
