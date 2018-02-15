@@ -104,7 +104,10 @@ class PyToCpp(ast.NodeVisitor):
     def visit_Num(self,node):
         # some zeros are encoded as 0j
         if node.n == 0: text = '0.0'
-        else:           text = str(float(node.n))
+        elif (node.n==complex("1j") ) :
+            text = "ii"
+        else:
+            text = str(float(node.n))
         self.result.append(text)
 
     def visit_Name(self,node):

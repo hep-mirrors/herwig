@@ -393,6 +393,8 @@ class VertexConverter:
         self.all_vertices = self.model.all_vertices
         # convert the vertices
         vertexclasses, vertexheaders = [], set()
+        ifile=1
+        icount=0
         for vertexnumber,vertex in enumerate(self.all_vertices,1) :
            # process the vertex 
            (skip,vertexClass,vertexHeader) = \
@@ -400,16 +402,19 @@ class VertexConverter:
            # check it can be handled
            if(skip) : continue
            # add to the list
+           icount +=1
            vertexclasses.append(vertexClass)
            vertexheaders.add(vertexHeader)
            WRAP = 25
-           if vertexnumber % WRAP == 0:
-               write_vertex_file({'vertexnumber' : vertexnumber//WRAP,
+           if icount % WRAP == 0 or vertexHeader.find("Abstract")>=0:
+               write_vertex_file({'vertexnumber' : ifile,
                                   'vertexclasses' : '\n'.join(vertexclasses),
                                   'vertexheaders' : ''.join(vertexheaders),
                                   'ModelName' : self.modelname})
                vertexclasses = []
                vertexheaders = set()
+               icount=0
+               ifile+=1
         # exit if there's vertices we can't handle
         if not self.should_print():
             sys.stderr.write(
@@ -454,7 +459,6 @@ Herwig may not give correct results, though.
         global skipped5Point
         # get the Lorentz tag for the vertex
         lorentztag,order = unique_lorentztag(vertex)
-        print "START OF VERTEX",vertex,lorentztag,order,vertex.particles
         # check if we should skip the vertex
         vertex.herwig_skip_vertex = checkGhostGoldstoneVertex(lorentztag,vertex)
         # check the order of the vertex and skip 5 points
@@ -464,9 +468,9 @@ Herwig may not give correct results, though.
                 skipped5Point = True
                 print "Skipping 5 point vertices which aren\'t used in Herwig7"
 
-        if(vertexnumber<=1100) :
+        if(vertexnumber<1107 or vertexnumber>1108) :
             vertex.herwig_skip_vertex = True
-            
+                
         if(vertex.herwig_skip_vertex) :
             return (True,"","")
         # check if we support this at all
