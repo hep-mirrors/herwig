@@ -467,9 +467,6 @@ Herwig may not give correct results, though.
             if(not skipped5Point) :
                 skipped5Point = True
                 print "Skipping 5 point vertices which aren\'t used in Herwig7"
-
-        if(vertexnumber<1107 or vertexnumber>1108) :
-            vertex.herwig_skip_vertex = True
                 
         if(vertex.herwig_skip_vertex) :
             return (True,"","")
