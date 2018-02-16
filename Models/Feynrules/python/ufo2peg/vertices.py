@@ -428,7 +428,7 @@ Herwig may not give correct results, though.
             sys.exit(1)
         # if still stuff to output it do it
         if vertexclasses:
-            write_vertex_file({'vertexnumber' : vertexnumber//WRAP + 1,
+            write_vertex_file({'vertexnumber' : ifile + 1,
                                'vertexclasses' : '\n'.join(vertexclasses),
                                'vertexheaders' : ''.join(vertexheaders),
                                'ModelName' : self.modelname})
