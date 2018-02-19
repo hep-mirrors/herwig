@@ -22,9 +22,9 @@
 #include "ShowerParticle.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
-#include "Herwig/Shower/QTilde/Default/FS_QTildeShowerKinematics1to2.h"
-#include "Herwig/Shower/QTilde/Default/IS_QTildeShowerKinematics1to2.h"
-#include "Herwig/Shower/QTilde/Default/Decay_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
 
 using namespace Herwig;
 

@@ -13,10 +13,10 @@ SplittingFunctions/OneHalfHalfSplitFn.h SplittingFunctions/OneHalfHalfSplitFn.cc
 SplittingFunctions/HalfOneHalfSplitFn.h SplittingFunctions/HalfOneHalfSplitFn.cc\
 SplittingFunctions/CMWOneOneOneSplitFn.h SplittingFunctions/CMWOneOneOneSplitFn.cc\
 SplittingFunctions/CMWHalfHalfOneSplitFn.h SplittingFunctions/CMWHalfHalfOneSplitFn.cc\
-Default/Decay_QTildeShowerKinematics1to2.cc \
-Default/Decay_QTildeShowerKinematics1to2.h  \
-Default/IS_QTildeShowerKinematics1to2.cc    Default/IS_QTildeShowerKinematics1to2.h  \
-Default/FS_QTildeShowerKinematics1to2.cc    Default/FS_QTildeShowerKinematics1to2.h  \
+Kinematics/Decay_QTildeShowerKinematics1to2.cc \
+Kinematics/Decay_QTildeShowerKinematics1to2.h  \
+Kinematics/IS_QTildeShowerKinematics1to2.cc    Kinematics/IS_QTildeShowerKinematics1to2.h  \
+Kinematics/FS_QTildeShowerKinematics1to2.cc    Kinematics/FS_QTildeShowerKinematics1to2.h  \
 Base/KinematicsReconstructor.cc \
 Base/KinematicsReconstructor.tcc \
 Base/KinematicsReconstructor.h \
