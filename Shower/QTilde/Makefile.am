@@ -18,8 +18,8 @@ Default/Decay_QTildeShowerKinematics1to2.cc \
 Default/Decay_QTildeShowerKinematics1to2.h  \
 Default/IS_QTildeShowerKinematics1to2.cc    Default/IS_QTildeShowerKinematics1to2.h  \
 Default/FS_QTildeShowerKinematics1to2.cc    Default/FS_QTildeShowerKinematics1to2.h  \
-Default/QTildeReconstructor.cc Default/QTildeReconstructor.h Default/QTildeReconstructor.tcc \
 Base/KinematicsReconstructor.cc \
+Base/KinematicsReconstructor.tcc \
 Base/KinematicsReconstructor.h \
 Base/KinematicsReconstructor.fh \
 Base/HardTree.cc Base/HardTree.h Base/HardTree.fh \
