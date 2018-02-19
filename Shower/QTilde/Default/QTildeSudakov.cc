@@ -28,7 +28,6 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 
 using namespace Herwig;

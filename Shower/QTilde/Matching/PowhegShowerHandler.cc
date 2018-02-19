@@ -444,7 +444,7 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
     if(!matched) continue;
     // find the colour partners
     try {
-      showerModel()->partnerFinder()
+      partnerFinder()
 	->setInitialEvolutionScales(branchingParticles,false,
 				    ShowerInteraction::QCD,true);
     }
@@ -501,7 +501,7 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
     // check the emitter and the spectator some how
     if(iemitter!=emitter_) continue;
     //do inverse momentum reconstruction
-    if( !showerModel()->kinematicsReconstructor()
+    if( !kinematicsReconstructor()
 	->deconstructHardJets( newTree.tree(), ShowerInteraction::QCD ) ) continue;
     newTree.tree()->findNodes();
     newTree.weight(1.);

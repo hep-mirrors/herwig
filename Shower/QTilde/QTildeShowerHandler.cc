@@ -67,25 +67,27 @@ IBPtr QTildeShowerHandler::fullclone() const {
 }
 
 void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << _model << _splittingGenerator << _maxtry 
+  os << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
      << _trunc_Mode << _hardEmission << _reconOpt 
      << ounit(muPt,GeV)
-     << oenum(interaction_) << _maxTryFSR << _maxFailFSR << _fracFSR;
+     << oenum(interaction_) << _maxTryFSR << _maxFailFSR << _fracFSR
+     << _reconstructor << _partnerfinder << _sudakovs;
 }
 
 void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> _splittingGenerator >> _maxtry 
+  is >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
      >> _trunc_Mode >> _hardEmission >> _reconOpt
      >> iunit(muPt,GeV)
-     >> ienum(interaction_) >> _maxTryFSR >> _maxFailFSR >> _fracFSR;
+     >> ienum(interaction_) >> _maxTryFSR >> _maxFailFSR >> _fracFSR
+     >> _reconstructor >> _partnerfinder >> _sudakovs;
 }
 
 
@@ -128,11 +130,6 @@ void QTildeShowerHandler::Init() {
 		      "A reference to the SplittingGenerator object", 
 		      &Herwig::QTildeShowerHandler::_splittingGenerator,
 		      false, false, true, false);
-
-  static Reference<QTildeShowerHandler,ShowerModel> interfaceShowerModel
-    ("ShowerModel",
-     "The pointer to the object which defines the shower evolution model.",
-     &QTildeShowerHandler::_model, false, false, true, false, false);
 
   static Parameter<QTildeShowerHandler,unsigned int> interfaceMaxTry
     ("MaxTry",
@@ -397,6 +394,21 @@ void QTildeShowerHandler::Init() {
      "Maximum fraction of events allowed to fail due to too many FSR emissions",
      &QTildeShowerHandler::_fracFSR, 0.001, 1e-10, 1,
      false, false, Interface::limited);
+
+  static Reference<QTildeShowerHandler,KinematicsReconstructor> interfaceKinematicsReconstructor
+    ("KinematicsReconstructor",
+     "Reference to the KinematicsReconstructor object",
+     &QTildeShowerHandler::_reconstructor, false, false, true, false, false);
+
+  static Reference<QTildeShowerHandler,PartnerFinder> interfacePartnerFinder
+    ("PartnerFinder",
+     "Reference to the PartnerFinder object",
+     &QTildeShowerHandler::_partnerfinder, false, false, true, false, false);
+
+  static RefVector<QTildeShowerHandler,SudakovFormFactor> interfaceSudakovFormFactors
+    ("SudakovFormFactors",
+     "Vector of references to the SudakovFormFactor objects",
+     &QTildeShowerHandler::_sudakovs, -1, false, false, true, false, false);
 
 }
 
@@ -1223,7 +1235,7 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
   }
 
   // Set the initial evolution scales
-  showerModel()->partnerFinder()->
+  partnerFinder()->
     setInitialEvolutionScales(particles,!hard,interaction_,!_hardtree);
   if(hardTree() && _hardPOWHEG) {
     bool tooHard=false;
@@ -2487,16 +2499,16 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
       cit!=hardTree->branchings().end();++cit) {
     particles.push_back((*cit)->branchingParticle());
   }
-  showerModel()->partnerFinder()->
+  partnerFinder()->
     setInitialEvolutionScales(particles,!hard,interaction_,true);
   hardTree->partnersSet(true);
   // inverse reconstruction
   if(hard) {
-    showerModel()->kinematicsReconstructor()->
+    kinematicsReconstructor()->
       deconstructHardJets(hardTree,interaction_);
   }
   else
-    showerModel()->kinematicsReconstructor()->
+    kinematicsReconstructor()->
       deconstructDecayJets(hardTree,interaction_);
   // now reset the momenta of the showering particles
   vector<ShowerProgenitorPtr> particlesToShower=showerTree->extractProgenitors();
@@ -2732,10 +2744,10 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
     }
     // do the kinematic reconstruction, checking if it worked
     reconstructed = hard ?
-      showerModel()->kinematicsReconstructor()->
+      kinematicsReconstructor()->
       reconstructHardJets (currentTree(),intrinsicpT(),interaction_,
 			   switchRecon && ntry>maximumTries()/2) :
-      showerModel()->kinematicsReconstructor()->
+      kinematicsReconstructor()->
       reconstructDecayJets(currentTree(),interaction_);
     if(!reconstructed) continue;
     // apply vetos on the full shower
@@ -3036,7 +3048,7 @@ void QTildeShowerHandler:: convertHardTree(bool hard,ShowerInteraction type) {
   // clear the tree
   hardTree(HardTreePtr());
   // Set the initial evolution scales
-  showerModel()->partnerFinder()->
+  partnerFinder()->
     setInitialEvolutionScales(particles,!hard,type,!_hardtree);
 }
 

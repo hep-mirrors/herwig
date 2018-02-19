@@ -14,7 +14,6 @@ SplittingFunctions/HalfOneHalfSplitFn.h SplittingFunctions/HalfOneHalfSplitFn.cc
 SplittingFunctions/CMWOneOneOneSplitFn.h SplittingFunctions/CMWOneOneOneSplitFn.cc\
 SplittingFunctions/CMWHalfHalfOneSplitFn.h SplittingFunctions/CMWHalfHalfOneSplitFn.cc\
 Default/QTildeSudakov.cc Default/QTildeSudakov.h\
-Default/QTildeModel.cc Default/QTildeModel.h\
 Default/Decay_QTildeShowerKinematics1to2.cc \
 Default/Decay_QTildeShowerKinematics1to2.h  \
 Default/IS_QTildeShowerKinematics1to2.cc    Default/IS_QTildeShowerKinematics1to2.h  \
@@ -24,7 +23,6 @@ Default/QTildeReconstructor.cc Default/QTildeReconstructor.h Default/QTildeRecon
 Base/KinematicsReconstructor.cc \
 Base/KinematicsReconstructor.h \
 Base/KinematicsReconstructor.fh \
-Base/ShowerModel.cc Base/ShowerModel.h Base/ShowerModel.fh \
 Base/HardTree.cc Base/HardTree.h Base/HardTree.fh \
 Base/HardBranching.h Base/HardBranching.fh Base/HardBranching.cc\
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \

@@ -1839,7 +1839,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
       (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
       particles.push_back((**cjt).branchingParticle());
     }
-    dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
+    dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->partnerFinder()
       ->setInitialEvolutionScales(particles,false,type,false);
     // calculate the reference vectors
     unsigned int iloc(0);
@@ -1915,7 +1915,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
     particles.push_back((**cjt).branchingParticle());
   }
-  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
+  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->partnerFinder()
     ->setInitialEvolutionScales(particles,false,type,false);
   // calculate the reference vectors
   unsigned int iloc(0);
@@ -2482,7 +2482,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
     (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
     particles.push_back((**cjt).branchingParticle());
   }
-  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
+  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->partnerFinder()
     ->setInitialEvolutionScales(particles,false,type,false);
   unsigned int iloc(0);
   for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {

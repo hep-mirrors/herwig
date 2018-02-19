@@ -7,7 +7,6 @@
 
 #include "QTildeShowerHandler.fh"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
@@ -15,6 +14,9 @@
 #include "Herwig/Shower/QTilde/Base/Branching.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVeto.h"
 #include "Herwig/Shower/QTilde/Base/FullShowerVeto.h"
+#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.fh"
+#include "Herwig/Shower/QTilde/Base/PartnerFinder.fh"
+#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.fh"
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/Decay/HwDecayerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
@@ -103,10 +105,6 @@ public:
    *  Access to the flags and shower variables
    */
   //@{
-  /**
-   *  Get the ShowerModel
-   */ 
-  ShowerModelPtr showerModel() const {return _model;}
 
   /**
    *  Get the SplittingGenerator
@@ -148,6 +146,27 @@ public:
   bool correlations() const {
     return _spinOpt!=0||_softOpt!=0;
   }
+  //@}
+
+public:
+  /**
+   *  Access methods to access the objects
+   */
+  //@{
+  /**
+   *  Access to the KinematicsReconstructor object
+   */
+  tKinematicsReconstructorPtr kinematicsReconstructor() const { return _reconstructor; }
+
+  /**
+   *  Access to the PartnerFinder object
+   */
+  tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
+
+  /**
+   *  Access to the SudakovFormFactor objects
+   */
+  const vector<SudakovPtr> & sudakovFormFactors() const { return _sudakovs; }
   //@}
 
 protected:
@@ -633,11 +652,6 @@ private:
 private :
 
   /**
-   *  Pointer to the model for the shower evolution model
-   */
-  ShowerModelPtr _model;
-
-  /**
    * Pointer to the splitting generator
    */
   SplittingGeneratorPtr _splittingGenerator;
@@ -848,6 +862,27 @@ private :
    *  Counter for the number of failed events due to FSR emissions
    */
   unsigned int _nFailedFSR;
+
+private:
+  /**
+   *  Pointer to the various objects
+   */
+  //@{
+  /**
+   *  Pointer to the KinematicsReconstructor object
+   */
+  KinematicsReconstructorPtr _reconstructor;
+
+  /**
+   *  Pointer to the PartnerFinder object
+   */
+  PartnerFinderPtr _partnerfinder;
+
+  /**
+   *  Pointers to the SudakovFormFactor objects
+   */
+  vector<SudakovPtr> _sudakovs;
+  //@}
 
 };
 

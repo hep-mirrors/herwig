@@ -547,7 +547,7 @@ double MatchingHandler::getDiagram(PotentialTree & tree) {
     branchingMap.insert(make_pair((**it).branchingParticle(),*it));
   }
   // find the colour partners
-  showerModel()->partnerFinder()
+  partnerFinder()
     ->setInitialEvolutionScales(branchingParticles,false,
 				ShowerInteraction::QCD,true);
   for(unsigned int ix=0;ix<branchingParticles.size();++ix) {
@@ -959,7 +959,7 @@ PotentialTree MatchingHandler::doClustering() {
       br->beam( beams.second );
     }
     // do inverse momentum reconstruction
-    if( !showerModel()->kinematicsReconstructor()
+    if( !kinematicsReconstructor()
     	->deconstructHardJets( newTree.tree(), evolver(), ShowerInteraction::QCD ) )
       continue;
     newTree.tree()->findNodes();

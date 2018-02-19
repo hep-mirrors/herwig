@@ -31,7 +31,6 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
 create Herwig::ShowerAlphaQED AlphaQED
-create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 1
 newdef PartnerFinder:ScaleChoice 1
@@ -43,9 +42,8 @@ newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
 newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 
-newdef ShowerModel:PartnerFinder PartnerFinder
-newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
-newdef ShowerHandler:ShowerModel ShowerModel
+newdef ShowerHandler:PartnerFinder PartnerFinder
+newdef ShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef ShowerHandler:SplittingGenerator SplittingGenerator
 newdef ShowerHandler:SpinCorrelations Yes
 newdef ShowerHandler:SoftCorrelations Singular
@@ -81,7 +79,8 @@ newdef PowhegShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
 newdef PowhegShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 newdef PowhegShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
 newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
-newdef PowhegShowerHandler:ShowerModel ShowerModel
+newdef PowhegShowerHandler:PartnerFinder PartnerFinder
+newdef PowhegShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef PowhegShowerHandler:SplittingGenerator SplittingGenerator
 newdef PowhegShowerHandler:Interactions QCDandQED
 newdef PowhegShowerHandler:SpinCorrelations Yes
