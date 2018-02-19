@@ -492,7 +492,7 @@ void QTildeMatching::Init() {
      &QTildeMatching::theQTildeFinder, false, false, true, false, false);
   interfaceQTildeFinder.rank(-1);
 
-  static Reference<QTildeMatching,QTildeSudakov> interfaceQTildeSudakov
+  static Reference<QTildeMatching,SudakovFormFactor> interfaceQTildeSudakov
     ("QTildeSudakov",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeSudakov, false, false, true, false, false);

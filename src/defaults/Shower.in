@@ -153,7 +153,7 @@ newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 set QtoGammaQSplitFn:AngularOrdered Yes
 #
 # Now the Sudakovs
-create Herwig::QTildeSudakov SudakovCommon
+create Herwig::SudakovFormFactor SudakovCommon
 newdef SudakovCommon:Alpha AlphaQCD
 newdef SudakovCommon:cutoffKinScale 0.0*GeV
 newdef SudakovCommon:PDFmax 1.0

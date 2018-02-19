@@ -158,7 +158,7 @@ public:
 					      const IdList &ids,
 					      const RhoDMatrix & rho,
 					      double enhance, double detuning,
-					      Energy2 maxQ2)=0;
+					      Energy2 maxQ2);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -176,7 +176,7 @@ public:
 					       const IdList &ids,
 					       const RhoDMatrix & rho,
 					       double enhance,
-					       double detuning)=0;
+					       double detuning);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -193,7 +193,7 @@ public:
 					       const RhoDMatrix & rho,
 					       double enhance,
 					       tcBeamPtr beam,
-					       double detuning)=0;
+					       double detuning);
   //@}
 
   /**
@@ -204,7 +204,7 @@ public:
    */
   virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
 				    ShoKinPtr kinematics,
-				    const RhoDMatrix & rho)=0;
+				    const RhoDMatrix & rho);
 
   /**
    *  Generate the azimuthal angle of the branching for backward evolution
@@ -214,7 +214,7 @@ public:
    */
   virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
 				     ShoKinPtr kinematics,
-				     const RhoDMatrix & rho)=0;
+				     const RhoDMatrix & rho);
 
   /**
    *  Generate the azimuthal angle of the branching for ISR in decays
@@ -224,7 +224,7 @@ public:
    */
   virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
 				  ShoKinPtr kinematics,
-				  const RhoDMatrix & rho)=0;
+				  const RhoDMatrix & rho);
 
   /**
    *  Methods to provide public access to the private member variables
@@ -278,25 +278,25 @@ public:
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
    */
-  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt)=0;
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
 
   /**
    *  Method to create the ShowerKinematics object for a final-state branching
    */
   virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
-					      double phi, Energy pt)=0;
+					      double phi, Energy pt);
 
   /**
    *  Method to create the ShowerKinematics object for an initial-state branching
    */
   virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
-						double phi, Energy pt)=0;
+						double phi, Energy pt);
 
   /**
    *  Method to create the ShowerKinematics object for a decay branching
    */
   virtual ShoKinPtr createDecayBranching(Energy scale,double z,
-					 double phi, Energy pt)=0;
+					 double phi, Energy pt);
 
 public:
 
@@ -335,6 +335,73 @@ protected:
    */
   virtual void doinit();
   //@}
+
+protected:
+  /**
+   *  Methods to provide the next value of the scale before the vetos
+   *  are applied.
+   */
+  //@{
+  /**
+   *  Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param enhance The radiation enhancement factor
+   * @return False if scale less than minimum, true otherwise
+   */
+  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, double detune);
+
+  /**
+   * Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmax The maximum scale
+   * @param minmass The minimum mass of the particle after the branching
+   * @param enhance The radiation enhancement factor
+   */
+  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
+		  double enhance, double detune);
+
+  /**
+   * Value of the energy fraction and scale for space-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param x Fraction of the beam momentum.
+   * @param enhance The radiation enhancement factor
+   */
+  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
+		      double enhance, double detune);
+  //@}
+
+  /**
+   *  Initialize the values of the cut-offs and scales
+   * @param tmin The minimum scale
+   * @param ids  The ids of the partics in the branching
+   */
+  void initialize(const IdList & ids,Energy2 &tmin);
+
+  /**
+   *  Phase Space veto member to implement the \f$\Theta\f$ function as a veto
+   *  so that the emission is within the allowed phase space.
+   * @param t  The scale
+   * @param maxQ2 The maximum virtuality
+   * @return true if vetoed
+   */
+  bool PSVeto(const Energy2 t,const Energy2 maxQ2);
+
+  /**
+   * Compute the limits on \f$z\f$ for time-like branching
+   * @param scale The scale of the particle
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeTimeLikeLimits(Energy2 & scale);
+
+  /**
+   * Compute the limits on \f$z\f$ for space-like branching
+   * @param scale The scale of the particle
+   * @param x The energy fraction of the parton
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeSpaceLikeLimits(Energy2 & scale, double x);
 
 protected:
 
@@ -538,13 +605,30 @@ public:
     freeze_ = scale;
   }
 
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SudakovFormFactor & operator=(const SudakovFormFactor &);
+  SudakovFormFactor & operator=(const SudakovFormFactor &) = delete;
 
 private:
 
@@ -680,6 +764,27 @@ private:
   Energy freeze_;
   //@}
 
+private:
+  
+  /**
+   *  The evolution scale, \f$\tilde{q}\f$.
+   */
+  Energy q_;
+
+  /**
+   *  The Ids of the particles in the current branching
+   */
+  IdList ids_;
+
+  /**
+   *  The masses of the particles in the current branching
+   */
+  vector<Energy> masses_;
+
+  /**
+   *  The mass squared of the particles in the current branching
+   */
+  vector<Energy2> masssquared_;
 
 };
 
