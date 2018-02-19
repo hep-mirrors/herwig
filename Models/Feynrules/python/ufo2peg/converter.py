@@ -3,9 +3,12 @@ AST visitor class to convert Python expressions into C++ as used by ThePEG
 """
 import ast
 
+convertHerwig=False
 
-def py2cpp(expr):
+def py2cpp(expr,con=False):
     """Convert expr to C++ form. Wraps the converter class."""
+    global convertHerwig
+    convertHerwig=con
     result = PyToCpp().parse(expr)
     return result
 
@@ -106,6 +109,8 @@ class PyToCpp(ast.NodeVisitor):
         if node.n == 0: text = '0.0'
         elif (node.n==complex("1j") ) :
             text = "ii"
+        elif (node.n==complex("2j") ) :
+            text = "2.*ii"
         else:
             text = str(float(node.n))
         self.result.append(text)
@@ -116,6 +121,18 @@ class PyToCpp(ast.NodeVisitor):
             text = 'Complex'
         elif text == 'complexconjugate': 
             text = 'conj'
+        elif convertHerwig :
+            if text == 'I' :
+                text = "ii"
+            elif ( text.find("UnitRemoval")==0) :
+                text = "%s::%s" % (text[:11],text[11:])
+            elif(len(text)==3 and
+                 (text[0]=="P" or text[0]=="E" or text[0]=="V")) :
+                text = "%s.%s()" % (text[0:2],text[2])
+            elif(text[0]=="R") :
+                text = "%s.%s()" % (text[:-3],text[-3:])
+            elif(text[0]=="s") :
+                text = "%s.%s()" % (text[:-2],text[-2:])
         elif text not in []:
             self.symbols.add(text)
         self.result.append(text)

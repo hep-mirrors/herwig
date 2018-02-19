@@ -1184,7 +1184,7 @@ class LorentzStructure:
 
 def LorentzCompare(a,b) :
     if(a.name=="int" and b.name=="int") :
-        return int(b.value-a.value)
+        return int(abs(b.value)-abs(a.value))
     elif(a.name=="int") :
         return -1
     elif(b.name=="int") :
@@ -2405,8 +2405,6 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             print end
             
             quit()
-    # needs for some output, TODO should be moved to py -> c++ converter
-    defns["I"] = ["I","static Complex I(0.,1.);"]
     # iterate over the uncontracted indices
     while True :
         # loop over the unContracted indices
@@ -2750,7 +2748,7 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                         dimension[2]+=1
                     if(index.type=="P" or
                        (index.type=="E" and index.value!=iloc)) :
-                        Symbols += momCom.substitute({"v":index})
+                        Symbols += momCom.substitute( {"v": index} )
                 lorentz.append(lstruct)
                 parsed[i]=""
             else :
@@ -3099,35 +3097,8 @@ def combineResult(res,nf,ispin,vertex) :
 def combineComponents(result,offType,RS) :
     for i in range(0,len(result)) :
         for (key,value) in result[i].iteritems() :
-            output=py2cpp(value.strip())
-            res = output[0]
-            # TODO can/should this be done in the py to c++ parser?
-            # replace variables with C++ member functions
-            for val in output[1] :
-                if(val[0]=="P" or val[0]=="E" or val[0]=="V") :
-                    if(len(val) > 3) :
-                        continue
-                    else :
-                        newName = "%s.%s()" % (val[0:2],val[2])
-                elif(val.find("GeV")==0 or
-                     val.find("Complex")==0 or
-                     val.find("local_")==0 or val.find("M")==0 or
-                     val.find("OM")==0 or val.find("dot")==0) :
-                    continue
-                elif(val[0]=="R") :
-                    newName = "%s.%s()" % (val[:-3],val[-3:])
-                elif(val[0]=="s") :
-                    newName = "%s.%s()" % (val[:-2],val[-2:])
-                elif(val=="I") :
-                    #newName = "ii"
-                    continue
-                elif(val.find("UnitRemoval")==0) :
-                    newName = "%s::%s" % (val[:11],val[11:])
-                else :
-                    print val
-                    quit()
-                res=res.replace(val,newName)
-            result[i][key]=res
+            output=py2cpp(value.strip(),True)
+            result[i][key]=output[0]
     # simplest case, just a value
     if(len(result[0])==1 and "res" in result[0]) :
         for i in range(0,len(result)) :
