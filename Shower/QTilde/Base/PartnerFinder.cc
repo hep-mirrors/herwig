@@ -62,15 +62,11 @@ namespace {
 }
 
 void PartnerFinder::persistentOutput(PersistentOStream & os) const {
-  os << partnerMethod_ << QEDPartner_ << scaleChoice_
-     << _finalFinalConditions << _initialFinalDecayConditions
-     << _initialInitialConditions;
+  os << partnerMethod_ << QEDPartner_ << scaleChoice_;
 }
 
 void PartnerFinder::persistentInput(PersistentIStream & is, int) {
-  is >> partnerMethod_ >> QEDPartner_ >> scaleChoice_
-     >> _finalFinalConditions >> _initialFinalDecayConditions
-     >>_initialInitialConditions;
+  is >> partnerMethod_ >> QEDPartner_ >> scaleChoice_;
 }
 
 void PartnerFinder::Init() {
@@ -130,74 +126,6 @@ void PartnerFinder::Init() {
      "Different",
      "Allow each interaction to have different scales",
      1);
-
-
-  static Switch<PartnerFinder,unsigned int> interfaceFinalFinalConditions
-    ("FinalFinalConditions",
-     "The initial conditions for the shower of a final-final colour connection",
-     &PartnerFinder::_finalFinalConditions, 0, false, false);
-  static SwitchOption interfaceFinalFinalConditionsSymmetric
-    (interfaceFinalFinalConditions,
-     "Symmetric",
-     "The symmetric choice",
-     0);
-  static SwitchOption interfaceFinalFinalConditionsColoured
-    (interfaceFinalFinalConditions,
-     "Coloured",
-     "Maximal radiation from the coloured particle",
-     1);
-  static SwitchOption interfaceFinalFinalConditionsAntiColoured
-    (interfaceFinalFinalConditions,
-     "AntiColoured",
-     "Maximal emission from the anticoloured particle",
-     2);
-  static SwitchOption interfaceFinalFinalConditionsRandom
-    (interfaceFinalFinalConditions,
-     "Random",
-     "Randomly selected maximal emission from one of the particles",
-     3);
-
-  static Switch<PartnerFinder,unsigned int> interfaceInitialFinalDecayConditions
-    ("InitialFinalDecayConditions",
-     "The initial conditions for the shower of an initial-final"
-     " decay colour connection.",
-     &PartnerFinder::_initialFinalDecayConditions, 0, false, false);
-  static SwitchOption interfaceInitialFinalDecayConditionsSymmetric
-    (interfaceInitialFinalDecayConditions,
-     "Symmetric",
-     "The symmetric choice",
-     0);
-  static SwitchOption interfaceInitialFinalDecayConditionsMaximal
-    (interfaceInitialFinalDecayConditions,
-     "Maximal",
-     "Maximal radiation from the decay product",
-     1);
-  static SwitchOption interfaceInitialFinalDecayConditionsSmooth
-    (interfaceInitialFinalDecayConditions,
-     "Smooth",
-     "Smooth matching in the soft limit",
-     2);
-
-  static Switch<PartnerFinder,unsigned int> interfaceInitialInitialConditions
-    ("InitialInitialConditions",
-     "The initial conditions for the shower of an initial-initial"
-     " colour connection.",
-     &PartnerFinder::_initialInitialConditions, 0, false, false);
-  static SwitchOption interfaceInitialInitialConditionsSymmetric
-    (interfaceInitialInitialConditions,
-     "Symmetric",
-     "The symmetric choice",
-     0);
-  static SwitchOption interfaceInitialInitialConditionsMaximiseB
-    (interfaceInitialInitialConditions,
-     "MaximiseB",
-     "Maximal radiation from parton b",
-     1);
-  static SwitchOption interfaceInitialInitialConditionsMaximiseC
-    (interfaceInitialInitialConditions,
-     "MaximiseC",
-     "Maximal radiation from parton c",
-     2);
 }
 
 void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
@@ -469,20 +397,14 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
                                 const bool isDecayCase) {
   bool FS1=FS(particlePair.first),FS2= FS(particlePair.second);
 
-  if(FS1 && FS2) {
-    bool colouredFirst =
-     particlePair.first->colourLine()&&
-     particlePair.first->colourLine()==particlePair.second->antiColourLine();
-   return calculateFinalFinalScales(particlePair.first->momentum(),
-                                    particlePair.second->momentum(),
- 				   colouredFirst);
-  }
+  if(FS1 && FS2)
+    return calculateFinalFinalScales(particlePair.first->momentum(),
+                                     particlePair.second->momentum());
   else if(FS1 && !FS2) {
-    ShowerPPair a(particlePair.second, particlePair.first);
-    pair<Energy,Energy> rval = calculateInitialFinalScales(a.first->momentum(),
-                                                           a.second->momentum(),
+    pair<Energy,Energy> rval = calculateInitialFinalScales(particlePair.second->momentum(),
+                                                           particlePair.first->momentum(),
                                                            isDecayCase);
-    return pair<Energy,Energy>(rval.second,rval.first);
+    return { rval.second, rval.first };
   }
   else if(!FS1 &&FS2)
     return calculateInitialFinalScales(particlePair.first->momentum(),particlePair.second->momentum(),isDecayCase);
@@ -617,8 +539,7 @@ PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
 pair<Energy,Energy> 
 PartnerFinder::calculateFinalFinalScales(
         const Lorentz5Momentum & p1,
-        const Lorentz5Momentum & p2,
-	bool colouredFirst) 
+        const Lorentz5Momentum & p2) 
 {
   static const double eps=1e-7;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
@@ -649,34 +570,10 @@ PartnerFinder::calculateFinalFinalScales(
   // which should be identical for p1 & p2 onshell in their COM
   // but in the inverse construction for the Nason method, this
   // was not the case, leading to misuse. 
-  double lam=sqrt((1.+sqrt(b)+sqrt(c))*(1.-sqrt(b)-sqrt(c))
-                 *(sqrt(b)-1.-sqrt(c))*(sqrt(c)-1.-sqrt(b)));
+  const double lam=sqrt((1.+sqrt(b)+sqrt(c))*(1.-sqrt(b)-sqrt(c))
+                   *(sqrt(b)-1.-sqrt(c))*(sqrt(c)-1.-sqrt(b)));
   // symmetric case
-  unsigned int iopt=finalFinalConditions();
-  Energy firstQ,secondQ;
-  if(iopt==0) {
-    firstQ  = sqrt(0.5*Q2*(1.+b-c+lam));
-    secondQ = sqrt(0.5*Q2*(1.-b+c+lam));
-  }
-  // assymetric choice
-  else {
-    double kappab,kappac;
-    // calculate kappa with coloured line getting maximum
-    if((iopt==1&&colouredFirst)|| // first particle coloured+maximal for coloured
-       (iopt==2&&!colouredFirst)|| // first particle anticoloured+maximal for acoloured
-       (iopt==3&&UseRandom::rndbool(0.5))) { // random choice
-      kappab=4.*(1.-2.*sqrt(c)-b+c);
-      kappac=c+0.25*sqr(1.-b-c+lam)/(kappab-b);
-    }
-    else {
-      kappac=4.*(1.-2.*sqrt(b)-c+b);
-      kappab=b+0.25*sqr(1.-b-c+lam)/(kappac-c);
-    }
-    // calculate the scales
-    firstQ  = sqrt(Q2*kappab);
-    secondQ = sqrt(Q2*kappac);
-  }
-  return pair<Energy,Energy>(firstQ, secondQ);
+  return { sqrt(0.5*Q2*(1.+b-c+lam)), sqrt(0.5*Q2*(1.-b+c+lam)) };
 }
 
 
@@ -692,9 +589,9 @@ PartnerFinder::calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lor
     // q_c = sqrt(Q^2+2 m_c^2)
     // We also assume that the first particle in the pair is the initial
     // state particle and the second is the final state one c 
-    Energy2  mc2 = sqr(pc.mass());
-    Energy2  Q2  = -(pb-pc).m2();
-    return pair<Energy,Energy>(sqrt(Q2+mc2), sqrt(Q2+2*mc2));
+    const Energy2  mc2 = sqr(pc.mass());
+    const Energy2  Q2  = -(pb-pc).m2();
+    return { sqrt(Q2+mc2), sqrt(Q2+2*mc2) };
   }
   else {    
     // In this case from JHEP 12(2003)045 we find, for the decay
@@ -713,30 +610,10 @@ PartnerFinder::calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lor
     double c=sqr(pc.mass())/mb2;
     double lambda   = 1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c;
     lambda = sqrt(max(lambda,0.));
-    double PROD     = 0.25*sqr(1. - a + c + lambda);
-    double ktilde_b, ktilde_c,cosi(0.);
-    switch(initialFinalDecayConditions()) {
-    case 0: // the 'symmetric' choice
-      ktilde_c = 0.5*(1-a+c+lambda) + c ;
-      ktilde_b = 1.+PROD/(ktilde_c-c)   ;
-      break;
-    case 1:  // the 'maximal' choice
-      ktilde_c = 4.0*(sqr(1.-sqrt(a))-c);
-      ktilde_b = 1.+PROD/(ktilde_c-c)   ;
-      break;
-    case 2:  // the 'smooth' choice
-      // c is a problem if very small here use 1GeV as minimum
-      c = max(c,1.*GeV2/mb2);
-      cosi = (sqr(1-sqrt(c))-a)/lambda;
-      ktilde_b = 2.0/(1.0-cosi);
-      ktilde_c = (1.0-a+c+lambda)*(1.0+c-a-lambda*cosi)/(2.0*(1.0+cosi));
-      break;
-    default:
-      throw Exception() << "Invalid option for decay shower's phase space"
-			<< " PartnerFinder::calculateInitialFinalScales"
-			<< Exception::abortnow;
-    }
-    return pair<Energy,Energy>(sqrt(mb2*ktilde_b),sqrt(mb2*ktilde_c));
+    const double PROD     = 0.25*sqr(1. - a + c + lambda);
+    const double ktilde_c = 0.5*(1-a+c+lambda) + c ;
+    const double ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    return { sqrt(mb2*ktilde_b), sqrt(mb2*ktilde_c) };
   }
 }
 
@@ -746,12 +623,6 @@ PartnerFinder::calculateInitialInitialScales(const Lorentz5Momentum& p1, const L
   // that ktilde_b = ktilde_c = 1. In this case we have the process
   // b+c->a so we need merely boost to the CM frame of the two incoming
   // particles and then qtilde is equal to the energy in that frame
-  Energy Q = sqrt((p1+p2).m2());
-  if(_initialInitialConditions==1) {
-    return pair<Energy,Energy>(sqrt(2.0)*Q,sqrt(0.5)*Q);
-  } else if(_initialInitialConditions==2) {
-    return pair<Energy,Energy>(sqrt(0.5)*Q,sqrt(2.0)*Q);
-  } else {
-    return pair<Energy,Energy>(Q,Q);
-  }
+  const Energy Q = sqrt((p1+p2).m2());
+  return {Q,Q};
 }

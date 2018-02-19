@@ -49,10 +49,7 @@ public:
   /**
    * The default constructor.
    */
-  PartnerFinder() : partnerMethod_(0), QEDPartner_(0), scaleChoice_(0),
-                    _finalFinalConditions(0),
-		    _initialFinalDecayConditions(0),
-		    _initialInitialConditions(0) {}
+  PartnerFinder() : partnerMethod_(0), QEDPartner_(0), scaleChoice_(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -129,32 +126,6 @@ public:
 protected:
 
   /**
-   * Access function for the initial conditions for the shower
-   */
-  //@{
-  /**
-   * Initial conditions for the shower of a final-final colour connection
-   * - 0 is the symmetric choice
-   * - 1 is maximal emmision from the coloured particle
-   * - 2 is maximal emmision from the anticoloured particle
-   * - 3 is randomly selected maximal emmision
-   */
-  unsigned int finalFinalConditions() const 
-  {return _finalFinalConditions;}
-
-  /**
-   * Initial conditions for the shower of an initial-final decay colour connection
-   * - 0 is the symmetric choice
-   * - 1 is maximal emission from the decay product
-   * - 2 is the smooth choice
-   */
-  unsigned int initialFinalDecayConditions() const
-  {return _initialFinalDecayConditions;}
-  //@}
-
-protected:
-
-  /**
    *  Members to set the scales for different interactions
    */
   //@{
@@ -210,8 +181,7 @@ public:
    *  Calculate the initial evolution scales given momenta
    */
   pair<Energy,Energy> calculateFinalFinalScales(const Lorentz5Momentum & p1, 
-                                                const Lorentz5Momentum & p2,
-						bool colouredfirst);
+                                                const Lorentz5Momentum & p2);
 
   /**
    *  Calculate the initial evolution scales given momenta
@@ -253,43 +223,6 @@ private:
    */
   int scaleChoice_;
 
-  /**
-   *  Flags controlling the initial conditions for the shower
-   */
-  //@{
-  /**
-   * Initial conditions for the shower with a final-final colour
-   * connection
-   */
-  unsigned int _finalFinalConditions; 
-
-  /**
-   * Initial conditions for the shower with an initial-final decay colour
-   * connection. This is done according to the top decay colour 
-   *  connection calculation in JHEP12(2003)_045. The options act as follows:
-   *  0: This is the default 'symmetric' choice which more or less divides
-   *     the phase space evenly between the parent and its charged child.
-   *  1: This 'maximal' choice maximises the phase space available for 
-   *     gluons emitted from the charged child.
-   *  2: This (experimental) 'smooth' choice does not suffer from
-   *     a discontinuity at the boundary between the region populated by
-   *     emissions from the charged child and the region populated by emissions
-   *     from the parent. This does, however, mean that the phase space 
-   *     available for emissions from the charged child is fairly minimal.
-   */
-  unsigned int _initialFinalDecayConditions;
-
-  /**
-   * Initial conditions for the shower with an initial-initial colour
-   * connection. This is done according to the colour connection 
-   * calculation in JHEP12(2003)_045. The options act as follows:
-   *  0: This is the default 'symmetric' choice which more or less divides
-   *     the phase space evenly between the two incoming partons.
-   *  1: This increases the phase space for emission from "parton b".
-   *  2: This increases the phase space for emission from "parton c".
-   */
-  unsigned int _initialInitialConditions;
-  //@}
 };
 
 }

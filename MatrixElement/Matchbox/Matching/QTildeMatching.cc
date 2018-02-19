@@ -87,8 +87,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
     qtildeHard = 
       theQTildeFinder->
       calculateFinalFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
-				bornCXComb()->meMomenta()[dipole()->bornSpectator()],
-				bornCXComb()->mePartonData()[dipole()->bornEmitter()]->iColour() == PDT::Colour3).first;
+				bornCXComb()->meMomenta()[dipole()->bornSpectator()]).first;
   }
 
   // FI
