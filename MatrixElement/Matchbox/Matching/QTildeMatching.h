@@ -14,7 +14,7 @@
 
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Default/QTildeFinder.h"
+#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Default/QTildeSudakov.h"
 
 namespace Herwig {
@@ -181,7 +181,7 @@ private:
   /**
    * The qtilde partner finder for calculating the hard scales
    */
-  Ptr<QTildeFinder>::ptr theQTildeFinder;
+  Ptr<PartnerFinder>::ptr theQTildeFinder;
 
   /**
    * The qtilde Sudakov to access the cutoff

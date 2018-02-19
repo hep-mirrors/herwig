@@ -487,7 +487,7 @@ void QTildeMatching::Init() {
   static ClassDocumentation<QTildeMatching> documentation
     ("QTildeMatching implements NLO matching with the default shower.");
 
-  static Reference<QTildeMatching,QTildeFinder> interfaceQTildeFinder
+  static Reference<QTildeMatching,PartnerFinder> interfaceQTildeFinder
     ("QTildeFinder",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeFinder, false, false, true, false, false);
