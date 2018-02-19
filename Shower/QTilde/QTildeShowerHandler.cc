@@ -75,7 +75,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << _trunc_Mode << _hardEmission << _reconOpt 
      << ounit(muPt,GeV)
      << oenum(interaction_) << _maxTryFSR << _maxFailFSR << _fracFSR
-     << _reconstructor << _partnerfinder << _sudakovs;
+     << _reconstructor << _partnerfinder;
 }
 
 void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -87,7 +87,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> _trunc_Mode >> _hardEmission >> _reconOpt
      >> iunit(muPt,GeV)
      >> ienum(interaction_) >> _maxTryFSR >> _maxFailFSR >> _fracFSR
-     >> _reconstructor >> _partnerfinder >> _sudakovs;
+     >> _reconstructor >> _partnerfinder;
 }
 
 
@@ -404,11 +404,6 @@ void QTildeShowerHandler::Init() {
     ("PartnerFinder",
      "Reference to the PartnerFinder object",
      &QTildeShowerHandler::_partnerfinder, false, false, true, false, false);
-
-  static RefVector<QTildeShowerHandler,SudakovFormFactor> interfaceSudakovFormFactors
-    ("SudakovFormFactors",
-     "Vector of references to the SudakovFormFactor objects",
-     &QTildeShowerHandler::_sudakovs, -1, false, false, true, false, false);
 
 }
 

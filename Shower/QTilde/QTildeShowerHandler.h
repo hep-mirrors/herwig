@@ -163,10 +163,6 @@ public:
    */
   tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
 
-  /**
-   *  Access to the SudakovFormFactor objects
-   */
-  const vector<SudakovPtr> & sudakovFormFactors() const { return _sudakovs; }
   //@}
 
 protected:
@@ -878,10 +874,6 @@ private:
    */
   PartnerFinderPtr _partnerfinder;
 
-  /**
-   *  Pointers to the SudakovFormFactor objects
-   */
-  vector<SudakovPtr> _sudakovs;
   //@}
 
 };
