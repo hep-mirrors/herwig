@@ -30,7 +30,8 @@ lfactors = {
     'RFV'  : 'complex(0,1)',
 }
 
-genericVertices=['FFFF','FFVV','FFSS','FFVS','VVVV','VVVT','FFVT','VVSS']
+genericVertices=['FFFF','FFVV','FFSS','FFVS','VVVV','VVVT','FFVT','VVSS',
+                 'RFVV','RFVS','RFSS']
 
 skipped5Point=False
 
