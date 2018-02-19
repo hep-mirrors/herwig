@@ -498,41 +498,6 @@ protected:
   //@}
 
   /**
-   *  Methods to set the kinematic variables for the branching
-   */
-  //@{
-  /**
-   *  The energy fraction
-   */
-  void z(double in) { z_=in; }
-
-  /**
-   *  The azimuthal angle
-   */
-  void phi(double in) { phi_=in; }
-
-  /**
-   *  The transverse momentum
-   */
-  void pT(Energy in) { pT_=in; }
-  //@}
-
-  /**
-   *  Set/Get the limits on the energy fraction for the splitting
-   */
-  //@{
-  /**
-   * Get the limits
-   */
-  pair<double,double> zLimits() const { return zlimits_;}
-
-  /**
-   * Set the limits
-   */
-  void zLimits(pair<double,double> in) { zlimits_=in; }
-  //@}
-
-  /**
    *  Set the particles in the splittings
    */
   void addSplitting(const IdList &);
@@ -613,13 +578,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:

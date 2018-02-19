@@ -25,6 +25,8 @@
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
+#include <array>
+using std::array;
 
 using namespace Herwig;
 
@@ -387,7 +389,7 @@ bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
   t = guesst(told,0,ids_,enhance,ids_[1]==ids_[2],detune);
-  z(guessz(0,ids_)); 
+  z_ = guessz(0,ids_); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
   if(t<tmin) {
@@ -406,7 +408,7 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
   if(!computeSpaceLikeLimits(t,x)) return false;
   // guess values of t and z
   t = guesst(told,1,ids_,enhance,ids_[1]==ids_[2],detune); 
-  z(guessz(1,ids_)); 
+  z_ = guessz(1,ids_);
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
   if(t<tmin) {
@@ -421,7 +423,7 @@ bool SudakovFormFactor::PSVeto(const Energy2 t,
 			   const Energy2 maxQ2) {
   // still inside PS, return true if outside
   // check vs overestimated limits
-  if(z() < zLimits().first || z() > zLimits().second) return true;
+  if(z() < zlimits_.first || z() > zlimits_.second) return true;
   Energy2 q2 = z()*(1.-z())*t;
   if(ids_[0]->id()!=ParticleID::g &&
      ids_[0]->id()!=ParticleID::gamma ) q2 += masssquared_[0];
@@ -431,7 +433,7 @@ bool SudakovFormFactor::PSVeto(const Energy2 t,
   // if pt2<0 veto
   if(pt2<pT2min()) return true;
   // otherwise calculate pt and return
-  pT(sqrt(pt2));
+  pT_ = sqrt(pt2);
   return false;
 }
 
@@ -446,8 +448,8 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
-  z(0.);
-  phi(0.); 
+  z_ = 0.;
+  phi_ = 0.; 
   // perform initialization
   Energy2 tmax(sqr(startingScale)),tmin;
   initialize(ids,tmin);
@@ -536,8 +538,8 @@ generateNextSpaceBranching(const Energy startingQ,
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
-  z(0.);
-  phi(0.);
+  z_ = 0.;
+  phi_ = 0.;
   // perform the initialization
   Energy2 tmax(sqr(startingQ)),tmin;
   initialize(ids,tmin);
@@ -554,7 +556,7 @@ generateNextSpaceBranching(const Energy startingQ,
       pt2=sqr(1.-z())*t-z()*masssquared_[2];
     }
     while(pt2 < pT2min()||
-        z() > zLimits().second||
+        z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
         alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,ids[0],ids[1],beam));
@@ -567,7 +569,7 @@ generateNextSpaceBranching(const Energy startingQ,
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
       pt2=sqr(1.-z())*t-z()*masssquared_[2];
       ptRew=pt2 < pT2min();
-      zRew=z() > zLimits().second;
+      zRew=z() > zlimits_.second;
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
       alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t);
@@ -620,10 +622,10 @@ generateNextSpaceBranching(const Energy startingQ,
     }
     while( PDFRew || SplitRew || alphaRew);
   }
-  if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
+  if(t > ZERO && zlimits_.first < zlimits_.second)  q_ = sqrt(t);
   else return ShoKinPtr();
   
-  pT(sqrt(pt2));
+  pT_ = sqrt(pt2);
   // create the ShowerKinematics and return it
   return createInitialStateBranching(q_,z(),phi(),pT());
 }
@@ -649,8 +651,8 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
   q_ = Constants::MaxEnergy;
-  z(0.);
-  phi(0.); 
+  z_ = 0.;
+  phi_ = 0.;
   // perform initialisation
   Energy2 tmax(sqr(stoppingScale)),tmin;
   initialize(ids,tmin);
@@ -669,10 +671,10 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
     q_ = sqrt(t);
-    pT(sqrt(pt2));
+    pT_ = sqrt(pt2);
   }
   else return ShoKinPtr();
-  phi(0.);
+  phi_ = 0.;
   // create the ShowerKinematics object
   return createDecayBranching(q_,z(),phi(),pT());
 }
@@ -688,18 +690,17 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   }
   Energy2 tm2 = tmax-masssquared_[0];
   Energy tm  = sqrt(tm2); 
-  pair<double,double> limits=make_pair(sqr(minmass/masses_[0]),
+  zlimits_ = make_pair(sqr(minmass/masses_[0]),
 				       1.-sqrt(masssquared_[2]+pT2min()+
 					       0.25*sqr(masssquared_[2])/tm2)/tm
 				       +0.5*masssquared_[2]/tm2);
-  zLimits(limits);
-  if(zLimits().second<zLimits().first) {
+  if(zlimits_.second<zlimits_.first) {
     t=-1.0*GeV2;
     return false;
   }
   // guess values of t and z
   t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2],detune);
-  z(guessz(2,ids_)); 
+  z_ = guessz(2,ids_); 
   // actual values for z-limits
   if(t<masssquared_[0])  {
     t=-1.0*GeV2;
@@ -707,12 +708,11 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   }
   tm2 = t-masssquared_[0];
   tm  = sqrt(tm2); 
-  limits=make_pair(sqr(minmass/masses_[0]),
+  zlimits_ = make_pair(sqr(minmass/masses_[0]),
 		   1.-sqrt(masssquared_[2]+pT2min()+
 			   0.25*sqr(masssquared_[2])/tm2)/tm
 		   +0.5*masssquared_[2]/tm2);
-  zLimits(limits);
-  if(t>tmax||zLimits().second<zLimits().first) {
+  if(t>tmax||zlimits_.second<zlimits_.first) {
     t=-1.0*GeV2;
     return false;
   }
@@ -726,7 +726,6 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
     return false;
   }
   // special case for gluon radiating
-  pair<double,double> limits;
   if(ids_[0]->id()==ParticleID::g||ids_[0]->id()==ParticleID::gamma) {
     // no emission possible
     if(t<16.*(masssquared_[1]+pT2min())) {
@@ -734,27 +733,26 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
       return false;
     }
     // overestimate of the limits
-    limits.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min())/t)));
-    limits.second = 1.-limits.first;
+    zlimits_.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min())/t)));
+    zlimits_.second = 1.-zlimits_.first;
   }
   // special case for radiated particle is gluon 
   else if(ids_[2]->id()==ParticleID::g||ids_[2]->id()==ParticleID::gamma) {
-    limits.first  =    sqrt((masssquared_[1]+pT2min())/t);
-    limits.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
+    zlimits_.first  =    sqrt((masssquared_[1]+pT2min())/t);
+    zlimits_.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
   }
   else if(ids_[1]->id()==ParticleID::g||ids_[1]->id()==ParticleID::gamma) {
-    limits.second  =    sqrt((masssquared_[2]+pT2min())/t);
-    limits.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
+    zlimits_.second  =    sqrt((masssquared_[2]+pT2min())/t);
+    zlimits_.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
   }
   else {
-    limits.first  =    (masssquared_[1]+pT2min())/t;
-    limits.second = 1.-(masssquared_[2]+pT2min())/t; 
+    zlimits_.first  =    (masssquared_[1]+pT2min())/t;
+    zlimits_.second = 1.-(masssquared_[2]+pT2min())/t; 
   }
-  if(limits.first>=limits.second) {
+  if(zlimits_.first>=zlimits_.second) {
     t=-1.*GeV2;
     return false;
   }
-  zLimits(limits);
   return true;
 }
 
@@ -763,14 +761,12 @@ bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x) {
     t=-1.*GeV2;
     return false;
   }
-  pair<double,double> limits;
   // compute the limits
-  limits.first = x;
+  zlimits_.first = x;
   double yy = 1.+0.5*masssquared_[2]/t;
-  limits.second = yy - sqrt(sqr(yy)-1.+pT2min()/t); 
+  zlimits_.second = yy - sqrt(sqr(yy)-1.+pT2min()/t); 
   // return false if lower>upper
-  zLimits(limits);
-  if(limits.second<limits.first) {
+  if(zlimits_.second<zlimits_.first) {
     t=-1.*GeV2;
     return false;
   }
@@ -894,8 +890,8 @@ double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
   Energy2 pipj,pik;
   bool canBeSoft[2] = {ids[1]->id()==ParticleID::g || ids[1]->id()==ParticleID::gamma,
 		       ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma };
-  vector<Energy2> pjk(3,ZERO);
-  vector<Energy> Ek(3,ZERO);
+  array<Energy2,3> pjk;
+  array<Energy,3> Ek;
   Energy Ei,Ej;
   Energy2 m12(ZERO),m22(ZERO);
   InvEnergy2 aziMax(ZERO);
@@ -1090,7 +1086,7 @@ double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
   bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
     (ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma);
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
-  vector<Energy2> pjk(3,ZERO);
+  array<Energy2,3> pjk;
   Energy Ei,Ej,Ek;
   InvEnergy2 aziMax(ZERO);
   if(softAllowed) {
@@ -1275,7 +1271,7 @@ double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
   Energy2 dot3 = pj*qperp0;
   Energy2 pipj = alpha0*dot1+beta0*dot2+dot3;
   // compute the constants for the phi dependent dot product
-  vector<Energy2> pjk(3,ZERO);
+  array<Energy2,3> pjk;
   pjk[0] = zFact*(alpha0*dot1+dot3-0.5*dot2/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
     +0.5*sqr(pT)*dot2/pn/zFact/alpha0;
   pjk[1] = (pj.x() - dot2/alpha0/pn*qperp0.x())*pT;
@@ -1284,7 +1280,7 @@ double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
   Energy2 m22 = sqr(partner->dataPtr()->mass());
   Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
   InvEnergy2 aziMax;
-  vector<Energy> Ek(3,ZERO);
+  array<Energy,3> Ek;
   Energy Ei,Ej;
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
     aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
