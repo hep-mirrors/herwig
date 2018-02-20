@@ -198,35 +198,22 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
-  double newpdf(0.0), oldpdf(0.0);
-
-  newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
-  oldpdf=pdf_->xfx(beam,parton1,theScale,x);
-
+  const double newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
   if(newpdf<=0.) return 0.;
+
+  const double oldpdf=pdf_->xfx(beam,parton1,theScale,x);
   if(oldpdf<=0.) return 1.;
   
-  double ratio = newpdf/oldpdf;
+  const double ratio = newpdf/oldpdf;
   double maxpdf = pdfmax_;
 
   switch (pdffactor_) {
-  case 0:
-    break;
-  case 1:
-    maxpdf /= z();
-    break;
-  case 2:
-    maxpdf /= 1.-z();
-    break;
-  case 3:
-    maxpdf /= (z()*(1.-z()));
-    break;
-  case 4:
-    maxpdf /= sqrt(z());
-    break;
-  case 5:
-    maxpdf *= sqrt(z());
-    break;
+  case 0: break;
+  case 1: maxpdf /= z(); break;
+  case 2: maxpdf /= 1.-z(); break;
+  case 3: maxpdf /= (z()*(1.-z())); break;
+  case 4: maxpdf /= sqrt(z()); break;
+  case 5: maxpdf *= sqrt(z()); break;
   default :
     throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
 		      << pdffactor_ << Exception::runerror;
