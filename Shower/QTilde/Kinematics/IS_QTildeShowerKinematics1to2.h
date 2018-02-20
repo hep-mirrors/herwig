@@ -12,7 +12,7 @@
 // This is the declaration of the IS_QTildeShowerKinematics1to2 class.
 //
 
-#include "Herwig/Shower/QTilde/Base/ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
 
 namespace Herwig {
 

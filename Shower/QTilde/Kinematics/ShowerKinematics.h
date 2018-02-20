@@ -14,8 +14,8 @@
 
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
-#include "ShowerKinematics.fh"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 
 namespace Herwig {
 

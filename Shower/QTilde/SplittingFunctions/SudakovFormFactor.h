@@ -20,7 +20,7 @@
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "ThePEG/EventRecord/SpinInfo.h"
-#include "ShowerKinematics.fh"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
 namespace Herwig {

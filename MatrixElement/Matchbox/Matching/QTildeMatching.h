@@ -15,7 +15,7 @@
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig/Shower/ShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
 
 namespace Herwig {
 

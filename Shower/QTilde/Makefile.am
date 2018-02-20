@@ -17,10 +17,10 @@ Kinematics/Decay_QTildeShowerKinematics1to2.cc \
 Kinematics/Decay_QTildeShowerKinematics1to2.h  \
 Kinematics/IS_QTildeShowerKinematics1to2.cc    Kinematics/IS_QTildeShowerKinematics1to2.h  \
 Kinematics/FS_QTildeShowerKinematics1to2.cc    Kinematics/FS_QTildeShowerKinematics1to2.h  \
-Base/KinematicsReconstructor.cc \
-Base/KinematicsReconstructor.tcc \
-Base/KinematicsReconstructor.h \
-Base/KinematicsReconstructor.fh \
+Kinematics/KinematicsReconstructor.cc \
+Kinematics/KinematicsReconstructor.tcc \
+Kinematics/KinematicsReconstructor.h \
+Kinematics/KinematicsReconstructor.fh \
 Base/HardTree.cc Base/HardTree.h Base/HardTree.fh \
 Base/HardBranching.h Base/HardBranching.fh Base/HardBranching.cc\
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \
@@ -32,10 +32,10 @@ Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc \
 ShowerConfig.h ShowerConfig.cc \
 Base/Branching.h \
 Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
-Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \
-Base/ShowerBasis.fh  Base/ShowerBasis.h Base/ShowerBasis.cc \
+Kinematics/ShowerKinematics.fh  Kinematics/ShowerKinematics.h Kinematics/ShowerKinematics.cc \
+Kinematics/ShowerBasis.fh  Kinematics/ShowerBasis.h Kinematics/ShowerBasis.cc \
 Base/ShowerProgenitor.fh Base/ShowerProgenitor.h \
-Base/SudakovFormFactor.cc Base/SudakovFormFactor.h Base/SudakovFormFactor.fh \
+SplittingFunctions/SudakovFormFactor.cc SplittingFunctions/SudakovFormFactor.h SplittingFunctions/SudakovFormFactor.fh \
 SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
 SplittingFunctions/SplittingFunction.cc  \
 Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h

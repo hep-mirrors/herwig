@@ -28,7 +28,7 @@
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/Shower/QTilde/Base/HardTree.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"

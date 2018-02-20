@@ -14,10 +14,10 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig/Shower/QTilde/Base/Branching.h"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "Herwig/Shower/QTilde/Base/ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
 
 namespace Herwig {
 

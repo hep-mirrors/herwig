@@ -18,7 +18,7 @@
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 #include <cassert>
 
