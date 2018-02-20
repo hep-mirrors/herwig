@@ -36,6 +36,10 @@ Kinematics/ShowerKinematics.fh  Kinematics/ShowerKinematics.h Kinematics/ShowerK
 Kinematics/ShowerBasis.fh  Kinematics/ShowerBasis.h Kinematics/ShowerBasis.cc \
 Base/ShowerProgenitor.fh Base/ShowerProgenitor.h \
 SplittingFunctions/SudakovFormFactor.cc SplittingFunctions/SudakovFormFactor.h SplittingFunctions/SudakovFormFactor.fh \
+SplittingFunctions/SudakovCutOff.cc SplittingFunctions/SudakovCutOff.h SplittingFunctions/SudakovCutOff.fh \
+SplittingFunctions/PTCutOff.cc SplittingFunctions/PTCutOff.h \
+SplittingFunctions/MassCutOff.cc SplittingFunctions/MassCutOff.h \
+SplittingFunctions/VariableMassCutOff.cc SplittingFunctions/VariableMassCutOff.h \
 SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
 SplittingFunctions/SplittingFunction.cc  \
 Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h
