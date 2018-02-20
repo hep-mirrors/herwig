@@ -44,7 +44,7 @@ namespace {
   }
 
   // return colour line size
-  inline unsigned int
+  inline size_t
   CLSIZE(const tShowerParticlePtr a) {
     return a->colourInfo()->colourLines().size();
   }
@@ -55,7 +55,7 @@ namespace {
       const_ptr_cast<ThePEG::tColinePtr>(a->colourInfo()->antiColourLines()[index]);
   }
 
-  inline unsigned int
+  inline size_t
   ACLSIZE(const tShowerParticlePtr a) {
     return a->colourInfo()->antiColourLines().size();
   }
@@ -293,16 +293,15 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 						 const bool isDecayCase,
 						 const bool setPartners) {
   // loop over all the particles
-  for(ShowerParticleVector::const_iterator cit = particles.begin();
-      cit != particles.end(); ++cit) {
+  for(const auto & sp : particles) {
     // not charged or photon continue
-    if(!(**cit).dataPtr()->charged()) continue;
+    if(!sp->dataPtr()->charged()) continue;
     // find the potential partners
-    vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(*cit,particles,isDecayCase);
+    vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(sp,particles,isDecayCase);
     if(partners.empty()) {
       throw Exception() << "Failed to find partner in " 
 			<< "PartnerFinder::setQEDInitialEvolutionScales"
-			<< (**cit) << Exception::eventerror;
+			<< *sp << Exception::eventerror;
     }
     // calculate the probabilities
     double prob(0.);
@@ -312,16 +311,16 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
     // set the partner if required
     int position(-1);
     // use QCD partner if set
-    if(!setPartners&&(*cit)->partner()) {
+    if(!setPartners&&sp->partner()) {
       for(unsigned int ix=0;ix<partners.size();++ix) {
-	if((*cit)->partner()==partners[ix].second) {
+	if(sp->partner()==partners[ix].second) {
 	  position = ix;
 	  break;
 	}
       }
     }
     // set the partner
-    if(setPartners||!(*cit)->partner()||position<0) {
+    if(setPartners||!sp->partner()||position<0) {
       prob = UseRandom::rnd();
       for(unsigned int ix=0;ix<partners.size();++ix) {
  	if(partners[ix].first>prob) {
@@ -330,30 +329,30 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 	}
 	prob -= partners[ix].first;
       }
-      if(position>=0&&(setPartners||!(*cit)->partner())) {
-	(*cit)->partner(partners[position].second);
+      if(position>=0&&(setPartners||!sp->partner())) {
+	sp->partner(partners[position].second);
       }
     }
     // must have a partner
     if(position<0) throw Exception() << "Failed to find partner in " 
 				 << "PartnerFinder::setQEDInitialEvolutionScales"
-				 << (**cit) << Exception::eventerror; 
+				 << *sp << Exception::eventerror; 
     // Calculate the evolution scales for all possible pairs of of particles
     vector<pair<Energy,Energy> > scales;
     for(unsigned int ix=0;ix< partners.size();++ix) {
-      scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
+      scales.push_back(calculateInitialEvolutionScales(ShowerPPair(sp,partners[ix].second),
 						       isDecayCase));
     }
     // store all the possible partners
     for(unsigned int ix=0;ix<partners.size();++ix) {
-      (**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
+      sp->addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
 							  partners[ix].first,
 							  ShowerPartnerType::QED,
 							  scales[ix].first));
     }
     // set scales
-    (**cit).scales().QED      = scales[position].first;
-    (**cit).scales().QED_noAO = scales[position].first;
+    sp->scales().QED      = scales[position].first;
+    sp->scales().QED_noAO = scales[position].first;
   }
 }
 
@@ -381,24 +380,23 @@ vector< pair<ShowerPartnerType, tShowerParticlePtr> >
 PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles) {
   vector< pair<ShowerPartnerType, tShowerParticlePtr> > partners;
-  ShowerParticleVector::const_iterator cjt;
-  for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
-    if(!(*cjt)->data().coloured() || particle==*cjt) continue;
+  for(const auto & sp : particles) {
+    if(!sp->data().coloured() || particle==sp) continue;
     // one initial-state and one final-state particle
-    if(FS(particle) != FS(*cjt)) {
+    if(FS(particle) != FS(sp)) {
       // loop over all the colours of both particles
-      for(unsigned int ix=0; ix<CLSIZE(particle); ++ix) {
-	for(unsigned int jx=0; jx<CLSIZE(*cjt); ++jx) {
-	  if((CL(particle,ix) && CL(particle,ix)==CL(*cjt,jx))) {
-	    partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
+      for(size_t ix=0; ix<CLSIZE(particle); ++ix) {
+	for(size_t jx=0; jx<CLSIZE(sp); ++jx) {
+	  if((CL(particle,ix) && CL(particle,ix)==CL(sp,jx))) {
+	    partners.push_back({ ShowerPartnerType::    QCDColourLine, sp });
 	  }
 	}
       }
       //loop over all the anti-colours of both particles
-      for(unsigned int ix=0; ix<ACLSIZE(particle); ++ix) {
-	for(unsigned int jx=0; jx<ACLSIZE(*cjt); ++jx) {
-	  if((ACL(particle,ix) && ACL(particle,ix)==ACL(*cjt,jx))) {
-	    partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));
+      for(size_t ix=0; ix<ACLSIZE(particle); ++ix) {
+	for(size_t jx=0; jx<ACLSIZE(sp); ++jx) {
+	  if((ACL(particle,ix) && ACL(particle,ix)==ACL(sp,jx))) {
+	    partners.push_back({ ShowerPartnerType::QCDAntiColourLine, sp });
 	  }
 	}
       }
@@ -406,18 +404,18 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
     // two initial-state or two final-state particles
     else {
       //loop over the colours of the first particle and the anti-colours of the other
-      for(unsigned int ix=0; ix<CLSIZE(particle); ++ix){
-	for(unsigned int jx=0; jx<ACLSIZE(*cjt); ++jx){
-	  if(CL(particle,ix) && CL(particle,ix)==ACL(*cjt,jx)) {
-	    partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
+      for(size_t ix=0; ix<CLSIZE(particle); ++ix){
+	for(size_t jx=0; jx<ACLSIZE(sp); ++jx){
+	  if(CL(particle,ix) && CL(particle,ix)==ACL(sp,jx)) {
+	    partners.push_back({ ShowerPartnerType::    QCDColourLine, sp });
 	  }
 	}
       }
       //loop over the anti-colours of the first particle and the colours of the other
-      for(unsigned int ix=0; ix<ACLSIZE(particle); ++ix){
-	for(unsigned int jx=0; jx<CLSIZE(*cjt); jx++){
-	  if(ACL(particle,ix) && ACL(particle,ix)==CL(*cjt,jx)) {
-	    partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));
+      for(size_t ix=0; ix<ACLSIZE(particle); ++ix){
+	for(size_t jx=0; jx<CLSIZE(sp); jx++){
+	  if(ACL(particle,ix) && ACL(particle,ix)==CL(sp,jx)) {
+	    partners.push_back({ ShowerPartnerType::QCDAntiColourLine, sp });
 	  }
 	}
       }
@@ -429,38 +427,38 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
     tColinePtr col = CL(particle); 
     if(FS(particle)&&col&&col->sourceNeighbours().first) {
       tColinePair cpair = col->sourceNeighbours();
-      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-	if(( FS(*cjt) && ( CL(*cjt) == cpair.first || CL(*cjt)  == cpair.second))||
-	   (!FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt) == cpair.second ))) {
-	  partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));
+      for(const auto & sp : particles) {
+	if(( FS(sp) && ( CL(sp) == cpair.first || CL(sp)  == cpair.second))||
+	   (!FS(sp) && (ACL(sp) == cpair.first || ACL(sp) == cpair.second ))) {
+	  partners.push_back({ ShowerPartnerType::    QCDColourLine, sp });
 	}
       }
     }
     else if(col&&col->sinkNeighbours().first) {
       tColinePair cpair = col->sinkNeighbours();
-      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-	if(( FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt)  == cpair.second))||
-	   (!FS(*cjt) && ( CL(*cjt) == cpair.first ||  CL(*cjt) == cpair.second))) {
-	  partners.push_back(make_pair(ShowerPartnerType::    QCDColourLine,*cjt));    
+      for(const auto & sp : particles) {
+	if(( FS(sp) && (ACL(sp) == cpair.first || ACL(sp)  == cpair.second))||
+	   (!FS(sp) && ( CL(sp) == cpair.first ||  CL(sp) == cpair.second))) {
+	  partners.push_back({ ShowerPartnerType::    QCDColourLine, sp });
 	}
       }
     }
     col = ACL(particle);
     if(FS(particle)&&col&&col->sinkNeighbours().first) {
       tColinePair cpair = col->sinkNeighbours();
-      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-	if(( FS(*cjt) && (ACL(*cjt) == cpair.first || ACL(*cjt)  == cpair.second))||
-	   (!FS(*cjt) && ( CL(*cjt) == cpair.first ||  CL(*cjt) == cpair.second ))) {
-	  partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));  
+      for(const auto & sp : particles) {
+	if(( FS(sp) && (ACL(sp) == cpair.first || ACL(sp)  == cpair.second))||
+	   (!FS(sp) && ( CL(sp) == cpair.first ||  CL(sp) == cpair.second ))) {
+	  partners.push_back({ ShowerPartnerType::QCDAntiColourLine, sp });
 	}
       }
     }
     else if(col&&col->sourceNeighbours().first) {
       tColinePair cpair = col->sourceNeighbours();
-      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-	if(( FS(*cjt) && ( CL(*cjt) == cpair.first || CL(*cjt) == cpair.second))||
-	   (!FS(*cjt) && (ACL(*cjt) == cpair.first ||ACL(*cjt) == cpair.second))) {
-	  partners.push_back(make_pair(ShowerPartnerType::QCDAntiColourLine,*cjt));     
+      for(const auto & sp : particles) {
+	if(( FS(sp) && ( CL(sp) == cpair.first || CL(sp) == cpair.second))||
+	   (!FS(sp) && (ACL(sp) == cpair.first ||ACL(sp) == cpair.second))) {
+	  partners.push_back({ ShowerPartnerType::QCDAntiColourLine, sp });
 	}
       }
     }
@@ -471,31 +469,31 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 
 vector< pair<double, tShowerParticlePtr> > 
 PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
-			       const ShowerParticleVector &particles,
+			       const ShowerParticleVector & particles,
 			       const bool isDecayCase) {
   vector< pair<double, tShowerParticlePtr> > partners;
-  ShowerParticleVector::const_iterator cjt;
-  double pcharge = particle->id()==ParticleID::gamma ? 1 : double(particle->data().iCharge());
+  const double pcharge = 
+    particle->id()==ParticleID::gamma ? 1 : double(particle->data().iCharge());
   vector< pair<double, tShowerParticlePtr> > photons;
-  for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
-    if(particle == *cjt) continue;
-    if((**cjt).id()==ParticleID::gamma) photons.push_back(make_pair(1.,*cjt));
-    if(!(*cjt)->data().charged() ) continue;
-    double charge = pcharge*double((*cjt)->data().iCharge());
-    if( FS(particle) != FS(*cjt) ) charge *=-1.;
-    if( QEDPartner_ != 0 && !isDecayCase ) {
+  for (const auto & sp : particles) {
+    if (particle == sp) continue;
+    if (sp->id()==ParticleID::gamma) photons.push_back(make_pair(1.,sp));
+    if (!sp->data().charged() ) continue;
+    double charge = pcharge*double((sp)->data().iCharge());
+    if ( FS(particle) != FS(sp) ) charge *=-1.;
+    if ( QEDPartner_ != 0 && !isDecayCase ) {
       // only include II and FF as requested
-      if( QEDPartner_ == 1 && FS(particle) != FS(*cjt) )
+      if ( QEDPartner_ == 1 && FS(particle) != FS(sp) )
 	continue;
       // only include IF is requested
-      else if(QEDPartner_ == 2 && FS(particle) == FS(*cjt) )
+      else if (QEDPartner_ == 2 && FS(particle) == FS(sp) )
 	continue;
     }
-    if(particle->id()==ParticleID::gamma) charge = -abs(charge);
+    if (particle->id()==ParticleID::gamma) charge = -abs(charge);
     // only keep positive dipoles
-    if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
+    if (charge<0.) partners.push_back({ -charge, sp });
   }
-  if(particle->id()==ParticleID::gamma&& partners.empty()) {
+  if (particle->id()==ParticleID::gamma && partners.empty()) {
     return photons;
   }
   return partners;
