@@ -31,7 +31,6 @@ void PTCutOff::persistentOutput(PersistentOStream & os) const {
 void PTCutOff::persistentInput(PersistentIStream & is, int) {
 }
 
-
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<PTCutOff,SudakovCutOff>
@@ -44,3 +43,6 @@ void PTCutOff::Init() {
 
 }
 
+void PTCutOff::doinit() {
+  SudakovCutOff::doinit();
+}
