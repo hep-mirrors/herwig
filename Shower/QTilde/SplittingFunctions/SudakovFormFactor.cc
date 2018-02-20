@@ -25,6 +25,8 @@
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
+#include "SudakovCutOff.h"
+
 #include <array>
 using std::array;
 
@@ -34,17 +36,11 @@ DescribeClass<SudakovFormFactor,Interfaced>
 describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_
-     << a_ << b_ << ounit(c_,GeV) << ounit(kinCutoffScale_,GeV) << cutOffOption_
-     << ounit(vgcut_,GeV) << ounit(vqcut_,GeV) 
-     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
+  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_
-     >> a_ >> b_ >> iunit(c_,GeV) >> iunit(kinCutoffScale_,GeV) >> cutOffOption_
-     >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV) 
-     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
+  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_;
 }
 
 void SudakovFormFactor::Init() {
@@ -63,6 +59,12 @@ void SudakovFormFactor::Init() {
     interfaceAlpha("Alpha",
 		   "A reference to the Alpha object",
 		   &Herwig::SudakovFormFactor::alpha_,
+		   false, false, true, false);
+
+  static Reference<SudakovFormFactor,SudakovCutOff>
+    interfaceCutoff("Cutoff",
+		   "A reference to the SudakovCutOff object",
+		   &Herwig::SudakovFormFactor::cutoff_,
 		   false, false, true, false);
 
   static Parameter<SudakovFormFactor,double> interfacePDFmax
@@ -107,70 +109,6 @@ void SudakovFormFactor::Init() {
      5);
 
 
-  static Switch<SudakovFormFactor,unsigned int> interfaceCutOffOption
-    ("CutOffOption",
-     "The type of cut-off to use to end the shower",
-     &SudakovFormFactor::cutOffOption_, 0, false, false);
-  static SwitchOption interfaceCutOffOptionDefault
-    (interfaceCutOffOption,
-     "Default",
-     "Use the standard Herwig cut-off on virtualities with the minimum"
-     " virtuality depending on the mass of the branching particle",
-     0);
-  static SwitchOption interfaceCutOffOptionFORTRAN
-    (interfaceCutOffOption,
-     "FORTRAN",
-     "Use a FORTRAN-like cut-off on virtualities",
-     1);
-  static SwitchOption interfaceCutOffOptionpT
-    (interfaceCutOffOption,
-     "pT",
-     "Use a cut on the minimum allowed pT",
-     2);
-
-  static Parameter<SudakovFormFactor,double> interfaceaParameter
-    ("aParameter",
-     "The a parameter for the kinematic cut-off",
-     &SudakovFormFactor::a_, 0.3, -10.0, 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<SudakovFormFactor,double> interfacebParameter
-    ("bParameter",
-     "The b parameter for the kinematic cut-off",
-     &SudakovFormFactor::b_, 2.3, -10.0, 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<SudakovFormFactor,Energy> interfacecParameter
-    ("cParameter",
-     "The c parameter for the kinematic cut-off",
-     &SudakovFormFactor::c_, GeV, 0.3*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<SudakovFormFactor,Energy>
-    interfaceKinScale ("cutoffKinScale",
-		       "kinematic cutoff scale for the parton shower phase"
-		       " space (unit [GeV])",
-		       &SudakovFormFactor::kinCutoffScale_, GeV, 
-		       2.3*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
-  
-  static Parameter<SudakovFormFactor,Energy> interfaceGluonVirtualityCut
-    ("GluonVirtualityCut",
-     "For the FORTRAN cut-off option the minimum virtuality of the gluon",
-     &SudakovFormFactor::vgcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-  
-  static Parameter<SudakovFormFactor,Energy> interfaceQuarkVirtualityCut
-    ("QuarkVirtualityCut",
-     "For the FORTRAN cut-off option the minimum virtuality added to"
-     " the mass for particles other than the gluon",
-     &SudakovFormFactor::vqcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-  
-  static Parameter<SudakovFormFactor,Energy> interfacepTmin
-    ("pTmin",
-     "The minimum pT if using a cut-off on the pT",
-     &SudakovFormFactor::pTmin_, GeV, 1.0*GeV, ZERO, 10.0*GeV,
-     false, false, Interface::limited);
 }
 
 bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
@@ -310,54 +248,6 @@ double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
 			       lower),ids,pdfopt);
 }
 
-void SudakovFormFactor::doinit() {
-  Interfaced::doinit();
-  pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : ZERO; 
-}
-
-const vector<Energy> & SudakovFormFactor::virtualMasses(const IdList & ids) {
-  static vector<Energy> output;
-  output.clear();
-  if(cutOffOption() == 0) {
-    for(unsigned int ix=0;ix<ids.size();++ix)
-      output.push_back(ids[ix]->mass());
-    Energy kinCutoff=
-      kinematicCutOff(kinScale(),*std::max_element(output.begin(),output.end()));
-    for(unsigned int ix=0;ix<output.size();++ix)
-      output[ix]=max(kinCutoff,output[ix]);
-  }
-  else if(cutOffOption() == 1) {
-    for(unsigned int ix=0;ix<ids.size();++ix) {
-      output.push_back(ids[ix]->mass());
-      output.back() += ids[ix]->id()==ParticleID::g ? vgCut() : vqCut();
-    }
-  }
-  else if(cutOffOption() == 2) {
-    for(unsigned int ix=0;ix<ids.size();++ix) 
-      output.push_back(ids[ix]->mass());
-  }
-  else {
-    throw Exception() << "Unknown option for the cut-off"
-		      << " in SudakovFormFactor::virtualMasses()"
-		      << Exception::runerror;
-  }
-  return output;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
 				  double detune) {
   Energy2 told = t;
@@ -407,7 +297,7 @@ bool SudakovFormFactor::PSVeto(const Energy2 t,
   // compute the pts
   Energy2 pt2 = z()*(1.-z())*q2 - masssquared_[1]*(1.-z()) - masssquared_[2]*z();
   // if pt2<0 veto
-  if(pt2<pT2min()) return true;
+  if(pt2<cutoff_->pT2min()) return true;
   // otherwise calculate pt and return
   pT_ = sqrt(pt2);
   return false;
@@ -531,7 +421,7 @@ generateNextSpaceBranching(const Energy startingQ,
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
       pt2=sqr(1.-z())*t-z()*masssquared_[2];
     }
-    while(pt2 < pT2min()||
+    while(pt2 < cutoff_->pT2min()||
         z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
         alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
@@ -544,7 +434,7 @@ generateNextSpaceBranching(const Energy startingQ,
     do {
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
       pt2=sqr(1.-z())*t-z()*masssquared_[2];
-      ptRew=pt2 < pT2min();
+      ptRew=pt2 < cutoff_->pT2min();
       zRew=z() > zlimits_.second;
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
@@ -608,8 +498,8 @@ generateNextSpaceBranching(const Energy startingQ,
 
 void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin) {
   ids_=ids;
-  tmin = cutOffOption() != 2 ? ZERO : 4.*pT2min();
-  masses_ = virtualMasses(ids);
+  tmin = 4.*cutoff_->pT2min();
+  masses_ = cutoff_->virtualMasses(ids);
   masssquared_.clear();
   for(unsigned int ix=0;ix<masses_.size();++ix) {
     masssquared_.push_back(sqr(masses_[ix]));
@@ -643,7 +533,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
 	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
-	pt2<pT2min() ||
+	pt2<cutoff_->pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
     q_ = sqrt(t);
@@ -667,7 +557,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   Energy2 tm2 = tmax-masssquared_[0];
   Energy tm  = sqrt(tm2); 
   zlimits_ = make_pair(sqr(minmass/masses_[0]),
-				       1.-sqrt(masssquared_[2]+pT2min()+
+				       1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
 					       0.25*sqr(masssquared_[2])/tm2)/tm
 				       +0.5*masssquared_[2]/tm2);
   if(zlimits_.second<zlimits_.first) {
@@ -685,7 +575,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   tm2 = t-masssquared_[0];
   tm  = sqrt(tm2); 
   zlimits_ = make_pair(sqr(minmass/masses_[0]),
-		   1.-sqrt(masssquared_[2]+pT2min()+
+		   1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
 			   0.25*sqr(masssquared_[2])/tm2)/tm
 		   +0.5*masssquared_[2]/tm2);
   if(t>tmax||zlimits_.second<zlimits_.first) {
@@ -701,29 +591,30 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
     t=-1.*GeV2;
     return false;
   }
+  const Energy2 pT2min = cutoff_->pT2min();
   // special case for gluon radiating
   if(ids_[0]->id()==ParticleID::g||ids_[0]->id()==ParticleID::gamma) {
     // no emission possible
-    if(t<16.*(masssquared_[1]+pT2min())) {
+    if(t<16.*(masssquared_[1]+pT2min)) {
       t=-1.*GeV2;
       return false;
     }
     // overestimate of the limits
-    zlimits_.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min())/t)));
+    zlimits_.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min)/t)));
     zlimits_.second = 1.-zlimits_.first;
   }
   // special case for radiated particle is gluon 
   else if(ids_[2]->id()==ParticleID::g||ids_[2]->id()==ParticleID::gamma) {
-    zlimits_.first  =    sqrt((masssquared_[1]+pT2min())/t);
-    zlimits_.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
+    zlimits_.first  =    sqrt((masssquared_[1]+pT2min)/t);
+    zlimits_.second = 1.-sqrt((masssquared_[2]+pT2min)/t);
   }
   else if(ids_[1]->id()==ParticleID::g||ids_[1]->id()==ParticleID::gamma) {
-    zlimits_.second  =    sqrt((masssquared_[2]+pT2min())/t);
-    zlimits_.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
+    zlimits_.second  =    sqrt((masssquared_[2]+pT2min)/t);
+    zlimits_.first   = 1.-sqrt((masssquared_[1]+pT2min)/t);
   }
   else {
-    zlimits_.first  =    (masssquared_[1]+pT2min())/t;
-    zlimits_.second = 1.-(masssquared_[2]+pT2min())/t; 
+    zlimits_.first  =    (masssquared_[1]+pT2min)/t;
+    zlimits_.second = 1.-(masssquared_[2]+pT2min)/t; 
   }
   if(zlimits_.first>=zlimits_.second) {
     t=-1.*GeV2;
@@ -740,7 +631,7 @@ bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x) {
   // compute the limits
   zlimits_.first = x;
   double yy = 1.+0.5*masssquared_[2]/t;
-  zlimits_.second = yy - sqrt(sqr(yy)-1.+pT2min()/t); 
+  zlimits_.second = yy - sqrt(sqr(yy)-1.+cutoff_->pT2min()/t); 
   // return false if lower>upper
   if(zlimits_.second<zlimits_.first) {
     t=-1.*GeV2;
@@ -1369,3 +1260,4 @@ ShoKinPtr SudakovFormFactor::createDecayBranching(Energy scale,double z,
   showerKin->SudakovFormFactor(this);
   return showerKin;
 }
+

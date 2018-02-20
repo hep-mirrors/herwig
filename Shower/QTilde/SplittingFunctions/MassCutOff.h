@@ -20,11 +20,11 @@ using namespace ThePEG;
 class MassCutOff: public SudakovCutOff {
 
 public:
-  
+
   /**
-   * The default constructor.
+   *  Calculate the virtual masses for a branchings
    */
-  MassCutOff() {}
+  virtual const vector<Energy> & virtualMasses(const IdList & ids);
 
 public:
 
@@ -75,7 +75,27 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MassCutOff & operator=(const MassCutOff &);
+  MassCutOff & operator=(const MassCutOff &) = delete;
+
+private:
+
+
+  /**
+    *  Parameters for the FORTRAN-like cut-off
+    */ 
+  //@{
+  /**
+   *  The virtualilty cut-off for gluons
+   */
+  Energy vgcut_ = 0.85_GeV;
+  
+  /**
+   *  The virtuality cut-off for everything else
+   */
+  Energy vqcut_ = 0.85_GeV;
+  //@}
+
+
 
 };
 

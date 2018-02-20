@@ -20,11 +20,11 @@ using namespace ThePEG;
 class VariableMassCutOff: public SudakovCutOff {
 
 public:
-  
+
   /**
-   * The default constructor.
+   *  Calculate the virtual masses for a branchings
    */
-  VariableMassCutOff() {}
+  virtual const vector<Energy> & virtualMasses(const IdList & ids);
 
 public:
 
@@ -72,10 +72,50 @@ protected:
 private:
 
   /**
+   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
+   * @param scale The scale \f$\delta\f$
+   * @param mq The quark mass \f$m_q\f$.
+   */
+  Energy kinematicCutOff(Energy scale, Energy mq) const {
+  	return max((scale -a_*mq)/b_,c_);
+  }
+
+
+  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VariableMassCutOff & operator=(const VariableMassCutOff &);
+  VariableMassCutOff & operator=(const VariableMassCutOff &) = delete;
+
+private:
+
+  /**
+   *  Parameters for the default Herwig cut-off option, i.e. the parameters for
+   *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
+   */
+  //@{
+  /**
+   *  The \f$a\f$ parameter
+   */
+  double a_ = 0.3;
+
+  /**
+   *  The \f$b\f$ parameter
+   */
+  double b_ = 2.3;
+
+  /**
+   *  The \f$c\f$ parameter
+   */
+  Energy c_ = 0.3_GeV;
+
+  /**
+   * Kinematic cutoff used in the parton shower phase space. 
+   */
+  Energy kinCutoffScale_ = 2.3_GeV;
+  //@} 
+
+
 
 };
 

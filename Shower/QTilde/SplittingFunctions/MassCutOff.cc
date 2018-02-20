@@ -10,7 +10,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
+#include "ThePEG/Interface/Parameter.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -26,9 +26,11 @@ IBPtr MassCutOff::fullclone() const {
 }
 
 void MassCutOff::persistentOutput(PersistentOStream & os) const {
+	os << ounit(vgcut_,GeV) << ounit(vqcut_,GeV);
 }
 
 void MassCutOff::persistentInput(PersistentIStream & is, int) {
+	is >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV);
 }
 
 
@@ -42,5 +44,30 @@ void MassCutOff::Init() {
   static ClassDocumentation<MassCutOff> documentation
     ("There is no documentation for the MassCutOff class");
 
+
+  static Parameter<MassCutOff,Energy> interfaceGluonVirtualityCut
+    ("GluonVirtualityCut",
+     "For the FORTRAN cut-off option the minimum virtuality of the gluon",
+     &MassCutOff::vgcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<MassCutOff,Energy> interfaceQuarkVirtualityCut
+    ("QuarkVirtualityCut",
+     "For the FORTRAN cut-off option the minimum virtuality added to"
+     " the mass for particles other than the gluon",
+     &MassCutOff::vqcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+
+}
+
+const vector<Energy> & MassCutOff::virtualMasses(const IdList & ids) {
+  static vector<Energy> output;
+  output.clear();
+  for(auto id : ids) {
+      output.push_back(id->mass());
+      output.back() += id->id()==ParticleID::g ? vgcut_ : vqcut_;
+  }
+  return output;
 }
 

@@ -20,11 +20,22 @@ using namespace ThePEG;
 class PTCutOff: public SudakovCutOff {
 
 public:
-  
+
   /**
-   * The default constructor.
+   *  Calculate the virtual masses for a branchings
    */
-  PTCutOff() {}
+  virtual const vector<Energy> & virtualMasses(const IdList & ids);
+
+  /**
+   * Default pTmin
+   */
+  virtual Energy pTmin() { return pTmin_; }
+
+  /**
+   * Default pT2min
+   */
+  virtual Energy2 pT2min() { return pT2min_; }
+
 
 public:
 
@@ -87,7 +98,25 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PTCutOff & operator=(const PTCutOff &);
+  PTCutOff & operator=(const PTCutOff &) = delete;
+
+private:
+
+  /**
+   *  Parameters for the \f$p_T\f$ cut-off 
+   */
+  //@{
+  /**
+   *  The minimum \f$p_T\f$ for the branching
+   */
+  Energy pTmin_ = 1_GeV;
+  
+  /**
+   *  The square of the minimum \f$p_T\f$
+   */
+  Energy2 pT2min_ = 1_GeV2;
+  //@}
+
 
 };
 

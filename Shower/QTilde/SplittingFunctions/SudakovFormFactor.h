@@ -22,6 +22,7 @@
 #include "ThePEG/EventRecord/SpinInfo.h"
 #include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
+#include "SudakovCutOff.h"
 
 namespace Herwig {
 
@@ -137,9 +138,6 @@ public:
    * The default constructor.
    */
   SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
-			kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
 			z_( 0.0 ),phi_(0.0), pT_(){}
 
   /**
@@ -325,18 +323,6 @@ public:
   static void Init();
 
 protected:
-  
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
-protected:
   /**
    *  Methods to provide the next value of the scale before the vetos
    *  are applied.
@@ -515,59 +501,20 @@ protected:
 public:
 
   /**
-   * @name Methods for the cut-off
-   */
-  //@{
-  /**
-   *  The option being used
-   */
-  unsigned int cutOffOption() const { return cutOffOption_; }
-
-  /**
-   *  The kinematic scale
-   */
-  Energy kinScale() const {return kinCutoffScale_;}
-
-  /**
-   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
-   * @param scale The scale \f$\delta\f$
-   * @param mq The quark mass \f$m_q\f$.
-   */
-  Energy kinematicCutOff(Energy scale, Energy mq) const 
-  {return max((scale -a_*mq)/b_,c_);}
-
-  /**
-   *  The virtualilty cut-off for gluons
-   */
-  Energy vgCut() const { return vgcut_; }
-  
-  /**
-   *  The virtuality cut-off for everything else
-   */
-  Energy vqCut() const { return vqcut_; }
-
-  /**
-   *  The minimum \f$p_T\f$ for the branching
-   */
-  Energy pTmin() const { return pTmin_; }
-  
-  /**
-   *  The square of the minimum \f$p_T\f$
-   */
-  Energy2 pT2min() const { return pT2min_; }
-
-  /**
-   *  Calculate the virtual masses for a branchings
-   */
-  const vector<Energy> & virtualMasses(const IdList & ids);
-  //@}
-
-  /**
    *   Set the PDF
    */
   void setPDF(tcPDFPtr pdf, Energy scale) {
     pdf_ = pdf;
     freeze_ = scale;
+  }
+
+public:
+
+  /**
+   *  Calculate the virtual masses for a branchings
+   */
+  const vector<Energy> & virtualMasses(const IdList & ids) {
+  	return cutoff_->virtualMasses(ids);
   }
 
 protected:
@@ -608,6 +555,11 @@ private:
   ShowerAlphaPtr alpha_;
 
   /**
+   *  Pointer to the coupling for this Sudakov form factor
+   */
+  SudakovCutOffPtr cutoff_;
+
+  /**
    * Maximum value of the PDF weight
    */
   double pdfmax_;
@@ -622,69 +574,6 @@ private:
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
   unsigned pdffactor_;
-
-private:
-
-  /**
-   *  Option for the type of cut-off to be applied
-   */
-  unsigned int cutOffOption_;
-
-  /**
-   *  Parameters for the default Herwig cut-off option, i.e. the parameters for
-   *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
-   */
-  //@{
-  /**
-   *  The \f$a\f$ parameter
-   */
-  double a_;
-
-  /**
-   *  The \f$b\f$ parameter
-   */
-  double b_;
-
-  /**
-   *  The \f$c\f$ parameter
-   */
-  Energy c_;
-
-  /**
-   * Kinematic cutoff used in the parton shower phase space. 
-   */
-  Energy kinCutoffScale_;
-  //@} 
-
-   /**
-    *  Parameters for the FORTRAN-like cut-off
-    */ 
-  //@{
-  /**
-   *  The virtualilty cut-off for gluons
-   */
-  Energy vgcut_;
-  
-  /**
-   *  The virtuality cut-off for everything else
-   */
-  Energy vqcut_;
-  //@}
-
-  /**
-   *  Parameters for the \f$p_T\f$ cut-off 
-   */
-  //@{
-  /**
-   *  The minimum \f$p_T\f$ for the branching
-   */
-  Energy pTmin_;
-  
-  /**
-   *  The square of the minimum \f$p_T\f$
-   */
-  Energy2 pT2min_;
-  //@}
 
 private:
 

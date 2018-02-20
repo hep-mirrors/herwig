@@ -6,6 +6,7 @@
 //
 
 #include "SudakovCutOff.fh"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
 
 namespace Herwig {
@@ -30,13 +31,30 @@ public:
    */
   static void Init();
 
+public:
+
+  /**
+   *  Calculate the virtual masses for a branchings
+   */
+  virtual const vector<Energy> & virtualMasses(const IdList & ids) = 0;
+
+  /**
+   * Default pTmin
+   */
+  virtual Energy pTmin() { return ZERO; }
+
+  /**
+   * Default pT2min
+   */
+  virtual Energy2 pT2min() { return ZERO; }
+
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SudakovCutOff & operator=(const SudakovCutOff &);
+  SudakovCutOff & operator=(const SudakovCutOff &) = delete;
 
 };
 
