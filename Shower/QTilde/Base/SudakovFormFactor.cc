@@ -180,8 +180,7 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
   factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
-  return  ThePEG::Math::powi(alpha_->ratio(pt2, factor),
-                               splittingFn_->interactionOrder());
+  return alpha_->ratio(pt2, factor);
 }
 
 
@@ -308,22 +307,12 @@ Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
     if(ident) c*=0.5;
   }
   else if(iopt==2) c*=-1.;
-  if(splittingFn_->interactionOrder()==1) {
-    double r = UseRandom::rnd();
-    if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
-      return t1*pow(r,c);
-    }
-    else
-      return Constants::MaxEnergy2;
+  double r = UseRandom::rnd();
+  if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
+    return t1*pow(r,c);
   }
-  else {
-    assert(false && "Units are dubious here.");
-    int nm(splittingFn()->interactionOrder()-1);
-    c/=Math::powi(alpha_->overestimateValue()/Constants::twopi,nm);
-    return t1 /       pow (1. - nm*c*log(UseRandom::rnd()) 
-			   * Math::powi(t1*UnitRemoval::InvE2,nm)
-			   ,1./double(nm));
-  }
+  else
+    return Constants::MaxEnergy2;
 }
 
 double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {

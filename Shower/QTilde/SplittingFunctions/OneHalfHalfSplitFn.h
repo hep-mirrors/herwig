@@ -41,11 +41,6 @@ class OneHalfHalfSplitFn: public SplittingFunction {
 public:
 
   /**
-   * The default constructor.
-   */
-  OneHalfHalfSplitFn() : SplittingFunction(1) {}
-
-  /**
    *  Concrete implementation of the method to determine whether this splitting
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
