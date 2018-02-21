@@ -155,8 +155,7 @@ public:
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,
 					      const RhoDMatrix & rho,
-					      double enhance, double detuning,
-					      Energy2 maxQ2);
+					      double enhance, double detuning);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -354,7 +353,7 @@ protected:
    * @param maxQ2 The maximum virtuality
    * @return true if vetoed
    */
-  bool PSVeto(const Energy2 t,const Energy2 maxQ2);
+  bool PSVeto(const Energy2 t);
 
   /**
    * Compute the limits on \f$z\f$ for time-like branching

@@ -286,13 +286,10 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
     return true; 
 } 
 
-bool SudakovFormFactor::PSVeto(const Energy2 t, const Energy2 maxQ2) {
+bool SudakovFormFactor::PSVeto(const Energy2 t) {
   // still inside PS, return true if outside
   // check vs overestimated limits
   if (z() < zlimits_.first || z() > zlimits_.second) return true;
-
-  Energy2 q2 = z()*(1.-z())*t;
-  if (q2>maxQ2) return true;
 
   Energy2 m02 = (ids_[0]->id()!=ParticleID::g && ids_[0]->id()!=ParticleID::gamma) ?
   	masssquared_[0] : Energy2();
@@ -312,8 +309,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
 						   const IdList &ids,
 						   const RhoDMatrix & rho,
 						   double enhance,
-						   double detuning,
-               					   Energy2 maxQ2) {
+						   double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
@@ -333,7 +329,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
     }
-    while(PSVeto(t,maxQ2) ||
+    while(PSVeto(t) ||
         SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
         alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
@@ -341,7 +337,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
     bool alphaRew(true),PSRew(true),SplitRew(true);
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
-      PSRew=PSVeto(t,maxQ2);
+      PSRew=PSVeto(t);
       if (PSRew) continue;
       SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning);
       alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);

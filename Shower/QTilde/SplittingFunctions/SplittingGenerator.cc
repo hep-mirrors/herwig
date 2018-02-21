@@ -271,8 +271,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
       newKin = cit->second.sudakov->
     	generateNextTimeBranching(startingScale,particles,rho,enhance,
-				  _deTuning,
-				  particle.scales().Max_Q2);
+				  _deTuning);
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::QCD) {
       // special for octets
@@ -283,13 +282,11 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
     	  newKin= cit->second.sudakov->
     	    generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,
-				      _deTuning,
-				      particle.scales().Max_Q2);
+				      _deTuning);
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
     	  ShoKinPtr newKin2 = cit->second.sudakov->
 	    generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,
-				      _deTuning,
-				      particle.scales().Max_Q2);
+				      _deTuning);
     	  // pick the one with the highest scale
     	  if( ( newKin && newKin2 && newKin2->scale() > newKin->scale()) ||
     	      (!newKin && newKin2) ) {
@@ -304,8 +301,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
     	  newKin= cit->second.sudakov->
     	    generateNextTimeBranching(startingScale,particles,rho,enhance,
-				      _deTuning,
-				      particle.scales().Max_Q2);
+				      _deTuning);
     	  type = UseRandom::rndbool() ? 
     	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	}
@@ -323,8 +319,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	}
 	newKin= cit->second.sudakov->
 	  generateNextTimeBranching(startingScale,particles,rho,enhance,
-				    _deTuning,
-				    particle.scales().Max_Q2);
+				    _deTuning);
       }
     }
     // shouldn't be anything else

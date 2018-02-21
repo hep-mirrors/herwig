@@ -67,8 +67,7 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType partnerType,
-			       bool massVeto) const;
+			       ShowerPartnerType partnerType) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
