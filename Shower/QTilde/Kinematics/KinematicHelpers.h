@@ -14,12 +14,16 @@ namespace QTildeKinematics {
 
 
 inline Energy2 pT2_FSR(Energy2 qt2, double z, Energy2 m02, Energy2 m12, Energy2 m22) {
-	return sqr(z*(1-z))*(qt2-m02) - m12*(1-z) - m22*z;
+	const double z1z = z*(1-z);
+	return z1z*(z1z*qt2 + m02) - m12*(1-z) - m22*z;
 }
 
+inline Energy2 pT2_ISR(Energy2 qt2, double z, Energy2 m22) {
+	return sqr(1-z)*qt2 - m22*z;
+}
 
-inline Energy2 pT2_ISR(Energy2 qt2, double z, Energy2 m2) {
-	return sqr(1-z)*qt2 - m2*z;
+inline Energy2 pT2_Decay(Energy2 qt2, double z, Energy2 m02, Energy2 m22) {
+	return sqr(1-z)*(qt2 - m02) - m22*z;
 }
 
 
@@ -29,8 +33,12 @@ inline Energy pT_FSR(Energy2 qt2, double z, Energy2 m02, Energy2 m12, Energy2 m2
 }
 
 
-inline Energy pT_ISR(Energy2 qt2, double z, Energy2 m2) {
-	return sqrt( pT2_ISR(qt2,z,m2) );
+inline Energy pT_ISR(Energy2 qt2, double z, Energy2 m22) {
+	return sqrt( pT2_ISR(qt2,z,m22) );
+}
+
+inline Energy pT_Decay(Energy2 qt2, double z, Energy2 m02, Energy2 m22) {
+	return sqrt( pT2_Decay(qt2,z,m02,m22) );
 }
 
 

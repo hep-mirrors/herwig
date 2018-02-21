@@ -25,6 +25,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "SudakovCutOff.h"
 
 #include <array>
@@ -36,11 +37,11 @@ DescribeClass<SudakovFormFactor,Interfaced>
 describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_;
+  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_;
+  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_;
 }
 
 void SudakovFormFactor::Init() {
@@ -285,19 +286,21 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
     return true; 
 } 
 
-bool SudakovFormFactor::PSVeto(const Energy2 t,
-			   const Energy2 maxQ2) {
+bool SudakovFormFactor::PSVeto(const Energy2 t, const Energy2 maxQ2) {
   // still inside PS, return true if outside
   // check vs overestimated limits
-  if(z() < zlimits_.first || z() > zlimits_.second) return true;
+  if (z() < zlimits_.first || z() > zlimits_.second) return true;
+
   Energy2 q2 = z()*(1.-z())*t;
-  if(ids_[0]->id()!=ParticleID::g &&
-     ids_[0]->id()!=ParticleID::gamma ) q2 += masssquared_[0];
-  if(q2>maxQ2) return true;
-  // compute the pts
-  Energy2 pt2 = z()*(1.-z())*q2 - masssquared_[1]*(1.-z()) - masssquared_[2]*z();
+  if (q2>maxQ2) return true;
+
+  Energy2 m02 = (ids_[0]->id()!=ParticleID::g && ids_[0]->id()!=ParticleID::gamma) ?
+  	masssquared_[0] : Energy2();
+  
+  Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2]);
+
   // if pt2<0 veto
-  if(pt2<cutoff_->pT2min()) return true;
+  if (pt2<cutoff_->pT2min()) return true;
   // otherwise calculate pt and return
   pT_ = sqrt(pt2);
   return false;
@@ -419,7 +422,7 @@ generateNextSpaceBranching(const Energy startingQ,
     // No need for more if-statements in this loop.
     do {
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
-      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+      pt2 = QTildeKinematics::pT2_ISR(t,z(),masssquared_[2]);
     }
     while(pt2 < cutoff_->pT2min()||
         z() > zlimits_.second||
@@ -433,7 +436,7 @@ generateNextSpaceBranching(const Energy startingQ,
     bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
     do {
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
-      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+      pt2 = QTildeKinematics::pT2_ISR(t,z(),masssquared_[2]);
       ptRew=pt2 < cutoff_->pT2min();
       zRew=z() > zlimits_.second;
       if (ptRew||zRew) continue;
@@ -529,7 +532,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
   Energy2 t(tmin),pt2(-MeV2);
   do {
     if(!guessDecay(t,tmax,minmass,enhance,detuning)) break;
-    pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
+    pt2 = QTildeKinematics::pT2_Decay(t,z(),masssquared_[0],masssquared_[2]);
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
 	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
