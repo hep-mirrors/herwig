@@ -153,12 +153,13 @@ newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 set QtoGammaQSplitFn:AngularOrdered Yes
 #
 # Now the Sudakovs
+create Herwig::PTCutOff PTCutOff
+newdef PTCutOff:pTmin 1.222798*GeV
+
 create Herwig::SudakovFormFactor SudakovCommon
 newdef SudakovCommon:Alpha AlphaQCD
-newdef SudakovCommon:cutoffKinScale 0.0*GeV
+newdef SudakovCommon:Cutoff PTCutOff
 newdef SudakovCommon:PDFmax 1.0
-newdef SudakovCommon:CutOffOption pT
-newdef SudakovCommon:pTmin 1.222798*GeV
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
@@ -170,8 +171,10 @@ set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
 
 cp QtoQGammaSudakov LtoLGammaSudakov
+cp PTCutOff LtoLGammaPTCutOff
 # Technical parameter to stop evolution.
-set LtoLGammaSudakov:pTmin 0.000001
+set LtoLGammaPTCutOff:pTmin 0.000001
+set LtoLGammaSudakov:Cutoff LtoLGammaPTCutOff
 
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
