@@ -26,6 +26,7 @@
 
 #include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 
 using namespace Herwig;
 
@@ -73,9 +74,6 @@ void QTildeMatching::getShowerVariables() {
 
 bool QTildeMatching::isInShowerPhasespace() const {
 
-  assert((theQTildeSudakov->cutOffOption() == 0 || theQTildeSudakov->cutOffOption() == 2) && 
-	 "implementation only provided for default and pt cutoff");
-
   Energy qtildeHard = ZERO;
 
   Energy qtilde = dipole()->showerScale();
@@ -119,18 +117,24 @@ bool QTildeMatching::isInShowerPhasespace() const {
   }
 
 
-
-  Energy Qg = theQTildeSudakov->kinScale();
   Energy2 pt2 = ZERO;
+
+  const vector<Energy> & masses = theQTildeSudakov->virtualMasses({{
+    bornCXComb()->mePartonData()[dipole()->bornEmitter() ],
+    realCXComb()->mePartonData()[dipole()->realEmitter() ],
+    realCXComb()->mePartonData()[dipole()->realEmission()]
+  }});
+
+  const Energy2 m22 = sqr(masses[2]);
+
   if ( dipole()->bornEmitter() > 1 ) {
-    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
-    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      pt2 = sqr(z*(1.-z)*qtilde) - sqr(mu);
-    else
-      pt2 = sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg);
+    const Energy2 m02 = sqr(masses[0]);
+    const Energy2 m12 = sqr(masses[1]);
+
+    pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22);
   }
-  if ( dipole()->bornEmitter() < 2 ) {
-    pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
+  else {
+    pt2 = QTildeKinematics::pT2_ISR(sqr(qtilde),z,m22);
   }
 
   if ( pt2 < max(theQTildeSudakov->pT2min(),sqr(safeCut()) ))
@@ -142,26 +146,30 @@ bool QTildeMatching::isInShowerPhasespace() const {
 }
 
 bool QTildeMatching::isAboveCutoff() const {
-
-  assert((theQTildeSudakov->cutOffOption() == 0 || theQTildeSudakov->cutOffOption() == 2) && 
-	 "implementation only provided for default and pt cutoff");
   Energy qtilde = dipole()->showerScale();
   assert(!dipole()->showerParameters().empty());
   double z = dipole()->showerParameters()[0];
-  Energy Qg = theQTildeSudakov->kinScale();
+
+
+  const vector<Energy> & masses = theQTildeSudakov->virtualMasses({{
+    bornCXComb()->mePartonData()[dipole()->bornEmitter() ],
+    realCXComb()->mePartonData()[dipole()->realEmitter() ],
+    realCXComb()->mePartonData()[dipole()->realEmission()]
+  }});
+
+  const Energy2 m22 = sqr(masses[2]);
+
   if ( dipole()->bornEmitter() > 1 ) {
-    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
-    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= 
-             max(theQTildeSudakov->pT2min(),sqr(safeCut()));
-    else
-      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= 
-             max(theQTildeSudakov->pT2min(),sqr(safeCut()));
+    const Energy2 m02 = sqr(masses[0]);
+    const Energy2 m12 = sqr(masses[1]);
+
+    const Energy2 pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22);
+
+    return pt2 >= max(theQTildeSudakov->pT2min(),sqr(safeCut()));
   }
-  if ( dipole()->bornEmitter() < 2 ) {
-    return
-      sqr((1.-z)*qtilde) - z*sqr(Qg) >= 
-      max(theQTildeSudakov->pT2min(),sqr(safeCut()));
+  else {
+    const Energy2 pt2 = QTildeKinematics::pT2_ISR(sqr(qtilde),z,m22);
+    return pt2 >= max(theQTildeSudakov->pT2min(),sqr(safeCut()));
   }
   return false;
 }
@@ -251,16 +259,22 @@ CrossSection QTildeMatching::dSigHatDR() const {
   Energy qtilde = sqrt(vars.first);
   double z = vars.second;
   Energy2 pt2 = ZERO;
-  Energy Qg = theQTildeSudakov->kinScale();
+
+  const vector<Energy> & masses = theQTildeSudakov->virtualMasses({{
+    bornCXComb()->mePartonData()[dipole()->bornEmitter() ],
+    realCXComb()->mePartonData()[dipole()->realEmitter() ],
+    realCXComb()->mePartonData()[dipole()->realEmission()]
+  }});
+
+  const Energy2 m22 = sqr(masses[2]);
   if ( dipole()->bornEmitter() > 1 ) {
-    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
-    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      pt2 = sqr(z*(1.-z)*qtilde) - sqr(mu);
-    else
-      pt2 = sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg);
+    const Energy2 m02 = sqr(masses[0]);
+    const Energy2 m12 = sqr(masses[1]);
+
+    pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22);
   }
-  if ( dipole()->bornEmitter() < 2 ) {
-    pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
+  else {
+    pt2 = QTildeKinematics::pT2_ISR(sqr(qtilde),z,m22);
   }
   assert(pt2 >= ZERO);
 

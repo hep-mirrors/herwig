@@ -517,6 +517,11 @@ public:
   	return cutoff_->virtualMasses(ids);
   }
 
+  /**
+   *  The minimum pT2
+   */
+  Energy2 pT2min() { return cutoff_->pT2min(); }
+
 protected:
 
   /** @name Clone Methods. */
