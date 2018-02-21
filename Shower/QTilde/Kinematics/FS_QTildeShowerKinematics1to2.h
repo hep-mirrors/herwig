@@ -35,7 +35,14 @@ public:
   /**
    * Default constructor
    */
-  inline FS_QTildeShowerKinematics1to2() {}
+  FS_QTildeShowerKinematics1to2() = default;
+
+  /**
+   * The constructor.
+   */
+  FS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+    : ShowerKinematics(scale,z,phi,pt,sud) {}
+  
 
   /**
    *  The updateChildren, updateParent and updateLast
@@ -108,7 +115,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FS_QTildeShowerKinematics1to2 & operator=(const FS_QTildeShowerKinematics1to2 &);
+  FS_QTildeShowerKinematics1to2 & operator=(const FS_QTildeShowerKinematics1to2 &) = delete;
 
 };
 

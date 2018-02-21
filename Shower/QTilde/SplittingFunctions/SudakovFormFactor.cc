@@ -393,7 +393,7 @@ ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScal
   if(q_ < ZERO) return ShoKinPtr();
   
   // return the ShowerKinematics object
-  return createFinalStateBranching(q_,z(),phi(),pT()); 
+  return new_ptr(FS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
 ShoKinPtr SudakovFormFactor::
@@ -496,7 +496,7 @@ generateNextSpaceBranching(const Energy startingQ,
   
   pT_ = sqrt(pt2);
   // create the ShowerKinematics and return it
-  return createInitialStateBranching(q_,z(),phi(),pT());
+  return new_ptr(IS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
 void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin) {
@@ -545,7 +545,7 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
   else return ShoKinPtr();
   phi_ = 0.;
   // create the ShowerKinematics object
-  return createDecayBranching(q_,z(),phi(),pT());
+  return new_ptr(Decay_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
 bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
@@ -1230,37 +1230,3 @@ Energy SudakovFormFactor::calculateScale(double zin, Energy pt, IdList ids,
 		      << "iopt = " << iopt << Exception::runerror;
   }
 }
-
-ShoKinPtr SudakovFormFactor::createFinalStateBranching(Energy scale,double z,
-						   double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(FS_QTildeShowerKinematics1to2());
-  showerKin->scale(scale);
-  showerKin->z(z);
-  showerKin->phi(phi);
-  showerKin->pT(pt);
-  showerKin->SudakovFormFactor(this);
-  return showerKin;
-}
-
-ShoKinPtr SudakovFormFactor::createInitialStateBranching(Energy scale,double z,
-						     double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(IS_QTildeShowerKinematics1to2());
-  showerKin->scale(scale);
-  showerKin->z(z);
-  showerKin->phi(phi);
-  showerKin->pT(pt);
-  showerKin->SudakovFormFactor(this);
-  return showerKin;
-}
-
-ShoKinPtr SudakovFormFactor::createDecayBranching(Energy scale,double z,
-					      double phi, Energy pt) {
-  ShoKinPtr  showerKin = new_ptr(Decay_QTildeShowerKinematics1to2());
-  showerKin->scale(scale);
-  showerKin->z(z);
-  showerKin->phi(phi);
-  showerKin->pT(pt);
-  showerKin->SudakovFormFactor(this);
-  return showerKin;
-}
-

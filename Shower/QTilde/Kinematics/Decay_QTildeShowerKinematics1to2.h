@@ -30,6 +30,19 @@ using namespace ThePEG;
  *
  */
 class Decay_QTildeShowerKinematics1to2: public ShowerKinematics {
+public:
+
+  /**
+   * Default constructor
+   */
+  Decay_QTildeShowerKinematics1to2() = default;
+
+  /**
+   * The constructor.
+   */
+  Decay_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+    : ShowerKinematics(scale,z,phi,pt,sud) {}
+  
 
 public:
 
@@ -92,7 +105,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Decay_QTildeShowerKinematics1to2 & operator=(const Decay_QTildeShowerKinematics1to2 &);
+  Decay_QTildeShowerKinematics1to2 & operator=(const Decay_QTildeShowerKinematics1to2 &) = delete;
 
 };
 

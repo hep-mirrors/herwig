@@ -37,7 +37,13 @@ public:
   /**
    *  Construct in terms of the basis states
    */
-  inline IS_QTildeShowerKinematics1to2() {}
+  IS_QTildeShowerKinematics1to2()= default;
+
+  /**
+   * The default constructor.
+   */
+  IS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+    : ShowerKinematics(scale,z,phi,pt,sud) {}
   //@}
 
 public:
@@ -103,7 +109,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  IS_QTildeShowerKinematics1to2 & operator=(const IS_QTildeShowerKinematics1to2 &);
+  IS_QTildeShowerKinematics1to2 & operator=(const IS_QTildeShowerKinematics1to2 &) = delete;
 
 };
 

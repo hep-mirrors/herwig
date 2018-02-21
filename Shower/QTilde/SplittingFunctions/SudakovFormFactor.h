@@ -278,24 +278,6 @@ public:
    */
   virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
 
-  /**
-   *  Method to create the ShowerKinematics object for a final-state branching
-   */
-  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
-					      double phi, Energy pt);
-
-  /**
-   *  Method to create the ShowerKinematics object for an initial-state branching
-   */
-  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
-						double phi, Energy pt);
-
-  /**
-   *  Method to create the ShowerKinematics object for a decay branching
-   */
-  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
-					 double phi, Energy pt);
-
 public:
 
   /** @name Functions used by the persistent I/O system. */

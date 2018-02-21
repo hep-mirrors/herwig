@@ -37,6 +37,10 @@
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
+#include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
+
 
 using namespace Herwig;
 
@@ -2042,9 +2046,10 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
   }
   if( !bb.kinematics ) {
     //do the hard emission
-    ShoKinPtr kinematics =
-      branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
-    						      branch->children()[0]->pT() );
+    ShoKinPtr kinematics = new_ptr(IS_QTildeShowerKinematics1to2(
+    	branch->scale(), z, branch->phi(),
+    	branch->children()[0]->pT(), branch->sudakov() 
+    	));
     // assign the splitting function and shower kinematics
     particle->showerKinematics( kinematics );
     if(kinematics->pT()>progenitor()->highestpT())
@@ -3140,11 +3145,14 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
   }
   // otherwise need to return the hard emission
   // construct the kinematics for the hard emission
-  ShoKinPtr showerKin=
-    branch->sudakov()->createFinalStateBranching(branch->scale(),
-	                                         branch->children()[0]->z(),
-	                                         branch->phi(),
-						 branch->children()[0]->pT());
+  ShoKinPtr showerKin = new_ptr(FS_QTildeShowerKinematics1to2(
+    branch->scale(),
+    branch->children()[0]->z(),
+    branch->phi(),
+    branch->children()[0]->pT(),
+    branch->sudakov()
+    ));						 
+
   IdList idlist(3);
   idlist[0] = particle->dataPtr();
   idlist[1] = branch->children()[0]->branchingParticle()->dataPtr();
@@ -3229,11 +3237,12 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
   }
   // otherwise need to return the hard emission
   // construct the kinematics for the hard emission
-  ShoKinPtr showerKin=
-    branch->sudakov()->createDecayBranching(branch->scale(),
-					    branch->children()[0]->z(),
-					    branch->phi(),
-					    branch->children()[0]->pT());
+  ShoKinPtr showerKin = new_ptr(Decay_QTildeShowerKinematics1to2(
+                                branch->scale(),
+				branch->children()[0]->z(),
+				branch->phi(),
+				branch->children()[0]->pT(),
+				branch->sudakov()));
    IdList idlist(3);
    idlist[0] = particle->dataPtr();
    idlist[1] = branch->children()[0]->branchingParticle()->dataPtr();
