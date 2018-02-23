@@ -2414,7 +2414,10 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             res.append([])
         # loop over the contracted indices
         while True :
+            # sign from metric tensor in contractions
             sign = 1
+            for key,val in contracted.iteritems() :
+                if(val>0) : sign *=-1
             eTemp =[]
             sTemp =[]
             fTemp =[]
