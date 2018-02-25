@@ -55,9 +55,7 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _nReWeight(100), _reWeight(false),
   interaction_(ShowerInteraction::Both),
   _trunc_Mode(true), _hardEmission(1),
-  _spinOpt(1), _softOpt(2), _hardPOWHEG(false), muPt(ZERO),
-  _maxTryFSR(100000), _maxFailFSR(100), _fracFSR(0.001),
-  _nFSR(0), _nFailedFSR(0)
+  _spinOpt(1), _softOpt(2), _hardPOWHEG(false), muPt(ZERO)
 {}
 
 QTildeShowerHandler::~QTildeShowerHandler() {}
@@ -77,8 +75,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
      << _trunc_Mode << _hardEmission << _reconOpt 
-     << ounit(muPt,GeV)
-     << oenum(interaction_) << _maxTryFSR << _maxFailFSR << _fracFSR
+     << ounit(muPt,GeV) << oenum(interaction_) 
      << _reconstructor << _partnerfinder;
 }
 
@@ -89,8 +86,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
      >> _trunc_Mode >> _hardEmission >> _reconOpt
-     >> iunit(muPt,GeV)
-     >> ienum(interaction_) >> _maxTryFSR >> _maxFailFSR >> _fracFSR
+     >> iunit(muPt,GeV) >> ienum(interaction_)
      >> _reconstructor >> _partnerfinder;
 }
 
@@ -356,25 +352,6 @@ void QTildeShowerHandler::Init() {
      "Generate shower from the real emmission configuration",
      true);
 
-  static Parameter<QTildeShowerHandler,unsigned int> interfaceMaxTryFSR
-    ("MaxTryFSR",
-     "The maximum number of attempted FSR emissions in"
-     " the generation of the FSR",
-     &QTildeShowerHandler::_maxTryFSR, 100000, 10, 100000000,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeShowerHandler,unsigned int> interfaceMaxFailFSR
-    ("MaxFailFSR",
-     "Maximum number of failures generating the FSR",
-     &QTildeShowerHandler::_maxFailFSR, 100, 1, 100000000,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeShowerHandler,double> interfaceFSRFailureFraction
-    ("FSRFailureFraction",
-     "Maximum fraction of events allowed to fail due to too many FSR emissions",
-     &QTildeShowerHandler::_fracFSR, 0.001, 1e-10, 1,
-     false, false, Interface::limited);
-
   static Reference<QTildeShowerHandler,KinematicsReconstructor> interfaceKinematicsReconstructor
     ("KinematicsReconstructor",
      "Reference to the KinematicsReconstructor object",
@@ -501,10 +478,6 @@ HardTreePtr QTildeShowerHandler::generateCKKW(ShowerTreePtr ) const {
 
 void QTildeShowerHandler::doinit() {
   ShowerHandler::doinit();
-  // interactions may have been changed through a setup file so we
-  // clear it up here
-  // calculate max no of FSR vetos
-  _maxFailFSR = max(int(_maxFailFSR), int(_fracFSR*double(generator()->N())));
   // check on the reweighting
   for(unsigned int ix=0;ix<_fullShowerVetoes.size();++ix) {
     if(_fullShowerVetoes[ix]->behaviour()==1) {
@@ -715,17 +688,6 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return false;
   }
-  // too many tries
-  if(_nFSR>=_maxTryFSR) {
-    ++_nFailedFSR;
-    // too many failed events
-    if(_nFailedFSR>=_maxFailFSR)
-      throw Exception() << "Too many events have failed due to too many shower emissions, in\n"
-			<< "QTildeShowerHandler::timeLikeShower(). Terminating run\n"
-			<< Exception::runerror;
-    throw Exception() << "Too many attempted emissions in QTildeShowerHandler::timeLikeShower()\n"
-		      << Exception::eventerror;
-  }
   // generate the emission
   ShowerParticleVector children;
   // generate the emission
@@ -736,41 +698,31 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return false;
   }
-  Branching fc[2];
-  bool setupChildren = true;
+  Branching fc[2] = {Branching(),Branching()};
 
-    fc[0] = Branching();
-    fc[1] = Branching();
-
-    assert(fb.kinematics);
-    // has emitted
-    // Assign the shower kinematics to the emitting particle.
-    if(setupChildren) {
-      ++_nFSR;
-      particle->showerKinematics(fb.kinematics);
-      // check highest pT
-      if(fb.kinematics->pT()>progenitor()->highestpT())
-	progenitor()->highestpT(fb.kinematics->pT());
-      // create the children
-      children = createTimeLikeChildren(particle,fb.ids);
-      // update the children
-      particle->showerKinematics()->
-	updateChildren(particle, children,fb.type);
-      // update number of emissions
-      ++_nfs;
-      if(_limitEmissions!=0) {
-	if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-	if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
-	if(particle->spinInfo()) particle->spinInfo()->develop();
-	return true;
-      }
-      setupChildren = false;
-    }
-    // select branchings for children
-    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
-    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
-    // old default
-
+  assert(fb.kinematics);
+  // has emitted
+  // Assign the shower kinematics to the emitting particle.
+  particle->showerKinematics(fb.kinematics);
+  // check highest pT
+  if(fb.kinematics->pT()>progenitor()->highestpT())
+    progenitor()->highestpT(fb.kinematics->pT());
+  // create the children
+  children = createTimeLikeChildren(particle,fb.ids);
+  // update the children
+  particle->showerKinematics()->
+    updateChildren(particle, children,fb.type);
+  // update number of emissions
+  ++_nfs;
+  if(_limitEmissions!=0) {
+    if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
+    if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return true;
+  }
+  // select branchings for children
+  fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
+  fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
   // shower the first  particle
   if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
   if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
@@ -941,17 +893,6 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
      ( _limitEmissions == 4 && _nfs + _nis != 0) ) {
     return false;
   }
-  // too many tries
-  if(_nFSR>=_maxTryFSR) {
-    ++_nFailedFSR;
-    // too many failed events
-    if(_nFailedFSR>=_maxFailFSR)
-      throw Exception() << "Too many events have failed due to too many shower emissions, in\n"
-			<< "QTildeShowerHandler::timeLikeShower(). Terminating run\n"
-			<< Exception::runerror;
-    throw Exception() << "Too many attempted emissions in QTildeShowerHandler::timeLikeShower()\n"
-		      << Exception::eventerror;
-  }
   // generate the emission
   ShowerParticleVector children;
   int ntry=0;
@@ -973,7 +914,6 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
     // has emitted
     // Assign the shower kinematics to the emitting particle.
     if(setupChildren) {
-      ++_nFSR;
       // Assign the shower kinematics to the emitting particle.
       particle->showerKinematics(fb.kinematics);
       if(fb.kinematics->pT()>progenitor()->highestpT())
@@ -1180,7 +1120,6 @@ void QTildeShowerHandler::updateHistory(tShowerParticlePtr particle) {
 }
 
 bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction type) {
-  _nFSR = 0;
   // initialize basis vectors etc
   if(!progenitor()->progenitor()->partner()) return false;
   progenitor()->progenitor()->initializeFinalState();
@@ -1223,7 +1162,6 @@ bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction ty
 bool QTildeShowerHandler::
 startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 			  Energy minimumMass,ShowerInteraction type) {
-  _nFSR = 0;
   // set up the particle basis vectors
   if(!progenitor()->progenitor()->partner()) return false;
   progenitor()->progenitor()->initializeDecay();
@@ -1691,7 +1629,6 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
     ++ntry;
     // Assign the shower kinematics to the emitting particle.
     if(setupChildren) {
-      ++_nFSR;
       // Assign the shower kinematics to the emitting particle.
       particle->showerKinematics(fb.kinematics);
       if(fb.kinematics->pT()>progenitor()->highestpT())
@@ -2014,7 +1951,6 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
     if(!fc[1].hard) fc[1] = Branching();
     ++ntry;
     if(setupChildren) {
-      ++_nFSR;
       // Assign the shower kinematics to the emitting particle.
       particle->showerKinematics(fb.kinematics);
       if(fb.kinematics->pT()>progenitor()->highestpT())

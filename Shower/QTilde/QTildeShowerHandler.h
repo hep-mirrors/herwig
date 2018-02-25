@@ -834,31 +834,6 @@ private :
    */
   Energy muPt;
 
-  /**
-   *  Maximum number of emission attempts for FSR
-   */
-  unsigned int _maxTryFSR;
-
-  /**
-   *  Maximum number of failures for FSR generation
-   */
-  unsigned int _maxFailFSR;
-
-  /**
-   *  Failure fraction for FSR generation
-   */
-  double _fracFSR;
-
-  /**
-   *  Counter for number of FSR emissions
-   */
-  unsigned int _nFSR;
-
-  /**
-   *  Counter for the number of failed events due to FSR emissions
-   */
-  unsigned int _nFailedFSR;
-
 private:
   /**
    *  Pointer to the various objects
