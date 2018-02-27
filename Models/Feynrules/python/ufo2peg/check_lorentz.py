@@ -2249,7 +2249,7 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
             # no contraction
             if(contract=="" or (contract.type=="E" and contract.value==iloc) ) :
                 if contract == "" :
-                    contract = LorentzIndex(lind)
+                    contract = LorentzIndex(sind)
                     contract.type="R"
                 # start of matrix string
                 start.value = Template(sbar  .substitute({'s' : ("Rsbar%s${L}" % sind)}))
