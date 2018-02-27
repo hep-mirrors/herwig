@@ -182,6 +182,20 @@ def colorfactor(vertex,L,pos,lorentztag):
         label = ('f(1,2,3)',)
         if match(label,colors): return ("SU3F",('-complex(0,1.)*(%s)'%sign,))
 
+    elif l(8) == 3 and l(1)==1 and L == 4:
+        colors=[]
+        for color in vertex.color :
+            order,sign  = extractAntiSymmetricIndices(color,"f(")
+            colors.append("f(%s,%s,%s)" % (order[0],order[1],order[2]))
+        if(pos[1][0]==1) :
+            label = ('f(2,3,4)',)
+        elif(pos[1][0]==2) :
+            label = ('f(1,3,4)',)
+        elif(pos[1][0]==3) :
+            label = ('f(1,2,4)',)
+        elif(pos[1][0]==4) :
+            label = ('f(1,2,3)',)
+        if match(label,colors): return ("SU3F",('-complex(0,1.)*(%s)'%sign,))
     elif l(8) == L == 4:
         colors=[]
         for color in vertex.color :
