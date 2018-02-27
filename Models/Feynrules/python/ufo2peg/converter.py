@@ -109,6 +109,8 @@ class PyToCpp(ast.NodeVisitor):
         if node.n == 0: text = '0.0'
         elif (node.n==complex("1j") ) :
             text = "ii"
+        elif (node.n==complex("-1j") ) :
+            text = "-ii"
         elif (node.n==complex("2j") ) :
             text = "2.*ii"
         else:
