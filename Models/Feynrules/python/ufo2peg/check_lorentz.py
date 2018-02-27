@@ -15,30 +15,30 @@ epsValue=[[[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0
           [[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],
            [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]]]
 
-epsValue[0][1][2][3] =  1.
-epsValue[0][1][3][2] = -1.
-epsValue[0][2][1][3] = -1.
-epsValue[0][2][3][1] =  1.
-epsValue[0][3][1][2] =  1.
-epsValue[0][3][2][1] = -1.
-epsValue[1][0][2][3] = -1.
-epsValue[1][0][3][2] =  1.
-epsValue[1][2][0][3] =  1
-epsValue[1][2][3][0] = -1.
-epsValue[1][3][0][2] = -1.
-epsValue[1][3][2][0] =  1.
-epsValue[2][0][1][3] =  1.
-epsValue[2][0][3][1] = -1.
-epsValue[2][1][0][3] = -1.
-epsValue[2][1][3][0] =  1.
-epsValue[2][3][0][1] =  1.
-epsValue[2][3][1][0] = -1.
-epsValue[3][0][1][2] = -1.
-epsValue[3][0][2][1] =  1.
-epsValue[3][1][0][2] =  1.
-epsValue[3][1][2][0] = -1.
-epsValue[3][2][0][1] = -1.
-epsValue[3][2][1][0] =  1.
+epsValue[0][1][2][3] = -1.
+epsValue[0][1][3][2] =  1.
+epsValue[0][2][1][3] =  1.
+epsValue[0][2][3][1] = -1.
+epsValue[0][3][1][2] = -1.
+epsValue[0][3][2][1] =  1.
+epsValue[1][0][2][3] =  1.
+epsValue[1][0][3][2] = -1.
+epsValue[1][2][0][3] = -1.
+epsValue[1][2][3][0] =  1.
+epsValue[1][3][0][2] =  1.
+epsValue[1][3][2][0] = -1.
+epsValue[2][0][1][3] = -1.
+epsValue[2][0][3][1] =  1.
+epsValue[2][1][0][3] =  1.
+epsValue[2][1][3][0] = -1.
+epsValue[2][3][0][1] = -1.
+epsValue[2][3][1][0] =  1.
+epsValue[3][0][1][2] =  1.
+epsValue[3][0][2][1] = -1.
+epsValue[3][1][0][2] = -1.
+epsValue[3][1][2][0] =  1.
+epsValue[3][2][0][1] =  1.
+epsValue[3][2][1][0] = -1.
 
 imap=["t","x","y","z"]
 
@@ -2116,6 +2116,9 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
                 RB = vslash.substitute({ "v" : contract})
                 Symbols += vslashS.substitute({ "v" : contract })
                 Symbols += "%s = Symbol('%s')\n" % (name,name)
+                defns["vv%s" % contract ] = ["vv%s" % contract,
+                                             vslashD.substitute({ "var" : computeUnit(contract.dimension),
+                                                                  "v" :  "%s" % contract })]
                 end=DiracMatrix()
                 end.name="RQ"
                 end.index = oindex
@@ -2225,6 +2228,9 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
                 RB = vslash.substitute({ "v" : contract})
                 Symbols += vslashS.substitute({ "v" : contract })
                 Symbols += "%s = Symbol('%s')\n" % (name,name)
+                defns["vv%s" % contract ] = ["vv%s" % contract,
+                                             vslashD.substitute({ "var" : computeUnit(contract.dimension),
+                                                                  "v" :  "%s" % contract })]
                 start=DiracMatrix()
                 start.name="RQ"
                 start.index = oindex
@@ -2749,6 +2755,8 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                 for index in lstruct.lorentz:
                     if(index.type=="P") :
                         dimension[2]+=1
+                        if( not index in defns) :
+                            defns[(index,)]=["",""]
                     if(index.type=="P" or
                        (index.type=="E" and index.value!=iloc)) :
                         Symbols += momCom.substitute( {"v": index} )
@@ -3289,9 +3297,11 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
     # cat the definitions
     defString=""
     for (key,value) in defns.iteritems() :
+        if(value[0]=="") : continue
         if(value[0][0]=="V") :
             defString+="    %s\n" %value[1]
     for (key,value) in defns.iteritems() :
+        if(value[0]=="") : continue
         if(value[0][0]!="V") :
             defString+="    %s\n" %value[1]
     sorder=swapOrder(vertex,iloc,momenta,fIndex)
