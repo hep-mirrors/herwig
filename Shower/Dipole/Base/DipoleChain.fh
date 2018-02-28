@@ -1,0 +1,21 @@
+// -*- C++ -*-
+// This is the forward declaration of the DipoleChain class      
+
+#ifndef HERWIG_DipoleChain_FH
+#define HERWIG_DipoleChain_FH
+
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
+
+
+namespace Herwig {
+  
+class DipoleChain;
+using namespace ThePEG;
+  
+  ThePEG_DECLARE_POINTERS(DipoleChain , DipoleChainPtr );
+  
+
+}
+
+#endif // HERWIG_DipoleChain_FH
