@@ -336,13 +336,11 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
       cfv.push_back(make_pair(4,  2.));
     }
     else if(ina==PDT::Colour8&&outa==PDT::Colour0&&
-	    inb==PDT::Colour8&&outb==PDT::Colour8&&
-	    oa->iSpin()==PDT::Spin0) {
+	    inb==PDT::Colour8&&outb==PDT::Colour8) {
       cfv[0] = make_pair(0,-1);
     }
     else if(ina==PDT::Colour8&&outa==PDT::Colour8&&
-	    inb==PDT::Colour8&&outb==PDT::Colour0&&
-	    ob->iSpin()==PDT::Spin0) {
+	    inb==PDT::Colour8&&outb==PDT::Colour0) {
       cfv[0] = make_pair(0,-1);
     }
   } 
