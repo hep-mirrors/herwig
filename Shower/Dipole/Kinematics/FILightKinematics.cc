@@ -66,9 +66,9 @@ pair<double,double> FILightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingKernel&) const {
   Energy hard=dInfo.hardPt();
   if(openZBoundaries()==1)
-	hard=dInfo.scale()*sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX()/2.);
+    hard=dInfo.scale()*sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX())/2.;
   if(openZBoundaries()==2)
-	hard=dInfo.scale()*min(1.,sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX())/2.);
+    hard=dInfo.scale()*min(1.,sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX())/2.);
   if(hard<pt)return {0.5,0.5};
   double s = sqrt(1.-sqr(pt/hard));
   return {0.5*(1.-s),0.5*(1.+s)};
