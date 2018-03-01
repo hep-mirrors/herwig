@@ -56,22 +56,26 @@ vTemplateT="""\
 """
 
 vTemplate4="""\
+{header} {{
+{swap}
     if(id{iloc1}=={id1}) {{
         if(id{iloc2}=={id2}) {{
-          return ({res1})*({cf});
+          return {res1};
         }}
         else {{
-          return ({res2})*({cf});
+          return {res2};
         }}
     }}
     else {{
         if(id{iloc2}=={id2}) {{
-          return ({res3})*({cf});
+          return {res3};
         }}
         else {{
-          return ({res4})*({cf});
+          return {res4};
         }}
     }}
+}};
+
 """
 
 vecTemplate="""\
@@ -2555,10 +2559,10 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                    sVal["sT"] = res[1]
                 # 4 fermion
                else :
-                   sVal["s"   ] = res[0][0]
-                   sVal["sT2" ] = res[1][0]
-                   sVal["sT1" ] = res[2][0]
-                   sVal["sT12"] = res[3][0]
+                   sVal["s"   ] = res[0]
+                   sVal["sT2" ] = res[1]
+                   sVal["sT1" ] = res[2]
+                   sVal["sT12"] = res[3]
             # spinor
             elif(len(res[0])==4) :
                 for k in range(0,4) :
@@ -2723,11 +2727,6 @@ def convertLorentz(Lstruct,lorentztag,order,vertex,iloc,defns,evalVertex) :
     return eps
 
 def swapOrder(vertex,iloc,momenta,fIndex) :
-    # special for 4 fermion case
-    if(vertex.lorentz[0].spins.count(2)==4) :
-        return swapOrderFFFF(vertex,iloc,momenta,fIndex)
-
-    
     names=['','sca','sp','v']
     waves=['','sca',''  ,'E']
     output=""
@@ -2757,8 +2756,14 @@ def swapOrder(vertex,iloc,momenta,fIndex) :
                 output += "    };\n"
     return output
 
-def swapOrderFFFF(vertex,iloc,momenta,fIndex) :
+def swapOrderFFFF(vertex,iloc,fIndex) :
     output=""
+    for j in range(0,len(fIndex)) :
+        if(j%2==0) :
+            output += "    SpinorWaveFunction s%s = sW%s;\n" % (fIndex[j],fIndex[j])
+        else :
+            output += "    SpinorBarWaveFunction sbar%s = sbarW%s;\n" % (fIndex[j],fIndex[j])
+
     for j in range(0,len(fIndex)) :
         if(j%2==0) :
             output += "    long id%s = sW%s.id();\n" % (fIndex[j],fIndex[j])
@@ -2772,10 +2777,6 @@ def swapOrderFFFF(vertex,iloc,momenta,fIndex) :
         wave="s"
         if(j==1) : wave = "sbar"
         output += "        swap(%s%s,%s%s);\n" % (wave,fIndex[j],wave,fIndex[j+2])
-        if(momenta[fIndex[j]-1][0] or momenta[fIndex[j+2]-1][0]) :
-            momenta[fIndex[j]-1][0] = True
-            momenta[fIndex[j+2]-1][0] = True
-            output += "        swap(P%s,P%s);\n" % (fIndex[j],fIndex[j+2])
         output += "    };\n"
     return output
 
@@ -3133,17 +3134,10 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
             result[ii]  = "(%s)*(%s)" % (result[ii],scalars[0:-1])
     # vertex, just return the answer
     if(iloc==0) :
-        if(nf!=4) :
-            result[0] = "return (%s)*(%s);\n" % (result[0],py2cpp(cf)[0])
-            if(FM or RS) :
-                result[1] = "return (%s)*(%s);\n" % (result[1],py2cpp(cf)[0])
-        else :
-            print 'need to change 4 f handling'
-            quit()
-            result = [vTemplate4.format(iloc1=fIndex[1],iloc2=fIndex[3],
-                                        id1=vertex.particles[fIndex[1]-1].pdg_code,
-                                        id2=vertex.particles[fIndex[3]-1].pdg_code,
-                                        cf=py2cpp(cf)[0],res1=result[0],res2=result[1],res3=result[2],res4=result[3])]
+        result[0] = "return (%s)*(%s);\n" % (result[0],py2cpp(cf)[0])
+        if(FM or RS) :
+            for i in range(1,len(result)) :
+                result[i] = "return (%s)*(%s);\n" % (result[i],py2cpp(cf)[0])
     # off-shell particle
     else :
         # off-shell scalar
@@ -3206,7 +3200,10 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
         if(value[0]=="") : continue
         if(value[0][0]!="V") :
             defString+="    %s\n" %value[1]
-    sorder=swapOrder(vertex,iloc,momenta,fIndex)
+    if(len(result)<=2) :
+        sorder=swapOrder(vertex,iloc,momenta,fIndex)
+    else :
+        sorder=""
     momentastring=""
     for i in range(0,len(momenta)) :
         if(momenta[i][0] and momenta[i][1]!="")  :
@@ -3225,84 +3222,184 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
 
     # special for transpose
     if(FM or RS) :
-        htemp = header.split(",")
-        irs=-1
-        isp=-1
-        for i in range(0,len(htemp)) :
-            print htemp
-            if(htemp[i].find("RS")>0) :
-                if(htemp[i].find("Bar")>0) :
-                   htemp[i]=htemp[i].replace("Bar","").replace("RsbarW","RsW")
-                else :
-                   htemp[i]=htemp[i].replace("Spinor","SpinorBar").replace("RsW","RsbarW")
-                if(i>0) : irs=i
-            elif(htemp[i].find("Spinor")>0) :
-                if(htemp[i].find("Bar")>0) :
-                   htemp[i]=htemp[i].replace("Bar","").replace("sbarW","sW")
-                else :
-                   htemp[i]=htemp[i].replace("Spinor","SpinorBar").replace("sW","sbarW")
-                if(i>0) : isp=i
-        if(irs>0 and isp >0) :
-            htemp[irs],htemp[isp] = htemp[isp],htemp[irs]
-        # header for transposed function
-        hnew = ','.join(htemp)
-        hnew = hnew.replace("virtual ","").replace("=-GeV","")
-        if(FM and not RS) :
-            hnew=hnew.replace("evaluate","evaluateT")
+        h2=header
+        if(not RS) :
             h2=header.replace("evaluate","evaluateN")
-            if(iloc not in fIndex) :
-                theader = headerReplace(hnew).replace("sbarW%s"%fIndex[0],"sbarW%s"%fIndex[1]) \
-                                             .replace("sW%s"%fIndex[1],"sW%s"%fIndex[0])
-            else :
-                theader = headerReplace(h2).replace("evaluateN","evaluateT")
-            if(iloc!=fIndex[1]) :
-                fi=1
-                stype="sbar"
-            else :
-                fi=0
-                stype="s"
-                
-            header = vTemplateT.format(header=header.replace("Energy2,","Energy2 q2,"),
-                                       normal=headerReplace(h2),
-                                       transpose=theader,type=stype,
-                                       iloc=fIndex[fi],id=vertex.particles[fIndex[fi]-1].pdg_code) \
-                    +h2.replace("virtual","")
             function=function.replace("evaluate(","evaluateN(")
-            
-        header += ";\n" + hnew
-        for i in range(0,len(waves)) :
-            if(waves[i].find("Spinor")<0) : continue
-            if(waves[i].find("Bar")>0) :
-                waves[i] = waves[i].replace("Bar","").replace("bar","")
+        headers=[]
+        newHeader=""
+        for ifunction in range(1,len(result)) :
+            waveNew=[]
+            momentastring=""
+            htemp = header.split(",")
+            irs=-1
+            isp=-1
+            # RS case
+            if(RS) :
+                # sort out the wavefunctions
+                for i in range(0,len(waves)) :
+                    if(waves[i].find("Spinor")<0) :
+                        waveNew.append(waves[i])
+                        continue
+                    if(waves[i].find("Bar")>0) :
+                        waveNew.append(waves[i].replace("Bar","").replace("bar",""))
+                    else :
+                        waveNew.append(waves[i].replace("Spinor","SpinorBar").replace(" s"," sbar").replace("Rs","Rsbar"))
+                # sort out the momenta definitions
+                for i in range(0,len(momenta)) :
+                    if(momenta[i][0] and momenta[i][1]!="")  :
+                        if(momenta[i][1].find("barW")>0) :
+                            momentastring+=momenta[i][1].replace("barW","W")+"\n   "
+                        elif(momenta[i][1].find("sW")>0) :
+                            momentastring+=momenta[i][1].replace("sW","sbarW")+"\n   "
+                        else :
+                            momentastring+=momenta[i][1]+"\n    "
+                # header string
+                for i in range(0,len(htemp)) :
+                    if(htemp[i].find("RS")>0) :
+                        if(htemp[i].find("Bar")>0) :
+                            htemp[i]=htemp[i].replace("Bar","").replace("RsbarW","RsW")
+                        else :
+                            htemp[i]=htemp[i].replace("Spinor","SpinorBar").replace("RsW","RsbarW")
+                        if(i>0) : irs=i
+                    elif(htemp[i].find("Spinor")>0) :
+                        if(htemp[i].find("Bar")>0) :
+                            htemp[i]=htemp[i].replace("Bar","").replace("sbarW","sW")
+                        else :
+                            htemp[i]=htemp[i].replace("Spinor","SpinorBar").replace("sW","sbarW")
+                        if(i>0) : isp=i
+                if(irs>0 and isp >0) :
+                    htemp[irs],htemp[isp] = htemp[isp],htemp[irs]
+            # fermion case
             else :
-                waves[i] = waves[i].replace("Spinor","SpinorBar").replace(" s"," sbar").replace("Rs","Rsbar")
-        momentastring=""
-        for i in range(0,len(momenta)) :
-            if(momenta[i][0] and momenta[i][1]!="")  :
-                if(momenta[i][1].find("barW")>0) :
-                    momentastring+=momenta[i][1].replace("barW","W")+"\n   "
-                elif(momenta[i][1].find("sW")>0) :
-                    momentastring+=momenta[i][1].replace("sW","sbarW")+"\n   "
+                htemp2 = header.split(",")
+                # which fermions to exchange
+                if(len(fIndex)==2) :
+                    isp  = (fIndex[0],)
+                    ibar = (fIndex[1],)
                 else :
-                    momentastring+=momenta[i][1]+"\n    "
-        print header
-        print fIndex
+                    if(ifunction==1) :
+                        isp  = (fIndex[2],)
+                        ibar = (fIndex[3],)
+                    elif(ifunction==2) :
+                        isp  = (fIndex[0],)
+                        ibar = (fIndex[1],)
+                    elif(ifunction==3) :
+                        isp  = (fIndex[0],fIndex[2])
+                        ibar = (fIndex[1],fIndex[3])
+                # wavefunctions
+                for i in range(0,len(waves)) :
+                    if(waves[i].find("Spinor")<0) :
+                        waveNew.append(waves[i])
+                        continue
+                    if(waves[i].find("Bar")>0) :
+                        found=False
+                        for itest in range(0,len(ibar)) :
+                            if(waves[i].find("sbarW%s"%ibar[itest])>=0) :
+                                waveNew.append(waves[i].replace("Bar","").replace("bar",""))
+                                found=True
+                                break
+                        if(not found) : waveNew.append(waves[i])
+                    else :
+                        found=False
+                        for itest in range(0,len(isp)) :
+                            if(waves[i].find("sW%s"%isp[itest])>=0) :
+                                waveNew.append(waves[i].replace("Spinor","SpinorBar").replace(" s"," sbar"))
+                                found=True
+                                break
+                        if(not found) : waveNew.append(waves[i])
+                # momenta definitions
+                for i in range(0,len(momenta)) :
+                    if(momenta[i][0] and momenta[i][1]!="")  :
+                        if(momenta[i][1].find("barW")>0) :
+                            found = False
+                            for itest in range(0,len(ibar)) :
+                                if(momenta[i][1].find("barW%s"%ibar[itest])>=0) :
+                                    momentastring+=momenta[i][1].replace("barW","W")+"\n   "
+                                    found=True
+                                    break
+                            if(not found) :
+                                momentastring+=momenta[i][1]+"\n    "
+                        elif(momenta[i][1].find("sW")>0) :
+                            found=False
+                            for itest in range(0,len(isp)) :
+                                if(momenta[i][1].find("sW%s"%isp[itest])>=0) :
+                                    momentastring+=momenta[i][1].replace("sW","sbarW")+"\n   "
+                                    found=True
+                                    break
+                            if(not found) :
+                                momentastring+=momenta[i][1]+"\n    "
+                        else :
+                            momentastring+=momenta[i][1]+"\n    "
+                # header
+                for i in range(0,len(htemp)) :
+                    if(htemp[i].find("Spinor")<0) : continue
+                    if(htemp[i].find("Bar")>0) :
+                        for itest in range(0,len(ibar)) :
+                            if(htemp[i].find("sbarW%s"%ibar[itest])>=0) :
+                                htemp[i] =htemp [i].replace("Bar","").replace("sbarW","sW")
+                                htemp2[i]=htemp2[i].replace("Bar","").replace("sbarW%s"%ibar[itest],"sW%s"%isp[itest])
+                                break
+                    else :
+                        for itest in range(0,len(isp)) :
+                            if(htemp[i].find("sW%s"%isp[itest])>=0) :
+                                htemp [i]=htemp [i].replace("Spinor","SpinorBar").replace("sW","sbarW")
+                                htemp2[i]=htemp2[i].replace("Spinor","SpinorBar").replace("sW%s"%isp[itest],"sbarW%s"%ibar[itest])
+                                break
+            # header for transposed function
+            hnew = ','.join(htemp)
+            hnew = hnew.replace("virtual ","").replace("=-GeV","")
+            if(not RS) :
+                theader = ','.join(htemp2)
+                theader = theader.replace("virtual ","").replace("=-GeV","")
+                if(len(result)==2) :
+                    hnew   =hnew   .replace("evaluate","evaluateT")
+                    theader=theader.replace("evaluate","evaluateT")
+                else :
+                    hnew   =hnew   .replace("evaluate","evaluateT%s" % ifunction)
+                    theader=theader.replace("evaluate","evaluateT%s" % ifunction)
+                if(iloc not in fIndex) :
+                    theader = headerReplace(theader)
+                else :
+                    theader = headerReplace(h2).replace("evaluateN","evaluateT")
+                headers.append(theader)
+                newHeader += hnew +";\n"
+            else :
+                newHeader += hnew
+            fnew = evaluateTemplate.format(decl=hnew,momenta=momentastring,defns=defString,
+                                           waves="\n    ".join(waveNew),symbols='\n    '.join(symboldefs),
+                                           couplings="\n    ".join(localCouplings),
+                                           result=result[ifunction],swap=sorder)
+            function +="\n" + fnew
 
-#--
-#-                result = [vTemplateT.format(iloc=fIndex[1],id=vertex.particles[fIndex[1]-1].pdg_code,
-#-                                              cf=py2cpp(cf)[0],res=result[0],resT=result[1])]
-#-            else :
 
-        fnew = evaluateTemplate.format(decl=hnew,momenta=momentastring,defns=defString,
-                                       waves="\n    ".join(waves),symbols='\n    '.join(symboldefs),
-                                       couplings="\n    ".join(localCouplings),
-                                       result=result[1],swap=sorder)
-        #if(FM and not RS) :
-                                
-
-                                
-        function +="\n" + fnew
-        #print header
+        if(FM and not RS) :
+            if(len(result)==2) :
+                if(iloc!=fIndex[1]) :
+                    fi=1
+                    stype="sbar"
+                else :
+                    fi=0
+                    stype="s"
+                    header = vTemplateT.format(header=header.replace("Energy2,","Energy2 q2,"),
+                                               normal=headerReplace(h2),
+                                               transpose=theader,type=stype,
+                                               iloc=fIndex[fi],id=vertex.particles[fIndex[fi]-1].pdg_code) \
+                                               +newHeader+h2.replace("virtual","")
+            else :
+                sorder = swapOrderFFFF(vertex,iloc,fIndex)
+                header = vTemplate4.format(header=header.replace("Energy2,","Energy2 q2,"),
+                                           iloc1=fIndex[1],iloc2=fIndex[3],swap=sorder,
+                                           id1=vertex.particles[fIndex[1]-1].pdg_code,
+                                           id2=vertex.particles[fIndex[3]-1].pdg_code,
+                                           cf=py2cpp(cf)[0],
+                                           res1=headerReplace(h2).replace("W",""),
+                                           res2=headers[0].replace("W",""),
+                                           res3=headers[1].replace("W",""),
+                                           res4=headers[2].replace("W",""))\
+                                           +newHeader+h2.replace("virtual","")
+        else :
+            header=header + ";\n" + newHeader
     return (header,function)
 
 
@@ -3342,3 +3439,5 @@ def multipleEvaluate(vertex,spin,defns) :
             iloc+=1
     code+="   else assert(false);\n"
     return (header,evaluateMultiple.format(decl=ccdefn,code=code))
+
+            
