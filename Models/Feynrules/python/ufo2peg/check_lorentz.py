@@ -3335,12 +3335,20 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                 for i in range(0,len(htemp)) :
                     if(htemp[i].find("Spinor")<0) : continue
                     if(htemp[i].find("Bar")>0) :
+                        if(i==0) :
+                            htemp[i] =htemp [i].replace("Bar","")
+                            htemp2[i]=htemp2[i].replace("Bar","")
+                            continue
                         for itest in range(0,len(ibar)) :
                             if(htemp[i].find("sbarW%s"%ibar[itest])>=0) :
                                 htemp[i] =htemp [i].replace("Bar","").replace("sbarW","sW")
                                 htemp2[i]=htemp2[i].replace("Bar","").replace("sbarW%s"%ibar[itest],"sW%s"%isp[itest])
                                 break
                     else :
+                        if(i==0) :
+                            htemp [i]=htemp [i].replace("Spinor","SpinorBar")
+                            htemp2[i]=htemp2[i].replace("Spinor","SpinorBar")
+                            continue
                         for itest in range(0,len(isp)) :
                             if(htemp[i].find("sW%s"%isp[itest])>=0) :
                                 htemp [i]=htemp [i].replace("Spinor","SpinorBar").replace("sW","sbarW")
@@ -3381,11 +3389,11 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                 else :
                     fi=0
                     stype="s"
-                    header = vTemplateT.format(header=header.replace("Energy2,","Energy2 q2,"),
-                                               normal=headerReplace(h2),
-                                               transpose=theader,type=stype,
-                                               iloc=fIndex[fi],id=vertex.particles[fIndex[fi]-1].pdg_code) \
-                                               +newHeader+h2.replace("virtual","")
+                header = vTemplateT.format(header=header.replace("Energy2,","Energy2 q2,"),
+                                           normal=headerReplace(h2),
+                                           transpose=theader,type=stype,
+                                           iloc=fIndex[fi],id=vertex.particles[fIndex[fi]-1].pdg_code) \
+                                           +newHeader+h2.replace("virtual","")
             else :
                 sorder = swapOrderFFFF(vertex,iloc,fIndex)
                 header = vTemplate4.format(header=header.replace("Energy2,","Energy2 q2,"),
