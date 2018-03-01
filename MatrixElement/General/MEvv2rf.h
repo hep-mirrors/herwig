@@ -1,45 +1,37 @@
 // -*- C++ -*-
+#ifndef Herwig_MEvv2rf_H
+#define Herwig_MEvv2rf_H
 //
-// MEvv2ff.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
-//
-// Herwig is licenced under version 3 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_MEvv2ff_H
-#define HERWIG_MEvv2ff_H
-//
-// This is the declaration of the MEvv2ff class.
+// This is the declaration of the MEvv2rf class.
 //
 
 #include "GeneralHardME.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
+
 using namespace ThePEG;
-using ThePEG::Helicity::SpinorWaveFunction;
-using ThePEG::Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
 
 /**
  * This class is designed to implement the matrix element for the 
- * \f$2 \rightarrow 2\f$ process vector-vector to fermion-antifermion pair. It
+ * \f$2 \rightarrow 2\f$ process vector-vector to fermion- RS fermion. It
  * inherits from GeneralHardME and implements the me2() virtual function.
  *
  * @see GeneralHardME
  * 
  */
-class MEvv2ff: public GeneralHardME {
+class MEvv2rf: public GeneralHardME {
 
 public:
   
@@ -51,6 +43,12 @@ public:
 
   /** A vector of SpinorBarWaveFunction objects. */
   typedef vector<SpinorBarWaveFunction> SpinorBarVector;
+  
+  /** A vector of SpinorBarWaveFunction objects. */
+  typedef vector<RSSpinorWaveFunction> RSSpinorVector;
+
+  /** A vector of SpinorBarWaveFunction objects. */
+  typedef vector<RSSpinorBarWaveFunction> RSSpinorBarVector;
 
 public:
 
@@ -72,25 +70,6 @@ public:
    */
   virtual void constructVertex(tSubProPtr sub);
 
-private:
-
-  /**
-   * Calculate the value of the matrix element 
-   */
-  ProductionMatrixElement vv2ffME(const VBVector & v1, const VBVector & v2,
-				  const SpinorBarVector & sbar,
-				  const SpinorVector & sp, 
-				  double & me2, bool first) const;
-  
-protected:
-
-  /**
-   * A debugging function to test the value of me2 against an
-   * analytic function.
-   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
-   */
-  virtual void debug(double me2) const;
-  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -117,6 +96,22 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
 
 protected:
 
@@ -130,32 +125,31 @@ protected:
   virtual void doinit();
   //@}
 
+private:
 
-protected:
-
-  /** @name Clone Methods. */
-  //@{
   /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
+   * Calculate the value of the matrix element 
    */
-  virtual IBPtr clone() const {return new_ptr(*this);}
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
+  ProductionMatrixElement vv2rfME(const VBVector & v1, const VBVector & v2,
+				  const RSSpinorBarVector & sbar,
+				  const SpinorVector & sp, 
+				  double & me2, bool first) const;
+  
+  /**
+   * Calculate the value of the matrix element 
    */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
+  ProductionMatrixElement vv2frME(const VBVector & v1, const VBVector & v2,
+				  const SpinorBarVector & sbar,
+				  const RSSpinorVector & sp, 
+				  double & me2, bool first) const;
+  
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEvv2ff & operator=(const MEvv2ff &);
-
+  MEvv2rf & operator=(const MEvv2rf &);
 private:
   
   /** @name Dynamically casted vertices. */
@@ -163,29 +157,26 @@ private:
   /**
    *  Intermediate scalar
    */
-  vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr > > scalar_;
+  vector<pair<AbstractVVSVertexPtr, AbstractRFSVertexPtr > > scalar_;
+  
   /**
    * Intermediate fermion 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
+  vector<pair<AbstractRFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
 
   /**
    * Intermediate vector
    */
-  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vector_;
-  
-  /**
-   * Intermediate tensor
-   */
-  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > tensor_;
+  vector<pair<AbstractVVVVertexPtr, AbstractRFVVertexPtr> > vector_;
 
   /**
    *  Four point vertices
    */
-  vector<AbstractFFVVVertexPtr> four_;
+  vector<AbstractRFVVVertexPtr> four_;
   //@}
+
 };
 
 }
 
-#endif /* HERWIG_MEvv2ff_H */
+#endif /* Herwig_MEvv2rf_H */

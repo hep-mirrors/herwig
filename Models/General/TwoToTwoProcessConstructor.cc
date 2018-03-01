@@ -628,6 +628,7 @@ string TwoToTwoProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     if(extpart[ix]->iSpin() == PDT::Spin0) classname += "s";
     else if(extpart[ix]->iSpin() == PDT::Spin1) classname += "v";
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
+    else if(extpart[ix]->iSpin() == PDT::Spin3Half) classname += "r";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else {
       std::stringstream message;
