@@ -40,9 +40,9 @@ public:
   ShowerAlphaQCD() : ShowerAlpha(), 
 		     _qmin(0.630882*GeV), _asType(1), _asMaxNP(1.0), 
 		     _thresholds(4), _lambda(4),
-		     _nloop(3),_lambdaopt(false),_thresopt(false),
-		     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
-		     _maxtry(100),_alphamin(0.),_val0(1.), _optInputScale(ZERO) {}
+		     _nloop(3),_thresopt(false),
+		     _alphain(0.118),_tolerance(1e-10),
+		     _maxtry(100),_alphamin(0.),_val0(1.), _optInputScale(91.1876_GeV) {}
 
 public:
 
@@ -169,22 +169,6 @@ private:
    */
   //@{
   /**
-   * The 1,2,3-loop parametrization of \f$\alpha_S\f$.
-   * @param q The scale
-   * @param lam \f$\Lambda_{\rm QCD}\f$
-   * @param nf The number of flavours 
-   */
-  double alphaS(Energy q, Energy lam, int nf) const; 
-
-  /**
-   * The derivative of \f$\alpha_S\f$ with respect to \f$\ln(Q^2/\Lambda^2)\f$
-   * @param q The scale
-   * @param lam \f$\Lambda_{\rm QCD}\f$
-   * @param nf The number of flavours 
-   */
-  double derivativealphaS(Energy q, Energy lam, int nf) const; 
-
-  /**
    * Compute the value of \f$Lambda\f$ needed to get the input value of
    * the strong coupling at the scale given for the given number of flavours
    * using the Newton-Raphson method
@@ -208,7 +192,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerAlphaQCD & operator=(const ShowerAlphaQCD &);
+  ShowerAlphaQCD & operator=(const ShowerAlphaQCD &) = delete;
 
 private:
 
@@ -245,30 +229,14 @@ private:
   unsigned int _nloop;
 
   /**
-   *  Option for the translation between \f$\Lambda_{\bar{MS}}\f$ and
-   *  \f$\Lambda_{\rm Herwig}\f$
-   */
-  bool _lambdaopt;
-
-  /**
    *  Option for the threshold masses
    */
   bool _thresopt;
 
   /**
-   *  Input value of Lambda
-   */
-  Energy _lambdain;
-
-  /**
    *  Input value of \f$alpha_S(M_Z)\f$
    */
   double _alphain;
-
-  /**
-   *  Option for the calculation of Lambda from input parameters
-   */
-  bool _inopt;
 
   /**
    *  Tolerance for discontinuities at the thresholds

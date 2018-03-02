@@ -107,8 +107,7 @@ newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:InputOption 1
-newdef AlphaQCD:AlphaMZ 0.126234
+newdef AlphaQCD:AlphaIn 0.126234
 #
 #
 # Lets set up all the splittings

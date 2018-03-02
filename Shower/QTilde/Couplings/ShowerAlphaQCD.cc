@@ -17,13 +17,17 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Config/Constants.h"
+#include "Herwig/Utilities/AlphaS.h"
 
 using namespace Herwig;
+using Herwig::Math::alphaS;
+using Herwig::Math::derivativeAlphaS;
 
 DescribeClass<ShowerAlphaQCD,ShowerAlpha>
 describeShowerAlphaQCD("Herwig::ShowerAlphaQCD","HwShower.so");
@@ -37,17 +41,15 @@ IBPtr ShowerAlphaQCD::fullclone() const {
 }
 
 void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
-  os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _lambdaopt << _thresopt 
-     << ounit(_lambdain,GeV) << _alphain << _inopt
-     << _tolerance << _maxtry << _alphamin
+  os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _thresopt 
+     << _alphain << _tolerance << _maxtry << _alphamin
      << ounit(_thresholds,GeV) << ounit(_lambda,GeV)
      << _val0 << ounit(_optInputScale,GeV) << ounit(_quarkMasses,GeV);
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
-  is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _lambdaopt >> _thresopt
-     >> iunit(_lambdain,GeV) >> _alphain >> _inopt
-     >> _tolerance >> _maxtry >> _alphamin
+  is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _thresopt
+     >> _alphain >> _tolerance >> _maxtry >> _alphamin
      >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV)
      >> _val0 >> iunit(_optInputScale,GeV) >> iunit(_quarkMasses,GeV);
 }
@@ -94,48 +96,17 @@ void ShowerAlphaQCD::Init() {
      &ShowerAlphaQCD::_nloop, 3, 1, 3,
      false, false, Interface::limited);
 
-  static Switch<ShowerAlphaQCD,bool> interfaceLambdaOption
-    ("LambdaOption",
-     "Option for the calculation of the Lambda used in the simulation from the input"
-     " Lambda_MSbar",
-     &ShowerAlphaQCD::_lambdaopt, false, false, false);
-  static SwitchOption interfaceLambdaOptionfalse
-    (interfaceLambdaOption,
-     "Same",
-     "Use the same value",
-     false);
-  static SwitchOption interfaceLambdaOptionConvert
-    (interfaceLambdaOption,
-     "Convert",
-     "Use the conversion to the Herwig scheme from NPB349, 635",
-     true);
+  static Deleted<ShowerAlphaQCD> delInputOption
+    ("InputOption", "The old default (1) is now the only choice");
 
-  static Parameter<ShowerAlphaQCD,Energy> interfaceLambdaQCD
-    ("LambdaQCD",
-     "Input value of Lambda_MSBar",
-     &ShowerAlphaQCD::_lambdain, MeV, 0.208364*GeV, 100.0*MeV, 500.0*MeV,
-     false, false, Interface::limited);
+  static Deleted<ShowerAlphaQCD> delAlphaMZ
+    ("AlphaMZ", "Renamed to AlphaIn.");
 
   static Parameter<ShowerAlphaQCD,double> interfaceAlphaMZ
-    ("AlphaMZ",
-     "The input value of the strong coupling at the Z mass ",
+    ("AlphaIn",
+     "The input value of the strong coupling at the chosen InputScale (default: MZ)",
      &ShowerAlphaQCD::_alphain, 0.118, 0.1, 0.2,
      false, false, Interface::limited);
-
-  static Switch<ShowerAlphaQCD,bool> interfaceInputOption
-    ("InputOption",
-     "Option for inputing the initial value of the coupling",
-     &ShowerAlphaQCD::_inopt, true, false, false);
-  static SwitchOption interfaceInputOptionAlphaMZ
-    (interfaceInputOption,
-     "AlphaMZ",
-     "Use the value of alpha at MZ to calculate the coupling",
-     true);
-  static SwitchOption interfaceInputOptionLambdaQCD
-    (interfaceInputOption,
-     "LambdaQCD",
-     "Use the input value of Lambda to calculate the coupling",
-     false);
 
   static Parameter<ShowerAlphaQCD,double> interfaceTolerance
     ("Tolerance",
@@ -174,11 +145,17 @@ void ShowerAlphaQCD::Init() {
      "check",
      &ShowerAlphaQCD::check, false);
 
+
+
+
   static Parameter<ShowerAlphaQCD,Energy> interfaceInputScale
     ("InputScale",
      "An optional input scale. MZ will be used if not set.",
-     &ShowerAlphaQCD::_optInputScale, GeV, ZERO, ZERO, 0*GeV,
+     &ShowerAlphaQCD::_optInputScale, GeV, 91.1876_GeV, ZERO, 0*GeV,
      false, false, Interface::lowerlim);
+
+
+
 
   static ParVector<ShowerAlphaQCD,Energy> interfaceQuarkMasses
     ("QuarkMasses",
@@ -193,17 +170,8 @@ void ShowerAlphaQCD::doinit() {
   // calculate the value of 5-flavour lambda 
   // evaluate the initial
   // value of Lambda from alphas if needed using Newton-Raphson
-  if(_inopt) {
-    _lambda[2]=computeLambda(_optInputScale == ZERO ? 
-			     getParticleData(ParticleID::Z0)->mass() :
-			     _optInputScale,
-			     _alphain,5);
-  }
-  // otherwise it was an input parameter
-  else{_lambda[2]=_lambdain;}
-  // convert lambda to the Monte Carlo scheme if needed
-  using Constants::pi;
-  if(_lambdaopt) _lambda[2] *=exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.)/sqrt(2.);
+  _lambda[2]=computeLambda(_optInputScale,_alphain,5);
+
   // compute the threshold matching
   // top threshold
   for(int ix=1;ix<4;++ix) {
@@ -218,13 +186,13 @@ void ShowerAlphaQCD::doinit() {
     }
   }
   // compute 6 flavour lambda by matching at top mass using Newton Raphson
-  _lambda[3]=computeLambda(_thresholds[3],alphaS(_thresholds[3],_lambda[2],5),6);
+  _lambda[3]=computeLambda(_thresholds[3],alphaS(_thresholds[3],_lambda[2],5,_nloop),6);
   // bottom threshold
   // compute 4 flavour lambda by matching at bottom mass using Newton Raphson
-  _lambda[1]=computeLambda(_thresholds[2],alphaS(_thresholds[2],_lambda[2],5),4);
+  _lambda[1]=computeLambda(_thresholds[2],alphaS(_thresholds[2],_lambda[2],5,_nloop),4);
   // charm threshold
   // compute 3 flavour lambda by matching at charm mass using Newton Raphson
-  _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4),3);
+  _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4,_nloop),3);
   // if qmin less than zero solve for alphaS(_qmin) = 1.
   if(_qmin<ZERO ) {
     Energy low  = _lambda[0]+MeV;
@@ -246,7 +214,7 @@ void ShowerAlphaQCD::doinit() {
   _thresholds[0]=_qmin;
   // value of alphaS at threshold
   pair<short,Energy> nflam = getLamNfTwoLoop(_qmin);
-  _val0 = alphaS(_qmin, nflam.second, nflam.first);
+  _val0 = alphaS(_qmin, nflam.second, nflam.first, _nloop);
   // compute the maximum value of as 
   if ( _asType < 5 )
     _alphamin = _val0;
@@ -298,7 +266,7 @@ double ShowerAlphaQCD::value(const Energy2 scale) const {
   // normal case
   if (q >= _qmin) {
     pair<short,Energy> nflam = getLamNfTwoLoop(q);
-    val = alphaS(q, nflam.second, nflam.first);
+    val = alphaS(q, nflam.second, nflam.first, _nloop);
   }
   // special handling if the scale is less than Qmin
   else {
@@ -342,7 +310,7 @@ double ShowerAlphaQCD::ratio(const Energy2 scale, double factor) const {
   // normal case
   if (q >= _qmin) {
     pair<short,Energy> nflam = getLamNfTwoLoop(q);
-    val = alphaS(q, nflam.second, nflam.first);
+    val = alphaS(q, nflam.second, nflam.first, _nloop);
   }
   // special handling if the scale is less than Qmin
   else {
@@ -406,48 +374,10 @@ Energy ShowerAlphaQCD::computeLambda(Energy match,
   do {
     ++ntry;
     xtest  = log(sqr(match/lamtest));
-    xtest += (alpha-alphaS(match,lamtest,nflav))/derivativealphaS(match,lamtest,nflav);
+    xtest += (alpha-alphaS(match,lamtest,nflav,_nloop))/derivativeAlphaS(match,lamtest,nflav,_nloop);
     Energy newLambda = match/exp(0.5*xtest);
     lamtest = newLambda<match ? newLambda : 0.5*(lamtest+match);
   }
-  while(abs(alpha-alphaS(match,lamtest,nflav)) > _tolerance && ntry < _maxtry);
+  while(abs(alpha-alphaS(match,lamtest,nflav,_nloop)) > _tolerance && ntry < _maxtry);
   return lamtest;
 }
-
-double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const {
-  using Constants::pi;
-  double lx = log(sqr(q/lam));
-  double b0 = 11. - 2./3.*nf;
-  double b1 = 51. - 19./3.*nf;
-  double b2 = 2857. - 5033./9.*nf + 325./27.*sqr(nf);
-  if(_nloop==1)
-    return -4.*pi/(b0*sqr(lx));
-  else if(_nloop==2)
-    return -4.*pi/(b0*sqr(lx))*(1.+2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
-  else
-    return -4.*pi/(b0*sqr(lx))*
-      (1.  + 2.*b1/sqr(b0)/lx*(1.-2.*log(lx))
-       + 4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*(1. - 2.*log(lx)
-					    + 3.*(sqr(log(lx) - 0.5)+b2*b0/(8.*sqr(b1))-1.25)));
-}
-
-double ShowerAlphaQCD::alphaS(Energy q, Energy lam, int nf) const {
-  using Constants::pi;
-  double lx(log(sqr(q/lam)));
-  double b0 = 11. - 2./3.*nf;
-  double b1 = 51. - 19./3.*nf;
-  double b2 = 2857. - 5033./9.*nf + 325./27.*sqr(nf);
-  // one loop
-  if(_nloop==1)
-    {return 4.*pi/(b0*lx);}
-  // two loop
-  else if(_nloop==2) {
-    return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx);
-  }
-  // three loop
-  else
-    {return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx + 
-			   4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*
-			   (sqr(log(lx) - 0.5) + b2*b0/(8.*sqr(b1)) - 5./4.));}
-}
-
