@@ -3,5 +3,5 @@
 ## this snippet is for fixed order ie NO shower
 
 create ThePEG::NLORivetAnalysis /Herwig/Analysis/RivetFixedOrder RivetAnalysis.so
-insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetFixexOrder
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetFixedOrder
 
