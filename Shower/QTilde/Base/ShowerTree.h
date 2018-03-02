@@ -361,11 +361,6 @@ private:
   set<tShowerParticlePtr> _forward;
 
   /**
-   *  The incoming ShowerParticles at the end of the initial-state shower
-   */
-  set<tShowerParticlePtr> _backward;
-
-  /**
    *  Was the hard matrix element correction applied
    */
   bool _hardMECorrection;

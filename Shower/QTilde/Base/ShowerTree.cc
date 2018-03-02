@@ -78,7 +78,6 @@ ShowerTree::ShowerTree(PerturbativeProcessPtr process)
       temp->x(ix==0 ? x1 : x2);
       _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],
  							       copy[ix],temp)),temp));
-      _backward.insert(temp);
     }
   }
   // decay process
@@ -564,22 +563,13 @@ void ShowerTree::clear() {
       cjt->first->reconstructed(ShowerProgenitor::notReconstructed);
     }
   }
-  // reset the particles at the end of the shower
-  _backward.clear();
-  // if hard process backward products
-  if(_wasHard)
-    for(cjt=_incomingLines.begin();cjt!=_incomingLines.end();++cjt)
-      _backward.insert(cjt->first->progenitor());
   clearTransforms();
 }
 
 void ShowerTree::resetShowerProducts() {
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-  _backward.clear();
   _forward.clear();
-  for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit)
-    _backward.insert(cit->second);
   for(cjt=_outgoingLines.begin();cjt!=_outgoingLines.end();++cjt)
     _forward.insert(cjt->second);
 }
@@ -601,6 +591,9 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
   // find the shower particles which should be decayed in the 
   // shower but didn't come from the hard process
   set<tShowerParticlePtr>::const_iterator cit;
+
+  // TODO construct _forward here?
+
   for(cit=_forward.begin();cit!=_forward.end();++cit) {
     if((ShowerHandler::currentHandler()->decaysInShower((**cit).id())&&
 	!(**cit).dataPtr()->stable()) &&
@@ -630,8 +623,6 @@ void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
 void ShowerTree::addInitialStateBranching(ShowerParticlePtr oldParent,
 					  ShowerParticlePtr newParent,
 					  ShowerParticlePtr otherChild) {
-  _backward.erase(oldParent);
-  _backward.insert(newParent);
   _forward.insert(otherChild);
 }
 
