@@ -102,7 +102,7 @@ HalfOneHalfSplitFn::generatePhiForward(const double, const Energy2, const IdList
 				       const RhoDMatrix &) {
   // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
   // and rest = splitting function for Tr(rho)=1 as required by defn
-  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+  return {{ {0, 1.} }};
 }
 
 vector<pair<int, Complex> > 

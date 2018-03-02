@@ -50,12 +50,10 @@ void UEDG0G0G1G1Vertex::Init() {
 void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2, 
 				    tcPDPtr part3, tcPDPtr part4) {
   int ismg(0), ikkg(0);
-  vector<tcPDPtr> particles(4);
-  particles[0] = part1; particles[1] = part2;
-  particles[2] = part3; particles[3] = part4;
-  for(vector<long>::size_type i = 0; i < 4; ++i) {
-    if(particles[i]->id() == ParticleID::g) ++ismg;
-    if(particles[i]->id() == 5100021) ++ikkg;
+  const array<tcPDPtr, 4> particles{{ part1, part2, part3, part4 }};
+  for(auto p : particles) {
+    if(p->id() == ParticleID::g) ++ismg;
+    if(p->id() == 5100021) ++ikkg;
   }
   assert(ismg == 2 && ikkg == 2);
   if(q2 != theq2Last || theCoupLast == 0. ) {
