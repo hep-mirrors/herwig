@@ -42,8 +42,7 @@ namespace {
 }
 
 ShowerTree::ShowerTree(PerturbativeProcessPtr process) 
-  : _hardMECorrection(false),
-    _parent(), _hasShowered(false) {
+  : _parent(), _hasShowered(false) {
   // get the incoming and outgoing particles and make copies
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<process->incoming().size();++ix) {

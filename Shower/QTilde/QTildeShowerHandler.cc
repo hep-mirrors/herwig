@@ -3046,7 +3046,6 @@ namespace {
 
 void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
   assert(real);
-  currentTree()->hardMatrixElementCorrection(true);
   // II emission
   if(real->emitter()   < real->incoming().size() &&
      real->spectator() < real->incoming().size()) {
