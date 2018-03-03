@@ -557,8 +557,8 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   Energy2 pipj,pik;
   bool canBeSoft[2] = {ids[1]->id()==ParticleID::g || ids[1]->id()==ParticleID::gamma,
 		       ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma };
-  vector<Energy2> pjk(3,ZERO);
-  vector<Energy> Ek(3,ZERO);
+  array<Energy2,3> pjk = {};
+  array<Energy, 3> Ek = {};
   Energy Ei,Ej;
   Energy2 m12(ZERO),m22(ZERO);
   InvEnergy2 aziMax(ZERO);
@@ -676,7 +676,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
   else {
-    wgts = vector<pair<int,Complex> >(1,make_pair(0,1.));
+    wgts = {{ {0, 1.} }};
   }
   // generate the azimuthal angle
   double phi,wgt;
@@ -753,7 +753,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
     (ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma);
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
-  vector<Energy2> pjk(3,ZERO);
+  array<Energy2,3> pjk = {};
   Energy Ei,Ej,Ek;
   InvEnergy2 aziMax(ZERO);
   if(softAllowed) {
@@ -827,7 +827,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
   }
   else {
-    wgts = vector<pair<int,Complex> >(1,make_pair(0,1.));
+    wgts = {{ {0, 1.} }};
   }
   // generate the azimuthal angle
   double phi,wgt;
@@ -938,7 +938,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   Energy2 dot3 = pj*qperp0;
   Energy2 pipj = alpha0*dot1+beta0*dot2+dot3;
   // compute the constants for the phi dependent dot product
-  vector<Energy2> pjk(3,ZERO);
+  array<Energy2,3> pjk = {};
   pjk[0] = zFact*(alpha0*dot1+dot3-0.5*dot2/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
     +0.5*sqr(pT)*dot2/pn/zFact/alpha0;
   pjk[1] = (pj.x() - dot2/alpha0/pn*qperp0.x())*pT;
@@ -947,7 +947,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   Energy2 m22 = sqr(partner->dataPtr()->mass());
   Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
   InvEnergy2 aziMax;
-  vector<Energy> Ek(3,ZERO);
+  array<Energy,3> Ek = {};
   Energy Ei,Ej;
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
     aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);

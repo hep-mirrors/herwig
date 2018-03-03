@@ -127,20 +127,20 @@ string alpha_s::check (string args) {
   string fname;
   argin >> fname;
 
-  generator()->log() <<  "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
-	    << n_steps << " steps.\nResults are written to " << fname << "\n";
+  Repository::clog() <<  "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
+		     << n_steps << " steps.\nResults are written to " << fname << "\n";
 
   double step_width = (Q_high-Q_low)/n_steps;
 
   match_thresholds();
 
-  generator()->log() <<  "threshold matching results:\n"
-	    << "(m_Q^2 -> Lambda^2) / GeV^2 for dynamic flavours in range ["
-	    << min_active_flavours_ << "," << max_active_flavours_ << "]\n";
+  Repository::clog() <<  "threshold matching results:\n"
+		     << "(m_Q^2 -> Lambda^2) / GeV^2 for dynamic flavours in range ["
+		     << min_active_flavours_ << "," << max_active_flavours_ << "]\n";
 
   for (size_t f = 0; f < 7; ++f) {
-    generator()->log() <<  (quark_masses_squared_[f]/GeV2) << " " 
-	      << (lambda_squared_[f]/GeV2) << "\n";
+    Repository::clog() <<  (quark_masses_squared_[f]/GeV2) << " " 
+		       << (lambda_squared_[f]/GeV2) << "\n";
   }
 
   ofstream out (fname.c_str());
