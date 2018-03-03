@@ -48,8 +48,8 @@ public:
    * Constructor with data as vectors.
    */
   Interpolator(const vector<ValT> & f, 
-	       const vector<ArgT> & x, 
-	       unsigned int order) 
+         const vector<ArgT> & x, 
+         unsigned int order) 
     : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
       _funit(TypeTraits<ValT>::baseunit()), 
       _xunit(TypeTraits<ArgT>::baseunit()),
@@ -57,6 +57,24 @@ public:
     assert(_order>0);
     assert(x.size() == f.size());
     for (size_t i = 0; i < f.size(); ++i) {
+      _fun [i] = f[i] / _funit;
+      _xval[i] = x[i] / _xunit;
+    }
+  }
+
+  /**
+   * Constructor with data as arrays.
+   */
+  template <size_t N>
+  Interpolator(const array<ValT,N> & f, 
+         const array<ArgT,N> & x, 
+         unsigned int order) 
+    : _fun(N,0.0),_xval(N,0.0),_order(order),
+      _funit(TypeTraits<ValT>::baseunit()), 
+      _xunit(TypeTraits<ArgT>::baseunit()),
+      _copyx(order+2),_copyfun(order+2) {
+    assert(_order>0);
+    for (size_t i = 0; i < N; ++i) {
       _fun [i] = f[i] / _funit;
       _xval[i] = x[i] / _xunit;
     }
@@ -181,30 +199,43 @@ private:
 
 /**
  * helper function to create InterpolatorPtr easily
- * (analogous to make_pair() )
+ * from bare arrays (analogous to make_pair() )
  */
 template <typename ValT, typename ArgT>
 inline typename Interpolator<ValT,ArgT>::Ptr
 make_InterpolatorPtr(size_t size, 
-		     const double f[], ValT funit,
-		     const double x[], ArgT xunit,
-		     unsigned int order)
+         const double f[], ValT funit,
+         const double x[], ArgT xunit,
+         unsigned int order)
 {
   return new_ptr(Interpolator<ValT,ArgT>(size,
-					 f,funit,
-					 x,xunit,
-					 order));
+           f,funit,
+           x,xunit,
+           order));
 }
 
 /**
  * helper function to create InterpolatorPtr easily
- * (analogous to make_pair() )
+ * from vectors (analogous to make_pair() )
  */
 template <typename ValT, typename ArgT>
 inline typename Interpolator<ValT,ArgT>::Ptr
 make_InterpolatorPtr(const typename std::vector<ValT> & f, 
-		     const typename std::vector<ArgT> & x, 
-		     unsigned int order)
+         const typename std::vector<ArgT> & x, 
+         unsigned int order)
+{
+  return new_ptr(Interpolator<ValT,ArgT>(f,x,order));
+}
+
+/**
+ * helper function to create InterpolatorPtr easily
+ * from arrays (analogous to make_pair() )
+ */
+template <typename ValT, typename ArgT, size_t N>
+inline typename Interpolator<ValT,ArgT>::Ptr
+make_InterpolatorPtr(const typename std::array<ValT,N> & f, 
+         const typename std::array<ArgT,N> & x, 
+         unsigned int order)
 {
   return new_ptr(Interpolator<ValT,ArgT>(f,x,order));
 }
