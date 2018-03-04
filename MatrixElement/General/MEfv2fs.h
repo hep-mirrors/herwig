@@ -22,6 +22,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -36,8 +37,6 @@ using ThePEG::Helicity::ScalarWaveFunction;
  * fermion-vector to fermion scalar. It inherits from GeneralHardME 
  * and implements the required virtual functions.
  *
- * @see @see \ref MEfv2fsInterfaces "The Interfaces"
- * defined for MEfv2fs.
  * @see GeneralHardME
  */
 class MEfv2fs: public GeneralHardME {
@@ -50,13 +49,6 @@ class MEfv2fs: public GeneralHardME {
 
   /** Vector of VectorWaveFunctions. */
   typedef vector<VectorWaveFunction> VecWFVector;
-
-public:
-
-  /**
-   * The default constructor.
-   */
-  MEfv2fs() : scalar_(0), fermion_(0), vector_(0) {}
 
 public:
 
@@ -203,7 +195,11 @@ private:
    * Store a pair of  VVSVertex and FFVVertex pointers  
    */
   vector<pair<AbstractFFVVertexPtr,AbstractVVSVertexPtr> > vector_;
-  
+
+  /**
+   *  Store any 4-point vertices
+   */
+  vector<AbstractFFVSVertexPtr> four_;
 };
 
 }
