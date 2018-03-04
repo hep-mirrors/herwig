@@ -65,8 +65,6 @@ void MEff2ff::doinit() {
 }
 
 double MEff2ff::me2() const {
-  tcPDPtr ina (mePartonData()[0]), inb (mePartonData()[1]);
-  tcPDPtr outa(mePartonData()[2]), outb(mePartonData()[3]);
   for(unsigned int ix=0;ix<4;++ix) {
     spin_[ix].clear();
     sbar_[ix].clear();
@@ -80,18 +78,15 @@ double MEff2ff::me2() const {
     }
   }
   double full_me(0.);
-  if( ina->id() > 0 && inb->id() < 0) {
+  if( mePartonData()[0]->id() > 0 && mePartonData()[1]->id() < 0) {
     ffb2ffbHeME (full_me,true);
   }
-  else if( ina->id() > 0 && inb->id() > 0 )
+  else if( mePartonData()[0]->id() > 0 && mePartonData()[1]->id() > 0 )
     ff2ffHeME(full_me,true);
-  else if( ina->id() < 0 && inb->id() < 0 )
+  else if( mePartonData()[0]->id() < 0 && mePartonData()[1]->id() < 0 )
     fbfb2fbfbHeME(full_me,true);
-  else 
-    throw MEException() 
-      << "MEff2ff::me2() - Cannot find correct function to deal with process " 
-      << ina->PDGName() << "," << inb->PDGName() << "->" << outa->PDGName() 
-      << "," << outb->PDGName() << "\n";
+  else
+    assert(false);
 
 #ifndef NDEBUG
   if( debugME() ) debug(full_me);
@@ -457,12 +452,10 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   for(unsigned int ix=0;ix<4;++ix) {
     spin_[ix].clear();
     sbar_[ix].clear();
-    for(unsigned int ih=0;ih<2;++ih) {
-      SpinorWaveFunction   (spin_[ix],hardpro[ix],
-			    ix<2 ? incoming : outgoing,ix>1);
-      SpinorBarWaveFunction(sbar_[ix],hardpro[ix],
-			    ix<2 ? incoming : outgoing,ix>1);
-    }
+    SpinorWaveFunction   (spin_[ix],hardpro[ix],
+			  ix<2 ? incoming : outgoing,ix>1);
+    SpinorBarWaveFunction(sbar_[ix],hardpro[ix],
+			  ix<2 ? incoming : outgoing,ix>1);
   }
   double dummy(0.);
   //pick which process we are doing

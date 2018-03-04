@@ -31,8 +31,6 @@ using Helicity::SpinorBarWaveFunction;
  * a \f$ \Psi \Psi \to \Psi \Psi\f$ process. It inherits from 
  * GeneralHardME and implements the appropriate virtual functions.
  *
- * @see \ref MEff2ffInterfaces "The Interfaces"
- * defined for MEff2ff.
  * @see GeneralHardME
  */
 class MEff2ff: public GeneralHardME {
@@ -44,14 +42,6 @@ public:
 
   /** Vector of SpinorBarWaveFunctions. */
   typedef vector<SpinorBarWaveFunction> SpinorBarVector;
-
-public:
-
-  /**
-   * The default constructor.
-   */
-  MEff2ff() : scalar_(0), vector_(0), tensor_(0), spin_(4), sbar_(4) 
-  {}
 
 public:
 
@@ -217,12 +207,12 @@ private:
   /**
    *  Spinors
    */
-  mutable vector<vector<SpinorWaveFunction> > spin_;
+  mutable std::array<SpinorVector,4> spin_;
 
   /**
    *  Barred spinors
    */
-  mutable vector<vector<SpinorBarWaveFunction> > sbar_;
+  mutable std::array<SpinorBarVector,4> sbar_;
 };
 
 }
