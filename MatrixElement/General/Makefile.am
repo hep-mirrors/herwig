@@ -5,6 +5,7 @@ MEvv2ff.cc MEvv2ff.h \
 MEvv2rf.cc MEvv2rf.h \
 MEvv2ss.cc MEvv2ss.h \
 MEfv2fs.cc MEfv2fs.h \
+MEfv2rs.cc MEfv2rs.h \
 MEff2ss.cc MEff2ss.h \
 MEff2ff.cc MEff2ff.h \
 MEff2rf.cc MEff2rf.h \
