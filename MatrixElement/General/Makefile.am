@@ -11,7 +11,6 @@ MEff2rf.cc MEff2rf.h \
 MEff2vv.cc MEff2vv.h \
 MEfv2vf.cc MEfv2vf.h \
 MEff2vs.cc MEff2vs.h \
-MEff2sv.cc MEff2sv.h \
 MEvv2vv.cc MEvv2vv.h \
 MEvv2vs.cc MEvv2vs.h \
 MEff2tv.cc MEff2tv.h \
