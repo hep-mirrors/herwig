@@ -323,7 +323,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(inb==PDT::Colour8) {
-	cfv[0] = make_pair(7, 1);
+	cfv[0] = make_pair(7, -1);
       }
     }
   }
@@ -555,7 +555,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(inb==PDT::Colour8) {
-	cfv[0] = make_pair(8, 1);
+	cfv[0] = make_pair(8, -1);
       }
     }
   }
