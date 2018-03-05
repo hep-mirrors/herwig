@@ -1,15 +1,8 @@
 // -*- C++ -*-
+#ifndef Herwig_MEfv2rv_H
+#define Herwig_MEfv2rv_H
 //
-// MEfv2vf.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
-//
-// Herwig is licenced under version 3 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_MEfv2vf_H
-#define HERWIG_MEfv2vf_H
-//
-// This is the declaration of the MEfv2vf class.
+// This is the declaration of the MEfv2rv class.
 //
 
 #include "GeneralHardME.h"
@@ -17,22 +10,26 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVVertex.h"
 
 namespace Herwig {
+
 using namespace ThePEG;
 
 /**
  * This class implements the matrix element for a fermion and a vector
- * boson to a fermion and a vector boson. It inherits from GeneralHardME
+ * boson to a vector boson and a RS fermion. It inherits from GeneralHardME
  * and implements the appropriate virtual functions. 
  * 
  * @see GeneralHardME
  *
  */
-class MEfv2vf: public GeneralHardME {
+class MEfv2rv: public GeneralHardME {
 
 public:
 
@@ -42,9 +39,15 @@ public:
   /** A vector of SpinorBarWaveFunctions. */
   typedef vector<Helicity::SpinorBarWaveFunction> SpinorBarVector;
 
+  /** A vector of SpinorWaveFunctions. */
+  typedef vector<Helicity::RSSpinorWaveFunction> RSSpinorVector;
+
+  /** A vector of SpinorBarWaveFunctions. */
+  typedef vector<Helicity::RSSpinorBarWaveFunction> RSSpinorBarVector;
+
   /** A vector of VectorWaveFunctions. */
   typedef vector<Helicity::VectorWaveFunction> VBVector;
-
+  
 public:
 
   /** @name Virtual functions required by the MEBase class. */
@@ -81,9 +84,9 @@ private:
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
-  fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
+  fv2rvHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
+	    const RSSpinorBarVector & spbOut, 
 	    const VBVector & vecOut, bool mc,
-	    const SpinorBarVector & spbOut, 
 	    double & mesq, bool first) const;
 
   /**
@@ -98,20 +101,11 @@ private:
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
-  fbv2vfbHeME(const SpinorBarVector & spbIn,  const VBVector & vecIn, 
-	      const VBVector & vecOut, bool mc,
-	      const SpinorVector & spOut, 
+  fbv2rbvHeME(const SpinorBarVector & spbIn,  const VBVector & vecIn,
+	      const RSSpinorVector & spOut,
+	      const VBVector & vecOut, bool mc, 
 	      double & mesq, bool first) const;
   //@}
-
-protected:
-  
-  /**
-   * A debugging function to test the value of me2 against an
-   * analytic function.
-   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
-   */
-  virtual void debug(double me2) const;
 
 public:
 
@@ -139,7 +133,23 @@ public:
    */
   static void Init();
 
+protected:
 
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+  
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -152,30 +162,13 @@ protected:
   virtual void doinit();
   //@}
 
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const {return new_ptr(*this);}
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEfv2vf & operator=(const MEfv2vf &);
+  MEfv2rv & operator=(const MEfv2rv &);
 
 private:
   
@@ -184,21 +177,21 @@ private:
   /**
    * A pair off FFVVertex pointers 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > fermion_;
+  vector<pair<AbstractFFVVertexPtr, AbstractRFVVertexPtr> > fermion_;
 
   /**
    * A pair of FFVVertex, VVVertex pointers 
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vector_;
+  vector<pair<AbstractRFVVertexPtr, AbstractVVVVertexPtr> > vector_;
 
   /**
    *  Four point vertices
    */
-  vector<AbstractFFVVVertexPtr> four_;
+  vector<AbstractRFVVVertexPtr> four_;
   //@}
 
 };
 
 }
 
-#endif /* HERWIG_MEfv2vf_H */
+#endif /* Herwig_MEfv2rv_H */
