@@ -106,7 +106,7 @@ sTemplate="""\
 RSTemplate="""\
     if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
     Energy2 p2 = P{iloc}.m2();
-    Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
+    Complex fact = Complex(0.,-1.)*({cf})*propagator(iopt,p2,out,mass,width);
     complex<InvEnergy> Omass = mass.real()==ZERO ? InvEnergy(ZERO) : 1./mass;
     Lorentz{offTypeA}<double> newSpin = fact*({res});
     return {offTypeB}(P{iloc},out,newSpin);
