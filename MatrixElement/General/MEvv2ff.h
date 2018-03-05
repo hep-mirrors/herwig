@@ -16,6 +16,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
@@ -164,6 +165,7 @@ private:
    *  Intermediate scalar
    */
   vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr > > scalar_;
+  
   /**
    * Intermediate fermion 
    */
@@ -173,6 +175,11 @@ private:
    * Intermediate vector
    */
   vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vector_;
+  
+  /**
+   * Intermediate RS fermion 
+   */
+  vector<pair<AbstractRFVVertexPtr, AbstractRFVVertexPtr> > RSfermion_;
   
   /**
    * Intermediate tensor

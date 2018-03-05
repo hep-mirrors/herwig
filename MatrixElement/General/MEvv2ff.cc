@@ -27,6 +27,7 @@ void MEvv2ff::doinit() {
   scalar_ .resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
+  RSfermion_.resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
   four_   .resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1    , PDT::Spin1, 
@@ -35,11 +36,22 @@ void MEvv2ff::doinit() {
   for( size_t i = 0; i < numberOfDiags(); ++i ) {
     HPDiagram dg = getProcessInfo()[i];
     if( dg.channelType == HPDiagram::tChannel ) {
-      AbstractFFVVertexPtr ffv1 = 
-	dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.first);
-      AbstractFFVVertexPtr ffv2 = 
-	dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.second);
-      fermion_[i] = make_pair(ffv1, ffv2);
+      if( dg.intermediate->iSpin() == PDT::Spin1Half ) {
+	AbstractFFVVertexPtr ffv1 = 
+	  dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.first);
+	AbstractFFVVertexPtr ffv2 = 
+	  dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.second);
+	fermion_[i] = make_pair(ffv1, ffv2);
+      }
+      else if( dg.intermediate->iSpin() == PDT::Spin3Half ) {
+	AbstractRFVVertexPtr rfv1 = 
+	  dynamic_ptr_cast<AbstractRFVVertexPtr>(dg.vertices.first);
+	AbstractRFVVertexPtr rfv2 = 
+	  dynamic_ptr_cast<AbstractRFVVertexPtr>(dg.vertices.second);
+	RSfermion_[i] = make_pair(rfv1, rfv2);
+      }
+      else
+	assert(false);
     }
     else if( dg.channelType == HPDiagram::sChannel ) {
       if( dg.intermediate->iSpin() == PDT::Spin0 ) {
@@ -114,20 +126,37 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    PDPtr offshell = current.intermediate;
-	    if(current.channelType == HPDiagram::tChannel && 
-	       offshell->iSpin() == PDT::Spin1Half) {
-	      if(current.ordered.second) {
-                SpinorBarWaveFunction interF = fermion_[ix].first->
-                  evaluate(q2, 3, offshell, sbar[of1], v1[iv1]);
-                diag = fermion_[ix].second->
-                  evaluate(q2, sp[of2], interF, v2[iv2]);
+	    if(current.channelType == HPDiagram::tChannel) {
+	      if(offshell->iSpin() == PDT::Spin1Half) {
+		if(current.ordered.second) {
+		  SpinorBarWaveFunction interF = fermion_[ix].first->
+		    evaluate(q2, 3, offshell, sbar[of1], v1[iv1]);
+		  diag = fermion_[ix].second->
+		    evaluate(q2, sp[of2], interF, v2[iv2]);
+		}
+		else {
+		  SpinorWaveFunction interF = fermion_[ix].first->
+		    evaluate(q2, 3, offshell, sp[of2], v1[iv1]);
+		  diag = fermion_[ix].second->
+		    evaluate(q2, interF, sbar[of1], v2[iv2]);
+		}
 	      }
-	      else {
-		SpinorWaveFunction interF = fermion_[ix].first->
-		  evaluate(q2, 3, offshell, sp[of2], v1[iv1]);
-		diag = fermion_[ix].second->
-		  evaluate(q2, interF, sbar[of1], v2[iv2]);
+	      else if (offshell->iSpin() == PDT::Spin3Half) {
+		if(current.ordered.second) {
+		  RSSpinorBarWaveFunction interF = RSfermion_[ix].first->
+		    evaluate(q2, 3, offshell, sbar[of1], v1[iv1]);
+		  diag = RSfermion_[ix].second->
+		    evaluate(q2, sp[of2], interF, v2[iv2]);
+		}
+		else {
+		  RSSpinorWaveFunction interF = RSfermion_[ix].first->
+		    evaluate(q2, 3, offshell, sp[of2], v1[iv1]);
+		  diag = RSfermion_[ix].second->
+		    evaluate(q2, interF, sbar[of1], v2[iv2]);
+		}
 	      }
+	      else
+		assert(false);
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
@@ -185,11 +214,11 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 }
 
 void MEvv2ff::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << fermion_ << vector_ << tensor_ << four_;
+  os << scalar_ << fermion_ << vector_ << RSfermion_ << tensor_ << four_;
 }
 
 void MEvv2ff::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> fermion_ >> vector_ >> tensor_ >> four_;
+  is >> scalar_ >> fermion_ >> vector_ >> RSfermion_ >> tensor_ >> four_;
   initializeMatrixElements(PDT::Spin1    , PDT::Spin1, 
 			   PDT::Spin1Half, PDT::Spin1Half);
 }
