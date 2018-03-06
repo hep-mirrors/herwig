@@ -710,7 +710,7 @@ ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticle
   ShowerParticleVector children;
   for(unsigned int ix=0;ix<2;++ix) {
     children.push_back(new_ptr(ShowerParticle(ids[ix+1],true)));
-    if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable())
+    if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable()&&abs(ids[ix+1]->id())!=ParticleID::tauminus)
       children[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
     else
       children[ix]->set5Momentum(Lorentz5Momentum(ids[ix+1]->mass()));
