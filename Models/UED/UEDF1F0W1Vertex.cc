@@ -24,7 +24,7 @@ using namespace Herwig;
 UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
 				     theCosOne(0.), theSinWmO(0.), 
 				     theCosWmO(0.), 
-				     theCKM(0, vector<Complex>(0, 0.)),
+				     theCKM(0, {}),
 				     theq2last(),
 				     theCouplast(0.), theLlast(0.),
 				     theRlast(0.), theGBlast(0), 

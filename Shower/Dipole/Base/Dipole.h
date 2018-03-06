@@ -179,6 +179,16 @@ public:
   }
 
   /**
+   * Set the first index
+   */
+  void setFirstIndex(DipoleIndex s){theIndices.first=s;}
+
+  /**
+   * Set the first index
+   */
+  void setSecondIndex(DipoleIndex s){theIndices.second=s;}
+
+  /**
    * Return the emitter particle for the
    * selected configuration.
    */

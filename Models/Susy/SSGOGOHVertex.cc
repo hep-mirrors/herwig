@@ -22,12 +22,12 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
-				 theQij(2, vector<Complex>(2,0.0)),
-				 theQijLp(4, vector<Complex>(2,0.0)),
-				 theQijRp(4, vector<Complex>(2,0.0)),
-				 theSijdp(4, vector<Complex>(4,0.0)),
-				 theQijdp(4, vector<Complex>(4,0.0)),
+SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, {{0., 0.}}),
+				 theQij(2, {{0., 0.}}),
+				 theQijLp(4, {{0., 0.}}),
+				 theQijRp(4, {{0., 0.}}),
+				 theSijdp(4, {{0., 0., 0., 0.}}),
+				 theQijdp(4, {{0., 0., 0., 0.}}),
 				 theSa(0.0), theSb(0.0),
 				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
 				 theLLast(0.0), theRLast(0.0), theHLast(0),

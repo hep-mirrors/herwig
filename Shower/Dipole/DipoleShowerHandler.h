@@ -514,6 +514,26 @@ private:
    */
   vector<long> theInputColouredOffShellInShower;
   
+  /**
+   * Allow the dipole chains to be rearranged
+   */
+  bool _rearrange=false;
+
+  /**
+   * number of maximal ME dipoles in the rearrangement.
+   */
+  unsigned int _dipmax=3;
+
+  /**
+   * If a chain is considered long (more than dipmax dipoles)
+   * ME with diplong dipoles are used to test for rearrangement.
+   */
+  unsigned int _diplong=3;
+  
+  /**
+   * Number of emissions to be rearranged.
+   */
+  int _rearrangeNEmissions=-1;
   
 
 private:

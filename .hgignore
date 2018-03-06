@@ -104,6 +104,7 @@ Makefile\.in$
 ^Utilities/XML/xml_test$
 ^Utilities/utilities_test$
 ^Utilities/versionstring.h$
+^MatrixElement/Matchbox/External/MadGraph/mg2herwig.py$
 test\.(log|trs)$
 test-suite\.log$
 ^Config/test-driver$

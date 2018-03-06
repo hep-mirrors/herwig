@@ -2421,7 +2421,7 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for ISR
     if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
       ++_nis;
-      vector<long> br(3);
+      array<long,3> br;
       br[0] = (**cit).parent()->branchingParticle()->id();
       br[1] = (**cit).          branchingParticle()->id();
       br[2] = (**cit).parent()->children()[0]==*cit ?
@@ -2454,7 +2454,7 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for FSR
     else if(!(**cit).children().empty()) {
       ++_nfs;
-      vector<long> br(3);
+      array<long,3> br;
       br[0] = (**cit)               .branchingParticle()->id();
       br[1] = (**cit).children()[0]->branchingParticle()->id();
       br[2] = (**cit).children()[1]->branchingParticle()->id();
