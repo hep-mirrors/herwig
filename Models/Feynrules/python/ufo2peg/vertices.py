@@ -6,7 +6,8 @@ from .collapse_vertices import collapse_vertices
 from .check_lorentz import tensorCouplings,VVVordering,lorentzScalar,\
     processTensorCouplings,scalarCouplings,processScalarCouplings,scalarVectorCouplings,\
     processScalarVectorCouplings,vectorCouplings,processVectorCouplings,fermionCouplings,processFermionCouplings,\
-    RSCouplings,convertLorentz,generateEvaluateFunction,multipleEvaluate
+    RSCouplings
+from .general_lorentz import convertLorentz,generateEvaluateFunction,multipleEvaluate
 from .helpers import SkipThisVertex,extractAntiSymmetricIndices,isGoldstone
 
 # prefactors for vertices
