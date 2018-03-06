@@ -286,8 +286,9 @@ void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
     if(p->dataPtr()->stable()||ShowerHandler::currentHandler()->decaysInShower(p->id()))
       p->setLifeLength(Lorentz5Distance());
     else {
-      Length ctau = p->dataPtr()->generateLifeTime(p->mass(), p->dataPtr()->width());
-      Lorentz5Distance lifeLength(ctau,p->momentum().vect()*(ctau/p->mass()));
+      Energy mass = p->mass()!=ZERO ? p->mass() :  p->dataPtr()->mass();
+      Length ctau = p->dataPtr()->generateLifeTime(mass, p->dataPtr()->width());
+      Lorentz5Distance lifeLength(ctau,p->momentum().vect()*(ctau/mass));
       p->setLifeLength(lifeLength);
     }
     return;
