@@ -40,6 +40,95 @@ epsValue[3][1][2][0] =  1.
 epsValue[3][2][0][1] =  1.
 epsValue[3][2][1][0] = -1.
 
+# self contracted tensor propagator
+tPropA=[[],[],[],[]]
+tPropA[0].append(Template("-2. / 3. * (M${iloc}2 + 2 * P${iloc}t ** 2) * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[0].append(Template("-4. / 3. * P${iloc}t * P${iloc}x * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[0].append(Template("-4. / 3. * P${iloc}t * P${iloc}y * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[0].append(Template("-4. / 3. * P${iloc}t * P${iloc}z * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[1].append(Template("-4. / 3. * P${iloc}t * P${iloc}x * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[1].append(Template(" 2. / 3. * (M${iloc}2 - 2 * P${iloc}x ** 2) * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[1].append(Template("-4. / 3. * P${iloc}x * P${iloc}y * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[1].append(Template("-4. / 3. * P${iloc}x * P${iloc}z * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[2].append(Template("-4. / 3. * P${iloc}t * P${iloc}y * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[2].append(Template("-4. / 3. * P${iloc}x * P${iloc}y * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[2].append(Template(" 2. / 3. * (M${iloc}2 - 2 * P${iloc}y ** 2) * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[2].append(Template("-4. / 3. * P${iloc}y * P${iloc}z * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[3].append(Template("-4. / 3. * P${iloc}t * P${iloc}z * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[3].append(Template("-4. / 3. * P${iloc}x * P${iloc}z * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[3].append(Template("-4. / 3. * P${iloc}y * P${iloc}z * (M${iloc}2 -p2)*OM${iloc}**2"))
+tPropA[3].append(Template(" 2. / 3. * (M${iloc}2 - 2 * P${iloc}z ** 2) * (M${iloc}2 -p2)*OM${iloc}**2"))
+
+# tensor propagator 1 index contracted
+tPropB=[[[],[],[],[]],[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]]
+tPropB[0][0].append(Template("4. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (1. - OM${iloc} * P${iloc}t ** 2)"))
+tPropB[0][0].append(Template("-2 * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}x - 2. / 3. * (1. - OM${iloc} * P${iloc}t ** 2) * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[0][0].append(Template(" -2 * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}y - 2. / 3. * (1. - OM${iloc} * P${iloc}t ** 2) * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[0][0].append(Template(" -2 * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}z - 2. / 3. * (1. - OM${iloc} * P${iloc}t ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[0][1].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}x / 3. + (1. - OM${iloc} * P${iloc}t ** 2) * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[0][1].append(Template(" (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1. - OM${iloc} * P${iloc}x ** 2) - OM${iloc} * P${iloc}t * P${iloc}x * (${V}x - ${dot}*OM${iloc} * P${iloc}x) / 3."))
+tPropB[0][1].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}y - OM${iloc} * P${iloc}t * P${iloc}y * (${V}x - ${dot}*OM${iloc} * P${iloc}x) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}x * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[0][1].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}z * (${V}x - ${dot}*OM${iloc} * P${iloc}x) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}x * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[0][2].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}y / 3. + (1. - OM${iloc} * P${iloc}t ** 2) * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[0][2].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}y - OM${iloc} * P${iloc}t * P${iloc}x * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}y * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[0][2].append(Template(" (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1. - OM${iloc} * P${iloc}y ** 2) - OM${iloc} * P${iloc}t * P${iloc}y * (${V}y - ${dot}*OM${iloc} * P${iloc}y) / 3."))
+tPropB[0][2].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[0][3].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}z / 3. + (1. - OM${iloc} * P${iloc}t ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[0][3].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}x * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}z * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[0][3].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[0][3].append(Template("(${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1. - OM${iloc} * P${iloc}z ** 2) - OM${iloc} * P${iloc}t * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) / 3."))
+
+tPropB[1][0].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}x / 3. + (1 - OM${iloc} * P${iloc}t ** 2) * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[1][0].append(Template(" (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1 - OM${iloc} * P${iloc}x ** 2) - OM${iloc} * P${iloc}t * P${iloc}x * (${V}x - ${dot}*OM${iloc} * P${iloc}x) / 3."))
+tPropB[1][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}y - OM${iloc} * P${iloc}t * P${iloc}y * (${V}x - ${dot}*OM${iloc} * P${iloc}x) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}x * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[1][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}z * (${V}x - ${dot}*OM${iloc} * P${iloc}x) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}x * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[1][1].append(Template(" -2*OM${iloc} * P${iloc}t * P${iloc}x * (${V}x - ${dot}*OM${iloc} * P${iloc}x) - 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1 - OM${iloc} * P${iloc}x ** 2)"))
+tPropB[1][1].append(Template(" 4. / 3. * (${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}x ** 2)"))
+tPropB[1][1].append(Template(" -2 * (${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}x * P${iloc}y - 2. / 3. * (-1 - OM${iloc} * P${iloc}x ** 2) * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[1][1].append(Template(" -2 * (${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}x * P${iloc}z - 2. / 3. * (-1 - OM${iloc} * P${iloc}x ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[1][2].append(Template(" -OM${iloc} * P${iloc}t * P${iloc}y * (${V}x - ${dot}*OM${iloc} * P${iloc}x) - OM${iloc} * P${iloc}t * P${iloc}x * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}y"))
+tPropB[1][2].append(Template(" -(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}x * P${iloc}y / 3. + (-1 - OM${iloc} * P${iloc}x ** 2) * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[1][2].append(Template(" (${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}y ** 2) - OM${iloc} * P${iloc}x * P${iloc}y * (${V}y - ${dot}*OM${iloc} * P${iloc}y) / 3."))
+tPropB[1][2].append(Template("-(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}x * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3.*OM${iloc} * P${iloc}x * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[1][3].append(Template("-OM${iloc} * P${iloc}t * P${iloc}z * (${V}x - ${dot}*OM${iloc} * P${iloc}x) - OM${iloc} * P${iloc}t * P${iloc}x * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}z"))
+tPropB[1][3].append(Template(" -(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}x * P${iloc}z / 3. + (-1 - OM${iloc} * P${iloc}x ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[1][3].append(Template(" -(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}x * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3.*OM${iloc} * P${iloc}x * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[1][3].append(Template("(${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}z ** 2) - OM${iloc} * P${iloc}x * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) / 3."))
+
+tPropB[2][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}y / 3. + (1 - OM${iloc} * P${iloc}t ** 2) * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[2][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}y - OM${iloc} * P${iloc}t * P${iloc}x * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}y * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[2][0].append(Template(" (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1 - OM${iloc} * P${iloc}y ** 2) - OM${iloc} * P${iloc}t * P${iloc}y * (${V}y - ${dot}*OM${iloc} * P${iloc}y) / 3."))
+tPropB[2][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[2][1].append(Template("-OM${iloc} * P${iloc}t * P${iloc}y * (${V}x - ${dot}*OM${iloc} * P${iloc}x) - OM${iloc} * P${iloc}t * P${iloc}x * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}y"))
+tPropB[2][1].append(Template("-(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}x * P${iloc}y / 3. + (-1 - OM${iloc} * P${iloc}x ** 2) * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[2][1].append(Template(" (${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}y ** 2) - OM${iloc} * P${iloc}x * P${iloc}y * (${V}y - ${dot}*OM${iloc} * P${iloc}y) / 3."))
+tPropB[2][1].append(Template("-(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}x * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) + 2. / 3.*OM${iloc} * P${iloc}x * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[2][2].append(Template(" -2*OM${iloc} * P${iloc}t * P${iloc}y * (${V}y - ${dot}*OM${iloc} * P${iloc}y) - 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1 - OM${iloc} * P${iloc}y ** 2)"))
+tPropB[2][2].append(Template(" -2*OM${iloc} * P${iloc}x * P${iloc}y * (${V}y - ${dot}*OM${iloc} * P${iloc}y) - 2. / 3. * (${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}y ** 2)"))
+tPropB[2][2].append(Template("4. / 3. * (${V}y - ${dot}*OM${iloc} * P${iloc}y) * (-1 - OM${iloc} * P${iloc}y ** 2)"))
+tPropB[2][2].append(Template(" -2 * (${V}y - ${dot}*OM${iloc} * P${iloc}y)*OM${iloc} * P${iloc}y * P${iloc}z - 2. / 3. * (-1 - OM${iloc} * P${iloc}y ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[2][3].append(Template(" -OM${iloc} * P${iloc}t * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) - OM${iloc} * P${iloc}t * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}y * P${iloc}z"))
+tPropB[2][3].append(Template(" -OM${iloc} * P${iloc}x * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) - OM${iloc} * P${iloc}x * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3. * (${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}y * P${iloc}z"))
+tPropB[2][3].append(Template(" -(${V}y - ${dot}*OM${iloc} * P${iloc}y)*OM${iloc} * P${iloc}y * P${iloc}z / 3. + (-1 - OM${iloc} * P${iloc}y ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[2][3].append(Template(" (${V}y - ${dot}*OM${iloc} * P${iloc}y) * (-1 - OM${iloc} * P${iloc}z ** 2) - OM${iloc} * P${iloc}y * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) / 3."))
+
+tPropB[3][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}t * P${iloc}z / 3. + (1 - OM${iloc} * P${iloc}t ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[3][0].append(Template(" -(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}x * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}z * (${V}x - ${dot}*OM${iloc} * P${iloc}x)"))
+tPropB[3][0].append(Template("-(${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}t * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3.*OM${iloc} * P${iloc}t * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[3][0].append(Template(" (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1 - OM${iloc} * P${iloc}z ** 2) - OM${iloc} * P${iloc}t * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) / 3."))
+tPropB[3][1].append(Template("-OM${iloc} * P${iloc}t * P${iloc}z * (${V}x - ${dot}*OM${iloc} * P${iloc}x) - OM${iloc} * P${iloc}t * P${iloc}x * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}x * P${iloc}z"))
+tPropB[3][1].append(Template(" -(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}x * P${iloc}z / 3. + (-1 - OM${iloc} * P${iloc}x ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[3][1].append(Template(" -(${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}y * P${iloc}z - OM${iloc} * P${iloc}x * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3.*OM${iloc} * P${iloc}x * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y)"))
+tPropB[3][1].append(Template(" (${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}z ** 2) - OM${iloc} * P${iloc}x * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) / 3."))
+tPropB[3][2].append(Template(" -OM${iloc} * P${iloc}t * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) - OM${iloc} * P${iloc}t * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t)*OM${iloc} * P${iloc}y * P${iloc}z"))
+tPropB[3][2].append(Template("-OM${iloc} * P${iloc}x * P${iloc}z * (${V}y - ${dot}*OM${iloc} * P${iloc}y) - OM${iloc} * P${iloc}x * P${iloc}y * (${V}z - ${dot}*OM${iloc} * P${iloc}z) + 2. / 3. * (${V}x - ${dot}*OM${iloc} * P${iloc}x)*OM${iloc} * P${iloc}y * P${iloc}z"))
+tPropB[3][2].append(Template(" -(${V}y - ${dot}*OM${iloc} * P${iloc}y)*OM${iloc} * P${iloc}y * P${iloc}z / 3. + (-1 - OM${iloc} * P${iloc}y ** 2) * (${V}z - ${dot}*OM${iloc} * P${iloc}z)"))
+tPropB[3][2].append(Template(" (${V}y - ${dot}*OM${iloc} * P${iloc}y) * (-1 - OM${iloc} * P${iloc}z ** 2) - OM${iloc} * P${iloc}y * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) / 3."))
+tPropB[3][3].append(Template(" -2*OM${iloc} * P${iloc}t * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) - 2. / 3. * (${V}t - ${dot}*OM${iloc} * P${iloc}t) * (-1 - OM${iloc} * P${iloc}z ** 2)"))
+tPropB[3][3].append(Template("-2*OM${iloc} * P${iloc}x * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) - 2. / 3. * (${V}x - ${dot}*OM${iloc} * P${iloc}x) * (-1 - OM${iloc} * P${iloc}z ** 2)"))
+tPropB[3][3].append(Template("-2*OM${iloc} * P${iloc}y * P${iloc}z * (${V}z - ${dot}*OM${iloc} * P${iloc}z) - 2. / 3. * (${V}y - ${dot}*OM${iloc} * P${iloc}y) * (-1 - OM${iloc} * P${iloc}z ** 2)"))
+tPropB[3][3].append(Template("4. / 3. * (${V}z - ${dot}*OM${iloc} * P${iloc}z) * (-1 - OM${iloc} * P${iloc}z ** 2)"))
+
 imap=["t","x","y","z"]
 
 RSDotProduct = Template("${s}ts${si}*${v}t-${s}xs${si}*${v}x-${s}ys${si}*${v}y-${s}zs${si}*${v}z")
@@ -79,8 +168,8 @@ vTemplate4="""\
 """
 
 vecTemplate="""\
-    LorentzPolarizationVector vtemp = {res};
     Energy2 p2 = P{iloc}.m2();
+    LorentzPolarizationVector vtemp = {res};
     Complex fact = -Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
     if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
     complex<Energy2> mass2 = sqr(mass);
@@ -96,8 +185,8 @@ vecTemplate="""\
 
 
 sTemplate="""\
-    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
     Energy2 p2 = P{iloc}.m2();
+    if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
     Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
     Lorentz{offTypeA}<double> newSpin = fact*({res});
     return {offTypeB}(P{iloc},out,newSpin);
@@ -122,7 +211,8 @@ scaTemplate="""\
 
 tenTemplate="""\
     if(mass.real() < ZERO) mass  = (iopt==5) ? ZERO : out->mass();
-    InvEnergy2 OM{iloc} = mass.real()==ZERO ? InvEnergy2(ZERO) : 1./sqr(mass.real()); 
+    InvEnergy2 OM{iloc} = mass.real()==ZERO ? InvEnergy2(ZERO) : 1./sqr(mass.real());
+    Energy2 M{iloc}2 = sqr(mass.real());
     Energy2 p2 = P{iloc}.m2();
     Complex fact = Complex(0.,1.)*({cf})*propagator(iopt,p2,out,mass,width);
     LorentzTensor<double> output = fact*({res});
@@ -182,7 +272,10 @@ class LorentzIndex :
     value=0
     dimension=0
     def __repr__(self):
-        return "%s%s" % (self.type,self.value)
+        if(self.type=="V" and not isinstance(self.value,int)) :
+            return self.value
+        else :
+            return "%s%s" % (self.type,self.value)
 
     def __init__(self,val) :
         if(isinstance(val,int)) :
@@ -646,7 +739,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                             newIndex1=li
                             break
                 else :
-                    print 'unknown type'
+                    print 'unknown type A'
                     print parsed[j]
                     quit()
                 if(parsed[k].name=="P") :
@@ -658,16 +751,39 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                         if(li != index) :
                             newIndex2=li
                             break
+                elif(parsed[k].name=="Gamma") :
+                    if(index.value==iloc or (newIndex1.type=="E" and newIndex1.value==iloc)) :
+                        newIndex2=index2
+                    else :
+                        unit="double"
+                        dtemp=0
+                        if(newIndex1.type=="P") :
+                            dtemp += 1
+                            unit="Energy"
+                        if(index.type=="T1") :
+                            name="T%s%sF" % (index.value,newIndex1)
+                            defns[name] = [name,"LorentzVector<complex<%s> > %s = T%s.preDot(%s);" % (unit,name,index.value,newIndex1)]
+                        else :
+                            name="T%s%sS" % (index.value,newIndex1)
+                            defns[name] = [name,"LorentzVector<complex<%s> > %s = T%s.postDot(%s);" % (unit,name,index.value,newIndex1)]
+                        parsed[j]=""
+                        gIndex=LorentzIndex(-1)
+                        gIndex.type="V"
+                        gIndex.value=name
+                        gIndex.dimension=dtemp
+                        parsed[k].lorentz[0] = gIndex
+                        break
                 else :
-                    print 'unknown type'
-                    print parsed[j]
+                    print 'unknown type B'
+                    print parsed[j],parsed[k]
                     quit()
                 if(index2.type=="T1") :
                     newIndex1,newIndex2=newIndex2,newIndex1
                 parsed[j].name = "Tensor"
                 parsed[j].value= int(index.value)
                 parsed[j].lorentz= [newIndex1,newIndex2]
-                parsed[k]=""
+                if(parsed[k].name!="Gamma") : parsed[k]=""
+                break
     # main handling of lorentz structures
     for j in range(0,len(parsed)) :
         if(parsed[j]=="") : continue
@@ -710,8 +826,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
             for ix in range(0,len(parsed[j].lorentz)) :
                 if(parsed[j].lorentz[ix].type=="P") : dTemp+=1
                 if(ix!=offLoc) : indices.append(parsed[j].lorentz[ix])
-            dimension[2] += dTemp
             if(sc==4) :
+                dimension[2] += dTemp
                 iTemp = (parsed[j].lorentz[0],parsed[j].lorentz[1],
                          parsed[j].lorentz[2],parsed[j].lorentz[3])
                 if(iTemp in defns) :
@@ -762,16 +878,16 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                         quit()
                     parsed[j]=""
         elif(parsed[j].name=="Tensor") :
-            # not an exteral tensor
+            # not an external tensor
             if(parsed[j].value!=iloc) :
                 # now check the lorentz indices
                 con=[]
                 uncon=[]
                 dtemp=0
                 for li in parsed[j].lorentz :
-                    if(li.type=="P") :
+                    if(li.type=="P" or li.type=="V") :
                         con.append(li)
-                        dtemp+=1
+                        dtemp+=li.dimension
                     elif(li.type=="E") :
                         if(li.value!=iloc) :
                             con.append(li)
@@ -798,13 +914,9 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                 else :
                     print "can't happen"
                     quit()
-            else :
-                dtemp=0
-                for li in parsed[j].lorentz :
-                    if(li.type=="P") : dtemp+=1
-                dimension[2]+=dtemp
         elif(parsed[j].name.find("Proj")>=0 or
-             parsed[j].name.find("Gamma")>=0) :
+             parsed[j].name.find("Gamma")>=0 or
+             parsed[j].name.find("Identity")>=0) :
             continue
         elif(parsed[j].name=="P" and parsed[j].lorentz[0].type=="R") :
             continue
@@ -853,6 +965,8 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
                 quit()
         # off-shell tensor
         else :
+            if(len(parsed[0].lorentz)!=0) :
+                dimension[2]+=parsed[0].lorentz[0].dimension+parsed[0].lorentz[1].dimension
             tensor = tensorPropagator(parsed[0],defns)
             if(output=="") : output="1."
             output = [output,tensor,()]
@@ -1015,14 +1129,24 @@ def convertMatrix(structure,spins,unContracted,Symbols,dtemp,defns,iloc) :
             output.index=structure.lorentz[0]
             output.name="GMU"
             structure=""
+        elif(structure.lorentz[0].type  == "T1" or
+              structure.lorentz[0].type  == "T2") :
+            if(structure.lorentz[0] not in unContracted) :
+                unContracted[structure.lorentz[0]] = 0
+            output = DiracMatrix()
+            output.value=0
+            output.index=structure.lorentz[0]
+            output.name="GMU"
+            structure=""
         else :
             output=DiracMatrix()
             output.name="M"
             output.value = vslash.substitute({ "v" : structure.lorentz[0]})
             Symbols += vslashS.substitute({ "v" : structure.lorentz[0]})
             variable = computeUnit(structure.lorentz[0].dimension)
-            if(structure.lorentz[0].type!="V") :
-                dtemp[2] += structure.lorentz[0].dimension
+            #if(structure.lorentz[0].type!="V" or
+            #   structure.lorentz[0].type=="V") :
+            dtemp[2] += structure.lorentz[0].dimension
             defns["vv%s" % structure.lorentz[0] ] = \
                                                     ["vv%s" % structure.lorentz[0],
                                                      vslashD.substitute({ "var" : variable,
@@ -1105,6 +1229,8 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
         ii+=1
         if(ii>=len(parsed)) :
             print "Can't parsed the chain of dirac matrices"
+            print parsed
+            print expr
             quit()
             SkipThisVertex()
     # start and end of the spin chains
@@ -1418,6 +1544,7 @@ def addToOutput(res,nchain,sign,rTemp) :
 
 def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     iloc,unContracted,spins,lorentz) :
+    tDot=""
     # output
     sVal={}
     # no of chains
@@ -1435,6 +1562,10 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
         elif key.type =="R" :
             contracted[key]=0
             del unContracted[key]
+        # tensor index
+        elif key.type == "T1" or key.type=="T2" :
+            contracted[key]=0
+            del unContracted[key]
         # external index
         elif key.type == "O" :
             continue
@@ -1442,7 +1573,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
         elif key.type=="E" or key.type=="Q":
             continue
         else :
-            print 'uknown type of uncontracted index',key
+            print 'unknown type of uncontracted index',key
             quit()
             raise SkipThisVertex()
     # check the lorentz structures
@@ -1458,6 +1589,54 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                 else :
                     print 'unknown index',index
                     quit()
+        elif(lstruct.name=="Tensor") :
+            if(iloc==lstruct.value) :
+                Symbols += momCom.substitute({"v": "P%s"%lstruct.value})
+                Symbols += "OM%s = Symbol(\"OM%s\")\n" % (lstruct.value,lstruct.value) 
+                Symbols += "M%s2 = Symbol(\"M%s2\")\n" % (lstruct.value,lstruct.value) 
+                Symbols += "p2 = Symbol(\"p2\")\n"
+                for ival in range(1,3) :
+                    newIndex=LorentzIndex(ival)
+                    newIndex.type="O"
+                    newIndex.dimension=0
+                    lstruct.lorentz.append(newIndex)
+                    unContracted[newIndex]=0
+                if(len(lstruct.lorentz)==0) :
+                    pass
+                elif lstruct.lorentz[0].type=="T1" and lstruct.lorentz[1].type=="T2":
+                    print 'both uncontracted' 
+                    print 'unknown tensor object',lstruct,iloc
+                    print lstruct.value
+                    print lorentz
+                    print expr
+                    print start
+                    print end
+                    print defns
+                    print contracted
+                    print unContracted
+                    quit()
+                elif lstruct.lorentz[0].type=="T1":
+                    pIndex = LorentzIndex(lstruct.value)
+                    pIndex.dimension=1
+                    pIndex.type="P"
+                    (tDot,dtemp) = constructDotProduct(pIndex,lstruct.lorentz[1],defns)
+                    Symbols+="%s = Symbol(\"%s\")\n" %(tDot,tDot)
+                    Symbols += momCom.substitute({"v": lstruct.lorentz[1]})
+                elif lstruct.lorentz[1].type=="T2" :
+                    pIndex = LorentzIndex(lstruct.value)
+                    pIndex.dimension=1
+                    pIndex.type="P"
+                    (tDot,dtemp) = constructDotProduct(pIndex,lstruct.lorentz[0],defns)
+                    Symbols+="%s = Symbol(\"%s\")\n" %(tDot,tDot)
+                    Symbols += momCom.substitute({"v": lstruct.lorentz[0]})
+            else :
+                print 'unknown tensor object',lstruct,iloc
+                print lstruct.value
+                print lorentz
+                print expr
+                print start
+                print end
+                quit()
         else :
             print 'unknown lorentz object',lstruct,iloc
             print lstruct.value
@@ -1649,6 +1828,28 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     else :
                         for ichain in range(0,nchain) :
                             eTemp[ichain].append("(%s*%s)"% (eVal,value) )
+                elif(li.name=="Tensor") :
+                    if(li.lorentz[0] in unContracted and li.lorentz[1] in unContracted) :
+                        value=tPropA[unContracted[li.lorentz[0]]][unContracted[li.lorentz[0]]].substitute({"iloc" : li.value})
+                        for ichain in range(0,nchain) :
+                            eTemp[ichain].append("(%s)"% (value) )
+                    else :
+                        if li.lorentz[0].type=="T1" and li.lorentz[1].type=="T2" :
+                            print 'both uncontracted'
+                            quit()
+                        elif li.lorentz[0].type=="T1":
+                            value=tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]].substitute({"iloc" : li.value,
+                                                                                                                                          "V" : li.lorentz[1],
+                                                                                                                                          "dot" : tDot})
+                        elif li.lorentz[1].type=="T2" :
+                            value=tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value,
+                                                                                                                                          "V" : li.lorentz[0],
+                                                                                                                                          "dot" : tDot})
+                        else :
+                            print 'both contracted'
+                            quit()
+                        for ichain in range(0,nchain) :
+                            eTemp[ichain].append("(%s)"% (value) )
                 # unknown
                 else :
                     print 'unknown expression in lorentz loop'
@@ -1714,10 +1915,9 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             istring = ""
             for (key,val) in unContracted.iteritems() :
                 istring +=imap[val]
-            if(len(istring)!=1) :
+            if(len(istring)>2) :
                 print 'index problem',istring
                 print unContracted
-                print unI
                 quit()
             sVal[istring]     = res[0]
             sVal[istring+"T"] = res[1]
@@ -1736,7 +1936,15 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                 if(val==0) : nZero+=1
             if(nZero==len(unContracted)) : break
     # handle the vector case
-    if( "t" in sVal ) :
+    if( "tt" in sVal) :
+        if(len(sVal)==32 and "tt" in sVal and len(sVal["tt"])==1) :
+            for key in sVal:
+                sVal[key] = sVal[key][0]
+        else :
+            print 'tensor'
+            print len(sVal)
+            quit()
+    elif( "t" in sVal ) :
         # deal with pure vectors
         if(len(sVal)==8 and "t" in sVal and len(sVal["t"])==1) :
             pass
@@ -1801,7 +2009,7 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                     lorentz.append(lstruct)
                     parsed[i]=""
                     unContracted[un]=0
-                    if(lo.type=="P") : dimension[2]+=1
+                    dimension[2] += lo.dimension
             elif(parsed[i].name=="Epsilon") :
                 lstruct = LorentzStructure()
                 lstruct.name="Epsilon"
@@ -1818,8 +2026,19 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                         Symbols += momCom.substitute( {"v": index} )
                 lorentz.append(lstruct)
                 parsed[i]=""
+            elif(parsed[i].name=="Tensor") :
+                lstruct = LorentzStructure()
+                lstruct.name="Tensor"
+                lstruct.value=parsed[i].value
+                lstruct.lorentz=parsed[i].lorentz
+                lstruct.spin=[]
+                for index in parsed[i].lorentz:
+                    dimension[2] += index.dimension
+                parsed[i]=""
+                lorentz.append(lstruct)
             else :
                 print 'unknown lorentz structure',parsed[i]
+                print iloc
                 print parsed
                 print expr
                 print start
@@ -1833,8 +2052,9 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
             quit()
             raise SkipThisVertex()
     sVal ={}
+    dimension = list(map(lambda x, y: x + y, dtemp, dimension))
     # deal with the simplest case first
-    if len(unContracted) == 0 :
+    if len(unContracted) == 0 and len(lorentz) == 0:
         sVal = calculateDirac(expr,start,end,startT,endT,sind,lind,Symbols,iloc)
     else :
         sVal = calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
@@ -1845,7 +2065,6 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
         output = [old,sVal,(lind[0],sind[0])]
     else :
         output = [old,sVal,(lind[0],sind[0],lind[1],sind[1])]
-    dimension = list(map(lambda x, y: x + y, dtemp, dimension))
     return (output,dimension,defns)
             
 def convertLorentz(Lstruct,lorentztag,order,vertex,iloc,defns,evalVertex) :
@@ -2063,7 +2282,7 @@ def combineResult(res,nf,ispin,vertex) :
            dimCheck[2]!=dim[i][2]) :
             print vertex.lorentz
             for j in range(0,len(vals)) :
-                print dim[j],vals[j]
+                print j,dim[j],vals[j]
             print "DIMENSION PROBLEM",i,dimCheck,dim,vertex
             quit()
         # simplest case 
@@ -2314,7 +2533,7 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
                 quit()
             result[0] = tenTemplate.format(iloc=iloc,cf=py2cpp(cf)[0],res=result[0])
             if(FM or RS) :
-                result[1] = [tenTemplate.format(iloc=iloc,cf=py2cpp(cf)[0],res=result[1])]
+                result[1] = tenTemplate.format(iloc=iloc,cf=py2cpp(cf)[0],res=result[1])
         else :
             print 'unknown spin for off-shell particle',vertex.lorentz[0].spins[iloc-1]
             quit()
@@ -2331,11 +2550,11 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
     defString=""
     for (key,value) in defns.iteritems() :
         if(value[0]=="") : continue
-        if(value[0][0]=="V") :
+        if(value[0][0]=="V" or value[0][0]=="T") :
             defString+="    %s\n" %value[1]
     for (key,value) in defns.iteritems() :
         if(value[0]=="") : continue
-        if(value[0][0]!="V") :
+        if(value[0][0]!="V" and  value[0][0]!="T") :
             defString+="    %s\n" %value[1]
     if(len(result)<=2) :
         sorder=swapOrder(vertex,iloc,momenta,fIndex)

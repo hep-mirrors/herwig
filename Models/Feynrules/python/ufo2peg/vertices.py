@@ -32,7 +32,7 @@ lfactors = {
 }
 
 genericVertices=['FFFF','FFVV','FFSS','FFVS','VVVV','VVVT','FFVT','VVSS',
-                 'RFVV','RFVS','RFSS']
+                 'RFVV','RFVS','RFSS','SSST','VVST','FFST']
 
 skipped5Point=False
 
@@ -500,7 +500,9 @@ Herwig may not give correct results, though.
         generic = False
         try:
             lf = lfactors[lorentztag]
-            if "T" in lorentztag : raise KeyError
+            #if lorentztag =="FFVT" : raise KeyError
+            #if "T" in lorentztag and "F" not in lorentztag : raise KeyError
+            #if "T" in lorentztag : raise KeyError
         except KeyError:
             if(not self.include_generic) :
                 msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
