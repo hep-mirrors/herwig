@@ -662,6 +662,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                     print 'unknown type'
                     print parsed[j]
                     quit()
+                if(index2.type=="T1") :
+                    newIndex1,newIndex2=newIndex2,newIndex1
                 parsed[j].name = "Tensor"
                 parsed[j].value= int(index.value)
                 parsed[j].lorentz= [newIndex1,newIndex2]
@@ -718,7 +720,6 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                 else :
                     name = "dot%s" % (len(defns)+1)
                     unit = computeUnit(dTemp)
-                    print 'eps construct A',name,unit
                     defns[iTemp] = [name,"complex<%s> %s =-%s*epsilon(%s,%s,%s);" % (unit,name,parsed[j].lorentz[0],
                                                                                      indices[0],indices[1],indices[2]) ]
                     output += "*(%s)" % name
@@ -791,9 +792,9 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                         defns[iTemp] = [name,"complex<%s> %s = T%s.preDot(%s)*%s;" % (unit,name,parsed[j].value,con[0],con[1])]
                         output += "*(%s)" % name
                     parsed[j]=""
+                # handled in final stage
                 elif(len(con)==1 and len(uncon)==1) :
-                    print 'uncon'
-                    quit()
+                    continue
                 else :
                     print "can't happen"
                     quit()
@@ -930,7 +931,7 @@ def tensorPropagator(struct,defns) :
                                     
                             
                 else :
-                    val += "%s*%s.%s()*%s.%s()" % (pre,term[1],i1,term[2],i2)
+                    val += "%s*%s%s*%s%s" % (pre,term[1],i1,term[2],i2)
             output["%s%s" % (i1,i2) ] = val.replace("+1*","+").replace("-1*","-")
     return output
         
