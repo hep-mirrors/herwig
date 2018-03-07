@@ -16,6 +16,7 @@ MEff2vs.cc MEff2vs.h \
 MEvv2vv.cc MEvv2vv.h \
 MEvv2vs.cc MEvv2vs.h \
 MEff2tv.cc MEff2tv.h \
+MEff2ts.cc MEff2ts.h \
 MEvv2tv.cc MEvv2tv.h \
 MEfv2tf.cc MEfv2tf.h \
 GeneralfftoVH.cc GeneralfftoVH.h GeneralfftoVH.fh\

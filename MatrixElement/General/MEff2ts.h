@@ -1,34 +1,33 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEff2tv_H
-#define HERWIG_MEff2tv_H
+#ifndef HERWIG_MEff2ts_H
+#define HERWIG_MEff2ts_H
 //
-// This is the declaration of the MEff2tv class.
+// This is the declaration of the MEff2ts class.
 //
 
 #include "GeneralHardME.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSTVertex.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using Helicity::VectorWaveFunction;
+using Helicity::ScalarWaveFunction;
 using Helicity::TensorWaveFunction;
 
 /**
- * The documentation of the MEff2tv class implements the general matrix element for
- * vector vectro to tensor vector
+ * The MEff2ts class implements the general matrix element for fermion fermion -> tensor scalar
  *
  */
-class MEff2tv: public GeneralHardME {
+class MEff2ts: public GeneralHardME {
 
 public:
 
@@ -47,11 +46,6 @@ public:
   /**
    * A vector of VectorWaveFunctions 
    */
-  typedef vector<VectorWaveFunction> VBVector;
-
-  /**
-   * A vector of VectorWaveFunctions 
-   */
   typedef vector<TensorWaveFunction> TBVector;
   //@}
 
@@ -60,7 +54,7 @@ public:
   /**
    * The default constructor.
    */
-  MEff2tv() : fermion_(0), vector_(0), fourPoint_(0) {}
+  MEff2ts() : fermion_(0), scalar_(0), fourPoint_(0) {}
 
   /**
    * The matrix element for the kinematical configuration
@@ -138,7 +132,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEff2tv & operator=(const MEff2tv &);
+  MEff2ts & operator=(const MEff2ts &);
 
 private:
 
@@ -148,7 +142,7 @@ private:
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\Psi\bar{\Psi}\f$
    * @param sp Spinors for first incoming particle
    * @param spbar SpinorBar Wavefunctions for second incoming particle
-   * @param vec VectorWaveFunctions for outgoing vector
+   * @param sca ScalarWaveFunction for outgoing scalar
    * @param ten Outgoing TensorWaveFunction
    * @param me2 colour averaged, spin summed ME
    * @param first Whether or not first call to decide if colour decomposition etc
@@ -157,37 +151,30 @@ private:
    * helicity calculations
    */
   ProductionMatrixElement
-  ffb2tvHeME(SpinorVector & sp, SpinorBarVector & spbar,
-	     TBVector & ten, VBVector & vec,
+  ffb2tsHeME(SpinorVector & sp, SpinorBarVector & spbar,
+	     TBVector & ten, ScalarWaveFunction & sca,
 	     double & me2,bool first) const;
   //@}
-
-  /**
-   * A debugging function to test the value of me2 against an
-   * analytic function.
-   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
-   */
-  virtual void debug(double me2) const;
 
 private:
 
   /**
    * Store a pair of  FFTVertex and FFVVertex pointers  
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractFFVVertexPtr> > fermion_;
+  vector<pair<AbstractFFTVertexPtr, AbstractFFSVertexPtr> > fermion_;
 
   /**
    *  Store a pair of FFTVertex and VVTVertex pointers
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVTVertexPtr> > vector_;
+  vector<pair<AbstractFFSVertexPtr, AbstractSSTVertexPtr> > scalar_;
 
   /**
    *  The four point vertex
    */
-  vector<AbstractFFVTVertexPtr> fourPoint_;
+  vector<AbstractFFSTVertexPtr> fourPoint_;
 
 };
 
 }
 
-#endif /* HERWIG_MEff2tv_H */
+#endif /* HERWIG_MEff2ts_H */
