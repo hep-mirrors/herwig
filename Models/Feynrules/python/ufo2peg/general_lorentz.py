@@ -1854,8 +1854,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     sVal[ "s%s"  % (k+1) ] = res[0][k]
                     sVal[ "sT%s" % (k+1) ] = res[1][k]
             else :
-                print 'sum problem',len(res),len(res[0])
-                quit()
+                print 'Sum problem',len(res),len(res[0])
+                raise SkipThisVertex()
             break
         # uncontracted indices
         else :
@@ -1863,9 +1863,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             for (key,val) in unContracted.iteritems() :
                 istring +=imap[val]
             if(len(istring)>2) :
-                print 'index problem',istring
-                print unContracted
-                quit()
+                print 'Index problem',istring
+                raise SkipThisVertex()
             sVal[istring]     = res[0]
             sVal[istring+"T"] = res[1]
             # increment the unsummed indices
@@ -1888,9 +1887,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
             for key in sVal:
                 sVal[key] = sVal[key][0]
         else :
-            print 'tensor'
-            print len(sVal)
-            quit()
+            print 'Tensor sum problem',len(sVal)
+            raise SkipThisVertex()
     elif( "t" in sVal ) :
         # deal with pure vectors
         if(len(sVal)==8 and "t" in sVal and len(sVal["t"])==1) :
@@ -1899,9 +1897,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
         elif(len(sVal)==8 and "t" in sVal and len(sVal["t"])==4) :
             pass
         else :
-            print sVal
-            print 'val problrm A',len(sVal)
-            quit()
+            print 'Value problem',len(sVal)
+            raise SkipThisVertex()
     else :
         if("s" in sVal) :
             for key in sVal:
@@ -1984,19 +1981,12 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
                 parsed[i]=""
                 lorentz.append(lstruct)
             else :
-                print 'unknown lorentz structure',parsed[i]
-                print iloc
-                print parsed
-                print expr
-                print start
-                print end
-                quit()
+                print 'Unknown lorentz structure',parsed[i]
+                raise SkipThisVertex()
                 
         parsed = [x for x in parsed if x != ""]
         if(len(parsed)!=0) :
-            print expr
             print "Can't parse ",parsed,iloc
-            quit()
             raise SkipThisVertex()
     sVal ={}
     dimension = list(map(lambda x, y: x + y, dtemp, dimension))
@@ -2037,8 +2027,8 @@ def swapOrder(vertex,iloc,momenta,fIndex) :
         ns = vertex.lorentz[0].spins.count(i)
         if((ns<=1 and i!=2) or (ns<=2 and i==2)) : continue
         if(i!=3 and i!=1) :
-            print 'swap problem',i
-            quit()
+            print 'Swap problem',i
+            raise SkipThisVertex()
         sloc=[]
         for j in range(0,len(vertex.lorentz[0].spins)) :
             if(vertex.lorentz[0].spins[j]==i) : sloc.append(j+1)
@@ -2109,8 +2099,8 @@ def constructSignature(vertex,order,iloc,decls,momenta,waves,fIndex) :
             elif(spin==5) :
                 offType="TensorWaveFunction"
             else :
-                print 'unknown spin',spin
-                quit()
+                print 'Unknown spin',spin
+                raise SkipThisVertex()
             momenta.append([False,""])
         else :
             if(spin==1) :
@@ -2148,8 +2138,8 @@ def constructSignature(vertex,order,iloc,decls,momenta,waves,fIndex) :
                 momenta.append([False,"Lorentz5Momentum P%s =-tW%s.momentum();" % (i,i)])
                 waves.append("LorentzTensor<double> T%s = tW%s.wave();" % (i,i))
             else :
-                print 'unknown spin',spin
-                quit()
+                print 'Unknown spin',spin
+                raise SkipThisVertex()
             poff += "-P%s" % (i)
     # ensure unbarred spinor first
     ibar=-1
@@ -2209,9 +2199,8 @@ def combineResult(res,nf,ispin,vertex) :
             for i2 in imap :
                 otype["%s%s"%(i1,i2)]=""
     else :      
-        print vals
-        print 'spin problem',ispin
-        quit()
+        print 'Unknown spin',ispin
+        raise SkipThisVertex()
     expr=[otype]
     for i in range(0,nf-1) :
         expr.append(copy.copy(otype))
@@ -2227,11 +2216,11 @@ def combineResult(res,nf,ispin,vertex) :
         # check the dimensions
         if(dimCheck[0]!=dim[i][0] or dimCheck[1]!=dim[i][1] or
            dimCheck[2]!=dim[i][2]) :
+            print "Dimension problem in result",i,dimCheck,dim,vertex
             print vertex.lorentz
             for j in range(0,len(vals)) :
                 print j,dim[j],vals[j]
-            print "DIMENSION PROBLEM",i,dimCheck,dim,vertex
-            quit()
+            raise SkipThisVertex()
         # simplest case 
         if(isinstance(vals[i], basestring)) :
             for ii in range(0,len(expr)) :
@@ -2311,9 +2300,8 @@ def combineResult(res,nf,ispin,vertex) :
                         expr[0][key] += "%s*(%s)" % (pre,vals[i][1][i1][k-1])
                         expr[1][key] += "%s*(%s)" % (pre,vals[i][1][i1+"T"][k-1])
         else :
-            print vals[i]
-            print 'problem with type'
-            quit()
+            print 'problem with type',vals[i]
+            raise SkipThisVertex()
     # no of particles in the vertex
     vDim = len(vertex.lorentz[0].spins)
     # compute the unit and apply it
@@ -2377,10 +2365,8 @@ def combineComponents(result,offType,RS) :
         subs[1]["type"] = sbtype
         result[1] = RSSpinorTemplate.substitute(subs[1])
     else :
-        print subs[0]
-        print result
-        print 'type not implemented'
-        quit()
+        print 'Type not implemented',result
+        raise SkipThisVertex()
     for i in range(0,len(result)) :
         result[i]=result[i].replace("1j","ii")
 
@@ -2477,13 +2463,13 @@ def generateEvaluateFunction(model,vertex,iloc,values,defns,vertexEval,cf,order)
         elif(vertex.lorentz[0].spins[iloc-1]) :
             if(RS) :
                 print "RS spinors and tensors not handled"
-                quit()
+                raise SkipThisVertex()
             result[0] = tenTemplate.format(iloc=iloc,cf=py2cpp(cf)[0],res=result[0])
             if(FM or RS) :
                 result[1] = tenTemplate.format(iloc=iloc,cf=py2cpp(cf)[0],res=result[1])
         else :
-            print 'unknown spin for off-shell particle',vertex.lorentz[0].spins[iloc-1]
-            quit()
+            print 'Unknown spin for off-shell particle',vertex.lorentz[0].spins[iloc-1]
+            raise SkipThisVertex()
     # check if momenta defns needed to clean up compile of code
     for (key,val) in defns.iteritems() :
         if( isinstance(key, basestring)) :
@@ -2726,8 +2712,8 @@ def multipleEvaluate(vertex,spin,defns) :
     elif(spin==3) :
         name="vW"
     else :
-        print 'testing evaluate multiple problem',spin
-        quit()
+        print 'Evaluate multiple problem',spin
+        raise SkipThisVertex()
     if(len(defns)==0) : return ("","")
     header = defns[0]
     ccdefn = header.replace("=-GeV","").replace("virtual ","").replace("Energy2","Energy2 q2")
