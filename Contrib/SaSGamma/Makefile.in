@@ -1,0 +1,36 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+# You can find plugins here: INSERT URL
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+THEPEGINCLUDE=
+GSLINCLUDE=
+HERWIGINCLUDE=
+FC=
+FCLIBS=
+LDFLAGS= 
+SHARED_FLAG=
+INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
+#
+# C++ flags
+# 
+CXX=
+CXXFLAGS=
+
+default : SaSPhotonPDF.so
+
+SaSPhotonPDF.so : SaSPhotonPDF.h SaSPhotonPDF.cc  SaSGamma.o
+	$(CXX) -fPIC $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	SaSGamma.o SaSPhotonPDF.cc -o SaSPhotonPDF.so  $(FCLIBS)
+
+SaSGamma.o: SaSGamma.f
+	$(FC) -fPIC $(ACERDETINCLUDE) -c -fno-second-underscore SaSGamma.f
+
+clean:
+	rm -f *.o *.so
