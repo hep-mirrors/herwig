@@ -151,11 +151,11 @@ def colorfactor(vertex,L,pos,lorentztag):
 
     elif l(6) == 1 and l(-3) == 2 and L==3:
         label = ('K6({s},{qb1},{qb2})'.format(s=pos[6][0],qb1=pos[-3][0],qb2=pos[-3][1]),)
-        if match(label): return ("K6",('1.',))
+        if match(label): return ("SU3K6",('1.',))
 
     elif l(-6) == 1 and l(3) == 2 and L==3:
         label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
-        if match(label): return ("K6",('1.',))
+        if match(label): return ("SU3K6",('1.',))
 
     elif l(3) == L == 3:
         colors=[]
