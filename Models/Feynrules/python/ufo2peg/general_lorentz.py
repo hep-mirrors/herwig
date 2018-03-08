@@ -2061,7 +2061,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                             eTemp[ichain].append("(%s)"% (value) )
                     elif(len(li.lorentz)==4) :
                         if li.lorentz[0].type=="T1" and li.lorentz[1].type=="T2" :
-                            value=tPropCunContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value})
+                            value=tPropC[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value})
                         elif li.lorentz[0].type=="T1":
                             value=tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]].substitute({"iloc" : li.value,
                                                                                                                                           "V" : li.lorentz[1],
