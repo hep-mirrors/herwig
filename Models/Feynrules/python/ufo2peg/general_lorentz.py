@@ -2059,7 +2059,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                         value=tPropA[unContracted[li.lorentz[0]]][unContracted[li.lorentz[0]]].substitute({"iloc" : li.value})
                         for ichain in range(0,nchain) :
                             eTemp[ichain].append("(%s)"% (value) )
-                    else :
+                    elif(len(li.lorentz)==4) :
                         if li.lorentz[0].type=="T1" and li.lorentz[1].type=="T2" :
                             value=tPropCunContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value})
                         elif li.lorentz[0].type=="T1":
@@ -2075,6 +2075,9 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                             raise SkipThisVertex()
                         for ichain in range(0,nchain) :
                             eTemp[ichain].append("(%s)"% (value) )
+                    else :
+                        print 'Uncontracted on-shell tensor'
+                        raise SkipThisVertex()
                 # unknown
                 else :
                     print 'Unknown expression in lorentz loop',li
