@@ -3,8 +3,6 @@ from .helpers import SkipThisVertex,def_from_model
 from .converter import py2cpp
 import string,re
 from string import Template
-import sympy
-from sympy import Matrix,Symbol
 
 epsValue=[[[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],
            [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]],
@@ -1050,6 +1048,15 @@ def tensorPropagator(struct,defns) :
     return output
         
 def generateVertex(iloc,L,parsed,lorentztag,vertex,defns) :
+    # try to import sympy and exit if required
+    try :
+        import sympy
+        from sympy import Matrix,Symbol
+    except :
+        print 'ufo2herwig uses the python sympy module to translate general lorentz structures.'
+        print 'This must be installed if you wish to use this option.'
+        print 'EXITTING'
+        quit()
     eps=False
     # parse the lorentz structures
     output    = [1.]*len(parsed)
