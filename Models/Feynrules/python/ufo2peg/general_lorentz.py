@@ -291,11 +291,11 @@ class LorentzIndex :
                 self.type="T2"
                 self.value = val%1000
             else :
-                print "INDEX",val
-                quit()
+                print "Unknown value in Lorentz index:",val
+                raise SkipThisVertex()
         else :
-            print 'unknown value in lorentz index',val
-            quit()
+            print "Unknown value in Lorentz index:",val
+            raise SkipThisVertex()
             
     def __eq__(self,other):
         if(not isinstance(other,LorentzIndex)) :
@@ -379,9 +379,9 @@ def LorentzCompare(a,b) :
          return 1
     else :
         if(len(a.spin)==0 or len(b.spin)==0) :
-            print 'index problem',a.name,b.name
-            print a.spin,b.spin
-            quit()
+            print 'Index problem in lorentz compare',\
+                a.name,b.name,a.spin,b.spin
+            raise SkipThisVertex()
         if(a.spin[0]>0 or b.spin[1]>0 ) : return -1
         if(a.spin[1]>0 or b.spin[0]>0 ) : return  1
         if(a.spin[1]==b.spin[0]) : return -1
@@ -441,7 +441,7 @@ def parse_structure(structure,spins) :
             output[-1].lorentz=[]
             output[-1].spin=[]
             found=True
-    # special handling for powers , assume only 2
+    # special handling for powers
     power = False
     if("**" in structure ) :
         power = True
@@ -509,7 +509,7 @@ def parse_structure(structure,spins) :
             output[-1].name=struct.split("(")[0]
             output[-1].value=1
             if(len(struct.replace("%s(%s,%s,%s,%s)" % (output[-1].name,ind[0],ind[1],ind[2],ind[3]),""))!=0) :
-                print 'problem parsing epsilon',struct
+                print 'Problem parsing epsilon',struct
                 raise SkipThisVertex()
         # scalars
         else :
@@ -527,9 +527,8 @@ def parse_structure(structure,spins) :
                     output[-1].lorentz=[]
                     output[-1].spin=[]
                 else :
-                    print 'scalar problem',struct
-                    print complex(struct)
-                    quit()
+                    print 'Problem parsing scalar',struct
+                    raise SkipThisVertex()
     # now do the sorting
     if(len(output)==1) : return output
     output = sorted(output,cmp=LorentzCompare)
@@ -654,7 +653,8 @@ def computeUnit2(dimension,vDim) :
 def indSort(a,b) :
     if(not isinstance(a,LorentzIndex) or
        not isinstance(b,LorentzIndex)) :
-       quit()
+       print "Trying to sort something that's not a Lorentz index",a,b
+       raise SkipThisVertex()
     if(a.type==b.type) :
         i1=a.value
         i2=b.value
@@ -737,9 +737,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                             newIndex1=li
                             break
                 else :
-                    print 'unknown type A'
-                    print parsed[j]
-                    quit()
+                    print 'Unknown object with tensor index, first object',parsed[j]
+                    raise SkipThisVertex()
                 if(parsed[k].name=="P") :
                     newIndex2 = LorentzIndex(parsed[k].value)
                     newIndex2.type="P"
@@ -750,14 +749,12 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                             newIndex2=li
                             break
                 elif(parsed[k].name=="Gamma") :
+                    # if we can't contract
                     if(index.value==iloc or (newIndex1.type=="E" and newIndex1.value==iloc)) :
                         newIndex2=index2
-                    else :
-                        unit="double"
-                        dtemp=0
-                        if(newIndex1.type=="P") :
-                            dtemp += 1
-                            unit="Energy"
+                    # otherwise contract
+                    else : 
+                        unit=computeUnit(newIndex1.dimension)
                         if(index.type=="T1") :
                             name="T%s%sF" % (index.value,newIndex1)
                             defns[name] = [name,"LorentzVector<complex<%s> > %s = T%s.preDot(%s);" % (unit,name,index.value,newIndex1)]
@@ -768,13 +765,12 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                         gIndex=LorentzIndex(-1)
                         gIndex.type="V"
                         gIndex.value=name
-                        gIndex.dimension=dtemp
+                        gIndex.dimension=newIndex1.dimension
                         parsed[k].lorentz[0] = gIndex
                         break
                 else :
-                    print 'unknown type B'
-                    print parsed[j],parsed[k]
-                    quit()
+                    print 'Unknown object with tensor index, second object',parsed[j],parsed[k]
+                    raise SkipThisVertex()
                 if(index2.type=="T1") :
                     newIndex1,newIndex2=newIndex2,newIndex1
                 parsed[j].name = "Tensor"
@@ -809,8 +805,10 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                 else :
                     summable.append(False)
             sc = summable.count(True)
+            # less than 3 contractable indices, leave for later
             if(sc<3) :
                 continue
+            # can contract to a vector
             elif(sc==3) :
                 offLoc = -1
                 for i in summable:
@@ -822,8 +820,9 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
             indices=[]
             dTemp=0
             for ix in range(0,len(parsed[j].lorentz)) :
-                if(parsed[j].lorentz[ix].type=="P") : dTemp+=1
+                dTemp += parsed[j].lorentz[ix].dimension
                 if(ix!=offLoc) : indices.append(parsed[j].lorentz[ix])
+            # contract all the indices
             if(sc==4) :
                 dimension[2] += dTemp
                 iTemp = (parsed[j].lorentz[0],parsed[j].lorentz[1],
@@ -837,6 +836,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                     defns[iTemp] = [name,"complex<%s> %s =-%s*epsilon(%s,%s,%s);" % (unit,name,parsed[j].lorentz[0],
                                                                                      indices[0],indices[1],indices[2]) ]
                     output += "*(%s)" % name
+            # contract 3 indices leaving a vector
             else :
                 iTemp = (indices[0],indices[1],indices[2])
                 sign = "1"
@@ -858,9 +858,6 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                     parsed[j].spins=[]
                     parsed[j].value=0
                     parsed[j].lorentz=[newIndex,oi]
-                    print 'replace with metric'
-                    print parsed[j]
-                    quit()
                 else :
                     found=False
                     for k in range(0,len(parsed)):
@@ -872,8 +869,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                                 break
                         if(found) : break
                     if(not found) :
-                        print "problem in eps"
-                        quit()
+                        print "Problem contracting indices of Epsilon tensor"
+                        raise SkipThisVertex()
                     parsed[j]=""
         elif(parsed[j].name=="Tensor") :
             # not an external tensor
@@ -892,9 +889,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                         else :
                             uncon.append(li)
                     else :
-                        print 'need to handle ',li,'in tensor',parsed[j]
-                        print li
-                        quit()
+                        print "Can't handle index ",li,"in tensor",parsed[j]
+                        raise SkipThisVertex()
                 if(len(con)==2) :
                     iTemp = ("T%s%s%s"% (parsed[j].value,con[0],con[1]))
                     dimension[2]+=dtemp
@@ -907,11 +903,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                         output += "*(%s)" % name
                     parsed[j]=""
                 # handled in final stage
-                elif(len(con)==1 and len(uncon)==1) :
-                    continue
                 else :
-                    print "can't happen"
-                    quit()
+                    continue
         elif(parsed[j].name.find("Proj")>=0 or
              parsed[j].name.find("Gamma")>=0 or
              parsed[j].name.find("Identity")>=0) :
@@ -919,8 +912,8 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
         elif(parsed[j].name=="P" and parsed[j].lorentz[0].type=="R") :
             continue
         else :
-            print 'not handled',parsed[j],iloc
-            quit()
+            print 'Lorentz structure',parsed[j],'not handled'
+            raise SkipThisVertex()
     # remove leading *
     if(output!="" and output[0]=="*") : output = output[1:]
     # remove any (now) empty elements
@@ -931,8 +924,7 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
     if(len(parsed)==0) :
        return (output,dimension)
     elif(len(parsed)!=1) :
-        print "summation can't be handled",parsed,iloc,output
-        quit()
+        print "Summation can't be handled",parsed
         raise SkipThisVertex()
     if(parsed[0].name=="Tensor") :
         # contracted with off-shell vector
@@ -944,10 +936,8 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
                 else :
                     lo=ll
             if(found) :
-                unit="double"
-                if(lo.type=="P") :
-                    dimension[2]+=1
-                    unit="Energy"
+                dimension[2]+= lo.dimension
+                unit=computeUnit(lo.dimension)
                 if(lo==parsed[0].lorentz[0]) :
                     name="T%s%sF" % (parsed[0].value,lo)
                     defns[name] = [name,"LorentzVector<complex<%s> > %s = T%s.preDot(%s);" % (unit,name,parsed[0].value,lo)]
@@ -958,9 +948,8 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
                 if(output=="") : output="1."
                 output = "(%s)*(%s)" %(output,name)
             else :
-                print 'problem with tensor',iloc
-                print parsed
-                quit()
+                print "Can\'t contract tensor",lo,iloc
+                raise SkipThisVertex()
         # off-shell tensor
         else :
             if(len(parsed[0].lorentz)!=0) :
@@ -982,8 +971,7 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
             if(output=="") : output="1."
             output = "(%s)*(%s)" %(output,lo)
     else :
-        print "structure can't be handled",parsed,iloc
-        quit()
+        print "Structure can't be handled",parsed,iloc
         raise SkipThisVertex()
     return (output,dimension)
     
@@ -1161,7 +1149,7 @@ def convertMatrix(structure,spins,unContracted,Symbols,dtemp,defns,iloc) :
             structure=""
     else :
         print 'Unknown Gamma matrix structure',structure
-        quit()
+        raise SkipThisVertex()
     return (i1,i2,output,structure,Symbols)
 
 
@@ -1199,9 +1187,8 @@ def checkRSContract(parsed,loc,dtemp) :
         elif(parsed[i].name=="Epsilon") :
             continue
         else :
-            print " CONT TEST A",parsed
-            print 'unkonwn type',parsed[i]
-            quit()
+            print "Unkonwn type contracted with RS spinor",parsed[i]
+            raise SkipThisVertex()
     return contract
 
 def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
@@ -1237,9 +1224,7 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
         if(ii>=len(parsed)) :
             print "Can't parsed the chain of dirac matrices"
             print parsed
-            print expr
-            quit()
-            SkipThisVertex()
+            raise SkipThisVertex()
     # start and end of the spin chains
     # first particle spin 1/2
     if(spins[sind-1]==2) :
@@ -1268,9 +1253,9 @@ def processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc) :
             Symbols += sline.substitute(subs)
             subs = {'s' : ("s%s" % sind)}
             endT.value = spinor.substitute(subs)
-            Symbols += sline.substitute(subs)    # start 3/2 and end 1/2
+            Symbols += sline.substitute(subs)
+    # spin 3/2 fermion
     elif spins[sind-1]==4 :
-        # spin 3/2 fermion
         # check if we can easily contract
         contract=checkRSContract(parsed,sind,dtemp)
         # off-shell
@@ -1503,7 +1488,6 @@ def calculateDirac(expr,start,end,startT,endT,sind,lind,Symbols,iloc) :
         sVal["sT12"] = res[1][0,0]*res[3][0,0]
     return sVal
 
-
 def addToOutput(res,nchain,sign,rTemp) :
     # 1 spin chain
     if(nchain==1) :
@@ -1524,8 +1508,7 @@ def addToOutput(res,nchain,sign,rTemp) :
                         for j in range(0,4) :
                             res[ii][j] += sign*rTemp[ii][0][0,j]
                 else :
-                    print "SIZE PROBLEM A",sign,rTemp[ii].shape
-                    quit()
+                    print "Size problem adding results A",sign,rTemp[ii].shape
                     raise SkipThisVertex()
             # spinor
             elif(rTemp[ii][0].shape[0]==4 and rTemp[ii][0].shape[1]==1 ) :
@@ -1536,8 +1519,7 @@ def addToOutput(res,nchain,sign,rTemp) :
                     for j in range(0,4) :
                         res[ii][j] += sign*rTemp[ii][0][j,0]
             else :
-                print "SIZE PROBLEM B ",sign,rTemp[ii][0].shape
-                quit()
+                print "Size problem adding results A",sign,rTemp[ii][0].shape
                 raise SkipThisVertex()
     # 2 spin chains, should only be for a vertex
     else :
@@ -1580,8 +1562,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
         elif key.type=="E" or key.type=="Q":
             continue
         else :
-            print 'unknown type of uncontracted index',key
-            quit()
+            print 'Unknown type of uncontracted index',key
             raise SkipThisVertex()
     # check the lorentz structures
     for lstruct in lorentz :
@@ -1594,8 +1575,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                      or index.type=="R" or index.type=="D") :
                     contracted[index]=0
                 else :
-                    print 'unknown index',index
-                    quit()
+                    print 'Unknown index',index, 'in ',lstruct
+                    raise SkipThisVertex()
         elif(lstruct.name=="Tensor") :
             if(iloc==lstruct.value) :
                 Symbols += momCom.substitute({"v": "P%s"%lstruct.value})
@@ -1608,20 +1589,12 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     newIndex.dimension=0
                     lstruct.lorentz.append(newIndex)
                     unContracted[newIndex]=0
+                # contracted with self
                 if(len(lstruct.lorentz)==0) :
                     pass
+                # both indices uncontracted, deal with later
                 elif lstruct.lorentz[0].type=="T1" and lstruct.lorentz[1].type=="T2":
-                    print 'both uncontracted' 
-                    print 'unknown tensor object',lstruct,iloc
-                    print lstruct.value
-                    print lorentz
-                    print expr
-                    print start
-                    print end
-                    print defns
-                    print contracted
-                    print unContracted
-                    quit()
+                    pass
                 elif lstruct.lorentz[0].type=="T1":
                     pIndex = LorentzIndex(lstruct.value)
                     pIndex.dimension=1
@@ -1636,23 +1609,13 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     (tDot,dtemp) = constructDotProduct(pIndex,lstruct.lorentz[0],defns)
                     Symbols+="%s = Symbol(\"%s\")\n" %(tDot,tDot)
                     Symbols += momCom.substitute({"v": lstruct.lorentz[0]})
+            # both indices still to be contracted
             else :
-                print 'unknown tensor object',lstruct,iloc
-                print lstruct.value
-                print lorentz
-                print expr
-                print start
-                print end
-                quit()
+                contracted[lstruct.lorentz[0].type]=0
+                contracted[lstruct.lorentz[1].type]=0
         else :
-            print 'unknown lorentz object',lstruct,iloc
-            print lstruct.value
-            print lorentz
-            print expr
-            print start
-            print end
-            
-            quit()
+            print 'Unknown lorentz object in calculateDirac2',lstruct,iloc
+            raise SkipThisVertex()
     # iterate over the uncontracted indices
     while True :
         # loop over the unContracted indices
@@ -1686,20 +1649,12 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                         elif(val.index in unContracted) :
                             eTemp[ichain].append(dirac[unContracted[val.index]])
                         else :
-                            print 'unknown index'
-                            print val
-                            print val.name
-                            print val.value
-                            print val.index
-                            quit()
+                            print 'Unknown index for gamma matrix',val
+                            raise SkipThisVertex()
                     # unknown to be sorted out
                     else :
-                        print 'unkonwn type in expr'
-                        print val
-                        print val.name
-                        print val.value
-                        print val.index
-                        quit()
+                        print 'Unknown type in expr',val
+                        raise SkipThisVertex()
                 # start and end
                 # start
                 if(start[ichain].name=="S" or start[ichain].name=="M" ) :
@@ -1722,11 +1677,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     sTemp.append(start[ichain].value.substitute({"eta" : eta, "A":imap[i1] , "B":imap[i2] ,
                                                                  "DA": dirac[i1], "DB": dirac[i2]}))
                 else :
-                    print 'barred spinor not a spinor'
-                    print start[ichain].name
-                    print start[ichain].value
-                    print start[ichain].index
-                    quit()
+                    print 'Barred spinor not a spinor',start[ichain]
+                    raise SkipThisVertex()
                 if(startT[ichain].name=="S" or startT[ichain].name=="M" ) :
                     sTTemp.append(startT[ichain].value)
                 elif(startT[ichain].name=="RS") :
@@ -1747,11 +1699,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     sTTemp.append(startT[ichain].value.substitute({"eta" : eta, "A":imap[i1] , "B":imap[i2] ,
                                                                    "DA": dirac[i1], "DB": dirac[i2]}))
                 else :
-                    print 'barred spinorT not a spinor'
-                    print startT[ichain].name
-                    print startT[ichain].value
-                    print startT[ichain].index
-                    quit()
+                    print 'barred spinorT not a spinor',startT[ichain]
+                    raise SkipThisVertex()
                 # end
                 if(end[ichain].name=="S" or end[ichain].name=="M" ) :
                     fTemp.append(end[ichain].value)
@@ -1773,11 +1722,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     fTemp.append(end[ichain].value.substitute({"eta" : eta, "A":imap[i1] , "B":imap[i2] ,
                                                                "DA": dirac[i1], "DB": dirac[i2]}))
                 else :
-                    print 'spinor not a spinor'
-                    print end[ichain].name
-                    print end[ichain].value
-                    print end[ichain].index
-                    quit()
+                    print 'spinor not a spinor',end[ichain]
+                    raise SkipThisVertex()
                 if(endT[ichain].name=="S" or endT[ichain].name=="M" ) :
                     fTTemp.append(endT[ichain].value)
                 elif(endT[ichain].name=="RS") :
@@ -1798,11 +1744,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                     fTTemp.append(endT[ichain].value.substitute({"eta" : eta, "A":imap[i1] , "B":imap[i2] ,
                                                                  "DA": dirac[i1], "DB": dirac[i2]}))
                 else :
-                    print 'spinorT not a spinor'
-                    print endT[ichain].name
-                    print endT[ichain].value
-                    print endT[ichain].index
-                    quit()
+                    print 'spinorT not a spinor',endT[ichain]
+                    raise SkipThisVertex()
             # and none dirac lorentz structures
             isZero = False
             for li in lorentz:
@@ -1823,8 +1766,8 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                             elif(index.type=="R" or index.type=="D") :
                                 ival.append(contracted[index])
                             else :
-                                print 'unknown index in eps',index
-                                quit()
+                                print 'Unknown index in Epsilon Tensor',index
+                                raise SkipThisVertex()
                         elif(index in unContracted) :
                             ival.append(unContracted[index])
                     if(len(value)!=0 and value[0]=="*") :
@@ -1859,10 +1802,7 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                             eTemp[ichain].append("(%s)"% (value) )
                 # unknown
                 else :
-                    print 'unknown expression in lorentz loop'
-                    print li.name
-                    print li.value
-                    quit()
+                    print 'Unknown expression in lorentz loop',li
                     raise SkipThisVertex()
             # now evaluate the result
             if(not isZero) :
