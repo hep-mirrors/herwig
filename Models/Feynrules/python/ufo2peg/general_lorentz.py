@@ -1262,9 +1262,9 @@ def tensorPropagator(struct,defns) :
     terms=[]
     if(len(struct.lorentz)==0) :
         (dp,dTemp) = constructDotProduct(ip,ip,defns)
-        pre = "-2./3.*(1.-%s*OM%s)" % (dp,struct.value)
+        pre = "-1./3.*(1.-%s*OM%s)" % (dp,struct.value)
         terms.append((pre,i0,i0))
-        pre = "-4./3.*(1.-%s*OM%s)" % (dp,struct.value)
+        pre = "-2./3.*(1.-%s*OM%s)" % (dp,struct.value)
         terms.append(("%s*OM%s" %(pre,struct.value),ip,ip))
     else :
         # indices of the tensor
@@ -1275,16 +1275,16 @@ def tensorPropagator(struct,defns) :
         (d2,dtemp) = constructDotProduct(ind2,ip,defns)
         (d3,dtemp) = constructDotProduct(ind1,ind2,defns)
         # various terms in the propagator
-        terms.append(("1",ind1,ind2))
-        terms.append(("-OM%s*%s"%(struct.value,d1),ip,ind2))
-        terms.append(("-OM%s*%s"%(struct.value,d2),ind1,ip))
-        terms.append(("1",ind2,ind1))
-        terms.append(("-OM%s*%s"%(struct.value,d2),ip,ind1))
-        terms.append(("-OM%s*%s"%(struct.value,d1),ind2,ip))
-        terms.append(("-2./3.*"+d3,i0,i0))
-        terms.append(("2./3.*OM%s*%s*%s"%(struct.value,d1,d2),i0,i0))
-        terms.append(("2./3.*OM%s*%s"%(struct.value,d3),ip,ip))
-        terms.append(("4./3.*OM%s*OM%s*%s*%s"%(struct.value,struct.value,d1,d2),ip,ip))
+        terms.append(("0.5",ind1,ind2))
+        terms.append(("-0.5*OM%s*%s"%(struct.value,d1),ip,ind2))
+        terms.append(("-0.5*OM%s*%s"%(struct.value,d2),ind1,ip))
+        terms.append(("0.5",ind2,ind1))
+        terms.append(("-0.5*OM%s*%s"%(struct.value,d2),ip,ind1))
+        terms.append(("-0.5*OM%s*%s"%(struct.value,d1),ind2,ip))
+        terms.append(("-1./3.*"+d3,i0,i0))
+        terms.append(("1./3.*OM%s*%s*%s"%(struct.value,d1,d2),i0,i0))
+        terms.append(("1./3.*OM%s*%s"%(struct.value,d3),ip,ip))
+        terms.append(("2./3.*OM%s*OM%s*%s*%s"%(struct.value,struct.value,d1,d2),ip,ip))
     # compute the output as a dict
     output={}
     for i1 in imap:
@@ -2056,18 +2056,18 @@ def calculateDirac2(expr,start,end,startT,endT,sind,lind,Symbols,defns,
                             eTemp[ichain].append("(%s*%s)"% (eVal,value) )
                 elif(li.name=="Tensor") :
                     if(li.lorentz[0] in unContracted and li.lorentz[1] in unContracted) :
-                        value=tPropA[unContracted[li.lorentz[0]]][unContracted[li.lorentz[0]]].substitute({"iloc" : li.value})
+                        value='0.5*(%s)'%tPropA[unContracted[li.lorentz[0]]][unContracted[li.lorentz[0]]].substitute({"iloc" : li.value})
                         for ichain in range(0,nchain) :
                             eTemp[ichain].append("(%s)"% (value) )
                     elif(len(li.lorentz)==4) :
                         if li.lorentz[0].type=="T1" and li.lorentz[1].type=="T2" :
-                            value=tPropC[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value})
+                            value='0.5*(%s)'%tPropC[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value})
                         elif li.lorentz[0].type=="T1":
-                            value=tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]].substitute({"iloc" : li.value,
+                            value='0.5*(%s)'%tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[0]]].substitute({"iloc" : li.value,
                                                                                                                                           "V" : li.lorentz[1],
                                                                                                                                           "dot" : tDot})
                         elif li.lorentz[1].type=="T2" :
-                            value=tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value,
+                            value= '0.5*(%s)'%tPropB[unContracted[li.lorentz[2]]][unContracted[li.lorentz[3]]][contracted[li.lorentz[1]]].substitute({"iloc" : li.value,
                                                                                                                                           "V" : li.lorentz[0],
                                                                                                                                           "dot" : tDot})
                         else :
