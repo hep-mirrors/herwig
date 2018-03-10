@@ -1087,7 +1087,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
             # can contract to a vector
             elif(sc==3) :
                 offLoc = -1
-                for i in summable:
+                for i in range(0,len(summable)):
                     if(not summable[i]) :
                         offLoc = i
                         break
@@ -1112,6 +1112,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                     defns[iTemp] = [name,"complex<%s> %s =-%s*epsilon(%s,%s,%s);" % (unit,name,parsed[j].lorentz[0],
                                                                                      indices[0],indices[1],indices[2]) ]
                     output += "*(%s)" % name
+                parsed[j]=""
             # contract 3 indices leaving a vector
             else :
                 iTemp = (indices[0],indices[1],indices[2])
@@ -1124,7 +1125,7 @@ def finishParsing(parsed,dimension,lorentztag,iloc,defns,eps) :
                     unit = computeUnit(dTemp)
                     defns[iTemp] = [name,"LorentzVector<complex<%s> > %s =-epsilon(%s,%s,%s);" % (unit,name,
                                                                                                   indices[0],indices[1],indices[2]) ]
-                newIndex = LorentzIndex(int(name[1]))
+                newIndex = LorentzIndex(int(name[1:]))
                 newIndex.type="V"
                 newIndex.dimension=dTemp
                 output += "*(%s)" % (sign)
@@ -1242,8 +1243,7 @@ def finalContractions(output,parsed,dimension,lorentztag,iloc,defns) :
                 lo=ll
         if(found) :
             parsed[0]=""
-            if(lo.type=="P") :
-                dimension[2]+=1
+            dimension[2] += lo.dimension
             if(output=="") : output="1."
             output = "(%s)*(%s)" %(output,lo)
     else :
