@@ -386,6 +386,7 @@ class VertexConverter:
         self.no_generic_loop_vertices = False
         self.parmsubs = parmsubs
         self.couplingDefns = defns
+        self.genericTensors = False
         
     def readArgs(self,args) :
         'Extract the relevant command line arguments'
@@ -394,6 +395,8 @@ class VertexConverter:
         self.modelname = args.name
         self.no_generic_loop_vertices = args.no_generic_loop_vertices
         self.include_generic = args.include_generic
+        self.genericTensors = args.use_generic_for_tensors
+        
     def should_print(self) :
         'Check if we should output the results'
         return not self.vertex_skipped or self.ignore_skipped
@@ -500,6 +503,8 @@ Herwig may not give correct results, though.
         generic = False
         try:
             lf = lfactors[lorentztag]
+            if( self.genericTensors and "T" in lorentztag) :
+                raise KeyError()
         except KeyError:
             if(not self.include_generic) :
                 msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \

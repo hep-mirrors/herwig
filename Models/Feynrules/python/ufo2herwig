@@ -49,6 +49,11 @@ parser.add_argument(
     help="Include support for generic spin structures (still experimental)"
 )
 parser.add_argument(
+    '--use-generic-for-tensors',
+    action="store_true",
+    help="Use the generic machinery for all tensor vertices (debugging only)"
+)
+parser.add_argument(
     '--forbidden-particle-name',
     action="append",
     default=["eta","phi"],
