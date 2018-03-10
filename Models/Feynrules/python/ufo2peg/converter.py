@@ -128,9 +128,9 @@ class PyToCpp(ast.NodeVisitor):
                 text = "ii"
             elif ( text.find("UnitRemoval")==0) :
                 text = "%s::%s" % (text[:11],text[11:])
-            elif(len(text)==3 and
-                 (text[0]=="P" or text[0]=="E" or text[0]=="V")) :
-                text = "%s.%s()" % (text[0:2],text[2])
+            elif(text[0]=="P" or text[0]=="E" or text[0] == "V") :
+                if text[-1] in ["x","y","z","t"] :
+                    text = "%s.%s()" % (text[0:-1],text[-1])
             elif(text[0]=="R") :
                 text = "%s.%s()" % (text[:-3],text[-3:])
             elif(text[0]=="s") :
