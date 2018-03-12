@@ -171,7 +171,7 @@ protected:
   bool excluded(VertexBasePtr vertex) const {
     // skip an effective vertex
     if( excludeEffective_ &&
-	int(vertex->orderInGs() + vertex->orderInGem()) != int(vertex->getNpoint())-2)
+	vertex->orderInAllCouplings() != int(vertex->getNpoint())-2)
       return true;
     // check if explicitly forbidden
     return excludedVerticesSet_.find(vertex)!=excludedVerticesSet_.end();
