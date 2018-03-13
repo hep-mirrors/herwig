@@ -26,6 +26,7 @@ using ThePEG::Helicity::outgoing;
 void MEff2ss::doinit() {
   GeneralHardME::doinit();
   fermion_.resize(numberOfDiags());
+  RSfermion_.resize(numberOfDiags());
   scalar_ .resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
@@ -39,6 +40,10 @@ void MEff2ss::doinit() {
 	fermion_[i] = 
 	  make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first), 
 		    dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.second));
+      else if(current.intermediate->iSpin() == PDT::Spin3Half)
+	RSfermion_[i] = 
+	  make_pair(dynamic_ptr_cast<AbstractRFSVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractRFSVertexPtr>(current.vertices.second));
       else
 	throw InitException() << "MEFF2ss:doinit() - t-channel"
 			      << " intermediate must be a fermion "
@@ -116,34 +121,50 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 	Complex diag(0.);
 	const HPDiagram & current = getProcessInfo()[ix];
 	tcPDPtr internal(current.intermediate);	
-	if(current.channelType == HPDiagram::tChannel &&
-	   internal->iSpin() == PDT::Spin1Half) {
+	if(current.channelType == HPDiagram::tChannel) {
 	  if(internal->CC()) internal=internal->CC();
-	  unsigned int iopt = ( abs(sbar[if2].particle()->id()) == abs(internal->id()) ||
-	  			abs(sp[if1]  .particle()->id()) == abs(internal->id())) ? 5 : 3;
-	  SpinorBarWaveFunction interFB;
-	  if(current.ordered.second) {
-	    if(iopt==3) { 
-	      interFB = fermion_[ix].second->
-		evaluate(q2, iopt, internal, sbar[if2], sca2);
+	  if(internal->iSpin() == PDT::Spin1Half) {
+	    unsigned int iopt = ( abs(sbar[if2].particle()->id()) == abs(internal->id()) ||
+				  abs(sp[if1]  .particle()->id()) == abs(internal->id())) ? 5 : 3;
+	    SpinorBarWaveFunction interFB;
+	    if(current.ordered.second) {
+	      if(iopt==3) { 
+		interFB = fermion_[ix].second->
+		  evaluate(q2, iopt, internal, sbar[if2], sca2);
+	      }
+	      else {
+		interFB = fermion_[ix].second->
+		  evaluate(q2, iopt, internal, sbar[if2], sca2, 0.*GeV, 0.*GeV);
+	      }
+	      diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca1);
 	    }
 	    else {
-	      interFB = fermion_[ix].second->
-		evaluate(q2, iopt, internal, sbar[if2], sca2, 0.*GeV, 0.*GeV);
+	      if(iopt==3) { 
+		interFB = fermion_[ix].second->
+		  evaluate(q2, iopt, internal, sbar[if2], sca1);
+	      }
+	      else {
+		interFB = fermion_[ix].second->
+		  evaluate(q2, iopt, internal, sbar[if2], sca1, 0.*GeV, 0.*GeV);
+	      }
+	      diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca2);
 	    }
-	    diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca1);
 	  }
-	  else {
-	    if(iopt==3) { 
-	      interFB = fermion_[ix].second->
-		evaluate(q2, iopt, internal, sbar[if2], sca1);
+	  else if (internal->iSpin() == PDT::Spin3Half) {
+	    RSSpinorBarWaveFunction interFB;
+	    if(current.ordered.second) {
+	      interFB = RSfermion_[ix].second->
+		evaluate(q2, 3, internal, sbar[if2], sca2);
+	      diag = RSfermion_[ix].first->evaluate(q2, sp[if1], interFB, sca1);
 	    }
-	    else {
-	      interFB = fermion_[ix].second->
-		evaluate(q2, iopt, internal, sbar[if2], sca1, 0.*GeV, 0.*GeV);
+	    else { 
+	      interFB = RSfermion_[ix].second->
+		evaluate(q2, 3, internal, sbar[if2], sca1);
+	      diag = RSfermion_[ix].first->evaluate(q2, sp[if1], interFB, sca2);
 	    }
-	    diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca2);
 	  }
+	  else
+	    assert(false);
 	}
 	else if(current.channelType == HPDiagram::sChannel) {
 	  if(internal->iSpin() == PDT::Spin0) {
@@ -196,11 +217,11 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 
 
 void MEff2ss::persistentOutput(PersistentOStream & os) const {
-  os << fermion_ << scalar_ << vector_ << tensor_ << fourPoint_;
+  os << fermion_ << scalar_ << vector_ << tensor_ << fourPoint_ << RSfermion_;
 }
 
 void MEff2ss::persistentInput(PersistentIStream & is, int) {
-  is >> fermion_ >> scalar_ >> vector_ >> tensor_ >> fourPoint_;
+  is >> fermion_ >> scalar_ >> vector_ >> tensor_ >> fourPoint_ >> RSfermion_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
 			   PDT::Spin0    , PDT::Spin0    );
 }
