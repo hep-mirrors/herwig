@@ -19,3 +19,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1404878
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1449082
 # cms boosted top
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1454211
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1518399
+# CMS diplepton charge asym
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1430892
+# CMS spin correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1413748
