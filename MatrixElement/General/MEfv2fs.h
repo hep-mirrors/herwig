@@ -20,6 +20,8 @@
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVSVertex.h"
@@ -195,6 +197,11 @@ private:
    * Store a pair of  VVSVertex and FFVVertex pointers  
    */
   vector<pair<AbstractFFVVertexPtr,AbstractVVSVertexPtr> > vector_;
+
+  /**
+   * Store a pair of  FFSVertex and FFVVertex pointers  
+   */
+  vector<pair<AbstractRFSVertexPtr, AbstractRFVVertexPtr> > RSfermion_;
 
   /**
    *  Store any 4-point vertices
