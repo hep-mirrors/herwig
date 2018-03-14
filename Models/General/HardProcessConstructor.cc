@@ -542,7 +542,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       if( inb == PDT::Colour0 ) {
 	cfv[0] = make_pair(0, 1);
       }
-      else if(inb==PDT::Colour3 || outb==PDT::Colour3bar) {
+      else if(inb==PDT::Colour3 || inb==PDT::Colour3bar) {
 	cfv[0] = make_pair(3, 1);
       }
       else if(inb==PDT::Colour8) {
