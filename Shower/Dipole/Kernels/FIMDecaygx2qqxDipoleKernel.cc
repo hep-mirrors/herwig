@@ -87,9 +87,9 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
 
 
   // Construct mass squared variables
-  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
   double mui2 = sqr(split.emitterData()->mass() / split.scale());
   double mu2 = mui2;
+  //double mua2 = sqr( split.spectatorMass() / split.scale() );
   // Recoil system mass
   double muj2 = sqr(split.recoilMass() / split.scale());
   double bar = 1. - mui2 - mu2 - muj2;
