@@ -124,29 +124,15 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 	if(current.channelType == HPDiagram::tChannel) {
 	  if(internal->CC()) internal=internal->CC();
 	  if(internal->iSpin() == PDT::Spin1Half) {
-	    unsigned int iopt = ( abs(sbar[if2].particle()->id()) == abs(internal->id()) ||
-				  abs(sp[if1]  .particle()->id()) == abs(internal->id())) ? 5 : 3;
 	    SpinorBarWaveFunction interFB;
 	    if(current.ordered.second) {
-	      if(iopt==3) { 
-		interFB = fermion_[ix].second->
-		  evaluate(q2, iopt, internal, sbar[if2], sca2);
-	      }
-	      else {
-		interFB = fermion_[ix].second->
-		  evaluate(q2, iopt, internal, sbar[if2], sca2, 0.*GeV, 0.*GeV);
-	      }
+	      interFB = fermion_[ix].second->
+		evaluate(q2, 3, internal, sbar[if2], sca2);
 	      diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca1);
 	    }
 	    else {
-	      if(iopt==3) { 
-		interFB = fermion_[ix].second->
-		  evaluate(q2, iopt, internal, sbar[if2], sca1);
-	      }
-	      else {
-		interFB = fermion_[ix].second->
-		  evaluate(q2, iopt, internal, sbar[if2], sca1, 0.*GeV, 0.*GeV);
-	      }
+	      interFB = fermion_[ix].second->
+		evaluate(q2, 3, internal, sbar[if2], sca1);
 	      diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca2);
 	    }
 	  }
