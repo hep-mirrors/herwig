@@ -497,7 +497,8 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 		(outa == PDT::Colour3bar || outb == PDT::Colour3bar))||
 	       (ina==PDT::Colour3bar && inb == PDT::Colour3bar &&
 		(outa == PDT::Colour3 || outb == PDT::Colour3 ))) {
-	cfv[0] = make_pair(0,-1.);
+	double sign = diag.intermediate->iSpin()==PDT::Spin0 ? 1 : -1.;
+	cfv[0] = make_pair(0,sign);
       }
       else {
 	cfv[0] = make_pair(0,1.);
