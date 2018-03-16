@@ -107,7 +107,7 @@ double FIMDecaygx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
 
   double vijk = sqrt( sqr(2.*muj2+bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
   double viji = sqrt( sqr(bar*y)-4.*sqr(mui2) ) / (bar*y+2.*mui2);
-  double vbar = sqrt( 1.+sqr(mui2)+sqr(muj2)-2.*(mui2+muj2+mui2*muj2) ) / bar;
+  //double vbar = sqrt( 1.+sqr(mui2)+sqr(muj2)-2.*(mui2+muj2+mui2*muj2) ) / bar;
   
   double zp = 0.5*(1.+viji*vijk);
   double zm = 0.5*(1.-viji*vijk);
