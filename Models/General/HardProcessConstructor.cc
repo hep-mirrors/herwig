@@ -497,7 +497,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 		(outa == PDT::Colour3bar || outb == PDT::Colour3bar))||
 	       (ina==PDT::Colour3bar && inb == PDT::Colour3bar &&
 		(outa == PDT::Colour3 || outb == PDT::Colour3 ))) {
-	double sign = diag.intermediate->iSpin()==PDT::Spin0 ? 1 : -1.;
+	double sign = diag.intermediate->iSpin()==PDT::Spin0 ? -1 : 1.;
 	cfv[0] = make_pair(0,sign);
       }
       else {
@@ -526,8 +526,10 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	 (outb==PDT::Colour0 && outa==PDT::Colour3bar))
 	cfv[0] = make_pair(0,1.);
       else if((outa==PDT::Colour8 && outb==PDT::Colour3bar)||
-	      (outb==PDT::Colour8 && outa==PDT::Colour3bar))
-	cfv[0] = make_pair(2,1.);
+	      (outb==PDT::Colour8 && outa==PDT::Colour3bar)) {
+	double sign = diag.intermediate->iSpin()==PDT::Spin0 ? -1. : 1.;
+	cfv[0] = make_pair(2,sign);
+      }
     }
     else if(ina==PDT::Colour3bar && inb==PDT::Colour3bar ) {
       if((outa==PDT::Colour0 && outb==PDT::Colour3)||
