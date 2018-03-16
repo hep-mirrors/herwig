@@ -247,7 +247,15 @@ bool FIMassiveDecayKinematics::generateSplitting(double kappa, double xi, double
   
   // Have derived and checked the equations for zp1 and zm1, these apply to zPrime
   // phasespace constraint to incorporate ptMax
-  Energy hard=info.hardPt();
+  Energy hard = info.hardPt();
+
+  if(openZBoundaries()>0){
+    // From ptMax(..)
+    hard = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
+      ( 2.-2.*sqrt(muj2) ) * info.scale();
+    assert(pt<=hard);
+  }
+  
   double ptRatio = sqrt(1.-sqr(pt/hard));
   double zp1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
 		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
