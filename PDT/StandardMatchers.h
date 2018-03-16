@@ -205,6 +205,26 @@ struct ChargedLeptonMatcher: public MatcherType {
 };
 /** Gives a MatcherBase class based on ChargedLeptonMatcher. */
 typedef Matcher<ChargedLeptonMatcher> MatchChargedLepton;
-}
 
+/**
+ * A Matcher class which matches any light (<1GeV) particles
+ */
+struct LightParticleMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef LightParticleMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) {
+    return abs(pd.mass())<=GeV;
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "LightParticle"; }
+};
+
+/**
+ * Gives a MatcherBase class based on LightParticleatcher. 
+ */
+typedef Matcher<LightParticleMatcher> MatchLightParticle;
+
+}
 #endif /* Herwig_StandardMatchers_H */
