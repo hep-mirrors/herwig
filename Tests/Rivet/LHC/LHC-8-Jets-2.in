@@ -2,3 +2,5 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419070
 # ATLAS jet charge
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1393758
+# ATLAS transverse energy correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1609253
