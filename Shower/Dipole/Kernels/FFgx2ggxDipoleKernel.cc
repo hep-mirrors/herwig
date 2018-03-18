@@ -90,7 +90,6 @@ double FFgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
 
 void FFgx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
-
   os << theAsymmetryOption;
 }
 
@@ -112,4 +111,3 @@ void FFgx2ggxDipoleKernel::Init() {
      &FFgx2ggxDipoleKernel::theAsymmetryOption, 1, 0, 0,
      false, false, Interface::lowerlim);
 }
-

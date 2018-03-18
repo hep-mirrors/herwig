@@ -109,11 +109,8 @@ double FFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   }else{
     ret *= 3.*0.5*( S1 + S2 + NS );
   }
- 
-  ret *= 3.*(1./(1.-z*(1.-y))+ 0.5*(z*(1.-z)-(1.-kappa)*zp*zm-2.)/vijk);
 
-  return ret > 0. ? ret : 0.;
-  
+  return ret > 0. ? ret : 0.;  
 }
 
 // If needed, insert default implementations of  function defined
@@ -143,4 +140,3 @@ void FFMgx2ggxDipoleKernel::Init() {
    false, false, Interface::lowerlim);
 
 }
-
