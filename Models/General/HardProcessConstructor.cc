@@ -382,16 +382,19 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	 (outb==PDT::Colour0 && outa==PDT::Colour3bar))
 	cfv[0] = make_pair(0,1.);
       else if((outa==PDT::Colour8 && outb==PDT::Colour3bar)||
-	      (outb==PDT::Colour8 && outa==PDT::Colour3bar))
-	cfv[0] = make_pair(1,1.);
+	      (outb==PDT::Colour8 && outa==PDT::Colour3bar)) {
+	double sign = diag.intermediate->iSpin()==PDT::Spin0 ? -1. : 1.;
+	cfv[0] = make_pair(1,sign);
+      }
     }
     else if(ina==PDT::Colour3bar && inb==PDT::Colour3bar ) {
       if((outa==PDT::Colour0 && outb==PDT::Colour3)||
 	 (outb==PDT::Colour0 && outa==PDT::Colour3))
 	cfv[0] = make_pair(0,1.);
       else if((outa==PDT::Colour8 && outb==PDT::Colour3)||
-	      (outb==PDT::Colour8 && outa==PDT::Colour3))
+	      (outb==PDT::Colour8 && outa==PDT::Colour3)) {
 	cfv[0] = make_pair(1,1.);
+      }
     }
     else if((ina==PDT::Colour3    && inb==PDT::Colour8) ||
 	    (ina==PDT::Colour3bar && inb==PDT::Colour8) ||
