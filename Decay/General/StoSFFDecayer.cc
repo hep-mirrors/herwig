@@ -59,7 +59,8 @@ threeBodyMEIntegrator(const DecayMode & ) const {
 }
 
 void StoSFFDecayer::doinit() {
-  GeneralThreeBodyDecayer::doinit(); 
+  GeneralThreeBodyDecayer::doinit();
+  if(outgoing().empty()) return;
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
   fer_.resize(ndiags);

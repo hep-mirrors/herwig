@@ -152,11 +152,15 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
     if( i != 3 ) refTagCC_ += string(",");
   }
   // set the colour factors and return the answer
-  return setColourFactors(symfac);
+  if(setColourFactors(symfac)) return true;
+  incoming_= PDPtr();
+  outgoing_.clear();
+  return false;
 }
 
 void GeneralThreeBodyDecayer::doinit() {
   DecayIntegrator::doinit();
+  if(outgoing_.empty()) return;
   // create the phase space integrator
   tPDVector extpart(1,incoming_);
   extpart.insert(extpart.end(),outgoing_.begin(),outgoing_.end());
@@ -165,6 +169,8 @@ void GeneralThreeBodyDecayer::doinit() {
   DecayPhaseSpaceChannelPtr newchannel;
   // create the phase-space channels for the integration
   unsigned int nmode(0);
+  for(unsigned int ix=0;ix<extpart.size();++ix)
+    cerr << extpart[ix]->PDGName() << "\n";
   for(unsigned int ix=0;ix<diagrams_.size();++ix) {
     if(diagrams_[ix].channelType==TBDiagram::fourPoint||
        diagrams_[ix].channelType==TBDiagram::UNDEFINED) continue;
