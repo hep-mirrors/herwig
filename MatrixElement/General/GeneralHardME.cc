@@ -1068,8 +1068,8 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     break;
   case Colour3bar3barto31:
     static ColourLines f3bar3barto31[3]={ColourLines("-1 6, -2 6, 4 3 6"),
-					 ColourLines("-1 6, -3 -2 6, 4 6"),
-					 ColourLines("-1 -2 6, -3 6, 4 6")};
+					 ColourLines("-1 6, -3 2 6, 4 6"),
+					 ColourLines("-1 2 6, -3 6, 4 6")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1., &f3bar3barto31[0]);
     else if(current.channelType == HPDiagram::tChannel) {
