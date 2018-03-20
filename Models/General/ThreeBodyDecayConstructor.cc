@@ -237,7 +237,8 @@ createDecayMode(vector<NBDiagram> & mode,
   for(unsigned int iy=0;iy<mode.size();++iy) {
     diagrams.push_back(TBDiagram(mode[iy]));
     // determine the type
-    diagrams.back().channelType = TBDiagram::Channel(mode[iy].channelType[0]-1);
+    diagrams.back().channelType = diagrams.back().intermediate ?
+      TBDiagram::Channel(mode[iy].channelType[0]-1) : TBDiagram::fourPoint;
     // remove weak processes simulated using the weak current
     if(weakMassCut_>ZERO && diagrams.back().intermediate &&
        abs(diagrams.back().intermediate->id())==ParticleID::Wplus) {
