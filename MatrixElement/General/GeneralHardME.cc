@@ -697,15 +697,18 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
       sel.insert(1.,&f3bar8to3bar1[1]);
     break;
   case Colour38to83:
-    static ColourLines f38to83[4]={ColourLines("1 4, -4 2 -3, 3 5"),
+    static ColourLines f38to83[5]={ColourLines("1 4, -4 2 -3, 3 5"),
 				   ColourLines("1 -2, 2 3 4, 5 -4"),
 				   ColourLines("1 2 4, -4  -3, 3 -2 5"),
-				   ColourLines("1 2 -3, -4 -2  5, 3 4")};
+				   ColourLines("1 2 -3, -4 -2  5, 3 4"),
+				   ColourLines("1 5, 3 4, -3 -4")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1.,&f38to83[1]);
     else {
       if(current.intermediate->iColour() == PDT::Colour8)
 	sel.insert(1.,&f38to83[flow_+2]);
+      else if(current.intermediate->iColour() == PDT::Colour0)
+	sel.insert(1.,&f38to83[4]);
       else
 	sel.insert(1.,&f38to83[0]);
     }
