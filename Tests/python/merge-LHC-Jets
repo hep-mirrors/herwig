@@ -1420,7 +1420,21 @@ for i in range(1,15) :
 logging.info("Processing ATLAS_2016_CONF_2016_092")
 for i in range(1,7) :
     mergeByPt("/ATLAS_2016_CONF_2016_092/d%02d-x01-y01" % i, "13000")
-aopath.find("")>0
+    
+logging.info("Processing ATLAS_2017_I1609253")
+useOnePt( "/ATLAS_2017_I1609253/d01-x01-y01",  "8000", "260" )
+useOnePt( "/ATLAS_2017_I1609253/d02-x01-y01",  "8000", "260" )
+useOnePt( "/ATLAS_2017_I1609253/d03-x01-y01",  "8000", "260" )
+useOnePt( "/ATLAS_2017_I1609253/d04-x01-y01",  "8000", "260" )
+useOnePt( "/ATLAS_2017_I1609253/d05-x01-y01",  "8000", "400" )
+useOnePt( "/ATLAS_2017_I1609253/d06-x01-y01",  "8000", "400" )
+useOnePt( "/ATLAS_2017_I1609253/d07-x01-y01",  "8000", "400" )
+useOnePt( "/ATLAS_2017_I1609253/d08-x01-y01",  "8000", "400" )
+useOnePt( "/ATLAS_2017_I1609253/d09-x01-y01",  "8000", "400" )
+useOnePt( "/ATLAS_2017_I1609253/d10-x01-y01",  "8000", "400" )
+useOnePt( "/ATLAS_2017_I1609253/d11-x01-y01",  "8000", "600" )
+useOnePt( "/ATLAS_2017_I1609253/d12-x01-y01",  "8000", "600" )
+
 # Choose output file
 name = args[0]+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)
