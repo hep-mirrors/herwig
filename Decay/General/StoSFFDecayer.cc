@@ -26,11 +26,11 @@ IBPtr StoSFFDecayer::fullclone() const {
 }
 
 void StoSFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << sca_ << fer_ << vec_ << ten_;
+  os << sca_ << fer_ << vec_ << ten_ << RSfer_ << four_;
 }
 
 void StoSFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> sca_ >> fer_ >> vec_ >> ten_;
+  is >> sca_ >> fer_ >> vec_ >> ten_ >> RSfer_ >> four_;
 }
 
 // The following static variable is needed for the type
@@ -64,11 +64,18 @@ void StoSFFDecayer::doinit() {
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
   fer_.resize(ndiags);
+  RSfer_.resize(ndiags);
   vec_.resize(ndiags);
   ten_.resize(ndiags);
+  four_.resize(ndiags);
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
+    // four point vertex
+    if(!offshell) {
+      four_[ix] = dynamic_ptr_cast<AbstractFFSSVertexPtr>(current.vertices.first);
+      continue;
+    }
     if( offshell->CC() ) offshell = offshell->CC();
     if(offshell->iSpin() == PDT::Spin0) {
       AbstractSSSVertexPtr vert1 = dynamic_ptr_cast<AbstractSSSVertexPtr>
@@ -109,6 +116,16 @@ void StoSFFDecayer::doinit() {
 	<< "Invalid vertices for a tensor diagram in StoSFFDecayer::doinit()"
 	<< Exception::runerror;
       ten_[ix] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin3Half) {
+      AbstractRFSVertexPtr vert1 = dynamic_ptr_cast<AbstractRFSVertexPtr>
+	(current.vertices.first);
+      AbstractRFSVertexPtr vert2 = dynamic_ptr_cast<AbstractRFSVertexPtr>
+	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a RS fermion diagram in StoSFFDecayer::doinit()"
+	<< Exception::runerror;
+      RSfer_[ix] = make_pair(vert1, vert2);
     }
   }
 }
@@ -197,61 +214,62 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
 	  continue;
 	}
 	tcPDPtr offshell = dit->intermediate;
-	if(cc&&offshell->CC()) offshell=offshell->CC();
 	Complex diag;
-	double sign = out3[dit->channelType] < out2[dit->channelType] ? 1. : -1.;
-	// intermediate scalar
-	if     (offshell->iSpin() == PDT::Spin0) {
-	  ScalarWaveFunction inters = sca_[idiag].first->
-	    evaluate(scale, widthOption(), offshell, swave_, outScalar);
-	  unsigned int h1(s1),h2(s2);
-	  if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
-	  if(decay[out2[dit->channelType]]->id()<0&&
-	     decay[out3[dit->channelType]]->id()>0) {
-	    diag =-sign*sca_[idiag].second->
-	      evaluate(scale,
-		       outspin_[out2[dit->channelType]].first [h1],
-		       outspin_[out3[dit->channelType]].second[h2],inters);
+	if(offshell) {
+	  if(cc&&offshell->CC()) offshell=offshell->CC();
+	  double sign = out3[dit->channelType] < out2[dit->channelType] ? 1. : -1.;
+	  // intermediate scalar
+	  if     (offshell->iSpin() == PDT::Spin0) {
+	    ScalarWaveFunction inters = sca_[idiag].first->
+	      evaluate(scale, widthOption(), offshell, swave_, outScalar);
+	    unsigned int h1(s1),h2(s2);
+	    if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
+	    if(decay[out2[dit->channelType]]->id()<0&&
+	       decay[out3[dit->channelType]]->id()>0) {
+	      diag =-sign*sca_[idiag].second->
+		evaluate(scale,
+			 outspin_[out2[dit->channelType]].first [h1],
+			 outspin_[out3[dit->channelType]].second[h2],inters);
+	    }
+	    else {
+	      diag = sign*sca_[idiag].second->
+		evaluate(scale,
+			 outspin_[out3[dit->channelType]].first [h2],
+			 outspin_[out2[dit->channelType]].second[h1],inters);
+	    }
 	  }
-	  else {
-	    diag = sign*sca_[idiag].second->
-	      evaluate(scale,
-		       outspin_[out3[dit->channelType]].first [h2],
-		       outspin_[out2[dit->channelType]].second[h1],inters);
-	  }
-	}
-	// intermediate fermion
-	else if(offshell->iSpin() == PDT::Spin1Half) {
-	  int iferm = 
-	    decay[out2[dit->channelType]]->dataPtr()->iSpin()==PDT::Spin1Half
-	    ? out2[dit->channelType] : out3[dit->channelType];
-	  unsigned int h1(s1),h2(s2);
-	  if(dit->channelType>iferm) swap(h1,h2);
-	  sign = iferm<dit->channelType ? 1. : -1.;
-
-
-	  if((decay[dit->channelType]->id() < 0 &&decay[iferm]->id() > 0 ) ||
-	     (decay[dit->channelType]->id()*offshell->id()>0)) {
-	    SpinorWaveFunction    inters = fer_[idiag].first->
-	      evaluate(scale,widthOption(),offshell,
-		       outspin_[dit->channelType].first [h1],swave_);
-	    diag = -sign*fer_[idiag].second->
-	      evaluate(scale,inters,outspin_[iferm].second[h2],outScalar);
-	  }
-	  else {
+	  // intermediate fermion
+	  else if(offshell->iSpin() == PDT::Spin1Half) {
+	    int iferm = 
+	      decay[out2[dit->channelType]]->dataPtr()->iSpin()==PDT::Spin1Half
+	      ? out2[dit->channelType] : out3[dit->channelType];
+	    unsigned int h1(s1),h2(s2);
+	    if(dit->channelType>iferm) swap(h1,h2);
+	    sign = iferm<dit->channelType ? 1. : -1.;
+	    
+	    
+	    if((decay[dit->channelType]->id() < 0 &&decay[iferm]->id() > 0 ) ||
+	       (decay[dit->channelType]->id()*offshell->id()>0)) {
+	      SpinorWaveFunction    inters = fer_[idiag].first->
+		evaluate(scale,widthOption(),offshell,
+			 outspin_[dit->channelType].first [h1],swave_);
+	      diag = -sign*fer_[idiag].second->
+		evaluate(scale,inters,outspin_[iferm].second[h2],outScalar);
+	    }
+	    else {
 	    SpinorBarWaveFunction inters = fer_[idiag].first->
 	      evaluate(scale,widthOption(),offshell,
 		       outspin_[dit->channelType].second[h1],swave_);
 	    diag =  sign*fer_[idiag].second->
 	      evaluate(scale,outspin_[iferm].first [h2],inters,outScalar);
+	    }
 	  }
-	}
-	// intermediate vector
-	else if(offshell->iSpin() == PDT::Spin1) {
-	  VectorWaveFunction interv = vec_[idiag].first->
-	    evaluate(scale, widthOption(), offshell, swave_, outScalar);
-	  unsigned int h1(s1),h2(s2);
-	  if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
+	  // intermediate vector
+	  else if(offshell->iSpin() == PDT::Spin1) {
+	    VectorWaveFunction interv = vec_[idiag].first->
+	      evaluate(scale, widthOption(), offshell, swave_, outScalar);
+	    unsigned int h1(s1),h2(s2);
+	    if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
 	  if(decay[out2[dit->channelType]]->id()<0&&
 	     decay[out3[dit->channelType]]->id()>0) {
 	    diag =-sign*vec_[idiag].second->
@@ -265,31 +283,71 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
 		       outspin_[out3[dit->channelType]].first [h2],
 		       outspin_[out2[dit->channelType]].second[h1],interv);
 	  }
-	}
-	// intermediate tensor
-	else if(offshell->iSpin() == PDT::Spin2) {
- 	  TensorWaveFunction intert = ten_[idiag].first->
-	    evaluate(scale, widthOption(), offshell, swave_, outScalar);
-	  unsigned int h1(s1),h2(s2);
-	  if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
-	  if(decay[out2[dit->channelType]]->id()<0&&
-	     decay[out3[dit->channelType]]->id()>0) {
-	    diag =-sign*ten_[idiag].second->
-	      evaluate(scale,
-		       outspin_[out2[dit->channelType]].first [h1],
-		       outspin_[out3[dit->channelType]].second[h2],intert);
 	  }
-	  else {
-	    diag = sign*ten_[idiag].second->
-	      evaluate(scale,
-		       outspin_[out3[dit->channelType]].first [h2],
-		       outspin_[out2[dit->channelType]].second[h1],intert);
+	  // intermediate tensor
+	  else if(offshell->iSpin() == PDT::Spin2) {
+	    TensorWaveFunction intert = ten_[idiag].first->
+	      evaluate(scale, widthOption(), offshell, swave_, outScalar);
+	    unsigned int h1(s1),h2(s2);
+	    if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
+	    if(decay[out2[dit->channelType]]->id()<0&&
+	       decay[out3[dit->channelType]]->id()>0) {
+	      diag =-sign*ten_[idiag].second->
+		evaluate(scale,
+			 outspin_[out2[dit->channelType]].first [h1],
+			 outspin_[out3[dit->channelType]].second[h2],intert);
+	    }
+	    else {
+	      diag = sign*ten_[idiag].second->
+		evaluate(scale,
+			 outspin_[out3[dit->channelType]].first [h2],
+			 outspin_[out2[dit->channelType]].second[h1],intert);
+	    }
 	  }
+	  // intermediate RS fermion
+	  else if(offshell->iSpin() == PDT::Spin3Half) {
+	    int iferm = 
+	      decay[out2[dit->channelType]]->dataPtr()->iSpin()==PDT::Spin1Half
+	      ? out2[dit->channelType] : out3[dit->channelType];
+	    unsigned int h1(s1),h2(s2);
+	    if(dit->channelType>iferm) swap(h1,h2);
+	    sign = iferm<dit->channelType ? 1. : -1.;
+	    if((decay[dit->channelType]->id() < 0 &&decay[iferm]->id() > 0 ) ||
+	       (decay[dit->channelType]->id()*offshell->id()>0)) {
+	      RSSpinorWaveFunction    inters = RSfer_[idiag].first->
+		evaluate(scale,widthOption(),offshell,
+			 outspin_[dit->channelType].first [h1],swave_);
+	      diag = -sign*RSfer_[idiag].second->
+		evaluate(scale,inters,outspin_[iferm].second[h2],outScalar);
+	    }
+	    else {
+	      RSSpinorBarWaveFunction inters = RSfer_[idiag].first->
+		evaluate(scale,widthOption(),offshell,
+			 outspin_[dit->channelType].second[h1],swave_);
+	      diag =  sign*RSfer_[idiag].second->
+		evaluate(scale,outspin_[iferm].first [h2],inters,outScalar);
+	    }
+	  }
+	  // unknown
+	  else throw Exception()
+		 << "Unknown intermediate in StoSFFDecayer::me2()" 
+		 << Exception::runerror;
 	}
-	// unknown
-	else throw Exception()
-	  << "Unknown intermediate in StoSFFDecayer::me2()" 
-	  << Exception::runerror;
+	// four point diagram
+	else {
+	    unsigned int o2 = isca > 0 ? 0 : 1;
+	    unsigned int o3 = isca < 2 ? 2 : 1;
+	    if(decay[o2]->id() < 0 && decay[o3]->id() > 0) {
+	      diag =-four_[idiag]->
+	    	evaluate(scale, outspin_[o2].first[s1],
+	    		 outspin_[o3].second[s2], outScalar, swave_);
+	    }
+	    else {
+	      diag = four_[idiag]->
+	    	evaluate(scale, outspin_[o3].first[s2],
+	    		 outspin_[o2].second[s1], outScalar, swave_);
+	    }
+	}
 	// matrix element for the different colour flows
 	if(ichan < 0) {
 	  for(unsigned iy = 0; iy < dit->colourFlow.size(); ++iy) {

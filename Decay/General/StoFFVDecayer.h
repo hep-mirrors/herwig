@@ -10,6 +10,9 @@
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVSVertex.h"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -112,6 +115,11 @@ private:
    * Store the vertices for fermion intrermediate
    */
   vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fer_;
+  
+  /**
+   * Store the vertices for fermion intrermediate
+   */
+  vector<pair<AbstractRFSVertexPtr, AbstractRFVVertexPtr> > RSfer_;
 
   /**
    * Store the vertices for scalar intrermediate
@@ -122,6 +130,11 @@ private:
    * Store the vertices for vector intrermediate
    */
   vector<pair<AbstractVVSVertexPtr, AbstractFFVVertexPtr> > vec_;
+
+  /**
+   * Store the vertices for 4-point diagrams
+   */
+  vector<AbstractFFVSVertexPtr> four_;
 
   /**
    *  Spin density matrix

@@ -151,6 +151,22 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
     refTagCC_ += (**dit).name();
     if( i != 3 ) refTagCC_ += string(",");
   }
+  // check if intermeidates or only four point diagrams
+  bool intermediates(false);
+  for(auto diagram : diagrams_) {
+    if(diagram.intermediate) {
+      intermediates=true;
+      break;
+    }
+  }
+  if(!intermediates) {
+    incoming_= PDPtr();
+    outgoing_.clear();
+    generator()->log() << "Only four body diagrams for decay "
+		       << refTag_  << " in GeneralThreeBodyDecayer::"
+		       << "setDecayInfo(), omitting decay\n";
+    return false;
+  }
   // set the colour factors and return the answer
   if(setColourFactors(symfac)) return true;
   incoming_= PDPtr();
@@ -169,8 +185,6 @@ void GeneralThreeBodyDecayer::doinit() {
   DecayPhaseSpaceChannelPtr newchannel;
   // create the phase-space channels for the integration
   unsigned int nmode(0);
-  for(unsigned int ix=0;ix<extpart.size();++ix)
-    cerr << extpart[ix]->PDGName() << "\n";
   for(unsigned int ix=0;ix<diagrams_.size();++ix) {
     if(diagrams_[ix].channelType==TBDiagram::fourPoint||
        diagrams_[ix].channelType==TBDiagram::UNDEFINED) continue;

@@ -8,10 +8,12 @@
 #include "GeneralThreeBodyDecayer.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSSVertex.h"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -111,24 +113,34 @@ private:
 private:
   
   /**
-   * Store the vertices for scalar intrermediate
+   * Store the vertices for scalar intermediate
    */
   vector<pair<AbstractSSSVertexPtr, AbstractFFSVertexPtr> > sca_;
 
   /**
-   * Store the vertices for fermion intrermediate
+   * Store the vertices for spin-\f$\frac12\f$ fermion intermediate
    */
   vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > fer_;
 
   /**
-   * Store the vertices for vector intrermediate
+   * Store the vertices for spin-\f$\frac32\f$  fermion intermediate
+   */
+  vector<pair<AbstractRFSVertexPtr, AbstractRFSVertexPtr> > RSfer_;
+
+  /**
+   * Store the vertices for vector intermediate
    */
   vector<pair<AbstractVSSVertexPtr, AbstractFFVVertexPtr> > vec_;
 
   /**
-   * Store the vertices for tensor intrermediate
+   * Store the vertices for tensor intermediate
    */
   vector<pair<AbstractSSTVertexPtr, AbstractFFTVertexPtr> > ten_;
+
+  /**
+   * Store the vertices for four point diagrams
+   */
+  vector<AbstractFFSSVertexPtr> four_;
 
   /**
    *  Spin density matrix
