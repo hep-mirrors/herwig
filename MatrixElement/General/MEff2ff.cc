@@ -229,6 +229,7 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
+	    if(offshell->CC()) offshell=offshell->CC();
 	    if(current.channelType == HPDiagram::tChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
@@ -274,7 +275,6 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
-	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 1, offshell,spin_[3][ofhel2],sbar_[2][ofhel1]);
@@ -345,6 +345,7 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
+	    if(offshell->CC()) offshell=offshell->CC();
 	    if(current.channelType == HPDiagram::tChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
@@ -390,7 +391,6 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
-	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 1, offshell,spin_[3][ofhel2],sbar_[2][ofhel1]);
