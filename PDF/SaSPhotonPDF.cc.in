@@ -55,6 +55,7 @@ double SaSPhotonPDF::xfl(tcPDPtr, tcPDPtr parton, Energy2 partonScale,
   float f2gm=0.;
   float xpdf[13];
   int iloc = parton->id()!=ParticleID::g ? 6+parton->id() : 6;
+  assert(x>=0. && x<=1.);
   SASGAM_F77(&iset_,&x,&q2,&p2,&ip_,&f2gm,xpdf);
   // cerr << "testing " << partonScale/GeV2 << " " << particleScale/GeV2 << " " << x << "\n";
   // for(unsigned int ix=0;ix<13;++ix)
