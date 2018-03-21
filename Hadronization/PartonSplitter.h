@@ -30,8 +30,13 @@ using namespace ThePEG;
  *  immediately after the end of the showering (both initial and final),
  *  as very first step of the cluster hadronization.
  *
- *  \todo change so quark weights can be varied and quarks other
- *        than u and d can be produced
+ *  the quarks are attributed with different weights for the splitting
+ *  by default only the splitting in u and d quarks is allowed
+ *  the option "set /Herwig/Hadronization/PartonSplitter:Split 1"
+ *  allows for additional splitting into s quarks based on some weight
+ *  in order for that to work the mass of the strange quark has to be changed 
+ *  from the default value s.t. m_g > 2m_s
+ *       
  *
  * * @see \ref PartonSplitterInterfaces "The interfaces"
  * defined for PartonSplitter.
@@ -43,7 +48,12 @@ public:
   /**
    *  Default constructor
    */
-  PartonSplitter() : _gluonDistance(ZERO)
+  PartonSplitter() :
+	 _splitPwtUquark(1),
+	 _splitPwtDquark(1),
+	 _splitPwtSquark(0.5),
+	 _gluonDistance(ZERO),
+	 _splitGluon(0)
   {}
 
   /**
@@ -108,7 +118,8 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-  //@}
+
+//@}
 
 private:
 
@@ -126,6 +137,12 @@ private:
    */
   void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
+  // probabilities for the different quark types
+  double _splitPwtUquark;
+  double _splitPwtDquark;
+  double _splitPwtSquark;
+
+
 private:
 
   /**
@@ -134,9 +151,20 @@ private:
   Selector<PDPtr,double> _quarkSelector;
 
   /**
+   * A pointer to a Herwig::HadronSelector object for generating hadrons.
+   */
+
+  /**
    *   c tau for gluon decays
    */
   Length _gluonDistance;
+
+    /**
+   * Flag used to determine between normal gluon splitting and alternative gluon splitting
+   */
+  int _splitGluon;
+
+
 };
 
 }
