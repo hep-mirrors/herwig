@@ -24,6 +24,7 @@ RivetFixedOrder.in \
 Rivet.in \
 SoftModel.in \
 SoftTune.in \
+BaryonicReconnection.in \
 CMWinQtiledShower.in \
 YFS.in
 

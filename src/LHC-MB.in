@@ -30,9 +30,17 @@ read snippets/SoftTune.in
 # Diffraction model
 read snippets/Diffraction.in
 
+# Read in snippet in order to use baryonic reconnection model with modified gluon splitting (uds)
+# For more details see [S. Gieseke, P. Kirchgaeßer, S. Plätzer. arXiv:1710.10906]]
+##############################################################################################
+
+# read snippets/BaryonicReconnection.in
+
+
 ##################################################
 # Analyses
 ##################################################
+
 
 # cd /Herwig/Analysis
 # create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
