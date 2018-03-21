@@ -51,6 +51,7 @@ LEP-Matchbox.in \
 LHC-ADD.in \
 LHC-CEX.in \
 LHC-GammaGamma.in \
+LHC-ResolvedGammaGamma.in \
 LHC.in \
 LHC-Matchbox.in \
 LHC-LQ.in \
@@ -131,7 +132,7 @@ check-Matchbox: $(check_Matchbox)
 
 check-valgrind-Matchbox: $(check_Matchbox_valgrind)
 
-check-extra: check-LHC-CEX check-LHC-GammaGamma check-LHC-MB check-TVT
+check-extra: check-LHC-CEX check-LHC-GammaGammacheck-LHC-ResolvedGammaGamma check-LHC-MB check-TVT
 
 check-valgrind-extra: check-valgrind-LHC-CEX check-valgrind-LHC-GammaGamma check-valgrind-LHC-MB check-valgrind-TVT
 

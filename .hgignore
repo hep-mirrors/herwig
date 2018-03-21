@@ -79,6 +79,7 @@ Makefile\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
+PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2herwig.py$
