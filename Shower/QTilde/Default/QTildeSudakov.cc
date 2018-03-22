@@ -533,9 +533,19 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
   root = sqrt(root);
   double denom  = (-2.*A*B*C*D*c01 + A2*D2 + B2*C2);
   double denom2 = (-B*C*c01 + A*D);
+
   double num    = B2*C*D*s012;
-  return make_pair(atan2(B*s01*(-C*(num + root) / denom + D) / denom2, -(num + root ) / denom) + phi0,
-		   atan2(B*s01*(-C*(num - root) / denom + D) / denom2, -(num - root ) / denom) + phi0);
+  double y1 = B*s01*(-C*(num + root) + D*denom) / denom2;
+  double y2 = B*s01*(-C*(num - root) + D*denom) / denom2;
+  double x1 = -(num + root );
+  double x2 = -(num - root );
+  if(denom<0.) {
+    y1*=-1.;
+    y2*=-1.;
+    x1*=-1.;
+    x2*=-1.;
+  }
+  return make_pair(atan2(y1,x1) + phi0,atan2(y2,x2) + phi0);
 }
 
 }
