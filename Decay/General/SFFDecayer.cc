@@ -35,13 +35,15 @@ IBPtr SFFDecayer::fullclone() const {
 }
 
 void SFFDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & inV,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> ) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractFFSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<FFSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_             .push_back(dynamic_ptr_cast<AbstractFFSVertexPtr>(vert));
+    perturbativeVertex_ .push_back(dynamic_ptr_cast<FFSVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
@@ -108,13 +110,17 @@ double SFFDecayer::me2(const int , const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int ifm = 0; ifm < 2; ++ifm){
     for(unsigned int ia = 0; ia < 2; ++ia) {
-      if(iferm > ianti){
-	(*ME())(0, ia, ifm) = vertex_->evaluate(scale,wave_[ia],
-						     wavebar_[ifm],swave_);
-      }
-      else {
-	(*ME())(0, ifm, ia) = vertex_->evaluate(scale,wave_[ia],
-						     wavebar_[ifm],swave_);	
+      if(iferm > ianti) (*ME())(0, ia, ifm) = 0.;
+      else              (*ME())(0, ifm, ia) = 0.;
+      for(auto vert : vertex_) {
+	if(iferm > ianti){
+	  (*ME())(0, ia, ifm) += vert->evaluate(scale,wave_[ia],
+						wavebar_[ifm],swave_);
+	}
+	else {
+	  (*ME())(0, ifm, ia) += vert->evaluate(scale,wave_[ia],
+						wavebar_[ifm],swave_);
+	}
       }
     }
   }
@@ -130,13 +136,14 @@ double SFFDecayer::me2(const int , const Particle & inpart,
 Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(sqr(inpart.second), outb.first, outa.first,
+    perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outb.first, outa.first,
 				     in);
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
-    double c2 = norm(perturbativeVertex_->norm());
-    Complex al(perturbativeVertex_->left()), ar(perturbativeVertex_->right());
+    double c2 = norm(perturbativeVertex_[0]->norm());
+    Complex al(perturbativeVertex_[0]->left()), ar(perturbativeVertex_[0]->right());
     double me2 = -c2*( (norm(al) + norm(ar))*( sqr(mu1) + sqr(mu2) - 1.)
 		       + 2.*(ar*conj(al) + al*conj(ar)).real()*mu1*mu2 );
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
@@ -247,8 +254,10 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    gs = abs(incomingVertex_[inter]->norm());
 	    couplingSet = true;
 	  }
-	  Complex diag = vertex_->evaluate(scale,wave3_[ia],
-					   wavebar3_[ifm],scalarInter);
+	  Complex diag = 0.;
+	  for(auto vertex : vertex_)
+	    diag += vertex->evaluate(scale,wave3_[ia],
+				     wavebar3_[ifm],scalarInter);
 	  for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
 	    (*ME[colourFlow[0][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[0][ix].second*diag;
@@ -274,7 +283,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    gs = abs(outgoingVertexF->norm());
 	    couplingSet = true;
 	  }
-	  Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,swave3_);
+	  Complex diag = 0.;
+	  for(auto vertex : vertex_)
+	    diag += vertex->evaluate(scale,wave3_[ia], interS,swave3_);
 	  for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
 	    (*ME[colourFlow[1][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[1][ix].second*diag;
@@ -301,7 +312,9 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    gs = abs(outgoingVertexA->norm());
 	    couplingSet = true;
 	  }
-	  Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],swave3_);
+	  Complex diag = 0.;
+	  for(auto vertex : vertex_)
+	    diag += vertex->evaluate(scale,interS,wavebar3_[ifm],swave3_);
 	  for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
 	    (*ME[colourFlow[2][ix].first])(0, ia, ifm, ig) += 
 	      colourFlow[2][ix].second*diag;

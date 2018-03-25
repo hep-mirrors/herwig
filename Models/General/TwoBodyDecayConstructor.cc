@@ -141,7 +141,7 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
 
 GeneralTwoBodyDecayerPtr
 TwoBodyDecayConstructor::createDecayer(TwoBodyDecay decay,
-				       vector<tVertexBasePtr> vertices) {
+				       vector<VertexBasePtr> vertices) {
   string name;
   using namespace Helicity::VertexType;
   PDT::Spin in   = decay.parent_->iSpin();
@@ -277,7 +277,7 @@ TwoBodyDecayConstructor::createDecayer(TwoBodyDecay decay,
   }
 
   // set info on decay
-  decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_,
+  decayer->setDecayInfo(decay.parent_,decay.children_,vertices,
   			inRad,outRad,fourRad);
   // initialised the decayer
   setDecayerInterfaces(fullname.str());
@@ -301,7 +301,7 @@ createDecayMode(multiset<TwoBodyDecay> & decays) {
     // Does it exist already ?
     tDMPtr dm = generator()->findDecayMode(tag);
     // find the vertices
-    vector<tVertexBasePtr> vertices;
+    vector<VertexBasePtr> vertices;
     for ( multiset<TwoBodyDecay>::iterator dit2 = range.first;
 	  dit2 != range.second; ++dit2) {
       vertices.push_back(dit2->vertex_);

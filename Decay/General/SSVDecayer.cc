@@ -33,13 +33,15 @@ IBPtr SSVDecayer::fullclone() const {
 }
 
 void SSVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & inV,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> fourV) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractVSSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<VSSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractVSSVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<VSSVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter]  = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
@@ -116,12 +118,18 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   //make sure decay matrix element is in the correct order
   double output(0.);
   if(ivec == 0) {
-    for(unsigned int ix = 0; ix < 3; ++ix)
-      (*ME())(0, ix, 0) = vertex_->evaluate(scale,vector_[ix],sca, swave_);
+    for(unsigned int ix = 0; ix < 3; ++ix) {
+      (*ME())(0, ix, 0) = 0.;
+      for(auto vert : vertex_)
+	(*ME())(0, ix, 0) += vert->evaluate(scale,vector_[ix],sca, swave_);
+    }
   }
   else {
-    for(unsigned int ix = 0; ix < 3; ++ix)
-      (*ME())(0, 0, ix) = vertex_->evaluate(scale,vector_[ix],sca,swave_);
+    for(unsigned int ix = 0; ix < 3; ++ix) {
+      (*ME())(0, 0, ix) = 0.;
+      for(auto vert : vertex_)
+	(*ME())(0, 0, ix) += vert->evaluate(scale,vector_[ix],sca,swave_);
+    }
   }
   output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
@@ -134,16 +142,17 @@ double SSVDecayer::me2(const int , const Particle & inpart,
 Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa, 
 				 PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     double mu1sq(sqr(outa.second/inpart.second)),
       mu2sq(sqr(outb.second/inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if(outa.first->iSpin() == PDT::Spin0) {
-      perturbativeVertex_->setCoupling(sqr(inpart.second), outb.first, outa.first,in);
+      perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outb.first, outa.first,in);
     }
     else {
       swap(mu1sq,mu2sq);
-      perturbativeVertex_->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
+      perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
     }
     double me2(0.);
     if(mu2sq == 0.) 
@@ -152,7 +161,7 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
       me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					       outb.second);
-    Energy output = pcm*me2*norm(perturbativeVertex_->norm())/8./Constants::pi;
+    Energy output = pcm*me2*norm(perturbativeVertex_[0]->norm())/8./Constants::pi;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
@@ -248,7 +257,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 					   gluon_[2*ig],swave3_,inpart.mass());
 	
 	assert(swave3_.particle()->id()==scalarInter.particle()->id());
-	Complex diag = vertex_->evaluate(scale,vector3_[iv],scal,scalarInter);
+	Complex diag = 0.;
+	for(auto vertex : vertex_)
+	  diag += vertex->evaluate(scale,vector3_[iv],scal,scalarInter);
 	if(!couplingSet) {
 	  gs = abs(incomingVertex_[inter]->norm());
 	  couplingSet = true;
@@ -277,7 +288,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	  gs = abs(outgoingVertexS_[inter]->norm());
 	  couplingSet = true;
 	}
-	Complex diag = vertex_->evaluate(scale,vector3_[iv],scalarInter,swave3_);
+	Complex diag = 0.;
+	for(auto vertex : vertex_)
+	  diag += vertex->evaluate(scale,vector3_[iv],scalarInter,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[S].size();++ix) {
 	  (*ME[colourFlow[S][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[S][ix].second*diag;
@@ -304,7 +317,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	  gs = abs(outgoingVertexV_[inter]->norm());
 	  couplingSet = true;
 	}	
-	Complex diag = vertex_->evaluate(scale,vectorInter,scal,swave3_);
+	Complex diag = 0.;
+	for(auto vertex : vertex_)
+	  diag += vertex->evaluate(scale,vectorInter,scal,swave3_);
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
 	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[V][ix].second*diag;

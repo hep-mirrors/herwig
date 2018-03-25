@@ -66,7 +66,14 @@ public:
    *  Has a POWHEG style correction
    */
   virtual POWHEGType hasPOWHEGCorrection()  {
-    return (vertex_->orderInGem()+vertex_->orderInGs())==1 ? FSR : No;
+    POWHEGType output = FSR;
+    for(auto vertex : vertex_) {
+      if(vertex->orderInAllCouplings()!=1) {
+	output = No;
+	break;
+      }
+    }
+    return output;
   }
 
   /**
@@ -79,7 +86,8 @@ public:
   /**
    *  Set the information on the decay
    */
-  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing,
+			    vector<VertexBasePtr>,
 			    map<ShowerInteraction,VertexBasePtr> &,
 			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
 			    map<ShowerInteraction,VertexBasePtr>);
@@ -141,12 +149,12 @@ private:
   /**
    *  Abstract pointer to AbstractFFTVertex
    */
-  AbstractFFTVertexPtr vertex_;
+  vector<AbstractFFTVertexPtr> vertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  FFTVertexPtr perturbativeVertex_;
+  vector<FFTVertexPtr> perturbativeVertex_;
 
   /**
    *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing (anti)fermion

@@ -21,13 +21,15 @@ IBPtr VVSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 void VVSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & inV,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr>) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractVVSVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<VVSVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter]  = dynamic_ptr_cast<AbstractVVVVertexPtr>(inV.at(inter));
@@ -99,8 +101,10 @@ double VVSDecayer::me2(const int , const Particle & inpart,
   for(unsigned int in=0;in<3;++in) {
     for(unsigned int out=0;out<3;++out) {
       if(massless&&out==1) ++out;
-      (*ME())(in,out,0) = 
-	vertex_->evaluate(scale,vectors_[0][in],vectors_[1][out],sca);
+      (*ME())(in,out,0) = 0.;
+      for(auto vert : vertex_)
+	(*ME())(in,out,0) += 
+	  vert->evaluate(scale,vectors_[0][in],vectors_[1][out],sca);
     }
   }
   double output=(ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
@@ -114,20 +118,21 @@ double VVSDecayer::me2(const int , const Particle & inpart,
 Energy VVSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     Energy2 scale(sqr(inpart.second));
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if( outb.first->iSpin() == PDT::Spin0 )
-      perturbativeVertex_->setCoupling(sqr(inpart.second), in, 
+      perturbativeVertex_[0]->setCoupling(sqr(inpart.second), in, 
 				       outa.first, outb.first);
     else {
-      perturbativeVertex_->setCoupling(sqr(inpart.second), in, 
+      perturbativeVertex_[0]->setCoupling(sqr(inpart.second), in, 
 				       outb.first, outa.first);
       swap(mu1sq, mu2sq);
     }
-    double vn = norm(perturbativeVertex_->norm());
+    double vn = norm(perturbativeVertex_[0]->norm());
     if(vn == ZERO || mu1sq == ZERO) return ZERO;
     double me2 = 2. + 0.25*sqr(1. + mu1sq - mu2sq)/mu1sq;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
@@ -212,7 +217,9 @@ double VVSDecayer::threeBodyME(const int , const Particle & inpart,
 					      gluon_[2*ig],inpart.mass());
 	   
 	   assert(vectors3_[0][iv0].particle()->id()==vectorInter.particle()->id());
-	   Complex diag = vertex_->evaluate(scale,vectorInter,vectors3_[1][iv1],scal);
+	   Complex diag = 0.;
+	   for(auto vertex : vertex_)
+	     diag += vertex->evaluate(scale,vectorInter,vectors3_[1][iv1],scal);
 	   if(!couplingSet) {
 	     gs = abs(incomingVertex_[inter]->norm());
 	     couplingSet = true;
@@ -237,7 +244,9 @@ double VVSDecayer::threeBodyME(const int , const Particle & inpart,
 	   
 	   assert(vectors3_[1][iv1].particle()->id()==vectorInter.particle()->id());
 	   
-	   Complex diag =vertex_->evaluate(scale,vectors3_[0][iv0],vectorInter,scal);
+	   Complex diag = 0.;
+	   for(auto vertex : vertex_)
+	     diag += vertex->evaluate(scale,vectors3_[0][iv0],vectorInter,scal);
 	   if(!couplingSet) {
 	     gs = abs(outgoingVertexV_[inter]->norm());
 	     couplingSet = true;
@@ -262,7 +271,9 @@ double VVSDecayer::threeBodyME(const int , const Particle & inpart,
 	
 	   assert(scal.particle()->id()==scalarInter.particle()->id());
 	 
-	   Complex diag = vertex_->evaluate(scale,vectors3_[0][iv0],vectors3_[1][iv1],scalarInter);
+	   Complex diag = 0.;
+	   for(auto vertex : vertex_)
+	     diag += vertex->evaluate(scale,vectors3_[0][iv0],vectors3_[1][iv1],scalarInter);
 	   if(!couplingSet) {
 	     gs = abs(outgoingVertexS_[inter]->norm());
 	     couplingSet = true;

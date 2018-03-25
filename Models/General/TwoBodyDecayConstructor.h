@@ -131,7 +131,7 @@ private:
    * member variable
    */
   GeneralTwoBodyDecayerPtr createDecayer(TwoBodyDecay decay,
-					 vector<tVertexBasePtr> );
+					 vector<VertexBasePtr> );
 
   /**
    * Create decay mode(s) from given part and decay modes
