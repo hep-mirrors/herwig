@@ -551,13 +551,20 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     break;
   case Colour33barto33bar:
     static ColourLines 
-      f33barto33bar[4]={ColourLines("1 2 -3, 4 -2 -5"),
+      f33barto33bar[5]={ColourLines("1 2 -3, 4 -2 -5"),
 			ColourLines("1 3 4, -2 -3 -5"),
 			ColourLines("1 4, -3 -5"),
-			ColourLines("1 -2, 4 -5")};
-    if(current.channelType == HPDiagram::tChannel)
-      sel.insert(1.,current.intermediate->iColour() == PDT::Colour8 ? 
-		 &f33barto33bar[0] : &f33barto33bar[2]);
+			ColourLines("1 -2, 4 -5"),
+			ColourLines("1 -3, 4 -5")};
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	sel.insert(1.,current.intermediate->iColour() == PDT::Colour8 ? 
+		   &f33barto33bar[0] : &f33barto33bar[2]);
+      }
+      else {
+	sel.insert(1.,&f33barto33bar[2*(flow_-2)+2]);
+      }
+    }
     else
       sel.insert(1.,current.intermediate->iColour() == PDT::Colour8 ? 
 		 &f33barto33bar[1] : &f33barto33bar[3]);
