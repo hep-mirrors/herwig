@@ -121,22 +121,24 @@ private:
    * @param iv Row number in _theExistingDecayers member
    * @return A vector a decay modes
    */
-  set<TwoBodyDecay> createModes(tPDPtr inpart, VertexBasePtr vert,
-				unsigned int ilist);
+  void createModes(tPDPtr inpart, VertexBasePtr vert,
+		   unsigned int ilist,
+		   multiset<TwoBodyDecay> & modes);
 
   /**
    * Function to create decayer for specific vertex
    * @param decay decay mode for this decay
    * member variable
    */
-  GeneralTwoBodyDecayerPtr createDecayer(TwoBodyDecay decay);
+  GeneralTwoBodyDecayerPtr createDecayer(TwoBodyDecay decay,
+					 vector<tVertexBasePtr> );
 
   /**
    * Create decay mode(s) from given part and decay modes
    * @param decays The vector of decay modes
    * @param decayer The decayer responsible for this decay
    */
-  void createDecayMode(set<TwoBodyDecay> & decays);
+  void createDecayMode(multiset<TwoBodyDecay> & decays);
   //@}
 
   /**

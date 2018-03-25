@@ -72,7 +72,16 @@ inline bool operator<(const TwoBodyDecay & x, const TwoBodyDecay & y) {
     return x.children_.first->id() < y.children_.first->id();
   if(x.children_.second->id()!=y.children_.second->id())
     return x.children_.second->id() < y.children_.second->id();
-  return x.vertex_<y.vertex_;
+  return false;
+}
+inline bool operator==(const TwoBodyDecay & x, const TwoBodyDecay & y) {
+  if(x.parent_->id()!=y.parent_->id())
+    return false;
+  if(x.children_.first->id()!=y.children_.first->id())
+    return false;
+  if(x.children_.second->id()!=y.children_.second->id())
+    return false;
+  return true;
 }
 
 }

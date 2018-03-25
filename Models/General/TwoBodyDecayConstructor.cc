@@ -107,28 +107,26 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     if ( Debug::level > 0 )
       Repository::cout() << "Constructing 2-body decays for " 
 			 << parent->PDGName() << '\n';
+    multiset<TwoBodyDecay> decays;
     for(unsigned int iv = 0; iv < nv; ++iv) {
       if(excluded(model->vertex(iv)) || 
 	 model->vertex(iv)->getNpoint()>3) continue;
-      for(unsigned int il = 0; il < 3; ++il) { 
-	set<TwoBodyDecay> decays = 
-	  createModes(parent, model->vertex(iv), il);
-	if( !decays.empty() ) createDecayMode(decays);
-      }
+      for(unsigned int il = 0; il < 3; ++il) 
+	createModes(parent, model->vertex(iv), il,decays);
     }
+    if( !decays.empty() ) createDecayMode(decays);
   }
 }
 
-set<TwoBodyDecay> TwoBodyDecayConstructor::
+void TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
-	    unsigned int list) {
+	    unsigned int list, multiset<TwoBodyDecay> & modes) {
   if( !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
-    return set<TwoBodyDecay>();
+    return;
   Energy m1(inpart->mass());
   tPDPtr ccpart = inpart->CC() ? inpart->CC() : inpart;
   long id = ccpart->id();
   tPDVector decaylist = vertex->search(list, ccpart);
-  set<TwoBodyDecay> decays;
   tPDVector::size_type nd = decaylist.size();
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
     tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
@@ -137,12 +135,13 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
     //allowed on-shell decay?
     if( m1 <= pb->mass() + pc->mass() ) continue;
     //vertices are defined with all particles incoming
-    decays.insert( TwoBodyDecay(inpart,pb, pc, vertex) );
+    modes.insert( TwoBodyDecay(inpart,pb, pc, vertex) );
   }
-  return decays;
 } 
 
-GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay decay) {
+GeneralTwoBodyDecayerPtr
+TwoBodyDecayConstructor::createDecayer(TwoBodyDecay decay,
+				       vector<tVertexBasePtr> vertices) {
   string name;
   using namespace Helicity::VertexType;
   PDT::Spin in   = decay.parent_->iSpin();
@@ -287,22 +286,33 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
 }
 
 void TwoBodyDecayConstructor::
-createDecayMode(set<TwoBodyDecay> & decays) {
+createDecayMode(multiset<TwoBodyDecay> & decays) {
   tPDPtr inpart = decays.begin()->parent_;
-  set<TwoBodyDecay>::iterator dend = decays.end();
-  for( set<TwoBodyDecay>::iterator dit = decays.begin();
-       dit != dend; ++dit ) {
-    tPDPtr pb((*dit).children_.first), pc((*dit).children_.second);
+  for( multiset<TwoBodyDecay>::iterator dit = decays.begin();
+       dit != decays.end(); ) {
+    TwoBodyDecay mode = *dit;
+    // get all the moees with the same in and outgoing particles
+    pair<multiset<TwoBodyDecay>::iterator,
+	 multiset<TwoBodyDecay>::iterator> range = decays.equal_range(mode);
+    // construct the decay mode
+    tPDPtr pb((mode).children_.first), pc((mode).children_.second);
     string tag = inpart->name() + "->" + pb->name() + "," + 
       pc->name() + ";";
     // Does it exist already ?
     tDMPtr dm = generator()->findDecayMode(tag);
+    // find the vertices
+    vector<tVertexBasePtr> vertices;
+    for ( multiset<TwoBodyDecay>::iterator dit2 = range.first;
+	  dit2 != range.second; ++dit2) {
+      vertices.push_back(dit2->vertex_);
+    }
+    dit=range.second;
     // now create DecayMode objects that do not already exist      
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
       if(ndm) {
 	inpart->stable(false);
-	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
+	GeneralTwoBodyDecayerPtr decayer=createDecayer(mode,vertices);
 	if(!decayer) continue;
 	generator()->preinitInterface(ndm, "Decayer", "set",
 				      decayer->fullName());
@@ -329,7 +339,7 @@ createDecayMode(set<TwoBodyDecay> & decays) {
       }
       if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
 	inpart->stable(false);
-	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
+	GeneralTwoBodyDecayerPtr decayer=createDecayer(mode,vertices);
 	if(!decayer) continue;
 	generator()->preinitInterface(dm, "Decayer", "set", 
 				      decayer->fullName());
