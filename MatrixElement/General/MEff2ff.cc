@@ -113,6 +113,7 @@ MEff2ff::ffb2ffbHeME(double & me2, bool first) const {
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
 	    if(current.channelType == HPDiagram::tChannel) {
+	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
 		  ScalarWaveFunction interS = scalar_[ix].second->
