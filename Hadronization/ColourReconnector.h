@@ -123,6 +123,12 @@ private:
    * @return    pair of pointers to the two new clusters
    */
   pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr &c1, ClusterPtr &c2) const;
+  
+  /**
+   * Reconnection method for baryonic reconenction model 
+   */ 
+  pair <ClusterPtr,ClusterPtr> _reconnectBaryonic(ClusterPtr &c1, ClusterPtr &c2) const;
+
 
   /**
    * @brief     At random, swap two antiquarks, if not excluded by the
