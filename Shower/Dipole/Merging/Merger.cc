@@ -1207,8 +1207,10 @@ double Merger::singleHistExpansion( Dipole dip  , Energy next , Energy running ,
     candidate.continuesEvolving();
     Energy ptMax = gen->second->
                    splittingKinematics()->ptMax(
-                      candidate.scale() , candidate.emitterX() , 
-                      candidate.spectatorX() , candidate.index() , 
+                      candidate.scale() ,
+                      candidate.emitterX() ,
+                      candidate.spectatorX() ,
+                      candidate ,
                       *gen->second->splittingKernel() );
     
     candidate.hardPt( min( running , ptMax ) );
