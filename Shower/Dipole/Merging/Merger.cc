@@ -1163,8 +1163,13 @@ double Merger::singlesudakov( Dipole dip  , Energy next , Energy running , pair<
     Energy dScale  = 	gen->second->splittingKinematics()->dipoleScale( emitter->momentum() , spectator->momentum() );
     candidate.scale( dScale );
     candidate.continuesEvolving();
-    Energy ptMax = gen->second->splittingKinematics()->ptMax( candidate.scale() , candidate.emitterX() , candidate.spectatorX() , 
-                                                             candidate.index() , *gen->second->splittingKernel() );
+
+    Energy ptMax = gen->second->splittingKinematics()->ptMax( 
+                  candidate.scale() , 
+                  candidate.emitterX() , 
+                  candidate.spectatorX() ,
+                  candidate , 
+                  *gen->second->splittingKernel() );
     
     candidate.hardPt( min( running , ptMax ) );
     

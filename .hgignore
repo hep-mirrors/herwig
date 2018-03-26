@@ -111,3 +111,4 @@ test-suite\.log$
 param_card\.dat$
 __all.cc$
 .ccR$
+^tmp/*
