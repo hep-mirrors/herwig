@@ -738,6 +738,7 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
   string name = incoming_->PDGName() + "->";
   vector<int> sng,trip,atrip,oct;
   unsigned int iloc(0);
+
   for(vector<PDPtr>::const_iterator it = outgoing_.begin();
       it != outgoing_.end();++it) {
     name += (**it).PDGName() + " ";
@@ -770,33 +771,7 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       colour_         = vector<DVector>(1,DVector(1,6.));
       colourLargeNC_  = vector<DVector>(1,DVector(1,6.));
       for(unsigned int ix=0;ix<diagrams_.size();++ix) {
-	tPDPtr inter = diagrams_[ix].intermediate;
-	if(inter->CC()) inter = inter->CC();
-	unsigned int io[2]={1,2};
 	double sign = diagrams_[ix].channelType == TBDiagram::channel13 ? -1. : 1.;
-	for(unsigned int iy=0;iy<3;++iy) {
-	  if     (iy==1) io[0]=0;
-	  else if(iy==2) io[1]=1;
-	  tPDVector decaylist = diagrams_[ix].vertices.second->search(iy, inter);
-	  if(decaylist.empty()) continue;
-	  bool found=false;
-	  for(unsigned int iz=0;iz<decaylist.size();iz+=3) {	    
-	    if(decaylist[iz+io[0]]->id()==diagrams_[ix].outgoingPair.first &&
-	       decaylist[iz+io[1]]->id()==diagrams_[ix].outgoingPair.second) {
-	      sign *= 1.;
-	      found = true;
-	    }
-	    else if(decaylist[iz+io[0]]->id()==diagrams_[ix].outgoingPair.second &&
-		    decaylist[iz+io[1]]->id()==diagrams_[ix].outgoingPair.first ) {
-	      sign *= -1.;
-	      found = true;
-	    }
-	  }
-	  if(found) {
-	    if(iy==1) sign *=-1.;
-	    break;
-	  }
-	}
 	diagrams_[ix].       colourFlow = vector<CFPair>(1,make_pair(1,sign));
 	diagrams_[ix].largeNcColourFlow = vector<CFPair>(1,make_pair(1,sign));
       }
