@@ -283,6 +283,9 @@ handle(EventHandler & ch, const tPVector & tagged,
   }
 }
 
+
+// Sets parent child relationship of all clusters with two components
+// Relationships for clusters with more than two components are set elsewhere in the Colour Reconnector 
 void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) const {
   // erase existing information about the partons' children
   tPVector partons;
