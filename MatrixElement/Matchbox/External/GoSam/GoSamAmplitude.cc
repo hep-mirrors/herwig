@@ -327,6 +327,12 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
   }
 	
+  // hand over widths of Z and W
+  double wZ = getParticleData(23)->hardProcessWidth()/GeV;
+  double wW = getParticleData(24)->hardProcessWidth()/GeV;
+  OLP_SetParameter((char*)"width(23)",&wZ,&zero,&pStatus);
+  OLP_SetParameter((char*)"width(24)",&wW,&zero,&pStatus);
+
   // hand over mass and width of the Higgs
   double wH = getParticleData(25)->hardProcessWidth()/GeV;
   double mH = getParticleData(25)->hardProcessMass()/GeV;
