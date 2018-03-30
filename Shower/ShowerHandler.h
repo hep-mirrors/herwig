@@ -255,6 +255,14 @@ public:
    * Return the relevant hard scale to be used in the profile scales
    */
   virtual Energy hardScale() const;
+
+  /**
+   * Return information about shower phase space choices
+   */
+  virtual int showerPhaseSpaceOption() const {
+    assert(false && "not implemented in general");
+    return -1;
+  }
   //@}
 
 public:

@@ -32,7 +32,7 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters(),theOpenZBoundaries(0) {}
+    theLastSplittingParameters(),theOpenZBoundaries(1) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
