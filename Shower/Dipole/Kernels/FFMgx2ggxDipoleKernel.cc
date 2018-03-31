@@ -15,7 +15,7 @@
 using namespace Herwig;
 
 FFMgx2ggxDipoleKernel::FFMgx2ggxDipoleKernel() 
-  : DipoleSplittingKernel(),theSymmetryFactor(0.5) {}
+  : DipoleSplittingKernel(){}
 
 FFMgx2ggxDipoleKernel::~FFMgx2ggxDipoleKernel() {}
 
@@ -83,7 +83,7 @@ double FFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   // Construct mass squared variables
 
   // Construct mass squared variables
-  double muj2 = sqr(split.spectatorData()->mass() / split.scale());
+  double muj2 = sqr(split.spectatorMass() / split.scale());
   double bar = 1. - muj2;
 
   // Calculate y
@@ -98,10 +98,19 @@ double FFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   // how to choose kappa?
   double kappa = 0.;
 
-  ret *= theSymmetryFactor*3.*(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y)) + (z*(1.-z)-(1.-kappa)*zp*zm-2.)/vijk);
-
-  return ret > 0. ? ret : 0.;
+  double S1=1./(1.-z*(1.-y));
+  double S2=1./(1.-(1.-z)*(1.-y));
+  double NS=(z*(1.-z)-(1.-kappa)*zp*zm-2.)/vijk;
   
+  if( theAsymmetryOption == 0 ){
+    ret *= 3.*( S1 + 0.5 * NS);
+  }else if ( theAsymmetryOption == 1 ){
+    ret *= 3.*z*( S1 +S2 + NS );
+  }else{
+    ret *= 3.*0.5*( S1 + S2 + NS );
+  }
+
+  return ret > 0. ? ret : 0.;  
 }
 
 // If needed, insert default implementations of  function defined
@@ -109,11 +118,11 @@ double FFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
 
 void FFMgx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
-  os<<theSymmetryFactor;
+  os << theAsymmetryOption;
 }
 
 void FFMgx2ggxDipoleKernel::persistentInput(PersistentIStream & is, int) {
-  is>>theSymmetryFactor;
+  is >> theAsymmetryOption;
 }
 
 ClassDescription<FFMgx2ggxDipoleKernel> FFMgx2ggxDipoleKernel::initFFMgx2ggxDipoleKernel;
@@ -123,13 +132,12 @@ void FFMgx2ggxDipoleKernel::Init() {
 
   static ClassDocumentation<FFMgx2ggxDipoleKernel> documentation
     ("FFMgx2ggxDipoleKernel");
-    
-    static Parameter<FFMgx2ggxDipoleKernel,double> interfaceSymmetryFactor
-    ("SymmetryFactor",
-     "The symmetry factor for final state gluon spliitings.",
-     &FFMgx2ggxDipoleKernel::theSymmetryFactor, 1.0, 0.0, 0,
-     false, false, Interface::lowerlim);  
-    
+  
+  static Parameter<FFMgx2ggxDipoleKernel,int> interfacetheAsymmetryOption
+  ("AsymmetryOption",
+   "The asymmetry option for final state gluon spliitings.",
+   &FFMgx2ggxDipoleKernel::theAsymmetryOption, 1, 0, 0,
+   false, false, Interface::lowerlim);
 
 }
 

@@ -291,6 +291,18 @@ public:
   Energy recoilMass() const { return theRecoilMass; }
 
   /**
+   * Return the spectator mass
+   * (to cope with off-shell particles)
+   **/
+  Energy spectatorMass() const { return theSpectatorMass; }
+  
+  /**
+   * Return the emitter mass
+   * (to cope with off-shell particles)
+   **/
+  Energy emitterMass() const { return theEmitterMass; }
+  
+  /**
    * Return the pt below which this
    * splitting has been generated.
    */
@@ -384,8 +396,19 @@ public:
    * in decay dipoles
    */
   void recoilMass(Energy mass) { theRecoilMass = mass; }
-    
 
+  /**
+   * Set the spectator mass
+   * (to cope with off-shell particles)
+   **/
+  void spectatorMass(Energy mass){ theSpectatorMass = mass; }
+  
+  /**
+   * Set the emitter mass 
+   * (to cope with off-shell particles)
+   **/
+  void emitterMass(Energy mass){ theEmitterMass = mass; }
+  
   /**
    * Set the emitter's momentum fraction
    */
@@ -609,6 +632,22 @@ private:
    * decay dipoles.
    */
   Energy theRecoilMass;
+
+
+  /**
+   * The mass of the emitter.
+   * (To account for off-shell).
+   */
+  Energy theEmitterMass;
+  
+  /**
+   * The mass of the spectator.
+   * (To account for off-shell).
+   */
+  Energy theSpectatorMass;
+
+
+  
 
   /**
    * The momentum fraction of the emitter.
