@@ -858,8 +858,9 @@ void Merger::doinit(){
     << Exception::abortnow;
   }
   DSH()->init();
-  if ( DSH()->showerPhaseSpaceOption() != 0 ||
-       DSH()->showerPhaseSpaceOption() != 1 ){
+  
+  if ( !( DSH()->showerPhaseSpaceOption() == 0 ||
+          DSH()->showerPhaseSpaceOption() == 1) ){
     throw InitException() << "Merger::doinit(): Choice of shower phase space cannot be handled by the merging";
   }
 }
