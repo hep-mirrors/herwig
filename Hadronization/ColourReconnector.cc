@@ -333,7 +333,19 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
 
     double maxsum = 0.0;
     double secondsum = 0.0;
-  
+
+
+    // boost into RF of cl 
+    Lorentz5Momentum cl1 = (*cl)->momentum();
+    const Boost boostv(-cl1.boostVector());
+    cl1.boost(boostv);
+    // boost constituents of cl into RF of cl
+    Lorentz5Momentum p1col = (*cl)->colParticle()->momentum();
+    Lorentz5Momentum p1anticol = (*cl)->antiColParticle()->momentum(); 
+    p1col.boost(boostv);
+    p1anticol.boost(boostv);
+
+ 
     for (CluVecIt cit=cv.begin(); cit != cv.end(); ++cit) {
       //avoid looping over clusters containing diquarks
       if ( hasDiquark(cit) ) continue;
@@ -357,21 +369,11 @@ CluVecIt ColourReconnector::_findPartnerBaryonic(
         _isColour8( (*cit)->colParticle(), (*cl)->antiColParticle() ) ;
       if ( Colour8 ) continue;
 
-      // boost into restframe of cluster 1
-      Lorentz5Momentum cl1 = (*cl)->momentum();
-      Lorentz5Momentum cl2 = (*cit)->momentum();
-      // boost cl1 constituents int restframe of cl1:
-      Boost boostv(-cl1.boostVector());
-      cl1.boost(boostv);
-      cl2.boost(boostv);
 
-      Lorentz5Momentum p1col = (*cl)->colParticle()->momentum();
-      Lorentz5Momentum p1anticol = (*cl)->antiColParticle()->momentum();
+      // boost constituents of cit into RF of cl
       Lorentz5Momentum p2col = (*cit)->colParticle()->momentum();
       Lorentz5Momentum p2anticol = (*cit)->antiColParticle()->momentum();
-      p1col.boost(boostv);
-      p1anticol.boost(boostv);
-      // boost cl2 constituents int rf of cl1:
+
       p2col.boost(boostv);
       p2anticol.boost(boostv);
 
