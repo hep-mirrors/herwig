@@ -25,8 +25,8 @@ Rivet.in \
 SoftModel.in \
 SoftTune.in \
 YFS.in \
-BaryonicReconnection.in
-
+BaryonicReconnection.in \
+Dipole_AutoTune_prel.in
 
 dist_snippets_DATA = $(INPUTFILES)
 

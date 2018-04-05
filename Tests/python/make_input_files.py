@@ -170,7 +170,7 @@ if(name.find("Dipole-Matchbox-Powheg")>0) :
     elif(name.find("Dipole-Powheg")>0) :
     istart = 3
     simulation="Powheg"
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
     '''
 
 # Dipole shower with MCatNLO
@@ -189,7 +189,7 @@ elif(name.find("Dipole-Matchbox-LO")>0) :
 elif(name.find("Dipole")>0) :
     istart = 2
     simulation=""
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
     
 # AO shower with Matchbox Powheg
 elif(name.find("Matchbox-Powheg")>0) :
