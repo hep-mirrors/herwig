@@ -50,7 +50,8 @@ DipoleShowerHandler::DipoleShowerHandler() :
   theFactorizationScaleFreeze(2.*GeV), theDoCompensate(false),
   theFreezeGrid(500000), theDetuning(1.0),
   maxPt(ZERO), muPt(ZERO),
-  theInputColouredOffShellInShower() {}
+  theInputColouredOffShellInShower(),
+  theZBoundaries(1) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -1061,6 +1062,28 @@ void DipoleShowerHandler::doinit() {
     for(unsigned int ix=0;ix<theInputColouredOffShellInShower.size();++ix)
       theColouredOffShellInShower.insert(abs(theInputColouredOffShellInShower[ix]));
   }
+  // work out which shower phase space to use for the matching
+  bool zChoice0 = false;
+  bool zChoice1 = false;
+  size_t zChoiceOther = false;
+  for ( auto & k : kernels) {
+    if ( k->splittingKinematics()->openZBoundaries() == 0 )
+      zChoice0 = true;
+    else if ( k->splittingKinematics()->openZBoundaries() == 1 )
+      zChoice1 = true;
+    else
+      zChoiceOther = true;
+    // either inconsistent or other option which cannot be handled by the matching
+    if ( zChoice0 && zChoice1 ) {
+      zChoiceOther = true; break;
+    }
+  }
+  if ( zChoiceOther )
+    theZBoundaries = 2;
+  else if ( zChoice1 )
+    theZBoundaries = 1;
+  else if ( zChoice0 )
+    theZBoundaries = 0;
 }
 
 void DipoleShowerHandler::dofinish() {
@@ -1085,7 +1108,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV)<< theMergingHelper << theColouredOffShellInShower
      << theInputColouredOffShellInShower
-     << _rearrange << _dipmax << _diplong << _rearrangeNEmissions;
+     << _rearrange << _dipmax << _diplong << _rearrangeNEmissions << theZBoundaries;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -1102,7 +1125,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV)>>theMergingHelper >> theColouredOffShellInShower
      >> theInputColouredOffShellInShower
-     >> _rearrange >> _dipmax >> _diplong >> _rearrangeNEmissions;
+     >> _rearrange >> _dipmax >> _diplong >> _rearrangeNEmissions >> theZBoundaries;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;

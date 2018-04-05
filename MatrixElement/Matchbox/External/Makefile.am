@@ -10,7 +10,7 @@ pkglib_LTLIBRARIES += HwMatchboxGoSam.la
 endif
 
 HwMatchboxGoSam_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 14:0:0
+$(AM_LDFLAGS) -module -version-info 14:1:0
 
 HwMatchboxGoSam_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_BINDIR="\"$(bindir)\"" \
@@ -27,7 +27,7 @@ if HAVE_VBFNLO
 pkglib_LTLIBRARIES += HwMatchboxVBFNLO.la
 endif
 
-HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:1:0
 HwMatchboxVBFNLO_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)
 HwMatchboxVBFNLO_la_CPPFLAGS += -DVBFNLOLIB=$(VBFNLOLIB)

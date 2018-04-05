@@ -152,7 +152,12 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
     case 0:
       quark = _quarkSelector.select(UseRandom::rnd());
       break;
-    case 1: 
+    case 1:
+      if ( ptrGluon->momentum().m() <
+	   2.0 *getParticle(ThePEG::ParticleID::s)->data().constituentMass() ) {
+	throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()"
+			  << Exception::runerror;
+      }
       // Only allow light quarks u,d,s with the probabilities
       double prob_d = _splitPwtDquark; 
       double prob_u = _splitPwtUquark;

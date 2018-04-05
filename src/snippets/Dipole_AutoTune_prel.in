@@ -1,0 +1,139 @@
+# This is a preliminary Tune.
+# With this version (7.1.3) various changes to the dipole shower are done.
+# The dipole shower will be retuned for version 7.1.4.
+
+# Note: The gluon ConstituentMass is lower than the strange quark
+# threshold assumed in the BaryonicReconnection.
+# Using both snippets will produce no resonable results.
+
+set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s                 0.118
+set /Herwig/DipoleShower/NLOAlphaS:input_scale                   91.18*GeV
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s                    0.118
+set /Herwig/Couplings/NLOAlphaS:input_scale                      91.18*GeV
+
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 0.80399886545
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff   0.80399886545
+set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 0.80399886545
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff   0.80399886545
+set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 0.80399886545
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff   0.80399886545
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff   0.80399886545
+
+set /Herwig/Particles/g:ConstituentMass                          0.762996296601
+
+set /Herwig/Hadronization/ClusterDecayer:ClSmrLight              0.342544255421
+set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm              0.237545842862
+set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom             0.0620545338048
+
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight            0.950949552153
+set /Herwig/Hadronization/ClusterFissioner:ClPowCharm            0.725163909065
+set /Herwig/Hadronization/ClusterFissioner:ClPowBottom           0.809774254452
+
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight            2.80478186219
+set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm            3.13483791689
+set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom           5.79181302131
+
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight           0.995391682928
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm           0.769749617516
+set /Herwig/Hadronization/ClusterFissioner:PSplitBottom          0.479199412481
+
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm  0.0485533655422
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom 0.0968582906399
+
+set /Herwig/Hadronization/HadronSelector:PwtUquark               0.718641969264
+set /Herwig/Hadronization/HadronSelector:PwtDquark               0.674967529289
+set /Herwig/Hadronization/HadronSelector:PwtSquark               0.542042947191
+set /Herwig/Hadronization/HadronSelector:PwtCquark               0.251544496683
+set /Herwig/Hadronization/HadronSelector:PwtBquark               0.426714635544
+set /Herwig/Hadronization/HadronSelector:PwtDIquark              0.296781084091
+set /Herwig/Hadronization/HadronSelector:SngWt                   0.541287379336
+set /Herwig/Hadronization/HadronSelector:DecWt                   0.569933528697
+
+set /Herwig/Particles/b:NominalMass                              5.38329996032
+set /Herwig/Particles/b:ConstituentMass                          4.84231667563
+
+#######
+# CMW scheme:
+# Tune was done with CMW for all kernels, as merging currently only is consistent if applied to all.
+#######
+
+
+cd /Herwig/DipoleShower/Kernels
+set FFgx2ggxDipoleKernel:CMWScheme Factor
+set FFqx2qgxDipoleKernel:CMWScheme Factor
+set FFgx2ddxDipoleKernel:CMWScheme Factor
+set FFgx2uuxDipoleKernel:CMWScheme Factor
+set FFgx2ccxDipoleKernel:CMWScheme Factor
+set FFgx2ssxDipoleKernel:CMWScheme Factor
+set FFgx2bbxDipoleKernel:CMWScheme Factor
+set FFMgx2ggxDipoleKernel:CMWScheme Factor
+set FFMdx2dgxDipoleKernel:CMWScheme Factor
+set FFMux2ugxDipoleKernel:CMWScheme Factor
+set FFMcx2cgxDipoleKernel:CMWScheme Factor
+set FFMsx2sgxDipoleKernel:CMWScheme Factor
+set FFMbx2bgxDipoleKernel:CMWScheme Factor
+set FFMtx2tgxDipoleKernel:CMWScheme Factor
+set FFMgx2ddxDipoleKernel:CMWScheme Factor
+set FFMgx2uuxDipoleKernel:CMWScheme Factor
+set FFMgx2ccxDipoleKernel:CMWScheme Factor
+set FFMgx2ssxDipoleKernel:CMWScheme Factor
+set FFMgx2bbxDipoleKernel:CMWScheme Factor
+set FIgx2ggxDipoleKernel:CMWScheme Factor
+set FIqx2qgxDipoleKernel:CMWScheme Factor
+set FIgx2ddxDipoleKernel:CMWScheme Factor
+set FIgx2uuxDipoleKernel:CMWScheme Factor
+set FIgx2ccxDipoleKernel:CMWScheme Factor
+set FIgx2ssxDipoleKernel:CMWScheme Factor
+set FIgx2bbxDipoleKernel:CMWScheme Factor
+set FIMdx2dgxDipoleKernel:CMWScheme Factor
+set FIMux2ugxDipoleKernel:CMWScheme Factor
+set FIMcx2cgxDipoleKernel:CMWScheme Factor
+set FIMsx2sgxDipoleKernel:CMWScheme Factor
+set FIMbx2bgxDipoleKernel:CMWScheme Factor
+set FIMtx2tgxDipoleKernel:CMWScheme Factor
+set FIMgx2ddxDipoleKernel:CMWScheme Factor
+set FIMgx2uuxDipoleKernel:CMWScheme Factor
+set FIMgx2ccxDipoleKernel:CMWScheme Factor
+set FIMgx2ssxDipoleKernel:CMWScheme Factor
+set FIMgx2bbxDipoleKernel:CMWScheme Factor
+#set FIMgx2ttxDipoleKernel:CMWScheme Factor
+set IFgx2ggxDipoleKernel:CMWScheme Factor
+set IFqx2qgxDipoleKernel:CMWScheme Factor
+set IFqx2gqxDipoleKernel:CMWScheme Factor
+set IFgx2ddbarxDipoleKernel:CMWScheme Factor
+set IFgx2dbardxDipoleKernel:CMWScheme Factor
+set IFgx2uubarxDipoleKernel:CMWScheme Factor
+set IFgx2ubaruxDipoleKernel:CMWScheme Factor
+set IFgx2ccbarxDipoleKernel:CMWScheme Factor
+set IFgx2cbarcxDipoleKernel:CMWScheme Factor
+set IFgx2ssbarxDipoleKernel:CMWScheme Factor
+set IFgx2sbarsxDipoleKernel:CMWScheme Factor
+set IFMgx2ggxDipoleKernel:CMWScheme Factor
+set IFMqx2qgxDipoleKernel:CMWScheme Factor
+set IFMqx2gqxDipoleKernel:CMWScheme Factor
+set IFMgx2ddbarxDipoleKernel:CMWScheme Factor
+set IFMgx2dbardxDipoleKernel:CMWScheme Factor
+set IFMgx2uubarxDipoleKernel:CMWScheme Factor
+set IFMgx2ubaruxDipoleKernel:CMWScheme Factor
+set IFMgx2ccbarxDipoleKernel:CMWScheme Factor
+set IFMgx2cbarcxDipoleKernel:CMWScheme Factor
+set IFMgx2ssbarxDipoleKernel:CMWScheme Factor
+set IFMgx2sbarsxDipoleKernel:CMWScheme Factor
+set IIgx2ggxDipoleKernel:CMWScheme Factor
+set IIqx2qgxDipoleKernel:CMWScheme Factor
+set IIqx2gqxDipoleKernel:CMWScheme Factor
+set IIgx2ddbarxDipoleKernel:CMWScheme Factor
+set IIgx2dbardxDipoleKernel:CMWScheme Factor
+set IIgx2uubarxDipoleKernel:CMWScheme Factor
+set IIgx2ubaruxDipoleKernel:CMWScheme Factor
+set IIgx2ccbarxDipoleKernel:CMWScheme Factor
+set IIgx2cbarcxDipoleKernel:CMWScheme Factor
+set IIgx2ssbarxDipoleKernel:CMWScheme Factor
+set IIgx2sbarsxDipoleKernel:CMWScheme Factor
+set IFgx2bbbarxDipoleKernel:CMWScheme Factor
+set IFgx2bbarbxDipoleKernel:CMWScheme Factor
+set IFMgx2bbbarxDipoleKernel:CMWScheme Factor
+set IFMgx2bbarbxDipoleKernel:CMWScheme Factor
+set IIgx2bbbarxDipoleKernel:CMWScheme Factor
+set IIgx2bbarbxDipoleKernel:CMWScheme Factor
+
