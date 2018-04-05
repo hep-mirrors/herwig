@@ -24,7 +24,8 @@ RivetFixedOrder.in \
 Rivet.in \
 SoftModel.in \
 SoftTune.in \
-YFS.in
+YFS.in \
+BaryonicReconnection.in
 
 
 dist_snippets_DATA = $(INPUTFILES)
