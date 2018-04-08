@@ -58,6 +58,10 @@ create ThePEG::BudnevPDF BudnevPDF BudnevPDF.so
 create ThePEG::UnResolvedRemnant /Herwig/Partons/HadronGammaRemnants 
 newdef /Herwig/Partons/BudnevPDF:RemnantHandler /Herwig/Partons/HadronGammaRemnants
 
+# partons inside photons
+create Herwig::SaSPhotonPDF /Herwig/Partons/SaSPDF HwSaSPhotonPDF.so
+set /Herwig/Partons/SaSPDF:RemnantHandler /Herwig/Partons/HadronRemnants
+
 # pomerons
 create Herwig::PomeronFlux PomeronFlux HwPomeronFlux.so
 newdef PomeronFlux:PDFFit Pomeron2006A

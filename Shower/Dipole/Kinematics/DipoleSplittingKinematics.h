@@ -331,6 +331,11 @@ namespace Herwig {
     virtual bool doesTransform () const { return false; }
 
     /*
+     * Use the Dipole scale instead of hardpt for z-boundaries.
+     */
+    int openZBoundaries() const { return theOpenZBoundaries; }
+
+    /*
      * perform the transformation if required.
      */
     virtual Lorentz5Momentum transform (const Lorentz5Momentum& p) const { return p; }
@@ -450,16 +455,6 @@ namespace Herwig {
      * Return the momentum of the recoil system after splitting.
      */
     const Lorentz5Momentum& splitRecoilMomentum() const { return theSplitRecoilMomentum; }
-
-
-
-  /*
-   * Use the Dipole scale instead of hardpt for z-boundaries.
-   */
-  
-  int openZBoundaries() const { return theOpenZBoundaries; }
-  
-
 
   public:
 

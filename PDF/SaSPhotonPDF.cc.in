@@ -18,10 +18,15 @@
 
 using namespace Herwig;
 
+/* Define to a macro mangling the given C identifier (in lower and upper
+   case), which must not contain underscores, for linking with Fortran. */
+#undef FC_FUNC
+
 extern "C" {
 
-  void sasgam_(int *,float *,float *,float *,int *,float *,float *);
-
+  #define SASGAM_F77 FC_FUNC(sasgam,SASGAM)
+  void SASGAM_F77(int *,float *,float *,float *,int *,float *,float *);
+  
 }
 
 bool SaSPhotonPDF::canHandleParticle(tcPDPtr particle) const {
@@ -42,7 +47,7 @@ cPDVector SaSPhotonPDF::partons(tcPDPtr particle) const {
   return ret;
 }
 
-double SaSPhotonPDF::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+double SaSPhotonPDF::xfl(tcPDPtr, tcPDPtr parton, Energy2 partonScale,
 			 double l, Energy2 particleScale) const {
   float x = exp(-l);
   float q2 = partonScale/GeV2;
@@ -50,13 +55,15 @@ double SaSPhotonPDF::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
   float f2gm=0.;
   float xpdf[13];
   int iloc = parton->id()!=ParticleID::g ? 6+parton->id() : 6;
-  sasgam_(&iset_,&x,&q2,&p2,&ip_,&f2gm,xpdf);
+  assert(x>=0. && x<=1.);
+  SASGAM_F77(&iset_,&x,&q2,&p2,&ip_,&f2gm,xpdf);
   // cerr << "testing " << partonScale/GeV2 << " " << particleScale/GeV2 << " " << x << "\n";
   // for(unsigned int ix=0;ix<13;++ix)
   //   cerr << ix << " " << xpdf[ix] << "\n";
   // cerr << "testing " << parton->PDGName() << " " << iloc << "\n";
   return xpdf[iloc];
 }
+
 double SaSPhotonPDF::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 		     double l, Energy2 particleScale) const {
   if(parton->id()==ParticleID::g)
@@ -85,7 +92,7 @@ void SaSPhotonPDF::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<SaSPhotonPDF,PDFBase>
-describeHerwigSaSPhotonPDF("Herwig::SaSPhotonPDF", "SaSPhotonPDF.so");
+describeHerwigSaSPhotonPDF("Herwig::SaSPhotonPDF", "HwSaSPhotonPDF.so");
 
 void SaSPhotonPDF::Init() {
 

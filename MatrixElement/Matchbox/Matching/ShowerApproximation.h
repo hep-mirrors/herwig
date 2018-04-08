@@ -435,6 +435,17 @@ protected:
    */
   virtual Energy hardScale() const;
 
+  /**
+   * Use the maximum available phase space for the momentum fraction
+   */
+  void useOpenZ(bool yes) { theOpenZ = yes; }
+
+  /**
+   * Return true if the maximum available phase space should be used
+   * for the momentum fraction
+   */
+  bool openZ() const { return theOpenZ; }
+
 public:
 
   /**
@@ -659,6 +670,11 @@ private:
    * The profile scales
    */
   Ptr<HardScaleProfile>::ptr theHardScaleProfile;
+
+  /**
+   * Use the maximum available phase space for the momentum fraction
+   */
+  bool theOpenZ;
 
 private:
 

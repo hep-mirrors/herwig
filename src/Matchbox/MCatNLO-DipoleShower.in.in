@@ -13,8 +13,7 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:ShowerApproximation DipoleMatching
 
 # tunes
-# Needs to be retuned !! TODO
-#read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
+read snippets/Dipole_AutoTune_prel.in
 
 cd /Herwig/Analysis
 

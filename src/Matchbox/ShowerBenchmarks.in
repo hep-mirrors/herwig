@@ -1,0 +1,143 @@
+# -*- ThePEG-repository -*-
+
+# ##############################################################################
+#
+#  unify alphas running
+#
+# ##############################################################################
+
+cd /Herwig/Couplings
+
+set NLOAlphaS:input_alpha_s 0.118
+set NLOAlphaS:input_scale 91.1876
+set NLOAlphaS:two_largeq_terms No
+
+clear NLOAlphaS:QuarkMasses
+insert NLOAlphaS:QuarkMasses[0] 0.005
+insert NLOAlphaS:QuarkMasses[1] 0.0023
+insert NLOAlphaS:QuarkMasses[2] 0.095
+insert NLOAlphaS:QuarkMasses[3] 1.25
+insert NLOAlphaS:QuarkMasses[4] 4.2
+insert NLOAlphaS:QuarkMasses[5] 174.2
+
+cd /Herwig/Shower
+
+set AlphaQCD:ScaleFactor 1.0
+set AlphaQCD:NPAlphaS 2
+set AlphaQCD:Qmin 0.935
+set AlphaQCD:NumberOfLoops 2
+set AlphaQCD:InputOption 1
+
+set AlphaQCD:AlphaMZ 0.118
+set AlphaQCD:InputScale 91.1876
+
+clear AlphaQCD:QuarkMasses
+insert AlphaQCD:QuarkMasses[0] 0.005
+insert AlphaQCD:QuarkMasses[1] 0.0023
+insert AlphaQCD:QuarkMasses[2] 0.095
+insert AlphaQCD:QuarkMasses[3] 1.25
+insert AlphaQCD:QuarkMasses[4] 4.2
+insert AlphaQCD:QuarkMasses[5] 174.2
+
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+
+# ##############################################################################
+#
+#  PDF settings -- same NLO PDF everywhere
+#
+# ##############################################################################
+
+read Matchbox/FourFlavourScheme.in
+
+cd /Herwig/Partons
+
+set HardNLOPDF:PDFName MMHT2014nlo68cl
+set ShowerNLOPDF:PDFName MMHT2014nlo68cl
+
+set /Herwig/Particles/p+:PDF HardNLOPDF
+set /Herwig/Particles/pbar-:PDF HardNLOPDF
+set /Herwig/Partons/PPExtractor:FirstPDF HardNLOPDF
+set /Herwig/Partons/PPExtractor:SecondPDF HardNLOPDF
+
+set /Herwig/Shower/ShowerHandler:PDFA ShowerNLOPDF
+set /Herwig/Shower/ShowerHandler:PDFB ShowerNLOPDF
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFA ShowerNLOPDF
+set /Herwig/DipoleShower/DipoleShowerHandler:PDFB ShowerNLOPDF
+
+# ##############################################################################
+#
+#  Quark kinematic masses are all zero
+#
+# ##############################################################################
+
+cd /Herwig/Particles
+
+do d:UnsetHardProcessMass
+do dbar:UnsetHardProcessMass
+set d:NominalMass 0*GeV
+set dbar:NominalMass 0*GeV
+
+do u:UnsetHardProcessMass
+do ubar:UnsetHardProcessMass
+set u:NominalMass 0*GeV
+set ubar:NominalMass 0*GeV
+
+do s:UnsetHardProcessMass
+do sbar:UnsetHardProcessMass
+set s:NominalMass 0*GeV
+set sbar:NominalMass 0*GeV
+
+do c:UnsetHardProcessMass
+do cbar:UnsetHardProcessMass
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+
+# ##############################################################################
+#
+#  Shower settings are those appropriate to the uncertainties studies
+#
+# ##############################################################################
+
+read Matchbox/PQCDLevel.in
+
+set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
+set /Herwig/Shower/ShowerHandler:HardEmission None
+set /Herwig/Shower/ShowerHandler:Interactions QCD
+set /Herwig/Shower/ShowerHandler:SpinCorrelations No
+set /Herwig/Shower/ShowerHandler:SoftCorrelations No
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour4
+set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption SofterFraction
+set /Herwig/Shower/PartnerFinder:PartnerMethod 0
+set /Herwig/Shower/PartnerFinder:ScaleChoice 0
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
+
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 0.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 0.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 0.0*GeV
+
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
+set /Herwig/Shower/ShowerHandler:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
+
+set /Herwig/MatrixElements/Matchbox/HardScaleProfile:ProfileType Resummation
+
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff 1.0*GeV
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff 1.0*GeV
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff 1.0*GeV
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff 1.0*GeV
+
+cd /Herwig/Shower
+
+set QtoQGSudakov:pTmin 1.0*GeV
+set GtoGGSudakov:pTmin 1.0*GeV
+set GtoQQbarSudakov:pTmin 1.0*GeV
+set GtobbbarSudakov:pTmin 1.0*GeV
+set GtoccbarSudakov:pTmin 1.0*GeV
+set QtoGQSudakov:pTmin 1.0*GeV
+set utoGuSudakov:pTmin 1.0*GeV
+set dtoGdSudakov:pTmin 1.0*GeV
+

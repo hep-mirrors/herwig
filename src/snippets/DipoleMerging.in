@@ -90,17 +90,6 @@ set /Herwig/Shower/ShowerHandler:PDFB ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFB ShowerNLOPDF
 
-### Don't apply restrictions on the z-boundaries while clustering.
-set /Herwig/Merging/Merger:OpenZBoundaries Full
-
-cd  /Herwig/DipoleShower/Kinematics
-set IFLightKinematics:OpenZBoundaries Full
-set IILightKinematics:OpenZBoundaries Full
-set FFLightKinematics:OpenZBoundaries Full
-set FILightKinematics:OpenZBoundaries Full
-set FIMassiveKinematics:OpenZBoundaries Full
-set IFMassiveKinematics:OpenZBoundaries Full
-set FFMassiveKinematics:OpenZBoundaries Full
 # Switch of the profiles of the Shower
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 

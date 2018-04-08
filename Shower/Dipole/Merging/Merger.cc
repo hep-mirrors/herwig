@@ -763,8 +763,8 @@ double Merger::pdfExpansion( NodePtr node  ,
     double z = zw.first;
     double mapz = zw.second;
     double PDFxparton = pdf->xfx( particle , parton , sqr( fixedScale ) , x )/x;
-    double CA = SM().Nc();
-    double CF = ( SM().Nc()*SM().Nc()-1.0 )/( 2.*SM().Nc() );
+    static double CA = SM().Nc();
+    static double CF = ( SM().Nc()*SM().Nc()-1.0 )/( 2.*SM().Nc() );
     
     
     if ( abs( parton->id() ) < 7 ) {
@@ -856,6 +856,12 @@ void Merger::doinit(){
     << "Merger: Merging is currently only sensible "
     << "if we are using the hardScale as MuF."
     << Exception::abortnow;
+  }
+  DSH()->init();
+  
+  if ( !( DSH()->showerPhaseSpaceOption() == 0 ||
+          DSH()->showerPhaseSpaceOption() == 1) ){
+    throw InitException() << "Merger::doinit(): Choice of shower phase space cannot be handled by the merging";
   }
 }
 
@@ -1207,8 +1213,10 @@ double Merger::singleHistExpansion( Dipole dip  , Energy next , Energy running ,
     candidate.continuesEvolving();
     Energy ptMax = gen->second->
                    splittingKinematics()->ptMax(
-                      candidate.scale() , candidate.emitterX() , 
-                      candidate.spectatorX() , candidate.index() , 
+                      candidate.scale() ,
+                      candidate.emitterX() ,
+                      candidate.spectatorX() ,
+                      candidate ,
                       *gen->second->splittingKernel() );
     
     candidate.hardPt( min( running , ptMax ) );
@@ -1419,7 +1427,7 @@ void Merger::debugReal(string realstr, double weight,
 void Merger::persistentOutput( PersistentOStream & os ) const {
   os << theShowerExpansionWeights << theCMWScheme << projected <<
   isUnitarized << isNLOUnitarized  <<
-  theOpenZBoundaries << theChooseHistory <<
+  theChooseHistory <<
   theN0 << theOnlyN   << weight <<
   theGamma << theSmearing <<  ounit( theIRSafePT , GeV ) <<
   ounit( theMergePt , GeV ) <<  ounit( theCentralMergePt , GeV )
@@ -1433,7 +1441,6 @@ void Merger::persistentOutput( PersistentOStream & os ) const {
 void Merger::persistentInput( PersistentIStream & is , int ) {
   is >> theShowerExpansionWeights >> theCMWScheme >> projected >>
   isUnitarized >> isNLOUnitarized >>
-  theOpenZBoundaries >>
   theChooseHistory >> theN0 >> theOnlyN >>
   weight >> 
   theGamma >>   theSmearing >>  iunit( theIRSafePT , GeV ) >>
@@ -1507,8 +1514,7 @@ void Merger::Init() {
    "Switch off the expansion." ,
    4 ); 
 
- /////////////////////////////////////////////////////////////////////7
-
+ /////////////////////////////////////////////////////////////////////
  
   static Switch<Merger , unsigned int>
   interfacetheCMWScheme
@@ -1533,14 +1539,11 @@ void Merger::Init() {
    "Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q) with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf)) ",
    2);
   
-
   static Parameter<Merger , Energy> interfaceMergerScale
   ( "MergingScale" ,  "The MergingScale." , 
    &Merger::theCentralMergePt ,
    GeV , 20.0*GeV , 0.0*GeV , 0*GeV ,
    false , false , Interface::lowerlim );
-  
-  
   
   static Parameter<Merger , double> interfacegamma
   ( "gamma" , 
@@ -1549,19 +1552,6 @@ void Merger::Init() {
    false , false , Interface::lowerlim );
    interfacegamma.rank(-1); 
   
- 
-  static Switch<Merger,int> interfaceOpenZBoundariesM
-  ("OpenZBoundaries", "",
-   &Merger::theOpenZBoundaries, 0, false, false);
-  static SwitchOption interfaceOpenZBoundariesMhardScale
-  (interfaceOpenZBoundariesM,   "Hard",   "",   0);
-  static SwitchOption interfaceOpenZBoundariesMfull
-  (interfaceOpenZBoundariesM,   "Full",   "",   1);
-  static SwitchOption interfaceOpenZBoundariesMDipoleScale
-  (interfaceOpenZBoundariesM,   "DipoleScale",   "",   2);
- 
- 
- 
   static Switch<Merger , bool>
   interfaceemitDipoleMEDiff
   ( "emitDipoleMEDiff" , 
@@ -1572,9 +1562,6 @@ void Merger::Init() {
   static SwitchOption interfaceemitDipoleMEDiffNo
   ( interfaceemitDipoleMEDiff , "No" , "" , false );
   interfaceemitDipoleMEDiff.rank(-1);
- 
-  
-
 
   static Parameter<Merger , Energy>  interfaceIRSafePT
   ( "IRSafePT" ,

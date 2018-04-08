@@ -299,16 +299,6 @@ void Node::birth(const vector<MatchboxMEBasePtr> & vec) {
   }
 }
 
-namespace{
-
-  /**
-   * Triangular / Kallen function
-   */
-  double rootOfKallen (double a, double b, double c)  {
-    return sqrt( a*a + b*b + c*c - 2.*( a*b+a*c+b*c ) ); }
-
-}
-
 
 vector<NodePtr> Node::getNextOrderedNodes(bool normal, double hardScaleFactor) const {
 
@@ -358,6 +348,7 @@ bool Node::inShowerPS(Energy hardpT)const {
   // Full phase space available -> Tilde Kinematic is always fine.
   if(deepHead()->MH()->openZBoundaries()==1)
       return true;
+  
   double z_ = dipole()->lastZ();
   // restrict according to hard scale
   if(deepHead()->MH()->openZBoundaries()==0){
@@ -366,64 +357,9 @@ bool Node::inShowerPS(Energy hardpT)const {
       return (zbounds.first<z_&&z_<zbounds.second);
   }
   
-  // restrict according to min ( dipole scale , kinematic limit )
-  // where here due to the tilde kinematics always the kinematic 
-  // limit is produced. So 
-  assert(deepHead()->MH()->openZBoundaries()==2);
-
-  if( dipole()->bornEmitter()>1&& dipole()->bornSpectator()>1 ) return true;  
-
-
-  bool isMassiv = (dipole()->tildeKinematics()->realEmitterData()->hardProcessMass()
-		  +dipole()->tildeKinematics()->realEmissionData()->hardProcessMass()
-                  +dipole()->tildeKinematics()->realSpectatorData()->hardProcessMass())!=ZERO;  
- 
-  Energy scale=sqrt(2.*dipole()->tildeKinematics()->bornEmitterMomentum()*
-                       dipole()->tildeKinematics()->bornSpectatorMomentum());
-
-  Energy hard=ZERO;
-
-  assert(scale>=ZERO);
-    // II
-  if( dipole()->bornEmitter()<2&& dipole()->bornSpectator()<2 ) {
-      hard = min(scale,(1.-dipole()->tildeKinematics()->emitterX()) 
-           *scale/(2.*sqrt(dipole()->tildeKinematics()->emitterX())));
-  }else 
-    // IF
-  if( dipole()->bornEmitter()<2&& dipole()->bornSpectator() >= 2){
-    if(isMassiv){
-      hard = scale * min(1.,sqrt(1.-dipole()->tildeKinematics()->emitterX()) /2.);
-    }
-    else{
-      hard = scale * min(1.,sqrt((1.-dipole()->tildeKinematics()->emitterX())/
-				     dipole()->tildeKinematics()->emitterX()) /2.);
-    }
-  }
-   // FI
-  else{
-    if(isMassiv){
-      Energy2 mi2 = sqr(dipole()->tildeKinematics()->realEmitterData()->hardProcessMass());
-      Energy2 m2  = sqr(dipole()->tildeKinematics()->realEmissionData()->hardProcessMass());
-      Energy2 Mi2 = sqr(dipole()->tildeKinematics()->bornEmitterData()->hardProcessMass());
-      Energy2 scale=2.*dipole()->tildeKinematics()->bornEmitterMomentum()*
-		       dipole()->tildeKinematics()->bornSpectatorMomentum();
-      Energy2 s = scale * (1.-dipole()->tildeKinematics()->spectatorX())/
-			      dipole()->tildeKinematics()->spectatorX() +  Mi2;      
-      Energy2 sdip = scale  +  Mi2; 
-      hard = .5 * sqrt(s)  * rootOfKallen( s/s, mi2/s, m2/s );
-      hard = min( .5 * sqrt(sdip)  * rootOfKallen( sdip/sdip, mi2/sdip, m2/sdip ),hard);
-    }
-    else{
-      hard = scale*min(1.,sqrt((1.-dipole()->tildeKinematics()->spectatorX())/
- 					   dipole()->tildeKinematics()->spectatorX())/2.);
-    }    
-  }
-
   
-  pair<double, double> zbounds = 
-  dipole()->tildeKinematics()->zBounds(pT(), hard);
+  assert(false);
   
-  return (zbounds.first<z_&&z_<zbounds.second);
 }
 
 

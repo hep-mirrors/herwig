@@ -48,6 +48,7 @@ Powheg-DipoleShower.in \
 Powheg.in \
 PQCDLevel.in \
 StandardModelLike.in \
+ShowerBenchmarks.in \
 VBFDiagramsOnly.in \
 VBFNLO.in \
 VBFNLOPhasespace.in

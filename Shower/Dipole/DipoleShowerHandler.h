@@ -210,6 +210,13 @@ protected:
    */
   bool realign();
 
+  /**
+   * The choice of z boundaries; 0 = restricted, 1 = open, 2 = mixed/other
+   */
+  virtual int showerPhaseSpaceOption() const {
+    return theZBoundaries;
+  }
+
 protected:
 
   /**
@@ -535,7 +542,11 @@ private:
    */
   int _rearrangeNEmissions=-1;
   
-
+  /**
+   * The choice of z boundaries; 0 = restricted, 1 = open, 2 = mixed/other
+   */
+  int theZBoundaries;
+  
 private:
 
   /**
