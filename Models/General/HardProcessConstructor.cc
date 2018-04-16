@@ -5,6 +5,7 @@
 //
 
 #include "HardProcessConstructor.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -20,9 +21,10 @@ void HardProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> debug_ >> subProcess_ >> model_;
 }
 
-AbstractClassDescription<HardProcessConstructor> 
-HardProcessConstructor::initHardProcessConstructor;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<HardProcessConstructor,Interfaced>
+describeHerwigHardProcessConstructor("Herwig::HardProcessConstructor", "Herwig.so");
 
 void HardProcessConstructor::Init() {
 
@@ -105,6 +107,18 @@ colourFlow(const tcPDVector & extpart) const {
     else if( outa == PDT::Colour0 && outb == PDT::Colour6 ) {
       return GeneralHardME::Colour33to16;
     }
+    else if ( outa == PDT::Colour0 && outb == PDT::Colour3bar) {
+      return GeneralHardME::Colour33to13bar;
+    }
+    else if ( outb == PDT::Colour0 && outa == PDT::Colour3bar) {
+      return GeneralHardME::Colour33to3bar1;
+    }
+    else if ( outa == PDT::Colour8 && outb == PDT::Colour3bar) {
+      return GeneralHardME::Colour33to83bar;
+    }
+    else if ( outb == PDT::Colour8 && outa == PDT::Colour3bar) {
+      return GeneralHardME::Colour33to3bar8;
+    }
     else
       assert(false);
   }
@@ -118,6 +132,18 @@ colourFlow(const tcPDVector & extpart) const {
     }
     else if ( outa == PDT::Colour0 && outb == PDT::Colour6bar ) {
       return GeneralHardME::Colour3bar3barto16bar;
+    }
+    else if ( outa == PDT::Colour0 && outb == PDT::Colour3) {
+      return GeneralHardME::Colour3bar3barto13;
+    }
+    else if ( outb == PDT::Colour0 && outa == PDT::Colour3) {
+      return GeneralHardME::Colour3bar3barto31;
+    }
+    else if ( outa == PDT::Colour8 && outb == PDT::Colour3) {
+      return GeneralHardME::Colour3bar3barto83;
+    }
+    else if ( outb == PDT::Colour8 && outa == PDT::Colour3) {
+      return GeneralHardME::Colour3bar3barto38;
     }
     else
       assert(false);
@@ -188,8 +214,11 @@ colourFlow(const tcPDVector & extpart) const {
     else if(outa == PDT::Colour3bar && outb == PDT::Colour6){
       return GeneralHardME::Colour38to3bar6;
     }
-    else if(outa == PDT::Colour6 && outb == PDT::Colour3bar){
+    else if(outa == PDT::Colour6 && outb == PDT::Colour3bar) {
       return GeneralHardME::Colour38to63bar;
+    }
+    else if(outa == PDT::Colour3bar && outb == PDT::Colour3bar) {
+      return GeneralHardME::Colour38to3bar3bar;
     }
     else
       assert(false);
@@ -207,6 +236,9 @@ colourFlow(const tcPDVector & extpart) const {
     }
     else if(outa == PDT::Colour8 && outb == PDT::Colour3bar) {
       return GeneralHardME::Colour3bar8to83bar;
+    }
+    else if(outa == PDT::Colour3 && outb == PDT::Colour3) {
+      return GeneralHardME::Colour3bar8to33;
     }
     else
       assert(false);
@@ -259,10 +291,14 @@ void HardProcessConstructor::assignToCF(HPDiagram & diag) {
 }
 
 void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
-  PDT::Colour ina  = getParticleData(diag.incoming.first )->iColour();
-  PDT::Colour inb  = getParticleData(diag.incoming.second)->iColour();
-  PDT::Colour outa = getParticleData(diag.outgoing.first )->iColour();
-  PDT::Colour outb = getParticleData(diag.outgoing.second)->iColour();
+  tcPDPtr ia = getParticleData(diag.incoming.first );
+  tcPDPtr ib = getParticleData(diag.incoming.second);
+  tcPDPtr oa = getParticleData(diag.outgoing.first );
+  tcPDPtr ob = getParticleData(diag.outgoing.second);
+  PDT::Colour ina  = ia->iColour();
+  PDT::Colour inb  = ib->iColour();
+  PDT::Colour outa = oa->iColour();
+  PDT::Colour outb = ob->iColour();
   vector<CFPair> cfv(1, make_pair(0, 1.));
   if(diag.intermediate->iColour() == PDT::Colour0) {
     if(ina==PDT::Colour0) {
@@ -287,14 +323,27 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(inb==PDT::Colour8) {
-	cfv[0] = make_pair(5, 1);
+	cfv[0] = make_pair(7, 1);
       }
     }
   }
   else if(diag.intermediate->iColour() == PDT::Colour8) {
     if(ina==PDT::Colour8&&outa==PDT::Colour8&&
        inb==PDT::Colour8&&outb==PDT::Colour8) {
-      cfv.push_back(make_pair(1, -1.));
+      cfv[0]=make_pair(2,  2.);
+      cfv.push_back(make_pair(3, -2.));
+      cfv.push_back(make_pair(1, -2.));
+      cfv.push_back(make_pair(4,  2.));
+    }
+    else if(ina==PDT::Colour8&&outa==PDT::Colour0&&
+	    inb==PDT::Colour8&&outb==PDT::Colour8&&
+	    oa->iSpin()==PDT::Spin0) {
+      cfv[0] = make_pair(0,-1);
+    }
+    else if(ina==PDT::Colour8&&outa==PDT::Colour8&&
+	    inb==PDT::Colour8&&outb==PDT::Colour0&&
+	    ob->iSpin()==PDT::Spin0) {
+      cfv[0] = make_pair(0,-1);
     }
   } 
   else if(diag.intermediate->iColour() == PDT::Colour3 ||
@@ -322,6 +371,31 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
 	    outb==PDT::Colour6 || outb ==PDT::Colour6bar ) {
       assert(false);
     }
+    else if(ina==PDT::Colour3    && inb==PDT::Colour3    ) {
+      if((outa==PDT::Colour0 && outb==PDT::Colour3bar)||
+	 (outb==PDT::Colour0 && outa==PDT::Colour3bar))
+	cfv[0] = make_pair(0,1.);
+      else if((outa==PDT::Colour8 && outb==PDT::Colour3bar)||
+	      (outb==PDT::Colour8 && outa==PDT::Colour3bar))
+	cfv[0] = make_pair(1,1.);
+    }
+    else if(ina==PDT::Colour3bar && inb==PDT::Colour3bar ) {
+      if((outa==PDT::Colour0 && outb==PDT::Colour3)||
+	 (outb==PDT::Colour0 && outa==PDT::Colour3))
+	cfv[0] = make_pair(0,1.);
+      else if((outa==PDT::Colour8 && outb==PDT::Colour3)||
+	      (outb==PDT::Colour8 && outa==PDT::Colour3))
+	cfv[0] = make_pair(1,1.);
+    }
+    else if((ina==PDT::Colour3    && inb==PDT::Colour8) ||
+	    (ina==PDT::Colour3bar && inb==PDT::Colour8) ||
+	    (inb==PDT::Colour3    && ina==PDT::Colour8) ||
+	    (inb==PDT::Colour3bar && ina==PDT::Colour8) ) {
+      if((outa==PDT::Colour3    && outb==PDT::Colour3    ) ||
+	 (outa==PDT::Colour3bar && outb==PDT::Colour3bar)) {
+	cfv[0] = make_pair(1,1.);
+      }
+    }
   }
   else if(diag.intermediate->iColour() == PDT::Colour6 ||
 	  diag.intermediate->iColour() == PDT::Colour6bar) {
@@ -345,7 +419,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   diag.colourFlow = cfv;
 }
  
-void HardProcessConstructor::uChannelCF(HPDiagram & diag) { 
+void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   PDT::Colour offshell = diag.intermediate->iColour();
   PDT::Colour ina  = getParticleData(diag.incoming.first )->iColour();
   PDT::Colour inb  = getParticleData(diag.incoming.second)->iColour();
@@ -362,14 +436,44 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	 outb == PDT::Colour0) {
 	cfv[0].first = 0;
       }
+      else if(ina  == PDT::Colour3 && inb  == PDT::Colour8 &&
+	      outb == PDT::Colour3 && outa == PDT::Colour8) {
+	tPDPtr off = diag.intermediate;
+	if(off->CC()) off=off->CC();
+	if(off->iSpin()!=PDT::Spin1Half ||
+	   diag.vertices.second->allowed(off->id(),diag.outgoing.first,diag.incoming.second)) {
+	  cfv[0].first = 0;
+	  cfv.push_back(make_pair(1, -1.));
+	}
+	else {
+	  cfv[0].first = 1;
+	  cfv.push_back(make_pair(0, -1.));
+	}
+      }
+      else if(ina  == PDT::Colour3bar && inb  == PDT::Colour8 &&
+	      outb == PDT::Colour3bar && outa == PDT::Colour8) {
+	tPDPtr off = diag.intermediate;
+	if(off->CC()) off=off->CC();
+	if(off->iSpin()!=PDT::Spin1Half ||
+	   diag.vertices.second->allowed(diag.outgoing.first,off->id(),diag.incoming.second)) {
+	  cfv[0].first = 0;
+	  cfv.push_back(make_pair(1, -1.));
+	}
+	else {
+	  cfv[0].first = 1;
+	  cfv.push_back(make_pair(0, -1.));
+	}
+      }
       else {
 	cfv[0].first = 0;
 	cfv.push_back(make_pair(1, -1.));
       }
     }
     else if(outa==PDT::Colour8&&ina==PDT::Colour8) {
-      cfv[0]=make_pair(1, -1.);
-      cfv.push_back(make_pair(2, 1.));
+      cfv[0]=make_pair(4, 2.);
+      cfv.push_back(make_pair(5, -2.));
+      cfv.push_back(make_pair(0, -2.));
+      cfv.push_back(make_pair(2,  2.));
     }
   }
   else if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
@@ -397,6 +501,38 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       for(int ix=5; ix<8;++ix)
 	cfv.push_back(make_pair(ix,1.));
     }
+    else if(ina==PDT::Colour0 && inb==PDT::Colour0) {
+      cfv[0] = make_pair(0,1.);
+    }
+    else if(ina==PDT::Colour3    && inb==PDT::Colour3    ) {
+      if((outa==PDT::Colour0 && outb==PDT::Colour3bar)||
+	 (outb==PDT::Colour0 && outa==PDT::Colour3bar))
+	cfv[0] = make_pair(0,1.);
+      else if((outa==PDT::Colour8 && outb==PDT::Colour3bar)||
+	      (outb==PDT::Colour8 && outa==PDT::Colour3bar))
+	cfv[0] = make_pair(2,1.);
+    }
+    else if(ina==PDT::Colour3bar && inb==PDT::Colour3bar ) {
+      if((outa==PDT::Colour0 && outb==PDT::Colour3)||
+	 (outb==PDT::Colour0 && outa==PDT::Colour3))
+	cfv[0] = make_pair(0,1.);
+      else if((outa==PDT::Colour8 && outb==PDT::Colour3)||
+	      (outb==PDT::Colour8 && outa==PDT::Colour3))
+	cfv[0] = make_pair(2,1.);
+    }
+    else if(((ina==PDT::Colour3    && inb==PDT::Colour8) ||
+	     (ina==PDT::Colour3bar && inb==PDT::Colour8) ||
+	     (inb==PDT::Colour3    && ina==PDT::Colour8) ||
+	     (inb==PDT::Colour3bar && ina==PDT::Colour8)) &&
+	    ((outa==PDT::Colour3    && outb==PDT::Colour3    ) ||
+	     (outa==PDT::Colour3bar && outb==PDT::Colour3bar))) {
+      cfv[0] = make_pair(2, 1.);
+    }
+    else if(( ina==PDT::Colour3    &&  inb==PDT::Colour3bar && 
+	      outa==PDT::Colour3    && outb==PDT::Colour3bar)) {
+      cfv[0] = make_pair(2, 1.);
+      cfv.push_back(make_pair(3,-1.));
+    }
   }
   else if( offshell == PDT::Colour0 ) {
     if(ina==PDT::Colour0) {
@@ -421,7 +557,7 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(inb==PDT::Colour8) {
-	cfv[0] = make_pair(4, 1);
+	cfv[0] = make_pair(8, 1);
       }
     }
   }
@@ -479,9 +615,10 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	    (outa        == PDT::Colour3   && outb        == PDT::Colour3bar) )
 	  prefact = -1;
 	if(incol && outcol) {
-	  cfv[0].first = 0;
-	  cfv[0].second = -prefact;
-	  cfv.push_back(make_pair(2, prefact));
+	  cfv[0] = make_pair(0, -2.);
+	  cfv.push_back(make_pair(1,  2.));
+	  cfv.push_back(make_pair(3,  2.));
+	  cfv.push_back(make_pair(5,  -2.));
 	}
 	else if(incol && outsex) {
 	  cfv[0].first = 4;
@@ -530,6 +667,10 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       else if(outa==PDT::Colour8) {
 	cfv[0] = make_pair(2, 1);
       }
+      else if(outa==PDT::Colour6 || outa==PDT::Colour6bar) {
+	cfv[0] = make_pair(8, 1.);
+	cfv.push_back(make_pair(9,1.));
+      }
       else
 	assert(false);
     }
@@ -541,7 +682,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(2, 1);
       }
       else if(outa==PDT::Colour8) {
-	cfv[0] = make_pair(3, 1);
+	cfv[0] = make_pair(6, 1);
       }
     }
   }
@@ -550,6 +691,24 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
        outb == PDT::Colour6bar || outb == PDT::Colour6) {
       cfv[0] = make_pair(6, 1.);
       cfv.push_back(make_pair(7,1.));
+    }
+    else if((ina  == PDT::Colour3    && inb  == PDT::Colour3) ||
+	    (ina  == PDT::Colour3bar && inb  == PDT::Colour3bar)) {
+      if((outa == PDT::Colour3    && outb == PDT::Colour3   ) ||
+	 (outa == PDT::Colour3bar && outb == PDT::Colour3bar)) {
+	cfv[0]      = make_pair(2, 1.);
+	cfv.push_back(make_pair(3,-1.));
+      }
+      else
+	cfv[0] = make_pair(0,1.);
+    }
+    else if(((ina==PDT::Colour3    && inb==PDT::Colour8) ||
+	     (ina==PDT::Colour3bar && inb==PDT::Colour8) ||
+	     (inb==PDT::Colour3    && ina==PDT::Colour8) ||
+	     (inb==PDT::Colour3bar && ina==PDT::Colour8) ) &&
+	    ((outa==PDT::Colour3    && outb==PDT::Colour3    ) ||
+	     (outa==PDT::Colour3bar && outb==PDT::Colour3bar))) {
+      cfv[0] = make_pair(0,1.);
     }
     else {
       if(outa == PDT::Colour0 || outb == PDT::Colour0)
@@ -605,10 +764,13 @@ void HardProcessConstructor::fourPointCF(HPDiagram & diag) {
   }
   else if(noct==4) {
     // flows for SSVV, VVVV is handled in me class
-    vector<CFPair> cfv(3);
-    cfv[0] = make_pair(0, 1.);
-    cfv[1] = make_pair(1,-2.);
-    cfv[2] = make_pair(2, 1.);
+    vector<CFPair> cfv(6);
+    cfv[0] = make_pair(0, -2.);
+    cfv[1] = make_pair(1, -2.);
+    cfv[2] = make_pair(2, +4.);
+    cfv[3] = make_pair(3, -2.);
+    cfv[4] = make_pair(4, +4.);
+    cfv[5] = make_pair(5, -2.);
     diag.colourFlow = cfv;
   }
   else if(ntri==2&&noct==2) {
