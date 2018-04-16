@@ -64,7 +64,12 @@ public:
                         Colour3bar8to83bar,Colour3bar8to3bar8,
                         Colour88to11,Colour88to33bar,
                         Colour88to66bar,Colour88to88,
-                        Colour88to18,Colour88to81};
+                        Colour88to18,Colour88to81,
+			Colour33to13bar,Colour33to3bar1,
+			Colour33to83bar,Colour33to3bar8,
+			Colour3bar3barto13,Colour3bar3barto31,
+			Colour3bar3barto83,Colour3bar3barto38,
+			Colour38to3bar3bar,Colour3bar8to33};
 
 public:
 
@@ -376,12 +381,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
-   */
-  static AbstractClassDescription<GeneralHardME> initGeneralHardME;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -490,33 +489,6 @@ private:
     up to matrix element.*/
 class MEException : public Exception {};
   
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralHardME. */
-template <>
-struct BaseClassTrait<Herwig::GeneralHardME,1> {
-  /** Typedef of the first base class of GeneralHardME. */
-  typedef Herwig::HwMEBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralHardME class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::GeneralHardME>
-  : public ClassTraitsBase<Herwig::GeneralHardME> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::GeneralHardME"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_GeneralHardME_H */
