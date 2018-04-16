@@ -296,6 +296,18 @@ void ModelGenerator::doinit() {
     // mass-shell
     checkDecays(parent);
     parent->reset();
+    // Now switch off the modes if needed
+    for(DecaySet::const_iterator it=parent->decayModes().begin();
+	it!=parent->decayModes().end();++it) {
+      if( _theDecayConstructor->disableDecayMode((**it).tag()) ) {
+	DMPtr mode = *it;
+	generator()->preinitInterface(mode, "Active", "set", "No");
+	if(mode->CC()) {
+	  DMPtr CCmode = mode->CC();
+	  generator()->preinitInterface(CCmode, "Active", "set", "No");
+	}
+      }
+    }
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
     if( parent->decaySelector().empty() ) {
@@ -345,12 +357,6 @@ void ModelGenerator::doinit() {
       parent->widthGenerator()->init();
     if(parent->massGenerator())
       parent->massGenerator()->init();
-    // Now switch off the modes if needed
-    for(DecaySet::const_iterator it=parent->decayModes().begin();
-	it!=parent->decayModes().end();++it) {
-      if( _theDecayConstructor->disableDecayMode((**it).tag()) )
-	generator()->preinitInterface(*it, "Active", "set", "No");
-    }
     // output the modes if needed
     if( !parent->decaySelector().empty() ) {
       if ( decayOutput_ == 2 )
