@@ -12,6 +12,7 @@
 //
 
 #include "MEff2vv.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -67,9 +68,9 @@ double MEff2vv::me2() const {
     sbar[i] = SpinorBarWaveFunction(rescaledMomenta()[1], mePartonData()[1], i, 
 				    incoming);
     v1[2*i] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2],2*i , 
-				 outgoing);
+    				 outgoing);
     v2[2*i] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 2*i, 
-				 outgoing);
+    				 outgoing);
   }
   if( !mc ) v1[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
 				       outgoing);
@@ -108,16 +109,17 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 	    tcPDPtr offshell = current.intermediate;
 	    Complex diag(0.);
 	    if(current.channelType == HPDiagram::tChannel) {
+	      unsigned int iopt = abs(offshell->id())==abs(sp[if1].particle()->id()) ? 5 : 3;
 	      if(current.intermediate->iSpin() == PDT::Spin1Half) {
 		if(current.ordered.second) {
 		  SpinorWaveFunction interF = fermion_[ix].first->
-		    evaluate(q2, 3, offshell, sp[if1], v1[vh1]);
+		    evaluate(q2, iopt, offshell, sp[if1], v1[vh1]);
 		  diag = fermion_[ix].second->
 		    evaluate(q2, interF, sbar[if2],v2[vh2]);
 		}
 		else {
 		  SpinorWaveFunction interF = fermion_[ix].first->
-		    evaluate(q2, 3 , offshell, sp[if1], v2[vh2]);
+		    evaluate(q2, iopt , offshell, sp[if1], v2[vh2]);
 		  diag = fermion_[ix].second->
 		    evaluate(q2, interF, sbar[if2],v1[vh1]);
 		}	      
@@ -183,8 +185,10 @@ void MEff2vv::persistentInput(PersistentIStream & is, int) {
 			   PDT::Spin1, PDT::Spin1);
 }
 
-ClassDescription<MEff2vv> MEff2vv::initMEff2vv;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEff2vv,GeneralHardME>
+describeHerwigMEff2vv("Herwig::MEff2vv", "Herwig.so");
 
 void MEff2vv::Init() {
 
