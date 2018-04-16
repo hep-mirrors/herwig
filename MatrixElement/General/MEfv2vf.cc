@@ -12,6 +12,7 @@
 //
 
 #include "MEfv2vf.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -264,8 +265,10 @@ void MEfv2vf::persistentInput(PersistentIStream & is, int) {
 			   PDT::Spin1, PDT::Spin1Half);
 }
 
-ClassDescription<MEfv2vf> MEfv2vf::initMEfv2vf;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<MEfv2vf,GeneralHardME>
+describeHerwigMEfv2vf("Herwig::MEfv2vf", "Herwig.so");
 
 void MEfv2vf::Init() {
 

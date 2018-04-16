@@ -145,12 +145,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEff2sv> initMEff2sv;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -199,33 +193,6 @@ private:
    */
   vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fermion_;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEff2sv. */
-template <>
-struct BaseClassTrait<Herwig::MEff2sv,1> {
-  /** Typedef of the first base class of MEff2sv. */
-  typedef Herwig::GeneralHardME NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEff2sv class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEff2sv>
-  : public ClassTraitsBase<Herwig::MEff2sv> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEff2sv"; }
-};
-
-/** @endcond */
 
 }
 
