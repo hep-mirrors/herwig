@@ -52,9 +52,10 @@ void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
 DescribeAbstractClass<NBodyDecayConstructorBase,Interfaced>
 describeThePEGNBodyDecayConstructorBase("Herwig::NBodyDecayConstructorBase", "Herwig.so");
 
-AbstractClassDescription<NBodyDecayConstructorBase> 
-NBodyDecayConstructorBase::initNBodyDecayConstructorBase;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractClass<NBodyDecayConstructorBase,Interfaced>
+describeHerwigNBodyDecayConstructorBase("Herwig::NBodyDecayConstructorBase", "Herwig.so");
 
 void NBodyDecayConstructorBase::Init() {
 
@@ -291,12 +292,16 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
     generator()->preinitInterface(dm, "OnOff","set", "Off");
     return;
   }
-  //Need width and branching ratios for all currently created decay modes
+  // Need width and branching ratios for all currently created decay modes
   PDPtr parent = const_ptr_cast<PDPtr>(dm->parent());
   DecaySet modes = parent->decayModes();
-  if( modes.empty() ) return;
+  unsigned int nmodes=0;
+  for( auto dm : modes ) {
+    if(dm->on()) ++nmodes;
+  }
+  if( nmodes==0 ) return;
   double dmbrat(0.);
-  if( modes.size() == 1 ) {
+  if( nmodes == 1 ) {
     parent->width(pwidth);
     if( pwidth > ZERO ) parent->cTau(hbarc/pwidth);
     dmbrat = 1.;
