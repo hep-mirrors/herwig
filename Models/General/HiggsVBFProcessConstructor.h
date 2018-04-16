@@ -78,13 +78,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<HiggsVBFProcessConstructor> 
-  initHiggsVBFProcessConstructor;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -113,33 +106,6 @@ private:
    */
   unsigned int _intermediates;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of HiggsVBFProcessConstructor. */
-template <>
-struct BaseClassTrait<Herwig::HiggsVBFProcessConstructor,1> {
-  /** Typedef of the first base class of HiggsVBFProcessConstructor. */
-  typedef Herwig::HardProcessConstructor NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the HiggsVBFProcessConstructor class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::HiggsVBFProcessConstructor>
-  : public ClassTraitsBase<Herwig::HiggsVBFProcessConstructor> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::HiggsVBFProcessConstructor"; }
-};
-
-/** @endcond */
 
 }
 
