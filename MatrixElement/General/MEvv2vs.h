@@ -9,6 +9,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVSVertex.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -133,12 +134,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<MEvv2vs> initMEvv2vs;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -156,42 +151,12 @@ private:
    */
   vector<pair<AbstractVVVVertexPtr, AbstractVVSVertexPtr> > vector_;
 
-};
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of MEvv2vs. */
-template <>
-struct BaseClassTrait<Herwig::MEvv2vs,1> {
-  /** Typedef of the first base class of MEvv2vs. */
-  typedef Herwig::GeneralHardME NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the MEvv2vs class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::MEvv2vs>
-  : public ClassTraitsBase<Herwig::MEvv2vs> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEvv2vs"; }
   /**
-   * The name of a file containing the dynamic library where the class
-   * MEvv2vs is implemented. It may also include several, space-separated,
-   * libraries if the class MEvv2vs depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
+   * Store the dynamically casted VVVSVertex pointer
    */
-  static string library() { return "MEvv2vs.so"; }
-};
+  AbstractVVVSVertexPtr fourPointVertex_;
 
-/** @endcond */
+};
 
 }
 
