@@ -54,16 +54,21 @@ void MEChargedCurrentDIS::getDiagrams() const {
     quarkpair.push_back(make_pair(ParticleID::s, ParticleID::t));
     quarkpair.push_back(make_pair(ParticleID::d, ParticleID::t));
     quarkpair.push_back(make_pair(ParticleID::b, ParticleID::t));
+    [[fallthrough]];
   case 5:
     quarkpair.push_back(make_pair(ParticleID::b, ParticleID::c));
     quarkpair.push_back(make_pair(ParticleID::b, ParticleID::u));
+    [[fallthrough]];
   case 4:
     quarkpair.push_back(make_pair(ParticleID::s, ParticleID::c));
     quarkpair.push_back(make_pair(ParticleID::d, ParticleID::c));
+    [[fallthrough]];
   case 3:
     quarkpair.push_back(make_pair(ParticleID::s, ParticleID::u));
+    [[fallthrough]];
   case 2:
     quarkpair.push_back(make_pair(ParticleID::d, ParticleID::u));
+    [[fallthrough]];
   default:
     ;
   }

@@ -153,17 +153,21 @@ void MEPP2VGamma::getDiagrams() const {
 				     getParticleData(ParticleID::cbar)));
       parentpair.push_back(make_pair(getParticleData(ParticleID::b), 
 				     getParticleData(ParticleID::ubar)));
+      [[fallthrough]];
     case 4:
       parentpair.push_back(make_pair(getParticleData(ParticleID::s),
 				     getParticleData(ParticleID::cbar)));
       parentpair.push_back(make_pair(getParticleData(ParticleID::d),
 				     getParticleData(ParticleID::cbar)));
+      [[fallthrough]];
     case 3:
       parentpair.push_back(make_pair(getParticleData(ParticleID::s),
 				     getParticleData(ParticleID::ubar)));
+      [[fallthrough]];
     case 2:
       parentpair.push_back(make_pair(getParticleData(ParticleID::d),
 				     getParticleData(ParticleID::ubar)));
+      [[fallthrough]];
     default:
       ;
     }

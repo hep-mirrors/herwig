@@ -165,17 +165,21 @@ void MEPP2SingleTop::getDiagrams() const {
 				  getParticleData(ParticleID::cbar)));
     lightPair.push_back(make_pair(getParticleData(ParticleID::b),
 				  getParticleData(ParticleID::ubar)));
+    [[fallthrough]];
   case 4:
     lightPair.push_back(make_pair(getParticleData(ParticleID::s), 
 				  getParticleData(ParticleID::cbar)));
     lightPair.push_back(make_pair(getParticleData(ParticleID::d), 
 				  getParticleData(ParticleID::cbar)));
+    [[fallthrough]];
   case 3:
     lightPair.push_back(make_pair(getParticleData(ParticleID::s),
 				  getParticleData(ParticleID::ubar)));
+    [[fallthrough]];
   case 2:
     lightPair.push_back(make_pair(getParticleData(ParticleID::d),
 				  getParticleData(ParticleID::ubar)));
+    [[fallthrough]];
   default:
     ;
   }

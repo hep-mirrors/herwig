@@ -62,13 +62,17 @@ void MEqq2W2ff::getDiagrams() const {
   case 5:
     parentpair.push_back(make_pair(ParticleID::b, ParticleID::cbar));
     parentpair.push_back(make_pair(ParticleID::b, ParticleID::ubar));
+    [[fallthrough]];
   case 4:
     parentpair.push_back(make_pair(ParticleID::s, ParticleID::cbar));
     parentpair.push_back(make_pair(ParticleID::d, ParticleID::cbar));
+    [[fallthrough]];
   case 3:
     parentpair.push_back(make_pair(ParticleID::s, ParticleID::ubar));
+    [[fallthrough]];
   case 2:
     parentpair.push_back(make_pair(ParticleID::d, ParticleID::ubar));
+    [[fallthrough]];
   default:
     ;
   }
