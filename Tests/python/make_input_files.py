@@ -840,7 +840,6 @@ elif(collider=="LHC") :
         elif "W-Z-e" in parameterName :
             process+=insert_ME("MEqq2gZ2ff","Electron")
             process+=insert_ME("MEqq2W2ff","Electron")
-
         elif "W-Z-mu" in parameterName :
             process+=insert_ME("MEqq2gZ2ff","Muon")
             process+=insert_ME("MEqq2W2ff","Muon")
