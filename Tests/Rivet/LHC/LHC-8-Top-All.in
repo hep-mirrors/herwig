@@ -3,5 +3,3 @@
 ##################################################
 # CMS top 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1370682
-# CMS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1473674

@@ -129,7 +129,7 @@ yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda",
            "-8-Top-SL.yoda","-8-Top-L.yoda","-8-Top-All.yoda",
-           "-13-Top-All.yoda"]
+           "-13-Top-L.yoda","-13-Top-SL.yoda"]
 
 for i in range(1,10) :
     for j in [7,8,13] :

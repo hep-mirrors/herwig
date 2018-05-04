@@ -13,3 +13,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1449082
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1430892
 # CMS spin correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1413748
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1404878
