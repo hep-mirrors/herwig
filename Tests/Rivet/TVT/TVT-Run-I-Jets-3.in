@@ -7,3 +7,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4517016
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4563131
 # run I CDF UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
+# run I D0 jet shape
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_1995_I398175
