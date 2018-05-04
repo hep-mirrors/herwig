@@ -236,7 +236,8 @@ for f in yodafiles:
            aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
            aopath.find("I1419070")>0 or aopath.find("I1394679")>0 or
            aopath.find("I929691" )>0 or aopath.find("I1393758")>0 or
-           aopath.find("I1459051")>0 or aopath.find("ATLAS_2016_CONF_2016_092")>0 or
+           aopath.find("I1459051")>0 or aopath.find("I1487277")>0 or
+           aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -370,6 +371,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1307243"   )>0 or
         hpath.find("I1419070")>0 or
         hpath.find("I1394679")>0 or
+        hpath.find("I1487277")>0 or
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
@@ -1435,6 +1437,15 @@ useOnePt( "/ATLAS_2017_I1609253/d09-x01-y01",  "8000", "400" )
 useOnePt( "/ATLAS_2017_I1609253/d10-x01-y01",  "8000", "400" )
 useOnePt( "/ATLAS_2017_I1609253/d11-x01-y01",  "8000", "600" )
 useOnePt( "/ATLAS_2017_I1609253/d12-x01-y01",  "8000", "600" )
+
+logging.info("Processing CMS_2016_I1487277")
+mergeByPt("/CMS_2016_I1487277/d01-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d02-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d03-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d04-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d05-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d06-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d07-x01-y01", "8000")
 
 # Choose output file
 name = args[0]+"-Jets.yoda"
