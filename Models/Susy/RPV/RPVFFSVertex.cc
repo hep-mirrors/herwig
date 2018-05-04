@@ -43,6 +43,7 @@ RPVFFSVertex::RPVFFSVertex() : interactions_(0), mw_(ZERO),
 			       _massLast(make_pair(ZERO,ZERO)) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }  
 
 IBPtr RPVFFSVertex::clone() const {

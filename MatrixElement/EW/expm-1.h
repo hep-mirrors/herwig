@@ -37,6 +37,7 @@
 
 #ifndef _BOOST_UBLAS_EXPM_
 #define _BOOST_UBLAS_EXPM_
+#include <boost/throw_exception.hpp>
 #include <complex>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>

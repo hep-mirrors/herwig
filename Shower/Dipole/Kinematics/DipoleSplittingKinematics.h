@@ -114,7 +114,16 @@ namespace Herwig {
     virtual Energy ptMax(Energy dScale, 
 			 double emX, double specX,
 			 const DipoleSplittingInfo& dInfo,
-			 const DipoleSplittingKernel& split) const; 
+			 const DipoleSplittingKernel& split) const;
+    
+    /**
+     * Return the maximum pt for the given dipole scale.
+     */
+    virtual Energy ptMax(Energy dScale, 
+			 double emX, double specX,
+			 const DipoleIndex& dIndex,
+			 const DipoleSplittingKernel& split,
+			 tPPtr emitter, tPPtr spectator) const; 
 
     /**
      * Return the maximum virtuality for the given dipole scale.
@@ -132,6 +141,15 @@ namespace Herwig {
 			const DipoleSplittingInfo& dInfo,
 			const DipoleSplittingKernel& split) const;
 
+    /**
+     * Return the maximum virtuality for the given dipole scale.
+     */
+    virtual Energy QMax(Energy dScale, 
+			double emX, double specX,
+			const DipoleIndex& dIndex,
+			const DipoleSplittingKernel& split,
+			tPPtr emitter, tPPtr spectator) const;
+  
     /**
      * Return the pt given a virtuality.
      */
@@ -313,6 +331,11 @@ namespace Herwig {
     virtual bool doesTransform () const { return false; }
 
     /*
+     * Use the Dipole scale instead of hardpt for z-boundaries.
+     */
+    int openZBoundaries() const { return theOpenZBoundaries; }
+
+    /*
      * perform the transformation if required.
      */
     virtual Lorentz5Momentum transform (const Lorentz5Momentum& p) const { return p; }
@@ -432,16 +455,6 @@ namespace Herwig {
      * Return the momentum of the recoil system after splitting.
      */
     const Lorentz5Momentum& splitRecoilMomentum() const { return theSplitRecoilMomentum; }
-
-
-
-  /*
-   * Use the Dipole scale instead of hardpt for z-boundaries.
-   */
-  
-  int openZBoundaries() const { return theOpenZBoundaries; }
-  
-
 
   public:
 

@@ -134,20 +134,37 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
 
   generatedSplitting.scale(sp.scale());
 
-  // For dipoles containing a decayed particle,
-  // the scale is fixed but the mass of the recoil 
-  // system is not so sample over recoilMass(),
-  // so the parameter is related to recoilMass()
-  if (generatedSplitting.index().incomingDecayEmitter() ||
-      generatedSplitting.index().incomingDecaySpectator() ) {
+  // If dealing with a decay, need to set recoilMass
+  if ( generatedSplitting.index().incomingDecaySpectator() ||    
+       generatedSplitting.index().incomingDecayEmitter() ) 
     generatedSplitting.recoilMass(sp.recoilMass());
-    parameters[3] = sp.recoilMass()/generator()->maximumCMEnergy();
-  }
-  // If not a decay dipole, sample over the scale of the dipole,
-  // so the parameter is related to scale()
-  else
-    parameters[3] = sp.scale()/generator()->maximumCMEnergy();
 
+  // Need to copy emitter and spectator masses
+  generatedSplitting.emitterMass(sp.emitterMass());
+  generatedSplitting.spectatorMass(sp.spectatorMass());
+  
+  // Counter to track if there is an off-shell
+  // emitter AND/OR spectator
+  int count = parameters.size()-1;    
+
+  // Off shell spectator mass
+  if ( sp.index().offShellSpectator() ) {
+    parameters[count] = sp.spectatorMass()/generator()->maximumCMEnergy();
+    count -= 1;
+  }
+  
+  // Off shell emitter mass
+  if ( sp.index().offShellEmitter() )
+    parameters[count] = sp.emitterMass()/generator()->maximumCMEnergy();
+
+  
+  // If not a decay, point[3] samples over the dipole scale
+  if ( !sp.index().incomingDecaySpectator() && !sp.index().incomingDecayEmitter() )
+    parameters[3] = sp.scale()/generator()->maximumCMEnergy();
+  // If it is a decay, point[3] samples over the recoilMass
+  else 
+    parameters[3] = sp.recoilMass()/generator()->maximumCMEnergy();
+  
   generatedSplitting.hardPt(sp.hardPt());
 
   parameters[0] = splittingKinematics()->ptToRandom(optHardPt == ZERO ? 
@@ -201,7 +218,9 @@ int DipoleSplittingGenerator::nDim() const {
   assert(!wrapping());
   assert(prepared);
 
-  int ret = 4; // 0 pt, 1 z, 2 phi, 3 scale, 4/5 xs + parameters
+  // Note this use of [3] for either the scale or the recoil mass
+  // is a bit of a nasty hack.
+  int ret = 4; // 0 pt, 1 z, 2 phi, 3 scale or recoilMass, 4/5 xs + parameters
 
   if ( generatedSplitting.index().emitterPDF().pdf() ) {
     ++ret;
@@ -212,7 +231,20 @@ int DipoleSplittingGenerator::nDim() const {
   }  
 
   ret += splittingKernel()->nDimAdditional();
+  assert(splittingKernel()->nDimAdditional() == 0);
 
+  // Put off-shell spectator mass at back [-1]
+  // followed by off-shell emitter mass (i.e. [-1] or [-2])
+
+  // Off-shell emitter
+  if ( generatedSplitting.index().offShellEmitter() )
+    ++ret;
+  
+  // Off-shell spectator
+  if ( generatedSplitting.index().offShellSpectator() )
+    ++ret;
+  
+  
   return ret;
 
 }
@@ -327,47 +359,67 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
   if ( presampling ) {
 
-    // For dipoles containing a decayed particle,
-    // the scale is fixed but the mass of the recoil 
-    // system is not so sample over recoilMass()
-    if ( split.index().incomingDecaySpectator() ) {
-      split.scale(split.index().spectatorData()->mass());
-      split.recoilMass(point[3] * generator()->maximumCMEnergy());
+    // Counter to track if there is an off-shell
+    // emitter AND/OR spectator
+    int count = parameters.size()-1;    
+
+    // Sample over off-shell emitter and spectator masss
+    // Do not sample if zero mass or off-shell
+    if ( split.index().spectatorData()->mass() != ZERO ) {
+      if ( !split.index().offShellSpectator() )
+	split.spectatorMass(split.index().spectatorData()->mass());
+      else {
+	split.spectatorMass(point[count] * generator()->maximumCMEnergy());
+	count -= 1;
+      }
     }
 
-    // Currently do not have decaying emitters
-    //else if ( split.index().incomingDecayEmitter() ) {
-    //  split.scale(split.index().emitterData()->mass());
-    //  split.recoilMass(point[3] * generator()->maximumCMEnergy());
-    //}
-
-    // If not a decay dipole, sample over the scale of the dipole
-    else
+    if ( split.index().emitterData()->mass() != ZERO ) {
+      if ( !split.index().offShellEmitter() ) 
+	split.emitterMass(split.index().emitterData()->mass());
+      else
+	split.emitterMass(point[count] * generator()->maximumCMEnergy());
+    }
+    
+    // If not a decay, point[3] samples over the dipole scale
+    if ( ! split.index().incomingDecaySpectator()
+	 && ! split.index().incomingDecayEmitter() )
       split.scale(point[3] * generator()->maximumCMEnergy());
-
-
+      
+    // For dipoles containing a decayed spectator:
+    // 1) Use point[3] to sample over the recoil mass
+    // 2) The dipole scale is the spectator mass
+    else if ( split.index().incomingDecaySpectator() ) {
+      split.recoilMass(point[3] * generator()->maximumCMEnergy());
+      assert(split.spectatorMass() != ZERO );
+      split.scale(split.spectatorMass());
+    }
+    // Not currently intended to work with decaying emitters
+    else
+      assert(false);
+    
     if ( split.index().emitterPDF().pdf() &&
 	 split.index().spectatorPDF().pdf() ) {
       split.emitterX(point[4]);
       split.spectatorX(point[5]);
       shift += 2;
     }
-
+  
     if ( split.index().emitterPDF().pdf() &&
 	 !split.index().spectatorPDF().pdf() ) {
       split.emitterX(point[4]);
       ++shift;
     }
-
+  
     if ( !split.index().emitterPDF().pdf() &&
 	 split.index().spectatorPDF().pdf() ) {
       split.spectatorX(point[4]);
       ++shift;
     }
-
+  
     if ( splittingKernel()->nDimAdditional() )
       copy(point.begin()+shift,point.end(),split.splittingParameters().begin());
-
+  
     split.hardPt(split.splittingKinematics()->ptMax(split.scale(),
 						    split.emitterX(),
 						    split.spectatorX(),

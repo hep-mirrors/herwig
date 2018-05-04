@@ -50,6 +50,7 @@ LHWHHVertex::LHWHHVertex() :
   addToList(-34, 35, 37);
   addToList(-34, 36, 37);
   addToList(-34,-37, 38);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr LHWHHVertex::clone() const {

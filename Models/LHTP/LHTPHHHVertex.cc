@@ -20,6 +20,7 @@ using namespace Herwig;
 LHTPHHHVertex::LHTPHHHVertex() : ratio_(ZERO), coupLast_(0.), q2Last_(ZERO) {
   orderInGem(1);
   orderInGs (0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr LHTPHHHVertex::clone() const {

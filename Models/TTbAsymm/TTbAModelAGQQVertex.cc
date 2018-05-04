@@ -37,9 +37,7 @@ TTbAModelAGQQVertex::TTbAModelAGQQVertex()  {
   addToList(-4,4,63);
   addToList(-5,5,63);
   addToList(-6,6,63);
-
-  
-
+  colourStructure(ColourStructure::DELTA);
 }
 
 void TTbAModelAGQQVertex::doinit() {

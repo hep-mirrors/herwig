@@ -14,11 +14,13 @@
 
 #include "GeneralHardME.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSSVertex.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -33,8 +35,6 @@ using ThePEG::Helicity::ScalarWaveFunction;
  * GeneralHardME and implements the appropriate virtual functions for this 
  * specific spin combination.
  *
- * @see \ref MEff2ssInterfaces "The interfaces"
- * defined for MEff2ss.
  * @see GeneralHardME
  */
 class MEff2ss: public GeneralHardME {
@@ -48,11 +48,6 @@ public:
   typedef vector<SpinorBarWaveFunction> SpinorBarVector;
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  MEff2ss() : fermion_(0), vector_(0), tensor_(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -167,6 +162,12 @@ private:
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
+   * vector
+   */
+  vector<pair<AbstractFFSVertexPtr, AbstractSSSVertexPtr> > scalar_;
+  
+  /**
+   * Storage for dynamically cast vertices for a diagram with intermediate
    * fermion
    */
   vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > fermion_;
@@ -175,19 +176,24 @@ private:
    * Storage for dynamically cast vertices for a diagram with intermediate
    * vector
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractSSSVertexPtr> > scalar_;
+  vector<pair<AbstractFFVVertexPtr, AbstractVSSVertexPtr> > vector_;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
-   * vector
+   * fermion
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVSSVertexPtr> > vector_;
+  vector<pair<AbstractRFSVertexPtr, AbstractRFSVertexPtr> > RSfermion_;
   
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * tensor
    */
   vector<pair<AbstractFFTVertexPtr, AbstractSSTVertexPtr> > tensor_;
+
+  /**
+   *  Storage for dynamically cast 4 point vertices
+   */
+  vector<AbstractFFSSVertexPtr> fourPoint_;
 };
 
 }

@@ -35,13 +35,15 @@ IBPtr SVVDecayer::fullclone() const {
 }
 
 void SVVDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & inV,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> ) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractVVSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<VVSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractVVSVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<VVSVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
@@ -105,7 +107,9 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     if( photon[1] && iv2 == 1 ) ++iv2;
     for(iv1=0;iv1<3;++iv1) {
       if( photon[0] && iv1 == 1) ++iv1;
-      (*ME())(0, iv1, iv2) = vertex_->evaluate(scale,vectors_[0][iv1],
+      (*ME())(0, iv1, iv2) = 0.;
+      for(auto vert : vertex_)
+	(*ME())(0, iv1, iv2) += vert->evaluate(scale,vectors_[0][iv1],
 					       vectors_[1][iv2],swave_);
     }
   }
@@ -120,10 +124,11 @@ double SVVDecayer::me2(const int , const Particle & inpart,
 Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     Energy2 scale(sqr(inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(scale, outa.first , 
+    perturbativeVertex_[0]->setCoupling(scale, outa.first , 
 				    outb.first, in);
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
@@ -138,7 +143,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(perturbativeVertex_->norm())*
+    Energy output = norm(perturbativeVertex_[0]->norm())*
       me2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
@@ -226,8 +231,10 @@ double SVVDecayer::threeBodyME(const int , const Particle & inpart,
 	
 	   assert(swave3_.particle()->id()==scalarInter.particle()->id());
 	
-	   Complex diag = vertex_->evaluate(scale,vectors3_[0][iv1],
-					    vectors3_[1][iv2],scalarInter);
+	   Complex diag = 0.;
+	   for(auto vertex : vertex_)
+	     diag += vertex->evaluate(scale,vectors3_[0][iv1],
+				      vectors3_[1][iv2],scalarInter);
 	   if(!couplingSet) {
 	     gs = abs(incomingVertex_[inter]->norm());
 	     couplingSet = true;
@@ -252,7 +259,9 @@ double SVVDecayer::threeBodyME(const int , const Particle & inpart,
 	   
 	   assert(vectors3_[0][iv1].particle()->id()==vectorInter.particle()->id());
 	 
-	   Complex diag =vertex_->evaluate(scale,vectorInter,vectors3_[1][iv2],swave3_);
+	   Complex diag =0.;
+	   for(auto vertex : vertex_)
+	     diag += vertex->evaluate(scale,vectorInter,vectors3_[1][iv2],swave3_);
 	   if(!couplingSet) {
 	     gs = abs(outgoingVertex1->norm());
 	     couplingSet = true;
@@ -277,7 +286,9 @@ double SVVDecayer::threeBodyME(const int , const Particle & inpart,
 	
 	   assert(vectors3_[1][iv2].particle()->id()==vectorInter.particle()->id());
 	
-	   Complex diag = vertex_->evaluate(scale,vectors3_[0][iv1],vectorInter,swave3_);
+	   Complex diag = 0.;
+	   for(auto vertex : vertex_)
+	     diag += vertex->evaluate(scale,vectors3_[0][iv1],vectorInter,swave3_);
 	   if(!couplingSet) {
 	     gs = abs(outgoingVertex2->norm());
 	     couplingSet = true;

@@ -26,6 +26,7 @@ UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 				     theSMlast(0), theKKlast(0) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void UEDW0W1W1Vertex::doinit() {

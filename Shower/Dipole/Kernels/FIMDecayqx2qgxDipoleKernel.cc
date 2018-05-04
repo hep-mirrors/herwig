@@ -89,10 +89,13 @@ double FIMDecayqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double zPrime = split.lastSplittingParameters()[0];
 
   // Construct mass squared variables
-  double mui2 = sqr(split.emitterData()->mass() / split.scale());
+  // Note for q->qg can use the emitterMass
+  // (i.e. mass of emitter before splitting = mass of emitter after)
+  double mui2 = sqr(split.emitterMass() / split.scale());
   // Recoil system mass
   double muj2 = sqr(split.recoilMass() / split.scale());
-  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
+  // This should be equal to one
+  double mua2 = sqr( split.spectatorMass() / split.scale() );
   double bar = 1. - mui2 - muj2;
   
   // Calculate y
@@ -108,7 +111,12 @@ double FIMDecayqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double vijk = sqrt( sqr(2.*muj2 + bar*(1.-y))-4.*muj2 ) / (bar*(1.-y));
   double vbar = sqrt( 1.+sqr(mui2)+sqr(muj2)-2.*(mui2+muj2+mui2*muj2) ) / bar;
 
-  ret *=  (!strictLargeN() ? 4./3. : 3./2.) * ( ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*((1.+z) + 2.*mui2/(y*bar)) ) + y/(1.-z*(1.-y)) * ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) ) );
+  ret *=
+    (!strictLargeN() ? 4./3. : 3./2.)
+    * ( ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y))
+	  - (vbar/vijk)*((1.+z) + 2.*mui2/(y*bar)) )
+	+ y/(1.-z*(1.-y)) * ( 2.*(2.*mui2/bar + 2.*y + 1.)/((1.+y)-z*(1.-y))
+			      - (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) ) );
   
   return ret > 0. ? ret : 0.;
   

@@ -19,6 +19,7 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
 				   _q2last(0.*MeV2), _couplast(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void NMSSMWHHVertex::doinit() {

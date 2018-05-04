@@ -37,24 +37,6 @@ class ColourReconnector: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor.
-   */
-  ColourReconnector() : 
-  _algorithm(0),
-  _annealingFactor(0.9),
-  _annealingSteps(50),
-  _clreco(0),
-  _initTemp(0.1),
-  _preco(0.5),
-  _triesPerStepFactor(5.0),
-  _maxDistance(1000.*femtometer),
-  _octetOption(0)
-  {}
-  //@}
-
   /**
    * Does the colour rearrangement, starting out from the list of particles in
    * the event record and the collection of "usual" clusters passed as
@@ -63,6 +45,7 @@ public:
    */
   void rearrange(ClusterVector & clusters);
 
+  using CluVecIt = ClusterVector::iterator;
 
 private:
 
@@ -98,6 +81,17 @@ private:
    */
   void _doRecoPlain(ClusterVector & cv) const;
 
+
+  /**
+   * Baryonic Colour Reconnection model
+   */
+  void _doRecoBaryonic(ClusterVector & cv) const;
+
+
+  void _makeBaryonicClusters(ClusterPtr &c1, ClusterPtr &c2, ClusterPtr &c3,
+			     ClusterPtr &newcluster1, ClusterPtr &newcluster2) const;
+  
+
   /**
    * @brief     Finds the cluster in cv which, if reconnected with the given
    *            cluster cl, would result in the smallest sum of cluster masses.
@@ -108,15 +102,33 @@ private:
    * @return    iterator to the found cluster, or the original cluster pointer if
    *            no mass-reducing combination can be found
    */
-  ClusterVector::iterator _findRecoPartner(ClusterVector::iterator cl,
-                                           ClusterVector & cv) const;
+
+
+  CluVecIt _findRecoPartner(CluVecIt cl, ClusterVector & cv) const;
+
+  CluVecIt _findPartnerRapidity(CluVecIt cl, ClusterVector & cv) const;
+
+  CluVecIt _findPartnerBaryonic(CluVecIt cl, ClusterVector & cv, 
+                                               bool & tetraCand, 
+                                               const ClusterVector& a, 
+                                               CluVecIt  &baryonic1,
+                                               CluVecIt  &baryonic2 ) const;
+
+
+
 
   /**
    * @brief     Reconnects the constituents of the given clusters to the (only)
    *            other possible cluster combination.
    * @return    pair of pointers to the two new clusters
    */
-  pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr c1, ClusterPtr c2) const;
+  pair <ClusterPtr,ClusterPtr> _reconnect(ClusterPtr &c1, ClusterPtr &c2) const;
+  
+  /**
+   * Reconnection method for baryonic reconenction model 
+   */ 
+  pair <ClusterPtr,ClusterPtr> _reconnectBaryonic(ClusterPtr &c1, ClusterPtr &c2) const;
+
 
   /**
    * @brief     At random, swap two antiquarks, if not excluded by the
@@ -131,12 +143,69 @@ private:
   pair <int,int>
     _shuffle(const PVector & q, const PVector & aq, unsigned maxtries = 10) const;
 
+
+  /** DATA MEMBERS */
+
+  /**
+   * Specifies the colour reconnection algorithm to be used.
+   */
+  int _algorithm = 0;
+
+  /**
+   * The annealing factor is the ratio of two successive temperature steps:
+   * T_n = _annealingFactor * T_(n-1)
+   */
+  double _annealingFactor = 0.9;
+
+  /**
+   * Number of temperature steps in the statistical annealing algorithm
+   */
+  unsigned int _annealingSteps = 50;
+
+  /**
+   * Do we do colour reconnections?
+   */
+  int _clreco = 0;
+
+  /**
+   * Factor used to determine the initial temperature according to
+   * InitialTemperature = _initTemp * median {energy changes in a few random
+   * rearrangements}
+   */
+  double _initTemp = 0.1;
+
+  /**
+   * Probability that a found reconnection possibility is actually accepted.
+   */
+  double _preco = 0.5;
+
+
+  double _precoBaryonic = 0.5;
+  
+  /**
+   * The number of tries per temperature steps is the number of clusters times
+   * this factor.
+   */
+  double _triesPerStepFactor = 5.0;
+  /**
+   * maximum allowed distance in the eta phi space for reconnection to occur
+   */
+
+  /**
+   *  Maximium distance for reconnections
+   */
+  Length _maxDistance = picometer;
+
   /**
    * @return	true, if the two partons are splitting products of the same
    * 		gluon
    */
-  bool isColour8(cPPtr p, cPPtr q) const;
-
+  bool _isColour8(tcPPtr p, tcPPtr q) const;
+  
+  /**
+   *  Option for handling octets
+   */
+  unsigned int _octetOption = 0;
 
 public:
 
@@ -184,60 +253,8 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ColourReconnector & operator=(const ColourReconnector &);
+  ColourReconnector & operator=(const ColourReconnector &) = delete;
 
-private:
-
-  /** DATA MEMBERS */
-
-  /**
-   * Specifies the colour reconnection algorithm to be used.
-   */
-  int _algorithm;
-
-  /**
-   * The annealing factor is the ratio of two successive temperature steps:
-   * T_n = _annealingFactor * T_(n-1)
-   */
-  double _annealingFactor;
-
-  /**
-   * Number of temperature steps in the statistical annealing algorithm
-   */
-  unsigned _annealingSteps;
-
-  /**
-   * Do we do colour reconnections?
-   */
-  int _clreco;
-
-  /**
-   * Factor used to determine the initial temperature according to
-   * InitialTemperature = _initTemp * median {energy changes in a few random
-   * rearrangements}
-   */
-  double _initTemp;
-
-  /**
-   * Probability that a found reconnection possibility is actually accepted.
-   */
-  double _preco;
-
-  /**
-   * The number of tries per temperature steps is the number of clusters times
-   * this factor.
-   */
-  double _triesPerStepFactor;
-
-  /**
-   *  Maximium distance for reconnections
-   */
-  Length _maxDistance;
-
-  /**
-   *  Option for handling octets
-   */
-  unsigned int _octetOption;
 
 };
 
@@ -245,3 +262,4 @@ private:
 }
 
 #endif /* HERWIG_ColourReconnector_H */
+

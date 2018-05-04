@@ -13,20 +13,24 @@
 
 #include "ColourReconnector.h"
 #include "Cluster.h"
-#include "Herwig/Utilities/Maths.h"
-#include <ThePEG/Interface/Switch.h>
-#include "ThePEG/Interface/Parameter.h"
+
+#include <ThePEG/Utilities/DescribeClass.h>
+#include <ThePEG/Repository/UseRandom.h>
+#include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/Repository/UseRandom.h>
-#include <algorithm>
-#include <ThePEG/Utilities/DescribeClass.h>
-#include <ThePEG/Repository/EventGenerator.h>
 
+#include <ThePEG/Interface/Switch.h>
+#include <ThePEG/Interface/Parameter.h>
+
+#include "Herwig/Utilities/Maths.h"
 
 using namespace Herwig;
 
-typedef ClusterVector::iterator CluVecIt;
+using CluVecIt = ColourReconnector::CluVecIt;
+using Constants::pi;
+using Constants::twopi;
+
 
 DescribeClass<ColourReconnector,Interfaced>
 describeColourReconnector("Herwig::ColourReconnector","");
@@ -47,13 +51,10 @@ void ColourReconnector::rearrange(ClusterVector & clusters) {
 
   // do the colour reconnection
   switch (_algorithm) {
-    case 0: _doRecoPlain(clusters);
-            break;
-    case 1: _doRecoStatistical(clusters);
-            break;
+    case 0: _doRecoPlain(clusters); break;
+    case 1: _doRecoStatistical(clusters); break;
+    case 2: _doRecoBaryonic(clusters); break;
   }
-
-  return;
 }
 
 
@@ -74,7 +75,7 @@ bool ColourReconnector::_containsColour8(const ClusterVector & cv,
   for (size_t i = 0; i < cv.size(); i++) {
     tcPPtr p = cv[i]->colParticle();
     tcPPtr q = cv[P[i]]->antiColParticle();
-    if (isColour8(p, q)) return true;
+    if (_isColour8(p, q)) return true;
   }
   return false;
 }
@@ -172,7 +173,6 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
 
   // iterate over all clusters
   for (CluVecIt cit = newcv.begin(); cit != newcv.end(); cit++) {
-
     // find the cluster which, if reconnected with *cit, would result in the
     // smallest sum of cluster masses
     // NB this method returns *cit if no reconnection partner can be found
@@ -201,6 +201,239 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
   return;
 }
 
+namespace {
+  inline bool hasDiquark(CluVecIt cit) {
+    for(int i = 0; i<(*cit)->numComponents(); i++) {
+        if (DiquarkMatcher::Check(*((*cit)->particle(i)->dataPtr()))) 
+            return true;
+    }
+    return false;
+  }
+}
+
+
+// Implementation of the baryonic reconnection algorithm
+void ColourReconnector::_doRecoBaryonic(ClusterVector & cv) const {
+
+    ClusterVector newcv = cv;
+
+    ClusterVector deleted; deleted.reserve(cv.size());
+
+    // try to avoid systematic errors by randomising the reconnection order
+    long (*p_irnd)(long) = UseRandom::irnd;
+    random_shuffle( newcv.begin(), newcv.end(), p_irnd ); 
+
+    // iterate over all clusters
+    for (CluVecIt cit = newcv.begin(); cit != newcv.end(); ++cit) {
+      //avoid clusters already containing diuarks
+      if (hasDiquark(cit)) continue;
+    
+      //skip the cluster to be deleted later 3->2 cluster
+      if (find(deleted.begin(), deleted.end(), *cit) != deleted.end())
+        continue;
+  
+      // Skip all found baryonic clusters, this biases the algorithm but implementing
+      // something like re-reconnection is ongoing work
+      if ((*cit)->numComponents()==3) continue;
+
+      // Find a candidate suitable for reconnection
+      CluVecIt baryonic1, baryonic2;
+      bool isBaryonicCandidate = false;
+      CluVecIt candidate = _findPartnerBaryonic(cit, newcv, 
+                                                isBaryonicCandidate, 
+                                                deleted,
+                                                baryonic1, baryonic2);
+
+      // skip this cluster if no possible reconnection partner can be found
+      if ( !isBaryonicCandidate && candidate==cit ) 
+        continue;
+
+      if ( isBaryonicCandidate 
+           && UseRandom::rnd() < _precoBaryonic ) {
+        deleted.push_back(*baryonic2);
+     
+        // Function that does the reconnection from 3 -> 2 clusters
+        ClusterPtr b1, b2;
+        _makeBaryonicClusters(*cit,*baryonic1,*baryonic2, b1, b2);
+
+        *cit = b1;
+        *baryonic1 = b2;
+
+        // Baryonic2 is easily skipped in the next loop 
+      }
+  
+      // Normal 2->2 Colour reconnection
+      if ( !isBaryonicCandidate 
+           && UseRandom::rnd() < _preco ) {
+        auto reconnected = _reconnectBaryonic(*cit, *candidate);
+        *cit = reconnected.first;
+        *candidate = reconnected.second;
+      }
+    }
+
+    // create a new vector of clusters except for the ones which are "deleted" during
+    // baryonic reconnection
+    ClusterVector clustervector;
+    for ( const auto & cluster : newcv )
+      if ( find(deleted.begin(),
+                deleted.end(), cluster) == deleted.end() )
+        clustervector.push_back(cluster);
+
+    swap(cv,clustervector);
+}
+
+
+
+namespace {
+
+double calculateRapidityRF(const Lorentz5Momentum & q1, 
+                           const Lorentz5Momentum & p2) {
+  //calculate rapidity wrt the direction of q1
+  //angle between the particles in the RF of cluster of q1
+
+  // calculate the z component of p2 w.r.t the direction of q1
+  const Energy pz = p2.vect() * q1.vect().unit();
+  if ( pz == ZERO ) return 0.;
+        
+  // Transverse momentum of p2 w.r.t the direction of q1
+  const Energy pt = sqrt(p2.vect().mag2() - sqr(pz));
+  
+  // Transverse mass pf p2 w.r.t to the direction of q1
+  const Energy mtrans = sqrt(p2.mass()*p2.mass() + (pt*pt));
+
+  // Correct formula
+  const double y2 = log((p2.t() + abs(pz))/mtrans);
+
+  return ( pz < ZERO ) ? -y2 : y2;
+}
+
+}
+
+
+CluVecIt ColourReconnector::_findPartnerBaryonic(
+             CluVecIt cl, ClusterVector & cv,
+             bool & baryonicCand,
+             const ClusterVector& deleted,
+             CluVecIt &baryonic1, 
+             CluVecIt &baryonic2 ) const {
+
+    using Constants::pi;
+    using Constants::twopi;
+
+    // Returns a candidate for possible reconnection
+    CluVecIt candidate = cl;
+
+    bool bcand = false;
+
+    double maxrap = 0.0;
+    double minrap = 0.0;
+    double maxrapNormal = 0.0;  
+    double minrapNormal = 0.0;
+    double maxsumnormal = 0.0;
+
+    double maxsum = 0.0;
+    double secondsum = 0.0;
+
+
+    // boost into RF of cl 
+    Lorentz5Momentum cl1 = (*cl)->momentum();
+    const Boost boostv(-cl1.boostVector());
+    cl1.boost(boostv);
+    // boost constituents of cl into RF of cl
+    Lorentz5Momentum p1col = (*cl)->colParticle()->momentum();
+    Lorentz5Momentum p1anticol = (*cl)->antiColParticle()->momentum(); 
+    p1col.boost(boostv);
+    p1anticol.boost(boostv);
+
+ 
+    for (CluVecIt cit=cv.begin(); cit != cv.end(); ++cit) {
+      //avoid looping over clusters containing diquarks
+      if ( hasDiquark(cit) ) continue;
+      if ( (*cit)->numComponents()==3 ) continue;
+      if ( cit==cl ) continue;
+
+      //skip the cluster to be deleted later 3->2 cluster
+      if ( find(deleted.begin(), deleted.end(), *cit) != deleted.end() )
+        continue;
+
+      if ( (*cl)->isBeamCluster() && (*cit)->isBeamCluster() )
+        continue;
+
+      // stop it putting far apart clusters together
+      if ( ( (**cl).vertex()-(**cit).vertex() ).m() >_maxDistance )
+        continue;
+  
+      const bool Colour8 = 
+        _isColour8( (*cl)->colParticle(), (*cit)->antiColParticle() )  
+        ||
+        _isColour8( (*cit)->colParticle(), (*cl)->antiColParticle() ) ;
+      if ( Colour8 ) continue;
+
+
+      // boost constituents of cit into RF of cl
+      Lorentz5Momentum p2col = (*cit)->colParticle()->momentum();
+      Lorentz5Momentum p2anticol = (*cit)->antiColParticle()->momentum();
+
+      p2col.boost(boostv);
+      p2anticol.boost(boostv);
+
+      // calculate the rapidity of the other constituents of the clusters
+      // w.r.t axis of p1anticol.vect.unit
+      const double rapq = calculateRapidityRF(p1anticol,p2col);
+      const double rapqbar = calculateRapidityRF(p1anticol,p2anticol);
+
+      // configuration for normal CR
+      if ( rapq > 0.0 && rapqbar < 0.0 
+           && rapq > maxrap 
+           && rapqbar < minrap ) {
+        maxrap = rapq;
+        minrap = rapqbar;
+        //sum of rapidities of quarks
+        const double normalsum = abs(rapq) + abs(rapqbar);
+        if ( normalsum > maxsumnormal ) {
+          maxsumnormal = normalsum;
+          maxrapNormal = rapq;
+          minrapNormal = rapqbar;   
+          bcand = false;
+          candidate = cit;
+        }
+      } 
+
+      if ( rapq < 0.0 && rapqbar >0.0 
+          && rapqbar > maxrapNormal 
+          && rapq < minrapNormal ) {
+        maxrap = rapqbar;
+        minrap = rapq;
+        const double sumrap = abs(rapqbar) + abs(rapq);
+        // first candidate gets here. If second baryonic candidate has higher Ysum than the first
+        // one, the second candidate becomes the first one and the first the second.
+        if (sumrap > maxsum) {
+          if(maxsum != 0){
+            baryonic2 = baryonic1;
+            baryonic1 = cit;
+            bcand = true;
+          } else {
+            baryonic1 = cit;
+          }      
+          maxsum = sumrap;
+        } else {
+          if (sumrap > secondsum && sumrap != maxsum) {
+            secondsum = sumrap;
+            bcand = true;
+            baryonic2 = cit;
+          }
+        }  
+      }
+
+    }
+
+    if(bcand == true){
+      baryonicCand = true;
+    }
+
+    return candidate;
+}
+
 
 CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
                                              ClusterVector & cv) const {
@@ -213,10 +446,10 @@ CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
     if(cit==cl) continue;
 
     // don't allow colour octet clusters
-    if ( isColour8( (*cl)->colParticle(),
-	            (*cit)->antiColParticle() )  ||
-         isColour8( (*cit)->colParticle(),
-	            (*cl)->antiColParticle() ) ) {
+    if ( _isColour8( (*cl)->colParticle(),
+              (*cit)->antiColParticle() )  ||
+         _isColour8( (*cit)->colParticle(),
+              (*cl)->antiColParticle() ) ) {
       continue;
     }
 
@@ -241,20 +474,54 @@ CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
     Energy oldMass = abs( p1.m() ) + abs( p2.m() );
     Energy newMass = abs( p3.m() ) + abs( p4.m() );
 
+
     if ( newMass < oldMass && newMass < minMass ) {
       minMass = newMass;
       candidate = cit;
     }
   }
+
   return candidate;
 }
 
+// forms two baryonic clusters from three clusters
+void ColourReconnector::_makeBaryonicClusters(
+                ClusterPtr &c1, ClusterPtr &c2, 
+                ClusterPtr &c3, 
+                ClusterPtr &newcluster1,
+                ClusterPtr &newcluster2) const{
+
+    //make sure they all have 2 components
+    assert(c1->numComponents()==2);
+    assert(c2->numComponents()==2);
+    assert(c3->numComponents()==2);
+    //abandon childs
+    c1->colParticle()->abandonChild(c1);
+    c1->antiColParticle()->abandonChild(c1);
+    c2->colParticle()->abandonChild(c2);
+    c2->antiColParticle()->abandonChild(c2);
+    c3->colParticle()->abandonChild(c3);
+    c3->antiColParticle()->abandonChild(c3);
+
+    newcluster1 = new_ptr(Cluster(c1->colParticle(),c2->colParticle(), c3->colParticle()));
+    c1->colParticle()->addChild(newcluster1);
+    c2->colParticle()->addChild(newcluster1);
+    c3->colParticle()->addChild(newcluster1);
+    newcluster1->setVertex(LorentzPoint());
+    newcluster2 = new_ptr(Cluster(c1->antiColParticle(), c2->antiColParticle(),
+          c3->antiColParticle()));
+    c1->antiColParticle()->addChild(newcluster2);
+    c2->antiColParticle()->addChild(newcluster2);
+    c3->antiColParticle()->addChild(newcluster2);
+    newcluster2->setVertex(LorentzPoint());
+}
 
 pair <ClusterPtr,ClusterPtr>
-ColourReconnector::_reconnect(ClusterPtr c1, ClusterPtr c2) const {
+ColourReconnector::_reconnect(ClusterPtr &c1, ClusterPtr &c2) const {
 
   // choose the other possibility to form two clusters from the given
   // constituents
+
   assert(c1->numComponents()==2);
   assert(c2->numComponents()==2);
   int c1_col(-1),c1_anti(-1),c2_col(-1),c2_anti(-1);
@@ -270,16 +537,70 @@ ColourReconnector::_reconnect(ClusterPtr c1, ClusterPtr c2) const {
     = new_ptr( Cluster( c1->colParticle(), c2->antiColParticle() ) );
 
   newCluster1->setVertex(0.5*( c1->colParticle()->vertex() + 
-			       c2->antiColParticle()->vertex() ));
+                               c2->antiColParticle()->vertex() ));
 
   if(c1->isBeamRemnant(c1_col )) newCluster1->setBeamRemnant(0,true);
   if(c2->isBeamRemnant(c2_anti)) newCluster1->setBeamRemnant(1,true);
-  
+
   ClusterPtr newCluster2
     = new_ptr( Cluster( c2->colParticle(), c1->antiColParticle() ) );
 
   newCluster2->setVertex(0.5*( c2->colParticle()->vertex() + 
-			       c1->antiColParticle()->vertex() ));
+                               c1->antiColParticle()->vertex() ));
+
+  if(c2->isBeamRemnant(c2_col )) newCluster2->setBeamRemnant(0,true);
+  if(c1->isBeamRemnant(c1_anti)) newCluster2->setBeamRemnant(1,true);
+
+  return pair <ClusterPtr,ClusterPtr> (newCluster1, newCluster2);
+}
+
+
+
+
+
+pair <ClusterPtr,ClusterPtr>
+ColourReconnector::_reconnectBaryonic(ClusterPtr &c1, ClusterPtr &c2) const {
+
+  // choose the other possibility to form two clusters from the given
+  // constituents
+
+  assert(c1->numComponents()==2);
+  assert(c2->numComponents()==2);
+  int c1_col(-1),c1_anti(-1),c2_col(-1),c2_anti(-1);
+  for(unsigned int ix=0;ix<2;++ix) {
+    if     (c1->particle(ix)->hasColour(false)) c1_col  = ix;
+    else if(c1->particle(ix)->hasColour(true )) c1_anti = ix;
+    if     (c2->particle(ix)->hasColour(false)) c2_col  = ix;
+    else if(c2->particle(ix)->hasColour(true )) c2_anti = ix;
+  }
+  assert(c1_col>=0&&c2_col>=0&&c1_anti>=0&&c2_anti>=0);
+
+c1->colParticle()->abandonChild(c1);
+c2->antiColParticle()->abandonChild(c2);
+
+  ClusterPtr newCluster1
+    = new_ptr( Cluster( c1->colParticle(), c2->antiColParticle() ) );
+
+  c1->colParticle()->addChild(newCluster1);
+  c2->antiColParticle()->addChild(newCluster1);
+
+  newCluster1->setVertex(0.5*( c1->colParticle()->vertex() + 
+             c2->antiColParticle()->vertex() ));
+
+  if(c1->isBeamRemnant(c1_col )) newCluster1->setBeamRemnant(0,true);
+  if(c2->isBeamRemnant(c2_anti)) newCluster1->setBeamRemnant(1,true);
+
+  c1->antiColParticle()->abandonChild(c1);
+  c2->colParticle()->abandonChild(c2);
+
+  ClusterPtr newCluster2
+    = new_ptr( Cluster( c2->colParticle(), c1->antiColParticle() ) );
+
+    c1->antiColParticle()->addChild(newCluster2);
+    c2->colParticle()->addChild(newCluster2);
+
+  newCluster2->setVertex(0.5*( c2->colParticle()->vertex() + 
+             c1->antiColParticle()->vertex() ));
 
   if(c2->isBeamRemnant(c2_col )) newCluster2->setBeamRemnant(0,true);
   if(c1->isBeamRemnant(c1_anti)) newCluster2->setBeamRemnant(1,true);
@@ -305,7 +626,7 @@ pair <int,int> ColourReconnector::_shuffle
     do { j = UseRandom::irnd( nclusters ); } while (i == j);
 
     // check if one of the two potential clusters would be a colour octet state
-    octet = isColour8( q[i], aq[j] ) || isColour8( q[j], aq[i] ) ;
+    octet = _isColour8( q[i], aq[j] ) || _isColour8( q[j], aq[i] ) ;
     tries++;
   } while (octet && tries < maxtries);
 
@@ -314,7 +635,8 @@ pair <int,int> ColourReconnector::_shuffle
 }
 
 
-bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
+
+bool ColourReconnector::_isColour8(tcPPtr p, tcPPtr q) const {
   bool octet = false;
 
   // make sure we have a triplet and an anti-triplet
@@ -361,7 +683,7 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
             // should get appropriate colour lines and 
             // colour states.
           //  See Ticket: #407 
-	  //  assert(parent->colourLine()&&parent->antiColourLine());
+          //  assert(parent->colourLine()&&parent->antiColourLine());
           octet = (parent->    colourLine()==cline &&
                    parent->antiColourLine()==aline);
         }
@@ -376,13 +698,13 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
 
 
 void ColourReconnector::persistentOutput(PersistentOStream & os) const {
-  os << _clreco << _preco << _algorithm << _initTemp << _annealingFactor
+  os << _clreco << _preco << _precoBaryonic << _algorithm << _initTemp << _annealingFactor
      << _annealingSteps << _triesPerStepFactor << ounit(_maxDistance,femtometer)
      << _octetOption;
 }
 
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
-  is >> _clreco >> _preco >> _algorithm >> _initTemp >> _annealingFactor
+  is >> _clreco >> _preco >> _precoBaryonic >> _algorithm >> _initTemp >> _annealingFactor
      >> _annealingSteps >> _triesPerStepFactor >> iunit(_maxDistance,femtometer)
      >> _octetOption;
 }
@@ -445,6 +767,12 @@ void ColourReconnector::Init() {
      &ColourReconnector::_preco, 0.5, 0.0, 1.0,
      false, false, Interface::limited);
 
+  static Parameter<ColourReconnector,double> interfaceRecoProbBaryonic
+    ("ReconnectionProbabilityBaryonic",
+     "Probability that a found reconnection possibility is actually accepted",
+     &ColourReconnector::_precoBaryonic, 0.5, 0.0, 1.0,
+     false, false, Interface::limited);
+
 
   static Switch<ColourReconnector,int> interfaceAlgorithm
     ("Algorithm",
@@ -460,7 +788,11 @@ void ColourReconnector::Init() {
      "Statistical",
      "Statistical colour reconnection using simulated annealing",
      1);
-
+  static SwitchOption interfaceAlgorithmBaryonic
+    (interfaceAlgorithm,
+     "BaryonicReco",
+     "Baryonic cluster reconnection",
+     2);
 
   static Parameter<ColourReconnector,Length> interfaceMaxDistance
     ("MaxDistance",
@@ -468,6 +800,7 @@ void ColourReconnector::Init() {
      " to avoid colour reconneections of displaced vertices",
      &ColourReconnector::_maxDistance, femtometer, 1000.*femtometer, 0.0*femtometer, 1e100*femtometer,
      false, false, Interface::limited);
+
 
   static Switch<ColourReconnector,unsigned int> interfaceOctetTreatment
     ("OctetTreatment",
@@ -484,5 +817,5 @@ void ColourReconnector::Init() {
      "Prevent for all octets",
      1);
 
-
 }
+

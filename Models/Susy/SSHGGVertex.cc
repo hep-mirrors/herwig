@@ -38,6 +38,7 @@ SSHGGVertex::SSHGGVertex() : theIncludeTriLinear(true),
 			     theq2last(), theHaveCoeff(false), theLastID(0) {
   orderInGs(2);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSHGGVertex::doinit() {

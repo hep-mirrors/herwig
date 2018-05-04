@@ -276,7 +276,7 @@ makeResonantDiagram(IDPair in, PDPtr offshell, long outa, long outb,
     }
   }
   // add to the list
-  diagrams_.push_back(newdiag);
+  if(checkOrder(newdiag)) diagrams_.push_back(newdiag);
 }
 	
 set<tPDPtr> 

@@ -200,10 +200,22 @@ protected:
   }
   
   /**
+   * Return the set of offshell parton ids.
+   **/
+  const set<long>& offShellPartons() { return theColouredOffShellInShower; }
+  
+  /**
    * Realign the event such as to have the incoming partons along thre
    * beam axes.
    */
   bool realign();
+
+  /**
+   * The choice of z boundaries; 0 = restricted, 1 = open, 2 = mixed/other
+   */
+  virtual int showerPhaseSpaceOption() const {
+    return theZBoundaries;
+  }
 
 protected:
 
@@ -250,7 +262,7 @@ protected:
 		   Energy startScale,
 		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
-
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -495,9 +507,46 @@ private:
    * If so, the emission is vetoed.
    */
   Ptr<MergerBase>::ptr theMergingHelper;
-  
-  
 
+
+  /**
+   *  PDG codes of the partons which can have an off-shell mass,
+   *  this is fast storage for use during running
+   */
+  set<long> theColouredOffShellInShower;
+
+  /**
+   *  PDG codes of the partons which can have an off-shell mass,
+   *  this is a vector that is interfaced so they can be changed
+   */
+  vector<long> theInputColouredOffShellInShower;
+  
+  /**
+   * Allow the dipole chains to be rearranged
+   */
+  bool _rearrange=false;
+
+  /**
+   * number of maximal ME dipoles in the rearrangement.
+   */
+  unsigned int _dipmax=3;
+
+  /**
+   * If a chain is considered long (more than dipmax dipoles)
+   * ME with diplong dipoles are used to test for rearrangement.
+   */
+  unsigned int _diplong=3;
+  
+  /**
+   * Number of emissions to be rearranged.
+   */
+  int _rearrangeNEmissions=-1;
+  
+  /**
+   * The choice of z boundaries; 0 = restricted, 1 = open, 2 = mixed/other
+   */
+  int theZBoundaries;
+  
 private:
 
   /**

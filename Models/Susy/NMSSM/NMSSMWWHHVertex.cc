@@ -17,6 +17,7 @@ NMSSMWWHHVertex::NMSSMWWHHVertex() : couplast_(0.),q2last_(ZERO),
 				     sw_(0.), cw_(0.), sb_(0.), cb_(0.) {
   orderInGem(2);
   orderInGs (0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr NMSSMWWHHVertex::clone() const {

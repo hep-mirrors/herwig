@@ -47,7 +47,7 @@ ShowerApproximation::ShowerApproximation()
     theEmissionScaleInSplitting(showerScale),
     theRenormalizationScaleFreeze(1.*GeV),
     theFactorizationScaleFreeze(1.*GeV),
-  maxPtIsMuF(false) {}
+  maxPtIsMuF(false), theOpenZ(true) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -179,7 +179,7 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   }
 
   try {
-    zbounds = kinematics.zBounds(pt,hard);
+    zbounds = kinematics.zBounds(pt,openZ() ? kinematics.ptMax() : hard);
   } catch(...) {
     kinematics.dipole(tmpdip);
     kinematics.prepare(tmpreal,tmpborn);
@@ -421,7 +421,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV) << maxPtIsMuF
-     << theHardScaleProfile;
+     << theHardScaleProfile << theOpenZ;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -439,7 +439,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV) >> maxPtIsMuF
-     >> theHardScaleProfile;
+     >> theHardScaleProfile >> theOpenZ;
 }
 
 // *** Attention *** The following static variable is needed for the type

@@ -18,6 +18,7 @@ SSGVNHVertex::SSGVNHVertex() : sa_(0.), sb_(0.), ca_(0.), cb_(0.),
 			       MPlanck_(2.4e18*GeV) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr SSGVNHVertex::clone() const {

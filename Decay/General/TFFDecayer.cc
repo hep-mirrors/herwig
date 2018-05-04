@@ -34,13 +34,15 @@ IBPtr TFFDecayer::fullclone() const {
 }
 
 void TFFDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> &,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> fourV) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractFFTVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<FFTVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractFFTVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<FFTVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     fourPointVertex_[inter] = dynamic_ptr_cast<AbstractFFVTVertexPtr>(fourV.at(inter));
@@ -106,14 +108,18 @@ double TFFDecayer::me2(const int , const Particle & inpart,
     for(fhel=0;fhel<2;++fhel) {
       for(ahel=0;ahel<2;++ahel) {
 	if(iferm > ianti) {
-	  (*ME())(thel,fhel,ahel) = 
-	    vertex_->evaluate(scale,wave_[ahel],
-				      wavebar_[fhel],tensors_[thel]);
+	  (*ME())(thel,fhel,ahel) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(thel,fhel,ahel) += 
+	      vert->evaluate(scale,wave_[ahel],
+			     wavebar_[fhel],tensors_[thel]);
 	}
 	else {
-	  (*ME())(thel,ahel,fhel) = 
-	    vertex_->evaluate(scale,wave_[ahel],
-				      wavebar_[fhel],tensors_[thel]);
+	  (*ME())(thel,ahel,fhel) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(thel,ahel,fhel) += 
+	      vert->evaluate(scale,wave_[ahel],
+			     wavebar_[fhel],tensors_[thel]);
 	}
       }
     }
@@ -129,16 +135,17 @@ double TFFDecayer::me2(const int , const Particle & inpart,
 Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     Energy2 scale = sqr(inpart.second);
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(scale, in, outa.first, outb.first);
+    perturbativeVertex_[0]->setCoupling(scale, in, outa.first, outb.first);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1- 4.*musq);
     double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(perturbativeVertex_->norm())*me2*pcm/(8.*Constants::pi);
+    Energy output = norm(perturbativeVertex_[0]->norm())*me2*pcm/(8.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer
@@ -258,7 +265,9 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	  
 	    assert(wavebar3_[ifm].particle()->id()==interS.particle()->id());
 
-	    Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,tensors3_[it]);
+	    Complex diag = 0.;
+	    for(auto vertex : vertex_)
+	      diag += vertex->evaluate(scale,wave3_[ia], interS,tensors3_[it]);
 	    if(!couplingSet) {
 	      gs = abs(outgoingVertexF->norm());
 	      couplingSet = true;
@@ -285,7 +294,9 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    
 	    assert(wave3_[ia].particle()->id()==interS.particle()->id());
 
-	    Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it]);
+	    Complex diag = 0.;
+	    for(auto vertex : vertex_)
+	      diag += vertex->evaluate(scale,interS,wavebar3_[ifm],tensors3_[it]);
 	    if(!couplingSet) {
 	      gs = abs(outgoingVertexA->norm());
 	      couplingSet = true;

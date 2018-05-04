@@ -47,6 +47,7 @@ void FtoFVVDecayer::Init() {
 
 void FtoFVVDecayer::doinit() {
   GeneralThreeBodyDecayer::doinit();
+  if(outgoing().empty()) return;
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
   fer_.resize(ndiags);

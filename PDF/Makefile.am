@@ -42,6 +42,12 @@ IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
 
 HwIncomingPhotonEvolver_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 6:0:0
 
+pkglib_LTLIBRARIES += HwSaSPhotonPDF.la
+HwSaSPhotonPDF_la_SOURCES = \
+SaSGamma.f SaSPhotonPDF.cc SaSPhotonPDF.h
+
+HwSaSPhotonPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+
 install-data-local:
 	for i in `find $(srcdir)/diffraction -name '*.data'`; \
 	do \

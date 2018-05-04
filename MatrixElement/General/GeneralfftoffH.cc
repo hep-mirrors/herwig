@@ -77,6 +77,7 @@ void GeneralfftoffH::getDiagrams() const {
 	if (minFlavour()<=2)
 	  parentpair.push_back(make_pair(getParticleData(ParticleID::b),
 					 getParticleData(ParticleID::u)));
+	[[fallthrough]];
       case 4:
 	if (minFlavour()<=3)
 	  parentpair.push_back(make_pair(getParticleData(ParticleID::s),
@@ -84,14 +85,17 @@ void GeneralfftoffH::getDiagrams() const {
 	if (minFlavour()<=1)
 	  parentpair.push_back(make_pair(getParticleData(ParticleID::d),
 					 getParticleData(ParticleID::c)));
+	[[fallthrough]];
       case 3:
 	if (minFlavour()<=2)
 	  parentpair.push_back(make_pair(getParticleData(ParticleID::s),
 					 getParticleData(ParticleID::u)));
+	[[fallthrough]];
       case 2:
 	if (minFlavour()<=1)
 	  parentpair.push_back(make_pair(getParticleData(ParticleID::d),
 					 getParticleData(ParticleID::u)));
+	[[fallthrough]];
       default:
 	;
       }

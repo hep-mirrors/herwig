@@ -145,6 +145,11 @@ protected:
   bool duplicate(const HPDiagram & diagram, 
 		 const HPDVector & group) const;
 
+  /**
+   *  check the order of a diagram
+   */
+  bool checkOrder(const HPDiagram & diag) const;
+
 protected:
 
   /** @name Standard Interfaced functions. */

@@ -1,46 +1,33 @@
 // -*- C++ -*-
+#ifndef HERWIG_MEff2ts_H
+#define HERWIG_MEff2ts_H
 //
-// MEff2sv.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
-//
-// Herwig is licenced under version 3 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_MEff2sv_H
-#define HERWIG_MEff2sv_H
-//
-// This is the declaration of the MEff2sv class.
+// This is the declaration of the MEff2ts class.
 //
 
 #include "GeneralHardME.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig/MatrixElement/ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSTVertex.h"
 
 namespace Herwig {
+
 using namespace ThePEG;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using Helicity::VectorWaveFunction;
 using Helicity::ScalarWaveFunction;
+using Helicity::TensorWaveFunction;
 
 /**
- * The MEff2sv class is designed to implement the matrix element for a
- * fermion-antifermion to vector-scalar hard process. It inherits from 
- * GeneralHardME and implements the appropriate virtual functions for this 
- * specific spin combination.
+ * The MEff2ts class implements the general matrix element for fermion fermion -> tensor scalar
  *
- * @see \ref MEff2svInterfaces "The interfaces"
- * defined for MEff2sv.
- * @see GeneralHardME
  */
-class MEff2sv: public GeneralHardME {
+class MEff2ts: public GeneralHardME {
 
 public:
 
@@ -59,7 +46,7 @@ public:
   /**
    * A vector of VectorWaveFunctions 
    */
-  typedef vector<VectorWaveFunction> VBVector;
+  typedef vector<TensorWaveFunction> TBVector;
   //@}
 
 public:
@@ -67,10 +54,8 @@ public:
   /**
    * The default constructor.
    */
-  MEff2sv() : scalar_(0), vector_(0), fermion_(0) {}
+  MEff2ts() : fermion_(0), scalar_(0), fourPoint_(0) {}
 
-  /** @name Virtual functions required by the MEBase class. */
-  //@{
   /**
    * The matrix element for the kinematical configuration
    * previously provided by the last call to setKinematics(), suitably
@@ -79,7 +64,6 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-  //@}
 
   /**
    * Construct the vertex information for the spin correlations
@@ -115,6 +99,23 @@ public:
 
 protected:
 
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -122,24 +123,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit();
-  //@}
-
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const {return new_ptr(*this);}
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  void doinit();
   //@}
 
 private:
@@ -148,7 +132,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEff2sv & operator=(const MEff2sv &);
+  MEff2ts & operator=(const MEff2ts &);
 
 private:
 
@@ -158,8 +142,8 @@ private:
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\Psi\bar{\Psi}\f$
    * @param sp Spinors for first incoming particle
    * @param spbar SpinorBar Wavefunctions for second incoming particle
-   * @param vec VectorWaveFunctions for outgoing vector
-   * @param sca Outgoing ScalarWaveFunction
+   * @param sca ScalarWaveFunction for outgoing scalar
+   * @param ten Outgoing TensorWaveFunction
    * @param me2 colour averaged, spin summed ME
    * @param first Whether or not first call to decide if colour decomposition etc
    * should be calculated
@@ -167,33 +151,30 @@ private:
    * helicity calculations
    */
   ProductionMatrixElement
-  ffb2svHeME(SpinorVector & sp, SpinorBarVector & spbar,
-	     ScalarWaveFunction & sca, VBVector & vec, 
+  ffb2tsHeME(SpinorVector & sp, SpinorBarVector & spbar,
+	     TBVector & ten, ScalarWaveFunction & sca,
 	     double & me2,bool first) const;
   //@}
-
 
 private:
 
   /**
-   * Storage for dynamically cast vertices for a diagram with intermediate
-   * scalar
+   * Store a pair of  FFTVertex and FFVVertex pointers  
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > scalar_;
+  vector<pair<AbstractFFTVertexPtr, AbstractFFSVertexPtr> > fermion_;
 
   /**
-   * Storage for dynamically cast vertices for a diagram with intermediate
-   * vector
+   *  Store a pair of FFTVertex and VVTVertex pointers
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractVVSVertexPtr> > vector_;
-  
+  vector<pair<AbstractFFSVertexPtr, AbstractSSTVertexPtr> > scalar_;
+
   /**
-   * Storage for dynamically cast vertices for a diagram with intermediate
-   * fermion
+   *  The four point vertex
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > fermion_;
+  vector<AbstractFFSTVertexPtr> fourPoint_;
+
 };
 
 }
 
-#endif /* HERWIG_MEff2sv_H */
+#endif /* HERWIG_MEff2ts_H */

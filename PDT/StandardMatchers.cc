@@ -26,5 +26,6 @@ namespace {
   static MatchZBoson m05;
   static MatchHiggsBoson m06;
   static MatchChargedLepton m07;
+  static MatchLightParticle m08;
 
 }

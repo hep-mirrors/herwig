@@ -146,6 +146,7 @@ LHTPFFWVertex::LHTPFFWVertex()
     coupLast_(0.),q2Last_(ZERO) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 // coupling for FFW vertex

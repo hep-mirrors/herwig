@@ -17,6 +17,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVSVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -192,6 +193,11 @@ private:
    * fermion
    */
   vector<pair<AbstractFFVVertexPtr, AbstractFFSVertexPtr> > fermion_;
+
+  /**
+   *  Four point vertices
+   */
+  vector<AbstractFFVSVertexPtr> four_;
 };
 
 }

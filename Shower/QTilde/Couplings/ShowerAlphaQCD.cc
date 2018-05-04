@@ -272,8 +272,8 @@ string ShowerAlphaQCD::check(string args) {
   string fname;
   argin >> fname;
 
-  generator()->log() << "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
-	    << n_steps << " steps.\nResults are written to " << fname << "\n";
+  Repository::clog() << "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
+		     << n_steps << " steps.\nResults are written to " << fname << "\n";
 
   double step_width = (Q_high-Q_low)/n_steps;
 

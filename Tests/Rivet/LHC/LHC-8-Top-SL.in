@@ -1,0 +1,13 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS pull in top events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1376945
+# ATLAS top + b jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1390114
+# ATLAS boosted t tbar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1397637
+# cms boosted top
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1454211
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1518399
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_PAS_TOP_15_006

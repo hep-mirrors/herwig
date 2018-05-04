@@ -1,0 +1,180 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the SaSPhotonPDF class.
+//
+
+#include "SaSPhotonPDF.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/PDT/EnumParticles.h"
+
+using namespace Herwig;
+
+/* Define to a macro mangling the given C identifier (in lower and upper
+   case), which must not contain underscores, for linking with Fortran. */
+#undef FC_FUNC
+
+extern "C" {
+
+  #define SASGAM_F77 FC_FUNC(sasgam,SASGAM)
+  void SASGAM_F77(int *,float *,float *,float *,int *,float *,float *);
+  
+}
+
+bool SaSPhotonPDF::canHandleParticle(tcPDPtr particle) const {
+  // only the photon can be handled
+  return ( particle->id() == ParticleID::gamma );
+}
+
+cPDVector SaSPhotonPDF::partons(tcPDPtr particle) const {
+  // All standard partons can be extracted.
+  cPDVector ret;
+  if ( canHandleParticle(particle) ) {
+    ret.push_back(getParticleData(ParticleID::g));
+    for ( int i = 1; i <= 5; ++i ) {
+      ret.push_back(getParticleData(i));
+      ret.push_back(getParticleData(-i));
+    }
+  }
+  return ret;
+}
+
+double SaSPhotonPDF::xfl(tcPDPtr, tcPDPtr parton, Energy2 partonScale,
+			 double l, Energy2 particleScale) const {
+  float x = exp(-l);
+  float q2 = partonScale/GeV2;
+  float p2 = particleScale/GeV2;
+  float f2gm=0.;
+  float xpdf[13];
+  int iloc = parton->id()!=ParticleID::g ? 6+parton->id() : 6;
+  assert(x>=0. && x<=1.);
+  SASGAM_F77(&iset_,&x,&q2,&p2,&ip_,&f2gm,xpdf);
+  // cerr << "testing " << partonScale/GeV2 << " " << particleScale/GeV2 << " " << x << "\n";
+  // for(unsigned int ix=0;ix<13;++ix)
+  //   cerr << ix << " " << xpdf[ix] << "\n";
+  // cerr << "testing " << parton->PDGName() << " " << iloc << "\n";
+  return xpdf[iloc];
+}
+
+double SaSPhotonPDF::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		     double l, Energy2 particleScale) const {
+  if(parton->id()==ParticleID::g)
+    return 0.;
+  else
+    return xfl(particle,parton,partonScale,l,particleScale);
+}
+
+IBPtr SaSPhotonPDF::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SaSPhotonPDF::fullclone() const {
+  return new_ptr(*this);
+}
+
+void SaSPhotonPDF::persistentOutput(PersistentOStream & os) const {
+  os << iset_ << ip_;
+}
+
+void SaSPhotonPDF::persistentInput(PersistentIStream & is, int) {
+  is >> iset_ >> ip_;
+}
+
+
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<SaSPhotonPDF,PDFBase>
+describeHerwigSaSPhotonPDF("Herwig::SaSPhotonPDF", "HwSaSPhotonPDF.so");
+
+void SaSPhotonPDF::Init() {
+
+  static ClassDocumentation<SaSPhotonPDF> documentation
+    ("The SaSPhotonPDF class interfaces to the photon PDFs of Schuler and Sjostrand",
+     "The photon PDF of \\cite{Schuler:1995fk} was used.",
+     "\bibitem{Schuler:1995fk}\n"
+     "G.~A.~Schuler and T.~Sjostrand,\n"
+     "%``Low and high mass components of the photon distribution functions,''\n"
+     "Z.\\ Phys.\\ C {\bf 68} (1995) 607\n"
+     "doi:10.1007/BF01565260\n"
+     "[hep-ph/9503384].\n"
+     "%%CITATION = doi:10.1007/BF01565260;\n");
+
+  static Switch<SaSPhotonPDF,int> interfaceIset
+    ("Iset",
+     "The choice of PDF set",
+     &SaSPhotonPDF::iset_, 2, false, false);
+  static SwitchOption interfaceIset1D
+    (interfaceIset,
+     "1D",
+     "SaS set 1D ('DIS',   Q0 = 0.6 GeV)",
+     1);
+  static SwitchOption interfaceIset1M
+    (interfaceIset,
+     "1M",
+     "SaS set 1M ('MSbar', Q0 = 0.6 GeV)",
+     2);
+  static SwitchOption interfaceIset2D
+    (interfaceIset,
+     "2D",
+     "SaS set 2D ('DIS',   Q0 =  2  GeV)",
+     3);
+  static SwitchOption interfaceIset2M
+    (interfaceIset,
+     "2M",
+     "SaS set 2M ('MSbar', Q0 =  2  GeV)",
+     4);
+
+  static Switch<SaSPhotonPDF,int> interfaceIP2
+    ("IP2",
+     "scheme used to evaluate off-shell anomalous component.",
+     &SaSPhotonPDF::ip_, 0, false, false);
+  static SwitchOption interfaceIP20
+    (interfaceIP2,
+     "0",
+     "recommended default, see = 7.",
+     0);
+  static SwitchOption interfaceIP21
+    (interfaceIP2,
+     "1",
+     "dipole dampening by integration; very time-consuming.",
+     1);
+  static SwitchOption interfaceIP22
+    (interfaceIP2,
+     "2",
+     "P_0^2 = max( Q_0^2, P^2 )",
+     2);
+  static SwitchOption interfaceIP23
+    (interfaceIP2,
+     "3",
+     "P'_0^2 = Q_0^2 + P^2.",
+     3);
+  static SwitchOption interfaceIP24
+    (interfaceIP2,
+     "4",
+     "P_{eff} that preserves momentum sum.",
+     4);
+  static SwitchOption interfaceIP25
+    (interfaceIP2,
+     "5",
+     "P_{int} that preserves momentum and average evolution range.",
+     5);
+  static SwitchOption interfaceIP26
+    (interfaceIP2,
+     "6",
+     "P_{eff}, matched to P_0 in P2 -> Q2 limit.",
+     6);
+  static SwitchOption interfaceIP27
+    (interfaceIP2,
+     "7",
+     "P_{eff}, matched to P_0 in P2 -> Q2 limit.",
+     7);
+
+}

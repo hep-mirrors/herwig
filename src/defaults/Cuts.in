@@ -14,6 +14,7 @@ create ThePEG::Matcher<Lepton> Lepton
 create ThePEG::Matcher<Neutrino> Neutrino
 create ThePEG::Matcher<ChargedLepton> ChargedLepton
 create ThePEG::Matcher<LightQuark> LightQuark
+create ThePEG::Matcher<LightParticle> LightParticle
 create ThePEG::Matcher<LightAntiQuark> LightAntiQuark
 create ThePEG::Matcher<StandardQCDParton> StandardQCDParton
 create ThePEG::Matcher<Photon> Photon
@@ -69,6 +70,10 @@ create ThePEG::KTRapidityCut HiggsBosonKtCut KTRapidityCut.so
 newdef HiggsBosonKtCut:Matcher /Herwig/Matchers/HiggsBoson
 newdef HiggsBosonKtCut:MinKT 0.0*GeV
 
+# cut on Higgs bosons
+create ThePEG::KTRapidityCut LightParticleKtCut KTRapidityCut.so
+newdef LightParticleKtCut:Matcher /Herwig/Matchers/LightParticle
+newdef LightParticleKtCut:MinKT 0.0*GeV
 
 # create a cut on the invariant mass of lepton pairs
 create ThePEG::V2LeptonsCut MassCut V2LeptonsCut.so

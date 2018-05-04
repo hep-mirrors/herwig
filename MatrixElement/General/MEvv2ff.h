@@ -16,9 +16,11 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractRFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -35,8 +37,6 @@ using ThePEG::Helicity::VectorWaveFunction;
  * \f$2 \rightarrow 2\f$ process vector-vector to fermion-antifermion pair. It
  * inherits from GeneralHardME and implements the me2() virtual function.
  *
- * @see \ref MEvv2ffInterfaces "The Interfaces"
- * defined for MEvv2ff.
  * @see GeneralHardME
  * 
  */
@@ -165,6 +165,7 @@ private:
    *  Intermediate scalar
    */
   vector<pair<AbstractVVSVertexPtr, AbstractFFSVertexPtr > > scalar_;
+  
   /**
    * Intermediate fermion 
    */
@@ -176,9 +177,19 @@ private:
   vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > vector_;
   
   /**
+   * Intermediate RS fermion 
+   */
+  vector<pair<AbstractRFVVertexPtr, AbstractRFVVertexPtr> > RSfermion_;
+  
+  /**
    * Intermediate tensor
    */
   vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > tensor_;
+
+  /**
+   *  Four point vertices
+   */
+  vector<AbstractFFVVVertexPtr> four_;
   //@}
 };
 

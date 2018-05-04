@@ -23,6 +23,7 @@ using namespace ThePEG;
 SMGGGGVertex::SMGGGGVertex() : _couplast(0.),_q2last() {
   orderInGs(2);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3FF);
 }
 
 void SMGGGGVertex::doinit() {

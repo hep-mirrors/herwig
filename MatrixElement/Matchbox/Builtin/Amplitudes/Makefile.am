@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = HwMatchboxBuiltin.la
 
 HwMatchboxBuiltin_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 4:0:0
+$(AM_LDFLAGS) -module -version-info 4:1:0
 
 nodist_HwMatchboxBuiltin_la_SOURCES = \
 Amplitudes__all.cc

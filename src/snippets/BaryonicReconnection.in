@@ -1,0 +1,17 @@
+# Set strange quark mass to 0.45 in order to allow alternative gluon splitting
+set /Herwig/Particles/s:ConstituentMass 0.45*GeV
+set /Herwig/Particles/sbar:ConstituentMass 0.45*GeV
+
+# Use Baryonic Colour Reconnection Model
+set /Herwig/Hadronization/ColourReconnector:Algorithm BaryonicReco
+
+# Allow alternative gluon splitting
+set /Herwig/Hadronization/PartonSplitter:Split uds
+
+# Parameters for the Baryonic Reconnection Model
+set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.772606     
+set /Herwig/Hadronization/ColourReconnector:ReconnectionProbabilityBaryonic 0.477612
+set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.053252     
+set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.282032
+set /Herwig/Hadronization/HadronSelector:PwtSquark 0.291717
+set /Herwig/Hadronization/PartonSplitter:SplitPwtSquark 0.824135

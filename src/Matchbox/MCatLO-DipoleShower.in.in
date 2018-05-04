@@ -5,7 +5,7 @@ read Matchbox/LO.in
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
+read snippets/Dipole_AutoTune_prel.in
 
 set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes

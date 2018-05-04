@@ -24,6 +24,7 @@ RPVFFWVertex::RPVFFWVertex() : _diagonal(false), _ckm(3,vector<Complex>(3,0.0)),
 			       _rightlast(0.), _interactions(0) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 IBPtr RPVFFWVertex::clone() const {

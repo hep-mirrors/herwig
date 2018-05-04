@@ -2,6 +2,7 @@ class ${ModelName}${classname}: public ${lorentztag}Vertex {
  public:
   ${ModelName}${classname}() {
     ${header}
+    colourStructure(ColourStructure::${colourStructure});
     ${addToPlist}
   }
   void setCoupling(Energy2 ${couplingptrs}) {
@@ -25,9 +26,7 @@ class ${ModelName}${classname}: public ${lorentztag}Vertex {
     assert(model_);
     //    getParams(q2);
     ${parameters}
-    ${setCouplings}
-    orderInGem(${qedorder});
-    orderInGs(${qcdorder});
+    ${couplingOrders}
     ${lorentztag}Vertex::doinit();
   }
   //    void getParams(Energy2);

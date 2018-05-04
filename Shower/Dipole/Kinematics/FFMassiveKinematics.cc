@@ -67,22 +67,55 @@ Energy FFMassiveKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
 
 Energy FFMassiveKinematics::ptMax(Energy dScale, 
 				  double, double,
-				  const DipoleIndex& ind,
+				  const DipoleSplittingInfo& dInfo,
 				  const DipoleSplittingKernel& split) const {
 
-  double mui = split.emitter(ind)->mass() / dScale;
-  double mu  = split.emission(ind)->mass() / dScale;
-  double muj = split.spectator(ind)->mass() / dScale;
-  double mui2 = sqr( mui ), mu2  = sqr( mu );
+  DipoleIndex ind = dInfo.index();
+  double mui2 = 0.;
+  
+  // g->gg and g->qqbar
+  if ( abs(split.emitter(ind)->id()) == abs(split.emission(ind)->id()) ) {
+    mui2 = sqr(split.emitter(ind)->mass() / dScale);
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mui2 = sqr(dInfo.emitterMass()/dScale);
+  }
+  
+  double mu2  = sqr(split.emission(ind)->mass() / dScale);
+  double muj = dInfo.spectatorMass()/dScale;  
+  
   return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*muj ) * dScale;
 }
 
+
+Energy FFMassiveKinematics::ptMax(Energy dScale, 
+				  double, double,
+				  const DipoleIndex& ind,
+				  const DipoleSplittingKernel& split,
+				  tPPtr emitter, tPPtr spectator) const {
+  double mui2 = 0.;  
+  // g->gg and g->qqbar
+  if ( abs(split.emitter(ind)->id()) == abs(split.emission(ind)->id()) ) {
+    mui2 = sqr(split.emitter(ind)->mass() / dScale);
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mui2 = sqr(emitter->mass()/dScale);
+  }
+  double mu2 = sqr(split.emission(ind)->mass() / dScale);
+  double muj = spectator->mass()/dScale;
+  
+  return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*muj ) * dScale;
+}
+
+
 Energy FFMassiveKinematics::QMax(Energy dScale, 
 				 double, double,
-				 const DipoleIndex& ind,
+				 const DipoleSplittingInfo& dInfo,
 				 const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
-  double Muj = ind.spectatorData()->mass() / dScale;
+  double Muj = dInfo.spectatorMass() / dScale;
   return dScale * ( 1.-2.*Muj+sqr(Muj) );
 }
 
@@ -91,9 +124,20 @@ Energy FFMassiveKinematics::QMax(Energy dScale,
 // Here, scale is Q
 Energy FFMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& split) const {
   double zPrime=split.lastSplittingParameters()[0];
-  Energy mi = split.emitterData()->mass();
-  Energy m = split.emissionData()->mass();
-  Energy2 pt2 = zPrime*(1.-zPrime)*sqr(scale) - (1-zPrime)*sqr(mi) - zPrime*sqr(m);  
+
+  // masses
+  Energy2 mi2 = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(split.emitterData()->id()) == abs(split.emissionData()->id()) ) {
+    mi2 = sqr(split.emitterData()->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = sqr(split.emitterMass());
+  }
+  Energy2 m2 = sqr(split.emissionData()->mass());
+
+  Energy2 pt2 = zPrime*(1.-zPrime)*sqr(scale) - (1-zPrime)*mi2 - zPrime*m2;  
   assert(pt2 >= ZERO);
   return sqrt(pt2);
 }
@@ -101,9 +145,21 @@ Energy FFMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
 // This is simply the inverse of PtFromQ
 Energy FFMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
   double zPrime=split.lastSplittingParameters()[0];
-  Energy mi = split.emitterData()->mass();
-  Energy m = split.emissionData()->mass();
-  Energy2 Q2 = (sqr(pt) + (1-zPrime)*sqr(mi) + zPrime*sqr(m))/(zPrime*(1.-zPrime));
+
+  
+  // masses
+  Energy2 mi2 = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(split.emitterData()->id()) == abs(split.emissionData()->id()) ) {
+    mi2 = sqr( split.emitterData()->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = sqr(split.emitterMass());
+  }
+  Energy2 m2  = sqr(split.emissionData()->mass());
+
+  Energy2 Q2 = (sqr(pt) + (1-zPrime)*mi2 + zPrime*m2)/(zPrime*(1.-zPrime));
   return sqrt(Q2);
 }
 
@@ -119,16 +175,22 @@ double FFMassiveKinematics::ptToRandom(Energy pt, Energy,
 bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi,
 					    DipoleSplittingInfo& info,
 					    const DipoleSplittingKernel&) {
-
+  
   // scaled masses
-  double mui2 = sqr( info.emitterData()->mass() / info.scale() );
-  double mu2 = sqr( info.emissionData()->mass() / info.scale() );
-  double muj2 = sqr( info.spectatorData()->mass() / info.scale() );
-
-  double Mui2 = 0.;
-  if ( info.emitterData()->id() + info.emissionData()->id() == 0 ) Mui2 = 0.; // gluon
-  else Mui2   = mui2; // (anti)quark 
-  double Muj2 = muj2;
+  double Mui2 = sqr(info.emitterMass() / info.scale());
+  double Muj2 = sqr(info.spectatorMass() / info.scale());
+  double muj2 = Muj2;
+  
+  double mui2 = 0.;
+  // g->gg and g->qqbar
+  if ( abs(info.emitterData()->id()) == abs(info.emissionData()->id()) ) {
+    mui2 = sqr(info.emitterData()->mass()/info.scale());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mui2 = Mui2;
+  }
+  double mu2 = sqr(info.emissionData()->mass()/info.scale() );
 
   // To solve issue with scale during presampling
   // need to enforce that Qijk-mij2-mk2 = 2*pij.pk > 0,
@@ -337,38 +399,45 @@ void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Energy2 pt2 = sqr(pt);
 
   // scaled masses
-  double mui2 = sqr( dInfo.emitterData()->mass() / dInfo.scale() );
-  double mu2 = sqr( dInfo.emissionData()->mass() / dInfo.scale() );
-  double muj2 = sqr( dInfo.spectatorData()->mass() / dInfo.scale() );
+  double Mui2 = sqr(dInfo.emitterMass() / dInfo.scale());
+  double Muk2 = sqr(dInfo.spectatorMass() / dInfo.scale());
+  //double muk2 = Muk2;
 
-  double Mui2 = 0.;
-  if ( dInfo.emitterData()->id() + dInfo.emissionData()->id() == 0 ) Mui2 = 0.; // gluon
-  else Mui2   = mui2; // (anti)quark 
-  double Muj2 = muj2;
+  Energy mi = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(dInfo.emitterData()->id()) == abs(dInfo.emissionData()->id()) ) {
+    mi = dInfo.emitterData()->mass();
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi = dInfo.emitterMass();
+  }
+  double mui2 = sqr(mi/dInfo.scale());
+  double mu2  = sqr(dInfo.emissionData()->mass() / dInfo.scale() );
 
   Energy2 Qijk = sqr(dInfo.scale());
-  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
+  double suijk = 0.5*( 1. - Mui2 - Muk2 + sqrt( sqr(1.-Mui2-Muk2) - 4.*Mui2*Muk2 ) );
   double suijk2 = sqr(suijk);
 
   // Calculate A:=xij*w
   double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
 
   // Calculate the scaling factors, xk and xij
-  double lambdaK = 1. + (Muj2/suijk);
+  double lambdaK = 1. + (Muk2/suijk);
   double lambdaIJ = 1. + (Mui2/suijk);
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
-  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
+  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muk2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muk2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muk2/suijk) );
+  double xij = 1. - ( (Muk2/suijk) * (1.-xk) / xk );
 
   // Construct reference momenta nk, nij, nt
-  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muj2) ) * (pEmitter - (Mui2/suijk)*pSpectator);
-  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muj2) ) * (pSpectator - (Muj2/suijk)*pEmitter);
+  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muk2) ) * (pEmitter - (Mui2/suijk)*pSpectator);
+  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muk2) ) * (pSpectator - (Muk2/suijk)*pEmitter);
 
   // Following notation in notes, qt = sqrt(wt)*nt
   Lorentz5Momentum qt = getKt(nij,nk,pt,dInfo.lastPhi());
 
   // Construct qij, qk, qi and qj
   Lorentz5Momentum qij = xij*nij + (Mui2/(xij*suijk))*nk;
-  Lorentz5Momentum qk = xk*nk + (Muj2/(xk*suijk))*nij;
+  Lorentz5Momentum qk = xk*nk + (Muk2/(xk*suijk))*nij;
 
   // For clarity, following notation in notes:
   //Lorentz5Momentum qi = zPrime*qij + ((pt2 + mi2 - zPrime*zPrime*mij2)/(xij*sijk*zPrime))*nk + sqrt(wt)*nt;
@@ -378,6 +447,15 @@ void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Lorentz5Momentum qi = zPrime*qij + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
   Lorentz5Momentum qj = (1.-zPrime)*qij + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
 
+  qi.setMass(mi);
+  qi.rescaleEnergy();
+  
+  qj.setMass(dInfo.emissionData()->mass());
+  qj.rescaleEnergy();
+  
+  qk.setMass(dInfo.spectatorMass());
+  qk.rescaleEnergy();
+  
   emitterMomentum(qi);
   emissionMomentum(qj);
   spectatorMomentum(qk);

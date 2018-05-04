@@ -29,6 +29,7 @@ SSHHHVertex::SSHHHVertex() : theMw(ZERO), theZfact(ZERO), theSw(0.),
 			     theq2last(ZERO) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSHHHVertex::doinit() {

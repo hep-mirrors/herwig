@@ -28,12 +28,16 @@ void MEfv2vf::doinit() {
   GeneralHardME::doinit();
   fermion_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
+  four_   .resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1, 
 			   PDT::Spin1, PDT::Spin1Half);
   for(HPCount ix = 0; ix < numberOfDiags(); ++ix) {
     HPDiagram diagram = getProcessInfo()[ix];
     PDT::Spin offspin = diagram.intermediate->iSpin();
-    if(diagram.channelType == HPDiagram::sChannel ||
+    if ( diagram.channelType == HPDiagram::fourPoint) {
+      four_[ix] = dynamic_ptr_cast<AbstractFFVVVertexPtr>(diagram.vertices.first);
+    }
+    else if(diagram.channelType == HPDiagram::sChannel ||
        ( diagram.channelType == HPDiagram::tChannel 
 	 && offspin == PDT::Spin1Half)) {
       AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
@@ -66,9 +70,9 @@ double MEfv2vf::me2() const {
       sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i, 
 				 incoming);
       vecIn[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*i, 
-				    incoming);
+      				    incoming);
       vecOut[2*i] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 2*i, 
-				     outgoing);
+      				     outgoing);
       spb[i] = SpinorBarWaveFunction(rescaledMomenta()[3], mePartonData()[3], i, 
 				     outgoing);
     }
@@ -150,6 +154,9 @@ MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn,
 	      diag = fermion_[ix].first->
 		evaluate(q2, spIn[ifh], interFB, vecIn[ivh]);
 	    }
+	    else if(current.channelType == HPDiagram::fourPoint) {
+	      diag = four_[ix]->evaluate(q2, spIn[ifh],spbOut[ofh],vecIn[ivh],vecOut[ovh]);
+	    }
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifh, 2*ivh, ovh, ofh) = diag;
 	    //Compute flows
@@ -225,6 +232,9 @@ MEfv2vf::fbv2vfbHeME(const SpinorBarVector & spbIn, const VBVector & vecIn,
 		  evaluate(q2, spOut[ofh], interFB, vecOut[ovh]);
 	      }
 	    }
+	    else if(current.channelType == HPDiagram::fourPoint) {
+	      diag = four_[ix]->evaluate(q2, spOut[ofh], spbIn[ifh],vecOut[ovh],vecIn[ivh]);
+	    }
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifh, ivh, ovh, ofh) = diag;
 	    //Compute flows
@@ -256,11 +266,11 @@ MEfv2vf::fbv2vfbHeME(const SpinorBarVector & spbIn, const VBVector & vecIn,
 }
 
 void MEfv2vf::persistentOutput(PersistentOStream & os) const {
-  os << fermion_ << vector_;
+  os << fermion_ << vector_ << four_;
 }
 
 void MEfv2vf::persistentInput(PersistentIStream & is, int) {
-  is >> fermion_ >> vector_;
+  is >> fermion_ >> vector_ >> four_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1, 
 			   PDT::Spin1, PDT::Spin1Half);
 }

@@ -50,4 +50,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 # ALICE pion and eta pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1116147
 # CMS charged particle rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_PAS_QCD_10_024
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024

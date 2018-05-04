@@ -64,11 +64,11 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
   vector<LorentzMomentum>::const_iterator mom = p.begin();
   for ( ; mom != p.end(); ++pdata, ++mom ) {
     
-    if ( theJetFinder->unresolvedMatcher()->check(**pdata)&&  
-        mom->perp()>theScalePtCut){
-      //abs(mom->rapidity()+(!lastXCombPtr()->head()?lastXCombPtr()->lastY():lastXCombPtr()->head()->lastY()))<5.01
-      gotone = true;
-      ptJetSum += jetPtWeight(*mom)*mom->perp();
+    if ( theJetFinder->unresolvedMatcher()->check(**pdata) ){
+      if( mom->perp() > theScalePtCut ){
+        gotone    = true;
+        ptJetSum += jetPtWeight(*mom)*mom->perp();
+      }
     } else if ( theIncludeMT ) {
       nonJetMomentum += *mom;
     }

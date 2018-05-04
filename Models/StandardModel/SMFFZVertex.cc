@@ -61,6 +61,7 @@ SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
 			     _couplast(0.0), _q2last(ZERO) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SMFFZVertex::doinit() {

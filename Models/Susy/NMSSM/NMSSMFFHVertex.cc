@@ -22,6 +22,7 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
 				   _couplast(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void NMSSMFFHVertex::persistentOutput(PersistentOStream & os) const {

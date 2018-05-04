@@ -12,6 +12,8 @@
 // This is the declaration of the ${ModelName} class.
 #include "Herwig/Models/General/BSMModel.h"
 
+${couplings}
+
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Constants::pi;

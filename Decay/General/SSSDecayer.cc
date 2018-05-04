@@ -32,13 +32,15 @@ IBPtr SSSDecayer::fullclone() const {
 }
 
 void SSSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & inV,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> ) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractSSSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<SSSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractSSSVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<SSSVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter] = dynamic_ptr_cast<AbstractVSSVertexPtr>(inV.at(inter));
@@ -91,7 +93,10 @@ double SSSDecayer::me2(const int , const Particle & inpart,
   ScalarWaveFunction s1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
   ScalarWaveFunction s2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
-  (*ME())(0,0,0) = vertex_->evaluate(scale,s1,s2,swave_);
+  (*ME())(0,0,0) = 0.;
+  for(auto vert : vertex_) {
+    (*ME())(0,0,0) += vert->evaluate(scale,s1,s2,swave_);
+  }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
@@ -103,13 +108,14 @@ double SSSDecayer::me2(const int , const Particle & inpart,
 Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_ && !perturbativeVertex_->kinematics()) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0] && !perturbativeVertex_[0]->kinematics()) {
     Energy2 scale(sqr(inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(scale, in, outa.first, outb.first);
+    perturbativeVertex_[0]->setCoupling(scale, in, outa.first, outb.first);
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					       outb.second);
-    double c2 = norm(perturbativeVertex_->norm());
+    double c2 = norm(perturbativeVertex_[0]->norm());
     Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
     // colour factor
     pWidth *= colourFactor(inpart.first,outa.first,outb.first);
@@ -203,7 +209,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
       assert(swave3_.particle()->id()==scalarInter.particle()->id());
 
-      Complex diag = vertex_->evaluate(scale,scal,anti,scalarInter);
+      Complex diag = 0.;
+      for(auto vertex : vertex_)
+	diag += vertex->evaluate(scale,scal,anti,scalarInter);
       if(!couplingSet) {
 	gs = abs(incomingVertex_[inter]->norm());
 	couplingSet = true;
@@ -228,7 +236,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
       assert(scal.particle()->id()==scalarInter.particle()->id());
 
-      Complex diag = vertex_->evaluate(scale,swave3_,anti,scalarInter);
+      Complex diag = 0.;
+      for(auto vertex : vertex_)
+	diag += vertex->evaluate(scale,swave3_,anti,scalarInter);
       if(!couplingSet) {
 	gs = abs(outgoingVertexS->norm());
 	couplingSet = true;
@@ -253,7 +263,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
       assert(anti.particle()->id()==scalarInter.particle()->id());
 
-      Complex diag = vertex_->evaluate(scale,swave3_,scal,scalarInter);
+      Complex diag = 0.;
+      for(auto vertex : vertex_)
+	diag += vertex->evaluate(scale,swave3_,scal,scalarInter);
       if(!couplingSet) {
 	gs = abs(outgoingVertexA->norm());
 	couplingSet = true;

@@ -2,6 +2,27 @@ Herwig News							 -*- outline -*-
 ================================================================================
 
 
+* Herwig 7.1.3 release: 2018-04-05
+
+** Dipole Shower
+*** Changed default phase space limits
+*** g -> gg splitting function asymmetrized
+*** Initial retune supplied, given the visible changes 
+    to LEP observables
+
+** Added new Baryonic colour reconnection model 
+   (arXiv 1710:10906)
+
+** Added Schuler-Sjostrand Photon PDFs
+
+** Handling of massless taus from external sources
+
+** various minor fixes
+
+** use std::array<> where possible
+
+
+
 * Herwig 7.1.2 release: 2017-11-01
 
 ** Reduction of the default pt cut for QED radiation off leptons.
@@ -22,6 +43,7 @@ Herwig News							 -*- outline -*-
 ** Fix in jacobian for massive dipole kinematics.
 
 ** General improvements for UFO model handling.
+
 
 
 * Herwig 7.1.1 release: 2017-07-14

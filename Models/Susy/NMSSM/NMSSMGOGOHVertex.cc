@@ -19,6 +19,7 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
 				       _q2last(0.*MeV2), _couplast(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void NMSSMGOGOHVertex::persistentOutput(PersistentOStream & os) const {

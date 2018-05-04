@@ -5,3 +5,5 @@
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 # underlying event
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1385107
+# ALICE neutral pion cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2017_I1512110

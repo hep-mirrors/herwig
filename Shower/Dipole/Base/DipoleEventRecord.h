@@ -341,6 +341,7 @@ public:
                                 const pair<PDF,PDF>& pdf,
 				tPPair beam,
 				bool firstInteraction,
+				const set<long>& offShellPartons,
                                 bool dipoles = true);
   /**
    * Prepare the event record for the given
@@ -349,6 +350,7 @@ public:
   void slimprepare(tSubProPtr subpro,
 		   tStdXCombPtr xc,
 		   const pair<PDF,PDF>& pdf,tPPair beam,
+		   const set<long>& offShellPartons,
 		   bool dipoles = true);
 
   /**
@@ -397,7 +399,8 @@ public:
    * Prepare the event record for the showering of a decay.
    * Return false if the decay does not need to be showered.
    **/
-  bool prepareDecay(PerturbativeProcessPtr decayProc);
+  bool prepareDecay(PerturbativeProcessPtr decayProc,
+				const set<long>& offShellPartons);
 
   /**
    * Boost the momentum of the outgoing of the given 
@@ -438,7 +441,9 @@ public:
    * Find the chains to be showered.
    * The decay bool avoids mixing up decaying particles in hard and decay processes
    */
-  void findChains(const PList& ordered, const bool decay = false);
+  void findChains(const PList& ordered, 
+		  const set<long>& offShellpartons,
+		  const bool decay = false);
 
   /**
    * Sort the coloured partons into a colour ordered ensemble.
@@ -480,6 +485,13 @@ private:
    */
   list<DipoleChain> theDoneChains;
 
+  /**
+   * The coloured partons that can be off-shell
+   * To only be filled by DipoleShowerHandler.
+   **/
+
+
+  
 private:
 
   /**

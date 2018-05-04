@@ -24,6 +24,7 @@ RSModelGGGGRVertex::RSModelGGGGRVertex()
   : kappa_(ZERO), _couplast(0.), _q2last(ZERO) {
   orderInGem(1);
   orderInGs (1);
+  colourStructure(ColourStructure::SU3FF);
 }
 
 void RSModelGGGGRVertex::doinit() {

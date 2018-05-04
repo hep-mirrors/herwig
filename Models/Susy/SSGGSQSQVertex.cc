@@ -20,8 +20,9 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGGSQSQVertex::SSGGSQSQVertex() : q2last_(),couplast_(0.) 
-{}
+SSGGSQSQVertex::SSGGSQSQVertex() : q2last_(),couplast_(0.) {
+  colourStructure(ColourStructure::SU3TTFUNDS);
+}
 
 // The following static variable is needed for the type
 // description system in ThePEG.

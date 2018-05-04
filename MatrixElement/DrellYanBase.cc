@@ -121,11 +121,14 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(RealEmissi
   // get the quark,antiquark
   ParticleVector incoming;
   vector<tcBeamPtr> beams;
+  Lorentz5Momentum phadron;
   for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
     incoming.push_back(born->bornIncoming()[ix]);
     tPPtr beam = born->hadrons()[ix];
+    phadron+=beam->momentum();
     beams.push_back(dynamic_ptr_cast<tcBeamPtr>(beam->dataPtr()));
   }
+  Energy2 shad = phadron.m2();
   pair<double,double> xnew = born->x();
   // ensure that the quark is first
   if(incoming[0]->id()<incoming[1]->id()) {
@@ -144,7 +147,8 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(RealEmissi
   vector<Lorentz5Momentum> pnew;
   LorentzRotation trans;
   // if not accepted return
-  if(!applyHard(incoming,beams,pboson,iemit,itype,pnew,trans,xnew)) return RealEmissionProcessPtr();
+  if(!applyHard(incoming,beams,pboson,iemit,itype,pnew,trans,xnew,shad))
+    return RealEmissionProcessPtr();
   // if applying ME correction create the new particles
   // first the final-state particles
   Boost boostv=pboson.findBoostToCM();
@@ -272,16 +276,14 @@ bool DrellYanBase::applyHard(ParticleVector & quarks,
 			     unsigned int & iemit,unsigned int & itype,
 			     vector<Lorentz5Momentum> & pnew,
 			     LorentzRotation & trans, 
-			     pair<double,double> & xout) {
+			     pair<double,double> & xout,
+			     Energy2 shad) {
   // check that quark along +z and qbar along -z
   bool quarkplus=quarks[0]->momentum().z()>quarks[1]->momentum().z();
   // calculate the limits on s
   Energy mb = sqrt(mb2_);
   Energy2 smin=mb2_;
-  Energy2 s=
-    (generator()->currentEvent()->incoming().first ->momentum()+
-     generator()->currentEvent()->incoming().second->momentum()).m2();
-  Energy2 smax(s);
+  Energy2 smax(shad);
   // calculate the rapidity of the boson
   double yB=0.5*log((boson.e()+boson.z())/
 		    (boson.e()-boson.z()));
@@ -337,10 +339,11 @@ bool DrellYanBase::applyHard(ParticleVector & quarks,
     Energy2 scale(uhat*that/shat+mb2_);
     // the PDF's with the emitted gluon
     double fxnew[2];
-    xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(mb2_-uhat)/(mb2_-that));
-    xnew[1]=shat/(s*xnew[0]);
-    for(unsigned int ix=0;ix<2;++ix)
-      {fxnew[ix]=pdf[ix]->xfx(beams[ix],quarks[ix]->dataPtr(),scale,xnew[ix]);}
+    xnew[0]=exp(yB)/sqrt(shad)*sqrt(shat*(mb2_-uhat)/(mb2_-that));
+    xnew[1]=shat/(shad*xnew[0]);
+    for(unsigned int ix=0;ix<2;++ix) {
+      fxnew[ix] = xnew[ix]<=1. ? pdf[ix]->xfx(beams[ix],quarks[ix]->dataPtr(),scale,xnew[ix]) : 0.;
+    }
     // jacobian and me parts of the weight
     weight=jacobian2*(sqr(mb2_-that)+sqr(mb2_-uhat))/(sqr(shat)*that*uhat);
     // pdf part of the weight
@@ -369,19 +372,19 @@ bool DrellYanBase::applyHard(ParticleVector & quarks,
     double fxnew[2];
     if(rn<_channelweights[1]) {
       itype=2;
-      xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(mb2_-uhat)/(mb2_-that));
-      xnew[1]=shat/(s*xnew[0]);
-      fxnew[0]=pdf[0]->xfx(beams[0],getParticleData(ParticleID::g),scale,xnew[0]);
-      fxnew[1]=pdf[1]->xfx(beams[1],quarks[1]->dataPtr(),scale,xnew[1]);
+      xnew[0]=exp(yB)/sqrt(shad)*sqrt(shat*(mb2_-uhat)/(mb2_-that));
+      xnew[1]=shat/(shad*xnew[0]);
+      fxnew[0] = xnew[0] <=1. ? pdf[0]->xfx(beams[0],getParticleData(ParticleID::g),scale,xnew[0]) : 0.;
+      fxnew[1] = xnew[1] <=1. ? pdf[1]->xfx(beams[1],quarks[1]->dataPtr()          ,scale,xnew[1]) : 0.;
       jacobian2/=(_channelweights[1]-_channelweights[0]);
     }
     // q g -> q V 
     else {
       itype=1;
-      xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(mb2_-that)/(mb2_-uhat));
-      xnew[1]=shat/(s*xnew[0]);
-      fxnew[0]=pdf[0]->xfx(beams[0],quarks[0]->dataPtr(),scale,xnew[0]);
-      fxnew[1]=pdf[1]->xfx(beams[1],getParticleData(ParticleID::g),scale,xnew[1]);
+      xnew[0]=exp(yB)/sqrt(shad)*sqrt(shat*(mb2_-that)/(mb2_-uhat));
+      xnew[1]=shat/(shad*xnew[0]);
+      fxnew[0] =  xnew[0] <=1. ? pdf[0]->xfx(beams[0],quarks[0]->dataPtr(),scale,xnew[0])           : 0.;
+      fxnew[1] =  xnew[1] <=1. ? pdf[1]->xfx(beams[1],getParticleData(ParticleID::g),scale,xnew[1]) : 0.;
       jacobian2/=(_channelweights[2]-_channelweights[1]);
     }
     // jacobian and me parts of the weight
@@ -404,43 +407,38 @@ bool DrellYanBase::applyHard(ParticleVector & quarks,
   // construct the momenta in the rest frame of the boson
   Lorentz5Momentum pb(ZERO,ZERO,ZERO,mb,mb),pspect,pg,pemit;
   double cos3 = 0.0;
-  if(itype==0)
-    {
-      pg     = Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(shat-mb2_)/mb,ZERO);
-      Energy2 tp(that),up(uhat);
-      double zsign(quarkplus ? -1. : 1.);
-      if(iemit==2)
-	{
-	  tp=uhat;
-	  up=that;
-	  zsign *= -1.;
-	}
-      pspect = Lorentz5Momentum(ZERO,ZERO,zsign*0.5*(mb2_-tp)/mb,
-				0.5*(mb2_-tp)/mb,ZERO);
-      Energy eemit=0.5*(mb2_-up)/mb;
+  if(itype==0) {
+    pg     = Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(shat-mb2_)/mb,ZERO);
+    Energy2 tp(that),up(uhat);
+    double zsign(quarkplus ? -1. : 1.);
+    if(iemit==2) {
+      tp=uhat;
+      up=that;
+      zsign *= -1.;
+    }
+    pspect = Lorentz5Momentum(ZERO,ZERO,zsign*0.5*(mb2_-tp)/mb,
+			      0.5*(mb2_-tp)/mb,ZERO);
+    Energy eemit=0.5*(mb2_-up)/mb;
+    cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
+  }
+  else {
+    pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(mb2_-uhat)/mb,ZERO);
+    double zsign(quarkplus ? 1. : -1.);
+    if(iemit==1) {
+      if(itype==1) zsign *= -1.;
+      pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(shat-mb2_)/mb,
+			      0.5*(shat-mb2_)/mb);
+      Energy eemit=0.5*(mb2_-that)/mb;
       cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
     }
-  else
-    {
-      pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(mb2_-uhat)/mb,ZERO);
-      double zsign(quarkplus ? 1. : -1.);
-      if(iemit==1)
-	{
-	  if(itype==1) zsign *= -1.;
-	  pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(shat-mb2_)/mb,
-				  0.5*(shat-mb2_)/mb);
-	  Energy eemit=0.5*(mb2_-that)/mb;
-	  cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
-	}
-      else
-	{
-	  if(itype==2) zsign *= -1.;
-	  pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(mb2_-that)/mb,
-				  0.5*(mb2_-that)/mb);
-	  Energy eemit=0.5*(shat-mb2_)/mb;
-	  cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
-	}
+    else {
+      if(itype==2) zsign *= -1.;
+      pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(mb2_-that)/mb,
+			      0.5*(mb2_-that)/mb);
+      Energy eemit=0.5*(shat-mb2_)/mb;
+      cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
     }
+  }
   // rotate the gluon
   double sin3(sqrt(1.-sqr(cos3)));
   double phi(Constants::twopi*UseRandom::rnd());

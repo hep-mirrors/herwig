@@ -42,6 +42,7 @@ SSHPPVertex::SSHPPVertex() : theIncludeTriLinear(true),
 			     theq2last(), theHaveCoeff(false), theLastID(0) {
   orderInGs(0);
   orderInGem(3);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSHPPVertex::persistentOutput(PersistentOStream & os) const {

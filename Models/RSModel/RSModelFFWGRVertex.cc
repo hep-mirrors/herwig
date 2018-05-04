@@ -27,6 +27,7 @@ RSModelFFWGRVertex::RSModelFFWGRVertex()
     couplast_(0.), q2last_(ZERO), kappa_(ZERO) {
   orderInGem(2);
   orderInGs (0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void RSModelFFWGRVertex::doinit() {

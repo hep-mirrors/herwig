@@ -66,9 +66,9 @@ pair<double,double> FILightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingKernel&) const {
   Energy hard=dInfo.hardPt();
   if(openZBoundaries()==1)
-	hard=dInfo.scale()*sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX()/2.);
+	hard=dInfo.scale()*sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX())/2.;
   if(openZBoundaries()==2)
-	hard=dInfo.scale()*min(1.,sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX())/2.);
+    hard=dInfo.scale()*min(1.,sqrt((1.-dInfo.spectatorX())/dInfo.spectatorX())/2.);
   if(hard<pt)return {0.5,0.5};
   double s = sqrt(1.-sqr(pt/hard));
   return {0.5*(1.-s),0.5*(1.+s)};
@@ -146,15 +146,16 @@ void FILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
     getKt (pSpectator, pEmitter, pt, dInfo.lastPhi(),true);
 
   Lorentz5Momentum em = z*pEmitter + (1.-z)*((1.-x)/x)*pSpectator + kt;
-  em.setMass(0.*GeV);
+  Lorentz5Momentum emm = (1.-z)*pEmitter + z*((1.-x)/x)*pSpectator - kt;
+  Lorentz5Momentum spe = (1./x)*pSpectator;
+  
+  em.setMass(ZERO);
   em.rescaleEnergy();
 
-  Lorentz5Momentum emm = (1.-z)*pEmitter + z*((1.-x)/x)*pSpectator - kt;
-  emm.setMass(0.*GeV);
+  emm.setMass(ZERO);
   emm.rescaleEnergy();
-
-  Lorentz5Momentum spe = (1./x)*pSpectator;
-  spe.setMass(0.*GeV);
+  
+  spe.setMass(ZERO);
   spe.rescaleEnergy();
 
   emitterMomentum(em);

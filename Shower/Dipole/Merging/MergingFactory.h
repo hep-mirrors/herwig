@@ -153,7 +153,18 @@ namespace Herwig {
       /// the merging helper
     MergerPtr theMergingHelper;
       /// Cut on non-QCD modified observables. 
-    Ptr<Cuts>::ptr theNonQCDCuts;  
+    Ptr<Cuts>::ptr theNonQCDCuts;
+    
+      /// For more complicated processes the number of subprocesses is large.
+      /// This parameter allows to chunk the suprocesses into same sized cunks.
+      /// It is in the responsibility of the user to add all chunk parts afterwards.
+      /// The user also needs to take care that, e.g. output can be compined.
+    int theChunk=0;
+      /// This parameter selects a part chunkpart of the chunked subprocesses.
+      /// The user needs to take care to sum all chunkparts afterwards.
+    int theChunkPart=0;
+    
+    
     /**
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.

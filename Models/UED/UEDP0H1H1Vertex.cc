@@ -24,6 +24,7 @@ using namespace ThePEG::Helicity;
 UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void UEDP0H1H1Vertex::doinit() {

@@ -270,7 +270,6 @@ void ModelGenerator::doinit() {
     ofs.open(filename.c_str());
   }
 
-
   if(decayOutput_!=0) {
     if(decayOutput_==1) {
       os << "# The decay modes listed below will have spin\n"

@@ -21,6 +21,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & os) const {

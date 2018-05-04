@@ -188,7 +188,7 @@ private:
   /**
    * The contact vertex 
    */
-  AbstractVVSSVertexPtr contact_;
+  vector<AbstractVVSSVertexPtr> contact_;
   //@}
   
   

@@ -24,7 +24,9 @@ public:
   /**
    * The default constructor.
    */
-  SextetFFSVertex() {}
+  SextetFFSVertex() {
+    colourStructure(ColourStructure::SU3K6);
+  }
 
   /**
    * Calculate the couplings.

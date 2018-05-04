@@ -26,6 +26,7 @@ SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO),
 			     _rightlast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSCNWVertex::doinit() {

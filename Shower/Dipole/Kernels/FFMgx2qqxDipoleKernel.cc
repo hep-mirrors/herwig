@@ -85,7 +85,7 @@ double FFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   // Construct mass squared variables
   double mui2 = sqr(split.emitterData()->mass() / split.scale());
   double mu2 = mui2;
-  double muj2 = sqr(split.spectatorData()->mass() / split.scale());
+  double muj2 = sqr(split.spectatorMass() / split.scale());
   double bar = 1. - mui2 - mu2 - muj2;
 
   // Calculate y

@@ -37,6 +37,7 @@ TTbAModelZPQQVertex::TTbAModelZPQQVertex()  {
   addToList(-4,4,32);
   orderInGem(1);
   orderInGs(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void TTbAModelZPQQVertex::doinit() {

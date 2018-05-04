@@ -21,6 +21,7 @@ using namespace Herwig;
 GenericHPPVertex::GenericHPPVertex() : setup_(false), q2Last_(ZERO), coupLast_(0.), idLast_(0) {
   orderInGs(0);
   orderInGem(3);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr GenericHPPVertex::clone() const {

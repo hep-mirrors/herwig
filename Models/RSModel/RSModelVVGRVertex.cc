@@ -47,6 +47,7 @@ void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
 RSModelVVGRVertex::RSModelVVGRVertex() : kappa_(ZERO) {
   orderInGem(1);
   orderInGs (0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void RSModelVVGRVertex::doinit() {

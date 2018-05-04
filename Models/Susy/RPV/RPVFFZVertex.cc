@@ -27,6 +27,7 @@ RPVFFZVertex::RPVFFZVertex()  : _sw(0.), _cw(0.), _id1last(0),
 				_interactions(0) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 IBPtr RPVFFZVertex::clone() const {

@@ -17,6 +17,7 @@ LHTPWHHVertex::LHTPWHHVertex() :
   coupLast_(0.), q2Last_(ZERO), coup_(11) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr LHTPWHHVertex::clone() const {

@@ -85,17 +85,52 @@ public:
    */
   virtual Energy ptMax(Energy dScale, 
 		       double emX, double specX,
-		       const DipoleIndex& ind,
+		       const DipoleSplittingInfo& dInfo,
 		       const DipoleSplittingKernel& split) const;
-
+  
+  /**
+   * Return the maximum pt for the given dipole scale.
+   */
+  virtual Energy ptMax(Energy dScale, 
+		       double, double,
+		       const DipoleIndex& dIndex,
+		       const DipoleSplittingKernel& split,
+		       tPPtr emitter, tPPtr) const;
+  
+  /**
+   * Return the maximum pt for the given dipole scale.
+   */
+  virtual Energy ptMax(Energy, 
+		       double, double,
+		       const DipoleIndex&,
+		       const DipoleSplittingKernel&) const {
+      // Only the DipoleSplittingInfo version should be used for massive
+      // dipoles, for now anyway.
+    assert(false);
+    return ZERO;
+  }
+  
   /**
    * Return the maximum virtuality for the given dipole scale.
    */
   virtual Energy QMax(Energy dScale, 
 		      double emX, double specX,
-		      const DipoleIndex& dIndex,
-		      const DipoleSplittingKernel&) const;
-
+		      const DipoleSplittingInfo& dInfo,
+		      const DipoleSplittingKernel& split) const;
+  
+  /**
+   * Return the maximum virtuality for the given dipole scale.
+   */
+  virtual Energy QMax(Energy, 
+		      double, double,
+		      const DipoleIndex&,
+		      const DipoleSplittingKernel&) const { 
+    // Only the DipoleSplittingInfo version should be used for massive
+    // dipoles, for now anyway.
+    assert(false);
+    return ZERO;
+  }
+  
   /**
    * Return the pt given a virtuality.
    */

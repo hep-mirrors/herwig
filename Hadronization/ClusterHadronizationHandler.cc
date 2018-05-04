@@ -212,6 +212,9 @@ handle(EventHandler & ch, const tPVector & tagged,
     // tag new clusters as children of the partons to hadronize
     _setChildren(CRclusters);
 
+    // forms diquarks  
+    _clusterFinder->reduceToTwoComponents(CRclusters);
+
     // recombine vectors of (possibly) reconnected and BV clusters
     clusters.clear();
     clusters.insert( clusters.end(), CRclusters.begin(), CRclusters.end() );
@@ -238,7 +241,6 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
   } 
   if (!lightOK) {
-    //    currentHandler_ = 0;
     throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
 		    Exception::eventerror);
   }
@@ -281,23 +283,25 @@ handle(EventHandler & ch, const tPVector & tagged,
   }
 }
 
-void ClusterHadronizationHandler::_setChildren(ClusterVector clusters) const {
 
+// Sets parent child relationship of all clusters with two components
+// Relationships for clusters with more than two components are set elsewhere in the Colour Reconnector 
+void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) const {
   // erase existing information about the partons' children
   tPVector partons;
-  for (ClusterVector::const_iterator cl = clusters.begin();
-       cl != clusters.end(); cl++) {
-    partons.push_back( (*cl)->colParticle() );
-    partons.push_back( (*cl)->antiColParticle() );
+  for ( const auto & cl : clusters ) {
+    if ( cl->numComponents() > 2 ) continue;
+    partons.push_back( cl->colParticle() );
+    partons.push_back( cl->antiColParticle() );
   }
+  // erase all previous information about parent child relationship
   for_each(partons.begin(), partons.end(), mem_fun(&Particle::undecay));
 
   // give new parents to the clusters: their constituents
-  for (ClusterVector::iterator cl = clusters.begin();
-       cl != clusters.end(); cl++) {
-    (*cl)->colParticle()->addChild(*cl);
-    (*cl)->antiColParticle()->addChild(*cl);
+  for ( const auto & cl : clusters ) {
+    if ( cl->numComponents() > 2 ) continue;
+    cl->colParticle()->addChild(cl);
+    cl->antiColParticle()->addChild(cl);
   }
-
 }
 

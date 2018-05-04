@@ -30,12 +30,17 @@ void MEff2ff::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
+  four_  .resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
 			   PDT::Spin1Half, PDT::Spin1Half);
   for(size_t ix = 0;ix < numberOfDiags(); ++ix) {
     const HPDiagram & current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
-    if(offshell->iSpin() == PDT::Spin0) {
+    if(!offshell) {
+      four_[ix] = dynamic_ptr_cast<AbstractFFFFVertexPtr>
+	(current.vertices.first);
+    }
+    else if(offshell->iSpin() == PDT::Spin0) {
       AbstractFFSVertexPtr vert1 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.first);
       AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
@@ -60,8 +65,6 @@ void MEff2ff::doinit() {
 }
 
 double MEff2ff::me2() const {
-  tcPDPtr ina (mePartonData()[0]), inb (mePartonData()[1]);
-  tcPDPtr outa(mePartonData()[2]), outb(mePartonData()[3]);
   for(unsigned int ix=0;ix<4;++ix) {
     spin_[ix].clear();
     sbar_[ix].clear();
@@ -75,18 +78,15 @@ double MEff2ff::me2() const {
     }
   }
   double full_me(0.);
-  if( ina->id() > 0 && inb->id() < 0) {
+  if( mePartonData()[0]->id() > 0 && mePartonData()[1]->id() < 0) {
     ffb2ffbHeME (full_me,true);
   }
-  else if( ina->id() > 0 && inb->id() > 0 )
+  else if( mePartonData()[0]->id() > 0 && mePartonData()[1]->id() > 0 )
     ff2ffHeME(full_me,true);
-  else if( ina->id() < 0 && inb->id() < 0 )
+  else if( mePartonData()[0]->id() < 0 && mePartonData()[1]->id() < 0 )
     fbfb2fbfbHeME(full_me,true);
-  else 
-    throw MEException() 
-      << "MEff2ff::me2() - Cannot find correct function to deal with process " 
-      << ina->PDGName() << "," << inb->PDGName() << "->" << outa->PDGName() 
-      << "," << outb->PDGName() << "\n";
+  else
+    assert(false);
 
 #ifndef NDEBUG
   if( debugME() ) debug(full_me);
@@ -113,6 +113,7 @@ MEff2ff::ffb2ffbHeME(double & me2, bool first) const {
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
 	    if(current.channelType == HPDiagram::tChannel) {
+	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
 		  ScalarWaveFunction interS = scalar_[ix].second->
@@ -176,7 +177,10 @@ MEff2ff::ffb2ffbHeME(double & me2, bool first) const {
 		  evaluate(q2, spin_[0][ifhel1], sbar_[1][ifhel2], interT);
 	      }
 	    }
-	    else assert(false);
+	    else {
+	      diag = four_[ix]->evaluate(q2,spin_[0][ifhel1], sbar_[1][ifhel2],
+					 spin_[3][ofhel2],sbar_[2][ofhel1]);
+	    }
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
 	    //Compute flows
@@ -226,6 +230,7 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
+	    if(offshell->CC()) offshell=offshell->CC();
 	    if(current.channelType == HPDiagram::tChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
@@ -271,7 +276,6 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
-	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 1, offshell,spin_[3][ofhel2],sbar_[2][ofhel1]);
@@ -291,8 +295,10 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 		  evaluate(q2, spin_[0][ifhel1], sbar_[1][ifhel2], interT);
 	      }
 	    }
-	    else 
-	      assert(false);
+	    else if(current.channelType == HPDiagram::fourPoint) {
+	      diag= four_[ix]->evaluate(q2,spin_[0][ifhel1],sbar_[2][ofhel1],
+					spin_[1][ifhel2],sbar_[3][ofhel2]);
+	    }
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
 	    //Compute flows
@@ -340,6 +346,7 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
+	    if(offshell->CC()) offshell=offshell->CC();
 	    if(current.channelType == HPDiagram::tChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		if(current.ordered.second) {
@@ -385,7 +392,6 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 	      }
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
-	      if(offshell->CC()) offshell=offshell->CC();
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 1, offshell,spin_[3][ofhel2],sbar_[2][ofhel1]);
@@ -405,8 +411,9 @@ MEff2ff::fbfb2fbfbHeME(double & me2, bool first) const {
 		  evaluate(q2, spin_[0][ifhel1], sbar_[1][ifhel2], interT);
 	      }
 	    }
-	    else {
-	      assert(false);
+	    else if(current.channelType == HPDiagram::fourPoint) {
+	      diag= four_[ix]->evaluate(q2,spin_[2][ofhel1],sbar_[0][ifhel1],
+					spin_[3][ofhel2],sbar_[1][ifhel2]);
 	    }
 	    me[ix] += norm(diag);
 	    diagramME()[ix](ifhel1, ifhel2, ofhel1, ofhel2) = diag;
@@ -446,12 +453,10 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   for(unsigned int ix=0;ix<4;++ix) {
     spin_[ix].clear();
     sbar_[ix].clear();
-    for(unsigned int ih=0;ih<2;++ih) {
-      SpinorWaveFunction   (spin_[ix],hardpro[ix],
-			    ix<2 ? incoming : outgoing,ix>1);
-      SpinorBarWaveFunction(sbar_[ix],hardpro[ix],
-			    ix<2 ? incoming : outgoing,ix>1);
-    }
+    SpinorWaveFunction   (spin_[ix],hardpro[ix],
+			  ix<2 ? incoming : outgoing,ix>1);
+    SpinorBarWaveFunction(sbar_[ix],hardpro[ix],
+			  ix<2 ? incoming : outgoing,ix>1);
   }
   double dummy(0.);
   //pick which process we are doing
@@ -480,11 +485,11 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
 }
 
 void MEff2ff::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << vector_ << tensor_;
+  os << scalar_ << vector_ << tensor_ << four_;
 }
 
 void MEff2ff::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> vector_ >> tensor_;
+  is >> scalar_ >> vector_ >> tensor_ >> four_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
 			   PDT::Spin1Half, PDT::Spin1Half);
 }

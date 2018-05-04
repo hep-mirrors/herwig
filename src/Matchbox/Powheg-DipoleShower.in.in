@@ -12,7 +12,7 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
 # tunes
-read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
+read snippets/Dipole_AutoTune_prel.in
 cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so

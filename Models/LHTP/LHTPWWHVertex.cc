@@ -47,6 +47,7 @@ LHTPWWHVertex::LHTPWWHVertex() : coupLast_(0.), q2Last_(0.*GeV2) {
   // order in the couplings
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void LHTPWWHVertex::doinit() {

@@ -40,6 +40,7 @@ LHFFHVertex::LHFFHVertex()
   _masslast[1] = 0.*GeV;
   _idlast[0] = 0;
   _idlast[1] = 0;
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LHFFHVertex::doinit() {

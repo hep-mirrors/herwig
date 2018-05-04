@@ -720,7 +720,7 @@ ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticle
   ShowerParticleVector children;
   for(unsigned int ix=0;ix<2;++ix) {
     children.push_back(new_ptr(ShowerParticle(ids[ix+1],true)));
-    if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable())
+    if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable()&&abs(ids[ix+1]->id())!=ParticleID::tauminus)
       children[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
     else
       children[ix]->set5Momentum(Lorentz5Momentum(ids[ix+1]->mass()));
@@ -2434,7 +2434,7 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for ISR
     if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
       ++_nis;
-      vector<long> br(3);
+      array<long,3> br;
       br[0] = (**cit).parent()->branchingParticle()->id();
       br[1] = (**cit).          branchingParticle()->id();
       br[2] = (**cit).parent()->children()[0]==*cit ?
@@ -2467,7 +2467,7 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for FSR
     else if(!(**cit).children().empty()) {
       ++_nfs;
-      vector<long> br(3);
+      array<long,3> br;
       br[0] = (**cit)               .branchingParticle()->id();
       br[1] = (**cit).children()[0]->branchingParticle()->id();
       br[2] = (**cit).children()[1]->branchingParticle()->id();

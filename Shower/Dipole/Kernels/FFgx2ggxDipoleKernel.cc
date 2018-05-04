@@ -15,7 +15,7 @@
 using namespace Herwig;
 
 FFgx2ggxDipoleKernel::FFgx2ggxDipoleKernel() 
-  : DipoleSplittingKernel(),theSymmetryFactor(0.5){}
+  : DipoleSplittingKernel(){}
 
 FFgx2ggxDipoleKernel::~FFgx2ggxDipoleKernel() {}
 
@@ -70,11 +70,19 @@ double FFgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double z = split.lastZ();
   double y = sqr(split.lastPt() / split.scale()) / (z*(1.-z));
 
-  ret *=theSymmetryFactor*3.*(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))-2.+z*(1.-z));
+  double S1=1./(1.-z*(1.-y));
+  double S2=1./(1.-(1.-z)*(1.-y));
+  double NS=(-2 + z*(1.-z));
   
-
+  if( theAsymmetryOption == 0 ){
+    ret *= 3.*( S1 + 0.5 * NS);
+  }else if ( theAsymmetryOption == 1 ){
+    ret *= 3.*z*( S1 +S2 + NS );
+  }else{
+    ret *= 3.*0.5*( S1 + S2 + NS );
+  }
+  
   return ret > 0. ? ret : 0.;
-
 }
 
 // If needed, insert default implementations of  function defined
@@ -82,12 +90,11 @@ double FFgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
 
 void FFgx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
-
-  os<<theSymmetryFactor;
+  os << theAsymmetryOption;
 }
 
 void FFgx2ggxDipoleKernel::persistentInput(PersistentIStream & is, int) {
-  is>>theSymmetryFactor;
+  is >> theAsymmetryOption;
 }
 
 ClassDescription<FFgx2ggxDipoleKernel> FFgx2ggxDipoleKernel::initFFgx2ggxDipoleKernel;
@@ -98,10 +105,9 @@ void FFgx2ggxDipoleKernel::Init() {
   static ClassDocumentation<FFgx2ggxDipoleKernel> documentation
     ("FFgx2ggxDipoleKernel");
 
-  static Parameter<FFgx2ggxDipoleKernel,double> interfaceSymmetryFactor
-    ("SymmetryFactor",
-     "The symmetry factor for final state gluon spliitings.",
-     &FFgx2ggxDipoleKernel::theSymmetryFactor, 1.0, 0.0, 0,
+  static Parameter<FFgx2ggxDipoleKernel,int> interfacetheAsymmetryOption
+    ("AsymmetryOption",
+     "The asymmetry option for final state gluon spliitings.",
+     &FFgx2ggxDipoleKernel::theAsymmetryOption, 1, 0, 0,
      false, false, Interface::lowerlim);
 }
-

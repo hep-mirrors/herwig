@@ -65,7 +65,8 @@ public:
   /**
    *  Set the information on the decay
    */
-  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing, VertexBasePtr,
+  virtual void setDecayInfo(PDPtr incoming, PDPair outgoing,
+			    vector<VertexBasePtr>,
 			    map<ShowerInteraction,VertexBasePtr> &,
 			    const vector<map<ShowerInteraction,VertexBasePtr> > &,
 			    map<ShowerInteraction,VertexBasePtr>);
@@ -127,12 +128,12 @@ private:
   /**
    *  Abstract pointer to AbstractSSTVertex
    */
-  AbstractSSTVertexPtr vertex_;
+  vector<AbstractSSTVertexPtr> vertex_;
 
   /**
    * Pointer to the perturbative vertex
    */
-  SSTVertexPtr perturbativeVertex_;
+  vector<SSTVertexPtr> perturbativeVertex_;
 
   /**
    *  Spin density matrix

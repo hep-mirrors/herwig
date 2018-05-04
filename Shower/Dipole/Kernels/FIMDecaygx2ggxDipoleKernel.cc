@@ -15,7 +15,7 @@
 using namespace Herwig;
 
 FIMDecaygx2ggxDipoleKernel::FIMDecaygx2ggxDipoleKernel() 
-  : DipoleSplittingKernel(),theSymmetryFactor(0.5){}
+  : DipoleSplittingKernel(){}
 
 FIMDecaygx2ggxDipoleKernel::~FIMDecaygx2ggxDipoleKernel() {}
 
@@ -81,7 +81,7 @@ double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   double zPrime = split.lastSplittingParameters()[0];
 
   // Construct mass squared variables
-  double mua2 = sqr( split.spectatorData()->mass() / split.scale() );
+  double mua2 = sqr( split.spectatorMass() / split.scale() );
   // Recoil system mass
   double muj2 = sqr(split.recoilMass() / split.scale());
   double bar = 1. - muj2;
@@ -107,15 +107,25 @@ double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
   // how to choose kappa?
   double kappa = 0.;
 
-  ret *= theSymmetryFactor * 3.*( (2.*y + 1.)/((1.+y)-z*(1.-y)) + (2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) + (1./vijk)*( z*(1.-z) - (1.-kappa)*zp*zm - 2. ) )
-    +
-    (!strictLargeN() ? 4./3. : 3./2.) 
-    * (
-       y/(1.-z*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-z*(1.-y)) - (vbar/vijk)*(2. + theSymmetryFactor*2.*mua2/((1.-z*(1.-y))*bar)) )
-       +
-       y/(1.-(1.-z)*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) - (vbar/vijk)*(2. + theSymmetryFactor*2.*mua2/((1.-(1.-z)*(1.-y))*bar)) )
-       );
- 
+  double S1 = 0.5*3.*(2.*y + 1.)/((1.+y)-z*(1.-y)) +
+    (!strictLargeN() ? 4./3. : 3./2.)*
+    y/(1.-z*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-z*(1.-y))
+			- (vbar/vijk)*(2. + 2.*mua2/((1.-z*(1.-y))*bar)) );
+  double S2 = 0.5*3.*(2.*y + 1.)/((1.+y)-(1.-z)*(1.-y)) +
+    (!strictLargeN() ? 4./3. : 3./2.)*
+    y/(1.-(1.-z)*(1.-y)) * ( 2.*(2.*y + 1.)/((1.+y)-(1.-z)*(1.-y))
+			     - (vbar/vijk)*(2. + 2.*mua2/((1.-(1.-z)*(1.-y))*bar)) );  
+  double NS = 0.5*3.*(z*(1.-z)-(1.-kappa)*zp*zm - 2.)/vijk;
+
+
+  if( theAsymmetryOption == 0 ){
+    ret *= 2.*S1 + NS;
+  }else if ( theAsymmetryOption == 1 ){
+    ret *= 2.*z*( S1 + S2 + NS );
+  }else{
+    ret *= S1 + S2 + NS;
+  }
+  
   return ret > 0. ? ret : 0.;
   
 }
@@ -125,13 +135,11 @@ double FIMDecaygx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) co
 
 
 void FIMDecaygx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
-
-  os<<theSymmetryFactor;
+  os<<theAsymmetryOption;
 }
 
 void FIMDecaygx2ggxDipoleKernel::persistentInput(PersistentIStream & is, int) {
-
-  is>>theSymmetryFactor;
+  is>>theAsymmetryOption;
 }
 
 ClassDescription<FIMDecaygx2ggxDipoleKernel> FIMDecaygx2ggxDipoleKernel::initFIMDecaygx2ggxDipoleKernel;
@@ -142,9 +150,10 @@ void FIMDecaygx2ggxDipoleKernel::Init() {
   static ClassDocumentation<FIMDecaygx2ggxDipoleKernel> documentation
     ("FIMDecaygx2ggxDipoleKernel");
 
-  static Parameter<FIMDecaygx2ggxDipoleKernel,double> interfaceSymmetryFactor
-    ("SymmetryFactor",
-     "The symmetry factor for final state gluon splittings.",
-     &FIMDecaygx2ggxDipoleKernel::theSymmetryFactor, 1.0, 0.0, 0,
+  static Parameter<FIMDecaygx2ggxDipoleKernel,int> interfacetheAsymmetryOption
+    ("AsymmetryOption",
+     "The asymmetry option for final state gluon spliitings.",
+     &FIMDecaygx2ggxDipoleKernel::theAsymmetryOption, 0, 0, 0,
      false, false, Interface::lowerlim);
+
 }
