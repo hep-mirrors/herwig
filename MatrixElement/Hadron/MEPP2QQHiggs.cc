@@ -317,7 +317,7 @@ CrossSection MEPP2QQHiggs::dSigHatDR() const {
     bwfact = mePartonData()[4]->generateWidth(moff)*moff/pi/
       (sqr(sqr(moff)-sqr(mh_))+sqr(mh_*wh_));
   }
-  else {
+  else if(shapeOpt_==2) {
     bwfact = hmass_->BreitWignerWeight(moff);
   }
   double jac1 = shapeOpt_==0 ? 

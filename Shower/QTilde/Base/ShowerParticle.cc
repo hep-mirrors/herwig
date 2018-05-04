@@ -41,6 +41,7 @@ void ShowerParticle::vetoEmission(ShowerPartnerType, Energy scale) {
   scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
   scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
   scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
+  if(spinInfo()) spinInfo()->undecay();
 }
 
 void ShowerParticle::addPartner(EvolutionPartner in ) {
