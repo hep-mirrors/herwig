@@ -30,3 +30,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1424838
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_EL
 # ATLAS forward backward
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1234228
+# ATLAS Z inclusive cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1502620_Z_EL

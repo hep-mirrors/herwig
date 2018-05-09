@@ -1,5 +1,5 @@
 ##################################################
 # select the analyses
 ##################################################
-# CMS top 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1370682
+# CMS W+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1610623

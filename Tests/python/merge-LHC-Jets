@@ -129,15 +129,15 @@ yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda",
            "-8-Top-SL.yoda","-8-Top-L.yoda","-8-Top-All.yoda",
-           "-13-Top-All.yoda"]
+           "-13-Top-L.yoda","-13-Top-SL.yoda"]
 
-for i in range(1,10) :
+for i in range(1,11) :
     for j in [7,8,13] :
         yodafiles.append("-%1.1i-Jets-%1.1i.yoda" % (j,i))
 
 if(opts.ue) :
-    yodafiles += ["-7-Jets-0.yoda"    ,"-8-Jets-0.yoda" ,"-7-Jets-10.yoda",
-                  "-8-Jets-10.yoda"   ,"-900-UE.yoda"   ,"-2360-UE.yoda"    ,
+    yodafiles += ["-7-Jets-0.yoda"    ,"-8-Jets-0.yoda" ,
+                  "-900-UE.yoda"   ,"-2360-UE.yoda"    ,
                   "-2760-UE.yoda"     ,"-7-UE.yoda"     ,"-900-UE-Long.yoda",
                   "-900-UE-Short.yoda","-8-UE.yoda"     ,
                   "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda"]
@@ -236,7 +236,9 @@ for f in yodafiles:
            aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
            aopath.find("I1419070")>0 or aopath.find("I1394679")>0 or
            aopath.find("I929691" )>0 or aopath.find("I1393758")>0 or
-           aopath.find("I1459051")>0 or aopath.find("ATLAS_2016_CONF_2016_092")>0 or
+           aopath.find("I1459051")>0 or aopath.find("I1487277")>0 or
+           aopath.find("I1421646")>0 or
+           aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -271,7 +273,6 @@ for i in range(1,8) :
     yodafiles.append("-7-DiJets-%1.1i-C.yoda" % i)
 
 for f in yodafiles:
-    print file
     file='Rivet-'+args[0]+f
     if(file.find("-7-Jets-1")>0) :
         sqrts=7000
@@ -370,6 +371,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1307243"   )>0 or
         hpath.find("I1419070")>0 or
         hpath.find("I1394679")>0 or
+        hpath.find("I1487277")>0 or
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
@@ -1435,6 +1437,24 @@ useOnePt( "/ATLAS_2017_I1609253/d09-x01-y01",  "8000", "400" )
 useOnePt( "/ATLAS_2017_I1609253/d10-x01-y01",  "8000", "400" )
 useOnePt( "/ATLAS_2017_I1609253/d11-x01-y01",  "8000", "600" )
 useOnePt( "/ATLAS_2017_I1609253/d12-x01-y01",  "8000", "600" )
+
+logging.info("Processing CMS_2016_I1487277")
+mergeByPt("/CMS_2016_I1487277/d01-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d02-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d03-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d04-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d05-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d06-x01-y01", "8000")
+mergeByPt("/CMS_2016_I1487277/d07-x01-y01", "8000")
+
+logging.info("Processing CMS_2016_I1421646")
+useOnePt( "/CMS_2016_I1421646/d01-x01-y01",  "8000", "210" )
+useOnePt( "/CMS_2016_I1421646/d02-x01-y01",  "8000", "260" )
+useOnePt( "/CMS_2016_I1421646/d03-x01-y01",  "8000", "400" )
+useOnePt( "/CMS_2016_I1421646/d04-x01-y01",  "8000", "400" )
+useOnePt( "/CMS_2016_I1421646/d05-x01-y01",  "8000", "600" )
+useOnePt( "/CMS_2016_I1421646/d06-x01-y01",  "8000", "900" )
+useOnePt( "/CMS_2016_I1421646/d07-x01-y01",  "8000", "900" )
 
 # Choose output file
 name = args[0]+"-Jets.yoda"

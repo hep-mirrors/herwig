@@ -420,9 +420,6 @@ tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
   hard_=ShowerTreePtr();
   decay_.clear();
   done_.clear();
-  // check if anything needs doing
-  if ( !doFSR() && ! doISR() )
-    return sub->incoming();
   // start of the try block for the whole showering process
   unsigned int countFailures=0;
   while (countFailures<maxtry()) {

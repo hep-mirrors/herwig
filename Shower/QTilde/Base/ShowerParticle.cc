@@ -171,7 +171,6 @@ FermionSpinPtr createFermionSpinInfo(ShowerParticle & particle,
     LorentzSpinor<SqrtEnergy> basis = wave.dimensionedWave();
     basis.transform(rinv);
     fspin->setBasisState(ix,basis);
-    fspin->setDecayState(ix,basis);
   }
   particle.spinInfo(fspin);
   return fspin;
@@ -198,7 +197,6 @@ VectorSpinPtr createVectorSpinInfo(ShowerParticle & particle,
     }
     basis *= rinv;
     vspin->setBasisState(ix,basis);
-    vspin->setDecayState(ix,basis);
   }
   particle.spinInfo(vspin);
   vspin->  DMatrix() = RhoDMatrix(PDT::Spin1);
