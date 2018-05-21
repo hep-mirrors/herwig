@@ -66,9 +66,13 @@ Energy BSMWidthGenerator::partial2BodyWidth(int iloc, Energy m0,
   tcPDPtr partb = *pit;
   int dummya(0);
   double dummyb(0.);
-  if( !theModes[iloc].second->twoBodyMEcode(*dm, dummya, dummyb) ) 
-    swap(parta, partb);
-  return theModes[iloc].second->partialWidth(make_pair(dm->parent(), m0), 
-					     make_pair(parta, m1),
-					     make_pair(partb, m2));
+  if(theModes[iloc].second) {
+    if( !theModes[iloc].second->twoBodyMEcode(*dm, dummya, dummyb) )
+      swap(parta, partb);
+    return theModes[iloc].second->partialWidth(make_pair(dm->parent(), m0),
+					       make_pair(parta, m1),
+					       make_pair(partb, m2));
+  }
+  else
+    return ZERO;
 }
