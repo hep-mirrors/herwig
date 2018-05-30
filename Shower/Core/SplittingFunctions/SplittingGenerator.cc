@@ -343,7 +343,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   }
   // return empty branching if nothing happened
   if(!kinematics) {
-    particle.spinInfo()->undecay();
+    if ( particle.spinInfo() ) particle.spinInfo()->undecay();
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 		     ShowerPartnerType::Undefined);
   }
@@ -565,7 +565,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr ,
   }
   // return empty branching if nothing happened
   if(!kinematics) {
-    particle.spinInfo()->undecay();
+    if ( particle.spinInfo() ) particle.spinInfo()->undecay();
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 		     ShowerPartnerType::Undefined);
   }
