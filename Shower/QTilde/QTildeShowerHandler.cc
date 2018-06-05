@@ -1303,6 +1303,7 @@ bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction type) {
 }
 
 bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction type) {
+  _nFSR = 0;
   // initialise the basis vectors
   if(!progenitor()->progenitor()->partner()) return false;
   progenitor()->progenitor()->initializeInitialState(parent);
