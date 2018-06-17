@@ -47,6 +47,7 @@ ZprimeModelZPQQVertex::ZprimeModelZPQQVertex()  {
   addToList(-16,16,32);
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SU3F);
 }
 
 void ZprimeModelZPQQVertex::doinit() {

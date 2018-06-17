@@ -28,6 +28,7 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): includeMixing_(true),
 				    thefermALast(0), thefermBLast(0) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void UEDF1F1W0Vertex::doinit() {

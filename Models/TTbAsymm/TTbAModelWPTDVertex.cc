@@ -33,6 +33,7 @@ TTbAModelWPTDVertex::TTbAModelWPTDVertex()  {
   addToList(-6,1,34);
   orderInGem(1);
   orderInGs(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void TTbAModelWPTDVertex::doinit() {

@@ -26,6 +26,7 @@ UEDF1F1P0Vertex::UEDF1F1P0Vertex() : coupLast_(0.0), q2Last_(ZERO),
 				     charges_(3) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void UEDF1F1P0Vertex::persistentOutput(PersistentOStream & os) const {

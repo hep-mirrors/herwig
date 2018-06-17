@@ -26,6 +26,7 @@ void MEff2vs::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
+  four_.resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
 			   PDT::Spin1,PDT::Spin0);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
@@ -52,15 +53,18 @@ void MEff2vs::doinit() {
 		      dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first));
       }
     }
+    else if( current.channelType == HPDiagram::fourPoint) {
+      four_[i] = dynamic_ptr_cast<AbstractFFVSVertexPtr>(current.vertices.first);
+    }
   }
 }
 
 void MEff2vs::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << vector_ << fermion_;
+  os << scalar_ << vector_ << fermion_ << four_;
 }
 
 void MEff2vs::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> vector_ >> fermion_;
+  is >> scalar_ >> vector_ >> fermion_ >> four_;
   initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
 			   PDT::Spin1,PDT::Spin0);
 }
@@ -83,6 +87,7 @@ double MEff2vs::me2() const {
   SpinorVector ina(2);
   SpinorBarVector inb(2);
   VBVector outa(3);
+  
   ScalarWaveFunction sca(rescaledMomenta()[3], mePartonData()[3], Complex(1.),
 			 outgoing);
   for(unsigned int ih = 0; ih < 2; ++ih) {
@@ -126,7 +131,7 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	    if( offshell->iSpin() == PDT::Spin0 ) {
 	      ScalarWaveFunction interS = scalar_[ix].first->
 		evaluate(m2, 1, offshell, sp[ihel1], spbar[ihel2]);
-	      diag = scalar_[ix].second->evaluate(m2, vec[ovhel], sca, interS); 
+	      diag = scalar_[ix].second->evaluate(m2, vec[ovhel], sca, interS);
 	    }
 	    else if( offshell->iSpin() == PDT::Spin1 ) {
 	      VectorWaveFunction interV = vector_[ix].first->
@@ -153,7 +158,11 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	      }
 	    }
 	  }
-	  else diag = 0.0;
+	  else if( current.channelType == HPDiagram::fourPoint) {
+	    diag = four_[ix]->evaluate(m2,sp[ihel1], spbar[ihel2], vec[ovhel], sca);
+	  }
+	  else
+	    assert(false);
 	  me[ix] += norm(diag);
 	  diagramME()[ix](ihel1, ihel2, ovhel, 0) = diag;
 	  //Compute flows

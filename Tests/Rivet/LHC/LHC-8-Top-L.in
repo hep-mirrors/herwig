@@ -1,0 +1,16 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS top + b jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1390114
+# CMS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1397174
+# ATLAS l +jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1397635 
+# ATLAS charge asymmetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1449082
+# CMS diplepton charge asym
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1430892
+# CMS spin correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1413748
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1404878

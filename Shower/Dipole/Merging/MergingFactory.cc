@@ -380,7 +380,7 @@ void MergingFactory::setup() {
   useMe();
   
   DipoleShowerHandlerPtr dsh=dynamic_ptr_cast<DipoleShowerHandlerPtr>(this->CKKWHandler());
-  if(! dsh  )throw InitException() << "The showerhandlerfor the MergingFactory must be the DipoleShower. ";
+  if(! dsh  )throw InitException() << "The showerhandler for the MergingFactory must be the DipoleShower. ";
   
   dsh->setMerger(MH());
   MH()->setFactory(this);
@@ -486,6 +486,26 @@ void MergingFactory::setup() {
     
     
     
+    
+    
+    if(int(numb+numv+numr) < theChunk){
+      throw InitException() << "You try to chunk (Chunk="<<theChunk<<") the number of "<<
+      "subprocesses ("<<int(numb+numv+numr)<<") into more parts than there are subprocesses.";
+    }
+    if(theChunk<theChunkPart)
+      throw InitException() <<" The ChunkPart is larger than the Chunk.";
+    
+    if(theChunk > 0 && theChunkPart == 0 )
+      throw InitException() <<" Set the ChunkPart ( = "<<theChunkPart<<" ) to i in [1,..,N] with N=Chunk.";
+    
+    if ( theChunkPart != 0 )
+      generator()->log() << ANSI::yellow
+      << "\n\nWarning: \nYou split up the runs into theChunks. This is no standard feature."
+      << "\nYou are now responsible to make sure to run all theChunk parts."
+      << "\nThis setup run is for: " << theChunkPart << "/" << theChunk<<"\n\n ";
+    
+    
+    
     generator()->log() << ANSI::red << "Preparing Merging: ";
     generator()->log() << ANSI::green << numb << " x Born " << ANSI::red;
     if (MH()->M()>-1) {
@@ -493,36 +513,42 @@ void MergingFactory::setup() {
       generator()->log() << ANSI::blue << numr << " x Real " << ANSI::red << flush;
     }
     
+    int countchunk=0;
+    
     progress_display progressBar{ numb+numv+numr, generator()->log() };
-      for (int i = 0; i <= max(0, MH()->N()) ; ++i ){
-        for ( auto born : thePureMEsMap[i]){
-          if (bornContributions() ){
-              pushB(born, i);
-              generator()->log() << ANSI::green;
-              ++progressBar;
-              generator()->log() << ANSI::reset;
-          }
+    
+    // insert the born contributions to ME vector
+    for (int i = 0; i <= max(0, MH()->N()) ; ++i )
+      for ( auto born : thePureMEsMap[i])
+        if (bornContributions() ){
+          countchunk++; // theChunkPart is in [1,...,theChunk]
+          if ( theChunk == 0 || theChunkPart == countchunk ) pushB( born , i );
+          if ( countchunk == theChunk ) countchunk=0;
+          generator()->log() << ANSI::green;
+          ++progressBar;
+          generator()->log() << ANSI::reset;
         }
-      }
-    
-    
-  
-   
+    // insert the virtual contributions to ME vector
     for (int i = 0 ; i <=max(0, MH()->N()); ++i )
-    for ( auto virt : thePureMEsMap[i])
-    if ( virtualContributions() && i <= MH()->M()){
-      pushV(virt, i);
-       generator()->log() << ANSI::yellow;
-      ++progressBar;
-    }
-    
+      for ( auto virt : thePureMEsMap[i])
+        if ( virtualContributions() && i <= MH()->M()){
+          countchunk++;// theChunkPart is in [1,...,theChunk]
+          if ( theChunk == 0 || theChunkPart == countchunk ) pushV(virt, i);
+          if ( countchunk == theChunk ) countchunk=0;
+          generator()->log() << ANSI::yellow;
+          ++progressBar;
+        }
+    // insert the real contributions to ME vector
     for (int i = 1; i <= max(0, MH()->N()) ; ++i )
-    for ( auto real : thePureMEsMap[i] )
-    if (realContributions()&& i <= MH()->M() + 1 ){
-      pushR(real, i);
-      generator()->log() << ANSI::blue;
-      ++progressBar;
-    }
+      for ( auto real : thePureMEsMap[i] )
+        if (realContributions()&& i <= MH()->M() + 1 ){
+          countchunk++;// theChunkPart is in [1,...,theChunk]
+          if ( theChunk == 0 || theChunkPart == countchunk ) pushR(real, i);
+          if ( countchunk == theChunk ) countchunk=0;
+          generator()->log() << ANSI::blue;
+          ++progressBar;
+        }
+    
     generator()->log() << ANSI::reset;
     
     if ( !externalAmplitudes().empty() ) {
@@ -583,14 +609,14 @@ void MergingFactory::persistentOutput(PersistentOStream & os) const {
   os
   << theonlymulti
   << ransetup
-  << processMap << theMergingHelper <<theM<<theN<<theNonQCDCuts;
+  << processMap << theMergingHelper <<theM<<theN<<theNonQCDCuts<<theChunk<<theChunkPart;
 }
 
 void MergingFactory::persistentInput(PersistentIStream & is, int) {
   is
   >> theonlymulti
   >> ransetup
-  >> processMap >> theMergingHelper >>theM>>theN>>theNonQCDCuts;
+  >> processMap >> theMergingHelper >>theM>>theN>>theNonQCDCuts>>theChunk>>theChunkPart;
 }
 
 
@@ -634,6 +660,17 @@ void MergingFactory::Init() {
         "Cut on non-QCD modified observables. Be carefull!",
         &MergingFactory::theNonQCDCuts, false, false, true, true, false);
   
+  
+  
+  static Parameter<MergingFactory, int> interfacetheChunk("Chunk",
+         "Cut the number of subprocesses into n theChunks.",
+         &MergingFactory::theChunk, -1, -1, 0,
+         false, false, Interface::lowerlim);
+  
+  static Parameter<MergingFactory, int> interfacetheChunkPart("ChunkPart",
+         "If theChunk is larger then 0, set this parameter to the n'th part. Make sure to add the ChunksParts afterwards.",
+         &MergingFactory::theChunkPart, -1, -1, 0,
+         false, false, Interface::lowerlim);
  
 }
 

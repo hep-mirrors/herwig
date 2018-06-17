@@ -229,7 +229,6 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
       long fs = outgoing_[os]->id();
       for(size_t iv = 0; iv < nv_; ++iv) {
 	tVertexBasePtr vertexA = vertices_[iv];
-
 	//This skips an effective vertex and the EW ones if 
 	// we only want the strong diagrams
 	if( !allDiagrams_ && vertexA->orderInGs() == 0 ) 
@@ -244,9 +243,10 @@ void TwoToTwoProcessConstructor::constructDiagrams() {
 	      vertexA->isIncoming(ppi.second) )
 	    createSChannels(ppi, fs, vertexA);
 	}
-	else 
+	else {
 	  makeFourPointDiagrams(ppi.first->id(), ppi.second->id(),
 				fs, vertexA);
+	}
       }
     }
   }
@@ -428,6 +428,7 @@ void TwoToTwoProcessConstructor::makeFourPointDiagrams(long parta, long partb,
     nhp.vertices = make_pair(vert, vert);
     nhp.channelType = HPDiagram::fourPoint;
     fixFSOrder(nhp);
+    if(!checkOrder(nhp)) continue;
     if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
   }
 }
@@ -453,6 +454,7 @@ TwoToTwoProcessConstructor::makeDiagrams(IDPair in, long out1, const tPDSet & ou
     nhp.channelType = chan;
     nhp.ordered = cross;
     fixFSOrder(nhp);
+    if(!checkOrder(nhp)) continue;
     if( !duplicate(nhp, processes_) ) processes_.push_back(nhp);
   }
 }
@@ -626,6 +628,7 @@ string TwoToTwoProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     if(extpart[ix]->iSpin() == PDT::Spin0) classname += "s";
     else if(extpart[ix]->iSpin() == PDT::Spin1) classname += "v";
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
+    else if(extpart[ix]->iSpin() == PDT::Spin3Half) classname += "r";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else {
       std::stringstream message;

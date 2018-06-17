@@ -52,7 +52,7 @@ RSModel/RS__all.cc
 #############
 
 HwUED_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 10:0:0
+$(AM_LDFLAGS) -module -version-info 10:1:0
 
 HwUED_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/UED
@@ -63,7 +63,7 @@ UED/UED__all.cc
 #############
 
 HwSusy_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 13:0:0
+$(AM_LDFLAGS) -module -version-info 13:1:0
 
 HwSusy_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Susy
@@ -104,7 +104,7 @@ Zprime/ZprimeModel.cc  Zprime/ZprimeModelZPQQVertex.cc
 #############
 
 HwTransplanck_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 4:0:0
+$(AM_LDFLAGS) -module -version-info 4:1:0
 
 HwTransplanck_la_SOURCES = \
 Transplanckian/METRP2to2.cc

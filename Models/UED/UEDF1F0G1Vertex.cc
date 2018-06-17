@@ -23,6 +23,7 @@ using namespace Herwig;
 UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3TFUND);
 }
 
 // The following static variable is needed for the type

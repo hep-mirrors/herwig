@@ -35,13 +35,15 @@ IBPtr FRSDecayer::fullclone() const {
 }
 
 void FRSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> &,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > &,
 			      map<ShowerInteraction,VertexBasePtr>) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractRFSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<RFSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractRFSVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<RFSVertexPtr>        (vert));
+  }
 }
 
 void FRSDecayer::persistentOutput(PersistentOStream & os) const {
@@ -113,10 +115,13 @@ double FRSDecayer::me2(const int , const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 4; ++if2) {
-      if(ferm) (*ME())(if1, if2, 0) = 
-		 vertex_->evaluate(scale,wave_[if1],RSwavebar_[if2],scal);
-      else     (*ME())(if1, if2, 0) = 
-		 vertex_->evaluate(scale,RSwave_[if2],wavebar_[if1],scal);
+      (*ME())(if1, if2, 0) = 0.;
+      for(auto vert : vertex_) {
+	if(ferm) (*ME())(if1, if2, 0) +=
+		   vert->evaluate(scale,wave_[if1],RSwavebar_[if2],scal);
+	else     (*ME())(if1, if2, 0) += 
+		   vert->evaluate(scale,RSwave_[if2],wavebar_[if1],scal);
+      }
     }
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
@@ -150,7 +155,8 @@ double FRSDecayer::me2(const int , const Particle & inpart,
 Energy FRSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     Energy q = inpart.second;
     Energy m1 = outa.second;
     Energy m2 = outb.second;
@@ -161,10 +167,10 @@ Energy FRSDecayer::partialWidth(PMPair inpart, PMPair outa,
     double r23(sqrt(2./3.));
     // couplings
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(sqr(inpart.second), outa.first, 
+    perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outa.first, 
 				     in,  outb.first);
-    Complex left  = perturbativeVertex_-> left()*perturbativeVertex_-> norm();
-    Complex right = perturbativeVertex_->right()*perturbativeVertex_-> norm();
+    Complex left  = perturbativeVertex_[0]-> left()*perturbativeVertex_[0]-> norm();
+    Complex right = perturbativeVertex_[0]->right()*perturbativeVertex_[0]-> norm();
     complex<InvEnergy> A1 = 0.5*(left+right)*UnitRemoval::InvE;
     complex<InvEnergy> B1 = 0.5*(right-left)*UnitRemoval::InvE;
     complex<Energy> h1(-2.*r23*pcm*q/m1*Qm*B1);

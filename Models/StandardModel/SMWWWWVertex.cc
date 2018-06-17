@@ -25,6 +25,7 @@ SMWWWWVertex::SMWWWWVertex()
     _vfact(4,0.0), _sw2(0.), _cw2(0.) {
   orderInGem(2);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SMWWWWVertex::doinit() {

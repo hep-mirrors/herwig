@@ -25,6 +25,7 @@ ADDModelFFGGRVertex::ADDModelFFGGRVertex()
   : couplast_(0.), q2last_(ZERO), kappa_(ZERO), r_(ZERO) {
   orderInGem(1);
   orderInGs (1);
+  colourStructure(ColourStructure::SU3TFUND);
 }
 
 void ADDModelFFGGRVertex::doinit() {

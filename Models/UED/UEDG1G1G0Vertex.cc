@@ -25,6 +25,7 @@ UEDG1G1G0Vertex::UEDG1G1G0Vertex()
   : theq2Last(ZERO), theCoupLast(0.) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3F);
 }
 
 void UEDG1G1G0Vertex::doinit() {

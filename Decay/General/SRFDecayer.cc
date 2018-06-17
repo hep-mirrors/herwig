@@ -35,13 +35,15 @@ IBPtr SRFDecayer::fullclone() const {
 }
 
 void SRFDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> &,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > &,
 			      map<ShowerInteraction,VertexBasePtr>) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractRFSVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<RFSVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_             .push_back(dynamic_ptr_cast<AbstractRFSVertexPtr>(vert));
+    perturbativeVertex_ .push_back(dynamic_ptr_cast<RFSVertexPtr>        (vert));
+  }
 }
 
 void SRFDecayer::persistentOutput(PersistentOStream & os) const {
@@ -114,20 +116,32 @@ double SRFDecayer::me2(const int , const Particle & inpart,
   for(unsigned int ifm = 0; ifm < 4; ++ifm){
     for(unsigned int ia = 0; ia < 2; ++ia) {
       if(irs==0) {
-	if(ferm)
-	  (*ME())(0, ifm, ia) = vertex_->evaluate(scale,wave_[ia],
-						       RSwavebar_[ifm],swave_);
-	else
-	  (*ME())(0, ifm, ia) = vertex_->evaluate(scale,RSwave_[ifm],
-						       wavebar_[ia],swave_);
+	if(ferm) {
+	  (*ME())(0, ifm, ia) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(0, ifm, ia) += vert->evaluate(scale,wave_[ia],
+						  RSwavebar_[ifm],swave_);
+	}
+	else {
+	  (*ME())(0, ifm, ia) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(0, ifm, ia) += vert->evaluate(scale,RSwave_[ifm],
+						  wavebar_[ia],swave_);
+	}
       }
       else {
-	if(ferm)
-	  (*ME())(0, ia, ifm) = vertex_->evaluate(scale,wave_[ia],
-						       RSwavebar_[ifm],swave_);
-	else
-	  (*ME())(0, ia, ifm) = vertex_->evaluate(scale,RSwave_[ifm],
-						       wavebar_[ia],swave_);
+	if(ferm) {
+	  (*ME())(0, ia, ifm) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(0, ia, ifm) += vert->evaluate(scale,wave_[ia],
+						  RSwavebar_[ifm],swave_);
+	}
+	else {
+	  (*ME())(0, ia, ifm) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(0, ia, ifm) += vert->evaluate(scale,RSwave_[ifm],
+						  wavebar_[ia],swave_);
+	}
       }
     }
   }
@@ -142,22 +156,23 @@ double SRFDecayer::me2(const int , const Particle & inpart,
 Energy SRFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     Energy q = inpart.second;
     Energy m1 = outa.second, m2 = outb.second;
     // couplings
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     if(outa.first->iSpin()==PDT::Spin1Half) {
       swap(m1,m2);
-      perturbativeVertex_->setCoupling(sqr(inpart.second),outb.first,
+      perturbativeVertex_[0]->setCoupling(sqr(inpart.second),outb.first,
 				       outa.first, in);
     }
     else {
-      perturbativeVertex_->setCoupling(sqr(inpart.second),outa.first,
+      perturbativeVertex_[0]->setCoupling(sqr(inpart.second),outa.first,
 				       outb.first, in);
     }
-    Complex left  = perturbativeVertex_-> left()*perturbativeVertex_-> norm();
-    Complex right = perturbativeVertex_->right()*perturbativeVertex_-> norm();
+    Complex left  = perturbativeVertex_[0]-> left()*perturbativeVertex_[0]-> norm();
+    Complex right = perturbativeVertex_[0]->right()*perturbativeVertex_[0]-> norm();
     complex<InvEnergy> A1 = 0.5*(left+right)*UnitRemoval::InvE;
     complex<InvEnergy> B1 = 0.5*(right-left)*UnitRemoval::InvE;
     Energy2 q2(q*q),m12(m1*m1),m22(m2*m2);

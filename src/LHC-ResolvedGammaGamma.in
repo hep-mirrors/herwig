@@ -1,0 +1,73 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+# Example generator based on LEP parameters
+# usage: Herwig read LEP.in
+##################################################
+
+read snippets/PPCollider.in
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set EventGenerator:EventHandler:Sampler:Ntry 10000
+
+##################################################
+# Choice of phase-space generation for PDFs
+##################################################
+set /Herwig/Partons/PPExtractor:FlatSHatY 0
+
+##################################################
+# Change the proton PDFs to those for photon radiation
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/PPExtractor:FirstPDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/BudnevPDF
+
+set /Herwig/Shower/ShowerHandler:PDFA  /Herwig/Partons/SaSPDF
+set /Herwig/Shower/ShowerHandler:PDFB  /Herwig/Partons/SaSPDF
+set /Herwig/Particles/gamma:PDF /Herwig/Partons/SaSPDF
+
+
+##################################################
+#  Cuts
+##################################################
+cd /Herwig/Cuts
+set Cuts:ScaleMin 0.0
+set Cuts:X1Min 0
+set Cuts:X2Min 0
+set Cuts:X1Max 1.
+set Cuts:X2Max 1.
+set Cuts:MHatMin 1.*GeV
+erase Cuts:MultiCuts 0
+set LeptonKtCut:MinKT 3*GeV
+
+##################################################
+# Selected the hard process
+##################################################
+cd /Herwig/MatrixElements
+
+# fermion-antifermion 
+insert SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEqq2gZ2ff
+
+##################################################
+# LHC physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+#read snippets/Rivet.in
+#insert /Herwig/Analysis/Rivet:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMC.in
+#set /Herwig/Analysis/HepMC:PrintEvent NNN
+
+###################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+saverun LHC-ResolvedGammaGamma EventGenerator

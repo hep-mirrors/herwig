@@ -1,7 +1,8 @@
-import itertools,cmath,re,sys
+import itertools,cmath,re
 from .helpers import SkipThisVertex,extractAntiSymmetricIndices
 from .converter import py2cpp
 from .lorentzparser import parse_lorentz
+import string,re
 
 def compare(a,b) :
     num=abs(a-b)
@@ -17,7 +18,7 @@ def evaluate(x,model,parmsubs):
                  'complexconjugate':model.function_library.complexconjugate}, 
                 parmsubs)
 
-# ordering for EW VVV vertices
+# ordering for EW VVV vertices (ordering not an issue as all same spin)
 def VVVordering(vertex) :
     pattern = "if((p1->id()==%s&&p2->id()==%s&&p3->id()==%s)"+\
         "||(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)||"+\
@@ -167,7 +168,7 @@ def tensorCouplings(vertex,value,prefactors,L,lorentztag,pos,all_couplings,order
     # return the results
     return (ordering,all_couplings)
 
-def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
+def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order) :
     # check for fermion vertices (i.e. has L/R couplings)
     fermions = "FF" in lorentztag
     # test and process the values of the couplings
@@ -190,7 +191,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
                     test[0] = all_couplings[icolor][ix]
                     # special for mass terms and massless particles
                     if(not all_couplings[icolor][ix]) :
-                        code = abs(vertex.particles[0].pdg_code)
+                        code = abs(vertex.particles[order[0]-1].pdg_code)
                         if(ix==6 and code ==12 or code ==14 or code==16) :
                             continue
                         else :
@@ -212,13 +213,13 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
                ( ix>=10 and ix<=12 and lorentztag=="VVT" )) :
                 for i in range(0,len(test)) :
                     if(test[i]) :
-                        test[i] = '(%s)/%s**2' % (test[i],vertex.particles[0].mass.value)
+                        test[i] = '(%s)/%s**2' % (test[i],vertex.particles[order[0]-1].mass.value)
             # fermions divide by 4*m
             elif(ix==6 and lorentztag=="FFT" and
-                 float(vertex.particles[0].mass.value) != 0. ) :
+                 float(vertex.particles[order[0]-1].mass.value) != 0. ) :
                 for i in range(0,len(test)) :
                     if(test[i]) :
-                        test[i] = '-(%s)/%s/4' % (test[i],vertex.particles[0].mass.value)
+                        test[i] = '-(%s)/%s/4' % (test[i],vertex.particles[order[0]-1].mass.value)
             # set values on first pass
             if(not tval[0] and not tval[1] and not tval[2]) :
                 value = test
@@ -231,7 +232,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
                     if(not test[i] or not tval[i]) :
                         # special for mass terms and vectors
                         if(lorentztag=="VVT" and ix >=10 and ix <=12 and
-                           float(vertex.particles[0].mass.value) == 0. ) :
+                           float(vertex.particles[order[0]-1].mass.value) == 0. ) :
                             continue
                         # special for vector gauge terms
                         if(lorentztag=="VVT" and ix>=13) :
@@ -241,7 +242,7 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
                     if(abs(tval[i]-tval2)>1e-6) :
                         # special for fermion mass term if fermions massless
                         if(lorentztag=="FFT" and ix ==6 and tval2 == 0. and
-                           float(vertex.particles[0].mass.value) == 0. ) :
+                           float(vertex.particles[order[0]-1].mass.value) == 0. ) :
                             continue
                         raise SkipThisVertex()
     # simple clean up
@@ -578,16 +579,18 @@ def scalarCouplings(vertex,value,prefactors,L,lorentztag,
         else :
             if(prepend=="") :
                 if(lorentztag=="SSS") :
+                    # order doesn't matter here, all same spin
                     prepend = kinematicsline.format(id1=vertex.particles[0].pdg_code,
+                                                    id2=vertex.particles[1].pdg_code,
+                                                    id3=vertex.particles[2].pdg_code,
+                                                    kine=output)
+                else :
+                    # order doesn't matter here, all same spin
+                    prepend = kinematicsline2.format(id1=vertex.particles[0].pdg_code,
                                                      id2=vertex.particles[1].pdg_code,
                                                      id3=vertex.particles[2].pdg_code,
+                                                     id4=vertex.particles[3].pdg_code,
                                                      kine=output)
-                else :
-                    prepend = kinematicsline2.format(id1=vertex.particles[0].pdg_code,
-                                                      id2=vertex.particles[1].pdg_code,
-                                                      id3=vertex.particles[2].pdg_code,
-                                                      id4=vertex.particles[2].pdg_code,
-                                                      kine=output)
                 value = "(%s) *(hw_kine1)" % value
             else :
                 osplit=prepend.split("\n")
@@ -729,10 +732,6 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                 order=[0,3,1,2]
                 value = "0.5*(%s)" % all_couplings[0][0]
             else:
-                sys.stderr.write(
-                    'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n'
-                    .format(tag="VVVV", name=vertex.name, ps=' '.join(map(str,vertex.particles)))
-                )
                 raise SkipThisVertex()
             pattern = \
                       "bool done[4]={false,false,false,false};\n" + \
@@ -746,6 +745,7 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                 "    }\n" + \
                 "    setType(2);\n" + \
                 "    setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);"
+            # order doesn't matter here same spin
             append = pattern % ( vertex.particles[0].pdg_code,order[0],
                                  vertex.particles[1].pdg_code,order[1],
                                  vertex.particles[2].pdg_code,order[2],
@@ -766,28 +766,28 @@ def processVectorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,append
                            not all_couplings[icolor][1]) :
                             raise SkipThisVertex()
                         if(not value) :
-                            value = all_couplings[icolor][0]
+                            value = all_couplings[icolor][1]
                             tval  = evaluate(value,model,parmsubs)
-                        tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
-                        tval3 = -evaluate(all_couplings[icolor][1],model,parmsubs)
+                        tval2 = -evaluate(all_couplings[icolor][0],model,parmsubs)
+                        tval3 =  evaluate(all_couplings[icolor][1],model,parmsubs)
                     elif(col[0][0]==1 and col[0][1]==3 and col[1][0] ==2 and col[1][1] == 4) : 
                         if(all_couplings[icolor][1] or not all_couplings[icolor][0] or
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
                         if(not value) :
-                            value = all_couplings[icolor][0]
+                            value = all_couplings[icolor][2]
                             tval  = evaluate(value,model,parmsubs)
-                        tval2 = evaluate(all_couplings[icolor][0],model,parmsubs)
-                        tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
+                        tval2 = -evaluate(all_couplings[icolor][0],model,parmsubs)
+                        tval3 =  evaluate(all_couplings[icolor][2],model,parmsubs)
                     elif(col[0][0]==1 and col[0][1]==4 and col[1][0] ==2 and col[1][1] == 3) : 
                         if(all_couplings[icolor][0] or not all_couplings[icolor][1] or
                            not all_couplings[icolor][2]) :
                             raise SkipThisVertex()
                         if(not value) :
-                            value = all_couplings[icolor][1]
+                            value = all_couplings[icolor][2]
                             tval  = evaluate(value,model,parmsubs)
-                        tval2 = evaluate(all_couplings[icolor][1],model,parmsubs)
-                        tval3 = -evaluate(all_couplings[icolor][2],model,parmsubs)
+                        tval2 = -evaluate(all_couplings[icolor][1],model,parmsubs)
+                        tval3 =  evaluate(all_couplings[icolor][2],model,parmsubs)
                     else :
                         raise SkipThisVertex()
                     if(abs(tval-tval2)>1e-6 or abs(tval-tval3)>1e-6 ) :
@@ -842,7 +842,7 @@ def fermionCouplings(value,prefactors,L,all_couplings,order) :
                 all_couplings[i] = new_couplings[i]
     return all_couplings
 
-def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
+def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order) :
     leftcontent  = all_couplings[0][0] if all_couplings[0][0] else "0."
     rightcontent = all_couplings[0][1] if all_couplings[0][1] else "0."
     tval=[evaluate( leftcontent,model,parmsubs),
@@ -857,7 +857,7 @@ def processFermionCouplings(lorentztag,vertex,model,parmsubs,all_couplings) :
     append=""
     if lorentztag == 'FFV':
         append = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
-                  % vertex.particles[0].pdg_code)
+                  % vertex.particles[order[0]-1].pdg_code)
     return normcontent,leftcontent,rightcontent,append
 
 def RSCouplings(value,prefactors,L,all_couplings,order) :

@@ -50,7 +50,8 @@ DipoleShowerHandler::DipoleShowerHandler() :
   theFactorizationScaleFreeze(2.*GeV), theDoCompensate(false),
   theFreezeGrid(500000), theDetuning(1.0),
   maxPt(ZERO), muPt(ZERO),
-  theInputColouredOffShellInShower() {}
+  theInputColouredOffShellInShower(),
+  theZBoundaries(1) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -695,6 +696,11 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   
   while ( eventRecord().haveChain() ) {
     
+     // allow the dipole chain to be rearranged according to arXiv:1801.06113
+    if( _rearrange && ( _rearrangeNEmissions < 0 || _rearrangeNEmissions >= emDone ) ){
+      eventRecord().currentChain().rearrange(_dipmax,_diplong);
+    }
+
     if ( verbosity > 2 ) {
       generator()->log() << "DipoleShowerHandler selecting splittings for the chain:\n"
       << eventRecord().currentChain() << flush;
@@ -1056,6 +1062,28 @@ void DipoleShowerHandler::doinit() {
     for(unsigned int ix=0;ix<theInputColouredOffShellInShower.size();++ix)
       theColouredOffShellInShower.insert(abs(theInputColouredOffShellInShower[ix]));
   }
+  // work out which shower phase space to use for the matching
+  bool zChoice0 = false;
+  bool zChoice1 = false;
+  size_t zChoiceOther = false;
+  for ( auto & k : kernels) {
+    if ( k->splittingKinematics()->openZBoundaries() == 0 )
+      zChoice0 = true;
+    else if ( k->splittingKinematics()->openZBoundaries() == 1 )
+      zChoice1 = true;
+    else
+      zChoiceOther = true;
+    // either inconsistent or other option which cannot be handled by the matching
+    if ( zChoice0 && zChoice1 ) {
+      zChoiceOther = true; break;
+    }
+  }
+  if ( zChoiceOther )
+    theZBoundaries = 2;
+  else if ( zChoice1 )
+    theZBoundaries = 1;
+  else if ( zChoice0 )
+    theZBoundaries = 0;
 }
 
 void DipoleShowerHandler::dofinish() {
@@ -1079,7 +1107,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << theDoCompensate << theFreezeGrid << theDetuning
      << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV)<< theMergingHelper << theColouredOffShellInShower
-     << theInputColouredOffShellInShower;
+     << theInputColouredOffShellInShower
+     << _rearrange << _dipmax << _diplong << _rearrangeNEmissions << theZBoundaries;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -1095,7 +1124,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> theDoCompensate >> theFreezeGrid >> theDetuning
      >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV)>>theMergingHelper >> theColouredOffShellInShower
-     >> theInputColouredOffShellInShower;
+     >> theInputColouredOffShellInShower
+     >> _rearrange >> _dipmax >> _diplong >> _rearrangeNEmissions >> theZBoundaries;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1316,5 +1346,39 @@ void DipoleShowerHandler::Init() {
      "PDG codes of the coloured particles that can be off-shell in the process.",
      &DipoleShowerHandler::theInputColouredOffShellInShower, -1, 0l, -10000000l, 10000000l,
      false, false, Interface::limited);
+
+  static Switch<DipoleShowerHandler, bool> interfacerearrange
+  ("Rearrange",
+   "Allow rearranging of dipole chains according to arXiv:1801.06113",
+   &DipoleShowerHandler::_rearrange, false, false, false);
+
+  static SwitchOption interfacerearrangeYes
+  (interfacerearrange,"Yes","_rearrange on", true);
+
+  static SwitchOption interfacerearrangeNo
+  (interfacerearrange,"No","_rearrange off", false);
+
+  static Parameter<DipoleShowerHandler,unsigned int> interfacedipmax
+  ("DipMax",
+   "Allow rearrangment of color chains with ME including dipmax dipoles.",
+   &DipoleShowerHandler::_dipmax, 0, 0, 0,
+   false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,unsigned int> interfacediplong
+  ("DipLong",
+   "Dipole chains with more than dipmax dipoles are treated as long. \
+    diplong=3 rearranges these chains with eeuugg MEs,  \
+    diplong=4 rearranges these chains with eeuuggg MEs (slower),  \
+    diplong=5 rearranges these chains with eeuugggg MEs (slow).\
+    Note: Numerically there is no difference between the options. ",
+   &DipoleShowerHandler::_diplong, 0, 0, 0,
+   false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler, int> interfacedcorrectNemissions
+  ("RearrangeNEmissions",
+   "Allow rearrangment of color chains up to the nth emission.",
+   &DipoleShowerHandler::_rearrangeNEmissions, 0, 0, 0,
+   false, false, Interface::lowerlim);
+
   
 }

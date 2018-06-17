@@ -35,6 +35,7 @@ void LHWWWVertex::Init() {
 LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(ZERO) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void LHWWWVertex::doinit() {

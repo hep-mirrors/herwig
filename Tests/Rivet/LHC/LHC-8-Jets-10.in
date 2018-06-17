@@ -4,3 +4,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1419070
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1394679
 # ATLAS jet charge
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1393758
+# ATLAS transverse energy correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1609253
+# CMS jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1487277
+# CMS di-jet decorrelation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1421646

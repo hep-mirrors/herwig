@@ -51,6 +51,7 @@ LHTPFFPVertex::LHTPFFPVertex() :
   TPreFactor_(0.), sL_(0.), cL_(1.), sR_(0.), cR_(1.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LHTPFFPVertex::doinit() {

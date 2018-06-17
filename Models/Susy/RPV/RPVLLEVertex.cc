@@ -18,6 +18,7 @@ using namespace Herwig;
 RPVLLEVertex::RPVLLEVertex() {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr RPVLLEVertex::clone() const {

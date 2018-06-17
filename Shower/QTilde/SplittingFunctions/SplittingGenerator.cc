@@ -337,8 +337,11 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
-				    ShowerPartnerType::Undefined);
+  if(!kinematics) {
+    if ( particle.spinInfo() ) particle.spinInfo()->undecay();
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
+		     ShowerPartnerType::Undefined);
+  }
   // if not hard generate phi
   kinematics->phi(sudakov->generatePhiForward(particle,ids,kinematics,rho));
   // and return it
@@ -556,8 +559,11 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr ,
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics) return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
-				   ShowerPartnerType::Undefined);
+  if(!kinematics) {
+    if ( particle.spinInfo() ) particle.spinInfo()->undecay();
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
+		     ShowerPartnerType::Undefined);
+  }
   // initialize the ShowerKinematics 
   // and generate phi
   kinematics->phi(sudakov->generatePhiBackward(particle,ids,kinematics,rho));

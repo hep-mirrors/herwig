@@ -26,6 +26,7 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
 			   _factlast(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSWSSVertex::doinit() {

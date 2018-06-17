@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::ScalarWaveFunction;
@@ -29,13 +30,14 @@ void MEvv2vv::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
+  four_  .resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1, PDT::Spin1,
 			   PDT::Spin1, PDT::Spin1);
   for(size_t i = 0; i < numberOfDiags(); ++i) {
     HPDiagram diag = getProcessInfo()[i];
     tcPDPtr offshell = diag.intermediate;
     if(!offshell)
-      fourPointVertex_ = dynamic_ptr_cast<AbstractVVVVVertexPtr>
+      four_[i] = dynamic_ptr_cast<AbstractVVVVVertexPtr>
 	(diag.vertices.first);
     else if(offshell->iSpin() == PDT::Spin0) {
       AbstractVVSVertexPtr vert1 = dynamic_ptr_cast<AbstractVVSVertexPtr>
@@ -57,6 +59,51 @@ void MEvv2vv::doinit() {
       AbstractVVTVertexPtr vert2 = dynamic_ptr_cast<AbstractVVTVertexPtr>
 	(diag.vertices.second);
       tensor_[i] = make_pair(vert1, vert2);
+    }
+  }
+  if(colour()==Colour88to88||colour()==Colour88to66bar) {
+    tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+    for(size_t i = 0; i < numberOfDiags(); ++i) {
+      HPDiagram diag = getProcessInfo()[i];
+      if(diag.intermediate) continue;
+      vector<int> order;
+      for(map<string,pair<unsigned int,int> >::const_iterator it=hwsm->couplings().begin();
+	  it!=hwsm->couplings().end();++it) {
+	order.push_back(0);
+	if(diag.vertices.first ) order.back() += diag.vertices.first ->orderInCoupling(it->second.first);
+	if(diag.vertices.second&&diag.vertices.first->getNpoint()==3)
+	  order.back() += diag.vertices.second->orderInCoupling(it->second.first);
+      }
+      vector<unsigned int> matchdiags;
+      for(size_t j = 0; j < numberOfDiags(); ++j) {
+	HPDiagram diag2 = getProcessInfo()[j];
+	if(!diag2.intermediate ||
+	   (diag2.intermediate->iColour()==PDT::Colour8 &&
+	    diag2.intermediate->iColour()==PDT::Colour6 &&
+	    diag2.intermediate->iColour()==PDT::Colour6bar)) continue;
+	unsigned int iloc(0);
+	bool match=true;
+	for(map<string,pair<unsigned int,int> >::const_iterator it=hwsm->couplings().begin();
+	    it!=hwsm->couplings().end();++it) {
+	  int otemp(0);
+	  if(diag2.vertices.first ) otemp += diag2.vertices.first ->orderInCoupling(it->second.first);
+	  if(diag2.vertices.second&&diag2.vertices.first->getNpoint()==3)
+	    otemp += diag2.vertices.second->orderInCoupling(it->second.first);
+	  if(otemp!=order[iloc]) {
+	    match = false;
+	    break;
+	  }
+	  iloc+=1;
+	}
+	if(!match) continue;
+	matchdiags.push_back(j);
+      }
+      double weight = 3./double(matchdiags.size());
+      for(unsigned int iy=0;iy<matchdiags.size();++iy)
+	if(fourFlow_.find(matchdiags[iy])!=fourFlow_.end())
+	  fourFlow_[matchdiags[iy]].push_back(make_pair(i,weight));
+	else
+	  fourFlow_[matchdiags[iy]] = vector<pair<unsigned int,double> >(1,make_pair(i,weight));
     }
   }
 }
@@ -131,11 +178,19 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		diag = vector_[ix].second->
 		  evaluate(q2, vout1[ohel1], vout2[ohel2], interV);
 		if(colour()==Colour88to88)
-		  diag += fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
-						     vout2[ohel2], vin1[ihel1]);
+		  for(unsigned int iy=0;iy<fourFlow_.at(ix).size();++iy) {
+		    unsigned int iloc=fourFlow_.at(ix)[iy].first;
+		    double wgt = fourFlow_.at(ix)[iy].second; 
+		    diag += wgt*four_[iloc]->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
+						      vout2[ohel2], vin1[ihel1]);
+		  }
 		else if(colour()==Colour88to66bar)
-		  diag -= fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
-						     vout2[ohel2], vin1[ihel1]);
+		  for(unsigned int iy=0;iy<fourFlow_.at(ix).size();++iy) {
+		    unsigned int iloc=fourFlow_.at(ix)[iy].first;
+		    double wgt = fourFlow_.at(ix)[iy].second; 
+		    diag -= wgt*four_[iloc]->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
+						      vout2[ohel2], vin1[ihel1]);
+		  }
 	      }
 	      else if(offshell->iSpin() == PDT::Spin2) {
 		TensorWaveFunction interT = tensor_[ix].first->
@@ -168,8 +223,12 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		  diag = vector_[ix].second->
 		    evaluate(q2, vin2[ihel2], interV, vout2[ohel2]);
 		  if(colour()==Colour88to88 || colour()==Colour88to66bar)
-		    diag += fourPointVertex_->evaluate(q2, 0, vin1[ihel1], vin2[ihel2], 
-						       vout1[ohel1], vout2[ohel2]);
+		    for(unsigned int iy=0;iy<fourFlow_.at(ix).size();++iy) {
+		      unsigned int iloc=fourFlow_.at(ix)[iy].first;
+		      double wgt = fourFlow_.at(ix)[iy].second; 
+		      diag += wgt*four_[iloc]->evaluate(q2, 0, vin1[ihel1], vin2[ihel2], 
+							vout1[ohel1], vout2[ohel2]);
+		    }
 		}
 		else {
 		  if(offshell->CC()) offshell = offshell->CC();
@@ -178,9 +237,13 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		  diag = vector_[ix].second->
 		    evaluate(q2, vin1[ihel1], interV, vout2[ohel2]);
 		  if(colour()==Colour88to88 || colour()==Colour88to66bar)
-		    diag += fourPointVertex_->
-		      evaluate(q2, 0, vin2[ihel2], vin1[ihel1],
-			       vout1[ohel1], vout2[ohel2]);
+		    for(unsigned int iy=0;iy<fourFlow_.at(ix).size();++iy) {
+		      unsigned int iloc=fourFlow_.at(ix)[iy].first;
+		      double wgt = fourFlow_.at(ix)[iy].second; 
+		      diag += wgt*four_[iloc]->
+			evaluate(q2, 0, vin2[ihel2], vin1[ihel1],
+				 vout1[ohel1], vout2[ohel2]);
+		    }
 		}
 	      }
 	      else if(offshell->iSpin() == PDT::Spin2) {
@@ -204,8 +267,8 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	      if(colour()==Colour88to88||colour()==Colour88to66bar)
 		diag = 0.;
 	      else
-		diag = fourPointVertex_->evaluate(q2, 0, vin1[ihel1], vin2[ihel2],
-						  vout1[ohel1], vout2[ohel2]);
+		diag = four_[ix]->evaluate(q2, 0, vin1[ihel1], vin2[ihel2],
+					   vout1[ohel1], vout2[ohel2]);
 	    }
 	    else
 	      assert(false);
@@ -241,11 +304,11 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 
 
 void MEvv2vv::persistentOutput(PersistentOStream & os) const {
-  os << scalar_ << vector_ << tensor_ << fourPointVertex_;
+  os << scalar_ << vector_ << tensor_ << four_ << fourFlow_;
 }
 
 void MEvv2vv::persistentInput(PersistentIStream & is, int) {
-  is >> scalar_ >> vector_ >> tensor_ >> fourPointVertex_;
+  is >> scalar_ >> vector_ >> tensor_ >> four_ >> fourFlow_;
   initializeMatrixElements(PDT::Spin1, PDT::Spin1,
 			   PDT::Spin1, PDT::Spin1);
 }

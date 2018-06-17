@@ -79,6 +79,7 @@ Makefile\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
+PDF/SaSPhotonPDF.cc
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2herwig$
@@ -104,9 +105,12 @@ Makefile\.in$
 ^Utilities/XML/xml_test$
 ^Utilities/utilities_test$
 ^Utilities/versionstring.h$
+^MatrixElement/Matchbox/External/MadGraph/mg2herwig.py$
 test\.(log|trs)$
 test-suite\.log$
 ^Config/test-driver$
 param_card\.dat$
 __all.cc$
 .ccR$
+^tmp/*
+PDF/stamp-h2

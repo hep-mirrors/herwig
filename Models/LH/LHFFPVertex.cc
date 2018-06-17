@@ -18,6 +18,7 @@ LHFFPVertex::LHFFPVertex()
   // order in strong and em coupling
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LHFFPVertex::persistentOutput(PersistentOStream & os) const {

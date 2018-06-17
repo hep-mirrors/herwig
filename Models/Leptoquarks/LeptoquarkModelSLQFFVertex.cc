@@ -31,6 +31,7 @@ IBPtr LeptoquarkModelSLQFFVertex::fullclone() const {
 LeptoquarkModelSLQFFVertex::LeptoquarkModelSLQFFVertex() {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void LeptoquarkModelSLQFFVertex::doinit() {

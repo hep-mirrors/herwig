@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -27,9 +28,9 @@ using namespace ThePEG;
  * This class implements the matrix element for a fermion and a vector
  * boson to a fermion and a vector boson. It inherits from GeneralHardME
  * and implements the appropriate virtual functions. 
+ * 
+ * @see GeneralHardME
  *
- * @see \ref MEfv2vfInterfaces "The interfaces"
- * defined for MEfv2vf.
  */
 class MEfv2vf: public GeneralHardME {
 
@@ -189,7 +190,12 @@ private:
    * A pair of FFVVertex, VVVertex pointers 
    */
   vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > vector_;
-    //@}
+
+  /**
+   *  Four point vertices
+   */
+  vector<AbstractFFVVVertexPtr> four_;
+  //@}
 
 };
 

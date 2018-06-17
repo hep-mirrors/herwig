@@ -40,7 +40,8 @@ StandardModel::StandardModel(const StandardModel & x)
     HPPVertex_ (x.HPPVertex_) , HHHVertex_ (x.HHHVertex_) ,
     WWHHVertex_ (x.WWHHVertex_) ,
     vertexList_(x.vertexList_), extraVertices_(x.extraVertices_),
-    runningMass_(x.runningMass_),modelGenerator_(x.modelGenerator_) 
+    runningMass_(x.runningMass_),modelGenerator_(x.modelGenerator_),
+    couplings_(x.couplings_)
 {}
 
 IBPtr StandardModel::clone() const {
@@ -71,6 +72,12 @@ void StandardModel::doinit() {
     addVertex(HPPVertex_);
     if(HHHVertex_ ) addVertex(HHHVertex_);
     if(WWHHVertex_) addVertex(WWHHVertex_);
+  }
+  if(couplings_.find("QED")==couplings_.end()) {
+    couplings_["QED"] = make_pair(1,99);
+  }
+  if(couplings_.find("QCD")==couplings_.end()) {
+    couplings_["QCD"] = make_pair(2,99);
   }
   StandardModelBase::doinit();
 }

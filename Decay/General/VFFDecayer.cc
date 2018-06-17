@@ -34,13 +34,15 @@ IBPtr VFFDecayer::fullclone() const {
 }
 
 void VFFDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & inV,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & outV,
 			      map<ShowerInteraction,VertexBasePtr> ) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractFFVVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<FFVVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractFFVVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<FFVVertexPtr>        (vert));
+  }
   vector<ShowerInteraction> itemp={ShowerInteraction::QCD,ShowerInteraction::QED};
   for(auto & inter : itemp) {
     incomingVertex_[inter] = dynamic_ptr_cast<AbstractVVVVertexPtr>(inV.at(inter));
@@ -105,14 +107,19 @@ double VFFDecayer::me2(const int , const Particle & inpart,
     for(unsigned int ia = 0; ia < 2; ++ia) {// loop over antifermion helicities
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {//loop over vector helicities
 	if(iferm > ianti) {
-	  (*ME())(vhel, ia, ifm) = 
-	    vertex_->evaluate(scale,wave_[ia],
-				      wavebar_[ifm],vectors_[vhel]);
+	  (*ME())(vhel, ia, ifm) = 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(vhel, ia, ifm) += 
+	      vert->evaluate(scale,wave_[ia],
+			     wavebar_[ifm],vectors_[vhel]);
 	}
-	else
-	  (*ME())(vhel,ifm,ia)=
-	    vertex_->evaluate(scale,wave_[ia],
-				      wavebar_[ifm],vectors_[vhel]);
+	else {
+	  (*ME())(vhel,ifm,ia)= 0.;
+	  for(auto vert : vertex_)
+	    (*ME())(vhel,ifm,ia) +=
+	      vert->evaluate(scale,wave_[ia],
+			     wavebar_[ifm],vectors_[vhel]);
+	}
       }
     }
   }
@@ -127,17 +134,18 @@ double VFFDecayer::me2(const int , const Particle & inpart,
 Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
-    Complex cl(perturbativeVertex_->left()), cr(perturbativeVertex_->right());
+    perturbativeVertex_[0]->setCoupling(sqr(inpart.second), outa.first, outb.first,in);
+    Complex cl(perturbativeVertex_[0]->left()), cr(perturbativeVertex_[0]->right());
     double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
 					 + sqr(mu1) + sqr(mu2) - 2.)
       - 6.*(cl*conj(cr) + cr*conj(cl)).real()*mu1*mu2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = -norm(perturbativeVertex_->norm())*me2*pcm / 
+    Energy output = -norm(perturbativeVertex_[0]->norm())*me2*pcm / 
       (24.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
@@ -241,7 +249,9 @@ double VFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    
 	    assert(vector3_[iv].particle()->id()==vectorInter.particle()->id());
 
-	    Complex diag = vertex_->evaluate(scale,wave3_[ia],wavebar3_[ifm],vectorInter);
+	    Complex diag = 0.;
+	    for(auto vertex : vertex_)
+	      diag += vertex->evaluate(scale,wave3_[ia],wavebar3_[ifm],vectorInter);
 	    if(!couplingSet) {
               gs = abs(incomingVertex_[inter]->norm());
 	      couplingSet = true;
@@ -268,7 +278,9 @@ double VFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    
 	    assert(wavebar3_[ifm].particle()->id()==interS.particle()->id());
 	    
-	    Complex diag = vertex_->evaluate(scale,wave3_[ia], interS,vector3_[iv]);
+	    Complex diag = 0.;
+	    for(auto vertex : vertex_)
+	      diag += vertex->evaluate(scale,wave3_[ia], interS,vector3_[iv]);
 	    if(!couplingSet) {
 	      gs = abs(outgoingVertexF->norm());
 	      couplingSet = true;
@@ -295,7 +307,9 @@ double VFFDecayer::threeBodyME(const int , const Particle & inpart,
 
 	    assert(wave3_[ia].particle()->id()==interS.particle()->id());
 
-	    Complex diag = vertex_->evaluate(scale,interS,wavebar3_[ifm],vector3_[iv]);
+	    Complex diag = 0.;
+	    for(auto vertex : vertex_)
+	      diag += vertex->evaluate(scale,interS,wavebar3_[ifm],vector3_[iv]);
 	    if(!couplingSet) {
 	      gs = abs(outgoingVertexA->norm());
 	      couplingSet = true;

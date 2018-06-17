@@ -26,6 +26,7 @@ RSModelWWWGRVertex::RSModelWWWGRVertex()
   // order in the couplings
   orderInGem(2);
   orderInGs (0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void RSModelWWWGRVertex::doinit() {

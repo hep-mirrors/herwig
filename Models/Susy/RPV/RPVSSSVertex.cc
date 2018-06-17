@@ -23,6 +23,7 @@ using namespace ThePEG::Helicity;
 RPVSSSVertex::RPVSSSVertex() : interactions_(0), q2Last_(ZERO), gLast_(0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr RPVSSSVertex::clone() const {

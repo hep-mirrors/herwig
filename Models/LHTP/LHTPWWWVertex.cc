@@ -17,6 +17,7 @@ LHTPWWWVertex::LHTPWWWVertex() : coupLast_(0.), q2Last_(ZERO),
 				 couplings_(3 ,0.) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void LHTPWWWVertex::persistentOutput(PersistentOStream & os) const {

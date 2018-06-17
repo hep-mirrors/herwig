@@ -26,6 +26,7 @@ SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _gblast(0) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSCCZVertex::doinit() {

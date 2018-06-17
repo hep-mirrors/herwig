@@ -28,6 +28,7 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
 			    yukawa_(1) {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void SSCFSVertex::doinit() {

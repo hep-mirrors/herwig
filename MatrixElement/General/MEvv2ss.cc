@@ -30,12 +30,13 @@ void MEvv2ss::doinit() {
   scalar3_.resize(numberOfDiags());
   vector_ .resize(numberOfDiags()); 
   tensor_ .resize(numberOfDiags());
+  contact_.resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
 			   PDT::Spin0, PDT::Spin0);
   for(size_t i = 0; i < numberOfDiags(); ++i ) {
     HPDiagram dg = getProcessInfo()[i];
     if( !dg.intermediate ) {
-      contact_ = dynamic_ptr_cast<AbstractVVSSVertexPtr>(dg.vertices.first);
+      contact_[i] = dynamic_ptr_cast<AbstractVVSSVertexPtr>(dg.vertices.first);
     }
     else if(dg.channelType == HPDiagram::tChannel) {
       if (dg.intermediate->iSpin() == PDT::Spin0 ) {
@@ -124,7 +125,7 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
 	const HPDiagram & current = getProcessInfo()[ix];
 	// do four-point diag first
 	if(current.channelType == HPDiagram::fourPoint) {
-	  diag = contact_->evaluate(m2, v1[iv1], v2[iv2], sca1, sca2);
+	  diag = contact_[ix]->evaluate(m2, v1[iv1], v2[iv2], sca1, sca2);
 	}
 	else {
 	  tcPDPtr offshell = current.intermediate;

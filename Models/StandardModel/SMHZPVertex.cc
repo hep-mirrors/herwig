@@ -21,6 +21,7 @@ SMHZPVertex::SMHZPVertex()
   orderInGs(0);
   orderInGem(3);
   kinematics(true);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 IBPtr SMHZPVertex::clone() const {

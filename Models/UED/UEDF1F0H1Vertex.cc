@@ -27,6 +27,7 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(ZERO), theMw(ZERO),
 				     theFermLast(0), theHLast(0) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void UEDF1F0H1Vertex::doinit() {

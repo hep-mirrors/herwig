@@ -13,3 +13,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1994_S2952106
 # run I D0 3 and 4 jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1996_S3214044
+# run I D0 jet shape
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_1995_I398175

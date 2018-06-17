@@ -35,13 +35,15 @@ IBPtr TSSDecayer::fullclone() const {
 
 
 void TSSDecayer::setDecayInfo(PDPtr incoming, PDPair outgoing,
-			      VertexBasePtr vertex,
+			      vector<VertexBasePtr> vertex,
 			      map<ShowerInteraction,VertexBasePtr> & ,
 			      const vector<map<ShowerInteraction,VertexBasePtr> > & ,
 			      map<ShowerInteraction,VertexBasePtr> ) {
   decayInfo(incoming,outgoing);
-  vertex_             = dynamic_ptr_cast<AbstractSSTVertexPtr>(vertex);
-  perturbativeVertex_ = dynamic_ptr_cast<SSTVertexPtr>        (vertex);
+  for(auto vert : vertex) {
+    vertex_            .push_back(dynamic_ptr_cast<AbstractSSTVertexPtr>(vert));
+    perturbativeVertex_.push_back(dynamic_ptr_cast<SSTVertexPtr>        (vert));
+  }
 }
 
 
@@ -89,7 +91,9 @@ double TSSDecayer::me2(const int , const Particle & inpart,
   ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int thel=0;thel<5;++thel) {
-    (*ME())(thel,0,0) = vertex_->evaluate(scale,sca1,sca2,tensors_[thel]); 
+    (*ME())(thel,0,0) =0.;
+    for(auto vert : vertex_)
+      (*ME())(thel,0,0) += vert->evaluate(scale,sca1,sca2,tensors_[thel]); 
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
@@ -103,16 +107,17 @@ double TSSDecayer::me2(const int , const Particle & inpart,
 Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return ZERO;
-  if(perturbativeVertex_) {
+  if(perturbativeVertex_.size()==1 &&
+     perturbativeVertex_[0]) {
     Energy2 scale(sqr(inpart.second));
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
-    perturbativeVertex_->setCoupling(scale, outa.first, outb.first, in);
+    perturbativeVertex_[0]->setCoupling(scale, outa.first, outb.first, in);
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1. - 4.*musq);
     double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(perturbativeVertex_->norm())*me2*pcm/(8.*Constants::pi);
+    Energy output = norm(perturbativeVertex_[0]->norm())*me2*pcm/(8.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer

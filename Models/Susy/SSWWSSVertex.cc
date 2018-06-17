@@ -17,7 +17,9 @@ using namespace Herwig;
 
 SSWWSSVertex::SSWWSSVertex() : sw_(0.), cw_(0.), q2last_(), couplast_(0.), 
 			       ulast_(0), dlast_(0), gblast1_(0), gblast2_(0),
-			       factlast_(0.) {}
+			       factlast_(0.) {
+  colourStructure(ColourStructure::DELTA);
+}
 
 IBPtr SSWWSSVertex::clone() const {
   return new_ptr(*this);

@@ -21,3 +21,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1319490_EL
 # ATLAS W+charm
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1282447
+# ATLAS W inclusive cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1502620_W_EL

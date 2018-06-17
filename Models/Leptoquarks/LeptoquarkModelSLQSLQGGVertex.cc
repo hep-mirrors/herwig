@@ -23,6 +23,7 @@ LeptoquarkModelSLQSLQGGVertex::LeptoquarkModelSLQSLQGGVertex() : q2last_(ZERO),
 								 couplast_(0.) {
   orderInGs(2);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3TTFUNDS);
 }
 
 void LeptoquarkModelSLQSLQGGVertex::doinit() {

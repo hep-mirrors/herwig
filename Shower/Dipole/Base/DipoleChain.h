@@ -103,6 +103,11 @@ public:
    */
   void check();
 
+  /**
+   * Rearrange the dipole chain (arXiv:1801.06113).
+   */
+  void rearrange(int dipmax,int diplong);
+
 public:
 
   /*

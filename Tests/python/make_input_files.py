@@ -215,7 +215,7 @@ if "Dipole-Matchbox-Powheg" in name :
     elif "Dipole-Powheg" in name :
     istart = 3
     simulation="Powheg"
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
     '''
 
 # Dipole shower with MCatNLO
@@ -234,7 +234,7 @@ elif "Dipole-Matchbox-LO" in name :
 elif "Dipole" in name :
     istart = 2
     simulation=""
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread Matchbox/MCatNLO-Dipole-HardAlphaSTune.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
     
 # AO shower with Matchbox Powheg
 elif "Matchbox-Powheg" in name :
@@ -840,7 +840,6 @@ elif(collider=="LHC") :
         elif "W-Z-e" in parameterName :
             process+=insert_ME("MEqq2gZ2ff","Electron")
             process+=insert_ME("MEqq2W2ff","Electron")
-
         elif "W-Z-mu" in parameterName :
             process+=insert_ME("MEqq2gZ2ff","Muon")
             process+=insert_ME("MEqq2W2ff","Muon")
@@ -1180,6 +1179,9 @@ elif(collider=="LHC") :
             elif "WW" in parameterName :
                process+=selectDecayMode("h0",["h0->W+,W-;"])
                process+=addBRReweighter()
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               process+=addBRReweighter()
                
         elif "VBF" in parameterName :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
@@ -1229,6 +1231,9 @@ elif(collider=="LHC") :
             elif "WW" in parameterName :
                process+=selectDecayMode("h0",["h0->W+,W-;"])
                process+=addBRReweighter()
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               process+=addBRReweighter()
                
         elif "ggH" in parameterName :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
@@ -1260,6 +1265,9 @@ elif(collider=="LHC") :
             elif "WW" in parameterName :
                process+=selectDecayMode("h0",["h0->W+,W-;"])
                process+=addBRReweighter()
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               process+=addBRReweighter()
                
         elif "8-ZH" in parameterName :
             if(simulation=="Merging"):
@@ -1273,6 +1281,9 @@ elif(collider=="LHC") :
                process+=addBRReweighter()
             elif "WW" in parameterName :
                process+=selectDecayMode("h0",["h0->W+,W-;"])
+               process+=addBRReweighter()
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                process+=addBRReweighter()
                
         elif "WH" in parameterName :

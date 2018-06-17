@@ -31,6 +31,7 @@ SSNNPVertex::SSNNPVertex() : _includeOnShell(false), _realIntegral(false),
 			     _leftlast(ZERO), _rightlast(ZERO) {
   orderInGem(3);
   orderInGs(0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void SSNNPVertex::doinit() {

@@ -23,6 +23,7 @@ using namespace ThePEG;
 ADDModelSSGRVertex::ADDModelSSGRVertex() : kappa_(ZERO), r_(ZERO) {
   orderInGem(1);
   orderInGs (0);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 void ADDModelSSGRVertex::doinit() {

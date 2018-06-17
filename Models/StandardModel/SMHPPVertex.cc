@@ -206,6 +206,7 @@ SMHPPVertex::SMHPPVertex()
    _minloop(6),_maxloop(6),_CoefRepresentation(1) {
   orderInGs(0);
   orderInGem(3);
+  colourStructure(ColourStructure::SINGLET);
 }
 
 

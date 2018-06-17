@@ -385,13 +385,15 @@ void GeneralHardME::getDiagrams() const {
   tcPDPtr inb = getParticleData(getIncoming().second);
   tcPDPtr outa = getParticleData(getOutgoing().first);
   tcPDPtr outb = getParticleData(getOutgoing().second);
-  
+
+  bool hasThreePoints = false;
   for(HPCount idx = 0; idx < numberOfDiagrams_; ++idx) {
     const HPDiagram & current = getProcessInfo()[idx];
     tcPDPtr offshell = current.intermediate;
     if(!offshell) continue;
     //t-channel
     if(current.channelType == HPDiagram::tChannel) {
+      hasThreePoints = true;
       if(offshell->id() < 0) offshell = offshell->CC();
       if(current.ordered.second)
 	add(new_ptr((Tree2toNDiagram(3), ina, offshell,
@@ -401,12 +403,18 @@ void GeneralHardME::getDiagrams() const {
 		     inb, 2, outa, 1, outb, -(idx+1))));
     }
     //s-channel
-    else if(current.channelType == HPDiagram::sChannel) 
+    else if(current.channelType == HPDiagram::sChannel) {
+      hasThreePoints = true;
       add(new_ptr((Tree2toNDiagram(2), ina, inb, 1, offshell,
 		   3, outa, 3, outb, -(idx+1))));
+    }
     else
       throw MEException() << "getDiagrams() - Unknown diagram in matrix element "
 			  << fullName() << Exception::runerror;			  
+  }
+  if(!hasThreePoints) {
+      add(new_ptr((Tree2toNDiagram(2), ina, inb, 1, outa,
+		   3, outa, 3, outb, -1)));
   }
 }
 
@@ -543,13 +551,20 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     break;
   case Colour33barto33bar:
     static ColourLines 
-      f33barto33bar[4]={ColourLines("1 2 -3, 4 -2 -5"),
+      f33barto33bar[5]={ColourLines("1 2 -3, 4 -2 -5"),
 			ColourLines("1 3 4, -2 -3 -5"),
 			ColourLines("1 4, -3 -5"),
-			ColourLines("1 -2, 4 -5")};
-    if(current.channelType == HPDiagram::tChannel)
-      sel.insert(1.,current.intermediate->iColour() == PDT::Colour8 ? 
-		 &f33barto33bar[0] : &f33barto33bar[2]);
+			ColourLines("1 -2, 4 -5"),
+			ColourLines("1 -3, 4 -5")};
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.ordered.second) {
+	sel.insert(1.,current.intermediate->iColour() == PDT::Colour8 ? 
+		   &f33barto33bar[0] : &f33barto33bar[2]);
+      }
+      else {
+	sel.insert(1.,&f33barto33bar[2*(flow_-2)+2]);
+      }
+    }
     else
       sel.insert(1.,current.intermediate->iColour() == PDT::Colour8 ? 
 		 &f33barto33bar[1] : &f33barto33bar[3]);
@@ -689,43 +704,52 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
       sel.insert(1.,&f3bar8to3bar1[1]);
     break;
   case Colour38to83:
-    static ColourLines f38to83[4]={ColourLines("1 4, -4 2 -3, 3 5"),
+    static ColourLines f38to83[5]={ColourLines("1 4, -4 2 -3, 3 5"),
 				   ColourLines("1 -2, 2 3 4, 5 -4"),
 				   ColourLines("1 2 4, -4  -3, 3 -2 5"),
-				   ColourLines("1 2 -3, -4 -2  5, 3 4")};
+				   ColourLines("1 2 -3, -4 -2  5, 3 4"),
+				   ColourLines("1 5, 3 4, -3 -4")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1.,&f38to83[1]);
     else {
       if(current.intermediate->iColour() == PDT::Colour8)
 	sel.insert(1.,&f38to83[flow_+2]);
+      else if(current.intermediate->iColour() == PDT::Colour0)
+	sel.insert(1.,&f38to83[4]);
       else
 	sel.insert(1.,&f38to83[0]);
     }
     break;
   case Colour38to38:
-    static ColourLines f38to38[4]={ColourLines("1 5, -5 2 -3, 3 4"),
+    static ColourLines f38to38[5]={ColourLines("1 5, -5 2 -3, 3 4"),
 				   ColourLines("1 -2, 2 3 5, 4 -5"),
 				   ColourLines("1 2 5, -5  -3, 3 -2 4"),
-				   ColourLines("1 2 -3, -5 -2  4, 3 5")};
+				   ColourLines("1 2 -3, -5 -2  4, 3 5"),
+				   ColourLines("1 4, 3 5, -3 -5")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1.,&f38to38[1]);
     else {
       if(current.intermediate->iColour() == PDT::Colour8)
 	sel.insert(1.,&f38to38[flow_+2]);
+      else if(current.intermediate->iColour() == PDT::Colour0)
+	sel.insert(1.,&f38to38[4]);
       else
 	sel.insert(1.,&f38to38[0]);
     }
     break;
   case Colour3bar8to83bar:
-    static ColourLines f3bar8to83bar[4]={ColourLines("-1 -4, 3 2 4, -3 -5"),
+    static ColourLines f3bar8to83bar[5]={ColourLines("-1 -4, 3 2 4, -3 -5"),
 					 ColourLines("-1 2, -4 -3 -2, 4 -5"),
 					 ColourLines("-1 -2 -4,-3 2 -5,3 4"),
-					 ColourLines("-1 -2 3, -5 2 4, -3 -4")};
+					 ColourLines("-1 -2 3, -5 2 4, -3 -4"),
+					 ColourLines("-1 -5, -3 -4, 3 4")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1.,&f3bar8to83bar[1]);
     else {
       if(current.intermediate->iColour() == PDT::Colour8)
 	sel.insert(1.,&f3bar8to83bar[flow_+2]);
+      else if(current.intermediate->iColour() == PDT::Colour0)
+	sel.insert(1.,&f3bar8to83bar[4]);
       else
 	sel.insert(1.,&f3bar8to83bar[0]);
     }
@@ -1054,8 +1078,8 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     break;
   case Colour3bar3barto31:
     static ColourLines f3bar3barto31[3]={ColourLines("-1 6, -2 6, 4 3 6"),
-					 ColourLines("-1 6, -3 -2 6, 4 6"),
-					 ColourLines("-1 -2 6, -3 6, 4 6")};
+					 ColourLines("-1 6, -3 2 6, 4 6"),
+					 ColourLines("-1 2 6, -3 6, 4 6")};
     if(current.channelType == HPDiagram::sChannel)
       sel.insert(1., &f3bar3barto31[0]);
     else if(current.channelType == HPDiagram::tChannel) {

@@ -25,6 +25,7 @@ using namespace Herwig;
 SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3F);
 }
 
 // Static variable needed for the type description system in ThePEG.

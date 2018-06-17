@@ -81,9 +81,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2014_I1300380
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2015_I1333223
 # ALICE pion and eta pT
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1116147
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_FSQ_12_020
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_PAS_FSQ_12_020
 # CMS charged particle rapidity
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_PAS_QCD_10_024
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
 # diffractive analyses
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2012_I1115479
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1356998

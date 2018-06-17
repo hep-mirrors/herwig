@@ -20,6 +20,7 @@ using namespace Herwig;
 RPVUDDVertex::RPVUDDVertex() {
   orderInGem(1);
   orderInGs(0);
+  colourStructure(ColourStructure::EPS);
 }
 
 IBPtr RPVUDDVertex::clone() const {

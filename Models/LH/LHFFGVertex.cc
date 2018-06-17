@@ -50,4 +50,5 @@ void LHFFGVertex::doinit() {
 LHFFGVertex::LHFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   orderInGs(1);
   orderInGem(0);
+  colourStructure(ColourStructure::SU3TFUND);
 }

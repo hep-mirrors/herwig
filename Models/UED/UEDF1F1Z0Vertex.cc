@@ -27,6 +27,7 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theCosThW(0.0), theRadius(
 				     theLeftLast(0.), theRightLast(0.) {
   orderInGs(0);
   orderInGem(1);
+  colourStructure(ColourStructure::DELTA);
 }
 
 void UEDF1F1Z0Vertex::doinit() {

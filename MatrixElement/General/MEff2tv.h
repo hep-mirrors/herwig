@@ -24,10 +24,9 @@ using Helicity::VectorWaveFunction;
 using Helicity::TensorWaveFunction;
 
 /**
- * Here is the documentation of the MEff2tv class.
+ * The documentation of the MEff2tv class implements the general matrix element for
+ * vector vectro to tensor vector
  *
- * @see \ref MEff2tvInterfaces "The interfaces"
- * defined for MEff2tv.
  */
 class MEff2tv: public GeneralHardME {
 

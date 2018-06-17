@@ -54,19 +54,16 @@ def getTemplate(name):
         templateText = f.read()
     return Template( templateText )
 
-
 def writeFile(filename, text):
     """Write text to a filename."""
     with open(filename,'w') as f:
         f.write(text)
 
-
-
-
-
-def qcd_qed_orders(vertex, coupling):
+def coupling_orders(vertex, coupling, defns):
     # if more  than one take QCD over QED and then lowest order in QED
     if type(coupling) is list:
+        print 'not sure this happens'
+        quit()
         qed = 0
         qcd = 0
         for coup in coupling :
@@ -80,14 +77,10 @@ def qcd_qed_orders(vertex, coupling):
                 if qed == 0 or (qed1 != 0 and qed1 < qed):
                     qed=qed1
     else:
-        qed = coupling.order.get('QED',0)
-        qcd = coupling.order.get('QCD',0)
-    # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
-    # Is there a better way to treat this?
-    if qed + qcd + 2 != len(vertex.particles):
-        qed = len(vertex.particles) - qcd - 2
-
-    return qcd, qed
+        output={}
+        for ctype in defns :
+            output[ctype]=coupling.order.get(ctype,0)
+    return output
 
 def def_from_model(FR,s):
     """Return a C++ line that defines parameter s as coming from the model file."""

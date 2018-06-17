@@ -113,7 +113,8 @@ protected:
 		 vector<tcBeamPtr> beams,
 		 Lorentz5Momentum boson,unsigned int & iemit,
 		 unsigned int & itype,vector<Lorentz5Momentum> & pnew,
-		 LorentzRotation & trans, pair<double,double> & xnew);
+		 LorentzRotation & trans, pair<double,double> & xnew,
+		 Energy2 shad);
 
   /**
    * Returns the matrix element for a given type of process,

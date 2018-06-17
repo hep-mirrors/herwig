@@ -11,4 +11,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1244522
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1258128
 # MC
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_PHOTONJETS
+# CMS photon + jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1266056
 

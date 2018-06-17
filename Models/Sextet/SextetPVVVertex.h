@@ -24,7 +24,9 @@ public:
   /**
    * The default constructor.
    */
-  SextetPVVVertex() {}
+  SextetPVVVertex() {
+    colourStructure(ColourStructure::DELTA);
+  }
 
   /** Calculate the coupling
    *@param q2 The scale at which to evaluate the coupling
