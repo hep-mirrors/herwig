@@ -309,6 +309,27 @@ public:
     return reweight_;
   }
 
+public :
+  
+  /**
+   *   Access to switches for spin correlations
+   */
+  //@{
+  /**
+   *   Spin Correlations
+   */
+  unsigned int spinCorrelations() const {
+    return spinOpt_;
+  }
+  
+  /**
+   *  Any correlations
+   */
+  virtual bool correlations() const {
+    return spinOpt_!=0;
+  }
+  //@}
+
 public:
 
   /** 
@@ -677,6 +698,11 @@ private:
    */
   Ptr<HardScaleProfile>::ptr hardScaleProfile_;
   //@}
+
+  /**
+   *  Option to include spin correlations
+   */
+  unsigned int spinOpt_;
 
 private:
 

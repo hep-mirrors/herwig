@@ -51,7 +51,7 @@ QTildeShowerHandler::QTildeShowerHandler() :
   _nReWeight(100), _reWeight(false),
   interaction_(ShowerInteraction::Both),
   _trunc_Mode(true), _hardEmission(1),
-  _spinOpt(1), _softOpt(2), _hardPOWHEG(false), muPt(ZERO),
+  _softOpt(2), _hardPOWHEG(false), muPt(ZERO),
   _maxTryFSR(100000), _maxFailFSR(100), _fracFSR(0.001),
   _nFSR(0), _nFailedFSR(0)
 {}
@@ -69,7 +69,7 @@ IBPtr QTildeShowerHandler::fullclone() const {
 void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoReadOption
-     << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
+     << _limitEmissions << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
      << _trunc_Mode << _hardEmission << _reconOpt 
@@ -80,7 +80,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
 void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoReadOption
-     >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
+     >> _limitEmissions >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
      >> _trunc_Mode >> _hardEmission >> _reconOpt
@@ -328,21 +328,6 @@ void QTildeShowerHandler::Init() {
      "OffShell5",
      "Try and preserve q2 but if pt negative just zero it",
      5);
-
-  static Switch<QTildeShowerHandler,unsigned int> interfaceSpinCorrelations
-    ("SpinCorrelations",
-     "Treatment of spin correlations in the parton shower",
-     &QTildeShowerHandler::_spinOpt, 1, false, false);
-  static SwitchOption interfaceSpinCorrelationsNo
-    (interfaceSpinCorrelations,
-     "No",
-     "No spin correlations",
-     0);
-  static SwitchOption interfaceSpinCorrelationsSpin
-    (interfaceSpinCorrelations,
-     "Yes",
-     "Include the azimuthal spin correlations only",
-     1);
 
   static Switch<QTildeShowerHandler,unsigned int> interfaceSoftCorrelations
     ("SoftCorrelations",
