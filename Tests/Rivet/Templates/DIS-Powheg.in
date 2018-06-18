@@ -7,7 +7,6 @@
 # usage: Herwig read DIS.in
 ##################################################
 read snippets/EPCollider.in
-read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF

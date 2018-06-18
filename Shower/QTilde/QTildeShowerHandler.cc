@@ -2141,6 +2141,13 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
 	  spin->decayVertex(VertexPtr());
 	}
       }
+      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+	if(particlesToShower[ix]->progenitor()->isFinalState() ||
+	   (hard && !particlesToShower[ix]->progenitor()->isFinalState())) {
+	  if(particlesToShower[ix]->progenitor()->spinInfo())
+	    particlesToShower[ix]->progenitor()->spinInfo()->reset();
+	}
+      }
     }
     // loop over particles
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
