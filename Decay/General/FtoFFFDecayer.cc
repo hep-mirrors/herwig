@@ -116,6 +116,8 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 	inwave_.first[ix].conjugate();
       }
     }
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   // setup spin info when needed
   if(meopt==Terminate) {

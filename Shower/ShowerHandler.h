@@ -74,6 +74,13 @@ public:
     return currentHandler_;
   }
 
+  /**
+   *  pointer to "this", the current ShowerHandler.
+   */
+  static bool currentHandlerIsSet() {
+    return currentHandler_;
+  }
+
 public:
 
   /**

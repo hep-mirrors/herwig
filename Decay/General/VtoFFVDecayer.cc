@@ -123,6 +123,8 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
     VectorWaveFunction::
       calculateWaveFunctions(inVector_,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     Helicity::incoming,false);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
 
   if(meopt==Terminate) {

@@ -197,6 +197,8 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
+    // fix rho if no correlations
+    fixRho(_rho);
   }
   // setup spin info when needed
   if(meopt==Terminate) {

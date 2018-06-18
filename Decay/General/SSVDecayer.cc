@@ -102,6 +102,8 @@ double SSVDecayer::me2(const int , const Particle & inpart,
     ScalarWaveFunction::
       calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

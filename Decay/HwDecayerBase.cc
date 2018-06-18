@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
+#include "Herwig/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -153,4 +154,10 @@ void HwDecayerBase::initializeMECorrection(RealEmissionProcessPtr , double & ,
 RealEmissionProcessPtr HwDecayerBase::applyHardMatrixElementCorrection(RealEmissionProcessPtr) {
   assert(false);
   return RealEmissionProcessPtr();
+}
+
+void HwDecayerBase::fixRho(RhoDMatrix & rho) const {
+  if(ShowerHandler::currentHandlerIsSet() &&
+     !ShowerHandler::currentHandler()->spinCorrelations())
+    rho.reset();
 }
