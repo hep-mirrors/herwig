@@ -2,3 +2,4 @@
 # select the analyses
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1491950
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1614149
