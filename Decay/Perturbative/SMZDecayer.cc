@@ -177,6 +177,8 @@ double SMZDecayer::me2(const int, const Particle & part,
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 					       const_ptr_cast<tPPtr>(&part),
 					       incoming,false);
+    // fix rho if no correlations
+    fixRho(_rho);
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),

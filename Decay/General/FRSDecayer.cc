@@ -89,6 +89,8 @@ double FRSDecayer::me2(const int , const Particle & inpart,
       if(wavebar_[0].wave().Type() != SpinorType::v)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   // setup spin info when needed
   if(meopt==Terminate) {

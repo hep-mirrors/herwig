@@ -244,6 +244,8 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inbar ,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
+    // fix rho if no correlations
+    fixRho(_rho);
     if(_polOpt) {
       _rho(0,1) = _rho(1,0) = 0.;
       if(inpart.id()==ParticleID::tauminus) {

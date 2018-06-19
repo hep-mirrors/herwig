@@ -126,6 +126,8 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       if( fbwave_[1].wave().Type() != SpinorType::v )
 	fbwave_[1].conjugate();
     }
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   // setup spin info when needed
   if(meopt==Terminate) {

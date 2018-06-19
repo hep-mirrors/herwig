@@ -142,6 +142,8 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
 			     Helicity::incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
 				Helicity::incoming);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

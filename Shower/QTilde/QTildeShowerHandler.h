@@ -127,13 +127,6 @@ public:
    */
   //@{
   /**
-   *   Spin Correlations
-   */
-  unsigned int spinCorrelations() const {
-    return _spinOpt;
-  }
-
-  /**
    *  Soft correlations
    */
   unsigned int softCorrelations() const {
@@ -143,8 +136,8 @@ public:
   /**
    *  Any correlations
    */
-  bool correlations() const {
-    return _spinOpt!=0||_softOpt!=0;
+  virtual bool correlations() const {
+    return spinCorrelations()!=0||_softOpt!=0;
   }
   //@}
 
@@ -801,11 +794,6 @@ private :
    *  Mode for the hard emissions
    */
   int _hardEmission;
-
-  /**
-   *  Option to include spin correlations
-   */
-  unsigned int _spinOpt;
 
   /**
    *  Option for the kernal for soft correlations

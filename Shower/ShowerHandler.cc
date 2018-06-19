@@ -81,7 +81,7 @@ ShowerHandler::ShowerHandler() :
   renormalizationScaleFactor_(1.0),
   hardScaleFactor_(1.0),
   restrictPhasespace_(true), maxPtIsMuF_(false), 
-  pdfFreezingScale_(2.5*GeV),
+  spinOpt_(1), pdfFreezingScale_(2.5*GeV),
   doFSR_(true), doISR_(true),
   splitHardProcess_(true),
   includeSpaceTime_(false), vMin_(0.1*GeV2),
@@ -117,7 +117,8 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << showerVariations_ << doFSR_ << doISR_ << splitHardProcess_;
+     << showerVariations_ << doFSR_ << doISR_ << splitHardProcess_
+     << spinOpt_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -130,7 +131,8 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> showerVariations_ >> doFSR_ >> doISR_ >> splitHardProcess_;
+     >> showerVariations_ >> doFSR_ >> doISR_ >> splitHardProcess_
+     >> spinOpt_;
 }
 
 void ShowerHandler::Init() {
@@ -332,6 +334,21 @@ void ShowerHandler::Init() {
      "No",
      "Don't split the hard process",
      false);
+
+  static Switch<ShowerHandler,unsigned int> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Treatment of spin correlations in the parton shower",
+     &ShowerHandler::spinOpt_, 1, false, false);
+  static SwitchOption interfaceSpinCorrelationsNo
+    (interfaceSpinCorrelations,
+     "No",
+     "No spin correlations",
+     0);
+  static SwitchOption interfaceSpinCorrelationsSpin
+    (interfaceSpinCorrelations,
+     "Yes",
+     "Include the azimuthal spin correlations",
+     1);
 }
 
 Energy ShowerHandler::hardScale() const {
