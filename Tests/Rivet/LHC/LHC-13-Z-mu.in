@@ -3,3 +3,5 @@
 ##################################################
 # ATLAS Z
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041_MU
+# CMS Z UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1635889

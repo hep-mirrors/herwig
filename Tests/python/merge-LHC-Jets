@@ -237,7 +237,8 @@ for f in yodafiles:
            aopath.find("I1419070")>0 or aopath.find("I1394679")>0 or
            aopath.find("I929691" )>0 or aopath.find("I1393758")>0 or
            aopath.find("I1459051")>0 or aopath.find("I1487277")>0 or
-           aopath.find("I1421646")>0 or
+           aopath.find("I1421646")>0 or aopath.find("I1111014")>0 or
+           aopath.find("I1605749")>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -375,6 +376,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
+        hpath.find("1111014"   )>0 or
         hpath.find("1459051")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
@@ -1456,6 +1458,44 @@ useOnePt( "/CMS_2016_I1421646/d05-x01-y01",  "8000", "600" )
 useOnePt( "/CMS_2016_I1421646/d06-x01-y01",  "8000", "900" )
 useOnePt( "/CMS_2016_I1421646/d07-x01-y01",  "8000", "900" )
 
+
+logging.info("Processing CMS_2017_I1605749")
+for i in [1,2,3,4,5,6,7,8,9,10,13,16] :
+    useOnePt("/CMS_2017_I1605749/d%02d-x01-y01" % i, "8000", "400" )
+for i in [11,14,17]:
+    useOnePt("/CMS_2017_I1605749/d%02d-x01-y01" % i, "8000", "600" )
+for i in [12,15,18]:
+    useOnePt("/CMS_2017_I1605749/d%02d-x01-y01" % i, "8000", "900" )
+
+def CMS_2012_I1111014_name(i,j) :
+    if(i+j<100) :
+        return "/CMS_2012_I1111014/d%02d-x01-y01" % (i+j)
+    else :
+        return "/CMS_2012_I1111014/d%03d-x01-y01" % (i+j)
+
+logging.info("Processing CMS_2012_I1111014")
+for j in [0,22,44,66,87,106]:
+    for i in [1,2,3] :
+        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "20" )
+    for i in [4,5,6,7]:
+        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "40" )
+    for i in [8,9,10]:
+        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "80" )
+    for i in [11,12,13,14,15,16]:
+        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "110" )
+    for i in [17,18]:
+        useOnePt(CMS_2012_I1111014_name(i,j), "7000", "210" )
+    useOnePt(CMS_2012_I1111014_name(19,j), "7000", "260" )
+    if(j<87) :
+        for i in [20,21]:
+            useOnePt(CMS_2012_I1111014_name(i,j), "7000", "400" )
+    if(j<66) :
+        useOnePt(CMS_2012_I1111014_name(22,j), "7000", "600" )
+
+for i in [126,127,128] :
+    for j in [1,2] :
+        mergeByPt("/CMS_2012_I1111014/d%03d-x01-y%02d" % (i,j), "7000")
+        
 # Choose output file
 name = args[0]+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)
