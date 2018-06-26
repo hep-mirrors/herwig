@@ -170,7 +170,7 @@ MEee2Higgs2SM::colourGeometries(tcDiagPtr diag) const {
   int id = abs((diag->partons()[2])->id());
   if (id<=6 )
     sel.insert(1.0, &quarks);
-  if (id==21)
+  else if (id==21)
     sel.insert(1.0, &gluons);
   else 
     sel.insert(1.0, &neutral);
