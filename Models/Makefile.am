@@ -63,7 +63,7 @@ UED/UED__all.cc
 #############
 
 HwSusy_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 13:1:0
+$(AM_LDFLAGS) -module -version-info 13:2:0
 
 HwSusy_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Susy
