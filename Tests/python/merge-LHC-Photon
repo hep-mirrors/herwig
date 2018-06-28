@@ -68,8 +68,7 @@ if sys.version_info[:3] < (2,4,0):
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
-    parser = OptionParser(usage="%prog aidafile aidafile2 [...]")
-    parser.add_option("-o", "--out", dest="OUTFILE", default="-")
+    parser = OptionParser(usage="%prog base")
     verbgroup = OptionGroup(parser, "Verbosity control")
     verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
                          default=logging.INFO, help="print debug (very verbose) messages")
@@ -284,5 +283,6 @@ useOnePt("/MC_PHOTONJETUE/trans-ptsum-gamma","0")
 useOnePt("/MC_PHOTONJETUE/trans-ptsum-jet","0")
 
 # Choose output file
-yoda.writeYODA(outhistos,opts.OUTFILE)
+name = args[0]+"-Photon.yoda"
+yoda.writeYODA(outhistos,name)
 sys.exit(0)
