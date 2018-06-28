@@ -45,7 +45,7 @@ public:
   /**
    * The density. Return the pdf for the given \a parton inside the
    * given \a particle for the virtuality \a partonScale and
-   * logarithmic momentum fraction \a l \f$(l=\log(1/x)\$f. The \a
+   * logarithmic momentum fraction \a l \f$(l=\log(1/x)\f$. The \a
    * particle is assumed to have a virtuality \a particleScale.
    */
   virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
@@ -55,7 +55,7 @@ public:
    * The valence density. Return the pdf for the given cvalence \a
    * parton inside the given \a particle for the virtuality \a
    * partonScale and logarithmic momentum fraction \a l
-   * \f$(l=\log(1/x)\$f. The \a particle is assumed to have a
+   * \f$(l=\log(1/x)\f$. The \a particle is assumed to have a
    * virtuality \a particleScale. If not overidden by a sub class this
    * will return zero.
    */
