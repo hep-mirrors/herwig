@@ -27,6 +27,7 @@ Energy2 ShowerTree::_vmin2 = 0.1*GeV2;
 
 namespace {
   void findBeam(tPPtr & beam, PPtr incoming) {
+    if(beam==incoming) return;
     while(!beam->children().empty()) {
       bool found=false;
       for(unsigned int ix=0;ix<beam->children().size();++ix) {
