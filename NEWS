@@ -2,6 +2,16 @@ Herwig News							 -*- outline -*-
 ================================================================================
 
 
+* Herwig 7.1.4 release: 2018-06-28
+
+** More matrix elements and better handling of BSM physics
+
+** Fix for spin correlations in angular-ordered shower, effects top decays
+
+** Allow fixed target collisions
+
+** various minor fixes
+
 * Herwig 7.1.3 release: 2018-04-05
 
 ** Dipole Shower
