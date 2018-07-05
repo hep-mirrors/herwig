@@ -921,7 +921,7 @@ HadronSelector::hadronsBelowThreshold(Energy threshold, tcPDPtr ptr1,
   vector<pair<tcPDPtr,double> > candidates;
   KupcoData::const_iterator hit = tit->second.begin();
   // find the hadrons
-  while(hit->mass<threshold&&hit!=tit->second.end()) {
+  while(hit!=tit->second.end()&&hit->mass<threshold) {
     // find the hadron
     int sign = signHadron(ptr1,ptr2,hit->ptrData);
     tcPDPtr candidate = sign > 0 ? hit->ptrData : hit->ptrData->CC();
