@@ -18,8 +18,8 @@
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 
 using namespace Herwig;
@@ -54,27 +54,12 @@ updateParameters(tShowerParticlePtr theParent,
 void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType partnerType,
-	       bool massVeto) const {
+	       ShowerPartnerType partnerType) const {
   assert(children.size()==2);
   // calculate the scales
   splittingFn()->evaluateFinalStateScales(partnerType,scale(),z(),parent,
 					  children[0],children[1]);
-  // set the maximum virtual masses
-  if(massVeto) {
-    Energy2 q2 = z()*(1.-z())*sqr(scale());
-    IdList ids(3);
-    ids[0] = parent->dataPtr();
-    ids[1] = children[0]->dataPtr();
-    ids[2] = children[1]->dataPtr();
-    const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
-    if(ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma ) {
-      q2 += sqr(virtualMasses[0]);
-    }
-    // limits on further evolution
-    children[0]->scales().Max_Q2 =     z() *(q2-sqr(virtualMasses[2])/(1.-z()));
-    children[1]->scales().Max_Q2 = (1.-z())*(q2-sqr(virtualMasses[1])/    z() );
-  }
+
   // update the parameters
   updateParameters(parent, children[0], children[1], true);
   // set up the colour connections
@@ -171,10 +156,13 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
   if(children[0]->children().empty()) children[0]->virtualMass(virtualMasses[1]);
   if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
   // compute the new pT of the branching
-  Energy2 pt2=sqr(z()*(1.-z()))*sqr(scale())
-    - sqr(children[0]->virtualMass())*(1.-z())
-    - sqr(children[1]->virtualMass())*    z() ;
-  if(ids[0]->id()!=ParticleID::g) pt2 += z()*(1.-z())*sqr(virtualMasses[0]);
+  Energy2 m02 = (ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma) ?
+  	sqr(virtualMasses[0]) : Energy2();
+
+  Energy2 pt2 = QTildeKinematics::pT2_FSR(
+        sqr(scale()), z(), m02, sqr(children[0]->virtualMass()), sqr(children[1]->virtualMass())
+        );
+
   if(pt2>ZERO) {
     pT(sqrt(pt2));
   }
@@ -182,10 +170,9 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
     pt2=ZERO;
     pT(ZERO);
   }
-  Energy2 q2 = 
-    sqr(children[0]->virtualMass())/z() + 
-    sqr(children[1]->virtualMass())/(1.-z()) +
-    pt2/z()/(1.-z());
+  Energy2 q2 = QTildeKinematics::q2_FSR(
+      pt2, z(), sqr(children[0]->virtualMass()), sqr(children[1]->virtualMass())
+    );
   parent->virtualMass(sqrt(q2));
 }
 

@@ -41,11 +41,6 @@ namespace Herwig {
   public:
     
     /**
-     * The default constructor.
-     */
-    CMWHalfHalfOneSplitFn()  : HalfHalfOneSplitFn() {}
-    
-    /**
      *   Methods to return the splitting function.
      */
       //@{

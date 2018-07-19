@@ -1,35 +1,50 @@
 // -*- C++ -*-
 //
-// Decay_QTildeShowerKinematics1to2.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// IS_QTildeShowerKinematics1to2.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_Decay_QTildeShowerKinematics1to2_H
-#define HERWIG_Decay_QTildeShowerKinematics1to2_H
+#ifndef HERWIG_IS_QTildeShowerKinematics1to2_H
+#define HERWIG_IS_QTildeShowerKinematics1to2_H
 //
-// This is the declaration of the Decay_QTildeShowerKinematics1to2 class.
+// This is the declaration of the IS_QTildeShowerKinematics1to2 class.
 //
 
-#include "Herwig/Shower/QTilde/Base/ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /** \ingroup Shower
- *
- *  This (concrete) class provides the specific decay shower
+ *  
+ *  This (concrete) class provides the specific Intial State shower
  *  kinematics information.
  *
  *  @see ShowerKinematics
- *  @see IS_QTildeShowerKinematics1to2
  *  @see FS_QTildeShowerKinematics1to2
+ *  @see Decay_QTildeShowerKinematics1to2
  *  @see KinematicsReconstructor
- *
  */
-class Decay_QTildeShowerKinematics1to2: public ShowerKinematics {
+class IS_QTildeShowerKinematics1to2: public ShowerKinematics {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   *  Construct in terms of the basis states
+   */
+  IS_QTildeShowerKinematics1to2()= default;
+
+  /**
+   * The default constructor.
+   */
+  IS_QTildeShowerKinematics1to2(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+    : ShowerKinematics(scale,z,phi,pt,sud) {}
+  //@}
 
 public:
 
@@ -39,7 +54,6 @@ public:
    *  \f$p_\perp\f$ variables during the shower evolution.
    */
   //@{
-
   /**
    * Along with the showering evolution --- going forward for
    * time-like (forward) evolution, and going backward for space-like
@@ -53,8 +67,19 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType partnerType,
-			       bool massVeto) const;
+			       ShowerPartnerType partnerType) const;
+
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the 
+   * KinematicsReconstructor.
+   * @param parent The branching particle
+   * @param children The particles produced in the branching
+   * @param partnerType The type of evolution partner
+   */
+  virtual void updateParent( const tShowerParticlePtr parent, 
+			     const ShowerParticleVector & children,
+			     ShowerPartnerType partnerType) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -69,33 +94,24 @@ public:
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
-   * @param last The particle to update
-   * @param mass The mass to be used, if less than zero on-shell
+   * @param theLast The particle.
+   * @param px The \f$x\f$ component of the \f$p_T\f$.
+   * @param py The \f$y\f$ component of the \f$p_T\f$.
    */
-  virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
-
-  /**
-   * Update the parent Kinematics from the knowledge of the kinematics
-   * of the children. This method will be used by the KinematicsReconstructor.
-   * @param parent   The parent
-   * @param children The children
-   * @param partnerType The type of evolution partner
-   */
-  virtual void updateParent(const tShowerParticlePtr parent,
-			    const ShowerParticleVector & children,
-			    ShowerPartnerType partnerType) const;
-
+  virtual void updateLast(const tShowerParticlePtr theLast,
+			  Energy px, Energy py) const;
   //@}
 
 private:
+
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Decay_QTildeShowerKinematics1to2 & operator=(const Decay_QTildeShowerKinematics1to2 &);
+  IS_QTildeShowerKinematics1to2 & operator=(const IS_QTildeShowerKinematics1to2 &) = delete;
 
 };
 
 }
 
-#endif /* HERWIG_Decay_QTildeShowerKinematics1to2_H */
+#endif /* HERWIG_IS_QTildeShowerKinematics1to2_H */

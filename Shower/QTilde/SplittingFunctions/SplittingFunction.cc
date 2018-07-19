@@ -130,13 +130,13 @@ void SplittingFunction::Init() {
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {
-   os << oenum(_interactionType) << _interactionOrder 
+   os << oenum(_interactionType)
       << oenum(_colourStructure) << _colourFactor
       << angularOrdered_ << scaleChoice_;
 }
 
 void SplittingFunction::persistentInput(PersistentIStream & is, int) {
-  is >> ienum(_interactionType) >> _interactionOrder 
+  is >> ienum(_interactionType)
      >>	ienum(_colourStructure) >> _colourFactor
      >> angularOrdered_ >> scaleChoice_;
 }

@@ -20,7 +20,7 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximationGenerator.h"
 
 using namespace Herwig;

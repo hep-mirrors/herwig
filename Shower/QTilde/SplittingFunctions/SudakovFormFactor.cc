@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// QTildeSudakov.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// SudakovFormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,49 +8,255 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QTildeSudakov class.
+// functions of the SudakovFormFactor class.
 //
 
-#include "QTildeSudakov.h"
+#include "SudakovFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/PDT/ParticleData.h"
-#include "ThePEG/EventRecord/Event.h"
-#include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
-#include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig/Shower/QTilde/Default/FS_QTildeShowerKinematics1to2.h"
-#include "Herwig/Shower/QTilde/Default/IS_QTildeShowerKinematics1to2.h"
-#include "Herwig/Shower/QTilde/Default/Decay_QTildeShowerKinematics1to2.h"
-#include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
+#include "SudakovCutOff.h"
+
+#include <array>
+using std::array;
 
 using namespace Herwig;
 
-DescribeNoPIOClass<QTildeSudakov,Herwig::SudakovFormFactor>
-describeQTildeSudakov ("Herwig::QTildeSudakov","HwShower.so");
+DescribeClass<SudakovFormFactor,Interfaced>
+describeSudakovFormFactor ("Herwig::SudakovFormFactor","");
 
-void QTildeSudakov::Init() {
-
-  static ClassDocumentation<QTildeSudakov> documentation
-    ("The QTildeSudakov class implements the Sudakov form factor for ordering it"
-     " qtilde");
+void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
+  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_ << cutoff_;
 }
 
-bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
+void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
+  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_ >> cutoff_;
+}
+
+void SudakovFormFactor::Init() {
+
+  static ClassDocumentation<SudakovFormFactor> documentation
+    ("The SudakovFormFactor class is the base class for the implementation of Sudakov"
+     " form factors in Herwig");
+
+  static Reference<SudakovFormFactor,SplittingFunction>
+    interfaceSplittingFunction("SplittingFunction",
+			       "A reference to the SplittingFunction object",
+			       &Herwig::SudakovFormFactor::splittingFn_,
+			       false, false, true, false);
+
+  static Reference<SudakovFormFactor,ShowerAlpha>
+    interfaceAlpha("Alpha",
+		   "A reference to the Alpha object",
+		   &Herwig::SudakovFormFactor::alpha_,
+		   false, false, true, false);
+
+  static Reference<SudakovFormFactor,SudakovCutOff>
+    interfaceCutoff("Cutoff",
+		   "A reference to the SudakovCutOff object",
+		   &Herwig::SudakovFormFactor::cutoff_,
+		   false, false, true, false);
+
+  static Parameter<SudakovFormFactor,double> interfacePDFmax
+    ("PDFmax",
+     "Maximum value of PDF weight. ",
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 1000000.0,
+     false, false, Interface::limited);
+
+  static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
+    ("PDFFactor",
+     "Include additional factors in the overestimate for the PDFs",
+     &SudakovFormFactor::pdffactor_, 0, false, false);
+  static SwitchOption interfacePDFFactorNo
+    (interfacePDFFactor,
+     "No",
+     "Don't include any factors",
+     0);
+  static SwitchOption interfacePDFFactorOverZ
+    (interfacePDFFactor,
+     "OverZ",
+     "Include an additional factor of 1/z",
+     1);
+  static SwitchOption interfacePDFFactorOverOneMinusZ
+    (interfacePDFFactor,
+     "OverOneMinusZ",
+     "Include an additional factor of 1/(1-z)",
+     2);
+  static SwitchOption interfacePDFFactorOverZOneMinusZ
+    (interfacePDFFactor,
+     "OverZOneMinusZ",
+     "Include an additional factor of 1/z/(1-z)",
+     3);
+  static SwitchOption interfacePDFFactorOverRootZ
+    (interfacePDFFactor,
+     "OverRootZ",
+     "Include an additional factor of 1/sqrt(z)",
+     4);
+  static SwitchOption interfacePDFFactorRootZ
+    (interfacePDFFactor,
+     "RootZ",
+     "Include an additional factor of sqrt(z)",
+     5);
+
+
+}
+
+bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
+  double ratio=alphaSVetoRatio(pt2,1.);
+  return UseRandom::rnd() > ratio;
+}
+
+double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
+  factor *= ShowerHandler::currentHandler()->renormalizationScaleFactor();
+  return alpha_->ratio(pt2, factor);
+}
+
+
+bool SudakovFormFactor::PDFVeto(const Energy2 t, const double x,
+	const tcPDPtr parton0, const tcPDPtr parton1,
+	Ptr<BeamParticleData>::transient_const_pointer beam) const {
+  double ratio=PDFVetoRatio(t,x,parton0,parton1,beam,1.);
+  return UseRandom::rnd() > ratio;
+}
+
+double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
+        const tcPDPtr parton0, const tcPDPtr parton1,
+        Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
+  assert(pdf_);
+  Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor()*factor);
+  if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
+
+  const double newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
+  if(newpdf<=0.) return 0.;
+
+  const double oldpdf=pdf_->xfx(beam,parton1,theScale,x);
+  if(oldpdf<=0.) return 1.;
+  
+  const double ratio = newpdf/oldpdf;
+  double maxpdf = pdfmax_;
+
+  switch (pdffactor_) {
+  case 0: break;
+  case 1: maxpdf /= z(); break;
+  case 2: maxpdf /= 1.-z(); break;
+  case 3: maxpdf /= (z()*(1.-z())); break;
+  case 4: maxpdf /= sqrt(z()); break;
+  case 5: maxpdf *= sqrt(z()); break;
+  default :
+    throw Exception() << "SudakovFormFactor::PDFVetoRatio invalid PDFfactor = "
+		      << pdffactor_ << Exception::runerror;
+    
+  }
+
+  if (ratio > maxpdf) {
+    generator()->log() << "PDFVeto warning: Ratio > " << name()
+                       << ":PDFmax (by a factor of "
+                       << ratio/maxpdf <<") for "
+                       << parton0->PDGName() << " to "
+                       << parton1->PDGName() << "\n";
+  }
+  return ratio/maxpdf ;
+}
+
+
+
+
+
+
+
+
+void SudakovFormFactor::addSplitting(const IdList & in) {
+  bool add=true;
+  for(unsigned int ix=0;ix<particles_.size();++ix) {
+    if(particles_[ix].size()==in.size()) {
+      bool match=true;
+      for(unsigned int iy=0;iy<in.size();++iy) {
+	if(particles_[ix][iy]!=in[iy]) {
+	  match=false;
+	  break;
+	}
+      }
+      if(match) {
+	add=false;
+	break;
+      }
+    }
+  }
+  if(add) particles_.push_back(in);
+}
+
+void SudakovFormFactor::removeSplitting(const IdList & in) {
+  for(vector<IdList>::iterator it=particles_.begin();
+      it!=particles_.end();++it) {
+    if(it->size()==in.size()) {
+      bool match=true;
+      for(unsigned int iy=0;iy<in.size();++iy) {
+	if((*it)[iy]!=in[iy]) {
+	  match=false;
+	  break;
+	}
+      }
+      if(match) {
+	vector<IdList>::iterator itemp=it;
+	--itemp;
+	particles_.erase(it);
+	it = itemp;
+      }
+    }
+  }
+}
+
+Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
+				  const IdList &ids,
+				  double enhance,bool ident,
+				  double detune) const {
+  unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
+  double c =
+    1./((splittingFn_->integOverP(zlimits_.second,ids,pdfopt) -
+	 splittingFn_->integOverP(zlimits_.first ,ids,pdfopt))* 
+	alpha_->overestimateValue()/Constants::twopi*enhance*detune);
+  assert(iopt<=2);
+  if(iopt==1) {
+    c/=pdfmax_;
+    //symmetry of FS gluon splitting
+    if(ident) c*=0.5;
+  }
+  else if(iopt==2) c*=-1.;
+  double r = UseRandom::rnd();
+  if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
+    return t1*pow(r,c);
+  }
+  else
+    return Constants::MaxEnergy2;
+}
+
+double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
+  unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
+  double lower = splittingFn_->integOverP(zlimits_.first,ids,pdfopt);
+  return splittingFn_->invIntegOverP
+    (lower + UseRandom::rnd()*(splittingFn_->integOverP(zlimits_.second,ids,pdfopt) - 
+			       lower),ids,pdfopt);
+}
+
+bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
 				  double detune) {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
   t = guesst(told,0,ids_,enhance,ids_[1]==ids_[2],detune);
-  z(guessz(0,ids_)); 
+  z_ = guessz(0,ids_); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
   if(t<tmin) {
@@ -61,7 +267,7 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
     return true; 
 } 
 
-bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
+bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
 				   double enhance,
 				   double detune) {
   Energy2 told = t;
@@ -69,7 +275,7 @@ bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
   if(!computeSpaceLikeLimits(t,x)) return false;
   // guess values of t and z
   t = guesst(told,1,ids_,enhance,ids_[1]==ids_[2],detune); 
-  z(guessz(1,ids_)); 
+  z_ = guessz(1,ids_);
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
   if(t<tmin) {
@@ -80,37 +286,35 @@ bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
     return true; 
 } 
 
-bool QTildeSudakov::PSVeto(const Energy2 t,
-			   const Energy2 maxQ2) {
+bool SudakovFormFactor::PSVeto(const Energy2 t) {
   // still inside PS, return true if outside
   // check vs overestimated limits
-  if(z() < zLimits().first || z() > zLimits().second) return true;
-  Energy2 q2 = z()*(1.-z())*t;
-  if(ids_[0]->id()!=ParticleID::g &&
-     ids_[0]->id()!=ParticleID::gamma ) q2 += masssquared_[0];
-  if(q2>maxQ2) return true;
-  // compute the pts
-  Energy2 pt2 = z()*(1.-z())*q2 - masssquared_[1]*(1.-z()) - masssquared_[2]*z();
+  if (z() < zlimits_.first || z() > zlimits_.second) return true;
+
+  Energy2 m02 = (ids_[0]->id()!=ParticleID::g && ids_[0]->id()!=ParticleID::gamma) ?
+  	masssquared_[0] : Energy2();
+  
+  Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2]);
+
   // if pt2<0 veto
-  if(pt2<pT2min()) return true;
+  if (pt2<cutoff_->pT2min()) return true;
   // otherwise calculate pt and return
-  pT(sqrt(pt2));
+  pT_ = sqrt(pt2);
   return false;
 }
 
 
  
-ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
+ShoKinPtr SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,
 						   const RhoDMatrix & rho,
 						   double enhance,
-						   double detuning,
-               					   Energy2 maxQ2) {
+						   double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
-  z(0.);
-  phi(0.); 
+  z_ = 0.;
+  phi_ = 0.; 
   // perform initialization
   Energy2 tmax(sqr(startingScale)),tmin;
   initialize(ids,tmin);
@@ -125,7 +329,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
     }
-    while(PSVeto(t,maxQ2) ||
+    while(PSVeto(t) ||
         SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning) || 
         alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
@@ -133,7 +337,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
     bool alphaRew(true),PSRew(true),SplitRew(true);
     do {
       if(!guessTimeLike(t,tmin,enhance,detuning)) break;
-      PSRew=PSVeto(t,maxQ2);
+      PSRew=PSVeto(t);
       if (PSRew) continue;
       SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho,detuning);
       alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
@@ -185,10 +389,10 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   if(q_ < ZERO) return ShoKinPtr();
   
   // return the ShowerKinematics object
-  return createFinalStateBranching(q_,z(),phi(),pT()); 
+  return new_ptr(FS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
-ShoKinPtr QTildeSudakov::
+ShoKinPtr SudakovFormFactor::
 generateNextSpaceBranching(const Energy startingQ,
 			   const IdList &ids,
 			   double x,
@@ -199,8 +403,8 @@ generateNextSpaceBranching(const Energy startingQ,
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
-  z(0.);
-  phi(0.);
+  z_ = 0.;
+  phi_ = 0.;
   // perform the initialization
   Energy2 tmax(sqr(startingQ)),tmin;
   initialize(ids,tmin);
@@ -214,10 +418,10 @@ generateNextSpaceBranching(const Energy startingQ,
     // No need for more if-statements in this loop.
     do {
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
-      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+      pt2 = QTildeKinematics::pT2_ISR(t,z(),masssquared_[2]);
     }
-    while(pt2 < pT2min()||
-        z() > zLimits().second||
+    while(pt2 < cutoff_->pT2min()||
+        z() > zlimits_.second||
 	  SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning)||
         alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,ids[0],ids[1],beam));
@@ -228,9 +432,9 @@ generateNextSpaceBranching(const Energy startingQ,
     bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
     do {
       if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
-      pt2=sqr(1.-z())*t-z()*masssquared_[2];
-      ptRew=pt2 < pT2min();
-      zRew=z() > zLimits().second;
+      pt2 = QTildeKinematics::pT2_ISR(t,z(),masssquared_[2]);
+      ptRew=pt2 < cutoff_->pT2min();
+      zRew=z() > zlimits_.second;
       if (ptRew||zRew) continue;
       SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,rho,detuning);
       alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t);
@@ -283,18 +487,18 @@ generateNextSpaceBranching(const Energy startingQ,
     }
     while( PDFRew || SplitRew || alphaRew);
   }
-  if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
+  if(t > ZERO && zlimits_.first < zlimits_.second)  q_ = sqrt(t);
   else return ShoKinPtr();
   
-  pT(sqrt(pt2));
+  pT_ = sqrt(pt2);
   // create the ShowerKinematics and return it
-  return createInitialStateBranching(q_,z(),phi(),pT());
+  return new_ptr(IS_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
-void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin) {
+void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin) {
   ids_=ids;
-  tmin = cutOffOption() != 2 ? ZERO : 4.*pT2min();
-  masses_ = virtualMasses(ids);
+  tmin = 4.*cutoff_->pT2min();
+  masses_ = cutoff_->virtualMasses(ids);
   masssquared_.clear();
   for(unsigned int ix=0;ix<masses_.size();++ix) {
     masssquared_.push_back(sqr(masses_[ix]));
@@ -302,7 +506,7 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin) {
   }
 }
 
-ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
+ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingScale,
 						    const Energy stoppingScale,
 						    const Energy minmass,
 						    const IdList &ids,
@@ -312,8 +516,8 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
   q_ = Constants::MaxEnergy;
-  z(0.);
-  phi(0.); 
+  z_ = 0.;
+  phi_ = 0.;
   // perform initialisation
   Energy2 tmax(sqr(stoppingScale)),tmin;
   initialize(ids,tmin);
@@ -324,23 +528,23 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   Energy2 t(tmin),pt2(-MeV2);
   do {
     if(!guessDecay(t,tmax,minmass,enhance,detuning)) break;
-    pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
+    pt2 = QTildeKinematics::pT2_Decay(t,z(),masssquared_[0],masssquared_[2]);
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho,detuning)|| 
 	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
-	pt2<pT2min() ||
+	pt2<cutoff_->pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
     q_ = sqrt(t);
-    pT(sqrt(pt2));
+    pT_ = sqrt(pt2);
   }
   else return ShoKinPtr();
-  phi(0.);
+  phi_ = 0.;
   // create the ShowerKinematics object
-  return createDecayBranching(q_,z(),phi(),pT());
+  return new_ptr(Decay_QTildeShowerKinematics1to2(q_,z(),phi(),pT(),this)); 
 }
 
-bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
+bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 			       double enhance, double detune) {
   // previous scale
   Energy2 told = t;
@@ -351,18 +555,17 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   }
   Energy2 tm2 = tmax-masssquared_[0];
   Energy tm  = sqrt(tm2); 
-  pair<double,double> limits=make_pair(sqr(minmass/masses_[0]),
-				       1.-sqrt(masssquared_[2]+pT2min()+
+  zlimits_ = make_pair(sqr(minmass/masses_[0]),
+				       1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
 					       0.25*sqr(masssquared_[2])/tm2)/tm
 				       +0.5*masssquared_[2]/tm2);
-  zLimits(limits);
-  if(zLimits().second<zLimits().first) {
+  if(zlimits_.second<zlimits_.first) {
     t=-1.0*GeV2;
     return false;
   }
   // guess values of t and z
   t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2],detune);
-  z(guessz(2,ids_)); 
+  z_ = guessz(2,ids_); 
   // actual values for z-limits
   if(t<masssquared_[0])  {
     t=-1.0*GeV2;
@@ -370,12 +573,11 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   }
   tm2 = t-masssquared_[0];
   tm  = sqrt(tm2); 
-  limits=make_pair(sqr(minmass/masses_[0]),
-		   1.-sqrt(masssquared_[2]+pT2min()+
+  zlimits_ = make_pair(sqr(minmass/masses_[0]),
+		   1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
 			   0.25*sqr(masssquared_[2])/tm2)/tm
 		   +0.5*masssquared_[2]/tm2);
-  zLimits(limits);
-  if(t>tmax||zLimits().second<zLimits().first) {
+  if(t>tmax||zlimits_.second<zlimits_.first) {
     t=-1.0*GeV2;
     return false;
   }
@@ -383,57 +585,54 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return true; 
 } 
 
-bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
+bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) {
   if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
+  const Energy2 pT2min = cutoff_->pT2min();
   // special case for gluon radiating
-  pair<double,double> limits;
   if(ids_[0]->id()==ParticleID::g||ids_[0]->id()==ParticleID::gamma) {
     // no emission possible
-    if(t<16.*(masssquared_[1]+pT2min())) {
+    if(t<16.*(masssquared_[1]+pT2min)) {
       t=-1.*GeV2;
       return false;
     }
     // overestimate of the limits
-    limits.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min())/t)));
-    limits.second = 1.-limits.first;
+    zlimits_.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min)/t)));
+    zlimits_.second = 1.-zlimits_.first;
   }
   // special case for radiated particle is gluon 
   else if(ids_[2]->id()==ParticleID::g||ids_[2]->id()==ParticleID::gamma) {
-    limits.first  =    sqrt((masssquared_[1]+pT2min())/t);
-    limits.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
+    zlimits_.first  =    sqrt((masssquared_[1]+pT2min)/t);
+    zlimits_.second = 1.-sqrt((masssquared_[2]+pT2min)/t);
   }
   else if(ids_[1]->id()==ParticleID::g||ids_[1]->id()==ParticleID::gamma) {
-    limits.second  =    sqrt((masssquared_[2]+pT2min())/t);
-    limits.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
+    zlimits_.second  =    sqrt((masssquared_[2]+pT2min)/t);
+    zlimits_.first   = 1.-sqrt((masssquared_[1]+pT2min)/t);
   }
   else {
-    limits.first  =    (masssquared_[1]+pT2min())/t;
-    limits.second = 1.-(masssquared_[2]+pT2min())/t; 
+    zlimits_.first  =    (masssquared_[1]+pT2min)/t;
+    zlimits_.second = 1.-(masssquared_[2]+pT2min)/t; 
   }
-  if(limits.first>=limits.second) {
+  if(zlimits_.first>=zlimits_.second) {
     t=-1.*GeV2;
     return false;
   }
-  zLimits(limits);
   return true;
 }
 
-bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
+bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x) {
   if (t < 1e-20 * GeV2) {
     t=-1.*GeV2;
     return false;
   }
-  pair<double,double> limits;
   // compute the limits
-  limits.first = x;
+  zlimits_.first = x;
   double yy = 1.+0.5*masssquared_[2]/t;
-  limits.second = yy - sqrt(sqr(yy)-1.+pT2min()/t); 
+  zlimits_.second = yy - sqrt(sqr(yy)-1.+cutoff_->pT2min()/t); 
   // return false if lower>upper
-  zLimits(limits);
-  if(limits.second<limits.first) {
+  if(zlimits_.second<zlimits_.first) {
     t=-1.*GeV2;
     return false;
   }
@@ -550,7 +749,7 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
 
 }
 
-double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
+double SudakovFormFactor::generatePhiForward(ShowerParticle & particle,
 					 const IdList & ids,
 					 ShoKinPtr kinematics,
 					 const RhoDMatrix & rho) {
@@ -565,8 +764,8 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   Energy2 pipj,pik;
   bool canBeSoft[2] = {ids[1]->id()==ParticleID::g || ids[1]->id()==ParticleID::gamma,
 		       ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma };
-  array<Energy2,3> pjk = {};
-  array<Energy, 3> Ek = {};
+  array<Energy2,3> pjk;
+  array<Energy,3> Ek;
   Energy Ei,Ej;
   Energy2 m12(ZERO),m22(ZERO);
   InvEnergy2 aziMax(ZERO);
@@ -746,7 +945,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   return phi;
 }
 
-double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
+double SudakovFormFactor::generatePhiBackward(ShowerParticle & particle,
 					  const IdList & ids,
 					  ShoKinPtr kinematics,
 					  const RhoDMatrix & rho) {
@@ -761,7 +960,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
     (ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma);
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
-  array<Energy2,3> pjk = {};
+  array<Energy2,3> pjk;
   Energy Ei,Ej,Ek;
   InvEnergy2 aziMax(ZERO);
   if(softAllowed) {
@@ -890,7 +1089,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   return phi;
 }
 
-double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
+double SudakovFormFactor::generatePhiDecay(ShowerParticle & particle,
 				       const IdList & ids,
 				       ShoKinPtr kinematics,
 				       const RhoDMatrix &) {
@@ -946,7 +1145,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   Energy2 dot3 = pj*qperp0;
   Energy2 pipj = alpha0*dot1+beta0*dot2+dot3;
   // compute the constants for the phi dependent dot product
-  array<Energy2,3> pjk = {};
+  array<Energy2,3> pjk;
   pjk[0] = zFact*(alpha0*dot1+dot3-0.5*dot2/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
     +0.5*sqr(pT)*dot2/pn/zFact/alpha0;
   pjk[1] = (pj.x() - dot2/alpha0/pn*qperp0.x())*pT;
@@ -955,7 +1154,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   Energy2 m22 = sqr(partner->dataPtr()->mass());
   Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
   InvEnergy2 aziMax;
-  array<Energy,3> Ek = {};
+  array<Energy,3> Ek;
   Energy Ei,Ej;
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
     aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
@@ -1011,7 +1210,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
 }
 
 
-Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
+Energy SudakovFormFactor::calculateScale(double zin, Energy pt, IdList ids,
 				     unsigned int iopt) {
   Energy2 tmin;
   initialize(ids,tmin);
@@ -1031,40 +1230,7 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
     return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
   else {
-    throw Exception() << "Unknown option in QTildeSudakov::calculateScale() "
+    throw Exception() << "Unknown option in SudakovFormFactor::calculateScale() "
 		      << "iopt = " << iopt << Exception::runerror;
   }
-}
-
-ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
-						   double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(FS_QTildeShowerKinematics1to2());
-  showerKin->scale(scale);
-  showerKin->z(z);
-  showerKin->phi(phi);
-  showerKin->pT(pt);
-  showerKin->SudakovFormFactor(this);
-  return showerKin;
-}
-
-ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
-						     double phi, Energy pt) {
-  ShoKinPtr showerKin = new_ptr(IS_QTildeShowerKinematics1to2());
-  showerKin->scale(scale);
-  showerKin->z(z);
-  showerKin->phi(phi);
-  showerKin->pT(pt);
-  showerKin->SudakovFormFactor(this);
-  return showerKin;
-}
-
-ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
-					      double phi, Energy pt) {
-  ShoKinPtr  showerKin = new_ptr(Decay_QTildeShowerKinematics1to2());
-  showerKin->scale(scale);
-  showerKin->z(z);
-  showerKin->phi(phi);
-  showerKin->pT(pt);
-  showerKin->SudakovFormFactor(this);
-  return showerKin;
 }

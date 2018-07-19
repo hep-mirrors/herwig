@@ -18,8 +18,7 @@
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 #include <cassert>
 
@@ -28,8 +27,7 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & children,
-		ShowerPartnerType,
-		bool massVeto) const {
+		ShowerPartnerType) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();
   ShowerParticle::Parameters & child1 = children[1]->showerParameters();
@@ -46,10 +44,6 @@ updateChildren( const tShowerParticlePtr theParent,
   child0.beta  = parent.beta  - child1.beta;
   child0.ptx   = parent.ptx   - child1.ptx;
   child0.pty   = parent.pty   - child1.pty;
-  if(massVeto) {
-    Energy2 q2 = (1.-z())*sqr(scale());
-    children[1]->scales().Max_Q2 = (1.-z())*q2/z();
-  }
 }
 
 

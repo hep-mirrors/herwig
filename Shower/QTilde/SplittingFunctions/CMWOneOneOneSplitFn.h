@@ -40,11 +40,6 @@ namespace Herwig {
   public:
     
     /**
-     * The default constructor.
-     */
-    CMWOneOneOneSplitFn() : OneOneOneSplitFn() {}
-    
-    /**
      *   Methods to return the splitting function.
      */
       //@{

@@ -16,7 +16,7 @@
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "Herwig/Decay/DecayMatrixElement.h"
-#include "Herwig/Shower/QTilde/Base/ShowerKinematics.fh"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SplittingFunction.fh"
@@ -73,9 +73,8 @@ public:
    * The default constructor.   
    * @param b All splitting functions must have an interaction order
    */
-  SplittingFunction(unsigned int b)
+  SplittingFunction()
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
-      _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
       angularOrdered_(true), scaleChoice_(2) {}
 
@@ -89,11 +88,6 @@ public:
    *  Return the type of the interaction
    */
   ShowerInteraction interactionType() const {return _interactionType;}
-
-  /**
-   *  Return the order of the splitting function in the interaction
-   */
-  unsigned int interactionOrder() const {return _interactionOrder;}
 
   /**
    *  Return the colour structure
@@ -355,11 +349,6 @@ private:
    *  The interaction type for the splitting function.
    */
   ShowerInteraction _interactionType;
-
-  /**
-   *  The order of the splitting function in the coupling
-   */
-  unsigned int _interactionOrder;
 
   /**
    *  The colour structure

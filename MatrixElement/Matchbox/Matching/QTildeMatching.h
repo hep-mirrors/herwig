@@ -14,8 +14,8 @@
 
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Default/QTildeFinder.h"
-#include "Herwig/Shower/QTilde/Default/QTildeSudakov.h"
+#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
 
 namespace Herwig {
 
@@ -181,12 +181,12 @@ private:
   /**
    * The qtilde partner finder for calculating the hard scales
    */
-  Ptr<QTildeFinder>::ptr theQTildeFinder;
+  Ptr<PartnerFinder>::ptr theQTildeFinder;
 
   /**
    * The qtilde Sudakov to access the cutoff
    */
-  Ptr<QTildeSudakov>::ptr theQTildeSudakov;
+  Ptr<SudakovFormFactor>::ptr theQTildeSudakov;
 
   /**
    * True, if PDF weight should be corrected for z/x mismatch at the

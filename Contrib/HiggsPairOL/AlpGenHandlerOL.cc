@@ -10,7 +10,7 @@
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <queue>
 #include "ThePEG/Utilities/Throw.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "gsl/gsl_rng.h"

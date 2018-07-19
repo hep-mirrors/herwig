@@ -79,6 +79,23 @@ public:
 					 ShowerInteraction,
 					 const bool setPartners=true);
   //@}
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const {return new_ptr(*this);}
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
 
 public:
 
@@ -144,6 +161,7 @@ protected:
   findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles,
 		  const bool isDecayCase);
 
+public:
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
    * this method returns their initial evolution scales as a pair.
@@ -156,25 +174,28 @@ protected:
   /**
    *  General method to calculate the initial evolution scales
    */
-  virtual pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &,
-							      const bool isDecayCase);
+  pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &,
+						      const bool isDecayCase);
 
   /**
-   *  Calculate the initial evolution scales for two final-state particles
+   *  Calculate the initial evolution scales given momenta
    */
-  virtual pair<Energy,Energy> calculateFinalFinalScales(const ShowerPPair &)=0;
+  pair<Energy,Energy> calculateFinalFinalScales(const Lorentz5Momentum & p1, 
+                                                const Lorentz5Momentum & p2);
 
   /**
-   *  Calculate the initial evolution scales for two initial-state particles
+   *  Calculate the initial evolution scales given momenta
    */
-  virtual pair<Energy,Energy> calculateInitialInitialScales(const ShowerPPair &)=0;
+  pair<Energy,Energy> calculateInitialInitialScales(const Lorentz5Momentum& p1, 
+						    const Lorentz5Momentum& p2);
 
   /**
-   *  Calculate the initial evolution scales for one initial 
-   *  and one final-state particles
+   *  Calculate the initial evolution scales given momenta
    */
-  virtual pair<Energy,Energy> calculateInitialFinalScales(const ShowerPPair &,
-							  const bool isDecayCase)=0;
+  pair<Energy,Energy> calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lorentz5Momentum& pc,
+						  const bool isDecayCase);
+
+
   //@}
 
 private:
@@ -201,6 +222,7 @@ private:
    *  Choice of the scale
    */
   int scaleChoice_;
+
 };
 
 }

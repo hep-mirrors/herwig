@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// QTildeReconstructor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// KinematicsReconstructor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QTildeReconstructor class.
+// functions of the KinematicsReconstructor class.
 //
 
-#include "QTildeReconstructor.h"
+#include "KinematicsReconstructor.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -31,8 +31,8 @@
 
 using namespace Herwig;
 
-DescribeClass<QTildeReconstructor,KinematicsReconstructor>
-describeQTildeReconstructor("Herwig::QTildeReconstructor", "HwShower.so");
+DescribeClass<KinematicsReconstructor,Interfaced>
+describeKinematicsReconstructor("Herwig::KinematicsReconstructor", "HwShower.so");
 
 namespace {
 
@@ -56,29 +56,29 @@ struct JetOrdering {
 
 }
 
-void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
+void KinematicsReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _reconopt << _initialBoost << ounit(_minQ,GeV) << _noRescale 
      << _noRescaleVector << _finalStateReconOption
      << _initialStateReconOption;
 }
 
-void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
+void KinematicsReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
      >> _noRescaleVector >> _finalStateReconOption
      >> _initialStateReconOption;  
 }
 
-void QTildeReconstructor::Init() {
+void KinematicsReconstructor::Init() {
 
-  static ClassDocumentation<QTildeReconstructor> documentation
+  static ClassDocumentation<KinematicsReconstructor> documentation
     ( "This class is responsible for the kinematics reconstruction of the showering,",
       " including the kinematics reshuffling necessary to compensate for the recoil"
       "of the emissions." );
 
-  static Switch<QTildeReconstructor,unsigned int> interfaceReconstructionOption
+  static Switch<KinematicsReconstructor,unsigned int> interfaceReconstructionOption
     ("ReconstructionOption",
      "Option for the kinematics reconstruction",
-     &QTildeReconstructor::_reconopt, 0, false, false);
+     &KinematicsReconstructor::_reconopt, 0, false, false);
   static SwitchOption interfaceReconstructionOptionGeneral
     (interfaceReconstructionOption,
      "General",
@@ -110,21 +110,21 @@ void QTildeReconstructor::Init() {
      " the colour partner on mass-shell",
      4);
 
-  static Parameter<QTildeReconstructor,Energy> interfaceMinimumQ2
+  static Parameter<KinematicsReconstructor,Energy> interfaceMinimumQ2
     ("MinimumQ2",
      "The minimum Q2 for the reconstruction of initial-final systems",
-     &QTildeReconstructor::_minQ, GeV, 0.001*GeV, 1e-6*GeV, 10.0*GeV,
+     &KinematicsReconstructor::_minQ, GeV, 0.001*GeV, 1e-6*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static RefVector<QTildeReconstructor,ParticleData> interfaceNoRescale
+  static RefVector<KinematicsReconstructor,ParticleData> interfaceNoRescale
     ("NoRescale",
      "Particles which shouldn't be rescaled to be on shell by the shower",
-     &QTildeReconstructor::_noRescaleVector, -1, false, false, true, false, false);
+     &KinematicsReconstructor::_noRescaleVector, -1, false, false, true, false, false);
 
-  static Switch<QTildeReconstructor,unsigned int> interfaceInitialInitialBoostOption
+  static Switch<KinematicsReconstructor,unsigned int> interfaceInitialInitialBoostOption
     ("InitialInitialBoostOption",
      "Option for how the boost from the system before ISR to that after ISR is applied.",
-     &QTildeReconstructor::_initialBoost, 0, false, false);
+     &KinematicsReconstructor::_initialBoost, 0, false, false);
   static SwitchOption interfaceInitialInitialBoostOptionOneBoost
     (interfaceInitialInitialBoostOption,
      "OneBoost",
@@ -136,10 +136,10 @@ void QTildeReconstructor::Init() {
      "First apply a longitudinal and then a transverse boost",
      1);
 
-  static Switch<QTildeReconstructor,unsigned int> interfaceFinalStateReconOption
+  static Switch<KinematicsReconstructor,unsigned int> interfaceFinalStateReconOption
     ("FinalStateReconOption",
      "Option for how to reconstruct the momenta of the final-state system",
-     &QTildeReconstructor::_finalStateReconOption, 0, false, false);
+     &KinematicsReconstructor::_finalStateReconOption, 0, false, false);
   static SwitchOption interfaceFinalStateReconOptionDefault
     (interfaceFinalStateReconOption,
      "Default",
@@ -170,10 +170,10 @@ void QTildeReconstructor::Init() {
      " only makes a difference if more than 3 partons.",
      4);
 
-  static Switch<QTildeReconstructor,unsigned int> interfaceInitialStateReconOption
+  static Switch<KinematicsReconstructor,unsigned int> interfaceInitialStateReconOption
     ("InitialStateReconOption",
      "Option for the reconstruction of initial state radiation",
-     &QTildeReconstructor::_initialStateReconOption, 0, false, false);
+     &KinematicsReconstructor::_initialStateReconOption, 0, false, false);
   static SwitchOption interfaceInitialStateReconOptionRapidity
     (interfaceInitialStateReconOption,
      "Rapidity",
@@ -192,12 +192,12 @@ void QTildeReconstructor::Init() {
 
 }
 
-void QTildeReconstructor::doinit() {
-  KinematicsReconstructor::doinit();
+void KinematicsReconstructor::doinit() {
+  Interfaced::doinit();
   _noRescale = set<cPDPtr>(_noRescaleVector.begin(),_noRescaleVector.end());
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
   assert(particleJetParent);
   bool emitted=true;
@@ -254,7 +254,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
   return emitted;
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
 		    pair<Energy,double> > & intrinsic,
@@ -365,7 +365,7 @@ reconstructHardJets(ShowerTreePtr hard,
 }
 
 double 
-QTildeReconstructor::solveKfactor(const Energy & root_s, 
+KinematicsReconstructor::solveKfactor(const Energy & root_s, 
 				  const JetKinVect & jets) const {
   Energy2 s = sqr(root_s);
   // must be at least two jets
@@ -414,7 +414,7 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
   throw KinematicsReconstructionVeto(); 
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   bool emitted = true;
   tShowerParticlePtr child;
@@ -443,7 +443,7 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   return emitted;
 }
 
-Boost QTildeReconstructor::
+Boost KinematicsReconstructor::
 solveBoostBeta( const double k, const Lorentz5Momentum & newq,
 		const Lorentz5Momentum & oldp ) {
   // try something different, purely numerical first: 
@@ -470,7 +470,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq,
   else              return Boost(0., 0., 0.); 
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 reconstructDecayJets(ShowerTreePtr decay,
 		     ShowerInteraction) const {
   _currentTree = decay;
@@ -668,7 +668,7 @@ reconstructDecayJets(ShowerTreePtr decay,
   return true;
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 reconstructDecayJet( const tShowerParticlePtr p) const {
   if(p->children().empty()) return false;
   tShowerParticlePtr child;
@@ -688,7 +688,7 @@ reconstructDecayJet( const tShowerParticlePtr p) const {
   return false;
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 solveDecayKFactor(Energy mb, 
 		  const Lorentz5Momentum & n, 
 		  const Lorentz5Momentum & pjet, 
@@ -745,7 +745,7 @@ solveDecayKFactor(Energy mb,
   return ix<100;
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 deconstructDecayJets(HardTreePtr decay,ShowerInteraction) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
@@ -980,7 +980,7 @@ deconstructDecayJets(HardTreePtr decay,ShowerInteraction) const {
   return true;
 }
 
-double QTildeReconstructor::
+double KinematicsReconstructor::
 inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 		       vector<Energy> mon, Energy roots) const {
   double lambda=1.;
@@ -991,7 +991,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
       ((1.+mu_q1+mu_q2)*(1.-mu_q1-mu_q2)*(mu_q1-1.-mu_q2)*(mu_q2-1.-mu_q1))/
       ((1.+mu_p1+mu_p2)*(1.-mu_p1-mu_p2)*(mu_p1-1.-mu_p2)*(mu_p2-1.-mu_p1));
     if(lambda<0.)
-      throw Exception() << "Rescaling factor is imaginary in  QTildeReconstructor::"
+      throw Exception() << "Rescaling factor is imaginary in  KinematicsReconstructor::"
 			<< "inverseRescalingFactor lambda^2= " << lambda
 			<< Exception::eventerror;
     lambda = sqrt(lambda);
@@ -1029,13 +1029,13 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
     while(ntry<100);
   }
   if(std::isnan(lambda))
-    throw Exception() << "Rescaling factor is nan in  QTildeReconstructor::"
+    throw Exception() << "Rescaling factor is nan in  KinematicsReconstructor::"
 		      << "inverseRescalingFactor " 
 		      << Exception::eventerror;
   return lambda;
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 deconstructGeneralSystem(HardTreePtr tree,
 			 ShowerInteraction type) const {
   // extract incoming and outgoing particles
@@ -1068,7 +1068,7 @@ deconstructGeneralSystem(HardTreePtr tree,
   return true;
 }
 
-bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
+bool KinematicsReconstructor::deconstructHardJets(HardTreePtr tree,
 					      ShowerInteraction type) const {
   // inverse of old recon method
   if(_reconopt == 0) {
@@ -1079,7 +1079,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
   }
   else if(_reconopt == 2) {
     throw Exception() << "Inverse reconstruction is not currently supported for ReconstructionOption Colour2 "
-		      << "in QTildeReconstructor::deconstructHardJets(). Please use one of the other options\n"
+		      << "in KinematicsReconstructor::deconstructHardJets(). Please use one of the other options\n"
 		      << Exception::runerror;
   }
   else if(_reconopt == 3 || _reconopt == 4 ) {
@@ -1089,7 +1089,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     assert(false);
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 deconstructColourSinglets(HardTreePtr tree,
 			  ShowerInteraction type) const {
   // identify the colour singlet systems
@@ -1170,7 +1170,7 @@ deconstructColourSinglets(HardTreePtr tree,
   return true;
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 deconstructColourPartner(HardTreePtr tree,
 			 ShowerInteraction type) const {
   Lorentz5Momentum ptotal;
@@ -1187,7 +1187,7 @@ deconstructColourPartner(HardTreePtr tree,
 	  emitter = *it;
 	else
 	  throw Exception() << "Only one emitting particle allowed in "
-			    << "QTildeReconstructor::deconstructColourPartner()"
+			    << "KinematicsReconstructor::deconstructColourPartner()"
 			    << Exception::runerror;
       }
     }
@@ -1199,7 +1199,7 @@ deconstructColourPartner(HardTreePtr tree,
 	  emitter = *it;
 	else
 	  throw Exception() << "Only one emitting particle allowed in "
-			    << "QTildeReconstructor::deconstructColourPartner()"
+			    << "KinematicsReconstructor::deconstructColourPartner()"
 			    << Exception::runerror;
       }
     }
@@ -1247,7 +1247,7 @@ deconstructColourPartner(HardTreePtr tree,
   }
   else {
     throw Exception() << "Unknown type of system in "
-		      << "QTildeReconstructor::deconstructColourPartner()"
+		      << "KinematicsReconstructor::deconstructColourPartner()"
 		      << Exception::runerror;
   }
   // only at this point that we can be sure all the reference vectors
@@ -1276,7 +1276,7 @@ deconstructColourPartner(HardTreePtr tree,
   return true;
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pin[2],pout[2],pbeam;
   for(unsigned int ix=0;ix<jets.size();++ix) {
@@ -1403,7 +1403,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   }
 }
 
-bool QTildeReconstructor::addIntrinsicPt(vector<ShowerProgenitorPtr> jets) const {
+bool KinematicsReconstructor::addIntrinsicPt(vector<ShowerProgenitorPtr> jets) const {
   bool added=false;
   // add the intrinsic pt if needed
   for(unsigned int ix=0;ix<jets.size();++ix) {
@@ -1447,7 +1447,7 @@ double defaultSolveBoostGamma(const double & betam,const Energy2 & kps,
 
 }
 
-LorentzRotation QTildeReconstructor::
+LorentzRotation KinematicsReconstructor::
 solveBoost(const double k, const Lorentz5Momentum & newq, 
 	   const Lorentz5Momentum & oldp ) const {
   Energy q = newq.vect().mag(); 
@@ -1503,7 +1503,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   return R;
 }
 
-LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q, 
+LorentzRotation KinematicsReconstructor::solveBoost(const Lorentz5Momentum & q, 
 						const Lorentz5Momentum & p ) const {
   Energy modp = p.vect().mag();
   Energy modq = q.vect().mag();
@@ -1524,7 +1524,7 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   return R;
 }
 
-LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
+LorentzRotation KinematicsReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
 						 const Lorentz5Momentum & p ) const {
   static const double eps = 1e-6;
   LorentzRotation R;
@@ -1556,7 +1556,7 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
   return R;
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructFinalStateSystem(bool applyBoost, 
 			    const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest, 
@@ -1691,7 +1691,7 @@ reconstructFinalStateSystem(bool applyBoost,
   }
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructInitialInitialSystem(bool & applyBoost, 
 				LorentzRotation &   toRest, 
 				LorentzRotation & fromRest,  
@@ -1759,7 +1759,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   findInitialBoost(pcm,newcmf,toRest,fromRest);
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 deconstructInitialInitialSystem(bool & applyBoost,
 				LorentzRotation & toRest,
 				LorentzRotation & fromRest,
@@ -1819,7 +1819,7 @@ deconstructInitialInitialSystem(bool & applyBoost,
   			      jets[1]->showerMomentum()).boostVector());
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
@@ -1839,7 +1839,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
       (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
       particles.push_back((**cjt).branchingParticle());
     }
-    dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
+    dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->partnerFinder()
       ->setInitialEvolutionScales(particles,false,type,false);
     // calculate the reference vectors
     unsigned int iloc(0);
@@ -1915,7 +1915,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
     particles.push_back((**cjt).branchingParticle());
   }
-  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
+  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->partnerFinder()
     ->setInitialEvolutionScales(particles,false,type,false);
   // calculate the reference vectors
   unsigned int iloc(0);
@@ -2011,7 +2011,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   }
 }
 
-Energy QTildeReconstructor::momConsEq(double k, 
+Energy KinematicsReconstructor::momConsEq(double k, 
 				      const Energy & root_s, 
 				      const JetKinVect & jets) const {
   static const Energy2 eps=1e-8*GeV2;
@@ -2027,7 +2027,7 @@ Energy QTildeReconstructor::momConsEq(double k,
   return dum - root_s; 
 }
 
-void QTildeReconstructor::boostChain(tPPtr p, const LorentzRotation &bv,
+void KinematicsReconstructor::boostChain(tPPtr p, const LorentzRotation &bv,
 				     tPPtr & parent) const {
   if(!p->parents().empty()) boostChain(p->parents()[0], bv,parent);
   else parent=p;
@@ -2046,7 +2046,7 @@ bool sortJets(ShowerProgenitorPtr j1, ShowerProgenitorPtr j2) {
 
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   // find initial- and final-state systems
   ColourSingletSystem in,out;
@@ -2066,7 +2066,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 }
 
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   static const Energy2 minQ2 = 1e-4*GeV2;
   map<ShowerProgenitorPtr,bool> used;
@@ -2192,7 +2192,7 @@ reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   }
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   static const Energy2 minQ2 = 1e-4*GeV2;
   // sort the vector by hardness of emission
@@ -2346,7 +2346,7 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   }
 }
 
-bool QTildeReconstructor::
+bool KinematicsReconstructor::
 inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
 			    vector<Energy> mon,Energy roots,
 			    Lorentz5Momentum ppartner, Energy mbar,
@@ -2385,7 +2385,7 @@ inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
   return itry<100;
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
 			      ShowerInteraction type) const {
   HardBranchingPtr incoming;
@@ -2482,7 +2482,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
     (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
     particles.push_back((**cjt).branchingParticle());
   }
-  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
+  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->partnerFinder()
     ->setInitialEvolutionScales(particles,false,type,false);
   unsigned int iloc(0);
   for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {
@@ -2570,7 +2570,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
   incoming->setMomenta(transb,1.,Lorentz5Momentum());
 }
 
-void QTildeReconstructor::deepTransform(PPtr particle,
+void KinematicsReconstructor::deepTransform(PPtr particle,
 					const LorentzRotation & r,
 					bool match,
 					PPtr original) const {
@@ -2618,7 +2618,7 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   }
 }
 
-void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
+void KinematicsReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
 							Energy2 s,
 							bool recursive) const {
   JetKinVect::iterator jit;
@@ -2672,7 +2672,7 @@ void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
   }
 }
 
-Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
+Energy KinematicsReconstructor::findMass(HardBranchingPtr branch) const {
   // KH - 230909 - If the particle has no children then it will 
   // not have showered and so it should be "on-shell" so we can
   // get it's mass from it's momentum. This means that the
@@ -2696,7 +2696,7 @@ Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
 }
 
 vector<double>
-QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
+KinematicsReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
 						  const Lorentz5Momentum & pold,
 						  const vector<Lorentz5Momentum> & p,
 						  const vector<Lorentz5Momentum> & pq) const {
@@ -2765,7 +2765,7 @@ QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
 }
 
 vector<double>
-QTildeReconstructor::initialStateRescaling(double x1, double x2, 
+KinematicsReconstructor::initialStateRescaling(double x1, double x2, 
 					   const Lorentz5Momentum & pold,
 					   const vector<Lorentz5Momentum> & p,
 					   const vector<Lorentz5Momentum> & pq,
@@ -2835,7 +2835,7 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2,
   return beta;
 }
 
-void QTildeReconstructor::
+void KinematicsReconstructor::
 reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
 			  ShowerInteraction type) const {
   // identify and catagorize the colour singlet systems
@@ -2913,7 +2913,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
   }
 }
 
-void QTildeReconstructor::findInitialBoost(const Lorentz5Momentum & pold,
+void KinematicsReconstructor::findInitialBoost(const Lorentz5Momentum & pold,
 					   const Lorentz5Momentum & pnew,
 					   LorentzRotation & toRest,
 					   LorentzRotation & fromRest) const {
