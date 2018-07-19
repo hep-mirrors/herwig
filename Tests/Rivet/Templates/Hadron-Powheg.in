@@ -24,7 +24,6 @@ set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 cd /Herwig/Shower
 set ShowerHandler:IntrinsicPtGaussian 1.9*GeV
 set ShowerHandler:HardEmission POWHEG
-read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################
 #  Create the Herwig analysis

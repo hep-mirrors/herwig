@@ -7,7 +7,6 @@ read snippets/EECollider.in
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
-read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 set EventGenerator:MaxErrors 1000000
 
 ##################################################
