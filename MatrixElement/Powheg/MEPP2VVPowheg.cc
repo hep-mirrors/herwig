@@ -3872,10 +3872,12 @@ RealEmissionProcessPtr MEPP2VVPowheg::generateHardest(RealEmissionProcessPtr bor
      (V1_->id()== 23&&abs(V2_->id())== 24) ) {
     swap(V1_,V2_);
     order = true;
-    swap(cmap[0],cmap[2]);
-    swap(cmap[1],cmap[3]);
-    swap(children_[0],children_[2]);
-    swap(children_[1],children_[3]);
+    if(born->bornOutgoing().size()==4) {
+      swap(cmap[0],cmap[2]);
+      swap(cmap[1],cmap[3]);
+      swap(children_[0],children_[2]);
+      swap(children_[1],children_[3]);
+    }
   }
   // *** N.B. ***
   // We should not have to do a swap in the ZZ case, even if the different
