@@ -171,6 +171,11 @@ public:
    */
   bool testOnShell() const { return _testOnShell; }
 
+  /**
+   *  Access to the epsilon parameter
+   */
+  Energy epsilonPS() const {return _eps;}
+
 protected:
 
   /** @name Set-up, Initialization and Access Members */
@@ -447,6 +452,11 @@ private:
    *  The selected channel
    */
   mutable unsigned int _ichannel;
+
+  /**
+   *   Epsilon parameter for phase-space integration
+   */
+  Energy _eps;
 
 };
 

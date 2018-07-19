@@ -33,13 +33,13 @@ using namespace ThePEG::Helicity;
 void DecayPhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << _integrator << _channels << _channelwgts << _maxweight << _niter 
      << _npoint << _ntry << _extpart << _partial << _widthgen << _massgen
-     << _testOnShell;
+     << _testOnShell << ounit(_eps,GeV);
 }
 
 void DecayPhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
   is >> _integrator >> _channels >> _channelwgts >> _maxweight >> _niter 
      >> _npoint >> _ntry >> _extpart >> _partial >> _widthgen >> _massgen
-     >> _testOnShell;
+     >> _testOnShell >> iunit(_eps,GeV);
 }
 
 // The following static variable is needed for the type
@@ -447,6 +447,8 @@ void DecayPhaseSpaceMode::doinit() {
   for(unsigned int ix=0;ix<_channels.size();++ix) {
     _channels[ix]->init();
   }
+  // set the phase-space cut off
+  _eps = _integrator->epsilonPS();
 }
   
 void DecayPhaseSpaceMode::doinitrun() {

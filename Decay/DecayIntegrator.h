@@ -85,7 +85,7 @@ public:
    */
   DecayIntegrator() : _niter(10), _npoint(10000), _ntry(500),
 		      _generateinter(false), _imode(-1),
-		      _realME(false), _virtualME(false) {}
+		      _realME(false), _virtualME(false), _eps(ZERO) {}
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -222,6 +222,11 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+  /**
+   *  Access to the epsilon parameter
+   */
+  Energy epsilonPS() const {return _eps;}
 
 public:
 
@@ -384,6 +389,11 @@ protected:
    */
   void hasRealEmissionME(bool in) {_realME=in;}
 
+  /**
+   * Set the epsilon parameter
+   */
+  void epsilonPS(Energy in) {_eps=in;}
+
 protected:
   
   /** @name Standard Interfaced functions. */
@@ -452,6 +462,11 @@ private:
    *  Whether or not the one-loop matrix element exists
    */
   bool _virtualME;
+
+  /**
+   *   Epsilon parameter for phase-space integration
+   */
+  Energy _eps;
   
 };
   /**

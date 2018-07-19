@@ -114,9 +114,12 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
       // lower limits on the masses of the two resonances
       for(iy=0;iy<2;++iy) {
 	lowerb[iy]=ZERO;
+	bool massless=true;
 	for(iz=0;iz<_intext[idau[iy]].size();++iz) {
+	  if(massext[_intext[idau[iy]][iz]]!=ZERO) massless = false;
 	  lowerb[iy]+=massext[_intext[idau[iy]][iz]];
 	}
+	if(massless) lowerb[iy] = _mode->epsilonPS(); 
       }
       // randomize the order
       if(UseRandom::rnd()<0.5) {
@@ -148,9 +151,12 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
       // compute the limits of integration
       upper = massint[ix]-massext[idau[1]];
       lower = ZERO;
+      bool massless=true;
       for(iy=0;iy<_intext[idau[0]].size();++iy) {
+	if(massext[_intext[idau[0]][iy]]!=ZERO) massless = false;
 	lower+=massext[_intext[idau[0]][iy]];
       }
+      if(massless) lower = _mode->epsilonPS();
       massint[idau[0]]=generateMass(idau[0],lower,upper);
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]], 
@@ -161,9 +167,12 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
       // compute the limits of integration
       upper = massint[ix]-massext[idau[0]];
       lower = ZERO;
+      bool massless=true;
       for(iy=0;iy<_intext[idau[1]].size();++iy) {
+	if(massext[_intext[idau[0]][iy]]!=ZERO) massless = false;
 	lower+=massext[_intext[idau[1]][iy]];
       }
+      if(massless) lower = _mode->epsilonPS();
       massint[idau[1]]=generateMass(idau[1],lower,upper);
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massext[idau[0]],massint[idau[1]], 
