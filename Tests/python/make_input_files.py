@@ -639,30 +639,46 @@ elif(collider=="LHC") :
     elif parameterName.startswith("2760") : process = StringBuilder(collider_lumi(2760.0))
     else                                  : process = StringBuilder(collider_lumi(7000.0))
     if(simulation=="") :
-        if "8-VBF" in parameterName :
+        if "VBF" in parameterName :
             process+=insert_ME("MEPP2HiggsVBF")
-        elif "VBF" in parameterName :
-            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            addedBRReweighter = True
-            process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+=insert_ME("MEPP2HiggsVBF")
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
+            elif "8-" not in paramterNane :
+                process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+                addedBRReweighter = True
+                process+="set /Herwig/Particles/tau-:Stable Stable\n"
+                
         elif "ggHJet" in parameterName :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
             addedBRReweighter = True
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("MEHiggsJet")
             process+=jet_kt_cut(20.)
-        elif "8-ggH" in parameterName :
-            process+=insert_ME("MEHiggs")
-            process+=insert_ME("MEHiggsJet","qqbar")
-            process+=jet_kt_cut(0.0)
         elif "ggH" in parameterName :
-            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
-            process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("MEHiggs")
             process+=insert_ME("MEHiggsJet","qqbar")
             process+=jet_kt_cut(0.0)
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
+            elif "8-" not in paramterNane :
+                process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+                addedBRReweighter = True
+                process+="set /Herwig/Particles/tau-:Stable Stable\n"
+                
         elif "PromptPhoton" in parameterName :
             process+=insert_ME("MEGammaJet")
             if "PromptPhoton-1" in parameterName :
@@ -684,9 +700,27 @@ elif(collider=="LHC") :
         elif "8-WH" in parameterName :
             process+=insert_ME("MEPP2WH")
             process+=jet_kt_cut(0.0)
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
         elif "8-ZH" in parameterName :
             process+=insert_ME("MEPP2ZH")
             process+=jet_kt_cut(0.0)
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
         elif "WH" in parameterName :
             process+=selectDecayMode("h0",["h0->b,bbar;"])
             process+=selectDecayMode("W+",["W+->nu_e,e+;",
@@ -951,29 +985,64 @@ elif(collider=="LHC") :
             logging.error(" Process %s not supported for internal matrix elements" % name)
             sys.exit(1)
     elif(simulation=="Powheg") :
-        if "8-VBF" in parameterName :
+        if "VBF" in parameterName :
             process+=insert_ME("PowhegMEPP2HiggsVBF")
-        elif "VBF" in parameterName :
-            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            addedBRReweighter = True
-            process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+=insert_ME("PowhegMEPP2HiggsVBF")
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
+            elif "8-" not in paramterNane :
+                process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+                addedBRReweighter = True
+                process+="set /Herwig/Particles/tau-:Stable Stable\n"
+            
         elif "ggHJet" in parameterName :
             logging.error(" Process %s not supported for POWHEG matrix elements" % name)
             sys.exit(1)
-        elif "8-ggH" in parameterName :
-            process+=insert_ME("PowhegMEHiggs")
         elif "ggH" in parameterName :
-            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            addedBRReweighter = True
-            process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("PowhegMEHiggs")
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
+            elif "8-" not in paramterNane :
+                process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+                addedBRReweighter = True
+                process+="set /Herwig/Particles/tau-:Stable Stable\n"
         elif "8-WH" in parameterName :
             process+=insert_ME("PowhegMEPP2WH")
             process+=jet_kt_cut(0.0)
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
         elif "8-ZH" in parameterName :
             process+=insert_ME("PowhegMEPP2ZH")
             process+=jet_kt_cut(0.0)
+            if "GammaGamma" in parameterName :
+               process+=selectDecayMode("h0",["h0->gamma,gamma;"])
+               addedBRReweighter = True
+            elif "WW" in parameterName :
+               process+=selectDecayMode("h0",["h0->W+,W-;"])
+               addedBRReweighter = True
+            elif "ZZ" in parameterName :
+               process+=selectDecayMode("h0",["h0->Z0,Z0;"])
+               addedBRReweighter = True
         elif "WH" in parameterName :
             process+=selectDecayMode("h0",["h0->b,bbar;"])
             process+=selectDecayMode("W+",["W+->nu_e,e+;",
@@ -1148,7 +1217,7 @@ elif(collider=="LHC") :
             sys.exit(1)
             
     elif( simulation=="Matchbox" or simulation=="Merging" ) :
-        if "8-VBF" in parameterName :
+        if "VBF" in parameterName :
             parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
             if(simulation=="Merging"):
                 process+="cd /Herwig/Merging/\n"
@@ -1172,25 +1241,10 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                process+=addBRReweighter()
-               
-        elif "VBF" in parameterName :
-            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
-            process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
-            if(simulation=="Merging"):
-                process+="cd /Herwig/Merging/\n"
-            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0\n"
-            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+\n"
-            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-\n"
-            process+="insert "+thefactory+":DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma\n"
-            process+="do "+thefactory+":DiagramGenerator:TimeLikeRange 0 0\n"
-            if(simulation=="Matchbox"):
-                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",0,0)
-            elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p h0 j j","0","3","FixedScale",1,1)
-            process+=setHardProcessWidthToZero(["h0"])
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            elif "8-" not in paramterNane :
+                process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+                process+=addBRReweighter()
+                process+="set /Herwig/Particles/tau-:Stable Stable\n"
         elif "ggHJet" in parameterName :
             if(simulation=="Merging"):
                logging.warning("ggHJet not explicitly tested for %s " % simulation)
@@ -1204,7 +1258,7 @@ elif(collider=="LHC") :
             process+=addFirstJet("20")
             process+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
-        elif "8-ggH" in parameterName :
+        elif "ggH" in parameterName :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             if(simulation=="Merging"):
                 process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff On\nset MadGraph:Model heft\n"
@@ -1224,23 +1278,10 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                process+=addBRReweighter()
-               
-        elif "ggH" in parameterName :
-            parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
-            if(simulation=="Merging"):
-                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff On\nset MadGraph:Model heft\n"
-                process+="cd /Herwig/Merging/\n"
-            process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
-            process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+=setHardProcessWidthToZero(["h0"])
-            if(simulation=="Matchbox"):
-                process+=addProcess(thefactory,"p p h0","2","1","FixedScale",0,0)
-            elif(simulation=="Merging"):
-                process+=addProcess(thefactory,"p p h0","2","1","FixedScale",2,2)
-
-            process+="set "+thefactory+":ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
-            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            elif "8-" not in parameterName :
+                process+=selectDecayMode("h0",["h0->tau-,tau+;"])
+                process+=addBRReweighter()
+                process+="set /Herwig/Particles/tau-:Stable Stable\n"
         elif "8-WH" in parameterName :
             if(simulation=="Merging"):
               logging.warning("8-WH not explicitly tested for %s " % simulation)
