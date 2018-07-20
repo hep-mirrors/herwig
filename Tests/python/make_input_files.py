@@ -643,12 +643,12 @@ elif(collider=="LHC") :
             process+=insert_ME("MEPP2HiggsVBF")
         elif "VBF" in parameterName :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("MEPP2HiggsVBF")
         elif "ggHJet" in parameterName :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("MEHiggsJet")
             process+=jet_kt_cut(20.)
@@ -691,14 +691,14 @@ elif(collider=="LHC") :
             process+=selectDecayMode("h0",["h0->b,bbar;"])
             process+=selectDecayMode("W+",["W+->nu_e,e+;",
                                            "W+->nu_mu,mu+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+=insert_ME("MEPP2WH")
             process+=jet_kt_cut(0.0)
         elif "ZH" in parameterName :
             process+=selectDecayMode("h0",["h0->b,bbar;"])
             process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+=insert_ME("MEPP2ZH")
             process+=jet_kt_cut(0.0)
         elif "UE" in parameterName :
@@ -805,7 +805,7 @@ elif(collider=="LHC") :
                                            "W-->nu_mubar,mu-;"])
             process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "WW-emu" in parameterName :
             process+=insert_ME("MEPP2VV","WW")
@@ -813,19 +813,19 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+=selectDecayMode("W+",["W+->nu_e,e+;"])
             process+=selectDecayMode("W-",["W-->nu_mubar,mu-;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "WW-ll" in parameterName :
             process+=insert_ME("MEPP2VV","WW")
             process+=selectDecayMode("W+",["W+->nu_e,e+;","W+->nu_mu,mu+;","W+->nu_tau,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "ZZ-ll" in parameterName :
             process+=insert_ME("MEPP2VV","ZZ")
             process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;",
                                            "Z0->tau-,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
 
         elif "ZZ-lv" in parameterName :
             process+=insert_ME("MEPP2VV","ZZ")
@@ -835,7 +835,7 @@ elif(collider=="LHC") :
                                            "Z0->nu_e,nu_ebar;",
                                            "Z0->nu_mu,nu_mubar;",
                                            "Z0->nu_tau,nu_taubar;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "W-Z-e" in parameterName :
             process+=insert_ME("MEqq2gZ2ff","Electron")
@@ -955,7 +955,7 @@ elif(collider=="LHC") :
             process+=insert_ME("PowhegMEPP2HiggsVBF")
         elif "VBF" in parameterName :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("PowhegMEPP2HiggsVBF")
         elif "ggHJet" in parameterName :
@@ -965,7 +965,7 @@ elif(collider=="LHC") :
             process+=insert_ME("PowhegMEHiggs")
         elif "ggH" in parameterName :
             process+=selectDecayMode("h0",["h0->tau-,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
             process+=insert_ME("PowhegMEHiggs")
         elif "8-WH" in parameterName :
@@ -978,14 +978,14 @@ elif(collider=="LHC") :
             process+=selectDecayMode("h0",["h0->b,bbar;"])
             process+=selectDecayMode("W+",["W+->nu_e,e+;",
                                            "W+->nu_mu,mu+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+=insert_ME("PowhegMEPP2WH")
             process+=jet_kt_cut(0.0)
         elif "ZH" in parameterName :
             process+=selectDecayMode("h0",["h0->b,bbar;"])
             process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             process+=insert_ME("PowhegMEPP2ZH")
             process+=jet_kt_cut(0.0)
         elif "UE" in parameterName :
@@ -1007,7 +1007,7 @@ elif(collider=="LHC") :
                                            "W-->nu_mubar,mu-;"])
             process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "WW-emu" in parameterName :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
@@ -1023,7 +1023,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
             process+=selectDecayMode("W+",["W+->nu_e,e+;"])
             process+=selectDecayMode("W-",["W-->nu_mubar,mu-;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "WW-ll" in parameterName :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
@@ -1038,7 +1038,7 @@ elif(collider=="LHC") :
             process+=selectDecayMode("W+",["W+->nu_e,e+;",
                                            "W+->nu_mu,mu+;",
                                            "W+->nu_tau,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "ZZ-ll" in parameterName :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
@@ -1053,7 +1053,7 @@ elif(collider=="LHC") :
             process+=selectDecayMode("Z0",["Z0->e-,e+;",
                                            "Z0->mu-,mu+;",
                                            "Z0->tau-,tau+;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "ZZ-lv" in parameterName :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
@@ -1071,7 +1071,7 @@ elif(collider=="LHC") :
                                            "Z0->nu_e,nu_ebar;",
                                            "Z0->nu_mu,nu_mubar;",
                                            "Z0->nu_tau,nu_taubar;"])
-            process+=addBRReweighter()
+            addedBRReweighter = True
             
         elif "W-Z-e" in parameterName :
             process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
