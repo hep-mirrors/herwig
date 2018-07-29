@@ -36,35 +36,26 @@ ScalarMesonCurrent::ScalarMesonCurrent() {
   // the eta/eta' mixing angle
   _thetaeta=-0.194;
   // the decay constants for the different modes
-  _id.push_back(211);_decay_constant.push_back(130.7*MeV);
+  _id = {211,111,111,221,221,221,
+	 331,331,331,
+	 311,321,411,421,431,10431};
+  _decay_constant = {130.7*MeV,130.7*MeV,130.7*MeV,130.7*MeV,130.7*MeV,130.7*MeV,
+		     130.7*MeV,130.7*MeV,130.7*MeV,
+		     159.8*MeV,159.8*MeV,200.0*MeV,200.0*MeV,241.0*MeV,73.7*MeV};
   addDecayMode(2,-1);
-  _id.push_back(111);_decay_constant.push_back(130.7*MeV);
   addDecayMode(1,-1);
-  _id.push_back(111);_decay_constant.push_back(130.7*MeV);
   addDecayMode(2,-2);
-  _id.push_back(221);_decay_constant.push_back(130.7*MeV);
   addDecayMode(1,-1);
-  _id.push_back(221);_decay_constant.push_back(130.7*MeV);
   addDecayMode(2,-2);
-  _id.push_back(221);_decay_constant.push_back(130.7*MeV);
   addDecayMode(3,-3);
-  _id.push_back(331);_decay_constant.push_back(130.7*MeV);
   addDecayMode(1,-1);
-  _id.push_back(331);_decay_constant.push_back(130.7*MeV);
   addDecayMode(2,-2);
-  _id.push_back(331);_decay_constant.push_back(130.7*MeV);
   addDecayMode(3,-3);
-  _id.push_back(311);_decay_constant.push_back(159.8*MeV);
   addDecayMode(1,-3);
-  _id.push_back(321);_decay_constant.push_back(159.8*MeV);
   addDecayMode(2,-3);
-  _id.push_back(411);_decay_constant.push_back(200.0*MeV);
   addDecayMode(4,-1);
-  _id.push_back(421);_decay_constant.push_back(200.0*MeV);
   addDecayMode(4,-2);
-  _id.push_back(431);_decay_constant.push_back(241.0*MeV);
   addDecayMode(4,-3);
-  _id.push_back(10431);_decay_constant.push_back(73.7*MeV);
   addDecayMode(4,-3);
   // initial size of the arrays
   _initsize = _id.size();
@@ -136,12 +127,8 @@ tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq,
     if(icharge==0) {
       int iqb,iab; 
       decayModeInfo(imode,iqb,iab);
-      if(iq==iqb&&ia==iab) {
-	output.push_back(part);
-      }
-      else {
-	output.push_back(part->CC());
-      }
+      if(iq==iqb&&ia==iab) output.push_back(part);
+      else                 output.push_back(part->CC());
     }
     else {
       output.push_back(part);
@@ -197,8 +184,7 @@ bool ScalarMesonCurrent::accept(vector<int> id) {
   return false;
 }
 
-unsigned int ScalarMesonCurrent::decayMode(vector<int> idout)
-{
+unsigned int ScalarMesonCurrent::decayMode(vector<int> idout) {
   int idtemp(abs(idout[0])); unsigned int ix(0);
   bool found(false);
   do {
