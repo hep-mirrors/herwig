@@ -1,0 +1,65 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+# Example generator based on LEP parameters
+# usage: Herwig read LEP.in
+##################################################
+
+read snippets/EECollider.in
+
+##################################################
+# Change settings for the ee->Z->qq matrix element
+# to avoid producing top quarks
+#
+# 'set' lines like this can be omitted if the 
+# default value is already okay.
+#
+# Any repository setting can be modified here
+##################################################
+
+##################################################
+# Selected the hard process 
+##################################################
+# leading-order processes
+##################################################
+cd /Herwig/MatrixElements
+create Herwig::MEee2Mesons MEee2Pions HwMELeptonLowEnergy.so
+set MEee2Pions:WeakCurrent /Herwig/Decays/Tau2MesonCurrent
+# default e+e- > q qbar (5 flavours d,u,s,c,b)
+insert SubProcess:MatrixElements 0 MEee2Pions
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set EventGenerator:EventHandler:LuminosityFunction:Energy 2.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 1.
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+
+cd /Herwig/Generators
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+#read snippets/Rivet.in
+#insert /Herwig/Analysis/Rivet:Analyses 0 XXX_2015_ABC123
+#read snippets/HepMC.in
+#set /Herwig/Analysis/HepMC:PrintEvent NNN
+
+###################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+saverun LEP-LowEnergy EventGenerator
+
+##################################################
+# uncomment this section for an example batch run
+# of two repeats with different parameters
+#
+# Note that a separate call of 'Herwig run' 
+# is not required
+##################################################
+# set EventGenerator:NumberOfEvents 100
+# run LEP-Zpole EventGenerator
+# set EventGenerator:EventHandler:LuminosityFunction:Energy 208.0
+# run LEP-maxE EventGenerator
