@@ -191,6 +191,38 @@ protected:
   void twoBodyDecay(const Lorentz5Momentum & p, 
 		    const Energy m1, const Energy m2,
 		    Lorentz5Momentum & p1, Lorentz5Momentum & p2);
+
+  //@}
+
+public:
+  
+  /**
+   * Get information on the intermediates
+   */
+  //@{
+  /**
+   *  Number of intermediates
+   */
+  unsigned int numberOfIntermediates() const {
+    return _intpart.size();
+  }
+
+  /**
+   *   Information on the ith intermediate
+   */
+  void intermediateInfo(unsigned int iloc,tcPDPtr & intermediate,
+			unsigned int & jacType,
+			Energy & intMass, Energy & intWidth, double & intPower,
+			unsigned int & dau1, unsigned int & dau2) const {
+    assert(iloc<_intpart.size());
+    intermediate = _intpart[iloc];
+    jacType  = _jactype[iloc];
+    intMass  = _intmass[iloc];
+    intWidth = _intwidth[iloc];
+    intPower = _intpower[iloc];
+    dau1     = _intdau1[iloc];
+    dau2     = _intdau2[iloc];
+  }
   //@}
   
 public:

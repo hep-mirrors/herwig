@@ -103,6 +103,14 @@ public:
   unsigned int numberChannels() const {return _channels.size();}
 
   /**
+   *  Access to the channels
+   */
+  tcDecayPhaseSpaceChannelPtr channel(unsigned int iloc) const {
+    assert(iloc<numberChannels());
+    return _channels[iloc];
+  }
+  
+  /**
    * Add a new channel. 
    * @param channel A pointer to the new DecayPhaseChannel
    */
