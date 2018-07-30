@@ -39,52 +39,45 @@ void TauDecayer::doinit() {
   // make sure the current got initialised
   _current->init();
   // set up the phase-space channels
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr channel;
-  tPDVector extpart,ptemp;
-  extpart.push_back(getParticleData(ParticleID::tauminus));
-  extpart.push_back(getParticleData(ParticleID::nu_tau));
-  Energy mtau(extpart[0]->mass());
+  tPDPtr tau = getParticleData(ParticleID::tauminus);
+  tPDPtr nu  = getParticleData(ParticleID::nu_tau);
+  Energy mtau(tau->mass());
   double maxweight;
   vector<double> channelwgts;
-  int iq(0),ia(0);
   _modemap.clear();
-  unsigned int ix,iy;
-  bool done;
   vector<double>::iterator start,end;
-  for(ix=0;ix<_current->numberOfModes();++ix) {
+  for(unsigned int ix=0;ix<_current->numberOfModes();++ix) {
     // get the external particles for this mode
-    extpart.resize(2);
-    ptemp=_current->particles(-3,ix,iq,ia);
-    for(iy=0;iy<ptemp.size();++iy) extpart.push_back(ptemp[iy]);
+    tPDVector extpart = {tau,nu};
+    int iq(0),ia(0);
+    tPDVector ptemp  = _current->particles(-3,ix,iq,ia);
+    extpart.insert(std::end(extpart), std::begin(ptemp), std::end(ptemp));
     // create the mode
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    DecayPhaseSpaceModePtr mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
     // create the first piece of the channel
-    channel = new_ptr(DecayPhaseSpaceChannel(mode));
+    DecayPhaseSpaceChannelPtr channel = new_ptr(DecayPhaseSpaceChannel(mode));
     channel->addIntermediate(extpart[0],0,0.0,-1,1);
-    done=_current->createMode(-3,ix,mode,2,1,channel,mtau);
-    if(done) {
-      // the maximum weight and the channel weights
-      // the maximum
-      maxweight = _wgtmax.size()>numberModes() ? _wgtmax[numberModes()] : 0;
-      // the weights for the channel
-      if(_wgtloc.size()>numberModes()&&
-	 _wgtloc[numberModes()]+mode->numberChannels()<=_weights.size()) {
-	start=_weights.begin()+_wgtloc[numberModes()];
-	end  = start+mode->numberChannels();
-	channelwgts=vector<double>(start,end);
-      }
-      else {
-	channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
-      }
-      _modemap.push_back(ix);
-      // special for the two body modes
-      if(extpart.size()==3) {
-	channelwgts.clear();
-	mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-      }
-      addMode(mode,maxweight,channelwgts);
+    if(!_current->createMode(-3,ix,mode,2,1,channel,mtau)) continue;
+    // the maximum weight and the channel weights
+    // the maximum
+    maxweight = _wgtmax.size()>numberModes() ? _wgtmax[numberModes()] : 0;
+    // the weights for the channel
+    if(_wgtloc.size()>numberModes()&&
+       _wgtloc[numberModes()]+mode->numberChannels()<=_weights.size()) {
+      start=_weights.begin()+_wgtloc[numberModes()];
+      end  = start+mode->numberChannels();
+      channelwgts=vector<double>(start,end);
     }
+    else {
+      channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
+    }
+    _modemap.push_back(ix);
+    // special for the two body modes
+    if(extpart.size()==3) {
+      channelwgts.clear();
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    }
+    addMode(mode,maxweight,channelwgts);
   }
   _current->reset();
   _current->touch();
