@@ -35,24 +35,25 @@ TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   addDecayMode(2,-3);
   addDecayMode(2,-1);
   addDecayMode(2,-3);
-  setInitialModes(5);
+  addDecayMode(1,-1);
+  addDecayMode(2,-2);
+  setInitialModes(7);
   // the weights of the different resonances in the matrix elements
-  _pimag.push_back(  1.0);_pimag.push_back(  0.167);_pimag.push_back(  0.05);
-  _piphase.push_back(0.0);_piphase.push_back(  180);_piphase.push_back(0.0);
-  _kmag.push_back(  1.0);_kmag.push_back(  0.038);_kmag.push_back(  0.00);
-  _kphase.push_back(0.0);_kphase.push_back(  180);_kphase.push_back(0.0);
+  _pimag   = {1.0,0.167,0.05};
+  _piphase = {0.0,180  ,0.0};
+  _kmag    = {1.0,0.038,0.0};
+  _kphase  = {0.0,180  ,0.0};
   // models to use
-  _pimodel = 0;_kmodel=0;
+  _pimodel = 0;
+  _kmodel  = 0;
   // parameter for the masses (use the parameters freom the CLEO fit 
   // rather than the PDG masses etc)
   _rhoparameters=true;
-  _rhomasses.push_back(774.6*MeV);_rhomasses.push_back(1408*MeV);
-  _rhomasses.push_back(1700*MeV);
-  _rhowidths.push_back(149*MeV);_rhowidths.push_back(502*MeV);
-  _rhowidths.push_back(235*MeV);
+  _rhomasses = {774.6*MeV,1408*MeV,1700*MeV};
+  _rhowidths = {149*MeV,502*MeV,235*MeV};
   _kstarparameters=true;
-  _kstarmasses.push_back(0.8921*GeV);_kstarmasses.push_back(1.700*GeV);
-  _kstarwidths.push_back(0.0513*GeV);_kstarwidths.push_back(0.235*GeV);
+  _kstarmasses = {0.8921*GeV,1.700*GeV};
+  _kstarwidths = {0.0513*GeV,0.235*GeV};
 }
 
 void TwoMesonRhoKStarCurrent::doinit() {
@@ -319,8 +320,6 @@ void TwoMesonRhoKStarCurrent::Init() {
      "  %%CITATION = PHRVA,D61,012002;%%\n"
      );
 
-
-
 }
 
 // complete the construction of the decay mode for integration
@@ -328,7 +327,8 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 					 DecayPhaseSpaceModePtr mode,
 					 unsigned int iloc,unsigned int,
 					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
-  if(abs(icharge)!=3) return false; 
+  if((imode<=4&&abs(icharge)!=3) ||
+     (imode>4 && icharge !=0)) return false; 
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -351,13 +351,17 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
     part[0]=getParticleData(ParticleID::eta);
     part[1]=getParticleData(ParticleID::Kplus);
   }
+  else if(imode==5 || imode==6 ) {
+    part[0]=getParticleData(ParticleID::piplus);
+    part[1]=getParticleData(ParticleID::piminus);
+  }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
   DecayPhaseSpaceChannelPtr newchannel;
   // set the resonances
   // two pion or  K+ K0 decay
   tPDPtr res[3];
-  if(imode==0||imode==3) {
+  if(imode==0||imode==3||imode==5||imode==6) {
     res[0]=getParticleData(213);
     res[1]=getParticleData(100213);
     res[2]=getParticleData(30213);
@@ -408,8 +412,7 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 
 // the particles produced by the current
 tPDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
-					    int,int) {
-  if(abs(icharge)!=3) return tPDVector();
+					     int,int) {
   tPDVector output(2);
   if(imode==0) {
     output[0]=getParticleData(ParticleID::piplus);
@@ -427,9 +430,13 @@ tPDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
     output[0]=getParticleData(ParticleID::Kplus);
     output[1]=getParticleData(ParticleID::Kbar0);
   }
-  else {
+  else if(imode==4) {
     output[0]=getParticleData(ParticleID::eta);
     output[1]=getParticleData(ParticleID::Kplus);
+  }
+  else {
+    output[0]=getParticleData(ParticleID::piplus);
+    output[1]=getParticleData(ParticleID::piminus);
   }
   if(icharge==-3) {
     for(unsigned int ix=0;ix<output.size();++ix) {
@@ -463,7 +470,7 @@ TwoMesonRhoKStarCurrent::current(const int imode, const int ichan,
   // calculate the current
   Complex FPI(0.),denom(0.);
   // rho
-  if(imode==0||imode==3) {
+  if(imode==0||imode==3||imode==5||imode==6) {
     if(ichan<0) {
       for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix) {
 	FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,0,ix);
@@ -505,40 +512,44 @@ TwoMesonRhoKStarCurrent::current(const int imode, const int ichan,
 }
    
 bool TwoMesonRhoKStarCurrent::accept(vector<int> id) {
-  bool allowed(false);
   // check there are only two particles
-  if(id.size()!=2){return false;}
+  if(id.size()!=2) return false;
   // pion modes
-  if((id[0]==ParticleID::piminus && id[1]==ParticleID::pi0)     ||
-     (id[0]==ParticleID::pi0     && id[1]==ParticleID::piminus) ||
-     (id[0]==ParticleID::piplus  && id[1]==ParticleID::pi0)     ||
-     (id[0]==ParticleID::pi0     && id[1]==ParticleID::piplus)) allowed=true;
+  if((abs(id[0])==ParticleID::piplus  &&     id[1] ==ParticleID::pi0   ) ||
+     (    id[0] ==ParticleID::pi0     && abs(id[1])==ParticleID::piplus))
+    return true;
   // single charged kaon
-  else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::pi0)    ||
-	  (id[0]==ParticleID::pi0    && id[1]==ParticleID::Kminus) ||
-	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::pi0)    ||
-	  (id[0]==ParticleID::pi0    && id[1]==ParticleID::Kplus)) allowed=true;
+  else if((abs(id[0])==ParticleID::Kplus  &&     id[1] ==ParticleID::pi0  ) ||
+	  (    id[0] ==ParticleID::pi0    && abs(id[1])==ParticleID::Kplus))
+    return true;
   // single neutral kaon
   else if((id[0]==ParticleID::piminus && id[1]==ParticleID::Kbar0)   ||
 	  (id[0]==ParticleID::Kbar0   && id[1]==ParticleID::piminus) ||
 	  (id[0]==ParticleID::piplus  && id[1]==ParticleID::K0)      ||
-	  (id[0]==ParticleID::K0      && id[1]==ParticleID::piplus)) allowed=true;
+	  (id[0]==ParticleID::K0      && id[1]==ParticleID::piplus))
+    return true;
   // two kaons
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::K0)     ||
 	  (id[0]==ParticleID::K0     && id[1]==ParticleID::Kminus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::Kbar0)  ||
-	  (id[0]==ParticleID::Kbar0  && id[1]==ParticleID::Kplus)) allowed=true;
+	  (id[0]==ParticleID::Kbar0  && id[1]==ParticleID::Kplus))
+    return true;
   // charged kaon and eta
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::eta)    ||
 	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kminus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::eta)    ||
-	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kplus)) allowed=true;
-  return allowed;
+	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kplus))
+    return true;
+  else if((id[0]==ParticleID::piminus && id[1]==ParticleID::piplus) ||
+	  (id[0]==ParticleID::piplus  && id[1]==ParticleID::piminus))
+    return true;
+  else
+    return false;
 }
 
 // the decay mode
 unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout) {
-  unsigned int imode(0),nkaon(0);
+  unsigned int imode(0),nkaon(0),npi(0);
   for(unsigned int ix=0;ix<idout.size();++ix) {
     if(abs(idout[ix])==ParticleID::K0) {
       imode=2;
@@ -552,9 +563,13 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout) {
       imode=4;
       break;
     }
+    else if(abs(idout[ix])==ParticleID::piplus) {
+      ++npi;
+    }
   }
-  if(nkaon==2) imode=3;
-  return imode;
+  if(nkaon==2)    return 3;
+  else if(npi==2) return 5;
+  else            return imode;
 }
 
 // output the information for the database
