@@ -276,7 +276,7 @@ tPDVector TwoPionRhoCurrent::particles(int icharge, unsigned int imode,
     output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::pi0);
   }
-  else if(imode==2) {
+  else if(imode==1) {
     output[0]=getParticleData(ParticleID::Kplus);
     output[1]=getParticleData(ParticleID::Kbar0);
   }
@@ -344,27 +344,11 @@ bool TwoPionRhoCurrent::accept(vector<int> id) {
   if((abs(id[0])==ParticleID::piplus  &&     id[1] ==ParticleID::pi0   ) ||
      (    id[0] ==ParticleID::pi0     && abs(id[1])==ParticleID::piplus))
     return true;
-  // single charged kaon
-  else if((abs(id[0])==ParticleID::Kplus  &&     id[1] ==ParticleID::pi0  ) ||
-	  (    id[0] ==ParticleID::pi0    && abs(id[1])==ParticleID::Kplus))
-    return true;
-  // single neutral kaon
-  else if((id[0]==ParticleID::piminus && id[1]==ParticleID::Kbar0)   ||
-	  (id[0]==ParticleID::Kbar0   && id[1]==ParticleID::piminus) ||
-	  (id[0]==ParticleID::piplus  && id[1]==ParticleID::K0)      ||
-	  (id[0]==ParticleID::K0      && id[1]==ParticleID::piplus))
-    return true;
   // two kaons
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::K0)     ||
 	  (id[0]==ParticleID::K0     && id[1]==ParticleID::Kminus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::Kbar0)  ||
 	  (id[0]==ParticleID::Kbar0  && id[1]==ParticleID::Kplus))
-    return true;
-  // charged kaon and eta
-  else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::eta)    ||
-	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kminus) ||
-	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::eta)    ||
-	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kplus))
     return true;
   else if((id[0]==ParticleID::piminus && id[1]==ParticleID::piplus) ||
 	  (id[0]==ParticleID::piplus  && id[1]==ParticleID::piminus))
@@ -378,24 +362,18 @@ unsigned int TwoPionRhoCurrent::decayMode(vector<int> idout) {
   unsigned int imode(0),nkaon(0),npi(0);
   for(unsigned int ix=0;ix<idout.size();++ix) {
     if(abs(idout[ix])==ParticleID::K0) {
-      imode=2;
       ++nkaon;
     }
     else if (abs(idout[ix])==ParticleID::Kplus) {
-      imode=1;
       ++nkaon;
-    }
-    else if (idout[ix]==ParticleID::eta) {
-      imode=4;
-      break;
     }
     else if(abs(idout[ix])==ParticleID::piplus) {
       ++npi;
     }
   }
-  if(nkaon==2)    return 3;
-  else if(npi==2) return 5;
-  else            return imode;
+  if(nkaon==2)    return 1;
+  else if(npi==2) return 2;
+  else            return 0;
 }
 
 // output the information for the database
