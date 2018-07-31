@@ -104,27 +104,21 @@ void TwoMesonRhoKStarCurrent::doinit() {
   for(unsigned int ix=0;ix<3;++ix) {
     _mass.push_back(_rhomasses[ix]);
     _width.push_back(_rhowidths[ix]);
-    _mass2.push_back(_mass[ix]*_mass[ix]);
-    _massw.push_back(_mass[ix]*_width[ix]);
     _massa.push_back(mpi0);
     _massb.push_back(mpiplus);
-    _mom.push_back(pcm(ix,_mass[ix]));
-    _hm2.push_back(GSModelhFunction(ix,_mass[ix]));
-    _dparam.push_back(GSModelDParameter(ix));
-    _dhdq2.push_back(GSModeldhdq2Parameter(ix));
+    _hres.push_back(Resonance::Hhat(sqr(_mass.back()),_mass.back(),_width.back(),_massa.back(),_massb.back()));
+    _dh.push_back(Resonance::dHhatds(_mass.back(),_width.back(),_massa.back(),_massb.back()));
+    _h0.push_back(Resonance::H(ZERO,_mass.back(),_width.back(),_massa.back(),_massb.back(),_dh.back(),_hres.back()));
   }
   // Kstar resonances
   for(unsigned int ix=0;ix<3;++ix) {
     _mass.push_back(_kstarmasses[ix]);
     _width.push_back(_kstarwidths[ix]);
-    _mass2.push_back(_mass[ix+3]*_mass[ix+3]);
-    _massw.push_back(_mass[ix+3]*_width[ix+3]);
     _massa.push_back(mk0);
     _massb.push_back(mpiplus);
-    _mom.push_back(pcm(ix+3,_mass[ix+3]));
-    _hm2.push_back(GSModelhFunction(ix+3,_mass[ix+3]));
-    _dparam.push_back(GSModelDParameter(ix+3));
-    _dhdq2.push_back(GSModeldhdq2Parameter(ix+3));
+    _hres.push_back(Resonance::Hhat(sqr(_mass.back()),_mass.back(),_width.back(),_massa.back(),_massb.back()));
+    _dh.push_back(Resonance::dHhatds(_mass.back(),_width.back(),_massa.back(),_massb.back()));
+    _h0.push_back(Resonance::H(ZERO,_mass.back(),_width.back(),_massa.back(),_massb.back(),_dh.back(),_hres.back()));
   }
   // weights for the rho channels
   if(_pimag.size()!=_piphase.size()) 
@@ -152,18 +146,18 @@ void TwoMesonRhoKStarCurrent::persistentOutput(PersistentOStream & os) const {
   os << _pimodel << _kmodel << _piwgt << _pimag << _piphase << _kwgt << _kmag 
      << _kphase << _rhoparameters << _kstarparameters << ounit(_rhomasses,GeV) << ounit(_rhowidths,GeV) 
      << ounit(_kstarmasses,GeV) << ounit(_kstarwidths,GeV) 
-     << ounit(_mass,GeV) << ounit(_width,GeV) << ounit(_mass2,GeV2) << ounit(_massw,GeV2) 
-     << ounit(_massa,GeV) <<ounit(_massb,GeV) << ounit(_mom,GeV) << ounit(_dhdq2,1/GeV2) 
-     << _hm2 << _dparam;
+     << ounit(_mass,GeV) << ounit(_width,GeV)
+     << ounit(_massa,GeV) <<ounit(_massb,GeV)
+     << _dh << ounit(_hres,GeV2) << ounit(_h0,GeV2);
 }
 
 void TwoMesonRhoKStarCurrent::persistentInput(PersistentIStream & is, int) {
   is >> _pimodel >> _kmodel >> _piwgt >> _pimag >> _piphase >> _kwgt >> _kmag 
      >> _kphase >> _rhoparameters >> _kstarparameters >> iunit(_rhomasses,GeV) >> iunit(_rhowidths,GeV) 
      >> iunit(_kstarmasses,GeV) >> iunit(_kstarwidths,GeV) 
-     >> iunit(_mass,GeV) >> iunit(_width,GeV) >> iunit(_mass2,GeV2) >> iunit(_massw,GeV2) 
-     >> iunit(_massa,GeV) >> iunit(_massb,GeV) >> iunit(_mom,GeV) >> iunit(_dhdq2,1/GeV2) 
-     >> _hm2 >> _dparam;
+     >> iunit(_mass,GeV) >> iunit(_width,GeV)
+     >> iunit(_massa,GeV) >> iunit(_massb,GeV)
+     >> _dh >> iunit(_hres,GeV2) >> iunit(_h0,GeV2);
 }
 
 // The following static variable is needed for the type
