@@ -14,7 +14,8 @@ ScalarMesonCurrent.h\
 ThreeMesonCurrentBase.h \
 ThreeMesonDefaultCurrent.h\
 ThreePionCLEOCurrent.h\
-TwoMesonRhoKStarCurrent.h\
+TwoPionRhoCurrent.h\
+KPiKStarCurrent.h\
 TwoPionPhotonCurrent.h\
 VectorMesonCurrent.h\
 FivePionCurrent.h \
@@ -28,7 +29,8 @@ ScalarMesonCurrent.cc \
 ThreeMesonCurrentBase.cc \
 ThreeMesonDefaultCurrent.cc \
 ThreePionCLEOCurrent.cc \
-TwoMesonRhoKStarCurrent.cc \
+TwoPionRhoCurrent.cc \
+KPiKStarCurrent.cc \
 TwoPionPhotonCurrent.cc \
 VectorMesonCurrent.cc \
 FivePionCurrent.cc \

@@ -34,7 +34,7 @@ insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
 insert WeakDecayConstructor:DecayModes 0 pi-;
 insert WeakDecayConstructor:Normalisation 0 1.01386262897
 # pi-,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
 insert WeakDecayConstructor:DecayModes 0 pi-,pi0;
 insert WeakDecayConstructor:Normalisation 0 1.17616809738
 # e-,nu_ebar
@@ -118,7 +118,7 @@ insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3MesonCurrent
 insert WeakDecayConstructor:DecayModes 0 eta,pi+,pi0;
 insert WeakDecayConstructor:Normalisation 0 0.880539616307
 # K+,Kbar0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
 insert WeakDecayConstructor:DecayModes 0 K+,Kbar0;
 insert WeakDecayConstructor:Normalisation 0 1.62501804004
 

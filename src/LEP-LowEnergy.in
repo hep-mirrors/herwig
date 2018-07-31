@@ -24,7 +24,7 @@ read snippets/EECollider.in
 ##################################################
 cd /Herwig/MatrixElements
 create Herwig::MEee2Mesons MEee2Pions HwMELeptonLowEnergy.so
-set MEee2Pions:WeakCurrent /Herwig/Decays/Tau2MesonCurrent
+set MEee2Pions:WeakCurrent /Herwig/Decays/Tau2PionCurrent
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 insert SubProcess:MatrixElements 0 MEee2Pions
 

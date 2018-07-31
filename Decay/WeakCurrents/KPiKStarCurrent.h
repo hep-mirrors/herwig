@@ -1,14 +1,14 @@
 // -*- C++ -*-
 //
-// TwoMesonRhoKStarCurrent.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// KPiKStarCurrent.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_TwoMesonRhoKStarCurrent_H
-#define HERWIG_TwoMesonRhoKStarCurrent_H
-// This is the declaration of the TwoMesonRhoKStarCurrent class.
+#ifndef HERWIG_KPiKStarCurrent_H
+#define HERWIG_KPiKStarCurrent_H
+// This is the declaration of the KPiKStarCurrent class.
 
 #include "WeakDecayCurrent.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -51,14 +51,14 @@ using namespace ThePEG;
  *  \author Peter Richardson
  *
  */
-class TwoMesonRhoKStarCurrent: public WeakDecayCurrent {
+class KPiKStarCurrent: public WeakDecayCurrent {
 
 public:
 
   /**
    * Default constructor
    */
-  TwoMesonRhoKStarCurrent();
+  KPiKStarCurrent();
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{ 
@@ -186,7 +186,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TwoMesonRhoKStarCurrent & operator=(const TwoMesonRhoKStarCurrent &);
+  KPiKStarCurrent & operator=(const KPiKStarCurrent &);
 
 private:
 
@@ -194,21 +194,19 @@ private:
    * \f$p\f$-wave breit wigner for form-factors
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param imodel Which of the two models for the Breit-Wigner shape to use.
-   * @param itype  Whether this is a \f$\rho\f$ or \f$K^*\f$ resonance.
    * @param ires   Which of the different multiplets to use.
    * @return The value of the Breit-Wigner distribution.
    */
-  Complex BreitWigner(Energy2 q2, unsigned int imodel,unsigned int itype,
+  Complex BreitWigner(Energy2 q2, unsigned int imodel,
 		      unsigned int ires) const {
     // workout the index of the resonace
-    unsigned int iy(3*itype+ires);
     // calculate the BW
     if(imodel==0) {
-      return Resonance::BreitWignerPWave(q2,_mass[iy],_width[iy],
+      return Resonance::BreitWignerPWave(q2,_mass[ires],_width[ires],
 					 _massa[ires],_massb[ires]);
     }
     else if(imodel==1) {
-      return Resonance::BreitWignerGS(q2,_mass[iy],_width[iy],
+      return Resonance::BreitWignerGS(q2,_mass[ires],_width[ires],
 				      _massa[ires],_massb[ires],
 				      _h0[ires],_dh[ires],_hres[ires]);
     }
@@ -217,26 +215,6 @@ private:
   }
 
 private:
-
-  /**
-   * Weights for the different \f$\rho\f$ resonances in the current, \f$\alpha_k\f$.
-   */
-  //@{
-  /**
-   *  The Complex weight used in the calculation
-   */
-  vector<Complex> _piwgt;
-
-  /**
-   *  The magnitude for input
-   */
-  vector<double> _pimag;
-
-  /**
-   *  The phase for input
-   */
-  vector<double> _piphase;
-  //@}
 
   /**
    * Weights for the different \f$K^*\f$ resonances in the current, \f$\alpha_k\f$.
@@ -256,32 +234,12 @@ private:
    *  The phase for input
    */
   vector<double> _kphase;
-  //@}
-
-  /**
-   * Model to use for the \f$\rho\f$ propagator.
-   */
-  int _pimodel;
+  //@};
 
   /**
    * Model to use for the \f$K^*\f$ propagator.
    */
   int _kmodel;
-
-  /**
-   * Option not to use the physical masses and widths for the \f$\rho\f$.
-   */
-  bool _rhoparameters;
-
-  /**
-   * The masses of the \f$\rho\f$ resonances.
-   */
-  vector<Energy> _rhomasses;
-
-  /**
-   * The widths of the \f$\rho\f$ resonances.
-   */
-  vector<Energy> _rhowidths;
   
   /**
    * Option not to use the physical masses and widths for the \f$K^*\f$.
@@ -340,4 +298,4 @@ private:
 }
 
 
-#endif /* HERWIG_TwoMesonRhoKStarCurrent_H */
+#endif /* HERWIG_KPiKStarCurrent_H */
