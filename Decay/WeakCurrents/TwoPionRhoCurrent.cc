@@ -359,7 +359,7 @@ bool TwoPionRhoCurrent::accept(vector<int> id) {
 
 // the decay mode
 unsigned int TwoPionRhoCurrent::decayMode(vector<int> idout) {
-  unsigned int imode(0),nkaon(0),npi(0);
+  unsigned int nkaon(0),npi(0);
   for(unsigned int ix=0;ix<idout.size();++ix) {
     if(abs(idout[ix])==ParticleID::K0) {
       ++nkaon;
