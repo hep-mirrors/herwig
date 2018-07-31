@@ -275,7 +275,7 @@ double MEee2Mesons::me2() const {
     hadpart.push_back(mePartonData()[ix]->produceParticle(meMomenta()[ix]));
   }
   vector<LorentzPolarizationVectorE> 
-    hadron(current_->current(imode,0,q,hadpart,DecayIntegrator::Calculate));
+    hadron(current_->current(imode,-1,q,hadpart,DecayIntegrator::Calculate));
   // for(unsigned int ix=0;ix<hadron.size();++ix)
   //   cerr << hadron[ix].x()/GeV << " " << hadron[ix].y()/GeV << " " << hadron[ix].z()/GeV << " " << hadron[ix].t()/GeV << "\n"; 
   // compute the matrix element
