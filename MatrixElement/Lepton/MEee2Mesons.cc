@@ -312,9 +312,7 @@ double MEee2Mesons::me2() const {
 }
 
 CrossSection MEee2Mesons::dSigHatDR() const {
-  return sqr(hbarc)*me2()*jacobian()/sHat(); // Here we can add other prefactors
-                                             // coming from the phase space
-                                             // integration.
+  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
 }
 
 unsigned int MEee2Mesons::orderInAlphaS() const {
