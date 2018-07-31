@@ -112,6 +112,14 @@ inline Complex BreitWignerPWave(const Energy2 & s, const Energy & mRes, const En
   Energy2 mR2=sqr(mRes);
   return mR2/(mR2-s-Complex(0.,1.)*sqrt(s)*gammaP(s,mRes,gamma,m1,m2));
 }
+  
+/**
+ *  Standard fixed width Breit-Wigner
+ */
+inline Complex BreitWignerFW(const Energy2 & s, const Energy & mRes, const Energy & gamma) {
+  Energy2 mR2=sqr(mRes);
+  return mR2/(mR2-s-Complex(0.,1.)*mRes*gamma);
+}
 
 }
 #endif
