@@ -10,7 +10,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Utilities/Maths.h"
 #include "Herwig/Decay/ResonanceHelpers.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -47,7 +46,7 @@ void TwoPionCzyzCurrent::persistentOutput(PersistentOStream & os) const {
      << rhoWgt_ << rhoMag_ << rhoPhase_
      << ounit(rhoMasses_,GeV) << ounit(rhoWidths_,GeV)
      << ounit(mass_,GeV) << ounit(width_,GeV) << coup_
-     << dh_ << ounit(hres_,GeV2) << ounit(h0_,GeV2);
+     << dh_ << ounit(hres_,GeV2) << ounit(h0_,GeV2) << nMax_;
 }
 
 void TwoPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
@@ -56,7 +55,7 @@ void TwoPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
      >> rhoWgt_ >> rhoMag_ >> rhoPhase_
      >> iunit(rhoMasses_,GeV) >> iunit(rhoWidths_,GeV)
      >> iunit(mass_,GeV) >> iunit(width_,GeV) >> coup_
-     >> dh_ >> iunit(hres_,GeV2) >> iunit(h0_,GeV2);
+     >> dh_ >> iunit(hres_,GeV2) >> iunit(h0_,GeV2) >> nMax_;
 }
 
 // The following static variable is needed for the type
@@ -149,10 +148,6 @@ void TwoPionCzyzCurrent::doinit() {
   if(rhoMasses_.size()!=rhoWidths_.size())
     throw InitException() << "Inconsistent parameters in TwoPionCzyzCurrent"
 			  << "::doinit()" << Exception::abortnow;
-  // the resonances (N.B. only3 rhos in Hw7)
-  tPDPtr res[3]={getParticleData(-213   ),
-  		 getParticleData(-100213),
-  		 getParticleData(-30213 )};
   // weights for the rho channels
   if(rhoMag_.size()!=rhoPhase_.size()) 
     throw InitException() << "The vectors containing the weights and phase for the"
@@ -165,7 +160,7 @@ void TwoPionCzyzCurrent::doinit() {
   }
   omegaWgt_ = omegaMag_*(cos(omegaPhase_)+Complex(0.,1.)*sin(omegaPhase_));
   // set up the masses and widths of the rho resonances
-  double gamB(Math::gamma(2.-beta_));
+  double gamB(tgamma(2.-beta_));
   Complex cwgt(0.);
   Energy mpi(getParticleData(ParticleID::piplus)->mass());
   for(unsigned int ix=0;ix<nMax_;++ix) {
@@ -173,7 +168,7 @@ void TwoPionCzyzCurrent::doinit() {
     if(ix>0) {
       gamB *= ((1.-beta_+double(ix)))/double(ix);
     }
-    Complex c_n = Math::gamma(beta_-0.5) /(0.5+double(ix)) / sqrt(Constants::pi) *
+    Complex c_n = tgamma(beta_-0.5) /(0.5+double(ix)) / sqrt(Constants::pi) *
       sin(Constants::pi*(beta_-1.-double(ix)))/Constants::pi*gamB;
     if(ix%2!=0) c_n *= -1.;
     // set the masses and widths
