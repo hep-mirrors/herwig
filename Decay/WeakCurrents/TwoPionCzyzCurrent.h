@@ -94,6 +94,12 @@ public:
    * @param create Whether or not to add a statement creating the object
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
+
+  /**
+   *  Calculation of the pion form factor
+   */
+  Complex Fpi(Energy2 q2,const int imode, const int ichan,
+	      Energy ma, Energy mb) const;
   
 public:
 

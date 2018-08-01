@@ -95,6 +95,11 @@ public:
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
   
+  /**
+   *  Calculation of the kaon form factor
+   */
+  Complex Fkaon(Energy2 q2,const int imode, const int ichan,
+		Energy ma, Energy mb) const;
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -318,6 +323,11 @@ private:
    *  Breit-Wigner
    */
   vector<Energy2> h0_;
+
+  /**
+   *  The charged pion mass
+   */
+  Energy mpi_;
 };
 
 }

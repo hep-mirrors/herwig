@@ -292,22 +292,11 @@ TwoPionCzyzCurrent::current(const int imode, const int ichan,
   psum *=dot;
   LorentzPolarizationVector vect;
   // calculate the current
-  Complex FPI(0.);
-  Energy ma = outpart[0]->mass();
-  Energy mb = outpart[1]->mass();
-  for(unsigned int ix=0;ix<coup_.size();++ix) {
-    if(ichan>=0&&ix!=abs(ichan)) continue;
-    Complex term = coup_[ix]*Resonance::BreitWignerGS(q2,mass_[ix],width_[ix],
-						      ma,mb,h0_[ix],dh_[ix],hres_[ix]);
-    // include rho-omega if needed
-    if(ix==0&&imode!=0)
-      term *= 1./(1.+omegaWgt_)*(1.+omegaWgt_*Resonance::BreitWignerFW(q2,omegaMass_,omegaWidth_));
-    FPI += term;
-  }
-  // factor for cc mode
-  if(imode==0)           FPI *= sqrt(2.0);
   // compute the current
   pdiff-=psum;
+  Energy ma = outpart[0]->mass();
+  Energy mb = outpart[1]->mass();
+  Complex FPI=Fpi(q2,imode,ichan,ma,mb);
   return vector<LorentzPolarizationVectorE>(1,FPI*pdiff);
 }
    
@@ -369,4 +358,21 @@ void TwoPionCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+Complex TwoPionCzyzCurrent::Fpi(Energy2 q2,const int imode, const int ichan,
+				Energy ma, Energy mb) const {
+  Complex FPI(0.);
+  for(unsigned int ix=0;ix<coup_.size();++ix) {
+    if(ichan>=0&&ix!=abs(ichan)) continue;
+    Complex term = coup_[ix]*Resonance::BreitWignerGS(q2,mass_[ix],width_[ix],
+						      ma,mb,h0_[ix],dh_[ix],hres_[ix]);
+    // include rho-omega if needed
+    if(ix==0&&imode!=0)
+      term *= 1./(1.+omegaWgt_)*(1.+omegaWgt_*Resonance::BreitWignerFW(q2,omegaMass_,omegaWidth_));
+    FPI += term;
+  }
+  // factor for cc mode
+  if(imode==0)           FPI *= sqrt(2.0);
+  return FPI;
 }

@@ -19,7 +19,7 @@ using namespace Herwig;
 
 TwoKaonCzyzCurrent::TwoKaonCzyzCurrent()
   : betaRho_(2.23), betaOmega_(2.23), betaPhi_(1.97),
-    nMax_(1000), etaPhi_(1.04), gammaOmega_(0.5), gammaPhi_(0.2) {
+    nMax_(1000), etaPhi_(1.04), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
   using Constants::pi;
   // various parameters
   // rho parameters
@@ -62,7 +62,7 @@ void TwoKaonCzyzCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(phiMasses_,GeV) << ounit(phiWidths_,GeV)
      << ounit(mass_,GeV) << ounit(width_,GeV) << coup_
      << dh_ << ounit(hres_,GeV2) << ounit(h0_,GeV2)
-     << nMax_ << etaPhi_ << gammaOmega_ << gammaPhi_;
+     << nMax_ << etaPhi_ << gammaOmega_ << gammaPhi_ << ounit(mpi_,GeV);
 }
 
 void TwoKaonCzyzCurrent::persistentInput(PersistentIStream & is, int) {
@@ -73,7 +73,7 @@ void TwoKaonCzyzCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(phiMasses_,GeV) >> iunit(phiWidths_,GeV)
      >> iunit(mass_,GeV) >> iunit(width_,GeV) >> coup_
      >> dh_ >> iunit(hres_,GeV2) >> iunit(h0_,GeV2)
-     >> nMax_ >> etaPhi_ >> gammaOmega_ >> gammaPhi_;
+     >> nMax_ >> etaPhi_ >> gammaOmega_ >> gammaPhi_ >> iunit(mpi_,GeV);
 }
 
 // The following static variable is needed for the type
@@ -237,9 +237,10 @@ void TwoKaonCzyzCurrent::doinit() {
   for(unsigned int ix=0;ix<phiMag_.size();++ix) {
     phiWgt_.push_back(phiMag_[ix]*(cos(phiPhase_[ix])+Complex(0.,1.)*sin(phiPhase_[ix])));
   }
+  // pion mass
+  mpi_ = getParticleData(211)->mass();
   // rho masses and couplings
   double gamB(std::tgamma(2.-betaRho_));
-  Energy mpi(getParticleData(ParticleID::piplus)->mass());
   mass_.push_back(vector<Energy>());
   width_.push_back(vector<Energy>());
   coup_.push_back(vector<Complex>());
@@ -271,10 +272,10 @@ void TwoKaonCzyzCurrent::doinit() {
     }
     // parameters for the gs propagators
     hres_.push_back(Resonance::Hhat(sqr(mass_[0].back()),
-	 			       mass_[0].back(),width_[0].back(),mpi,mpi));
-    dh_  .push_back(Resonance::dHhatds(mass_[0].back(),width_[0].back(),mpi,mpi));
+	 			       mass_[0].back(),width_[0].back(),mpi_,mpi_));
+    dh_  .push_back(Resonance::dHhatds(mass_[0].back(),width_[0].back(),mpi_,mpi_));
     h0_  .push_back(Resonance::H(ZERO,mass_[0].back(),width_[0].back(),
-				    mpi,mpi,dh_.back(),hres_.back()));
+				    mpi_,mpi_,dh_.back(),hres_.back()));
   }
   // omega masses and couplings
   gamB = std::tgamma(2.-betaOmega_);
@@ -454,43 +455,9 @@ TwoKaonCzyzCurrent::current(const int imode, const int ichan,
   psum *=dot;
   LorentzPolarizationVector vect;
   // calculate the current
-  Complex FK(0.);
   Energy ma = outpart[0]->mass();
   Energy mb = outpart[1]->mass();
-  Energy mpi = getParticleData(ParticleID::piplus)->mass();
-  int icharge = abs(outpart[0]->dataPtr()->iCharge())+abs(outpart[1]->dataPtr()->iCharge());
-  if(imode==0||imode==1) {
-    pdiff-=psum;
-    return vector<LorentzPolarizationVectorE>(1,FK*pdiff);
-  }
-  for(unsigned int ix=0;ix<coup_[0].size();++ix) {
-    if(ichan>=0&&ix>3) break;
-    // rho exchange
-    Complex term = coup_[0][ix]*Resonance::BreitWignerGS(q2,mass_[0][ix],width_[0][ix],
-							 mpi,mpi,h0_[ix],dh_[ix],hres_[ix]);
-    FK += icharge!=0 ? 0.5*term : -0.5*term;
-    if(ichan>0&&ichan<3&&ichan==int(ix)) {
-      FK = icharge!=0 ? 0.5*term : -0.5*term;
-      break;
-    }
-    // omega exchange
-    term = coup_[1][ix]*Resonance::BreitWignerFW(q2,mass_[1][ix],width_[1][ix]);
-    FK += 1./6.*term;
-    if(ichan==3) {
-      FK = 1./6.*term;
-      break;
-    }
-    // phi exchange
-    term = coup_[2][ix]*Resonance::BreitWignerPWave(q2,mass_[2][ix],width_[2][ix],ma,mb);
-    if(ix==0 && icharge==0 ) term *=etaPhi_;
-    FK += term/3.;
-    if(ichan==4) {
-      FK = 1./3.*term;
-      break;
-    }
-  }
-  // factor for cc mode
-  if(imode==0) FK *= sqrt(2.0);
+  Complex FK = Fkaon(q2,imode,ichan,ma,mb);
   // compute the current
   pdiff-=psum;
   return vector<LorentzPolarizationVectorE>(1,FK*pdiff);
@@ -523,8 +490,8 @@ unsigned int TwoKaonCzyzCurrent::decayMode(vector<int> idout) {
     else if(abs(idout[ix])==ParticleID::K0) ++nk0;
   }
   if(nkp==1&&nk0==1) return 0;
-  else if(nkp==2)    return 1;
-  else if(nk0==2)    return 3;
+  else if(nkp==2)    return 3;
+  else if(nk0==2)    return 1;
   else return false;
 }
 
@@ -599,4 +566,40 @@ void TwoKaonCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
+				  Energy ma, Energy mb) const {
+  Complex FK(0.);
+  for(unsigned int ix=0;ix<coup_[0].size();++ix) {
+    if(ichan>=0&&ix>3) break;
+    // rho exchange
+    Complex term = coup_[0][ix]*Resonance::BreitWignerGS(q2,mass_[0][ix],width_[0][ix],
+							 mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
+    FK += imode!=1 ? 0.5*term : -0.5*term;
+    if(ichan>0&&ichan<3&&ichan==int(ix)) {
+      FK = imode!=1 ? 0.5*term : -0.5*term;
+      break;
+    }
+    // only rho for cc
+    if(imode==0) continue;
+    // omega exchange
+    term = coup_[1][ix]*Resonance::BreitWignerFW(q2,mass_[1][ix],width_[1][ix]);
+    FK += 1./6.*term;
+    if(ichan==3) {
+      FK = 1./6.*term;
+      break;
+    }
+    // phi exchange
+    term = coup_[2][ix]*Resonance::BreitWignerPWave(q2,mass_[2][ix],width_[2][ix],ma,mb);
+    if(ix==0 && imode==1 ) term *=etaPhi_;
+    FK += term/3.;
+    if(ichan==4) {
+      FK = 1./3.*term;
+      break;
+    }
+  }
+  // factor for cc mode
+  if(imode==0) FK *= sqrt(2.0);
+  return FK;
 }
