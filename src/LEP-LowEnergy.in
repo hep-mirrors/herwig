@@ -29,9 +29,16 @@ set MEee2Pions:WeakCurrent /Herwig/Decays/TwoPionCzyzCurrent
 create Herwig::MEee2Mesons MEee2Kaons HwMELeptonLowEnergy.so
 create Herwig::TwoKaonCzyzCurrent /Herwig/Decays/TwoKaonCzyzCurrent 
 set MEee2Kaons:WeakCurrent /Herwig/Decays/TwoKaonCzyzCurrent
+
+
+create Herwig::MEee2Mesons MEee3Pions HwMELeptonLowEnergy.so
+create Herwig::ThreePionCzyzCurrent /Herwig/Decays/ThreePionCzyzCurrent
+set MEee3Pions:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
+
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
-insert SubProcess:MatrixElements 0 MEee2Pions
-insert SubProcess:MatrixElements 0 MEee2Kaons
+#insert SubProcess:MatrixElements 0 MEee2Pions
+#insert SubProcess:MatrixElements 0 MEee2Kaons
+insert SubProcess:MatrixElements 0 MEee3Pions
 
 ##################################################
 # LEP physics parameters (override defaults) 
