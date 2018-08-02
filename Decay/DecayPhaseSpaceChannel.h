@@ -213,7 +213,7 @@ public:
   void intermediateInfo(unsigned int iloc,tcPDPtr & intermediate,
 			unsigned int & jacType,
 			Energy & intMass, Energy & intWidth, double & intPower,
-			unsigned int & dau1, unsigned int & dau2) const {
+			int & dau1, int & dau2) const {
     assert(iloc<_intpart.size());
     intermediate = _intpart[iloc];
     jacType  = _jactype[iloc];
