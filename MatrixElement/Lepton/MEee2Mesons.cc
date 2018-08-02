@@ -28,7 +28,6 @@ using namespace Herwig;
 typedef LorentzVector<complex<InvEnergy> > LorentzPolarizationVectorInvE;
 
 void MEee2Mesons::getDiagrams() const {
-  // cerr << "statr of get diagrams\n";
   // make sure the current got initialised
   current_->init();
   tPDPtr gamma = getParticleData(ParticleID::gamma);
@@ -48,15 +47,12 @@ void MEee2Mesons::getDiagrams() const {
     DecayPhaseSpaceChannelPtr channel = new_ptr(DecayPhaseSpaceChannel(mode));
     channel->addIntermediate(extpart[0],0,0.0,-1,1);
     if(!current_->createMode(0,imode,mode,1,1,channel,Emax)) continue;
-    // for(unsigned int ix=0;ix<extpart.size();++ix)
-    //   cerr << extpart[ix]->PDGName() << " ";
-    // cerr << "\n";
     nmult_ = int(extpart.size())-1;
     int ndiag=0;
     for(unsigned int imode=0;imode<mode->numberChannels();++imode) {
       tcDecayPhaseSpaceChannelPtr iChannel = mode->channel(imode);
       // extract the intermediates
-      vector<pair<unsigned int,unsigned int> > children;
+      vector<pair<int,int> > children;
       vector<tcPDPtr> intermediate;
       vector<unsigned int> jacType;
       vector<Energy> intMass;
@@ -81,7 +77,6 @@ void MEee2Mesons::getDiagrams() const {
 	if(ix==0) {
 	  diag = new_ptr((Tree2toNDiagram(2), em, ep,1,intermediate[ix]));
 	  ndiag+=1;
-	  // cerr << "creating " << ix << " " << diag->partons().size() << "\n";
 	  isize+=1;
 	  ires[ix] = isize;
 	}
@@ -105,7 +100,6 @@ void MEee2Mesons::getDiagrams() const {
 	  ires[iloc] = isize;
 	  diag = new_ptr((*diag,ires[ix],intermediate[iloc]));
 	}
-	// cerr << "testing in the loop " << ix << " " << diag->partons().size() << "\n";
       }
       diag = new_ptr((*diag,-ndiag));
       add(diag);
@@ -118,7 +112,7 @@ Energy2 MEee2Mesons::scale() const {
 }
 
 int MEee2Mesons::nDim() const {
-  return 3*nmult_-4;
+  return 3*nmult_-5;
 }
 
 void MEee2Mesons::setKinematics() {
@@ -126,16 +120,21 @@ void MEee2Mesons::setKinematics() {
 }
 
 bool MEee2Mesons::generateKinematics(const double * r) {
-  // cerr << "testing in generate\n";
+  using Constants::pi;
   // Save the jacobian dPS/dr for later use.
   jacobian(1.0);
-  if(nDim()==2) {
-    // set up the momenta
-    for ( int i = 2, N = meMomenta().size(); i < N; ++i ) {
-      meMomenta()[i] = Lorentz5Momentum(mePartonData()[i]->mass());
-    }
-    double ctmin = -1.0, ctmax = 1.0;
-    Energy q = ZERO;
+  // set the masses of the outgoing particles
+  for ( int i = 2, N = meMomenta().size(); i < N; ++i ) {
+    meMomenta()[i] = Lorentz5Momentum(mePartonData()[i]->mass());
+  }
+  double ctmin = -1.0, ctmax = 1.0;
+  double cth = getCosTheta(ctmin, ctmax, r[0]);
+  phi(rnd(2.0*Constants::pi));
+  unsigned int i1(2),i2(3),i3(4);
+  Energy q = ZERO;
+  Energy e = sqrt(sHat())/2.0;
+  Energy2 pq;
+  if(nDim()==1) {
     try {
       q = SimplePhaseSpace::
 	getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
@@ -143,78 +142,87 @@ bool MEee2Mesons::generateKinematics(const double * r) {
     catch ( ImpossibleKinematics ) {
       return false;
     }
-    Energy e = sqrt(sHat())/2.0;
+    pq = 2.0*e*q;
     
-    Energy2 m22 = meMomenta()[2].mass2();
-    Energy2 m32 = meMomenta()[3].mass2();
-    Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
-    Energy2 e1e2 = 2.0*e*sqrt(sqr(q) + m22);
-    Energy2 e0e3 = 2.0*e*sqrt(sqr(q) + m32);
-    Energy2 e1e3 = 2.0*e*sqrt(sqr(q) + m32);
-    Energy2 pq = 2.0*e*q;
-    
-    Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-    if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
-    
-    thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-    if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
-    
-    thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-    if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
-    
-    thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-    if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-    
-    Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
-		       lastCuts().minKT(mePartonData()[3]));
-    if ( ptmin > ZERO ) {
-      double ctm = 1.0 - sqr(ptmin/q);
-      if ( ctm <= 0.0 ) return false;
-      ctmin = max(ctmin, -sqrt(ctm));
-      ctmax = min(ctmax, sqrt(ctm));
-    }
-    
-    double ymin2 = lastCuts().minYStar(mePartonData()[2]);
-    double ymax2 = lastCuts().maxYStar(mePartonData()[2]);
-    double ymin3 = lastCuts().minYStar(mePartonData()[3]);
-    double ymax3 = lastCuts().maxYStar(mePartonData()[3]);
-    double ytot = lastCuts().Y() + lastCuts().currentYHat();
-    if ( ymin2 + ytot > -0.9*Constants::MaxRapidity )
-      ctmin = max(ctmin, sqrt(sqr(q) +  m22)*tanh(ymin2)/q);
-    if ( ymax2 + ytot < 0.9*Constants::MaxRapidity )
-      ctmax = min(ctmax, sqrt(sqr(q) +  m22)*tanh(ymax2)/q);
-    if ( ymin3 + ytot > -0.9*Constants::MaxRapidity )
-      ctmax = min(ctmax, sqrt(sqr(q) +  m32)*tanh(-ymin3)/q);
-    if ( ymax3 + ytot < 0.9*Constants::MaxRapidity )
-      ctmin = max(ctmin, sqrt(sqr(q) +  m32)*tanh(-ymax3)/q);
-    
-    if ( ctmin >= ctmax ) return false;
-    
-    double cth = getCosTheta(ctmin, ctmax, r[0]);
     Energy pt = q*sqrt(1.0-sqr(cth));
-    phi(rnd(2.0*Constants::pi));
     meMomenta()[2].setVect(Momentum3( pt*sin(phi()),  pt*cos(phi()),  q*cth));
     meMomenta()[3].setVect(Momentum3(-pt*sin(phi()), -pt*cos(phi()), -q*cth));
     
     meMomenta()[2].rescaleEnergy();
     meMomenta()[3].rescaleEnergy();
-    vector<LorentzMomentum> out(2);
-    out[0] = meMomenta()[2];
-    out[1] = meMomenta()[3];
-    tcPDVector tout(2);
-    tout[0] = mePartonData()[2];
-    tout[1] = mePartonData()[3];
-    if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
-      return false;
     
+    Energy2 m22 = meMomenta()[2].mass2();
+    Energy2 m32 = meMomenta()[3].mass2();
+    Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
     tHat(pq*cth + m22 - e0e2);
     uHat(m22 + m32 - sHat() - tHat());
-    jacobian((pq/sHat())*Constants::pi*jacobian());
-    return true;
+  }
+  else if(nDim()==4) {
+    double rm=r[1];
+    if(rm<1./3.) {
+      rm *=3.;
+    }
+    else if(rm<2./3.) {
+      rm = 3.*rm-1.;
+      swap(i2,i3);
+    }
+    else {
+      rm = 3.*rm-2.;
+      swap(i1,i2);
+    }
+    tcPDPtr res = getParticleData(213);
+    Energy mass = res->mass(), width = res->width();
+    Energy2 m2max = sqr(sqrt(sHat())-meMomenta()[i3].mass());
+    Energy2 m2min = sqr(meMomenta()[i1].mass()+meMomenta()[i2].mass());
+    double rhomin = atan((m2min-sqr(mass))/mass/width);
+    double rhomax = atan((m2max-sqr(mass))/mass/width);
+    double rho = rhomin+rm*(rhomax-rhomin);
+    Energy2 m2 = mass*(width*tan(rho)+mass);
+    Energy mv = sqrt(m2);
+    try {
+      q = SimplePhaseSpace::
+	getMagnitude(sHat(), mv, meMomenta()[i3].mass());
+    } 
+    catch ( ImpossibleKinematics ) {
+      return false;
+    }
+    pq = 2.0*e*q;
+
+    Energy pt = q*sqrt(1.0-sqr(cth));
+    Lorentz5Momentum poff;
+    poff.setMass(mv);
+    poff.setVect(Momentum3( pt*sin(phi()),  pt*cos(phi()),  q*cth));
+    meMomenta()[i3].setVect(Momentum3(-pt*sin(phi()), -pt*cos(phi()), -q*cth));
+    
+    poff.rescaleEnergy();
+    meMomenta()[i3].rescaleEnergy();
+    // decay of the intermediate
+    bool test=Kinematics::twoBodyDecay(poff,meMomenta()[i1].mass(),
+				       meMomenta()[i2].mass(),
+				       -1.+2*r[2],r[3]*2.*pi,
+				       meMomenta()[i1],meMomenta()[i2]);
+    if(!test) return false;
+    // decay piece of the jacobian
+    Energy p2 = Kinematics::pstarTwoBodyDecay(mv,meMomenta()[i1].mass(),
+					      meMomenta()[i2].mass());
+    jacobian(p2/mv/8./sqr(pi)*jacobian());
+    // mass piece
+    jacobian((rhomax-rhomin)*( sqr(m2-sqr(mass))+sqr(mass*width))
+	     /mass/width*jacobian()/sHat());
   }
   else {
     assert(false);
   }
+  vector<LorentzMomentum> out(meMomenta().size()-2);
+  tcPDVector tout(meMomenta().size());
+  for(unsigned int ix=2;ix<meMomenta().size();++ix) {
+    out[ix-2] = meMomenta()[ix];
+    tout[ix-2] = mePartonData()[ix];
+  }
+  if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
+    return false;
+  jacobian((pq/sHat())*Constants::pi*jacobian());
+  return true;
 }
 
 double MEee2Mesons::me2() const {
@@ -298,7 +306,7 @@ double MEee2Mesons::me2() const {
       }
     }
   }
-  output *= 0.25;
+  output *= 0.25*sqr(pow(sqrt(sHat())/q,int(hadpart.size()-2)));
   // polarization stuff
   tcPolarizedBeamPDPtr beam[2] = 
     {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
