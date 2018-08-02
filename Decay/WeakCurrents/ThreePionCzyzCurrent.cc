@@ -266,13 +266,6 @@ tPDVector ThreePionCzyzCurrent::particles(int icharge, unsigned int,
   return extpart;
 }
 
-Complex ThreePionCzyzCurrent::H(Energy mass, Energy width, Energy2 sp, Energy2 sm,
-				 Energy2 s0) const {
-  return
-    Resonance::BreitWignerPWave(sp,mass,width,mpip_,mpi0_)+
-    Resonance::BreitWignerPWave(sm,mass,width,mpip_,mpi0_)+
-    Resonance::BreitWignerPWave(s0,mass,width,mpip_,mpip_);
-}
 
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
@@ -296,14 +289,15 @@ ThreePionCzyzCurrent::current(const int imode, const int ichan,
   Energy2 sp = (decay[0]->momentum()+decay[2]->momentum()).m2();
   Energy2 s0 = (decay[0]->momentum()+decay[1]->momentum()).m2();
   // isospin = 0
-  complex<InvEnergy3> F_I1 = H(rhoMasses_[0],rhoWidths_[0],sp,sm,s0)*
+  complex<InvEnergy3> F_I1 =
+    Resonance::H(rhoMasses_[0],rhoWidths_[0],sp,sm,s0,mpip_,mpi0_)*
     (coup_I0_[0]*Resonance::BreitWignerFW(q2,omegaMasses_[0],omegaWidths_[0])+
      coup_I0_[1]*Resonance::BreitWignerFW(q2,phiMass_       ,phiWidth_      )+
      coup_I0_[2]*Resonance::BreitWignerFW(q2,omegaMasses_[1],omegaWidths_[1])+
      coup_I0_[3]*Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]))
-    +coup_I0_[4]*H(rhoMasses_[1],rhoWidths_[1],sp,sm,s0)*
+    +coup_I0_[4]*Resonance::H(rhoMasses_[1],rhoWidths_[1],sp,sm,s0,mpip_,mpi0_)*
     Resonance::BreitWignerFW(q2,phiMass_,phiWidth_)
-    +coup_I0_[5]*H(rhoMasses_[2],rhoWidths_[2],sp,sm,s0)*
+    +coup_I0_[5]*Resonance::H(rhoMasses_[2],rhoWidths_[2],sp,sm,s0,mpip_,mpi0_)*
     Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[3]);
   // isospin = 1
   complex<InvEnergy3> F_I0 = GW_*

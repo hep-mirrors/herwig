@@ -83,6 +83,18 @@ inline Energy gammaP(const Energy2 & s, const Energy & mRes, const Energy & gamm
 }
 
 /**
+ *    The \f$p\f$-wave runningwidth
+ */
+inline Energy gammaS(const Energy2 & s, const Energy & mRes, const Energy & gamma,
+		     const Energy & m1, const Energy & m2) {
+  double v2 = beta2(s,m1,m2);
+  if(v2<=0.) return ZERO;
+  double vR2 = beta2(sqr(mRes),m1,m2);
+  double rp = sqrt(v2/vR2);
+  return mRes/sqrt(s)*rp*gamma;
+}
+
+/**
  *  The GS form of the Breit-Wigner distribution
  */
 inline Complex BreitWignerGS(const Energy2 & s, const Energy & mRes, const Energy & gamma,
@@ -114,6 +126,15 @@ inline Complex BreitWignerPWave(const Energy2 & s, const Energy & mRes, const En
 }
   
 /**
+ *  Standard \f$s\f$-wave Breit-Wigner
+ */
+inline Complex BreitWignerSWave(const Energy2 & s, const Energy & mRes, const Energy & gamma,
+				const Energy & m1, const Energy & m2) {
+  Energy2 mR2=sqr(mRes);
+  return mR2/(mR2-s-Complex(0.,1.)*sqrt(s)*gammaS(s,mRes,gamma,m1,m2));
+}
+  
+/**
  *  Standard fixed width Breit-Wigner
  */
 inline Complex BreitWignerFW(const Energy2 & s, const Energy & mRes, const Energy & gamma) {
@@ -121,5 +142,16 @@ inline Complex BreitWignerFW(const Energy2 & s, const Energy & mRes, const Energ
   return mR2/(mR2-s-Complex(0.,1.)*mRes*gamma);
 }
 
+/**
+ *   The \f$H\f$ function from 0512180
+ */
+Complex H(const Energy & mass, const Energy & width, const Energy2 & sp, const Energy2 & sm,
+	  const Energy2 & s0, const Energy & mp, const Energy & m0) {
+  return
+    Resonance::BreitWignerPWave(sp,mass,width,mp,m0)+
+    Resonance::BreitWignerPWave(sm,mass,width,mp,m0)+
+    Resonance::BreitWignerPWave(s0,mass,width,mp,mp);
 }
+}
+
 #endif

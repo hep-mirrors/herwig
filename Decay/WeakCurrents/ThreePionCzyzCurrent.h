@@ -124,14 +124,6 @@ public:
    */
   static void Init();
 
-protected :
-
-  /**
-   *   The \f$H\f$ function from 0512180
-   */
-  Complex H(Energy mass, Energy width, Energy2 sp, Energy2 sm,
-	    Energy2 s0) const;
-
 protected:
 
   /** @name Clone Methods. */
