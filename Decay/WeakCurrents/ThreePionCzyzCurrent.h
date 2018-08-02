@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_TwoPionCzyzCurrent_H
-#define Herwig_TwoPionCzyzCurrent_H
+#ifndef Herwig_ThreePionCzyzCurrent_H
+#define Herwig_ThreePionCzyzCurrent_H
 //
-// This is the declaration of the TwoPionCzyzCurrent class.
+// This is the declaration of the ThreePionCzyzCurrent class.
 //
 
 #include "WeakDecayCurrent.h"
@@ -11,20 +11,24 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the TwoPionCzyzCurrent class.
+
+/** \ingroup Decay
  *
- * @see \ref TwoPionCzyzCurrentInterfaces "The interfaces"
- * defined for TwoPionCzyzCurrent.
+ * The ThreeMesonCzyzCurrent class implements the currents from Eur.Phys.J. C47 (2006) 617-624 for 
+ * \f$\pi^+\pi^-\pi^0\f$
+ * @see WeakDecayCurrent.
+ * @see \ref ThreePionCzyzCurrentInterfaces "The interfaces"
+ * defined for ThreePionCzyzCurrent.
+ * 
  */
-class TwoPionCzyzCurrent: public WeakDecayCurrent {
+class ThreePionCzyzCurrent: public WeakDecayCurrent {
 
 public:
 
   /**
    * The default constructor.
    */
-  TwoPionCzyzCurrent();
+  ThreePionCzyzCurrent();
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{ 
@@ -93,12 +97,6 @@ public:
    * @param create Whether or not to add a statement creating the object
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
-
-  /**
-   *  Calculation of the pion form factor
-   */
-  Complex Fpi(Energy2 q2,const int imode, const int ichan,
-	      Energy ma, Energy mb) const;
   
 public:
 
@@ -125,6 +123,14 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected :
+
+  /**
+   *   The \f$H\f$ function from 0512180
+   */
+  Complex H(Energy mass, Energy width, Energy2 sp, Energy2 sm,
+	    Energy2 s0) const;
 
 protected:
 
@@ -162,109 +168,104 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TwoPionCzyzCurrent & operator=(const TwoPionCzyzCurrent &);
+  ThreePionCzyzCurrent & operator=(const ThreePionCzyzCurrent &);
 
 private:
-
+ 
   /**
-   * Weights for the different \f$\rho\f$ resonances in the current, \f$\alpha_k\f$.
+   *  Masses and widths of the particles, used in the \f$I=0\f$ piece
    */
   //@{
   /**
-   *  The Complex weight used in the calculation
+   *  Rho masses
    */
-  vector<Complex> rhoWgt_;
-
+  vector<Energy> rhoMasses_;
   /**
-   *  The magnitude for input
+   *  Rho widths
    */
-  vector<double> rhoMag_;
-
+  vector<Energy> rhoWidths_;
+  
   /**
-   *  The phase for input
+   *  Omega masses
    */
-  vector<double> rhoPhase_;
+  vector<Energy> omegaMasses_;
+  /**
+   *  Omega widths
+   */
+  vector<Energy> omegaWidths_;
+  
+  /**
+   *  Phi mass
+   */
+  Energy phiMass_;
+  /**
+   *  Phi width
+   */
+  Energy phiWidth_;
   //@}
 
   /**
-   *  Weight for the omega resonance
+   *  Couplings in the model \f$I=0\f$, labelled A..F in paper
    */
-  Complex omegaWgt_;
+  //@{
+  vector<InvEnergy3> coup_I0_;
+  //@}
 
   /**
-   *  The magnitude for input
+   *  Masses and widths for the \f$I=1\f$ component
    */
-  double omegaMag_;
+  //@{
+  /**
+   *  Rho masses
+   */
+  vector<Energy> rhoMasses_I1_;
+  /**
+   *  Rho widths
+   */
+  vector<Energy> rhoWidths_I1_;
+  
+  /**
+   *  Omega masses
+   */
+  Energy omegaMass_I1_;
+  /**
+   *  Omega widths
+   */
+  Energy omegaWidth_I1_;
+  //@}
+  
+  /**
+   *  Couplings for the the \f$I=1\f$ component
+   */
+  //@{
+  /**
+   *   The sigma parameter
+   */
+  double sigma_;
 
   /**
-   *   The phase for input
+   *  The numerical part of \f$G_\omega\f$
    */
-  double omegaPhase_;
+  InvEnergy GW_pre_;
+  
+  /**
+   *  The full \f$G_\omega\f$
+   */
+  Energy GW_;
 
   /**
-   * The masses of the \f$\rho\f$ resonances.
+   * \f$g_{\omega\pi\pi}\f$
    */
-  vector<Energy> rhoMasses_;
+  double g_omega_pi_pi_;
+  //@}
 
   /**
-   * The widths of the \f$\rho\f$ resonances.
+   *  Pion mass
    */
-  vector<Energy> rhoWidths_;
+  Energy mpip_, mpi0_;
 
-  /**
-   * The mass of the \f$\omega\f$ resonance
-   */
-  Energy omegaMass_;
-
-  /**
-   * The width of the \f$\omega\f$ resonance
-   */
-  Energy omegaWidth_;
-
-  /**
-   *   Regge \f$\beta\f$ parameter
-   */
-  double beta_;
-
-  /**
-   *  Number of resonaces at which to trucated the series
-   */
-  unsigned int nMax_;
-
-  /**
-   *   Masses of the resonances
-   */
-  vector<Energy> mass_;
-
-  /**
-   *   Widths of the resonances
-   */
-  vector<Energy> width_;
-
-  /**
-   *   Couplings of the resonaces
-   */
-  vector<Complex> coup_;
-
-  /**
-   * The function \f$\frac{\\hat{H}}{dq^2}\f$ at \f$q^2=m^2\f$ for the GS form of the
-   *  Breit-Wigner
-   */
-  vector<double> dh_;
-
-  /**
-   * The function \f$\\hat{H}\f$ at \f$q^2=m^2\f$ for the GS form of the
-   *  Breit-Wigner
-   */
-  vector<Energy2> hres_;
-
-  /**
-   * The \f$H(0)\f$ parameter  for the GS form of the
-   *  Breit-Wigner
-   */
-  vector<Energy2> h0_;
 };
 
 }
 
-#endif /* Herwig_TwoPionCzyzCurrent_H */
+#endif /* Herwig_ThreePionCzyzCurrent_H */

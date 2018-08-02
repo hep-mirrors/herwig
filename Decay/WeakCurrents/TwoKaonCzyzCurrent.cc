@@ -79,7 +79,7 @@ void TwoKaonCzyzCurrent::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<TwoKaonCzyzCurrent,WeakDecayCurrent>
-  describeHerwigTwoKaonCzyzCurrent("Herwig::TwoKaonCzyzCurrent", "HwWeakCurrents.so");
+describeHerwigTwoKaonCzyzCurrent("Herwig::TwoKaonCzyzCurrent", "HwWeakCurrents.so");
 
 void TwoKaonCzyzCurrent::Init() {
 
