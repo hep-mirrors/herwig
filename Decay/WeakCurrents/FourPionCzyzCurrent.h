@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_ThreePionCzyzCurrent_H
-#define Herwig_ThreePionCzyzCurrent_H
+#ifndef Herwig_FourPionCzyzCurrent_H
+#define Herwig_FourPionCzyzCurrent_H
 //
-// This is the declaration of the ThreePionCzyzCurrent class.
+// This is the declaration of the FourPionCzyzCurrent class.
 //
 
 #include "WeakDecayCurrent.h"
@@ -14,21 +14,21 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- * The ThreeMesonCzyzCurrent class implements the currents from Eur.Phys.J. C47 (2006) 617-624 for 
- * \f$\pi^+\pi^-\pi^0\f$
+ * The FourMesonCzyzCurrent class implements the currents from Phys.Rev. D77 (2008) 114005 
+ * for 4 pions
  * @see WeakDecayCurrent.
- * @see \ref ThreePionCzyzCurrentInterfaces "The interfaces"
- * defined for ThreePionCzyzCurrent.
+ * @see \ref FourPionCzyzCurrentInterfaces "The interfaces"
+ * defined for FourPionCzyzCurrent.
  * 
  */
-class ThreePionCzyzCurrent: public WeakDecayCurrent {
+class FourPionCzyzCurrent: public WeakDecayCurrent {
 
 public:
 
   /**
    * The default constructor.
    */
-  ThreePionCzyzCurrent();
+  FourPionCzyzCurrent();
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{ 
@@ -126,6 +126,17 @@ public:
 
 protected:
 
+  /**
+   *   Basis current in terms of which all the others can be calculated
+   */
+  LorentzVector<complex<InvEnergy> > baseCurrent(Energy2 Q2,
+						 const Lorentz5Momentum & Q,
+						 const Lorentz5Momentum & q1,
+						 const Lorentz5Momentum & q2,
+						 const Lorentz5Momentum & q3,
+						 const Lorentz5Momentum & q4) const;
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -160,97 +171,127 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ThreePionCzyzCurrent & operator=(const ThreePionCzyzCurrent &);
+  FourPionCzyzCurrent & operator=(const FourPionCzyzCurrent &);
 
 private:
  
   /**
-   *  Masses and widths of the particles, used in the \f$I=0\f$ piece
+   *  Masses and widths of the particles
    */
   //@{
   /**
-   *  Rho masses
+   *  Rho masses (PDG for most of current)
    */
   vector<Energy> rhoMasses_;
   /**
-   *  Rho widths
+   *  Rho widths (PDG for most of current)
    */
   vector<Energy> rhoWidths_;
   
   /**
-   *  Omega masses
+   *  Rho masses for the \f$F_\rho\f$ piece
    */
-  vector<Energy> omegaMasses_;
+  vector<Energy> rhoMasses_Frho_;
+  /**
+   *  Rho widths for the \f$F_\rho\f$ piece
+   */
+  vector<Energy> rhoWidths_Frho_;
+  
+  /**
+   *  Omega mass
+   */
+  Energy omegaMass_;
   /**
    *  Omega widths
    */
-  vector<Energy> omegaWidths_;
+  Energy omegaWidth_;
   
   /**
-   *  Phi mass
+   *  \f$f_0\f$ mass
    */
-  Energy phiMass_;
+  Energy f0Mass_;
   /**
-   *  Phi width
+   *  \f$f_0\f$ width
    */
-  Energy phiWidth_;
+  Energy f0Width_;
+  
+  /**
+   *  \f$a_1\f$ mass
+   */
+  Energy a1Mass_;
+  /**
+   *  \f$a_1\f$ width
+   */
+  Energy a1Width_;
   //@}
 
   /**
-   *  Couplings in the model \f$I=0\f$, labelled A..F in paper
-   */
-  vector<InvEnergy3> coup_I0_;
-
-  /**
-   *  Masses and widths for the \f$I=1\f$ component
+   *  Couplings in the model
    */
   //@{
   /**
-   *  Rho masses
+   *  Coefficents for sum over \f$\rho\f$ resonances in \f$a_1\f$ term
    */
-  vector<Energy> rhoMasses_I1_;
-  /**
-   *  Rho widths
-   */
-  vector<Energy> rhoWidths_I1_;
+  vector<double> beta_a1_;
   
   /**
-   *  Omega masses
+   *  Coefficents for sum over \f$\rho\f$ resonances in \f$f_0\f$ term
    */
-  Energy omegaMass_I1_;
+  vector<double> beta_f0_;
+  
   /**
-   *  Omega widths
+   *  Coefficents for sum over \f$\rho\f$ resonances in \f$\omega\f$ term
    */
-  Energy omegaWidth_I1_;
+  vector<double> beta_omega_;
+  
+  /**
+   *  Coefficents for sum over \f$\rho\f$ resonances in \f$B_\rho\f$ term
+   */
+  vector<double> beta_B_;
+  
+  /**
+   *  Coefficents for sum over \f$\rho\f$ resonances in \f$T_\rho\f$ term
+   */
+  vector<double> beta_bar_;
+
+  /**
+   *   Coupling for the \f$a_1\f$ term
+   */
+  InvEnergy2 c_a1_;
+
+  /**
+   *   Coupling for the \f$f_0\f$ term
+   */
+  InvEnergy2 c_f0_;
+
+  /**
+   *   Coupling for the \f$\omega\f$ term
+   */
+  InvEnergy c_omega_;
+
+  /**
+   *   Coupling for the \f\rho\f$ term
+   */
+  double c_rho_;
+
+  /**
+   * \f$g_{\rho\pi\pi}\f$
+   */
+  double g_rho_pi_pi_;
+
+  /**
+   * \f$g_{\omega\pi\prho}\f$
+   */
+  ThePEG::Qty<std::ratio<0,1>, std::ratio<-5,1>, std::ratio<0,1> > g_omega_pi_rho_;
+
+  /**
+   * \f$g_{\rho\gamma}\f$
+   */
+  Energy2 g_rho_gamma_;
   //@}
-  
-  /**
-   *  Couplings for the the \f$I=1\f$ component
-   */
-  //@{
-  /**
-   *   The sigma parameter
-   */
-  double sigma_;
 
   /**
-   *  The numerical part of \f$G_\omega\f$
-   */
-  InvEnergy GW_pre_;
-  
-  /**
-   *  The full \f$G_\omega\f$
-   */
-  Energy GW_;
-
-  /**
-   * \f$g_{\omega\pi\pi}\f$
-   */
-  double g_omega_pi_pi_;
-  //@}
-
-  /**
-   *  Pion mass
+   *  Pion masses
    */
   Energy mpip_, mpi0_;
 
@@ -258,4 +299,4 @@ private:
 
 }
 
-#endif /* Herwig_ThreePionCzyzCurrent_H */
+#endif /* Herwig_FourPionCzyzCurrent_H */

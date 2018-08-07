@@ -23,7 +23,8 @@ KPiCurrent.h\
 KaonThreeMesonCurrent.h\
 TwoPionCzyzCurrent.h\
 TwoKaonCzyzCurrent.h\
-ThreePionCzyzCurrent.h
+ThreePionCzyzCurrent.h\
+FourPionCzyzCurrent.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -41,4 +42,5 @@ KPiCurrent.cc \
 KaonThreeMesonCurrent.cc \
 TwoPionCzyzCurrent.cc \
 TwoKaonCzyzCurrent.cc \
-ThreePionCzyzCurrent.cc
+ThreePionCzyzCurrent.cc \
+FourPionCzyzCurrent.cc

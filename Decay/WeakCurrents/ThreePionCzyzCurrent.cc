@@ -18,8 +18,9 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
+namespace {
 static const InvEnergy3 InvGeV3 = pow<-3,1>(GeV);
+}
 
 ThreePionCzyzCurrent::ThreePionCzyzCurrent()
   : mpip_(140*MeV), mpi0_(140*MeV) {

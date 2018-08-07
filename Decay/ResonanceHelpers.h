@@ -152,6 +152,57 @@ Complex H(const Energy & mass, const Energy & width, const Energy2 & sp, const E
     Resonance::BreitWignerPWave(sm,mass,width,mp,m0)+
     Resonance::BreitWignerPWave(s0,mass,width,mp,mp);
 }
-}
 
+/**
+ *  Sum over \f$p\f$-wave resonaces
+ */
+template<typename Value>
+Complex F_rho(const Energy2 & s,
+	      const vector<Value> weights,
+	      const vector<Energy> & mass,
+	      const vector<Energy> & width,
+	      const Energy & m1, const Energy & m2) {
+  Value norm(0.);
+  Complex output;
+  for(unsigned int ix=0;ix<weights.size();++ix) {
+    norm += weights[ix];
+    output += weights[ix]*
+      BreitWignerPWave(s,mass[ix],width[ix],m1,m2);
+  }
+  return output/norm;
+}
+  
+double ga1(const Energy2 &s) {
+  static const Energy mpi=0.13957*GeV;
+  if(s>0.838968432668*GeV2) {
+    double Q2 = s/GeV2;
+    return 1.623*Q2+10.38-9.32/Q2+0.65/sqr(Q2);
+  }
+  else {
+    double Q2 = (s-9.*sqr(mpi))/GeV2;
+    return 4.1*Q2*sqr(Q2)*(1.-3.3*Q2+5.8*sqr(Q2));
+  }
+}
+  
+/**
+ *  GS form of the \f$a_1\f$ Breit-Wigner
+ */
+Complex BreitWignera1(const Energy2 & s, const Energy & mRes,
+		      const Energy & gamma) {
+  Energy2 mR2 = sqr(mRes);
+  return mR2/(mR2-s-Complex(0.,1)*gamma*mRes*ga1(s)/ga1(mR2));
+}
+  
+/**
+ *  Difference between two resonances
+ */
+complex<InvEnergy2> BreitWignerDiff(const Energy2 & s,
+				    const Energy & mRes1, const Energy & gamma1,
+				    const Energy & mRes2, const Energy & gamma2,
+				    const Energy & m1, const Energy & m2) {
+  return
+    BreitWignerPWave(s,mRes1,gamma1,m1,m2)/sqr(mRes1)-
+    BreitWignerPWave(s,mRes2,gamma2,m1,m2)/sqr(mRes2);
+}
+}
 #endif
