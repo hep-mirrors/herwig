@@ -418,8 +418,8 @@ tPDVector TwoKaonCzyzCurrent::particles(int icharge, unsigned int imode,
     output[1]=getParticleData(ParticleID::K0);
   }
   else if(imode==1||imode==2) {
-    output[0]=getParticleData(ParticleID::K0);
-    output[1]=getParticleData(ParticleID::Kbar0);
+    output[0]=getParticleData(ParticleID::K_S0);
+    output[1]=getParticleData(ParticleID::K_L0);
   }
   else {
     output[0]=getParticleData(ParticleID::Kplus );
@@ -475,8 +475,8 @@ bool TwoKaonCzyzCurrent::accept(vector<int> id) {
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::Kplus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::Kminus))
     return true;
-  else if((id[0]==ParticleID::Kbar0 && id[1]==ParticleID::K0) ||
-	  (id[0]==ParticleID::K0    && id[1]==ParticleID::Kbar0))
+  else if((id[0]==ParticleID::K_S0 && id[1]==ParticleID::K_L0) ||
+	  (id[0]==ParticleID::K_L0 && id[1]==ParticleID::K_S0))
     return true;
   else
     return false;
@@ -487,7 +487,8 @@ unsigned int TwoKaonCzyzCurrent::decayMode(vector<int> idout) {
   unsigned int nk0(0),nkp(0);
   for(unsigned int ix=0;ix<idout.size();++ix) {
     if(abs(idout[ix])==ParticleID::Kplus) ++nkp;
-    else if(abs(idout[ix])==ParticleID::K0) ++nk0;
+    else if(abs(idout[ix])==ParticleID::K0 ||
+	    idout[ix]==ParticleID::K_L0 ||idout[ix]==ParticleID::K_S0 ) ++nk0;
   }
   if(nkp==1&&nk0==1) return 0;
   else if(nkp==2)    return 3;
