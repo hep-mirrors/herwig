@@ -25,6 +25,7 @@ read snippets/EECollider.in
 cd /Herwig/MatrixElements
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 insert SubProcess:MatrixElements 0 MEee2gZ2qq
+set /Herwig/Decays/PPVDecayer:Initialize 1
 # e+e- > l+l-
 # insert SubProcess:MatrixElements[0] MEee2gZ2ll
 # e+e- > W+W- ZZ

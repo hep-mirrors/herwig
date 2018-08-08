@@ -52,12 +52,6 @@ void DecayPhaseSpaceMode::Init() {
   static ClassDocumentation<DecayPhaseSpaceMode> documentation
     ("The DecayPhaseSpaceMode class contains a number of phase space"
      " channels for the integration of a particular decay mode");
-
-  static RefVector<DecayPhaseSpaceMode,DecayPhaseSpaceChannel> interfaceChannels
-    ("Channels",
-     "The phase space integration channels.",
-     &DecayPhaseSpaceMode::_channels, 0, false, false, true, true);
- 
 }
 
 // flat phase space generation and weight

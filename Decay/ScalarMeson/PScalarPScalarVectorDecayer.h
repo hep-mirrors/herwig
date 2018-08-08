@@ -11,8 +11,8 @@
 //
 // This is the declaration of the PScalarPScalarVectorDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
@@ -31,12 +31,12 @@ using namespace ThePEG;
  * - \f$\epsilon_2\f$ is the polarization vector of the vector meson.
  * - \f$g\f$ is the coupling for the decay.
  *
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  *
  * \author Peter Richardson
  * 
  */
-class PScalarPScalarVectorDecayer: public DecayIntegrator {
+class PScalarPScalarVectorDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -62,9 +62,13 @@ public:
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2( const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
 
+  virtual void constructSpinInfo(const Particle & part, ParticleVector outgoing) const;
+  
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
    * @param dm The DecayMode

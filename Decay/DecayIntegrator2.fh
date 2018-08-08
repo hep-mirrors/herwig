@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DecayIntegrator2 class.
+//
+#ifndef Herwig_DecayIntegrator2_FH
+#define Herwig_DecayIntegrator2_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+using namespace ThePEG; 
+class DecayIntegrator2;
+
+ThePEG_DECLARE_POINTERS(Herwig::DecayIntegrator2,DecayIntegrator2Ptr);
+
+}
+
+#endif

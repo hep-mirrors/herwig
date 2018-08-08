@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PhaseSpaceMode class.
+//
+#ifndef Herwig_PhaseSpaceMode_FH
+#define Herwig_PhaseSpaceMode_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class PhaseSpaceMode;
+
+ThePEG_DECLARE_POINTERS(PhaseSpaceMode,PhaseSpaceModePtr);
+
+}
+
+#endif

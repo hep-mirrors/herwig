@@ -21,66 +21,35 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "ThePEG/Helicity/HelicityFunctions.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void PScalarPScalarVectorDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix)
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
   }
 }
 
-PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer() 
-  : _incoming(19), _outgoingP(19), _outgoingV(19), 
-    _coupling(19), _maxweight(19) {
-  // decay pi' to rho pi
-  _incoming[0] =  100111; _outgoingV[0] =  213; _outgoingP[0] = -211; 
-  _coupling[0] = 3.57; _maxweight[0] = 4.5; 
-  _incoming[1] =  100211; _outgoingV[1] =  213; _outgoingP[1] =  111; 
-  _coupling[1] = 3.57; _maxweight[1] = 4.5; 
-  _incoming[2] =  100211; _outgoingV[2] =  113; _outgoingP[2] =  211; 
-  _coupling[2] = 3.57; _maxweight[2] = 4.5; 
-  // K' to K rho
-  _incoming[3] =  100311; _outgoingP[3] =  311; _outgoingV[3] =  113; 
-  _coupling[3] = 1.; _maxweight[3] = 4.; 
-  _incoming[4] =  100321; _outgoingP[4] =  321; _outgoingV[4] =  113; 
-  _coupling[4] = 1.; _maxweight[4] = 4.; 
-  _incoming[5] =  100311; _outgoingP[5] =  321; _outgoingV[5] = -213; 
-  _coupling[5] = 1.41; _maxweight[5] = 4.; 
-  _incoming[6] =  100321; _outgoingP[6] =  311; _outgoingV[6] =  213; 
-  _coupling[6] = 1.41; _maxweight[6] = 4.; 
-  // K' to K* pi
-  _incoming[7] =  100311; _outgoingV[7] =  313; _outgoingP[7] =  111; 
-  _coupling[7] = 1.55; _maxweight[7] = 2.; 
-  _incoming[8] =  100321; _outgoingV[8] =  323; _outgoingP[8] =  111; 
-  _coupling[8] = 1.55; _maxweight[8] = 2.; 
-  _incoming[9] =  100311; _outgoingV[9] =  323; _outgoingP[9] = -211; 
-  _coupling[9] = 2.19; _maxweight[9] = 2.; 
-  _incoming[10] =  100321; _outgoingV[10] =  313; _outgoingP[10] =  211; 
-  _coupling[10] = 2.19; _maxweight[10] = 2.; 
-  // eta (1475) to K* K
-  _incoming[11] =  100331; _outgoingV[11] =  323; _outgoingP[11] = -321; 
-  _coupling[11] = 2.92; _maxweight[11] = 3.5; 
-  _incoming[12] =  100331; _outgoingV[12] =  313; _outgoingP[12] = -311; 
-  _coupling[12] = 2.92; _maxweight[12] = 3.5; 
-  // eta (1475) to K* K
-  _incoming[13] =  9020221; _outgoingV[13] =  323; _outgoingP[13] = -321; 
-  _coupling[13] = 0.956; _maxweight[13] = 4.; 
-  _incoming[14] =  9020221; _outgoingV[14] =  313; _outgoingP[14] = -311; 
-  _coupling[14] = 0.956; _maxweight[14] = 4.; 
-  // decay f_0(1370) to a_1 pi
-  _incoming[15] =  10221; _outgoingV[15] = 20213; _outgoingP[15] = -211; 
-  _coupling[15] = 2.68; _maxweight[15] = 4.5; 
-  _incoming[16] =  10221; _outgoingV[16] = 20113; _outgoingP[16] =  111; 
-  _coupling[16] = 2.68; _maxweight[16] = 4.5; 
-  // decay f_0(1500) to a_1 pi
-  _incoming[17] =  9030221; _outgoingV[17] = 20213; _outgoingP[17] = -211; 
-  _coupling[17] = 1.147; _maxweight[17] = 3.2; 
-  _incoming[18] =  9030221; _outgoingV[18] = 20113; _outgoingP[18] =  111; 
-  _coupling[18] = 1.147; _maxweight[18] = 3.2; 
+PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer() {
+  _incoming  = { 100111, 100211, 100211, 100311, 100321, 100311, 100321,
+		 100311, 100321, 100311, 100321, 100331, 100331,9020221,9020221,
+	 	  10221,  10221,9030221,9030221};
+  _outgoingP = {   -211,    111,    211,    311,    321,    321,    311,
+		    111,    111,   -211,    211,   -321,   -311,   -321,   -311,
+		   -211,    111,   -211,    111};
+  _outgoingV = {    213,    213,    113,    113,    113,   -213,    213,
+		    313,    323,    323,    313,    323,    313,    323,    313,
+		  20213,  20113,  20213,  20113};
+  _coupling  = {   3.57,   3.57,   3.57,     1.,     1.,   1.41,   1.41,
+		   1.55,   1.55,   2.19,   2.19,   2.92,   2.92,  0.956,  0.956,
+		   2.68,   2.68,  1.147,  1.147};
+  _maxweight = {    4.5,    4.5,    4.5,     4.,     4.,     4.,     4.,
+		     2.,     2.,     2.,     2.,    3.5,    3.5,     4.,     4.,
+		    4.5,    4.5,    3.2,    3.2};
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates
@@ -88,26 +57,24 @@ PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer()
 }
 
 void PScalarPScalarVectorDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoingP.size()||
      isize!=_outgoingV.size() || isize!=_maxweight.size())
     throw InitException() << "Inconsistent parameters in PScalarPScalarVectorDecayer" 
-			  << Exception::abortnow;
+  			  << Exception::abortnow;
   // set up the integration channels
-  vector<double> wgt;
-  DecayPhaseSpaceModePtr mode;
-  tPDVector extpart(3);
+  PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0] = getParticleData(_incoming[ix]);
-    extpart[1] = getParticleData(_outgoingP[ix]);
-    extpart[2] = getParticleData(_outgoingV[ix]);
-    if(extpart[0]&&extpart[1]&&extpart[2]) 
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr    in  = getParticleData( _incoming[ix]);
+    tPDVector out = {getParticleData(_outgoingP[ix]),
+		     getParticleData(_outgoingV[ix])};
+    if(in&&out[0]&&out[1]) 
+      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     else
-      mode=DecayPhaseSpaceModePtr();
-    addMode(mode,_maxweight[ix],wgt);
+      mode=PhaseSpaceModePtr();
+    addMode(mode);
   }
 }
 
@@ -152,7 +119,7 @@ void PScalarPScalarVectorDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<PScalarPScalarVectorDecayer,DecayIntegrator>
+DescribeClass<PScalarPScalarVectorDecayer,DecayIntegrator2>
 describeHerwigPScalarPScalarVectorDecayer("Herwig::PScalarPScalarVectorDecayer", "HwSMDecay.so");
 
 void PScalarPScalarVectorDecayer::Init() {
@@ -193,42 +160,47 @@ void PScalarPScalarVectorDecayer::Init() {
 
 }
 
-double PScalarPScalarVectorDecayer::me2( const int,
-					 const Particle & inpart,
-					 const ParticleVector & decay,
-					 MEOption meopt) const {
+void PScalarPScalarVectorDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
+  VectorWaveFunction::constructSpinInfo(_vectors,decay[1],
+					outgoing,true,false);
+}
+
+double PScalarPScalarVectorDecayer::me2(const int,const Particle & part,
+					const tPDVector & outgoing,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
   if(meopt==Initialize) {
-    ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+     ScalarWaveFunction::
+       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
-    VectorWaveFunction::constructSpinInfo(_vectors,decay[1],
-					  outgoing,true,false);
-    return 0.;
-  }
-  VectorWaveFunction::calculateWaveFunctions(_vectors,decay[1],
-					     outgoing,false);
-  // calculate the matrix element
-  Lorentz5Momentum psum(inpart.momentum()+decay[0]->momentum());
+  _vectors.resize(3);
+  bool massless = outgoing[1]->id()==ParticleID::gamma;
   for(unsigned int ix=0;ix<3;++ix) {
-    (*ME())(0,0,ix)=_coupling[imode()]/inpart.mass()*(_vectors[ix]*psum);
+    if(massless && ix==1) continue;
+    _vectors[ix] = HelicityFunctions::polarizationVector(momenta[1],ix,Helicity::outgoing);
   }
+  // calculate the matrix element
+  Lorentz5Momentum psum(part.momentum()+momenta[0]);
+  for(unsigned int ix=0;ix<3;++ix) {
+    (*ME())(0,0,ix)=_coupling[imode()]/part.mass()*(_vectors[ix]*psum);
+  }
+  double me=ME()->contract(_rho).real();
   // test of the matrix element
-//   double me=newME.contract(rhoin).real();
-//   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
-// 					     decay[1]->mass());
-//   double test = 4.*sqr(_coupling[imode()]*pcm/decay[1]->mass());
-//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-//        << me << " " << (me-test)/(me+test) << "\n";
+  // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
+  // 					     momenta[1].mass());
+  // double test = 4.*sqr(_coupling[imode()]*pcm/momenta[1].mass());
+  // cerr << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  //      << me << " " << (me-test)/(me+test) << "\n";
   // output the answer
-  return ME()->contract(_rho).real();
+  return me;
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
@@ -277,8 +249,8 @@ bool PScalarPScalarVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & meco
 void PScalarPScalarVectorDecayer::dataBaseOutput(ofstream & output,
 						 bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
