@@ -26,7 +26,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void EtaPiPiPiDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix)
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
@@ -67,46 +67,39 @@ EtaPiPiPiDecayer::EtaPiPiPiDecayer()
 }
  
 void EtaPiPiPiDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check consistency of the parameters
   unsigned int isize(_incoming.size());
   if(isize!=_outgoing.size()||isize!=_prefactor.size()||
      isize!=_charged.size()||isize!=_a.size()||
      isize!=_b.size()||isize!=_c.size()||isize!=_maxweight.size())
     throw InitException() << "Inconsistent parameters in EtaPiPiPiDecayer::doinit()"
-			  << Exception::runerror;
+  			  << Exception::runerror;
   // external particles for the modes
-  tPDVector extneut(4),extcharged(4);
-  extneut[1]    = getParticleData(ParticleID::pi0);
-  extneut[2]    = getParticleData(ParticleID::pi0);
-  extcharged[1] = getParticleData(ParticleID::piplus);
-  extcharged[2] = getParticleData(ParticleID::piminus);
+  tPDVector outneut(3),outcharged(3);
+  outneut[0]    = getParticleData(ParticleID::pi0);
+  outneut[1]    = getParticleData(ParticleID::pi0);
+  outcharged[0] = getParticleData(ParticleID::piplus);
+  outcharged[1] = getParticleData(ParticleID::piminus);
   tPDPtr rho(getParticleData(113));
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr newchannel;
-  vector<double> dummyweights(1,1.);
+  PhaseSpaceModePtr mode;
+  // PhaseSpaceChannelPtr newchannel;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extneut[0]    = getParticleData(_incoming[ix]);
-    extcharged[0] = getParticleData(_incoming[ix]);
-    extneut[3]    = getParticleData(_outgoing[ix]);
-    extcharged[3] = getParticleData(_outgoing[ix]);
+    tPDPtr incoming = getParticleData(_incoming[ix]);
+    outneut[2]    = getParticleData(_outgoing[ix]);
+    outcharged[2] = getParticleData(_outgoing[ix]);
+    // the pi+pi- mode
     if(_charged[ix]) {
-      // the pi+pi- mode
-      mode = new_ptr(DecayPhaseSpaceMode(extcharged,this));
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extcharged[0],0, 0.0,-1,3);
-      newchannel->addIntermediate(rho,1,0.0, 1,2);
-      mode->addChannel(newchannel);
+      mode = new_ptr(PhaseSpaceMode(incoming,outcharged,_maxweight[ix]));
     }
+    // the pi0pi0 mode
     else {
-      // the pi0pi0 mode
-      mode = new_ptr(DecayPhaseSpaceMode(extneut,this));
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extneut[0],0, 0.0,-1,3);
-      newchannel->addIntermediate(rho,1,0.0, 1,2);
-      mode->addChannel(newchannel);
+      mode = new_ptr(PhaseSpaceMode(incoming,outneut,_maxweight[ix]));
     }
-    addMode(mode,_maxweight[ix],dummyweights);
+    PhaseSpaceChannel newChannel((PhaseSpaceChannel(mode),0,rho,0,3,1,1,1,2));
+    newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,0.0);
+    mode->addChannel(newChannel);
+    addMode(mode);
   }
   resetIntermediate(rho,600.*MeV,600.*MeV);
 }
@@ -156,7 +149,7 @@ void EtaPiPiPiDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<EtaPiPiPiDecayer,DecayIntegrator>
+DescribeClass<EtaPiPiPiDecayer,DecayIntegrator2>
 describeHerwigEtaPiPiPiDecayer("Herwig::EtaPiPiPiDecayer", "HwSMDecay.so");
 
 void EtaPiPiPiDecayer::Init() {
@@ -238,37 +231,44 @@ void EtaPiPiPiDecayer::Init() {
 
 }
 
-double EtaPiPiPiDecayer::me2(const int,const Particle & inpart,
-			     const ParticleVector & decay,
-			     MEOption meopt) const {
+void EtaPiPiPiDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
+
+
+
+double EtaPiPiPiDecayer::me2(const int,const Particle & part,
+					const tPDVector &,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-  }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    for(unsigned int ix=0;ix<3;++ix)
-      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return 0.;
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
   // calculate the matrix element
   // compute the variables we need
-  Lorentz5Momentum ps(inpart.momentum()-decay[2]->momentum());ps.rescaleMass();
-  Lorentz5Momentum pu(inpart.momentum()-decay[0]->momentum());pu.rescaleMass();
-  Lorentz5Momentum pt(inpart.momentum()-decay[1]->momentum());pt.rescaleMass();
+  Lorentz5Momentum ps(part.momentum()-momenta[2]);
+  ps.rescaleMass();
+  Lorentz5Momentum pu(part.momentum()-momenta[0]);
+  pu.rescaleMass();
+  Lorentz5Momentum pt(part.momentum()-momenta[1]);
+  pt.rescaleMass();
   Energy2 s(ps.mass2()),u(pu.mass2()),t(pt.mass2());
-  Energy m34(0.5*(decay[0]->mass()+decay[1]->mass()));
-  Energy msum(decay[2]->mass()+2.*m34);
-  Energy Q(inpart.mass()-msum);
-  Energy2 Mmm2((inpart.mass()-decay[2]->mass())*(inpart.mass()-decay[2]->mass()));
+  Energy m34(0.5*(momenta[0].mass()+momenta[1].mass()));
+  Energy msum(momenta[2].mass()+2.*m34);
+  Energy Q(part.mass()-msum);
+  Energy2 Mmm2((part.mass()-momenta[2].mass())*(part.mass()-momenta[2].mass()));
   // compute the variables
-  double x(0.5*sqrt(3.)*(u-t)/inpart.mass()/Q),x2(x*x);
-  double y(0.5*msum/inpart.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
+  double x(0.5*sqrt(3.)*(u-t)/part.mass()/Q),x2(x*x);
+  double y(0.5*msum/part.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
   double me(_prefactor[imode()]*(1+_a[imode()]*y+_b[imode()]*y2+_c[imode()]*x2));
   (*ME())(0,0,0,0)=sqrt(me);
   return me;
@@ -295,51 +295,51 @@ InvEnergy EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy2 q2
 
 WidthCalculatorBasePtr 
 EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
-  int idout(0),id,imode(-1);
-  unsigned int npi0(0),ix(0);
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  for( ;pit!=dm.products().end();++pit) {
-    id=(**pit).id();
-    if(id==ParticleID::pi0&&npi0<2)                            ++npi0;
-    else if(id!=ParticleID::piplus&&id!=ParticleID::piminus) idout=id;
-  }
-  if(npi0==1) idout=ParticleID::pi0;
-  bool charged(npi0<2);
-  id=dm.parent()->id();
-  do {
-    if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged) 
-      imode=ix;
-    ++ix;
-  }
-  while(imode<0&&ix<_incoming.size());
-  Energy mpi;
-  if(charged){mpi=getParticleData(ParticleID::piplus)->mass();}
-  else{mpi=getParticleData(ParticleID::pi0)->mass();}
-  Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
-  WidthCalculatorBasePtr 
-    temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
-		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
-  if(_outgoing[imode]==ParticleID::eta) {
-    tcGenericMassGeneratorPtr test;
-    tGenericMassGeneratorPtr massptr;
-    if(getParticleData(_outgoing[imode])->massGenerator()) {
-      test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
-	(getParticleData(_outgoing[imode])->massGenerator());
-      massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
-    }
-    if(massptr) {
-      massptr->init();
-      return new_ptr(OneOffShellCalculator(3,temp,massptr,ZERO));
-    }
-  }
-  return temp;
+  // int idout(0),id,imode(-1);
+  // unsigned int npi0(0),ix(0);
+  // ParticleMSet::const_iterator pit(dm.products().begin());
+  // for( ;pit!=dm.products().end();++pit) {
+  //   id=(**pit).id();
+  //   if(id==ParticleID::pi0&&npi0<2)                            ++npi0;
+  //   else if(id!=ParticleID::piplus&&id!=ParticleID::piminus) idout=id;
+  // }
+  // if(npi0==1) idout=ParticleID::pi0;
+  // bool charged(npi0<2);
+  // id=dm.parent()->id();
+  // do {
+  //   if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged) 
+  //     imode=ix;
+  //   ++ix;
+  // }
+  // while(imode<0&&ix<_incoming.size());
+  // Energy mpi;
+  // if(charged){mpi=getParticleData(ParticleID::piplus)->mass();}
+  // else{mpi=getParticleData(ParticleID::pi0)->mass();}
+  // Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
+  // WidthCalculatorBasePtr 
+  //   temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
+  // 		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
+  // if(_outgoing[imode]==ParticleID::eta) {
+  //   tcGenericMassGeneratorPtr test;
+  //   tGenericMassGeneratorPtr massptr;
+  //   if(getParticleData(_outgoing[imode])->massGenerator()) {
+  //     test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
+  // 	(getParticleData(_outgoing[imode])->massGenerator());
+  //     massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
+  //   }
+  //   if(massptr) {
+  //     massptr->init();
+  //     return new_ptr(OneOffShellCalculator(3,temp,massptr,ZERO));
+  //   }
+  // }
+  // return temp;
 } 
   
 void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
 				      bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming   " << ix << " "

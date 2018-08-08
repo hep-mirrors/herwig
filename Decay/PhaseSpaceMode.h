@@ -57,6 +57,40 @@ public:
   ParticleVector generateDecay(const Particle & inpart,
 			       tcDecayIntegrator2Ptr decayer,
 			       bool intermediates,bool cc);
+  
+  /**
+   * Add a new channel. 
+   * @param channel A pointer to the new PhaseChannel
+   */
+  void addChannel(PhaseSpaceChannel channel) {
+    channel.init(this);
+    channels_.push_back(channel);
+  }
+
+  /**
+   * Reset the properties of one of the intermediate particles. Only a specific channel
+   * is reset.
+   * @param ichan The channel to reset.
+   * @param part The ParticleData object of the particle to reset
+   * @param mass The mass of the intermediate.
+   * @param width The width of gthe intermediate.
+   */
+  void resetIntermediate(int ichan, tcPDPtr part, Energy mass, Energy width) {
+    if(!part) return;
+    channels_[ichan].resetIntermediate(part,mass,width);
+  }
+
+  /**
+   * Reset the properties of one of the intermediate particles. All the channels 
+   * are reset.
+   * @param part The ParticleData object of the particle to reset
+   * @param mass The mass of the intermediate.
+   * @param width The width of gthe intermediate.
+   */
+  void resetIntermediate(tcPDPtr part, Energy mass, Energy width) {
+    for(PhaseSpaceChannel & channel : channels_)
+      channel.resetIntermediate(part,mass,width);
+  }
 
 public:
 
@@ -104,7 +138,6 @@ public :
     // get max energy for decays
     if(!incoming_.second)
       eMax_ = testOnShell_ ? incoming_.first->mass() : incoming_.first->massMax();
-    for(PhaseSpaceChannel & channel : channels_) channel.init(this);
   }
 
   void initrun() {
@@ -115,9 +148,7 @@ public :
       if(massGen_[ix]!=outgoing_[ix]->massGenerator())
 	massGen_[ix] = dynamic_ptr_cast<cGenericMassGeneratorPtr>(outgoing_[ix]->massGenerator());
     }
-    //   for(unsigned int ix=0;ix<_channels.size();++ix) {
-    //     _channels[ix]->initrun();
-    //   }
+    for(PhaseSpaceChannel & channel : channels_) channel.initrun(this);
     if(widthGen_) const_ptr_cast<GenericWidthGeneratorPtr>(widthGen_)->initrun();
     tcGenericWidthGeneratorPtr wtemp;
     for(unsigned int ix=0;ix<outgoing_.size();++ix) {
@@ -196,17 +227,12 @@ private:
 		vector<Lorentz5Momentum> & momenta,
 		bool onShell=false) const {
     ichan=0;
-    Energy phwgt(ZERO);
     // flat phase-space
-    if(channels_.empty()) {
-      phwgt = flatPhaseSpace(in,momenta,onShell);
-    }
+    if(channels_.empty())
+      return flatPhaseSpace(in,momenta,onShell);
     // multi-channel
-    else {
-      assert(false);
-      // phwgt = channelPhaseSpace(cc,ichan,in,particles,onShell);
-    }
-    return phwgt;
+    else
+      return channelPhaseSpace(ichan,in,momenta,onShell);
   }
     
   /**
@@ -218,6 +244,16 @@ private:
   Energy flatPhaseSpace(const Particle & inpart,
 			vector<Lorentz5Momentum> & momenta,
 			bool onShell=false) const;
+  
+  /**
+   * Generate a phase-space point using multichannel phase space.
+   * @param in The incoming particle.
+   * @param particles The outgoing particles.
+   * @return The weight.
+   */
+  Energy channelPhaseSpace(int & ichan, const Particle & in, 
+			   vector<Lorentz5Momentum> & momenta,
+			   bool onShell=false) const;
 
   /**
    * Generate the masses of the external particles.

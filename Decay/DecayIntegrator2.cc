@@ -316,11 +316,18 @@ void  DecayIntegrator2::addMode(PhaseSpaceModePtr mode) const {
 }
 
 ostream & Herwig::operator<<(ostream & os, const DecayIntegrator2 & decay) { 
-    os << "The integrator has " << decay.modes_.size() << " modes"  << endl;
-    for(unsigned int ix=0;ix<decay.modes_.size();++ix) {
-      os << "Information on mode " << ix << endl;
-      os << *(decay.modes_[ix]);
-    }
-    return os;
+  os << "The integrator has " << decay.modes_.size() << " modes"  << endl;
+  for(unsigned int ix=0;ix<decay.modes_.size();++ix) {
+    os << "Information on mode " << ix << endl;
+    os << *(decay.modes_[ix]);
   }
+  return os;
+}
   
+// reset the properities of all intermediates
+void DecayIntegrator2::resetIntermediate(tcPDPtr part, Energy mass, Energy width) {
+  if(!part) return;
+  for(unsigned int ix=0,N=modes_.size();ix<N;++ix) {
+    modes_[ix]->resetIntermediate(part,mass,width);
+  }
+}

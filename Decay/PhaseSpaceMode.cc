@@ -139,7 +139,8 @@ Energy PhaseSpaceMode::flatPhaseSpace(const Particle & inpart,
     throw Exception() << "Incoming mass - Outgoing mass negative in "
  		      << "PhaseSpaceMode::flatPhaseSpace()"
 		      << Exception::eventerror;
-  wgt *= Kinematics::pstarTwoBodyDecay(inpart.mass(),mass[0],mass[1])/8./Constants::pi/inpart.mass();
+  wgt *= Kinematics::pstarTwoBodyDecay(inpart.mass(),mass[0],mass[1])
+    /8./Constants::pi/inpart.mass();
   return wgt*inpart.mass();
 }
 
@@ -272,110 +273,137 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
     output=wsum*fact;
   }
   else {
-    assert(false);
-    // //   double totsum(0.),totsq(0.);
-    // //   for(int iy=0;iy<_niter;++iy) {
-    // //     // zero the maximum weight
-    // //     maxWeight_=0.;
-    // //     vector<double> wsum(_channels.size(),0.),wsqsum(_channels.size(),0.);
-    // //     vector<int> nchan(_channels.size(),0);
-    // //     totsum = 0.; totsq = 0.;
-    // //     Energy m0,mmin(ZERO);
-    // //     for(unsigned int ix=1;ix<_extpart.size();++ix) {
-    // // 	mmin+=_extpart[ix]->massMin();
-    // //     }
-    // //     for(int ix=0;ix<_npoint;++ix) {
-    // // 	m0 = !onShell ? inpart->dataPtr()->generateMass() : inpart->dataPtr()->mass();
-    // // 	double wgt=0.; 
-    // // 	int ichan(-1);
-    // // 	if(m0>mmin) {
-    // // 	  inpart->set5Momentum(Lorentz5Momentum(m0));
-    // // 	  // compute the prefactor
-    // // 	  prewid= (widthGen_&&partial_>=0) ? 
-    // // 	    widthGen_->partialWidth(partial_,inpart->mass()) :
-    // // 	    inpart->dataPtr()->width();
-    // // 	  pre = prewid>ZERO ? 1./prewid : 1./MeV;
-    // // 	  // generate the weight for this point
-    // // 	  try {
-    // // 	    wgt = pre*weight(false,ichan,*inpart,particles,true,onShell);
-    // // 	  }
-    // // 	  catch (Veto) {
-    // // 	    wgt=0.;
-    // // 	  }
-    // // 	}
-    // // 	if(wgt>maxWeight_) maxWeight_=wgt;
-    // // 	if(ichan>=0) {
-    // // 	  wsum[ichan]   += wgt;
-    // // 	  wsqsum[ichan] += sqr(wgt);
-    // // 	  ++nchan[ichan];
-    // // 	}
-    // // 	totsum+=wgt;
-    // // 	totsq+=wgt*wgt;
-    // //     }
-    // //     totsum=totsum/_npoint;
-    // //     totsq=totsq/_npoint-sqr(totsum);
-    // //     if(totsq<0.) totsq=0.;
-    // //     totsq=sqrt(totsq/_npoint);
-    // //     if ( Debug::level > 1 )
-    // // 	CurrentGenerator::log() << "The branching ratio is " << iy << " " 
-    // // 				<< totsum << " +/- " << totsq 
-    // // 				<< maxWeight_ << "\n";
-    // //     // compute the individual terms
-    // //     double total(0.);
-    // //     for(unsigned int ix=0;ix<_channels.size();++ix) {
-    // // 	if(nchan[ix]!=0) {
-    // // 	  wsum[ix]=wsum[ix]/nchan[ix];
-    // // 	  wsqsum[ix]=wsqsum[ix]/nchan[ix];
-    // // 	  if(wsqsum[ix]<0.) wsqsum[ix]=0.;
-    // // 	  wsqsum[ix]=sqrt(wsqsum[ix]/nchan[ix]);
-    // // 	}
-    // // 	else {
-    // // 	  wsum[ix]=0;
-    // // 	  wsqsum[ix]=0;
-    // // 	}
-    // // 	total+=sqrt(wsqsum[ix])*_channelwgts[ix];
-    // //     }
-    // //     if(total>0.) {
-    // // 	double temp;
-    // // 	for(unsigned int ix=0;ix<_channels.size();++ix) {
-    // // 	  temp=sqrt(wsqsum[ix])*_channelwgts[ix]/total;
-    // // 	  _channelwgts[ix]=temp;
-    // // 	}
-    // //     }
-    // //   }
-    // //   // factor for the weight with spin correlations
-    // //   maxWeight_*= inpart->dataPtr()->iSpin()==1 ? 1.1 : 1.6;
-    // //   // ouptut the information on the initialisation
-    // //   Energy fact = (widthGen_&&partial_>=0) ? 
-    // //     widthGen_->partialWidth(partial_,inpart->nominalMass()) :
-    // //     inpart->dataPtr()->width();
-    // //   if(fact==ZERO) fact=MeV;
-    // //   if ( Debug::level > 1 ) {
-    // //     CurrentGenerator::log() << "Initialized the phase space for the decay " 
-    // // 			      << _extpart[0]->PDGName() << " -> ";
-    // //     for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
-    // // 	CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
-    // //     CurrentGenerator::log() << "\n";
-    // //     if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << totsum 
-    // // 					    << " +/- " << totsq << "\n";
-    // //     CurrentGenerator::log() << "The partial width is " << totsum*fact/MeV 
-    // // 			      << " +/- " << totsq*fact/MeV << " MeV\n";
-    // //     CurrentGenerator::log() << "The partial width is " 
-    // // 			      << totsum*fact/6.58212E-22/MeV 
-    // // 			      << " +/- " << totsq*fact/6.58212E-22/MeV 
-    // // 			      << " s-1\n";
-    // //     CurrentGenerator::log() << "The maximum weight is " 
-    // // 			      << maxWeight_ << "\n";
-    // //     CurrentGenerator::log() << "The weights for the different phase" 
-    // // 			      << " space channels are \n";
-    // //     for(unsigned int ix=0,N=_channels.size();ix<N;++ix) {
-    // // 	CurrentGenerator::log() << "Channel " << ix 
-    // // 				<< " had weight " << _channelwgts[ix] 
-    // // 				<< "\n";
-    // //     }
-    // //     CurrentGenerator::log() << flush;
-    // //   }
-    // //   output=totsum*fact;
+    vector<Lorentz5Momentum> momenta(outgoing_.size());
+    double totsum(0.),totsq(0.);
+    for(unsigned int iy=0;iy<decayer->nIter_;++iy) {
+      // zero the maximum weight
+      maxWeight_=0.;
+      vector<double> wsum(channels_.size(),0.),wsqsum(channels_.size(),0.);
+      vector<int> nchan(channels_.size(),0);
+      totsum = 0.;
+      totsq  = 0.;
+      Energy m0,mmin(ZERO);
+      for(tcPDPtr part : outgoing_) mmin += part->massMin();
+      for(unsigned int ix=0;ix<decayer->nPoint_;++ix) {
+     	m0 = !onShell ? incoming_.first->generateMass() : incoming_.first->mass();
+     	double wgt=0.; 
+     	int ichan(-1);
+     	if(m0>mmin) {
+	  inpart->set5Momentum(Lorentz5Momentum(m0));
+	  // compute the prefactor
+	  Energy prewid= (widthGen_&&partial_>=0) ? 
+	    widthGen_->partialWidth(partial_,inpart->mass()) :
+	    inpart->dataPtr()->width();
+	  InvEnergy pre = prewid>ZERO ? 1./prewid : 1./MeV;
+	  // generate the weight for this point
+	  try {
+	    wgt = pre*weight(ichan,*inpart,momenta,onShell);
+	  }
+	  catch (Veto) {
+	    wgt=0.;
+	  }
+     	}
+     	if(wgt>maxWeight_) maxWeight_=wgt;
+    	if(ichan>=0) {
+    	  wsum[ichan]   += wgt;
+    	  wsqsum[ichan] += sqr(wgt);
+    	  ++nchan[ichan];
+    	}
+    	totsum+=wgt;
+    	totsq+=wgt*wgt;
+      }
+      totsum=totsum/decayer->nPoint_;
+      totsq=totsq/decayer->nPoint_-sqr(totsum);
+      if(totsq<0.) totsq=0.;
+      totsq=sqrt(totsq/decayer->nPoint_);
+      if ( Debug::level > 1 )
+    	CurrentGenerator::log() << "The branching ratio is " << iy << " " 
+    				<< totsum << " +/- " << totsq 
+    				<< maxWeight_ << "\n";
+      // compute the individual terms
+      double total(0.);
+      for(unsigned int ix=0;ix<channels_.size();++ix) {
+     	if(nchan[ix]!=0) {
+     	  wsum[ix]=wsum[ix]/nchan[ix];
+     	  wsqsum[ix]=wsqsum[ix]/nchan[ix];
+     	  if(wsqsum[ix]<0.) wsqsum[ix]=0.;
+     	  wsqsum[ix]=sqrt(wsqsum[ix]/nchan[ix]);
+     	}
+     	else {
+     	  wsum[ix]=0;
+     	  wsqsum[ix]=0;
+     	}
+     	total+=sqrt(wsqsum[ix])*channels_[ix].weight();
+      }
+      if(total>0.) {
+    	for(unsigned int ix=0;ix<channels_.size();++ix) {
+	  channels_[ix].weight(sqrt(wsqsum[ix])*channels_[ix].weight()/total);
+     	}
+      }
+    }
+    // factor for the weight with spin correlations
+    maxWeight_*= inpart->dataPtr()->iSpin()==1 ? 1.1 : 1.6;
+    // output the information on the initialisation
+    Energy fact = (widthGen_&&partial_>=0) ? 
+      widthGen_->partialWidth(partial_,inpart->nominalMass()) :
+      inpart->dataPtr()->width();
+    output=totsum*fact;
+    if(fact==ZERO) fact=MeV;
+    if ( Debug::level > 1 ) {
+      CurrentGenerator::log() << "Initialized the phase space for the decay " 
+     			      << incoming_.first->PDGName() << " -> ";
+      for(tcPDPtr part : outgoing_)
+	CurrentGenerator::log() << part->PDGName() << " ";
+      CurrentGenerator::log() << "\n";
+      if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << totsum 
+     					    << " +/- " << totsq << "\n";
+      CurrentGenerator::log() << "The partial width is " << totsum*fact/MeV 
+     			      << " +/- " << totsq*fact/MeV << " MeV\n";
+      CurrentGenerator::log() << "The partial width is " 
+     			      << totsum*fact/6.58212E-22/MeV 
+     			      << " +/- " << totsq*fact/6.58212E-22/MeV 
+     			      << " s-1\n";
+      CurrentGenerator::log() << "The maximum weight is " 
+     			      << maxWeight_ << "\n";
+      CurrentGenerator::log() << "The weights for the different phase" 
+			      << " space channels are \n";
+      for(unsigned int ix=0,N=channels_.size();ix<N;++ix) {
+    	CurrentGenerator::log() << "Channel " << ix 
+    				<< " had weight " << channels_[ix].weight()
+    				<< "\n";
+      }
+    }
+    CurrentGenerator::log() << flush;
   }
   return output;
+}
+ 
+// generate a phase-space point using multichannel phase space
+Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Particle & in, 
+					 vector<Lorentz5Momentum> & momenta,
+					 bool onShell) const {
+  double wgt(UseRandom::rnd());
+  // select a channel
+  ichan=-1;
+  do {
+    ++ichan;
+    wgt-=channels_[ichan].weight();
+  }
+  while(ichan<int(channels_.size())&&wgt>0.);
+  // generate the momenta
+  if(ichan==int(channels_.size())) {
+    throw DecayIntegratorError() << "PhaseSpaceMode::channelPhaseSpace()"
+  				 << " failed to select a channel" 
+  				 << Exception::abortnow;
+  }
+  // generate the masses of the external particles
+  double masswgt(1.);
+  vector<Energy> mass(externalMasses(in.mass(),masswgt,onShell));
+  momenta=channels_[ichan].generateMomenta(in.momentum(),mass);
+  // compute the denominator of the weight
+  wgt=0.;
+  for(const PhaseSpaceChannel & channel : channels_) 
+    wgt += channel.generateWeight(momenta);
+  // return the weight
+  return wgt!=0. ? in.mass()*masswgt/wgt : ZERO;
 }

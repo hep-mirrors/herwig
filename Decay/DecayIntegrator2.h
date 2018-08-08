@@ -332,6 +332,14 @@ protected:
    * The helicity amplitude matrix element for spin correlations.
    */
   DecayMEPtr ME() const {return matrixElement_;}
+   
+  /**
+   * Reset the properities of all intermediates.
+   * @param part The intermediate particle being reset.
+   * @param mass The mass of the particle.
+   * @param width The width of the particle.
+   */
+  void resetIntermediate(tcPDPtr part, Energy mass, Energy width);
   
 protected:
   
