@@ -9,8 +9,8 @@
 #ifndef HERWIG_PScalarVectorVectorDecayer_H
 #define HERWIG_PScalarVectorVectorDecayer_H
 // This is the declaration of the PScalarVectorVectorDecayer class.
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
@@ -37,14 +37,14 @@ using namespace ThePEG;
  *  The incoming pseudoscalar meson, the outgoing vectors and the coupling can
  *  be specified using the relevant interfaces.
  *
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  * @see PScalarVectorFermionsDecayer
  * @see PScalar4FermionsDecayer
  *
  * \author Peter Richardson
  * 
  */
-class PScalarVectorVectorDecayer: public DecayIntegrator {
+class PScalarVectorVectorDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -66,12 +66,21 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2( const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.

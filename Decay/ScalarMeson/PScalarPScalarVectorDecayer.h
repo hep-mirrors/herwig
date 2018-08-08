@@ -58,7 +58,8 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
@@ -67,7 +68,11 @@ public:
 	     const vector<Lorentz5Momentum> & momenta,
 	     MEOption meopt) const;
 
-  virtual void constructSpinInfo(const Particle & part, ParticleVector outgoing) const;
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
   
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
