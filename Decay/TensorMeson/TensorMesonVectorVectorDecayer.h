@@ -11,8 +11,8 @@
 //
 // This is the declaration of the TensorMesonVectorVectorDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 
 namespace Herwig {
@@ -44,18 +44,18 @@ using namespace ThePEG;
  *  The incoming tensor mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
  *  for the decays can be calculated using the Initialize interface of the
- *  DecayIntegrator class or specified using the interface.
+ *  DecayIntegrator2 class or specified using the interface.
  *
  *  The incoming and outgoing particles, couplings and maximum weights for
  *  many of the common \f$T\to VV\f$ decays are specified in the default
  *  constructor.
  *
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  * * @see \ref TensorMesonVectorVectorDecayerInterfaces "The interfaces"
  * defined for TensorMesonVectorVectorDecayer.
  *
  */
-class TensorMesonVectorVectorDecayer: public DecayIntegrator {
+class TensorMesonVectorVectorDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -77,12 +77,21 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2(const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.

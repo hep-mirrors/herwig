@@ -276,7 +276,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 
 // matrix elememt for the process
 double TensorMeson2PScalarDecayer::me2(const int,const Particle & part,
-				       const tPDVector & outgoing,
+				       const tPDVector &,
 				       const vector<Lorentz5Momentum> & momenta,
 				       MEOption meopt) const {
   if(!ME())
