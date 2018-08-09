@@ -143,72 +143,8 @@ void DecayIntegrator2::dataBaseOutput(ofstream & output,bool header) const {
 
 // set the code for the partial width
 void DecayIntegrator2::setPartialWidth(const DecayMode & dm, int imode) {
-  int nfound(0),ifound,nmax(1),id;
-  unsigned int ix(0),iy,N,nmatched;
-  if(dm.parent()->CC()) nmax=2;
-  if(modes_.size()==0) return;
-  do {
-    if(!modes_[ix]) {
-      ++ix;
-      continue;
-    }
-    tcPDPtr in = modes_[ix]->incoming().first;
-    tcPDPtr cc = modes_[ix]->incoming().first->CC();
-    unsigned int tmax = cc ? 1 : 2;
-    for(unsigned int iz=0;iz<tmax;++iz) {
-      ifound=-1;
-      vector<int> extid;
-      // check the parent
-      if(dm.parent()!=in && dm.parent()!=cc) continue;
-      if(dm.parent()->id()==modes_[ix]->incoming().first->id()&&iz==0) {
-	for(iy=0,N=modes_[ix]->numberOfParticles();iy<N;++iy) {
-	  extid.push_back(modes_[ix]->outgoing()[iy]->id());
-	}
-      }
-      else if(dm.parent()->id()==modes_[ix]->incoming().first->id()&&iz==1) {
-	for(iy=0,N=modes_[ix]->numberOfParticles();iy<N;++iy) {
-	  tcPDPtr cc2=modes_[ix]->outgoing()[iy]->CC();
-	  extid.push_back( cc2 ? cc2->id() : modes_[ix]->outgoing()[iy]->id());
-	}
-      }
-      else if(cc&&dm.parent()->id()==cc->id()) {
-	for(iy=0,N=modes_[ix]->numberOfParticles();iy<N;++iy) {
-	  tcPDPtr cc2 = modes_[ix]->outgoing()[iy]->CC();
-	  extid.push_back( cc2 ? cc2->id() : modes_[ix]->outgoing()[iy]->id());
-	}
-      }
-      // if the parents match
-      if(!extid.empty()) {
-	vector<bool> matched(extid.size(),false);
-	bool done;
-	nmatched=0;
-	ParticleMSet::const_iterator pit = dm.products().begin();
-	do {
-	  id=(**pit).id();
-	  done=false;
-	  iy=0;
-	  do {
-	    if(id==extid[iy]&&!matched[iy]) {
-	      matched[iy]=true;
-	      ++nmatched;
-	      done=true;
-	    }
-	    ++iy;
-	  }
-	  while(iy<extid.size()&&!done);
-	  ++pit;
-	}
-	while(pit!=dm.products().end());
-	if(nmatched==extid.size()) {
-	  ifound=ix;
-	  ++nfound;
-	}
-      }
-      if(ifound>=0) modes_[ifound]->setPartialWidth(imode);
-    }
-    ++ix;
-  }
-  while(nfound<nmax&&ix<modes_.size());
+  int ifound = findMode(dm);
+  if(ifound>=0) modes_[ifound]->setPartialWidth(imode);
 }
 
 WidthCalculatorBasePtr 
@@ -234,6 +170,7 @@ int DecayIntegrator2::findMode(const DecayMode & dm) {
     for(iz=0;iz<tmax;++iz) {
       extid.clear();
       // check the parent
+      if(dm.parent()!=in && dm.parent()!=cc) continue;
       if(dm.parent()->id()==in->id()&&iz==0) {
 	for(iy=0,N=modes_[ix]->numberOfParticles();iy<N;++iy) {
 	  extid.push_back(modes_[ix]->outgoing()[iy]->id());
