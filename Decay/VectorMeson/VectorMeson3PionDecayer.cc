@@ -29,17 +29,17 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void VectorMeson3PionDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     double temp;
     unsigned int iy;
     for(unsigned int ix=0;ix<_incoming.size();++ix) {
       _maxwgt[ix]=mode(ix)->maxWeight();
       for(iy=0;iy<3;++iy) {
-	if(mode(ix)->numberChannels()>3*iy+1) {
-	  temp=mode(ix)->channelWeight(3*iy)+mode(ix)->channelWeight(3*iy+1)+
-	    mode(ix)->channelWeight(3*iy+2);
-	  temp/=3.;
+	if(mode(ix)->channels().size()>3*iy+1) {
+	  temp=1./3.*(mode(ix)->channels()[3*iy  ].weight()+
+		      mode(ix)->channels()[3*iy+1].weight()+
+		      mode(ix)->channels()[3*iy+2].weight());
 	  switch(iy) {
 	  case 0: _rho1wgt[ix]=temp; break;
 	  case 1: _rho2wgt[ix]=temp; break;
@@ -99,7 +99,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
 }
 
 void VectorMeson3PionDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the consistence of the decay modes
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()       || 
@@ -116,10 +116,9 @@ void VectorMeson3PionDecayer::doinit() {
 			  << Exception::abortnow;
   // calculate the parameters 
   // set the external particles
-  tPDVector extpart(4);
-  extpart[1]=getParticleData(ParticleID::pi0);
-  extpart[2]=getParticleData(ParticleID::piplus);
-  extpart[3]=getParticleData(ParticleID::piminus);
+  tPDVector out={getParticleData(ParticleID::pi0),
+		 getParticleData(ParticleID::piplus),
+		 getParticleData(ParticleID::piminus)};
   // pointer to the different rho resonances
   // the rho0 resonances
   tPDPtr rho0[3]={getParticleData(113),getParticleData(100113),getParticleData(30113)};
@@ -128,17 +127,13 @@ void VectorMeson3PionDecayer::doinit() {
 		  getParticleData(-30213)};
   tPDPtr rhop[3]={getParticleData(213),getParticleData(100213),getParticleData(30213)};
   // create the integration channels for the decay
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr newchannel;
-  unsigned int iy,iz;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0]=getParticleData(int(_incoming[ix]));
-    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr in =  getParticleData(_incoming[ix]);
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_maxwgt[ix]));
     // decide which rho resonances to add
     double  temp[3] = {_rho1wgt[ix]  ,_rho2wgt[ix]  ,_rho3wgt[ix]  };
     Energy  mass[3] = {_rho1mass[ix] ,_rho2mass[ix] ,_rho3mass[ix] };
     Energy width[3] = {_rho1width[ix],_rho2width[ix],_rho3width[ix]};
-    vector<double> wgt;
     // set the mass parameters to the default if needed
     if(_defaultmass[ix]) {
       if(rhom[0]) {
@@ -154,33 +149,31 @@ void VectorMeson3PionDecayer::doinit() {
 	_rho3width[ix] = rhom[2]->width();
       }
     }
+    // total of the weights
     double sumwgt(0);
-    for(iy=0;iy<3;++iy) {
+    for(unsigned int iy=0;iy<3;++iy) {
       if(temp[iy]>0) sumwgt+=temp[iy];
     }
-    for(iy=0;iy<3;++iy) {
+    for(unsigned int iy=0;iy<3;++iy) {
       if(temp[iy]>0) {
 	// set the weights for the channels
-	for(iz=0;iz<3;++iz) wgt.push_back(temp[iy]/3./sumwgt);
+	double weight = temp[iy]/3./sumwgt;
 	// rho0 channel
-	newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-	newchannel->addIntermediate(rho0[iy]  ,0,0.0, 2,3);
-	mode->addChannel(newchannel);
+	PhaseSpaceChannel c1((PhaseSpaceChannel(mode),0,rho0[iy],0,1,1,2,1,3));
+	mode->addChannel(c1);
+	c1.weight(weight);
 	if(!_defaultmass[ix]) resetIntermediate(rho0[iy],mass[iy],width[iy]);
 	// rho+ channel
-	newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
-	newchannel->addIntermediate(rhop[iy]  ,0,0.0, 1,2);
-	mode->addChannel(newchannel);
+	PhaseSpaceChannel c2((PhaseSpaceChannel(mode),0,rhop[iy],0,3,1,1,1,2));
+	mode->addChannel(c2);
+	c2.weight(weight);
 	if(!_defaultmass[ix]) resetIntermediate(rhop[iy],mass[iy],width[iy]);
 	// rho- channel
-	newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
-	newchannel->addIntermediate(rhom[iy]  ,0,0.0, 1,3);
-	mode->addChannel(newchannel);
+	PhaseSpaceChannel c3((PhaseSpaceChannel(mode),0,rhom[iy],0,2,1,1,1,3));
+	mode->addChannel(c3);
+	c3.weight(weight);
 	if(!_defaultmass[ix]) mode->resetIntermediate(rhom[iy],mass[iy],width[iy]);
-	addMode(mode,_maxwgt[ix],wgt);
+	addMode(mode);
       }
     }
   }
@@ -273,7 +266,7 @@ void VectorMeson3PionDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMeson3PionDecayer,DecayIntegrator>
+DescribeClass<VectorMeson3PionDecayer,DecayIntegrator2>
 describeHerwigVectorMeson3PionDecayer("Herwig::VectorMeson3PionDecayer", "HwVMDecay.so");
 
 void VectorMeson3PionDecayer::Init() {
@@ -294,7 +287,7 @@ void VectorMeson3PionDecayer::Init() {
      "  %%CITATION = PHLTA,B561,55;%%\n"
      );
   
-  static ParVector<VectorMeson3PionDecayer,double> interfaceIncoming
+  static ParVector<VectorMeson3PionDecayer,long> interfaceIncoming
     ("Incoming",
      "The PDG code for the incoming particle",
      &VectorMeson3PionDecayer::_incoming,
@@ -417,26 +410,26 @@ void VectorMeson3PionDecayer::Init() {
      0, 0, 1, 0, 1, false, false, true);
 
 }
+void VectorMeson3PionDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  // set up the spin information for the decay products
+  for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
 
-double VectorMeson3PionDecayer::me2(const int ichan,
-				    const Particle & inpart,
-				    const ParticleVector & decay,
+double VectorMeson3PionDecayer::me2(const int ichan, const Particle & part,
+				    const tPDVector & outgoing,
+				    const vector<Lorentz5Momentum> & momenta,
 				    MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
-						const_ptr_cast<tPPtr>(&inpart),
+						const_ptr_cast<tPPtr>(&part),
 						incoming,false);
-  }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true,false);
-    // set up the spin information for the decay products
-    for(unsigned int ix=0;ix<3;++ix)
-      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return 0.;
   }
   // compute the matrix element
   // work out the prefactor
@@ -445,9 +438,9 @@ double VectorMeson3PionDecayer::me2(const int ichan,
   if(ichan<0){pre=_ccoupling[imode()][3];}
   Energy pcm;
   // work out the direct invariant masses needed
-  Energy mrho0(sqrt(decay[1]->momentum().m2(decay[2]->momentum())));
-  Energy mrhop(sqrt(decay[1]->momentum().m2(decay[0]->momentum())));
-  Energy mrhom(sqrt(decay[2]->momentum().m2(decay[0]->momentum())));
+  Energy mrho0(sqrt(momenta[1].m2(momenta[2])));
+  Energy mrhop(sqrt(momenta[1].m2(momenta[0])));
+  Energy mrhom(sqrt(momenta[2].m2(momenta[0])));
   // contribution of the resonances
   int ichannow(-3);
   for(unsigned int ix=0;ix<3;++ix) {
@@ -496,12 +489,13 @@ double VectorMeson3PionDecayer::me2(const int ichan,
   }
   // polarization vector piece
   LorentzPolarizationVector 
-    scalar=_coupling[imode()]*pre*epsilon(decay[0]->momentum(),
-					  decay[1]->momentum(),
-					  decay[2]->momentum());
+    scalar=_coupling[imode()]*pre*epsilon(momenta[0],
+					  momenta[1],
+					  momenta[2]);
   // compute the matrix element
-  for(unsigned int ix=0;ix<3;++ix) 
+  for(unsigned int ix=0;ix<3;++ix) {
     (*ME())(ix,0,0,0)=scalar.dot(_vectors[ix]);
+  }
   // return the answer
   return ME()->contract(_rho).real();
 }
@@ -569,7 +563,7 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<Energy> inmass(3,mrho);
   vector<Energy> inwidth(3,wrho);
   vector<double> inpow(2,0.0);
-  //tcDecayIntegratorPtr decayer(this);
+  //tcDecayIntegrator2Ptr decayer(this);
   WidthCalculatorBasePtr output(
     new_ptr(ThreeBodyAllOnCalculator<VectorMeson3PionDecayer>
 	    (inweights,intype,inmass,inwidth,inpow,
@@ -580,8 +574,8 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
 					     bool header) const {
   if(header){output << "update decayers set parameters=\"";}
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming " 
