@@ -298,6 +298,8 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 	  // generate the weight for this point
 	  try {
 	    wgt = pre*weight(ichan,*inpart,momenta,onShell);
+	    // matrix element piece
+	    wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
 	  }
 	  catch (Veto) {
 	    wgt=0.;

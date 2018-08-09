@@ -186,7 +186,7 @@ void DecayIntegrator2::setPartialWidth(const DecayMode & dm, int imode) {
 	do {
 	  id=(**pit).id();
 	  done=false;
-	  iy=1;
+	  iy=0;
 	  do {
 	    if(id==extid[iy]&&!matched[iy]) {
 	      matched[iy]=true;
@@ -199,7 +199,7 @@ void DecayIntegrator2::setPartialWidth(const DecayMode & dm, int imode) {
 	  ++pit;
 	}
 	while(pit!=dm.products().end());
-	if(nmatched==extid.size()-1) {
+	if(nmatched==extid.size()) {
 	  ifound=ix;
 	  ++nfound;
 	}
@@ -260,7 +260,7 @@ int DecayIntegrator2::findMode(const DecayMode & dm) {
 	do {
 	  id=(**pit).id();
 	  done=false;
-	  iy=1;
+	  iy=0;
 	  do {
 	    if(id==extid[iy]&&!matched[iy]) {
 	      matched[iy]=true;
@@ -273,7 +273,7 @@ int DecayIntegrator2::findMode(const DecayMode & dm) {
 	  ++pit;
 	}
 	while(pit!=dm.products().end());
-	if(nmatched==extid.size()-1) {
+	if(nmatched==extid.size()) {
 	  imode=ix;
 	  found=true;
 	}
