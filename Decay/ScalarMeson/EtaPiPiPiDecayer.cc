@@ -270,6 +270,7 @@ double EtaPiPiPiDecayer::me2(const int,const Particle & part,
   double x(0.5*sqrt(3.)*(u-t)/part.mass()/Q),x2(x*x);
   double y(0.5*msum/part.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
   double me(_prefactor[imode()]*(1+_a[imode()]*y+_b[imode()]*y2+_c[imode()]*x2));
+  if(me<0.) me=0.;
   (*ME())(0,0,0,0)=sqrt(me);
   return me;
 }

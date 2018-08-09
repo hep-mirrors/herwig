@@ -220,9 +220,9 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 double ScalarScalarScalarDecayer::me2(const int,const Particle & part,
-					const tPDVector &,
-					const vector<Lorentz5Momentum> &,
-					MEOption meopt) const {
+				      const tPDVector &,
+				      const vector<Lorentz5Momentum> &,
+				      MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {

@@ -8,6 +8,9 @@
 #include "DecayIntegrator2.fh"
 #include "HwDecayerBase.h"
 #include "PhaseSpaceMode.fh"
+#include "Herwig/PDT/WidthCalculatorBase.fh"
+#include "Radiation/DecayRadiationGenerator.h"
+#include <Herwig/Decay/DecayVertex.h>
 
 namespace Herwig {
 

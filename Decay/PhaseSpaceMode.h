@@ -8,6 +8,8 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "PhaseSpaceMode.fh"
 #include "PhaseSpaceChannel.h"
+#include "Herwig/PDT/GenericWidthGenerator.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
