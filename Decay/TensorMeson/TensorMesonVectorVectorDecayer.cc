@@ -231,7 +231,7 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & part,
     _vectors[iy].resize(3);
     for(unsigned int ix=0;ix<3;++ix) {
       if(photon[iy] && ix==1) continue;
-      _vectors[iy][ix] = HelicityFunctions::polarizationVector(momenta[iy],ix,Helicity::outgoing);
+      _vectors[iy][ix] = HelicityFunctions::polarizationVector(-momenta[iy],ix,Helicity::outgoing);
     }
   }
   // compute some useful dot products etc

@@ -193,7 +193,7 @@ double PScalarVectorVectorDecayer::me2(const int,const Particle & part,
     _vectors[ix].resize(3);
     for(unsigned int ihel=0;ihel<3;++ihel) {
       if(photon[ix] && ihel==1) continue;
-      _vectors[ix][ihel] = HelicityFunctions::polarizationVector(momenta[ix],ihel,Helicity::outgoing);
+      _vectors[ix][ihel] = HelicityFunctions::polarizationVector(-momenta[ix],ihel,Helicity::outgoing);
     }
   }
   // now compute the matrix element

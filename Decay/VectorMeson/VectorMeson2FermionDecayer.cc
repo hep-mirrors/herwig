@@ -22,12 +22,13 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "ThePEG/Helicity/HelicityFunctions.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void VectorMeson2FermionDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix) {
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
@@ -36,7 +37,7 @@ void VectorMeson2FermionDecayer::doinitrun() {
 }
 
 void VectorMeson2FermionDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoingf.size()||
@@ -44,18 +45,16 @@ void VectorMeson2FermionDecayer::doinit() {
     throw InitException() << "Inconsistent parameters in VectorMeson2"
 			   << "FermionDecayer::doiin() " << Exception::runerror;
   // set up the integration channels
-  vector<double> wgt(0);
-  DecayPhaseSpaceModePtr mode;
-  tPDVector extpart(3);
+  PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0]=getParticleData(_incoming[ix]);
-    extpart[1]=getParticleData(_outgoingf[ix]);
-    extpart[2]=getParticleData(_outgoinga[ix]);
-    if(extpart[0]&&extpart[1]&&extpart[2]) 
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr    in  = getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoingf[ix]),
+		     getParticleData(_outgoinga[ix])};
+    if(in&&out[0]&&out[1]) 
+      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     else
-      mode=DecayPhaseSpaceModePtr();
-    addMode(mode,_maxweight[ix],wgt);
+      mode=PhaseSpaceModePtr();
+    addMode(mode);
   }
 }
 
@@ -211,7 +210,7 @@ void VectorMeson2FermionDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMeson2FermionDecayer,DecayIntegrator>
+DescribeClass<VectorMeson2FermionDecayer,DecayIntegrator2>
 describeHerwigVectorMeson2FermionDecayer("Herwig::VectorMeson2FermionDecayer", "HwVMDecay.so");
 
 void VectorMeson2FermionDecayer::Init() {
@@ -252,37 +251,41 @@ void VectorMeson2FermionDecayer::Init() {
      0, 0, 0, -10000000, 10000000, false, false, true);
 
 }
+void VectorMeson2FermionDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  unsigned int iferm(0),ianti(1);
+  if(_outgoingf[imode()]!=decay[iferm]->id()) swap(iferm,ianti);
+  VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  SpinorBarWaveFunction::
+    constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+}
 
-double VectorMeson2FermionDecayer::me2(const int,
-				       const Particle & inpart,
-				       const ParticleVector& decay,
+double VectorMeson2FermionDecayer::me2(const int,const Particle & part,
+				       const tPDVector & outgoing,
+				       const vector<Lorentz5Momentum> & momenta,
 				       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
-  if(_outgoingf[imode()]!=decay[iferm]->id()) swap(iferm,ianti);
+  if(_outgoingf[imode()]!=outgoing[iferm]->id()) swap(iferm,ianti);
   // initialization
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
-					       const_ptr_cast<tPPtr>(&inpart),
+					       const_ptr_cast<tPPtr>(&part),
 					       incoming,false);
   }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true,false);
-    SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
-    return 0.;
+  _wave.resize(2);
+  _wavebar.resize(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    _wavebar[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[iferm],ix,Helicity::outgoing);
+    _wave   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[ianti],ix,Helicity::outgoing);
   }
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
-  SpinorWaveFunction::
-    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   // prefactor
-  InvEnergy pre(_coupling[imode()]/inpart.mass());
+  InvEnergy pre(_coupling[imode()]/part.mass());
   // now compute the currents
   LorentzPolarizationVector temp;
   for(unsigned ix=0;ix<2;++ix) {
@@ -294,15 +297,15 @@ double VectorMeson2FermionDecayer::me2(const int,
       }
     }
   }
+  double me = ME()->contract(_rho).real();
   // test of the matrix element
-//   double me = newME.contract(rhoin).real();
-//   double test = 4.*sqr(_coupling[imode()])/3.*
-//     (1.+2.*sqr(decay[0]->mass()/inpart.mass()));
-//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-//        << me << " " << test << " " << (me-test)/(me+test) << "\n";
+  // double test = 4.*sqr(_coupling[imode()])/3.*
+  //   (1.+2.*sqr(momenta[0].mass()/part.mass()));
+  // cerr << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  //      << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME()->contract(_rho).real();
+  return me;
 }
 
 bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -350,8 +353,8 @@ bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode
 void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output,
 						bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {

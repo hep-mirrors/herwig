@@ -184,7 +184,7 @@ double PScalarPScalarVectorDecayer::me2(const int,const Particle & part,
   bool massless = outgoing[1]->id()==ParticleID::gamma;
   for(unsigned int ix=0;ix<3;++ix) {
     if(massless && ix==1) continue;
-    _vectors[ix] = HelicityFunctions::polarizationVector(momenta[1],ix,Helicity::outgoing);
+    _vectors[ix] = HelicityFunctions::polarizationVector(-momenta[1],ix,Helicity::outgoing);
   }
   // calculate the matrix element
   Lorentz5Momentum psum(part.momentum()+momenta[0]);

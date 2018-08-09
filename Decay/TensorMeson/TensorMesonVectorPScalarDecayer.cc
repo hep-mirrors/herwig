@@ -251,7 +251,7 @@ double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & part,
   _vectors.resize(3);
   for(unsigned int ix=0;ix<3;++ix) {
     if(photon && ix==1) continue;
-    _vectors[ix] = HelicityFunctions::polarizationVector(momenta[0],ix,Helicity::outgoing);
+    _vectors[ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
   }
   InvEnergy3 fact(_coupling[imode()]/part.mass());
   // calculate the matrix element
