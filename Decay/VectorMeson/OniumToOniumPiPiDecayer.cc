@@ -27,7 +27,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void OniumToOniumPiPiDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
   }
@@ -104,7 +104,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
 }
 
 void OniumToOniumPiPiDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check consistency of the vectors
   unsigned int isize=_incoming.size();
   if(_outgoing.size()!=isize||_maxweight.size()!=2*isize||
@@ -122,38 +122,27 @@ void OniumToOniumPiPiDecayer::doinit() {
     _cC.push_back(complex<InvEnergy2>(_reC[ix],_imC[ix]));
   }
   // construct the decay channels
-  tPDVector extpart(4);
   tPDPtr pip(getParticleData(ParticleID::piplus ));
   tPDPtr pim(getParticleData(ParticleID::piminus));
   tPDPtr pi0(getParticleData(ParticleID::pi0    ));
   tPDPtr rho0(getParticleData(113)); 
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr newchannel;
-  vector<double> dummyweights(1,1.);
   for(unsigned int ix=0;ix<isize;++ix) {
-    extpart[0]=getParticleData(_incoming[ix]);
-    extpart[1]=getParticleData(_outgoing[ix]);
+    tPDPtr     in = getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoing[ix]),pip,pim};
     for(unsigned int iy=0;iy<2;++iy) {
-      // pi+ pi-
-      if(iy==0) {
-	extpart[2]=pip;
-	extpart[3]=pim;
-      }
       // pi0 pi0
-      else {
-	extpart[2]=pi0;
-	extpart[3]=pi0;
+      if(iy==1) {
+	out[1]=pi0;
+	out[2]=pi0;
       }
       // construct the phase-space mode
-      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,1,-1);
-      newchannel->addIntermediate(rho0,1,0.0, 2,3);
-      mode->addChannel(newchannel);
+      PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+      PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1,0,rho0,1,2,1,3));
+      mode->addChannel(channel);
       // reset the resonance parameters
-      mode->resetIntermediate(rho0,2*extpart[0]->mass(),2*extpart[0]->mass());
+      mode->resetIntermediate(rho0,2*in->mass(),in->mass());
       // add the mode
-      addMode(mode,_maxweight[2*ix+iy],dummyweights);
+      addMode(mode);
     }
   }
 }
@@ -175,7 +164,7 @@ void OniumToOniumPiPiDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<OniumToOniumPiPiDecayer,DecayIntegrator>
+DescribeClass<OniumToOniumPiPiDecayer,DecayIntegrator2>
 describeHerwigOniumToOniumPiPiDecayer("Herwig::OniumToOniumPiPiDecayer", "HwVMDecay.so");
 
 void OniumToOniumPiPiDecayer::Init() {
@@ -299,40 +288,44 @@ int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return npi0==2 ? 2*imode+1 : 2*imode;
 }
 
-double OniumToOniumPiPiDecayer::me2(const int,
-				    const Particle & inpart,
-				    const ParticleVector & decay,
-				    MEOption meopt) const {
+void OniumToOniumPiPiDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  VectorWaveFunction::constructSpinInfo(_vectors[1],decay[0],
+					outgoing,true,false);
+  for(unsigned int ix=1;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
+
+double OniumToOniumPiPiDecayer::me2(const int,const Particle & part,
+					const tPDVector & ,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
-						const_ptr_cast<tPPtr>(&inpart),
+						const_ptr_cast<tPPtr>(&part),
 						incoming,false);
   }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true,false);
-    VectorWaveFunction::constructSpinInfo(_vectors[1],decay[0],
-					  outgoing,true,false);
-    for(unsigned int ix=1;ix<3;++ix)
-      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return 0.;
+  _vectors[1].resize(3);
+  for(unsigned int ix=0;ix<3;++ix) {
+    _vectors[1][ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
   }
-  VectorWaveFunction::calculateWaveFunctions(_vectors[1],decay[0],outgoing,false);
   // compute the matrix element
   complex<InvEnergy2> A(_cA[imode()/2]),B(_cB[imode()/2]),C(_cC[imode()/2]);
-  Energy2 q2  =(decay[1]->momentum()+decay[2]->momentum()).m2();
-  Energy2 mpi2=sqr(decay[1]->mass());
+  Energy2 q2  =(momenta[1]+momenta[2]).m2();
+  Energy2 mpi2=sqr(momenta[1].mass());
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
       Complex dota = _vectors[0][ix].dot(_vectors[1][iy]);
       complex<Energy2> dotb = 
-	(_vectors[0][ix]*decay[1]->momentum())*(_vectors[1][iy]*decay[2]->momentum())+
-	(_vectors[0][ix]*decay[2]->momentum())*(_vectors[1][iy]*decay[1]->momentum());
+	(_vectors[0][ix]*momenta[1])*(_vectors[1][iy]*momenta[2])+
+	(_vectors[0][ix]*momenta[2])*(_vectors[1][iy]*momenta[1]);
       (*ME())(ix,iy,0,0)= _coupling[imode()/2]*
-	(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
+	(A*dota*(q2-2.*mpi2)+B*dota*momenta[1].e()*momenta[2].e()
 	 +C*dotb);
     }
   }
@@ -340,12 +333,13 @@ double OniumToOniumPiPiDecayer::me2(const int,
   double output=ME()->contract(_rho).real();
   if(imode()%2==1) output*=0.5;
   // test of the matrix element
-//   Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();
-//   Energy2 s2=(decay[0]->momentum()+decay[2]->momentum()).m2();
-//   Energy2 s3=(decay[1]->momentum()+decay[0]->momentum()).m2();
-//   double test=threeBodyMatrixElement(imode(),sqr(inpart.mass()),
-// 				     s3,s2,s1,decay[0]->mass(),
-// 				     decay[1]->mass(),decay[2]->mass());
+  // Energy2 s1=(momenta[1]+momenta[2]).m2();
+  // Energy2 s2=(momenta[0]+momenta[2]).m2();
+  // Energy2 s3=(momenta[1]+momenta[0]).m2();
+  // double test=threeBodyMatrixElement(imode(),sqr(part.mass()),
+  // 				     s3,s2,s1,momenta[0].mass(),
+  // 				     momenta[1].mass(),momenta[2].mass());
+  // cerr << "testing " << output << " " << test << " " << (output-test)/(output+test) << "\n";
   // return the answer
   return output;
 }
@@ -354,8 +348,8 @@ double OniumToOniumPiPiDecayer::me2(const int,
 void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 					     bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
