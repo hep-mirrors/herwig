@@ -25,7 +25,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void VectorMesonVectorVectorDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix)
       if(mode(ix)) _maxweight[ix]=mode(ix)->maxWeight();
@@ -33,25 +33,23 @@ void VectorMesonVectorVectorDecayer::doinitrun() {
 }
 
 void VectorMesonVectorVectorDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   unsigned int isize(_incoming.size());
   if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
      isize!=_maxweight.size()||isize!=_coupling.size())
     throw InitException() << "Inconsistent parameters in " 
 			  << "VectorMesonVectorVectorDecayer" << Exception::runerror;
   // set up the integration channels
-  vector<double> wgt(0);
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
+  PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0]=getParticleData(_incoming[ix]);
-    extpart[1]=getParticleData(_outgoing1[ix]);
-    extpart[2]=getParticleData(_outgoing2[ix]);
-    if(extpart[0]&&extpart[1]&&extpart[2]) 
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr    in  =  getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoing1[ix]),
+		     getParticleData(_outgoing2[ix])};
+    if(in&&out[0]&&out[1]) 
+      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     else
-      mode=DecayPhaseSpaceModePtr();
-    addMode(mode,_maxweight[ix],wgt);
+      mode=PhaseSpaceModePtr();
+    addMode(mode);
   }
 }
 
@@ -114,7 +112,7 @@ void VectorMesonVectorVectorDecayer::persistentInput(PersistentIStream & is, int
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMesonVectorVectorDecayer,DecayIntegrator>
+DescribeClass<VectorMesonVectorVectorDecayer,DecayIntegrator2>
 describeHerwigVectorMesonVectorVectorDecayer("Herwig::VectorMesonVectorVectorDecayer", "HwVMDecay.so");
 
 void VectorMesonVectorVectorDecayer::Init() {
@@ -156,42 +154,48 @@ void VectorMesonVectorVectorDecayer::Init() {
 
 }
 
-double VectorMesonVectorVectorDecayer::me2(const int,
-					   const Particle & inpart,
-					   const ParticleVector & decay,
-					   MEOption meopt) const {
+void VectorMesonVectorVectorDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::constructSpinInfo(_vectors[ix+1],decay[ix],
+					  outgoing,true,decay[ix]->id()==ParticleID::gamma);
+}
+
+double VectorMesonVectorVectorDecayer::me2(const int,const Particle & part,
+					const tPDVector & outgoing,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix) 
-    photon[ix] = decay[ix]->id()==ParticleID::gamma;
+    photon[ix] = outgoing[ix]->id()==ParticleID::gamma;
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
-					       const_ptr_cast<tPPtr>(&inpart),
+					       const_ptr_cast<tPPtr>(&part),
 					       incoming,false);
   }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true,false);
-    for(unsigned int ix=0;ix<2;++ix)
-      VectorWaveFunction::constructSpinInfo(_vectors[ix+1],decay[ix],
-					    outgoing,true,photon[ix]);
-    return 0.;
+  for(unsigned int ix=0;ix<2;++ix) {
+    _vectors[ix+1].resize(3);
+    for(unsigned int ihel=0;ihel<3;++ihel) {
+      if(photon[ix] && ihel==1) continue;
+      _vectors[ix+1][ihel] = HelicityFunctions::polarizationVector(-momenta[ix],
+								   ihel,Helicity::outgoing);
+    }
   }
-  for(unsigned int ix=0;ix<2;++ix)
-    VectorWaveFunction::
-      calculateWaveFunctions(_vectors[ix+1],decay[ix],outgoing,photon[ix]);
   // work out the dot products we need for the matrix element
-  Energy2 p1p2((decay[0]->momentum())*(decay[1]->momentum()));
+  Energy2 p1p2((momenta[0])*(momenta[1]));
   complex<Energy> p1eps2[3],p2eps1[3];
   for(unsigned int ix=0;ix<3;++ix) {
-    p1eps2[ix]=_vectors[2][ix]*(decay[0]->momentum());
-    p2eps1[ix]=_vectors[1][ix]*(decay[1]->momentum());
+    p1eps2[ix]=_vectors[2][ix]*(momenta[0]);
+    p2eps1[ix]=_vectors[1][ix]*(momenta[1]);
   }
   // compute the matrix element
-  Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
-  Energy2 m12(decay[0]->mass()*decay[0]->mass()),m22(decay[1]->mass()*decay[1]->mass());
-  InvEnergy3 fact(2.*_coupling[imode()]/(inpart.mass()*inpart.mass()*inpart.mass()));
+  Lorentz5Momentum pdiff(momenta[0]-momenta[1]);
+  Energy2 m12(momenta[0].mass()*momenta[0].mass()),m22(momenta[1].mass()*momenta[1].mass());
+  InvEnergy3 fact(2.*_coupling[imode()]/(part.mass()*part.mass()*part.mass()));
   LorentzPolarizationVector vtemp;
   for(unsigned int ipol1=0;ipol1<3;++ipol1) {
     for(unsigned int ipol2=0;ipol2<3;++ipol2) {
@@ -199,23 +203,23 @@ double VectorMesonVectorVectorDecayer::me2(const int,
       vtemp=fact*(p1eps2[ipol2]*p2eps1[ipol1]*pdiff
 		  +p1eps2[ipol2]*m22*_vectors[1][ipol1]
 		  -p2eps1[ipol1]*m12*_vectors[2][ipol2]
-		  +eps1eps2*(-p1p2*pdiff+m12*decay[1]->momentum()
-			     -m22*decay[0]->momentum()));
+		  +eps1eps2*(-p1p2*pdiff+m12*momenta[1]
+			     -m22*momenta[0]));
       for(unsigned int inpol=0;inpol<3;++inpol) 
 	(*ME())(inpol,ipol1,ipol2)=_vectors[0][inpol].dot(vtemp);
     }
   }
-  // test of the matrix element
-//   double me = newME.contract(rhoin).real();
-//   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
-// 					   decay[1]->mass());
-//   double test = 8./3.*sqr(_coupling[imode()]*pcm/inpart.mass())*
-//     (1.+sqr(decay[0]->mass()/inpart.mass())+sqr(decay[1]->mass()/inpart.mass()));
-//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-//        << me << " " << test << " " << (me-test)/(me+test) << "\n";
+  double me = ME()->contract(_rho).real();
+  // test of the matrix element;
+  // Energy pcm=Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
+  // 					   momenta[1].mass());
+  // double test = 8./3.*sqr(_coupling[imode()]*pcm/part.mass())*
+  //   (1.+sqr(momenta[0].mass()/part.mass())+sqr(momenta[1].mass()/part.mass()));
+  // cerr << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  //      << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME()->contract(_rho).real();
+  return me;
 }
 
 bool VectorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -263,8 +267,8 @@ bool VectorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & me
 void VectorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
 						    bool header) const {
   if(header){output << "update decayers set parameters=\"";}
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {

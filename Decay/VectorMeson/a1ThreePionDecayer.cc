@@ -477,7 +477,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 double a1ThreePionDecayer::me2(const int ichan, const Particle & part,
-			    const tPDVector & outgoing,
+			    const tPDVector & ,
 			    const vector<Lorentz5Momentum> & momenta,
 			    MEOption meopt) const {
   useMe();
