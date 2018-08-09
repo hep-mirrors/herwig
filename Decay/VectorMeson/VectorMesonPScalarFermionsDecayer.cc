@@ -27,16 +27,17 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
+#include "ThePEG/Helicity/HelicityFunctions.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void VectorMesonPScalarFermionsDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix) {
       _maxweight[ix] = mode(ix)->maxWeight();
-      _weight[ix]    = mode(ix)->channelWeight(1);
+      _weight[ix]    = mode(ix)->channels()[1].weight();
     }
   }
 }
@@ -85,7 +86,7 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
 }
 
 void VectorMesonPScalarFermionsDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters are consistent
   unsigned int isize(_coupling.size());
   if(isize!=_incoming.size()  || isize!=_outgoingP.size()|| isize!=_outgoingf.size()||
@@ -94,32 +95,25 @@ void VectorMesonPScalarFermionsDecayer::doinit() {
      isize!=_weight.size())
     throw InitException() << "Inconsistent parameters in VectorMesonPScalar"
 			  << "FermionsDecayer" << Exception::abortnow;
-  // create the integration channel for each mode 
-  tPDVector extpart(4);
+  // create the integration channel for each mode
   tPDPtr gamma(getParticleData(ParticleID::gamma)),rho;
-  DecayPhaseSpaceChannelPtr newchannel;
-  DecayPhaseSpaceModePtr newmode;
-  vector<double> wgt(2,1.);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     rho=getParticleData(_VMDid[ix]);
-    extpart[0] = getParticleData(_incoming[ix]);
-    extpart[1] = getParticleData(_outgoingP[ix]);
-    extpart[2] = getParticleData(_outgoingf[ix]);
-    extpart[3] = getParticleData(_outgoinga[ix]);
-    newmode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr in     =  getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoingP[ix]),
+		     getParticleData(_outgoingf[ix]),
+		     getParticleData(_outgoinga[ix])};
+    PhaseSpaceModePtr newmode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     // photon channel
-    newchannel=new_ptr(DecayPhaseSpaceChannel(newmode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
-    newchannel->addIntermediate(gamma     ,1,-1.1, 2,3);
-    newmode->addChannel(newchannel);
-    wgt[0]=1.-_weight[ix];
+    PhaseSpaceChannel newChannel ((PhaseSpaceChannel(newmode),0,gamma,0,1,1,2,1,3));
+    newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
+    newChannel.weight(1.-_weight[ix]);
+    newmode->addChannel(newChannel);
     // vmd channel
-    newchannel=new_ptr(DecayPhaseSpaceChannel(newmode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
-    newchannel->addIntermediate(rho       ,0, 0.0, 2,3);
-    newmode->addChannel(newchannel);
-    wgt[1]=_weight[ix];
-    addMode(newmode,_maxweight[ix],wgt);
+    PhaseSpaceChannel newChannel2((PhaseSpaceChannel(newmode),0,rho,0,1,1,2,1,3));
+    newChannel2.weight(_weight[ix]);
+    newmode->addChannel(newChannel2);
+    addMode(newmode);
   }
   // set up the values for the VMD factor if needed (copy the default mass and width 
   //                                                 into the array)
@@ -176,7 +170,7 @@ void VectorMesonPScalarFermionsDecayer::persistentInput(PersistentIStream & is, 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMesonPScalarFermionsDecayer,DecayIntegrator>
+DescribeClass<VectorMesonPScalarFermionsDecayer,DecayIntegrator2>
 describeHerwigVectorMesonPScalarFermionsDecayer("Herwig::VectorMesonPScalarFermionsDecayer", "HwVMDecay.so");
 
 void VectorMesonPScalarFermionsDecayer::Init() {
@@ -257,9 +251,20 @@ void VectorMesonPScalarFermionsDecayer::Init() {
 
 }
 
-double VectorMesonPScalarFermionsDecayer::me2(const int,
-					      const Particle & inpart,
-					      const ParticleVector & decay,
+void VectorMesonPScalarFermionsDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(_wavebar,decay[1],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(_wave   ,decay[2],outgoing,true);
+}
+
+double VectorMesonPScalarFermionsDecayer::me2(const int ichan, const Particle & part,
+					      const tPDVector & ,
+					      const vector<Lorentz5Momentum> & momenta,
 					      MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,
@@ -267,25 +272,17 @@ double VectorMesonPScalarFermionsDecayer::me2(const int,
   // initialization
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
-					       const_ptr_cast<tPPtr>(&inpart),
+					       const_ptr_cast<tPPtr>(&part),
 					       incoming,false);
   }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true,false);
-    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
-    SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar,decay[1],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(_wave   ,decay[2],outgoing,true);
-    return 0.;
+  _wave.resize(2);
+  _wavebar.resize(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    _wavebar[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[1],ix,Helicity::outgoing);
+    _wave   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[2],ix,Helicity::outgoing);
   }
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar,decay[1],outgoing);
-  SpinorWaveFunction::
-    calculateWaveFunctions(_wave   ,decay[2],outgoing);
   // the factor for the off-shell photon
-  Lorentz5Momentum pff(decay[1]->momentum()+decay[2]->momentum());
+  Lorentz5Momentum pff(momenta[1]+momenta[2]);
   pff.rescaleMass();
   Energy2 mff2(pff.mass2());
   // prefactor
@@ -302,33 +299,33 @@ double VectorMesonPScalarFermionsDecayer::me2(const int,
   unsigned int ix,iy,iz;
   for(ix=0;ix<2;++ix) {
     for(iy=0;iy<2;++iy) {
-      temp=pre*epsilon(inpart.momentum(),pff,
+      temp=pre*epsilon(part.momentum(),pff,
 				    _wave[ix].vectorCurrent(_wavebar[iy]));
       for(iz=0;iz<3;++iz) 
 	(*ME())(iz,0,iy,ix)=temp.dot(_vectors[iz]); 
     }
   }
-  /* code for the spin averaged me for testing only
-  Energy  m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
-  Energy m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};
-  Lorentz5Momentum p12=decay[0]->momentum()+decay[1]->momentum();p12.rescaleMass();
-  Energy m122(p12.mass2());
-  cout << "testing the matrix element " 
-       << -1./3.*(pre*conj(pre)).real()*(-2*m122*m122*mff2 - mff2*mff2*mff2 + 
-		   m2[1]*(2*m2[2]*m2[3] - 2*m2[3]*m2[3] + 
-			  m2[1]*(m2[2] - 2*m[2]*m[3] - m2[3])) - 
-		   2*m[2]*(m2[2]*m[2] - 2*m2[1]*m[3] - m[2]*m2[3])*
-		   m2[0] - (m2[2] + 2*m[2]*m[3] - m2[3])*
-		   m2[0]*m2[0] + mff2*mff2*
-		   (2*m2[1] + (m[2] - m[3])*(m[2] - m[3]) + 2*m2[0]) - 
-		   mff2*(m2[1]*m2[1] + 2*m2[1]*m[2]*(m[2] - 2*m[3]) + 
-			 2*m2[2]*m2[3] - 2*(2*m[2] - m[3])*m[3]*m2[0] + 
-			 m2[0]*m2[0]) + 2*m122*
-		   (-mff2*mff2 - (m[2] - m[3])*(m[2] + m[3])*(m[1] - m[0])*
-		    (m[1] + m[0]) + mff2*
-		    (m2[1] + m2[2] + m2[3] + m2[0])))
-       << endl;
-   */
+  // code for the spin averaged me for testing only
+  // Energy  m[4]={part.mass(),momenta[0].mass(),
+  // 		momenta[1].mass(),momenta[2].mass()};
+  // Energy2 m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};
+  // Lorentz5Momentum p12=momenta[0]+momenta[1];p12.rescaleMass();
+  // Energy2 m122(p12.mass2());
+  // cout << "testing the matrix element " 
+  //      << -1./3.*(pre*conj(pre)).real()*(-2*m122*m122*mff2 - mff2*mff2*mff2 + 
+  // 		   m2[1]*(2*m2[2]*m2[3] - 2*m2[3]*m2[3] + 
+  // 			  m2[1]*(m2[2] - 2*m[2]*m[3] - m2[3])) - 
+  // 		   2*m[2]*(m2[2]*m[2] - 2*m2[1]*m[3] - m[2]*m2[3])*
+  // 		   m2[0] - (m2[2] + 2*m[2]*m[3] - m2[3])*
+  // 		   m2[0]*m2[0] + mff2*mff2*
+  // 		   (2*m2[1] + (m[2] - m[3])*(m[2] - m[3]) + 2*m2[0]) - 
+  // 		   mff2*(m2[1]*m2[1] + 2*m2[1]*m[2]*(m[2] - 2*m[3]) + 
+  // 			 2*m2[2]*m2[3] - 2*(2*m[2] - m[3])*m[3]*m2[0] + 
+  // 			 m2[0]*m2[0]) + 2*m122*
+  // 		   (-mff2*mff2 - (m[2] - m[3])*(m[2] + m[3])*(m[1] - m[0])*
+  // 		    (m[1] + m[0]) + mff2*
+  // 		    (m2[1] + m2[2] + m2[3] + m2[0])))
+  //      << endl;
   // return the answer
   return ME()->contract(_rho).real();
 }
@@ -406,8 +403,8 @@ threeBodydGammads(int imodeb, const Energy2 q2, const Energy2 mff2,
 void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output,
 						       bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming   " << ix << "  " 
