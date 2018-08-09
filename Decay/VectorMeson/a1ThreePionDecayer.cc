@@ -68,17 +68,17 @@ a1ThreePionDecayer::a1ThreePionDecayer()
 }
 
 void a1ThreePionDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     // get the weights for the different channels
     for(unsigned int ix=0;ix<_zerowgts.size();++ix)
-      _zerowgts[ix]=mode(0)->channelWeight(ix);
+      _zerowgts[ix]=mode(0)->channels()[ix].weight();
     for(unsigned int ix=0;ix<_onewgts.size();++ix)
-      _onewgts[ix]=mode(1)->channelWeight(ix);
+      _onewgts[ix]=mode(1)->channels()[ix].weight();
     for(unsigned int ix=0;ix<_twowgts.size();++ix)
-      _twowgts[ix]=mode(2)->channelWeight(ix);
+      _twowgts[ix]=mode(2)->channels()[ix].weight();
     for(unsigned int ix=0;ix<_threewgts.size();++ix)
-      _threewgts[ix]=mode(3)->channelWeight(ix);
+      _threewgts[ix]=mode(3)->channels()[ix].weight();
     // get the maximum weight
     _zeromax  = mode(0)->maxWeight();
     _onemax   = mode(1)->maxWeight();
@@ -88,7 +88,7 @@ void a1ThreePionDecayer::doinitrun() {
 }
 
 void a1ThreePionDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // particles we need for the external state
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);
   tPDPtr a10 = getParticleData(ParticleID::a_10);
@@ -106,124 +106,100 @@ void a1ThreePionDecayer::doinit() {
   // the sigma
   tPDPtr sigma = getParticleData(9000221);
   // set up the phase space integration
-  tPDVector extpart(4);
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr newchannel;
   // decay mode a_0 -> pi0 pi0 pi0
-  extpart[0]=a10;
-  extpart[1]=pi0;
-  extpart[2]=pi0;
-  extpart[3]=pi0;
+  tPDPtr in = a10;
+  tPDVector out={pi0,pi0,pi0};
   if(sigma) {
-    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a10,0,0.0,-1,1);
-    newchannel->addIntermediate(sigma,0,0.0,2,3);
-    mode->addChannel(newchannel);
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a10,0,0.0,-1,2);
-    newchannel->addIntermediate(sigma,0,0.0,1,3);
-    mode->addChannel(newchannel);
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a10,0,0.0,-1,3);
-    newchannel->addIntermediate(sigma,0,0.0,1,2);
-    mode->addChannel(newchannel);
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_zeromax));
+    if(_zerowgts.size()!=3) _zerowgts=vector<double>(3,1./3.);
+    PhaseSpaceChannel c1((PhaseSpaceChannel(mode),0,sigma,0,1,1,2,1,3));
+    c1.weight(_zerowgts[0]);
+    mode->addChannel(c1);
+    PhaseSpaceChannel c2((PhaseSpaceChannel(mode),0,sigma,0,2,1,1,1,3));
+    c2.weight(_zerowgts[1]);
+    mode->addChannel(c2);
+    PhaseSpaceChannel c3((PhaseSpaceChannel(mode),0,sigma,0,3,1,1,1,2));
+    c3.weight(_zerowgts[2]);
+    mode->addChannel(c3);
+    addMode(mode);
   }
-  if(_zerowgts.size()!=mode->numberChannels()) 
-    _zerowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
-  addMode(mode,_zeromax,_zerowgts);
   // decay mode a_1+ -> pi+ pi0 pi0
-  extpart[0]=a1p;
-  extpart[1]=pi0;
-  extpart[2]=pi0;
-  extpart[3]=pip;
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  in = a1p;
+  out = {pi0,pi0,pip};
+  PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_onemax));
+  unsigned int nrho(0);
+  for(unsigned int ix=0;ix<3;++ix) if(rhop[ix]) ++nrho;
+  if(_onewgts.size()!=2*nrho+1) _onewgts=vector<double>(2*nrho+1,1./(2.*nrho+1.));
   for(unsigned int ix=0;ix<3;++ix) {
     if(!rhop[ix]) continue;
     // first rho+ channel
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,1);
-    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c1((PhaseSpaceChannel(mode),0,rhop[ix],0,1,1,2,1,3));
+    c1.weight(_onewgts[2*ix]);
+    mode->addChannel(c1);
     // second rho+ channel
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,2);
-    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c2((PhaseSpaceChannel(mode),0,rhop[ix],0,2,1,1,1,3));
+    c2.weight(_onewgts[2*ix+1]);
+    mode->addChannel(c2);
   }
   // the sigma channel
   if(sigma) {
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,3);
-    newchannel->addIntermediate(sigma,0,0.0,1,2);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c3((PhaseSpaceChannel(mode),0,sigma,0,3,1,1,1,2));
+    c3.weight(_onewgts.back());
+    mode->addChannel(c3);
   }
-  if(_onewgts.size()!=mode->numberChannels()) 
-    _onewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
-  addMode(mode,_onemax,_onewgts);
+  addMode(mode);
   // decay mode a_1 -> pi+ pi- pi0
-  extpart[0]=a10;
-  extpart[1]=pip;
-  extpart[2]=pim;
-  extpart[3]=pi0;
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  in = a10;
+  out = {pip,pim,pi0};
+  mode = new_ptr(PhaseSpaceMode(in,out,_twomax));
+  if(_twowgts.size()!=2*nrho+1) _twowgts=vector<double>(2*nrho+1,1./(2.*nrho+1.));
   for(unsigned int ix=0;ix<3;++ix) {
     if(!rhop[ix]) continue;
     // first rho channel
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a10,0,0.0,-1,1);
-    newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c1((PhaseSpaceChannel(mode),0,rhop[ix],0,1,1,2,1,3));
+    c1.weight(_twowgts[2*ix]);
+    mode->addChannel(c1);
     // second channel
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a10,0,0.0,-1,2);
-    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c2((PhaseSpaceChannel(mode),0,rhom[ix],0,2,1,1,1,3));
+    c2.weight(_twowgts[2*ix+1]);
+    mode->addChannel(c2);
   }
   // sigma channel
   if(sigma) {
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a10,0,0.0,-1,3);
-    newchannel->addIntermediate(sigma,0,0.0,1,2);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c3((PhaseSpaceChannel(mode),0,sigma,0,3,1,1,1,2));
+    c3.weight(_twowgts.back());
+    mode->addChannel(c3);
   }
-  if(_twowgts.size()!=mode->numberChannels()) 
-    _twowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
-  addMode(mode,_twomax,_twowgts);
+  addMode(mode);
   // decay mode a_1+ -> pi+ pi+ pi-
-  extpart[0]=a1p;
-  extpart[1]=pip;
-  extpart[2]=pip;
-  extpart[3]=pim;
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  in = a1p;
+  out = {pip,pip,pim};
+  mode = new_ptr(PhaseSpaceMode(in,out,_threemax));
+  nrho = 0;
+  for(unsigned int ix=0;ix<3;++ix) if(rho0[ix]) ++nrho;
+  if(_threewgts.size()!=2*nrho+2) _threewgts=vector<double>(2*nrho+2,1./(2.*nrho+2.));
   for(unsigned int ix=0;ix<3;++ix) {
     // the neutral rho channels
     if(!rho0[ix]) continue;
-    // first channel
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,1);
-    newchannel->addIntermediate(rho0[ix],0,0.0,2,3);
-    mode->addChannel(newchannel);
+    // the neutral rho channels
+    PhaseSpaceChannel c1((PhaseSpaceChannel(mode),0,rho0[ix],0,1,1,2,1,3));
+    c1.weight(_threewgts[2*ix]);
+    mode->addChannel(c1);
     // interchanged channel
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,2);
-    newchannel->addIntermediate(rho0[ix],0,0.0,1,3);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c2((PhaseSpaceChannel(mode),0,rho0[ix],0,2,1,1,1,3));
+    c2.weight(_threewgts[2*ix+1]);
+    mode->addChannel(c2);
   }
   // the sigma channels
   if(sigma) {
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,1);
-    newchannel->addIntermediate(sigma,0,0.0,2,3);
-    mode->addChannel(newchannel);
-    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,2);
-    newchannel->addIntermediate(sigma,0,0.0,1,3);
-    mode->addChannel(newchannel);
+    PhaseSpaceChannel c3((PhaseSpaceChannel(mode),0,sigma,0,1,1,2,1,3));
+    c3.weight(_threewgts[6]);
+    mode->addChannel(c3);
+    PhaseSpaceChannel c4((PhaseSpaceChannel(mode),0,sigma,0,2,1,1,1,3));
+    c4.weight(_threewgts[7]);
+    mode->addChannel(c4);
   }
-  if(_threewgts.size()!=mode->numberChannels()) 
-    _threewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
-  addMode(mode,_threemax,_threewgts);
+  addMode(mode);
   // set up the parameters 
   _mpi=getParticleData(ParticleID::piplus)->mass();
   _mpi2=sqr(_mpi);
@@ -336,7 +312,7 @@ void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<a1ThreePionDecayer,DecayIntegrator>
+DescribeClass<a1ThreePionDecayer,DecayIntegrator2>
 describeHerwiga1ThreePionDecayer("Herwig::a1ThreePionDecayer", "HwVMDecay.so");
   
 void a1ThreePionDecayer::Init() {
@@ -491,35 +467,36 @@ void a1ThreePionDecayer::Init() {
      false, false, true);
 }
 
-double a1ThreePionDecayer::me2(const int ichan,
-			       const Particle & inpart,
-			       const ParticleVector & decay,
-			       MEOption meopt) const {
+void   a1ThreePionDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  // set up the spin information for the decay products
+  for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
+
+double a1ThreePionDecayer::me2(const int ichan, const Particle & part,
+			    const tPDVector & outgoing,
+			    const vector<Lorentz5Momentum> & momenta,
+			    MEOption meopt) const {
   useMe();
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
-						const_ptr_cast<tPPtr>(&inpart),
+						const_ptr_cast<tPPtr>(&part),
 						incoming,false);
   }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true,false);
-    // set up the spin information for the decay products
-    for(unsigned int ix=0;ix<3;++ix)
-      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return 0.;
-  }
   // momentum of the incoming particle
-  Lorentz5Momentum Q=inpart.momentum();
+  Lorentz5Momentum Q=part.momentum();
   // momenta of the intermediates
-  Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();
-  Energy2 s2=(decay[0]->momentum()+decay[2]->momentum()).m2();
-  Energy2 s3=(decay[0]->momentum()+decay[1]->momentum()).m2();
-  Energy2 dot01=Q*decay[0]->momentum();
-  Energy2 dot02=Q*decay[1]->momentum();
-  Energy2 dot03=Q*decay[2]->momentum();
+  Energy2 s1=(momenta[1]+momenta[2]).m2();
+  Energy2 s2=(momenta[0]+momenta[2]).m2();
+  Energy2 s3=(momenta[0]+momenta[1]).m2();
+  Energy2 dot01=Q*momenta[0];
+  Energy2 dot02=Q*momenta[1];
+  Energy2 dot03=Q*momenta[2];
   // vector for the output
   LorentzVector<complex<Energy3> > output;
   // a_10 -> pi0pi0pi0
@@ -531,12 +508,12 @@ double a1ThreePionDecayer::me2(const int ichan,
     // compute the vector
     LorentzPolarizationVectorE tmpoutput;
     if(ichan<0) {
-      tmpoutput= sig1*(decay[0]->momentum())+sig2*(decay[1]->momentum())
-	+sig3*(decay[2]->momentum());
+      tmpoutput= sig1*(momenta[0])+sig2*(momenta[1])
+	+sig3*(momenta[2]);
     }
-    else if(ichan==0) tmpoutput=sig1*(decay[0]->momentum());
-    else if(ichan==1) tmpoutput=sig2*(decay[1]->momentum());
-    else if(ichan==2) tmpoutput=sig3*(decay[2]->momentum());
+    else if(ichan==0) tmpoutput=sig1*(momenta[0]);
+    else if(ichan==1) tmpoutput=sig2*(momenta[1]);
+    else if(ichan==2) tmpoutput=sig3*(momenta[2]);
     // the coupling z and identical particle factor
     output = tmpoutput * _zsigma* 1./sqrt(6.) *Q.mass2();
   }
@@ -546,18 +523,18 @@ double a1ThreePionDecayer::me2(const int ichan,
     Complex sig1 = sigmaBreitWigner(s3);
     // sigma terms
     if(ichan<0||ichan==6) 
-      output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();
+      output = _zsigma*Q.mass2()*sig1*momenta[2];
     // the rho terms
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
       Complex rho1=_rhocoupling[ix]*rhoBreitWigner(s1,ix);
       Complex rho2=_rhocoupling[ix]*rhoBreitWigner(s2,ix);
       if(ichan<0||ichan==2*ix) {
-	output +=rho1*(dot03*(decay[1]->momentum())-
-		       dot02*(decay[2]->momentum()));
+	output +=rho1*(dot03*(momenta[1])-
+		       dot02*(momenta[2]));
       }
       if(ichan<0||ichan==2*ix+1){
-	output +=rho2*(dot03*(decay[0]->momentum())-
-		       dot01*(decay[2]->momentum()));
+	output +=rho2*(dot03*(momenta[0])-
+		       dot01*(momenta[2]));
       }
     }
     // the identical particle factor
@@ -568,18 +545,18 @@ double a1ThreePionDecayer::me2(const int ichan,
     // the sigma terms
     Complex sig1=sigmaBreitWigner(s3);
     if(ichan<0||ichan==6)
-      output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();
+      output = _zsigma*Q.mass2()*sig1*momenta[2];
     // rho terms
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
       Complex rho1=_rhocoupling[ix]*rhoBreitWigner(s1,ix);
       Complex rho2=_rhocoupling[ix]*rhoBreitWigner(s2,ix);
       if(ichan<0||ichan==2*ix) {
-	output+=rho1*(dot03*(decay[1]->momentum())
-		      -dot02*(decay[2]->momentum()));
+	output+=rho1*(dot03*(momenta[1])
+		      -dot02*(momenta[2]));
       }
       if(ichan<0||ichan==2*ix+1) {
-	output+=rho2*(dot03*(decay[0]->momentum())
-		      -dot01*(decay[2]->momentum()));
+	output+=rho2*(dot03*(momenta[0])
+		      -dot01*(momenta[2]));
       }
     }
   }
@@ -590,20 +567,20 @@ double a1ThreePionDecayer::me2(const int ichan,
     Complex sig2=sigmaBreitWigner(s2);
     // sigma terms
     LorentzPolarizationVectorE tmpoutput;
-    if(ichan<0||ichan==6) tmpoutput+=sig1*(decay[0]->momentum());
-    if(ichan<0||ichan==7) tmpoutput+=sig2*(decay[1]->momentum());
+    if(ichan<0||ichan==6) tmpoutput+=sig1*(momenta[0]);
+    if(ichan<0||ichan==7) tmpoutput+=sig2*(momenta[1]);
     output = tmpoutput * _zsigma * Q.mass2();
     // rho terms
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
       Complex rho1 = _rhocoupling[ix]*rhoBreitWigner(s1,ix);
       Complex rho2 = _rhocoupling[ix]*rhoBreitWigner(s2,ix);
       if(ichan<0||ichan==2*ix) {
-	output-=rho1*( dot03*(decay[1]->momentum())-
-		       dot02*(decay[2]->momentum()));
+	output-=rho1*( dot03*(momenta[1])-
+		       dot02*(momenta[2]));
       }
       if(ichan<0||ichan==2*ix+1) {
-	output-=rho2*( dot03*(decay[0]->momentum())-
-		       dot01*(decay[2]->momentum()));
+	output-=rho2*( dot03*(momenta[0])-
+		       dot01*(momenta[2]));
       }
     }
     // the identical particle factor
@@ -618,13 +595,13 @@ double a1ThreePionDecayer::me2(const int ichan,
   // return the answer
   double out = ME()->contract(_rho).real();
   // test of the answer
-//   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),s3,s2,s1,
-// 				       decay[0]->mass(),decay[1]->mass(), 
-// 				       decay[2]->mass());
-//   if(ichan<0) cerr << "testing matrix element " << inpart.PDGName() << " -> "
-// 		   << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-// 		   << decay[2]->PDGName() << " " << out << " " << test << " " 
-// 		   << (out-test)/(out+test) << "\n"; 
+  // double test = threeBodyMatrixElement(imode(),sqr(part.mass()),s3,s2,s1,
+  // 				       momenta[0].mass(),momenta[1].mass(), 
+  // 				       momenta[2].mass());
+  // if(ichan<0) cerr << "testing matrix element " << part.PDGName() << " -> "
+  // 		   << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  // 		   << outgoing[2]->PDGName() << " " << out << " " << test << " " 
+  // 		   << (out-test)/(out+test) << "\n";
   return out;
 }
 
@@ -720,8 +697,8 @@ a1ThreePionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void a1ThreePionDecayer::dataBaseOutput(ofstream & output,
 					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   output << "newdef " << name() << ":Coupling " << _coupling     << "\n";
   output << "newdef " << name() << ":Lambda2 "  << _lambda2/GeV2 << "\n";

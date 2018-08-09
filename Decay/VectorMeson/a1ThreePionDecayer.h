@@ -11,8 +11,8 @@
 //
 // This is the declaration of the a1ThreePionDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
@@ -96,10 +96,10 @@ using namespace ThePEG;
  * - \f$m_{a_1}\f$ the mass of the \f$a_1\f$ meson.
  * - \f$\Lambda^2\f$ the mass parameter for the \f$a_1\f$ form factor.
  * @see FourPionNovosibirskCurrent
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  * 
  */
-class a1ThreePionDecayer: public DecayIntegrator {
+class a1ThreePionDecayer: public DecayIntegrator2 {
   
 public:
   
@@ -121,12 +121,21 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2(const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -308,8 +317,8 @@ private:
   Energy2 hFunction(const Energy q) const  {
     static const Energy2 eps(0.01*MeV2);
     Energy2 q2=sqr(q), output;
-    double root = sqrt(1.-4.*_mpi2/q2);
     if(q2>4*_mpi2) {
+      double root = sqrt(1.-4.*_mpi2/q2);
       output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;
     }
     else if(q2>eps) output=ZERO;
