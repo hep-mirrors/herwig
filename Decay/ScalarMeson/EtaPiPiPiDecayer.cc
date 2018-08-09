@@ -83,7 +83,6 @@ void EtaPiPiPiDecayer::doinit() {
   outcharged[1] = getParticleData(ParticleID::piminus);
   tPDPtr rho(getParticleData(113));
   PhaseSpaceModePtr mode;
-  // PhaseSpaceChannelPtr newchannel;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     tPDPtr incoming = getParticleData(_incoming[ix]);
     outneut[2]    = getParticleData(_outgoing[ix]);
