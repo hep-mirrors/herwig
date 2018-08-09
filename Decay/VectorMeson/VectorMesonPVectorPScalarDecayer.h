@@ -10,8 +10,8 @@
 #define HERWIG_VectorMesonPVectorPScalarDecayer_H
 // This is the declaration of the VectorMesonPVectorPScalarDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
@@ -26,13 +26,13 @@ using namespace ThePEG;
  *  \f[\mathcal{M}= g\left[ p_V \cdot p_0 \epsilon_V\cdot \epsilon_0  
  *                     -p_V\cdot \epsilon_0 \epsilon_V \cdot p_0\right]\f]
  *
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  * @see \ref VectorMesonPVectorPScalarDecayerInterfaces "The interfaces"
  * defined for VectorMesonPVectorPScalarDecayer.
  * 
  *  \author Peter Richardson
  */
-class VectorMesonPVectorPScalarDecayer: public DecayIntegrator {
+class VectorMesonPVectorPScalarDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -49,17 +49,26 @@ public:
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
 			 const tPDVector & children) const;
-  
+
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2(const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Output the setup information for the particle database
