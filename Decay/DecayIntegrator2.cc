@@ -123,7 +123,6 @@ void DecayIntegrator2::doinitrun() {
     iMode_=ix;
     modes_[ix]->initializePhaseSpace(initialize(),this);
   }
-  CurrentGenerator::current().log() << *this << "\n";
 }
 
 // output the information for the database

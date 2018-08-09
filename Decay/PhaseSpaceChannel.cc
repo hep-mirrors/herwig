@@ -195,7 +195,7 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     // only second off-shell
     else if(intermediates_[ix].children.second<0) {
       // compute the limits of integration
-      Energy upper = massint[ix]-massext[idau[0]];
+      Energy upper = massint[ix]-massext[idau[0]-1];
       Energy lower = ZERO;
       bool massless=true;
       for(const int & des : intermediates_[idau[1]].descendents) {	
@@ -259,14 +259,10 @@ InvEnergy2 PhaseSpaceChannel::massWeight(const PhaseSpaceResonance & res,
 					 Energy moff, Energy lower,
 					 Energy upper) const {
   InvEnergy2 wgt = ZERO;
-  if(lower>upper) {
-    cerr << "testing in mass weight " << lower/GeV << " " << upper/GeV << "\n";
-    assert(false);
-    throw PhaseSpaceError() << "PhaseSpaceChannel::massWeight not allowed " 
-			    << res.particle->PDGName() << "   " 
-			    << moff/GeV << " " << lower/GeV << " " << upper/GeV
-			    << Exception::eventerror;
-  } 
+  if(lower>upper) throw PhaseSpaceError() << "PhaseSpaceChannel::massWeight not allowed " 
+					  << res.particle->PDGName() << "   " 
+					  << moff/GeV << " " << lower/GeV << " " << upper/GeV
+					  << Exception::eventerror;
   // use a Breit-Wigner 
   if ( res.jacobian == PhaseSpaceResonance::BreitWigner ) {
     double rhomin  = atanhelper(res,lower);
@@ -429,14 +425,14 @@ double PhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & output
     // only second off-shell
     else if(intermediates_[ix].children.second<0) {
       // compute the limits of integration
-      Energy upper = intmass[ix]-output[idau[0]].mass(); 
+      Energy upper = intmass[ix]-output[idau[0]-1].mass(); 
       Energy lower = ZERO;
       for(const int & des : intermediates_[idau[1]].descendents) {
 	lower += output[des-1].mass();
       }
       wgt *=scale*massWeight(intermediates_[idau[1]],intmass[idau[1]],lower,upper);
       Energy pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[1]],
-						 output[idau[0]].mass());
+						 output[idau[0]-1].mass());
       if(pcm>ZERO)
       	wgt *=intmass[ix]*8.*pi*pi/pcm;
       else
