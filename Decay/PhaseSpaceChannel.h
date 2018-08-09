@@ -196,6 +196,20 @@ public:
    * @param output The momenta of the outgoing particles.
    */
   double generateWeight(const vector<Lorentz5Momentum> & output) const;
+
+  /**
+   * Generate the final-state particles including the intermediate resonances.
+   * This method takes the outgoing particles and adds the intermediate particles
+   * specified by this phase-space channel. This is to allow a given set of 
+   * intermediates to be specified even when there is interference between different
+   * intermediate states.
+   * @param cc Whether the particles are the mode specified or its charge conjugate.
+   * @param in The incoming particles.
+   * @param out The outgoing particles.
+   * 
+   */
+  void generateIntermediates(bool cc,const Particle & in, ParticleVector & out);
+
   
 public:
 

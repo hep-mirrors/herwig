@@ -453,3 +453,50 @@ double PhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & output
   // return the answer
   return wgt;
 }
+
+// generate the final-state particles including the intermediate resonances
+void PhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
+					      ParticleVector & out) {
+  // create the particles
+  // incoming particle
+  ParticleVector external;
+  external.push_back(const_ptr_cast<tPPtr>(&in));
+  // outgoing
+  for(unsigned int ix=0;ix<out.size();++ix)
+    external.push_back(out[ix]);
+  out.clear();
+  // now create the intermediates
+  ParticleVector resonance;
+  resonance.push_back(external[0]);
+  // Lorentz5Momentum pinter;
+  for(unsigned ix=1;ix<intermediates_.size();++ix) {
+    Lorentz5Momentum pinter;
+    for(const int & des : intermediates_[ix].descendents)
+      pinter += external[des]->momentum();
+    pinter.rescaleMass();
+    PPtr respart = (cc&&intermediates_[ix].particle->CC()) ? 
+      intermediates_[ix].particle->CC()->produceParticle(pinter) : 
+      intermediates_[ix].particle      ->produceParticle(pinter);
+    resonance.push_back(respart);
+  }
+  // set up the mother daughter relations
+  for(unsigned int ix=1;ix<intermediates_.size();++ix) {
+    resonance[ix]->addChild( intermediates_[ix].children.first <0 ? 
+   			     resonance[-intermediates_[ix].children.first ] :
+			     external[intermediates_[ix].children.first   ]);
+    
+    resonance[ix]->addChild( intermediates_[ix].children.second<0 ? 
+   			     resonance[-intermediates_[ix].children.second] :
+			     external[intermediates_[ix].children.second  ]);
+    if(resonance[ix]->dataPtr()->stable())
+      resonance[ix]->setLifeLength(Lorentz5Distance());
+  }
+  // construct the output with the particles in the first step
+  out.push_back( intermediates_[0].children.first >0 ?
+		 external[intermediates_[0].children.first] :
+		 resonance[-intermediates_[0].children.first ]);
+  out.push_back( intermediates_[0].children.second>0 ?
+		 external[intermediates_[0].children.second] :
+		 resonance[-intermediates_[0].children.second]);
+}
+ 

@@ -12,11 +12,25 @@
 #include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the PhaseSpaceMode class.
+/** \ingroup Decay
+ *
+ * The <code>PhaseSpaceMode</code> class is designed to store a group
+ * of phase-space channels for use by the DecayIntegrator class to 
+ * generate the phase-space for a given decay mode.
+ *
+ * Additional phase-space channels can be added using the addChannel member.
+ * 
+ *  In practice the modes are usually constructed together with the a number of
+ *  <code>PhaseSpaceChannel</code> objects. In classes inheriting from the
+ *  DecayIntegrator class.
+ *
+ * @see DecayIntegrator
+ * @see PhaseSpaceChannel
+ *
+ * @author  Peter Richardson
+ * 
  */
 class PhaseSpaceMode: public Base {
 
@@ -94,6 +108,11 @@ public:
       channel.resetIntermediate(part,mass,width);
   }
 
+  /**
+   *   The phase-space channels
+   */
+  const vector<PhaseSpaceChannel> & channels() const {return channels_;}
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -272,7 +291,7 @@ private:
    */
   void constructVertex(const Particle & in, const ParticleVector & out,
 		       tcDecayIntegrator2Ptr decayer) const;
-
+  
 private:
 
   /**

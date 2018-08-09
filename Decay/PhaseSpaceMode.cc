@@ -112,12 +112,25 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
   }
   // find the intermediate particles
   else {
-    assert(false);
-    //   // select the channel
-    //   _ichannel = selectChannel(inpart,particles);
-    //   for(ix=0;ix<particles.size();++ix) particles[ix]->transform(boostFromRest);
-    //   // generate the particle vector
-    //   _channels[_ichannel]->generateIntermediates(cc,inpart,particles);
+    // select the channel
+    vector<double> mewgts(channels_.size(),0.0);
+    double total=0.;
+    for(unsigned int ix=0,N=channels_.size();ix<N;++ix) {
+      decayer->me2(ix,inrest,!cc ? outgoing_ : outgoingCC_,
+		   momenta,DecayIntegrator2::Calculate);
+      total+=mewgts[ix];
+    }
+    // randomly pick a channel
+    total *= UseRandom::rnd();
+    iChannel_ = 0;
+    do {
+      total-=mewgts[iChannel_];
+      ++iChannel_;
+    }
+    while(iChannel_<channels_.size() && total>0.);
+    // apply boost
+    for(tPPtr part : output) part->transform(boostFromRest);
+    channels_[iChannel_].generateIntermediates(cc,inpart,output);
   }
   decayer->ME(DecayMEPtr());
   // return particles;
@@ -191,7 +204,7 @@ void PhaseSpaceMode::constructVertex(const Particle & inpart,
   // set the incoming particle for the decay vertex
   (inpart.spinInfo())->decayVertex(vertex);
   for(unsigned int ix=0;ix<decay.size();++ix) {
-    (decay[ix]->spinInfo())->productionVertex(vertex);
+    decay[ix]->spinInfo()->productionVertex(vertex);
   }
   // set the matrix element
   Dvertex->ME(decayer->ME());
