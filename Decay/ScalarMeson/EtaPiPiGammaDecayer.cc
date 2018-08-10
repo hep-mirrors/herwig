@@ -26,12 +26,13 @@
 #include "Herwig/Utilities/GaussianIntegrator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
+#include "ThePEG/Helicity/HelicityFunctions.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 
-DescribeClass<EtaPiPiGammaDecayer,DecayIntegrator>
+DescribeClass<EtaPiPiGammaDecayer,DecayIntegrator2>
 describeHerwigEtaPiPiGammaDecayer("Herwig::EtaPiPiGammaDecayer",
 				  "HwSMDecay.so");
 HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiGammaDecayer,double,Energy)
@@ -39,7 +40,7 @@ HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiGammaDecayer,double,Energy)
 
 
 void EtaPiPiGammaDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_maxweight.size();++ix)
       _maxweight[ix]=mode(ix)->maxWeight();
@@ -167,7 +168,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
 }
 
 void EtaPiPiGammaDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the consistence of the parameters
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()||isize!=_option.size()||isize!=_maxweight.size()||
@@ -226,21 +227,15 @@ void EtaPiPiGammaDecayer::doinit() {
     }
   }
   // set up the modes
-  tPDVector extpart(4);
-  extpart[1] = getParticleData(ParticleID::piplus);
-  extpart[2] = getParticleData(ParticleID::piminus);
-  extpart[3] = getParticleData(ParticleID::gamma);
-  vector<double> dummyweights(1,1.);
-  DecayPhaseSpaceChannelPtr newchannel;
-  DecayPhaseSpaceModePtr mode;
+  tPDVector out = {getParticleData(ParticleID::piplus),
+		   getParticleData(ParticleID::piminus),
+		   getParticleData(ParticleID::gamma)};
+  PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_coupling.size();++ix) {
-    extpart[0] = getParticleData(_incoming[ix]);
-    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-    newchannel->addIntermediate(rho,0,0.0, 1,2);
-    mode->addChannel(newchannel);
-    addMode(mode,_maxweight[ix],dummyweights);
+    tPDPtr in = getParticleData(_incoming[ix]);
+    mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+    mode->addChannel((PhaseSpaceChannel(mode),0,rho,0,3,1,1,1,2));
+    addMode(mode);
   }
 }
 
@@ -436,32 +431,35 @@ void EtaPiPiGammaDecayer::Init() {
      false, false, true);
 
 }
+void EtaPiPiGammaDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+  VectorWaveFunction::constructSpinInfo(_vectors,decay[2],
+					outgoing,true,true);
+}
 
-double EtaPiPiGammaDecayer::me2(const int,const Particle & inpart,
-				const ParticleVector & decay,
-				MEOption meopt) const {
+double EtaPiPiGammaDecayer::me2(const int,const Particle & part,
+					const tPDVector &,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1)));
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    for(unsigned int ix=0;ix<2;++ix)
-    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    VectorWaveFunction::constructSpinInfo(_vectors,decay[2],
-					  outgoing,true,true);
-    return 0.;
+  _vectors.resize(3);
+  for(unsigned int ix=0;ix<3;ix+=2) {
+    _vectors[ix] = HelicityFunctions::polarizationVector(-momenta[2],ix,Helicity::outgoing);
   }
-  VectorWaveFunction::calculateWaveFunctions(_vectors,decay[2],
-					     outgoing,true);
   // prefactor for the matrix element
   complex<InvEnergy3> pre(_coupling[imode()]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
-  Lorentz5Momentum ppipi(decay[0]->momentum()+decay[1]->momentum());
+  Lorentz5Momentum ppipi(momenta[0]+momenta[1]);
   ppipi.rescaleMass();
   Energy q(ppipi.mass());
   Energy2 q2(q*q);
@@ -488,9 +486,9 @@ double EtaPiPiGammaDecayer::me2(const int,const Particle & inpart,
     fact=(1.-_cconst+_cconst*(1.+_aconst*q2)/experimentalOmnes(q2));
   }
   pre = pre*fact;
-  LorentzPolarizationVector epstemp(pre*Helicity::epsilon(decay[0]->momentum(),
-							  decay[1]->momentum(),
-							  decay[2]->momentum()));
+  LorentzPolarizationVector epstemp(pre*Helicity::epsilon(momenta[0],
+							  momenta[1],
+							  momenta[2]));
   // compute the matrix element
   vector<unsigned int> ispin(4,0);
   for(ispin[3]=0;ispin[3]<3;++ispin[3]) {
@@ -555,8 +553,8 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
 					 bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   output << "newdef " << name() << ":fpi             " << _fpi/MeV         << "\n";
   output << "newdef " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
   output << "newdef " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
