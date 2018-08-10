@@ -29,7 +29,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void PScalarLeptonNeutrinoDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   unsigned int iz(0),ix,iy;
   if(initialize()) {
     for(ix=0;ix<_incoming.size();++ix) {
@@ -77,7 +77,7 @@ PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer()
 }
 
 void PScalarLeptonNeutrinoDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters are consistent
   unsigned int isize(_incoming.size());
   if(isize!=_decayconstant.size()||isize!=_leptons.size()||isize!=_maxweighte.size()||
@@ -85,7 +85,6 @@ void PScalarLeptonNeutrinoDecayer::doinit() {
     throw InitException() << "Inconsistent parameters in PScalarLeptonNeutrinoDecayer"
 			  << Exception::abortnow;
   // create the integration channels
-  tPDVector extpart(3);  
   tPDPtr nu[3]={getParticleData(ParticleID::nu_e),
 		getParticleData(ParticleID::nu_mu),
 		getParticleData(ParticleID::nu_tau)};
@@ -98,27 +97,24 @@ void PScalarLeptonNeutrinoDecayer::doinit() {
   tPDPtr lepbar[3]={getParticleData(ParticleID::eplus),
 		    getParticleData(ParticleID::muplus),
 		    getParticleData(ParticleID::tauplus)};
-  int charge;
-  vector<double> dummyweights;
-  double wgt;
-  DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0]=getParticleData(_incoming[ix]);
-    charge=extpart[0]->iCharge();
+    tPDPtr in = getParticleData(_incoming[ix]);
     for(unsigned int iy=0;iy<_leptons[ix];++iy) {
-      if(charge>0) {
-	extpart[1]=lepbar[iy];
-	extpart[2]=nu[iy];
+      tPDVector out(2);
+      if(in->iCharge()>0) {
+	out[0]=lepbar[iy];
+	out[1]=nu[iy];
       }
       else {
-	extpart[1]=lep[iy];
-	extpart[2]=nubar[iy];
+	out[0]=lep[iy];
+	out[1]=nubar[iy];
       }
-      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      double wgt;
       if(iy==0)      wgt = _maxweighte[ix];
       else if(iy==1) wgt = _maxweightmu[ix];
       else           wgt = _maxweighttau[ix];
-      addMode(mode,wgt,dummyweights);
+      PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,wgt));
+      addMode(mode);
     }
   }
 }
@@ -171,7 +167,7 @@ void PScalarLeptonNeutrinoDecayer::persistentInput(PersistentIStream & is, int) 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<PScalarLeptonNeutrinoDecayer,DecayIntegrator>
+DescribeClass<PScalarLeptonNeutrinoDecayer,DecayIntegrator2>
 describeHerwigPScalarLeptonNeutrinoDecayer("Herwig::PScalarLeptonNeutrinoDecayer", "HwSMDecay.so");
 
 void PScalarLeptonNeutrinoDecayer::Init() {
@@ -219,47 +215,58 @@ void PScalarLeptonNeutrinoDecayer::Init() {
      MeV, 0, ZERO, ZERO, 1000.*MeV, false, false, true);
 }
 
-double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
-					 const ParticleVector & decay,
-					 MEOption meopt) const {
+void PScalarLeptonNeutrinoDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  unsigned int iferm(0),ianti(0);
+  for(unsigned ix=0;ix<decay.size();++ix) {
+    long id=decay[ix]->id();
+    if(id<=-11&&id>=-16)    ianti=ix;
+    else if(id>=11&&id<=16) iferm=ix;
+  }
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  // set up the spin information for the decay products
+  SpinorBarWaveFunction::
+    constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+}
+
+double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & part,
+				       const tPDVector & outgoing,
+				       const vector<Lorentz5Momentum> & momenta,
+				       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   // work out which decay constant to use
-  int icoup(0),id(abs(inpart.id()));
+  int icoup(0),id(abs(part.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(id==abs(_incoming[ix])) icoup=ix;
   }
   // find the particles
   unsigned int iferm(0),ianti(0);
-  for(unsigned ix=0;ix<decay.size();++ix) {
-    id=decay[ix]->id();
+  for(unsigned ix=0;ix<outgoing.size();++ix) {
+    id=outgoing[ix]->id();
     if(id<=-11&&id>=-16)    ianti=ix;
     else if(id>=11&&id<=16) iferm=ix;
   }
-  int idferm = decay[iferm]->id();
+  int idferm = outgoing[iferm]->id();
   // initialization
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-  }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    // set up the spin information for the decay products
-    SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
   // calculate the spinors
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
-  SpinorWaveFunction::
-    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
+  _wave.resize(2);
+  _wavebar.resize(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    _wavebar[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[iferm],ix,Helicity::outgoing);
+    _wave   [ix] = HelicityFunctions::dimensionedSpinor   (-momenta[ianti],ix,Helicity::outgoing);
+  }
   // the prefactor
-  Energy premass =  idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
-  InvEnergy pre = premass * 2.*_decayconstant[icoup]*SM().fermiConstant()/inpart.mass();
+  Energy premass =  idferm%2==0 ? momenta[ianti].mass() : momenta[iferm].mass();
+  InvEnergy pre = premass * 2.*_decayconstant[icoup]*SM().fermiConstant()/part.mass();
   // compute the matrix element
   vector<unsigned int> ispin(3,0);
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
@@ -269,23 +276,22 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 	pre*_wave[ispin[ianti+1]].leftScalar( _wavebar[ispin[iferm+1]]) ;
     }
   }
-//   // test of the matrix element
-//   double me=newME.contract(rhoin).real();
-//   Energy mass = idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
-//   double test = sqr(_decayconstant[icoup]*SM().fermiConstant()*2.*mass/inpart.mass())*
-//     (sqr(inpart.mass())-sqr(mass));
-//   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
-//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
-//        << me << " " << (me-test)/(me+test) << endl;
-  return 0.5*ME()->contract(_rho).real();
+  double me = 0.5*ME()->contract(_rho).real();
+  // test of the matrix element
+  // Energy mass = idferm%2==0 ? momenta[ianti].mass() : momenta[iferm].mass();
+  // double test = 0.5*sqr(_decayconstant[icoup]*SM().fermiConstant()*2.*mass/part.mass())*
+  //   (sqr(part.mass())-sqr(mass));
+  // cout << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " " 
+  //      << me << " " << (me-test)/(me+test) << endl;
+  return me;
 }
-
 
 void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
 						  bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming   " << ix << " "

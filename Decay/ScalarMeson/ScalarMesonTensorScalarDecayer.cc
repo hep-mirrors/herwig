@@ -26,7 +26,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void ScalarMesonTensorScalarDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix) 
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
@@ -50,7 +50,7 @@ ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer()
 }
 
 void ScalarMesonTensorScalarDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoingT.size()||
@@ -59,18 +59,16 @@ void ScalarMesonTensorScalarDecayer::doinit() {
 			  << "ScalarMesonTensorScalarDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
-  vector<double> wgt;
-  DecayPhaseSpaceModePtr mode;
-  tPDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0] = getParticleData(_incoming[ix]);
-    extpart[1] = getParticleData(_outgoingT[ix]);
-    extpart[2] = getParticleData(_outgoingS[ix]);
-    if(extpart[0]&&extpart[1]&&extpart[2]) 
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr    in  =  getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoingT[ix]),
+    		     getParticleData(_outgoingS[ix])};
+    PhaseSpaceModePtr mode;
+    if(in&&out[0]&&out[1]) 
+      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     else
-      mode=DecayPhaseSpaceModePtr();
-    addMode(mode,_maxweight[ix],wgt);
+      mode=PhaseSpaceModePtr();
+    addMode(mode);
   }
 }
 
@@ -116,7 +114,7 @@ void ScalarMesonTensorScalarDecayer::persistentInput(PersistentIStream & is, int
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ScalarMesonTensorScalarDecayer,DecayIntegrator>
+DescribeClass<ScalarMesonTensorScalarDecayer,DecayIntegrator2>
 describeHerwigScalarMesonTensorScalarDecayer("Herwig::ScalarMesonTensorScalarDecayer", "HwSMDecay.so");
 
 void ScalarMesonTensorScalarDecayer::Init() {
@@ -156,45 +154,50 @@ void ScalarMesonTensorScalarDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-double ScalarMesonTensorScalarDecayer::me2(const int,
-					   const Particle & inpart,
-					   const ParticleVector & decay,
-					   MEOption meopt) const {
+void ScalarMesonTensorScalarDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  TensorWaveFunction::constructSpinInfo(_tensors,decay[0],
+					outgoing,true,false);
+  ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+}
+
+double ScalarMesonTensorScalarDecayer::me2(const int,const Particle & part,
+					const tPDVector & outgoing,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin0)));
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    TensorWaveFunction::constructSpinInfo(_tensors,decay[0],
-					  outgoing,true,false);
-    ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
-    return 0.;
+  TensorWaveFunction twave(momenta[0],outgoing[0],Helicity::outgoing);
+  _tensors.resize(5);
+  for(unsigned int ihel=0;ihel<5;++ihel) {
+    twave.reset(ihel);
+    _tensors[ihel] = twave.wave();
   }
-  TensorWaveFunction::
-    calculateWaveFunctions(_tensors,decay[0],outgoing,false);
   // calculate the matrix element
-  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
+  InvEnergy2 fact(_coupling[imode()]/part.mass());
   LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix) {
-    vtemp = _tensors[ix]*inpart.momentum(); 
-    (*ME())(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
+    vtemp = _tensors[ix]*part.momentum(); 
+    (*ME())(0,ix,0) = fact * momenta[1].dot(vtemp);
   }
-  // test of the matrix element
-//   double me=newME.contract(rhoin).real();
-//   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
-// 					     decay[1]->mass());
-//   double test = 2.*pow<4,1>(pcm)*sqr(_coupling[imode()]*inpart.mass())/
-//     3./pow<4,1>(decay[0]->mass());
-//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-//        << me << " " << (me-test)/(me+test) << "\n";
+  double me = ME()->contract(_rho).real();
+  // // test of the matrix element
+  // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
+  // 					     momenta[1].mass());
+  // double test = 2.*pow<4,1>(pcm)*sqr(_coupling[imode()]*part.mass())/
+  //   3./pow<4,1>(momenta[0].mass());
+  // cerr << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  //      << me << " " << (me-test)/(me+test) << "\n";
   // output the answer
-  return ME()->contract(_rho).real();
+  return me;
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
@@ -244,8 +247,8 @@ bool ScalarMesonTensorScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & i
 void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
 						    bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {

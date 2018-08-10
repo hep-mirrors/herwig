@@ -67,7 +67,7 @@ void PScalarPScalarVectorDecayer::doinit() {
   // set up the integration channels
   PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr    in  = getParticleData( _incoming[ix]);
+    tPDPtr    in  =  getParticleData( _incoming[ix]);
     tPDVector out = {getParticleData(_outgoingP[ix]),
 		     getParticleData(_outgoingV[ix])};
     if(in&&out[0]&&out[1]) 

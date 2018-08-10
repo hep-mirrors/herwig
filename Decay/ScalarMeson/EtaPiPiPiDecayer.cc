@@ -295,44 +295,44 @@ InvEnergy EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy2 q2
 
 WidthCalculatorBasePtr 
 EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
-  // int idout(0),id,imode(-1);
-  // unsigned int npi0(0),ix(0);
-  // ParticleMSet::const_iterator pit(dm.products().begin());
-  // for( ;pit!=dm.products().end();++pit) {
-  //   id=(**pit).id();
-  //   if(id==ParticleID::pi0&&npi0<2)                            ++npi0;
-  //   else if(id!=ParticleID::piplus&&id!=ParticleID::piminus) idout=id;
-  // }
-  // if(npi0==1) idout=ParticleID::pi0;
-  // bool charged(npi0<2);
-  // id=dm.parent()->id();
-  // do {
-  //   if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged) 
-  //     imode=ix;
-  //   ++ix;
-  // }
-  // while(imode<0&&ix<_incoming.size());
-  // Energy mpi;
-  // if(charged){mpi=getParticleData(ParticleID::piplus)->mass();}
-  // else{mpi=getParticleData(ParticleID::pi0)->mass();}
-  // Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
-  // WidthCalculatorBasePtr 
-  //   temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
-  // 		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
-  // if(_outgoing[imode]==ParticleID::eta) {
-  //   tcGenericMassGeneratorPtr test;
-  //   tGenericMassGeneratorPtr massptr;
-  //   if(getParticleData(_outgoing[imode])->massGenerator()) {
-  //     test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
-  // 	(getParticleData(_outgoing[imode])->massGenerator());
-  //     massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
-  //   }
-  //   if(massptr) {
-  //     massptr->init();
-  //     return new_ptr(OneOffShellCalculator(3,temp,massptr,ZERO));
-  //   }
-  // }
-  // return temp;
+  int idout(0),id,imode(-1);
+  unsigned int npi0(0),ix(0);
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  for( ;pit!=dm.products().end();++pit) {
+    id=(**pit).id();
+    if(id==ParticleID::pi0&&npi0<2)                            ++npi0;
+    else if(id!=ParticleID::piplus&&id!=ParticleID::piminus) idout=id;
+  }
+  if(npi0==1) idout=ParticleID::pi0;
+  bool charged(npi0<2);
+  id=dm.parent()->id();
+  do {
+    if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged) 
+      imode=ix;
+    ++ix;
+  }
+  while(imode<0&&ix<_incoming.size());
+  Energy mpi;
+  if(charged){mpi=getParticleData(ParticleID::piplus)->mass();}
+  else{mpi=getParticleData(ParticleID::pi0)->mass();}
+  Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
+  WidthCalculatorBasePtr 
+    temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
+  		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
+  if(_outgoing[imode]==ParticleID::eta) {
+    tcGenericMassGeneratorPtr test;
+    tGenericMassGeneratorPtr massptr;
+    if(getParticleData(_outgoing[imode])->massGenerator()) {
+      test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
+  	(getParticleData(_outgoing[imode])->massGenerator());
+      massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
+    }
+    if(massptr) {
+      massptr->init();
+      return new_ptr(OneOffShellCalculator(3,temp,massptr,ZERO));
+    }
+  }
+  return temp;
 } 
   
 void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,

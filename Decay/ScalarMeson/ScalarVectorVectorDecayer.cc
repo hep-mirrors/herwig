@@ -28,7 +28,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void ScalarVectorVectorDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix)
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
@@ -75,7 +75,7 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
 }
 
 void ScalarVectorVectorDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters arew consistent
   unsigned int isize(_coupling.size());
   if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
@@ -84,18 +84,16 @@ void ScalarVectorVectorDecayer::doinit() {
 			  << "ScalarVectorVectorDecayerDecayer" 
 			  << Exception::abortnow;
   // set up the integration channels
-  vector<double> wgt;
-  DecayPhaseSpaceModePtr mode;
-  tPDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0] = getParticleData(_incoming[ix]);
-    extpart[1] = getParticleData(_outgoing1[ix]);
-    extpart[2] = getParticleData(_outgoing2[ix]);
-    if(extpart[0]&&extpart[1]&&extpart[2]) 
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    tPDPtr in     =  getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoing1[ix]),
+		     getParticleData(_outgoing2[ix])};
+    PhaseSpaceModePtr mode;
+    if(in&&out[0]&&out[1]) 
+      mode=new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     else
-      mode=DecayPhaseSpaceModePtr();
-    addMode(mode,_maxweight[ix],wgt);
+      mode=PhaseSpaceModePtr();
+    addMode(mode);
   }
 }
 
@@ -133,7 +131,7 @@ void ScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ScalarVectorVectorDecayer,DecayIntegrator>
+DescribeClass<ScalarVectorVectorDecayer,DecayIntegrator2>
 describeHerwigScalarVectorVectorDecayer("Herwig::ScalarVectorVectorDecayer", "HwSMDecay.so");
 
 void ScalarVectorVectorDecayer::Init() {
@@ -174,60 +172,65 @@ void ScalarVectorVectorDecayer::Init() {
 
 }
 
-double ScalarVectorVectorDecayer::me2(const int,
-				      const Particle & inpart,
-				      const ParticleVector & decay,
-				      MEOption meopt) const {
+void ScalarVectorVectorDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
+					  outgoing,true,decay[ix]->id()==ParticleID::gamma);
+}
+
+double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
+					const tPDVector & outgoing,
+					const vector<Lorentz5Momentum> & momenta,
+					MEOption meopt) const {
   if(!ME())
     ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   bool photon[2]={false,false};
   for(unsigned int ix=0;ix<2;++ix)
-    photon[ix] = decay[ix]->id()==ParticleID::gamma;
+    photon[ix] = outgoing[ix]->id()==ParticleID::gamma;
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    for(unsigned int ix=0;ix<2;++ix)
-      VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
-					    outgoing,true,photon[ix]);
-    return 0.;
+  for(unsigned int ix=0;ix<2;++ix) {
+    _vectors[ix].resize(3);
+    for(unsigned int ihel=0;ihel<3;++ihel) {
+      if(photon[ix] && ihel==1) continue;
+      _vectors[ix][ihel] = HelicityFunctions::polarizationVector(-momenta[ix],ihel,Helicity::outgoing);
+    }
   }
-  for(unsigned int ix=0;ix<2;++ix)
-    VectorWaveFunction::
-      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
   // now compute the matrix element
-  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
-  Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
+  InvEnergy2 fact(_coupling[imode()]/part.mass());
+  Energy2 p1p2(momenta[0]*momenta[1]);
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
       (*ME())(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
-			  (_vectors[1][iy]*decay[0]->momentum())*
-			  (_vectors[0][ix]*decay[1]->momentum()));
+			  (_vectors[1][iy]*momenta[0])*
+			  (_vectors[0][ix]*momenta[1]));
     }
   }
+  double me = ME()->contract(_rho).real();
   // test of the matrix element
-  //   double me = newME.contract(rhoin).real();
-  //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
-  // 					   decay[1]->mass());
-  //   double test = sqr(_coupling[imode()]/inpart.mass())*
-  //     (2.*sqr(pcm*inpart.mass())+3.*sqr(decay[0]->mass()*decay[1]->mass()));
-  //   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-  //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-  //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
-  return ME()->contract(_rho).real();
+  // Energy pcm=Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
+  // 					   momenta[1].mass());
+  // double test = sqr(_coupling[imode()]/part.mass())*
+  //   (2.*sqr(pcm*part.mass())+3.*sqr(momenta[0].mass()*momenta[1].mass()));
+  // cerr << "testing matrix element for " << part.PDGName() << " -> " 
+  //      << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << " "
+  //      << me << " " << test << " " << (me-test)/(me+test) << "\n";
+  return me;
 }
 
 // output the setup info for the particle database
 void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
 					       bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class  
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class  
+  DecayIntegrator2::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming   " << ix << " "
