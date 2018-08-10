@@ -47,7 +47,7 @@ void VectorMeson2FermionDecayer::doinit() {
   // set up the integration channels
   PhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    tPDPtr    in  = getParticleData(_incoming[ix]);
+    tPDPtr    in  =  getParticleData(_incoming[ix]);
     tPDVector out = {getParticleData(_outgoingf[ix]),
 		     getParticleData(_outgoinga[ix])};
     if(in&&out[0]&&out[1]) 
