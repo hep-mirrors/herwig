@@ -30,18 +30,14 @@ void RadiativeHyperonDecayer::doinit() {
 			  << "RadiativeHyperonDecayer::doinit()" 
 			  << Exception::runerror;
   // set up the decay modes
-  tPDVector extpart(3);
-  extpart[2]=getParticleData(ParticleID::gamma);
-  DecayPhaseSpaceModePtr mode;
-  double wgtmax;
-  vector<double> wgt(0);
+  tPDPtr photon = getParticleData(ParticleID::gamma);
   for(unsigned int ix=0;ix<incomingB_.size();++ix) {
-    extpart[0]=getParticleData(incomingB_[ix]);
-    extpart[1]=getParticleData(outgoingB_[ix]);
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-    wgtmax = maxweight_.size()>numberModes() ? 
+    tPDPtr in = getParticleData(incomingB_[ix]);
+    tPDVector out={getParticleData(outgoingB_[ix]),photon};
+    double wgtmax = maxweight_.size()>numberModes() ? 
       maxweight_[numberModes()] : 1.;
-    addMode(mode,wgtmax,wgt);
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,wgtmax));
+    addMode(mode);
   }
 }
 

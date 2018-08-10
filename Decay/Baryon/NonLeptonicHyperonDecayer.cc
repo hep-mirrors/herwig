@@ -32,18 +32,14 @@ void NonLeptonicHyperonDecayer::doinit() {
 			  << "NonLeptonicHyperonDecayer::doinit()" 
 			  << Exception::runerror;
   // set up the decay modes
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  double wgtmax;
-  vector<double> wgt(0);
   for(unsigned int ix=0;ix<_incomingB.size();++ix) {
-    extpart[0]=getParticleData(_incomingB[ix]);
-    extpart[1]=getParticleData(_outgoingB[ix]);
-    extpart[2]=getParticleData(_outgoingM[ix]);
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-    wgtmax = _maxweight.size()>numberModes() ? 
+    tPDPtr    in  =  getParticleData(_incomingB[ix]);
+    tPDVector out = {getParticleData(_outgoingB[ix]),
+    		     getParticleData(_outgoingM[ix])};
+    double wgtmax = _maxweight.size()>numberModes() ? 
       _maxweight[numberModes()] : 1.;
-    addMode(mode,wgtmax,wgt);
+    PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(in,out,wgtmax)));
+    addMode(mode);
     // test of the asummetries
 //     Energy e1 = (sqr(extpart[0]->mass())+sqr(extpart[1]->mass())-
 // 		 sqr(extpart[2]->mass()))/2./extpart[0]->mass();

@@ -103,21 +103,19 @@ void RadiativeHeavyBaryonDecayer::doinit() {
     throw InitException() << "Inconsistent parameters in "
 			  << "RadiativeHeavyBaryonDecayer::doinit()" 
 			  << Exception::abortnow;
-  vector<double> wgt(0);
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
   // the decay modes
-  extpart[2]=getParticleData(ParticleID::gamma);
+  tPDPtr photon = getParticleData(ParticleID::gamma);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0]=getParticleData(_incoming[ix]);
-    extpart[1]=getParticleData(_outgoingB[ix]);
-    if(extpart[0]&&extpart[1]) {
-      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-      addMode(mode,_maxweight[ix],wgt);
+    tPDPtr    in  =  getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoingB[ix]),photon};
+    PhaseSpaceModePtr mode;
+    if(in&&out[0]) {
+      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     }
     else {
-      addMode(DecayPhaseSpaceModePtr(),_maxweight[ix],wgt);
+      mode = PhaseSpaceModePtr();
     }
+    addMode(mode);
   }
 }
 

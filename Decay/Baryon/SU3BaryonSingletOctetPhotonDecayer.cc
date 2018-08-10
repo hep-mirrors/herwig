@@ -35,18 +35,14 @@ void SU3BaryonSingletOctetPhotonDecayer::doinit() {
   // set up the decay modes
   setupModes(1);
   // set up the phase space and the couplings
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  double wgtmax;
-  vector<double> wgt(0);
   for(unsigned int ix=0;ix<_outgoingB.size();++ix) {
-    extpart[0]=getParticleData(_elambda);
-    extpart[1]=getParticleData(_outgoingB[ix]);
-    extpart[2]=getParticleData(ParticleID::gamma);
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-    if(_maxweight.size()>numberModes()){wgtmax=_maxweight[numberModes()];}
-    else{wgtmax=1.;}
-    addMode(mode,wgtmax,wgt);
+    tPDPtr    in  =  getParticleData(_elambda);
+    tPDVector out = {getParticleData(_outgoingB[ix]),
+    		     getParticleData(ParticleID::gamma)};
+    double wgtmax = _maxweight.size()>numberModes() ?
+      _maxweight[numberModes()] : 1.;
+    PhaseSpaceModePtr mode=new_ptr(PhaseSpaceMode(in,out,wgtmax));
+    addMode(mode);
   }
 }
 

@@ -4,9 +4,9 @@
 //
 // This is the declaration of the Baryon1MesonDecayerBase class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/PDT/BaryonWidthGenerator.fh"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzSpinor.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
 #include "ThePEG/Helicity/LorentzRSSpinor.h"
@@ -52,9 +52,9 @@ using namespace ThePEG;
  *   \f[\bar{u}^\alpha(p_1)\left[(A_1+B_1\gamma_5)g_{\alpha\beta}
  *      +p_{0\alpha}p_{1\beta}(A_2+B_2\gamma_5)\right]u^\beta(p_0)\f]
  *
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  */
-class Baryon1MesonDecayerBase: public DecayIntegrator {
+class Baryon1MesonDecayerBase: public DecayIntegrator2 {
 
   /**
    *  The BaryonWidthGenerator is a friend to get access to the couplings
@@ -63,18 +63,26 @@ class Baryon1MesonDecayerBase: public DecayIntegrator {
 
 public:
 
+
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * This version uses the generalised couplings to compute the matrix elements
-   * given above.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2(const int ichan,const Particle & part,
-	     const ParticleVector & decay,MEOption meopt) const;
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -231,80 +239,101 @@ private:
   //@{
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double halfHalfScalar(const int ichan,const Particle & inpart,
-			const ParticleVector & decay,MEOption meopt) const;
+  double halfHalfScalar(const int ichan,const Particle & part,
+			const tPDVector & outgoing,
+			const vector<Lorentz5Momentum> & momenta,
+			MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a vector.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double halfHalfVector(const int ichan,const Particle & inpart,
-			const ParticleVector & decay,MEOption meopt) const;
+  double halfHalfVector(const int ichan,const Particle & part,
+			const tPDVector & outgoing,
+			const vector<Lorentz5Momentum> & momenta,
+			MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double halfThreeHalfScalar(const int ichan,const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt) const;
+  double halfThreeHalfScalar(const int ichan,const Particle & part,
+			     const tPDVector & outgoing,
+			     const vector<Lorentz5Momentum> & momenta,
+			     MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a vector.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double halfThreeHalfVector(const int ichan,const Particle & inpart,
-			     const ParticleVector  & decay,MEOption meopt) const;
+  double halfThreeHalfVector(const int ichan,const Particle & part,
+			     const tPDVector & outgoing,
+			     const vector<Lorentz5Momentum> & momenta,
+			     MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac12\f$ and a scalar.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double threeHalfHalfScalar(const int ichan,const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt) const;
+  double threeHalfHalfScalar(const int ichan,const Particle & part,
+			     const tPDVector & outgoing,
+			     const vector<Lorentz5Momentum> & momenta,
+			     MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac12\f$ and a vector.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double threeHalfHalfVector(const int ichan,const Particle & inpart,
-			     const ParticleVector & decay,MEOption meopt) const;
+  double threeHalfHalfVector(const int ichan,const Particle & part,
+			     const tPDVector & outgoing,
+			     const vector<Lorentz5Momentum> & momenta,
+			     MEOption meopt) const;
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac32\f$ and a scalar.
-   * @param ichan The phase-space channel.
-   * @param inpart The decaying particle.
-   * @param decay The decay products.
-   * @param meopt The option for the matrix element
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared.
    */
-  double threeHalfThreeHalfScalar(const int ichan,const Particle & inpart,
-				  const ParticleVector & decay,MEOption meopt) const;
+  double threeHalfThreeHalfScalar(const int ichan,const Particle & part,
+				  const tPDVector & outgoing,
+				  const vector<Lorentz5Momentum> & momenta,
+				  MEOption meopt) const;
   //@}
 
 private:

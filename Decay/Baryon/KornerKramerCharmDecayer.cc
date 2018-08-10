@@ -472,20 +472,16 @@ void KornerKramerCharmDecayer::doinit() {
   InvEnergy2 pre(SM().fermiConstant()*sqrt(SM().CKM(1,1)*SM().CKM(0,0)/2.)),mform2[2];
   // testing only
 //   pre = SM().fermiConstant()*0.974/sqrt(2.);
-  vector<double> wgt(0);
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  unsigned int iy;
   for(unsigned int ix=0;ix<isize;++ix) {
     // get the mass of the particles
-    extpart[0]=getParticleData(incoming_[ix]);
-    extpart[1]=getParticleData(outgoingB_[ix]);
-    extpart[2]=getParticleData(outgoingM_[ix]);
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-    addMode(mode,maxweight_[ix],wgt);
-    m1=extpart[0]->mass();
-    m2=extpart[1]->mass();
-    m3=extpart[2]->mass();
+    tPDPtr    in  =  getParticleData(incoming_[ix]);
+    tPDVector out = {getParticleData(outgoingB_[ix]),
+    		     getParticleData(outgoingM_[ix])};
+    PhaseSpaceModePtr mode=new_ptr(PhaseSpaceMode(in,out,maxweight_[ix]));
+    addMode(mode);
+    m1=in->mass();
+    m2=out[0]->mass();
+    m3=out[1]->mass();
     // dot product P1P2
     P1P2 = 0.5*(m1*m1+m2*m2-m3*m3);
     // formfactor for the non-factorizating diagrams and coefficients
@@ -526,7 +522,7 @@ void KornerKramerCharmDecayer::doinit() {
       gmes=ZERO;
     }
     // form factor for the factorising diagrams
-    for(iy=0;iy<2;++iy) {
+    for(unsigned int iy=0;iy<2;++iy) {
       Ffact[iy]  = 1./(1.-m3*m3*mform2[iy])*(1.-(m1-m2)*(m1-m2)*mform2[iy]);
       Ffact[iy] *= Ffact[iy]*Ffact[iy];
     }

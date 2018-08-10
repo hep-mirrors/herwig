@@ -91,17 +91,14 @@ void NonLeptonicOmegaDecayer::doinit() {
 			       +_hpi*_mpi0*_mpi0/2./(_mk0*_mk0-_mpi0*_mpi0));
   _b[2] = ZERO;
   // set up the decay modes
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  double wgtmax;
-  vector<double> wgt(0);
   for(unsigned int ix=0;ix<_outgoingB.size();++ix) {
-    extpart[0]=getParticleData(_incomingB);
-    extpart[1]=getParticleData(_outgoingB[ix]);
-    extpart[2]=getParticleData(_outgoingM[ix]);
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-    wgtmax = _maxweight.size()>numberModes() ? _maxweight[numberModes()] : 1.;
-    addMode(mode,wgtmax,wgt);
+    tPDPtr    in  =  getParticleData(_incomingB);
+    tPDVector out = {getParticleData(_outgoingB[ix]),
+    		     getParticleData(_outgoingM[ix])};
+    double wgtmax = _maxweight.size()>numberModes() ?
+      _maxweight[numberModes()] : 1.;
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,wgtmax));
+    addMode(mode);
   }
 }
 

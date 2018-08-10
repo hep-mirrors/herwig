@@ -234,22 +234,20 @@ void StrongHeavyBaryonDecayer::doinit() {
     throw InitException() << "Inconsistent parameters in StrongHeavyBaryonDecayer"
 			  << "::doinit()" << Exception::abortnow;
   // add the various decay modes
-  vector<double> wgt(0);
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
   double or2(1./sqrt(2.)),or3(1./sqrt(3.)),or6(1./sqrt(6.));
   // the decay modes
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    extpart[0]=getParticleData(_incoming[ix]);
-    extpart[1]=getParticleData(_outgoingB[ix]);
-    extpart[2]=getParticleData(_outgoingM[ix]);
-    if(extpart[0]&&extpart[1]) {
-      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-      addMode(mode,_maxweight[ix],wgt);
+    tPDPtr    in  =  getParticleData(_incoming[ix]);
+    tPDVector out = {getParticleData(_outgoingB[ix]),
+    		     getParticleData(_outgoingM[ix])};
+    PhaseSpaceModePtr mode;
+    if(in&&out[0]&&out[1]) {
+      mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
     }
     else {
-      addMode(DecayPhaseSpaceModePtr(),_maxweight[ix],wgt);
+      mode = PhaseSpaceModePtr();
     }
+    addMode(mode);
     if(_outgoingB[ix]==4122&&((_incoming[ix]==4222&&_outgoingM[ix]==211)||
 			      (_incoming[ix]==4212&&_outgoingM[ix]==111)||
 			      (_incoming[ix]==4112&&_outgoingM[ix]==-211)))

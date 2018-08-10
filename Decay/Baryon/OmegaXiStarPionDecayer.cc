@@ -33,14 +33,11 @@ OmegaXiStarPionDecayer::OmegaXiStarPionDecayer()  {
 void OmegaXiStarPionDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // set up the phase space
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  vector<double> wgt(0);
-  extpart[0]=getParticleData(idin_);
-  extpart[1]=getParticleData(idout_);
-  extpart[2]=getParticleData(-211);
-  mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-  addMode(mode,wgtmax_,wgt);
+  tPDPtr    in  =  getParticleData(idin_);
+  tPDVector out = {getParticleData(idout_),
+  		   getParticleData(-211)};
+  PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,wgtmax_));
+  addMode(mode);
 }
 
 void OmegaXiStarPionDecayer::doinitrun() {
