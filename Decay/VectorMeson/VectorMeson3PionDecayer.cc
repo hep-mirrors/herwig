@@ -410,6 +410,7 @@ void VectorMeson3PionDecayer::Init() {
      0, 0, 1, 0, 1, false, false, true);
 
 }
+
 void VectorMeson3PionDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
