@@ -56,7 +56,7 @@ DtoKPiPiE691::DtoKPiPiE691() {
 }
 
 void DtoKPiPiE691::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // complex amplitudes calculated from magnitudes and phases
   double fact = Constants::pi/180.;
   // D+ -> K-pi+pi+
@@ -81,130 +81,98 @@ void DtoKPiPiE691::doinit() {
   tPDPtr rho0  = getParticleData(ParticleID::rho0);
   tPDPtr rhop  = getParticleData(ParticleID::rhoplus);
   // D+ -> K-pi+pi+
-  tPDVector extpart(4);
-  extpart[0]=getParticleData(ParticleID::Dplus);
-  extpart[1]=getParticleData(ParticleID::Kminus);
-  extpart[2]=getParticleData(ParticleID::piplus);
-  extpart[3]=getParticleData(ParticleID::piplus);
-  DecayPhaseSpaceChannelPtr newchannel;
-  DecayPhaseSpaceModePtr mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-  int ix=0;
+  tPDPtr in    =  getParticleData(ParticleID::Dplus);
+  tPDVector out= {getParticleData(ParticleID::Kminus),
+		  getParticleData(ParticleID::piplus),
+		  getParticleData(ParticleID::piplus)};
+  if(_maxwgt.empty()) _maxwgt.push_back(1.);
+  PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_maxwgt[0]));
+  vector<PhaseSpaceChannel> channels;
   if(k8920) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-    newchannel->addIntermediate(k8920,0,0., 1,2);
-    mode->addChannel(newchannel);
-    ++ix;
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
-    newchannel->addIntermediate(k8920,0,0., 1,3);
-    mode->addChannel(newchannel);
-    ++ix;
+    channels.push_back((PhaseSpaceChannel(mode),0,k8920,0,3,1,1,1,2));
+    channels.push_back((PhaseSpaceChannel(mode),0,k8920,0,2,1,1,1,3));
   }
   if(k1430) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-    newchannel->addIntermediate(k1430,0,0., 1,2);
-    mode->addChannel(newchannel);
-    ++ix;
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
-    newchannel->addIntermediate(k1430,0,0., 1,3);
-    mode->addChannel(newchannel);
-    ++ix;
+    channels.push_back((PhaseSpaceChannel(mode),0,k1430,0,3,1,1,1,2));
+    channels.push_back((PhaseSpaceChannel(mode),0,k1430,0,2,1,1,1,3));
   }
   if(k1680) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-    newchannel->addIntermediate(k1680,0,0., 1,2);
-    mode->addChannel(newchannel);
-    ++ix;
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
-    newchannel->addIntermediate(k1680,0,0., 1,3);
-    mode->addChannel(newchannel);
-    ++ix;
+    channels.push_back((PhaseSpaceChannel(mode),0,k1680,0,3,1,1,1,2));
+    channels.push_back((PhaseSpaceChannel(mode),0,k1680,0,2,1,1,1,3));
   }
   // add the mode
   vector<double> wtemp;
-  if(ix<=int(_weights.size())) {
+  if(channels.size()<=_weights.size()) {
     vector<double>::const_iterator wit=_weights.begin();
-    wtemp=vector<double>(wit,wit+ix);
+    wtemp=vector<double>(wit,wit+channels.size());
   }
   else {
-    wtemp=vector<double>(ix,1./double(ix));
+    wtemp=vector<double>(channels.size(),1./double(channels.size()));
   }
-  if(_maxwgt.empty()) _maxwgt.push_back(1.);
-  addMode(mode,_maxwgt[0],wtemp);
+  for(unsigned int ix=0;ix<channels.size();++ix) {
+    channels[ix].weight(wtemp[ix]);
+    mode->addChannel(channels[ix]);
+  }
+  addMode(mode);
   // D0 -> K-pi+pi0
-  extpart[0]=getParticleData(ParticleID::D0);
-  extpart[1]=getParticleData(ParticleID::Kminus);
-  extpart[2]=getParticleData(ParticleID::piplus);
-  extpart[3]=getParticleData(ParticleID::pi0);
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-  int iy=ix;
+  if(_maxwgt.size()<2) _maxwgt.push_back(1.);
+  in = getParticleData(ParticleID::D0);
+  out = {getParticleData(ParticleID::Kminus),
+	 getParticleData(ParticleID::piplus),
+	 getParticleData(ParticleID::pi0)};
+  mode = new_ptr(PhaseSpaceMode(in,out,_maxwgt[1]));
+  int iy = channels.size();
+  channels.clear();
   if(k8920) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-    newchannel->addIntermediate(k8920,0,0., 1,2);
-    mode->addChannel(newchannel);
-    ++iy;
+    channels.push_back((PhaseSpaceChannel(mode),0,k8920,0,3,1,1,1,2));
   }
   if(k892m) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
-    newchannel->addIntermediate(k892m,0,0., 1,3);
-    mode->addChannel(newchannel);
-    ++iy;
+    channels.push_back((PhaseSpaceChannel(mode),0,k892m,0,2,1,1,1,3));
   }
   if(rhop) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
-    newchannel->addIntermediate(rhop,0,0., 2,3);
-    mode->addChannel(newchannel);
-    ++iy;
+    channels.push_back((PhaseSpaceChannel(mode),0,rhop,0,1,1,2,1,3));
   }
   // add the mode
-  if(iy<=int(_weights.size())) {
+  if(iy+channels.size()<=_weights.size()) {
     vector<double>::const_iterator wit=_weights.begin();
-    wtemp=vector<double>(wit+ix,wit+iy);
+    wtemp=vector<double>(wit+iy,wit+iy+channels.size());
   }
   else {
-    wtemp=vector<double>(iy-ix,1./double(iy-ix));
+    wtemp=vector<double>(channels.size(),1./double(channels.size()));
   }
-  if(_maxwgt.size()<2) _maxwgt.push_back(1.);
-  addMode(mode,_maxwgt[1],wtemp);
+  iy+=channels.size();
+  for(unsigned int ix=0;ix<channels.size();++ix) {
+    channels[ix].weight(wtemp[ix]);
+    mode->addChannel(channels[ix]);
+  }
+  addMode(mode);
   // D0 -> Kbar0 pi+ pi-
-  extpart[0]=getParticleData(ParticleID::D0);
-  extpart[1]=getParticleData(ParticleID::Kbar0);
-  extpart[2]=getParticleData(ParticleID::piplus);
-  extpart[3]=getParticleData(ParticleID::piminus);
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-  ix=iy;
+  in  =  getParticleData(ParticleID::D0);
+  out = {getParticleData(ParticleID::Kbar0),
+	 getParticleData(ParticleID::piplus),
+	 getParticleData(ParticleID::piminus)};
+  if(_maxwgt.size()<3) _maxwgt.push_back(1.);
+  mode = new_ptr(PhaseSpaceMode(in,out,_maxwgt[2]));
+  channels.clear();
   if(rho0) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
-    newchannel->addIntermediate(rho0,0,0., 2,3);
-    mode->addChannel(newchannel);
-    ++iy;
+    channels.push_back((PhaseSpaceChannel(mode),0,rho0,0,1,1,2,1,3));
   }
   if(k892m) {
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
-    newchannel->addIntermediate(k892m,0,0., 1,3);
-    mode->addChannel(newchannel);
-    ++iy;
+    channels.push_back((PhaseSpaceChannel(mode),0,k892m,0,2,1,1,1,3));
   }
   // add the mode
-  if(iy<=int(_weights.size())) {
+  if(iy+channels.size()<=_weights.size()) {
     vector<double>::const_iterator wit=_weights.begin();
-    wtemp=vector<double>(wit+ix,wit+iy);
+    wtemp=vector<double>(wit+iy,wit+iy+channels.size());
   }
   else {
-    wtemp=vector<double>(iy-ix,1./double(iy-ix));
+    wtemp=vector<double>(channels.size(),1./double(channels.size()));
   }
-  if(_maxwgt.size()<3) _maxwgt.push_back(1.);
-  addMode(mode,_maxwgt[2],wtemp);
+  for(unsigned int ix=0;ix<channels.size();++ix) {
+    channels[ix].weight(wtemp[ix]);
+    mode->addChannel(channels[ix]);
+  }
+  addMode(mode);
   // reset the resonance parameters in the integration if needed
   if(_localparameters) {
     resetIntermediate(k8920,_mK8920,_wK8920);
@@ -259,7 +227,7 @@ void DtoKPiPiE691::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<DtoKPiPiE691,DecayIntegrator>
+DescribeClass<DtoKPiPiE691,DecayIntegrator2>
 describeHerwigDtoKPiPiE691("Herwig::DtoKPiPiE691", "HwSMDecay.so");
 
 void DtoKPiPiE691::Init() {
@@ -537,34 +505,35 @@ int DtoKPiPiE691::modeNumber(bool & cc,tcPDPtr parent,
   }
 }
 
-double DtoKPiPiE691::me2(const int ichan,
-			 const Particle & inpart,
-			 const ParticleVector & decay,
-			 MEOption meopt) const {
+void DtoKPiPiE691::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
+
+double DtoKPiPiE691::me2(const int ichan, const Particle & part,
+				   const tPDVector & ,
+				   const vector<Lorentz5Momentum> & momenta,
+				   MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-  }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    for(unsigned int ix=0;ix<3;++ix)
-    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return 0.;
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
   Complex amp;
   // D+ -> K-pi+pi+
   if(imode()==0) {
-    Lorentz5Momentum pres1=decay[0]->momentum()+decay[1]->momentum();
+    Lorentz5Momentum pres1=momenta[0]+momenta[1];
     pres1.rescaleMass();
-    double ct1 =-decayAngle(inpart.momentum(),pres1,decay[0]->momentum());
-    Lorentz5Momentum pres2=decay[0]->momentum()+decay[2]->momentum();
+    double ct1 =-decayAngle(part.momentum(),pres1,momenta[0]);
+    Lorentz5Momentum pres2=momenta[0]+momenta[2];
     pres2.rescaleMass();
-    double ct2 =-decayAngle(inpart.momentum(),pres2,decay[0]->momentum());
+    double ct2 =-decayAngle(part.momentum(),pres2,momenta[0]);
     if(ichan<0) {
       amp = _c1NR*sqrt(2.)
 	+_c1K892 *amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920)
@@ -595,15 +564,15 @@ double DtoKPiPiE691::me2(const int ichan,
   }
   // D0 -> K-pi+pi0
   else if(imode()==1) {
-    Lorentz5Momentum pres1=decay[0]->momentum()+decay[1]->momentum();
+    Lorentz5Momentum pres1=momenta[0]+momenta[1];
     pres1.rescaleMass();
-    double ct1 = decayAngle(inpart.momentum(),pres1,decay[0]->momentum());
-    Lorentz5Momentum pres2=decay[0]->momentum()+decay[2]->momentum();
+    double ct1 = decayAngle(part.momentum(),pres1,momenta[0]);
+    Lorentz5Momentum pres2=momenta[0]+momenta[2];
     pres2.rescaleMass();
-    double ct2 = decayAngle(inpart.momentum(),pres2,decay[2]->momentum());
-    Lorentz5Momentum pres3=decay[1]->momentum()+decay[2]->momentum();
+    double ct2 = decayAngle(part.momentum(),pres2,momenta[2]);
+    Lorentz5Momentum pres3=momenta[1]+momenta[2];
     pres3.rescaleMass();
-    double ct3 = decayAngle(inpart.momentum(),pres3,decay[2]->momentum());
+    double ct3 = decayAngle(part.momentum(),pres3,momenta[2]);
     if(ichan<0) {
       amp = _c2NR
 	+_c2K8920*amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920)
@@ -622,12 +591,12 @@ double DtoKPiPiE691::me2(const int ichan,
   }
   // D0 -> Kbar0pi+pi-
   else if(imode()==2) {
-    Lorentz5Momentum pres1=decay[0]->momentum()+decay[2]->momentum();
+    Lorentz5Momentum pres1=momenta[0]+momenta[2];
     pres1.rescaleMass();
-    double ct1 = decayAngle(inpart.momentum(),pres1,decay[0]->momentum());
-    Lorentz5Momentum pres2=decay[1]->momentum()+decay[2]->momentum();
+    double ct1 = decayAngle(part.momentum(),pres1,momenta[0]);
+    Lorentz5Momentum pres2=momenta[1]+momenta[2];
     pres2.rescaleMass();
-    double ct2 = decayAngle(inpart.momentum(),pres2,decay[1]->momentum());
+    double ct2 = decayAngle(part.momentum(),pres2,momenta[1]);
     if(ichan<0) {
       amp = _c3NR
 	+_c3K892*amplitude(1,ct1,pres1.mass(),_wK892m,_mK892m)
@@ -647,8 +616,8 @@ double DtoKPiPiE691::me2(const int ichan,
 
 void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   // parameters
   output << "newdef " << name() << ":KmPipPipNonResonantMagnitude " 
 	 << _a1NR      << "\n";
@@ -721,15 +690,15 @@ void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
 }
 
 void DtoKPiPiE691::doinitrun() {
-  DecayIntegrator::doinitrun();
-  _weights.resize(mode(0)->numberChannels()+mode(1)->numberChannels()+
-		  mode(2)->numberChannels());
+  DecayIntegrator2::doinitrun();
+  _weights.resize(mode(0)->channels().size()+mode(1)->channels().size()+
+		  mode(2)->channels().size());
   _maxwgt.resize(3);
   unsigned int iy=0;
   for(unsigned int ix=0;ix<3;++ix) {
     _maxwgt[ix]=mode(ix)->maxWeight();
-    for(unsigned int iz=0;iz<mode(ix)->numberChannels();++iz) {
-      _weights[iy]=mode(ix)->channelWeight(iz);
+    for(unsigned int iz=0;iz<mode(ix)->channels().size();++iz) {
+      _weights[iy]=mode(ix)->channels()[iz].weight();
       ++iy;
     }
   }

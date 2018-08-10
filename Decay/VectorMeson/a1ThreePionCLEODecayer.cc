@@ -591,9 +591,9 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 double a1ThreePionCLEODecayer::me2(const int ichan, const Particle & part,
-			    const tPDVector & ,
-			    const vector<Lorentz5Momentum> & momenta,
-			    MEOption meopt) const {
+				   const tPDVector & ,
+				   const vector<Lorentz5Momentum> & momenta,
+				   MEOption meopt) const {
   useMe();
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
