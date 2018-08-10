@@ -45,6 +45,7 @@ ParticleVector
 PhaseSpaceMode::generateDecay(const Particle & inpart,
 			      tcDecayIntegrator2Ptr decayer,
 			      bool intermediates,bool cc) {
+  decayer->ME(DecayMEPtr());
   // compute the prefactor
   Energy prewid = (widthGen_&&partial_>=0) ?
     widthGen_->partialWidth(partial_,inpart.mass()) :
@@ -214,6 +215,7 @@ void PhaseSpaceMode::constructVertex(const Particle & inpart,
 // initialise the phase space
 Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr decayer,
 					    bool onShell) {
+  decayer->ME(DecayMEPtr());
   Energy output(ZERO);
   // ensure that the weights add up to one
   if(!channels_.empty()) {
@@ -390,6 +392,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
     }
     CurrentGenerator::log() << flush;
   }
+  decayer->ME(DecayMEPtr());
   return output;
 }
  

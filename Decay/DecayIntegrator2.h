@@ -458,7 +458,7 @@ private:
    */
   Energy eps_;
 
-private:
+protected:
 
   /**
    * Exception for this class and those inheriting from it
