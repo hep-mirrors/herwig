@@ -60,7 +60,7 @@ void TwoPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TwoPionCzyzCurrent,WeakDecayCurrent>
+DescribeClass<TwoPionCzyzCurrent,WeakCurrent>
   describeHerwigTwoPionCzyzCurrent("Herwig::TwoPionCzyzCurrent", "HwWeakCurrents.so");
 
 void TwoPionCzyzCurrent::Init() {
@@ -143,7 +143,7 @@ void TwoPionCzyzCurrent::Init() {
 }
 
 void TwoPionCzyzCurrent::doinit() {
-  WeakDecayCurrent::doinit();
+  WeakCurrent::doinit();
   // check consistency of parametrers
   if(rhoMasses_.size()!=rhoWidths_.size())
     throw InitException() << "Inconsistent parameters in TwoPionCzyzCurrent"
@@ -196,12 +196,33 @@ void TwoPionCzyzCurrent::doinit() {
 }
 
 // complete the construction of the decay mode for integration
-bool TwoPionCzyzCurrent::createMode(int icharge, unsigned int imode,
-					 DecayPhaseSpaceModePtr mode,
-					 unsigned int iloc,unsigned int,
-					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
+bool TwoPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
+				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				    unsigned int imode,PhaseSpaceModePtr mode,
+				    unsigned int iloc,unsigned int ires,
+				    PhaseSpaceChannel phase, Energy upp ) {
+  // check the charge
   if((imode==0 && abs(icharge)!=3) ||
-     (imode>0  && icharge !=0)) return false; 
+     (imode>0  && icharge !=0)) return false;
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal!=IsoSpin::IOne) return false;
+  }
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Zero:
+      if(imode==0) return false;
+      break;
+    case IsoSpin::I3One:
+      if(imode==1 || icharge ==-3) return false;
+      break;
+    case IsoSpin::I3MinusOne:
+      if(imode==1 || icharge ==3) return false;
+    default:
+      return false;
+    }
+  }
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -214,8 +235,7 @@ bool TwoPionCzyzCurrent::createMode(int icharge, unsigned int imode,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
-  DecayPhaseSpaceChannelPtr newchannel;
-  // set the resonances
+  // set up the resonances
   tPDPtr res[3];
   if(icharge==0) {
     res[0] =getParticleData(113);
@@ -228,17 +248,16 @@ bool TwoPionCzyzCurrent::createMode(int icharge, unsigned int imode,
     res[2] =getParticleData(30213);
     if(icharge==-3) {
       for(unsigned int ix=0;ix<3;++ix) {
-	if(res[ix]&&res[ix]->CC()) res[ix]=res[ix]->CC();
+  	if(res[ix]&&res[ix]->CC()) res[ix]=res[ix]->CC();
       }
     }
   }
   // create the channels
   for(unsigned int ix=0;ix<3;++ix) {
-    if(res[ix]) {
-      newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(res[ix],0,0.0,iloc,iloc+1);
-      mode->addChannel(newchannel);
-    }
+    if(!res[ix]) continue;
+    if(resonance && resonance != res[ix]) continue;
+    PhaseSpaceChannel newChannel((PhaseSpaceChannel(phase),ires,res[ix],ires+1,iloc+1,ires+1,iloc+2));
+    mode->addChannel(newChannel);
   }
   // reset the masses in the intergrators
   for(unsigned int ix=0;ix<3;++ix) {
@@ -246,7 +265,6 @@ bool TwoPionCzyzCurrent::createMode(int icharge, unsigned int imode,
       mode->resetIntermediate(res[ix],rhoMasses_[ix],rhoWidths_[ix]);
     }
   }
-  // return if successful
   return true;
 }
 
@@ -257,33 +275,55 @@ tPDVector TwoPionCzyzCurrent::particles(int icharge, unsigned int imode,
   if(imode==0) {
     output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::pi0);
+    if(icharge==-3) {
+      for(unsigned int ix=0;ix<output.size();++ix) {
+	if(output[ix]->CC()) output[ix]=output[ix]->CC();
+      }
+    }
   }
   else {
     output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::piminus);
   }
-  if(icharge==-3) {
-    for(unsigned int ix=0;ix<output.size();++ix) {
-      if(output[ix]->CC()) output[ix]=output[ix]->CC();
-    }
-  }
   return output;
 }
 
-// hadronic current   
+void TwoPionCzyzCurrent::constructSpinInfo(ParticleVector decay) const {
+  for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
+
+// hadronic current
 vector<LorentzPolarizationVectorE> 
-TwoPionCzyzCurrent::current(const int imode, const int ichan,
-			    Energy & scale,const ParticleVector & outpart,
-			    DecayIntegrator::MEOption meopt) const {
+TwoPionCzyzCurrent::current(tcPDPtr resonance,
+			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			    const int imode, const int ichan,Energy & scale, 
+			    const tPDVector & outgoing,
+			    const vector<Lorentz5Momentum> & momenta,
+			    DecayIntegrator2::MEOption) const {
   useMe();
-  if(meopt==DecayIntegrator::Terminate) {
-    for(unsigned int ix=0;ix<2;++ix)
-      ScalarWaveFunction::constructSpinInfo(outpart[ix],outgoing,true);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  // check the isospin
+  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
+    return vector<LorentzPolarizationVectorE>();
+  int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge();
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Zero:
+      if(imode==0) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3One:
+      if(imode==1 || icharge ==-3) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3MinusOne:
+      if(imode==1 || icharge ==3) return vector<LorentzPolarizationVectorE>();
+    default:
+      return vector<LorentzPolarizationVectorE>();
+    }
   }
   // momentum difference and sum of the mesons
-  Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
-  Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
+  Lorentz5Momentum pdiff(momenta[0]-momenta[1]);
+  Lorentz5Momentum psum (momenta[0]+momenta[1]);
   psum.rescaleMass();
   scale=psum.mass();
   // mass2 of vector intermediate state
@@ -291,12 +331,10 @@ TwoPionCzyzCurrent::current(const int imode, const int ichan,
   double dot(psum*pdiff/q2);
   psum *=dot;
   LorentzPolarizationVector vect;
+  // compute the form factor
+  Complex FPI=Fpi(q2,imode,ichan,resonance,momenta[0].mass(),momenta[1].mass());
   // calculate the current
-  // compute the current
-  pdiff-=psum;
-  Energy ma = outpart[0]->mass();
-  Energy mb = outpart[1]->mass();
-  Complex FPI=Fpi(q2,imode,ichan,ma,mb);
+  pdiff -= psum;
   return vector<LorentzPolarizationVectorE>(1,FPI*pdiff);
 }
    
@@ -355,16 +393,37 @@ void TwoPionCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":OmegaPhase " << omegaPhase_ << "\n";
   output << "newdef " << name() << ":nMax " << nMax_ << "\n";
   output << "newdef " << name() << ":beta " << beta_ << "\n";
-  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
 
 Complex TwoPionCzyzCurrent::Fpi(Energy2 q2,const int imode, const int ichan,
-				Energy ma, Energy mb) const {
+				tcPDPtr resonance, Energy ma, Energy mb) const {
   Complex FPI(0.);
-  for(unsigned int ix=0;ix<coup_.size();++ix) {
-    if(ichan>=0&&ix!=abs(ichan)) continue;
+  unsigned int imin=0, imax = coup_.size();
+  if(ichan>0) {
+    imin = ichan;
+    imax = ichan+1;
+  }
+  if(resonance) {
+    switch(resonance->id()/1000) {
+    case 0:
+      imax = 1;
+      break;
+    case 100:
+      imin = 1;
+      imax = 2;
+      break;
+    case 30 :
+      imin = 2;
+      imax = 3;
+      break;
+    default:
+      assert(false);
+    }
+  }
+  for(unsigned int ix=imin;ix<imax;++ix) {
     Complex term = coup_[ix]*Resonance::BreitWignerGS(q2,mass_[ix],width_[ix],
 						      ma,mb,h0_[ix],dh_[ix],hres_[ix]);
     // include rho-omega if needed

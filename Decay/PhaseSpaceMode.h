@@ -112,6 +112,15 @@ public:
    *   The phase-space channels
    */
   const vector<PhaseSpaceChannel> & channels() const {return channels_;}
+
+  /**
+   *   Set the weights
+   */
+  void setWeights(const vector<double> & wgts) {
+    assert(wgts.size()==channels_.size());
+    for(unsigned int ix=0;ix<channels_.size();++ix)
+      channels_[ix].weight(wgts[ix]);
+  }
   
 public:
 
