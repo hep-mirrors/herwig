@@ -4,10 +4,10 @@
 //
 // This is the declaration of the SemiLeptonicBaryonDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
 #include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzRSSpinorBar.h"
 
 namespace Herwig {
@@ -27,7 +27,7 @@ using namespace ThePEG;
  * @see BaryonFormFactor.
  * 
  */
-class SemiLeptonicBaryonDecayer: public DecayIntegrator {
+class SemiLeptonicBaryonDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -51,6 +51,26 @@ public:
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
 			 const tPDVector & children) const;
+
+  /**
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
+   * @return The matrix element squared for the phase-space configuration.
+   */
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
   
   /**
    * Output the setup information for the particle database
@@ -58,17 +78,6 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
-  
-  /**
-   * Return the matrix element squared for a given mode and phase-space channel.
-   * @param ichan The channel we are calculating the matrix element for. 
-   * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
-   * @return The matrix element squared for the phase-space configuration.
-   */
-  double me2(const int ichan,const Particle & part,
-	     const ParticleVector & decay,MEOption meopt) const;
 
 public:
 
@@ -132,24 +141,30 @@ protected:
   /**
    * Matrix element for \f$\frac12\to\frac12\f$.
    * @param ichan The channel we are calculating the matrix element for. 
-   * @param inpart The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double halfHalf(const int ichan,const Particle & inpart,
-		  const ParticleVector & decay,MEOption meopt) const;
+  double halfHalf(const Particle & part,
+		  const tPDVector & outgoing,
+		  const vector<Lorentz5Momentum> & momenta,
+		  MEOption meopt) const;
 
   /**
    * Matrix element for \f$\frac12\to\frac32\f$.
    * @param ichan The channel we are calculating the matrix element for. 
-   * @param inpart The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double halfThreeHalf(const int ichan,const Particle & inpart,
-		       const ParticleVector & decay,MEOption meopt) const;
+  double halfThreeHalf(const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
+		       MEOption meopt) const;
 
 private:
 

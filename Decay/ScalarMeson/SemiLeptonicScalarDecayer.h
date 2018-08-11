@@ -11,7 +11,7 @@
 //
 // This is the declaration of the SemiLeptonicScalarDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/Decay/FormFactors/ScalarFormFactor.h"
 #include "Herwig/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
@@ -29,12 +29,12 @@ using namespace ThePEG;
  *  for the hadronic current. These form-factor are specified using a ScalarFormFactor
  *  class and the leptonic part of the decay uses the LeptonNeutrinoCurrent.
  * 
- * @see DecayIntegrator
+ * @see DecayIntegrator2
  * @see ScalarFormFactor
  * @see LeptonNeutrinoCurrent 
  *
  */
-class SemiLeptonicScalarDecayer: public DecayIntegrator {
+class SemiLeptonicScalarDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -64,12 +64,21 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2( const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Output the setup information for the particle database

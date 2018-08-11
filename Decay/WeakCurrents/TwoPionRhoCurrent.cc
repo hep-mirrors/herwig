@@ -320,11 +320,11 @@ void TwoPionRhoCurrent::constructSpinInfo(ParticleVector decay) const {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 TwoPionRhoCurrent::current(tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			    const int imode, const int ichan,Energy & scale, 
-			    const tPDVector & outgoing,
-			    const vector<Lorentz5Momentum> & momenta,
-			    DecayIntegrator2::MEOption) const {
+			   IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			   const int imode, const int ichan,Energy & scale, 
+			   const tPDVector & outgoing,
+			   const vector<Lorentz5Momentum> & momenta,
+			   DecayIntegrator2::MEOption) const {
   useMe();
   // check the isospin
   if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
