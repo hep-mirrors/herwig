@@ -23,6 +23,20 @@ using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using ThePEG::Helicity::LorentzPolarizationVectorE;
 
+namespace IsoSpin {
+
+  /**
+   *   Enum for the total isospin of the system
+   */
+  enum IsoSpin { IUnknown, IZero, IHalf, IOne};
+
+  /**
+   *   Third component
+   */
+  enum I3     { I3Unknown, I3MinusOne, I3MinusHalf, I3Zero, I3Half, I3One};
+  
+}
+  
 /** \ingroup Decay
  *
  *  The <code>WeakCurrent</code> class is the base class for the hadronic
@@ -84,9 +98,11 @@ public:
    *                allowed to have.
    * @return Whether the current was sucessfully constructed.
    */
-  virtual bool createMode(int icharge,unsigned int imode,PhaseSpaceModePtr mode,
+  virtual bool createMode(int icharge, tcPDPtr resonance,
+			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			  unsigned int imode,PhaseSpaceModePtr mode,
 			  unsigned int iloc,unsigned int ires,
-			  PhaseSpaceChannel phase,Energy upp)=0;
+			  PhaseSpaceChannel phase, Energy upp )=0;
 
   /**
    * The particles produced by the current. This method is purely virtual and
