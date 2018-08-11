@@ -12,7 +12,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the TwoPionCzyzCurrent class.
+ * The TwoPionCzyzCurrent class implements the current of PRD 81 094014 for
+ * two pions.
  *
  * @see \ref TwoPionCzyzCurrentInterfaces "The interfaces"
  * defined for TwoPionCzyzCurrent.
