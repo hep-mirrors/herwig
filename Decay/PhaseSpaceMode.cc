@@ -117,21 +117,21 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
     vector<double> mewgts(channels_.size(),0.0);
     double total=0.;
     for(unsigned int ix=0,N=channels_.size();ix<N;++ix) {
-      decayer->me2(ix,inrest,!cc ? outgoing_ : outgoingCC_,
-		   momenta,DecayIntegrator2::Calculate);
+      mewgts[ix]=decayer->me2(ix,inrest,!cc ? outgoing_ : outgoingCC_,
+			      momenta,DecayIntegrator2::Calculate);
       total+=mewgts[ix];
     }
     // randomly pick a channel
     total *= UseRandom::rnd();
-    iChannel_ = 0;
+    int iChannel = -1;
     do {
-      total-=mewgts[iChannel_];
-      ++iChannel_;
+      ++iChannel;
+      total-=mewgts[iChannel];
     }
-    while(iChannel_<channels_.size() && total>0.);
+    while(iChannel<int(channels_.size()) && total>0.);
     // apply boost
     for(tPPtr part : output) part->transform(boostFromRest);
-    channels_[iChannel_].generateIntermediates(cc,inpart,output);
+    channels_[iChannel].generateIntermediates(cc,inpart,output);
   }
   decayer->ME(DecayMEPtr());
   // return particles;

@@ -44,7 +44,7 @@ public:
    * The default constructor.
    */
   PhaseSpaceMode() : maxWeight_(0.), partial_(-1),
-		     testOnShell_(false), iChannel_(999), eMax_(ZERO)
+		     testOnShell_(false), eMax_(ZERO)
   {};
   
   /**
@@ -55,7 +55,7 @@ public:
 		 Energy eMax=ZERO) : incoming_(make_pair(in1,in2)),
 				     maxWeight_(wMax),
 				     outgoing_(out), partial_(-1),
-				     testOnShell_(false), iChannel_(999), eMax_(eMax)
+				     testOnShell_(false), eMax_(eMax)
   {};
   //@}
 
@@ -193,6 +193,12 @@ public :
    * @return The maximum weight.
    */
   double maxWeight() const {return maxWeight_;}
+  
+  /**
+   * Set the maximum weight for the decay.
+   * @return The maximum weight.
+   */
+  void maxWeight(double wgt) const {maxWeight_=wgt;}
   
   /**
    * Initialise the phase space.
@@ -352,11 +358,6 @@ private:
    * in doinit, if on-shell off-shell is tested in initrun
    */
   bool testOnShell_;
-
-  /**
-   *  The selected channel
-   */
-  mutable unsigned int iChannel_;
 
   /**
    *   The maximum energy for the mode
