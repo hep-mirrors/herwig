@@ -54,7 +54,7 @@ public:
   /**
    * Default constructor.
    */
-  TauDecayer2() : _polOpt(false), _tauMpol(0.), _tauPpol(0.) {
+  TauDecayer2() : polOpt_(false), tauMpol_(0.), tauPpol_(0.) {
     generateIntermediates(true);
   }
 
@@ -169,67 +169,67 @@ private:
   /**
    * mapping of the modes to the currents
    */
-  vector<unsigned int> _modemap;
+  vector<unsigned int> modeMap_;
 
   /**
    * the hadronic current
    */
-  WeakCurrentPtr _current;
+  WeakCurrentPtr current_;
 
   /**
    * location of the weights
    */
-  vector<int> _wgtloc;
+  vector<int> wgtLoc_;
 
   /**
    * the maximum weight
    */
-  vector<double> _wgtmax;
+  vector<double> wgtMax_;
 
   /**
    *  The weights for the different channels
    */
-  vector<double> _weights;
+  vector<double> weights_;
 
   /**
    *  The spinors for the decaying particle
    */
-  mutable vector<LorentzSpinor   <SqrtEnergy> > _inspin;
+  mutable vector<LorentzSpinor   <SqrtEnergy> > inSpin_;
 
   /**
    *  Barred spinors for the deaying particle
    */
-  mutable vector<LorentzSpinorBar<SqrtEnergy> > _inbar ;
+  mutable vector<LorentzSpinorBar<SqrtEnergy> > inBar_ ;
 
   /**
    *  Rho matrix
    */
-  mutable RhoDMatrix _rho;
+  mutable RhoDMatrix rho_;
 
   /**
    *  Maps for the vectors
    */
-  mutable vector<unsigned int> _constants;
+  mutable vector<unsigned int> constants_;
 
   /**
    *  Spins of the particles
    */
-  mutable vector<PDT::Spin> _ispin; 
+  mutable vector<PDT::Spin> iSpin_; 
 
   /**
    *  Option to force the polarizations of the tau leptons
    */
-  bool _polOpt;
+  bool polOpt_;
 
   /**
    *  Polarization for \f$\tau^-\f$
    */
-  double _tauMpol;
+  double tauMpol_;
 
   /**
    *  Polarization of \f$\tau^+\f$
    */
-  double _tauPpol;
+  double tauPpol_;
 };
 
 }
