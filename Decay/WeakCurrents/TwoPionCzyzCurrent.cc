@@ -330,7 +330,6 @@ TwoPionCzyzCurrent::current(tcPDPtr resonance,
   Energy2 q2(psum.m2());
   double dot(psum*pdiff/q2);
   psum *=dot;
-  LorentzPolarizationVector vect;
   // compute the form factor
   Complex FPI=Fpi(q2,imode,ichan,resonance,momenta[0].mass(),momenta[1].mass());
   // calculate the current

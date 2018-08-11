@@ -24,6 +24,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include <numeric>
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -48,7 +49,7 @@ TwoPionRhoCurrent::TwoPionRhoCurrent() {
 }
 
 void TwoPionRhoCurrent::doinit() {
-  WeakDecayCurrent::doinit();
+  WeakCurrent::doinit();
   // check consistency of parametrers
   if(_rhomasses.size()!=_rhowidths.size()) {
     throw InitException() << "Inconsistent parameters in TwoPionRhoCurrent"
@@ -115,7 +116,7 @@ void TwoPionRhoCurrent::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TwoPionRhoCurrent,WeakDecayCurrent>
+DescribeClass<TwoPionRhoCurrent,WeakCurrent>
 describeHerwigTwoPionRhoCurrent("Herwig::TwoPionRhoCurrent", "HwWeakCurrents.so");
 
 void TwoPionRhoCurrent::Init() {
@@ -216,12 +217,33 @@ void TwoPionRhoCurrent::Init() {
 }
 
 // complete the construction of the decay mode for integration
-bool TwoPionRhoCurrent::createMode(int icharge, unsigned int imode,
-					 DecayPhaseSpaceModePtr mode,
-					 unsigned int iloc,unsigned int,
-					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
-  if((imode<=1&&abs(icharge)!=3) ||
-     (imode>1 && icharge !=0)) return false; 
+bool TwoPionRhoCurrent::createMode(int icharge, tcPDPtr resonance,
+				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				    unsigned int imode,PhaseSpaceModePtr mode,
+				    unsigned int iloc,unsigned int ires,
+				    PhaseSpaceChannel phase, Energy upp ) {
+  // check the charge
+  if((imode<1 && abs(icharge)!=3) ||
+     (imode>1  && icharge !=0)) return false;
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal!=IsoSpin::IOne) return false;
+  }
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Zero:
+      if(imode<=1) return false;
+      break;
+    case IsoSpin::I3One:
+      if(imode>1 || icharge ==-3) return false;
+      break;
+    case IsoSpin::I3MinusOne:
+      if(imode>1 || icharge ==3) return false;
+    default:
+      return false;
+    }
+  }
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -230,7 +252,7 @@ bool TwoPionRhoCurrent::createMode(int icharge, unsigned int imode,
   }
   else if(imode==1) {
     part[0]=getParticleData(ParticleID::Kplus);
-    part[1]=getParticleData(ParticleID::K0);
+    part[1]=getParticleData(ParticleID::Kbar0);
   }
   else if(imode==2 || imode==3 ) {
     part[0]=getParticleData(ParticleID::piplus);
@@ -238,7 +260,6 @@ bool TwoPionRhoCurrent::createMode(int icharge, unsigned int imode,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
-  DecayPhaseSpaceChannelPtr newchannel;
   // set the resonances
   // two pion or  K+ K0 decay
   tPDPtr res[3]={getParticleData(213),getParticleData(100213),getParticleData(30213)};
@@ -249,18 +270,17 @@ bool TwoPionRhoCurrent::createMode(int icharge, unsigned int imode,
   }
   // create the channels
   for(unsigned int ix=0;ix<3;++ix) {
-    if(res[ix]) {
-      newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(res[ix],0,0.0,iloc,iloc+1);
-      mode->addChannel(newchannel);
-    }
+    if(!res[ix]) continue;
+    if(resonance && resonance != res[ix]) continue;
+    PhaseSpaceChannel newChannel((PhaseSpaceChannel(phase),ires,res[ix],ires+1,iloc+1,ires+1,iloc+2));
+    mode->addChannel(newChannel);
   }
   // reset the masses in the intergrators if needed
   // for the rho 
   if(_rhoparameters) {
     for(unsigned int ix=0;ix<3;++ix) {
       if(ix<_rhomasses.size()&&res[ix]) {
-	mode->resetIntermediate(res[ix],_rhomasses[ix],_rhowidths[ix]);
+  	mode->resetIntermediate(res[ix],_rhomasses[ix],_rhowidths[ix]);
       }
     }
   }
@@ -292,39 +312,75 @@ tPDVector TwoPionRhoCurrent::particles(int icharge, unsigned int imode,
   return output;
 }
 
+void TwoPionRhoCurrent::constructSpinInfo(ParticleVector decay) const {
+  for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+}
+
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-TwoPionRhoCurrent::current(const int imode, const int ichan,
-				 Energy & scale,const ParticleVector & outpart,
-				 DecayIntegrator::MEOption meopt) const {
+TwoPionRhoCurrent::current(tcPDPtr resonance,
+			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			    const int imode, const int ichan,Energy & scale, 
+			    const tPDVector & outgoing,
+			    const vector<Lorentz5Momentum> & momenta,
+			    DecayIntegrator2::MEOption) const {
   useMe();
-  if(meopt==DecayIntegrator::Terminate) {
-    for(unsigned int ix=0;ix<2;++ix)
-      ScalarWaveFunction::constructSpinInfo(outpart[ix],outgoing,true);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  // check the isospin
+  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
+    return vector<LorentzPolarizationVectorE>();
+  int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge();
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Zero:
+      if(imode<=1) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3One:
+      if(imode>1 || icharge ==-3) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3MinusOne:
+      if(imode>1 || icharge ==3) return vector<LorentzPolarizationVectorE>();
+    default:
+      return vector<LorentzPolarizationVectorE>();
+    }
   }
   // momentum difference and sum of the mesons
-  Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
-  Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
+  Lorentz5Momentum pdiff(momenta[0]-momenta[1]);
+  Lorentz5Momentum psum (momenta[0]+momenta[1]);
   psum.rescaleMass();
   scale=psum.mass();
   // mass2 of vector intermediate state
   Energy2 q2(psum.m2());
   double dot(psum*pdiff/q2);
   psum *=dot;
-  LorentzPolarizationVector vect;
   // calculate the current
-  Complex FPI(0.),denom(0.);
-  // rho
-  if(ichan<0) {
-    for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix) {
-      FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,ix);
-      denom+=_piwgt[ix];
-    }
+  Complex FPI(0.);
+  Complex denom = std::accumulate(_piwgt.begin(),_piwgt.end(),Complex(0.));
+  unsigned int imin=0, imax = _piwgt.size();
+  if(ichan>0) {
+    imin = ichan;
+    imax = ichan+1;
   }
-  else if(ichan<int(_piwgt.size())&&ichan<3) {
-    FPI=_piwgt[ichan]*BreitWigner(q2,_pimodel,ichan);
-    for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix) denom+=_piwgt[ix];
+  if(resonance) {
+    switch(resonance->id()/1000) {
+    case 0:
+      imin = 0;
+      break;
+    case 100:
+      imin = 1;
+      break;
+    case 30 :
+      imin = 2;
+      break;
+    default:
+      assert(false);
+    }
+    imax=imin+1;
+  }
+  // rho
+  for(unsigned int ix=imin;ix<imax;++ix) {
+    FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,ix);
   }
   // additional prefactors
   FPI/=denom;
@@ -403,7 +459,7 @@ void TwoPionRhoCurrent::dataBaseOutput(ofstream & output,bool header,
     output << name() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
   }
   output << "newdef " << name() << ":PiModel " << _pimodel << "\n";
-  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
