@@ -271,8 +271,7 @@ bool TwoPionRhoCurrent::createMode(int icharge, tcPDPtr resonance,
   for(unsigned int ix=0;ix<3;++ix) {
     if(!res[ix]) continue;
     if(resonance && resonance != res[ix]) continue;
-    mode->addChannel((PhaseSpaceChannel(phase),ires,res[ix],
-		      ires+1,iloc+1,ires+1,iloc+2));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,res[ix],ires+1,iloc+1,ires+1,iloc+2));
   }
   // reset the masses in the intergrators if needed
   // for the rho 
@@ -289,7 +288,7 @@ bool TwoPionRhoCurrent::createMode(int icharge, tcPDPtr resonance,
 
 // the particles produced by the current
 tPDVector TwoPionRhoCurrent::particles(int icharge, unsigned int imode,
-					     int,int) {
+				       int,int) {
   tPDVector output(2);
   if(imode==0) {
     output[0]=getParticleData(ParticleID::piplus);

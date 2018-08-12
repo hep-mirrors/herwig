@@ -83,6 +83,7 @@ tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode_in,
   }
   return output;
 }
+
 void LeptonNeutrinoCurrent::constructSpinInfo(ParticleVector decay) const {
   if(decay[0]->id()>0) {
     SpinorWaveFunction   ::constructSpinInfo(wave_   ,decay[1],outgoing,true);
