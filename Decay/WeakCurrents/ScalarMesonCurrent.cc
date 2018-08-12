@@ -29,7 +29,7 @@ void ScalarMesonCurrent::doinit() {
   if(_id.size()!=isize||_decay_constant.size()!=isize)
     {throw InitException() << "Inconsistent parameters in ScalarMesonCurrent::doinit()"
 			   << Exception::abortnow;}
-  WeakDecayCurrent::doinit();
+  WeakCurrent::doinit();
 }
 
 ScalarMesonCurrent::ScalarMesonCurrent() {
@@ -72,7 +72,7 @@ void ScalarMesonCurrent::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ScalarMesonCurrent,WeakDecayCurrent>
+DescribeClass<ScalarMesonCurrent,WeakCurrent>
 describeHerwigScalarMesonCurrent("Herwig::ScalarMesonCurrent", "HwWeakCurrents.so");
 
 void ScalarMesonCurrent::Init() {
@@ -102,10 +102,13 @@ void ScalarMesonCurrent::Init() {
 }
 
 // create the decay phase space mode
-bool ScalarMesonCurrent::createMode(int icharge,unsigned int imode,
-				    DecayPhaseSpaceModePtr mode,
+bool ScalarMesonCurrent::createMode(int icharge, tcPDPtr resonance,
+				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				    unsigned int imode,PhaseSpaceModePtr mode,
 				    unsigned int iloc,unsigned int ires,
-				    DecayPhaseSpaceChannelPtr phase,Energy upp) {
+				    PhaseSpaceChannel phase, Energy upp ) {
+  assert(!resonance);
+  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
   // check the mode has the correct charge
   if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))) return false;
   // check if the particle is kinematically allowed
@@ -113,9 +116,7 @@ bool ScalarMesonCurrent::createMode(int icharge,unsigned int imode,
   Energy min=part->massMin();
   if(min>upp) return false;
   // construct the mode
-  DecayPhaseSpaceChannelPtr newchannel(new_ptr(DecayPhaseSpaceChannel(*phase)));
-  newchannel->resetDaughter(-ires,iloc);
-  mode->addChannel(newchannel);
+  mode->addChannel((PhaseSpaceChannel(phase),ires,iloc+1));
   return true;
 }
 
@@ -141,21 +142,22 @@ tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq,
 }
 
 vector<LorentzPolarizationVectorE> 
-ScalarMesonCurrent::current(const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay,
-			    DecayIntegrator::MEOption meopt) const {
+ScalarMesonCurrent::current(tcPDPtr resonance,
+			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			    const int imode, const int , Energy & scale, 
+			    const tPDVector & outgoing,
+			    const vector<Lorentz5Momentum> & momenta,
+			    DecayIntegrator2::MEOption) const {
+  assert(!resonance);
+  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
   static const Complex ii(0.,1.);
-  if(meopt==DecayIntegrator::Terminate) {
-    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
-  }
-  scale = decay[0]->mass();
+  scale =momenta[0].mass();
   Complex pre(-ii*_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;
   decayModeInfo(imode,iq,ia);
   if(abs(iq)==abs(ia)) {
-    int id(decay[0]->id());
+    int id(outgoing[0]->id());
     if(id==ParticleID::eta) {
       if(abs(iq)==3) pre*=-2.*cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);
       else           pre*=cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);
@@ -172,7 +174,7 @@ ScalarMesonCurrent::current(const int imode, const int,
     }
   }
   // return the answer
-  return vector<LorentzPolarizationVectorE>(1,pre*decay[0]->momentum());
+  return vector<LorentzPolarizationVectorE>(1,pre*momenta[0]);
 }
   
 bool ScalarMesonCurrent::accept(vector<int> id) {
@@ -220,7 +222,7 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
 	     << " " << _decay_constant[ix]/MeV << "\n";
     }
   }
-  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
   }

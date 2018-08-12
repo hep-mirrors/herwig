@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/HelicityFunctions.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -28,7 +29,7 @@ void VectorMesonCurrent::doinit() {
   if(_id.size()!=isize||_decay_constant.size()!=isize)
     {throw InitException() << "Inconsistent parameters in VectorMesonCurrent::doinit()"
 			   << Exception::abortnow;}
-  WeakDecayCurrent::doinit();
+  WeakCurrent::doinit();
 }
 VectorMesonCurrent::VectorMesonCurrent()  {
   _id.push_back(213);_decay_constant.push_back(0.1764*GeV2);
@@ -80,7 +81,7 @@ void VectorMesonCurrent::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMesonCurrent,WeakDecayCurrent>
+DescribeClass<VectorMesonCurrent,WeakCurrent>
 describeHerwigVectorMesonCurrent("Herwig::VectorMesonCurrent", "HwWeakCurrents.so");
 
 void VectorMesonCurrent::Init() {
@@ -104,10 +105,13 @@ void VectorMesonCurrent::Init() {
 }
 
 // create the decay phase space mode
-bool VectorMesonCurrent::createMode(int icharge, unsigned int imode,
-				    DecayPhaseSpaceModePtr mode,
+bool VectorMesonCurrent::createMode(int icharge, tcPDPtr resonance,
+				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				    unsigned int imode,PhaseSpaceModePtr mode,
 				    unsigned int iloc,unsigned int ires,
-				    DecayPhaseSpaceChannelPtr phase,Energy upp) {
+				    PhaseSpaceChannel phase, Energy upp ) {
+  assert(!resonance);
+  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
   tPDPtr part(getParticleData(_id[imode]));
   // check the mode has the correct charge
   if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))) return false;
@@ -115,9 +119,7 @@ bool VectorMesonCurrent::createMode(int icharge, unsigned int imode,
   Energy min=part->massMin();
   if(min>upp) return false;
   // construct the mode
-  DecayPhaseSpaceChannelPtr newchannel(new_ptr(DecayPhaseSpaceChannel(*phase)));
-  newchannel->resetDaughter(-ires,iloc);
-  mode->addChannel(newchannel);
+  mode->addChannel((PhaseSpaceChannel(phase),ires,iloc+1));
   return true;
 }
 
@@ -138,20 +140,29 @@ tPDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq,
   return output;
 }
 
-vector<LorentzPolarizationVectorE> 
-VectorMesonCurrent::current(const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay,
-			    DecayIntegrator::MEOption meopt) const {
-  // set up the spin information for the particle and calculate the wavefunctions
+void VectorMesonCurrent::constructSpinInfo(ParticleVector decay) const {
   vector<LorentzPolarizationVector> temp;
   VectorWaveFunction::
     calculateWaveFunctions(temp,decay[0],outgoing,false);
-  if(meopt==DecayIntegrator::Terminate) {
-    VectorWaveFunction::constructSpinInfo(temp,decay[0],
-					  outgoing,true,false);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  VectorWaveFunction::constructSpinInfo(temp,decay[0],
+					outgoing,true,false);
+}
+
+vector<LorentzPolarizationVectorE> 
+VectorMesonCurrent::current(tcPDPtr resonance,
+			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			    const int imode, const int , Energy & scale, 
+			    const tPDVector & outgoing,
+			    const vector<Lorentz5Momentum> & momenta,
+			    DecayIntegrator2::MEOption) const {
+  assert(!resonance);
+  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
+  // set up the spin information for the particle and calculate the wavefunctions
+  vector<LorentzPolarizationVector> temp(3);
+  for(unsigned int ix=0;ix<3;++ix) {
+    temp[ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
   }
-  scale=decay[0]->mass();
+  scale=momenta[0].mass();
   // polarization vector
   Energy fact(_decay_constant[imode]/scale);
   // quarks in the current
@@ -159,7 +170,7 @@ VectorMesonCurrent::current(const int imode, const int,
   decayModeInfo(imode,iq,ia);
   if(abs(iq)==abs(ia)&&abs(iq)<3) {
     fact *= sqrt(0.5);
-    if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1) fact=-fact;
+    if(outgoing[0]->id()==ParticleID::rho0&&abs(iq)==1) fact=-fact;
   }
   // normalise the current
   vector<LorentzPolarizationVectorE> returnval(3);
@@ -209,7 +220,7 @@ void VectorMesonCurrent::dataBaseOutput(ofstream & output,
 	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
   }
-  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
