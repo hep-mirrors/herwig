@@ -17,6 +17,7 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -27,6 +28,12 @@ void WeakCurrent::persistentOutput(PersistentOStream & os) const {
 
 void WeakCurrent::persistentInput(PersistentIStream & is, int) {
   is >> quark_ >> antiquark_ >> numberModes_;
+}
+
+void WeakCurrent::constructSpinInfo(ParticleVector decay) const {
+  using namespace Helicity;
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
 }
 
 // The following static variable is needed for the type

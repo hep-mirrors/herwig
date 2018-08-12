@@ -90,11 +90,6 @@ public:
 	  DecayIntegrator2::MEOption meopt) const;
 
   /**
-   *   Construct the SpinInfo for the decay products
-   */
-  void constructSpinInfo(ParticleVector decay) const;
-
-  /**
    * Accept the decay. Checks the particles are the allowed mode.
    * @param id The id's of the particles in the current.
    * @return Can this current have the external particles specified.

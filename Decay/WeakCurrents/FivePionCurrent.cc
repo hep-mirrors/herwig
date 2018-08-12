@@ -592,11 +592,6 @@ void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) 
   WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }
-
-void FivePionCurrent::constructSpinInfo(ParticleVector decay) const {
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-}
  
 vector<LorentzPolarizationVectorE> 
 FivePionCurrent::current(tcPDPtr,

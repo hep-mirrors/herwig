@@ -149,7 +149,7 @@ public:
   /**
    *   Construct the SpinInfo for the decay products
    */
-  virtual void constructSpinInfo(ParticleVector decay) const = 0;
+  virtual void constructSpinInfo(ParticleVector decay) const;
 
   /**
    * Accept the decay. This method is purely virtual and must be implemented in any class

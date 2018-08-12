@@ -454,11 +454,6 @@ tPDVector TwoKaonCzyzCurrent::particles(int icharge, unsigned int imode,
   return output;
 }
 
-void TwoKaonCzyzCurrent::constructSpinInfo(ParticleVector decay) const {
-  for(unsigned int ix=0;ix<2;++ix)
-    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-}
-
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 TwoKaonCzyzCurrent::current(tcPDPtr resonance,

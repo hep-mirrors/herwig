@@ -23,7 +23,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -272,8 +271,8 @@ bool TwoPionRhoCurrent::createMode(int icharge, tcPDPtr resonance,
   for(unsigned int ix=0;ix<3;++ix) {
     if(!res[ix]) continue;
     if(resonance && resonance != res[ix]) continue;
-    PhaseSpaceChannel newChannel((PhaseSpaceChannel(phase),ires,res[ix],ires+1,iloc+1,ires+1,iloc+2));
-    mode->addChannel(newChannel);
+    mode->addChannel((PhaseSpaceChannel(phase),ires,res[ix],
+		      ires+1,iloc+1,ires+1,iloc+2));
   }
   // reset the masses in the intergrators if needed
   // for the rho 
@@ -310,11 +309,6 @@ tPDVector TwoPionRhoCurrent::particles(int icharge, unsigned int imode,
     }
   }
   return output;
-}
-
-void TwoPionRhoCurrent::constructSpinInfo(ParticleVector decay) const {
-  for(unsigned int ix=0;ix<2;++ix)
-    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
 }
 
 // hadronic current   
