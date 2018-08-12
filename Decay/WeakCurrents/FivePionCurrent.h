@@ -12,7 +12,7 @@
 // This is the declaration of the FivePionCurrent class.
 //
 
-#include "WeakDecayCurrent.h"
+#include "WeakCurrent.h"
 #include "ThePEG/Helicity/epsilon.h"
 
 namespace Herwig {
@@ -25,7 +25,7 @@ using namespace ThePEG;
  * @see \ref FivePionCurrentInterfaces "The interfaces"
  * defined for FivePionCurrent.
  */
-class FivePionCurrent: public WeakDecayCurrent {
+class FivePionCurrent: public WeakCurrent {
 
 public:
 
@@ -39,20 +39,27 @@ public:
   /**
    * Complete the construction of the decay mode for integration.classes inheriting
    * from this one.
-   * @param icharge The total charge of the outgoing particles in the current.
-   * @param imode   The mode in the current being asked for.
-   * @param mode    The phase space mode for the integration
-   * @param iloc    The location of the of the first particle from the current in
-   *                the list of outgoing particles.
-   * @param ires    The location of the first intermediate for the current.
-   * @param phase   The prototype phase space channel for the integration.
-   * @param upp     The maximum possible mass the particles in the current are
-   *                allowed to have.
+   * This method is purely virtual and must be implemented in the classes inheriting
+   * from WeakCurrent.
+   * @param icharge   The total charge of the outgoing particles in the current.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
+   * @param imode     The mode in the current being asked for.
+   * @param mode      The phase space mode for the integration
+   * @param iloc      The location of the of the first particle from the current in
+   *                  the list of outgoing particles.
+   * @param ires      The location of the first intermediate for the current.
+   * @param phase     The prototype phase space channel for the integration.
+   * @param upp       The maximum possible mass the particles in the current are
+   *                  allowed to have.
    * @return Whether the current was sucessfully constructed.
    */
-  virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
+  virtual bool createMode(int icharge, tcPDPtr resonance,
+			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			  unsigned int imode,PhaseSpaceModePtr mode,
 			  unsigned int iloc,unsigned int ires,
-			  DecayPhaseSpaceChannelPtr phase,Energy upp);
+			  PhaseSpaceChannel phase, Energy upp );
 
   /**
    * The particles produced by the current.
@@ -68,16 +75,29 @@ public:
   /**
    * Hadronic current. This method is purely virtual and must be implemented in
    * all classes inheriting from this one.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
-   * @param decay The decay products
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  
-  current(const int imode,const int ichan,Energy & scale, 
-	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(tcPDPtr resonance,
+	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+	  const int imode, const int ichan,Energy & scale,
+	  const tPDVector & outgoing,
+	  const vector<Lorentz5Momentum> & momenta,
+	  DecayIntegrator2::MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfo for the decay products
+   */
+  void constructSpinInfo(ParticleVector decay) const;
 
   /**
    * Accept the decay. 
