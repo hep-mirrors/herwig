@@ -246,6 +246,14 @@ InvEnergy DecayIntegrator2::threeBodydGammads(const int, const Energy2,
     << Exception::runerror;
 }
 
+// generate the momenta for the decay
+ParticleVector DecayIntegrator2::generate(bool inter,bool cc,
+					 const unsigned int & imode,
+					 const Particle & inpart) const {
+  iMode_=imode;
+  return modes_[imode]->generateDecay(inpart,this,inter,cc);
+}
+
 void  DecayIntegrator2::addMode(PhaseSpaceModePtr mode) const {
   modes_.push_back(mode);
   if(mode) mode->init();

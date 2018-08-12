@@ -722,7 +722,7 @@ double PerturbativeDecayer::dipoleSpinFactor(tcPDPtr part, double z){
 
 namespace {
 
-double colourCharge(PDT::Colour icol) {
+double colourChargeOld(PDT::Colour icol) {
   switch(icol) {
   case PDT::Colour0 :
     return 0.;
@@ -743,9 +743,9 @@ double PerturbativeDecayer::colourCoeff(tcPDPtr emitter,
 					tcPDPtr other,
 					DipoleType dipole) {
   if(dipole.interaction==ShowerInteraction::QCD) {
-    double emitterColour   = colourCharge(emitter  ->iColour());
-    double spectatorColour = colourCharge(spectator->iColour());
-    double otherColour     = colourCharge(other    ->iColour());
+    double emitterColour   = colourChargeOld(emitter  ->iColour());
+    double spectatorColour = colourChargeOld(spectator->iColour());
+    double otherColour     = colourChargeOld(other    ->iColour());
     double val = 0.5*(sqr(emitterColour)+sqr(spectatorColour)-sqr(otherColour))/emitterColour;
     return val;
   }

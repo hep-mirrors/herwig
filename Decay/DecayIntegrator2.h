@@ -115,23 +115,26 @@ public:
    * @param mode The mode being added.
    */
   void addMode(PhaseSpaceModePtr mode) const;
-  
+
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * This function is purely virtual and must be implemented in classes inheriting
-   * from DecayIntegrator.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param opt Option for the calculation of the matrix element
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
 		     const tPDVector & outgoing,
 		     const vector<Lorentz5Momentum> & momenta,
-		     MEOption opt) const=0;
+		     MEOption meopt) const = 0;
 
-  virtual void constructSpinInfo(const Particle & part, ParticleVector outgoing) const = 0;  
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const = 0;
   
   /**
    * Output the setup information for the particle database
@@ -320,6 +323,18 @@ protected:
   //@}
 
 protected:
+
+  /**
+   * Generate the momenta for the decay
+   * @param inter Generate the intermediates produced in the decay as well as the
+   * final particles.
+   * @param cc Is this the mode defined or its charge conjugate.
+   * @param imode The mode being generated.
+   * @param inpart The decaying particle.
+   * @return The particles produced inthe decay.
+   */
+  ParticleVector generate(bool inter,bool cc, const unsigned int & imode,
+			  const Particle & inpart) const;
 
   /**
    * Set the mode being use for this decay.

@@ -48,7 +48,7 @@ SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() :
 }
 
 void SMHiggsFermionsDecayer::doinit() {
-  PerturbativeDecayer::doinit();
+  PerturbativeDecayer2::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm)
@@ -61,20 +61,14 @@ void SMHiggsFermionsDecayer::doinit() {
   // get the width generator for the higgs
   tPDPtr higgs = getParticleData(ParticleID::h0);
   // set up the decay modes
-  vector<double> wgt(0);
   unsigned int imode=0;
-  tPDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  int iy;
-  extpart[0]=higgs;
   for(unsigned int istep=0;istep<11;istep+=10) {
     for(unsigned ix=1;ix<7;++ix) {
       if(istep<10||ix%2!=0) {
-	iy = ix+istep;
-	extpart[1]=getParticleData( iy);
-	extpart[2]=getParticleData(-iy);
-	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-	addMode(mode,_maxwgt[imode],wgt);
+	int iy = ix+istep;
+	tPDVector out = {getParticleData( iy),
+			 getParticleData(-iy)};
+	PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(higgs,out,_maxwgt[imode]));
 	++imode;
       }
     }
@@ -162,7 +156,7 @@ void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMHiggsFermionsDecayer,PerturbativeDecayer>
+DescribeClass<SMHiggsFermionsDecayer,PerturbativeDecayer2>
 describeHerwigSMHiggsFermionsDecayer("Herwig::SMHiggsFermionsDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsFermionsDecayer::Init() {
@@ -193,15 +187,27 @@ void SMHiggsFermionsDecayer::Init() {
      true);
 
 }
+void SMHiggsFermionsDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  int iferm(1),ianti(0);
+  if(decay[0]->id()>0) swap(iferm,ianti);
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+}
 
 // return the matrix element squared
-double SMHiggsFermionsDecayer::me2(const int, const Particle & part,
-				   const ParticleVector & decay,
+double SMHiggsFermionsDecayer::me2(const int,const Particle & part,
+				   const tPDVector & outgoing,
+				   const vector<Lorentz5Momentum> & momenta,
 				   MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   int iferm(1),ianti(0);
-  if(decay[0]->id()>0) swap(iferm,ianti);
+  if(outgoing[0]->id()>0) swap(iferm,ianti);
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
@@ -209,19 +215,16 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & part,
     // fix rho if no correlations
     fixRho(_rho);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
-					  incoming,true);
-    SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
-    return 0.;
+  SpinorBarWaveFunction wbar(momenta[iferm],outgoing[iferm],Helicity::outgoing);
+  SpinorWaveFunction    w   (momenta[ianti],outgoing[ianti],Helicity::outgoing);
+  _wavebar.resize(2);
+  _wave.resize(2);
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    wbar.reset(ihel);
+    _wavebar[ihel] = wbar;
+    w.reset(ihel);
+    _wave[ihel] = w;
   }
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
-  SpinorWaveFunction::
-    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   Energy2 scale(sqr(part.mass()));
   unsigned int ifm,ia;
   for(ifm=0;ifm<2;++ifm) {
@@ -234,28 +237,28 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & part,
 					  _wavebar[ifm],_swave);
     }
   }
-  int id = abs(decay[0]->id());
+  int id = abs(outgoing[0]->id());
   double output=(ME()->contract(_rho)).real()*UnitRemoval::E2/scale;
   if(id <=6) output*=3.;
   // test of the partial width
-//   Ptr<Herwig::StandardModel>::transient_const_pointer 
-//     hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
-//   double g2(hwsm->alphaEM(scale)*4.*Constants::pi/hwsm->sin2ThetaW());
-//   Energy mass(hwsm->mass(scale,decay[0]->dataPtr())),
-//     mw(getParticleData(ParticleID::Wplus)->mass());
-//   double beta(sqrt(1.-4.*decay[0]->mass()*decay[0]->mass()/scale));
-//   cerr << "testing alpha " << hwsm->alphaEM(scale) << "\n";
-//   Energy test(g2*mass*mass*beta*beta*beta*part.mass()/32./Constants::pi/mw/mw);
-//   if(abs(decay[0]->id())<=6){test *=3.;}
-//   cout << "testing the answer " << output << "     " 
-//        << test/GeV
-//        << endl;
+  //   Ptr<Herwig::StandardModel>::transient_const_pointer 
+  //     hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  //   double g2(hwsm->alphaEM(scale)*4.*Constants::pi/hwsm->sin2ThetaW());
+  //   Energy mass(hwsm->mass(scale,outgoing[0])),
+  //     mw(getParticleData(ParticleID::Wplus)->mass());
+  //   double beta(sqrt(1.-4.*decay[0]->mass()*decay[0]->mass()/scale));
+  //   cerr << "testing alpha " << hwsm->alphaEM(scale) << "\n";
+  //   Energy test(g2*mass*mass*beta*beta*beta*part.mass()/32./Constants::pi/mw/mw);
+  //   if(abs(decay[0]->id())<=6){test *=3.;}
+  //   cout << "testing the answer " << output << "     " 
+  //        << test/GeV
+  //        << endl;
   // leading-order result
   if(!NLO_) return output;
   // fermion mass
-  Energy particleMass = decay[0]->dataPtr()->mass();
+  Energy particleMass = outgoing[0]->mass();
   // check decay products coloured, otherwise return
-  if(!decay[0]->dataPtr()->coloured()||
+  if(!outgoing[0]->coloured()||
      particleMass==ZERO) return output;
   // inital masses, couplings  etc
   // higgs mass
@@ -299,18 +302,18 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & part,
 
 void SMHiggsFermionsDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
-  // parameters for the PerturbativeDecayer base class
+  // parameters for the PerturbativeDecayer2 base class
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     os << "newdef " << name() << ":MaxWeights " << ix << " "
 	   << _maxwgt[ix] << "\n";
   }
-  PerturbativeDecayer::dataBaseOutput(os,false);
+  PerturbativeDecayer2::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" 
 		<< fullName() << "\";" << endl;
 }
 
 void SMHiggsFermionsDecayer::doinitrun() {
-  PerturbativeDecayer::doinitrun();
+  PerturbativeDecayer2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       _maxwgt[ix] = mode(ix)->maxWeight();
