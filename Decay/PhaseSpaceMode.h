@@ -210,7 +210,7 @@ public :
   /**
    *   The incoming particles
    */
-  pair<PDPtr,PDPtr> const incoming() {return incoming_;}
+  pair<PDPtr,PDPtr> incoming() const {return incoming_;}
   
   /**
    * Access to the outging particles.
