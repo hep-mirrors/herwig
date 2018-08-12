@@ -134,32 +134,29 @@ void DtoKPiPiCLEO::doinit() {
   PhaseSpaceModePtr mode1 = new_ptr(PhaseSpaceMode(in,out,_maxwgt[0]));
   vector<PhaseSpaceChannel> channels;
   if(rho770)
-    channels.push_back((PhaseSpaceChannel(mode1),0, rho770,0,1,1,2,1,3));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0, rho770,0,1,1,2,1,3));
   if(k892m)
-    channels.push_back((PhaseSpaceChannel(mode1),0,  k892m,0,2,1,1,1,3));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0,  k892m,0,2,1,1,1,3));
   if(k8920)
-    channels.push_back((PhaseSpaceChannel(mode1),0,  k8920,0,3,1,1,1,2));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0,  k8920,0,3,1,1,1,2));
   if(k1430m0)
-    channels.push_back((PhaseSpaceChannel(mode1),0, k1430m0,0,2,1,1,1,3));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0, k1430m0,0,2,1,1,1,3));
   if(k143000)
-    channels.push_back((PhaseSpaceChannel(mode1),0,k143000,0,3,1,1,1,2));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0,k143000,0,3,1,1,1,2));
   if(rho1700)
-    channels.push_back((PhaseSpaceChannel(mode1),0,rho1700,0,1,1,2,1,3));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0,rho1700,0,1,1,2,1,3));
   if(k1680m)
-    channels.push_back((PhaseSpaceChannel(mode1),0, k1680m,0,2,1,1,1,3));
+    mode1->addChannel((PhaseSpaceChannel(mode1),0, k1680m,0,2,1,1,1,3));
   // add the mode
   vector<double> wtemp;
-  if(channels.size()<=_weights.size()) {
+  if(mode1->channels().size()<=_weights.size()) {
     vector<double>::const_iterator wit=_weights.begin();
-    wtemp=vector<double>(wit,wit+channels.size());
+    wtemp=vector<double>(wit,wit+mode1->channels().size());
   }
   else {
-    wtemp=vector<double>(channels.size(),1./double(channels.size()));
+    wtemp=vector<double>(mode1->channels().size(),1./double(mode1->channels().size()));
   }
-  for(unsigned int ix=0;ix<channels.size();++ix) {
-    channels[ix].weight(wtemp[ix]);
-    mode1->addChannel(channels[ix]);
-  }
+  mode1->setWeights(wtemp);
   addMode(mode1);
   // D0 -> Kbar0 pi+ pi-
   in  =  getParticleData(ParticleID::D0);
@@ -168,41 +165,38 @@ void DtoKPiPiCLEO::doinit() {
 	 getParticleData(ParticleID::piminus)};
   if(_maxwgt.size()<2) _maxwgt.push_back(1.);
   PhaseSpaceModePtr mode2 = new_ptr(PhaseSpaceMode(in,out,_maxwgt[1]));
-  unsigned int iChannel1 = channels.size();
+  unsigned int iChannel1 = mode1->channels().size();
   channels.clear();
   if(k892p)
-    channels.push_back((PhaseSpaceChannel(mode2),0, k892p,0,3,1,1,1,2));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0, k892p,0,3,1,1,1,2));
   if(rho0)
-    channels.push_back((PhaseSpaceChannel(mode2),0,  rho0,0,1,1,2,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0,  rho0,0,1,1,2,1,3));
   if(omega)
-    channels.push_back((PhaseSpaceChannel(mode2),0, omega,0,1,1,2,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0, omega,0,1,1,2,1,3));
   if(k892m)
-    channels.push_back((PhaseSpaceChannel(mode2),0, k892m,0,2,1,1,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0, k892m,0,2,1,1,1,3));
   if(f980)
-    channels.push_back((PhaseSpaceChannel(mode2),0,  f980,0,1,1,2,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0,  f980,0,1,1,2,1,3));
   if(f2)
-    channels.push_back((PhaseSpaceChannel(mode2),0,    f2,0,1,1,2,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0,    f2,0,1,1,2,1,3));
   if(f1370)
-    channels.push_back((PhaseSpaceChannel(mode2),0, f1370,0,1,1,2,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0, f1370,0,1,1,2,1,3));
   if(k1430m0)
-    channels.push_back((PhaseSpaceChannel(mode2),0,k1430m0,0,2,1,1,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0,k1430m0,0,2,1,1,1,3));
   if(k1430m2)
-    channels.push_back((PhaseSpaceChannel(mode2),0,k1430m2,0,2,1,1,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0,k1430m2,0,2,1,1,1,3));
   if(k1680m)
-    channels.push_back((PhaseSpaceChannel(mode2),0,k1680m,0,2,1,1,1,3));
+    mode2->addChannel((PhaseSpaceChannel(mode2),0,k1680m,0,2,1,1,1,3));
   // add the mode
-  if(iChannel1+channels.size()<=_weights.size()) {
-    wtemp.resize(channels.size());
-    for(unsigned int ix=0;ix<channels.size();++ix)
+  if(iChannel1+mode2->channels().size()<=_weights.size()) {
+    wtemp.resize(mode2->channels().size());
+    for(unsigned int ix=0;ix<mode2->channels().size();++ix)
       wtemp[ix] = _weights[ix+iChannel1];
   }
   else {
-    wtemp=vector<double>(channels.size()-iChannel1,1./double(channels.size()-iChannel1));
+    wtemp=vector<double>(mode2->channels().size()-iChannel1,1./double(mode2->channels().size()-iChannel1));
   }
-  for(unsigned int ix=0;ix<channels.size();++ix) {
-    channels[ix].weight(wtemp[ix]);
-    mode2->addChannel(channels[ix]);
-  }
+  mode2->setWeights(wtemp);
   addMode(mode2);
   if(!_localparameters) {
     _momega   = omega  ->mass();
