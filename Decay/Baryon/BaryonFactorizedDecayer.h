@@ -6,7 +6,7 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -25,9 +25,9 @@ using namespace ThePEG;
  *
  * @see BaryonFactorizedDecayer
  * @see BaryonFormFactor
- * @see WeakDecayCurrent
+ * @see WeakCurrent
  */
-class BaryonFactorizedDecayer: public DecayIntegrator {
+class BaryonFactorizedDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -54,16 +54,23 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * This method combines the form factor and the weka current to 
-   * calculate the matrix element.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(const int ichan, const Particle & part,
-		     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Output the setup information for the particle database
@@ -77,25 +84,33 @@ protected:
   /**
    * Matrix element for \f$\frac12\to\frac12\f$.
    * @param ichan The channel we are calculating the matrix element for. 
-   * @param inpart The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double halfHalf(const int ichan,const Particle & inpart,
-		  const ParticleVector & decay,MEOption meopt) const;
+  double halfHalf(const int ichan,
+		  const Particle & part,
+		  const tPDVector & outgoing,
+		  const vector<Lorentz5Momentum> & momenta,
+		  MEOption meopt) const;
 
   /**
    * Matrix element for \f$\frac12\to\frac32\f$.
    * @param ichan The channel we are calculating the matrix element for. 
-   * @param inpart The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt The option for the matrix element
+   * @param part The decaying Particle.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double halfThreeHalf(const int ichan,const Particle & inpart,
-		       const ParticleVector & decay,MEOption meopt) const;
-
+  double halfThreeHalf(const int ichan,
+		       const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
+		       MEOption meopt) const;
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -163,11 +178,14 @@ private:
   /**
    * Find duplicate modes in the list of particles
    * @param imode The mode we are studying
-   * @param particles The external particles for the different modes
+   * @param incoming The incoming particles for the different modes
+   * @param outgoing The outgoing particles for the different modes
    * @param loc The location of the duplicate mode
    * @param cc  If the duplicate is the charge conjugate
    */
-  void findModes(unsigned int imode,vector<tPDVector> & particles,
+  void findModes(unsigned int imode,
+		 tPDVector & incoming,
+		 vector<tPDVector> & outgoing,
 		 vector<unsigned int> & loc,vector<bool> & cc);
 
 private:
@@ -183,7 +201,7 @@ private:
   /**
    *  The weak decay current
    */
-  WeakDecayCurrentPtr _current;
+  WeakCurrentPtr _current;
 
   /**
    * The baryon form factor

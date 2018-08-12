@@ -140,7 +140,6 @@ protected:
 
   /**
    * Matrix element for \f$\frac12\to\frac12\f$.
-   * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param outgoing The particles produced in the decay
    * @param momenta  The momenta of the particles produced in the decay
@@ -154,7 +153,6 @@ protected:
 
   /**
    * Matrix element for \f$\frac12\to\frac32\f$.
-   * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param outgoing The particles produced in the decay
    * @param momenta  The momenta of the particles produced in the decay

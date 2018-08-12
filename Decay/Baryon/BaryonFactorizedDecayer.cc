@@ -40,209 +40,202 @@ BaryonFactorizedDecayer::BaryonFactorizedDecayer() {
 void BaryonFactorizedDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   _weights.clear();_wgtloc.clear();_wgtmax.clear();
-  unsigned int ix,iy;
-  for(ix=0;ix<numberModes();++ix) {
+  for(unsigned int ix=0;ix<numberModes();++ix) {
     _wgtmax.push_back(mode(ix)->maxWeight());
     _wgtloc.push_back(_weights.size());
-    for(iy=0;iy<mode(ix)->numberChannels();++iy)
-      _weights.push_back(mode(ix)->channelWeight(iy));
+    for(unsigned int iy=0;iy<mode(ix)->channels().size();++iy)
+      _weights.push_back(mode(ix)->channels()[iy].weight());
   }
 }
 
 void BaryonFactorizedDecayer::doinit() {
-  DecayIntegrator::doinit();
-  // get the CKM matrix elements
-  unsigned int ix,iy,iz,iform,icurr;
+  DecayIntegrator2::doinit();
   // get the CKM matrix (unsquared for interference)
   Complex ckmmat[3][3];
   vector< vector<Complex > > CKM(_theCKM->getUnsquaredMatrix(SM().families()));
-  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckmmat[ix][iy]=CKM[ix][iy];}}
+  for(unsigned int ix=0;ix<3;++ix) {
+    for(unsigned int iy=0;iy<3;++iy) {
+      ckmmat[ix][iy]=CKM[ix][iy];
+    }
+  }
   // make sure the current and form factor got initialised
   _current->init();
   _form->init();
   // find all the possible modes
   vector<unsigned int> tformmap,tcurrmap;
   vector<int> inquark,outquark,currq,curra;
-  vector<tPDVector> particles;
-  tPDVector extpart,extpartb,ptemp;
-  Energy min,minb;
-  int iq,ia,spect1,spect2,inq,outq,id0,id1,Wcharge,ispin,ospin;
-  for(iform=0;iform<_form->numberOfFactors();++iform)
-    {
-      // particles from the form factor
-      extpart.resize(2);
-      _form->particleID (iform,id0,id1);
-      _form->formFactorInfo(iform,ispin,ospin,spect1,spect2,inq,outq);
-      // particles from the form factor
-      extpart[0]=getParticleData(id0);
-      extpart[1]=getParticleData(id1);
-      // the charge of the decay products
-      Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge();
-      // max mass for the particles in the current
-      min = extpart[0]->massMax()-extpart[1]->massMin();
-      for(icurr=0;icurr<_current->numberOfModes();++icurr)
-	{
-	  extpart.resize(2);
-	  // get the particles from the current
-	  _current->decayModeInfo(icurr,iq,ia);
-	  ptemp=_current->particles(Wcharge,icurr,iq,ia);
-	  minb=ZERO;
-	  for(iz=0;iz<ptemp.size();++iz)
-	    {extpart.push_back(ptemp[iz]);minb+=ptemp[iz]->massMin();}
-	  // valid mode
-	  if(extpart.size()>2&&minb<min&&
-	     (Wcharge!=0||(Wcharge==0&&((inq>0&&inq%2!=iq%2)||
-					(inq<0&&abs(inq)%2!=abs(ia)%2)))))
-	    {
-	      tformmap.push_back(iform);tcurrmap.push_back(icurr);
-	      particles.push_back(extpart);
-	      inquark.push_back(inq);outquark.push_back(outq);
-	      currq.push_back(iq);curra.push_back(ia);
-	    }
-	  // if the meson is neutral try the CC mode
-	  if(Wcharge==0&&iq!=-ia&&((inq>0&&inq%2!=iq%2)||
-				   (inq<0&&abs(inq)%2!=abs(ia)%2)))
-	    {
-	      extpart.resize(2);
-	      ptemp=_current->particles(Wcharge,icurr,-ia,-iq);
-	      minb=ZERO;
-	      for(iz=0;iz<ptemp.size();++iz)
-		{extpart.push_back(ptemp[iz]);minb+=ptemp[iz]->massMin();}
-	      if(extpart.size()>2&&minb<min)
-		{
-		  tformmap.push_back(iform);tcurrmap.push_back(icurr);
-		  particles.push_back(extpart);
-		  inquark.push_back(inq);outquark.push_back(outq);
-		  currq.push_back(-ia);curra.push_back(-iq);
-		}
-	    }
-	}
-    } 
-  vector<bool> modecc;
-  vector<unsigned int> modeloc,ttform,ttcurr;
-  vector<Complex> tCKM; Complex ckm;
-  bool done;
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr channel;
-  vector<double>::iterator start,end;
-  double maxweight;
-  vector<double> channelwgts;
+  tPDVector incoming;
+  vector<tPDVector> outgoing;
+  for(unsigned int iform=0;iform<_form->numberOfFactors();++iform) {
+    // particles from the form factor
+    int id0,id1;
+    _form->particleID (iform,id0,id1);
+    int spect1,spect2,inq,outq,ispin,ospin;
+    _form->formFactorInfo(iform,ispin,ospin,spect1,spect2,inq,outq);
+    // particles from the form factor
+    tPDPtr in  = getParticleData(id0);
+    tPDPtr out = getParticleData(id1);
+    // the charge of the decay products
+    int Wcharge = in->iCharge()-out->iCharge();
+    // max mass for the particles in the current
+    Energy min = in->massMax()-out->massMin();
+    for(unsigned int icurr=0;icurr<_current->numberOfModes();++icurr) {
+      // get the particles from the current
+      int iq,ia;
+      _current->decayModeInfo(icurr,iq,ia);
+      tPDVector ptemp=_current->particles(Wcharge,icurr,iq,ia);
+      tPDVector outV = {out};
+      outV.insert(std::end(outV), std::begin(ptemp), std::end(ptemp));
+      Energy minb=ZERO;
+      for(unsigned int iz=0;iz<ptemp.size();++iz) minb+=ptemp[iz]->massMin();
+      // valid mode
+      if(outV.size()>1&&minb<min&&
+	 (Wcharge!=0||(Wcharge==0&&((inq>0&&inq%2!=iq%2)||
+				    (inq<0&&abs(inq)%2!=abs(ia)%2))))) {
+	tformmap.push_back(iform);tcurrmap.push_back(icurr);
+	incoming.push_back(in);
+	outgoing.push_back(outV);
+	inquark.push_back(inq);outquark.push_back(outq);
+	currq.push_back(iq);curra.push_back(ia);
+      }
+      // if the meson is neutral try the CC mode
+      if(Wcharge==0&&iq!=-ia&&((inq>0&&inq%2!=iq%2)||
+			       (inq<0&&abs(inq)%2!=abs(ia)%2))) {
+	ptemp=_current->particles(Wcharge,icurr,-ia,-iq);
+	tPDVector outV = {out};
+	outV.insert(std::end(outV), std::begin(ptemp), std::end(ptemp));
+	Energy minb=ZERO;
+	for(unsigned int iz=0;iz<ptemp.size();++iz) minb+=ptemp[iz]->massMin();
+	if(outV.size()>1&&minb<min) {
+  	  tformmap.push_back(iform);tcurrmap.push_back(icurr);
+	  incoming.push_back(in);
+  	  outgoing.push_back(outV);
+  	  inquark.push_back(inq);outquark.push_back(outq);
+  	  currq.push_back(-ia);curra.push_back(-iq);
+  	}
+      }
+    }
+  }
   _formmap.clear();
   _currentmap.clear();
   // loop over the modes and find the dupliciates
-  for(ix=0;ix<particles.size();++ix)
-    {
-      while(true)
-	{
-	  if ( particles[ix].empty() ) {break;}
-	  findModes(ix,particles,modeloc,modecc);
-	  // if more than three particles only allow one diagram
-	  if ( particles[ix].size() > 3 && !modeloc.empty() ) {break;}
-	  // create the mode and set the particles as for the first instance
-	  mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
-	  channel = new_ptr(DecayPhaseSpaceChannel(mode));
-	  channel->addIntermediate(particles[ix][0],0,0.0,1,-1);
-	  min = particles[ix][0]->massMax()-particles[ix][1]->massMin();
-	  Wcharge = particles[ix][0]->iCharge()-particles[ix][1]->iCharge();
-	  done=_current->createMode(Wcharge,tcurrmap[ix],mode,2,1,channel,min);
-	  if(!done){throw InitException() << "Failed to construct mode in "
-					  << "BaryonFactorizedDecayer::doinit()." 
-					  << Exception::abortnow;}
-	  // set the parameters for the additional modes
-	  ttform.clear();ttcurr.clear();
-	  ttform.push_back(tformmap[ix]);ttcurr.push_back(tcurrmap[ix]);
-	  for(iy=0;iy<modeloc.size();++iy)
-	    {
-	      ttform.push_back(tformmap[modeloc[iy]]);
-	      ttcurr.push_back(tcurrmap[modeloc[iy]]);
-	    }
-	  tCKM.clear();
-	  for(iy=0;iy<ttcurr.size();++iy)
-	    {
-	      // get the quarks involved in the process
-	      if(iy==0)
-		{iq=currq[ix];ia=curra[ix];inq=inquark[ix];outq=outquark[ix];}
-	      else
-		{
-		  if(!modecc[iy-1])
-		    {
-		      iq=currq[modeloc[iy-1]];ia=curra[modeloc[iy-1]];
-		      inq=inquark[modeloc[iy-1]];outq=outquark[modeloc[iy-1]];
-		    }
-		  else
-		    {
-		      ia=-currq[modeloc[iy-1]];iq=-curra[modeloc[iy-1]];
-		      inq=-inquark[modeloc[iy-1]];outq=-outquark[modeloc[iy-1]];
-		    }
-		}
-	      _form->particleID(ttform[iy],id0,id1);
-	      Wcharge = getParticleData(id0)->iCharge()-getParticleData(id1)->iCharge();
-	      ckm=1.;
-	      if(Wcharge!=0)
-		{
-		  ckm=1.;
-		  if(abs(iq)%2==0){ckm *= conj(ckmmat[abs(iq)/2-1][(abs(ia)-1)/2]);}
-		  else{ckm *= conj(ckmmat[abs(ia)/2-1][(abs(iq)-1)/2]);}
-		  if(abs(inq)%2==0){ckm *= ckmmat[abs(inq)/2-1][(abs(outq)-1)/2];}
-		  else{ckm *= ckmmat[abs(outq)/2-1][(abs(inq)-1)/2];}
-		  if(abs(inq)==5){ckm*=_a1b;}
-		  else{ckm*=_a1c;}
-		}
-	      else
-		{
-		  ckm=1.;
-		  if(inq>0)
-		    {
-		      if(abs(inq)%2==0){ckm *= ckmmat[abs(inq)/2-1][(abs(iq)-1)/2];}
-		      else{ckm *= ckmmat[abs(iq)/2-1][(abs(inq)-1)/2];}
-		      if(abs(outq)%2==0)
-			{ckm *= conj(ckmmat[abs(outq)/2-1][(abs(ia)-1)/2]);}
-		      else{ckm *= conj(ckmmat[abs(ia)/2-1][(abs(outq)-1)/2]);}
-		    }
-		  else
-		    {
-		      if(abs(inq)%2==0){ckm *= ckmmat[abs(inq)/2-1][(abs(ia)-1)/2];}
-		      else{ckm *= ckmmat[abs(ia)/2-1][(abs(inq)-1)/2];}
-		      if(abs(outq)%2==0)
-			{ckm *= conj(ckmmat[abs(outq)/2-1][(abs(iq)-1)/2]);}
-		      else{ckm *= conj(ckmmat[abs(iq)/2-1][(abs(outq)-1)/2]);}
-		    }
-		  if(abs(inq)==5){ckm*=_a2b;}
-		  else{ckm*=_a2c;}
-		}
-	      if((abs(inq)%2==0&&inq<0)||(abs(inq)%2!=0&&inq>0)){ckm=conj(ckm);}
-	      tCKM.push_back(ckm);
-	    }
-	  // add the parameters for the mode to the list
-	  _currentmap.push_back(ttcurr);_formmap.push_back(ttform);
-	  _factCKM.push_back(tCKM);
-	  // add the mode to the list
-	  if(_wgtmax.size()>numberModes()){maxweight=_wgtmax[numberModes()];}
-	  else{maxweight=0.;}
-	  // the weights for the channel
-	  if(_wgtloc.size()>numberModes()&&
-	     _wgtloc[numberModes()]+mode->numberChannels()<=_weights.size())
-	    {
-	      start=_weights.begin()+_wgtloc[numberModes()];
-	      end  = start+mode->numberChannels();
-	      channelwgts=vector<double>(start,end);
-	    }
-	  else
-	    {channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));}
-	  // don't need channels for two body decays
-	  if(particles[ix].size()==3)
-	    {
-	      channelwgts.clear();
-	      mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
-	    }
-	  addMode(mode,maxweight,channelwgts);
-	  // resize the duplicate modes to remove them
-	  for(iy=0;iy<modeloc.size();++iy){particles[modeloc[iy]]=tPDVector();}
-	  break;
+  for(unsigned int ix=0;ix<outgoing.size();++ix) {
+    while(true) {
+      if ( outgoing[ix].empty() ) break;
+      vector<unsigned int> modeloc;
+      vector<bool> modecc;
+      findModes(ix,incoming,outgoing,modeloc,modecc);
+      // if more than two outgoing particles only allow one diagram
+      if ( outgoing[ix].size() > 2 && !modeloc.empty() ) {break;}
+      // create the mode and set the particles as for the first instance
+      PhaseSpaceModePtr mode=new_ptr(PhaseSpaceMode(incoming[ix],outgoing[ix],1.));
+      PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1));
+      Energy min = incoming[ix]->massMax()-outgoing[ix][0]->massMin();
+      int Wcharge = incoming[ix]->iCharge()-outgoing[ix][0]->iCharge();
+      bool done = _current->createMode(Wcharge,tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+				       tcurrmap[ix],mode,1,0,channel,min);
+      if(!done){throw InitException() << "Failed to construct mode in "
+				      << "BaryonFactorizedDecayer::doinit()." 
+				      << Exception::abortnow;}
+      // set the parameters for the additional modes
+      vector<unsigned int>ttform,ttcurr;
+      ttform.push_back(tformmap[ix]);ttcurr.push_back(tcurrmap[ix]);
+      for(unsigned int iy=0;iy<modeloc.size();++iy) {
+	ttform.push_back(tformmap[modeloc[iy]]);
+	ttcurr.push_back(tcurrmap[modeloc[iy]]);
+      }
+      vector<Complex> tCKM; Complex ckm;
+      for(unsigned int iy=0;iy<ttcurr.size();++iy) {
+	// get the quarks involved in the process
+	int iq,ia,inq,outq;
+	if(iy==0) {
+	  iq=currq[ix];
+	  ia=curra[ix];
+	  inq=inquark[ix];
+	  outq=outquark[ix];
 	}
+	else {
+	  if(!modecc[iy-1]) {
+	    iq=currq[modeloc[iy-1]];
+	    ia=curra[modeloc[iy-1]];
+	    inq=inquark[modeloc[iy-1]];
+	    outq=outquark[modeloc[iy-1]];
+	  }
+	  else {
+	    ia=-currq[modeloc[iy-1]];
+	    iq=-curra[modeloc[iy-1]];
+	    inq=-inquark[modeloc[iy-1]];
+	    outq=-outquark[modeloc[iy-1]];
+	  }
+ 	}
+	int id0,id1;
+	_form->particleID(ttform[iy],id0,id1);
+	int Wcharge = getParticleData(id0)->iCharge()-getParticleData(id1)->iCharge();
+	Complex ckm=1.;
+	if(Wcharge!=0) {
+	  if(abs(iq)%2==0){ckm *= conj(ckmmat[abs(iq)/2-1][(abs(ia)-1)/2]);}
+	  else{ckm *= conj(ckmmat[abs(ia)/2-1][(abs(iq)-1)/2]);}
+	  if(abs(inq)%2==0){ckm *= ckmmat[abs(inq)/2-1][(abs(outq)-1)/2];}
+	  else{ckm *= ckmmat[abs(outq)/2-1][(abs(inq)-1)/2];}
+	  if(abs(inq)==5){ckm*=_a1b;}
+	  else{ckm*=_a1c;}
+	}
+	else {
+	  if(inq>0) {
+	    if(abs(inq)%2==0){ckm *= ckmmat[abs(inq)/2-1][(abs(iq)-1)/2];}
+	    else{ckm *= ckmmat[abs(iq)/2-1][(abs(inq)-1)/2];}
+	    if(abs(outq)%2==0)
+	      {ckm *= conj(ckmmat[abs(outq)/2-1][(abs(ia)-1)/2]);}
+	    else{ckm *= conj(ckmmat[abs(ia)/2-1][(abs(outq)-1)/2]);}
+	  }
+	  else {
+	    if(abs(inq)%2==0){ckm *= ckmmat[abs(inq)/2-1][(abs(ia)-1)/2];}
+	    else{ckm *= ckmmat[abs(ia)/2-1][(abs(inq)-1)/2];}
+	    if(abs(outq)%2==0)
+	      {ckm *= conj(ckmmat[abs(outq)/2-1][(abs(iq)-1)/2]);}
+	    else{ckm *= conj(ckmmat[abs(iq)/2-1][(abs(outq)-1)/2]);}
+	  }
+	  if(abs(inq)==5){ckm*=_a2b;}
+	  else{ckm*=_a2c;}
+	}
+	if((abs(inq)%2==0&&inq<0)||(abs(inq)%2!=0&&inq>0)){ckm=conj(ckm);}
+	tCKM.push_back(ckm);
+      }
+      // add the parameters for the mode to the list
+      _currentmap.push_back(ttcurr);
+      _formmap.push_back(ttform);
+      _factCKM.push_back(tCKM);
+      double maxweight(0.);
+      // add the mode to the list
+      if(_wgtmax.size()>numberModes()) maxweight=_wgtmax[numberModes()];
+      // the weights for the channel
+      vector<double> channelwgts;
+      if(_wgtloc.size()>numberModes()&&
+	 _wgtloc[numberModes()]+mode->channels().size()<=_weights.size()) {
+	vector<double>::iterator start=_weights.begin()+_wgtloc[numberModes()];
+	vector<double>::iterator end  = start+mode->channels().size();
+	channelwgts=vector<double>(start,end);
+      }
+      else {
+	channelwgts.resize(mode->channels().size(),1./(mode->channels().size()));
+      }
+      // don't need channels for two body decays
+      if(outgoing[ix].size()==2) {
+	channelwgts.clear();
+	mode = new_ptr(PhaseSpaceMode(incoming[ix],outgoing[ix],maxweight));
+      }
+      else {
+       mode->maxWeight(maxweight);
+       mode->setWeights(channelwgts);
+      }
+      addMode(mode);
+      // resize the duplicate modes to remove them
+      for(unsigned int iy=0;iy<modeloc.size();++iy) outgoing[modeloc[iy]]=tPDVector();
+      break;
     }
+  }
 }
 
 bool BaryonFactorizedDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
@@ -254,25 +247,22 @@ bool BaryonFactorizedDecayer::accept(tcPDPtr parent, const tPDVector & children)
   tPDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit){idall.push_back((**pit).id());}
   // loop over the particles in the form factor
-  do
-    {
-      _form->particleID(iform,id0,id1);
-      ibaryon=0;
-      if(id0==idin){ibaryon=id1;}
-      else if(id0==-idin){ibaryon=-id1;}
-      if(ibaryon!=0)
-	{
-	  foundb=false;
-	  idother.clear();
-	  for(ix=0;ix<idall.size();++ix)
-	    {
-	      if(idall[ix]==ibaryon){foundb=true;}
-	      else{idother.push_back(idall[ix]);}
-	    }
-	  if(foundb){allowed=_current->accept(idother);}
-	}
-      ++iform;
+  do {
+    _form->particleID(iform,id0,id1);
+    ibaryon=0;
+    if(id0==idin){ibaryon=id1;}
+    else if(id0==-idin){ibaryon=-id1;}
+    if(ibaryon!=0) {
+      foundb=false;
+      idother.clear();
+      for(ix=0;ix<idall.size();++ix) {
+	if(idall[ix]==ibaryon){foundb=true;}
+	else{idother.push_back(idall[ix]);}
+      }
+      if(foundb){allowed=_current->accept(idother);}
     }
+    ++iform;
+  }
   while(!allowed&&iform<_form->numberOfFactors());
   return allowed;
 }
@@ -314,7 +304,7 @@ int BaryonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
       ++ix;
     }
   while(imode<0&&ix<numberModes());
-  if(imode<0){throw DecayIntegratorError() << "Unable to find the mode in " 
+  if(imode<0){throw DecayIntegrator2Error() << "Unable to find the mode in " 
 					   << "BaryonFactorizedDecayer::decay()" 
 					   << Exception::abortnow;}
   // generate the mode
@@ -337,7 +327,7 @@ void BaryonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<BaryonFactorizedDecayer,DecayIntegrator>
+DescribeClass<BaryonFactorizedDecayer,DecayIntegrator2>
 describeHerwigBaryonFactorizedDecayer("Herwig::BaryonFactorizedDecayer", "HwBaryonDecay.so");
 
 void BaryonFactorizedDecayer::Init() {
@@ -346,7 +336,7 @@ void BaryonFactorizedDecayer::Init() {
     ("The BaryonFactorizedDecayer class combines the baryon form factor and a"
      " weak current to perform a decay in the naive factorization approximation.");
 
-  static Reference<BaryonFactorizedDecayer,WeakDecayCurrent> interfaceWeakCurrent
+  static Reference<BaryonFactorizedDecayer,WeakCurrent> interfaceWeakCurrent
     ("Current",
      "The reference for the decay current to be used.",
      &BaryonFactorizedDecayer::_current, false, false, true, false, false);
@@ -404,143 +394,160 @@ void BaryonFactorizedDecayer::Init() {
      &BaryonFactorizedDecayer::_theCKM, false, false, true, false);
 }
 
-double BaryonFactorizedDecayer::me2(const int ichan,
-				    const Particle & inpart,
-				    const ParticleVector & decay,
+void BaryonFactorizedDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // for the decaying particle
+  if(part.id()>0) {
+    SpinorWaveFunction::
+      constructSpinInfo(_inHalf,const_ptr_cast<tPPtr>(&part),incoming,true);
+  }
+  else {
+    SpinorBarWaveFunction::
+      constructSpinInfo(_inHalfBar,const_ptr_cast<tPPtr>(&part),incoming,true);
+  }
+  // decay product
+  // spin 1/2
+  if(decay[0]->dataPtr()->iSpin()==PDT::Spin1Half) {
+    if(part.id()>0) {
+      SpinorBarWaveFunction::constructSpinInfo(_inHalfBar,decay[0],outgoing,true);
+    }
+    else {
+      SpinorWaveFunction::constructSpinInfo(_inHalf,decay[0],outgoing,true);
+    }
+  }
+  // spin 3/2
+  else if(decay[0]->dataPtr()->iSpin()==PDT::Spin3Half) {
+    if(part.id()>0) {
+      RSSpinorBarWaveFunction::constructSpinInfo(_inThreeHalfBar,
+  						 decay[0],outgoing,true);
+      
+    }
+    else {
+      RSSpinorWaveFunction::constructSpinInfo(_inThreeHalf,
+  					      decay[0],outgoing,true);
+    }
+  }
+  else
+    assert(false);
+  // and the stuff from the current
+  _current->constructSpinInfo(ParticleVector(decay.begin()+1,decay.end()));
+}
+
+double BaryonFactorizedDecayer::me2(const int ichan, const Particle & part,
+				    const tPDVector & outgoing,
+				    const vector<Lorentz5Momentum> & momenta,
 				    MEOption meopt) const {
   double me(0.);
-  assert(inpart.dataPtr()->iSpin()==2);
-  if(decay[0]->dataPtr()->iSpin()==2)
-    me=halfHalf(ichan,inpart,decay,meopt);
-  else if(decay[0]->dataPtr()->iSpin()==4)
-    me=halfThreeHalf(ichan,inpart,decay,meopt);
+  assert(part.dataPtr()->iSpin()==PDT::Spin1Half);
+  if(outgoing[0]->iSpin()==PDT::Spin1Half)
+    me=halfHalf(ichan,part,outgoing,momenta,meopt);
+  else if(outgoing[0]->iSpin()==PDT::Spin3Half)
+    me=halfThreeHalf(ichan,part,outgoing,momenta,meopt);
   else
     assert(false);
   return me;
 }
 
 // matrix element for a 1/2 -> 1/2 decay
-double BaryonFactorizedDecayer::halfHalf(const int ichan,
-					 const Particle & inpart,
-					 const ParticleVector & decay,
+double BaryonFactorizedDecayer::halfHalf(const int ichan, const Particle & part,
+					 const tPDVector & outgoing,
+					 const vector<Lorentz5Momentum> & momenta,
 					 MEOption meopt) const {
   Energy scale;
   // extract the spins of the particles
   vector<PDT::Spin> spin;
-  for(unsigned ix=0;ix<decay.size();++ix) 
-    spin.push_back(decay[ix]->dataPtr()->iSpin());
+  for(unsigned ix=0;ix<outgoing.size();++ix) 
+    spin.push_back(outgoing[ix]->iSpin());
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   if(meopt==Initialize) {
     // spinors and rho
-    if(inpart.id()>0)
+    if(part.id()>0)
       SpinorWaveFunction   ::calculateWaveFunctions(_inHalf,_rho,
-						    const_ptr_cast<tPPtr>(&inpart),
+						    const_ptr_cast<tPPtr>(&part),
 						    incoming);
     else
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
-						    const_ptr_cast<tPPtr>(&inpart),
+						    const_ptr_cast<tPPtr>(&part),
 						    incoming);
-  }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    // for the decaying particle
-    if(inpart.id()>0) {
-      SpinorWaveFunction::
-	constructSpinInfo(_inHalf,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      SpinorBarWaveFunction::constructSpinInfo(_inHalfBar,decay[0],outgoing,true);
-    }
-    else {
-      SpinorBarWaveFunction::
-	constructSpinInfo(_inHalfBar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      SpinorWaveFunction::constructSpinInfo(_inHalf,decay[0],outgoing,true);
-    }
-    ParticleVector::const_iterator start = decay.begin()+1,
-                                   end   = decay.end();
-    ParticleVector hadpart(start,end);
-    _current->current(_currentmap[imode()][0],
-		      ichan,scale,hadpart,meopt);
-    return 0.;
   }
   ME()->zero();
   // spinors for the decay product
-  if(inpart.id()>0) {
-    SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,decay[0],outgoing);
+  if(part.id()>0) {
+    _inHalfBar.resize(2);
+    for(unsigned int ihel=0;ihel<2;++ihel)
+      _inHalfBar[ihel] = HelicityFunctions::dimensionedSpinorBar(-momenta[0],ihel,Helicity::outgoing);
   }
   else {
-    SpinorWaveFunction   ::calculateWaveFunctions(_inHalf,decay[0],outgoing);
+    _inHalf.resize(2);
+    for(unsigned int ihel=0;ihel<2;++ihel)
+      _inHalf[ihel] = HelicityFunctions::dimensionedSpinor   (-momenta[0],ihel,Helicity::outgoing);
   }
   // get the information on the form-factor
-  int id0(inpart.id()),id1(decay[0]->id());
+  int id0(part.id()),id1(outgoing[0]->id());
   // work out the value of q and calculate the form factors
-  Lorentz5Momentum q(inpart.momentum()-decay[0]->momentum());q.rescaleMass();
-  Energy m0(inpart.mass()),m1(decay[0]->mass());
+  Lorentz5Momentum q(part.momentum()-momenta[0]);
+  q.rescaleMass();
+  Energy m0(part.mass()),m1(momenta[0].mass());
   Energy2 q2(q.mass2());
-  Lorentz5Momentum sum(inpart.momentum()+decay[0]->momentum());
-  // calculate the baryon part of the current for the decay
-  vector<LorentzPolarizationVectorE> baryon;
-  Complex f1v,f2v,f3v,f1a,f2a,f3a;
-  baryon.resize(4);
-  Complex left,right;
-  ParticleVector::const_iterator start,end;
-  ParticleVector hadpart;
-  vector<LorentzPolarizationVectorE> hadron;
+  Lorentz5Momentum sum(part.momentum()+momenta[0]);
+  // calculate the baryonic part of the current for the decay
   double pre(0.);
-  unsigned int mhel,ix,iy,lhel;
-  vector<unsigned int> constants,ihel;
-  int itemp; unsigned int ibar;
   for(unsigned int mode=0;mode<_formmap[imode()].size();++mode) {
+    Complex f1v,f2v,f3v,f1a,f2a,f3a;
     // calculate the form factor piece
     _form->SpinHalfSpinHalfFormFactor(q2,_formmap[imode()][mode],id0,id1,m0,m1,
 				      f1v,f2v,f3v,f1a,f2a,f3a);
-    left =  f1v-f1a-f2v-double((m0-m1)/(m0+m1))*f2a;
-    right = f1v+f1a-f2v+double((m0-m1)/(m0+m1))*f2a;
-    for(ix=0;ix<2;++ix) {
-      for(iy=0;iy<2;++iy) {
+    Complex  left = f1v-f1a-f2v-double((m0-m1)/(m0+m1))*f2a;
+    Complex right = f1v+f1a-f2v+double((m0-m1)/(m0+m1))*f2a;
+    vector<LorentzPolarizationVectorE> baryon(4);
+    for(unsigned int ix=0;ix<2;++ix) {
+      for(unsigned int iy=0;iy<2;++iy) {
 	LorentzPolarizationVectorE 
 	  vtemp = _inHalf[ix].generalCurrent(_inHalfBar[iy],left,right);
 	complex<Energy> vspin=_inHalf[ix].scalar(_inHalfBar[iy]);      
 	complex<Energy> aspin=_inHalf[ix].pseudoScalar(_inHalfBar[iy]);
 	// the momentum like pieces
-	if(inpart.id()>0) {
-	  vtemp+= (f2v*vspin+f2a*aspin)/(m0+m1)*sum;
-	  vtemp+= (f3v*vspin+f3a*aspin)/(m0+m1)*q;
-	}
-	else {
-	  vtemp+= (f2v*vspin-f2a*aspin)/(m0+m1)*sum;
-	  vtemp+= (f3v*vspin-f3a*aspin)/(m0+m1)*q;
-	}
-	if(inpart.id()>0){baryon[2*ix+iy]=vtemp;}
-	else{baryon[2*iy+ix]=vtemp;}
+ 	if(part.id()>0) {
+ 	  vtemp+= (f2v*vspin+f2a*aspin)/(m0+m1)*sum;
+ 	  vtemp+= (f3v*vspin+f3a*aspin)/(m0+m1)*q;
+ 	}
+ 	else {
+ 	  vtemp+= (f2v*vspin-f2a*aspin)/(m0+m1)*sum;
+ 	  vtemp+= (f3v*vspin-f3a*aspin)/(m0+m1)*q;
+ 	}
+ 	if(part.id()>0) baryon[2*ix+iy]=vtemp;
+ 	else            baryon[2*iy+ix]=vtemp;
       }
     }
     // construct the weak current
-    start=decay.begin()+1;
-    end  =decay.end();
-    hadpart = ParticleVector(start,end);
-    hadron=_current->current(_currentmap[imode()][mode],
-			     ichan,scale,hadpart,meopt);
-    pre=pow(inpart.mass()/scale,int(hadpart.size()-2));pre*=pre;
-    constants.resize(decay.size()+1);ihel.resize(decay.size()+1);
-    itemp=1;ibar=0;
-    for(int iz=int(decay.size()-1);iz>=0;--iz) {
-      if(abs(decay[iz]->id())!=id1) {
-	itemp *= decay[iz]->data().iSpin();
-	constants[iz]=itemp;
+    vector<LorentzPolarizationVectorE> hadron =
+      _current->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+			_currentmap[imode()][mode],ichan,scale,
+			tPDVector(outgoing.begin()+1,outgoing.end()),
+			vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),meopt);
+    pre=pow(part.mass()/scale,int(outgoing.size()-3));pre*=pre;
+    vector<unsigned int> constants(outgoing.size()+1),ihel(outgoing.size()+1);
+    int itemp=1;
+    unsigned int ibar=0;
+    for(int iz=int(outgoing.size()-1);iz>=0;--iz) {
+      if(abs(outgoing[iz]->id())!=id1) {
+ 	itemp *= outgoing[iz]->iSpin();
+ 	constants[iz]=itemp;
       }
       else ibar=iz;
-      constants[decay.size()]=1;
+      constants[outgoing.size()]=1;
       constants[ibar]=constants[ibar+1];
     }
-    for(mhel=0;mhel<baryon.size();++mhel) {
+    for(unsigned int mhel=0;mhel<baryon.size();++mhel) {
       ihel[0     ]=mhel/2;
       ihel[ibar+1]=mhel%2;
-      for(lhel=0;lhel<hadron.size();++lhel) {
-	// map the index for the hadrons to a helicity state
-	for(ix=decay.size();ix>0;--ix) {
-	  if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	(*ME())(ihel) += hadron[lhel].dot(baryon[mhel])*
-	  _factCKM[imode()][mode]*SM().fermiConstant();
+      for(unsigned int lhel=0;lhel<hadron.size();++lhel) {
+ 	// map the index for the hadrons to a helicity state
+ 	for(unsigned int ix=outgoing.size();ix>0;--ix) {
+ 	  if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
+ 	(*ME())(ihel) += hadron[lhel].dot(baryon[mhel])*
+ 	  _factCKM[imode()][mode]*SM().fermiConstant();
       }
     }
   }
@@ -549,96 +556,72 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
 }
 
 // matrix element for a 1/2 -> 3/2 decay
-double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
-					      const Particle & inpart,
-					      const ParticleVector & decay,
+double BaryonFactorizedDecayer::halfThreeHalf(const int ichan, const Particle & part,
+					      const tPDVector & outgoing,
+					      const vector<Lorentz5Momentum> & momenta,
 					      MEOption meopt) const {
   // spins
   Energy scale;
-  vector<PDT::Spin> spin(decay.size());
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    spin[ix]=decay[ix]->data().iSpin();
+  vector<PDT::Spin> spin(outgoing.size());
+  for(unsigned int ix=0;ix<outgoing.size();++ix)
+    spin[ix]=outgoing[ix]->iSpin();
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
-    if(inpart.id()>0)
+    if(part.id()>0)
       SpinorWaveFunction   ::calculateWaveFunctions(_inHalf,_rho,
-						    const_ptr_cast<tPPtr>(&inpart),
-						    incoming);
+  						    const_ptr_cast<tPPtr>(&part),
+  						    incoming);
     else
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
-						    const_ptr_cast<tPPtr>(&inpart),
-						    incoming);
-  }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    // for the decaying particle
-    if(inpart.id()>0) {
-      SpinorWaveFunction::
-	constructSpinInfo(_inHalf,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      RSSpinorBarWaveFunction::constructSpinInfo(_inThreeHalfBar,
-						 decay[0],outgoing,true);
-
-    }
-    else {
-      SpinorBarWaveFunction::
-	constructSpinInfo(_inHalfBar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      RSSpinorWaveFunction::constructSpinInfo(_inThreeHalf,
-					      decay[0],outgoing,true);
-    }
-    ParticleVector::const_iterator start = decay.begin()+1,
-                                   end   = decay.end();
-    ParticleVector hadpart(start,end);
-    _current->current(_currentmap[imode()][0],
-		      ichan,scale,hadpart,meopt);
-    return 0.;
+  						    const_ptr_cast<tPPtr>(&part),
+  						    incoming);
   }
   ME()->zero();
   // spinors for the decay product
-  LorentzPolarizationVector in=UnitRemoval::InvE*inpart.momentum();
-  if(inpart.id()>0) {
-    RSSpinorBarWaveFunction::
-      calculateWaveFunctions(_inThreeHalfBar,decay[0],outgoing);
-    _inHalfBar.resize(_inThreeHalfBar.size());
-    for(unsigned int ix=0;ix<_inThreeHalfBar.size();++ix)
-      _inHalfBar[ix] = _inThreeHalfBar[ix].dot(in);
+  LorentzPolarizationVector in=UnitRemoval::InvE*part.momentum();
+  if(part.id()>0) {
+    RSSpinorBarWaveFunction swave(momenta[0],outgoing[0],Helicity::outgoing);
+    _inThreeHalfBar.resize(4);
+    _inHalfBar.resize(4);
+    for(unsigned int ihel=0;ihel<4;++ihel) {
+      swave.reset(ihel);
+      _inThreeHalfBar[ihel]=swave.dimensionedWf();
+      _inHalfBar[ihel] = _inThreeHalfBar[ihel].dot(in);
     }
+  }
   else {
-    RSSpinorWaveFunction::
-      calculateWaveFunctions(_inThreeHalf,decay[0],outgoing);
-    _inHalf.resize(_inThreeHalf.size());
-    for(unsigned int ix=0;ix<_inThreeHalf.size();++ix)
-      _inHalf[ix] = _inThreeHalf[ix].dot(in);
+    RSSpinorWaveFunction swave(momenta[0],outgoing[0],Helicity::outgoing);
+    _inThreeHalf.resize(4);
+    _inHalf.resize(4);
+    for(unsigned int ihel=0;ihel<4;++ihel) {
+      swave.reset(ihel);
+      _inThreeHalf[ihel]=swave.dimensionedWf();
+      _inHalf[ihel] = _inThreeHalf[ihel].dot(in);
+    }
   }
   // get the information on the form-factor
-  int id0(inpart.id()),id1(decay[0]->id());
+  int id0(part.id()),id1(outgoing[0]->id());
   // work out the value of q and calculate the form factors
-  Lorentz5Momentum q(inpart.momentum()-decay[0]->momentum());q.rescaleMass();
-  Energy m0(inpart.mass()),m1(decay[0]->mass());
+  Lorentz5Momentum q(part.momentum()-momenta[0]);
+  q.rescaleMass();
+  Energy m0(part.mass()),m1(momenta[0].mass());
   Energy2 q2(q.mass2());
-  Lorentz5Momentum sum(inpart.momentum()+decay[0]->momentum());
-  LorentzPolarizationVectorE baryon[4][2];
-  Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
-  LorentzPolarizationVector vtemp;
-  complex<InvEnergy2> lS1,lS2,rS1,rS2;
-  Complex left,right;
-  complex<InvEnergy> lV,rV;
+  Lorentz5Momentum sum(part.momentum()+momenta[0]);
   InvEnergy ms(1./(m0+m1));
   InvEnergy2 ms2(ms*ms);
-  unsigned int ix,iy,ixa,iya;
-  ParticleVector::const_iterator start,end;
-  ParticleVector hadpart;
-  vector<LorentzPolarizationVectorE> hadron;
   double pre(0.);
-  vector<unsigned int> constants,ihel;
-  int itemp; unsigned int ibar;
   for(unsigned int mode=0;mode<_formmap[imode()].size();++mode) {
     // calculate the form factors
+    Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
     _form->SpinHalfSpinThreeHalfFormFactor(q2,_formmap[imode()][mode],id0,id1,m0,m1,
-					   f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a);
-    if(inpart.id()>0) {
+  					   f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a);
+    complex<InvEnergy2> lS1,lS2,rS1,rS2;
+    Complex left,right;
+    complex<InvEnergy> lV,rV;
+    if(part.id()>0) {
       left  = f1a-f1v;
       right = f1a+f1v; 
       lS1   = ms2*(f3a-f4a-f3v+f4v);
@@ -659,56 +642,63 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
       rV    = ms *conj(f2a+f2v);
     }
     // construct the vectors for the decay
-    Complex scalar1,scalar2;
-    complex<Energy> lfact,rfact;
-    LorentzPolarizationVectorE tvec;
-    LorentzPolarizationVector  svec;
-    for(iya=0;iya<4;++iya) {
-      for(ixa=0;ixa<2;++ixa) {
-	if(decay[0]->id()>0){ix=iya;iy=ixa;}
-	else{ix=ixa;iy=iya;}
-	// scalar like terms
-	lfact = _inHalf[iy].leftScalar( _inHalfBar[ix]);
-	rfact = _inHalf[iy].rightScalar(_inHalfBar[ix]);
-	scalar1 = (lS1*lfact+rS1*rfact)*UnitRemoval::E;
-	scalar2 = (lS2*lfact+rS2*rfact)*UnitRemoval::E;
-	svec = _inHalf[iy].generalCurrent(_inHalfBar[ix],lV/ms,rV/ms)*ms;
-	if(inpart.id()>0) {
-	  tvec=_inThreeHalfBar[ix].generalCurrent(_inHalf[iy],left,right);
+    LorentzPolarizationVectorE baryon[4][2];
+    for(unsigned int iya=0;iya<4;++iya) {
+      for(unsigned int ixa=0;ixa<2;++ixa) {
+	unsigned int ix,iy;
+  	if(outgoing[0]->id()>0) {
+	  ix=iya;
+	  iy=ixa;
 	}
 	else {
-	  tvec=_inThreeHalf[iy].generalCurrent(_inHalfBar[ix],left,right);
+	  ix=ixa;
+	  iy=iya;
 	}
-	baryon[iya][ixa] = tvec+svec*UnitRemoval::E
-	  +scalar1*decay[0]->momentum()+scalar2*inpart.momentum();
+  	// scalar like terms
+	complex<Energy> lfact = _inHalf[iy].leftScalar( _inHalfBar[ix]);
+	complex<Energy> rfact = _inHalf[iy].rightScalar(_inHalfBar[ix]);
+	Complex       scalar1 = (lS1*lfact+rS1*rfact)*UnitRemoval::E;
+	Complex       scalar2 = (lS2*lfact+rS2*rfact)*UnitRemoval::E;
+	LorentzPolarizationVector  svec = _inHalf[iy].generalCurrent(_inHalfBar[ix],lV/ms,rV/ms)*ms;
+	LorentzPolarizationVectorE tvec;
+   	if(part.id()>0) {
+   	  tvec=_inThreeHalfBar[ix].generalCurrent(_inHalf[iy],left,right);
+   	}
+   	else {
+   	  tvec=_inThreeHalf[iy].generalCurrent(_inHalfBar[ix],left,right);
+   	}
+  	baryon[iya][ixa] = tvec+svec*UnitRemoval::E
+  	  +scalar1*momenta[0]+scalar2*part.momentum();
       }
     }
-    start=decay.begin()+1;
-    end  =decay.end();
-    hadpart=ParticleVector(start,end);
-    hadron=_current->current(_currentmap[imode()][mode],
-			     ichan,scale,hadpart,meopt);
+    vector<LorentzPolarizationVectorE> hadron =
+      _current->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+			_currentmap[imode()][mode],ichan,scale,
+			tPDVector(outgoing.begin()+1,outgoing.end()),
+			vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),meopt);
     // prefactor
-    pre = pow(inpart.mass()/scale,int(hadpart.size()-2));pre*=pre;
+    pre  = pow(part.mass()/scale,int(outgoing.size()-3));
+    pre *= pre;
     // work out the mapping for the hadron vector
-    constants.resize(decay.size()+1);ihel.resize(decay.size()+1);
-    itemp=1;ibar=0;
-    for(int ix=int(decay.size()-1);ix>=0;--ix) {
-      if(abs(decay[ix]->id())!=id1) {
-	itemp*=decay[ix]->data().iSpin();
-	constants[ix]=itemp;
+    vector<unsigned int> constants(outgoing.size()+1),ihel(outgoing.size()+1);
+    int itemp = 1;
+    int ibar  = 0;
+    for(int ix=int(outgoing.size()-1);ix>=0;--ix) {
+      if(abs(outgoing[ix]->id())!=id1) {
+   	itemp*=outgoing[ix]->iSpin();
+   	constants[ix]=itemp;
       }
       else{ibar=ix;}
     }
-    constants[decay.size()]=1;
+    constants[outgoing.size()]=1;
     constants[ibar]=constants[ibar+1];
-    for(iya=0;iya<4;++iya) {
+    for(unsigned int iya=0;iya<4;++iya) {
       ihel[1]=iya;
-      for(ixa=0;ixa<2;++ixa) {
-	ihel[0]=ixa;
+      for(unsigned int ixa=0;ixa<2;++ixa) {
+   	ihel[0]=ixa;
 	for(unsigned int lhel=0;lhel<hadron.size();++lhel) {
 	  // map the index for the hadrons to a helicity state
-	  for(unsigned int ix=decay.size();ix>0;--ix)
+	  for(int ix=int(outgoing.size());ix>0;--ix)
 	    {if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
 	  (*ME())(ihel) += hadron[lhel].dot(baryon[iya][ixa])*
 	    _factCKM[imode()][mode]*SM().fermiConstant();
@@ -721,67 +711,83 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
 }
 
 void BaryonFactorizedDecayer::findModes(unsigned int imode,
-					vector<tPDVector> & particles,
+					tPDVector & incoming,
+					vector<tPDVector> & outgoing,
 					vector<unsigned int> & loc,
 					vector<bool> & cc) {
-  unsigned int ix,iy,nfound,iz;
-  // resize the vectors
-  loc.clear();cc.clear();
   // get the id's for the mode
-  vector<int> id,idbar;
-  int idtemp; bool found;
-  for(ix=0;ix<particles[imode].size();++ix)
-    {
-      id.push_back(particles[imode][ix]->id());
-      if(particles[imode][ix]->CC()){idbar.push_back(particles[imode][ix]->CC()->id());}
-      else{idbar.push_back(id[ix]);}
-    }
-  vector<bool> done(id.size(),false);
+  // incoming
+  int id_in    = incoming[imode]->id();
+  int idbar_in = incoming[imode]->CC() ?
+    incoming[imode]->CC()->id() : incoming[imode]->id();
+  // outgoing
+  vector<int> id_out,idbar_out;
+  for(unsigned int ix=0;ix<outgoing[imode].size();++ix) {
+    id_out.push_back(outgoing[imode][ix]->id());
+    if(outgoing[imode][ix]->CC())
+      idbar_out.push_back(outgoing[imode][ix]->CC()->id());
+    else
+      idbar_out.push_back(id_out[ix]);
+  }
   // loop over the modes
-  for(ix=0;ix<particles.size();++ix)
-    {
-      if(ix==imode||particles[ix].empty()) continue;
-	  assert(!particles[ix].empty());
-	  assert(particles[ix][0]);
-	  // the particle mode
-	  if(particles[ix][0]->id()==id[0]&&particles[ix].size()==id.size())
-	    {
-	      nfound=1;
-	      for(iy=0;iy<id.size();++iy){done[iy]=false;}
-	      for(iy=1;iy<id.size();++iy)
-		{
-		  idtemp=particles[ix][iy]->id();
-		  iz=1;found=false;
-		  do{if(idtemp==id[iz]&&!done[iz]){done[iz]=true;found=true;}++iz;}
-		  while(iz<id.size()&&!found);
-		  if(found){++nfound;}
-		}
-	      if(nfound==id.size()){cc.push_back(false);loc.push_back(ix);}
-	    }
-	  // the charge conjugate mode
-	  if(particles[ix][0]->id()==idbar[0]&&particles[ix].size()==idbar.size())
-	    {
-	      nfound=1;
-	      for(iy=0;iy<idbar.size();++iy){done[iy]=false;}
-	      for(iy=1;iy<idbar.size();++iy)
-		{
-		  idtemp=particles[ix][iy]->id();
-		  iz=1;found=false;
-		  do{if(idtemp==idbar[iz]&&!done[iz]){done[iz]=true;found=true;}++iz;}
-		  while(iz<idbar.size()&&!found);
-		  if(found){++nfound;}
-		}
-	      if(nfound==idbar.size()){cc.push_back(false);loc.push_back(ix);}
-	    }
+  for(unsigned int ix=0;ix<outgoing.size();++ix) {
+    if(ix==imode||outgoing[ix].empty()) continue;
+    assert(!outgoing[ix].empty());
+    assert(incoming[ix]);
+    // the particle mode
+    if(incoming[ix]->id()==id_in&&outgoing[ix].size()==id_out.size()) {
+      vector<bool> done(id_out.size(),false);
+      unsigned int nfound = 0;
+      for(unsigned int iy=0;iy<id_out.size();++iy) {
+	int idtemp = outgoing[ix][iy]->id();
+	unsigned int iz = 0;
+	bool found = false;
+	do {
+	  if(idtemp==id_out[iz]&&!done[iz]) {
+	    done[iz]=true;
+	    found=true;
+	  }
+	  ++iz;
+	}
+	while(iz<id_out.size()&&!found);
+	if(found) ++nfound;
+      }
+      if(nfound==id_out.size()) {
+	cc.push_back(false);
+	loc.push_back(ix);
+      }
     }
+    // the charge conjugate mode
+    if(incoming[ix]->id()==idbar_in&&outgoing[ix].size()==idbar_out.size()) {
+      vector<bool> done(id_out.size(),false);
+      unsigned int nfound=0;
+      for(unsigned int iy=0;iy<idbar_out.size();++iy) {
+	int idtemp=outgoing[ix][iy]->id();
+	unsigned int iz=0;
+	bool found = false;
+	do {
+	  if(idtemp==idbar_out[iz]&&!done[iz]) {
+	    done[iz]=true;
+	    found=true;
+	  }
+	  ++iz;
+	}
+	while(iz<idbar_out.size()&&!found);
+	if(found) ++nfound;
+      }
+      if(nfound==idbar_out.size()) {
+	cc.push_back(false);
+	loc.push_back(ix);
+      }
+    }
+  }
 }
 
 // output the setup information for the particle database
-void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) const
-{
+void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) const {
   unsigned int ix;
   if(header){output << "update decayers set parameters=\"";}
-  DecayIntegrator::dataBaseOutput(output,false);
+  DecayIntegrator2::dataBaseOutput(output,false);
   output << "newdef " << name() << ":a1Bottom "  << _a1b << "\n";
   output << "newdef " << name() << ":a2Bottom "  << _a2b << "\n";
   output << "newdef " << name() << ":a1Charm "   << _a1c << "\n";
