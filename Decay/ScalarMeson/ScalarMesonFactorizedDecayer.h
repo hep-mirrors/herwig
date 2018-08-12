@@ -12,8 +12,8 @@
 // This is the declaration of the ScalarMesonFactorizedDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/FormFactors/ScalarFormFactor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -26,16 +26,16 @@ using namespace ThePEG;
 /** \ingroup Decay
  *
  * The <code>ScalarMesonFactorizedDecayer</code> class is a class which combines a 
- * WeakDecayCurrent and a ScalarFormFactor in the naive factorization approximation
+ * WeakCurrent and a ScalarFormFactor in the naive factorization approximation
  * to perform the non-leptonic weak decays of scalar mesons.
  *
- * @see DecayIntegrator
- * @see WeakDecayCurrent
+ * @see DecayIntegrator2
+ * @see WeakCurrent
  * @see ScalarFormFactor
  *
  */
 
-class ScalarMesonFactorizedDecayer: public DecayIntegrator {
+class ScalarMesonFactorizedDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -46,7 +46,7 @@ public:
 
 public:
 
-  /** @name Virtual functions required by the Decayer and DecayIntegrator classes. */
+  /** @name Virtual functions required by the Decayer and DecayIntegrator2 classes. */
   //@{
   /**
    * Which of the possible decays is required
@@ -67,16 +67,23 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * This function combines the current and the form factor to give the matrix
-   * element.
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2( const int ichan, const Particle & part,
-		     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
   //@}
 
   /**
@@ -172,11 +179,13 @@ private:
   /**
    * Find duplicate modes in the list of particles
    * @param imode The mode we are studying
-   * @param particles The external particles for the different modes
+   * @param incoming The incoming particles for the different modes
+   * @param outgoing The outgoing particles for the different modes
    * @param loc The location of the duplicate mode
    * @param cc  If the duplicate is the charge conjugate
    */
-  void findModes(unsigned int imode,vector<tPDVector> & particles,
+  void findModes(unsigned int imode, tPDVector & incoming,
+		 vector<tPDVector> & outgoing,
 		 vector<unsigned int> & loc,vector<bool> & cc);
 
 private:
@@ -192,7 +201,7 @@ private:
   /**
    *  The weak decay current
    */
-  vector<WeakDecayCurrentPtr> _current;
+  vector<WeakCurrentPtr> _current;
 
   /**
    * The baryon form factor
