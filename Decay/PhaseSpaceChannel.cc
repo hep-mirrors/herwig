@@ -99,19 +99,19 @@ void PhaseSpaceChannel::initrun(tPhaseSpaceModePtr mode) {
   // }
   // // ensure intermediates either have the width set, or
   // // can't possibly be on-shell
-  // Energy massmax = _mode->externalParticles(0)->massMax();
-  // for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
-  //   massmax -= _mode->externalParticles(ix)->massMin();
+  // Energy massmax = mode_->externalParticles(0)->massMax();
+  // for(unsigned int ix=1;ix<mode_->numberofParticles();++ix) 
+  //   massmax -= mode_->externalParticles(ix)->massMin();
   // for(unsigned int ix=0;ix<_intpart.size();++ix) {
   //   if(_intwidth[ix]==0.*MeV && ix>0 && _jactype[ix]==0 ) {
   //     Energy massmin(0.*GeV);
   //     for(unsigned int iy=0;iy<_intext[ix].size();++iy)
-  // 	massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
+  // 	massmin += mode_->externalParticles(_intext[ix][iy])->massMin();
   //     // check if can be on-shell
   //     if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
   // 	string modeout;
-  // 	for(unsigned int iy=0;iy<_mode->numberofParticles();++iy) {
-  // 	  modeout += _mode->externalParticles(iy)->PDGName() + " ";
+  // 	for(unsigned int iy=0;iy<mode_->numberofParticles();++iy) {
+  // 	  modeout += mode_->externalParticles(iy)->PDGName() + " ";
   // 	}
   // 	throw Exception() << "Width zero for " << _intpart[ix]->PDGName()
   // 			  << " in PhaseSpaceChannel::doinitrun() "
@@ -139,8 +139,9 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     int idau[2] = {abs(intermediates_[ix].children.first),
 		   abs(intermediates_[ix].children.second)};
     // if both decay products off-shell
-    double rnd  = UseRandom::rnd();
     if(intermediates_[ix].children.first<0&&intermediates_[ix].children.second<0) {
+      double rnd  = mode_->rStack_.top();
+      mode_->rStack_.pop();
       Energy lowerb[2];
        // lower limits on the masses of the two resonances
       for(unsigned int iy=0;iy<2;++iy) {
@@ -150,9 +151,10 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
    	  if(massext[des-1]!=ZERO) massless = false;
    	  lowerb[iy]+=massext[des-1];
   	}
-  // 	if(massless) lowerb[iy] = _mode->epsilonPS(); 
+   	if(massless) lowerb[iy] = mode_->epsilonPS(); 
       }
-      double rnd2 = UseRandom::rnd();
+      double rnd2 = mode_->rStack_.top();
+      mode_->rStack_.pop();
       // randomize the order
       if(rnd<0.5) {
 	rnd*=2.;
@@ -182,6 +184,8 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     }
     // only first off-shell
     else if(intermediates_[ix].children.first<0) {
+      double rnd  = mode_->rStack_.top();
+      mode_->rStack_.pop();
       // compute the limits of integration
       Energy upper = massint[ix]-massext[idau[1]-1];
       Energy lower = ZERO;
@@ -190,7 +194,7 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
    	if(massext[des-1]!=ZERO) massless = false;
    	lower+=massext[des-1];
       }
-      //     if(massless) lower = _mode->epsilonPS();
+      if(massless) lower = mode_->epsilonPS();
       massint[idau[0]] = generateMass(intermediates_[idau[0]],lower,upper,rnd);
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]-1], 
@@ -198,6 +202,8 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     }
     // only second off-shell
     else if(intermediates_[ix].children.second<0) {
+      double rnd  = mode_->rStack_.top();
+      mode_->rStack_.pop();
       // compute the limits of integration
       Energy upper = massint[ix]-massext[idau[0]-1];
       Energy lower = ZERO;
@@ -206,7 +212,7 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
  	if(massext[des-1]!=ZERO) massless = false;
  	lower+=massext[des-1];
       }
-      //     if(massless) lower = _mode->epsilonPS();
+      if(massless) lower = mode_->epsilonPS();
       massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper,rnd);
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massext[idau[0]-1],massint[idau[1]], 
@@ -227,7 +233,10 @@ void PhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
 				     Lorentz5Momentum & p1,
 				     Lorentz5Momentum & p2 ) const {
   static const double eps=1e-6;
-  double ctheta,phi;
+  double ctheta = 2.*mode_->rStack_.top()-1.;
+  mode_->rStack_.pop();
+  double phi = Constants::twopi*mode_->rStack_.top();
+  mode_->rStack_.pop();
   Kinematics::generateAngles(ctheta,phi);
   Axis unitDir1=Kinematics::unitDirection(ctheta,phi);
   Momentum3 pstarVector;

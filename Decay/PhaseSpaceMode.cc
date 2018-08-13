@@ -20,13 +20,13 @@ using namespace ThePEG::Helicity;
 void PhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << incoming_ << channels_ << maxWeight_ << outgoing_ << outgoingCC_
      << partial_ << widthGen_ << massGen_ << testOnShell_
-     << ounit(eMax_,GeV);
+     << ounit(eMax_,GeV) << nRand_;
 }
 
 void PhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
   is >> incoming_ >> channels_ >> maxWeight_ >> outgoing_ >> outgoingCC_
      >> partial_ >> widthGen_ >> massGen_ >> testOnShell_
-     >> iunit(eMax_,GeV);
+     >> iunit(eMax_,GeV) >> nRand_;
 }
 
 // The following static variable is needed for the type
@@ -46,6 +46,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
 			      tcDecayIntegrator2Ptr decayer,
 			      bool intermediates,bool cc) {
   decayer->ME(DecayMEPtr());
+  eps_=decayer->eps_;
   // compute the prefactor
   Energy prewid = (widthGen_&&partial_>=0) ?
     widthGen_->partialWidth(partial_,inpart.mass()) :
@@ -66,6 +67,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
   try {
     do {
       // phase-space pieces of the weight
+      fillStack();
       wgt = pre*weight(ichan,inrest,momenta);
       // matrix element piece
       wgt *= decayer->me2(-1,inrest,!cc ? outgoing_ : outgoingCC_,
@@ -146,8 +148,10 @@ Energy PhaseSpaceMode::flatPhaseSpace(const Particle & inpart,
   // masses of the particles
   vector<Energy> mass = externalMasses(inpart.mass(),wgt,onShell);
   // two body decay
-  double ctheta,phi;
-  Kinematics::generateAngles(ctheta,phi);
+  double ctheta  = 2.*rStack_.top() - 1.;
+  rStack_.pop();
+  double phi  = Constants::twopi*rStack_.top();
+  rStack_.pop();
   if(! Kinematics::twoBodyDecay(inpart.momentum(), mass[0], mass[1],
 				ctheta, phi, momenta[0],momenta[1])) 
     throw Exception() << "Incoming mass - Outgoing mass negative in "
@@ -186,7 +190,8 @@ vector<Energy> PhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
     Energy low = max(outgoing_[notdone[iloc]]->mass()-outgoing_[notdone[iloc]]->widthLoCut(),ZERO);
     mlow-=low;
     double wgttemp;
-    mass[notdone[iloc]]= massGen_[notdone[iloc]]->mass(wgttemp,*outgoing_[notdone[iloc]],low,inmass-mlow);
+    mass[notdone[iloc]]= massGen_[notdone[iloc]]->mass(wgttemp,*outgoing_[notdone[iloc]],low,inmass-mlow,rStack_.top());
+    rStack_.pop();
     assert(mass[notdone[iloc]]>=low&&mass[notdone[iloc]]<=inmass-mlow);
     wgt   *= wgttemp;
     mlow  += mass[notdone[iloc]];
@@ -216,6 +221,7 @@ void PhaseSpaceMode::constructVertex(const Particle & inpart,
 Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr decayer,
 					    bool onShell) {
   decayer->ME(DecayMEPtr());
+  eps_=decayer->eps_;
   Energy output(ZERO);
   // ensure that the weights add up to one
   if(!channels_.empty()) {
@@ -247,6 +253,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
       try {
 	int dummy;
 	// phase-space piece
+	fillStack();
 	wgt = pre*weight(dummy,*inpart,momenta,onShell);
 	// matrix element piece
 	wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
@@ -312,6 +319,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 	  InvEnergy pre = prewid>ZERO ? 1./prewid : 1./MeV;
 	  // generate the weight for this point
 	  try {
+	    fillStack();
 	    wgt = pre*weight(ichan,*inpart,momenta,onShell);
 	    // matrix element piece
 	    wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
@@ -400,7 +408,8 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Particle & in, 
 					 vector<Lorentz5Momentum> & momenta,
 					 bool onShell) const {
-  double wgt(UseRandom::rnd());
+  double wgt(rStack_.top());
+  rStack_.pop();
   // select a channel
   ichan=-1;
   do {
@@ -424,4 +433,45 @@ Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Particle & in,
     wgt += channel.generateWeight(momenta);
   // return the weight
   return wgt!=0. ? in.mass()*masswgt/wgt : ZERO;
+}
+
+void PhaseSpaceMode::init() {
+  // get mass and width generators
+  outgoingCC_.clear();
+  for(tPDPtr part : outgoing_) {
+    outgoingCC_.push_back(part->CC() ? part->CC() : part);
+  }
+  massGen_.resize(outgoing_.size());
+  widthGen_ = dynamic_ptr_cast<cGenericWidthGeneratorPtr>(incoming_.first->widthGenerator());
+  for(unsigned int ix=0;ix<outgoing_.size();++ix) {
+    assert(outgoing_[ix]);
+    massGen_[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(outgoing_[ix]->massGenerator());
+  }
+  // get max energy for decays
+  if(!incoming_.second)
+    eMax_ = testOnShell_ ? incoming_.first->mass() : incoming_.first->massMax();
+  // work out how many random numbers we need
+  nRand_ = 3*outgoing_.size()-4;
+  for(unsigned int ix=0;ix<outgoing_.size();++ix) {
+    if(massGen_[ix]) ++nRand_;
+  }
+  if(!channels_.empty()) ++nRand_;
+}
+
+void PhaseSpaceMode::initrun() {
+  // update the mass and width generators
+  if(incoming_.first->widthGenerator()!=widthGen_)
+    widthGen_ = dynamic_ptr_cast<cGenericWidthGeneratorPtr>(incoming_.first->widthGenerator());
+  for(unsigned int ix=0;ix<outgoing_.size();++ix) {
+    if(massGen_[ix]!=outgoing_[ix]->massGenerator())
+      massGen_[ix] = dynamic_ptr_cast<cGenericMassGeneratorPtr>(outgoing_[ix]->massGenerator());
+  }
+  for(PhaseSpaceChannel & channel : channels_) channel.initrun(this);
+  if(widthGen_) const_ptr_cast<GenericWidthGeneratorPtr>(widthGen_)->initrun();
+  tcGenericWidthGeneratorPtr wtemp;
+  for(unsigned int ix=0;ix<outgoing_.size();++ix) {
+    wtemp=
+      dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(outgoing_[ix]->widthGenerator());
+    if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->initrun();
+  }
 }

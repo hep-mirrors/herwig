@@ -44,7 +44,8 @@ public:
    * The default constructor.
    */
   PhaseSpaceMode() : maxWeight_(0.), partial_(-1),
-		     testOnShell_(false), eMax_(ZERO)
+		     testOnShell_(false), eMax_(ZERO),
+		     eps_(ZERO), nRand_(0)
   {};
   
   /**
@@ -55,7 +56,8 @@ public:
 		 Energy eMax=ZERO) : incoming_(make_pair(in1,in2)),
 				     maxWeight_(wMax),
 				     outgoing_(out), partial_(-1),
-				     testOnShell_(false), eMax_(eMax)
+				     testOnShell_(false), eMax_(eMax),
+				     eps_(ZERO), nRand_(0)
   {};
   //@}
 
@@ -153,40 +155,12 @@ public :
   /**
    *   Initialize the phase space
    */
-  void init() {
-    // get mass and width generators
-    outgoingCC_.clear();
-    for(tPDPtr part : outgoing_) {
-      outgoingCC_.push_back(part->CC() ? part->CC() : part);
-    }
-    massGen_.resize(outgoing_.size());
-    widthGen_ = dynamic_ptr_cast<cGenericWidthGeneratorPtr>(incoming_.first->widthGenerator());
-    for(unsigned int ix=0;ix<outgoing_.size();++ix) {
-      assert(outgoing_[ix]);
-      massGen_[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(outgoing_[ix]->massGenerator());
-    }
-    // get max energy for decays
-    if(!incoming_.second)
-      eMax_ = testOnShell_ ? incoming_.first->mass() : incoming_.first->massMax();
-  }
+  void init();
 
-  void initrun() {
-    // update the mass and width generators
-    if(incoming_.first->widthGenerator()!=widthGen_)
-      widthGen_ = dynamic_ptr_cast<cGenericWidthGeneratorPtr>(incoming_.first->widthGenerator());
-    for(unsigned int ix=0;ix<outgoing_.size();++ix) {
-      if(massGen_[ix]!=outgoing_[ix]->massGenerator())
-	massGen_[ix] = dynamic_ptr_cast<cGenericMassGeneratorPtr>(outgoing_[ix]->massGenerator());
-    }
-    for(PhaseSpaceChannel & channel : channels_) channel.initrun(this);
-    if(widthGen_) const_ptr_cast<GenericWidthGeneratorPtr>(widthGen_)->initrun();
-    tcGenericWidthGeneratorPtr wtemp;
-    for(unsigned int ix=0;ix<outgoing_.size();++ix) {
-      wtemp=
-	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(outgoing_[ix]->widthGenerator());
-      if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->initrun();
-    }
-  }
+  /**
+   *   Initialisation before the run stage
+   */
+  void initrun(); 
 
   /**
    * Get the maximum weight for the decay.
@@ -231,6 +205,11 @@ public :
    */
   void setPartialWidth(int in) {partial_=in;}
   
+  /**
+   *  Access to the epsilon parameter
+   */
+  Energy epsilonPS() const {return eps_;}
+
 public :
 
   /**
@@ -306,6 +285,14 @@ private:
    */
   void constructVertex(const Particle & in, const ParticleVector & out,
 		       tcDecayIntegrator2Ptr decayer) const;
+
+  /**
+   *   Fill the stack
+   */
+  void fillStack() {
+    assert(rStack_.empty());
+    for(unsigned int ix=0;ix<nRand_;++ix) rStack_.push(UseRandom::rnd());
+  }
   
 private:
 
@@ -363,6 +350,21 @@ private:
    *   The maximum energy for the mode
    */
   Energy eMax_;
+
+  /**
+   *   Cut-off
+   */
+  Energy eps_;
+
+  /**
+   *   Number of random numbers required
+   */
+  unsigned int nRand_;
+
+  /**
+   *   Stack for the random numbers
+   */
+  mutable stack<double> rStack_;
 };
 
 }
