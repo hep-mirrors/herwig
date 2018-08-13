@@ -50,8 +50,9 @@ void PhaseSpaceChannel::init(tPhaseSpaceModePtr mode) {
 
 ostream & Herwig::operator<<(ostream & os, const PhaseSpaceChannel & channel) {
   // output of the external particles
-  if(!channel.mode_->incoming().second)
+  if(!channel.mode_->incoming().second) {
     os << "Channel for the decay of " << channel.mode_->incoming().first->PDGName() << " -> ";
+  }
   else 
     os << "Channel for " << channel.mode_->incoming().first->PDGName()
        << ", " << channel.mode_->incoming().second->PDGName()
@@ -514,3 +515,36 @@ void PhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
 		 resonance[-intermediates_[0].children.second]);
 }
  
+ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer PhaseSpaceChannel::createDiagram() const {
+  assert(mode_->incoming().second);
+  // create the diagram with incoming and s chnnel particle
+  ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer diag =
+    new_ptr((Tree2toNDiagram(2), mode_->incoming().first,
+	     mode_->incoming().second,1,intermediates_[0].particle));
+  map<int,int> children;
+  map<unsigned int,int> res;
+  int ires=3;
+  res[0]=3;
+  // add the intermediates
+  for(unsigned int ix=0;ix<intermediates_.size();++ix) {
+    if(intermediates_[ix].children.first>0)
+      children[intermediates_[ix].children.first]= res[ix];
+    else {
+      ires+=1;
+      diag = new_ptr((*diag,res[ix],intermediates_[-intermediates_[ix].children.first].particle));
+      res[-intermediates_[ix].children.first]=ires;
+    }
+    if(intermediates_[ix].children.second>0)
+      children[intermediates_[ix].children.second]= res[ix];
+    else {
+      ires+=1;
+      diag = new_ptr((*diag,res[ix],intermediates_[-intermediates_[ix].children.second].particle));
+      res[-intermediates_[ix].children.second]=ires;
+    }
+  }
+  // add the children in the corret order
+  for(map<int,int>::const_iterator it=children.begin();it!=children.end();++it) {
+    diag = new_ptr((*diag,it->second,mode_->outgoing()[it->first-1]));
+  }
+  return diag;
+}

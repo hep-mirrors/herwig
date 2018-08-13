@@ -37,7 +37,8 @@ describeHerwigPhaseSpaceMode("Herwig::PhaseSpaceMode", "PhaseSpaceMode.so");
 void PhaseSpaceMode::Init() {
 
   static ClassDocumentation<PhaseSpaceMode> documentation
-    ("There is no documentation for the PhaseSpaceMode class");
+    ("The PhaseSpaceMode classs contains a number of phase space"
+     " channels for the integration of a particular decay mode");
 
 }
 

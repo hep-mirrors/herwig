@@ -123,6 +123,11 @@ public:
     for(unsigned int ix=0;ix<channels_.size();++ix)
       channels_[ix].weight(wgts[ix]);
   }
+
+  /**
+   *  Number of rnadom numbers needed
+   */
+  unsigned int nRand() const {return nRand_;}
   
 public:
 
@@ -209,6 +214,34 @@ public :
    *  Access to the epsilon parameter
    */
   Energy epsilonPS() const {return eps_;}
+  
+  /**
+   *   Fill the stack
+   */
+  void fillStack(const double * r) {
+    assert(rStack_.empty());
+    for(unsigned int ix=nRand_;ix>0;--ix)
+      rStack_.push(r[nRand_-1]);
+  }
+
+  /**
+   * Return the weight for a given phase-space point.
+   * @param in The momentum of the incoming particle
+   * @param momenta The momenta of the outgoing particles
+   * @param onShell Whether or not to force the intermediates to be on-shell 
+   * @return The weight.
+   */
+  Energy weight(int & ichan, const Lorentz5Momentum & in,
+		vector<Lorentz5Momentum> & momenta,
+		bool onShell=false) const {
+    ichan=0;
+    // flat phase-space
+    if(channels_.empty())
+      return flatPhaseSpace(in,momenta,onShell);
+    // multi-channel
+    else
+      return channelPhaseSpace(ichan,in,momenta,onShell);
+  }
 
 public :
 
@@ -229,25 +262,6 @@ public :
   }
 
 private: 
-
-  /**
-   * Return the weight for a given phase-space point.
-   * @param in The momentum of the incoming particle
-   * @param momenta The momenta of the outgoing particles
-   * @param onShell Whether or not to force the intermediates to be on-shell 
-   * @return The weight.
-   */
-  Energy weight(int & ichan, const Lorentz5Momentum & in,
-		vector<Lorentz5Momentum> & momenta,
-		bool onShell=false) const {
-    ichan=0;
-    // flat phase-space
-    if(channels_.empty())
-      return flatPhaseSpace(in,momenta,onShell);
-    // multi-channel
-    else
-      return channelPhaseSpace(ichan,in,momenta,onShell);
-  }
     
   /**
    * Return the weight and momenta for a flat phase-space decay.

@@ -11,6 +11,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "PhaseSpaceMode.fh"
+#include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 namespace Herwig {
 
@@ -210,6 +211,10 @@ public:
    */
   void generateIntermediates(bool cc,const Particle & in, ParticleVector & out);
 
+  /**
+   *   Create a \f$2\to n\f$ diagrams for the channel
+   */
+  ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer createDiagram() const;
   
 public:
 
@@ -252,6 +257,7 @@ private:
       children.push_back(res.children.first);
     else
       findChildren(intermediates_[abs(res.children.first)],children);
+    if(!res.particle) return; 
     if(res.children.second>0)
       children.push_back(res.children.second);
     else
