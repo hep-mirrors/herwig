@@ -648,7 +648,7 @@ ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
 // complete the construction of the decay mode for integration
 bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceModePtr mode,
-					  unsigned int iloc,unsigned int ires,
+					  unsigned int iloc,int ires,
 					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;

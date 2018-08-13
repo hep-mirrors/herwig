@@ -46,7 +46,7 @@ void LeptonNeutrinoCurrent::Init() {
 bool LeptonNeutrinoCurrent::createMode(int icharge, tcPDPtr ,
 				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
 				       unsigned int imode,PhaseSpaceModePtr mode,
-				       unsigned int iloc,unsigned int ires,
+				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
   // no isospin here
   if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return false;

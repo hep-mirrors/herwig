@@ -205,7 +205,7 @@ void TwoPionPhotonCurrent::Init() {
 bool TwoPionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
 				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
 				      unsigned int imode,PhaseSpaceModePtr mode,
-				      unsigned int iloc,unsigned int ires,
+				      unsigned int iloc,int ires,
 				      PhaseSpaceChannel phase, Energy upp ) {
   assert(!resonance);
   // check the charge

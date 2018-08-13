@@ -53,7 +53,7 @@ public:
    * @return Whether the current was sucessfully constructed.
    */
   virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
-			  unsigned int iloc,unsigned int ires,
+			  unsigned int iloc,int ires,
 			  DecayPhaseSpaceChannelPtr phase,Energy upp);
   //@}
 

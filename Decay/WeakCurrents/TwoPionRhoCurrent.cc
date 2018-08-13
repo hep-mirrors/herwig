@@ -219,7 +219,7 @@ void TwoPionRhoCurrent::Init() {
 bool TwoPionRhoCurrent::createMode(int icharge, tcPDPtr resonance,
 				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
 				    unsigned int imode,PhaseSpaceModePtr mode,
-				    unsigned int iloc,unsigned int ires,
+				    unsigned int iloc,int ires,
 				    PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
   if((imode<1 && abs(icharge)!=3) ||

@@ -199,7 +199,7 @@ void TwoPionCzyzCurrent::doinit() {
 bool TwoPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
 				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
 				    unsigned int imode,PhaseSpaceModePtr mode,
-				    unsigned int iloc,unsigned int ires,
+				    unsigned int iloc,int ires,
 				    PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
   if((imode==0 && abs(icharge)!=3) ||

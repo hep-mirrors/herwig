@@ -727,7 +727,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 // complete the construction of the decay mode for integration
 bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
 				      DecayPhaseSpaceModePtr mode,
-				      unsigned int iloc,unsigned int ires,
+				      unsigned int iloc,int ires,
 				      DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if(!acceptMode(imode)){return false;}
   int iq(0),ia(0);

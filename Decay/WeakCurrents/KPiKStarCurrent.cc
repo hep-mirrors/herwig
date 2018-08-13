@@ -218,9 +218,9 @@ void KPiKStarCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool KPiKStarCurrent::createMode(int icharge, unsigned int imode,
-					 DecayPhaseSpaceModePtr mode,
-					 unsigned int iloc,unsigned int,
-					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
+				 DecayPhaseSpaceModePtr mode,
+				 unsigned int iloc,int,
+				 DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if((imode<=4&&abs(icharge)!=3) ||
      (imode>4 && icharge !=0)) return false; 
   // make sure that the decays are kinematically allowed
