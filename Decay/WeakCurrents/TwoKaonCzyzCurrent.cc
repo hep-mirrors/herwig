@@ -379,8 +379,8 @@ bool TwoKaonCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
     part[1]=getParticleData(ParticleID::Kbar0);
   }
   else if(imode==1|| imode==2)  {
-    part[0]=getParticleData(ParticleID::K0   );
-    part[1]=getParticleData(ParticleID::Kbar0);
+    part[0]=getParticleData(ParticleID::K_S0);
+    part[1]=getParticleData(ParticleID::K_L0);
   }
   else {
     part[0]=getParticleData(ParticleID::Kplus);
