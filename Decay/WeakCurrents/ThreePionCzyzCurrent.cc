@@ -199,14 +199,18 @@ bool ThreePionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
 				      unsigned int iloc,int ires,
 				      PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
-  if(imode>2 || icharge != 0) return false;
+  if(imode>=2 || icharge != 0) return false;
   // check the total isospin
   if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IZero) return false;
-  }
-  // check I_3
-  if(i3!=IsoSpin::I3Unknown && i3!=IsoSpin::I3Zero ) {
-    return false;
+    if(Itotal==IsoSpin::IZero) {
+      if(i3!=IsoSpin::I3Unknown) return false;
+    }
+    else if(Itotal==IsoSpin::IOne) {
+      if(i3!=IsoSpin::I3Unknown&&
+	 i3!=IsoSpin::I3One) return false;
+    }
+    else
+      return false;
   }
   // check the kinematics
   tPDPtr pip = getParticleData(ParticleID::piplus);
@@ -231,61 +235,98 @@ bool ThreePionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
 		      ires+2,iloc+1,ires+2,iloc+3));
     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
 		      ires+1,rho0[0],ires+1,iloc+3,
-		      ires+2,iloc+1,ires+1,iloc+2));
+		      ires+2,iloc+1,ires+2,iloc+2));
   }
   // phi rho 1450
   if(!resonance || resonance ==omega[3]) {
-    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    // newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc);
-    // newchannel->addIntermediate(rhom[1]  ,0,0.0, iloc+1,iloc+2);
-    // mode->addChannel(newchannel);
-    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    // newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc+1);
-    // newchannel->addIntermediate(rhop[1]  ,0,0.0, iloc  ,iloc+2);
-    // mode->addChannel(newchannel);
-    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    // newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc+2);
-    // newchannel->addIntermediate(rho0[1]  ,0,0.0, iloc  ,iloc+1);
-    // mode->addChannel(newchannel);
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[3],
+		      ires+1,rhom[1],ires+1,iloc+1,
+		      ires+2,iloc+2,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[3],
+		      ires+1,rhop[1],ires+1,iloc+2,
+		      ires+2,iloc+1,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[3],
+		      ires+1,rho0[1],ires+1,iloc+3,
+		      ires+2,iloc+1,ires+2,iloc+2));
   }
   // // omega 1650 rho 1700
   if(!resonance || resonance ==omega[2]) {
-    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    // newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc);
-    // newchannel->addIntermediate(rhom[2]  ,0,0.0, iloc+1,iloc+2);
-    // mode->addChannel(newchannel);
-    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    // newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc+1);
-    // newchannel->addIntermediate(rhop[2]  ,0,0.0, iloc  ,iloc+2);
-    // mode->addChannel(newchannel);
-    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    // newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc+2);
-    // newchannel->addIntermediate(rho0[2]  ,0,0.0, iloc  ,iloc+1);
-    // mode->addChannel(newchannel);
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[2],
+		      ires+1,rhom[2],ires+1,iloc+1,
+		      ires+2,iloc+2,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[2],
+		      ires+1,rhop[2],ires+1,iloc+2,
+		      ires+2,iloc+1,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[2],
+		      ires+1,rho0[2],ires+1,iloc+3,
+		      ires+2,iloc+1,ires+2,iloc+2));
   }
+  // reset the masses in the intergrators
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix<rhoMasses_.size()) {
+      if(rho0[ix])
+	mode->resetIntermediate(rho0[ix],rhoMasses_[ix],rhoWidths_[ix]);
+      if(rhop[ix])
+	mode->resetIntermediate(rhop[ix],rhoMasses_[ix],rhoWidths_[ix]);
+      if(rhom[ix])
+	mode->resetIntermediate(rhom[ix],rhoMasses_[ix],rhoWidths_[ix]);
+    }
+  }
+  for(unsigned int ix=0;ix<omegaMasses_.size();++ix) {
+    if(omega[ix])
+      mode->resetIntermediate(omega[ix],omegaMasses_[ix],omegaWidths_[ix]);
+  }
+  if(omega[3]) 
+    mode->resetIntermediate(omega[3],phiMass_,phiWidth_);
   return true;
 }
 
 // the particles produced by the current
 tPDVector ThreePionCzyzCurrent::particles(int icharge, unsigned int,
-					     int,int) {
+					  int,int) {
   assert(icharge==0);
-  tPDVector extpart(3);
-  extpart[0]=getParticleData(ParticleID::piplus);
-  extpart[1]=getParticleData(ParticleID::piminus);
-  extpart[2]=getParticleData(ParticleID::pi0);
   // return the answer
-  return extpart;
+  return {getParticleData(ParticleID::piplus),
+          getParticleData(ParticleID::piminus),
+          getParticleData(ParticleID::pi0)};
 }
 
+namespace {
+  Complex HChannel(const int & irho,
+		   const Energy & mass, const Energy & width, const Energy2 & sp, const Energy2 & sm,
+		   const Energy2 & s0, const Energy & mp, const Energy & m0) {
+    if(irho<0)
+      return Resonance::H(mass,width,sp,sm,s0,mp,m0);
+    else if(irho==0)
+      return Resonance::BreitWignerPWave(sm,mass,width,mp,m0);
+    else if(irho==1)
+      return Resonance::BreitWignerPWave(sp,mass,width,mp,m0);
+    else if(irho==2)
+      return Resonance::BreitWignerPWave(s0,mass,width,mp,mp);
+    else
+      assert(false);
+  }
+}
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 ThreePionCzyzCurrent::current(tcPDPtr resonance,
 			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			      const int imode, const int ichan, Energy & scale, 
-			      const tPDVector & outgoing,
+			      const int, const int ichan, Energy & scale, 
+			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator2::MEOption) const {
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal==IsoSpin::IZero) {
+      if(i3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+    }
+    else if(Itotal==IsoSpin::IOne) {
+      if(i3!=IsoSpin::I3Unknown&&
+	 i3!=IsoSpin::I3One) return vector<LorentzPolarizationVectorE>();
+    }
+    else
+      return vector<LorentzPolarizationVectorE>();
+  }
   useMe();
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;
@@ -297,24 +338,47 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
   Energy2 sm = (momenta[1]+momenta[2]).m2();
   Energy2 sp = (momenta[0]+momenta[2]).m2();
   Energy2 s0 = (momenta[0]+momenta[1]).m2();
-  // isospin = 0
-  complex<InvEnergy3> F_I1 =
-    Resonance::H(rhoMasses_[0],rhoWidths_[0],sp,sm,s0,mpip_,mpi0_)*
-    (coup_I0_[0]*Resonance::BreitWignerFW(q2,omegaMasses_[0],omegaWidths_[0])+
-     coup_I0_[1]*Resonance::BreitWignerFW(q2,phiMass_       ,phiWidth_      )+
-     coup_I0_[2]*Resonance::BreitWignerFW(q2,omegaMasses_[1],omegaWidths_[1])+
-     coup_I0_[3]*Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]))
-    +coup_I0_[4]*Resonance::H(rhoMasses_[1],rhoWidths_[1],sp,sm,s0,mpip_,mpi0_)*
-    Resonance::BreitWignerFW(q2,phiMass_,phiWidth_)
-    +coup_I0_[5]*Resonance::H(rhoMasses_[2],rhoWidths_[2],sp,sm,s0,mpip_,mpi0_)*
+  int irho=-1;
+  if(ichan>=0) {
+    irho = ichan%3;
+  }
+  // isospin zero part of the current
+  complex<InvEnergy3> F_I0(ZERO);
+  if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) {
+    // compute H rho
+    Complex Hrho = HChannel(irho,rhoMasses_[0],rhoWidths_[0],sp,sm,s0,mpip_,mpi0_);
+    // terms in the current
+    if((!resonance || resonance->id() == 223) && ichan<=2) {
+      F_I0 += Hrho*coup_I0_[0]*Resonance::BreitWignerFW(q2,omegaMasses_[0],omegaWidths_[0]);
+    }
+    if((!resonance || resonance->id() == 333) && (ichan<0 || (ichan>=9&&ichan<=11))) {
+      F_I0 += Hrho*coup_I0_[1]*Resonance::BreitWignerFW(q2,phiMass_       ,phiWidth_      );
+    }
+    if((!resonance || resonance->id() == 100223) && (ichan<0 || (ichan>=3&&ichan<=5))) {
+      F_I0 += Hrho*coup_I0_[2]*Resonance::BreitWignerFW(q2,omegaMasses_[1],omegaWidths_[1]);
+    }
+    if((!resonance || resonance->id() == 30223) && (ichan<0 || (ichan>=6&&ichan<=8))) {
+      F_I0 += coup_I0_[3]*Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]);
+    }
+    if((!resonance || resonance->id() == 333) && (ichan<0 || (ichan>=12&&ichan<=14))) {
+      F_I0 += coup_I0_[4]*HChannel(irho,rhoMasses_[1],rhoWidths_[1],sp,sm,s0,mpip_,mpi0_)*
+	Resonance::BreitWignerFW(q2,phiMass_,phiWidth_);
+    }
+    if((!resonance || resonance->id() == 100223) && (ichan<0 || (ichan>=15&&ichan<=17))) {
+      F_I0 += coup_I0_[5]*HChannel(irho,rhoMasses_[2],rhoWidths_[2],sp,sm,s0,mpip_,mpi0_)*
     Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[3]);
+    }
+  }
   // isospin = 1
-  complex<InvEnergy3> F_I0 = GW_*
-    Resonance::BreitWignerFW(q2,omegaMass_I1_,omegaWidth_I1_)/sqr(omegaMass_I1_)*
-    (Resonance::BreitWignerPWave(s0,rhoMasses_I1_[0],
-  				 rhoWidths_I1_[0],mpip_,mpip_)/sqr(rhoMasses_I1_[0])+
-     sigma_*Resonance::BreitWignerPWave(s0,rhoMasses_I1_[1],
-  					rhoWidths_I1_[1],mpip_,mpip_)/sqr(rhoMasses_I1_[0]));
+  complex<InvEnergy3> F_I1(ZERO);
+  if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && !resonance && ichan<0) {
+    F_I1 = GW_*
+      Resonance::BreitWignerFW(q2,omegaMass_I1_,omegaWidth_I1_)/sqr(omegaMass_I1_)*
+      (Resonance::BreitWignerPWave(s0,rhoMasses_I1_[0],
+				   rhoWidths_I1_[0],mpip_,mpip_)/sqr(rhoMasses_I1_[0])+
+       sigma_*Resonance::BreitWignerPWave(s0,rhoMasses_I1_[1],
+					  rhoWidths_I1_[1],mpip_,mpip_)/sqr(rhoMasses_I1_[0]));
+  }
   // the current
   LorentzPolarizationVector vect = (F_I0+F_I1)*
     Helicity::epsilon(momenta[0],
@@ -336,7 +400,7 @@ bool ThreePionCzyzCurrent::accept(vector<int> id) {
 }
 
 // the decay mode
-unsigned int ThreePionCzyzCurrent::decayMode(vector<int> idout) {
+unsigned int ThreePionCzyzCurrent::decayMode(vector<int> ) {
   return 0;
 }
 
