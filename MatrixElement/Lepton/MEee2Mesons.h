@@ -5,8 +5,8 @@
 // This is the declaration of the MEee2Mesons class.
 //
 
-#include "Herwig/MatrixElement/HwMEBase.h"
-#include "Herwig/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "Herwig/MatrixElement/MEMultiChannel.h"
+#include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
@@ -14,21 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEee2Mesons class is designed to simulate the production of a small
- * number of mesons via the weak current
+ * Here is the documentation of the MEee2Mesons class.
  *
  * @see \ref MEee2MesonsInterfaces "The interfaces"
  * defined for MEee2Mesons.
  */
-class MEee2Mesons: public HwMEBase {
+class MEee2Mesons: public MEMultiChannel {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEee2Mesons()
-  {}
+  MEee2Mesons();
 
 public:
 
@@ -47,80 +45,15 @@ public:
   virtual unsigned int orderInAlphaEW() const;
 
   /**
-   * The matrix element for the kinematical configuration
-   * previously provided by the last call to setKinematics(), suitably
-   * scaled by sHat() to give a dimension-less number.
-   * @return the matrix element scaled with sHat() to give a
-   * dimensionless number.
-   */
-  virtual double me2() const;
-
-  /**
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
-
-  /**
-   * Set the typed and momenta of the incoming and outgoing partons to
-   * be used in subsequent calls to me() and colourGeometries()
-   * according to the associated XComb object. If the function is
-   * overridden in a sub class the new function must call the base
-   * class one first.
-   */
-  virtual void setKinematics();
-
-  /**
-   * The number of internal degrees of freedom used in the matrix
-   * element.
-   */
-  virtual int nDim() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
-
-  /**
-   * Return the matrix element squared differential in the variables
-   * given by the last call to generateKinematics().
-   */
-  virtual CrossSection dSigHatDR() const;
-
-  /**
-   * Add all possible diagrams with the add() function.
-   */
-  virtual void getDiagrams() const;
-
-  /**
-   * Get diagram selector. With the information previously supplied with the
-   * setKinematics method, a derived class may optionally
-   * override this method to weight the given diagrams with their
-   * (although certainly not physical) relative probabilities.
-   * @param dv the diagrams to be weighted.
-   * @return a Selector relating the given diagrams to their weights.
-   */
-  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
+  //@}
 
   /**
    *  Construct the vertex of spin correlations.
    */
   virtual void constructVertex(tSubProPtr);
-  //@}
 
 
 public:
@@ -149,6 +82,15 @@ public:
    */
   static void Init();
 
+
+protected:
+
+  /**
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param ichan The channel we are calculating the matrix element for. 
+   */
+  virtual double me2(const int ichan) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -167,15 +109,14 @@ protected:
   //@}
 
 protected:
-  
+
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-
-
+  
 private:
 
   /**
@@ -184,22 +125,22 @@ private:
    */
   MEee2Mesons & operator=(const MEee2Mesons &);
 
-private:
-
+private :
+  
   /**
    * the hadronic current
    */
-  WeakDecayCurrentPtr current_;
-
-  /**
-   *  Multiplicity
-   */
-  mutable unsigned int nmult_;
+  WeakCurrentPtr current_;
 
   /**
    *  The matrix element
    */
   mutable ProductionMatrixElement me_;
+
+/**
+ *  Map for the modes
+ */
+map<int,int>  modeMap_;
 };
 
 }

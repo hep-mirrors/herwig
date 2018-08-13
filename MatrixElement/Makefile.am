@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libHwME.la
 
 libHwME_la_SOURCES =  \
 HwMEBase.h HwMEBase.fh HwMEBase.cc \
+MEMultiChannel.h MEMultiChannel.cc \
 MEfftoVH.h MEfftoVH.cc \
 MEfftoffH.h MEfftoffH.cc \
 HardVertex.fh HardVertex.h HardVertex.cc \
