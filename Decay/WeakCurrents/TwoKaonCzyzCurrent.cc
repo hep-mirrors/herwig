@@ -611,13 +611,28 @@ Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
 				  IsoSpin::IsoSpin Itotal, tcPDPtr resonance,
 				  Energy ma, Energy mb) const {
   unsigned int imin=0, imax = coup_[0].size();
-  if(ichan>0) {
-    imin = ichan;
-    imax = ichan+1;
-  }
   bool on[3] = {(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne),
 		(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && imode!=0,
 		(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && imode!=0};
+  if(ichan>=0) {
+    if(ichan<3) {
+      on[1]=on[2]=false;
+      imin = ichan;
+      imax = ichan+1;
+    }
+    else if(ichan==3) {
+      on[0]=on[2]=false;
+      imin=0;
+      imax=1;
+    }
+    else if(ichan==4) {
+      on[0]=on[1]=false;
+      imin=0;
+      imax=1;
+    }
+    else
+      assert(false);
+  }
   if(resonance) {
     switch(resonance->id()%1000) {
     case 223:
