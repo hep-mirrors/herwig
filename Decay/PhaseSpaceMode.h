@@ -232,13 +232,12 @@ private:
 
   /**
    * Return the weight for a given phase-space point.
-   * @param ichan The channel to generate the weight for.
-   * @param in The incoming particle.
-   * @param particles The outgoing particles.
-   * @param first Whether or not this is the first call for initialisation
+   * @param in The momentum of the incoming particle
+   * @param momenta The momenta of the outgoing particles
+   * @param onShell Whether or not to force the intermediates to be on-shell 
    * @return The weight.
    */
-  Energy weight(int & ichan, const Particle & in,
+  Energy weight(int & ichan, const Lorentz5Momentum & in,
 		vector<Lorentz5Momentum> & momenta,
 		bool onShell=false) const {
     ichan=0;
@@ -252,21 +251,24 @@ private:
     
   /**
    * Return the weight and momenta for a flat phase-space decay.
-   * @param inpart The incoming particle.
-   * @param outpart The outgoing particles.
+   * @param in The momentum of the incoming particle
+   * @param momenta The momenta of the outgoing particles
+   * @param onShell Whether or not to force the intermediates to be on-shell 
    * @return The weight.
    */
-  Energy flatPhaseSpace(const Particle & inpart,
+  Energy flatPhaseSpace(const Lorentz5Momentum & in,
 			vector<Lorentz5Momentum> & momenta,
 			bool onShell=false) const;
   
   /**
    * Generate a phase-space point using multichannel phase space.
-   * @param in The incoming particle.
-   * @param particles The outgoing particles.
+   * @param ichan The channel to use
+   * @param in The momentum of the incoming particle
+   * @param momenta The momenta of the outgoing particles
+   * @param onShell Whether or not to force the intermediates to be on-shell 
    * @return The weight.
    */
-  Energy channelPhaseSpace(int & ichan, const Particle & in, 
+  Energy channelPhaseSpace(int & ichan, const Lorentz5Momentum & in,
 			   vector<Lorentz5Momentum> & momenta,
 			   bool onShell=false) const;
 

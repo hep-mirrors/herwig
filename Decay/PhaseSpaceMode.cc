@@ -68,7 +68,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
     do {
       // phase-space pieces of the weight
       fillStack();
-      wgt = pre*weight(ichan,inrest,momenta);
+      wgt = pre*weight(ichan,inrest.momentum(),momenta);
       // matrix element piece
       wgt *= decayer->me2(-1,inrest,!cc ? outgoing_ : outgoingCC_,
 			  momenta,
@@ -141,25 +141,25 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
 }
 
 // flat phase space generation and weight
-Energy PhaseSpaceMode::flatPhaseSpace(const Particle & inpart,
+Energy PhaseSpaceMode::flatPhaseSpace(const Lorentz5Momentum & in,
 				      vector<Lorentz5Momentum> & momenta,
 				      bool onShell) const {
   double wgt(1.);
   // masses of the particles
-  vector<Energy> mass = externalMasses(inpart.mass(),wgt,onShell);
+  vector<Energy> mass = externalMasses(in.mass(),wgt,onShell);
   // two body decay
   double ctheta  = 2.*rStack_.top() - 1.;
   rStack_.pop();
   double phi  = Constants::twopi*rStack_.top();
   rStack_.pop();
-  if(! Kinematics::twoBodyDecay(inpart.momentum(), mass[0], mass[1],
+  if(! Kinematics::twoBodyDecay(in, mass[0], mass[1],
 				ctheta, phi, momenta[0],momenta[1])) 
     throw Exception() << "Incoming mass - Outgoing mass negative in "
  		      << "PhaseSpaceMode::flatPhaseSpace()"
 		      << Exception::eventerror;
-  wgt *= Kinematics::pstarTwoBodyDecay(inpart.mass(),mass[0],mass[1])
-    /8./Constants::pi/inpart.mass();
-  return wgt*inpart.mass();
+  wgt *= Kinematics::pstarTwoBodyDecay(in.mass(),mass[0],mass[1])
+    /8./Constants::pi/in.mass();
+  return wgt*in.mass();
 }
 
 // generate the masses of the external particles
@@ -254,7 +254,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 	int dummy;
 	// phase-space piece
 	fillStack();
-	wgt = pre*weight(dummy,*inpart,momenta,onShell);
+	wgt = pre*weight(dummy,inpart->momentum(),momenta,onShell);
 	// matrix element piece
 	wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
       }
@@ -320,7 +320,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 	  // generate the weight for this point
 	  try {
 	    fillStack();
-	    wgt = pre*weight(ichan,*inpart,momenta,onShell);
+	    wgt = pre*weight(ichan,inpart->momentum(),momenta,onShell);
 	    // matrix element piece
 	    wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
 	  }
@@ -405,7 +405,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 }
  
 // generate a phase-space point using multichannel phase space
-Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Particle & in, 
+Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Lorentz5Momentum & in, 
 					 vector<Lorentz5Momentum> & momenta,
 					 bool onShell) const {
   double wgt(rStack_.top());
@@ -426,7 +426,7 @@ Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Particle & in,
   // generate the masses of the external particles
   double masswgt(1.);
   vector<Energy> mass(externalMasses(in.mass(),masswgt,onShell));
-  momenta=channels_[ichan].generateMomenta(in.momentum(),mass);
+  momenta=channels_[ichan].generateMomenta(in,mass);
   // compute the denominator of the weight
   wgt=0.;
   for(const PhaseSpaceChannel & channel : channels_) 
