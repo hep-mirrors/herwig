@@ -17,7 +17,7 @@ library HwPerturbativeDecay.so
 library HwBaryonDecay.so
 library HwTauDecay.so
 #
-create Herwig::TauDecayer  Tau1Meson
+create Herwig::TauDecayer2  Tau1Meson
 newdef Tau1Meson:Iteration 1
 newdef Tau1Meson:Ntry 500
 newdef Tau1Meson:Points 10000
@@ -91,7 +91,7 @@ newdef Tau1MesonCurrent:AntiQuark 14  -3
 newdef Tau1Meson:WeakCurrent Tau1MesonCurrent 
 
 #
-create Herwig::TauDecayer  Tau2Pion
+create Herwig::TauDecayer2  Tau2Pion
 newdef Tau2Pion:Iteration 10
 newdef Tau2Pion:Ntry 500
 newdef Tau2Pion:Points 10000
@@ -692,7 +692,7 @@ newdef Tau4PionCurrent:AntiQuark 1  -1
 newdef Tau4Pion:WeakCurrent Tau4PionCurrent 
 
 #
-create Herwig::TauDecayer  Tau2MesonPhoton
+create Herwig::TauDecayer2  Tau2MesonPhoton
 newdef Tau2MesonPhoton:Iteration 10
 newdef Tau2MesonPhoton:Ntry 500
 newdef Tau2MesonPhoton:Points 10000
@@ -1094,7 +1094,7 @@ newdef VectorVP:Coupling 72 2.6e-07
 newdef VectorVP:MaxWeight 72 3.3628
 
 #
-create Herwig::TauDecayer  Tau2Leptons
+create Herwig::TauDecayer2  Tau2Leptons
 newdef Tau2Leptons:Iteration 1
 newdef Tau2Leptons:Ntry 500
 newdef Tau2Leptons:Points 10000
@@ -17426,7 +17426,7 @@ insert SU3Gamma5:MaxWeight 0 1.60087
 insert SU3Gamma5:MaxWeight 1 2.20194
 
 #
-create Herwig::TauDecayer  Tau1Vector
+create Herwig::TauDecayer2  Tau1Vector
 newdef Tau1Vector:Iteration 1
 newdef Tau1Vector:Ntry 500
 newdef Tau1Vector:Points 10000
@@ -22868,7 +22868,7 @@ newdef a1Simple:ThreeChargedWeights 5 0.138687
 create Herwig::MamboDecayer  Mambo
 
 #
-create Herwig::TauDecayer  Tau5Pion
+create Herwig::TauDecayer2  Tau5Pion
 newdef Tau5Pion:Iteration 10
 newdef Tau5Pion:Ntry 4000
 newdef Tau5Pion:Points 10000
@@ -23779,7 +23779,7 @@ newdef Tau3KaonCurrent:Quark 11  2
 newdef Tau3KaonCurrent:AntiQuark 11  -1
 newdef Tau3Kaon:WeakCurrent Tau3KaonCurrent
 #
-create Herwig::TauDecayer  TauKPi
+create Herwig::TauDecayer2  TauKPi
 newdef TauKPi:Iteration 5
 newdef TauKPi:Ntry 500
 newdef TauKPi:Points 10000

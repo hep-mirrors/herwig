@@ -280,7 +280,8 @@ private:
    * @param upper The upper limit on the particle's mass. 
    */
   Energy generateMass(const PhaseSpaceResonance & res,
-		      Energy lower,Energy upper) const;
+		      Energy lower,Energy upper,
+		      const double & rnd) const;
   
   /**
    * Return the weight for a given resonance.

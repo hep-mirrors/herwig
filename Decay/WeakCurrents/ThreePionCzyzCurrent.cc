@@ -79,7 +79,7 @@ void ThreePionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ThreePionCzyzCurrent,WeakDecayCurrent>
+DescribeClass<ThreePionCzyzCurrent,WeakCurrent>
 describeHerwigThreePionCzyzCurrent("Herwig::ThreePionCzyzCurrent",
 				     "HwWeakCurrents.so");
 
@@ -186,72 +186,83 @@ void ThreePionCzyzCurrent::Init() {
 }
 
 void ThreePionCzyzCurrent::doinit() {
-  WeakDecayCurrent::doinit();
+  WeakCurrent::doinit();
   GW_ = GW_pre_*sqr(rhoMasses_I1_[0])*g_omega_pi_pi_;
   mpip_ = getParticleData(211)->mass();
   mpi0_ = getParticleData(111)->mass();
 }
 
 // complete the construction of the decay mode for integration
-bool ThreePionCzyzCurrent::createMode(int icharge, unsigned int imode,
-				      DecayPhaseSpaceModePtr mode,
+bool ThreePionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
+				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				      unsigned int imode,PhaseSpaceModePtr mode,
 				      unsigned int iloc,unsigned int ires,
-				      DecayPhaseSpaceChannelPtr phase,
-				      Energy upp) {
+				      PhaseSpaceChannel phase, Energy upp ) {
+  // check the charge
   if(imode>2 || icharge != 0) return false;
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal!=IsoSpin::IZero) return false;
+  }
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown && i3!=IsoSpin::I3Zero ) {
+    return false;
+  }
+  // check the kinematics
   tPDPtr pip = getParticleData(ParticleID::piplus);
   tPDPtr pim = getParticleData(ParticleID::piminus);
   tPDPtr pi0 = getParticleData(ParticleID::pi0);
   if(2*pip->mass()+pi0->mass()>upp) return false;
   // resonaces we need
   tPDPtr omega[4] = {getParticleData( 223),getParticleData( 100223),getParticleData( 30223),
-		      getParticleData( 333)};
+  		      getParticleData( 333)};
   tPDPtr rho0[3]  = {getParticleData( 113),getParticleData( 100113),getParticleData( 30113)};
   tPDPtr rhop[3]  = {getParticleData( 213),getParticleData( 100213),getParticleData( 30213)};
   tPDPtr rhom[3]  = {getParticleData(-213),getParticleData(-100213),getParticleData(-30213)};
-  DecayPhaseSpaceChannelPtr newchannel;
-  // I=0 channels
+  // DecayPhaseSpaceChannelPtr newchannel;
   // omega/omega -> rho pi
   for(unsigned int ix=0;ix<4;++ix) {
-    newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    newchannel->addIntermediate(omega[ix],0,0.0,-ires-1,iloc);
-    newchannel->addIntermediate(rhom[0]  ,0,0.0, iloc+1,iloc+2);
-    mode->addChannel(newchannel);
-    newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    newchannel->addIntermediate(omega[ix],0,0.0,-ires-1,iloc+1);
-    newchannel->addIntermediate(rhop[0]  ,0,0.0, iloc  ,iloc+2);
-    mode->addChannel(newchannel);
-    newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-    newchannel->addIntermediate(omega[ix],0,0.0,-ires-1,iloc+2);
-    newchannel->addIntermediate(rho0[0]  ,0,0.0, iloc  ,iloc+1);
-    mode->addChannel(newchannel);
+    if(resonance && resonance != omega[ix]) continue;
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
+		      ires+1,rhom[0],ires+1,iloc+1,
+		      ires+2,iloc+2,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
+		      ires+1,rhop[0],ires+1,iloc+2,
+		      ires+2,iloc+1,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
+		      ires+1,rho0[0],ires+1,iloc+3,
+		      ires+2,iloc+1,ires+1,iloc+2));
   }
   // phi rho 1450
-  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-  newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc);
-  newchannel->addIntermediate(rhom[1]  ,0,0.0, iloc+1,iloc+2);
-  mode->addChannel(newchannel);
-  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-  newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc+1);
-  newchannel->addIntermediate(rhop[1]  ,0,0.0, iloc  ,iloc+2);
-  mode->addChannel(newchannel);
-  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-  newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc+2);
-  newchannel->addIntermediate(rho0[1]  ,0,0.0, iloc  ,iloc+1);
-  mode->addChannel(newchannel);
-  // omega 1650 rho 1700
-  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-  newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc);
-  newchannel->addIntermediate(rhom[2]  ,0,0.0, iloc+1,iloc+2);
-  mode->addChannel(newchannel);
-  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-  newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc+1);
-  newchannel->addIntermediate(rhop[2]  ,0,0.0, iloc  ,iloc+2);
-  mode->addChannel(newchannel);
-  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-  newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc+2);
-  newchannel->addIntermediate(rho0[2]  ,0,0.0, iloc  ,iloc+1);
-  mode->addChannel(newchannel);
+  if(!resonance || resonance ==omega[3]) {
+    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+    // newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc);
+    // newchannel->addIntermediate(rhom[1]  ,0,0.0, iloc+1,iloc+2);
+    // mode->addChannel(newchannel);
+    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+    // newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc+1);
+    // newchannel->addIntermediate(rhop[1]  ,0,0.0, iloc  ,iloc+2);
+    // mode->addChannel(newchannel);
+    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+    // newchannel->addIntermediate(omega[3],0,0.0,-ires-1,iloc+2);
+    // newchannel->addIntermediate(rho0[1]  ,0,0.0, iloc  ,iloc+1);
+    // mode->addChannel(newchannel);
+  }
+  // // omega 1650 rho 1700
+  if(!resonance || resonance ==omega[2]) {
+    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+    // newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc);
+    // newchannel->addIntermediate(rhom[2]  ,0,0.0, iloc+1,iloc+2);
+    // mode->addChannel(newchannel);
+    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+    // newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc+1);
+    // newchannel->addIntermediate(rhop[2]  ,0,0.0, iloc  ,iloc+2);
+    // mode->addChannel(newchannel);
+    // newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
+    // newchannel->addIntermediate(omega[2],0,0.0,-ires-1,iloc+2);
+    // newchannel->addIntermediate(rho0[2]  ,0,0.0, iloc  ,iloc+1);
+    // mode->addChannel(newchannel);
+  }
   return true;
 }
 
@@ -267,28 +278,25 @@ tPDVector ThreePionCzyzCurrent::particles(int icharge, unsigned int,
   return extpart;
 }
 
-
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-ThreePionCzyzCurrent::current(const int imode, const int ichan,
-			      Energy & scale,const ParticleVector & decay,
-			      DecayIntegrator::MEOption meopt) const {
+ThreePionCzyzCurrent::current(tcPDPtr resonance,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      const int imode, const int ichan, Energy & scale, 
+			      const tPDVector & outgoing,
+			      const vector<Lorentz5Momentum> & momenta,
+			      DecayIntegrator2::MEOption) const {
   useMe();
-  if(meopt==DecayIntegrator::Terminate) {
-    for(unsigned int ix=0;ix<3;++ix)
-      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
-  }
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    q+=decay[ix]->momentum();
+  for(unsigned int ix=0;ix<momenta.size();++ix)
+    q+=momenta[ix];
   q.rescaleMass();
   scale=q.mass();
   Energy2 q2=q.mass2();
-  Energy2 sm = (decay[1]->momentum()+decay[2]->momentum()).m2();
-  Energy2 sp = (decay[0]->momentum()+decay[2]->momentum()).m2();
-  Energy2 s0 = (decay[0]->momentum()+decay[1]->momentum()).m2();
+  Energy2 sm = (momenta[1]+momenta[2]).m2();
+  Energy2 sp = (momenta[0]+momenta[2]).m2();
+  Energy2 s0 = (momenta[0]+momenta[1]).m2();
   // isospin = 0
   complex<InvEnergy3> F_I1 =
     Resonance::H(rhoMasses_[0],rhoWidths_[0],sp,sm,s0,mpip_,mpi0_)*
@@ -304,30 +312,27 @@ ThreePionCzyzCurrent::current(const int imode, const int ichan,
   complex<InvEnergy3> F_I0 = GW_*
     Resonance::BreitWignerFW(q2,omegaMass_I1_,omegaWidth_I1_)/sqr(omegaMass_I1_)*
     (Resonance::BreitWignerPWave(s0,rhoMasses_I1_[0],
-				 rhoWidths_I1_[0],mpip_,mpip_)/sqr(rhoMasses_I1_[0])+
+  				 rhoWidths_I1_[0],mpip_,mpip_)/sqr(rhoMasses_I1_[0])+
      sigma_*Resonance::BreitWignerPWave(s0,rhoMasses_I1_[1],
-					rhoWidths_I1_[1],mpip_,mpip_)/sqr(rhoMasses_I1_[0]));
+  					rhoWidths_I1_[1],mpip_,mpip_)/sqr(rhoMasses_I1_[0]));
   // the current
   LorentzPolarizationVector vect = (F_I0+F_I1)*
-    Helicity::epsilon(decay[0]->momentum(),
-		      decay[1]->momentum(),
-		      decay[2]->momentum());
+    Helicity::epsilon(momenta[0],
+  		      momenta[1],
+  		      momenta[2]);
   // factor to get dimensions correct
   return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
 }
    
 bool ThreePionCzyzCurrent::accept(vector<int> id) {
-  // check there are only two particles
-  if(id.size()!=2) return false;
-  // pion modes
-  if((abs(id[0])==ParticleID::piplus  &&     id[1] ==ParticleID::pi0   ) ||
-     (    id[0] ==ParticleID::pi0     && abs(id[1])==ParticleID::piplus))
-    return true;
-  else if((id[0]==ParticleID::piminus && id[1]==ParticleID::piplus) ||
-	  (id[0]==ParticleID::piplus  && id[1]==ParticleID::piminus))
-    return true;
-  else
-    return false;
+  if(id.size()!=3){return false;}
+  unsigned int npiplus(0),npi0(0),npiminus(0);
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID::piplus) ++npiplus;
+    else if(id[ix]==ParticleID::piminus) ++npiplus;
+    else if(id[ix]==ParticleID::pi0)    ++npi0;
+  }
+  return (npiplus==1&&npiminus==1&&npi0==1);
 }
 
 // the decay mode
@@ -384,7 +389,7 @@ void ThreePionCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":sigma "      << sigma_     << "\n";  
   output << "newdef " << name() << ":GWPrefactor "      << GW_pre_*GeV     << "\n";  
   output << "newdef " << name() << ":g_omega_pipi "      << g_omega_pi_pi_ << "\n";
-  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
   		    << fullName() << "\";" << endl;
 }

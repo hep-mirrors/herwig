@@ -22,9 +22,34 @@ read snippets/EECollider.in
 ##################################################
 # leading-order processes
 ##################################################
+cd /Herwig/Particles
+read defaults/HerwigBDecays.in
 cd /Herwig/MatrixElements
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 insert SubProcess:MatrixElements 0 MEee2gZ2qq
+#set /Herwig/Decays/a13Pi:Initialize 1
+#set /Herwig/Particles/a_1+/a_1+->pi+,pi0,pi0;:Decayer /Herwig/Decays/a1CLEO
+#set /Herwig/Decays/DKPiPiE691:Initialize 1
+# set /Herwig/Decays/ISGW:Initialize 1
+# set /Herwig/Decays/ISGW2:Initialize 1
+# set /Herwig/Decays/BaryonLight1:Initialize 1
+# set /Herwig/Decays/BaryonHeavy1:Initialize 1
+# set /Herwig/Decays/BaryonHeavy2:Initialize 1
+# set /Herwig/Decays/BaryonHeavy3:Initialize 1
+# set /Herwig/Decays/WSB:Initialize 1
+# set /Herwig/Decays/BZVector:Initialize 1
+# set /Herwig/Decays/BZScalar:Initialize 1
+# set /Herwig/Decays/Melikhov:Initialize 1
+# set /Herwig/Decays/MelikhovStech:Initialize 1
+# set /Herwig/Decays/BaryonLight2:Initialize 1
+# set /Herwig/Decays/KiselevBc:Initialize 1
+# set /Herwig/Decays/ExcitedLambda:Initialize 1
+# set /Herwig/Decays/HQET:Initialize 1
+#set /Herwig/Decays/:Initialize 1
+#set /Herwig/Decays/:Initialize 1
+#set /Herwig/Particles/D0/D0->K-,pi+,pi0;:Decayer /Herwig/Decays/DtoKPiPiMarkIII
+#set  /Herwig/Decays/DtoKPiPiMarkIII:Initialize 1
+#set  /Herwig/Decays/DtoKPiPiMarkIII:Points 1000000
 # e+e- > l+l-
 # insert SubProcess:MatrixElements[0] MEee2gZ2ll
 # e+e- > W+W- ZZ
@@ -40,6 +65,39 @@ insert SubProcess:MatrixElements 0 MEee2gZ2qq
 #insert SubProcess:MatrixElements 0 PowhegMEee2gZ2qq
 #insert SubProcess:MatrixElements 0 PowhegMEee2gZ2ll
 
+
+cd /Herwig/Decays
+#create Herwig::TauDecayer2 Tau2PionsCzyz
+#create Herwig::TwoPionCzyzCurrent TwoPionCzyzCurrent
+#set Tau2PionsCzyz:WeakCurrent TwoPionCzyzCurrent
+#set /Herwig/Particles/tau-/tau-->pi-,pi0,nu_tau;:Decayer Tau2PionsCzyz
+#set Tau2PionsCzyz:Initialize 1
+#create Herwig::TauDecayer2 Tau2KaonsCzyz
+#create Herwig::TwoKaonCzyzCurrent TwoKaonCzyzCurrent
+#set Tau2KaonsCzyz:WeakCurrent TwoKaonCzyzCurrent
+#set /Herwig/Particles/tau-/tau-->K-,K0,nu_tau;:Decayer Tau2KaonsCzyz
+#set TauKPi:Initialize 1
+#set TauKPi:Points 1000000
+
+
+#decaymode tau+->rho+,nu_taubar; 0.108235 1 /Herwig/Decays/Tau1Vector
+
+#set Tau1Vector:Initialize 1
+#set Tau1Vector:Points 10000000
+#set Tau1Meson:Initialize 1
+#set Tau1Meson:Points 10000000
+#set BottomBaryonScalar:Initialize 1
+#set BottomBaryonScalar:Points 10000000
+#set BottomBaryonVector:Initialize 1
+#set BottomBaryonVector:Points 10000000
+#set ISGW2Hadronic:Initialize 1
+#set ISGW2Hadronic:Points 1000000
+#set WSBHadronic:Initialize 1
+#set WSBHadronic:Points 1000000
+#set BcHadronic:Initialize 1
+#set BcHadronic:Points 1000000
+set Tau2MesonPhoton:Initialize 1
+#set Tau2MesonPhoton:Points 1000000
 
 ##################################################
 # LEP physics parameters (override defaults) 

@@ -30,25 +30,25 @@ create Herwig::WeakCurrentDecayConstructor WeakDecayConstructor
 set  WeakDecayConstructor:InitPoints 10000
 set  WeakDecayConstructor:MassCut 2.
 # pi-
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
-insert WeakDecayConstructor:DecayModes 0 pi-;
-insert WeakDecayConstructor:Normalisation 0 1.01386262897
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
+# insert WeakDecayConstructor:DecayModes 0 pi-;
+# insert WeakDecayConstructor:Normalisation 0 1.01386262897
 # pi-,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
-insert WeakDecayConstructor:DecayModes 0 pi-,pi0;
-insert WeakDecayConstructor:Normalisation 0 1.17616809738
+#insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
+#insert WeakDecayConstructor:DecayModes 0 pi-,pi0;
+#insert WeakDecayConstructor:Normalisation 0 1.17616809738
 # e-,nu_ebar
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
-insert WeakDecayConstructor:DecayModes 0 e-,nu_ebar;
-insert WeakDecayConstructor:Normalisation 0 1.
-# mu-,nu_mubar
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
-insert WeakDecayConstructor:DecayModes 0 mu-,nu_mubar;
-insert WeakDecayConstructor:Normalisation 0 1.
-# tau-,nu_taubar
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
-insert WeakDecayConstructor:DecayModes 0 tau-,nu_taubar;
-insert WeakDecayConstructor:Normalisation 0 1.
+#insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
+#insert WeakDecayConstructor:DecayModes 0 e-,nu_ebar;
+#insert WeakDecayConstructor:Normalisation 0 1.
+## mu-,nu_mubar
+#insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
+#insert WeakDecayConstructor:DecayModes 0 mu-,nu_mubar;
+#insert WeakDecayConstructor:Normalisation 0 1.
+## tau-,nu_taubar
+#insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2LeptonCurrent
+#insert WeakDecayConstructor:DecayModes 0 tau-,nu_taubar;
+#insert WeakDecayConstructor:Normalisation 0 1.
 # pi-,pi0,pi0
 insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3PionCurrent
 insert WeakDecayConstructor:DecayModes 0 pi-,pi0,pi0;
@@ -65,30 +65,30 @@ insert WeakDecayConstructor:Normalisation 0 1.09170097618
 insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau4PionCurrent
 insert WeakDecayConstructor:DecayModes 0 pi-,pi0,pi0,pi0;
 insert WeakDecayConstructor:Normalisation 0 1.
-# Kbar0,pi-
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauKPiCurrent
-insert WeakDecayConstructor:DecayModes 0 Kbar0,pi-;
-insert WeakDecayConstructor:Normalisation 0 1.17156865176
+# # Kbar0,pi-
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauKPiCurrent
+# insert WeakDecayConstructor:DecayModes 0 Kbar0,pi-;
+# insert WeakDecayConstructor:Normalisation 0 1.17156865176
 # K-
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
-insert WeakDecayConstructor:DecayModes 0 K-;
-insert WeakDecayConstructor:Normalisation 0 0.938794564668
-# K-,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauKPiCurrent
-insert WeakDecayConstructor:DecayModes 0 K-,pi0;
-insert WeakDecayConstructor:Normalisation 0 1.12526014943
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1MesonCurrent
+# insert WeakDecayConstructor:DecayModes 0 K-;
+# insert WeakDecayConstructor:Normalisation 0 0.938794564668
+# # K-,pi0
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauKPiCurrent
+# insert WeakDecayConstructor:DecayModes 0 K-,pi0;
+# insert WeakDecayConstructor:Normalisation 0 1.12526014943
 # pi-,pi-,pi+,pi0,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
-insert WeakDecayConstructor:DecayModes 0 pi-,pi-,pi+,pi0,pi0;
-insert WeakDecayConstructor:Normalisation 0 0.954286993254
-# pi-,pi-,pi-,pi+,pi+
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
-insert WeakDecayConstructor:DecayModes 0 pi+,pi+,pi+,pi-,pi-;
-insert WeakDecayConstructor:Normalisation 0 0.435953860245
-# pi-,pi0,pi0,pi0,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
-insert WeakDecayConstructor:DecayModes 0 pi+,pi0,pi0,pi0,pi0;
-insert WeakDecayConstructor:Normalisation 0 0.603378959531
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
+# insert WeakDecayConstructor:DecayModes 0 pi-,pi-,pi+,pi0,pi0;
+# insert WeakDecayConstructor:Normalisation 0 0.954286993254
+# # pi-,pi-,pi-,pi+,pi+
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
+# insert WeakDecayConstructor:DecayModes 0 pi+,pi+,pi+,pi-,pi-;
+# insert WeakDecayConstructor:Normalisation 0 0.435953860245
+# # pi-,pi0,pi0,pi0,pi0
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
+# insert WeakDecayConstructor:DecayModes 0 pi+,pi0,pi0,pi0,pi0;
+# insert WeakDecayConstructor:Normalisation 0 0.603378959531
 # K0,pi+,pi0
 insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
 insert WeakDecayConstructor:DecayModes 0 K0,pi+,pi0;
@@ -110,17 +110,17 @@ insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
 insert WeakDecayConstructor:DecayModes 0 K_L0,K_S0,pi+;
 insert WeakDecayConstructor:Normalisation 0 1.10729951668
 # pi+,pi0,gamma
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonPhotonCurrent
-insert WeakDecayConstructor:DecayModes 0 pi+,pi0,gamma;
-insert WeakDecayConstructor:Normalisation 0 3.13799210805
+# insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonPhotonCurrent
+# insert WeakDecayConstructor:DecayModes 0 pi+,pi0,gamma;
+# insert WeakDecayConstructor:Normalisation 0 3.13799210805
 # eta,pi+,pi0
 insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3MesonCurrent
 insert WeakDecayConstructor:DecayModes 0 eta,pi+,pi0;
 insert WeakDecayConstructor:Normalisation 0 0.880539616307
 # K+,Kbar0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
-insert WeakDecayConstructor:DecayModes 0 K+,Kbar0;
-insert WeakDecayConstructor:Normalisation 0 1.62501804004
+#insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
+#insert WeakDecayConstructor:DecayModes 0 K+,Kbar0;
+#insert WeakDecayConstructor:Normalisation 0 1.62501804004
 
 insert NewModel:HardProcessConstructors[0] HPConstructor
 insert NewModel:HardProcessConstructors[1] ResConstructor

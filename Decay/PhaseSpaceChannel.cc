@@ -139,6 +139,7 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     int idau[2] = {abs(intermediates_[ix].children.first),
 		   abs(intermediates_[ix].children.second)};
     // if both decay products off-shell
+    double rnd  = UseRandom::rnd();
     if(intermediates_[ix].children.first<0&&intermediates_[ix].children.second<0) {
       Energy lowerb[2];
        // lower limits on the masses of the two resonances
@@ -151,26 +152,29 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
   	}
   // 	if(massless) lowerb[iy] = _mode->epsilonPS(); 
       }
+      double rnd2 = UseRandom::rnd();
       // randomize the order
-      if(UseRandom::rnd()<0.5) {
+      if(rnd<0.5) {
+	rnd*=2.;
   	// mass of the first resonance
   	Energy upper = massint[ix]-lowerb[1];
   	Energy lower = lowerb[0];
-   	massint[idau[0]]=generateMass(intermediates_[idau[0]],lower,upper);
+   	massint[idau[0]]=generateMass(intermediates_[idau[0]],lower,upper,rnd );
    	// mass of the second resonance
    	upper = massint[ix]-massint[idau[0]];
    	lower = lowerb[1];
-   	massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper);
+   	massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper,rnd2);
       }
       else {
+	rnd = 2.*rnd-1.;
   	// mass of the second resonance
   	Energy upper = massint[ix]-lowerb[0];
   	Energy lower = lowerb[1];
-   	massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper);
+   	massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper,rnd2);
    	// mass of the first resonance
    	upper = massint[ix]-massint[idau[1]];
    	lower = lowerb[0];
-   	massint[idau[0]]=generateMass(intermediates_[idau[0]],lower,upper);
+   	massint[idau[0]]=generateMass(intermediates_[idau[0]],lower,upper,rnd );
       }
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massint[idau[0]],massint[idau[1]],
@@ -187,7 +191,7 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
    	lower+=massext[des-1];
       }
       //     if(massless) lower = _mode->epsilonPS();
-      massint[idau[0]] = generateMass(intermediates_[idau[0]],lower,upper);
+      massint[idau[0]] = generateMass(intermediates_[idau[0]],lower,upper,rnd);
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]-1], 
 		   pinter[idau[0]],pexternal[idau[1]-1]);
@@ -203,7 +207,7 @@ PhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
  	lower+=massext[des-1];
       }
       //     if(massless) lower = _mode->epsilonPS();
-      massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper);
+      massint[idau[1]]=generateMass(intermediates_[idau[1]],lower,upper,rnd);
       // generate the momenta of the decay products
       twoBodyDecay(pinter[ix],massext[idau[0]-1],massint[idau[1]], 
    		   pexternal[idau[0]-1],pinter[idau[1]]);
@@ -295,7 +299,8 @@ InvEnergy2 PhaseSpaceChannel::massWeight(const PhaseSpaceResonance & res,
 }
 
 Energy PhaseSpaceChannel::generateMass(const PhaseSpaceResonance & res,
-				       Energy lower,Energy upper) const {
+				       Energy lower,Energy upper,
+				       const double & rnd) const {
   static const Energy eps=1e-9*MeV;
   if(lower<eps) lower=eps;
   Energy mass=ZERO;
@@ -316,7 +321,7 @@ Energy PhaseSpaceChannel::generateMass(const PhaseSpaceResonance & res,
       
       double rhomin = atan2((lower2 - res.mass2),res.mWidth);
       double rhomax = atan2((upper2 - res.mass2),res.mWidth)-rhomin;
-      double rho = rhomin+rhomax*UseRandom::rnd();
+      double rho = rhomin+rhomax*rnd;
       Energy2 mass2 = max(lower2,min(upper2,res.mass2+res.mWidth*tan(rho)));
       if(mass2<ZERO) mass2 = ZERO;
       mass = sqrt(mass2);
@@ -324,14 +329,14 @@ Energy PhaseSpaceChannel::generateMass(const PhaseSpaceResonance & res,
     else {
       mass = sqrt(res.mass2+
   		  (sqr(lower)-res.mass2)*(sqr(upper)-res.mass2)/
-  		  (sqr(lower)-res.mass2-UseRandom::rnd()*(sqr(lower)-sqr(upper))));
+  		  (sqr(lower)-res.mass2-rnd*(sqr(lower)-sqr(upper))));
     }
   }
   // use a power-law
   else if(res.jacobian == PhaseSpaceResonance::Power) {
     double rhomin = pow(sqr(lower/MeV),res.power+1.);
     double rhomax = pow(sqr(upper/MeV),res.power+1.)-rhomin;
-    double rho = rhomin+rhomax*UseRandom::rnd();
+    double rho = rhomin+rhomax*rnd;
     mass = pow(rho,0.5/(res.power+1.))*MeV;
   }
   else if(res.jacobian == PhaseSpaceResonance::OnShell) {
