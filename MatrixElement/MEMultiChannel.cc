@@ -26,12 +26,15 @@ void MEMultiChannel::getDiagrams() const {
   int ndiag=0;
   channelMap_.clear();
   for(PhaseSpaceModePtr mode : modes_) {
-    channelMap_.push_back(vector<int>());
-    for(const PhaseSpaceChannel & channel : mode->channels()) {
-      ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer diag = channel.createDiagram();
+channelMap_.push_back(map<int,int>());
+    for(unsigned int ix=0;ix<mode->channels().size();++ix) {
+       ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer diag = mode->channels()[ix].createDiagram();
+
+
+      
       ndiag+=1;
       diag = new_ptr((*diag,-ndiag));
-      channelMap_.back().push_back(ndiag);
+      channelMap_.back()[ndiag]= ix;
       add(diag);
     }
   }
@@ -95,8 +98,8 @@ Selector<MEBase::DiagramIndex>
 MEMultiChannel::diagrams(const DiagramVector & diags) const {
    Selector<DiagramIndex> sel;
    for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-double wgt = me2(channelMap_[iMode_][-diags[i]->id()-1] );
-sel.insert(wgt, i);
+       double wgt = me2(channelMap_[iMode_][-diags[i]->id()-1] );
+       sel.insert(wgt, i);
    }
   return sel;
 }

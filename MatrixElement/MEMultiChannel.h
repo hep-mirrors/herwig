@@ -201,7 +201,7 @@ private:
   /**
    *   Map from the phase space channels to the modes
    */
-  mutable vector<vector <int> > channelMap_;
+  mutable vector<map <int,int> > channelMap_;
 
   /**
    *   The mode currently begining used
