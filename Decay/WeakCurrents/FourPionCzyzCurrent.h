@@ -5,7 +5,7 @@
 // This is the declaration of the FourPionCzyzCurrent class.
 //
 
-#include "WeakDecayCurrent.h"
+#include "WeakCurrent.h"
 
 namespace Herwig {
 
@@ -16,12 +16,12 @@ using namespace ThePEG;
  *
  * The FourMesonCzyzCurrent class implements the currents from Phys.Rev. D77 (2008) 114005 
  * for 4 pions
- * @see WeakDecayCurrent.
+ * @see WeakCurrent.
  * @see \ref FourPionCzyzCurrentInterfaces "The interfaces"
  * defined for FourPionCzyzCurrent.
  * 
  */
-class FourPionCzyzCurrent: public WeakDecayCurrent {
+class FourPionCzyzCurrent: public WeakCurrent {
 
 public:
 
@@ -33,23 +33,29 @@ public:
   /** @name Methods for the construction of the phase space integrator. */
   //@{ 
   /**
-   * Complete the construction of the decay mode for integration.
-   * This version just adds the intermediate resonances, two outgoing mesons
-   * and photon.
-   * @param icharge The total charge of the outgoing particles in the current.
-   * @param imode   The mode in the current being asked for.
-   * @param mode    The phase space mode for the integration
-   * @param iloc    The location of the of the first particle from the current in
-   *                the list of outgoing particles.
-   * @param ires    The location of the first intermediate for the current.
-   * @param phase   The prototype phase space channel for the integration.
-   * @param upp     The maximum possible mass the particles in the current are
-   *                allowed to have.
+   * Complete the construction of the decay mode for integration.classes inheriting
+   * from this one.
+   * This method is purely virtual and must be implemented in the classes inheriting
+   * from WeakCurrent.
+   * @param icharge   The total charge of the outgoing particles in the current.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
+   * @param imode     The mode in the current being asked for.
+   * @param mode      The phase space mode for the integration
+   * @param iloc      The location of the of the first particle from the current in
+   *                  the list of outgoing particles.
+   * @param ires      The location of the first intermediate for the current.
+   * @param phase     The prototype phase space channel for the integration.
+   * @param upp       The maximum possible mass the particles in the current are
+   *                  allowed to have.
    * @return Whether the current was sucessfully constructed.
    */
-  virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
+  virtual bool createMode(int icharge, tcPDPtr resonance,
+			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			  unsigned int imode,PhaseSpaceModePtr mode,
 			  unsigned int iloc,int ires,
-			  DecayPhaseSpaceChannelPtr phase,Energy upp);
+			  PhaseSpaceChannel phase, Energy upp );
 
   /**
    * The particles produced by the current. This just returns the two pseudoscalar
@@ -64,17 +70,26 @@ public:
   //@}
 
   /**
-   * Hadronic current. This version returns the hadronic current described above.
+   * Hadronic current. This method is purely virtual and must be implemented in
+   * all classes inheriting from this one.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
    * @param imode The mode
-   * @param ichan The phase-space channel the current is needed for
+   * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
-   * @param decay The decay products
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVectorE> 
-  current(const int imode, const int ichan,Energy & scale,  
-	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
+  current(tcPDPtr resonance,
+	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+	  const int imode, const int ichan,Energy & scale,
+	  const tPDVector & outgoing,
+	  const vector<Lorentz5Momentum> & momenta,
+	  DecayIntegrator2::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the particles are the allowed mode.
@@ -127,9 +142,22 @@ public:
 protected:
 
   /**
+   *  Create the channels for 1 term in the current 
+   */
+  void createChannels(unsigned int imode,
+		      int icharge,  tcPDPtr resonance,
+		      unsigned int iloc,int ires,
+		      tPDVector outgoing, PhaseSpaceModePtr mode,
+		      PhaseSpaceChannel channel,
+		      unsigned int j1, unsigned int j2,
+		      unsigned int j3, unsigned int j4);
+  
+  /**
    *   Basis current in terms of which all the others can be calculated
    */
   LorentzVector<complex<InvEnergy> > baseCurrent(Energy2 Q2,
+						 tcPDPtr resonance,
+						 const int ichan,
 						 const Lorentz5Momentum & Q,
 						 const Lorentz5Momentum & q1,
 						 const Lorentz5Momentum & q2,
