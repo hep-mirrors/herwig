@@ -26,10 +26,10 @@ void MEMultiChannel::getDiagrams() const {
   int ndiag=0;
   channelMap_.clear();
   for(PhaseSpaceModePtr mode : modes_) {
-channelMap_.push_back(map<int,int>());
+    channelMap_.push_back(map<int,int>());
     for(unsigned int ix=0;ix<mode->channels().size();++ix) {
-       ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer diag = mode->channels()[ix].createDiagram();
-      ndiag+=1;
+      ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer diag = mode->channels()[ix].createDiagram();
+       ndiag+=1;
       diag = new_ptr((*diag,-ndiag));
       channelMap_.back()[ndiag]= ix;
       add(diag);
