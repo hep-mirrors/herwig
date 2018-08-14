@@ -330,8 +330,7 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
   useMe();
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;
-  for(unsigned int ix=0;ix<momenta.size();++ix)
-    q+=momenta[ix];
+  for(unsigned int ix=0;ix<momenta.size();++ix) q+=momenta[ix];
   q.rescaleMass();
   scale=q.mass();
   Energy2 q2=q.mass2();
@@ -358,7 +357,7 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
       F_I0 += Hrho*coup_I0_[2]*Resonance::BreitWignerFW(q2,omegaMasses_[1],omegaWidths_[1]);
     }
     if((!resonance || resonance->id() == 30223) && (ichan<0 || (ichan>=6&&ichan<=8))) {
-      F_I0 += coup_I0_[3]*Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]);
+      F_I0 +=  Hrho*coup_I0_[3]*Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]);
     }
     if((!resonance || resonance->id() == 333) && (ichan<0 || (ichan>=12&&ichan<=14))) {
       F_I0 += coup_I0_[4]*HChannel(irho,rhoMasses_[1],rhoWidths_[1],sp,sm,s0,mpip_,mpi0_)*
