@@ -40,7 +40,7 @@ ThreeMesonCurrentBase::ThreeMesonCurrentBase() {
   setInitialModes(12);
 }
 
-DescribeAbstractNoPIOClass<ThreeMesonCurrentBase,WeakDecayCurrent>
+DescribeAbstractNoPIOClass<ThreeMesonCurrentBase,WeakCurrent>
 describeHerwigThreeMesonCurrentBase("Herwig::ThreeMesonCurrentBase",
 				    "HwWeakCurrents.so");
 
@@ -59,38 +59,37 @@ void ThreeMesonCurrentBase::Init() {
 
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-ThreeMesonCurrentBase::current(const int imode, const int ichan, 
-			       Energy & scale,const ParticleVector & decay,
-			       DecayIntegrator::MEOption meopt) const {
-  if(meopt==DecayIntegrator::Terminate) {
-    for(unsigned int ix=0;ix<3;++ix)
-      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
-  }
+ThreeMesonCurrentBase::current(tcPDPtr resonance,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      const int imode, const int ichan, Energy & scale, 
+			      const tPDVector & ,
+			      const vector<Lorentz5Momentum> & momenta,
+			      DecayIntegrator2::MEOption) const {
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;
-  for(unsigned int ix=0;ix<decay.size();++ix){q+=decay[ix]->momentum();}
+  for(unsigned int ix=0;ix<momenta.size();++ix)
+    q+=momenta[ix];
   q.rescaleMass();
   scale=q.mass();
   Energy2 q2=q.mass2();
-  Energy2 s1 = (decay[1]->momentum()+decay[2]->momentum()).m2();
-  Energy2 s2 = (decay[0]->momentum()+decay[2]->momentum()).m2();
-  Energy2 s3 = (decay[0]->momentum()+decay[1]->momentum()).m2();
+  Energy2 s1 = (momenta[1]+momenta[2]).m2();
+  Energy2 s2 = (momenta[0]+momenta[2]).m2();
+  Energy2 s3 = (momenta[0]+momenta[1]).m2();
   FormFactors F = calculateFormFactors(ichan,imode,q2,s1,s2,s3);
   //if(inpart.id()==ParticleID::tauplus){F.F5=conj(F.F5);}
   // the first three form-factors
   LorentzPolarizationVector vect;
-  vect = (F.F2-F.F1)*decay[2]->momentum()
-        +(F.F1-F.F3)*decay[1]->momentum()
-        +(F.F3-F.F2)*decay[0]->momentum();
+  vect = (F.F2-F.F1)*momenta[2]
+        +(F.F1-F.F3)*momenta[1]
+        +(F.F3-F.F2)*momenta[0];
   // multiply by the transverse projection operator
   complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
   vect += (F.F4-dot)*q;
   if(F.F5!=complex<InvEnergy3>()) 
-    vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
-							       decay[1]->momentum(),
-							       decay[2]->momentum());
+    vect += Complex(0.,1.)*F.F5*Helicity::epsilon(momenta[0],
+						  momenta[1],
+						  momenta[2]);
   // factor to get dimensions correct
   return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
 }
@@ -171,7 +170,7 @@ unsigned int ThreeMesonCurrentBase::decayMode(vector<int> id) {
 
 void ThreeMesonCurrentBase::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
-  WeakDecayCurrent::dataBaseOutput(output,header,create);
+  WeakCurrent::dataBaseOutput(output,header,create);
 }
 
 tPDVector ThreeMesonCurrentBase::particles(int icharge, unsigned int imode,int,int) {

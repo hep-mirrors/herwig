@@ -10,7 +10,7 @@
 #define HERWIG_ThreeMesonCurrentBase_H
 // This is the declaration of the ThreeMesonCurrentBase class.
 
-#include "WeakDecayCurrent.h"
+#include "WeakCurrent.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -51,12 +51,12 @@ using namespace ThePEG;
  *  calculated in the calculateFormFactors member which should be implemented
  * in classes inheriting from this.
  *
- * @see WeakDecayCurrent.
+ * @see WeakCurrent.
  *  
  * \author Peter Richardson
  *
  */
-class ThreeMesonCurrentBase: public WeakDecayCurrent {
+class ThreeMesonCurrentBase: public WeakCurrent {
 
 public:
 
@@ -72,19 +72,27 @@ public:
 
 public:
 
-
   /**
-   * Hadronic current. This version returns the hadronic current described above.
+   * Hadronic current. This method is purely virtual and must be implemented in
+   * all classes inheriting from this one.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
-   * @param decay The decay products
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVectorE> 
-  current(const int imode,const int ichan,Energy & scale,
-	  const ParticleVector & decay,DecayIntegrator::MEOption meopt) const;
+  current(tcPDPtr resonance,
+	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+	  const int imode, const int ichan,Energy & scale,
+	  const tPDVector & outgoing,
+	  const vector<Lorentz5Momentum> & momenta,
+	  DecayIntegrator2::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the mesons against the list.

@@ -17,7 +17,7 @@ PhaseSpaceChannel::PhaseSpaceChannel(tPhaseSpaceModePtr inm) : mode_(inm), weigh
 
 void PhaseSpaceChannel::init(tPhaseSpaceModePtr mode) {
   mode_=mode;
-  // find the descentents
+  // find the descendents
   for(PhaseSpaceResonance & res : intermediates_)
     findChildren(res,res.descendents);
   // ensure intermediates either have the width set, or

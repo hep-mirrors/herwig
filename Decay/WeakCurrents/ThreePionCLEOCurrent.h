@@ -136,24 +136,30 @@ public:
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{
-  
   /**
-   * Complete the construction of the decay mode for integration.
-   * This version addes the mesons for the current
-   * @param icharge The total charge of the outgoing particles in the current.
-   * @param imode   The mode in the current being asked for.
-   * @param mode    The phase space mode for the integration
-   * @param iloc    The location of the of the first particle from the current in
-   *                the list of outgoing particles.
-   * @param ires    The location of the first intermediate for the current.
-   * @param phase   The prototype phase space channel for the integration.
-   * @param upp     The maximum possible mass the particles in the current are
-   *                allowed to have.
+   * Complete the construction of the decay mode for integration.classes inheriting
+   * from this one.
+   * This method is purely virtual and must be implemented in the classes inheriting
+   * from WeakCurrent.
+   * @param icharge   The total charge of the outgoing particles in the current.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
+   * @param imode     The mode in the current being asked for.
+   * @param mode      The phase space mode for the integration
+   * @param iloc      The location of the of the first particle from the current in
+   *                  the list of outgoing particles.
+   * @param ires      The location of the first intermediate for the current.
+   * @param phase     The prototype phase space channel for the integration.
+   * @param upp       The maximum possible mass the particles in the current are
+   *                  allowed to have.
    * @return Whether the current was sucessfully constructed.
    */
-  virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
+  virtual bool createMode(int icharge, tcPDPtr resonance,
+			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			  unsigned int imode,PhaseSpaceModePtr mode,
 			  unsigned int iloc,int ires,
-			  DecayPhaseSpaceChannelPtr phase,Energy upp);
+			  PhaseSpaceChannel phase, Energy upp );
   //@}
 
   /**

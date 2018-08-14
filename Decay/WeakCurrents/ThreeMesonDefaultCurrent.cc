@@ -646,10 +646,11 @@ ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
 }
 
 // complete the construction of the decay mode for integration
-bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
-					  DecayPhaseSpaceModePtr mode,
+bool ThreeMesonDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
+					  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+					  unsigned int imode,PhaseSpaceModePtr mode,
 					  unsigned int iloc,int ires,
-					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
+					  PhaseSpaceChannel phase, Energy upp ) {
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
   tPDVector extpart(particles(1,imode,iq,ia));
@@ -671,93 +672,57 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
   }
   _maxmass=max(_maxmass,upp);
   // the rho0 resonances
-  tPDPtr rho0[3]={getParticleData(113),getParticleData(100113),getParticleData(30113)};
-  tPDPtr rhoc[3],Kstar0[3],Kstarc[3];
-  if(icharge==-3) {
-    // the charged rho resonances
-    rhoc[0] = getParticleData(-213);
-    rhoc[1] = getParticleData(-100213);
-    rhoc[2] = getParticleData(-30213);
-    // the K*0 resonances
-    Kstar0[0] = getParticleData(313);
-    Kstar0[1] = getParticleData(100313);
-    Kstar0[2] = getParticleData(30313);
-    // the charged K* resonances
-    Kstarc[0] = getParticleData(-323);
-    Kstarc[1] = getParticleData(-100323);
-    Kstarc[2] = getParticleData(-30323);
+  tPDPtr rho0[3]   = { getParticleData(113), getParticleData(100113), getParticleData(30113)};
+  tPDPtr rhoc[3]   = {getParticleData(-213),getParticleData(-100213),getParticleData(-30213)};
+  tPDPtr Kstar0[3] = { getParticleData(313), getParticleData(100313), getParticleData(30313)};
+  tPDPtr Kstarc[3] = {getParticleData(-323),getParticleData(-100323),getParticleData(-30323)};
+  if(icharge==3) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      rhoc  [ix] =   rhoc[ix]->CC();
+      Kstar0[ix] = Kstar0[ix]->CC();
+      Kstarc[ix] = Kstarc[ix]->CC();
+    }
   }
-  else {
-    // the charged rho resonances
-    rhoc[0] = getParticleData(213);
-    rhoc[1] = getParticleData(100213);
-    rhoc[2] = getParticleData(30213);
-    // the K*0 resonances
-    Kstar0[0] = getParticleData(-313);
-    Kstar0[1] = getParticleData(-100313);
-    Kstar0[2] = getParticleData(-30313);
-    // the charged K* resonances
-    Kstarc[0] = getParticleData(323);
-    Kstarc[1] = getParticleData(100323);
-    Kstarc[2] = getParticleData(30323);
-  }
-  DecayPhaseSpaceChannelPtr newchannel;
   if(imode==0) {
     // channels for pi- pi- pi+
     for(unsigned int ix=0;ix<3;++ix) {
       if(!rho0[ix]) continue;
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(rho0[ix],0,0.0, iloc+1,iloc+2);
-      mode->addChannel(newchannel);
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(rho0[ix],0,0.0, iloc,iloc+2);
-      mode->addChannel(newchannel);
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+1,ires+1,rho0[ix],
+			ires+2,iloc+2,ires+2,iloc+3));
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+2,ires+1,rho0[ix],
+			ires+2,iloc+1,ires+2,iloc+3));
     }
   }
   else if(imode==1) {
     // channels for pi0 pi0 pi-
     for(unsigned int ix=0;ix<3;++ix) {
       if(!rhoc[ix]) continue;
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(rhoc[ix],0,0.0, iloc+1,iloc+2);
-      mode->addChannel(newchannel);
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
-      mode->addChannel(newchannel);
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+1,ires+1,rhoc[ix],
+			ires+2,iloc+2,ires+2,iloc+3));
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+2,ires+1,rhoc[ix],
+			ires+2,iloc+1,ires+2,iloc+3));
     }
   }
   else if(imode==2) {
     // channels for K- pi- K+
     for(unsigned int ix=0;ix<3;++ix) {
       if(Kstar0[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(a1        ,0,0.0,-ires-1,iloc);
-	newchannel->addIntermediate(Kstar0[ix],0,0.0, iloc+1,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+1,ires+1,Kstar0[ix],
+			  ires+2,iloc+2,ires+2,iloc+3));
       }
       if(rho0[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	newchannel->addIntermediate(rho0[ix],0,0.0,iloc,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+2,ires+1,rho0[ix],
+			  ires+2,iloc+1,ires+2,iloc+3));
       }
       for(unsigned int iy=0;iy<3;++iy) {
 	if(!rhoc[ix]) continue;
 	if(Kstar0[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(rhoc[ix]  ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,iloc+1,ires+1,Kstar0[iy],
+			    ires+2,iloc+2,ires+2,iloc+3));
 	}
 	if(rho0[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rho0[iy],0,0.0,iloc,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,iloc+2,ires+1,rho0[iy],
+			    ires+2,iloc+1,ires+2,iloc+3));
 	}
       }
     }
@@ -766,30 +731,22 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
     // channels for K0 pi- K0bar
     for(unsigned int ix=0;ix<3;++ix) {
       if(Kstarc[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(a1        ,0,0.0,-ires-1,iloc);
-	newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc+1,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+1,ires+1,Kstarc[ix],
+			  ires+2,iloc+2,ires+2,iloc+3));
       }
       if(rho0[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-	newchannel->addIntermediate(rho0[ix],0,0.0, iloc,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+2,ires+1,rho0[ix],
+			  ires+2,iloc+1,ires+2,iloc+3));
       }
       for(unsigned int iy=0;iy<3;++iy) {
 	if(!rhoc[ix]) continue;
 	if(Kstarc[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(rhoc[ix]  ,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(Kstarc[iy],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,iloc+1,ires+1,Kstarc[iy],
+			    ires+2,iloc+2,ires+2,iloc+3));
 	}
 	if(rho0[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rho0[iy],0,0.0, iloc,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,iloc+2,ires+1,rho0[iy],
+			    ires+2,iloc+1,ires+2,iloc+3));
 	}
       }
     }
@@ -798,54 +755,40 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
     // channels for K- pi0 K0
     for(unsigned int ix=0;ix<3;++ix) {
       if(!rhoc[ix]) continue;
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(a1      ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
-      mode->addChannel(newchannel);
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,iloc+2,ires+1,rhoc[ix],
+			ires+2,iloc+1,ires+2,iloc+3));
     }
   }
   else if(imode==5) {  
     // channels for pi0 pi0 K-
     for(unsigned int ix=0;ix<3;++ix) {
       if(!Kstarc[ix]) continue;
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc+1,iloc+2);
-      mode->addChannel(newchannel);
-      newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(Kstarc[ix],0,0.0, iloc,iloc+2);
-      mode->addChannel(newchannel);
+      mode->addChannel((PhaseSpaceChannel(phase),ires,k1,ires+1,iloc+1,ires+1,Kstarc[ix],
+			ires+2,iloc+2,ires+2,iloc+3));
+      mode->addChannel((PhaseSpaceChannel(phase),ires,k1,ires+1,iloc+2,ires+1,Kstarc[ix],
+			ires+2,iloc+1,ires+2,iloc+3));
     }
   }
   else if(imode==6) {
     // channels for K- pi- pi+
     for(unsigned int ix=0;ix<3;++ix) {
       if(rho0[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(k1      ,0,0.0,-ires-1,iloc);
-	newchannel->addIntermediate(rho0[ix],0,0.0, iloc+1,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1,ires+1,iloc+1,ires+1,rho0[ix],
+			  ires+2,iloc+2,ires+2,iloc+3));
       }
       if(Kstar0[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(k1        ,0,0.0,-ires-1,iloc+1);
-	newchannel->addIntermediate(Kstar0[ix],0,0.0, iloc,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1,ires+1,iloc+2,ires+1,Kstar0[ix],
+			  ires+2,iloc+1,ires+2,iloc+3));
       }
       for(unsigned int iy=0;iy<3;++iy) {
 	if(!Kstarc[ix]) continue;
 	if(rho0[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(rho0[iy]  ,0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,iloc+1,ires+1,rho0[iy],
+			    ires+2,iloc+2,ires+2,iloc+3));
 	}
 	if(Kstar0[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,iloc+2,ires+1,Kstar0[iy],
+			    ires+2,iloc+1,ires+2,iloc+3));
 	}
       }
     }
@@ -854,24 +797,18 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
     // channels for pi- kbar0 pi0
     for(unsigned int ix=0;ix<3;++ix) {
       if(rhoc[ix]) {
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(k1      ,0,0.0,-ires-1,iloc+1);
-	newchannel->addIntermediate(rhoc[ix],0,0.0, iloc,iloc+2);
-	mode->addChannel(newchannel);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1,ires+1,iloc+2,ires+1,rhoc[ix],
+			  ires+2,iloc+1,ires+2,iloc+3));
       }
       for(unsigned int iy=0;iy<3;++iy) {
 	if(!Kstarc[ix]) continue;
 	if(Kstar0[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(Kstar0[iy],0,0.0, iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,iloc+1,ires+1,Kstar0[iy],
+			    ires+2,iloc+2,ires+2,iloc+3));
 	}
 	if(rhoc[iy]) {
-	  newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(Kstarc[ix],0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rhoc[iy]  ,0,0.0, iloc,iloc+2);
-	  mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,iloc+2,ires+1,rhoc[iy],
+			    ires+2,iloc+1,ires+2,iloc+3));
 	}
       }
     }
@@ -882,10 +819,8 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
       if(!rhoc[ix]) continue;
       for(unsigned int iy=0;iy<3;++iy) {
 	if(!rho0[iy]) continue;
-	newchannel= new_ptr(DecayPhaseSpaceChannel(*phase));
-	newchannel->addIntermediate(rhoc[ix],0,0.0,-ires-1,iloc);
-	newchannel->addIntermediate(rho0[iy],0,0.0, iloc+1,iloc+2);
-	mode->addChannel(newchannel);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,iloc+1,ires+1,rho0[iy],
+			    ires+2,iloc+2,ires+2,iloc+3));
       }
     }
   }
