@@ -42,7 +42,8 @@ Energy2 MEMultiChannel::scale() const {
 }
 
 int MEMultiChannel::nDim() const {
-  return modes_[0]->nRand();
+  return 0;
+  // return modes_[0]->nRand();
 }
 
 bool MEMultiChannel::generateKinematics(const double * r) {
@@ -63,7 +64,8 @@ bool MEMultiChannel::generateKinematics(const double * r) {
   }
   assert(imode>=0);
   // fill the stack of random numbers
-  modes_[imode]->fillStack(r);
+  modes_[imode]->fillStack();
+  //modes_[imode]->fillStack(r);
   // generate the momenta
   int ichan;
   vector<Lorentz5Momentum> momenta(meMomenta().size()-2);
