@@ -456,7 +456,14 @@ void PhaseSpaceMode::init() {
   for(unsigned int ix=0;ix<outgoing_.size();++ix) {
     if(massGen_[ix]) ++nRand_;
   }
-  if(!channels_.empty()) ++nRand_;
+  if(channels_.empty()) return;
+  ++nRand_;
+  // ensure weights sum to one
+  double sum(0.);
+  for(const PhaseSpaceChannel & channel : channels_)
+    sum+=channel.weight();
+  for(PhaseSpaceChannel & channel : channels_)
+    channel.weight(channel.weight()/sum);
 }
 
 void PhaseSpaceMode::initrun() {
@@ -475,4 +482,10 @@ void PhaseSpaceMode::initrun() {
       dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(outgoing_[ix]->widthGenerator());
     if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->initrun();
   }
+  // ensure weights sum to one
+  double sum(0.);
+  for(const PhaseSpaceChannel & channel : channels_)
+    sum+=channel.weight();
+  for(PhaseSpaceChannel & channel : channels_)
+    channel.weight(channel.weight()/sum);
 }
