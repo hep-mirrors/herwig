@@ -323,6 +323,18 @@ bool KPiCurrent::createMode(int icharge, tcPDPtr resonance,
   if(Itotal!=IsoSpin::IUnknown) {
     if(Itotal!=IsoSpin::IHalf) return false;
   } 
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Half:
+      if(icharge ==-3) return false;
+      break;
+    case IsoSpin::I3MinusHalf:
+      if(icharge ==3) return false;
+    default:
+      return false;
+    }
+  }
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -336,21 +348,8 @@ bool KPiCurrent::createMode(int icharge, tcPDPtr resonance,
   else {
     return false;
   }
-  // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
-    case IsoSpin::I3Half:
-      if(icharge ==-3) return false;
-      break;
-    case IsoSpin::I3MinusHalf:
-      if(icharge ==3) return false;
-    default:
-      return false;
-    }
-  }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
-  DecayPhaseSpaceChannelPtr newchannel;
   // possible resonances
   tPDPtr res[5]={getParticleData(-323   ),getParticleData(-100323),
 		 getParticleData(-30323 ),getParticleData(-9000321),
@@ -428,11 +427,11 @@ void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
 
 vector<LorentzPolarizationVectorE> 
 KPiCurrent::current(tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			    const int imode, const int ichan,Energy & scale, 
-			    const tPDVector & outgoing,
-			    const vector<Lorentz5Momentum> & momenta,
-			    DecayIntegrator2::MEOption) const {
+		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+		    const int imode, const int ichan,Energy & scale, 
+		    const tPDVector & outgoing,
+		    const vector<Lorentz5Momentum> & momenta,
+		    DecayIntegrator2::MEOption) const {
   useMe();
   // check the isospin
   if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IHalf)

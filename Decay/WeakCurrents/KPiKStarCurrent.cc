@@ -47,7 +47,7 @@ KPiKStarCurrent::KPiKStarCurrent() {
 }
 
 void KPiKStarCurrent::doinit() {
-  WeakDecayCurrent::doinit();
+  WeakCurrent::doinit();
   // check consistency of parametrers
   if(_kstarmasses.size()!=_kstarwidths.size()) {
     throw InitException() << "Inconsistent parameters in KPiKStarCurrent"
@@ -116,7 +116,7 @@ void KPiKStarCurrent::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<KPiKStarCurrent,WeakDecayCurrent>
+DescribeClass<KPiKStarCurrent,WeakCurrent>
 describeHerwigKPiKStarCurrent("Herwig::KPiKStarCurrent", "HwWeakCurrents.so");
 
 void KPiKStarCurrent::Init() {
@@ -217,12 +217,29 @@ void KPiKStarCurrent::Init() {
 }
 
 // complete the construction of the decay mode for integration
-bool KPiKStarCurrent::createMode(int icharge, unsigned int imode,
-				 DecayPhaseSpaceModePtr mode,
-				 unsigned int iloc,int,
-				 DecayPhaseSpaceChannelPtr phase,Energy upp) {
-  if((imode<=4&&abs(icharge)!=3) ||
-     (imode>4 && icharge !=0)) return false; 
+bool KPiKStarCurrent::createMode(int icharge, tcPDPtr resonance,
+				 IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				 unsigned int imode,PhaseSpaceModePtr mode,
+				 unsigned int iloc,int ires,
+				 PhaseSpaceChannel phase, Energy upp ) {
+  // check the charge
+  if(abs(icharge)!=3) return false;
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal!=IsoSpin::IHalf) return false;
+  } 
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Half:
+      if(icharge ==-3) return false;
+      break;
+    case IsoSpin::I3MinusHalf:
+      if(icharge == 3) return false;
+    default:
+      return false;
+    }
+  }
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -239,7 +256,6 @@ bool KPiKStarCurrent::createMode(int icharge, unsigned int imode,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
-  DecayPhaseSpaceChannelPtr newchannel;
   // set the resonances
   // K+ pi0 or K0 pi+ or K eta decay
   tPDPtr res[3]={getParticleData(323),getParticleData(100323),getParticleData(30323)};
@@ -250,11 +266,10 @@ bool KPiKStarCurrent::createMode(int icharge, unsigned int imode,
   }
   // create the channels
   for(unsigned int ix=0;ix<3;++ix) {
-    if(res[ix]) {
-      newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(res[ix],0,0.0,iloc,iloc+1);
-      mode->addChannel(newchannel);
-    }
+    if(!res[ix]) continue;
+    if(resonance && resonance != res[ix]) continue;
+    mode->addChannel((PhaseSpaceChannel(phase),ires,res[ix],
+		      ires+1,iloc+1,ires+1,iloc+2));
   }
   // reset the masses in the intergrators if needed
   if(_kstarparameters) {
@@ -294,18 +309,32 @@ tPDVector KPiKStarCurrent::particles(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-KPiKStarCurrent::current(const int imode, const int ichan,
-				 Energy & scale,const ParticleVector & outpart,
-				 DecayIntegrator::MEOption meopt) const {
+KPiKStarCurrent::current(tcPDPtr resonance,
+		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+		    const int imode, const int ichan,Energy & scale, 
+		    const tPDVector & outgoing,
+		    const vector<Lorentz5Momentum> & momenta,
+		    DecayIntegrator2::MEOption) const {
   useMe();
-  if(meopt==DecayIntegrator::Terminate) {
-    for(unsigned int ix=0;ix<2;++ix)
-      ScalarWaveFunction::constructSpinInfo(outpart[ix],outgoing,true);
-    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  // check the isospin
+  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IHalf)
+    return vector<LorentzPolarizationVectorE>();
+  int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge();
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Half:
+      if(icharge ==-3) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3MinusHalf:
+      if(icharge ==3) return vector<LorentzPolarizationVectorE>();
+    default:
+      return vector<LorentzPolarizationVectorE>();
+    }
   }
   // momentum difference and sum of the mesons
-  Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
-  Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
+  Lorentz5Momentum pdiff(momenta[0]-momenta[1]);
+  Lorentz5Momentum psum (momenta[0]+momenta[1]);
   psum.rescaleMass();
   scale=psum.mass();
   // mass2 of vector intermediate state
@@ -314,16 +343,28 @@ KPiKStarCurrent::current(const int imode, const int ichan,
   psum *=dot;
   LorentzPolarizationVector vect;
   // calculate the current
-  Complex FK(0.),denom(0.);
-  if(ichan<0) {
-    for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix) {
-      FK+=_kwgt[ix]*BreitWigner(q2,_kmodel,ix);
-      denom+=_kwgt[ix];
-    }
+  unsigned int imin=0, imax=_kwgt.size();
+  if(ichan>0) {
+    imin = ichan;
+    imax = ichan+1;
   }
-  else if (ichan<int(_kwgt.size())&&ichan<3) {
-    FK=_kwgt[ichan]*BreitWigner(q2,_kmodel,ichan);
-    for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix) denom+=_kwgt[ix];
+  if(resonance) {
+    switch(abs(resonance->id())/1000) {
+    case 0:
+      imin=0; break;
+    case 100:
+      imin=1; break;
+    case  30:
+      imin=2; break;
+    default:
+      assert(false);
+    }
+    imax = imin+1;
+  }
+  Complex denom=std::accumulate(_kwgt.begin(),_kwgt.end(),Complex(0.));
+  Complex FK(0.);
+  for(unsigned int ix=imin;ix<imax;++ix) {
+    FK+=_kwgt[ix]*BreitWigner(q2,_kmodel,ix);
   }
   // additional prefactors
   FK/=denom;
@@ -407,7 +448,7 @@ void KPiKStarCurrent::dataBaseOutput(ofstream & output,bool header,
     output << name() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
   }
   output << "newdef " << name() << ":KModel  " << _kmodel  << "\n";
-  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
