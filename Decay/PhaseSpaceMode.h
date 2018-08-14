@@ -225,6 +225,14 @@ public :
   }
 
   /**
+   *   Fill the stack
+   */
+  void fillStack() {
+    assert(rStack_.empty());
+    for(unsigned int ix=0;ix<nRand_;++ix) rStack_.push(UseRandom::rnd());
+  }
+
+  /**
    * Return the weight for a given phase-space point.
    * @param in The momentum of the incoming particle
    * @param momenta The momenta of the outgoing particles
@@ -301,14 +309,6 @@ private:
    */
   void constructVertex(const Particle & in, const ParticleVector & out,
 		       tcDecayIntegrator2Ptr decayer) const;
-
-  /**
-   *   Fill the stack
-   */
-  void fillStack() {
-    assert(rStack_.empty());
-    for(unsigned int ix=0;ix<nRand_;++ix) rStack_.push(UseRandom::rnd());
-  }
   
 private:
 
