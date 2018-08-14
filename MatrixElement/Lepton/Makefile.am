@@ -11,5 +11,6 @@ MEee2Higgs2SM.h MEee2Higgs2SM.cc
 HwMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 
 HwMELeptonLowEnergy_la_SOURCES = \
-MEee2Mesons.h MEee2Mesons.cc
+MEee2Mesons.h MEee2Mesons.cc\
+MEee2Mesons2.h MEee2Mesons2.cc
 HwMELeptonLowEnergy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
