@@ -17,9 +17,31 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the PhaseSpaceChannel class.
- */
+  /** \ingroup Decay
+   *
+   * This class is designed to store the information needed for a given
+   * phase-space channel for use by the multi-channel phase space decayer
+   * and perform the generation of the phase space for that channel.
+   *
+   * The decay channel is specified as a series of \f$1\to2\f$ decays to either
+   * external particles or other intermediates. For each intermediate
+   * the Jacobian to be used can be either a Breit-Wigner(0) or a power-law
+   * (1).
+   *
+   * The class is then capable of generating a phase-space point using this
+   * channel and computing the weight of a given point for use in a multi-channel
+   * phase space integration using the <code>PhaseSpaceMode</code> class.
+   *
+   * The class is designed so that the phase-space channels can either by specified
+   * using the addIntermediate method directly or via the repository.
+   * (In practice at the moment all the channels are constructed by the relevant decayers
+   *  using the former method at the moment.)
+   *
+   * @see PhaseSpaceMode
+   * @see DecayIntegrator2
+   *
+   * @author  Peter Richardson
+   */
 class PhaseSpaceChannel  {
 
 public:
