@@ -365,7 +365,7 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
     }
     if((!resonance || resonance->id() == 100223) && (ichan<0 || (ichan>=15&&ichan<=17))) {
       F_I0 += coup_I0_[5]*HChannel(irho,rhoMasses_[2],rhoWidths_[2],sp,sm,s0,mpip_,mpi0_)*
-    Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[3]);
+    Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]);
     }
   }
   // isospin = 1
