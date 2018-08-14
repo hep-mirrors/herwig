@@ -102,6 +102,7 @@ public:
    */
   PhaseSpaceChannel & operator , (tPDPtr res) {
     intermediates_.push_back(PhaseSpaceResonance(res));
+    if(iAdd_<0) return *this;
     if(intermediates_[iAdd_].children.first==0)
       intermediates_[iAdd_].children.first  = 1-int(intermediates_.size());
     else
