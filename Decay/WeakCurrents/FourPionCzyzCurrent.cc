@@ -678,6 +678,7 @@ bool FourPionCzyzCurrent::accept(vector<int> id) {
     else if(id[ix]==ParticleID::piminus) ++npiminus;
     else if(id[ix]==ParticleID::pi0)     ++npi0;
   }
+  cerr << "testing in accepted " << npiplus << " " << npiminus << " " << npi0 << "\n";
   if(npiminus==2&&npiplus==1&&npi0==1)      allowed=true;
   else if(npiminus==1&&npi0==3)             allowed=true;
   else if(npiplus==2&&npiminus==1&&npi0==1) allowed=true;
