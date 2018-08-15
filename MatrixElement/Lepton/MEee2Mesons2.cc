@@ -53,8 +53,8 @@ void MEee2Mesons2::getDiagrams() const {
       diag = new_ptr((*diag,-ndiag));
       add(diag);
     }
+    nmult_= mode->outgoing().size();
   }
-  nmult_=3;
 }
 
 Energy2 MEee2Mesons2::scale() const {
@@ -159,6 +159,65 @@ bool MEee2Mesons2::generateKinematics(const double * r) {
     // mass piece
     jacobian((rhomax-rhomin)*( sqr(m2-sqr(mass))+sqr(mass*width))
 	     /mass/width*jacobian()/sHat());
+  }
+  else if(nDim()==7) {
+    tcPDPtr res = getParticleData(213);
+    Energy mass = res->mass(), width = res->width();
+    Energy m12min = meMomenta()[2].mass()+meMomenta()[3].mass(); 
+    Energy m34min = meMomenta()[4].mass()+meMomenta()[5].mass(); 
+    
+    Energy m12max = sqrt(sHat())-m34min;
+    double rhomin = atan((sqr(m12min)-sqr(mass))/mass/width);
+    double rhomax = atan((sqr(m12max)-sqr(mass))/mass/width);
+    double rho = rhomin+r[1]*(rhomax-rhomin);
+    jacobian(jacobian()*(rhomax-rhomin));
+    Energy2 m122 = mass*(width*tan(rho)+mass);
+    Energy m12 = sqrt(m122);
+
+    Energy m34max = sqrt(sHat())-m12;
+    rhomin = atan((sqr(m34min)-sqr(mass))/mass/width);
+    rhomax = atan((sqr(m34max)-sqr(mass))/mass/width);
+    rho = rhomin+r[2]*(rhomax-rhomin);
+    jacobian(jacobian()*(rhomax-rhomin));
+    Energy2 m342 = mass*(width*tan(rho)+mass);
+    Energy m34 = sqrt(m342);
+    try {
+      q = SimplePhaseSpace::
+	getMagnitude(sHat(), m12, m34);
+    } 
+    catch ( ImpossibleKinematics ) {
+      return false;
+    }
+    pq = 2.0*e*q;
+    Energy pt = q*sqrt(1.0-sqr(cth));
+    Lorentz5Momentum p12,p34;
+    p12.setMass(m12);
+    p34.setMass(m34);
+    p12.setVect(Momentum3( pt*sin(phi()),  pt*cos(phi()),  q*cth));
+    p34.setVect(Momentum3(-pt*sin(phi()), -pt*cos(phi()), -q*cth));
+    p12.rescaleEnergy();
+    p34.rescaleEnergy();
+    // decay of the intermediate
+    bool test=Kinematics::twoBodyDecay(p12,meMomenta()[2].mass(),
+				       meMomenta()[3].mass(),
+				       -1.+2*r[3],r[4]*2.*pi,
+				       meMomenta()[2],meMomenta()[3]);
+    if(!test) return false;
+    test=Kinematics::twoBodyDecay(p34,meMomenta()[4].mass(),
+				  meMomenta()[5].mass(),
+				  -1.+2*r[5],r[6]*2.*pi,
+				  meMomenta()[4],meMomenta()[5]);
+    if(!test) return false;
+    // decay piece of the jacobian
+    Energy p2 = Kinematics::pstarTwoBodyDecay(m12,meMomenta()[2].mass(),
+					      meMomenta()[3].mass());
+    jacobian(p2/m12/8./sqr(pi)*jacobian());
+    p2 = Kinematics::pstarTwoBodyDecay(m34,meMomenta()[4].mass(),
+				       meMomenta()[5].mass());
+    jacobian(p2/m34/8./sqr(pi)*jacobian());
+    // mass piece
+    jacobian((sqr(m122-sqr(mass))+sqr(mass*width))/mass/width/sHat()*jacobian());
+    jacobian((sqr(m342-sqr(mass))+sqr(mass*width))/mass/width/sHat()*jacobian());
   }
   else {
     assert(false);
