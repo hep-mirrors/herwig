@@ -1108,7 +1108,7 @@ Complex FourPionNovosibirskCurrent::rhoBreitWigner(Energy2 q2) const {
 LorentzVector<complex<Energy5> > 
 FourPionNovosibirskCurrent::t1(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
 			       Lorentz5Momentum & q3,Lorentz5Momentum & q4) const {
-  // momentum of the whole sysytem
+  // momentum of the whole system
   Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
   // compute the virtuality of the a_1
   Lorentz5Momentum a1(q2+q3+q4);a1.rescaleMass();
