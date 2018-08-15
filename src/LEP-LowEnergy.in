@@ -30,21 +30,34 @@ create Herwig::MEee2Mesons MEee2Kaons HwMELeptonLowEnergy.so
 create Herwig::TwoKaonCzyzCurrent /Herwig/Decays/TwoKaonCzyzCurrent 
 set MEee2Kaons:WeakCurrent /Herwig/Decays/TwoKaonCzyzCurrent
 
-
 create Herwig::MEee2Mesons MEee3Pions HwMELeptonLowEnergy.so
+create Herwig::MEee2Mesons2 MEee3Pions2 HwMELeptonLowEnergy.so
 create Herwig::ThreePionCzyzCurrent /Herwig/Decays/ThreePionCzyzCurrent
 set MEee3Pions:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
+set MEee3Pions2:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
+
+
+create Herwig::MEee2Mesons MEee4Pions HwMELeptonLowEnergy.so
+create Herwig::MEee2Mesons2 MEee4Pions2 HwMELeptonLowEnergy.so
+create Herwig::FourPionCzyzCurrent /Herwig/Decays/FourPionCzyzCurrent
+set MEee4Pions:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
+set MEee4Pions2:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
+
+
 
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 #insert SubProcess:MatrixElements 0 MEee2Pions
 #insert SubProcess:MatrixElements 0 MEee2Kaons
-insert SubProcess:MatrixElements 0 MEee3Pions
+#insert SubProcess:MatrixElements 0 MEee3Pions
+#insert SubProcess:MatrixElements 0 MEee3Pions2
+insert SubProcess:MatrixElements 0 MEee4Pions
+#insert SubProcess:MatrixElements 0 MEee4Pions2
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set EventGenerator:EventHandler:LuminosityFunction:Energy 0.78
+set EventGenerator:EventHandler:LuminosityFunction:Energy 1.55
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.1
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
@@ -63,6 +76,8 @@ cd /Herwig/Generators
 # Save run for later usage with 'Herwig run'
 ##################################################
 set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler NULL
+#set EventGenerator:EventHandler:CascadeHandlder NULL
 saverun LEP-LowEnergy EventGenerator
 
 ##################################################

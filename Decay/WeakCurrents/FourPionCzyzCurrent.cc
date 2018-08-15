@@ -40,7 +40,7 @@ FourPionCzyzCurrent::FourPionCzyzCurrent()
   // Coefficents for sum over \f$\rho\f$ resonances 
   beta_a1_    ={1.,-0.066,-0.021,-0.0043};
   beta_f0_    ={1.,7e4,-2.5e3,1.9e3};
-  beta_omega_ ={1.,-0.33,-0.012,-0.0053};
+  beta_omega_ ={1.,-0.33,0.012,-0.0053};
   beta_B_     ={1.,-0.145};
   beta_bar_   ={1.,0.08,-0.0075};
   // couplings for the various termsz
@@ -251,6 +251,32 @@ void FourPionCzyzCurrent::doinit() {
   WeakCurrent::doinit();
   mpip_ = getParticleData(211)->mass();
   mpi0_ = getParticleData(111)->mass();
+  // test of the current for a fixed momentum configuration
+  // Lorentz5Momentum q1(0.13061870567796208*GeV,-0.21736300316234394*GeV,
+  // 		      0.51725254282500699*GeV,0.59167288008090657*GeV);
+  // Lorentz5Momentum q2(-1.1388573867484255 *GeV,      0.37727761929037396 *GeV,      0.31336706796993302 *GeV,    1.2472979400305677*GeV);
+  // Lorentz5Momentum q3(0.11806773412672231 *GeV,      0.17873024832600765   *GeV,    0.10345508827447017   *GeV,   0.27580297667647757*GeV );
+  // Lorentz5Momentum q4 (7.7487017488620830E-002*GeV, 0.16118198754624435    *GeV,    6.5813182962706746E-002*GeV, 0.23620982448991124*GeV );
+  // q1.rescaleMass();
+  // q2.rescaleMass();
+  // q2.rescaleMass();
+  // q3.rescaleMass();
+  // cerr << q1/GeV << " " << q1.mass()/GeV << "\n";
+  // cerr << q2/GeV << " " << q2.mass()/GeV << "\n";
+  // cerr << q3/GeV << " " << q3.mass()/GeV << "\n";
+  // cerr << q4/GeV << " " << q4.mass()/GeV << "\n";
+  // Lorentz5Momentum Q(q1+q2+q3+q4);
+  // Q.rescaleMass();
+ 
+  // LorentzVector<complex<InvEnergy> > base = baseCurrent(Q.mass2(),tcPDPtr(),-1,Q,q1,q2,q3,q4);
+  // LorentzVector<complex<InvEnergy> > test( Complex(  376.35697290395467     ,  66.446392015809550     )/GeV,
+  // 					   Complex( -135.73591401998152     ,  112.36912660073307     )/GeV,
+  // 					   Complex(  83.215302375273723     , -54.986430577097920     )/GeV,
+  // 					   Complex( -123.56434266557559     , -22.465096431505703     )/GeV);
+  // cerr << "current test X " << (base.x()-test.x())/(base.x()+test.x()) << "\n";
+  // cerr << "current test Y " << (base.y()-test.y())/(base.x()+test.y()) << "\n";
+  // cerr << "current test Z " << (base.z()-test.z())/(base.x()+test.z()) << "\n";
+  // cerr << "current test T " << (base.t()-test.t())/(base.x()+test.t()) << "\n";
 }
 
 void FourPionCzyzCurrent::createChannels(unsigned int imode,
@@ -630,9 +656,9 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
   }
   else if(imode==4||imode==5) {
     if(ichan<51)
-      output += baseCurrent(Q.mass2(),resonance,ichan,Q,q2,q4,q1,q3);
+      output += baseCurrent(Q.mass2(),resonance,ichan    ,Q,q2,q4,q1,q3);
     if(ichan<0 || (ichan>=51&&ichan<102))
-      output += baseCurrent(Q.mass2(),resonance,ichan-51,Q,q1,q4,q2,q3);
+      output += baseCurrent(Q.mass2(),resonance,ichan-51 ,Q,q1,q4,q2,q3);
     if(ichan<0 || (ichan>=102&&ichan<153)) 
       output += baseCurrent(Q.mass2(),resonance,ichan-102,Q,q2,q3,q1,q4);
     if(ichan<0 ||  ichan>=153)
@@ -745,13 +771,9 @@ void FourPionCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
 }
 
 LorentzVector<complex<InvEnergy> > FourPionCzyzCurrent::
-baseCurrent(Energy2 Q2,
-	    tcPDPtr resonance,
-	    const int ichan,
-	    const Lorentz5Momentum & Q,
-	    const Lorentz5Momentum & q1,
-	    const Lorentz5Momentum & q2,
-	    const Lorentz5Momentum & q3,
+baseCurrent(Energy2 Q2, tcPDPtr resonance,const int ichan,
+	    const Lorentz5Momentum & Q , const Lorentz5Momentum & q1,
+	    const Lorentz5Momentum & q2, const Lorentz5Momentum & q3,
 	    const Lorentz5Momentum & q4) const {
   // check the resonance
   int ires0(-1);
@@ -793,51 +815,51 @@ baseCurrent(Energy2 Q2,
     complex<InvEnergy2> a1_fact;
     if(ires1<0) {
       a1_fact = -c_a1_*
-	Resonance::F_rho(Q2,beta_a1_,rhoMasses_Frho_,
-			 rhoWidths_Frho_,mpip_,mpip_);
+  	Resonance::F_rho(Q2,beta_a1_,rhoMasses_Frho_,
+  			 rhoWidths_Frho_,mpip_,mpip_);
     }
     else {
       if(ires0<0 || ires0==ires1) {
-	a1_fact = -c_a1_*beta_a1_[ires1]*
-	  Resonance::BreitWignerPWave(Q2,rhoMasses_Frho_[ires1],rhoWidths_Frho_[ires1],mpip_,mpip_)
-	  /std::accumulate(beta_a1_.begin(),beta_a1_.end(),0.);
+  	a1_fact = -c_a1_*beta_a1_[ires1]*
+  	  Resonance::BreitWignerPWave(Q2,rhoMasses_Frho_[ires1],rhoWidths_Frho_[ires1],mpip_,mpip_)
+  	  /std::accumulate(beta_a1_.begin(),beta_a1_.end(),0.);
       }
       else
-	a1_fact=ZERO;
+  	a1_fact=ZERO;
     }
     // first 2 terms
     if(iterm<2) {
-      Complex bw_a1_Qm4 = Resonance::BreitWignera1(Qm42,a1Mass_,a1Width_);
+      Complex bw_a1_Qm3 = Resonance::BreitWignera1(Qm32,a1Mass_,a1Width_);
       // first term
       if(iterm<=0) {
-	Complex Brhoq1q4(0.);
-	if(ires2<0) {
-	  Brhoq1q4 = bw_a1_Qm4*
-	  Resonance::F_rho(m12+m42+2.*q1q4,beta_B_,rhoMasses_,rhoWidths_,mpip_,mpip_);
-	}
-	else {
-	  Brhoq1q4 = bw_a1_Qm4*beta_B_[ires2]*
-	    Resonance::BreitWignerPWave(m12+m42+2.*q1q4,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
-	    std::accumulate(beta_B_.begin(),beta_B_.end(),0.);
-	}
-	double dot1  = (q1q2-q2q4)/Qm32;
-	double dot1B = (Qq1-Qq4)/Q2;
-	double dot1C = Qq3/Q2*dot1;
-	// coefficients of the momenta to construct the current
-	c1 +=-0.5*a1_fact*Brhoq1q4*( 3.-dot1);
-	c2 +=-0.5*a1_fact*Brhoq1q4*( 1.-dot1);
-	c34+=-0.5*a1_fact*Brhoq1q4*( 1.+dot1);
-	cq +=-0.5*a1_fact*Brhoq1q4*(-1.+dot1-2.*dot1B-2.*dot1C);
+  	Complex Brhoq1q4(0.);
+  	if(ires2<0) {
+  	  Brhoq1q4 = bw_a1_Qm3*
+  	  Resonance::F_rho(m12+m42+2.*q1q4,beta_B_,rhoMasses_,rhoWidths_,mpip_,mpip_);
+  	}
+  	else {
+  	  Brhoq1q4 = bw_a1_Qm3*beta_B_[ires2]*
+  	    Resonance::BreitWignerPWave(m12+m42+2.*q1q4,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
+  	    std::accumulate(beta_B_.begin(),beta_B_.end(),0.);
+  	}
+  	double dot1  = (q1q2-q2q4)/Qm32;
+  	double dot1B = (Qq1-Qq4)/Q2;
+  	double dot1C = Qq3/Q2*dot1;
+  	// coefficients of the momenta to construct the current
+  	c1 += 0.5*a1_fact*Brhoq1q4*( 3.-dot1);
+  	c2 += 0.5*a1_fact*Brhoq1q4*( 1.-dot1);
+  	c34+= 0.5*a1_fact*Brhoq1q4*( 1.+dot1);
+  	cq += 0.5*a1_fact*Brhoq1q4*(-1.+dot1-2.*dot1B-2.*dot1C);
       }
       // second term
       if(iterm<0||iterm==1) {
       	Complex Brhoq2q4(0.);
       	if(ires2<0) {
-      	  Brhoq2q4= bw_a1_Qm4*
+      	  Brhoq2q4= bw_a1_Qm3*
       	    Resonance::F_rho(m12+m42+2.*q2q4,beta_B_,rhoMasses_,rhoWidths_,mpip_,mpip_);
       	}
       	else {
-      	  Brhoq2q4= bw_a1_Qm4*beta_B_[ires2]*
+      	  Brhoq2q4= bw_a1_Qm3*beta_B_[ires2]*
       	    Resonance::BreitWignerPWave(m12+m42+2.*q2q4,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
       	    std::accumulate(beta_B_.begin(),beta_B_.end(),0.);
       	}
@@ -846,24 +868,24 @@ baseCurrent(Energy2 Q2,
       	double dot2C = Qq3/Q2*dot2;
       	// coefficients of the momenta to construct the current
       	// a_1 terms
-      	c1 +=-0.5*a1_fact*Brhoq2q4*( 1.-dot2);
-      	c2 +=-0.5*a1_fact*Brhoq2q4*( 3.-dot2);
-      	c34+=-0.5*a1_fact*Brhoq2q4*( 1.+dot2);
-      	cq +=-0.5*a1_fact*Brhoq2q4*(-1.+dot2-2.*dot2B-2.*dot2C);
+      	c1 += 0.5*a1_fact*Brhoq2q4*( 1.-dot2);
+      	c2 += 0.5*a1_fact*Brhoq2q4*( 3.-dot2);
+      	c34+= 0.5*a1_fact*Brhoq2q4*( 1.+dot2);
+      	cq += 0.5*a1_fact*Brhoq2q4*(-1.+dot2-2.*dot2B-2.*dot2C);
       }
     }
     // second 2 terms
     if(iterm<0||iterm>=2) {
-      Complex bw_a1_Qm3 = Resonance::BreitWignera1(Qm32,a1Mass_,a1Width_);
+      Complex bw_a1_Qm4 = Resonance::BreitWignera1(Qm42,a1Mass_,a1Width_);
       // third term
       if(iterm<0||iterm==2) {
       	Complex Brhoq1q3(0.);
       	if(ires2<0) {
-      	  Brhoq1q3 = bw_a1_Qm3*
+      	  Brhoq1q3 = bw_a1_Qm4*
       	    Resonance::F_rho(m12+m32+2.*q1q3,beta_B_,rhoMasses_,rhoWidths_,mpip_,mpip_);
       	}
       	else {
-      	  Brhoq1q3 = bw_a1_Qm3*beta_B_[ires2]*
+      	  Brhoq1q3 = bw_a1_Qm4*beta_B_[ires2]*
       	    Resonance::BreitWignerPWave(m12+m32+2.*q1q3,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
       	    std::accumulate(beta_B_.begin(),beta_B_.end(),0.);
       	}
@@ -872,32 +894,32 @@ baseCurrent(Energy2 Q2,
       	double dot3C = Qq4/Q2*dot3;
       	// coefficients of the momenta to construct the current
       	// a_1 terms
-      	c1 =-0.5*a1_fact*Brhoq1q3*(-3.+dot3);
-      	c2 =-0.5*a1_fact*Brhoq1q3*(-1.+dot3);
-      	c34=-0.5*a1_fact*Brhoq1q3*( 1.+dot3);
-      	cq =-0.5*a1_fact*Brhoq1q3*( 1.-dot3+2.*dot3B+2.*dot3C);
+      	c1 += 0.5*a1_fact*Brhoq1q3*(-3.+dot3);
+      	c2 += 0.5*a1_fact*Brhoq1q3*(-1.+dot3);
+      	c34+= 0.5*a1_fact*Brhoq1q3*( 1.+dot3);
+      	cq += 0.5*a1_fact*Brhoq1q3*( 1.-dot3+2.*dot3B+2.*dot3C);
       }
       // fourth term
       if(iterm<0||iterm==3) {
-	Complex Brhoq2q3(0.);
-	if(ires2<0) {
-	  Brhoq2q3 = bw_a1_Qm3*
-	  Resonance::F_rho(m12+m32+2.*q2q3,beta_B_,rhoMasses_,rhoWidths_,mpip_,mpip_);
-	}
-	else {
-	  Brhoq2q3 = bw_a1_Qm3*beta_B_[ires2]*
-	  Resonance::BreitWignerPWave(m12+m32+2.*q2q3,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
-	    std::accumulate(beta_B_.begin(),beta_B_.end(),0.);
-	}
-	double dot4  = (q1q2-q1q3)/Qm42;
-	double dot4B = (Qq2-Qq3)/Q2;
-	double dot4C = Qq4/Q2*dot4;
-	// coefficients of the momenta to construct the current
-	// a_1 terms
-	c1 =-0.5*a1_fact*Brhoq2q3*(-1.+dot4);
-	c2 =-0.5*a1_fact*Brhoq2q3*(-3.+dot4);
-	c34=-0.5*a1_fact*Brhoq2q3*( 1.+dot4);
-	cq =-0.5*a1_fact*Brhoq2q3*( 1.-dot4+2.*dot4B+2.*dot4C);
+  	Complex Brhoq2q3(0.);
+  	if(ires2<0) {
+  	  Brhoq2q3 = bw_a1_Qm4*
+  	  Resonance::F_rho(m12+m32+2.*q2q3,beta_B_,rhoMasses_,rhoWidths_,mpip_,mpip_);
+  	}
+  	else {
+  	  Brhoq2q3 = bw_a1_Qm4*beta_B_[ires2]*
+  	  Resonance::BreitWignerPWave(m12+m32+2.*q2q3,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
+  	    std::accumulate(beta_B_.begin(),beta_B_.end(),0.);
+  	}
+  	double dot4  = (q1q2-q1q3)/Qm42;
+  	double dot4B = (Qq2-Qq3)/Q2;
+  	double dot4C = Qq4/Q2*dot4;
+  	// coefficients of the momenta to construct the current
+  	// a_1 terms
+  	c1 += 0.5*a1_fact*Brhoq2q3*(-1.+dot4);
+  	c2 += 0.5*a1_fact*Brhoq2q3*(-3.+dot4);
+  	c34+= 0.5*a1_fact*Brhoq2q3*( 1.+dot4);
+  	cq += 0.5*a1_fact*Brhoq2q3*( 1.-dot4+2.*dot4B+2.*dot4C);
       }
     }
   }
@@ -915,11 +937,11 @@ baseCurrent(Energy2 Q2,
     }
     else {
       if(ires0<0 || ires0==ires1) {
-	rho1 = beta_f0_[ires1]*Resonance::BreitWignerPWave(Q2,rhoMasses_Frho_[ires1],rhoWidths_Frho_[ires1],mpip_,mpip_)/
-	  std::accumulate(beta_f0_.begin(),beta_f0_.end(),0.);
+  	rho1 = beta_f0_[ires1]*Resonance::BreitWignerPWave(Q2,rhoMasses_Frho_[ires1],rhoWidths_Frho_[ires1],mpip_,mpip_)/
+  	  std::accumulate(beta_f0_.begin(),beta_f0_.end(),0.);
       }
       else
-	rho1=0.;
+  	rho1=0.;
     }
     Complex rho2(0.);
     if(ires2<0) {
@@ -927,7 +949,7 @@ baseCurrent(Energy2 Q2,
     }
     else {
       rho2 = beta_bar_[ires2]*Resonance::BreitWignerPWave(m32+m42+2.*q3q4,rhoMasses_[ires2],rhoWidths_[ires2],mpip_,mpip_)/
-	std::accumulate(beta_bar_.begin(),beta_bar_.end(),0.);
+  	std::accumulate(beta_bar_.begin(),beta_bar_.end(),0.);
     }
     complex<InvEnergy2> f0fact = c_f0_*rho1*rho2*
       Resonance::BreitWignerSWave(m12+m22+2.*q1q2,f0Mass_,f0Width_,mpip_,mpip_);
@@ -935,6 +957,7 @@ baseCurrent(Energy2 Q2,
     c34 -= f0fact;
     cq  += f0fact*(Qq3-Qq4)/Q2;
   }
+  // omega
   if(ichan<0 || (ichan>=33&&ichan<=51) ) {
     int ires1(-1),iterm(-1);
     if(ichan>0) {
@@ -973,8 +996,8 @@ baseCurrent(Energy2 Q2,
       complex<ThePEG::Qty<std::ratio<0,1>, std::ratio<-6,1>, std::ratio<0,1> > >
 	bw_omega_1 = wfact*Resonance::BreitWignerFW(m12-2.*Qq1+Q2,omegaMass_,omegaWidth_)*Hterm;
       c2 -=  bw_omega_1*(q1q4*Qq3-q1q3*Qq4);
-      c3 += -bw_omega_1*(q1q2*Qq4-q1q4*Qq2);
-      c4 += -bw_omega_1*(q1q3*Qq2-q1q2*Qq3);
+      c3 -=  bw_omega_1*(q1q2*Qq4-q1q4*Qq2);
+      c4 -=  bw_omega_1*(q1q3*Qq2-q1q2*Qq3);
     }
     if(iterm<0||iterm>=3) {
       Complex Hterm(0.);
@@ -992,9 +1015,9 @@ baseCurrent(Energy2 Q2,
 	assert(false);
       complex<ThePEG::Qty<std::ratio<0,1>, std::ratio<-6,1>, std::ratio<0,1> > >
 	bw_omega_2 = wfact*Resonance::BreitWignerFW(m22-2.*Qq2+Q2,omegaMass_,omegaWidth_)*Hterm;
-      c1 -=  bw_omega_2*(q2q4*Qq3-q2q3*Qq4);
-      c3 += -bw_omega_2*(q1q2*Qq4-q2q4*Qq1);
-      c4 += -bw_omega_2*(q2q3*Qq1-q1q2*Qq3);
+      c1 -= bw_omega_2*(q2q4*Qq3-q2q3*Qq4);
+      c3 -= bw_omega_2*(q1q2*Qq4-q2q4*Qq1);
+      c4 -= bw_omega_2*(q2q3*Qq1-q1q2*Qq3);
     }
   }
   // the rho term
@@ -1110,5 +1133,5 @@ baseCurrent(Energy2 Q2,
     v_rho  = -v_rho + vdot*Q;
   }
   // put everything together
-  return c1*q1+c2*q2+(c3+c34)*q3+(c4-c34)*q4+cq*Q + v_rho;
+  return c1*q1+c2*q2+(c3+c34)*q3+(c4-c34)*q4+cq*Q+v_rho;
 }

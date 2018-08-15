@@ -76,8 +76,12 @@ cd /Herwig/Decays
 #create Herwig::TwoKaonCzyzCurrent TwoKaonCzyzCurrent
 #set Tau2KaonsCzyz:WeakCurrent TwoKaonCzyzCurrent
 #set /Herwig/Particles/tau-/tau-->K-,K0,nu_tau;:Decayer Tau2KaonsCzyz
-#set TauKPi:Initialize 1
-#set TauKPi:Points 1000000
+set Tau3Meson:Initialize 1
+set Tau3Meson:Points 1000000
+set Tau3Kaon:Initialize 1
+set Tau3Kaon:Points 1000000
+set Tau3Pion:Initialize 1
+set Tau3Pion:Points 1000000
 
 
 #decaymode tau+->rho+,nu_taubar; 0.108235 1 /Herwig/Decays/Tau1Vector
@@ -96,7 +100,7 @@ cd /Herwig/Decays
 #set WSBHadronic:Points 1000000
 #set BcHadronic:Initialize 1
 #set BcHadronic:Points 1000000
-set Tau2MesonPhoton:Initialize 1
+#set Tau2MesonPhoton:Initialize 1
 #set Tau2MesonPhoton:Points 1000000
 
 ##################################################
