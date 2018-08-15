@@ -165,6 +165,13 @@ double MEee2Mesons::me2(const int ichan) const {
       }
     }
   }
+  // symmetry factors
+  map<long,int> ncount;
+  double symmetry(1.);
+  for(tPDPtr o : out) ncount[o->id()]+=1;
+  for(map<long,int>::const_iterator it=ncount.begin();it!=ncount.end();++it) {
+    symmetry *= it->second;
+  }
   // prefactors
   output *= 0.25*sqr(pow(sqrt(sHat())/q,int(momenta.size()-2)));
   // polarization stuff
@@ -176,7 +183,7 @@ double MEee2Mesons::me2(const int ichan) const {
 			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
     output = me_.average(rho[0],rho[1]);
   }
-  return output;
+  return output/symmetry;
 }
 
 void MEee2Mesons::constructVertex(tSubProPtr) {

@@ -318,6 +318,13 @@ double MEee2Mesons2::me2() const {
     }
   }
   output *= 0.25*sqr(pow(sqrt(sHat())/q,int(momenta.size()-2)));
+  // identical particle stuff
+  map<long,int> ncount;
+  double symmetry(1.);
+  for(tPDPtr o : out) ncount[o->id()]+=1;
+  for(map<long,int>::const_iterator it=ncount.begin();it!=ncount.end();++it) {
+    symmetry *= it->second;
+  }
   // polarization stuff
   tcPolarizedBeamPDPtr beam[2] = 
     {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
@@ -327,7 +334,7 @@ double MEee2Mesons2::me2() const {
   			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
     output = me_.average(rho[0],rho[1]);
   }
-  return output;
+  return output/symmetry;
 }
 
 CrossSection MEee2Mesons2::dSigHatDR() const {
