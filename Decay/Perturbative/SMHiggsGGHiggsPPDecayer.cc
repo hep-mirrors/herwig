@@ -29,7 +29,7 @@ using namespace ThePEG::Helicity;
 
 // The following static variable is needed for the type
 // description system in ThePEG. 
-DescribeClass<SMHiggsGGHiggsPPDecayer,PerturbativeDecayer>
+DescribeClass<SMHiggsGGHiggsPPDecayer,PerturbativeDecayer2>
 describeHerwigSMHiggsGGHiggsPPDecayer("Herwig::SMHiggsGGHiggsPPDecayer",
 				      "HwPerturbativeHiggsDecay.so");
 
@@ -140,9 +140,19 @@ void SMHiggsGGHiggsPPDecayer::Init() {
 
 }
 
-double SMHiggsGGHiggsPPDecayer::me2(const int, 
-				    const Particle & part,
-				    const ParticleVector & decay,
+void SMHiggsGGHiggsPPDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::constructSpinInfo(_vwave[ix],decay[ix],
+					  outgoing,true,
+					  decay[ix]->id()!=ParticleID::Z0);
+}
+
+double SMHiggsGGHiggsPPDecayer::me2(const int,const Particle & part,
+				    const tPDVector & outgoing,
+				    const vector<Lorentz5Momentum> & momenta,
 				    MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
@@ -153,41 +163,36 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
     // fix rho if no correlations
     fixRho(_rho);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
-					  incoming,true);
-    for(unsigned int ix=0;ix<2;++ix)
-      VectorWaveFunction::constructSpinInfo(_vwave[ix],decay[ix],
-					    outgoing,true,
-					    decay[ix]->id()!=ParticleID::Z0);
-    return 0.;
-  }
-  for(unsigned int ix=0;ix<2;++ix)
+  for(unsigned int ix=0;ix<2;++ix) {
     VectorWaveFunction::
-      calculateWaveFunctions(_vwave[ix],decay[ix],outgoing,decay[ix]->id()!=ParticleID::Z0);
+      calculateWaveFunctions(_vwave[ix],momenta[ix],outgoing[ix],
+			     Helicity::outgoing,outgoing[ix]->id()!=ParticleID::Z0);
+
+
+  }
   //Set up decay matrix
   Energy2 scale(sqr(part.mass()));
   unsigned int v1hel,v2hel;
   AbstractVVSVertexPtr vertex;
   unsigned int vstep1(2),vstep2(2);
   double sym(1.);
-  if(decay[0]->id() == ParticleID::g &&
-     decay[1]->id() == ParticleID::g) {
+  if(outgoing[0]->id() == ParticleID::g &&
+     outgoing[1]->id() == ParticleID::g) {
     vertex = _hggvertex;
     sym = 2.;
   }
-  else if(decay[0]->id() == ParticleID::gamma &&
-	  decay[1]->id() == ParticleID::gamma) {
+  else if(outgoing[0]->id() == ParticleID::gamma &&
+  	  outgoing[1]->id() == ParticleID::gamma) {
     vertex = _hppvertex;
     sym = 2.;
   }
-  else if(decay[0]->id() == ParticleID::Z0 &&
-	  decay[1]->id() == ParticleID::gamma) {
+  else if(outgoing[0]->id() == ParticleID::Z0 &&
+  	  outgoing[1]->id() == ParticleID::gamma) {
     vertex = _hzpvertex;
     vstep1 = 1;
   }
-  else if(decay[1]->id() == ParticleID::Z0 &&
-	  decay[0]->id() == ParticleID::gamma) {
+  else if(outgoing[1]->id() == ParticleID::Z0 &&
+  	  outgoing[0]->id() == ParticleID::gamma) {
     vertex = _hzpvertex;
     vstep2 = 1;
   }
@@ -197,13 +202,13 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
   for(v1hel = 0;v1hel < 3;v1hel+=vstep1) {
     for(v2hel = 0;v2hel < 3;v2hel+=vstep2) {
       (*ME())(0,v1hel,v2hel) = vertex->evaluate(scale,_vwave[0][v1hel],
-						_vwave[1][v2hel],_swave);
+  						_vwave[1][v2hel],_swave);
     }
   }
   //store matrix element
   double output = ME()->contract(_rho).real()*UnitRemoval::E2/scale;
   //colour factor (N^2 - 1)/4
-  if(decay[0]->id() == ParticleID::g) output *= 8.;
+  if(outgoing[0]->id() == ParticleID::g) output *= 8.;
   //symmetric final states
   output /= sym;
   // return the answer
@@ -211,57 +216,36 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
 }
 
 void SMHiggsGGHiggsPPDecayer::doinit() {
-  PerturbativeDecayer::doinit();
-  // get the width generator for the higgs
-  tPDPtr higgs = getParticleData(ParticleID::h0);
-  if(_hggvertex) {
-    _hggvertex->init();
-  }
+  PerturbativeDecayer2::doinit();
+  if(_hggvertex) _hggvertex->init();
   else {
     throw InitException() << "SMHiggsGGHiggsPPDecayer::doinit() - " 
-			  << "_hggvertex is null";
+  			  << "_hggvertex is null";
   }
-  if(_hppvertex) {
-    _hppvertex->init();
-  }
+  if(_hppvertex) _hppvertex->init();
   else {
     throw InitException() << "SMHiggsGGHiggsPPDecayer::doinit() - " 
-			  << "_hppvertex is null";
+  			  << "_hppvertex is null";
   }
-  if(_hzpvertex) {
-    _hzpvertex->init();
-  }
-  else {
-    throw InitException() << "SMHiggsGGHiggsZPDecayer::doinit() - " 
-			  << "_hzpvertex is null";
-  }
+  if(_hzpvertex) _hzpvertex->init();
   //set up decay modes
-  DecayPhaseSpaceModePtr mode;
-  tPDVector extpart(3);
-  vector<double> wgt(0);
+  tPDPtr higgs  = getParticleData(ParticleID::h0);
+  tPDPtr gluon  = getParticleData(ParticleID::g);
+  tPDPtr photon = getParticleData(ParticleID::gamma);
+  tPDPtr Z0     = getParticleData(ParticleID::Z0);
   // glu,glu mode
-  extpart[0] = getParticleData(ParticleID::h0);
-  extpart[1] = getParticleData(ParticleID::g);
-  extpart[2] = getParticleData(ParticleID::g);
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-  addMode(mode,_h0wgt[0],wgt);
+  addMode(new_ptr(PhaseSpaceMode(higgs,{gluon,gluon},_h0wgt[0])));
   // gamma,gamma mode
-  extpart[1] = getParticleData(ParticleID::gamma);
-  extpart[2] = getParticleData(ParticleID::gamma);
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-  addMode(mode,_h0wgt[1],wgt);
+  addMode(new_ptr(PhaseSpaceMode(higgs,{photon,photon},_h0wgt[1])));
   // Z0,gamma mode
-  extpart[1] = getParticleData(ParticleID::Z0);
-  extpart[2] = getParticleData(ParticleID::gamma);
-  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-  addMode(mode,_h0wgt[2],wgt);
+  addMode(new_ptr(PhaseSpaceMode(higgs,{Z0,photon},_h0wgt[2])));
 }
 
 void SMHiggsGGHiggsPPDecayer::doinitrun() {
   _hggvertex->initrun();
   _hppvertex->initrun();
   _hzpvertex->initrun();
-  PerturbativeDecayer::doinitrun();
+  PerturbativeDecayer2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       _h0wgt[ix] = mode(ix)->maxWeight();
@@ -271,7 +255,7 @@ void SMHiggsGGHiggsPPDecayer::doinitrun() {
 
 void SMHiggsGGHiggsPPDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
-  // parameters for the PerturbativeDecayer base class
+  // parameters for the PerturbativeDecayer2 base class
   for(unsigned int ix=0;ix<_h0wgt.size();++ix) {
     os << "newdef " << name() << ":MaxWeights " << ix << " "
 	   << _h0wgt[ix] << "\n";
@@ -279,7 +263,7 @@ void SMHiggsGGHiggsPPDecayer::dataBaseOutput(ofstream & os,bool header) const {
   os << "newdef " << name() << ":SMHGGVertex " << _hggvertex->fullName() << "\n";
   os << "newdef " << name() << ":SMHPPVertex " << _hppvertex->fullName() << "\n";
   os << "newdef " << name() << ":SMHZPVertex " << _hzpvertex->fullName() << "\n";
-  PerturbativeDecayer::dataBaseOutput(os,false);
+  PerturbativeDecayer2::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" 
 		<< fullName() << "\";" << endl;
 }

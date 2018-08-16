@@ -68,7 +68,7 @@ void SMHiggsFermionsDecayer::doinit() {
 	int iy = ix+istep;
 	tPDVector out = {getParticleData( iy),
 			 getParticleData(-iy)};
-	PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(higgs,out,_maxwgt[imode]));
+	addMode(new_ptr(PhaseSpaceMode(higgs,out,_maxwgt[imode])));
 	++imode;
       }
     }
