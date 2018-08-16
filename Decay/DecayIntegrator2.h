@@ -376,6 +376,11 @@ protected:
    * Set whether or not the intermediates are included 
    */ 
   void generateIntermediates(bool in) {generateInter_=in;}
+
+  /**
+   * Set whether or not the intermediates are included 
+   */ 
+  bool generateIntermediates() const {return generateInter_;}
   
   /**
    *  Whether or not the one loop matrix element is implemented

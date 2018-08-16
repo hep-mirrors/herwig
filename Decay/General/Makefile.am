@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libHwGeneralDecay.la
 libHwGeneralDecay_la_SOURCES = \
 GeneralTwoBodyDecayer.h GeneralTwoBodyDecayer.fh GeneralTwoBodyDecayer.cc \
+GeneralTwoBodyDecayer2.h GeneralTwoBodyDecayer2.fh GeneralTwoBodyDecayer2.cc \
 GeneralThreeBodyDecayer.h GeneralThreeBodyDecayer.fh \
 GeneralThreeBodyDecayer.cc \
 GeneralCurrentDecayer.h GeneralCurrentDecayer.fh GeneralCurrentDecayer.cc \
