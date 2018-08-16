@@ -160,11 +160,8 @@ Perturbative/Perturbative__all.cc
 
 noinst_LTLIBRARIES += libHwWeakCurrent.la
 libHwWeakCurrent_la_SOURCES = \
-WeakCurrents/WeakDecayCurrent.cc \
 WeakCurrents/WeakCurrent.cc \
 WeakCurrents/LeptonNeutrinoCurrent.cc \
-WeakCurrents/WeakDecayCurrent.fh \
-WeakCurrents/WeakDecayCurrent.h \
 WeakCurrents/WeakCurrent.fh \
 WeakCurrents/WeakCurrent.h \
 WeakCurrents/LeptonNeutrinoCurrent.fh \
