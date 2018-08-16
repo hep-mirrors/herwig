@@ -57,12 +57,12 @@ SMZDecayer::SMZDecayer()
 }
 
 void SMZDecayer::doinit() {
-  PerturbativeDecayer::doinit();
+  PerturbativeDecayer2::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) throw InitException() << "Must have Herwig StandardModel object in"
-				  << "SMZDecayer::doinit()"
-				  << Exception::runerror;
+  				  << "SMZDecayer::doinit()"
+  				  << Exception::runerror;
   // cast the vertices
   FFZVertex_ = dynamic_ptr_cast<FFVVertexPtr>(hwsm->vertexFFZ());
   FFZVertex_->init();
@@ -72,21 +72,16 @@ void SMZDecayer::doinit() {
   FFPVertex_->init();
   gluon_ = getParticleData(ParticleID::g);
   // now set up the decay modes
-  DecayPhaseSpaceModePtr mode;
-  tPDVector extpart(3);
-  vector<double> wgt(0);
-  // the Z decay modes
-  extpart[0]=getParticleData(ParticleID::Z0);
+  tPDPtr Z0 = getParticleData(ParticleID::Z0);
   // loop over the  quarks and the leptons
   for(int istep=0;istep<11;istep+=10) {
     for(int ix=1;ix<7;++ix) {
       int iy=istep+ix;
       if(iy==6) continue;
-      extpart[1] = getParticleData(-iy);
-      extpart[2] = getParticleData( iy);
-      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-      if(iy<=6) addMode(mode,  quarkWeight_.at(ix-1),wgt);
-      else      addMode(mode,leptonWeight_.at(iy-11),wgt);
+      double maxWeight = iy<=6 ? quarkWeight_.at(ix-1) : leptonWeight_.at(iy-11);
+      tPDVector out = {getParticleData(-iy),getParticleData( iy)};
+      PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(Z0,out,maxWeight));
+      addMode(mode);
     }
   }
 }
@@ -127,7 +122,7 @@ void SMZDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMZDecayer,PerturbativeDecayer>
+DescribeClass<SMZDecayer,PerturbativeDecayer2>
 describeHerwigSMZDecayer("Herwig::SMZDecayer", "HwPerturbativeDecay.so");
 
 void SMZDecayer::Init() {
@@ -165,57 +160,76 @@ void SMZDecayer::Init() {
 
 }
 
+ParticleVector SMZDecayer::decay(const Particle & parent,
+				 const tPDVector & children) const {
+  // generate the decay
+  bool cc;
+  unsigned int imode = modeNumber(cc,parent.dataPtr(),children);
+  ParticleVector output = generate(false,false,imode,parent);
+  if(output[0]->hasColour())      output[0]->antiColourNeighbour(output[1]);
+  else if(output[1]->hasColour()) output[1]->antiColourNeighbour(output[0]);
+  return output;
+}
+
+void SMZDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  int iferm(1),ianti(0);
+  if(decay[0]->id()>0) swap(iferm,ianti);
+  VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
+					incoming,true,false);
+  SpinorBarWaveFunction::
+    constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+}
+
 // return the matrix element squared
-double SMZDecayer::me2(const int, const Particle & part,
-			const ParticleVector & decay,
-			MEOption meopt) const {
+double SMZDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
+		       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   int iferm(1),ianti(0);
-  if(decay[0]->id()>0) swap(iferm,ianti);
+  if(outgoing[0]->id()>0) swap(iferm,ianti);
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
-					       const_ptr_cast<tPPtr>(&part),
-					       incoming,false);
+  					       const_ptr_cast<tPPtr>(&part),
+  					       incoming,false);
     // fix rho if no correlations
     fixRho(_rho);
   }
-  if(meopt==Terminate) {
-    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&part),
-					  incoming,true,false);
-    SpinorBarWaveFunction::
-      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
-    return 0.;
+  SpinorBarWaveFunction wbar(momenta[iferm],outgoing[iferm],Helicity::outgoing);
+  SpinorWaveFunction    w   (momenta[ianti],outgoing[ianti],Helicity::outgoing);
+  _wavebar.resize(2);
+  _wave   .resize(2);
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    wbar.reset(ihel);
+    _wavebar[ihel] = wbar;
+    w.reset(ihel);
+    _wave   [ihel] = w;
   }
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
-  SpinorWaveFunction::
-    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   // compute the matrix element
   Energy2 scale(sqr(part.mass()));
   unsigned int ifm,ia,vhel;
   for(ifm=0;ifm<2;++ifm) {
     for(ia=0;ia<2;++ia) {
       for(vhel=0;vhel<3;++vhel) {
-	if(iferm>ianti) (*ME())(vhel,ia,ifm)=
-	  FFZVertex_->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
-	else            (*ME())(vhel,ifm,ia)=
-	  FFZVertex_->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
+  	if(iferm>ianti) (*ME())(vhel,ia,ifm)=
+  	  FFZVertex_->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
+  	else            (*ME())(vhel,ifm,ia)=
+  	  FFZVertex_->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
       }
     }
   }
   double output=(ME()->contract(_rho)).real()*UnitRemoval::E2/scale;
-  if(abs(decay[0]->id())<=6) output*=3.;
-  if(decay[0]->hasColour())      decay[0]->antiColourNeighbour(decay[1]);
-  else if(decay[1]->hasColour()) decay[1]->antiColourNeighbour(decay[0]);
+  if(abs(outgoing[0]->id())<=6) output*=3.;
   // if LO return
   if(!NLO_) return output;  // check decay products coloured, otherwise return
-  if(!decay[0]->dataPtr()->coloured()) return output;
+  if(!outgoing[0]->coloured()) return output;
   // inital masses, couplings  etc
   // fermion mass
-  Energy particleMass = decay[0]->dataPtr()->mass();
+  Energy particleMass = outgoing[0]->mass();
   // Z mass
   mZ_ = part.mass();
   // strong coupling
@@ -229,8 +243,8 @@ double SMZDecayer::me2(const int, const Particle & part,
   vector<SpinorWaveFunction>    aout;
   vector<SpinorBarWaveFunction> fout;
   vector<VectorWaveFunction>    vin;
-  SpinorBarWaveFunction qkout(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
-  SpinorWaveFunction    qbout(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
+  SpinorBarWaveFunction qkout(momenta[0],outgoing[0],Helicity::outgoing);
+  SpinorWaveFunction    qbout(momenta[1],outgoing[1],Helicity::outgoing);
   VectorWaveFunction    zin  (part.momentum()     ,part.dataPtr()     ,incoming);
   for(unsigned int ix=0;ix<2;++ix){
     qkout.reset(ix);
@@ -247,32 +261,31 @@ double SMZDecayer::me2(const int, const Particle & part,
   double total=0.;
   if(mu_!=0.) {
     LorentzPolarizationVector momDiff = 
-      (decay[0]->momentum()-decay[1]->momentum())/2./
-      (decay[0]->momentum().mass()+decay[1]->momentum().mass());
+      (momenta[0]-momenta[1])/2./(momenta[0].mass()+momenta[1].mass());
     // scalars
     Complex scalar1 = zin.wave().dot(momDiff);
     for(unsigned int outhel1=0;outhel1<2;++outhel1) {
       for(unsigned int outhel2=0;outhel2<2;++outhel2) {		
-	for(unsigned int inhel=0;inhel<3;++inhel) {
-	  // first the LO bit
-	  Complex diag1 = FFZVertex_->evaluate(scale_,aout[outhel2],
-					       fout[outhel1],vin[inhel]);
-	  // extra stuff for NLO 
-	  LorentzPolarizationVector left  = 
-	    aout[outhel2].wave().leftCurrent(fout[outhel1].wave());
-	  LorentzPolarizationVector right = 
-	    aout[outhel2].wave().rightCurrent(fout[outhel1].wave());
-	  Complex scalar = 
-	    aout[outhel2].wave().scalar(fout[outhel1].wave());
-	  // nlo specific pieces
-	  Complex diag3 =
-	    Complex(0.,1.)*FFZVertex_->norm()*
-	    (FFZVertex_->right()*( left.dot(zin.wave())) +
-	     FFZVertex_-> left()*(right.dot(zin.wave())) -
-	     ( FFZVertex_-> left()+FFZVertex_->right())*scalar1*scalar);
-	  // nlo piece
-	  total += real(diag1*conj(diag3) + diag3*conj(diag1));
-	}
+  	for(unsigned int inhel=0;inhel<3;++inhel) {
+  	  // first the LO bit
+  	  Complex diag1 = FFZVertex_->evaluate(scale_,aout[outhel2],
+  					       fout[outhel1],vin[inhel]);
+  	  // extra stuff for NLO 
+  	  LorentzPolarizationVector left  = 
+  	    aout[outhel2].wave().leftCurrent(fout[outhel1].wave());
+  	  LorentzPolarizationVector right = 
+  	    aout[outhel2].wave().rightCurrent(fout[outhel1].wave());
+  	  Complex scalar = 
+  	    aout[outhel2].wave().scalar(fout[outhel1].wave());
+  	  // nlo specific pieces
+  	  Complex diag3 =
+  	    Complex(0.,1.)*FFZVertex_->norm()*
+  	    (FFZVertex_->right()*( left.dot(zin.wave())) +
+  	     FFZVertex_-> left()*(right.dot(zin.wave())) -
+  	     ( FFZVertex_-> left()+FFZVertex_->right())*scalar1*scalar);
+  	  // nlo piece
+  	  total += real(diag1*conj(diag3) + diag3*conj(diag1));
+  	}
       }
     }
     // rescale
@@ -293,15 +306,15 @@ double SMZDecayer::me2(const int, const Particle & part,
   if(mu_>1e-4) {
     f1 = CF_*aS_/Constants::pi*
       ( +1. + 3.*log(0.5*(1.+v)) - 1.5*log(0.5*(1.+v2)) + sqr(Constants::pi)/6.
-	- 0.5*sqr(lr) - (1.+v2)/v*(lr*log(1.+v2) + sqr(Constants::pi)/12. 
-				       -0.5*log(4.*mu2_)*lr + 0.25*sqr(lr)));
+  	- 0.5*sqr(lr) - (1.+v2)/v*(lr*log(1.+v2) + sqr(Constants::pi)/12. 
+  				       -0.5*log(4.*mu2_)*lr + 0.25*sqr(lr)));
     fNS = -0.5*(1.+2.*v2)*lr/v + 1.5*lr - 2./3.*sqr(Constants::pi) + 0.5*sqr(lr)
       + (1.+v2)/v*(Herwig::Math::ReLi2(r) + sqr(Constants::pi)/3. - 0.25*sqr(lr) 
-		   + lr*log((2.*v/ (1.+v))));
+  		   + lr*log((2.*v/ (1.+v))));
     VNS = 1.5*log(0.5*(1.+v2)) 
       + 0.5*(1.+v2)/v*( 2.*lr*log(2.*(1.+v2)/sqr(1.+v))  
-			+ 2.*Herwig::Math::ReLi2(sqr(r)) 
-			- 2.*Herwig::Math::ReLi2(2.*v/(1.+v)) - sqr(Constants::pi)/6.)
+  			+ 2.*Herwig::Math::ReLi2(sqr(r)) 
+  			- 2.*Herwig::Math::ReLi2(2.*v/(1.+v)) - sqr(Constants::pi)/6.)
       + log(1.-mu_) - 2.*log(1.-2.*mu_) - 4.*mu2_/(1.+v2)*log(mu_/(1.-mu_)) 
       - mu_/(1.-mu_)
       + 4.*(2.*mu2_-mu_)/(1.+v2) + 0.5*sqr(Constants::pi); 
@@ -311,15 +324,15 @@ double SMZDecayer::me2(const int, const Particle & part,
   else {
     f1 = -CF_*aS_/Constants::pi/6.*
       ( - 6. - 24.*lmu*mu2_ - 15.*mu4 - 12.*mu4*lmu - 24.*mu4*sqr(lmu) 
-	+ 2.*mu4*sqr(Constants::pi) - 12.*mu2_*mu4 - 96.*mu2_*mu4*sqr(lmu) 
-	+ 8.*mu2_*mu4*sqr(Constants::pi) - 80.*mu2_*mu4*lmu);
+  	+ 2.*mu4*sqr(Constants::pi) - 12.*mu2_*mu4 - 96.*mu2_*mu4*sqr(lmu) 
+  	+ 8.*mu2_*mu4*sqr(Constants::pi) - 80.*mu2_*mu4*lmu);
     fNS = - mu2_/18.*( + 36.*lmu - 36. - 45.*mu2_ + 216.*lmu*mu2_ - 24.*mu2_*sqr(Constants::pi) 
-		      + 72.*mu2_*sqr(lmu) - 22.*mu4 + 1032.*mu4 * lmu
-		      - 96.*mu4*sqr(Constants::pi) + 288.*mu4*sqr(lmu));
+  		      + 72.*mu2_*sqr(lmu) - 22.*mu4 + 1032.*mu4 * lmu
+  		      - 96.*mu4*sqr(Constants::pi) + 288.*mu4*sqr(lmu));
     VNS = - mu2_/1260.*(-6930. + 7560.*lmu + 2520.*mu_ - 16695.*mu2_ 
-		       + 1260.*mu2_*sqr(Constants::pi) 
-		       + 12600.*lmu*mu2_ + 1344.*mu_*mu2_ - 52780.*mu4 + 36960.*mu4*lmu 
-		       + 5040.*mu4*sqr(Constants::pi) - 12216.*mu_*mu4);
+  		       + 1260.*mu2_*sqr(Constants::pi) 
+  		       + 12600.*lmu*mu2_ + 1344.*mu_*mu2_ - 52780.*mu4 + 36960.*mu4*lmu 
+  		       + 5040.*mu4*sqr(Constants::pi) - 12216.*mu_*mu4);
     f2 = CF_*aS_*mu2_/Constants::pi*( 2.*lmu + 4.*mu2_*lmu + 2.*mu2_ + 12.*mu4*lmu + 7.*mu4);
   }
   // add up bits for f1
@@ -342,15 +355,13 @@ double SMZDecayer::me2(const int, const Particle & part,
     double x2 = 1. - y*(1.-2.*mu2_);
     double x1 = 1. - z*(x2-2.*mu2_);
     // copy the particle objects over for calculateRealEmission
-    vector<PPtr> hardProcess(3);
-    hardProcess[0] = const_ptr_cast<PPtr>(&part);
-    hardProcess[1] = decay[0];
-    hardProcess[2] = decay[1];
+    tcPDVector outgoing = {part.dataPtr(),outgoing[0],outgoing[1],gluon_};
+    vector<Lorentz5Momentum> mom = {part.momentum(),momenta[0],momenta[1]};
     // total real emission contribution
     realFact += 0.25*jac*sqr(1.-2.*mu2_)/
-    sqrt(1.-4.*mu2_)/Constants::twopi
-      *2.*CF_*aS_*calculateRealEmission(x1, x2, hardProcess, phi,
-					iemit, true);
+      sqrt(1.-4.*mu2_)/Constants::twopi
+      *2.*CF_*aS_*calculateRealEmission(x1, x2, outgoing, mom,  phi,
+  					iemit, true);
   }
   // the born + virtual + real
   output = output*(1. + f1 + realFact) + f2*total;
@@ -358,7 +369,7 @@ double SMZDecayer::me2(const int, const Particle & part,
 }
 
 void SMZDecayer::doinitrun() {
-  PerturbativeDecayer::doinitrun();
+  PerturbativeDecayer2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       if(ix<5)       quarkWeight_ [ix   ]=mode(ix)->maxWeight();
@@ -378,8 +389,8 @@ void SMZDecayer::dataBaseOutput(ofstream & output,
     output << "newdef " << name() << ":LeptonMax " << ix << " "
 	   << leptonWeight_[ix] << "\n";
   }
-  // parameters for the PerturbativeDecayer base class
-  PerturbativeDecayer::dataBaseOutput(output,false);
+  // parameters for the PerturbativeDecayer2 base class
+  PerturbativeDecayer2::dataBaseOutput(output,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
@@ -845,17 +856,17 @@ double SMZDecayer::PS(double x, double xbar) {
   return brack/den;
 }
 
-double SMZDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+double SMZDecayer::matrixElementRatio(const Particle & part, const ParticleVector & decay2,
 				      const ParticleVector & decay3, MEOption,
 				      ShowerInteraction inter) {
   // extract partons and LO momentas
-  vector<cPDPtr> partons(1,inpart.dataPtr());
-  vector<Lorentz5Momentum> lomom(1,inpart.momentum());
+  tcPDVector partons(1,part.dataPtr());
+  vector<Lorentz5Momentum> lomom(1,part.momentum());
   for(unsigned int ix=0;ix<2;++ix) {
     partons.push_back(decay2[ix]->dataPtr());
     lomom.push_back(decay2[ix]->momentum());
   }
-  vector<Lorentz5Momentum> realmom(1,inpart.momentum());
+  vector<Lorentz5Momentum> realmom(1,part.momentum());
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix==2) partons.push_back(decay3[ix]->dataPtr());
     realmom.push_back(decay3[ix]->momentum());
@@ -865,17 +876,17 @@ double SMZDecayer::matrixElementRatio(const Particle & inpart, const ParticleVec
     swap(lomom[1],lomom[2]);
     swap(realmom[1],realmom[2]);
   }
-  scale_ = sqr(inpart.mass());
+  scale_ = sqr(part.mass());
   double     lome = loME(partons,lomom);
   InvEnergy2 reme = realME(partons,realmom,inter);
-  double ratio = reme/lome*sqr(inpart.mass())*4.*Constants::pi;
+  double ratio = reme/lome*sqr(part.mass())*4.*Constants::pi;
   if(inter==ShowerInteraction::QCD) ratio *= CF_;
   return ratio;
 }
 
-double SMZDecayer::meRatio(vector<cPDPtr> partons, 
-					 vector<Lorentz5Momentum> momenta,
-					 unsigned int iemitter, bool subtract) const {
+double SMZDecayer::meRatio(tcPDVector partons, 
+			   vector<Lorentz5Momentum> momenta,
+			   unsigned int iemitter, bool subtract) const {
   Lorentz5Momentum q = momenta[1]+momenta[2]+momenta[3];
   Energy2 Q2=q.m2();
   Energy2 lambda = sqrt((Q2-sqr(momenta[1].mass()+momenta[2].mass()))*
@@ -927,7 +938,7 @@ double SMZDecayer::meRatio(vector<cPDPtr> partons,
     return Q2*ratio;
 }
 
-double SMZDecayer::loME(const vector<cPDPtr> & partons, 
+double SMZDecayer::loME(const tcPDVector & partons, 
 			const vector<Lorentz5Momentum> & momenta) const {
   // compute the spinors
   vector<VectorWaveFunction>    vin;
@@ -961,7 +972,7 @@ double SMZDecayer::loME(const vector<cPDPtr> & partons,
   return total;
 }
  
-InvEnergy2 SMZDecayer::realME(const vector<cPDPtr> & partons, 
+InvEnergy2 SMZDecayer::realME(const tcPDVector & partons, 
 			      const vector<Lorentz5Momentum> & momenta,
 			      ShowerInteraction inter) const {
   AbstractFFVVertexPtr vertex = inter==ShowerInteraction::QCD ?
@@ -1022,7 +1033,7 @@ double SMZDecayer::calculateRealEmission(double x1, double x2,
 					 double phi,
 					 bool subtract) const {
   // make partons data object for meRatio
-  vector<cPDPtr> partons (3);
+  tcPDVector partons (3);
   for(int ix=0; ix<3; ++ix)
     partons[ix] = hardProcess[ix]->dataPtr();
   partons.push_back(gluon_);
@@ -1070,16 +1081,12 @@ double SMZDecayer::calculateRealEmission(double x1, double x2,
   return realwgt;
 }
 
-double SMZDecayer::calculateRealEmission(double x1, double x2, 
-					 vector<PPtr> hardProcess,
+double SMZDecayer::calculateRealEmission(double x1, double x2,
+					 tcPDVector partons,
+					 vector<Lorentz5Momentum> pin,
 					 double phi,
 					 bool subtract,
 					 int emitter) const {
-  // make partons data object for meRatio
-  vector<cPDPtr> partons (3);
-  for(int ix=0; ix<3; ++ix)
-    partons[ix] = hardProcess[ix]->dataPtr();
-  partons.push_back(gluon_);
   // calculate x3
   double x3 = 2.-x1-x2;
   double xT = sqrt(max(0.,sqr(x3) -0.25*sqr(sqr(x2)+sqr(x3)-sqr(x1))/(sqr(x2)-4.*mu2_)));
@@ -1095,22 +1102,16 @@ double SMZDecayer::calculateRealEmission(double x1, double x2,
   else if(abs(pspect.z()-pemit.z()+pgluon.z())/M<1e-6) 
     pemit .setZ(- pemit.z());
   // boost and rotate momenta
-  LorentzRotation eventFrame( ( hardProcess[1]->momentum() +
-				hardProcess[2]->momentum() ).findBoostToCM() );
-  Lorentz5Momentum spectator = eventFrame*hardProcess[emitter+1]->momentum();
+  LorentzRotation eventFrame( ( pin[1]+pin[2] ).findBoostToCM() );
+  unsigned int ispect =  emitter==0 ? 2 : 1;
+  Lorentz5Momentum spectator = eventFrame*pin[ispect];
   eventFrame.rotateZ( -spectator.phi()    );
   eventFrame.rotateY( -spectator.theta()  );
   eventFrame.invert();
   vector<Lorentz5Momentum> momenta(3);
-  momenta[0]   = hardProcess[0]->momentum();
-  if(emitter==0) {
-    momenta[2] = eventFrame*pspect;
-    momenta[1] = eventFrame*pemit ;
-  }
-  else {
-    momenta[1] = eventFrame*pspect;
-    momenta[2] = eventFrame*pemit ;
-  }
+  momenta[0]   = pin[0];
+  momenta[ispect   ] = eventFrame*pspect;
+  momenta[emitter+1] = eventFrame*pemit ;
   momenta.push_back(eventFrame*pgluon);
   // calculate the weight
   double realwgt(0.);
