@@ -441,7 +441,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
 }
 
 Energy GeneralTwoBodyDecayer2::partialWidth(PMPair inpart, PMPair outa, 
-					   PMPair outb) const {
+					    PMPair outb) const {
   // select the number of the mode
   tPDVector children;
   children.push_back(const_ptr_cast<PDPtr>(outa.first));
@@ -453,7 +453,7 @@ Energy GeneralTwoBodyDecayer2::partialWidth(PMPair inpart, PMPair outa,
   // make the particles
   Lorentz5Momentum pparent = Lorentz5Momentum(inpart.second);
   PPtr parent = inpart.first->produceParticle(pparent);
-  Lorentz5Momentum pout[2];
+  vector<Lorentz5Momentum> pout(2);
   double ctheta,phi;
   Kinematics::generateAngles(ctheta,phi);
   Kinematics::twoBodyDecay(pparent, outa.second, outb.second,
@@ -462,10 +462,9 @@ Energy GeneralTwoBodyDecayer2::partialWidth(PMPair inpart, PMPair outa,
       (  cc && !((  outa.first->CC() && outa.first->CC() == newchild[0])||
 		 ( !outa.first->CC() && outa.first       == newchild[0]) )))
     swap(pout[0],pout[1]);
-  ParticleVector decay;
-  decay.push_back(newchild[0]->produceParticle(pout[0]));
-  decay.push_back(newchild[1]->produceParticle(pout[1]));
-  double me =  me2(-1,*parent,decay,Initialize);
+  tPDVector out = {const_ptr_cast<tPDPtr>(outa.first),
+		   const_ptr_cast<tPDPtr>(outb.first)};
+  double me =  me2(-1,*parent,out,pout,Initialize);
   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,
 					     outa.second, outb.second);
   return me/(8.*Constants::pi)*pcm;
@@ -479,12 +478,17 @@ void GeneralTwoBodyDecayer2::decayInfo(PDPtr incoming, PDPair outgoing) {
 }
 
 double GeneralTwoBodyDecayer2::matrixElementRatio(const Particle & inpart, 
-						 const ParticleVector & decay2,
-						 const ParticleVector & decay3, 
-						 MEOption meopt,
-						 ShowerInteraction inter) {
+						  const ParticleVector & decay2,
+						  const ParticleVector & decay3, 
+						  MEOption meopt,
+						  ShowerInteraction inter) {
   // calculate R/B
-  double B = me2        (0, inpart, decay2, meopt);    
+  tPDVector outgoing = {const_ptr_cast<tPDPtr>(decay2[0]->dataPtr()),
+			const_ptr_cast<tPDPtr>(decay2[1]->dataPtr())};
+  const vector<Lorentz5Momentum> mom = {decay2[0]->momentum(),
+					decay2[1]->momentum()};
+  
+  double B = me2        (0, inpart, outgoing,mom, meopt);    
   double R = threeBodyME(0, inpart, decay3, inter, meopt);
   return R/B;
   

@@ -65,7 +65,7 @@ void TVVDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TVVDecayer,GeneralTwoBodyDecayer>
+DescribeClass<TVVDecayer,GeneralTwoBodyDecayer2>
 describeHerwigTVVDecayer("Herwig::TVVDecayer", "Herwig.so");
 
 void TVVDecayer::Init() {
@@ -75,53 +75,57 @@ void TVVDecayer::Init() {
 
 }
 
-double TVVDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,
+void TVVDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  bool photon[2];
+  for(unsigned int ix=0;ix<2;++ix)
+    photon[ix] = decay[ix]->mass()==ZERO;
+  TensorWaveFunction::
+    constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&part),
+		      incoming,true,false);
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      constructSpinInfo(vectors_[ix],decay[ix],outgoing,true,photon[ix]);
+}
+
+double TVVDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
 		       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
-    photon[ix] = decay[ix]->mass()==ZERO;
+    photon[ix] = outgoing[ix]->mass()==ZERO;
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&inpart),
-			     incoming,false);
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&part),
+  			     incoming,false);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    TensorWaveFunction::
-      constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&inpart),
-			incoming,true,false);
-    for(unsigned int ix=0;ix<2;++ix)
-      VectorWaveFunction::
-	constructSpinInfo(vectors_[ix],decay[ix],outgoing,true,photon[ix]);
-    return 0.;
-  }
   for(unsigned int ix=0;ix<2;++ix)
     VectorWaveFunction::
-      calculateWaveFunctions(vectors_[ix],decay[ix],outgoing,photon[ix]);
-  Energy2 scale(sqr(inpart.mass()));
+      calculateWaveFunctions(vectors_[ix],momenta[ix],outgoing[ix],Helicity::outgoing,photon[ix]);
+  Energy2 scale(sqr(part.mass()));
   unsigned int thel,v1hel,v2hel;
   for(thel=0;thel<5;++thel) {
     for(v1hel=0;v1hel<3;++v1hel) {
       for(v2hel=0;v2hel<3;++v2hel) {
-	(*ME())(thel,v1hel,v2hel) = 0.;
-	  for(auto vert : vertex_)
-	    (*ME())(thel,v1hel,v2hel) += vert->evaluate(scale,
-							vectors_[0][v1hel],
-							vectors_[1][v2hel],
-							tensors_[thel]);
-	if(photon[1]) ++v2hel;
+  	(*ME())(thel,v1hel,v2hel) = 0.;
+  	  for(auto vert : vertex_)
+  	    (*ME())(thel,v1hel,v2hel) += vert->evaluate(scale,
+  							vectors_[0][v1hel],
+  							vectors_[1][v2hel],
+  							tensors_[thel]);
+  	if(photon[1]) ++v2hel;
       }
       if(photon[0]) ++v1hel;
     }
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // return the answer
   return output;
 }
@@ -152,7 +156,7 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -225,7 +229,7 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer::CFlow & colourFlow
+  const GeneralTwoBodyDecayer2::CFlow & colourFlow
         = colourFlows(inpart, decay);
   double gs(0.);
   bool couplingSet(false);

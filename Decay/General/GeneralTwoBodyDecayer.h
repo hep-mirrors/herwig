@@ -16,6 +16,7 @@
 #include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
+#include "GeneralTwoBodyDecayer2.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -264,43 +265,7 @@ private:
 
 };
 
-
-/**
- * Write a map with ShowerInteraction as the key
- */
-template<typename T, typename Cmp, typename A>
-inline PersistentOStream & operator<<(PersistentOStream & os,
-				      const map<ShowerInteraction,T,Cmp,A> & m) {
-  os << m.size();
-  if(m.find(ShowerInteraction::QCD)!=m.end()) {
-    os << 0 << m.at(ShowerInteraction::QCD);
-  }
-  if(m.find(ShowerInteraction::QED)!=m.end()) {
-    os << 1 << m.at(ShowerInteraction::QED);
-  }
-  return os;
 }
 
-/**
- * Read a map with ShowerInteraction as the key
- */
-template <typename T, typename Cmp, typename A>
-inline PersistentIStream & operator>>(PersistentIStream & is, map<ShowerInteraction,T,Cmp,A> & m) {
-  m.clear();
-  long size;
-  int k;
-  is >> size;
-  while ( size-- && is ) {
-    is >> k;
-    if(k==0)
-      is >> m[ShowerInteraction::QCD];
-    else if(k==1)
-      is >> m[ShowerInteraction::QED];
-    else
-      assert(false);
-  }
-  return is;
-}
-}
 
 #endif /* HERWIG_GeneralTwoBodyDecayer_H */
