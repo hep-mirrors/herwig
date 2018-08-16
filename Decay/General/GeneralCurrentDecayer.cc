@@ -36,18 +36,18 @@ void GeneralCurrentDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<GeneralCurrentDecayer,DecayIntegrator>
+DescribeAbstractClass<GeneralCurrentDecayer,DecayIntegrator2>
 describeHerwigGeneralCurrentDecayer("Herwig::GeneralCurrentDecayer", "Herwig.so");
 
 void GeneralCurrentDecayer::Init() {
 
   static ClassDocumentation<GeneralCurrentDecayer> documentation
     ("The GeneralCurrentDecayer class is designed to be the base class for all "
-     "decays using the WeakDecayCurrents");
+     "decays using the WeakCurrents");
 }
 
 void GeneralCurrentDecayer::setDecayInfo(PDPtr in, PDPtr out, const vector<tPDPtr> & outCurrent,
-					 VertexBasePtr vertex, WeakDecayCurrentPtr current,
+					 VertexBasePtr vertex, WeakCurrentPtr current,
 					 Energy maxmass) {
   inpart_ = in;
   outpart_ = out;
@@ -69,28 +69,19 @@ int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent,
 
 void GeneralCurrentDecayer::doinitrun() {
   current_->initrun();
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
 }
 
 void GeneralCurrentDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // make sure the current got initialised
   current_->init();
-  // set up the phase-space channels
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr channel;
-  tPDVector extpart;
-  extpart.push_back(inpart_);
-  extpart.push_back(outpart_);
   Energy mdiff(inpart_->mass()-outpart_->mass());
-  vector<double> channelwgts;
-  int iq(0),ia(0);
-  bool done;
-  vector<double>::iterator start,end;
+  // vector<double>::iterator start,end;
   for(unsigned int ix=0;ix<current_->numberOfModes();++ix) {
     // get the external particles for this mode
-    extpart.resize(2);
-    tPDVector ptemp=current_->particles(inpart_->iCharge()-outpart_->iCharge(),ix,iq,ia);
+    int iq(0),ia(0);
+    tPDVector ptemp  = current_->particles(inpart_->iCharge()-outpart_->iCharge(),ix,iq,ia);
     // check this is the right mode
     if(ptemp.size()!=currentOut_.size()) continue;
     vector<bool> matched(ptemp.size(),false);
@@ -98,40 +89,42 @@ void GeneralCurrentDecayer::doinit() {
     for(unsigned int iy=0;iy<currentOut_.size();++iy) {
       bool found = false;
       for(unsigned int iz=0;iz<ptemp.size();++iz) {
-	if(!matched[iz]&&ptemp[iz]==currentOut_[iy]) {
-	  found = true;
-	  matched[iz] = true;
-	  break;
-	}
+  	if(!matched[iz]&&ptemp[iz]==currentOut_[iy]) {
+  	  found = true;
+  	  matched[iz] = true;
+  	  break;
+  	}
       }
       if(!found) {
-	match = false;
-	break;
+  	match = false;
+  	break;
       }
     }
     if(!match) continue;
-    for(unsigned int iy=0;iy<ptemp.size();++iy)
-      extpart.push_back(ptemp[iy]);
+    tPDVector out = {outpart_};
+    out.insert(std::end(out), std::begin(ptemp), std::end(ptemp));
     // create the mode
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(inpart_,out,1.));
     // create the first piece of the channel
-    channel = new_ptr(DecayPhaseSpaceChannel(mode));
-    channel->addIntermediate(extpart[0],0,0.0,-1,1);
-    done=current_->createMode(inpart_->iCharge()-outpart_->iCharge(),
-			      ix,mode,2,1,channel,mdiff);
+    PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1));
+    bool done=current_->createMode(inpart_->iCharge()-outpart_->iCharge(),
+				   tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+				   ix,mode,1,0,channel,mdiff);
     if(done) {
       // the maximum weight and the channel weights
       // the weights for the channel
       if(weights_.empty()) {
-	weights_.resize(mode->numberChannels(),1./(mode->numberChannels()));
+  	weights_.resize(mode->channels().size(),1./(mode->channels().size()));
       }
       mode_ = ix;
       // special for the two body modes
-      if(extpart.size()==3) {
-	weights_.clear();
-	mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      if(out.size()==3) {
+  	weights_.clear();
+  	mode=new_ptr(PhaseSpaceMode(inpart_,out,1.));
       }
-      addMode(mode,wgtmax_,weights_);
+      mode->maxWeight(wgtmax_);
+      mode->setWeights(weights_);
+      addMode(mode);
     }
     break;
   }

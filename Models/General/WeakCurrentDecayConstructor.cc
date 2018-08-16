@@ -97,7 +97,7 @@ void WeakCurrentDecayConstructor::Init() {
      &WeakCurrentDecayConstructor::_norm, -1, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static RefVector<WeakCurrentDecayConstructor,WeakDecayCurrent> interfaceCurrent
+  static RefVector<WeakCurrentDecayConstructor,WeakCurrent> interfaceCurrent
     ("Current",
      "The current for the decay mode",
      &WeakCurrentDecayConstructor::_current, -1, false, false, true, false, false);
@@ -166,7 +166,7 @@ vector<TwoBodyDecay> WeakCurrentDecayConstructor::createModes(const PDPtr inpart
 GeneralCurrentDecayerPtr  WeakCurrentDecayConstructor::createDecayer(PDPtr in, PDPtr out1,
 								     vector<tPDPtr> outCurrent,
 								     VertexBasePtr vertex,
-								     WeakDecayCurrentPtr current) {
+								     WeakCurrentPtr current) {
   string name;
   using namespace ThePEG::Helicity::VertexType;
   switch(vertex->getName()) {

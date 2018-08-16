@@ -275,3 +275,10 @@ void DecayIntegrator2::resetIntermediate(tcPDPtr part, Energy mass, Energy width
     modes_[ix]->resetIntermediate(part,mass,width);
   }
 }
+
+Energy DecayIntegrator2::initializePhaseSpaceMode(unsigned int imode,bool init, bool onShell) const{
+  tcPhaseSpaceModePtr cmodeptr=mode(imode);
+  tPhaseSpaceModePtr modeptr = const_ptr_cast<tPhaseSpaceModePtr>(cmodeptr);
+  modeptr->init();
+  return modeptr->initializePhaseSpace(init,this,onShell);
+}

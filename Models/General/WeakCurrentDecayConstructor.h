@@ -14,11 +14,9 @@
 
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Decay/General/GeneralCurrentDecayer.fh"
 #include "Herwig/Models/StandardModel/StandardModel.h"
-#include "Herwig/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/General/GeneralCurrentDecayer.h"
 #include "TwoBodyDecay.h"
 
@@ -139,7 +137,7 @@ private:
   GeneralCurrentDecayerPtr createDecayer(PDPtr in, PDPtr out1,
 					 vector<tPDPtr> outCurrent,
 					 VertexBasePtr vertex,
-					 WeakDecayCurrentPtr current);
+					 WeakCurrentPtr current);
 
   /**
    * Create decay mode(s) from given part and decay modes
@@ -188,7 +186,7 @@ private:
   /**
    *  The current for the mode
    */
-  vector<WeakDecayCurrentPtr> _current;
+  vector<WeakCurrentPtr> _current;
 };
 
 }

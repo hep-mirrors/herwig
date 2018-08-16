@@ -358,6 +358,13 @@ protected:
    * @param width The width of the particle.
    */
   void resetIntermediate(tcPDPtr part, Energy mass, Energy width);
+
+  /**
+   * Initialize the phase-space mode
+   * @param imode The mode
+   * @param init Whether or not to perform the initialization
+   */
+  Energy initializePhaseSpaceMode(unsigned int imode,bool init, bool onShell=false) const;
   
 protected:
   

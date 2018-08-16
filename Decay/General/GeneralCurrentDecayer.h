@@ -12,9 +12,9 @@
 // This is the declaration of the GeneralCurrentDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/WeakCurrents/WeakDecayCurrent.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralCurrentDecayer.fh"
 
@@ -28,7 +28,7 @@ using Helicity::VertexBasePtr;
  * @see \ref GeneralCurrentDecayerInterfaces "The interfaces"
  * defined for GeneralCurrentDecayer.
  */
-class GeneralCurrentDecayer: public DecayIntegrator {
+class GeneralCurrentDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -47,17 +47,6 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent,const tPDVector & children) const;
-
-  /**
-   * Return the matrix element squared for a given mode and phase-space channel
-   * @param ichan The channel we are calculating the matrix element for.
-   * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt Option for the calculation of the matrix element
-   * @return The matrix element squared for the phase-space configuration.
-   */
-  virtual double me2(const int ichan, const Particle & part,
-		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
    * Function to return partial Width
@@ -73,7 +62,7 @@ public:
    *  set up the decay
    */
   void setDecayInfo(PDPtr in, PDPtr out, const vector<tPDPtr> & outCurrent,
-		    VertexBasePtr vertex, WeakDecayCurrentPtr current,
+		    VertexBasePtr vertex, WeakCurrentPtr current,
 		    Energy maxmass);
 
 public:
@@ -138,7 +127,7 @@ protected:
   /**
    *  Access to the weak current
    */
-  WeakDecayCurrentPtr weakCurrent() const { return current_; }
+  WeakCurrentPtr weakCurrent() const { return current_; }
 
   /**
    * Get vertex pointer
@@ -179,7 +168,7 @@ private:
   /**
    * Pointer to the current
    */
-  WeakDecayCurrentPtr current_;
+  WeakCurrentPtr current_;
 
   /**
    *  Maximum mass difference

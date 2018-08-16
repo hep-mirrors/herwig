@@ -382,7 +382,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 	   << "You may have forgotten to switch on the decay mode calculation using\n"
 	   << "  set TwoBodyDC:CreateDecayModes Yes\n"
 	   << "  set ThreeBodyDC:CreateDecayModes Yes\n"
-	   << "  set WeakDecayConstructor:CreateDecayModes Yes\n"
+	   << "  set WeakConstructor:CreateDecayModes Yes\n"
 	   << "or the decays of this particle are missing from your\n"
 	   << "input spectrum and decay file in the SLHA format.\n\n";
     return;
