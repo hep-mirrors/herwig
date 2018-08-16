@@ -361,40 +361,42 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
     }
   }
   // now the omega channels
-  for(unsigned int irho=0;irho<3;++irho) {
-    tPDPtr rhoin = icharge==0 ? rho0[irho] : rhom[irho];
-    if(resonance && rhoin!=resonance) continue;
-    rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
-    rho= rhoCharge==0 ? rho0[0] : rhop[0];
-    if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-    mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
-  		      ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
-    rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
-    rho= rhoCharge==0 ? rho0[0] : rhop[0];
-    if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-    mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
-  		      ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
-    rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
-    rho= rhoCharge==0 ? rho0[0] : rhop[0];
-    if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-    mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
-  		      ires+2,rho,ires+2,iloc+j2,ires+3,iloc+j3,ires+3,iloc+j4));
-    rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
-    rho= rhoCharge==0 ? rho0[0] : rhop[0];
-    if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-    mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
-  		      ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j1,ires+3,iloc+j3));
-    rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
-    rho= rhoCharge==0 ? rho0[0] : rhop[0];
-    if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-    mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
-  		      ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j1,ires+3,iloc+j4));
-    rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
-    rho= rhoCharge==0 ? rho0[0] : rhop[0];
-    if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-    mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
-  		      ires+2,rho,ires+2,iloc+j1,ires+3,iloc+j3,ires+3,iloc+j4));
-  } 
+  if(imode>=1&&imode<=3) {
+    for(unsigned int irho=0;irho<3;++irho) {
+      tPDPtr rhoin = icharge==0 ? rho0[irho] : rhom[irho];
+      if(resonance && rhoin!=resonance) continue;
+      rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
+      rho= rhoCharge==0 ? rho0[0] : rhop[0];
+      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
+			ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
+      rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
+      rho= rhoCharge==0 ? rho0[0] : rhop[0];
+      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
+			ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
+      rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
+      rho= rhoCharge==0 ? rho0[0] : rhop[0];
+      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
+			ires+2,rho,ires+2,iloc+j2,ires+3,iloc+j3,ires+3,iloc+j4));
+      rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
+      rho= rhoCharge==0 ? rho0[0] : rhop[0];
+      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
+			ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j1,ires+3,iloc+j3));
+      rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
+      rho= rhoCharge==0 ? rho0[0] : rhop[0];
+      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
+			ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j1,ires+3,iloc+j4));
+      rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
+      rho= rhoCharge==0 ? rho0[0] : rhop[0];
+      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
+			ires+2,rho,ires+2,iloc+j1,ires+3,iloc+j3,ires+3,iloc+j4));
+    }
+  }
   // the rho channels cancel for -000 and ++--
   if(imode==0 || imode>3) return;
   // rho channels
@@ -414,83 +416,19 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
   	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
   			  ires+2,iloc+j1,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
   	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j2,ires+2,iloc+j4,ires+3,iloc+j1,ires+3,iloc+j3));
-  	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j1,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
-  	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j2,ires+2,iloc+j3,ires+3,iloc+j1,ires+3,iloc+j4));
-  	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j2,ires+2,iloc+j3,ires+3,iloc+j1,ires+3,iloc+j4));
-  	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j1,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
-  	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j2,ires+2,iloc+j4,ires+3,iloc+j1,ires+3,iloc+j3));
-  	assert(icharge==rho1Charge+rho2Charge);
-  	rho1Charge =  outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
-  	rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
-  	if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
-  	assert(abs(rho1Charge)<=3);
-  	rho2Charge =  outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
-  	rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
-  	if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
-  	assert(abs(rho2Charge)<=3);
-  	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
-  			  ires+2,iloc+j1,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
-  	assert(icharge==rho1Charge+rho2Charge);
+	if(imode!=1) {
+	  rho1Charge =  outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
+	  rho1= rho1Charge==0 ? rho0[irho1] : rhop[irho1];
+	  if(rho1->iCharge()!=rho1Charge) rho1 = rhom[irho1];
+	  assert(abs(rho1Charge)<=3);
+	  rho2Charge =  outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
+	  rho2= rho2Charge==0 ? rho0[irho2] : rhop[irho2];
+	  if(rho2->iCharge()!=rho2Charge) rho2 = rhom[irho2];
+	  assert(abs(rho2Charge)<=3);
+	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
+			    ires+2,iloc+j1,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
+	  assert(icharge==rho1Charge+rho2Charge);
+	}
       }
     }
   }
@@ -644,6 +582,7 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
        output += baseCurrent(Q.mass2(),resonance,ichan-51,Q,q2,q4,q1,q3);
     if(ichan<0 ||  ichan>=102) 
        output += baseCurrent(Q.mass2(),resonance,ichan-102,Q,q2,q3,q1,q4);
+    output *= sqrt(1./3.);
   }
   else if(imode==1) {
     if(ichan<117)
@@ -652,7 +591,7 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
       output += baseCurrent(Q.mass2(),resonance,ichan-117,Q,q3,q1,q2,q4);
   }
   else if(imode==2||imode==3) {
-    output = sqrt(0.5)*baseCurrent(Q.mass2(),resonance,ichan,Q,q3,q4,q1,q2);
+    output = baseCurrent(Q.mass2(),resonance,ichan,Q,q3,q4,q1,q2);
   }
   else if(imode==4||imode==5) {
     if(ichan<51)
@@ -663,7 +602,6 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
       output += baseCurrent(Q.mass2(),resonance,ichan-102,Q,q2,q3,q1,q4);
     if(ichan<0 ||  ichan>=153)
       output += baseCurrent(Q.mass2(),resonance,ichan-153,Q,q1,q3,q2,q4);
-    output *= sqrt(0.5);
   }
   return  vector<LorentzPolarizationVectorE>(1,output*Q.mass2());
 }
@@ -678,7 +616,6 @@ bool FourPionCzyzCurrent::accept(vector<int> id) {
     else if(id[ix]==ParticleID::piminus) ++npiminus;
     else if(id[ix]==ParticleID::pi0)     ++npi0;
   }
-  cerr << "testing in accepted " << npiplus << " " << npiminus << " " << npi0 << "\n";
   if(npiminus==2&&npiplus==1&&npi0==1)      allowed=true;
   else if(npiminus==1&&npi0==3)             allowed=true;
   else if(npiplus==2&&npiminus==1&&npi0==1) allowed=true;
