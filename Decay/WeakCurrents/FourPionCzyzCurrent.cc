@@ -19,8 +19,8 @@
 
 using namespace Herwig;
 
-FourPionCzyzCurrent::FourPionCzyzCurrent()
-  : mpip_(140*MeV), mpi0_(140*MeV) {  // /**
+FourPionCzyzCurrent::FourPionCzyzCurrent() 
+  : mpip_(140*MeV), mpi0_(140*MeV), channelMap_(6,vector<int>()) {
   // Masses and widths of the particles
   // rho (PDG for most of current)
   rhoMasses_ = {0.7755*GeV,1.459*GeV,1.72*GeV};
@@ -78,7 +78,7 @@ void FourPionCzyzCurrent::persistentOutput(PersistentOStream & os) const {
      << beta_a1_ << beta_f0_ << beta_omega_ << beta_B_ << beta_bar_
      << ounit(c_a1_,1./GeV2) << ounit(c_f0_,1./GeV2) << ounit(c_omega_,1./GeV) << c_rho_
      << g_rho_pi_pi_ << ounit(g_omega_pi_rho_,1/GeV/GeV2/GeV2) << ounit(g_rho_gamma_,GeV2)
-     << ounit(mpip_,GeV) << ounit(mpi0_,GeV);
+     << ounit(mpip_,GeV) << ounit(mpi0_,GeV) << channelMap_;
 }
 
 void FourPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
@@ -90,7 +90,7 @@ void FourPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
      >> beta_a1_ >> beta_f0_ >> beta_omega_ >> beta_B_ >> beta_bar_
      >> iunit(c_a1_,1./GeV2) >> iunit(c_f0_,1./GeV2) >> iunit(c_omega_,1./GeV) >> c_rho_
      >> g_rho_pi_pi_ >> iunit(g_omega_pi_rho_,1/GeV/GeV2/GeV2) >> iunit(g_rho_gamma_,GeV2)
-     >> iunit(mpip_,GeV) >> iunit(mpi0_,GeV);
+     >> iunit(mpip_,GeV) >> iunit(mpi0_,GeV) >> channelMap_;
 }
 
 // The following static variable is needed for the type
@@ -285,7 +285,8 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
 					 tPDVector outgoing, PhaseSpaceModePtr mode,
 					 PhaseSpaceChannel phase,
 					 unsigned int j1, unsigned int j2,
-					 unsigned int j3, unsigned int j4) {
+					 unsigned int j3, unsigned int j4,
+					 int & nchan) {
   tPDPtr rho0[3]  = {getParticleData( 113),getParticleData( 100113),getParticleData( 30113)};
   tPDPtr rhop[3]  = {getParticleData( 213),getParticleData( 100213),getParticleData( 30213)};
   tPDPtr rhom[3]  = {getParticleData(-213),getParticleData(-100213),getParticleData(-30213)};
@@ -304,7 +305,10 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
   // first the a1 channels
   for(unsigned int irho=0;irho<3;++irho) {
     tPDPtr rhoin = icharge==0 ? rho0[irho] : rhom[irho];
-    if(resonance && rhoin!=resonance) continue;
+    if(resonance && rhoin!=resonance) {
+      nchan+=8;
+      continue;
+    }
     int a1Charge;
     tPDPtr a1;
     for(unsigned int irho2=0;irho2<2;++irho2) {
@@ -312,40 +316,55 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
       a1Charge = outgoing[j1-1]->iCharge()+outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
       a1 = a1Charge==0 ? a10 : a1p;
       if(a1->iCharge()!=a1Charge) a1=a1m;
+      assert(abs(a1Charge)<=3);
       // find the rho
       rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
       rho = rhoCharge==0 ? rho0[irho2] : rhop[irho2];
       if(rho->iCharge()!=rhoCharge) rho = rhom[irho2];
+      assert(abs(rhoCharge)<=3);
       mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,a1,ires+1,iloc+j3,
       			ires+2,rho,ires+2,iloc+j2,ires+3,iloc+j1,ires+3,iloc+j4));
+      ++nchan; channelMap_[imode].push_back(nchan);
       // find the rho
       if(imode!=4) {
 	rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
 	rho = rhoCharge==0 ? rho0[irho2] : rhop[irho2];
 	if(rho->iCharge()!=rhoCharge) rho = rhom[irho2];
+	assert(abs(rhoCharge)<=3);
 	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,a1,ires+1,iloc+j3,
 			  ires+2,rho,ires+2,iloc+j1,ires+3,iloc+j2,ires+3,iloc+j4));
+	++nchan; channelMap_[imode].push_back(nchan);
       }
+      else ++nchan;
       // find the second a1
       a1Charge = outgoing[j1-1]->iCharge()+outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
       a1 = a1Charge==0 ? a10 : a1p;
       if(a1->iCharge()!=a1Charge) a1=a1m;
+      assert(abs(a1Charge)<=3);
       // find the rho
       if(imode!=4) {
 	rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
 	rho = rhoCharge==0 ? rho0[irho2] : rhop[irho2];
 	if(rho->iCharge()!=rhoCharge) rho = rhom[irho2];
+	assert(abs(rhoCharge)<=3);
 	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,a1,ires+1,iloc+j4,
 			  ires+2,rho,ires+2,iloc+j2,ires+3,iloc+j1,ires+3,iloc+j3));
+	++nchan; channelMap_[imode].push_back(nchan);
       }
+      else
+	++nchan;
       // find the rho
       if(imode!=1) {
 	rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
 	rho = rhoCharge==0 ? rho0[irho2] : rhop[irho2];
 	if(rho->iCharge()!=rhoCharge) rho = rhom[irho2];
+	assert(abs(rhoCharge)<=3);
 	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,a1,ires+1,iloc+j4,
 			  ires+2,rho,ires+2,iloc+j1,ires+3,iloc+j2,ires+3,iloc+j3));
+	++nchan; channelMap_[imode].push_back(nchan);
       }
+      else
+	++nchan;
     }
   }
   // now the f_0 channel
@@ -356,8 +375,10 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
     for(unsigned int irho2=0;irho2<3;++irho2) {
       rho= rhoCharge==0 ? rho0[irho2] : rhop[irho2];
       if(rho->iCharge()!=rhoCharge) rho = rhom[irho2];
+      assert(abs(rhoCharge)<=3);
       mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho,ires+1,f0,
   			ires+2,iloc+j1,ires+2,iloc+j2,ires+3,iloc+j3,ires+3,iloc+j4));
+      ++nchan; channelMap_[imode].push_back(nchan);
     }
   }
   // now the omega channels
@@ -365,40 +386,60 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
     for(unsigned int irho=0;irho<3;++irho) {
       tPDPtr rhoin = icharge==0 ? rho0[irho] : rhom[irho];
       if(resonance && rhoin!=resonance) continue;
-      rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
-      rho= rhoCharge==0 ? rho0[0] : rhop[0];
-      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
-			ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
-      rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
-      rho= rhoCharge==0 ? rho0[0] : rhop[0];
-      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
-			ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
-      rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
-      rho= rhoCharge==0 ? rho0[0] : rhop[0];
-      if(rho->iCharge()!=rhoCharge) rho = rhom[0];
-      mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
-			ires+2,rho,ires+2,iloc+j2,ires+3,iloc+j3,ires+3,iloc+j4));
+      if(imode!=1) {
+	rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j3-1]->iCharge();
+	rho= rhoCharge==0 ? rho0[0] : rhop[0];
+	if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+	assert(abs(rhoCharge)<=3);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
+			  ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
+	++nchan; channelMap_[imode].push_back(nchan);
+	rhoCharge = outgoing[j2-1]->iCharge()+outgoing[j4-1]->iCharge();
+	rho= rhoCharge==0 ? rho0[0] : rhop[0];
+	if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+	assert(abs(rhoCharge)<=3);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
+			  ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
+	++nchan; channelMap_[imode].push_back(nchan);
+	rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
+	rho= rhoCharge==0 ? rho0[0] : rhop[0];
+	if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+	assert(abs(rhoCharge)<=3);
+	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j1,
+			  ires+2,rho,ires+2,iloc+j2,ires+3,iloc+j3,ires+3,iloc+j4));
+	++nchan; channelMap_[imode].push_back(nchan);
+      }
+      else nchan+=3;
       rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j3-1]->iCharge();
       rho= rhoCharge==0 ? rho0[0] : rhop[0];
       if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      assert(abs(rhoCharge)<=3);
       mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
 			ires+2,rho,ires+2,iloc+j4,ires+3,iloc+j1,ires+3,iloc+j3));
+      ++nchan; channelMap_[imode].push_back(nchan);
       rhoCharge = outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
       rho= rhoCharge==0 ? rho0[0] : rhop[0];
       if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      assert(abs(rhoCharge)<=3);
       mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
 			ires+2,rho,ires+2,iloc+j3,ires+3,iloc+j1,ires+3,iloc+j4));
+      ++nchan; channelMap_[imode].push_back(nchan);
       rhoCharge = outgoing[j3-1]->iCharge()+outgoing[j4-1]->iCharge();
       rho= rhoCharge==0 ? rho0[0] : rhop[0];
       if(rho->iCharge()!=rhoCharge) rho = rhom[0];
+      assert(abs(rhoCharge)<=3);
       mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,omega,ires+1,iloc+j2,
 			ires+2,rho,ires+2,iloc+j1,ires+3,iloc+j3,ires+3,iloc+j4));
+      ++nchan; channelMap_[imode].push_back(nchan);
     }
   }
+  else
+    nchan+=18;
   // the rho channels cancel for -000 and ++--
-  if(imode==0 || imode>3) return;
+  if(imode==0 || imode>3) {
+    nchan+=16;
+    return;
+  }
   // rho channels
   for(unsigned int irho=0;irho<2;++irho) {
     tPDPtr rhoin = icharge==0 ? rho0[irho] : rhom[irho];
@@ -415,6 +456,7 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
   	assert(abs(rho2Charge)<=3);
   	mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
   			  ires+2,iloc+j1,ires+2,iloc+j3,ires+3,iloc+j2,ires+3,iloc+j4));
+	++nchan; channelMap_[imode].push_back(nchan);
   	assert(icharge==rho1Charge+rho2Charge);
 	if(imode!=1) {
 	  rho1Charge =  outgoing[j1-1]->iCharge()+outgoing[j4-1]->iCharge();
@@ -427,8 +469,11 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
 	  assert(abs(rho2Charge)<=3);
 	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoin,ires+1,rho1,ires+1,rho2,
 			    ires+2,iloc+j1,ires+2,iloc+j4,ires+3,iloc+j2,ires+3,iloc+j3));
+	  ++nchan; channelMap_[imode].push_back(nchan);
 	  assert(icharge==rho1Charge+rho2Charge);
 	}
+	else
+	  ++nchan;
       }
     }
   }
@@ -473,24 +518,26 @@ bool FourPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
   // get the external particles
   int iq(0),ia(0);
   tPDVector outgoing = particles(icharge,imode,iq,ia);
+  int nchan(-1);
+  channelMap_[imode].clear();
   if(imode==0) {
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,4,1,2);
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,4,1,3);
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,3,1,4);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,4,1,2,nchan);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,4,1,3,nchan);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,3,1,4,nchan);
   }
   else if(imode==1) {
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,2,1,4);
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,1,2,4);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,2,1,4,nchan);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,1,2,4,nchan);
   }
   // pi0 pi0 pi+ pi-
   else if(imode==2||imode==3) {
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,4,1,2);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,3,4,1,2,nchan);
   }
   else {
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,4,1,3);
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,1,4,2,3);
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,3,1,4);
-    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,1,3,2,4);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,4,1,3,nchan);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,1,4,2,3,nchan);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,2,3,1,4,nchan);
+    createChannels(imode,icharge,resonance,iloc,ires,outgoing,mode,phase,1,3,2,4,nchan);
   }
   return true;
 }
@@ -575,33 +622,35 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
   Q.rescaleMass();
   scale = Q.mass();
   LorentzVector<complex<InvEnergy> > output;
+  assert(ichan<int(channelMap_[imode].size()));
+  int ichannelB = ichan<0 ? -1 : channelMap_[imode][ichan];
   if(imode==0) {
-    if(ichan<51)
-      output  += baseCurrent(Q.mass2(),resonance,ichan   ,Q,q3,q4,q1,q2);
-    if(ichan<0 || (ichan>=51&&ichan<102))
-       output += baseCurrent(Q.mass2(),resonance,ichan-51,Q,q2,q4,q1,q3);
-    if(ichan<0 ||  ichan>=102) 
-       output += baseCurrent(Q.mass2(),resonance,ichan-102,Q,q2,q3,q1,q4);
+    if(ichannelB<51)
+      output  += baseCurrent(Q.mass2(),resonance,ichannelB   ,Q,q3,q4,q1,q2);
+    if(ichannelB<0 || (ichannelB>=67&&ichannelB<133))
+       output += baseCurrent(Q.mass2(),resonance,ichannelB-67,Q,q2,q4,q1,q3);
+    if(ichannelB<0 ||  ichannelB>=133) 
+       output += baseCurrent(Q.mass2(),resonance,ichannelB-133,Q,q2,q3,q1,q4);
     output *= sqrt(1./3.);
   }
   else if(imode==1) {
-    if(ichan<117)
-      output += baseCurrent(Q.mass2(),resonance,ichan,Q,q3,q2,q1,q4);
-    if(ichan<0||ichan>=117)
-      output += baseCurrent(Q.mass2(),resonance,ichan-117,Q,q3,q1,q2,q4);
+    if(ichannelB<117)
+      output += baseCurrent(Q.mass2(),resonance,ichannelB,Q,q3,q2,q1,q4);
+    if(ichannelB<0||ichannelB>=67)
+      output += baseCurrent(Q.mass2(),resonance,ichannelB-67,Q,q3,q1,q2,q4);
   }
   else if(imode==2||imode==3) {
-    output = baseCurrent(Q.mass2(),resonance,ichan,Q,q3,q4,q1,q2);
+    output = baseCurrent(Q.mass2(),resonance,ichannelB,Q,q3,q4,q1,q2);
   }
   else if(imode==4||imode==5) {
-    if(ichan<51)
-      output += baseCurrent(Q.mass2(),resonance,ichan    ,Q,q2,q4,q1,q3);
-    if(ichan<0 || (ichan>=51&&ichan<102))
-      output += baseCurrent(Q.mass2(),resonance,ichan-51 ,Q,q1,q4,q2,q3);
-    if(ichan<0 || (ichan>=102&&ichan<153)) 
-      output += baseCurrent(Q.mass2(),resonance,ichan-102,Q,q2,q3,q1,q4);
-    if(ichan<0 ||  ichan>=153)
-      output += baseCurrent(Q.mass2(),resonance,ichan-153,Q,q1,q3,q2,q4);
+    if(ichannelB<67)
+      output += baseCurrent(Q.mass2(),resonance,ichannelB    ,Q,q2,q4,q1,q3);
+    if(ichannelB<0 || (ichannelB>=67&&ichannelB<133))
+      output += baseCurrent(Q.mass2(),resonance,ichannelB-67 ,Q,q1,q4,q2,q3);
+    if(ichannelB<0 || (ichannelB>=133&&ichannelB<200)) 
+      output += baseCurrent(Q.mass2(),resonance,ichannelB-133,Q,q2,q3,q1,q4);
+    if(ichannelB<0 ||  ichannelB>=200)
+      output += baseCurrent(Q.mass2(),resonance,ichannelB-200,Q,q1,q3,q2,q4);
   }
   return  vector<LorentzPolarizationVectorE>(1,output*Q.mass2());
 }
@@ -896,7 +945,7 @@ baseCurrent(Energy2 Q2, tcPDPtr resonance,const int ichan,
     cq  += f0fact*(Qq3-Qq4)/Q2;
   }
   // omega
-  if(ichan<0 || (ichan>=33&&ichan<=51) ) {
+  if(ichan<0 || (ichan>=33&&ichan<=50) ) {
     int ires1(-1),iterm(-1);
     if(ichan>0) {
       ires1 = (ichan-33)/6;
@@ -963,10 +1012,10 @@ baseCurrent(Energy2 Q2, tcPDPtr resonance,const int ichan,
   if(ichan<0||ichan>=51) {
     int ires1(-1),ires2(-1),ires3(-1),iterm(-1);
     if(ichan>0) {
-      ires1 = (ichan-51)/32;
-      ires2 = ((ichan-51)/16)%2;
-      ires3 = ((ichan-51)/8)%2;
-      iterm = (ichan-51)%8;
+      ires1 = (ichan-51)/8;
+      ires2 = ((ichan-51)/4)%2;
+      ires3 = ((ichan-51)/2)%2;
+      iterm = (ichan-51)%2;
     }
     // prefactor
     complex<InvEnergy2> rho1;
@@ -988,48 +1037,35 @@ baseCurrent(Energy2 Q2, tcPDPtr resonance,const int ichan,
    	rho1 = ZERO;
     }
     Complex pre_rho = c_rho_*pow(g_rho_pi_pi_,3)*g_rho_gamma_*rho1;
-    complex<InvEnergy2> BW12_q1q3_A(ZERO),BW12_q1q3_B(ZERO),BW12_q1q4_A(ZERO),BW12_q1q4_B(ZERO),
-      BW12_q2q3_A(ZERO),BW12_q2q3_B(ZERO),BW12_q2q4_A(ZERO),BW12_q2q4_B(ZERO);
+    complex<InvEnergy2> BW12_q1q3_A(ZERO),BW12_q1q4_A(ZERO),BW12_q2q3_B(ZERO),BW12_q2q4_B(ZERO);
     if(ires2<0) {
       BW12_q1q3_A = Resonance::BreitWignerDiff(m12+m32+2.*q1q3,rhoMasses_[0],rhoWidths_[0],
   					       rhoMasses_[1],rhoWidths_[1],mpip_,mpip_);
       BW12_q1q4_A = Resonance::BreitWignerDiff(m12+m42+2.*q1q4,rhoMasses_[0],rhoWidths_[0],
   					       rhoMasses_[1],rhoWidths_[1],mpip_,mpip_);
-      BW12_q2q3_A = Resonance::BreitWignerDiff(m22+m32+2.*q2q3,rhoMasses_[0],rhoWidths_[0],
+      BW12_q2q3_B = Resonance::BreitWignerDiff(m22+m32+2.*q2q3,rhoMasses_[0],rhoWidths_[0],
   					       rhoMasses_[1],rhoWidths_[1],mpip_,mpip_);
-      BW12_q2q4_A = Resonance::BreitWignerDiff(m22+m42+2.*q2q4,rhoMasses_[0],rhoWidths_[0],
+      
+      BW12_q2q4_B = Resonance::BreitWignerDiff(m22+m42+2.*q2q4,rhoMasses_[0],rhoWidths_[0],
   					       rhoMasses_[1],rhoWidths_[1],mpip_,mpip_);
+      
     }
     else {
       if(ires2==0) {
   	BW12_q1q3_A = Resonance::BreitWignerPWave(m12+m32+2.*q1q3,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
   	BW12_q1q4_A = Resonance::BreitWignerPWave(m12+m42+2.*q1q4,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
-  	BW12_q2q3_A = Resonance::BreitWignerPWave(m22+m32+2.*q2q3,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
-  	BW12_q2q4_A = Resonance::BreitWignerPWave(m22+m42+2.*q2q4,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
       }
       else {
   	BW12_q1q3_A = -Resonance::BreitWignerPWave(m12+m32+2.*q1q3,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
   	BW12_q1q4_A = -Resonance::BreitWignerPWave(m12+m42+2.*q1q4,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
-  	BW12_q2q3_A = -Resonance::BreitWignerPWave(m22+m32+2.*q2q3,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
-  	BW12_q2q4_A = -Resonance::BreitWignerPWave(m22+m42+2.*q2q4,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
       }
     }
-    if(ires3<0 || ires3==ires2) {
-      BW12_q1q3_B = BW12_q1q3_A;	  
-      BW12_q1q4_B = BW12_q1q4_A;	  
-      BW12_q2q3_B = BW12_q2q3_A;	  
-      BW12_q2q4_B = BW12_q2q4_A;      
-    }
-    else {
+    if(ires3>=0) {
       if(ires3==0) {
-  	BW12_q1q3_B = Resonance::BreitWignerPWave(m12+m32+2.*q1q3,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
-  	BW12_q1q4_B = Resonance::BreitWignerPWave(m12+m42+2.*q1q4,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
   	BW12_q2q3_B = Resonance::BreitWignerPWave(m22+m32+2.*q2q3,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
   	BW12_q2q4_B = Resonance::BreitWignerPWave(m22+m42+2.*q2q4,rhoMasses_[0],rhoWidths_[0],mpip_,mpip_)/sqr(rhoMasses_[0]);
       }
       else {
-  	BW12_q1q3_B = -Resonance::BreitWignerPWave(m12+m32+2.*q1q3,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
-  	BW12_q1q4_B = -Resonance::BreitWignerPWave(m12+m42+2.*q1q4,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
   	BW12_q2q3_B = -Resonance::BreitWignerPWave(m22+m32+2.*q2q3,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
   	BW12_q2q4_B = -Resonance::BreitWignerPWave(m22+m42+2.*q2q4,rhoMasses_[1],rhoWidths_[1],mpip_,mpip_)/sqr(rhoMasses_[1]);
       }
@@ -1039,31 +1075,31 @@ baseCurrent(Energy2 Q2, tcPDPtr resonance,const int ichan,
       Energy2 d1 = Qq2 - Qq4 + 2.*q2q3 - 2.*q3q4;
       v_rho += pre_rho*BW12_q1q3_A*(BW12_q2q4_B*d1 + 2.)*q1;
     }
-    if(iterm<0||iterm==1) {
+    if(iterm<=0) {
       Energy2 d5 = Qq1 - Qq3 + 2.*q1q2 - 2.*q2q3;
-      v_rho += pre_rho*BW12_q2q4_A*(BW12_q1q3_B*d5 + 2.)*q4;
+      v_rho += pre_rho*BW12_q2q4_B*(BW12_q1q3_A*d5 + 2.)*q4;
     }
-    if(iterm<0||iterm==2) {
+    if(iterm<0||iterm==1) {
       Energy2 d2 = Qq2 - Qq3 + 2.*q2q4 - 2.*q3q4;
       v_rho -= pre_rho*BW12_q1q4_A*(BW12_q2q3_B*d2 + 2.)*q1;
     }
-    if(iterm<0||iterm==3) {
+    if(iterm<0||iterm==1) {
       Energy2 d7 = Qq1 - Qq4 + 2.*q1q2 - 2.*q2q4;
-      v_rho -= pre_rho*BW12_q2q3_A*(BW12_q1q4_B*d7 + 2.)*q3;
+      v_rho -= pre_rho*BW12_q2q3_B*(BW12_q1q4_A*d7 + 2.)*q3;
     }
-    if(iterm<0||iterm==4) {
+    if(iterm<0||iterm==1) {
       Energy2 d3 = Qq1 - Qq4 + 2.*q1q3 - 2.*q3q4;
-      v_rho += pre_rho*BW12_q2q3_A*(BW12_q1q4_B*d3 + 2.)*q2;
+      v_rho += pre_rho*BW12_q2q3_B*(BW12_q1q4_A*d3 + 2.)*q2;
     }
-    if(iterm<0||iterm==5) {
+    if(iterm<0||iterm==1) {
       Energy2 d6 = Qq2 - Qq3 + 2.*q1q2 - 2.*q1q3;
       v_rho += pre_rho*BW12_q1q4_A*(BW12_q2q3_B*d6 + 2.)*q4;
     }
-    if(iterm<0||iterm==6) {
+    if(iterm<=0) {
       Energy2 d4 = Qq1 - Qq3 + 2.*q1q4 - 2.*q3q4;
-      v_rho -= pre_rho*BW12_q2q4_A*(BW12_q1q3_B*d4 + 2.)*q2;
+      v_rho -= pre_rho*BW12_q2q4_B*(BW12_q1q3_A*d4 + 2.)*q2;
     }
-    if(iterm<0||iterm==7) {
+    if(iterm<=0) {
       Energy2 d8 = Qq2 - Qq4 + 2.*q1q2 - 2.*q1q4;  
       v_rho -= pre_rho*BW12_q1q3_A*(BW12_q2q4_B*d8 + 2.)*q3;
     }

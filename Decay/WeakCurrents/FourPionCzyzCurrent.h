@@ -150,7 +150,8 @@ protected:
 		      tPDVector outgoing, PhaseSpaceModePtr mode,
 		      PhaseSpaceChannel channel,
 		      unsigned int j1, unsigned int j2,
-		      unsigned int j3, unsigned int j4);
+		      unsigned int j3, unsigned int j4,
+		      int & nchan);
   
   /**
    *   Basis current in terms of which all the others can be calculated
@@ -323,6 +324,10 @@ private:
    */
   Energy mpip_, mpi0_;
 
+  /**
+   *   Map for the phase-space channels
+   */
+  vector<vector<int> > channelMap_;
 };
 
 }
