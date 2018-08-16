@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// TauDecayer2.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// TauDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,12 +8,12 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the TauDecayer2 class.
+// functions of the TauDecayer class.
 //
 //  Author: Peter Richardson
 //
 
-#include "TauDecayer2.h"
+#include "TauDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -35,7 +35,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void TauDecayer2::doinit() {
+void TauDecayer::doinit() {
   DecayIntegrator2::doinit();
   // make sure the current got initialised
   current_->init();
@@ -84,7 +84,7 @@ void TauDecayer2::doinit() {
   current_->update();
 }
 
-void TauDecayer2::doinitrun() {
+void TauDecayer::doinitrun() {
   current_->initrun();
   DecayIntegrator2::doinitrun();
   if(initialize()) {
@@ -101,7 +101,7 @@ void TauDecayer2::doinitrun() {
   }
 }
 
-bool TauDecayer2::accept(tcPDPtr parent, const tPDVector & children) const {
+bool TauDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   bool allowed(false);
   // find the neutrino 
   int idnu(0),idtemp,idin(parent->id());
@@ -121,7 +121,7 @@ bool TauDecayer2::accept(tcPDPtr parent, const tPDVector & children) const {
 }
 
 
-int TauDecayer2::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children) const {
+int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children) const {
   int imode(-1);
   tPDVector::const_iterator pit  = children.begin();
   tPDVector::const_iterator pend = children.end();
@@ -140,56 +140,56 @@ int TauDecayer2::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children
 }
 
 
-void TauDecayer2::persistentOutput(PersistentOStream & os) const {
+void TauDecayer::persistentOutput(PersistentOStream & os) const {
   os << modeMap_ << current_ << wgtLoc_ 
      << wgtMax_ << weights_ << polOpt_ << tauMpol_ << tauPpol_;
 }
 
-void TauDecayer2::persistentInput(PersistentIStream & is, int) {
+void TauDecayer::persistentInput(PersistentIStream & is, int) {
   is >> modeMap_ >> current_ >> wgtLoc_ 
      >> wgtMax_ >> weights_ >> polOpt_ >> tauMpol_ >> tauPpol_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TauDecayer2,DecayIntegrator2>
-describeHerwigTauDecayer2("Herwig::TauDecayer2", "HwTauDecay.so");
+DescribeClass<TauDecayer,DecayIntegrator2>
+describeHerwigTauDecayer("Herwig::TauDecayer", "HwTauDecay.so");
 
-void TauDecayer2::Init() {
+void TauDecayer::Init() {
 
-  static ClassDocumentation<TauDecayer2> documentation
-    ("The TauDecayer2 class is designed to use a weak current"
+  static ClassDocumentation<TauDecayer> documentation
+    ("The TauDecayer class is designed to use a weak current"
      " to perform the decay of the tau.");
 
-  static Reference<TauDecayer2,WeakCurrent> interfaceWeakCurrent
+  static Reference<TauDecayer,WeakCurrent> interfaceWeakCurrent
     ("WeakCurrent",
      "The reference for the decay current to be used.",
-     &TauDecayer2::current_, false, false, true, false, false);
+     &TauDecayer::current_, false, false, true, false, false);
 
-  static ParVector<TauDecayer2,int> interfaceWeightLocation
+  static ParVector<TauDecayer,int> interfaceWeightLocation
     ("WeightLocation",
      "The locations of the weights for a given channel in the vector",
-     &TauDecayer2::wgtLoc_,
+     &TauDecayer::wgtLoc_,
      0, 0, 0, 0, 10000, false, false, true);
 
-  static ParVector<TauDecayer2,double> interfaceWeightMax
+  static ParVector<TauDecayer,double> interfaceWeightMax
     ("MaximumWeight",
      "The maximum weight for a given channel.",
-     &TauDecayer2::wgtMax_,
+     &TauDecayer::wgtMax_,
      0, 0, 0, 0., 100., false, false, true);
 
-  static ParVector<TauDecayer2,double> interfaceWeights
+  static ParVector<TauDecayer,double> interfaceWeights
     ("Weights",
      "The weights for the integration.",
-     &TauDecayer2::weights_,
+     &TauDecayer::weights_,
      0, 0, 0, 0., 1., false, false, true);
 
-  static Switch<TauDecayer2,bool> interfacePolarizationOption
+  static Switch<TauDecayer,bool> interfacePolarizationOption
     ("PolarizationOption",
      "Option of forcing the polarization of the tau leptons, N.B. you"
      " should only use this option for making distributions for"
      " comparision if you really know what you are doing.",
-     &TauDecayer2::polOpt_, false, false, false);
+     &TauDecayer::polOpt_, false, false, false);
   static SwitchOption interfacePolarizationOptionDefault
     (interfacePolarizationOption,
      "Default",
@@ -202,22 +202,22 @@ void TauDecayer2::Init() {
      "Force the polarizations",
      true);
 
-  static Parameter<TauDecayer2,double> interfaceTauMinusPolarization
+  static Parameter<TauDecayer,double> interfaceTauMinusPolarization
     ("TauMinusPolarization",
      "The polarization of the tau-, left=-1, right=+1 if this is forced.",
-     &TauDecayer2::tauMpol_, 0.0, -1.0, 1.0,
+     &TauDecayer::tauMpol_, 0.0, -1.0, 1.0,
      false, false, Interface::limited);
 
 
-  static Parameter<TauDecayer2,double> interfaceTauPlusPolarization
+  static Parameter<TauDecayer,double> interfaceTauPlusPolarization
     ("TauPlusPolarization",
      "The polarization of the tau+, left=-1, right=+1 if this is forced.",
-     &TauDecayer2::tauPpol_, 0.0, -1.0, 1.0,
+     &TauDecayer::tauPpol_, 0.0, -1.0, 1.0,
      false, false, Interface::limited);
 
 }
 
-void TauDecayer2::
+void TauDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   if(part.id()==ParticleID::tauminus) {
     SpinorWaveFunction   ::
@@ -235,7 +235,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 // combine the currents to give the matrix element
-double TauDecayer2::me2(const int ichan, const Particle & part,
+double TauDecayer::me2(const int ichan, const Particle & part,
 			const tPDVector & outgoing,
 			const vector<Lorentz5Momentum> & momenta,
 			MEOption meopt) const {
@@ -340,7 +340,7 @@ double TauDecayer2::me2(const int ichan, const Particle & part,
 }
   
 // output the setup information for the particle database
-void TauDecayer2::dataBaseOutput(ofstream & output,bool header) const {
+void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator2::dataBaseOutput(output,false);

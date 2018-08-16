@@ -1,1 +1,1 @@
-EXTRA_DIST = TauDecayer2.cc  TauDecayer2.h
+EXTRA_DIST = TauDecayer.cc  TauDecayer.h

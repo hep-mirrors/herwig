@@ -1,14 +1,14 @@
 // -*- C++ -*-
 //
-// TauDecayer2.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// TauDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_TauDecayer2_H
-#define HERWIG_TauDecayer2_H
-// This is the declaration of the TauDecayer2 class.
+#ifndef HERWIG_TauDecayer_H
+#define HERWIG_TauDecayer_H
+// This is the declaration of the TauDecayer class.
 
 #include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
@@ -24,7 +24,7 @@ using ThePEG::Helicity::LorentzPolarizationVector;
 
 /** \ingroup Decay
  *
- *  The TauDecayer2 class performs the decay of the \f$\tau\f$. The matrix element
+ *  The TauDecayer class performs the decay of the \f$\tau\f$. The matrix element
  *  for \f$\tau\f$ decay can be split into a leptonic current describing the
  *  weak decay of the decay to a neutrino and a highly virtual \f$W\f$ combined
  *  with a hadronic current for the virtual \f$W\f$ decay.
@@ -47,14 +47,14 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  * @see WeakCurrent
  * 
  */
-class TauDecayer2: public DecayIntegrator2 {
+class TauDecayer: public DecayIntegrator2 {
 
 public:
 
   /**
    * Default constructor.
    */
-  TauDecayer2() : polOpt_(false), tauMpol_(0.), tauPpol_(0.) {
+  TauDecayer() : polOpt_(false), tauMpol_(0.), tauPpol_(0.) {
     generateIntermediates(true);
   }
 
@@ -162,7 +162,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TauDecayer2 & operator=(const TauDecayer2 &);
+  TauDecayer & operator=(const TauDecayer &);
 
 private:
 
@@ -235,4 +235,4 @@ private:
 }
 
 
-#endif /* HERWIG_TauDecayer2_H */
+#endif /* HERWIG_TauDecayer_H */
