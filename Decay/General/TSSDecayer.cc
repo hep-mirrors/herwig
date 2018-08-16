@@ -57,7 +57,7 @@ void TSSDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TSSDecayer,GeneralTwoBodyDecayer>
+DescribeClass<TSSDecayer,GeneralTwoBodyDecayer2>
 describeHerwigTSSDecayer("Herwig::TSSDecayer", "Herwig.so");
 
 void TSSDecayer::Init() {
@@ -68,30 +68,32 @@ void TSSDecayer::Init() {
 
 }
 
-double TSSDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,
+void TSSDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  TensorWaveFunction::
+    constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&part),
+		      incoming,true,false);
+  for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::
+      constructSpinInfo(decay[ix],outgoing,true);
+}
+
+double TSSDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
 		       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&part),
 			     incoming,false);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    TensorWaveFunction::
-      constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&inpart),
-			incoming,true,false);
-    for(unsigned int ix=0;ix<2;++ix)
-      ScalarWaveFunction::
-	constructSpinInfo(decay[ix],outgoing,true);
-    return 0.;
-  }
-  ScalarWaveFunction sca1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
-  ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
-  Energy2 scale(sqr(inpart.mass()));
+  ScalarWaveFunction sca1(momenta[0],outgoing[0],Helicity::outgoing);
+  ScalarWaveFunction sca2(momenta[1],outgoing[1],Helicity::outgoing);
+  Energy2 scale(sqr(part.mass()));
   for(unsigned int thel=0;thel<5;++thel) {
     (*ME())(thel,0,0) =0.;
     for(auto vert : vertex_)
@@ -99,8 +101,7 @@ double TSSDecayer::me2(const int , const Particle & inpart,
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // return the answer
   return output;
 }
@@ -126,7 +127,7 @@ Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 

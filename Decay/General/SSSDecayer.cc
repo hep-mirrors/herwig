@@ -63,7 +63,7 @@ void SSSDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SSSDecayer,GeneralTwoBodyDecayer>
+DescribeClass<SSSDecayer,GeneralTwoBodyDecayer2>
 describeHerwigSSSDecayer("Herwig::SSSDecayer", "Herwig.so");
 
 void SSSDecayer::Init() {
@@ -73,36 +73,38 @@ void SSSDecayer::Init() {
 
 }
 
-double SSSDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,
+void SSSDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  ScalarWaveFunction::
+    constructSpinInfo(const_ptr_cast<tPPtr>(&part),incoming,true);
+  for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::
+      constructSpinInfo(decay[ix],outgoing,true);
+}
+
+double SSSDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
 		       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
-    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
+    swave_ = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::
-      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
-    for(unsigned int ix=0;ix<2;++ix)
-      ScalarWaveFunction::
-	constructSpinInfo(decay[ix],outgoing,true);
-  }
-  ScalarWaveFunction s1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
-  ScalarWaveFunction s2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
-  Energy2 scale(sqr(inpart.mass()));
+  ScalarWaveFunction s1(momenta[0],outgoing[0],Helicity::outgoing);
+  ScalarWaveFunction s2(momenta[1],outgoing[1],Helicity::outgoing);
+  Energy2 scale(sqr(part.mass()));
   (*ME())(0,0,0) = 0.;
   for(auto vert : vertex_) {
     (*ME())(0,0,0) += vert->evaluate(scale,s1,s2,swave_);
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // return the answer
   return output;
 }
@@ -124,7 +126,7 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     return pWidth;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -193,7 +195,7 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer::CFlow & colourFlow
+  const GeneralTwoBodyDecayer2::CFlow & colourFlow
         = colourFlows(inpart, decay);
   double gs(0.);
   bool couplingSet(false);

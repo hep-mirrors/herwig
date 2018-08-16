@@ -12,7 +12,7 @@
 // This is the declaration of the VSSDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer.h"
+#include "GeneralTwoBodyDecayer2.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -25,13 +25,13 @@ using Helicity::VSSVertexPtr;
  * The VSSDecayer class implements the decay of a vector
  * to 2 scalars in a general model. It holds an VSSVertex pointer
  * that must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer
+ * @see GeneralTwoBodyDecayer2
  */
 
-class VSSDecayer: public GeneralTwoBodyDecayer {
+class VSSDecayer: public GeneralTwoBodyDecayer2 {
 
 public:
 
@@ -43,15 +43,24 @@ public:
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
-   * Return the matrix element squared for a given mode and phase-space channel
-   * @param ichan The channel we are calculating the matrix element for.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @param meopt Option for the matrix element
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(const int ichan, const Particle & part,
-		     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Function to return partial Width
