@@ -112,7 +112,6 @@ HwTauDecay_la_LDFLAGS = \
 $(AM_LDFLAGS) -module -version-info 10:0:0
 
 HwTauDecay_la_SOURCES = \
-Tau/TauDecayer.cc\
 Tau/TauDecayer2.cc
 
 ##################
