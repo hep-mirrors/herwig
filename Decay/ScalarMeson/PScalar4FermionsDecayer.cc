@@ -31,7 +31,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void PScalar4FermionsDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
+  DecayIntegrator2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix)
       _maxweight[ix] = mode(ix)->maxWeight();
@@ -48,44 +48,32 @@ PScalar4FermionsDecayer::PScalar4FermionsDecayer()
 }
 
 void PScalar4FermionsDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   // check the parameters are consistent
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoing1.size() || isize!=_outgoing2.size()||
      isize!=_maxweight.size() || isize!=_includeVMD.size()|| isize!=_VMDid.size()    ||
      isize!=_VMDmass.size()  || isize!=_VMDwidth.size())
     throw InitException() << "Inconsistent parameters in PScalar4FermionsDecayer"
-			  << Exception::abortnow;
-  // create the integration channels for each mode 
-  tPDVector extpart(5);
+  			  << Exception::abortnow;
+  // create the integration channels for each mode
   tPDPtr gamma=getParticleData(ParticleID::gamma);
-  DecayPhaseSpaceChannelPtr newchannel;
-  DecayPhaseSpaceModePtr mode;
-  vector<double> wgt;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    wgt.resize(1);wgt[0]=1.;
-    extpart[0] = getParticleData(_incoming[ix]);
-    extpart[1] = getParticleData( _outgoing1[ix]);
-    extpart[2] = getParticleData(-_outgoing1[ix]);
-    extpart[3] = getParticleData( _outgoing2[ix]);
-    extpart[4] = getParticleData(-_outgoing2[ix]);
-    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-    // first channel always need this
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(extpart[0],0, 0.0,-1,-2);
-    newchannel->addIntermediate(gamma     ,1,-1.1, 1,2);
-    newchannel->addIntermediate(gamma     ,1,-1.1, 3,4);
-    mode->addChannel(newchannel);
-    if(_outgoing1[ix]==_outgoing2[ix]) {
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,-1,-2);
-      newchannel->addIntermediate(gamma     ,1,-1.1, 3,2);
-      newchannel->addIntermediate(gamma     ,1,-1.1, 1,4);
-      mode->addChannel(newchannel);
-      wgt.resize(2);wgt[0]=0.5;wgt[1]=0.5;
-    }
-    else{wgt.resize(1);wgt[0]=1.;}
-    addMode(mode,_maxweight[ix],wgt);
+    tPDPtr in = getParticleData(_incoming[ix]);
+    tPDVector out={getParticleData( _outgoing1[ix]),
+		   getParticleData(-_outgoing1[ix]),
+		   getParticleData( _outgoing2[ix]),
+		   getParticleData(-_outgoing2[ix])};
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(in,out,_maxweight[ix]));
+    PhaseSpaceChannel newChannel((PhaseSpaceChannel(mode),0,gamma,0,gamma,1,1,1,2,2,3,2,4));
+    newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
+    newChannel.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
+    mode->addChannel(newChannel);
+    PhaseSpaceChannel newChannel2((PhaseSpaceChannel(mode),0,gamma,0,gamma,1,3,1,2,2,1,2,4));
+    newChannel2.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
+    newChannel2.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,-1.1);
+    mode->addChannel(newChannel2);
+    addMode(mode);
   }
   // set up the values for the VMD factor if needed (copy the default mass and width 
   //                                                 into the array)
@@ -175,7 +163,7 @@ void PScalar4FermionsDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<PScalar4FermionsDecayer,DecayIntegrator>
+DescribeClass<PScalar4FermionsDecayer,DecayIntegrator2>
 describeHerwigPScalar4FermionsDecayer("Herwig::PScalar4FermionsDecayer", "HwSMDecay.so");
 
 void PScalar4FermionsDecayer::Init() {
@@ -243,46 +231,52 @@ void PScalar4FermionsDecayer::Init() {
      1.*MeV, -1, ZERO, -10000*MeV, 10000*MeV, false, false, true);
 
 }
+void PScalar4FermionsDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // set up the spin information for the decay products
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					incoming,true);
+  // set up the spin information for the decay products
+  for(unsigned int ix=0;ix<2;++ix) {
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar[ix],decay[2*ix  ],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave[ix]   ,decay[2*ix+1],outgoing,true);
+  }
+}
 
-double PScalar4FermionsDecayer::me2(const int,
-				    const Particle & inpart,
-				    const ParticleVector & decay,
-				    MEOption meopt) const {
+double PScalar4FermionsDecayer::me2(const int,const Particle & part,
+				       const tPDVector &,
+				       const vector<Lorentz5Momentum> & momenta,
+				       MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-					 PDT::Spin1Half,PDT::Spin1Half)));
+  					 PDT::Spin1Half,PDT::Spin1Half)));
   bool identical((_outgoing1[imode()]==_outgoing2[imode()]));
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-  }
-  if(meopt==Terminate) {
-    // set up the spin information for the decay products
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    // set up the spin information for the decay products
-    for(unsigned int ix=0;ix<2;++ix) {
-      SpinorBarWaveFunction::
-	constructSpinInfo(_wavebar[ix],decay[2*ix  ],outgoing,true);
-      SpinorWaveFunction::
-	constructSpinInfo(_wave[ix]   ,decay[2*ix+1],outgoing,true);
-    }
-    return 0.;
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
   }
   // calculate the spinors
   for(unsigned int ix=0;ix<2;++ix) {
-    SpinorBarWaveFunction::
-      calculateWaveFunctions(_wavebar[ix],decay[2*ix  ],outgoing);
-    SpinorWaveFunction::
-      calculateWaveFunctions(_wave[ix]   ,decay[2*ix+1],outgoing);
+    _wavebar[ix].resize(2);
+    _wave   [ix].resize(2);
+    for(unsigned int ihel=0;ihel<2;++ihel) {
+      _wavebar[ix][ihel] = HelicityFunctions::dimensionedSpinorBar(-momenta[2*ix  ],ihel,Helicity::outgoing);
+      _wave   [ix][ihel] = HelicityFunctions::dimensionedSpinor   (-momenta[2*ix+1],ihel,Helicity::outgoing);
+    }
   }
-  // momenta of the outgoing photons
-  Lorentz5Momentum momentum[4];
-  momentum[0]=decay[0]->momentum()+decay[1]->momentum();momentum[0].rescaleMass();
-  momentum[1]=decay[2]->momentum()+decay[3]->momentum();momentum[1].rescaleMass();
+  // // momenta of the outgoing photons
+  Lorentz5Momentum poff[4];
+  poff[0]=momenta[0]+momenta[1];
+  poff[0].rescaleMass();
+  poff[1]=momenta[2]+momenta[3];
+  poff[1].rescaleMass();
   if(identical) {
-    momentum[2]=decay[2]->momentum()+decay[1]->momentum();momentum[2].rescaleMass();
-    momentum[3]=decay[0]->momentum()+decay[3]->momentum();momentum[3].rescaleMass();
+    poff[2]=momenta[2]+momenta[1];
+    poff[2].rescaleMass();
+    poff[3]=momenta[0]+momenta[3];
+    poff[3].rescaleMass();
   }
   // compute the currents for the two leptonic decays
   LorentzPolarizationVectorE current[4][2][2];
@@ -291,22 +285,22 @@ double PScalar4FermionsDecayer::me2(const int,
     it = iz==0 ? 1 : 0;
     for(ix=0;ix<2;++ix) {
       for(iy=0;iy<2;++iy) {
-	current[iz][iy][ix] = _wave[iz][ix].vectorCurrent(_wavebar[iz][iy]);
-	// the second two currents      
-	if(identical)
-	  current[iz+2][iy][ix] = _wave[it][ix].vectorCurrent(_wavebar[iz][iy]);
+  	current[iz][iy][ix] = _wave[iz][ix].vectorCurrent(_wavebar[iz][iy]);
+  	// the second two currents      
+  	if(identical)
+  	  current[iz+2][iy][ix] = _wave[it][ix].vectorCurrent(_wavebar[iz][iy]);
       }
     }
   }
   // invariants
-  Energy2 m12(sqr(momentum[0].mass()));
-  Energy2 m34(sqr(momentum[1].mass()));
+  Energy2 m12(sqr(poff[0].mass()));
+  Energy2 m34(sqr(poff[1].mass()));
   Energy2 m14(ZERO), m23(ZERO);
   complex<InvEnergy4> prop1(1./m12/m34),prop2(0./sqr(MeV2));
   Complex ii(0.,1.);
   if(identical) {
-    m14=momentum[2].mass()*momentum[2].mass();
-    m23=momentum[3].mass()*momentum[3].mass();
+    m14=poff[2].mass()*poff[2].mass();
+    m23=poff[3].mass()*poff[3].mass();
     prop2=1./m14/m23;
   }
   // the VMD factor if needed
@@ -317,12 +311,12 @@ double PScalar4FermionsDecayer::me2(const int,
                   (-mrho2+ii*mwrho)/(m34-mrho2+ii*mwrho);
     if(identical) {
       prop2 = prop2*(-mrho2+ii*mwrho)/(m14-mrho2+ii*mwrho)*
-	            (-mrho2+ii*mwrho)/(m23-mrho2+ii*mwrho);
+  	            (-mrho2+ii*mwrho)/(m23-mrho2+ii*mwrho);
     }
   }
   // prefactor
   Complex pre(_coupling[imode()]*4.*Constants::pi
-	      *SM().alphaEM()*inpart.mass());
+  	      *SM().alphaEM()*part.mass());
   Complex diag;
   // now compute the matrix element
   LorentzVector<complex<Energy3> > eps;
@@ -330,20 +324,20 @@ double PScalar4FermionsDecayer::me2(const int,
   for(ispin[1]=0; ispin[1]<2;++ispin[1]) {
     for(ispin[2]=0;ispin[2]<2;++ispin[2]) {
       for(ispin[3]=0;ispin[3]<2;++ispin[3]) {
-	for(ispin[4]=0;ispin[4]<2;++ispin[4]) {
-	  // the first diagram
-	  eps = epsilon(current[0][ispin[1]][ispin[2]],momentum[1],
-			current[1][ispin[3]][ispin[4]]);
-	  diag = prop1*(eps*momentum[0]);
-	  // exchanged diagram if identical particles
-	  //  (sign due normal ordering) 
-	  if(identical) {
-	    eps = epsilon(current[2][ispin[1]][ispin[4]],momentum[3],
-			  current[3][ispin[3]][ispin[2]]);
-	    diag-= prop2*(eps*momentum[2]);
-	  }
-	  (*ME())(ispin)=pre*diag;
-	}
+  	for(ispin[4]=0;ispin[4]<2;++ispin[4]) {
+  	  // the first diagram
+  	  eps = epsilon(current[0][ispin[1]][ispin[2]],poff[1],
+  			current[1][ispin[3]][ispin[4]]);
+  	  diag = prop1*(eps*poff[0]);
+  	  // exchanged diagram if identical particles
+  	  //  (sign due normal ordering) 
+  	  if(identical) {
+  	    eps = epsilon(current[2][ispin[1]][ispin[4]],poff[3],
+  			  current[3][ispin[3]][ispin[2]]);
+  	    diag-= prop2*(eps*poff[2]);
+  	  }
+  	  (*ME())(ispin)=pre*diag;
+  	}
       }
     }
   }
@@ -356,8 +350,8 @@ double PScalar4FermionsDecayer::me2(const int,
 void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output,
 					     bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator2 base class
+  DecayIntegrator2::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming   " << ix << " " 
