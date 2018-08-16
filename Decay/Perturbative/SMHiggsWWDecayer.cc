@@ -29,7 +29,7 @@ typedef Selector<tDMPtr> DecaySelector;
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMHiggsWWDecayer,PerturbativeDecayer>
+DescribeClass<SMHiggsWWDecayer,PerturbativeDecayer2>
 describeHerwigSMHiggsWWDecayer("Herwig::SMHiggsWWDecayer", "HwPerturbativeHiggsDecay.so");
 
 void SMHiggsWWDecayer::Init() {
@@ -55,13 +55,13 @@ SMHiggsWWDecayer::SMHiggsWWDecayer() : _wmax(2,1.00), _zmax(2,1.00)
 {}
 
 void SMHiggsWWDecayer::doinit() {
-  PerturbativeDecayer::doinit();
+  PerturbativeDecayer2::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) 
     throw InitException() << "SMHiggsWWDecayer needs the StandardModel class"
-			  << " to be either the Herwig one or a class inheriting"
-			  << " from it";
+  			  << " to be either the Herwig one or a class inheriting"
+  			  << " from it";
   _theFFWVertex = hwsm->vertexFFW();
   _theFFZVertex = hwsm->vertexFFZ();
   _theHVVVertex = hwsm->vertexWWH();
@@ -69,48 +69,36 @@ void SMHiggsWWDecayer::doinit() {
   tPDPtr higgs = getParticleData(ParticleID::h0);
   // the W+W- decays
   for(unsigned int ix=0;ix<2;++ix) {
-    tPDPtr h0     = getParticleData(ParticleID::h0);
     tPDPtr wplus  = getParticleData(ParticleID::Wplus);
     tPDPtr wminus = getParticleData(ParticleID::Wminus);
     DecaySelector wpDecay =  wplus->decaySelector();
     DecaySelector wmDecay = wminus->decaySelector();
-    tPDVector extpart(5);
-    extpart[0]=h0;
-    DecayPhaseSpaceModePtr mode;
-    DecayPhaseSpaceChannelPtr newchannel;
-    vector<double> wgt(1,1.);
     unsigned int imode=0;
     for(DecaySelector::const_iterator wp=wpDecay.begin();wp!=wpDecay.end();++wp) {
       // extract the decay products of W+
       tPDVector prod=(*wp).second->orderedProducts();
       if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
-      extpart[1]=prod[0];
-      extpart[2]=prod[1];
+      tPDVector out={prod[0],prod[1],tPDPtr(),tPDPtr()};
       for(DecaySelector::const_iterator wm=wmDecay.begin();wm!=wmDecay.end();++wm) {
 	// extract the decay products of W-
 	tPDVector prod=(*wm).second->orderedProducts();
 	if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
-	extpart[3]=prod[0];
-	extpart[4]=prod[1];
+	out[2] = prod[0];
+	out[3] = prod[1];
 	// create the new mode
-	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+	PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(higgs,out,_wmax[ix]));
 	// create the phase space channel
-	newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	newchannel->addIntermediate(extpart[0],0,0.0,-1,-2);
+	PhaseSpaceChannel phase((PhaseSpaceChannel(mode),0,wplus,0,wminus,1,1,1,2,2,3,2,4));
+	mode->addChannel(phase);
 	if(ix==0) {
-	  newchannel->addIntermediate(wplus     ,1,0., 1, 2);
-	  newchannel->addIntermediate(wminus    ,1,0., 3, 4);
+	  phase.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,0.);
+	  phase.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,0.);
 	}
-	else {
-	  newchannel->addIntermediate(wplus     ,0,0., 1, 2);
-	  newchannel->addIntermediate(wminus    ,0,0., 3, 4);
-	}
-	mode->addChannel(newchannel);
-	addMode(mode,_wmax[ix],wgt);
+	addMode(mode);
 	// insert mode into selector
 	_ratio.push_back(wp->second->brat()*wm->second->brat());
 	if(ix==0) _wdecays.insert (_ratio.back(),imode);
-	++imode;
+  	++imode;
       }
     }
     // the Z0Z0 decays
@@ -120,29 +108,23 @@ void SMHiggsWWDecayer::doinit() {
       // extract the decay products of Z0
       tPDVector prod=(*z1).second->orderedProducts();
       if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
-      extpart[1]=prod[0];
-      extpart[2]=prod[1];
+      tPDVector out = {prod[0],prod[1],tPDPtr(),tPDPtr()};
       for(DecaySelector::const_iterator z2=Z0Decay.begin();z2!=Z0Decay.end();++z2) {
 	// extract the decay products of Z0
 	tPDVector prod=(*z2).second->orderedProducts();
 	if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
-	extpart[3]=prod[0];
-	extpart[4]=prod[1];
+	out[2] = prod[0];
+	out[3] = prod[1];
 	// create the new mode
-	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+	PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(higgs,out,_zmax[ix]));
 	// create the phase space channel
-	newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	newchannel->addIntermediate(extpart[0],0,0.0,-1,-2);
+	PhaseSpaceChannel phase((PhaseSpaceChannel(mode),0,Z0,0,Z0,1,1,1,2,2,3,2,4));
+	mode->addChannel(phase);
 	if(ix==0) {
-	  newchannel->addIntermediate(Z0    ,1,0., 1, 2);
-	  newchannel->addIntermediate(Z0    ,1,0., 3, 4);
+	  phase.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,0.);
+	  phase.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,0.);
 	}
-	else {
-	  newchannel->addIntermediate(Z0    ,0,0., 1, 2);
-	  newchannel->addIntermediate(Z0    ,0,0., 3, 4);
-	}
-	mode->addChannel(newchannel);
-	addMode(mode,_zmax[ix],wgt);
+	addMode(mode);
 	// insert mode into selector
 	_ratio.push_back(z1->second->brat()*z2->second->brat());
 	if(ix==0) _zdecays.insert (_ratio.back(),imode);
@@ -190,45 +172,62 @@ ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
   if(parent.mass()>1.8*children[0]->mass()) 
     imode+=_wdecays.size()+_zdecays.size();
   // generate the kinematics
-  return generate(true,false,imode,parent);
+  ParticleVector decay = generate(true,false,imode,parent);
+  // set up the colour flows
+  if(decay[0]->coloured()) {
+    decay[0]->antiColourNeighbour(decay[1]);
+  }
+  if(decay[2]->coloured()) {
+    decay[2]->antiColourNeighbour(decay[3]);
+  }
+  return decay;
 }
 
-double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
-			     const ParticleVector & decay,
-			     MEOption meopt) const {
+void SMHiggsWWDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+  					  incoming,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(_fwave1,decay[0],outgoing,true);
+  SpinorWaveFunction   ::
+    constructSpinInfo(_awave1,decay[1],outgoing,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(_fwave2,decay[2],outgoing,true);
+  SpinorWaveFunction   ::
+    constructSpinInfo(_awave2,decay[3],outgoing,true);
+}
+
+double SMHiggsWWDecayer::me2(const int,const Particle & part,
+				   const tPDVector & outgoing,
+				   const vector<Lorentz5Momentum> & momenta,
+				   MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-					 PDT::Spin1Half,PDT::Spin1Half)));
+  					 PDT::Spin1Half,PDT::Spin1Half)));
   // check if Z or W decay
-  bool Z0=decay[0]->id()==-decay[1]->id();
+  bool Z0=outgoing[0]->id()==-outgoing[1]->id();
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+    _swave = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
     // fix rho if no correlations
     fixRho(_rho);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-					  incoming,true);
-    SpinorBarWaveFunction::
-      constructSpinInfo(_fwave1,decay[0],outgoing,true);
-    SpinorWaveFunction   ::
-      constructSpinInfo(_awave1,decay[1],outgoing,true);
-    SpinorBarWaveFunction::
-      constructSpinInfo(_fwave2,decay[2],outgoing,true);
-    SpinorWaveFunction   ::
-      constructSpinInfo(_awave2,decay[3],outgoing,true);
-    return 0.;
-  }
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_fwave1,decay[0],outgoing);
-  SpinorWaveFunction   ::
-    calculateWaveFunctions(_awave1,decay[1],outgoing);
-  SpinorBarWaveFunction::
-    calculateWaveFunctions(_fwave2,decay[2],outgoing);
-  SpinorWaveFunction   ::
-    calculateWaveFunctions(_awave2,decay[3],outgoing);
+
+  SpinorBarWaveFunction fw1(momenta[0],outgoing[0],Helicity::outgoing);
+  SpinorBarWaveFunction fw2(momenta[2],outgoing[2],Helicity::outgoing);
+  SpinorWaveFunction    aw1(momenta[1],outgoing[1],Helicity::outgoing);
+  SpinorWaveFunction    aw2(momenta[3],outgoing[3],Helicity::outgoing);
+  _fwave1.resize(2);
+  _fwave2.resize(2);
+  _awave1.resize(2);
+  _awave2.resize(2);  
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    fw1.reset(ihel);   _fwave1[ihel] = fw1;
+    fw2.reset(ihel);   _fwave2[ihel] = fw2;
+    aw1.reset(ihel);   _awave1[ihel] = aw1;
+    aw2.reset(ihel);   _awave2[ihel] = aw2;
+  }  
   // get the intermediates and vertex
   tcPDPtr inter[2];
   AbstractFFVVertexPtr vert;
@@ -242,51 +241,43 @@ double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
     inter[1]=getParticleData(ParticleID::Wminus);
     vert=_theFFWVertex;
   }
-
-
   // construct the spinors for the outgoing particles
-  Energy2 scale0(sqr(inpart.mass()));
-  Energy2 scale1((decay[0]->momentum()+decay[1]->momentum()).m2());
-  Energy2 scale2((decay[2]->momentum()+decay[3]->momentum()).m2());
+  Energy2 scale0(sqr(part.mass()));
+  Energy2 scale1((momenta[0]+momenta[1]).m2());
+  Energy2 scale2((momenta[2]+momenta[3]).m2());
   // for decays to quarks ensure boson is massive enough to
   // put quarks on constituent mass-shell
-  if(scale1<sqr(decay[0]->dataPtr()->constituentMass()+
-		decay[1]->dataPtr()->constituentMass())) return 0.;
-  if(scale2<sqr(decay[2]->dataPtr()->constituentMass()+
-		decay[3]->dataPtr()->constituentMass())) return 0.;
+  if(scale1<sqr(outgoing[0]->constituentMass()+
+  		outgoing[1]->constituentMass())) return 0.;
+  if(scale2<sqr(outgoing[2]->constituentMass()+
+  		outgoing[3]->constituentMass())) return 0.;
   // compute the boson currents
   VectorWaveFunction curr1[2][2],curr2[2][2];
   unsigned int ohel1,ohel2,ohel3,ohel4;
   for(ohel1=0;ohel1<2;++ohel1) {
     for(ohel2=0;ohel2<2;++ohel2) {
       curr1[ohel1][ohel2]=vert->evaluate(scale1,1,inter[0],
-					 _awave1[ohel2],_fwave1[ohel1]);
+  					 _awave1[ohel2],_fwave1[ohel1]);
       curr2[ohel1][ohel2]=vert->evaluate(scale2,1,inter[1],
-					 _awave2[ohel2],_fwave2[ohel1]);
+  					 _awave2[ohel2],_fwave2[ohel1]);
     }
   }
   // compute the matrix element
   for(ohel1=0;ohel1<2;++ohel1) {
     for(ohel2=0;ohel2<2;++ohel2) {
       for(ohel3=0;ohel3<2;++ohel3) {
-	for(ohel4=0;ohel4<2;++ohel4) {
-	  (*ME())(0,ohel1,ohel2,ohel3,ohel4)=
-	    _theHVVVertex->evaluate(scale0,curr1[ohel1][ohel2],
-				    curr2[ohel3][ohel4],_swave);
-	}
+  	for(ohel4=0;ohel4<2;++ohel4) {
+  	  (*ME())(0,ohel1,ohel2,ohel3,ohel4)=
+  	    _theHVVVertex->evaluate(scale0,curr1[ohel1][ohel2],
+  				    curr2[ohel3][ohel4],_swave);
+  	}
       }
     }
   }
   double output=(ME()->contract(_rho)).real()*scale0*UnitRemoval::InvE2;
-  // set up the colour flows
-  if(decay[0]->coloured()) {
-    output*=3.;
-    decay[0]->antiColourNeighbour(decay[1]);
-  }
-  if(decay[2]->coloured()) {
-    output*=3.;
-    decay[2]->antiColourNeighbour(decay[3]);
-  }
+  // colour factors
+  if(outgoing[0]->coloured()) output *= 3.;
+  if(outgoing[2]->coloured()) output *= 3.;
   // divide out the gauge boson branching ratios
   output/=_ratio[imode()];
   // if Z0 decays identical particle factor
@@ -301,12 +292,12 @@ void SMHiggsWWDecayer::dataBaseOutput(ofstream & os,bool header) const {
     os << "newdef " << name() << ":WMaximum "    << ix << " " << _wmax[ix]  << "\n";
     os << "newdef " << name() << ":ZMaximum "    << ix << " " << _zmax[ix]  << "\n";
   }
-  PerturbativeDecayer::dataBaseOutput(os,false);
+  PerturbativeDecayer2::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
 void SMHiggsWWDecayer::doinitrun() {
-  PerturbativeDecayer::doinitrun();
+  PerturbativeDecayer2::doinitrun();
   for(unsigned int ix=0;ix<2;++ix) {
     _zmax[ix]=0.;
     _wmax[ix]=0.;
@@ -315,8 +306,8 @@ void SMHiggsWWDecayer::doinitrun() {
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       unsigned int iloc = ix<ntest ? 0 : 1;
-      if(mode(ix)->externalParticles(1)->iCharge()==
-	 -mode(ix)->externalParticles(2)->iCharge()) {
+      if(mode(ix)->outgoing()[0]->iCharge()==
+	 -mode(ix)->outgoing()[1]->iCharge()) {
 	_zmax[iloc]=max(mode(ix)->maxWeight(),_zmax[iloc]);
       }
       else {

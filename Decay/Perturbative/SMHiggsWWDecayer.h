@@ -12,8 +12,8 @@
 // This is the declaration of the SMHiggsWWDecayer class.
 //
 
-#include "Herwig/Decay/PerturbativeDecayer.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/PerturbativeDecayer2.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
@@ -32,7 +32,7 @@ using namespace ThePEG::Helicity;
  * @see \ref SMHiggsWWDecayerInterfaces "The interfaces"
  * defined for SMHiggsWWDecayer.
  */
-class SMHiggsWWDecayer: public PerturbativeDecayer {
+class SMHiggsWWDecayer: public PerturbativeDecayer2 {
 
 public:
 
@@ -72,14 +72,23 @@ public:
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param ichan The channel we are calculating the matrix element for.
+   * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(const int ichan, const Particle & part,
-		     const ParticleVector & decay, MEOption meopt) const;
+  double me2(const int ichan,const Particle & part,
+	     const tPDVector & outgoing,
+	     const vector<Lorentz5Momentum> & momenta,
+	     MEOption meopt) const;
+
+  /**
+   *   Construct the SpinInfos for the particles produced in the decay
+   */
+  virtual void constructSpinInfo(const Particle & part,
+				 ParticleVector outgoing) const;
 
   /**
    * Output the setup information for the particle database
