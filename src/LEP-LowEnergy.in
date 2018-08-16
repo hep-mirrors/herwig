@@ -57,7 +57,7 @@ insert SubProcess:MatrixElements 0 MEee4Pions
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set EventGenerator:EventHandler:LuminosityFunction:Energy 1.55
+set EventGenerator:EventHandler:LuminosityFunction:Energy 4
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.1
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
@@ -76,8 +76,7 @@ cd /Herwig/Generators
 # Save run for later usage with 'Herwig run'
 ##################################################
 set EventGenerator:EventHandler:StatLevel Full
-set EventGenerator:EventHandler:CascadeHandler NULL
-#set EventGenerator:EventHandler:CascadeHandlder NULL
+#set EventGenerator:EventHandler:CascadeHandler NULL
 saverun LEP-LowEnergy EventGenerator
 
 ##################################################

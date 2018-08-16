@@ -187,6 +187,7 @@ void SMHiggsFermionsDecayer::Init() {
      true);
 
 }
+
 void SMHiggsFermionsDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   int iferm(1),ianti(0);

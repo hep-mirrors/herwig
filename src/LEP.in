@@ -73,13 +73,16 @@ cd /Herwig/Decays
 #set /Herwig/Particles/tau-/tau-->pi-,pi0,nu_tau;:Decayer Tau2PionsCzyz
 #set Tau2PionsCzyz:Initialize 1
 
-create Herwig::TauDecayer2 Tau4PionsCzyz
-create Herwig::TwoPionCzyzCurrent TwoPionCzyzCurrent
-set Tau4PionsCzyz:WeakCurrent TwoPionCzyzCurrent
-set /Herwig/Particles/tau-/tau-->pi-,pi0,pi0,pi0,nu_tau;:Decayer Tau4PionsCzyz
-set Tau4PionsCzyz:Initialize 1
-
-#create Herwig::TauDecayer2 Tau2KaonsCzyz
+# create Herwig::TauDecayer2 Tau4PionsCzyz
+# create Herwig::FourPionCzyzCurrent FourPionCzyzCurrent
+# set Tau4PionsCzyz:WeakCurrent FourPionCzyzCurrent
+# set /Herwig/Particles/tau-/tau-->pi-,pi0,pi0,pi0,nu_tau;:Decayer Tau4PionsCzyz
+# set Tau4PionsCzyz:Initialize 1
+# set Tau4PionsCzyz:Iteration 5
+# set Tau4PionsCzyz:Points 10000000
+set PVff:Initialize 1
+set PVff:Points 10000000
+# #create Herwig::TauDecayer2 Tau2KaonsCzyz
 #create Herwig::TwoKaonCzyzCurrent TwoKaonCzyzCurrent
 #set Tau2KaonsCzyz:WeakCurrent TwoKaonCzyzCurrent
 #set /Herwig/Particles/tau-/tau-->K-,K0,nu_tau;:Decayer Tau2KaonsCzyz

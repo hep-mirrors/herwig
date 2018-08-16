@@ -128,7 +128,7 @@ void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
   
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMTopDecayer,PerturbativeDecayer>
+DescribeClass<SMTopDecayer,PerturbativeDecayer2>
 describeHerwigSMTopDecayer("Herwig::SMTopDecayer", "HwPerturbativeDecay.so");
   
 void SMTopDecayer::Init() {
@@ -180,109 +180,124 @@ void SMTopDecayer::Init() {
      false, false, Interface::limited);
 }
 
-double SMTopDecayer::me2(const int, const Particle & inpart,
-			 const ParticleVector & decay,
+void SMTopDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // for the decaying particle
+  if(part.id()>0) {
+    SpinorWaveFunction::
+      constructSpinInfo(_inHalf,const_ptr_cast<tPPtr>(&part),incoming,true);
+    SpinorBarWaveFunction::constructSpinInfo(_inHalfBar,decay[0],outgoing,true);
+    SpinorWaveFunction   ::constructSpinInfo(_outHalf   ,decay[1],outgoing,true);
+    SpinorBarWaveFunction::constructSpinInfo(_outHalfBar,decay[2],outgoing,true);
+  }
+  else {
+    SpinorBarWaveFunction::
+      constructSpinInfo(_inHalfBar,const_ptr_cast<tPPtr>(&part),incoming,true);
+    SpinorWaveFunction::constructSpinInfo(_inHalf,decay[0],outgoing,true);
+    SpinorBarWaveFunction::constructSpinInfo(_outHalfBar,decay[1],outgoing,true);
+    SpinorWaveFunction   ::constructSpinInfo(_outHalf   ,decay[2],outgoing,true);
+  }
+}
+
+double SMTopDecayer::me2(const int,const Particle & part,
+			 const tPDVector & outgoing,
+			 const vector<Lorentz5Momentum> & momenta,
 			 MEOption meopt) const {
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					 PDT::Spin1Half,PDT::Spin1Half)));
+  					 PDT::Spin1Half,PDT::Spin1Half)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
-    if(inpart.id()>0)
+    if(part.id()>0)
       SpinorWaveFunction   ::calculateWaveFunctions(_inHalf,_rho,
-						    const_ptr_cast<tPPtr>(&inpart),
-						    incoming);
+  						    const_ptr_cast<tPPtr>(&part),
+  						    incoming);
     else
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
-						    const_ptr_cast<tPPtr>(&inpart),
-						    incoming);
+  						    const_ptr_cast<tPPtr>(&part),
+  						    incoming);
     // fix rho if no correlations
     fixRho(_rho);
   }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    // for the decaying particle
-    if(inpart.id()>0) {
-      SpinorWaveFunction::
-	constructSpinInfo(_inHalf,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      SpinorBarWaveFunction::constructSpinInfo(_inHalfBar,decay[0],outgoing,true);
-      SpinorWaveFunction   ::constructSpinInfo(_outHalf   ,decay[1],outgoing,true);
-      SpinorBarWaveFunction::constructSpinInfo(_outHalfBar,decay[2],outgoing,true);
-    }
-    else {
-      SpinorBarWaveFunction::
-	constructSpinInfo(_inHalfBar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      SpinorWaveFunction::constructSpinInfo(_inHalf,decay[0],outgoing,true);
-      SpinorBarWaveFunction::constructSpinInfo(_outHalfBar,decay[1],outgoing,true);
-      SpinorWaveFunction   ::constructSpinInfo(_outHalf   ,decay[2],outgoing,true);
-    }
-  }
-
-  if ( ( decay[1]->momentum() + decay[2]->momentum() ).m()
-       < decay[1]->data().constituentMass() + decay[2]->data().constituentMass() )
+  if ( ( momenta[1] + momenta[2] ).m()
+       < outgoing[1]->constituentMass() + outgoing[2]->constituentMass() )
     return 0.0;
 
   // spinors for the decay product
-  if(inpart.id()>0) {
-    SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar ,decay[0],outgoing);
-    SpinorWaveFunction   ::calculateWaveFunctions(_outHalf   ,decay[1],outgoing);
-    SpinorBarWaveFunction::calculateWaveFunctions(_outHalfBar,decay[2],outgoing);
+  _outHalf.resize(2);
+  _outHalfBar.resize(2);
+  if(part.id()>0) {
+    SpinorBarWaveFunction w0(momenta[0],outgoing[0],Helicity::outgoing);
+    SpinorWaveFunction    w1(momenta[1],outgoing[1],Helicity::outgoing);
+    SpinorBarWaveFunction w2(momenta[2],outgoing[2],Helicity::outgoing);
+    _inHalfBar.resize(2);
+    for(unsigned int ihel=0;ihel<2;++ihel) {
+      w0.reset(ihel);      _inHalfBar [ihel] = w0;
+      w1.reset(ihel);      _outHalf   [ihel] = w1;
+      w2.reset(ihel);      _outHalfBar[ihel] = w2;
+    }
   }
   else {
-    SpinorWaveFunction   ::calculateWaveFunctions(_inHalf    ,decay[0],outgoing);
-    SpinorBarWaveFunction::calculateWaveFunctions(_outHalfBar,decay[1],outgoing);
-    SpinorWaveFunction   ::calculateWaveFunctions(_outHalf   ,decay[2],outgoing);
+    SpinorWaveFunction    w0(momenta[0],outgoing[0],Helicity::outgoing);
+    SpinorBarWaveFunction w1(momenta[1],outgoing[1],Helicity::outgoing);
+    SpinorWaveFunction    w2(momenta[2],outgoing[2],Helicity::outgoing);
+    _inHalf.resize(2);
+    for(unsigned int ihel=0;ihel<2;++ihel) {
+      w0.reset(ihel);      _inHalf    [ihel] = w0;
+      w1.reset(ihel);      _outHalfBar[ihel] = w1;
+      w2.reset(ihel);      _outHalf   [ihel] = w2;
+    }
   }
-  Energy2 scale(sqr(inpart.mass()));
-  if(inpart.id() == ParticleID::t) {
+  Energy2 scale(sqr(part.mass()));
+  if(part.id() == ParticleID::t) {
     //Define intermediate vector wave-function for Wplus 
     tcPDPtr Wplus(getParticleData(ParticleID::Wplus));
     VectorWaveFunction inter;
     unsigned int thel,bhel,fhel,afhel;
     for(thel = 0;thel<2;++thel){
       for(bhel = 0;bhel<2;++bhel){	  
-	inter = FFWVertex_->evaluate(scale,1,Wplus,_inHalf[thel],
-				   _inHalfBar[bhel]);
-	for(afhel=0;afhel<2;++afhel){
-	  for(fhel=0;fhel<2;++fhel){
-	    (*ME())(thel,bhel,afhel,fhel) = 
-	      FFWVertex_->evaluate(scale,_outHalf[afhel],
-				 _outHalfBar[fhel],inter);
-	  }
-	}
+  	inter = FFWVertex_->evaluate(scale,1,Wplus,_inHalf[thel],
+  				   _inHalfBar[bhel]);
+  	for(afhel=0;afhel<2;++afhel){
+  	  for(fhel=0;fhel<2;++fhel){
+  	    (*ME())(thel,bhel,afhel,fhel) = 
+  	      FFWVertex_->evaluate(scale,_outHalf[afhel],
+  				 _outHalfBar[fhel],inter);
+  	  }
+  	}
       }
     }
   }
-  else if(inpart.id() == ParticleID::tbar) {
+  else if(part.id() == ParticleID::tbar) {
     VectorWaveFunction inter;
     tcPDPtr Wminus(getParticleData(ParticleID::Wminus));
     unsigned int tbhel,bbhel,afhel,fhel;
     for(tbhel = 0;tbhel<2;++tbhel){
       for(bbhel = 0;bbhel<2;++bbhel){
-	inter = FFWVertex_->
-	  evaluate(scale,1,Wminus,_inHalf[bbhel],_inHalfBar[tbhel]);
-	for(afhel=0;afhel<2;++afhel){
-	  for(fhel=0;fhel<2;++fhel){
-	    (*ME())(tbhel,bbhel,fhel,afhel) = 
-	      FFWVertex_->evaluate(scale,_outHalf[afhel],
-				 _outHalfBar[fhel],inter);
-	  }
-	}
+  	inter = FFWVertex_->
+  	  evaluate(scale,1,Wminus,_inHalf[bbhel],_inHalfBar[tbhel]);
+  	for(afhel=0;afhel<2;++afhel){
+  	  for(fhel=0;fhel<2;++fhel){
+  	    (*ME())(tbhel,bbhel,fhel,afhel) = 
+  	      FFWVertex_->evaluate(scale,_outHalf[afhel],
+  				 _outHalfBar[fhel],inter);
+  	  }
+  	}
       }
     }
   }
   double output = (ME()->contract(_rho)).real();
-  if(abs(decay[1]->id())<=6) output *=3.;
+  if(abs(outgoing[1]->id())<=6) output *=3.;
   return output;
 }
 
 void SMTopDecayer::doinit() {
-  PerturbativeDecayer::doinit();
+  PerturbativeDecayer2::doinit();
   //get vertices from SM object
   tcHwSMPtr hwsm = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) throw InitException() << "Must have Herwig::StandardModel in "
-				  << "SMTopDecayer::doinit()";
+  				  << "SMTopDecayer::doinit()";
   FFWVertex_ = hwsm->vertexFFW();
   FFGVertex_ = hwsm->vertexFFG();
   FFPVertex_ = hwsm->vertexFFP();
@@ -294,23 +309,14 @@ void SMTopDecayer::doinit() {
   WWWVertex_->init();
   //set up decay modes
   _wplus = getParticleData(ParticleID::Wplus);
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr Wchannel;
-  tPDVector extpart(4);
-  vector<double> wgt(1,1.0);
-  extpart[0] = getParticleData(ParticleID::t);
-  extpart[1] = getParticleData(ParticleID::b);
+  tPDPtr top = getParticleData(ParticleID::t);
+  tPDPtr bot = getParticleData(ParticleID::b);
   //lepton modes
   for(int i=11; i<17;i+=2) {
-    extpart[2] = getParticleData(-i);
-    extpart[3] = getParticleData(i+1);
-    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-    Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-    Wchannel->addIntermediate(_wplus,0,0.0,2,3);
-    Wchannel->init();
-    mode->addChannel(Wchannel);
-    addMode(mode,_wleptonwgt[(i-11)/2],wgt);
+    tPDVector out = {bot,getParticleData(-i),getParticleData(i+1)};
+    PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(top,out,_wleptonwgt[(i-11)/2]));
+    mode->addChannel((PhaseSpaceChannel(mode),0,_wplus,0,1,1,2,1,3));
+    addMode(mode);
   }
   //quark modes
   unsigned int iz=0;
@@ -318,21 +324,16 @@ void SMTopDecayer::doinit() {
     for(int iy=2;iy<6;iy+=2) {
       // check that the combination of particles is allowed
       if(FFWVertex_->allowed(-ix,iy,ParticleID::Wminus)) {
-	extpart[2] = getParticleData(-ix);
-	extpart[3] = getParticleData( iy);
-	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-	Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-	Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-	Wchannel->addIntermediate(_wplus,0,0.0,2,3);
-	Wchannel->init();
-	mode->addChannel(Wchannel);
-	addMode(mode,_wquarkwgt[iz],wgt);
-	++iz;
+	tPDVector out = {bot,getParticleData(-ix),getParticleData( iy)};
+	PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(top,out,_wquarkwgt[iz]));
+	mode->addChannel((PhaseSpaceChannel(mode),0,_wplus,0,1,1,2,1,3));
+	addMode(mode);
+ 	++iz;
       }
       else {
-	throw InitException() << "SMTopDecayer::doinit() the W vertex" 
-			      << "cannot handle all the quark modes" 
-			      << Exception::abortnow;
+  	throw InitException() << "SMTopDecayer::doinit() the W vertex" 
+  			      << "cannot handle all the quark modes" 
+  			      << Exception::abortnow;
       }
     }
   }
@@ -340,7 +341,7 @@ void SMTopDecayer::doinit() {
 
 void SMTopDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
-  // parameters for the PerturbativeDecayer base class
+  // parameters for the PerturbativeDecayer2 base class
   for(unsigned int ix=0;ix<_wquarkwgt.size();++ix) {
     os << "newdef " << name() << ":QuarkWeights " << ix << " "
 	   << _wquarkwgt[ix] << "\n";
@@ -349,12 +350,12 @@ void SMTopDecayer::dataBaseOutput(ofstream & os,bool header) const {
     os << "newdef " << name() << ":LeptonWeights " << ix << " "
 	   << _wleptonwgt[ix] << "\n";
   }
-  PerturbativeDecayer::dataBaseOutput(os,false);
+  PerturbativeDecayer2::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
 void SMTopDecayer::doinitrun() {
-  PerturbativeDecayer::doinitrun();
+  PerturbativeDecayer2::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       if(ix<3) _wleptonwgt[ix  ] = mode(ix)->maxWeight();
@@ -379,17 +380,17 @@ WidthCalculatorBasePtr SMTopDecayer::threeBodyMEIntegrator(const DecayMode & dm)
   // work out which mode we are doing
   int imode(-1);
   for(unsigned int ix=0;ix<numberModes();++ix) {
-    if(mode(ix)->externalParticles(2)->id() == ianti &&
-       mode(ix)->externalParticles(3)->id() == iferm ) {
+    if(mode(ix)->outgoing()[1]->id() == ianti &&
+       mode(ix)->outgoing()[2]->id() == iferm ) {
       imode = ix;
       break;
     }
   }
   assert(imode>=0);
   // get the masses we need
-  Energy m[3] = {mode(imode)->externalParticles(1)->mass(),
-		 mode(imode)->externalParticles(3)->mass(),
-		 mode(imode)->externalParticles(2)->mass()};
+  Energy m[3] = {mode(imode)->outgoing()[0]->mass(),
+		 mode(imode)->outgoing()[2]->mass(),
+		 mode(imode)->outgoing()[1]->mass()};
   return 
     new_ptr(ThreeBodyAllOn1IntegralCalculator<SMTopDecayer>
 	    (3,_wplus->mass(),_wplus->width(),0.0,*this,imode,m[0],m[1],m[2]));
@@ -414,16 +415,16 @@ InvEnergy SMTopDecayer::threeBodydGammads(const int imode, const Energy2 mt2,
   // couplings
   width *= 0.25*sqr(4.*Constants::pi*generator()->standardModel()->alphaEM(mt2)/
 		    generator()->standardModel()->sin2ThetaW());
-  width *= generator()->standardModel()->CKM(*mode(imode)->externalParticles(0),
-					     *mode(imode)->externalParticles(1));
-  if(abs(mode(imode)->externalParticles(2)->id())<=6) {
+  width *= generator()->standardModel()->CKM(*mode(imode)->incoming().first,
+					     *mode(imode)->outgoing()[0]);
+  if(abs(mode(imode)->outgoing()[1]->id())<=6) {
     width *=3.;
-    if(abs(mode(imode)->externalParticles(2)->id())%2==0)
-      width *=generator()->standardModel()->CKM(*mode(imode)->externalParticles(2),
-						*mode(imode)->externalParticles(3));
+    if(abs(mode(imode)->outgoing()[1]->id())%2==0)
+      width *=generator()->standardModel()->CKM(*mode(imode)->outgoing()[1],
+						*mode(imode)->outgoing()[2]);
     else
-      width *=generator()->standardModel()->CKM(*mode(imode)->externalParticles(3),
-						*mode(imode)->externalParticles(2));
+      width *=generator()->standardModel()->CKM(*mode(imode)->outgoing()[2],
+						*mode(imode)->outgoing()[1]);
   }
   // final spin average
   assert(!std::isnan(double(width*MeV)));
