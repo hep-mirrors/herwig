@@ -6,7 +6,7 @@
 
 #include "GeneralThreeBodyDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -27,7 +27,7 @@ void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<GeneralThreeBodyDecayer,DecayIntegrator>
+DescribeAbstractClass<GeneralThreeBodyDecayer,DecayIntegrator2>
 describeHerwigGeneralThreeBodyDecayer("Herwig::GeneralThreeBodyDecayer", "Herwig.so");
 
 void GeneralThreeBodyDecayer::Init() {
@@ -126,7 +126,7 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 					   double symfac) {
   // set the member variables from the info supplied
   incoming_        = incoming;
-  outgoing_        = outgoing;
+  outgoing_ = {outgoing[0],outgoing[1],outgoing[2]};
   diagrams_        = process;
   assert( outgoing_.size() == 3 );
   // Construct reference tags for testing in modeNumber function
@@ -175,21 +175,18 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 }
 
 void GeneralThreeBodyDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
   if(outgoing_.empty()) return;
   // create the phase space integrator
-  tPDVector extpart(1,incoming_);
-  extpart.insert(extpart.end(),outgoing_.begin(),outgoing_.end());
   // create the integration channels for the decay
-  DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this,true)));
-  DecayPhaseSpaceChannelPtr newchannel;
+  PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(incoming_,outgoing_,1.)));
   // create the phase-space channels for the integration
   unsigned int nmode(0);
   for(unsigned int ix=0;ix<diagrams_.size();++ix) {
     if(diagrams_[ix].channelType==TBDiagram::fourPoint||
        diagrams_[ix].channelType==TBDiagram::UNDEFINED) continue;
     // create the new channel
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    PhaseSpaceChannel newChannel(mode);
     int jac = 0;
     double power = 0.0;
     if ( diagrams_[ix].intermediate->mass() == ZERO ||
@@ -197,31 +194,26 @@ void GeneralThreeBodyDecayer::doinit() {
       jac = 1;
       power = -2.0;
     }
-    if(diagrams_[ix].channelType==TBDiagram::channel23) {
-      newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 2,3);
-    }
-    else if(diagrams_[ix].channelType==TBDiagram::channel13) {
-      newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
-      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 1,3);
-    }
-    else if(diagrams_[ix].channelType==TBDiagram::channel12) {
-      newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
-      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 1,2);
-    }
+    if(diagrams_[ix].channelType==TBDiagram::channel23)
+      newChannel = (newChannel,0,diagrams_[ix].intermediate,0,1,1,2,1,3);
+    else if(diagrams_[ix].channelType==TBDiagram::channel13)
+      newChannel = (newChannel,0,diagrams_[ix].intermediate,0,2,1,1,1,3);
+    else if(diagrams_[ix].channelType==TBDiagram::channel12)
+      newChannel = (newChannel,0,diagrams_[ix].intermediate,0,3,1,1,1,2);
+    if(jac==1)
+      newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,power);
     diagmap_.push_back(ix);
-    mode->addChannel(newchannel);
+    mode->addChannel(newChannel);
     ++nmode;
   }
   if(nmode==0) {
-    string mode = extpart[0]->PDGName() + "->";
-    for(unsigned int ix=1;ix<extpart.size();++ix) mode += extpart[ix]->PDGName() + " ";
+    string mode = incoming_->PDGName() + "->";
+    for(unsigned int ix=0;ix<outgoing_.size();++ix) mode += outgoing_[ix]->PDGName() + " ";
     throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
 		      << "doinit() for " << mode << "\n" << Exception::runerror;
   }
   // add the mode
-  vector<double> wgt(nmode,1./double(nmode));
-  addMode(mode,1.,wgt);
+  addMode(mode);
 }
 
 double GeneralThreeBodyDecayer::
@@ -242,19 +234,15 @@ threeBodyMatrixElement(const int imode,  const Energy2 q2,
   double cos2 = 0.5*(sqr(pout[0])+sqr(pout[1])-sqr(pout[2]))/pout[0]/pout[1];
   double cos3 = 0.5*(sqr(pout[0])-sqr(pout[1])+sqr(pout[2]))/pout[0]/pout[2];
   double sin2 = sqrt(1.-sqr(cos2)), sin3 = sqrt(1.-sqr(cos3));
-  Lorentz5Momentum out[3]=
+  vector<Lorentz5Momentum> out =
     {Lorentz5Momentum(      ZERO   , ZERO ,  pout[0]      , eout[0] , m1),
      Lorentz5Momentum(  pout[1]*sin2 , ZERO , -pout[1]*cos2 , eout[1] , m2),
      Lorentz5Momentum( -pout[2]*sin3 , ZERO , -pout[2]*cos3 , eout[2] , m3)};
-  // create the incoming
-  PPtr inpart=mode(imode)->externalParticles(0)->
+  // create the incoming particle
+  PPtr inpart=mode(imode)->incoming().first->
     produceParticle(Lorentz5Momentum(sqrt(q2)));
-  // and outgoing particles
-  ParticleVector decay;
-  for(unsigned int ix=1;ix<4;++ix)
-    decay.push_back(mode(imode)->externalParticles(ix)->produceParticle(out[ix-1]));
   // return the matrix element
-  return me2(-1,*inpart,decay,Initialize);
+  return me2(-1,*inpart,outgoing_,out,Initialize);
 }
 
 double GeneralThreeBodyDecayer::brat(const DecayMode &, const Particle & p,
@@ -739,7 +727,7 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
   vector<int> sng,trip,atrip,oct;
   unsigned int iloc(0);
 
-  for(vector<PDPtr>::const_iterator it = outgoing_.begin();
+  for(tPDVector::const_iterator it = outgoing_.begin();
       it != outgoing_.end();++it) {
     name += (**it).PDGName() + " ";
     if     ((**it).iColour() == PDT::Colour0    ) sng.push_back(iloc) ;

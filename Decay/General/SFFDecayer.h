@@ -34,11 +34,6 @@ using Helicity::FFSVertexPtr;
 class SFFDecayer: public GeneralTwoBodyDecayer {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  SFFDecayer() {}
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

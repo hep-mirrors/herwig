@@ -98,19 +98,59 @@ void FtoFVVDecayer::doinit() {
     }
   }
 }
+void FtoFVVDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  bool ferm( part.id() > 0 );
+  // for the decaying particle
+  if(ferm)
+    SpinorWaveFunction::constructSpinInfo(fwave_,
+					  const_ptr_cast<tPPtr>(&part),
+					  Helicity::incoming,true);
+  else
+    SpinorBarWaveFunction::constructSpinInfo(fbwave_,
+					     const_ptr_cast<tPPtr>(&part),
+					     Helicity::incoming,true);
+  int ivec(-1);
+  // outgoing particles
+  for(int ix = 0; ix < 3; ++ix) {
+    tPPtr p = decay[ix];
+    if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
+      if( ferm ) {
+	SpinorBarWaveFunction::
+	  constructSpinInfo(fbwave_, p, Helicity::outgoing,true);
+      }
+      else {
+	SpinorWaveFunction::
+	  constructSpinInfo(fwave_ , p, Helicity::outgoing,true);
+      }
+    }
+    else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
+      if( ivec < 0 ) {
+	ivec = ix;
+	VectorWaveFunction::
+	  constructSpinInfo(vwave_.first , p, Helicity::outgoing, true, false);
+      }
+      else {
+	VectorWaveFunction::
+	  constructSpinInfo(vwave_.second, p, Helicity::outgoing, true, false);
+      }
+    }
+  }
+}
 
-double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
-			   const ParticleVector & decay,
+double  FtoFVVDecayer::me2(const int ichan,const Particle & part,
+			   const tPDVector & outgoing,
+			   const vector<Lorentz5Momentum> & momenta,
 			   MEOption meopt) const {
   // particle or CC of particle
-  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  bool cc = (*getProcessInfo().begin()).incoming != part.id();
   // special handling or first/last call
   //Set up wave-functions
-  bool ferm( inpart.id() > 0 );
+  bool ferm( part.id() > 0 );
   if(meopt==Initialize) {
     if( ferm ) {
       SpinorWaveFunction::
-	calculateWaveFunctions(fwave_,rho_,const_ptr_cast<tPPtr>(&inpart),
+	calculateWaveFunctions(fwave_,rho_,const_ptr_cast<tPPtr>(&part),
 			       Helicity::incoming);
       if( fwave_[0].wave().Type() != SpinorType::u )
 	fwave_[0].conjugate();
@@ -119,7 +159,7 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
     }
     else {
       SpinorBarWaveFunction::
-	calculateWaveFunctions(fbwave_, rho_, const_ptr_cast<tPPtr>(&inpart),
+	calculateWaveFunctions(fbwave_, rho_, const_ptr_cast<tPPtr>(&part),
 			       Helicity::incoming);
       if( fbwave_[0].wave().Type() != SpinorType::v )
 	fbwave_[0].conjugate();
@@ -129,56 +169,16 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
     // fix rho if no correlations
     fixRho(rho_);
   }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    // for the decaying particle
-    if(ferm)
-      SpinorWaveFunction::constructSpinInfo(fwave_,
-					    const_ptr_cast<tPPtr>(&inpart),
-					    Helicity::incoming,true);
-    else
-      SpinorBarWaveFunction::constructSpinInfo(fbwave_,
-					       const_ptr_cast<tPPtr>(&inpart),
-					       Helicity::incoming,true);
-    int ivec(-1);
-    // outgoing particles
-    for(int ix = 0; ix < 3; ++ix) {
-      tPPtr p = decay[ix];
-      if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
-	if( ferm ) {
-	  SpinorBarWaveFunction::
-	    constructSpinInfo(fbwave_, p, Helicity::outgoing,true);
-	}
-	else {
-	  SpinorWaveFunction::
-	    constructSpinInfo(fwave_ , p, Helicity::outgoing,true);
-	}
-      }
-      else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
-	if( ivec < 0 ) {
-	  ivec = ix;
-	  VectorWaveFunction::
-	    constructSpinInfo(vwave_.first , p, Helicity::outgoing, true, false);
-	}
-	else {
-	  VectorWaveFunction::
-	    constructSpinInfo(vwave_.second, p, Helicity::outgoing, true, false);
-	}
-      }
-    }
-    return 0.;
-  }
   // outgoing, keep track of fermion and first occurrence of vector positions
   int isp(-1), ivec(-1);
   // outgoing particles
   pair<bool,bool> mass = make_pair(false,false);
   for(int ix = 0; ix < 3; ++ix) {
-    tPPtr p = decay[ix];
-    if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
+    if( outgoing[ix]->iSpin() == PDT::Spin1Half ) {
       isp = ix;
       if( ferm ) {
 	SpinorBarWaveFunction::
-	  calculateWaveFunctions(fbwave_, p, Helicity::outgoing);
+	  calculateWaveFunctions(fbwave_, momenta[ix],outgoing[ix], Helicity::outgoing);
 	if( fbwave_[0].wave().Type() != SpinorType::u )
 	  fbwave_[0].conjugate();
 	if( fbwave_[1].wave().Type() != SpinorType::u )
@@ -186,30 +186,30 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       }
       else {
 	SpinorWaveFunction::
-	  calculateWaveFunctions(fwave_, p, Helicity::outgoing);
+	  calculateWaveFunctions(fwave_, momenta[ix],outgoing[ix], Helicity::outgoing);
 	if( fwave_[0].wave().Type() != SpinorType::v )
 	  fwave_[0].conjugate();
 	if( fwave_[1].wave().Type() != SpinorType::v )
 	  fwave_[1].conjugate();
       }
     }
-    else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
-      bool massless = p->id() == ParticleID::gamma || p->id() == ParticleID::g;
+    else if( outgoing[ix]->iSpin() == PDT::Spin1 ) {
+      bool massless = outgoing[ix]->id() == ParticleID::gamma || outgoing[ix]->id() == ParticleID::g;
       if( ivec < 0 ) {
 	ivec = ix;
 	VectorWaveFunction::
-	  calculateWaveFunctions(vwave_.first , p, Helicity::outgoing, massless);
+	  calculateWaveFunctions(vwave_.first , momenta[ix],outgoing[ix], Helicity::outgoing, massless);
 	mass.first = massless;
       }
       else {
 	VectorWaveFunction::
-	  calculateWaveFunctions(vwave_.second, p, Helicity::outgoing, massless);
+	  calculateWaveFunctions(vwave_.second, momenta[ix],outgoing[ix], Helicity::outgoing, massless);
 	mass.second = massless;
       }
     }
   }
   assert(isp >= 0 && ivec >= 0);
-  Energy2 scale(sqr(inpart.mass()));
+  Energy2 scale(sqr(part.mass()));
   const vector<vector<double> > cfactors(getColourFactors());
   const vector<vector<double> > nfactors(getLargeNcColourFactors());
   const size_t ncf(numberOfFlows());

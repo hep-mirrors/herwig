@@ -89,19 +89,38 @@ void FtoFFFDecayer::doinit() {
   }
 }
 
-double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
-			   const ParticleVector & decay,
+void FtoFFFDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  // for the decaying particle
+  if(part.id()<0) 
+    SpinorWaveFunction::constructSpinInfo(inwave_.first,
+					  const_ptr_cast<tPPtr>(&part),
+					  Helicity::incoming,true);
+  else
+    SpinorBarWaveFunction::constructSpinInfo(inwave_.second,
+					     const_ptr_cast<tPPtr>(&part),
+					     Helicity::incoming,true);
+  // outgoing particles
+  for(unsigned int ix = 0; ix < 3; ++ix) {
+    SpinorWaveFunction::
+      constructSpinInfo(outwave_[ix].first,decay[ix],Helicity::outgoing,true);
+  }
+}
+
+double  FtoFFFDecayer::me2(const int ichan,const Particle & part,
+			   const tPDVector & outgoing,
+			   const vector<Lorentz5Momentum> & momenta,
 			   MEOption meopt) const {
   // particle or CC of particle
-  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  bool cc = (*getProcessInfo().begin()).incoming != part.id();
   // special handling or first/last call
   const vector<vector<double> > cfactors(getColourFactors());
   const vector<vector<double> > nfactors(getLargeNcColourFactors());
   const size_t ncf(numberOfFlows());
-  Energy2 scale(sqr(inpart.mass()));
+  Energy2 scale(sqr(part.mass()));
   if(meopt==Initialize) {
     SpinorWaveFunction::
-      calculateWaveFunctions(inwave_.first,rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(inwave_.first,rho_,const_ptr_cast<tPPtr>(&part),
 			    Helicity::incoming);
     inwave_.second.resize(2);
     if(inwave_.first[0].wave().Type() == SpinorType::u) {
@@ -119,27 +138,10 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
     // fix rho if no correlations
     fixRho(rho_);
   }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    // for the decaying particle
-    if(inpart.id()<0) 
-      SpinorWaveFunction::constructSpinInfo(inwave_.first,
-					    const_ptr_cast<tPPtr>(&inpart),
-					    Helicity::incoming,true);
-    else
-      SpinorBarWaveFunction::constructSpinInfo(inwave_.second,
-					       const_ptr_cast<tPPtr>(&inpart),
-					       Helicity::incoming,true);
-    // outgoing particles
-    for(unsigned int ix = 0; ix < 3; ++ix) {
-      SpinorWaveFunction::
-      constructSpinInfo(outwave_[ix].first,decay[ix],Helicity::outgoing,true);
-    }
-  }
   // outgoing particles
   for(unsigned int ix = 0; ix < 3; ++ix) {
     SpinorWaveFunction::
-      calculateWaveFunctions(outwave_[ix].first,decay[ix],Helicity::outgoing);
+      calculateWaveFunctions(outwave_[ix].first,momenta[ix],outgoing[ix],Helicity::outgoing);
     outwave_[ix].second.resize(2);
     if(outwave_[ix].first[0].wave().Type() == SpinorType::u) {
       for(unsigned int iy = 0; iy < 2; ++iy) {
@@ -154,7 +156,7 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
       }
     }
   }
-  bool ferm = inpart.id()>0; 
+  bool ferm = part.id()>0; 
   vector<Complex> flows(ncf, Complex(0.)),largeflows(ncf, Complex(0.)); 
   static const unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   vector<GeneralDecayMEPtr> mes(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
@@ -195,8 +197,8 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      w0 = outwave_[dit->channelType].first [ihel[dit->channelType+1]];
 	      w1 = inwave_.second[ihel[0]];
 	    }
-	    if(decay[out2[dit->channelType]]->id()<0&&
-	       decay[out3[dit->channelType]]->id()>0) {
+	    if(outgoing[out2[dit->channelType]]->id()<0&&
+	       outgoing[out3[dit->channelType]]->id()>0) {
 	      w2 = outwave_[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
 	      w3 = outwave_[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
 	      sign *= -1.;

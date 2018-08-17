@@ -132,6 +132,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
       total-=mewgts[iChannel];
     }
     while(iChannel<int(channels_.size()) && total>0.);
+    iChannel_ = iChannel;
     // apply boost
     for(tPPtr part : output) part->transform(boostFromRest);
     channels_[iChannel].generateIntermediates(cc,inpart,output);

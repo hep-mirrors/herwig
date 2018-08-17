@@ -5,7 +5,7 @@
 // This is the declaration of the GeneralThreeBodyDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/Models/General/TBDiagram.h"
 #include "GeneralThreeBodyDecayer.fh"
 
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref GeneralThreeBodyDecayerInterfaces "The interfaces"
  * defined for GeneralThreeBodyDecayer.
  */
-class GeneralThreeBodyDecayer: public DecayIntegrator {
+class GeneralThreeBodyDecayer: public DecayIntegrator2 {
 
 public:
   
@@ -158,7 +158,7 @@ protected:
   /**
    *  Outgoing particles
    */
-  const vector<PDPtr> & outgoing() const {  return outgoing_; }
+  const vector<tPDPtr> & outgoing() const {  return outgoing_; }
  
   /**
    *  Number of colour flows
@@ -249,7 +249,7 @@ private:
   /**
    *  Outgoing particles
    */
-  vector<PDPtr> outgoing_;
+  vector<tPDPtr> outgoing_;
 
   /**
    *  Store the diagrams for the decay

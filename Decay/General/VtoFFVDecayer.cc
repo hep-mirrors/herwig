@@ -112,48 +112,49 @@ void VtoFFVDecayer::doinit() {
     }
   }
 }
+void VtoFFVDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  VectorWaveFunction::
+    constructSpinInfo(inVector_,const_ptr_cast<tPPtr>(&part),
+		      Helicity::incoming,true,false);
+  for(unsigned int ix=0;ix<decay.size();++ix) {
+    if(decay[ix]->dataPtr()->iSpin()==PDT::Spin1) {
+      VectorWaveFunction::constructSpinInfo(outVector_,decay[ix],
+					    Helicity::outgoing,true,false);
+    }
+    else {
+      SpinorWaveFunction::
+	constructSpinInfo(outspin_[ix].first,decay[ix],Helicity::outgoing,true);
+    }
+  }
+}
 
-double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
-			  const ParticleVector & decay,
+double VtoFFVDecayer::me2(const int ichan,const Particle & part,
+			  const tPDVector & outgoing,
+			  const vector<Lorentz5Momentum> & momenta,
 			  MEOption meopt) const {
   // particle or CC of particle
-  bool cc = (*getProcessInfo().begin()).incoming != inpart.id();
+  bool cc = (*getProcessInfo().begin()).incoming != part.id();
   // special handling or first/last call
   if(meopt==Initialize) {
     VectorWaveFunction::
-      calculateWaveFunctions(inVector_,rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(inVector_,rho_,const_ptr_cast<tPPtr>(&part),
 			     Helicity::incoming,false);
     // fix rho if no correlations
     fixRho(rho_);
   }
-
-  if(meopt==Terminate) {
-    VectorWaveFunction::
-      constructSpinInfo(inVector_,const_ptr_cast<tPPtr>(&inpart),
-			Helicity::incoming,true,false);
-    for(unsigned int ix=0;ix<decay.size();++ix) {
-      if(decay[ix]->dataPtr()->iSpin()==PDT::Spin1) {
-	VectorWaveFunction::constructSpinInfo(outVector_,decay[ix],
-					      Helicity::outgoing,true,false);
-      }
-      else {
-	SpinorWaveFunction::
-	  constructSpinInfo(outspin_[ix].first,decay[ix],Helicity::outgoing,true);
-      }
-    }
-  }
   unsigned int ivec(0);
   bool massless = false;
-  for(unsigned int ix = 0; ix < decay.size();++ix) {
-    if(decay[ix]->dataPtr()->iSpin() == PDT::Spin1) {
-      massless = decay[ix]->id()==ParticleID::g || decay[ix]->id()==ParticleID::gamma;
+  for(unsigned int ix = 0; ix < outgoing.size();++ix) {
+    if(outgoing[ix]->iSpin() == PDT::Spin1) {
+      massless = outgoing[ix]->id()==ParticleID::g || outgoing[ix]->id()==ParticleID::gamma;
       ivec = ix;
       VectorWaveFunction::
-	calculateWaveFunctions(outVector_, decay[ix], Helicity::outgoing, massless );
+	calculateWaveFunctions(outVector_, momenta[ix], outgoing[ix], Helicity::outgoing, massless );
     }
     else {
       SpinorWaveFunction::
-	calculateWaveFunctions(outspin_[ix].first,decay[ix],Helicity::outgoing);
+	calculateWaveFunctions(outspin_[ix].first,momenta[ix], outgoing[ix],Helicity::outgoing);
       outspin_[ix].second.resize(2);
       // Need a ubar and a v spinor
       if(outspin_[ix].first[0].wave().Type() == SpinorType::u) {
@@ -172,7 +173,7 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
   }
   const vector<vector<double> > cfactors(getColourFactors());
   const vector<vector<double> > nfactors(getLargeNcColourFactors());
-  Energy2 scale(sqr(inpart.mass()));
+  Energy2 scale(sqr(part.mass()));
   const size_t ncf(numberOfFlows());
   vector<Complex> flows(ncf, Complex(0.)), largeflows(ncf, Complex(0.));
   // setup the DecayMatrixElement
@@ -216,7 +217,7 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			 inVector_[vi]);
 	      unsigned int h1(s1),h2(s2);
 	      if(o2 > o3) swap(h1, h2);
-	      if(decay[o2]->id() < 0 &&  decay[o3]->id() > 0) {
+	      if(outgoing[o2]->id() < 0 &&  outgoing[o3]->id() > 0) {
 		diag = -sign*sca_[idiag].second->
 		  evaluate(scale,outspin_[o2].first[h1],
 			   outspin_[o3].second[h2],inters);
@@ -229,12 +230,12 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	    }
 	    // intermediate fermion
 	    else if(offshell->iSpin() == PDT::Spin1Half) {
-	      int iferm = (decay[o2]->dataPtr()->iSpin() == PDT::Spin1Half) 
+	      int iferm = (outgoing[o2]->iSpin() == PDT::Spin1Half) 
 		? o2 : o3;
 	      unsigned int h1(s1),h2(s2);
 	      if(dit->channelType > iferm) swap(h1, h2);
 	      sign = iferm < dit->channelType ? 1. : -1.;
-	      if(decay[dit->channelType]->id() < 0 && decay[iferm]->id() > 0 ) {
+	      if(outgoing[dit->channelType]->id() < 0 && outgoing[iferm]->id() > 0 ) {
 		SpinorWaveFunction inters = fer_[idiag].first->
 		  evaluate(scale,widthOption(),offshell,
 			   outspin_[dit->channelType].first[h1], inVector_[vi]);
@@ -256,7 +257,7 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			 inVector_[vi]);
 	      unsigned int h1(s1),h2(s2);
 	      if(o2 > o3) swap(h1,h2);
-	      if(decay[o2]->id() < 0 && decay[o3]->id() > 0) {
+	      if(outgoing[o2]->id() < 0 && outgoing[o3]->id() > 0) {
 		diag =-sign*vec_[idiag].second->
 		  evaluate(scale, outspin_[o2].first[h1],
 			   outspin_[o3].second[h2], interv);
@@ -273,8 +274,8 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			 outVector_[v1]);
 	      unsigned int h1(s1),h2(s2);
 	      if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
-	      if(decay[out2[dit->channelType]]->id()<0&&
-		 decay[out3[dit->channelType]]->id()>0) {
+	      if(outgoing[out2[dit->channelType]]->id()<0&&
+		 outgoing[out3[dit->channelType]]->id()>0) {
 		diag =-sign*ten_[idiag].second->
 		  evaluate(scale,
 			   outspin_[out2[dit->channelType]].first [h1],

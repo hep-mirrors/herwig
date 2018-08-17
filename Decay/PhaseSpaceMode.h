@@ -125,6 +125,11 @@ public:
   }
 
   /**
+   *  Access to the selected channel
+   */
+  unsigned int selectedChannel() const {return iChannel_;}
+
+  /**
    *  Number of rnadom numbers needed
    */
   unsigned int nRand() const {return nRand_;}
@@ -366,6 +371,11 @@ private:
    *   The maximum energy for the mode
    */
   Energy eMax_;
+
+  /**
+   *  The selected channel
+   */
+  mutable unsigned int iChannel_;
 
   /**
    *   Cut-off
