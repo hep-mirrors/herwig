@@ -108,7 +108,7 @@ double VVVDecayer::me2(const int,const Particle & part,
   }
   for(unsigned int ix=0;ix<2;++ix)
     VectorWaveFunction::
-      calculateWaveFunctions(vectors_[ix],momenta[ix],outgoing[ix],Helicity::outgoing,massless[ix]);
+      calculateWaveFunctions(vectors_[ix+1],momenta[ix],outgoing[ix],Helicity::outgoing,massless[ix]);
   Energy2 scale(sqr(part.mass()));
   for(unsigned int iv3=0;iv3<3;++iv3) {
     for(unsigned int iv2=0;iv2<3;++iv2) {
