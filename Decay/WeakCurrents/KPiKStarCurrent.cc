@@ -406,15 +406,15 @@ unsigned int KPiKStarCurrent::decayMode(vector<int> idout) {
   unsigned int imode(0),nkaon(0);
   for(unsigned int ix=0;ix<idout.size();++ix) {
     if(abs(idout[ix])==ParticleID::K0) {
-      imode=2;
-      ++nkaon;
-    }
-    else if (abs(idout[ix])==ParticleID::Kplus) {
       imode=1;
       ++nkaon;
     }
+    else if (abs(idout[ix])==ParticleID::Kplus) {
+      imode=0;
+      ++nkaon;
+    }
     else if (idout[ix]==ParticleID::eta) {
-      imode=4;
+      imode=2;
       break;
     }
   }
