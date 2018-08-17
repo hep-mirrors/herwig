@@ -489,4 +489,10 @@ void PhaseSpaceMode::initrun() {
     sum+=channel.weight();
   for(PhaseSpaceChannel & channel : channels_)
     channel.weight(channel.weight()/sum);
+  nRand_ = 3*outgoing_.size()-4;
+  for(unsigned int ix=0;ix<outgoing_.size();++ix) {
+    if(massGen_[ix]) ++nRand_;
+  }
+  if(channels_.empty()) return;
+  ++nRand_;
 }
