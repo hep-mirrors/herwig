@@ -44,20 +44,26 @@ set MEee4Pions:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
 set MEee4Pions2:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
 
 
+create Herwig::MEee2Mesons MEee2EtaPiPi HwMELeptonLowEnergy.so
+create Herwig::EtaPiPiCurrent /Herwig/Decays/EtaPiPiCurrent 
+set MEee2EtaPiPi:WeakCurrent /Herwig/Decays/EtaPiPiCurrent
+
+
 
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 #insert SubProcess:MatrixElements 0 MEee2Pions
 #insert SubProcess:MatrixElements 0 MEee2Kaons
 #insert SubProcess:MatrixElements 0 MEee3Pions
 #insert SubProcess:MatrixElements 0 MEee3Pions2
-insert SubProcess:MatrixElements 0 MEee4Pions
+#insert SubProcess:MatrixElements 0 MEee4Pions
+insert SubProcess:MatrixElements 0 MEee2EtaPiPi
 #insert SubProcess:MatrixElements 0 MEee4Pions2
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set EventGenerator:EventHandler:LuminosityFunction:Energy 4
+set EventGenerator:EventHandler:LuminosityFunction:Energy 2.
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.1
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF

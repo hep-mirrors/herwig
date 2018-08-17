@@ -421,9 +421,9 @@ Energy PhaseSpaceMode::channelPhaseSpace(int & ichan, const Lorentz5Momentum & i
   while(ichan<int(channels_.size())&&wgt>0.);
   // generate the momenta
   if(ichan==int(channels_.size())) {
-    throw DecayIntegratorError() << "PhaseSpaceMode::channelPhaseSpace()"
-  				 << " failed to select a channel" 
-  				 << Exception::abortnow;
+    throw Exception() << "PhaseSpaceMode::channelPhaseSpace()"
+		      << " failed to select a channel" 
+		      << Exception::abortnow;
   }
   // generate the masses of the external particles
   double masswgt(1.);

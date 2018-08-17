@@ -20,8 +20,8 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
+#include "Herwig/Utilities/Kinematics.h"
 
 using namespace Herwig;
 

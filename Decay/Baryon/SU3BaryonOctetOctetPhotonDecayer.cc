@@ -365,7 +365,7 @@ void SU3BaryonOctetOctetPhotonDecayer::setupModes(unsigned int iopt) const {
 	  factor[ix] *=2.;
 	  if(inspin==2&&outspin==2)      _prefactor.push_back(2.*factor[ix]);
 	  else if(inspin==4&&outspin==2) _prefactor.push_back(factor[ix]);
-	  else throw DecayIntegratorError() 
+	  else throw Exception() 
 	    << "Invalid combination of spins in "
 	    << "SU3BaryonOctetOctetPhotonDecayer::" 
 	    << "setupModes()" << Exception::abortnow;}

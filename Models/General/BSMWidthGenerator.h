@@ -68,7 +68,7 @@ protected:
    * @param decayer The decayer for the mode.
    * @param imode The number of the mode.
    */
-  virtual void setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer, 
+  virtual void setupMode(tcDMPtr mode, tDecayIntegrator2Ptr decayer, 
 			 unsigned int imode);
 
   /**

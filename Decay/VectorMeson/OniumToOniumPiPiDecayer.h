@@ -13,7 +13,6 @@
 //
 
 #include "Herwig/Decay/DecayIntegrator2.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {

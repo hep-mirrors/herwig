@@ -80,8 +80,13 @@ cd /Herwig/Decays
 # set Tau4PionsCzyz:Initialize 1
 # set Tau4PionsCzyz:Iteration 5
 # set Tau4PionsCzyz:Points 10000000
-set PVff:Initialize 1
-set PVff:Points 10000000
+#set Hff:Initialize 1
+#set HPP:Initialize 1
+set HWW:Initialize 1
+set HWW:Points 1000000
+#set Top:Initialize 1
+#set WDecayer:Initialize 1
+#set ZDecayer:Initialize 1
 # #create Herwig::TauDecayer2 Tau2KaonsCzyz
 #create Herwig::TwoKaonCzyzCurrent TwoKaonCzyzCurrent
 #set Tau2KaonsCzyz:WeakCurrent TwoKaonCzyzCurrent

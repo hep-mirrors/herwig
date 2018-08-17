@@ -224,8 +224,7 @@ public:
    * of photons.
    */
   ParticleVector generatePhotons(const Particle & p,ParticleVector children) {
-    assert(false);
-    //return photonGen_->generatePhotons(p,children,this);
+    return photonGen_->generatePhotons(p,children,this);
   }
 
   /**

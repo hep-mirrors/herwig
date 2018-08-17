@@ -12,8 +12,6 @@
 
 #include "WidthCalculatorBase.h"
 #include "Herwig/Utilities/GSLIntegrator.h"
-#include "Herwig/Decay/DecayIntegrator.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 
 namespace Herwig {
 using namespace ThePEG;

@@ -24,10 +24,7 @@ EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
-DecayIntegrator.fh DecayIntegrator.h \
 DecayIntegrator2.fh DecayIntegrator2.h \
-DecayPhaseSpaceChannel.fh DecayPhaseSpaceChannel.h \
-DecayPhaseSpaceMode.fh DecayPhaseSpaceMode.h \
 PhaseSpaceMode.fh PhaseSpaceMode.h \
 HwDecayerBase.fh HwDecayerBase.h \
 HwDecayHandler.h \
@@ -41,10 +38,7 @@ ResonanceHelpers.h PhaseSpaceChannel.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
-DecayIntegrator.cc \
 DecayIntegrator2.cc \
-DecayPhaseSpaceChannel.cc \
-DecayPhaseSpaceMode.cc \
 PhaseSpaceChannel.cc \
 PhaseSpaceMode.cc \
 HwDecayerBase.cc \

@@ -20,6 +20,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
+#include "Herwig/Utilities/Kinematics.h"
 
 using namespace Herwig;
 

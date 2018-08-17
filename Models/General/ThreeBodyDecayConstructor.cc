@@ -14,7 +14,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/Decay/General/GeneralThreeBodyDecayer.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Interface/Switch.h"

@@ -26,7 +26,6 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include <ctime>
-#include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 
 using namespace Herwig;
@@ -250,8 +249,7 @@ void GenericWidthGenerator::doinit() {
   if(particle()->widthGenerator()!=this) return;
   // make sure the particle data object was initialized
   particle_->init();
-  tDecayIntegratorPtr decayer;
-  tDecayIntegrator2Ptr decayer2;
+  tDecayIntegrator2Ptr decayer;
   // mass of the decaying particle
   mass_ = particle_->mass();
   if(initialize_) {
@@ -303,14 +301,11 @@ void GenericWidthGenerator::doinit() {
       minMass_.push_back(minmass);
       pit=mode->products().begin();
       // its decayer
-      decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(mode->decayer());
+      decayer=dynamic_ptr_cast<tDecayIntegrator2Ptr>(mode->decayer());
       if(decayer) decayer->init();
-      // its decayer
-      decayer2=dynamic_ptr_cast<tDecayIntegrator2Ptr>(mode->decayer());
-      if(decayer2) decayer2->init();
       // if there's no decayer then set the partial width to the br times the
       // on-shell value
-      if(!decayer&&!decayer2) {
+      if(!decayer) {
 	MEtype_.push_back(0);
 	MEcode_.push_back(0);
 	MEcoupling_.push_back(mode->brat());
@@ -338,11 +333,7 @@ void GenericWidthGenerator::doinit() {
 	if(massgen2) massgen2->init();
 	double coupling(0.);
 	int mecode(-1);
-	bool order;
-	if(decayer)
-	  order = decayer ->twoBodyMEcode(*mode,mecode,coupling);
-	else
-	  order = decayer2->twoBodyMEcode(*mode,mecode,coupling);
+	bool order = decayer ->twoBodyMEcode(*mode,mecode,coupling);
 	MEcode_.push_back(mecode);
 	MEcoupling_.push_back(coupling);
 	modeOn_.push_back(mode->brat()>BRminimum_);
@@ -603,21 +594,15 @@ void GenericWidthGenerator::doinit() {
     }
   }
   // setup the partial widths in the decayers for normalization
-  tDecayIntegratorPtr temp;
+  tDecayIntegrator2Ptr temp;
   for(unsigned int ix=0;ix<decayModes_.size();++ix) {
     if(!decayModes_[ix]) continue;
     decayModes_[ix]->init();
-    decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(decayModes_[ix]->decayer());
+    decayer=dynamic_ptr_cast<tDecayIntegrator2Ptr>(decayModes_[ix]->decayer());
     if(decayer) {
       decayer->init();
       if(particle_->widthGenerator() && 
 	 particle_->widthGenerator()==this ) decayer->setPartialWidth(*decayModes_[ix],ix);
-    }
-    decayer2=dynamic_ptr_cast<tDecayIntegrator2Ptr>(decayModes_[ix]->decayer());
-    if(decayer2) {
-      decayer2->init();
-      if(particle_->widthGenerator() && 
-	 particle_->widthGenerator()==this ) decayer2->setPartialWidth(*decayModes_[ix],ix);
     }
   }
   if ( Debug::level > 29 ) {
@@ -776,7 +761,7 @@ DecayMap GenericWidthGenerator::rate(const Particle & p) {
   return dm;
 }
 
-void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr,
+void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegrator2Ptr,
 				      unsigned int)
 {}
 

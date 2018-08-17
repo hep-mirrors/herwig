@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig/Decay/DecayIntegrator.fh"
+#include "Herwig/Decay/DecayIntegrator2.fh"
 #include "DecayRadiationGenerator.fh"
 
 namespace Herwig {
@@ -43,7 +43,7 @@ public:
    */
   virtual ParticleVector generatePhotons(const Particle & p,
 					 ParticleVector children,
-					 tDecayIntegratorPtr decayer)=0;
+					 tDecayIntegrator2Ptr decayer)=0;
 
 public:
 

@@ -22,8 +22,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "YFSFormFactors.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 
 using namespace Herwig;
 
@@ -228,7 +228,7 @@ void FFDipole::printDebugInfo(const Particle & p,
 
 ParticleVector FFDipole::generatePhotons(const Particle & p,
 					 ParticleVector children,
-					 tDecayIntegratorPtr decayer) {
+					 tDecayIntegrator2Ptr decayer) {
   _parent = const_ptr_cast<tPPtr>(&p);
   // set the decayer
   _decayer=decayer;

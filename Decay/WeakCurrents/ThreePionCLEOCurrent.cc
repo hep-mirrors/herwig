@@ -716,7 +716,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
     }
   }
   else {
-    throw DecayIntegratorError() << "ThreePionCLEOCurrent Unknown Decay" << imode
+    throw Exception() << "ThreePionCLEOCurrent Unknown Decay" << imode
 				 << Exception::abortnow;
   }
   // identical particle factors

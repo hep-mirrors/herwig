@@ -9,7 +9,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include <numeric>

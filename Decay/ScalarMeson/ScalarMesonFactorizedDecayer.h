@@ -17,7 +17,6 @@
 #include "Herwig/Decay/FormFactors/ScalarFormFactor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {

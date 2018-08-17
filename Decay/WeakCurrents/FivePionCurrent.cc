@@ -713,7 +713,7 @@ FivePionCurrent::current(tcPDPtr,
     output/=sqrt(24.);
   }
   else {
-    throw DecayIntegratorError() << "Unknown decay mode in the " 
+    throw Exception() << "Unknown decay mode in the " 
 				 << "FivePionCurrent::"
 				 << "hadronCurrent()" << Exception::abortnow;
   }

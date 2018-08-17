@@ -564,7 +564,7 @@ halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
     B = 0.5*_prefactor[imode]*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV;
   }
   else
-    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+    throw Exception() << "Unknown mode in  StrongHeavyBaryonDecayer::"
 				 << "halfHalfScalarCoupling() " 
 				 << Exception::abortnow;
 }
@@ -583,7 +583,7 @@ halfThreeHalfScalarCoupling(int imode, Energy m0, Energy m1, Energy m2,
     B = 0.5*_prefactor[imode]*(m0+m1)*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV2;
   }
   else {
-    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+    throw Exception() << "Unknown mode in  StrongHeavyBaryonDecayer::"
 				 << "halfThreeHalfScalarCoupling() " 
 				 << Exception::abortnow;
   }
@@ -601,7 +601,7 @@ threeHalfThreeHalfScalarCoupling(int imode,Energy,Energy,Energy,
     B2=0.;
   }
   else {
-    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+    throw Exception() << "Unknown mode in  StrongHeavyBaryonDecayer::"
 				 << "threeHalfThreeHalfScalarCoupling() " 
 				 << Exception::abortnow;
   }
@@ -621,7 +621,7 @@ threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
     B = 0.5*_prefactor[imode]*(m0+m1)*((m0+m1)*(m0+m1)-m2*m2)/m0/GeV2;
   }
   else {
-    throw DecayIntegratorError() << "Unknown mode in  StrongHeavyBaryonDecayer::"
+    throw Exception() << "Unknown mode in  StrongHeavyBaryonDecayer::"
 				 << "threeHalfHalfScalarCoupling() " 
 				 << Exception::abortnow;
   }

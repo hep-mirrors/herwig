@@ -6,15 +6,16 @@
 
 #include "DecayIntegrator2.h"
 #include "PhaseSpaceMode.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig/PDT/WidthCalculatorBase.h"
 
 using namespace Herwig;
 
@@ -81,7 +82,7 @@ void DecayIntegrator2::Init() {
 double DecayIntegrator2::oneLoopVirtualME(unsigned int ,
 					  const Particle &, 
 					  const ParticleVector &) {
-  throw DecayIntegrator2Error()
+  throw Exception()
     << "DecayIntegrator2::oneLoopVirtualME() called. This should"
     << " have been overidden in an inheriting class if it is used"
     << Exception::runerror;
@@ -94,7 +95,7 @@ InvEnergy2 DecayIntegrator2::realEmissionME(unsigned int,
 					    double, double, 
 					    const LorentzRotation &,
 					    const LorentzRotation &) {
-  throw DecayIntegrator2Error()
+  throw Exception()
     << "DecayIntegrator2::realEmmisionME() called. This should"
     << " have been overidden in an inheriting class if it is used"
     << Exception::runerror;
@@ -227,7 +228,7 @@ double DecayIntegrator2::threeBodyMatrixElement(const int,const Energy2,
 					       const Energy2,const Energy2,
 					       const Energy, const Energy, 
 					       const Energy) const {
-  throw DecayIntegratorError() 
+  throw Exception() 
     << "Calling the virtual DecayIntegrator2::threeBodyMatrixElement"
     << "method. This must be overwritten in the classes "
     << "inheriting from DecayIntegrator where it is needed"
@@ -239,7 +240,7 @@ InvEnergy DecayIntegrator2::threeBodydGammads(const int, const Energy2,
 					     const Energy2,
 					     const Energy, const Energy, 
 					     const Energy) const {
-  throw DecayIntegratorError() 
+  throw Exception() 
     << "Calling the virtual DecayIntegrator2::threeBodydGammads()" 
     <<"method. This must be overwritten in the classes "
     << "inheriting from DecayIntegrator where it is needed"

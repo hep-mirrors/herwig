@@ -11,7 +11,6 @@
 // This is the declaration of the PScalarLeptonNeutrinoDecayer class.
 
 #include "Herwig/Decay/DecayIntegrator2.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {

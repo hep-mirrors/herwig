@@ -201,7 +201,7 @@ void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const {
   vector<int> outtemp;
   vector<InvEnergy> factor;
   if(_elambda==0)
-    throw DecayIntegratorError() << "Invalid incoming particle in "
+    throw Exception() << "Invalid incoming particle in "
 				 << "SU3BaryonSingletOctetScalarDecayer::" 
 				 << "setupModes()" << Exception::abortnow;
   // decays of the excited lambda
@@ -220,7 +220,7 @@ void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const {
 	  if(inspin==2&&outspin==2)      _prefactor.push_back(2.*factor[ix]);
 	  else if(inspin==4&&outspin==2) _prefactor.push_back(   factor[ix]);
 	  else
-	    throw DecayIntegratorError() 
+	    throw Exception() 
 	      << "Invalid combination of spins in "
 	      << "SU3BaryonSingletOctetScalarDecayer::" 
 	      << "setupModes()" << Exception::abortnow;

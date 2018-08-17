@@ -6,6 +6,7 @@
 
 #include "PhaseSpaceChannel.h"
 #include "PhaseSpaceMode.h"
+#include "Herwig/Utilities/Kinematics.h"
 
 /** 
  *  Constructor with incoming particles

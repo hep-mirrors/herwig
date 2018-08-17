@@ -273,7 +273,7 @@ void RadiativeHeavyBaryonDecayer::halfHalfVectorCoupling(int imode,Energy m0,Ene
     B2=0.;
   }
   else {
-    throw DecayIntegratorError() << "Unknown type of mode " << _modetype[imode] 
+    throw Exception() << "Unknown type of mode " << _modetype[imode] 
 				 << " in RadiativeHeavyBaryonDecayer::"
 				 << "halfHalfVectorCoupling()" << Exception::abortnow;
   }
@@ -303,7 +303,7 @@ void RadiativeHeavyBaryonDecayer::threeHalfHalfVectorCoupling(int imode,Energy m
     A3=0.;
   }
   else {
-    throw DecayIntegratorError() << "Unknown type of mode " << _modetype[imode] 
+    throw Exception() << "Unknown type of mode " << _modetype[imode] 
 				 << " in RadiativeHeavyBaryonDecayer::"
 				 << "threeHalfHalfVectorCoupling()" 
 				 << Exception::abortnow;
