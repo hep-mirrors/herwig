@@ -68,7 +68,7 @@ a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
 }
   
 void a1ThreePionCLEODecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // pointers to the particles we need as external particles
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);
   tPDPtr a10 = getParticleData(ParticleID::a_10);
@@ -281,7 +281,7 @@ void a1ThreePionCLEODecayer::doinit() {
 
 
 inline void a1ThreePionCLEODecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     // get the weights for the different channels
     for(unsigned int ix=0;ix<_zerowgts.size();++ix)
@@ -380,7 +380,7 @@ void a1ThreePionCLEODecayer::persistentInput(PersistentIStream & is, int) {
   
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<a1ThreePionCLEODecayer,DecayIntegrator2>
+DescribeClass<a1ThreePionCLEODecayer,DecayIntegrator>
 describeHerwiga1ThreePionCLEODecayer("Herwig::a1ThreePionCLEODecayer", "HwVMDecay.so");
   
 void a1ThreePionCLEODecayer::Init() {
@@ -992,8 +992,8 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
 void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
 					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // masses and widths of the intermediate particles
   output << "newdef " << name() << ":f_2Mass "    << _f2mass/GeV     << "\n";
   output << "newdef " << name() << ":f_2Width "   << _f2width/GeV    << "\n";

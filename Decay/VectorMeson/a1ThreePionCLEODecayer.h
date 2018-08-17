@@ -11,7 +11,7 @@
 //
 // This is the declaration of the a1ThreePionCLEODecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -140,10 +140,10 @@ using namespace ThePEG;
  * rest frame of the resonanc \f$Y\f$.
  *
  * @see ThreePionCLEOCurrent
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  *
  */
-class a1ThreePionCLEODecayer: public DecayIntegrator2 {
+class a1ThreePionCLEODecayer: public DecayIntegrator {
   
 public:
   

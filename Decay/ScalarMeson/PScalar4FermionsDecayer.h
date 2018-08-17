@@ -10,7 +10,7 @@
 #define HERWIG_PScalar4FermionsDecayer_H
 // This is the declaration of the PScalar4FermionsDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
 
@@ -34,14 +34,14 @@ using namespace ThePEG;
  *  \f$\frac{-M^2+i\Gamma M}{(m^2_{f\bar{f}}-M^2+i\Gamma M)}\f$. In the case of identical
  *  fermions in also includes the exchange diagram.
  *  
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see PScalarVectorVectorDecayer
  * @see PScalarVectorFermionsDecayer
  * 
  *  \author Peter Richardson
  *
  */
-class PScalar4FermionsDecayer: public DecayIntegrator2 {
+class PScalar4FermionsDecayer: public DecayIntegrator {
 
 public:
 

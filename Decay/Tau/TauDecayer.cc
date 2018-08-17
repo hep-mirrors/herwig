@@ -36,7 +36,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void TauDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // make sure the current got initialised
   current_->init();
   // set up the phase-space channels
@@ -86,7 +86,7 @@ void TauDecayer::doinit() {
 
 void TauDecayer::doinitrun() {
   current_->initrun();
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     weights_.clear();
     wgtLoc_.clear();
@@ -152,7 +152,7 @@ void TauDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TauDecayer,DecayIntegrator2>
+DescribeClass<TauDecayer,DecayIntegrator>
 describeHerwigTauDecayer("Herwig::TauDecayer", "HwTauDecay.so");
 
 void TauDecayer::Init() {
@@ -343,7 +343,7 @@ double TauDecayer::me2(const int ichan, const Particle & part,
 void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
-  DecayIntegrator2::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   for(ix=0;ix<wgtLoc_.size();++ix) {
     output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << wgtLoc_[ix] << "\n";

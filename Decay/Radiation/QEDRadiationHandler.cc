@@ -21,7 +21,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/PDT/DecayMode.h"
 
@@ -107,10 +107,10 @@ handle(EventHandler & eh, const tPVector & tagged,
     }
     tag += ";";
     tDMPtr dm = generator()->findDecayMode(tag);
-    tDecayIntegrator2Ptr decayer;
+    tDecayIntegratorPtr decayer;
     if(dm) {
       tDecayerPtr dtemp = dm->decayer();
-      decayer = dynamic_ptr_cast<tDecayIntegrator2Ptr>(dtemp);
+      decayer = dynamic_ptr_cast<tDecayIntegratorPtr>(dtemp);
       bool cc;
       tPDVector ctemp;
       vector<Lorentz5Momentum> momenta;
@@ -119,7 +119,7 @@ handle(EventHandler & eh, const tPVector & tagged,
 	momenta.push_back(children[ix]->momentum());
       }
       unsigned int imode = decayer->modeNumber(cc,(**sit).dataPtr(),ctemp);
-      decayer->me2(imode,**sit,ctemp,momenta,DecayIntegrator2::Initialize);
+      decayer->me2(imode,**sit,ctemp,momenta,DecayIntegrator::Initialize);
     }
     // generate photons
     ParticleVector newchildren =

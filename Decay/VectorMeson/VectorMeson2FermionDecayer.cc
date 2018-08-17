@@ -28,7 +28,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void VectorMeson2FermionDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix) {
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
@@ -37,7 +37,7 @@ void VectorMeson2FermionDecayer::doinitrun() {
 }
 
 void VectorMeson2FermionDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoingf.size()||
@@ -210,7 +210,7 @@ void VectorMeson2FermionDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMeson2FermionDecayer,DecayIntegrator2>
+DescribeClass<VectorMeson2FermionDecayer,DecayIntegrator>
 describeHerwigVectorMeson2FermionDecayer("Herwig::VectorMeson2FermionDecayer", "HwVMDecay.so");
 
 void VectorMeson2FermionDecayer::Init() {
@@ -353,8 +353,8 @@ bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode
 void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output,
 						bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {

@@ -146,7 +146,7 @@ ScalarMesonCurrent::current(tcPDPtr resonance,
 			    const int imode, const int , Energy & scale, 
 			    const tPDVector & outgoing,
 			    const vector<Lorentz5Momentum> & momenta,
-			    DecayIntegrator2::MEOption) const {
+			    DecayIntegrator::MEOption) const {
   assert(!resonance);
   assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
   static const Complex ii(0.,1.);

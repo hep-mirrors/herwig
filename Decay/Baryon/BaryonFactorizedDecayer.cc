@@ -40,7 +40,7 @@ BaryonFactorizedDecayer::BaryonFactorizedDecayer() {
 void BaryonFactorizedDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   _weights.clear();_wgtloc.clear();_wgtmax.clear();
   for(unsigned int ix=0;ix<numberModes();++ix) {
     _wgtmax.push_back(mode(ix)->maxWeight());
@@ -51,7 +51,7 @@ void BaryonFactorizedDecayer::doinitrun() {
 }
 
 void BaryonFactorizedDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // get the CKM matrix (unsquared for interference)
   Complex ckmmat[3][3];
   vector< vector<Complex > > CKM(_theCKM->getUnsquaredMatrix(SM().families()));
@@ -304,7 +304,7 @@ int BaryonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
       ++ix;
     }
   while(imode<0&&ix<numberModes());
-  if(imode<0){throw DecayIntegrator2Error() << "Unable to find the mode in " 
+  if(imode<0){throw DecayIntegratorError() << "Unable to find the mode in " 
 					   << "BaryonFactorizedDecayer::decay()" 
 					   << Exception::abortnow;}
   // generate the mode
@@ -327,7 +327,7 @@ void BaryonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<BaryonFactorizedDecayer,DecayIntegrator2>
+DescribeClass<BaryonFactorizedDecayer,DecayIntegrator>
 describeHerwigBaryonFactorizedDecayer("Herwig::BaryonFactorizedDecayer", "HwBaryonDecay.so");
 
 void BaryonFactorizedDecayer::Init() {
@@ -787,7 +787,7 @@ void BaryonFactorizedDecayer::findModes(unsigned int imode,
 void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) const {
   unsigned int ix;
   if(header){output << "update decayers set parameters=\"";}
-  DecayIntegrator2::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":a1Bottom "  << _a1b << "\n";
   output << "newdef " << name() << ":a2Bottom "  << _a2b << "\n";
   output << "newdef " << name() << ":a1Charm "   << _a1c << "\n";

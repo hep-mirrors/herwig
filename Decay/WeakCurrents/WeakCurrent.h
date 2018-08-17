@@ -13,7 +13,7 @@
 //
 #include "ThePEG/Interface/Interfaced.h"
 #include "WeakCurrent.fh"
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Decay/PhaseSpaceChannel.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -144,7 +144,7 @@ public:
 	  const int imode, const int ichan,Energy & scale,
 	  const tPDVector & outgoing,
 	  const vector<Lorentz5Momentum> & momenta,
-	  DecayIntegrator2::MEOption meopt) const=0;
+	  DecayIntegrator::MEOption meopt) const=0;
 
   /**
    *   Construct the SpinInfo for the decay products

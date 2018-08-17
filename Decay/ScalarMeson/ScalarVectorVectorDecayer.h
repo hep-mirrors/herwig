@@ -12,7 +12,7 @@
 // This is the declaration of the ScalarVectorVectorDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
@@ -31,9 +31,9 @@ using namespace ThePEG;
  * The incoming scalar meson, the outgoing vectors and the coupling can
  * be specified using the relevant interfaces.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  */
-class ScalarVectorVectorDecayer: public DecayIntegrator2 {
+class ScalarVectorVectorDecayer: public DecayIntegrator {
 
 public:
 

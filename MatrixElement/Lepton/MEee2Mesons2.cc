@@ -294,7 +294,7 @@ double MEee2Mesons2::me2() const {
   }
   vector<LorentzPolarizationVectorE> 
     hadron(current_->current(tcPDPtr(), IsoSpin::IUnknown, IsoSpin::I3Unknown, imode,-1,
-			     q,out,momenta,DecayIntegrator2::Calculate));
+			     q,out,momenta,DecayIntegrator::Calculate));
   // for(unsigned int ix=0;ix<hadron.size();++ix)
   //   cerr << hadron[ix].x()/GeV << " " << hadron[ix].y()/GeV << " " << hadron[ix].z()/GeV << " " << hadron[ix].t()/GeV << "\n"; 
   // compute the matrix element

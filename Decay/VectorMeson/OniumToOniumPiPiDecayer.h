@@ -12,7 +12,7 @@
 // This is the declaration of the OniumToOniumPiPiDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
@@ -41,7 +41,7 @@ using namespace ThePEG;
  * @see \ref OniumToOniumPiPiDecayerInterfaces "The interfaces"
  * defined for OniumToOniumPiPiDecayer.
  */
-class OniumToOniumPiPiDecayer: public DecayIntegrator2 {
+class OniumToOniumPiPiDecayer: public DecayIntegrator {
 
 public:
 

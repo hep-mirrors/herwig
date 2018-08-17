@@ -249,7 +249,7 @@ void GenericWidthGenerator::doinit() {
   if(particle()->widthGenerator()!=this) return;
   // make sure the particle data object was initialized
   particle_->init();
-  tDecayIntegrator2Ptr decayer;
+  tDecayIntegratorPtr decayer;
   // mass of the decaying particle
   mass_ = particle_->mass();
   if(initialize_) {
@@ -301,7 +301,7 @@ void GenericWidthGenerator::doinit() {
       minMass_.push_back(minmass);
       pit=mode->products().begin();
       // its decayer
-      decayer=dynamic_ptr_cast<tDecayIntegrator2Ptr>(mode->decayer());
+      decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(mode->decayer());
       if(decayer) decayer->init();
       // if there's no decayer then set the partial width to the br times the
       // on-shell value
@@ -333,7 +333,7 @@ void GenericWidthGenerator::doinit() {
 	if(massgen2) massgen2->init();
 	double coupling(0.);
 	int mecode(-1);
-	bool order = decayer ->twoBodyMEcode(*mode,mecode,coupling);
+	bool order(decayer->twoBodyMEcode(*mode,mecode,coupling));
 	MEcode_.push_back(mecode);
 	MEcoupling_.push_back(coupling);
 	modeOn_.push_back(mode->brat()>BRminimum_);
@@ -594,16 +594,15 @@ void GenericWidthGenerator::doinit() {
     }
   }
   // setup the partial widths in the decayers for normalization
-  tDecayIntegrator2Ptr temp;
+  tDecayIntegratorPtr temp;
   for(unsigned int ix=0;ix<decayModes_.size();++ix) {
     if(!decayModes_[ix]) continue;
     decayModes_[ix]->init();
-    decayer=dynamic_ptr_cast<tDecayIntegrator2Ptr>(decayModes_[ix]->decayer());
-    if(decayer) {
-      decayer->init();
-      if(particle_->widthGenerator() && 
-	 particle_->widthGenerator()==this ) decayer->setPartialWidth(*decayModes_[ix],ix);
-    }
+    decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(decayModes_[ix]->decayer());
+    if(!decayer) continue;
+    decayer->init();
+    if(particle_->widthGenerator() && 
+       particle_->widthGenerator()==this ) decayer->setPartialWidth(*decayModes_[ix],ix);
   }
   if ( Debug::level > 29 ) {
   //  code to output plots
@@ -761,7 +760,7 @@ DecayMap GenericWidthGenerator::rate(const Particle & p) {
   return dm;
 }
 
-void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegrator2Ptr,
+void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr,
 				      unsigned int)
 {}
 

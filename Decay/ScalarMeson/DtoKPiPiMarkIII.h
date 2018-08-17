@@ -12,7 +12,7 @@
 // This is the declaration of the DtoKPiPiMarkIII class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 
 namespace Herwig {
@@ -25,7 +25,7 @@ using namespace ThePEG;
  * @see \ref DtoKPiPiMarkIIIInterfaces "The interfaces"
  * defined for DtoKPiPiMarkIII.
  */
-class DtoKPiPiMarkIII: public DecayIntegrator2 {
+class DtoKPiPiMarkIII: public DecayIntegrator {
 
 public:
 

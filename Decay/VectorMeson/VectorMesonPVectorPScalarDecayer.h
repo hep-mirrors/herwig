@@ -10,7 +10,7 @@
 #define HERWIG_VectorMesonPVectorPScalarDecayer_H
 // This is the declaration of the VectorMesonPVectorPScalarDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
@@ -26,13 +26,13 @@ using namespace ThePEG;
  *  \f[\mathcal{M}= g\left[ p_V \cdot p_0 \epsilon_V\cdot \epsilon_0  
  *                     -p_V\cdot \epsilon_0 \epsilon_V \cdot p_0\right]\f]
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see \ref VectorMesonPVectorPScalarDecayerInterfaces "The interfaces"
  * defined for VectorMesonPVectorPScalarDecayer.
  * 
  *  \author Peter Richardson
  */
-class VectorMesonPVectorPScalarDecayer: public DecayIntegrator2 {
+class VectorMesonPVectorPScalarDecayer: public DecayIntegrator {
 
 public:
 

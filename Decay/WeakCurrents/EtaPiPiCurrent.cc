@@ -200,7 +200,7 @@ EtaPiPiCurrent::current(tcPDPtr resonance,
 			    const int imode, const int ichan,Energy & scale, 
 			    const tPDVector & outgoing,
 			    const vector<Lorentz5Momentum> & momenta,
-			    DecayIntegrator2::MEOption) const {
+			    DecayIntegrator::MEOption) const {
   useMe();
   // check the isospin
   if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)

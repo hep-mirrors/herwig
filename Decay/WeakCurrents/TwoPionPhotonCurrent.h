@@ -148,7 +148,7 @@ public:
 	  const int imode, const int ichan,Energy & scale,
 	  const tPDVector & outgoing,
 	  const vector<Lorentz5Momentum> & momenta,
-	  DecayIntegrator2::MEOption meopt) const;
+	  DecayIntegrator::MEOption meopt) const;
 
   /**
    *   Construct the SpinInfo for the decay products

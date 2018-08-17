@@ -15,7 +15,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "GenericWidthGenerator.fh"
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Interpolator.h"
 #include "GenericMassGenerator.h"
@@ -45,7 +45,7 @@ using namespace ThePEG;
  * based on the mass.
  *
  * @see WidthGenerator
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see GenericMassGenerator
  */
 class GenericWidthGenerator: public WidthGenerator {
@@ -190,7 +190,7 @@ protected:
    * @param decayer The decayer for the mode.
    * @param imode The number of the mode.
    */
-  virtual void setupMode(tcDMPtr mode, tDecayIntegrator2Ptr decayer, unsigned int imode);
+  virtual void setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer, unsigned int imode);
 
   /**
    *  Access to the particle dat for inheriting classes

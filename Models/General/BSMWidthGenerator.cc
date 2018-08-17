@@ -48,7 +48,7 @@ void BSMWidthGenerator::Init() {
 
 }
 
-void BSMWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegrator2Ptr decayer, 
+void BSMWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer, 
 				  unsigned int) {
   tcGeneralTwoBodyDecayerPtr dec = 
     dynamic_ptr_cast<tcGeneralTwoBodyDecayerPtr>(decayer);

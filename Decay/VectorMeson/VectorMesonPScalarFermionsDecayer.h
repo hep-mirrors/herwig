@@ -11,7 +11,7 @@
 //
 // This is the declaration of the VectorMesonPScalarFermionsDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
@@ -38,7 +38,7 @@ using namespace ThePEG;
  *  The incoming and outgoing meson together with the types of fermions can be
  *  specified using the interfaces.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see VectorMesonVectorPScalarDecayer
  * @see \ref VectorMesonPScalarFermionsDecayerInterfaces "The interfaces"
  * defined for VectorMesonPScalarFermionsDecayer.
@@ -46,7 +46,7 @@ using namespace ThePEG;
  *  \author Peter Richardson
  *
  */
-class VectorMesonPScalarFermionsDecayer: public DecayIntegrator2 {
+class VectorMesonPScalarFermionsDecayer: public DecayIntegrator {
 
 public:
 

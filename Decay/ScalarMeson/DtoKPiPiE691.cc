@@ -56,7 +56,7 @@ DtoKPiPiE691::DtoKPiPiE691() {
 }
 
 void DtoKPiPiE691::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // complex amplitudes calculated from magnitudes and phases
   double fact = Constants::pi/180.;
   // D+ -> K-pi+pi+
@@ -227,7 +227,7 @@ void DtoKPiPiE691::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<DtoKPiPiE691,DecayIntegrator2>
+DescribeClass<DtoKPiPiE691,DecayIntegrator>
 describeHerwigDtoKPiPiE691("Herwig::DtoKPiPiE691", "HwSMDecay.so");
 
 void DtoKPiPiE691::Init() {
@@ -616,8 +616,8 @@ double DtoKPiPiE691::me2(const int ichan, const Particle & part,
 
 void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // parameters
   output << "newdef " << name() << ":KmPipPipNonResonantMagnitude " 
 	 << _a1NR      << "\n";
@@ -690,7 +690,7 @@ void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
 }
 
 void DtoKPiPiE691::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   _weights.resize(mode(0)->channels().size()+mode(1)->channels().size()+
 		  mode(2)->channels().size());
   _maxwgt.resize(3);

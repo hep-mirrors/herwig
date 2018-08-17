@@ -10,7 +10,7 @@
 #define HERWIG_EtaPiPiPiDecayer_H
 // This is the declaration of the EtaPiPiPiDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 
 namespace Herwig {
@@ -38,10 +38,10 @@ using namespace ThePEG;
  * the constants which are used where available and the theory results which are
  * used when there is no experimental data. 
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * 
  */
-class EtaPiPiPiDecayer: public DecayIntegrator2 {
+class EtaPiPiPiDecayer: public DecayIntegrator {
 
 public:
 

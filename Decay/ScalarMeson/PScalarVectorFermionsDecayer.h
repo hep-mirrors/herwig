@@ -11,7 +11,7 @@
 //
 // This is the declaration of the PScalarVectorFermionsDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
@@ -39,14 +39,14 @@ using namespace ThePEG;
  *  The incoming pseudoscalar meson, the outgoing vector, the fermion and antifermion
  *  and the coupling can be specified using the relevant interfaces.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see PScalarVectorVectorDecayer
  * @see PScalar4FermionsDecayer
  * 
  *  \author Peter Richardson
  *
  */
-class PScalarVectorFermionsDecayer: public DecayIntegrator2 {
+class PScalarVectorFermionsDecayer: public DecayIntegrator {
 
 public:
 

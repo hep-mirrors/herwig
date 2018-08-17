@@ -590,7 +590,7 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
 			     const int imode, const int ichan,Energy & scale,
 			     const tPDVector & outgoing,
 			     const vector<Lorentz5Momentum> & momenta,
-			     DecayIntegrator2::MEOption) const {
+			     DecayIntegrator::MEOption) const {
   int icharge(0);
   for(tPDPtr out : outgoing) icharge+=out->iCharge();
   // check the total isospin

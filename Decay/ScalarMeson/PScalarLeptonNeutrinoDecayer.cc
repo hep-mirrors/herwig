@@ -29,7 +29,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void PScalarLeptonNeutrinoDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   unsigned int iz(0),ix,iy;
   if(initialize()) {
     for(ix=0;ix<_incoming.size();++ix) {
@@ -77,7 +77,7 @@ PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer()
 }
 
 void PScalarLeptonNeutrinoDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize(_incoming.size());
   if(isize!=_decayconstant.size()||isize!=_leptons.size()||isize!=_maxweighte.size()||
@@ -167,7 +167,7 @@ void PScalarLeptonNeutrinoDecayer::persistentInput(PersistentIStream & is, int) 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<PScalarLeptonNeutrinoDecayer,DecayIntegrator2>
+DescribeClass<PScalarLeptonNeutrinoDecayer,DecayIntegrator>
 describeHerwigPScalarLeptonNeutrinoDecayer("Herwig::PScalarLeptonNeutrinoDecayer", "HwSMDecay.so");
 
 void PScalarLeptonNeutrinoDecayer::Init() {
@@ -290,8 +290,8 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & part,
 void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
 						  bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming   " << ix << " "

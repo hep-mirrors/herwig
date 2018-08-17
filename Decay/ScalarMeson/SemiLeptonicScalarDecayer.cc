@@ -41,7 +41,7 @@ SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() {
 void SemiLeptonicScalarDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     _maxwgt.clear();
     for(unsigned int ix=0;ix<numberModes();++ix) {
@@ -51,7 +51,7 @@ void SemiLeptonicScalarDecayer::doinitrun() {
 }
 
 void SemiLeptonicScalarDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();
   // and the form factors
@@ -137,7 +137,7 @@ void SemiLeptonicScalarDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SemiLeptonicScalarDecayer,DecayIntegrator2>
+DescribeClass<SemiLeptonicScalarDecayer,DecayIntegrator>
 describeHerwigSemiLeptonicScalarDecayer("Herwig::SemiLeptonicScalarDecayer", "HwSMDecay.so");
 
 void SemiLeptonicScalarDecayer::Init() {
@@ -329,7 +329,7 @@ double SemiLeptonicScalarDecayer::me2(const int , const Particle & part,
 void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output,
 					       bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  DecayIntegrator2::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     output << "insert " << name() << ":MaximumWeight " << ix << " " 
 	   << _maxwgt[ix] << "\n";

@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig/Decay/DecayIntegrator2.fh"
+#include "Herwig/Decay/DecayIntegrator.fh"
 #include "Herwig/Utilities/Kinematics.h"
 #include "Herwig/Utilities/Maths.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -66,7 +66,7 @@ public:
    */
   virtual ParticleVector generatePhotons(const Particle & p,
 					 ParticleVector children,
-					 tDecayIntegrator2Ptr decayer);
+					 tDecayIntegratorPtr decayer);
 
 public:
 
@@ -428,7 +428,7 @@ private:
   /**
    *  The decayer
    */
-  tDecayIntegrator2Ptr _decayer;
+  tDecayIntegratorPtr _decayer;
 
   /**
    *  The decaying particle

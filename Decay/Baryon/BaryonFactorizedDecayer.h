@@ -5,7 +5,7 @@
 // This is the declaration of the BaryonFactorizedDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -27,7 +27,7 @@ using namespace ThePEG;
  * @see BaryonFormFactor
  * @see WeakCurrent
  */
-class BaryonFactorizedDecayer: public DecayIntegrator2 {
+class BaryonFactorizedDecayer: public DecayIntegrator {
 
 public:
 

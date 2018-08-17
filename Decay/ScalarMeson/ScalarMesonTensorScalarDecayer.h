@@ -11,7 +11,7 @@
 //
 // This is the declaration of the ScalarMesonTensorScalarDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 
@@ -29,10 +29,10 @@ using namespace Herwig;
  * The incoming and outgoing mesons and the coupling can be specified using the
  * interfaces.
  *
- * @see DecayIntegrator2.
+ * @see DecayIntegrator.
  * 
  */
-class ScalarMesonTensorScalarDecayer: public DecayIntegrator2 {
+class ScalarMesonTensorScalarDecayer: public DecayIntegrator {
 
 public:
 

@@ -47,7 +47,7 @@ void BaryonWidthGenerator::Init() {
      false, false, false);
 }
  
-void BaryonWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegrator2Ptr decayer,
+void BaryonWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
 				     unsigned int) {
   // cast the decayer
   tBaryon1MesonDecayerBasePtr 

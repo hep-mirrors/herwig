@@ -11,7 +11,7 @@
 //
 // This is the declaration of the a1ThreePionDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -96,10 +96,10 @@ using namespace ThePEG;
  * - \f$m_{a_1}\f$ the mass of the \f$a_1\f$ meson.
  * - \f$\Lambda^2\f$ the mass parameter for the \f$a_1\f$ form factor.
  * @see FourPionNovosibirskCurrent
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * 
  */
-class a1ThreePionDecayer: public DecayIntegrator2 {
+class a1ThreePionDecayer: public DecayIntegrator {
   
 public:
   

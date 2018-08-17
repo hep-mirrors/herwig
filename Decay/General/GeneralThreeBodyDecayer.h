@@ -5,7 +5,7 @@
 // This is the declaration of the GeneralThreeBodyDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Models/General/TBDiagram.h"
 #include "GeneralThreeBodyDecayer.fh"
 
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref GeneralThreeBodyDecayerInterfaces "The interfaces"
  * defined for GeneralThreeBodyDecayer.
  */
-class GeneralThreeBodyDecayer: public DecayIntegrator2 {
+class GeneralThreeBodyDecayer: public DecayIntegrator {
 
 public:
   

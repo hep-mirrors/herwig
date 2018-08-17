@@ -11,7 +11,7 @@
 //
 // This is the declaration of the SemiLeptonicScalarDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/FormFactors/ScalarFormFactor.h"
 #include "Herwig/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
@@ -29,12 +29,12 @@ using namespace ThePEG;
  *  for the hadronic current. These form-factor are specified using a ScalarFormFactor
  *  class and the leptonic part of the decay uses the LeptonNeutrinoCurrent.
  * 
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see ScalarFormFactor
  * @see LeptonNeutrinoCurrent 
  *
  */
-class SemiLeptonicScalarDecayer: public DecayIntegrator2 {
+class SemiLeptonicScalarDecayer: public DecayIntegrator {
 
 public:
 

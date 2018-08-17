@@ -83,7 +83,7 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(),
 }
 
 void DtoKPiPiCLEO::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // complex amplitudes for K-pi+pi0
   double fact = Constants::pi/180.;
   _c1NR      = _a1NR     *Complex(cos(_phi1NR     *fact),sin(_phi1NR     *fact));
@@ -303,7 +303,7 @@ void DtoKPiPiCLEO::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<DtoKPiPiCLEO,DecayIntegrator2>
+DescribeClass<DtoKPiPiCLEO,DecayIntegrator>
 describeHerwigDtoKPiPiCLEO("Herwig::DtoKPiPiCLEO", "HwSMDecay.so");
 
 void DtoKPiPiCLEO::Init() {
@@ -915,8 +915,8 @@ double DtoKPiPiCLEO::me2(const int ichan, const Particle & part,
 
 void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // parameters
   output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   output << "newdef " << name() << ":OmegaMass "          << _momega/MeV   << "\n";
@@ -1006,7 +1006,7 @@ void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
 }
 
 void DtoKPiPiCLEO::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   _weights.resize(mode(0)->channels().size()+mode(1)->channels().size());
   _maxwgt.resize(2);
   unsigned int iy=0;

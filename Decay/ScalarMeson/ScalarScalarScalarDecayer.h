@@ -10,7 +10,7 @@
 #define HERWIG_ScalarScalarScalarDecayer_H
 // This is the declaration of the ScalarScalarScalarDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 
 namespace Herwig {
@@ -32,7 +32,7 @@ using namespace ThePEG;
  * \author Peter Richardson
  *
  */
-class ScalarScalarScalarDecayer: public DecayIntegrator2 {
+class ScalarScalarScalarDecayer: public DecayIntegrator {
 
 public:
 

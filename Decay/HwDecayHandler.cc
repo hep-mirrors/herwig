@@ -25,7 +25,7 @@
 #include "ThePEG/EventRecord/Collision.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "DecayIntegrator2.h"
+#include "DecayIntegrator.h"
 #include "PhaseSpaceMode.h"
 #include "ThePEG/PDT/MixedParticleData.h"
 #include "Herwig/Utilities/EnumParticles.h"
@@ -123,7 +123,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
       if(children.empty()) continue;
       assert(parent->children().empty());
       // generate radiation in the decay
-      tDecayIntegrator2Ptr hwdec=dynamic_ptr_cast<tDecayIntegrator2Ptr>(dm->decayer());
+      tDecayIntegratorPtr hwdec=dynamic_ptr_cast<tDecayIntegratorPtr>(dm->decayer());
       if (hwdec && hwdec->canGeneratePhotons())
 	children = hwdec->generatePhotons(*parent,children);
       // set up parent

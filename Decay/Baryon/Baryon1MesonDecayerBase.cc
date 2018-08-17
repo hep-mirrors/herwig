@@ -24,7 +24,7 @@ using namespace ThePEG::Helicity;
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractNoPIOClass<Baryon1MesonDecayerBase,DecayIntegrator2>
+DescribeAbstractNoPIOClass<Baryon1MesonDecayerBase,DecayIntegrator>
 describeHerwigBaryon1MesonDecayerBase("Herwig::Baryon1MesonDecayerBase", "HwBaryonDecay.so");
 
 void Baryon1MesonDecayerBase::Init() {
@@ -97,7 +97,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 }
 
 // return the matrix element squared for a given mode and phase-space channel
-// (inherited from DecayIntegrator2 and implemented here)
+// (inherited from DecayIntegrator and implemented here)
 double Baryon1MesonDecayerBase::me2(const int ichan,const Particle & part,
 				    const tPDVector & outgoing,
 				    const vector<Lorentz5Momentum> & momenta,
@@ -115,7 +115,7 @@ double Baryon1MesonDecayerBase::me2(const int ichan,const Particle & part,
       else if(outgoing[1]->iSpin()==3)
    	me=halfHalfVector(ichan,part,outgoing,momenta,meopt);
       else
-   	throw DecayIntegrator2Error() << "Unknown outgoing meson spin in "
+   	throw DecayIntegratorError() << "Unknown outgoing meson spin in "
 				      << "Baryon1MesonDecayerBase::me2()" 
 				      << Exception::abortnow;
     }
@@ -128,13 +128,13 @@ double Baryon1MesonDecayerBase::me2(const int ichan,const Particle & part,
       else if(outgoing[1]->iSpin()==3)
    	me=halfThreeHalfVector(ichan,part,outgoing,momenta,meopt);
       else
-   	throw DecayIntegrator2Error() << "Unknown outgoing meson spin in "
+   	throw DecayIntegratorError() << "Unknown outgoing meson spin in "
 				      << "Baryon1MesonDecayerBase::me2()" 
 				      << Exception::abortnow;
     }
     // unknown
     else
-      throw DecayIntegrator2Error() << "Unknown outgoing baryon spin in "
+      throw DecayIntegratorError() << "Unknown outgoing baryon spin in "
 				    << "Baryon1MesonDecayerBase::me2()" 
 				    << Exception::abortnow;
   }
@@ -149,7 +149,7 @@ double Baryon1MesonDecayerBase::me2(const int ichan,const Particle & part,
       else if(outgoing[1]->iSpin()==3)
    	me=threeHalfHalfVector(ichan,part,outgoing,momenta,meopt);
       else
-   	throw DecayIntegrator2Error() << "Unknown outgoing meson spin in "
+   	throw DecayIntegratorError() << "Unknown outgoing meson spin in "
 				      << "Baryon1MesonDecayerBase::me2()" 
 				      << Exception::abortnow;
     }
@@ -159,19 +159,19 @@ double Baryon1MesonDecayerBase::me2(const int ichan,const Particle & part,
       if(outgoing[1]->iSpin()==1)
    	me=threeHalfThreeHalfScalar(ichan,part,outgoing,momenta,meopt);
       else
-   	throw DecayIntegrator2Error() << "Unknown outgoing meson spin in "
+   	throw DecayIntegratorError() << "Unknown outgoing meson spin in "
 				      << "Baryon1MesonDecayerBase::me2()" 
 				      << Exception::abortnow;
     }
     // unknown
     else
-      throw DecayIntegrator2Error() << "Unknown outgoing baryon spin in "
+      throw DecayIntegratorError() << "Unknown outgoing baryon spin in "
 				    << "Baryon1MesonDecayerBase::me2()" 
 				    << Exception::abortnow;
   }
   // unknown
   else
-    throw DecayIntegrator2Error() << "Unknown incoming spin in "
+    throw DecayIntegratorError() << "Unknown incoming spin in "
 				  << "Baryon1MesonDecayerBase::me2()" 
 				  << Exception::abortnow;
   return me;
@@ -874,7 +874,7 @@ threeHalfHalfVector(const int,const Particle & part, const tPDVector & outgoing,
 
 void Baryon1MesonDecayerBase::halfHalfScalarCoupling(int,Energy,Energy,Energy,
 						     Complex&,Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::halfHalfScalarCoupling()"
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::halfHalfScalarCoupling()"
 			      << " called from base class this must be implemented"
 			      << " in the inheriting class" << Exception::abortnow;
 }
@@ -882,14 +882,14 @@ void Baryon1MesonDecayerBase::halfHalfScalarCoupling(int,Energy,Energy,Energy,
 void Baryon1MesonDecayerBase::halfHalfVectorCoupling(int,Energy,Energy,Energy,
 						     Complex&,Complex&,
 						     Complex&,Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::halfHalfVectorCoupling()" 
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::halfHalfVectorCoupling()" 
 			       << " called from base class this must be implemented " 
 			       << "in the inheriting class" << Exception::abortnow;
 }
 
 void Baryon1MesonDecayerBase::halfThreeHalfScalarCoupling(int,Energy,Energy,Energy,
 							  Complex&,Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::halfThreeHalfScalarCoupling"
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::halfThreeHalfScalarCoupling"
 			       << "() called from base class this must be implemented"
 			       << " in the inheriting class" << Exception::abortnow;
 }
@@ -898,14 +898,14 @@ void Baryon1MesonDecayerBase::halfThreeHalfVectorCoupling(int,Energy,Energy,Ener
 							  Complex&,Complex&,
 							  Complex&,Complex&,
 							  Complex&,Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::halfThreeHalfVectorCoupling"
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::halfThreeHalfVectorCoupling"
 			       << "() called from base class this must be implemented "
 			       << "in the inheriting class" << Exception::abortnow;
 }
 
 void Baryon1MesonDecayerBase::threeHalfHalfScalarCoupling(int,Energy,Energy,Energy,
 							  Complex&,Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::threeHalfHalfScalarCoupling"
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::threeHalfHalfScalarCoupling"
 			       << "() called from base class this must be implemented"
 			       << " in the inheriting class" << Exception::abortnow;
 }
@@ -914,7 +914,7 @@ void Baryon1MesonDecayerBase::threeHalfHalfVectorCoupling(int,Energy,Energy,Ener
 							  Complex&,Complex&,
 							  Complex&,Complex&,
 							  Complex&,Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::threeHalfHalfVectorCoupling"
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::threeHalfHalfVectorCoupling"
 			       << "() called from base class this must be implemented "
 			       << "in the inheriting class" << Exception::abortnow;
 }
@@ -923,7 +923,7 @@ void Baryon1MesonDecayerBase::threeHalfThreeHalfScalarCoupling(int,Energy,Energy
 							       Energy,Complex&,
 							       Complex&,Complex&,
 							       Complex&) const {
-  throw DecayIntegrator2Error() << "Baryon1MesonDecayerBase::threeHalfThreeHalfScalar"
+  throw DecayIntegratorError() << "Baryon1MesonDecayerBase::threeHalfThreeHalfScalar"
 			       << "Coupling() called from base class this must be "
 			       << "implemented in the inheriting class" 
 			       << Exception::abortnow;
@@ -958,5 +958,5 @@ bool Baryon1MesonDecayerBase::twoBodyMEcode(const DecayMode & dm,int & mecode,
 }
 
 void Baryon1MesonDecayerBase::dataBaseOutput(ofstream & os,bool header) const {
-  DecayIntegrator2::dataBaseOutput(os,header);
+  DecayIntegrator::dataBaseOutput(os,header);
 }

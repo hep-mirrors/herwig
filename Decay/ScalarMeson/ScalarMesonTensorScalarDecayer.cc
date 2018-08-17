@@ -26,7 +26,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void ScalarMesonTensorScalarDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix) 
       if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
@@ -50,7 +50,7 @@ ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer()
 }
 
 void ScalarMesonTensorScalarDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoingT.size()||
@@ -114,7 +114,7 @@ void ScalarMesonTensorScalarDecayer::persistentInput(PersistentIStream & is, int
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ScalarMesonTensorScalarDecayer,DecayIntegrator2>
+DescribeClass<ScalarMesonTensorScalarDecayer,DecayIntegrator>
 describeHerwigScalarMesonTensorScalarDecayer("Herwig::ScalarMesonTensorScalarDecayer", "HwSMDecay.so");
 
 void ScalarMesonTensorScalarDecayer::Init() {
@@ -247,8 +247,8 @@ bool ScalarMesonTensorScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & i
 void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
 						    bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {

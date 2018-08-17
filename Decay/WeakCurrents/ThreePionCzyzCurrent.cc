@@ -314,7 +314,7 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
 			      const int, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
-			      DecayIntegrator2::MEOption) const {
+			      DecayIntegrator::MEOption) const {
   // check the total isospin
   if(Itotal!=IsoSpin::IUnknown) {
     if(Itotal==IsoSpin::IZero) {

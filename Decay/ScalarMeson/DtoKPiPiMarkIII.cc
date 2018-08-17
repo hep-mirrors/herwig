@@ -100,7 +100,7 @@ void DtoKPiPiMarkIII::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<DtoKPiPiMarkIII,DecayIntegrator2>
+DescribeClass<DtoKPiPiMarkIII,DecayIntegrator>
 describeHerwigDtoKPiPiMarkIII("Herwig::DtoKPiPiMarkIII", "HwSMDecay.so");
 
 void DtoKPiPiMarkIII::Init() {
@@ -347,7 +347,7 @@ void DtoKPiPiMarkIII::Init() {
 }
 
 void DtoKPiPiMarkIII::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   double fact = Constants::pi/180.;
   // amplitudes for D0 -> K- pi+ pi0
   _c1rho    = _a1rho   *Complex(cos(_phi1rho   *fact),sin(_phi1rho   *fact));
@@ -612,8 +612,8 @@ double DtoKPiPiMarkIII::me2(const int ichan, const Particle & part,
 
 void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // parameters
   output << "newdef " << name() << ":KmPipPi0RhoMagnitude " << _a1rho << "\n";
   output << "newdef " << name() << ":KmPipPi0RhoPhase " << _phi1rho << "\n";
@@ -664,7 +664,7 @@ void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {
 }
 
 void DtoKPiPiMarkIII::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   _weights.resize(mode(0)->channels().size()+mode(1)->channels().size()+
 		  mode(2)->channels().size()+mode(3)->channels().size());
   _maxwgt.resize(4);

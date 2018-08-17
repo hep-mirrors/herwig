@@ -1,11 +1,11 @@
 // -*- C++ -*-
-#ifndef Herwig_DecayIntegrator2_H
-#define Herwig_DecayIntegrator2_H
+#ifndef Herwig_DecayIntegrator_H
+#define Herwig_DecayIntegrator_H
 //
-// This is the declaration of the DecayIntegrator2 class.
+// This is the declaration of the DecayIntegrator class.
 //
 
-#include "DecayIntegrator2.fh"
+#include "DecayIntegrator.fh"
 #include "HwDecayerBase.h"
 #include "PhaseSpaceMode.fh"
 #include "Herwig/PDT/WidthCalculatorBase.fh"
@@ -17,14 +17,14 @@ namespace Herwig {
 using namespace ThePEG;
 
   /** \ingroup Decay
-   * \class DecayIntegrator2
+   * \class DecayIntegrator
    * \brief Main class for Decayers implementing multi-channel phase space integration.
    * \author Peter Richardson
    *
    *  This class is designed to be the base class for Herwig decays including
    *  the implementation of a multichannel decayer or n-body phase space decays.
    *
-   *  The <code>DecayIntegrator2</code> class inherits from ThePEG's Decayer class
+   *  The <code>DecayIntegrator</code> class inherits from ThePEG's Decayer class
    *  and makes use of the <code>PhaseSpaceMode</code> class to specify a number
    *  of decay modes.
    *
@@ -47,10 +47,10 @@ using namespace ThePEG;
    *   
    * @see DecayPhaseSpaceMode
    * @see DecayPhaseSpaceChannel
-   * @see \ref DecayIntegrator2Interfaces "The interfaces"
-   * defined for DecayIntegrator2.
+   * @see \ref DecayIntegratorInterfaces "The interfaces"
+   * defined for DecayIntegrator.
    */
-class DecayIntegrator2: public HwDecayerBase {
+class DecayIntegrator: public HwDecayerBase {
 
 public:
   
@@ -69,7 +69,7 @@ public:
   /**
    * The default constructor.
    */
-  DecayIntegrator2() : nIter_(10), nPoint_(10000), nTry_(500),
+  DecayIntegrator() : nIter_(10), nPoint_(10000), nTry_(500),
 		       generateInter_(false), iMode_(-1),
 		       realME_(false), virtualME_(false), eps_(ZERO)
   {}
@@ -280,7 +280,7 @@ public:
   /**
    *  The output operator is a friend, this is mainly for debugging
    */    
-  friend ostream & operator<<(ostream & os, const DecayIntegrator2 & decay);
+  friend ostream & operator<<(ostream & os, const DecayIntegrator & decay);
 
   
 public:
@@ -421,7 +421,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DecayIntegrator2 & operator=(const DecayIntegrator2 &);
+  DecayIntegrator & operator=(const DecayIntegrator &);
 
   /**
    *  Parameters for the integration
@@ -489,15 +489,15 @@ protected:
   /**
    * Exception for this class and those inheriting from it
    */
-  class DecayIntegrator2Error: public Exception {};
+  class DecayIntegratorError: public Exception {};
 
 };
   
 /**
  * Output information on the DecayIntegrator for debugging purposes
  */
-ostream & operator<<(ostream &, const DecayIntegrator2 &);
+ostream & operator<<(ostream &, const DecayIntegrator &);
 
 }
 
-#endif /* Herwig_DecayIntegrator2_H */
+#endif /* Herwig_DecayIntegrator_H */

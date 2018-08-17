@@ -35,7 +35,7 @@ SemiLeptonicBaryonDecayer::SemiLeptonicBaryonDecayer() {
 void SemiLeptonicBaryonDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     _maxwgt.clear();
     for(unsigned int ix=0;ix<numberModes();++ix)
@@ -44,7 +44,7 @@ void SemiLeptonicBaryonDecayer::doinitrun() {
 }
 
 void SemiLeptonicBaryonDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();
   // and the form factors
@@ -134,7 +134,7 @@ void SemiLeptonicBaryonDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SemiLeptonicBaryonDecayer,DecayIntegrator2>
+DescribeClass<SemiLeptonicBaryonDecayer,DecayIntegrator>
 describeHerwigSemiLeptonicBaryonDecayer("Herwig::SemiLeptonicBaryonDecayer", "HwBaryonDecay.so");
 
 void SemiLeptonicBaryonDecayer::Init() {
@@ -486,7 +486,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const Particle & part,
 // output the setup information for the particle database
 void SemiLeptonicBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  DecayIntegrator2::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     output << "insert " << name() << ":MaximumWeight " << ix << " " 
 	   << _maxwgt[ix] << " \n";

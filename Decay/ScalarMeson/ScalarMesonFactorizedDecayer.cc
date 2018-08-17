@@ -41,17 +41,17 @@ ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer()
 void ScalarMesonFactorizedDecayer::rebind(const TranslationMap & trans)
   {
   _ckm = trans.translate(_ckm);
-  DecayIntegrator2::rebind(trans);
+  DecayIntegrator::rebind(trans);
 }
 
 IVector ScalarMesonFactorizedDecayer::getReferences() {
-  IVector ret = DecayIntegrator2::getReferences();
+  IVector ret = DecayIntegrator::getReferences();
   ret.push_back(_ckm);
   return ret;
 }
 
 void ScalarMesonFactorizedDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // get the ckm object
   _ckm=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
   if(!_ckm) throw InitException() << "ScalarMesonFactorizedDecayer::doinit() "
@@ -281,7 +281,7 @@ void ScalarMesonFactorizedDecayer::doinitrun() {
   unsigned int ix,iy;
   for(ix=0;ix<_current.size();++ix) _current[ix]->initrun();
   for(ix=0;ix<_form.size();++ix)    _form[ix]->initrun();
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     _weights.clear();
     _wgtloc.clear();
@@ -407,7 +407,7 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
     string mode = parent->PDGName() + "->";
     for(unsigned int ix=0;ix<children.size();++ix) 
       mode += children[ix]->PDGName() +",";
-    throw DecayIntegrator2Error() << "Unable to find the mode " << mode << " in " 
+    throw DecayIntegratorError() << "Unable to find the mode " << mode << " in " 
 				  << name() 
 				  << " ScalarMesonFactorizedDecayer::decay()" 
 				  << Exception::abortnow;
@@ -434,7 +434,7 @@ void ScalarMesonFactorizedDecayer::persistentInput(PersistentIStream & is, int) 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<ScalarMesonFactorizedDecayer,DecayIntegrator2>
+DescribeClass<ScalarMesonFactorizedDecayer,DecayIntegrator>
 describeHerwigScalarMesonFactorizedDecayer("Herwig::ScalarMesonFactorizedDecayer", "HwSMDecay.so");
 
 void ScalarMesonFactorizedDecayer::Init() {
@@ -753,7 +753,7 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output,
 						  bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
-  DecayIntegrator2::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":a1Bottom "  << _a1b << "\n";
   output << "newdef " << name() << ":a2Bottom "  << _a2b << "\n";
   output << "newdef " << name() << ":a1Charm "   << _a1c << "\n";

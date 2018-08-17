@@ -44,7 +44,7 @@ void PhaseSpaceMode::Init() {
 
 ParticleVector
 PhaseSpaceMode::generateDecay(const Particle & inpart,
-			      tcDecayIntegrator2Ptr decayer,
+			      tcDecayIntegratorPtr decayer,
 			      bool intermediates,bool cc) {
   decayer->ME(DecayMEPtr());
   eps_=decayer->eps_;
@@ -73,7 +73,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
       // matrix element piece
       wgt *= decayer->me2(-1,inrest,!cc ? outgoing_ : outgoingCC_,
 			  momenta,
-			  ncount ==0 ? DecayIntegrator2::Initialize : DecayIntegrator2::Calculate);
+			  ncount ==0 ? DecayIntegrator::Initialize : DecayIntegrator::Calculate);
       ++ncount;
       if(wgt>maxWeight_) {
 	CurrentGenerator::log() << "Resetting max weight for decay " 
@@ -121,7 +121,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
     double total=0.;
     for(unsigned int ix=0,N=channels_.size();ix<N;++ix) {
       mewgts[ix]=decayer->me2(ix,inrest,!cc ? outgoing_ : outgoingCC_,
-			      momenta,DecayIntegrator2::Calculate);
+			      momenta,DecayIntegrator::Calculate);
       total+=mewgts[ix];
     }
     // randomly pick a channel
@@ -205,7 +205,7 @@ vector<Energy> PhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
 // construct the vertex for spin corrections
 void PhaseSpaceMode::constructVertex(const Particle & inpart, 
 				     const ParticleVector & decay,
-				     tcDecayIntegrator2Ptr decayer) const {
+				     tcDecayIntegratorPtr decayer) const {
   // construct the decay vertex
   VertexPtr vertex(new_ptr(DecayVertex()));
   DVertexPtr Dvertex(dynamic_ptr_cast<DVertexPtr>(vertex));
@@ -220,7 +220,7 @@ void PhaseSpaceMode::constructVertex(const Particle & inpart,
 }
 
 // initialise the phase space
-Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr decayer,
+Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegratorPtr decayer,
 					    bool onShell) {
   decayer->ME(DecayMEPtr());
   eps_=decayer->eps_;
@@ -258,7 +258,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 	fillStack();
 	wgt = pre*weight(dummy,inpart->momentum(),momenta,onShell);
 	// matrix element piece
-	wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
+	wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator::Initialize);
       }
       catch (Veto) {
 	wgt=0.;
@@ -324,7 +324,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegrator2Ptr dec
 	    fillStack();
 	    wgt = pre*weight(ichan,inpart->momentum(),momenta,onShell);
 	    // matrix element piece
-	    wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator2::Initialize);
+	    wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator::Initialize);
 	  }
 	  catch (Veto) {
 	    wgt=0.;

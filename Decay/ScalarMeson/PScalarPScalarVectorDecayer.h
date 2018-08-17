@@ -11,7 +11,7 @@
 //
 // This is the declaration of the PScalarPScalarVectorDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
@@ -31,12 +31,12 @@ using namespace ThePEG;
  * - \f$\epsilon_2\f$ is the polarization vector of the vector meson.
  * - \f$g\f$ is the coupling for the decay.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  *
  * \author Peter Richardson
  * 
  */
-class PScalarPScalarVectorDecayer: public DecayIntegrator2 {
+class PScalarPScalarVectorDecayer: public DecayIntegrator {
 
 public:
 

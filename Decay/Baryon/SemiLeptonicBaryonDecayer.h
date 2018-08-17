@@ -4,7 +4,7 @@
 //
 // This is the declaration of the SemiLeptonicBaryonDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
 #include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
@@ -27,7 +27,7 @@ using namespace ThePEG;
  * @see BaryonFormFactor.
  * 
  */
-class SemiLeptonicBaryonDecayer: public DecayIntegrator2 {
+class SemiLeptonicBaryonDecayer: public DecayIntegrator {
 
 public:
 

@@ -102,7 +102,7 @@ LeptonNeutrinoCurrent::current(tcPDPtr ,
 			       const int imode, const int ichan,Energy & scale, 
 			       const tPDVector & outgoing,
 			       const vector<Lorentz5Momentum> & momenta,
-			       DecayIntegrator2::MEOption) const {
+			       DecayIntegrator::MEOption) const {
   // no isospin here
   if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
   useMe();

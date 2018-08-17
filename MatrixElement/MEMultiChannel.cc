@@ -5,7 +5,7 @@
 //
 
 #include "MEMultiChannel.h"
-#include "Herwig/Decay/DecayIntegrator2.fh"
+#include "Herwig/Decay/DecayIntegrator.fh"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"

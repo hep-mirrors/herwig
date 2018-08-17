@@ -36,7 +36,7 @@ void GeneralCurrentDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<GeneralCurrentDecayer,DecayIntegrator2>
+DescribeAbstractClass<GeneralCurrentDecayer,DecayIntegrator>
 describeHerwigGeneralCurrentDecayer("Herwig::GeneralCurrentDecayer", "Herwig.so");
 
 void GeneralCurrentDecayer::Init() {
@@ -69,11 +69,11 @@ int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent,
 
 void GeneralCurrentDecayer::doinitrun() {
   current_->initrun();
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
 }
 
 void GeneralCurrentDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // make sure the current got initialised
   current_->init();
   Energy mdiff(inpart_->mass()-outpart_->mass());

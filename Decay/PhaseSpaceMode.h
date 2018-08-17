@@ -73,7 +73,7 @@ public:
    * @return The outgoing particles.
    */
   ParticleVector generateDecay(const Particle & inpart,
-			       tcDecayIntegrator2Ptr decayer,
+			       tcDecayIntegratorPtr decayer,
 			       bool intermediates,bool cc);
   
   /**
@@ -188,7 +188,7 @@ public :
    * Initialise the phase space.
    * @param init Perform the initialization.
    */
-  Energy initializePhaseSpace(bool init, tcDecayIntegrator2Ptr decayer,
+  Energy initializePhaseSpace(bool init, tcDecayIntegratorPtr decayer,
 			      bool onShell=false);
 
   /**
@@ -313,7 +313,7 @@ private:
    * @param out The outgoing particles.
    */
   void constructVertex(const Particle & in, const ParticleVector & out,
-		       tcDecayIntegrator2Ptr decayer) const;
+		       tcDecayIntegratorPtr decayer) const;
   
 private:
 

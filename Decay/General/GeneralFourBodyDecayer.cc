@@ -27,7 +27,7 @@ void GeneralFourBodyDecayer::persistentInput(PersistentIStream & is, int) {
      >> widthOpt_ >> colour_ >> colourLargeNC_ >> nflow_ >> diagmap_;
 }
 
-DescribeAbstractClass<GeneralFourBodyDecayer,DecayIntegrator2>
+DescribeAbstractClass<GeneralFourBodyDecayer,DecayIntegrator>
 describeGeneralFourBodyDecayer("Herwig::GeneralFourBodyDecayer",
 			       "Herwig.so");
 
@@ -174,7 +174,7 @@ Energy GeneralFourBodyDecayer::partialWidth(tPDPtr inpart,
 // }
 
 void GeneralFourBodyDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   assert(false);
   // create the phase space integrator
   // create the integration channels for the decay

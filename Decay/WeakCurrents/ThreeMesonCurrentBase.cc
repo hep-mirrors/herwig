@@ -64,7 +64,7 @@ ThreeMesonCurrentBase::current(tcPDPtr resonance,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
-			      DecayIntegrator2::MEOption) const {
+			      DecayIntegrator::MEOption) const {
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;
   for(unsigned int ix=0;ix<momenta.size();++ix)

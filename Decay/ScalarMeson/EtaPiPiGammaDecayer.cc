@@ -32,7 +32,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 
-DescribeClass<EtaPiPiGammaDecayer,DecayIntegrator2>
+DescribeClass<EtaPiPiGammaDecayer,DecayIntegrator>
 describeHerwigEtaPiPiGammaDecayer("Herwig::EtaPiPiGammaDecayer",
 				  "HwSMDecay.so");
 HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiGammaDecayer,double,Energy)
@@ -40,7 +40,7 @@ HERWIG_INTERPOLATOR_CLASSDESC(EtaPiPiGammaDecayer,double,Energy)
 
 
 void EtaPiPiGammaDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_maxweight.size();++ix)
       _maxweight[ix]=mode(ix)->maxWeight();
@@ -168,7 +168,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
 }
 
 void EtaPiPiGammaDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // check the consistence of the parameters
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()||isize!=_option.size()||isize!=_maxweight.size()||
@@ -553,8 +553,8 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
 					 bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":fpi             " << _fpi/MeV         << "\n";
   output << "newdef " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
   output << "newdef " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";

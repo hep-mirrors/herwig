@@ -11,7 +11,7 @@
 //
 // This is the declaration of the TensorMesonVectorVectorDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 
@@ -44,18 +44,18 @@ using namespace ThePEG;
  *  The incoming tensor mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
  *  for the decays can be calculated using the Initialize interface of the
- *  DecayIntegrator2 class or specified using the interface.
+ *  DecayIntegrator class or specified using the interface.
  *
  *  The incoming and outgoing particles, couplings and maximum weights for
  *  many of the common \f$T\to VV\f$ decays are specified in the default
  *  constructor.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * * @see \ref TensorMesonVectorVectorDecayerInterfaces "The interfaces"
  * defined for TensorMesonVectorVectorDecayer.
  *
  */
-class TensorMesonVectorVectorDecayer: public DecayIntegrator2 {
+class TensorMesonVectorVectorDecayer: public DecayIntegrator {
 
 public:
 

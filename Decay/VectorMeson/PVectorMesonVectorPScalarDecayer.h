@@ -11,7 +11,7 @@
 //
 // This is the declaration of the PVectorMesonVectorPScalarDecayer class.
 //
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
@@ -31,14 +31,14 @@ using namespace ThePEG;
  *  \f$p_0\f$ is the momentum of the decaying particle and \f$p_V\f$ is the momentum
  *  of the outgoing vector meson.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see \ref PVectorMesonVectorPScalarDecayerInterfaces "The interfaces"
  * defined for PVectorMesonVectorPScalarDecayer.
  * 
  *  \author Peter Richardson
  *
  */
-class PVectorMesonVectorPScalarDecayer: public DecayIntegrator2 {
+class PVectorMesonVectorPScalarDecayer: public DecayIntegrator {
 
 public:
 

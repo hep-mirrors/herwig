@@ -32,7 +32,7 @@ void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<PerturbativeDecayer,DecayIntegrator2>
+DescribeAbstractClass<PerturbativeDecayer,DecayIntegrator>
 describeHerwigPerturbativeDecayer("Herwig::PerturbativeDecayer",
 				  "Herwig.so HwPerturbativeDecay.so");
 

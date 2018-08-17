@@ -35,7 +35,7 @@
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 
 using namespace Herwig;
@@ -1053,7 +1053,7 @@ tDMPtr ShowerHandler::decay(PerturbativeProcessPtr process,
 
       if(radPhotons){
 	// generate radiation in the decay
-	tDecayIntegrator2Ptr hwdec=dynamic_ptr_cast<tDecayIntegrator2Ptr>(dm->decayer());
+	tDecayIntegratorPtr hwdec=dynamic_ptr_cast<tDecayIntegratorPtr>(dm->decayer());
 	if (hwdec && hwdec->canGeneratePhotons())
 	  children = hwdec->generatePhotons(*parent,children);
       }

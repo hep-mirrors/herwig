@@ -286,7 +286,7 @@ TwoPionPhotonCurrent::current(tcPDPtr resonance,
 			      const int imode, const int ,Energy & scale, 
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
-			      DecayIntegrator2::MEOption) const {
+			      DecayIntegrator::MEOption) const {
   assert(!resonance);
   int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge()+outgoing[2]->iCharge();
   // check the charge

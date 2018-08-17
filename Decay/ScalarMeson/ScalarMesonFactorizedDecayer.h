@@ -12,7 +12,7 @@
 // This is the declaration of the ScalarMesonFactorizedDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/FormFactors/ScalarFormFactor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -28,13 +28,13 @@ using namespace ThePEG;
  * WeakCurrent and a ScalarFormFactor in the naive factorization approximation
  * to perform the non-leptonic weak decays of scalar mesons.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see WeakCurrent
  * @see ScalarFormFactor
  *
  */
 
-class ScalarMesonFactorizedDecayer: public DecayIntegrator2 {
+class ScalarMesonFactorizedDecayer: public DecayIntegrator {
 
 public:
 
@@ -45,7 +45,7 @@ public:
 
 public:
 
-  /** @name Virtual functions required by the Decayer and DecayIntegrator2 classes. */
+  /** @name Virtual functions required by the Decayer and DecayIntegrator classes. */
   //@{
   /**
    * Which of the possible decays is required

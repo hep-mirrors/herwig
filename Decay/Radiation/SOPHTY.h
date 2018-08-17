@@ -45,7 +45,7 @@ public:
    * @return The decay products with additional radiation
    */
   virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children,
-					 tDecayIntegrator2Ptr decayer);
+					 tDecayIntegratorPtr decayer);
 
 public:
 

@@ -27,7 +27,7 @@ void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<GeneralThreeBodyDecayer,DecayIntegrator2>
+DescribeAbstractClass<GeneralThreeBodyDecayer,DecayIntegrator>
 describeHerwigGeneralThreeBodyDecayer("Herwig::GeneralThreeBodyDecayer", "Herwig.so");
 
 void GeneralThreeBodyDecayer::Init() {
@@ -175,7 +175,7 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 }
 
 void GeneralThreeBodyDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   if(outgoing_.empty()) return;
   // create the phase space integrator
   // create the integration channels for the decay

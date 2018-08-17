@@ -12,7 +12,7 @@
 // This is the declaration of the GeneralCurrentDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
@@ -28,7 +28,7 @@ using Helicity::VertexBasePtr;
  * @see \ref GeneralCurrentDecayerInterfaces "The interfaces"
  * defined for GeneralCurrentDecayer.
  */
-class GeneralCurrentDecayer: public DecayIntegrator2 {
+class GeneralCurrentDecayer: public DecayIntegrator {
 
 public:
 

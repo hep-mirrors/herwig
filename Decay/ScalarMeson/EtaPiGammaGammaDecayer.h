@@ -10,7 +10,7 @@
 #define HERWIG_EtaPiGammaGammaDecayer_H
 // This is the declaration of the EtaPiGammaGammaDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig/Utilities/Kinematics.h"
@@ -57,10 +57,10 @@ using namespace ThePEG;
  *  In practice we use a slightly modified form by including a running width term to 
  * include the \f$\eta'\f$ decay as well as the \f$\eta\f$ decay.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * 
  */
-class EtaPiGammaGammaDecayer: public DecayIntegrator2 {
+class EtaPiGammaGammaDecayer: public DecayIntegrator {
 
 public:
 

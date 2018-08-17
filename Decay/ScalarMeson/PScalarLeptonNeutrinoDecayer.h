@@ -10,7 +10,7 @@
 #define HERWIG_PScalarLeptonNeutrinoDecayer_H
 // This is the declaration of the PScalarLeptonNeutrinoDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {
@@ -32,10 +32,10 @@ using namespace ThePEG;
  * - \f$p_\ell\f$ is the momentum of the charged lepton
  * - \f$p_\nu\f$ is the momentum of the neutrino
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * 
  */
-class PScalarLeptonNeutrinoDecayer: public DecayIntegrator2 {
+class PScalarLeptonNeutrinoDecayer: public DecayIntegrator {
 
 public:
 

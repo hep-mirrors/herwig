@@ -38,7 +38,7 @@ using namespace ThePEG;
    *  using the former method at the moment.)
    *
    * @see PhaseSpaceMode
-   * @see DecayIntegrator2
+   * @see DecayIntegrator
    *
    * @author  Peter Richardson
    */

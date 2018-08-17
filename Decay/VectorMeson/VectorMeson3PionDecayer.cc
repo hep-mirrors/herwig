@@ -29,7 +29,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void VectorMeson3PionDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     double temp;
     unsigned int iy;
@@ -99,7 +99,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
 }
 
 void VectorMeson3PionDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // check the consistence of the decay modes
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()       || 
@@ -266,7 +266,7 @@ void VectorMeson3PionDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VectorMeson3PionDecayer,DecayIntegrator2>
+DescribeClass<VectorMeson3PionDecayer,DecayIntegrator>
 describeHerwigVectorMeson3PionDecayer("Herwig::VectorMeson3PionDecayer", "HwVMDecay.so");
 
 void VectorMeson3PionDecayer::Init() {
@@ -564,7 +564,7 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<Energy> inmass(3,mrho);
   vector<Energy> inwidth(3,wrho);
   vector<double> inpow(2,0.0);
-  //tcDecayIntegrator2Ptr decayer(this);
+  //tcDecayIntegratorPtr decayer(this);
   WidthCalculatorBasePtr output(
     new_ptr(ThreeBodyAllOnCalculator<VectorMeson3PionDecayer>
 	    (inweights,intype,inmass,inwidth,inpow,
@@ -575,8 +575,8 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
 					     bool header) const {
   if(header){output << "update decayers set parameters=\"";}
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "newdef " << name() << ":Incoming " 

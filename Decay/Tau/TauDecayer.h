@@ -10,7 +10,7 @@
 #define HERWIG_TauDecayer_H
 // This is the declaration of the TauDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
@@ -43,11 +43,11 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  *  current  \f$ J_\mu\f$. This allows a range of \f$\tau\f$ decays to be
  *  constructed via the repository using the interfaces.
  *
- * @see DecayIntegrator2.
+ * @see DecayIntegrator.
  * @see WeakCurrent
  * 
  */
-class TauDecayer: public DecayIntegrator2 {
+class TauDecayer: public DecayIntegrator {
 
 public:
 

@@ -68,7 +68,7 @@ a1ThreePionDecayer::a1ThreePionDecayer()
 }
 
 void a1ThreePionDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     // get the weights for the different channels
     for(unsigned int ix=0;ix<_zerowgts.size();++ix)
@@ -88,7 +88,7 @@ void a1ThreePionDecayer::doinitrun() {
 }
 
 void a1ThreePionDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // particles we need for the external state
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);
   tPDPtr a10 = getParticleData(ParticleID::a_10);
@@ -312,7 +312,7 @@ void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<a1ThreePionDecayer,DecayIntegrator2>
+DescribeClass<a1ThreePionDecayer,DecayIntegrator>
 describeHerwiga1ThreePionDecayer("Herwig::a1ThreePionDecayer", "HwVMDecay.so");
   
 void a1ThreePionDecayer::Init() {
@@ -697,8 +697,8 @@ a1ThreePionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void a1ThreePionDecayer::dataBaseOutput(ofstream & output,
 					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   output << "newdef " << name() << ":Coupling " << _coupling     << "\n";
   output << "newdef " << name() << ":Lambda2 "  << _lambda2/GeV2 << "\n";

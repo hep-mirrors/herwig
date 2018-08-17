@@ -11,7 +11,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig/Decay/DecayIntegrator2.fh"
+#include "Herwig/Decay/DecayIntegrator.fh"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -147,7 +147,7 @@ double MEee2Mesons::me2(const int ichan) const {
   if(ichan<0) iMode(modeMap_.at(imode));
   vector<LorentzPolarizationVectorE> 
     hadron(current_->current(tcPDPtr(), IsoSpin::IUnknown, IsoSpin::I3Unknown, imode,ichan,
-			     q,out,momenta,DecayIntegrator2::Calculate));
+			     q,out,momenta,DecayIntegrator::Calculate));
   // compute the matrix element
   vector<unsigned int> ihel(meMomenta().size());
   double output(0.);

@@ -27,7 +27,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void OniumToOniumPiPiDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
   }
@@ -104,7 +104,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
 }
 
 void OniumToOniumPiPiDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // check consistency of the vectors
   unsigned int isize=_incoming.size();
   if(_outgoing.size()!=isize||_maxweight.size()!=2*isize||
@@ -164,7 +164,7 @@ void OniumToOniumPiPiDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<OniumToOniumPiPiDecayer,DecayIntegrator2>
+DescribeClass<OniumToOniumPiPiDecayer,DecayIntegrator>
 describeHerwigOniumToOniumPiPiDecayer("Herwig::OniumToOniumPiPiDecayer", "HwVMDecay.so");
 
 void OniumToOniumPiPiDecayer::Init() {
@@ -348,8 +348,8 @@ double OniumToOniumPiPiDecayer::me2(const int,const Particle & part,
 void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 					     bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator2 base class
-  DecayIntegrator2::dataBaseOutput(output,false);
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {

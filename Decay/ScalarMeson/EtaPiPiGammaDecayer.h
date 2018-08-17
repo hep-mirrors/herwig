@@ -11,7 +11,7 @@
 // This is the declaration of the EtaPiPiGammaDecayer class.
 
 #include "Herwig/Utilities/Kinematics.h"
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Utilities/Interpolator.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
@@ -50,10 +50,10 @@ using namespace ThePEG;
  *  The coefficient \f$B_0\f$ is given in hep-ph/0112150. We use the values from this
  *  paper and use their default choice \f$c=1\f$, \f$a=\frac1{2M_\rho}\f$.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * 
  */
-class EtaPiPiGammaDecayer: public DecayIntegrator2 {
+class EtaPiPiGammaDecayer: public DecayIntegrator {
 
 public:
 

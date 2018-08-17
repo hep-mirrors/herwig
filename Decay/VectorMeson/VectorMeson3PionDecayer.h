@@ -10,7 +10,7 @@
 #define HERWIG_VectorMeson3PionDecayer_H
 // This is the declaration of the VectorMeson3PionDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
@@ -90,13 +90,13 @@ using namespace ThePEG;
  *   - Rho2Width      - width of the second rho multiplet, \f$\Gamma_{\rho_2}\f$.
  *   - Rho3Width      - width of the third  rho multiplet, \f$\Gamma_{\rho_3}\f$.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see \ref VectorMeson3PionDecayerInterfaces "The interfaces"
  * defined for VectorMeson3PionDecayer.
  * 
  *  \author Peter Richardson
  */
-class VectorMeson3PionDecayer: public DecayIntegrator2 {
+class VectorMeson3PionDecayer: public DecayIntegrator {
 
 public:
 

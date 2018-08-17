@@ -12,7 +12,7 @@
 // This is the declaration of the a1SimpleDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
@@ -27,7 +27,7 @@ using namespace ThePEG;
  * @see \ref a1SimpleDecayerInterfaces "The interfaces"
  * defined for a1SimpleDecayer.
  */
-class a1SimpleDecayer: public DecayIntegrator2 {
+class a1SimpleDecayer: public DecayIntegrator {
 
 public:
 

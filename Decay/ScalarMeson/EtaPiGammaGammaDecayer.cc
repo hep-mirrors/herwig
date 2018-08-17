@@ -28,7 +28,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 void EtaPiGammaGammaDecayer::doinitrun() {
-  DecayIntegrator2::doinitrun();
+  DecayIntegrator::doinitrun();
   if(initialize()) {
     _etamax  = mode(0)->maxWeight();
     _etapmax = mode(1)->maxWeight();
@@ -46,7 +46,7 @@ EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
 }
 
 void EtaPiGammaGammaDecayer::doinit() {
-  DecayIntegrator2::doinit();
+  DecayIntegrator::doinit();
   // set rho parameters if needed
   tPDPtr rho(getParticleData(ParticleID::rho0));
   if(!_localparameters) {
@@ -128,7 +128,7 @@ void EtaPiGammaGammaDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<EtaPiGammaGammaDecayer,DecayIntegrator2>
+DescribeClass<EtaPiGammaGammaDecayer,DecayIntegrator>
 describeHerwigEtaPiGammaGammaDecayer("Herwig::EtaPiGammaGammaDecayer", "HwSMDecay.so");
 
 void EtaPiGammaGammaDecayer::Init() {
@@ -358,7 +358,7 @@ EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output, 
 					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
-  DecayIntegrator2::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "newdef " << name() << ":grhoomega " << _grhoomega*GeV << "\n";
   output << "newdef " << name() << ":Fpi " << _fpi/MeV  << "\n";
   output << "newdef " << name() << ":grho " << _grho << "\n";

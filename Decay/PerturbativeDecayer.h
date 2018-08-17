@@ -5,7 +5,7 @@
 // This is the declaration of the PerturbativeDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Shower/ShowerAlpha.h"
 #include "Herwig/Shower/ShowerInteraction.h"
 
@@ -20,7 +20,7 @@ using namespace ThePEG;
  * @see \ref PerturbativeDecayerInterfaces "The interfaces"
  * defined for PerturbativeDecayer.
  */
-class PerturbativeDecayer: public DecayIntegrator2 {
+class PerturbativeDecayer: public DecayIntegrator {
 
 protected:
   

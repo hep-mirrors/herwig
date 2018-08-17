@@ -23,7 +23,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
@@ -382,7 +382,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 	   << "You may have forgotten to switch on the decay mode calculation using\n"
 	   << "  set TwoBodyDC:CreateDecayModes Yes\n"
 	   << "  set ThreeBodyDC:CreateDecayModes Yes\n"
-	   << "  set WeakConstructor:CreateDecayModes Yes\n"
+	   << "  set WeakDecayConstructor:CreateDecayModes Yes\n"
 	   << "or the decays of this particle are missing from your\n"
 	   << "input spectrum and decay file in the SLHA format.\n\n";
     return;
@@ -410,7 +410,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       generator()->preinitInterface(*dit, "Active", "set", "No");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
-      DecayIntegrator2Ptr decayer = dynamic_ptr_cast<DecayIntegrator2Ptr>((**dit).decayer());
+      DecayIntegratorPtr decayer = dynamic_ptr_cast<DecayIntegratorPtr>((**dit).decayer());
       if(decayer) {
       	generator()->preinitInterface(decayer->fullName(), "Initialize", "set","0");
       }

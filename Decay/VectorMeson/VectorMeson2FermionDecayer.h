@@ -10,7 +10,7 @@
 #define HERWIG_VectorMeson2FermionDecayer_H
 // This is the declaration of the VectorMeson2FermionDecayer class.
 
-#include "Herwig/Decay/DecayIntegrator2.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
@@ -32,18 +32,18 @@ using namespace ThePEG;
  *  The incoming vector mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
  *  for the decays can be calculated using the Initialize interface of the
- *  DecayIntegrator2 class or specified using the interface.
+ *  DecayIntegrator class or specified using the interface.
  *
  *  The incoming and outgoing particles, couplings and maximum weights for
  *  many of the common \f$V\to f\bar{f}\f$ decays are specified in the default
  *  constructor.
  *
- * @see DecayIntegrator2
+ * @see DecayIntegrator
  * @see \ref VectorMeson2FermionDecayerInterfaces "The interfaces"
  * defined for VectorMeson2FermionDecayer.
  *
  */
-class VectorMeson2FermionDecayer: public DecayIntegrator2 {
+class VectorMeson2FermionDecayer: public DecayIntegrator {
 
 public:
 
