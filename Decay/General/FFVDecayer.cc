@@ -205,13 +205,13 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<FFVDecayer,GeneralTwoBodyDecayer2>
+DescribeClass<FFVDecayer,GeneralTwoBodyDecayer>
 describeHerwigFFVDecayer("Herwig::FFVDecayer", "Herwig.so");
 
 void FFVDecayer::Init() {
@@ -319,7 +319,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   Complex diag;
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer2::CFlow & colourFlow = colourFlows(inpart, decay);
+  const GeneralTwoBodyDecayer::CFlow & colourFlow = colourFlows(inpart, decay);
   double gs(0.);
   bool couplingSet(false);
 #ifdef GAUGE_CHECK

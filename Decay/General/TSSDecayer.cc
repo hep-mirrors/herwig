@@ -57,7 +57,7 @@ void TSSDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TSSDecayer,GeneralTwoBodyDecayer2>
+DescribeClass<TSSDecayer,GeneralTwoBodyDecayer>
 describeHerwigTSSDecayer("Herwig::TSSDecayer", "Herwig.so");
 
 void TSSDecayer::Init() {
@@ -127,7 +127,7 @@ Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
 

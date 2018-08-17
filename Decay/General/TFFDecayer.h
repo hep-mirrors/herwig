@@ -12,7 +12,7 @@
 // This is the declaration of the TFFDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
@@ -26,12 +26,12 @@ using Helicity::FFTVertexPtr;
  * The TFFDecayer class implements the decay of a tensor
  * to 2 fermions in a general model. It holds an FFTVertex pointer
  * that must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer2
+ * @see GeneralTwoBodyDecayer
  */
-class TFFDecayer: public GeneralTwoBodyDecayer2 {
+class TFFDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

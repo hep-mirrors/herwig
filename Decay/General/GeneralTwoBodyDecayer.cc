@@ -1,7 +1,7 @@
 
 // -*- C++ -*-
 //
-// GeneralTwoBodyDecayer2.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// GeneralTwoBodyDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -9,10 +9,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the GeneralTwoBodyDecayer2 class.
+// functions of the GeneralTwoBodyDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -23,7 +23,7 @@
 
 using namespace Herwig;
 
-ParticleVector GeneralTwoBodyDecayer2::decay(const Particle & parent,
+ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 					    const tPDVector & children) const {
 
   // return empty vector if products heavier than parent
@@ -42,15 +42,15 @@ ParticleVector GeneralTwoBodyDecayer2::decay(const Particle & parent,
   return decay;
 }
 
-void GeneralTwoBodyDecayer2::doinit() {
-  PerturbativeDecayer2::doinit();
+void GeneralTwoBodyDecayer::doinit() {
+  PerturbativeDecayer::doinit();
   assert( incoming_ && outgoing_.size()==2);
   //create phase space mode
   addMode(new_ptr(PhaseSpaceMode(incoming_,{outgoing_[0],outgoing_[1]},
 				 maxWeight_)));
 }
 
-int GeneralTwoBodyDecayer2::modeNumber(bool & cc, tcPDPtr parent, 
+int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
 				      const tPDVector & children) const {
   long parentID = parent->id();
   long id1 = children[0]->id();
@@ -73,7 +73,7 @@ int GeneralTwoBodyDecayer2::modeNumber(bool & cc, tcPDPtr parent,
   return -1;
 }
 
-void GeneralTwoBodyDecayer2::
+void GeneralTwoBodyDecayer::
 colourConnections(const Particle & parent,
 		  const ParticleVector & out) const {
   PDT::Colour incColour(parent.data().iColour());
@@ -99,7 +99,7 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour singlet in "
-			<< "GeneralTwoBodyDecayer2::colourConnections "
+			<< "GeneralTwoBodyDecayer::colourConnections "
 			<< outaColour << " " << outbColour
 			<< Exception::runerror; 
   }
@@ -131,7 +131,7 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour triplet in "
-			<< "GeneralTwoBodyDecayer2::colourConnections() "
+			<< "GeneralTwoBodyDecayer::colourConnections() "
 			<< outaColour << " " << outbColour
 			<< Exception::runerror; 
   }
@@ -163,7 +163,7 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour antitriplet "
-			<< "in GeneralTwoBodyDecayer2::colourConnections() "
+			<< "in GeneralTwoBodyDecayer::colourConnections() "
 			<< outaColour << " " << outbColour
 			<< Exception::runerror; 
   }
@@ -191,7 +191,7 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
                         << "colour octet "
-                        << "in GeneralTwoBodyDecayer2::colourConnections() "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
                         << outaColour << " " << outbColour
                         << Exception::runerror;
   }
@@ -211,7 +211,7 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
                         << "colour sextet "
-                        << "in GeneralTwoBodyDecayer2::colourConnections() "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
                         << outaColour << " " << outbColour
                         << Exception::runerror;
   }
@@ -231,18 +231,18 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
                         << "colour anti-sextet "
-                        << "in GeneralTwoBodyDecayer2::colourConnections() "
+                        << "in GeneralTwoBodyDecayer::colourConnections() "
                         << outaColour << " " << outbColour
                         << Exception::runerror;
   }
   else
     throw Exception() << "Unknown incoming colour in "
-		      << "GeneralTwoBodyDecayer2::colourConnections() "
+		      << "GeneralTwoBodyDecayer::colourConnections() "
 		      << incColour
 		      << Exception::runerror; 
 }
 
-bool GeneralTwoBodyDecayer2::twoBodyMEcode(const DecayMode & dm, int & mecode,
+bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
 					  double & coupling) const {
   assert(dm.parent()->id() == incoming_->id());
   ParticleMSet::const_iterator pit = dm.products().begin();
@@ -264,28 +264,28 @@ bool GeneralTwoBodyDecayer2::twoBodyMEcode(const DecayMode & dm, int & mecode,
 }
 
 
-void GeneralTwoBodyDecayer2::persistentOutput(PersistentOStream & os) const {
+void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << incoming_ << outgoing_ << maxWeight_;
 }
 
-void GeneralTwoBodyDecayer2::persistentInput(PersistentIStream & is, int) {
+void GeneralTwoBodyDecayer::persistentInput(PersistentIStream & is, int) {
   is >> incoming_ >> outgoing_ >> maxWeight_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<GeneralTwoBodyDecayer2,PerturbativeDecayer2>
-describeHerwigGeneralTwoBodyDecayer2("Herwig::GeneralTwoBodyDecayer2", "Herwig.so");
+DescribeAbstractClass<GeneralTwoBodyDecayer,PerturbativeDecayer>
+describeHerwigGeneralTwoBodyDecayer("Herwig::GeneralTwoBodyDecayer", "Herwig.so");
 
-void GeneralTwoBodyDecayer2::Init() {
+void GeneralTwoBodyDecayer::Init() {
 
-  static ClassDocumentation<GeneralTwoBodyDecayer2> documentation
+  static ClassDocumentation<GeneralTwoBodyDecayer> documentation
     ("This class is designed to be a base class for all 2 body decays"
      "in a general model");
 
 }
 
-double GeneralTwoBodyDecayer2::brat(const DecayMode &, const Particle & p,
+double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
 				   double oldbrat) const {
   ParticleVector children = p.children();
   if( children.size() != 2 || !p.data().widthGenerator() ) 
@@ -301,15 +301,15 @@ double GeneralTwoBodyDecayer2::brat(const DecayMode &, const Particle & p,
   return pwidth/width;
 }
 
-void GeneralTwoBodyDecayer2::doinitrun() {
-  PerturbativeDecayer2::doinitrun();
+void GeneralTwoBodyDecayer::doinitrun() {
+  PerturbativeDecayer::doinitrun();
   for(unsigned int ix=0;ix<numberModes();++ix) {
     double fact = pow(1.5,int(mode(ix)->incoming().first->iSpin())-1);
     mode(ix)->maxWeight(fact*mode(ix)->maxWeight());
   }
 }
 
-double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
+double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 					   tcPDPtr out2) const {
   // identical particle symmetry factor
   double output = out1->id()==out2->id() ? 0.5 : 1.;
@@ -330,7 +330,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
     else 
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour neutral particle in "
-			<< "GeneralTwoBodyDecayer2::colourFactor() for "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
@@ -355,7 +355,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour triplet particle in "
-			<< "GeneralTwoBodyDecayer2::colourFactor() for "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
@@ -380,7 +380,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour anti triplet particle in "
-			<< "GeneralTwoBodyDecayer2::colourFactor() for "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
@@ -399,7 +399,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour octet particle in "
-			<< "GeneralTwoBodyDecayer2::colourFactor() for "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
@@ -412,7 +412,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour sextet particle in "
-			<< "GeneralTwoBodyDecayer2::colourFactor() for "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
@@ -425,7 +425,7 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour anti-sextet particle in "
-			<< "GeneralTwoBodyDecayer2::colourFactor() for "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
 			<< in->PDGName() << " -> "
 			<< out1->PDGName() << " " << out2->PDGName() 
 			<< Exception::runerror;
@@ -433,14 +433,14 @@ double GeneralTwoBodyDecayer2::colourFactor(tcPDPtr in, tcPDPtr out1,
   else
     throw Exception() << "Unknown colour "
 		      << in->iColour() << " for the decaying particle in "
-		      << "GeneralTwoBodyDecayer2::colourFactor() for "
+		      << "GeneralTwoBodyDecayer::colourFactor() for "
 		      << in->PDGName() << " -> "
 		      << out1->PDGName() << " " << out2->PDGName() 
 		      << Exception::runerror;
   return output;
 }
 
-Energy GeneralTwoBodyDecayer2::partialWidth(PMPair inpart, PMPair outa, 
+Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa, 
 					    PMPair outb) const {
   // select the number of the mode
   tPDVector children;
@@ -470,14 +470,14 @@ Energy GeneralTwoBodyDecayer2::partialWidth(PMPair inpart, PMPair outa,
   return me/(8.*Constants::pi)*pcm;
 }
 
-void GeneralTwoBodyDecayer2::decayInfo(PDPtr incoming, PDPair outgoing) {
+void GeneralTwoBodyDecayer::decayInfo(PDPtr incoming, PDPair outgoing) {
   incoming_=incoming;
   outgoing_.clear();
   outgoing_.push_back(outgoing.first );
   outgoing_.push_back(outgoing.second);
 }
 
-double GeneralTwoBodyDecayer2::matrixElementRatio(const Particle & inpart, 
+double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart, 
 						  const ParticleVector & decay2,
 						  const ParticleVector & decay3, 
 						  MEOption meopt,
@@ -494,7 +494,7 @@ double GeneralTwoBodyDecayer2::matrixElementRatio(const Particle & inpart,
   
 }
 
-const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle & inpart, 
+const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
 								const ParticleVector & decay,
 								unsigned int & nflow) {
   // calculate the colour factors for the three-body decay
@@ -545,7 +545,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour scalar particle in "
-			<< "GeneralTwoBodyDecayer2::getColourFactors() for "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
 			<< decay[1]->dataPtr()->PDGName() << " "  
@@ -583,7 +583,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour triplet particle in "
-			<< "GeneralTwoBodyDecayer2::getColourFactors() for "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
 			<< decay[1]->dataPtr()->PDGName() << " "  
@@ -621,7 +621,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for decay colour anti-triplet particle in "
-			<< "GeneralTwoBodyDecayer2::getColourFactors() for "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
 			<< decay[1]->dataPtr()->PDGName() << " "  
@@ -648,7 +648,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for a decaying colour octet particle in "
-			<< "GeneralTwoBodyDecayer2::getColourFactors() for "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
 			<< decay[1]->dataPtr()->PDGName() << " "  
@@ -671,7 +671,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for a decaying colour sextet particle in "
-			<< "GeneralTwoBodyDecayer2::getColourFactors() for "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
 			<< decay[1]->dataPtr()->PDGName() << " "  
@@ -694,7 +694,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
     else
       throw Exception() << "Unknown colour for the outgoing particles"
 			<< " for a decaying colour anti-sextet particle in "
-			<< "GeneralTwoBodyDecayer2::getColourFactors() for "
+			<< "GeneralTwoBodyDecayer::getColourFactors() for "
 			<< inpart.   dataPtr()->PDGName() << " -> "
 			<< decay[0]->dataPtr()->PDGName() << " " 
 			<< decay[1]->dataPtr()->PDGName() << " "  
@@ -703,7 +703,7 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
   }
   else
     throw Exception() << "Unknown colour for the decaying particle in "
-  		      << "GeneralTwoBodyDecayer2::getColourFactors() for "
+  		      << "GeneralTwoBodyDecayer::getColourFactors() for "
   		      << inpart.   dataPtr()->PDGName() << " -> "
 		      << decay[0]->dataPtr()->PDGName() << " " 
 		      << decay[1]->dataPtr()->PDGName() << " "  
@@ -712,8 +712,8 @@ const vector<DVector> & GeneralTwoBodyDecayer2::getColourFactors(const Particle 
   return colour_;
 }
 
-const GeneralTwoBodyDecayer2::CFlow & 
-GeneralTwoBodyDecayer2::colourFlows(const Particle & inpart,
+const GeneralTwoBodyDecayer::CFlow & 
+GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
 				   const ParticleVector & decay) {
   // static initialization of commonly used colour structures
   static const CFlow init = CFlow(3, CFlowPairVec(1, make_pair(0, 1.)));
@@ -813,10 +813,10 @@ GeneralTwoBodyDecayer2::colourFlows(const Particle & inpart,
   return *retval;
 }
 
-double GeneralTwoBodyDecayer2::threeBodyME(const int , const Particle &,
+double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle &,
 					  const ParticleVector &,
 					  ShowerInteraction, MEOption) {
-  throw Exception() << "Base class GeneralTwoBodyDecayer2::threeBodyME() "
+  throw Exception() << "Base class GeneralTwoBodyDecayer::threeBodyME() "
 		    << "called, should have an implementation in the inheriting class"
 		    << Exception::runerror;
   return 0.;

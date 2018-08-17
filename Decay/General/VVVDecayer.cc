@@ -65,7 +65,7 @@ void VVVDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<VVVDecayer,GeneralTwoBodyDecayer2>
+DescribeClass<VVVDecayer,GeneralTwoBodyDecayer>
 describeHerwigVVVDecayer("Herwig::VVVDecayer", "Herwig.so");
 
 void VVVDecayer::Init() {
@@ -153,7 +153,7 @@ Energy VVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     return pWidth;
   }
   else {
-    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -209,7 +209,7 @@ double VVVDecayer::threeBodyME(const int , const Particle & inpart,
 
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer2::CFlow & colourFlow
+  const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
   double gs(0.);
   bool couplingSet(false);

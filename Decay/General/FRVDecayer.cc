@@ -206,13 +206,13 @@ Energy FRVDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<FRVDecayer,GeneralTwoBodyDecayer2>
+DescribeClass<FRVDecayer,GeneralTwoBodyDecayer>
 describeHerwigFRVDecayer("Herwig::FRVDecayer", "Herwig.so");
 
 void FRVDecayer::Init() {

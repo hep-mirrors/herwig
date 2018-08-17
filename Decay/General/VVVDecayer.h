@@ -12,7 +12,7 @@
 // This is the declaration of the VVVDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
@@ -25,12 +25,12 @@ using Helicity::VVVVertexPtr;
    * The VVVDecayer class implements the decay of a vector
    * to 2 vectors in a general model. It holds an VVVVertex pointer
    * that must be typecast from the VertexBase pointer held in
-   * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+   * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
    * partialWidth().
    *
-   * @see GeneralTwoBodyDecayer2
+   * @see GeneralTwoBodyDecayer
    */
-class VVVDecayer: public GeneralTwoBodyDecayer2 {
+class VVVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

@@ -37,7 +37,6 @@ TwoBodyDecayMatrixElement.h \
 GeneralDecayMatrixElement.fh GeneralDecayMatrixElement.h \
 BranchingRatioReweighter.h\
 PerturbativeDecayer.h \
-PerturbativeDecayer2.h \
 ResonanceHelpers.h PhaseSpaceChannel.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
@@ -55,8 +54,7 @@ DecayMatrixElement.cc \
 TwoBodyDecayMatrixElement.cc \
 GeneralDecayMatrixElement.cc \
 BranchingRatioReweighter.cc\
-PerturbativeDecayer.cc\
-PerturbativeDecayer2.cc
+PerturbativeDecayer.cc
 
 ##################
 

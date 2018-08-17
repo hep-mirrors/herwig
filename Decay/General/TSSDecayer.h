@@ -12,7 +12,7 @@
 // This is the declaration of the TSSDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
 
@@ -24,12 +24,12 @@ using Helicity::SSTVertexPtr;
  * The TSSDecayer class implements the decay of a tensor
  * to 2 scalars in a general model. It holds an SSTVertex pointer
  * that must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer2
+ * @see GeneralTwoBodyDecayer
  */
-class TSSDecayer: public GeneralTwoBodyDecayer2 {
+class TSSDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

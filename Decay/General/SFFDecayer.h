@@ -12,7 +12,7 @@
 // This is the declaration of the SFFDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
@@ -26,12 +26,12 @@ using Helicity::FFSVertexPtr;
    * The SFFDecayer class implements the decay of a scalar to 2
    * fermions in a general model. It holds an FFSVertex pointer that 
    * must be typecast from the VertexBase pointer held in 
-   * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+   * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
    * partialWidth(). 
    *
-   * @see GeneralTwoBodyDecayer2
+   * @see GeneralTwoBodyDecayer
    */
-class SFFDecayer: public GeneralTwoBodyDecayer2 {
+class SFFDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

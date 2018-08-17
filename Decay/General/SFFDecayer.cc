@@ -66,7 +66,7 @@ void SFFDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SFFDecayer,GeneralTwoBodyDecayer2>
+DescribeClass<SFFDecayer,GeneralTwoBodyDecayer>
 describeHerwigSFFDecayer("Herwig::SFFDecayer", "Herwig.so");
 
 void SFFDecayer::Init() {
@@ -163,7 +163,7 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -236,7 +236,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   identifyVertices(iferm, ianti, inpart, decay, outgoingVertexF, outgoingVertexA,
 		   inter);
 
-  const GeneralTwoBodyDecayer2::CFlow & colourFlow
+  const GeneralTwoBodyDecayer::CFlow & colourFlow
         = colourFlows(inpart, decay);
 
   Energy2 scale(sqr(inpart.mass()));

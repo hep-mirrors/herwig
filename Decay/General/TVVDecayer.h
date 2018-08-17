@@ -12,7 +12,7 @@
 // This is the declaration of the TVVDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
@@ -26,12 +26,12 @@ using Helicity::VVTVertexPtr;
  * The TVVDecayer class implements the decay of a tensor
  * to 2 vector bosons in a general model. It holds a VVTVertex pointer
  * that must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer2
+ * @see GeneralTwoBodyDecayer
  */
-class TVVDecayer: public GeneralTwoBodyDecayer2 {
+class TVVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

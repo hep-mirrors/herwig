@@ -56,7 +56,7 @@ void SRFDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SRFDecayer,GeneralTwoBodyDecayer2>
+DescribeClass<SRFDecayer,GeneralTwoBodyDecayer>
 describeHerwigSRFDecayer("Herwig::SRFDecayer", "Herwig.so");
 
 void SRFDecayer::Init() {
@@ -197,7 +197,7 @@ Energy SRFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
 }
 

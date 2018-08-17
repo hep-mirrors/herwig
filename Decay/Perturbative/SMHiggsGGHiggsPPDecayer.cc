@@ -29,7 +29,7 @@ using namespace ThePEG::Helicity;
 
 // The following static variable is needed for the type
 // description system in ThePEG. 
-DescribeClass<SMHiggsGGHiggsPPDecayer,PerturbativeDecayer2>
+DescribeClass<SMHiggsGGHiggsPPDecayer,PerturbativeDecayer>
 describeHerwigSMHiggsGGHiggsPPDecayer("Herwig::SMHiggsGGHiggsPPDecayer",
 				      "HwPerturbativeHiggsDecay.so");
 
@@ -216,7 +216,7 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,const Particle & part,
 }
 
 void SMHiggsGGHiggsPPDecayer::doinit() {
-  PerturbativeDecayer2::doinit();
+  PerturbativeDecayer::doinit();
   if(_hggvertex) _hggvertex->init();
   else {
     throw InitException() << "SMHiggsGGHiggsPPDecayer::doinit() - " 
@@ -245,7 +245,7 @@ void SMHiggsGGHiggsPPDecayer::doinitrun() {
   _hggvertex->initrun();
   _hppvertex->initrun();
   _hzpvertex->initrun();
-  PerturbativeDecayer2::doinitrun();
+  PerturbativeDecayer::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       _h0wgt[ix] = mode(ix)->maxWeight();
@@ -255,7 +255,7 @@ void SMHiggsGGHiggsPPDecayer::doinitrun() {
 
 void SMHiggsGGHiggsPPDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
-  // parameters for the PerturbativeDecayer2 base class
+  // parameters for the PerturbativeDecayer base class
   for(unsigned int ix=0;ix<_h0wgt.size();++ix) {
     os << "newdef " << name() << ":MaxWeights " << ix << " "
 	   << _h0wgt[ix] << "\n";
@@ -263,7 +263,7 @@ void SMHiggsGGHiggsPPDecayer::dataBaseOutput(ofstream & os,bool header) const {
   os << "newdef " << name() << ":SMHGGVertex " << _hggvertex->fullName() << "\n";
   os << "newdef " << name() << ":SMHPPVertex " << _hppvertex->fullName() << "\n";
   os << "newdef " << name() << ":SMHZPVertex " << _hzpvertex->fullName() << "\n";
-  PerturbativeDecayer2::dataBaseOutput(os,false);
+  PerturbativeDecayer::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" 
 		<< fullName() << "\";" << endl;
 }

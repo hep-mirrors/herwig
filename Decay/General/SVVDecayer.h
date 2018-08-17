@@ -12,7 +12,7 @@
 // This is the declaration of the SVVDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
@@ -26,13 +26,13 @@ using Helicity::VVSVertexPtr;
  * This SVVDecayer class implements the decay of a scalar to 
  * 2 vector bosons using either the tree level VVSVertex or the loop vertex.
  * It inherits from 
- * GeneralTwoBodyDecayer2 and implements the virtual member functions me2() 
+ * GeneralTwoBodyDecayer and implements the virtual member functions me2() 
  * and partialWidth(). It also stores a pointer to the VVSVertex.
  *
- * @see GeneralTwoBodyDecayer2 
+ * @see GeneralTwoBodyDecayer 
  * 
  */
-class SVVDecayer: public GeneralTwoBodyDecayer2 {
+class SVVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

@@ -6,36 +6,36 @@
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_GeneralTwoBodyDecayer2_H
-#define HERWIG_GeneralTwoBodyDecayer2_H
+#ifndef HERWIG_GeneralTwoBodyDecayer_H
+#define HERWIG_GeneralTwoBodyDecayer_H
 //
-// This is the declaration of the GeneralTwoBodyDecayer2 class.
+// This is the declaration of the GeneralTwoBodyDecayer class.
 //
 
-#include "Herwig/Decay/PerturbativeDecayer2.h"
+#include "Herwig/Decay/PerturbativeDecayer.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
-#include "GeneralTwoBodyDecayer2.fh"
+#include "GeneralTwoBodyDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::VertexBasePtr;
 
 /** \ingroup Decay
- * The GeneralTwoBodyDecayer2 class is designed to be the base class 
+ * The GeneralTwoBodyDecayer class is designed to be the base class 
  * for 2 body decays for some general model. It inherits from 
- * PerturbativeDecayer2 and implements the modeNumber() virtual function
+ * PerturbativeDecayer and implements the modeNumber() virtual function
  * that is the  same for all of the decays. A decayer for
  * a specific spin configuration should inherit from this and implement
  * the me2() and partialWidth() member functions. The colourConnections()
  * member should be called from inside me2() in the inheriting decayer
  * to set up the colour lines.
  *
- * @see \ref GeneralTwoBodyDecayer2Interfaces "The interfaces"
- * defined for GeneralTwoBodyDecayer2.
- * @see PerturbativeDecayer2
+ * @see \ref GeneralTwoBodyDecayerInterfaces "The interfaces"
+ * defined for GeneralTwoBodyDecayer.
+ * @see PerturbativeDecayer
  */
-class GeneralTwoBodyDecayer2: public PerturbativeDecayer2 {
+class GeneralTwoBodyDecayer: public PerturbativeDecayer {
 
 public:
   
@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer2() : maxWeight_(1.), colour_(1,DVector(1,1.))
+  GeneralTwoBodyDecayer() : maxWeight_(1.), colour_(1,DVector(1,1.))
   {}
 
 
@@ -227,7 +227,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GeneralTwoBodyDecayer2 & operator=(const GeneralTwoBodyDecayer2 &);
+  GeneralTwoBodyDecayer & operator=(const GeneralTwoBodyDecayer &);
  
 private:
 
@@ -292,4 +292,4 @@ inline PersistentIStream & operator>>(PersistentIStream & is, map<ShowerInteract
 }
 }
 
-#endif /* HERWIG_GeneralTwoBodyDecayer2_H */
+#endif /* HERWIG_GeneralTwoBodyDecayer_H */

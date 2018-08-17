@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralTwoBodyDecayer class.
+//
+#ifndef ThePEG_GeneralTwoBodyDecayer_FH
+#define ThePEG_GeneralTwoBodyDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+  using namespace ThePEG;
+class GeneralTwoBodyDecayer;
+ThePEG_DECLARE_POINTERS(GeneralTwoBodyDecayer,GeneralTwoBodyDecayerPtr);
+
+}
+
+#endif

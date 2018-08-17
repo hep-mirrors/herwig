@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the PerturbativeDecayer2 class.
+// functions of the PerturbativeDecayer class.
 //
 
-#include "PerturbativeDecayer2.h"
+#include "PerturbativeDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -19,12 +19,12 @@
 
 using namespace Herwig;
 
-void PerturbativeDecayer2::persistentOutput(PersistentOStream & os) const {
+void PerturbativeDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(pTmin_,GeV) << oenum(inter_) << alphaS_ << alphaEM_
      << useMEforT2_ << C_ << ymax_ << phaseOpt_;
 }
 
-void PerturbativeDecayer2::persistentInput(PersistentIStream & is, int) {
+void PerturbativeDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(pTmin_,GeV) >> ienum(inter_) >> alphaS_ >> alphaEM_
      >> useMEforT2_ >> C_ >> ymax_ >> phaseOpt_;
 }
@@ -32,26 +32,26 @@ void PerturbativeDecayer2::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeAbstractClass<PerturbativeDecayer2,DecayIntegrator2>
-describeHerwigPerturbativeDecayer2("Herwig::PerturbativeDecayer2",
+DescribeAbstractClass<PerturbativeDecayer,DecayIntegrator2>
+describeHerwigPerturbativeDecayer("Herwig::PerturbativeDecayer",
 				  "Herwig.so HwPerturbativeDecay.so");
 
-void PerturbativeDecayer2::Init() {
+void PerturbativeDecayer::Init() {
 
-  static ClassDocumentation<PerturbativeDecayer2> documentation
-    ("The PerturbativeDecayer2 class is the mase class for "
+  static ClassDocumentation<PerturbativeDecayer> documentation
+    ("The PerturbativeDecayer class is the mase class for "
      "perturbative decays in Herwig");
 
-  static Parameter<PerturbativeDecayer2,Energy> interfacepTmin
+  static Parameter<PerturbativeDecayer,Energy> interfacepTmin
     ("pTmin",
      "Minimum transverse momentum from gluon radiation",
-     &PerturbativeDecayer2::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &PerturbativeDecayer::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Switch<PerturbativeDecayer2,ShowerInteraction> interfaceInteractions
+  static Switch<PerturbativeDecayer,ShowerInteraction> interfaceInteractions
     ("Interactions",
      "which interactions to include for the hard corrections",
-     &PerturbativeDecayer2::inter_, ShowerInteraction::QCD, false, false);
+     &PerturbativeDecayer::inter_, ShowerInteraction::QCD, false, false);
   static SwitchOption interfaceInteractionsQCD
     (interfaceInteractions,
      "QCD",
@@ -68,21 +68,21 @@ void PerturbativeDecayer2::Init() {
      "Both QCD and QED",
      ShowerInteraction::Both);
 
-  static Reference<PerturbativeDecayer2,ShowerAlpha> interfaceAlphaS
+  static Reference<PerturbativeDecayer,ShowerAlpha> interfaceAlphaS
     ("AlphaS",
      "Object for the coupling in the generation of hard QCD radiation",
-     &PerturbativeDecayer2::alphaS_, false, false, true, true, false);
+     &PerturbativeDecayer::alphaS_, false, false, true, true, false);
 
-  static Reference<PerturbativeDecayer2,ShowerAlpha> interfaceAlphaEM
+  static Reference<PerturbativeDecayer,ShowerAlpha> interfaceAlphaEM
     ("AlphaEM",
      "Object for the coupling in the generation of hard QED radiation",
-     &PerturbativeDecayer2::alphaEM_, false, false, true, true, false);
+     &PerturbativeDecayer::alphaEM_, false, false, true, true, false);
 
-  static Switch<PerturbativeDecayer2,bool> interfaceUseMEForT2
+  static Switch<PerturbativeDecayer,bool> interfaceUseMEForT2
     ("UseMEForT2",
      "Use the matrix element correction, if available to fill the T2"
      " region for the decay shower and don't fill using the shower",
-     &PerturbativeDecayer2::useMEforT2_, true, false, false);
+     &PerturbativeDecayer::useMEforT2_, true, false, false);
   static SwitchOption interfaceUseMEForT2Shower
     (interfaceUseMEForT2,
      "Shower",
@@ -94,22 +94,22 @@ void PerturbativeDecayer2::Init() {
      "Use the Matrix element to fill the T2 region",
      true);
 
-    static Parameter<PerturbativeDecayer2,double> interfacePrefactor
+    static Parameter<PerturbativeDecayer,double> interfacePrefactor
     ("Prefactor",
      "The prefactor for the sampling of the powheg Sudakov",
-     &PerturbativeDecayer2::C_, 6.3, 0.0, 1e10,
+     &PerturbativeDecayer::C_, 6.3, 0.0, 1e10,
      false, false, Interface::limited);
 
-  static Parameter<PerturbativeDecayer2,double> interfaceYMax
+  static Parameter<PerturbativeDecayer,double> interfaceYMax
     ("YMax",
      "The maximum value for the rapidity",
-     &PerturbativeDecayer2::ymax_, 10., 0.0, 100.,
+     &PerturbativeDecayer::ymax_, 10., 0.0, 100.,
      false, false, Interface::limited);
 
-  static Switch<PerturbativeDecayer2,unsigned int> interfacePhaseSpaceOption
+  static Switch<PerturbativeDecayer,unsigned int> interfacePhaseSpaceOption
     ("PhaseSpaceOption",
      "Option for the phase-space sampling",
-     &PerturbativeDecayer2::phaseOpt_, 0, false, false);
+     &PerturbativeDecayer::phaseOpt_, 0, false, false);
   static SwitchOption interfacePhaseSpaceOptionFixedYLimits
     (interfacePhaseSpaceOption,
      "FixedYLimits",
@@ -123,26 +123,26 @@ void PerturbativeDecayer2::Init() {
 
 }
 
-double PerturbativeDecayer2::matrixElementRatio(const Particle & , 
+double PerturbativeDecayer::matrixElementRatio(const Particle & , 
 					       const ParticleVector & ,
 					       const ParticleVector & , 
 					       MEOption ,
 					       ShowerInteraction ) {
-  throw Exception() << "Base class PerturbativeDecayer2::matrixElementRatio() "
+  throw Exception() << "Base class PerturbativeDecayer::matrixElementRatio() "
 		    << "called, should have an implementation in the inheriting class"
 		    << Exception::runerror;
   return 0.;
 }
 
-RealEmissionProcessPtr PerturbativeDecayer2::generateHardest(RealEmissionProcessPtr born) {
+RealEmissionProcessPtr PerturbativeDecayer::generateHardest(RealEmissionProcessPtr born) {
   return getHardEvent(born,false,inter_);
 }
 
-RealEmissionProcessPtr PerturbativeDecayer2::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
+RealEmissionProcessPtr PerturbativeDecayer::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   return getHardEvent(born,true,ShowerInteraction::QCD);
 }
 
-RealEmissionProcessPtr PerturbativeDecayer2::getHardEvent(RealEmissionProcessPtr born,
+RealEmissionProcessPtr PerturbativeDecayer::getHardEvent(RealEmissionProcessPtr born,
 							 bool inDeadZone,
 							 ShowerInteraction inter) {
   // check one incoming
@@ -294,7 +294,7 @@ RealEmissionProcessPtr PerturbativeDecayer2::getHardEvent(RealEmissionProcessPtr
   return born;
 }
 
-bool PerturbativeDecayer2::identifyDipoles(vector<DipoleType>  & dipoles,
+bool PerturbativeDecayer::identifyDipoles(vector<DipoleType>  & dipoles,
 					  PPtr & aProgenitor,
 					  PPtr & bProgenitor,
 					  PPtr & cProgenitor,
@@ -445,7 +445,7 @@ bool PerturbativeDecayer2::identifyDipoles(vector<DipoleType>  & dipoles,
   return !dipoles.empty();
 }
 
-vector<Lorentz5Momentum>  PerturbativeDecayer2::hardMomenta(PPtr in, PPtr emitter, 
+vector<Lorentz5Momentum>  PerturbativeDecayer::hardMomenta(PPtr in, PPtr emitter, 
 							   PPtr spectator, 
 							   const vector<DipoleType>  &dipoles, 
 							   int i, bool inDeadZone) {
@@ -574,7 +574,7 @@ vector<Lorentz5Momentum>  PerturbativeDecayer2::hardMomenta(PPtr in, PPtr emitte
   return particleMomenta;
 }
 
-bool PerturbativeDecayer2::calcMomenta(int j, Energy pT, double y, double phi,
+bool PerturbativeDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 					double& xg, double& xs, double& xe, double& xe_z,
 					vector<Lorentz5Momentum>& particleMomenta) {
   // calculate xg
@@ -627,7 +627,7 @@ bool PerturbativeDecayer2::calcMomenta(int j, Energy pT, double y, double phi,
   return true;
 }
 
-bool PerturbativeDecayer2::psCheck(const double xg, const double xs) {
+bool PerturbativeDecayer::psCheck(const double xg, const double xs) {
 
   // check is point is in allowed region of phase space
   double xe_star = (1.-s2_+e2_-xg)/sqrt(1.-xg);
@@ -644,7 +644,7 @@ bool PerturbativeDecayer2::psCheck(const double xg, const double xs) {
   return true;
 }
 
-pair<double,double> PerturbativeDecayer2::calculateDipole(const DipoleType & dipoleId,
+pair<double,double> PerturbativeDecayer::calculateDipole(const DipoleType & dipoleId,
 							 const Particle & inpart,
 							 const ParticleVector & decay3) {
   // calculate dipole for decay b->ac
@@ -709,7 +709,7 @@ pair<double,double> PerturbativeDecayer2::calculateDipole(const DipoleType & dip
   return dipole;
 }
 
-double PerturbativeDecayer2::dipoleSpinFactor(tcPDPtr part, double z){
+double PerturbativeDecayer::dipoleSpinFactor(tcPDPtr part, double z){
   // calculate the spin dependent component of the dipole  
   if      (part->iSpin()==PDT::Spin0)
     return 2.;
@@ -738,7 +738,7 @@ double colourCharge(PDT::Colour icol) {
 }
 }
 
-double PerturbativeDecayer2::colourCoeff(tcPDPtr emitter,
+double PerturbativeDecayer::colourCoeff(tcPDPtr emitter,
 					tcPDPtr spectator,
 					tcPDPtr other,
 					DipoleType dipole) {
@@ -758,7 +758,7 @@ double PerturbativeDecayer2::colourCoeff(tcPDPtr emitter,
   }
 }
 
-void PerturbativeDecayer2::getColourLines(RealEmissionProcessPtr real) {
+void PerturbativeDecayer::getColourLines(RealEmissionProcessPtr real) {
   // extract the particles
   vector<tPPtr> branchingPart;
   branchingPart.push_back(real->incoming()[0]);
@@ -1049,8 +1049,8 @@ void PerturbativeDecayer2::getColourLines(RealEmissionProcessPtr real) {
     assert(false);
 }
 
-PerturbativeDecayer2::phaseSpaceRegion
-PerturbativeDecayer2::inInitialFinalDeadZone(double xg, double xa,
+PerturbativeDecayer::phaseSpaceRegion
+PerturbativeDecayer::inInitialFinalDeadZone(double xg, double xa,
 					    double a, double c) const {
   double lam    = sqrt(1.+a*a+c*c-2.*a-2.*c-2.*a*c);
   double kappab = 1.+0.5*(1.-a+c+lam);
@@ -1106,8 +1106,8 @@ PerturbativeDecayer2::inInitialFinalDeadZone(double xg, double xa,
     return deadZone;
 }
 
-PerturbativeDecayer2::phaseSpaceRegion
-PerturbativeDecayer2::inFinalFinalDeadZone(double xb, double xc,
+PerturbativeDecayer::phaseSpaceRegion
+PerturbativeDecayer::inFinalFinalDeadZone(double xb, double xc,
 					  double b, double c) const {
   // basic kinematics
   double lam = sqrt(1.+b*b+c*c-2.*b-2.*c-2.*b*c);
@@ -1130,7 +1130,7 @@ PerturbativeDecayer2::inFinalFinalDeadZone(double xb, double xc,
   return deadZone;
 }
 
-bool PerturbativeDecayer2::inTotalDeadZone(double xg, double xs,
+bool PerturbativeDecayer::inTotalDeadZone(double xg, double xs,
 					  const vector<DipoleType>  & dipoles,
 					  int i) {
   double xb,xc,b,c;

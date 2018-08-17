@@ -12,7 +12,7 @@
 // This is the declaration of the SSVDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
@@ -26,12 +26,12 @@ using Helicity::VSSVertexPtr;
  * The SSVDecayer class implements the decay of a scalar to a vector 
  * and a scalar in a general model. It holds an VSSVertex pointer
  * that must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer2
+ * @see GeneralTwoBodyDecayer
  */
-class SSVDecayer: public GeneralTwoBodyDecayer2 {
+class SSVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

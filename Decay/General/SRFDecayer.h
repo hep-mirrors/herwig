@@ -12,7 +12,7 @@
 // This is the declaration of the SRFDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/RFSVertex.h"
 
@@ -24,12 +24,12 @@ using Helicity::RFSVertexPtr;
  * The SRFDecayer class implements the decay of a scalar to spin-3/2
  * and spin-1/2 fermion in a general model. It holds an RFSVertex pointer that 
  * must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer2
+ * @see GeneralTwoBodyDecayer
  */
-class SRFDecayer: public GeneralTwoBodyDecayer2 {
+class SRFDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

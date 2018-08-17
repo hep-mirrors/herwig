@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_PerturbativeDecayer2_H
-#define Herwig_PerturbativeDecayer2_H
+#ifndef Herwig_PerturbativeDecayer_H
+#define Herwig_PerturbativeDecayer_H
 //
-// This is the declaration of the PerturbativeDecayer2 class.
+// This is the declaration of the PerturbativeDecayer class.
 //
 
 #include "Herwig/Decay/DecayIntegrator2.h"
@@ -14,13 +14,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The PerturbativeDecayer2 class is the base class for perturbative decays in
+ * The PerturbativeDecayer class is the base class for perturbative decays in
  * Herwig and implements the functuality for the POWHEG corrections
  *
- * @see \ref PerturbativeDecayer2Interfaces "The interfaces"
- * defined for PerturbativeDecayer2.
+ * @see \ref PerturbativeDecayerInterfaces "The interfaces"
+ * defined for PerturbativeDecayer.
  */
-class PerturbativeDecayer2: public DecayIntegrator2 {
+class PerturbativeDecayer: public DecayIntegrator2 {
 
 protected:
   
@@ -55,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  PerturbativeDecayer2() : inter_(ShowerInteraction::QCD),
+  PerturbativeDecayer() : inter_(ShowerInteraction::QCD),
 			  pTmin_(GeV), useMEforT2_(true),
 			  C_(5.), ymax_(10.), phaseOpt_(1),
 			  pT_(ZERO),mb_(ZERO), e_(0.),
@@ -246,7 +246,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PerturbativeDecayer2 & operator=(const PerturbativeDecayer2 &);
+  PerturbativeDecayer & operator=(const PerturbativeDecayer &);
 
 private:
 
@@ -342,4 +342,4 @@ private:
 
 }
 
-#endif /* Herwig_PerturbativeDecayer2_H */
+#endif /* Herwig_PerturbativeDecayer_H */

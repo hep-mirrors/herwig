@@ -12,7 +12,7 @@
 // This is the declaration of the VSSDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer2.h"
+#include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -25,13 +25,13 @@ using Helicity::VSSVertexPtr;
  * The VSSDecayer class implements the decay of a vector
  * to 2 scalars in a general model. It holds an VSSVertex pointer
  * that must be typecast from the VertexBase pointer held in 
- * GeneralTwoBodyDecayer2. It implents the virtual functions me2() and
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
  * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer2
+ * @see GeneralTwoBodyDecayer
  */
 
-class VSSDecayer: public GeneralTwoBodyDecayer2 {
+class VSSDecayer: public GeneralTwoBodyDecayer {
 
 public:
 

@@ -57,7 +57,7 @@ SMZDecayer::SMZDecayer()
 }
 
 void SMZDecayer::doinit() {
-  PerturbativeDecayer2::doinit();
+  PerturbativeDecayer::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) throw InitException() << "Must have Herwig StandardModel object in"
@@ -122,7 +122,7 @@ void SMZDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SMZDecayer,PerturbativeDecayer2>
+DescribeClass<SMZDecayer,PerturbativeDecayer>
 describeHerwigSMZDecayer("Herwig::SMZDecayer", "HwPerturbativeDecay.so");
 
 void SMZDecayer::Init() {
@@ -369,7 +369,7 @@ double SMZDecayer::me2(const int,const Particle & part,
 }
 
 void SMZDecayer::doinitrun() {
-  PerturbativeDecayer2::doinitrun();
+  PerturbativeDecayer::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<numberModes();++ix) {
       if(ix<5)       quarkWeight_ [ix   ]=mode(ix)->maxWeight();
@@ -389,8 +389,8 @@ void SMZDecayer::dataBaseOutput(ofstream & output,
     output << "newdef " << name() << ":LeptonMax " << ix << " "
 	   << leptonWeight_[ix] << "\n";
   }
-  // parameters for the PerturbativeDecayer2 base class
-  PerturbativeDecayer2::dataBaseOutput(output,false);
+  // parameters for the PerturbativeDecayer base class
+  PerturbativeDecayer::dataBaseOutput(output,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
