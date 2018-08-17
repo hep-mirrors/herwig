@@ -98,6 +98,7 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
 
 // initialise the phase space
 Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init, bool onShell) {
+  _integrator->ME(DecayMEPtr());
   Energy output(ZERO);
   // ensure that the weights add up to one
   if(!_channels.empty()) {
