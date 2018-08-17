@@ -77,7 +77,7 @@ void SSVDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SSVDecayer,GeneralTwoBodyDecayer>
+DescribeClass<SSVDecayer,GeneralTwoBodyDecayer2>
 describeHerwigSSVDecayer("Herwig::SSVDecayer", "Herwig.so");
 
 void SSVDecayer::Init() {
@@ -87,11 +87,24 @@ void SSVDecayer::Init() {
 
 }
 
-double SSVDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,
-		       MEOption meopt) const {
+void SSVDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
   unsigned int isc(0),ivec(1);
   if(decay[0]->dataPtr()->iSpin() != PDT::Spin0) swap(isc,ivec);
+  ScalarWaveFunction::
+    constructSpinInfo(const_ptr_cast<tPPtr>(&part),incoming,true);
+  ScalarWaveFunction::
+    constructSpinInfo(decay[isc],outgoing,true);
+  VectorWaveFunction::
+    constructSpinInfo(vector_,decay[ivec],outgoing,true,false);
+}
+
+double SSVDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
+		       MEOption meopt) const {
+  unsigned int isc(0),ivec(1);
+  if(outgoing[0]->iSpin() != PDT::Spin0) swap(isc,ivec);
   if(!ME()) {
     if(ivec==1)
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
@@ -100,23 +113,15 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   }
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
-    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
+    swave_ = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::
-      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
-    ScalarWaveFunction::
-      constructSpinInfo(decay[isc],outgoing,true);
-    VectorWaveFunction::
-      constructSpinInfo(vector_,decay[ivec],outgoing,true,false);
-  }
   VectorWaveFunction::
-    calculateWaveFunctions(vector_,decay[ivec],outgoing,false);
-  ScalarWaveFunction sca(decay[isc]->momentum(),decay[isc]->dataPtr(),outgoing);
-  Energy2 scale(sqr(inpart.mass()));
+    calculateWaveFunctions(vector_,momenta[ivec],outgoing[ivec],Helicity::outgoing,false);
+  ScalarWaveFunction sca(momenta[isc],outgoing[isc],Helicity::outgoing);
+  Energy2 scale(sqr(part.mass()));
   //make sure decay matrix element is in the correct order
   double output(0.);
   if(ivec == 0) {
@@ -135,8 +140,7 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   }
   output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // return the answer
   return output;
 }
@@ -170,7 +174,7 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -241,7 +245,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer::CFlow & colourFlow
+  const GeneralTwoBodyDecayer2::CFlow & colourFlow
         = colourFlows(inpart, decay);
   double gs(0.);
   bool couplingSet(false);

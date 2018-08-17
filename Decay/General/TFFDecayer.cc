@@ -65,7 +65,7 @@ void TFFDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<TFFDecayer,GeneralTwoBodyDecayer>
+DescribeClass<TFFDecayer,GeneralTwoBodyDecayer2>
 describeHerwigTFFDecayer("Herwig::TFFDecayer", "Herwig.so");
 
 void TFFDecayer::Init() {
@@ -76,35 +76,39 @@ void TFFDecayer::Init() {
   
 }
 
-double TFFDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,
+void TFFDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  unsigned int iferm(0),ianti(1);
+  if(decay[0]->id()>=0) swap(iferm,ianti);
+  TensorWaveFunction::
+    constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&part),
+		      incoming,true,false);
+  SpinorBarWaveFunction::
+    constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
+}
+
+double TFFDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
 		       MEOption meopt) const {
   unsigned int iferm(0),ianti(1);
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half)));
-  if(decay[0]->id()>=0) swap(iferm,ianti);
+  if(outgoing[0]->id()>=0) swap(iferm,ianti);
   if(meopt==Initialize) {
     TensorWaveFunction::
-      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&part),
 			     incoming,false);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    TensorWaveFunction::
-      constructSpinInfo(tensors_,const_ptr_cast<tPPtr>(&inpart),
-			incoming,true,false);
-    SpinorBarWaveFunction::
-      constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
-    return 0.;
-  }
   SpinorBarWaveFunction::
-    calculateWaveFunctions(wavebar_,decay[iferm],outgoing);
+    calculateWaveFunctions(wavebar_,momenta[iferm],outgoing[iferm],Helicity::outgoing);
   SpinorWaveFunction::
-    calculateWaveFunctions(wave_   ,decay[ianti],outgoing);
-  Energy2 scale(sqr(inpart.mass()));
+    calculateWaveFunctions(wave_   ,momenta[ianti],outgoing[ianti],Helicity::outgoing);
+  Energy2 scale(sqr(part.mass()));
   unsigned int thel,fhel,ahel;
   for(thel=0;thel<5;++thel) {
     for(fhel=0;fhel<2;++fhel) {
@@ -128,8 +132,7 @@ double TFFDecayer::me2(const int , const Particle & inpart,
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // return the answer
   return output;
 }
@@ -154,7 +157,7 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -242,7 +245,7 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 
   Energy2 scale(sqr(inpart.mass()));
 
-  const GeneralTwoBodyDecayer::CFlow & colourFlow
+  const GeneralTwoBodyDecayer2::CFlow & colourFlow
         = colourFlows(inpart, decay);
   double gs(0.);
   bool couplingSet(false);

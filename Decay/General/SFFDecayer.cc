@@ -66,7 +66,7 @@ void SFFDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SFFDecayer,GeneralTwoBodyDecayer>
+DescribeClass<SFFDecayer,GeneralTwoBodyDecayer2>
 describeHerwigSFFDecayer("Herwig::SFFDecayer", "Herwig.so");
 
 void SFFDecayer::Init() {
@@ -75,12 +75,8 @@ void SFFDecayer::Init() {
     ("This class implements to decay of a scalar to 2 fermions");
 
 }
-
-double SFFDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,MEOption meopt) const {
-  if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
-  // work out which is the fermion and antifermion
+void SFFDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
   int iferm(1),ianti(0);
   int itype[2];
   for(unsigned int ix=0;ix<2;++ix) {
@@ -88,28 +84,40 @@ double SFFDecayer::me2(const int , const Particle & inpart,
     else                           itype[ix] = 2;
   }
   if(itype[0]==0||itype[1]==1||(itype[0]==2&&itype[1]==2)) swap(iferm,ianti);
+  ScalarWaveFunction::
+    constructSpinInfo(const_ptr_cast<tPPtr>(&part),incoming,true);
+  SpinorBarWaveFunction::
+    constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
+  SpinorWaveFunction::
+    constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
+}
+double SFFDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
+		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
+  // work out which is the fermion and antifermion
+  int iferm(1),ianti(0);
+  int itype[2];
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(outgoing[ix]->CC()) itype[ix] = outgoing[ix]->id()>0 ? 0:1;
+    else                   itype[ix] = 2;
+  }
+  if(itype[0]==0||itype[1]==1||(itype[0]==2&&itype[1]==2)) swap(iferm,ianti);
 
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
-    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
+    swave_ = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::
-      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
-    SpinorBarWaveFunction::
-      constructSpinInfo(wavebar_,decay[iferm],outgoing,true);
-    SpinorWaveFunction::
-      constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
-    return 0.;
-  }
   SpinorBarWaveFunction::
-    calculateWaveFunctions(wavebar_,decay[iferm],outgoing);
+    calculateWaveFunctions(wavebar_,momenta[iferm],outgoing[iferm],Helicity::outgoing);
   SpinorWaveFunction::
-    calculateWaveFunctions(wave_   ,decay[ianti],outgoing);
-  Energy2 scale(sqr(inpart.mass()));
+    calculateWaveFunctions(wave_   ,momenta[ianti],outgoing[ianti],Helicity::outgoing);
+  Energy2 scale(sqr(part.mass()));
   for(unsigned int ifm = 0; ifm < 2; ++ifm){
     for(unsigned int ia = 0; ia < 2; ++ia) {
       if(iferm > ianti) (*ME())(0, ia, ifm) = 0.;
@@ -129,8 +137,7 @@ double SFFDecayer::me2(const int , const Particle & inpart,
 
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // return the answer
   return output;
 }
@@ -156,7 +163,7 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 
@@ -229,7 +236,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   identifyVertices(iferm, ianti, inpart, decay, outgoingVertexF, outgoingVertexA,
 		   inter);
 
-  const GeneralTwoBodyDecayer::CFlow & colourFlow
+  const GeneralTwoBodyDecayer2::CFlow & colourFlow
         = colourFlows(inpart, decay);
 
   Energy2 scale(sqr(inpart.mass()));
