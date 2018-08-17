@@ -5,7 +5,7 @@
 // This is the declaration of the GeneralFourBodyDecayer class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayIntegrator2.h"
 #include "Herwig/Models/General/PrototypeVertex.h"
 
 namespace Herwig {
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref GeneralFourBodyDecayerInterfaces "The interfaces"
  * defined for GeneralFourBodyDecayer.
  */
-class GeneralFourBodyDecayer: public DecayIntegrator {
+class GeneralFourBodyDecayer: public DecayIntegrator2 {
 
 public:
 
@@ -101,7 +101,7 @@ protected:
   /**
    *  Outgoing particles
    */
-  const vector<PDPtr> & outgoing() const {  return outgoing_; }
+  const tPDVector & outgoing() const {  return outgoing_; }
   
   /**
    *  Number of colour flows
@@ -195,7 +195,7 @@ private:
   /**
    *  Outgoing particles
    */
-  vector<PDPtr> outgoing_;
+  tPDVector outgoing_;
 
   /**
    *  Store the diagrams for the decay

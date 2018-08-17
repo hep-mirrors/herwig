@@ -5,7 +5,7 @@
 //
 
 #include "GeneralFourBodyDecayer.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -27,7 +27,7 @@ void GeneralFourBodyDecayer::persistentInput(PersistentIStream & is, int) {
      >> widthOpt_ >> colour_ >> colourLargeNC_ >> nflow_ >> diagmap_;
 }
 
-DescribeAbstractClass<GeneralFourBodyDecayer,DecayIntegrator>
+DescribeAbstractClass<GeneralFourBodyDecayer,DecayIntegrator2>
 describeGeneralFourBodyDecayer("Herwig::GeneralFourBodyDecayer",
 			       "Herwig.so");
 
@@ -104,12 +104,13 @@ bool GeneralFourBodyDecayer::setDecayInfo(PDPtr incoming,
 					  vector<PDPtr> outgoing,
 					  const vector<NBDiagram> & process,
 					  double symfac) {
+  assert( outgoing.size() == 4 );
   // set the member variables from the info supplied
   // external particles
   incoming_        = incoming;
-  outgoing_        = outgoing;
+  outgoing_        = {outgoing[0],outgoing[1],
+		      outgoing[2],outgoing[3]};
   diagrams_        = process;
-  assert( outgoing_.size() == 4 );
   // Construct reference tags for testing in modeNumber function
   OrderedParticles refmode(outgoing_.begin(), outgoing_.end());
   OrderedParticles::const_iterator dit = refmode.begin();
@@ -144,81 +145,79 @@ Energy GeneralFourBodyDecayer::partialWidth(tPDPtr inpart,
   else return initializePhaseSpaceMode(0,true,true);  
 }
 
-namespace {
-  bool addIntermediate(DecayPhaseSpaceChannelPtr newChannel,
-		       const NBVertex &vertex,vector<unsigned int> &order,
-		       int & ioff, int & loc) {
-    if(vertex.vertices.size()!=2) return false;
-    assert(!vertex.vertices.begin()->second.incoming);
-    int first = order[loc];
-    ++loc;
-    unsigned int type = vertex.incoming->width()!=ZERO ? 0 : 1;
-    double      power = vertex.incoming->width()!=ZERO ? 0. : -2.;
-    // one off-shell
-    if((++vertex.vertices.begin())->second.incoming) {
-      newChannel->addIntermediate(vertex.incoming,type,power,ioff,first);
-      --ioff;
-      return addIntermediate(newChannel,(++vertex.vertices.begin())->second,
-			     order,ioff,loc);
-    }
-    // no off-shell
-    else {
-      int second = order[loc];
-      ++loc;
-      newChannel->addIntermediate(vertex.incoming,type,power,first,second);
-      --ioff;
-      return true;
-    }
-  }
-}
+// namespace {
+//   bool addIntermediate(PhaseSpaceChannelPtr newChannel,
+// 		       const NBVertex &vertex,vector<unsigned int> &order,
+// 		       int & ioff, int & loc) {
+//     if(vertex.vertices.size()!=2) return false;
+//     assert(!vertex.vertices.begin()->second.incoming);
+//     int first = order[loc];
+//     ++loc;
+//     unsigned int type = vertex.incoming->width()!=ZERO ? 0 : 1;
+//     double      power = vertex.incoming->width()!=ZERO ? 0. : -2.;
+//     // one off-shell
+//     if((++vertex.vertices.begin())->second.incoming) {
+//       newChannel->addIntermediate(vertex.incoming,type,power,ioff,first);
+//       --ioff;
+//       return addIntermediate(newChannel,(++vertex.vertices.begin())->second,
+// 			     order,ioff,loc);
+//     }
+//     // no off-shell
+//     else {
+//       int second = order[loc];
+//       ++loc;
+//       newChannel->addIntermediate(vertex.incoming,type,power,first,second);
+//       --ioff;
+//       return true;
+//     }
+//   }
+// }
 
 void GeneralFourBodyDecayer::doinit() {
-  DecayIntegrator::doinit();
+  DecayIntegrator2::doinit();
+  assert(false);
   // create the phase space integrator
-  tPDVector extpart(1,incoming_);
-  extpart.insert(extpart.end(),outgoing_.begin(),outgoing_.end());
   // create the integration channels for the decay
-  DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this,true)));
-  DecayPhaseSpaceChannelPtr newChannel;
+  PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(incoming_,outgoing_,1.)));
   // create the phase-space channels for the integration
   unsigned int nmode(0);
   for(unsigned int ix=0;ix<diagrams_.size();++ix) {
     // check not four point
     if(diagrams_[ix].vertices.size()!=2) continue;
     // create the new channel
-    newChannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    PhaseSpaceChannel newChannel(mode);
     int ioff = -1;
     int loc=0;
     // two off-shell particles
     if(diagrams_[ix].vertices.begin()->second.incoming) {
-      newChannel->addIntermediate(extpart[0],0,0.0,-1,-2);
-      if(!addIntermediate(newChannel,(  diagrams_[ix].vertices.begin())->second,
-			  diagrams_[ix].channelType,ioff,loc)) continue;
-      if(!addIntermediate(newChannel,(++diagrams_[ix].vertices.begin())->second,
-			  diagrams_[ix].channelType,ioff,loc)) continue;
+  //     newChannel->addIntermediate(extpart[0],0,0.0,-1,-2);
+  //     if(!addIntermediate(newChannel,(  diagrams_[ix].vertices.begin())->second,
+  // 			  diagrams_[ix].channelType,ioff,loc)) continue;
+  //     if(!addIntermediate(newChannel,(++diagrams_[ix].vertices.begin())->second,
+  // 			  diagrams_[ix].channelType,ioff,loc)) continue;
+      assert(false);
     }
     // only one off-shell particle
     else {
-      int first = diagrams_[ix].channelType[loc];
-      ++loc;
-      newChannel->addIntermediate(extpart[0],0,0.0,-1,first);
-      --ioff;
-      if(!addIntermediate(newChannel,(++diagrams_[ix].vertices.begin())->second,
-			  diagrams_[ix].channelType,ioff,loc)) continue;
+      // int first = diagrams_[ix].channelType[loc];
+      // ++loc;
+  //     newChannel->addIntermediate(extpart[0],0,0.0,-1,first);
+  //     --ioff;
+  //     if(!addIntermediate(newChannel,(++diagrams_[ix].vertices.begin())->second,
+  // 			  diagrams_[ix].channelType,ioff,loc)) continue;
     }
     diagmap_.push_back(ix);
     mode->addChannel(newChannel);
     ++nmode;
   }
   if(nmode==0) {
-    string mode = extpart[0]->PDGName() + "->";
-    for(unsigned int ix=1;ix<extpart.size();++ix) mode += extpart[ix]->PDGName() + " ";
+    string mode = incoming_->PDGName() + "->";
+    for(unsigned int ix=0;ix<outgoing_.size();++ix) mode += outgoing_[ix]->PDGName() + " ";
     throw Exception() << "No decay channels in GeneralFourBodyDecayer::"
-		      << "doinit() for " << mode << "\n" << Exception::runerror;
+  		      << "doinit() for " << mode << "\n" << Exception::runerror;
   }
   // add the mode
-  vector<double> wgt(nmode,1./double(nmode));
-  addMode(mode,1.,wgt);
+  addMode(mode);
 }
 
 void GeneralFourBodyDecayer::colourConnections(const Particle & parent,
@@ -359,7 +358,8 @@ bool GeneralFourBodyDecayer::setColourFactors(double symfac) {
   string name = incoming_->PDGName() + "->";
   vector<int> sng,trip,atrip,oct;
   unsigned int iloc(0);
-  for(vector<PDPtr>::const_iterator it = outgoing_.begin();
+
+  for(tPDVector::const_iterator it = outgoing_.begin();
       it != outgoing_.end();++it) {
     name += (**it).PDGName() + " ";
     if     ((**it).iColour() == PDT::Colour0    ) sng.push_back(iloc) ;

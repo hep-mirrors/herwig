@@ -75,6 +75,7 @@ void SFFDecayer::Init() {
     ("This class implements to decay of a scalar to 2 fermions");
 
 }
+
 void SFFDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   int iferm(1),ianti(0);
@@ -91,6 +92,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
   SpinorWaveFunction::
     constructSpinInfo(wave_   ,decay[ianti],outgoing,true);
 }
+
 double SFFDecayer::me2(const int,const Particle & part,
 		       const tPDVector & outgoing,
 		       const vector<Lorentz5Momentum> & momenta,

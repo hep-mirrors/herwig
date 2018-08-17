@@ -13,7 +13,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
@@ -26,14 +26,14 @@ using namespace ThePEG::Helicity;
 
 namespace {
 
-  inline bool isParticle(tPPtr part) {
-    return part->id()>0 && part->dataPtr()->CC();
+  inline bool isParticle(tcPDPtr part) {
+    return part->id()>0 && part->CC();
   }
-  inline bool isAntiParticle(tPPtr part) {
-    return part->id()<0 && part->dataPtr()->CC();
+  inline bool isAntiParticle(tcPDPtr part) {
+    return part->id()<0 && part->CC();
   }
-  inline bool isMajorana(tPPtr part) {
-    return !part->dataPtr()->CC();
+  inline bool isMajorana(tcPDPtr part) {
+    return !part->CC();
   }
 
 }
@@ -126,39 +126,42 @@ void StoFFFFDecayer::doinit() {
   }
 }
 
-double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
-			   const ParticleVector & decay, MEOption meopt) const {
+void StoFFFFDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  ScalarWaveFunction::
+    constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+		      Helicity::incoming,true);
+  // outgoing particles
+  for(unsigned int ix = 0; ix < 4; ++ix) {
+    SpinorWaveFunction::
+      constructSpinInfo(outwave_[ix].first,decay[ix],Helicity::outgoing,true);
+  }
+}
+
+double StoFFFFDecayer::me2(const int ichan, const Particle & part,
+			   const tPDVector & outgoing,
+			   const vector<Lorentz5Momentum> & momenta,
+			   MEOption meopt) const {
   // particle or CC of particle
-  bool cc = (*getProcessInfo().begin()).incoming->id() != inpart.id();
+  bool cc = (*getProcessInfo().begin()).incoming->id() != part.id();
   // special handling or first/last call
   const vector<vector<double> > & cfactors(getColourFactors());
   const vector<vector<double> > & nfactors(getLargeNcColourFactors());
   const size_t ncf(numberOfFlows());
-  Energy2 scale(sqr(inpart.mass()));
+  Energy2 scale(sqr(part.mass()));
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),
 			     Helicity::incoming);
-    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
+    swave_ = ScalarWaveFunction(part.momentum(),part.dataPtr(),
 				Helicity::incoming);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    ScalarWaveFunction::
-      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
-			Helicity::incoming,true);
-    // outgoing particles
-    for(unsigned int ix = 0; ix < 4; ++ix) {
-      SpinorWaveFunction::
-      constructSpinInfo(outwave_[ix].first,decay[ix],Helicity::outgoing,true);
-    }
-  }
   // outgoing particles
   for(unsigned int ix = 0; ix < 4; ++ix) {
     SpinorWaveFunction::
-      calculateWaveFunctions(outwave_[ix].first,decay[ix],Helicity::outgoing);
+      calculateWaveFunctions(outwave_[ix].first,momenta[ix],outgoing[ix],Helicity::outgoing);
     outwave_[ix].second.resize(2);
     if(outwave_[ix].first[0].wave().Type() == SpinorType::u) {
       for(unsigned int iy = 0; iy < 2; ++iy) {
@@ -222,8 +225,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	    ScalarWaveFunction offScalar2;
 	    // intermediate scalar
 	    if(inter.second->iSpin()==PDT::Spin0) {
-	      if( (isAntiParticle(decay[iloc[2]]) || isMajorana(decay[iloc[2]])) &&
-		   (isParticle   (decay[iloc[3]]) || isMajorana(decay[iloc[3]])) ) {
+	      if( (isAntiParticle(outgoing[iloc[2]]) || isMajorana(outgoing[iloc[2]])) &&
+		   (isParticle   (outgoing[iloc[3]]) || isMajorana(outgoing[iloc[3]])) ) {
 		sign *= -1.;
 		offScalar2 = thirdFFS_[idiag]->
 		  evaluate(scale, widthOption(),inter.second,
@@ -239,8 +242,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	    }
 	    // intermediate vector
 	    else if(inter.second->iSpin()==PDT::Spin1) {
-	      if( (isAntiParticle(decay[iloc[2]]) || isMajorana(decay[iloc[2]])) &&
-		   (isParticle(decay[iloc[3]])||isMajorana(decay[iloc[3]]))) {
+	      if( (isAntiParticle(outgoing[iloc[2]]) || isMajorana(outgoing[iloc[2]])) &&
+		   (isParticle(outgoing[iloc[3]])||isMajorana(outgoing[iloc[3]]))) {
 		sign *= -1.;
 		offVector2 = thirdFFV_[idiag]->
 		  evaluate(scale, widthOption(),inter.second,
@@ -265,8 +268,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      ScalarWaveFunction offScalar1;
 	      // intermeidate scalar
 	      if(inter.first->iSpin()==PDT::Spin0) {
-		if(decay[iloc[0]]->id()<0&&
-		   decay[iloc[1]]->id()>0) {
+		if(outgoing[iloc[0]]->id()<0&&
+		   outgoing[iloc[1]]->id()>0) {
 		  sign *= -1.;
 		  offScalar1 = secondFFS_[idiag]->
 		    evaluate(scale, widthOption(),inter.first,
@@ -282,8 +285,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	      }
 	      // intermediate vector
 	      else if(inter.first->iSpin()==PDT::Spin1) {
-		if(decay[iloc[0]]->id()<0&&
-		   decay[iloc[1]]->id()>0) {
+		if(outgoing[iloc[0]]->id()<0&&
+		   outgoing[iloc[1]]->id()>0) {
 		  sign *= -1.;
 		  offVector1 = secondFFV_[idiag]->
 		    evaluate(scale, widthOption(),inter.first,
@@ -324,8 +327,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	    }
 	    // second topology
 	    else {
-	      if(((isAntiParticle(decay[iloc[0]]) || isMajorana(decay[iloc[0]]))&&
-		  (isParticle    (decay[iloc[1]]) || isMajorana(decay[iloc[1]])))) {
+	      if(((isAntiParticle(outgoing[iloc[0]]) || isMajorana(outgoing[iloc[0]]))&&
+		  (isParticle    (outgoing[iloc[1]]) || isMajorana(outgoing[iloc[1]])))) {
 		sign *= -1.;
 		SpinorWaveFunction    inters = firstFFS_[idiag]->
 		  evaluate(scale,widthOption(),inter.first,
@@ -616,12 +619,12 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 
 // private :
 
-//   InvEnergy2 stopMatrixElement(const Particle & inpart,
+//   InvEnergy2 stopMatrixElement(const Particle & part,
 // 			       const ParticleVector & decay,
 // 			       InvEnergy2 me2) const;
 
 // #include "Herwig/Models/StandardModel/StandardModel.h"
-// InvEnergy2 StoFFFFDecayer::stopMatrixElement(const Particle & inpart,
+// InvEnergy2 StoFFFFDecayer::stopMatrixElement(const Particle & part,
 // 					     const ParticleVector & decay,
 // 					     InvEnergy2 me2) const {
 //   // extract the momenta and check the process
@@ -675,15 +678,15 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 //   vector<Complex> cL,cR,d,bL,bR,kL,kR,fL,fR,hL,hR,lL,lR;
 //   vector<vector<Complex> > eL,eR,gL,gR;
 //   double ytop,ytau;
-//   Energy2 scale = sqr(inpart.mass());
+//   Energy2 scale = sqr(part.mass());
 //   model->StopCouplings(scale,ferm,anti,g,sw,cw,aL,aR,cL,cR,d,bL,bR,kL,kR,fL,fR,eL,eR,gL,gR,hL,hR,
 // 		       lL,lR,ytop,ytau);
 //   // compute the matrix element
 //   Lorentz5Momentum pw   = pf+pfp; pw.rescaleMass();
 //   Lorentz5Momentum ptop = pw+pb; ptop.rescaleMass();
-//   Lorentz5Momentum ptt  = inpart.momentum(); 
-//   Lorentz5Momentum pbt  = inpart.momentum()-pw; pbt.rescaleMass();
-//   Lorentz5Momentum pChiP= inpart.momentum()-pb; pb.rescaleMass();
+//   Lorentz5Momentum ptt  = part.momentum(); 
+//   Lorentz5Momentum pbt  = part.momentum()-pw; pbt.rescaleMass();
+//   Lorentz5Momentum pChiP= part.momentum()-pb; pb.rescaleMass();
 //   Lorentz5Momentum psf  = pChi+pf;psf.rescaleMass();
 //   Lorentz5Momentum psfp = pChi+pfp;psfp.rescaleMass();
   
@@ -1304,5 +1307,5 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	    //   continue;
 	    // }
 //reomved from end of me2()
-//InvEnergy2 output = stopMatrixElement(inpart,decay,me2*UnitRemoval::InvE2);
+//InvEnergy2 output = stopMatrixElement(part,decay,me2*UnitRemoval::InvE2);
   // return output*scale;
