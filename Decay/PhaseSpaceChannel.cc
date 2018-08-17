@@ -31,9 +31,9 @@ void PhaseSpaceChannel::init(tPhaseSpaceModePtr mode) {
     if(!res.particle || res.mWidth!=ZERO ||
        res.jacobian != PhaseSpaceResonance::BreitWigner) continue;
     Energy massmin(ZERO);
-    for(const int & ext : res.descendents) 
+    for(const int & ext : res.descendents)
       massmin += mode->testOnShell_ ? 
-	mode->outgoing_[ext]->mass() : mode->outgoing_[ext]->massMin();
+	mode->outgoing_[ext-1]->mass() : mode->outgoing_[ext-1]->massMin();
     // check if can be on-shell
     Energy mass = sqrt(res.mass2);
     if(mass>=massmin&&mass<=massmax+massmin) {

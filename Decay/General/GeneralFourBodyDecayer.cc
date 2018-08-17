@@ -145,37 +145,8 @@ Energy GeneralFourBodyDecayer::partialWidth(tPDPtr inpart,
   else return initializePhaseSpaceMode(0,true,true);  
 }
 
-// namespace {
-//   bool addIntermediate(PhaseSpaceChannelPtr newChannel,
-// 		       const NBVertex &vertex,vector<unsigned int> &order,
-// 		       int & ioff, int & loc) {
-//     if(vertex.vertices.size()!=2) return false;
-//     assert(!vertex.vertices.begin()->second.incoming);
-//     int first = order[loc];
-//     ++loc;
-//     unsigned int type = vertex.incoming->width()!=ZERO ? 0 : 1;
-//     double      power = vertex.incoming->width()!=ZERO ? 0. : -2.;
-//     // one off-shell
-//     if((++vertex.vertices.begin())->second.incoming) {
-//       newChannel->addIntermediate(vertex.incoming,type,power,ioff,first);
-//       --ioff;
-//       return addIntermediate(newChannel,(++vertex.vertices.begin())->second,
-// 			     order,ioff,loc);
-//     }
-//     // no off-shell
-//     else {
-//       int second = order[loc];
-//       ++loc;
-//       newChannel->addIntermediate(vertex.incoming,type,power,first,second);
-//       --ioff;
-//       return true;
-//     }
-//   }
-// }
-
 void GeneralFourBodyDecayer::doinit() {
   DecayIntegrator::doinit();
-  assert(false);
   // create the phase space integrator
   // create the integration channels for the decay
   PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(incoming_,outgoing_,1.)));
@@ -186,25 +157,49 @@ void GeneralFourBodyDecayer::doinit() {
     if(diagrams_[ix].vertices.size()!=2) continue;
     // create the new channel
     PhaseSpaceChannel newChannel(mode);
-    int ioff = -1;
     int loc=0;
+    list<pair<PDPtr,NBVertex> >::iterator vertex = diagrams_[ix].vertices.begin();
     // two off-shell particles
-    if(diagrams_[ix].vertices.begin()->second.incoming) {
-  //     newChannel->addIntermediate(extpart[0],0,0.0,-1,-2);
-  //     if(!addIntermediate(newChannel,(  diagrams_[ix].vertices.begin())->second,
-  // 			  diagrams_[ix].channelType,ioff,loc)) continue;
-  //     if(!addIntermediate(newChannel,(++diagrams_[ix].vertices.begin())->second,
-  // 			  diagrams_[ix].channelType,ioff,loc)) continue;
-      assert(false);
+    if(vertex->second.incoming) {
+      list<pair<PDPtr,NBVertex> >::iterator vertex2 = vertex;
+      ++vertex2;
+      newChannel = (newChannel,0,vertex->first,0,vertex2->first);
+      if(vertex->second.incoming->width()==ZERO) {
+	newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,-2.);
+      }
+      if(vertex2->second.incoming->width()==ZERO) {
+	newChannel.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,-2.);
+      }
+      int first = diagrams_[ix].channelType[loc];
+      ++loc;
+      int second = diagrams_[ix].channelType[loc];
+      ++loc;newChannel = (newChannel,1,first,1,second);
+      first = diagrams_[ix].channelType[loc];
+      ++loc;
+      second = diagrams_[ix].channelType[loc];
+      ++loc;newChannel = (newChannel,2,first,2,second);
     }
     // only one off-shell particle
     else {
-      // int first = diagrams_[ix].channelType[loc];
-      // ++loc;
-  //     newChannel->addIntermediate(extpart[0],0,0.0,-1,first);
-  //     --ioff;
-  //     if(!addIntermediate(newChannel,(++diagrams_[ix].vertices.begin())->second,
-  // 			  diagrams_[ix].channelType,ioff,loc)) continue;
+      int first = diagrams_[ix].channelType[loc];
+      ++loc;
+      ++vertex;
+      newChannel = (newChannel,0,vertex->first,0,first);
+      if(vertex->second.incoming->width()==ZERO) {
+	newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,-2.);
+      }
+      first = diagrams_[ix].channelType[loc];
+      ++loc;
+      vertex=vertex->second.vertices.begin();
+      ++vertex;
+      newChannel = (newChannel,1,vertex->second.incoming,1,first);
+      if(vertex->second.incoming->width()==ZERO) {
+	newChannel.setJacobian(2,PhaseSpaceChannel::PhaseSpaceResonance::Power,-2.);
+      }
+      first = diagrams_[ix].channelType[loc];
+      ++loc;
+      int second = diagrams_[ix].channelType[loc];
+      newChannel = (newChannel,2,first,2,second);
     }
     diagmap_.push_back(ix);
     mode->addChannel(newChannel);
