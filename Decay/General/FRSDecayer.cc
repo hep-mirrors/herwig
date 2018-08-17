@@ -56,7 +56,7 @@ void FRSDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<FRSDecayer,GeneralTwoBodyDecayer>
+DescribeClass<FRSDecayer,GeneralTwoBodyDecayer2>
 describeHerwigFRSDecayer("Herwig::FRSDecayer", "Herwig.so");
 
 void FRSDecayer::Init() {
@@ -67,24 +67,42 @@ void FRSDecayer::Init() {
 
 }
 
-double FRSDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,
+void FRSDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
+  bool ferm = part.id() > 0;
+  // for the decaying particle
+  if(ferm) {
+    SpinorWaveFunction::
+      constructSpinInfo(wave_,const_ptr_cast<tPPtr>(&part),incoming,true);
+    RSSpinorBarWaveFunction::constructSpinInfo(RSwavebar_,decay[0],outgoing,true);
+  }
+  else {
+    SpinorBarWaveFunction::
+      constructSpinInfo(wavebar_,const_ptr_cast<tPPtr>(&part),incoming,true);
+    RSSpinorWaveFunction::constructSpinInfo(RSwave_,decay[0],outgoing,true);
+  }
+  ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+}
+
+double FRSDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
 		       MEOption meopt) const {
-  bool ferm = inpart.id() > 0;
+  bool ferm = part.id() > 0;
   if(!ME())
     ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
   if(meopt==Initialize) {
     // spinors and rho
     if(ferm) {
       SpinorWaveFunction   ::calculateWaveFunctions(wave_,rho_,
-						    const_ptr_cast<tPPtr>(&inpart),
+						    const_ptr_cast<tPPtr>(&part),
 						    incoming);
       if(wave_[0].wave().Type() != SpinorType::u)
 	for(unsigned int ix = 0; ix < 2; ++ix) wave_   [ix].conjugate();
     }
     else {
       SpinorBarWaveFunction::calculateWaveFunctions(wavebar_,rho_,
-						    const_ptr_cast<tPPtr>(&inpart),
+						    const_ptr_cast<tPPtr>(&part),
 						    incoming);
       if(wavebar_[0].wave().Type() != SpinorType::v)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
@@ -92,29 +110,14 @@ double FRSDecayer::me2(const int , const Particle & inpart,
     // fix rho if no correlations
     fixRho(rho_);
   }
-  // setup spin info when needed
-  if(meopt==Terminate) {
-    // for the decaying particle
-    if(ferm) {
-      SpinorWaveFunction::
-	constructSpinInfo(wave_,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      RSSpinorBarWaveFunction::constructSpinInfo(RSwavebar_,decay[0],outgoing,true);
-    }
-    else {
-      SpinorBarWaveFunction::
-	constructSpinInfo(wavebar_,const_ptr_cast<tPPtr>(&inpart),incoming,true);
-      RSSpinorWaveFunction::constructSpinInfo(RSwave_,decay[0],outgoing,true);
-    }
-    ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
-  }
   if(ferm)
     RSSpinorBarWaveFunction::
-      calculateWaveFunctions(RSwavebar_,decay[0],outgoing);
+      calculateWaveFunctions(RSwavebar_,momenta[0],outgoing[1],Helicity::outgoing);
   else
     RSSpinorWaveFunction::
-      calculateWaveFunctions(RSwave_   ,decay[0],outgoing);
-  ScalarWaveFunction scal(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
-  Energy2 scale(sqr(inpart.mass()));
+      calculateWaveFunctions(RSwave_   ,momenta[0],outgoing[1],Helicity::outgoing);
+  ScalarWaveFunction scal(momenta[1],outgoing[1],Helicity::outgoing);
+  Energy2 scale(sqr(part.mass()));
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 4; ++if2) {
       (*ME())(if1, if2, 0) = 0.;
@@ -128,10 +131,9 @@ double FRSDecayer::me2(const int , const Particle & inpart,
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
-			 decay[1]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[0],outgoing[1]);
   // test code
-//   Energy q = inpart.mass();
+//   Energy q = part.mass();
 //   Energy m1 = decay[0]->mass();
 //   Energy m2 = decay[1]->mass();
 //   Energy2 q2(q*q),m12(m1*m1),m22(m2*m2);
@@ -185,7 +187,7 @@ Energy FRSDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 

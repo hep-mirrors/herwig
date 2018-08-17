@@ -56,7 +56,7 @@ void SRFDecayer::persistentInput(PersistentIStream & is, int) {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<SRFDecayer,GeneralTwoBodyDecayer>
+DescribeClass<SRFDecayer,GeneralTwoBodyDecayer2>
 describeHerwigSRFDecayer("Herwig::SRFDecayer", "Herwig.so");
 
 void SRFDecayer::Init() {
@@ -67,54 +67,60 @@ void SRFDecayer::Init() {
 
 }
 
-double SRFDecayer::me2(const int , const Particle & inpart,
-		       const ParticleVector & decay,MEOption meopt) const {
+void SRFDecayer::
+constructSpinInfo(const Particle & part, ParticleVector decay) const {
   unsigned int irs=0,ifm=1;
   if(decay[0]->dataPtr()->iSpin()==PDT::Spin1Half) swap(irs,ifm);
+  bool ferm = decay[ifm]->id()<0;
+  ScalarWaveFunction::
+    constructSpinInfo(const_ptr_cast<tPPtr>(&part),incoming,true);
+  if(ferm) {
+    RSSpinorBarWaveFunction::
+      constructSpinInfo(RSwavebar_,decay[irs],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(wave_     ,decay[ifm],outgoing,true);
+  }
+  else {
+    RSSpinorWaveFunction::
+      constructSpinInfo(RSwave_ ,decay[irs],outgoing,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(wavebar_,decay[ifm],outgoing,true);
+  }
+}
+
+double SRFDecayer::me2(const int,const Particle & part,
+		       const tPDVector & outgoing,
+		       const vector<Lorentz5Momentum> & momenta,
+		       MEOption meopt) const {
+  unsigned int irs=0,ifm=1;
+  if(outgoing[0]->iSpin()==PDT::Spin1Half) swap(irs,ifm);
   if(!ME()) {
     if(irs==0)
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin3Half,PDT::Spin1Half)));
     else
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin3Half)));
   }
-  bool ferm = decay[ifm]->id()<0;
+  bool ferm = outgoing[ifm]->id()<0;
   if(meopt==Initialize) {
     ScalarWaveFunction::
-      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
-    swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+      calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&part),incoming);
+    swave_ = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
     // fix rho if no correlations
     fixRho(rho_);
   }
-  if(meopt==Terminate) {
-    ScalarWaveFunction::
-      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
-    if(ferm) {
-      RSSpinorBarWaveFunction::
-	constructSpinInfo(RSwavebar_,decay[irs],outgoing,true);
-      SpinorWaveFunction::
-	constructSpinInfo(wave_     ,decay[ifm],outgoing,true);
-    }
-    else {
-      RSSpinorWaveFunction::
-	constructSpinInfo(RSwave_ ,decay[irs],outgoing,true);
-      SpinorBarWaveFunction::
-	constructSpinInfo(wavebar_,decay[ifm],outgoing,true);
-    }
-    return 0.;
-  }
   if(ferm) {
     RSSpinorBarWaveFunction::
-      calculateWaveFunctions(RSwavebar_,decay[irs],outgoing);
+      calculateWaveFunctions(RSwavebar_,momenta[irs],outgoing[irs],Helicity::outgoing);
     SpinorWaveFunction::
-      calculateWaveFunctions(wave_     ,decay[ifm],outgoing);
+      calculateWaveFunctions(wave_     ,momenta[ifm],outgoing[ifm],Helicity::outgoing);
   }
   else {
     RSSpinorWaveFunction::
-      calculateWaveFunctions(RSwave_ ,decay[irs],outgoing);
+      calculateWaveFunctions(RSwave_ ,momenta[irs],outgoing[irs],Helicity::outgoing);
     SpinorBarWaveFunction::
-      calculateWaveFunctions(wavebar_,decay[ifm],outgoing);
+      calculateWaveFunctions(wavebar_,momenta[ifm],outgoing[ifm],Helicity::outgoing);
   }
-  Energy2 scale(sqr(inpart.mass()));
+  Energy2 scale(sqr(part.mass()));
   for(unsigned int ifm = 0; ifm < 4; ++ifm){
     for(unsigned int ia = 0; ia < 2; ++ia) {
       if(irs==0) {
@@ -149,8 +155,7 @@ double SRFDecayer::me2(const int , const Particle & inpart,
   }
   double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
-  output *= colourFactor(inpart.dataPtr(),decay[irs]->dataPtr(),
-			 decay[ifm]->dataPtr());
+  output *= colourFactor(part.dataPtr(),outgoing[irs],outgoing[ifm]);
   // return the answer
   return output;
 }
@@ -192,7 +197,7 @@ Energy SRFDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else {
-    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+    return GeneralTwoBodyDecayer2::partialWidth(inpart,outa,outb);
   }
 }
 
