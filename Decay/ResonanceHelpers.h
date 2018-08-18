@@ -85,6 +85,18 @@ inline Energy gammaP(const Energy2 & s, const Energy & mRes, const Energy & gamm
 /**
  *    The \f$p\f$-wave runningwidth
  */
+inline Energy gammaD(const Energy2 & s, const Energy & mRes, const Energy & gamma,
+		     const Energy & m1, const Energy & m2) {
+  double v2 = beta2(s,m1,m2);
+  if(v2<=0.) return ZERO;
+  double vR2 = beta2(sqr(mRes),m1,m2);
+  double rp = sqrt(v2/vR2);
+  return pow(sqrt(s)/mRes,3)*pow(rp,5)*gamma;
+}
+
+/**
+ *    The \f$p\f$-wave runningwidth
+ */
 inline Energy gammaS(const Energy2 & s, const Energy & mRes, const Energy & gamma,
 		     const Energy & m1, const Energy & m2) {
   double v2 = beta2(s,m1,m2);
@@ -132,6 +144,15 @@ inline Complex BreitWignerSWave(const Energy2 & s, const Energy & mRes, const En
 				const Energy & m1, const Energy & m2) {
   Energy2 mR2=sqr(mRes);
   return mR2/(mR2-s-Complex(0.,1.)*sqrt(s)*gammaS(s,mRes,gamma,m1,m2));
+}
+
+/**
+ *  Standard \f$p\f$-wave Breit-Wigner
+ */
+inline Complex BreitWignerDWave(const Energy2 & s, const Energy & mRes, const Energy & gamma,
+				const Energy & m1, const Energy & m2) {
+  Energy2 mR2=sqr(mRes);
+  return mR2/(mR2-s-Complex(0.,1.)*sqrt(s)*gammaD(s,mRes,gamma,m1,m2));
 }
   
 /**
