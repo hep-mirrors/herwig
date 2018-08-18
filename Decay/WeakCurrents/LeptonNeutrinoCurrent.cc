@@ -99,7 +99,7 @@ void LeptonNeutrinoCurrent::constructSpinInfo(ParticleVector decay) const {
 vector<LorentzPolarizationVectorE> 
 LeptonNeutrinoCurrent::current(tcPDPtr ,
 			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			       const int imode, const int ichan,Energy & scale, 
+			       const int, const int, Energy & scale, 
 			       const tPDVector & outgoing,
 			       const vector<Lorentz5Momentum> & momenta,
 			       DecayIntegrator::MEOption) const {
