@@ -1505,7 +1505,6 @@ newdef Tau3PionCurrent:sigmaPhase 0.722566
 newdef Tau3PionCurrent:f0Magnitude 0.77
 newdef Tau3PionCurrent:f2Magnitude 0.71
 newdef Tau3PionCurrent:sigmaMagnitude 2.1
-newdef Tau3PionCurrent:LocalParameters 1
 newdef Tau3PionCurrent:Initializea1 0
 newdef    Tau3PionCurrent:a1RunningWidth 0 0
 newdef    Tau3PionCurrent:a1RunningWidth 1 0
@@ -1909,30 +1908,6 @@ newdef    Tau3PionCurrent:a1RunningQ2 197 3.11033e+06
 newdef    Tau3PionCurrent:a1RunningQ2 198 3.12612e+06
 newdef    Tau3PionCurrent:a1RunningQ2 199 3.1419e+06
 insert Tau3PionCurrent:a1RunningQ2 200 3.15769e+06
-newdef Tau3PionCurrent:Quark 0  2
-newdef Tau3PionCurrent:AntiQuark 0  -1
-newdef Tau3PionCurrent:Quark 1  2
-newdef Tau3PionCurrent:AntiQuark 1  -1
-newdef Tau3PionCurrent:Quark 2  2
-newdef Tau3PionCurrent:AntiQuark 2  -1
-newdef Tau3PionCurrent:Quark 3  2
-newdef Tau3PionCurrent:AntiQuark 3  -1
-newdef Tau3PionCurrent:Quark 4  2
-newdef Tau3PionCurrent:AntiQuark 4  -1
-newdef Tau3PionCurrent:Quark 5  2
-newdef Tau3PionCurrent:AntiQuark 5  -3
-newdef Tau3PionCurrent:Quark 6  2
-newdef Tau3PionCurrent:AntiQuark 6  -3
-newdef Tau3PionCurrent:Quark 7  2
-newdef Tau3PionCurrent:AntiQuark 7  -3
-newdef Tau3PionCurrent:Quark 8  2
-newdef Tau3PionCurrent:AntiQuark 8  -1
-newdef Tau3PionCurrent:Quark 9  2
-newdef Tau3PionCurrent:AntiQuark 9  -1
-newdef Tau3PionCurrent:Quark 10  2
-newdef Tau3PionCurrent:AntiQuark 10  -1
-newdef Tau3PionCurrent:Quark 11  2
-newdef Tau3PionCurrent:AntiQuark 11  -1
 newdef Tau3Pion:WeakCurrent Tau3PionCurrent
 #
 create Herwig::TauDecayer  Tau3Meson

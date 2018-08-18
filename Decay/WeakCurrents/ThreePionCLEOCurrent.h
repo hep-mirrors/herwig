@@ -11,7 +11,7 @@
 //
 // This is the declaration of the ThreePionCLEOCurrent class.
 //
-#include "ThreeMesonCurrentBase.h"
+#include "WeakCurrent.h"
 #include "Herwig/Utilities/Interpolator.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -91,12 +91,11 @@ using namespace ThePEG;
  * respectively. \f$p(s_i)\f$ is the momentum of the outgoing pion in the 
  * rest frame of the resonance \f$Y\f$.
  *
- * @see ThreeMesonCurrentBase
  * @see a1ThreePionCLEODecayer
  * @see ThreePionCLEOa1MatrixElement
  * 
  */
-class ThreePionCLEOCurrent: public ThreeMesonCurrentBase {
+class ThreePionCLEOCurrent: public WeakCurrent {
 
   /**
    * The matrix element for the running \f$a_1\f$ width is a friend to 
@@ -111,26 +110,52 @@ public:
    */
   ThreePionCLEOCurrent();
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
   /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
+   * Hadronic current. This method is purely virtual and must be implemented in
+   * all classes inheriting from this one.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
+   * @param imode The mode
+   * @param ichan The phase-space channel the current is needed for.
+   * @param scale The invariant mass of the particles in the current.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
+   * @return The current. 
    */
-  void persistentOutput(PersistentOStream & os) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(tcPDPtr resonance,
+	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+	  const int imode, const int ichan,Energy & scale,
+	  const tPDVector & outgoing,
+	  const vector<Lorentz5Momentum> & momenta,
+	  DecayIntegrator::MEOption meopt) const;
 
   /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
+   * Accept the decay. Checks the mesons against the list.
+   * @param id The id's of the particles in the current.
+   * @return Can this current have the external particles specified.
    */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
+  virtual bool accept(vector<int> id);
 
   /**
-   * Standard Init function used to initialize the interfaces.
+   * Return the decay mode number for a given set of particles in the current. 
+   * Checks the mesons against the list.
+   * @param id The id's of the particles in the current.
+   * @return The number of the mode
    */
-  static void Init();
+  virtual unsigned int decayMode(vector<int> id);
+
+  /**
+   * The particles produced by the current. This returns the mesons for the mode.
+   * @param icharge The total charge of the particles in the current.
+   * @param imode The mode for which the particles are being requested
+   * @param iq The PDG code for the quark
+   * @param ia The PDG code for the antiquark
+   * @return The external particles for the current.
+   */
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
 
 public:
 
@@ -186,28 +211,32 @@ public:
 				const Energy2 s3, const Energy2 s2, 
 				const Energy2 s1, const Energy  m1,
 				const Energy  m2, const Energy  m3) const;
+  
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
 
 protected:
-
-  /**
-   * Can the current handle a particular set of mesons. 
-   * As this current includes all the allowed modes this is always true.
-   */
-  virtual bool acceptMode(int) const;
-
-  /**
-   * Calculate the form factor for the current. Implements the form factors
-   * described above.
-   * @param ichan The phase space channel
-   * @param imode The mode
-   * @param q2 The scale \f$q^2\f$ for the current.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   */
-  virtual FormFactors calculateFormFactors(const int ichan,const int imode,Energy2 q2,
-					   Energy2 s1,Energy2 s2,Energy2 s3) const;
-
+  
   /**
    * Calculate CLEO form factors for the current. Implements the form factors
    * described above.
@@ -297,73 +326,6 @@ private:
     return output;
   }
 
-  /**
-   * The \f$\rho\f$ Breit-Wigner.
-   * @param ires The \f$\rho\f$ multiplet.
-   * @param q2 The scale, \f$q^2\f$.
-   * @param icharge The charge of the \f$\rho\f$.
-   * @return The Breit-Wigner
-   */
-  Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const {
-    Energy q=sqrt(q2);
-    double ratio; Complex ii(0.,1.);
-    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_prhocc[ires];
-    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpi0)/_prhoc0[ires];
-    ratio*= ratio*ratio;
-    Energy gamrun=_rhowidth[ires]*ratio*_rhomass[ires]/q;
-    return _rhomass[ires]*_rhomass[ires]/(_rhomass[ires]*_rhomass[ires]
-					  -q2-ii*_rhomass[ires]*gamrun);
-  }
-
-  /**
-   * Breit-Wigner for the \f$\sigma\f$.
-   * @param q2 The scale, \f$q^2\f$.
-   * @param icharge Whether the pions produced in the meson decay are
-   * charged (0) or neutral (1) 
-   * @return The Breit-Wigner
-   */
-  Complex sigmaBreitWigner(Energy2 q2,int icharge) const {
-    Energy q=sqrt(q2);
-    double ratio; Complex ii(0.,1.);
-    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_psigmacc;
-    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_psigma00;
-    Energy gamrun=_sigmawidth*ratio*_sigmamass/q;
-    return _sigmamass*_sigmamass/(_sigmamass*_sigmamass-q2-ii*_sigmamass*gamrun);
-  }
-  
-  /**
-   * Breit-Wigner for the \f$f_0(1370)\f$.
-   * @param q2 The scale, \f$q^2\f$.
-   * @param icharge Whether the pions produced in the meson decay are
-   * charged (0) or neutral (1) 
-   * @return The Breit-Wigner
-   */
-  Complex f0BreitWigner(Energy2 q2,int icharge) const {
-    Energy q=sqrt(q2);
-    double ratio; Complex ii(0.,1.);
-    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf0cc;
-    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf000;
-    Energy gamrun=_f0width*ratio*_f0mass/q;
-    return _f0mass*_f0mass/(_f0mass*_f0mass-q2-ii*_f0mass*gamrun);
-  }
-
-  /**
-   * Breit-Wigner for the \f$f_2\f$.
-   * @param q2 The scale, \f$q^2\f$.
-   * @param icharge Whether the pions produced in the meson decay are
-   * charged (0) or neutral (1) 
-   * @return The Breit-Wigner
-   */
-  Complex f2BreitWigner(Energy2 q2,int icharge) const {
-    Energy q=sqrt(q2);
-    double ratio; Complex ii(0.,1.);
-    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf2cc;
-    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf200;
-    ratio*= ratio*ratio*ratio*ratio;
-    Energy gamrun=_f2width*ratio*_f2mass/q;
-    return _f2mass*_f2mass/(_f2mass*_f2mass-q2-ii*_f2mass*gamrun);
-  }
-
 private:
   
   /**
@@ -377,16 +339,6 @@ private:
   vector<Energy> _rhowidth;
 
   /**
-   * Momenta of the decay products for neutral \f$\rho\f$ decay.
-   */
-  vector<Energy> _prhocc;
-
-  /**
-   * Momenta of the decay products for charged \f$\rho\f$ decay.
-   */
-  vector<Energy> _prhoc0;
-
-  /**
    * Mass of the \f$f_2\f$ resonance
    */
   Energy _f2mass;
@@ -395,16 +347,6 @@ private:
    * Width of the \f$f_2\f$ resonance
    */
   Energy _f2width;
-
-  /**
-   * Momenta of the decay products for \f$f_2\f$ decay to charged pions.
-   */
-  Energy _pf2cc;
-
-  /**
-   * Momenta of the decay products for \f$f_2\f$ decay to neutral pions.
-   */
-  Energy _pf200;
 
   /**
    * Mass of the \f$f_0(1370)\f$ resonance
@@ -417,16 +359,6 @@ private:
   Energy _f0width;
 
   /**
-   * Momenta of the decay products for \f$f_0(1370)\f$ decay to charged pions.
-   */
-  Energy _pf0cc;
-
-  /**
-   * Momenta of the decay products for \f$f_0(1370)\f$ decay to neutral pions.
-   */
-  Energy _pf000;
-
-  /**
    * Mass of the \f$\sigma\f$ resonance
    */
   Energy _sigmamass;
@@ -435,16 +367,6 @@ private:
    * Width of the \f$\sigma\f$ resonance
    */
   Energy _sigmawidth;
-
-  /**
-   * Momenta of the decay products for \f$\sigma\f$ decay to charged pions.
-   */
-  Energy _psigmacc;
-
-  /**
-   * Momenta of the decay products for \f$\sigma\f$ decay to neutral pions.
-   */
-  Energy _psigma00;
 
   /**
    * Mass of the neutral pion.
@@ -580,11 +502,6 @@ private:
    * (\f$\beta_7\f$ in the CLEO paper.)
    */
   Complex _sigmacoup;
-
-  /**
-   * use local values of the mass parameters
-   */
-  bool _localparameters;
   
   /**
    * The \f$a_1\f$ width for the running \f$a_1\f$ width calculation.

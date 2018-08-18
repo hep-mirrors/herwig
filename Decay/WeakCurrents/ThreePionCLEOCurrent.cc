@@ -19,55 +19,65 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig/Decay/ResonanceHelpers.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-DescribeClass<ThreePionCLEOCurrent,ThreeMesonCurrentBase>
+DescribeClass<ThreePionCLEOCurrent,WeakCurrent>
 describeHerwigThreePionCLEOCurrent("Herwig::ThreePionCLEOCurrent",
 				   "HwWeakCurrents.so");
 HERWIG_INTERPOLATOR_CLASSDESC(ThreePionCLEOCurrent,Energy,Energy2)
 
 ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
-  // local particle properties
-  _localparameters=true;
+  addDecayMode(1,-1);
+  addDecayMode(2,-2);
+  addDecayMode(2,-1);
+  addDecayMode(1,-1);
+  addDecayMode(2,-2);
+  addDecayMode(2,-1);
+  setInitialModes(6);
   // rho masses and widths
-  if(_rhomass.size()==0) {
-    _rhomass.push_back(0.7743*GeV);_rhowidth.push_back(0.1491*GeV);
-    _rhomass.push_back(1.370*GeV);_rhowidth.push_back(0.386*GeV);
-  }
+  _rhomass  = {0.7743*GeV,1.370*GeV};
+  _rhowidth = {0.1491*GeV,0.386*GeV};
   // f_2 mass and width
-  _f2mass=1.275*GeV;_f2width=0.185*GeV;
+  _f2mass  = 1.275*GeV;
+  _f2width = 0.185*GeV;
   // f_0(1370) mass and width
-  _f0mass=1.186*GeV;_f0width=0.350*GeV;
+  _f0mass  = 1.186*GeV;
+  _f0width = 0.350*GeV;
   // sigma mass and width
-  _sigmamass = 0.860*GeV;_sigmawidth =0.880*GeV;
+  _sigmamass  = 0.860*GeV;
+  _sigmawidth = 0.880*GeV;
   // a1 mass and width
-  _a1mass = 1.331*GeV;_a1width=0.814*GeV;
+  _a1mass  = 1.331*GeV;
+  _a1width = 0.814*GeV;
   // parameters for the K K* contribution to the a_1 running width
   _mKstar = 894*MeV;
-  _mK=496*MeV;
-  _gammk=3.32;
+  _mK     = 496*MeV;
+  _gammk  = 3.32;
   // pion decay constant
   _fpi = 130.7*MeV/sqrt(2.);
   // couplings and phases for the different channels
   // p-wave rho and rho prime
   using Constants::pi;
-  if(_rhomagP.size()==0) {
-    _rhomagP.push_back(1.)  ;_rhophaseP.push_back(0.);
-    _rhomagP.push_back(0.12);_rhophaseP.push_back(0.99*pi);
-  }
+  _rhomagP   = {1.,0.12};
+  _rhophaseP = {0.,0.99*pi};
   // d-wave rho and rho prime
-  if(_rhomagD.size()==0) {
-    _rhomagD.push_back(0.37/GeV2);_rhophaseD.push_back(-0.15*pi);
-    _rhomagD.push_back(0.87/GeV2);_rhophaseD.push_back( 0.53*pi);
-  }
+  _rhomagD   = {0.37/GeV2,0.87/GeV2};
+  _rhophaseD = {-0.15*pi, 0.53*pi};
   // f_2
-  _f2mag=0.71/GeV2;_f2phase=0.56*pi;_f2coup=ZERO;
+  _f2mag   = 0.71/GeV2;
+  _f2phase = 0.56*pi;
+  _f2coup  = ZERO;
   // sigma
-  _sigmamag=2.10;_sigmaphase=0.23*pi;_sigmacoup=0.;
+  _sigmamag   = 2.10;
+  _sigmaphase = 0.23*pi;
+  _sigmacoup  = 0.;
   // f_0
-  _f0mag=0.77;_f0phase=-0.54*pi;_f0coup=0.;
+  _f0mag   = 0.77;
+  _f0phase = -0.54*pi;
+  _f0coup  = 0.;
   // initialize the a_1 width
   _initializea1=false;
   _a1opt=true;
@@ -154,12 +164,6 @@ ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
 		   [](double x){return x*GeV2;});
   }
   // zero parameters which will be calculated later to avoid problems
-  _pf2cc=ZERO; 
-  _pf200=ZERO;
-  _pf0cc=ZERO;
-  _pf000=ZERO;
-  _psigmacc=ZERO;
-  _psigma00=ZERO; 
   _mpi0=ZERO;
   _mpic=ZERO;
   _fact=ZERO;
@@ -168,65 +172,18 @@ ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
 }
 
 void ThreePionCLEOCurrent::doinit() {
-  ThreeMesonCurrentBase::doinit();
-  // pointers to the particles we need
-  tPDPtr a1m = getParticleData(ParticleID::a_1minus);
-  // the different rho resonances
-  tPDPtr rhom[3];
-  rhom[0] = getParticleData(-213);
-  rhom[1] = getParticleData(-100213);
-  rhom[2] = getParticleData(-30213);
-  // the sigma
-  tPDPtr sigma = getParticleData(9000221);
-  // the f_2
-  tPDPtr f2=getParticleData(225);
-  // the f_0
-  tPDPtr f0=getParticleData(10221);
-  if(_localparameters) {
-    // make sure the rho array has enough masses
-    if(_rhomass.size()<3) {
-      for(unsigned int ix=_rhomass.size();ix<3;++ix) {
-	_rhomass.push_back(rhom[ix]->mass());
-	_rhowidth.push_back(rhom[ix]->width());
-      }
-    }
-  }
-  // set the local variables if needed
-  else {
-    // masses and widths for the particles
-    _rhomass.resize(3);_rhowidth.resize(3);
-    for(unsigned int ix=0;ix<3;++ix)
-      {_rhomass[ix]=rhom[ix]->mass();_rhowidth[ix]=rhom[ix]->width();}
-    _f2mass=f2->mass();_f2width=f2->width();
-    _f0mass=f0->mass();_f0width=f0->width();
-    _sigmamass=sigma->mass();_sigmawidth=sigma->width();
-    _a1mass=a1m->mass();_a1width=a1m->width();
-    _mKstar=getParticleData(ParticleID::Kstarplus)->mass();
-    _mK =getParticleData(ParticleID::Kplus)->mass();
-  }
+  WeakCurrent::doinit();
   // parameters for the breit-wigners
-  _mpic=getParticleData(ParticleID::piplus)->mass();
-  _mpi0=getParticleData(ParticleID::pi0)->mass();
-  // momenta of the decay products for on-shell particles
-  _psigmacc=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpic,_mpic);
-  _psigma00=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpi0,_mpi0);
-  _pf2cc=Kinematics::pstarTwoBodyDecay(_f2mass,_mpic,_mpic);
-  _pf200=Kinematics::pstarTwoBodyDecay(_f2mass,_mpi0,_mpi0); 
-  _pf0cc=Kinematics::pstarTwoBodyDecay(_f0mass,_mpic,_mpic);
-  _pf000=Kinematics::pstarTwoBodyDecay(_f0mass,_mpi0,_mpi0); 
-  _prhocc.resize(3);_prhoc0.resize(3);
-  for(unsigned int ix=0;ix<3;++ix) {
-    _prhocc[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpic);
-    _prhoc0[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpi0);
-  }
+  _mpic = getParticleData(ParticleID::piplus)->mass();
+  _mpi0 = getParticleData(ParticleID::pi0)   ->mass();
   // couplings for the different modes
   Complex ii(0.,1.);
   _rhocoupP.resize(_rhomagP.size());
   for(unsigned int ix=0;ix<_rhomagP.size();++ix)
-    {_rhocoupP[ix]=_rhomagP[ix]*(cos(_rhophaseP[ix])+ii*sin(_rhophaseP[ix]));}
+    _rhocoupP[ix]=_rhomagP[ix]*(cos(_rhophaseP[ix])+ii*sin(_rhophaseP[ix]));
   _rhocoupD.resize(_rhomagD.size());
   for(unsigned int ix=0;ix<_rhomagD.size();++ix)
-    {_rhocoupD[ix]=_rhomagD[ix]*(cos(_rhophaseD[ix])+ii*sin(_rhophaseD[ix]));}
+    _rhocoupD[ix]=_rhomagD[ix]*(cos(_rhophaseD[ix])+ii*sin(_rhophaseD[ix]));
   _f0coup=_f0mag*(cos(_f0phase)+ii*sin(_f0phase));
   _f2coup=_f2mag*(cos(_f2phase)+ii*sin(_f2phase));
   _sigmacoup=_sigmamag*(cos(_sigmaphase)+ii*sin(_sigmaphase));
@@ -237,18 +194,16 @@ void ThreePionCLEOCurrent::doinit() {
 }
 
 void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV) << ounit(_prhocc,GeV) << ounit(_prhoc0,GeV) 
-     << ounit(_f2mass,GeV) << ounit(_f2width,GeV) << ounit(_pf2cc,GeV) 
-     << ounit(_pf200,GeV) << ounit(_f0mass,GeV) << ounit(_f0width,GeV) 
-     << ounit(_pf0cc,GeV) << ounit(_pf000,GeV) 
+  os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV)
+     << ounit(_f2mass,GeV) << ounit(_f2width,GeV)
+     << ounit(_f0mass,GeV) << ounit(_f0width,GeV) 
      << ounit(_sigmamass,GeV) << ounit(_sigmawidth,GeV)
-     << ounit(_psigmacc,GeV) << ounit(_psigma00,GeV) << ounit(_mpi0,GeV) << ounit(_mpic,GeV) 
+     << ounit(_mpi0,GeV) << ounit(_mpic,GeV) 
      << ounit(_fpi,GeV) << ounit(_fact,1/GeV) 
      << _rhomagP << _rhophaseP 
      << _rhocoupP << ounit(_rhomagD,1/GeV2) << _rhophaseD 
      << ounit(_rhocoupD,1/GeV2) <<ounit(_f2mag,1/GeV2) << _f2phase << ounit(_f2coup ,1/GeV2)
-     << _f0mag << _f0phase << _f0coup << _sigmamag << _sigmaphase << _sigmacoup 
-     << _localparameters 
+     << _f0mag << _f0phase << _f0coup << _sigmamag << _sigmaphase << _sigmacoup
      << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_a1runwidth,GeV) 
      << ounit(_a1runq2,GeV2) <<  _initializea1
      << ounit(_mKstar,GeV) << ounit(_mK,GeV) << _gammk << _a1opt 
@@ -256,18 +211,16 @@ void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
 }
 
 void ThreePionCLEOCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_rhomass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_prhocc,GeV) >> iunit(_prhoc0,GeV) 
-     >> iunit(_f2mass,GeV) >> iunit(_f2width,GeV) >> iunit(_pf2cc,GeV)
-     >> iunit(_pf200,GeV) >> iunit(_f0mass,GeV) >> iunit(_f0width,GeV) 
-     >> iunit(_pf0cc,GeV) >> iunit(_pf000,GeV) 
+  is >> iunit(_rhomass,GeV) >> iunit(_rhowidth,GeV)
+     >> iunit(_f2mass,GeV) >> iunit(_f2width,GeV)
+     >> iunit(_f0mass,GeV) >> iunit(_f0width,GeV)
      >> iunit(_sigmamass,GeV) >> iunit(_sigmawidth,GeV)
-     >> iunit(_psigmacc,GeV) >> iunit(_psigma00,GeV) >> iunit(_mpi0,GeV) >> iunit(_mpic,GeV) 
+     >> iunit(_mpi0,GeV) >> iunit(_mpic,GeV) 
      >> iunit(_fpi,GeV) >> iunit(_fact,1/GeV) 
      >> _rhomagP >> _rhophaseP 
      >> _rhocoupP >> iunit(_rhomagD,1/GeV2) >> _rhophaseD >> iunit(_rhocoupD,1/GeV2) 
      >> iunit(_f2mag,1/GeV2) >> _f2phase >> iunit(_f2coup,1/GeV2) 
-     >> _f0mag >> _f0phase >> _f0coup >> _sigmamag >> _sigmaphase >> _sigmacoup 
-     >> _localparameters 
+     >> _f0mag >> _f0phase >> _f0coup >> _sigmamag >> _sigmaphase >> _sigmacoup
      >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >>  iunit(_a1runwidth,GeV) 
      >> iunit(_a1runq2,GeV2) >>  _initializea1
      >> iunit(_mKstar,GeV) >> iunit(_mK,GeV) >> _gammk >> _a1opt 
@@ -423,7 +376,6 @@ void ThreePionCLEOCurrent::Init() {
      &ThreePionCLEOCurrent::_f0mag, 0.77, 0.0, 10,
      false, false, true);
 
-
   static Parameter<ThreePionCLEOCurrent,InvEnergy2> interfacef2Magnitude
     ("f2Magnitude",
      "The magnitude of the f_2 tensor current",
@@ -435,21 +387,6 @@ void ThreePionCLEOCurrent::Init() {
      "The magnitude of the sigma scalar current",
      &ThreePionCLEOCurrent::_sigmamag, 2.1, 0.0, 10,
      false, false, true);
-
-  static Switch<ThreePionCLEOCurrent,bool> interfaceLocalParameters
-    ("LocalParameters",
-     "Use local values of the intermediate resonances masses and widths",
-     &ThreePionCLEOCurrent::_localparameters, true, false, false);
-  static SwitchOption interfaceLocalParametersLocal
-    (interfaceLocalParameters,
-     "Local",
-     "Use the local values",
-     true);
-  static SwitchOption interfaceLocalParametersDefault
-    (interfaceLocalParameters,
-     "ParticleData",
-     "Use the values from the particleData objects",
-     false);
 
   static ParVector<ThreePionCLEOCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
@@ -539,42 +476,234 @@ void ThreePionCLEOCurrent::inita1Width(int iopt) {
   }
 }
 
-// modes handled by this class
-bool ThreePionCLEOCurrent::acceptMode(int imode) const {
-  return imode>=0&&imode<=1;
-}
-
-ThreePionCLEOCurrent::FormFactors ThreePionCLEOCurrent::
-  calculateFormFactors(const int ichan, const int imode,
-		      Energy2 q2, Energy2 s1, Energy2 s2, Energy2 s3) const {
-  Complex F1=0., F2=0., F3=0.;//F4=0.;F5=0.;
-  // calculate the form factors without the a_1 piece
-  CLEOFormFactor(imode,ichan,q2,s1,s2,s3,F1,F2,F3);
-  // change sign of the f_2 term
-  F2=-F2;
-  // multiply by the a_1 factor
-  complex<InvEnergy> a1fact = a1BreitWigner(q2) * _fact;
-  return FormFactors(F1*a1fact, F2*a1fact, F3*a1fact);
-}
-
 void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 					  Energy2 q2,Energy2 s1, Energy2 s2, Energy2 s3,
 					  Complex & F1, Complex & F2, 
 					  Complex & F3) const {
   useMe();
-  if(imode==0) {
+  double fact=1.;
+  if(imode<=1) {
+    // identical particle factors
+    fact = 1./sqrt(6.);
     // compute the breit wigners we need
-    Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
-    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
-      rhos1bw[ix]=rhoBreitWigner(ix,s1,0);
-      rhos2bw[ix]=rhoBreitWigner(ix,s2,0);
+    Complex sigbws1 = Resonance::BreitWignerSWave(s1,_sigmamass,_sigmawidth,_mpi0,_mpi0);
+    Complex sigbws2 = Resonance::BreitWignerSWave(s2,_sigmamass,_sigmawidth,_mpi0,_mpi0);
+    Complex sigbws3 = Resonance::BreitWignerSWave(s3,_sigmamass,_sigmawidth,_mpi0,_mpi0);
+    Complex f0bws1  = Resonance::BreitWignerSWave(s1,   _f0mass,   _f0width,_mpi0,_mpi0);
+    Complex f0bws2  = Resonance::BreitWignerSWave(s2,   _f0mass,   _f0width,_mpi0,_mpi0);
+    Complex f0bws3  = Resonance::BreitWignerSWave(s3,   _f0mass,   _f0width,_mpi0,_mpi0);
+    Complex f2bws1  = Resonance::BreitWignerDWave(s1,   _f2mass,   _f2width,_mpi0,_mpi0);
+    Complex f2bws2  = Resonance::BreitWignerDWave(s2,   _f2mass,   _f2width,_mpi0,_mpi0);
+    Complex f2bws3  = Resonance::BreitWignerDWave(s3,   _f2mass,   _f2width,_mpi0,_mpi0);
+    if(ichan<0) {
+      // the scalar terms
+      F1=2./3.*(_sigmacoup*sigbws3+_f0coup*f0bws3)
+	-2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
+      F2=2./3.*(_sigmacoup*sigbws3+_f0coup*f0bws3)
+	-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1);
+      F3=-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1)
+	+2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
+      // the tensor terms
+      complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
+      complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
+      complex<Energy2> Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
+      F1+=_f2coup*( 0.5*(s3-s2)*f2bws1-Dfact2+Dfact3);
+      F2+=_f2coup*( 0.5*(s3-s1)*f2bws2-Dfact1+Dfact3);
+      F3+=_f2coup*(-0.5*(s1-s2)*f2bws3-Dfact1+Dfact2);
     }
-    f0bws1  =f0BreitWigner(s1,0);
-    sigbws1 =sigmaBreitWigner(s1,0);
-    f2bws1  =f2BreitWigner(s1,0);
-    f0bws2  =f0BreitWigner(s2,0);
-    sigbws2 =sigmaBreitWigner(s2,0);
-    f2bws2  =f2BreitWigner(s2,0);
+    else if(ichan==0) {
+      F2=-2./3.*_sigmacoup*sigbws1;
+      F3=-2./3.*_sigmacoup*sigbws1;
+    }
+    else if(ichan==1) {
+      F1=-2./3.*_sigmacoup*sigbws2;
+      F3=+2./3.*_sigmacoup*sigbws2;
+    }
+    else if(ichan==2) {
+      F1= 2./3.*_sigmacoup*sigbws3;
+      F2= 2./3.*_sigmacoup*sigbws3;
+    }
+    else if(ichan==3) {
+      complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
+      F1+=_f2coup*0.5*(s3-s2)*f2bws1;
+      F2-=_f2coup*Dfact1; 
+      F3-=_f2coup*Dfact1;
+    }
+    else if(ichan==4) {
+      complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
+      F2+=_f2coup*0.5*(s3-s1)*f2bws2;
+      F1-=_f2coup*Dfact2;
+      F3+=_f2coup*Dfact2;
+    }
+    else if(ichan==5) {
+      complex<Energy2> Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
+      F3+=-_f2coup*0.5*(s1-s2)*f2bws3;
+      F1+=_f2coup*Dfact3;
+      F2+=_f2coup*Dfact3;
+    }
+    else if(ichan==6) {
+      F2=-2./3.*_f0coup*f0bws1;
+      F3=-2./3.*_f0coup*f0bws1;
+    }
+    else if(ichan==7) {
+      F1=-2./3.*_f0coup*f0bws2;
+      F3=+2./3.*_f0coup*f0bws2;
+    }
+    else if(ichan==8) {
+      F1= 2./3.*_f0coup*f0bws3;
+      F2= 2./3.*_f0coup*f0bws3;
+    }
+  }
+  // calculate the pi0 pi0 pi+ factor
+  else if(imode==2) {
+    // identical particle factors
+    fact = 1./sqrt(2.);
+    // compute the breit wigners we need
+    Complex rhos1bw[3],rhos2bw[3];
+    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
+      rhos1bw[ix] = Resonance::BreitWignerPWave(s1,_rhomass[ix], _rhowidth[ix],_mpic,_mpi0);
+      rhos2bw[ix] = Resonance::BreitWignerPWave(s2,_rhomass[ix], _rhowidth[ix],_mpic,_mpi0);
+    }
+    Complex f0bw  = Resonance::BreitWignerSWave(s3,   _f0mass,   _f0width,_mpi0,_mpi0);
+    Complex sigbw = Resonance::BreitWignerSWave(s3,_sigmamass,_sigmawidth,_mpi0,_mpi0);
+    Complex f2bw  = Resonance::BreitWignerDWave(s3,   _f2mass,   _f2width,_mpi0,_mpi0);
+    if(ichan<0) {
+      // the p-wave rho terms
+      for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
+	F1+=_rhocoupP[ix]*rhos1bw[ix];
+	F2+=_rhocoupP[ix]*rhos2bw[ix];
+      }
+      // the D-wave rho terms
+      Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
+      Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
+      for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
+	F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
+	F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
+	F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
+      }
+      // the scalar terms
+      Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
+      F1+=scalar;F2+=scalar;
+      // the tensor terms
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
+      F1+=Dfact3;F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan%2==0&&ichan<=4) {
+      unsigned int ires=ichan/2;
+      if(ires<_rhocoupP.size()){F1+=_rhocoupP[ires]*rhos1bw[ires];}
+      Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
+      if(ires<_rhocoupD.size()) {
+	F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
+	F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
+      }
+    }
+    else if(ichan%2==1&&ichan<=5) {
+      unsigned int ires=(ichan-1)/2;
+      if(ires<_rhocoupP.size()){F2+=_rhocoupP[ires]*rhos2bw[ires];}
+      Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
+      if(ires<_rhocoupD.size()) {
+	F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
+	F3-=_rhocoupD[ires]*Dfact1*rhos2bw[ires];
+      }
+    }
+    else if(ichan==6) {
+      F1+=2./3.*_sigmacoup*sigbw;
+      F2+=2./3.*_sigmacoup*sigbw;
+    }
+    else if(ichan==7) {
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
+      F1+=Dfact3;F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan==8) {
+      F1+=2./3.*_f0coup*f0bw;
+      F2+=2./3.*_f0coup*f0bw;
+    }
+  }
+  // a_1^0 ->pi+pi-pi0
+  else if(imode==3||imode==4) {
+    // compute the breit wigners we need
+    Complex rhos1bw[3],rhos2bw[3];
+    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
+      rhos1bw[ix] = Resonance::BreitWignerPWave(s1,_rhomass[ix], _rhowidth[ix],_mpic,_mpi0);
+      rhos2bw[ix] = Resonance::BreitWignerPWave(s2,_rhomass[ix], _rhowidth[ix],_mpic,_mpi0);
+    }
+    Complex f0bw  = Resonance::BreitWignerSWave(s3,   _f0mass,   _f0width,_mpic,_mpic);
+    Complex sigbw = Resonance::BreitWignerSWave(s3,_sigmamass,_sigmawidth,_mpic,_mpic);
+    Complex f2bw  = Resonance::BreitWignerDWave(s3,   _f2mass,   _f2width,_mpic,_mpic);
+    if(ichan<0) {
+      // the p-wave rho terms
+      for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
+	F1+=_rhocoupP[ix]*rhos1bw[ix];
+	F2+=_rhocoupP[ix]*rhos2bw[ix];
+      }
+      // the D-wave rho terms
+      Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
+      Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
+      for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
+	F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
+	F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
+	F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
+      }
+      // the scalar terms
+      Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
+      F1+=scalar;
+      F2+=scalar;
+      // the tensor terms
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
+      F1+=Dfact3;
+      F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan%2==0&&ichan<=4) {
+      unsigned int ires=ichan/2;
+      if(ires<_rhocoupP.size()) F1+=_rhocoupP[ires]*rhos1bw[ires];
+      Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
+      if(ires<_rhocoupD.size()) {
+	F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
+	F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
+      }
+    }
+    else if(ichan%2==1&&ichan<=5) {
+      unsigned int ires=(ichan-1)/2;
+      if(ires<_rhocoupP.size()) F2+=_rhocoupP[ires]*rhos2bw[ires];
+      Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
+      if(ires<_rhocoupD.size()) {
+	F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
+	F3-=_rhocoupD[ires]*-Dfact1*rhos2bw[ires];
+      }
+    }
+    else if(ichan==6) {
+      F1+=2./3.*_sigmacoup*sigbw;
+      F2+=2./3.*_sigmacoup*sigbw;
+    }
+    else if(ichan==7) {
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
+      F1+=Dfact3;
+      F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan==8) {
+      F1+=2./3.*_f0coup*f0bw;
+      F2+=2./3.*_f0coup*f0bw;
+    }
+  }
+  else if(imode==5) {
+    // identical particle factors
+    fact = 1./sqrt(2.);
+    // compute the breit wigners we need
+    Complex rhos1bw[3],rhos2bw[3];
+    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
+      rhos1bw[ix] = Resonance::BreitWignerPWave(s1,_rhomass[ix], _rhowidth[ix],_mpic,_mpic);
+      rhos2bw[ix] = Resonance::BreitWignerPWave(s2,_rhomass[ix], _rhowidth[ix],_mpic,_mpic);
+    }
+    Complex f0bws1  = Resonance::BreitWignerSWave(s1,   _f0mass,   _f0width,_mpic,_mpic);
+    Complex sigbws1 = Resonance::BreitWignerSWave(s1,_sigmamass,_sigmawidth,_mpic,_mpic);
+    Complex f2bws1  = Resonance::BreitWignerDWave(s1,   _f2mass,   _f2width,_mpic,_mpic);
+    Complex f0bws2  = Resonance::BreitWignerSWave(s2,   _f0mass,   _f0width,_mpic,_mpic);
+    Complex sigbws2 = Resonance::BreitWignerSWave(s2,_sigmamass,_sigmawidth,_mpic,_mpic);
+    Complex f2bws2  = Resonance::BreitWignerDWave(s2,   _f2mass,   _f2width,_mpic,_mpic);
     if(ichan<0) {
       // the p-wave rho terms
       for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
@@ -650,78 +779,13 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
       F3+=2./3.*_f0coup*f0bws2;
     }
   }
-  // calculate the pi0 pi0 pi+ factor
-  else if(imode==1) {
-    // compute the breit wigners we need
-    Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
-    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
-      rhos1bw[ix]=rhoBreitWigner(ix,s1,1);
-      rhos2bw[ix]=rhoBreitWigner(ix,s2,1);
-    }
-    f0bw  =f0BreitWigner(s3,1);
-    sigbw =sigmaBreitWigner(s3,1);
-    f2bw  =f2BreitWigner(s3,1);
-    if(ichan<0) {
-      // the p-wave rho terms
-      for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
-	F1+=_rhocoupP[ix]*rhos1bw[ix];
-	F2+=_rhocoupP[ix]*rhos2bw[ix];
-      }
-      // the D-wave rho terms
-      Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
-      Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
-      for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
-	F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
-	F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
-	F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
-      }
-      // the scalar terms
-      Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
-      F1+=scalar;F2+=scalar;
-      // the tensor terms
-      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
-      F1+=Dfact3;F2+=Dfact3;
-      F3-=0.5*_f2coup*(s1-s2)*f2bw;
-    }
-    else if(ichan%2==0&&ichan<=4) {
-      unsigned int ires=ichan/2;
-      if(ires<_rhocoupP.size()){F1+=_rhocoupP[ires]*rhos1bw[ires];}
-      Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
-      if(ires<_rhocoupD.size()) {
-	F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
-	F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
-      }
-    }
-    else if(ichan%2==1&&ichan<=5) {
-      unsigned int ires=(ichan-1)/2;
-      if(ires<_rhocoupP.size()){F2+=_rhocoupP[ires]*rhos2bw[ires];}
-      Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
-      if(ires<_rhocoupD.size()) {
-	F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
-	F3-=_rhocoupD[ires]*Dfact1*rhos2bw[ires];
-      }
-    }
-    else if(ichan==6) {
-      F1+=2./3.*_sigmacoup*sigbw;
-      F2+=2./3.*_sigmacoup*sigbw;
-    }
-    else if(ichan==7) {
-      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
-      F1+=Dfact3;F2+=Dfact3;
-      F3-=0.5*_f2coup*(s1-s2)*f2bw;
-    }
-    else if(ichan==8) {
-      F1+=2./3.*_f0coup*f0bw;
-      F2+=2./3.*_f0coup*f0bw;
-    }
-  }
   else {
     throw Exception() << "ThreePionCLEOCurrent Unknown Decay" << imode
 				 << Exception::abortnow;
   }
-  // identical particle factors
-  double fact = 1./sqrt(2.);
-  F1*=fact;F2*=fact;F3*=fact;
+  F1 *= fact;
+  F2 *= fact;
+  F3 *= fact;
 }
 
 // complete the construction of the decay mode for integration
@@ -730,8 +794,35 @@ bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
 				      unsigned int imode,PhaseSpaceModePtr mode,
 				      unsigned int iloc,int ires,
 				      PhaseSpaceChannel phase, Energy upp ) {
-  if(abs(icharge)!=3) return false;
-  if(!acceptMode(imode)){return false;}
+  // check the charge and resonance
+  if(imode<=1||imode==3||imode==4) {
+    if(icharge!=0) return false;
+    if(resonance && resonance->id()!=ParticleID::a_10) return false;
+  }
+  else if(imode==2||imode==5) {
+    if(abs(icharge)!=3) return false;
+    if(resonance && abs(resonance->id())!=ParticleID::a_1plus) return false;
+  }
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal!=IsoSpin::IOne) return false;
+  }
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Zero:
+      if(imode==2||imode==5) return false;
+      break;
+    case IsoSpin::I3One:
+      if((imode!=2&&imode!=5) || icharge ==-3) return false;
+      break;
+    case IsoSpin::I3MinusOne:
+      if((imode!=2&&imode!=5) || icharge == 3) return false;
+    default:
+      return false;
+    }
+  }
+  // get the particles and check the masses
   int iq(0),ia(0);
   tPDVector extpart=particles(1,imode,iq,ia);
   Energy min(ZERO);
@@ -740,21 +831,79 @@ bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
   _maxmass=max(_maxmass,upp);
   // pointers to the particles we need
   tPDPtr a1m = getParticleData(ParticleID::a_1minus);
+  tPDPtr a10 = getParticleData(ParticleID::a_10);
   // the different rho resonances
   tPDPtr rhom[3] = {getParticleData(-213),getParticleData(-100213),getParticleData(-30213)};
-  if(icharge==3) for(unsigned int ix=0;ix<3;++ix) rhom[ix]=rhom[ix]->CC();
-  tPDPtr rho0[3] = {getParticleData(113),getParticleData(100113),
-		    getParticleData(30113)};
+  if(icharge==3) {
+    for(unsigned int ix=0;ix<3;++ix) rhom[ix]=rhom[ix]->CC();
+    a1m = a1m->CC();
+  }
+  tPDPtr rho0[3] = {getParticleData(113),getParticleData(100113),getParticleData(30113)};
   // the sigma
   tPDPtr sigma = getParticleData(9000221);
   // the f_2
   tPDPtr f2=getParticleData(225);
   // the f_0
   tPDPtr f0=getParticleData(10221);
-  // set up the integration channels
-  if(imode==0) {
+  assert(f2 && f0 && sigma);
+  // a0 -> pi0 pi0 pi0
+  if(imode<=1) {
     for(unsigned int ix=0;ix<3;++ix) {
-      if(!rho0[ix]) continue;
+      tPDPtr temp;
+      if(ix==0)      temp = sigma;
+      else if(ix==1) temp = f2;
+      else if(ix==2) temp = f0;
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a10,ires+1,temp,ires+1,iloc+1,
+			ires+2,iloc+2,ires+2,iloc+3));
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a10,ires+1,temp,ires+1,iloc+2,
+			ires+2,iloc+1,ires+2,iloc+3));
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a10,ires+1,temp,ires+1,iloc+3,
+			ires+2,iloc+1,ires+2,iloc+2));
+    }
+  }
+  // decay mode a_1- -> pi0 pi0 pi-
+  else if(imode==2) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      // first rho+ channel
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,rhom[ix],ires+1,iloc+1,
+			ires+2,iloc+2,ires+2,iloc+3));
+      // second rho+ channel
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,rhom[ix],ires+1,iloc+2,
+			ires+2,iloc+1,ires+2,iloc+3));
+    }
+    // I=0 channels
+    for(unsigned int iy=0;iy<3;++iy) {
+      tPDPtr temp;
+      if(iy==0)      temp = sigma;
+      else if(iy==1) temp = f2;
+      else if(iy==2) temp = f0;
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,temp,ires+1,iloc+3,
+			ires+2,iloc+1,ires+2,iloc+2));
+    }
+  }
+  // decay mode a_10 -> pi+ pi- pi0
+  else if(imode==3||imode==4) {
+    // rho modes
+    for(unsigned int ix=0;ix<3;++ix) {
+      // first rho channel
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a10,ires+1,rhom[ix],ires+1,iloc+1,
+			ires+2,iloc+2,ires+2,iloc+3));
+      // second channel
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a10,ires+1,rhom[ix],ires+1,iloc+2,
+			ires+2,iloc+1,ires+2,iloc+3));
+    }
+    // I=0 channels
+    for(unsigned int iy=0;iy<3;++iy) {
+      tPDPtr temp;
+      if(iy==0)      temp = sigma;
+      else if(iy==1) temp = f2;
+      else if(iy==2) temp = f0;
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a10,ires+1,temp,ires+1,iloc+3,
+			ires+2,iloc+1,ires+2,iloc+2));
+    }
+  }
+  else if(imode==5) {
+    for(unsigned int ix=0;ix<3;++ix) {
       // the neutral rho channels
       // first channel
       mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,rho0[ix],ires+1,iloc+1,
@@ -763,67 +912,29 @@ bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
       mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,rho0[ix],ires+1,iloc+2,
 			ires+2,iloc+1,ires+2,iloc+3));
     }
-    // the sigma channels
-    if(sigma) {
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,sigma,ires+1,iloc+1,
+    for(unsigned int iy=0;iy<3;++iy) {
+      tPDPtr temp;
+      if(iy==0)      temp = sigma;
+      else if(iy==1) temp = f2;
+      else if(iy==2) temp = f0;
+      // first channel
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,temp,ires+1,iloc+1,
 			ires+2,iloc+2,ires+2,iloc+3));
       // interchanged channel
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,sigma,ires+1,iloc+2,
-			ires+2,iloc+1,ires+2,iloc+3));
-    }
-    // the f_2 channels
-    if(f2) {
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,f2,ires+1,iloc+1,
-			ires+2,iloc+2,ires+2,iloc+3));
-      // interchanged channel
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,f2,ires+1,iloc+2,
-			ires+2,iloc+1,ires+2,iloc+3));
-    }
-    // the f_0 channel
-    if(f0) {
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,f0,ires+1,iloc+1,
-			ires+2,iloc+2,ires+2,iloc+3));
-      // interchanged channel
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,f0,ires+1,iloc+2,
+      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,temp,ires+1,iloc+2,
 			ires+2,iloc+1,ires+2,iloc+3));
     }
   }
-  else {
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(!rhom[ix]) continue;
-      // first rho+ channel
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,rhom[ix],ires+1,iloc+1,
-			ires+2,iloc+2,ires+2,iloc+3));
-      // second rho+ channel
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,rhom[ix],ires+1,iloc+2,
-			ires+2,iloc+1,ires+2,iloc+3));
-    }
-    // the sigma channel
-    if(sigma) {
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,sigma,ires+1,iloc+3,
-			ires+2,iloc+1,ires+2,iloc+2));
-    }
-    //  the f_2  channel
-    if(f2) {
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,f2,ires+1,iloc+3,
-			ires+2,iloc+1,ires+2,iloc+2));
-    }
-    // the f_0 channel
-    if(f0) {
-      mode->addChannel((PhaseSpaceChannel(phase),ires,a1m,ires+1,f0,ires+1,iloc+3,
-			ires+2,iloc+1,ires+2,iloc+2));
-    }
+  // reset the integration parameters
+  for(unsigned int iy=0;iy<_rhomass.size();++iy) {
+    mode->resetIntermediate(rho0[iy],_rhomass[iy],_rhowidth[iy]);
+    mode->resetIntermediate(rhom[iy],_rhomass[iy],_rhowidth[iy]);
   }
-  if(_localparameters) {
-    for(unsigned int iy=0;iy<_rhomass.size();++iy) {
-      if(rho0[iy]) mode->resetIntermediate(rho0[iy],_rhomass[iy],_rhowidth[iy]);
-      if(rhom[iy]) mode->resetIntermediate(rhom[iy],_rhomass[iy],_rhowidth[iy]);
-    }
-    if(sigma) mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
-    if(f2)    mode->resetIntermediate(f2,_f2mass,_f2width);
-    if(f0)    mode->resetIntermediate(f0,_f0mass,_f0width);
-    mode->resetIntermediate(a1m,_a1mass,_a1width);
-  }
+  mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
+  mode->resetIntermediate(f2,_f2mass,_f2width);
+  mode->resetIntermediate(f0,_f0mass,_f0width);
+  mode->resetIntermediate(a10,_a1mass,_a1width);
+  mode->resetIntermediate(a10,_a1mass,_a1width);
   return true;
 }
 
@@ -913,7 +1024,6 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":f0Magnitude " << _f0mag << "\n";
   output << "newdef " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
   output << "newdef " << name() << ":sigmaMagnitude " <<_sigmamag  << "\n";
-  output << "newdef " << name() << ":LocalParameters " << _localparameters << "\n";
   output << "newdef " << name() << ":Initializea1 " <<_initializea1  << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) {
@@ -935,7 +1045,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
   }
-  ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
+  WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
@@ -943,11 +1053,11 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 void ThreePionCLEOCurrent::doinitrun() {
   // set up the running a_1 width
   inita1Width(0);
-  ThreeMesonCurrentBase::doinitrun();
+  WeakCurrent::doinitrun();
 }
 
 void ThreePionCLEOCurrent::doupdate() {
-  ThreeMesonCurrentBase::doupdate();
+  WeakCurrent::doupdate();
   // update running width if needed
   if ( !touched() ) return;
   if(_maxmass!=_maxcalc) inita1Width(-1);
@@ -1047,3 +1157,119 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
   complex<Energy2> dot2=current[0]*q;
   return(-dot1+dot2*conj(dot2)/q2).real() / sqr(_rhomass[0]);
 }
+
+// the hadronic currents    
+vector<LorentzPolarizationVectorE> 
+ThreePionCLEOCurrent::current(tcPDPtr resonance,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      const int imode, const int ichan, Energy & scale, 
+			      const tPDVector & ,
+			      const vector<Lorentz5Momentum> & momenta,
+			      DecayIntegrator::MEOption) const {
+  useMe();
+  // check the isospin
+  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
+    return vector<LorentzPolarizationVectorE>();
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Zero:
+      if(imode==2||imode==5) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3One:
+      if(imode!=2&&imode!=5) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3MinusOne:
+      if(imode!=2&&imode!=5) return vector<LorentzPolarizationVectorE>();
+    default:
+      return vector<LorentzPolarizationVectorE>();
+    }
+  }
+  // calculate q2,s1,s2,s3
+  Lorentz5Momentum q;
+  for(unsigned int ix=0;ix<momenta.size();++ix)
+    q+=momenta[ix];
+  q.rescaleMass();
+  scale=q.mass();
+  Energy2 q2=q.mass2();
+  Energy2 s1 = (momenta[1]+momenta[2]).m2();
+  Energy2 s2 = (momenta[0]+momenta[2]).m2();
+  Energy2 s3 = (momenta[0]+momenta[1]).m2();
+  // form factors
+  Complex F1(0.), F2(0.), F3(0.);
+  CLEOFormFactor(imode,ichan,q2,s1,s2,s3,F1,F2,F3);
+  // change sign of the F2 term
+  F2 =- F2;
+  // prefactor
+  complex<InvEnergy> a1fact = _fact;
+  if(!resonance) a1fact *= a1BreitWigner(q2);
+  // current
+  LorentzPolarizationVectorE vect = q.mass()*a1fact*
+    ((F2-F1)*momenta[2] + (F1-F3)*momenta[1] + (F3-F2)*momenta[0]);
+  // scalar piece
+  Complex dot=(vect*q)/q2;
+  vect -= dot*q;
+  // return the answer
+  return vector<LorentzPolarizationVectorE>(1,vect);
+}
+
+bool ThreePionCLEOCurrent::accept(vector<int> id) {
+  if(id.size()!=3) return false;
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID::piplus) continue; 
+    else if(id[ix]==ParticleID::piminus) continue;
+    else if(id[ix]==ParticleID::pi0)     continue;
+    return false;
+  }
+  return true;
+}
+
+unsigned int ThreePionCLEOCurrent::decayMode(vector<int> id) {
+  if(id.size()!=3) return -1;
+  int npip(0),npim(0),npi0(0);
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID::piplus)       ++npip;
+    else if(id[ix]==ParticleID::piminus) ++npim;
+    else if(id[ix]==ParticleID::pi0)     ++npi0;
+  }
+  if       (npi0==3)                                  return 0;
+  else if( (npip==1&&npi0==2) || (npim==1&&npi0==2) ) return 2;
+  else if( npi0==1 && npip==1 && npim==1 )            return 3; 
+  else if( (npip==2&&npim==1) || (npim==2&&npip==1) ) return 5;
+  else return -1;
+}
+
+tPDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int,int) {
+  tPDVector extpart(3);
+  if(imode==0||imode==1) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==2) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::piminus);
+  }
+  else if(imode==3||imode==4) {
+    extpart[0]=getParticleData(ParticleID::piplus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==5) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::piplus);
+  }
+  else
+    assert(false);
+  // conjugate the particles if needed
+  if(icharge==3) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(extpart[ix]->CC()) extpart[ix]=extpart[ix]->CC();
+    }
+  }
+  // return the answer
+  return extpart;
+}
+
