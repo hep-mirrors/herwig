@@ -13,6 +13,10 @@ FourPionNovosibirskCurrent.h \
 ScalarMesonCurrent.h\
 ThreeMesonCurrentBase.h \
 ThreeMesonDefaultCurrent.h\
+ThreePionDefaultCurrent.h\
+OneKaonTwoPionDefaultCurrent.h \
+TwoKaonOnePionDefaultCurrent.h \
+EtaPiPiDefaultCurrent.h \
 ThreePionCLEOCurrent.h\
 TwoPionRhoCurrent.h\
 KPiKStarCurrent.h\
@@ -33,6 +37,10 @@ FourPionNovosibirskCurrent.cc \
 ScalarMesonCurrent.cc \
 ThreeMesonCurrentBase.cc \
 ThreeMesonDefaultCurrent.cc \
+ThreePionDefaultCurrent.cc \
+OneKaonTwoPionDefaultCurrent.cc \
+TwoKaonOnePionDefaultCurrent.cc \
+EtaPiPiDefaultCurrent.cc \
 ThreePionCLEOCurrent.cc \
 TwoPionRhoCurrent.cc \
 KPiKStarCurrent.cc \
