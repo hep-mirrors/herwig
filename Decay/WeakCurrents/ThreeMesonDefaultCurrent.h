@@ -15,6 +15,7 @@
 #include "Herwig/Utilities/Interpolator.h"
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig/Decay/ResonanceHelpers.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -329,10 +330,13 @@ private:
    * @return The Breit-Wigner
    */
   Complex a1BreitWigner(Energy2 q2) const  {
+    if(!_a1opt)
+      return Resonance::BreitWignera1(q2,_a1mass,_a1width);
     Complex ii(0.,1.);
     Energy2 m2(_a1mass*_a1mass);
     Energy  q(sqrt(q2));
-    return m2/(m2-q2-ii*q*a1Width(q2));
+    Energy width = (*_a1runinter)(q2);
+    return m2/(m2-q2-ii*q*width);
   }
   
   /**
@@ -345,38 +349,6 @@ private:
     Complex ii(0.,1.);
     complex<Energy2> fact(m2 - ii*_k1mass*_k1width);
     return fact/(fact-q2);
-  }
-  
-  /**
-   * The \f$a_1\f$ running width
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @return The \f$a_1\f$ running width.
-   */
-  Energy a1Width(Energy2 q2) const {
-    Energy output;
-    if(!_a1opt) output = _a1mass*_a1width*g(q2)/g(sqr(_a1mass))/sqrt(q2);
-    else        output = (*_a1runinter)(q2);
-    return output;
-  }
-  
-  /**
-   *  The \f$g(Q^2)\f$ function of Kuhn and Santamaria
-   */
-  double g(Energy2 q2) const {
-    double output;
-    if(q2 < 9.*sqr(_mpi)) {
-      output=0.;
-    }
-    else if(q2 < sqr(_rhoF123masses[0]+_mpi)) {
-      double diff = (q2-9.*sqr(_mpi))/GeV2;
-      
-      output = 4.1*sqr(diff)*diff*(1.-3.3*diff+5.8*sqr(diff));
-    }
-    else {
-      double ratio = q2/GeV2;
-      output = ratio*(1.623+10.38/ratio-9.32/sqr(ratio)+0.65/(ratio*sqr(ratio)));
-    }
-    return output;
   }
 
   /**
