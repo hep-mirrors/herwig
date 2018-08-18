@@ -176,9 +176,9 @@ bool EtaPiPiCurrent::createMode(int icharge, tcPDPtr resonance,
 tPDVector EtaPiPiCurrent::particles(int icharge, unsigned int imode,
 				    int,int) {
   tPDVector output(3);
+  output[0]=getParticleData(ParticleID::piplus);
   output[2]=getParticleData(ParticleID::eta);
   if(imode==0) {
-    output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::pi0);
     if(icharge==-3) {
       for(unsigned int ix=0;ix<output.size();++ix) {
@@ -187,7 +187,6 @@ tPDVector EtaPiPiCurrent::particles(int icharge, unsigned int imode,
     }
   }
   else {
-    output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::piminus);
   }
   return output;
@@ -196,11 +195,11 @@ tPDVector EtaPiPiCurrent::particles(int icharge, unsigned int imode,
 // hadronic current
 vector<LorentzPolarizationVectorE> 
 EtaPiPiCurrent::current(tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			    const int imode, const int ichan,Energy & scale, 
-			    const tPDVector & outgoing,
-			    const vector<Lorentz5Momentum> & momenta,
-			    DecayIntegrator::MEOption) const {
+			IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			const int imode, const int ichan,Energy & scale, 
+			const tPDVector & outgoing,
+			const vector<Lorentz5Momentum> & momenta,
+			DecayIntegrator::MEOption) const {
   useMe();
   // check the isospin
   if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)

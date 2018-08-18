@@ -12,7 +12,6 @@ ALL_H_FILES = \
 FourPionNovosibirskCurrent.h \
 ScalarMesonCurrent.h\
 ThreeMesonCurrentBase.h \
-ThreeMesonDefaultCurrent.h\
 ThreePionDefaultCurrent.h\
 OneKaonTwoPionDefaultCurrent.h \
 TwoKaonOnePionDefaultCurrent.h \
@@ -36,7 +35,6 @@ ALL_CC_FILES = \
 FourPionNovosibirskCurrent.cc \
 ScalarMesonCurrent.cc \
 ThreeMesonCurrentBase.cc \
-ThreeMesonDefaultCurrent.cc \
 ThreePionDefaultCurrent.cc \
 OneKaonTwoPionDefaultCurrent.cc \
 TwoKaonOnePionDefaultCurrent.cc \
