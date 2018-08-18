@@ -28,31 +28,18 @@ using namespace ThePEG;
  *
  *  The following three meson modes are implemented.
  *
- * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
- * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
- * - \f$    K^-   \pi^-    K^+ \f$, (imode=2)
- * - \f$    K^0   \pi^-    \bar{K}^0\f$, (imode=3)
- * - \f$    K^-   \pi^0    K^0 \f$, (imode=4)
  * - \f$    \pi^0  \pi^0    K^- \f$, (imode=5)
  * - \f$    K^-   \pi^-    \pi^+ \f$, (imode=6)
  * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
- * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
  *
  *  using the currents from TAUOLA
  *
  *
- * @see WeakCurrent,
- * @see WeakCurrent.
+ * @see WeakCurrent
  * @see Defaulta1MatrixElement
  * 
  */
 class OneKaonTwoPionDefaultCurrent: public WeakCurrent {
-
-  /**
-   * The matrix element for the running \f$a_1\f$ width is a friend to 
-   * keep some members private.
-   */
-  friend class Defaulta1MatrixElement;
 
 public:
 
@@ -168,24 +155,6 @@ public:
    * @param create Whether or not to add a statement creating the object
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
-  
-  /**
-   * the matrix element for the \f$a_1\f$ decay to calculate the running width
-   * @param imode The mode for which the matrix element is needed.
-   * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
-   * @return The matrix element squared summed over spins.
-   */
-  double threeBodyMatrixElement(const int imode,  const Energy2 q2,
-				const Energy2 s3, const Energy2 s2, 
-				const Energy2 s1, const Energy  m1, 
-				const Energy  m2, const Energy  m3) const;
-
 
 protected:
 
@@ -276,25 +245,12 @@ protected:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
-  //@{
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  virtual void doinitrun();
-
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  virtual void doupdate();
-  //@}
 
 private:
 
@@ -423,21 +379,6 @@ private:
   }
   
   /**
-   * \f$a_1\f$ Breit-Wigner
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @return The Breit-Wigner
-   */
-  Complex a1BreitWigner(Energy2 q2) const  {
-    if(!_a1opt)
-      return Resonance::BreitWignera1(q2,_a1mass,_a1width);
-    Complex ii(0.,1.);
-    Energy2 m2(_a1mass*_a1mass);
-    Energy  q(sqrt(q2));
-    Energy width = (*_a1runinter)(q2);
-    return m2/(m2-q2-ii*q*width);
-  }
-  
-  /**
    * The \f$K_1\f$ Breit-Wigner
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
@@ -448,12 +389,6 @@ private:
     complex<Energy2> fact(m2 - ii*_k1mass*_k1width);
     return fact/(fact-q2);
   }
-
-  /**
-   * Initialize the \f$a_1\f$ running width
-   * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
-   */
-  void inita1Width(int iopt);
 
   /**
    * Breit-Wigners for the \f$\rho\f$ and \f$K^*\f$.
@@ -493,37 +428,6 @@ private:
    * The relative weight of the \f$\rho\f$ and \f$K^*\f$ where needed.
    */
   double _rhoKstarwgt;
-  
-  /**
-   * The \f$a_1\f$ width for the running \f$a_1\f$ width calculation.
-   */
-  vector<Energy>  _a1runwidth;
-
-  /**
-   * The \f$q^2\f$ for the running \f$a_1\f$  width calculation.
-   */
-  vector<Energy2> _a1runq2;
-
-
-  /**
-   * The interpolator for the running \f$a_1\f$ width calculation.
-   */
-  Interpolator<Energy,Energy2>::Ptr _a1runinter;
-
-  /**
-   * Initialize the running \f$a_1\f$ width.
-   */
-  bool _initializea1;
-  
-  /**
-   * The mass of the \f$a_1\f$ resonances.
-   */
-  Energy _a1mass;
-
-  /**
-   * The width of the \f$a_1\f$ resonances.
-   */
-  Energy _a1width;
 
   /**
    * The mass of the \f$aK1\f$ resonances.
@@ -551,11 +455,6 @@ private:
   Energy _mK;
 
   /**
-   * use local values of the \f$\rho\f$ masses and widths
-   */
-  bool _rhoparameters;
-
-  /**
    * The \f$\rho\f$ masses for the \f$F_{1,2,3}\f$ form factors.
    */
   vector<Energy> _rhoF123masses;
@@ -574,11 +473,6 @@ private:
    * The \f$\rho\f$ widths for the \f$F_5\f$ form factors.
    */
   vector<Energy> _rhoF5widths;
-  
-  /**
-   * use local values of the \f$K^*\f$ resonances masses and widths
-   */
-  bool _kstarparameters;
 
   /**
    * The \f$K^*\f$ masses for the \f$F_{1,2,3}\f$ form factors.
@@ -599,32 +493,6 @@ private:
    * The \f$K^*\f$ widths for the \f$F_5\f$ form factors.
    */
   vector<Energy> _kstarF5widths;
-  
-  /**
-   * Use local values of the \f$a_1\f$ parameters
-   */
-  bool _a1parameters;
-  
-  /**
-   * Use local values of the \f$K_1\f$ parameters
-   */
-  bool _k1parameters;
-
-  /**
-   * Option for the \f$a_1\f$ width
-   */
-  bool _a1opt;
-
-  /**
-   *  The maximum mass of the hadronic system
-   */
-  Energy _maxmass;
-
-  /**
-   *  The maximum mass when the running width was calculated
-   */
-  Energy _maxcalc;
-  
 };
 
 }
