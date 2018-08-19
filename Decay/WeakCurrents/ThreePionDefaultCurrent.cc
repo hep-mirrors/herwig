@@ -453,27 +453,6 @@ void ThreePionDefaultCurrent::doupdate() {
   if(_maxmass!=_maxcalc) inita1Width(-1);
 }
 
-Complex ThreePionDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
-							 unsigned int ires) const {
-  Energy q(sqrt(q2)),mass,width;
-  // get the mass and width of the requested resonance
-  if(itype==0) {
-    mass=_rhoF123masses[ires];
-    width=_rhoF123widths[ires];
-  }
-  else
-    assert(false);
-  // calculate the momenta for the running widths
-  Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi));
-  Energy pcm(ZERO);
-  if(2.*_mpi<q){pcm=Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);}
-  double ratio = Math::Pow<3>(pcm/pcm0);
-  Energy gamrun(width*mass*ratio/q);
-  Complex ii(0.,1.);
-  complex<Energy2> denom(q2-mass*mass+ii*mass*gamrun), numer(-mass*mass);
-  return numer/denom;
-}
-
 double ThreePionDefaultCurrent::
 threeBodyMatrixElement(const int       , const Energy2 q2,
 		       const Energy2 s3, const Energy2 s2, 

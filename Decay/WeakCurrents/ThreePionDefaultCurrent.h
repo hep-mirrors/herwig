@@ -16,6 +16,7 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig/Decay/ResonanceHelpers.h"
+#include <numeric>
 
 namespace Herwig {
 using namespace ThePEG;
@@ -233,22 +234,18 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BrhoF123(Energy2 q2,int ires) const {
-    Complex output(0.),norm(0.);
-    for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
-      norm+=_rhoF123wgts[ix];
+    if(ires>=_rhoF123wgts.size()) return 0.;
+    Complex output(0.);
+    Complex norm = std::accumulate(_rhoF123wgts.begin(),
+				   _rhoF123wgts.end(),Complex(0.));
+    unsigned int imin=0,imax=_rhoF123wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
     }
-    if(ires<0) {
-      for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
-	output+=_rhoF123wgts[ix]*rhoKBreitWigner(q2,0,ix);
-      }
-    }
-    else {
-      unsigned int temp(ires);
-      if(temp<_rhoF123wgts.size()&&temp<3)
-	output=_rhoF123wgts[temp]*rhoKBreitWigner(q2,0,temp);
-      else
-	output=0.;
-    }
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_rhoF123wgts[ix]*Resonance::BreitWignerPWave(q2,_rhoF123masses[ix],
+							   _rhoF123widths[ix],_mpi,_mpi);
     return output/norm;
   }
   
@@ -272,14 +269,6 @@ private:
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
   void inita1Width(int iopt);
-
-  /**
-   * Breit-Wigners for the \f$\rho\f$ and \f$K^*\f$.
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner.
-   * @param itype The type of Breit-Wigner, \e i.e. which masses and widths to use.x
-   * @param ires Which multiplet to use.
-   */
-  Complex rhoKBreitWigner(Energy2 q2,unsigned int itype,unsigned int ires) const;
 
 private:
   
