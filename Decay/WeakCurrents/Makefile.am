@@ -22,7 +22,8 @@ TwoPionPhotonCurrent.h\
 VectorMesonCurrent.h\
 FivePionCurrent.h \
 KPiCurrent.h\
-KaonThreeMesonCurrent.h\
+OneKaonTwoPionCurrent.h\
+TwoKaonOnePionCurrent.h\
 TwoPionCzyzCurrent.h\
 TwoKaonCzyzCurrent.h\
 ThreePionCzyzCurrent.h\
@@ -44,7 +45,8 @@ TwoPionPhotonCurrent.cc \
 VectorMesonCurrent.cc \
 FivePionCurrent.cc \
 KPiCurrent.cc \
-KaonThreeMesonCurrent.cc \
+OneKaonTwoPionCurrent.cc\
+TwoKaonOnePionCurrent.cc\
 TwoPionCzyzCurrent.cc \
 TwoKaonCzyzCurrent.cc \
 ThreePionCzyzCurrent.cc \

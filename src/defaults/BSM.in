@@ -90,23 +90,23 @@ insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau5PionCurrent
 insert WeakDecayConstructor:DecayModes 0 pi+,pi0,pi0,pi0,pi0;
 insert WeakDecayConstructor:Normalisation 0 0.603378959531
 # K0,pi+,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1K2PiCurrent
 insert WeakDecayConstructor:DecayModes 0 K0,pi+,pi0;
 insert WeakDecayConstructor:Normalisation 0 0.380268556539
 # K+,pi+,pi-
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau1K2PiCurrent
 insert WeakDecayConstructor:DecayModes 0 K+,pi+,pi-;
 insert WeakDecayConstructor:Normalisation 0 0.407904176498
 # K+,K-,pi+
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2K1PiCurrent
 insert WeakDecayConstructor:DecayModes 0 K+,K-,pi+;
 insert WeakDecayConstructor:Normalisation 0 0.727416124384
 # K+,Kbar0,pi0 
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2K1PiCurrent
 insert WeakDecayConstructor:DecayModes 0 K+,Kbar0,pi0;
 insert WeakDecayConstructor:Normalisation 0 0.945076580717
 # K_L0,K_S0,pi+
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3KaonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2K1PiCurrent
 insert WeakDecayConstructor:DecayModes 0 K_L0,K_S0,pi+;
 insert WeakDecayConstructor:Normalisation 0 1.10729951668
 # pi+,pi0,gamma
@@ -114,7 +114,7 @@ insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2MesonPhotonCurrent
 insert WeakDecayConstructor:DecayModes 0 pi+,pi0,gamma;
 insert WeakDecayConstructor:Normalisation 0 3.13799210805
 # eta,pi+,pi0
-insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau3MesonCurrent
+insert WeakDecayConstructor:Current 0 /Herwig/Decays/TauEtaPiPiCurrent
 insert WeakDecayConstructor:DecayModes 0 eta,pi+,pi0;
 insert WeakDecayConstructor:Normalisation 0 0.880539616307
 # K+,Kbar0

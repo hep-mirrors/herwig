@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// KaonThreeMesonCurrent.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// OneKaonTwoPionCurrent.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the KaonThreeMesonCurrent class.
+// functions of the OneKaonTwoPionCurrent class.
 //
 
-#include "KaonThreeMesonCurrent.h"
+#include "OneKaonTwoPionCurrent.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -24,34 +24,25 @@
 
 using namespace Herwig;
 
-DescribeClass<KaonThreeMesonCurrent,WeakCurrent>
-describeHerwigKaonThreeMesonCurrent("Herwig::KaonThreeMesonCurrent",
+DescribeClass<OneKaonTwoPionCurrent,WeakCurrent>
+describeHerwigOneKaonTwoPionCurrent("Herwig::OneKaonTwoPionCurrent",
 				    "HwWeakCurrents.so");
-HERWIG_INTERPOLATOR_CLASSDESC(KaonThreeMesonCurrent,Energy,Energy2)
+HERWIG_INTERPOLATOR_CLASSDESC(OneKaonTwoPionCurrent,Energy,Energy2)
 
-IBPtr KaonThreeMesonCurrent::clone() const {
+IBPtr OneKaonTwoPionCurrent::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr KaonThreeMesonCurrent::fullclone() const {
+IBPtr OneKaonTwoPionCurrent::fullclone() const {
   return new_ptr(*this);
 }
 
-KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
+OneKaonTwoPionCurrent::OneKaonTwoPionCurrent() {
   // the quarks for the different modes
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
   addDecayMode(2,-3);
   addDecayMode(2,-3);
   addDecayMode(2,-3);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  setInitialModes(12);
+  setInitialModes(3);
   // rho parameters
   // use local values
   _rhoparameters=true;
@@ -160,13 +151,13 @@ KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   _a1runwidth.clear();
   std::transform(tmp1.begin(), tmp1.end(),
 		 back_inserter(_a1runwidth),
-		 [](double x){return x*GeV;});
+		 [](double x){return x*MeV;});
   
   vector<double> tmp2(a1q2in,a1q2in+200);
   _a1runq2.clear();
   std::transform(tmp2.begin(), tmp2.end(),
 		 back_inserter(_a1runq2),
-		 [](double x){return x*GeV2;});
+		 [](double x){return x*MeV2;});
 
 
   // K_1 parameters
@@ -191,7 +182,7 @@ KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
 }
 
 
-void KaonThreeMesonCurrent::persistentOutput(PersistentOStream & os) const {
+void OneKaonTwoPionCurrent::persistentOutput(PersistentOStream & os) const {
   os << _a1runinter
      << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
      << _rho2wgts << ounit(_rho2mass,GeV) << ounit(_rho2width,GeV)
@@ -208,7 +199,7 @@ void KaonThreeMesonCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
-void KaonThreeMesonCurrent::persistentInput(PersistentIStream & is, int) {
+void OneKaonTwoPionCurrent::persistentInput(PersistentIStream & is, int) {
   is >> _a1runinter
      >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
      >> _rho2wgts >> iunit(_rho2mass,GeV) >> iunit(_rho2width,GeV) 
@@ -226,14 +217,14 @@ void KaonThreeMesonCurrent::persistentInput(PersistentIStream & is, int) {
 }
 
 
-void KaonThreeMesonCurrent::Init() {
+void OneKaonTwoPionCurrent::Init() {
 
-  static ClassDocumentation<KaonThreeMesonCurrent> documentation
-    ("The KaonThreeMesonCurrent class implements the model of "
+  static ClassDocumentation<OneKaonTwoPionCurrent> documentation
+    ("The OneKaonTwoPionCurrent class implements the model of "
      "Z. Phys.  C 69 (1996) 243 [arXiv:hep-ph/9503474]"
      " for the weak current with three "
      "mesons, at least one of which is a kaon",
-     "The KaonThreeMesonCurrent class implements the model of "
+     "The OneKaonTwoPionCurrent class implements the model of "
      "\\cite{Finkemeier:1995sr} for the weak current with three "
      "mesons, at least one of which is a kaon.",
      "\\bibitem{Finkemeier:1995sr}\n"
@@ -243,10 +234,10 @@ void KaonThreeMesonCurrent::Init() {
 
 );
 
-  static Switch<KaonThreeMesonCurrent,bool> interfaceInitializea1
+  static Switch<OneKaonTwoPionCurrent,bool> interfaceInitializea1
     ("Initializea1",
      "Initialise the calculation of the a_1 running width",
-     &KaonThreeMesonCurrent::_initializea1, false, false, false);
+     &OneKaonTwoPionCurrent::_initializea1, false, false, false);
   static SwitchOption interfaceInitializea1Initialization
     (interfaceInitializea1,
      "Yes",
@@ -258,100 +249,100 @@ void KaonThreeMesonCurrent::Init() {
      "Use the default values",
      false);
 
-  static Parameter<KaonThreeMesonCurrent,Energy> interfaceA1Width
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceA1Width
     ("A1Width",
      "The a_1 width if using local values.",
-     &KaonThreeMesonCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
-  static Parameter<KaonThreeMesonCurrent,Energy> interfaceA1Mass
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceA1Mass
     ("A1Mass",
      "The a_1 mass if using local values.",
-     &KaonThreeMesonCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
      false, false, false);
 
-  static Parameter<KaonThreeMesonCurrent,Energy> interfaceFPi
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceFPi
     ("FPi",
      "The pion decay constant",
-     &KaonThreeMesonCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
+     &OneKaonTwoPionCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoAxialMasses
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceRhoAxialMasses
     ("RhoAxialMasses",
      "The masses for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_rho1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoAxialWidths
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceRhoAxialWidths
     ("RhoAxialWidths",
      "The widths for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_rho1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoVectorMasses
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceRhoVectorMasses
     ("RhoVectorMasses",
      "The masses for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_rho2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoVectorWidths
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceRhoVectorWidths
     ("RhoVectorWidths",
      "The widths for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_rho2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarAxialMasses
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceKstarAxialMasses
     ("KstarAxialMasses",
      "The masses for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_kstar1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarAxialWidths
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceKstarAxialWidths
     ("KstarAxialWidths",
      "The widths for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_kstar1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarVectorMasses
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceKstarVectorMasses
     ("KstarVectorMasses",
      "The masses for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_kstar2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarVectorWidths
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceKstarVectorWidths
     ("KstarVectorWidths",
      "The widths for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_kstar2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
-  static ParVector<KaonThreeMesonCurrent,double> interfaceAxialRhoWeight
+  static ParVector<OneKaonTwoPionCurrent,double> interfaceAxialRhoWeight
     ("AxialRhoWeight",
      "The weights of the different rho resonances in the F1,2,3 form factor",
-     &KaonThreeMesonCurrent::_rho1wgts,
+     &OneKaonTwoPionCurrent::_rho1wgts,
      0, 0, 0, -1000, 1000, false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,double> interfaceAxialKStarWeight
+  static ParVector<OneKaonTwoPionCurrent,double> interfaceAxialKStarWeight
     ("AxialKStarWeight",
      "The weights of the different Kstar resonances in the F1,2,3 form factor",
-     &KaonThreeMesonCurrent::_kstar1wgts,
+     &OneKaonTwoPionCurrent::_kstar1wgts,
      0, 0, 0, -1000, 1000, false, false, true);
 
-  static ParVector<KaonThreeMesonCurrent,double> interfaceVectorRhoWeight
+  static ParVector<OneKaonTwoPionCurrent,double> interfaceVectorRhoWeight
     ("VectorRhoWeight",
      "The weights of the different rho resonances in the F1,2,3 form factor",
-     &KaonThreeMesonCurrent::_rho2wgts,
+     &OneKaonTwoPionCurrent::_rho2wgts,
      0, 0, 0, -1000, 1000, false, false, true);
   
-  static ParVector<KaonThreeMesonCurrent,double> interfaceVectorKStarWeight
+  static ParVector<OneKaonTwoPionCurrent,double> interfaceVectorKStarWeight
     ("VectorKStarWeight",
      "The weights of the different Kstar resonances in the F1,2,3 form factor",
-     &KaonThreeMesonCurrent::_kstar2wgts,
+     &OneKaonTwoPionCurrent::_kstar2wgts,
      0, 0, 0, -1000, 1000, false, false, true);
   
-  static Switch<KaonThreeMesonCurrent,bool> interfaceRhoParameters
+  static Switch<OneKaonTwoPionCurrent,bool> interfaceRhoParameters
     ("RhoParameters",
      "Use local values of the rho meson masses and widths",
-     &KaonThreeMesonCurrent::_rhoparameters, true, false, false);
+     &OneKaonTwoPionCurrent::_rhoparameters, true, false, false);
   static SwitchOption interfaceRhoParameterstrue
     (interfaceRhoParameters,
      "Local",
@@ -363,10 +354,10 @@ void KaonThreeMesonCurrent::Init() {
      "Use the masses and widths from the particle data objects",
      false);
   
-  static Switch<KaonThreeMesonCurrent,bool> interfaceKstarParameters
+  static Switch<OneKaonTwoPionCurrent,bool> interfaceKstarParameters
     ("KstarParameters",
      "Use local values of the rho meson masses and widths",
-     &KaonThreeMesonCurrent::_kstarparameters, true, false, false);
+     &OneKaonTwoPionCurrent::_kstarparameters, true, false, false);
   static SwitchOption interfaceKstarParameterstrue
     (interfaceKstarParameters,
      "Local",
@@ -378,10 +369,10 @@ void KaonThreeMesonCurrent::Init() {
      "Use the masses and widths from the particle data objects",
      false);
   
-  static Switch<KaonThreeMesonCurrent,bool> interfacea1Parameters
+  static Switch<OneKaonTwoPionCurrent,bool> interfacea1Parameters
     ("a1Parameters",
      "Use local values of the rho meson masses and widths",
-     &KaonThreeMesonCurrent::_a1parameters, true, false, false);
+     &OneKaonTwoPionCurrent::_a1parameters, true, false, false);
   static SwitchOption interfacea1Parameterstrue
     (interfacea1Parameters,
      "Local",
@@ -393,10 +384,10 @@ void KaonThreeMesonCurrent::Init() {
      "Use the masses and widths from the particle data objects",
      false);
   
-  static Switch<KaonThreeMesonCurrent,bool> interfaceK1Parameters
+  static Switch<OneKaonTwoPionCurrent,bool> interfaceK1Parameters
     ("K1Parameters",
      "Use local values of the rho meson masses and widths",
-     &KaonThreeMesonCurrent::_k1parameters, true, false, false);
+     &OneKaonTwoPionCurrent::_k1parameters, true, false, false);
   static SwitchOption interfaceK1Parameterstrue
     (interfaceK1Parameters,
      "Local",
@@ -408,10 +399,10 @@ void KaonThreeMesonCurrent::Init() {
      "Use the masses and widths from the particle data objects",
      false);
   
-  static Switch<KaonThreeMesonCurrent,bool> interfacea1WidthOption
+  static Switch<OneKaonTwoPionCurrent,bool> interfacea1WidthOption
     ("a1WidthOption",
      "Option for the treatment of the a1 width",
-     &KaonThreeMesonCurrent::_a1opt, true, false, false);
+     &OneKaonTwoPionCurrent::_a1opt, true, false, false);
   static SwitchOption interfacea1WidthOptionLocal
     (interfacea1WidthOption,
      "Local",
@@ -425,82 +416,82 @@ void KaonThreeMesonCurrent::Init() {
      " This should only be used for testing vs TAUOLA",
      false);
 
-  static ParVector<KaonThreeMesonCurrent,Energy> interfacea1RunningWidth
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &KaonThreeMesonCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
-  static ParVector<KaonThreeMesonCurrent,Energy2> interfacea1RunningQ2
+  static ParVector<OneKaonTwoPionCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &KaonThreeMesonCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
+     &OneKaonTwoPionCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
 
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceK1Masses
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceK1Masses
     ("K1Masses",
      "Masses of the K_1 mesons",
-     &KaonThreeMesonCurrent::_k1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_k1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
-  static ParVector<KaonThreeMesonCurrent,Energy> interfaceK1Widths
+  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceK1Widths
     ("K1Widths",
      "Widths of the K_1 mesons",
-     &KaonThreeMesonCurrent::_k1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_k1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
-  static ParVector<KaonThreeMesonCurrent,double> interfaceK1WeightKStarPi
+  static ParVector<OneKaonTwoPionCurrent,double> interfaceK1WeightKStarPi
     ("K1WeightKStarPi",
      "The relative weights for the K_1 resonances in the K* pi final-state",
-     &KaonThreeMesonCurrent::_k1wgta, -1, 1.0, 0, 10.0,
+     &OneKaonTwoPionCurrent::_k1wgta, -1, 1.0, 0, 10.0,
      false, false, Interface::limited);
 
-  static ParVector<KaonThreeMesonCurrent,double> interfaceK1WeightRhoK
+  static ParVector<OneKaonTwoPionCurrent,double> interfaceK1WeightRhoK
     ("K1WeightRhoK",
      "The relative weights for the K_1 resonances in the rho K final-state",
-     &KaonThreeMesonCurrent::_k1wgtb, -1, 1.0, 0, 10.0,
+     &OneKaonTwoPionCurrent::_k1wgtb, -1, 1.0, 0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<KaonThreeMesonCurrent,double> interfaceEpsOmega
+  static Parameter<OneKaonTwoPionCurrent,double> interfaceEpsOmega
     ("EpsOmega",
      "The omega-phi mixing ",
-     &KaonThreeMesonCurrent::_epsomega, 0.05, 0.0, 1.0,
+     &OneKaonTwoPionCurrent::_epsomega, 0.05, 0.0, 1.0,
      false, false, Interface::limited);
 
-  static Parameter<KaonThreeMesonCurrent,Energy> interfaceOmegaMass
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceOmegaMass
     ("OmegaMass",
      "The mass of the omega meson",
-     &KaonThreeMesonCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<KaonThreeMesonCurrent,Energy> interfaceOmegaWidth
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceOmegaWidth
     ("OmegaWidth",
      "The width of the omega meson",
-     &KaonThreeMesonCurrent::_omegawidth, GeV, 0.00843*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_omegawidth, GeV, 0.00843*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<KaonThreeMesonCurrent,Energy> interfacePhiMass
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfacePhiMass
     ("PhiMass",
      "The mass of the phi meson",
-     &KaonThreeMesonCurrent::_phimass, GeV, 1.020*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_phimass, GeV, 1.020*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<KaonThreeMesonCurrent,Energy> interfacePhiWidth
+  static Parameter<OneKaonTwoPionCurrent,Energy> interfacePhiWidth
     ("PhiWidth",
      "The width of the phi meson",
-     &KaonThreeMesonCurrent::_phiwidth, GeV, 0.00443*GeV, ZERO, 10.0*GeV,
+     &OneKaonTwoPionCurrent::_phiwidth, GeV, 0.00443*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<KaonThreeMesonCurrent,double> interfaceOmegaKStarWeight
+  static Parameter<OneKaonTwoPionCurrent,double> interfaceOmegaKStarWeight
     ("OmegaKStarWeight",
      "The relative weight of the omega-phi and K* terms",
-     &KaonThreeMesonCurrent::_omegaKstarwgt, 1./sqrt(2.), 0.0, 100.0,
+     &OneKaonTwoPionCurrent::_omegaKstarwgt, 1./sqrt(2.), 0.0, 100.0,
      false, false, Interface::limited);
   
-  static Switch<KaonThreeMesonCurrent,bool> interfaceOmegaParameters
+  static Switch<OneKaonTwoPionCurrent,bool> interfaceOmegaParameters
     ("OmegaParameters",
      "Use local values of the omega/phi meson masses and widths",
-     &KaonThreeMesonCurrent::_omegaopt, true, false, false);
+     &OneKaonTwoPionCurrent::_omegaopt, true, false, false);
   static SwitchOption interfaceOmegaParameterstrue
     (interfaceOmegaParameters,
      "Local",
@@ -514,7 +505,7 @@ void KaonThreeMesonCurrent::Init() {
 
 }
 
-void KaonThreeMesonCurrent::inita1Width(int iopt) {
+void OneKaonTwoPionCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
     if(!_initializea1||_maxmass==ZERO) return; 
@@ -527,7 +518,7 @@ void KaonThreeMesonCurrent::inita1Width(int iopt) {
       wrho(getParticleData(ParticleID::rhoplus)->width());
     vector<Energy> inmass(2,mrho),inwidth(2,wrho);
     vector<double> inpow(2,0.0);
-    ThreeBodyAllOnCalculator<KaonThreeMesonCurrent> 
+    ThreeBodyAllOnCalculator<OneKaonTwoPionCurrent> 
       widthgen(inweights,intype,inmass,inwidth,inpow,*this,0,_mpi,_mpi,_mpi);
     // normalisation constant to give physical width if on shell
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
@@ -543,23 +534,15 @@ void KaonThreeMesonCurrent::inita1Width(int iopt) {
     _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
   }
 }
-  
-// modes handled by this class
-bool KaonThreeMesonCurrent::acceptMode(int imode) const { 
-  return imode>=2&&imode<=11&&imode!=8;
-}
-
-
 
 // complete the construction of the decay mode for integration
-bool KaonThreeMesonCurrent::createMode(int icharge, tcPDPtr resonance,
+bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
 				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
 				       unsigned int imode,PhaseSpaceModePtr mode,
 				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
   if(abs(icharge)!=3) return false;
   int iq(0),ia(0);
-  if(!acceptMode(imode)) return false;
   tPDVector extpart(particles(1,imode,iq,ia));
   Energy min(ZERO);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
@@ -591,75 +574,7 @@ bool KaonThreeMesonCurrent::createMode(int icharge, tcPDPtr resonance,
       if(Kstarc[ix]) Kstarc[ix]=Kstarc[ix]->CC();
     }
   }
-  if(imode==2) {
-    // channels for K- pi- K+
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(Kstar0[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstar0[ix],ires+1,iloc+1,
-			  ires+2,iloc+2,ires+2,iloc+3));
-      }
-      if(rho0[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,rho0[ix],ires+1,iloc+2,
-			  ires+2,iloc+1,ires+2,iloc+3));
-      }
-      for(unsigned int iy=0;iy<3;++iy) {
-	if(!rhoc[ix]) continue;
-	if(Kstar0[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstar0[iy],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	}
-      }
-    }
-  }
-  else if(imode==3) {
-    // channels for K0 pi- K0bar
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstarc[ix],ires+1,iloc+1,
-			  ires+2,iloc+2,ires+2,iloc+3));
-      }
-      if(rho0[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,rho0[ix],ires+1,iloc+2,
-			  ires+2,iloc+1,ires+2,iloc+3));
-      }
-      for(unsigned int iy=0;iy<3;++iy) {
-	if(!rhoc[ix]) continue;
-	if(Kstarc[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstarc[iy],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	}
-      }
-    }
-  }
-  else if(imode==4) {
-    // channels for K- pi0 K0
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(Kstar0[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstar0[ix],ires+1,iloc+1,
-			  ires+2,iloc+2,ires+2,iloc+3));
-      }
-      if(Kstarc[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstarc[ix],ires+1,iloc+3,
-			  ires+2,iloc+1,ires+2,iloc+2));
-      }
-      if(rhoc[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,rhoc[ix],ires+1,iloc+2,
-			  ires+2,iloc+1,ires+2,iloc+3));
-      }
-      for(unsigned int iy=0;iy<3;++iy) {
-	if(!rhoc[ix]) continue;
-	if(Kstar0[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstar0[iy],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	}
-	if(Kstarc[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstarc[iy],ires+1,iloc+3,
-			    ires+2,iloc+1,ires+2,iloc+2));
-	}
-      }
-    }
-  }
-  else if(imode==5) {  
+  if(imode==0) {  
     // channels for pi0 pi0 K-
     for(unsigned int ix=0;ix<3;++ix) {
       if(!Kstarc[ix]) continue;
@@ -678,7 +593,7 @@ bool KaonThreeMesonCurrent::createMode(int icharge, tcPDPtr resonance,
       }
     }
   }
-  else if(imode==6) {
+  else if(imode==1) {
     // channels for K- pi- pi+
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int ik=0;ik<2;++ik) {
@@ -702,7 +617,7 @@ bool KaonThreeMesonCurrent::createMode(int icharge, tcPDPtr resonance,
       }
     }
   }
-  else if(imode==7) {
+  else if(imode==2) {
     // channels for pi- kbar0 pi0
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int ik=0;ik<2;++ik) {
@@ -730,73 +645,26 @@ bool KaonThreeMesonCurrent::createMode(int icharge, tcPDPtr resonance,
       }
     }
   }
-  else if(imode==9||imode==10) {
-    // channels for K_S0 pi- K_S0 and K_L0 pi- K_L0 
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstarc[ix],ires+1,iloc+1,
-			  ires+2,iloc+2,ires+2,iloc+3));
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstarc[ix],ires+1,iloc+3,
-			  ires+2,iloc+1,ires+2,iloc+2));
-      }
-      for(unsigned int iy=0;iy<3;++iy) {
-	if(!rhoc[ix]) continue;
-	if(Kstarc[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstarc[iy],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstarc[iy],ires+1,iloc+3,
-			    ires+2,iloc+1,ires+2,iloc+2));
-	}
-      }
-    }
-  }
-  else if(imode==11) {
-    // channels for K_S0 pi- K_L0
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstarc[ix],ires+1,iloc+1,
-			  ires+2,iloc+2,ires+2,iloc+3));
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,Kstarc[ix],ires+1,iloc+3,
-			  ires+2,iloc+1,ires+2,iloc+2));
-      }
-      if(rho0[ix])
-	mode->addChannel((PhaseSpaceChannel(phase),ires,a1,ires+1,rho0[ix],ires+1,iloc+2,
-			  ires+2,iloc+1,ires+2,iloc+3));
-      for(unsigned int iy=0;iy<3;++iy) {
-	if(!rhoc[ix]) continue;
-	if(Kstarc[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstarc[ix],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,rhoc[ix],ires+1,Kstarc[ix],ires+1,iloc+3,
-			    ires+2,iloc+1,ires+2,iloc+2));
-	}
-      }
-    }
-  }
-  if(_rhoparameters) {
-    for(unsigned int ix=0;ix<_rho1mass.size();++ix) {
-      if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rho1mass[ix],
-					   _rho1width[ix]);
-      if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rho1mass[ix],
-					   _rho1width[ix]);
-    }
+  for(unsigned int ix=0;ix<_rho1mass.size();++ix) {
+    mode->resetIntermediate(rhoc[ix],_rho1mass[ix],
+			    _rho1width[ix]);
+    mode->resetIntermediate(rho0[ix],_rho1mass[ix],
+			    _rho1width[ix]);
   }
   // K star parameters in the base class
-  if(_kstarparameters) {
-    for(unsigned int ix=0;ix<_kstar1mass.size();++ix) {
-      if(Kstarc[ix]) mode->resetIntermediate(Kstarc[ix],_kstar1mass[ix],
-					     _kstar1width[ix]);
-      if(Kstar0[ix]) mode->resetIntermediate(Kstar0[ix],_kstar1mass[ix],
-					     _kstar1width[ix]);
-    }
+  for(unsigned int ix=0;ix<_kstar1mass.size();++ix) {
+    mode->resetIntermediate(Kstarc[ix],_kstar1mass[ix],
+			    _kstar1width[ix]);
+    mode->resetIntermediate(Kstar0[ix],_kstar1mass[ix],
+			    _kstar1width[ix]);
   }
   return true;
 }
 
-void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
+void OneKaonTwoPionCurrent::dataBaseOutput(ofstream & os,
 					   bool header,bool create) const {
   if(header) os << "update decayers set parameters=\"";
-  if(create) os << "create Herwig::KaonThreeMesonCurrent " 
+  if(create) os << "create Herwig::OneKaonTwoPionCurrent " 
 		<< name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rho1wgts.size();++ix) {
     if(ix<3) {
@@ -945,7 +813,7 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
 		<< fullName() << "\";" << endl;
 }  
 
-void KaonThreeMesonCurrent::doinit() {
+void OneKaonTwoPionCurrent::doinit() {
   WeakCurrent::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
@@ -1062,59 +930,14 @@ void KaonThreeMesonCurrent::doinit() {
   inita1Width(0);
 }
 
-KaonThreeMesonCurrent::FormFactors
-KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
+OneKaonTwoPionCurrent::FormFactors
+OneKaonTwoPionCurrent::calculateFormFactors(const int ichan,const int imode,
 						 Energy2 q2,Energy2 s1,
 						 Energy2 s2,Energy2 s3) const {
   useMe();
   Complex F1, F2, F5;
-  // calculate the K- pi - K+ factor
-  if(imode==2) {
-    Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
-    if(ichan<0) {
-      F1 = -a1fact*TKstar1(s1,-1);
-      F2 =  a1fact*Trho1(s2,-1);
-      F5 = Trho2(q2,-1)*TOmegaKStar(s1,s2,-1)*sqrt(2.);
-    }
-    else if(ichan%5==0) F1 = -a1fact*TKstar1(s1,    ichan/5);
-    else if(ichan%5==1) F2 =  a1fact*Trho1(  s2,(ichan-1)/5);
-    else if(ichan%5>=2) F5 = Trho2(q2,ichan/5)*TOmegaKStar(s1,s2,2*((ichan-2)%5))
-      *sqrt(2.);
-  }
-  // calculate the K0 pi- K0bar
-  else if(imode==3) {
-    Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
-    if(ichan<0) {
-      F1 =-a1fact*TKstar1(s1,-1);
-      F2 = a1fact*Trho1  (s2,-1);
-      F5 =-Trho2(q2,-1)*TOmegaKStar(s1,s2,-1)*sqrt(2.);
-    }
-    else if(ichan%5==0) F1 = -a1fact*TKstar1(s1,    ichan/5);
-    else if(ichan%5==1) F2 =  a1fact*Trho1  (s2,(ichan-1)/5);
-    else if(ichan%5>=2) F5 = -Trho2(q2,ichan/5)*TOmegaKStar(s1,s2,2*((ichan-2)%5))
-      *sqrt(2.);
-  }
-  // calculate the K- pi0 k0
-  else if(imode==4) {
-    Complex a1fact(a1BreitWigner(q2)/3.);
-    if(ichan<0) {
-      F1 =  a1fact*( TKstar1(s1,-1)-TKstar1(s3,-1));
-      F2 = -a1fact*(2.*Trho1(s2,-1)+TKstar1(s3,-1));
-      F5 = Trho2(q2,-1)*(TKstar1(s3,-1)-TKstar1(s1,-1))/(1.+_omegaKstarwgt)/sqrt(2.);
-    }
-    else if(ichan%9==0) F1 =  a1fact*TKstar1(s1,ichan/9)/3.;
-    else if(ichan%9==1) {
-      F1 = +a1fact*TKstar1(s3,(ichan-1)/9)/3.;
-      F2 = -a1fact*TKstar1(s3,(ichan-1)/9)/3.;
-    }
-    else if(ichan%9==2) F2 = -a1fact*2.*Trho1(s2,(ichan-2)/9)/3.;
-    else if(ichan%9<6)  F5 =-Trho2(q2,ichan/9)*TKstar1(s1,(ichan-3)%9)
-      /(1.+_omegaKstarwgt)/sqrt(2.);
-    else                F5 = Trho2(q2,ichan/9)*TKstar1(s3,(ichan-6)%9)
-      /(1.+_omegaKstarwgt)/sqrt(2.);
-  }
   // calculate the pi0 pi0 K-
-  else if(imode==5) {
+  if(imode==0) {
     if(ichan<0) {
       Complex K1fact(TK1(q2,0,-1)/6.);
       F1 = K1fact*TKstar1(s1,-1);
@@ -1129,7 +952,7 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
     else                 F5 = sqrt(2.)/4*TKstar2(q2,ichan/10)*TKstar1(s2,(ichan-7)%10);
   }
   // calculate the K- pi- pi+
-  else if(imode==6) {
+  else if(imode==1) {
     double fact=sqrt(2.)/3.;
     if(ichan<0) {
       F1 = -fact*TK1(q2,1,-1)*Trho1(s1,-1);
@@ -1144,7 +967,7 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
     else                 F5 = -sqrt(0.5)*TKstar2(q2,ichan/10)*TKstar1(s2,(ichan-7)%10);
   }
   // calculate the pi- K0bar pi0
-  else if(imode==7) {
+  else if(imode==2) {
     if(ichan<0) {
       Complex K1facta(TK1(q2,0,-1)),K1factb(TK1(q2,1,-1));
       F1 = K1facta*(TKstar1(s1,-1)-TKstar1(s3,-1))/3.;
@@ -1167,42 +990,6 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
     else if(ichan%15<12) F5 = -    TKstar2(q2,ichan/15)*Trho1  (s2,(ichan- 9)%15);
     else                 F5 = -0.5*TKstar2(q2,ichan/15)*TKstar1(s3,(ichan-12)%15);
   }
-  // calculate the K_S0 pi- K_S0 or K_L0 pi- K_L0
-  else if(imode==9||imode==10) {
-    Complex a1fact(a1BreitWigner(q2)/6.);
-    if(ichan<0) {
-      F1 = a1fact*(TKstar1(s1,-1)+TKstar1(s3,-1));
-      F2 = a1fact*TKstar1(s3,-1);
-      F5 = 0.5*Trho2(q2,-1)*(TOmegaKStar(s1,s2,-1)-TOmegaKStar(s3,s2,-1));
-    }
-    else if(ichan%8==0) F1=a1fact*TKstar1(s1,ichan/8);
-    else if(ichan%8==1) {
-      F1 = a1fact*TKstar1(s3,ichan/8);
-      F2 = a1fact*TKstar1(s3,ichan/8);
-    }
-    else if(ichan%8<5 ) F5 = -Trho2(q2,ichan/8)*TKstar1(s1,(ichan-2)%8)
-      /(1.+_omegaKstarwgt)/2.;
-    else                F5 =  Trho2(q2,ichan/8)*TKstar1(s3,(ichan-5)%8)
-      /(1.+_omegaKstarwgt)/2.;
-  }
-  else if(imode==11) {
-    Complex a1fact(a1BreitWigner(q2)/3./sqrt(2.));
-    if(ichan<0) {
-      F1 = -a1fact*(TKstar1(s1,-1)-TKstar1(s3,-1));
-      F2 =  a1fact*(2.*Trho1(s2,-1)+TKstar1(s3,-1));
-      F5 = -Trho2(q2,-1)*(TOmegaKStar(s1,s2,-1)+TOmegaKStar(s3,s2,-1))/sqrt(2.);
-    }
-    else if(ichan%9==0) F1 =-   a1fact*TKstar1(s1,ichan/9);
-    else if(ichan%9==1) {
-      F1 = a1fact*TKstar1(s3,ichan/9);
-      F2 = a1fact*TKstar1(s3,ichan/9);
-    }
-    else if(ichan%9==2) F2 = 2.*a1fact*Trho1(  s2,ichan/9);
-    else if(ichan%9<6 ) F5 = -sqrt(0.5)*TKstar2(q2,ichan/9)*
-      TOmegaKStar(s1,s2,2*((ichan-3)%9))/sqrt(2.);
-    else                F5 = -sqrt(0.5)*TKstar2(q2,ichan/9)*
-      TOmegaKStar(s3,s2,2*((ichan-6)%9))/sqrt(2.);
-  }
   return FormFactors(F1 / _fpi,
 		     F2 / _fpi,
 		     InvEnergy(),
@@ -1210,20 +997,20 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
 }
 
-void KaonThreeMesonCurrent::doinitrun() {
+void OneKaonTwoPionCurrent::doinitrun() {
   // set up the running a_1 width
   inita1Width(0);
   WeakCurrent::doinitrun();
 }
 
-void KaonThreeMesonCurrent::doupdate() {
+void OneKaonTwoPionCurrent::doupdate() {
   WeakCurrent::doupdate();
   // update running width if needed
   if ( !touched() ) return;
   if(_maxmass!=_maxcalc) inita1Width(-1);
 }
 
-double KaonThreeMesonCurrent::
+double OneKaonTwoPionCurrent::
 threeBodyMatrixElement(const int       , const Energy2 q2,
 		       const Energy2 s3, const Energy2 s2, 
 		       const Energy2 s1, const Energy    , 
@@ -1242,7 +1029,7 @@ threeBodyMatrixElement(const int       , const Energy2 q2,
   return output / sqr(_rho1mass[0]);
 }
 
-Complex KaonThreeMesonCurrent::Trho1(Energy2 q2,int ires) const {
+Complex OneKaonTwoPionCurrent::Trho1(Energy2 q2,int ires) const {
   Complex output(0.);
   double norm(0.);
   for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) norm+=_rho1wgts[ix];
@@ -1258,7 +1045,7 @@ Complex KaonThreeMesonCurrent::Trho1(Energy2 q2,int ires) const {
   return output/norm;
 }
   
-Complex KaonThreeMesonCurrent::Trho2(Energy2 q2,int ires) const {
+Complex OneKaonTwoPionCurrent::Trho2(Energy2 q2,int ires) const {
   Complex output(0.);
   double norm(0.);
   for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) norm+=_rho2wgts[ix];
@@ -1274,7 +1061,7 @@ Complex KaonThreeMesonCurrent::Trho2(Energy2 q2,int ires) const {
   return output/norm;
 }
   
-Complex KaonThreeMesonCurrent::TKstar1(Energy2 q2,int ires) const  {
+Complex OneKaonTwoPionCurrent::TKstar1(Energy2 q2,int ires) const  {
   Complex output(0.);
   double norm(0.);
   for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) norm+=_kstar1wgts[ix];
@@ -1290,7 +1077,7 @@ Complex KaonThreeMesonCurrent::TKstar1(Energy2 q2,int ires) const  {
   return output/norm;
 }
   
-Complex KaonThreeMesonCurrent::TKstar2(Energy2 q2,int ires) const {
+Complex OneKaonTwoPionCurrent::TKstar2(Energy2 q2,int ires) const {
   Complex output(0.);
   double norm(0.);
   for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) norm+=_kstar2wgts[ix];
@@ -1306,7 +1093,7 @@ Complex KaonThreeMesonCurrent::TKstar2(Energy2 q2,int ires) const {
   return output/norm;
 }
 
-Complex KaonThreeMesonCurrent::BWrho1(Energy2 q2, unsigned int ires) const {
+Complex OneKaonTwoPionCurrent::BWrho1(Energy2 q2, unsigned int ires) const {
   if(ires>=_rho1mass.size()) return 0.;
   Energy mass  = _rho1mass [ires];
   Energy width = _rho1width[ires];
@@ -1318,7 +1105,7 @@ Complex KaonThreeMesonCurrent::BWrho1(Energy2 q2, unsigned int ires) const {
   return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
 } 
 
-Complex KaonThreeMesonCurrent::BWrho2(Energy2 q2, unsigned int ires) const {
+Complex OneKaonTwoPionCurrent::BWrho2(Energy2 q2, unsigned int ires) const {
   if(ires>=_rho2mass.size()) return 0.;
   Energy mass  = _rho2mass [ires];
   Energy width = _rho2width[ires];
@@ -1330,7 +1117,7 @@ Complex KaonThreeMesonCurrent::BWrho2(Energy2 q2, unsigned int ires) const {
   return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
 }
   
-Complex KaonThreeMesonCurrent::BWKstar1(Energy2 q2, unsigned int ires) const {
+Complex OneKaonTwoPionCurrent::BWKstar1(Energy2 q2, unsigned int ires) const {
   if(ires>=_kstar1mass.size()) return 0.;
   Energy mass  = _kstar1mass [ires];
   Energy width = _kstar1width[ires];
@@ -1342,7 +1129,7 @@ Complex KaonThreeMesonCurrent::BWKstar1(Energy2 q2, unsigned int ires) const {
   return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
 }
 
-Complex KaonThreeMesonCurrent::BWKstar2(Energy2 q2, unsigned int ires) const  {
+Complex OneKaonTwoPionCurrent::BWKstar2(Energy2 q2, unsigned int ires) const  {
   if(ires>=_kstar2mass.size()) return 0.;
   Energy mass  = _kstar2mass [ires];
   Energy width = _kstar2width[ires];
@@ -1354,14 +1141,14 @@ Complex KaonThreeMesonCurrent::BWKstar2(Energy2 q2, unsigned int ires) const  {
   return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
 }
 
-Complex KaonThreeMesonCurrent::a1BreitWigner(Energy2 q2) const {
+Complex OneKaonTwoPionCurrent::a1BreitWigner(Energy2 q2) const {
   Complex ii(0.,1.);
   Energy2 m2(_a1mass*_a1mass);
   Energy  q(sqrt(q2));
   return m2/(m2-q2-ii*q*a1Width(q2));
 }
   
-Complex KaonThreeMesonCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const {
+Complex OneKaonTwoPionCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const {
   Complex denom(0),num(0.);
   if(iopt==0) {
     for(unsigned int ix=0;ix<_k1wgta.size();++ix) denom+=_k1wgta[ix];
@@ -1389,18 +1176,18 @@ Complex KaonThreeMesonCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const 
   return num/denom;
 }
 
-Complex KaonThreeMesonCurrent::K1BreitWigner(Energy2 q2,unsigned int ires) const {
+Complex OneKaonTwoPionCurrent::K1BreitWigner(Energy2 q2,unsigned int ires) const {
   if(ires>=_k1mass.size()) return 0.;
   Energy2 m2=sqr(_k1mass[ires]),mg=_k1mass[ires]*_k1width[ires];
   return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
 }
 
-Energy KaonThreeMesonCurrent::a1Width(Energy2 q2) const {
+Energy OneKaonTwoPionCurrent::a1Width(Energy2 q2) const {
   if(!_a1opt) return _a1mass*_a1width*g(q2)/g(_a1mass*_a1mass)/sqrt(q2);
   else        return (*_a1runinter)(q2);
 }
   
-double KaonThreeMesonCurrent::g(Energy2 q2) const {
+double OneKaonTwoPionCurrent::g(Energy2 q2) const {
   double output;
   if(q2<9.*_mpi*_mpi) {
     output=0.;
@@ -1417,7 +1204,7 @@ double KaonThreeMesonCurrent::g(Energy2 q2) const {
   return output;
 }
   
-Complex KaonThreeMesonCurrent::Tomega(Energy2 q2, int ires) const {
+Complex OneKaonTwoPionCurrent::Tomega(Energy2 q2, int ires) const {
   double denom=(1.+_epsomega);
   Complex num(0.);
   if(ires<0) num=OmegaPhiBreitWigner(q2,0)+_epsomega*OmegaPhiBreitWigner(q2,1);
@@ -1426,7 +1213,7 @@ Complex KaonThreeMesonCurrent::Tomega(Energy2 q2, int ires) const {
   return num/denom;
 }
 
-Complex KaonThreeMesonCurrent::OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const {
+Complex OneKaonTwoPionCurrent::OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const {
   Energy2 m2,mg;
   if(ires==0) {
     m2=sqr(_omegamass);
@@ -1439,7 +1226,7 @@ Complex KaonThreeMesonCurrent::OmegaPhiBreitWigner(Energy2 q2, unsigned int ires
   return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
 }
 
-Complex KaonThreeMesonCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const {
+Complex OneKaonTwoPionCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const {
   Complex output;
   if(ires<0)         output = _omegaKstarwgt*TKstar1(s1,-1)+Tomega(s2,-1);
   else if(ires%2==0) output = _omegaKstarwgt*TKstar1(s1,ires/2);
@@ -1450,7 +1237,7 @@ Complex KaonThreeMesonCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const
 
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-KaonThreeMesonCurrent::current(tcPDPtr resonance,
+OneKaonTwoPionCurrent::current(tcPDPtr resonance,
 			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & ,
@@ -1485,9 +1272,10 @@ KaonThreeMesonCurrent::current(tcPDPtr resonance,
   return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
 }
 
-bool KaonThreeMesonCurrent::accept(vector<int> id) {
-  int npip(0),npim(0),nkp(0),nkm(0),
-    npi0(0),nk0(0),nk0bar(0),neta(0),nks(0),nkl(0);
+bool OneKaonTwoPionCurrent::accept(vector<int> id) {
+  if(id.size()!=3) return false;
+  int npip(0),npim(0),nkp(0),nkm(0);
+  int npi0(0),nk0(0),nk0bar(0);
   for(unsigned int ix=0;ix<id.size();++ix) {
     if(id[ix]==ParticleID::piplus)       ++npip;
     else if(id[ix]==ParticleID::piminus) ++npim;
@@ -1496,35 +1284,19 @@ bool KaonThreeMesonCurrent::accept(vector<int> id) {
     else if(id[ix]==ParticleID::pi0)     ++npi0;
     else if(id[ix]==ParticleID::K0)      ++nk0;
     else if(id[ix]==ParticleID::Kbar0)   ++nk0bar;
-    else if(id[ix]==ParticleID::eta)     ++neta;
-    else if(id[ix]==ParticleID::K_S0)    ++nks;
-    else if(id[ix]==ParticleID::K_L0)    ++nkl;
   }
-  int imode(-1);
-  if(      (npip==2&&npim==1) || (npim==2&&npip==1) ) imode= 0;
-  else if( (npip==1&&npi0==2) || (npim==1&&npi0==2) ) imode= 1;
-  else if( (nkp==1&&nkm==1&&npip==1) ||
-	   (nkp==1&&nkm==1&&npim==1))                 imode= 2;
-  else if( (nk0==1&&nk0bar==1&&npip==1) ||
-	   (nk0==1&&nk0bar==1&&npim==1))              imode= 3;
-  else if( (nkp==1&&nk0bar==1&&npi0==1) ||
-	   (nkm==1&&npi0==1&&nk0==1))                 imode= 4;
-  else if( (nkp==1&&npi0==2) || (npi0==2&&nkm==1) )   imode= 5;
+  if     ( (nkp==1&&npi0==2) || (npi0==2&&nkm==1) )   return true;
   else if( (npip==1&&npim==1&&nkp==1) ||
-	   (nkm==1&&npim==1&&npip==1) )               imode= 6;
+	   (nkm==1&&npim==1&&npip==1) )               return true;
   else if( (nk0==1&&npip==1&&npi0==1)  ||
-	   (npim==1&&nk0bar==1&&npi0==1))             imode= 7;
-  else if( (npip==1&&npi0==1&&neta==1) ||
-	   (npim==1&&npi0==1&&neta==1))               imode= 8;
-  else if( nks==2 && (npip==1||npim==1) )             imode= 9;
-  else if( nkl==2 && (npip==1||npim==1) )             imode=10;
-  else if( nks==1&&nkl==1 && (npip==1||npim==1) )     imode=11;
-  return imode==-1 ? false : acceptMode(imode);
+	   (npim==1&&nk0bar==1&&npi0==1))             return true;
+  else return false;
 }
 
-unsigned int KaonThreeMesonCurrent::decayMode(vector<int> id) {
-  int npip(0),npim(0),nkp(0),nkm(0),
-    npi0(0),nk0(0),nk0bar(0),neta(0),nks(0),nkl(0);
+unsigned int OneKaonTwoPionCurrent::decayMode(vector<int> id) {
+  assert(id.size()==3);
+  int npip(0),npim(0),nkp(0),nkm(0);
+  int npi0(0),nk0(0),nk0bar(0);
   for(unsigned int ix=0;ix<id.size();++ix) {
     if(id[ix]==ParticleID::piplus)       ++npip;
     else if(id[ix]==ParticleID::piminus) ++npim;
@@ -1533,95 +1305,35 @@ unsigned int KaonThreeMesonCurrent::decayMode(vector<int> id) {
     else if(id[ix]==ParticleID::pi0)     ++npi0;
     else if(id[ix]==ParticleID::K0)      ++nk0;
     else if(id[ix]==ParticleID::Kbar0)   ++nk0bar;
-    else if(id[ix]==ParticleID::eta)     ++neta;
-    else if(id[ix]==ParticleID::K_S0)    ++nks;
-    else if(id[ix]==ParticleID::K_L0)    ++nkl;
   }
-  int imode(-1);
-  if(      (npip==2&&npim==1) || (npim==2&&npip==1) ) imode= 0;
-  else if( (npip==1&&npi0==2) || (npim==1&&npi0==2) ) imode= 1;
-  else if( (nkp==1&&nkm==1&&npip==1) ||
-	   (nkp==1&&nkm==1&&npim==1))                 imode= 2;
-  else if( (nk0==1&&nk0bar==1&&npip==1) ||
-	   (nk0==1&&nk0bar==1&&npim==1))              imode= 3;
-  else if( (nkp==1&&nk0bar==1&&npi0==1) ||
-	   (nkm==1&&npi0==1&&nk0==1))                 imode= 4;
-  else if( (nkp==1&&npi0==2) || (npi0==2&&nkm==1) )   imode= 5;
+  if     ( (nkp==1&&npi0==2) || (npi0==2&&nkm==1) ) return 0;
   else if( (npip==1&&npim==1&&nkp==1) ||
-	   (nkm==1&&npim==1&&npip==1) )               imode= 6;
+	   (nkm==1&&npim==1&&npip==1) )             return 1;
   else if( (nk0==1&&npip==1&&npi0==1)  ||
-	   (npim==1&&nk0bar==1&&npi0==1))             imode= 7;
-  else if( (npip==1&&npi0==1&&neta==1) ||
-	   (npim==1&&npi0==1&&neta==1))               imode= 8;
-  else if( nks==2 && (npip==1||npim==1) )             imode= 9;
-  else if( nkl==2 && (npip==1||npim==1) )             imode=10;
-  else if( nks==1&&nkl==1 && (npip==1||npim==1) )     imode=11;
-  return imode;
+	   (npim==1&&nk0bar==1&&npi0==1))           return 2;
+  assert(false);
 }
 
 
-tPDVector KaonThreeMesonCurrent::particles(int icharge, unsigned int imode,int,int) {
+tPDVector OneKaonTwoPionCurrent::particles(int icharge, unsigned int imode,int,int) {
   tPDVector extpart(3);
   if(imode==0) {
-    extpart[0]=getParticleData(ParticleID::piminus);
-    extpart[1]=getParticleData(ParticleID::piminus);
-    extpart[2]=getParticleData(ParticleID::piplus);
-  }
-  else if(imode==1) {
-    extpart[0]=getParticleData(ParticleID::pi0);
-    extpart[1]=getParticleData(ParticleID::pi0);
-    extpart[2]=getParticleData(ParticleID::piminus);
-  }
-  else if(imode==2) {
-    extpart[0]=getParticleData(ParticleID::Kminus);
-    extpart[1]=getParticleData(ParticleID::piminus);
-    extpart[2]=getParticleData(ParticleID::Kplus);
-  }
-  else if(imode==3) {
-    extpart[0]=getParticleData(ParticleID::K0);
-    extpart[1]=getParticleData(ParticleID::piminus);
-    extpart[2]=getParticleData(ParticleID::Kbar0);
-  }
-  else if(imode==4) {
-    extpart[0]=getParticleData(ParticleID::Kminus);
-    extpart[1]=getParticleData(ParticleID::pi0);
-    extpart[2]=getParticleData(ParticleID::K0);
-  }
-  else if(imode==5) {
     extpart[0]=getParticleData(ParticleID::pi0);
     extpart[1]=getParticleData(ParticleID::pi0);
     extpart[2]=getParticleData(ParticleID::Kminus);
   }
-  else if(imode==6) {
+  else if(imode==1) {
     extpart[0]=getParticleData(ParticleID::Kminus);
     extpart[1]=getParticleData(ParticleID::piminus);
     extpart[2]=getParticleData(ParticleID::piplus);
   }
-  else if(imode==7) {
+  else if(imode==2) {
     extpart[0]=getParticleData(ParticleID::piminus);
     extpart[1]=getParticleData(ParticleID::Kbar0);
     extpart[2]=getParticleData(ParticleID::pi0);
   }
-  else if(imode==8) {
-    extpart[0]=getParticleData(ParticleID::piminus);
-    extpart[1]=getParticleData(ParticleID::pi0);
-    extpart[2]=getParticleData(ParticleID::eta);
-  }
-  else if(imode==9) {
-    extpart[0]=getParticleData(ParticleID::K_S0);
-    extpart[1]=getParticleData(ParticleID::piminus);
-    extpart[2]=getParticleData(ParticleID::K_S0);
-  }
-  else if(imode==10) {
-    extpart[0]=getParticleData(ParticleID::K_L0);
-    extpart[1]=getParticleData(ParticleID::piminus);
-    extpart[2]=getParticleData(ParticleID::K_L0);
-  }
-  else if(imode==11) {
-    extpart[0]=getParticleData(ParticleID::K_S0);
-    extpart[1]=getParticleData(ParticleID::piminus);
-    extpart[2]=getParticleData(ParticleID::K_L0);
-  }
+  else
+    assert(false);
   // conjugate the particles if needed
   if(icharge==3) {
     for(unsigned int ix=0;ix<3;++ix) {
@@ -1631,4 +1343,3 @@ tPDVector KaonThreeMesonCurrent::particles(int icharge, unsigned int imode,int,i
   // return the answer
   return extpart;
 }
-

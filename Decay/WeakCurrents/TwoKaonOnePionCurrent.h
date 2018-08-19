@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// KaonThreeMesonCurrent.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// TwoKaonOnePionCurrent.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_KaonThreeMesonCurrent_H
-#define HERWIG_KaonThreeMesonCurrent_H
+#ifndef HERWIG_TwoKaonOnePionCurrent_H
+#define HERWIG_TwoKaonOnePionCurrent_H
 //
-// This is the declaration of the KaonThreeMesonCurrent class.
+// This is the declaration of the TwoKaonOnePionCurrent class.
 //
 
 #include "WeakCurrent.h"
@@ -19,7 +19,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The KaonThreeMesonCurrent class implements the model of M. Finkemeier 
+ * The TwoKaonOnePionCurrent class implements the model of M. Finkemeier 
  * and E.~Mirkes, Z. Phys. C 69 (1996) 243 [arXiv:hep-ph/9503474],
  * for the weak current for three mesons where at least one of the mesons is
  * a kaon.
@@ -63,17 +63,17 @@ using namespace ThePEG;
  * @see WeakCurrent.
  *  
  * \author Peter Richardson
- * @see \ref KaonThreeMesonCurrentInterfaces "The interfaces"
- * defined for KaonThreeMesonCurrent.
+ * @see \ref TwoKaonOnePionCurrentInterfaces "The interfaces"
+ * defined for TwoKaonOnePionCurrent.
  */
-class KaonThreeMesonCurrent: public WeakCurrent {
+class TwoKaonOnePionCurrent: public WeakCurrent {
 
 public:
 
   /**
    * The default constructor.
    */
-  KaonThreeMesonCurrent();
+  TwoKaonOnePionCurrent();
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{
@@ -314,7 +314,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KaonThreeMesonCurrent & operator=(const KaonThreeMesonCurrent &);
+  TwoKaonOnePionCurrent & operator=(const TwoKaonOnePionCurrent &);
 
 private:
 
@@ -673,4 +673,4 @@ private:
 
 }
 
-#endif /* HERWIG_KaonThreeMesonCurrent_H */
+#endif /* HERWIG_TwoKaonOnePionCurrent_H */
