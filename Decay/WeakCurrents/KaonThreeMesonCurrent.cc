@@ -20,10 +20,11 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Helicity/epsilon.h"
 
 using namespace Herwig;
 
-DescribeClass<KaonThreeMesonCurrent,ThreeMesonCurrentBase>
+DescribeClass<KaonThreeMesonCurrent,WeakCurrent>
 describeHerwigKaonThreeMesonCurrent("Herwig::KaonThreeMesonCurrent",
 				    "HwWeakCurrents.so");
 HERWIG_INTERPOLATOR_CLASSDESC(KaonThreeMesonCurrent,Energy,Energy2)
@@ -37,6 +38,20 @@ IBPtr KaonThreeMesonCurrent::fullclone() const {
 }
 
 KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
+  // the quarks for the different modes
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-3);
+  addDecayMode(2,-3);
+  addDecayMode(2,-3);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  setInitialModes(12);
   // rho parameters
   // use local values
   _rhoparameters=true;
@@ -925,13 +940,13 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
     else     os << "insert " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
   }
-  ThreeMesonCurrentBase::dataBaseOutput(os,false,false);
+  WeakCurrent::dataBaseOutput(os,false,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" 
 		<< fullName() << "\";" << endl;
 }  
 
 void KaonThreeMesonCurrent::doinit() {
-  ThreeMesonCurrentBase::doinit();
+  WeakCurrent::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
     pi0(getParticleData(ParticleID::pi0)),
@@ -1198,11 +1213,11 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 void KaonThreeMesonCurrent::doinitrun() {
   // set up the running a_1 width
   inita1Width(0);
-  ThreeMesonCurrentBase::doinitrun();
+  WeakCurrent::doinitrun();
 }
 
 void KaonThreeMesonCurrent::doupdate() {
-  ThreeMesonCurrentBase::doupdate();
+  WeakCurrent::doupdate();
   // update running width if needed
   if ( !touched() ) return;
   if(_maxmass!=_maxcalc) inita1Width(-1);
@@ -1432,4 +1447,188 @@ Complex KaonThreeMesonCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const
   return output/(1.+_omegaKstarwgt);
 }
 
+
+// the hadronic currents    
+vector<LorentzPolarizationVectorE> 
+KaonThreeMesonCurrent::current(tcPDPtr resonance,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      const int imode, const int ichan, Energy & scale, 
+			      const tPDVector & ,
+			      const vector<Lorentz5Momentum> & momenta,
+			      DecayIntegrator::MEOption) const {
+  // calculate q2,s1,s2,s3
+  Lorentz5Momentum q;
+  for(unsigned int ix=0;ix<momenta.size();++ix)
+    q+=momenta[ix];
+  q.rescaleMass();
+  scale=q.mass();
+  Energy2 q2=q.mass2();
+  Energy2 s1 = (momenta[1]+momenta[2]).m2();
+  Energy2 s2 = (momenta[0]+momenta[2]).m2();
+  Energy2 s3 = (momenta[0]+momenta[1]).m2();
+  FormFactors F = calculateFormFactors(ichan,imode,q2,s1,s2,s3);
+  //if(inpart.id()==ParticleID::tauplus){F.F5=conj(F.F5);}
+  // the first three form-factors
+  LorentzPolarizationVector vect;
+  vect = (F.F2-F.F1)*momenta[2]
+        +(F.F1-F.F3)*momenta[1]
+        +(F.F3-F.F2)*momenta[0];
+  // multiply by the transverse projection operator
+  complex<InvEnergy> dot=(vect*q)/q2;
+  // scalar and parity violating terms
+  vect += (F.F4-dot)*q;
+  if(F.F5!=complex<InvEnergy3>()) 
+    vect += Complex(0.,1.)*F.F5*Helicity::epsilon(momenta[0],
+						  momenta[1],
+						  momenta[2]);
+  // factor to get dimensions correct
+  return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
+}
+
+bool KaonThreeMesonCurrent::accept(vector<int> id) {
+  int npip(0),npim(0),nkp(0),nkm(0),
+    npi0(0),nk0(0),nk0bar(0),neta(0),nks(0),nkl(0);
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID::piplus)       ++npip;
+    else if(id[ix]==ParticleID::piminus) ++npim;
+    else if(id[ix]==ParticleID::Kplus)   ++nkp;
+    else if(id[ix]==ParticleID::Kminus)  ++nkm;
+    else if(id[ix]==ParticleID::pi0)     ++npi0;
+    else if(id[ix]==ParticleID::K0)      ++nk0;
+    else if(id[ix]==ParticleID::Kbar0)   ++nk0bar;
+    else if(id[ix]==ParticleID::eta)     ++neta;
+    else if(id[ix]==ParticleID::K_S0)    ++nks;
+    else if(id[ix]==ParticleID::K_L0)    ++nkl;
+  }
+  int imode(-1);
+  if(      (npip==2&&npim==1) || (npim==2&&npip==1) ) imode= 0;
+  else if( (npip==1&&npi0==2) || (npim==1&&npi0==2) ) imode= 1;
+  else if( (nkp==1&&nkm==1&&npip==1) ||
+	   (nkp==1&&nkm==1&&npim==1))                 imode= 2;
+  else if( (nk0==1&&nk0bar==1&&npip==1) ||
+	   (nk0==1&&nk0bar==1&&npim==1))              imode= 3;
+  else if( (nkp==1&&nk0bar==1&&npi0==1) ||
+	   (nkm==1&&npi0==1&&nk0==1))                 imode= 4;
+  else if( (nkp==1&&npi0==2) || (npi0==2&&nkm==1) )   imode= 5;
+  else if( (npip==1&&npim==1&&nkp==1) ||
+	   (nkm==1&&npim==1&&npip==1) )               imode= 6;
+  else if( (nk0==1&&npip==1&&npi0==1)  ||
+	   (npim==1&&nk0bar==1&&npi0==1))             imode= 7;
+  else if( (npip==1&&npi0==1&&neta==1) ||
+	   (npim==1&&npi0==1&&neta==1))               imode= 8;
+  else if( nks==2 && (npip==1||npim==1) )             imode= 9;
+  else if( nkl==2 && (npip==1||npim==1) )             imode=10;
+  else if( nks==1&&nkl==1 && (npip==1||npim==1) )     imode=11;
+  return imode==-1 ? false : acceptMode(imode);
+}
+
+unsigned int KaonThreeMesonCurrent::decayMode(vector<int> id) {
+  int npip(0),npim(0),nkp(0),nkm(0),
+    npi0(0),nk0(0),nk0bar(0),neta(0),nks(0),nkl(0);
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID::piplus)       ++npip;
+    else if(id[ix]==ParticleID::piminus) ++npim;
+    else if(id[ix]==ParticleID::Kplus)   ++nkp;
+    else if(id[ix]==ParticleID::Kminus)  ++nkm;
+    else if(id[ix]==ParticleID::pi0)     ++npi0;
+    else if(id[ix]==ParticleID::K0)      ++nk0;
+    else if(id[ix]==ParticleID::Kbar0)   ++nk0bar;
+    else if(id[ix]==ParticleID::eta)     ++neta;
+    else if(id[ix]==ParticleID::K_S0)    ++nks;
+    else if(id[ix]==ParticleID::K_L0)    ++nkl;
+  }
+  int imode(-1);
+  if(      (npip==2&&npim==1) || (npim==2&&npip==1) ) imode= 0;
+  else if( (npip==1&&npi0==2) || (npim==1&&npi0==2) ) imode= 1;
+  else if( (nkp==1&&nkm==1&&npip==1) ||
+	   (nkp==1&&nkm==1&&npim==1))                 imode= 2;
+  else if( (nk0==1&&nk0bar==1&&npip==1) ||
+	   (nk0==1&&nk0bar==1&&npim==1))              imode= 3;
+  else if( (nkp==1&&nk0bar==1&&npi0==1) ||
+	   (nkm==1&&npi0==1&&nk0==1))                 imode= 4;
+  else if( (nkp==1&&npi0==2) || (npi0==2&&nkm==1) )   imode= 5;
+  else if( (npip==1&&npim==1&&nkp==1) ||
+	   (nkm==1&&npim==1&&npip==1) )               imode= 6;
+  else if( (nk0==1&&npip==1&&npi0==1)  ||
+	   (npim==1&&nk0bar==1&&npi0==1))             imode= 7;
+  else if( (npip==1&&npi0==1&&neta==1) ||
+	   (npim==1&&npi0==1&&neta==1))               imode= 8;
+  else if( nks==2 && (npip==1||npim==1) )             imode= 9;
+  else if( nkl==2 && (npip==1||npim==1) )             imode=10;
+  else if( nks==1&&nkl==1 && (npip==1||npim==1) )     imode=11;
+  return imode;
+}
+
+
+tPDVector KaonThreeMesonCurrent::particles(int icharge, unsigned int imode,int,int) {
+  tPDVector extpart(3);
+  if(imode==0) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==1) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::piminus);
+  }
+  else if(imode==2) {
+    extpart[0]=getParticleData(ParticleID::Kminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::Kplus);
+  }
+  else if(imode==3) {
+    extpart[0]=getParticleData(ParticleID::K0);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::Kbar0);
+  }
+  else if(imode==4) {
+    extpart[0]=getParticleData(ParticleID::Kminus);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::K0);
+  }
+  else if(imode==5) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::Kminus);
+  }
+  else if(imode==6) {
+    extpart[0]=getParticleData(ParticleID::Kminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==7) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::Kbar0);
+    extpart[2]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==8) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::eta);
+  }
+  else if(imode==9) {
+    extpart[0]=getParticleData(ParticleID::K_S0);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::K_S0);
+  }
+  else if(imode==10) {
+    extpart[0]=getParticleData(ParticleID::K_L0);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::K_L0);
+  }
+  else if(imode==11) {
+    extpart[0]=getParticleData(ParticleID::K_S0);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::K_L0);
+  }
+  // conjugate the particles if needed
+  if(icharge==3) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(extpart[ix]->CC()) extpart[ix]=extpart[ix]->CC();
+    }
+  }
+  // return the answer
+  return extpart;
+}
 

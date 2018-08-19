@@ -11,7 +11,6 @@ DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
 FourPionNovosibirskCurrent.h \
 ScalarMesonCurrent.h\
-ThreeMesonCurrentBase.h \
 ThreePionDefaultCurrent.h\
 OneKaonTwoPionDefaultCurrent.h \
 TwoKaonOnePionDefaultCurrent.h \
@@ -34,7 +33,6 @@ DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
 FourPionNovosibirskCurrent.cc \
 ScalarMesonCurrent.cc \
-ThreeMesonCurrentBase.cc \
 ThreePionDefaultCurrent.cc \
 OneKaonTwoPionDefaultCurrent.cc \
 TwoKaonOnePionDefaultCurrent.cc \

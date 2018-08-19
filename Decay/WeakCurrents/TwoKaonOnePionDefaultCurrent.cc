@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Helicity/epsilon.h"
 
 using namespace Herwig;
 using namespace ThePEG;

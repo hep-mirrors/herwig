@@ -12,7 +12,7 @@
 // This is the declaration of the KaonThreeMesonCurrent class.
 //
 
-#include "ThreeMesonCurrentBase.h"
+#include "WeakCurrent.h"
 
 namespace Herwig {
 
@@ -24,10 +24,49 @@ using namespace ThePEG;
  * for the weak current for three mesons where at least one of the mesons is
  * a kaon.
  *
+ * \ingroup Decay
+ *
+ *  This is the base class for the three meson decays of the weak current.
+ *  It is designed so that the currents for the following modes can be implemented
+ *  in classes inheriting from this
+ * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
+ * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
+ * - \f$    K^-   \pi^-    K^+ \f$, (imode=2)
+ * - \f$    K^0   \pi^-    \bar{K}^0\f$, (imode=3)
+ * - \f$    K^-   \pi^0    K^0 \f$, (imode=4)
+ * - \f$    \pi^0  \pi^0    K^- \f$, (imode=5)
+ * - \f$    K^-   \pi^-    \pi^+ \f$, (imode=6)
+ * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
+ * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
+ *
+ * obviously there are other modes with three pseudoscalar mesons for the decay
+ * of the weak current but this model original came from \f$\tau\f$ decay where
+ * these are the only modes. However one case which is important is the inclusion
+ * of the mixing in the neutral kaon sector for which we include the additional
+ * currents
+ * - \f$    K^0_S \pi^- K^0_S\f$, (imode=9)
+ * - \f$    K^0_L \pi^- K^0_L\f$, (imode=10)
+ * - \f$    K^0_S \pi^- K^0_L\f$, (imode=11)
+ *
+ *  In this case the current is given by
+ *  \f[ J^\mu = \left(g^{\mu\nu}-\frac{q^\mu q^\nu}{q^2}\right)
+ *   \left[F_1(p_2-p_3)^\mu +F_2(p_3-p_1)^\mu+F_3(p_1-p_2)^\mu\right]
+ *  +q^\mu F_4
+ *  +F_5\epsilon^{\mu\alpha\beta\gamma}p_1^\alpha p_2^\beta p_3^\gamma
+ *  \f]
+ * where
+ * - \f$p_{1,2,3}\f$ are the momenta of the mesons in the order given above.
+ * - \f$F_1,F_2,F_3,F_4,F_5\f$ are the form factors which must be 
+ *  calculated in the calculateFormFactors member which should be implemented
+ * in classes inheriting from this.
+ *
+ * @see WeakCurrent.
+ *  
+ * \author Peter Richardson
  * @see \ref KaonThreeMesonCurrentInterfaces "The interfaces"
  * defined for KaonThreeMesonCurrent.
  */
-class KaonThreeMesonCurrent: public ThreeMesonCurrentBase {
+class KaonThreeMesonCurrent: public WeakCurrent {
 
 public:
 
@@ -64,6 +103,54 @@ public:
 			  PhaseSpaceChannel phase, Energy upp );
   //@}
 
+
+  /**
+   * Hadronic current. This method is purely virtual and must be implemented in
+   * all classes inheriting from this one.
+   * @param resonance If specified only include terms with this particle
+   * @param Itotal    If specified the total isospin of the current
+   * @param I3        If specified the thrid component of isospin
+   * @param imode The mode
+   * @param ichan The phase-space channel the current is needed for.
+   * @param scale The invariant mass of the particles in the current.
+   * @param outgoing The particles produced in the decay
+   * @param momenta  The momenta of the particles produced in the decay
+   * @param meopt Option for the calculation of the matrix element
+   * @return The current. 
+   */
+  virtual vector<LorentzPolarizationVectorE> 
+  current(tcPDPtr resonance,
+	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+	  const int imode, const int ichan,Energy & scale,
+	  const tPDVector & outgoing,
+	  const vector<Lorentz5Momentum> & momenta,
+	  DecayIntegrator::MEOption meopt) const;
+
+  /**
+   * Accept the decay. Checks the mesons against the list.
+   * @param id The id's of the particles in the current.
+   * @return Can this current have the external particles specified.
+   */
+  virtual bool accept(vector<int> id);
+
+  /**
+   * Return the decay mode number for a given set of particles in the current. 
+   * Checks the mesons against the list.
+   * @param id The id's of the particles in the current.
+   * @return The number of the mode
+   */
+  virtual unsigned int decayMode(vector<int> id);
+
+  /**
+   * The particles produced by the current. This returns the mesons for the mode.
+   * @param icharge The total charge of the particles in the current.
+   * @param imode The mode for which the particles are being requested
+   * @param iq The PDG code for the quark
+   * @param ia The PDG code for the antiquark
+   * @return The external particles for the current.
+   */
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
+  
   /**
    * Output the setup information for the particle database
    * @param os The stream to output the information to
@@ -91,6 +178,52 @@ public:
 
 protected:
 
+  /**
+   * Helper class for form factors
+   */
+  struct FormFactors {
+
+    /**
+     * @param F1 The \f$F_1\f$ form factor
+     */
+    complex<InvEnergy>  F1;
+    
+    /**
+     * @param F2 The \f$F_2\f$ form factor
+     */
+    complex<InvEnergy>  F2;
+    
+    /**
+     * @param F3 The \f$F_3\f$ form factor
+     */
+    complex<InvEnergy>  F3; 
+    
+    /**
+     * @param F4 The \f$F_4\f$ form factor
+     */
+    complex<InvEnergy>  F4;
+    
+    /**
+     * @param F5 The \f$F_5\f$ form factor
+     */
+    complex<InvEnergy3> F5;
+
+    /**
+     *  Constructor
+     * @param f1 The \f$F_1\f$ form factor
+     * @param f2 The \f$F_2\f$ form factor
+     * @param f3 The \f$F_3\f$ form factor
+     * @param f4 The \f$F_4\f$ form factor
+     * @param f5 The \f$F_5\f$ form factor
+     */    
+    FormFactors(complex<InvEnergy>  f1 = InvEnergy(), 
+		complex<InvEnergy>  f2 = InvEnergy(),
+		complex<InvEnergy>  f3 = InvEnergy(),
+		complex<InvEnergy>  f4 = InvEnergy(),
+		complex<InvEnergy3> f5 = InvEnergy3())
+      : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
+  };
+  
   /**
    * Can the current handle a particular set of mesons. 
    * As this current includes all the allowed modes this is always true.
