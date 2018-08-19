@@ -238,12 +238,6 @@ protected:
 protected:
 
   /**
-   * Can the current handle a particular set of mesons. 
-   * As this current includes all the allowed modes this is always true.
-   */
-  virtual bool acceptMode(int) const;
-
-  /**
    * Calculate the form factor for the current. Implements the form factors
    * described above.
    * @param ichan The phase space channel
@@ -380,31 +374,6 @@ private:
     }
     return output/norm;
   }
-
-  /**
-   * The \f$K^*\f$ Breit-Wigner for the \f$F_5\f$ form factors.
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires Which \f$\rho\f$ multiplet
-   * @return The Breit-Wigner 
-   */
-  Complex BKstarF5(Energy2 q2,int ires) const {
-    Complex output(0.),norm(0.);
-    for(unsigned int ix=0,N=min(3,int(_kstarF5wgts.size()));ix<N;++ix) {
-      norm+=_kstarF5wgts[ix];
-    }
-    if(ires<0) {
-      for(unsigned int ix=0,N=min(3,int(_kstarF5wgts.size()));ix<N;++ix) {
-	output+=_kstarF5wgts[ix]*rhoKBreitWigner(q2,3,ix);
-      }
-    }
-    else {
-      unsigned int temp(ires);
-      if(temp<_kstarF5wgts.size()&&temp<3) {
-	output=_kstarF5wgts[ires]*rhoKBreitWigner(q2,3,temp);
-      }
-    }
-    return output/norm;
-  }
   
   /**
    * Mixed Breit Wigner for the \f$F_5\f$ form factor
@@ -435,18 +404,6 @@ private:
     Energy  q(sqrt(q2));
     Energy width = (*_a1runinter)(q2);
     return m2/(m2-q2-ii*q*width);
-  }
-  
-  /**
-   * The \f$K_1\f$ Breit-Wigner
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @return The Breit-Wigner
-   */
-  Complex K1BreitWigner(Energy2 q2) const {
-    Energy2 m2 = sqr(_k1mass);
-    Complex ii(0.,1.);
-    complex<Energy2> fact(m2 - ii*_k1mass*_k1width);
-    return fact/(fact-q2);
   }
 
   /**
@@ -482,12 +439,6 @@ private:
    * \f$F_5\f$ form factors.
    */
   vector<double> _rhoF5wgts;
-
-  /**
-   * Parameters for the \f$K^*\f$ Breit-Wigner in the
-   * \f$F_5\f$ form factors.
-   */
-  vector<double> _kstarF5wgts;
   
   /**
    * The relative weight of the \f$\rho\f$ and \f$K^*\f$ where needed.
@@ -503,7 +454,6 @@ private:
    * The \f$q^2\f$ for the running \f$a_1\f$  width calculation.
    */
   vector<Energy2> _a1runq2;
-
 
   /**
    * The interpolator for the running \f$a_1\f$ width calculation.
@@ -526,16 +476,6 @@ private:
   Energy _a1width;
 
   /**
-   * The mass of the \f$aK1\f$ resonances.
-   */
-  Energy _k1mass;
-
-  /**
-   * The width of the \f$K_1\f$ resonances.
-   */
-  Energy _k1width;
-
-  /**
    * The pion decay constant, \f$f_\pi\f$.
    */
   Energy _fpi;
@@ -549,11 +489,6 @@ private:
    * The kaon mass
    */
   Energy _mK;
-
-  /**
-   * use local values of the \f$\rho\f$ masses and widths
-   */
-  bool _rhoparameters;
 
   /**
    * The \f$\rho\f$ masses for the \f$F_{1,2,3}\f$ form factors.
@@ -574,11 +509,6 @@ private:
    * The \f$\rho\f$ widths for the \f$F_5\f$ form factors.
    */
   vector<Energy> _rhoF5widths;
-  
-  /**
-   * use local values of the \f$K^*\f$ resonances masses and widths
-   */
-  bool _kstarparameters;
 
   /**
    * The \f$K^*\f$ masses for the \f$F_{1,2,3}\f$ form factors.
@@ -586,29 +516,9 @@ private:
   vector<Energy> _kstarF123masses;
 
   /**
-   * The \f$K^*\f$ masses for the \f$F_5\f$ form factors.
-   */
-  vector<Energy> _kstarF5masses;
-
-  /**
    * The \f$K^*\f$ widths for the \f$F_{1,2,3}\f$ form factors.
    */
   vector<Energy> _kstarF123widths;
-
-  /**
-   * The \f$K^*\f$ widths for the \f$F_5\f$ form factors.
-   */
-  vector<Energy> _kstarF5widths;
-  
-  /**
-   * Use local values of the \f$a_1\f$ parameters
-   */
-  bool _a1parameters;
-  
-  /**
-   * Use local values of the \f$K_1\f$ parameters
-   */
-  bool _k1parameters;
 
   /**
    * Option for the \f$a_1\f$ width
