@@ -199,7 +199,7 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BrhoF123(Energy2 q2,int ires) const {
-    if(ires>=_rhoF123wgts.size()) return 0.;
+    if(ires>=int(_rhoF123wgts.size())) return 0.;
     Complex output(0.);
     Complex norm = std::accumulate(_rhoF123wgts.begin(),
 				   _rhoF123wgts.end(),Complex(0.));
@@ -221,7 +221,7 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BKstarF123(Energy2 q2,int ires) const {
-    if(ires>=_kstarF123wgts.size()) return 0.;
+    if(ires>=int(_kstarF123wgts.size())) return 0.;
     Complex output(0.);
     Complex norm = std::accumulate(_kstarF123wgts.begin(),
 				   _kstarF123wgts.end(),Complex(0.));
@@ -230,6 +230,7 @@ private:
       imin=ires;
       imax=imin+1;
     }
+    assert(imax<=_kstarF123wgts.size());
     for(unsigned int ix=imin;ix<imax;++ix)
       output+=_kstarF123wgts[ix]*Resonance::BreitWignerPWave(q2,_kstarF123masses[ix],
 							     _kstarF123widths[ix],_mpi,_mK);

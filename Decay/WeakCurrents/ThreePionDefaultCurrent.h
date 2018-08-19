@@ -234,7 +234,7 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BrhoF123(Energy2 q2,int ires) const {
-    if(ires>=_rhoF123wgts.size()) return 0.;
+    if(ires>=int(_rhoF123wgts.size())) return 0.;
     Complex output(0.);
     Complex norm = std::accumulate(_rhoF123wgts.begin(),
 				   _rhoF123wgts.end(),Complex(0.));

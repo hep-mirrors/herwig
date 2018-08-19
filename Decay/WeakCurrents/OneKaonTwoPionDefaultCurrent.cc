@@ -417,8 +417,7 @@ OneKaonTwoPionDefaultCurrent::current(tcPDPtr resonance,
   Complex F1(0.), F2(0.), F3(0.), F5(0.);
   // calculate the K- pi0 k0
   // calculate the pi0 pi0 K-
-  Complex K1fact = ires1<0 || ires1==3 ?
-			 Resonance::BreitWignerFW_GN(q2,_k1mass,_k1width) : 0.;
+  Complex K1fact = ires1<0 || ires1==3 ? Resonance::BreitWignerFW_GN(q2,_k1mass,_k1width) : 0.;
   if(imode==0) {
     K1fact /=6.;
     if(ichan<0) {
