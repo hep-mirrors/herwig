@@ -264,7 +264,7 @@ private:
   }
 
   /**
-   *  The \f$\rho\f$ lineshape for the vector terms
+   *  The \f$K^*\f$ lineshape for the vector terms
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$K^*\f$ multiplet
    */

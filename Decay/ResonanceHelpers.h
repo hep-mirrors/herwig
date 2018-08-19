@@ -204,7 +204,10 @@ Complex F_rho(const Energy2 & s,
   
 double ga1(const Energy2 &s) {
   static const Energy mpi=0.13957*GeV;
-  if(s>0.838968432668*GeV2) {
+  if(s<9.*sqr(mpi)) {
+    return 0.;
+  }
+  else if(s>0.838968432668*GeV2) {
     double Q2 = s/GeV2;
     return 1.623*Q2+10.38-9.32/Q2+0.65/sqr(Q2);
   }

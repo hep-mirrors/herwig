@@ -583,11 +583,11 @@ threeBodyMatrixElement(const int       , const Energy2 q2,
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 TwoKaonOnePionDefaultCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			      const int imode, const int ichan, Energy & scale, 
-			      const tPDVector & ,
-			      const vector<Lorentz5Momentum> & momenta,
-			      DecayIntegrator::MEOption) const {
+				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				      const int imode, const int ichan, Energy & scale, 
+				      const tPDVector & ,
+				      const vector<Lorentz5Momentum> & momenta,
+				      DecayIntegrator::MEOption) const {
   // check the isospin
   if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
     return vector<LorentzPolarizationVectorE>();
