@@ -156,11 +156,20 @@ inline Complex BreitWignerDWave(const Energy2 & s, const Energy & mRes, const En
 }
   
 /**
- *  Standard fixed width Breit-Wigner
+ *  Standard fixed width Breit-Wigner, no width in numerator
  */
 inline Complex BreitWignerFW(const Energy2 & s, const Energy & mRes, const Energy & gamma) {
   Energy2 mR2=sqr(mRes);
   return mR2/(mR2-s-Complex(0.,1.)*mRes*gamma);
+}
+
+/**
+ *  Standard fixed width Breit-Wigner, width in numerator
+ */
+inline Complex BreitWignerFW_GN(const Energy2 & s, const Energy & mRes, const Energy & gamma) {
+  Energy2 mR2=sqr(mRes);
+  complex<Energy2> fact = mR2 - Complex(0.,1.)*mRes*gamma;
+  return fact/(fact-s);
 }
 
 /**
