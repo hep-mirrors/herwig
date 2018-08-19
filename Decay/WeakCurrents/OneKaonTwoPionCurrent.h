@@ -282,25 +282,12 @@ protected:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
-  //@{
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  virtual void doinitrun();
-
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  virtual void doupdate();
-  //@}
 
 private:
 
@@ -369,13 +356,6 @@ private:
   Complex BWKstar2(Energy2 q2, unsigned int ires) const;
 
   /**
-   * \f$a_1\f$ Breit-Wigner
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @return The Breit-Wigner
-   */
-  Complex a1BreitWigner(Energy2 q2) const;
-
-  /**
    *  The \f$K_1\f$ line shape
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param iopt Whether this is \f$K^*\pi\f$ or \f$\rho K\f$.
@@ -390,24 +370,6 @@ private:
    * @return The Breit-Wigner
    */
   Complex K1BreitWigner(Energy2 q2,unsigned int ires) const;
-
-  /**
-   * The \f$a_1\f$ running width
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @return The \f$a_1\f$ running width.
-   */
-  Energy a1Width(Energy2 q2) const;
-
-  /**
-   *  The \f$g(Q^2)\f$ function of Kuhn and Santamaria
-   */
-  double g(Energy2 q2) const;
-
-  /**
-   * Initialize the \f$a_1\f$ running width
-   * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
-   */
-  void inita1Width(int iopt);
 
   /**
    *  The \f$T_\omega\f$ function
@@ -518,15 +480,6 @@ private:
    *  Parameters for the three meson resonances
    */
   //@{
-  /**
-   * The mass of the \f$a_1\f$ resonances.
-   */
-  Energy _a1mass;
-  
-  /**
-   * The width of the \f$a_1\f$ resonances.
-   */
-  Energy _a1width;
 
   /**
    *  The masses of the \f$aK1\f$ resonances.
@@ -547,21 +500,6 @@ private:
    *  The weights for the different \f$K_1\f$ resonaces for \f$K_1\to\rho K\f$.
    */
   vector<double> _k1wgtb;
-
-  /**
-   * The \f$a_1\f$ width for the running \f$a_1\f$ width calculation.
-   */
-  vector<Energy>  _a1runwidth;
-
-  /**
-   * The \f$q^2\f$ for the running \f$a_1\f$  width calculation.
-   */
-  vector<Energy2> _a1runq2;
-
-  /**
-   * The interpolator for the running \f$a_1\f$ width calculation.
-   */
-  Interpolator<Energy,Energy2>::Ptr _a1runinter;
   //@}
 
   /**
@@ -613,56 +551,7 @@ private:
    * The kaon mass
    */
   Energy _mK;
-
-  /**
-   *  Initialization switches
-   */
-  //@{
-  /**
-   * Initialize the running \f$a_1\f$ width.
-   */
-  bool _initializea1;
-  
-  /**
-   * use local values of the \f$\rho\f$ masses and widths
-   */
-  bool _rhoparameters;
-
-  /**
-   * use local values of the \f$K^*\f$ resonances masses and widths
-   */
-  bool _kstarparameters;
-
-  /**
-   * Use local values of the \f$a_1\f$ parameters
-   */
-  bool _a1parameters;
-
-  /**
-   * Use local values of the \f$K_1\f$ parameters
-   */
-  bool _k1parameters;
-
-  /**
-   * Option for the \f$a_1\f$ width
-   */
-  bool _a1opt;
-
-  /**
-   * Option for the \f$\omega-\phi\f$ parameters
-   */
-  bool _omegaopt;
   //@}
-
-  /**
-   *  The maximum mass of the hadronic system
-   */
-  Energy _maxmass;
-
-  /**
-   *  The maximum mass when the running width was calculated
-   */
-  Energy _maxcalc;
 };
 
 }

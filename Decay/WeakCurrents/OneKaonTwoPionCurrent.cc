@@ -44,176 +44,61 @@ OneKaonTwoPionCurrent::OneKaonTwoPionCurrent() {
   addDecayMode(2,-3);
   setInitialModes(3);
   // rho parameters
-  // use local values
-  _rhoparameters=true;
   // rho parameters for axial-vector pieces
-  _rho1wgts.push_back( 1.0  );   _rho1wgts.push_back(-0.145);
-  _rho1wgts.push_back(0.);
-  _rho1mass.push_back(0.773*GeV);_rho1mass.push_back(1.370*GeV);
-  _rho1mass.push_back(1.750*GeV);
-  _rho1width.push_back(0.145*GeV);_rho1width.push_back(0.510*GeV);
-  _rho1width.push_back(0.120*GeV);
+  _rho1wgts  = {1.0,-0.145,0.};
+  _rho1mass  = {0.773*GeV,1.370*GeV,1.750*GeV};
+  _rho1width = {0.145*GeV,0.510*GeV,0.120*GeV};
   // rho parameters for vector pieces
-  _rho2wgts.push_back( 1.0  );   _rho2wgts.push_back(-0.25 );
-  _rho2wgts.push_back(-0.038);
-  _rho2mass.push_back(0.773*GeV);_rho2mass.push_back(1.500*GeV);
-  _rho2mass.push_back(1.750*GeV);
-  _rho2width.push_back(0.145*GeV);_rho2width.push_back(0.220*GeV);
-  _rho2width.push_back(0.120*GeV);
-  // K* parameters
-  _kstarparameters=true;
+  _rho2wgts  = { 1.0  ,-0.25 ,-0.038};
+  _rho2mass  = {0.773*GeV,1.500*GeV,1.750*GeV};
+  _rho2width = {0.145*GeV,0.220*GeV,0.120*GeV};
   // K* parameters for the axial-vector pieces
-  _kstar1wgts.push_back( 1.0  );   _kstar1wgts.push_back(-0.135);
-  _kstar1wgts.push_back(0.);
-  _kstar1mass.push_back(0.892*GeV);_kstar1mass.push_back(1.412*GeV);
-  _kstar1mass.push_back(1.714*GeV);
-  _kstar1width.push_back(0.050*GeV);_kstar1width.push_back(0.227*GeV);
-  _kstar1width.push_back(0.323*GeV);
+  _kstar1wgts  = {1.0,-0.135,0.};
+  _kstar1mass  = {0.892*GeV,1.412*GeV,1.714*GeV};
+  _kstar1width = {0.050*GeV,0.227*GeV,0.323*GeV};
   // K* parameters for vector pieces
-  _kstar2wgts.push_back( 1.0  );   _kstar2wgts.push_back(-0.25 );
-  _kstar2wgts.push_back(-0.038);
-  _kstar2mass.push_back(0.892*GeV);_kstar2mass.push_back(1.412*GeV);
-  _kstar2mass.push_back(1.714*GeV);
-  _kstar2width.push_back(0.050*GeV);_kstar2width.push_back(0.227*GeV);
-  _kstar2width.push_back(0.323*GeV);
-  // a_1 parameters
-  _a1parameters = true;
-  _initializea1 = false;
-  _a1opt        = true;
-  _a1mass  = 1.251*GeV;
-  _a1width = 0.475*GeV;
-  double a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
-		       126309,142098,157886,173675,189464,205252,221041,236830,
-		       252618,268407,284196,299984,315773,331562,347350,363139,
-		       378927,394716,410505,426293,442082,457871,473659,489448,
-		       505237,521025,536814,552603,568391,584180,599969,615757,
-		       631546,647334,663123,678912,694700,710489,726278,742066,
-		       757855,773644,789432,805221,821010,836798,852587,868375,
-		       884164,899953,915741,931530,947319,963107,978896,994685,
-		       1.01047e+06,1.02626e+06,1.04205e+06,1.05784e+06,1.07363e+06,
-		       1.08942e+06,1.10521e+06,1.12099e+06,1.13678e+06,1.15257e+06,
-		       1.16836e+06,1.18415e+06,1.19994e+06,1.21573e+06,1.23151e+06,
-		       1.2473e+06,1.26309e+06,1.27888e+06,1.29467e+06,1.31046e+06,
-		       1.32625e+06,1.34203e+06,1.35782e+06,1.37361e+06,1.3894e+06,
-		       1.40519e+06,1.42098e+06,1.43677e+06,1.45256e+06,1.46834e+06
-		       ,1.48413e+06,1.49992e+06,1.51571e+06,1.5315e+06,1.54729e+06,
-		       1.56308e+06,1.57886e+06,1.59465e+06,1.61044e+06,1.62623e+06,
-		       1.64202e+06,1.65781e+06,1.6736e+06,1.68939e+06,1.70517e+06,
-		       1.72096e+06,1.73675e+06,1.75254e+06,1.76833e+06,1.78412e+06,
-		       1.79991e+06,1.81569e+06,1.83148e+06,1.84727e+06,1.86306e+06,
-		       1.87885e+06,1.89464e+06,1.91043e+06,1.92621e+06,1.942e+06,
-		       1.95779e+06,1.97358e+06,1.98937e+06,2.00516e+06,2.02095e+06,
-		       2.03674e+06,2.05252e+06,2.06831e+06,2.0841e+06,2.09989e+06,
-		       2.11568e+06,2.13147e+06,2.14726e+06,2.16304e+06,2.17883e+06,
-		       2.19462e+06,2.21041e+06,2.2262e+06,2.24199e+06,2.25778e+06,
-		       2.27356e+06,2.28935e+06,2.30514e+06,2.32093e+06,2.33672e+06,
-		       2.35251e+06,2.3683e+06,2.38409e+06,2.39987e+06,2.41566e+06,
-		       2.43145e+06,2.44724e+06,2.46303e+06,2.47882e+06,2.49461e+06,
-		       2.51039e+06,2.52618e+06,2.54197e+06,2.55776e+06,2.57355e+06,
-		       2.58934e+06,2.60513e+06,2.62092e+06,2.6367e+06,2.65249e+06,
-		       2.66828e+06,2.68407e+06,2.69986e+06,2.71565e+06,2.73144e+06,
-		       2.74722e+06,2.76301e+06,2.7788e+06,2.79459e+06,2.81038e+06,
-		       2.82617e+06,2.84196e+06,2.85774e+06,2.87353e+06,2.88932e+06,
-		       2.90511e+06,2.9209e+06,2.93669e+06,2.95248e+06,2.96827e+06,
-		       2.98405e+06,2.99984e+06,3.01563e+06,3.03142e+06,3.04721e+06,
-		       3.063e+06,3.07879e+06,3.09457e+06,3.11036e+06,3.12615e+06,
-		       3.14194e+06};
-  double a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
-			 0.105567,0.199612,0.333825,0.513831,0.745192,1.0336,1.38501,
-			 1.80581,2.30295,2.88403,3.5575,4.33278,5.22045,6.23243,
-			 7.38223,8.68521,10.1589,11.8234,13.7018,15.8206,18.2107,
-			 20.9078,23.9533,27.3954,31.2905,35.7038,40.7106,46.3984,
-			 52.8654,60.2207,68.581,78.0637,88.7754,100.794,114.145,
-			 128.783,144.574,161.299,178.683,196.426,214.248,231.908,
-			 249.221,266.059,282.336,298.006,313.048,327.46,341.254,
-			 354.448,367.066,379.133,390.677,401.726,412.304,422.439,
-			   432.155,441.474,450.419,459.01,467.267,475.207,482.847,
-			 490.203,497.29,504.121,510.71,517.068,523.207,529.138,
-			 534.869,540.411,545.776,550.961,556.663,560.851,565.566,
-			 570.137,574.569,578.869,583.041,587.091,591.023,594.843,
-			 598.553,602.16,605.664,609.072,612.396,615.626,618.754,
-			 621.796,624.766,627.656,630.47,633.21,635.878,638.5,
-			 641.006,643.471,645.873,648.213,650.493,652.715,654.88,
-			 656.99,659.047,661.052,663.007,664.963,666.771,668.6,
-			 670.351,672.075,673.828,675.397,676.996,678.567,680.083,
-			 681.589,683.023,684.457,685.825,687.18,688.499,689.789,
-			 691.058,692.284,693.501,694.667,695.82,696.947,698.05,
-			 699.129,700.186,701.221,702.234,703.226,704.198,705.158,
-			 706.085,707.001,707.899,708.78,709.644,710.474,711.334,
-			 712.145,712.943,713.727,714.505,715.266,716.015,716.751,
-			 717.474,718.183,718.88,719.645,720.243,720.91,721.565,
-			 722.211,722.851,723.473,724.094,724.697,725.296,725.886,
-			 726.468,727.041,727.608,728.166,728.718,729.262,729.808,
-			 730.337,730.856,731.374,731.883,732.386,732.884,733.373,
-			 733.859,734.339,734.813};
-  
-  vector<double> tmp1(a1widthin,a1widthin+200);
-  _a1runwidth.clear();
-  std::transform(tmp1.begin(), tmp1.end(),
-		 back_inserter(_a1runwidth),
-		 [](double x){return x*MeV;});
-  
-  vector<double> tmp2(a1q2in,a1q2in+200);
-  _a1runq2.clear();
-  std::transform(tmp2.begin(), tmp2.end(),
-		 back_inserter(_a1runq2),
-		 [](double x){return x*MeV2;});
-
-
+  _kstar2wgts  = {1.0,-0.25 ,-0.038};
+  _kstar2mass  = {0.892*GeV,1.412*GeV,1.714*GeV};
+  _kstar2width = {0.050*GeV,0.227*GeV,0.323*GeV};
   // K_1 parameters
-  _k1parameters=true;
-  _k1mass.push_back(1.270*GeV);_k1width.push_back(0.090*GeV);
-  _k1mass.push_back(1.402*GeV);_k1width.push_back(0.174*GeV);
-  _k1wgta.push_back(0.33);_k1wgta.push_back(1.);
-  _k1wgtb.push_back(1.00);_k1wgtb.push_back(0.);
+  _k1mass  = {1.270*GeV,1.402*GeV};
+  _k1width = {0.090*GeV,0.174*GeV};
+  _k1wgta = {0.33,1.};
+  _k1wgtb = {1.00,0.};
   // parameters for the T_omega function
-  _omegaopt=true;
-  _epsomega=0.05;
+  _epsomega   = 0.05;
   _omegamass  = 0.782*GeV;
   _omegawidth = 0.00843*GeV;
   _phimass    = 1.020*GeV;
   _phiwidth   = 0.00443*GeV;
   _omegaKstarwgt=1./sqrt(2.);
   // the pion decay constant
-  _fpi=130.7*MeV/sqrt(2.);
-  _mpi=ZERO;_mK=ZERO;
-  _maxmass=ZERO;
-  _maxcalc=ZERO;
+  _fpi = 130.7*MeV/sqrt(2.);
+  _mpi = ZERO;
+  _mK  = ZERO;
 }
 
 
 void OneKaonTwoPionCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _a1runinter
-     << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
+  os << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
      << _rho2wgts << ounit(_rho2mass,GeV) << ounit(_rho2width,GeV)
      << _kstar1wgts << ounit(_kstar1mass,GeV) << ounit(_kstar1width,GeV) 
      << _kstar2wgts << ounit(_kstar2mass,GeV) << ounit(_kstar2width,GeV) 
-     << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_k1mass,GeV) 
-     << ounit(_k1width,GeV) << _k1wgta << _k1wgtb 
-     << ounit(_a1runwidth,GeV) << ounit(_a1runq2,GeV2) << _epsomega 
-     << ounit(_omegamass,GeV) << ounit(_omegawidth,GeV) 
+     << ounit(_k1mass,GeV) << ounit(_k1width,GeV) << _k1wgta << _k1wgtb 
+     << _epsomega << ounit(_omegamass,GeV) << ounit(_omegawidth,GeV) 
      << ounit(_phimass,GeV) << ounit(_phiwidth,GeV) << _omegaKstarwgt 
-     << ounit(_fpi,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV) 
-     << _initializea1 << _rhoparameters << _kstarparameters << _a1parameters 
-     << _k1parameters << _a1opt << _omegaopt 
-     << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
+     << ounit(_fpi,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV);
 }
 
 void OneKaonTwoPionCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _a1runinter
-     >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
+  is >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
      >> _rho2wgts >> iunit(_rho2mass,GeV) >> iunit(_rho2width,GeV) 
      >> _kstar1wgts >> iunit(_kstar1mass,GeV) >> iunit(_kstar1width,GeV) 
      >> _kstar2wgts >> iunit(_kstar2mass,GeV) >> iunit(_kstar2width,GeV) 
-     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >> iunit(_k1mass,GeV) 
-     >> iunit(_k1width,GeV) >> _k1wgta >> _k1wgtb 
-     >> iunit(_a1runwidth,GeV) >> iunit(_a1runq2,GeV2) >> _epsomega 
-     >> iunit(_omegamass,GeV) >> iunit(_omegawidth,GeV) 
+     >> iunit(_k1mass,GeV) >> iunit(_k1width,GeV) >> _k1wgta >> _k1wgtb 
+     >> _epsomega >> iunit(_omegamass,GeV) >> iunit(_omegawidth,GeV) 
      >> iunit(_phimass,GeV) >> iunit(_phiwidth,GeV) >> _omegaKstarwgt 
-     >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV) 
-     >> _initializea1 >> _rhoparameters >> _kstarparameters >> _a1parameters 
-     >> _k1parameters >> _a1opt >> _omegaopt 
-     >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
+     >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV);
 }
 
 
@@ -230,36 +115,7 @@ void OneKaonTwoPionCurrent::Init() {
      "\\bibitem{Finkemeier:1995sr}\n"
      "M.~Finkemeier and E.~Mirkes,\n"
      "Z.\\ Phys.\\  C {\\bf 69} (1996) 243 [arXiv:hep-ph/9503474].\n"
-     " %%CITATION = ZEPYA,C69,243;%%\n"
-
-);
-
-  static Switch<OneKaonTwoPionCurrent,bool> interfaceInitializea1
-    ("Initializea1",
-     "Initialise the calculation of the a_1 running width",
-     &OneKaonTwoPionCurrent::_initializea1, false, false, false);
-  static SwitchOption interfaceInitializea1Initialization
-    (interfaceInitializea1,
-     "Yes",
-     "Initialize the calculation",
-     true);
-  static SwitchOption interfaceInitializea1NoInitialization
-    (interfaceInitializea1,
-     "No",
-     "Use the default values",
-     false);
-
-  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceA1Width
-    ("A1Width",
-     "The a_1 width if using local values.",
-     &OneKaonTwoPionCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
-     false, false, false);
-  
-  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceA1Mass
-    ("A1Mass",
-     "The a_1 mass if using local values.",
-     &OneKaonTwoPionCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
-     false, false, false);
+     " %%CITATION = ZEPYA,C69,243;%%\n");
 
   static Parameter<OneKaonTwoPionCurrent,Energy> interfaceFPi
     ("FPi",
@@ -338,95 +194,6 @@ void OneKaonTwoPionCurrent::Init() {
      "The weights of the different Kstar resonances in the F1,2,3 form factor",
      &OneKaonTwoPionCurrent::_kstar2wgts,
      0, 0, 0, -1000, 1000, false, false, true);
-  
-  static Switch<OneKaonTwoPionCurrent,bool> interfaceRhoParameters
-    ("RhoParameters",
-     "Use local values of the rho meson masses and widths",
-     &OneKaonTwoPionCurrent::_rhoparameters, true, false, false);
-  static SwitchOption interfaceRhoParameterstrue
-    (interfaceRhoParameters,
-     "Local",
-     "Use local values of the parameters",
-     true);
-  static SwitchOption interfaceRhoParametersParticleData
-    (interfaceRhoParameters,
-     "ParticleData",
-     "Use the masses and widths from the particle data objects",
-     false);
-  
-  static Switch<OneKaonTwoPionCurrent,bool> interfaceKstarParameters
-    ("KstarParameters",
-     "Use local values of the rho meson masses and widths",
-     &OneKaonTwoPionCurrent::_kstarparameters, true, false, false);
-  static SwitchOption interfaceKstarParameterstrue
-    (interfaceKstarParameters,
-     "Local",
-     "Use local values of the parameters",
-     true);
-  static SwitchOption interfaceKstarParametersParticleData
-    (interfaceKstarParameters,
-     "ParticleData",
-     "Use the masses and widths from the particle data objects",
-     false);
-  
-  static Switch<OneKaonTwoPionCurrent,bool> interfacea1Parameters
-    ("a1Parameters",
-     "Use local values of the rho meson masses and widths",
-     &OneKaonTwoPionCurrent::_a1parameters, true, false, false);
-  static SwitchOption interfacea1Parameterstrue
-    (interfacea1Parameters,
-     "Local",
-     "Use local values of the parameters",
-     true);
-  static SwitchOption interfacea1ParametersParticleData
-    (interfacea1Parameters,
-     "ParticleData",
-     "Use the masses and widths from the particle data objects",
-     false);
-  
-  static Switch<OneKaonTwoPionCurrent,bool> interfaceK1Parameters
-    ("K1Parameters",
-     "Use local values of the rho meson masses and widths",
-     &OneKaonTwoPionCurrent::_k1parameters, true, false, false);
-  static SwitchOption interfaceK1Parameterstrue
-    (interfaceK1Parameters,
-     "Local",
-     "Use local values of the parameters",
-     true);
-  static SwitchOption interfaceK1ParametersParticleData
-    (interfaceK1Parameters,
-     "ParticleData",
-     "Use the masses and widths from the particle data objects",
-     false);
-  
-  static Switch<OneKaonTwoPionCurrent,bool> interfacea1WidthOption
-    ("a1WidthOption",
-     "Option for the treatment of the a1 width",
-     &OneKaonTwoPionCurrent::_a1opt, true, false, false);
-  static SwitchOption interfacea1WidthOptionLocal
-    (interfacea1WidthOption,
-     "Local",
-     "Use a calculation of the running width based on the parameters as"
-     " interpolation table.",
-     true);
-  static SwitchOption interfacea1WidthOptionParam
-    (interfacea1WidthOption,
-     "Kuhn",
-     "Use the parameterization of Kuhn and Santamaria for default parameters."
-     " This should only be used for testing vs TAUOLA",
-     false);
-
-  static ParVector<OneKaonTwoPionCurrent,Energy> interfacea1RunningWidth
-    ("a1RunningWidth",
-     "The values of the a_1 width for interpolation to giving the running width.",
-     &OneKaonTwoPionCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
-     false, false, true);
-
-  static ParVector<OneKaonTwoPionCurrent,Energy2> interfacea1RunningQ2
-    ("a1RunningQ2",
-     "The values of the q^2 for interpolation to giving the running width.",
-     &OneKaonTwoPionCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
-     false, false, true);
 
   static ParVector<OneKaonTwoPionCurrent,Energy> interfaceK1Masses
     ("K1Masses",
@@ -487,52 +254,6 @@ void OneKaonTwoPionCurrent::Init() {
      "The relative weight of the omega-phi and K* terms",
      &OneKaonTwoPionCurrent::_omegaKstarwgt, 1./sqrt(2.), 0.0, 100.0,
      false, false, Interface::limited);
-  
-  static Switch<OneKaonTwoPionCurrent,bool> interfaceOmegaParameters
-    ("OmegaParameters",
-     "Use local values of the omega/phi meson masses and widths",
-     &OneKaonTwoPionCurrent::_omegaopt, true, false, false);
-  static SwitchOption interfaceOmegaParameterstrue
-    (interfaceOmegaParameters,
-     "Local",
-     "Use local values of the parameters",
-     true);
-  static SwitchOption interfaceOmegaParametersParticleData
-    (interfaceOmegaParameters,
-     "ParticleData",
-     "Use the masses and widths from the particle data objects",
-     false);
-
-}
-
-void OneKaonTwoPionCurrent::inita1Width(int iopt) {
-  if(iopt==-1) {
-    _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==ZERO) return; 
-    // parameters for the table of values
-    Energy2 step(sqr(_maxmass)/199.);
-    // integrator to perform the integral
-    vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
-    vector<int> intype;intype.push_back(2);intype.push_back(3);
-    Energy mrho(getParticleData(ParticleID::rhoplus)->mass()),
-      wrho(getParticleData(ParticleID::rhoplus)->width());
-    vector<Energy> inmass(2,mrho),inwidth(2,wrho);
-    vector<double> inpow(2,0.0);
-    ThreeBodyAllOnCalculator<OneKaonTwoPionCurrent> 
-      widthgen(inweights,intype,inmass,inwidth,inpow,*this,0,_mpi,_mpi,_mpi);
-    // normalisation constant to give physical width if on shell
-    double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
-    // loop to give the values
-    _a1runq2.clear();_a1runwidth.clear();
-    for(Energy2 moff2 = ZERO; moff2<=sqr(_maxmass); moff2+=step) {
-      _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
-      _a1runq2.push_back(moff2);
-    }
-  }
-  // set up the interpolator
-  else if(iopt==0) {
-    _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
-  }
 }
 
 // complete the construction of the decay mode for integration
@@ -551,7 +272,6 @@ bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
   tPDPtr a1    = getParticleData(ParticleID::a_1minus);
   tPDPtr k1[2] = {getParticleData(ParticleID::K_1minus),
 		  getParticleData(ParticleID::Kstar_1minus)};
-  _maxmass=max(_maxmass,upp);
   // the rho0 resonances
   tPDPtr rho0[3]  ={getParticleData( 113),getParticleData( 100113),
 		    getParticleData( 30113)};
@@ -706,23 +426,6 @@ void OneKaonTwoPionCurrent::dataBaseOutput(ofstream & os,
   }
   os << "newdef " << name() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
   os << "newdef " << name() << ":EpsOmega " << _epsomega << "\n";
-  os << "newdef " << name() << ":Initializea1 " << _initializea1 << "\n";
-  os << "newdef " << name() << ":RhoParameters " << _rhoparameters << "\n";
-  os << "newdef " << name() << ":KstarParameters " << _kstarparameters << "\n";
-  os << "newdef " << name() << ":a1Parameters " << _a1parameters << "\n";
-  os << "newdef " << name() << ":K1Parameters " << _k1parameters << "\n";
-  os << "newdef " << name() << ":OmegaParameters " << _omegaopt << "\n";
-  os << "newdef " << name() << ":a1WidthOption " << _a1opt << "\n";
-  for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    os << "newdef " << name() << ":a1RunningWidth " << ix 
-	   << " " << _a1runwidth[ix]/GeV << "\n";
-  }
-  for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    os << "newdef " << name() << ":a1RunningQ2 " << ix 
-	   << " " << _a1runq2[ix]/GeV2 << "\n";
-  }
-  os << "newdef " << name() << ":A1Width " << _a1width/GeV << "\n";
-  os << "newdef " << name() << ":A1Mass " << _a1mass/GeV << "\n";
   os << "newdef " << name() << ":OmegaWidth " << _omegawidth/GeV << "\n";
   os << "newdef " << name() << ":OmegaMass " << _omegamass/GeV << "\n";
   os << "newdef " << name() << ":PhiWidth " << _phiwidth/GeV << "\n";
@@ -815,119 +518,9 @@ void OneKaonTwoPionCurrent::dataBaseOutput(ofstream & os,
 
 void OneKaonTwoPionCurrent::doinit() {
   WeakCurrent::doinit();
-  // the particles we will use a lot
-  tPDPtr a1(getParticleData(ParticleID::a_1minus)),
-    pi0(getParticleData(ParticleID::pi0)),
-    piplus(getParticleData(ParticleID::piplus)),
-    piminus(getParticleData(ParticleID::piminus));
-  tPDPtr k1[2]={getParticleData(ParticleID::K_1minus),
-		getParticleData(ParticleID::Kstar_1minus)};
   // masses for the running widths
-  _mpi=piplus->mass();
-  _mK=getParticleData(ParticleID::K0)->mass();
-  // the charged rho resonances
-  tPDPtr rhoc[3]={getParticleData(-213),getParticleData(-100213),
- 		  getParticleData(-30213)};
-  // the charged K* resonances
-  tPDPtr Kstarc[3]={getParticleData(-323),getParticleData(-100323),
- 		    getParticleData(-30323)};
-  if(!_a1parameters) {
-    _a1mass=a1->mass();
-    _a1width=a1->width();
-  }
-  // mass and width of the k_1
-  if(!_k1parameters) {
-    for(unsigned int ix=0;ix<2;++ix) {
-      _k1mass[ix]  = k1[ix]->mass();
-      _k1width[ix] = k1[ix]->width();
-    }
-  }
-  // initialise the a_1 running width calculation
-  inita1Width(-1);
-  // rho parameters in the base classs
-  tcPDPtr temp;
-  unsigned int ix;
-  if(_rhoparameters&&_rho1mass.size()<3) {
-    ix = _rho1mass.size();
-    _rho1mass.resize(3);
-    _rho1width.resize(3);
-    for(;ix<3;++ix) {
-      if(rhoc[ix]) {
-	_rho1mass [ix]=rhoc[ix]->mass();
-	_rho1width[ix]=rhoc[ix]->width();
-      }
-    }
-  }
-  else if(!_rhoparameters) {
-    _rho1mass.resize(3);_rho1width.resize(3);
-    for(ix=0;ix<3;++ix) {
-      if(rhoc[ix]) {
-	_rho1mass[ix]=rhoc[ix]->mass();
-	_rho1width[ix]=rhoc[ix]->width();
-      }
-    }
-  }
-  // K star parameters in the base class
-  if(_kstarparameters&&_kstar1mass.size()<3) {
-    ix = _kstar1mass.size();
-    _kstar1mass.resize(3);_kstar1width.resize(3);
-    for(;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	_kstar1mass[ix]=Kstarc[ix]->mass();
-	_kstar1width[ix]=Kstarc[ix]->width();
-      }
-    }
-  }
-  else if(!_kstarparameters) {
-    _kstar1mass.resize(3);_kstar1width.resize(3);
-    for(ix=0;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	_kstar1mass[ix]=Kstarc[ix]->mass();
-	_kstar1width[ix]=Kstarc[ix]->width();
-      }
-    }
-  }
-  // rho parameters here
-  if(_rhoparameters&&_rho2mass.size()<3) {
-    ix = _rho2mass.size();
-    _rho2mass.resize(3);_rho2width.resize(3);
-    for(;ix<3;++ix) {
-      if(rhoc[ix]) {
-	_rho2mass[ix]=rhoc[ix]->mass();
-	_rho2width[ix]=rhoc[ix]->width();
-      }
-    }
-  }
-  else if(!_rhoparameters) {
-    _rho2mass.resize(3);_rho2width.resize(3);
-    for(ix=0;ix<3;++ix) {
-      if(rhoc[ix]) {
-	_rho2mass[ix]=rhoc[ix]->mass();
-	_rho2width[ix]=rhoc[ix]->width();
-      }
-    }
-  }
-  // Kstar parameters here
-  if(_kstarparameters&&_kstar2width.size()<3) {
-    ix = _kstar2mass.size();
-    _kstar2mass.resize(3);_kstar2width.resize(3);
-    for(;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	_kstar2mass[ix]=Kstarc[ix]->mass();
-	_kstar2width[ix]=Kstarc[ix]->width();
-      }
-    }
-  }
-  else if(!_kstarparameters) {
-    _kstar2mass.resize(3);_kstar2width.resize(3);
-    for(ix=0;ix<3;++ix) {
-      if(Kstarc[ix]) {
-	_kstar2mass[ix]=Kstarc[ix]->mass();
-	_kstar2width[ix]=Kstarc[ix]->width();
-      }
-    }
-  }
-  inita1Width(0);
+  _mpi = getParticleData(ParticleID::piplus)->mass();
+  _mK  = getParticleData(ParticleID::K0    )->mass();
 }
 
 OneKaonTwoPionCurrent::FormFactors
@@ -995,19 +588,6 @@ OneKaonTwoPionCurrent::calculateFormFactors(const int ichan,const int imode,
 		     InvEnergy(),
 		     InvEnergy(),
 		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
-}
-
-void OneKaonTwoPionCurrent::doinitrun() {
-  // set up the running a_1 width
-  inita1Width(0);
-  WeakCurrent::doinitrun();
-}
-
-void OneKaonTwoPionCurrent::doupdate() {
-  WeakCurrent::doupdate();
-  // update running width if needed
-  if ( !touched() ) return;
-  if(_maxmass!=_maxcalc) inita1Width(-1);
 }
 
 double OneKaonTwoPionCurrent::
@@ -1140,13 +720,6 @@ Complex OneKaonTwoPionCurrent::BWKstar2(Energy2 q2, unsigned int ires) const  {
   Energy gam(width*mass*ratio/q);
   return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
 }
-
-Complex OneKaonTwoPionCurrent::a1BreitWigner(Energy2 q2) const {
-  Complex ii(0.,1.);
-  Energy2 m2(_a1mass*_a1mass);
-  Energy  q(sqrt(q2));
-  return m2/(m2-q2-ii*q*a1Width(q2));
-}
   
 Complex OneKaonTwoPionCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const {
   Complex denom(0),num(0.);
@@ -1181,29 +754,7 @@ Complex OneKaonTwoPionCurrent::K1BreitWigner(Energy2 q2,unsigned int ires) const
   Energy2 m2=sqr(_k1mass[ires]),mg=_k1mass[ires]*_k1width[ires];
   return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
 }
-
-Energy OneKaonTwoPionCurrent::a1Width(Energy2 q2) const {
-  if(!_a1opt) return _a1mass*_a1width*g(q2)/g(_a1mass*_a1mass)/sqrt(q2);
-  else        return (*_a1runinter)(q2);
-}
-  
-double OneKaonTwoPionCurrent::g(Energy2 q2) const {
-  double output;
-  if(q2<9.*_mpi*_mpi) {
-    output=0.;
-  }
-  else if(q2<sqr(_rho1mass[0]+_mpi)) {
-    double diff=(q2-9.*_mpi*_mpi)/GeV2;
-      
-    output=4.1*sqr(diff)*diff*(1.-3.3*diff+5.8*sqr(diff));
-  }
-  else {
-    double ratio = q2/GeV2;
-    output = ratio*(1.623+10.38/ratio-9.32/sqr(ratio)+0.65/(ratio*sqr(ratio)));
-  }
-  return output;
-}
-  
+    
 Complex OneKaonTwoPionCurrent::Tomega(Energy2 q2, int ires) const {
   double denom=(1.+_epsomega);
   Complex num(0.);
