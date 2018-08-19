@@ -398,7 +398,7 @@ OneKaonTwoPionDefaultCurrent::current(tcPDPtr resonance,
       ires1=1; break;
     case  30:
       ires1=2; break;
-    case  10:
+    case  20:
       ires1=3; break;
     default:
       assert(false);

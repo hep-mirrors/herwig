@@ -13,6 +13,8 @@
 //
 
 #include "WeakCurrent.h"
+#include "Herwig/Decay/ResonanceHelpers.h"
+#include <numeric>
 
 namespace Herwig {
 
@@ -158,84 +160,6 @@ public:
    * @param create Whether or not to add a statement creating the object
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
-  
-  /**
-   * the matrix element for the \f$a_1\f$ decay to calculate the running width
-   * @param imode The mode for which the matrix element is needed.
-   * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
-   * @return The matrix element squared summed over spins.
-   */
-  double threeBodyMatrixElement(const int imode,  const Energy2 q2,
-				const Energy2 s3, const Energy2 s2, 
-				const Energy2 s1, const Energy  m1, 
-				const Energy  m2, const Energy  m3) const;
-
-protected:
-
-  /**
-   * Helper class for form factors
-   */
-  struct FormFactors {
-
-    /**
-     * @param F1 The \f$F_1\f$ form factor
-     */
-    complex<InvEnergy>  F1;
-    
-    /**
-     * @param F2 The \f$F_2\f$ form factor
-     */
-    complex<InvEnergy>  F2;
-    
-    /**
-     * @param F3 The \f$F_3\f$ form factor
-     */
-    complex<InvEnergy>  F3; 
-    
-    /**
-     * @param F4 The \f$F_4\f$ form factor
-     */
-    complex<InvEnergy>  F4;
-    
-    /**
-     * @param F5 The \f$F_5\f$ form factor
-     */
-    complex<InvEnergy3> F5;
-
-    /**
-     *  Constructor
-     * @param f1 The \f$F_1\f$ form factor
-     * @param f2 The \f$F_2\f$ form factor
-     * @param f3 The \f$F_3\f$ form factor
-     * @param f4 The \f$F_4\f$ form factor
-     * @param f5 The \f$F_5\f$ form factor
-     */    
-    FormFactors(complex<InvEnergy>  f1 = InvEnergy(), 
-		complex<InvEnergy>  f2 = InvEnergy(),
-		complex<InvEnergy>  f3 = InvEnergy(),
-		complex<InvEnergy>  f4 = InvEnergy(),
-		complex<InvEnergy3> f5 = InvEnergy3())
-      : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
-  };
-
-  /**
-   * Calculate the form factor for the current. Implements the form factors
-   * described above.
-   * @param ichan The phase space channel
-   * @param imode The mode
-   * @param q2 The scale \f$q^2\f$ for the current.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   */
-  virtual FormFactors calculateFormFactors(const int ichan,const int imode,
-					   Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3) const;
 
 public:
 
@@ -304,56 +228,60 @@ private:
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$\rho\f$ multiplet
    */
-  Complex Trho1(Energy2 q2,int ires) const;
-
-  /**
-   *  The \f$\rho\f$ lineshape for the vector terms
-   * @param q2 The scale \f$q^2\f$ for the lineshape
-   * @param ires Which \f$\rho\f$ multiplet
-   */
-  Complex Trho2(Energy2 q2,int ires) const;
+  Complex Trho1(Energy2 q2,int ires) const {
+    if(ires>=int(_rho1wgts.size())) return 0.;
+    double norm = std::accumulate(_rho1wgts.begin(),_rho1wgts.end(),0.);
+    unsigned int imin=0,imax=_rho1wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
+    }
+    Complex output(0.);
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_rho1wgts[ix]*
+	Resonance::BreitWignerPWave(q2,_rho1mass[ix],_rho1width[ix],_mpi,_mpi);
+    return output/norm;
+  }
 
   /**
    *  The \f$K^*\f$ lineshape for the axial-vector terms
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$K^*\f$ multiplet
    */
-  Complex TKstar1(Energy2 q2,int ires) const;
+  Complex TKstar1(Energy2 q2,int ires) const {
+    if(ires>=int(_kstar1wgts.size())) return 0.;
+    double norm = std::accumulate(_kstar1wgts.begin(),_kstar1wgts.end(),0.);
+    unsigned int imin=0,imax=_kstar1wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
+    }
+    Complex output(0.);
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_kstar1wgts[ix]*
+	Resonance::BreitWignerPWave(q2,_kstar1mass[ix],_kstar1width[ix],_mK,_mpi);
+    return output/norm;
+  }
 
   /**
    *  The \f$\rho\f$ lineshape for the vector terms
    * @param q2 The scale \f$q^2\f$ for the lineshape
    * @param ires Which \f$K^*\f$ multiplet
    */
-  Complex TKstar2(Energy2 q2,int ires) const;
-
-  /**
-   *  The \f$\rho\f$ Breit-Wigner for the axial-vector terms
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires Which \f$\rho\f$ multiplet
-   */
-  Complex BWrho1(Energy2 q2, unsigned int ires) const;
-
-  /**
-   *  The \f$\rho\f$ Breit-Wigner for the vector terms
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires Which \f$\rho\f$ multiplet
-   */
-  Complex BWrho2(Energy2 q2, unsigned int ires) const;
-
-  /**
-   * The \f$K^*\f$ Breit-Wigner for the axial-vector terms
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires Which \f$K^*\f$ multiplet
-   */
-  Complex BWKstar1(Energy2 q2, unsigned int ires) const;
-
-  /**
-   * The \f$K^*\f$ Breit-Wigner for the vector terms
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires Which \f$K^*\f$ multiplet
-   */
-  Complex BWKstar2(Energy2 q2, unsigned int ires) const;
+  Complex TKstar2(Energy2 q2,int ires) const {
+    if(ires>=int(_kstar2wgts.size())) return 0.;
+    double norm = std::accumulate(_kstar2wgts.begin(),_kstar2wgts.end(),0.);
+    unsigned int imin=0,imax=_kstar2wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
+    }
+    Complex output(0.);
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_kstar2wgts[ix]*
+	Resonance::BreitWignerPWave(q2,_kstar2mass[ix],_kstar2width[ix],_mK,_mpi);
+    return output/norm;
+  }
 
   /**
    *  The \f$K_1\f$ line shape
@@ -362,37 +290,6 @@ private:
    * @param ires the resonance
    */
   Complex TK1(Energy2 q2,unsigned int iopt,int ires) const;
-
-  /**
-   * The \f$K_1\f$ Breit-Wigner
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires the resonance
-   * @return The Breit-Wigner
-   */
-  Complex K1BreitWigner(Energy2 q2,unsigned int ires) const;
-
-  /**
-   *  The \f$T_\omega\f$ function
-   * @param q2 The scale
-   * @param ires the resonance
-   */
-  Complex Tomega(Energy2 q2, int ires) const;
-
-  /**
-   *  The \f$\omega\f$ and \f$\phi\f$ Breit-Wigner
-   * @param q2 The scale
-   * @param ires the resonance
-   */
-  Complex OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const;
-
-  /**
-   * The \f$\omega-\phi\f$ \f$K^*\f$ form-factor for the \f$F_5\f$ form-factor
-   * @param s1 The scale \f$s_1\f$.
-   * @param s2 The scale \f$s_2\f$.
-   * @param ires Which resonances to use
-   * @return The mixed Breit-Wigner
-   */
-  Complex TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const;
 
 private:
 
@@ -414,26 +311,6 @@ private:
    *  Widths
    */
   vector<Energy> _rho1width;
-  //@}
-
-  /**
-   *  Parameters for the \f$\rho\f$ in the vector terms
-   */
-  //@{
-  /**
-   *  Weight for the different resonances
-   */
-  vector<double> _rho2wgts;
-
-  /**
-   *  Masses
-   */
-  vector<Energy> _rho2mass;
-
-  /**
-   *  Widths
-   */
-  vector<Energy> _rho2width;
   //@}
 
   /**
@@ -501,41 +378,6 @@ private:
    */
   vector<double> _k1wgtb;
   //@}
-
-  /**
-   *  Parameters for the \f$T_\omega\f$ function
-   */
-  //@{
-  /**
-   *  Mixing parameter
-   */
-  double _epsomega;
-
-  /**
-   *  Mass of the \f$\omega\f$
-   */
-  Energy _omegamass;
-
-  /**
-   *  Width of the \f$\omega\f$
-   */
-  Energy _omegawidth;
-
-  /**
-   *  Mass of the \f$\phi\f$
-   */
-  Energy _phimass;
-
-  /**
-   *  Width of the \f$\phi\f$
-   */
-  Energy _phiwidth;
-  //@}
-
-  /**
-   * The relative weight of the \f$\omega-\phi\f$ and \f$K^*\f$ where needed.
-   */
-  double _omegaKstarwgt;
 
   /**
    * The pion decay constant, \f$f_\pi\f$.

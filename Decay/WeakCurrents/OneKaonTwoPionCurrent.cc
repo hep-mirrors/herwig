@@ -48,10 +48,6 @@ OneKaonTwoPionCurrent::OneKaonTwoPionCurrent() {
   _rho1wgts  = {1.0,-0.145,0.};
   _rho1mass  = {0.773*GeV,1.370*GeV,1.750*GeV};
   _rho1width = {0.145*GeV,0.510*GeV,0.120*GeV};
-  // rho parameters for vector pieces
-  _rho2wgts  = { 1.0  ,-0.25 ,-0.038};
-  _rho2mass  = {0.773*GeV,1.500*GeV,1.750*GeV};
-  _rho2width = {0.145*GeV,0.220*GeV,0.120*GeV};
   // K* parameters for the axial-vector pieces
   _kstar1wgts  = {1.0,-0.135,0.};
   _kstar1mass  = {0.892*GeV,1.412*GeV,1.714*GeV};
@@ -65,13 +61,6 @@ OneKaonTwoPionCurrent::OneKaonTwoPionCurrent() {
   _k1width = {0.090*GeV,0.174*GeV};
   _k1wgta = {0.33,1.};
   _k1wgtb = {1.00,0.};
-  // parameters for the T_omega function
-  _epsomega   = 0.05;
-  _omegamass  = 0.782*GeV;
-  _omegawidth = 0.00843*GeV;
-  _phimass    = 1.020*GeV;
-  _phiwidth   = 0.00443*GeV;
-  _omegaKstarwgt=1./sqrt(2.);
   // the pion decay constant
   _fpi = 130.7*MeV/sqrt(2.);
   _mpi = ZERO;
@@ -81,23 +70,17 @@ OneKaonTwoPionCurrent::OneKaonTwoPionCurrent() {
 
 void OneKaonTwoPionCurrent::persistentOutput(PersistentOStream & os) const {
   os << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
-     << _rho2wgts << ounit(_rho2mass,GeV) << ounit(_rho2width,GeV)
      << _kstar1wgts << ounit(_kstar1mass,GeV) << ounit(_kstar1width,GeV) 
      << _kstar2wgts << ounit(_kstar2mass,GeV) << ounit(_kstar2width,GeV) 
      << ounit(_k1mass,GeV) << ounit(_k1width,GeV) << _k1wgta << _k1wgtb 
-     << _epsomega << ounit(_omegamass,GeV) << ounit(_omegawidth,GeV) 
-     << ounit(_phimass,GeV) << ounit(_phiwidth,GeV) << _omegaKstarwgt 
      << ounit(_fpi,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV);
 }
 
 void OneKaonTwoPionCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
-     >> _rho2wgts >> iunit(_rho2mass,GeV) >> iunit(_rho2width,GeV) 
+  is >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV)
      >> _kstar1wgts >> iunit(_kstar1mass,GeV) >> iunit(_kstar1width,GeV) 
      >> _kstar2wgts >> iunit(_kstar2mass,GeV) >> iunit(_kstar2width,GeV) 
      >> iunit(_k1mass,GeV) >> iunit(_k1width,GeV) >> _k1wgta >> _k1wgtb 
-     >> _epsomega >> iunit(_omegamass,GeV) >> iunit(_omegawidth,GeV) 
-     >> iunit(_phimass,GeV) >> iunit(_phiwidth,GeV) >> _omegaKstarwgt 
      >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV);
 }
 
@@ -135,18 +118,6 @@ void OneKaonTwoPionCurrent::Init() {
      &OneKaonTwoPionCurrent::_rho1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
-  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceRhoVectorMasses
-    ("RhoVectorMasses",
-     "The masses for the rho resonances if used local values",
-     &OneKaonTwoPionCurrent::_rho2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
-     false, false, true);
-  
-  static ParVector<OneKaonTwoPionCurrent,Energy> interfaceRhoVectorWidths
-    ("RhoVectorWidths",
-     "The widths for the rho resonances if used local values",
-     &OneKaonTwoPionCurrent::_rho2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
-     false, false, true);
-  
   static ParVector<OneKaonTwoPionCurrent,Energy> interfaceKstarAxialMasses
     ("KstarAxialMasses",
      "The masses for the Kstar resonances if used local values",
@@ -182,12 +153,6 @@ void OneKaonTwoPionCurrent::Init() {
      "The weights of the different Kstar resonances in the F1,2,3 form factor",
      &OneKaonTwoPionCurrent::_kstar1wgts,
      0, 0, 0, -1000, 1000, false, false, true);
-
-  static ParVector<OneKaonTwoPionCurrent,double> interfaceVectorRhoWeight
-    ("VectorRhoWeight",
-     "The weights of the different rho resonances in the F1,2,3 form factor",
-     &OneKaonTwoPionCurrent::_rho2wgts,
-     0, 0, 0, -1000, 1000, false, false, true);
   
   static ParVector<OneKaonTwoPionCurrent,double> interfaceVectorKStarWeight
     ("VectorKStarWeight",
@@ -218,42 +183,6 @@ void OneKaonTwoPionCurrent::Init() {
      "The relative weights for the K_1 resonances in the rho K final-state",
      &OneKaonTwoPionCurrent::_k1wgtb, -1, 1.0, 0, 10.0,
      false, false, Interface::limited);
-
-  static Parameter<OneKaonTwoPionCurrent,double> interfaceEpsOmega
-    ("EpsOmega",
-     "The omega-phi mixing ",
-     &OneKaonTwoPionCurrent::_epsomega, 0.05, 0.0, 1.0,
-     false, false, Interface::limited);
-
-  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceOmegaMass
-    ("OmegaMass",
-     "The mass of the omega meson",
-     &OneKaonTwoPionCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<OneKaonTwoPionCurrent,Energy> interfaceOmegaWidth
-    ("OmegaWidth",
-     "The width of the omega meson",
-     &OneKaonTwoPionCurrent::_omegawidth, GeV, 0.00843*GeV, ZERO, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<OneKaonTwoPionCurrent,Energy> interfacePhiMass
-    ("PhiMass",
-     "The mass of the phi meson",
-     &OneKaonTwoPionCurrent::_phimass, GeV, 1.020*GeV, ZERO, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<OneKaonTwoPionCurrent,Energy> interfacePhiWidth
-    ("PhiWidth",
-     "The width of the phi meson",
-     &OneKaonTwoPionCurrent::_phiwidth, GeV, 0.00443*GeV, ZERO, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<OneKaonTwoPionCurrent,double> interfaceOmegaKStarWeight
-    ("OmegaKStarWeight",
-     "The relative weight of the omega-phi and K* terms",
-     &OneKaonTwoPionCurrent::_omegaKstarwgt, 1./sqrt(2.), 0.0, 100.0,
-     false, false, Interface::limited);
 }
 
 // complete the construction of the decay mode for integration
@@ -262,7 +191,25 @@ bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
 				       unsigned int imode,PhaseSpaceModePtr mode,
 				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
-  if(abs(icharge)!=3) return false;
+  // check the charge
+  if(abs(icharge)!=3) return false; 
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal!=IsoSpin::IHalf) return false;
+  }
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Half:
+      if(icharge ==-3) return false;
+      break;
+    case IsoSpin::I3MinusHalf:
+      if(icharge == 3) return false;
+    default:
+      return false;
+    }
+  }
+  // get the external particles and check the mass
   int iq(0),ia(0);
   tPDVector extpart(particles(1,imode,iq,ia));
   Energy min(ZERO);
@@ -297,15 +244,15 @@ bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
   if(imode==0) {  
     // channels for pi0 pi0 K-
     for(unsigned int ix=0;ix<3;++ix) {
-      if(!Kstarc[ix]) continue;
       for(unsigned int ik=0;ik<2;++ik) {
+	if(resonance && resonance != k1[ik]) continue;
 	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstarc[ix],ires+1,iloc+1,
 			  ires+2,iloc+2,ires+2,iloc+3));
 	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstarc[ix],ires+1,iloc+2,
 			  ires+2,iloc+1,ires+2,iloc+3));
       }
       for(unsigned int iy=0;iy<3;++iy) {
-	if(!Kstarc[iy]) continue;
+	if(resonance && resonance !=Kstarc[ix]) continue;
 	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstarc[iy],ires+1,iloc+1,
 			  ires+2,iloc+2,ires+2,iloc+3));
 	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstarc[iy],ires+1,iloc+2,
@@ -317,23 +264,18 @@ bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
     // channels for K- pi- pi+
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int ik=0;ik<2;++ik) {
-	if(rho0[ix])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,rho0[ix],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	if(Kstar0[ix])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstar0[ix],ires+1,iloc+2,
-			    ires+2,iloc+1,ires+2,iloc+3));
+	if(resonance && resonance != k1[ik]) continue;
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,rho0[ix],ires+1,iloc+1,
+			  ires+2,iloc+2,ires+2,iloc+3));
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstar0[ix],ires+1,iloc+2,
+			  ires+2,iloc+1,ires+2,iloc+3));
       }
       for(unsigned int iy=0;iy<3;++iy) {
-	if(!Kstarc[ix]) continue;
-	if(rho0[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,rho0[ix],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	}
-	if(Kstar0[iy]) {
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstar0[ix],ires+1,iloc+2,
-			    ires+2,iloc+1,ires+2,iloc+3));
-	}
+	if(resonance && resonance !=Kstarc[ix]) continue;
+	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,rho0[ix],ires+1,iloc+1,
+			  ires+2,iloc+2,ires+2,iloc+3));
+	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstar0[ix],ires+1,iloc+2,
+			  ires+2,iloc+1,ires+2,iloc+3));
       }
     }
   }
@@ -341,27 +283,22 @@ bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
     // channels for pi- kbar0 pi0
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int ik=0;ik<2;++ik) {
-	if(rhoc[ix])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,rhoc[ix],ires+1,iloc+2,
-			    ires+2,iloc+1,ires+2,iloc+3));
-	if(Kstar0[ix])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstar0[ix],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	if(Kstarc[ix])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstarc[ix],ires+1,iloc+3,
-			    ires+2,iloc+1,ires+2,iloc+2));
+	if(resonance && resonance != k1[ik]) continue;
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,rhoc[ix],ires+1,iloc+2,
+			  ires+2,iloc+1,ires+2,iloc+3));
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstar0[ix],ires+1,iloc+1,
+			  ires+2,iloc+2,ires+2,iloc+3));
+	mode->addChannel((PhaseSpaceChannel(phase),ires,k1[ik],ires+1,Kstarc[ix],ires+1,iloc+3,
+			  ires+2,iloc+1,ires+2,iloc+2));
       }
       for(unsigned int iy=0;iy<3;++iy) {
-	if(!Kstarc[ix]) continue;
-	if(Kstar0[iy])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstar0[iy],ires+1,iloc+1,
-			    ires+2,iloc+2,ires+2,iloc+3));
-	if(rhoc[iy])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,  rhoc[iy],ires+1,iloc+2,
-			    ires+2,iloc+1,ires+2,iloc+3));
-	if(Kstarc[iy])
-	  mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstarc[iy],ires+1,iloc+3,
-			    ires+2,iloc+1,ires+2,iloc+2));
+	if(resonance && resonance !=Kstarc[ix]) continue;
+	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstar0[iy],ires+1,iloc+1,
+			  ires+2,iloc+2,ires+2,iloc+3));
+	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,  rhoc[iy],ires+1,iloc+2,
+			  ires+2,iloc+1,ires+2,iloc+3));
+	mode->addChannel((PhaseSpaceChannel(phase),ires,Kstarc[ix],ires+1,Kstarc[iy],ires+1,iloc+3,
+			  ires+2,iloc+1,ires+2,iloc+2));
       }
     }
   }
@@ -405,16 +342,6 @@ void OneKaonTwoPionCurrent::dataBaseOutput(ofstream & os,
 	 << " " << _kstar1wgts[ix] << "\n";
     }
   }
-  for(unsigned int ix=0;ix<_rho2wgts.size();++ix) {
-    if(ix<3) {
-      os << "newdef " << name() << ":VectorRhoWeight " << ix 
-	 << " " << _rho2wgts[ix] << "\n";
-    }
-    else {
-      os << "insert " << name() << ":VectorRhoWeight " << ix 
-	 << " " << _rho2wgts[ix] << "\n";
-    }
-  }
   for(unsigned int ix=0;ix<_kstar2wgts.size();++ix) {
     if(ix<3) {
       os << "newdef " << name() << ":VectorKStarWeight " << ix 
@@ -424,12 +351,6 @@ void OneKaonTwoPionCurrent::dataBaseOutput(ofstream & os,
 	 << " " << _kstar2wgts[ix] << "\n";
     }
   }
-  os << "newdef " << name() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
-  os << "newdef " << name() << ":EpsOmega " << _epsomega << "\n";
-  os << "newdef " << name() << ":OmegaWidth " << _omegawidth/GeV << "\n";
-  os << "newdef " << name() << ":OmegaMass " << _omegamass/GeV << "\n";
-  os << "newdef " << name() << ":PhiWidth " << _phiwidth/GeV << "\n";
-  os << "newdef " << name() << ":PhiMass " << _phimass/GeV << "\n";
   os << "newdef " << name() << ":FPi " << _fpi/MeV << "\n";
   for(unsigned int ix=0;ix<_k1mass.size();++ix) {
     if(ix<2) {
@@ -462,18 +383,6 @@ void OneKaonTwoPionCurrent::dataBaseOutput(ofstream & os,
 		    << " " << _rho1width[ix]/GeV << "\n";
     else     os << "insert " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
-  }
-  for(unsigned int ix=0;ix<_rho2mass.size();++ix) {
-    if(ix<3) os << "newdef " << name() << ":RhoVectorMasses " << ix 
-		<< " " << _rho2mass[ix]/GeV << "\n";
-    else     os << "insert " << name() << ": RhoVectorMasses" << ix 
-		<< " " << _rho2mass[ix]/GeV << "\n";
-  }
-  for(unsigned int ix=0;ix<_rho2width.size();++ix) {
-    if(ix<3) os << "newdef " << name() << ":RhoVectorWidths " << ix 
-		    << " " << _rho2width[ix]/GeV << "\n";
-    else     os << "insert " << name() << ":RhoVectorWidths " << ix 
-		    << " " << _rho2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1mass.size();++ix) {
     if(ix<3) os << "newdef " << name() << ":KstarAxialMasses " << ix 
@@ -522,20 +431,107 @@ void OneKaonTwoPionCurrent::doinit() {
   _mpi = getParticleData(ParticleID::piplus)->mass();
   _mK  = getParticleData(ParticleID::K0    )->mass();
 }
+  
+Complex OneKaonTwoPionCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const {
+  double denom(0);
+  Complex num(0.);
+  if(iopt==0) {
+    if(ires>=int(_k1wgta.size())) return 0.;
+    denom = std::accumulate(_k1wgta.begin(),_k1wgta.end(),0.0);
+    unsigned int imin=0,imax=_k1wgta.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
+    }
+    for(unsigned int ix=imin;ix<imax;++ix)
+      num+=_k1wgta[ix]*Resonance::BreitWignerFW_GN(q2,_k1mass[ix],_k1width[ix]);
+  }
+  else if(iopt==1) {
+    if(ires>=int(_k1wgtb.size())) return 0.;
+    denom = std::accumulate(_k1wgtb.begin(),_k1wgtb.end(),0.0);
+    unsigned int imin=0,imax=_k1wgtb.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
+    }
+    for(unsigned int ix=imin;ix<imax;++ix)
+      num+=_k1wgtb[ix]*Resonance::BreitWignerFW_GN(q2,_k1mass[ix],_k1width[ix]);
+  }
+  else assert(false);
+  return num/denom;
+}
 
-OneKaonTwoPionCurrent::FormFactors
-OneKaonTwoPionCurrent::calculateFormFactors(const int ichan,const int imode,
-						 Energy2 q2,Energy2 s1,
-						 Energy2 s2,Energy2 s3) const {
+// the hadronic currents    
+vector<LorentzPolarizationVectorE> 
+OneKaonTwoPionCurrent::current(tcPDPtr resonance,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      const int imode, const int ichan, Energy & scale, 
+			      const tPDVector & outgoing,
+			      const vector<Lorentz5Momentum> & momenta,
+			      DecayIntegrator::MEOption) const {
+  // check the isospin
+  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IHalf)
+    return vector<LorentzPolarizationVectorE>();
+  int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge()+outgoing[2]->iCharge();
+  // check I_3
+  if(i3!=IsoSpin::I3Unknown) {
+    switch(i3) {
+    case IsoSpin::I3Half:
+      if(icharge ==-3) return vector<LorentzPolarizationVectorE>();
+      break;
+    case IsoSpin::I3MinusHalf:
+      if(icharge ==3) return vector<LorentzPolarizationVectorE>();
+    default:
+      return vector<LorentzPolarizationVectorE>();
+    }
+  }
   useMe();
-  Complex F1, F2, F5;
+  // check the resonance
+  int ires1=-1;
+  if(resonance) {
+    switch(abs(resonance->id())/1000) {
+    case 0:
+      ires1=0; break;
+    case 100:
+      ires1=1; break;
+    case  30:
+      ires1=2; break;
+    case  10:
+      ires1=3; break;
+    case  20:
+      ires1=4; break;
+    default:
+      assert(false);
+    }
+  }
+  // calculate q2,s1,s2,s3
+  Lorentz5Momentum q;
+  for(unsigned int ix=0;ix<momenta.size();++ix)
+    q+=momenta[ix];
+  q.rescaleMass();
+  scale=q.mass();
+  Energy2 q2=q.mass2();
+  Energy2 s1 = (momenta[1]+momenta[2]).m2();
+  Energy2 s2 = (momenta[0]+momenta[2]).m2();
+  Energy2 s3 = (momenta[0]+momenta[1]).m2();
+  Complex F1(0.), F2(0.), F5(0.);
   // calculate the pi0 pi0 K-
   if(imode==0) {
     if(ichan<0) {
-      Complex K1fact(TK1(q2,0,-1)/6.);
+      Complex K1fact;
+      if(ires1<0)
+	K1fact = TK1(q2,0,-1);
+      else if(ires1<3)
+	K1fact = 0.;
+      else
+	K1fact = TK1(q2,0,ires1-3);
+      K1fact /= 6.;
       F1 = K1fact*TKstar1(s1,-1);
       F2 =-K1fact*TKstar1(s2,-1);
-      F5 =-0.25*TKstar2(q2,-1)*(TKstar1(s1,-1)-TKstar1(s2,-1));
+      if(ires1<0||ires1>2)
+	F5 =-0.25*TKstar2(q2,   -1)*(TKstar1(s1,-1)-TKstar1(s2,-1));
+      else
+	F5 =-0.25*TKstar2(q2,ires1)*(TKstar1(s1,-1)-TKstar1(s2,-1));
     }
     else if(ichan%10==0) F1=  TK1(q2,0,0)/6.*TKstar1(s1,ichan/10);
     else if(ichan%10==1) F2= -TK1(q2,0,0)/6.*TKstar1(s2,ichan/10);
@@ -548,9 +544,24 @@ OneKaonTwoPionCurrent::calculateFormFactors(const int ichan,const int imode,
   else if(imode==1) {
     double fact=sqrt(2.)/3.;
     if(ichan<0) {
-      F1 = -fact*TK1(q2,1,-1)*Trho1(s1,-1);
-      F2 =  fact*TK1(q2,0,-1)*TKstar1(s2,-1);
-      F5 = -sqrt(0.5)*TKstar2(q2,-1)*(Trho1(s1,-1)+TKstar1(s2,-1));
+      Complex K1facta(0.),K1factb(0.);
+      if(ires1<0) {
+	K1facta = TK1(q2,0,-1);
+	K1factb = TK1(q2,1,-1);
+      }
+      else if(ires1<3) {
+	K1facta = 0.;
+      }
+      else {
+	K1facta = TK1(q2,0,ires1-3);
+	K1factb = TK1(q2,1,ires1-3);
+      }
+      F1 = -fact*K1factb*Trho1(s1,-1);
+      F2 =  fact*K1facta*TKstar1(s2,-1);
+      if(ires1<0||ires1>2)
+	F5 = -sqrt(0.5)*TKstar2(q2,-1)*(Trho1(s1,-1)+TKstar1(s2,-1));
+      else
+	F5 = -sqrt(0.5)*TKstar2(q2,ires1)*(Trho1(s1,-1)+TKstar1(s2,-1));
     }
     else if(ichan%10==0) F1 = -fact*TK1(q2,1,0)*Trho1  (s1,ichan/10);
     else if(ichan%10==1) F2 =  fact*TK1(q2,0,0)*TKstar1(s2,ichan/10);
@@ -562,10 +573,24 @@ OneKaonTwoPionCurrent::calculateFormFactors(const int ichan,const int imode,
   // calculate the pi- K0bar pi0
   else if(imode==2) {
     if(ichan<0) {
-      Complex K1facta(TK1(q2,0,-1)),K1factb(TK1(q2,1,-1));
+      Complex K1facta(0.),K1factb(0.);
+      if(ires1<0) {
+	K1facta = TK1(q2,0,-1);
+	K1factb = TK1(q2,1,-1);
+      }
+      else if(ires1<3) {
+	K1facta = 0.;
+      }
+      else {
+	K1facta = TK1(q2,0,ires1-3);
+	K1factb = TK1(q2,1,ires1-3);
+      }
       F1 = K1facta*(TKstar1(s1,-1)-TKstar1(s3,-1))/3.;
       F2 =-(2.*K1factb*Trho1(s2,-1)+K1facta*TKstar1(s3,-1))/3.;
-      F5 = -0.5*TKstar2(q2,-1)*(2.*Trho1(s2,-1)+TKstar1(s1,-1)+TKstar1(s3,-1));
+      if(ires1<0||ires1>2)
+	F5 = -0.5*TKstar2(q2,-1)*(2.*Trho1(s2,-1)+TKstar1(s1,-1)+TKstar1(s3,-1));
+      else
+	F5 = -0.5*TKstar2(q2,ires1)*(2.*Trho1(s2,-1)+TKstar1(s1,-1)+TKstar1(s3,-1));
     }
     else if(ichan%15==0) F2 =-2.*TK1(q2,0,0)*Trho1  (s2,ichan/15)/3.;
     else if(ichan%15==1) F1 =    TK1(q2,1,0)*TKstar1(s1,ichan/15)/3.;
@@ -583,244 +608,17 @@ OneKaonTwoPionCurrent::calculateFormFactors(const int ichan,const int imode,
     else if(ichan%15<12) F5 = -    TKstar2(q2,ichan/15)*Trho1  (s2,(ichan- 9)%15);
     else                 F5 = -0.5*TKstar2(q2,ichan/15)*TKstar1(s3,(ichan-12)%15);
   }
-  return FormFactors(F1 / _fpi,
-		     F2 / _fpi,
-		     InvEnergy(),
-		     InvEnergy(),
-		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
-}
-
-double OneKaonTwoPionCurrent::
-threeBodyMatrixElement(const int       , const Energy2 q2,
-		       const Energy2 s3, const Energy2 s2, 
-		       const Energy2 s1, const Energy    , 
-		       const Energy    , const Energy    ) const {
-  Energy2 mpi2(sqr(_mpi));
-  Complex propb(Trho1(s1,-1)),propa(Trho1(s2,-1)); 
-  // the matrix element
-  Energy2 output(ZERO); 
-  // first resonance
-  output+= ((s1-4.*mpi2)+0.25*(s3-s2)*(s3-s2)/q2)*real(propb*conj(propb)); 
-  // second resonance
-  output+= ((s2-4.*mpi2)+0.25*(s3-s1)*(s3-s1)/q2)*real(propa*conj(propa)); 
-  // the interference term 
-  output+= (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
-							     propb*conj(propa)); 
-  return output / sqr(_rho1mass[0]);
-}
-
-Complex OneKaonTwoPionCurrent::Trho1(Energy2 q2,int ires) const {
-  Complex output(0.);
-  double norm(0.);
-  for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) norm+=_rho1wgts[ix];
-  if(ires<0) {
-    for(unsigned int ix=0,N=_rho1wgts.size();ix<N;++ix) {
-      output+=_rho1wgts[ix]*BWrho1(q2,ix);
-    }
-  }
-  else {
-    unsigned int temp(ires);
-    if(temp<_rho1wgts.size()) output=_rho1wgts[temp]*BWrho1(q2,temp);
-  }
-  return output/norm;
-}
-  
-Complex OneKaonTwoPionCurrent::Trho2(Energy2 q2,int ires) const {
-  Complex output(0.);
-  double norm(0.);
-  for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) norm+=_rho2wgts[ix];
-  if(ires<0) {
-    for(unsigned int ix=0,N=_rho2wgts.size();ix<N;++ix) {
-      output+=_rho2wgts[ix]*BWrho2(q2,ix);
-    }
-  }
-  else {
-    unsigned int temp(ires);
-    if(temp<_rho2wgts.size()) output=_rho2wgts[temp]*BWrho2(q2,temp);
-  }
-  return output/norm;
-}
-  
-Complex OneKaonTwoPionCurrent::TKstar1(Energy2 q2,int ires) const  {
-  Complex output(0.);
-  double norm(0.);
-  for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) norm+=_kstar1wgts[ix];
-  if(ires<0) {
-    for(unsigned int ix=0,N=_kstar1wgts.size();ix<N;++ix) {
-      output+=_kstar1wgts[ix]*BWKstar1(q2,ix);
-    }
-  }
-  else {
-    unsigned int temp(ires);
-    if(temp<_kstar1wgts.size()) output=_kstar1wgts[temp]*BWKstar1(q2,temp);
-  }
-  return output/norm;
-}
-  
-Complex OneKaonTwoPionCurrent::TKstar2(Energy2 q2,int ires) const {
-  Complex output(0.);
-  double norm(0.);
-  for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) norm+=_kstar2wgts[ix];
-  if(ires<0) {
-    for(unsigned int ix=0,N=_kstar2wgts.size();ix<N;++ix) {
-      output+=_kstar2wgts[ix]*BWKstar2(q2,ix);
-    }
-  }
-  else {
-    unsigned int temp(ires);
-    if(temp<_kstar2wgts.size()) output=_kstar2wgts[temp]*BWKstar2(q2,temp);
-  }
-  return output/norm;
-}
-
-Complex OneKaonTwoPionCurrent::BWrho1(Energy2 q2, unsigned int ires) const {
-  if(ires>=_rho1mass.size()) return 0.;
-  Energy mass  = _rho1mass [ires];
-  Energy width = _rho1width[ires];
-  Energy q=sqrt(q2);
-  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
-  Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
-  double ratio = Math::powi(pcm/pcm0, 3);
-  Energy gam(width*mass*ratio/q);
-  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
-} 
-
-Complex OneKaonTwoPionCurrent::BWrho2(Energy2 q2, unsigned int ires) const {
-  if(ires>=_rho2mass.size()) return 0.;
-  Energy mass  = _rho2mass [ires];
-  Energy width = _rho2width[ires];
-  Energy q=sqrt(q2);
-  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
-  Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
-  double ratio(pcm/pcm0);ratio*=ratio*ratio;
-  Energy gam(width*mass*ratio/q);
-  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
-}
-  
-Complex OneKaonTwoPionCurrent::BWKstar1(Energy2 q2, unsigned int ires) const {
-  if(ires>=_kstar1mass.size()) return 0.;
-  Energy mass  = _kstar1mass [ires];
-  Energy width = _kstar1width[ires];
-  Energy q=sqrt(q2);
-  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
-  Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
-  double ratio(pcm/pcm0);ratio*=ratio*ratio;
-  Energy gam(width*mass*ratio/q);
-  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
-}
-
-Complex OneKaonTwoPionCurrent::BWKstar2(Energy2 q2, unsigned int ires) const  {
-  if(ires>=_kstar2mass.size()) return 0.;
-  Energy mass  = _kstar2mass [ires];
-  Energy width = _kstar2width[ires];
-  Energy q=sqrt(q2);
-  Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
-  Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
-  double ratio(pcm/pcm0);ratio*=ratio*ratio;
-  Energy gam(width*mass*ratio/q);
-  return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
-}
-  
-Complex OneKaonTwoPionCurrent::TK1(Energy2 q2,unsigned int iopt,int ires) const {
-  Complex denom(0),num(0.);
-  if(iopt==0) {
-    for(unsigned int ix=0;ix<_k1wgta.size();++ix) denom+=_k1wgta[ix];
-    if(ires==-1) {
-      for(unsigned int ix=0;ix<_k1wgta.size();++ix) 
-	num+=_k1wgta[ix]*K1BreitWigner(q2,ix);
-    }
-    else {	
-      num+=_k1wgta[ires]*K1BreitWigner(q2,ires);
-    }
-  }
-  else if(iopt==1) {
-    for(unsigned int ix=0;ix<_k1wgtb.size();++ix) denom+=_k1wgtb[ix];
-    if(ires==-1) {
-      for(unsigned int ix=0;ix<_k1wgtb.size();++ix) 
-	num+=_k1wgtb[ix]*K1BreitWigner(q2,ix);
-    }
-    else {	
-      num+=_k1wgtb[ires]*K1BreitWigner(q2,ires);
-    }
-  }
-  else {
-    return 0.;
-  }
-  return num/denom;
-}
-
-Complex OneKaonTwoPionCurrent::K1BreitWigner(Energy2 q2,unsigned int ires) const {
-  if(ires>=_k1mass.size()) return 0.;
-  Energy2 m2=sqr(_k1mass[ires]),mg=_k1mass[ires]*_k1width[ires];
-  return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
-}
-    
-Complex OneKaonTwoPionCurrent::Tomega(Energy2 q2, int ires) const {
-  double denom=(1.+_epsomega);
-  Complex num(0.);
-  if(ires<0) num=OmegaPhiBreitWigner(q2,0)+_epsomega*OmegaPhiBreitWigner(q2,1);
-  else if(ires==0) num=OmegaPhiBreitWigner(q2,0);
-  else             num=OmegaPhiBreitWigner(q2,1);
-  return num/denom;
-}
-
-Complex OneKaonTwoPionCurrent::OmegaPhiBreitWigner(Energy2 q2, unsigned int ires) const {
-  Energy2 m2,mg;
-  if(ires==0) {
-    m2=sqr(_omegamass);
-    mg=_omegamass*_omegawidth;
-  }
-  else {
-    m2=sqr(_phimass);
-    mg=_phimass*_phiwidth;
-  }
-  return (-m2+Complex(0.,1.)*mg)/(q2-m2+Complex(0.,1.)*mg);
-}
-
-Complex OneKaonTwoPionCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const {
-  Complex output;
-  if(ires<0)         output = _omegaKstarwgt*TKstar1(s1,-1)+Tomega(s2,-1);
-  else if(ires%2==0) output = _omegaKstarwgt*TKstar1(s1,ires/2);
-  else if(ires%2==1) output = Tomega(s2,ires/2);
-  return output/(1.+_omegaKstarwgt);
-}
-
-
-// the hadronic currents    
-vector<LorentzPolarizationVectorE> 
-OneKaonTwoPionCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-			      const int imode, const int ichan, Energy & scale, 
-			      const tPDVector & ,
-			      const vector<Lorentz5Momentum> & momenta,
-			      DecayIntegrator::MEOption) const {
-  // calculate q2,s1,s2,s3
-  Lorentz5Momentum q;
-  for(unsigned int ix=0;ix<momenta.size();++ix)
-    q+=momenta[ix];
-  q.rescaleMass();
-  scale=q.mass();
-  Energy2 q2=q.mass2();
-  Energy2 s1 = (momenta[1]+momenta[2]).m2();
-  Energy2 s2 = (momenta[0]+momenta[2]).m2();
-  Energy2 s3 = (momenta[0]+momenta[1]).m2();
-  FormFactors F = calculateFormFactors(ichan,imode,q2,s1,s2,s3);
-  //if(inpart.id()==ParticleID::tauplus){F.F5=conj(F.F5);}
   // the first three form-factors
-  LorentzPolarizationVector vect;
-  vect = (F.F2-F.F1)*momenta[2]
-        +(F.F1-F.F3)*momenta[1]
-        +(F.F3-F.F2)*momenta[0];
+  LorentzPolarizationVectorE vect = (F2-F1)*momenta[2] + F1*momenta[1] - F2*momenta[0];
   // multiply by the transverse projection operator
-  complex<InvEnergy> dot=(vect*q)/q2;
+  Complex dot=(vect*q)/q2;
   // scalar and parity violating terms
-  vect += (F.F4-dot)*q;
-  if(F.F5!=complex<InvEnergy3>()) 
-    vect += Complex(0.,1.)*F.F5*Helicity::epsilon(momenta[0],
-						  momenta[1],
-						  momenta[2]);
+  vect -= dot*q;
+  if(F5!=0.) 
+    vect -= Complex(0.,1.)*F5/ sqr(Constants::twopi) / sqr(_fpi)*
+      Helicity::epsilon(momenta[0],momenta[1],momenta[2]);
   // factor to get dimensions correct
-  return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
+  return vector<LorentzPolarizationVectorE>(1,q.mass()/_fpi*vect);
 }
 
 bool OneKaonTwoPionCurrent::accept(vector<int> id) {
