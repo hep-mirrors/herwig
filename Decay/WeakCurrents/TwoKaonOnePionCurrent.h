@@ -29,15 +29,13 @@ using namespace ThePEG;
  *  This is the base class for the three meson decays of the weak current.
  *  It is designed so that the currents for the following modes can be implemented
  *  in classes inheriting from this
- * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
- * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
- * - \f$    K^-   \pi^-    K^+ \f$, (imode=2)
- * - \f$    K^0   \pi^-    \bar{K}^0\f$, (imode=3)
- * - \f$    K^-   \pi^0    K^0 \f$, (imode=4)
- * - \f$    \pi^0  \pi^0    K^- \f$, (imode=5)
- * - \f$    K^-   \pi^-    \pi^+ \f$, (imode=6)
- * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
- * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
+ * - \f$    K^-   \pi^-    K^+ \f$, (imode=0)
+ * - \f$    K^0   \pi^-    \bar{K}^0\f$, (imode=1)
+ * - \f$    K^-   \pi^0    K^0 \f$, (imode=2)
+ * - \f$    \pi^0  \pi^0    K^- \f$, (imode=3)
+ * - \f$    K^-   \pi^-    \pi^+ \f$, (imode=4)
+ * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=5)
+ * - \f$    \pi^-  \pi^0    \eta \f$, (imode=6)
  *
  * obviously there are other modes with three pseudoscalar mesons for the decay
  * of the weak current but this model original came from \f$\tau\f$ decay where
@@ -223,12 +221,6 @@ protected:
 		complex<InvEnergy3> f5 = InvEnergy3())
       : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
   };
-  
-  /**
-   * Can the current handle a particular set of mesons. 
-   * As this current includes all the allowed modes this is always true.
-   */
-  virtual bool acceptMode(int) const;
 
   /**
    * Calculate the form factor for the current. Implements the form factors
@@ -382,22 +374,6 @@ private:
   Complex a1BreitWigner(Energy2 q2) const;
 
   /**
-   *  The \f$K_1\f$ line shape
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param iopt Whether this is \f$K^*\pi\f$ or \f$\rho K\f$.
-   * @param ires the resonance
-   */
-  Complex TK1(Energy2 q2,unsigned int iopt,int ires) const;
-
-  /**
-   * The \f$K_1\f$ Breit-Wigner
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
-   * @param ires the resonance
-   * @return The Breit-Wigner
-   */
-  Complex K1BreitWigner(Energy2 q2,unsigned int ires) const;
-
-  /**
    * The \f$a_1\f$ running width
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The \f$a_1\f$ running width.
@@ -535,26 +511,6 @@ private:
   Energy _a1width;
 
   /**
-   *  The masses of the \f$aK1\f$ resonances.
-   */
-  vector<Energy> _k1mass;
-
-  /**
-   *  The widths of the \f$K_1\f$ resonances.
-   */
-  vector<Energy> _k1width;
-
-  /**
-   *  The weights for the different \f$K_1\f$ resonances for \f$K_1\to K^*\pi\f$
-   */
-  vector<double> _k1wgta;
-
-  /**
-   *  The weights for the different \f$K_1\f$ resonaces for \f$K_1\to\rho K\f$.
-   */
-  vector<double> _k1wgtb;
-
-  /**
    * The \f$a_1\f$ width for the running \f$a_1\f$ width calculation.
    */
   vector<Energy>  _a1runwidth;
@@ -628,36 +584,11 @@ private:
    * Initialize the running \f$a_1\f$ width.
    */
   bool _initializea1;
-  
-  /**
-   * use local values of the \f$\rho\f$ masses and widths
-   */
-  bool _rhoparameters;
-
-  /**
-   * use local values of the \f$K^*\f$ resonances masses and widths
-   */
-  bool _kstarparameters;
-
-  /**
-   * Use local values of the \f$a_1\f$ parameters
-   */
-  bool _a1parameters;
-
-  /**
-   * Use local values of the \f$K_1\f$ parameters
-   */
-  bool _k1parameters;
 
   /**
    * Option for the \f$a_1\f$ width
    */
   bool _a1opt;
-
-  /**
-   * Option for the \f$\omega-\phi\f$ parameters
-   */
-  bool _omegaopt;
   //@}
 
   /**
