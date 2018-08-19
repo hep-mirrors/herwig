@@ -16,6 +16,7 @@
 #include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig/Decay/ResonanceHelpers.h"
+#include <numeric>
 
 namespace Herwig {
 using namespace ThePEG;
@@ -28,21 +29,14 @@ using namespace ThePEG;
  *
  *  The following three meson modes are implemented.
  *
- * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
- * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
- * - \f$    K^-   \pi^-    K^+ \f$, (imode=2)
- * - \f$    K^0   \pi^-    \bar{K}^0\f$, (imode=3)
- * - \f$    K^-   \pi^0    K^0 \f$, (imode=4)
- * - \f$    \pi^0  \pi^0    K^- \f$, (imode=5)
- * - \f$    K^-   \pi^-    \pi^+ \f$, (imode=6)
- * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
- * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
+ * - \f$    K^-   \pi^-    K^+ \f$, (imode=0)
+ * - \f$    K^0   \pi^-    \bar{K}^0\f$, (imode=1)
+ * - \f$    K^-   \pi^0    K^0 \f$, (imode=2)
  *
  *  using the currents from TAUOLA
  *
  *
- * @see WeakCurrent,
- * @see WeakCurrent.
+ * @see WeakCurrent
  * @see Defaulta1MatrixElement
  * 
  */
@@ -186,71 +180,6 @@ public:
 				const Energy2 s1, const Energy  m1, 
 				const Energy  m2, const Energy  m3) const;
 
-
-protected:
-
-  /**
-   * Helper class for form factors
-   */
-  struct FormFactors {
-
-    /**
-     * @param F1 The \f$F_1\f$ form factor
-     */
-    complex<InvEnergy>  F1;
-    
-    /**
-     * @param F2 The \f$F_2\f$ form factor
-     */
-    complex<InvEnergy>  F2;
-    
-    /**
-     * @param F3 The \f$F_3\f$ form factor
-     */
-    complex<InvEnergy>  F3; 
-    
-    /**
-     * @param F4 The \f$F_4\f$ form factor
-     */
-    complex<InvEnergy>  F4;
-    
-    /**
-     * @param F5 The \f$F_5\f$ form factor
-     */
-    complex<InvEnergy3> F5;
-
-    /**
-     *  Constructor
-     * @param f1 The \f$F_1\f$ form factor
-     * @param f2 The \f$F_2\f$ form factor
-     * @param f3 The \f$F_3\f$ form factor
-     * @param f4 The \f$F_4\f$ form factor
-     * @param f5 The \f$F_5\f$ form factor
-     */    
-    FormFactors(complex<InvEnergy>  f1 = InvEnergy(), 
-		complex<InvEnergy>  f2 = InvEnergy(),
-		complex<InvEnergy>  f3 = InvEnergy(),
-		complex<InvEnergy>  f4 = InvEnergy(),
-		complex<InvEnergy3> f5 = InvEnergy3())
-      : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
-  };
-  
-protected:
-
-  /**
-   * Calculate the form factor for the current. Implements the form factors
-   * described above.
-   * @param ichan The phase space channel
-   * @param imode The mode
-   * @param q2 The scale \f$q^2\f$ for the current.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   */
-  virtual FormFactors calculateFormFactors(const int ichan, const int imode,
-					   Energy2 q2,
-					   Energy2 s1, Energy2 s2, Energy2 s3) const;
-
 protected:
 
   /** @name Clone Methods. */
@@ -306,22 +235,18 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BrhoF123(Energy2 q2,int ires) const {
-    Complex output(0.),norm(0.);
-    for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
-      norm+=_rhoF123wgts[ix];
+    if(ires>=int(_rhoF123wgts.size())) return 0.;
+    Complex output(0.);
+    Complex norm = std::accumulate(_rhoF123wgts.begin(),
+				   _rhoF123wgts.end(),Complex(0.));
+    unsigned int imin=0,imax=_rhoF123wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
     }
-    if(ires<0) {
-      for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
-	output+=_rhoF123wgts[ix]*rhoKBreitWigner(q2,0,ix);
-      }
-    }
-    else {
-      unsigned int temp(ires);
-      if(temp<_rhoF123wgts.size()&&temp<3)
-	output=_rhoF123wgts[temp]*rhoKBreitWigner(q2,0,temp);
-      else
-	output=0.;
-    }
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_rhoF123wgts[ix]*Resonance::BreitWignerPWave(q2,_rhoF123masses[ix],
+							   _rhoF123widths[ix],_mpi,_mpi);
     return output/norm;
   }
 
@@ -332,21 +257,18 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BrhoF5(Energy2 q2,int ires) const {
-    Complex output(0.),norm(0.);
-    for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix) {
-      norm+=_rhoF5wgts[ix];
+    if(ires>=int(_rhoF5wgts.size())) return 0.;
+    Complex output(0.);
+    Complex norm = std::accumulate(_rhoF5wgts.begin(),
+				   _rhoF5wgts.end(),Complex(0.));
+    unsigned int imin=0,imax=_rhoF5wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
     }
-    if(ires<0) {
-      for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix) {
-	output+=_rhoF5wgts[ix]*rhoKBreitWigner(q2,1,ix);
-      }
-    }
-    else {
-      unsigned int temp(ires);
-      if(temp<_rhoF5wgts.size()&&temp<3) {
-	output=_rhoF5wgts[temp]*rhoKBreitWigner(q2,1,temp);
-      }
-    }
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_rhoF5wgts[ix]*Resonance::BreitWignerPWave(q2,_rhoF5masses[ix],
+							   _rhoF5widths[ix],_mpi,_mpi);
     return output/norm;
   }
 
@@ -357,21 +279,19 @@ private:
    * @return The Breit-Wigner 
    */
   Complex BKstarF123(Energy2 q2,int ires) const {
-    Complex output(0.),norm(0.);
-    for(unsigned int ix=0,N=min(3,int(_kstarF123wgts.size()));ix<N;++ix) {
-      norm+=_kstarF123wgts[ix];
+    if(ires>=int(_kstarF123wgts.size())) return 0.;
+    Complex output(0.);
+    Complex norm = std::accumulate(_kstarF123wgts.begin(),
+				   _kstarF123wgts.end(),Complex(0.));
+    unsigned int imin=0,imax=_kstarF123wgts.size();
+    if(ires>0) {
+      imin=ires;
+      imax=imin+1;
     }
-    if(ires<0) {
-      for(unsigned int ix=0,N=min(3,int(_kstarF123wgts.size()));ix<N;++ix) {
-	output+=_kstarF123wgts[ix]*rhoKBreitWigner(q2,2,ix);
-      }
-    }
-    else {
-      unsigned int temp(ires);
-      if(temp<_kstarF123wgts.size()&&temp<3) {
-	output=_kstarF123wgts[temp]*rhoKBreitWigner(q2,2,temp);
-      }
-    }
+    assert(imax<=_kstarF123wgts.size());
+    for(unsigned int ix=imin;ix<imax;++ix)
+      output+=_kstarF123wgts[ix]*Resonance::BreitWignerPWave(q2,_kstarF123masses[ix],
+							     _kstarF123widths[ix],_mpi,_mK);
     return output/norm;
   }
   
@@ -384,11 +304,13 @@ private:
    */
   Complex FKrho(Energy2 si,Energy2 sj,int ires) const {
     Complex output;
-    if(ires<0){output = _rhoKstarwgt*BKstarF123(si,-1)+BrhoF123(sj,-1);}
-    else if(ires%2==0){output= _rhoKstarwgt*BKstarF123(si,ires/2);}
-    else if(ires%2==1){output=BrhoF123(sj,ires/2);}
-    output /=(1.+_rhoKstarwgt);
-    return output;
+    if(ires<0)
+      output = _rhoKstarwgt*BKstarF123(si,-1)+BrhoF123(sj,-1);
+    else if(ires%2==0)
+      output= _rhoKstarwgt*BKstarF123(si,ires/2);
+    else if(ires%2==1)
+      output=BrhoF123(sj,ires/2);
+    return output/(1.+_rhoKstarwgt);
   }
   
   /**
@@ -411,14 +333,6 @@ private:
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
   void inita1Width(int iopt);
-
-  /**
-   * Breit-Wigners for the \f$\rho\f$ and \f$K^*\f$.
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner.
-   * @param itype The type of Breit-Wigner, \e i.e. which masses and widths to use.x
-   * @param ires Which multiplet to use.
-   */
-  Complex rhoKBreitWigner(Energy2 q2,unsigned int itype,unsigned int ires) const;
 
 private:
   

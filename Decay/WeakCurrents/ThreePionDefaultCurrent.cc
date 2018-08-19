@@ -495,6 +495,7 @@ ThreePionDefaultCurrent::current(tcPDPtr resonance,
       break;
     case IsoSpin::I3MinusOne:
       if(imode>=2) return vector<LorentzPolarizationVectorE>();
+      break;
     default:
       return vector<LorentzPolarizationVectorE>();
     }
