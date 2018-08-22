@@ -701,8 +701,6 @@ insert Tau2MesonPhoton:WeightLocation 0 0
 insert Tau2MesonPhoton:MaximumWeight 0 0.0107705
 insert Tau2MesonPhoton:Weights 0 1
 create Herwig::TwoPionPhotonCurrent Tau2MesonPhotonCurrent HwWeakCurrents.so
-newdef Tau2MesonPhotonCurrent:RhoParameters 1
-newdef Tau2MesonPhotonCurrent:omegaParameters 1
 newdef Tau2MesonPhotonCurrent:omegamass 0.782
 newdef Tau2MesonPhotonCurrent:omegawidth 0.0085
 newdef Tau2MesonPhotonCurrent:grho 0.112389

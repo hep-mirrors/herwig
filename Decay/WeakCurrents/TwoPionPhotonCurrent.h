@@ -194,18 +194,6 @@ protected:
    */
   virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
-  
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
 
 private:
 
@@ -265,12 +253,6 @@ private:
    * Weights of the different rho resonances in the current
    */
   vector<double> _resweights;
-  
-  /**
-   * Use local parameters for the rho resonances rather than from the particle data
-   * objects
-   */
-  bool _rhoparameters;
 
   /**
    * Masses of the \f$\rho\f$ resonances
@@ -280,12 +262,7 @@ private:
   /**
    * Widths of the \f$\rho\f$ resonances
    */
-  vector<Energy> _rhowidths; 
-
-  /**
-   * use local parameters for the omega rather than from the particle data objects
-   */
-  bool _omegaparameters;
+  vector<Energy> _rhowidths;
 
   /**
    * The \f$\omega\f$ mass.

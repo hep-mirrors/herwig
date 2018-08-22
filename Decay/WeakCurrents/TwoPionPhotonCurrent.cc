@@ -36,60 +36,30 @@ TwoPionPhotonCurrent::TwoPionPhotonCurrent() {
   addDecayMode(2,-2);
   setInitialModes(3);
   // weight of the resonances in the current
-  _resweights.push_back(1.0);_resweights.push_back(-0.1);_resweights.push_back(0.0);
+  _resweights = {1.0,-0.1,0.0};
   // parameters of the rho resonaces
-  _rhoparameters=true;
-  _rhomasses.push_back(0.773*GeV);_rhomasses.push_back(1.70*GeV);
-  _rhowidths.push_back(0.145*GeV);_rhowidths.push_back(0.26*GeV);
+  _rhomasses = {0.773*GeV,1.70*GeV};
+  _rhowidths = {0.145*GeV,0.26*GeV};
   // parameters fo the omega resonance
-  _omegaparameters=true;
   _omegamass=782*MeV;_omegawidth=8.5*MeV;
   // couplings
   _grho   = 0.11238947*GeV2;
   _grhoomegapi = 12.924/GeV;
   // parameters for the resonance used in the integration
-  _intmass = 1.2*GeV;
+  _intmass  = 1.2*GeV;
   _intwidth = 0.35*GeV;
-}
-
-void TwoPionPhotonCurrent::doinit() {
-  WeakCurrent::doinit();
-  // set up the rho masses and widths
-  tPDPtr temp;
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(ix==0)      temp = getParticleData(-213);
-    else if(ix==1) temp = getParticleData(-100213);
-    else if(ix==2) temp = getParticleData(-30213);
-    // if using local values
-    if(!_rhoparameters&&ix<_rhomasses.size()) {
-      _rhomasses[ix]=temp->mass();
-      _rhowidths[ix]=temp->width();
-    }
-    else if(ix>=_rhomasses.size()) {
-      _rhomasses.push_back(temp->mass());
-      _rhowidths.push_back(temp->width());
-    }
-  }
-  // set up the omega masses and widths
-  if(!_omegaparameters) {
-    temp = getParticleData(ParticleID::omega);
-    _omegamass  = temp->mass();
-    _omegawidth = temp->width();
-  }
 }
 
 void TwoPionPhotonCurrent::persistentOutput(PersistentOStream & os) const {
   os << ounit(_grho,GeV2) << ounit(_grhoomegapi,1/GeV) << _resweights 
-     << _rhoparameters << ounit(_rhomasses,GeV) 
-     << ounit(_rhowidths,GeV) << _omegaparameters << ounit(_omegamass,GeV) 
+     << ounit(_rhomasses,GeV) << ounit(_rhowidths,GeV) << ounit(_omegamass,GeV) 
      << ounit(_omegawidth,GeV) << ounit(_intmass,GeV) 
      << ounit(_intwidth,GeV) ;
 }
 
 void TwoPionPhotonCurrent::persistentInput(PersistentIStream & is, int) { 
   is >> iunit(_grho,GeV2) >> iunit(_grhoomegapi,1/GeV) >> _resweights 
-     >> _rhoparameters >> iunit(_rhomasses,GeV) 
-     >> iunit(_rhowidths,GeV) >> _omegaparameters >> iunit(_omegamass,GeV) 
+     >> iunit(_rhomasses,GeV) >> iunit(_rhowidths,GeV) >> iunit(_omegamass,GeV) 
      >> iunit(_omegawidth,GeV) >> iunit(_intmass,GeV)
      >> iunit(_intwidth,GeV);
 }
@@ -106,37 +76,6 @@ void TwoPionPhotonCurrent::Init() {
      "The weights of the different resonances for the decay tau -> nu pi pi gamma",
      &TwoPionPhotonCurrent::_resweights,
      0, 0, 0, -1000, 1000, false, false, true);
-    
-  static Switch<TwoPionPhotonCurrent,bool> interfaceRhoParameters
-    ("RhoParameters",
-     "Use local values for the rho meson masses and widths",
-     &TwoPionPhotonCurrent::_rhoparameters, true, false, false);
-
-  static SwitchOption interfaceRhoParameterstrue
-    (interfaceRhoParameters,
-     "Local",
-     "Use local values",
-     true);
-  static SwitchOption interfaceRhoParametersParticleData
-    (interfaceRhoParameters,
-     "ParticleData",
-     "Use the value from the particle data objects",
-     false);
-  
-  static Switch<TwoPionPhotonCurrent,bool> interfaceomegaParameters
-    ("omegaParameters",
-     "Use local values for the omega meson masses and widths",
-     &TwoPionPhotonCurrent::_omegaparameters, true, false, false);
-  static SwitchOption interfaceomegaParameterstrue
-    (interfaceomegaParameters,
-     "Local",
-     "Use local values",
-     true);
-  static SwitchOption interfaceomegaParametersParticleData
-    (interfaceomegaParameters,
-     "ParticleData",
-     "Use the value from the particle data objects",
-     false);
 
   static ParVector<TwoPionPhotonCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
@@ -247,7 +186,7 @@ bool TwoPionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   // reset the masses and widths of the resonances if needed
   mode->resetIntermediate(rho,_intmass,_intwidth);
   // set up the omega masses and widths
-  if(_omegaparameters) mode->resetIntermediate(omega,_omegamass,_omegawidth);
+  mode->resetIntermediate(omega,_omegamass,_omegawidth);
   return true;
 }
 
@@ -352,7 +291,8 @@ TwoPionPhotonCurrent::current(tcPDPtr resonance,
 			  -coeffb*momenta[1]
 			  +coeffc*momenta[2]);
     }
-    else{ret[ix]=LorentzPolarizationVectorE();}
+    else
+      ret[ix]=LorentzPolarizationVectorE();
   }
   return ret;
 }
@@ -389,8 +329,6 @@ void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::TwoPionPhotonCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "newdef " << name() << ":RhoParameters "    << _rhoparameters << "\n";
-  output << "newdef " << name() << ":omegaParameters "    << _omegaparameters << "\n";
   output << "newdef " << name() << ":omegamass "    << _omegamass/GeV << "\n";
   output << "newdef " << name() << ":omegawidth "    << _omegawidth/GeV << "\n";
   output << "newdef " << name() << ":grho "    << _grho/GeV2 << "\n";
