@@ -122,23 +122,23 @@ double MEee2Mesons::me2(const int ichan) const {
     }
   }
   // work out the mapping for the hadron vector
-  vector<unsigned int> constants(meMomenta().size()+1);
-  vector<PDT::Spin   > ispin(meMomenta().size()-2);
-  vector<int> hadrons(meMomenta().size()-2);
+  int nOut = int(meMomenta().size())-2;
+  vector<unsigned int> constants(nOut+1);
+  vector<PDT::Spin   > iSpin(nOut);
+  vector<int> hadrons(nOut);
   int itemp(1);
-  unsigned int ix(meMomenta().size());
+  int ix(nOut);
   do {
     --ix;
-    ispin[ix-2]     = mePartonData()[ix]->iSpin();
-    hadrons[ix-2]   = mePartonData()[ix]->id();
-    itemp         *= ispin[ix-2];
-    constants[ix] = itemp;
+    iSpin[ix]      = mePartonData()[ix+2]->iSpin();
+    itemp         *= iSpin[ix];
+    constants[ix]  = itemp;
+    hadrons[ix]   = mePartonData()[ix+2]->id();
   }
-  while(ix>2);
-  constants[meMomenta().size()] = 1;
-  constants[0] = constants[1] = constants[2];
+  while(ix>0);
+  constants[nOut] = 1;
   // calculate the matrix element
-  me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,ispin));
+  me_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,iSpin));
   // calculate the hadron current
   unsigned int imode = current_->decayMode(hadrons);
   Energy q = sqrt(sHat());
@@ -153,8 +153,8 @@ double MEee2Mesons::me2(const int ichan) const {
   double output(0.);
   for(unsigned int hhel=0;hhel<hadron.size();++hhel) {
     // map the index for the hadrons to a helicity state
-    for(unsigned int ix=meMomenta().size()-1;ix>1;--ix) {
-      ihel[ix]=(hhel%constants[ix-1])/constants[ix];
+    for(int ix=nOut;ix>0;--ix) {
+      ihel[ix+1]=(hhel%constants[ix-1])/constants[ix];
     }
     // loop over the helicities of the incoming leptons
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
