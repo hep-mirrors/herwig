@@ -709,13 +709,10 @@ newdef Tau2MesonPhotonCurrent:IntegrationMass 1.2
 newdef Tau2MesonPhotonCurrent:IntegrationWidth 0.35
 newdef Tau2MesonPhotonCurrent:Weights 0 1
 newdef Tau2MesonPhotonCurrent:Weights 1 -0.1
-newdef Tau2MesonPhotonCurrent:Weights 2 0
 newdef Tau2MesonPhotonCurrent:RhoMasses 0 773
 newdef Tau2MesonPhotonCurrent:RhoMasses 1 1700
-insert Tau2MesonPhotonCurrent:RhoMasses 2 1720
 newdef Tau2MesonPhotonCurrent:RhoWidths 0 145
 newdef Tau2MesonPhotonCurrent:RhoWidths 1 260
-insert Tau2MesonPhotonCurrent:RhoWidths 2 250
 newdef Tau2MesonPhotonCurrent:Quark 0  2
 newdef Tau2MesonPhotonCurrent:AntiQuark 0  -1
 newdef Tau2MesonPhoton:WeakCurrent Tau2MesonPhotonCurrent

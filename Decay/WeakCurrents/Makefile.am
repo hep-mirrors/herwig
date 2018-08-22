@@ -19,6 +19,8 @@ ThreePionCLEOCurrent.h\
 TwoPionRhoCurrent.h\
 KPiKStarCurrent.h\
 TwoPionPhotonCurrent.h\
+TwoPionPhotonSNDCurrent.h\
+OmegaPionSNDCurrent.h\
 VectorMesonCurrent.h\
 FivePionCurrent.h \
 KPiCurrent.h\
@@ -42,6 +44,8 @@ ThreePionCLEOCurrent.cc \
 TwoPionRhoCurrent.cc \
 KPiKStarCurrent.cc \
 TwoPionPhotonCurrent.cc \
+TwoPionPhotonSNDCurrent.cc \
+OmegaPionSNDCurrent.cc \
 VectorMesonCurrent.cc \
 FivePionCurrent.cc \
 KPiCurrent.cc \

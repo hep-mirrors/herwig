@@ -36,7 +36,7 @@ TwoPionPhotonCurrent::TwoPionPhotonCurrent() {
   addDecayMode(2,-2);
   setInitialModes(3);
   // weight of the resonances in the current
-  _resweights = {1.0,-0.1,0.0};
+  _resweights = {1.0,-0.1};
   // parameters of the rho resonaces
   _rhomasses = {0.773*GeV,1.70*GeV};
   _rhowidths = {0.145*GeV,0.26*GeV};
@@ -337,7 +337,7 @@ void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
   unsigned int ix;
   for(ix=0;ix<_resweights.size();++ix) {
-    if(ix<3) output << "newdef " << name() << ":Weights " << ix 
+    if(ix<2) output << "newdef " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
     else     output << "insert " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";

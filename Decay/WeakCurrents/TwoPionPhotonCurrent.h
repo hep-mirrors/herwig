@@ -211,7 +211,7 @@ private:
    */
   complex<InvEnergy> FFunction(Energy2 q2) const {
     complex<InvEnergy2> output(ZERO);
-    for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix) {
+    for(unsigned int ix=0; ix<_resweights.size();++ix) {
       output -= _resweights[ix]*BreitWigner(q2,ix);
     }
     return output*_grho*_grhoomegapi*sqrt(2.);
