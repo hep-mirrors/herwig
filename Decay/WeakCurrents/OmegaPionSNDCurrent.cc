@@ -76,7 +76,17 @@ describeHerwigOmegaPionSNDCurrent("Herwig::OmegaPionSNDCurrent",
 void OmegaPionSNDCurrent::Init() {
 
   static ClassDocumentation<OmegaPionSNDCurrent> documentation
-    ("There is no documentation for the OmegaPionSNDCurrent class");
+    ("The OmegaPionSNDCurrent class provides a current for omega pi"
+     " using the model of SND",
+     "The current based on \\cite{Achasov:2013btb} for $\\omega\\pi$ was used.\n",
+     "\\bibitem{Achasov:2013btb}\n"
+     "M.~N.~Achasov {\\it et al.},\n"
+     "%``Study of $e^+e^- \\to \\omega\\pi^0 \\to \\pi^0\\pi^0\\gamma$ in the energy range $1.05-2.00$ GeV with SND,''\n"
+     "Phys.\\ Rev.\\ D {\\bf 88} (2013) no.5,  054013\n"
+     "doi:10.1103/PhysRevD.88.054013\n"
+     "[arXiv:1303.5198 [hep-ex]].\n"
+     "%%CITATION = doi:10.1103/PhysRevD.88.054013;%%\n"
+     "%50 citations counted in INSPIRE as of 22 Aug 2018\n");
 
   static ParVector<OmegaPionSNDCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
@@ -312,33 +322,32 @@ void OmegaPionSNDCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::OmegaPionSNDCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-//   output << "newdef " << name() << ":RhoParameters "    << _rhoparameters << "\n";
-//   output << "newdef " << name() << ":omegaParameters "    << _omegaparameters << "\n";
-//   output << "newdef " << name() << ":omegamass "    << _omegamass/GeV << "\n";
-//   output << "newdef " << name() << ":omegawidth "    << _omegawidth/GeV << "\n";
-//   output << "newdef " << name() << ":grho "    << _grho/GeV2 << "\n";
-//   output << "newdef " << name() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
-//   output << "newdef " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-//   output << "newdef " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
-//   unsigned int ix;
-//   for(ix=0;ix<_resweights.size();++ix) {
-//     if(ix<3) output << "newdef " << name() << ":Weights " << ix 
-// 		    << " " << _resweights[ix] << "\n";
-//     else     output << "insert " << name() << ":Weights " << ix 
-// 		    << " " << _resweights[ix] << "\n";
-//   }
-//   for(ix=0;ix<_rhomasses.size();++ix) {
-//     if(ix<2) output << "newdef " << name() << ":RhoMasses " << ix 
-// 		    << " " << _rhomasses[ix]/MeV << "\n";
-//     else     output << "insert " << name() << ":RhoMasses " << ix 
-// 		    << " " << _rhomasses[ix]/MeV << "\n";
-//   }
-//   for(ix=0;ix<_rhowidths.size();++ix) {
-//     if(ix<2) output << "newdef " << name() << ":RhoWidths " << ix 
-// 		    << " " << _rhowidths[ix]/MeV << "\n";
-//     else     output << "insert " << name() << ":RhoWidths " << ix 
-// 		    << " " << _rhowidths[ix]/MeV << "\n";
-//   }
+  for(unsigned int ix=0;ix<rhoMasses_.size();++ix) {
+    if(ix<3) output << "newdef " << name() << ":RhoMasses " << ix 
+		    << " " << rhoMasses_[ix]/GeV << "\n";
+    else     output << "insert " << name() << ":RhoMasses " << ix 
+		    << " " << rhoMasses_[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<rhoWidths_.size();++ix) {
+    if(ix<3) output << "newdef " << name() << ":RhoWidths " << ix 
+		    << " " << rhoWidths_[ix]/GeV << "\n";
+    else     output << "insert " << name() << ":RhoWidths " << ix 
+		    << " " << rhoWidths_[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<amp_.size();++ix) {
+    if(ix<3) output << "newdef " << name() << ":Amplitudes " << ix 
+		    << " " << amp_[ix] << "\n";
+    else     output << "insert " << name() << ":Amplitudes " << ix 
+		    << " " << amp_[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<phase_.size();++ix) {
+    if(ix<3) output << "newdef " << name() << ":Phases " << ix 
+		    << " " << phase_[ix] << "\n";
+    else     output << "insert " << name() << ":Phases " << ix 
+		    << " " << phase_[ix] << "\n";
+  }
+  output << "newdef " << name() << ":fRho "    << fRho_ << "\n";
+  output << "newdef " << name() << ":gRhoOmegaPi "    << gRhoOmegaPi_*GeV << "\n";
   WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
