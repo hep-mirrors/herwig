@@ -18,6 +18,7 @@ EtaPiPiDefaultCurrent.h \
 ThreePionCLEOCurrent.h\
 TwoPionRhoCurrent.h\
 KPiKStarCurrent.h\
+EtaPhotonCurrent.h\
 PionPhotonCurrent.h\
 TwoPionPhotonCurrent.h\
 TwoPionPhotonSNDCurrent.h\
@@ -44,6 +45,7 @@ EtaPiPiDefaultCurrent.cc \
 ThreePionCLEOCurrent.cc \
 TwoPionRhoCurrent.cc \
 KPiKStarCurrent.cc \
+EtaPhotonCurrent.cc \
 PionPhotonCurrent.cc \
 TwoPionPhotonCurrent.cc \
 TwoPionPhotonSNDCurrent.cc \
