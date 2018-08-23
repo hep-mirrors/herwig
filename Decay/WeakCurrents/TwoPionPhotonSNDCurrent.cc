@@ -25,13 +25,14 @@ TwoPionPhotonSNDCurrent::TwoPionPhotonSNDCurrent() {
   addDecayMode(2,-2);
   setInitialModes(3);
   // amplitudes for the weights in the current
-  amp_   = {1.,0.26,0.06};
-  phase_ = {0.,168.,10.};
+  amp_   = {1.,0.175,0.014};
+  phase_ = {0.,124.,-63.};
   // rho masses and widths
-  rhoMasses_ = {0.77526*GeV,1.491*GeV,1.708*GeV};
-  rhoWidths_ = {0.1491 *GeV,0.4  *GeV,0.25 *GeV};
+  rhoMasses_ = {0.77526*GeV,1.510*GeV,1.720*GeV};
+  rhoWidths_ = {0.1491 *GeV,0.44 *GeV,0.25 *GeV};
   // coupling
-  gRhoOmegaPi_   = 15.6/GeV;
+  gRhoOmegaPi_   = 15.9/GeV;
+  fRho_        = 4.9583;
   gGammaOmegaPi_ = 0.695821538653/GeV;
   fRho_        = 4.9583;
   // omega parameters
@@ -85,15 +86,15 @@ void TwoPionPhotonSNDCurrent::Init() {
   static ClassDocumentation<TwoPionPhotonSNDCurrent> documentation
     ("The TwoPionPhotonSNDCurrent class provides the weka current for"
      "pi pi gamma using the model of SND",
-     "The current based on \\cite{Achasov:2013btb} for $\\pi\\pi^0\\gamma$ was used.\n",
-     "\\bibitem{Achasov:2013btb}\n"
+     "The current based on \\cite{Achasov:2016zvn} for $\\pi\\pi^0\\gamma$ was used.\n",
+     "\\bibitem{Achasov:2016zvn}"
      "M.~N.~Achasov {\\it et al.},\n"
-     "%``Study of $e^+e^- \\to \\omega\\pi^0 \\to \\pi^0\\pi^0\\gamma$ in the energy range $1.05-2.00$ GeV with SND,''\n"
-     "Phys.\\ Rev.\\ D {\\bf 88} (2013) no.5,  054013\n"
-     "doi:10.1103/PhysRevD.88.054013\n"
-     "[arXiv:1303.5198 [hep-ex]].\n"
-     "%%CITATION = doi:10.1103/PhysRevD.88.054013;%%\n"
-     "%50 citations counted in INSPIRE as of 22 Aug 2018\n");
+     "%``Updated measurement of the $e^+e^- \\to \\omega \\pi^0 \\to \\pi^0\\pi^0\\gamma$ cross section with the SND detector,''\n"
+     "Phys.\\ Rev.\\ D {\\bf 94} (2016) no.11,  112001\n"
+     "doi:10.1103/PhysRevD.94.112001\n"
+     "[arXiv:1610.00235 [hep-ex]].\n"
+     "%%CITATION = doi:10.1103/PhysRevD.94.112001;%%\n"
+     "%12 citations counted in INSPIRE as of 22 Aug 2018\n");
 
   static ParVector<TwoPionPhotonSNDCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
@@ -131,7 +132,7 @@ void TwoPionPhotonSNDCurrent::Init() {
     ("gRhoOmegaPi",
      "The coupling rho-omega-pi",
      &TwoPionPhotonSNDCurrent::gRhoOmegaPi_, 1./GeV,
-     15.6/GeV, 0./GeV, 1000./GeV,
+     15.9/GeV, 0./GeV, 1000./GeV,
      false, false, Interface::limited);
 
   static Parameter<TwoPionPhotonSNDCurrent,InvEnergy> interfacegGammaOmegaPi

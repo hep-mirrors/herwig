@@ -30,7 +30,6 @@ public:
    */
   TwoPionPhotonSNDCurrent();
 
-
 public:
 
   /** @name Methods for the construction of the phase space integrator. */
