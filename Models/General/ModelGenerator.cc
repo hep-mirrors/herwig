@@ -320,6 +320,12 @@ void ModelGenerator::doinit() {
       if(parent->mass()*minWidth_>parent->width()) {
 	parent->massGenerator(tGenericMassGeneratorPtr());
 	parent->widthGenerator(tGenericWidthGeneratorPtr());
+	Energy minMass = minimumMass(parent);
+	Energy offShellNess = howOffShell_*parent->width();
+	if(minMass>parent->mass()-offShellNess) {
+	  offShellNess = parent->mass()-minMass;
+	}
+	parent->widthCut(offShellNess);
       }
       else {
 	if( offShell.find(*pit) != offShell.end() ) {
@@ -332,7 +338,6 @@ void ModelGenerator::doinit() {
       }
 
     }
-
     if( parent->massGenerator() ) {
       Energy minMass = minimumMass(parent);
       Energy offShellNess = howOffShell_*parent->width();
