@@ -156,7 +156,8 @@ void BaryonSimpleFormFactor::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<BaryonSimpleFormFactor,BaryonFormFactor>
-describeHerwigBaryonSimpleFormFactor("Herwig::BaryonSimpleFormFactor", "HwFormFactors.so");
+describeHerwigBaryonSimpleFormFactor("Herwig::BaryonSimpleFormFactor",
+				     "HwFormFactors.so");
 
 void BaryonSimpleFormFactor::Init() {
 

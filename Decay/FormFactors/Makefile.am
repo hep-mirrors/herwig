@@ -25,7 +25,8 @@ MelikhovFormFactor.h \
 MelikhovStechFormFactor.h \
 BtoSGammaFlatEnergy.h \
 BtoSGammaKagan.h \
-HQETFormFactor.h
+HQETFormFactor.h \
+CzyzNucleonFormFactor.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -45,4 +46,5 @@ MelikhovFormFactor.cc \
 MelikhovStechFormFactor.cc \
 BtoSGammaFlatEnergy.cc \
 BtoSGammaKagan.cc \
-HQETFormFactor.cc
+HQETFormFactor.cc \
+CzyzNucleonFormFactor.cc
