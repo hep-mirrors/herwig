@@ -210,7 +210,9 @@ void BaryonSimpleFormFactor::Init() {
 void BaryonSimpleFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2,int iloc, int,int,Energy,Energy,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
-			   Complex & f1a,Complex & f2a,Complex & f3a) {
+			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   Virtuality virt) {
+  assert(virt==SpaceLike);
   useMe();
   f1v =  _f1[iloc];
   f1a = -_g1[iloc];

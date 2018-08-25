@@ -98,7 +98,8 @@ void BaryonFormFactor::Init() {
 // form factor for spin-1/2 to spin-1/2
 void BaryonFormFactor::SpinHalfSpinHalfFormFactor(Energy2,int,int,int,Energy,Energy,
 						  Complex &,Complex &,Complex &,
-						  Complex &,Complex &,Complex &) {
+						  Complex &,Complex &,Complex &,
+						  Virtuality) {
   throw Exception() << "Error in BaryonFormFactor::SpinHalfSpinHalfFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
@@ -106,7 +107,8 @@ void BaryonFormFactor::SpinHalfSpinHalfFormFactor(Energy2,int,int,int,Energy,Ene
 void BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor(Energy2,int,int,int,Energy,
 						       Energy,Complex &,Complex &,
 						       Complex &,Complex &,Complex &,
-						       Complex &,Complex &,Complex &) {
+						       Complex &,Complex &,Complex &,
+						       Virtuality) {
   throw Exception() << "Error in BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;

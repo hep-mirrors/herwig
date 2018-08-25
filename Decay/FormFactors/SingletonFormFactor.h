@@ -72,11 +72,13 @@ public:
    * @param f1a The form factor \f$F^A_1\f$.
    * @param f2a The form factor \f$F^A_2\f$.
    * @param f3a The form factor \f$F^A_3\f$.
+   * @param virt Whether the q2 is space or timelike
    */
   virtual void SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 					  Energy m0, Energy m1,
 					  Complex & f1v,Complex & f2v,Complex & f3v,
-					  Complex & f1a,Complex & f2a,Complex & f3a);
+					  Complex & f1a,Complex & f2a,Complex & f3a,
+					  Virtuality virt=SpaceLike);
   //@}
 
   /**

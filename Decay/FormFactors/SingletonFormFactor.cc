@@ -183,7 +183,9 @@ void SingletonFormFactor::Init() {
 void SingletonFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int, int, Energy m0, Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
-			   Complex & f1a,Complex & f2a,Complex & f3a) {
+			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   Virtuality virt) {
+  assert(virt==SpaceLike);
   useMe();
   InvEnergy ratio(0.5/m0);
   // all factors divided by sqrt(4.*m0*m1) normalisation  

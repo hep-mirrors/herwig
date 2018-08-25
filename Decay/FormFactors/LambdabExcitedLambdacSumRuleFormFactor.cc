@@ -95,12 +95,13 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 }
 
 void  LambdabExcitedLambdacSumRuleFormFactor::
- SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
-				 Complex & f1v,Complex & f2v,
-				 Complex & f3v,Complex & f4v,
-				 Complex & f1a,Complex & f2a,
-				 Complex & f3a,Complex & f4a )
-{
+SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
+				Complex & f1v,Complex & f2v,
+				Complex & f3v,Complex & f4v,
+				Complex & f1a,Complex & f2a,
+				Complex & f3a,Complex & f4a,
+				Virtuality virt) {
+  assert(virt==SpaceLike);
   useMe();
   // the omega value
   double omega(.5/m0/m1*(m0*m0+m1*m1-q2));

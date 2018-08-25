@@ -319,8 +319,9 @@ void ChengHeavyBaryonFormFactor::Init() {
 void ChengHeavyBaryonFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
-			   Complex & f1a,Complex & f2a,Complex & f3a)
-{
+			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   Virtuality virt) {
+  assert(virt==SpaceLike);
   useMe();
   id0=abs(id0);
   id1=abs(id1);
@@ -359,8 +360,8 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 				Energy m0, Energy m1,
 				Complex & g1v,Complex & g2v,Complex & g3v,
 				Complex & g4v,Complex & g1a,Complex & g2a,
-				Complex & g3a,Complex & g4a)
-{
+				Complex & g3a,Complex & g4a, Virtuality virt) {
+  assert(virt==SpaceLike);
   useMe();
   id0=abs(id0);
   id1=abs(id1);

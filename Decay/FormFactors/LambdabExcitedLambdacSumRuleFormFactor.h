@@ -106,12 +106,14 @@ public:
    * @param g2a The form factor \f$G^A_2\f$.
    * @param g3a The form factor \f$G^A_3\f$.
    * @param g4a The form factor \f$G^A_4\f$.
+   * @param virt Whether the q2 is space or timelike
    */
   virtual void SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 					       Energy m0, Energy m1,
 					       Complex & g1v,Complex & g2v,Complex & g3v,
 					       Complex & g4v,Complex & g1a,Complex & g2a,
-					       Complex & g3a,Complex & g4a);
+					       Complex & g3a,Complex & g4a,
+					       Virtuality virt=SpaceLike);
   //@}
 
   /**
