@@ -137,10 +137,10 @@ private :
    */
   mutable ProductionMatrixElement me_;
 
-/**
- *  Map for the modes
- */
-map<int,int>  modeMap_;
+  /**
+   *  Map for the modes
+   */
+  map<int,int>  modeMap_;
 };
 
 }
