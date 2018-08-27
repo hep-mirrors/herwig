@@ -159,8 +159,11 @@ bool OmegaPionSNDCurrent::createMode(int icharge, tcPDPtr resonance,
     }
   }
   // check that the mode is are kinematical allowed
-  Energy min(getParticleData(ParticleID::piplus)->mass()+
-  	     getParticleData(ParticleID::pi0   )->mass());
+  Energy min = getParticleData(ParticleID::omega)->massMin();
+  if(imode==0)
+    min += getParticleData(ParticleID::piplus)->mass();
+  else
+    min += getParticleData(ParticleID::pi0   )->mass();
   if(min>upp) return false;
   // set up the integration channels;
   vector<tPDPtr> rho;
@@ -288,6 +291,7 @@ OmegaPionSNDCurrent::current(tcPDPtr resonance,
   for(unsigned int ix=0;ix<3;++ix) {
     ret[ix] = pre*Helicity::epsilon(q,temp[ix],momenta[1]);
   }
+  if(imode==0) pre *=sqrt(2.);
   return ret;
 }
 

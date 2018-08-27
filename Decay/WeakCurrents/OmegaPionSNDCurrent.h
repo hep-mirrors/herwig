@@ -30,7 +30,6 @@ public:
    */
   OmegaPionSNDCurrent();
 
-
 public:
 
   /** @name Methods for the construction of the phase space integrator. */
