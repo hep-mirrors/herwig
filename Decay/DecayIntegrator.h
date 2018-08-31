@@ -394,6 +394,11 @@ protected:
    */
   void epsilonPS(Energy in) {_eps=in;}
 
+  /**
+   *  Clear the models
+   */
+  void clearModes() {_modes.clear();}
+
 protected:
   
   /** @name Standard Interfaced functions. */

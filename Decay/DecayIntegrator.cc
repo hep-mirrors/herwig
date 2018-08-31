@@ -61,11 +61,6 @@ DescribeAbstractClass<DecayIntegrator,HwDecayerBase>
 describeHerwigDecayIntegrator("Herwig::DecayIntegrator", "Herwig.so");
   
 void DecayIntegrator::Init() {
-    
-  static RefVector<DecayIntegrator,DecayPhaseSpaceMode> interfaceModes
-    ("Modes",
-     "The phase space integration modes.",
-     &DecayIntegrator::_modes, 0, false, false, true, true); 
   
   static ClassDocumentation<DecayIntegrator> documentation
     ("The DecayIntegrator class is a base decayer class "

@@ -49,7 +49,7 @@ using namespace ThePEG;
    * @author  Peter Richardson
    */
 
-class DecayPhaseSpaceChannel: public Interfaced {
+class DecayPhaseSpaceChannel: public Base {
 
   /**
    *  A friend output operator to allow the channel to be outputted for
@@ -140,6 +140,11 @@ public:
       if(_intdau2[ix]==oldp) _intdau2[ix]=newp;
     }
   }
+
+  /**
+   *  Check the kinematics
+   */
+  bool checkKinematics();
   //@}
 
 protected:
@@ -215,25 +220,8 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
-  
-protected:
-  
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const {return new_ptr(*this);}
 
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
-protected:  
+public:  
 
   /** @name Standard Interfaced functions. */
   //@{
@@ -242,13 +230,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit();
+  virtual void init();
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  virtual void doinitrun();
+  virtual void initrun();
   //@}
 
 private:

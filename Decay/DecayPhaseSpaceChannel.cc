@@ -44,10 +44,10 @@ void DecayPhaseSpaceChannel::persistentInput(PersistentIStream & is, int) {
      >> iunit(_intmass2,GeV2) >> iunit(_intmwidth,GeV2) >> _intpower
      >> _intdau1 >> _intdau2 >> _intext >> _mode;
 }
-  
+
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<DecayPhaseSpaceChannel,Interfaced>
+DescribeClass<DecayPhaseSpaceChannel,Base>
 describeHerwigDecayPhaseSpaceChannel("Herwig::DecayPhaseSpaceChannel", "Herwig.so");
 
 void DecayPhaseSpaceChannel::Init() {
@@ -56,35 +56,6 @@ void DecayPhaseSpaceChannel::Init() {
     ("IntermediateParticles",
      "The intermediate particles in the decay chain.",
      &DecayPhaseSpaceChannel::_intpart, 0, false, false, true, false);
-  
-  static ParVector<DecayPhaseSpaceChannel,int> interfacejactype
-    ("Jacobian",
-     "The type of Jacobian to use for the intermediate particle",
-     &DecayPhaseSpaceChannel::_jactype,
-     0, 0, 0, 0, 1, false, false, true);
-  
-  static ParVector<DecayPhaseSpaceChannel,double> interfaceIntermediatePower
-    ("IntermediatePower",
-     "The power to use in the Jacobian",
-     &DecayPhaseSpaceChannel::_intpower,
-     0, 0, 0, -10, 10, false, false, true);
-  
-  static ParVector<DecayPhaseSpaceChannel,int> interfaceIntermediateDau1
-    ("IntermediateDaughter1",
-     "First Daughter of the intermediate",
-     &DecayPhaseSpaceChannel::_intdau1,
-     0, 0, 0, -10, 10, false, false, true);
-  
-  static ParVector<DecayPhaseSpaceChannel,int> interfaceIntermediateDau2
-    ("IntermediateDaughter2",
-     "Second Daughter of the intermediate",
-     &DecayPhaseSpaceChannel::_intdau2,
-     0, 0, 0, -10, 10, false, false, true);
-  
-  static ClassDocumentation<DecayPhaseSpaceChannel> documentation
-    ("The DecayPhaseSpaceChannel class defines a channel"
-     " for the multichannel integration of the phase space for a decay.");
-  
 }
 
 // generate the momenta of the external particles
@@ -327,12 +298,9 @@ ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceChannel & channe
 }
 
 // doinit method  
-void DecayPhaseSpaceChannel::doinit() {
-  Interfaced::doinit();
+void DecayPhaseSpaceChannel::init() {
   // check if the mode pointer exists
-  if(!_mode){throw InitException() << "DecayPhaseSpaceChannel::doinit() the " 
-				   << "channel must have a pointer to a decay mode "
-				   << Exception::abortnow;}
+  assert(_mode);
   // masses and widths of the intermediate particles
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
     _intmass.push_back(_intpart[ix]->mass());
@@ -403,8 +371,7 @@ void DecayPhaseSpaceChannel::doinit() {
   }
 }
 
-void DecayPhaseSpaceChannel::doinitrun() {
-  Interfaced::doinitrun();
+void DecayPhaseSpaceChannel::initrun() {
   if(!_mode->testOnShell()) return;
   _intmass.clear();
   _intwidth.clear();
@@ -425,8 +392,9 @@ void DecayPhaseSpaceChannel::doinitrun() {
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
     if(_intwidth[ix]==0.*MeV && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(0.*GeV);
-      for(unsigned int iy=0;iy<_intext[ix].size();++iy)
+      for(unsigned int iy=0;iy<_intext[ix].size();++iy) {
 	massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
+      }
       // check if can be on-shell
       if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
 	string modeout;
@@ -609,4 +577,19 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   double gammarest = p.e()/p.mass();
   p1.boost( bv , gammarest );
   p2.boost( bv , gammarest );
+}
+
+bool DecayPhaseSpaceChannel::checkKinematics() {
+  Energy massmax = _mode->externalParticles(0)->massMax();
+  for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+    massmax -= _mode->externalParticles(ix)->massMin();
+  for(unsigned int ix=1;ix<_intpart.size();++ix) {
+    Energy massmin(0.*GeV);
+    for(unsigned int iy=0;iy<_intext[ix].size();++iy) {
+      massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
+    }
+    if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin)
+      return false;
+  }
+  return true;
 }

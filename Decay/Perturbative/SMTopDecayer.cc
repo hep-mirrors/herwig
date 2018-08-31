@@ -308,7 +308,6 @@ void SMTopDecayer::doinit() {
     Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
     Wchannel->addIntermediate(_wplus,0,0.0,2,3);
-    Wchannel->init();
     mode->addChannel(Wchannel);
     addMode(mode,_wleptonwgt[(i-11)/2],wgt);
   }
@@ -324,7 +323,6 @@ void SMTopDecayer::doinit() {
 	Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
 	Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
 	Wchannel->addIntermediate(_wplus,0,0.0,2,3);
-	Wchannel->init();
 	mode->addChannel(Wchannel);
 	addMode(mode,_wquarkwgt[iz],wgt);
 	++iz;
