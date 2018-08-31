@@ -306,8 +306,9 @@ createDecayMode(vector<NBDiagram> & mode,
     if ( Debug::level > 1 )
       generator()->log() << "Partial width is: " << width / GeV << " GeV\n";
     if(width==ZERO) {
-      generator()->log() << "Partial width for " 
-			 << tag << " so mode not created \n";
+      if ( Debug::level > 1 )
+	generator()->log() << "Partial width for " 
+			   << tag << " zero so mode not created \n";
       generator()->preinitRemove(decayer);
       return;
     }
