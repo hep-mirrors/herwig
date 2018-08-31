@@ -177,51 +177,12 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 void GeneralThreeBodyDecayer::doinit() {
   DecayIntegrator::doinit();
   if(outgoing_.empty()) return;
-  // create the phase space integrator
-  tPDVector extpart(1,incoming_);
-  extpart.insert(extpart.end(),outgoing_.begin(),outgoing_.end());
-  // create the integration channels for the decay
-  DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this,true)));
-  DecayPhaseSpaceChannelPtr newchannel;
-  // create the phase-space channels for the integration
-  unsigned int nmode(0);
-  for(unsigned int ix=0;ix<diagrams_.size();++ix) {
-    if(diagrams_[ix].channelType==TBDiagram::fourPoint||
-       diagrams_[ix].channelType==TBDiagram::UNDEFINED) continue;
-    // create the new channel
-    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-    int jac = 0;
-    double power = 0.0;
-    if ( diagrams_[ix].intermediate->mass() == ZERO ||
-	 diagrams_[ix].intermediate->width() == ZERO ) {
-      jac = 1;
-      power = -2.0;
-    }
-    if(diagrams_[ix].channelType==TBDiagram::channel23) {
-      newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 2,3);
-    }
-    else if(diagrams_[ix].channelType==TBDiagram::channel13) {
-      newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
-      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 1,3);
-    }
-    else if(diagrams_[ix].channelType==TBDiagram::channel12) {
-      newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
-      newchannel->addIntermediate(diagrams_[ix].intermediate,jac,power, 1,2);
-    }
-    diagmap_.push_back(ix);
-    mode->addChannel(newchannel);
-    ++nmode;
-  }
-  if(nmode==0) {
-    string mode = extpart[0]->PDGName() + "->";
-    for(unsigned int ix=1;ix<extpart.size();++ix) mode += extpart[ix]->PDGName() + " ";
-    throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
-		      << "doinit() for " << mode << "\n" << Exception::runerror;
-  }
-  // add the mode
-  vector<double> wgt(nmode,1./double(nmode));
-  addMode(mode,1.,wgt);
+  setupDiagrams(false);
+}
+
+void GeneralThreeBodyDecayer::doinitrun() {
+  setupDiagrams(true);
+  DecayIntegrator::doinitrun();
 }
 
 double GeneralThreeBodyDecayer::
@@ -1025,4 +986,67 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     }
   }
   return true;
+}
+
+void GeneralThreeBodyDecayer::setupDiagrams(bool kinCheck) {
+  clearModes();
+  // create the phase space integrator
+  tPDVector extpart(1,incoming_);
+  extpart.insert(extpart.end(),outgoing_.begin(),outgoing_.end());
+  // create the integration channels for the decay
+  DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this,true)));
+  DecayPhaseSpaceChannelPtr newchannel;
+  // create the phase-space channels for the integration
+  unsigned int nmode(0);
+  unsigned int idiag(0);
+  for(vector<TBDiagram>::iterator it = diagrams_.begin();it!=diagrams_.end();++it) {
+    if(it->channelType==TBDiagram::fourPoint||
+       it->channelType==TBDiagram::UNDEFINED) {
+      idiag+=1;
+      continue;
+    }
+    // create the new channel
+    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    int jac = 0;
+    double power = 0.0;
+    if ( it->intermediate->mass() == ZERO ||
+  	 it->intermediate->width() == ZERO ) {
+      jac = 1;
+      power = -2.0;
+    }
+    if(it->channelType==TBDiagram::channel23) {
+      newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
+      newchannel->addIntermediate(it->intermediate,jac,power, 2,3);
+    }
+    else if(it->channelType==TBDiagram::channel13) {
+      newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
+      newchannel->addIntermediate(it->intermediate,jac,power, 1,3);
+    }
+    else if(it->channelType==TBDiagram::channel12) {
+      newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
+      newchannel->addIntermediate(it->intermediate,jac,power, 1,2);
+    }
+    newchannel->init();
+    if(kinCheck&&!newchannel->checkKinematics()) {
+      generator()->log() << "Erasing diagram "
+			 << *it
+			 << "from three body decay as zero width propagator can be on-shell,\n"
+			 << "hopefully this diagram is zero in your model, but you should check this\n";
+      it = diagrams_.erase(it);
+      continue;
+    }
+    diagmap_.push_back(idiag);
+    mode->addChannel(newchannel);
+    ++nmode;
+    ++idiag;
+  }
+  if(nmode==0) {
+    string mode = extpart[0]->PDGName() + "->";
+    for(unsigned int ix=1;ix<extpart.size();++ix) mode += extpart[ix]->PDGName() + " ";
+    throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
+  		      << "doinit() for " << mode << "\n" << Exception::runerror;
+  }
+  // // add the mode
+  vector<double> wgt(nmode,1./double(nmode));
+  addMode(mode,1.,wgt);
 }
