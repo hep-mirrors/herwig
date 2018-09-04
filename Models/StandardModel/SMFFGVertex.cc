@@ -43,6 +43,7 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -strongCoupling(q2);
+    cerr << "testing coupling " << sqr(_couplast)/4./Constants::pi << "\n";
     _q2last=q2;
   }
   // the left and right couplings
