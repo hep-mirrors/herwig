@@ -16,10 +16,12 @@
 
 using namespace Herwig;
 
+HERWIG_INTERPOLATOR_CLASSDESC(TwoPionCzyzCurrent,double,Energy2)
+
 TwoPionCzyzCurrent::TwoPionCzyzCurrent()
   : omegaMag_(18.7e-4), omegaPhase_(0.106),
     omegaMass_(782.4*MeV),omegaWidth_(8.33*MeV), beta_(2.148),
-    nMax_(1000) {
+    nMax_(1000), eMax_(ZERO) {
   // various parameters
   rhoMag_  =  {1.,1.,0.59,0.048,0.40,0.43};
   rhoPhase_ = {0.,0.,-2.20,-2.0,-2.9,1.19}; 
@@ -46,7 +48,8 @@ void TwoPionCzyzCurrent::persistentOutput(PersistentOStream & os) const {
      << rhoWgt_ << rhoMag_ << rhoPhase_
      << ounit(rhoMasses_,GeV) << ounit(rhoWidths_,GeV)
      << ounit(mass_,GeV) << ounit(width_,GeV) << coup_
-     << dh_ << ounit(hres_,GeV2) << ounit(h0_,GeV2) << nMax_;
+     << dh_ << ounit(hres_,GeV2) << ounit(h0_,GeV2) << nMax_
+     << ounit(eMax_,GeV) << fpiRe_ << fpiIm_;
 }
 
 void TwoPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
@@ -55,13 +58,14 @@ void TwoPionCzyzCurrent::persistentInput(PersistentIStream & is, int) {
      >> rhoWgt_ >> rhoMag_ >> rhoPhase_
      >> iunit(rhoMasses_,GeV) >> iunit(rhoWidths_,GeV)
      >> iunit(mass_,GeV) >> iunit(width_,GeV) >> coup_
-     >> dh_ >> iunit(hres_,GeV2) >> iunit(h0_,GeV2) >> nMax_;
+     >> dh_ >> iunit(hres_,GeV2) >> iunit(h0_,GeV2) >> nMax_
+     >> iunit(eMax_,GeV) >> fpiRe_ >> fpiIm_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<TwoPionCzyzCurrent,WeakCurrent>
-  describeHerwigTwoPionCzyzCurrent("Herwig::TwoPionCzyzCurrent", "HwWeakCurrents.so");
+describeHerwigTwoPionCzyzCurrent("Herwig::TwoPionCzyzCurrent", "HwWeakCurrents.so");
 
 void TwoPionCzyzCurrent::Init() {
 
@@ -193,6 +197,20 @@ void TwoPionCzyzCurrent::doinit() {
   for(unsigned int ix=1;ix<rhoMasses_.size();++ix) {
     coup_[ix] = rhoWgt_[ix]*cwgt/rhoSum;
   }
+  // construct the interpolator
+  vector<Energy2> en;
+  vector<double> re,im;
+  Energy step = (eMax_-2.*mpi)/nMax_;
+  Energy Q = 2.*mpi;
+  for(unsigned int ix=0;ix<nMax_+1;++ix) {
+    Complex value = FpiRemainder(sqr(Q),mpi,mpi);
+    Q+=step;
+    en.push_back(sqr(Q));
+    re.push_back(value.real());
+    im.push_back(value.imag());
+  }
+  fpiRe_ = make_InterpolatorPtr(re,en,3);
+  fpiIm_ = make_InterpolatorPtr(im,en,3);
 }
 
 // complete the construction of the decay mode for integration
@@ -235,6 +253,7 @@ bool TwoPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
+  eMax_=upp;
   // set up the resonances
   tPDPtr res[3];
   if(icharge==0) {
@@ -394,7 +413,7 @@ void TwoPionCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
 Complex TwoPionCzyzCurrent::Fpi(Energy2 q2,const int imode, const int ichan,
 				tcPDPtr resonance, Energy ma, Energy mb) const {
   Complex FPI(0.);
-  unsigned int imin=0, imax = coup_.size();
+  unsigned int imin=0, imax = 4;
   if(ichan>0) {
     imin = ichan;
     imax = ichan+1;
@@ -424,7 +443,18 @@ Complex TwoPionCzyzCurrent::Fpi(Energy2 q2,const int imode, const int ichan,
       term *= 1./(1.+omegaWgt_)*(1.+omegaWgt_*Resonance::BreitWignerFW(q2,omegaMass_,omegaWidth_));
     FPI += term;
   }
+  // interpolator for the higher resonances
+  if(imax==4) FPI += Complex((*fpiRe_)(q2),(*fpiIm_)(q2));
   // factor for cc mode
   if(imode==0)           FPI *= sqrt(2.0);
   return FPI;
+}
+
+Complex TwoPionCzyzCurrent::FpiRemainder(Energy2 q2, Energy ma, Energy mb) const {
+  Complex output(0.);
+  for(unsigned int ix=4;ix<coup_.size();++ix) {
+    output += coup_[ix]*Resonance::BreitWignerGS(q2,mass_[ix],width_[ix],
+						 ma,mb,h0_[ix],dh_[ix],hres_[ix]);
+  }
+  return output;
 }

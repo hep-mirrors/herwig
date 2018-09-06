@@ -6,6 +6,7 @@
 //
 
 #include "WeakCurrent.h"
+#include "Herwig/Utilities/Interpolator.h"
 
 namespace Herwig {
 
@@ -113,8 +114,13 @@ public:
   /**
    *  Calculation of the pion form factor
    */
-  Complex Fpi(Energy2 q2,const int imode, const int ichan,tcPDPtr resonance,
+  Complex Fpi(Energy2 q2,const int imode, const int ichan, tcPDPtr resonance,
 	      Energy ma, Energy mb) const;
+
+  /**
+   *  Calculation of the pion form factor
+   */
+  Complex FpiRemainder(Energy2 q2, Energy ma, Energy mb) const;
   
 public:
 
@@ -279,6 +285,16 @@ private:
    *  Breit-Wigner
    */
   vector<Energy2> h0_;
+
+  /**
+   *  The maximum energy
+   */
+  Energy eMax_;
+
+  /**
+   *  Interpolators for the higher resonance components for speed
+   */
+  Interpolator<double,Energy2>::Ptr fpiRe_, fpiIm_;
 };
 
 }
