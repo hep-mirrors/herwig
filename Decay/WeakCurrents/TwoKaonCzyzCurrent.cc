@@ -17,6 +17,8 @@
 
 using namespace Herwig;
 
+HERWIG_INTERPOLATOR_CLASSDESC(TwoKaonCzyzCurrent,double,Energy2)
+
 TwoKaonCzyzCurrent::TwoKaonCzyzCurrent()
   : betaRho_(2.23), betaOmega_(2.23), betaPhi_(1.97),
     nMax_(1000), etaPhi_(1.04), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
@@ -62,7 +64,8 @@ void TwoKaonCzyzCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(phiMasses_,GeV) << ounit(phiWidths_,GeV)
      << ounit(mass_,GeV) << ounit(width_,GeV) << coup_
      << dh_ << ounit(hres_,GeV2) << ounit(h0_,GeV2)
-     << nMax_ << etaPhi_ << gammaOmega_ << gammaPhi_ << ounit(mpi_,GeV);
+     << nMax_ << etaPhi_ << gammaOmega_ << gammaPhi_ << ounit(mpi_,GeV)
+     << ounit(eMax_,GeV) << fKI0Re_ << fKI0Im_ << fKI1Re_ << fKI1Im_;
 }
 
 void TwoKaonCzyzCurrent::persistentInput(PersistentIStream & is, int) {
@@ -73,7 +76,8 @@ void TwoKaonCzyzCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(phiMasses_,GeV) >> iunit(phiWidths_,GeV)
      >> iunit(mass_,GeV) >> iunit(width_,GeV) >> coup_
      >> dh_ >> iunit(hres_,GeV2) >> iunit(h0_,GeV2)
-     >> nMax_ >> etaPhi_ >> gammaOmega_ >> gammaPhi_ >> iunit(mpi_,GeV);
+     >> nMax_ >> etaPhi_ >> gammaOmega_ >> gammaPhi_ >> iunit(mpi_,GeV)
+     >> iunit(eMax_,GeV) >> fKI0Re_ >> fKI0Im_ >> fKI1Re_ >> fKI1Im_;
 }
 
 // The following static variable is needed for the type
@@ -344,6 +348,30 @@ void TwoKaonCzyzCurrent::doinit() {
   }
 }
 
+void TwoKaonCzyzCurrent::constructInterpolators() const {
+  // construct the interpolators
+  vector<Energy2> en;
+  vector<double> re0,im0;
+  vector<double> re1,im1;
+  Energy mK = getParticleData(ParticleID::Kplus)->mass();
+  Energy2 step = (sqr(eMax_)-sqr(2.*mK))/nMax_;
+  Energy2 Q2 = sqr(2.*mK);
+  for(unsigned int ix=0;ix<nMax_+1;++ix) {
+    Complex value = FkaonRemainderI1(Q2);
+    re1.push_back(value.real());
+    im1.push_back(value.imag());
+    value = FkaonRemainderI0(Q2,mK,mK);
+    re0.push_back(value.real());
+    im0.push_back(value.imag());
+    en.push_back(Q2);
+    Q2+=step;
+  }
+  fKI0Re_ = make_InterpolatorPtr(re0,en,3);
+  fKI0Im_ = make_InterpolatorPtr(im0,en,3);
+  fKI1Re_ = make_InterpolatorPtr(re1,en,3);
+  fKI1Im_ = make_InterpolatorPtr(im1,en,3);
+}
+
 // complete the construction of the decay mode for integration
 bool TwoKaonCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
 				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
@@ -388,6 +416,7 @@ bool TwoKaonCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
+  eMax_=upp;
   // set the resonances
   vector<tPDPtr> res;
   if(icharge==0) {
@@ -610,7 +639,7 @@ void TwoKaonCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
 Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
 				  IsoSpin::IsoSpin Itotal, tcPDPtr resonance,
 				  Energy ma, Energy mb) const {
-  unsigned int imin=0, imax = coup_[0].size();
+  unsigned int imin=0, imax = 4;
   bool on[3] = {(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne),
 		(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && imode!=0,
 		(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && imode!=0};
@@ -673,7 +702,7 @@ Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
 							   mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
       FK += imode!=1 ? 0.5*term : -0.5*term;
     }
-   // omega exchange
+    // omega exchange
     if(on[1]) {
       Complex term = coup_[1][ix]*Resonance::BreitWignerFW(q2,mass_[1][ix],width_[1][ix]);
       FK += 1./6.*term;
@@ -685,7 +714,36 @@ Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
       FK += term/3.;
     }
   }
+  // remainder pieces
+  if(imax==4) {
+    if(!fKI1Re_) constructInterpolators();
+    Complex i1((*fKI1Re_)(q2),(*fKI1Im_)(q2));
+    FK += imode!=1 ? i1 : -i1;
+    FK += Complex((*fKI0Re_)(q2),(*fKI0Im_)(q2));
+  }
   // factor for cc mode
   if(imode==0) FK *= sqrt(2.0);
   return FK;
+}
+
+Complex  TwoKaonCzyzCurrent::FkaonRemainderI1(Energy2 q2) const {
+  Complex output(0.);
+  for(unsigned int ix=4;ix<coup_[0].size();++ix) {
+    output += 0.5*coup_[0][ix]*Resonance::BreitWignerGS(q2,mass_[0][ix],width_[0][ix],
+						    mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
+  }
+  return output;
+}
+
+Complex  TwoKaonCzyzCurrent::FkaonRemainderI0(Energy2 q2,Energy ma, Energy mb) const {
+  Complex output(0.);
+  // omega exchange
+  for(unsigned int ix=4;ix<coup_[1].size();++ix) {
+    output += 1./6.*coup_[1][ix]*Resonance::BreitWignerFW(q2,mass_[1][ix],width_[1][ix]);
+  }
+  // phi exchange
+  for(unsigned int ix=4;ix<coup_[2].size();++ix) {
+    output += 1./3.*coup_[2][ix]*Resonance::BreitWignerPWave(q2,mass_[2][ix],width_[2][ix],ma,mb);
+  }
+  return output;
 }

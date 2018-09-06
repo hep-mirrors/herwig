@@ -117,6 +117,17 @@ public:
   Complex Fkaon(Energy2 q2,const int imode, const int ichan,
 		IsoSpin::IsoSpin Itotal, tcPDPtr resonance,
 		Energy ma, Energy mb) const;
+  
+  /**
+   *  Calculation of the kaon form factor, remainder I=1
+   */
+  Complex FkaonRemainderI1(Energy2 q2) const;
+  
+  /**
+   *  Calculation of the kaon form factor, remainder I=0
+   */
+  Complex FkaonRemainderI0(Energy2 q2,Energy ma, Energy mb) const;
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -172,6 +183,11 @@ protected:
    */
   virtual void doinit();
   //@}
+
+  /**
+   *   Construct the interpolators
+   */
+  void constructInterpolators() const;
 
 private:
 
@@ -345,6 +361,17 @@ private:
    *  The charged pion mass
    */
   Energy mpi_;
+
+  /**
+   *  The maximum energy
+   */
+  Energy eMax_;
+
+  /**
+   *  Interpolators for the higher resonance components for speed
+   */
+  mutable Interpolator<double,Energy2>::Ptr fKI0Re_, fKI0Im_,fKI1Re_, fKI1Im_;
+  
 };
 
 }

@@ -178,6 +178,11 @@ protected:
   virtual void doinit();
   //@}
 
+  /**
+   *   Construct the interpolators
+   */
+  void constructInterpolators() const;
+
 private:
 
   /**
@@ -294,7 +299,7 @@ private:
   /**
    *  Interpolators for the higher resonance components for speed
    */
-  Interpolator<double,Energy2>::Ptr fpiRe_, fpiIm_;
+  mutable Interpolator<double,Energy2>::Ptr fpiRe_, fpiIm_;
 };
 
 }

@@ -197,17 +197,21 @@ void TwoPionCzyzCurrent::doinit() {
   for(unsigned int ix=1;ix<rhoMasses_.size();++ix) {
     coup_[ix] = rhoWgt_[ix]*cwgt/rhoSum;
   }
-  // construct the interpolator
+}
+
+void TwoPionCzyzCurrent::constructInterpolators() const {
+  // construct the interpolators
+  Energy mpi(getParticleData(ParticleID::piplus)->mass());
   vector<Energy2> en;
   vector<double> re,im;
   Energy step = (eMax_-2.*mpi)/nMax_;
   Energy Q = 2.*mpi;
   for(unsigned int ix=0;ix<nMax_+1;++ix) {
     Complex value = FpiRemainder(sqr(Q),mpi,mpi);
-    Q+=step;
     en.push_back(sqr(Q));
     re.push_back(value.real());
     im.push_back(value.imag());
+    Q+=step;
   }
   fpiRe_ = make_InterpolatorPtr(re,en,3);
   fpiIm_ = make_InterpolatorPtr(im,en,3);
@@ -444,7 +448,10 @@ Complex TwoPionCzyzCurrent::Fpi(Energy2 q2,const int imode, const int ichan,
     FPI += term;
   }
   // interpolator for the higher resonances
-  if(imax==4) FPI += Complex((*fpiRe_)(q2),(*fpiIm_)(q2));
+  if(imax==4) {
+    if(!fpiRe_) constructInterpolators();
+    FPI += Complex((*fpiRe_)(q2),(*fpiIm_)(q2));
+  }
   // factor for cc mode
   if(imode==0)           FPI *= sqrt(2.0);
   return FPI;
