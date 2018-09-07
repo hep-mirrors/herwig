@@ -23,6 +23,7 @@ PionPhotonCurrent.h\
 TwoPionPhotonCurrent.h\
 TwoPionPhotonSNDCurrent.h\
 OmegaPionSNDCurrent.h\
+PhiPiCurrent.h\
 VectorMesonCurrent.h\
 FivePionCurrent.h \
 KPiCurrent.h\
@@ -32,7 +33,9 @@ TwoPionCzyzCurrent.h\
 TwoKaonCzyzCurrent.h\
 ThreePionCzyzCurrent.h\
 FourPionCzyzCurrent.h\
-EtaPiPiCurrent.h
+EtaPiPiCurrent.h\
+KKPiCurrent.h\
+KStarKCurrent.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -50,6 +53,7 @@ PionPhotonCurrent.cc \
 TwoPionPhotonCurrent.cc \
 TwoPionPhotonSNDCurrent.cc \
 OmegaPionSNDCurrent.cc \
+PhiPiCurrent.cc \
 VectorMesonCurrent.cc \
 FivePionCurrent.cc \
 KPiCurrent.cc \
@@ -59,4 +63,6 @@ TwoPionCzyzCurrent.cc \
 TwoKaonCzyzCurrent.cc \
 ThreePionCzyzCurrent.cc \
 FourPionCzyzCurrent.cc\
-EtaPiPiCurrent.cc
+EtaPiPiCurrent.cc\
+KKPiCurrent.cc\
+KStarKCurrent.cc
