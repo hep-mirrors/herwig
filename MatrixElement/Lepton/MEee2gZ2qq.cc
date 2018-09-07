@@ -73,8 +73,7 @@ void MEee2gZ2qq::getDiagrams() const {
 }
 
 Energy2 MEee2gZ2qq::scale() const {
-  return sqr(getParticleData(ParticleID::Z0)->mass());
-//   return sHat();
+  return sHat();
 }
 
 unsigned int MEee2gZ2qq::orderInAlphaS() const {
@@ -248,10 +247,10 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
 	for(outhel2=0;outhel2<2;++outhel2) {		
 	  // first the Z exchange diagram
 	  diag1 = FFZVertex_->evaluate(scale(),aout[outhel2],fout[outhel1],
-				       interZ);
+	  			       interZ);
 	  // then the photon exchange diagram
 	  diag2 = FFPVertex_->evaluate(scale(),aout[outhel2],fout[outhel1],
-				       interG);
+	  			       interG);
 	  // add up squares of individual terms
 	  total[1] += norm(diag1);
 	  Zboson(inhel1,inhel2,outhel1,outhel2) = diag1;
