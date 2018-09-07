@@ -48,6 +48,17 @@ create Herwig::MEee2Mesons MEee2EtaPiPi HwMELeptonLowEnergy.so
 create Herwig::EtaPiPiCurrent /Herwig/Decays/EtaPiPiCurrent 
 set MEee2EtaPiPi:WeakCurrent /Herwig/Decays/EtaPiPiCurrent
 
+create Herwig::MEee2Mesons MEee2KStarK HwMELeptonLowEnergy.so
+create Herwig::KStarKCurrent /Herwig/Decays/KStarKCurrent 
+set MEee2KStarK:WeakCurrent /Herwig/Decays/KStarKCurrent
+
+create Herwig::MEee2Mesons MEee2PhiPi HwMELeptonLowEnergy.so
+create Herwig::PhiPiCurrent /Herwig/Decays/PhiPiCurrent 
+set MEee2PhiPi:WeakCurrent /Herwig/Decays/PhiPiCurrent
+
+create Herwig::MEee2Baryons MEee2ppbar HwMELeptonLowEnergy.so
+create Herwig::CzyzNucleonFormFactor  /Herwig/Decays/CzyzFormFactor
+set MEee2ppbar:FormFactor /Herwig/Decays/CzyzFormFactor
 
 
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
@@ -56,14 +67,17 @@ set MEee2EtaPiPi:WeakCurrent /Herwig/Decays/EtaPiPiCurrent
 #insert SubProcess:MatrixElements 0 MEee3Pions
 #insert SubProcess:MatrixElements 0 MEee3Pions2
 #insert SubProcess:MatrixElements 0 MEee4Pions
-insert SubProcess:MatrixElements 0 MEee2EtaPiPi
+#insert SubProcess:MatrixElements 0 MEee2EtaPiPi
 #insert SubProcess:MatrixElements 0 MEee4Pions2
+#insert SubProcess:MatrixElements 0 MEee2ppbar
+insert SubProcess:MatrixElements 0  MEee2KStarK
+#insert SubProcess:MatrixElements 0  MEee2PhiPi
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set EventGenerator:EventHandler:LuminosityFunction:Energy 2.
+set EventGenerator:EventHandler:LuminosityFunction:Energy 2.2
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.1
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
