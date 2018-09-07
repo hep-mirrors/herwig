@@ -261,6 +261,7 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegratorPtr deca
 	wgt *= decayer->me2(-1,*inpart,outgoing_,momenta,DecayIntegrator::Initialize);
       }
       catch (Veto) {
+	while(!rStack_.empty()) rStack_.pop();
 	wgt=0.;
       }
       if(wgt>maxWeight_) maxWeight_ = wgt;
