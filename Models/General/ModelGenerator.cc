@@ -332,14 +332,15 @@ void ModelGenerator::doinit() {
       }
 
     }
-
+    // set the offshellness 
+    Energy minMass = minimumMass(parent);
+    Energy offShellNess = howOffShell_*parent->width();
+    if(minMass>parent->mass()-offShellNess) {
+      offShellNess = parent->mass()-minMass;
+    }
+    parent->widthCut(offShellNess);
+    
     if( parent->massGenerator() ) {
-      Energy minMass = minimumMass(parent);
-      Energy offShellNess = howOffShell_*parent->width();
-      if(minMass>parent->mass()-offShellNess) {
-	offShellNess = parent->mass()-minMass;
-      }
-      parent->widthCut(offShellNess);
 
       parent->massGenerator()->reset();
       if(decayOutput_==1)

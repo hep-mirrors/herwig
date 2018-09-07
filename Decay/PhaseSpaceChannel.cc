@@ -87,41 +87,29 @@ ostream & Herwig::operator<<(ostream & os, const PhaseSpaceChannel & channel) {
 void PhaseSpaceChannel::initrun(tPhaseSpaceModePtr mode) {
   mode_=mode;
   if(!mode_->testOnShell_) return;
-  assert(false);
-  // _intmass.clear();
-  // _intwidth.clear();
-  // _intmass2.clear();
-  // _intmwidth.clear();
-  // // masses and widths of the intermediate particles
-  // for(unsigned int ix=0;ix<_intpart.size();++ix) {
-  //   _intmass.push_back(_intpart[ix]->mass());
-  //   _intwidth.push_back(_intpart[ix]->width());
-  //   _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
-  //   _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
-  // }
-  // // ensure intermediates either have the width set, or
-  // // can't possibly be on-shell
-  // Energy massmax = mode_->externalParticles(0)->massMax();
-  // for(unsigned int ix=1;ix<mode_->numberofParticles();++ix) 
-  //   massmax -= mode_->externalParticles(ix)->massMin();
-  // for(unsigned int ix=0;ix<_intpart.size();++ix) {
-  //   if(_intwidth[ix]==0.*MeV && ix>0 && _jactype[ix]==0 ) {
-  //     Energy massmin(0.*GeV);
-  //     for(unsigned int iy=0;iy<_intext[ix].size();++iy)
-  // 	massmin += mode_->externalParticles(_intext[ix][iy])->massMin();
-  //     // check if can be on-shell
-  //     if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
-  // 	string modeout;
-  // 	for(unsigned int iy=0;iy<mode_->numberofParticles();++iy) {
-  // 	  modeout += mode_->externalParticles(iy)->PDGName() + " ";
-  // 	}
-  // 	throw Exception() << "Width zero for " << _intpart[ix]->PDGName()
-  // 			  << " in PhaseSpaceChannel::doinitrun() "
-  // 			  << modeout
-  // 			  << Exception::runerror;
-  //     }
-  //   }
-  // }
+  // ensure intermediates either have the width set, or
+  // can't possibly be on-shell
+  Energy massmax = mode_->incoming().first->massMax();
+  for(tPDPtr out : mode_->outgoing()) 
+    massmax -= out->massMin();
+  for(unsigned int ix=1;ix<intermediates_.size();++ix) { 
+    if(intermediates_[ix].mWidth==ZERO && intermediates_[ix].jacobian==PhaseSpaceResonance::BreitWigner) {
+      Energy massmin(ZERO);
+      for(const int & iloc : intermediates_[ix].descendents) 
+	massmin += mode_->outgoing()[iloc-1]->massMin();
+      // check if can be on-shell
+      if(intermediates_[ix].mass2>=sqr(massmin)&&
+	 intermediates_[ix].mass2<=sqr(massmax+massmin)) {
+	string modeout = mode_->incoming().first->PDGName() + " -> ";
+	for(tPDPtr out : mode_->outgoing()) 
+	  modeout += out->PDGName() + " ";
+	throw Exception() << "Width zero for " << intermediates_[ix].particle->PDGName()
+			  << " in PhaseSpaceChannel::doinitrun() "
+			  << modeout
+			  << Exception::runerror;
+      }
+    }
+  }
 }
 
 // generate the momenta of the external particles
@@ -548,4 +536,19 @@ ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer PhaseSpaceChannel::createDiagram()
     diag = new_ptr((*diag,it->second,mode_->outgoing()[it->first-1]));
   }
   return diag;
+}
+
+bool PhaseSpaceChannel::checkKinematics() {
+  Energy massmax = mode_->incoming().first->massMax();
+  for(tPDPtr out : mode_->outgoing()) 
+    massmax -= out->massMin();
+  for(unsigned int ix=1;ix<intermediates_.size();++ix) {
+    Energy massmin(ZERO);
+    for(const int & iloc : intermediates_[ix].descendents) 
+      massmin += mode_->outgoing()[iloc-1]->massMin();
+    if(intermediates_[ix].mass2>=sqr(massmin)&&
+       intermediates_[ix].mass2<=sqr(massmax+massmin))
+      return false;
+  }
+  return true;
 }

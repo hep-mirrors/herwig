@@ -177,43 +177,12 @@ bool GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 void GeneralThreeBodyDecayer::doinit() {
   DecayIntegrator::doinit();
   if(outgoing_.empty()) return;
-  // create the phase space integrator
-  // create the integration channels for the decay
-  PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(incoming_,outgoing_,1.)));
-  // create the phase-space channels for the integration
-  unsigned int nmode(0);
-  for(unsigned int ix=0;ix<diagrams_.size();++ix) {
-    if(diagrams_[ix].channelType==TBDiagram::fourPoint||
-       diagrams_[ix].channelType==TBDiagram::UNDEFINED) continue;
-    // create the new channel
-    PhaseSpaceChannel newChannel(mode);
-    int jac = 0;
-    double power = 0.0;
-    if ( diagrams_[ix].intermediate->mass() == ZERO ||
-	 diagrams_[ix].intermediate->width() == ZERO ) {
-      jac = 1;
-      power = -2.0;
-    }
-    if(diagrams_[ix].channelType==TBDiagram::channel23)
-      newChannel = (newChannel,0,diagrams_[ix].intermediate,0,1,1,2,1,3);
-    else if(diagrams_[ix].channelType==TBDiagram::channel13)
-      newChannel = (newChannel,0,diagrams_[ix].intermediate,0,2,1,1,1,3);
-    else if(diagrams_[ix].channelType==TBDiagram::channel12)
-      newChannel = (newChannel,0,diagrams_[ix].intermediate,0,3,1,1,1,2);
-    if(jac==1)
-      newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,power);
-    diagmap_.push_back(ix);
-    mode->addChannel(newChannel);
-    ++nmode;
-  }
-  if(nmode==0) {
-    string mode = incoming_->PDGName() + "->";
-    for(unsigned int ix=0;ix<outgoing_.size();++ix) mode += outgoing_[ix]->PDGName() + " ";
-    throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
-		      << "doinit() for " << mode << "\n" << Exception::runerror;
-  }
-  // add the mode
-  addMode(mode);
+  setupDiagrams(false);
+}
+
+void GeneralThreeBodyDecayer::doinitrun() {
+  setupDiagrams(true);
+  DecayIntegrator::doinitrun();
 }
 
 double GeneralThreeBodyDecayer::
@@ -1013,4 +982,59 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
     }
   }
   return true;
+}
+
+void GeneralThreeBodyDecayer::setupDiagrams(bool kinCheck) {
+  clearModes();
+  // create the phase space integrator
+  // create the integration channels for the decay
+  PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(incoming_,outgoing_,1.)));
+  // create the phase-space channels for the integration
+  unsigned int nmode(0);
+  unsigned int idiag(0);
+  for(vector<TBDiagram>::iterator it = diagrams_.begin();it!=diagrams_.end();++it) {
+    if(it->channelType==TBDiagram::fourPoint||
+       it->channelType==TBDiagram::UNDEFINED) {
+      idiag+=1;
+      continue;
+    }
+    // create the new channel
+    PhaseSpaceChannel newChannel(mode);
+    int jac = 0;
+    double power = 0.0;
+    if ( it->intermediate->mass() == ZERO ||
+  	 it->intermediate->width() == ZERO ) {
+      jac = 1;
+      power = -2.0;
+    }
+    if(it->channelType==TBDiagram::channel23)
+      newChannel = (newChannel,0,it->intermediate,0,1,1,2,1,3);
+    else if(it->channelType==TBDiagram::channel13)
+      newChannel = (newChannel,0,it->intermediate,0,2,1,1,1,3);
+    else if(it->channelType==TBDiagram::channel12)
+      newChannel = (newChannel,0,it->intermediate,0,3,1,1,1,2);
+    if(jac==1)
+      newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,power);
+    if(kinCheck&&!newChannel.checkKinematics()) {
+      generator()->log() << "Erasing diagram "
+			 << *it
+			 << "from three body decay as zero width propagator can be on-shell,\n"
+			 << "hopefully this diagram is zero in your model, but you should check this\n";
+      it = diagrams_.erase(it);
+      if(it == diagrams_.end()) break;
+      continue;
+    }
+    diagmap_.push_back(idiag);
+    mode->addChannel(newChannel);
+    ++nmode;
+    ++idiag;
+  }
+  if(nmode==0) {
+    string mode = incoming_->PDGName() + "->";
+    for(unsigned int ix=0;ix<outgoing_.size();++ix) mode += outgoing_[ix]->PDGName() + " ";
+    throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
+		      << "doinit() for " << mode << "\n" << Exception::runerror;
+  }
+  // add the mode
+  addMode(mode);
 }

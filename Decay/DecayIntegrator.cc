@@ -35,7 +35,6 @@ DescribeAbstractClass<DecayIntegrator,HwDecayerBase>
 describeHerwigDecayIntegrator("Herwig::DecayIntegrator", "Herwig.so");
 
 void DecayIntegrator::Init() {
-
   static ClassDocumentation<DecayIntegrator> documentation
     ("The DecayIntegrator class is a base decayer class "
      "including a multi-channel integrator.");

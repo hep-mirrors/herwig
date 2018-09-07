@@ -395,7 +395,13 @@ protected:
    * Set the epsilon parameter
    */
   void epsilonPS(Energy in) {eps_=in;}
-  //@}
+
+  /**
+   *  Clear the models
+   */
+  void clearModes() {modes_.clear();}
+
+protected:
   
   /**
    * Number of decay modes

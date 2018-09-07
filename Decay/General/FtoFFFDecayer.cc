@@ -44,8 +44,8 @@ void FtoFFFDecayer::Init() {
 
 }
 
-void FtoFFFDecayer::doinit() {
-  GeneralThreeBodyDecayer::doinit();
+void FtoFFFDecayer::setupDiagrams(bool kinCheck) {
+  GeneralThreeBodyDecayer::setupDiagrams(kinCheck);
   if(outgoing().empty()) return;
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
@@ -61,7 +61,7 @@ void FtoFFFDecayer::doinit() {
       AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a scalar diagram in FtoFFFDecayer::doinit()"
+	<< "Invalid vertices for a scalar diagram in FtoFFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       sca_[ix] = make_pair(vert1, vert2);
     }
@@ -71,7 +71,7 @@ void FtoFFFDecayer::doinit() {
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a vector diagram in FtoFFFDecayer::doinit()"
+	<< "Invalid vertices for a vector diagram in FtoFFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       vec_[ix] = make_pair(vert1, vert2);
     }
@@ -81,7 +81,7 @@ void FtoFFFDecayer::doinit() {
       AbstractFFTVertexPtr vert2 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a tensor diagram in FtoFFFDecayer::doinit()"
+	<< "Invalid vertices for a tensor diagram in FtoFFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       ten_[ix] = make_pair(vert1, vert2);
     }

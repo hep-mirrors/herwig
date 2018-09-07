@@ -171,6 +171,11 @@ public:
    *  Initialize the channel
    */
   void initrun(tPhaseSpaceModePtr mode);
+  
+  /**
+   *  Check the kinematics
+   */
+  bool checkKinematics();
 
   /**
    *  The weight
