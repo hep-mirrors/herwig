@@ -588,7 +588,8 @@ bool DecayPhaseSpaceChannel::checkKinematics() {
     for(unsigned int iy=0;iy<_intext[ix].size();++iy) {
       massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
     }
-    if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin)
+    if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin &&
+       _intwidth[ix]==ZERO)
       return false;
   }
   return true;
