@@ -20,25 +20,25 @@ using namespace Herwig;
 HERWIG_INTERPOLATOR_CLASSDESC(TwoKaonCzyzCurrent,double,Energy2)
 
 TwoKaonCzyzCurrent::TwoKaonCzyzCurrent()
-  : betaRho_(2.23), betaOmega_(2.23), betaPhi_(1.97),
-    nMax_(1000), etaPhi_(1.04), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
+: betaRho_(2.21), betaOmega_(2.75), betaPhi_(1.91),
+  nMax_(1000), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
   using Constants::pi;
   // various parameters
   // rho parameters
-  rhoMag_    = {1.138, 0.043, 0.144,0.004,0.0662};
-  rhoPhase_  = {0    ,    pi,    pi,   pi,     0};
-  rhoMasses_ = {775.49*MeV,1465*MeV,1680*MeV};
-  rhoWidths_ = {149.4 *MeV,400 *MeV, 365*MeV};
+  rhoMag_    = {1.120, 0.107, 0.028,0.032};
+  rhoPhase_  = {0    ,    pi,    pi,    0};
+  rhoMasses_ = {775.49*MeV,1465*MeV,1720*MeV};
+  rhoWidths_ = {149.4 *MeV,400 *MeV, 250*MeV};
   // omega parameters
-  omegaMag_    = {1.138, 0.043, 0.144,0.004,0.0662};
-  omegaPhase_  = {0    ,    pi,    pi,   pi,     0};
-  omegaMasses_ = {782.65*MeV,1425*MeV,1729*MeV};
-  omegaWidths_ = {8.49  *MeV, 145*MeV, 245*MeV};
+  omegaMag_    = {1.37, 0.173, 0.621,0.43};
+  omegaPhase_  = {0   ,    pi,    pi,   0};
+  omegaMasses_ = {782.65*MeV,1425*MeV,1670*MeV};
+  omegaWidths_ = {8.49  *MeV, 215*MeV, 315*MeV};
   // phi parameters
-  phiMag_    = {0.985,0.0042,0.0039,0.0033};
-  phiPhase_  = {0.   ,0.    ,0.    ,0.    };
+  phiMag_    = {0.947,0.0136,0.0214};
+  phiPhase_  = {0.   ,0.    ,0.    };
   phiMasses_ = {1019.415*MeV,1680*MeV};
-  phiWidths_ = {4.34    *MeV, 150*MeV};
+  phiWidths_ = {4.22    *MeV, 150*MeV};
   // set up for the modes in the base class
   addDecayMode(2,-1);
   addDecayMode(1,-1);
