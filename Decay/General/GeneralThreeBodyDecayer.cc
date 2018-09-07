@@ -1033,6 +1033,7 @@ void GeneralThreeBodyDecayer::setupDiagrams(bool kinCheck) {
 			 << "from three body decay as zero width propagator can be on-shell,\n"
 			 << "hopefully this diagram is zero in your model, but you should check this\n";
       it = diagrams_.erase(it);
+      if(it == diagrams_.end()) break;
       continue;
     }
     diagmap_.push_back(idiag);
