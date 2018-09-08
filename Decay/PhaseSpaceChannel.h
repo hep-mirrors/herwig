@@ -111,7 +111,7 @@ public:
   /**
    *  Default constructior
    */
-  PhaseSpaceChannel() : weight_(1.)  {};
+  PhaseSpaceChannel() : weight_(1.), initialized_(false)  {};
   
   /** 
    *  Constructor with incoming particles
@@ -253,7 +253,7 @@ public:
    */
   inline friend PersistentOStream & operator<<(PersistentOStream & os, 
 					       const PhaseSpaceChannel  & x) {
-    os << x.weight_ << x.intermediates_;
+    os << x.weight_ << x.initialized_ << x.intermediates_;
     return os;
   }
 
@@ -264,7 +264,7 @@ public:
    */
   inline friend PersistentIStream & operator>>(PersistentIStream & is,
 					       PhaseSpaceChannel & x) {
-    is >> x.weight_ >> x.intermediates_;
+    is >> x.weight_ >> x.initialized_ >> x.intermediates_;
     return is;
   }
   
@@ -356,6 +356,11 @@ private:
    *  The weight
    */
   double weight_;
+
+  /**
+   *  Whether or not its been initialized
+   */
+  bool initialized_;
 
 };
 

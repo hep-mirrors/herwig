@@ -11,13 +11,16 @@
 /** 
  *  Constructor with incoming particles
  */
-PhaseSpaceChannel::PhaseSpaceChannel(tPhaseSpaceModePtr inm) : mode_(inm), weight_(1.) {
+PhaseSpaceChannel::PhaseSpaceChannel(tPhaseSpaceModePtr inm) : mode_(inm), weight_(1.),
+							       initialized_(false) {
   if(!inm->incoming().second)
      intermediates_.push_back(PhaseSpaceResonance(inm->incoming().first));
 }
 
 void PhaseSpaceChannel::init(tPhaseSpaceModePtr mode) {
   mode_=mode;
+  if(initialized_) return;
+  initialized_=true;
   // find the descendents
   for(PhaseSpaceResonance & res : intermediates_)
     findChildren(res,res.descendents);
@@ -104,7 +107,7 @@ void PhaseSpaceChannel::initrun(tPhaseSpaceModePtr mode) {
 	for(tPDPtr out : mode_->outgoing()) 
 	  modeout += out->PDGName() + " ";
 	throw Exception() << "Width zero for " << intermediates_[ix].particle->PDGName()
-			  << " in PhaseSpaceChannel::doinitrun() "
+			  << " in PhaseSpaceChannel::initrun() "
 			  << modeout
 			  << Exception::runerror;
       }
@@ -262,10 +265,15 @@ InvEnergy2 PhaseSpaceChannel::massWeight(const PhaseSpaceResonance & res,
 					 Energy moff, Energy lower,
 					 Energy upper) const {
   InvEnergy2 wgt = ZERO;
-  if(lower>upper) throw PhaseSpaceError() << "PhaseSpaceChannel::massWeight not allowed " 
-					  << res.particle->PDGName() << "   " 
-					  << moff/GeV << " " << lower/GeV << " " << upper/GeV
-					  << Exception::eventerror;
+  if(lower>upper) {
+    string modestring = mode_->incoming().first->PDGName() + " -> ";
+    for(tPDPtr part :mode_->outgoing()) modestring += part->PDGName() + " ";
+    throw PhaseSpaceError() << "PhaseSpaceChannel::massWeight not allowed in"
+			    << modestring << " "
+			    << res.particle->PDGName() << "   " 
+			    << moff/GeV << " " << lower/GeV << " " << upper/GeV
+			    << Exception::eventerror;
+  }
   // use a Breit-Wigner 
   if ( res.jacobian == PhaseSpaceResonance::BreitWigner ) {
     double rhomin  = atanhelper(res,lower);
@@ -303,9 +311,16 @@ Energy PhaseSpaceChannel::generateMass(const PhaseSpaceResonance & res,
   static const Energy eps=1e-9*MeV;
   if(lower<eps) lower=eps;
   Energy mass=ZERO;
-  if(lower>upper) throw PhaseSpaceError() << "PhaseSpaceChannel::generateMass"
-					  << " not allowed" 
-					  << Exception::eventerror;
+  if(lower>upper) {
+    string modestring = mode_->incoming().first->PDGName() + " -> ";
+    for(tPDPtr part :mode_->outgoing()) modestring += part->PDGName() + " ";
+    throw PhaseSpaceError() << "PhaseSpaceChannel::generateMass"
+			    << " not allowed in"
+			    << modestring << " "
+			    << res.particle->PDGName()
+			    << " " << lower/GeV << " " << upper/GeV
+			    << Exception::eventerror;
+  }
   if(abs(lower-upper)/(lower+upper)>2e-10) {
     lower +=1e-10*(lower+upper);
     upper -=1e-10*(lower+upper);
@@ -539,6 +554,11 @@ ThePEG::Ptr<ThePEG::Tree2toNDiagram>::pointer PhaseSpaceChannel::createDiagram()
 }
 
 bool PhaseSpaceChannel::checkKinematics() {
+  // recalculate the masses and widths of the resonances
+  for(auto inter : intermediates_) {
+    inter.mass2 = sqr(inter.particle->mass());
+    inter.mWidth = inter.particle->mass()*inter.particle->width();
+  }
   Energy massmax = mode_->incoming().first->massMax();
   for(tPDPtr out : mode_->outgoing()) 
     massmax -= out->massMin();
@@ -547,7 +567,8 @@ bool PhaseSpaceChannel::checkKinematics() {
     for(const int & iloc : intermediates_[ix].descendents) 
       massmin += mode_->outgoing()[iloc-1]->massMin();
     if(intermediates_[ix].mass2>=sqr(massmin)&&
-       intermediates_[ix].mass2<=sqr(massmax+massmin))
+       intermediates_[ix].mass2<=sqr(massmax+massmin)&&
+       intermediates_[ix].mWidth==ZERO)
       return false;
   }
   return true;

@@ -1015,6 +1015,7 @@ void GeneralThreeBodyDecayer::setupDiagrams(bool kinCheck) {
       newChannel = (newChannel,0,it->intermediate,0,3,1,1,1,2);
     if(jac==1)
       newChannel.setJacobian(1,PhaseSpaceChannel::PhaseSpaceResonance::Power,power);
+    newChannel.init(mode);
     if(kinCheck&&!newChannel.checkKinematics()) {
       generator()->log() << "Erasing diagram "
 			 << *it
