@@ -650,7 +650,7 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                addedBRReweighter = True
-            elif "8-" not in paramterNane :
+            elif "8-" not in parameterName :
                 process+=selectDecayMode("h0",["h0->tau-,tau+;"])
                 addedBRReweighter = True
                 process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -674,7 +674,7 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                addedBRReweighter = True
-            elif "8-" not in paramterNane :
+            elif "8-" not in parameterName :
                 process+=selectDecayMode("h0",["h0->tau-,tau+;"])
                 addedBRReweighter = True
                 process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -996,7 +996,7 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                addedBRReweighter = True
-            elif "8-" not in paramterNane :
+            elif "8-" not in parameterName :
                 process+=selectDecayMode("h0",["h0->tau-,tau+;"])
                 addedBRReweighter = True
                 process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -1015,7 +1015,7 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                addedBRReweighter = True
-            elif "8-" not in paramterNane :
+            elif "8-" not in parameterName :
                 process+=selectDecayMode("h0",["h0->tau-,tau+;"])
                 addedBRReweighter = True
                 process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -1241,7 +1241,7 @@ elif(collider=="LHC") :
             elif "ZZ" in parameterName :
                process+=selectDecayMode("h0",["h0->Z0,Z0;"])
                process+=addBRReweighter()
-            elif "8-" not in paramterNane :
+            elif "8-" not in parameterName :
                 process+=selectDecayMode("h0",["h0->tau-,tau+;"])
                 process+=addBRReweighter()
                 process+="set /Herwig/Particles/tau-:Stable Stable\n"
