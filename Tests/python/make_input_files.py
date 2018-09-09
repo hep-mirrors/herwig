@@ -159,7 +159,7 @@ set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
 ME_Upsilon = """\
 create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
-set /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809
+set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 """ + insert_ME("MEUpsilon")
 
 
