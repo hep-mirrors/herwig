@@ -6,8 +6,8 @@
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef THEPEG_MEee2VectorMeson_H
-#define THEPEG_MEee2VectorMeson_H
+#ifndef HERWIG_MEee2VectorMeson_H
+#define HERWIG_MEee2VectorMeson_H
 //
 // This is the declaration of the MEee2VectorMeson class.
 //
@@ -42,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEee2VectorMeson() :_coupling(0.0012), _lineshape(false) 
+  MEee2VectorMeson() : coupling_(0.0012), lineShape_(false) 
   {}
 
   /** @name Virtual functions required by the MEBase class. */
@@ -212,25 +212,25 @@ private:
   /**
    *  The vector meson being produced
    */
-  PDPtr _vector;
+  PDPtr vector_;
 
   /**
    *  The coupling
    */
-  double _coupling;
+  double coupling_;
 
   /**
    *  Use the mass generator for the line shape
    */
-  bool _lineshape;
+  bool lineShape_;
 
   /**
    *  Pointer to the mass generator for the Higgs
    */
-  GenericMassGeneratorPtr _massgen;
+  GenericMassGeneratorPtr massGen_;
 
 };
 
 }
 
-#endif /* THEPEG_MEee2VectorMeson_H */
+#endif /* HERWIG_MEee2VectorMeson_H */
