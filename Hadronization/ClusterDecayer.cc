@@ -183,8 +183,7 @@ static Parameter<ClusterDecayer,double>
 }
 
 
-void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) 
-  {
+void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
@@ -194,6 +193,10 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
     if ((*it)->isAvailable() && !(*it)->isStatusFinal() 
 	&& (*it)->isReadyToDecay()) {   
       pair<PPtr,PPtr> prod = decayIntoTwoHadrons(*it);
+      if(!prod.first)
+	throw Exception() << "Can't perform decay of cluster " << **it
+			  << "in ClusterDecayer::decay()"
+			  << Exception::eventerror;
       (*it)->addChild(prod.first);
       (*it)->addChild(prod.second);
       finalhadrons.push_back(prod.first);
