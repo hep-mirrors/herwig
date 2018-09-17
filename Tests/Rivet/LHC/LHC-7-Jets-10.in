@@ -36,3 +36,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1188891
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1208923
 # ATLAS Jet frag
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I929691
+# CMS shapes etc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1111014
+

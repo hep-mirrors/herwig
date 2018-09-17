@@ -24,8 +24,7 @@ using namespace Herwig;
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType partnerType,
-	       bool massVeto) const {
+	       ShowerPartnerType partnerType) const {
   assert(children.size() == 2);
   // calculate the scales
   splittingFn()->evaluateDecayScales(partnerType,scale(),z(),parent,
@@ -38,9 +37,6 @@ updateChildren(const tShowerParticlePtr parent,
   const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
   Energy2 q2 = sqr(virtualMasses[0])-(1.-z())*sqr(scale());
   children[0]->virtualMass(sqrt(q2));
-  if(massVeto) {
-    children[1]->scales().Max_Q2 = (1.-z())/z()*(z()*sqr(virtualMasses[0])-q2);
-  }
   // determine alphas of children according to interpretation of z
   const ShowerParticle::Parameters & params = parent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();

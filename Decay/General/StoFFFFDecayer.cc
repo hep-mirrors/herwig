@@ -141,6 +141,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 			     Helicity::incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
 				Helicity::incoming);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   // setup spin info when needed
   if(meopt==Terminate) {

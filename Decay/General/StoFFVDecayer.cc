@@ -58,8 +58,8 @@ threeBodyMEIntegrator(const DecayMode & ) const {
 		  outgoing()[2]->mass(),relativeError()));
 }
 
-void StoFFVDecayer::doinit() {
-  GeneralThreeBodyDecayer::doinit();
+void StoFFVDecayer::setupDiagrams(bool kinCheck) {
+  GeneralThreeBodyDecayer::setupDiagrams(kinCheck);
   if(outgoing().empty()) return;
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
@@ -82,7 +82,7 @@ void StoFFVDecayer::doinit() {
       AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a scalar diagram in StoFFVDecayer::doinit()"
+	<< "Invalid vertices for a scalar diagram in StoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       sca_[ix] = make_pair(vert1, vert2);
     }
@@ -92,7 +92,7 @@ void StoFFVDecayer::doinit() {
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a fermion diagram in StoFFVDecayer::doinit()"
+	<< "Invalid vertices for a fermion diagram in StoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       fer_[ix] = make_pair(vert1, vert2);
     }
@@ -102,7 +102,7 @@ void StoFFVDecayer::doinit() {
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a vector diagram in StoFFVDecayer::doinit()"
+	<< "Invalid vertices for a vector diagram in StoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       vec_[ix] = make_pair(vert1, vert2);
     }
@@ -112,7 +112,7 @@ void StoFFVDecayer::doinit() {
       AbstractRFVVertexPtr vert2 = dynamic_ptr_cast<AbstractRFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a RS fermion diagram in StoFFVDecayer::doinit()"
+	<< "Invalid vertices for a RS fermion diagram in StoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       RSfer_[ix] = make_pair(vert1, vert2);
     }
@@ -130,6 +130,8 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 			     Helicity::incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
 				Helicity::incoming);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

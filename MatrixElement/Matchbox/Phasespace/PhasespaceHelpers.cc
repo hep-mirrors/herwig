@@ -15,7 +15,7 @@ using namespace Herwig::PhasespaceHelpers;
 using namespace Herwig::RandomHelpers;
 
 Energy PhasespaceInfo::generateMass(tcPDPtr data, 
-				    const pair<Energy,Energy>& range) {
+                                    const pair<Energy,Energy>& range) {
 
   double xlow = sqr(range.first)/sHat;
   if ( range.first < ZERO )
@@ -44,108 +44,76 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 
     if ( mu < xlow || mu > xup ) {
       if ( abs(xlow-mu) < xc )
-	xlow = mu;
+        xlow = mu;
       if ( abs(xup-mu) < xc )
-	xup = mu;
+        xup = mu;
     }
 
     if ( mu < xlow || mu > xup ) {
       event =
-	generate(inverse(mu,xlow,xup),r);
+      generate(inverse(mu,xlow,xup),r);
     } else {
       pair<double,double> pLeft(xlow,xlow < mu-x0 ? mu-x0 : xlow);
       pair<double,double> pRight(xup > mu+x0 ? mu+x0 : xup,xup);
       pair<double,double> fLeft(pLeft.second < mu-x0 ? mu-x0 : pLeft.second,mu-xc);
-      if ( fLeft.first >= fLeft.second )
-	fLeft.first = fLeft.second;
+      if ( fLeft.first >= fLeft.second ) fLeft.first = fLeft.second;
       pair<double,double> fRight(mu+xc,pRight.first > mu+x0 ? mu+x0 : pRight.first);
-      if ( fRight.first >= fRight.second )
-	fRight.second = fRight.first;
+      if ( fRight.first >= fRight.second ) fRight.second = fRight.first;
 
-      if ( pLeft.first != pLeft.second &&
-	   fLeft.first != fLeft.second &&
-	   fRight.first != fRight.second &&
-	   pRight.first != pRight.second ) {
-	event = 
-	  generate((piecewise(),                                                                                   
-		    inverse(mu,pLeft.first,pLeft.second),
-		    match(flat(fLeft.first,fLeft.second))) +
-		   match((piecewise(),
-			  flat(fRight.first,fRight.second),
-			  match(inverse(mu,pRight.first,pRight.second)))),
-		   r);
-      } else if ( pLeft.first == pLeft.second &&
-		  fLeft.first != fLeft.second &&
-		  fRight.first != fRight.second &&
-		  pRight.first != pRight.second ) {
-	event = 
-	  generate(flat(fLeft.first,fLeft.second) +
-		   match((piecewise(),
-			  flat(fRight.first,fRight.second),
-			  match(inverse(mu,pRight.first,pRight.second)))),
-		   r);
-      } else if ( pLeft.first != pLeft.second &&
-		  fLeft.first != fLeft.second &&
-		  fRight.first != fRight.second &&
-		  pRight.first == pRight.second ) {
-	event = 
-	  generate((piecewise(),                                                                                   
-		    inverse(mu,pLeft.first,pLeft.second),
-		    match(flat(fLeft.first,fLeft.second))) +
-		   match(flat(fRight.first,fRight.second)),
-		   r);
-      } else if ( pLeft.first == pLeft.second &&
-		  fLeft.first == fLeft.second &&
-		  fRight.first != fRight.second &&
-		  pRight.first != pRight.second ) {
-	event = 
-	  generate((piecewise(),
-		    flat(fRight.first,fRight.second),
-		    match(inverse(mu,pRight.first,pRight.second))),
-		   r);
-      } else if ( pLeft.first != pLeft.second &&
-		  fLeft.first != fLeft.second &&
-		  fRight.first == fRight.second &&
-		  pRight.first == pRight.second ) {
-	event = 
-	  generate((piecewise(),                                                                                   
-		    inverse(mu,pLeft.first,pLeft.second),
-		    match(flat(fLeft.first,fLeft.second))),
-		   r);
-      } else if ( pLeft.first == pLeft.second &&
-		  fLeft.first != fLeft.second &&
-		  fRight.first != fRight.second &&
-		  pRight.first == pRight.second ) {
-	event = 
-	  generate(flat(fLeft.first,fLeft.second) +
-		   match(flat(fRight.first,fRight.second)),
-		   r);
-      } else if ( pLeft.first == pLeft.second &&
-		  fLeft.first == fLeft.second &&
-		  fRight.first != fRight.second &&
-		  pRight.first == pRight.second ) {
-	event = 
-	  generate(flat(fRight.first,fRight.second),
-		   r);
-      } else if ( pLeft.first == pLeft.second &&
-		  fLeft.first != fLeft.second &&
-		  fRight.first == fRight.second &&
-		  pRight.first == pRight.second ) {
-	event = 
-	  generate(flat(fLeft.first,fLeft.second),
-		   r);
-      } else if ( pLeft.first == pLeft.second &&
-		  fLeft.first == fLeft.second &&
-		  fRight.first == fRight.second &&
-		  pRight.first == pRight.second ) {
-	throw Veto();
+      
+      const bool pL= abs( pLeft.first - pLeft.second ) < 1e-14;
+      const bool fL= abs( fLeft.first - fLeft.second ) < 1e-14;
+      const bool fR= abs( fRight.first - fRight.second ) < 1e-14;
+      const bool pR= abs( pRight.first - pRight.second ) < 1e-14;
+
+
+      if ( !pL && !fL && !fR && !pR ) {
+        event =
+        generate((piecewise(),
+                  inverse(mu,pLeft.first,pLeft.second),
+                  match(flat(fLeft.first,fLeft.second))) +
+                 match((piecewise(),
+                        flat(fRight.first,fRight.second),
+                        match(inverse(mu,pRight.first,pRight.second)))),
+                 r);
+      } else if ( pL && !fL && !fR && !pR ) {
+        event =
+        generate(flat(fLeft.first,fLeft.second) +
+                 match((piecewise(),
+                        flat(fRight.first,fRight.second),
+                        match(inverse(mu,pRight.first,pRight.second)))), r);
+      } else if ( !pL && !fL && !fR && pR ) {
+        event =
+        generate((piecewise(),
+                  inverse(mu,pLeft.first,pLeft.second),
+                  match(flat(fLeft.first,fLeft.second))) +
+                 match(flat(fRight.first,fRight.second)),
+                 r);
+      } else if ( pL && fL && !fR && !pR ) {
+        event =
+        generate((piecewise(),flat(fRight.first,fRight.second),
+                  match(inverse(mu,pRight.first,pRight.second))), r);
+      } else if ( !pL && !fL && fR && pR ) {
+        event =
+        generate((piecewise(),
+                  inverse(mu,pLeft.first,pLeft.second),
+                  match(flat(fLeft.first,fLeft.second))),r);
+      } else if ( pL && !fL && !fR && pR ) {
+        event = generate(flat(fLeft.first,fLeft.second) +
+                 match(flat(fRight.first,fRight.second)),r);
+      } else if ( pL && fL && !fR && pR ) {
+        event = generate(flat(fRight.first,fRight.second),r);
+      } else if ( pL && !fL && fR && pR ) {
+        event = generate(flat(fLeft.first,fLeft.second),r);
+      } else if ( pL && fL && fR && pR ) {
+        throw Veto();
       } else assert(false);
     }
   } else {
     event = generate(breitWigner(mu,gamma,xlow,xup),r);
   }
 
-  if ( abs(event.first) < xc ) 
+  if ( abs(event.first) < xc )
     throw Veto();
 
   weight *= event.second;
@@ -158,8 +126,8 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
 }
 
 Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
-					    const Lorentz5Momentum& p2,
-					    Energy pt) {
+                                            const Lorentz5Momentum& p2,
+                                            Energy pt) {
 
   double phi = 2.*Constants::pi*rnd();
   weight *= 2.*Constants::pi;
@@ -168,8 +136,7 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
 
   Energy2 Q2 = abs(P.m2());
 
-  Lorentz5Momentum Q = 
-    Lorentz5Momentum(ZERO,ZERO,ZERO,sqrt(Q2),sqrt(Q2));
+  Lorentz5Momentum Q =  Lorentz5Momentum(ZERO,ZERO,ZERO,sqrt(Q2),sqrt(Q2));
 
   bool boost =
     abs((P-Q).vect().mag2()/GeV2) > 1e-8 ||
@@ -211,11 +178,10 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
 }
 
 void PhasespaceTree::setup(const Tree2toNDiagram& diag, 
-			   int pos) {
+                           int pos) {
   doMirror = false;
 
-  pair<int,int> dchildren =
-    diag.children(pos);
+  pair<int,int> dchildren =  diag.children(pos);
 
   data = diag.allPartons()[pos];
 
@@ -236,11 +202,11 @@ void PhasespaceTree::setup(const Tree2toNDiagram& diag,
   children.back().setup(diag,dchildren.second);
 
   if ( !children[0].children.empty() &&
-       children[1].children.empty() &&
-       !spacelike )
+      children[1].children.empty() &&
+      !spacelike )
     swap(children[0],children[1]);
   if ( spacelike &&
-       !children[0].spacelike )
+      !children[0].spacelike )
     swap(children[0],children[1]);
 
   copy(children[0].leafs.begin(),children[0].leafs.end(),
@@ -251,7 +217,7 @@ void PhasespaceTree::setup(const Tree2toNDiagram& diag,
 }
 
 void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag, 
-			   int pos) {
+                                   int pos) {
 
   doMirror = true;
 
@@ -259,14 +225,9 @@ void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag,
 
   pair<int,int> dchildren;
   if (pos != 0 && spacelike)
-    dchildren =
-      make_pair(diag.parent(pos), diag.children(diag.parent(pos)).second);
-  else if ( !spacelike )
-    dchildren =
-      diag.children(pos);
-  else 
-    dchildren =
-      make_pair(-1,-1);
+    dchildren = {diag.parent(pos), diag.children(diag.parent(pos)).second};
+  else if ( !spacelike ) dchildren = diag.children(pos);
+  else                   dchildren = {-1,-1};
 
   data = diag.allPartons()[pos];
 
@@ -287,11 +248,11 @@ void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag,
   children.back().setupMirrored(diag,dchildren.second);
 
   if ( !children[0].children.empty() &&
-       children[1].children.empty() &&
-       !spacelike )
+      children[1].children.empty() &&
+      !spacelike )
     swap(children[0],children[1]);
   if ( spacelike &&
-       !children[0].spacelike ) {
+      !children[0].spacelike ) {
     assert (false);
   }
 
@@ -311,7 +272,7 @@ void PhasespaceTree::print(int in) {
     children[0].print(in+int(!spacelike));
   }
   else {
-  cerr << "\n";
+    cerr << "\n";
   }
 }
 
@@ -332,16 +293,16 @@ void PhasespaceTree::init(const vector<Lorentz5Momentum>& meMomenta) {
   children[1].init(meMomenta);
 
   if ( !children[0].spacelike &&
-       !children[1].spacelike ) {
-    massRange.first = 
-      children[0].massRange.first +
-      children[1].massRange.first;
+      !children[1].spacelike ) {
+    massRange.first =
+    children[0].massRange.first +
+    children[1].massRange.first;
   }
 
 }
 
 void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
-					vector<Lorentz5Momentum>& meMomenta) {
+                                        vector<Lorentz5Momentum>& meMomenta) {
   
   if ( !doMirror && externalId == 0 ) {
     init(meMomenta);
@@ -354,50 +315,50 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
 
   if ( children.empty() ) {
     if ( ( !doMirror && externalId != 1 )
-	 || ( doMirror && externalId !=0 ) )
+        || ( doMirror && externalId !=0 ) )
       meMomenta[externalId] = momentum;
     return;
   }
 
-  // s-channel
+    // s-channel
   if ( ( !doMirror && externalId == 0 &&
-	 children[0].externalId == 1 )
-       || ( doMirror && externalId == 1 &&
-	    children[0].externalId == 0 ) ) {
-    children[1].momentum = meMomenta[0] + meMomenta[1];
-    children[1].momentum.setMass(info.sqrtSHat);
-    children[1].momentum.rescaleEnergy();
-    children[1].generateKinematics(info,meMomenta);
-    return;
-  }
+          children[0].externalId == 1 )
+     || ( doMirror && externalId == 1 &&
+          children[0].externalId == 0 ) ) {
+        children[1].momentum = meMomenta[0] + meMomenta[1];
+        children[1].momentum.setMass(info.sqrtSHat);
+        children[1].momentum.rescaleEnergy();
+        children[1].generateKinematics(info,meMomenta);
+        return;
+      }
 
   if ( !spacelike ) {
 
     Energy mij = momentum.mass();
     Energy mi,mj;
-
-    // work out the mass for the first child
+    
+      // work out the mass for the first child
     if ( !children[0].children.empty() ) {
       Energy sumOthers = ZERO;
       for ( size_t k = 2; k < meMomenta.size(); ++k )
-	if ( children[1].leafs.find(k) != children[1].leafs.end() )
-	  sumOthers += meMomenta[k].mass();
+        if ( children[1].leafs.find(k) != children[1].leafs.end() )
+          sumOthers += meMomenta[k].mass();
       children[0].massRange.second = momentum.mass() - sumOthers;
       if ( children[0].massRange.second < children[0].massRange.first )
-	throw Veto();
+        throw Veto();
       if ( children[0].massRange.second > momentum.mass() )
-	throw Veto();
+        throw Veto();
       mi = info.generateMass(children[0].data,children[0].massRange);
       children[0].momentum.setMass(mi);
     } else {
       mi = children[0].momentum.mass();
     }
 
-    // work out the mass for the second child
+      // work out the mass for the second child
     if ( !children[1].children.empty() ) {
       children[1].massRange.second = momentum.mass()-children[0].momentum.mass();
       if ( children[1].massRange.second < children[1].massRange.first )
-	throw Veto();
+        throw Veto();
       mj = info.generateMass(children[1].data,children[1].massRange);
       children[1].momentum.setMass(mj);
     } else {
@@ -408,7 +369,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     Energy2 mi2 = sqr(mi);
     Energy2 mj2 = sqr(mj);
 
-    // perform the decay
+      // perform the decay
     Energy4 lambda2 = sqr(mij2-mi2-mj2)-4.*mi2*mj2;
     if ( lambda2 <= ZERO )
       throw Veto();
@@ -436,7 +397,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     children[1].momentum.setMass(mj);
     children[1].momentum.rescaleEnergy();
 
-    // go on with next branchings
+      // go on with next branchings
     children[0].generateKinematics(info,meMomenta);
     children[1].generateKinematics(info,meMomenta);
 
@@ -444,7 +405,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
 
   }
 
-  // get the minimum mass of the `W' system
+    // get the minimum mass of the `W' system
   Energy Wmin = ZERO;
   PhasespaceTree* current = &children[0];
   while ( !(current->children.empty()) ) {
@@ -452,12 +413,12 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     current = &(current->children[0]);
   }
 
-  // get the CM energy avaialble
+    // get the CM energy avaialble
   Energy2 s = (momentum+meMomenta[int(!doMirror)]).m2();
   if ( s <= ZERO )
     throw Veto();
 
-  // generate a mass for the timelike child
+    // generate a mass for the timelike child
   Energy mi;
   if ( !children[1].children.empty() ) {
     children[1].massRange.second = sqrt(s)-Wmin;
@@ -469,25 +430,24 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     mi = children[1].momentum.mass();
   }
   Energy2 mi2 = sqr(mi);
+ 
+    // wether or not this is the last 2->2 scatter
+  bool lastScatter = children[0].children[0].children.empty();
 
-  // wether or not this is the last 2->2 scatter
-  bool lastScatter
-    = children[0].children[0].children.empty();
-
-  // `W' mass relevant for the other boundaries
+    // `W' mass relevant for the other boundaries
   Energy MW = Wmin;
 
-  // generate a mass for second outgoing leg, if needed
+    // generate a mass for second outgoing leg, if needed
   if ( lastScatter )
     if ( !children[0].children[1].children.empty() ) {
-      // get the maximum `W' mass
+        // get the maximum `W' mass
       Energy Wmax = sqrt(s)-children[1].momentum.mass();
       children[0].children[1].massRange.second = Wmax;
       if ( children[0].children[1].massRange.second <
-	   children[0].children[1].massRange.first )
-	throw Veto();
+          children[0].children[1].massRange.first )
+        throw Veto();
       MW = info.generateMass(children[0].children[1].data,
-			     children[0].children[1].massRange);
+                             children[0].children[1].massRange);
       children[0].children[1].momentum.setMass(MW);
     }
   Energy2 MW2 = sqr(MW);
@@ -499,7 +459,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy mb = meMomenta[int(!doMirror)].mass();
   Energy2 mb2 = sqr(mb);
 
-  // pick the ys variable
+    // pick the ys variable
   Energy2 ys = ZERO;
   if ( !lastScatter ) {
     ys = info.rnd()*(sqr(sqrt(s)-mi)-MW2);
@@ -513,16 +473,16 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy2 lambda = sqrt(lambda2);
   info.weight *= info.sHat/(4.*lambda);
 
-  // get the boundaries on the momentum transfer
+    // get the boundaries on the momentum transfer
   Energy4 rho2 = sqr(s-ys-MW2-mi2)-4.*mi2*(ys+MW2);
   if ( rho2 < ZERO )
     throw Veto();
   Energy2 rho = sqrt(rho2);
-  Energy4 tau2 = 
-    ys*(ma2-mb2+s)
-    - sqr(s)+s*(ma2+mb2+mi2+MW2)-(mi2-MW2)*(ma2-mb2);
+  Energy4 tau2 =
+  ys*(ma2-mb2+s)
+  - sqr(s)+s*(ma2+mb2+mi2+MW2)-(mi2-MW2)*(ma2-mb2);
   pair<Energy2,Energy2> tBounds
-    ((tau2-rho*lambda)/(2.*s),(tau2+rho*lambda)/(2.*s));
+  ((tau2-rho*lambda)/(2.*s),(tau2+rho*lambda)/(2.*s));
   children[0].massRange.first = sqrt(abs(tBounds.first));
   if ( tBounds.first < ZERO )
     children[0].massRange.first = -children[0].massRange.first;
@@ -530,7 +490,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   if ( tBounds.second < ZERO )
     children[0].massRange.second = -children[0].massRange.second;
 
-  // generate a momentum transfer
+    // generate a momentum transfer
   Energy mai = info.generateMass(children[0].data,children[0].massRange);
   children[0].momentum.setMass(mai);
   Energy2 t = sqr(mai);
@@ -542,7 +502,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy2 tt = t - mi2 - ma2;
   Energy2 ut = u - mi2 - mb2;
 
-  // get the timelike momentum
+    // get the timelike momentum
   double xa = (-st*ut+2.*mb2*tt)/lambda2;
   double xb = (-st*tt+2.*ma2*ut)/lambda2;
   Energy2 pt2 = (st*tt*ut-ma2*sqr(ut)-mb2*sqr(tt)-mi2*sqr(st)+4.*ma2*mb2*mi2)/lambda2;
@@ -550,13 +510,14 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     throw Veto();
   Energy pt = sqrt(pt2);
 
-  children[1].momentum = 
-    xa*momentum + xb*meMomenta[int(!doMirror)] + info.generateKt(momentum,meMomenta[int(!doMirror)],pt);
+  children[1].momentum =
+  xa*momentum + xb*meMomenta[int(!doMirror)] 
+  + info.generateKt(momentum,meMomenta[int(!doMirror)],pt);
   children[1].momentum.setMass(mi);
   children[1].momentum.rescaleEnergy();
 
   children[0].momentum =
-    momentum - children[1].momentum;
+  momentum - children[1].momentum;
   children[0].momentum.setMass(mai);
   bool changeSign = false;
   if ( children[0].momentum.t() < ZERO && mai > ZERO ) changeSign = true;
@@ -572,7 +533,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     children[0].generateKinematics(info,meMomenta);
   } else {
     children[0].children[1].momentum =
-      meMomenta[int(!doMirror)] + children[0].momentum;
+    meMomenta[int(!doMirror)] + children[0].momentum;
     children[0].children[1].momentum.setMass(MW);
     children[0].children[1].momentum.rescaleEnergy();
     children[0].children[1].generateKinematics(info,meMomenta);

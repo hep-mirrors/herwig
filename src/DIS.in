@@ -6,6 +6,8 @@
 ##################################################
 
 read snippets/EPCollider.in
+# for fixed target
+# read snippets/FixedTarget.in
 
 ##################################################
 # Technical parameters for this run

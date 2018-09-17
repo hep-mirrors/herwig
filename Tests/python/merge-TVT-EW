@@ -17,8 +17,7 @@ if sys.version_info[:3] < (2,4,0):
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
-    parser = OptionParser(usage="%prog aidafile aidafile2 [...]")
-    parser.add_option("-o", "--out", dest="OUTFILE", default="-")
+    parser = OptionParser(usage="%prog base")
     verbgroup = OptionGroup(parser, "Verbosity control")
     verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
                          default=logging.INFO, help="print debug (very verbose) messages")
@@ -30,12 +29,16 @@ if __name__ == "__main__":
 
     ## Check args
     if len(args) < 1:
-        logging.error("Must specify at least one AIDA histogram file")
+        logging.error("Must specify at least the name of the files")
         sys.exit(1)
+
+
+    yodafiles=["-Run-II-Z-e","-Run-II-Z-mu","-Run-II-Z-LowMass-mu","-Run-II-Z-HighMass-mu","-Run-I-W","-Run-I-Z","-Run-I-WZ"]
 
     ## Get histos
     outhistos={}
-    for file in args:
+    for f in yodafiles:
+        file='Rivet-'+args[0]+f+".yoda"
         if not os.access(file, os.R_OK):
             logging.error("%s can not be read" % file)
             break
@@ -65,5 +68,6 @@ if __name__ == "__main__":
                 outhistos[aopath] = ao
 
     # output the yoda file
-    yoda.writeYODA(outhistos,opts.OUTFILE)
+    name = args[0]+"-EW.yoda"
+    yoda.writeYODA(outhistos,name)
     sys.exit(0)

@@ -205,6 +205,8 @@ double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    // fix rho if no correlations
+    fixRho(_rho);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),

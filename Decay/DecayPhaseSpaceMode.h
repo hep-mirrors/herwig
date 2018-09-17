@@ -40,7 +40,7 @@ using namespace ThePEG;
  * @author  Peter Richardson
  * 
  */
-class DecayPhaseSpaceMode: public Interfaced {
+class DecayPhaseSpaceMode: public Base {
 
   /**
    * A friend operator to allow the mode to be outputted for debugging purposes.
@@ -170,6 +170,11 @@ public:
    *  test on/off-shell kinematics
    */
   bool testOnShell() const { return _testOnShell; }
+
+  /**
+   *  Access to the epsilon parameter
+   */
+  Energy epsilonPS() const {return _eps;}
 
 protected:
 
@@ -341,23 +346,6 @@ public:
 
 protected:
 
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const {return new_ptr(*this);}
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
-  //@}
-
-protected:
-
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -365,12 +353,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit();
+  virtual void init();
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  virtual void doinitrun();
+  virtual void initrun();
   //@}
 
 private:
@@ -447,6 +435,11 @@ private:
    *  The selected channel
    */
   mutable unsigned int _ichannel;
+
+  /**
+   *   Epsilon parameter for phase-space integration
+   */
+  Energy _eps;
 
 };
 

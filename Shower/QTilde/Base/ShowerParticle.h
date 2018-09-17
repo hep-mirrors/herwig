@@ -15,8 +15,8 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.fh"
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
-#include "ShowerBasis.h"
-#include "ShowerKinematics.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerBasis.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.h"
 #include "ShowerParticle.fh"
 #include <iosfwd>
 
@@ -103,8 +103,7 @@ public:
      *  Constructor
      */
     EvolutionScales() : QED(),QCD_c(),QCD_ac(),
-			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO(),EW(),
-			Max_Q2(Constants::MaxEnergy2)
+			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO()
     {}
 
     /**
@@ -146,11 +145,7 @@ public:
      *   EW scale
      */
     Energy EW_noAO;
-
-    /**
-     *  Maximum allowed virtuality of the particle
-     */
-    Energy2 Max_Q2;
+    
   };
 
 

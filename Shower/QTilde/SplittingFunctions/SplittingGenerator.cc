@@ -273,8 +273,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       type = ShowerPartnerType::QED;
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
       newKin = cit->second.sudakov->
-    	generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning,
-				  particle.scales().Max_Q2);
+    	generateNextTimeBranching(startingScale,particles,rho,enhance,
+				  _deTuning);
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::QCD) {
       // special for octets
@@ -284,12 +284,12 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     	  type = ShowerPartnerType::QCDColourLine;
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
     	  newKin= cit->second.sudakov->
-    	    generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,_deTuning,
-				      particle.scales().Max_Q2);
+    	    generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,
+				      _deTuning);
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
     	  ShoKinPtr newKin2 = cit->second.sudakov->
-	    generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,_deTuning,
-				      particle.scales().Max_Q2);
+	    generateNextTimeBranching(startingScale,particles,rho,0.5*enhance,
+				      _deTuning);
     	  // pick the one with the highest scale
     	  if( ( newKin && newKin2 && newKin2->scale() > newKin->scale()) ||
     	      (!newKin && newKin2) ) {
@@ -303,8 +303,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	    max(particle.scales().QCD_c     , particle.scales().QCD_ac     ) : 
 	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
     	  newKin= cit->second.sudakov->
-    	    generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning,
-				      particle.scales().Max_Q2);
+    	    generateNextTimeBranching(startingScale,particles,rho,enhance,
+				      _deTuning);
     	  type = UseRandom::rndbool() ? 
     	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	}
@@ -321,16 +321,15 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
 	}
 	newKin= cit->second.sudakov->
-	  generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning,
-				    particle.scales().Max_Q2);
+	  generateNextTimeBranching(startingScale,particles,rho,enhance,
+				    _deTuning);
       }
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
       Energy startingScale = particle.scales().EW;
       newKin = cit->second.sudakov->
-    	generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning,
-				  particle.scales().Max_Q2);
+    	generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning);
     }
     // shouldn't be anything else
     else
@@ -348,7 +347,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   }
   // return empty branching if nothing happened
   if(!kinematics) {
-    particle.spinInfo()->undecay();
+    if ( particle.spinInfo() ) particle.spinInfo()->undecay();
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 		     ShowerPartnerType::Undefined);
   }
@@ -591,7 +590,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
   }
   // return empty branching if nothing happened
   if(!kinematics) {
-    particle.spinInfo()->undecay();
+    if ( particle.spinInfo() ) particle.spinInfo()->undecay();
     return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 		     ShowerPartnerType::Undefined);
   }

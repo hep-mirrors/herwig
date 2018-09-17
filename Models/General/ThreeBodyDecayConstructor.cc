@@ -294,45 +294,49 @@ createDecayMode(vector<NBDiagram> & mode,
 					       << tag << " so mode not created\n";
       return;
     }
-    tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
-    if(ndm) {
-      generator()->preinitInterface(ndm, "Decayer", "set",
- 				    decayer->fullName());
-      generator()->preinitInterface(ndm, "Active", "set", "Yes");
-      if(!ndm->decayer()) {
-	generator()->log() << "Can't set the decayer for " 
-			   << tag << " so mode not created \n";
-	return;
-      }
-      OrderedParticles::const_iterator pit=outgoing.begin();
-      tPDPtr pa = *pit; ++pit;
-      tPDPtr pb = *pit; ++pit;
-      tPDPtr pc = *pit;
-      Energy width = 
-	decayer->partialWidth(make_pair(inpart,inpart->mass()),
-			      make_pair(pa,pa->mass()) , 
-			      make_pair(pb,pb->mass()) , 
-			      make_pair(pc,pc->mass()));
+    OrderedParticles::const_iterator pit=outgoing.begin();
+    tPDPtr pa = *pit; ++pit;
+    tPDPtr pb = *pit; ++pit;
+    tPDPtr pc = *pit;
+    Energy width = 
+      decayer->partialWidth(make_pair(inpart,inpart->mass()),
+			    make_pair(pa,pa->mass()) , 
+			    make_pair(pb,pb->mass()) , 
+			    make_pair(pc,pc->mass()));
+    if ( Debug::level > 1 )
+      generator()->log() << "Partial width is: " << width / GeV << " GeV\n";
+    if(width==ZERO) {
       if ( Debug::level > 1 )
-	generator()->log() << "Partial width is: " << width / GeV << " GeV\n";
-
-      setBranchingRatio(ndm, width);
-      if(ndm->brat()<decayConstructor()->minimumBR()) {
-	generator()->preinitInterface(decayer->fullName(),
-				      "Initialize", "set","0");
-      }
-      // incoming particle is now unstable
-      inpart->stable(false);
-      if(Debug::level > 1 ) {
-	generator()->log() << "Calculated partial width for mode "
-			   << tag << " is " << width/GeV << "\n";
-      }
+	generator()->log() << "Partial width for " 
+			   << tag << " zero so mode not created \n";
+      generator()->preinitRemove(decayer);
+      return;
     }
-    else
+    tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
+    if(!ndm)
       throw NBodyDecayConstructorError() 
 	<< "ThreeBodyDecayConstructor::createDecayMode - Needed to create "
 	<< "new decaymode but one could not be created for the tag " 
 	<< tag << Exception::warning;
+    generator()->preinitInterface(ndm, "Decayer", "set",
+				  decayer->fullName());
+    generator()->preinitInterface(ndm, "Active", "set", "Yes");
+    if(!ndm->decayer()) {
+      generator()->log() << "Can't set the decayer for " 
+			 << tag << " so mode not created \n";
+      return;
+    }
+    setBranchingRatio(ndm, width);
+    if(ndm->brat()<decayConstructor()->minimumBR()) {
+      generator()->preinitInterface(decayer->fullName(),
+				    "Initialize", "set","0");
+    }
+    // incoming particle is now unstable
+    inpart->stable(false);
+    if(Debug::level > 1 ) {
+      generator()->log() << "Calculated partial width for mode "
+			 << tag << " is " << width/GeV << "\n";
+    }
   }
   else if( dm ) {
     if(dm->brat()<decayConstructor()->minimumBR()) {

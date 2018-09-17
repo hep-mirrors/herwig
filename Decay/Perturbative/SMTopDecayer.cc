@@ -197,6 +197,8 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
+    // fix rho if no correlations
+    fixRho(_rho);
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -306,7 +308,6 @@ void SMTopDecayer::doinit() {
     Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
     Wchannel->addIntermediate(_wplus,0,0.0,2,3);
-    Wchannel->init();
     mode->addChannel(Wchannel);
     addMode(mode,_wleptonwgt[(i-11)/2],wgt);
   }
@@ -322,7 +323,6 @@ void SMTopDecayer::doinit() {
 	Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
 	Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
 	Wchannel->addIntermediate(_wplus,0,0.0,2,3);
-	Wchannel->init();
 	mode->addChannel(Wchannel);
 	addMode(mode,_wquarkwgt[iz],wgt);
 	++iz;

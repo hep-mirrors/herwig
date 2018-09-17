@@ -34,11 +34,10 @@ create Herwig::ShowerAlphaQED AlphaQED
 set AlphaQED:CouplingSource Thompson
 create Herwig::ShowerAlphaQED AlphaEW
 set AlphaEW:CouplingSource MZ
-create Herwig::QTildeModel ShowerModel
-create Herwig::QTildeFinder PartnerFinder
+create Herwig::PartnerFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 1
 newdef PartnerFinder:ScaleChoice 1
-create Herwig::QTildeReconstructor KinematicsReconstructor
+create Herwig::KinematicsReconstructor KinematicsReconstructor
 newdef KinematicsReconstructor:ReconstructionOption Colour3
 newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
@@ -46,9 +45,8 @@ newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
 newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 
-newdef ShowerModel:PartnerFinder PartnerFinder
-newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
-newdef ShowerHandler:ShowerModel ShowerModel
+newdef ShowerHandler:PartnerFinder PartnerFinder
+newdef ShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef ShowerHandler:SplittingGenerator SplittingGenerator
 newdef ShowerHandler:Interactions QEDQCD
 newdef ShowerHandler:SpinCorrelations Yes
@@ -85,7 +83,8 @@ newdef PowhegShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
 newdef PowhegShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 newdef PowhegShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
 newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
-newdef PowhegShowerHandler:ShowerModel ShowerModel
+newdef PowhegShowerHandler:PartnerFinder PartnerFinder
+newdef PowhegShowerHandler:KinematicsReconstructor KinematicsReconstructor
 newdef PowhegShowerHandler:SplittingGenerator SplittingGenerator
 newdef PowhegShowerHandler:Interactions QEDQCD
 newdef PowhegShowerHandler:SpinCorrelations Yes
@@ -112,8 +111,7 @@ newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:InputOption 1
-newdef AlphaQCD:AlphaMZ 0.126234
+newdef AlphaQCD:AlphaIn 0.126234
 #
 #
 # Lets set up all the splittings
@@ -162,12 +160,13 @@ newdef QtoQWZSplitFn:InteractionType EW
 newdef QtoQWZSplitFn:ColourStructure EW
 #
 # Now the Sudakovs
-create Herwig::QTildeSudakov SudakovCommon
+create Herwig::PTCutOff PTCutOff
+newdef PTCutOff:pTmin 1.222798*GeV
+
+create Herwig::SudakovFormFactor SudakovCommon
 newdef SudakovCommon:Alpha AlphaQCD
-newdef SudakovCommon:cutoffKinScale 0.0*GeV
+newdef SudakovCommon:Cutoff PTCutOff
 newdef SudakovCommon:PDFmax 1.0
-newdef SudakovCommon:CutOffOption pT
-newdef SudakovCommon:pTmin 1.222798*GeV
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
@@ -179,8 +178,10 @@ set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
 
 cp QtoQGammaSudakov LtoLGammaSudakov
+cp PTCutOff LtoLGammaPTCutOff
 # Technical parameter to stop evolution.
-set LtoLGammaSudakov:pTmin 0.000001
+set LtoLGammaPTCutOff:pTmin 0.000001
+set LtoLGammaSudakov:Cutoff LtoLGammaPTCutOff
 
 cp SudakovCommon QtoQWZSudakov
 set QtoQWZSudakov:SplittingFunction QtoQWZSplitFn

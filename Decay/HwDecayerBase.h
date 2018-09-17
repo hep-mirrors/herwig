@@ -202,6 +202,13 @@ public:
 
 protected:
 
+  /**
+   * Set rho to be diagonal if no correlations
+   */
+  void fixRho(RhoDMatrix &) const;
+  
+protected:
+
   /** @name Standard Interfaced functions. */
   //@{
   /**

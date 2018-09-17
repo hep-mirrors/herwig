@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// QTildeReconstructor.tcc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// KinematicsReconstructor.tcc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,7 +8,7 @@
 //
 //
 // This is the implementation of the non-inlined templated member
-// functions of the QTildeReconstructor class.
+// functions of the KinematicsReconstructor class.
 //
 using namespace Herwig;
 using namespace ThePEG;
@@ -64,7 +64,7 @@ unsigned int ACLSIZE(Value a) {
 }
 }
 
-template<typename Value> void QTildeReconstructor::
+template<typename Value> void KinematicsReconstructor::
 findPartners(Value jet,set<Value> & done,
              const set<Value> & jets,
              vector<Value> & system) const {
@@ -170,7 +170,7 @@ findPartners(Value jet,set<Value> & done,
 }
 
 template<typename Value >
-typename Herwig::ColourSinglet<Value>::VecType QTildeReconstructor::
+typename Herwig::ColourSinglet<Value>::VecType KinematicsReconstructor::
 identifySystems(set<Value> jets,
 		unsigned int & nnun,unsigned int & nnii,unsigned int & nnif,
 		unsigned int & nnf ,unsigned int & nni ) const {
@@ -221,7 +221,7 @@ identifySystems(set<Value> jets,
 }
 
 template<typename Value >
-void QTildeReconstructor::combineFinalState(vector<ColourSinglet<Value> > & systems) const {
+void KinematicsReconstructor::combineFinalState(vector<ColourSinglet<Value> > & systems) const {
   // check that 1 particle final-state systems which can be combine
   bool canCombine(true);
   for(unsigned int ix=0;ix<systems.size();++ix) {

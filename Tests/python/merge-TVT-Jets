@@ -69,7 +69,7 @@ def useOnePt(hpath, sqrts, ptmin):
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
-    parser = OptionParser(usage="%prog name")
+    parser = OptionParser(usage="%progbase")
     verbgroup = OptionGroup(parser, "Verbosity control")
     verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
                          default=logging.INFO, help="print debug (very verbose) messages")

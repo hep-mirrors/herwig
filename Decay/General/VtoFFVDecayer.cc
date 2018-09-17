@@ -58,8 +58,8 @@ threeBodyMEIntegrator(const DecayMode & ) const {
 		  outgoing()[2]->mass(),relativeError()));
 }
 
-void VtoFFVDecayer::doinit() {
-  GeneralThreeBodyDecayer::doinit();
+void VtoFFVDecayer::setupDiagrams(bool kinCheck) {
+  GeneralThreeBodyDecayer::setupDiagrams(kinCheck);
   if(outgoing().empty()) return;
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
@@ -76,7 +76,7 @@ void VtoFFVDecayer::doinit() {
       AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a scalar diagram in VtoFFVDecayer::doinit()"
+	<< "Invalid vertices for a scalar diagram in VtoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       sca_[ix] = make_pair(vert1, vert2);
     }
@@ -86,7 +86,7 @@ void VtoFFVDecayer::doinit() {
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a fermion diagram in VtoFFVDecayer::doinit()"
+	<< "Invalid vertices for a fermion diagram in VtoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       fer_[ix] = make_pair(vert1, vert2);
     }
@@ -96,7 +96,7 @@ void VtoFFVDecayer::doinit() {
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a vector diagram in VtoFFVDecayer::doinit()"
+	<< "Invalid vertices for a vector diagram in VtoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       vec_[ix] = make_pair(vert1, vert2);
     }
@@ -106,7 +106,7 @@ void VtoFFVDecayer::doinit() {
       AbstractFFTVertexPtr vert2 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a tensor diagram in VtoFFVDecayer::doinit()"
+	<< "Invalid vertices for a tensor diagram in VtoFFVDecayer::setupDiagrams()"
 	<< Exception::runerror;
       ten_[ix] = make_pair(vert1, vert2);
     }
@@ -123,6 +123,8 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
     VectorWaveFunction::
       calculateWaveFunctions(inVector_,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     Helicity::incoming,false);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
 
   if(meopt==Terminate) {

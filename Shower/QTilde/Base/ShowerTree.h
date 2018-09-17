@@ -106,21 +106,6 @@ public:
   //@}
 
   /**
-   *  Flags relating to the application of the hard matrix element correction
-   */
-  //@{
-  /**
-   *  Was the hard matrix element correction applied
-   */
-  bool hardMatrixElementCorrection() const { return _hardMECorrection; }
-
-  /**
-   *  Set whether or not the hard matrix element correction was applied
-   */ 
-  void hardMatrixElementCorrection(bool in) { _hardMECorrection=in; }
-  //@}
-
-  /**
    *  Get the incoming shower particles
    */
   map<ShowerProgenitorPtr,ShowerParticlePtr> & incomingLines() {
@@ -335,7 +320,6 @@ protected:
   void fixColour(tShowerParticlePtr part);
 
 private:
-
   /**
    * Incoming partons for the hard process
    */
@@ -359,16 +343,6 @@ private:
    *  The outgoing ShowerParticles at the end of the final-state shower
    */
   set<tShowerParticlePtr> _forward;
-
-  /**
-   *  The incoming ShowerParticles at the end of the initial-state shower
-   */
-  set<tShowerParticlePtr> _backward;
-
-  /**
-   *  Was the hard matrix element correction applied
-   */
-  bool _hardMECorrection;
 
   /**
    *  Was this a scattering process or a decay

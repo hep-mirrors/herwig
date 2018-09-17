@@ -89,6 +89,8 @@ double VVVDecayer::me2(const int , const Particle & inpart,
     VectorWaveFunction::calculateWaveFunctions(vectors_[0],rho_,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       incoming,false);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(vectors_[0],const_ptr_cast<tPPtr>(&inpart),

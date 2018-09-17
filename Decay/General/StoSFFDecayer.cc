@@ -58,8 +58,8 @@ threeBodyMEIntegrator(const DecayMode & ) const {
 		  relativeError()));
 }
 
-void StoSFFDecayer::doinit() {
-  GeneralThreeBodyDecayer::doinit();
+void StoSFFDecayer::setupDiagrams(bool kinCheck) {
+  GeneralThreeBodyDecayer::setupDiagrams(kinCheck);
   if(outgoing().empty()) return;
   unsigned int ndiags = getProcessInfo().size();
   sca_.resize(ndiags);
@@ -83,7 +83,7 @@ void StoSFFDecayer::doinit() {
       AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a scalar diagram in StoSFFDecayer::doinit()"
+	<< "Invalid vertices for a scalar diagram in StoSFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       sca_[ix] = make_pair(vert1, vert2);
     }
@@ -93,7 +93,7 @@ void StoSFFDecayer::doinit() {
       AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a fermion diagram in StoSFFDecayer::doinit()"
+	<< "Invalid vertices for a fermion diagram in StoSFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       fer_[ix] = make_pair(vert1, vert2);
     }
@@ -103,7 +103,7 @@ void StoSFFDecayer::doinit() {
       AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a vector diagram in StoSFFDecayer::doinit()"
+	<< "Invalid vertices for a vector diagram in StoSFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       vec_[ix] = make_pair(vert1, vert2);
     }
@@ -113,7 +113,7 @@ void StoSFFDecayer::doinit() {
       AbstractFFTVertexPtr vert2 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a tensor diagram in StoSFFDecayer::doinit()"
+	<< "Invalid vertices for a tensor diagram in StoSFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       ten_[ix] = make_pair(vert1, vert2);
     }
@@ -123,7 +123,7 @@ void StoSFFDecayer::doinit() {
       AbstractRFSVertexPtr vert2 = dynamic_ptr_cast<AbstractRFSVertexPtr>
 	(current.vertices.second);
       if(!vert1||!vert2) throw Exception() 
-	<< "Invalid vertices for a RS fermion diagram in StoSFFDecayer::doinit()"
+	<< "Invalid vertices for a RS fermion diagram in StoSFFDecayer::setupDiagrams()"
 	<< Exception::runerror;
       RSfer_[ix] = make_pair(vert1, vert2);
     }
@@ -142,6 +142,8 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
 			     Helicity::incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),
 				Helicity::incoming);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

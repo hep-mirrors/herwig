@@ -7,3 +7,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516_EL
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467454_EL
 # ATLAS splittings
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1589844_EL
+# CMS Z+b
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1499471

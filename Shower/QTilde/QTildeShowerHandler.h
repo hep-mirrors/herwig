@@ -7,7 +7,6 @@
 
 #include "QTildeShowerHandler.fh"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
@@ -15,6 +14,9 @@
 #include "Herwig/Shower/QTilde/Base/Branching.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVeto.h"
 #include "Herwig/Shower/QTilde/Base/FullShowerVeto.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.fh"
+#include "Herwig/Shower/QTilde/Base/PartnerFinder.fh"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.fh"
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/Decay/HwDecayerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
@@ -103,10 +105,6 @@ public:
    *  Access to the flags and shower variables
    */
   //@{
-  /**
-   *  Get the ShowerModel
-   */ 
-  ShowerModelPtr showerModel() const {return _model;}
 
   /**
    *  Get the SplittingGenerator
@@ -129,13 +127,6 @@ public:
    */
   //@{
   /**
-   *   Spin Correlations
-   */
-  unsigned int spinCorrelations() const {
-    return _spinOpt;
-  }
-
-  /**
    *  Soft correlations
    */
   unsigned int softCorrelations() const {
@@ -145,9 +136,26 @@ public:
   /**
    *  Any correlations
    */
-  bool correlations() const {
-    return _spinOpt!=0||_softOpt!=0;
+  virtual bool correlations() const {
+    return spinCorrelations()!=0||_softOpt!=0;
   }
+  //@}
+
+public:
+  /**
+   *  Access methods to access the objects
+   */
+  //@{
+  /**
+   *  Access to the KinematicsReconstructor object
+   */
+  tKinematicsReconstructorPtr kinematicsReconstructor() const { return _reconstructor; }
+
+  /**
+   *  Access to the PartnerFinder object
+   */
+  tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
+
   //@}
 
 protected:
@@ -633,11 +641,6 @@ private:
 private :
 
   /**
-   *  Pointer to the model for the shower evolution model
-   */
-  ShowerModelPtr _model;
-
-  /**
    * Pointer to the splitting generator
    */
   SplittingGeneratorPtr _splittingGenerator;
@@ -793,11 +796,6 @@ private :
   int _hardEmission;
 
   /**
-   *  Option to include spin correlations
-   */
-  unsigned int _spinOpt;
-
-  /**
    *  Option for the kernal for soft correlations
    */
   unsigned int _softOpt;
@@ -824,30 +822,22 @@ private :
    */
   Energy muPt;
 
+private:
   /**
-   *  Maximum number of emission attempts for FSR
+   *  Pointer to the various objects
    */
-  unsigned int _maxTryFSR;
+  //@{
+  /**
+   *  Pointer to the KinematicsReconstructor object
+   */
+  KinematicsReconstructorPtr _reconstructor;
 
   /**
-   *  Maximum number of failures for FSR generation
+   *  Pointer to the PartnerFinder object
    */
-  unsigned int _maxFailFSR;
+  PartnerFinderPtr _partnerfinder;
 
-  /**
-   *  Failure fraction for FSR generation
-   */
-  double _fracFSR;
-
-  /**
-   *  Counter for number of FSR emissions
-   */
-  unsigned int _nFSR;
-
-  /**
-   *  Counter for the number of failed events due to FSR emissions
-   */
-  unsigned int _nFailedFSR;
+  //@}
 
 };
 

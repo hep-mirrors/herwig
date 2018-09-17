@@ -14,8 +14,8 @@
 
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
-#include "ShowerKinematics.fh"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 
 namespace Herwig {
 
@@ -49,9 +49,17 @@ public:
   /**
    * The default constructor.
    */
-  ShowerKinematics() : Base(), _isTheJetStartingPoint( false ),
+  ShowerKinematics() : Base(),
 		       _scale(), _z( 0.0 ), _phi( 0.0 ), _pt(),
 		       _sudakov() {}
+
+  /**
+   * The default constructor.
+   */
+  ShowerKinematics(Energy scale, double z, double phi, Energy pt, tSudakovPtr sud) 
+    : Base(),
+      _scale(scale), _z(z), _phi(phi), _pt(pt),
+      _sudakov(sud) {}
 
   /**
    *  The updateChildren and updateParent
@@ -71,8 +79,7 @@ public:
    */
   virtual void updateChildren(const tShowerParticlePtr parent, 
 			      const ShowerParticleVector & children,
-			      ShowerPartnerType partnerType,
-			      bool massVeto ) const;
+			      ShowerPartnerType partnerType) const;
 
   virtual void resetChildren( const tShowerParticlePtr parent, 
 			      const ShowerParticleVector & children) const;
@@ -139,23 +146,6 @@ public:
   //@}
 
 public:
-
-  /**
-   * Set/access the flag that tells whether or not this ShowerKinematics
-   * object is associated to the starting particle of the jet: only in this
-   * case it is sensible to use the two main virtual methods below.
-   */
-  //@{
-  /**
-   * Set the starting point flag
-   */
-  void isTheJetStartingPoint(const bool );
-  
-  /**
-   * Get the starting point flag
-   */
-  bool isTheJetStartingPoint() const;
-  //@}
 
   /**
    *  Set/Get methods for the kinematic variables
@@ -235,14 +225,9 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerKinematics & operator=(const ShowerKinematics &);
+  ShowerKinematics & operator=(const ShowerKinematics &) = delete;
 
 private:
-
-  /**
-   *  Is this the starting point of the jet
-   */
-  bool _isTheJetStartingPoint;
 
   /**
    *  The \f$\tilde{q}\f$ evolution variable.

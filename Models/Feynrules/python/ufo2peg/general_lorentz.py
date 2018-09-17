@@ -1746,10 +1746,10 @@ def calculateDirac(expr,start,end,startT,endT,sind,lind,Symbols,iloc) :
         res.append(temp["result"])
         tempT={}
         exec("import sympy\nfrom sympy import Symbol,Matrix,Transpose\n"+Symbols+"result="+
-             ( "%s*%s*Transpose(%s)*%s*%s" %(startT[0],CC,etemp,CD,endT[0]))) in tempT
+             ( "%s*%s*Transpose(%s)*%s*%s" %(startT[ichain],CC,etemp,CD,endT[ichain]))) in tempT
         res.append(tempT["result"])
     if(len(start)==1) :
-        if(iloc==0 or (iloc!=sind[0] and iloc!=lind[0])) :
+        if(iloc==0 or (iloc!=sind[ichain] and iloc!=lind[ichain])) :
             sVal = {'s' : temp ["result"][0,0],'sT' : tempT["result"][0,0]}
         else :
             sVal={}
@@ -2208,6 +2208,17 @@ def convertDiracStructure(parsed,output,dimension,defns,iloc,L,lorentztag,vertex
         endT  .append("")
         sind[ichain],lind[ichain],expr[ichain],start[ichain],startT[ichain],end[ichain],endT[ichain],Symbols =\
             processChain(dtemp,parsed,spins,Symbols,unContracted,defns,iloc)
+    # standard ordering of the chains
+    for ichain in range(0,nchain) :
+        for jchain in range(ichain+1,nchain) :
+            if(sind[jchain]<sind[ichain]) :
+                sind[ichain]  ,sind[jchain]   = sind[jchain]  ,sind[ichain]
+                lind[ichain]  ,lind[jchain]   = lind[jchain]  ,lind[ichain]
+                expr[ichain]  ,expr[jchain]   = expr[jchain]  ,expr[ichain]
+                start[ichain] ,start[jchain]  = start[jchain] ,start[ichain]
+                startT[ichain],startT[jchain] = startT[jchain],startT[ichain]
+                end[ichain]   ,end[jchain]    = end[jchain]   ,end[ichain]
+                endT[ichain]  ,endT[jchain]   = endT[jchain]  ,endT[ichain]
     # clean up parsed
     # check we've dealt with everything
     parsed = [x for x in parsed if x != ""]

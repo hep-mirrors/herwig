@@ -88,3 +88,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2012_I1115479
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1356998
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOTEM_2012_I1220862
+# atlas hadron ordering
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1624693
+# LHCF
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2015_I1351909
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCF_2016_I1385877

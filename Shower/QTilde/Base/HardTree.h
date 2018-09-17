@@ -8,7 +8,7 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
-#include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
+#include "Herwig/Shower/QTilde/SplittingFunctions/SudakovFormFactor.h"
 #include "Herwig/Shower/RealEmissionProcess.fh"
 #include "HardBranching.h"
 #include "HardTree.fh"

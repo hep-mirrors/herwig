@@ -74,6 +74,13 @@ public:
     return currentHandler_;
   }
 
+  /**
+   *  pointer to "this", the current ShowerHandler.
+   */
+  static bool currentHandlerIsSet() {
+    return currentHandler_;
+  }
+
 public:
 
   /**
@@ -308,6 +315,27 @@ public:
   double reweight() const {
     return reweight_;
   }
+
+public :
+  
+  /**
+   *   Access to switches for spin correlations
+   */
+  //@{
+  /**
+   *   Spin Correlations
+   */
+  unsigned int spinCorrelations() const {
+    return spinOpt_;
+  }
+  
+  /**
+   *  Any correlations
+   */
+  virtual bool correlations() const {
+    return spinOpt_!=0;
+  }
+  //@}
 
 public:
 
@@ -677,6 +705,11 @@ private:
    */
   Ptr<HardScaleProfile>::ptr hardScaleProfile_;
   //@}
+
+  /**
+   *  Option to include spin correlations
+   */
+  unsigned int spinOpt_;
 
 private:
 

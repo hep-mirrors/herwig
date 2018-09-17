@@ -48,11 +48,11 @@ ParticleVector DecayIntegrator::decay(const Particle & parent,
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter;
+  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter << ounit(_eps,GeV);
 }
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter;
+  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter >> iunit(_eps,GeV);
 }
   
 // The following static variable is needed for the type
@@ -61,11 +61,6 @@ DescribeAbstractClass<DecayIntegrator,HwDecayerBase>
 describeHerwigDecayIntegrator("Herwig::DecayIntegrator", "Herwig.so");
   
 void DecayIntegrator::Init() {
-    
-  static RefVector<DecayIntegrator,DecayPhaseSpaceMode> interfaceModes
-    ("Modes",
-     "The phase space integration modes.",
-     &DecayIntegrator::_modes, 0, false, false, true, true); 
   
   static ClassDocumentation<DecayIntegrator> documentation
     ("The DecayIntegrator class is a base decayer class "

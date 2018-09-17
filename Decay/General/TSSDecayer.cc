@@ -77,6 +77,8 @@ double TSSDecayer::me2(const int , const Particle & inpart,
     TensorWaveFunction::
       calculateWaveFunctions(tensors_,rho_,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
+    // fix rho if no correlations
+    fixRho(rho_);
   }
   if(meopt==Terminate) {
     TensorWaveFunction::

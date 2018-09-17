@@ -10,3 +10,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1609253
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1487277
 # CMS di-jet decorrelation
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1421646
+# CMS jet charge
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1605749

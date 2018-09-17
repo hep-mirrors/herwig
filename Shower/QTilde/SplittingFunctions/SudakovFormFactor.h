@@ -20,8 +20,9 @@
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "ThePEG/EventRecord/SpinInfo.h"
-#include "ShowerKinematics.fh"
+#include "Herwig/Shower/QTilde/Kinematics/ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
+#include "SudakovCutOff.h"
 
 namespace Herwig {
 
@@ -137,9 +138,6 @@ public:
    * The default constructor.
    */
   SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
-			cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
-			kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
 			z_( 0.0 ),phi_(0.0), pT_(){}
 
   /**
@@ -157,8 +155,7 @@ public:
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,
 					      const RhoDMatrix & rho,
-					      double enhance, double detuning,
-					      Energy2 maxQ2)=0;
+					      double enhance, double detuning);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -176,7 +173,7 @@ public:
 					       const IdList &ids,
 					       const RhoDMatrix & rho,
 					       double enhance,
-					       double detuning)=0;
+					       double detuning);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -193,7 +190,7 @@ public:
 					       const RhoDMatrix & rho,
 					       double enhance,
 					       tcBeamPtr beam,
-					       double detuning)=0;
+					       double detuning);
   //@}
 
   /**
@@ -204,7 +201,7 @@ public:
    */
   virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
 				    ShoKinPtr kinematics,
-				    const RhoDMatrix & rho)=0;
+				    const RhoDMatrix & rho);
 
   /**
    *  Generate the azimuthal angle of the branching for backward evolution
@@ -214,7 +211,7 @@ public:
    */
   virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
 				     ShoKinPtr kinematics,
-				     const RhoDMatrix & rho)=0;
+				     const RhoDMatrix & rho);
 
   /**
    *  Generate the azimuthal angle of the branching for ISR in decays
@@ -224,7 +221,7 @@ public:
    */
   virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
 				  ShoKinPtr kinematics,
-				  const RhoDMatrix & rho)=0;
+				  const RhoDMatrix & rho);
 
   /**
    *  Methods to provide public access to the private member variables
@@ -278,25 +275,7 @@ public:
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
    */
-  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt)=0;
-
-  /**
-   *  Method to create the ShowerKinematics object for a final-state branching
-   */
-  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
-					      double phi, Energy pt)=0;
-
-  /**
-   *  Method to create the ShowerKinematics object for an initial-state branching
-   */
-  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
-						double phi, Energy pt)=0;
-
-  /**
-   *  Method to create the ShowerKinematics object for a decay branching
-   */
-  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
-					 double phi, Energy pt)=0;
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
 
 public:
 
@@ -325,16 +304,71 @@ public:
   static void Init();
 
 protected:
-  
-  /** @name Standard Interfaced functions. */
+  /**
+   *  Methods to provide the next value of the scale before the vetos
+   *  are applied.
+   */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
+   *  Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param enhance The radiation enhancement factor
+   * @return False if scale less than minimum, true otherwise
    */
-  virtual void doinit();
+  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, double detune);
+
+  /**
+   * Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmax The maximum scale
+   * @param minmass The minimum mass of the particle after the branching
+   * @param enhance The radiation enhancement factor
+   */
+  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
+		  double enhance, double detune);
+
+  /**
+   * Value of the energy fraction and scale for space-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param x Fraction of the beam momentum.
+   * @param enhance The radiation enhancement factor
+   */
+  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
+		      double enhance, double detune);
   //@}
+
+  /**
+   *  Initialize the values of the cut-offs and scales
+   * @param tmin The minimum scale
+   * @param ids  The ids of the partics in the branching
+   */
+  void initialize(const IdList & ids,Energy2 &tmin);
+
+  /**
+   *  Phase Space veto member to implement the \f$\Theta\f$ function as a veto
+   *  so that the emission is within the allowed phase space.
+   * @param t  The scale
+   * @param maxQ2 The maximum virtuality
+   * @return true if vetoed
+   */
+  bool PSVeto(const Energy2 t);
+
+  /**
+   * Compute the limits on \f$z\f$ for time-like branching
+   * @param scale The scale of the particle
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeTimeLikeLimits(Energy2 & scale);
+
+  /**
+   * Compute the limits on \f$z\f$ for space-like branching
+   * @param scale The scale of the particle
+   * @param x The energy fraction of the parton
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeSpaceLikeLimits(Energy2 & scale, double x);
 
 protected:
 
@@ -431,41 +465,6 @@ protected:
   //@}
 
   /**
-   *  Methods to set the kinematic variables for the branching
-   */
-  //@{
-  /**
-   *  The energy fraction
-   */
-  void z(double in) { z_=in; }
-
-  /**
-   *  The azimuthal angle
-   */
-  void phi(double in) { phi_=in; }
-
-  /**
-   *  The transverse momentum
-   */
-  void pT(Energy in) { pT_=in; }
-  //@}
-
-  /**
-   *  Set/Get the limits on the energy fraction for the splitting
-   */
-  //@{
-  /**
-   * Get the limits
-   */
-  pair<double,double> zLimits() const { return zlimits_;}
-
-  /**
-   * Set the limits
-   */
-  void zLimits(pair<double,double> in) { zlimits_=in; }
-  //@}
-
-  /**
    *  Set the particles in the splittings
    */
   void addSplitting(const IdList &);
@@ -483,54 +482,6 @@ protected:
 public:
 
   /**
-   * @name Methods for the cut-off
-   */
-  //@{
-  /**
-   *  The option being used
-   */
-  unsigned int cutOffOption() const { return cutOffOption_; }
-
-  /**
-   *  The kinematic scale
-   */
-  Energy kinScale() const {return kinCutoffScale_;}
-
-  /**
-   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
-   * @param scale The scale \f$\delta\f$
-   * @param mq The quark mass \f$m_q\f$.
-   */
-  Energy kinematicCutOff(Energy scale, Energy mq) const 
-  {return max((scale -a_*mq)/b_,c_);}
-
-  /**
-   *  The virtualilty cut-off for gluons
-   */
-  Energy vgCut() const { return vgcut_; }
-  
-  /**
-   *  The virtuality cut-off for everything else
-   */
-  Energy vqCut() const { return vqcut_; }
-
-  /**
-   *  The minimum \f$p_T\f$ for the branching
-   */
-  Energy pTmin() const { return pTmin_; }
-  
-  /**
-   *  The square of the minimum \f$p_T\f$
-   */
-  Energy2 pT2min() const { return pT2min_; }
-
-  /**
-   *  Calculate the virtual masses for a branchings
-   */
-  const vector<Energy> & virtualMasses(const IdList & ids);
-  //@}
-
-  /**
    *   Set the PDF
    */
   void setPDF(tcPDFPtr pdf, Energy scale) {
@@ -538,13 +489,44 @@ public:
     freeze_ = scale;
   }
 
+public:
+
+  /**
+   *  Calculate the virtual masses for a branchings
+   */
+  const vector<Energy> & virtualMasses(const IdList & ids) {
+  	return cutoff_->virtualMasses(ids);
+  }
+
+  /**
+   *  The minimum pT2
+   */
+  Energy2 pT2min() { return cutoff_->pT2min(); }
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const {return new_ptr(*this);}
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  //@}
+
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SudakovFormFactor & operator=(const SudakovFormFactor &);
+  SudakovFormFactor & operator=(const SudakovFormFactor &) = delete;
 
 private:
 
@@ -557,6 +539,11 @@ private:
    *  Pointer to the coupling for this Sudakov form factor
    */
   ShowerAlphaPtr alpha_;
+
+  /**
+   *  Pointer to the coupling for this Sudakov form factor
+   */
+  SudakovCutOffPtr cutoff_;
 
   /**
    * Maximum value of the PDF weight
@@ -573,69 +560,6 @@ private:
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
   unsigned pdffactor_;
-
-private:
-
-  /**
-   *  Option for the type of cut-off to be applied
-   */
-  unsigned int cutOffOption_;
-
-  /**
-   *  Parameters for the default Herwig cut-off option, i.e. the parameters for
-   *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
-   */
-  //@{
-  /**
-   *  The \f$a\f$ parameter
-   */
-  double a_;
-
-  /**
-   *  The \f$b\f$ parameter
-   */
-  double b_;
-
-  /**
-   *  The \f$c\f$ parameter
-   */
-  Energy c_;
-
-  /**
-   * Kinematic cutoff used in the parton shower phase space. 
-   */
-  Energy kinCutoffScale_;
-  //@} 
-
-   /**
-    *  Parameters for the FORTRAN-like cut-off
-    */ 
-  //@{
-  /**
-   *  The virtualilty cut-off for gluons
-   */
-  Energy vgcut_;
-  
-  /**
-   *  The virtuality cut-off for everything else
-   */
-  Energy vqcut_;
-  //@}
-
-  /**
-   *  Parameters for the \f$p_T\f$ cut-off 
-   */
-  //@{
-  /**
-   *  The minimum \f$p_T\f$ for the branching
-   */
-  Energy pTmin_;
-  
-  /**
-   *  The square of the minimum \f$p_T\f$
-   */
-  Energy2 pT2min_;
-  //@}
 
 private:
 
@@ -680,6 +604,27 @@ private:
   Energy freeze_;
   //@}
 
+private:
+  
+  /**
+   *  The evolution scale, \f$\tilde{q}\f$.
+   */
+  Energy q_;
+
+  /**
+   *  The Ids of the particles in the current branching
+   */
+  IdList ids_;
+
+  /**
+   *  The masses of the particles in the current branching
+   */
+  vector<Energy> masses_;
+
+  /**
+   *  The mass squared of the particles in the current branching
+   */
+  vector<Energy2> masssquared_;
 
 };
 

@@ -11,7 +11,7 @@
 // functions of the ShowerConfig class.
 //
 #include "ShowerConfig.h"
-#include "Base/SudakovFormFactor.h"
+#include "SplittingFunctions/SudakovFormFactor.h"
 
 using namespace Herwig;
 

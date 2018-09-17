@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SudakovCutOff class.
+//
+#ifndef Herwig_SudakovCutOff_FH
+#define Herwig_SudakovCutOff_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class SudakovCutOff;
+
+ThePEG_DECLARE_POINTERS(Herwig::SudakovCutOff,SudakovCutOffPtr);
+
+}
+
+#endif

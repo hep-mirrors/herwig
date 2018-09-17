@@ -90,15 +90,10 @@ protected:
 
 protected:
 
-  /** @name Standard Interfaced functions. */
-  //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
+   *   Set up the diagrams etc
    */
-  virtual void doinit();
-  //@}
+  virtual void setupDiagrams(bool checkKinematics);
 
 private:
 

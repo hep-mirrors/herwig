@@ -1,22 +1,36 @@
 // -*- C++ -*-
 //
-// QTildeReconstructor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// KinematicsReconstructor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_QTildeReconstructor_H
-#define HERWIG_QTildeReconstructor_H
+#ifndef HERWIG_KinematicsReconstructor_H
+#define HERWIG_KinematicsReconstructor_H
 //
-// This is the declaration of the QTildeReconstructor class.
+// This is the declaration of the KinematicsReconstructor class.
 //
 
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
+#include "ThePEG/Interface/Interfaced.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
+#include "KinematicsReconstructor.fh"
+#include <cassert>
 
 namespace Herwig {
 
 using namespace ThePEG;
+
+  /**\ingroup Shower
+   * Exception class
+   * used to communicate failure of kinematics
+   * reconstruction.
+   */
+  struct KinematicsReconstructionVeto {};
+
 
 /** \ingroup Shower
  *  A simple struct to store the information we need on the 
@@ -106,17 +120,17 @@ typedef ColourSinglet<HardBranchingPtr> ColourSingletShower;
  * 
  * @see ShowerParticle
  * @see ShowerKinematics
- * @see \ref QTildeReconstructorInterfaces "The interfaces"
- * defined for QTildeReconstructor.
+ * @see \ref KinematicsReconstructorInterfaces "The interfaces"
+ * defined for KinematicsReconstructor.
  */
-class QTildeReconstructor: public KinematicsReconstructor {
+class KinematicsReconstructor: public Interfaced {
 
 public:
 
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _initialBoost(0), 
+  KinematicsReconstructor() : _reconopt(0), _initialBoost(0), 
 			  _finalStateReconOption(0), 
 			  _initialStateReconOption(0), _minQ(MeV) {};
 
@@ -568,7 +582,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QTildeReconstructor & operator=(const QTildeReconstructor &);
+  KinematicsReconstructor & operator=(const KinematicsReconstructor &) = delete;
 
 private:
 
@@ -638,5 +652,5 @@ private:
 
 }
 
-#include "QTildeReconstructor.tcc"
-#endif /* HERWIG_QTildeReconstructor_H */
+#include "KinematicsReconstructor.tcc"
+#endif /* HERWIG_KinematicsReconstructor_H */
