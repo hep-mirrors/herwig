@@ -72,7 +72,9 @@ void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 void LambdabExcitedLambdacSumRuleFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
-			   Complex & f1a,Complex & f2a,Complex & f3a) {
+			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   Virtuality virt) {
+  assert(virt==SpaceLike);
   useMe();
   double omega(.5/m0/m1*(m0*m0+m1*m1-q2)),orr(1./sqrt(3.));
   // the universal form-factor
