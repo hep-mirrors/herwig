@@ -315,7 +315,6 @@ void TwoKaonCzyzCurrent::doinit() {
   }
   // phi masses and couplings
   gamB = std::tgamma(2.-betaPhi_);
-  gamB = 32.78;
   mass_.push_back(vector<Energy>());
   width_.push_back(vector<Energy>());
   coup_.push_back(vector<Complex>());
