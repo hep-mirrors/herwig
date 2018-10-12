@@ -36,7 +36,8 @@ FourPionCzyzCurrent.h\
 EtaPiPiCurrent.h\
 KKPiCurrent.h\
 KStarKCurrent.h\
-EtaPhiCurrent.h
+EtaPhiCurrent.h\
+EtaOmegaCurrent.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -67,4 +68,5 @@ FourPionCzyzCurrent.cc\
 EtaPiPiCurrent.cc\
 KKPiCurrent.cc\
 KStarKCurrent.cc\
-EtaPhiCurrent.cc
+EtaPhiCurrent.cc\
+EtaOmegaCurrent.cc
