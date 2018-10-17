@@ -18,9 +18,13 @@ using namespace Herwig;
 
 EtaPiPiCurrent::EtaPiPiCurrent() : fpi_(93.3*MeV) {
   rhoMasses_ = {0.77549*GeV,1.470*GeV,1.76*GeV};
-  rhoWidths_ = {0.1494 *GeV,0.28 *GeV,0.3 *GeV};
-  amp_       = {1.         ,   -0.385,   -0.08};
-  phase_     = {0.         ,     -5.6,    -3.9};
+  rhoWidths_ = {0.1494 *GeV,0.28 *GeV,0.35*GeV};
+  amp_       = {1.27491587208,
+		0.490315004253,
+		0.0853678060617};
+  phase_     = {0.357439353035,
+		-2.15650097934,
+		-0.454434283655};
   // set up for the modes in the base class
   addDecayMode(2,-1);
   addDecayMode(1,-1);
@@ -52,6 +56,9 @@ void EtaPiPiCurrent::doinit() {
   for(unsigned int ix=0;ix<amp_.size();++ix) {
     weights_.push_back(amp_[ix]*(cos(phase_[ix])+Complex(0.,1.)*sin(phase_[ix])));
   }
+  Complex denom = std::accumulate(weights_.begin(),weights_.end(),Complex(0.));
+  for(unsigned int ix=0;ix<weights_.size();++ix)
+    weights_[ix] /=denom;
 }
 
 void EtaPiPiCurrent::persistentOutput(PersistentOStream & os) const {
@@ -220,18 +227,19 @@ EtaPiPiCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
-  Lorentz5Momentum Q=momenta[0]+momenta[1]+momenta[2];
-  Q.rescaleMass();
+  Lorentz5Momentum q=momenta[0]+momenta[1]+momenta[2];
+  q.rescaleMass();
   Energy2 s1 = (momenta[0]+momenta[1]).m2();
+  Energy2 Q2 = q.mass2();
+  Energy  Q  = q.mass();
   Complex BW1 = Resonance::BreitWignerPWave(s1,rhoMasses_[0],rhoWidths_[0],
 					    momenta[0].mass(),momenta[1].mass());
-  vector<Complex> BWs = {Resonance::BreitWignerPWave(Q.mass2(),rhoMasses_[0],rhoWidths_[0],
+  vector<Complex> BWs = {Resonance::BreitWignerPWave(Q2,rhoMasses_[0],rhoWidths_[0],
 						     momenta[0].mass(),momenta[1].mass()),
-			 Resonance::BreitWignerFW(Q.mass2(),rhoMasses_[1],
-						  rhoWidths_[1]*pow(Q.mass()/rhoMasses_[1],3)),
-			 Resonance::BreitWignerFW(Q.mass2(),rhoMasses_[2],
-						  rhoWidths_[2]*pow(Q.mass()/rhoMasses_[2],3))};
-  Complex denom = std::accumulate(weights_.begin(),weights_.end(),Complex(0.));
+			 Resonance::BreitWignerFW(Q2,rhoMasses_[1],
+						  rhoWidths_[1]*pow(Q/rhoMasses_[1],3)),
+			 Resonance::BreitWignerFW(Q2,rhoMasses_[2],
+						  rhoWidths_[2]*pow(Q/rhoMasses_[2],3))};
   unsigned int imin=0,imax=3;
   if(resonance) {
     switch(resonance->id()/1000) {
@@ -258,11 +266,12 @@ EtaPiPiCurrent::current(tcPDPtr resonance,
   Complex fact(0.);
   for(unsigned int ix=imin;ix<imax;++ix) {
     fact += weights_[ix]*BWs[ix];
+    cerr << "testing in form factor " << Q/GeV << " " << ix << " " << weights_[ix] << " " << BWs[ix] << "\n";
   }
-  fact *= -0.25*Complex(0.,1.)/sqr(Constants::pi)/sqrt(3.)/denom*BW1;
+  fact *= -0.25*Complex(0.,1.)/sqr(Constants::pi)/sqrt(3.)*BW1;
   if(imode==0) fact *=sqrt(2.);
-  scale=Q.mass();
-  LorentzPolarizationVectorE output = fact/pow<3,1>(fpi_)*Q.mass()*
+  scale=Q;
+  LorentzPolarizationVectorE output = fact/pow<3,1>(fpi_)*Q*
     Helicity::epsilon(momenta[0],momenta[1],momenta[2]);
   return vector<LorentzPolarizationVectorE>(1,output);
 }
