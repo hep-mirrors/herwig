@@ -17,14 +17,10 @@
 using namespace Herwig;
 
 EtaPiPiCurrent::EtaPiPiCurrent() : fpi_(93.3*MeV) {
-  rhoMasses_ = {0.77549*GeV,1.470*GeV,1.76*GeV};
-  rhoWidths_ = {0.1494 *GeV,0.28 *GeV,0.35*GeV};
-  amp_       = {1.27491587208,
-		0.490315004253,
-		0.0853678060617};
-  phase_     = {0.357439353035,
-		-2.15650097934,
-		-0.454434283655};
+  rhoMasses_ = {0.77549*GeV,1.54*GeV,1.76*GeV};
+  rhoWidths_ = {0.1494 *GeV,0.356*GeV,.113*GeV};
+  amp_       = {1.,0.326,0.0115};
+  phase_     = {0.,Constants::pi,Constants::pi};
   // set up for the modes in the base class
   addDecayMode(2,-1);
   addDecayMode(1,-1);
