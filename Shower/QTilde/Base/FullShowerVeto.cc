@@ -120,7 +120,7 @@ int FullShowerVeto::applyVeto(ShowerTreePtr tree) {
   incoming_.clear();
   outgoing_.clear();
   // return the answer
-  return vetoed ? behaviour_ : -1;
+  return vetoed ? int(behaviour_) : -1;
 }
 
 namespace {

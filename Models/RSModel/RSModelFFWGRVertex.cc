@@ -152,7 +152,7 @@ void RSModelFFWGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr bb,
     right(gr_[iferm]);
   }
   else if(ibos==24) {
-    coup = UnitRemoval::E * kappa_ * couplast_ * 
+    coup = Complex(UnitRemoval::E * kappa_ * couplast_) * 
       sqrt(0.5) / sqrt(sin2ThetaW());
     // the left and right couplings
     int iferm=abs(aa->id());

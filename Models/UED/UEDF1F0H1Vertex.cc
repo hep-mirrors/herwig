@@ -31,7 +31,7 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(ZERO), theMw(ZERO),
 void UEDF1F0H1Vertex::doinit() {
   long heavy[3] = {5, 6, 15};
   //h0
-  for( unsigned int i = 0; i < 3; ++i ) {
+  for( int i = 0; i < 3; ++i ) {
     addToList(-5100000 - i, 5100000 + i, 25);
     addToList(-6100000 - i, 6100000 + i, 25);
     addToList(-5100000 - i, 6100000 + i, 25);
@@ -40,7 +40,7 @@ void UEDF1F0H1Vertex::doinit() {
   // Neutral KK-Higgs
   long higgs[2] = {5100025, 5100036};
   for( unsigned int h = 0; h < 2; ++h ) {
-    for( unsigned int i = 0; i < 3; ++i ) {
+    for( int i = 0; i < 3; ++i ) {
       addToList(-heavy[i], 5100000 + heavy[i], higgs[h]);
       addToList(-5100000 - heavy[i], heavy[i], higgs[h]);
       addToList(-heavy[i], 6100000 + heavy[i], higgs[h]);

@@ -17,7 +17,7 @@ using Constants::pi;
 
 namespace {
 
-  const static LorentzVector<Complex> czero(0.,0.,0.,0.);
+  static const LorentzVector<Complex> czero(0.,0.,0.,0.);
 
   inline Complex csqr(const Complex & a) {
     return a * a;
@@ -33,35 +33,6 @@ namespace {
       return 1.;
     return -1.;
   }
-
-  // quick'n'dirty fix to template troubles
-
-  Complex operator * (const Complex& a, const double b) {
-    return Complex(a.real() * b,a.imag() * b);
-  }
-
-  Complex operator * (const double b, const Complex& a) {
-    return Complex(a.real() * b,a.imag() * b);
-  }
-
-  Complex operator+(const Complex& a, const double b) {
-    return Complex(a.real()+b,a.imag());
-  }
-
-  Complex operator+(const double b, const Complex& a) {
-    return Complex(a.real()+b,a.imag());
-  }
-
-  Complex operator-(const Complex& a, const double b) {
-    return Complex(a.real()-b,a.imag());
-  }
-
-  Complex operator-(const double b, const Complex& a) {
-    return Complex(b-a.real(),-a.imag());
-  }
-
-
-  // end fix, needs to be looked at in ThePEG/Config/
 
 }
 

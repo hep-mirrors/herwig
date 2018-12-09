@@ -329,7 +329,7 @@ double OniumToOniumPiPiDecayer::me2(const int,
 	(_vectors[0][ix]*decay[1]->momentum())*(_vectors[1][iy]*decay[2]->momentum())+
 	(_vectors[0][ix]*decay[2]->momentum())*(_vectors[1][iy]*decay[1]->momentum());
       (*ME())(ix,iy,0,0)= _coupling[imode()/2]*
-	(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
+	Complex(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
 	 +C*dotb);
     }
   }

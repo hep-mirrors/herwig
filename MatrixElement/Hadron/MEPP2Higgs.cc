@@ -1255,7 +1255,7 @@ complex<Energy> MEPP2Higgs::me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2,
      -8.*mf2*(ci_[j1]/(t*t1)+ci_[k1]/(u*u1))
      +0.5*(s-4.*mf2)*(s*t*di_[k]+u*s*di_[j]-u*t*di_[i])/(s*t*u)
      +4.*mf2*di_[i]/s
-     -2.*(u*ci_[k]+t*ci_[j]+u1*ci_[k1]+t1*ci_[j1]-u*t*di_[i])/sqr(s));
+     -2.*Complex(u*ci_[k]+t*ci_[j]+u1*ci_[k1]+t1*ci_[j1]-u*t*di_[i])/sqr(s));
 }
 
 complex<Energy> MEPP2Higgs::me2(Energy2 s,Energy2 t,Energy2 u,
