@@ -12,6 +12,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/epsilon.h"
 
 using namespace Herwig;
 
@@ -126,8 +127,8 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
     mout += out[ix]->mass();
   if(mout>upp) return false;
   // resonances we need
-  tPDPtr resI0[3] = {getParticleData(   113),getParticleData(100113),getParticleData( 30113)};
-  tPDPtr resI1[6] = {getParticleData(   223),getParticleData(   333),
+  tPDPtr resI1[3] = {getParticleData(   113),getParticleData(100113),getParticleData( 30113)};
+  tPDPtr resI0[6] = {getParticleData(   223),getParticleData(   333),
 		     getParticleData(100223),getParticleData(100333),
 		     getParticleData( 30223),getParticleData( 30333)};
   tPDPtr res[2];
@@ -147,13 +148,13 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
     res[0] = getParticleData(ParticleID::Kstarminus);
     res[0] = getParticleData(ParticleID::Kstar0);
   }
-  for(unsigned int ix=0;ix<3;++ix) {
+  for(unsigned int ix=0;ix<6;++ix) {
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[0],ires+1,iloc+2,
 		      ires+2,iloc+1,ires+2,iloc+3));
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[1],ires+1,iloc+1,
 		      ires+2,iloc+2,ires+2,iloc+3));
   }
-  for(unsigned int ix=0;ix<6;++ix) {
+  for(unsigned int ix=0;ix<3;++ix) {
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI1[ix],ires+1,res[0],ires+1,iloc+2,
 		      ires+2,iloc+1,ires+2,iloc+3));
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI1[ix],ires+1,res[1],ires+1,iloc+1,
@@ -187,98 +188,134 @@ tPDVector KKPiCurrent::particles(int icharge, unsigned int imode,
 vector<LorentzPolarizationVectorE> 
 KKPiCurrent::current(tcPDPtr resonance,
 		     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
-		     const int, const int ichan, Energy & scale, 
+		     const int imode, const int ichan, Energy & scale, 
 		     const tPDVector & ,
 		     const vector<Lorentz5Momentum> & momenta,
 		     DecayIntegrator::MEOption) const {
-//   // check the total isospin
-//   if(Itotal!=IsoSpin::IUnknown) {
-//     if(Itotal==IsoSpin::IZero) {
-//       if(i3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
-//     }
-//     else if(Itotal==IsoSpin::IOne) {
-//       if(i3!=IsoSpin::I3Unknown&&
-// 	 i3!=IsoSpin::I3One) return vector<LorentzPolarizationVectorE>();
-//     }
-//     else
-//       return vector<LorentzPolarizationVectorE>();
-//   }
-//   useMe();
-//   // calculate q2,s1,s2,s3
-//   Lorentz5Momentum q;
-//   for(unsigned int ix=0;ix<momenta.size();++ix) q+=momenta[ix];
-//   q.rescaleMass();
-//   scale=q.mass();
-//   Energy2 q2=q.mass2();
-//   Energy2 sm = (momenta[1]+momenta[2]).m2();
-//   Energy2 sp = (momenta[0]+momenta[2]).m2();
-//   Energy2 s0 = (momenta[0]+momenta[1]).m2();
-//   int irho=-1;
-//   if(ichan>=0) {
-//     irho = ichan%3;
-//   }
-//   // isospin zero part of the current
-//   complex<InvEnergy3> F_I0(ZERO);
-//   if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) {
-//     // compute H rho
-//     Complex Hrho = HChannel(irho,rhoMasses_[0],rhoWidths_[0],sp,sm,s0,mpip_,mpi0_);
-//     // terms in the current
-//     if((!resonance || resonance->id() == 223) && ichan<=2) {
-//       F_I0 += Hrho*coup_I0_[0]*Resonance::BreitWignerFW(q2,omegaMasses_[0],omegaWidths_[0]);
-//     }
-//     if((!resonance || resonance->id() == 333) && (ichan<0 || (ichan>=9&&ichan<=11))) {
-//       F_I0 += Hrho*coup_I0_[1]*Resonance::BreitWignerFW(q2,phiMass_       ,phiWidth_      );
-//     }
-//     if((!resonance || resonance->id() == 100223) && (ichan<0 || (ichan>=3&&ichan<=5))) {
-//       F_I0 += Hrho*coup_I0_[2]*Resonance::BreitWignerFW(q2,omegaMasses_[1],omegaWidths_[1]);
-//     }
-//     if((!resonance || resonance->id() == 30223) && (ichan<0 || (ichan>=6&&ichan<=8))) {
-//       F_I0 +=  Hrho*coup_I0_[3]*Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]);
-//     }
-//     if((!resonance || resonance->id() == 333) && (ichan<0 || (ichan>=12&&ichan<=14))) {
-//       F_I0 += coup_I0_[4]*HChannel(irho,rhoMasses_[1],rhoWidths_[1],sp,sm,s0,mpip_,mpi0_)*
-// 	Resonance::BreitWignerFW(q2,phiMass_,phiWidth_);
-//     }
-//     if((!resonance || resonance->id() == 100223) && (ichan<0 || (ichan>=15&&ichan<=17))) {
-//       F_I0 += coup_I0_[5]*HChannel(irho,rhoMasses_[2],rhoWidths_[2],sp,sm,s0,mpip_,mpi0_)*
-//     Resonance::BreitWignerFW(q2,omegaMasses_[2],omegaWidths_[2]);
-//     }
-//   }
-//   // isospin = 1
-//   complex<InvEnergy3> F_I1(ZERO);
-//   if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && !resonance && ichan<0) {
-//     F_I1 = GW_*
-//       Resonance::BreitWignerFW(q2,omegaMass_I1_,omegaWidth_I1_)/sqr(omegaMass_I1_)*
-//       (Resonance::BreitWignerPWave(s0,rhoMasses_I1_[0],
-// 				   rhoWidths_I1_[0],mpip_,mpip_)/sqr(rhoMasses_I1_[0])+
-//        sigma_*Resonance::BreitWignerPWave(s0,rhoMasses_I1_[1],
-// 					  rhoWidths_I1_[1],mpip_,mpip_)/sqr(rhoMasses_I1_[0]));
-//   }
-//   // the current
-//   LorentzPolarizationVector vect = (F_I0+F_I1)*
-//     Helicity::epsilon(momenta[0],
-//   		      momenta[1],
-//   		      momenta[2]);
-//   // factor to get dimensions correct
-//   return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
-  assert(false);
+  // check the total isospin
+  if(Itotal!=IsoSpin::IUnknown) {
+    if(Itotal==IsoSpin::IZero) {
+      if(i3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+    }
+    else if(Itotal==IsoSpin::IOne) {
+      if(i3!=IsoSpin::I3Unknown&&
+	 i3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
+    }
+    else
+      return vector<LorentzPolarizationVectorE>();
+  }
+  useMe();
+  // calculate q2,s1,s2
+  Lorentz5Momentum q;
+  for(unsigned int ix=0;ix<momenta.size();++ix) q+=momenta[ix];
+  q.rescaleMass();
+  scale=q.mass();
+  Energy2 q2=q.mass2();
+  Energy2 s1 = (momenta[0]+momenta[2]).m2();
+  Energy2 s2 = (momenta[1]+momenta[2]).m2();
+  // I=0 coefficient
+  complex<InvEnergy> A0(ZERO);
+  int ires=-1;
+  if(ichan>=0) ires=ichan/2;
+  if(Itotal==IsoSpin::IUnknown ||
+     Itotal==IsoSpin::IZero) {
+    if(ires>=0) {
+      if(ires<int(isoScalarMasses_.size()))
+	A0 = isoScalarKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoScalarMasses_[ires],isoScalarWidths_[ires]);
+    }
+    else {
+      for(unsigned int ix=0;ix<isoScalarMasses_.size();++ix) {
+	A0 += isoScalarKStarCoup_[ix]*Resonance::BreitWignerFW(q2,isoScalarMasses_[ix],isoScalarWidths_[ix]);
+      }
+    }
+  }
+  ires-=6;
+  // I=1 coefficient
+  complex<InvEnergy> A1(ZERO);
+  if(Itotal==IsoSpin::IUnknown ||
+     Itotal==IsoSpin::IOne) {
+    if(ires>=0) {
+      if(ires<int(isoVectorMasses_.size()))
+	A1  = isoVectorKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoVectorMasses_[ires],isoVectorWidths_[ires]);
+    }
+    else {
+      for(unsigned int ix=0;ix<isoVectorMasses_.size();++ix) {
+	A1 += isoVectorKStarCoup_[ix]*Resonance::BreitWignerFW(q2,isoVectorMasses_[ix],isoVectorWidths_[ix]);
+      }
+    }
+  }
+  complex<InvEnergy3> amp(ZERO);
+  ires = -1;
+  if(ichan>=0) ires = ichan%2;
+  if(imode==0) {
+    complex<InvEnergy2> r1 = (ires<0||ires==0) ?
+     Resonance::BreitWignerPWave(s1,mKStar0_,wKStar0_,momenta[0].mass(),momenta[2].mass())/sqr(mKStar0_) : InvEnergy2(); 
+    complex<InvEnergy2> r2 = (ires<0||ires==1) ?
+     Resonance::BreitWignerPWave(s2,mKStar0_,wKStar0_,momenta[1].mass(),momenta[2].mass())/sqr(mKStar0_) : InvEnergy2();
+    amp = sqrt(1./6.)*(A0-A1)*(r1+r2);
+  }
+  else if(imode==1) {
+    complex<InvEnergy2> r1 = (ires<0||ires==0) ?
+     Resonance::BreitWignerPWave(s1,mKStarP_,wKStarP_,momenta[0].mass(),momenta[2].mass())/sqr(mKStarP_) : InvEnergy2(); 
+    complex<InvEnergy2> r2 = (ires<0||ires==1) ?
+     Resonance::BreitWignerPWave(s2,mKStarP_,wKStarP_,momenta[1].mass(),momenta[2].mass())/sqr(mKStarP_) : InvEnergy2();
+    amp = sqrt(1./6.)*(A0+A1)*(r1+r2);
+  }
+  else {
+    complex<InvEnergy2> r1 = (ires<0||ires==0) ?
+     Resonance::BreitWignerPWave(s1,mKStarP_,wKStarP_,momenta[0].mass(),momenta[2].mass())/sqr(mKStarP_) : InvEnergy2(); 
+    complex<InvEnergy2> r2 = (ires<0||ires==1) ?
+     Resonance::BreitWignerPWave(s2,mKStar0_,wKStar0_,momenta[1].mass(),momenta[2].mass())/sqr(mKStar0_) : InvEnergy2();
+    amp = sqrt(1./6.)*((A0+A1)*r1+(A0-A1)*r2);
+  }
+  amp *= 2.*gKStar_;
+  // the current
+  LorentzPolarizationVector vect = amp*Helicity::epsilon(momenta[0],momenta[1],momenta[2]);
+  // factor to get dimensions correct
+  return vector<LorentzPolarizationVectorE>(1,scale*vect);
 }
    
 bool KKPiCurrent::accept(vector<int> id) {
-  if(id.size()!=3){return false;}
-  unsigned int npiplus(0),npi0(0),npiminus(0);
+  if(id.size()!=3) return false;
+  int npip(0),npim(0),nkp(0),nkm(0),
+    npi0(0),nks(0),nkl(0);
   for(unsigned int ix=0;ix<id.size();++ix) {
-    if(id[ix]==ParticleID::piplus) ++npiplus;
-    else if(id[ix]==ParticleID::piminus) ++npiplus;
-    else if(id[ix]==ParticleID::pi0)    ++npi0;
+    if(id[ix]==ParticleID::piplus)       ++npip;
+    else if(id[ix]==ParticleID::piminus) ++npim;
+    else if(id[ix]==ParticleID::Kplus)   ++nkp;
+    else if(id[ix]==ParticleID::Kminus)  ++nkm;
+    else if(id[ix]==ParticleID::pi0)     ++npi0;
+    else if(id[ix]==ParticleID::K_S0)    ++nks;
+    else if(id[ix]==ParticleID::K_L0)    ++nkl;
   }
-  return (npiplus==1&&npiminus==1&&npi0==1);
+  if ( (npi0==1 && (( nks==1&&nkl==1 ) ||
+		    ( nkp==1&&nkm==1 )) ) ||
+       ( (nkl==1||nks==1) &&
+	 ( (nkm==1&&npip==1) || (nkp==1&&npim==1) ) ) ) return true;
+  return false;
 }
 
 // the decay mode
-unsigned int KKPiCurrent::decayMode(vector<int> ) {
+unsigned int KKPiCurrent::decayMode(vector<int> id) {
+  assert(id.size()==3);
+  int npip(0),npim(0),nkp(0),nkm(0),
+    npi0(0),nks(0),nkl(0);
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID::piplus)       ++npip;
+    else if(id[ix]==ParticleID::piminus) ++npim;
+    else if(id[ix]==ParticleID::Kplus)   ++nkp;
+    else if(id[ix]==ParticleID::Kminus)  ++nkm;
+    else if(id[ix]==ParticleID::pi0)     ++npi0;
+    else if(id[ix]==ParticleID::K_S0)    ++nks;
+    else if(id[ix]==ParticleID::K_L0)    ++nkl;
+  }
+  if     ( nks==1&&nkl==1&&npi0==1 ) return 0;
+  else if( nkp==1&&nkm==1&&npi0==1 ) return 1;
+  else if( nks==1&&nkm==1&&npip==1 ) return 2;
+  else if( nks==1&&nkp==1&&npim==1 ) return 3;
+  else if( nkl==1&&nkm==1&&npip==1 ) return 4;
+  else if( nkl==1&&nkp==1&&npim==1 ) return 5;
   assert(false);
-  return 0;
 }
 
 // output the information for the database
