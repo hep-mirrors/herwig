@@ -262,10 +262,8 @@ EtaPiPiCurrent::current(tcPDPtr resonance,
   }
   // form factor
   Complex fact(0.);
-  for(unsigned int ix=imin;ix<imax;++ix) {
+  for(unsigned int ix=imin;ix<imax;++ix)
     fact += weights_[ix]*BWs[ix];
-    cerr << "testing in form factor " << Q/GeV << " " << ix << " " << weights_[ix] << " " << BWs[ix] << "\n";
-  }
   fact *= -0.25*Complex(0.,1.)/sqr(Constants::pi)/sqrt(3.)*BW1;
   if(imode==0) fact *=sqrt(2.);
   scale=Q;
