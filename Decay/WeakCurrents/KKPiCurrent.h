@@ -192,6 +192,10 @@ private:
   vector<Energy> isoVectorWidths_;
 
   /**
+   *   \f$K^*\f$ couplings
+   */
+  //@{
+  /**
    *  Amplitudes of the isoscalar couplings
    */
   vector<InvEnergy> isoScalarKStarAmp_;
@@ -220,47 +224,13 @@ private:
    *  Isovector couplings
    */
   vector<complex<InvEnergy> > isoVectorKStarCoup_;
-  
-  /**
-   *  Amplitudes of the isoscalar couplings
-   */
-  vector<InvEnergy2> isoScalarK2Amp_;
-
-  /**
-   *  Amplitudes of the isovector couplings
-   */
-  vector<InvEnergy2> isoVectorK2Amp_;
-
-  /**
-   *  Phase of the isoscalar couplings
-   */
-  vector<double> isoScalarK2Phase_;
-
-  /**
-   * Phase of the isovector couplings
-   */
-  vector<double> isoVectorK2Phase_;
-
-  /**
-   *  Isoscalar couplings
-   */
-  vector<complex<InvEnergy2> > isoScalarK2Coup_;
-
-  /**
-   *  Isovector couplings
-   */
-  vector<complex<InvEnergy2> > isoVectorK2Coup_;
+  //@}
 
   /**
    *  Coupling for the \f$K*\f$ to \f$K\pi\f$
    */
   double gKStar_;
-
-  /**
-   *  Coupling for the \f$K_2*\f$ to \f$K\pi\f$
-   */
-  InvEnergy2 gK2_;
-
+  
   /**
    *   Mass of the \f$K^{*+}\f$
    */
@@ -280,27 +250,6 @@ private:
    *   Width of the \f$K^{*0}\f$
    */
   Energy wKStar0_;
-
-  /**
-   *   Mass of the \f$K_2^{*+}\f$
-   */
-  Energy mK2P_;
-
-  /**
-   *   Mass of the \f$K_2^{*0}\f$
-   */
-  Energy mK20_;
-
-  /**
-   *   Width of the \f$K_2^{*+}\f$
-   */
-  Energy wK2P_;
-
-  /**
-   *   Width of the \f$K_2^{*0}\f$
-   */
-  Energy wK20_;
-  
 };
 
 }

@@ -10,8 +10,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -24,37 +22,12 @@ KKPiCurrent::KKPiCurrent() {
   // masses for the isovector component
   isoVectorMasses_ = {775.26*MeV,1465*MeV,1720*MeV};
   isoVectorWidths_ = {149.1 *MeV, 400*MeV, 250*MeV};
-
-  // /**
-  //  *  Amplitudes of the isoscalar couplings
-  //  */
-  // vector<InvEnergy> isoScalarAmp_;
-
-  // /**
-  //  *  Amplitudes of the isovector couplings
-  //  */
-  // vector<InvEnergy> isoVectorAmp_;
-
-  // /**
-  //  *  Phase of the isoscalar couplings
-  //  */
-  // vector<double> isoScalarPhase_;
-
-  // /**
-  //  * Phase of the isovector couplings
-  //  */
-  // vector<double> isoVectorPhase_;
-
-  // /**
-  //  *  Isoscalar couplings
-  //  */
-  // vector<Complex<InvEnergy> > isoScalarAmp_;
-
-  // /**
-  //  *  Isovector couplings
-  //  */
-  // vector<Complex<InvEnergy> > isoVectorAmp_;
-
+  // amplitude and phases for the isoscalar
+  isoScalarKStarAmp_  ={ZERO,ZERO,ZERO,11./GeV,ZERO,ZERO};
+  isoScalarKStarPhase_={  0.,  0.,  0.,     0.,  0.,  0.};
+  // amplitudes and phase for the isovector component
+  isoVectorKStarAmp_  ={ZERO,ZERO,4.5/GeV};
+  isoVectorKStarPhase_={0.,0.,Constants::pi};
   // Coupling for the K* to Kpi
   gKStar_ = 5.38;
   // mstar masses
@@ -91,10 +64,7 @@ void KKPiCurrent::persistentOutput(PersistentOStream & os) const {
      << ounit(isoScalarKStarAmp_,1./GeV) << ounit(isoVectorKStarAmp_,1./GeV)
      << isoScalarKStarPhase_ << isoVectorKStarPhase_
      << ounit(isoScalarKStarCoup_,1./GeV) << ounit(isoVectorKStarCoup_,1./GeV)
-     << ounit(isoScalarK2Amp_,1./GeV2) << ounit(isoVectorK2Amp_,1./GeV2)
-     << isoScalarK2Phase_ << isoVectorK2Phase_
-     << ounit(isoScalarK2Coup_,1./GeV2) << ounit(isoVectorK2Coup_,1./GeV2)
-     << gKStar_ << ounit(gK2_,1./GeV2)
+     << gKStar_
      << ounit(mKStarP_,GeV) <<  ounit(mKStar0_,GeV)
      << ounit(wKStarP_,GeV) << ounit(wKStar0_,GeV);
 }
@@ -105,10 +75,7 @@ void KKPiCurrent::persistentInput(PersistentIStream & is, int) {
      >> iunit(isoScalarKStarAmp_,1./GeV) >> iunit(isoVectorKStarAmp_,1./GeV)
      >> isoScalarKStarPhase_ >> isoVectorKStarPhase_
      >> iunit(isoScalarKStarCoup_,1./GeV) >> iunit(isoVectorKStarCoup_,1./GeV)
-     >> iunit(isoScalarK2Amp_,1./GeV2) >> iunit(isoVectorK2Amp_,1./GeV2)
-     >> isoScalarK2Phase_ >> isoVectorK2Phase_
-     >> iunit(isoScalarK2Coup_,1./GeV2) >> iunit(isoVectorK2Coup_,1./GeV2)
-     >> gKStar_ >> iunit(gK2_,1./GeV2)
+     >> gKStar_
      >> iunit(mKStarP_,GeV) >>  iunit(mKStar0_,GeV)
      >> iunit(wKStarP_,GeV) >> iunit(wKStar0_,GeV);
 }
@@ -116,7 +83,7 @@ void KKPiCurrent::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<KKPiCurrent,WeakCurrent>
-  describeHerwigKKPiCurrent("Herwig::KKPiCurrent", "HwWeakCurrents.so");
+describeHerwigKKPiCurrent("Herwig::KKPiCurrent", "HwWeakCurrents.so");
 
 void KKPiCurrent::Init() {
 
@@ -124,49 +91,6 @@ void KKPiCurrent::Init() {
     ("There is no documentation for the KKPiCurrent class");
 
 
-  // /**
-  //  *  The masses of the intermediate resonances for the isoscalar piece
-  //  */
-  // vector<Energy> isoScalarMasses_;
-  
-  // /**
-  //  *  The widths of the intermediate resonances for the isoscalar piece
-  //  */
-  // vector<Energy> isoScalarWidths_;
-
-  // /**
-  //  *  The masses of the intermediate resonances for the isovector piece
-  //  */
-  // vector<Energy> isoVectorMasses_;
-  
-  // /**
-  //  *  The widths of the intermediate resonances for the isovector piece
-  //  */
-  // vector<Energy> isoVectorWidths_;
-
-  // /**
-  //  *  Amplitudes of the isoscalar couplings
-  //  */
-  // vector<InvEnergy> isoScalarAmp_;
-
-  // /**
-  //  *  Amplitudes of the isovector couplings
-  //  */
-  // vector<InvEnergy> isoVectorAmp_;
-
-  // /**
-  //  *  Phase of the isoscalar couplings
-  //  */
-  // vector<double> isoScalarPhase_;
-
-  // /**
-  //  * Phase of the isovector couplings
-  //  */
-  // vector<double> isoVectorPhase_;
-  // /**
-  //  *  Coupling for the \f$K*\f$ to \f$K\pi\f$
-  //  */
-  // double gKStar_;
 }
 
 
@@ -176,100 +100,86 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
 			     unsigned int imode,PhaseSpaceModePtr mode,
 			     unsigned int iloc,int ires,
 			     PhaseSpaceChannel phase, Energy upp ) {
+  // check the charge
   if(icharge!=0) return false;
-//   // check the charge
-//   if(imode>=2 || icharge != 0) return false;
-//   // check the total isospin
-//   if(Itotal!=IsoSpin::IUnknown) {
-//     if(Itotal==IsoSpin::IZero) {
-//       if(i3!=IsoSpin::I3Unknown) return false;
-//     }
-//     else if(Itotal==IsoSpin::IOne) {
-//       if(i3!=IsoSpin::I3Unknown&&
-// 	 i3!=IsoSpin::I3One) return false;
-//     }
-//     else
-//       return false;
-//   }
-//   // check the kinematics
-//   tPDPtr pip = getParticleData(ParticleID::piplus);
-//   tPDPtr pim = getParticleData(ParticleID::piminus);
-//   tPDPtr pi0 = getParticleData(ParticleID::pi0);
-//   if(2*pip->mass()+pi0->mass()>upp) return false;
-//   // resonaces we need
-//   tPDPtr omega[4] = {getParticleData( 223),getParticleData( 100223),getParticleData( 30223),
-//   		      getParticleData( 333)};
-//   tPDPtr rho0[3]  = {getParticleData( 113),getParticleData( 100113),getParticleData( 30113)};
-//   tPDPtr rhop[3]  = {getParticleData( 213),getParticleData( 100213),getParticleData( 30213)};
-//   tPDPtr rhom[3]  = {getParticleData(-213),getParticleData(-100213),getParticleData(-30213)};
-//   // DecayPhaseSpaceChannelPtr newchannel;
-//   // omega/omega -> rho pi
-//   for(unsigned int ix=0;ix<4;++ix) {
-//     if(resonance && resonance != omega[ix]) continue;
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
-// 		      ires+1,rhom[0],ires+1,iloc+1,
-// 		      ires+2,iloc+2,ires+2,iloc+3));
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
-// 		      ires+1,rhop[0],ires+1,iloc+2,
-// 		      ires+2,iloc+1,ires+2,iloc+3));
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
-// 		      ires+1,rho0[0],ires+1,iloc+3,
-// 		      ires+2,iloc+1,ires+2,iloc+2));
-//   }
-//   // phi rho 1450
-//   if(!resonance || resonance ==omega[3]) {
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[3],
-// 		      ires+1,rhom[1],ires+1,iloc+1,
-// 		      ires+2,iloc+2,ires+2,iloc+3));
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[3],
-// 		      ires+1,rhop[1],ires+1,iloc+2,
-// 		      ires+2,iloc+1,ires+2,iloc+3));
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[3],
-// 		      ires+1,rho0[1],ires+1,iloc+3,
-// 		      ires+2,iloc+1,ires+2,iloc+2));
-//   }
-//   // // omega 1650 rho 1700
-//   if(!resonance || resonance ==omega[2]) {
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[2],
-// 		      ires+1,rhom[2],ires+1,iloc+1,
-// 		      ires+2,iloc+2,ires+2,iloc+3));
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[2],
-// 		      ires+1,rhop[2],ires+1,iloc+2,
-// 		      ires+2,iloc+1,ires+2,iloc+3));
-//     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[2],
-// 		      ires+1,rho0[2],ires+1,iloc+3,
-// 		      ires+2,iloc+1,ires+2,iloc+2));
-//   }
-//   // reset the masses in the intergrators
-//   for(unsigned int ix=0;ix<3;++ix) {
-//     if(ix<rhoMasses_.size()) {
-//       if(rho0[ix])
-// 	mode->resetIntermediate(rho0[ix],rhoMasses_[ix],rhoWidths_[ix]);
-//       if(rhop[ix])
-// 	mode->resetIntermediate(rhop[ix],rhoMasses_[ix],rhoWidths_[ix]);
-//       if(rhom[ix])
-// 	mode->resetIntermediate(rhom[ix],rhoMasses_[ix],rhoWidths_[ix]);
-//     }
-//   }
-//   for(unsigned int ix=0;ix<omegaMasses_.size();++ix) {
-//     if(omega[ix])
-//       mode->resetIntermediate(omega[ix],omegaMasses_[ix],omegaWidths_[ix]);
-//   }
-//   if(omega[3]) 
-//     mode->resetIntermediate(omega[3],phiMass_,phiWidth_);
-//   return true;
-  assert(false);
+  if(imode>5) return false;
+  // check the total isospin
+  //   if(Itotal!=IsoSpin::IUnknown) {
+  //     if(Itotal==IsoSpin::IZero) {
+  //       if(i3!=IsoSpin::I3Unknown) return false;
+  //     }
+  //     else if(Itotal==IsoSpin::IOne) {
+  //       if(i3!=IsoSpin::I3Unknown&&
+  // 	 i3!=IsoSpin::I3One) return false;
+  //     }
+  //     else
+  //       return false;
+  //   }
+  
+  
+  
+  // get the external particles
+  tPDVector out = particles(0,imode,0,0);
+  // check the kinematics
+  Energy mout(ZERO);
+  for(unsigned int ix=0;ix<out.size();++ix)
+    mout += out[ix]->mass();
+  if(mout>upp) return false;
+  // resonances we need
+  tPDPtr resI0[3] = {getParticleData(   113),getParticleData(100113),getParticleData( 30113)};
+  tPDPtr resI1[6] = {getParticleData(   223),getParticleData(   333),
+		     getParticleData(100223),getParticleData(100333),
+		     getParticleData( 30223),getParticleData( 30333)};
+  tPDPtr res[2];
+  if(imode==0) {
+    res[0] = getParticleData(ParticleID::Kstar0);
+    res[0] = getParticleData(ParticleID::Kstarbar0);
+  }
+  else if(imode==1) {
+    res[0] = getParticleData(ParticleID::Kstarplus);
+    res[0] = getParticleData(ParticleID::Kstarminus);
+  }
+  else if(imode==2||imode==4) {
+    res[0] = getParticleData(ParticleID::Kstarplus);
+    res[0] = getParticleData(ParticleID::Kstarbar0);
+  }
+  else if(imode==3||imode==5) {
+    res[0] = getParticleData(ParticleID::Kstarminus);
+    res[0] = getParticleData(ParticleID::Kstar0);
+  }
+  for(unsigned int ix=0;ix<3;++ix) {
+    mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[0],ires+1,iloc+2,
+		      ires+2,iloc+1,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[1],ires+1,iloc+1,
+		      ires+2,iloc+2,ires+2,iloc+3));
+  }
+  for(unsigned int ix=0;ix<6;++ix) {
+    mode->addChannel((PhaseSpaceChannel(phase),ires,resI1[ix],ires+1,res[0],ires+1,iloc+2,
+		      ires+2,iloc+1,ires+2,iloc+3));
+    mode->addChannel((PhaseSpaceChannel(phase),ires,resI1[ix],ires+1,res[1],ires+1,iloc+1,
+		      ires+2,iloc+2,ires+2,iloc+3));
+  }
+  return true;
 }
 
 // the particles produced by the current
-tPDVector KKPiCurrent::particles(int icharge, unsigned int,
+tPDVector KKPiCurrent::particles(int icharge, unsigned int imode,
 				 int,int) {
-  assert(false);
-//   assert(icharge==0);
-//   // return the answer
-//   return {getParticleData(ParticleID::piplus),
-//           getParticleData(ParticleID::piminus),
-//           getParticleData(ParticleID::pi0)};
+  assert(icharge==0);
+  if(imode==0)
+    return {getParticleData(ParticleID::K_S0 ),getParticleData(ParticleID::K_L0  ),getParticleData(ParticleID::pi0)};
+  else if(imode==1) 
+    return {getParticleData(ParticleID::Kplus),getParticleData(ParticleID::Kminus),getParticleData(ParticleID::pi0)};
+  else if(imode==2)
+    return {getParticleData(ParticleID::K_S0 ),getParticleData(ParticleID::Kminus),getParticleData(ParticleID::piplus)};
+  else if(imode==3)
+    return {getParticleData(ParticleID::K_S0 ),getParticleData(ParticleID::Kplus ),getParticleData(ParticleID::piminus)};
+  else if(imode==4)
+    return {getParticleData(ParticleID::K_L0 ),getParticleData(ParticleID::Kminus),getParticleData(ParticleID::piplus)};
+  else if(imode==5)
+    return {getParticleData(ParticleID::K_L0 ),getParticleData(ParticleID::Kplus ),getParticleData(ParticleID::piminus)};
+  else
+    assert(false);
 }
 
 
