@@ -818,6 +818,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
       break;
     case IsoSpin::I3MinusOne:
       if((imode!=2&&imode!=5) || icharge == 3) return false;
+      break;
     default:
       return false;
     }
@@ -1181,6 +1182,7 @@ ThreePionCLEOCurrent::current(tcPDPtr resonance,
       break;
     case IsoSpin::I3MinusOne:
       if(imode!=2&&imode!=5) return vector<LorentzPolarizationVectorE>();
+      break;
     default:
       return vector<LorentzPolarizationVectorE>();
     }

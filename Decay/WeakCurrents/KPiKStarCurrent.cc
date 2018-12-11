@@ -236,6 +236,7 @@ bool KPiKStarCurrent::createMode(int icharge, tcPDPtr resonance,
       break;
     case IsoSpin::I3MinusHalf:
       if(icharge == 3) return false;
+      break;
     default:
       return false;
     }
@@ -328,6 +329,7 @@ KPiKStarCurrent::current(tcPDPtr resonance,
       break;
     case IsoSpin::I3MinusHalf:
       if(icharge ==3) return vector<LorentzPolarizationVectorE>();
+      break;
     default:
       return vector<LorentzPolarizationVectorE>();
     }

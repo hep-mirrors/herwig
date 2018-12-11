@@ -353,6 +353,7 @@ bool TwoKaonOnePionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
       break;
     case IsoSpin::I3MinusOne:
       if( imode>1 || icharge == 3) return false;
+      break;
     default:
       return false;
     }
