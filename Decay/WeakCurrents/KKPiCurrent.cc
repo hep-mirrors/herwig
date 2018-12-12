@@ -24,18 +24,25 @@ KKPiCurrent::KKPiCurrent() {
   isoVectorMasses_ = {775.26*MeV,1465*MeV,1720*MeV};
   isoVectorWidths_ = {149.1 *MeV, 400*MeV, 250*MeV};
   // amplitude and phases for the isoscalar
-  isoScalarKStarAmp_  ={ZERO,ZERO,ZERO,11./GeV,ZERO,ZERO};
+  isoScalarKStarAmp_  ={ZERO,ZERO,ZERO,0.096/GeV,ZERO,ZERO};
   isoScalarKStarPhase_={  0.,  0.,  0.,     0.,  0.,  0.};
   // amplitudes and phase for the isovector component
-  isoVectorKStarAmp_  ={ZERO,ZERO,4.5/GeV};
+  isoVectorKStarAmp_  ={ZERO,ZERO,0.04/GeV};
   isoVectorKStarPhase_={0.,0.,Constants::pi};
   // Coupling for the K* to Kpi
-  gKStar_ = 5.38;
+  gKStar_ = 5.37392360229;
   // mstar masses
-  mKStarP_ = 895.5 *MeV;
-  mKStar0_ = 895.55*MeV;
-  wKStarP_ = 46.2  *MeV;
-  wKStar0_ = 47.3  *MeV;
+  mKStarP_ = 895.6*MeV;
+  mKStar0_ = 895.6*MeV;
+  wKStarP_ = 47.0*MeV;
+  wKStar0_ = 47.0*MeV;
+  // modes
+  addDecayMode(3,-3);
+  addDecayMode(3,-3);
+  addDecayMode(3,-3);
+  addDecayMode(3,-3);
+  addDecayMode(3,-3);
+  addDecayMode(3,-3);
 }
 
 IBPtr KKPiCurrent::clone() const {
@@ -130,25 +137,25 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
   tPDPtr resI1[3] = {getParticleData(   113),getParticleData(100113),getParticleData( 30113)};
   tPDPtr resI0[6] = {getParticleData(   223),getParticleData(   333),
 		     getParticleData(100223),getParticleData(100333),
-		     getParticleData( 30223),getParticleData( 30333)};
+		     getParticleData( 30223)};
   tPDPtr res[2];
   if(imode==0) {
     res[0] = getParticleData(ParticleID::Kstar0);
-    res[0] = getParticleData(ParticleID::Kstarbar0);
+    res[1] = getParticleData(ParticleID::Kstarbar0);
   }
   else if(imode==1) {
     res[0] = getParticleData(ParticleID::Kstarplus);
-    res[0] = getParticleData(ParticleID::Kstarminus);
+    res[1] = getParticleData(ParticleID::Kstarminus);
   }
   else if(imode==2||imode==4) {
     res[0] = getParticleData(ParticleID::Kstarplus);
-    res[0] = getParticleData(ParticleID::Kstarbar0);
+    res[1] = getParticleData(ParticleID::Kstarbar0);
   }
   else if(imode==3||imode==5) {
     res[0] = getParticleData(ParticleID::Kstarminus);
-    res[0] = getParticleData(ParticleID::Kstar0);
+    res[1] = getParticleData(ParticleID::Kstar0);
   }
-  for(unsigned int ix=0;ix<6;++ix) {
+  for(unsigned int ix=0;ix<5;++ix) {
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[0],ires+1,iloc+2,
 		      ires+2,iloc+1,ires+2,iloc+3));
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[1],ires+1,iloc+1,
@@ -220,7 +227,7 @@ KKPiCurrent::current(tcPDPtr resonance,
   if(Itotal==IsoSpin::IUnknown ||
      Itotal==IsoSpin::IZero) {
     if(ires>=0) {
-      if(ires<int(isoScalarMasses_.size()))
+      if(ires<5)
 	A0 = isoScalarKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoScalarMasses_[ires],isoScalarWidths_[ires]);
     }
     else {
@@ -229,7 +236,7 @@ KKPiCurrent::current(tcPDPtr resonance,
       }
     }
   }
-  ires-=6;
+  ires-=5;
   // I=1 coefficient
   complex<InvEnergy> A1(ZERO);
   if(Itotal==IsoSpin::IUnknown ||
