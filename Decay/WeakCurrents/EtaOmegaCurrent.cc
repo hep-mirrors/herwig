@@ -21,9 +21,9 @@ EtaOmegaCurrent::EtaOmegaCurrent() {
   // Masses for the resonances
   resMasses_ = {1.425*GeV,1.67*GeV};
   // widths for the resonances
-  resWidths_ = {215*MeV  , 114*MeV};
+  resWidths_ = {215*MeV  , 113*MeV};
   // amplitudes
-  amp_   = {0.0863/GeV,0.0655/GeV};
+  amp_   = {0.0862/GeV,0.0648/GeV};
   // phases
   phase_ = {0.,180.};
 }
