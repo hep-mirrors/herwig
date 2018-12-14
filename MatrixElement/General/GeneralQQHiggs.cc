@@ -224,7 +224,7 @@ bool GeneralQQHiggs::generateKinematics(const double * r) {
     try {
       p1 = SimplePhaseSpace::getMagnitude(sHat(), m13, mq);
       p2 = SimplePhaseSpace::getMagnitude(m132,mq,mh);
-    } catch ( ImpossibleKinematics ) {
+    } catch ( ImpossibleKinematics & e ) {
       return false;
     }
     Energy ptmin = lastCuts().minKT(mePartonData()[3]);
@@ -265,7 +265,7 @@ bool GeneralQQHiggs::generateKinematics(const double * r) {
     try {
       p1 = SimplePhaseSpace::getMagnitude(sHat(), m23, mq);
       p2 = SimplePhaseSpace::getMagnitude(m232,mq,mh);
-    } catch ( ImpossibleKinematics ) {
+    } catch ( ImpossibleKinematics & e ) {
       return false;
     }
     Energy ptmin = lastCuts().minKT(mePartonData()[2]);

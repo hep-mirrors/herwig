@@ -322,7 +322,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), mv);
   } 
-  catch ( ImpossibleKinematics ) {
+  catch ( ImpossibleKinematics & e) {
     return false;
   }
 	
