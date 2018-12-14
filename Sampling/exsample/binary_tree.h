@@ -425,12 +425,6 @@ namespace exsample {
       return right_child().right_most();
     }
 
-    /// the iterator is a good friend
-    friend class binary_tree<value_type>::iterator;
-
-    /// the iterator is a good friend
-    friend class binary_tree<value_type>::const_iterator;
-
     /// the left and right neighbours of this node
     std::pair<binary_tree*,binary_tree*> neighbours_;
 

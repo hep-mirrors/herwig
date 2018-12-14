@@ -277,7 +277,7 @@ namespace Herwig {
       /// calculate only the N particle contribution
     int theOnlyN = -1;
       /// the current maxlegs (either LO or NLO maxlegs)
-    size_t theCurrentMaxLegs = -1;
+    int theCurrentMaxLegs = -1;
       /// current weight and weight of clustered born
     double weight = 1.0;
     double weightCB = 1.0;
