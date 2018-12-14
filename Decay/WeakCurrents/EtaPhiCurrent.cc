@@ -19,13 +19,13 @@ EtaPhiCurrent::EtaPhiCurrent() {
   addDecayMode(3,-3);
   setInitialModes(3);
   // Masses for the resonances
-  resMasses_ = {1.670*GeV};
+  resMasses_ = {1.670*GeV,2.14*GeV};
   // widths for the resonances
-  resWidths_ = {124*MeV};
+  resWidths_ = {122*MeV,43.5*MeV};
   // amplitudes
-  amp_   = {0.177/GeV};
+  amp_   = {0.175/GeV,0.00409/GeV};
   // phases
-  phase_ = {0.};
+  phase_ = {0.,2.19};
 }
 
 IBPtr EtaPhiCurrent::clone() const {
@@ -42,8 +42,7 @@ void EtaPhiCurrent::doinit() {
   couplings_.clear();
   Complex ii(0.,1.);
   for(unsigned int ix=0;ix<amp_.size();++ix) {
-    double phi = phase_[ix]/180.*Constants::pi;
-    couplings_.push_back(amp_[ix]*(cos(phi)+ii*sin(phi)));
+    couplings_.push_back(amp_[ix]*(cos(phase_[ix])+ii*sin(phase_[ix])));
   }
 }
 
@@ -99,8 +98,8 @@ void EtaPhiCurrent::Init() {
 
   static ParVector<EtaPhiCurrent,double> interfacePhase
     ("Phase",
-     "The phases of the couplings in degrees",
-     &EtaPhiCurrent::phase_, 1, 0., 0.0, 360.0,
+     "The phases of the couplings in radians",
+     &EtaPhiCurrent::phase_, 1, 0., 0.0, 2.*Constants::pi,
      false, false, Interface::limited);
 }
 
@@ -192,7 +191,7 @@ EtaPhiCurrent::current(tcPDPtr resonance,
   }
   if(resonance) {
     switch(abs(resonance->id())) {
-    case 100223:
+    case 100333:
       imin=0;
       break;
     default:
