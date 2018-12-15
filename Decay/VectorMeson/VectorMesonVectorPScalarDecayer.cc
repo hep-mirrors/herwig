@@ -342,6 +342,7 @@ void VectorMesonVectorPScalarDecayer::Init() {
      0, 0, 0, -10000000, 10000000, false, false, true);
 
 }
+
 void VectorMesonVectorPScalarDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&part),
@@ -350,6 +351,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
 					outgoing,true,decay[0]->id()==ParticleID::gamma);
   ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
 }
+
 double VectorMesonVectorPScalarDecayer::me2(const int,const Particle & part,
 					const tPDVector & ,
 					const vector<Lorentz5Momentum> & momenta,

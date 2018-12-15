@@ -34,35 +34,13 @@ a1ThreePionDecayer::a1ThreePionDecayer()
     _lambda2(1.2*GeV2), _a1mass2(1.23*1.23*GeV2),
     _zsigma(0.), _zmag(1.3998721), _zphase(0.43585036),
     _rhomag(1,1.), _rhophase(1,0.), _coupling(90.44), 
-    _localparameters(true), _zerowgts(3), _onewgts(7), _twowgts(7),
-    _threewgts(8) ,_zeromax(19.144), _onemax(7.83592), 
+    _localparameters(true),
+    _zerowgts ({0.339108,0.335601,0.325291}),
+    _onewgts  ({0.19616 ,0.191408,0.12137 ,0.115498,0.12729 ,0.127183,0.12109 }),
+    _twowgts  ({0.188163,0.192479,0.121658,0.12135 ,0.127298,0.124835,0.124217}),
+    _threewgts({0.153071,0.165741,0.107509,0.10275 ,0.109738,0.11254 ,0.125344,0.123307}) ,
+    _zeromax(19.144), _onemax(7.83592), 
     _twomax(6.64804), _threemax(6.66296) {
-  // weights for the different channels
-  _threewgts[0] = 0.153071;
-  _threewgts[1] = 0.165741;
-  _threewgts[2] = 0.107509;
-  _threewgts[3] = 0.10275 ;
-  _threewgts[4] = 0.109738;
-  _threewgts[5] = 0.11254 ;
-  _threewgts[6] = 0.125344;
-  _threewgts[7] = 0.123307;
-  _onewgts[0] = 0.19616 ;
-  _onewgts[1] = 0.191408;
-  _onewgts[2] = 0.12137 ;
-  _onewgts[3] = 0.115498;
-  _onewgts[4] = 0.12729 ;
-  _onewgts[5] = 0.127183;
-  _onewgts[6] = 0.12109 ;
-  _zerowgts[0] = 0.339108;
-  _zerowgts[1] = 0.335601;
-  _zerowgts[2] = 0.325291;
-  _twowgts[0] = 0.188163;
-  _twowgts[1] = 0.192479;
-  _twowgts[2] = 0.121658;
-  _twowgts[3] = 0.12135 ;
-  _twowgts[4] = 0.127298;
-  _twowgts[5] = 0.124835;
-  _twowgts[6] = 0.124217;
   // generation of intermediates
   generateIntermediates(true);
 }

@@ -269,7 +269,7 @@ void a1SimpleDecayer::Init() {
 }
 
 int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				       const tPDVector & children) const {
+				const tPDVector & children) const {
   if(children.size()!=3) return -1;
   int id(parent->id());
   // check the pions
