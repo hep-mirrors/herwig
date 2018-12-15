@@ -221,32 +221,32 @@ private:
   /**
    * Maximum weight for the one charged pion channel.
    */
-  mutable double _onemax;
+  double _onemax;
 
   /**
    * Maximum weight for the two charged pion channel.
    */
-  mutable double _twomax;
+  double _twomax;
 
   /**
    * Maximum weight for the three charged pion channel.
    */
-  mutable double _threemax;
+  double _threemax;
   
   /**
    * Weights for the channels for the one charged pion channel.
    */
-  mutable vector<double> _onewgts;
+  vector<double> _onewgts;
   
   /**
    * Weights for the channels for the two charged pion channel.
    */
-  mutable vector<double> _twowgts;
+  vector<double> _twowgts;
   
   /**
    * Weights for the channels for the three charged pion channel.
    */
-  mutable vector<double> _threewgts;
+  vector<double> _threewgts;
 
   /**
    * The pion mass

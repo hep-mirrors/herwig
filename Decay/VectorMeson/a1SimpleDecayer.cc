@@ -28,21 +28,17 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 a1SimpleDecayer::a1SimpleDecayer() 
-  : _rhomass(3), _rhowidth(3), _rhowgts(3),_localparameters(true), 
-    _coupling(47.95/GeV), _onemax(5.4474), _twomax(5.47784), 
-    _threemax(5.40185), _onewgts(6), 
-    _twowgts(6), _threewgts(6), _mpi(ZERO) {
   // rho masses, widths and weights
-  _rhomass[0] = 0.773*GeV; _rhowidth[0] = 0.145*GeV; _rhowgts[0] =  1.0;  
-  _rhomass[1] = 1.370*GeV; _rhowidth[1] = 0.510*GeV; _rhowgts[1] = -0.145;
-  _rhomass[2] = 1.750*GeV; _rhowidth[2] = 0.120*GeV; _rhowgts[2] =  0.;
-  // integration weights
-  _onewgts[0] = 0.235562; _twowgts[0] = 0.236208; _threewgts[0] = 0.234259;
-  _onewgts[1] = 0.231098; _twowgts[1] = 0.229481; _threewgts[1] = 0.233634;
-  _onewgts[2] = 0.131071; _twowgts[2] = 0.131169; _threewgts[2] = 0.135922;
-  _onewgts[3] = 0.131135; _twowgts[3] = 0.133604; _threewgts[3] = 0.129231;
-  _onewgts[4] = 0.135841; _twowgts[4] = 0.132685; _threewgts[4] = 0.133949;
-  _onewgts[5] = 0.135294; _twowgts[5] = 0.136854; _threewgts[5] = 0.133005;
+  : _rhomass ({0.773*GeV,1.370*GeV,1.750*GeV}),
+    _rhowidth({0.145*GeV,0.510*GeV,0.120*GeV}),
+    _rhowgts({1.0,-0.145,0.}),_localparameters(true), 
+    _coupling(47.95/GeV),
+    // integration weights
+    _onemax(5.4474), _twomax(5.47784), _threemax(5.40185),
+    _onewgts  ({0.235562,0.231098,0.131071,0.131135,0.135841,0.135294}), 
+    _twowgts  ({0.236208,0.229481,0.131169,0.133604,0.132685,0.136854}),
+    _threewgts({0.234259,0.233634,0.135922,0.129231,0.133949,0.133005}),
+    _mpi(ZERO) {
   generateIntermediates(true);
 }
 
@@ -215,20 +211,20 @@ void a1SimpleDecayer::Init() {
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhomass
     ("RhoMasses",
-     "The masses of the different rho resonnaces",
-     &a1SimpleDecayer::_rhomass,
-     MeV, 0, ZERO, ZERO, 10000*MeV, false, false, true);
+     "The masses of the different rho resonaces",
+     &a1SimpleDecayer::_rhomass, MeV, 3, 775.*MeV, ZERO, 10000*MeV,
+     false, false, Interface::limited);
 
-  static ParVector<a1SimpleDecayer,Energy> interfacerhowidth
+  static ParVector<a1SimpleDecayer,Energy> interfaceRhoWidths
     ("RhoWidths",
-     "The widths of the different rho resonnaces",
-     &a1SimpleDecayer::_rhowidth,
-     MeV, 0, ZERO, ZERO, 10000*MeV, false, false, true);
-
+     "The widths of the different rho resonances",
+     &a1SimpleDecayer::_rhowidth, MeV, 3, 141*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+  
   static ParVector<a1SimpleDecayer,double> interfaceRhoWeights
     ("RhoWeights",
      "Weight for the different rho resonances",
-     &a1SimpleDecayer::_rhowgts, -1, 0.0, -10.0, 10.0,
+     &a1SimpleDecayer::_rhowgts, 3, 0.0, -10.0, 10.0,
      false, false, Interface::limited);
 
   static Parameter<a1SimpleDecayer,double> interfaceOneMax
@@ -277,11 +273,9 @@ int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
   if(children.size()!=3) return -1;
   int id(parent->id());
   // check the pions
-  tPDVector::const_iterator pit  = children.begin();
-  tPDVector::const_iterator pend = children.end();
-  int idtemp,npi0(0),npiplus(0),npiminus(0);
-  for( ; pit!=pend;++pit) {
-    idtemp=(**pit).id();
+  int npi0(0),npiplus(0),npiminus(0);
+  for(auto child : children) {
+    int idtemp= child->id();
     if(idtemp==ParticleID::piplus)       ++npiplus;
     else if(idtemp==ParticleID::piminus) ++npiminus;
     else if(idtemp==ParticleID::pi0)     ++npi0;
