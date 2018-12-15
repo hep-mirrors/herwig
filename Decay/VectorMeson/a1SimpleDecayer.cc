@@ -409,22 +409,16 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   output << "newdef " << name() << ":TwoMax   " <<   _twomax << "\n";
   output << "newdef " << name() << ":ThreeMax " << _threemax << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<3) output << "newdef    " << name() << ":RhoMasses " << ix << " " 
-		    << _rhomass[ix]/MeV << "\n";
-    else     output << "insert " << name() << ":RhoMasses " << ix << " " 
-		    << _rhomass[ix]/MeV << "\n";
+    output << "newdef    " << name() << ":RhoMasses " << ix << " "
+	   << _rhomass[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<3) output << "newdef    " << name() << ":RhoWidths " << ix << " " 
-		    << _rhowidth[ix]/MeV << "\n";
-    else     output << "insert " << name() << ":RhoWidths " << ix << " " 
-		    << _rhowidth[ix]/MeV << "\n";
+    output << "newdef    " << name() << ":RhoWidths " << ix << " "
+	   << _rhowidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowgts.size();++ix) {
-    if(ix<3) output << "newdef    " << name() << ":RhoWeights " << ix << " " 
-		    << _rhowgts[ix] << "\n";
-    else     output << "insert " << name() << ":RhoWeights " << ix << " " 
-		    << _rhowgts[ix] << "\n";
+    output << "newdef    " << name() << ":RhoWeights " << ix << " "
+	   << _rhowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
     output << "newdef " << name() << ":OneChargedWeights " 
@@ -445,19 +439,15 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
 // functions to return the Breit-Wigners
 Complex a1SimpleDecayer::rhoFormFactor(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
-  for(unsigned int ix=0,N=min(3,int(_rhowgts.size()));ix<N;++ix)
-    norm+=_rhowgts[ix];
+  for(unsigned int ix=0;ix<3;++ix) norm += _rhowgts[ix];
   if(ires<0) {
-    for(unsigned int ix=0,N=min(3,int(_rhowgts.size()));ix<N;++ix) {
+    for(unsigned int ix=0;ix<3;++ix) {
       output+=_rhowgts[ix]*rhoBreitWigner(q2,ix);
     }
   }
   else {
-    unsigned int temp(ires);
-    if(temp<_rhowgts.size()&&temp<3)
-      output=_rhowgts[temp]*rhoBreitWigner(q2,temp);
-    else
-      output=0.;
+    assert(ires<3);
+    output=_rhowgts[ires]*rhoBreitWigner(q2,ires);
   }
   return output/norm;
 }
