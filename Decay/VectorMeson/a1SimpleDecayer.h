@@ -15,6 +15,7 @@
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
+#include "Herwig/Decay/ResonanceHelpers.h"
 
 namespace Herwig {
 
@@ -160,28 +161,26 @@ protected:
   //@}
 
 private:
-
-  /**
-   * Breit-Wigner for the \f$\rho\f$
-   * @param q2 The scale \f$q^2\f$ for the Breit-Wigner.
-   * @param ires Which multiplet to use.
-   */
-  Complex rhoBreitWigner(Energy2 q2, unsigned int ires) const {
-    Energy q(sqrt(q2));
-    Energy mass  = _rhomass[ires], width = _rhowidth[ires];
-    Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi));
-    Energy pcm = 2.*_mpi<q ? Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi) : ZERO;
-    Energy gamrun(width*mass*Math::Pow<3>(pcm/pcm0)/q);
-    return -sqr(mass)/complex<Energy2>(q2-mass*mass,mass*gamrun);
-  }
-
+  
   /**
    * The \f$\rho\f$ form factors
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @param ires Which \f$\rho\f$ multiplet
    * @return The form factor
    */
-  Complex rhoFormFactor(Energy2 q2,int ires) const;
+  Complex rhoFormFactor(Energy2 q2,int ires) const {
+    Complex output(0.),norm(0.);
+    for(unsigned int ix=0;ix<3;++ix) norm += _rhowgts[ix];
+    if(ires<0) {
+      for(unsigned int ix=0;ix<3;++ix)
+	output+=_rhowgts[ix]*Resonance::BreitWignerPWave(q2,_rhomass[ix],_rhowidth[ix],_mpi,_mpi);
+    }
+    else {
+      assert(ires<3);
+      output=_rhowgts[ires]*Resonance::BreitWignerPWave(q2,_rhomass[ires],_rhowidth[ires],_mpi,_mpi);
+    }
+    return output/norm;
+  }
 
 private:
 

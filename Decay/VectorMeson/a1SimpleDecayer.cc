@@ -435,19 +435,3 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
-
-// functions to return the Breit-Wigners
-Complex a1SimpleDecayer::rhoFormFactor(Energy2 q2,int ires) const {
-  Complex output(0.),norm(0.);
-  for(unsigned int ix=0;ix<3;++ix) norm += _rhowgts[ix];
-  if(ires<0) {
-    for(unsigned int ix=0;ix<3;++ix) {
-      output+=_rhowgts[ix]*rhoBreitWigner(q2,ix);
-    }
-  }
-  else {
-    assert(ires<3);
-    output=_rhowgts[ires]*rhoBreitWigner(q2,ires);
-  }
-  return output/norm;
-}
