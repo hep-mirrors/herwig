@@ -262,7 +262,7 @@ constructSpinInfo(const Particle & part, ParticleVector decay) const {
     constructSpinInfo(_wave   ,decay[2],outgoing,true);
 }
 
-double VectorMesonPScalarFermionsDecayer::me2(const int ichan, const Particle & part,
+double VectorMesonPScalarFermionsDecayer::me2(const int, const Particle & part,
 					      const tPDVector & ,
 					      const vector<Lorentz5Momentum> & momenta,
 					      MEOption meopt) const {
