@@ -22,7 +22,8 @@ VectorMesonVectorPScalarDecayer.h  \
 VectorMesonVectorScalarDecayer.h  \
 VectorMesonVectorVectorDecayer.h  \
 OniumToOniumPiPiDecayer.h \
-f1RhoPiPiDecayer.h
+f1RhoPiPiDecayer.h \
+f1FourPiDecayer.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -39,5 +40,6 @@ VectorMesonVectorPScalarDecayer.cc   \
 VectorMesonVectorScalarDecayer.cc    \
 VectorMesonVectorVectorDecayer.cc    \
 OniumToOniumPiPiDecayer.cc           \
-f1RhoPiPiDecayer.cc
+f1RhoPiPiDecayer.cc                  \
+f1FourPiDecayer.cc
 
