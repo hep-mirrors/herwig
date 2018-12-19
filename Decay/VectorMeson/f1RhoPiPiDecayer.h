@@ -142,11 +142,6 @@ private:
 private:
 
   /**
-   *  rho-pi-pi coupling
-   */
-  double gRhoPiPi_;
-
-  /**
    *  a_1-rho-pi
    */
   Energy ga1RhoPi_;

@@ -18,7 +18,7 @@
 using namespace Herwig;
 
 f1RhoPiPiDecayer::f1RhoPiPiDecayer() :
-  gRhoPiPi_(6.), ga1RhoPi_(4.8*GeV), gf1a1Pi_(10./GeV), maxWeight_({1.,1.}) {
+  ga1RhoPi_(4.8*GeV), gf1a1Pi_(10./GeV), maxWeight_({1.,1.}) {
   generateIntermediates(true);
 }
 
@@ -54,12 +54,12 @@ IBPtr f1RhoPiPiDecayer::fullclone() const {
 }
 
 void f1RhoPiPiDecayer::persistentOutput(PersistentOStream & os) const {
-  os << gRhoPiPi_ << ounit(ga1RhoPi_,GeV) << ounit(gf1a1Pi_,1./GeV)
+  os << ounit(ga1RhoPi_,GeV) << ounit(gf1a1Pi_,1./GeV)
      << ounit(ma1_,GeV) << ounit(ga1_,GeV) << maxWeight_;
 }
 
 void f1RhoPiPiDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> gRhoPiPi_ >> iunit(ga1RhoPi_,GeV) >> iunit(gf1a1Pi_,1./GeV)
+  is >> iunit(ga1RhoPi_,GeV) >> iunit(gf1a1Pi_,1./GeV)
      >> iunit(ma1_,GeV) >> iunit(ga1_,GeV) >> maxWeight_;
 }
 
@@ -78,12 +78,6 @@ void f1RhoPiPiDecayer::Init() {
     ("MaxWeight",
      "Maximum weights for the decays",
      &f1RhoPiPiDecayer::maxWeight_, 2, 1.0, 0.0, 100.0,
-     false, false, Interface::limited);
-
-  static Parameter<f1RhoPiPiDecayer,double> interfacegRhoPiPi
-    ("gRhoPiPi",
-     "The coupling of the rho to two pions",
-     &f1RhoPiPiDecayer::gRhoPiPi_, 6., 0.0, 10.0,
      false, false, Interface::limited);
 
   static Parameter<f1RhoPiPiDecayer,Energy> interfacega1RhoPi
@@ -213,7 +207,6 @@ void f1RhoPiPiDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "newdef " << name() << ":gRhoPiPi " << gRhoPiPi_     << "\n";
   output << "newdef " << name() << ":ga1RhoPi " << ga1RhoPi_/GeV << "\n";
   output << "newdef " << name() << ":gf1a1Pi "  << gf1a1Pi_*GeV  << "\n";
   for(unsigned int ix=0;ix<maxWeight_.size();++ix) {
