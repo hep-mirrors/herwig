@@ -32,7 +32,7 @@ void PhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<PhaseSpaceMode,Base>
-describeHerwigPhaseSpaceMode("Herwig::PhaseSpaceMode", "PhaseSpaceMode.so");
+describeHerwigPhaseSpaceMode("Herwig::PhaseSpaceMode", "libHerwig.so");
 
 void PhaseSpaceMode::Init() {
 
@@ -90,6 +90,7 @@ PhaseSpaceMode::generateDecay(const Particle & inpart,
   catch (Veto) {
     // restore the incoming particle to its original state
     inrest.transform(boostFromRest);
+    while(!rStack_.empty()) rStack_.pop();
     throw Veto();
   }
   if(ncount>=decayer->nTry_) {
@@ -307,10 +308,10 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegratorPtr deca
       vector<int> nchan(channels_.size(),0);
       totsum = 0.;
       totsq  = 0.;
-      Energy m0,mmin(ZERO);
+      Energy mmin(ZERO);
       for(tcPDPtr part : outgoing_) mmin += part->massMin();
       for(unsigned int ix=0;ix<decayer->nPoint_;++ix) {
-     	m0 = !onShell ? incoming_.first->generateMass() : incoming_.first->mass();
+     	Energy m0 = !onShell ? incoming_.first->generateMass() : incoming_.first->mass();
      	double wgt=0.; 
      	int ichan(-1);
      	if(m0>mmin) {
