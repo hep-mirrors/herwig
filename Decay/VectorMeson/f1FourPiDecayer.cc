@@ -114,7 +114,7 @@ void f1FourPiDecayer::doinit() {
   tPDPtr rhop = getParticleData(ParticleID::rhoplus);
   tPDPtr rhom = getParticleData(ParticleID::rhominus);
   tPDPtr rho0 = getParticleData(ParticleID::rho0);
-  // decay mode f_1 -> pi+ pi- rho0
+  // decay mode f_1 -> pi+ pi- pi+ pi-
   PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(f1,{pip,pim,pip,pim},maxWeight_[0]));
   mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,rho0,2,3,2,4));
   mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,2,1,1,1,rho0,2,3,2,4));
@@ -125,7 +125,7 @@ void f1FourPiDecayer::doinit() {
   mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,3,1,4,1,rho0,2,1,2,2));
   mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,4,1,3,1,rho0,2,1,2,2));
   addMode(mode);
-  // decay mode f_1 -> pi- pi0 rho+
+  // decay mode f_1 -> pi+ pi0 pi- pi0
   mode = new_ptr(PhaseSpaceMode(f1,{pip,pi0,pim,pi0},maxWeight_[0]));
   mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,rhop,2,3,2,4));
   mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,1,1,rhop,2,3,2,4));
@@ -193,23 +193,105 @@ double f1FourPiDecayer::me2(const int ichan, const Particle & part,
   					       const_ptr_cast<tPPtr>(&part),
   					       incoming,false);
   }
-  // // breit wigners
-  // Lorentz5Momentum pa1[2] = {part.momentum()-momenta[0],
-  // 			     part.momentum()-momenta[1]};
-  // for(unsigned int ix=0;ix<2;++ix) pa1[ix].rescaleMass();
-  // complex<InvEnergy2> bwa1[2] = {Resonance::BreitWignera1(pa1[0].mass2(),ma1_,ga1_)/sqr(ma1_),
-  // 				 Resonance::BreitWignera1(pa1[1].mass2(),ma1_,ga1_)/sqr(ma1_)};
-  // if(ichan>0) bwa1[ ichan == 0 ? 1 : 0 ] = ZERO;
-  // // compute the matrix element
-  // for(unsigned int ihel=0;ihel<3;++ihel) {
-  //   LorentzVector<complex<Energy2> > pol[2] = {epsilon(vectors_[0][ihel],part.momentum(),pa1[0]),
-  // 					       epsilon(vectors_[0][ihel],part.momentum(),pa1[1])};
-  //   for(unsigned int ohel=0;ohel<3;++ohel) {
-  //     (*ME())(ihel,0,0,ohel) = gf1a1Pi_*ga1RhoPi_*(pol[0]*bwa1[0]-pol[1]*bwa1[1]).dot(vectors_[1][ohel]);
-  //   }
-  // } 
-  // // matrix element
-  // return ME()->contract(rho_).real();
+  // breit wigners
+  Lorentz5Momentum pa1[4] = {part.momentum()-momenta[0],part.momentum()-momenta[1],
+			     part.momentum()-momenta[2],part.momentum()-momenta[3]};
+  complex<InvEnergy2> bwa1[4];
+  for(unsigned int ix=0;ix<4;++ix) {
+    pa1[ix].rescaleMass();
+    bwa1[ix] = Resonance::BreitWignera1(pa1[ix].mass2(),ma1_,ga1_)/sqr(ma1_);
+  }
+  // compute the matrix element (as a current and then contract)
+  LorentzVector<complex<InvEnergy> > current;
+  // decay mode f_1 -> pi+ pi- pi+pi-
+  if(imode()==0) {
+    complex<InvEnergy2> bwrho[4] =
+      {Resonance::BreitWignerPWave((momenta[0]+momenta[1]).m2(),mrho_,grho_,momenta[0].mass(),momenta[1].mass())/sqr(mrho_),
+       Resonance::BreitWignerPWave((momenta[0]+momenta[3]).m2(),mrho_,grho_,momenta[0].mass(),momenta[3].mass())/sqr(mrho_),
+       Resonance::BreitWignerPWave((momenta[2]+momenta[1]).m2(),mrho_,grho_,momenta[2].mass(),momenta[1].mass())/sqr(mrho_),
+       Resonance::BreitWignerPWave((momenta[2]+momenta[3]).m2(),mrho_,grho_,momenta[2].mass(),momenta[3].mass())/sqr(mrho_)};
+    if(ichan<=0) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,rho0,2,3,2,4));
+      current += bwa1[0]*bwrho[3]*epsilon(part.momentum(),pa1[0],momenta[2]-momenta[3]);
+    }
+    else if(ichan<0||ichan==1) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,2,1,1,1,rho0,2,3,2,4));
+      current -= bwa1[1]*bwrho[3]*epsilon(part.momentum(),pa1[1],momenta[2]-momenta[3]);
+    }
+    else if(ichan<0||ichan==2) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,3,1,2,1,rho0,2,1,2,4));
+      current += bwa1[2]*bwrho[1]*epsilon(part.momentum(),pa1[2],momenta[0]-momenta[3]);
+    }
+    else if(ichan<0||ichan==3) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,2,1,3,1,rho0,2,1,2,4));
+      current -= bwa1[1]*bwrho[1]*epsilon(part.momentum(),pa1[1],momenta[0]-momenta[3]);
+    }
+    else if(ichan<0||ichan==4) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,4,1,rho0,2,3,2,2));
+      current += bwa1[0]*bwrho[2]*epsilon(part.momentum(),pa1[0],momenta[2]-momenta[1]);
+    }
+    else if(ichan<0||ichan==5) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,4,1,1,1,rho0,2,3,2,2));
+      current -= bwa1[3]*bwrho[2]*epsilon(part.momentum(),pa1[3],momenta[2]-momenta[1]);
+    }
+    else if(ichan<0||ichan==6) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,3,1,4,1,rho0,2,1,2,2));
+      current += bwa1[2]*bwrho[0]*epsilon(part.momentum(),pa1[2],momenta[0]-momenta[1]);
+    }
+    else if(ichan<0||ichan==7) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,4,1,3,1,rho0,2,1,2,2));
+      current -= bwa1[3]*bwrho[0]*epsilon(part.momentum(),pa1[3],momenta[0]-momenta[1]);
+    }
+  }
+  // decay mode f_1 -> pi+ pi0 pi- pi0
+  else {
+    complex<InvEnergy2> bwrho[4] =
+      {Resonance::BreitWignerPWave((momenta[0]+momenta[1]).m2(),mrho_,grho_,momenta[0].mass(),momenta[1].mass())/sqr(mrho_),
+       Resonance::BreitWignerPWave((momenta[0]+momenta[3]).m2(),mrho_,grho_,momenta[0].mass(),momenta[3].mass())/sqr(mrho_),
+       Resonance::BreitWignerPWave((momenta[2]+momenta[1]).m2(),mrho_,grho_,momenta[2].mass(),momenta[1].mass())/sqr(mrho_),
+       Resonance::BreitWignerPWave((momenta[2]+momenta[3]).m2(),mrho_,grho_,momenta[2].mass(),momenta[3].mass())/sqr(mrho_)};
+    double f1 = (momenta[2].mass2()-momenta[3].mass2())/sqr(mrho_);
+    double f2 = 1+f1;
+    f1 = 1.-f1;
+    if(ichan<=0) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,rhop,2,3,2,4));
+      current += bwa1[0]*bwrho[3]*epsilon(part.momentum(),pa1[0],f1*momenta[2]-f2*momenta[3]);
+    }
+    else if(ichan<0||ichan==1) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,1,1,rhop,2,3,2,4));
+      current -= bwa1[1]*bwrho[3]*epsilon(part.momentum(),pa1[1],f1*momenta[2]-f2*momenta[3]);
+    }
+    else if(ichan<0||ichan==2) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,4,1,rhop,2,3,2,2));
+      current += bwa1[0]*bwrho[2]*epsilon(part.momentum(),pa1[0],f1*momenta[2]-f2*momenta[1]);
+    }
+    else if(ichan<0||ichan==3) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,4,1,1,1,rhop,2,3,2,2));
+      current -= bwa1[3]*bwrho[2]*epsilon(part.momentum(),pa1[3],f1*momenta[2]-f2*momenta[1]);
+    }
+    else if(ichan<0||ichan==4) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,3,1,4,1,rhom,2,1,2,2));
+      current += bwa1[2]*bwrho[0]*epsilon(part.momentum(),pa1[2],f1*momenta[0]-f2*momenta[1]);
+    }
+    else if(ichan<0||ichan==5) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,4,1,3,1,rhom,2,1,2,2));
+      current -= bwa1[3]*bwrho[0]*epsilon(part.momentum(),pa1[3],f1*momenta[0]-f2*momenta[1]);
+    }
+    else if(ichan<0||ichan==6) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,3,1,2,1,rhom,2,1,2,4));
+      current += bwa1[2]*bwrho[1]*epsilon(part.momentum(),pa1[2],f1*momenta[0]-f2*momenta[3]);
+    }
+    else if(ichan<0||ichan==7) {
+      // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,3,1,rhom,2,1,2,4));
+      current -= bwa1[1]*bwrho[1]*epsilon(part.momentum(),pa1[1],f1*momenta[0]-f2*momenta[3]);
+    }
+  }
+  // contract the current
+  double pre = gRhoPiPi_*gf1a1Pi_*ga1RhoPi_;
+  for(unsigned int ihel=0;ihel<3;++ihel)
+    (*ME())(ihel,0,0,0,0) = pre*current.dot(vector_[ihel])*part.mass();
+  // matrix element
+  return ME()->contract(rho_).real();
 }
 
 void f1FourPiDecayer::dataBaseOutput(ofstream & output,
