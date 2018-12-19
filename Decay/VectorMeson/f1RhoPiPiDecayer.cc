@@ -18,19 +18,31 @@
 using namespace Herwig;
 
 f1RhoPiPiDecayer::f1RhoPiPiDecayer() :
-  gRhoPiPi_(6.), ga1RhoPi_(4.8*GeV), gf1a1Pi_(1./GeV), maxWeight_({1.,1.,1.}) {
+  gRhoPiPi_(6.), ga1RhoPi_(4.8*GeV), gf1a1Pi_(10./GeV), maxWeight_({1.,1.}) {
   generateIntermediates(true);
 }
 
-// bool f1RhoPiPiDecayer::accept(const DecayMode & dm) const {
-//   return false;
-// }
-
-// ParticleVector f1RhoPiPiDecayer::decay(const DecayMode & dm,
-// 				  const Particle & parent) const {
-//   ParticleVector children = dm.produceProducts();
-//   return children;
-// }
+// normally not implemented but do it here to get rid of the a_1 which
+// can't be on-shell
+ParticleVector f1RhoPiPiDecayer::decay(const Particle & parent,
+				       const tPDVector & children) const {
+  ParticleVector output = DecayIntegrator::decay(parent,children);
+  ParticleVector::iterator it =output.begin();
+  for(;it!=output.end();++it) {
+    long id = (**it).id();
+    if(id==20113 || id==20213 || id==-20213)
+      break;
+  }
+  if(it!=output.end()) {
+    PPtr a1 = *it;
+    output.erase(it);
+    for(PPtr child : a1->children()) {
+      output.push_back(child);
+      a1->abandonChild(child);
+    }
+  }
+  return output;
+}
 
 
 IBPtr f1RhoPiPiDecayer::clone() const {
@@ -42,11 +54,13 @@ IBPtr f1RhoPiPiDecayer::fullclone() const {
 }
 
 void f1RhoPiPiDecayer::persistentOutput(PersistentOStream & os) const {
-  os << gRhoPiPi_ << ounit(ga1RhoPi_,GeV) << ounit(gf1a1Pi_,1./GeV) << maxWeight_;
+  os << gRhoPiPi_ << ounit(ga1RhoPi_,GeV) << ounit(gf1a1Pi_,1./GeV)
+     << ounit(ma1_,GeV) << ounit(ga1_,GeV) << maxWeight_;
 }
 
 void f1RhoPiPiDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> gRhoPiPi_ >> iunit(ga1RhoPi_,GeV) >> iunit(gf1a1Pi_,1./GeV) >> maxWeight_;
+  is >> gRhoPiPi_ >> iunit(ga1RhoPi_,GeV) >> iunit(gf1a1Pi_,1./GeV)
+     >> iunit(ma1_,GeV) >> iunit(ga1_,GeV) >> maxWeight_;
 }
 
 // The following static variable is needed for the type
@@ -63,7 +77,7 @@ void f1RhoPiPiDecayer::Init() {
   static ParVector<f1RhoPiPiDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "Maximum weights for the decays",
-     &f1RhoPiPiDecayer::maxWeight_, 3, 1.0, 0.0, 100.0,
+     &f1RhoPiPiDecayer::maxWeight_, 2, 1.0, 0.0, 100.0,
      false, false, Interface::limited);
 
   static Parameter<f1RhoPiPiDecayer,double> interfacegRhoPiPi
@@ -105,13 +119,8 @@ void f1RhoPiPiDecayer::doinit() {
   mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,2,1,1,1,3));
   addMode(mode);
   // decay mode f_1 -> pi- pi0 rho+
-  mode = new_ptr(PhaseSpaceMode(f1,{pim,pi0,rhop},maxWeight_[0]));
+  mode = new_ptr(PhaseSpaceMode(f1,{pim,pi0,rhop},maxWeight_[1]));
   mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,1,1,2,1,3));
-  mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,1,1,3));
-  addMode(mode);
-  // decay mode f_1 -> pi+ pi0 rho-
-  mode = new_ptr(PhaseSpaceMode(f1,{pip,pi0,rhom},maxWeight_[0]));
-  mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,3));
   mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,1,1,3));
   addMode(mode);
   ma1_ = a1p->mass();
@@ -140,11 +149,13 @@ int f1RhoPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   }
   cc = false;
   // f_1 -> pi+pi-rho0 mode
-  if(idrho==113 && npiplus==1 && npiminus==1)    return 0;
+  if(idrho==113 && npiplus==1 && npiminus==1)         return 0;
   // f_1 -> pi-pi0rho+ mode
-  else if(idrho== 213 && npiminus==1 && npi0==1) return 1;
-  // f_1 -> pi+pi0rho- mode
-  else if(idrho==-213 && npiplus ==1 && npi0==1) return 2;
+  else if  (idrho== 213 && npiminus==1 && npi0==1)    return 1;
+  else if  (idrho==-213 && npiplus ==1 && npi0==1) {
+    cc=true;
+    return 1;
+  }
   // not found
   return -1;
 }
@@ -190,13 +201,11 @@ double f1RhoPiPiDecayer::me2(const int ichan, const Particle & part,
     LorentzVector<complex<Energy2> > pol[2] = {epsilon(vectors_[0][ihel],part.momentum(),pa1[0]),
 					       epsilon(vectors_[0][ihel],part.momentum(),pa1[1])};
     for(unsigned int ohel=0;ohel<3;++ohel) {
-      (*ME())(ihel,0,0,0,ohel) = gf1a1Pi_*ga1RhoPi_*(pol[0]*bwa1[0]-pol[1]*bwa1[1]).dot(vectors_[1][ohel]);
+      (*ME())(ihel,0,0,ohel) = gf1a1Pi_*ga1RhoPi_*(pol[0]*bwa1[0]-pol[1]*bwa1[1]).dot(vectors_[1][ohel]);
     }
   } 
-  // matrix element and identical particle factor
-  double output=ME()->contract(rho_).real();
-  // return the answer
-  return output;
+  // matrix element
+  return ME()->contract(rho_).real();
 }
 
 void f1RhoPiPiDecayer::dataBaseOutput(ofstream & output,
