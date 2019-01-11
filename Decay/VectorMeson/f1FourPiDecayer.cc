@@ -18,7 +18,7 @@
 using namespace Herwig;
 
 f1FourPiDecayer::f1FourPiDecayer() :
-  gRhoPiPi_(6.), ga1RhoPi_(4.8*GeV), gf1a1Pi_(10./GeV), maxWeight_({1.,1.}) {
+  gRhoPiPi_(6.), ga1RhoPi_(4.8*GeV), gf1a1Pi_(9.77/GeV), maxWeight_({1.,1.}) {
   generateIntermediates(true);
 }
 
@@ -153,7 +153,7 @@ void f1FourPiDecayer::doinitrun() {
 
 int f1FourPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
 				const tPDVector & children) const {
-  if(children.size()!=3 || parent->id()!=ParticleID::f_1) return -1;
+  if(children.size()!=4 || parent->id()!=ParticleID::f_1) return -1;
   // check the pions
   int npi0(0),npiplus(0),npiminus(0);
   for(auto child : children) {
@@ -166,7 +166,7 @@ int f1FourPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   // f_1 -> 2pi+ 2pi-mode
   if(npiplus==2 && npiminus==2)                    return 0;
   // f_1 -> pi+ pi- pi0 pi0 mode
-  else if  (npiplus ==1 && npiminus==1 && npi0==1) return 1;
+  else if  (npiplus ==1 && npiminus==1 && npi0==2) return 1;
   // not found
   return -1;
 }
@@ -204,7 +204,9 @@ double f1FourPiDecayer::me2(const int ichan, const Particle & part,
   // compute the matrix element (as a current and then contract)
   LorentzVector<complex<InvEnergy> > current;
   // decay mode f_1 -> pi+ pi- pi+pi-
+  double sym(0.5);
   if(imode()==0) {
+    sym=0.25;
     complex<InvEnergy2> bwrho[4] =
       {Resonance::BreitWignerPWave((momenta[0]+momenta[1]).m2(),mrho_,grho_,momenta[0].mass(),momenta[1].mass())/sqr(mrho_),
        Resonance::BreitWignerPWave((momenta[0]+momenta[3]).m2(),mrho_,grho_,momenta[0].mass(),momenta[3].mass())/sqr(mrho_),
@@ -291,7 +293,7 @@ double f1FourPiDecayer::me2(const int ichan, const Particle & part,
   for(unsigned int ihel=0;ihel<3;++ihel)
     (*ME())(ihel,0,0,0,0) = pre*current.dot(vector_[ihel])*part.mass();
   // matrix element
-  return ME()->contract(rho_).real();
+  return sym*ME()->contract(rho_).real();
 }
 
 void f1FourPiDecayer::dataBaseOutput(ofstream & output,

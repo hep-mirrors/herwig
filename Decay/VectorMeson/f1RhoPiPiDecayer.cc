@@ -18,7 +18,7 @@
 using namespace Herwig;
 
 f1RhoPiPiDecayer::f1RhoPiPiDecayer() :
-  ga1RhoPi_(4.8*GeV), gf1a1Pi_(10./GeV), maxWeight_({1.,1.}) {
+  ga1RhoPi_(4.8*GeV), gf1a1Pi_(9.77/GeV), maxWeight_({1.,1.}) {
   generateIntermediates(true);
 }
 
