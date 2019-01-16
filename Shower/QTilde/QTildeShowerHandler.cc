@@ -2564,9 +2564,12 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   else {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
       if(particlesToShower[ix]->progenitor()->isFinalState()) {
-	if(particlesToShower[ix]->progenitor()->dataPtr()->stable()) 
-	  minmass += particlesToShower[ix]->progenitor()->dataPtr()->constituentMass();
-	else
+        if(particlesToShower[ix]->progenitor()->dataPtr()->stable()){
+          auto dm=  ShowerHandler::currentHandler()->retConstituentMasses()?
+          particlesToShower[ix]->progenitor()->dataPtr()->constituentMass():
+          particlesToShower[ix]->progenitor()->dataPtr()->mass();
+          minmass += dm;
+        }else
 	  minmass += particlesToShower[ix]->progenitor()->mass();
       }
       else {

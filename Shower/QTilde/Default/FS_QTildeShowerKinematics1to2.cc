@@ -131,7 +131,12 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass > ZERO  ?  mass : last->data().constituentMass();
+  Energy theMass =ZERO;
+  if(!(mass > ZERO) && ShowerHandler::currentHandler()->retConstituentMasses())
+    theMass = last->data().constituentMass();
+  else
+    theMass = mass > ZERO ? mass : last->data().mass();
+  
   Lorentz5Momentum pVector = last->showerBasis()->pVector();
   ShowerParticle::Parameters & lastParam = last->showerParameters();
   Energy2 denom = 2. * lastParam.alpha * last->showerBasis()->p_dot_n();

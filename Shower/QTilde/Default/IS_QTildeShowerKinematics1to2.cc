@@ -114,12 +114,17 @@ reconstructParent(const tShowerParticlePtr parent,
   // from c1.  The name updateParent is still referring to the
   // timelike branching though.
   // on-shell child
-  c2param.beta = 0.5*( sqr(c2->data().constituentMass()) + sqr(c2param.pt) )
+  
+  auto m=  ShowerHandler::currentHandler()->retConstituentMasses()?
+           c2->data().constituentMass():
+           c2->data().mass();
+  
+  c2param.beta = 0.5*( sqr(m) + sqr(c2param.pt) )
     / ( c2param.alpha * parent->showerBasis()->p_dot_n() );
   Lorentz5Momentum pnew = parent->showerBasis()->
     sudakov2Momentum(c2param.alpha, c2param.beta, 
 		     c2param.ptx  , c2param.pty);
-  pnew.setMass(c2->data().constituentMass());
+  pnew.setMass(m);
   pnew.rescaleEnergy();
   c2->set5Momentum( pnew );
   // spacelike child

@@ -122,7 +122,8 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << showerVariations_ << doFSR_ << doISR_ << splitHardProcess_;
+     << showerVariations_ << doFSR_ << doISR_ << splitHardProcess_
+     << useConstituentMasses_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -135,7 +136,8 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> showerVariations_ >> doFSR_ >> doISR_ >> splitHardProcess_;
+     >> showerVariations_ >> doFSR_ >> doISR_ >> splitHardProcess_
+     >> useConstituentMasses_;
 }
 
 void ShowerHandler::Init() {
@@ -337,6 +339,23 @@ void ShowerHandler::Init() {
      "No",
      "Don't split the hard process",
      false);
+  
+  
+  static Switch<ShowerHandler,bool> interfaceUseConstituentMasses
+  ("UseConstituentMasses",
+   "Whether or not to use constituent masses for the reconstruction of the particle after showering.",
+   &ShowerHandler::useConstituentMasses_, true, false, false);
+  static SwitchOption interfaceUseConstituentMassesYes
+  (interfaceUseConstituentMasses,
+   "Yes",
+   "Use constituent masses.",
+   true);
+  static SwitchOption interfaceUseConstituentMassesNo
+  (interfaceUseConstituentMasses,
+   "No",
+   "Don't use constituent masses.",
+   false);
+  
 }
 
 Energy ShowerHandler::hardScale() const {

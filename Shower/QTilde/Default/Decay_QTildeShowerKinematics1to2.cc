@@ -79,7 +79,12 @@ void Decay_QTildeShowerKinematics1to2::
 reconstructLast(const tShowerParticlePtr last, Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass > ZERO ? mass : last->data().constituentMass(); 
+  Energy theMass =ZERO;
+  
+  if(!(mass > ZERO) && ShowerHandler::currentHandler()->retConstituentMasses())
+    theMass = last->data().constituentMass();
+  else
+    theMass = mass > ZERO ? mass : last->data().mass();
   last->showerParameters().beta=
     (sqr(theMass) + sqr(last->showerParameters().pt)
      - sqr( last->showerParameters().alpha )*last->showerBasis()->pVector().m2())

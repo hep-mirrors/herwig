@@ -248,7 +248,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
   // Reshuffle the outgoing partons from the hard process onto their constituent mass shells
 void DipoleShowerHandler::constituentReshuffle() {
   
-  if ( constituentReshuffler ) {
+  if ( constituentReshuffler &&  ShowerHandler::currentHandler()->retConstituentMasses() ) {
     if ( eventRecord().decays().empty() ) {
       constituentReshuffler->reshuffle(eventRecord().outgoing(),
                                        eventRecord().incoming(),
@@ -341,7 +341,7 @@ void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decay
     
     
       // decayReshuffle updates both the event record and the decay perturbative process
-    if ( constituentReshuffler ) {
+    if ( constituentReshuffler && ShowerHandler::currentHandler()->retConstituentMasses()) {
       constituentReshuffler->decayReshuffle(decayProc,
                                             eventRecord().outgoing(),
                                             eventRecord().hard(),
@@ -366,7 +366,7 @@ void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decay
     
   }else{
       // decayReshuffle updates both the event record and the decay perturbative process
-    if ( constituentReshuffler ) {
+    if ( constituentReshuffler && ShowerHandler::currentHandler()->retConstituentMasses() ) {
       constituentReshuffler->decayReshuffle(decayProc,
                                             eventRecord().outgoing(),
                                             eventRecord().hard(),
