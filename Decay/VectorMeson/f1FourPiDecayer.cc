@@ -216,31 +216,31 @@ double f1FourPiDecayer::me2(const int ichan, const Particle & part,
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,rho0,2,3,2,4));
       current += bwa1[0]*bwrho[3]*epsilon(part.momentum(),pa1[0],momenta[2]-momenta[3]);
     }
-    else if(ichan<0||ichan==1) {
+    if(ichan<0||ichan==1) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,2,1,1,1,rho0,2,3,2,4));
       current -= bwa1[1]*bwrho[3]*epsilon(part.momentum(),pa1[1],momenta[2]-momenta[3]);
     }
-    else if(ichan<0||ichan==2) {
+    if(ichan<0||ichan==2) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,3,1,2,1,rho0,2,1,2,4));
       current += bwa1[2]*bwrho[1]*epsilon(part.momentum(),pa1[2],momenta[0]-momenta[3]);
     }
-    else if(ichan<0||ichan==3) {
+    if(ichan<0||ichan==3) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,2,1,3,1,rho0,2,1,2,4));
       current -= bwa1[1]*bwrho[1]*epsilon(part.momentum(),pa1[1],momenta[0]-momenta[3]);
     }
-    else if(ichan<0||ichan==4) {
+    if(ichan<0||ichan==4) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,4,1,rho0,2,3,2,2));
       current += bwa1[0]*bwrho[2]*epsilon(part.momentum(),pa1[0],momenta[2]-momenta[1]);
     }
-    else if(ichan<0||ichan==5) {
+    if(ichan<0||ichan==5) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,4,1,1,1,rho0,2,3,2,2));
       current -= bwa1[3]*bwrho[2]*epsilon(part.momentum(),pa1[3],momenta[2]-momenta[1]);
     }
-    else if(ichan<0||ichan==6) {
+    if(ichan<0||ichan==6) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,3,1,4,1,rho0,2,1,2,2));
       current += bwa1[2]*bwrho[0]*epsilon(part.momentum(),pa1[2],momenta[0]-momenta[1]);
     }
-    else if(ichan<0||ichan==7) {
+    if(ichan<0||ichan==7) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,4,1,3,1,rho0,2,1,2,2));
       current -= bwa1[3]*bwrho[0]*epsilon(part.momentum(),pa1[3],momenta[0]-momenta[1]);
     }
@@ -259,31 +259,31 @@ double f1FourPiDecayer::me2(const int ichan, const Particle & part,
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,2,1,rhop,2,3,2,4));
       current += bwa1[0]*bwrho[3]*epsilon(part.momentum(),pa1[0],f1*momenta[2]-f2*momenta[3]);
     }
-    else if(ichan<0||ichan==1) {
+    if(ichan<0||ichan==1) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,1,1,rhop,2,3,2,4));
       current -= bwa1[1]*bwrho[3]*epsilon(part.momentum(),pa1[1],f1*momenta[2]-f2*momenta[3]);
     }
-    else if(ichan<0||ichan==2) {
+    if(ichan<0||ichan==2) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1m,0,1,1,4,1,rhop,2,3,2,2));
       current += bwa1[0]*bwrho[2]*epsilon(part.momentum(),pa1[0],f1*momenta[2]-f2*momenta[1]);
     }
-    else if(ichan<0||ichan==3) {
+    if(ichan<0||ichan==3) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,4,1,1,1,rhop,2,3,2,2));
       current -= bwa1[3]*bwrho[2]*epsilon(part.momentum(),pa1[3],f1*momenta[2]-f2*momenta[1]);
     }
-    else if(ichan<0||ichan==4) {
+    if(ichan<0||ichan==4) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,3,1,4,1,rhom,2,1,2,2));
       current += bwa1[2]*bwrho[0]*epsilon(part.momentum(),pa1[2],f1*momenta[0]-f2*momenta[1]);
     }
-    else if(ichan<0||ichan==5) {
+    if(ichan<0||ichan==5) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,4,1,3,1,rhom,2,1,2,2));
       current -= bwa1[3]*bwrho[0]*epsilon(part.momentum(),pa1[3],f1*momenta[0]-f2*momenta[1]);
     }
-    else if(ichan<0||ichan==6) {
+    if(ichan<0||ichan==6) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a1p,0,3,1,2,1,rhom,2,1,2,4));
       current += bwa1[2]*bwrho[1]*epsilon(part.momentum(),pa1[2],f1*momenta[0]-f2*momenta[3]);
     }
-    else if(ichan<0||ichan==7) {
+    if(ichan<0||ichan==7) {
       // mode->addChannel((PhaseSpaceChannel(mode),0,a10,0,2,1,3,1,rhom,2,1,2,4));
       current -= bwa1[1]*bwrho[1]*epsilon(part.momentum(),pa1[1],f1*momenta[0]-f2*momenta[3]);
     }
