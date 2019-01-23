@@ -169,13 +169,6 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   return ratio/maxpdf ;
 }
 
-
-
-
-
-
-
-
 void SudakovFormFactor::addSplitting(const IdList & in) {
   bool add=true;
   for(unsigned int ix=0;ix<particles_.size();++ix) {
@@ -217,15 +210,17 @@ void SudakovFormFactor::removeSplitting(const IdList & in) {
   }
 }
 
-Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
+void SudakovFormFactor::guesstz(Energy2 t1,unsigned int iopt,
 				  const IdList &ids,
 				  double enhance,bool ident,
-				  double detune) const {
+				  double detune, 
+				  Energy2 &t_main, double &z_main){
   unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
-  double c =
-    1./((splittingFn_->integOverP(zlimits_.second,ids,pdfopt) -
-	 splittingFn_->integOverP(zlimits_.first ,ids,pdfopt))* 
-	alpha_->overestimateValue()/Constants::twopi*enhance*detune);
+  double lower = splittingFn_->integOverP(zlimits_.first ,ids,pdfopt);
+  double upper = splittingFn_->integOverP(zlimits_.second,ids,pdfopt);
+  double c = 1./((upper - lower)
+           * alpha_->overestimateValue()/Constants::twopi*enhance*detune);
+  double r = UseRandom::rnd();
   assert(iopt<=2);
   if(iopt==1) {
     c/=pdfmax_;
@@ -233,20 +228,15 @@ Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
     if(ident) c*=0.5;
   }
   else if(iopt==2) c*=-1.;
-  double r = UseRandom::rnd();
+// guessing t
   if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
-    return t1*pow(r,c);
+    t_main = t1*pow(r,c);
   }
   else
-    return Constants::MaxEnergy2;
-}
-
-double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
-  unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
-  double lower = splittingFn_->integOverP(zlimits_.first,ids,pdfopt);
-  return splittingFn_->invIntegOverP
-    (lower + UseRandom::rnd()*(splittingFn_->integOverP(zlimits_.second,ids,pdfopt) - 
-			       lower),ids,pdfopt);
+    t_main = Constants::MaxEnergy2;
+// guessing z
+  z_main = splittingFn_->invIntegOverP(lower + UseRandom::rnd()
+         *(upper - lower),ids,pdfopt);
 }
 
 bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
@@ -255,8 +245,7 @@ bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
-  t = guesst(told,0,ids_,enhance,ids_[1]==ids_[2],detune);
-  z_ = guessz(0,ids_); 
+  guesstz(told,0,ids_,enhance,ids_[1]==ids_[2],detune,t,z_);
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
   if(t<tmin) {
@@ -274,8 +263,7 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
   // guess values of t and z
-  t = guesst(told,1,ids_,enhance,ids_[1]==ids_[2],detune); 
-  z_ = guessz(1,ids_);
+  guesstz(told,1,ids_,enhance,ids_[1]==ids_[2],detune,t,z_);
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
   if(t<tmin) {
@@ -564,8 +552,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return false;
   }
   // guess values of t and z
-  t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2],detune);
-  z_ = guessz(2,ids_); 
+  guesstz(told,2,ids_,enhance,ids_[1]==ids_[2],detune,t,z_);
   // actual values for z-limits
   if(t<masssquared_[0])  {
     t=-1.0*GeV2;

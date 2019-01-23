@@ -73,7 +73,7 @@ typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
  *  \f[c = \frac{\alpha_{\rm over}}{2\pi}\int^{z_1}_{z_0}P_{\rm over}(z),\f]
  * is a constant independent of \f$\tilde{q}\f$.
  *
- *  The guesst() member can then be used to generate generate the value of 
+ *  The guesstz() member can then be used to generate generate the value of 
  *  \f$\tilde{q}^2\f$ according to this result. This is done by solving the Sudakov
  *  form factor, with the over estimates, is equal to a random number 
  *  \f$r\f$ in the interval \f$[0,1]\f$. This gives
@@ -85,7 +85,7 @@ typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
  *  \f[\tilde{q}^2_{i+1}=\tilde{q}^2_ir^{\frac1c}.\f]
  *  The value of \f$z\f$ can then be calculated in a similar way
  *  \f[z = I^{-1}\left[I(z_0)+r\left(I(z_1)-I(z_0)\right)\right],\f]
- *  using the guessz() member,
+ *  using the guesstz() member,
  *  where \f$I=\int P(z){\rm d}z\f$ and \f$I^{-1}\f$ is its inverse.
  *  
  *  The veto algorithm then uses rejection using the ratio of the 
@@ -378,28 +378,21 @@ protected:
    */
   //@{
   /**
-   * Value of the energy fraction for the veto algorithm
+   * Value of the energy fraction and value of the scale for the veto algorithm
    * @param iopt The option for calculating z
    * @param ids The PDG codes of the particles in the splitting
    * - 0 is final-state
    * - 1 is initial-state for the hard process
    * - 2 is initial-state for particle decays
-   */
-  double guessz (unsigned int iopt, const IdList &ids) const;
-
-  /**
-   *  Value of the scale for the veto algorithm
    * @param t1 The starting valoe of the scale
-   * @param iopt The option for calculating t 
-   * @param ids The PDG codes of the particles in the splitting
-   * - 0 is final-state
-   * - 1 is initial-state for the hard process
-   * - 2 is initial-state for particle decays
    * @param enhance The radiation enhancement factor
    * @param identical Whether or not the outgoing particles are identical
+   * @param t_main rerurns the value of the energy fraction for the veto algorithm
+   * @param z_main returns the value of the scale for the veto algorithm
    */
-  Energy2 guesst (Energy2 t1,unsigned int iopt, const IdList &ids,
-		  double enhance, bool identical, double detune) const;
+  void guesstz(Energy2 t1,unsigned int iopt, const IdList &ids,
+	      double enhance,bool ident,
+	      double detune, Energy2 &t_main, double &z_main);
 
   /**
    * Veto on the PDF for the initial-state shower
