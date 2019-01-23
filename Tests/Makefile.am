@@ -191,15 +191,11 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 Rivet-LEP : Rivet-LEP/done
 	touch $@
 
-Rivet-LEP/done : $(shell echo Rivet{,-Powheg,-Matchbox,-Dipole}-LEP-{9.4,12,13,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
-	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
-           $(shell echo Rivet{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole}-LEP-14.yoda)	
+Rivet-LEP/done : $(shell echo Rivet-LEP-{9.4,12,13,14,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
+	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda)
 	rm -rf Rivet-LEP
 	python/merge-LEP --with-gg LEP
-	python/merge-LEP Powheg-LEP
-	python/merge-LEP Matchbox-LEP
-	python/merge-LEP Dipole-LEP
-	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw Powheg-LEP.yoda:Hw-Powheg Matchbox-LEP.yoda:Hw-Matchbox Dipole-LEP.yoda:Hw-Dipole
+	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw 
 	touch $@
 
 
@@ -208,14 +204,10 @@ Rivet-LEP/done : $(shell echo Rivet{,-Powheg,-Matchbox,-Dipole}-LEP-{9.4,12,13,1
 Rivet-BFactory : Rivet-BFactory/done
 	touch $@
 
-Rivet-BFactory/done: $(shell echo Rivet{,-Powheg,-Matchbox,-Dipole}-BFactory-{10.52,10.52-sym,10.54,10.45}.yoda) \
-                $(shell echo Rivet-BFactory-{Upsilon,Upsilon2,Upsilon4,Tau,10.58-res,10.58}.yoda)
+Rivet-BFactory/done: $(shell echo Rivet-BFactory-{10.52,10.52-sym,10.54,10.45,Upsilon,Upsilon2,Upsilon4,Tau,10.58-res,10.58}.yoda)
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
-	python/merge-BFactory Powheg-BFactory
-	python/merge-BFactory Matchbox-BFactory
-	python/merge-BFactory Dipole-BFactory
-	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw Powheg-BFactory.yoda:Hw-Powheg Matchbox-BFactory.yoda:Hw-Matchbox Dipole-BFactory.yoda:Hw-Dipole
+	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw
 	touch $@
 
 
