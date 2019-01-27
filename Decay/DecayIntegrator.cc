@@ -44,6 +44,7 @@ ParticleVector DecayIntegrator::decay(const Particle & parent,
   // generate the decay
   bool cc;
   _imode = modeNumber(cc,parent.dataPtr(),children);
+  if(numberModes()==0) return ParticleVector();
   return _modes[_imode]->generate(_generateinter,cc,parent);
 }
   
