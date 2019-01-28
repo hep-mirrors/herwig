@@ -419,7 +419,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   try {
     q = SimplePhaseSpace::getMagnitude(sHat(), meMomenta()[2].mass(),mz);
   } 
-  catch ( ImpossibleKinematics ) {
+  catch ( ImpossibleKinematics & e ) {
     return false;
   }	    
   Energy2 pq = sqrt(sHat())*q;
@@ -446,7 +446,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   try {
     q2 = SimplePhaseSpace::getMagnitude(_mz2, meMomenta()[3].mass(),
 					meMomenta()[4].mass());
-  } catch ( ImpossibleKinematics ) {
+  } catch ( ImpossibleKinematics & e ) {
     return false;
   }
   double cth2 =-1.+2.*r[3];

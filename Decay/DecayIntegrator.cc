@@ -109,6 +109,7 @@ ParticleVector DecayIntegrator::decay(const Particle & parent,
   // generate the decay
   bool cc;
   iMode_ = modeNumber(cc,parent.dataPtr(),children);
+  if(numberModes()==0) return ParticleVector();
   return modes_[iMode_]->generateDecay(parent,this,generateInter_,cc);
 }
 

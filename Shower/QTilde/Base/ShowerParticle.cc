@@ -368,7 +368,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
   else if(this->perturbative() == 2 && !this->isFinalState()) { 
     // get the basis vectors
     Lorentz5Momentum porig;
-    LorentzRotation rot=boostToShower(porig,showerBasis());
+    //LorentzRotation rot=boostToShower(porig,showerBasis());
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
     mapping=RhoDMatrix(spin);

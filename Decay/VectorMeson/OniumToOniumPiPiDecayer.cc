@@ -325,7 +325,7 @@ double OniumToOniumPiPiDecayer::me2(const int,const Particle & part,
 	(_vectors[0][ix]*momenta[1])*(_vectors[1][iy]*momenta[2])+
 	(_vectors[0][ix]*momenta[2])*(_vectors[1][iy]*momenta[1]);
       (*ME())(ix,iy,0,0)= _coupling[imode()/2]*
-	(A*dota*(q2-2.*mpi2)+B*dota*momenta[1].e()*momenta[2].e()
+	Complex(A*dota*(q2-2.*mpi2)+B*dota*momenta[1].e()*momenta[2].e()
 	 +C*dotb);
     }
   }

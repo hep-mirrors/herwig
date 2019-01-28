@@ -61,7 +61,7 @@ namespace exsample {
       double err = 0;
       double maxval = 0;
       std::vector<double> maxpos (ll.size());
-      unsigned long imax;
+      unsigned long imax(0);
       for ( unsigned long ival=0; ival < vals.size(); ival++ ) {
         val = std::abs(vals[ival].first);
         if ( val == 0 ) continue;
@@ -121,7 +121,7 @@ namespace exsample {
       double err = 0;
       double maxval = 0;
       std::vector<double> maxpos (ll.size());
-      unsigned long imax;
+      unsigned long imax(0);
       for ( unsigned long ival=0; ival < vals.size(); ival++ ) {
         double thisval = vals[ival].first;
         avg += thisval;

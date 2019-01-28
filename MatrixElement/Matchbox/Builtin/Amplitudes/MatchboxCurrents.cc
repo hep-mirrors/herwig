@@ -17,7 +17,7 @@ using Constants::pi;
 
 namespace {
 
-  const static LorentzVector<Complex> czero(0.,0.,0.,0.);
+  static const LorentzVector<Complex> czero(0.,0.,0.,0.);
 
   inline Complex csqr(const Complex & a) {
     return a * a;
@@ -33,35 +33,6 @@ namespace {
       return 1.;
     return -1.;
   }
-
-  // quick'n'dirty fix to template troubles
-
-  Complex operator * (const Complex& a, const double b) {
-    return Complex(a.real() * b,a.imag() * b);
-  }
-
-  Complex operator * (const double b, const Complex& a) {
-    return Complex(a.real() * b,a.imag() * b);
-  }
-
-  Complex operator+(const Complex& a, const double b) {
-    return Complex(a.real()+b,a.imag());
-  }
-
-  Complex operator+(const double b, const Complex& a) {
-    return Complex(a.real()+b,a.imag());
-  }
-
-  Complex operator-(const Complex& a, const double b) {
-    return Complex(a.real()-b,a.imag());
-  }
-
-  Complex operator-(const double b, const Complex& a) {
-    return Complex(b-a.real(),-a.imag());
-  }
-
-
-  // end fix, needs to be looked at in ThePEG/Config/
 
 }
 
@@ -224,9 +195,9 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftCurrent(const int q,  
       if ( qHel == 1 && qbarHel == 1 )
 	cacheCurrent( Complex(0.,1.)*cminus*( ((sqr(mass(q))*plusProduct(qbar,g)/(plusProduct(qbar,q)*den_i)) - (minusProduct(qbar,q)*plusProduct(g,qbar)/den_j))*minusCurrent(q, qbar) - (minusProduct(g,q)*plusProduct(g,qbar)/den_j)*minusCurrent(q,g) ) ); 
       if ( qHel == 1 && qbarHel == -1 )
-	cacheCurrent( Complex(0.,1.)*cminus*(-mass(qbar)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(qbar,g)/(plusProduct(qbar,q)*den_i)) - (plusProduct(qbar,g)*minusProduct(q,qbar)/den_j))*2*momentum(q) + (invariant(q,g)/den_j)*minusCurrent(q,g) ) );
+	cacheCurrent( Complex(0.,1.)*cminus*(-mass(qbar)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(qbar,g)/(plusProduct(qbar,q)*den_i)) - (plusProduct(qbar,g)*minusProduct(q,qbar)/den_j))*2.*momentum(q) + (invariant(q,g)/den_j)*minusCurrent(q,g) ) );
       if ( qHel == -1 && qbarHel == 1 )
-	cacheCurrent( Complex(0.,1.)*cminus*(mass(q)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(g,qbar)/(plusProduct(q,qbar)*den_i)) - (plusProduct(g,qbar)*minusProduct(qbar,q)/den_j))*2*momentum(qbar) - (minusProduct(g,q)*plusProduct(g,qbar)/den_j)*minusCurrent(qbar,g) ) );
+	cacheCurrent( Complex(0.,1.)*cminus*(mass(q)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(g,qbar)/(plusProduct(q,qbar)*den_i)) - (plusProduct(g,qbar)*minusProduct(qbar,q)/den_j))*2.*momentum(qbar) - (minusProduct(g,q)*plusProduct(g,qbar)/den_j)*minusCurrent(qbar,g) ) );
       if ( qHel == -1 && qbarHel == -1 )
 	cacheCurrent( Complex(0.,1.)*cminus*(mass(qbar)*mass(q)/(invariant(q,qbar))) * ( ((sqr(mass(q))*plusProduct(g,qbar)/(plusProduct(q,qbar)*den_i)) - (minusProduct(q,qbar)*plusProduct(qbar,g)/den_j))*minusCurrent(qbar,q) + (invariant(q,g)/den_j)*minusCurrent(qbar,g) ) );
     }
@@ -251,9 +222,9 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftCurrent(const int q,  
       if ( qHel == 1 && qbarHel == 1 )
 	cacheCurrent( Complex(0.,1.)*cplus*( ((sqr(mass(q))*minusProduct(g,qbar)/(minusProduct(q,qbar)*den_i)) - (minusProduct(qbar,g)*plusProduct(q,qbar)/den_j))*minusCurrent(q, qbar) - (invariant(q,g)/den_i)*minusCurrent(g,qbar) ) ); 
       if ( qHel == 1 && qbarHel == -1 )
-	cacheCurrent( Complex(0.,1.)*cplus*(-mass(qbar)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(g,qbar)/(minusProduct(q,qbar)*den_i)) - (plusProduct(qbar,q)*minusProduct(g,qbar)/den_j))*2*momentum(q) - (invariant(q,g)/den_i)*minusCurrent(g,q) ) );
+	cacheCurrent( Complex(0.,1.)*cplus*(-mass(qbar)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(g,qbar)/(minusProduct(q,qbar)*den_i)) - (plusProduct(qbar,q)*minusProduct(g,qbar)/den_j))*2.*momentum(q) - (invariant(q,g)/den_i)*minusCurrent(g,q) ) );
       if ( qHel == -1 && qbarHel == 1 )
-	cacheCurrent( Complex(0.,1.)*cplus*(mass(q)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(qbar,g)/(minusProduct(qbar,q)*den_i)) - (minusProduct(qbar,g)*plusProduct(q,qbar)/den_j))*2*momentum(qbar) + (minusProduct(qbar,g)*plusProduct(q,g)/den_i)*minusCurrent(g,qbar) ) );
+	cacheCurrent( Complex(0.,1.)*cplus*(mass(q)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(qbar,g)/(minusProduct(qbar,q)*den_i)) - (minusProduct(qbar,g)*plusProduct(q,qbar)/den_j))*2.*momentum(qbar) + (minusProduct(qbar,g)*plusProduct(q,g)/den_i)*minusCurrent(g,qbar) ) );
       if ( qHel == -1 && qbarHel == -1 )
 	cacheCurrent( Complex(0.,1.)*cplus*(mass(qbar)*mass(q)/(invariant(q,qbar))) * ( ((sqr(mass(q))*minusProduct(qbar,g)/(minusProduct(qbar,q)*den_i)) - (plusProduct(qbar,q)*minusProduct(g,qbar)/den_j))*minusCurrent(qbar, q) + (minusProduct(qbar,g)*plusProduct(q,g)/den_i)*minusCurrent(g,q) ) );
     }
@@ -285,9 +256,9 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(const int q, 
       if ( qHel == 1 && qbarHel == 1 )
 	cacheCurrent( Complex(0.,1.)*cminus*(mass(qbar)*mass(q)/(invariant(q,qbar))) * ( ((sqr(mass(q))*plusProduct(qbar,g)/(plusProduct(qbar,q)*den_i)) - (minusProduct(qbar,q)*plusProduct(g,qbar)/den_j))*plusCurrent(qbar, q) + (plusProduct(qbar,g)*minusProduct(q,g)/den_i)*plusCurrent(g,q) ) );
       if ( qHel == 1 && qbarHel == -1 )
-	cacheCurrent( Complex(0.,1.)*cminus*(mass(q)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(qbar,g)/(plusProduct(qbar,q)*den_i)) - (plusProduct(qbar,g)*minusProduct(q,qbar)/den_j))*2*momentum(qbar) + (plusProduct(qbar,g)*minusProduct(q,g)/den_i)*plusCurrent(g,qbar) ) );
+	cacheCurrent( Complex(0.,1.)*cminus*(mass(q)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(qbar,g)/(plusProduct(qbar,q)*den_i)) - (plusProduct(qbar,g)*minusProduct(q,qbar)/den_j))*2.*momentum(qbar) + (plusProduct(qbar,g)*minusProduct(q,g)/den_i)*plusCurrent(g,qbar) ) );
       if ( qHel == -1 && qbarHel == 1 )
-	cacheCurrent( Complex(0.,1.)*cminus*(-mass(qbar)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(g,qbar)/(plusProduct(q,qbar)*den_i)) - (minusProduct(qbar,q)*plusProduct(g,qbar)/den_j))*2*momentum(q) - (invariant(q,g)/den_i)*plusCurrent(g,q) ) );
+	cacheCurrent( Complex(0.,1.)*cminus*(-mass(qbar)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*plusProduct(g,qbar)/(plusProduct(q,qbar)*den_i)) - (minusProduct(qbar,q)*plusProduct(g,qbar)/den_j))*2.*momentum(q) - (invariant(q,g)/den_i)*plusCurrent(g,q) ) );
       if ( qHel == -1 && qbarHel == -1 )
 	cacheCurrent( Complex(0.,1.)*cminus*( ((sqr(mass(q))*plusProduct(g,qbar)/(plusProduct(q,qbar)*den_i)) - (plusProduct(qbar,g)*minusProduct(q,qbar)/den_j))*plusCurrent(q, qbar) - (invariant(q,g)/den_i)*plusCurrent(g,qbar) ) ); 
     }
@@ -312,9 +283,9 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(const int q, 
       if ( qHel == 1 && qbarHel == 1 )
 	cacheCurrent( Complex(0.,1.)*cplus*(mass(qbar)*mass(q)/(invariant(q,qbar))) * ( ((sqr(mass(q))*minusProduct(g,qbar)/(minusProduct(q,qbar)*den_i)) - (plusProduct(q,qbar)*minusProduct(qbar,g)/den_j))*plusCurrent(qbar, q) + (invariant(q,g)/den_j)*plusCurrent(qbar,g) ) );
       if ( qHel == 1 && qbarHel == -1 )
-	cacheCurrent( Complex(0.,1.)*cplus*(mass(q)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(g,qbar)/(minusProduct(q,qbar)*den_i)) - (minusProduct(g,qbar)*plusProduct(qbar,q)/den_j))*2*momentum(qbar) - (plusProduct(g,q)*minusProduct(g,qbar)/den_j)*plusCurrent(qbar,g) ) );
+	cacheCurrent( Complex(0.,1.)*cplus*(mass(q)/plusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(g,qbar)/(minusProduct(q,qbar)*den_i)) - (minusProduct(g,qbar)*plusProduct(qbar,q)/den_j))*2.*momentum(qbar) - (plusProduct(g,q)*minusProduct(g,qbar)/den_j)*plusCurrent(qbar,g) ) );
       if ( qHel == -1 && qbarHel == 1 )
-	cacheCurrent( Complex(0.,1.)*cplus*(-mass(qbar)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(qbar,g)/(minusProduct(qbar,q)*den_i)) - (minusProduct(qbar,g)*plusProduct(q,qbar)/den_j))*2*momentum(q) + (invariant(q,g)/den_j)*plusCurrent(q,g) ) );
+	cacheCurrent( Complex(0.,1.)*cplus*(-mass(qbar)/minusProduct(qbar,q)) * ( ((sqr(mass(q))*minusProduct(qbar,g)/(minusProduct(qbar,q)*den_i)) - (minusProduct(qbar,g)*plusProduct(q,qbar)/den_j))*2.*momentum(q) + (invariant(q,g)/den_j)*plusCurrent(q,g) ) );
       if ( qHel == -1 && qbarHel == -1 )
 	cacheCurrent( Complex(0.,1.)*cplus*( ((sqr(mass(q))*minusProduct(qbar,g)/(minusProduct(qbar,q)*den_i)) - (plusProduct(qbar,q)*minusProduct(g,qbar)/den_j))*plusCurrent(q, qbar) - (plusProduct(g,q)*minusProduct(g,qbar)/den_j)*plusCurrent(q,g) ) ); 
     }
@@ -1483,10 +1454,10 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarLeftOneLoopCurrent(const in
     const Complex inv12 = s - sqr(mass(q)) - sqr(mass(qbar));
 
     // Coefficient of the left-handed born-level current
-    const Complex coeffLeftTree = -1.0*log1(1./sqr(mass(q)))-1.0*log1(1./sqr(mass(qbar)))-4.0 + 0.5*((2.*log1(sqr(mass(q))/sqr(mass(qbar)))*(0.5*inv12+sqr(mass(q))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))-(2.*inv12*Li2(0.5-(0.25*inv12)/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*sqr(mass(qbar)))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*Li2((0.5*(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(1.*inv12*log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*log1((2*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))*log1((-0.5*inv12-1.*sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(1.*inv12*log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(4*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*(-0.25*(3+2*log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*sqr(inv12)+sqr(mass(q))*sqr(mass(qbar))-0.5*inv12*(1.+log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*(sqr(mass(q))+sqr(mass(qbar)))))/((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))));
+    const Complex coeffLeftTree = -1.0*log1(1./sqr(mass(q)))-1.0*log1(1./sqr(mass(qbar)))-4.0 + 0.5*((2.*log1(sqr(mass(q))/sqr(mass(qbar)))*(0.5*inv12+sqr(mass(q))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))-(2.*inv12*Li2(0.5-(0.25*inv12)/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*sqr(mass(qbar)))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*Li2((0.5*(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(1.*inv12*log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*log1((2.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))*log1((-0.5*inv12-1.*sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(1.*inv12*log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(4.*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*(-0.25*(3.+2.*log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*sqr(inv12)+sqr(mass(q))*sqr(mass(qbar))-0.5*inv12*(1.+log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*(sqr(mass(q))+sqr(mass(qbar)))))/((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))));
 
     // Coefficient of the right-handed born-level current
-    const Complex coeffRightTree = (2*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*mass(q)*mass(qbar))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)));      
+    const Complex coeffRightTree = (2.*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*mass(q)*mass(qbar))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)));      
        
     const LorentzVector<Complex>& leftTree = qqbarLeftCurrent(q,qHel,qbar,qbarHel);
     const LorentzVector<Complex>& rightTree = qqbarRightCurrent(q,qHel,qbar,qbarHel);
@@ -1567,10 +1538,10 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarRightOneLoopCurrent(const i
     const Complex inv12 = s - sqr(mass(q)) - sqr(mass(qbar));
 
     // Coefficient of the right-handed born-level current
-    const Complex coeffRightTree = -1.0*log1(1./sqr(mass(q)))-1.0*log1(1./sqr(mass(qbar)))-4.0 + 0.5*((2.*log1(sqr(mass(q))/sqr(mass(qbar)))*(0.5*inv12+sqr(mass(q))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))-(2.*inv12*Li2(0.5-(0.25*inv12)/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*sqr(mass(qbar)))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*Li2((0.5*(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(1.*inv12*log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*log1((2*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))*log1((-0.5*inv12-1.*sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(1.*inv12*log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(4*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*(-0.25*(3+2*log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*sqr(inv12)+sqr(mass(q))*sqr(mass(qbar))-0.5*inv12*(1.+log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*(sqr(mass(q))+sqr(mass(qbar)))))/((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))));
+    const Complex coeffRightTree = -1.0*log1(1./sqr(mass(q)))-1.0*log1(1./sqr(mass(qbar)))-4.0 + 0.5*((2.*log1(sqr(mass(q))/sqr(mass(qbar)))*(0.5*inv12+sqr(mass(q))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))-(2.*inv12*Li2(0.5-(0.25*inv12)/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*sqr(mass(qbar)))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*Li2((0.5*(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(1.*inv12*log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(2.*inv12*log1((2.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))*log1((-0.5*inv12-1.*sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(1.*inv12*log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1(-((0.5*inv12+sqr(mass(q))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(0.5*inv12*sqr(log1((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(qbar))-1.*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1(-((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))/(0.5*inv12+sqr(mass(q))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))-(0.5*inv12*sqr(log1((0.5*inv12+sqr(mass(qbar))+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar))))/(1.*inv12+sqr(mass(q))+sqr(mass(qbar))))))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))+(4.*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*(-0.25*(3.+2.*log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*sqr(inv12)+sqr(mass(q))*sqr(mass(qbar))-0.5*inv12*(1.+log1(1./(1.*inv12+sqr(mass(q))+sqr(mass(qbar)))))*(sqr(mass(q))+sqr(mass(qbar)))))/((1.*inv12+sqr(mass(q))+sqr(mass(qbar)))*sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))));
 
     // Coefficient of the left-handed born-level current
-    const Complex coeffLeftTree = (2*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*mass(q)*mass(qbar))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)));      
+    const Complex coeffLeftTree = (2.*log1((-1.*mass(q)*mass(qbar))/(0.5*inv12+sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)))))*mass(q)*mass(qbar))/sqrt1(0.25*sqr(inv12)-sqr(mass(q))*sqr(mass(qbar)));      
        
     const LorentzVector<Complex>& leftTree = qqbarLeftCurrent(q,qHel,qbar,qbarHel);
     const LorentzVector<Complex>& rightTree = qqbarRightCurrent(q,qHel,qbar,qbarHel);
