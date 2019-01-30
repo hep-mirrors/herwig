@@ -96,6 +96,8 @@ void ConstituentReshuffler::reshuffle(PList& out,
 				      PList& decayPartons,
 				      PList& decayRecoilers) {
 
+  assert(!ShowerHandler::currentHandler()->retConstituentMasses());
+
   if ( !decay ) {
   
     if (out.size() == 0)
@@ -349,6 +351,10 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
   // The update of the PPtrs in theDecays is done in DipoleShowerHandler::constituentReshuffle()
   // as this needs to be done if ConstituentReshuffling is switched off.
 
+  
+  //Make sure the shower should return constituent masses:
+  assert(!ShowerHandler::currentHandler()->retConstituentMasses());
+
   // Find the outgoing decaying particles
   PList recoilers;
   for ( PList::iterator decIt = decaying.begin(); decIt != decaying.end(); ++decIt) {
@@ -468,6 +474,11 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
   // i.e. non-coloured and decaying particles
   PList partons;
   PList recoilers;
+
+
+  //Make sure the shower should return constituent masses:
+  assert(!ShowerHandler::currentHandler()->retConstituentMasses());
+  
 
   // Populate the particle lists from the outgoing of the decay process
   for( unsigned int ix = 0; ix<decayProc->outgoing().size(); ++ix) {

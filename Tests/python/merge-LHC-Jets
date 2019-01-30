@@ -238,7 +238,7 @@ for f in yodafiles:
            aopath.find("I929691" )>0 or aopath.find("I1393758")>0 or
            aopath.find("I1459051")>0 or aopath.find("I1487277")>0 or
            aopath.find("I1421646")>0 or aopath.find("I1111014")>0 or
-           aopath.find("I1605749")>0 or
+           aopath.find("I1605749")>0 or aopath.find("I1682495")>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -1495,6 +1495,21 @@ for j in [0,22,44,66,87,106]:
 for i in [126,127,128] :
     for j in [1,2] :
         mergeByPt("/CMS_2012_I1111014/d%03d-x01-y%02d" % (i,j), "7000")
+        
+logging.info("Processing CMS_2018_I1682495")
+for i in [0,1,2,3] :
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 1), "13000", "110" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 2), "13000", "260" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 3), "13000", "260" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 4), "13000", "400" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 5), "13000", "400" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 6), "13000", "600" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 7), "13000", "600" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 8), "13000", "900" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+ 9), "13000", "900" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+10), "13000", "900" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+11), "13000", "900" )
+    useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+12), "13000", "900" )
         
 # Choose output file
 name = args[0]+"-Jets.yoda"

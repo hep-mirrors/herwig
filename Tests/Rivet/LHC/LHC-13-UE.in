@@ -9,3 +9,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1467230
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1509919
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1468167
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1511284
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1653948
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1680318
