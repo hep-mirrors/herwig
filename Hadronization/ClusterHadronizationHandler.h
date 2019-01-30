@@ -87,7 +87,12 @@ public:
    *  pointer to "this", the current HadronizationHandler.
    */
   static const ClusterHadronizationHandler * currentHandler() {
-    assert(currentHandler_);
+    if(!currentHandler_){
+      cerr<< " \nCreating new ClusterHadronizationHandler without input from infiles.";
+      cerr<< " \nWhen using for example the string model ";
+      cerr<< " hadronic decays are still treated by the Cluster model\n";
+      currentHandler_=new ClusterHadronizationHandler();;
+    }
     return currentHandler_;
   }
 

@@ -231,7 +231,9 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
     }
     // otherwise
     else {
-      Energy dm = particleJetParent->data().constituentMass();
+      Energy dm = ShowerHandler::currentHandler()->retConstituentMasses()?
+	particleJetParent->data().constituentMass():
+	particleJetParent->data().mass();
       if (abs(dm-particleJetParent->momentum().m())>0.001*MeV
 	  &&(particleJetParent->dataPtr()->stable() || abs(particleJetParent->id())==ParticleID::tauminus)
 	  &&particleJetParent->id()!=ParticleID::gamma
