@@ -475,7 +475,6 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
   PList partons;
   PList recoilers;
 
-
   //Make sure the shower should return constituent masses:
   assert(!ShowerHandler::currentHandler()->retConstituentMasses());
   
@@ -504,40 +503,24 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
     PList out;
     // Make an empty list for storing the new intermediates
     PList intermediates;
-    // Empty in particles pair
+    // Empty incoming particles pair
     PPair in;
 
 
-    // If there is only one parton, the momentum must be 
-    // reshuffled amongst it and the recoilers
-    if ( partons.size() == 1 ) {
-      assert ( recoilers.size() >= 1);
-
-      // Populate the out for the reshuffling
-      out.insert(out.end(),partons.begin(),partons.end());
-      out.insert(out.end(),recoilers.begin(),recoilers.end());
-      assert( out.size() > 1 );
+    // SW - 15/06/2018, 31/01/2019 - Always include 'recoilers' in
+    // reshuffling, regardless of the number of partons to be put on their
+    // constituent mass shell. This is because reshuffling between 2 partons
+    // frequently leads to a redoShower exception. This treatment is
+    // consistent with the AO shower
     
-      // Perform the reshuffle with the temporary particle lists
-      reshuffle(out, in, intermediates, true, partons, recoilers);    
-    }
-
-      
-    // If there is more than one outgoing particle that
-    // needs to be assigned its constituent mass
-    // then simply reshuffle only these particles
-    else {
-    assert(partons.size() > 1);
-
     // Populate the out for the reshuffling
     out.insert(out.end(),partons.begin(),partons.end());
+    out.insert(out.end(),recoilers.begin(),recoilers.end());
     assert( out.size() > 1 );
     
     // Perform the reshuffle with the temporary particle lists
-    reshuffle(out, in, intermediates, true);
-    }
-
-
+    reshuffle(out, in, intermediates, true, partons, recoilers);    
+    
     // Update the dipole event record and the decay process
     updateEvent(intermediates, eventIntermediates, out, eventOutgoing, eventHard, decayProc );
     return;
