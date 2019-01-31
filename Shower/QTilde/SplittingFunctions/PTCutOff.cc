@@ -26,11 +26,11 @@ IBPtr PTCutOff::fullclone() const {
 }
 
 void PTCutOff::persistentOutput(PersistentOStream & os) const {
-	os << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
+  os << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
 }
 
 void PTCutOff::persistentInput(PersistentIStream & is, int) {
-	is >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
+  is >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
 }
 
 // The following static variable is needed for the type
@@ -53,6 +53,7 @@ void PTCutOff::Init() {
 }
 
 void PTCutOff::doinit() {
+  pT2min_ = sqr(pTmin_);
   SudakovCutOff::doinit();
 }
 
