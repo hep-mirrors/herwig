@@ -96,7 +96,7 @@ void ConstituentReshuffler::reshuffle(PList& out,
 				      PList& decayPartons,
 				      PList& decayRecoilers) {
 
-  assert(!ShowerHandler::currentHandler()->retConstituentMasses());
+  assert(ShowerHandler::currentHandler()->retConstituentMasses());
 
   if ( !decay ) {
   
@@ -353,7 +353,7 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
 
   
   //Make sure the shower should return constituent masses:
-  assert(!ShowerHandler::currentHandler()->retConstituentMasses());
+  assert(ShowerHandler::currentHandler()->retConstituentMasses());
 
   // Find the outgoing decaying particles
   PList recoilers;
@@ -477,7 +477,7 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
 
 
   //Make sure the shower should return constituent masses:
-  assert(!ShowerHandler::currentHandler()->retConstituentMasses());
+  assert(ShowerHandler::currentHandler()->retConstituentMasses());
   
 
   // Populate the particle lists from the outgoing of the decay process
