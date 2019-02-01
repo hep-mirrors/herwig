@@ -24,8 +24,8 @@ PhiPiCurrent::PhiPiCurrent() {
   addDecayMode(2,-2);
   setInitialModes(3);
   // amplitudes for the weights in the current
-  amp_   = {0.045/GeV,0.0315/GeV,0./GeV};
-  phase_ = {180.,0.,180.};
+  amp_   = {0.194/GeV,0.0214/GeV,0./GeV};
+  phase_ = {0.,121.,0.};
   br4pi_     = {0.,0.33,0.};
   // rho masses and widths
   rhoMasses_ = {0.77526*GeV,1.593*GeV,1.909*GeV};
