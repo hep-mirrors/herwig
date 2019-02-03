@@ -181,7 +181,7 @@ bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   // reset the masses and widths of the resonances if needed
   for(unsigned int ix=0;ix<res.size();++ix) {
     int ires(0);
-    if(res[ix]->id()==223)         ires=1;
+    if(res[ix]->id()==213)         ires=1;
     else if(res[ix]->id()==   223) ires=2;
     else if(res[ix]->id()==100223) ires=3;
     else if(res[ix]->id()== 30223) ires=4;

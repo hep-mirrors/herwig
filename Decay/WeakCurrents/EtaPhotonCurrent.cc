@@ -77,7 +77,7 @@ void EtaPhotonCurrent::Init() {
   static ClassDocumentation<EtaPhotonCurrent> documentation
     ("The EtaPhotonCurrent class implements a current based"
      " on the model of SND for pion+photon",
-     "The current based on the model of \\cite{Achasov:2006dv"
+     "The current based on the model of \\cite{Achasov:2006dv}"
      " for eta and photon was used.",
      "\\bibitem{Achasov:2006dv}\n"
      "M.~N.~Achasov {\\it et al.},\n"
@@ -138,8 +138,8 @@ bool EtaPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   tPDVector res = {getParticleData(113),
 		   getParticleData(   223),
 		   getParticleData(   333),
-		   getParticleData(100223),
-		   getParticleData( 30223)};
+		   getParticleData(100213),
+		   getParticleData( 100333)};
   // set up the integration channels;
   for(unsigned int ix=0;ix<res.size();++ix) {
     if(resonance && resonance!=res[ix]) continue;
@@ -217,10 +217,10 @@ EtaPhotonCurrent::current(tcPDPtr resonance,
     case 333:
       imin=2;
       break;
-    case 100223:
+    case 100213:
       imin = 3;
       break;
-    case 30223 :
+    case 100333 :
       imin = 4;
       break;
     default:
