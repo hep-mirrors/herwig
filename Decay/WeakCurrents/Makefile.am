@@ -34,6 +34,7 @@ TwoKaonCzyzCurrent.h\
 ThreePionCzyzCurrent.h\
 FourPionCzyzCurrent.h\
 EtaPiPiCurrent.h\
+EtaPrimePiPiCurrent.h\
 KKPiCurrent.h\
 KStarKCurrent.h\
 EtaPhiCurrent.h\
@@ -66,6 +67,7 @@ TwoKaonCzyzCurrent.cc \
 ThreePionCzyzCurrent.cc \
 FourPionCzyzCurrent.cc\
 EtaPiPiCurrent.cc\
+EtaPrimePiPiCurrent.cc\
 KKPiCurrent.cc\
 KStarKCurrent.cc\
 EtaPhiCurrent.cc\
