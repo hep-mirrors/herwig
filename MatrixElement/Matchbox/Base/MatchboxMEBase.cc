@@ -707,29 +707,40 @@ CrossSection MatchboxMEBase::dSigHatDRAlphaDiff(double alpha) const {
   return res;
 }
 
-
-
-
-
-
 CrossSection MatchboxMEBase::dSigHatDR() const {
   getPDFWeight();
   
   if (theMerger){
     lastMECrossSection(theMerger->MergingDSigDR());
     return lastMECrossSection();
-  }else if (lastXCombPtr()->willPassCuts() ) {
-    lastMECrossSection(dSigHatDRB()+
-                       dSigHatDRV()+
-                       dSigHatDRI());
+  }
+  else if (lastXCombPtr()->willPassCuts() ) {
+	lastME2(me2());
+	CrossSection _dSigHatDRB, _dSigHatDRV, _dSigHatDRI, res = ZERO;
+	// ----- dSigHatDRB -----
+	_dSigHatDRB = oneLoopNoBorn()?ZERO:prefactor() * lastME2();
+	// ----- dSigHatDRV -----
+	_dSigHatDRV = ( oneLoop() && !oneLoopNoLoops() )?(prefactor() * oneLoopInterference()):ZERO;
+	// ----- dSigHatDRI -----
+    if  (oneLoop() &&!onlyOneLoop())  {
+    for ( auto const & v : virtuals()) {
+      v->setXComb(lastXCombPtr());
+      res += v->dSigHatDR();
+    }
+    if ( checkPoles() && oneLoop() )
+      logPoles();
+  }
+	_dSigHatDRI = res;
+	// ----- finalizing -----
+    lastMECrossSection(_dSigHatDRB + _dSigHatDRV + _dSigHatDRI);
     return lastMECrossSection();
   }
-
+  else
+  {
   lastME2(ZERO);
   lastMECrossSection(ZERO);
-
   return lastMECrossSection();
-
+  }
 }
 
 double MatchboxMEBase::oneLoopInterference() const {
