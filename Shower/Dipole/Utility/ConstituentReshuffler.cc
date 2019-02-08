@@ -512,15 +512,13 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
     // constituent mass shell. This is because reshuffling between 2 partons
     // frequently leads to a redoShower exception. This treatment is
     // consistent with the AO shower
-    
     // Populate the out for the reshuffling
     out.insert(out.end(),partons.begin(),partons.end());
     out.insert(out.end(),recoilers.begin(),recoilers.end());
     assert( out.size() > 1 );
     
     // Perform the reshuffle with the temporary particle lists
-    reshuffle(out, in, intermediates, true, partons, recoilers);    
-    
+    reshuffle(out, in, intermediates, true, partons, recoilers);
     // Update the dipole event record and the decay process
     updateEvent(intermediates, eventIntermediates, out, eventOutgoing, eventHard, decayProc );
     return;
