@@ -360,7 +360,7 @@ private:
    *  The mass generators for the outgoing particles.
    */
   vector<cGenericMassGeneratorPtr> massGen_;
-
+  vector<double> BRsum_;
   /**
    *  Whether to check on-shell or off-shell kinematics
    * in doinit, if on-shell off-shell is tested in initrun

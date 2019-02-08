@@ -19,13 +19,13 @@ using namespace ThePEG::Helicity;
 
 void PhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << incoming_ << channels_ << maxWeight_ << outgoing_ << outgoingCC_
-     << partial_ << widthGen_ << massGen_ << testOnShell_
+     << partial_ << widthGen_ << massGen_ << BRsum_ << testOnShell_
      << ounit(eMax_,GeV) << nRand_;
 }
 
 void PhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
   is >> incoming_ >> channels_ >> maxWeight_ >> outgoing_ >> outgoingCC_
-     >> partial_ >> widthGen_ >> massGen_ >> testOnShell_
+     >> partial_ >> widthGen_ >> massGen_ >> BRsum_ >> testOnShell_
      >> iunit(eMax_,GeV) >> nRand_;
 }
 
@@ -194,6 +194,7 @@ vector<Energy> PhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
     mlow-=low;
     double wgttemp;
     mass[notdone[iloc]]= massGen_[notdone[iloc]]->mass(wgttemp,*outgoing_[notdone[iloc]],low,inmass-mlow,rStack_.top());
+    wgttemp /= BRsum_[notdone[iloc]];
     rStack_.pop();
     assert(mass[notdone[iloc]]>=low&&mass[notdone[iloc]]<=inmass-mlow);
     wgt   *= wgttemp;
@@ -446,10 +447,21 @@ void PhaseSpaceMode::init() {
     outgoingCC_.push_back(part->CC() ? part->CC() : part);
   }
   massGen_.resize(outgoing_.size());
+  BRsum_.resize(outgoing_.size());
   widthGen_ = dynamic_ptr_cast<cGenericWidthGeneratorPtr>(incoming_.first->widthGenerator());
   for(unsigned int ix=0;ix<outgoing_.size();++ix) {
     assert(outgoing_[ix]);
     massGen_[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(outgoing_[ix]->massGenerator());
+    if(outgoing_[ix]->stable()) {
+      BRsum_[ix] = 1.;
+    }
+    else {
+      double total(0.);
+      for(tDMPtr mode : outgoing_[ix]->decayModes()) {
+	if(mode->on()) total += mode->brat();
+      }
+      BRsum_[ix] = total;
+    }
   }
   // get max energy for decays
   if(!incoming_.second)

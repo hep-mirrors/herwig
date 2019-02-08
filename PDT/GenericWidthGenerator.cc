@@ -884,6 +884,12 @@ GenericWidthGenerator::width(Energy m, const ParticleData & ) const {
 	gamma.first += partial;
     }
   }
+  if(gamma.first==ZERO) {
+    for(unsigned int ix=0;ix<decayModes_.size();++ix) {
+      if(decayModes_[ix]->on())
+	gamma.first += partialWidth(ix,m);
+    }
+  }
   gamma.first  *= prefactor_;
   gamma.second *= prefactor_;
   return gamma;
