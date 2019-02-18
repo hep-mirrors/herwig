@@ -786,8 +786,14 @@ elif(collider=="LHC") :
             elif "Jets-7" in parameterName : process+=jet_kt_cut(300.)
             elif "Jets-8" in parameterName : process+=jet_kt_cut(500.)
             elif "Jets-9" in parameterName : process+=jet_kt_cut(800.)
-        elif("7-Charm" in parameterName  or "7-Bottom" in parameterName) :
-            if "7-Bottom" in parameterName :
+        elif(    "7-Charm" in parameterName  or "7-Bottom" in parameterName
+             or "8-Bottom" in parameterName) :
+            
+            if("8-Bottom" in parameterName) :
+                addBRReweighter()
+                process+=selectDecayMode("Jpsi",["Jpsi->mu-,mu+;"])
+                
+            if "Bottom" in parameterName :
                 process+="cp MEHeavyQuark MEBottom\n" 
                 process+="set MEBottom:QuarkType Bottom\n"
                 process+=insert_ME("MEBottom")
@@ -797,7 +803,7 @@ elif(collider=="LHC") :
                 process+=insert_ME("MECharm")
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if "-0" in parameterName :
-                if "7-Bottom" in parameterName :
+                if "Bottom" in parameterName :
                     process+="set MEBottom:Process Pair\n" 
                 process+=jet_kt_cut(0.)
             elif "-1" in parameterName : process+=jet_kt_cut(5.)
@@ -1402,13 +1408,17 @@ elif(collider=="LHC") :
             else :
                 logging.error("Exit 00003")
                 sys.exit(1)
-        elif( "7-Charm" in parameterName or "7-Bottom" in parameterName) :
+        elif(     "7-Charm" in parameterName or "7-Bottom" in parameterName
+              or "8-Bottom" in parameterName) :
             parameters["bscheme"]=fourFlavour
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\n"
             process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             
+            if("8-Bottom" in parameterName) :
+                addBRReweighter()
+                process+=selectDecayMode("Jpsi",["Jpsi->mu-,mu+;"])
             
-            if "7-Bottom" in parameterName :
+            if "Bottom" in parameterName :
                 if(simulation=="Matchbox"):
                     process+=addProcess(thefactory,"p p b bbar","2","0","MaxJetPtScale",0,0)
                 elif(simulation=="Merging"):

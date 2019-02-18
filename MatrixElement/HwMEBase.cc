@@ -127,7 +127,7 @@ bool HwMEBase::generateKinematics(const double * r) {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
   } 
-  catch ( ImpossibleKinematics ) {
+  catch ( ImpossibleKinematics & e) {
     return false;
   }
 

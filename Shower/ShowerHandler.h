@@ -94,6 +94,14 @@ public:
    * process masses.
    */
   virtual bool isReshuffling() const { return true; }
+  
+  /**
+   * Return true, if this cascade handler will put the final state
+   * particles to their constituent mass. If false the nominal mass is used.
+   */
+  virtual bool retConstituentMasses() const { return useConstituentMasses_; }
+  
+  
 
   /**
    * Return true, if the shower handler can generate a truncated 
@@ -847,6 +855,16 @@ private:
   Energy2 vMin_;
   //@}
 
+
+private:
+  
+  /**
+   *  Parameters for the constituent mass treatment.
+   */
+    //@{
+  // True if shower should return constituent masses.
+  bool useConstituentMasses_=true;
+  //@}
 private:
 
   /**

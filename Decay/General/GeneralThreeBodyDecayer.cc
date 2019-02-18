@@ -1044,10 +1044,11 @@ void GeneralThreeBodyDecayer::setupDiagrams(bool kinCheck) {
   if(nmode==0) {
     string mode = extpart[0]->PDGName() + "->";
     for(unsigned int ix=1;ix<extpart.size();++ix) mode += extpart[ix]->PDGName() + " ";
-    throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
-  		      << "doinit() for " << mode << "\n" << Exception::runerror;
+    generator()->log() << "No decay channels in GeneralThreeBodyDecayer::"
+		       << "setupDiagrams() for " << mode << "\n";
+    return;
   }
-  // // add the mode
+  // add the mode
   vector<double> wgt(nmode,1./double(nmode));
   addMode(mode,1.,wgt);
 }

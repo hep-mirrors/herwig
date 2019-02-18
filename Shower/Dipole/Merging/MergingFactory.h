@@ -55,7 +55,7 @@ namespace Herwig {
       /// Debugging: push only multiplicities to the ME vector
       /// in range of specified mulltiplicity.
     int onlymulti()const {
-       return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());
+      return theonlymulti==-1?-1:(theonlymulti+int(processMap.find(0)->second.size()));
     }
       /// pointer to the merging helper.
     MergerPtr MH() {return theMergingHelper;}

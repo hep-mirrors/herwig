@@ -152,7 +152,7 @@ bool MEPP2GammaGammaPowheg::generateKinematics(const double * r) {
     q = SimplePhaseSpace::
       getMagnitude(shat, meMomenta()[2].mass(), ZERO);
   } 
-  catch ( ImpossibleKinematics ) {
+  catch ( ImpossibleKinematics & e ) {
     return false;
   }
   Energy e = 0.5*sqrt(shat);
