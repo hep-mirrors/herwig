@@ -37,7 +37,19 @@ library HwVMDecay.so
 library HwSatPDF.so
 library HwIncomingPhotonEvolver.so
 @LOAD_BSM@
-## @LOAD_DIPOLE_ALPHAS@
-## @LOAD_MATCHBOX@
-## @LOAD_DIPOLE@
+library HwDipoleMatching.so
+library HwDipoleShowerAlphaS.so
+library HwDipoleShower.so
+library HwDipoleMatching.so
+library HwMatchboxBuiltin.so
+library HwMatchboxCuts.so
+library HwMatchboxGoSam.so
+library HwMatchboxMadGraph.so
+library HwMatchboxNJet.so
+library HwMatchboxOpenLoops.so
+library HwMatchboxScales.so
+library HwMatchboxVBFNLO.so
+library HwMatching.so
+library HwQTildeMatching.so
+library HwKrknloEventReweight.so
 doxygendump Herwig:: AllInterfaces.h
