@@ -247,8 +247,8 @@ Rivet-TVT-Photon : Rivet-TVT-Photon/done
 Rivet-TVT-Photon/done: $(shell echo Rivet-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.yoda) \
                   $(shell echo Rivet-Powheg-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-TVT-Photon
-	python/merge-TVT-Photon TVT -o TVT-Photon.yoda
-	python/merge-TVT-Photon TVT-Powheg -o TVT-Powheg-Photon.yoda
+	python/merge-TVT-Photon TVT
+	python/merge-TVT-Photon TVT-Powheg
 	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.yoda:Hw TVT-Powheg-Photon.yoda:Hw-Powheg
 	touch $@
 
@@ -356,8 +356,8 @@ Rivet-LHC-Photon/done: \
 		Rivet-LHC-GammaGamma-7.yoda \
 	    $(shell echo Rivet{,-Powheg}-LHC-{7,8}-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-LHC-Photon
-	python/merge-LHC-Photon LHC -o LHC-Photon.yoda
-	python/merge-LHC-Photon LHC-Powheg -o LHC-Powheg-Photon.yoda
+	python/merge-LHC-Photon LHC
+	python/merge-LHC-Photon LHC-Powheg
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.yoda:Hw LHC-Powheg-Photon.yoda:Hw-Powheg
 	touch $@
 
