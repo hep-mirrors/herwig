@@ -32,8 +32,8 @@ do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Her
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
 # Matchbox settings
 cd /Herwig/MatrixElements/Matchbox
-set Factory:FirstPerturbativePDF Yes
-set Factory:SecondPerturbativePDF No
+set Factory:FirstPerturbativePDF No
+set Factory:SecondPerturbativePDF Yes
 set Factory:PartonExtractor /Herwig/Partons/EPExtractor
 
 set /Herwig/Merging/MergingFactory:FirstPerturbativePDF No
