@@ -70,8 +70,8 @@ double FIgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double z = split.lastZ();
   double x = 1. / ( 1. + sqr(split.lastPt()/split.scale()) / (z*(1.-z)) );
 
-  double S1=1./(1.-z*(1.-x));
-  double S2=1./(1.-(1.-z)*(1.-x));
+  double S1=1./(1.-z+(1.-x));
+  double S2=1./(1.-(1.-z)+(1.-x));
   double NS=(-2 + z*(1.-z)+(1.-x)*(1.+x*z*(1.-z)));
   
   if( theAsymmetryOption == 0 ){
