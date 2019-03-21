@@ -354,7 +354,7 @@ double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
   }
   // compute the matrix element
   for(unsigned int ix=0;ix<3;++ix)
-    (*ME())(ix,0,0,0)=_coupling*current.dot(_vectors[ix]);
+    (*ME())(ix,0,0,0) = Complex(_coupling*current.dot(_vectors[ix]));
   // matrix element and identical particle factor
   double output=ME()->contract(_rho).real();
   if(imode()!=1) output*=0.5;

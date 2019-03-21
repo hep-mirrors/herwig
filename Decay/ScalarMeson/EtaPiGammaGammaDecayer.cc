@@ -283,12 +283,12 @@ double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
       else {
 	e1dote2=_vectors[0][ix].dot(_vectors[1][iy]);
 	(*ME())(0,0,ix,iy) = 
-	  Dfact*complex<Energy2>(e1dote2*q1dotq2-
-				 e1dotq2[ix]*e2dotq1[iy])
-	  -Efact*complex<Energy4>(-e1dote2*pdotq1*pdotq2
-				  -e1dotp[ix]*e2dotp[iy]*q1dotq2
-				  +e1dotq2[ix]*e2dotp[iy]*pdotq1
-				  +e1dotp[ix]*e2dotq1[iy]*pdotq2);
+	  Complex(Dfact*complex<Energy2>(e1dote2*q1dotq2-
+					 e1dotq2[ix]*e2dotq1[iy])
+		  -Efact*complex<Energy4>(-e1dote2*pdotq1*pdotq2
+					  -e1dotp[ix]*e2dotp[iy]*q1dotq2
+					  +e1dotq2[ix]*e2dotp[iy]*pdotq1
+					  +e1dotp[ix]*e2dotq1[iy]*pdotq2));
       }
     }
   }

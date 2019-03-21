@@ -215,7 +215,7 @@ double PScalarPScalarVectorDecayer::me2( const int,
   // calculate the matrix element
   Lorentz5Momentum psum(inpart.momentum()+decay[0]->momentum());
   for(unsigned int ix=0;ix<3;++ix) {
-    (*ME())(0,0,ix)=_coupling[imode()]/inpart.mass()*(_vectors[ix]*psum);
+    (*ME())(0,0,ix)=Complex(_coupling[imode()]/inpart.mass()*(_vectors[ix]*psum));
   }
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();

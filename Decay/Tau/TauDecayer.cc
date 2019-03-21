@@ -317,8 +317,7 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
     // element
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
-	(*ME())(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*
-	  SM().fermiConstant();
+	(*ME())(ihel)= Complex(lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*SM().fermiConstant());
       }
     }
   }

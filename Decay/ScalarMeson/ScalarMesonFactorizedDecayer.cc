@@ -581,7 +581,7 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
       _form[_formmapA[mode][iy]]->ScalarVectorFormFactor(q2,_formmapB[mode][iy],id0,
 							 id1,MP,MV,A0,A1,A2,V);
       if(cc){V=-V;}
-      A3 = 0.5/MV*(msum*A1-mdiff*A2);
+      A3 = Complex(0.5/MV*(msum*A1-mdiff*A2));
       // compute the hadron currents
       for(unsigned int ix=0;ix<3;++ix) {
 	// dot product
@@ -639,8 +639,8 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
       }
       for(fhel=0;fhel<form.size();++fhel) {
 	ihel[_formpart[mode][iy]+1]=fhel;
-	(*ME())(ihel) +=pre*_CKMfact[mode][iy]*
-	  form[fhel].dot(curr[chel])*SM().fermiConstant();
+	(*ME())(ihel) += Complex(pre*_CKMfact[mode][iy]*
+				 form[fhel].dot(curr[chel])*SM().fermiConstant());
       }
     }
   }

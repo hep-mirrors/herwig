@@ -287,8 +287,8 @@ double TensorMeson2PScalarDecayer::me2(const int, const Particle & inpart,
   }
   // calculate the matrix element
   for(unsigned int ix=0;ix<5;++ix) {
-    (*ME())(ix,0,0) = _coupling[imode()]/inpart.mass()*
-      ((_tensors[ix]*decay[1]->momentum())*decay[0]->momentum());
+    (*ME())(ix,0,0) = Complex(_coupling[imode()]/inpart.mass()*
+			      ((_tensors[ix]*decay[1]->momentum())*decay[0]->momentum()));
   }
 //   // test of the answer
 //   double me = newME.contract(_rho).real();

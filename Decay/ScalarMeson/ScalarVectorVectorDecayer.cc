@@ -203,9 +203,9 @@ double ScalarVectorVectorDecayer::me2(const int,
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      (*ME())(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
-			  (_vectors[1][iy]*decay[0]->momentum())*
-			  (_vectors[0][ix]*decay[1]->momentum()));
+      (*ME())(0,ix,iy)=Complex(fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
+				     (_vectors[1][iy]*decay[0]->momentum())*
+				     (_vectors[0][ix]*decay[1]->momentum())));
     }
   }
   // test of the matrix element

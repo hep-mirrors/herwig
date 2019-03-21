@@ -264,7 +264,7 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & inpart,
 	      -p1eps2[iy]*(_vectors[0][ix].dot(pleft[1][inhel]+pright[1][inhel]))
 	      +pboth[inhel]*e1e2
 	      +(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*trace[inhel]);
-	(*ME())(inhel,ix,iy)=fact*me;
+	(*ME())(inhel,ix,iy)=Complex(fact*me);
       }    
     }
   }

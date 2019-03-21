@@ -99,7 +99,7 @@ void SSGVNVVertex::setCoupling(Energy2 ,
     lV.push_back( coup[0]);
     lV.push_back(0.);
     rV=lV;
-    rV[0] = (-coup[0]*part2->mass()+mz_*coup[1])*UnitRemoval::InvE;
+    rV[0] = Complex((-coup[0]*part2->mass()+mz_*coup[1])*UnitRemoval::InvE);
     break;
   case ParticleID::g :
     lV.push_back(-double(part2->mass()*UnitRemoval::InvE));

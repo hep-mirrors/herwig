@@ -180,7 +180,7 @@ double ScalarMesonTensorScalarDecayer::me2(const int,
   LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix) {
     vtemp = _tensors[ix]*inpart.momentum(); 
-    (*ME())(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
+    (*ME())(0,ix,0) = Complex(fact * decay[1]->momentum().dot(vtemp));
   }
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();

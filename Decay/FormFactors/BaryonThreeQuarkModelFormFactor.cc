@@ -421,10 +421,10 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
   // convert to our form
   f1v = g1v+Complex(0.5*(m0+m1)*(g2v/m0+g3v/m1));
   f1a =-g1a+Complex(0.5*(m0-m1)*(g2a/m0+g3a/m1));
-  f2v = 0.5*(m0+m1)*( g2v/m0+g3v/m1);
-  f3v = 0.5*(m0+m1)*( g2v/m0-g3v/m1);
-  f2a =-0.5*(m0+m1)*( g2a/m0+g3a/m1);
-  f3a = 0.5*(m0+m1)*(-g2a/m0+g3a/m1);
+  f2v = Complex(0.5*(m0+m1)*( g2v/m0+g3v/m1));
+  f3v = Complex(0.5*(m0+m1)*( g2v/m0-g3v/m1));
+  f2a =-Complex(0.5*(m0+m1)*( g2a/m0+g3a/m1));
+  f3a = Complex(0.5*(m0+m1)*(-g2a/m0+g3a/m1));
 }
 
 void  BaryonThreeQuarkModelFormFactor::
@@ -479,10 +479,10 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int id1,Energy m0,
   f1a =-g1a;
   f2v = g2v*msum/m0;
   f2a =-g2a*msum/m0;
-  f3v = msum2/m0*(g3v/m0+g4v/m1);
-  f3a =-msum2/m0*(g3a/m0+g4a/m1);
-  f4v = msum2/m0/m0*g3v;
-  f4a =-msum2/m0/m0*g3a;
+  f3v = Complex(msum2/m0*(g3v/m0+g4v/m1));
+  f3a =-Complex(msum2/m0*(g3a/m0+g4a/m1));
+  f4v = Complex(msum2/m0/m0*g3v);
+  f4a =-Complex(msum2/m0/m0*g3a);
 }
 
 void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool header,

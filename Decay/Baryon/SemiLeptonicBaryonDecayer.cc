@@ -291,7 +291,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
       for(ix=decay.size();ix>0;--ix) {
 	if(ix-1!=_ibar) ihel[ix]=(lhel%_constants[ix-1])/_constants[ix];
       }
-      (*ME())(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
+      (*ME())(ihel) = Complex(lepton[lhel].dot(hadron[mhel])*SM().fermiConstant());
     }
   }
   // ckm factor
@@ -435,8 +435,8 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
       // scalar like terms
       lfact = _inHalf[iy].leftScalar(_inHalfBar[ix]);
       rfact = _inHalf[iy].rightScalar(_inHalfBar[ix]);
-      scalar1 = (lS1*lfact+rS1*rfact)*UnitRemoval::E;
-      scalar2 = (lS2*lfact+rS2*rfact)*UnitRemoval::E;
+      scalar1 = Complex((lS1*lfact+rS1*rfact)*UnitRemoval::E);
+      scalar2 = Complex((lS2*lfact+rS2*rfact)*UnitRemoval::E);
       svec = _inHalf[iy].generalCurrent(_inHalfBar[ix],lV/ms,rV/ms)*ms;
       if(inpart.id()>0) tvec=_inThreeHalfBar[ix].generalCurrent(_inHalf[iy],left,right);
       else              tvec=_inThreeHalf[iy].generalCurrent(_inHalfBar[ix],left,right);
@@ -455,7 +455,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
       for(unsigned int lhel=0;lhel<lepton.size();++lhel) {
 	ihel[2] = lhel/2;
 	ihel[3] = lhel%2;
-	(*ME())(ihel) = lepton[lhel].dot(hadron[iya][ixa])*SM().fermiConstant();
+	(*ME())(ihel) = Complex(lepton[lhel].dot(hadron[iya][ixa])*SM().fermiConstant());
       }
     }  
   }

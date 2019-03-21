@@ -230,8 +230,8 @@ double VectorMesonPVectorPScalarDecayer::me2(const int,
   for(unsigned int ix=0;ix<3;++ix) {
     epsdot=_vectors[1][ix]*inpart.momentum();
     for(unsigned int iy=0;iy<3;++iy) {
-      (*ME())(iy,ix,0)=pre*(p0dotpv*(_vectors[1][ix].dot(_vectors[0][iy]))-
-			 epsdot*(_vectors[0][iy]*decay[0]->momentum()));
+      (*ME())(iy,ix,0)=Complex(pre*(p0dotpv*(_vectors[1][ix].dot(_vectors[0][iy]))-
+				    epsdot*(_vectors[0][iy]*decay[0]->momentum())));
     }
   }
   // test of the matrix element

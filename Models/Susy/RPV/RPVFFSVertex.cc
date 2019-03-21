@@ -646,8 +646,8 @@ void RPVFFSVertex::higgsFermionCoupling(Energy2 q2, tcPDPtr f1,
      isc == ParticleID::SUSY_nu_tauL ) {
     unsigned int ih = isc < 1000000 ? (isc-25)/10 : (isc-1000008)/2;
     unsigned int id = abs(f1ID);
-    fact = -_massLast.first*
-      ((id%2==0) ? (*_mixH)(ih,1)/vu_ : (*_mixH)(ih,0)/vd_);
+    fact = -Complex(_massLast.first*
+		    ((id%2==0) ? (*_mixH)(ih,1)/vu_ : (*_mixH)(ih,0)/vd_));
     left (1.);
     right(1.);
   }
@@ -657,12 +657,12 @@ void RPVFFSVertex::higgsFermionCoupling(Energy2 q2, tcPDPtr f1,
     unsigned int ih = isc < 1000000 ? 0 : (isc-1000016);
     unsigned int id = abs(f1ID);
     if(_mixP) {
-      fact = -Complex(0., 1.)*_massLast.first*
-	( (id%2==0) ?  (*_mixP)(ih,1)/vu_ : (*_mixP)(ih,0)/vd_);
+      fact = Complex(-Complex(0., 1.)*_massLast.first*
+		     ( (id%2==0) ?  (*_mixP)(ih,1)/vu_ : (*_mixP)(ih,0)/vd_));
     }
     else {
-      fact = -Complex(0., 1.)*_massLast.first*
-	( (id%2==0) ?  _cb/vu_ : _sb/vd_);
+      fact = Complex(-Complex(0., 1.)*_massLast.first*
+		     ( (id%2==0) ?  _cb/vu_ : _sb/vd_));
     }
     left ( 1.);
     right(-1.);
@@ -689,12 +689,12 @@ void RPVFFSVertex::higgsFermionCoupling(Energy2 q2, tcPDPtr f1,
 	ih = abs(isc)<2000000 ? (abs(isc)-1000009)/2 : (abs(isc)-2000003)/2;
       }
       if( abs(f1ID) % 2 == 0 ) {
-	_leftlast  =  _massLast.first /vu_*(*_mixC)(ih,1);
-	_rightlast =  _massLast.second/vd_*(*_mixC)(ih,0);
+	_leftlast  =  Complex(_massLast.first /vu_*(*_mixC)(ih,1));
+	_rightlast =  Complex(_massLast.second/vd_*(*_mixC)(ih,0));
       }
       else {
-	_leftlast  =  _massLast.second/vu_*(*_mixC)(ih,1);
-	_rightlast =  _massLast.first /vd_*(*_mixC)(ih,0);
+	_leftlast  =  Complex(_massLast.second/vu_*(*_mixC)(ih,1));
+	_rightlast =  Complex(_massLast.first /vd_*(*_mixC)(ih,0));
       }
     }
     if( isc > 0 ) swap(_leftlast,_rightlast);

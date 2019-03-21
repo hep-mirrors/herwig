@@ -136,7 +136,7 @@ void ADDModelFFWGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr bb,
   // photon
   if(ibos==22) {
     // alpha
-    coup = UnitRemoval::E * kappa_ * couplast_;
+    coup = Complex(UnitRemoval::E * kappa_ * couplast_);
     // _charge of particle
     assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
     coup *= charge_[iferm];
@@ -145,7 +145,7 @@ void ADDModelFFWGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr bb,
   }
   // Z boson
   else if(ibos==23) {
-    coup = UnitRemoval::E * kappa_ * couplast_;
+    coup = Complex(UnitRemoval::E * kappa_ * couplast_);
     // _charge of particle
     assert((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16));
     left (gl_[iferm]);

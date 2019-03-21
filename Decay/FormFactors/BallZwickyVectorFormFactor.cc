@@ -506,7 +506,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
       T3 = _T3r1[mode]/(1.-q2/_T3mR2[mode])+_T3r2[mode]/(1.-q2/_T3mfit2[mode]);
     }
     // convert for T_3tilde to T_3
-    T3 = (m0*m0-m1*m1)/q2*(T3-T2);
+    T3 = Complex((m0*m0-m1*m1)/q2*(T3-T2));
   }
   else {
     InvEnergy2 smallT2,smallT3;

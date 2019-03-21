@@ -172,12 +172,12 @@ void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
 	      (ianti == 6 && iferm == 8 ));
       Complex cleft,cright;
       if(iferm==6) {
-	cleft  = -_coup[3]*b->mass();
-	cright = -_coup[4]*_masslast[0];
+	cleft  = Complex(-_coup[3]*b->mass());
+	cright = Complex(-_coup[4]*_masslast[0]);
       }
       else {
-	cleft  = -_coup[3]*a->mass();
-	cright = -_coup[4]*_masslast[0];
+	cleft  = Complex(-_coup[3]*a->mass());
+	cright = Complex(-_coup[4]*_masslast[0]);
       }
       if(b->id()==ParticleID::tbar || c->id()==ParticleID::tbar) {
 	cright = conj(cleft);
@@ -242,20 +242,20 @@ void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     Complex cleft(0.),cright(0.);
     if(iferm%2==0) {
       if(iferm==ParticleID::t) {
-	cleft  = _masslast[0]*_coup[ 9];
+	cleft  = Complex(_masslast[0]*_coup[ 9]);
       }
       else {
-	cleft  = _masslast[0]*_coup[10];
-	cright = _masslast[1]*_coup[10];
+	cleft  = Complex(_masslast[0]*_coup[10]);
+	cright = Complex(_masslast[1]*_coup[10]);
       }
     }
     else {
       if(ianti==ParticleID::t) {
-	cleft  = _masslast[1]*_coup[ 9];
+	cleft  = Complex(_masslast[1]*_coup[ 9]);
       }
       else {
-	cleft  = _masslast[1]*_coup[10];
-	cright = _masslast[0]*_coup[10];
+	cleft  = Complex(_masslast[1]*_coup[10]);
+	cright = Complex(_masslast[0]*_coup[10]);
       }
     }
     left ( cleft);
@@ -266,20 +266,20 @@ void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     Complex cleft(0.),cright(0.);
     if(iferm%2==0) {
       if(iferm==ParticleID::t) {
-	cright = _masslast[0]*_coup[ 9];
+	cright = Complex(_masslast[0]*_coup[ 9]);
       }
       else {
-	cright = _masslast[0]*_coup[10];
-	cleft  = _masslast[1]*_coup[10];
+	cright = Complex(_masslast[0]*_coup[10]);
+	cleft  = Complex(_masslast[1]*_coup[10]);
       }
     }
     else {
       if(ianti==ParticleID::t) {
-	cright = _masslast[1]*_coup[ 9];
+	cright = Complex(_masslast[1]*_coup[ 9]);
       }
       else {
-	cright = _masslast[1]*_coup[10];
-	cleft  = _masslast[0]*_coup[10];
+	cright = Complex(_masslast[1]*_coup[10]);
+	cleft  = Complex(_masslast[0]*_coup[10]);
       }
     }
     left ( cleft);

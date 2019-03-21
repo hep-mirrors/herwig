@@ -158,7 +158,8 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 		    +  _triBt*(*_mixS)(iloc,0))*((*_mixQb)(ix, 1)*(*_mixQb)(ix, 0)
 						 + (*_mixQb)(ix, 0)*(*_mixQb)(ix, 1));
 
-	couplings[2+ix] = make_pair(0.5*cpl*UnitRemoval::InvE,0.5*cpl*UnitRemoval::InvE); 
+	couplings[2+ix] = make_pair(Complex(0.5*cpl*UnitRemoval::InvE),
+				    Complex(0.5*cpl*UnitRemoval::InvE)); 
       }
       // stop
       f1 = mt/_mw/_sb;
@@ -172,7 +173,8 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
 		     + _triTp*(*_mixS)(iloc,1))*((*_mixQt)(ix, 1)*(*_mixQt)(ix, 0)
 						 + (*_mixQt)(ix, 0)*(*_mixQt)(ix, 1));
 
-	couplings[4+ix] = make_pair(0.5*cpl*UnitRemoval::InvE,0.5*cpl*UnitRemoval::InvE);
+	couplings[4+ix] = make_pair(Complex(0.5*cpl*UnitRemoval::InvE),
+				    Complex(0.5*cpl*UnitRemoval::InvE));
       }
     }
     // pseudoscalar higgs bosons	

@@ -1095,9 +1095,9 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     Energy msum(mX+mY),mdiff(mY-mX);
     Complex ii(0.,1.);
     f2 = -ii*f/msum;
-    f3 = +ii*ap*msum;
-    f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
-    f4 =  ii*g*msum;
+    f3 = +Complex(ii*ap*msum);
+    f1 = -Complex(ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3));
+    f4 =  Complex(ii*g*msum);
   }
   else if(jspin==2) {
     Energy msum(mX+mY);

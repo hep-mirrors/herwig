@@ -192,9 +192,9 @@ double PScalarVectorVectorDecayer::me2(const int,
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      (*ME())(0,ix,iy)=fact*epsilon(_vectors[0][ix],decay[1]->momentum(),
-				 _vectors[1][iy])
-	*decay[0]->momentum();
+      (*ME())(0,ix,iy)=Complex(fact*epsilon(_vectors[0][ix],decay[1]->momentum(),
+					    _vectors[1][iy])
+			       *decay[0]->momentum());
     }
   }
   // test of the matrix element

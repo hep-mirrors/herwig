@@ -357,20 +357,20 @@ void LHTPFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     Complex cleft(0.),cright(0.);
     // lepton and T-odd lepton
     if(iferm>=11&&iferm<=16) {
-      cright = cR_[14]*massLast_[0];
-      cleft  = cL_[14]*model_->vev(); 
+      cright = Complex(cR_[14]*massLast_[0]);
+      cleft  = Complex(cL_[14]*model_->vev()); 
     }
     else if(iferm>=1&&iferm<=6) {
-      cright = cR_[15]*massLast_[0];
-      cleft  = cL_[15]*model_->vev();
+      cright = Complex(cR_[15]*massLast_[0]);
+      cleft  = Complex(cL_[15]*model_->vev());
     }
     else if(iferm==6) {
-      cright = cR_[16]*massLast_[0];
-      cleft  = cL_[16]*model_->vev(); 
+      cright = Complex(cR_[16]*massLast_[0]);
+      cleft  = Complex(cL_[16]*model_->vev()); 
     }
     else if(iferm==8) {
-      cright = cR_[17]*massLast_[0];
-      cleft  = cL_[17]*model_->vev(); 
+      cright = Complex(cR_[17]*massLast_[0]);
+      cleft  = Complex(cL_[17]*model_->vev()); 
     }
     if((a->id()>=1&&a->id()<=16) ||(b->id()>=1&&b->id()<=16) ) {
       swap(cleft,cright);
