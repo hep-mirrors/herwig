@@ -101,7 +101,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LeptoquarkModelSLQSLQGVertex & operator=(const LeptoquarkModelSLQSLQGVertex &);
+  LeptoquarkModelSLQSLQGVertex & operator=(const LeptoquarkModelSLQSLQGVertex &) = delete;
   
   /**
    * Pointer to the model.

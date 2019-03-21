@@ -132,7 +132,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LambdabExcitedLambdacSumRuleFormFactor & operator=(const LambdabExcitedLambdacSumRuleFormFactor &);
+  LambdabExcitedLambdacSumRuleFormFactor & operator=(const LambdabExcitedLambdacSumRuleFormFactor &) = delete;
 
 private:
 

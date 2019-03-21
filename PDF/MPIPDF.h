@@ -149,7 +149,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MPIPDF & operator=(const MPIPDF &);
+  MPIPDF & operator=(const MPIPDF &) = delete;
 
   /**
    * pointer to the underlying ThePEG::PDFBase object, we are modifying.

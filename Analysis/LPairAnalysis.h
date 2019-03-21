@@ -107,7 +107,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LPairAnalysis & operator=(const LPairAnalysis &);
+  LPairAnalysis & operator=(const LPairAnalysis &) = delete;
 
 private:
   /**

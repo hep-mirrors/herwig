@@ -169,7 +169,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  WeakPartonicDecayer & operator=(const WeakPartonicDecayer &);
+  WeakPartonicDecayer & operator=(const WeakPartonicDecayer &) = delete;
 
 private:
 

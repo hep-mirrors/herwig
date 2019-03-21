@@ -170,7 +170,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  RadiativeHeavyBaryonDecayer & operator=(const RadiativeHeavyBaryonDecayer &);
+  RadiativeHeavyBaryonDecayer & operator=(const RadiativeHeavyBaryonDecayer &) = delete;
 
 private:
 

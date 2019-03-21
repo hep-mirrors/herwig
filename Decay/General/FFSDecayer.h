@@ -141,7 +141,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FFSDecayer & operator=(const FFSDecayer &);
+  FFSDecayer & operator=(const FFSDecayer &) = delete;
 
 private:
 

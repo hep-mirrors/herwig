@@ -202,7 +202,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGammaP2Jets & operator=(const MEGammaP2Jets &);
+  MEGammaP2Jets & operator=(const MEGammaP2Jets &) = delete;
 
 private:
 

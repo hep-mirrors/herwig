@@ -201,7 +201,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  METRP2to2 & operator=(const METRP2to2 &);
+  METRP2to2 & operator=(const METRP2to2 &) = delete;
 
 private:
 

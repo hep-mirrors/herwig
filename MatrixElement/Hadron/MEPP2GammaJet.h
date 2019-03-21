@@ -229,7 +229,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2GammaJet & operator=(const MEPP2GammaJet &);
+  MEPP2GammaJet & operator=(const MEPP2GammaJet &) = delete;
 
 private:
 

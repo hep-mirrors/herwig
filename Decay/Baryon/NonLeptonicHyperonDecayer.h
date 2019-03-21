@@ -135,7 +135,7 @@ protected:
   /**
    * Private and non-existent assignment operator.
    */
-  NonLeptonicHyperonDecayer & operator=(const NonLeptonicHyperonDecayer &);
+  NonLeptonicHyperonDecayer & operator=(const NonLeptonicHyperonDecayer &) = delete;
 
 private:
 

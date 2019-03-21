@@ -80,7 +80,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GaussianIntegrator & operator=(const GaussianIntegrator &);
+  GaussianIntegrator & operator=(const GaussianIntegrator &) = delete;
 
   /**
    * Initialise the weights and abscissae.

@@ -107,7 +107,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  NMSSMWWHVertex & operator=(const NMSSMWWHVertex &);
+  NMSSMWWHVertex & operator=(const NMSSMWWHVertex &) = delete;
 
 private:
 

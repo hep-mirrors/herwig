@@ -96,7 +96,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMFFWVertex & operator=(const SMFFWVertex &);
+  SMFFWVertex & operator=(const SMFFWVertex &) = delete;
 
 private:
 

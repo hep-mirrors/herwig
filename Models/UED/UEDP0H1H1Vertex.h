@@ -94,7 +94,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  UEDP0H1H1Vertex & operator=(const UEDP0H1H1Vertex &);
+  UEDP0H1H1Vertex & operator=(const UEDP0H1H1Vertex &) = delete;
 
 private:
 

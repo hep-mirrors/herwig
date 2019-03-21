@@ -67,7 +67,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DecayRadiationGenerator & operator=(const DecayRadiationGenerator &);
+  DecayRadiationGenerator & operator=(const DecayRadiationGenerator &) = delete;
 
 };
 

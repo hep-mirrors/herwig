@@ -177,7 +177,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEqq2ZPrime2ZGamma & operator=(const MEqq2ZPrime2ZGamma &);
+  MEqq2ZPrime2ZGamma & operator=(const MEqq2ZPrime2ZGamma &) = delete;
 
 private:
 

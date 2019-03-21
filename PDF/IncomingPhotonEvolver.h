@@ -131,7 +131,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  IncomingPhotonEvolver & operator=(const IncomingPhotonEvolver &);
+  IncomingPhotonEvolver & operator=(const IncomingPhotonEvolver &) = delete;
 
 private:
   /**

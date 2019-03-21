@@ -88,7 +88,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  RunningMassBase & operator=(const RunningMassBase &);
+  RunningMassBase & operator=(const RunningMassBase &) = delete;
   
 private:
   

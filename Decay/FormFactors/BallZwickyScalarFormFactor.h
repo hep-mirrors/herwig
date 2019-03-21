@@ -137,7 +137,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  BallZwickyScalarFormFactor & operator=(const BallZwickyScalarFormFactor &);
+  BallZwickyScalarFormFactor & operator=(const BallZwickyScalarFormFactor &) = delete;
 
 private:
 

@@ -210,7 +210,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LeptoquarkModel & operator=(const LeptoquarkModel &);
+  LeptoquarkModel & operator=(const LeptoquarkModel &) = delete;
 
   
   /**

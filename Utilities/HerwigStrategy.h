@@ -71,7 +71,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  HerwigStrategy & operator=(const HerwigStrategy &);
+  HerwigStrategy & operator=(const HerwigStrategy &) = delete;
 
 };
 

@@ -252,7 +252,7 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    FIMassiveDecayKinematics & operator=(const FIMassiveDecayKinematics &);
+    FIMassiveDecayKinematics & operator=(const FIMassiveDecayKinematics &) = delete;
 
     /**
      * Option to use the full jacobian, including the z->zprime jacobian.

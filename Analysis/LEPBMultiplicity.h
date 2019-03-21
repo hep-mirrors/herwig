@@ -170,7 +170,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LEPBMultiplicity & operator=(const LEPBMultiplicity &);
+  LEPBMultiplicity & operator=(const LEPBMultiplicity &) = delete;
 
 private:
 

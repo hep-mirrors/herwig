@@ -171,7 +171,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGammaGamma2ff & operator=(const MEGammaGamma2ff &);
+  MEGammaGamma2ff & operator=(const MEGammaGamma2ff &) = delete;
 
 private:
   

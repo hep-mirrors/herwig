@@ -151,7 +151,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  IFqgxDipole & operator=(const IFqgxDipole &);
+  IFqgxDipole & operator=(const IFqgxDipole &) = delete;
 
 };
 

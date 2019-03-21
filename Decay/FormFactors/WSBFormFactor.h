@@ -150,7 +150,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  WSBFormFactor & operator=(const WSBFormFactor &);
+  WSBFormFactor & operator=(const WSBFormFactor &) = delete;
 
 private:
 

@@ -112,7 +112,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSWGSSVertex & operator=(const SSWGSSVertex &);
+  SSWGSSVertex & operator=(const SSWGSSVertex &) = delete;
 
 private:
 

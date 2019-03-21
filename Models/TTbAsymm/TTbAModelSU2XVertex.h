@@ -103,7 +103,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TTbAModelSU2XVertex & operator=(const TTbAModelSU2XVertex &);
+  TTbAModelSU2XVertex & operator=(const TTbAModelSU2XVertex &) = delete;
 
    /**
    * Pointer to the model object.

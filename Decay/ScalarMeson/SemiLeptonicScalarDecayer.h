@@ -146,7 +146,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SemiLeptonicScalarDecayer & operator=(const SemiLeptonicScalarDecayer &);
+  SemiLeptonicScalarDecayer & operator=(const SemiLeptonicScalarDecayer &) = delete;
 
 private:
 

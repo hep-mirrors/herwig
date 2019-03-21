@@ -145,7 +145,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PScalar4FermionsDecayer & operator=(const PScalar4FermionsDecayer &);
+  PScalar4FermionsDecayer & operator=(const PScalar4FermionsDecayer &) = delete;
 
 private:
 

@@ -261,7 +261,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  DecayPhaseSpaceChannel & operator=(const DecayPhaseSpaceChannel &);
+  DecayPhaseSpaceChannel & operator=(const DecayPhaseSpaceChannel &) = delete;
   
 private:
   

@@ -89,7 +89,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  HardVertex & operator=(const HardVertex &);
+  HardVertex & operator=(const HardVertex &) = delete;
   
 private:
   

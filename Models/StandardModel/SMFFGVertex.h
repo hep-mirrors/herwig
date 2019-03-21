@@ -88,7 +88,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMFFGVertex & operator=(const SMFFGVertex &);
+  SMFFGVertex & operator=(const SMFFGVertex &) = delete;
   
 private:
 

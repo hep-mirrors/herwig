@@ -118,7 +118,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DipoleSplittingReweight & operator=(const DipoleSplittingReweight &);
+  DipoleSplittingReweight & operator=(const DipoleSplittingReweight &) = delete;
 
   /**
    * A pointer to the currently active dipole shower handler object.

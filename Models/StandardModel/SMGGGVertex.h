@@ -87,7 +87,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMGGGVertex & operator=(const SMGGGVertex &);
+  SMGGGVertex & operator=(const SMGGGVertex &) = delete;
 
   /**
    * Storage of the couplings.

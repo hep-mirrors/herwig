@@ -156,7 +156,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TensorMeson2PScalarDecayer & operator=(const TensorMeson2PScalarDecayer &);
+  TensorMeson2PScalarDecayer & operator=(const TensorMeson2PScalarDecayer &) = delete;
 
 private:
 

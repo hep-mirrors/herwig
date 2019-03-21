@@ -103,7 +103,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaZPrimeZVertex & operator=(const GammaZPrimeZVertex &);
+  GammaZPrimeZVertex & operator=(const GammaZPrimeZVertex &) = delete;
 
 private:
 

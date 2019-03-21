@@ -405,7 +405,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SusyBase & operator=(const SusyBase &);
+  SusyBase & operator=(const SusyBase &) = delete;
 
 private:
 

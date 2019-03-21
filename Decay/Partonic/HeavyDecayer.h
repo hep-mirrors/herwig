@@ -131,7 +131,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  const HeavyDecayer & operator=(const HeavyDecayer &);
+  const HeavyDecayer & operator=(const HeavyDecayer &) = delete;
 
 private:
 

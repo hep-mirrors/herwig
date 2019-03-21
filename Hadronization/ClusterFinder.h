@@ -124,7 +124,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ClusterFinder & operator=(const ClusterFinder &);
+  ClusterFinder & operator=(const ClusterFinder &) = delete;
 
 private:
 

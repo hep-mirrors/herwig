@@ -118,7 +118,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  OmegaPhi3PionAnalysis & operator=(const OmegaPhi3PionAnalysis &);
+  OmegaPhi3PionAnalysis & operator=(const OmegaPhi3PionAnalysis &) = delete;
 
 private:
 

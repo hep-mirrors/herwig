@@ -140,7 +140,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  const Hw64Decayer & operator=(const Hw64Decayer &);
+  const Hw64Decayer & operator=(const Hw64Decayer &) = delete;
 
 private:
 

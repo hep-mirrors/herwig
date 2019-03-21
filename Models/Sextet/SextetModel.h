@@ -182,7 +182,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SextetModel & operator=(const SextetModel &);
+  SextetModel & operator=(const SextetModel &) = delete;
 
 private:
 

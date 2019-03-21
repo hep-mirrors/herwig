@@ -480,7 +480,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DipoleMPKOperator & operator=(const DipoleMPKOperator &);
+  DipoleMPKOperator & operator=(const DipoleMPKOperator &) = delete;
 
 };
 

@@ -150,7 +150,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ChengHeavyBaryonFormFactor & operator=(const ChengHeavyBaryonFormFactor &);
+  ChengHeavyBaryonFormFactor & operator=(const ChengHeavyBaryonFormFactor &) = delete;
 
 private:
 

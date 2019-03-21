@@ -100,7 +100,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ZHTest & operator=(const ZHTest &);
+  ZHTest & operator=(const ZHTest &) = delete;
 
 private:
 

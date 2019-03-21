@@ -157,7 +157,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SMHiggsGGHiggsPPDecayer & operator=(const SMHiggsGGHiggsPPDecayer &);
+  SMHiggsGGHiggsPPDecayer & operator=(const SMHiggsGGHiggsPPDecayer &) = delete;
   
   /**
    * Pointer to h->gluon,gluon vertex

@@ -108,7 +108,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GammaJetAnalysis & operator=(const GammaJetAnalysis &);
+  GammaJetAnalysis & operator=(const GammaJetAnalysis &) = delete;
 
 private:
   /**

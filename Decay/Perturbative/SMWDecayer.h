@@ -286,7 +286,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMWDecayer & operator=(const SMWDecayer &);
+  SMWDecayer & operator=(const SMWDecayer &) = delete;
 
  private:
 

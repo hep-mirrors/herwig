@@ -99,7 +99,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Upsilon4SSpectrumAnalysis & operator=(const Upsilon4SSpectrumAnalysis &);
+  Upsilon4SSpectrumAnalysis & operator=(const Upsilon4SSpectrumAnalysis &) = delete;
 
 private:
 

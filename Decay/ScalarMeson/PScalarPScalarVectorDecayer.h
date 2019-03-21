@@ -150,7 +150,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PScalarPScalarVectorDecayer & operator=(const PScalarPScalarVectorDecayer &);
+  PScalarPScalarVectorDecayer & operator=(const PScalarPScalarVectorDecayer &) = delete;
 
 private:
 

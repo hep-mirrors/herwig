@@ -103,7 +103,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LeptoquarkModelSLQFFVertex & operator=(const LeptoquarkModelSLQFFVertex &);
+  LeptoquarkModelSLQFFVertex & operator=(const LeptoquarkModelSLQFFVertex &) = delete;
 
    /**
    * Pointer to the model object.

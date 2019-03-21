@@ -109,7 +109,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  BtoSGammaDecayer & operator=(const BtoSGammaDecayer &);
+  BtoSGammaDecayer & operator=(const BtoSGammaDecayer &) = delete;
 
 private:
 

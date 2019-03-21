@@ -251,7 +251,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HwMEBase & operator=(const HwMEBase &);
+  HwMEBase & operator=(const HwMEBase &) = delete;
 
 private:
 

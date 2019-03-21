@@ -268,7 +268,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Cluster & operator=(const Cluster &);
+  Cluster & operator=(const Cluster &) = delete;
   
   /**
    * Calculate the 5-momentum vector of the cluster

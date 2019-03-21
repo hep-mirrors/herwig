@@ -103,7 +103,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Tau5Pion & operator=(const Tau5Pion &);
+  Tau5Pion & operator=(const Tau5Pion &) = delete;
 
 private:
 

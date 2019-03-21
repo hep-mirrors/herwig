@@ -106,7 +106,7 @@ private:
     /**
    * Private and non-existent assignment operator.
    */
-  SMWWHVertex & operator=(const SMWWHVertex &);
+  SMWWHVertex & operator=(const SMWWHVertex &) = delete;
 
 private:
 

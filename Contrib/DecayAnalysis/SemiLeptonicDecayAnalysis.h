@@ -108,7 +108,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SemiLeptonicDecayAnalysis & operator=(const SemiLeptonicDecayAnalysis &);
+  SemiLeptonicDecayAnalysis & operator=(const SemiLeptonicDecayAnalysis &) = delete;
 
 private:
 

@@ -149,7 +149,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SFFDecayer & operator=(const SFFDecayer &);
+  SFFDecayer & operator=(const SFFDecayer &) = delete;
 
 private:
 

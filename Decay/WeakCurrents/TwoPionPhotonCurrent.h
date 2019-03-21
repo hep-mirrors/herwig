@@ -198,7 +198,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TwoPionPhotonCurrent & operator=(const TwoPionPhotonCurrent &);
+  TwoPionPhotonCurrent & operator=(const TwoPionPhotonCurrent &) = delete;
 
 private:
   

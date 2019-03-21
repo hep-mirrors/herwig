@@ -128,7 +128,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  BasicConsistency & operator=(const BasicConsistency &);
+  BasicConsistency & operator=(const BasicConsistency &) = delete;
 
 private:
 

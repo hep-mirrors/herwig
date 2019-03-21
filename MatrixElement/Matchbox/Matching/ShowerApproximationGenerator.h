@@ -247,7 +247,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerApproximationGenerator & operator=(const ShowerApproximationGenerator &);
+  ShowerApproximationGenerator & operator=(const ShowerApproximationGenerator &) = delete;
 
 };
 

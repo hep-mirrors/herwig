@@ -337,7 +337,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DipolePKOperator & operator=(const DipolePKOperator &);
+  DipolePKOperator & operator=(const DipolePKOperator &) = delete;
 
 };
 

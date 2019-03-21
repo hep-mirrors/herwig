@@ -106,7 +106,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSGVFSVertex & operator=(const SSGVFSVertex &);
+  SSGVFSVertex & operator=(const SSGVFSVertex &) = delete;
 
   /**
    * Pointer to the stop mixing matrix

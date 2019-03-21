@@ -120,7 +120,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  a1DecayAnalysis & operator=(const a1DecayAnalysis &);
+  a1DecayAnalysis & operator=(const a1DecayAnalysis &) = delete;
 
 private:
 

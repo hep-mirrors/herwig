@@ -274,7 +274,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  BasicLesHouchesFileReader & operator=(const BasicLesHouchesFileReader &);
+  BasicLesHouchesFileReader & operator=(const BasicLesHouchesFileReader &) = delete;
 
 public:
 

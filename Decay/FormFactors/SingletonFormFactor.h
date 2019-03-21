@@ -127,7 +127,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SingletonFormFactor & operator=(const SingletonFormFactor &);
+  SingletonFormFactor & operator=(const SingletonFormFactor &) = delete;
 
 private:
 

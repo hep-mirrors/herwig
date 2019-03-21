@@ -149,7 +149,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SatPDF & operator=(const SatPDF &);
+  SatPDF & operator=(const SatPDF &) = delete;
 
   /**
    * pointer to the underlying ThePEG::PDFBase object, we are modifying.

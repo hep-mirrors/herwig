@@ -160,7 +160,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TauDecayer & operator=(const TauDecayer &);
+  TauDecayer & operator=(const TauDecayer &) = delete;
 
 private:
 

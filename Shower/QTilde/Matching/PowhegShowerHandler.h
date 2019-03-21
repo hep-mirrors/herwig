@@ -265,7 +265,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PowhegShowerHandler & operator=(const PowhegShowerHandler &);
+  PowhegShowerHandler & operator=(const PowhegShowerHandler &) = delete;
 
 private:
 

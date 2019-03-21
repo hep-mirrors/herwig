@@ -106,7 +106,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSNFSVertex & operator=(const SSNFSVertex &);
+  SSNFSVertex & operator=(const SSNFSVertex &) = delete;
 
   /**
    * Pointer to the stop mixing matrix

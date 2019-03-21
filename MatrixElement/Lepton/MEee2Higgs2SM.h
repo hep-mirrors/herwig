@@ -212,7 +212,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2Higgs2SM & operator=(const MEee2Higgs2SM &);
+  MEee2Higgs2SM & operator=(const MEee2Higgs2SM &) = delete;
 
 private:
 

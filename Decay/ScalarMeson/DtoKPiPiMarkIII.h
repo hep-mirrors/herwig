@@ -154,7 +154,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DtoKPiPiMarkIII & operator=(const DtoKPiPiMarkIII &);
+  DtoKPiPiMarkIII & operator=(const DtoKPiPiMarkIII &) = delete;
 
 private:
 

@@ -158,7 +158,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GeneralCurrentDecayer & operator=(const GeneralCurrentDecayer &);
+  GeneralCurrentDecayer & operator=(const GeneralCurrentDecayer &) = delete;
 
 private:
   

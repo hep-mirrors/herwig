@@ -161,7 +161,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  VectorMeson2MesonDecayer & operator=(const VectorMeson2MesonDecayer &);
+  VectorMeson2MesonDecayer & operator=(const VectorMeson2MesonDecayer &) = delete;
   
 private:
   

@@ -171,7 +171,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  VectorMesonPScalarFermionsDecayer & operator=(const VectorMesonPScalarFermionsDecayer &);
+  VectorMesonPScalarFermionsDecayer & operator=(const VectorMesonPScalarFermionsDecayer &) = delete;
 
 private:
   

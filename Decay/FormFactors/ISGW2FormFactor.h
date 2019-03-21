@@ -184,7 +184,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ISGW2FormFactor & operator=(const ISGW2FormFactor &);
+  ISGW2FormFactor & operator=(const ISGW2FormFactor &) = delete;
 
 protected:
 

@@ -350,7 +350,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxPhasespace & operator=(const MatchboxPhasespace &);
+  MatchboxPhasespace & operator=(const MatchboxPhasespace &) = delete;
 
 };
 

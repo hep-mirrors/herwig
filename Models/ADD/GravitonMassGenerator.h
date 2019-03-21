@@ -109,7 +109,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GravitonMassGenerator & operator=(const GravitonMassGenerator &);
+  GravitonMassGenerator & operator=(const GravitonMassGenerator &) = delete;
 
 private:
 

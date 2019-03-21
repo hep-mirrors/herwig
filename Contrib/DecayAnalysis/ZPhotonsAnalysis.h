@@ -134,7 +134,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ZPhotonsAnalysis & operator=(const ZPhotonsAnalysis &);
+  ZPhotonsAnalysis & operator=(const ZPhotonsAnalysis &) = delete;
 
 private:
 

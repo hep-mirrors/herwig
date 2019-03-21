@@ -152,7 +152,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  HwDecayHandler & operator=(const HwDecayHandler &);
+  HwDecayHandler & operator=(const HwDecayHandler &) = delete;
 
 private:
 

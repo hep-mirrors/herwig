@@ -105,7 +105,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  RSModelFFGRVertex & operator=(const RSModelFFGRVertex &);
+  RSModelFFGRVertex & operator=(const RSModelFFGRVertex &) = delete;
 
   /**
    * The coupling.

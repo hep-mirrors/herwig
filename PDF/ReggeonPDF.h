@@ -149,7 +149,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ReggeonPDF & operator=(const ReggeonPDF &);
+  ReggeonPDF & operator=(const ReggeonPDF &) = delete;
 
   /**
    * Pointer to the concrete PDF reggeon structure function. 

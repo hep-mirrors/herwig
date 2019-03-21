@@ -102,7 +102,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SOPHTY & operator=(const SOPHTY &);
+  SOPHTY & operator=(const SOPHTY &) = delete;
 
 private:
 

@@ -204,7 +204,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2SingleTop & operator=(const MEPP2SingleTop &);
+  MEPP2SingleTop & operator=(const MEPP2SingleTop &) = delete;
 
 private:
 

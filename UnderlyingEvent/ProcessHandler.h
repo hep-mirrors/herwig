@@ -342,7 +342,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ProcessHandler & operator=(const ProcessHandler &);
+  ProcessHandler & operator=(const ProcessHandler &) = delete;
 
   /**
    * The phase space sampler responsible for generating phase space

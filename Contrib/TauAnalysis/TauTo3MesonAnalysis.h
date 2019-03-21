@@ -116,7 +116,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TauTo3MesonAnalysis & operator=(const TauTo3MesonAnalysis &);
+  TauTo3MesonAnalysis & operator=(const TauTo3MesonAnalysis &) = delete;
 
 private:
 

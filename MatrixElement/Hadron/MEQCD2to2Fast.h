@@ -311,7 +311,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEQCD2to2Fast & operator=(const MEQCD2to2Fast &);
+  MEQCD2to2Fast & operator=(const MEQCD2to2Fast &) = delete;
 
 private:
 

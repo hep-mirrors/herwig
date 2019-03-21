@@ -171,7 +171,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PScalarVectorFermionsDecayer & operator=(const PScalarVectorFermionsDecayer &);
+  PScalarVectorFermionsDecayer & operator=(const PScalarVectorFermionsDecayer &) = delete;
 
 private:
 

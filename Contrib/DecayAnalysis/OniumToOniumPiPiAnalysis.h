@@ -110,7 +110,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  OniumToOniumPiPiAnalysis & operator=(const OniumToOniumPiPiAnalysis &);
+  OniumToOniumPiPiAnalysis & operator=(const OniumToOniumPiPiAnalysis &) = delete;
 
 private:
 

@@ -193,7 +193,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MSSM & operator=(const MSSM &);
+  MSSM & operator=(const MSSM &) = delete;
 
 private:
 

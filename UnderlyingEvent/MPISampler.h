@@ -269,7 +269,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MPISampler & operator=(const MPISampler &);
+  MPISampler & operator=(const MPISampler &) = delete;
 
 };
 

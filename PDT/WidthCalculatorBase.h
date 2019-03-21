@@ -72,7 +72,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  WidthCalculatorBase & operator=(const WidthCalculatorBase &);
+  WidthCalculatorBase & operator=(const WidthCalculatorBase &) = delete;
 
 };
 }

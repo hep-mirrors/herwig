@@ -246,7 +246,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxInsertionOperator & operator=(const MatchboxInsertionOperator &);
+  MatchboxInsertionOperator & operator=(const MatchboxInsertionOperator &) = delete;
 
 };
 

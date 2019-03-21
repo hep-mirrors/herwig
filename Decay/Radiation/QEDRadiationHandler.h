@@ -122,7 +122,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QEDRadiationHandler & operator=(const QEDRadiationHandler &);
+  QEDRadiationHandler & operator=(const QEDRadiationHandler &) = delete;
 
 private:
 

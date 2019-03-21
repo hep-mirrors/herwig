@@ -172,7 +172,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VBFNLOPhasespace & operator=(const VBFNLOPhasespace &);
+  VBFNLOPhasespace & operator=(const VBFNLOPhasespace &) = delete;
 
   /**
    * Whether or not we need to reshuffle.

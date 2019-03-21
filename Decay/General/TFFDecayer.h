@@ -141,7 +141,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TFFDecayer & operator=(const TFFDecayer &);
+  TFFDecayer & operator=(const TFFDecayer &) = delete;
 
 private:
 

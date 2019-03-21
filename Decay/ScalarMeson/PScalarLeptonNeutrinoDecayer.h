@@ -140,7 +140,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PScalarLeptonNeutrinoDecayer & operator=(const PScalarLeptonNeutrinoDecayer &);
+  PScalarLeptonNeutrinoDecayer & operator=(const PScalarLeptonNeutrinoDecayer &) = delete;
 
 private:
 

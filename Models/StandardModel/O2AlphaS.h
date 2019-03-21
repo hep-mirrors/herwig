@@ -131,7 +131,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  O2AlphaS & operator=(const O2AlphaS &);
+  O2AlphaS & operator=(const O2AlphaS &) = delete;
 
 private:
 

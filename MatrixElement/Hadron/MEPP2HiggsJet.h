@@ -365,7 +365,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2HiggsJet & operator=(const MEPP2HiggsJet &);
+  MEPP2HiggsJet & operator=(const MEPP2HiggsJet &) = delete;
 
 private:
 

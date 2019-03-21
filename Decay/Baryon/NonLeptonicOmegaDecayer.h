@@ -131,7 +131,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  NonLeptonicOmegaDecayer & operator=(const NonLeptonicOmegaDecayer &);
+  NonLeptonicOmegaDecayer & operator=(const NonLeptonicOmegaDecayer &) = delete;
 
 private:
 

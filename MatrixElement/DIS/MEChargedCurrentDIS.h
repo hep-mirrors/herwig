@@ -183,7 +183,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEChargedCurrentDIS & operator=(const MEChargedCurrentDIS &);
+  MEChargedCurrentDIS & operator=(const MEChargedCurrentDIS &) = delete;
 
 private:
 

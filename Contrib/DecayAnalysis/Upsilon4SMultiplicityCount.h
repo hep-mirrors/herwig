@@ -100,7 +100,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Upsilon4SMultiplicityCount & operator=(const Upsilon4SMultiplicityCount &);
+  Upsilon4SMultiplicityCount & operator=(const Upsilon4SMultiplicityCount &) = delete;
 
 private:
 

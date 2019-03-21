@@ -407,7 +407,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MPIHandler & operator=(const MPIHandler &);
+  MPIHandler & operator=(const MPIHandler &) = delete;
 
   /**
    * A pointer to the EventHandler that calls us. Has to be saved, because the

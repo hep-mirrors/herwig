@@ -112,7 +112,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ADDModelSSGRVertex & operator=(const ADDModelSSGRVertex &);
+  ADDModelSSGRVertex & operator=(const ADDModelSSGRVertex &) = delete;
 
   /**
    * Coupling.

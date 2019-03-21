@@ -235,7 +235,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2ZHPowheg & operator=(const MEPP2ZHPowheg &);
+  MEPP2ZHPowheg & operator=(const MEPP2ZHPowheg &) = delete;
 
 private:
 

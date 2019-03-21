@@ -129,7 +129,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PartonicDecayerBase & operator=(const PartonicDecayerBase &);
+  PartonicDecayerBase & operator=(const PartonicDecayerBase &) = delete;
 
 private:
 

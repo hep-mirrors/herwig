@@ -217,7 +217,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2GammaGamma & operator=(const MEPP2GammaGamma &);
+  MEPP2GammaGamma & operator=(const MEPP2GammaGamma &) = delete;
 
 private:
 

@@ -190,7 +190,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TwoMesonRhoKStarCurrent & operator=(const TwoMesonRhoKStarCurrent &);
+  TwoMesonRhoKStarCurrent & operator=(const TwoMesonRhoKStarCurrent &) = delete;
 
 private:
 

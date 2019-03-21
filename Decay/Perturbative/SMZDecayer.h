@@ -320,7 +320,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMZDecayer & operator=(const SMZDecayer &);
+  SMZDecayer & operator=(const SMZDecayer &) = delete;
 
 private:
 

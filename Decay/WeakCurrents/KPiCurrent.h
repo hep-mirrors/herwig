@@ -211,7 +211,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KPiCurrent & operator=(const KPiCurrent &);
+  KPiCurrent & operator=(const KPiCurrent &) = delete;
 
 private:
 

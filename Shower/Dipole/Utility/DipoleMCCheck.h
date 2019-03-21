@@ -187,7 +187,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DipoleMCCheck & operator=(const DipoleMCCheck &);
+  DipoleMCCheck & operator=(const DipoleMCCheck &) = delete;
 
 };
 

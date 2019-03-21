@@ -183,7 +183,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEqq2gZ2ff & operator=(const MEqq2gZ2ff &);
+  MEqq2gZ2ff & operator=(const MEqq2gZ2ff &) = delete;
 
 private:
 

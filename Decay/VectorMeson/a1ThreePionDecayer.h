@@ -227,7 +227,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  a1ThreePionDecayer & operator=(const a1ThreePionDecayer &);
+  a1ThreePionDecayer & operator=(const a1ThreePionDecayer &) = delete;
   
 private:
   

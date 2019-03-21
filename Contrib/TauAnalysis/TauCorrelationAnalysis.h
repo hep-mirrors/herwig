@@ -137,7 +137,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TauCorrelationAnalysis & operator=(const TauCorrelationAnalysis &);
+  TauCorrelationAnalysis & operator=(const TauCorrelationAnalysis &) = delete;
 
 private:
 

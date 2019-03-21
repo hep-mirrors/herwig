@@ -111,7 +111,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ADDModelVVGRVertex & operator=(const ADDModelVVGRVertex &);
+  ADDModelVVGRVertex & operator=(const ADDModelVVGRVertex &) = delete;
 
   /**
    * The coupling.

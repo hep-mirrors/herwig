@@ -130,7 +130,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FRVDecayer & operator=(const FRVDecayer &);
+  FRVDecayer & operator=(const FRVDecayer &) = delete;
 
 private:
 

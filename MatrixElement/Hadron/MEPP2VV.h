@@ -213,7 +213,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2VV & operator=(const MEPP2VV &);
+  MEPP2VV & operator=(const MEPP2VV &) = delete;
 
 private:
 

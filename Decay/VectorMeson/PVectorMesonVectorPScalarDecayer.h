@@ -151,7 +151,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PVectorMesonVectorPScalarDecayer & operator=(const PVectorMesonVectorPScalarDecayer &);
+  PVectorMesonVectorPScalarDecayer & operator=(const PVectorMesonVectorPScalarDecayer &) = delete;
 
 private:
 

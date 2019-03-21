@@ -115,7 +115,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  EtaDecayAnalysis & operator=(const EtaDecayAnalysis &);
+  EtaDecayAnalysis & operator=(const EtaDecayAnalysis &) = delete;
 
 private:
 

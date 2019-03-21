@@ -320,7 +320,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2GammaGammaPowheg & operator=(const MEPP2GammaGammaPowheg &);
+  MEPP2GammaGammaPowheg & operator=(const MEPP2GammaGammaPowheg &) = delete;
 
 private:
 

@@ -383,7 +383,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  DecayPhaseSpaceMode & operator=(const DecayPhaseSpaceMode &);
+  DecayPhaseSpaceMode & operator=(const DecayPhaseSpaceMode &) = delete;
 
  private:
 

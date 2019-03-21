@@ -124,7 +124,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DrellYanPT & operator=(const DrellYanPT &);
+  DrellYanPT & operator=(const DrellYanPT &) = delete;
 
 };
 

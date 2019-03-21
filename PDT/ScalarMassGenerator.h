@@ -125,7 +125,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ScalarMassGenerator & operator=(const ScalarMassGenerator &);
+  ScalarMassGenerator & operator=(const ScalarMassGenerator &) = delete;
 
 private:
 

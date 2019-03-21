@@ -115,7 +115,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ADDModelFFWGRVertex & operator=(const ADDModelFFWGRVertex &);
+  ADDModelFFWGRVertex & operator=(const ADDModelFFWGRVertex &) = delete;
 
 private:
 

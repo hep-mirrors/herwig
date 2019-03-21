@@ -103,7 +103,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TTbAModelZPQQVertex & operator=(const TTbAModelZPQQVertex &);
+  TTbAModelZPQQVertex & operator=(const TTbAModelZPQQVertex &) = delete;
 
    /**
    * Pointer to the model object.

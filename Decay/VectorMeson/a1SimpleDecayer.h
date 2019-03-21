@@ -186,7 +186,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  a1SimpleDecayer & operator=(const a1SimpleDecayer &);
+  a1SimpleDecayer & operator=(const a1SimpleDecayer &) = delete;
 
 private:
 

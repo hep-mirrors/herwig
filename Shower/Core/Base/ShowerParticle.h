@@ -414,7 +414,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerParticle & operator=(const ShowerParticle &);
+  ShowerParticle & operator=(const ShowerParticle &) = delete;
 
 private:
 

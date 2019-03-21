@@ -150,7 +150,7 @@ private:
     /**
      * Private and non-existent assignment operator.
      */
-  RSModel & operator=(const RSModel &);
+  RSModel & operator=(const RSModel &) = delete;
 
 private:
   

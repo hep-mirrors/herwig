@@ -122,7 +122,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  BaryonSimpleFormFactor & operator=(const BaryonSimpleFormFactor &);
+  BaryonSimpleFormFactor & operator=(const BaryonSimpleFormFactor &) = delete;
 
 private:
 

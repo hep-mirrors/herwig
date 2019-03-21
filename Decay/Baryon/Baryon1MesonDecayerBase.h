@@ -318,7 +318,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Baryon1MesonDecayerBase & operator=(const Baryon1MesonDecayerBase &);
+  Baryon1MesonDecayerBase & operator=(const Baryon1MesonDecayerBase &) = delete;
 
 private:
 

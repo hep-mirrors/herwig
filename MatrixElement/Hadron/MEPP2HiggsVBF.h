@@ -281,7 +281,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2HiggsVBF & operator=(const MEPP2HiggsVBF &);
+  MEPP2HiggsVBF & operator=(const MEPP2HiggsVBF &) = delete;
 
 private:
 

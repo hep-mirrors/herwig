@@ -119,7 +119,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VffGammaAnalysis & operator=(const VffGammaAnalysis &);
+  VffGammaAnalysis & operator=(const VffGammaAnalysis &) = delete;
 
 private:
 

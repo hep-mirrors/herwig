@@ -115,7 +115,7 @@ private:
    * Private and non-existent assignment operator.
    */
   ThreeBodyAllOn1IntegralCalculator & 
-  operator=(const ThreeBodyAllOn1IntegralCalculator &);
+  operator=(const ThreeBodyAllOn1IntegralCalculator &) = delete;
 
 private:
 

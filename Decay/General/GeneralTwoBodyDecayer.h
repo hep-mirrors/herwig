@@ -336,7 +336,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GeneralTwoBodyDecayer & operator=(const GeneralTwoBodyDecayer &);
+  GeneralTwoBodyDecayer & operator=(const GeneralTwoBodyDecayer &) = delete;
  
 private:
 

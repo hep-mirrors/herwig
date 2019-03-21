@@ -224,7 +224,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  VectorMeson3PionDecayer & operator=(const VectorMeson3PionDecayer &);
+  VectorMeson3PionDecayer & operator=(const VectorMeson3PionDecayer &) = delete;
 
 private:
 

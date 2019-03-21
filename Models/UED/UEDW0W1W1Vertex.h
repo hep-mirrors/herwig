@@ -113,7 +113,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  UEDW0W1W1Vertex & operator=(const UEDW0W1W1Vertex &);
+  UEDW0W1W1Vertex & operator=(const UEDW0W1W1Vertex &) = delete;
 
 private:
 

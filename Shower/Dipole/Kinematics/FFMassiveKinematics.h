@@ -218,7 +218,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FFMassiveKinematics & operator=(const FFMassiveKinematics &);
+  FFMassiveKinematics & operator=(const FFMassiveKinematics &) = delete;
 
   /**
    * Option to use the full jacobian, including the z->zprime jacobian.

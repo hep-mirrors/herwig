@@ -176,7 +176,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  KornerKramerCharmDecayer & operator=(const KornerKramerCharmDecayer &);
+  KornerKramerCharmDecayer & operator=(const KornerKramerCharmDecayer &) = delete;
 
 private:
 

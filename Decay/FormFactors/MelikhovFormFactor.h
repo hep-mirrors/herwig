@@ -144,7 +144,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MelikhovFormFactor & operator=(const MelikhovFormFactor &);
+  MelikhovFormFactor & operator=(const MelikhovFormFactor &) = delete;
 
 private:
 
