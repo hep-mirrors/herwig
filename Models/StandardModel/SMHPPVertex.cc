@@ -109,7 +109,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
       tcPDPtr qrk = getParticleData(i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
       Charge charge = qrk->charge();
-      loop += 3.*sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
+      loop += Complex(3.*sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2));
     }
     // lepton loops
     int Lminloop = 3; // still fixed value
@@ -118,7 +118,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
       tcPDPtr lpt = getParticleData(9 + 2*i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,lpt) : lpt->mass();
       Charge charge = lpt->charge();
-      loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
+      loop += Complex(sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2));
     }
     // W loop
     loop += Aw(sqr(_mw)/q2);

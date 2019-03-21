@@ -178,7 +178,7 @@ halfHalfScalar(const int,const Particle & inpart,
     for(iy=0;iy<2;++iy) {
       if(decay[0]->id()>0){ispin[0]=iy;ispin[1]=ix;}
       else{ispin[0]=ix;ispin[1]=iy;}
-      (*ME())(ispin)=_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)/inpart.mass();
+      (*ME())(ispin)=Complex(_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)/inpart.mass());
 //       output += norm(ME()(ispin));
     }
   }
@@ -526,7 +526,7 @@ halfThreeHalfVector(const int,const Particle & inpart,
 	ispin[0]=ixa;
 	if(decay[0]->id()>0) stemp  = _inHalf[ixa];
 	else                 sbtemp = _inHalfBar[ixa];
-	(*ME())(ispin) += stemp.generalScalar(sbtemp,left,right)/inpart.mass();
+	(*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/inpart.mass());
       }
     }
   }
@@ -636,8 +636,8 @@ threeHalfHalfScalar(const int,const Particle & inpart,
       if(decay[0]->id()<0) swap(ix,iy);
       ispin[0]=iya;
       ispin[1]=ixa;
-      (*ME())(ispin) = _inHalf[iy].generalScalar(_inHalfBar[ix],left,right)*
-	UnitRemoval::E/msum/inpart.mass();
+      (*ME())(ispin) = Complex(_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)*
+			       UnitRemoval::E/msum/inpart.mass());
     }
   }
   double output = (ME()->contract(_rho)).real();
@@ -737,9 +737,9 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(const int,
       if(decay[0]->id()<0) swap(ix,iy);
       ispin[0]=iya;
       ispin[1]=ixa;
-      (*ME())(ispin)=(_inThreeHalf[iy].generalScalar(_inThreeHalfBar[ix],left1,right1)
-		   +_inHalf[iy].generalScalar( _inHalfBar[ix],left2,right2)
-		   *UnitRemoval::E2/sqr(msum))/inpart.mass();
+      (*ME())(ispin)=Complex((_inThreeHalf[iy].generalScalar(_inThreeHalfBar[ix],left1,right1)
+			      +_inHalf[iy].generalScalar( _inHalfBar[ix],left2,right2)
+			      *UnitRemoval::E2/sqr(msum))/inpart.mass());
     }
   }
   // return the answer
@@ -857,7 +857,7 @@ threeHalfHalfVector(const int,const Particle & inpart,
 	ispin[1]=ixa;
 	if(decay[0]->id()>0) sbtemp = _inHalfBar[ixa];
 	else                 stemp  = _inHalf[ixa];
-	(*ME())(ispin) += stemp.generalScalar(sbtemp,left,right)/inpart.mass();
+	(*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/inpart.mass());
       }
     }
   }
