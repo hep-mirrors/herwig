@@ -129,7 +129,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSGNGVertex & operator=(const SSGNGVertex &);
+  SSGNGVertex & operator=(const SSGNGVertex &) = delete;
 
 private:
 

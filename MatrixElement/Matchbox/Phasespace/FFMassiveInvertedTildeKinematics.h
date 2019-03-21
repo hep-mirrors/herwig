@@ -169,7 +169,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FFMassiveInvertedTildeKinematics & operator=(const FFMassiveInvertedTildeKinematics &);
+  FFMassiveInvertedTildeKinematics & operator=(const FFMassiveInvertedTildeKinematics &) = delete;
 
   /**
    * Option to use the full jacobian, including the z->zprime jacobian.

@@ -106,7 +106,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TwoBodyAllOnCalculator & operator=(const TwoBodyAllOnCalculator &);
+  TwoBodyAllOnCalculator & operator=(const TwoBodyAllOnCalculator &) = delete;
 
 private:
 

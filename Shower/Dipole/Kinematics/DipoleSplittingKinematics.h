@@ -599,7 +599,7 @@ namespace Herwig {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    DipoleSplittingKinematics & operator=(const DipoleSplittingKinematics &);
+    DipoleSplittingKinematics & operator=(const DipoleSplittingKinematics &) = delete;
 
   };
 

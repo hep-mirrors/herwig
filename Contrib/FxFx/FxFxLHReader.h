@@ -274,7 +274,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  FxFxLHReader & operator=(const FxFxLHReader &);
+  FxFxLHReader & operator=(const FxFxLHReader &) = delete;
 
 public:
 

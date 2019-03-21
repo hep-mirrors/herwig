@@ -94,7 +94,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHTPHHHVertex & operator=(const LHTPHHHVertex &);
+  LHTPHHHVertex & operator=(const LHTPHHHVertex &) = delete;
 
 private:
 

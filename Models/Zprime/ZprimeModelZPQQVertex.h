@@ -98,7 +98,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ZprimeModelZPQQVertex & operator=(const ZprimeModelZPQQVertex &);
+  ZprimeModelZPQQVertex & operator=(const ZprimeModelZPQQVertex &) = delete;
 
    /**
    * Pointer to the model object.

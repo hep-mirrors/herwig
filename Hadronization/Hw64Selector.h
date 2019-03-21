@@ -102,7 +102,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Hw64Selector & operator=(const Hw64Selector &);
+  Hw64Selector & operator=(const Hw64Selector &) = delete;
 
 };
 

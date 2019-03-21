@@ -80,7 +80,7 @@ public:
   /** 
    * Private and non-existent assignment operator.
    */
-  DecayVertex & operator=(const DecayVertex &);
+  DecayVertex & operator=(const DecayVertex &) = delete;
   
 private:
   

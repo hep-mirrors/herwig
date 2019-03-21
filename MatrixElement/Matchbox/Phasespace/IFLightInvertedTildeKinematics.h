@@ -129,7 +129,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  IFLightInvertedTildeKinematics & operator=(const IFLightInvertedTildeKinematics &);
+  IFLightInvertedTildeKinematics & operator=(const IFLightInvertedTildeKinematics &) = delete;
 
 };
 

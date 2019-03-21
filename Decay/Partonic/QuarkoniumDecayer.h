@@ -118,7 +118,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  const QuarkoniumDecayer & operator=(const QuarkoniumDecayer &);
+  const QuarkoniumDecayer & operator=(const QuarkoniumDecayer &) = delete;
 
 private:
 

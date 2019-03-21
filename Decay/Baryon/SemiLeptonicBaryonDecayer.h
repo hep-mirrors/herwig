@@ -156,7 +156,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SemiLeptonicBaryonDecayer & operator=(const SemiLeptonicBaryonDecayer &);
+  SemiLeptonicBaryonDecayer & operator=(const SemiLeptonicBaryonDecayer &) = delete;
 
 private:
 

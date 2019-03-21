@@ -109,7 +109,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ADDModelWWWGRVertex & operator=(const ADDModelWWWGRVertex &);
+  ADDModelWWWGRVertex & operator=(const ADDModelWWWGRVertex &) = delete;
 
 private:
 

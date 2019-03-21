@@ -150,7 +150,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  CellGridSampler & operator=(const CellGridSampler &);
+  CellGridSampler & operator=(const CellGridSampler &) = delete;
 
   /**
    * The number of points used to explore a cell

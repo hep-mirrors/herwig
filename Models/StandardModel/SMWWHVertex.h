@@ -101,7 +101,7 @@ private:
   
   /**
    */
-  SMWWHVertex & operator=(const SMWWHVertex &);
+  SMWWHVertex & operator=(const SMWWHVertex &) = delete;
 
 private:
 

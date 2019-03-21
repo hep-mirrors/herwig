@@ -133,7 +133,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEMatching & operator=(const MEMatching &);
+  MEMatching & operator=(const MEMatching &) = delete;
 
   /**
    * True, if a truncated parton shower should be generated

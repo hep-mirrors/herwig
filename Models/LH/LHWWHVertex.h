@@ -96,7 +96,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHWWHVertex & operator=(const LHWWHVertex &);
+  LHWWHVertex & operator=(const LHWWHVertex &) = delete;
 
 private:
 

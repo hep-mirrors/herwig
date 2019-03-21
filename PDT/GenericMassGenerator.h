@@ -357,7 +357,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  GenericMassGenerator & operator=(const GenericMassGenerator &);
+  GenericMassGenerator & operator=(const GenericMassGenerator &) = delete;
 
 private:
  

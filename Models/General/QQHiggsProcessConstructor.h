@@ -81,7 +81,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QQHiggsProcessConstructor & operator=(const QQHiggsProcessConstructor &);
+  QQHiggsProcessConstructor & operator=(const QQHiggsProcessConstructor &) = delete;
 
 private:
 

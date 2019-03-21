@@ -91,7 +91,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHTPFFPVertex & operator=(const LHTPFFPVertex &);
+  LHTPFFPVertex & operator=(const LHTPFFPVertex &) = delete;
 
 private:
 

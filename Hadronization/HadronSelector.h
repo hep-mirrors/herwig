@@ -574,7 +574,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HadronSelector & operator=(const HadronSelector &);
+  HadronSelector & operator=(const HadronSelector &) = delete;
 
 private:
 

@@ -149,7 +149,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEvv2rf & operator=(const MEvv2rf &);
+  MEvv2rf & operator=(const MEvv2rf &) = delete;
 private:
   
   /** @name Dynamically casted vertices. */

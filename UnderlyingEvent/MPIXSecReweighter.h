@@ -114,7 +114,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MPIXSecReweighter & operator=(const MPIXSecReweighter &);
+  MPIXSecReweighter & operator=(const MPIXSecReweighter &) = delete;
 
   /**
    * The sum of weights currently accumulated.

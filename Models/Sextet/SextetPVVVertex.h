@@ -81,7 +81,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SextetPVVVertex & operator=(const SextetPVVVertex &);
+  SextetPVVVertex & operator=(const SextetPVVVertex &) = delete;
 
 private:
   

@@ -626,7 +626,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerHandler & operator=(const ShowerHandler &);
+  ShowerHandler & operator=(const ShowerHandler &) = delete;
 
 private:
 

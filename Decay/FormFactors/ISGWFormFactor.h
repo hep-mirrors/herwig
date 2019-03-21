@@ -177,7 +177,7 @@ private:
 
   /**
    */
-  ISGWFormFactor & operator=(const ISGWFormFactor &);
+  ISGWFormFactor & operator=(const ISGWFormFactor &) = delete;
 
 private:
 

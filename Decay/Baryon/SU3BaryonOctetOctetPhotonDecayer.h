@@ -189,7 +189,7 @@ private:
    * Private and non-existent assignment operator.
    */
   SU3BaryonOctetOctetPhotonDecayer & 
-  operator=(const SU3BaryonOctetOctetPhotonDecayer &);
+  operator=(const SU3BaryonOctetOctetPhotonDecayer &) = delete;
 
 private:
 

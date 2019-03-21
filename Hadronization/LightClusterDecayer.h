@@ -116,7 +116,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LightClusterDecayer & operator=(const LightClusterDecayer &);
+  LightClusterDecayer & operator=(const LightClusterDecayer &) = delete;
 
   /**
    * This (private) method, called by decay(), takes care of the kinematical

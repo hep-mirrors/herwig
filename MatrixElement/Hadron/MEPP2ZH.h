@@ -96,7 +96,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2ZH & operator=(const MEPP2ZH &);
+  MEPP2ZH & operator=(const MEPP2ZH &) = delete;
 
 private:
 
