@@ -537,7 +537,8 @@
 		    if ( initn1 .eq. 0 ) then
 			initn1 = 1
 			do 410 i = 1,30
-  410			    xpnn1(i)=Re(i)/Re((i+1)*(i+2))
+			   xpnn1(i)=Re(i)/Re((i+1)*(i+2))
+ 410			continue
 		    endif
 *		    determine the boundaries for 1,5,10,15 terms
 		    if ( xprcn1 .ne. precc ) then
