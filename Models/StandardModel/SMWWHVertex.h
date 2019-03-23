@@ -100,6 +100,7 @@ protected:
 private:
   
   /**
+   * Private and non-existent assignment operator.
    */
   SMWWHVertex & operator=(const SMWWHVertex &) = delete;
 

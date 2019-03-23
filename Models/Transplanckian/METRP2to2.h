@@ -24,6 +24,8 @@ using namespace ThePEG;
 /**
  * The METRP2to2 class implements the matrix elements for
  * Transplanckian \f$2\to2\f$ scattering process
+ *
+ * @see \ref METRP2to2Interfaces "The interfaces" defined for METRP2to2.
  */
 class METRP2to2: public HwMEBase {
 

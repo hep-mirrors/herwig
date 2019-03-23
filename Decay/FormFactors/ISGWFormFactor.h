@@ -176,6 +176,7 @@ protected:
 private:
 
   /**
+   * Private and non-existent assignment operator.
    */
   ISGWFormFactor & operator=(const ISGWFormFactor &) = delete;
 
