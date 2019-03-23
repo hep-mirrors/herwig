@@ -168,7 +168,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ScalarMesonCurrent & operator=(const ScalarMesonCurrent &);
+  ScalarMesonCurrent & operator=(const ScalarMesonCurrent &) = delete;
 
 private:
 

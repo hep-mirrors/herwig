@@ -434,8 +434,8 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
       fdotp = -(fcurrent.dot(gout[0].momentum()));
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5c*(fcurrent.dot(gout[ghel].wave())
-		 -fdotp*epsdot[ghel]/denom);
+	diag = Complex(A5c*(fcurrent.dot(gout[ghel].wave())
+			    -fdotp*epsdot[ghel]/denom));
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel1,ihel2,0,2*ghel)=diag;
@@ -501,7 +501,7 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
       fdotp=fcurrent.dot(gin[0].momentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom);
+	diag = Complex(A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom));
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
@@ -566,7 +566,7 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
       fdotp=fcurrent.dot(gin[0].momentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom);
+	diag = Complex(A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom));
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
@@ -644,12 +644,12 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
        A2stu+=A2(s,t,u,mf2);
        A2tsu+=A2(u,s,t,mf2);
        A2ust+=A2(t,s,u,mf2);
-       A5s+= mf2/s*(4.+4.*double(s/(u+t))*(W1(s,mf2)-W1(mh2,mf2))
-		    +(1.-4.*double(mf2/(u+t)))*(W2(s,mf2)-W2(mh2,mf2)));
-       A5t+= mf2/t*(4.+4.*double(t/(s+u))*(W1(t,mf2)-W1(mh2,mf2))
-		    +(1.-4.*double(mf2/(s+u)))*(W2(t,mf2)-W2(mh2,mf2)));
-       A5u+= mf2/u*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
-		    +(1.-4.*double(mf2/(s+t)))*(W2(u,mf2)-W2(mh2,mf2)));
+       A5s+= double(mf2/s)*(4.+4.*double(s/(u+t))*(W1(s,mf2)-W1(mh2,mf2))
+			    +(1.-4.*double(mf2/(u+t)))*(W2(s,mf2)-W2(mh2,mf2)));
+       A5t+= double(mf2/t)*(4.+4.*double(t/(s+u))*(W1(t,mf2)-W1(mh2,mf2))
+			    +(1.-4.*double(mf2/(s+u)))*(W2(t,mf2)-W2(mh2,mf2)));
+       A5u+= double(mf2/u)*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
+			    +(1.-4.*double(mf2/(s+t)))*(W2(u,mf2)-W2(mh2,mf2)));
      }
      else {
        A4stu=-1./3.;
@@ -718,48 +718,47 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
 	 wdot[2][0]=wdot[0][2];
 	 wdot[2][1]=wdot[1][2];
 	 // last piece
-	 diag[3]=pre*A3stu*(eps[0][2][ihel1]*eps[1][0][ihel2]*eps[2][1][ohel]-
-			    eps[0][1][ihel1]*eps[1][2][ihel2]*eps[2][0][ohel]+
-			    (eps[2][0][ohel ]-eps[2][1][ohel ])*wdot[0][1]/pdot[0][1]+
-			    (eps[1][2][ihel2]-eps[1][0][ihel2])*wdot[0][2]/pdot[0][2]+
-			    (eps[0][1][ihel1]-eps[0][2][ihel1])*wdot[1][2]/pdot[1][2]);
+	 diag[3]= Complex(pre*A3stu*(eps[0][2][ihel1]*eps[1][0][ihel2]*eps[2][1][ohel]-
+				     eps[0][1][ihel1]*eps[1][2][ihel2]*eps[2][0][ohel]+
+				     (eps[2][0][ohel ]-eps[2][1][ohel ])*wdot[0][1]/pdot[0][1]+
+				     (eps[1][2][ihel2]-eps[1][0][ihel2])*wdot[0][2]/pdot[0][2]+
+				     (eps[0][1][ihel1]-eps[0][2][ihel1])*wdot[1][2]/pdot[1][2]));
 	 // first piece
-	 diag[3]+=pre*(
-		       +A2stu*(eps[0][1][ihel1]*eps[1][0][ihel2]-wdot[0][1]/pdot[0][1])*
-		       (eps[2][0][ohel ]-eps[2][1][ohel ])
-		       +A2ust*(eps[0][2][ihel1]*eps[2][0][ohel ]-wdot[0][2]/pdot[0][2])*
-		       (eps[1][2][ihel2]-eps[1][0][ihel2])
-		       +A2tsu*(eps[1][2][ihel2]*eps[2][1][ohel ]-wdot[1][2]/pdot[1][2])*
-		       (eps[0][1][ihel1]-eps[0][2][ihel1])
-		       );
+	 diag[3] += Complex(pre*(+A2stu*(eps[0][1][ihel1]*eps[1][0][ihel2]-wdot[0][1]/pdot[0][1])*
+				 (eps[2][0][ohel ]-eps[2][1][ohel ])
+				 +A2ust*(eps[0][2][ihel1]*eps[2][0][ohel ]-wdot[0][2]/pdot[0][2])*
+				 (eps[1][2][ihel2]-eps[1][0][ihel2])
+				 +A2tsu*(eps[1][2][ihel2]*eps[2][1][ohel ]-wdot[1][2]/pdot[1][2])*
+				 (eps[0][1][ihel1]-eps[0][2][ihel1])
+				 ));
 	 output+=real(diag[3]*conj(diag[3]));
 	 // matrix element if needed
 	 if(calc) newme(2*ihel1,2*ihel2,0,2*ohel)=diag[3];
 	 // different diagrams 
-	 diag[0] = A5t*UnitRemoval::InvE*(-eps[0][3][ihel1]*
-			(-2.*eps[2][1][ohel ]*eps[1][0][ihel2]*pdot[2][1]*pdot[1][0]
-			 -2.*eps[1][2][ihel2]*eps[2][0][ohel ]*pdot[1][2]*pdot[2][0]
-			 +wdot[1][2]*(pdot[0][1]+pdot[0][2]))
-			-2.*eps[2][1][ohel ]*pdot[2][1]*wdot[0][1]
-			-2.*eps[1][2][ihel2]*pdot[1][2]*wdot[0][2]
-			+wdot[1][2]*(eps[0][1][ihel1]*pdot[0][1]+
-				     eps[0][2][ihel1]*pdot[0][2]));
-	 diag[1] = A5u*UnitRemoval::InvE*(-eps[1][3][ihel2]*
-			(+2.*eps[0][1][ihel1]*eps[2][0][ohel ]*pdot[0][1]*pdot[2][0]
-			 +2.*eps[0][2][ihel1]*eps[2][1][ohel ]*pdot[0][2]*pdot[2][1]
-			 -wdot[0][2]*(pdot[1][0]+pdot[1][2]))
-			+2.*eps[2][0][ohel ]*pdot[2][0]*wdot[0][1]
-			+2.*eps[0][2][ihel1]*pdot[0][2]*wdot[2][1]
-			-wdot[0][2]*(eps[1][0][ihel2]*pdot[1][0]+
-				     eps[1][2][ihel2]*pdot[1][2]));
-	 diag[2] = A5s*UnitRemoval::InvE*(-eps[2][3][ohel ]*
-			(+2.*eps[0][1][ihel1]*eps[1][2][ihel2]*pdot[0][1]*pdot[1][2]
-			 -2.*eps[1][0][ihel2]*eps[0][2][ihel1]*pdot[1][0]*pdot[1][3]
-			 +wdot[0][1]*(pdot[2][0]-pdot[2][1]))
-			+2.*eps[0][1][ihel1]*pdot[0][1]*wdot[1][2]
-			-2.*eps[1][0][ihel2]*pdot[1][0]*wdot[0][2]
-			+wdot[0][1]*(eps[2][0][ohel]*pdot[2][0]-
-				     eps[2][1][ohel]*pdot[2][1]));
+	 diag[0] = Complex(A5t*UnitRemoval::InvE*(-eps[0][3][ihel1]*
+						  (-2.*eps[2][1][ohel ]*eps[1][0][ihel2]*pdot[2][1]*pdot[1][0]
+						   -2.*eps[1][2][ihel2]*eps[2][0][ohel ]*pdot[1][2]*pdot[2][0]
+						   +wdot[1][2]*(pdot[0][1]+pdot[0][2]))
+						  -2.*eps[2][1][ohel ]*pdot[2][1]*wdot[0][1]
+						  -2.*eps[1][2][ihel2]*pdot[1][2]*wdot[0][2]
+						  +wdot[1][2]*(eps[0][1][ihel1]*pdot[0][1]+
+							       eps[0][2][ihel1]*pdot[0][2])));
+	 diag[1] = Complex(A5u*UnitRemoval::InvE*(-eps[1][3][ihel2]*
+						  (+2.*eps[0][1][ihel1]*eps[2][0][ohel ]*pdot[0][1]*pdot[2][0]
+						   +2.*eps[0][2][ihel1]*eps[2][1][ohel ]*pdot[0][2]*pdot[2][1]
+						   -wdot[0][2]*(pdot[1][0]+pdot[1][2]))
+						  +2.*eps[2][0][ohel ]*pdot[2][0]*wdot[0][1]
+						  +2.*eps[0][2][ihel1]*pdot[0][2]*wdot[2][1]
+						  -wdot[0][2]*(eps[1][0][ihel2]*pdot[1][0]+
+							       eps[1][2][ihel2]*pdot[1][2])));
+	 diag[2] = Complex(A5s*UnitRemoval::InvE*(-eps[2][3][ohel ]*
+						  (+2.*eps[0][1][ihel1]*eps[1][2][ihel2]*pdot[0][1]*pdot[1][2]
+						   -2.*eps[1][0][ihel2]*eps[0][2][ihel1]*pdot[1][0]*pdot[1][3]
+						   +wdot[0][1]*(pdot[2][0]-pdot[2][1]))
+						  +2.*eps[0][1][ihel1]*pdot[0][1]*wdot[1][2]
+						  -2.*eps[1][0][ihel2]*pdot[1][0]*wdot[0][2]
+						  +wdot[0][1]*(eps[2][0][ohel]*pdot[2][0]-
+							       eps[2][1][ohel]*pdot[2][1])));
 	 _diagwgt[0]+=real(diag[0]*conj(diag[0]));
 	 _diagwgt[1]+=real(diag[1]*conj(diag[1]));
 	 _diagwgt[2]+=real(diag[2]*conj(diag[2]));

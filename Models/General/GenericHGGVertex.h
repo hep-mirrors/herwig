@@ -132,7 +132,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GenericHGGVertex & operator=(const GenericHGGVertex &);
+  GenericHGGVertex & operator=(const GenericHGGVertex &) = delete;
 
 private:
 

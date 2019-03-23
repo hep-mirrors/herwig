@@ -118,7 +118,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  StandardCKM & operator=(const StandardCKM &);
+  StandardCKM & operator=(const StandardCKM &) = delete;
   
 };
 

@@ -621,8 +621,7 @@ void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
   }
 }
 
-void ShowerTree::addInitialStateBranching(ShowerParticlePtr oldParent,
-					  ShowerParticlePtr newParent,
+void ShowerTree::addInitialStateBranching(ShowerParticlePtr , ShowerParticlePtr ,
 					  ShowerParticlePtr otherChild) {
   _forward.insert(otherChild);
 }

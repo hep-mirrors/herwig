@@ -367,7 +367,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  StandardModel & operator=(const StandardModel &);
+  StandardModel & operator=(const StandardModel &) = delete;
   
 private:
 

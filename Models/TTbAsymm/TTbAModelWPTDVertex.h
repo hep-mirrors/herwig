@@ -98,7 +98,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TTbAModelWPTDVertex & operator=(const TTbAModelWPTDVertex &);
+  TTbAModelWPTDVertex & operator=(const TTbAModelWPTDVertex &) = delete;
 
    /**
    * Pointer to the model object.

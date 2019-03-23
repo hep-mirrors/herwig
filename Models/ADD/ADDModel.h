@@ -160,7 +160,7 @@ private:
   /**
      * Private and non-existent assignment operator.
      */
-  ADDModel & operator=(const ADDModel &);
+  ADDModel & operator=(const ADDModel &) = delete;
 
 private:
   

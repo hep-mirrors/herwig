@@ -135,7 +135,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  RPV & operator=(const RPV &);
+  RPV & operator=(const RPV &) = delete;
 
 private:
 

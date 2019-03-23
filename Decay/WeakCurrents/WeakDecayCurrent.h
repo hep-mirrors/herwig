@@ -206,7 +206,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  WeakDecayCurrent & operator=(const WeakDecayCurrent &);
+  WeakDecayCurrent & operator=(const WeakDecayCurrent &) = delete;
 
 private:
 

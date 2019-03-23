@@ -90,7 +90,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSGGSQSQVertex & operator=(const SSGGSQSQVertex &);
+  SSGGSQSQVertex & operator=(const SSGGSQSQVertex &) = delete;
 
 private:
 

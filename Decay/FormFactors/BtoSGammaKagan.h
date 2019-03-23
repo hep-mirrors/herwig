@@ -160,7 +160,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  BtoSGammaKagan & operator=(const BtoSGammaKagan &);
+  BtoSGammaKagan & operator=(const BtoSGammaKagan &) = delete;
 
 private:
 

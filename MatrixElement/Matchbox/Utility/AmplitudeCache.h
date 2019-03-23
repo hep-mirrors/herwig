@@ -237,8 +237,8 @@ public:
     if ( getPlusProduct[idx(i,j)] ) {
       getPlusProduct[idx(i,j)] = false;
       thePlusProducts[idx(i,j)] = 
-	PlusSpinorProduct(thePlusConjugateSpinors[i],
-			  thePlusSpinors[j]).eval() / theScale;
+	Complex(PlusSpinorProduct(thePlusConjugateSpinors[i],
+				  thePlusSpinors[j]).eval() / theScale);
     }
     return swapij ? -thePlusProducts[idx(i,j)] : thePlusProducts[idx(i,j)];
   }

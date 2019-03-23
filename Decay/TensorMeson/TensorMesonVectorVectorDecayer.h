@@ -163,7 +163,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TensorMesonVectorVectorDecayer & operator=(const TensorMesonVectorVectorDecayer &);
+  TensorMesonVectorVectorDecayer & operator=(const TensorMesonVectorVectorDecayer &) = delete;
 
 private:
 

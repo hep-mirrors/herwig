@@ -242,7 +242,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GeneralQQHiggs & operator=(const GeneralQQHiggs &);
+  GeneralQQHiggs & operator=(const GeneralQQHiggs &) = delete;
 
 private:
   

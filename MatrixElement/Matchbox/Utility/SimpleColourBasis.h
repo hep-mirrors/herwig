@@ -180,7 +180,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SimpleColourBasis & operator=(const SimpleColourBasis &);
+  SimpleColourBasis & operator=(const SimpleColourBasis &) = delete;
 
 };
 

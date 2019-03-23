@@ -126,7 +126,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PartonSplitter & operator=(const PartonSplitter &);
+  PartonSplitter & operator=(const PartonSplitter &) = delete;
 
   /**
    * Non-perturbatively split a time-like gluon,

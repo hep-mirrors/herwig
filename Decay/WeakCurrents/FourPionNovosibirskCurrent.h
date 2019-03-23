@@ -202,7 +202,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  FourPionNovosibirskCurrent & operator=(const FourPionNovosibirskCurrent &);
+  FourPionNovosibirskCurrent & operator=(const FourPionNovosibirskCurrent &) = delete;
       
 protected:
   

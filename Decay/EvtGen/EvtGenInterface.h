@@ -159,10 +159,10 @@ protected:
     InvSqrtEnergy norm(sqrt(0.5)/sqrt(GeV));
     complex<double> out[4][4];
     for(unsigned int ix=0;ix<4;++ix) {
-      out[ix][0] =-norm*( sp(ix,0)+sp(ix,2));
-      out[ix][1] =-norm*( sp(ix,1)+sp(ix,3));
-      out[ix][2] =-norm*(-sp(ix,0)+sp(ix,2));
-      out[ix][3] =-norm*(-sp(ix,1)+sp(ix,3));
+      out[ix][0] = -Complex(norm*( sp(ix,0)+sp(ix,2)));
+      out[ix][1] = -Complex(norm*( sp(ix,1)+sp(ix,3)));
+      out[ix][2] = -Complex(norm*(-sp(ix,0)+sp(ix,2)));
+      out[ix][3] = -Complex(norm*(-sp(ix,1)+sp(ix,3)));
     }
     EvtRaritaSchwinger output;
     unsigned int ix,iy;
@@ -418,7 +418,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  EvtGenInterface & operator=(const EvtGenInterface &);
+  EvtGenInterface & operator=(const EvtGenInterface &) = delete;
 
 private:
 

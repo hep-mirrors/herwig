@@ -154,7 +154,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TensorMesonVectorPScalarDecayer & operator=(const TensorMesonVectorPScalarDecayer &);
+  TensorMesonVectorPScalarDecayer & operator=(const TensorMesonVectorPScalarDecayer &) = delete;
 
 private:
 

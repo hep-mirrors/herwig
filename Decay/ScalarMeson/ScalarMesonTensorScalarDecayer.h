@@ -140,7 +140,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ScalarMesonTensorScalarDecayer & operator=(const ScalarMesonTensorScalarDecayer &);
+  ScalarMesonTensorScalarDecayer & operator=(const ScalarMesonTensorScalarDecayer &) = delete;
 
  private:
 

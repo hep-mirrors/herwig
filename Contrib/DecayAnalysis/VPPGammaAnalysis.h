@@ -113,7 +113,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VPPGammaAnalysis & operator=(const VPPGammaAnalysis &);
+  VPPGammaAnalysis & operator=(const VPPGammaAnalysis &) = delete;
 
 private:
 

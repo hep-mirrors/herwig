@@ -174,7 +174,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxAmplitudeqqbarttbarg & operator=(const MatchboxAmplitudeqqbarttbarg &);
+  MatchboxAmplitudeqqbarttbarg & operator=(const MatchboxAmplitudeqqbarttbarg &) = delete;
 
   /**
    * Containers for external particle momenta
