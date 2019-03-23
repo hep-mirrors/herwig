@@ -102,7 +102,8 @@
 	    call ffcxr(cs3(8),ipi12(2),yy,yy1,zz,zz1,dyyzz,.FALSE.,
      +			0D0,0D0,0D0,.FALSE.,x00,0,ier)
 	    do 20 i=8,14
-   20		cs3(i) = -cs3(i)
+	       cs3(i) = -cs3(i)
+ 20	    continue
    30	    continue
 *	    And now the remaining Li_2(x^2) terms
 	    call ffxli2(xdilog,xlog,(y(2)/dyz(2,1))**2,ier)
@@ -304,8 +305,9 @@
 	if ( isoort(2) .eq. 0 ) then
 *	    do nothing
 	elseif ( mod(isoort(2),5) .eq. 0 ) then
-	    do 100 i=1,7
-  100		cs3(i) = 2*Re(cs3(i))
+	   do 100 i=1,7
+	      cs3(i) = 2*Re(cs3(i))
+ 100	   continue
 	    ipi12(1) = 2*ipi12(1)
 	elseif ( mod(isoort(2),10).eq.-1 .or. mod(isoort(1),10).eq.-3 )
      +		then

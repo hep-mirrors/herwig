@@ -496,9 +496,7 @@ void FFV2_5_2(std::complex<double> F1[], std::complex<double> V3[],
     std::complex<double> COUP1, std::complex<double> COUP2, double M2, double
     W2, std::complex<double> F2[])
 {
-  static std::complex<double> cI = std::complex<double> (0., 1.); 
-  std::complex<double> Ftmp[6]; 
-  double P2[4]; 
+  std::complex<double> Ftmp[6];
   std::complex<double> denom; 
   int i; 
   FFV2_2(F1, V3, COUP1, M2, W2, F2); 
@@ -567,7 +565,6 @@ void FFV2_5_0(std::complex<double> F1[], std::complex<double> F2[],
     std::complex<double> V3[], std::complex<double> COUP1, std::complex<double>
     COUP2, std::complex<double> & vertex)
 {
-  static std::complex<double> cI = std::complex<double> (0., 1.); 
   std::complex<double> tmp; 
   FFV2_0(F1, F2, V3, COUP1, vertex); 
   FFV5_0(F1, F2, V3, COUP2, tmp); 
@@ -759,10 +756,7 @@ void FFV2_4_3(std::complex<double> F1[], std::complex<double> F2[],
     std::complex<double> COUP1, std::complex<double> COUP2, double M3, double
     W3, std::complex<double> V3[])
 {
-  static std::complex<double> cI = std::complex<double> (0., 1.); 
-  std::complex<double> denom; 
-  double P3[4]; 
-  double OM3; 
+  std::complex<double> denom;
   int i; 
   std::complex<double> Vtmp[6]; 
   FFV2_3(F1, F2, COUP1, M3, W3, V3); 
@@ -850,8 +844,6 @@ void FFV2_5_1(std::complex<double> F2[], std::complex<double> V3[],
     std::complex<double> COUP1, std::complex<double> COUP2, double M1, double
     W1, std::complex<double> F1[])
 {
-  static std::complex<double> cI = std::complex<double> (0., 1.); 
-  double P1[4]; 
   std::complex<double> denom; 
   int i; 
   std::complex<double> Ftmp[6]; 
