@@ -114,7 +114,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SMHiggsFermionsPOWHEGDecayer & operator=(const SMHiggsFermionsPOWHEGDecayer &);
+  SMHiggsFermionsPOWHEGDecayer & operator=(const SMHiggsFermionsPOWHEGDecayer &) = delete;
 
   /**
    *  Calcluate the Kallen function

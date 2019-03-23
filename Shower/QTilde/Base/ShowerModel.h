@@ -117,7 +117,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerModel & operator=(const ShowerModel &);
+  ShowerModel & operator=(const ShowerModel &) = delete;
 
 private:
 

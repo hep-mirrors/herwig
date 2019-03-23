@@ -568,7 +568,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QTildeReconstructor & operator=(const QTildeReconstructor &);
+  QTildeReconstructor & operator=(const QTildeReconstructor &) = delete;
 
 private:
 

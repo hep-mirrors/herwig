@@ -114,7 +114,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SMWFermionsPOWHEGDecayer & operator=(const SMWFermionsPOWHEGDecayer &);
+  SMWFermionsPOWHEGDecayer & operator=(const SMWFermionsPOWHEGDecayer &) = delete;
 
   /**
    *  Pointer to the fermion-antifermion W vertex

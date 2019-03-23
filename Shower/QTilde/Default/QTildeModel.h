@@ -68,7 +68,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QTildeModel & operator=(const QTildeModel &);
+  QTildeModel & operator=(const QTildeModel &) = delete;
 
 };
 

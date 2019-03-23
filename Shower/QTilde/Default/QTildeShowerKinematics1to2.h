@@ -102,7 +102,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QTildeShowerKinematics1to2 & operator=(const QTildeShowerKinematics1to2 &);
+  QTildeShowerKinematics1to2 & operator=(const QTildeShowerKinematics1to2 &) = delete;
 
 private:
 

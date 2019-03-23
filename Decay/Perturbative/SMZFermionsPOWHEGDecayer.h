@@ -112,7 +112,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SMZFermionsPOWHEGDecayer & operator=(const SMZFermionsPOWHEGDecayer &);
+  SMZFermionsPOWHEGDecayer & operator=(const SMZFermionsPOWHEGDecayer &) = delete;
 
   /**
    *  Pointer to the fermion-antifermion Z vertex

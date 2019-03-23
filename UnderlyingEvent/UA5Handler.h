@@ -326,7 +326,7 @@ private:
    * needed. The prototype is defined so the compiler doesn't use the 
    * default = operator.
    */
-  UA5Handler& operator=(const UA5Handler &);
+  UA5Handler& operator=(const UA5Handler &) = delete;
   
 private:
 

@@ -124,7 +124,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KinematicsReconstructor & operator=(const KinematicsReconstructor &);
+  KinematicsReconstructor & operator=(const KinematicsReconstructor &) = delete;
 };
 
 }
