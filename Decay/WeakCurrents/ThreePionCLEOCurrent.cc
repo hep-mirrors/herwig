@@ -714,9 +714,9 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
       Energy2 Dfact1=1./3.*(s1-s3);
       Energy2 Dfact2=1./3.*(s2-s3);
       for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
-	F1-=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
-	F2-=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
-	F3-=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
+	F1-=Complex(Dfact1*_rhocoupD[ix]*rhos2bw[ix]);
+	F2-=Complex(Dfact2*_rhocoupD[ix]*rhos1bw[ix]);
+	F3-=Complex(_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]));
       }
       // the scalar terms
       F1-=2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
@@ -726,17 +726,17 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
       // the tensor terms
       complex<Energy2> sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
       complex<Energy2> sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
-      F1+=_f2coup*(0.5*(s3-s2)*f2bws1-sfact2);
-      F2+=_f2coup*(0.5*(s3-s1)*f2bws2-sfact1);
-      F3+=_f2coup*(-sfact1+sfact2);
+      F1+=Complex(_f2coup*(0.5*(s3-s2)*f2bws1-sfact2));
+      F2+=Complex(_f2coup*(0.5*(s3-s1)*f2bws2-sfact1));
+      F3+=Complex(_f2coup*(-sfact1+sfact2));
     }
     else if(ichan%2==0&&ichan<=4) {
       unsigned int ires=ichan/2;
       Energy2 Dfact2=1./3.*(s2-s3);
       if(ires<_rhocoupP.size()) F1-=_rhocoupP[ires]*rhos1bw[ires];
       if(ires<_rhocoupD.size()) {
-	F2-=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
-	F3-=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
+	F2-=Complex(Dfact2*_rhocoupD[ires]*rhos1bw[ires]);
+	F3-=Complex(_rhocoupD[ires]*Dfact2*rhos1bw[ires]);
       }
     }
     else if(ichan%2==1&&ichan<=5) {
@@ -746,8 +746,8 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 	F2-=_rhocoupP[ires]*rhos2bw[ires];
       }
       if(ires<_rhocoupD.size()) {
-	F1-=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
-	F3+=_rhocoupD[ires]*Dfact1*rhos2bw[ires];
+	F1-=Complex(Dfact1*_rhocoupD[ires]*rhos2bw[ires]);
+	F3+=Complex(_rhocoupD[ires]*Dfact1*rhos2bw[ires]);
       }
     }
     else if(ichan==6) {
@@ -760,15 +760,15 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
     }
     else if(ichan==8) {
       complex<Energy2> sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
-      F1+=_f2coup*0.5*(s3-s2)*f2bws1;
-      F2-=_f2coup*sfact1;
-      F3-=_f2coup*sfact1;
+      F1+=Complex(_f2coup*0.5*(s3-s2)*f2bws1);
+      F2-=Complex(_f2coup*sfact1);
+      F3-=Complex(_f2coup*sfact1);
     }
     else if(ichan==9) {
       complex<Energy2> sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
-      F1-=_f2coup*sfact2;
-      F2+=_f2coup*0.5*(s3-s1)*f2bws2;
-      F3+=_f2coup*sfact2;
+      F1-=Complex(_f2coup*sfact2);
+      F2+=Complex(_f2coup*0.5*(s3-s1)*f2bws2);
+      F3+=Complex(_f2coup*sfact2);
     }
     else if(ichan==10) {
       F2-=2./3.*_f0coup*f0bws1;

@@ -354,8 +354,8 @@ double PVectorMesonVectorPScalarDecayer::me2(const int,const Particle & part,
     else {
       epsdot=_vectors[1][ix]*part.momentum();
       for(unsigned int iy=0;iy<3;++iy)
-	(*ME())(iy,ix,0)=pre*_vectors[0][iy].dot(p0dotpv*_vectors[1][ix]
-					 -epsdot*momenta[0]);
+	(*ME())(iy,ix,0)=Complex(pre*_vectors[0][iy].dot(p0dotpv*_vectors[1][ix]
+							 -epsdot*momenta[0]));
     }
   }
   double me = ME()->contract(_rho).real();

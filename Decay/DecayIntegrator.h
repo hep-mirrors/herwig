@@ -424,10 +424,9 @@ protected:
 private:
 
   /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
+   * Private and non-existent assignment operator.
    */
-  DecayIntegrator & operator=(const DecayIntegrator &);
+  DecayIntegrator & operator=(const DecayIntegrator &) = delete;
 
   /**
    *  Parameters for the integration

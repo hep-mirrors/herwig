@@ -201,7 +201,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  KPiKStarCurrent & operator=(const KPiKStarCurrent &);
+  KPiKStarCurrent & operator=(const KPiKStarCurrent &) = delete;
 
 private:
 

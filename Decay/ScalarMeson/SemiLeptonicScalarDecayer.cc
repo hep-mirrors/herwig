@@ -264,7 +264,7 @@ double SemiLeptonicScalarDecayer::me2(const int , const Particle & part,
     complex<Energy> dot;
     Energy MP(part.mass()),MV(momenta[0].mass()),msum(MP+MV),mdiff(MP-MV);
     _form->ScalarVectorFormFactor(q2,iloc,id0,id1,MP,MV,A0,A1,A2,V);
-    A3 = 0.5/MV*(msum*A1-mdiff*A2);
+    A3 = Complex(0.5/MV*(msum*A1-mdiff*A2));
     if(cc) V*=-1.;
     // compute the hadron currents
     for(unsigned int ix=0;ix<3;++ix) {
@@ -312,7 +312,7 @@ double SemiLeptonicScalarDecayer::me2(const int , const Particle & part,
       // helicities of mesons
       ihel[0]=0;
       ihel[_imes+1]=mhel;
-      (*ME())(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
+      (*ME())(ihel) = Complex(lepton[lhel].dot(hadron[mhel])*SM().fermiConstant());
     }
   }
   // store the matrix element

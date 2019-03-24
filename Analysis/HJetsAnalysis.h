@@ -203,7 +203,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HJetsAnalysis & operator=(const HJetsAnalysis &);
+  HJetsAnalysis & operator=(const HJetsAnalysis &) = delete;
 
 };
 

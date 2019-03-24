@@ -1128,7 +1128,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LeptonsJetsAnalysis & operator=(const LeptonsJetsAnalysis &);
+  LeptonsJetsAnalysis & operator=(const LeptonsJetsAnalysis &) = delete;
 
 };
 

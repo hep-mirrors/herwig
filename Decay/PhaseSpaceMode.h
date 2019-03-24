@@ -321,7 +321,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PhaseSpaceMode & operator=(const PhaseSpaceMode &);
+  PhaseSpaceMode & operator=(const PhaseSpaceMode &) = delete;
 
 private:
 

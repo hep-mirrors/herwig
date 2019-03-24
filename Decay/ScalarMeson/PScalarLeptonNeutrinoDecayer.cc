@@ -272,8 +272,8 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & part,
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
     for(ispin[iferm+1]=0;ispin[iferm+1]<2;++ispin[iferm+1]) {
       (*ME())(ispin)= idferm%2==0 ? 
-	pre*_wave[ispin[ianti+1]].rightScalar(_wavebar[ispin[iferm+1]]) :
-	pre*_wave[ispin[ianti+1]].leftScalar( _wavebar[ispin[iferm+1]]) ;
+	Complex(pre*_wave[ispin[ianti+1]].rightScalar(_wavebar[ispin[iferm+1]])) :
+	Complex(pre*_wave[ispin[ianti+1]].leftScalar( _wavebar[ispin[iferm+1]])) ;
     }
   }
   double me = 0.5*ME()->contract(_rho).real();

@@ -106,7 +106,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSCCZVertex & operator=(const SSCCZVertex &);
+  SSCCZVertex & operator=(const SSCCZVertex &) = delete;
 
 private:
 

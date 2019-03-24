@@ -188,7 +188,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  OneKaonTwoPionDefaultCurrent & operator=(const OneKaonTwoPionDefaultCurrent &);
+  OneKaonTwoPionDefaultCurrent & operator=(const OneKaonTwoPionDefaultCurrent &) = delete;
 
 private:
   

@@ -375,7 +375,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TildeKinematics & operator=(const TildeKinematics &);
+  TildeKinematics & operator=(const TildeKinematics &) = delete;
 
 };
 

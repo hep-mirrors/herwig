@@ -97,7 +97,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMFFZVertex & operator=(const SMFFZVertex &);
+  SMFFZVertex & operator=(const SMFFZVertex &) = delete;
 
 private:
 

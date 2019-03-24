@@ -697,7 +697,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   while ( eventRecord().haveChain() ) {
     
      // allow the dipole chain to be rearranged according to arXiv:1801.06113
-    if( _rearrange && ( _rearrangeNEmissions < 0 || _rearrangeNEmissions >= emDone ) ){
+    if( _rearrange && ( _rearrangeNEmissions < 0 || _rearrangeNEmissions >= int(emDone) ) ){
       eventRecord().currentChain().rearrange(_dipmax,_diplong);
     }
 

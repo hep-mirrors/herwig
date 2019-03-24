@@ -192,7 +192,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  EtaPiGammaGammaDecayer & operator=(const EtaPiGammaGammaDecayer &);
+  EtaPiGammaGammaDecayer & operator=(const EtaPiGammaGammaDecayer &) = delete;
 
 private:
 

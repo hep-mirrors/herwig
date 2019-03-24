@@ -223,7 +223,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ThreePionDefaultCurrent & operator=(const ThreePionDefaultCurrent &);
+  ThreePionDefaultCurrent & operator=(const ThreePionDefaultCurrent &) = delete;
 
 private:
   

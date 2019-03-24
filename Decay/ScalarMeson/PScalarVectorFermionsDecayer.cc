@@ -290,7 +290,7 @@ double PScalarVectorFermionsDecayer::me2(const int,const Particle & part,
       // compute the current for this part
       eps = epsilon(momenta[0],pff,fcurrent);
       for(ispin[1]=0;ispin[1]<3;++ispin[1]) {
-	(*ME())(ispin)=pre *_vectors[ispin[1]].dot(eps);
+	(*ME())(ispin) = Complex(pre *_vectors[ispin[1]].dot(eps));
       }
     }	  
   }

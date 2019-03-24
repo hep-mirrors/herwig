@@ -245,7 +245,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TwoKaonOnePionCurrent & operator=(const TwoKaonOnePionCurrent &);
+  TwoKaonOnePionCurrent & operator=(const TwoKaonOnePionCurrent &) = delete;
 
 private:
 

@@ -129,7 +129,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HardProcessAnalysis & operator=(const HardProcessAnalysis &);
+  HardProcessAnalysis & operator=(const HardProcessAnalysis &) = delete;
 
   /**
    * Differential information per outgoing parton

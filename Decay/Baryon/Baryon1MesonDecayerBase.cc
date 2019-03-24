@@ -231,8 +231,7 @@ halfHalfScalar(const int,const Particle & part, const tPDVector & outgoing,
     for(iy=0;iy<2;++iy) {
       if(outgoing[0]->id()>0){ispin[0]=iy;ispin[1]=ix;}
       else{ispin[0]=ix;ispin[1]=iy;}
-      (*ME())(ispin)=_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)/part.mass();
-      // output += norm((*ME())(ispin));
+      (*ME())(ispin)=Complex(_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)/part.mass());
     }
   }
   // test of the matrix element
@@ -543,8 +542,8 @@ halfThreeHalfVector(const int,const Particle & part, const tPDVector & outgoing,
       for(unsigned int ixa=0;ixa<2;++ixa) {
 	ispin[0]=ixa;
 	if(outgoing[0]->id()>0) stemp  = _inHalf[ixa];
-	else                 sbtemp = _inHalfBar[ixa];
-	(*ME())(ispin) += stemp.generalScalar(sbtemp,left,right)/part.mass();
+	else        
+	  (*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/part.mass());
       }
     }
   }
@@ -640,8 +639,8 @@ threeHalfHalfScalar(const int,const Particle & part, const tPDVector & outgoing,
       if(outgoing[0]->id()<0) swap(ix,iy);
       ispin[0]=iya;
       ispin[1]=ixa;
-      (*ME())(ispin) = _inHalf[iy].generalScalar(_inHalfBar[ix],left,right)*
-	UnitRemoval::E/msum/part.mass();
+      (*ME())(ispin) = Complex(_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)*
+			       UnitRemoval::E/msum/part.mass());
     }
   }
   double output = (ME()->contract(_rho)).real();
@@ -731,9 +730,9 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(const int, const Partic
       if(outgoing[0]->id()<0) swap(ix,iy);
       ispin[0]=iya;
       ispin[1]=ixa;
-      (*ME())(ispin)=(_inThreeHalf[iy].generalScalar(_inThreeHalfBar[ix],left1,right1)
-		   +_inHalf[iy].generalScalar( _inHalfBar[ix],left2,right2)
-		   *UnitRemoval::E2/sqr(msum))/part.mass();
+      (*ME())(ispin)=Complex((_inThreeHalf[iy].generalScalar(_inThreeHalfBar[ix],left1,right1)
+			      +_inHalf[iy].generalScalar( _inHalfBar[ix],left2,right2)
+			      *UnitRemoval::E2/sqr(msum))/part.mass());
     }
   }
   // return the answer
@@ -840,7 +839,7 @@ threeHalfHalfVector(const int,const Particle & part, const tPDVector & outgoing,
 	ispin[1]=ixa;
 	if(outgoing[0]->id()>0) sbtemp = _inHalfBar[ixa];
 	else                 stemp  = _inHalf[ixa];
-	(*ME())(ispin) += stemp.generalScalar(sbtemp,left,right)/part.mass();
+	(*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/part.mass());
       }
     }
   }

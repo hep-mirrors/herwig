@@ -247,8 +247,8 @@ Rivet-TVT-Photon : Rivet-TVT-Photon/done
 Rivet-TVT-Photon/done: $(shell echo Rivet-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.yoda) \
                   $(shell echo Rivet-Powheg-TVT-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-TVT-Photon
-	python/merge-TVT-Photon TVT -o TVT-Photon.yoda
-	python/merge-TVT-Photon TVT-Powheg -o TVT-Powheg-Photon.yoda
+	python/merge-TVT-Photon TVT
+	python/merge-TVT-Photon TVT-Powheg
 	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.yoda:Hw TVT-Powheg-Photon.yoda:Hw-Powheg
 	touch $@
 
@@ -356,8 +356,8 @@ Rivet-LHC-Photon/done: \
 		Rivet-LHC-GammaGamma-7.yoda \
 	    $(shell echo Rivet{,-Powheg}-LHC-{7,8}-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-LHC-Photon
-	python/merge-LHC-Photon LHC -o LHC-Photon.yoda
-	python/merge-LHC-Photon LHC-Powheg -o LHC-Powheg-Photon.yoda
+	python/merge-LHC-Photon LHC
+	python/merge-LHC-Photon LHC-Powheg
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.yoda:Hw LHC-Powheg-Photon.yoda:Hw-Powheg
 	touch $@
 
@@ -371,10 +371,13 @@ Rivet-LHC-Higgs/done:  \
 		$(shell echo Rivet{,-Powheg}-LHC-{ggH,VBF,WH,ZH}.yoda) \
         $(shell echo Rivet{,-Powheg}-LHC-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.yoda) \
         Rivet-LHC-ggHJet.yoda
+	yodamerge Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Powheg-Higgs.yoda
+	yodamerge Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Higgs.yoda
 	rm -rf Rivet-LHC-Higgs
-	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.yoda:gg-Powheg LHC-ggH.yoda:gg LHC-ggHJet.yoda:HJet \
-                        LHC-Powheg-VBF.yoda:VBF-Powheg LHC-VBF.yoda:VBF LHC-WH.yoda:WH LHC-ZH.yoda:ZH \
-                        LHC-Powheg-WH.yoda:WH-Powheg LHC-Powheg-ZH.yoda:ZH-Powheg
+	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-Higgs.yoda:Hw-Powheg LHC-Higgs.yoda:Hw\
+	                Rivet-Powheg-LHC-ggH.yoda:gg-Powheg Rivet-LHC-ggH.yoda:gg Rivet-LHC-ggHJet.yoda:HJet \
+                        Rivet-Powheg-LHC-VBF.yoda:VBF-Powheg Rivet-LHC-VBF.yoda:VBF Rivet-LHC-WH.yoda:WH Rivet-LHC-ZH.yoda:ZH \
+                        Rivet-Powheg-LHC-WH.yoda:WH-Powheg Rivet-Powheg-LHC-ZH.yoda:ZH-Powheg
 	touch $@
 
 

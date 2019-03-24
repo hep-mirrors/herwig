@@ -156,7 +156,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FILightKinematics & operator=(const FILightKinematics &);
+  FILightKinematics & operator=(const FILightKinematics &) = delete;
 
 };
 

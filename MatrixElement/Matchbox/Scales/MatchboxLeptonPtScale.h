@@ -114,7 +114,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxLeptonPtScale & operator=(const MatchboxLeptonPtScale &);
+  MatchboxLeptonPtScale & operator=(const MatchboxLeptonPtScale &) = delete;
 
 };
 

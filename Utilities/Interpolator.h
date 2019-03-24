@@ -156,7 +156,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Interpolator & operator=(const Interpolator &);
+  Interpolator & operator=(const Interpolator &) = delete;
   
 private:
   

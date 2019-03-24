@@ -546,8 +546,8 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan, const Particle & part,
  	// map the index for the hadrons to a helicity state
  	for(unsigned int ix=outgoing.size();ix>0;--ix) {
  	  if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
- 	(*ME())(ihel) += hadron[lhel].dot(baryon[mhel])*
- 	  _factCKM[imode()][mode]*SM().fermiConstant();
+ 	(*ME())(ihel) += Complex(hadron[lhel].dot(baryon[mhel])*
+				 _factCKM[imode()][mode]*SM().fermiConstant());
       }
     }
   }
@@ -700,8 +700,8 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan, const Particle & 
 	  // map the index for the hadrons to a helicity state
 	  for(int ix=int(outgoing.size());ix>0;--ix)
 	    {if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	  (*ME())(ihel) += hadron[lhel].dot(baryon[iya][ixa])*
-	    _factCKM[imode()][mode]*SM().fermiConstant();
+	  (*ME())(ihel) += Complex(hadron[lhel].dot(baryon[iya][ixa])*
+				   _factCKM[imode()][mode]*SM().fermiConstant());
 	}
       }
     }

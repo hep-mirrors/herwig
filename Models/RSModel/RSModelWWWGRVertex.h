@@ -98,7 +98,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  RSModelWWWGRVertex & operator=(const RSModelWWWGRVertex &);
+  RSModelWWWGRVertex & operator=(const RSModelWWWGRVertex &) = delete;
 
 private:
 

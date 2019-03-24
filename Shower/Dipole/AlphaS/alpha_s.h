@@ -288,7 +288,7 @@ namespace matchbox {
      * The assignment operator is private and must never be called.
      * In fact, it should not even be implemented.
      */
-    alpha_s & operator=(const alpha_s &);
+    alpha_s & operator=(const alpha_s &) = delete;
 
   private:
 

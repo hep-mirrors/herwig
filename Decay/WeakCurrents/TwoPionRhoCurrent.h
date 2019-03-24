@@ -201,7 +201,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TwoPionRhoCurrent & operator=(const TwoPionRhoCurrent &);
+  TwoPionRhoCurrent & operator=(const TwoPionRhoCurrent &) = delete;
 
 private:
 

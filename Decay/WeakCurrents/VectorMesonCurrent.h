@@ -185,7 +185,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  VectorMesonCurrent & operator=(const VectorMesonCurrent &);
+  VectorMesonCurrent & operator=(const VectorMesonCurrent &) = delete;
 
 private:
 

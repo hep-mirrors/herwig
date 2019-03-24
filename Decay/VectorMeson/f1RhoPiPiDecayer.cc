@@ -195,7 +195,8 @@ double f1RhoPiPiDecayer::me2(const int ichan, const Particle & part,
     LorentzVector<complex<Energy2> > pol[2] = {epsilon(vectors_[0][ihel],part.momentum(),pa1[0]),
 					       epsilon(vectors_[0][ihel],part.momentum(),pa1[1])};
     for(unsigned int ohel=0;ohel<3;++ohel) {
-      (*ME())(ihel,0,0,ohel) = gf1a1Pi_*ga1RhoPi_*(pol[0]*bwa1[0]-pol[1]*bwa1[1]).dot(vectors_[1][ohel]);
+      (*ME())(ihel,0,0,ohel) = gf1a1Pi_*ga1RhoPi_*(LorentzPolarizationVector(pol[0]*bwa1[0])-
+						   LorentzPolarizationVector(pol[1]*bwa1[1])).dot(vectors_[1][ohel]);
     }
   } 
   // matrix element

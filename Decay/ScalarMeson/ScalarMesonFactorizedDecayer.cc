@@ -667,8 +667,8 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan, const Particle & part,
       }
       for(unsigned int fhel=0;fhel<form.size();++fhel) {
 	ihel[_formpart[mode][iy]+1]=fhel;
-	(*ME())(ihel) +=pre*_CKMfact[mode][iy]*
-	  form[fhel].dot(curr[chel])*SM().fermiConstant();
+	(*ME())(ihel) += Complex(pre*_CKMfact[mode][iy]*
+				 form[fhel].dot(curr[chel])*SM().fermiConstant());
       }
     }
   }

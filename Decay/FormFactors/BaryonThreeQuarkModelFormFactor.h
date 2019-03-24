@@ -203,7 +203,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  BaryonThreeQuarkModelFormFactor & operator=(const BaryonThreeQuarkModelFormFactor &);
+  BaryonThreeQuarkModelFormFactor & operator=(const BaryonThreeQuarkModelFormFactor &) = delete;
 
 private:
 

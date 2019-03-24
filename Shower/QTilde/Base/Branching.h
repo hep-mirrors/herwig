@@ -61,7 +61,7 @@ using namespace ThePEG;
     /**
      *  Default constructor
      */
-    Branching() : hard(false), iout(0) {}
+    Branching() : type(ShowerPartnerType::Undefined), hard(false), iout(0) {}
   };
 
 }

@@ -178,7 +178,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  EtaPiPiDefaultCurrent & operator=(const EtaPiPiDefaultCurrent &);
+  EtaPiPiDefaultCurrent & operator=(const EtaPiPiDefaultCurrent &) = delete;
 
 private:
   

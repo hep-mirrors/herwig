@@ -110,7 +110,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FtoFVVDecayer & operator=(const FtoFVVDecayer &);
+  FtoFVVDecayer & operator=(const FtoFVVDecayer &) = delete;
 
 private:
   

@@ -274,7 +274,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  FxFxFileReader & operator=(const FxFxFileReader &);
+  FxFxFileReader & operator=(const FxFxFileReader &) = delete;
 
 public:
 

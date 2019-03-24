@@ -290,8 +290,8 @@ double TensorMeson2PScalarDecayer::me2(const int,const Particle & part,
   }
   // calculate the matrix element
   for(unsigned int ix=0;ix<5;++ix) {
-    (*ME())(ix,0,0) = _coupling[imode()]/part.mass()*
-      ((_tensors[ix]*momenta[1])*momenta[0]);
+    (*ME())(ix,0,0) = Complex(_coupling[imode()]/part.mass()*
+			      ((_tensors[ix]*momenta[1])*momenta[0]));
   }
   double output = ME()->contract(_rho).real();
   // test of the answer

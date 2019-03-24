@@ -224,7 +224,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TwoKaonOnePionDefaultCurrent & operator=(const TwoKaonOnePionDefaultCurrent &);
+  TwoKaonOnePionDefaultCurrent & operator=(const TwoKaonOnePionDefaultCurrent &) = delete;
 
 private:
   

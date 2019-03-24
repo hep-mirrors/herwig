@@ -160,7 +160,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  VectorMeson2FermionDecayer & operator=(const VectorMeson2FermionDecayer &);
+  VectorMeson2FermionDecayer & operator=(const VectorMeson2FermionDecayer &) = delete;
 
 private:
 

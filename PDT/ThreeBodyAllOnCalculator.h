@@ -194,7 +194,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ThreeBodyAllOnCalculator & operator=(const ThreeBodyAllOnCalculator &);
+  ThreeBodyAllOnCalculator & operator=(const ThreeBodyAllOnCalculator &) = delete;
 
 private:
   

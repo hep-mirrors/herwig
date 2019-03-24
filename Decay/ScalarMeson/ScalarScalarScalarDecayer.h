@@ -149,7 +149,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ScalarScalarScalarDecayer & operator=(const ScalarScalarScalarDecayer &);
+  ScalarScalarScalarDecayer & operator=(const ScalarScalarScalarDecayer &) = delete;
 
 private:
 

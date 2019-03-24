@@ -103,7 +103,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  RunningMass & operator=(const RunningMass &);
+  RunningMass & operator=(const RunningMass &) = delete;
   
 private:
 

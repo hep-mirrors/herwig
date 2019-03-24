@@ -208,9 +208,9 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      (*ME())(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
-			  (_vectors[1][iy]*momenta[0])*
-			  (_vectors[0][ix]*momenta[1]));
+      (*ME())(0,ix,iy)=Complex(fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
+				     (_vectors[1][iy]*momenta[0])*
+				     (_vectors[0][ix]*momenta[1])));
     }
   }
   double me = ME()->contract(_rho).real();

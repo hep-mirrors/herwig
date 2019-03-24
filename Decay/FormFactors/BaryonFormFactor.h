@@ -350,7 +350,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  BaryonFormFactor & operator=(const BaryonFormFactor &);
+  BaryonFormFactor & operator=(const BaryonFormFactor &) = delete;
 
   private:
 

@@ -232,7 +232,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PairRapidityCut & operator=(const PairRapidityCut &);
+  PairRapidityCut & operator=(const PairRapidityCut &) = delete;
 
 };
 

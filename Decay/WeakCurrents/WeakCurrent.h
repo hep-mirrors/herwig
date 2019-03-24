@@ -239,7 +239,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  WeakCurrent & operator=(const WeakCurrent &);
+  WeakCurrent & operator=(const WeakCurrent &) = delete;
 
 private:
 

@@ -164,7 +164,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LeptonNeutrinoCurrent & operator=(const LeptonNeutrinoCurrent &);
+  LeptonNeutrinoCurrent & operator=(const LeptonNeutrinoCurrent &) = delete;
 
 private:
   
