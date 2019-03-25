@@ -266,7 +266,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PGSInterface & operator=(const PGSInterface &);
+  PGSInterface & operator=(const PGSInterface &) = delete;
 
 private:
 

@@ -266,7 +266,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  a1ThreePionCLEODecayer & operator=(const a1ThreePionCLEODecayer &);
+  a1ThreePionCLEODecayer & operator=(const a1ThreePionCLEODecayer &) = delete;
   
 private:
 

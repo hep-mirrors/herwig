@@ -196,7 +196,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ThreeMesonDefaultCurrent & operator=(const ThreeMesonDefaultCurrent &);
+  ThreeMesonDefaultCurrent & operator=(const ThreeMesonDefaultCurrent &) = delete;
 
 private:
   

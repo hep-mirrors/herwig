@@ -414,7 +414,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  DecayIntegrator & operator=(const DecayIntegrator &);
+  DecayIntegrator & operator=(const DecayIntegrator &) = delete;
 
 private:
 

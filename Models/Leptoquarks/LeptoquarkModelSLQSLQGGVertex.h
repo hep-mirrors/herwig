@@ -82,7 +82,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LeptoquarkModelSLQSLQGGVertex & operator=(const LeptoquarkModelSLQSLQGGVertex &);
+  LeptoquarkModelSLQSLQGGVertex & operator=(const LeptoquarkModelSLQSLQGGVertex &) = delete;
   
   /**
    * The energy at which the coupling was last evaluated

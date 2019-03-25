@@ -652,5 +652,4 @@ private:
 
 }
 
-#include "KinematicsReconstructor.tcc"
 #endif /* HERWIG_KinematicsReconstructor_H */

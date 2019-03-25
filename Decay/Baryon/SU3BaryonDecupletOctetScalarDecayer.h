@@ -145,7 +145,7 @@ private:
    * Private and non-existent assignment operator.
    */
   SU3BaryonDecupletOctetScalarDecayer & 
-  operator=(const SU3BaryonDecupletOctetScalarDecayer &);
+  operator=(const SU3BaryonDecupletOctetScalarDecayer &) = delete;
 
 private:
 

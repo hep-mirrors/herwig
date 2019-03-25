@@ -98,7 +98,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SMHPPVertex & operator=(const SMHPPVertex &);
+  SMHPPVertex & operator=(const SMHPPVertex &) = delete;
 
 private:
   

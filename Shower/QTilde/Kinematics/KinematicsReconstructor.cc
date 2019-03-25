@@ -28,6 +28,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include <cassert>
+#include "KinematicsReconstructor.tcc"
 
 using namespace Herwig;
 

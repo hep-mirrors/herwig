@@ -177,7 +177,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxAmplitudellbarqqbar & operator=(const MatchboxAmplitudellbarqqbar &);
+  MatchboxAmplitudellbarqqbar & operator=(const MatchboxAmplitudellbarqqbar &) = delete;
 
 };
 

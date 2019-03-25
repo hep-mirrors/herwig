@@ -153,7 +153,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxRambo & operator=(const MatchboxRambo &);
+  MatchboxRambo & operator=(const MatchboxRambo &) = delete;
 
   /**
    * Whether or not we need to reshuffle.

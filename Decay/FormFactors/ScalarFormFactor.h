@@ -381,7 +381,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ScalarFormFactor & operator=(const ScalarFormFactor &);
+  ScalarFormFactor & operator=(const ScalarFormFactor &) = delete;
 
   private:
 

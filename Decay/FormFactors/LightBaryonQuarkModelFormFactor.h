@@ -117,7 +117,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LightBaryonQuarkModelFormFactor & operator=(const LightBaryonQuarkModelFormFactor &);
+  LightBaryonQuarkModelFormFactor & operator=(const LightBaryonQuarkModelFormFactor &) = delete;
 
 private:
 

@@ -109,7 +109,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ADDModelGGGGRVertex & operator=(const ADDModelGGGGRVertex &);
+  ADDModelGGGGRVertex & operator=(const ADDModelGGGGRVertex &) = delete;
 
 private:
 

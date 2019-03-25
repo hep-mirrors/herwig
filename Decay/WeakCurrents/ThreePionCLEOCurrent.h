@@ -262,7 +262,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ThreePionCLEOCurrent & operator=(const ThreePionCLEOCurrent &);
+  ThreePionCLEOCurrent & operator=(const ThreePionCLEOCurrent &) = delete;
 
 private:
 

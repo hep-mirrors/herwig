@@ -175,7 +175,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEfv2vf & operator=(const MEfv2vf &);
+  MEfv2vf & operator=(const MEfv2vf &) = delete;
 
 private:
   

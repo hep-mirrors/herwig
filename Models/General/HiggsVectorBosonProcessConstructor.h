@@ -83,7 +83,7 @@ private:
    * In fact, it should not even be implemented.
    */
   HiggsVectorBosonProcessConstructor & 
-  operator=(const HiggsVectorBosonProcessConstructor &);
+  operator=(const HiggsVectorBosonProcessConstructor &) = delete;
 
 private:
 

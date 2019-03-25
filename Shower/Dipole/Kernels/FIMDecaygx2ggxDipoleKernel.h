@@ -138,7 +138,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FIMDecaygx2ggxDipoleKernel & operator=(const FIMDecaygx2ggxDipoleKernel &);
+  FIMDecaygx2ggxDipoleKernel & operator=(const FIMDecaygx2ggxDipoleKernel &) = delete;
 
   /**
    * Asymmetry option for final state gluon splittings.

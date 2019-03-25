@@ -95,7 +95,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ClusterDecayer & operator=(const ClusterDecayer &);
+  ClusterDecayer & operator=(const ClusterDecayer &) = delete;
 
 public:
 

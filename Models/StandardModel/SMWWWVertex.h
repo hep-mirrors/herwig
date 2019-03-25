@@ -104,7 +104,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMWWWVertex & operator=(const SMWWWVertex &);
+  SMWWWVertex & operator=(const SMWWWVertex &) = delete;
   
 private:
   /**

@@ -82,7 +82,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SextetGGSSVertex & operator=(const SextetGGSSVertex &);
+  SextetGGSSVertex & operator=(const SextetGGSSVertex &) = delete;
 
 private:
 

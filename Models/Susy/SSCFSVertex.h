@@ -106,7 +106,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSCFSVertex & operator=(const SSCFSVertex &);
+  SSCFSVertex & operator=(const SSCFSVertex &) = delete;
 
   /**
    * Pointer to the MSSM object

@@ -144,7 +144,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ClusterFissioner & operator=(const ClusterFissioner &);
+  ClusterFissioner & operator=(const ClusterFissioner &) = delete;
 
   /** 
    * This method directs the splitting of the heavy clusters

@@ -79,12 +79,21 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
     _id = 100*abs(p1->id()) + 10*abs(p2->id()) + abs(p3->id());
   } else {
     _numComp = 2;
-    if(p2->id() > 10)
-      _id = 10*abs(p2->id()/100) + abs(p1->id());
-    else if(p1->id() > 10)
-      _id = 10*abs(p1->id()/100) + abs(p2->id());
-    else
-      _id = 10*abs(p1->id()) + abs(p2->id());
+    int i1,i2;
+    if(p2->id() > 10) {
+      i1 = abs(p2->id()/100);
+      i2 = abs(p1->id());
+    }
+    else if(p1->id() > 10) {
+      i1 = abs(p1->id()/100);
+      i2 = abs(p2->id());
+    }
+    else {
+      i1 = abs(p1->id());
+      i2 = abs(p2->id());
+    }
+    if(i1>i2) swap (i1,i2);
+    _id = 10*i1+i2;
   }
   // calculate the momentum
   calculateP();
