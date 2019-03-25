@@ -189,7 +189,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEMultiChannel & operator=(const MEMultiChannel &);
+  MEMultiChannel & operator=(const MEMultiChannel &) = delete;
 
 private:
 

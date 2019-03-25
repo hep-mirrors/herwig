@@ -148,7 +148,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2Baryons & operator=(const MEee2Baryons &);
+  MEee2Baryons & operator=(const MEee2Baryons &) = delete;
 
 private:
 

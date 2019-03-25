@@ -195,7 +195,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TwoKaonCzyzCurrent & operator=(const TwoKaonCzyzCurrent &);
+  TwoKaonCzyzCurrent & operator=(const TwoKaonCzyzCurrent &) = delete;
 
 private:
 
