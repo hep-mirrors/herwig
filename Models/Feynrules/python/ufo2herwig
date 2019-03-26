@@ -162,11 +162,19 @@ for particle in FR.all_particles:
     # skip ghosts and goldstones
     if(isGhost(particle) or isGoldstone(particle)) :
         continue
-    if particle.mass != 'ZERO':
-        massnames[particle.mass] = abs(particle.pdg_code)
+    if particle.mass != 'ZERO' and particle.mass.name != 'ZERO':
+        if(particle.mass in massnames) :
+            if(abs(particle.pdg_code) not in massnames[particle.mass]) :
+                massnames[particle.mass].append(abs(particle.pdg_code))
+        else :
+            massnames[particle.mass] = [abs(particle.pdg_code)]
 
-    if particle.width != 'ZERO':
-        widthnames[particle.width] = abs(particle.pdg_code)
+    if particle.width != 'ZERO' and particle.width.name != 'ZERO':
+        if(particle.width in widthnames) :
+            if(abs(particle.pdg_code) not in widthnames[particle.width]) :
+                widthnames[particle.width].append(abs(particle.pdg_code))
+        else :
+            widthnames[particle.width] = [abs(particle.pdg_code)]
 
 interfaceDecls = []
 modelparameters = {}
@@ -238,18 +246,22 @@ for p in FR.all_parameters:
         text=text.replace('()()','()')
         doinit.append('   %s_ = %s;'  % (p.name, text) )
         if p in massnames:
-            doinit.append('   resetMass(%s,%s_ * GeV);'  % (massnames[p], p.name) )
-        elif p in widthnames:
-            doinit.append('   getParticleData(%s)->width(%s_ * GeV);' % (widthnames[p], p.name) )
-            doinit.append('   getParticleData(%s)->cTau (%s_ == 0.0 ? Length() : hbarc/(%s_*GeV));' % (widthnames[p], p.name, p.name) )
-            doinit.append('   getParticleData(%s)->widthCut(10. * %s_ * GeV);' % (widthnames[p], p.name) )
+            for idCode in massnames[p] :
+                doinit.append('   resetMass(%s,%s_ * GeV);'  % (idCode, p.name) )
+        if p in widthnames:
+            for idCode in widthnames[p] :
+                doinit.append('   getParticleData(%s)->width(%s_ * GeV);' % (idCode, p.name) )
+                doinit.append('   getParticleData(%s)->cTau (%s_ == 0.0 ? Length() : hbarc/(%s_*GeV));' % (idCode, p.name, p.name) )
+                doinit.append('   getParticleData(%s)->widthCut(10. * %s_ * GeV);' % (idCode, p.name) )
 
 
     elif p.nature == 'external':
         if p in massnames:
-            doinit.append('   %s_ = getParticleData(%s)->mass()  / GeV;'  % (p.name, massnames[p]) )
-        elif p in widthnames:
-            doinit.append('   %s_ = getParticleData(%s)->width() / GeV;'  % (p.name, widthnames[p]) )
+            for idCode in massnames[p] :
+                doinit.append('   %s_ = getParticleData(%s)->mass()  / GeV;'  % (p.name, idCode) )
+        if p in widthnames:
+            for idCode in widthnames[p] :
+                doinit.append('   %s_ = getParticleData(%s)->width() / GeV;'  % (p.name, idCode) )
 
     if args.verbose:
         pprint.pprint((p.name,p.value, value, p.nature))
