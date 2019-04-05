@@ -36,6 +36,7 @@ class PyToCpp(ast.NodeVisitor):
         """Convert expression to C++ format."""
         self.result = []
         self.symbols = set()
+        expression=expression.replace("abs(","cmath.abs(")
         tree = ast.parse(expression)
         #print ast.dump(tree)
         return self.visit(tree)
@@ -112,6 +113,8 @@ class PyToCpp(ast.NodeVisitor):
             text = 'Complex'
         elif text == 'complexconjugate': 
             text = 'conj'
+        elif text == 'im':
+            text = 'imag'
         elif text not in []:
             self.symbols.add(text)
         self.result.append(text)

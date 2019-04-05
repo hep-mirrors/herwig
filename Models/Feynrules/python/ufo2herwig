@@ -86,7 +86,8 @@ def evaluate(x):
     import cmath
     return eval(x, 
                 {'cmath':cmath,
-                 'complexconjugate':FR.function_library.complexconjugate}, 
+                 'complexconjugate':FR.function_library.complexconjugate,
+                 'im':FR.function_library.im},
                 parmsubs)
 
 
