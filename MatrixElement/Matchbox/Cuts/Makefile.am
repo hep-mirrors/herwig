@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = HwMatchboxCuts.la
 
 HwMatchboxCuts_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 3:0:0
+$(AM_LDFLAGS) -module -version-info 4:0:0
 
 nodist_HwMatchboxCuts_la_SOURCES = \
 Cuts__all.cc
