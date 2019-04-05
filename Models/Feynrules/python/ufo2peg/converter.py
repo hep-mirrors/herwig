@@ -115,6 +115,8 @@ class PyToCpp(ast.NodeVisitor):
             text = 'conj'
         elif text == 'im':
             text = 'imag'
+        elif text == 're':
+            text = 'real'
         elif text not in []:
             self.symbols.add(text)
         self.result.append(text)
