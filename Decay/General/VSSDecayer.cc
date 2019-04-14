@@ -118,12 +118,10 @@ Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     tcPDPtr in = inpart.first->CC() ? tcPDPtr(inpart.first->CC()) : inpart.first;
     perturbativeVertex_[0]->setCoupling(sqr(inpart.second), in, outa.first,
 				     outb.first);
-    double mu1sq = sqr(outa.second/inpart.second);
-    double mu2sq = sqr(outb.second/inpart.second);
-    double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = -norm(perturbativeVertex_[0]->norm())*me2*pcm /
+    double me2 = 4.*sqr(pcm/inpart.second);
+    Energy output = norm(perturbativeVertex_[0]->norm())*me2*pcm /
       (24.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);

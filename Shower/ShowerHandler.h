@@ -176,7 +176,7 @@ public:
   
   struct ParticleOrdering {
 
-    bool operator() (tcPDPtr p1, tcPDPtr p2);
+    bool operator() (tcPDPtr p1, tcPDPtr p2) const;
 
   };
   
