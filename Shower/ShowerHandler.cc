@@ -1113,7 +1113,7 @@ tDMPtr ShowerHandler::findDecayMode(const string & tag) const {
  * @param p2 The second ParticleData object
  */
 
-bool ShowerHandler::ParticleOrdering::operator() (tcPDPtr p1, tcPDPtr p2) {
+bool ShowerHandler::ParticleOrdering::operator() (tcPDPtr p1, tcPDPtr p2) const {
   return abs(p1->id()) > abs(p2->id()) ||
     ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
     ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );

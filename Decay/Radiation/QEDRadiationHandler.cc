@@ -37,7 +37,7 @@ struct ParticleOrdering {
    * @param p1 The first ParticleData object
    * @param p2 The second ParticleData object
    */
-  bool operator()(cPDPtr p1, cPDPtr p2) {
+  bool operator()(cPDPtr p1, cPDPtr p2) const {
     return abs(p1->id()) > abs(p2->id()) ||
       ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
       ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
