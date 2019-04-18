@@ -117,6 +117,10 @@ class PyToCpp(ast.NodeVisitor):
             text = 'imag'
         elif text == 're':
             text = 'real'
+        elif text == 'max':
+            text = 'max'
+        elif text == 'min':
+            text = 'min'
         elif text not in []:
             self.symbols.add(text)
         self.result.append(text)
