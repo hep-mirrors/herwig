@@ -327,7 +327,23 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
-      Energy startingScale = particle.scales().EW;
+	  // -----------------------------------------------------------------//
+	  Energy startingScale;
+	  if(particles[1]->id()==ParticleID::Z0 || particles[2]->id()==ParticleID::Z0){
+		startingScale = particle.scales().EW_Z; //ref: symmetry choice
+		//cerr<<"-->HINT: Z0\n";
+	  }
+	  else if(abs(particles[1]->id())==ParticleID::Wplus 
+	       || abs(particles[2]->id())==ParticleID::Wplus){
+		startingScale = particle.scales().EW_W; //ref: anticolor choice
+		//cerr<<"-->HINT: W+/W-\n";
+	  }
+	  else{ //ensurance! 
+		startingScale = particle.scales().EW_Z; //ref: symmetry choice
+		cerr<<"suspicious activity in EW shower: P[0]: "
+		    <<particles[0]->id()<<" P[1]: "<<particles[1]->id()<<" P[2]:"<<particles[2]->id()<<"\n";
+	  }
+      // -----------------------------------------------------------------//
       newKin = cit->second.sudakov->
     	generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning);
     }
@@ -451,8 +467,25 @@ chooseDecayBranching(ShowerParticle &particle,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
-      Energy stoppingScale = stoppingScales.EW;
-      Energy startingScale = particle.scales().EW;
+	  // -----------------------------------------------------------------//
+	  Energy stoppingScale, startingScale; 
+	  if(particles[1]->id()==ParticleID::Z0 || particles[2]->id()==ParticleID::Z0){
+	  stoppingScale = stoppingScales.EW_Z;
+      startingScale = particle.scales().EW_Z; //ref: symmetry choice
+	  //cerr<<"-->HINT: Z0\n";
+	  }
+	  else if(abs(particles[1]->id())==ParticleID::Wplus || abs(particles[2]->id())==ParticleID::Wplus){
+	  stoppingScale = stoppingScales.EW_W;
+      startingScale = particle.scales().EW_W; //ref: anticolor choice
+	  //cerr<<"-->HINT: W+/W-\n";
+	  }
+	  else{ //ensurance! 
+	  stoppingScale = stoppingScales.EW_Z;
+      startingScale = particle.scales().EW_Z; //ref: symmetry choice
+		cerr<<"suspicious activity in EW shower: P[0]: "
+		    <<particles[0]->id()<<" P[1]: "<<particles[1]->id()<<" P[2]:"<<particles[2]->id()<<"\n";
+	  }
+      // -----------------------------------------------------------------//	  
       if(startingScale < stoppingScale ) { 
     	newKin = cit->second.sudakov->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,particles,rho,enhance,_deTuning);
@@ -570,7 +603,23 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
-      Energy startingScale = particle.scales().EW;
+	  // -----------------------------------------------------------------//
+	  Energy startingScale;
+	  if(particles[1]->id()==ParticleID::Z0 || particles[2]->id()==ParticleID::Z0){
+		startingScale = particle.scales().EW_Z; //ref: symmetry choice
+		//cerr<<"-->HINT: Z0\n";
+	  }
+	  else if(abs(particles[1]->id())==ParticleID::Wplus 
+	       || abs(particles[2]->id())==ParticleID::Wplus){
+		startingScale = particle.scales().EW_W; //ref: anticolor choice
+		//cerr<<"-->HINT: W+/W-\n";
+	  }
+	  else{ //ensurance! 
+		startingScale = particle.scales().EW_Z; //ref: symmetry choice
+		cerr<<"suspicious activity in EW shower: P[0]: "
+		    <<particles[0]->id()<<" P[1]: "<<particles[1]->id()<<" P[2]:"<<particles[2]->id()<<"\n";
+	  }
+      // -----------------------------------------------------------------//
       newKin=cit->second.sudakov->
     	generateNextSpaceBranching(startingScale,particles,particle.x(),rho,enhance,beam,_deTuning);
     }

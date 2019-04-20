@@ -85,7 +85,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
     qtildeHard = 
       theQTildeFinder->
       calculateFinalFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
-				bornCXComb()->meMomenta()[dipole()->bornSpectator()]).first;
+				bornCXComb()->meMomenta()[dipole()->bornSpectator()],0).first; //0 is the key to symmetric choice for final final scale 
   }
 
   // FI
