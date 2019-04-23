@@ -147,7 +147,7 @@ inline Complex BreitWignerSWave(const Energy2 & s, const Energy & mRes, const En
 }
 
 /**
- *  Standard \f$p\f$-wave Breit-Wigner
+ *  Standard \f$d\f$-wave Breit-Wigner
  */
 inline Complex BreitWignerDWave(const Energy2 & s, const Energy & mRes, const Energy & gamma,
 				const Energy & m1, const Energy & m2) {

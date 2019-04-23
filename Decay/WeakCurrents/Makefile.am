@@ -38,7 +38,8 @@ EtaPrimePiPiCurrent.h\
 KKPiCurrent.h\
 KStarKCurrent.h\
 EtaPhiCurrent.h\
-EtaOmegaCurrent.h
+EtaOmegaCurrent.h\
+OmegaPiPiCurrent.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -71,4 +72,5 @@ EtaPrimePiPiCurrent.cc\
 KKPiCurrent.cc\
 KStarKCurrent.cc\
 EtaPhiCurrent.cc\
-EtaOmegaCurrent.cc
+EtaOmegaCurrent.cc\
+OmegaPiPiCurrent.cc
