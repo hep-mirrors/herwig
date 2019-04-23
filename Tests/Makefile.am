@@ -180,7 +180,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
                   $(shell echo Rivet/LHC{,-Dipole}-7-{W,Z}Gamma-{e,mu}.in) \
 	          $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \
 	          $(shell echo Rivet/LHC{-Matchbox,-Matchbox-Powheg,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{Z-b,Z-bb,8-Z-b,8-Z-bb,W-b,8-Z-jj}.in) \
-		  $(shell echo Rivet/LHC{,-Dipole}-{7,8}-PromptPhoton-{1..4}.in) Rivet/LHC-GammaGamma-7.in \
+		  $(shell echo Rivet/LHC{,-Dipole}-{7,8,13}-PromptPhoton-{1..4}.in) Rivet/LHC-GammaGamma-7.in \
 	          $(shell echo Rivet/LHC{,-Powheg}-{7,8}-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.in) \
 	          $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{ggH,VBF,WH,ZH}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.in) \
@@ -353,7 +353,7 @@ Rivet-LHC-Photon : Rivet-LHC-Photon/done
 	touch $@
 
 Rivet-LHC-Photon/done: \
-		$(shell echo Rivet-LHC-{7,8}-PromptPhoton-{1..4}.yoda) \
+		$(shell echo Rivet-LHC-{7,8,13}-PromptPhoton-{1..4}.yoda) \
 		Rivet-LHC-GammaGamma-7.yoda \
 	    $(shell echo Rivet{,-Powheg}-LHC-{7,8}-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.yoda)
 	rm -rf Rivet-LHC-Photon
