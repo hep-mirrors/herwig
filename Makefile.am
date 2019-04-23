@@ -6,7 +6,7 @@ SUBDIRS = include \
 
 EXTRA_DIST = GUIDELINES cat_with_cpplines
 
-## DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH) --with-gsl=$(GSLPATH) --with-boost=/mt/data1/herwig
+DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH) --with-gsl=$(GSLPATH)
 
 ACLOCAL_AMFLAGS = -I m4
 

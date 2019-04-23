@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwDipoleShowerAlphaS.la
 
-HwDipoleShowerAlphaS_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:0:0
+HwDipoleShowerAlphaS_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 6:0:0
 
 HwDipoleShowerAlphaS_la_SOURCES =  \
 alpha_s.h \

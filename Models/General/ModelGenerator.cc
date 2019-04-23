@@ -451,7 +451,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 
 namespace {
   struct DecayModeOrdering {
-    bool operator()(tcDMPtr m1, tcDMPtr m2) {
+    bool operator()(tcDMPtr m1, tcDMPtr m2) const {
       if(m1->brat()!=m2->brat()) {
 	return m1->brat()>m2->brat();
       }

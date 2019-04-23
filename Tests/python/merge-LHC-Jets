@@ -11,6 +11,9 @@ import os, yoda
 
 # #############################################
 
+def rescale(path,scale) :
+    if(path not in outhistos) : return
+    outhistos[path].scaleW(scale)
 
 def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     pthigh= 1e100
@@ -127,9 +130,9 @@ yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
-           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda",
+           "-7-Top-SL.yoda","-7-Top-L.yoda",
            "-8-Top-SL.yoda","-8-Top-L.yoda","-8-Top-All.yoda",
-           "-13-Top-L.yoda","-13-Top-SL.yoda"]
+           "-13-Top-L.yoda","-13-Top-SL.yoda","-13-Top-All.yoda"]
 
 for i in range(1,11) :
     for j in [7,8,13] :
@@ -239,6 +242,7 @@ for f in yodafiles:
            aopath.find("I1459051")>0 or aopath.find("I1487277")>0 or
            aopath.find("I1421646")>0 or aopath.find("I1111014")>0 or
            aopath.find("I1605749")>0 or aopath.find("I1682495")>0 or
+           aopath.find("I1609253")>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -1307,17 +1311,17 @@ mergeByPt("/ATLAS_2014_I1307243/d40-x01-y01", "7000")
 
 logging.info("Processing ATLAS_2014_I1325553")
 mergeByPt("/ATLAS_2014_I1325553/d01-x01-y01", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d01-x01-y02", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d01-x01-y03", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d01-x01-y04", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d01-x01-y05", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d01-x01-y06", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y01", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d02-x01-y02", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d02-x01-y03", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d02-x01-y04", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d02-x01-y05", "7000")
-mergeByPt("/ATLAS_2014_I1325553/d02-x01-y06", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d06-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d07-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d08-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d09-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d10-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d11-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d12-x01-y01", "7000")
 
 logging.info("Processing ATLAS_2016_I1419070")
 for i in range(1,13) :
@@ -1510,7 +1514,30 @@ for i in [0,1,2,3] :
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+10), "13000", "900" )
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+11), "13000", "900" )
     useOnePt("/CMS_2018_I1682495/d%02d-x01-y01" % (12*i+12), "13000", "900" )
-        
+
+# rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
+for i in range(96,116,2) :
+    rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)
+for i in range(15,29,2) :
+    rescale("/ATLAS_2017_I1614149/d%s-x01-y01" % i,2.)
+for i in range(1,23,2) :
+    rescale("/ATLAS_2015_I1404878/d%02d-x01-y01" % i,2.)
+rescale("/ATLAS_2015_I1397637/d01-x01-y01",2.)
+for i in range(1,22,1) :
+    rescale("/ATLAS_2015_I1345452/d%02d-x01-y01" % i,2.)
+for i in range(1,10,1) :
+    rescale("/ATLAS_2014_I1304688/d%02d-x01-y01" % i,2.)
+for i in range(1,82) :
+    rescale("/CMS_2018_I1663958/d%02d-x01-y01" % i,2.)
+for i in range(169,173,1) :
+    rescale("/CMS_2018_I1663958/d%02d-x01-y01" % i,2.)
+for i in range(8,15) :
+    rescale("/CMS_2018_I1662081/d%02d-x01-y01" % i,2.)
+for i in range(1,41) :
+    rescale("/CMS_2016_I1491950/d%02d-x02-y01" % i,2.)
+for i in range(1,13) :
+    rescale("/CMS_2016_I1454211/d%02d-x01-y01" % i,2.)
+rescale("/CMS_2017_I1518399/d01-x01-y01",2.)
 # Choose output file
 name = args[0]+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)
