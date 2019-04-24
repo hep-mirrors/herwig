@@ -191,13 +191,13 @@ public:
    *  General method to calculate the initial evolution scales
    */
   pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &,
-						      const bool isDecayCase);
+						      const bool isDecayCase, int key);
 
   /**
    *  Calculate the initial evolution scales given momenta
    */
   pair<Energy,Energy> calculateFinalFinalScales(const Lorentz5Momentum & p1, 
-                                                const Lorentz5Momentum & p2);
+                                                const Lorentz5Momentum & p2, int key);
 
   /**
    *  Calculate the initial evolution scales given momenta
@@ -230,7 +230,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  PartnerFinder & operator=(const PartnerFinder &) = delete;
+  PartnerFinder & operator=(const PartnerFinder &);
 
 private:
 

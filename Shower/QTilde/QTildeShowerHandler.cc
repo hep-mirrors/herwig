@@ -1020,8 +1020,15 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
 	else if(type==ShowerPartnerType::QCDAntiColourLine) {
 	  tooHard |= particles[ix]->scales().QCD_ac_noAO<hardScale;
 	}
-	else if(type==ShowerPartnerType::EW) {
-	  tooHard |= particles[ix]->scales().EW<hardScale;
+	else if(type==ShowerPartnerType::EW && 
+	       (particles[1]->id()==ParticleID::Z0 
+		   || particles[2]->id()==ParticleID::Z0)) {
+	  tooHard |= particles[ix]->scales().EW_Z<hardScale;
+	}
+	else if(type==ShowerPartnerType::EW && 
+	       (abs(particles[1]->id())==ParticleID::Wplus 
+	       || abs(particles[2]->id())==ParticleID::Wplus)) {
+	  tooHard |= particles[ix]->scales().EW_W<hardScale;
 	}
       }
     }
@@ -2084,12 +2091,9 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   else {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
       if(particlesToShower[ix]->progenitor()->isFinalState()) {
-        if(particlesToShower[ix]->progenitor()->dataPtr()->stable()){
-          auto dm=  ShowerHandler::currentHandler()->retConstituentMasses()?
-          particlesToShower[ix]->progenitor()->dataPtr()->constituentMass():
-          particlesToShower[ix]->progenitor()->dataPtr()->mass();
-          minmass += dm;
-        }else
+	if(particlesToShower[ix]->progenitor()->dataPtr()->stable()) 
+	  minmass += particlesToShower[ix]->progenitor()->dataPtr()->constituentMass();
+	else
 	  minmass += particlesToShower[ix]->progenitor()->mass();
       }
       else {

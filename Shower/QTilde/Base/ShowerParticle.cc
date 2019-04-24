@@ -41,7 +41,8 @@ void ShowerParticle::vetoEmission(ShowerPartnerType, Energy scale) {
   scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
   scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
   scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
-  scales_.EW          = min(scale,scales_.EW         );
+  scales_.EW_Z        = min(scale,scales_.EW_Z       );
+  scales_.EW_W        = min(scale,scales_.EW_W       );
   if(spinInfo()) spinInfo()->undecay();
 }
 
@@ -72,11 +73,16 @@ LorentzRotation boostToShower(Lorentz5Momentum & porig, tShowerBasisPtr basis) {
     else if(axis.z()<0.) {
       output.rotate(Constants::pi,Axis(1.,0.,0.));
     }
-    porig *= output;
+    porig = output*basis->pVector();
+    porig.setX(ZERO);
+    porig.setY(ZERO);
   }
   else {
     output = LorentzRotation(-basis->pVector().boostVector());
-    porig *= output;
+    porig = output*basis->pVector();
+    porig.setX(ZERO);
+    porig.setY(ZERO);
+    porig.setZ(ZERO);
   }
   return output;
 }
@@ -246,7 +252,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
       return false;
     }
     else {
-      Lorentz5Momentum porig=momentum();
+      Lorentz5Momentum porig;
       LorentzRotation rot = boostToShower(porig,showerBasis());
       Helicity::Direction dir = this->isFinalState() ? outgoing : incoming;
       if(this->dataPtr()->iSpin()==PDT::Spin0) {
@@ -268,7 +274,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
   else if(this->isFinalState()) {
     assert(this->perturbative()==1 || this->perturbative()==2);
     // get transform to shower frame
-    Lorentz5Momentum porig=momentum();
+    Lorentz5Momentum porig;
     LorentzRotation rot = boostToShower(porig,showerBasis());
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
@@ -317,7 +323,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
   else if(this->perturbative()==1 && !this->isFinalState()) {
     // get the basis vectors
     // get transform to shower frame
-    Lorentz5Momentum porig=momentum();
+    Lorentz5Momentum porig;
     LorentzRotation rot = boostToShower(porig,showerBasis());
     porig *= this->x();
     // the rest depends on the spin of the particle
@@ -363,8 +369,8 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
   // incoming to decay
   else if(this->perturbative() == 2 && !this->isFinalState()) { 
     // get the basis vectors
-    //Lorentz5Momentum porig;
-    //LorentzRotation rot=boostToShower(porig,showerBasis());
+    Lorentz5Momentum porig;
+    LorentzRotation rot=boostToShower(porig,showerBasis());
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
     mapping=RhoDMatrix(spin);

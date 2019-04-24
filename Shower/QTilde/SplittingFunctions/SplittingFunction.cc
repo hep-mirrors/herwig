@@ -693,7 +693,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
       emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
       emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
-      emitter->scales().EW          = min(scale,parent->scales().EW         );
+      emitter->scales().EW_Z        = min(scale,parent->scales().EW_Z       );
+      emitter->scales().EW_W        = min(scale,parent->scales().EW_W       );
       emitter->scales().EW_noAO     = min(scale,parent->scales().EW_noAO    );
       // emitted 
       emitted->scales().QED         = zEmitted*scale;
@@ -702,7 +703,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitted->scales().QCD_c_noAO  = ZERO;
       emitted->scales().QCD_ac      = ZERO;
       emitted->scales().QCD_ac_noAO = ZERO;
-      emitted->scales().EW          = min(scale,parent->scales().EW         );
+      emitted->scales().EW_Z        = min(scale,parent->scales().EW_Z       );
+      emitted->scales().EW_W        = min(scale,parent->scales().EW_W       );
       emitted->scales().EW_noAO     = min(scale,parent->scales().EW_noAO    );
     }
     // gamma -> f fbar
@@ -719,7 +721,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
 	emitter->scales().QCD_ac      = zEmitter*scale;
 	emitter->scales().QCD_ac_noAO =          scale;
       }
-      emitter->scales().EW            = zEmitter*scale;
+      emitter->scales().EW_Z          = zEmitter*scale;
+      emitter->scales().EW_W          = zEmitter*scale;
       emitter->scales().EW_noAO       =          scale;
       // emitted 
       emitted->scales().QED           = zEmitted*scale;
@@ -732,7 +735,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
 	emitted->scales().QCD_ac      = zEmitted*scale;
 	emitted->scales().QCD_ac_noAO =          scale;
       }
-      emitted->scales().EW            = zEmitted*scale;
+      emitted->scales().EW_Z          = zEmitted*scale;
+      emitted->scales().EW_W          = zEmitted*scale;
       emitted->scales().EW_noAO       =          scale;
     }
   }
@@ -743,7 +747,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
     if(!bosonSplitting) {
       emitter->scales().QED         = min(scale,parent->scales().QED     );
       emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
-      emitter->scales().EW          = min(scale,parent->scales().EW     );
+      emitter->scales().EW_Z        = min(scale,parent->scales().EW_Z   );
+      emitter->scales().EW_W        = min(scale,parent->scales().EW_W   );
       emitter->scales().EW_noAO     = min(scale,parent->scales().EW_noAO);
       if(partnerType==ShowerPartnerType::QCDColourLine) {
 	emitter->scales().QCD_c       = zEmitter*scale;
@@ -764,7 +769,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       emitted->scales().QCD_c_noAO  =          scale;
       emitted->scales().QCD_ac      = zEmitted*scale;
       emitted->scales().QCD_ac_noAO =          scale;
-      emitted->scales().EW          = min(scale,parent->scales().EW     );
+      emitted->scales().EW_Z        = min(scale,parent->scales().EW_Z   );
+      emitted->scales().EW_W        = min(scale,parent->scales().EW_W   );
       emitted->scales().EW_noAO     = min(scale,parent->scales().EW_noAO);
     }
     // g -> q qbar
@@ -774,7 +780,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
 	emitter->scales().QED         = zEmitter*scale;
 	emitter->scales().QED_noAO    =          scale;
       }
-      emitter->scales().EW            = zEmitter*scale;
+      emitter->scales().EW_Z          = zEmitter*scale;
+      emitter->scales().EW_W          = zEmitter*scale;
       emitter->scales().EW_noAO       =          scale;
       emitter->scales().QCD_c         = zEmitter*scale;
       emitter->scales().QCD_c_noAO    =          scale;
@@ -785,7 +792,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
 	emitted->scales().QED         = zEmitted*scale;
 	emitted->scales().QED_noAO    =          scale;
       }
-      emitted->scales().EW            = zEmitted*scale;
+      emitted->scales().EW_Z          = zEmitted*scale;
+      emitted->scales().EW_W          = zEmitted*scale;
       emitted->scales().EW_noAO       =          scale;
       emitted->scales().QCD_c         = zEmitted*scale;
       emitted->scales().QCD_c_noAO    =          scale;
@@ -795,9 +803,11 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
   }
   else if(partnerType==ShowerPartnerType::EW) {
     // EW
-    emitter->scales().EW          = zEmitter*scale;
+    emitter->scales().EW_Z        = zEmitter*scale;
+    emitter->scales().EW_W        = zEmitter*scale;
     emitter->scales().EW_noAO     =          scale;
-    emitted->scales().EW          = zEmitted*scale;
+    emitted->scales().EW_Z        = zEmitted*scale;
+    emitted->scales().EW_W        = zEmitted*scale;
     emitted->scales().EW_noAO     =          scale;
     // QED
     // W radiation AO
@@ -961,9 +971,15 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType partnerType
 	timelike->scales().QED_noAO     =   scale;
       }
       // EW scales
-      parent   ->scales().EW         =   scale;
+	  if(timelike->id()==ParticleID::Z0) {
+      parent   ->scales().EW_Z       =   scale;
+	  timelike->scales().EW_Z        = AOScale;
+	  }
+	  if(timelike->id()==ParticleID::Wplus){
+      parent   ->scales().EW_W       =   scale;
+	  timelike->scales().EW_W        = AOScale;
+	  }
       parent   ->scales().EW_noAO    =   scale;
-      timelike->scales().EW          = AOScale;
       timelike->scales().EW_noAO     =   scale;
     }
     else assert(false);
@@ -989,12 +1005,14 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
     timelike->scales().QCD_c_noAO  =    ZERO;
     timelike->scales().QCD_ac      =    ZERO;
     timelike->scales().QCD_ac_noAO =    ZERO;
-    timelike->scales().EW          = ZERO;
+    timelike->scales().EW_Z        = ZERO;
+    timelike->scales().EW_W        = ZERO;
     timelike->scales().EW_noAO     = ZERO;
     // spacelike
     spacelike->scales().QED         =   scale;
     spacelike->scales().QED_noAO    =   scale;
-    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    spacelike->scales().EW_Z        = max(scale,parent->scales().EW_Z       );
+    spacelike->scales().EW_W        = max(scale,parent->scales().EW_W       );
     spacelike->scales().EW_noAO     = max(scale,parent->scales().EW_noAO    );
   }
   // QCD
@@ -1007,26 +1025,31 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType partnerType,
     timelike->scales().QCD_c_noAO  =   scale;
     timelike->scales().QCD_ac      = AOScale;
     timelike->scales().QCD_ac_noAO =   scale;
-    timelike->scales().EW          = ZERO;
+    timelike->scales().EW_Z        = ZERO;
+    timelike->scales().EW_W        = ZERO;
     timelike->scales().EW_noAO     = ZERO;
     // spacelike
     spacelike->scales().QED         = max(scale,parent->scales().QED        );
     spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
-    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    spacelike->scales().EW_Z        = max(scale,parent->scales().EW_Z       );
+    spacelike->scales().EW_W        = max(scale,parent->scales().EW_W       );
     spacelike->scales().EW_noAO     = max(scale,parent->scales().EW_noAO    );
   }
   else if(partnerType==ShowerPartnerType::EW) {
     // EW
-    timelike->scales().EW           = AOScale;
+    timelike->scales().EW_Z         = AOScale;
+    timelike->scales().EW_W         = AOScale;
     timelike->scales().EW_noAO      =   scale;
-    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    spacelike->scales().EW_Z        = max(scale,parent->scales().EW_Z       );
+    spacelike->scales().EW_W        = max(scale,parent->scales().EW_W       );
     spacelike->scales().EW_noAO     = max(scale,parent->scales().EW_noAO    );
     // QCD
     timelike->scales().QCD_c       =    ZERO;
     timelike->scales().QCD_c_noAO  =    ZERO;
     timelike->scales().QCD_ac      =    ZERO;
     timelike->scales().QCD_ac_noAO =    ZERO;
-    timelike->scales().EW          = ZERO;
+    timelike->scales().EW_Z        = ZERO;
+    timelike->scales().EW_W        = ZERO;
     timelike->scales().EW_noAO     = ZERO;
     // QED
     timelike->scales().QED         = ZERO;

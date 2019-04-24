@@ -215,11 +215,9 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 			int position = -1;
 			for(size_t ix=0; ix< partners.size(); ++ix) {
 					scales.push_back(
-					  calculateInitialEvolutionScales(
+					  calculateInitialEvolutionScales( //QCD shower
 					      ShowerPPair(sp, partners[ix].second),
-							  isDecayCase
-						)
-					);
+							  isDecayCase, 0)); //choices: 0->symmetric 1->colored 'maximal' 2->anti-coloured maximal
 					if (!setPartners && partners[ix].second) position = ix; 
 			}
 			assert(setPartners || position >= 0);
@@ -350,9 +348,9 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 				 << *sp << Exception::eventerror; 
     // Calculate the evolution scales for all possible pairs of of particles
     vector<pair<Energy,Energy> > scales;
-    for(unsigned int ix=0;ix< partners.size();++ix) {
+    for(unsigned int ix=0;ix< partners.size();++ix) { //QED shower
       scales.push_back(calculateInitialEvolutionScales(ShowerPPair(sp,partners[ix].second),
-						       isDecayCase));
+						       isDecayCase, 0)); //choices: 0->symmetric 1->colored 'maximal' 2->anti-coloured maximal
     }
     // store all the possible partners
     for(unsigned int ix=0;ix<partners.size();++ix) {
@@ -369,12 +367,11 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 
 pair<Energy,Energy> PartnerFinder::
 calculateInitialEvolutionScales(const ShowerPPair &particlePair,
-                                const bool isDecayCase) {
+                                const bool isDecayCase, int key) {
   bool FS1=FS(particlePair.first),FS2= FS(particlePair.second);
-
-  if(FS1 && FS2)
-    return calculateFinalFinalScales(particlePair.first->momentum(),
-                                     particlePair.second->momentum());
+  if(FS1 && FS2){
+    return calculateFinalFinalScales(particlePair.first->momentum(),particlePair.second->momentum(), key);
+  }
   else if(FS1 && !FS2) {
     pair<Energy,Energy> rval = calculateInitialFinalScales(particlePair.second->momentum(),
                                                            particlePair.first->momentum(),
@@ -561,9 +558,9 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
   				 << (**cit) << Exception::eventerror;
     // Calculate the evolution scales for all possible pairs of of particles
     vector<pair<Energy,Energy> > scales;
-    for(unsigned int ix=0;ix< partners.size();++ix) {
+    for(unsigned int ix=0;ix< partners.size();++ix) { //EW shower
       scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
-  						       isDecayCase));
+  						       isDecayCase, 2)); //choices: 0->symmetric 1->colored 'maximal' 2->anti-coloured maximal
     }
     // store all the possible partners
     for(unsigned int ix=0;ix<partners.size();++ix) {
@@ -573,7 +570,8 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
   							  scales[ix].first));
     }
     // set scales
-    (**cit).scales().EW      = scales[position].first;
+    (**cit).scales().EW_Z    = scales[position].first;
+    (**cit).scales().EW_W    = scales[position].first;
     (**cit).scales().EW_noAO = scales[position].first;
   }
 }
@@ -605,7 +603,7 @@ PartnerFinder::findEWPartners(tShowerParticlePtr particle,
 pair<Energy,Energy> 
 PartnerFinder::calculateFinalFinalScales(
         const Lorentz5Momentum & p1,
-        const Lorentz5Momentum & p2) 
+        const Lorentz5Momentum & p2, int key) 
 {
   static const double eps=1e-7;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
@@ -615,6 +613,7 @@ PartnerFinder::calculateFinalFinalScales(
   Energy2 Q2 = (p1+p2).m2();
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
+ 
   if(b<0.) {
     if(b<-eps) {
       throw Exception() << "Negative Mass squared b = " << b
@@ -638,8 +637,31 @@ PartnerFinder::calculateFinalFinalScales(
   // was not the case, leading to misuse. 
   const double lam=sqrt((1.+sqrt(b)+sqrt(c))*(1.-sqrt(b)-sqrt(c))
                    *(sqrt(b)-1.-sqrt(c))*(sqrt(c)-1.-sqrt(b)));
-  // symmetric case
-  return { sqrt(0.5*Q2*(1.+b-c+lam)), sqrt(0.5*Q2*(1.-b+c+lam)) };
+  
+  Energy firstQ, secondQ;
+  double kappab(0.), kappac(0.);
+  //key = 0; // symmetric case pre-selection 
+  switch(key)
+  {
+  case 0: // symmetric case
+  firstQ  = sqrt(0.5*Q2*(1.+b-c+lam));
+  secondQ = sqrt(0.5*Q2*(1.-b+c+lam));
+  break;
+  case 1: // assymetric choices - colored
+  kappac=4.*(1.-2.*sqrt(b)-c+b);
+  kappab=b+0.25*sqr(1.-b-c+lam)/(kappac-c);
+  firstQ  = sqrt(Q2*kappab);
+  secondQ = sqrt(Q2*kappac);
+  break;
+  case 2: // assymetric choices - anticolored
+  kappab=4.*(1.-2.*sqrt(c)-b+c);
+  kappac=c+0.25*sqr(1.-b-c+lam)/(kappab-b);
+  firstQ  = sqrt(Q2*kappab);
+  secondQ = sqrt(Q2*kappac);
+  break;
+  }     
+  // calculate the scales
+  return pair<Energy,Energy>(firstQ, secondQ);
 }
 
 
@@ -677,8 +699,25 @@ PartnerFinder::calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lor
     double lambda   = 1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c;
     lambda = sqrt(max(lambda,0.));
     const double PROD     = 0.25*sqr(1. - a + c + lambda);
-    const double ktilde_c = 0.5*(1-a+c+lambda) + c ;
-    const double ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    int key = 0;
+    double ktilde_b, ktilde_c, cosi = 0.;
+    switch (key)
+    {
+    case 0: // the 'symmetric' choice
+    ktilde_c = 0.5*(1-a+c+lambda) + c ;
+    ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    break;
+    case 1: // the 'maximal' choice
+    ktilde_c = 4.0*(sqr(1.-sqrt(a))-c);
+    ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    break;
+    case 2: // the 'smooth' choice
+    c = max(c,1.*GeV2/mb2);
+    cosi = (sqr(1-sqrt(c))-a)/lambda;
+    ktilde_b = 2.0/(1.0-cosi);
+    ktilde_c = (1.0-a+c+lambda)*(1.0+c-a-lambda*cosi)/(2.0*(1.0+cosi));
+    break;
+    }
     return { sqrt(mb2*ktilde_b), sqrt(mb2*ktilde_c) };
   }
 }
