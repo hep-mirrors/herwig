@@ -17,6 +17,17 @@
 
 using namespace Herwig;
 
+OmegaPiPiCurrent::OmegaPiPiCurrent() : mRes_(1.62*GeV) {
+  wRes_ = 0.288*GeV;
+  gRes_ = 2.83;
+  mSigma_ = 0.6*GeV;
+  wSigma_ = 1.0*GeV;
+  mf0_ = 0.98*GeV;
+  gPiPi_ = 0.331;
+  gKK_ = 0.144;
+  gf0_ = 0.85;
+}
+
 IBPtr OmegaPiPiCurrent::clone() const {
   return new_ptr(*this);
 }
@@ -139,7 +150,7 @@ OmegaPiPiCurrent::current(tcPDPtr resonance,
     temp[ix] = HelicityFunctions::polarizationVector(-momenta[0],ix,Helicity::outgoing);
   }
   // total momentum of the system
-  Lorentz5Momentum q(momenta[0]+momenta[1]);
+  Lorentz5Momentum q(momenta[0]+momenta[1]+momenta[2]);
   // overall hadronic mass
   q.rescaleMass();
   scale=q.mass();
@@ -153,8 +164,35 @@ OmegaPiPiCurrent::current(tcPDPtr resonance,
   formFactor = pre*scale*gSigma_;
 
   // needs to be multiplied by thing inside || in 1.9
-
   
+  //cm energy for intermediate f0 channel
+  Energy2 s1 = (momenta[1]+momenta[2]).m2();
+  
+  //sigma meson
+  Energy2 mSigma2 = sqr(mSigma_);
+  Complex Sigma_form = mSigma2/(s1-mSigma2 + Complex(0.,1.)*scale*wSigma_);
+  
+  //f0(980) following Phys. Lett. B 63, 224 (1976)
+  Energy2 mf02 = sqr(mf0_);
+  Energy2 mPi2 = momenta[1].m2();
+  Energy pcm_pipi = 0.5*sqrt(s1-4*mPi2);
+  Energy pcm_f0 = 0.5*sqrt(mf0_*mf0_-4*mPi2);
+  Energy GPiPi = gPiPi_*pcm_pipi;
+  Energy G0 = gPiPi_*pcm_f0;
+  Energy m_kaon = getParticleData(311)->mass();
+  Energy2 m_kaon2 = sqr(m_kaon);
+  Energy GKK;
+  Complex f0_form;
+  if(0.25*s1>m_kaon2){
+    GKK = gKK_*sqrt(0.25*s1-m_kaon2);
+    f0_form = gf0_*mf0_*sqrt(G0*GPiPi)/(s1-mf02+Complex(0.,1.)*mf0_*(GPiPi+GKK));
+  }
+  else{
+    GKK = gKK_*sqrt(m_kaon2-0.25*s1);
+    f0_form = gf0_*mf0_*sqrt(G0*GPiPi)/(s1-mf02+Complex(0.,1.)*mf0_*(GPiPi+Complex(0.,1.)*GKK));
+  }
+  formFactor *=(Sigma_form+f0_form);
+
 //   // loop over the resonances
 //   for(unsigned int ix=imin;ix<imax;++ix) {
 //     Energy2 mR2(sqr(resMasses_[ix]));

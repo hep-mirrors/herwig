@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  OmegaPiPiCurrent() {
+  OmegaPiPiCurrent(); //{
   // /**
   //  *   Parameters for the \f$\omega(1650)\f$
   //  */
@@ -34,17 +34,17 @@ public:
   // /**
   //  *   Mass of the resonance
   //  */
-  // mRes_;
+  //Energy mRes_;
   
   // /**
   //  *   Width of the resonance
   //  */
-  // wRes_;
+  //Energy wRes_;
 
   // /**
   //  *   Coupling of the resonance
   //  */
-  // gRes_;
+  //double gRes_;
   // //@}
 
   // /**
@@ -54,27 +54,27 @@ public:
   // /**
   //  *  Mass of the \f$\sigma\f$
   //  */
-  // mSigma_;
+  //Energy mSigma_;
   
   // /**
   //  *  Width of the \f$\sigma\f$
   //  */
-  // wSigma_;
+  //Energy wSigma_;
   
   // /**
   //  *  Mass of the \f$f_0(980)\f$
   //  */
-  // mf0_;
+  //Energy mf0_;
 
   // /**
   //  *  \f$f_0\f$ coupling to \f$\pi\pi\f$
   //  */
-  // gPiPi_;
+  //double gPiPi_;
 
   // /**
   //  *  \f$f_0\f$ coupling to KK
   //  */
-  // gKK_;
+  //double gKK_;
 
   // /**
   //  *   Sigma coupling
@@ -84,8 +84,8 @@ public:
   // /**
   //  *   f_0 coupling
   //  */
-  // gf0_;
-  };
+  //double gf0_;
+  //};
   //@}
 
 
