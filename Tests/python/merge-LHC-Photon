@@ -165,8 +165,8 @@ for hpath,hsets in inhistos.iteritems():
 
 logging.info("Processing ATLAS_2013_I1263495")
 mergeByPt("/ATLAS_2013_I1263495/d01-x01-y01")
-mergeByPt("/ATLAS_2013_I1263495/d01-x01-y03")
-useOnePt("/ATLAS_2013_I1263495/d01-x02-y01", "90" )
+mergeByPt("/ATLAS_2013_I1263495/d02-x01-y01")
+useOnePt("/ATLAS_2013_I1263495/d03-x01-y01", "90" )
 
 logging.info("Processing ATLAS_2012_I1093738")
 mergeByPt("/ATLAS_2012_I1093738/d01-x01-y01")
