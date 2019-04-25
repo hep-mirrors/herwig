@@ -283,8 +283,7 @@ Rivet-Star : Rivet-Star/done
 Rivet-Star/done : $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) 
 	rm -rf Rivet-Star
 	python/merge-Star Star
-	## broken DVI? ## rivet-mkhtml -v -o Rivet-Star Star.yoda
-	mkdir -p Rivet-Star # remove when fixed
+	rivet-mkhtml-o Rivet-Star Star.yoda
 	touch $@
 
 
