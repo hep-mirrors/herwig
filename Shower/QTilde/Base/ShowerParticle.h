@@ -141,11 +141,6 @@ public:
      */
     Energy EW_Z;
     Energy EW_W;
-
-    /**
-     *   EW scale
-     */
-    Energy EW_noAO;
     
   };
 
@@ -418,7 +413,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerParticle & operator=(const ShowerParticle &);
+  ShowerParticle & operator=(const ShowerParticle &) = delete;
 
 private:
 
@@ -498,7 +493,6 @@ inline ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales 
      << " QED_noAO=" << es.QED_noAO / GeV
      << " QCD_c_noAO=" << es.QCD_c_noAO / GeV
      << " QCD_ac_noAO=" << es.QCD_ac_noAO / GeV
-     << " EW_noAO=" << es.EW_noAO / GeV
      << '\n';
   return os;
 }
