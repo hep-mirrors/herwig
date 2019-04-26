@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import logging
 import sys
+import math
 
 if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
@@ -8,7 +9,51 @@ if sys.version_info[:3] < (2,4,0):
 
 import os, yoda
 
-# #############################################
+# Divide two profile histograms with different nos of bins
+def divide(name,numer,denom) :
+    output = yoda.Scatter2D(name,name)
+    size = min(numer.numBins,denom.numBins)
+    for i in range(0,size) :
+        b1 = numer.bin(i)
+        b2 = denom.bin(i)
+        # Assemble the x value and error
+        x = b1.xMid
+        exminus = x - b1.xMin
+        explus  = b1.xMax - x
+        # Assemble the y value and error
+        # numerator
+        yupp=0.
+        relerr_1=0.
+        try :
+            yupp = b1.mean
+            try :
+                if b1.stdErr() != 0 :
+                    relerr_1 =  b1.stdErr()/b1.mean()
+            except:
+                relerr_1=0.
+        except :
+            yupp = 0.
+            relerr_1 =0.
+        # denominator
+        ylow=0.
+        relerr_2 = 0.
+        try :
+            ylow = b2.mean
+            try :
+                if b2.stdErr() != 0 :
+                    relerr_2 =  b2.stdErr()/b2.mean()
+            except:
+                relerr_2=0.
+        except :
+            ylow = 0.
+            relerr_2 = 0.
+        if yupp==0. or ylow== 0. :
+            y=0.
+        else :
+            y = yupp / ylow
+            ey = y * math.sqrt(relerr_1**2 + relerr_2**2)
+        output.addPoint(x, y, (exminus,explus), (ey,ey))
+    return output
 
 def fillAbove(desthisto, sourcehistosbyptmin):
     pthigh= 1e100
@@ -101,11 +146,10 @@ yodafiles=["-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
            "-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
            "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
            "-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
-           "-630-Jets-3.yoda", "-300-UE.yoda", "-900-UE.yoda"
-#           "-RatioPlots.yoda"
-           ]
+           "-630-Jets-3.yoda", "-300-UE.yoda", "-900-UE.yoda"]
 if(opts.ue) :
-    yodafiles += ["-Run-II-UE.yoda"    ,"-Run-I-UE.yoda"    ,"-630-UE.yoda"      ,]
+    yodafiles += ["-Run-II-UE.yoda"    ,"-Run-I-UE.yoda"    ,"-630-UE.yoda"      ,\
+                  "-300-Jets-1.yoda", "-900-Jets-1.yoda"]
 
 ## Get histos
 inhistos = {}
@@ -142,9 +186,15 @@ for f in yodafiles:
     elif(file.find("300-UE")>0) :
         sqrts=300
         ptmin=0.
+    elif(file.find("300-Jets-1")>0) :
+        sqrts=300
+        ptmin=6.
     elif(file.find("900-UE")>0) :
         sqrts=900
         ptmin=0.
+    elif(file.find("900-Jets-1")>0) :
+        sqrts=900
+        ptmin=10.
     elif(file.find("630-UE")>0) :
         sqrts=630
         ptmin=0.
@@ -194,7 +244,7 @@ for f in yodafiles:
            aopath.find("5839831")>0 or aopath.find("4563131")>0 or
            aopath.find("4517016")>0 or aopath.find("3618439")>0 or
            aopath.find("8591881")>0 or aopath.find("1388868")>0 or
-           aopath.find("398175")>0) :
+           aopath.find("NOTE10874")>0 or aopath.find("398175")>0) :
            if not inhistos.has_key(aopath):
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
@@ -211,11 +261,8 @@ for f in yodafiles:
              aopath.find("2089246")>0 or aopath.find("3108457")>0 or
              aopath.find("3349578")>0 or aopath.find("3541940")>0 or
              aopath.find("3214044")>0 or aopath.find("2952106")>0 or
-             aopath.find("NOTE10874")>0 or aopath.find("895662")>0 ) :
-            if( opts.ue ) :
-                outhistos[aopath] = ao
-            elif (aopath.find("NOTE10874")<0) :
-                outhistos[aopath] = ao
+             aopath.find("895662")>0 ) :
+            outhistos[aopath] = ao
         else :
             if(aopath.find("/_EVTCOUNT")>=0 or 
                aopath.find("/_XSEC"    )>=0 ) : continue
@@ -255,7 +302,7 @@ for f in yodafiles:
     except:
         logging.error("%s can not be parsed as YODA" % file)
         continue
-    ## Get histos from this AIDA file
+    ## Get histos from this yoda file
     for aopath, ao in aos.iteritems() :
         if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :
            if not inhistos.has_key(aopath):
@@ -292,7 +339,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("4563131")>0 or hpath.find("4517016")>0 or
         hpath.find("3618439")>0 or hpath.find("4266730")>0 or
         hpath.find("3418421")>0 or hpath.find("8591881")>0 or
-        hpath.find("1388868")>0) :
+        hpath.find("1388868")>0 or hpath.find("NOTE10874")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)
@@ -425,7 +472,7 @@ useOnePt("/CDF_2005_S6217184/d12-x01-y02", "1960", "265")
 useOnePt("/CDF_2005_S6217184/d12-x01-y03", "1960", "265")
 mergeByPt("/CDF_2005_S6217184/d13-x01-y01", "1960")
 
-#     ## CDF dijet mass spectrum
+# CDF dijet mass spectrum
 mergeByPt("/CDF_2008_S8093652/d01-x01-y01", "1960")
 
 # ## Rick Field Run-II Leading Jets analysis
@@ -550,7 +597,35 @@ useOnePt("/D0_1995_I398175/d03-x01-y01", "1800", "105" )
 useOnePt("/D0_1995_I398175/d04-x01-y01", "1800", "105" )
 useOnePt("/D0_1995_I398175/d05-x01-y01", "1800", "30" )
 useOnePt("/D0_1995_I398175/d06-x01-y01", "1800", "55" )
-        
+
+logging.info("CDF_2012_NOTE10874")
+mergeByPt("/CDF_2012_NOTE10874/d01-x01-y01", "300")
+mergeByPt("/CDF_2012_NOTE10874/d01-x01-y02", "900")
+mergeByPt("/CDF_2012_NOTE10874/d01-x01-y03","1960")
+mergeByPt("/CDF_2012_NOTE10874/d02-x01-y01", "300")
+mergeByPt("/CDF_2012_NOTE10874/d02-x01-y02", "900")
+mergeByPt("/CDF_2012_NOTE10874/d02-x01-y03","1960")
+mergeByPt("/CDF_2012_NOTE10874/d03-x01-y01", "300")
+mergeByPt("/CDF_2012_NOTE10874/d03-x01-y02", "900")
+mergeByPt("/CDF_2012_NOTE10874/d03-x01-y03","1960")
+
+for i in range(1,4) :
+    names = ["/CDF_2012_NOTE10874/d0%s-x01-y01" % i,
+             "/CDF_2012_NOTE10874/d0%s-x01-y02" % i,
+             "/CDF_2012_NOTE10874/d0%s-x01-y03" % i]
+    # ratio 1960/300
+    if names[0] in outhistos and names[2] in outhistos :
+        outhistos["/CDF_2012_NOTE10874/d0%s-x01-y04" % i] = \
+        divide("/CDF_2012_NOTE10874/d0%s-x01-y04" % i,outhistos[names[2]],outhistos[names[0]])
+    # ratio 900/300
+    if names[0] in outhistos and names[1] in outhistos :
+        outhistos["/CDF_2012_NOTE10874/d0%s-x01-y05" % i]= \
+        divide("/CDF_2012_NOTE10874/d0%s-x01-y05" % i,outhistos[names[1]],outhistos[names[0]])
+    # ratio 1960/900
+    if names[1] in outhistos and names[2] in outhistos :
+        outhistos["/CDF_2012_NOTE10874/d0%s-x01-y06" % i]= \
+        divide("/CDF_2012_NOTE10874/d0%s-x01-y06" %i,outhistos[names[2]],outhistos[names[1]])
+
 # Choose output file
 name = args[0]+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)

@@ -266,24 +266,13 @@ Rivet-TVT-Jets/done:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1.
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw
 	touch $@
 
-
-
-
-#python/merge-TVT-Energy TVT
-#rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.yoda TVT-900-Energy.yoda TVT-1960-Energy.yoda
-#flat2yoda RatioPlots.dat -o TVT-RatioPlots.yoda
-
-
-
-
-
 Rivet-Star : Rivet-Star/done
 	touch $@
 
 Rivet-Star/done : $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) 
 	rm -rf Rivet-Star
 	python/merge-Star Star
-	rivet-mkhtml-o Rivet-Star Star.yoda
+	rivet-mkhtml -o Rivet-Star Star.yoda
 	touch $@
 
 
@@ -311,6 +300,7 @@ Rivet-LHC-Jets : Rivet-LHC-Jets/done
 Rivet-LHC-Jets/done : \
 			$(shell echo Rivet-LHC-7-DiJets-{1..7}-{A,B,C}.yoda   ) \
 	        $(shell echo Rivet-LHC-{7,8,13}-Jets-{0..10}.yoda     ) \
+	        $(shell echo Rivet-LHC-2760-Jets-{1..3}.yoda     ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8,13}-UE.yoda ) \
 	        $(shell echo Rivet-LHC-{900,7,13}-UE-Long.yoda        ) \
 		$(shell echo Rivet-LHC-7-Charm-{1..5}.yoda            ) \
