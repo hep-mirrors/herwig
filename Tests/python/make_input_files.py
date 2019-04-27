@@ -771,6 +771,7 @@ elif(collider=="LHC") :
         elif(      "7-Jets" in parameterName 
                or  "8-Jets" in parameterName 
                or "13-Jets" in parameterName 
+               or "2760-Jets" in parameterName 
             ) :
             process+=insert_ME("MEQCD2to2")
             process+="set MEQCD2to2:MaximumFlavour 5\n"
@@ -1388,6 +1389,7 @@ elif(collider=="LHC") :
         elif(      "7-Jets" in parameterName 
                or  "8-Jets" in parameterName 
                or "13-Jets" in parameterName 
+               or "2760-Jets" in parameterName 
             ) :
             if(simulation=="Matchbox"):
                 process+=addProcess(thefactory,"p p j j","2","0","MaxJetPtScale",0,0)

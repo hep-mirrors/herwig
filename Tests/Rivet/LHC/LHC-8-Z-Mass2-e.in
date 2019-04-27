@@ -2,4 +2,4 @@
 # select the analyses
 ##################################################
 # ATLAS Z pT and phi*
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516_EL
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1408516:LMODE=EL

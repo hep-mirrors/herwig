@@ -83,12 +83,12 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-files=["-7-PromptPhoton-1.yoda","-7-PromptPhoton-2.yoda",
-       "-7-PromptPhoton-3.yoda","-7-PromptPhoton-4.yoda",
-       "-8-PromptPhoton-1.yoda","-8-PromptPhoton-2.yoda",
-       "-8-PromptPhoton-3.yoda","-8-PromptPhoton-4.yoda",
-       "-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda",
+files=["-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda",
        "-8-DiPhoton-GammaGamma.yoda","-8-DiPhoton-GammaJet.yoda","-GammaGamma-8.yoda"]
+
+for i in [7,8,13] :
+    for j in range(1,5) :
+        files.append("-%s-PromptPhoton-%s.yoda" % (i,j))
 
 ## Get histos
 inhistos = {}
@@ -139,7 +139,8 @@ for hpath,hsets in inhistos.iteritems():
     if( hpath.find("1263495")>0 or hpath.find("1093738")>0 or 
         hpath.find("921594" )>0 or hpath.find("8914702")>0 or 
         hpath.find("1244522")>0 or hpath.find("1457605")>0 or
-        hpath.find("1632756")>0 or hpath.find("1266056")>0 ) :
+        hpath.find("1632756")>0 or hpath.find("1266056")>0 or
+        hpath.find("1645627")>0) :
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
                                                    hsets.values()[0].title)
@@ -164,8 +165,8 @@ for hpath,hsets in inhistos.iteritems():
 
 logging.info("Processing ATLAS_2013_I1263495")
 mergeByPt("/ATLAS_2013_I1263495/d01-x01-y01")
-mergeByPt("/ATLAS_2013_I1263495/d01-x01-y03")
-useOnePt("/ATLAS_2013_I1263495/d01-x02-y01", "90" )
+mergeByPt("/ATLAS_2013_I1263495/d02-x01-y01")
+useOnePt("/ATLAS_2013_I1263495/d03-x01-y01", "90" )
 
 logging.info("Processing ATLAS_2012_I1093738")
 mergeByPt("/ATLAS_2012_I1093738/d01-x01-y01")
@@ -223,6 +224,13 @@ mergeByPt("/CMS_2014_I1266056/d03-x01-y01")
 mergeByPt("/CMS_2014_I1266056/d03-x01-y02")
 mergeByPt("/CMS_2014_I1266056/d04-x01-y01")
 mergeByPt("/CMS_2014_I1266056/d04-x01-y02")
+
+logging.info("Processing ATLAS_2017_I1645627")
+mergeByPt("/ATLAS_2017_I1645627/d01-x01-y01")
+mergeByPt("/ATLAS_2017_I1645627/d02-x01-y01")
+useOnePt("/ATLAS_2017_I1645627/d03-x01-y01","90")
+useOnePt("/ATLAS_2017_I1645627/d04-x01-y01","90")
+useOnePt("/ATLAS_2017_I1645627/d05-x01-y01","90")
 
 logging.info("Processing /MC_PHOTONJETS")
 useOnePt("/MC_PHOTONJETS/jet_HT","0")
