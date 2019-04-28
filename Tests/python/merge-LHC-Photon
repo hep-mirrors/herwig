@@ -114,6 +114,7 @@ for f in files:
             ptmin=170.
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
+            if("RAW" in aopath) :continue
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
             if (aopath.find("CMS_2013_I1258128")>0) :
@@ -125,6 +126,7 @@ for f in files:
     else : 
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
+            if("RAW" in aopath) :continue
             if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
             if ( aopath in outhistos ) :
                 aotype = type(ao)

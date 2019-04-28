@@ -77,6 +77,7 @@ for file in yodafiles:
         break
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("1926373")>0 or aopath.find("1867512")>0 or
            aopath.find("1583476")>0 or aopath.find("2044935")>0 or
            aopath.find("1178091")>0 ) :

@@ -222,6 +222,7 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("S8924791")>0 or aopath.find("S8971293")>0 or
            aopath.find("S8817804")>0 or aopath.find("I1082936")>0 or
            aopath.find("S8994773")>0 or aopath.find("S8918562")>0 or
@@ -328,6 +329,7 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("8817804")>0 or
            aopath.find("8968497")>0 or 
            aopath.find("1082936")>0 or

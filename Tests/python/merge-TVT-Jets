@@ -235,6 +235,7 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         # di-jet decorrelations
         # jet shapes
         if(aopath.find("5992206")>0 or aopath.find("6217184")>0 or
@@ -304,6 +305,7 @@ for f in yodafiles:
         continue
     ## Get histos from this yoda file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :
            if not inhistos.has_key(aopath):
                inhistos[aopath] = {}
