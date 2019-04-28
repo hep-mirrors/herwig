@@ -60,12 +60,12 @@ struct JetOrdering {
 
 void KinematicsReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _reconopt << _initialBoost << ounit(_minQ,GeV) << _noRescale 
-     << _noRescaleVector << _initialStateReconOption;
+     << _noRescaleVector << _initialStateReconOption << _finalFinalWeight;
 }
 
 void KinematicsReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
-     >> _noRescaleVector >> _initialStateReconOption;
+     >> _noRescaleVector >> _initialStateReconOption >> _finalFinalWeight;
 }
 
 void KinematicsReconstructor::Init() {
@@ -137,8 +137,8 @@ void KinematicsReconstructor::Init() {
      1);
 
   static Deleted<KinematicsReconstructor> delFinalStateReconOption
-    ("FinalStateReconOption", "The old default (0) is now the only choice");  
-
+    ("FinalStateReconOption", "The old default (0) is now the only choice");
+  
   static Switch<KinematicsReconstructor,unsigned int> interfaceInitialStateReconOption
     ("InitialStateReconOption",
      "Option for the reconstruction of initial state radiation",
@@ -158,6 +158,21 @@ void KinematicsReconstructor::Init() {
      "SofterFraction",
      "Preserve the momentum fraction of the parton which has emitted softer.",
      2);
+
+  static Switch<KinematicsReconstructor,bool> interfaceFinalFinalWeight
+    ("FinalFinalWeight",
+     "Apply kinematic rejection weight for final-states",
+     &KinematicsReconstructor::_finalFinalWeight, false, false, false);
+  static SwitchOption interfaceFinalFinalWeightNo
+    (interfaceFinalFinalWeight,
+     "No",
+     "Don't apply the weight",
+     false);
+  static SwitchOption interfaceFinalFinalWeightYes
+    (interfaceFinalFinalWeight,
+     "Yes",
+     "Apply the weight",
+     true);
 
 }
 
@@ -1576,6 +1591,18 @@ reconstructFinalStateSystem(bool applyBoost,
     }
     tempJetKin.q = (*cit)->progenitor()->momentum();
     jetKinematics.push_back(tempJetKin);
+  }
+  if(_finalFinalWeight && jetKinematics.size()==2) {
+    Energy m1 = jetKinematics[0].q.m();
+    Energy m2 = jetKinematics[1].q.m();
+    Energy m0 = pcm.m();
+    if(m0<m1+m2)  throw KinematicsReconstructionVeto();
+    Energy4 lambdaNew = (sqr(m0)-sqr(m1-m2))*(sqr(m0)-sqr(m1+m2));
+    m1 = jetKinematics[0].p.m();
+    m2 = jetKinematics[1].p.m();
+    Energy4 lambdaOld = (sqr(m0)-sqr(m1-m2))*(sqr(m0)-sqr(m1+m2));
+    if(UseRandom::rnd()>sqrt(lambdaNew/lambdaOld))
+      throw KinematicsReconstructionVeto();
   }
   // default option rescale everything with the same factor
   // find the rescaling factor
