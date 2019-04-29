@@ -6,6 +6,7 @@
 # q^2 scheme
 set /Herwig/Shower/PowhegShowerHandler:EvolutionScheme Q2
 set /Herwig/Shower/ShowerHandler:EvolutionScheme Q2
+set /Herwig/Shower/KinematicsReconstructor:FinalFinalWeight No
 # don't enforce strict angular ordering
 set /Herwig/Shower/QtoQGammaSplitFn:StrictAO No
 set /Herwig/Shower/QtoQGSplitFn:StrictAO No

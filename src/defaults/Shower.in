@@ -89,7 +89,7 @@ newdef PowhegShowerHandler:IntrinsicPtGaussian 1.3*GeV
 newdef PowhegShowerHandler:IntrinsicPtBeta  	0
 newdef PowhegShowerHandler:IntrinsicPtGamma 	0*GeV
 newdef PowhegShowerHandler:IntrinsicPtIptmax   0*GeV
-newdef PowhegShowerHandler:EvolutionScheme Q2
+newdef PowhegShowerHandler:EvolutionScheme DotProduct
 
 #############################################################
 # End of interesting user servicable section.
@@ -102,7 +102,7 @@ newdef PowhegShowerHandler:EvolutionScheme Q2
 #
 # a few default values
 newdef ShowerHandler:MECorrMode 1
-newdef ShowerHandler:EvolutionScheme Q2
+newdef ShowerHandler:EvolutionScheme DotProduct
 newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
@@ -115,49 +115,49 @@ create Herwig::HalfHalfOneSplitFn QtoQGammaSplitFn
 set QtoQGammaSplitFn:InteractionType QED
 set QtoQGammaSplitFn:ColourStructure ChargedChargedNeutral
 set QtoQGammaSplitFn:AngularOrdered Yes
-set QtoQGammaSplitFn:StrictAO No
+set QtoQGammaSplitFn:StrictAO Yes
 
 create Herwig::HalfHalfOneSplitFn QtoQGSplitFn
 newdef QtoQGSplitFn:InteractionType QCD
 newdef QtoQGSplitFn:ColourStructure TripletTripletOctet
 set QtoQGSplitFn:AngularOrdered Yes
-set QtoQGSplitFn:StrictAO No
+set QtoQGSplitFn:StrictAO Yes
 
 create Herwig::OneOneOneSplitFn GtoGGSplitFn
 newdef GtoGGSplitFn:InteractionType QCD
 newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 set GtoGGSplitFn:AngularOrdered Yes
-set GtoGGSplitFn:StrictAO No
+set GtoGGSplitFn:StrictAO Yes
 
 create Herwig::OneOneOneMassiveSplitFn WtoWGammaSplitFn
 newdef WtoWGammaSplitFn:InteractionType QED
 newdef WtoWGammaSplitFn:ColourStructure ChargedChargedNeutral
 set WtoWGammaSplitFn:AngularOrdered Yes
-set WtoWGammaSplitFn:StrictAO No
+set WtoWGammaSplitFn:StrictAO Yes
 
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
 set GtoQQbarSplitFn:AngularOrdered Yes
-set GtoQQbarSplitFn:StrictAO No
+set GtoQQbarSplitFn:StrictAO Yes
 
 create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
 newdef GammatoQQbarSplitFn:InteractionType QED
 newdef GammatoQQbarSplitFn:ColourStructure NeutralChargedCharged
 set GammatoQQbarSplitFn:AngularOrdered Yes
-set GammatoQQbarSplitFn:StrictAO No
+set GammatoQQbarSplitFn:StrictAO Yes
 
 create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
 newdef QtoGQSplitFn:InteractionType QCD
 newdef QtoGQSplitFn:ColourStructure TripletOctetTriplet
 set QtoGQSplitFn:AngularOrdered Yes
-set QtoGQSplitFn:StrictAO No
+set QtoGQSplitFn:StrictAO Yes
 
 create Herwig::HalfOneHalfSplitFn QtoGammaQSplitFn
 newdef QtoGammaQSplitFn:InteractionType QED
 newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 set QtoGammaQSplitFn:AngularOrdered Yes
-set QtoGammaQSplitFn:StrictAO No
+set QtoGammaQSplitFn:StrictAO Yes
 #
 # Now the Sudakovs
 create Herwig::PTCutOff PTCutOff
