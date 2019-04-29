@@ -97,7 +97,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ZJetsAnalysis & operator=(const ZJetsAnalysis &);
+  ZJetsAnalysis & operator=(const ZJetsAnalysis &) = delete;
 
 };
 

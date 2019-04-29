@@ -76,7 +76,7 @@ public:
   SplittingFunction()
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true), scaleChoice_(2) {}
+      angularOrdered_(true), scaleChoice_(2), strictAO_(false) {}
 
 public:
 
@@ -341,7 +341,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SplittingFunction & operator=(const SplittingFunction &);
+  SplittingFunction & operator=(const SplittingFunction &) = delete;
 
 private:
 
@@ -369,6 +369,11 @@ private:
    *  The choice of scale
    */
   unsigned int scaleChoice_;
+
+  /**
+   *   Enforce strict AO 
+   */
+  bool strictAO_;
 
 };
 

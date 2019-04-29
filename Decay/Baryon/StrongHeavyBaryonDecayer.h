@@ -166,7 +166,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  StrongHeavyBaryonDecayer & operator=(const StrongHeavyBaryonDecayer &);
+  StrongHeavyBaryonDecayer & operator=(const StrongHeavyBaryonDecayer &) = delete;
 
 private:
 

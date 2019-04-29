@@ -125,7 +125,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  OmegaXiStarPionDecayer & operator=(const OmegaXiStarPionDecayer &);
+  OmegaXiStarPionDecayer & operator=(const OmegaXiStarPionDecayer &) = delete;
 
 private:
 

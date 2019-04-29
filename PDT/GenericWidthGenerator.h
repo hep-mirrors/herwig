@@ -310,7 +310,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  GenericWidthGenerator & operator=(const GenericWidthGenerator &);
+  GenericWidthGenerator & operator=(const GenericWidthGenerator &) = delete;
 
 private:
 

@@ -115,7 +115,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  OneOffShellCalculator & operator=(const OneOffShellCalculator &);
+  OneOffShellCalculator & operator=(const OneOffShellCalculator &) = delete;
 
 private:
 

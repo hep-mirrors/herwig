@@ -45,10 +45,11 @@ for f in files:
     try:
         aos = yoda.read(file)
     except:
-        logging.error("%s can not be parsed as XML" % file)
-        break
+        logging.error("%s can not be parsed as yoda" % file)
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
         if ( aopath in outhistos ) :
             aotype = type(ao)

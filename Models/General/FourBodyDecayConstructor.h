@@ -120,7 +120,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FourBodyDecayConstructor & operator=(const FourBodyDecayConstructor &);
+  FourBodyDecayConstructor & operator=(const FourBodyDecayConstructor &) = delete;
 
 private:
 

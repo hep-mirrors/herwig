@@ -269,7 +269,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  OpenLoopsAmplitude & operator=(const OpenLoopsAmplitude &);
+  OpenLoopsAmplitude & operator=(const OpenLoopsAmplitude &) = delete;
 
   /**
    * Store colour correlator results

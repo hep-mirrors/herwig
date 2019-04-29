@@ -172,8 +172,8 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
     # check for fermion vertices (i.e. has L/R couplings)
     fermions = "FF" in lorentztag
     # test and process the values of the couplings
-    tval  = [False]*3
-    value = [False]*3
+    tval  = ["Unknown"]*3
+    value = ["Unknown"]*3
     # loop over the colours
     for icolor in range(0,len(all_couplings)) :
         lmax = len(all_couplings[icolor])
@@ -181,18 +181,21 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
         # loop over the different terms
         for ix in range(0,lmax) :
             test = [False]*3
+            imax=3
             # normal case
             if( not fermions ) :
                 test[0] = all_couplings[icolor][ix]
+                imax=1
             else :
                 # first case vector but no L/R couplings
                 if( not all_couplings[icolor][lmax+ix]  and
                     not all_couplings[icolor][2*lmax+ix] ) :
                     test[0] = all_couplings[icolor][ix]
+                    imax=1
                     # special for mass terms and massless particles
                     if(not all_couplings[icolor][ix]) :
                         code = abs(vertex.particles[order[0]-1].pdg_code)
-                        if(ix==6 and code ==12 or code ==14 or code==16) :
+                        if(ix==6 and (code ==12 or code ==14 or code==16) ) :
                             continue
                         else :
                             raise SkipThisVertex()
@@ -221,21 +224,22 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
                     if(test[i]) :
                         test[i] = '-(%s)/%s/4' % (test[i],vertex.particles[order[0]-1].mass.value)
             # set values on first pass
-            if(not tval[0] and not tval[1] and not tval[2]) :
+            if((tval[0]=="Unknown" and fermions ) or
+               (not fermions and tval[0]=="Unknown" and tval[1]=="Unknown" and tval[2]=="Unknown")) :
                 value = test
                 for i in range(0,len(test)) :
                     if(test[i]) : tval[i] = evaluate(test[i],model,parmsubs)
             else :
-                for i in range(0,len(test)) :
+                for i in range(0,imax) :
                     if(not test[i] and not tval[i]) :
                         continue
-                    if(not test[i] or not tval[i]) :
+                    # special for vector gauge terms
+                    if(lorentztag=="VVT" and ix>=13) :
+                        continue
+                    if(not test[i] or tval[i]=="Unknown") :
                         # special for mass terms and vectors
                         if(lorentztag=="VVT" and ix >=10 and ix <=12 and
                            float(vertex.particles[order[0]-1].mass.value) == 0. ) :
-                            continue
-                        # special for vector gauge terms
-                        if(lorentztag=="VVT" and ix>=13) :
                             continue
                         raise SkipThisVertex()
                     tval2 = evaluate(test[i],model,parmsubs)

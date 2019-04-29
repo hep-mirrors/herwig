@@ -282,7 +282,8 @@ bool SudakovFormFactor::PSVeto(const Energy2 t) {
   Energy2 m02 = (ids_[0]->id()!=ParticleID::g && ids_[0]->id()!=ParticleID::gamma) ?
   	masssquared_[0] : Energy2();
   
-  Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2]);
+  Energy2 pt2 = QTildeKinematics::pT2_FSR(t,z(),m02,masssquared_[1],masssquared_[2],
+					  masssquared_[1],masssquared_[2]);
 
   // if pt2<0 veto
   if (pt2<cutoff_->pT2min()) return true;

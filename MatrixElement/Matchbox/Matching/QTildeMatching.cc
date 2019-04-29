@@ -131,7 +131,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
     const Energy2 m02 = sqr(masses[0]);
     const Energy2 m12 = sqr(masses[1]);
 
-    pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22);
+    pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22,m12,m22);
   }
   else {
     pt2 = QTildeKinematics::pT2_ISR(sqr(qtilde),z,m22);
@@ -163,7 +163,7 @@ bool QTildeMatching::isAboveCutoff() const {
     const Energy2 m02 = sqr(masses[0]);
     const Energy2 m12 = sqr(masses[1]);
 
-    const Energy2 pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22);
+    const Energy2 pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22,m12,m22);
 
     return pt2 >= max(theQTildeSudakov->pT2min(),sqr(safeCut()));
   }
@@ -271,7 +271,7 @@ CrossSection QTildeMatching::dSigHatDR() const {
     const Energy2 m02 = sqr(masses[0]);
     const Energy2 m12 = sqr(masses[1]);
 
-    pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22);
+    pt2 = QTildeKinematics::pT2_FSR(sqr(qtilde),z,m02,m12,m22,m12,m22);
   }
   else {
     pt2 = QTildeKinematics::pT2_ISR(sqr(qtilde),z,m22);

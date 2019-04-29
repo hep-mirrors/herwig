@@ -126,7 +126,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxReference & operator=(const MatchboxReference &);
+  MatchboxReference & operator=(const MatchboxReference &) = delete;
 
   /**
    * Stream to read the reference samples.

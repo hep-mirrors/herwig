@@ -90,7 +90,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxZGammaAmplitude & operator=(const MatchboxZGammaAmplitude &);
+  MatchboxZGammaAmplitude & operator=(const MatchboxZGammaAmplitude &) = delete;
 
   /**
    * True, if the Z contribution should be taken into account

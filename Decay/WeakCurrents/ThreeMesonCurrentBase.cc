@@ -80,17 +80,17 @@ ThreeMesonCurrentBase::current(const int imode, const int ichan,
   //if(inpart.id()==ParticleID::tauplus){F.F5=conj(F.F5);}
   // the first three form-factors
   LorentzPolarizationVector vect;
-  vect = (F.F2-F.F1)*decay[2]->momentum()
-        +(F.F1-F.F3)*decay[1]->momentum()
-        +(F.F3-F.F2)*decay[0]->momentum();
+  vect = LorentzPolarizationVector((F.F2-F.F1)*decay[2]->momentum())
+    +LorentzPolarizationVector((F.F1-F.F3)*decay[1]->momentum())
+    +LorentzPolarizationVector((F.F3-F.F2)*decay[0]->momentum());
   // multiply by the transverse projection operator
   complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
-  vect += (F.F4-dot)*q;
+  vect += LorentzPolarizationVector((F.F4-dot)*q);
   if(F.F5!=complex<InvEnergy3>()) 
-    vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
-							       decay[1]->momentum(),
-							       decay[2]->momentum());
+    vect += LorentzPolarizationVector(Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
+									    decay[1]->momentum(),
+									    decay[2]->momentum()));
   // factor to get dimensions correct
   return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
 }

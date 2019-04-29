@@ -293,7 +293,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxOLPME & operator=(const MatchboxOLPME &);
+  MatchboxOLPME & operator=(const MatchboxOLPME &) = delete;
 
   /**
    * The (tree-level) order in \f$g_S\f$ in which this matrix

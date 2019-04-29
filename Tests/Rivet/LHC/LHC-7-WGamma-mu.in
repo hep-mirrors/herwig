@@ -1,2 +1,2 @@
 # ATLAS W Gamma analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217863_W_MU 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217863:LMODE=WMU 

@@ -123,6 +123,14 @@ class PyToCpp(ast.NodeVisitor):
             text = 'Complex'
         elif text == 'complexconjugate': 
             text = 'conj'
+        elif text == 'im':
+            text = 'imag'
+        elif text == 're':
+            text = 'real'
+        elif text == 'max':
+            text = 'max'
+        elif text == 'min':
+            text = 'min'
         elif convertHerwig :
             if text == 'I' :
                 text = "ii"

@@ -228,7 +228,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  IFMassiveKinematics & operator=(const IFMassiveKinematics &);
+  IFMassiveKinematics & operator=(const IFMassiveKinematics &) = delete;
 
 private:
 

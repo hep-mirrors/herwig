@@ -1246,7 +1246,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SubtractionDipole & operator=(const SubtractionDipole &);
+  SubtractionDipole & operator=(const SubtractionDipole &) = delete;
 
 };
 

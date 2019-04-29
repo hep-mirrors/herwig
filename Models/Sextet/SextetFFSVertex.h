@@ -99,7 +99,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SextetFFSVertex & operator=(const SextetFFSVertex &);
+  SextetFFSVertex & operator=(const SextetFFSVertex &) = delete;
 
 private:
 

@@ -1,7 +1,0 @@
-##################################################
-# select the analyses
-##################################################
-# ATLAS b-jet shapes in top events
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1304688
-# ATLAS top cross sections
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1345452

@@ -108,7 +108,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxSHatScale & operator=(const MatchboxSHatScale &);
+  MatchboxSHatScale & operator=(const MatchboxSHatScale &) = delete;
 
 };
 

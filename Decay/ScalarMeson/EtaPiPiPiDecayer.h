@@ -160,7 +160,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  EtaPiPiPiDecayer & operator=(const EtaPiPiPiDecayer &);
+  EtaPiPiPiDecayer & operator=(const EtaPiPiPiDecayer &) = delete;
 
 private:
 

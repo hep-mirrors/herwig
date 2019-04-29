@@ -102,7 +102,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SMWWWWVertex & operator=(const SMWWWWVertex &);
+  SMWWWWVertex & operator=(const SMWWWWVertex &) = delete;
 
   /**
    *  Intermediate particles

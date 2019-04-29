@@ -932,7 +932,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  FxFxReader & operator=(const FxFxReader &);
+  FxFxReader & operator=(const FxFxReader &) = delete;
 
 public:
 

@@ -130,9 +130,10 @@ public:
   /**
    *  Default constructor
    */
-  KinematicsReconstructor() : _reconopt(0), _initialBoost(0), 
-			  _finalStateReconOption(0), 
-			  _initialStateReconOption(0), _minQ(MeV) {};
+  KinematicsReconstructor() : _reconopt(0), _initialBoost(0),
+			      _finalStateReconOption(0),
+			      _initialStateReconOption(0),
+			      _finalFinalWeight(false), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -607,6 +608,11 @@ private:
   unsigned int _initialStateReconOption;
 
   /**
+   *  Option for FF kinematic factor
+   */
+  bool _finalFinalWeight;
+
+  /**
    * Minimum invariant mass for initial-final dipoles to allow the
    * reconstruction
    */
@@ -652,5 +658,4 @@ private:
 
 }
 
-#include "KinematicsReconstructor.tcc"
 #endif /* HERWIG_KinematicsReconstructor_H */

@@ -2,7 +2,7 @@ SUBDIRS = Base Kernels Kinematics Utility AlphaS Merging Colorea
 
 pkglib_LTLIBRARIES = HwDipoleShower.la
 
-HwDipoleShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:1:0
+HwDipoleShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 10:0:0
 
 HwDipoleShower_la_LIBADD = \
 	Base/libHwDipoleShowerBase.la \
@@ -20,4 +20,4 @@ pkglib_LTLIBRARIES += HwKrknloEventReweight.la
 HwKrknloEventReweight_la_SOURCES = \
 	KrkNLO/KrknloEventReweight.h KrkNLO/KrknloEventReweight.cc
 
-HwKrknloEventReweight_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+HwKrknloEventReweight_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
