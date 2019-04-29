@@ -712,7 +712,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
   if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
   if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
   if(_reconOpt>=1)
-    particle->showerKinematics()->updateParent(particle, children,fb.type);
+    particle->showerKinematics()->updateParent(particle, children,2,fb.type);
   // branching has happened
   if(first&&!children.empty())
     particle->showerKinematics()->resetChildren(particle,children);
@@ -773,7 +773,7 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   theChildren.push_back(otherChild);
   //this updates the evolution scale
   particle->showerKinematics()->
-    updateParent(newParent, theChildren,bb.type);
+    updateParent(newParent, theChildren,2,bb.type);
   // update the history if needed
   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
   _currenttree->addInitialStateBranching(particle,newParent,otherChild);
@@ -1591,7 +1591,7 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
   }
   if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
   // branching has happened
-  particle->showerKinematics()->updateParent(particle, children,fb.type); 
+  particle->showerKinematics()->updateParent(particle, children,2,fb.type); 
   if(first&&!children.empty())
     particle->showerKinematics()->resetChildren(particle,children);
   if(particle->spinInfo()) particle->spinInfo()->develop();
@@ -1680,7 +1680,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
     theChildren.push_back( particle ); 
     theChildren.push_back( otherChild );
     particle->showerKinematics()->
-      updateParent( newParent, theChildren, branch->type());
+      updateParent( newParent, theChildren,2, branch->type());
     // update the history if needed
     currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
     currentTree()->addInitialStateBranching( particle, newParent, otherChild );
@@ -1734,7 +1734,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
   theChildren.push_back( particle ); 
   theChildren.push_back( otherChild );
   particle->showerKinematics()->
-    updateParent( newParent, theChildren, bb.type);
+    updateParent( newParent, theChildren,2, bb.type);
   // update the history if needed
   currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
   currentTree()->addInitialStateBranching( particle, newParent, otherChild );
