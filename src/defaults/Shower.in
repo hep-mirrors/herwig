@@ -89,7 +89,7 @@ newdef PowhegShowerHandler:IntrinsicPtGaussian 1.3*GeV
 newdef PowhegShowerHandler:IntrinsicPtBeta  	0
 newdef PowhegShowerHandler:IntrinsicPtGamma 	0*GeV
 newdef PowhegShowerHandler:IntrinsicPtIptmax   0*GeV
-newdef PowhegShowerHandler:ReconstructionOption OffShell5
+newdef PowhegShowerHandler:EvolutionScheme Q2
 
 #############################################################
 # End of interesting user servicable section.
@@ -102,7 +102,7 @@ newdef PowhegShowerHandler:ReconstructionOption OffShell5
 #
 # a few default values
 newdef ShowerHandler:MECorrMode 1
-newdef ShowerHandler:ReconstructionOption OffShell5
+newdef ShowerHandler:EvolutionScheme Q2
 newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
