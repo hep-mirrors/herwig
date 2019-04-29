@@ -115,41 +115,49 @@ create Herwig::HalfHalfOneSplitFn QtoQGammaSplitFn
 set QtoQGammaSplitFn:InteractionType QED
 set QtoQGammaSplitFn:ColourStructure ChargedChargedNeutral
 set QtoQGammaSplitFn:AngularOrdered Yes
+set QtoQGammaSplitFn:StrictAO No
 
 create Herwig::HalfHalfOneSplitFn QtoQGSplitFn
 newdef QtoQGSplitFn:InteractionType QCD
 newdef QtoQGSplitFn:ColourStructure TripletTripletOctet
 set QtoQGSplitFn:AngularOrdered Yes
+set QtoQGSplitFn:StrictAO No
 
 create Herwig::OneOneOneSplitFn GtoGGSplitFn
 newdef GtoGGSplitFn:InteractionType QCD
 newdef GtoGGSplitFn:ColourStructure OctetOctetOctet
 set GtoGGSplitFn:AngularOrdered Yes
+set GtoGGSplitFn:StrictAO No
 
 create Herwig::OneOneOneMassiveSplitFn WtoWGammaSplitFn
 newdef WtoWGammaSplitFn:InteractionType QED
 newdef WtoWGammaSplitFn:ColourStructure ChargedChargedNeutral
 set WtoWGammaSplitFn:AngularOrdered Yes
+set WtoWGammaSplitFn:StrictAO No
 
 create Herwig::OneHalfHalfSplitFn GtoQQbarSplitFn
 newdef GtoQQbarSplitFn:InteractionType QCD
 newdef GtoQQbarSplitFn:ColourStructure OctetTripletTriplet
 set GtoQQbarSplitFn:AngularOrdered Yes
+set GtoQQbarSplitFn:StrictAO No
 
 create Herwig::OneHalfHalfSplitFn GammatoQQbarSplitFn
 newdef GammatoQQbarSplitFn:InteractionType QED
 newdef GammatoQQbarSplitFn:ColourStructure NeutralChargedCharged
 set GammatoQQbarSplitFn:AngularOrdered Yes
+set GammatoQQbarSplitFn:StrictAO No
 
 create Herwig::HalfOneHalfSplitFn QtoGQSplitFn
 newdef QtoGQSplitFn:InteractionType QCD
 newdef QtoGQSplitFn:ColourStructure TripletOctetTriplet
 set QtoGQSplitFn:AngularOrdered Yes
+set QtoGQSplitFn:StrictAO No
 
 create Herwig::HalfOneHalfSplitFn QtoGammaQSplitFn
 newdef QtoGammaQSplitFn:InteractionType QED
 newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 set QtoGammaQSplitFn:AngularOrdered Yes
+set QtoGammaQSplitFn:StrictAO No
 #
 # Now the Sudakovs
 create Herwig::PTCutOff PTCutOff

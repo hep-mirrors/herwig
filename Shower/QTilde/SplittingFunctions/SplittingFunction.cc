@@ -127,6 +127,21 @@ void SplittingFunction::Init() {
      "If angular order use pT, otherwise Q2",
      2);
 
+  static Switch<SplittingFunction,bool> interfaceStrictAO
+    ("StrictAO",
+     "Whether or not to apply strict angular-ordering,"
+     " i.e. for QED even in QCD emission, and vice versa",
+     &SplittingFunction::strictAO_, true, false, false);
+  static SwitchOption interfaceStrictAOYes
+    (interfaceStrictAO,
+     "Yes",
+     "Apply strict ordering",
+     true);
+  static SwitchOption interfaceStrictAONo
+    (interfaceStrictAO,
+     "No",
+     "Don't apply strict ordering",
+     false);
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {

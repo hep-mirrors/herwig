@@ -76,7 +76,7 @@ public:
   SplittingFunction()
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true), scaleChoice_(2), strictAO_(false) {}
+      angularOrdered_(true), scaleChoice_(2), strictAO_(true) {}
 
 public:
 

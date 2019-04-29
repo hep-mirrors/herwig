@@ -49,7 +49,7 @@ bool QTildeShowerHandler::_hardEmissionWarn = true;
 bool QTildeShowerHandler::_missingTruncWarn = true;
 
 QTildeShowerHandler::QTildeShowerHandler() :
-  _maxtry(100), _meCorrMode(1), _evolutionScheme(2),
+  _maxtry(100), _meCorrMode(1), _evolutionScheme(1),
   _hardVetoReadOption(false),
   _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
   _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
