@@ -50,6 +50,7 @@ updateChildren( const tShowerParticlePtr theParent,
 void IS_QTildeShowerKinematics1to2::
 updateParent(const tShowerParticlePtr parent, 
 	     const ShowerParticleVector & children,
+	     unsigned int ,
 	     ShowerPartnerType partnerType) const {
   // calculate the scales
   splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,

@@ -94,6 +94,7 @@ reconstructLast(const tShowerParticlePtr last, Energy mass) const {
 
 void Decay_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						    const ShowerParticleVector & children,
+						    unsigned int ,
 						    ShowerPartnerType) const {
   IdList ids(3);
   ids[0] = parent->dataPtr();

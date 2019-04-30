@@ -1,0 +1,18 @@
+# -*- ThePEG-repository -*-
+#
+#  Settings for the dot product preserving tune with veto of arXiv:1904.11866
+#  http://inspirehep.net/record/1731587
+#
+# dot product scheme
+set /Herwig/Shower/PowhegShowerHandler:EvolutionScheme DotProduct
+set /Herwig/Shower/ShowerHandler:EvolutionScheme DotProduct
+set /Herwig/Shower/KinematicsReconstructor:FinalFinalWeight Yes
+# don't enforce strict angular ordering
+set /Herwig/Shower/QtoQGammaSplitFn:StrictAO Yes
+set /Herwig/Shower/QtoQGSplitFn:StrictAO Yes
+set /Herwig/Shower/GtoGGSplitFn:StrictAO Yes
+set /Herwig/Shower/WtoWGammaSplitFn:StrictAO Yes
+set /Herwig/Shower/GtoQQbarSplitFn:StrictAO Yes
+set /Herwig/Shower/GammatoQQbarSplitFn:StrictAO Yes
+set /Herwig/Shower/QtoGQSplitFn:StrictAO Yes
+set /Herwig/Shower/QtoGammaQSplitFn:StrictAO Yes

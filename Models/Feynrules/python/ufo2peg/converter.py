@@ -127,6 +127,10 @@ class PyToCpp(ast.NodeVisitor):
             text = 'imag'
         elif text == 're':
             text = 'real'
+        elif text == 'max':
+            text = 'max'
+        elif text == 'min':
+            text = 'min'
         elif convertHerwig :
             if text == 'I' :
                 text = "ii"
