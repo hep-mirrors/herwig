@@ -658,7 +658,7 @@ private :
   /**
    *  Control of the reconstruction option
    */
-  unsigned int _reconOpt;
+  unsigned int _evolutionScheme;
 
   /**
    * If hard veto pT scale is being read-in this determines

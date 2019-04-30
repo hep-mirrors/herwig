@@ -107,6 +107,7 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         # jet shapes
         if(aopath.find("4300807")>0 or aopath.find("6132243")>0 or
            aopath.find("5765862")>0 or aopath.find("3612880")>0 or

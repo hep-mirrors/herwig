@@ -16,6 +16,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -59,14 +60,12 @@ struct JetOrdering {
 
 void KinematicsReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _reconopt << _initialBoost << ounit(_minQ,GeV) << _noRescale 
-     << _noRescaleVector << _finalStateReconOption
-     << _initialStateReconOption;
+     << _noRescaleVector << _initialStateReconOption << _finalFinalWeight;
 }
 
 void KinematicsReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
-     >> _noRescaleVector >> _finalStateReconOption
-     >> _initialStateReconOption;  
+     >> _noRescaleVector >> _initialStateReconOption >> _finalFinalWeight;
 }
 
 void KinematicsReconstructor::Init() {
@@ -137,40 +136,9 @@ void KinematicsReconstructor::Init() {
      "First apply a longitudinal and then a transverse boost",
      1);
 
-  static Switch<KinematicsReconstructor,unsigned int> interfaceFinalStateReconOption
-    ("FinalStateReconOption",
-     "Option for how to reconstruct the momenta of the final-state system",
-     &KinematicsReconstructor::_finalStateReconOption, 0, false, false);
-  static SwitchOption interfaceFinalStateReconOptionDefault
-    (interfaceFinalStateReconOption,
-     "Default",
-     "All the momenta are rescaled in the rest frame",
-     0);
-  static SwitchOption interfaceFinalStateReconOptionMostOffShell
-    (interfaceFinalStateReconOption,
-     "MostOffShell",
-     "All particles put on the new-mass shell and then the most off-shell and"
-     " recoiling system are rescaled to ensure 4-momentum is conserved.",
-     1);
-  static SwitchOption interfaceFinalStateReconOptionRecursive
-    (interfaceFinalStateReconOption,
-     "Recursive",
-     "Recursively put on shell by putting the most off-shell particle which"
-     " hasn't been rescaled on-shell by rescaling the particles and the recoiling system. ",
-     2);
-  static SwitchOption interfaceFinalStateReconOptionRestMostOffShell
-    (interfaceFinalStateReconOption,
-     "RestMostOffShell",
-     "The most off-shell is put on shell by rescaling it and the recoiling system,"
-     " the recoiling system is then put on-shell in its rest frame.",
-     3);
-  static SwitchOption interfaceFinalStateReconOptionRestRecursive
-    (interfaceFinalStateReconOption,
-     "RestRecursive",
-     "As 3 but recursive treated the currently most-off shell,"
-     " only makes a difference if more than 3 partons.",
-     4);
-
+  static Deleted<KinematicsReconstructor> delFinalStateReconOption
+    ("FinalStateReconOption", "The old default (0) is now the only choice");
+  
   static Switch<KinematicsReconstructor,unsigned int> interfaceInitialStateReconOption
     ("InitialStateReconOption",
      "Option for the reconstruction of initial state radiation",
@@ -190,6 +158,21 @@ void KinematicsReconstructor::Init() {
      "SofterFraction",
      "Preserve the momentum fraction of the parton which has emitted softer.",
      2);
+
+  static Switch<KinematicsReconstructor,bool> interfaceFinalFinalWeight
+    ("FinalFinalWeight",
+     "Apply kinematic rejection weight for final-states",
+     &KinematicsReconstructor::_finalFinalWeight, false, false, false);
+  static SwitchOption interfaceFinalFinalWeightNo
+    (interfaceFinalFinalWeight,
+     "No",
+     "Don't apply the weight",
+     false);
+  static SwitchOption interfaceFinalFinalWeightYes
+    (interfaceFinalFinalWeight,
+     "Yes",
+     "Apply the weight",
+     true);
 
 }
 
@@ -369,7 +352,7 @@ reconstructHardJets(ShowerTreePtr hard,
 
 double 
 KinematicsReconstructor::solveKfactor(const Energy & root_s, 
-				  const JetKinVect & jets) const {
+				      const JetKinVect & jets) const {
   Energy2 s = sqr(root_s);
   // must be at least two jets
   if ( jets.size() < 2) throw KinematicsReconstructionVeto();
@@ -1609,79 +1592,30 @@ reconstructFinalStateSystem(bool applyBoost,
     tempJetKin.q = (*cit)->progenitor()->momentum();
     jetKinematics.push_back(tempJetKin);
   }
+  if(_finalFinalWeight && jetKinematics.size()==2) {
+    Energy m1 = jetKinematics[0].q.m();
+    Energy m2 = jetKinematics[1].q.m();
+    Energy m0 = pcm.m();
+    if(m0<m1+m2)  throw KinematicsReconstructionVeto();
+    Energy4 lambdaNew = (sqr(m0)-sqr(m1-m2))*(sqr(m0)-sqr(m1+m2));
+    m1 = jetKinematics[0].p.m();
+    m2 = jetKinematics[1].p.m();
+    Energy4 lambdaOld = (sqr(m0)-sqr(m1-m2))*(sqr(m0)-sqr(m1+m2));
+    if(UseRandom::rnd()>sqrt(lambdaNew/lambdaOld))
+      throw KinematicsReconstructionVeto();
+  }
   // default option rescale everything with the same factor
-  if( _finalStateReconOption == 0 || jetKinematics.size() <= 2 ) {
-    // find the rescaling factor
-    double k = 0.0;
-    if(radiated) {
-      k = solveKfactor(pcm.m(), jetKinematics);
-      // perform the rescaling and boosts
-      for(JetKinVect::iterator it = jetKinematics.begin();
-	  it != jetKinematics.end(); ++it) {
-	LorentzRotation Trafo = solveBoost(k, it->q, it->p);
-	deepTransform(it->parent,Trafo);
-      }
+  // find the rescaling factor
+  double k = 0.0;
+  if(radiated) {
+    k = solveKfactor(pcm.m(), jetKinematics);
+    // perform the rescaling and boosts
+    for(JetKinVect::iterator it = jetKinematics.begin();
+	it != jetKinematics.end(); ++it) {
+      LorentzRotation Trafo = solveBoost(k, it->q, it->p);
+      deepTransform(it->parent,Trafo);
     }
   }
-  // different treatment of most off-shell
-  else if ( _finalStateReconOption <= 4 ) {
-    // sort the jets by virtuality
-    std::sort(jetKinematics.begin(),jetKinematics.end(),JetOrdering());
-    // Bryan's procedures from FORTRAN
-    if( _finalStateReconOption <=2 ) {
-      // loop over the off-shell partons,  _finalStateReconOption==1 only first ==2 all
-      JetKinVect::const_iterator jend = _finalStateReconOption==1 ? jetKinematics.begin()+1 : jetKinematics.end();
-      for(JetKinVect::const_iterator jit=jetKinematics.begin(); jit!=jend;++jit) {
-	// calculate the 4-momentum of the recoiling system
-	Lorentz5Momentum psum;
-	bool done = true;
-	for(JetKinVect::const_iterator it=jetKinematics.begin();it!=jetKinematics.end();++it) {
-	  if(it==jit) {
-	    done = false;
-	    continue;
-	  }
-	  // first option put on-shell and sum 4-momenta
-	  if( _finalStateReconOption == 1 ) {
-	    LorentzRotation Trafo = solveBoost(1., it->q, it->p);
-	    deepTransform(it->parent,Trafo);
-	    psum += it->parent->momentum();
-	  }
-	  // second option, sum momenta
-	  else {
-	    // already rescaled
-	    if(done) psum += it->parent->momentum();
-	    // still needs to be rescaled
-	    else psum += it->p;
-	  }
-	}
-	// set the mass
-	psum.rescaleMass();
-	// calculate the 3-momentum rescaling factor
-	Energy2 s(pcm.m2());
-	Energy2 m1sq(jit->q.m2()),m2sq(psum.m2());
-	Energy4 num = sqr(s - m1sq - m2sq) - 4.*m1sq*m2sq;
-	if(num<ZERO) throw KinematicsReconstructionVeto();
-	double k = sqrt( num / (4.*s*jit->p.vect().mag2()) );
-	// boost the off-shell parton
-	LorentzRotation B1 = solveBoost(k, jit->q, jit->p);
-	deepTransform(jit->parent,B1);
-	// boost everything else to rescale
-	LorentzRotation B2 = solveBoost(k, psum, psum);
-	for(JetKinVect::iterator it=jetKinematics.begin();it!=jetKinematics.end();++it) {
-	  if(it==jit) continue;
-	  deepTransform(it->parent,B2);
-	  it->p *= B2;
-	  it->q *= B2;
-	}
-      }
-    }
-    // Peter's C++ procedures
-    else {
-      reconstructFinalFinalOffShell(jetKinematics,pcm.m2(), _finalStateReconOption == 4);
-    }
-  }
-  else
-    assert(false);
   // apply the final boosts
   if(gottaBoost || applyBoost) { 
     LorentzRotation finalBoosts;
@@ -2618,60 +2552,6 @@ void KinematicsReconstructor::deepTransform(PPtr particle,
       tit->first->transform(r*rot,false);
       _treeBoosts[tit->first].push_back(r*rot);
     }
-  }
-}
-
-void KinematicsReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
-							Energy2 s,
-							bool recursive) const {
-  JetKinVect::iterator jit;
-  jit = orderedJets.begin(); ++jit;
-  // 4-momentum of recoiling system
-  Lorentz5Momentum psum;
-  for( ; jit!=orderedJets.end(); ++jit) psum += jit->p;
-  psum.rescaleMass();
-  // calculate the 3-momentum rescaling factor
-  Energy2 m1sq(orderedJets.begin()->q.m2()),m2sq(psum.m2());
-  Energy4 num = sqr(s - m1sq - m2sq) - 4.*m1sq*m2sq;
-  if(num<ZERO) throw KinematicsReconstructionVeto();
-  double k = sqrt( num / (4.*s*orderedJets.begin()->p.vect().mag2()) );
-  // boost the most off-shell
-  LorentzRotation B1 = solveBoost(k, orderedJets.begin()->q, orderedJets.begin()->p);
-  deepTransform(orderedJets.begin()->parent,B1);
-  // boost everything else 
-  // first to rescale
-  LorentzRotation B2 = solveBoost(k, psum, psum);
-  // and then to rest frame of new system
-  Lorentz5Momentum pnew = B2*psum;
-  pnew.rescaleMass();
-  B2.transform(pnew.findBoostToCM());
-  // apply transform (calling routine ensures at least 3 elements)
-  jit = orderedJets.begin(); ++jit;
-  for(;jit!=orderedJets.end();++jit) {
-    deepTransform(jit->parent,B2);
-    jit->p *= B2; 
-    jit->q *= B2;
-  }
-  JetKinVect newJets(orderedJets.begin()+1,orderedJets.end());
-  // final reconstruction 
-  if(newJets.size()==2 || !recursive ) {
-    // rescaling factor
-    double k = solveKfactor(psum.m(), newJets);
-    // rescale jets in the new CMF
-    for(JetKinVect::iterator it = newJets.begin(); it != newJets.end(); ++it) {
-      LorentzRotation Trafo = solveBoost(k, it->q, it->p);
-      deepTransform(it->parent,Trafo);
-    }
-  }
-  // recursive
-  else {
-    std::sort(newJets.begin(),newJets.end(),JetOrdering());
-    reconstructFinalFinalOffShell(newJets,psum.m2(),recursive);
-  }
-  // finally boost back from new CMF
-  LorentzRotation back(-pnew.findBoostToCM());
-  for(JetKinVect::iterator it = newJets.begin(); it != newJets.end(); ++it) {
-     deepTransform(it->parent,back);
   }
 }
 

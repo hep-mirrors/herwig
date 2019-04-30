@@ -13,32 +13,35 @@ namespace QTildeKinematics {
 
 
 
-inline Energy2 pT2_FSR(Energy2 qt2, double z, Energy2 m02, Energy2 m12, Energy2 m22) {
-	const double z1z = z*(1.-z);
-	return z1z*(z1z*qt2 + m02) - m12*(1.-z) - m22*z;
+inline Energy2 pT2_FSR(Energy2 qt2, double z, Energy2 m02, Energy2 m12, Energy2 m22,
+		       Energy2 q12, Energy2 q22) {
+  const double z1z = z*(1.-z);
+  return z1z*(z1z*qt2 + m02 -m12-m22) - q12*sqr(1.-z) - q22*sqr(z);
+  //return z1z*(z1z*qt2 + m02) - q12*(1.-z) - q22*z;
 }
 
 inline Energy2 pT2_ISR(Energy2 qt2, double z, Energy2 m22) {
-	return sqr(1.-z)*qt2 - m22*z;
+  return sqr(1.-z)*qt2 - m22*z;
 }
 
 inline Energy2 pT2_Decay(Energy2 qt2, double z, Energy2 m02, Energy2 m22) {
-	return sqr(1.-z)*(qt2 - m02) - m22*z;
+  return sqr(1.-z)*(qt2 - m02) - m22*z;
 }
 
 
 
-inline Energy pT_FSR(Energy2 qt2, double z, Energy2 m02, Energy2 m12, Energy2 m22) {
-	return sqrt( pT2_FSR(qt2,z,m02,m12,m22) );
+inline Energy pT_FSR(Energy2 qt2, double z, Energy2 m02, Energy2 m12, Energy2 m22,
+		       Energy2 q12, Energy2 q22) {
+  return sqrt( pT2_FSR(qt2,z,m02,m12,m22,q12,q22) );
 }
 
 
 inline Energy pT_ISR(Energy2 qt2, double z, Energy2 m22) {
-	return sqrt( pT2_ISR(qt2,z,m22) );
+  return sqrt( pT2_ISR(qt2,z,m22) );
 }
 
 inline Energy pT_Decay(Energy2 qt2, double z, Energy2 m02, Energy2 m22) {
-	return sqrt( pT2_Decay(qt2,z,m02,m22) );
+  return sqrt( pT2_Decay(qt2,z,m02,m22) );
 }
 
 

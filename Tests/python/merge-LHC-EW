@@ -120,6 +120,7 @@ if __name__ == "__main__":
             mass = 116
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
+            if("RAW" in aopath) :continue
             if(aopath.find("ATLAS_2010_S8919674")>0) :
                 if((aopath.find("d01")>0 or aopath.find("d05")>0 or 
                     aopath.find("d07")>0) and file.find("-e")>0) : 

@@ -1,0 +1,25 @@
+# -*- ThePEG-repository -*-
+#
+#  Settings for the q^2 preserving tune of arXiv:1904.11866
+#  http://inspirehep.net/record/1731587
+#
+# q^2 scheme
+read snippets/EvolutionScheme-Q2.in
+# parameters of the tune
+set /Herwig/Shower/AlphaQCD:AlphaIn                                0.1244
+set /Herwig/Shower/PTCutOff:pTmin                                  1.136
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              3.141
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight              1.353
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 		   0.831
+set /Herwig/Hadronization/HadronSelector:PwtSquark     		   0.737
+set /Herwig/Hadronization/HadronSelector:PwtDIquark    		   0.383
+set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm              3.564
+set /Herwig/Hadronization/ClusterFissioner:ClPowCharm 		   2.089
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm		   0.928
+set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm  		   0.141
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm	   0.011
+set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom             2.900
+set /Herwig/Hadronization/ClusterFissioner:ClPowBottom 		   0.518
+set /Herwig/Hadronization/ClusterFissioner:PSplitBottom		   0.365
+set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom  		   0.070
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom   0.000

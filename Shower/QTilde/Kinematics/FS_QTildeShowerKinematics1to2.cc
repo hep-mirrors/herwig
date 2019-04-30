@@ -152,6 +152,7 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
 
 void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						 const ShowerParticleVector & children,
+						 unsigned int pTscheme,
 						 ShowerPartnerType) const {
   IdList ids(3);
   ids[0] = parent->dataPtr();
@@ -163,11 +164,25 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
   // compute the new pT of the branching
   Energy2 m02 = (ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma) ?
   	sqr(virtualMasses[0]) : Energy2();
-
-  Energy2 pt2 = QTildeKinematics::pT2_FSR(
-        sqr(scale()), z(), m02, sqr(children[0]->virtualMass()), sqr(children[1]->virtualMass())
-        );
-
+  Energy2 pt2;
+  if(pTscheme==0) {
+    pt2 = QTildeKinematics::pT2_FSR(sqr(scale()), z(), m02,
+				    sqr(virtualMasses[1])          ,sqr(virtualMasses[2]),
+				    sqr(virtualMasses[1])          ,sqr(virtualMasses[2]));
+  }
+  else if(pTscheme==1) {
+    pt2 = QTildeKinematics::pT2_FSR(sqr(scale()), z(), m02,
+				    sqr(virtualMasses[1])          ,sqr(virtualMasses[2]),
+				    sqr(children[0]->virtualMass()), sqr(children[1]->virtualMass()));
+  }
+  else if(pTscheme==2) {
+    pt2 = QTildeKinematics::pT2_FSR(sqr(scale()), z(), m02,
+				    sqr(children[0]->virtualMass()), sqr(children[1]->virtualMass()),
+				    sqr(children[0]->virtualMass()), sqr(children[1]->virtualMass()));
+  }
+  else
+    assert(false);
+  
   if(pt2>ZERO) {
     pT(sqrt(pt2));
   }

@@ -1,0 +1,25 @@
+# -*- ThePEG-repository -*-
+#
+#  Settings for the dot product preserving tune with veto of arXiv:1904.11866
+#  http://inspirehep.net/record/1731587
+#
+# dot-product scheme
+read snippets/EvolutionScheme-DotProduct-Veto.in
+# parameters of the tune
+set /Herwig/Shower/AlphaQCD:AlphaIn                                0.1186
+set /Herwig/Shower/PTCutOff:pTmin                                  0.958
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              3.649
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight              2.780
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 		   0.899
+set /Herwig/Hadronization/HadronSelector:PwtSquark     		   0.700
+set /Herwig/Hadronization/HadronSelector:PwtDIquark    		   0.298
+set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm              3.950
+set /Herwig/Hadronization/ClusterFissioner:ClPowCharm 		   2.559
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm		   0.994
+set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm  		   0.163
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm	   0.000
+set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom             3.757
+set /Herwig/Hadronization/ClusterFissioner:ClPowBottom 		   0.547
+set /Herwig/Hadronization/ClusterFissioner:PSplitBottom		   0.625
+set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom  		   0.078
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom   0.000

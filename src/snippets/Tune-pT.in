@@ -1,0 +1,25 @@
+# -*- ThePEG-repository -*-
+#
+#  Settings for the pT preserving tune of arXiv:1904.11866
+#  http://inspirehep.net/record/1731587
+#
+# pT scheme
+read snippets/EvolutionScheme-pT.in
+# parameters of the tune
+set /Herwig/Shower/AlphaQCD:AlphaIn                                0.1074
+set /Herwig/Shower/PTCutOff:pTmin                                  0.900
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight              4.204
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight              3.000
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 		   0.914
+set /Herwig/Hadronization/HadronSelector:PwtSquark     		   0.647
+set /Herwig/Hadronization/HadronSelector:PwtDIquark    		   0.236
+set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm              4.204
+set /Herwig/Hadronization/ClusterFissioner:ClPowCharm 		   3.000
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm		   1.060
+set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm  		   0.098
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm	   0.000
+set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom             5.757
+set /Herwig/Hadronization/ClusterFissioner:ClPowBottom 		   0.672
+set /Herwig/Hadronization/ClusterFissioner:PSplitBottom		   0.557
+set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom  		   0.117
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom   0.000

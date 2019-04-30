@@ -27,7 +27,15 @@ SoftTune.in \
 YFS.in \
 BaryonicReconnection.in \
 CMWinQtiledShower.in \
-Dipole_AutoTune_prel.in
+Dipole_AutoTune_prel.in \
+Tune-DotProduct.in  \
+Tune-DotProduct-Veto.in  \
+Tune-pT.in  \
+Tune-Q2.in \
+EvolutionScheme-DotProduct.in  \
+EvolutionScheme-DotProduct-Veto.in  \
+EvolutionScheme-pT.in  \
+EvolutionScheme-Q2.in
 
 dist_snippets_DATA = $(INPUTFILES)
 

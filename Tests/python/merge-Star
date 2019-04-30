@@ -116,6 +116,7 @@ for f in yodafiles:
         break
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("6870392")>0 or aopath.find("HELEN")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}

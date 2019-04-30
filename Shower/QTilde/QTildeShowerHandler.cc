@@ -11,6 +11,7 @@
 //
 
 #include "QTildeShowerHandler.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
@@ -48,7 +49,7 @@ bool QTildeShowerHandler::_hardEmissionWarn = true;
 bool QTildeShowerHandler::_missingTruncWarn = true;
 
 QTildeShowerHandler::QTildeShowerHandler() :
-  _maxtry(100), _meCorrMode(1), _reconOpt(0),
+  _maxtry(100), _meCorrMode(1), _evolutionScheme(1),
   _hardVetoReadOption(false),
   _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
   _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
@@ -74,7 +75,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
-     << _trunc_Mode << _hardEmission << _reconOpt 
+     << _trunc_Mode << _hardEmission << _evolutionScheme 
      << ounit(muPt,GeV) << oenum(interaction_) 
      << _reconstructor << _partnerfinder;
 }
@@ -85,7 +86,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
-     >> _trunc_Mode >> _hardEmission >> _reconOpt
+     >> _trunc_Mode >> _hardEmission >> _evolutionScheme
      >> iunit(muPt,GeV) >> ienum(interaction_)
      >> _reconstructor >> _partnerfinder;
 }
@@ -285,22 +286,30 @@ void QTildeShowerHandler::Init() {
      "QCDandQED",
      "Both QED and QCD radiation",
      ShowerInteraction::Both);
+  
+  static Deleted<QTildeShowerHandler> delReconstructionOption
+    ("ReconstructionOption", "The old reconstruction option switch has been replaced with"
+     " the new EvolutionScheme switch, see  arXiv:1904.11866 for details");
 
-  static Switch<QTildeShowerHandler,unsigned int> interfaceReconstructionOption
-    ("ReconstructionOption",
-     "Treatment of the reconstruction of the transverse momentum of "
-     "a branching from the evolution scale.",
-     &QTildeShowerHandler::_reconOpt, 0, false, false);
-  static SwitchOption interfaceReconstructionOptionCutOff
-    (interfaceReconstructionOption,
-     "CutOff",
-     "Use the cut-off masses in the calculation",
+  static Switch<QTildeShowerHandler,unsigned int> interfaceEvolutionScheme
+    ("EvolutionScheme",
+     "The scheme to interpret the evolution variable in the case of multple emission.",
+     &QTildeShowerHandler::_evolutionScheme, 1, false, false);
+  static SwitchOption interfaceEvolutionSchemepT
+    (interfaceEvolutionScheme,
+     "pT",
+     "pT scheme",
      0);
-  static SwitchOption interfaceReconstructionOptionOffShell5
-    (interfaceReconstructionOption,
-     "OffShell5",
-     "Try and preserve q2 but if pt negative just zero it",
-     5);
+  static SwitchOption interfaceEvolutionSchemeDotProduct
+    (interfaceEvolutionScheme,
+     "DotProduct",
+     "Dot-product scheme",
+     1);
+  static SwitchOption interfaceEvolutionSchemeQ2
+    (interfaceEvolutionScheme,
+     "Q2",
+     "Q2 scheme",
+     2);
 
   static Switch<QTildeShowerHandler,unsigned int> interfaceSoftCorrelations
     ("SoftCorrelations",
@@ -711,8 +720,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
   // shower the second particle
   if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
   if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
-  if(_reconOpt>=1)
-    particle->showerKinematics()->updateParent(particle, children,fb.type);
+  particle->showerKinematics()->updateParent(particle, children,_evolutionScheme,fb.type);
   // branching has happened
   if(first&&!children.empty())
     particle->showerKinematics()->resetChildren(particle,children);
@@ -773,7 +781,7 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   theChildren.push_back(otherChild);
   //this updates the evolution scale
   particle->showerKinematics()->
-    updateParent(newParent, theChildren,bb.type);
+    updateParent(newParent, theChildren,_evolutionScheme,bb.type);
   // update the history if needed
   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
   _currenttree->addInitialStateBranching(particle,newParent,otherChild);
@@ -1591,7 +1599,7 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
   }
   if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
   // branching has happened
-  particle->showerKinematics()->updateParent(particle, children,fb.type); 
+  particle->showerKinematics()->updateParent(particle, children,_evolutionScheme,fb.type); 
   if(first&&!children.empty())
     particle->showerKinematics()->resetChildren(particle,children);
   if(particle->spinInfo()) particle->spinInfo()->develop();
@@ -1680,7 +1688,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
     theChildren.push_back( particle ); 
     theChildren.push_back( otherChild );
     particle->showerKinematics()->
-      updateParent( newParent, theChildren, branch->type());
+      updateParent( newParent, theChildren,_evolutionScheme, branch->type());
     // update the history if needed
     currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
     currentTree()->addInitialStateBranching( particle, newParent, otherChild );
@@ -1734,7 +1742,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
   theChildren.push_back( particle ); 
   theChildren.push_back( otherChild );
   particle->showerKinematics()->
-    updateParent( newParent, theChildren, bb.type);
+    updateParent( newParent, theChildren,_evolutionScheme, bb.type);
   // update the history if needed
   currentTree()->updateInitialStateShowerProduct( progenitor(), newParent );
   currentTree()->addInitialStateBranching( particle, newParent, otherChild );
