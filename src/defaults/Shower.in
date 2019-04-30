@@ -38,6 +38,7 @@ create Herwig::KinematicsReconstructor KinematicsReconstructor
 newdef KinematicsReconstructor:ReconstructionOption Colour3
 newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
+newdef KinematicsReconstructor:FinalFinalWeight Yes
 
 newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
 newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
@@ -107,7 +108,7 @@ newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
-newdef AlphaQCD:AlphaIn 0.126234
+newdef AlphaQCD:AlphaIn 0.1186
 #
 #
 # Lets set up all the splittings
@@ -161,7 +162,7 @@ set QtoGammaQSplitFn:StrictAO Yes
 #
 # Now the Sudakovs
 create Herwig::PTCutOff PTCutOff
-newdef PTCutOff:pTmin 1.222798*GeV
+newdef PTCutOff:pTmin 0.958*GeV
 
 create Herwig::SudakovFormFactor SudakovCommon
 newdef SudakovCommon:Alpha AlphaQCD
