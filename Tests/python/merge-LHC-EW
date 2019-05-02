@@ -99,12 +99,12 @@ if __name__ == "__main__":
         file='Rivet-'+args[0]+f+".yoda"
         if not os.access(file, os.R_OK):
             logging.error("%s can not be read" % file)
-            break
+            continue
         try:
             aos = yoda.read(file)
         except:
             logging.error("%s can not be parsed as yoda" % file)
-            break
+            continue
         mass=66
         if(file.find("HighMass1")>=0) :
             mass = 116
