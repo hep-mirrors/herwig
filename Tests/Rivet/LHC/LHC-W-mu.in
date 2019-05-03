@@ -27,3 +27,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109:LMODE=MU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1282447
 # ATLAS W inclusive cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1502620:LMODE=WMU
+# ATLAS W/Z ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_MU

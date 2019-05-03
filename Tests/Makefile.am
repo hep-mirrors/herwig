@@ -176,7 +176,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{8,13}-Top-{All,L,SL}.in) \
                   $(shell echo Rivet/Star{,-Dipole}-{UE,Jets-{1..4}}.in ) \
 	          $(shell echo Rivet/SppS{,-Dipole}-{200,500,900,546}-UE.in ) \
-                  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{W-{e,mu},13-Z-{e,mu},Z-HighMass{1,2}-e,{8,13}-W-mu,8-Z-Mass{1..4}-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,W-Z-{e,mu},Z-mu-Short}.in) \
+                  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{W-{e,mu},13-Z-{e,mu},Z-HighMass{1,2}-e,{8,13}-W-mu,8-Z-Mass{1..4}-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-7-{W,Z}Gamma-{e,mu}.in) \
 	          $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \
 	          $(shell echo Rivet/LHC{-Matchbox,-Matchbox-Powheg,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{Z-b,Z-bb,8-Z-b,8-Z-bb,W-b,8-Z-jj}.in) \
@@ -313,7 +313,7 @@ Rivet-LHC-EW : Rivet-LHC-EW/done
 	touch $@
 
 Rivet-LHC-EW/done: \
-		$(shell echo Rivet{,-Powheg}-LHC-{13-Z-{e,mu},{8,13}-W-mu,Z-HighMass{1,2}-e,8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,W-Z-{e,mu},Z-mu-Short}.yoda) \
+		$(shell echo Rivet{,-Powheg}-LHC-{13-Z-{e,mu},{8,13}-W-mu,Z-HighMass{1,2}-e,8-Z-Mass{1..4}-{e,mu},W-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.yoda) \
 		$(shell echo Rivet-LHC-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.yoda) \
 		$(shell echo Rivet-LHC-7-{W,Z}Gamma-{e,mu}.yoda) 
 	rm -rf Rivet-LHC-EW;
