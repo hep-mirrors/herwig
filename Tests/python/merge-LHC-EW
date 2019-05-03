@@ -214,9 +214,10 @@ if __name__ == "__main__":
                 elif(file.find("-e")>=0 and (aopath.find("d02")>=0 or aopath.find("d03")>=0)) :
                     outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2016_I1424838")>0) :
-                if(file.find("-mu")>=0 and aopath.find("x02")>=0 ) :
+                ihist = int(aopath.split("/")[2].split("-")[0].replace("d",""))
+                if(file.find("-mu")>=0 and ihist>30 ) :
                     outhistos[aopath] = ao
-                elif(file.find("-e")>=0 and (aopath.find("x01")>=0)) :
+                elif(file.find("-e")>=0 and ihist<=30) :
                     outhistos[aopath] = ao
             elif (aopath.find("CMS_2015_I1310737")>0) :
                 if aopath in outhistos :
