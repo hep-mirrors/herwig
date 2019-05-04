@@ -286,6 +286,10 @@ if __name__ == "__main__":
                     tmpP[mass] = ao
                 else:
                     raise Exception("A set with mass = %s already exists" % ( mass))
+            elif ( "2015_041_" in aopath) :
+                aopath=aopath.replace("_EL","").replace("_MU","")
+                ao.path = aopath
+                outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
     for hpath,hsets in inhistos_mass.iteritems():
