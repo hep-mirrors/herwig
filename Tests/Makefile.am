@@ -192,11 +192,12 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 Rivet-LEP : Rivet-LEP/done
 	touch $@
 
-Rivet-LEP/done : $(shell echo Rivet-LEP-{9.4,12,13,14,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
+Rivet-LEP/done : $(shell echo Rivet{,-Powheg}-LEP-{9.4,12,13,14,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
 	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda)
 	rm -rf Rivet-LEP
 	python/merge-LEP --with-gg LEP
-	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw 
+	python/merge-LEP LEP-Powheg
+	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw LEP-Powheg.yoda:Hw-Powheg
 	touch $@
 
 
@@ -216,14 +217,12 @@ Rivet-BFactory/done: $(shell echo Rivet-BFactory-{10.52,10.52-sym,10.54,10.45,Up
 Rivet-DIS : Rivet-DIS/done
 	touch $@
 
-Rivet-DIS/done: $(shell echo Rivet{-DIS,-DIS-NoME,-Powheg-DIS,-Matchbox-DIS,-Dipole-DIS}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.yoda)
+Rivet-DIS/done: $(shell echo Rivet{-DIS,-DIS-NoME,-Powheg-DIS}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.yoda)
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS 
 	python/merge-DIS Powheg-DIS
 	python/merge-DIS DIS-NoME
-	python/merge-DIS Matchbox-DIS
-	python/merge-DIS Dipole-DIS
-	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg DIS-NoME.yoda:Hw-NoME Matchbox-DIS.yoda:Hw-Matchbox Dipole-DIS.yoda:Hw-Dipole
+	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw Powheg-DIS.yoda:Hw-Powheg DIS-NoME.yoda:Hw-NoME
 	touch $@
 
 
@@ -267,7 +266,7 @@ Rivet-Star : Rivet-Star/done
 Rivet-Star/done : $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda ) 
 	rm -rf Rivet-Star
 	python/merge-Star Star
-	rivet-mkhtml -o Rivet-Star Star.yoda
+	rivet-mkhtml -o Rivet-Star Star.yoda:Hw
 	touch $@
 
 
@@ -281,7 +280,7 @@ Rivet-SppS : Rivet-SppS/done
 Rivet-SppS/done : $(shell echo Rivet-SppS-{200,500,900,546}-UE.yoda )
 	rm -rf Rivet-SppS
 	python/merge-SppS SppS
-	rivet-mkhtml -o Rivet-SppS SppS.yoda
+	rivet-mkhtml -o Rivet-SppS SppS.yoda:Hw
 	touch $@
 
 
@@ -349,8 +348,8 @@ Rivet-LHC-Higgs/done:  \
 		$(shell echo Rivet{,-Powheg}-LHC-{ggH,VBF,WH,ZH}.yoda) \
         $(shell echo Rivet{,-Powheg}-LHC-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.yoda) \
         Rivet-LHC-ggHJet.yoda
-	yodamerge Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o Powheg-LHC-Higgs.yoda
-	yodamerge Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Higgs.yoda
+	yodamerge --add Rivet-Powheg-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o Powheg-LHC-Higgs.yoda
+	yodamerge --add Rivet-LHC-8-{ggH{-GammaGamma,-WW,},{VBF,ZH,WH}{,-GammaGamma}}.yoda -o LHC-Higgs.yoda
 	rm -rf Rivet-LHC-Higgs
 	rivet-mkhtml -o Rivet-LHC-Higgs Powheg-LHC-Higgs.yoda:Hw-Powheg LHC-Higgs.yoda:Hw\
 	                Rivet-Powheg-LHC-ggH.yoda:gg-Powheg Rivet-LHC-ggH.yoda:gg Rivet-LHC-ggHJet.yoda:HJet \

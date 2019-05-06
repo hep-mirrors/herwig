@@ -144,8 +144,8 @@ for i in range(1,3) :
 if(opts.ue) :
     yodafiles += ["-7-Jets-0.yoda"    ,"-8-Jets-0.yoda" ,
                   "-900-UE.yoda"   ,"-2360-UE.yoda"    ,
-                  "-2760-UE.yoda"     ,"-7-UE.yoda"     ,"-900-UE-Long.yoda",
-                  "-900-UE-Short.yoda","-8-UE.yoda"     ,
+                  "-2760-UE.yoda"     ,"-7-UE.yoda"     ,
+                  "-900-UE-Long.yoda" ,"-8-UE.yoda"     ,
                   "-7-UE-Long.yoda","-13-UE.yoda","-13-UE-Long.yoda"]
 ## Get histos
 inhistos_pt   = {}
