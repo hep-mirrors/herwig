@@ -975,19 +975,19 @@ elif(collider=="LHC") :
             
             if "-e" in parameterName :
                 process+=selectDecayMode("W+",["W+->nu_e,e+;"])
-                process+=addBRReweighter()
+                addedBRReweighter=True
             else :
                 process+=selectDecayMode("W+",["W+->nu_mu,mu+;"])
-                process+=addBRReweighter()
+                addedBRReweighter=True
         elif "ZGamma" in parameterName :
             process+=insert_ME("MEPP2VGamma","2")
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
             if "-e" in parameterName :
                 process+=selectDecayMode("Z0",["Z0->e-,e+;"])
-                process+=addBRReweighter()
+                addedBRReweighter=True
             else :
                 process+=selectDecayMode("Z0",["Z0->mu-,mu+;"])
-                process+=addBRReweighter()
+                addedBRReweighter=True
         else :
             logging.error(" Process %s not supported for internal matrix elements" % name)
             sys.exit(1)
