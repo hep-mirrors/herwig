@@ -6,6 +6,7 @@
 
 #include "OmegaPiPiCurrent.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -28,6 +29,7 @@ OmegaPiPiCurrent::OmegaPiPiCurrent() :mRes_(1.62*GeV) {
   gKK_ = 0.144;
   gf0_ = 0.85;
   addDecayMode(1,-1);
+  addDecayMode(1,-1);
   setInitialModes(2);
 }
 
@@ -40,22 +42,20 @@ IBPtr OmegaPiPiCurrent::fullclone() const {
 }
 
 void OmegaPiPiCurrent::persistentOutput(PersistentOStream & os) const {
+  os << ounit(mRes_,GeV) << ounit(wRes_,GeV) << gRes_
+     << ounit(mSigma_,GeV) << ounit(wSigma_,GeV) << ounit(mf0_,GeV)
+     << gPiPi_ << gKK_ << gSigma_ << gf0_;
 }
 
 void OmegaPiPiCurrent::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(mRes_,GeV) >> iunit(wRes_,GeV) >> gRes_
+     >> iunit(mSigma_,GeV) >> iunit(wSigma_,GeV) >> iunit(mf0_,GeV)
+     >> gPiPi_ >> gKK_ >> gSigma_ >> gf0_;
 }
 
 void OmegaPiPiCurrent::doinit() {
   WeakCurrent::doinit();
-  // assert(phase_.size()==amp_.size());
-  // couplings_.clear();
-  // Complex ii(0.,1.);
-  // for(unsigned int ix=0;ix<amp_.size();++ix) {
-  //   double phi = phase_[ix]/180.*Constants::pi;
-  //   couplings_.push_back(amp_[ix]*(cos(phi)+ii*sin(phi)));
-  // }
 }
-
 
 // The following static variable is needed for the type
 // description system in ThePEG. 
@@ -65,8 +65,68 @@ describeHerwigOmegaPiPiCurrent("Herwig::OmegaPiPiCurrent", "HwWeakCurrents.so");
 void OmegaPiPiCurrent::Init() {
 
   static ClassDocumentation<OmegaPiPiCurrent> documentation
-    ("There is no documentation for the OmegaPiPiCurrent class");
+    ("The OmegaPiPiCurrent class provides the current for I=0 omega pi pi");
+  
+  static Parameter<OmegaPiPiCurrent,Energy> interfacemRes
+    ("mRes",
+     "The mass of the s-channel resonance",
+     &OmegaPiPiCurrent::mRes_, GeV, 1.62*GeV, 0.*GeV, 10.*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<OmegaPiPiCurrent,Energy> interfacewRes
+    ("wRes",
+     "The width of the s-channel resonance",
+     &OmegaPiPiCurrent::wRes_, GeV, 0.288*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
+  static Parameter<OmegaPiPiCurrent,double> interfacegRes
+    ("gRes",
+     "The coupling of the s-channel resonance",
+     &OmegaPiPiCurrent::gRes_, 2.83, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<OmegaPiPiCurrent,Energy> interfacemSigma
+    ("mSigma",
+     "The mass of the Sigma",
+     &OmegaPiPiCurrent::mSigma_, GeV, 0.6*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<OmegaPiPiCurrent,Energy> interfacewSigma
+    ("wSigma",
+     "The width of the Sigma",
+     &OmegaPiPiCurrent::wSigma_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<OmegaPiPiCurrent,double> interfacegSigma
+    ("gSigma",
+     "The coupling of the Sigma resonance",
+     &OmegaPiPiCurrent::gSigma_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+  
+  static Parameter<OmegaPiPiCurrent,Energy> interfacemf0
+    ("mf0",
+     "The mass of the f_0(980)",
+     &OmegaPiPiCurrent::mf0_, GeV, 0.98*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<OmegaPiPiCurrent,double> interfacegf0
+    ("gf0",
+     "The coupling of the f_0(980) meson",
+     &OmegaPiPiCurrent::gf0_, 0.85, 0.0, 10.0,
+     false, false, Interface::limited);
+  
+  static Parameter<OmegaPiPiCurrent,double> interfacegPiPi
+    ("gPiPi",
+     "The coupling of the f_0(980) to pipi",
+     &OmegaPiPiCurrent::gPiPi_, .331, 0.0, 10.0,
+     false, false, Interface::limited);
+  
+  static Parameter<OmegaPiPiCurrent,double> interfacegKK
+    ("gKK",
+     "The coupling of the f_0(980) to KK",
+     &OmegaPiPiCurrent::gKK_, .144, 0.0, 10.0,
+     false, false, Interface::limited);
+  
 }
 
 
@@ -116,6 +176,8 @@ tPDVector OmegaPiPiCurrent::particles(int icharge, unsigned int imode,int,int) {
     return {getParticleData(ParticleID::omega),
 	getParticleData(ParticleID::pi0),
 	getParticleData(ParticleID::pi0)};
+  else
+    assert(false);
 }
 
 void OmegaPiPiCurrent::constructSpinInfo(ParticleVector decay) const {
@@ -244,34 +306,20 @@ unsigned int OmegaPiPiCurrent::decayMode(vector<int> id) {
 // output the information for the database
 void OmegaPiPiCurrent::dataBaseOutput(ofstream & output,bool header,
 				   bool create) const {
-  // if(header) output << "update decayers set parameters=\"";
-  // if(create) output << "create Herwig::OmegaPiPiCurrent " << name() 
-  // 		    << " HwWeakCurrents.so\n";
-  // for(unsigned int ix=0;ix<resMasses_.size();++ix) {
-  //   if(ix<1) output << "newdef " << name() << ":ResonanceMasses " << ix 
-  // 		    << " " << resMasses_[ix]/GeV << "\n";
-  //   else     output << "insert " << name() << ":ResonanceMasses " << ix 
-  // 		    << " " << resMasses_[ix]/GeV << "\n";
-  // }
-  // for(unsigned int ix=0;ix<resWidths_.size();++ix) {
-  //   if(ix<1) output << "newdef " << name() << ":ResonanceWidths " << ix 
-  // 		    << " " << resWidths_[ix]/GeV << "\n";
-  //   else     output << "insert " << name() << ":ResonanceWidths " << ix 
-  // 		    << " " << resWidths_[ix]/GeV << "\n";
-  // }
-  // for(unsigned int ix=0;ix<amp_.size();++ix) {
-  //   if(ix<1) output << "newdef " << name() << ":Amplitude " << ix 
-  // 		    << " " << amp_[ix]*GeV << "\n";
-  //   else     output << "insert " << name() << ":Amplitude " << ix 
-  // 		    << " " << amp_[ix]*GeV << "\n";
-  // }
-  // for(unsigned int ix=0;ix<phase_.size();++ix) {
-  //   if(ix<1) output << "newdef " << name() << ":Phase " << ix 
-  // 		    << " " << phase_[ix] << "\n";
-  //   else     output << "insert " << name() << ":Phase " << ix 
-  // 		    << " " << phase_[ix] << "\n";
-  // }
-  //  WeakCurrent::dataBaseOutput(output,false,false);
-  //  if(header) output << "\n\" where BINARY ThePEGName=\"" 
-  //   		    << fullName() << "\";" << endl;
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::OmegaPiPiCurrent " << name() 
+  		    << " HwWeakCurrents.so\n";
+  output << "newdef " << name() << ":mRes "   << " " << mRes_/GeV   << "\n";
+  output << "newdef " << name() << ":wRes "   << " " << wRes_/GeV   << "\n";
+  output << "newdef " << name() << ":mSigma " << " " << mSigma_/GeV << "\n";
+  output << "newdef " << name() << ":wSigma " << " " << wSigma_/GeV << "\n";
+  output << "newdef " << name() << ":mf0 "    << " " << mf0_/GeV    << "\n";
+  output << "newdef " << name() << ":gRes "   << " " << gRes_       << "\n";
+  output << "newdef " << name() << ":gSigma " << " " << gSigma_     << "\n";
+  output << "newdef " << name() << ":gf0 "    << " " << gf0_        << "\n";
+  output << "newdef " << name() << ":gPiPi "  << " " << gPiPi_      << "\n";
+  output << "newdef " << name() << ":gKK "    << " " << gKK_        << "\n";
+  WeakCurrent::dataBaseOutput(output,false,false);
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+   		    << fullName() << "\";" << endl;
 }

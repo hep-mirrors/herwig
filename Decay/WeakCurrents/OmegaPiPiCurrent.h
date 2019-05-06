@@ -26,69 +26,9 @@ public:
   /**
    * The default constructor.
    */
-  OmegaPiPiCurrent(); //{
-  // /**
-  //  *   Parameters for the \f$\omega(1650)\f$
-  //  */
-  // //@{
-  // /**
-  //  *   Mass of the resonance
-  //  */
-  //Energy mRes_;
-  
-  // /**
-  //  *   Width of the resonance
-  //  */
-  //Energy wRes_;
-
-  // /**
-  //  *   Coupling of the resonance
-  //  */
-  //double gRes_;
-  // //@}
-
-  // /**
-  //  *   Parameters for the \f$f_0\f$ resonances
-  //  */
-  // //@{
-  // /**
-  //  *  Mass of the \f$\sigma\f$
-  //  */
-  //Energy mSigma_;
-  
-  // /**
-  //  *  Width of the \f$\sigma\f$
-  //  */
-  //Energy wSigma_;
-  
-  // /**
-  //  *  Mass of the \f$f_0(980)\f$
-  //  */
-  //Energy mf0_;
-
-  // /**
-  //  *  \f$f_0\f$ coupling to \f$\pi\pi\f$
-  //  */
-  //double gPiPi_;
-
-  // /**
-  //  *  \f$f_0\f$ coupling to KK
-  //  */
-  //double gKK_;
-
-  // /**
-  //  *   Sigma coupling
-  //  */
-  // gSigma_;
-  
-  // /**
-  //  *   f_0 coupling
-  //  */
-  //double gf0_;
-  //};
+  OmegaPiPiCurrent();
   //@}
-
-
+  
 public:
 
   /** @name Methods for the construction of the phase space integrator. */
