@@ -228,7 +228,8 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
                 elif(file.find("-e")>=0 and ihist<=30) :
                     outhistos[aopath] = ao
-            elif (aopath.find("CMS_2015_I1310737")>0) :
+            elif ("CMS_2015_I1310737" in aopath or "ATLAS_2013_I1219109" in aopath or
+                  ("ATLAS_2014_I1319490" in aopath and "y01" in aopath )) :
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                 else :
