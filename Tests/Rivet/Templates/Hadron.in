@@ -5,7 +5,7 @@
 ##################################################
 # Technical parameters for this run
 ##################################################
-read snippets/PPCollider.in
+read snippets/${collider}
 cd /Herwig/Generators
 set EventGenerator:MaxErrors 1000000
 set EventGenerator:EventHandler:StatLevel Full

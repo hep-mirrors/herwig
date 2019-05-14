@@ -185,6 +185,7 @@ KNOWN_COLLIDERS = [
     "ISR",
     "SppS",
     "Star",
+    "EHS",
 ]
 collider = ""
 for cand_collider in KNOWN_COLLIDERS:
@@ -193,7 +194,7 @@ for cand_collider in KNOWN_COLLIDERS:
         break
 del cand_collider
 assert collider
-have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star"]
+have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","EHS"]
 
 
 thefactory="Factory"
@@ -606,7 +607,7 @@ elif(collider=="Star" ) :
         logging.error("Star not supported for %s " % simulation)
         sys.exit(1)
 # ISR and SppS
-elif(collider=="ISR" or collider =="SppS" ) :
+elif(collider=="ISR" or collider =="SppS" or collider == "EHS" ) :
     process = StringBuilder("set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n")
     process+="set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm\n"
     if(collider=="SppS") :
@@ -1809,7 +1810,11 @@ elif(collider=="LHC-GammaGamma" ) :
 parameters['parameterFile'] = os.path.join(collider,"{c}-{pn}.in".format(c=collider, pn=parameterName))
 parameters['runname'] = 'Rivet-%s' % name
 parameters['process'] = str(process)
-
+if have_hadronic_collider :
+    if collider == "EHS" :
+        parameters['collider'] = "PPCollider.in\nread snippets/FixedTarget-PP.in"
+    else :
+        parameters['collider'] = "PPCollider.in"
 
 #check if selecteddecaymode and addedBRReweighter is consistent
 
