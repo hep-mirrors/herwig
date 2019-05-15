@@ -270,6 +270,9 @@ for f in yodafiles:
                     outhistos[aopath] = ao
                 elif(aopath.find("y02")>0 and file.find("Long")<0 ) :
                     outhistos[aopath] = ao
+            elif("CMS_2017_I1471287" in aopath) :
+                if("CMS_2017_I1471287/d" in aopath) :
+                    outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
 
