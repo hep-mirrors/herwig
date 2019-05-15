@@ -37,7 +37,7 @@ unsigned int MEee2Mesons::orderInAlphaS() const {
 }
 
 unsigned int MEee2Mesons::orderInAlphaEW() const {
-  return 0;
+  return 2;
 }
 
 IBPtr MEee2Mesons::clone() const {
@@ -76,11 +76,11 @@ void MEee2Mesons::doinit() {
 }
 
 void MEee2Mesons::persistentOutput(PersistentOStream & os) const {
-os << current_ << modeMap_;
+  os << current_ << modeMap_;
 }
 
 void MEee2Mesons::persistentInput(PersistentIStream & is, int) {
-is >> current_ >> modeMap_;
+  is >> current_ >> modeMap_;
 }
 
 

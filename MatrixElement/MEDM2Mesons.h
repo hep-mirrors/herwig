@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_MEee2Mesons_H
-#define Herwig_MEee2Mesons_H
+#ifndef Herwig_MEDM2Mesons_H
+#define Herwig_MEDM2Mesons_H
 //
-// This is the declaration of the MEee2Mesons class.
+// This is the declaration of the MEDM2Mesons class.
 //
 
 #include "Herwig/MatrixElement/MEMultiChannel.h"
@@ -14,20 +14,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEee2Mesons class implements \f$e^+e^-\f$ annhilation to mesons at low energy
- * using hadronic currents.
+ * The MEDM2Mesons class implements dark matter annhilation via a vector current to
+ * mesons at low energies
  *
- * @see \ref MEee2MesonsInterfaces "The interfaces"
- * defined for MEee2Mesons.
+ * @see \ref MEDM2MesonsInterfaces "The interfaces"
+ * defined for MEDM2Mesons.
  */
-class MEee2Mesons: public MEMultiChannel {
+class MEDM2Mesons: public MEMultiChannel {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEee2Mesons();
+  MEDM2Mesons();
 
 public:
 
@@ -56,7 +56,6 @@ public:
    */
   virtual void constructVertex(tSubProPtr);
 
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -83,7 +82,6 @@ public:
    */
   static void Init();
 
-
 protected:
 
   /**
@@ -91,7 +89,7 @@ protected:
    * @param ichan The channel we are calculating the matrix element for. 
    */
   virtual double me2(const int ichan) const;
-
+  
 protected:
 
   /** @name Clone Methods. */
@@ -109,7 +107,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
+private:
 
   /**
    * Initialize this object after the setup phase before saving an
@@ -117,17 +115,21 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-  
+
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2Mesons & operator=(const MEee2Mesons &) = delete;
+  MEDM2Mesons & operator=(const MEDM2Mesons &);
 
 private :
-  
+
+  /**
+   *    Hadronic current etc
+   */
+  //@{
   /**
    * the hadronic current
    */
@@ -142,8 +144,19 @@ private :
    *  Map for the modes
    */
   map<int,int>  modeMap_;
+  //@}
+
+  /**
+   *  DM
+   */
+  //@{
+  /**
+   *   Incoming Particles
+   */
+  PDPtr incomingA_, incomingB_;
+  //@}
 };
 
 }
 
-#endif /* Herwig_MEee2Mesons_H */
+#endif /* Herwig_MEDM2Mesons_H */
