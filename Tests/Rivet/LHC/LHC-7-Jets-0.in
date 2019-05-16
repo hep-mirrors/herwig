@@ -9,8 +9,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # ATLAS charged particle in min bias
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
-# CMS Jet/UE properties
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1261026
 # ATLAS leading jet UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
 # CMS Jets

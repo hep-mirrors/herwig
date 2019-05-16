@@ -76,7 +76,7 @@ public:
   SplittingFunction()
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true), scaleChoice_(2) {}
+      angularOrdered_(true), scaleChoice_(2), strictAO_(true) {}
 
 public:
 
@@ -369,6 +369,11 @@ private:
    *  The choice of scale
    */
   unsigned int scaleChoice_;
+
+  /**
+   *   Enforce strict AO 
+   */
+  bool strictAO_;
 
 };
 

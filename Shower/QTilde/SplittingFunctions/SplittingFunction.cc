@@ -127,18 +127,33 @@ void SplittingFunction::Init() {
      "If angular order use pT, otherwise Q2",
      2);
 
+  static Switch<SplittingFunction,bool> interfaceStrictAO
+    ("StrictAO",
+     "Whether or not to apply strict angular-ordering,"
+     " i.e. for QED even in QCD emission, and vice versa",
+     &SplittingFunction::strictAO_, true, false, false);
+  static SwitchOption interfaceStrictAOYes
+    (interfaceStrictAO,
+     "Yes",
+     "Apply strict ordering",
+     true);
+  static SwitchOption interfaceStrictAONo
+    (interfaceStrictAO,
+     "No",
+     "Don't apply strict ordering",
+     false);
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {
    os << oenum(_interactionType)
       << oenum(_colourStructure) << _colourFactor
-      << angularOrdered_ << scaleChoice_;
+      << angularOrdered_ << scaleChoice_ << strictAO_;
 }
 
 void SplittingFunction::persistentInput(PersistentIStream & is, int) {
   is >> ienum(_interactionType)
      >>	ienum(_colourStructure) >> _colourFactor
-     >> angularOrdered_ >> scaleChoice_;
+     >> angularOrdered_ >> scaleChoice_ >> strictAO_;
 }
 
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,
@@ -653,9 +668,15 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
       // emitter
       emitter->scales().QED         = zEmitter*scale;
       emitter->scales().QED_noAO    =          scale;
-      emitter->scales().QCD_c       = min(scale,parent->scales().QCD_c      );
+      if(strictAO_)
+	emitter->scales().QCD_c       = min(zEmitter*scale,parent->scales().QCD_c      );
+      else
+	emitter->scales().QCD_c       = min(         scale,parent->scales().QCD_c      );
       emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
-      emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
+      if(strictAO_)
+	emitter->scales().QCD_ac      = min(zEmitter*scale,parent->scales().QCD_ac     );
+      else
+	emitter->scales().QCD_ac      = min(         scale,parent->scales().QCD_ac     );
       emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
       // emitted 
       emitted->scales().QED         = zEmitted*scale;
@@ -696,7 +717,10 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType partnerType,
   else {
    // normal case eg q -> q g and g -> g g
     if(!bosonSplitting) {
-      emitter->scales().QED         = min(scale,parent->scales().QED     );
+      if(strictAO_)
+	emitter->scales().QED         = min(zEmitter*scale,parent->scales().QED     );
+      else
+	emitter->scales().QED         = min(         scale,parent->scales().QED     );
       emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
       if(partnerType==ShowerPartnerType::QCDColourLine) {
 	emitter->scales().QCD_c       = zEmitter*scale;

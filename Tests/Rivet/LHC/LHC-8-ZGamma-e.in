@@ -1,0 +1,2 @@
+# ATLAS Z Gamma analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1448301:LMODE=EL

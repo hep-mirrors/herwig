@@ -87,7 +87,7 @@ if __name__ == "__main__":
     yodafiles=["-13-Z-e","-13-Z-mu","-Z-HighMass1-e","-Z-HighMass2-e",
                "-8-Z-Mass1-e","-8-Z-Mass1-mu","-8-Z-Mass2-e","-8-Z-Mass2-mu","-8-Z-Mass3-e","-8-Z-Mass3-mu","-8-Z-Mass4-e","-8-Z-Mass4-mu",
                "-W-e","-W-mu","-Z-e","-Z-mu","-Z-mu-Short","-Z-LowMass-e","-Z-LowMass-mu",
-               "-Z-MedMass-e","-W-Z-e","-W-Z-mu",
+               "-Z-MedMass-e",
                "-WW-emu","-WW-ll","-WZ","-ZZ-ll","-ZZ-lv","-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
                "-7-W-Jet-1-e","-7-W-Jet-2-e","-7-W-Jet-3-e","-7-Z-Jet-1-e","-7-Z-Jet-2-e","-7-Z-Jet-3-e",
                "-7-WGamma-e","-7-WGamma-mu","-7-ZGamma-e","-7-ZGamma-mu"]
@@ -99,12 +99,12 @@ if __name__ == "__main__":
         file='Rivet-'+args[0]+f+".yoda"
         if not os.access(file, os.R_OK):
             logging.error("%s can not be read" % file)
-            break
+            continue
         try:
             aos = yoda.read(file)
         except:
             logging.error("%s can not be parsed as yoda" % file)
-            break
+            continue
         mass=66
         if(file.find("HighMass1")>=0) :
             mass = 116
@@ -120,6 +120,7 @@ if __name__ == "__main__":
             mass = 116
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
+            if("RAW" in aopath) :continue
             if(aopath.find("ATLAS_2010_S8919674")>0) :
                 if((aopath.find("d01")>0 or aopath.find("d05")>0 or 
                     aopath.find("d07")>0) and file.find("-e")>0) : 
@@ -175,13 +176,22 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2014_I1312627_EL") >0) :
                 if(file.find("-e")>0) :
-                    outhistos[aopath] = ao
+                    if(file.find("W")>0 and aopath.find("x02")>0) :
+                        outhistos[aopath] = ao
+                    elif(file.find("Z")>0 and aopath.find("x03")>0) :
+                        outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2014_I1312627_MU") >0) :
                 if(file.find("-mu")>0) :
-                    outhistos[aopath] = ao
+                    if(file.find("W")>0 and aopath.find("x02")>0) :
+                        outhistos[aopath] = ao
+                    elif(file.find("Z")>0 and aopath.find("x03")>0) :
+                        outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2014_I1312627") >0) :
                 if(file.find("-e")>0) :
-                    outhistos[aopath] = ao
+                    if(file.find("W")>0 and aopath.find("x02")>0) :
+                        outhistos[aopath] = ao
+                    elif(file.find("Z")>0 and aopath.find("x03")>0) :
+                        outhistos[aopath] = ao
             elif (aopath.find("CMS_2013_I1224539_WJET" )>0) :
                 if(file.find("-1-e")>0 and (aopath.find("d52")>0 or aopath.find("d53")>0 or aopath.find("d56")>0 or aopath.find("d57")>0 or aopath.find("d60")>0 or aopath.find("d61")>0 or aopath.find("d64")>0 or aopath.find("d65")>0 or aopath.find("d68")>0 or aopath.find("d69")>0 or aopath.find("d72")>0)) :
                     outhistos[aopath] = ao
@@ -213,11 +223,13 @@ if __name__ == "__main__":
                 elif(file.find("-e")>=0 and (aopath.find("d02")>=0 or aopath.find("d03")>=0)) :
                     outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2016_I1424838")>0) :
-                if(file.find("-mu")>=0 and aopath.find("x02")>=0 ) :
+                ihist = int(aopath.split("/")[2].split("-")[0].replace("d",""))
+                if(file.find("-mu")>=0 and ihist>30 ) :
                     outhistos[aopath] = ao
-                elif(file.find("-e")>=0 and (aopath.find("x01")>=0)) :
+                elif(file.find("-e")>=0 and ihist<=30) :
                     outhistos[aopath] = ao
-            elif (aopath.find("CMS_2015_I1310737")>0) :
+            elif ("CMS_2015_I1310737" in aopath or "ATLAS_2013_I1219109" in aopath or
+                  ("ATLAS_2014_I1319490" in aopath and "y01" in aopath )) :
                 if aopath in outhistos :
                     outhistos[aopath] += ao
                 else :
@@ -275,6 +287,10 @@ if __name__ == "__main__":
                     tmpP[mass] = ao
                 else:
                     raise Exception("A set with mass = %s already exists" % ( mass))
+            elif ( "2015_041_" in aopath) :
+                aopath=aopath.replace("_EL","").replace("_MU","")
+                ao.path = aopath
+                outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
     for hpath,hsets in inhistos_mass.iteritems():
@@ -395,6 +411,20 @@ if __name__ == "__main__":
 
         
     mergeByMass("/ATLAS_2013_I1234228/d01-x01-y02", "7000")
+    # ATLAS W/Z ratios
+    iy=0
+    for suffix in ["","_EL","_MU"] :
+        iy+=1
+        basePath = "/ATLAS_2014_I1312627%s/" % suffix
+        for ihist in range(1,21) :
+            num = "%sd%02d-x02-y%02d" % (basePath,ihist,iy) 
+            den = "%sd%02d-x03-y%02d" % (basePath,ihist,iy)
+            if(den in outhistos and num in outhistos) :
+                ratio = outhistos[num]/outhistos[den]
+                ratio.path = "%sd%02d-x01-y%02d" % (basePath,ihist,iy)
+                del outhistos[num]
+                del outhistos[den]
+                outhistos[ "%sd%02d-x01-y%02d" % (basePath,ihist,iy)]=ratio
     # Choose output file
     name = args[0]+"-EW.yoda"
     yoda.writeYODA(outhistos,name)

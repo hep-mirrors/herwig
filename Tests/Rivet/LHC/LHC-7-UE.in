@@ -56,8 +56,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
 # CMS central and forward jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
-# CMS dijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 # ATLAS charged particle in min bias
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
 # ATLAS two particle correlation

@@ -41,14 +41,15 @@ if __name__ == "__main__":
         file='Rivet-'+args[0]+f+".yoda"
         if not os.access(file, os.R_OK):
             logging.error("%s can not be read" % file)
-            break
+            continue
         try:
             aos = yoda.read(file)
         except:
             logging.error("%s can not be parsed as yoda" % file)
-            break
+            continue
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
+            if("RAW" in aopath) :continue
             if(aopath.find("D0_2010_S8821313")>0) :
                 if(aopath.find("d01")>0 and file.find("-e")>0) : 
                     outhistos[aopath] = ao

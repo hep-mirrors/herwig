@@ -1,3 +1,2 @@
 # ATLAS W Gamma analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217863_W 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217863_W_EL 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217863:LMODE=WEL 

@@ -34,6 +34,7 @@ void ShowerKinematics::resetChildren(const tShowerParticlePtr,
 
 void ShowerKinematics::updateParent(const tShowerParticlePtr, 
 				    const ShowerParticleVector &,
+				    unsigned int ,
 				    ShowerPartnerType) const {
   throw Exception() << "Base class ShowerKinematics::updateParent called,"
 		    << " should have been overriden in an inheriting class" 

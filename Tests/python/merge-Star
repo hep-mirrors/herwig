@@ -108,14 +108,15 @@ for f in yodafiles:
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath) :continue
         if(aopath.find("6870392")>0 or aopath.find("HELEN")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
