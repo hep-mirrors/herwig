@@ -273,6 +273,37 @@ for f in yodafiles:
             elif("CMS_2017_I1471287" in aopath) :
                 if("CMS_2017_I1471287/d" in aopath) :
                     outhistos[aopath] = ao
+            elif("ATLAS_2018_I1705857" in aopath ) :
+                ihist = int(aopath.split("/d")[1].split("-")[0])
+                if "-SL" in file :
+                    if ihist in [9,10,11,12,19,20,21,22,23,24,25,26,33,34,35,36,37,38,45,46,47,48,49,50] :
+                        outhistos[aopath] = ao
+                elif "-L" in file :
+                    if ihist in [3,4,5,6,7,8,13,14,15,16,17,18,27,28,29,30,31,32,39,40,41,42,43,44]  :
+                        outhistos[aopath] = ao
+                if ihist in [1,2] :
+                    if aopath not in outhistos :
+                        outhistos[aopath] = ao
+                    else :
+                        temp = yoda.core.Histo1D(ao.path,
+                                                 ao.title)
+                        for i in range(0,ao.numBins) :
+                            temp.addBin(ao.bins[i].xMin,ao.bins[i].xMax)
+                        if("-SL" in file) :
+                            temp.bins[0] += outhistos[aopath].bins[0]
+                            temp.bins[1] += outhistos[aopath].bins[1]
+                            temp.bins[2] += ao.bins[2]
+                            temp.bins[3] += ao.bins[3]
+                            temp.bins[2] += ao.bins[2]
+                            temp.bins[3] += ao.bins[3]
+                        else :
+                            temp.bins[0] += ao.bins[0]
+                            temp.bins[1] += ao.bins[1]
+                            temp.bins[2] += outhistos[aopath].bins[2]
+                            temp.bins[3] += outhistos[aopath].bins[3]
+                            temp.bins[2] += outhistos[aopath].bins[2]
+                            temp.bins[3] += outhistos[aopath].bins[3]
+                        outhistos[aopath] = temp
             else :
                 outhistos[aopath] = ao
 
@@ -1376,7 +1407,7 @@ for ihist in range(1,4) :
         hdiff.addPoint(x,ydiff,xerr,yerr)
         hsum.addPoint(x,ysum ,xerr,bstderr)
 
-logging.info("ATLAS_2015_I1394679")
+logging.info("Processing ATLAS_2015_I1394679")
 for i in range(1,5) :
     mergeByPt("/ATLAS_2015_I1394679/d0%s-x01-y01" % i, "8000")
 for i in range(5,11) :
