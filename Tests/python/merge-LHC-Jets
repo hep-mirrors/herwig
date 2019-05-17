@@ -127,7 +127,7 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
-           "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
+           "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda","-7-Bottom-6.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda",
@@ -202,12 +202,14 @@ for f in yodafiles:
     elif(file.find("Bottom-1")>0 or file.find("Charm-1")>0) :
         ptmin=10.
     elif(file.find("Bottom-2")>0 or file.find("Charm-2")>0) :
-        ptmin=30.
+        ptmin=20.
     elif(file.find("Bottom-3")>0 or file.find("Charm-3")>0) :
-        ptmin=70.
+        ptmin=30.
     elif(file.find("Bottom-4")>0 or file.find("Charm-4")>0) :
-        ptmin=100.
+        ptmin=70.
     elif(file.find("Bottom-5")>0 or file.find("Charm-5")>0) :
+        ptmin=100.
+    elif(file.find("Bottom-6")>0 or file.find("Charm-6")>0) :
         ptmin=130.
     elif(file.find("Top-SL.yoda")>0 or file.find("Top-L.yoda")>0 or \
          file.find("Top-All.yoda")>0):
@@ -246,7 +248,8 @@ for f in yodafiles:
            aopath.find("I1459051")>0 or aopath.find("I1487277")>0 or
            aopath.find("I1421646")>0 or aopath.find("I1111014")>0 or
            aopath.find("I1605749")>0 or aopath.find("I1682495")>0 or
-           aopath.find("I1609253")>0 or aopath.find("1385107" )>0 or 
+           aopath.find("I1609253")>0 or aopath.find("1385107" )>0 or
+           aopath.find("I1486238" )>0 or 
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -309,7 +312,7 @@ for f in yodafiles:
 
 
 
-yodafiles=["-7-Bottom-6.yoda","-7-Bottom-7.yoda","-7-Bottom-8.yoda"]
+yodafiles=["-7-Bottom-7.yoda","-7-Bottom-8.yoda","-7-Bottom-9.yoda"]
 for i in range(1,8) :
     yodafiles.append("-7-DiJets-%1.1i-A.yoda" % i)
     yodafiles.append("-7-DiJets-%1.1i-B.yoda" % i)
@@ -345,11 +348,11 @@ for f in yodafiles:
         mass=5900
     elif(file.find("-DiJets-1")>0) :
         mass=100
-    elif(file.find("-Bottom-6")>0) :
-        mass=110
     elif(file.find("-Bottom-7")>0) :
-        mass=370
+        mass=110
     elif(file.find("-Bottom-8")>0) :
+        mass=370
+    elif(file.find("-Bottom-9")>0) :
         mass=550
     elif(file.find("-Jets-1")>0) :
         mass=0
@@ -424,8 +427,8 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("CMS_2013_I1208923")>0 or
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
-        hpath.find("1111014"   )>0 or hpath.find("1385107")>0 or
-        hpath.find("1459051")>0) :
+        hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238") or
+        hpath.find("1459051")>0 ) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)
@@ -1580,6 +1583,14 @@ useOneMass("/CMS_2017_I1519995/d03-x01-y01", "13000", "2800" )
 useOneMass("/CMS_2017_I1519995/d04-x01-y01", "13000", "2800" )
 useOneMass("/CMS_2017_I1519995/d05-x01-y01", "13000", "2200" )
 useOneMass("/CMS_2017_I1519995/d06-x01-y01", "13000", "1600" )
+
+logging.info("Processing CMS_2016_I1486238")
+for i in [1,5,9,10,12,13,14,16,17] :
+    useOnePt("/CMS_2016_I1486238/d%02d-x01-y01" % i, "7000", "20" )
+mergeByPt("/CMS_2016_I1486238/d11-x01-y01", "7000")
+mergeByPt("/CMS_2016_I1486238/d15-x01-y01", "7000")
+
+
 
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :

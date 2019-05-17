@@ -819,13 +819,14 @@ elif(collider=="LHC") :
                     process+="set MEBottom:Process Pair\n" 
                 process+=jet_kt_cut(0.)
             elif "-1" in parameterName : process+=jet_kt_cut(5.)
-            elif "-2" in parameterName : process+=jet_kt_cut(20.)
-            elif "-3" in parameterName : process+=jet_kt_cut(50.)
-            elif "-4" in parameterName : process+=jet_kt_cut(80.)
-            elif "-5" in parameterName : process+=jet_kt_cut(110.)
-            elif "-6" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(90.)
-            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(340.)
-            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(500.)
+            elif "-2" in parameterName : process+=jet_kt_cut(15.)
+            elif "-3" in parameterName : process+=jet_kt_cut(20.)
+            elif "-4" in parameterName : process+=jet_kt_cut(50.)
+            elif "-5" in parameterName : process+=jet_kt_cut(80.)
+            elif "-6" in parameterName : process+=jet_kt_cut(110.)
+            elif "-7" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(90.)
+            elif "-8" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(340.)
+            elif "-9" in parameterName : process+=jet_kt_cut(30.)+mhatmin_cut(500.)
         elif "Top-L" in parameterName :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+=insert_ME("MEHeavyQuark")
@@ -1460,19 +1461,20 @@ elif(collider=="LHC") :
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
             if "-0" in parameterName   : process+=addFirstJet("0")
             elif "-1" in parameterName : process+=addFirstJet("5")
-            elif "-2" in parameterName : process+=addFirstJet("20")
-            elif "-3" in parameterName : process+=addFirstJet("50")
-            elif "-4" in parameterName : process+=addFirstJet("80")
-            elif "-5" in parameterName : process+=addFirstJet("110")
-            elif "-6" in parameterName :
-                process+=addFirstJet("30")
-                process+=addSecondJet("25")
-                process+=addJetPairCut("90")
+            elif "-2" in parameterName : process+=addFirstJet("15")
+            elif "-3" in parameterName : process+=addFirstJet("20")
+            elif "-4" in parameterName : process+=addFirstJet("50")
+            elif "-5" in parameterName : process+=addFirstJet("80")
+            elif "-6" in parameterName : process+=addFirstJet("110")
             elif "-7" in parameterName :
                 process+=addFirstJet("30")
                 process+=addSecondJet("25")
-                process+=addJetPairCut("340")
+                process+=addJetPairCut("90")
             elif "-8" in parameterName :
+                process+=addFirstJet("30")
+                process+=addSecondJet("25")
+                process+=addJetPairCut("340")
+            elif "-9" in parameterName :
                 process+=addFirstJet("30")
                 process+=addSecondJet("25")
                 process+=addJetPairCut("500")
