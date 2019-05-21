@@ -155,6 +155,26 @@ private :
    */
   PDPtr incomingA_, incomingB_;
   //@}
+
+  /**
+   * DM coupling to the dark mediator
+   */
+  double cDMmed_;
+
+  /**                                                                                                                                                       
+   * SM couplings to the dark mediator
+   */
+  vector<double> cSMmed_;
+
+  /**
+   * DM mediator mass
+   */
+  Energy MMed_;
+
+  /**
+   * DM vector mediator
+   */
+  PDPtr Mediator_;
 };
 
 }

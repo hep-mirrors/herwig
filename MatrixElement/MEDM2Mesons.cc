@@ -13,13 +13,16 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
 using namespace Herwig;
 typedef LorentzVector<complex<InvEnergy> > LorentzPolarizationVectorInvE;
 
-MEDM2Mesons::MEDM2Mesons() {}
+MEDM2Mesons::MEDM2Mesons() {
+  cSMmed_ = {1.0,1.0};
+}
 
 Energy2 MEDM2Mesons::scale() const {
   return sHat();
@@ -67,11 +70,11 @@ void MEDM2Mesons::doinit() {
 }
 
 void MEDM2Mesons::persistentOutput(PersistentOStream & os) const {
-  os << current_ << modeMap_ << incomingA_ << incomingB_;
+  os << current_ << modeMap_ << incomingA_ << incomingB_ << Mediator_ << cDMmed_ << cSMmed_ << ounit(MMed_,GeV);
 }
 
 void MEDM2Mesons::persistentInput(PersistentIStream & is, int) {
-  is >> current_ >> modeMap_ >> incomingA_ >> incomingB_;
+  is >> current_ >> modeMap_ >> incomingA_ >> incomingB_ >> Mediator_ >> cDMmed_ >> cSMmed_ >> iunit(MMed_,GeV);
 }
 
 //The following static variable is needed for the type
@@ -100,6 +103,21 @@ void MEDM2Mesons::Init() {
      "Second incoming particle",
      &MEDM2Mesons::incomingB_, false, false, true, false, false);
 
+  static Reference<MEDM2Mesons,ParticleData> interfaceMediator_
+    ("Mediator",
+     "DM mediator",
+     &MEDM2Mesons::Mediator_, false, false, true, false, false);
+
+  static Parameter<MEDM2Mesons,double> interfacecDMmed
+    ("cDMmed",
+     "coupling of DM to dark mediator",
+     &MEDM2Mesons::cDMmed_, 1.0, 0., 10., false, false, Interface::limited);
+
+  static ParVector<MEDM2Mesons,double> interfacecSMmed
+    ("cSMmed",
+     "coupling of SM to dark mediator",
+     &MEDM2Mesons::cSMmed_, -1 , 1.0 , 0. , 10. , false, false, Interface::limited);
+
 }
 
 
@@ -118,7 +136,11 @@ double MEDM2Mesons::me2(const int ichan) const {
       a1.push_back(ep_in);
     }
     // this should be coupling of DM to mediator/ mediator propagator
-    InvEnergy2 pre = 1./GeV2;
+    complex<Energy> mmed = Mediator_->mass();
+    complex<Energy2> mmed2 = sqr(mmed);
+    complex<Energy> mwid = Mediator_->width();
+    complex<Energy2> prop = sHat()-mmed2+Complex(0.,1.)*mmed*mwid;
+    complex<InvEnergy2> pre = cDMmed_/prop;
     for(unsigned ix=0;ix<2;++ix) {
       for(unsigned iy=0;iy<2;++iy) {
 	lepton[ix][iy]= pre*f1[ix].dimensionedWave().vectorCurrent(a1[iy].dimensionedWave());
@@ -162,7 +184,10 @@ double MEDM2Mesons::me2(const int ichan) const {
   // compute the matrix element
   vector<unsigned int> ihel(meMomenta().size());
   double output(0.);
-  for(unsigned int hhel=0;hhel<hadronI0.size();++hhel) {
+  int hI0_size = hadronI0.size();
+  int hI1_size = hadronI0.size();
+  int maxsize = max(hadronI0.size(),hadronI1.size());
+  for(unsigned int hhel=0;hhel<maxsize;++hhel) {
     // map the index for the hadrons to a helicity state
     for(int ix=nOut;ix>0;--ix) {
       ihel[ix+1]=(hhel%constants[ix-1])/constants[ix];
@@ -170,8 +195,17 @@ double MEDM2Mesons::me2(const int ichan) const {
     // loop over the helicities of the incoming particles
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
+	Complex amp;
 	// work one coefficients for the I1 and I0 bits
-  	Complex amp = lepton[ihel[0]][ihel[1]].dot(hadronI0[hhel]+hadronI1[hhel]);
+  	if(hI0_size != 0 && hI1_size !=0){
+	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[0]*hadronI0[hhel]+cSMmed_[1]*hadronI1[hhel]);
+	}
+	else if(hI0_size != 0 && hI1_size == 0){
+	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[0]*hadronI0[hhel]);
+	}
+	else {
+	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[1]*hadronI1[hhel]);
+	}
 	me_(ihel)= amp;
   	output += std::norm(amp);
       }
