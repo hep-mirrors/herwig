@@ -39,7 +39,7 @@ CzyzNucleonFormFactor::CzyzNucleonFormFactor() {
   mup_ =  2.793;
   mun_ = -1.913;
   // set up the form factors
-  addFormFactor(2212,2212,2,2,2,1,2,2);
+  addFormFactor(2212,2212,2,2,2,1,1,1);
   addFormFactor(2112,2112,2,2,2,1,1,1);
   initialModes(numberOfFactors());
 }

@@ -135,8 +135,6 @@ WeakBaryonCurrent::current(tcPDPtr ,
 			       DecayIntegrator::MEOption) const {
   // no isospin here
   if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
-  for(unsigned int ix=0;ix<outgoing.size();++ix)
-    cerr << outgoing[ix]->PDGName() << " " << momenta[ix]/GeV << "\n";
   useMe();
   Lorentz5Momentum q = momenta[0]+momenta[1];
   q.rescaleMass();
