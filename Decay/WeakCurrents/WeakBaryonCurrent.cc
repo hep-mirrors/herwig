@@ -114,15 +114,14 @@ tPDVector WeakBaryonCurrent::particles(int icharge, unsigned int imode, int , in
 }
 
 void WeakBaryonCurrent::constructSpinInfo(ParticleVector decay) const {
-  assert(false);
-  // if(decay[0]->id()>0) {
-  //   SpinorWaveFunction   ::constructSpinInfo(wave_   ,decay[1],outgoing,true);
-  //   SpinorBarWaveFunction::constructSpinInfo(wavebar_,decay[0],outgoing,true);
-  // }
-  // else {
-  //   SpinorWaveFunction   ::constructSpinInfo(   wave_,decay[0],outgoing,true);
-  //   SpinorBarWaveFunction::constructSpinInfo(wavebar_,decay[1],outgoing,true);
-  // }
+  if(decay[0]->id()>0) {
+    SpinorWaveFunction   ::constructSpinInfo(wave_   ,decay[1],outgoing,true);
+    SpinorBarWaveFunction::constructSpinInfo(wavebar_,decay[0],outgoing,true);
+  }
+  else {
+    SpinorWaveFunction   ::constructSpinInfo(   wave_,decay[0],outgoing,true);
+    SpinorBarWaveFunction::constructSpinInfo(wavebar_,decay[1],outgoing,true);
+  }
 }
 
 // hadronic current   
@@ -148,11 +147,11 @@ WeakBaryonCurrent::current(tcPDPtr ,
   // todo generalize to spin != 1/2
   assert(outgoing[0]->iSpin()==PDT::Spin1Half &&
 	 outgoing[1]->iSpin()==PDT::Spin1Half );
-  vector<LorentzSpinor   <SqrtEnergy> > f2(2);
-  vector<LorentzSpinorBar<SqrtEnergy> > a2(2);
+  wave_.resize(2);
+  wavebar_.resize(2);
   for(unsigned int ix=0;ix<2;++ix) {
-    a2[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[0],ix,Helicity::outgoing);
-    f2[ix] = HelicityFunctions::dimensionedSpinor   (-momenta[1],ix,Helicity::outgoing);
+    wavebar_[ix] = HelicityFunctions::dimensionedSpinorBar(-momenta[0],ix,Helicity::outgoing);
+    wave_[ix] = HelicityFunctions::dimensionedSpinor   (-momenta[1],ix,Helicity::outgoing);
   }
   // get the form factors
   Complex f1v(0.),f2v(0.),f3v(0.),f1a(0.),f2a(0.),f3a(0.);
@@ -166,9 +165,9 @@ WeakBaryonCurrent::current(tcPDPtr ,
   for(unsigned int ohel1=0;ohel1<2;++ohel1) {
     for(unsigned int ohel2=0;ohel2<2;++ohel2) {
       LorentzPolarizationVectorE 
-	vtemp = f2[ohel2].generalCurrent(a2[ohel1],left,right);
-      complex<Energy> vspin=f2[ohel2].scalar      (a2[ohel1]);      
-      complex<Energy> aspin=f2[ohel2].pseudoScalar(a2[ohel1]);
+	vtemp = wave_[ohel2].generalCurrent(wavebar_[ohel1],left,right);
+      complex<Energy> vspin=wave_[ohel2].scalar      (wavebar_[ohel1]);      
+      complex<Energy> aspin=wave_[ohel2].pseudoScalar(wavebar_[ohel1]);
       vtemp-= (f2v*vspin+f2a*aspin)/(m1+m2)*diff;
       vtemp+= (f3v*vspin+f3a*aspin)/(m1+m2)*q;
       baryon.push_back(vtemp);

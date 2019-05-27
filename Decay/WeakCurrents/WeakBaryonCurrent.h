@@ -7,6 +7,7 @@
 
 #include "WeakCurrent.h"
 #include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {
 
@@ -178,7 +179,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  WeakBaryonCurrent & operator=(const WeakBaryonCurrent &);
+  WeakBaryonCurrent & operator=(const WeakBaryonCurrent &) = delete;
 
 private:
   
@@ -186,6 +187,18 @@ private:
    * The baryon form factor
    */
   BaryonFormFactorPtr formFactor_;
+
+private:
+  
+  /**
+   *  Spinors for the decay products
+   */
+  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > wave_;
+
+  /**
+   *  barred spinors for the decay products
+   */
+  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > wavebar_;
   
 };
 
