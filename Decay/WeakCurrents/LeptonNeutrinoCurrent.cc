@@ -20,7 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/HelicityFunctions.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
@@ -167,6 +167,4 @@ void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output,bool header,
 		    << "  HwWeakCurrents.so\n";
   WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
-}
-
 }

@@ -60,6 +60,11 @@ create Herwig::MEee2Baryons MEee2ppbar HwMELeptonLowEnergy.so
 create Herwig::CzyzNucleonFormFactor  /Herwig/Decays/CzyzFormFactor
 set MEee2ppbar:FormFactor /Herwig/Decays/CzyzFormFactor
 
+create Herwig::MEee2Mesons MEee2ppbar2 HwMELeptonLowEnergy.so
+create Herwig::WeakBaryonCurrent  /Herwig/Decays/CzyzCurrent
+set MEee2ppbar2:WeakCurrent /Herwig/Decays/CzyzCurrent
+set /Herwig/Decays/CzyzCurrent:FormFactor /Herwig/Decays/CzyzFormFactor
+
 
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 #insert SubProcess:MatrixElements 0 MEee2Pions
@@ -70,9 +75,10 @@ set MEee2ppbar:FormFactor /Herwig/Decays/CzyzFormFactor
 #insert SubProcess:MatrixElements 0 MEee2EtaPiPi
 #insert SubProcess:MatrixElements 0 MEee4Pions2
 #insert SubProcess:MatrixElements 0 MEee2ppbar
-insert SubProcess:MatrixElements 0  MEee2KStarK
+#insert SubProcess:MatrixElements 0  MEee2KStarK
 #insert SubProcess:MatrixElements 0  MEee2PhiPi
-
+insert SubProcess:MatrixElements 0  MEee2ppbar
+insert SubProcess:MatrixElements 0  MEee2ppbar2
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################

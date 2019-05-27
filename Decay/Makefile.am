@@ -157,7 +157,9 @@ WeakCurrents/LeptonNeutrinoCurrent.cc \
 WeakCurrents/WeakCurrent.fh \
 WeakCurrents/WeakCurrent.h \
 WeakCurrents/LeptonNeutrinoCurrent.fh \
-WeakCurrents/LeptonNeutrinoCurrent.h
+WeakCurrents/LeptonNeutrinoCurrent.h \
+WeakCurrents/WeakBaryonCurrent.cc \
+WeakCurrents/WeakBaryonCurrent.h
 
 pkglib_LTLIBRARIES += HwWeakCurrents.la
 

@@ -99,24 +99,23 @@ double MEee2Baryons::me2() const {
 					  BaryonFormFactor::TimeLike);
   Complex left  = f1v - f1a + f2v -double((m1-m2)/(m1+m2))*f2a;
   Complex right = f1v + f1a + f2v +double((m1-m2)/(m1+m2))*f2a;
-  vector<LorentzPolarizationVectorE> baryon(4);
   Lorentz5Momentum diff = meMomenta()[2]-meMomenta()[3];
   double output(0.);
   for(unsigned int ohel1=0;ohel1<2;++ohel1) {
     for(unsigned int ohel2=0;ohel2<2;++ohel2) {
-       LorentzPolarizationVectorE 
-       vtemp = f2[ohel2].generalCurrent(a2[ohel1],left,right);
-       complex<Energy> vspin=f2[ohel2].scalar      (a2[ohel1]);      
-       complex<Energy> aspin=f2[ohel2].pseudoScalar(a2[ohel1]);
-       vtemp-= (f2v*vspin+f2a*aspin)/(m1+m2)*diff;
-       vtemp+= (f3v*vspin+f3a*aspin)/(m1+m2)*q;
-       for(unsigned int ihel1=0;ihel1<2;++ihel1) {
-	 for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-	   Complex amp =  lepton[ihel1][ihel2].dot(vtemp);
-	   output += std::norm(amp);
-	   me_(ihel1,ihel2,ohel1,ohel2) = amp;
-	 }
-       }
+      LorentzPolarizationVectorE 
+	vtemp = f2[ohel2].generalCurrent(a2[ohel1],left,right);
+      complex<Energy> vspin=f2[ohel2].scalar      (a2[ohel1]);      
+      complex<Energy> aspin=f2[ohel2].pseudoScalar(a2[ohel1]);
+      vtemp-= (f2v*vspin+f2a*aspin)/(m1+m2)*diff;
+      vtemp+= (f3v*vspin+f3a*aspin)/(m1+m2)*q;
+      for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+	for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+	  Complex amp =  lepton[ihel1][ihel2].dot(vtemp);
+	  output += std::norm(amp);
+	  me_(ihel1,ihel2,ohel1,ohel2) = amp;
+	}
+      }
     }
   }
   // prefactors
