@@ -31,18 +31,12 @@ create Herwig::TwoKaonCzyzCurrent /Herwig/Decays/TwoKaonCzyzCurrent
 set MEee2Kaons:WeakCurrent /Herwig/Decays/TwoKaonCzyzCurrent
 
 create Herwig::MEee2Mesons MEee3Pions HwMELeptonLowEnergy.so
-create Herwig::MEee2Mesons2 MEee3Pions2 HwMELeptonLowEnergy.so
 create Herwig::ThreePionCzyzCurrent /Herwig/Decays/ThreePionCzyzCurrent
 set MEee3Pions:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
-set MEee3Pions2:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
-
 
 create Herwig::MEee2Mesons MEee4Pions HwMELeptonLowEnergy.so
-create Herwig::MEee2Mesons2 MEee4Pions2 HwMELeptonLowEnergy.so
 create Herwig::FourPionCzyzCurrent /Herwig/Decays/FourPionCzyzCurrent
 set MEee4Pions:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
-set MEee4Pions2:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
-
 
 create Herwig::MEee2Mesons MEee2EtaPiPi HwMELeptonLowEnergy.so
 create Herwig::EtaPiPiCurrent /Herwig/Decays/EtaPiPiCurrent 
@@ -67,13 +61,11 @@ set MEee2ppbar:WeakCurrent /Herwig/Decays/CzyzCurrent
 #insert SubProcess:MatrixElements 0 MEee2Pions
 #insert SubProcess:MatrixElements 0 MEee2Kaons
 #insert SubProcess:MatrixElements 0 MEee3Pions
-#insert SubProcess:MatrixElements 0 MEee3Pions2
 #insert SubProcess:MatrixElements 0 MEee4Pions
 #insert SubProcess:MatrixElements 0 MEee2EtaPiPi
-#insert SubProcess:MatrixElements 0 MEee4Pions2
-insert SubProcess:MatrixElements 0 MEee2ppbar
+#insert SubProcess:MatrixElements 0 MEee2ppbar
 #insert SubProcess:MatrixElements 0  MEee2KStarK
-#insert SubProcess:MatrixElements 0  MEee2PhiPi
+insert SubProcess:MatrixElements 0  MEee2PhiPi
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################

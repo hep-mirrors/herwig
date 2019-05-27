@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -102,9 +103,10 @@ void MEee2Mesons::Init() {
   
 }
 
-double MEee2Mesons::me2(const int ichan) const {
-  SpinorWaveFunction    em_in( meMomenta()[0],mePartonData()[0],incoming);
-  SpinorBarWaveFunction ep_in( meMomenta()[1],mePartonData()[1],incoming);
+double MEee2Mesons::helicityME(const int ichan, const cPDVector & particles,
+			       const vector<Lorentz5Momentum> & momenta) const {
+  SpinorWaveFunction    em_in( momenta[0],particles[0],incoming);
+  SpinorBarWaveFunction ep_in( momenta[1],particles[1],incoming);
   vector<SpinorWaveFunction> f1;
   vector<SpinorBarWaveFunction> a1;
   for(unsigned int ix=0;ix<2;++ix) {
@@ -122,7 +124,7 @@ double MEee2Mesons::me2(const int ichan) const {
     }
   }
   // work out the mapping for the hadron vector
-  int nOut = int(meMomenta().size())-2;
+  int nOut = int(momenta.size())-2;
   vector<unsigned int> constants(nOut+1);
   vector<PDT::Spin   > iSpin(nOut);
   vector<int> hadrons(nOut);
@@ -130,10 +132,10 @@ double MEee2Mesons::me2(const int ichan) const {
   int ix(nOut);
   do {
     --ix;
-    iSpin[ix]      = mePartonData()[ix+2]->iSpin();
+    iSpin[ix]      = particles[ix+2]->iSpin();
     itemp         *= iSpin[ix];
     constants[ix]  = itemp;
-    hadrons[ix]   = mePartonData()[ix+2]->id();
+    hadrons[ix]   = particles[ix+2]->id();
   }
   while(ix>0);
   constants[nOut] = 1;
@@ -142,14 +144,14 @@ double MEee2Mesons::me2(const int ichan) const {
   // calculate the hadron current
   unsigned int imode = current_->decayMode(hadrons);
   Energy q = sqrt(sHat());
-  vector<Lorentz5Momentum> momenta(meMomenta()   .begin()+2,   meMomenta().end());
+  vector<Lorentz5Momentum> momenta2(momenta   .begin()+2,   momenta.end());
   tPDVector out = mode(modeMap_.at(imode))->outgoing();
   if(ichan<0) iMode(modeMap_.at(imode));
   vector<LorentzPolarizationVectorE> 
     hadron(current_->current(tcPDPtr(), IsoSpin::IUnknown, IsoSpin::I3Unknown, imode,ichan,
-			     q,out,momenta,DecayIntegrator::Calculate));
+			     q,out,momenta2,DecayIntegrator::Calculate));
   // compute the matrix element
-  vector<unsigned int> ihel(meMomenta().size());
+  vector<unsigned int> ihel(momenta.size());
   double output(0.);
   for(unsigned int hhel=0;hhel<hadron.size();++hhel) {
     // map the index for the hadrons to a helicity state
@@ -176,15 +178,55 @@ double MEee2Mesons::me2(const int ichan) const {
   output *= 0.25*sqr(pow(sqrt(sHat())/q,int(momenta.size()-2)));
   // polarization stuff
   tcPolarizedBeamPDPtr beam[2] = 
-    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[0]),
-     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(mePartonData()[1])};
+    {dynamic_ptr_cast<tcPolarizedBeamPDPtr>(particles[0]),
+     dynamic_ptr_cast<tcPolarizedBeamPDPtr>(particles[1])};
   if( beam[0] || beam[1] ) {
-    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(mePartonData()[0]->iSpin()),
-			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(mePartonData()[1]->iSpin())};
+    RhoDMatrix rho[2] = {beam[0] ? beam[0]->rhoMatrix() : RhoDMatrix(particles[0]->iSpin()),
+			 beam[1] ? beam[1]->rhoMatrix() : RhoDMatrix(particles[1]->iSpin())};
     output = me_.average(rho[0],rho[1]);
   }
   return output/symmetry;
+  return output/symmetry;
 }
 
-void MEee2Mesons::constructVertex(tSubProPtr) {
+double MEee2Mesons::me2(const int ichan) const {
+  return helicityME(ichan,mePartonData(),meMomenta());
+}
+
+void MEee2Mesons::constructVertex(tSubProPtr sub) {
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  for(unsigned int ix=0;ix<sub->outgoing().size();++ix)
+    hard.push_back(sub->outgoing()[ix]);
+  if(hard[0]->id()<hard[1]->id()) swap(hard[0],hard[1]);
+  cPDVector particles;
+  vector<Lorentz5Momentum> momenta;
+  for(unsigned int ix=0;ix<hard.size();++ix) {
+    particles.push_back(hard[ix]-> dataPtr());
+    momenta  .push_back(hard[ix]->momentum());
+  }
+  helicityME(-1,particles,momenta);
+  // construct the vertex
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
+  // set the matrix element for the vertex
+  hardvertex->ME(me_);  
+  // wavefunctions for the incoming particles
+  vector<SpinorWaveFunction>    fin;
+  vector<SpinorBarWaveFunction> ain;
+  SpinorWaveFunction(   fin ,hard[0],incoming,false,true);
+  SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
+  // and the outgoing particles
+  current_->constructSpinInfo(ParticleVector(hard.begin()+2,hard.end()));
+  // set the pointers and to and from the vertex
+  for(unsigned int ix=0;ix<hard.size();++ix) {
+    tSpinPtr spin = hard[ix]->spinInfo();
+    if(ix<2) {
+      tcPolarizedBeamPDPtr beam = 
+	dynamic_ptr_cast<tcPolarizedBeamPDPtr>(hard[ix]->dataPtr());
+      if(beam) spin->rhoMatrix() = beam->rhoMatrix();
+    }
+    spin->productionVertex(hardvertex);
+  }
 }

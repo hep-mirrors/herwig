@@ -91,6 +91,14 @@ protected:
    * @param ichan The channel we are calculating the matrix element for. 
    */
   virtual double me2(const int ichan) const;
+  
+  /**
+   * Return the matrix element squared for a given mode and phase-space channel,
+   * with the helicities amplitudes
+   * @param ichan The channel we are calculating the matrix element for. 
+   */
+  virtual double helicityME(const int ichan, const cPDVector & particles,
+			    const vector<Lorentz5Momentum> & momenta) const;
 
 protected:
 
