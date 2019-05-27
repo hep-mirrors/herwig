@@ -1,0 +1,7 @@
+# -*- ThePEG-repository -*-
+cd /Herwig/EventHandlers
+create ThePEG::FixedTargetLuminosity FixedTargetLuminosity FixedTargetLuminosity.so
+set FixedTargetLuminosity:BeamParticle /Herwig/Particles/p+
+set FixedTargetLuminosity:BeamEMaxA 250.*GeV
+set FixedTargetLuminosity:TargetParticle /Herwig/Particles/p+
+set EventHandler:LuminosityFunction FixedTargetLuminosity

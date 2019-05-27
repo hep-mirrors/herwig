@@ -3,3 +3,5 @@
 ##################################################
 # b-jet cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220
+# 2b + 2 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1486238

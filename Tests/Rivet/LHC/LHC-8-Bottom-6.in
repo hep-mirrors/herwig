@@ -1,5 +1,0 @@
-##################################################
-# select the analyses
-##################################################
-# Atlas BB
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1598613
