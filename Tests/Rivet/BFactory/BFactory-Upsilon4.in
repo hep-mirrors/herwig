@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.2897*GeV
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.2897*GeV

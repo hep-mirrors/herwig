@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+# e+ e- -> phi
+create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEPhi HwMELepton.so
+set /Herwig/MatrixElements/MEPhi:VectorMeson /Herwig/Particles/phi
+set /Herwig/MatrixElements/MEPhi:Coupling  13.60507
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEPhi
+set EventGenerator:EventHandler:LuminosityFunction:Energy 1.019461
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE_2009_I818106

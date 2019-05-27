@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
 yodafiles=["-10.52","-10.52-sym","-10.54",
            "-10.58-res","-10.58","-Upsilon",
-           "-Upsilon2","-Upsilon4","-10.45","-Tau"]
+           "-Upsilon2","-Upsilon4","-10.45","-Tau","-Phi"]
 
 ## Get histos
 inhistos = {}

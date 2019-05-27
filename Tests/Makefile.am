@@ -158,7 +158,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
                   $(shell echo Rivet/LEP{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-14.in) \
 	          $(shell echo Rivet/LEP{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{10.52,10.52-sym,10.54,10.45}.in) \
-                  $(shell echo Rivet/BFactory{,-Dipole}-{Upsilon,Upsilon2,Upsilon4,Tau,10.58-res}.in) \
+                  $(shell echo Rivet/BFactory{,-Dipole}-{Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
@@ -208,7 +208,7 @@ Rivet-LEP/done : $(shell echo Rivet{,-Powheg}-LEP-{9.4,12,13,14,17,27.6,29,30.2,
 Rivet-BFactory : Rivet-BFactory/done
 	touch $@
 
-Rivet-BFactory/done: $(shell echo Rivet-BFactory-{10.52,10.52-sym,10.54,10.45,Upsilon,Upsilon2,Upsilon4,Tau,10.58-res,10.58}.yoda)
+Rivet-BFactory/done: $(shell echo Rivet-BFactory-{10.52,10.52-sym,10.54,10.45,Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res,10.58}.yoda)
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
 	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw
