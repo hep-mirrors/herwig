@@ -129,15 +129,9 @@ test-LHC-% : Inputs/LHC-%.in GammaTest.la $(HADLIBS)
 
 
 
-
-
-
-
 tests-Rivet : Rivet-LEP Rivet-BFactory Rivet-DIS Rivet-Star Rivet-SppS \
-		Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets \
-		Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
-
-
+	      Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets \
+	      Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
 Rivet-%.run : Rivet/%.in
 	$(HWBUILD) -c .cache/$(subst .run,,$@) $<
@@ -202,8 +196,14 @@ Rivet-LEP/done : $(shell echo Rivet{,-Powheg}-LEP-{9.4,12,13,14,17,27.6,29,30.2,
 	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw LEP-Powheg.yoda:Hw-Powheg
 	touch $@
 
+Rivet-LowEnergy-%.yoda:
+	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
+	$(HWRUN)  $(subst .yoda,.run,$@) 
 
-
+Rivet-LowEnergy-%:
+	OUTPUT=`python/LowEnergy.py --process $(subst Rivet-LowEnergy-,,$@) --path ~/montecarlo/herwig/common/low-energy/lowenergy/rivet/ --non-perturbative --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@)
+	rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert"
 
 Rivet-BFactory : Rivet-BFactory/done
 	touch $@
