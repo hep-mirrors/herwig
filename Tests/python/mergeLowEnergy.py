@@ -17,8 +17,11 @@ for runType in ["NonPerturbative","Perturbative"]:
         aos = yoda.read(fileName)
         for hpath,histo in aos.iteritems():
             if("/_" in hpath or "TMP" in hpath) : continue
+            if(type(histo)==yoda.core.Histo1D) :
+                outhistos[hpath] = histo
+                continue
             # create histo if it doesn't exist
-            if(hpath not in outhistos) :
+            elif(hpath not in outhistos) :
                 outhistos[hpath] = yoda.core.Scatter2D(histo.path,
                                                        histo.title)
             matched = False
@@ -50,7 +53,6 @@ for runType in ["NonPerturbative","Perturbative"]:
                 if((energy    > xmin and energy    < xmax) or
                    (energyMeV > xmin and energyMeV < xmax) ) :
                     duplicate = False
-                    print 'found point',energy,xmin,xmax
                     for j in range(0,outhistos[hpath].numPoints) :
                         if(outhistos[hpath].points[j].x==aos[hpath].points[i].x) :
                             duplicate = True

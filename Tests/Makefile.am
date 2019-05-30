@@ -201,9 +201,15 @@ Rivet-LowEnergy-%.yoda:
 	$(HWRUN)  $(subst .yoda,.run,$@) 
 
 Rivet-LowEnergy-%:
-	OUTPUT=`python/LowEnergy.py --process $(subst Rivet-LowEnergy-,,$@) --path ~/montecarlo/herwig/common/low-energy/lowenergy/rivet/ --non-perturbative --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	OUTPUT=`python/LowEnergy.py --process $(subst Rivet-LowEnergy-,,$@) --non-perturbative --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@)
 	rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert"
+
+Rivet-R:
+	OUTPUT=`python/R.py --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	python/mergeLowEnergy.py R
+	rivet-mkhtml -o Rivet-R LowEnergy-EE-Perturbative-R.yoda:"Pert"
+#LowEnergy-EE-NonPerturbative-R.yoda:"Non-Pert" 
 
 Rivet-BFactory : Rivet-BFactory/done
 	touch $@
