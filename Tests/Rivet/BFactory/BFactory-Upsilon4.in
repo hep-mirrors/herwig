@@ -26,12 +26,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 # BES eta' dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_VectorMeson_PseudoScalar_Fermions_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_PseudoScalarMeson_Vector_Fermions_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhi_3Pion_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_A1_3Pion_Decay
+# multiplicities
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
+# MC analyses based on old internal ones
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Eta_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
