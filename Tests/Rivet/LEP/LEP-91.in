@@ -58,7 +58,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3396100
 # DELPHI tuning paper
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
 # DELPHI b quark
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2002_069_CONF_603
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2011_I890503
 # ALEPH b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_S4656318
@@ -71,7 +70,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
 # OPAL from gluon paper
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I648738
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I631361_qq
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2004_I631361:PROCESS=QQ
 # L3 eta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1992_I336180
 # L3 jet rates
