@@ -13,14 +13,11 @@ import os, yoda, copy
 
 def fillAbove(desthisto, sourcehistosbysqrts):
     if type(desthisto) is yoda.core.Scatter2D :
-        if(desthisto.numPoints!=1) :
-            logging.error("Must have one bin for a specific sqrt(s) for %s" % desthisto.path)
-            sys.exit(1)
-        for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
-            if(h.numPoints!=1) :
-                continue
-            if(desthisto.points[0].x != h.points[0].x) :
-                desthisto.addPoint(h.points[0])
+        for sqrts in sorted(sourcehistosbysqrts.keys()) :
+            h=sourcehistosbysqrts[sqrts]
+            for i in range(0,h.numPoints) :
+                if sqrts==h.points[i].x :
+                    desthisto.addPoint(h.points[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
         for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
@@ -85,7 +82,7 @@ yodafiles=["-130","-133","-136","-177","-192",
            "-12.8","-26.8","-48.0","-93.0",\
            "-12","-13","-17","-27.6","-29","-30.2","-30.75",\
            "-30.7","-30","-31.3","-34.8","-43.6","-50","-52",\
-           "-55","-56","-57","-60.8","-60","-61.4","-9.4" ]
+           "-55","-56","-57","-60.8","-60","-61.4","-9.4","-45","-66","-76"]
 # add gg if needed
 if(opts.gg) :
     yodafiles += ["-10.5-gg","-12.8-gg","-16.86-gg","-26.8-gg",\
@@ -139,9 +136,24 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("4328825")>0 or hpath.find("5361494")>0 or
         hpath.find("190818")>0 or hpath.find("154270")>0 or
         hpath.find("277658")>0) :
-        # workhisto = copy.deepcopy(hsets.values()[0])
-        # outhistos[hpath] = workhisto
-        outhistos[hpath] = hsets.values()[0]
+        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
+                                                   hsets.values()[0].title)
+        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,
+                                                   hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
+                                        hsets.values()[0].bins[i].xMax)
+        elif(type(hsets.values()[0])==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].path,
+                                                hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
+                                        hsets.values()[0].bins[i].xMax)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            sys.exit(1)
 
 # tasso
 useOne("/TASSO_1990_S2148048/d06-x01-y01","14")
