@@ -14,6 +14,7 @@
 #include "HwppSelector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Utilities/Kinematics.h"
@@ -41,11 +42,11 @@ void HwppSelector::doinit() {
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
-  os << _mode;
+  os << _mode << _enhanceSProb << ounit(_m0Decay,GeV) << _massMeasure;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _mode;
+  is >> _mode >> _enhanceSProb >> iunit(_m0Decay,GeV) >> _massMeasure;
 }
 
 void HwppSelector::Init() {
@@ -79,16 +80,58 @@ void HwppSelector::Init() {
      "Use the Herwig approach",
      1);
 
+  static Switch<HwppSelector,int> interfaceEnhanceSProb
+    ("EnhanceSProb",
+     "Option for enhancing strangeness",
+     &HwppSelector::_enhanceSProb, 0, false, false);
+  static SwitchOption interfaceEnhanceSProbNo
+    (interfaceEnhanceSProb,
+     "No",
+     "No strangeness enhancement.",
+     0);
+  static SwitchOption interfaceEnhanceSProbScaled
+    (interfaceEnhanceSProb,
+     "Scaled",
+     "Scaled strangeness enhancement",
+     1);
+  static SwitchOption interfaceEnhanceSProbExponential
+    (interfaceEnhanceSProb,
+     "Exponential",
+     "Exponential strangeness enhancement",
+     2);
+
+   static Switch<HwppSelector,int> interfaceMassMeasure
+     ("MassMeasure",
+      "Option to use different mass measures",
+      &HwppSelector::_massMeasure,0,false,false);
+   static SwitchOption interfaceMassMeasureMass
+     (interfaceMassMeasure,
+      "Mass",
+      "Mass Measure",
+      0);
+   static SwitchOption interfaceMassMeasureLambda
+     (interfaceMassMeasure,
+      "Lambda",
+      "Lambda Measure",
+      1);
+
+  static Parameter<HwppSelector,Energy> interfaceDecayMassScale
+    ("DecayMassScale",
+     "Cluster decay mass scale",
+     &HwppSelector::_m0Decay, GeV, 1.0*GeV, 0.1*GeV, 50.*GeV,
+     false, false, Interface::limited);
+
 }
 
-pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
+pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1,
 						     tcPDPtr par2,tcPDPtr ) const
   {
-  // if either of the input partons is a diquark don't allow diquarks to be 
+
+  // if either of the input partons is a diquark don't allow diquarks to be
   // produced
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
   bool quark = true;
-  // if the Herwig algorithm 
+  // if the Herwig algorithm
   if(_mode ==1) {
     if(UseRandom::rnd() > 1./(1.+pwtDIquark())
        &&cluMass > massLightestBaryonPair(par1,par2)) {
@@ -112,9 +155,9 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
        && !DiquarkMatcher::Check(quarktopick->id())) continue;
     if(!diquark && abs(int(quarktopick->iColour())) == 3
        && DiquarkMatcher::Check(quarktopick->id())) continue;
-    HadronTable::const_iterator 
+    HadronTable::const_iterator
       tit1 = table().find(make_pair(abs(par1->id()),quarktopick->id()));
-    HadronTable::const_iterator 
+    HadronTable::const_iterator
       tit2 = table().find(make_pair(quarktopick->id(),abs(par2->id())));
     // If not in table skip
     if(tit1 == table().end()||tit2==table().end()) continue;
@@ -123,8 +166,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     const KupcoData & T2 = tit2->second;
     if(T1.empty()||T2.empty()) continue;
     // if too massive skip
-    if(cluMass <= T1.begin()->mass + 
-                  T2.begin()->mass) continue; 
+    if(cluMass <= T1.begin()->mass +
+                  T2.begin()->mass) continue;
     // loop over the hadrons
     KupcoData::const_iterator H1,H2;
     for(H1 = T1.begin();H1 != T1.end(); ++H1) {
@@ -132,22 +175,43 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
  	// calculate the weight
- 	weight = pwt(quarktopick->id()) * H1->overallWeight * H2->overallWeight *
- 	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
+  double pwtstrange;
+  if (quarktopick->id() == 3){
+    pwtstrange = pwt(3);
+    if (_enhanceSProb == 1){
+      double scale = double(sqr(_m0Decay/cluMass));
+      pwtstrange = (20. < scale || scale < 0.) ? 0. : pow(pwtstrange,scale);
+    }
+    else if (_enhanceSProb == 2){
+      Energy2 mass2;
+      Energy endpointmass = par1->mass() + par2->mass();
+      mass2 = (_massMeasure == 0) ? sqr(cluMass) :
+                sqr(cluMass) - sqr(endpointmass);
+      double scale = double(sqr(_m0Decay)/mass2);
+      pwtstrange = (20. < scale || scale < 0.) ? 0. : exp(-scale);
+    }
+    weight = pwtstrange * H1->overallWeight * H2->overallWeight *
+      Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
+  }
+  else {
+    weight = pwt(quarktopick->id()) * H1->overallWeight * H2->overallWeight *
+      Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
+  }
+
 	int signQ = 0;
 	assert (par1 && quarktopick);
 	assert (par2);
 
 	assert(quarktopick->CC());
-	
-	if(CheckId::canBeHadron(par1, quarktopick->CC()) 
+
+	if(CheckId::canBeHadron(par1, quarktopick->CC())
 	   && CheckId::canBeHadron(quarktopick, par2))
 	   signQ = +1;
-	else if(CheckId::canBeHadron(par1, quarktopick) 
+	else if(CheckId::canBeHadron(par1, quarktopick)
 		&& CheckId::canBeHadron(quarktopick->CC(), par2))
 	   signQ = -1;
 	else {
-	  cerr << "Could not make sign for" << par1->id()<< " " << quarktopick->id() 
+	  cerr << "Could not make sign for" << par1->id()<< " " << quarktopick->id()
 	       << " " << par2->id() << "\n";
 	  assert(false);
 	}
@@ -161,7 +225,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
       }
     }
   }
-  if (hadrons.empty()) 
+  if (hadrons.empty())
     return make_pair(tcPDPtr(),tcPDPtr());
   // select the hadron
   wgtsum *= UseRandom::rnd();
@@ -171,7 +235,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     ++ix;
   }
   while(wgtsum > ZERO && ix < hadrons.size());
-  if(ix == hadrons.size() && wgtsum > ZERO) 
+  if(ix == hadrons.size() && wgtsum > ZERO)
       return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
   assert(hadrons[ix].idQ);

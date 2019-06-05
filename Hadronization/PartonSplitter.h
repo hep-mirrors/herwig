@@ -25,8 +25,8 @@ using namespace ThePEG;
  *  \brief This class splits the gluons from the end of the shower.
  *  \author Philip Stephens
  *  \author Alberto Ribon
- * 
- *  This class does all of the nonperturbative parton splittings needed 
+ *
+ *  This class does all of the nonperturbative parton splittings needed
  *  immediately after the end of the showering (both initial and final),
  *  as very first step of the cluster hadronization.
  *
@@ -34,9 +34,9 @@ using namespace ThePEG;
  *  by default only the splitting in u and d quarks is allowed
  *  the option "set /Herwig/Hadronization/PartonSplitter:Split 1"
  *  allows for additional splitting into s quarks based on some weight
- *  in order for that to work the mass of the strange quark has to be changed 
+ *  in order for that to work the mass of the strange quark has to be changed
  *  from the default value s.t. m_g > 2m_s
- *       
+ *
  *
  * * @see \ref PartonSplitterInterfaces "The interfaces"
  * defined for PartonSplitter.
@@ -53,7 +53,10 @@ public:
 	 _splitPwtDquark(1),
 	 _splitPwtSquark(0.5),
 	 _gluonDistance(ZERO),
-	 _splitGluon(0)
+	 _splitGluon(0),
+   _enhanceSProb(0),
+   _m0(10.*GeV),
+   _massMeasure(0)
   {}
 
   /**
@@ -64,7 +67,7 @@ public:
    * @return The particles which were not split and the products of splitting.
    */
   void split(PVector & tagged);
- 
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -137,13 +140,37 @@ private:
    */
   void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
+
+  /**
+   * Non-perturbatively split a time-like gluon using a mass-based
+   * strangeness enhancement,
+   * if something goes wrong null pointers are returned.
+   * @param gluon The gluon to be split
+   * @param quark The quark produced in the splitting
+   * @param anti  The antiquark produced in the splitting
+   * @param gluon's index in the colour-sorted Particle vector
+   */
+  void massSplitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti,
+    size_t i);
+
+  /**
+   * Colour-sort the event into grouped colour-singlets.
+   * Convention: triplet - gluons - antitriplet, repeat for
+   * all other colour-singlets or colourless particles.
+   */
+  void colourSorted(PVector& tagged);
+
+  /**
+   *   Method to calculate the probability for producing strange quarks
+   */
+  double enhanceStrange(size_t i);
+
+private:
+
   // probabilities for the different quark types
   double _splitPwtUquark;
   double _splitPwtDquark;
   double _splitPwtSquark;
-
-
-private:
 
   /**
    *  The selector to pick the type of quark
@@ -151,19 +178,42 @@ private:
   Selector<PDPtr,double> _quarkSelector;
 
   /**
-   * A pointer to a Herwig::HadronSelector object for generating hadrons.
-   */
-
-  /**
    *   c tau for gluon decays
    */
   Length _gluonDistance;
 
-    /**
+  /**
    * Flag used to determine between normal gluon splitting and alternative gluon splitting
    */
   int _splitGluon;
 
+  /**
+   *   Vector that stores the index in the event record of the anti-triplet
+   *   of the colour-singlets, or of a colourless particle
+   */
+  vector<int> _colSingletSize;
+
+  /**
+   *   Vector that stores the masses of the colour-singlets or of a colourless
+   *   particle
+   */
+  vector<Energy2> _colSingletm2;
+
+  /**
+   *   Option to choose which functional form to use for strangeness
+   *   production
+   */
+  int _enhanceSProb;
+
+  /**
+   *   Characteristic mass scale for mass-based strangeness enhancement
+   */
+  Energy _m0;
+
+  /**
+   *   Option to choose which mass measure to use
+   */
+  int _massMeasure;
 
 };
 
