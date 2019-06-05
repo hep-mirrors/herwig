@@ -25,12 +25,12 @@ using namespace ThePEG;
  *  \author Alberto Ribon
  *
  *  This class decays the "normal" clusters, e.g. ones that are not heavy
- *  enough for fission, and not too light to decay into one hadron. 
+ *  enough for fission, and not too light to decay into one hadron.
  *
- *  This class is directs the production of hadrons via 2-body cluster decays. 
+ *  This class is directs the production of hadrons via 2-body cluster decays.
  *  The selection of the hadron flavours is given by Herwig::HadronSelector.
  *
- *  @see HadronSelector 
+ *  @see HadronSelector
  * @see \ref ClusterDecayerInterfaces "The interfaces"
  * defined for ClusterDecayer.
  */
@@ -43,17 +43,17 @@ public:
   /**
    * Default constructor.
    */
-  ClusterDecayer();  
+  ClusterDecayer();
   //@}
 
-  /** Decays all remaining clusters into hadrons. 
+  /** Decays all remaining clusters into hadrons.
    * This routine decays the clusters that are left after
    * Herwig::ClusterFissioner::fission and
    * Herwig::LightClusterDecayer::decay have been called. These are all
    * the "normal" clusters which are not forced into hadrons by
    * the other functions.
    */
-  void decay(const ClusterVector & clusters, tPVector & finalhadrons) 
+  void decay(const ClusterVector & clusters, tPVector & finalhadrons)
    ;
 
 public:
@@ -99,12 +99,12 @@ private:
 
 public:
 
-  /** Decays the cluster into two hadrons. 
+  /** Decays the cluster into two hadrons.
    *
    *  This routine is used to take a given cluster and decay it into
    *  two hadrons which are returned. If one of the constituents is from
    *  the perturbative regime then the direction of the perturbative parton
-   *  is remembered and the decay is preferentially in that direction. The 
+   *  is remembered and the decay is preferentially in that direction. The
    *  direction of the decay is given by
    *  \f[ \cos \theta = 1 + S \log r_1 \f]
    *  where \f$ S \f$ is a parameter of the model and \f$ r_1 \f$ is a random
@@ -117,10 +117,10 @@ private:
   /** Compute the positions of the new hadrons based on the clusters position.
    *
    *  This method calculates the positions of the children hadrons by a
-   *  call to ThePEG::RandomGenerator::rndGaussTwoNumbers with width inversely 
+   *  call to ThePEG::RandomGenerator::rndGaussTwoNumbers with width inversely
    *  proportional to the cluster mass, around the parent cluster position.
    */
-  void calculatePositions( const Lorentz5Momentum &, const LorentzPoint &, 
+  void calculatePositions( const Lorentz5Momentum &, const LorentzPoint &,
 			   const Lorentz5Momentum &, const Lorentz5Momentum &,
 			   LorentzPoint &, LorentzPoint &) const;
 
@@ -129,7 +129,7 @@ private:
    */
   Ptr<HadronSelector>::pointer _hadronsSelector;
 
-  //@{  
+  //@{
   /**
    * Whether a cluster decays along the perturbative parton direction.
    */
@@ -157,6 +157,7 @@ private:
    * Number of tries to generate the masses of the decay products
    */
   unsigned int _masstry;
+
 
 };
 

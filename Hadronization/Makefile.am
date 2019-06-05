@@ -13,4 +13,4 @@ HadronSelector.cc HadronSelector.h HadronSelector.fh\
 Hw64Selector.cc Hw64Selector.h Hw64Selector.fh\
 HwppSelector.cc HwppSelector.h HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h LightClusterDecayer.fh \
-PartonSplitter.cc PartonSplitter.h PartonSplitter.fh
+PartonSplitter.cc PartonSplitter.h PartonSplitter.fh 

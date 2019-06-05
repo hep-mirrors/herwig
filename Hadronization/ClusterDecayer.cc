@@ -25,6 +25,7 @@
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 #include <ThePEG/Repository/UseRandom.h>
+#include <fstream>
 
 using namespace Herwig;
 
@@ -32,11 +33,11 @@ DescribeClass<ClusterDecayer,Interfaced>
 describeClusterDecayer("Herwig::ClusterDecayer","");
 
 ClusterDecayer::ClusterDecayer() :
-  _clDirLight(1),	     
+  _clDirLight(1),
   _clDirBottom(1),
   _clDirCharm(1),
-  _clDirExotic(1),	     
-  _clSmrLight(0.0),	     
+  _clDirExotic(1),
+  _clSmrLight(0.0),
   _clSmrBottom(0.0),
   _clSmrCharm(0.0),
   _clSmrExotic(0.0),
@@ -52,16 +53,16 @@ IBPtr ClusterDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
+void ClusterDecayer::persistentOutput(PersistentOStream & os) const
 {
   os << _hadronsSelector << _clDirLight << _clDirBottom
-     << _clDirCharm << _clDirExotic << _clSmrLight << _clSmrBottom 
+     << _clDirCharm << _clDirExotic << _clSmrLight << _clSmrBottom
      << _clSmrCharm << _clSmrExotic << _onshell << _masstry;
 }
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _hadronsSelector >> _clDirLight >> _clDirBottom
-     >> _clDirCharm >> _clDirExotic >> _clSmrLight >> _clSmrBottom 
+     >> _clDirCharm >> _clDirExotic >> _clSmrLight >> _clSmrBottom
      >> _clSmrCharm >> _clSmrExotic >> _onshell >> _masstry;
 }
 
@@ -71,9 +72,9 @@ void ClusterDecayer::Init() {
   static ClassDocumentation<ClusterDecayer> documentation
     ("This class is responsible for the two-body decays of normal clusters");
 
-  static Reference<ClusterDecayer,HadronSelector> 
-    interfaceHadronSelector("HadronSelector", 
-                             "A reference to the HadronSelector object", 
+  static Reference<ClusterDecayer,HadronSelector>
+    interfaceHadronSelector("HadronSelector",
+                             "A reference to the HadronSelector object",
                              &Herwig::ClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
 
@@ -144,19 +145,19 @@ void ClusterDecayer::Init() {
      false);
 
   // ClSmr for ligth, Bottom, Charm and exotic (e.g. Susy) quarks
-  static Parameter<ClusterDecayer,double> 
+  static Parameter<ClusterDecayer,double>
     interfaceClSmrLight ("ClSmrLight", "cluster direction Gaussian smearing for light quark",
                      &ClusterDecayer::_clSmrLight, 0, 0.0 , 0.0 , 2.0,false,false,false);
-  static Parameter<ClusterDecayer,double> 
+  static Parameter<ClusterDecayer,double>
     interfaceClSmrBottom ("ClSmrBottom", "cluster direction Gaussian smearing for b quark",
-                     &ClusterDecayer::_clSmrBottom, 0, 0.0 , 0.0 , 2.0,false,false,false); 
-static Parameter<ClusterDecayer,double> 
+                     &ClusterDecayer::_clSmrBottom, 0, 0.0 , 0.0 , 2.0,false,false,false);
+static Parameter<ClusterDecayer,double>
     interfaceClSmrCharm ("ClSmrCharm", "cluster direction Gaussian smearing for c quark",
-                     &ClusterDecayer::_clSmrCharm, 0, 0.0 , 0.0 , 2.0,false,false,false); 
-static Parameter<ClusterDecayer,double> 
+                     &ClusterDecayer::_clSmrCharm, 0, 0.0 , 0.0 , 2.0,false,false,false);
+static Parameter<ClusterDecayer,double>
     interfaceClSmrExotic ("ClSmrExotic", "cluster direction Gaussian smearing for exotic quark",
-                     &ClusterDecayer::_clSmrExotic, 0, 0.0 , 0.0 , 2.0,false,false,false); 
-   
+                     &ClusterDecayer::_clSmrExotic, 0, 0.0 , 0.0 , 2.0,false,false,false);
+
   static Switch<ClusterDecayer,bool> interfaceOnShell
     ("OnShell",
      "Whether or not the hadrons produced should by on shell or generated using the"
@@ -183,16 +184,17 @@ static Parameter<ClusterDecayer,double>
 }
 
 
-void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) 
+void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons)
   {
   // Loop over all clusters, and if they are not too heavy (that is
-  // intermediate clusters that have undergone to fission) or not 
-  // too light (that is final clusters that have been already decayed 
+  // intermediate clusters that have undergone to fission) or not
+  // too light (that is final clusters that have been already decayed
   // into single hadron) then decay them into two hadrons.
+
   for (ClusterVector::const_iterator it = clusters.begin();
 	 it != clusters.end(); ++it) {
-    if ((*it)->isAvailable() && !(*it)->isStatusFinal() 
-	&& (*it)->isReadyToDecay()) {   
+    if ((*it)->isAvailable() && !(*it)->isStatusFinal()
+	&& (*it)->isReadyToDecay()) {
       pair<PPtr,PPtr> prod = decayIntoTwoHadrons(*it);
       (*it)->addChild(prod.first);
       (*it)->addChild(prod.second);
@@ -211,33 +213,33 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
   // processes (hard process or parton shower) from those that are generated
   // by the non-perturbative gluon splitting or from fission of heavy clusters.
   // In the latter case the two body decay is assumed to be *isotropic*.
-  // In the former case instead, if proper flag are activated, the two body 
-  // decay is assumed to "remember" the direction of the constituents inside 
-  // the cluster, in the cluster frame. The actual smearing of the hadron 
-  // directions around the direction of the constituents, in the cluster 
+  // In the former case instead, if proper flag are activated, the two body
+  // decay is assumed to "remember" the direction of the constituents inside
+  // the cluster, in the cluster frame. The actual smearing of the hadron
+  // directions around the direction of the constituents, in the cluster
   // frame, can be different between non-b hadrons and b-hadrons, but is given
   // by the same functional form:
   //          cosThetaSmearing = 1 + smearFactor * log( rnd() )
   // (repeated until cosThetaSmearing > -1)
   // where the factor smearFactor is different between b- and non-b hadrons.
   //
-  // We need to require (at least at the moment, maybe in the future we 
-  // could change it) that the cluster has exactly two components. 
-  // If this is not the case, then send a warning because it is not suppose 
+  // We need to require (at least at the moment, maybe in the future we
+  // could change it) that the cluster has exactly two components.
+  // If this is not the case, then send a warning because it is not suppose
   // to happen, and then return.
   if ( ptr->numComponents() != 2 ) {
     generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons "
-				       "***Still cluster with not exactly 2 components*** ", 
+				       "***Still cluster with not exactly 2 components*** ",
 				       Exception::warning) );
     return pair<PPtr,PPtr>();
   }
-     
+
   // Extract the id and particle pointer of the two components of the cluster.
   tPPtr ptr1 = ptr->particle(0);
   tPPtr ptr2 = ptr->particle(1);
   tcPDPtr ptr1data = ptr1->dataPtr();
   tcPDPtr ptr2data = ptr2->dataPtr();
-  
+
   bool isHad1FlavSpecial    = false;
   bool cluDirHad1      = _clDirLight;
   double cluSmearHad1 = _clSmrLight;
@@ -249,39 +251,39 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
     isHad1FlavSpecial  = true;
     cluDirHad1   = _clDirExotic;
     cluSmearHad1 = _clSmrExotic;
-  } 
+  }
   else if (CheckId::hasBottom(ptr1data)) {
     isHad1FlavSpecial  = true;
     cluDirHad1   = _clDirBottom;
     cluSmearHad1 = _clSmrBottom;
-  } 
+  }
   else if (CheckId::hasCharm(ptr1data)) {
     isHad1FlavSpecial  = true;
     cluDirHad1   = _clDirCharm;
     cluSmearHad1 = _clSmrCharm;
-  } 
+  }
 
   if (CheckId::isExotic(ptr2data)) {
     isHad2FlavSpecial  = true;
     cluDirHad2   = _clDirExotic;
     cluSmearHad2 = _clSmrExotic;
-  } 
+  }
   else if (CheckId::hasBottom(ptr2data)) {
     isHad2FlavSpecial  = true;
     cluDirHad2   = _clDirBottom;
     cluSmearHad2 = _clSmrBottom;
-  } 
+  }
   else if (CheckId::hasCharm(ptr2data)) {
     isHad2FlavSpecial  = true;
     cluDirHad2   = _clDirCharm;
     cluSmearHad2 = _clSmrCharm;
-  } 
+  }
 
 
   bool isOrigin1Perturbative = ptr->isPerturbative(0);
   bool isOrigin2Perturbative = ptr->isPerturbative(1);
 
-  // We have to decide which, if any, of the two hadrons will have 
+  // We have to decide which, if any, of the two hadrons will have
   // the momentum, in the cluster parent frame, smeared around the
   // direction of its constituent (for Had1 is the one pointed by
   // ptr1, and for Had2 is the one pointed by ptr2).
@@ -289,10 +291,10 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
   // perturbative (that is not coming from nonperturbative gluon splitting
   // or cluster fission). In the case that both the hadrons satisfy this
   // two requirements (of course only one must be treated, because the other
-  // one will have the momentum automatically fixed by the momentum 
+  // one will have the momentum automatically fixed by the momentum
   // conservation) then more priority is given in the case of a b-hadron.
   // Finally, in the case that the two hadrons have same priority, then
-  // we choose randomly, with equal probability, one of the two. 
+  // we choose randomly, with equal probability, one of the two.
 
   int priorityHad1 = 0;
   if ( cluDirHad1  &&  isOrigin1Perturbative ) {
@@ -309,19 +311,19 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
   Lorentz5Momentum pClu = ptr->momentum();
   bool secondHad = false;
   Axis uSmear_v3;
-  if ( priorityHad1  ||  priorityHad2 ) { 
+  if ( priorityHad1  ||  priorityHad2 ) {
 
     double cluSmear;
     Lorentz5Momentum pQ;
     if ( priorityHad1 > priorityHad2 ) {
       pQ = ptr1->momentum();
       cluSmear = cluSmearHad1;
-    } else {                                
+    } else {
       pQ = ptr2->momentum();
       cluSmear = cluSmearHad2;
       secondHad = true;
     }
-    
+
     // To find the momenta of the two hadrons in the parent cluster frame
     // we proceed as follows. First, we determine the unit vector parallel
     // to the direction of the constituent in the cluster frame. Then we
@@ -335,11 +337,11 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
     // two hadrons, it is straighforward to get the momenta of both hadrons
     // (always in the same parent cluster frame).
 
-    pQ.boost( -pClu.boostVector() );    // boost from Lab to Cluster frame 
+    pQ.boost( -pClu.boostVector() );    // boost from Lab to Cluster frame
     uSmear_v3 = pQ.vect().unit();
     // skip if cluSmear is too small
     if ( cluSmear > 0.001 ) {
-      // generate the smearing angle    
+      // generate the smearing angle
       double cosSmear;
       do cosSmear = 1.0 + cluSmear*log( UseRandom::rnd() );
       while ( cosSmear < -1.0 );
@@ -359,23 +361,32 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
       ltemp *= rot;
       uSmear_v3 = ltemp.vect();
     }
-  } 
+  }
   else {
-    
-    // Isotropic decay: flat in cosTheta and phi. 
+
+    // Isotropic decay: flat in cosTheta and phi.
     uSmear_v3 = Axis(1.0, 0.0, 0.0);  // just to set the rho to 1
     uSmear_v3.setTheta( acos( UseRandom::rnd( -1.0 , 1.0 ) ) );
-    uSmear_v3.setPhi( UseRandom::rnd( -pi , pi ) );   
-    
+    uSmear_v3.setPhi( UseRandom::rnd( -pi , pi ) );
+
   }
 
-  pair<tcPDPtr,tcPDPtr> dataPair 
+  pair<tcPDPtr,tcPDPtr> dataPair
     = _hadronsSelector->chooseHadronPair(ptr->mass(),
 					 ptr1data,
 					 ptr2data);
-  if(dataPair.first  == tcPDPtr() || 
+  if(dataPair.first  == tcPDPtr() ||
      dataPair.second == tcPDPtr()) return pair<PPtr,PPtr>();
 
+   /*ofstream afile("mCDLEP.txt", std::ios_base::app | std::ios_base::out);
+   afile<<ptr->mass()/GeV<<"\n";
+   afile.close();
+   Lorentz5Momentum mom = ptr1->momentum() + ptr2->momentum();
+   Energy pT = abs(sqrt( sqr(mom.x()) + sqr(mom.y()) ) );
+   ofstream bfile("pTCDLEP.txt", std::ios_base::app | std::ios_base::out);
+   bfile<<pT/GeV<<"\n";
+   bfile.close();
+   */
   // Create the two hadron particle objects with the specified id.
   PPtr ptrHad1,ptrHad2;
   // produce the hadrons on mass shell
@@ -401,11 +412,11 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
       ptrHad2 = dataPair.second->produceParticle(dataPair.second->mass());
     }
   }
-  
+
   if (!ptrHad1  ||  !ptrHad2) {
     ostringstream s;
     s << "ClusterDecayer::decayIntoTwoHadrons ***Cannot create the two hadrons***"
-      << dataPair.first ->PDGName() << " and " 
+      << dataPair.first ->PDGName() << " and "
       << dataPair.second->PDGName();
     cerr << s.str() << endl;
     generator()->logWarning( Exception(s.str(), Exception::warning) );
@@ -415,7 +426,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
     if ( secondHad ) uSmear_v3 *= -1.0;
 
     if (pClu.m() < ptrHad1->mass()+ptrHad2->mass() ) {
-      throw Exception() << "Impossible Kinematics in ClusterDecayer::decayIntoTwoHadrons()" 
+      throw Exception() << "Impossible Kinematics in ClusterDecayer::decayIntoTwoHadrons()"
 			<< Exception::eventerror;
     }
     Kinematics::twoBodyDecay(pClu,ptrHad1->mass(),ptrHad2->mass(),uSmear_v3,
@@ -435,15 +446,15 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
 
 
 void ClusterDecayer::
-calculatePositions(const Lorentz5Momentum &pClu, 
-		   const LorentzPoint &positionClu, 
-		   const Lorentz5Momentum &, 
-		   const Lorentz5Momentum &, 
-		   LorentzPoint &positionHad1, 
+calculatePositions(const Lorentz5Momentum &pClu,
+		   const LorentzPoint &positionClu,
+		   const Lorentz5Momentum &,
+		   const Lorentz5Momentum &,
+		   LorentzPoint &positionHad1,
 		   LorentzPoint &positionHad2 ) const {
   // First, determine the relative positions of the children hadrons
   // with respect to their parent cluster, in the cluster reference frame,
-  // assuming gaussian smearing with width inversely proportional to the 
+  // assuming gaussian smearing with width inversely proportional to the
   // parent cluster mass.
   Length smearingWidth = hbarc / pClu.m();
   LorentzDistance distanceHad[2];
@@ -467,4 +478,3 @@ calculatePositions(const Lorentz5Momentum &pClu,
   positionHad1 = distanceHad[0] + positionClu;
   positionHad2 = distanceHad[1] + positionClu;
 }
-

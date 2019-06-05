@@ -33,38 +33,38 @@ public:
   /**
    * The default constructor.
    */
-  HwppSelector() : HadronSelector(1), _mode(1)
+  HwppSelector() : HadronSelector(1), _mode(1), _enhanceSProb(0), _m0Decay(1.*GeV)
   {}
 
   /**
    *
    * This method is used to choose a pair of hadrons.
    *
-   * Given the mass of a cluster and the particle pointers of its 
+   * Given the mass of a cluster and the particle pointers of its
    * two (or three) constituents, this returns the pair of particle pointers of
-   * the two hadrons with proper flavour numbers. 
-   * Furthermore, the first of the two hadron must have the 
+   * the two hadrons with proper flavour numbers.
+   * Furthermore, the first of the two hadron must have the
    * constituent with par1, and the second must have the constituent with par2.
    * At the moment it does *nothing* in the case that also par3 is present.
    *
    * Kupco's method is used, rather than one used in FORTRAN HERWIG
    * The idea is to build on the fly a table of all possible pairs
    * of hadrons (Had1,Had2) (that we can call "cluster decay channels")
-   * which are kinematically above threshold  and have flavour 
+   * which are kinematically above threshold  and have flavour
    * Had1=(par1,quarktopick->CC()), Had2=(quarktopick,par2), where quarktopick
-   * is the poniter of: 
-   *    ---  d, u, s, c, b  
-   *                        if either par1 or par2 is a diquark;      
-   *    ---  d, u, s, c, b, dd, ud, uu, sd, su, ss, 
+   * is the poniter of:
+   *    ---  d, u, s, c, b
+   *                        if either par1 or par2 is a diquark;
+   *    ---  d, u, s, c, b, dd, ud, uu, sd, su, ss,
    *                        cd, cu, cs, cc, bd, bu, bs, bc, bb
    *                        if both par1 and par2  are quarks.
    * The weight associated with each channel is given by the product
-   * of: the phase space available including the spin factor 2*J+1, 
-   *     the constant weight factor for chosen idQ, 
-   *     the octet-singlet isoscalar mixing factor, and finally 
+   * of: the phase space available including the spin factor 2*J+1,
+   *     the constant weight factor for chosen idQ,
+   *     the octet-singlet isoscalar mixing factor, and finally
    *     the singlet-decuplet weight factor.
    */
-  pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
+  pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1,
 						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
    ;
 
@@ -137,6 +137,13 @@ private:
    *  Which algorithm to use
    */
   unsigned int _mode;
+
+  int _enhanceSProb;
+
+  Energy _m0Decay;
+
+  int _massMeasure;
+
 };
 
 }
