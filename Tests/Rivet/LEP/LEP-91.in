@@ -57,6 +57,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I524694
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_S3960137
 # OPAL strange baryon production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3396100
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I421977
 # DELPHI tuning paper
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
 # DELPHI b quark
