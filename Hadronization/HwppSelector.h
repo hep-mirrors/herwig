@@ -138,11 +138,28 @@ private:
    */
   unsigned int _mode;
 
+  /**
+  *  Flag that switches between no strangeness enhancement, scaling enhancement,
+  *  and exponential enhancement (in numerical order)
+  */
   int _enhanceSProb;
 
+  /**
+  *  Parameter that governs the strangeness enhancement scaling
+  */
   Energy _m0Decay;
 
+  /**
+  *  Flag that switches between mass measures used in strangeness enhancement:
+  *  cluster mass, or the lambda measure -  ( m_{clu}^2 - (m_q + m_{qbar})^2 )
+  */
   int _massMeasure;
+
+  /**
+  *  Constant variable that stops the scale in strangeness enhancement from
+  *  becoming too large
+  */
+  const double _maxScale = 20.;
 
 };
 

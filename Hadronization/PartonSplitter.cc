@@ -543,12 +543,12 @@ double PartonSplitter::enhanceStrange(size_t i){
     // If the mass is significantly smaller than the characteristic mass,
     // just set the prob to 0
     double scale = double(m2/mass2);
-    return (20. < scale || scale < 0.) ? 0. : pow(_splitPwtSquark,scale);
+    return (_maxScale < scale || scale < 0.) ? 0. : pow(_splitPwtSquark,scale);
   }
   // Exponential strangeness enhancement
   else if (_enhanceSProb == 2){
     double scale = double(m2/mass2);
-    return (20. < scale || scale < 0.) ? 0. : exp(-scale);
+    return (_maxScale < scale || scale < 0.) ? 0. : exp(-scale);
   }
   else
     return _splitPwtSquark;

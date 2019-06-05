@@ -177,18 +177,23 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
  	// calculate the weight
   double pwtstrange;
   if (quarktopick->id() == 3){
+    // Strangeness weight takes the automatic flat weight
     pwtstrange = pwt(3);
+    // Scaling strangeness enhancement
     if (_enhanceSProb == 1){
       double scale = double(sqr(_m0Decay/cluMass));
-      pwtstrange = (20. < scale || scale < 0.) ? 0. : pow(pwtstrange,scale);
+      pwtstrange = (_maxScale < scale) ? 0. : pow(pwtstrange,scale);
     }
+    // Exponential strangeness enhancement
     else if (_enhanceSProb == 2){
       Energy2 mass2;
       Energy endpointmass = par1->mass() + par2->mass();
+      // Choose to use either the cluster mass
+      // or to use the lambda measure
       mass2 = (_massMeasure == 0) ? sqr(cluMass) :
                 sqr(cluMass) - sqr(endpointmass);
       double scale = double(sqr(_m0Decay)/mass2);
-      pwtstrange = (20. < scale || scale < 0.) ? 0. : exp(-scale);
+      pwtstrange = (_maxScale < scale) ? 0. : exp(-scale);
     }
     weight = pwtstrange * H1->overallWeight * H2->overallWeight *
       Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );

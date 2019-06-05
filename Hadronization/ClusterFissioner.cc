@@ -832,22 +832,30 @@ void ClusterFissioner::drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg,
     double prob_u;
     double prob_s = 0.;
     double scale = abs(double(sqr(_m0Fission)/mass2));
+    // Choose which splitting weights you wish to use
 switch(_fissionCluster){
+  // 0: ClusterFissioner and ClusterDecayer use the same weights
   case 0:
      prob_d = _hadronsSelector->pwtDquark();
      prob_u = _hadronsSelector->pwtUquark();
+     /* Strangeness enhancement:
+        Case 1: probability scaling
+        Case 2: Exponential scaling
+     */
      if (_enhanceSProb == 1)
-      prob_s = (20. < scale || scale < 0.) ? 0. : pow(_hadronsSelector->pwtSquark(),scale);
+        prob_s = (_maxScale < scale) ? 0. : pow(_hadronsSelector->pwtSquark(),scale);
      else if (_enhanceSProb == 2)
-      prob_s = (20. < scale || scale < 0.) ? 0. : exp(-scale);
+        prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
+  /* 1: ClusterFissioner uses its own unique set of weights,
+        i.e. decoupled from ClusterDecayer */
   case 1:
      prob_d = _fissionPwtDquark;
      prob_u = _fissionPwtUquark;
      if (_enhanceSProb == 1)
-      prob_s = (20. < scale || scale < 0.) ? 0. : pow(_fissionPwtSquark,scale);
+        prob_s = (_maxScale < scale) ? 0. : pow(_fissionPwtSquark,scale);
      else if (_enhanceSProb == 2)
-      prob_s = (20. < scale || scale < 0.) ? 0. : exp(-scale);
+        prob_s = (_maxScale < scale) ? 0. : exp(-scale);
     break;
 }
 
@@ -873,6 +881,7 @@ Energy2 ClusterFissioner::clustermass(const ClusterPtr & cluster){
   Energy2 endpointmass2 = sqr(cluster->particle(0)->mass() +
   cluster->particle(1)->mass());
   Energy2 singletm2 = pIn.m2();
+  // Return either the cluster mass, or the lambda measure
   return (_massMeasure == 0) ? singletm2 : singletm2 - endpointmass2;
 }
 

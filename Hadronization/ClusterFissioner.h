@@ -236,6 +236,14 @@ protected:
    */
   void drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const;
 
+  /**
+   * Returns the new quark-antiquark pair
+   * needed for fission of a heavy cluster. Equal probabilities
+   * are assumed for producing  u, d, or s pairs.
+   * Extra argument is used when performing strangeness enhancement
+   */
+  void drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg, Energy2 mass2) const;
+
 
   /**
    * Produces the mass of a child cluster.
@@ -289,6 +297,13 @@ protected:
 			  const Lorentz5Momentum & pClu2,
 			  LorentzPoint & positionClu1,
 			  LorentzPoint & positionClu2 ) const;
+
+
+
+  /**
+  *  Function that returns either the cluster mass or the lambda measure
+  */
+  Energy2 clustermass(const ClusterPtr & cluster);
 
 protected:
 
@@ -393,16 +408,28 @@ private:
    */
   Tension _kappa;
 
+  /**
+  *  Flag that switches between no strangeness enhancement, scaling enhancement,
+  *  and exponential enhancement (in numerical order)
+  */
   int _enhanceSProb;
 
+  /**
+  *  Parameter that governs the strangeness enhancement scaling
+  */
   Energy _m0Fission;
 
-  Energy2 clustermass(const ClusterPtr & cluster);
-
+  /**
+  *  Flag that switches between mass measures used in strangeness enhancement:
+  *  cluster mass, or the lambda measure -  ( m_{clu}^2 - (m_q + m_{qbar})^2 )
+  */
   int _massMeasure;
 
-protected:
-  void drawNewFlavourEnhanced(PPtr& newPtrPos,PPtr& newPtrNeg, Energy2 mass2) const;
+  /**
+  *  Constant variable which stops the scale from being to large, and not worth
+  *  calculating
+  */
+  const double _maxScale = 20.;
 
 
 };
