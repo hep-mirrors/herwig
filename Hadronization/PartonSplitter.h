@@ -167,7 +167,10 @@ private:
 
 private:
 
-  // probabilities for the different quark types
+  /**
+  *  Different variables for the weight for splitting into various
+  *  light quark species.
+  */
   double _splitPwtUquark;
   double _splitPwtDquark;
   double _splitPwtSquark;
@@ -206,14 +209,21 @@ private:
   int _enhanceSProb;
 
   /**
-   *   Characteristic mass scale for mass-based strangeness enhancement
+   *   Characteristic mass scale for strangeness enhancement
    */
   Energy _m0;
 
   /**
-   *   Option to choose which mass measure to use
-   */
+  *  Flag that switches between mass measures used in strangeness enhancement:
+  *  cluster mass, or the lambda measure -  ( m_{clu}^2 - (m_q + m_{qbar})^2 )
+  */
   int _massMeasure;
+
+  /**
+  *  Constant variable that stops the scale in strangeness enhancement from
+  *  becoming too large
+  */
+  const double _maxScale = 20.;
 
 };
 
