@@ -8,3 +8,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2004_S5809304
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1606201
