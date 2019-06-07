@@ -35,3 +35,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Eta_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102

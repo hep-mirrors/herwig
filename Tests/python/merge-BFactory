@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
 yodafiles=["-10.52","-10.52-sym","-10.54",
            "-10.58-res","-10.58","-Upsilon",
-           "-Upsilon2","-Upsilon4","-10.45","-Tau","-Phi"]
+           "-Upsilon2","-Upsilon4","-10.45","-10.47","-Tau","-Phi"]
 
 ## Get histos
 inhistos = {}
@@ -66,6 +66,8 @@ for f in yodafiles:
     file = "Rivet-%s%s.yoda" % (args[0], f)
     if(file.find("10.45")>0) :
         sqrts=10.45
+    elif(file.find("10.47")>0) :
+        sqrts=10.47
     elif(file.find("10.52")>0) :
         sqrts=10.52
     elif(file.find("10.54")>0) :
@@ -110,7 +112,13 @@ for f in yodafiles:
                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
            sqrts=sqrttemp
         else :
-            outhistos[aopath] = ao
+            if("ARGUS_1992_I319102" in aopath) :
+                if("d02" in aopath and sqrts==10.47) :
+                    outhistos[aopath] = ao
+                elif("d03"in aopath and sqrts==10.58) :
+                    outhistos[aopath] = ao
+            else:
+                outhistos[aopath] = ao
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
