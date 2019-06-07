@@ -11,8 +11,10 @@ op.add_option("--path"            , dest="path"            , default=path)
 op.add_option("--non-perturbative", dest="nonPerturbative" , default=False, action="store_true")
 op.add_option("--perturbative"    , dest="perturbative"    , default=False, action="store_true")
 op.add_option("--dest"            , dest="dest"            , default="Rivet")
+op.add_option("--list"            , dest="list"            , default=False, action="store_true")
 opts, args = op.parse_args()
 path=opts.path
+thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
 analyses={ 'KK' : {} , 'pipi' : {}, 'ppbar' : {}, "3pi" : {}, "etapipi" : {},
            "etaprimepipi" : {} , "4pi" : {}, "etaPhi" : {}, "etaOmega" : {},
@@ -196,6 +198,7 @@ analyses["4K"]["BABAR_2007_I747875"]   = ["d07-x01-y01"]
 analyses['4K']["BESII_2007_I750713"] = ["d01-x01-y06","d01-x01-y07"]
 # 6 mesons
 analyses["6m"]["BABAR_2018_I1700745"] = ["d04-x01-y01","d05-x01-y01"]
+analyses["6m"]["SND_2016_I1471515"] = ["d01-x01-y06"]
 analyses["6m"]["DM1_1981_I166353"]   = ["d01-x01-y01"]
 analyses["6m"]["BABAR_2006_I709730"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 analyses["6m"]["BABAR_2007_I758568"]   = ["d03-x01-y01","d04-x01-y01","d05-x01-y01","d07-x01-y01",
@@ -249,6 +252,15 @@ analyses["BB"]["CLEO_1991_I29927"]     = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
 analyses["LL"]["DM2_1990_I297706"]     = ["d02-x01-y01"]
 analyses["LL"]["BABAR_2007_I760730"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+# list the analysis if required and quit()
+if "all" in opts.processes :
+    processes = sorted(list(analyses.keys()))
+else :
+    processes = sorted(list(set(opts.processes)))
+if(opts.list) :
+    for process in processes :
+        print " ".join(analyses[process])
+    quit()
 # mapping of process to me to use
 me = { "pipi"     : "MEee2Pions",
        "KK"       : "MEee2Kaons",
@@ -279,7 +291,7 @@ def nearestEnergy(en) :
             anals=energies[val]
     return (Emin,delta,anals)
 
-for process in opts.processes:
+for process in processes:
     if(process not in analyses) : continue
     matrix=""
     if( process in me ) :
@@ -329,10 +341,17 @@ for energy in sorted(energies) :
     proc=""
     for matrix in energies[energy][0] :
         proc+="insert SubProcess:MatrixElements 0 %s\n" % matrix
+    maxflavour =5
+    if(energy<thresholds[1]) :
+        maxflavour=2
+    elif(energy<thresholds[2]) :
+        maxflavour=3
+    elif(energy<thresholds[3]) :
+        maxflavour=4
     # input file for perturbative QCD
-    if(opts.perturbative) :
+    if(opts.perturbative and energy> thresholds[0]) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                     "lepton" : ""})
+                                                     "lepton" : "", "maxflavour" : maxflavour})
         with open(opts.dest+"/Rivet-LowEnergy-EE-Perturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputPerturbative)
         targets += "Rivet-LowEnergy-EE-Perturbative-%8.6f.yoda " % energy
