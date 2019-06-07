@@ -238,16 +238,17 @@ analyses["DD"]["CLEOC_2008_I777917"] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03
                                         "d03-x01-y01","d03-x01-y02","d03-x01-y03",
                                         "d04-x01-y01","d04-x01-y02",
                                         "d05-x01-y01","d05-x01-y02"]
-analyses["DD"]["BELLE_2017_I1613517"] = ["d01-x01-y01","d01-x01-y02"]
+analyses["DD"]["BELLE_2017_I1613517"]  = ["d01-x01-y01","d01-x01-y02"]
 # BB
-analyses["BB"]["BELLE_2016_I1389855"] = ["d01-x01-y02","d01-x01-y03"]
-analyses["BB"]["BELLE_2008_I764099"] = ["d01-x01-y01","d02-x01-y01",
-                                        "d03-x01-y01","d04-x01-y01"]
-analyses["BB"]["CLEO_1999_I474676"] = ["d01-x01-y01","d01-x01-y02"]
-analyses["BB"]["BABAR_2001_I558091"] = ["d01-x01-y01"]
+analyses["BB"]["BELLE_2016_I1389855"]  = ["d01-x01-y02","d01-x01-y03"]
+analyses["BB"]["BELLE_2008_I764099"]   = ["d01-x01-y01","d02-x01-y01",
+                                          "d03-x01-y01","d04-x01-y01"]
+analyses["BB"]["CLEO_1999_I474676"]    = ["d01-x01-y01","d01-x01-y02"]
+analyses["BB"]["BABAR_2001_I558091"]   = ["d01-x01-y01"]
+analyses["BB"]["CLEO_1991_I29927"]     = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
-analyses["LL"]["DM2_1990_I297706"] = ["d02-x01-y01"]
-analyses["LL"]["BABAR_2007_I760730"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+analyses["LL"]["DM2_1990_I297706"]     = ["d02-x01-y01"]
+analyses["LL"]["BABAR_2007_I760730"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # mapping of process to me to use
 me = { "pipi"     : "MEee2Pions",
        "KK"       : "MEee2Kaons",
@@ -284,7 +285,7 @@ for process in opts.processes:
     if( process in me ) :
         matrix = me[process]
     for analysis in analyses[process] :
-        aos=yoda.read(os.path.join(os.getcwd(),path)+analysis+".yoda")
+        aos=yoda.read(os.path.join(os.path.join(os.getcwd(),path),analysis+".yoda"))
         if(len(aos)==0) : continue
         for plot in analyses[process][analysis] :
             histo = aos["/REF/%s/%s" %(analysis,plot)]
