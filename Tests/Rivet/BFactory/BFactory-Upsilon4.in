@@ -19,3 +19,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2015_I1334693
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2011_I878990
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1238273
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1397632
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
