@@ -120,33 +120,12 @@ for analysis in analyses :
             else :
                 energies[energy]=[analysis]
 
-if "MARKI_1975_I100733" in analyses :
-    for val in [3.0,4.8, 7.4] :
-        if val in energies :
-            if "MARKI_1975_I100733" not in energies[val] :
-               energies[val].append("MARKI_1975_I100733")
-        else:
-            energies[val] = ["MARKI_1975_I100733"]
-            
-if "ARGUS_1992_I319102" in analyses :
-    for val in [10.47,10.575] :
-        if val in energies :
-            if "ARGUS_1992_I319102" not in energies[val] :
-               energies[val].append("ARGUS_1992_I319102")
-        else:
-            energies[val] = ["ARGUS_1992_I319102"]
-
 if "BESII_2004_I622224" in analyses :
     for val in [2.2,2.6,3.0,3.2,4.6,4.8] :
         if val in energies :
             energies[val].append("BESII_2004_I622224")
         else:
             energies[val] = ["BESII_2004_I622224"]
-
-if 10.52 in energies :
-    energies[10.52].append("BELLE_2017_I1606201")
-else :
-    energies[10.52] = ["BELLE_2017_I1606201"]
 
 
 # set up the templates
@@ -181,7 +160,7 @@ for energy in sorted(energies) :
         maxflavour=4
     if(opts.perturbative) :
         inputPerturbative = perturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
-                                                     "lepton" : lepton_me})
+                                                     "lepton" : lepton_me, 'maxflavour' : maxflavour})
         with open(opts.dest+"/Rivet-LowEnergy-EE-Perturbative-%8.6f.in" % energy ,'w') as f:
             f.write(inputPerturbative)
         targets += "Rivet-LowEnergy-EE-Perturbative-%8.6f.yoda " % energy
