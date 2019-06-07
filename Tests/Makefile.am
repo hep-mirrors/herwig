@@ -148,7 +148,7 @@ Rivet/%.in :
 
 
 
-Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{9.4,12,13,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
+Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34.8,41,43.6,45,50,52,55,56,57,60.8,60,61.4,66,76,82,8510,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
                   $(shell echo Rivet/LEP{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-14.in) \
 	          $(shell echo Rivet/LEP{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{10.52,10.52-sym,10.54,10.45}.in) \
@@ -188,12 +188,12 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
 Rivet-LEP : Rivet-LEP/done
 	touch $@
 
-Rivet-LEP/done : $(shell echo Rivet{,-Powheg}-LEP-{9.4,12,13,14,17,27.6,29,30.2,30.7,30.75,30,31.3,34.8,43.6,50,52,55,56,57,60.8,60,61.4,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
+Rivet-LEP/done : $(shell echo Rivet{,-Powheg}-LEP-{9.4,12,13,14,17,27.6,29,30.2,30.7,30,31.3,34.8,43.6,45,50,52,55,56,57,60.8,60,61.4,66,76,10,12.8,22,26.8,35,41,44,48.0,82,85,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.yoda) \
 	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda)
 	rm -rf Rivet-LEP
 	python/merge-LEP --with-gg LEP
-	python/merge-LEP LEP-Powheg
-	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw LEP-Powheg.yoda:Hw-Powheg
+	python/merge-LEP Powheg-LEP
+	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw Powheg-LEP.yoda:Hw-Powheg
 	touch $@
 
 Rivet-LowEnergy-%.yoda:

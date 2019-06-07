@@ -15,8 +15,8 @@
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/Interface/Switch.h> 
-#include <ThePEG/Interface/Parameter.h> 
+#include <ThePEG/Interface/Switch.h>
+#include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Handlers/EventHandler.h>
 #include <ThePEG/Handlers/Hint.h>
@@ -28,7 +28,7 @@
 #include <ThePEG/Utilities/Throw.h>
 #include "Herwig/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
-#include "Cluster.h"  
+#include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
@@ -46,7 +46,7 @@ IBPtr ClusterHadronizationHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) 
+void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
   const {
   os << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
@@ -77,51 +77,51 @@ void ClusterHadronizationHandler::Init() {
      // main manual
      );
 
-  static Reference<ClusterHadronizationHandler,PartonSplitter> 
-    interfacePartonSplitter("PartonSplitter", 
-		      "A reference to the PartonSplitter object", 
+  static Reference<ClusterHadronizationHandler,PartonSplitter>
+    interfacePartonSplitter("PartonSplitter",
+		      "A reference to the PartonSplitter object",
 		      &Herwig::ClusterHadronizationHandler::_partonSplitter,
 		      false, false, true, false);
 
-  static Reference<ClusterHadronizationHandler,ClusterFinder> 
-    interfaceClusterFinder("ClusterFinder", 
-		      "A reference to the ClusterFinder object", 
+  static Reference<ClusterHadronizationHandler,ClusterFinder>
+    interfaceClusterFinder("ClusterFinder",
+		      "A reference to the ClusterFinder object",
 		      &Herwig::ClusterHadronizationHandler::_clusterFinder,
 		      false, false, true, false);
 
-  static Reference<ClusterHadronizationHandler,ColourReconnector> 
-    interfaceColourReconnector("ColourReconnector", 
-		      "A reference to the ColourReconnector object", 
+  static Reference<ClusterHadronizationHandler,ColourReconnector>
+    interfaceColourReconnector("ColourReconnector",
+		      "A reference to the ColourReconnector object",
 		      &Herwig::ClusterHadronizationHandler::_colourReconnector,
 		      false, false, true, false);
 
-  static Reference<ClusterHadronizationHandler,ClusterFissioner> 
-    interfaceClusterFissioner("ClusterFissioner", 
-		      "A reference to the ClusterFissioner object", 
+  static Reference<ClusterHadronizationHandler,ClusterFissioner>
+    interfaceClusterFissioner("ClusterFissioner",
+		      "A reference to the ClusterFissioner object",
 		      &Herwig::ClusterHadronizationHandler::_clusterFissioner,
 		      false, false, true, false);
 
-  static Reference<ClusterHadronizationHandler,LightClusterDecayer> 
-    interfaceLightClusterDecayer("LightClusterDecayer", 
-		    "A reference to the LightClusterDecayer object", 
+  static Reference<ClusterHadronizationHandler,LightClusterDecayer>
+    interfaceLightClusterDecayer("LightClusterDecayer",
+		    "A reference to the LightClusterDecayer object",
 		    &Herwig::ClusterHadronizationHandler::_lightClusterDecayer,
 		    false, false, true, false);
 
-  static Reference<ClusterHadronizationHandler,ClusterDecayer> 
-    interfaceClusterDecayer("ClusterDecayer", 
-		       "A reference to the ClusterDecayer object", 
+  static Reference<ClusterHadronizationHandler,ClusterDecayer>
+    interfaceClusterDecayer("ClusterDecayer",
+		       "A reference to the ClusterDecayer object",
 		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
 		       false, false, true, false);
 
-  static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2 
+  static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
      &ClusterHadronizationHandler::_minVirtuality2, GeV2, 0.1*GeV2, ZERO, 10.0*GeV2,false,false,false);
-  
-  static Parameter<ClusterHadronizationHandler,Length> interfaceMaxDisplacement 
+
+  static Parameter<ClusterHadronizationHandler,Length> interfaceMaxDisplacement
     ("MaxDisplacement",
      "Maximum displacement that is allowed for a particle  (unit [millimeter]).",
-     &ClusterHadronizationHandler::_maxDisplacement, mm, 1.0e-10*mm, 
+     &ClusterHadronizationHandler::_maxDisplacement, mm, 1.0e-10*mm,
      0.0*mm, 1.0e-9*mm,false,false,false);
 
   static Reference<ClusterHadronizationHandler,StepHandler> interfaceUnderlyingEventHandler
@@ -175,6 +175,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 
   // split the gluons
   _partonSplitter->split(currentlist);
+
   // form the clusters
   ClusterVector clusters =
     _clusterFinder->formClusters(currentlist);
@@ -212,14 +213,14 @@ handle(EventHandler & ch, const tPVector & tagged,
     // tag new clusters as children of the partons to hadronize
     _setChildren(CRclusters);
 
-    // forms diquarks  
+    // forms diquarks
     _clusterFinder->reduceToTwoComponents(CRclusters);
 
     // recombine vectors of (possibly) reconnected and BV clusters
     clusters.clear();
     clusters.insert( clusters.end(), CRclusters.begin(), CRclusters.end() );
     clusters.insert( clusters.end(), BVclusters.begin(), BVclusters.end() );
-    
+
     // fission of heavy clusters
     // NB: during cluster fission, light hadrons might be produced straight away
     finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
@@ -235,13 +236,13 @@ handle(EventHandler & ch, const tPVector & tagged,
     // record
     if (!lightOK) {
       clusters = savedclusters;
-      for_each(clusters.begin(), 
-	       clusters.end(), 
+      for_each(clusters.begin(),
+	       clusters.end(),
 	       mem_fun(&Particle::undecay));
     }
-  } 
+  }
   if (!lightOK) {
-    throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
+    throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!",
 		    Exception::eventerror);
   }
 
@@ -262,7 +263,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 
   for(set<PPtr>::const_iterator it = allDecendants.begin();
       it != allDecendants.end(); ++it) {
-    // this is a workaround because the set sometimes 
+    // this is a workaround because the set sometimes
     // re-orders parents after their children
     if ((*it)->children().empty())
       pstep->addDecayProduct(*it);
@@ -285,7 +286,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 
 
 // Sets parent child relationship of all clusters with two components
-// Relationships for clusters with more than two components are set elsewhere in the Colour Reconnector 
+// Relationships for clusters with more than two components are set elsewhere in the Colour Reconnector
 void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) const {
   // erase existing information about the partons' children
   tPVector partons;
@@ -304,4 +305,3 @@ void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) c
     cl->antiColParticle()->addChild(cl);
   }
 }
-
