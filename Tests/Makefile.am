@@ -189,7 +189,14 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCat
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in)
 #                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) $(shell echo Rivet/SppS-{53,63}-UE.in )
 
+Rivet-LEP-Gamma: Rivet-LEP-Gamma/done
+	touch $@
 
+Rivet-LEP-Gamma/done: $(shell echo Rivet-LEP-Gamma-mumu-{161,172,183,189,196,206}.yoda )
+	rm -rf Rivet-LEP-Gamma
+	python/merge-LEP-Gamma LEP-Gamma
+	rivet-mkhtml -o Rivet-LEP-Gamma LEP-Gamma.yoda:Hw
+	touch $@
 
 Rivet-LEP : Rivet-LEP/done
 	touch $@

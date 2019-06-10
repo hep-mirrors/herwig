@@ -176,6 +176,7 @@ print name
 # select the template to load
 # collider
 KNOWN_COLLIDERS = [
+    "LEP-Gamma",
     "BFactory",
     "LEP",
     "DIS",
@@ -195,7 +196,6 @@ for cand_collider in KNOWN_COLLIDERS:
 del cand_collider
 assert collider
 have_hadronic_collider = collider in ["TVT","LHC","ISR","SppS","Star","EHS"]
-
 
 thefactory="Factory"
 
@@ -283,6 +283,9 @@ if simulation=="" :
         templateName="Hadron-Gamma.in"
     elif have_hadronic_collider :
         templateName="Hadron.in"
+    elif collider=="LEP-Gamma" :
+        istart+=1
+        templateName="LEP-Gamma.in"
     elif collider != "BFactory" :
         templateName= "%s.in" % collider
     else :
@@ -391,6 +394,23 @@ elif(collider=="LEP") :
           process+="read Matchbox/FourFlavourScheme.in"
         else :
           process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",2,2))
+# LEP-Gamma
+elif(collider=="LEP-Gamma") :
+    if(simulation=="") :
+        if("mumu" in parameterName) :
+            process = StringBuilder(insert_ME("MEgg2ff"))
+            process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
+            process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
+        elif( "tautau" in parameterName) :
+            process = StringBuilder(insert_ME("MEgg2ff"))
+            process +="set /Herwig/MatrixElements/MEgg2ff:Process Tau\n"
+            process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
+        else :
+            print "process not supported for Gamma Gamma processes at LEP"
+            quit()
+    else :
+        print "Only internal matrix elements currently supported for Gamma Gamma processes at LEP"
+        quit()
 # TVT
 elif(collider=="TVT") :
     process = StringBuilder("set /Herwig/Generators/EventGenerator:EventHandler:BeamB /Herwig/Particles/pbar-\n")
