@@ -176,6 +176,7 @@ print name
 # select the template to load
 # collider
 KNOWN_COLLIDERS = [
+    "GammaGamma",
     "LEP-Gamma",
     "BFactory",
     "LEP",
@@ -286,6 +287,11 @@ if simulation=="" :
     elif collider=="LEP-Gamma" :
         istart+=1
         templateName="LEP-Gamma.in"
+    elif collider=="LEP-Gamma" :
+        istart+=1
+        templateName="LEP-Gamma.in"
+    elif collider=="GammaGamma" :
+        templateName="GammaGamma.in"
     elif collider != "BFactory" :
         templateName= "%s.in" % collider
     else :
@@ -404,6 +410,18 @@ elif(collider=="LEP-Gamma") :
         elif( "tautau" in parameterName) :
             process = StringBuilder(insert_ME("MEgg2ff"))
             process +="set /Herwig/MatrixElements/MEgg2ff:Process Tau\n"
+            process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
+        else :
+            print "process not supported for Gamma Gamma processes at LEP"
+            quit()
+    else :
+        print "Only internal matrix elements currently supported for Gamma Gamma processes at LEP"
+        quit()
+elif(collider=="GammaGamma") :
+    if(simulation=="") :
+        if("mumu" in parameterName) :
+            process = StringBuilder(insert_ME("MEgg2ff"))
+            process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
         else :
             print "process not supported for Gamma Gamma processes at LEP"

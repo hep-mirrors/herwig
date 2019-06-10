@@ -1,0 +1,124 @@
+#! /usr/bin/env python
+import logging,sys
+import os, yoda, copy
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+
+#############################################
+
+def fillAbove(desthisto, sourcehistosbysqrts):
+    print "in fill above"
+    if type(desthisto) is yoda.core.Scatter2D :
+        for sqrts in sorted(sourcehistosbysqrts.keys()) :
+            h=sourcehistosbysqrts[sqrts]
+            for i in range(0,h.numPoints) :
+                if sqrts==h.points[i].x :
+                    desthisto.addPoint(h.points[i])
+
+    elif(type(desthisto)==yoda.core.Profile1D) :
+        for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
+            for i in range(0,h.numBins) :
+                if(sqrts>=h.bins[i].xMin and \
+                   sqrts<=h.bins[i].xMax) :
+                    desthisto.bins[i] += h.bins[i]
+                    break
+    else :
+        logging.error("Unknown analysis object" + desthisto.path)
+        sys.exit(1)
+
+def merge(hpath):
+    global inhistos
+    global outhistos
+    try:
+        fillAbove(outhistos[hpath], inhistos[hpath])
+    except:
+        pass
+
+def useOne(hpath, sqrts):
+    global inhistos
+    global outhistos
+    try:
+        outhistos[hpath] =  inhistos[hpath][float(sqrts)]
+    except:
+        pass
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+#######################################
+
+yodafiles=["-mumu-3.5","-mumu-4.5","-mumu-5.5","-mumu-6.5","-mumu-7.5","-mumu-9.0","-mumu-12.5","-mumu-17.5","-mumu-30.0"]
+
+# Get histos
+inhistos  = {}
+outhistos = {}
+for f in yodafiles:
+    file = "Rivet-%s%s.yoda" % (args[0], f)
+    sqrts=float(f.split("-")[-1].replace(".yoda",""))
+    if not os.access(file, os.R_OK):
+        logging.error("%s cannot be read" % file)
+        continue
+    try:
+        aos = yoda.read(file)
+    except:
+        logging.error("%s cannot be parsed as yoda" % file)
+        continue
+    ## Get histos from this YODA file
+    for aopath, ao in aos.iteritems() :
+        if("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath ) :continue
+        # merge of different energy values
+        if("L3_2004_I645127" in aopath) :
+            if not inhistos.has_key(aopath):
+                inhistos[aopath] = {}
+            if not inhistos[aopath].has_key(sqrts):
+                inhistos[aopath][sqrts] = ao
+            else:
+                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+        else :
+            outhistos[aopath] = ao
+## Make empty output histos if needed
+for hpath,hsets in inhistos.iteritems():
+    if("L3_2004_I645127" in hpath ) :
+        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
+                                                   hsets.values()[0].title)
+        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,
+                                                   hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
+                                        hsets.values()[0].bins[i].xMax)
+        elif(type(hsets.values()[0])==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].path,
+                                                hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
+                                        hsets.values()[0].bins[i].xMax)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            sys.exit(1)
+merge("/L3_2004_I645127:PROCESS=GG/d03-x01-y05")
+
+# Choose output file
+name = args[0]+".yoda"
+# output the yoda file
+print "Write yoda to ",name
+yoda.writeYODA(outhistos,name)
+sys.exit(0)
