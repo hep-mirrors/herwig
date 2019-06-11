@@ -2,9 +2,11 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 206.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 198.
 ##################################################
 # select the analyses 
 ##################################################
-# L3 mu+mu-
+# L3 jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I661114
+# OPAL jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2003_I611415
