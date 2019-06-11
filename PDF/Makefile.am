@@ -36,6 +36,12 @@ SatPDF.h SatPDF.cc
 
 HwSatPDF_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
 
+pkglib_LTLIBRARIES += HwPartonExtractor.la
+HwPartonExtractor_la_SOURCES = \
+MultiPartonExtractor.h MultiPartonExtractor.cc
+
+HwPartonExtractor_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
+
 pkglib_LTLIBRARIES += HwIncomingPhotonEvolver.la
 HwIncomingPhotonEvolver_la_SOURCES = \
 IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
