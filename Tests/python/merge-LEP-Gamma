@@ -66,6 +66,7 @@ if __name__ == "__main__":
 yodafiles=["-Direct-mumu-161","-Direct-mumu-172","-Direct-mumu-183",
            "-Direct-mumu-189","-Direct-mumu-196","-Direct-mumu-206",
            "-Direct-tautau-189","-Direct-tautau-196","-Direct-tautau-206",
+           "-Direct-Jets-198","-Single-Resolved-Jets-198","-Double-Resolved-Jets-198",
            "-Direct-Jets-206","-Single-Resolved-Jets-206","-Double-Resolved-Jets-206",]
 
 # Get histos

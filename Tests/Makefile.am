@@ -203,7 +203,7 @@ Rivet-LEP-Gamma: Rivet-LEP-Gamma/done
 
 Rivet-LEP-Gamma/done: $(shell echo Rivet-LEP-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
                       $(shell echo Rivet-LEP-Gamma-Direct-mumu-{189,196,206}.yoda ) \
-	              $(shell echo Rivet-LEP-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-206.yoda )
+	              $(shell echo Rivet-LEP-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
 	rm -rf Rivet-LEP-Gamma
 	python/merge-LEP-Gamma LEP-Gamma
 	rivet-mkhtml -o Rivet-LEP-Gamma LEP-Gamma.yoda:Hw
