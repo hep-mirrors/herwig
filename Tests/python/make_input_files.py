@@ -133,8 +133,8 @@ set /Herwig/Cuts/MassCut:MaxM {e3}*GeV
 def collider_lumi(energy):
     return "set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy {E}*GeV\n".format(E=energy)
 
-def insert_ME(me,process=None,ifname='Process'):
-    result = "insert /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
+def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
+    result = "insert /Herwig/MatrixElements/{subprocess}:MatrixElements 0 /Herwig/MatrixElements/{me}\n".format(**locals())
     if process is not None:
         result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
     return result
@@ -286,10 +286,15 @@ if simulation=="" :
         templateName="Hadron.in"
     elif collider=="LEP-Gamma" :
         istart+=1
-        templateName="LEP-Gamma.in"
-    elif collider=="LEP-Gamma" :
-        istart+=1
-        templateName="LEP-Gamma.in"
+        if("Direct" in name) :
+            templateName="LEP-Gamma-Direct.in"
+        elif("Single-Resolved" in name) :
+            templateName="LEP-Gamma-Single-Resolved.in"
+        elif("Double-Resolved" in name) :
+            templateName="LEP-Gamma-Double-Resolved.in"
+        else :
+            print "Unknown type of LEP-Gamma event ",name
+            quit()
     elif collider=="GammaGamma" :
         templateName="GammaGamma.in"
     elif collider != "BFactory" :
@@ -404,13 +409,21 @@ elif(collider=="LEP") :
 elif(collider=="LEP-Gamma") :
     if(simulation=="") :
         if("mumu" in parameterName) :
-            process = StringBuilder(insert_ME("MEgg2ff"))
-            process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
+            process = StringBuilder(insert_ME("MEgg2ff","Muon"))
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
         elif( "tautau" in parameterName) :
-            process = StringBuilder(insert_ME("MEgg2ff"))
-            process +="set /Herwig/MatrixElements/MEgg2ff:Process Tau\n"
+            process = StringBuilder(insert_ME("MEgg2ff","Tau"))
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
+        elif( "Jets" in parameterName) :
+            if("Direct" in parameterName ) :
+                process = StringBuilder(insert_ME("MEgg2ff","Quarks"))
+            elif("Single-Resolved" in parameterName ) :
+                process = StringBuilder(insert_ME("MEGammaP2Jets",None,"Process","SubProcess"))
+                process+= insert_ME("MEGammaP2Jets",None,"Process","SubProcess2")
+            else :
+                process = StringBuilder(insert_ME("MEQCD2to2"))
+            process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
+            process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
         else :
             print "process not supported for Gamma Gamma processes at LEP"
             quit()

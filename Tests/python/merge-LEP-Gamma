@@ -63,8 +63,10 @@ if __name__ == "__main__":
 
 #######################################
 
-yodafiles=["-mumu-161","-mumu-172","-mumu-183","-mumu-189","-mumu-196","-mumu-206",
-           "-tautau-189","-tautau-196","-tautau-206"]
+yodafiles=["-Direct-mumu-161","-Direct-mumu-172","-Direct-mumu-183",
+           "-Direct-mumu-189","-Direct-mumu-196","-Direct-mumu-206",
+           "-Direct-tautau-189","-Direct-tautau-196","-Direct-tautau-206",
+           "-Direct-Jets-206","-Single-Resolved-Jets-206","-Double-Resolved-Jets-206",]
 
 # Get histos
 inhistos  = {}
@@ -82,7 +84,7 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
-        if("RAW" in aopath) :continue
+        if("RAW" in aopath or "_XSEC" in aopath or "_EVTCOUNT" in aopath ) :continue
         # merge of different energy values
         if("L3_2004_I645127" in aopath) :
             if(("d01" in aopath and "mu" in file) or
@@ -94,7 +96,10 @@ for f in yodafiles:
                 else:
                     raise Exception("A set with sqrts = %s already exists" % ( sqrts))
         else :
-            outhistos[aopath] = ao
+            if(aopath in outhistos) :
+                outhistos[aopath] += ao
+            else :
+                outhistos[aopath] = ao
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
     if("L3_2004_I645127" in hpath ) :
