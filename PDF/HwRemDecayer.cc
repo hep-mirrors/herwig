@@ -582,12 +582,13 @@ void HwRemDecayer::setRemMasses() const {
   // one remnant in e.g. DIS
   if(!theprocessed[0]||!theprocessed[1]) {
     tRemPPtr rem = theprocessed[0] ? theprocessed[0] : theprocessed[1];
+    int remid = theprocessed[0] ? theContent.first.RemID() : theContent.second.RemID();
     Lorentz5Momentum deltap(rem->momentum());
     // find the diquark and momentum we still need in the energy
     tPPtr diquark;
     vector<PPtr> progenitors;
     for(unsigned int ix=0;ix<rem->children().size();++ix) {
-      if(!DiquarkMatcher::Check(rem->children()[ix]->data())) {
+      if(rem->children()[ix]->id()!=remid) {
 	progenitors.push_back(rem->children()[ix]);
 	deltap -= rem->children()[ix]->momentum();
       }

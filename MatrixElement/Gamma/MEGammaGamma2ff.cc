@@ -127,15 +127,15 @@ double MEGammaGamma2ff::helicityME(vector<VectorWaveFunction> &p1,
   meInfo(save);
   // colour factors if needed
   if(mePartonData()[2]->coloured()) output *= 3.;
-  // code to test vs the analytic result
-//   Energy2 m2 = sqr(f[0].particle()->mass());
-//   Energy2 tm = (p1[0].getMomentum()+f   [0].getMomentum()).m2()-m2;
-//   Energy2 um = (p1[0].getMomentum()+fbar[0].getMomentum()).m2()-m2;
-//   double test = 8.*um/tm+8.*tm/um- 32*m2/tm - 32*m2/um
-//     -32*sqr(double(m2/tm)) - 64*sqr(m2)/tm/um - 32*sqr(double(m2/um));
-//   test *= sqr(4.*Constants::pi*SM().alphaEM());
-//   if(mePartonData()[2]->coloured()) test *= 3.;
-//   cerr << "testing ME " << (output-test)/(output+test) << "\n"; 
+  // // code to test vs the analytic result
+  // Energy2 m2 = sqr(f[0].particle()->mass());
+  // Energy2 tm = (p1[0].momentum()+f   [0].momentum()).m2()-m2;
+  // Energy2 um = (p1[0].momentum()+fbar[0].momentum()).m2()-m2;
+  // double test = 8.*um/tm+8.*tm/um- 32*m2/tm - 32*m2/um
+  //   -32*sqr(double(m2/tm)) - 64*sqr(m2)/tm/um - 32*sqr(double(m2/um));
+  // test *= sqr(4.*Constants::pi*SM().alphaEM());
+  // if(mePartonData()[2]->coloured()) test *= 3.;
+  // cerr << "testing ME " << (output-test)/(output+test) << "\n"; 
   // spin factors
   return 0.25*output;
 }
