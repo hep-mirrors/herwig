@@ -2161,7 +2161,7 @@ newdef VectorVPff:OutgoingPseudoScalar  0  111
 newdef VectorVPff:OutgoingFermion  0  11
 newdef VectorVPff:OutgoingAntiFermion 0  -11
 newdef VectorVPff:Coupling   0  0.0002179
-newdef VectorVPff:MaxWeight  0  3.9008
+newdef VectorVPff:MaxWeight  0  3.90876
 newdef VectorVPff:Weight  0  0
 newdef VectorVPff:IncludeVMD 0  2
 newdef VectorVPff:VMDID      0  113
@@ -2172,7 +2172,7 @@ newdef VectorVPff:OutgoingPseudoScalar  1  111
 newdef VectorVPff:OutgoingFermion  1  13
 newdef VectorVPff:OutgoingAntiFermion 1  -13
 newdef VectorVPff:Coupling   1  0.0002179
-newdef VectorVPff:MaxWeight  1  2.70723
+newdef VectorVPff:MaxWeight  1  2.72283
 newdef VectorVPff:Weight  1  0
 newdef VectorVPff:IncludeVMD 1  2
 newdef VectorVPff:VMDID      1  113
@@ -2183,7 +2183,7 @@ newdef VectorVPff:OutgoingPseudoScalar  2  221
 newdef VectorVPff:OutgoingFermion  2  11
 newdef VectorVPff:OutgoingAntiFermion 2  -11
 newdef VectorVPff:Coupling   2  6.43e-05
-newdef VectorVPff:MaxWeight  2  3.6661
+newdef VectorVPff:MaxWeight  2  3.65751
 newdef VectorVPff:Weight  2  0
 newdef VectorVPff:IncludeVMD 2  2
 newdef VectorVPff:VMDID      2  113
@@ -2194,7 +2194,7 @@ newdef VectorVPff:OutgoingPseudoScalar  3  221
 newdef VectorVPff:OutgoingFermion  3  13
 newdef VectorVPff:OutgoingAntiFermion 3  -13
 newdef VectorVPff:Coupling   3  6.43e-05
-newdef VectorVPff:MaxWeight  3  2.70487
+newdef VectorVPff:MaxWeight  3  2.70372
 newdef VectorVPff:Weight  3  0
 newdef VectorVPff:IncludeVMD 3  2
 newdef VectorVPff:VMDID      3  113
@@ -2205,8 +2205,8 @@ newdef VectorVPff:OutgoingPseudoScalar  4  111
 newdef VectorVPff:OutgoingFermion  4  11
 newdef VectorVPff:OutgoingAntiFermion 4  -11
 newdef VectorVPff:Coupling   4  1.20094e-05
-newdef VectorVPff:MaxWeight  4  4.80884
-newdef VectorVPff:Weight  4  0.216528
+newdef VectorVPff:MaxWeight  4  4.80107
+newdef VectorVPff:Weight  4  0.218246
 newdef VectorVPff:IncludeVMD 4  2
 newdef VectorVPff:VMDID      4  113
 newdef VectorVPff:VMDmass    4  775.8
@@ -2216,12 +2216,34 @@ newdef VectorVPff:OutgoingPseudoScalar  5  111
 newdef VectorVPff:OutgoingFermion  5  13
 newdef VectorVPff:OutgoingAntiFermion 5  -13
 newdef VectorVPff:Coupling   5  1.20094e-05
-newdef VectorVPff:MaxWeight  5  3.10323
-newdef VectorVPff:Weight  5  0.330441
+newdef VectorVPff:MaxWeight  5  3.08487
+newdef VectorVPff:Weight  5  0.329988
 newdef VectorVPff:IncludeVMD 5  2
 newdef VectorVPff:VMDID      5  113
 newdef VectorVPff:VMDmass    5  775.8
 newdef VectorVPff:VMDwidth   5  150.3
+newdef VectorVPff:Incoming   6  443
+newdef VectorVPff:OutgoingPseudoScalar  6  221
+newdef VectorVPff:OutgoingFermion  6  11
+newdef VectorVPff:OutgoingAntiFermion 6  -11
+newdef VectorVPff:Coupling   6  6.43e-05
+newdef VectorVPff:MaxWeight  6  50.7503
+newdef VectorVPff:Weight  6  0
+newdef VectorVPff:IncludeVMD 6  2
+newdef VectorVPff:VMDID      6  113
+newdef VectorVPff:VMDmass    6  775.8
+newdef VectorVPff:VMDwidth   6  150.3
+newdef VectorVPff:Incoming   7  443
+newdef VectorVPff:OutgoingPseudoScalar  7  221
+newdef VectorVPff:OutgoingFermion  7  13
+newdef VectorVPff:OutgoingAntiFermion 7  -13
+newdef VectorVPff:Coupling   7  6.43e-05
+newdef VectorVPff:MaxWeight  7  8.46054
+newdef VectorVPff:Weight  7  0
+newdef VectorVPff:IncludeVMD 7  2
+newdef VectorVPff:VMDID      7  113
+newdef VectorVPff:VMDmass    7  775.8
+newdef VectorVPff:VMDwidth   7  150.3
 
 #
 create Herwig::VectorMeson3PionDecayer  Vector3Pion

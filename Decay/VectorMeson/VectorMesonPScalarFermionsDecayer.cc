@@ -43,9 +43,9 @@ void VectorMesonPScalarFermionsDecayer::doinitrun() {
 }
 
 VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() 
-  : _coupling(6), _incoming(6), _outgoingP(6), _outgoingf(6), _outgoinga(6), 
-    _maxweight(6), _weight(6), _includeVMD(6), _VMDid(6), _VMDmass(6), 
-    _VMDwidth(6) {
+  : _coupling(8), _incoming(8), _outgoingP(8), _outgoingf(8), _outgoinga(8), 
+    _maxweight(8), _weight(8), _includeVMD(8), _VMDid(8), _VMDmass(8), 
+    _VMDwidth(8) {
   // omega -> pi e+e- /mu+mu-
   _incoming[0] =  223; _outgoingP[0] =  111; 
   _outgoingf[0] = 11; _outgoinga[0] = -11; 
@@ -78,7 +78,18 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
   _outgoingf[5] = 13; _outgoinga[5] = -13; 
   _coupling[5] = 0.0120094/GeV; _maxweight[5] = 3.2; _weight[5] = 0.33; 
   _includeVMD[5] = 2; _VMDid[5] = 113; 
-  _VMDmass[5] = 0.7758*GeV; _VMDwidth[5] = 0.1503*GeV; 
+  _VMDmass[5] = 0.7758*GeV; _VMDwidth[5] = 0.1503*GeV;
+  // Jpsi -> eta e+e-
+  _incoming[6] =  443; _outgoingP[6] =  221; 
+  _outgoingf[6] = 11; _outgoinga[6] = -11; 
+  _coupling[6] = 0.0643/GeV; _maxweight[6] = 3.7; _weight[6] = 0.; 
+  _includeVMD[6] = 2; _VMDid[6] = 113; 
+  _VMDmass[6] = 0.7758*GeV; _VMDwidth[6] = 0.1503*GeV; 
+  _incoming[7] =  443; ;_outgoingP[7] =  221; 
+  _outgoingf[7] = 13; _outgoinga[7] = -13; 
+  _coupling[7] = 0.0643/GeV; _maxweight[7] = 2.8; _weight[7] = 0.; 
+  _includeVMD[7] = 2; _VMDid[7] = 113; 
+  _VMDmass[7] = 0.7758*GeV; _VMDwidth[7] = 0.1503*GeV; 
   // the initial size of the arrays
   _initsize=_coupling.size();
   // intermediates
@@ -126,7 +137,7 @@ void VectorMesonPScalarFermionsDecayer::doinit() {
 }
 
 int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const tPDVector & children) const {
+						  const tPDVector & children) const {
   int imode(-1);
   // must be three outgoing particles
   if(children.size()!=3){return imode;}

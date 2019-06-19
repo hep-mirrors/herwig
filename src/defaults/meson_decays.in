@@ -380,7 +380,8 @@ decaymode Jpsi->n0,nbar0,pi0; 0.00102 1 /Herwig/Decays/DecayME0
 decaymode Jpsi->n0,K-,Sigma*bar+; 0.00102 1 /Herwig/Decays/DecayME0
 decaymode Jpsi->p+,Kbar0,Sigma*bar-; 0.00102 1 /Herwig/Decays/DecayME0
 decaymode Jpsi->gamma,pi+,pi-,pi+,pi-; 0.001 1 /Herwig/Decays/Mambo
-decaymode Jpsi->gamma,eta; 0.00098 1 /Herwig/Decays/VectorVP
+decaymode Jpsi->gamma,eta; 0.0009657 1 /Herwig/Decays/VectorVP
+decaymode Jpsi->eta,e+,e-; 1.43e-5 1   /Herwig/Decays/VectorVPff
 decaymode Jpsi->gamma,f_2,f_2; 0.00095 1 /Herwig/Decays/DecayME0
 decaymode Jpsi->eta',n0,nbar0; 0.0009 1 /Herwig/Decays/DecayME0
 decaymode Jpsi->eta',p+,pbar-; 0.0009 1 /Herwig/Decays/DecayME0
