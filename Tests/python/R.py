@@ -84,6 +84,7 @@ analyses["GAMMAGAMMA_1975_I100016"] = ["d01-x01-y01","d01-x01-y02"]
 analyses["GAMMAGAMMA_1973_I84794"] = ["d03-x01-y01","d04-x01-y01"]
 analyses["GAMMAGAMMA_1981_I158474"] = ["d02-x01-y01","d02-x01-y02","d01-x01-y05","d01-x01-y06"]
 analyses["TASSO_1984_I195333"] = ["d01-x01-y01","d04-x01-y01"]
+analyses["PLUTO_1977_I110272"]=["d02-x01-y01"]
 # list analyses if needed
 if(opts.list) :
     print " ".join(analyses.keys())
