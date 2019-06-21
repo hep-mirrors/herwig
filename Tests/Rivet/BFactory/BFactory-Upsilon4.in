@@ -32,8 +32,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1641075
 # BES J/psi dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697377
-# KLOE phi pi0 dalitz
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416825
 # multiplicities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
 # MC analyses based on old internal ones

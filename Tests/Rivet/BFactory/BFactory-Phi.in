@@ -8,4 +8,15 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 1.019461
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+# phi -> eta pi0 gamma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE_2009_I818106
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SND_2000_I525398
+# phi -> pi0 pi0 gamma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE_2002_I585183
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SND_2000_I527094
+# KLOE phi -> pi0 dalitz
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416825
+# KLOE phi -> eta dalitz
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2014_I1317236
+# phi -> pi+pi-pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SND_2001_I558279
