@@ -28,8 +28,8 @@ for runType in ["NonPerturbative","Perturbative"]:
             for i in range(0,aos[hpath].numPoints) :
                 x = aos[hpath].points[i].x
                 delta=1e-5
-                if("KLOE_2009_I797438" in hpath or "KLOE_2005_I655225" in hpath or
-                   "FENICE_1994_I377833" in hpath):
+                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath):
                    x=math.sqrt(x)
                    delta=1e-3
                 if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
@@ -46,8 +46,8 @@ for runType in ["NonPerturbative","Perturbative"]:
             for i in range(0,aos[hpath].numPoints) :
                 xmin = aos[hpath].points[i].xMin
                 xmax = aos[hpath].points[i].xMax
-                if("KLOE_2009_I797438" in hpath or "KLOE_2005_I655225" in hpath or
-                   "FENICE_1994_I377833" in hpath) :
+                if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
+                   "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath) :
                    xmin=math.sqrt(xmin)
                    xmax=math.sqrt(xmax)
                 if((energy    > xmin and energy    < xmax) or

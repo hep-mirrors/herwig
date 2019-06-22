@@ -12,3 +12,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1998_S3612880
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1980_I154270
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I277658
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1982_I12010

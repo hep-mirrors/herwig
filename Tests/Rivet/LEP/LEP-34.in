@@ -1,0 +1,10 @@
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 34.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+# CELLO EEC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1982_I12010

@@ -24,6 +24,7 @@ analyses={ 'KK' : {} , 'pipi' : {}, 'ppbar' : {}, "3pi" : {}, "etapipi" : {},
 # pi+pi-
 analyses["pipi"]["KLOE_2009_I797438"]    = ["d02-x01-y01"]
 analyses["pipi"]["KLOE_2005_I655225"]    = ["d02-x01-y01"]
+analyses["pipi"]["KLOE2_2017_I1634981"]    = ["d01-x01-y01"]
 analyses["pipi"]["BABAR_2009_I829441"]   = ["d01-x01-y01"]
 analyses["pipi"]["DM1_1978_I134061"]     = ["d01-x01-y01"]
 analyses["pipi"]["DM2_1989_I267118"]     = ["d01-x01-y01"]
@@ -250,6 +251,11 @@ analyses["DD"]["CLEOC_2008_I777917"] = ["d01-x01-y01","d01-x01-y02","d01-x01-y03
                                         "d04-x01-y01","d04-x01-y02",
                                         "d05-x01-y01","d05-x01-y02"]
 analyses["DD"]["BELLE_2017_I1613517"]  = ["d01-x01-y01","d01-x01-y02"]
+analyses["DD"]["BESIII_2014_I1323621"]  = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2015_I1406939"]  = ["d02-x01-y06","d03-x01-y06"]
+analyses["DD"]["BESIII_2017_I1628093"]  = ["d01-x01-y01"]
+analyses["DD"]["BESIII_2019_I1723934"]  = ["d01-x01-y01"]
+
 # BB
 analyses["BB"]["BELLE_2016_I1389855"]  = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"]   = ["d01-x01-y01","d02-x01-y01",
@@ -313,6 +319,7 @@ for process in processes:
                 energy = point.x
                 if(analysis=="KLOE_2009_I797438" or
                    analysis=="KLOE_2005_I655225" or
+                   analysis=="KLOE2_2017_I1634981" or
                    analysis=="FENICE_1994_I377833") :
                     energy = math.sqrt(energy)
                 if(energy>200) :
