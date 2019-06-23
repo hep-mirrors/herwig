@@ -36,7 +36,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697377
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
 # BES multiplicty in eta_c decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
-# MC analyses based on old internal ones
+# eta -> pi+pi-pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
+# # MC analyses based on old internal ones
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
