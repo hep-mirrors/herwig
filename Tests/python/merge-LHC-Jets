@@ -249,7 +249,7 @@ for f in yodafiles:
            aopath.find("I1421646")>0 or aopath.find("I1111014")>0 or
            aopath.find("I1605749")>0 or aopath.find("I1682495")>0 or
            aopath.find("I1609253")>0 or aopath.find("1385107" )>0 or
-           aopath.find("I1486238" )>0 or 
+           aopath.find("I1486238")>0 or aopath.find("1634970" )>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -317,8 +317,10 @@ for i in range(1,8) :
     yodafiles.append("-7-DiJets-%1.1i-A.yoda" % i)
     yodafiles.append("-7-DiJets-%1.1i-B.yoda" % i)
     yodafiles.append("-7-DiJets-%1.1i-C.yoda" % i)
-for i in range(6,12) :
+for i in range(1,12) :
     yodafiles.append("-13-DiJets-%1.1i-A.yoda" % i)
+for i in range(6,12) :
+    yodafiles.append("-13-DiJets-%1.1i-B.yoda" % i)
 
 for f in yodafiles:
     file='Rivet-'+args[0]+f
@@ -367,15 +369,12 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         if("RAW" in aopath) :continue
-        if(aopath.find("8817804")>0 or
-           aopath.find("8968497")>0 or 
-           aopath.find("1082936")>0 or
-           aopath.find("I930220")>0 or
-           aopath.find("1261026")>0 or
-           aopath.find("1090423")>0 or
-           aopath.find("1268975")>0 or
-           aopath.find("1519995") >0 or
+        if(aopath.find("8817804")>0 or aopath.find("8968497")>0 or 
+           aopath.find("1082936")>0 or aopath.find("I930220")>0 or
+           aopath.find("1261026")>0 or aopath.find("1090423")>0 or
+           aopath.find("1268975")>0 or aopath.find("1519995") >0 or
            aopath.find("1663452") >0 or
+           aopath.find("1634970" )>0 or
            aopath.find("CMS_2013_I1208923")>0) :
            if not inhistos_mass.has_key(aopath):
                inhistos_mass[aopath] = {}
@@ -428,7 +427,8 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
         hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238") or
-        hpath.find("1459051")>0 ) :
+        hpath.find("1459051")>0 or
+        hpath.find("1634970")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)
@@ -453,7 +453,8 @@ for hpath,hsets in inhistos_pt.iteritems():
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_mass.iteritems():
-    if(hpath.find("1268975")>0) :
+    if(hpath.find("1268975")>0 or
+       hpath.find("1634970")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)
@@ -1567,7 +1568,7 @@ for i in range(1,9) :
     mergeByPt("/CMS_2015_I1385107/d%02d-x01-y01" % i, "2760")
 
 
-logging.info("Processing CMS_2018_I1663452)")
+logging.info("Processing CMS_2018_I1663452")
 useOneMass("/CMS_2018_I1663452/d01-x01-y01", "13000", "5900" )
 useOneMass("/CMS_2018_I1663452/d02-x01-y01", "13000", "4900" )
 useOneMass("/CMS_2018_I1663452/d03-x01-y01", "13000", "3900" )
@@ -1590,6 +1591,13 @@ for i in [1,5,9,10,12,13,14,16,17] :
 mergeByPt("/CMS_2016_I1486238/d11-x01-y01", "7000")
 mergeByPt("/CMS_2016_I1486238/d15-x01-y01", "7000")
 
+logging.info("Processing ATLAS_2018_I1634970")
+for i in range(1,7) :
+    mergeByPt("/ATLAS_2018_I1634970/d%02d-x01-y01"%i, "13000")
+for i in range(7,13) :
+    mergeByMass("/ATLAS_2018_I1634970/d%02d-x01-y01"%i, "13000", 1.)
+        
+        
 
 
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)

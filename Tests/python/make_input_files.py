@@ -815,6 +815,10 @@ elif(collider=="LHC") :
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  4.8\n"
             else :
                 if "-A" in parameterName :
+                    process+=jet_kt_cut(60.)
+                    process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
+                    process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
+                elif "-B" in parameterName :
                     process+=jet_kt_cut(180.)
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
@@ -1439,7 +1443,12 @@ elif(collider=="LHC") :
                     sys.exit(1)
             else :
                 if "-A" in parameterName :
-                    process+=addFirstJet("220")
+                    process+= addFirstJet("75.")
+                    process+=addSecondJet("60.")
+                    process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
+                    process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
+                elif "-B" in parameterName :
+                    process+= addFirstJet("220.")
                     process+=addSecondJet("180.")
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
