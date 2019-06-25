@@ -11,3 +11,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18502
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I250824
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1987_I235694
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MAC_1985_I202924
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1992_I339573

@@ -1,12 +1,10 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 43.6
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 59.5
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # select the analyses 
 ##################################################
-# tasso charged mult
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I277658
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
-
+# EEC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOPAZ_1989_I279575
