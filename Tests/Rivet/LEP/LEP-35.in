@@ -16,4 +16,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1983_I190818
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1990_I283026

@@ -54,6 +54,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
 # DELPHI strange baryon production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_S3137023
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2006_I719387
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I524694
 # DELPHI f_0, rho_0 and f_2 production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_S3960137
