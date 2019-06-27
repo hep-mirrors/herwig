@@ -17,3 +17,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1992_I339573
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I205869
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1986_I217416
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1990_I280958
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1988_I262143
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I201482
