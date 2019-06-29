@@ -111,7 +111,8 @@ for f in yodafiles:
         if("RAW" in aopath) :continue
         if(aopath.find("6265367")>0 or aopath.find("6895344")>0 or
            aopath.find("6181155")>0 or aopath.find("2789213")>0 or
-           aopath.find("2669951")>0 or aopath.find("278933")>0) :
+           aopath.find("2669951")>0 or aopath.find("278933" )>0 or
+           aopath.find("262551" )>0 ) :
            if not inhistos.has_key(aopath):
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
@@ -243,6 +244,12 @@ useOne("/ARGUS_1990_I278933/d05-x01-y01","9.46")
 useOne("/ARGUS_1990_I278933/d05-x01-y02","9.46")
 useOne("/ARGUS_1990_I278933/d06-x01-y01","U1")
 useOne("/ARGUS_1990_I278933/d06-x01-y02","U2")
+
+useOne("/ARGUS_1989_I262551/d01-x01-y01","10.00")
+useOne("/ARGUS_1989_I262551/d02-x01-y01","U1")
+useOne("/ARGUS_1989_I262551/d02-x01-y02","U2")
+useOne("/ARGUS_1989_I262551/d03-x01-y01","U1")
+useOne("/ARGUS_1989_I262551/d04-x01-y01","U2")
 
 # Choose output file
 name = args[0]+".yoda"

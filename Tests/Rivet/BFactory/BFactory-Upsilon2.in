@@ -13,3 +13,5 @@ set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/ME
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
+
