@@ -38,6 +38,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLIC
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
 # eta -> pi+pi-pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
+# kaons in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
 # # MC analyses based on old internal ones
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay
