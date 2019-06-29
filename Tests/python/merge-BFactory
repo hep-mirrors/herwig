@@ -20,6 +20,7 @@ def fillAbove(desthisto, sourcehistosbysqrts):
             sqrts2=10.58
         else :
             sqrts2=float(sqrts)
+            if("ARGUS_1989_I276860" in desthisto.path and sqrts2==10.00) : sqrts2=9.98
         for i in range(0,h.numPoints) :
             if(h.points[i].x-0.01<sqrts2 and
                h.points[i].x+0.01>sqrts2) :
@@ -112,6 +113,7 @@ for f in yodafiles:
         if(aopath.find("6265367")>0 or aopath.find("6895344")>0 or
            aopath.find("6181155")>0 or aopath.find("2789213")>0 or
            aopath.find("2669951")>0 or aopath.find("278933" )>0 or
+           aopath.find("276860" )>0 or
            aopath.find("262551" )>0 ) :
            if not inhistos.has_key(aopath):
                inhistos[aopath] = {}
@@ -137,7 +139,7 @@ for f in yodafiles:
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
-    if( hpath.find("2669951")>0) :
+    if( hpath.find("2669951")>0 or hpath.find("276860" )>0) :
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,hsets.values()[0].title)
         else :
@@ -251,6 +253,15 @@ useOne("/ARGUS_1989_I262551/d02-x01-y02","U2")
 useOne("/ARGUS_1989_I262551/d03-x01-y01","U1")
 useOne("/ARGUS_1989_I262551/d04-x01-y01","U2")
 
+merge("/ARGUS_1989_I276860/d01-x01-y01")
+merge("/ARGUS_1989_I276860/d01-x01-y02")
+merge("/ARGUS_1989_I276860/d02-x01-y01")
+merge("/ARGUS_1989_I276860/d03-x01-y01")
+merge("/ARGUS_1989_I276860/d04-x01-y01")
+merge("/ARGUS_1989_I276860/d04-x01-y02")
+for i in range(5,13) :
+    useOne("/ARGUS_1989_I276860/d%02d-x01-y01" %i,"U1")
+    useOne("/ARGUS_1989_I276860/d%02d-x01-y02" %i,"10.00")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file

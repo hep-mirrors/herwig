@@ -11,3 +11,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I268577
 # argus phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I276860
+
