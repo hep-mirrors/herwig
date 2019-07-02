@@ -177,6 +177,7 @@ vector<Energy> PhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
     if(onShell)
       mass[ix] = outgoing_[ix]->mass();
     else if(!massGen_[ix] || outgoing_[ix]->stable()) {
+      if(massGen_[ix]) rStack_.pop();
       mass[ix] = outgoing_[ix]->generateMass();
       mlow += mass[ix];
     }
