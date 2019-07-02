@@ -58,6 +58,18 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2006_I719387
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_I524694
 # DELPHI f_0, rho_0 and f_2 production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_S3960137
+# DELPHI K*0 and phi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_I420528
+# DELPHI f'_2 production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_I416741
+# DELPHI pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_I401100
+# DELPHI K- K*+/-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I377487
+# DELPHI K+/-, p pbar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I394052
+# DELPHI pi, K p, flavour seperated
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1998_I473409
 # OPAL strange baryon production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3396100
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I421977
@@ -83,6 +95,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1992_I336180
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683
 # ALEPH pi+-, K+- and (p, anti-p) 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1995_I382179
+# L3 eta' and omega specta
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1997_I427107
 ##################################################
 # unvalidated 
 ##################################################

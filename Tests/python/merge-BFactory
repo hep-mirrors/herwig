@@ -113,8 +113,8 @@ for f in yodafiles:
         if(aopath.find("6265367")>0 or aopath.find("6895344")>0 or
            aopath.find("6181155")>0 or aopath.find("2789213")>0 or
            aopath.find("2669951")>0 or aopath.find("278933" )>0 or
-           aopath.find("276860" )>0 or
-           aopath.find("262551" )>0 ) :
+           aopath.find("276860" )>0 or aopath.find("251097" )>0 or
+           aopath.find("262551" )>0 or aopath.find("262415" )>0 ) :
            if not inhistos.has_key(aopath):
                inhistos[aopath] = {}
            tmpE = inhistos[aopath]
@@ -262,6 +262,20 @@ merge("/ARGUS_1989_I276860/d04-x01-y02")
 for i in range(5,13) :
     useOne("/ARGUS_1989_I276860/d%02d-x01-y01" %i,"U1")
     useOne("/ARGUS_1989_I276860/d%02d-x01-y02" %i,"10.00")
+
+for i in range(1,8) :
+    useOne("/ARGUS_1988_I251097/d01-x01-y%02d" %i,"U1")
+    useOne("/ARGUS_1988_I251097/d02-x01-y%02d" %i,"10.00")
+useOne("/ARGUS_1988_I251097/d03-x01-y01","U1")
+useOne("/ARGUS_1988_I251097/d04-x01-y01","U2")
+useOne("/ARGUS_1988_I251097/d05-x01-y01","10.00")
+useOne("/ARGUS_1988_I251097/d06-x01-y01","10.00")
+useOne("/ARGUS_1988_I251097/d07-x01-y01","U1")
+useOne("/ARGUS_1988_I251097/d08-x01-y01","U2")
+useOne("/ARGUS_1988_I251097/d09-x01-y01","10.00")
+
+useOne("/ARGUS_1989_I262415/d03-x01-y01","U1")
+useOne("/ARGUS_1989_I262415/d04-x01-y01","10.00")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
