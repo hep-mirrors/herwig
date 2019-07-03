@@ -90,7 +90,7 @@ if __name__ == "__main__":
 yodafiles=["-130","-133","-136","-177","-192",
            "-196","-202","-205","-206","-207","-91" ,"-91-nopi" ,\
            "-161","-183","-197","-35" ,"-172",\
-           "-189","-200","-44","-14","-22","-10",\
+           "-189","-200","-44","-14","-22","-25","-10",\
            "-12.8","-26.8","-48.0","-93.0",\
            "-12","-13","-17","-27.6","-29","-30.2",\
            "-30.7","-30","-31.3","-34","-34.8","-43.6","-50","-52","-53.3",\
@@ -148,6 +148,7 @@ for f in yodafiles:
            aopath.find("276860" )>0 or aopath.find("251097" )>0 or
            aopath.find("262551" )>0 or aopath.find("262415" )>0 or
            aopath.find("165122" )>0 or aopath.find("118873" )>0 or
+           aopath.find("177174" )>0 or
            aopath.find("MULTIPLICITIES")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -1086,6 +1087,20 @@ useOne("/PLUTO_1981_I165122/d05-x01-y01","9.4")
 useOne("/PLUTO_1977_I118873/d02-x01-y01","3.63")
 useOne("/PLUTO_1977_I118873/d03-x01-y01","4.03")
 useOne("/PLUTO_1977_I118873/d04-x01-y01","4.5")
+
+
+useOne("/TASSO_1982_I177174/d01-x01-y01","14.")
+useOne("/TASSO_1982_I177174/d01-x01-y02","22.")
+useOne("/TASSO_1982_I177174/d01-x01-y03","34.")
+for i in range(2,4) :
+    useOne("/TASSO_1982_I177174/d0%s-x01-y01" %i ,"12.")
+    useOne("/TASSO_1982_I177174/d0%s-x01-y02" %i ,"14.")
+    useOne("/TASSO_1982_I177174/d0%s-x01-y03" %i ,"22.")
+    useOne("/TASSO_1982_I177174/d0%s-x01-y04" %i ,"25.")
+    useOne("/TASSO_1982_I177174/d0%s-x01-y05" %i ,"30.")
+    useOne("/TASSO_1982_I177174/d0%s-x01-y06" %i ,"34.")
+    useOne("/TASSO_1982_I177174/d0%s-x01-y07" %i ,"35.")
+
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file

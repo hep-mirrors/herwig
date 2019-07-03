@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
@@ -14,3 +15,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1983_I191415
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1984_I202784
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I168232
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I177174
+
