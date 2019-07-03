@@ -129,7 +129,7 @@ test-LHC-% : Inputs/LHC-%.in GammaTest.la $(HADLIBS)
 
 
 
-tests-Rivet : Rivet-LEP Rivet-BFactory Rivet-DIS Rivet-Star Rivet-SppS \
+tests-Rivet : Rivet-EE Rivet-DIS Rivet-Star Rivet-SppS \
 	      Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets \
 	      Rivet-LHC-Jets Rivet-LHC-EW Rivet-LHC-Photon Rivet-LHC-Higgs
 
@@ -148,11 +148,11 @@ Rivet/%.in :
 
 
 
-Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34,34.8,41,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,8510,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
-                  $(shell echo Rivet/LEP{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-14.in) \
-	          $(shell echo Rivet/LEP{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
-                  $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{9.46,10.00,10.52,10.52-sym,10.54,10.45,10.47}.in) \
-                  $(shell echo Rivet/BFactory{,-Dipole}-{Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res}.in) \
+Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34,34.8,41,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,8510,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
+                  $(shell echo Rivet/EE{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-14.in) \
+	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
+                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{9.46,10.00,10.52,10.52-sym,10.54,10.45,10.47}.in) \
+                  $(shell echo Rivet/EE{,-Dipole}-{Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
@@ -192,27 +192,36 @@ Rivet-GammaGamma/done: $(shell echo Rivet-GammaGamma-mumu-{3.5,4.5,5.5,6.5,7.5,9
 	rivet-mkhtml -o Rivet-GammaGamma GammaGamma.yoda:Hw
 	touch $@
 
-Rivet-LEP-Gamma: Rivet-LEP-Gamma/done
+Rivet-EE-Gamma: Rivet-EE-Gamma/done
 	touch $@
 
-Rivet-LEP-Gamma/done: $(shell echo Rivet-LEP-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
-                      $(shell echo Rivet-LEP-Gamma-Direct-tautau-{189,196,206}.yoda ) \
-	              $(shell echo Rivet-LEP-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
-	rm -rf Rivet-LEP-Gamma
-	python/merge-LEP-Gamma LEP-Gamma
-	rivet-mkhtml -o Rivet-LEP-Gamma LEP-Gamma.yoda:Hw
+Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
+                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
+	              $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
+	rm -rf Rivet-EE-Gamma
+	python/merge-EE-Gamma EE-Gamma
+	rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
 	touch $@
 
-Rivet-LEP : Rivet-LEP/done
+Rivet-EE : Rivet-EE/done
 	touch $@
 
-Rivet-LEP/done : $(shell echo Rivet{,-Powheg}-LEP-{9.4,12,13,14,17,27.6,29,30.2,30.7,30,31.3,34,34.8,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,10,12.8,22,26.8,35,41,44,48.0,82,85,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.yoda) \
-	   $(shell echo Rivet-LEP-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda)
-	rm -rf Rivet-LEP
-	python/merge-LEP --with-gg LEP
-	python/merge-LEP Powheg-LEP
-	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw Powheg-LEP.yoda:Hw-Powheg
+Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{9.4,12,13,14,17,27.6,29,30.2,30.7,30,31.3,34,34.8,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,10,12.8,22,26.8,35,41,44,48.0,82,85,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.yoda) \
+	   $(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
+	   $(shell echo Rivet-EE-{10.52,10.52-sym,9.46,10.00,10.54,10.45,10.47,Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res,10.58}.yoda)
+	rm -rf Rivet-EE
+	python/merge-EE --with-gg EE
+	python/merge-EE Powheg-EE
+	rivet-mkhtml -o Rivet-EE EE.yoda:Hw Powheg-EE.yoda:Hw-Powheg
 	touch $@
+
+
+# Rivet-BFactory/done: 
+# 	rm -rf Rivet-BFactory
+# 	python/merge-BFactory BFactory
+# 	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw
+# 	touch $@
+
 
 Rivet-LowEnergy-%.yoda:
 	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
@@ -229,14 +238,6 @@ Rivet-R:
 	rivet-mkhtml -o Rivet-R LowEnergy-EE-Perturbative-R.yoda:"Pert"
 #LowEnergy-EE-NonPerturbative-R.yoda:"Non-Pert" 
 
-Rivet-BFactory : Rivet-BFactory/done
-	touch $@
-
-Rivet-BFactory/done: $(shell echo Rivet-BFactory-{10.52,10.52-sym,9.46,10.00,10.54,10.45,10.47,Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res,10.58}.yoda)
-	rm -rf Rivet-BFactory
-	python/merge-BFactory BFactory
-	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw
-	touch $@
 
 
 

@@ -11,16 +11,7 @@ import os, yoda
 # #############################################
 
 def fillAbove(desthisto, sourcehistosbysqrts):
-    for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
-        if(sqrts=="U1") :
-            sqrts2=9.46
-        elif sqrts=="U2" :
-            sqrts2=10.02
-        elif sqrts=="U4" :
-            sqrts2=10.58
-        else :
-            sqrts2=float(sqrts)
-            if("ARGUS_1989_I276860" in desthisto.path and sqrts2==10.00) : sqrts2=9.98
+    for sqrts, h in sorted(sourcehistosbysqrts) :
         for i in range(0,h.numPoints) :
             if(h.points[i].x-0.01<sqrts2 and
                h.points[i].x+0.01>sqrts2) :
@@ -107,175 +98,23 @@ for f in yodafiles:
     except:
         logging.error("%s can not be parsed as yoda" % file)
         continue
-    ## Get histos from this YODA file
-    for aopath, ao in aos.iteritems() :
-        if("RAW" in aopath) :continue
-        if(aopath.find("6265367")>0 or aopath.find("6895344")>0 or
-           aopath.find("6181155")>0 or aopath.find("2789213")>0 or
-           aopath.find("2669951")>0 or aopath.find("278933" )>0 or
-           aopath.find("276860" )>0 or aopath.find("251097" )>0 or
-           aopath.find("262551" )>0 or aopath.find("262415" )>0 ) :
-           if not inhistos.has_key(aopath):
-               inhistos[aopath] = {}
-           tmpE = inhistos[aopath]
-           sqrttemp=sqrts
-           if(aopath.find("2669951")>0 and aopath.find("d01")>0 and 
-              sqrts==10.45) :
-               sqrts=9.9
+
+
+
+
+    
            
-           if not tmpE.has_key(sqrts):
-               tmpE[sqrts] = ao
-           else:
-               raise Exception("A set with sqrts = %s already exists" % ( sqrts))
-           sqrts=sqrttemp
+           
         else :
-            if("ARGUS_1992_I319102" in aopath) :
-                if("d02" in aopath and sqrts==10.47) :
-                    outhistos[aopath] = ao
-                elif("d03"in aopath and sqrts=="U4") :
-                    outhistos[aopath] = ao
-            else:
-                outhistos[aopath] = ao
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
-    if( hpath.find("2669951")>0 or hpath.find("276860" )>0) :
+    if() :
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,hsets.values()[0].title)
         else :
             outhistos[hpath] = hsets.values()[0]
 
-# BELLE
-useOne("/BELLE_2006_S6265367/d01-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y03","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y04","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y05","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y06","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y07","10.52")
-useOne("/BELLE_2006_S6265367/d01-x01-y08","10.52")
-useOne("/BELLE_2006_S6265367/d02-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d02-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d03-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d03-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d04-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d04-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d05-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d05-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d06-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d06-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d07-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d07-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d08-x01-y01","10.52")
-useOne("/BELLE_2006_S6265367/d08-x01-y02","10.52")
-useOne("/BELLE_2006_S6265367/d09-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d09-x01-y02","U4")
-useOne("/BELLE_2006_S6265367/d10-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d10-x01-y02","U4")
-useOne("/BELLE_2006_S6265367/d11-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d11-x01-y02","U4")
-useOne("/BELLE_2006_S6265367/d12-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d12-x01-y02","U4")
-useOne("/BELLE_2006_S6265367/d13-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d13-x01-y02","U4")
-useOne("/BELLE_2006_S6265367/d14-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d14-x01-y02","U4")
-useOne("/BELLE_2006_S6265367/d15-x01-y01","U4")
-useOne("/BELLE_2006_S6265367/d15-x01-y02","U4")
-# BABAR
-useOne("/BABAR_2007_S6895344/d01-x01-y01","10.54")
-useOne("/BABAR_2007_S6895344/d02-x01-y01","10.54")
-useOne("/BABAR_2007_S6895344/d03-x01-y01","10.58")
-useOne("/BABAR_2007_S6895344/d04-x01-y01","10.58")
-# BABAR
-useOne("/BABAR_2005_S6181155/d01-x01-y01","10.58")
-useOne("/BABAR_2005_S6181155/d02-x01-y01","10.58")
-useOne("/BABAR_2005_S6181155/d02-x01-y02","10.54")
-useOne("/BABAR_2005_S6181155/d03-x01-y01","10.54")
-useOne("/BABAR_2005_S6181155/d04-x01-y01","10.58")
-useOne("/BABAR_2005_S6181155/d05-x01-y01","10.58")
-useOne("/BABAR_2005_S6181155/d05-x01-y02","10.54")
-# ARGUS
-useOne("/ARGUS_1993_S2789213/d01-x01-y01","10.45")
-useOne("/ARGUS_1993_S2789213/d01-x01-y02","10.45")
-useOne("/ARGUS_1993_S2789213/d01-x01-y03","10.45")
-useOne("/ARGUS_1993_S2789213/d01-x01-y04","10.45")
-useOne("/ARGUS_1993_S2789213/d01-x01-y05","10.45")
-useOne("/ARGUS_1993_S2789213/d02-x01-y01", "U1")
-useOne("/ARGUS_1993_S2789213/d02-x01-y02", "U1")
-useOne("/ARGUS_1993_S2789213/d02-x01-y03", "U1")
-useOne("/ARGUS_1993_S2789213/d02-x01-y04", "U1")
-useOne("/ARGUS_1993_S2789213/d02-x01-y05", "U1")
-useOne("/ARGUS_1993_S2789213/d03-x01-y01","U4")
-useOne("/ARGUS_1993_S2789213/d03-x01-y02","U4")
-useOne("/ARGUS_1993_S2789213/d03-x01-y03","U4")
-useOne("/ARGUS_1993_S2789213/d03-x01-y04","U4")
-useOne("/ARGUS_1993_S2789213/d03-x01-y05","U4")
-useOne("/ARGUS_1993_S2789213/d04-x01-y01","10.45")
-useOne("/ARGUS_1993_S2789213/d05-x01-y01", "U1")
-useOne("/ARGUS_1993_S2789213/d06-x01-y01","U4")
-useOne("/ARGUS_1993_S2789213/d07-x01-y01","10.45")
-useOne("/ARGUS_1993_S2789213/d08-x01-y01", "U1")
-useOne("/ARGUS_1993_S2789213/d09-x01-y01","U4")
-useOne("/ARGUS_1993_S2789213/d10-x01-y01","10.45")
-useOne("/ARGUS_1993_S2789213/d11-x01-y01", "U1")
-useOne("/ARGUS_1993_S2789213/d12-x01-y01","U4")
-useOne("/ARGUS_1993_S2789213/d13-x01-y01","10.45")
-useOne("/ARGUS_1993_S2789213/d14-x01-y01", "U1")
-useOne("/ARGUS_1993_S2789213/d15-x01-y01","U4")
-
-if("/ARGUS_1993_S2669951/d04-x01-y01" in outhistos) :
-    useOne("/ARGUS_1993_S2669951/d02-x01-y01","10.45")
-    useOne("/ARGUS_1993_S2669951/d03-x01-y01","U1")
-    useOne("/ARGUS_1993_S2669951/d04-x01-y01","U2")
-    merge("/ARGUS_1993_S2669951/d01-x01-y01")
-    merge("/ARGUS_1993_S2669951/d01-x01-y02")
-    merge("/ARGUS_1993_S2669951/d05-x01-y01")
-
-useOne("/ARGUS_1990_I278933/d01-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d01-x01-y02","U1")
-useOne("/ARGUS_1990_I278933/d01-x01-y03","U2")
-useOne("/ARGUS_1990_I278933/d02-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d02-x01-y02","U1")
-useOne("/ARGUS_1990_I278933/d02-x01-y03","U2")
-useOne("/ARGUS_1990_I278933/d03-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d03-x01-y02","9.46")
-useOne("/ARGUS_1990_I278933/d04-x01-y01","U1")
-useOne("/ARGUS_1990_I278933/d04-x01-y02","U2")
-useOne("/ARGUS_1990_I278933/d05-x01-y01","9.46")
-useOne("/ARGUS_1990_I278933/d05-x01-y02","9.46")
-useOne("/ARGUS_1990_I278933/d06-x01-y01","U1")
-useOne("/ARGUS_1990_I278933/d06-x01-y02","U2")
-
-useOne("/ARGUS_1989_I262551/d01-x01-y01","10.00")
-useOne("/ARGUS_1989_I262551/d02-x01-y01","U1")
-useOne("/ARGUS_1989_I262551/d02-x01-y02","U2")
-useOne("/ARGUS_1989_I262551/d03-x01-y01","U1")
-useOne("/ARGUS_1989_I262551/d04-x01-y01","U2")
-
-merge("/ARGUS_1989_I276860/d01-x01-y01")
-merge("/ARGUS_1989_I276860/d01-x01-y02")
-merge("/ARGUS_1989_I276860/d02-x01-y01")
-merge("/ARGUS_1989_I276860/d03-x01-y01")
-merge("/ARGUS_1989_I276860/d04-x01-y01")
-merge("/ARGUS_1989_I276860/d04-x01-y02")
-for i in range(5,13) :
-    useOne("/ARGUS_1989_I276860/d%02d-x01-y01" %i,"U1")
-    useOne("/ARGUS_1989_I276860/d%02d-x01-y02" %i,"10.00")
-
-for i in range(1,8) :
-    useOne("/ARGUS_1988_I251097/d01-x01-y%02d" %i,"U1")
-    useOne("/ARGUS_1988_I251097/d02-x01-y%02d" %i,"10.00")
-useOne("/ARGUS_1988_I251097/d03-x01-y01","U1")
-useOne("/ARGUS_1988_I251097/d04-x01-y01","U2")
-useOne("/ARGUS_1988_I251097/d05-x01-y01","10.00")
-useOne("/ARGUS_1988_I251097/d06-x01-y01","10.00")
-useOne("/ARGUS_1988_I251097/d07-x01-y01","U1")
-useOne("/ARGUS_1988_I251097/d08-x01-y01","U2")
-useOne("/ARGUS_1988_I251097/d09-x01-y01","10.00")
-
-useOne("/ARGUS_1989_I262415/d03-x01-y01","U1")
-useOne("/ARGUS_1989_I262415/d04-x01-y01","10.00")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
