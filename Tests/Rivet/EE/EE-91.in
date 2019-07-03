@@ -68,6 +68,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_I401100
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I377487
 # DELPHI K+/-, p pbar
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I394052
+# DELPHI Delta++
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I399737
 # DELPHI pi, K p, flavour seperated
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1998_I473409
 # OPAL strange baryon production

@@ -101,7 +101,7 @@ if(opts.gg) :
                   "-35.44-gg","-97.0-gg","-11.96-gg","-13.96-gg",\
                   "-21.84-gg","-28.48-gg","-48.0-gg"]
     
-yodafiles += ["-9.46","-10.00","-10.52","-10.52-sym","-10.54",
+yodafiles += ["-3.63","-4.03","-4.5","-9.46","-10.00","-10.52","-10.52-sym","-10.54",
               "-10.58-res","-10.58","-Upsilon",
               "-Upsilon2","-Upsilon4","-10.45","-10.47","-Tau","-Phi"]
 ## Get histos
@@ -147,7 +147,7 @@ for f in yodafiles:
            aopath.find("2669951")>0 or aopath.find("278933" )>0 or
            aopath.find("276860" )>0 or aopath.find("251097" )>0 or
            aopath.find("262551" )>0 or aopath.find("262415" )>0 or
-           aopath.find("165122" )>0 or
+           aopath.find("165122" )>0 or aopath.find("118873" )>0 or
            aopath.find("MULTIPLICITIES")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -184,7 +184,8 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("4328825")>0 or hpath.find("5361494")>0 or
         hpath.find("190818" )>0 or hpath.find("154270" )>0 or
         hpath.find("277658" )>0 or hpath.find("2669951")>0 or
-        hpath.find("276860" )>0 or hpath.find("165122" )>0) :
+        hpath.find("276860" )>0 or hpath.find("165122" )>0 or
+        hpath.find("118873" )>0) :
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
@@ -1082,6 +1083,9 @@ merge("/PLUTO_1981_I165122/d02-x01-y01")
 useOne("/PLUTO_1981_I165122/d06-x01-y01","U1")
 useOne("/PLUTO_1981_I165122/d04-x01-y01","30.2")
 useOne("/PLUTO_1981_I165122/d05-x01-y01","9.4")
+useOne("/PLUTO_1977_I118873/d02-x01-y01","3.63")
+useOne("/PLUTO_1977_I118873/d03-x01-y01","4.03")
+useOne("/PLUTO_1977_I118873/d04-x01-y01","4.5")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
