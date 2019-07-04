@@ -23,9 +23,13 @@ def fillAbove(desthisto, sourcehistosbysqrts):
             else :
                 sqrts2=float(sqrts)
             if("ARGUS_1989_I276860" in desthisto.path and sqrts2==10.00) : sqrts2=9.98
+            step = 0.001
+            if("TASSO_1980_I143691" in desthisto.path) : step=0.3
             for i in range(0,h.numPoints) :
-                if(sqrts2>=h.points[i].xMin and \
-                   sqrts2<=h.points[i].xMax) :
+                xmin = min(h.points[i].xMin,h.points[i].x-step)
+                xmax = max(h.points[i].xMax,h.points[i].x+step)
+                if(sqrts2>=xmin and \
+                   sqrts2<=xmax) :
                     desthisto.addPoint(h.points[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
@@ -58,6 +62,13 @@ def useOne(hpath, sqrts):
         except:
             pass
 
+def average(hpath, sqrts1,sqrts2):
+    global inhistos
+    global outhistos
+    outhistos[hpath] = inhistos[hpath][float(sqrts1)]+inhistos[hpath][float(sqrts2)]
+    outhistos[hpath].path=hpath
+    outhistos[hpath].scaleW(0.5)
+        
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
@@ -94,7 +105,8 @@ yodafiles=["-130","-133","-136","-177","-192",
            "-12.8","-26.8","-48.0","-93.0",\
            "-12","-13","-17","-27.6","-29","-30.2",\
            "-30.7","-30","-31.3","-34","-34.8","-43.6","-50","-52","-53.3",\
-           "-55","-56","-57","-58","-59.5","-60.8","-60","-61.4","-9.4","-45","-66","-76","-41","-82","-85"]
+           "-55","-56","-57","-58","-59.5","-60.8","-60","-61.4","-7.7",
+           "-9.4","-45","-66","-76","-41","-82","-85"]
 # add gg if needed
 if(opts.gg) :
     yodafiles += ["-10.5-gg","-12.8-gg","-16.86-gg","-26.8-gg",\
@@ -139,9 +151,9 @@ for f in yodafiles:
         if(aopath.find("4300807")>0 or aopath.find("6132243")>0 or
            aopath.find("5765862")>0 or aopath.find("3612880")>0 or
            aopath.find("4328825")>0 or aopath.find("5361494")>0 or
-           aopath.find("2148048")>0 or aopath.find("295160")>0  or
-           aopath.find("190818" )>0 or aopath.find("154270")>0 or
-           aopath.find("277658" )>0 or
+           aopath.find("2148048")>0 or aopath.find("295160" )>0 or
+           aopath.find("190818" )>0 or aopath.find("154270" )>0 or
+           aopath.find("277658" )>0 or aopath.find("143691" )>0 or
            aopath.find("6265367")>0 or aopath.find("6895344")>0 or
            aopath.find("6181155")>0 or aopath.find("2789213")>0 or
            aopath.find("2669951")>0 or aopath.find("278933" )>0 or
@@ -186,7 +198,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("190818" )>0 or hpath.find("154270" )>0 or
         hpath.find("277658" )>0 or hpath.find("2669951")>0 or
         hpath.find("276860" )>0 or hpath.find("165122" )>0 or
-        hpath.find("118873" )>0) :
+        hpath.find("118873" )>0 or hpath.find("143691" )>0) :
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
@@ -1101,6 +1113,14 @@ for i in range(2,4) :
     useOne("/TASSO_1982_I177174/d0%s-x01-y06" %i ,"34.")
     useOne("/TASSO_1982_I177174/d0%s-x01-y07" %i ,"35.")
 
+merge("/TASSO_1980_I143691/d01-x01-y01")
+useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
+useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
+average("/TASSO_1980_I143691/d03-x01-y01","17.","22.")
+average("/TASSO_1980_I143691/d06-x01-y01","17.","22.")
+useOne("/TASSO_1980_I143691/d04-x01-y01","30.2")
+useOne("/TASSO_1980_I143691/d07-x01-y01","30.2")
+        
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
