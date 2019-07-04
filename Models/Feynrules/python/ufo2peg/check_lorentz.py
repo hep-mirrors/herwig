@@ -288,7 +288,8 @@ def processTensorCouplings(lorentztag,vertex,model,parmsubs,all_couplings,order)
     return (coup_left,coup_right,coup_norm)
 
 def extractStructures(L) :
-    structure1 = L.structure.split()
+    structure1 = L.structure.replace(")-P",") - P").replace(")+P",") + P")
+    structure1 = structure1.split()
     structures =[]
     sign=''
     for struct in structure1 :
