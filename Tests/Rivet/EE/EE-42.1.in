@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 42.1
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+# TASSO strange baryons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I266893

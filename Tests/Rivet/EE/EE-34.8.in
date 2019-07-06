@@ -12,3 +12,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1984_I202785
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1986_I230950
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1985_I215869
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I279165
+# TASSO strange baryons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I266893
