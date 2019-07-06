@@ -100,13 +100,13 @@ if __name__ == "__main__":
 
 yodafiles=["-130","-133","-136","-177","-192",
            "-196","-202","-205","-206","-207","-91" ,"-91-nopi" ,\
-           "-161","-183","-197","-35" ,"-172",\
-           "-189","-200","-44","-14","-22","-25","-10",\
+           "-161","-183","-197","-35" ,"-36.2","-172",\
+           "-189","-200","-44","-14","-14.8","-21.5","-22","-25","-10",\
            "-12.8","-26.8","-48.0","-93.0",\
-           "-12","-13","-17","-27.6","-29","-30.2",\
+           "-12","-13","-17","-27.6","-29","-30.2","-34.5",\
            "-30.7","-30","-31.3","-34","-34.8","-43.6","-50","-52","-53.3",\
            "-55","-56","-57","-58","-59.5","-60.8","-60","-61.4","-7.7",
-           "-9.4","-45","-66","-76","-41","-82","-85"]
+           "-9.4","-45","-66","-76","-41","-42.6","-82","-85"]
 # add gg if needed
 if(opts.gg) :
     yodafiles += ["-10.5-gg","-12.8-gg","-16.86-gg","-26.8-gg",\
@@ -160,7 +160,7 @@ for f in yodafiles:
            aopath.find("276860" )>0 or aopath.find("251097" )>0 or
            aopath.find("262551" )>0 or aopath.find("262415" )>0 or
            aopath.find("165122" )>0 or aopath.find("118873" )>0 or
-           aopath.find("177174" )>0 or
+           aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("MULTIPLICITIES")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -198,7 +198,8 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("190818" )>0 or hpath.find("154270" )>0 or
         hpath.find("277658" )>0 or hpath.find("2669951")>0 or
         hpath.find("276860" )>0 or hpath.find("165122" )>0 or
-        hpath.find("118873" )>0 or hpath.find("143691" )>0) :
+        hpath.find("118873" )>0 or hpath.find("143691" )>0 or
+        hpath.find("284251" )>0) :
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
@@ -1116,11 +1117,34 @@ for i in range(2,4) :
 merge("/TASSO_1980_I143691/d01-x01-y01")
 useOne("/TASSO_1980_I143691/d02-x01-y01","13.")
 useOne("/TASSO_1980_I143691/d05-x01-y01","13.")
-average("/TASSO_1980_I143691/d03-x01-y01","17.","22.")
-average("/TASSO_1980_I143691/d06-x01-y01","17.","22.")
+if("/TASSO_1980_I143691/d03-x01-y01" in inhistos) :
+    average("/TASSO_1980_I143691/d03-x01-y01","17.","22.")
+    average("/TASSO_1980_I143691/d06-x01-y01","17.","22.")
 useOne("/TASSO_1980_I143691/d04-x01-y01","30.2")
 useOne("/TASSO_1980_I143691/d07-x01-y01","30.2")
         
+useOne("/TASSO_1990_I284251/d01-x01-y01","42.6")
+useOne("/TASSO_1990_I284251/d01-x01-y02","35.")
+useOne("/TASSO_1990_I284251/d01-x01-y03","34.5")
+useOne("/TASSO_1990_I284251/d02-x01-y01","14.8")
+useOne("/TASSO_1990_I284251/d03-x01-y01","21.5")
+merge("/TASSO_1990_I284251/d04-x01-y01")
+useOne("/TASSO_1990_I284251/d05-x01-y01","42.6")
+useOne("/TASSO_1990_I284251/d05-x01-y02","42.6")
+useOne("/TASSO_1990_I284251/d05-x01-y03","35")
+useOne("/TASSO_1990_I284251/d05-x01-y04","35")
+useOne("/TASSO_1990_I284251/d06-x01-y01","14.8")
+useOne("/TASSO_1990_I284251/d06-x01-y02","14.8")
+useOne("/TASSO_1990_I284251/d07-x01-y01","21.5")
+useOne("/TASSO_1990_I284251/d07-x01-y02","21.5")
+useOne("/TASSO_1990_I284251/d08-x01-y01","42.6")
+useOne("/TASSO_1990_I284251/d08-x01-y02","35.")
+useOne("/TASSO_1990_I284251/d08-x01-y03","34.5")
+merge("/TASSO_1990_I284251/d09-x01-y01")
+useOne("/TASSO_1990_I284251/d10-x01-y01","35")
+useOne("/TASSO_1990_I284251/d10-x01-y02","35")
+
+
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file

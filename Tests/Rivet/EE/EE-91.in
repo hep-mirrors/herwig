@@ -99,6 +99,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1995_I382179
 # L3 eta' and omega specta
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1997_I427107
+# charged mult, different # of jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1992_I334948
+# charged mult, different rapidity regions
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1991_I324035
+# lambda, lambdabar correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I360638
 ##################################################
 # unvalidated 
 ##################################################
