@@ -444,8 +444,7 @@ private:
   	if(!multiPeriph_){
   		doSoftInteractions_old(N);} //outdated model for soft interactions
   	else{
-                //doSoftInteractions_multiPeriph(N); //old multiperipheral model
-                doSoftInteractions_multiPeriph_new(N); //new multiperipheral model
+                doSoftInteractions_multiPeriph(N); // Multiperipheral model
   	}
   }
   
@@ -455,17 +454,13 @@ private:
   void doSoftInteractions_old(unsigned int N);
   
   /**
-   * Create N soft gluon interactions - multiperhpheral kinematics
+   * Create N soft gluon interactions with multiperhpheral kinematics
    */
   void doSoftInteractions_multiPeriph(unsigned int N);
 
-
-  void doSoftInteractions_multiPeriph_new(unsigned int N);
-
-  void generateMomentumGluons(PPtr remnant1, PPtr remnant2,
-                                    vector<Lorentz5Momentum> &softGluons, Energy &energy,
-                                    const Lorentz5Momentum &cm)const;
-
+  /**
+   * Phase space generation for the ladder partons
+   */
   bool doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGluons, Energy energy, unsigned int &its)
     const;
 
