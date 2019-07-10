@@ -37,7 +37,7 @@ set /Herwig/Cuts/MinBiasCuts:X2Min 0.011
 
 
 # Needed to get the correct fraction of diffractive events
-set /Herwig/MatrixElements/MEMinBias:csNorm 4.5584
+set /Herwig/MatrixElements/MEMinBias:csNorm 0.01
 
 set /Herwig/MatrixElements/MEMinBias:Scale 2.0
 
