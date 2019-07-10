@@ -791,7 +791,7 @@ void ColourReconnector::Init() {
      1);
   static SwitchOption interfaceAlgorithmBaryonic
     (interfaceAlgorithm,
-     "BaryonicReco",
+     "Baryonic",
      "Baryonic cluster reconnection",
      2);
 

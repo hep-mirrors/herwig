@@ -72,6 +72,7 @@ public:
 		   ladderbFactor_(0.0),
 		   ladderPower_(-0.08),
 		   ladderNorm_(1.0),
+ 		   ladderMult_(1.0),
 		   gaussWidth_(0.1),
 		   valOfN_(0), 
 		   initTotRap_(0),
@@ -79,6 +80,9 @@ public:
 		   _forcedSplitScale(2.5*GeV),
 		   _range(1.1), _zbin(0.05),_ybin(0.),
 		   _nbinmax(100), DISRemnantOpt_(0),
+                   PtDistribution_(0),
+                   disrupt_(0),
+		   randomRemnantConnection_(0),
 		   pomeronStructure_(0), mg_(ZERO) {}
 
   /** @name Virtual functions required by the Decayer class. */
@@ -223,7 +227,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  HwRemDecayer & operator=(const HwRemDecayer &) = delete;
+  HwRemDecayer & operator=(const HwRemDecayer &);
 
 public:
   
@@ -438,9 +442,10 @@ private:
    */
   void doSoftInteractions(unsigned int N){
   	if(!multiPeriph_){
-  		doSoftInteractions_old(N);}
+  		doSoftInteractions_old(N);} //outdated model for soft interactions
   	else{
-  		doSoftInteractions_multiPeriph(N);
+                //doSoftInteractions_multiPeriph(N); //old multiperipheral model
+                doSoftInteractions_multiPeriph_new(N); //new multiperipheral model
   	}
   }
   
@@ -453,6 +458,84 @@ private:
    * Create N soft gluon interactions - multiperhpheral kinematics
    */
   void doSoftInteractions_multiPeriph(unsigned int N);
+
+
+  void doSoftInteractions_multiPeriph_new(unsigned int N);
+
+  void generateMomentumGluons(PPtr remnant1, PPtr remnant2,
+                                    vector<Lorentz5Momentum> &softGluons, Energy &energy,
+                                    const Lorentz5Momentum &cm)const;
+
+  bool doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGluons, Energy energy, unsigned int &its)
+    const;
+
+  /**
+   * This returns the rotation matrix needed to rotate p into the z axis
+   */
+  LorentzRotation rotate(const LorentzMomentum &p) const;
+
+   /**
+    * Methods to generate random distributions also all stolen form UA5Handler
+    **/
+
+  template <typename T>
+  inline T gaussDistribution(T mean, T stdev) const{
+    double x = rnd();
+    x = sqrt(-2.*log(x));
+    double y;
+    randAzm(x,x,y);
+    return mean + stdev*x;
+  }
+
+
+  /**
+   * This returns a random number with a flat distribution
+   * [-A,A] plus gaussian tail with stdev B 
+   * TODO: Should move this to Utilities
+   * @param A The width of the flat part
+   * @param B The standard deviation of the gaussian tail
+   * @return the randomly generated value
+   */
+  inline double randUng(double A, double B) const{
+    double prun;
+    if(A == 0.) prun = 0.;
+    else prun = 1./(1.+B*1.2533/A);
+    if(rnd() < prun) return 2.*(rnd()-0.5)*A;
+    else {
+      double temp = gaussDistribution(0.,B);
+      if(temp < 0) return temp - abs(A);
+      else return temp + abs(A);
+    }
+  }
+  template <typename T>
+  inline void randAzm(T pt, T &px, T &py) const{
+    double c,s,cs;
+    while(true) {
+      c = 2.*rnd()-1.;
+      s = 2.*rnd()-1.;
+      cs = c*c+s*s;
+      if(cs <= 1.&&cs!=0.) break;
+    }
+    T qt = pt/cs;
+    px = (c*c-s*s)*qt;
+    py = 2.*c*s*qt;
+  }
+
+  inline Energy randExt(Energy AM0,InvEnergy B) const{
+    double r = rnd();
+    // Starting value
+    Energy am = AM0-log(r)/B;
+    for(int i = 1; i<20; ++i) {
+      double a = exp(-B*(am-AM0))/(1.+B*AM0);
+      double f = (1.+B*am)*a-r;
+      InvEnergy df = -B*B*am*a;
+      Energy dam = -f/df;
+      am += dam;
+      if(am<AM0) am = AM0 + .001*MeV;
+      if(abs(dam) < .001*MeV) break;
+    }
+    return am;
+  }
 
   /**
    * Method to add a particle to the step
@@ -577,6 +660,7 @@ private:
    */
   double ladderNorm_;
 
+  double ladderMult_;
   /**
    * Variable to store the gaussian width of the 
    * fluctuation of the longitudinal momentum
@@ -646,6 +730,19 @@ private:
    */
   unsigned int DISRemnantOpt_;
 
+  /**
+   *  Option for the pT generation
+   */
+  unsigned int PtDistribution_;
+
+
+  /**
+   * Option for remnant connection
+   */
+  unsigned int disrupt_;
+
+
+  bool randomRemnantConnection_;
   /**
    *  Option for the treatment of the pomeron structure
    */
