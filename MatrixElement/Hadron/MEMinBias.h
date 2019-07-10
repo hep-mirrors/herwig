@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  MEMinBias() : csNorm_(1.) {}
+  MEMinBias() : csNorm_(1.), Scale_(2.) {}
 
 public:
 
@@ -176,6 +176,11 @@ private:
   *  Normalization of the min-bias cross section
   */
   double csNorm_;	
+
+  /**
+   * Scale for the Min Bias matrix element
+   */
+  double Scale_;
 
   /**
    * The assignment operator is private and must never be called.

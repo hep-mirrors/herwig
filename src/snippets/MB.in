@@ -31,11 +31,15 @@ insert QCDMinBias:MatrixElements[0] MEMinBias
 
 cd /Herwig/Generators
 # MinBias parameters used for the new kinematics of soft MPI
-set /Herwig/Cuts/MinBiasCuts:X1Min 0.11
-set /Herwig/Cuts/MinBiasCuts:X2Min 0.11
+set /Herwig/Cuts/MinBiasCuts:X1Min 0.011
+set /Herwig/Cuts/MinBiasCuts:X2Min 0.011
+
+
 
 # Needed to get the correct fraction of diffractive events
 set /Herwig/MatrixElements/MEMinBias:csNorm 4.5584
+
+set /Herwig/MatrixElements/MEMinBias:Scale 2.0
 
 set EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 

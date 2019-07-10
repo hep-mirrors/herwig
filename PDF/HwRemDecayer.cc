@@ -850,16 +850,8 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 
   Lorentz5Momentum ig1, ig2, cmf;
 
-//  cout << "the protons" <<endl;
-//  cout << P1/GeV <<endl;
-//  cout << P2/GeV <<endl;
-  
   ig1 = x_g1*P1;
   ig2 = x_g2*P2;
-
-cout << "g1 = " << ig1/GeV <<endl;
-cout << "g2 = " <<ig2/GeV <<endl;
-
 
   ig1.setMass(mp);
   ig2.setMass(mp);
@@ -887,7 +879,6 @@ cout << "g2 = " <<ig2/GeV <<endl;
   
   if(!multiPeriph_){
   	if(UseRandom::rndbool()){
-	//TODO:fix
     		pz = sqrt(pz2);
 
   	}else
@@ -948,7 +939,6 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
                       << Exception::runerror; 
 
 
-//cout << "Make " << N << "soft interactions" <<endl;
   Lorentz5Momentum g1, g2;
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   unsigned int tries(1), i(0);
@@ -970,8 +960,6 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
       continue;
     }
  
-//cout <<"g1: "<< g1/GeV<<endl;
-//cout <<"g2: "<< g2/GeV<<endl;
  
     PPair oldrems = softRems_;
     PPair gluons = make_pair(addParticle(softRems_.first, ParticleID::g, g1), 
@@ -987,34 +975,7 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
     ColinePtr cl1 = new_ptr(ColourLine());
     ColinePtr cl2 = new_ptr(ColourLine());
 
-
-//    int flow = UseRandom::rnd2(1,1);
-//    cout << "flow = " << flow <<endl;
-/*
-    flow=2;
-    switch (flow) {
-      case 0: 
-      oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
-      //connect the gluons to each other
-      cl1->addColoured(gluons.first);
-      cl1->addAntiColoured(gluons.second);
-      cl2->addColoured(gluons.second);
-      cl2->addAntiColoured(gluons.first);
-      break;
-
-      case 1:
-
-      //connect the remnants to the gluons
-      oldrems.first->colourLine(anti.first)->addColoured(gluons.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(gluons.second, anti.second);
-      //and the remaining colour line to the final remnant
-      cl1->addColoured(softRems_.first, anti.first);
-      cl1->addColoured(gluons.first, !anti.first);
-      cl2->addColoured(softRems_.second, anti.second);
-      cl2->addColoured(gluons.second, !anti.second);
-*/
-    //  case 2:
+   //  case 2:
 oldrems.first->colourLine(anti.first)
               ->addColoured(gluons.second,anti.second);
 cl2->addColoured(softRems_.first, anti.second);
@@ -1025,38 +986,11 @@ cl2->addColoured(softRems_.first, anti.second);
               ->addColoured(gluons.second,anti.second);
       oldrems.second->colourLine(anti.second)
               ->addColoured(gluons.first,anti.first);
-//      cl1->addColoured(softRems_.first,anti.first);
-//      cl1->addColoured(gluons.first,!anti.first);
-//      cl2->addColoured(softRems_.second, anti.second);
-//      cl2->addColoured(gluons.second, !anti.second);
 
       cl1->addColoured(softRems_.second, anti.first);
       cl1->addColoured(gluons.first, !anti.first);
       cl2->addColoured(softRems_.first, anti.second);
       cl2->addColoured(gluons.second, !anti.second);
-
-  //  }
-/*
-    if( UseRandom::rnd() < colourDisrupt_ ){//this is the member variable, i.e. SOFT colour disruption
-      //connect the remnants independent of the gluons
-      oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
-      //connect the gluons to each other
-      cl1->addColoured(gluons.first);
-      cl1->addAntiColoured(gluons.second);
-      cl2->addColoured(gluons.second);
-      cl2->addAntiColoured(gluons.first);	
-    }else{
-      //connect the remnants to the gluons
-      oldrems.first->colourLine(anti.first)->addColoured(gluons.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(gluons.second, anti.second);
-      //and the remaining colour line to the final remnant
-      cl1->addColoured(softRems_.first, anti.first);
-      cl1->addColoured(gluons.first, !anti.first);
-      cl2->addColoured(softRems_.second, anti.second);
-      cl2->addColoured(gluons.second, !anti.second);
-    }
-*/
     //reset counter
     tries = 1;
   }
@@ -1082,8 +1016,6 @@ double bisectReshuffling(const vector<PPtr>& particles,
 
     xi = (left+right)*pow(0.5,level+1.);
     check = 0.;
-//    vector<Lorentz5Momentum>::const_iterator p = momenta.begin();
-//    vector<Energy>::const_iterator  m = masses.begin();
     for (vector<PPtr>::const_iterator p = particles.begin(); p != particles.end(); ++p){
       check += sqrt(sqr(xi)*((*p)->momentum().vect().mag2())+sqr((*p)->mass()))/w;
     }
@@ -1105,7 +1037,6 @@ double bisectReshuffling(const vector<PPtr>& particles,
     }
 
   }
-//  cout << "scaling factor = " << xi <<endl;
   return xi;
 
 }
@@ -1201,7 +1132,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // Initialize partons in the ladder
   // The toy masses are needed for the correct calculation of the available energy
   Lorentz5Momentum sumMomenta;
-  for(unsigned int i = 0; i<N; i++) {
+  for(unsigned int i = 0; i<2*N; i++) {
       // choose constituents
       Energy newMass = ZERO;
       Energy toyMass;
@@ -1452,16 +1383,13 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
          // New remnant 1 with first quark in ladder
          ColinePtr cl1 = new_ptr(ColourLine());
          cl1->addColoured(softRems_.first,anti.first);
-         cout << partons[0]->id() <<endl;
          cl1->addColoured(partons[0]);     
          // Connect old rems to the first gluon
-         cout << partons[1]->id() <<endl;
          oldRems_.first->colourLine(anti.first)
               ->addAntiColoured(partons[1]);
 
          // Connect gluons with each other
          for (unsigned int i=1; i<partons.size()-2; i++){
-            cout << i << endl;
             ColinePtr cl = new_ptr(ColourLine());
             cl->addColoured(partons[i]);
             cl->addAntiColoured(partons[i+1]);
@@ -1660,11 +1588,9 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
   double eps = 1e-10/double(ncl);
   vector<double> xi(ncl);
   vector<Energy> tempEnergy(ncl);
-//  unsigned int its(0);
   Energy sum1(ZERO);
   double yy(0.);
   while(its < _maxtries) {
-  //  cout << "try nr: " << its << endl;
     ++its;
     Energy sumx = ZERO;
     Energy sumy = ZERO;
@@ -1675,21 +1601,19 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
     iterations++;
     Energy sumxIt = ZERO;
     Energy sumyIt = ZERO;
-  //  cout << "angle generation : " << iterations <<endl;
     bool success=false;
     Energy pTmax=ZERO;
     Energy firstPt=ZERO;
     for(unsigned int i = 0; i<ncl; ++i) {
-//      cout << i <<endl;
-      //To do: Different options for soft pt sampling
+      // Different options for soft pt sampling
       //1) pT1>pT2...pTN
       //2) pT1>pT2>..>pTN
       //3) flat
       //4) y dependent
+      //5) Frist then flat
       int triesPt=0;
       Energy pt;
       Energy ptTest;
-//      int pTgeneration=2;
       switch(PtDistribution_) {
         case 0: //default softPt()
            pt=softPt();
@@ -1698,11 +1622,9 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
            if(i==0){
              pt=softPt();
              pTmax=pt;
-  //           cout << "pTmax = " << pt/GeV <<endl;
            }else{
              do{
               pt=softPt();
-    //          cout << "soft pT = " << pt/GeV << endl;
              }while(pt>pTmax);
            }
            break;
@@ -1743,11 +1665,8 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
             
  
       }
-//      ofstream myfile3("softPt_in_Jadach.txt", ios::app );
-//      myfile3 << pt/GeV << endl;
-//      myfile3.close();
  
-      Energy2 ptp = pt*pt; //TODO: cannot be < ZERO (assert!)
+      Energy2 ptp = pt*pt;
       if(ptp <= ZERO) pt = - sqrt(-ptp);
       else pt = sqrt(ptp);
       // randomize azimuth
@@ -1758,7 +1677,6 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
        // set transverse momentum
        mom[i].setX(px);
        mom[i].setY(py);
-//       cout << "px = " <<px/GeV << "py = "<<py/GeV <<endl;
        sumxIt += px;
        sumyIt += py;
       }else{
@@ -1766,7 +1684,6 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
       // double factor;
       Energy pTdummy;
       pTdummy = sqrt(sumxIt*sumxIt+sumyIt*sumyIt);
-//      cout << "pt = " << pTdummy/GeV <<endl;
       if( pTdummy < ptmin_ ){
         px=-sumxIt;
         py=-sumyIt;
@@ -1783,22 +1700,18 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
       }
     }
    if(success){
-//     cout << "calculation of angle was successful" <<endl;
      break;
    }
    }
     sumx /= ncl;
     sumy /= ncl;
-  //  cout << sumy/GeV << " " <<sumx/GeV <<endl;
     // find the sum of the transverse mass
     Energy sumtm=ZERO;
     for(unsigned int ix = 0; ix<ncl; ++ix) {
-    //  cout <<"sum x = " << sumx/GeV << " sum y = "<< sumy/GeV <<endl;
       mom[ix].setX(mom[ix].x()-sumx);
       mom[ix].setY(mom[ix].y()-sumy);
       Energy2 pt2 = mom[ix].perp2();
       // Use the z component of the clusters momentum for temporary storage
-      //TODO: vector mit Ncl komponenten statt temporaory storage
       mom[ix].setZ(sqrt(pt2+mom[ix].mass2()));
       sumtm += mom[ix].z();
     }
@@ -1829,7 +1742,6 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
       double dd = (sum3*sum2 - sum1*sum4)/(sum1*sum2);
       double dyy = fy/dd;
       if(abs(dyy/yy) < eps) {
-//        cout <<"tries: "<< its <<endl;
         yy += dyy;
         suceeded=true;
         break;
@@ -1837,13 +1749,11 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
       yy += dyy;
     }
     if(suceeded){
- //      cout << "tries: " << its <<endl;
        break;
     }
     if(its > 100) eps *= 10.;
   }
   if(its==_maxtries){
-//    cout << "maxtries reached" <<endl;
     return false;
   }
 //    throw Exception() << "Can't generate soft underlying event in "
@@ -1856,9 +1766,6 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
     mom[i].setZ(0.5*tm*(1./E1-E1));
     mom[i].setE( 0.5*tm*(1./E1+E1));
     softGluons[i]=mom[i];
-    //ofstream myfile3("softPt_Jadach_2.txt", ios::app );
-    //myfile3 << mom[i].vect().perp()/GeV << endl;
-    //myfile3.close();
 
   }
   return true;
