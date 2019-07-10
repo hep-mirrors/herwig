@@ -99,7 +99,7 @@ void OmegaPionSNDCurrent::Init() {
     ("RhoWidths",
      "The widths of the rho mesons",
      &OmegaPionSNDCurrent::rhoWidths_, GeV, -1, 0.1491*GeV,
-     0.5*GeV, 10.0*GeV,
+     0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<OmegaPionSNDCurrent,double> interfaceAmplitudes
@@ -111,7 +111,7 @@ void OmegaPionSNDCurrent::Init() {
   static ParVector<OmegaPionSNDCurrent,double> interfacePhase
     ("Phase",
      "The phases for the different rho resonances in degrees",
-     &OmegaPionSNDCurrent::phase_, -1, 0., 0.0, 360.,
+     &OmegaPionSNDCurrent::phase_, -1, 0., -360., 360.,
      false, false, Interface::limited);
 
   static Parameter<OmegaPionSNDCurrent,double> interfacefRho
