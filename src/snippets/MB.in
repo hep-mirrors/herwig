@@ -35,6 +35,14 @@ set /Herwig/Cuts/MinBiasCuts:X1Min 0.011
 set /Herwig/Cuts/MinBiasCuts:X2Min 0.011
 
 
+#PDFs for MPI,Underlying Event, Min Bias
+# set the correct PDFs
+cd /Herwig/Partons
+set HardLOPDF:PDFName CT14lo
+set ShowerLOPDF:PDFName CT14lo
+set MPIPDF:PDFName CT14lo
+set RemnantPDF:PDFName CT14lo
+
 
 # Needed to get the correct fraction of diffractive events
 set /Herwig/MatrixElements/MEMinBias:csNorm 0.01
