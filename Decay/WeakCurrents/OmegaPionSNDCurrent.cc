@@ -31,7 +31,8 @@ OmegaPionSNDCurrent::OmegaPionSNDCurrent() {
   rhoWidths_ = {0.1491 *GeV,0.44 *GeV,0.25 *GeV};
   // coupling
   gRhoOmegaPi_   = 15.9/GeV;
-  fRho_        = 4.9583;
+  //fRho_        = 4.9583;
+  fRho_ = 5.06325//evaluated with alphaEM in considered energy range
 }
 
 IBPtr OmegaPionSNDCurrent::clone() const {
@@ -99,7 +100,7 @@ void OmegaPionSNDCurrent::Init() {
     ("RhoWidths",
      "The widths of the rho mesons",
      &OmegaPionSNDCurrent::rhoWidths_, GeV, -1, 0.1491*GeV,
-     0.5*GeV, 10.0*GeV,
+     0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<OmegaPionSNDCurrent,double> interfaceAmplitudes
@@ -111,7 +112,7 @@ void OmegaPionSNDCurrent::Init() {
   static ParVector<OmegaPionSNDCurrent,double> interfacePhase
     ("Phase",
      "The phases for the different rho resonances in degrees",
-     &OmegaPionSNDCurrent::phase_, -1, 0., 0.0, 360.,
+     &OmegaPionSNDCurrent::phase_, -1, 0., -360., 360.,
      false, false, Interface::limited);
 
   static Parameter<OmegaPionSNDCurrent,double> interfacefRho

@@ -87,7 +87,7 @@ void EtaPhiCurrent::Init() {
   static ParVector<EtaPhiCurrent,Energy> interfaceResonanceWidths
     ("ResonanceWidths",
      "The widths of the resonances for the form factor",
-     &EtaPhiCurrent::resWidths_, GeV, 1, 150*MeV, 0.5*GeV, 10.0*GeV,
+     &EtaPhiCurrent::resWidths_, GeV, 1, 150*MeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<EtaPhiCurrent,InvEnergy> interfaceAmplitude

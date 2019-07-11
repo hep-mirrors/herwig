@@ -110,7 +110,7 @@ void PionPhotonCurrent::Init() {
   static ParVector<PionPhotonCurrent,double> interfacePhase
     ("Phase",
      "The phases of the couplings in degrees",
-     &PionPhotonCurrent::phase_, 5, 0., 0.0, 360.0,
+     &PionPhotonCurrent::phase_, 5, 0., -360.0, 360.0,
      false, false, Interface::limited);
 
 }
