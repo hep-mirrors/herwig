@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
@@ -9,3 +10,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 7.0
 #  Validated
 ##################################################
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1981_I156315
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1983_I191161

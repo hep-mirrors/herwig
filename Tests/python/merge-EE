@@ -28,17 +28,22 @@ def fillAbove(desthisto, sourcehistosbysqrts):
             for i in range(0,h.numPoints) :
                 xmin = min(h.points[i].xMin,h.points[i].x-step)
                 xmax = max(h.points[i].xMax,h.points[i].x+step)
-                if(sqrts2>=xmin and \
-                   sqrts2<=xmax) :
+                if(sqrts2>=xmin and sqrts2<=xmax) :
                     desthisto.addPoint(h.points[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
         for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
+            step = 0.001
             for i in range(0,h.numBins) :
-                if(sqrts>=h.bins[i].xMin and \
-                   sqrts<=h.bins[i].xMax) :
-                    desthisto.bins[i] += h.bins[i]
-                    break
+                try :
+                    xmin = min(h.bins[i].xMin,h.bins[i].xMid-step)
+                    xmax = max(h.bins[i].xMax,h.bins[i].xMid+step)
+                    if(sqrts>=xmin and sqrts<=xmax) :
+                        desthisto.bins[i] += h.bins[i]
+                        break
+                except:
+                    print 'exception'
+                    quit()
     else :
         logging.error("Unknown analysis object" + desthisto.path)
         sys.exit(1)
@@ -161,6 +166,7 @@ for f in yodafiles:
            aopath.find("262551" )>0 or aopath.find("262415" )>0 or
            aopath.find("165122" )>0 or aopath.find("118873" )>0 or
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
+           aopath.find("191161" )>0 or
            aopath.find("MULTIPLICITIES")>0) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -199,7 +205,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("277658" )>0 or hpath.find("2669951")>0 or
         hpath.find("276860" )>0 or hpath.find("165122" )>0 or
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
-        hpath.find("284251" )>0) :
+        hpath.find("284251" )>0 or hpath.find("191161" )>0) :
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
@@ -959,7 +965,6 @@ useOne("/TASSO_1989_I277658/d05-x01-y02","22")
 useOne("/TASSO_1989_I277658/d05-x01-y03","34.8")
 useOne("/TASSO_1989_I277658/d05-x01-y04","43.6")
 
-
 # BELLE
 useOne("/BELLE_2006_S6265367/d01-x01-y01","10.52")
 useOne("/BELLE_2006_S6265367/d01-x01-y02","10.52")
@@ -1144,6 +1149,9 @@ merge("/TASSO_1990_I284251/d09-x01-y01")
 useOne("/TASSO_1990_I284251/d10-x01-y01","35")
 useOne("/TASSO_1990_I284251/d10-x01-y02","35")
 
+for id in range(1,3) :
+    for iy in range(1,5) :
+        merge("/PLUTO_1983_I191161/d0%s-x01-y0%s" % (id,iy))
 
 # Choose output file
 name = args[0]+".yoda"

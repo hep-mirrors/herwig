@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 erase /Herwig/EventHandlers/EventHandler:PostSubProcessHandlers 0
 create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 3.5*GeV
