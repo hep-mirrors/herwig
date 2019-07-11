@@ -182,6 +182,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Matchbox/External/OpenLoops/Makefile
 		MatrixElement/Matchbox/External/MadGraph/Makefile
 		MatrixElement/Matchbox/External/MadGraph/mg2herwig
+		MatrixElement/FxFx/Makefile
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
 		Shower/Makefile

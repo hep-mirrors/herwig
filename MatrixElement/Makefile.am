@@ -1,4 +1,4 @@
-SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox Reweighters
+SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox Reweighters FxFx
 
 noinst_LTLIBRARIES = libHwME.la 
 
