@@ -40,9 +40,7 @@ bool isMomLessThanEpsilon(Lorentz5Momentum p,Energy epsilon) {
 
 FxFxHandler::FxFxHandler()
   : ncy_(100),ncphi_(60),ihvy_(-999),nph_(-999),nh_(-999),
-    etclusmean_(20*GeV),rclus_(0.4),etaclmax_(5.0),rclusfactor_(1.5),
-    ihrd_(-999),njets_(-999),drjmin_(-999), highestMultiplicity_(false),
-    ycmax_(5.4),ycmin_(-5.4),jetAlgorithm_(1),vetoIsTurnedOff_(false),vetoSoftThanMatched_(false), etclusfixed_(true),epsetclus_(2.5*GeV), mergemode_(0), vetoHeavyQ_(true), hpdetect_(true), vetoHeavyFlavour_(false)
+    mergemode_(0), vetoHeavyQ_(true), vetoHeavyFlavour_(false), etclusmean_(20*GeV),  jetAlgorithm_(1),vetoIsTurnedOff_(false),vetoSoftThanMatched_(false),etclusfixed_(true),epsetclus_(2.5*GeV),rclus_(0.4),etaclmax_(5.0),rclusfactor_(1.5), hpdetect_(true), ihrd_(-999),njets_(-999),drjmin_(-999), highestMultiplicity_(false), ycmax_(5.4),ycmin_(-5.4)
   {}
 
 void FxFxHandler::doinitrun() {
@@ -419,9 +417,9 @@ bool FxFxHandler::showerHardProcessVeto() const {
     // but without the requirement of a minimal pT on the jets (or set it very small). 
     // By construction, for S-events you should find exactly npNLO jets, while for the H-events it is either npNLO or npNLO+1.
     // Cluster partonsToMatch_ into jets with FastJet.
-    getFastJetsToMatch(rclus_,0*GeV,etaclmax_);
+    getFastJetsToMatch(rclus_);
   
-    int me_njets_found(pjetME_.size());
+    //int me_njets_found(pjetME_.size());
   
     // cout << "number of ME jets found = " << me_njets_found << "partons to match: " << partonsToMatch_.size() << endl;
 
@@ -437,7 +435,7 @@ bool FxFxHandler::showerHardProcessVeto() const {
     // For those events, at the level of the matrix elements there can either be npNLO or npNLO+1 matrix-element jets, depending on S- or H-events and the kinematics of those partons.
     // Still only the shower jets need to be matched, so an event should not be rejected if a matrix-element jet cannot be matched.
     // For each parton, starting with the hardest one ...
-    for(unsigned int ixx=0; ixx<npNLO_; ixx++) {
+    for(int ixx=0; ixx<npNLO_; ixx++) {
       // ... loop over all jets not already matched.
       double DRmin(777e100);
       int    jetIndexForDRmin(-999);
@@ -524,7 +522,8 @@ bool FxFxHandler::showerHardProcessVeto() const {
   if(mergemode_ == 1 || mergemode_ == 2) {
     
     // determine whether event is of highest multiplicity or not
-    if(partonsToMatch_.size()==njets_) { highestMultiplicity_ = true; }
+    unsigned long int njets_long = njets_;
+    if(partonsToMatch_.size()==njets_long) { highestMultiplicity_ = true; }
 
     //  cout << "jet finding gives pjet_.size() = " << pjet_.size() << endl;
     // If there are less jets than partons then parton-jet matching is
@@ -771,7 +770,7 @@ void FxFxHandler::getFastJets(double rjet, Energy ejcut, double etajcut) const {
 }
 
 // Get FastJets from partonsToMatch_
-void FxFxHandler::getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) const {
+void FxFxHandler::getFastJetsToMatch(double rjet) const {
 
   vector<fastjet::PseudoJet> particlesToCluster;
   for(unsigned int ipar=0; ipar<partonsToMatch_.size(); ipar++) { 

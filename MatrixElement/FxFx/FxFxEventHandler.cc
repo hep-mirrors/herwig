@@ -186,7 +186,7 @@ void FxFxEventHandler::doinitrun() {
 
   //  XSecStat initxsecs;
   XSecStat* initxsecs = new XSecStat[weightnames.size()];
-  for(int ww = 0; ww < weightnames.size(); ww++){
+  for(size_t ww = 0; ww < weightnames.size(); ww++){
     initxsecs[ww].reset();
 
     //  optstats.insert(std::make_pair<string,XSecStat>(weightnames[ww], initxsecs[ww]));			 

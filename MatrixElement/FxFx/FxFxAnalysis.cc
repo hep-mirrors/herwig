@@ -29,7 +29,7 @@ using namespace ThePEG;
 
 FxFxAnalysis::FxFxAnalysis() 
   :  _remnantId(82), _format(1),_unitchoice(),
-     _geneventPrecision(16), debug(false), _rivet(), _nevent(0), useoptweights(false), normoptweights(false) {}
+     _geneventPrecision(16), debug(false),useoptweights(false), normoptweights(false), _rivet(), _nevent(0)  {}
 
 HepMC::GenEvent * FxFxAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, long no,
 					  Energy eUnit, Length lUnit, 
@@ -46,7 +46,7 @@ HepMC::GenEvent * FxFxAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, long 
   return ev;
 }
 
-HepMC::GenEvent * FxFxAnalysis::makeEventW(tEventPtr event, tSubProPtr sub, long no,
+HepMC::GenEvent * FxFxAnalysis::makeEventW(tEventPtr event, long no,
 					  Energy eUnit, Length lUnit, 
                                            CrossSection xsec, CrossSection xsecErr, double evoptweight, double centralweight) const {
 
@@ -162,7 +162,7 @@ void FxFxAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int sta
       /* cout << "xsec = " << xsec/picobarn << endl;
       cout << "OptWeights[rr].second = " << OptWeights[rr].second << endl;
       cout << "xsrr = " << xsrr << endl;*/
-      hepmcMULTIi = makeEventW(event,sub,_nevent,eUnit,lUnit,xsrr*picobarn,xsecErr,OptWeights[rr].second, CentralWeight);
+      hepmcMULTIi = makeEventW(event,_nevent,eUnit,lUnit,xsrr*picobarn,xsecErr,OptWeights[rr].second, CentralWeight);
       hepmcMULTI.push_back(hepmcMULTIi); 
     }
   }

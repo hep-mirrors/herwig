@@ -167,7 +167,7 @@ private:
   /**
    * Find jets using the FastJet package on particlesToCluster_.
    */
-  void getFastJetsToMatch(double rjet, Energy ejcut, double etajcut) const;
+  void getFastJetsToMatch(double rjet) const;
 
   /**
    * Deletes particles from partonsToMatch_ and particlesToCluster_
@@ -424,10 +424,55 @@ private:
    */
   mutable Energy etclus_;
 
+  
+
+  /*
+   * The merging mode (FxFx vs tree-level) used. 
+   */
+  int mergemode_;
+
+
+
+  /*
+   * Allows the vetoing on heavy quark decay products to be turned off. 
+   */
+  bool vetoHeavyQ_;
+
+  /* 
+   * Allows vetoing of heavy flavour 
+   */
+
+  bool vetoHeavyFlavour_;
+
+
   /*
    * Mean Jet ET cut to apply in jet clustering (in merging).
    */
   Energy etclusmean_;
+
+  
+  /*
+   * The jet algorithm used for parton-jet matching in the MLM procedure.
+   */
+  int jetAlgorithm_;
+   
+  /*
+   * Allows the vetoing to be turned off completely - just for convenience.
+   */
+  bool vetoIsTurnedOff_;
+
+      /* 
+   * Veto if there exist softer unmatched jets than matched
+   */
+
+  bool vetoSoftThanMatched_;
+
+    /*
+   * This flags whether the etclus_ (merging scale) should be fixed or variable according to a prob. distribution around the mean
+   */
+  bool etclusfixed_;
+
+
 
   /*
    * maximum deviation from mean Jet ET cut to apply in jet clustering (in merging).
@@ -483,55 +528,28 @@ private:
    */
   mutable bool highestMultiplicity_;
 
-  /*
-   * This flags whether the etclus_ (merging scale) should be fixed or variable according to a prob. distribution around the mean
-   */
-  bool etclusfixed_;
-
-  /*
+    /*
    * The forwards rapidity span of the calorimeter.
    */
   double ycmax_;
 
-  /*
+
+    /*
    * The backwards rapidity span of the calorimeter.
    */
   double ycmin_;
 
-  /*
-   * The jet algorithm used for parton-jet matching in the MLM procedure.
-   */
-  int jetAlgorithm_;
-
-  /*
-   * The merging mode (FxFx vs tree-level) used. 
-   */
-  int mergemode_;
-
-  /*
-   * Allows the vetoing to be turned off completely - just for convenience.
-   */
-  bool vetoIsTurnedOff_;
 
 
-  /*
-   * Allows the vetoing on heavy quark decay products to be turned off. 
-   */
-  bool vetoHeavyQ_;
 
-  /* 
-   * Allows vetoing of heavy flavour 
-   */
 
-  bool vetoHeavyFlavour_;
 
   
-  /* 
-   * Veto if there exist softer unmatched jets than matched
-   */
 
-  bool vetoSoftThanMatched_;
+
+
   
+
   /*
    * Cosine of phi values of calorimeter cell centres.
    * Goes phi~=0 to phi~=2*pi          (index = 0 ---> ncphi).

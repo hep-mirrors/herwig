@@ -60,7 +60,7 @@ public:
      /**
    * Produca a HepMC event for the given subprocess
    */
-  HepMC::GenEvent * makeEventW(tEventPtr event, tSubProPtr sub, long no,
+  HepMC::GenEvent * makeEventW(tEventPtr event, long no,
 					  Energy eUnit, Length lUnit, 
                                            CrossSection xsec, CrossSection xsecErr, double evoptweight, double centralweight) const;
 
