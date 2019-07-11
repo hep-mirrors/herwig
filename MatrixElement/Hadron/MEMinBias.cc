@@ -44,7 +44,7 @@ void MEMinBias::getDiagrams() const {
 }
 
 Energy2 MEMinBias::scale() const {
-  return sqr(10*GeV);
+  return sqr(Scale_);
 }
 
 int MEMinBias::nDim() const {
@@ -163,5 +163,12 @@ void MEMinBias::Init() {
      &MEMinBias::csNorm_, 
      1.0, 0.0, 100.0, 
      false, false, Interface::limited);
+  static Parameter<MEMinBias,Energy> interfaceScale
+    ("Scale",
+     "Scale for the Min Bias matrix element.",
+     &MEMinBias::Scale_,GeV,
+     1.0*GeV, 0.0*GeV, 100.0*GeV,
+     false, false, Interface::limited);
+
 }
 

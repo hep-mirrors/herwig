@@ -584,7 +584,7 @@ CrossSection MPIHandler::totalXSecExp() const {
     break;
     
   case 3://new DL extrapolation
-    return coef_new_hard * pow(energy/GeV, 2*pom_new_hard) + 
+    return 0.8*coef_new_hard * pow(energy/GeV, 2*pom_new_hard) + 
       coef_new_soft * pow(energy/GeV, 2*pom_new_soft);
     break;
     

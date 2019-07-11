@@ -628,12 +628,29 @@ double MatchboxMEBase::finalStateSymmetry() const {
 
 double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
-  // assume that we always have incoming
-  // spin-1/2 or massless spin-1 particles
-  double fac = 1./4.;
+  double fac = 1.;
 
-  if ( hasInitialAverage() )
-    fac = 1.;
+  if ( !hasInitialAverage() ) {
+    for ( size_t k = 0; k < 2; ++k ) {
+      // Spin 0 does not involve any additional factors
+      if ( mePartonData()[k]->iSpin() == PDT::Spin1Half )
+	fac *= 1./2.;
+      else if ( mePartonData()[k]->iSpin() == PDT::Spin1 &&
+		mePartonData()[k]->hardProcessMass() == ZERO )
+	fac *= 1./2.;
+      else if ( mePartonData()[k]->iSpin() == PDT::Spin1 &&
+		mePartonData()[k]->hardProcessMass() > ZERO )
+	fac *= 1./3.;
+      else if ( mePartonData()[k]->iSpin() == PDT::Spin3Half )
+	fac *= 1./4.;
+      else if ( mePartonData()[k]->iSpin() == PDT::Spin2 &&
+		mePartonData()[k]->hardProcessMass() == ZERO )
+	fac *= 1./2.;
+      else if ( mePartonData()[k]->iSpin() == PDT::Spin2 &&
+		mePartonData()[k]->hardProcessMass() > ZERO )
+	fac *= 1./5.;
+    }
+  }  
 
   double couplings = 1.0;
   if ( (orderInAlphaS() > 0 || addAlphaS != 0) && !hasRunningAlphaS() ) {
