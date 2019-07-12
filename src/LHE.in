@@ -78,14 +78,10 @@ set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random
 set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
-# fix issue before 7.0.5 (not needed after this)
-set /Herwig/Shower/GtoQQbarSplitFn:AngularOrdered Yes
-set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
 # with MC@NLO these parameters are required for consistency of the subtraction terms
 # suggested parameters (give worse physics results with POWHEG)
 #set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 #set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
-#set /Herwig/Shower/KinematicsReconstructor:FinalStateReconOption Default
 #set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
 #set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 ##################################################

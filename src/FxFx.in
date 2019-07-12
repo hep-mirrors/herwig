@@ -28,8 +28,9 @@ create Herwig::FxFxFileReader theLHReader
 cd /Herwig/Shower
 library HwFxFxHandler.so
 create Herwig::FxFxHandler FxFxHandler
-set /Herwig/Shower/FxFxHandler:ShowerModel /Herwig/Shower/ShowerModel
 set /Herwig/Shower/FxFxHandler:SplittingGenerator /Herwig/Shower/SplittingGenerator
+set /Herwig/Shower/FxFxHandler:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+set /Herwig/Shower/FxFxHandler:PartnerFinder /Herwig/Shower/PartnerFinder
 
 #############################################################
 # Create an LHAPDF (set up & assigned below) ...            #
@@ -68,14 +69,10 @@ set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random
 set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
-# fix issue before 7.0.5 (not needed after this)
-#set /Herwig/Shower/GtoQQbarSplitFn:AngularOrdered Yes
-#set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
 # with MC@NLO these parameters are required for consistency of the subtraction terms
 # suggested parameters
 set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
-set /Herwig/Shower/KinematicsReconstructor:FinalStateReconOption Default
 set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
 set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 
@@ -157,11 +154,8 @@ cd /Herwig/Generators
 #create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 #insert theGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_XS
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 1 ATLAS_2011_I928289_Z
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 2 ATLAS_2011_I945498 
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 3 ATLAS_2011_S9131140
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 4 ATLAS_2013_I1230812 
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 5 ATLAS_2014_I1315949
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 1 ATLAS_2017_I1514251
+
 
 cd /Herwig/Generators
 # Stuff for rivet:
@@ -171,11 +165,8 @@ cd /Herwig/Generators
 #set /Herwig/Analysis/FxFxAnalysis:NormOptWeights Yes # different normalization for weights
 #insert theGenerator:AnalysisHandlers 0 /Herwig/Analysis/FxFxAnalysis
 #insert /Herwig/Analysis/FxFxAnalysis:Analyses 0 MC_XS
-#insert /Herwig/Analysis/FxFxAnalysis:Analyses 1 MC_TTBAR
-#insert /Herwig/Analysis/FxFxAnalysis:Analyses 2 ATLAS_2014_I1304289
-#insert /Herwig/Analysis/FxFxAnalysis:Analyses 2 ATLAS_2013_I1243871
-#insert /Herwig/Analysis/FxFxAnalysis:Analyses 3 ATLAS_2014_I1304688
-#insert /Herwig/Analysis/FxFxAnalysis:Analyses 4 ATLAS_2015_I1345452
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 1 ATLAS_2017_I1514251
+
 
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
 #insert theGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
