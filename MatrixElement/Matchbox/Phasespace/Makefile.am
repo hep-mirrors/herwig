@@ -41,8 +41,7 @@ TreePhasespaceChannels.h \
 MatchboxReference.h \
 FlatInvertiblePhasespace.h \
 FlatInvertibleLabframePhasespace.h \
-PhasespaceCouplings.h \
-MamboPhasespace.h
+PhasespaceCouplings.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
