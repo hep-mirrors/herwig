@@ -12,21 +12,21 @@ cp EventGenerator theGenerator
 # Create a LH event handler (set up & assigned below) ...   #
 #############################################################
 cd /Herwig/EventHandlers
-library FxFx.so
+library HwFxFx.so
 create Herwig::FxFxEventHandler theLesHouchesHandler
 
 #############################################################
 # Create a LH reader (set up & assigned below) ...          #
 #############################################################
 cd /Herwig/EventHandlers
-library FxFx.so
+library HwFxFx.so
 create Herwig::FxFxFileReader theLHReader
 
 #############################################################
 # Create an FxFxHandler (set up & assigned below) ...     #
 #############################################################
 cd /Herwig/Shower
-library FxFxHandler.so
+library HwFxFxHandler.so
 create Herwig::FxFxHandler FxFxHandler
 set /Herwig/Shower/FxFxHandler:ShowerModel /Herwig/Shower/ShowerModel
 set /Herwig/Shower/FxFxHandler:SplittingGenerator /Herwig/Shower/SplittingGenerator
@@ -63,20 +63,7 @@ set theLesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 # to be used as a pT veto scale in the parton shower
 set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
 set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
-# Shower parameters
-# treatment of wide angle radiation
-set /Herwig/Shower/PartnerFinder:PartnerMethod Random
-set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
-# fix issue before 7.0.5 (not needed after this)
-#set /Herwig/Shower/GtoQQbarSplitFn:AngularOrdered Yes
-#set /Herwig/Shower/GammatoQQbarSplitFn:AngularOrdered Yes
-# with MC@NLO these parameters are required for consistency of the subtraction terms
-# suggested parameters
-#set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
-#set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
-#set /Herwig/Shower/KinematicsReconstructor:FinalStateReconOption Default
-#set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
-#set /Herwig/Shower/ShowerHandler:SpinCorrelations No
+
 ############################################################
 
 #############################################################
@@ -86,7 +73,7 @@ cd /Herwig/EventHandlers
 set theLHReader:WeightWarnings    false
 # Input event file name:
 # 10 k
-set theLHReader:FileName unweighted_events.lhe.gz
+set theLHReader:FileName NAME_OF_FILE #(the file can be compressed (gziped,bziped))
 set theLHReader:MomentumTreatment      RescaleEnergy
 set theLHReader:Cuts  /Herwig/Cuts/NoCuts
 
@@ -153,14 +140,14 @@ set FxFxHandler:RClusFactor 1.5
 ######################################################### 
 cd /Herwig/Generators
 # Stuff for rivet:
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert theGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_XS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 1 ATLAS_2011_I928289_Z
-insert /Herwig/Analysis/RivetAnalysis:Analyses 2 ATLAS_2011_I945498 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 3 ATLAS_2011_S9131140
-insert /Herwig/Analysis/RivetAnalysis:Analyses 4 ATLAS_2013_I1230812 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 5 ATLAS_2014_I1315949
+#create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+#insert theGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_XS
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 1 ATLAS_2011_I928289_Z
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 2 ATLAS_2011_I945498 
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 3 ATLAS_2011_S9131140
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 4 ATLAS_2013_I1230812 
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 5 ATLAS_2014_I1315949
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 1 MC_TTBAR
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 2 ATLAS_2014_I1304289
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 2 ATLAS_2013_I1243871
@@ -195,4 +182,4 @@ cd /Herwig/Generators
 ################ 
 cd /Herwig/Generators
 
-saverun HW7-Zjets-FxFx-Tree theGenerator
+saverun FxFx-Tree theGenerator
