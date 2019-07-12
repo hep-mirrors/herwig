@@ -69,5 +69,4 @@ TreePhasespaceChannels.cc \
 MatchboxReference.cc \
 FlatInvertiblePhasespace.cc \
 FlatInvertibleLabframePhasespace.cc \
-PhasespaceCouplings.cc \
-MamboPhasespace.cc
+PhasespaceCouplings.cc
