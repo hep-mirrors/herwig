@@ -648,7 +648,7 @@ struct ClassTraits<Herwig::FxFxHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "FxFxHandler.so"; }
+  static string library() { return "HwFxFxHandler.so"; }
 };
 
 /** @endcond */
