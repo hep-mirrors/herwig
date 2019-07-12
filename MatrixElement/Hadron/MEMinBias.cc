@@ -145,11 +145,11 @@ DescribeClass<MEMinBias,HwMEBase>
 describeHerwigMEMinBias("Herwig::MEMinBias", "HwMEHadron.so");
 
 void MEMinBias::persistentOutput(PersistentOStream & os) const {
-  os << csNorm_;
+  os << csNorm_ << ounit(Scale_,GeV);;
 }
 
 void MEMinBias::persistentInput(PersistentIStream & is, int) {
-  is >> csNorm_;
+  is >> csNorm_ >> iunit(Scale_,GeV);
 }
 
 void MEMinBias::Init() {
@@ -167,7 +167,7 @@ void MEMinBias::Init() {
     ("Scale",
      "Scale for the Min Bias matrix element.",
      &MEMinBias::Scale_,GeV,
-     1.0*GeV, 0.0*GeV, 100.0*GeV,
+     2.0*GeV, 0.0*GeV, 100.0*GeV,
      false, false, Interface::limited);
 
 }
