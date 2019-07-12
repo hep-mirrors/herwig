@@ -438,7 +438,7 @@ struct ClassTraits<FxFxEventHandler>
   /** Return the name of the shared library be loaded to get access to
    *  the FxFxEventHandler class and every other class it uses
    *  (except the base class). */
-  static string library() { return "FxFx.so"; }
+  static string library() { return "HwFxFx.so"; }
 };
 
 /** @endcond */
