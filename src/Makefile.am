@@ -70,8 +70,8 @@ TVT-TTBA.in \
 LHC-LH.in \
 LHC-LHTP.in \
 LHE.in \
-HW7-Zjets-FxFx-FxFx.in\
-HW7-Zjets-FxFx-Tree.in
+FxFx.in\
+FxFx-Tree.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
