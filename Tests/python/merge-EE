@@ -167,7 +167,7 @@ for f in yodafiles:
            aopath.find("165122" )>0 or aopath.find("118873" )>0 or
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or
-           aopath.find("MULTIPLICITIES")>0) :
+           (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
             tmpE = inhistos[aopath]
