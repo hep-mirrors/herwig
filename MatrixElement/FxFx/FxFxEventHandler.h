@@ -15,7 +15,6 @@
 #include "ThePEG/Handlers/EventHandler.h"
 #include "FxFxEventHandler.fh"
 #include "FxFxReader.fh"
-#include "FxFxAnalysis.h"
 #include "ThePEG/Utilities/CompSelector.h"
 #include "ThePEG/Utilities/XSecStat.h"
 
