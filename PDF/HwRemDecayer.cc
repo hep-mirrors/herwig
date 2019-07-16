@@ -1097,7 +1097,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     
   // Generate the poisson distribution with mean avgN
   N=UseRandom::rndPoisson(avgN);
-  
+
   valOfN_=N;
   if(N <= 1){
     continue;
@@ -1710,7 +1710,7 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
     // randomize the mom vector to get the first and the compensating parton 
     // at all possible positions:
     long (*p_irnd)(long) = UseRandom::irnd;
-    random_shuffle(mom.begin(),mom.end());
+    random_shuffle(mom.begin(),mom.end(),p_irnd);
 
 
     for(unsigned int i = 0; i<ncl; i++) xi[i] = randUng(0.6,1.0);

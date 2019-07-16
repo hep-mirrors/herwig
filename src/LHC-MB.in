@@ -56,7 +56,7 @@ set /Herwig/Partons/RemnantDecayer:ladderbFactor 1.0
 #ordered pTs
 set /Herwig/Partons/RemnantDecayer:PtDistribution 5
 #use random remnant connections
-set /Herwig/Partons/RemnantDecayer:RandomConnection Yes
+set /Herwig/Partons/RemnantDecayer:RandomConnection No
 
 # set the correct PDFs
 set /Herwig/Partons/HardLOPDF:PDFName CT14lo
