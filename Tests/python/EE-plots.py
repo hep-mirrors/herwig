@@ -112,7 +112,7 @@ analyses={ "HadronDecays"     : { },
                              "y12_jade" : {}, "y23_jade" : {}, "y34_jade" : {}, "y45_jade" : {}, "y56_jade" : {},
                              "HeavyJetMass" : {} , "JetMassDifference" : {} ,
                              "LightJetMass" : {}, "TotalJetMass" : {} , "EEC" : {}, "AEEC" : {} ,
-                             "P" : {}, "A" : {} , "BW" : {}, "BT" : {}, "BN" : {},
+                             "P" : {}, "A" : {} , "Qx" : {}, "Q21" : {}, "BW" : {}, "BT" : {}, "BN" : {},
                              "Bdiff" : {}, "C" : {},
                              "1jet_dur"  : {}, "2jet_dur"  : {}, "3jet_dur"  : {}, "4jet_dur"  : {}, "5jet_dur"  : {}, "6jet_dur"  : {},
                              "1jet_jade" : {}, "2jet_jade" : {}, "3jet_jade" : {}, "4jet_jade" : {}, "5jet_jade" : {}, "6jet_jade" : {},
@@ -570,14 +570,6 @@ analyses["Charged"]["ChargedAveragepT2inSphericity" ][55.2] = ["/AMY_1990_I28333
 analyses["Charged"]["ChargedAveragepT2outSphericity"][29.0] = ["/HRS_1985_I201482/d25-x01-y01"]
 analyses["Charged"]["ChargedAveragepT2outSphericity"][35.0] = ["/TASSO_1988_I263859/d05-x01-y01"]
 analyses["Charged"]["ChargedAveragepT2outSphericity"][55.2] = ["/AMY_1990_I283337/d09-x01-y01"]
-
-
-
-
-
-
-
-
 # identified particle (flavour sep)
 analyses["IdentifiedParticleFlavour"][111 ][5][91.2]=["/DELPHI_1996_I401100/d03-x01-y01","/SLD_2004_S5693039/d05-x01-y03"]
 analyses["IdentifiedParticleFlavour"][211 ][5][91.2]=["/DELPHI_1998_I473409/d26-x01-y01","/DELPHI_1998_I473409/d27-x01-y01",
@@ -1338,6 +1330,27 @@ analyses["EventShapes"]["Minor"][202.0] = ["/DELPHI_2003_I620250/d43-x01-y02"]
 analyses["EventShapes"]["Minor"][205.0] = ["/DELPHI_2003_I620250/d43-x01-y03"]
 analyses["EventShapes"]["Minor"][206.0] = ["/ALEPH_2004_S5765862/d109-x01-y01"]
 analyses["EventShapes"]["Minor"][207.0] = ["/DELPHI_2003_I620250/d43-x01-y04"]
+
+analyses["EventShapes"]["O"][45.0 ] = ["/DELPHI_2003_I620250/d06-x01-y01"]
+analyses["EventShapes"]["O"][55.2 ] = ["/AMY_1990_I283337/d15-x01-y01"]
+analyses["EventShapes"]["O"][66.0 ] = ["/DELPHI_2003_I620250/d06-x01-y02"]
+analyses["EventShapes"]["O"][76.0 ] = ["/DELPHI_2003_I620250/d06-x01-y03"]
+analyses["EventShapes"]["O"][91.2 ] = ["/ALEPH_2004_S5765862/d133-x01-y01","/DELPHI_1996_S3430090/d14-x01-y01",
+                                       "/ALEPH_1996_S3486095/d08-x01-y01","/OPAL_2004_S6132243/d11-x01-y01"]
+analyses["EventShapes"]["O"][133.0] = ["/ALEPH_2004_S5765862/d134-x01-y01","/OPAL_2004_S6132243/d11-x01-y02"]
+analyses["EventShapes"]["O"][161.0] = ["/ALEPH_2004_S5765862/d135-x01-y01"]
+analyses["EventShapes"]["O"][172.0] = ["/ALEPH_2004_S5765862/d136-x01-y01"]
+analyses["EventShapes"]["O"][177.0] = ["/OPAL_2004_S6132243/d11-x01-y03"]
+analyses["EventShapes"]["O"][183.0] = ["/DELPHI_2003_I620250/d44-x01-y01","/ALEPH_2004_S5765862/d137-x01-y01"]
+analyses["EventShapes"]["O"][189.0] = ["/DELPHI_2003_I620250/d44-x01-y02","/ALEPH_2004_S5765862/d138-x01-y01"]
+analyses["EventShapes"]["O"][192.0] = ["/DELPHI_2003_I620250/d44-x01-y03"]
+analyses["EventShapes"]["O"][196.0] = ["/DELPHI_2003_I620250/d44-x01-y04"]
+analyses["EventShapes"]["O"][197.0] = ["/OPAL_2004_S6132243/d11-x01-y04"]
+analyses["EventShapes"]["O"][200.0] = ["/DELPHI_2003_I620250/d45-x01-y01","/ALEPH_2004_S5765862/d139-x01-y01"]
+analyses["EventShapes"]["O"][202.0] = ["/DELPHI_2003_I620250/d45-x01-y02"]
+analyses["EventShapes"]["O"][205.0] = ["/DELPHI_2003_I620250/d45-x01-y03"]
+analyses["EventShapes"]["O"][206.0] = ["/ALEPH_2004_S5765862/d140-x01-y01"]
+analyses["EventShapes"]["O"][207.0] = ["/DELPHI_2003_I620250/d45-x01-y04"]
 # jet broadenings
 analyses["EventShapes"]["BW"][45.0 ] = ["/DELPHI_2003_I620250/d13-x01-y01"]
 analyses["EventShapes"]["BW"][66.0 ] = ["/DELPHI_2003_I620250/d13-x01-y02"]
@@ -1766,16 +1779,6 @@ analyses["EventShapes"]["S"][205.0] = ["/DELPHI_2003_I620250/d67-x01-y03"]
 analyses["EventShapes"]["S"][206.0] = ["/ALEPH_2004_S5765862/d148-x01-y01"]
 analyses["EventShapes"]["S"][207.0] = ["/DELPHI_2003_I620250/d67-x01-y04"]
 
-analyses["QED"] = ["/ALEPH_1996_S3196992/d03-x01-y01","/ALEPH_1996_S3196992/d04-x01-y01",
-                   "/ALEPH_1996_S3196992/d01-x01-y01","/ALEPH_1996_S3196992/d02-x01-y01",
-                   "/ALEPH_1996_S3196992/d05-x01-y01","/ALEPH_1996_S3196992/d06-x01-y01",
-                   "/ALEPH_1996_S3196992/d07-x01-y01","/ALEPH_1996_S3196992/d08-x01-y01",
-                   "/OPAL_1993_S2692198/d01-x01-y01","/OPAL_1993_S2692198/d02-x01-y01",
-                   "/OPAL_1993_S2692198/d03-x01-y01","/OPAL_1993_S2692198/d03-x01-y02",
-                   "/OPAL_1993_S2692198/d03-x01-y03","/OPAL_1993_S2692198/d03-x01-y04",
-                   "/OPAL_1993_S2692198/d04-x01-y01","/OPAL_1993_S2692198/d04-x01-y02",
-                   "/OPAL_1993_S2692198/d04-x01-y03","/OPAL_1993_S2692198/d04-x01-y04",]
-
 analyses["EventShapes"]["P"][45.0 ] = ["/DELPHI_2003_I620250/d05-x01-y01"]
 analyses["EventShapes"]["P"][66.0 ] = ["/DELPHI_2003_I620250/d05-x01-y02"]
 analyses["EventShapes"]["P"][76.0 ] = ["/DELPHI_2003_I620250/d05-x01-y03"]
@@ -1816,28 +1819,19 @@ analyses["EventShapes"]["A"][202.0] = ["/DELPHI_2003_I620250/d71-x01-y02"]
 analyses["EventShapes"]["A"][205.0] = ["/DELPHI_2003_I620250/d71-x01-y03"]
 analyses["EventShapes"]["A"][206.0] = ["/ALEPH_2004_S5765862/d125-x01-y01"]
 analyses["EventShapes"]["A"][207.0] = ["/DELPHI_2003_I620250/d71-x01-y04"]
+# other
+analyses["EventShapes"]["Qx" ][55.2] = ["/AMY_1990_I283337/d18-x01-y01"]
+analyses["EventShapes"]["Q21"][55.2] = ["/AMY_1990_I283337/d19-x01-y01"]
 
-analyses["EventShapes"]["O"][45.0 ] = ["/DELPHI_2003_I620250/d06-x01-y01"]
-analyses["EventShapes"]["O"][55.2 ] = ["/AMY_1990_I283337/d15-x01-y01"]
-analyses["EventShapes"]["O"][66.0 ] = ["/DELPHI_2003_I620250/d06-x01-y02"]
-analyses["EventShapes"]["O"][76.0 ] = ["/DELPHI_2003_I620250/d06-x01-y03"]
-analyses["EventShapes"]["O"][91.2 ] = ["/ALEPH_2004_S5765862/d133-x01-y01","/DELPHI_1996_S3430090/d14-x01-y01",
-                                       "/ALEPH_1996_S3486095/d08-x01-y01","/OPAL_2004_S6132243/d11-x01-y01"]
-analyses["EventShapes"]["O"][133.0] = ["/ALEPH_2004_S5765862/d134-x01-y01","/OPAL_2004_S6132243/d11-x01-y02"]
-analyses["EventShapes"]["O"][161.0] = ["/ALEPH_2004_S5765862/d135-x01-y01"]
-analyses["EventShapes"]["O"][172.0] = ["/ALEPH_2004_S5765862/d136-x01-y01"]
-analyses["EventShapes"]["O"][177.0] = ["/OPAL_2004_S6132243/d11-x01-y03"]
-analyses["EventShapes"]["O"][183.0] = ["/DELPHI_2003_I620250/d44-x01-y01","/ALEPH_2004_S5765862/d137-x01-y01"]
-analyses["EventShapes"]["O"][189.0] = ["/DELPHI_2003_I620250/d44-x01-y02","/ALEPH_2004_S5765862/d138-x01-y01"]
-analyses["EventShapes"]["O"][192.0] = ["/DELPHI_2003_I620250/d44-x01-y03"]
-analyses["EventShapes"]["O"][196.0] = ["/DELPHI_2003_I620250/d44-x01-y04"]
-analyses["EventShapes"]["O"][197.0] = ["/OPAL_2004_S6132243/d11-x01-y04"]
-analyses["EventShapes"]["O"][200.0] = ["/DELPHI_2003_I620250/d45-x01-y01","/ALEPH_2004_S5765862/d139-x01-y01"]
-analyses["EventShapes"]["O"][202.0] = ["/DELPHI_2003_I620250/d45-x01-y02"]
-analyses["EventShapes"]["O"][205.0] = ["/DELPHI_2003_I620250/d45-x01-y03"]
-analyses["EventShapes"]["O"][206.0] = ["/ALEPH_2004_S5765862/d140-x01-y01"]
-analyses["EventShapes"]["O"][207.0] = ["/DELPHI_2003_I620250/d45-x01-y04"]
-
+analyses["QED"] = ["/ALEPH_1996_S3196992/d03-x01-y01","/ALEPH_1996_S3196992/d04-x01-y01",
+                   "/ALEPH_1996_S3196992/d01-x01-y01","/ALEPH_1996_S3196992/d02-x01-y01",
+                   "/ALEPH_1996_S3196992/d05-x01-y01","/ALEPH_1996_S3196992/d06-x01-y01",
+                   "/ALEPH_1996_S3196992/d07-x01-y01","/ALEPH_1996_S3196992/d08-x01-y01",
+                   "/OPAL_1993_S2692198/d01-x01-y01","/OPAL_1993_S2692198/d02-x01-y01",
+                   "/OPAL_1993_S2692198/d03-x01-y01","/OPAL_1993_S2692198/d03-x01-y02",
+                   "/OPAL_1993_S2692198/d03-x01-y03","/OPAL_1993_S2692198/d03-x01-y04",
+                   "/OPAL_1993_S2692198/d04-x01-y01","/OPAL_1993_S2692198/d04-x01-y02",
+                   "/OPAL_1993_S2692198/d04-x01-y03","/OPAL_1993_S2692198/d04-x01-y04",]
 analyses["TauDecays"]["KK"   ] = ["/BABAR_2018_I1679886/d01-x01-y01","/MC_TAU_Decay/h_2B_m2KK","/MC_TAU_Decay/h_2B_mKK"]
 analyses["TauDecays"]["Kpi"  ] = ["/BELLE_2007_I753243/d01-x01-y01","/MC_TAU_Decay/h_2B_m2KpiA","/MC_TAU_Decay/h_2B_m2KpiB",
                                   "/MC_TAU_Decay/h_2B_mKpiA","/MC_TAU_Decay/h_2B_mKpiB"]
@@ -2576,7 +2570,7 @@ def writeFlavour() :
     flavour.write("</body>\n</html>")
     flavour.close()
     
-def writeCharged() :
+def writeCharged(index) :
     # headers
     charged=open(os.path.join(directory,"charged.html"),'w')
     charged.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data on Charged Particles"))
@@ -2718,8 +2712,6 @@ def writeJets(index) :
             jets .write(lFormat.format(hlevel="h4",tag   ="y%s_jade" % yval,name  ="$y_{%s}$ (JADE)" % yval))
             writePlots(analyses["EventShapes"]["y%s_jade" % yval],jets)
             jets.write("</div>\n")
-
-
         jets.write("</div>\n")
     # footer
     index.write(" </ul>\n")
@@ -2727,111 +2719,127 @@ def writeJets(index) :
     jets.write("</body>\n</html>")
     jets.close()
 
-def writeEventShapes() :
+def writeEventShapes(index) :
+    lFormat="""<div style=\"float:none; overflow:auto; width:100%\">\n<{hlevel} id=\"{tag}\">{name}</{hlevel}>\n"""
+    index.write("<ul>\n")
+    index.write("<li> <a href=\"event.html\">Event Shapes</a>\n")
+    index.write("<ul>\n")
     event=open(os.path.join(directory,"event.html"),'w')
     event.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Event Shape Data"))
     # thrust and related
     event.write("<h2 id=\"THRUST\">Thrust and Related Variables</h2>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"thrust\">Thrust</h3>\n")
-    writePlots(analyses["EventShapes"]["T"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"major\">Thrust Major</h3>\n")
-    writePlots(analyses["EventShapes"]["Major"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"minor\">Thrust Minor</h3>\n")
-    writePlots(analyses["EventShapes"]["Minor"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"oblateness\">Oblateness</h3>\n")
-    writePlots(analyses["EventShapes"]["O"],event)
-    event.write("</div>\n")
+    index.write("<li> <a href=\"event.html#THRUST\">Thrust related:</a> \n")
+    for obs in ["T","Major","Minor","O"]:
+        title=obs
+        if(title=="T") : title="Thrust"
+        elif(title=="O") : title="Oblateness"
+        event.write(lFormat.format(hlevel="h3",tag=obs,name=title))
+        index.write(" <a href=\"event.html#%s\">%s,<a/>\n" %(obs,title))
+        writePlots(analyses["EventShapes"][obs],event)
+        event.write("</div>\n")
     # sphericity and related
+    index.write("<li> <a href=\"event.html#SPHERICITY\">Sphericity related:</a> \n")
     event.write("<h2 id=\"SPHERICITY\">Sphericity and Related Variables</h2>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"sphericity\">Sphericity</h3>\n")
-    writePlots(analyses["EventShapes"]["S"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"planarity\">Planarity</h3>\n")
-    writePlots(analyses["EventShapes"]["P"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"aplanarity\">Aplanarity</h3>\n")
-    writePlots(analyses["EventShapes"]["A"],event)
-    event.write("</div>\n")
+    for obs in ["S","P","A","Qx","Q21"]:
+        if   obs == "S"  : title="Sphericity"
+        elif obs == "P"  : title="Planarity"
+        elif obs == "A"  : title="Aplanarity"
+        elif obs == "Qx" : title="$Q_x$"
+        elif obs == "Q21": title="$Q_2-Q_1$"
+        event.write(lFormat.format(hlevel="h3",tag=obs,name=title))
+        index.write(" <a href=\"event.html#%s\">%s,<a/>\n" %(obs,title))
+        writePlots(analyses["EventShapes"][obs],event)
+        event.write("</div>\n")
     # jet masses
     event.write("<h2 id=\"MASSES\">Jet Masses</h2>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"heavyjetmass\">Heavy Jet Mass</h3>\n")
-    writePlots(analyses["EventShapes"]["HeavyJetMass"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"lightjetmass\">Light Jet Mass</h3>\n")
-    writePlots(analyses["EventShapes"]["LightJetMass"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"totaljetmass\">Total Jet Mass</h3>\n")
-    writePlots(analyses["EventShapes"]["TotalJetMass"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"jetmassdifference\">Jet Mass Difference</h3>\n")
-    writePlots(analyses["EventShapes"]["JetMassDifference"],event)
-    event.write("</div>\n")
-    event.write("<h2 id=\"EEC\">Energy-Energy Correlations</h2>\n")
+    index.write("<li> <a href=\"event.html#MASSES\">Jet Masses:</a> \n")
+    for obs in ["HeavyJetMass","LightJetMass","TotalJetMass","JetMassDifference"]:
+        if   obs == "HeavyJetMass"      : title="Heavy Jet Mass"
+        elif obs == "LightJetMass"      : title="Light Jet Mass"
+        elif obs == "TotalJetMass"      : title="Total Jet Mass"
+        elif obs == "JetMassDifference" : title="Jet Mass Difference"
+        event.write(lFormat.format(hlevel="h3",tag=obs,name=title))
+        index.write(" <a href=\"event.html#%s\">%s,<a/>\n" %(obs,title))
+        writePlots(analyses["EventShapes"][obs],event)
+        event.write("</div>\n")
     # EEC and AEEC
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"eec\">Energy-Energy Correlation</h3>\n")
-    writePlots(analyses["EventShapes"]["EEC"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"aeec\">Asymmetry of the Energy-Energy Correlation</h3>\n")
-    writePlots(analyses["EventShapes"]["AEEC"],event)
-    event.write("</div>\n")
+    event.write("<h2 id=\"eec\">Energy-Energy Correlations</h2>\n")
+    index.write("<li> <a href=\"event.html#eec\">Energy-Energy Correlations:</a> \n")
+    for obs in ["EEC","AEEC"]:
+        if   obs == "EEC"  : title="Energy-Energy Correlation"
+        elif obs == "AEEC" : title="Energy-Energy Asymmetry Correlation"
+        event.write(lFormat.format(hlevel="h3",tag=obs,name=title))
+        index.write(" <a href=\"event.html#%s\">%s,<a/>\n" %(obs,title))
+        writePlots(analyses["EventShapes"][obs],event)
+        event.write("</div>\n")
     # jet broadening
     event.write("<h2 id=\"JB\">Jet Broadenings</h2>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"bt\">Total Jet Broadening</h3>\n")
-    writePlots(analyses["EventShapes"]["BT"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"bw\">Wide Jet Broadening</h3>\n")
-    writePlots(analyses["EventShapes"]["BW"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"bn\">Narrow Jet Broadening</h3>\n")
-    writePlots(analyses["EventShapes"]["BN"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"bdiff\">Difference of Jet Broadenings</h3>\n")
-    writePlots(analyses["EventShapes"]["Bdiff"],event)
-    event.write("</div>\n")
+    index.write("<li> <a href=\"event.html#JB\">Jet Broadening:</a> \n")
+    for obs in ["BT","BW","BN","Bdiff"]:
+        if   obs == "BT"    : title="Total Jet Broadening"
+        elif obs == "BW"    : title="Wide Jet Broadening"
+        elif obs == "BN"    : title="Narrow Jet Broadening"
+        elif obs == "Bdiff" : title="Difference of Jet Broadenings"
+        event.write(lFormat.format(hlevel="h3",tag=obs,name=title))
+        index.write(" <a href=\"event.html#%s\">%s,<a/>\n" %(obs,title))
+        writePlots(analyses["EventShapes"][obs],event)
+        event.write("</div>\n")
     # C and D
     event.write("<h2 id=\"CD\">C and D parameters</h2>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"C\">C</h3>\n")
-    writePlots(analyses["EventShapes"]["C"],event)
-    event.write("</div>\n")
-    event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"D\">D</h3>\n")
-    writePlots(analyses["EventShapes"]["D"],event)
-    event.write("</div>\n")
+    index.write("<li> <a href=\"event.html#CD\">C and D parameters:</a> \n")
+    for obs in ["C","D"]:
+        title= "%s-parameter" % obs
+        event.write(lFormat.format(hlevel="h3",tag=obs,name=title))
+        index.write(" <a href=\"event.html#%s\">%s,<a/>\n" %(obs,title))
+        writePlots(analyses["EventShapes"][obs],event)
+        event.write("</div>\n")    
     # moments of event shapes
     event.write("<h2 id=\"MOMENT\">Moments of Event Shapes</h2>\n")
-    for val in ["Moment_T","Moment_M","Moment_m","Moment_O","Moment_H","Moment_L","Moment_BT","Moment_BW","Moment_BN","Moment_C","Moment_S","Moment_y"] :
+    index.write("<li> <a href=\"event.html#MOMENT\">Moments:</a> \n")
+    for val in ["Moment_T","Moment_M","Moment_m","Moment_O","Moment_H","Moment_L",
+                "Moment_BT","Moment_BW","Moment_BN","Moment_C","Moment_S","Moment_y"] :
         if(val=="Moment_T") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_thrust\">Thrust</h3>\n")
+            index.write(" <a href=\"event.html#m_thrust\">thrust,<a/>\n")
         elif(val=="Moment_M") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_major\">Thrust Major</h3>\n")
+            index.write(" <a href=\"event.html#m_major\">major,<a/>\n")
         elif(val=="Moment_m") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_minor\">Thrust Minor</h3>\n")
+            index.write(" <a href=\"event.html#m_minor\">minor,<a/>\n")
         elif(val=="Moment_O") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_O\">Oblateness</h3>\n")
+            index.write(" <a href=\"event.html#m_O\">oblateness,<a/>\n")
         elif(val=="Moment_H") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_heavy\">Heavy Jet Mass</h3>\n")
+            index.write(" <a href=\"event.html#m_heavy\">heavy jet mass,<a/>\n")
         elif(val=="Moment_L") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_light\">Light Jet Mass</h3>\n")
+            index.write(" <a href=\"event.html#m_light\">light jet mass,<a/>\n")
         elif(val=="Moment_BT") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_bt\">Total Jet Broadening</h3>\n")
+            index.write(" <a href=\"event.html#m_bt\">total jet broadening,<a/>\n")
         elif(val=="Moment_BW") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_bw\">Wide Jet Broadening</h3>\n")
+            index.write(" <a href=\"event.html#m_bw\">wide jet broadening,<a/>\n")
         elif(val=="Moment_BN") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_bn\">Narrow Jet Broadening</h3>\n")
+            index.write(" <a href=\"event.html#m_bn\">narrow jet broadening,<a/>\n")
         elif(val=="Moment_C") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_C\">C-parameter</h3>\n")
+            index.write(" <a href=\"event.html#m_C\">C-parameter,<a/>\n")
         elif(val=="Moment_S") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_S\">Sphericity</h3>\n")
+            index.write(" <a href=\"event.html#m_S\">sphericity,<a/>\n")
         elif(val=="Moment_y") :
             event.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"m_y\">$y_{23}$</h3>\n")
+            index.write(" <a href=\"event.html#m_y\">$y_{23}$<a/>\n")
         writePlots(analyses["EventShapes"][val],event)
         event.write("</div>\n")
+    # footer
+    index.write(" </ul>\n")
     event.write("</body>\n</html>")
     event.close()
-
-#  ,"Moment_C":{},"Moment_S":{} "Moment_y":{},
     
 def writeGluon() :
     gluon=open(os.path.join(directory,"gluon.html"),'w')
@@ -2845,10 +2853,11 @@ def writeGluon() :
     # footer
     gluon.write("</body>\n</html>")
     gluon.close()
+
+
+
     
 print 'Total no of figures',len(figures)
-# output the event shapes    
-writeEventShapes()
 writeMult()
 writeFlavour()
 writeDecays()
@@ -2860,37 +2869,9 @@ writeGluon()
 index=open(os.path.join(directory,"herwig.html"),'w')
 index.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data"))
 # event shapes
-index.write("<ul>\n")
-index.write("<li> <a href=\"event.html\">Event Shapes</a>\n")
-index.write("<ul>\n")
-index.write("<li> <a href=\"event.html#THRUST\">Thrust related:</a> \n")
-index.write(" <a href=\"event.html#thrust\">thrust,<a/>\n")
-index.write(" <a href=\"event.html#major\">major,<a/>\n")
-index.write(" <a href=\"event.html#minor\">minor,<a/>\n")
-index.write(" <a href=\"event.html#oblateness\">oblateness.<a/>\n")
-index.write("<li> <a href=\"event.html#SPHERICITY\">Sphericity related:</a> \n")
-index.write(" <a href=\"event.html#sphericity\">sphericity,<a/>\n")
-index.write(" <a href=\"event.html#planarity\">planarity,<a/>\n")
-index.write(" <a href=\"event.html#aplanarity\">aplanarity.<a/>\n")
-index.write("<li> <a href=\"event.html#MASSES\">Jet Masses:</a> \n")
-index.write(" <a href=\"event.html#heavyjetmass\">heavy jet mass,<a/>\n")
-index.write(" <a href=\"event.html#lightjetmass\">light jet mass,<a/>\n")
-index.write(" <a href=\"event.html#totaljetmass\">total jet mass,<a/>\n")
-index.write(" <a href=\"event.html#jetmassdifference\">jet mass difference,<a/>\n")
-index.write("<li> <a href=\"event.html#EEC\">Energy-Energy Correlations:</a> \n")
-index.write(" <a href=\"event.html#eec\">energy-energy correlation,<a/>\n")
-index.write(" <a href=\"event.html#aeec\">asymmetry.<a/>\n")
-index.write("<li> <a href=\"event.html#JB\">Jet Broadening:</a> \n")
-index.write(" <a href=\"event.html#bt\">total jet broadening,<a/>\n")
-index.write(" <a href=\"event.html#bw\">wide jet broadening,<a/>\n")
-index.write(" <a href=\"event.html#bn\">narrow jet broadening,<a/>\n")
-index.write(" <a href=\"event.html#bdiff\">difference of jet broadenings.<a/>\n")
-index.write("<li> <a href=\"event.html#CD\">C and D parameters:</a> \n")
-index.write(" <a href=\"event.html#C\">C,<a/>\n")
-index.write(" <a href=\"event.html#D\">D.<a/>\n")
-index.write(" </ul>\n")
+writeEventShapes(index)
 # charged particles
-writeCharged()
+writeCharged(index)
 # jets
 writeJets(index)
 # identified particle spectra
