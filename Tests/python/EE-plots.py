@@ -36,12 +36,52 @@ analyses={ "HadronDecays"     : { },
                         "ChargedpTSphericity"      : { },
                         "ChargedpT2Sphericity"     : { },
                         "DistChargedMult"  : { 0 : {}, 1 : {}, 2 : {}, 4 : {}, 5: {}, 21 : {}, "C" : {} }},
-           "IdentifiedParticle"  : { 22: {}, 111 : {}, 211 : {}, 221 : {},331 : {}, 223 : {}, 333 : {},
-                                     321 : {}, 311 : {}, 313 : {}, 323 : {}, 2212 : {}, 413 : {}, 423 : {},
-                                     3122 : {},3212 : {}, 2224 : {}, 3312 : {}, 3222 : {}, "3224B" : {}, 431 : {}, 433 : {},
-                                     3112 : {}, 3224 : {}, 3114 : {}, 3324 : {}, 3124 : {}, 443 : {},
-                                     9010221 : {}, 9000211 : {}, 225 : {}, 335 : {}, 113 : {}, 213 : {}, 421 : {}, 411 : {}, 425 : {},
-                                     511 : { }, 4122 : {}, 3334 : {}, 4332 : {}, 4132 : {}, 4112 : {}, 4114 : {},4124 : {}, 14122  :{}},
+           "IdentifiedParticle"  : { 22      : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     111     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     211     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     221     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     331     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     223     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     333     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     321     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     311     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     313     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     323     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     2212    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     413     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     423     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3122    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3212    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     2224    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3312    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3222    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     "3224B" : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     431     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     433     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3112    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3224    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3114    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3324    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3124    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     443     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     9010221 : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     9000211 : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     225     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     335     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     113     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     213     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     421     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     411     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     425     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     511     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4122    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3334    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4332    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4132    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4112    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4114    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4124    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     14122   : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}}},
            "IdentifiedParticleFlavour" : {111  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 211  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
                                           321  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 311  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
                                           313  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 333  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
@@ -65,7 +105,8 @@ analyses={ "HadronDecays"     : { },
                              "LightJetMass" : {}, "TotalJetMass" : {} , "EEC" : {}, "AEEC" : {} ,
                              "P" : {}, "A" : {} , "BW" : {}, "BT" : {}, "BN" : {},
                              "Bdiff" : {}, "C" : {},
-                             "1jet" : {},"2jet" : {},"3jet" : {},"4jet" : {},"5jet" : {},"6jet" : {},
+                             "1jet_dur"  : {}, "2jet_dur"  : {}, "3jet_dur"  : {}, "4jet_dur"  : {}, "5jet_dur"  : {}, "6jet_dur"  : {},
+                             "1jet_jade" : {}, "2jet_jade" : {}, "3jet_jade" : {}, "4jet_jade" : {}, "5jet_jade" : {}, "6jet_jade" : {},
                              "Moment_T":{}, "Moment_H":{},"Moment_C":{},"Moment_S":{},"Moment_L":{},"Moment_y":{},"Moment_BW":{},
                              "Moment_BN":{},"Moment_BT":{},"Moment_O":{},"Moment_M":{},"Moment_m":{},},
            "EventShapesFlavour" : { "T" : { 1 : {}, 2 : {}, 4 : {}, 5 : {}},
@@ -369,7 +410,8 @@ analyses["Charged"]["ChargedSpectrum"][0][3.2  ] = ["/BESII_2004_I622224/d04-x01
 analyses["Charged"]["ChargedSpectrum"][0][4.6  ] = ["/BESII_2004_I622224/d05-x01-y01"]
 analyses["Charged"]["ChargedSpectrum"][0][4.8  ] = ["/BESII_2004_I622224/d06-x01-y01"]
 analyses["Charged"]["ChargedSpectrum"][0][12.0 ] = ["/TASSO_1980_I153511/d05-x01-y01","/TASSO_1982_I177174/d02-x01-y01",
-                                                    "/TASSO_1982_I177174/d03-x01-y01","/TASSO_1980_I143691/d05-x01-y01"]
+                                                    "/TASSO_1982_I177174/d03-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0][13.0 ] = ["/TASSO_1980_I143691/d05-x01-y01"]
 analyses["Charged"]["ChargedSpectrum"][0][14.0 ] = ["/TASSO_1982_I177174/d01-x01-y01","/TASSO_1982_I177174/d02-x01-y02","/TASSO_1982_I177174/d03-x01-y02"]
 analyses["Charged"]["ChargedSpectrum"][0][19.5 ] = ["/TASSO_1980_I143691/d06-x01-y01"]
 analyses["Charged"]["ChargedSpectrum"][0][22.0 ] = ["/TASSO_1982_I177174/d01-x01-y02","/TASSO_1982_I177174/d02-x01-y03","/TASSO_1982_I177174/d03-x01-y03"]
@@ -484,7 +526,8 @@ analyses["Charged"]["ChargedpTOutThrust"][196.0] = ["/DELPHI_2003_I620250/d36-x0
 analyses["Charged"]["ChargedpTOutThrust"][200.0] = ["/DELPHI_2003_I620250/d37-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][200.5] = ["/OPAL_2003_I595335/d02-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][202.0] = ["/DELPHI_2003_I620250/d37-x01-y02"]
-analyses["Charged"]["ChargedpTOutThrust"][205.0] = ["/DELPHI_2003_I620250/d37-x01-y03","/ALEPH_2004_S5765862/d35-x01-y01"]
+analyses["Charged"]["ChargedpTOutThrust"][205.0] = ["/DELPHI_2003_I620250/d37-x01-y03"]
+analyses["Charged"]["ChargedpTOutThrust"][206.0] = ["/ALEPH_2004_S5765862/d35-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][207.0] = ["/DELPHI_2003_I620250/d37-x01-y04"]
 # identified particle (flavour sep)
 analyses["IdentifiedParticleFlavour"][111 ][5][91.2]=["/DELPHI_1996_I401100/d03-x01-y01","/SLD_2004_S5693039/d05-x01-y03"]
@@ -591,203 +634,358 @@ analyses["Charged"]["ChargedSpectrum"][4][91.2]=["/DELPHI_1997_I428178/d01-x01-y
 analyses["Charged"]["ChargedSpectrum"][5][91.2]=["/DELPHI_1998_I473409/d24-x01-y01","/DELPHI_1998_I473409/d25-x01-y01",
                                                  "/DELPHI_1997_I428178/d01-x01-y01","/OPAL_1998_S3780481/d03-x01-y01",
                                                  "/OPAL_1998_S3780481/d07-x01-y01","/SLD_2004_S5693039/d08-x01-y03","/L3_2004_I652683/d65-x01-y03"]
+
+
 # identified particle distributions
-analyses["IdentifiedParticle"][22  ][14.0]=["/CELLO_1983_I191415/d01-x01-y01"]
-analyses["IdentifiedParticle"][22  ][22.0]=["/CELLO_1983_I191415/d02-x01-y01"]
-analyses["IdentifiedParticle"][22  ][29.0]=["/TPC_1985_I205868/d01-x01-y01" ]
-analyses["IdentifiedParticle"][22  ][34.0]=["/CELLO_1983_I191415/d03-x01-y01"]
-analyses["IdentifiedParticle"][22  ][35.0]=["/CELLO_1989_I276764/d02-x01-y01","/JADE_1990_I282847/d01-x01-y01"]
-analyses["IdentifiedParticle"][22  ][44.0]=["/JADE_1990_I282847/d02-x01-y01"]
-analyses["IdentifiedParticle"][22  ][91.2]=["/ALEPH_1996_S3486095/d28-x01-y01","/OPAL_1998_S3749908/d02-x01-y01",
-                                            "/OPAL_1998_S3749908/d03-x01-y01"]
-analyses["IdentifiedParticle"][111 ][10.0]=["/ARGUS_1990_I278933/d03-x01-y01","/ARGUS_1990_I278933/d03-x01-y02"]
-analyses["IdentifiedParticle"][111 ][14.0]=["/TASSO_1982_I168232/d02-x01-y01","/TASSO_1982_I168232/d02-x02-y02",
-                                            "/TASSO_1982_I168232/d02-x03-y03","/CELLO_1983_I191415/d04-x01-y01"]
-analyses["IdentifiedParticle"][111 ][22.0]=["/CELLO_1983_I191415/d05-x01-y01"]
-analyses["IdentifiedParticle"][111 ][29.0]=["/TPC_1985_I205868/d02-x01-y01" ]
-analyses["IdentifiedParticle"][111 ][34.0]=["/TASSO_1982_I168232/d03-x01-y01","/TASSO_1982_I168232/d03-x02-y02",
-                                            "/TASSO_1982_I168232/d03-x03-y03","/TASSO_1986_I230950/d01-x01-y01",
-                                            "/TASSO_1986_I230950/d02-x01-y01","/CELLO_1983_I191415/d06-x01-y01"]
-analyses["IdentifiedParticle"][111 ][35.0]=["/CELLO_1989_I276764/d03-x01-y01","/CELLO_1989_I276764/d04-x01-y01","/JADE_1990_I282847/d03-x01-y01"]
-analyses["IdentifiedParticle"][111 ][44.0]=["/TASSO_1989_I267755/d13-x01-y01","/JADE_1990_I282847/d04-x01-y01"]
-analyses["IdentifiedParticle"][111 ][91.2]=["/DELPHI_1996_I401100/d01-x01-y01","/ALEPH_1996_S3486095/d29-x01-y01",
-                                            "/OPAL_1998_S3749908/d04-x01-y01","/OPAL_1998_S3749908/d05-x01-y01"]
-analyses["IdentifiedParticle"][113 ][10.0]=["/ARGUS_1993_S2789213/d10-x01-y01"]
-analyses["IdentifiedParticle"][113 ][91.2]=["/DELPHI_1999_S3960137/d01-x01-y01","/ALEPH_1996_S3486095/d37-x01-y01"]
-analyses["IdentifiedParticle"][113 ][35.0]=["/JADE_1984_I203145/d02-x01-y01"]
-analyses["IdentifiedParticle"][213 ][91.2]=["/OPAL_1998_S3749908/d08-x01-y01","/OPAL_1998_S3749908/d09-x01-y01"]
-analyses["IdentifiedParticle"][9010221][91.2]=["/DELPHI_1999_S3960137/d01-x01-y02","/OPAL_1998_S3702294/d02-x01-y01"]
-analyses["IdentifiedParticle"][9010221][10.0]=["/ARGUS_1993_S2669951/d02-x01-y01"]
-analyses["IdentifiedParticle"][9000211][91.2]=["/OPAL_1998_S3749908/d14-x01-y01","/OPAL_1998_S3749908/d15-x01-y01"]
-analyses["IdentifiedParticle"][225][91.2]=["/DELPHI_1999_S3960137/d01-x01-y03","/OPAL_1998_S3702294/d02-x01-y02"]
-analyses["IdentifiedParticle"][335][91.2]=["/DELPHI_1996_I416741/d01-x01-y01"]
-analyses["IdentifiedParticle"][211 ][10.0]=["/ARGUS_1989_I276860/d05-x01-y02","/ARGUS_1989_I276860/d09-x01-y02"]
-analyses["IdentifiedParticle"][211 ][10.52]=["/BELLE_2013_I1216515/d01-x01-y01"]
-analyses["IdentifiedParticle"][211 ][10.54]=["/BABAR_2013_I1238276/d01-x01-y01","/BABAR_2013_I1238276/d02-x01-y01"]
-analyses["IdentifiedParticle"][211 ][12.0]=["/TASSO_1980_I153656/d02-x01-y01","/TASSO_1980_I153656/d02-x01-y02","/TASSO_1980_I153656/d08-x01-y01"]
-analyses["IdentifiedParticle"][211 ][14.0]=["/TASSO_1983_I181470/d19-x01-y01","/TASSO_1983_I181470/d20-x01-y01"]
-analyses["IdentifiedParticle"][211 ][22.0]=["/TASSO_1983_I181470/d25-x01-y01","/TASSO_1983_I181470/d26-x01-y01"]
-analyses["IdentifiedParticle"][211 ][29.0]=["/TPC_1988_I262143/d01-x01-y01","/TPC_1988_I262143/d05-x01-y01",
-                                            "/TPC_1988_I262143/d06-x01-y01"]
-analyses["IdentifiedParticle"][211 ][30.0]=["/TASSO_1980_I153656/d05-x01-y01","/TASSO_1980_I153656/d05-x01-y02",
-                                            "/TASSO_1980_I153656/d11-x01-y01"]
-analyses["IdentifiedParticle"][211 ][34.0]=["/TASSO_1989_I267755/d01-x01-y01","/TASSO_1989_I267755/d07-x01-y01",
-                                            "/TASSO_1983_I181470/d13-x01-y01","/TASSO_1983_I181470/d14-x01-y01"]
-analyses["IdentifiedParticle"][211 ][44.0]=["/TASSO_1989_I267755/d04-x01-y01","/TASSO_1989_I267755/d10-x01-y01"]
-analyses["IdentifiedParticle"][211 ][58.0]=["/TOPAZ_1995_I381900/d02-x01-y01"]
-analyses["IdentifiedParticle"][211 ][91.2]=["/ALEPH_1995_I382179/d01-x01-y01","/OPAL_1994_S2927284/d01-x01-y01",
-                                            "/DELPHI_1998_I473409/d18-x01-y01","/DELPHI_1998_I473409/d19-x01-y01",
-                                            "/ALEPH_1996_S3486095/d25-x01-y01","/SLD_2004_S5693039/d02-x01-y02",
-                                            "/SLD_1999_S3743934/d01-x01-y02"]
-analyses["IdentifiedParticle"][431 ][10.5]=["/CLEO_2000_I526554/d02-x01-y01","/CLEO_2000_I526554/d04-x01-y01"]
-analyses["IdentifiedParticle"][433 ][10.5]=["/CLEO_2000_I526554/d01-x01-y01","/CLEO_2000_I526554/d03-x01-y01"]
-
-
-
-
-
-# charged kaons
-analyses["IdentifiedParticle"][321 ][10.0]=["/ARGUS_1989_I276860/d06-x01-y02","/ARGUS_1989_I276860/d10-x01-y02"]
-analyses["IdentifiedParticle"][321 ][10.52]=["/BELLE_2013_I1216515/d01-x01-y02"]
-analyses["IdentifiedParticle"][321 ][10.54]=["/BABAR_2013_I1238276/d01-x01-y02","/BABAR_2013_I1238276/d02-x01-y02"]
-analyses["IdentifiedParticle"][321 ][12.0]=["/TASSO_1980_I153656/d03-x01-y01","/TASSO_1980_I153656/d03-x01-y02",
-                                            "/TASSO_1980_I153656/d09-x01-y01"]
-analyses["IdentifiedParticle"][321 ][14.0]=["/TASSO_1983_I181470/d21-x01-y01","/TASSO_1983_I181470/d22-x01-y01"]
-analyses["IdentifiedParticle"][321 ][22.0]=["/TASSO_1983_I181470/d10-x01-y01","/TASSO_1983_I181470/d27-x01-y01"]
-analyses["IdentifiedParticle"][321 ][29.0]=["/TPC_1988_I262143/d01-x01-y02","/TPC_1988_I262143/d05-x01-y02",
-                                            "/TPC_1988_I262143/d06-x01-y02","/TPC_1988_I262143/d07-x01-y01"]
-analyses["IdentifiedParticle"][321 ][30.0]=["/TASSO_1980_I153656/d06-x01-y01","/TASSO_1980_I153656/d06-x01-y02",
-                                            "/TASSO_1980_I153656/d12-x01-y01"]
-analyses["IdentifiedParticle"][321 ][34.0]=["/TASSO_1989_I267755/d02-x01-y01","/TASSO_1989_I267755/d08-x01-y01",
-                                            "/TASSO_1983_I181470/d15-x01-y01","/TASSO_1983_I181470/d16-x01-y01"]
-analyses["IdentifiedParticle"][321 ][44.0]=["/TASSO_1989_I267755/d05-x01-y01","/TASSO_1989_I267755/d11-x01-y01"]
-analyses["IdentifiedParticle"][321 ][58.0]=["/TOPAZ_1995_I381900/d02-x01-y02"]
-analyses["IdentifiedParticle"][321 ][91.2]=["/ALEPH_1995_I382179/d02-x01-y01","/OPAL_1994_S2927284/d02-x01-y01",
-                                            "/DELPHI_1995_I394052/d03-x01-y01","/DELPHI_1995_I394052/d05-x01-y01",
-                                            "/DELPHI_1998_I473409/d20-x01-y01","/DELPHI_1998_I473409/d21-x01-y01",
-                                            "/ALEPH_1996_S3486095/d26-x01-y01","/SLD_2004_S5693039/d03-x01-y02",
-                                            "/SLD_1999_S3743934/d02-x01-y02"]
-analyses["IdentifiedParticle"][2212][10.0] =["/ARGUS_1989_I276860/d08-x01-y02","/ARGUS_1989_I276860/d12-x01-y02"]
-analyses["IdentifiedParticle"][2212][10.54]=["/BABAR_2013_I1238276/d01-x01-y03","/BABAR_2013_I1238276/d02-x01-y03"] 
-analyses["IdentifiedParticle"][2212][12.0]=["/TASSO_1980_I153656/d04-x01-y01","/TASSO_1980_I153656/d04-x01-y02",
-                                            "/TASSO_1980_I153656/d10-x01-y01"]
-analyses["IdentifiedParticle"][2212][14.0]=["/TASSO_1983_I181470/d23-x01-y01","/TASSO_1983_I181470/d24-x01-y01"]
-analyses["IdentifiedParticle"][2212][22.0]=["/TASSO_1983_I181470/d11-x01-y01","/TASSO_1983_I181470/d12-x01-y01"]
-analyses["IdentifiedParticle"][2212][29.0]=["/TPC_1988_I262143/d01-x01-y03","/TPC_1988_I262143/d05-x01-y03",
-                                            "/TPC_1988_I262143/d06-x01-y03","/TPC_1988_I262143/d07-x01-y02","/TPC_1988_I262143/d07-x01-y03"]
-analyses["IdentifiedParticle"][2212][30.0]=["/TASSO_1980_I153656/d07-x01-y01","/TASSO_1980_I153656/d07-x01-y02",
-                                            "/TASSO_1980_I153656/d13-x01-y01"]
-analyses["IdentifiedParticle"][2212][34.0]=["/TASSO_1989_I267755/d03-x01-y01","/TASSO_1989_I267755/d09-x01-y01",
-                                            "/JADE_1981_I166363/d01-x01-y01",
-                                            "/TASSO_1983_I181470/d17-x01-y01","/TASSO_1983_I181470/d18-x01-y01"]
-analyses["IdentifiedParticle"][2212][44.0]=["/TASSO_1989_I267755/d06-x01-y01","/TASSO_1989_I267755/d12-x01-y01"]
-analyses["IdentifiedParticle"][2212][58.0]=["/TOPAZ_1995_I381900/d02-x01-y03"]
-analyses["IdentifiedParticle"][2212][91.2]=["/ALEPH_1995_I382179/d03-x01-y01","/OPAL_1994_S2927284/d03-x01-y01",
-                                            "/DELPHI_1995_I394052/d04-x01-y01","/DELPHI_1995_I394052/d06-x01-y01",
-                                            "/DELPHI_1998_I473409/d22-x01-y01","/DELPHI_1998_I473409/d23-x01-y01",
-                                            "/ALEPH_1996_S3486095/d27-x01-y01","/SLD_2004_S5693039/d04-x01-y02",
-                                            "/SLD_1999_S3743934/d03-x01-y02"]
-analyses["IdentifiedParticle"][221 ][10.0]=["/ARGUS_1990_I278933/d05-x01-y01","/ARGUS_1990_I278933/d05-x01-y02"]
-analyses["IdentifiedParticle"][221 ][29.0]=["/HRS_1988_I250824/d01-x01-y01"]
-analyses["IdentifiedParticle"][221 ][35.0]=["/CELLO_1989_I276764/d05-x01-y01","/JADE_1990_I282847/d05-x01-y01"]
-analyses["IdentifiedParticle"][221 ][91.2]=["/ALEPH_2002_S4823664/d02-x01-y02","/L3_1992_I336180/d01-x01-y01",
-                                            "/L3_1992_I336180/d02-x01-y01","/ALEPH_1996_S3486095/d30-x01-y01",
-                                            "/OPAL_1998_S3749908/d06-x01-y01","/OPAL_1998_S3749908/d07-x01-y01"]
-analyses["IdentifiedParticle"][331 ][91.2]=["/L3_1997_I427107/d07-x01-y01","/L3_1997_I427107/d08-x01-y01",
-                                            "/L3_1997_I427107/d09-x01-y01","/L3_1997_I427107/d10-x01-y01",
-                                            "/ALEPH_1996_S3486095/d31-x01-y01",
-                                            "/OPAL_1998_S3749908/d12-x01-y01","/OPAL_1998_S3749908/d13-x01-y01"]
-analyses["IdentifiedParticle"][223 ][10.0]=["/ARGUS_1993_S2789213/d13-x01-y01"]
-analyses["IdentifiedParticle"][223 ][91.2]=["/ALEPH_2002_S4823664/d03-x01-y02","/L3_1997_I427107/d05-x01-y01",
-                                            "/L3_1997_I427107/d06-x01-y01","/ALEPH_1996_S3486095/d38-x01-y01",
-                                            "/OPAL_1998_S3749908/d10-x01-y01","/OPAL_1998_S3749908/d11-x01-y01"]
-analyses["IdentifiedParticle"][413 ][29.0]=["/TPC_1986_I217416/d01-x01-y01","/TPC_1986_I217416/d01-x01-y02",
-                                            "/HRS_1988_I23360/d01-x01-y01","/HRS_1988_I23360/d01-x01-y02"]
-analyses["IdentifiedParticle"][413 ][34.4]=["/JADE_1984_I202785/d01-x01-y01"]
-analyses["IdentifiedParticle"][413 ][36.2]=["/TASSO_1989_I278856/d01-x01-y01","/TASSO_1989_I278856/d01-x01-y02",
-                                            "/TASSO_1989_I278856/d02-x01-y01","/TASSO_1989_I278856/d02-x01-y02"]
-analyses["IdentifiedParticle"][413 ][91.2]=["/ALEPH_1999_S4193598/d01-x01-y01"]
-analyses["IdentifiedParticle"][421 ][10.5]=["/CLEO_2004_S5809304/d03-x01-y01","/CLEO_2004_S5809304/d04-x01-y01"]
-analyses["IdentifiedParticle"][421 ][29.0]=["/HRS_1988_I23360/d02-x01-y01"]
-analyses["IdentifiedParticle"][411 ][10.5]=["/CLEO_2004_S5809304/d02-x01-y01","/CLEO_2004_S5809304/d09-x01-y01"]
-analyses["IdentifiedParticle"][411 ][29.0]=["/HRS_1988_I23360/d02-x01-y02"]
-analyses["IdentifiedParticle"][413 ][10.5]=["/CLEO_2004_S5809304/d05-x01-y01","/CLEO_2004_S5809304/d06-x01-y01"]
-analyses["IdentifiedParticle"][423 ][10.5]=["/CLEO_2004_S5809304/d07-x01-y01","/CLEO_2004_S5809304/d08-x01-y01"]
-analyses["IdentifiedParticle"][425 ][10.0]=["/ARGUS_1989_I268577/d02-x01-y01"]
-analyses["IdentifiedParticle"][333 ][10.0]=["/ARGUS_1989_I262551/d01-x01-y01"]
-analyses["IdentifiedParticle"][333 ][29.0]=["/TPC_1984_I200105/d01-x01-y01","/TPC_1984_I200105/d03-x01-y01"]
-analyses["IdentifiedParticle"][333 ][91.2]=["/DELPHI_1996_I420528/d03-x01-y01","/ALEPH_1996_S3486095/d40-x01-y01",
-                                            "/OPAL_1998_S3702294/d02-x01-y03","/SLD_1999_S3743934/d09-x01-y01"]
-analyses["IdentifiedParticle"][313 ][10.0]=["/ARGUS_1993_S2789213/d07-x01-y01"]
-analyses["IdentifiedParticle"][313 ][29.0]=["/TPC_1984_I205869/d03-x01-y01"]
-analyses["IdentifiedParticle"][313 ][91.2]=["/DELPHI_1996_I420528/d01-x01-y01","/ALEPH_1996_S3486095/d39-x01-y01",
-                                            "/OPAL_1997_S3608263/d01-x01-y01","/SLD_1999_S3743934/d08-x01-y01"]
-analyses["IdentifiedParticle"][323 ][10.0]=["/ARGUS_1993_S2789213/d04-x01-y01"]
-analyses["IdentifiedParticle"][323 ][14.8]=["/TASSO_1990_I284251/d02-x01-y01"]
-analyses["IdentifiedParticle"][323 ][21.5]=["/TASSO_1990_I284251/d03-x01-y01"]
-analyses["IdentifiedParticle"][323 ][34.5]=["/TASSO_1990_I284251/d08-x01-y03"]
-analyses["IdentifiedParticle"][323 ][35.0]=["/TASSO_1990_I284251/d08-x01-y02","/CELLO_1990_I283026/d02-x01-y01","/JADE_1984_I203145/d03-x01-y01"]
-analyses["IdentifiedParticle"][323 ][42.6]=["/TASSO_1990_I284251/d08-x01-y01"]
-analyses["IdentifiedParticle"][323 ][91.2]=["/OPAL_1993_I342766/d01-x01-y01","/DELPHI_1995_I377487/d10-x01-y01","/ALEPH_1996_S3486095/d43-x01-y01"]
-
-analyses["IdentifiedParticle"][311 ][3.63]=["/PLUTO_1977_I118873/d02-x01-y01"]
-analyses["IdentifiedParticle"][311 ][4.03]=["/PLUTO_1977_I118873/d03-x01-y01"]
-analyses["IdentifiedParticle"][311 ][4.5]=["/PLUTO_1977_I118873/d04-x01-y01"]
-analyses["IdentifiedParticle"][311 ][9.4]=["/PLUTO_1981_I165122/d05-x01-y01"]
-analyses["IdentifiedParticle"][311 ][10.0]=["/ARGUS_1989_I276860/d07-x01-y02","/ARGUS_1989_I276860/d11-x01-y02"]
-analyses["IdentifiedParticle"][311 ][14.0]=["/TASSO_1980_I153341/d02-x01-y01","/TASSO_1980_I153341/d04-x01-y01",
-                                            "/TASSO_1985_I205119/d01-x01-y01","/TASSO_1985_I205119/d07-x01-y01"]
-analyses["IdentifiedParticle"][311 ][22.0]=["/TASSO_1985_I205119/d02-x01-y01","/TASSO_1985_I205119/d08-x01-y01"]
-analyses["IdentifiedParticle"][311 ][29.0]=["/TPC_1984_I205869/d04-x01-y01","/HRS_1990_I280958/d03-x01-y01"]
-analyses["IdentifiedParticle"][311 ][30.0]=["/PLUTO_1981_I165122/d04-x01-y01"]
-analyses["IdentifiedParticle"][311 ][34.0]=["/TASSO_1985_I205119/d03-x01-y01","/TASSO_1985_I205119/d09-x01-y01"]
-analyses["IdentifiedParticle"][311 ][34.5]=["/TASSO_1990_I284251/d01-x01-y03"]
-analyses["IdentifiedParticle"][311 ][35.0]=["/TASSO_1990_I284251/d01-x01-y02","/CELLO_1990_I283026/d01-x01-y01"]
-analyses["IdentifiedParticle"][311 ][42.6]=["/TASSO_1990_I284251/d01-x01-y01"]
-analyses["IdentifiedParticle"][311 ][58.0]=["/TOPAZ_1995_I381900/d03-x01-y01"]
-analyses["IdentifiedParticle"][311 ][91.2]=["/OPAL_2000_S4418603/d03-x01-y01","/DELPHI_1995_I377487/d08-x01-y01",
-                                            "/DELPHI_1995_I377487/d09-x01-y01","/ALEPH_1996_S3486095/d32-x01-y01",
-                                            "/SLD_1999_S3743934/d05-x01-y01"]
-analyses["IdentifiedParticle"][3122][10.0] = ["/ARGUS_1988_I251097/d05-x01-y01","/ARGUS_1988_I251097/d06-x01-y01"]
-analyses["IdentifiedParticle"][3122][10.52] = ["/BELLE_2017_I1606201/d01-x01-y01"]
-analyses["IdentifiedParticle"][3212][10.52] = ["/BELLE_2017_I1606201/d02-x01-y01"]
-analyses["IdentifiedParticle"][3224][10.52] = ["/BELLE_2017_I1606201/d03-x01-y01"]
-analyses["IdentifiedParticle"][3124][10.52] = ["/BELLE_2017_I1606201/d04-x01-y01"]
-analyses["IdentifiedParticle"][3312][10.52] = ["/BELLE_2017_I1606201/d05-x01-y01"]
-analyses["IdentifiedParticle"][3334][10.52] = ["/BELLE_2017_I1606201/d06-x01-y01"]
-analyses["IdentifiedParticle"][3324][10.52] = ["/BELLE_2017_I1606201/d07-x01-y01"]
-analyses["IdentifiedParticle"][4122][10.52] = ["/BELLE_2017_I1606201/d08-x01-y01"]
-analyses["IdentifiedParticle"][14122][10.52] = ["/BELLE_2017_I1606201/d09-x01-y01"]
-analyses["IdentifiedParticle"][4124][10.52] = ["/BELLE_2017_I1606201/d10-x01-y01"]
-analyses["IdentifiedParticle"][4112][10.52] = ["/BELLE_2017_I1606201/d11-x01-y01"]
-analyses["IdentifiedParticle"][4114][10.52] = ["/BELLE_2017_I1606201/d12-x01-y01"]
-analyses["IdentifiedParticle"][4332][10.52] = ["/BELLE_2017_I1606201/d13-x01-y01"]
-analyses["IdentifiedParticle"][4132][10.52] = ["/BELLE_2017_I1606201/d14-x01-y01","/BELLE_2017_I1606201/d15-x01-y01"]
-analyses["IdentifiedParticle"][3122][14.0] = ["/TASSO_1985_I205119/d04-x01-y01","/TASSO_1985_I205119/d10-x01-y01"]
-analyses["IdentifiedParticle"][3122][22.0] = ["/TASSO_1985_I205119/d05-x01-y01","/TASSO_1985_I205119/d11-x01-y01"]
-analyses["IdentifiedParticle"][3122][29.0] = ["/HRS_1992_I339573/d01-x01-y01"]
-analyses["IdentifiedParticle"][3122][34.0] = ["/TASSO_1985_I205119/d06-x01-y01","/TASSO_1985_I205119/d12-x01-y01","/JADE_1981_I166363/d02-x01-y01"]
-analyses["IdentifiedParticle"][3122][34.8] = ["/TASSO_1989_I266893/d03-x01-y01","/TASSO_1989_I266893/d08-x01-y01"]
-analyses["IdentifiedParticle"][3122][35.0] = ["/CELLO_1990_I283026/d03-x01-y01"]
-analyses["IdentifiedParticle"][3122][91.2] = ["/OPAL_1997_S3396100/d01-x01-y01","/OPAL_1997_S3396100/d02-x01-y01",
-                                              "/ALEPH_1996_S3486095/d33-x01-y01","/DELPHI_1993_I360638/d01-x01-y01",
-                                              "/SLD_1999_S3743934/d07-x01-y01"]
-analyses["IdentifiedParticle"][2224][91.2] = ["/OPAL_1995_S3198391/d01-x01-y01","/DELPHI_1995_I399737/d01-x01-y01"]
-analyses["IdentifiedParticle"][3312][10.0]=["/ARGUS_1988_I251097/d09-x01-y01"]
-analyses["IdentifiedParticle"][3312][34.4]=["/TASSO_1983_I192072/d02-x01-y01"]
-analyses["IdentifiedParticle"][3312][34.8]=["/TASSO_1989_I266893/d18-x01-y01","/TASSO_1989_I266893/d23-x01-y01"]
-analyses["IdentifiedParticle"][3312][91.2]=["/OPAL_1997_S3396100/d03-x01-y01","/OPAL_1997_S3396100/d04-x01-y01",
-                                            "/DELPHI_1995_S3137023/d02-x01-y01","/DELPHI_2006_I719387/d01-x03-y01","/ALEPH_1996_S3486095/d34-x01-y01"]
-analyses["IdentifiedParticle"][3222][91.2] = ["/OPAL_1997_I421977/d01-x01-y01"]
-analyses["IdentifiedParticle"][3112][91.2] = ["/OPAL_1997_I421977/d02-x01-y01","/DELPHI_2000_I524694/d01-x01-y01"]
-analyses["IdentifiedParticle"][3224][91.2]  = ["/DELPHI_1995_S3137023/d03-x01-y01","/OPAL_1997_S3396100/d05-x01-y01","/OPAL_1997_S3396100/d06-x01-y01"]
-analyses["IdentifiedParticle"]["3224B"][91.2] = ["/ALEPH_1996_S3486095/d35-x01-y01"]
-analyses["IdentifiedParticle"][3114][91.2] = ["/OPAL_1997_S3396100/d07-x01-y01","/OPAL_1997_S3396100/d08-x01-y01"]
-analyses["IdentifiedParticle"][3324][91.2] = ["/OPAL_1997_S3396100/d09-x01-y01","/OPAL_1997_S3396100/d10-x01-y01","/ALEPH_1996_S3486095/d36-x01-y01"]
-analyses["IdentifiedParticle"][3124][10.0] = ["/ARGUS_1989_I262415/d04-x01-y01"]
-analyses["IdentifiedParticle"][3124][91.2] = ["/OPAL_1997_S3396100/d11-x01-y01","/OPAL_1997_S3396100/d12-x01-y01","/DELPHI_2000_I524694/d03-x01-y01"]
-analyses["IdentifiedParticle"][443][91.2] = ["/OPAL_1996_S3257789/d01-x01-y01"]
-analyses["IdentifiedParticle"][4122][10.54] = ["/BABAR_2007_S6895344/d01-x01-y01"]
+# photons
+# x_E
+analyses["IdentifiedParticle"][22  ]["x" ][14.0]=["/CELLO_1983_I191415/d01-x01-y01"]
+analyses["IdentifiedParticle"][22  ]["x" ][22.0]=["/CELLO_1983_I191415/d02-x01-y01"]
+analyses["IdentifiedParticle"][22  ]["x" ][29.0]=["/TPC_1985_I205868/d01-x01-y01" ]
+analyses["IdentifiedParticle"][22  ]["x" ][34.0]=["/CELLO_1983_I191415/d03-x01-y01"]
+analyses["IdentifiedParticle"][22  ]["x" ][35.0]=["/CELLO_1989_I276764/d02-x01-y01","/JADE_1990_I282847/d01-x01-y01"]
+analyses["IdentifiedParticle"][22  ]["x" ][44.0]=["/JADE_1990_I282847/d02-x01-y01"]
+analyses["IdentifiedParticle"][22  ]["x" ][91.2]=["/OPAL_1998_S3749908/d02-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][22  ]["xi"][91.2]=["/ALEPH_1996_S3486095/d28-x01-y01","/OPAL_1998_S3749908/d03-x01-y01"]
+# charged pions
+# x
+analyses["IdentifiedParticle"][211 ]["x" ][10.0 ] = ["/ARGUS_1989_I276860/d09-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["x" ][10.52] = ["/BELLE_2013_I1216515/d01-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][12.0 ] = ["/TASSO_1980_I153656/d02-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["x" ][14.0 ] = ["/TASSO_1983_I181470/d20-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][22.0 ] = ["/TASSO_1983_I181470/d22-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][29.0 ] = ["/TPC_1988_I262143/d01-x01-y01","/TPC_1988_I262143/d05-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][30.0 ] = ["/TASSO_1980_I153656/d05-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["x" ][34.0 ] = ["/TASSO_1989_I267755/d07-x01-y01","/TASSO_1983_I181470/d24-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][44.0 ] = ["/TASSO_1989_I267755/d10-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][91.2 ] = ["/ALEPH_1995_I382179/d01-x01-y01","/DELPHI_1998_I473409/d19-x01-y01",
+                                                     "/ALEPH_1996_S3486095/d25-x01-y01","/SLD_2004_S5693039/d02-x01-y02",
+                                                     "/SLD_1999_S3743934/d01-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["Other" ][91.2 ] = ["/SLD_1999_S3743934/d26-x01-y01","/SLD_1999_S3743934/d26-x01-y02",
+                                                         "/SLD_1999_S3743934/d27-x01-y01","/SLD_2004_S5693039/d09-x01-y01",
+                                                         "/SLD_2004_S5693039/d09-x01-y02","/SLD_2004_S5693039/d09-x01-y03",]
+# p
+analyses["IdentifiedParticle"][211 ]["p" ][10.0 ] = ["/ARGUS_1989_I276860/d05-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["p" ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y01","/BABAR_2013_I1238276/d02-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][12.0 ] = ["/TASSO_1980_I153656/d02-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][14.0 ] = ["/TASSO_1983_I181470/d19-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][22.0 ] = ["/TASSO_1983_I181470/d25-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][30.0 ] = ["/TASSO_1980_I153656/d05-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][34.0 ] = ["/TASSO_1983_I181470/d13-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][91.2 ] = ["/DELPHI_1998_I473409/d18-x01-y01","/OPAL_1994_S2927284/d01-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][211 ]["xi"][58.0 ] = ["/TOPAZ_1995_I381900/d02-x01-y01"]
+# ratios
+analyses["IdentifiedParticle"][211 ]["Ratio"][12.0 ] = ["/TASSO_1980_I153656/d08-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["Ratio"][29.0 ] = ["/TPC_1988_I262143/d06-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["Ratio"][30.0 ] = ["/TASSO_1980_I153656/d11-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["Ratio"][34.0 ] = ["/TASSO_1989_I267755/d01-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["Ratio"][44.0 ] = ["/TASSO_1989_I267755/d04-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["Ratio"][91.2 ] = ["/DELPHI_1998_I473409/d04-x01-y01","/SLD_1999_S3743934/d01-x01-y01"]
+# neutral pions
+# x
+analyses["IdentifiedParticle"][111 ]["x" ][10.0]=["/ARGUS_1990_I278933/d03-x01-y01","/ARGUS_1990_I278933/d03-x01-y02"]
+analyses["IdentifiedParticle"][111 ]["x" ][14.0]=["/TASSO_1982_I168232/d02-x03-y03","/CELLO_1983_I191415/d04-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][22.0]=["/CELLO_1983_I191415/d05-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][29.0]=["/TPC_1985_I205868/d02-x01-y01" ]
+analyses["IdentifiedParticle"][111 ]["x" ][34.0]=["/TASSO_1982_I168232/d03-x03-y03","/TASSO_1986_I230950/d02-x01-y01",
+                                                  "/CELLO_1983_I191415/d06-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][35.0]=["/CELLO_1989_I276764/d03-x01-y01","/CELLO_1989_I276764/d04-x01-y01",
+                                                  "/JADE_1990_I282847/d03-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][44.0]=["/TASSO_1989_I267755/d13-x01-y01","/JADE_1990_I282847/d04-x01-y01"]
+analyses["IdentifiedParticle"][111 ]["x" ][91.2]=["/DELPHI_1996_I401100/d01-x01-y01","/ALEPH_1996_S3486095/d29-x01-y01",
+                                                  "/OPAL_1998_S3749908/d04-x01-y01",]
+# p/E
+analyses["IdentifiedParticle"][111 ]["p" ][14.0]=["/TASSO_1982_I168232/d02-x01-y01","/TASSO_1982_I168232/d02-x02-y02"]
+analyses["IdentifiedParticle"][111 ]["p" ][34.0]=["/TASSO_1982_I168232/d03-x01-y01","/TASSO_1982_I168232/d03-x02-y02",
+                                                  "/TASSO_1986_I230950/d01-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][111 ]["xi"][91.2]=["/OPAL_1998_S3749908/d05-x01-y01"]
+# eta
+#x
+analyses["IdentifiedParticle"][221 ]["x" ][10.0]=["/ARGUS_1990_I278933/d05-x01-y01","/ARGUS_1990_I278933/d05-x01-y02"]
+analyses["IdentifiedParticle"][221 ]["x" ][29.0]=["/HRS_1988_I250824/d01-x01-y01"]
+analyses["IdentifiedParticle"][221 ]["x" ][35.0]=["/CELLO_1989_I276764/d05-x01-y01" ,"/JADE_1990_I282847/d05-x01-y01"]
+analyses["IdentifiedParticle"][221 ]["x" ][91.2]=["/ALEPH_2002_S4823664/d02-x01-y02","/L3_1992_I336180/d01-x01-y01",
+                                                  "/ALEPH_1996_S3486095/d30-x01-y01","/OPAL_1998_S3749908/d06-x01-y01",]
+# xi
+analyses["IdentifiedParticle"][221 ]["xi"][91.2]=["/L3_1992_I336180/d02-x01-y01","/OPAL_1998_S3749908/d07-x01-y01"]
+# eta'
+# x
+analyses["IdentifiedParticle"][331 ]["x" ][91.2]=["/L3_1997_I427107/d07-x01-y01"    ,"/L3_1997_I427107/d09-x01-y01",
+                                                  "/ALEPH_1996_S3486095/d31-x01-y01","/OPAL_1998_S3749908/d12-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][331 ]["xi"][91.2]=["/L3_1997_I427107/d08-x01-y01","/L3_1997_I427107/d10-x01-y01",
+                                                  "/OPAL_1998_S3749908/d13-x01-y01"]
+# rho +/-
+analyses["IdentifiedParticle"][213 ]["x" ][91.2] = ["/OPAL_1998_S3749908/d08-x01-y01"]
+analyses["IdentifiedParticle"][213 ]["xi"][91.2] = ["/OPAL_1998_S3749908/d09-x01-y01"]
+# rho0
+analyses["IdentifiedParticle"][113 ]["x" ][10.0] = ["/ARGUS_1993_S2789213/d10-x01-y01"]
+analyses["IdentifiedParticle"][113 ]["x" ][35.0] = ["/JADE_1984_I203145/d02-x01-y01"]
+analyses["IdentifiedParticle"][113 ]["x" ][91.2] = ["/DELPHI_1999_S3960137/d01-x01-y01","/ALEPH_1996_S3486095/d37-x01-y01"]
+# omega
+analyses["IdentifiedParticle"][223 ]["x" ][10.0] = ["/ARGUS_1993_S2789213/d13-x01-y01"]
+analyses["IdentifiedParticle"][223 ]["x" ][91.2] = ["/ALEPH_2002_S4823664/d03-x01-y02","/L3_1997_I427107/d05-x01-y01",
+                                                    "/ALEPH_1996_S3486095/d38-x01-y01","/OPAL_1998_S3749908/d10-x01-y01",]
+analyses["IdentifiedParticle"][223 ]["xi"][91.2] = ["/L3_1997_I427107/d06-x01-y01","/OPAL_1998_S3749908/d11-x01-y01"]
+# phi
+analyses["IdentifiedParticle"][333 ]["x"    ][10.0] = ["/ARGUS_1989_I262551/d01-x01-y01"]
+analyses["IdentifiedParticle"][333 ]["x"    ][29.0] = ["/TPC_1984_I200105/d01-x01-y01"]
+analyses["IdentifiedParticle"][333 ]["x"    ][91.2] = ["/DELPHI_1996_I420528/d03-x01-y01","/ALEPH_1996_S3486095/d40-x01-y01",
+                                                       "/OPAL_1998_S3702294/d02-x01-y03","/SLD_1999_S3743934/d09-x01-y01"]
+analyses["IdentifiedParticle"][333 ]["Other"][29.0] = ["/TPC_1984_I200105/d03-x01-y01"]
+# f_2
+analyses["IdentifiedParticle"][225]["x"    ][91.2]=["/DELPHI_1999_S3960137/d01-x01-y03","/OPAL_1998_S3702294/d02-x01-y02"]
+# f_2'
+analyses["IdentifiedParticle"][335]["x"    ][91.2]=["/DELPHI_1996_I416741/d01-x01-y01"]
+# f_0(980)
+analyses["IdentifiedParticle"][9010221]["x"    ][10.0]=["/ARGUS_1993_S2669951/d02-x01-y01"]
+analyses["IdentifiedParticle"][9010221]["x"    ][91.2]=["/DELPHI_1999_S3960137/d01-x01-y02","/OPAL_1998_S3702294/d02-x01-y01"]
+# a_0 =/-
+analyses["IdentifiedParticle"][9000211]["x"    ][91.2]=["/OPAL_1998_S3749908/d14-x01-y01"]
+analyses["IdentifiedParticle"][9000211]["xi"   ][91.2]=["/OPAL_1998_S3749908/d15-x01-y01"]
+# strange mesons
+# K0
+# x
+analyses["IdentifiedParticle"][311 ]["x"    ][3.63] = ["/PLUTO_1977_I118873/d02-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][4.03] = ["/PLUTO_1977_I118873/d03-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][4.5]  = ["/PLUTO_1977_I118873/d04-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][9.4]  = ["/PLUTO_1981_I165122/d05-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][10.0] = ["/ARGUS_1989_I276860/d11-x01-y02"]
+analyses["IdentifiedParticle"][311 ]["x"    ][14.0] = ["/TASSO_1980_I153341/d04-x01-y01","/TASSO_1985_I205119/d01-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][22.0] = ["/TASSO_1985_I205119/d02-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][29.0] = ["/TPC_1984_I205869/d04-x01-y01","/HRS_1990_I280958/d03-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][30.0] = ["/PLUTO_1981_I165122/d04-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][34.0] = ["/TASSO_1985_I205119/d03-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][34.5] = ["/TASSO_1990_I284251/d01-x01-y03"]
+analyses["IdentifiedParticle"][311 ]["x"    ][35.0] = ["/TASSO_1990_I284251/d01-x01-y02","/CELLO_1990_I283026/d01-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][42.6] = ["/TASSO_1990_I284251/d01-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["x"    ][91.2] = ["/OPAL_2000_S4418603/d03-x01-y01","/DELPHI_1995_I377487/d08-x01-y01",
+                                                       "/ALEPH_1996_S3486095/d32-x01-y01","/SLD_1999_S3743934/d05-x01-y01"]
+# p
+analyses["IdentifiedParticle"][311 ]["p"    ][10.0] = ["/ARGUS_1989_I276860/d07-x01-y02"]
+analyses["IdentifiedParticle"][311 ]["p"    ][14.0] = ["/TASSO_1980_I153341/d02-x01-y01","/TASSO_1985_I205119/d07-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["p"    ][22.0] = ["/TASSO_1985_I205119/d08-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["p"    ][34.0] = ["/TASSO_1985_I205119/d09-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][311 ]["xi"   ][58.0] = ["/TOPAZ_1995_I381900/d03-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["xi"   ][91.2] = ["/DELPHI_1995_I377487/d09-x01-y01"]
+# other
+analyses["IdentifiedParticle"][311 ]["Other"][14.8 ] = ["/TASSO_1990_I284251/d06-x01-y01","/TASSO_1990_I284251/d06-x01-y02"]
+analyses["IdentifiedParticle"][311 ]["Other"][21.5 ] = ["/TASSO_1990_I284251/d07-x01-y01","/TASSO_1990_I284251/d07-x01-y02"]
+analyses["IdentifiedParticle"][311 ]["Other"][29.0 ] = ["/HRS_1990_I280958/d04-x01-y01"]
+analyses["IdentifiedParticle"][311 ]["Other"][35.0 ] = ["/TASSO_1990_I284251/d05-x01-y03","/TASSO_1990_I284251/d05-x01-y04",""]
+analyses["IdentifiedParticle"][311 ]["Other"][42.6 ] = ["/TASSO_1990_I284251/d05-x01-y01","/TASSO_1990_I284251/d05-x01-y02"]
+# K+/-
+# x
+analyses["IdentifiedParticle"][321 ]["x"    ][10.0 ] = ["/ARGUS_1989_I276860/d10-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["x"    ][10.52] = ["/BELLE_2013_I1216515/d01-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["x"    ][12.0 ] = ["/TASSO_1980_I153656/d03-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["x"    ][14.0 ] = ["/TASSO_1983_I181470/d26-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x"    ][22.0 ] = ["/TASSO_1983_I181470/d10-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x"    ][29.0 ] = ["/TPC_1988_I262143/d01-x01-y02","/TPC_1988_I262143/d05-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["x"    ][30.0 ] = ["/TASSO_1980_I153656/d06-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["x"    ][34.0 ] = ["/TASSO_1989_I267755/d08-x01-y01","/TASSO_1983_I181470/d12-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x"    ][44.0 ] = ["/TASSO_1989_I267755/d11-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x"    ][91.2 ] = ["/ALEPH_1995_I382179/d02-x01-y01","/DELPHI_1995_I394052/d05-x01-y01",
+                                                        "/DELPHI_1998_I473409/d21-x01-y01","/SLD_1999_S3743934/d02-x01-y02",
+                                                        "/ALEPH_1996_S3486095/d26-x01-y01","/SLD_2004_S5693039/d03-x01-y02"]
+# p
+analyses["IdentifiedParticle"][321 ]["p"    ][10.0 ] = ["/ARGUS_1989_I276860/d06-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["p"    ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y02","/BABAR_2013_I1238276/d02-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["p"    ][12.0 ] = ["/TASSO_1980_I153656/d03-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p"    ][14.0 ] = ["/TASSO_1983_I181470/d21-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p"    ][22.0 ] = ["/TASSO_1983_I181470/d27-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p"    ][30.0 ] = ["/TASSO_1980_I153656/d06-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p"    ][34.0 ] = ["/TASSO_1983_I181470/d15-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p"    ][91.2 ] = ["/DELPHI_1995_I394052/d03-x01-y01","/DELPHI_1998_I473409/d20-x01-y01",
+                                                        "/OPAL_1994_S2927284/d02-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][321 ]["xi"   ][58.0 ] = ["/TOPAZ_1995_I381900/d02-x01-y02"]
+# ratio
+analyses["IdentifiedParticle"][321 ]["Ratio"][12.0 ] = ["/TASSO_1980_I153656/d09-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["Ratio"][29.0 ] = ["/TPC_1988_I262143/d07-x01-y01","/TPC_1988_I262143/d06-x01-y02"]
+analyses["IdentifiedParticle"][321 ]["Ratio"][30.0 ] = ["/TASSO_1980_I153656/d12-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["Ratio"][34.0 ] = ["/TASSO_1989_I267755/d02-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["Ratio"][44.0 ] = ["/TASSO_1989_I267755/d05-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["Ratio"][91.2 ] = ["/DELPHI_1998_I473409/d05-x01-y01","/SLD_1999_S3743934/d02-x01-y01"]
+# other
+analyses["IdentifiedParticle"][321 ]["Other"][91.2 ] = ["/SLD_1999_S3743934/d30-x01-y01","/SLD_1999_S3743934/d30-x01-y02",
+                                                        "/SLD_1999_S3743934/d31-x01-y01","/SLD_2004_S5693039/d10-x01-y01",
+                                                        "/SLD_2004_S5693039/d10-x01-y02","/SLD_2004_S5693039/d10-x01-y03"]
+# K*0
+analyses["IdentifiedParticle"][313 ]["x"    ][10.0 ] = ["/ARGUS_1993_S2789213/d07-x01-y01"]
+analyses["IdentifiedParticle"][313 ]["x"    ][29.0 ] = ["/TPC_1984_I205869/d03-x01-y01"]
+analyses["IdentifiedParticle"][313 ]["x"    ][91.2 ] = ["/DELPHI_1996_I420528/d01-x01-y01","/ALEPH_1996_S3486095/d39-x01-y01",
+                                                        "/OPAL_1997_S3608263/d01-x01-y01","/SLD_1999_S3743934/d08-x01-y01"]
+analyses["IdentifiedParticle"][313 ]["Other"][91.2 ] = ["/SLD_1999_S3743934/d28-x01-y01","/SLD_1999_S3743934/d28-x01-y02",
+                                                        "/SLD_1999_S3743934/d29-x01-y01"]
+# K* +/-
+analyses["IdentifiedParticle"][323 ]["x"    ][10.0 ] = ["/ARGUS_1993_S2789213/d04-x01-y01"]
+analyses["IdentifiedParticle"][323 ]["x"    ][14.8 ] = ["/TASSO_1990_I284251/d02-x01-y01"]
+analyses["IdentifiedParticle"][323 ]["x"    ][21.5 ] = ["/TASSO_1990_I284251/d03-x01-y01"]
+analyses["IdentifiedParticle"][323 ]["x"    ][34.5 ] = ["/TASSO_1990_I284251/d08-x01-y03"]
+analyses["IdentifiedParticle"][323 ]["x"    ][35.0 ] = ["/TASSO_1990_I284251/d08-x01-y02","/CELLO_1990_I283026/d02-x01-y01",
+                                                        "/JADE_1984_I203145/d03-x01-y01"]
+analyses["IdentifiedParticle"][323 ]["x"    ][42.6 ] = ["/TASSO_1990_I284251/d08-x01-y01"]
+analyses["IdentifiedParticle"][323 ]["x"    ][91.2 ] = ["/OPAL_1993_I342766/d01-x01-y01","/DELPHI_1995_I377487/d10-x01-y01",
+                                                        "/ALEPH_1996_S3486095/d43-x01-y01"]
+analyses["IdentifiedParticle"][323 ]["Other"][35.0 ] = ["/TASSO_1990_I284251/d10-x01-y01","/TASSO_1990_I284251/d10-x01-y02"]
+# charm
+# D+/-
+analyses["IdentifiedParticle"][421 ]["x"    ][10.5 ] = ["/CLEO_2004_S5809304/d03-x01-y01","/CLEO_2004_S5809304/d04-x01-y01"]
+analyses["IdentifiedParticle"][421 ]["x"    ][29.0 ] = ["/HRS_1988_I23360/d02-x01-y01"]
+# D0
+analyses["IdentifiedParticle"][411 ]["x"    ][10.5 ] = ["/CLEO_2004_S5809304/d02-x01-y01","/CLEO_2004_S5809304/d09-x01-y01"]
+analyses["IdentifiedParticle"][411 ]["x"    ][29.0 ] = ["/HRS_1988_I23360/d02-x01-y02"]
+# D* 0
+analyses["IdentifiedParticle"][423 ]["x"    ][10.5]=["/CLEO_2004_S5809304/d07-x01-y01","/CLEO_2004_S5809304/d08-x01-y01"]
+# D* +/-
+analyses["IdentifiedParticle"][413 ]["x"    ][29.0 ] = ["/TPC_1986_I217416/d01-x01-y01","/TPC_1986_I217416/d01-x01-y02",
+                                                        "/HRS_1988_I23360/d01-x01-y01","/HRS_1988_I23360/d01-x01-y02"]
+analyses["IdentifiedParticle"][413 ]["x"    ][34.4 ] = ["/JADE_1984_I202785/d01-x01-y01"]
+analyses["IdentifiedParticle"][413 ]["x"    ][36.2 ] = ["/TASSO_1989_I278856/d01-x01-y01","/TASSO_1989_I278856/d01-x01-y02",
+                                                        "/TASSO_1989_I278856/d02-x01-y01","/TASSO_1989_I278856/d02-x01-y02"]
+analyses["IdentifiedParticle"][413 ]["x"    ][91.2 ] = ["/ALEPH_1999_S4193598/d01-x01-y01"]
+analyses["IdentifiedParticle"][413 ]["x"    ][10.5 ] = ["/CLEO_2004_S5809304/d05-x01-y01","/CLEO_2004_S5809304/d06-x01-y01"]
+analyses["IdentifiedParticle"][413 ]["Other"][34.4 ] = ["/JADE_1984_I202785/d03-x01-y01"]
+# D_2
+analyses["IdentifiedParticle"][425 ]["x"    ][10.0 ] = ["/ARGUS_1989_I268577/d02-x01-y01"]
+# D_s+
+analyses["IdentifiedParticle"][431 ]["x"    ][10.5 ] = ["/CLEO_2000_I526554/d02-x01-y01","/CLEO_2000_I526554/d04-x01-y01"]
+# D_s*+
+analyses["IdentifiedParticle"][433 ]["x"    ][10.5 ] = ["/CLEO_2000_I526554/d01-x01-y01","/CLEO_2000_I526554/d03-x01-y01"]
+# charmonium
+analyses["IdentifiedParticle"][443 ]["x"    ][91.2 ] = ["/OPAL_1996_S3257789/d01-x01-y01"]
+#
+#  Baryons
+#
+# light unflavoured
+# proton
+# x
+analyses["IdentifiedParticle"][2212]["x"    ][10.0 ] = ["/ARGUS_1989_I276860/d12-x01-y02"]
+analyses["IdentifiedParticle"][2212]["x"    ][12.0 ] = ["/TASSO_1980_I153656/d04-x01-y02"]
+analyses["IdentifiedParticle"][2212]["x"    ][14.0 ] = ["/TASSO_1983_I181470/d14-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x"    ][22.0 ] = ["/TASSO_1983_I181470/d16-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x"    ][29.0 ] = ["/TPC_1988_I262143/d01-x01-y03","/TPC_1988_I262143/d05-x01-y03"]
+analyses["IdentifiedParticle"][2212]["x"    ][30.0 ] = ["/TASSO_1980_I153656/d07-x01-y02"]
+analyses["IdentifiedParticle"][2212]["x"    ][34.0 ] = ["/TASSO_1989_I267755/d09-x01-y01","/TASSO_1983_I181470/d18-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x"    ][44.0 ] = ["/TASSO_1989_I267755/d12-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x"    ][91.2 ] = ["/ALEPH_1995_I382179/d03-x01-y01","/DELPHI_1995_I394052/d06-x01-y01",
+                                                        "/DELPHI_1998_I473409/d23-x01-y01","/ALEPH_1996_S3486095/d27-x01-y01",
+                                                        "/SLD_2004_S5693039/d04-x01-y02","/SLD_1999_S3743934/d03-x01-y02"]
+# p
+analyses["IdentifiedParticle"][2212]["p"    ][10.0 ] = ["/ARGUS_1989_I276860/d08-x01-y02"]
+analyses["IdentifiedParticle"][2212]["p"    ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y03","/BABAR_2013_I1238276/d02-x01-y03"] 
+analyses["IdentifiedParticle"][2212]["p"    ][12.0 ] = ["/TASSO_1980_I153656/d04-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p"    ][14.0 ] = ["/TASSO_1983_I181470/d23-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p"    ][22.0 ] = ["/TASSO_1983_I181470/d11-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p"    ][30.0 ] = ["/TASSO_1980_I153656/d07-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p"    ][34.0 ] = ["/TASSO_1989_I267755/d03-x01-y01","/JADE_1981_I166363/d01-x01-y01",
+                                                        "/TASSO_1983_I181470/d17-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p"    ][44.0 ] = ["/TASSO_1989_I267755/d06-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p"    ][91.2 ] = ["/DELPHI_1995_I394052/d04-x01-y01","/DELPHI_1998_I473409/d22-x01-y01",
+                                                        "/OPAL_1994_S2927284/d03-x01-y01",]
+# xi
+analyses["IdentifiedParticle"][2212]["xi"   ][58.0 ] = ["/TOPAZ_1995_I381900/d02-x01-y03"]
+# ratio
+analyses["IdentifiedParticle"][2212]["Ratio"][12.0 ] = ["/TASSO_1980_I153656/d10-x01-y01"]
+analyses["IdentifiedParticle"][2212]["Ratio"][29.0 ] = ["/TPC_1988_I262143/d06-x01-y03","/TPC_1988_I262143/d07-x01-y02",
+                                                        "/TPC_1988_I262143/d07-x01-y03"]
+analyses["IdentifiedParticle"][2212]["Ratio"][30.0 ] = ["/TASSO_1980_I153656/d13-x01-y01"]
+analyses["IdentifiedParticle"][2212]["Ratio"][91.2 ] = ["/SLD_1999_S3743934/d03-x01-y01","/DELPHI_1998_I473409/d06-x01-y01"]
+analyses["IdentifiedParticle"][2212]["Other"][91.2 ] = ["/SLD_1999_S3743934/d32-x01-y01","/SLD_1999_S3743934/d32-x01-y02",
+                                                        "/SLD_1999_S3743934/d33-x01-y01","/SLD_2004_S5693039/d11-x01-y01",
+                                                        "/SLD_2004_S5693039/d11-x01-y02","/SLD_2004_S5693039/d11-x01-y03"]
+# Delta++
+analyses["IdentifiedParticle"][2224]["x"    ][91.2 ] = ["/OPAL_1995_S3198391/d01-x01-y01","/DELPHI_1995_I399737/d01-x01-y01"]
+# hyperons
+# lambda0
+# x
+analyses["IdentifiedParticle"][3122]["x"    ][10.0 ] = ["/ARGUS_1988_I251097/d05-x01-y01","/ARGUS_1988_I251097/d06-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][10.52] = ["/BELLE_2017_I1606201/d01-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][14.0 ] = ["/TASSO_1985_I205119/d04-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][22.0 ] = ["/TASSO_1985_I205119/d05-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][29.0 ] = ["/HRS_1992_I339573/d01-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][34.0 ] = ["/TASSO_1985_I205119/d06-x01-y01"] 
+analyses["IdentifiedParticle"][3122]["x"    ][34.8 ] = ["/TASSO_1989_I266893/d08-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][35.0 ] = ["/CELLO_1990_I283026/d03-x01-y01"]
+analyses["IdentifiedParticle"][3122]["x"    ][91.2 ] = ["/OPAL_1997_S3396100/d01-x01-y01","/ALEPH_1996_S3486095/d33-x01-y01",
+                                                        "/DELPHI_1993_I360638/d01-x01-y01","/SLD_1999_S3743934/d07-x01-y01"]
+# p
+analyses["IdentifiedParticle"][3122]["p"    ][14.0 ] = ["/TASSO_1985_I205119/d10-x01-y01"]
+analyses["IdentifiedParticle"][3122]["p"    ][22.0 ] = ["/TASSO_1985_I205119/d11-x01-y01"]
+analyses["IdentifiedParticle"][3122]["p"    ][34.0 ] = ["/JADE_1981_I166363/d02-x01-y01","/TASSO_1985_I205119/d12-x01-y01"]
+analyses["IdentifiedParticle"][3122]["p"    ][34.8 ] = ["/TASSO_1989_I266893/d03-x01-y01"]
+# xi
+analyses["IdentifiedParticle"][3122]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d02-x01-y01"]
+# other
+analyses["IdentifiedParticle"][3122]["Other"][34.8 ] = ["/TASSO_1989_I266893/d04-x01-y01","/TASSO_1989_I266893/d05-x01-y01",
+                                                        "/TASSO_1989_I266893/d06-x01-y01","/TASSO_1989_I266893/d07-x01-y01",
+                                                        "/TASSO_1989_I266893/d15-x01-y01","/TASSO_1989_I266893/d15-x01-y02",
+                                                        "/TASSO_1989_I266893/d15-x01-y03"]
+analyses["IdentifiedParticle"][3122]["Other"][91.2 ] = ["/DELPHI_1993_I360638/d03-x01-y01","/DELPHI_1993_I360638/d04-x01-y01",
+                                                        "/DELPHI_1993_I360638/d05-x01-y01","/DELPHI_1993_I360638/d06-x01-y01",
+                                                        "/SLD_1999_S3743934/d34-x01-y01","/SLD_1999_S3743934/d34-x01-y02",
+                                                        "/SLD_1999_S3743934/d35-x01-y01"]
+# Sigma+
+analyses["IdentifiedParticle"][3222]["x"    ][91.2 ] = ["/OPAL_1997_I421977/d01-x01-y01"]
+# sigma0
+analyses["IdentifiedParticle"][3212]["x"    ][10.52] = ["/BELLE_2017_I1606201/d02-x01-y01"]
+# sigma-
+analyses["IdentifiedParticle"][3112]["x"    ][91.2 ] = ["/OPAL_1997_I421977/d02-x01-y01","/DELPHI_2000_I524694/d01-x01-y01"]
+# Sigma*+
+analyses["IdentifiedParticle"][3224   ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d03-x01-y01"]
+analyses["IdentifiedParticle"][3224   ]["x"    ][91.2 ] = ["/DELPHI_1995_S3137023/d03-x01-y01","/OPAL_1997_S3396100/d05-x01-y01"]
+analyses["IdentifiedParticle"][3224   ]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d06-x01-y01"]
+analyses["IdentifiedParticle"]["3224B"]["x"    ][91.2 ] = ["/ALEPH_1996_S3486095/d35-x01-y01"]
+# sigma*-
+analyses["IdentifiedParticle"][3114   ]["x"    ][91.2 ] = ["/OPAL_1997_S3396100/d07-x01-y01"]
+analyses["IdentifiedParticle"][3114   ]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d08-x01-y01"]
+# xi-
+analyses["IdentifiedParticle"][3312]["x"    ][10.0 ] = ["/ARGUS_1988_I251097/d09-x01-y01"]
+analyses["IdentifiedParticle"][3312]["x"    ][10.52] = ["/BELLE_2017_I1606201/d05-x01-y01"]
+analyses["IdentifiedParticle"][3312]["x"    ][34.4 ] = ["/TASSO_1983_I192072/d02-x01-y01"]
+analyses["IdentifiedParticle"][3312]["x"    ][34.8 ] = ["/TASSO_1989_I266893/d23-x01-y01"]
+analyses["IdentifiedParticle"][3312]["p"    ][34.8 ] = ["/TASSO_1989_I266893/d18-x01-y01"]
+analyses["IdentifiedParticle"][3312]["x"    ][91.2 ] = ["/OPAL_1997_S3396100/d03-x01-y01","/DELPHI_1995_S3137023/d02-x01-y01",
+                                                        "/ALEPH_1996_S3486095/d34-x01-y01"]
+analyses["IdentifiedParticle"][3312]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d04-x01-y01","/DELPHI_2006_I719387/d01-x03-y01",]
+analyses["IdentifiedParticle"][3312]["Other"][34.8 ] = ["/TASSO_1989_I266893/d19-x01-y01","/TASSO_1989_I266893/d20-x01-y01",
+                                                        "/TASSO_1989_I266893/d21-x01-y01","/TASSO_1989_I266893/d22-x01-y01"]
+# xi*0
+analyses["IdentifiedParticle"][3324]["x"    ][10.52] = ["/BELLE_2017_I1606201/d07-x01-y01"]
+analyses["IdentifiedParticle"][3324]["x"    ][91.2 ] = ["/OPAL_1997_S3396100/d09-x01-y01","/ALEPH_1996_S3486095/d36-x01-y01"]
+analyses["IdentifiedParticle"][3324]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d10-x01-y01"]
+# omega
+analyses["IdentifiedParticle"][3334]["x"    ][10.52] = ["/BELLE_2017_I1606201/d06-x01-y01"]
+# lambda 1520
+analyses["IdentifiedParticle"][3124]["x"    ][10.0 ] = ["/ARGUS_1989_I262415/d04-x01-y01"]
+analyses["IdentifiedParticle"][3124]["x"    ][10.52] = ["/BELLE_2017_I1606201/d04-x01-y01"]
+analyses["IdentifiedParticle"][3124]["x"    ][91.2 ] = ["/OPAL_1997_S3396100/d11-x01-y01","/DELPHI_2000_I524694/d03-x01-y01"]
+analyses["IdentifiedParticle"][3124]["xi"   ][91.2 ] = ["/OPAL_1997_S3396100/d12-x01-y01"]
+# charm baryons
+# lambda_c
+analyses["IdentifiedParticle"][4122 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d08-x01-y01"]
+analyses["IdentifiedParticle"][4122 ]["x"    ][10.54] = ["/BABAR_2007_S6895344/d01-x01-y01"]
+analyses["IdentifiedParticle"][4122 ]["Other"][10.5 ] = ["/CLEO_2001_I552541/d03-x01-y01","/CLEO_2001_I552541/d03-x01-y02",
+                                                         "/CLEO_2001_I552541/d03-x01-y03","/CLEO_2001_I552541/d03-x01-y04",
+                                                         "/CLEO_2001_I552541/d04-x01-y01","/CLEO_2001_I552541/d04-x01-y02",
+                                                         "/CLEO_2001_I552541/d04-x01-y03","/CLEO_2001_I552541/d04-x01-y04",]
+# sigma_c0
+analyses["IdentifiedParticle"][4112 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d11-x01-y01"]
+# sigma_c*0
+analyses["IdentifiedParticle"][4114 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d12-x01-y01"]
+# xi_c
+analyses["IdentifiedParticle"][4132 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d14-x01-y01","/BELLE_2017_I1606201/d15-x01-y01"]
+# omega_c
+analyses["IdentifiedParticle"][4332 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d13-x01-y01"]
+# lambda_c(2595)
+analyses["IdentifiedParticle"][14122]["x"    ][10.52] = ["/BELLE_2017_I1606201/d09-x01-y01"]
+# lambda_c(2625)
+analyses["IdentifiedParticle"][4124 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d10-x01-y01"]
 # b fragmentation
 analyses["IdentifiedParticle"][511]["weak"     ] = ["/DELPHI_2011_I890503/d01-x01-y01","/SLD_2002_S4869273/d01-x01-y01",
                                                     "/ALEPH_2001_S4656318/d01-x01-y01","/OPAL_2003_I599181/d01-x01-y01"]
@@ -949,22 +1147,24 @@ analyses["Multiplicity"]["3224B"][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d48-x01-
 analyses["EventShapes"]["T"][14.0 ] = ["/TASSO_1990_S2148048/d08-x01-y01"]
 analyses["EventShapes"]["T"][22.0 ] = ["/TASSO_1990_S2148048/d08-x01-y02"]
 analyses["EventShapes"]["T"][29.0 ] = ["/HRS_1985_I201482/d03-x01-y01","/HRS_1985_I201482/d04-x01-y01"]
-analyses["EventShapes"]["T"][35.0 ] = ["/TASSO_1990_S2148048/d08-x01-y03","/TASSO_1988_I263859/d03-x01-y01","/JADE_1998_S3612880/d06-x01-y01"]
+analyses["EventShapes"]["T"][35.0 ] = ["/TASSO_1990_S2148048/d08-x01-y03","/TASSO_1988_I263859/d03-x01-y01",
+                                       "/JADE_1998_S3612880/d06-x01-y01"]
 analyses["EventShapes"]["T"][44.0 ] = ["/TASSO_1990_S2148048/d08-x01-y04","/JADE_1998_S3612880/d02-x01-y01"]
 analyses["EventShapes"]["T"][45.0 ] = ["/DELPHI_2003_I620250/d01-x01-y01"]
 analyses["EventShapes"]["T"][55.2 ] = ["/AMY_1990_I283337/d12-x01-y01"]
 analyses["EventShapes"]["T"][58.0 ] = ["/TOPAZ_1993_I361661/d01-x01-y01"]
 analyses["EventShapes"]["T"][66.0 ] = ["/DELPHI_2003_I620250/d01-x01-y02"]
 analyses["EventShapes"]["T"][76.0 ] = ["/DELPHI_2003_I620250/d01-x01-y03"]
-analyses["EventShapes"]["T"][91.2 ] = ["/DELPHI_1996_S3430090/d11-x01-y01","/ALEPH_1996_S3486095/d03-x01-y01","/OPAL_2004_S6132243/d01-x01-y01"]
-analyses["EventShapes"]["T"][133.0] = ["/ALEPH_2004_S5765862/d54-x01-y01","/OPAL_2004_S6132243/d01-x01-y02"]
-analyses["EventShapes"]["T"][161.0] = ["/ALEPH_2004_S5765862/d55-x01-y01"]
-analyses["EventShapes"]["T"][172.0] = ["/ALEPH_2004_S5765862/d56-x01-y01"]
+analyses["EventShapes"]["T"][91.2 ] = ["/DELPHI_1996_S3430090/d11-x01-y01","/ALEPH_1996_S3486095/d03-x01-y01",
+                                       "/OPAL_2004_S6132243/d01-x01-y01","/ALEPH_2004_S5765862/d54-x01-y01"]
+analyses["EventShapes"]["T"][133.0] = ["/ALEPH_2004_S5765862/d55-x01-y01","/OPAL_2004_S6132243/d01-x01-y02"]
+analyses["EventShapes"]["T"][161.0] = ["/ALEPH_2004_S5765862/d56-x01-y01"]
+analyses["EventShapes"]["T"][172.0] = ["/ALEPH_2004_S5765862/d57-x01-y01"]
 analyses["EventShapes"]["T"][177.0] = ["/OPAL_2004_S6132243/d01-x01-y03"]
-analyses["EventShapes"]["T"][183.0] = ["/DELPHI_2003_I620250/d38-x01-y01","/ALEPH_2004_S5765862/d57-x01-y01"]
-analyses["EventShapes"]["T"][189.0] = ["/DELPHI_2003_I620250/d38-x01-y02","/ALEPH_2004_S5765862/d58-x01-y01"]
+analyses["EventShapes"]["T"][183.0] = ["/DELPHI_2003_I620250/d38-x01-y01","/ALEPH_2004_S5765862/d58-x01-y01"]
+analyses["EventShapes"]["T"][189.0] = ["/DELPHI_2003_I620250/d38-x01-y02","/ALEPH_2004_S5765862/d59-x01-y01"]
 analyses["EventShapes"]["T"][192.0] = ["/DELPHI_2003_I620250/d38-x01-y03"]
-analyses["EventShapes"]["T"][196.0] = ["/DELPHI_2003_I620250/d38-x01-y04","/ALEPH_2004_S5765862/d59-x01-y01"]
+analyses["EventShapes"]["T"][196.0] = ["/DELPHI_2003_I620250/d38-x01-y04"]
 analyses["EventShapes"]["T"][200.0] = ["/DELPHI_2003_I620250/d39-x01-y01","/ALEPH_2004_S5765862/d60-x01-y01"]
 analyses["EventShapes"]["T"][197.0] = ["/OPAL_2004_S6132243/d01-x01-y04"]
 analyses["EventShapes"]["T"][202.0] = ["/DELPHI_2003_I620250/d39-x01-y02"]
@@ -1052,14 +1252,17 @@ analyses["EventShapes"]["Moment_BN"][197.0] = ["/OPAL_2004_S6132243/d26-x01-y04"
 analyses["EventShapes"]["Major"][45.0 ] = ["/DELPHI_2003_I620250/d02-x01-y01"]
 analyses["EventShapes"]["Major"][55.2 ] = ["/AMY_1990_I283337/d13-x01-y01"]
 analyses["EventShapes"]["Major"][66.0 ] = ["/DELPHI_2003_I620250/d02-x01-y02"]
-analyses["EventShapes"]["Major"][76.0 ] = ["/DELPHI_2003_I620250/d02-x01-y03","/ALEPH_2004_S5765862/d97-x01-y01"]
-analyses["EventShapes"]["Major"][91.2 ] = ["/DELPHI_1996_S3430090/d12-x01-y01","/OPAL_2004_S6132243/d07-x01-y01"]
-analyses["EventShapes"]["Major"][133.0] = ["/OPAL_2004_S6132243/d07-x01-y02"]
+analyses["EventShapes"]["Major"][76.0 ] = ["/DELPHI_2003_I620250/d02-x01-y03"]
+analyses["EventShapes"]["Major"][91.2 ] = ["/DELPHI_1996_S3430090/d12-x01-y01","/OPAL_2004_S6132243/d07-x01-y01",
+                                           "/ALEPH_2004_S5765862/d94-x01-y01"]
+analyses["EventShapes"]["Major"][133.0] = ["/ALEPH_2004_S5765862/d95-x01-y01","/OPAL_2004_S6132243/d07-x01-y02"]
+analyses["EventShapes"]["Major"][161.0] = ["/ALEPH_2004_S5765862/d96-x01-y01"]
+analyses["EventShapes"]["Major"][172.0] = ["/ALEPH_2004_S5765862/d97-x01-y01"]
 analyses["EventShapes"]["Major"][177.0] = ["/OPAL_2004_S6132243/d07-x01-y03"]
-analyses["EventShapes"]["Major"][183.0] = ["/ALEPH_2004_S5765862/d94-x01-y01","/DELPHI_2003_I620250/d40-x01-y01","/ALEPH_2004_S5765862/d98-x01-y01"]
-analyses["EventShapes"]["Major"][189.0] = ["/ALEPH_2004_S5765862/d95-x01-y01","/DELPHI_2003_I620250/d40-x01-y02"]
-analyses["EventShapes"]["Major"][192.0] = ["/ALEPH_2004_S5765862/d96-x01-y01","/DELPHI_2003_I620250/d40-x01-y03"]
-analyses["EventShapes"]["Major"][196.0] = ["/DELPHI_2003_I620250/d40-x01-y04","/ALEPH_2004_S5765862/d99-x01-y01" ]
+analyses["EventShapes"]["Major"][183.0] = ["/DELPHI_2003_I620250/d40-x01-y01","/ALEPH_2004_S5765862/d98-x01-y01"]
+analyses["EventShapes"]["Major"][189.0] = ["/DELPHI_2003_I620250/d40-x01-y02","/ALEPH_2004_S5765862/d99-x01-y01"]
+analyses["EventShapes"]["Major"][192.0] = ["/DELPHI_2003_I620250/d40-x01-y03"]
+analyses["EventShapes"]["Major"][196.0] = ["/DELPHI_2003_I620250/d40-x01-y04"]
 analyses["EventShapes"]["Major"][197.0] = ["/OPAL_2004_S6132243/d07-x01-y04"]
 analyses["EventShapes"]["Major"][200.0] = ["/DELPHI_2003_I620250/d41-x01-y01","/ALEPH_2004_S5765862/d100-x01-y01"]
 analyses["EventShapes"]["Major"][202.0] = ["/DELPHI_2003_I620250/d41-x01-y02"]
@@ -1074,11 +1277,12 @@ analyses["EventShapes"]["Minor"][91.2 ] = ["/DELPHI_1996_S3430090/d13-x01-y01","
                                            "/ALEPH_1996_S3486095/d04-x01-y01","/OPAL_2004_S6132243/d08-x01-y01"]
 analyses["EventShapes"]["Minor"][133.0] = ["/ALEPH_2004_S5765862/d103-x01-y01","/OPAL_2004_S6132243/d08-x01-y02"]
 analyses["EventShapes"]["Minor"][161.0] = ["/ALEPH_2004_S5765862/d104-x01-y01"]
+analyses["EventShapes"]["Minor"][172.0] = ["/ALEPH_2004_S5765862/d105-x01-y01"]
 analyses["EventShapes"]["Minor"][177.0] = ["/OPAL_2004_S6132243/d08-x01-y03"]
-analyses["EventShapes"]["Minor"][183.0] = ["/DELPHI_2003_I620250/d42-x01-y01","/ALEPH_2004_S5765862/d105-x01-y01"]
-analyses["EventShapes"]["Minor"][189.0] = ["/DELPHI_2003_I620250/d42-x01-y02","/ALEPH_2004_S5765862/d106-x01-y01"]
+analyses["EventShapes"]["Minor"][183.0] = ["/DELPHI_2003_I620250/d42-x01-y01","/ALEPH_2004_S5765862/d106-x01-y01"]
+analyses["EventShapes"]["Minor"][189.0] = ["/DELPHI_2003_I620250/d42-x01-y02","/ALEPH_2004_S5765862/d107-x01-y01"]
 analyses["EventShapes"]["Minor"][192.0] = ["/DELPHI_2003_I620250/d42-x01-y03"]
-analyses["EventShapes"]["Minor"][196.0] = ["/DELPHI_2003_I620250/d42-x01-y04","/ALEPH_2004_S5765862/d107-x01-y01"]
+analyses["EventShapes"]["Minor"][196.0] = ["/DELPHI_2003_I620250/d42-x01-y04"]
 analyses["EventShapes"]["Minor"][197.0] = ["/OPAL_2004_S6132243/d08-x01-y04"]
 analyses["EventShapes"]["Minor"][200.0] = ["/DELPHI_2003_I620250/d43-x01-y01","/ALEPH_2004_S5765862/d108-x01-y01"]
 analyses["EventShapes"]["Minor"][202.0] = ["/DELPHI_2003_I620250/d43-x01-y02"]
@@ -1089,15 +1293,15 @@ analyses["EventShapes"]["Minor"][207.0] = ["/DELPHI_2003_I620250/d43-x01-y04"]
 analyses["EventShapes"]["BW"][45.0 ] = ["/DELPHI_2003_I620250/d13-x01-y01"]
 analyses["EventShapes"]["BW"][66.0 ] = ["/DELPHI_2003_I620250/d13-x01-y02"]
 analyses["EventShapes"]["BW"][76.0 ] = ["/DELPHI_2003_I620250/d13-x01-y03"]
-analyses["EventShapes"]["BW"][91.2 ] = ["/DELPHI_1996_S3430090/d23-x01-y01","/OPAL_2004_S6132243/d05-x01-y01"]
-analyses["EventShapes"]["BW"][133.0] = ["/ALEPH_2004_S5765862/d78-x01-y01","/OPAL_2004_S6132243/d05-x01-y02"]
-analyses["EventShapes"]["BW"][161.0] = ["/ALEPH_2004_S5765862/d79-x01-y01"]
-analyses["EventShapes"]["BW"][172.0] = ["/ALEPH_2004_S5765862/d80-x01-y01"]
+analyses["EventShapes"]["BW"][91.2 ] = ["/DELPHI_1996_S3430090/d23-x01-y01","/ALEPH_2004_S5765862/d78-x01-y01","/OPAL_2004_S6132243/d05-x01-y01"]
+analyses["EventShapes"]["BW"][133.0] = ["/OPAL_2004_S6132243/d05-x01-y02","/ALEPH_2004_S5765862/d79-x01-y01"]
+analyses["EventShapes"]["BW"][161.0] = ["/ALEPH_2004_S5765862/d80-x01-y01"]
+analyses["EventShapes"]["BW"][172.0] = ["/ALEPH_2004_S5765862/d81-x01-y01"]
 analyses["EventShapes"]["BW"][177.0] = ["/OPAL_2004_S6132243/d05-x01-y03"]
-analyses["EventShapes"]["BW"][183.0] = ["/DELPHI_2003_I620250/d46-x01-y01","/ALEPH_2004_S5765862/d81-x01-y01"]
-analyses["EventShapes"]["BW"][189.0] = ["/DELPHI_2003_I620250/d46-x01-y02","/ALEPH_2004_S5765862/d82-x01-y01"]
+analyses["EventShapes"]["BW"][183.0] = ["/DELPHI_2003_I620250/d46-x01-y01","/ALEPH_2004_S5765862/d82-x01-y01"]
+analyses["EventShapes"]["BW"][189.0] = ["/DELPHI_2003_I620250/d46-x01-y02","/ALEPH_2004_S5765862/d83-x01-y01"]
 analyses["EventShapes"]["BW"][192.0] = ["/DELPHI_2003_I620250/d46-x01-y03"]
-analyses["EventShapes"]["BW"][196.0] = ["/DELPHI_2003_I620250/d46-x01-y04","/ALEPH_2004_S5765862/d83-x01-y01"]
+analyses["EventShapes"]["BW"][196.0] = ["/DELPHI_2003_I620250/d46-x01-y04"]
 analyses["EventShapes"]["BW"][197.0] = ["/OPAL_2004_S6132243/d05-x01-y04"]
 analyses["EventShapes"]["BW"][200.0] = ["/DELPHI_2003_I620250/d47-x01-y01","/ALEPH_2004_S5765862/d84-x01-y01"]
 analyses["EventShapes"]["BW"][202.0] = ["/DELPHI_2003_I620250/d47-x01-y02"]
@@ -1134,9 +1338,10 @@ analyses["EventShapes"]["BT"][65.4 ] = ["/L3_2004_I652683/d31-x01-y03"]
 analyses["EventShapes"]["BT"][75.7 ] = ["/L3_2004_I652683/d32-x01-y01"]
 analyses["EventShapes"]["BT"][82.3 ] = ["/L3_2004_I652683/d32-x01-y02"]
 analyses["EventShapes"]["BT"][85.1 ] = ["/L3_2004_I652683/d32-x01-y03"]
-analyses["EventShapes"]["BT"][91.2 ] = ["/DELPHI_1996_S3430090/d25-x01-y01","/OPAL_2004_S6132243/d04-x01-y01"]
+analyses["EventShapes"]["BT"][91.2 ] = ["/DELPHI_1996_S3430090/d25-x01-y01","/OPAL_2004_S6132243/d04-x01-y01",
+                                        "/ALEPH_2004_S5765862/d70-x01-y01"]
 analyses["EventShapes"]["BT"][130.1] = ["/L3_2004_I652683/d33-x01-y01"]
-analyses["EventShapes"]["BT"][133.0] = ["/OPAL_2004_S6132243/d04-x01-y02","/ALEPH_2004_S5765862/d70-x01-y01"]
+analyses["EventShapes"]["BT"][133.0] = ["/OPAL_2004_S6132243/d04-x01-y02","/ALEPH_2004_S5765862/d71-x01-y01"]
 analyses["EventShapes"]["BT"][136.3] = ["/L3_2004_I652683/d33-x01-y02"]
 analyses["EventShapes"]["BT"][161.3] = ["/L3_2004_I652683/d33-x01-y03"]
 analyses["EventShapes"]["BT"][172.3] = ["/L3_2004_I652683/d34-x01-y01"]
@@ -1150,12 +1355,12 @@ analyses["EventShapes"]["BT"][206.2] = ["/L3_2004_I652683/d35-x01-y03"]
 analyses["EventShapes"]["BT"][45.0 ] = ["/DELPHI_2003_I620250/d15-x01-y01"]
 analyses["EventShapes"]["BT"][66.0 ] = ["/DELPHI_2003_I620250/d15-x01-y02"]
 analyses["EventShapes"]["BT"][76.0 ] = ["/DELPHI_2003_I620250/d15-x01-y03"]
-analyses["EventShapes"]["BT"][161.0] = ["/ALEPH_2004_S5765862/d71-x01-y01"]
-analyses["EventShapes"]["BT"][172.0] = ["/ALEPH_2004_S5765862/d72-x01-y01"]
-analyses["EventShapes"]["BT"][183.0] = ["/DELPHI_2003_I620250/d48-x01-y01","/ALEPH_2004_S5765862/d73-x01-y01"]
-analyses["EventShapes"]["BT"][189.0] = ["/DELPHI_2003_I620250/d48-x01-y02","/ALEPH_2004_S5765862/d74-x01-y01"]
+analyses["EventShapes"]["BT"][161.0] = ["/ALEPH_2004_S5765862/d72-x01-y01"]
+analyses["EventShapes"]["BT"][172.0] = ["/ALEPH_2004_S5765862/d73-x01-y01"]
+analyses["EventShapes"]["BT"][183.0] = ["/DELPHI_2003_I620250/d48-x01-y01","/ALEPH_2004_S5765862/d74-x01-y01"]
+analyses["EventShapes"]["BT"][189.0] = ["/DELPHI_2003_I620250/d48-x01-y02","/ALEPH_2004_S5765862/d75-x01-y01"]
 analyses["EventShapes"]["BT"][192.0] = ["/DELPHI_2003_I620250/d48-x01-y03"]
-analyses["EventShapes"]["BT"][196.0] = ["/DELPHI_2003_I620250/d48-x01-y04","/ALEPH_2004_S5765862/d75-x01-y01"]
+analyses["EventShapes"]["BT"][196.0] = ["/DELPHI_2003_I620250/d48-x01-y04"]
 analyses["EventShapes"]["BT"][200.0] = ["/DELPHI_2003_I620250/d49-x01-y01","/ALEPH_2004_S5765862/d76-x01-y01"]
 analyses["EventShapes"]["BT"][202.0] = ["/DELPHI_2003_I620250/d49-x01-y02"]
 analyses["EventShapes"]["BT"][205.0] = ["/DELPHI_2003_I620250/d49-x01-y03"]
@@ -1179,15 +1384,16 @@ analyses["EventShapes"]["Bdiff"][207.0] = ["/DELPHI_2003_I620250/d51-x01-y04"]
 analyses["EventShapes"]["C"][45.0 ] = ["/DELPHI_2003_I620250/d17-x01-y01"]
 analyses["EventShapes"]["C"][66.0 ] = ["/DELPHI_2003_I620250/d17-x01-y02"]
 analyses["EventShapes"]["C"][76.0 ] = ["/DELPHI_2003_I620250/d17-x01-y03"]
-analyses["EventShapes"]["C"][91.2 ] = ["/DELPHI_1996_S3430090/d18-x01-y01","/ALEPH_1996_S3486095/d07-x01-y01","/OPAL_2004_S6132243/d03-x01-y01"]
-analyses["EventShapes"]["C"][133.0] = ["/ALEPH_2004_S5765862/d86-x01-y01","/OPAL_2004_S6132243/d03-x01-y02"]
-analyses["EventShapes"]["C"][161.0] = ["/ALEPH_2004_S5765862/d87-x01-y01"]
-analyses["EventShapes"]["C"][172.0] = ["/ALEPH_2004_S5765862/d88-x01-y01"]
+analyses["EventShapes"]["C"][91.2 ] = ["/DELPHI_1996_S3430090/d18-x01-y01","/ALEPH_1996_S3486095/d07-x01-y01",
+                                       "/ALEPH_2004_S5765862/d86-x01-y01","/OPAL_2004_S6132243/d03-x01-y01"]
+analyses["EventShapes"]["C"][133.0] = ["/OPAL_2004_S6132243/d03-x01-y02","/ALEPH_2004_S5765862/d87-x01-y01"]
+analyses["EventShapes"]["C"][161.0] = ["/ALEPH_2004_S5765862/d88-x01-y01"]
+analyses["EventShapes"]["C"][172.0] = ["/ALEPH_2004_S5765862/d89-x01-y01"]
 analyses["EventShapes"]["C"][177.0] = ["/OPAL_2004_S6132243/d03-x01-y03"]
-analyses["EventShapes"]["C"][183.0] = ["/DELPHI_2003_I620250/d52-x01-y01","/ALEPH_2004_S5765862/d89-x01-y01"]
-analyses["EventShapes"]["C"][189.0] = ["/DELPHI_2003_I620250/d52-x01-y02","/ALEPH_2004_S5765862/d90-x01-y01"]
+analyses["EventShapes"]["C"][183.0] = ["/DELPHI_2003_I620250/d52-x01-y01","/ALEPH_2004_S5765862/d90-x01-y01"]
+analyses["EventShapes"]["C"][189.0] = ["/DELPHI_2003_I620250/d52-x01-y02","/ALEPH_2004_S5765862/d91-x01-y01"]
 analyses["EventShapes"]["C"][192.0] = ["/DELPHI_2003_I620250/d52-x01-y03"]
-analyses["EventShapes"]["C"][196.0] = ["/DELPHI_2003_I620250/d52-x01-y04","/ALEPH_2004_S5765862/d91-x01-y01"]
+analyses["EventShapes"]["C"][196.0] = ["/DELPHI_2003_I620250/d52-x01-y04"]
 analyses["EventShapes"]["C"][197.0] = ["/OPAL_2004_S6132243/d03-x01-y04"]
 analyses["EventShapes"]["C"][200.0] = ["/DELPHI_2003_I620250/d53-x01-y01","/ALEPH_2004_S5765862/d92-x01-y01"]
 analyses["EventShapes"]["C"][202.0] = ["/DELPHI_2003_I620250/d53-x01-y02"]
@@ -1239,19 +1445,19 @@ analyses["EventShapes"]["HeavyJetMass"][55.2] = ["/AMY_1990_I283337/d21-x01-y01"
 analyses["EventShapes"]["HeavyJetMass"][58.0] = ["/TOPAZ_1993_I361661/d02-x01-y01"]
 analyses["EventShapes"]["HeavyJetMass"][66.0] = ["/DELPHI_2003_I620250/d07-x01-y02","/DELPHI_2003_I620250/d08-x01-y02"]
 analyses["EventShapes"]["HeavyJetMass"][76.0] = ["/DELPHI_2003_I620250/d07-x01-y03","/DELPHI_2003_I620250/d08-x01-y03"]
-analyses["EventShapes"]["HeavyJetMass"][91.2] = ["/DELPHI_1996_S3430090/d20-x01-y01","/ALEPH_1996_S3486095/d06-x01-y01","/OPAL_2004_S6132243/d02-x01-y01"]
-analyses["EventShapes"]["HeavyJetMass"][133.0] = ["/ALEPH_2004_S5765862/d62-x01-y01","/OPAL_2004_S6132243/d02-x01-y02"]
-analyses["EventShapes"]["HeavyJetMass"][161.0] = ["/ALEPH_2004_S5765862/d63-x01-y01"]
-analyses["EventShapes"]["HeavyJetMass"][172.0] = ["/ALEPH_2004_S5765862/d64-x01-y01"]
+analyses["EventShapes"]["HeavyJetMass"][91.2] = ["/DELPHI_1996_S3430090/d20-x01-y01","/ALEPH_1996_S3486095/d06-x01-y01","/OPAL_2004_S6132243/d02-x01-y01","/ALEPH_2004_S5765862/d62-x01-y01"]
+analyses["EventShapes"]["HeavyJetMass"][133.0] = ["/OPAL_2004_S6132243/d02-x01-y02","/ALEPH_2004_S5765862/d63-x01-y01"]
+analyses["EventShapes"]["HeavyJetMass"][161.0] = ["/ALEPH_2004_S5765862/d64-x01-y01"]
+analyses["EventShapes"]["HeavyJetMass"][172.0] = ["/ALEPH_2004_S5765862/d65-x01-y01"]
 analyses["EventShapes"]["HeavyJetMass"][177.0] = ["/OPAL_2004_S6132243/d02-x01-y03"]
 analyses["EventShapes"]["HeavyJetMass"][183.0] = ["/DELPHI_2003_I620250/d56-x01-y01","/DELPHI_2003_I620250/d58-x01-y01",
-                                                  "/DELPHI_2003_I620250/d60-x01-y01","/ALEPH_2004_S5765862/d65-x01-y01"]
+                                                  "/DELPHI_2003_I620250/d60-x01-y01","/ALEPH_2004_S5765862/d66-x01-y01"]
 analyses["EventShapes"]["HeavyJetMass"][189.0] = ["/DELPHI_2003_I620250/d56-x01-y02","/DELPHI_2003_I620250/d58-x01-y02",
-                                                  "/DELPHI_2003_I620250/d60-x01-y02","/ALEPH_2004_S5765862/d66-x01-y01"]
+                                                  "/DELPHI_2003_I620250/d60-x01-y02","/ALEPH_2004_S5765862/d67-x01-y01"]
 analyses["EventShapes"]["HeavyJetMass"][192.0] = ["/DELPHI_2003_I620250/d56-x01-y03","/DELPHI_2003_I620250/d58-x01-y03",
                                                   "/DELPHI_2003_I620250/d60-x01-y03"]
 analyses["EventShapes"]["HeavyJetMass"][196.0] = ["/DELPHI_2003_I620250/d56-x01-y04","/DELPHI_2003_I620250/d58-x01-y04",
-                                                  "/DELPHI_2003_I620250/d60-x01-y04","/ALEPH_2004_S5765862/d67-x01-y01"]
+                                                  "/DELPHI_2003_I620250/d60-x01-y04"]
 analyses["EventShapes"]["HeavyJetMass"][197.0] = ["/OPAL_2004_S6132243/d02-x01-y04"]
 analyses["EventShapes"]["HeavyJetMass"][200.0] = ["/DELPHI_2003_I620250/d57-x01-y01","/DELPHI_2003_I620250/d59-x01-y01",
                                                   "/DELPHI_2003_I620250/d61-x01-y01","/ALEPH_2004_S5765862/d68-x01-y01"]
@@ -1286,14 +1492,14 @@ analyses["EventShapes"]["JetMassDifference"][45.0] = ["/DELPHI_2003_I620250/d10-
 analyses["EventShapes"]["JetMassDifference"][55.2] = ["/AMY_1990_I283337/d22-x01-y01"]
 analyses["EventShapes"]["JetMassDifference"][66.0] = ["/DELPHI_2003_I620250/d10-x01-y02"]
 analyses["EventShapes"]["JetMassDifference"][76.0] = ["/DELPHI_2003_I620250/d10-x01-y03"]
-analyses["EventShapes"]["JetMassDifference"][91.2] = ["/DELPHI_1996_S3430090/d22-x01-y01"]
-analyses["EventShapes"]["JetMassDifference"][133.0] = ["/ALEPH_2004_S5765862/d110-x01-y01"]
-analyses["EventShapes"]["JetMassDifference"][161.0] = ["/ALEPH_2004_S5765862/d111-x01-y01"]
-analyses["EventShapes"]["JetMassDifference"][172.0] = ["/ALEPH_2004_S5765862/d112-x01-y01"]
-analyses["EventShapes"]["JetMassDifference"][183.0] = ["/DELPHI_2003_I620250/d64-x01-y01","/ALEPH_2004_S5765862/d113-x01-y01"]
-analyses["EventShapes"]["JetMassDifference"][189.0] = ["/DELPHI_2003_I620250/d64-x01-y02","/ALEPH_2004_S5765862/d114-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][91.2] = ["/DELPHI_1996_S3430090/d22-x01-y01","/ALEPH_2004_S5765862/d110-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][133.0] = ["/ALEPH_2004_S5765862/d111-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][161.0] = ["/ALEPH_2004_S5765862/d112-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][172.0] = ["/ALEPH_2004_S5765862/d113-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][183.0] = ["/DELPHI_2003_I620250/d64-x01-y01","/ALEPH_2004_S5765862/d114-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][189.0] = ["/DELPHI_2003_I620250/d64-x01-y02","/ALEPH_2004_S5765862/d115-x01-y01"]
 analyses["EventShapes"]["JetMassDifference"][192.0] = ["/DELPHI_2003_I620250/d64-x01-y03"]
-analyses["EventShapes"]["JetMassDifference"][196.0] = ["/DELPHI_2003_I620250/d64-x01-y04","/ALEPH_2004_S5765862/d115-x01-y01"]
+analyses["EventShapes"]["JetMassDifference"][196.0] = ["/DELPHI_2003_I620250/d64-x01-y04"]
 analyses["EventShapes"]["JetMassDifference"][200.0] = ["/DELPHI_2003_I620250/d65-x01-y01","/ALEPH_2004_S5765862/d116-x01-y01"]
 analyses["EventShapes"]["JetMassDifference"][202.0] = ["/DELPHI_2003_I620250/d65-x01-y02"]
 analyses["EventShapes"]["JetMassDifference"][205.0] = ["/DELPHI_2003_I620250/d65-x01-y03"]
@@ -1338,13 +1544,14 @@ analyses["EventShapes"]["y12"][206.0] = ["/ALEPH_2004_S5765862/d156-x01-y01"]
 analyses["EventShapes"]["y23"][22.0] = ["/JADE_1998_S3612880/d12-x01-y01"]
 
 
-analyses["EventShapes"]["y23"][57.7 ] = ["/AMY_1990_I283337/d18-x01-y01","/AMY_1990_I283337/d19-x01-y01",
-                                         "/AMY_1995_I406129/d02-x01-y01","/AMY_1995_I406129/d03-x01-y01",
-                                         "/AMY_1995_I406129/d04-x01-y01","/AMY_1995_I406129/d06-x01-y01"]
+# analyses["EventShapes"]["y23"][57.7 ] = ["/AMY_1995_I406129/d02-x01-y01","/AMY_1995_I406129/d03-x01-y01",
+#                                          "/AMY_1995_I406129/d04-x01-y01","/AMY_1995_I406129/d06-x01-y01"]
+#"/ALEPH_1996_S3486095/d05-x01-y01",
+
 analyses["EventShapes"]["y23"][58.0 ] = ["/TOPAZ_1993_I361661/d03-x01-y01"]
-analyses["EventShapes"]["y23"][91.2 ] = ["/ALEPH_2004_S5765862/d157-x01-y01","/ALEPH_1996_S3486095/d05-x01-y01",
+analyses["EventShapes"]["y23"][91.2 ] = ["/ALEPH_2004_S5765862/d157-x01-y01",
                                          "/OPAL_2004_S6132243/d06-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y01",
-                                         "/DELPHI_1996_S3430090/d27-x01-y01","/DELPHI_1996_S3430090/d28-x01-y01"]
+                                         "/DELPHI_1996_S3430090/d27-x01-y01"]
 analyses["EventShapes"]["y23"][133.0] = ["/ALEPH_2004_S5765862/d158-x01-y01","/OPAL_2004_S6132243/d06-x01-y02",
                                          "/JADE_OPAL_2000_S4300807/d27-x01-y01"]
 analyses["EventShapes"]["y23"][161.0] = ["/ALEPH_2004_S5765862/d159-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y01"]
@@ -1363,9 +1570,10 @@ analyses["EventShapes"]["y23"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y01",
 analyses["EventShapes"]["y34"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y02"]
 analyses["EventShapes"]["y45"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y03"]
 analyses["EventShapes"]["y56"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y04"]
-  
+#,"/DELPHI_1996_S3430090/d28-x01-y01","/DELPHI_1996_S3430090/d30-x01-y01","/DELPHI_1996_S3430090/d32-x01-y01"
+
 analyses["EventShapes"]["y34"][91.2 ] = ["/ALEPH_2004_S5765862/d165-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y02",
-                                         "/DELPHI_1996_S3430090/d29-x01-y01","/DELPHI_1996_S3430090/d30-x01-y01"]
+                                         "/DELPHI_1996_S3430090/d29-x01-y01"]
 analyses["EventShapes"]["y34"][133.0] = ["/ALEPH_2004_S5765862/d166-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y02"]
 analyses["EventShapes"]["y34"][161.0] = ["/ALEPH_2004_S5765862/d167-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y02"]
 analyses["EventShapes"]["y34"][172.0] = ["/ALEPH_2004_S5765862/d168-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y02"]
@@ -1374,7 +1582,7 @@ analyses["EventShapes"]["y34"][189.0] = ["/ALEPH_2004_S5765862/d170-x01-y01","/J
 analyses["EventShapes"]["y34"][206.0] = ["/ALEPH_2004_S5765862/d172-x01-y01"]
 
 analyses["EventShapes"]["y45"][91.2 ] = ["/ALEPH_2004_S5765862/d173-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y03",
-                                         "/DELPHI_1996_S3430090/d31-x01-y01","/DELPHI_1996_S3430090/d32-x01-y01"]
+                                         "/DELPHI_1996_S3430090/d31-x01-y01"]
 analyses["EventShapes"]["y45"][133.0] = ["/ALEPH_2004_S5765862/d174-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y03"]
 analyses["EventShapes"]["y45"][161.0] = ["/ALEPH_2004_S5765862/d175-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y03"]
 analyses["EventShapes"]["y45"][172.0] = ["/ALEPH_2004_S5765862/d176-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y03"]
@@ -1390,59 +1598,78 @@ analyses["EventShapes"]["y56"][183.0] = ["/ALEPH_2004_S5765862/d184-x01-y01","/J
 analyses["EventShapes"]["y56"][189.0] = ["/ALEPH_2004_S5765862/d185-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y04"]
 analyses["EventShapes"]["y56"][200.0] = ["/ALEPH_2004_S5765862/d186-x01-y01"]
 
-analyses["EventShapes"]["1jet"][91.2 ] = ["/ALEPH_2004_S5765862/d187-x01-y01"]
-analyses["EventShapes"]["1jet"][133.0] = ["/ALEPH_2004_S5765862/d188-x01-y01"]
-analyses["EventShapes"]["1jet"][161.0] = ["/ALEPH_2004_S5765862/d189-x01-y01"]
-analyses["EventShapes"]["1jet"][172.0] = ["/ALEPH_2004_S5765862/d190-x01-y01"]
-analyses["EventShapes"]["1jet"][183.0] = ["/ALEPH_2004_S5765862/d191-x01-y01"]
-analyses["EventShapes"]["1jet"][189.0] = ["/ALEPH_2004_S5765862/d192-x01-y01"]
-analyses["EventShapes"]["1jet"][200.0] = ["/ALEPH_2004_S5765862/d193-x01-y01"]
-analyses["EventShapes"]["1jet"][206.0] = ["/ALEPH_2004_S5765862/d194-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d187-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d188-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d189-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][172.0] = ["/ALEPH_2004_S5765862/d190-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d191-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d192-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d193-x01-y01"]
+analyses["EventShapes"]["1jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d194-x01-y01"]
 
-analyses["EventShapes"]["2jet"][91.2 ] = ["/ALEPH_2004_S5765862/d195-x01-y01"]
-analyses["EventShapes"]["2jet"][133.0] = ["/ALEPH_2004_S5765862/d196-x01-y01"]
-analyses["EventShapes"]["2jet"][161.0] = ["/ALEPH_2004_S5765862/d197-x01-y01"]
-analyses["EventShapes"]["2jet"][172.0] = ["/ALEPH_2004_S5765862/d198-x01-y01"]
-analyses["EventShapes"]["2jet"][183.0] = ["/ALEPH_2004_S5765862/d199-x01-y01"]
-analyses["EventShapes"]["2jet"][189.0] = ["/ALEPH_2004_S5765862/d200-x01-y01"]
-analyses["EventShapes"]["2jet"][200.0] = ["/ALEPH_2004_S5765862/d201-x01-y01"]
-analyses["EventShapes"]["2jet"][206.0] = ["/ALEPH_2004_S5765862/d202-x01-y01"]
 
-analyses["EventShapes"]["3jet"][91.2 ] = ["/ALEPH_2004_S5765862/d203-x01-y01"]
-analyses["EventShapes"]["3jet"][133.0] = ["/ALEPH_2004_S5765862/d204-x01-y01"]
-analyses["EventShapes"]["3jet"][161.0] = ["/ALEPH_2004_S5765862/d205-x01-y01"]
-analyses["EventShapes"]["3jet"][172.0] = ["/ALEPH_2004_S5765862/d206-x01-y01"]
-analyses["EventShapes"]["3jet"][183.0] = ["/ALEPH_2004_S5765862/d207-x01-y01"]
-analyses["EventShapes"]["3jet"][189.0] = ["/ALEPH_2004_S5765862/d208-x01-y01"]
-analyses["EventShapes"]["3jet"][200.0] = ["/ALEPH_2004_S5765862/d209-x01-y01"]
-analyses["EventShapes"]["3jet"][206.0] = ["/ALEPH_2004_S5765862/d210-x01-y01"]
 
-analyses["EventShapes"]["4jet"][91.2 ] = ["/ALEPH_2004_S5765862/d211-x01-y01"]
-analyses["EventShapes"]["4jet"][133.0] = ["/ALEPH_2004_S5765862/d212-x01-y01"]
-analyses["EventShapes"]["4jet"][161.0] = ["/ALEPH_2004_S5765862/d213-x01-y01"]
-analyses["EventShapes"]["4jet"][172.0] = ["/ALEPH_2004_S5765862/d214-x01-y01"]
-analyses["EventShapes"]["4jet"][183.0] = ["/ALEPH_2004_S5765862/d215-x01-y01"]
-analyses["EventShapes"]["4jet"][189.0] = ["/ALEPH_2004_S5765862/d216-x01-y01"]
-analyses["EventShapes"]["4jet"][200.0] = ["/ALEPH_2004_S5765862/d217-x01-y01"]
-analyses["EventShapes"]["4jet"][206.0] = ["/ALEPH_2004_S5765862/d218-x01-y01"]
 
-analyses["EventShapes"]["5jet"][91.2 ] = ["/ALEPH_2004_S5765862/d219-x01-y01"]
-analyses["EventShapes"]["5jet"][133.0] = ["/ALEPH_2004_S5765862/d220-x01-y01"]
-analyses["EventShapes"]["5jet"][161.0] = ["/ALEPH_2004_S5765862/d221-x01-y01"]
-analyses["EventShapes"]["5jet"][172.0] = ["/ALEPH_2004_S5765862/d222-x01-y01"]
-analyses["EventShapes"]["5jet"][183.0] = ["/ALEPH_2004_S5765862/d223-x01-y01"]
-analyses["EventShapes"]["5jet"][189.0] = ["/ALEPH_2004_S5765862/d224-x01-y01"]
-analyses["EventShapes"]["5jet"][200.0] = ["/ALEPH_2004_S5765862/d225-x01-y01"]
-analyses["EventShapes"]["5jet"][206.0] = ["/ALEPH_2004_S5765862/d226-x01-y01"]
 
-analyses["EventShapes"]["6jet"][91.2 ] = ["/ALEPH_2004_S5765862/d227-x01-y01"]
-analyses["EventShapes"]["6jet"][133.0] = ["/ALEPH_2004_S5765862/d228-x01-y01"]
-analyses["EventShapes"]["6jet"][161.0] = ["/ALEPH_2004_S5765862/d229-x01-y01"]
-analyses["EventShapes"]["6jet"][172.0] = ["/ALEPH_2004_S5765862/d230-x01-y01"]
-analyses["EventShapes"]["6jet"][183.0] = ["/ALEPH_2004_S5765862/d231-x01-y01"]
-analyses["EventShapes"]["6jet"][189.0] = ["/ALEPH_2004_S5765862/d232-x01-y01"]
-analyses["EventShapes"]["6jet"][200.0] = ["/ALEPH_2004_S5765862/d233-x01-y01"]
-analyses["EventShapes"]["6jet"][206.0] = ["/ALEPH_2004_S5765862/d234-x01-y01"]
+
+
+
+
+
+analyses["EventShapes"]["2jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d195-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d196-x01-y01","/JADE_OPAL_2000_S4300807/d19-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d197-x01-y01","/JADE_OPAL_2000_S4300807/d20-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][172.0] = ["/ALEPH_2004_S5765862/d198-x01-y01","/JADE_OPAL_2000_S4300807/d21-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d199-x01-y01","/JADE_OPAL_2000_S4300807/d22-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d200-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d201-x01-y01"]
+analyses["EventShapes"]["2jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d202-x01-y01"]
+
+analyses["EventShapes"]["3jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d203-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d204-x01-y01","/JADE_OPAL_2000_S4300807/d19-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d205-x01-y01","/JADE_OPAL_2000_S4300807/d20-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][172.0] = ["/ALEPH_2004_S5765862/d206-x01-y01","/JADE_OPAL_2000_S4300807/d21-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d207-x01-y01","/JADE_OPAL_2000_S4300807/d22-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d208-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y02"]
+analyses["EventShapes"]["3jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d209-x01-y01"]
+analyses["EventShapes"]["3jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d210-x01-y01"]
+
+analyses["EventShapes"]["4jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d211-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d212-x01-y01","/JADE_OPAL_2000_S4300807/d19-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d213-x01-y01","/JADE_OPAL_2000_S4300807/d20-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][172.0] = ["/ALEPH_2004_S5765862/d214-x01-y01","/JADE_OPAL_2000_S4300807/d21-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d215-x01-y01","/JADE_OPAL_2000_S4300807/d22-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d216-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y03"]
+analyses["EventShapes"]["4jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d217-x01-y01"]
+analyses["EventShapes"]["4jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d218-x01-y01"]
+                                              
+analyses["EventShapes"]["5jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d219-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d220-x01-y01","/JADE_OPAL_2000_S4300807/d19-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d221-x01-y01","/JADE_OPAL_2000_S4300807/d20-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][172.0] = ["/ALEPH_2004_S5765862/d222-x01-y01","/JADE_OPAL_2000_S4300807/d21-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d223-x01-y01","/JADE_OPAL_2000_S4300807/d22-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d224-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y04"]
+analyses["EventShapes"]["5jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d225-x01-y01"]
+analyses["EventShapes"]["5jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d226-x01-y01"]
+                                              
+analyses["EventShapes"]["6jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d227-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d228-x01-y01","/JADE_OPAL_2000_S4300807/d19-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d229-x01-y01","/JADE_OPAL_2000_S4300807/d20-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][172.0] = ["/ALEPH_2004_S5765862/d230-x01-y01","/JADE_OPAL_2000_S4300807/d21-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d231-x01-y01","/JADE_OPAL_2000_S4300807/d22-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d232-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y05"]
+analyses["EventShapes"]["6jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d233-x01-y01"]
+analyses["EventShapes"]["6jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d234-x01-y01"]
 # EEC
 analyses["EventShapes"]["EEC" ][7.7 ] = ["/PLUTO_1981_I156315/d01-x01-y01"]
 analyses["EventShapes"]["EEC" ][9.4 ] = ["/PLUTO_1981_I156315/d01-x01-y02"]
@@ -1632,86 +1859,47 @@ analyses["TauDecays"]["5pi"] = ["/MC_TAU_Decay/h_5B_pipi1_1","/MC_TAU_Decay/h_5B
                                 "/MC_TAU_Decay/h_5B_pipipipi2_2","/MC_TAU_Decay/h_5B_pipipipi3_1",
                                 "/MC_TAU_Decay/h_5B_pipipipi3_2","/MC_TAU_Decay/h_5B_q1",
                                 "/MC_TAU_Decay/h_5B_q2","/MC_TAU_Decay/h_5B_q3"]
-# /JADE_OPAL_2000_S4300807/d07-x01-y01
-# /JADE_OPAL_2000_S4300807/d07-x01-y02
-# /JADE_OPAL_2000_S4300807/d07-x01-y03
-# /JADE_OPAL_2000_S4300807/d07-x01-y04
-# /JADE_OPAL_2000_S4300807/d07-x01-y05
-# /JADE_OPAL_2000_S4300807/d08-x01-y01
-# /JADE_OPAL_2000_S4300807/d08-x01-y02
-# /JADE_OPAL_2000_S4300807/d08-x01-y03
-# /JADE_OPAL_2000_S4300807/d08-x01-y04
-# /JADE_OPAL_2000_S4300807/d08-x01-y05
-# /JADE_OPAL_2000_S4300807/d09-x01-y01
-# /JADE_OPAL_2000_S4300807/d09-x01-y02
-# /JADE_OPAL_2000_S4300807/d09-x01-y03
-# /JADE_OPAL_2000_S4300807/d09-x01-y04
-# /JADE_OPAL_2000_S4300807/d09-x01-y05
-# /JADE_OPAL_2000_S4300807/d10-x01-y01
-# /JADE_OPAL_2000_S4300807/d10-x01-y02
-# /JADE_OPAL_2000_S4300807/d10-x01-y03
-# /JADE_OPAL_2000_S4300807/d10-x01-y04
-# /JADE_OPAL_2000_S4300807/d10-x01-y05
-# /JADE_OPAL_2000_S4300807/d11-x01-y01
-# /JADE_OPAL_2000_S4300807/d11-x01-y02
-# /JADE_OPAL_2000_S4300807/d11-x01-y03
-# /JADE_OPAL_2000_S4300807/d11-x01-y04
-# /JADE_OPAL_2000_S4300807/d11-x01-y05
-# /JADE_OPAL_2000_S4300807/d12-x01-y01
-# /JADE_OPAL_2000_S4300807/d12-x01-y02
-# /JADE_OPAL_2000_S4300807/d12-x01-y03
-# /JADE_OPAL_2000_S4300807/d12-x01-y04
-# /JADE_OPAL_2000_S4300807/d12-x01-y05
-# /JADE_OPAL_2000_S4300807/d13-x01-y01
-# /JADE_OPAL_2000_S4300807/d13-x01-y02
-# /JADE_OPAL_2000_S4300807/d13-x01-y03
-# /JADE_OPAL_2000_S4300807/d13-x01-y04
-# /JADE_OPAL_2000_S4300807/d13-x01-y05
-# /JADE_OPAL_2000_S4300807/d14-x01-y01
-# /JADE_OPAL_2000_S4300807/d14-x01-y02
-# /JADE_OPAL_2000_S4300807/d14-x01-y03
-# /JADE_OPAL_2000_S4300807/d14-x01-y04
-# /JADE_OPAL_2000_S4300807/d14-x01-y05
-# /JADE_OPAL_2000_S4300807/d16-x01-y01
-# /JADE_OPAL_2000_S4300807/d16-x01-y02
-# /JADE_OPAL_2000_S4300807/d16-x01-y03
-# /JADE_OPAL_2000_S4300807/d16-x01-y04
-# /JADE_OPAL_2000_S4300807/d16-x01-y05
-# /JADE_OPAL_2000_S4300807/d17-x01-y01
-# /JADE_OPAL_2000_S4300807/d17-x01-y02
-# /JADE_OPAL_2000_S4300807/d17-x01-y03
-# /JADE_OPAL_2000_S4300807/d17-x01-y04
-# /JADE_OPAL_2000_S4300807/d17-x01-y05
-# /JADE_OPAL_2000_S4300807/d18-x01-y01
-# /JADE_OPAL_2000_S4300807/d18-x01-y02
-# /JADE_OPAL_2000_S4300807/d18-x01-y03
-# /JADE_OPAL_2000_S4300807/d18-x01-y04
-# /JADE_OPAL_2000_S4300807/d18-x01-y05
-# /JADE_OPAL_2000_S4300807/d19-x01-y01
-# /JADE_OPAL_2000_S4300807/d19-x01-y02
-# /JADE_OPAL_2000_S4300807/d19-x01-y03
-# /JADE_OPAL_2000_S4300807/d19-x01-y04
-# /JADE_OPAL_2000_S4300807/d19-x01-y05
-# /JADE_OPAL_2000_S4300807/d20-x01-y01
-# /JADE_OPAL_2000_S4300807/d20-x01-y02
-# /JADE_OPAL_2000_S4300807/d20-x01-y03
-# /JADE_OPAL_2000_S4300807/d20-x01-y04
-# /JADE_OPAL_2000_S4300807/d20-x01-y05
-# /JADE_OPAL_2000_S4300807/d21-x01-y01
-# /JADE_OPAL_2000_S4300807/d21-x01-y02
-# /JADE_OPAL_2000_S4300807/d21-x01-y03
-# /JADE_OPAL_2000_S4300807/d21-x01-y04
-# /JADE_OPAL_2000_S4300807/d21-x01-y05
-# /JADE_OPAL_2000_S4300807/d22-x01-y01
-# /JADE_OPAL_2000_S4300807/d22-x01-y02
-# /JADE_OPAL_2000_S4300807/d22-x01-y03
-# /JADE_OPAL_2000_S4300807/d22-x01-y04
-# /JADE_OPAL_2000_S4300807/d22-x01-y05
-# /JADE_OPAL_2000_S4300807/d23-x01-y01
-# /JADE_OPAL_2000_S4300807/d23-x01-y02
-# /JADE_OPAL_2000_S4300807/d23-x01-y03
-# /JADE_OPAL_2000_S4300807/d23-x01-y04
-# /JADE_OPAL_2000_S4300807/d23-x01-y05
+analyses["EventShapes"]["2jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d08-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d08-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d08-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d08-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d08-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][91.2 ] = ["/JADE_OPAL_2000_S4300807/d09-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][91.2 ] = ["/JADE_OPAL_2000_S4300807/d09-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][91.2 ] = ["/JADE_OPAL_2000_S4300807/d09-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][91.2 ] = ["/JADE_OPAL_2000_S4300807/d09-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][91.2 ] = ["/JADE_OPAL_2000_S4300807/d09-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][133.0] = ["/JADE_OPAL_2000_S4300807/d10-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][133.0] = ["/JADE_OPAL_2000_S4300807/d10-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][133.0] = ["/JADE_OPAL_2000_S4300807/d10-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][133.0] = ["/JADE_OPAL_2000_S4300807/d10-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][133.0] = ["/JADE_OPAL_2000_S4300807/d10-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][161.0] = ["/JADE_OPAL_2000_S4300807/d11-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][161.0] = ["/JADE_OPAL_2000_S4300807/d11-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][161.0] = ["/JADE_OPAL_2000_S4300807/d11-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][161.0] = ["/JADE_OPAL_2000_S4300807/d11-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][161.0] = ["/JADE_OPAL_2000_S4300807/d11-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][172.0] = ["/JADE_OPAL_2000_S4300807/d12-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][172.0] = ["/JADE_OPAL_2000_S4300807/d12-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][172.0] = ["/JADE_OPAL_2000_S4300807/d12-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][172.0] = ["/JADE_OPAL_2000_S4300807/d12-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][172.0] = ["/JADE_OPAL_2000_S4300807/d12-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][183.0] = ["/JADE_OPAL_2000_S4300807/d13-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][183.0] = ["/JADE_OPAL_2000_S4300807/d13-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][183.0] = ["/JADE_OPAL_2000_S4300807/d13-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][183.0] = ["/JADE_OPAL_2000_S4300807/d13-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][183.0] = ["/JADE_OPAL_2000_S4300807/d13-x01-y05"]
+analyses["EventShapes"]["2jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y01"]
+analyses["EventShapes"]["3jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y02"]
+analyses["EventShapes"]["4jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y03"]
+analyses["EventShapes"]["5jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y04"]
+analyses["EventShapes"]["6jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y05"]
+
 
 # /OPAL_2001_S4553896/d03-x01-y01
 # /OPAL_2001_S4553896/d04-x01-y01
@@ -1719,15 +1907,6 @@ analyses["TauDecays"]["5pi"] = ["/MC_TAU_Decay/h_5B_pipi1_1","/MC_TAU_Decay/h_5B
 # /OPAL_2001_S4553896/d06-x01-y01
 # /OPAL_2004_I631361/d05-x01-y01
 # /OPAL_2004_I631361/d05-x01-y02
-# /OPAL_2004_I631361:PROCESS=QQ/d01-x01-y01
-# /OPAL_2004_I631361:PROCESS=QQ/d01-x01-y02
-# /OPAL_2004_I631361:PROCESS=QQ/d01-x01-y03
-# /OPAL_2004_I631361:PROCESS=QQ/d02-x01-y01
-# /OPAL_2004_I631361:PROCESS=QQ/d02-x01-y02
-# /OPAL_2004_I631361:PROCESS=QQ/d03-x01-y01
-# /OPAL_2004_I631361:PROCESS=QQ/d03-x01-y02
-# /OPAL_2004_I631361:PROCESS=QQ/d05-x01-y01
-# /OPAL_2004_I631361:PROCESS=QQ/d05-x01-y02
 # /OPAL_2004_I648738/d06-x01-y01
 # /OPAL_2004_I648738/d06-x01-y02
 # /OPAL_2004_I648738/d06-x01-y03
@@ -1760,6 +1939,10 @@ def writePlots(plots,output) :
     global figures
     output.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
     for energy in sorted(plots.keys()) :
+        try :
+            float(energy)
+        except:
+            continue
         for name in sorted(plots[energy]) :
             dat=name[1:] +".dat"
             figName = ("%s/%s" %(directory,dat))
@@ -1988,66 +2171,192 @@ def writeMult() :
     # footer
     mult.write("</body>\n</html>")
     mult.close()
-    
-def writeIdentified() :
-    global figures
+
+# output the identified particle plots
+def writeIdentified(index) :
     ident=open(os.path.join(directory,"identified.html"),'w')
+    latexNames = { "x"     : "Scaled Momentum/Energy",
+                   "xi"    : "Log of Scaled Momentum/Energy",
+                   "p"     : "Momentum/Energy",
+                   "Ratio" : "Ratios of particle multiplicities",
+                   "Other" : "Other distributions" }
+    # header for page
     ident.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Identified Particle Spectra"))
-    ident.write("<h2 id=\"MESONS\">Meson</h2>\n")
-    ident.write("<h3 id=\"gamma\">Photons</h3>\n")
+    # line for index
+    index.write("<li> <a href=\"identified.html\">Identified Particle Spectra</a>\n")
+    index.write("<ul>\n")
+    # photons
+    # page
+    ident.write("<h2 id=\"gamma\">Photons</h2>\n")
     ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s\">%s</h3>\n" % (22,particleNames[22]))
-    writePlots(analyses["IdentifiedParticle"][22],ident)
+    # index
+    index.write("<li> <a href=\"identified.html#gamma\">Photons:<a/>\n")
+    index.write(" <a href=\"identified.html#22\">%s,<a/>\n" % particleNames[22])
+    # plots
+    for val in ["x","p","xi"] :
+        if(len(analyses["IdentifiedParticle"][22][val])==0) : continue
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (22,val,latexNames[val]))
+        writePlots(analyses["IdentifiedParticle"][22][val],ident)
     ident.write("</div>\n")
+    ident.write("<h2 id=\"MESONS\">Mesons</h2>\n")
+    # Light unflavoured mesons
+    # page
     ident.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
-    for val in [211,111,221,331,213,113,223,333,225,335, 9010221, 9000211] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
+    # index
+    index.write("<li><a href=\"identified.html#m_light\">Light unflavoured mesons:<a/>\n")
+    # loop over particles
+    for pdgId in [211,111,221,331,213,113,223,333,225,335, 9010221, 9000211] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # Strange mesons
+    # page
     ident.write("<h3 id=\"m_strange\">Strange</h3>\n")
-    for val in [311,321,313,323] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
+    # index
+    index.write("<li><a href=\"identified.html#m_strange\">Strange mesons:<a/>\n")
+    # loop over particles
+    for pdgId in [311,321,313,323] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # charm meson
+    # page
     ident.write("<h3 id=\"m_charm\">Charm</h3>\n")
-    for val in [411,421,413,423,425,431,433] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
-    ident.write("<h3 id=\"m_ccbar\">$c\\bar{c}$</h3>\n")
-    for val in [443] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
-    
+    # index
+    index.write("<li><a href=\"identified.html#m_charm\">Charm mesons:<a/>\n")
+    # loop over particles
+    for pdgId in [411,421,413,423,425,431,433] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # charmonium
+    # page
+    ident.write("<h3 id=\"m_charm\">Charmonium</h3>\n")
+    # index
+    index.write("<li><a href=\"identified.html#m_charm\">Charmonium:<a/>\n")
+    # loop over particles
+    for pdgId in [443] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # Baryons
     ident.write("<h2 id=\"BARYONS\">Baryons</h2>\n")
+    # light baryons
     ident.write("<h3 id=\"b_light\">Light, Unflavoured</h3>\n")
-    for val in [2212,2224] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
+    index.write("<li><a href=\"identified.html#b_light\">Light unflavoured baryons:<a/>\n")
+    # loop over particles
+    for pdgId in [2212,2224] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # hyperons
     ident.write("<h3 id=\"b_strange\">Hyperons</h3>\n")
-    for val in [3122,3222,3212,3112,3224,"3224B",3114,3312,3324,3334,3124] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
-    ident.write("<h3 id=\"m_charm\">Charm</h3>\n")
-    for val in [4122,4112,4114,4332,4132,14122,4124] :
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
-        writePlots(analyses["IdentifiedParticle"][val],ident)
-        ident.write("</div>\n")
+    index.write("<li><a href=\"identified.html#b_strange\">Hyperons:<a/>\n")
+    # loop over particles
+    for pdgId in [3122,3222,3212,3112,3224,"3224B",3114,3312,3322,3314,3324,3334,3124] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # charm baryons
+    ident.write("<h3 id=\"b_charm\">Charm Baryons</h3>\n")
+    index.write("<li><a href=\"identified.html#b_charm\">Charm baryons:<a/>\n")
+    # loop over particles
+    for pdgId in [4122,4112,4114,4332,4132,14122,4124] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    # bottom fragmentation
     ident.write("<h2 id=\"b_frag\">Bottom Fragmentation Function</h2>\n")
+    index.write("<li><a href=\"identified.html#b_frag\">Bottom Fragmentation Function:<a/>\n")
     for val in ["weak","lead","weak_mean","lead_mean"] :
         if val=="weak" :
             name="Weakly Decaying B hadron"
+            name2="Weakly Decaying"
         elif val=="lead" :
             name="Leading Decaying B hadron"
+            name2="Leading"
         elif val=="weak_mean":
             name="Weakly Decaying B hadron (average)"
+            name2="Weakly Decaying (average)"
         elif val=="lead_mean" :
             name="Leading Decaying B hadron (average)"
+            name2="Leading (average)"
         ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s\">%s</h3>\n" % (val,name))
+        index.write("<a href=\"identified.html#%s\">%s,<a/>\n" % (val,name2))
         writePlots2(analyses["IdentifiedParticle"][511][val],ident)
         ident.write("</div>\n")
+    # footer
+    index.write(" </ul>\n")    
     ident.write("</body>\n</html>")
     ident.close()
     
@@ -2290,24 +2599,51 @@ def writeJets() :
     jets.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Jet Data"))
     # fractions
     jets.write("<h2 id=\"FRACTION\">Jet Fractions</h2>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"1jet\">1 Jet Fraction</h3>\n")
-    writePlots(analyses["EventShapes"]["1jet"],jets)
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"1jet_dur\">1 Jet Fraction (Durham)</h3>\n")
+    writePlots(analyses["EventShapes"]["1jet_dur"],jets)
     jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"2jet\">2 Jet Fraction</h3>\n")
-    writePlots(analyses["EventShapes"]["2jet"],jets)
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"1jet_jade\">1 Jet Fraction (JADE)</h3>\n")
+    writePlots(analyses["EventShapes"]["1jet_jade"],jets)
     jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"3jet\">3 Jet Fraction</h3>\n")
-    writePlots(analyses["EventShapes"]["3jet"],jets)
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"2jet_dur\">2 Jet Fraction (Durham)</h3>\n")
+    writePlots(analyses["EventShapes"]["2jet_dur"],jets)
     jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"4jet\">4 Jet Fraction</h3>\n")
-    writePlots(analyses["EventShapes"]["4jet"],jets)
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"2jet_jade\">2 Jet Fraction (JADE)</h3>\n")
+    writePlots(analyses["EventShapes"]["2jet_jade"],jets)
     jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"5jet\">5 Jet Fraction</h3>\n")
-    writePlots(analyses["EventShapes"]["5jet"],jets)
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"3jet_dur\">3 Jet Fraction (Durham)</h3>\n")
+    writePlots(analyses["EventShapes"]["3jet_dur"],jets)
     jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"6jet\">6 Jet Fraction</h3>\n")
-    writePlots(analyses["EventShapes"]["6jet"],jets)
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"3jet_jade\">3 Jet Fraction (JADE)</h3>\n")
+    writePlots(analyses["EventShapes"]["3jet_jade"],jets)
     jets.write("</div>\n")
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"4jet_dur\">4 Jet Fraction (Durham)</h3>\n")
+    writePlots(analyses["EventShapes"]["4jet_dur"],jets)
+    jets.write("</div>\n")
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"4jet_jade\">4 Jet Fraction (JADE)</h3>\n")
+    writePlots(analyses["EventShapes"]["4jet_jade"],jets)
+    jets.write("</div>\n")
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"5jet_dur\">5 Jet Fraction (Durham)</h3>\n")
+    writePlots(analyses["EventShapes"]["5jet_dur"],jets)
+    jets.write("</div>\n")
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"5jet_jade\">5 Jet Fraction (JADE)</h3>\n")
+    writePlots(analyses["EventShapes"]["5jet_jade"],jets)
+    jets.write("</div>\n")
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"6jet_dur\">6 Jet Fraction (Durham)</h3>\n")
+    writePlots(analyses["EventShapes"]["6jet_dur"],jets)
+    jets.write("</div>\n")
+    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"6jet_jade\">6 Jet Fraction (JADE)</h3>\n")
+    writePlots(analyses["EventShapes"]["6jet_jade"],jets)
+    jets.write("</div>\n")
+
+
+
+
+
+
+
+
+    
     jets.write("<h2 id=\"DRATE\">Differential Jet Rates</h2>\n")
     jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"y12\">$y_{12}$</h3>\n")
     writePlots(analyses["EventShapes"]["y12"],jets)
@@ -2453,15 +2789,12 @@ print 'Total no of figures',len(figures)
 writeEventShapes()
 writeJets()
 writeCharged()
-writeIdentified()
 writeMult()
 writeFlavour()
 writeDecays()
 writeTauDecays()
 writeQED()
 writeGluon()
-print 'Unused figures',len(figures)
-writeMisc()
 
 
 index=open(os.path.join(directory,"herwig.html"),'w')
@@ -2529,46 +2862,7 @@ index.write(" <a href=\"jets.html#y45\">$y_{45}$,<a/>\n")
 index.write(" <a href=\"jets.html#y56\">$y_{56}$,<a/>\n")
 index.write(" </ul>\n")
 # identified particle spectra
-index.write("<li> <a href=\"identified.html\">Identified Particle Spectra</a>\n")
-index.write("<ul>\n")
-index.write("<li> <a href=\"identified.html#gamma\">Photons:<a/>\n")
-index.write(" <a href=\"identified.html#22\">%s,<a/>\n" % particleNames[22])
-index.write("<li><a href=\"identified.html#m_light\">Light unflavoured mesons:<a/>\n")
-for val in [211,111,221,331,213,113,223,333,225,335, 9010221,9000211] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"identified.html#m_strange\">Strange mesons:<a/>\n")
-for val in [311,321,313,323] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"identified.html#m_charm\">Charm mesons:<a/>\n")
-for val in [411,421,413,423,425] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"identified.html#m_ccbar\">$c\\bar{c}$:<a/>\n")
-for val in [443] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-
-
-index.write("<li><a href=\"identified.html#b_light\">Light unflavoured baryons:<a/>\n")
-for val in [2212,2224] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-    
-index.write("<li><a href=\"identified.html#b_strange\">Hyperons:<a/>\n")
-for val in [3122,3222,3112,3224,"3224B",3114,3312,3324,3124] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"identified.html#b_charm\">Charm baryons:<a/>\n")
-for val in [4122] :
-    index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"identified.html#b_frag\">Bottom Fragmentation Function:<a/>\n")
-for val in ["weak","lead","weak_mean","lead_mean"] :
-    if val=="weak" :
-        name="Weakly Decaying"
-    elif val=="lead" :
-        name="Leading"
-    elif val=="weak_mean":
-        name="Weakly Decaying (average)"
-    elif val=="lead_mean" :
-        name="Leading (average)"
-    index.write("<a href=\"identified.html#%s\">%s,<a/>\n" % (val,name))
-index.write(" </ul>\n")
+writeIdentified(index)
 # identified particle multiplicity
 # mesons
 index.write("<li> <a href=\"mult.html\">Identified Particle Multiplicities</a>\n")
@@ -2642,6 +2936,9 @@ index.write(" </ul>\n")
 # tau decays
 index.write("<li> <a href=\"taus.html\">Tau Decays</a>\n")
 
+print 'Unused figures',len(figures)
+writeMisc()
+
     # decays.write("<h2 id=\"2pi\">$\\tau\\to\\nu_\\tau\\pi^-\\pi^0$</h2>\n")
     # writePlots2(analyses["TauDecays"]["2pi"],decays)
     # decays.write("<h2 id=\"Kpi\">$\\tau\\to\\nu_\\tau K\\pi$</h2>\n")
@@ -2664,199 +2961,3 @@ index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
 index.write("</ul>\n")
 index.write("</body>\n</html>")
 index.close()
-
-
-# /ALEPH_1996_S3486095/d20-x01-y01
-# /ALEPH_1996_S3486095/d21-x01-y01
-# /ALEPH_1996_S3486095/d22-x01-y01
-# /ALEPH_1996_S3486095/d23-x01-y01
-
-# /AMY_1990_I283337/d03-x01-y01
-# /AMY_1990_I283337/d04-x01-y01
-# /AMY_1990_I283337/d05-x01-y01
-# /AMY_1990_I283337/d08-x01-y01
-# /AMY_1990_I283337/d09-x01-y01
-# /AMY_1990_I283337/d10-x01-y01
-# /AMY_1990_I283337/d11-x01-y01
-
-# /ARGUS_1993_S2669951/d01-x01-y01
-# /ARGUS_1993_S2669951/d01-x01-y02
-# /ARGUS_1993_S2669951/d05-x01-y01
-
-# /BABAR_2005_S6181155/d02-x01-y01
-# /BABAR_2005_S6181155/d02-x01-y02
-# /BABAR_2005_S6181155/d03-x01-y01
-
-# /CLEO_2004_S5809304/d01-x01-y01
-# /CLEO_2004_S5809304/d01-x01-y02
-# /CLEO_2004_S5809304/d01-x01-y03
-# /CLEO_2004_S5809304/d01-x01-y04
-# /CLEO_2004_S5809304/d01-x01-y05
-# /CLEO_2004_S5809304/d01-x01-y06
-# /CLEO_2004_S5809304/d01-x01-y07
-
-# /CLEO_2001_I552541/d03-x01-y01
-# /CLEO_2001_I552541/d03-x01-y02
-# /CLEO_2001_I552541/d03-x01-y03
-# /CLEO_2001_I552541/d03-x01-y04
-# /CLEO_2001_I552541/d04-x01-y01
-# /CLEO_2001_I552541/d04-x01-y02
-# /CLEO_2001_I552541/d04-x01-y03
-# /CLEO_2001_I552541/d04-x01-y04
-
-# /DELPHI_1998_I473409/d01-x01-y05
-#
-# /DELPHI_1998_I473409/d02-x01-y05
-# 
-# /DELPHI_1998_I473409/d03-x01-y05
-
-# /DELPHI_1998_I473409/d04-x01-y01
-# /DELPHI_1998_I473409/d05-x01-y01
-# /DELPHI_1998_I473409/d06-x01-y01
-# /DELPHI_1998_I473409/d07-x01-y01
-# /DELPHI_1998_I473409/d08-x01-y01
-# /DELPHI_1998_I473409/d09-x01-y01
-# /DELPHI_1998_I473409/d10-x01-y01
-# /DELPHI_1998_I473409/d11-x01-y01
-# /DELPHI_1998_I473409/d12-x01-y01
-# /DELPHI_1998_I473409/d13-x01-y01
-# /DELPHI_1998_I473409/d14-x01-y01
-# /DELPHI_1998_I473409/d15-x01-y01
-
-# /DELPHI_1996_S3430090/d09-x01-y01
-# /DELPHI_1996_S3430090/d10-x01-y01
-#
-# /DELPHI_1993_I360638/d03-x01-y01
-# /DELPHI_1993_I360638/d04-x01-y01
-# /DELPHI_1993_I360638/d05-x01-y01
-# /DELPHI_1993_I360638/d06-x01-y01
-
-
-
-# analyses={ "HadronDecays"     : { },
-#            "TauDecays" : {},
-#            "Charged" : {"TotalChargedMult" : { 0 : {}, 1 : {}, 4 : {}, 5 : {}, 51 : {}, 41 : {} , "C" : {} },
-#                         "ChargedSpectrum" : { 0 : {}, 1 : {}, 2 : {}, 4 : {}, 5 : {} },
-#                         "ChargedRapidityThrust"    : { },
-#                         "ChargedpTInThrust"        : { },
-#                         "ChargedpTOutThrust"       : { },
-#                         "ChargedRapiditySphericity": { },
-#                         "ChargedpTInSphericity"    : { },
-#                         "ChargedpTOutSphericity"   : { },
-#                         "ChargedpLSphericity"      : { },
-#                         "ChargedpTSphericity"      : { },
-#                         "ChargedpT2Sphericity"     : { },
-#                         "DistChargedMult"  : { 0 : {}, 1 : {}, 2 : {}, 4 : {}, 5: {}, 21 : {}, "C" : {} }},
-#            "IdentifiedParticle"  : { 22: {}, 111 : {}, 211 : {}, 221 : {},331 : {}, 223 : {}, 333 : {},
-
-
-
-
-# /HRS_1985_I201482/d13-x01-y01
-# /HRS_1985_I201482/d14-x01-y01
-# /HRS_1985_I201482/d15-x01-y01
-# /HRS_1985_I201482/d16-x01-y01
-# /HRS_1985_I201482/d17-x01-y01
-# /HRS_1985_I201482/d19-x01-y01
-# /HRS_1985_I201482/d20-x01-y01
-# /HRS_1985_I201482/d22-x01-y01
-# /HRS_1985_I201482/d23-x01-y01
-# /HRS_1985_I201482/d24-x01-y01
-# /HRS_1985_I201482/d25-x01-y01
-
-# 
-# /HRS_1990_I280958/d04-x01-y01
-# /HRS_1990_I280958/d05-x01-y01
-# /HRS_1990_I280958/d06-x01-y01
-
-#JADE_1984_I202785/d03-x01-y01
-
-# /PLUTO_1983_I191161/d01-x01-y01
-# /PLUTO_1983_I191161/d01-x01-y02
-# /PLUTO_1983_I191161/d01-x01-y03
-# /PLUTO_1983_I191161/d01-x01-y04
-# /PLUTO_1983_I191161/d02-x01-y01
-# /PLUTO_1983_I191161/d02-x01-y02
-# /PLUTO_1983_I191161/d02-x01-y03
-# /PLUTO_1983_I191161/d02-x01-y04
-
-
-# /TASSO_1988_I263859/d04-x01-y01
-# /TASSO_1988_I263859/d05-x01-y01
-# /TASSO_1988_I263859/d09-x01-y01
-#
-
-
-
-# /TASSO_1989_I266893/d04-x01-y01
-# /TASSO_1989_I266893/d05-x01-y01
-# /TASSO_1989_I266893/d06-x01-y01
-# /TASSO_1989_I266893/d07-x01-y01
-# 
-# /TASSO_1989_I266893/d09-x01-y01
-# /TASSO_1989_I266893/d10-x01-y01
-# /TASSO_1989_I266893/d11-x01-y01
-# /TASSO_1989_I266893/d12-x01-y01
-# /TASSO_1989_I266893/d13-x01-y01
-# /TASSO_1989_I266893/d14-x01-y01
-# /TASSO_1989_I266893/d15-x01-y01
-# /TASSO_1989_I266893/d15-x01-y02
-# /TASSO_1989_I266893/d15-x01-y03
-# /TASSO_1989_I266893/d16-x01-y01
-# /TASSO_1989_I266893/d16-x01-y02
-# /TASSO_1989_I266893/d16-x01-y03
-# /TASSO_1989_I266893/d19-x01-y01
-# /TASSO_1989_I266893/d20-x01-y01
-# /TASSO_1989_I266893/d21-x01-y01
-# /TASSO_1989_I266893/d22-x01-y01
-
-# /TASSO_1990_I284251/d05-x01-y01
-# /TASSO_1990_I284251/d05-x01-y02
-# /TASSO_1990_I284251/d05-x01-y03
-# /TASSO_1990_I284251/d05-x01-y04
-# /TASSO_1990_I284251/d06-x01-y01
-# /TASSO_1990_I284251/d06-x01-y02
-# /TASSO_1990_I284251/d07-x01-y01
-# /TASSO_1990_I284251/d07-x01-y02
-# /TASSO_1990_I284251/d10-x01-y01
-# /TASSO_1990_I284251/d10-x01-y02
-
-
-# /SLD_2004_S5693039/d09-x01-y01
-# /SLD_2004_S5693039/d09-x01-y02
-# /SLD_2004_S5693039/d09-x01-y03
-# /SLD_2004_S5693039/d10-x01-y01
-# /SLD_2004_S5693039/d10-x01-y02
-# /SLD_2004_S5693039/d10-x01-y03
-# /SLD_2004_S5693039/d11-x01-y01
-# /SLD_2004_S5693039/d11-x01-y02
-# /SLD_2004_S5693039/d11-x01-y03
-
-
-
-
-
-
-
-
-# /SLD_1999_S3743934/d01-x01-y01
-# /SLD_1999_S3743934/d02-x01-y01
-# /SLD_1999_S3743934/d03-x01-y01
-#
-
-# 
-# /SLD_1999_S3743934/d26-x01-y01
-# /SLD_1999_S3743934/d26-x01-y02
-# /SLD_1999_S3743934/d27-x01-y01
-# /SLD_1999_S3743934/d28-x01-y01
-# /SLD_1999_S3743934/d28-x01-y02
-# /SLD_1999_S3743934/d29-x01-y01
-# /SLD_1999_S3743934/d30-x01-y01
-# /SLD_1999_S3743934/d30-x01-y02
-# /SLD_1999_S3743934/d31-x01-y01
-# /SLD_1999_S3743934/d32-x01-y01
-# /SLD_1999_S3743934/d32-x01-y02
-# /SLD_1999_S3743934/d33-x01-y01
-# /SLD_1999_S3743934/d34-x01-y01
-# /SLD_1999_S3743934/d34-x01-y02
-# /SLD_1999_S3743934/d35-x01-y01
