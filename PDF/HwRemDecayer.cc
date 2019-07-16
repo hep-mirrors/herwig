@@ -1710,6 +1710,14 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
     }
     // if transverse mass greater the CMS try again
     if(sumtm > CME) continue;
+
+
+    // randomize the mom vector to get the first and the compensating parton 
+    // at all possible positions:
+    long (*p_irnd)(long) = UseRandom::irnd;
+    random_shuffle(mom.begin(),mom.end());
+
+
     for(unsigned int i = 0; i<ncl; i++) xi[i] = randUng(0.6,1.0);
     // sort into ascending order
     sort(xi.begin(), xi.end());
