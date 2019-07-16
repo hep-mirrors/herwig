@@ -1090,7 +1090,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // Parametrization of the ladder multiplicity
   // ladderMult_ = ladderNorm_ * pow( ( reference ) , ladderPower_ );
 
-  int avgN = floor(ladderMult_*log((softRems_.first->momentum()
+  double avgN = ladderMult_*log((softRems_.first->momentum()
   		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
   initTotRap_ = abs(softRems_.first->momentum().rapidity())
   		+abs(softRems_.second->momentum().rapidity());
