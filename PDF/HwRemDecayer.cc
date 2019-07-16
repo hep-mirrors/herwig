@@ -1148,17 +1148,12 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
 
   // Calculate available energy for the partons
-  double x_1(0.0), x_2(0.0);
-  double x1max = (r1.e()+abs(r1.z()))/(P1.e() + abs(P1.z()));
-  double x2max = (r2.e()+abs(r2.z()))/(P2.e() + abs(P2.z()));
   double x1;
   double param = (1./(valOfN_-1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
-       x1 = UseRandom::rndGauss(gaussWidth_, 1 - (exp(param)-1)/exp(param));
+       x1 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
   }while(x1 < 0 || x1>=1.0);
-       x_1 = x1max*x1;
-       x_2 = x2max*x1;
 
   // Remnants 1 and 2 need to be rescaled later by this amount
   Lorentz5Momentum ig1 = x1*r1;
