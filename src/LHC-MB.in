@@ -59,11 +59,10 @@ set /Herwig/Partons/RemnantDecayer:PtDistribution 5
 set /Herwig/Partons/RemnantDecayer:RandomConnection Yes
 
 # set the correct PDFs
-cd /Herwig/Partons
-set HardLOPDF:PDFName CT14lo
-set ShowerLOPDF:PDFName CT14lo
-set MPIPDF:PDFName CT14lo
-set RemnantPDF:PDFName CT14lo
+set /Herwig/Partons/HardLOPDF:PDFName CT14lo
+set /Herwig/Partons/ShowerLOPDF:PDFName CT14lo
+set /Herwig/Partons/MPIPDF:PDFName CT14lo
+set /Herwig/Partons/RemnantPDF:PDFName CT14lo
 
 #set /Herwig/Shower/ShowerHandler:CascadeHandler NULL     # Switch off parton shower
 #set /Herwig/Hadronization/HadronizationHandler:HadronizationHandler  NULL
