@@ -1090,8 +1090,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // Parametrization of the ladder multiplicity
   // ladderMult_ = ladderNorm_ * pow( ( reference ) , ladderPower_ );
 
-  double avgN = ladderMult_*log((softRems_.first->momentum()
-  		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
+  double avgN = 2.*ladderMult_*log((softRems_.first->momentum()
+  		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_;
   initTotRap_ = abs(softRems_.first->momentum().rapidity())
   		+abs(softRems_.second->momentum().rapidity());
     
@@ -1099,7 +1099,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   N=UseRandom::rndPoisson(avgN);
   
   valOfN_=N;
-  if(N == 0){
+  if(N <= 1){
     continue;
   }
   
@@ -1125,7 +1125,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // Initialize partons in the ladder
   // The toy masses are needed for the correct calculation of the available energy
   Lorentz5Momentum sumMomenta;
-  for(unsigned int i = 0; i<2*N; i++) {
+  for(unsigned int i = 0; i < N; i++) {
       // choose constituents
       Energy newMass = ZERO;
       Energy toyMass;
@@ -1152,7 +1152,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   double x1max = (r1.e()+abs(r1.z()))/(P1.e() + abs(P1.z()));
   double x2max = (r2.e()+abs(r2.z()))/(P2.e() + abs(P2.z()));
   double x1;
-  double param = (1/(2*valOfN_+1))*initTotRap_;
+  double param = (1./(valOfN_-1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
        x1 = UseRandom::rndGauss(gaussWidth_, 1 - (exp(param)-1)/exp(param));
