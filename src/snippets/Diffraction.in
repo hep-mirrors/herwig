@@ -95,6 +95,16 @@ insert QCDDiffraction:MatrixElements[0] MEDiffractionDeltaRight
 # No cluster fission (set to E/2, if needed. Here E=7TeV.)
 #set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3500
 
+
+# The DiffractionMEs need to know the MPIHandler for the cross section.
+set MEDiffractionLeft:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set MEDiffractionRight:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set MEDiffractionDouble:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set MEDiffractionDeltaLeft:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set MEDiffractionDeltaRight:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set MEDiffractionDeltaDouble:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+
+
 set QCDDiffraction:CascadeHandler NULL
 set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 

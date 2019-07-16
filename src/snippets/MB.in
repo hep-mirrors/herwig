@@ -7,8 +7,12 @@ set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
 
 ## Report the correct cross section
 cd /Herwig/Generators
-create Herwig::MPIXSecReweighter MPIXSecReweighter
-insert EventGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+
+# TODO: remove the MPIXSecReweighter once validated. 
+#create Herwig::MPIXSecReweighter MPIXSecReweighter
+#insert EventGenerator:EventHandler:PostSubProcessHandlers 0 MPIXSecReweighter
+
+
 set EventGenerator:EventHandler:CascadeHandler NULL
 
 clear EventGenerator:EventHandler:SubProcessHandlers[0]
@@ -28,6 +32,10 @@ set /Herwig/Shower/ShowerHandler:SplitHardProcess No
 set /Herwig/DipoleShower/DipoleShowerHandler:SplitHardProcess No
 
 insert QCDMinBias:MatrixElements[0] MEMinBias
+
+# MEMinBias is automatically reweighted to give the cross section 
+# comunicated by the MPIHandler.
+set MEMinBias:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 
 cd /Herwig/Generators
 # MinBias parameters used for the new kinematics of soft MPI

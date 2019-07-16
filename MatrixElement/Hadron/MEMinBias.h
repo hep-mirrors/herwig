@@ -6,6 +6,7 @@
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
+#include "Herwig/Shower/UEBase.h"
 
 namespace Herwig {
 
@@ -53,6 +54,12 @@ public:
    */
   virtual double me2() const;
 
+  /**
+   * Correction weight to reweight the cross section to the inelastic cross
+   * section subtracted by the diffractive cross section.
+   */
+  double correctionweight() const;
+  
   /**
    * Return the scale associated with the last set phase space point.
    */
@@ -173,14 +180,24 @@ protected:
 
 private:
   /**
-  *  Normalization of the min-bias cross section
-  */
+   * Normalization of the min-bias cross section.
+   * Note that the cross section is reweighted in addition to produce the
+   * non-diffractive cross section given by the MPIHandler
+   * csNorm can be modified to improve the unweighting effiency.  
+   */
   double csNorm_;	
 
   /**
    * Scale for the Min Bias matrix element
    */
   Energy Scale_;
+
+  /**
+   * a MPIHandler to administer the creation of several (semihard) 
+   * partonic interactions.
+   * Needed to comunicate the non-diffractive cross section.
+   */
+  UEBasePtr MPIHandler_;
 
   /**
    * The assignment operator is private and must never be called.

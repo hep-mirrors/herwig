@@ -7,10 +7,11 @@
 #include "MEDiffraction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-
+#include "ThePEG/Handlers/SamplerBase.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -648,12 +649,64 @@ Energy2 MEDiffraction::tmaxfun(Energy2 s, Energy2 M12, Energy2 M22) const  {
 }
 
 
+
+double  MEDiffraction::correctionweight() const {
+
+
+  // Here we calculate the weight to restore the diffractiveXSec
+  // given by the MPIHandler. 
+  
+  // First get the eventhandler to get the current cross sections. 
+  static Ptr<StandardEventHandler>::tptr eh =
+  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+
+  // All diffractive processes make use of this ME. 
+  // The static map can be used to collect all the sumOfWeights.
+  static map<XCombPtr,double> weightsmap;
+  weightsmap[lastXCombPtr()]=lastXComb().stats().sumWeights();
+  
+
+  // Define static variable to keep trac of reweighting
+  static double rew_=1.;
+  static int countUpdateWeight=50;
+  static double sumRew=0.;
+  static double countN=0;
+
+  // if we produce events we count
+  if(eh->integratedXSec()>ZERO)sumRew+=rew_;
+  if(eh->integratedXSec()>ZERO)countN+=1.;
+
+
+
+  if(countUpdateWeight<countN){
+    // Summing all diffractive processes (various initial states)
+    double sum=0.;
+    for(auto xx:weightsmap){
+     sum+=xx.second;
+    }
+    double avcsNorm2=sumRew/countN;
+    
+    CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
+    CrossSection XS_wanted=MPIHandler_->diffractiveXSec();
+    double deltaN=50;
+    rew_=avcsNorm2*(XS_wanted*(countN+deltaN)-XS_have*countN)/(XS_have*deltaN);
+    countUpdateWeight+=deltaN;
+  }
+  //Make sure we dont produce negative weights. 
+  // TODO: write finalize method that checks if reweighting was performed correctly. 
+  rew_=max(rew_,0.000001);
+  rew_=min(rew_,10000.0);
+  
+  return rew_;
+  
+}
+
 double MEDiffraction::me2() const{
-  return theme2; 
+  return theme2;
 }
 
 CrossSection MEDiffraction::dSigHatDR() const {
-  return me2()*jacobian()/sHat()*sqr(hbarc);
+  return me2()*jacobian()/sHat()*sqr(hbarc)*correctionweight();
 }
 
 unsigned int MEDiffraction::orderInAlphaS() const {
@@ -805,13 +858,13 @@ describeHerwigMEDiffraction("Herwig::MEDiffraction", "HwMEHadron.so");
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope
      << thesoftPomeronIntercept << thesoftPomeronSlope << dissociationDecay
-     << ounit(theProtonMass,GeV);
+     << ounit(theProtonMass,GeV) << MPIHandler_;
 }
 
 void MEDiffraction::persistentInput(PersistentIStream & is, int) {
   is >> theme2 >> deltaOnly >> diffDirection >> theprotonPomeronSlope
      >> thesoftPomeronIntercept >> thesoftPomeronSlope >> dissociationDecay
-     >> iunit(theProtonMass,GeV);
+     >> iunit(theProtonMass,GeV)>> MPIHandler_;
 }
 
 InvEnergy2 MEDiffraction::protonPomeronSlope() const{
@@ -887,4 +940,14 @@ void MEDiffraction::Init() {
     (interfaceDissociationDecay,"One","Dissociated proton decays into one cluster", 0);
   static SwitchOption two
     (interfaceDissociationDecay,"Two","Dissociated proton decays into two clusters", 1);
+
+
+  static Reference<MEDiffraction,UEBase> interfaceMPIHandler
+    ("MPIHandler",
+     "The object that administers all additional scatterings.",
+     &MEDiffraction::MPIHandler_, false, false, true, true);
+
+
+
+
 } 

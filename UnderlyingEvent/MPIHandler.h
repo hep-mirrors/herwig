@@ -205,6 +205,18 @@ public:
    */
   CrossSection inelasticXSec() const { return inelXSec_; }
 
+
+  /**
+   * Return the diffractive cross section assumed by the model.
+   * The diffractive cross section is seen as part of the
+   * inelastic cross section. 
+   */
+  CrossSection diffractiveXSec() const {
+      static auto totalXS=totalXSecExp();
+      return diffratio_*totalXS;
+  }
+
+
   /** @name Simple access functions. */
   //@{
 
@@ -570,6 +582,11 @@ private:
   Energy refScale_;
   Energy pT0_;
   double b_;
+
+  /**
+   * Parameters to set the fraction of diffractive cross section in the total cross section.
+   */
+  double diffratio_=0.2;
 
 protected:
 
