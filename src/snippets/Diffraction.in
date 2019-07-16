@@ -113,7 +113,7 @@ insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDD
 
 ## These cuts are also set in MB.in
 # If only diffraction is needed, we want the same cuts:
-set EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 
 ##########################################################################
 ##########################################################################
