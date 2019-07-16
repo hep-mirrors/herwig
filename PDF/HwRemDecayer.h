@@ -81,8 +81,6 @@ public:
 		   _range(1.1), _zbin(0.05),_ybin(0.),
 		   _nbinmax(100), DISRemnantOpt_(0),
                    PtDistribution_(0),
-                   disrupt_(0),
-		   randomRemnantConnection_(0),
 		   pomeronStructure_(0), mg_(ZERO) {}
 
   /** @name Virtual functions required by the Decayer class. */
@@ -730,14 +728,6 @@ private:
    */
   unsigned int PtDistribution_;
 
-
-  /**
-   * Option for remnant connection
-   */
-  unsigned int disrupt_;
-
-
-  bool randomRemnantConnection_;
   /**
    *  Option for the treatment of the pomeron structure
    */

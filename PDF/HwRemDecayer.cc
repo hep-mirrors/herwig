@@ -1122,10 +1122,18 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   Lorentz5Momentum cm =r1+r2;
 
+if ( cm.m()<3*GeV ){
+ cout << cm.m()/GeV << endl;
+ cout << "not enough energy to do soft interactions"<<endl;
+ return;
+} 
+
   // Initialize partons in the ladder
   // The toy masses are needed for the correct calculation of the available energy
   Lorentz5Momentum sumMomenta;
+  cout << "Number of ladder partons = " << N << endl;
   for(unsigned int i = 0; i < N; i++) {
+     
       // choose constituents
       Energy newMass = ZERO;
       Energy toyMass;
@@ -1148,16 +1156,19 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
 
   // Calculate available energy for the partons
-  double x1;
+  double x1,x2;
   double param = (1./(valOfN_-1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
+       // physical to use different x's
        x1 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
+       x2 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
+
   }while(x1 < 0 || x1>=1.0);
 
   // Remnants 1 and 2 need to be rescaled later by this amount
   Lorentz5Momentum ig1 = x1*r1;
-  Lorentz5Momentum ig2 = x1*r2;
+  Lorentz5Momentum ig2 = x2*r2;
 
   // The available energy that is used to generate the ladder
   // sumMomenta is the the sum of rest masses of the ladder partons
@@ -1267,22 +1278,13 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   softRems_.first = addParticle(softRems_.first, softRems_.first->id(),
                                remnants[0]->momentum());
 
-  // Switch for random connections
-  if (randomRemnantConnection_){
-    disrupt_ = UseRandom::rnd3(1,1,1);
-  }
-
   // Connect the old remnant to the new remnant
-  if(disrupt_==0){
-    oldRems_.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-  }
+  oldRems_.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
   // Replace second remnant
   softRems_.second = addParticle(softRems_.second, softRems_.second->id(),
                                 remnants[1]->momentum());
   // This connects the old remnants to the new remnants
-  if(disrupt_==0){
-    oldRems_.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
-  }
+  oldRems_.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
   // Add all partons to the first remnant for the event record
   vector<PPtr> partons;
   int count=0;
@@ -1317,18 +1319,14 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
                                         softRems_.first->momentum());
 
 
-  if (disrupt_==0) {
    oldRems_.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-}
+
   }
 
 
   // Need to differenciate between the two quark positions, this defines the 
   // colour connections to the new remnants and old remnants
   if(quarkPosition==0){
-  switch(disrupt_){
-    case 0:
-        {
         // ladder self contained
         if(partons.size()==2){
           ColinePtr clq =  new_ptr(ColourLine());
@@ -1351,208 +1349,35 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
              cl->addAntiColoured(partons[i+1]);
            }
          }
-         break;
-         }
-    case 1:
-         {
-         // Connect remnants with ladder
-         // Case 1 (only 2 quarks)
-         if(partons.size()==2){
-           ColinePtr clq =  new_ptr(ColourLine());
-           clq->addColoured(partons[0]);
-           clq->addAntiColoured(partons[1]);
-           // and connect remnants to old rems
-              oldRems_.first->colourLine(anti.first)
-                          ->addColoured(softRems_.first, anti.first);
-              oldRems_.second->colourLine(anti.second)
-                           ->addColoured(softRems_.second, anti.second);
-         } else {
-         // Case 2
-         // New remnant 1 with first quark in ladder
-         ColinePtr cl1 = new_ptr(ColourLine());
-         cl1->addColoured(softRems_.first,anti.first);
-         cl1->addColoured(partons[0]);     
-         // Connect old rems to the first gluon
-         oldRems_.first->colourLine(anti.first)
-              ->addAntiColoured(partons[1]);
-
-         // Connect gluons with each other
-         for (unsigned int i=1; i<partons.size()-2; i++){
-            ColinePtr cl = new_ptr(ColourLine());
-            cl->addColoured(partons[i]);
-            cl->addAntiColoured(partons[i+1]);
-
-         }
-         // Connect remnant 2 with with last gluon
-         ColinePtr cl2 = new_ptr(ColourLine());
-
-         cl2->addColoured(softRems_.second,anti.second);
-         cl2->addColoured(partons[partons.size()-2]);
-
-         // Connect old remnant 2 with antiquark
-         oldRems_.second->colourLine(anti.first)
-              ->addAntiColoured(partons[partons.size()-1]);
-
-         }
-         break;
-         }
-      case 2:
-         {
-         if(partons.size()==2){
-           ColinePtr clq =  new_ptr(ColourLine());
-           clq->addColoured(partons[0]);
-           clq->addAntiColoured(partons[1]);
-              oldRems_.first->colourLine(anti.first)
-                          ->addColoured(softRems_.first, anti.first);
-              oldRems_.second->colourLine(anti.second)
-                           ->addColoured(softRems_.second, anti.second);
-         }else{
-         // NNew remnant 1 with first gluon in ladder
-         ColinePtr cl1 = new_ptr(ColourLine());
-         cl1->addColoured(softRems_.first,anti.first);
-         cl1->addColoured(partons[1],!anti.first);
-         // Connect old rems to the first gluon as well
-         oldRems_.first->colourLine(anti.first)
-              ->addColoured(partons[1],anti.first);
-         // Gluons with each other
-         // Connect quark with second gluon
-         ColinePtr clq1 = new_ptr(ColourLine());
-         clq1->addColoured(partons[0]);
-         clq1->addAntiColoured(partons[2]);
-         // First gluon already is handled
-         for (unsigned int i=2; i<partons.size()-2; i++){
-            ColinePtr cl = new_ptr(ColourLine());
-            cl->addColoured(partons[i]);
-            cl->addAntiColoured(partons[i+1]);
-         }
-         // Connect remnant 2 with with last gluon
-         ColinePtr cl2 = new_ptr(ColourLine());
-         cl2->addColoured(softRems_.second,anti.second);
-         cl2->addColoured(partons[partons.size()-2],!anti.second);
-
-         // Connect original remnant 2 with antiquark
-         oldRems_.second->colourLine(anti.first)
-              ->addColoured(partons[partons.size()-1],anti.second);
-         }
-         break;
-         }
-    }
   } else {
-   switch(disrupt_){
-     case 0:
-        {
-        if(partons.size()==2){
-          ColinePtr clq =  new_ptr(ColourLine());
-          clq->addAntiColoured(partons[0]);
-          clq->addColoured(partons[1]);
-         }
-
-         ColinePtr clfirst =  new_ptr(ColourLine());
-         ColinePtr cllast =  new_ptr(ColourLine());
-
-         if(partons.size()>2){
-           clfirst->addAntiColoured(partons[0]);
-    	   clfirst->addColoured(partons[1]);
-    	   cllast->addColoured(partons[partons.size()-1]);
-           cllast->addAntiColoured(partons[partons.size()-2]);
-           //now the remaining gluons
-           for (unsigned int i=1; i<partons.size()-2; i++){
-             ColinePtr cl = new_ptr(ColourLine());
-             cl->addAntiColoured(partons[i]);
-             cl->addColoured(partons[i+1]);
-           }
-         }
-         break;
-         }
-    case 1:
-         {
-         //Case 1 (only 2 quarks)
          if(partons.size()==2){
            ColinePtr clq =  new_ptr(ColourLine());
            clq->addAntiColoured(partons[0]);
            clq->addColoured(partons[1]);
-           // and connect remnants to old rems
-              oldRems_.first->colourLine(anti.first)
-                          ->addColoured(softRems_.first, anti.first);
-              oldRems_.second->colourLine(anti.second)
-                           ->addColoured(softRems_.second, anti.second);
-         } else {
-         //Case 2
-         //new remnant 1 with first gluon in ladder
-         ColinePtr cl1 = new_ptr(ColourLine());
-         cl1->addColoured(softRems_.first,anti.first);
-         cl1->addColoured(partons[1],!anti.first);     
-         //Connect old rems to the first antiquark 
-         oldRems_.first->colourLine(anti.first)
-              ->addColoured(partons[0],anti.first);
-         //gluons with each other
-         for (unsigned int i=1; i<partons.size()-2; i++){
-            ColinePtr cl = new_ptr(ColourLine());
-            cl->addAntiColoured(partons[i]);
-            cl->addColoured(partons[i+1]);
-         }
-         //Connect remnant 2 with with last quark
-         ColinePtr cl2 = new_ptr(ColourLine());
+          }
 
-         cl2->addColoured(softRems_.second,anti.second);
-         cl2->addColoured(partons[partons.size()-1],!anti.second);
-        
-         //Connect original remnant with first gluon
-         oldRems_.second->colourLine(anti.first)
-              ->addColoured(partons[partons.size()-2],anti.second);
-         }
-         break;
-         }
-      case 2:
-         {
-	 // only two quarks case
-         if(partons.size()==2){
-           ColinePtr clq =  new_ptr(ColourLine());
-           clq->addAntiColoured(partons[0]);
-           clq->addColoured(partons[1]);
-           // and connect remnants to old rems
-              oldRems_.first->colourLine(anti.first)
-                          ->addColoured(softRems_.first, anti.first);
-              oldRems_.second->colourLine(anti.second)
-                           ->addColoured(softRems_.second, anti.second);
-         }else{
-         //new remnant 1 with first gluon in ladder
-         ColinePtr cl1 = new_ptr(ColourLine());
-         cl1->addColoured(softRems_.first,anti.first);
-         cl1->addColoured(partons[1],!anti.first);
-         //Connect old rems to the first antiquark
-         oldRems_.first->colourLine(anti.first)
-              ->addColoured(partons[0],anti.first);
-         //gluons with each other
-         // connect quark with second gluon
-         ColinePtr clq1 = new_ptr(ColourLine());
-         clq1->addColoured(partons[partons.size()-1]);
-         clq1->addAntiColoured(partons[partons.size()-2]);
-         // first gluon already is handled
-         for (unsigned int i=1; i<partons.size()-2; i++){
-            ColinePtr cl = new_ptr(ColourLine());
-            cl->addAntiColoured(partons[i]);
-            cl->addColoured(partons[i+1]);
-         }
-         //Connect remnant 2 with with last gluon
-         ColinePtr cl2 = new_ptr(ColourLine());
-         cl2->addColoured(softRems_.second,anti.second);
-         cl2->addColoured(partons[partons.size()-2],!anti.second);
+          ColinePtr clfirst =  new_ptr(ColourLine());
+          ColinePtr cllast =  new_ptr(ColourLine());
 
-         //Connect original remnant 2 with antiquark
-         oldRems_.second->colourLine(anti.first)
-              ->addColoured(partons[partons.size()-3],anti.second);
-         }
-         break;
-         }
-  }
+          if(partons.size()>2){
+            clfirst->addAntiColoured(partons[0]);
+    	    clfirst->addColoured(partons[1]);
+    	    cllast->addColoured(partons[partons.size()-1]);
+            cllast->addAntiColoured(partons[partons.size()-2]);
+            //now the remaining gluons
+            for (unsigned int i=1; i<partons.size()-2; i++){
+              ColinePtr cl = new_ptr(ColourLine());
+              cl->addAntiColoured(partons[i]);
+              cl->addColoured(partons[i+1]);
+            }
+          }
+    }// end colour connection loop
 
-  } 
+  }// end Nmpi loop
 
- }
 
- 
-}
+}//end function 
+
 // Do the phase space generation here is 1 to 1 the same from UA5 model
 bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGluons, Energy CME, unsigned int &its)
     const{
@@ -1891,8 +1716,7 @@ void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
      << maxtrySoft_ << colourDisrupt_ << ladderPower_<< ladderNorm_ << ladderMult_ << ladderbFactor_ << pomeronStructure_
      << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV))
-     << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_ << PtDistribution_
-     << disrupt_ << randomRemnantConnection_;
+     << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_ << PtDistribution_;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
@@ -1900,8 +1724,7 @@ void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
      >> maxtrySoft_ >> colourDisrupt_ >> ladderPower_ >> ladderNorm_ >> ladderMult_ >> ladderbFactor_ >> pomeronStructure_
      >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV))
-     >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_ >> PtDistribution_
-     >> disrupt_ >> randomRemnantConnection_;
+     >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_ >> PtDistribution_;
 }
 
 // The following static variable is needed for the type
@@ -2108,43 +1931,6 @@ void HwRemDecayer::Init() {
      "FlatOrdered2",
      "First pT normal, then flat but steep",
      5);
-
-static Switch<HwRemDecayer,unsigned int> interfaceRemnantConnection
-    ("RemnantConnection",
-     "Options for different colour connections between the remnant and the ladder",
-     &HwRemDecayer::disrupt_, 0, false, false);
-  static SwitchOption interfaceRemnantConnectionDisrupt
-    (interfaceRemnantConnection,
-     "Default",
-     "Connect new remnants to old remnants and the ladder is connected itself",
-     0);
-  static SwitchOption interfaceRemnantConnectionConnected
-    (interfaceRemnantConnection,
-     "Connected",
-     "Connect the remnants to the gluon ladder",
-     1);
-  static SwitchOption interfaceRemnantConnectionConnected2
-    (interfaceRemnantConnection,
-     "Connected2",
-     "Connect the remnants to the gluon ladder, possibility 2",
-     2);
-
-
-   static Switch<HwRemDecayer,bool> interfaceRandomConnection
-    ("RandomConnection",
-     "Choose between differnet remnant connections",
-     &HwRemDecayer::randomRemnantConnection_, false, false, false);
-  static SwitchOption interfaceRandomConnectionNo
-    (interfaceRandomConnection,
-     "No",
-     "Don't use random connections",
-     false);
-  static SwitchOption interfaceRandomConnectionYes
-    (interfaceRandomConnection,
-     "Yes",
-     "Use random connections ",
-     true);
-
 
 }
 
