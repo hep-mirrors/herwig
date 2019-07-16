@@ -132,6 +132,50 @@ analyses={ "HadronDecays"     : { },
 
            "QED" : {},
 }
+particleNames = {
+    22 : "$\\gamma$",
+    111 : "$\\pi^0$", 211 : "$\\pi^\\pm$", 221 : "$\\eta$", 331 : "$\\eta^\\prime$",
+    113 : "$\\rho^0$", 213 : "$\\rho^\\pm$", 223 : "$\\omega$", 333 : "$\\phi$",
+    115 : "$a_2^0$", 215 : "$a_2^\pm$", 225 : "$f_2$", 335 : "$f^\\prime_2$",
+    20223 : "$f_1$", 20333 : "$f^\\prime_1$", 20113 : "$a^0_1$", 20213 : "$a^\\pm_1$",
+    9010221 : "$f_0(980)$", 9000211 : "$a^\\pm_0(980)$",
+    
+    311 : "$K^0,\\bar{K}^0$", 321 : "$K^\\pm$",  313 : "$K^{*0},\\bar{K}^{*0}$", 323 : "$K^{*\\pm}$",
+    315 : "$K^0_2,\\bar{K}^0_2$", 325 : "$K^\\pm_2$",
+    411 : "$D^\\pm$", 421 : "$D^0,\\bar{D}^0$", 413: "$D^{*\\pm}$", 415 : "$D^\\pm_2$", 425 : "$D^0_2, \\bar{D}^0_2$", 423: "$D^{*0},\\bar{D}^{*0}$",
+    431 : "$D_s^\\pm$", 435 : "$D^\\pm_{s2}$", 20431 : "$D^\\pm_{s1}$", 433 : "$D_s^{*\\pm}$",
+
+    511 : "$B^0,\\bar{B}^0, B^\\pm$", 521 : "$B^\\pm$", 531 : "$B^0_s,\\bar{B}^0_s$", 513 : "$B^*$",515 : "$B^{**}$",
+    
+    443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$", 441  : "$\\eta_c$", 100553 : "$\Upsilon(2S)$", 300553 : "$\Upsilon(4S)$",
+    
+    2212 : "$p,\\bar{p}$", 2224 : "$\\Delta^{++},\\bar{\\Delta}^{--}$",
+
+    3122 : "$\\Lambda^0,\\bar{\\Lambda}^0$",
+    3222 : "$\\Sigma^+,\\bar{\Sigma}^-$", "3222B" : "$\\Sigma^\\pm,\\bar{\Sigma}^\\pm$",
+    3212 : "$\\Sigma^0,\\bar{\Sigma}^0$", 3112 : "$\\Sigma^-,\\bar{\Sigma}^+$",
+    3224 : "$\\Sigma^{*+},\\bar{\Sigma}^{*-}$", "3224B" : "$\\Sigma^{*\\pm},\\bar{\Sigma}^{*\\pm}$",
+    3214 : "$\\Sigma^{*0},\\bar{\Sigma}^{*0}$", 3114 : "$\\Sigma^{*-},\\bar{\Sigma}^{*+}$",
+    3322 : "$\\Xi^0,\\bar{\\Xi}^0$", 3312 : "$\\Xi^-,\\bar{\\Xi}^+$", 3324 : "$\\Xi^{*0},\\bar{\\Xi}^{*0}$", 3314 : "$\\Xi^{*-},\\bar{\\Xi}^{*+}$",
+    3334 : "$\\Omega^-,\\bar{\\Omega}^+$", 3124 : "$\\Lambda^0(1520),\\bar{\\Lambda}^0(1520)$",
+
+    4122 : "$\\Lambda_c^+,\\bar{\\Lambda}^+_c$", 4222 : "$\\Sigma_c^{++}, \\Sigma_c^{0}, \\bar{\\Sigma}_c^{++}, \\bar{\\Sigma}_c^{0}$",
+    
+    5122 : "$\\Lambda_b^0,\\bar{\\Lambda}^0_b$", 14122 : "$\\Lambda_c(2595)^+,\\bar{\\Lambda}(2595)_c^+$",
+    4124 : "$\\Lambda_c(2625)^+,\\bar{\\Lambda}(2595)_c^+$", 4112 : "$\\Sigma_c^0,\\bar{\\Sigma}_c^0$", 4114 : "$\\Sigma_c^{*0},\\bar{\\Sigma}_c^{*0}$",
+    4332 : "$\\Omega_c^0,\\bar{\\Omega}_c^0$", 4132 : "$\\Xi_c^0,\\bar{\\Xi}_c^0$"
+    }
+# hadron species
+mLight   = [211,111,221,331,213,113,223,333,225,335,20223,20333,9010221, 9000211]
+mStrange = [311,321,313,323,315,325]
+mCharm   = [411,421,413,423,425,431,433,435,20431]
+mBottom  = [511,521,531,513,515]
+mccbar   = [443,100443,20443]
+mbbbar   = [553]
+bLight   = [2212,2224]
+bStrange = [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3324,3334,3124]
+bCharm   = [4122,4112,4222,4114,4332,4132,14122,4124]
+bBottom  =  [5122]
 # hadron decays
 analyses["HadronDecays"][111] = ["/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVf","/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVfbar",
                                  "/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mff"]
@@ -2000,40 +2044,6 @@ def writePlots2(plots,output) :
         output.write("\n")
     output.write("</div>")
 
-particleNames = {
-    22 : "$\\gamma$",
-    111 : "$\\pi^0$", 211 : "$\\pi^\\pm$", 221 : "$\\eta$", 331 : "$\\eta^\\prime$",
-    113 : "$\\rho^0$", 213 : "$\\rho^\\pm$", 223 : "$\\omega$", 333 : "$\\phi$",
-    115 : "$a_2^0$", 215 : "$a_2^\pm$", 225 : "$f_2$", 335 : "$f^\\prime_2$",
-    20223 : "$f_1$", 20333 : "$f^\\prime_1$", 20113 : "$a^0_1$", 20213 : "$a^\\pm_1$",
-    9010221 : "$f_0(980)$", 9000211 : "$a^\\pm_0(980)$",
-    
-    311 : "$K^0,\\bar{K}^0$", 321 : "$K^\\pm$",  313 : "$K^{*0},\\bar{K}^{*0}$", 323 : "$K^{*\\pm}$",
-    315 : "$K^0_2,\\bar{K}^0_2$", 325 : "$K^\\pm_2$",
-    411 : "$D^\\pm$", 421 : "$D^0,\\bar{D}^0$", 413: "$D^{*\\pm}$", 415 : "$D^\\pm_2$", 425 : "$D^0_2, \\bar{D}^0_2$", 423: "$D^{*0},\\bar{D}^{*0}$",
-    431 : "$D_s^\\pm$", 435 : "$D^\\pm_{s2}$", 20431 : "$D^\\pm_{s1}$", 433 : "$D_s^{*\\pm}$",
-
-    511 : "$B^0,\\bar{B}^0, B^\\pm$", 521 : "$B^\\pm$", 531 : "$B^0_s,\\bar{B}^0_s$", 513 : "$B^*$",515 : "$B^{**}$",
-    
-    443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$", 441  : "$\\eta_c$", 100553 : "$\Upsilon(2S)$", 300553 : "$\Upsilon(4S)$",
-    
-    2212 : "$p,\\bar{p}$", 2224 : "$\\Delta^{++},\\bar{\\Delta}^{--}$",
-
-    3122 : "$\\Lambda^0,\\bar{\\Lambda}^0$",
-    3222 : "$\\Sigma^+,\\bar{\Sigma}^-$", "3222B" : "$\\Sigma^\\pm,\\bar{\Sigma}^\\pm$",
-    3212 : "$\\Sigma^0,\\bar{\Sigma}^0$", 3112 : "$\\Sigma^-,\\bar{\Sigma}^+$",
-    3224 : "$\\Sigma^{*+},\\bar{\Sigma}^{*-}$", "3224B" : "$\\Sigma^{*\\pm},\\bar{\Sigma}^{*\\pm}$",
-    3214 : "$\\Sigma^{*0},\\bar{\Sigma}^{*0}$", 3114 : "$\\Sigma^{*-},\\bar{\Sigma}^{*+}$",
-    3322 : "$\\Xi^0,\\bar{\\Xi}^0$", 3312 : "$\\Xi^-,\\bar{\\Xi}^+$", 3324 : "$\\Xi^{*0},\\bar{\\Xi}^{*0}$", 3314 : "$\\Xi^{*-},\\bar{\\Xi}^{*+}$",
-    3334 : "$\\Omega^-,\\bar{\\Omega}^+$", 3124 : "$\\Lambda^0(1520),\\bar{\\Lambda}^0(1520)$",
-
-    4122 : "$\\Lambda_c^+,\\bar{\\Lambda}^+_c$", 4222 : "$\\Sigma_c^{++}, \\Sigma_c^{0}, \\bar{\\Sigma}_c^{++}, \\bar{\\Sigma}_c^{0}$",
-    
-    5122 : "$\\Lambda_b^0,\\bar{\\Lambda}^0_b$", 14122 : "$\\Lambda_c(2595)^+,\\bar{\\Lambda}(2595)_c^+$",
-    4124 : "$\\Lambda_c(2625)^+,\\bar{\\Lambda}(2595)_c^+$", 4112 : "$\\Sigma_c^0,\\bar{\\Sigma}_c^0$", 4114 : "$\\Sigma_c^{*0},\\bar{\\Sigma}_c^{*0}$",
-    4332 : "$\\Omega_c^0,\\bar{\\Omega}_c^0$", 4132 : "$\\Xi_c^0,\\bar{\\Xi}_c^0$"
-    }
-
 def writeMisc() :
     global figures
     misc=open(os.path.join(directory,"misc.html"),'w')
@@ -2055,7 +2065,6 @@ def writeMisc() :
     misc.close()
     
 def writeQED() :
-    global figures
     qed=open(os.path.join(directory,"qed.html"),'w')
     qed.write(header.format(title="Comparisions of Herwig7 and Photon Radiation Data"))
     writePlots2(analyses["QED"],qed)
@@ -2064,7 +2073,6 @@ def writeQED() :
     qed.close()
 
 def writeTauDecays() :
-    global figures
     decays=open(os.path.join(directory,"taus.html"),'w')
     decays.write(header.format(title="Comparisions of Herwig7 and Tau Decay Data"))
     decays.write("<h2 id=\"2pi\">$\\tau\\to\\nu_\\tau\\pi^-\\pi^0$</h2>\n")
@@ -2103,7 +2111,6 @@ def writeTauDecays() :
 
 
 def writeDecays() :
-    global figures
     decays=open(os.path.join(directory,"decays.html"),'w')
     decays.write(header.format(title="Comparisions of Herwig7 and Hadronic Decay Data"))
     # mesons
@@ -2142,65 +2149,100 @@ def writeDecays() :
     decays.write("</body>\n</html>")
     decays.close()
     
-def writeMult() :
-    global figures
+def writeMult(index) :
+    index.write("<li> <a href=\"mult.html\">Identified Particle Multiplicities</a>\n")
     mult=open(os.path.join(directory,"mult.html"),'w')
     mult.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Mult Particle Spectra"))
     # mesons
-    mult.write("<h2 id=\"MESONS\">Meson</h2>\n")
+    mult.write("<h2 id=\"MESONS\">Mesons</h2>\n")
     mult.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
-    for val in [211,111,221,331,213,113,223,333,225,335,20223,20333,9010221, 9000211] : 
+    index.write("<ul>\n")
+    index.write("<li><a href=\"mult.html#m_light\">Light unflavoured mesons:<a/>\n")
+    # light
+    for val in mLight:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
         mult.write("</div>\n")
+    index.write("<li><a href=\"mult.html#m_strange\">Strange mesons:<a/>\n")
     mult.write("<h3 id=\"m_strange\">Strange</h3>\n")
-    for val in [311,321,313,323,315,325] :
+    # strange
+    for val in mStrange :
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
         mult.write("</div>\n")
+    # charm
+    index.write("<li><a href=\"mult.html#m_charm\">Charm mesons:<a/>\n")
     mult.write("<h3 id=\"m_charm\">Charm</h3>\n")
-    for val in [411,421,413,423,431,433,435,20431] : 
+    for val in mCharm:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
         mult.write("</div>\n")
+    # bottom
     mult.write("<h3 id=\"m_bottom\">Bottom</h3>\n")
-    for val in [511,521,531,513,515] : 
+    index.write("<li><a href=\"mult.html#m_bottom\">Bottom mesons:<a/>\n")
+    for val in mBottom : 
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
+    # charmonium
+    index.write("<li><a href=\"mult.html#m_ccbar\">$c\\bar{c}$ mesons:<a/>\n")
     mult.write("<h3 id=\"m_ccbar\">$c\\bar{c}$</h3>\n")
-    for val in [443,100443,20443] : 
+    for val in mccbar : 
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
+    # bottomonium
+    index.write("<li><a href=\"mult.html#m_bbbar\">$b\\bar{b}$ mesons:<a/>\n")
     mult.write("<h3 id=\"m_bbbar\">$b\\bar{b}$</h3>\n")
-    for val in [553] : 
+    for val in mbbbar : 
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
     # baryons
     mult.write("<h2 id=\"BARYONS\">Baryons</h2>\n")
+    # light unflavoured
+    index.write("<li><a href=\"mult.html#b_light\">Light unflavoured baryons:<a/>\n")
     mult.write("<h3 id=\"b_light\">Light, Unflavoured</h3>\n")
-    for val in [2212,2224] :
+    for val in bLight:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
+    # hyperons
+    index.write("<li><a href=\"mult.html#b_strange\">Hyperons:<a/>\n")
     mult.write("<h3 id=\"b_strange\">Hyperons</h3>\n")
-    for val in [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3324,3334,3124] :
+    for val in bStrange:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
+    # charm baryons
+    index.write("<li><a href=\"mult.html#b_charm\">Charm:<a/>\n")
     mult.write("<h3 id=\"b_charm\">Charm Baryons</h3>\n")
-    for val in [4122,4222] :
+    for val in bCharm:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
+    # bottom
+    index.write("<li><a href=\"mult.html#b_bottom\">Bottom:<a/>\n")
     mult.write("<h3 id=\"b_bottom\">Bottom Baryons</h3>\n")
-    for val in [5122] :
+    for val in bBottom:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots(analyses["Multiplicity"][val],mult)
-        mult.write("</div>\n")
     # footer
+    index.write(" </ul>\n")
     mult.write("</body>\n</html>")
     mult.close()
 
@@ -2237,7 +2279,7 @@ def writeIdentified(index) :
     # index
     index.write("<li><a href=\"identified.html#m_light\">Light unflavoured mesons:<a/>\n")
     # loop over particles
-    for pdgId in [211,111,221,331,213,113,223,333,225,335, 9010221, 9000211] :
+    for pdgId in mLight:
         if(pdgId not in analyses["IdentifiedParticle"]) : continue
         sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
                len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
@@ -2257,7 +2299,7 @@ def writeIdentified(index) :
     # index
     index.write("<li><a href=\"identified.html#m_strange\">Strange mesons:<a/>\n")
     # loop over particles
-    for pdgId in [311,321,313,323] :
+    for pdgId in mStrange:
         if(pdgId not in analyses["IdentifiedParticle"]) : continue
         sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
                len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
@@ -2277,7 +2319,7 @@ def writeIdentified(index) :
     # index
     index.write("<li><a href=\"identified.html#m_charm\">Charm mesons:<a/>\n")
     # loop over particles
-    for pdgId in [411,421,413,423,425,431,433] :
+    for pdgId in mCharm :
         if(pdgId not in analyses["IdentifiedParticle"]) : continue
         sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
                len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
@@ -2297,7 +2339,7 @@ def writeIdentified(index) :
     # index
     index.write("<li><a href=\"identified.html#m_charm\">Charmonium:<a/>\n")
     # loop over particles
-    for pdgId in [443] :
+    for pdgId in mccbar :
         if(pdgId not in analyses["IdentifiedParticle"]) : continue
         sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
                len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
@@ -2353,7 +2395,7 @@ def writeIdentified(index) :
     ident.write("<h3 id=\"b_charm\">Charm Baryons</h3>\n")
     index.write("<li><a href=\"identified.html#b_charm\">Charm baryons:<a/>\n")
     # loop over particles
-    for pdgId in [4122,4112,4114,4332,4132,14122,4124] :
+    for pdgId in bCharm :
         if(pdgId not in analyses["IdentifiedParticle"]) : continue
         sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
                len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
@@ -2393,7 +2435,6 @@ def writeIdentified(index) :
     ident.close()
     
 def writeFlavour() :
-    global figures
     flavour=open(os.path.join(directory,"flavour.html"),'w')
     flavour.write(header.format(title="Comparisions of Herwig7 and Flavour Separated $e^+e^-$ Data"))
     # total multiplicity
@@ -2858,7 +2899,6 @@ def writeGluon() :
 
     
 print 'Total no of figures',len(figures)
-writeMult()
 writeFlavour()
 writeDecays()
 writeTauDecays()
@@ -2877,41 +2917,7 @@ writeJets(index)
 # identified particle spectra
 writeIdentified(index)
 # identified particle multiplicity
-# mesons
-index.write("<li> <a href=\"mult.html\">Identified Particle Multiplicities</a>\n")
-index.write("<ul>\n")
-index.write("<li><a href=\"mult.html#m_light\">Light unflavoured mesons:<a/>\n")
-for val in [211,111,221,331,213,113,223,333,225,335,20223,20333,9010221, 9000211] : 
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#m_strange\">Strange mesons:<a/>\n")
-for val in [311,321,313,323,315,325] :
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#m_charm\">Charm mesons:<a/>\n")
-for val in [411,421,413,423,431,433,435,20431] : 
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#m_bottom\">Bottom mesons:<a/>\n")
-for val in [511,521,531,513,515] : 
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#m_ccbar\">$c\\bar{c}$ mesons:<a/>\n")
-for val in  [443,100443,20443] : 
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#m_bbbar\">$b\\bar{b}$ mesons:<a/>\n")
-for val in  [553] : 
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-# baryons
-index.write("<li><a href=\"mult.html#b_light\">Light unflavoured baryons:<a/>\n")
-for val in [2212,2224] :
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))    
-index.write("<li><a href=\"mult.html#b_strange\">Hyperons:<a/>\n")
-for val in [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3324,3334,3124] :
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#b_charm\">Charm:<a/>\n")
-for val in [4122,4222] :
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"mult.html#b_bottom\">Bottom:<a/>\n")
-for val in  [5122] :
-    index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write(" </ul>\n")
+writeMult(index)
 # flavour
 index.write("<li> <a href=\"flavour.html\">Flavour Separated</a>\n")
 index.write(" <ul>\n")
