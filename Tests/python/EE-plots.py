@@ -25,7 +25,12 @@ header="""<html>
 analyses={ "HadronDecays"     : { },
            "TauDecays" : {},
            "Charged" : {"TotalChargedMult" : { 0 : {}, 1 : {}, 4 : {}, 5 : {}, 51 : {}, 41 : {} , "C" : {} },
-                        "ChargedSpectrum" : { 0 : {}, 1 : {}, 2 : {}, 4 : {}, 5 : {} },
+                        "ChargedSpectrum" : {  0   : { "x" : {}, "p" : {}, "xi" : {}},
+                                               1   : { "x" : {}, "p" : {}, "xi" : {}},
+                                               2   : { "x" : {}, "p" : {}, "xi" : {}},
+                                               4   : { "x" : {}, "p" : {}, "xi" : {}},
+                                               5   : { "x" : {}, "p" : {}, "xi" : {}},
+                                               "C" : { "x" : {}, "p" : {}, "xi" : {}}},
                         "ChargedRapidityThrust"    : { },
                         "ChargedpTInThrust"        : { },
                         "ChargedpTOutThrust"       : { },
@@ -35,7 +40,9 @@ analyses={ "HadronDecays"     : { },
                         "ChargedpLSphericity"      : { },
                         "ChargedpTSphericity"      : { },
                         "ChargedpT2Sphericity"     : { },
-                        "DistChargedMult"  : { 0 : {}, 1 : {}, 2 : {}, 4 : {}, 5: {}, 21 : {}, "C" : {} }},
+                        "ChargedAveragepT2inSphericity"     : { },
+                        "ChargedAveragepT2outSphericity"     : { },
+                        "DistChargedMult"  : {0 : {}, 1 : {}, 2 : {}, 4 : {}, 5 : {} , 21 : {}, "C" :{}}},
            "IdentifiedParticle"  : { 22      : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
                                      111     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
                                      211     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
@@ -126,9 +133,13 @@ analyses={ "HadronDecays"     : { },
            "QED" : {},
 }
 # hadron decays
+analyses["HadronDecays"][111] = ["/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVf","/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVfbar",
+                                 "/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mff"]
 analyses["HadronDecays"][223] = ["/A2_2017_I1486671/d01-x01-y01","/MC_OmegaPhia1_3Pion_Decay/dalitz_1",
                                  "/MC_OmegaPhia1_3Pion_Decay/m0_1","/MC_OmegaPhia1_3Pion_Decay/mminus_1","/MC_OmegaPhia1_3Pion_Decay/mplus_1",
-                                 "/MC_OmegaPhia1_3Pion_Decay/xhist_1","/MC_OmegaPhia1_3Pion_Decay/yhist_1",]
+                                 "/MC_OmegaPhia1_3Pion_Decay/xhist_1","/MC_OmegaPhia1_3Pion_Decay/yhist_1",
+                                 "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_11_mPf","/MC_Meson_Meson_Leptons_Decay/h_223p_111p_11_mPfbar",
+                                 "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_11_mff"]
 analyses["HadronDecays"][221] = ["/A2_2017_I1486671/d02-x01-y01","/KLOE2_2016_I1416990/d01-x01-y01","/KLOE2_2016_I1416990/d02-x01-y01",
                                  "/KLOE2_2016_I1416990/d02-x01-y02","/KLOE2_2016_I1416990/d02-x01-y03","/KLOE2_2016_I1416990/d02-x01-y04",
                                  "/KLOE2_2016_I1416990/d02-x01-y05","/KLOE2_2016_I1416990/d02-x01-y06","/KLOE2_2016_I1416990/d02-x01-y07",
@@ -331,25 +342,33 @@ analyses["Charged"]["TotalChargedMult"][0][91.2 ] = ["/ALEPH_1991_S2435284/d02-x
                                                      "/DELPHI_1991_I301657/d04-x01-y01","/ALEPH_2004_S5765862/d01-x01-y01",
                                                      "/DELPHI_1996_S3430090/d35-x01-y01","/DELPHI_1998_I473409/d01-x01-y01",
                                                      "/OPAL_1998_S3780481/d09-x01-y04","/ALEPH_1996_S3486095/d19-x01-y01"]
-analyses["Charged"]["TotalChargedMult"][5][91.2] = ["/OPAL_2002_S5361494/d01-x01-y01","/OPAL_1998_S3780481/d09-x01-y03",
-                                                    "/DELPHI_1998_I473409/d02-x01-y01","/SLD_2004_S5693039/d08-x02-y03",
-                                                    "/SLD_1996_S3398250/d01-x01-y01"]
-analyses["Charged"]["TotalChargedMult"][4][91.2] = ["/OPAL_2002_S5361494/d01-x01-y02","/OPAL_1998_S3780481/d09-x01-y02",
-                                                    "/SLD_2004_S5693039/d08-x02-y02","/SLD_1996_S3398250/d02-x01-y01"]
-analyses["Charged"]["TotalChargedMult"][1][91.2] = ["/OPAL_2002_S5361494/d01-x01-y03","/OPAL_1998_S3780481/d09-x01-y01",
-                                                    "/DELPHI_1998_I473409/d03-x01-y01","/SLD_2004_S5693039/d08-x02-y01",
-                                                    "/SLD_1996_S3398250/d03-x01-y01"]
-analyses["Charged"]["TotalChargedMult"][51][91.2] = ["/OPAL_2002_S5361494/d01-x01-y04","/SLD_2004_S5693039/d08-x03-y03",
-                                                     "/SLD_1996_S3398250/d05-x01-y01"]
-analyses["Charged"]["TotalChargedMult"][41][91.2] = ["/SLD_2004_S5693039/d08-x03-y02","/SLD_1996_S3398250/d04-x01-y01"]
-
-analyses["Charged"]["TotalChargedMult"][1][29.0] = ["/TPC_1987_I235694/d04-x01-y04"]
-analyses["Charged"]["TotalChargedMult"][4][29.0] = ["/TPC_1987_I235694/d03-x01-y04"]
-analyses["Charged"]["TotalChargedMult"][5][29.0] = ["/TPC_1987_I235694/d02-x01-y04"]
+# light quark events
+analyses["Charged"]["TotalChargedMult"][1][29.0  ] = ["/TPC_1987_I235694/d04-x01-y04"]
+analyses["Charged"]["TotalChargedMult"][1][91.2  ] = ["/OPAL_2002_S5361494/d01-x01-y03","/OPAL_1998_S3780481/d09-x01-y01",
+                                                      "/DELPHI_1998_I473409/d03-x01-y01","/SLD_2004_S5693039/d08-x02-y01",
+                                                      "/SLD_1996_S3398250/d03-x01-y01"]
 analyses["Charged"]["TotalChargedMult"][1 ][195.0] = ["/DELPHI_2000_S4328825/d01-x01-y03"]
+
+# charm events
+analyses["Charged"]["TotalChargedMult"][4][29.0  ] = ["/TPC_1987_I235694/d03-x01-y04"]
+analyses["Charged"]["TotalChargedMult"][4][91.2  ] = ["/OPAL_2002_S5361494/d01-x01-y02","/OPAL_1998_S3780481/d09-x01-y02",
+                                                      "/SLD_2004_S5693039/d08-x02-y02","/SLD_1996_S3398250/d02-x01-y01"]
 analyses["Charged"]["TotalChargedMult"][4 ][195.0] = ["/DELPHI_2000_S4328825/d01-x01-y02"]
+# bottom events
+analyses["Charged"]["TotalChargedMult"][5][29.0  ] = ["/TPC_1987_I235694/d02-x01-y04"]
+analyses["Charged"]["TotalChargedMult"][5][91.2  ] = ["/OPAL_2002_S5361494/d01-x01-y01","/OPAL_1998_S3780481/d09-x01-y03",
+                                                      "/DELPHI_1998_I473409/d02-x01-y01","/SLD_2004_S5693039/d08-x02-y03",
+                                                      "/SLD_1996_S3398250/d01-x01-y01"]
 analyses["Charged"]["TotalChargedMult"][5 ][195.0] = ["/DELPHI_2000_S4328825/d01-x01-y01"]
+# difference charm-light
+analyses["Charged"]["TotalChargedMult"][41][91.2 ] = ["/SLD_2004_S5693039/d08-x03-y02","/SLD_1996_S3398250/d04-x01-y01"]
+# difference bottom-light
+analyses["Charged"]["TotalChargedMult"][51][91.2 ] = ["/OPAL_2002_S5361494/d01-x01-y04","/SLD_2004_S5693039/d08-x03-y03",
+                                                     "/SLD_1996_S3398250/d05-x01-y01"]
 analyses["Charged"]["TotalChargedMult"][51][195.0] = ["/DELPHI_2000_S4328825/d01-x01-y04"]
+# with cuts
+analyses["Charged"]["TotalChargedMult"]["C"][91.2] = ["\ALEPH_1996_S3486095/d20-x01-y01","\ALEPH_1996_S3486095/d21-x01-y01",
+                                                      "\ALEPH_1996_S3486095/d22-x01-y01","\ALEPH_1996_S3486095/d23-x01-y01"]
 # charged multiplicity (dist)
 analyses["Charged"]["DistChargedMult"][0][10.47] = ["/ARGUS_1992_I319102/d02-x01-y01"]
 analyses["Charged"]["DistChargedMult"][0][14.0] = ["/TASSO_1989_I277658/d05-x01-y01"]
@@ -405,70 +424,77 @@ analyses["Charged"]["DistChargedMult"][21][10.92] = ["/OPAL_2004_I631361/d02-x01
 analyses["Charged"]["DistChargedMult"][21][14.24] = ["/OPAL_2004_I631361/d03-x01-y01"]
 analyses["Charged"]["DistChargedMult"][21][17.72] = ["/OPAL_2004_I631361/d03-x01-y02"]
 
-analyses["Charged"]["ChargedSpectrum"][0][2.2  ] = ["/BESII_2004_I622224/d01-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][2.6  ] = ["/BESII_2004_I622224/d02-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][3.0  ] = ["/BESII_2004_I622224/d03-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][3.2  ] = ["/BESII_2004_I622224/d04-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][4.6  ] = ["/BESII_2004_I622224/d05-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][4.8  ] = ["/BESII_2004_I622224/d06-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][12.0 ] = ["/TASSO_1980_I153511/d05-x01-y01","/TASSO_1982_I177174/d02-x01-y01",
-                                                    "/TASSO_1982_I177174/d03-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][13.0 ] = ["/TASSO_1980_I143691/d05-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][14.0 ] = ["/TASSO_1982_I177174/d01-x01-y01","/TASSO_1982_I177174/d02-x01-y02","/TASSO_1982_I177174/d03-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][0][19.5 ] = ["/TASSO_1980_I143691/d06-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][22.0 ] = ["/TASSO_1982_I177174/d01-x01-y02","/TASSO_1982_I177174/d02-x01-y03","/TASSO_1982_I177174/d03-x01-y03"]
-analyses["Charged"]["ChargedSpectrum"][0][25.0 ] = ["/TASSO_1982_I177174/d02-x01-y04","/TASSO_1982_I177174/d03-x01-y04"]
-analyses["Charged"]["ChargedSpectrum"][0][29.0 ] = ["/TPC_1988_I262143/d01-x01-y04","/HRS_1985_I201482/d10-x01-y01",
-                                                    "/HRS_1985_I201482/d11-x01-y01","/HRS_1985_I201482/d12-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][30.0 ] = ["/TASSO_1982_I177174/d02-x01-y05","/TASSO_1982_I177174/d03-x01-y05","/TASSO_1980_I143691/d07-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][30.8 ] = ["/TASSO_1980_I153511/d06-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][33.0 ] = ["/TASSO_1982_I177174/d01-x01-y03"]
-analyses["Charged"]["ChargedSpectrum"][0][34.0 ] = ["/TASSO_1982_I177174/d02-x01-y06","/TASSO_1982_I177174/d03-x01-y06"]
-analyses["Charged"]["ChargedSpectrum"][0][35.0 ] = ["/TASSO_1982_I177174/d02-x01-y07","/TASSO_1982_I177174/d03-x01-y07",
-                                                    "/TASSO_1988_I263859/d10-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][55.2 ] = ["/AMY_1990_I283337/d02-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][58.0 ] = ["/TOPAZ_1995_I381900/d01-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][91.2 ] = ["/DELPHI_1998_I473409/d16-x01-y01","/DELPHI_1998_I473409/d17-x01-y01",
-                                                    "/ALEPH_1996_S3486095/d09-x01-y01","/OPAL_1998_S3780481/d04-x01-y01",
-                                                    "/OPAL_1998_S3780481/d08-x01-y01","/SLD_2004_S5693039/d01-x01-y01",
-                                                    "/L3_2004_I652683/d65-x01-y01","/SLD_1999_S3743934/d04-x01-y01",
-                                                    "/ALEPH_1996_S3486095/d17-x01-y01","/DELPHI_1996_S3430090/d07-x01-y01",
-                                                    "/DELPHI_1996_S3430090/d08-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][133.0] = ["/ALEPH_2004_S5765862/d02-x01-y01","/ALEPH_2004_S5765862/d11-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d19-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][161.0] = ["/ALEPH_2004_S5765862/d03-x01-y01","/ALEPH_2004_S5765862/d12-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d20-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][172.0] = ["/ALEPH_2004_S5765862/d04-x01-y01","/ALEPH_2004_S5765862/d13-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d21-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][183.0] = ["/DELPHI_2003_I620250/d32-x01-y01","/ALEPH_2004_S5765862/d05-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d14-x01-y01","/ALEPH_2004_S5765862/d22-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][189.0] = ["/DELPHI_2003_I620250/d32-x01-y02","/ALEPH_2004_S5765862/d06-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d15-x01-y01","/ALEPH_2004_S5765862/d23-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][192.0] = ["/DELPHI_2003_I620250/d32-x01-y03"]
-analyses["Charged"]["ChargedSpectrum"][0][196.0] = ["/DELPHI_2003_I620250/d32-x01-y04","/ALEPH_2004_S5765862/d07-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d16-x01-y01","/ALEPH_2004_S5765862/d24-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][200.0] = ["/DELPHI_2003_I620250/d33-x01-y01","/ALEPH_2004_S5765862/d08-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d17-x01-y01","/ALEPH_2004_S5765862/d25-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][200.5] = ["/OPAL_2003_I595335/d04-x01-y01","/OPAL_2003_I595335/d05-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][202.0] = ["/DELPHI_2003_I620250/d33-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][0][205.0] = ["/DELPHI_2003_I620250/d33-x01-y03"]
-analyses["Charged"]["ChargedSpectrum"][0][206.0] = ["/ALEPH_2004_S5765862/d09-x01-y01","/ALEPH_2004_S5765862/d18-x01-y01",
-                                                    "/ALEPH_2004_S5765862/d26-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][207.0] = ["/DELPHI_2003_I620250/d33-x01-y04"]
+# charged particle spectra
+# xi
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][2.2  ] = ["/BESII_2004_I622224/d01-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][2.6  ] = ["/BESII_2004_I622224/d02-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][3.0  ] = ["/BESII_2004_I622224/d03-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][3.2  ] = ["/BESII_2004_I622224/d04-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][4.6  ] = ["/BESII_2004_I622224/d05-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][4.8  ] = ["/BESII_2004_I622224/d06-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][12.0 ] = ["/TASSO_1980_I153511/d05-x01-y01","/TASSO_1982_I177174/d02-x01-y01",
+                                                          "/TASSO_1982_I177174/d03-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][58.0 ] = ["/TOPAZ_1995_I381900/d01-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][91.2 ] = ["/ALEPH_1996_S3486095/d17-x01-y01","/DELPHI_1996_S3430090/d08-x01-y01",
+                                                          "/L3_2004_I652683/d65-x01-y01","/OPAL_1998_S3780481/d08-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][130.1] = ["/L3_2004_I652683/d66-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][133.0] = ["/ALEPH_2004_S5765862/d11-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][136.3] = ["/L3_2004_I652683/d66-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][161.0] = ["/ALEPH_2004_S5765862/d12-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][161.3] = ["/L3_2004_I652683/d66-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][172.0] = ["/ALEPH_2004_S5765862/d13-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][172.3] = ["/L3_2004_I652683/d67-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][182.8] = ["/L3_2004_I652683/d67-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][183.0] = ["/DELPHI_2003_I620250/d32-x01-y01","/ALEPH_2004_S5765862/d14-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][188.6] = ["/L3_2004_I652683/d67-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][189.0] = ["/ALEPH_2004_S5765862/d15-x01-y01","/DELPHI_2003_I620250/d32-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][192.0] = ["/DELPHI_2003_I620250/d32-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][194.4] = ["/L3_2004_I652683/d68-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][200.2] = ["/L3_2004_I652683/d68-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][206.2] = ["/L3_2004_I652683/d68-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][196.0] = ["/DELPHI_2003_I620250/d32-x01-y04","/ALEPH_2004_S5765862/d16-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][200.0] = ["/DELPHI_2003_I620250/d33-x01-y01","/ALEPH_2004_S5765862/d17-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][200.5] = ["/OPAL_2003_I595335/d05-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][202.0] = ["/DELPHI_2003_I620250/d33-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][205.0] = ["/DELPHI_2003_I620250/d33-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][206.0] = ["/ALEPH_2004_S5765862/d18-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["xi"][207.0] = ["/DELPHI_2003_I620250/d33-x01-y04"]
 
 
-
-analyses["Charged"]["ChargedSpectrum"][0][130.1]=["/L3_2004_I652683/d66-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][136.3]=["/L3_2004_I652683/d66-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][0][161.3]=["/L3_2004_I652683/d66-x01-y03"]
-analyses["Charged"]["ChargedSpectrum"][0][172.3]=["/L3_2004_I652683/d67-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][182.8]=["/L3_2004_I652683/d67-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][0][188.6]=["/L3_2004_I652683/d67-x01-y03"]
-analyses["Charged"]["ChargedSpectrum"][0][194.4]=["/L3_2004_I652683/d68-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][0][200.2]=["/L3_2004_I652683/d68-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][0][206.2]=["/L3_2004_I652683/d68-x01-y03"]
-
-
+# x
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][13.0 ] = ["/TASSO_1980_I143691/d05-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][14.0 ] = ["/TASSO_1982_I177174/d01-x01-y01","/TASSO_1982_I177174/d02-x01-y02",
+                                                          "/TASSO_1982_I177174/d03-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][19.5 ] = ["/TASSO_1980_I143691/d06-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][22.0 ] = ["/TASSO_1982_I177174/d01-x01-y02","/TASSO_1982_I177174/d02-x01-y03",
+                                                          "/TASSO_1982_I177174/d03-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][25.0 ] = ["/TASSO_1982_I177174/d02-x01-y04","/TASSO_1982_I177174/d03-x01-y04"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][29.0 ] = ["/TPC_1988_I262143/d01-x01-y04"  ,"/HRS_1985_I201482/d10-x01-y01",
+                                                          "/HRS_1985_I201482/d12-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][30.0 ] = ["/TASSO_1982_I177174/d02-x01-y05","/TASSO_1982_I177174/d03-x01-y05",
+                                                          "/TASSO_1980_I143691/d07-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][30.8 ] = ["/TASSO_1980_I153511/d06-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][33.0 ] = ["/TASSO_1982_I177174/d01-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][34.0 ] = ["/TASSO_1982_I177174/d02-x01-y06","/TASSO_1982_I177174/d03-x01-y06"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][35.0 ] = ["/TASSO_1982_I177174/d02-x01-y07","/TASSO_1982_I177174/d03-x01-y07",
+                                                          "/TASSO_1988_I263859/d10-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][55.2 ] = ["/AMY_1990_I283337/d02-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][91.2 ] = ["/DELPHI_1998_I473409/d16-x01-y01","/DELPHI_1998_I473409/d17-x01-y01",
+                                                          "/ALEPH_1996_S3486095/d09-x01-y01","/OPAL_1998_S3780481/d04-x01-y01",
+                                                          "/SLD_2004_S5693039/d01-x01-y01","/SLD_1999_S3743934/d04-x01-y01",
+                                                          "/DELPHI_1996_S3430090/d07-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][133.0] = ["/ALEPH_2004_S5765862/d02-x01-y01","/ALEPH_2004_S5765862/d19-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][161.0] = ["/ALEPH_2004_S5765862/d03-x01-y01","/ALEPH_2004_S5765862/d20-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][172.0] = ["/ALEPH_2004_S5765862/d04-x01-y01","/ALEPH_2004_S5765862/d21-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][183.0] = ["/ALEPH_2004_S5765862/d05-x01-y01","/ALEPH_2004_S5765862/d22-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][189.0] = ["/ALEPH_2004_S5765862/d06-x01-y01","/ALEPH_2004_S5765862/d23-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][196.0] = ["/ALEPH_2004_S5765862/d07-x01-y01","/ALEPH_2004_S5765862/d24-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][200.0] = ["/ALEPH_2004_S5765862/d08-x01-y01","/ALEPH_2004_S5765862/d25-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][200.5] = ["/OPAL_2003_I595335/d04-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][0]["x" ][206.0] = ["/ALEPH_2004_S5765862/d09-x01-y01","/ALEPH_2004_S5765862/d26-x01-y01"]
+# with cuts
+analyses["Charged"]["ChargedSpectrum"]["C"]["x" ][29.0 ] = ["/HRS_1985_I201482/d11-x01-y01"]
+# rapidity w.r.t thrust
 analyses["Charged"]["ChargedRapidityThrust"][13.0 ] = ["/TASSO_1980_I143691/d02-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][19.5 ] = ["/TASSO_1980_I143691/d03-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][30.0 ] = ["/TASSO_1980_I143691/d04-x01-y01"]
@@ -487,7 +513,7 @@ analyses["Charged"]["ChargedRapidityThrust"][202.0] = ["/DELPHI_2003_I620250/d31
 analyses["Charged"]["ChargedRapidityThrust"][205.0] = ["/DELPHI_2003_I620250/d31-x01-y03"]
 analyses["Charged"]["ChargedRapidityThrust"][206.0] = ["/ALEPH_2004_S5765862/d43-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][207.0] = ["/DELPHI_2003_I620250/d31-x01-y04"]
-
+# pt in w.r.t thrust
 analyses["Charged"]["ChargedpTInThrust" ][91.2 ] = ["/DELPHI_1996_S3430090/d01-x01-y01","/ALEPH_1996_S3486095/d11-x01-y01"]
 analyses["Charged"]["ChargedpTInThrust" ][133.0] = ["/ALEPH_2004_S5765862/d27-x01-y01"]
 analyses["Charged"]["ChargedpTInThrust" ][161.0] = ["/ALEPH_2004_S5765862/d28-x01-y01"]
@@ -502,24 +528,7 @@ analyses["Charged"]["ChargedpTInThrust" ][202.0] = ["/DELPHI_2003_I620250/d35-x0
 analyses["Charged"]["ChargedpTInThrust" ][205.0] = ["/DELPHI_2003_I620250/d35-x01-y03"]
 analyses["Charged"]["ChargedpTInThrust" ][206.0] = ["/ALEPH_2004_S5765862/d34-x01-y01"]
 analyses["Charged"]["ChargedpTInThrust" ][207.0] = ["/DELPHI_2003_I620250/d35-x01-y04"]
-analyses["Charged"]["ChargedpTInSphericity" ][35.0]=["/TASSO_1988_I263859/d07-x01-y01"]
-analyses["Charged"]["ChargedpTInSphericity" ][55.2 ]    = ["/AMY_1990_I283337/d06-x01-y01"]
-analyses["Charged"]["ChargedpTInSphericity" ][91.2 ]    = ["/DELPHI_1996_S3430090/d03-x01-y01"]
-
-analyses["Charged"]["ChargedpTOutSphericity"][35.0 ]    = ["/TASSO_1988_I263859/d08-x01-y01"]
-analyses["Charged"]["ChargedpTOutSphericity"][55.2 ]    = ["/AMY_1990_I283337/d07-x01-y01"]
-analyses["Charged"]["ChargedpTOutSphericity"][91.2 ]    = ["/DELPHI_1996_S3430090/d04-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][35.0 ] = ["/TASSO_1988_I263859/d11-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][91.2 ] = ["/DELPHI_1996_S3430090/d06-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][133.0] = ["/ALEPH_2004_S5765862/d44-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][161.0] = ["/ALEPH_2004_S5765862/d45-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][172.0] = ["/ALEPH_2004_S5765862/d46-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][183.0] = ["/ALEPH_2004_S5765862/d47-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][189.0] = ["/ALEPH_2004_S5765862/d48-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][196.0] = ["/ALEPH_2004_S5765862/d49-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][200.0] = ["/ALEPH_2004_S5765862/d50-x01-y01"]
-analyses["Charged"]["ChargedRapiditySphericity"][206.0] = ["/ALEPH_2004_S5765862/d51-x01-y01"]
-
+# pt out thrust
 analyses["Charged"]["ChargedpTOutThrust"][91.2 ] = ["/DELPHI_1996_S3430090/d02-x01-y01","/ALEPH_1996_S3486095/d12-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][183.0] = ["/DELPHI_2003_I620250/d36-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][189.0] = ["/DELPHI_2003_I620250/d36-x01-y02"]
@@ -531,6 +540,44 @@ analyses["Charged"]["ChargedpTOutThrust"][202.0] = ["/DELPHI_2003_I620250/d37-x0
 analyses["Charged"]["ChargedpTOutThrust"][205.0] = ["/DELPHI_2003_I620250/d37-x01-y03"]
 analyses["Charged"]["ChargedpTOutThrust"][206.0] = ["/ALEPH_2004_S5765862/d35-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][207.0] = ["/DELPHI_2003_I620250/d37-x01-y04"]
+# rapidity sphericity
+analyses["Charged"]["ChargedRapiditySphericity"][35.0 ] = ["/TASSO_1988_I263859/d11-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][91.2 ] = ["/DELPHI_1996_S3430090/d06-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][133.0] = ["/ALEPH_2004_S5765862/d44-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][161.0] = ["/ALEPH_2004_S5765862/d45-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][172.0] = ["/ALEPH_2004_S5765862/d46-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][183.0] = ["/ALEPH_2004_S5765862/d47-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][189.0] = ["/ALEPH_2004_S5765862/d48-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][196.0] = ["/ALEPH_2004_S5765862/d49-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][200.0] = ["/ALEPH_2004_S5765862/d50-x01-y01"]
+analyses["Charged"]["ChargedRapiditySphericity"][206.0] = ["/ALEPH_2004_S5765862/d51-x01-y01"]
+# pt in sphericity
+analyses["Charged"]["ChargedpTInSphericity" ][35.0 ] = ["/TASSO_1988_I263859/d07-x01-y01"]
+analyses["Charged"]["ChargedpTInSphericity" ][55.2 ] = ["/AMY_1990_I283337/d06-x01-y01"]
+analyses["Charged"]["ChargedpTInSphericity" ][91.2 ] = ["/DELPHI_1996_S3430090/d03-x01-y01"]
+# pt out sphericity
+analyses["Charged"]["ChargedpTOutSphericity"][35.0 ] = ["/TASSO_1988_I263859/d08-x01-y01"]
+analyses["Charged"]["ChargedpTOutSphericity"][55.2 ] = ["/AMY_1990_I283337/d07-x01-y01"]
+analyses["Charged"]["ChargedpTOutSphericity"][91.2 ] = ["/DELPHI_1996_S3430090/d04-x01-y01"]
+# others
+analyses["Charged"]["ChargedpLSphericity" ][55.2] = ["/AMY_1990_I283337/d03-x01-y01" ]
+analyses["Charged"]["ChargedpTSphericity" ][55.2] = ["/AMY_1990_I283337/d04-x01-y01" ]
+analyses["Charged"]["ChargedpTSphericity" ][35.0] = ["/TASSO_1988_I263859/d09-x01-y01"]
+analyses["Charged"]["ChargedpT2Sphericity"][55.2] = ["/AMY_1990_I283337/d05-x01-y01" ]
+analyses["Charged"]["ChargedAveragepT2inSphericity" ][29.0] = ["/HRS_1985_I201482/d24-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2inSphericity" ][35.0] = ["/TASSO_1988_I263859/d04-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2inSphericity" ][55.2] = ["/AMY_1990_I283337/d08-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2outSphericity"][29.0] = ["/HRS_1985_I201482/d25-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2outSphericity"][35.0] = ["/TASSO_1988_I263859/d05-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2outSphericity"][55.2] = ["/AMY_1990_I283337/d09-x01-y01"]
+
+
+
+
+
+
+
+
 # identified particle (flavour sep)
 analyses["IdentifiedParticleFlavour"][111 ][5][91.2]=["/DELPHI_1996_I401100/d03-x01-y01","/SLD_2004_S5693039/d05-x01-y03"]
 analyses["IdentifiedParticleFlavour"][211 ][5][91.2]=["/DELPHI_1998_I473409/d26-x01-y01","/DELPHI_1998_I473409/d27-x01-y01",
@@ -1545,7 +1592,7 @@ analyses["EventShapes"]["y23_dur"][22.0] = ["/JADE_1998_S3612880/d12-x01-y01"]
 analyses["EventShapes"]["y23_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y01","/JADE_1998_S3612880/d11-x01-y01"]
 analyses["EventShapes"]["y23_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y01","/JADE_1998_S3612880/d10-x01-y01"]
 analyses["EventShapes"]["y23_dur"][58.0 ] = ["/TOPAZ_1993_I361661/d03-x01-y01"]
-analyses["EventShapes"]["y23_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d157-x01-y01","/ALEPH_1996_S3486095/d05-x01-y01"
+analyses["EventShapes"]["y23_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d157-x01-y01","/ALEPH_1996_S3486095/d05-x01-y01",
                                              "/OPAL_2004_S6132243/d06-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y01",
                                              "/DELPHI_1996_S3430090/d27-x01-y01"]
 analyses["EventShapes"]["y23_dur"][133.0] = ["/ALEPH_2004_S5765862/d158-x01-y01","/OPAL_2004_S6132243/d06-x01-y02",
@@ -2530,57 +2577,108 @@ def writeFlavour() :
     flavour.close()
     
 def writeCharged() :
-    global figures
+    # headers
     charged=open(os.path.join(directory,"charged.html"),'w')
     charged.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data on Charged Particles"))
+    index.write("<li> <a href=\"charged.html\">Charged Particles</a>\n")
+    index.write("<ul>\n")
     # total multiplicity
+    index.write("<li> <a href=\"charged.html#mult\">Total Charged Multiplicity</a> \n")
     charged.write("<h2 id=\"mult\">Charged Particle Multiplicity</h2>\n")
     charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
     writePlots(analyses["Charged"]["TotalChargedMult"][0],charged)
     charged.write("</div>\n")
+    # with cuts
+    charged.write("<h2 id=\"mult_c\">Charged Particle Multiplicity, With Cuts</h2>\n")
+    index.write("<a href=\"charged.html#mult_c\">(with cuts)</a> \n")
+    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
+    writePlots(analyses["Charged"]["TotalChargedMult"]["C"],charged)
+    charged.write("</div>\n")
     # multiplicity dist
     charged.write("<h2 id=\"multdist\">Charged Particle Multiplicity Distribution</h2>\n")
+    index.write("<li> <a href=\"charged.html#multdist\">Charged Multiplicity Distribution</a> \n")
     charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
     writePlots(analyses["Charged"]["DistChargedMult"][0],charged)
     charged.write("</div>\n")
+    index.write("<a href=\"charged.html#multdist_c\">(with cuts)</a> \n")
     charged.write("<h2 id=\"multdist_c\">Charged Particle Multiplicity Distributions, with cuts</h2>\n")
     charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
     writePlots(analyses["Charged"]["DistChargedMult"]["C"],charged)
     charged.write("</div>\n")
     # spectra
+    index.write("<li> <a href=\"charged.html#spectra\">Charged Spectra</a> \n")
     charged.write("<h2 id=\"spectra\">Charged Particle Spectra</h2>\n")
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
-    writePlots(analyses["Charged"]["ChargedSpectrum"][0],charged)
-    charged.write("</div>\n")
-    # dist w.r.t thrust
-    charged.write("<h2 id=\"T\">Charged Particle Distribution w.r.t the Thrust axis</h2>\n")
-    # rap
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"Trap\">Rapidity</h3>\n")
-    writePlots(analyses["Charged"]["ChargedRapidityThrust"],charged)
-    charged.write("</div>\n")
-    # ptin
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"Tptin\">$p_\\perp^{\\text{in}}$</h3>\n")
-    writePlots(analyses["Charged"]["ChargedpTInThrust"],charged)
-    charged.write("</div>\n")
-    # ptout
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"Tptout\">$p_\\perp^{\\text{out}}$</h3>\n")
-    writePlots(analyses["Charged"]["ChargedpTOutThrust"],charged)
-    charged.write("</div>\n")
-    charged.write("</body>\n</html>")
-    # dist w.r.t sphericity
-    charged.write("<h2 id=\"T\">Charged Particle Distribution w.r.t the Sphericity axis</h2>\n")
-    # rap
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"Srap\">Rapidity</h3>\n")
-    writePlots(analyses["Charged"]["ChargedRapiditySphericity"],charged)
-    charged.write("</div>\n")
-    # ptin
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"Sptin\">$p_\\perp^{\\text{in}}$</h3>\n")
-    writePlots(analyses["Charged"]["ChargedpTInSphericity"],charged)
-    charged.write("</div>\n")
-    # ptout
-    charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"Sptout\">$p_\\perp^{\\text{out}}$</h3>\n")
-    writePlots(analyses["Charged"]["ChargedpTOutSphericity"],charged)
-    charged.write("</div>\n")
+    for val2 in [0,"C"] :
+        if(val2=="C") :
+            charged.write("<h3 id=\"spectra_c\">With cuts</h2>\n")
+            index.write("<a href=\"charged.html#spectra_c\">(with cuts)</a> \n")
+        for val in ["x","p","xi"] :
+            if(len(analyses["Charged"]["ChargedSpectrum"][val2][val])==0) : continue
+            if(val=="x") :
+                charged.write("<h4 id=\"spectra\">Scaled Momentum</h2>\n")
+            elif(val=="p") :
+                charged.write("<h4 id=\"spectra\">Momentum</h2>\n")
+            elif(val=="xi") :
+                charged.write("<h4 id=\"spectra\">Log of the Scaled Momentum</h2>\n")
+            charged.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
+            writePlots(analyses["Charged"]["ChargedSpectrum"][val2][val],charged)
+            charged.write("</div>\n")
+    # with respect to axes
+    lFormat="""<div style=\"float:none; overflow:auto; width:100%\">\n<{hlevel} id=\"{tag}\">{name}</{hlevel}>\n"""
+    for axis in ["Thrust","Sphericity"] :
+        if axis=="Thrust" :
+            abbrev = "T"
+        else :
+            abbrev = "S"
+        charged.write("<h2 id=\"%s\">Charged Particle Distribution w.r.t the %s axis</h2>\n" % (abbrev,axis))
+        index.write("<li> <a href=\"charged.html#%s\">Distributions w.r.t %s axis:</a> \n" % (abbrev,axis))
+        # rapidity
+        index.write(" <a href=\"charged.html#%srap\">rapidity,<a/>\n" %abbrev)
+        charged.write(lFormat.format(hlevel="h3",tag="%srap"%abbrev,name="Rapidity"))
+        writePlots(analyses["Charged"]["ChargedRapidity%s"%axis],charged)
+        charged.write("</div>\n")
+        # pT in
+        index.write(" <a href=\"charged.html#%sptin\">$p_\\perp^{\\text{in}}$,<a/>\n" %abbrev)
+        charged.write(lFormat.format(hlevel="h3",tag="%sptin"%abbrev,name="$p_\\perp^{\\text{in}}$"))
+        writePlots(analyses["Charged"]["ChargedpTIn%s"%axis],charged)
+        charged.write("</div>\n")
+        # pT out
+        index.write(" <a href=\"charged.html#%sptout\">$p_\\perp^{\\text{out}}$.<a/>\n" %abbrev)
+        charged.write(lFormat.format(hlevel="h3",tag="%sptout"%abbrev,name="$p_\\perp^{\\text{out}}$"))
+        writePlots(analyses["Charged"]["ChargedpTOut%s"%axis],charged)
+        charged.write("</div>\n")
+        # pL
+        if("ChargedpL%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpL%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%spL\">$p_\\parallel$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%spL"%abbrev,name="$p_\\parallel$"))
+            writePlots(analyses["Charged"]["ChargedpL%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT
+        if("ChargedpT%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpT%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%spt\">$p_\\perp$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%spt"%abbrev,name="$p_\\perp$"))
+            writePlots(analyses["Charged"]["ChargedpT%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT2
+        if("ChargedpT2%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpT2%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%spt2\">$p^2_\\perp$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%spt2"%abbrev,name="$p^2_\\perp$"))
+            writePlots(analyses["Charged"]["ChargedpT2%s"%axis],charged)
+            charged.write("</div>\n")
+        # average ptin
+        if("ChargedAveragepT2in%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedAveragepT2in%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%saverpt2in\">$\langle p^2_{\\perp\\text{in}}\\rangle$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%saverpt2in"%abbrev,name="$\langle p^2_{\\perp\\text{in}}\\rangle$"))
+            writePlots(analyses["Charged"]["ChargedAveragepT2in%s"%axis],charged)
+            charged.write("</div>\n")
+        # average ptout
+        if("ChargedAveragepT2out%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedAveragepT2out%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%saverpt2out\">$\langle p^2_{\\perp\\text{out}}\\rangle$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%saverpt2out"%abbrev,name="$\langle p^2_{\\perp\\text{out}}\\rangle$"))
+            writePlots(analyses["Charged"]["ChargedAveragepT2out%s"%axis],charged)
+            charged.write("</div>\n")
+    # footer
+    index.write(" </ul>\n")
     charged.write("</body>\n</html>")
     charged.close()
     
@@ -2630,7 +2728,6 @@ def writeJets(index) :
     jets.close()
 
 def writeEventShapes() :
-    global figures
     event=open(os.path.join(directory,"event.html"),'w')
     event.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Event Shape Data"))
     # thrust and related
@@ -2737,7 +2834,6 @@ def writeEventShapes() :
 #  ,"Moment_C":{},"Moment_S":{} "Moment_y":{},
     
 def writeGluon() :
-    global figures
     gluon=open(os.path.join(directory,"gluon.html"),'w')
     gluon.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data on Gluon Jets"))
     # charged particles dists
@@ -2753,7 +2849,6 @@ def writeGluon() :
 print 'Total no of figures',len(figures)
 # output the event shapes    
 writeEventShapes()
-writeCharged()
 writeMult()
 writeFlavour()
 writeDecays()
@@ -2795,20 +2890,7 @@ index.write(" <a href=\"event.html#C\">C,<a/>\n")
 index.write(" <a href=\"event.html#D\">D.<a/>\n")
 index.write(" </ul>\n")
 # charged particles
-index.write("<li> <a href=\"charged.html\">Charged Particles</a>\n")
-index.write("<ul>\n")
-index.write("<li> <a href=\"charged.html#mult\">Total Charged Multiplicity</a> \n")
-index.write("<li> <a href=\"charged.html#multdist\">Charged Multiplicity Distribution</a> \n")
-index.write("<li> <a href=\"charged.html#spectra\">Charged Spectra</a> \n")
-index.write("<li> <a href=\"charged.html#T\">Distributions w.r.t thrust axis:</a> \n")
-index.write(" <a href=\"charged.html#Trap\">rapidity,<a/>\n")
-index.write(" <a href=\"charged.html#Tptin\">$p_\\perp^{\\text{in}}$,<a/>\n")
-index.write(" <a href=\"charged.html#Tptout\">$p_\\perp^{\\text{out}}$.<a/>\n")
-index.write("<li> <a href=\"charged.html#T\">Distributions w.r.t sphericity axis:</a> \n")
-index.write(" <a href=\"charged.html#Srap\">rapidity,<a/>\n")
-index.write(" <a href=\"charged.html#Sptin\">$p_\\perp^{\\text{in}}$,<a/>\n")
-index.write(" <a href=\"charged.html#Sptout\">$p_\\perp^{\\text{out}}$.<a/>\n")
-index.write(" </ul>\n")
+writeCharged()
 # jets
 writeJets(index)
 # identified particle spectra
