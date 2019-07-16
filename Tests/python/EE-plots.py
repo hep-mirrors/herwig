@@ -101,7 +101,9 @@ analyses={ "HadronDecays"     : { },
                                3222 : {}, 2224 : {},  3224 : {}, 3114 : {}, 4122 : {}, 5122 :{}, 3124 :{}, 4222 : {}, "3222B" : {}, "3224B" : {},
            },
            "EventShapes" : { "T" : {}, "S" : {}, "D" : {}, "O" : {}, "Minor" : {}, "Major" : {},
-                             "y12" : {},"y23" : {},"y34" : {},"y45" : {},"y56" : {}, "HeavyJetMass" : {} , "JetMassDifference" : {} ,
+                             "y12_dur"  : {}, "y23_dur"  : {}, "y34_dur"  : {}, "y45_dur"  : {}, "y56_dur"  : {},
+                             "y12_jade" : {}, "y23_jade" : {}, "y34_jade" : {}, "y45_jade" : {}, "y56_jade" : {},
+                             "HeavyJetMass" : {} , "JetMassDifference" : {} ,
                              "LightJetMass" : {}, "TotalJetMass" : {} , "EEC" : {}, "AEEC" : {} ,
                              "P" : {}, "A" : {} , "BW" : {}, "BT" : {}, "BN" : {},
                              "Bdiff" : {}, "C" : {},
@@ -1529,75 +1531,73 @@ analyses["EventShapes"]["TotalJetMass"][45.0] = ["/DELPHI_2003_I620250/d11-x01-y
 analyses["EventShapes"]["TotalJetMass"][66.0] = ["/DELPHI_2003_I620250/d11-x01-y02","/DELPHI_2003_I620250/d12-x01-y02"]
 analyses["EventShapes"]["TotalJetMass"][76.0] = ["/DELPHI_2003_I620250/d11-x01-y03","/DELPHI_2003_I620250/d12-x01-y03"]
 # jets
-analyses["EventShapes"]["y12"][91.2 ] = ["/ALEPH_2004_S5765862/d149-x01-y01"]
-analyses["EventShapes"]["y12"][133.0] = ["/ALEPH_2004_S5765862/d150-x01-y01"]
-analyses["EventShapes"]["y12"][161.0] = ["/ALEPH_2004_S5765862/d151-x01-y01"]
-analyses["EventShapes"]["y12"][172.0] = ["/ALEPH_2004_S5765862/d152-x01-y01"]
-analyses["EventShapes"]["y12"][183.0] = ["/ALEPH_2004_S5765862/d153-x01-y01"]
-analyses["EventShapes"]["y12"][189.0] = ["/ALEPH_2004_S5765862/d154-x01-y01"]
-analyses["EventShapes"]["y12"][200.0] = ["/ALEPH_2004_S5765862/d155-x01-y01"]
-analyses["EventShapes"]["y12"][206.0] = ["/ALEPH_2004_S5765862/d156-x01-y01"]
-
-
-
-
-analyses["EventShapes"]["y23"][22.0] = ["/JADE_1998_S3612880/d12-x01-y01"]
-
-
-# analyses["EventShapes"]["y23"][57.7 ] = ["/AMY_1995_I406129/d02-x01-y01","/AMY_1995_I406129/d03-x01-y01",
-#                                          "/AMY_1995_I406129/d04-x01-y01","/AMY_1995_I406129/d06-x01-y01"]
-#"/ALEPH_1996_S3486095/d05-x01-y01",
-
-analyses["EventShapes"]["y23"][58.0 ] = ["/TOPAZ_1993_I361661/d03-x01-y01"]
-analyses["EventShapes"]["y23"][91.2 ] = ["/ALEPH_2004_S5765862/d157-x01-y01",
-                                         "/OPAL_2004_S6132243/d06-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y01",
-                                         "/DELPHI_1996_S3430090/d27-x01-y01"]
-analyses["EventShapes"]["y23"][133.0] = ["/ALEPH_2004_S5765862/d158-x01-y01","/OPAL_2004_S6132243/d06-x01-y02",
-                                         "/JADE_OPAL_2000_S4300807/d27-x01-y01"]
-analyses["EventShapes"]["y23"][161.0] = ["/ALEPH_2004_S5765862/d159-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y01"]
-analyses["EventShapes"]["y23"][172.0] = ["/ALEPH_2004_S5765862/d160-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y01"]
-analyses["EventShapes"]["y23"][177.0] = ["/OPAL_2004_S6132243/d06-x01-y03"]
-analyses["EventShapes"]["y23"][183.0] = ["/ALEPH_2004_S5765862/d161-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y01"]
-analyses["EventShapes"]["y23"][189.0] = ["/ALEPH_2004_S5765862/d162-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y01"]
-analyses["EventShapes"]["y23"][197.0] = ["/OPAL_2004_S6132243/d06-x01-y04"]
-analyses["EventShapes"]["y23"][200.0] = ["/ALEPH_2004_S5765862/d163-x01-y01"]
-analyses["EventShapes"]["y23"][206.0] = ["/ALEPH_2004_S5765862/d164-x01-y01"]
-analyses["EventShapes"]["y23"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y01","/JADE_1998_S3612880/d11-x01-y01"]
-analyses["EventShapes"]["y34"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y02"]
-analyses["EventShapes"]["y45"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y03"]
-analyses["EventShapes"]["y56"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y04"]
-analyses["EventShapes"]["y23"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y01","/JADE_1998_S3612880/d10-x01-y01"]
-analyses["EventShapes"]["y34"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y02"]
-analyses["EventShapes"]["y45"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y03"]
-analyses["EventShapes"]["y56"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y04"]
-#,"/DELPHI_1996_S3430090/d28-x01-y01","/DELPHI_1996_S3430090/d30-x01-y01","/DELPHI_1996_S3430090/d32-x01-y01"
-
-analyses["EventShapes"]["y34"][91.2 ] = ["/ALEPH_2004_S5765862/d165-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y02",
-                                         "/DELPHI_1996_S3430090/d29-x01-y01"]
-analyses["EventShapes"]["y34"][133.0] = ["/ALEPH_2004_S5765862/d166-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y02"]
-analyses["EventShapes"]["y34"][161.0] = ["/ALEPH_2004_S5765862/d167-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y02"]
-analyses["EventShapes"]["y34"][172.0] = ["/ALEPH_2004_S5765862/d168-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y02"]
-analyses["EventShapes"]["y34"][183.0] = ["/ALEPH_2004_S5765862/d169-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y02"]
-analyses["EventShapes"]["y34"][189.0] = ["/ALEPH_2004_S5765862/d170-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y02"]
-analyses["EventShapes"]["y34"][206.0] = ["/ALEPH_2004_S5765862/d172-x01-y01"]
-
-analyses["EventShapes"]["y45"][91.2 ] = ["/ALEPH_2004_S5765862/d173-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y03",
-                                         "/DELPHI_1996_S3430090/d31-x01-y01"]
-analyses["EventShapes"]["y45"][133.0] = ["/ALEPH_2004_S5765862/d174-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y03"]
-analyses["EventShapes"]["y45"][161.0] = ["/ALEPH_2004_S5765862/d175-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y03"]
-analyses["EventShapes"]["y45"][172.0] = ["/ALEPH_2004_S5765862/d176-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y03"]
-analyses["EventShapes"]["y45"][183.0] = ["/ALEPH_2004_S5765862/d177-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y03"]
-analyses["EventShapes"]["y45"][189.0] = ["/ALEPH_2004_S5765862/d178-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y03"]
-analyses["EventShapes"]["y45"][200.0] = ["/ALEPH_2004_S5765862/d179-x01-y01"]
-
-analyses["EventShapes"]["y56"][91.2 ] = ["/ALEPH_2004_S5765862/d180-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y04"]
-analyses["EventShapes"]["y56"][133.0] = ["/ALEPH_2004_S5765862/d181-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y04"]
-analyses["EventShapes"]["y56"][161.0] = ["/ALEPH_2004_S5765862/d182-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y04"]
-analyses["EventShapes"]["y56"][172.0] = ["/ALEPH_2004_S5765862/d183-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y04"]
-analyses["EventShapes"]["y56"][183.0] = ["/ALEPH_2004_S5765862/d184-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y04"]
-analyses["EventShapes"]["y56"][189.0] = ["/ALEPH_2004_S5765862/d185-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y04"]
-analyses["EventShapes"]["y56"][200.0] = ["/ALEPH_2004_S5765862/d186-x01-y01"]
-
+# y12
+analyses["EventShapes"]["y12_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d149-x01-y01"]
+analyses["EventShapes"]["y12_dur"][133.0] = ["/ALEPH_2004_S5765862/d150-x01-y01"]
+analyses["EventShapes"]["y12_dur"][161.0] = ["/ALEPH_2004_S5765862/d151-x01-y01"]
+analyses["EventShapes"]["y12_dur"][172.0] = ["/ALEPH_2004_S5765862/d152-x01-y01"]
+analyses["EventShapes"]["y12_dur"][183.0] = ["/ALEPH_2004_S5765862/d153-x01-y01"]
+analyses["EventShapes"]["y12_dur"][189.0] = ["/ALEPH_2004_S5765862/d154-x01-y01"]
+analyses["EventShapes"]["y12_dur"][200.0] = ["/ALEPH_2004_S5765862/d155-x01-y01"]
+analyses["EventShapes"]["y12_dur"][206.0] = ["/ALEPH_2004_S5765862/d156-x01-y01"]
+# y23
+analyses["EventShapes"]["y23_dur"][22.0] = ["/JADE_1998_S3612880/d12-x01-y01"]
+analyses["EventShapes"]["y23_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y01","/JADE_1998_S3612880/d11-x01-y01"]
+analyses["EventShapes"]["y23_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y01","/JADE_1998_S3612880/d10-x01-y01"]
+analyses["EventShapes"]["y23_dur"][58.0 ] = ["/TOPAZ_1993_I361661/d03-x01-y01"]
+analyses["EventShapes"]["y23_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d157-x01-y01","/ALEPH_1996_S3486095/d05-x01-y01"
+                                             "/OPAL_2004_S6132243/d06-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y01",
+                                             "/DELPHI_1996_S3430090/d27-x01-y01"]
+analyses["EventShapes"]["y23_dur"][133.0] = ["/ALEPH_2004_S5765862/d158-x01-y01","/OPAL_2004_S6132243/d06-x01-y02",
+                                             "/JADE_OPAL_2000_S4300807/d27-x01-y01"]
+analyses["EventShapes"]["y23_dur"][161.0] = ["/ALEPH_2004_S5765862/d159-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y01"]
+analyses["EventShapes"]["y23_dur"][172.0] = ["/ALEPH_2004_S5765862/d160-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y01"]
+analyses["EventShapes"]["y23_dur"][177.0] = ["/OPAL_2004_S6132243/d06-x01-y03"]
+analyses["EventShapes"]["y23_dur"][183.0] = ["/ALEPH_2004_S5765862/d161-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y01"]
+analyses["EventShapes"]["y23_dur"][189.0] = ["/ALEPH_2004_S5765862/d162-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y01"]
+analyses["EventShapes"]["y23_dur"][197.0] = ["/OPAL_2004_S6132243/d06-x01-y04"]
+analyses["EventShapes"]["y23_dur"][200.0] = ["/ALEPH_2004_S5765862/d163-x01-y01"]
+analyses["EventShapes"]["y23_dur"][206.0] = ["/ALEPH_2004_S5765862/d164-x01-y01"]
+# y34                           
+analyses["EventShapes"]["y34_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y02"]
+analyses["EventShapes"]["y34_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y02"]
+analyses["EventShapes"]["y34_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d165-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y02",
+                                             "/DELPHI_1996_S3430090/d29-x01-y01"]
+analyses["EventShapes"]["y34_dur"][133.0] = ["/ALEPH_2004_S5765862/d166-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y02"]
+analyses["EventShapes"]["y34_dur"][161.0] = ["/ALEPH_2004_S5765862/d167-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y02"]
+analyses["EventShapes"]["y34_dur"][172.0] = ["/ALEPH_2004_S5765862/d168-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y02"]
+analyses["EventShapes"]["y34_dur"][183.0] = ["/ALEPH_2004_S5765862/d169-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y02"]
+analyses["EventShapes"]["y34_dur"][189.0] = ["/ALEPH_2004_S5765862/d170-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y02"]
+analyses["EventShapes"]["y34_dur"][206.0] = ["/ALEPH_2004_S5765862/d172-x01-y01"]
+# y45                           
+analyses["EventShapes"]["y45_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y03"]
+analyses["EventShapes"]["y45_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y03"]
+analyses["EventShapes"]["y45_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d173-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y03",
+                                             "/DELPHI_1996_S3430090/d31-x01-y01"]
+analyses["EventShapes"]["y45_dur"][133.0] = ["/ALEPH_2004_S5765862/d174-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y03"]
+analyses["EventShapes"]["y45_dur"][161.0] = ["/ALEPH_2004_S5765862/d175-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y03"]
+analyses["EventShapes"]["y45_dur"][172.0] = ["/ALEPH_2004_S5765862/d176-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y03"]
+analyses["EventShapes"]["y45_dur"][183.0] = ["/ALEPH_2004_S5765862/d177-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y03"]
+analyses["EventShapes"]["y45_dur"][189.0] = ["/ALEPH_2004_S5765862/d178-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y03"]
+analyses["EventShapes"]["y45_dur"][200.0] = ["/ALEPH_2004_S5765862/d179-x01-y01"]
+# y56                           
+analyses["EventShapes"]["y56_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d24-x01-y04"]
+analyses["EventShapes"]["y56_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d25-x01-y04"]
+analyses["EventShapes"]["y56_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d180-x01-y01","/JADE_OPAL_2000_S4300807/d26-x01-y04"]
+analyses["EventShapes"]["y56_dur"][133.0] = ["/ALEPH_2004_S5765862/d181-x01-y01","/JADE_OPAL_2000_S4300807/d27-x01-y04"]
+analyses["EventShapes"]["y56_dur"][161.0] = ["/ALEPH_2004_S5765862/d182-x01-y01","/JADE_OPAL_2000_S4300807/d28-x01-y04"]
+analyses["EventShapes"]["y56_dur"][172.0] = ["/ALEPH_2004_S5765862/d183-x01-y01","/JADE_OPAL_2000_S4300807/d29-x01-y04"]
+analyses["EventShapes"]["y56_dur"][183.0] = ["/ALEPH_2004_S5765862/d184-x01-y01","/JADE_OPAL_2000_S4300807/d30-x01-y04"]
+analyses["EventShapes"]["y56_dur"][189.0] = ["/ALEPH_2004_S5765862/d185-x01-y01","/JADE_OPAL_2000_S4300807/d31-x01-y04"]
+analyses["EventShapes"]["y56_dur"][200.0] = ["/ALEPH_2004_S5765862/d186-x01-y01"]
+# jade scheme
+analyses["EventShapes"]["y23_jade"][57.7 ] = ["/AMY_1995_I406129/d02-x01-y01","/AMY_1995_I406129/d03-x01-y01",
+                                              "/AMY_1995_I406129/d04-x01-y01","/AMY_1995_I406129/d06-x01-y01"]
+analyses["EventShapes"]["y23_jade"][91.2 ] = ["/DELPHI_1996_S3430090/d28-x01-y01"]
+analyses["EventShapes"]["y34_jade"][91.2 ] = ["/DELPHI_1996_S3430090/d30-x01-y01"]
+analyses["EventShapes"]["y45_jade"][91.2 ] = ["/DELPHI_1996_S3430090/d32-x01-y01"]
+# jet fractions
+# 1 jet
 analyses["EventShapes"]["1jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d187-x01-y01"]
 analyses["EventShapes"]["1jet_dur"][133.0] = ["/ALEPH_2004_S5765862/d188-x01-y01"]
 analyses["EventShapes"]["1jet_dur"][161.0] = ["/ALEPH_2004_S5765862/d189-x01-y01"]
@@ -1606,16 +1606,7 @@ analyses["EventShapes"]["1jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d191-x01-y01
 analyses["EventShapes"]["1jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d192-x01-y01"]
 analyses["EventShapes"]["1jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d193-x01-y01"]
 analyses["EventShapes"]["1jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d194-x01-y01"]
-
-
-
-
-
-
-
-
-
-
+# 2 jet
 analyses["EventShapes"]["2jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y01"]
 analyses["EventShapes"]["2jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y01"]
 analyses["EventShapes"]["2jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d195-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y01"]
@@ -1626,7 +1617,7 @@ analyses["EventShapes"]["2jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d199-x01-y01
 analyses["EventShapes"]["2jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d200-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y01"]
 analyses["EventShapes"]["2jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d201-x01-y01"]
 analyses["EventShapes"]["2jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d202-x01-y01"]
-
+# 3 jet
 analyses["EventShapes"]["3jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y02"]
 analyses["EventShapes"]["3jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y02"]
 analyses["EventShapes"]["3jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d203-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y02"]
@@ -1637,7 +1628,7 @@ analyses["EventShapes"]["3jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d207-x01-y01
 analyses["EventShapes"]["3jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d208-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y02"]
 analyses["EventShapes"]["3jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d209-x01-y01"]
 analyses["EventShapes"]["3jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d210-x01-y01"]
-
+# 4 jet
 analyses["EventShapes"]["4jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y03"]
 analyses["EventShapes"]["4jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y03"]
 analyses["EventShapes"]["4jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d211-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y03"]
@@ -1648,7 +1639,7 @@ analyses["EventShapes"]["4jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d215-x01-y01
 analyses["EventShapes"]["4jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d216-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y03"]
 analyses["EventShapes"]["4jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d217-x01-y01"]
 analyses["EventShapes"]["4jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d218-x01-y01"]
-                                              
+# 5 jet
 analyses["EventShapes"]["5jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y04"]
 analyses["EventShapes"]["5jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y04"]
 analyses["EventShapes"]["5jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d219-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y04"]
@@ -1659,7 +1650,7 @@ analyses["EventShapes"]["5jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d223-x01-y01
 analyses["EventShapes"]["5jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d224-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y04"]
 analyses["EventShapes"]["5jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d225-x01-y01"]
 analyses["EventShapes"]["5jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d226-x01-y01"]
-                                              
+# 6 jet                                       
 analyses["EventShapes"]["6jet_dur"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d16-x01-y05"]
 analyses["EventShapes"]["6jet_dur"][44.0 ] = ["/JADE_OPAL_2000_S4300807/d17-x01-y05"]
 analyses["EventShapes"]["6jet_dur"][91.2 ] = ["/ALEPH_2004_S5765862/d227-x01-y01","/JADE_OPAL_2000_S4300807/d18-x01-y05"]
@@ -2593,72 +2584,47 @@ def writeCharged() :
     charged.write("</body>\n</html>")
     charged.close()
     
-def writeJets() :
-    global figures
+def writeJets(index) :
     jets=open(os.path.join(directory,"jets.html"),'w')
     jets.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Jet Data"))
+    index.write("<li> <a href=\"jets.html\">Jets</a>\n")
+    index.write("<ul>\n")
     # fractions
     jets.write("<h2 id=\"FRACTION\">Jet Fractions</h2>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"1jet_dur\">1 Jet Fraction (Durham)</h3>\n")
-    writePlots(analyses["EventShapes"]["1jet_dur"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"1jet_jade\">1 Jet Fraction (JADE)</h3>\n")
-    writePlots(analyses["EventShapes"]["1jet_jade"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"2jet_dur\">2 Jet Fraction (Durham)</h3>\n")
-    writePlots(analyses["EventShapes"]["2jet_dur"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"2jet_jade\">2 Jet Fraction (JADE)</h3>\n")
-    writePlots(analyses["EventShapes"]["2jet_jade"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"3jet_dur\">3 Jet Fraction (Durham)</h3>\n")
-    writePlots(analyses["EventShapes"]["3jet_dur"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"3jet_jade\">3 Jet Fraction (JADE)</h3>\n")
-    writePlots(analyses["EventShapes"]["3jet_jade"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"4jet_dur\">4 Jet Fraction (Durham)</h3>\n")
-    writePlots(analyses["EventShapes"]["4jet_dur"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"4jet_jade\">4 Jet Fraction (JADE)</h3>\n")
-    writePlots(analyses["EventShapes"]["4jet_jade"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"5jet_dur\">5 Jet Fraction (Durham)</h3>\n")
-    writePlots(analyses["EventShapes"]["5jet_dur"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"5jet_jade\">5 Jet Fraction (JADE)</h3>\n")
-    writePlots(analyses["EventShapes"]["5jet_jade"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"6jet_dur\">6 Jet Fraction (Durham)</h3>\n")
-    writePlots(analyses["EventShapes"]["6jet_dur"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"6jet_jade\">6 Jet Fraction (JADE)</h3>\n")
-    writePlots(analyses["EventShapes"]["6jet_jade"],jets)
-    jets.write("</div>\n")
-
-
-
-
-
-
-
-
-    
+    index.write("<li> <a href=\"jets.html#FRACTION\">Jet Fractions:</a> \n")
+    lFormat="""<div style=\"float:none; overflow:auto; width:100%\">\n<{hlevel} id=\"{tag}\">{name}</{hlevel}>\n"""
+    for i in range(1,7) :
+        if(i<6) : index.write(" <a href=\"jets.html#%sjet\">%s jet,<a/>\n" % (i,i))
+        else    :  index.write(" <a href=\"jets.html#%sjet\">%s jet.<a/>\n" % (i,i))
+        jets .write(lFormat.format(hlevel="h3",tag   ="%sjet" % i,name  ="%s Jet Fraction" % i))
+        jets .write(lFormat.format(hlevel="h4",tag   ="%sjet_dur" % i,name  ="%s Jet Fraction (Durham)" % i))
+        writePlots(analyses["EventShapes"]["%sjet_dur" % i],jets)
+        jets.write("</div>\n")
+        jets .write(lFormat.format(hlevel="h4",tag   ="%sjet_jade" % i,name  ="%s Jet Fraction (JADE)" % i))
+        writePlots(analyses["EventShapes"]["%sjet_jade" % i],jets)
+        jets.write("</div>\n")
+        jets.write("</div>\n")
+    # differential jet rates
+    index.write("<li> <a href=\"jets.html#DRATE\">Differential jet rates:</a> \n")
     jets.write("<h2 id=\"DRATE\">Differential Jet Rates</h2>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"y12\">$y_{12}$</h3>\n")
-    writePlots(analyses["EventShapes"]["y12"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"y23\">$y_{23}$</h3>\n")
-    writePlots(analyses["EventShapes"]["y23"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"y34\">$y_{34}$</h3>\n")
-    writePlots(analyses["EventShapes"]["y34"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"y45\">$y_{45}$</h3>\n")
-    writePlots(analyses["EventShapes"]["y45"],jets)
-    jets.write("</div>\n")
-    jets.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"y56\">$y_{56}$</h3>\n")
-    writePlots(analyses["EventShapes"]["y56"],jets)
+    for i in range(1,6) :
+        yval="%s%s" % (i,i+1)
+        if(i!=5) : index.write(" <a href=\"jets.html#y%s\">$y_{%s}$,<a/>\n" %(yval,yval))
+        else     : index.write(" <a href=\"jets.html#y%s\">$y_{%s}$.<a/>\n" %(yval,yval))
+        jets .write(lFormat.format(hlevel="h3",tag   ="y%s" % yval,name  ="$y_{%s}$" % yval))
+        if(len(analyses["EventShapes"]["y%s_dur" % yval])!=0) :
+            jets .write(lFormat.format(hlevel="h4",tag   ="y%s_dur" % yval,name  ="$y_{%s}$ (Durham)" % yval))
+            writePlots(analyses["EventShapes"]["y%s_dur" % yval],jets)
+            jets.write("</div>\n")
+        if(len(analyses["EventShapes"]["y%s_jade" % yval])!=0) :
+            jets .write(lFormat.format(hlevel="h4",tag   ="y%s_jade" % yval,name  ="$y_{%s}$ (JADE)" % yval))
+            writePlots(analyses["EventShapes"]["y%s_jade" % yval],jets)
+            jets.write("</div>\n")
+
+
+        jets.write("</div>\n")
+    # footer
+    index.write(" </ul>\n")
     jets.write("</div>\n")
     jets.write("</body>\n</html>")
     jets.close()
@@ -2787,7 +2753,6 @@ def writeGluon() :
 print 'Total no of figures',len(figures)
 # output the event shapes    
 writeEventShapes()
-writeJets()
 writeCharged()
 writeMult()
 writeFlavour()
@@ -2845,22 +2810,7 @@ index.write(" <a href=\"charged.html#Sptin\">$p_\\perp^{\\text{in}}$,<a/>\n")
 index.write(" <a href=\"charged.html#Sptout\">$p_\\perp^{\\text{out}}$.<a/>\n")
 index.write(" </ul>\n")
 # jets
-index.write("<li> <a href=\"jets.html\">Jets</a>\n")
-index.write("<ul>\n")
-index.write("<li> <a href=\"jets.html#FRACTION\">Jet Fractions:</a> \n")
-index.write(" <a href=\"jets.html#1jet\">1 jet,<a/>\n")
-index.write(" <a href=\"jets.html#2jet\">2 jet,<a/>\n")
-index.write(" <a href=\"jets.html#3jet\">3 jet,<a/>\n")
-index.write(" <a href=\"jets.html#4jet\">4 jet,<a/>\n")
-index.write(" <a href=\"jets.html#5jet\">5 jet,<a/>\n")
-index.write(" <a href=\"jets.html#6jet\">6 jet,<a/>\n")
-index.write("<li> <a href=\"jets.html#DRATE\">Differential jet rates:</a> \n")
-index.write(" <a href=\"jets.html#y12\">$y_{12}$,<a/>\n")
-index.write(" <a href=\"jets.html#y23\">$y_{23}$,<a/>\n")
-index.write(" <a href=\"jets.html#y34\">$y_{34}$,<a/>\n")
-index.write(" <a href=\"jets.html#y45\">$y_{45}$,<a/>\n")
-index.write(" <a href=\"jets.html#y56\">$y_{56}$,<a/>\n")
-index.write(" </ul>\n")
+writeJets(index)
 # identified particle spectra
 writeIdentified(index)
 # identified particle multiplicity
