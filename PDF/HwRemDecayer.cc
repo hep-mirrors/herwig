@@ -1096,14 +1096,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   		+abs(softRems_.second->momentum().rapidity());
     
   // Generate the poisson distribution with mean avgN
-  double L = exp(-double(avgN));
-  int k = 0;
-  double p = 1;
-  do {
-      k++;
-      p *= UseRandom::rnd();
-  } while( p > L);
-  N=k-1;
+  N=UseRandom::rndPoisson(avgN);
   
   valOfN_=N;
   if(N == 0){
