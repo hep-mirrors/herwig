@@ -169,7 +169,7 @@ analyses={ "HadronDecays"     : { },
            "Multiplicity"  : { 22: {}, 111 : {}, 211 : {}, 221 : {}, 331 : {}, 113 : {},9010221 : {},9000211 : {}, 213 : {},
                                223 : {}, 333 : {}, 321  : {}, 311 : {}, 411 : {}, 421 : {}, 431 : {}, 521 : {}, 531 : {}, 511 : {},
                                313 : {}, 323 : {}, 2212 : {}, 413 : {}, 423 : {}, 433 : {}, 513 : {}, 515 : {},
-                               3122  : {}, 3312 : {}, 3212 : {}, 3112 : {}, 3114 : {}, 3324: {}, 3334 : {}, "321/2212" : {},
+                               3122  : {}, 3312 : {}, 3212 : {}, 3112 : {}, 3114 : {}, 3324: {}, 3334 : {}, "321/2212" : {}, 4132 : {},
                                443 : {}, 100443 : {}, 553 : {}, 20223 : {}, 20333 : {}, 20443 : {}, 225 :{}, 335 : {}, 20431 : {}, 435 : {}, 315 : {}, 325 : {},
                                3222 : {}, 2224 : {},  3224 : {}, 3114 : {}, 4122 : {}, 5122 :{}, 3124 :{}, 4222 : {}, "3222B" : {}, "3224B" : {},
            },
@@ -433,6 +433,7 @@ analyses["HadronDecays"][300553] = ["/ARGUS_1993_S2789213/d03-x01-y01","/ARGUS_1
                                     "/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d88-x01-y01","/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d89-x01-y01",
                                     "/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d90-x01-y01","/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d92-x01-y01",
                                     "/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d96-x01-y01",
+                                    "/BABAR_2005_S6181155/d01-x01-y01","/BABAR_2005_S6181155/d02-x01-y01",
                                     "/BABAR_2007_S6895344/d03-x01-y01","/BABAR_2007_S6895344/d04-x01-y01",
                                     "/BABAR_2003_I593379/d01-x01-y01","/BABAR_2003_I593379/d01-x01-y02",
                                     "/BABAR_2003_I593379/d01-x01-y03","/BABAR_2003_I593379/d01-x01-y04",
@@ -609,7 +610,8 @@ analyses["Charged"]["ChargedSpectrum"][0]["x" ][200.0] = ["/ALEPH_2004_S5765862/
 analyses["Charged"]["ChargedSpectrum"][0]["x" ][200.5] = ["/OPAL_2003_I595335/d04-x01-y01"]
 analyses["Charged"]["ChargedSpectrum"][0]["x" ][206.0] = ["/ALEPH_2004_S5765862/d09-x01-y01","/ALEPH_2004_S5765862/d26-x01-y01"]
 # with cuts
-analyses["Charged"]["ChargedSpectrum"]["C"]["x" ][29.0 ] = ["/HRS_1985_I201482/d11-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"]["C"]["x" ][29.0 ] = ["/HRS_1985_I201482/d11-x01-y01","/HRS_1985_I201482/d13-x01-y01",
+                                                            "/HRS_1985_I201482/d14-x01-y01","/HRS_1985_I201482/d15-x01-y01"]
 # flavour separated
 analyses["Charged"]["ChargedSpectrum"][1]["x" ][91.2] = ["/DELPHI_1998_I473409/d32-x01-y01","/DELPHI_1998_I473409/d33-x01-y01",
                                                          "/DELPHI_1997_I428178/d01-x01-y03","/OPAL_1998_S3780481/d01-x01-y01",
@@ -1200,6 +1202,7 @@ analyses["IdentifiedParticle"][4112 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d
 analyses["IdentifiedParticle"][4114 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d12-x01-y01"]
 # xi_c
 analyses["IdentifiedParticle"][4132 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d14-x01-y01","/BELLE_2017_I1606201/d15-x01-y01"]
+analyses["IdentifiedParticle"][4132 ]["p"    ][10.58] = ["/BABAR_2005_S6181155/d02-x01-y02"]
 # omega_c
 analyses["IdentifiedParticle"][4332 ]["x"    ][10.52] = ["/BELLE_2017_I1606201/d13-x01-y01"]
 # lambda_c(2595)
@@ -1367,6 +1370,7 @@ analyses["Multiplicity"]["3224B"][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d48-x01-
 analyses["Multiplicity"]["3224B"][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d48-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y02"]
 analyses["Multiplicity"]["3224B"][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d48-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d48-x01-y03",
                                             "/DELPHI_1996_S3430090/d40-x01-y06","/ALEPH_1996_S3486095/d44-x01-y14"]
+analyses["Multiplicity"][4132][10.52] = ["/BABAR_2005_S6181155/d03-x01-y01"]
 # event shapes
 # thrust based
 analyses["EventShapes"]["T"][14.0 ] = ["/TASSO_1990_S2148048/d08-x01-y01"]
@@ -2028,7 +2032,7 @@ analyses["TauDecays"]["2pi"  ] = ["/BELLE_2008_I786560/d01-x01-y01","/ALEPH_2014
                                   "/MC_TAU_Decay/h_2B_m2pipi","/MC_TAU_Decay/h_2B_mpipi"]
 analyses["TauDecays"]["3pi"  ] = ["/BELLE_2010_I841618/d01-x01-y01","/BABAR_2007_S7266081/d01-x01-y01",
                                   "/BABAR_2007_S7266081/d02-x01-y01","/BABAR_2007_S7266081/d11-x01-y01",
-                                  "/BABAR_2005_S6181155/d01-x01-y01","/ALEPH_2014_I1267648/d02-x01-y01","/ALEPH_2014_I1267648/d04-x01-y01",
+                                  "/ALEPH_2014_I1267648/d02-x01-y01","/ALEPH_2014_I1267648/d04-x01-y01",
                                   "/MC_TAU_Decay/h_3B_pi0pi0pim_1","/MC_TAU_Decay/h_3B_pi0pi0pim_2","/MC_TAU_Decay/h_3B_pi0pi0pim_3",
                                   "/MC_TAU_Decay/h_3B_pippimpim_1","/MC_TAU_Decay/h_3B_pippimpim_2","/MC_TAU_Decay/h_3B_pippimpim_3"]
 analyses["TauDecays"]["Kpipi"] = ["/BELLE_2010_I841618/d02-x01-y01" ,"/BABAR_2007_S7266081/d03-x01-y01",
