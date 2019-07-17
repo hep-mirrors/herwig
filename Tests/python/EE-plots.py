@@ -2167,8 +2167,10 @@ def writePlots2(plots,output) :
         output.write("\n")
     output.write("</div>")
 
-def writeMisc() :
+def writeMisc(index) :
     global figures
+    index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
+    print 'Unused figures',len(figures)
     misc=open(os.path.join(directory,"misc.html"),'w')
     misc.write(header.format(title="Comparisions of Herwig7 and Miscellaneous $e^+e^-$ Data"))
     misc.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
@@ -2187,7 +2189,8 @@ def writeMisc() :
     misc.write("</body>\n</html>")
     misc.close()
     
-def writeQED() :
+def writeQED(index) :
+    index.write("<li> <a href=\"qed.html\">QED Radiation</a>\n")
     qed=open(os.path.join(directory,"qed.html"),'w')
     qed.write(header.format(title="Comparisions of Herwig7 and Photon Radiation Data"))
     writePlots2(analyses["QED"],qed)
@@ -2195,7 +2198,8 @@ def writeQED() :
     qed.write("</body>\n</html>")
     qed.close()
 
-def writeTauDecays() :
+def writeTauDecays(index) :
+    index.write("<li> <a href=\"taus.html\">Tau Decays</a>\n")
     decays=open(os.path.join(directory,"taus.html"),'w')
     decays.write(header.format(title="Comparisions of Herwig7 and Tau Decay Data"))
     decays.write("<h2 id=\"2pi\">$\\tau\\to\\nu_\\tau\\pi^-\\pi^0$</h2>\n")
@@ -2233,42 +2237,54 @@ def writeTauDecays() :
     decays.close()
 
 
-def writeDecays() :
+def writeDecays(index) :
     decays=open(os.path.join(directory,"decays.html"),'w')
     decays.write(header.format(title="Comparisions of Herwig7 and Hadronic Decay Data"))
+    index.write("<li> <a href=\"decays.html\">Hadron Decays</a>\n")
+    index.write(" <ul>\n")
     # mesons
     decays.write("<h2 id=\"MESONS\">Meson</h2>\n")
     decays.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
+    index.write("<li><a href=\"decays.html#m_light\">Light unflavoured mesons:<a/>\n")
     for val in [111,221,331,223,333,20113,20213] : 
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
+        index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         writePlots2(analyses["HadronDecays"][val],decays)
         decays.write("</div>\n")
         
     decays.write("<h3 id=\"m_charm\">Charm Mesons</h3>\n")
+    index.write("<li><a href=\"decays.html#m_charm\">Charm mesons:<a/>\n")
     for val in [411,421,431] : 
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
+        index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         writePlots2(analyses["HadronDecays"][val],decays)
         decays.write("</div>\n")
         
     decays.write("<h3 id=\"m_charm\">Bottom Mesons</h3>\n")
+    index.write("<li><a href=\"decays.html#m_charm\">Bottom mesons:<a/>\n")
     for val in [511,521] : 
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
+        index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         writePlots2(analyses["HadronDecays"][val],decays)
         decays.write("</div>\n")
         
     decays.write("<h3 id=\"m_ccbar\">Charmonium</h3>\n")
+    index.write("<li><a href=\"decays.html#m_ccbar\">Charmonium:<a/>\n")
     for val in [441,443] : 
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
+        index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         writePlots2(analyses["HadronDecays"][val],decays)
         decays.write("</div>\n")
         
     decays.write("<h3 id=\"m_bbbar\">Bottomonium</h3>\n")
+    index.write("<li><a href=\"decays.html#m_bbbar\">Bottomonium:<a/>\n")
     for val in [553,100553,300553] : 
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
+        index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         writePlots2(analyses["HadronDecays"][val],decays)
         decays.write("</div>\n")
-    
     # footer
+    index.write(" </ul>\n")
     decays.write("</body>\n</html>")
     decays.close()
     
@@ -3066,11 +3082,6 @@ def writeGluon(index) :
     gluon.close()
     
 print 'Total no of figures',len(figures)
-writeDecays()
-writeTauDecays()
-writeQED()
-
-
 index=open(os.path.join(directory,"herwig.html"),'w')
 index.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data"))
 # event shapes
@@ -3087,48 +3098,14 @@ writeMult(index)
 writeFlavour(index)
 # gluons
 writeGluon(index)
+# QED
+writeQED(index)
 # hadron decays
-index.write("<li> <a href=\"decays.html\">Hadron Decays</a>\n")
-index.write(" <ul>\n")
-index.write("<li><a href=\"decays.html#m_light\">Light unflavoured mesons:<a/>\n")
-for val in [221,331,223,333] : 
-    index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"decays.html#m_charm\">Charm mesons:<a/>\n")
-for val in [411,421,431] : 
-    index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"decays.html#m_charm\">Bottom mesons:<a/>\n")
-for val in [511,521] : 
-    index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"decays.html#m_ccbar\">Charmonium:<a/>\n")
-for val in [441,443] : 
-    index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write("<li><a href=\"decays.html#m_bbbar\">Bottomonium:<a/>\n")
-for val in [553,100553,300553] : 
-    index.write(" <a href=\"decays.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
-index.write(" </ul>\n")
+writeDecays(index)
 # tau decays
-index.write("<li> <a href=\"taus.html\">Tau Decays</a>\n")
-
-print 'Unused figures',len(figures)
-writeMisc()
-
-    # decays.write("<h2 id=\"2pi\">$\\tau\\to\\nu_\\tau\\pi^-\\pi^0$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["2pi"],decays)
-    # decays.write("<h2 id=\"Kpi\">$\\tau\\to\\nu_\\tau K\\pi$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["Kpi"],decays)
-    # decays.write("<h2 id=\"KK\">$\\tau\\to\\nu_\\tau KK$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["KK"],decays)
-    # decays.write("<h2 id=\"3pi\">$\\tau\\to\\nu_\\tau\\pi\\pi\\pi$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["3pi"],decays)
-    # decays.write("<h2 id=\"Kpipi\">$\\tau\\to\\nu_\\tau K\\pi\\pi$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["Kpipi"],decays)
-    # decays.write("<h2 id=\"KKpi\">$\\tau\\to\\nu_\\tau KK\\pi$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["KKpi"],decays)
-    # decays.write("<h2 id=\"3K\">$\\tau\\to\\nu_\\tau KKK$</h2>\n")
-    # writePlots2(analyses["TauDecays"]["3K"],decays)
-# qed
-index.write("<li> <a href=\"qed.html\">QED Radiation</a>\n")
-index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
+writeTauDecays(index)
+# remaining plots
+writeMisc(index)
 # footer
 index.write("</ul>\n")
 index.write("</body>\n</html>")
