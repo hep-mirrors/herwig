@@ -23,7 +23,19 @@ header="""<html>
 
 
 analyses={ "HadronDecays"     : { },
-           "TauDecays" : {},
+           "TauDecays" : { "2pi"      : {},
+                           "Kpi"      : {},
+                           "KK"       : {},
+                           "lnu"      : {},
+                           "Keta"     : {},
+                           "3pi"      : {},
+                           "Kpipi"    : {},
+                           "KKpi"     : {},
+                           "2pieta"   : {},
+                           "2pigamma" : {},
+                           "3K"       : {},
+                           "4pi"      : {},
+                           "5pi"      : {},},
            "Charged" : {"TotalChargedMult" : { 0 : {}, 1 : {}, 4 : {}, 5 : {}, 51 : {}, 41 : {} , "C" : {} },
                         "ChargedSpectrum" : {  0   : { "x" : {}, "p" : {}, "xi" : {}},
                                                1   : { "x" : {}, "p" : {}, "xi" : {}},
@@ -2025,65 +2037,70 @@ analyses["QED"] = ["/ALEPH_1996_S3196992/d03-x01-y01","/ALEPH_1996_S3196992/d04-
                    "/OPAL_1993_S2692198/d03-x01-y03","/OPAL_1993_S2692198/d03-x01-y04",
                    "/OPAL_1993_S2692198/d04-x01-y01","/OPAL_1993_S2692198/d04-x01-y02",
                    "/OPAL_1993_S2692198/d04-x01-y03","/OPAL_1993_S2692198/d04-x01-y04",]
-analyses["TauDecays"]["KK"   ] = ["/BABAR_2018_I1679886/d01-x01-y01","/MC_TAU_Decay/h_2B_m2KK","/MC_TAU_Decay/h_2B_mKK"]
-analyses["TauDecays"]["Kpi"  ] = ["/BELLE_2007_I753243/d01-x01-y01","/MC_TAU_Decay/h_2B_m2KpiA","/MC_TAU_Decay/h_2B_m2KpiB",
-                                  "/MC_TAU_Decay/h_2B_mKpiA","/MC_TAU_Decay/h_2B_mKpiB"]
-analyses["TauDecays"]["2pi"  ] = ["/BELLE_2008_I786560/d01-x01-y01","/ALEPH_2014_I1267648/d01-x01-y01","/CLEO_1999_I508944/d01-x01-y01",
-                                  "/MC_TAU_Decay/h_2B_m2pipi","/MC_TAU_Decay/h_2B_mpipi"]
-analyses["TauDecays"]["3pi"  ] = ["/BELLE_2010_I841618/d01-x01-y01","/BABAR_2007_S7266081/d01-x01-y01",
-                                  "/BABAR_2007_S7266081/d02-x01-y01","/BABAR_2007_S7266081/d11-x01-y01",
-                                  "/ALEPH_2014_I1267648/d02-x01-y01","/ALEPH_2014_I1267648/d04-x01-y01",
-                                  "/MC_TAU_Decay/h_3B_pi0pi0pim_1","/MC_TAU_Decay/h_3B_pi0pi0pim_2","/MC_TAU_Decay/h_3B_pi0pi0pim_3",
-                                  "/MC_TAU_Decay/h_3B_pippimpim_1","/MC_TAU_Decay/h_3B_pippimpim_2","/MC_TAU_Decay/h_3B_pippimpim_3"]
-analyses["TauDecays"]["Kpipi"] = ["/BELLE_2010_I841618/d02-x01-y01" ,"/BABAR_2007_S7266081/d03-x01-y01",
-                                  "/BABAR_2007_S7266081/d04-x01-y01","/BABAR_2007_S7266081/d05-x01-y01",
-                                  "/BABAR_2007_S7266081/d12-x01-y01",
-                                  "/MC_TAU_Decay/h_3B_pi0pi0km_1","/MC_TAU_Decay/h_3B_pi0pi0km_2","/MC_TAU_Decay/h_3B_pi0pi0km_3",
-                                  "/MC_TAU_Decay/h_3B_pimk0pi0_1","/MC_TAU_Decay/h_3B_pimk0pi0_2","/MC_TAU_Decay/h_3B_pimk0pi0_3",
-                                  "/MC_TAU_Decay/h_3B_pimk0pi0_4"]
-analyses["TauDecays"]["KKpi" ] = ["/BELLE_2010_I841618/d03-x01-y01","/BABAR_2007_S7266081/d06-x01-y01",
-                                  "/BABAR_2007_S7266081/d07-x01-y01","/BABAR_2007_S7266081/d08-x01-y01",
-                                  "/BABAR_2007_S7266081/d13-x01-y01",
-                                  "/MC_TAU_Decay/h_3B_klpimkl_1","/MC_TAU_Decay/h_3B_klpimkl_2","/MC_TAU_Decay/h_3B_klpimkl_3",
-                                  "/MC_TAU_Decay/h_3B_kmpi0k0_1","/MC_TAU_Decay/h_3B_kmpi0k0_2","/MC_TAU_Decay/h_3B_kmpi0k0_3",
-                                  "/MC_TAU_Decay/h_3B_kmpi0k0_4","/MC_TAU_Decay/h_3B_kmpimkp_1","/MC_TAU_Decay/h_3B_kmpimkp_2",
-                                  "/MC_TAU_Decay/h_3B_kmpimkp_3","/MC_TAU_Decay/h_3B_kmpimkp_4","/MC_TAU_Decay/h_3B_kmpimpip_1",
-                                  "/MC_TAU_Decay/h_3B_kmpimpip_2","/MC_TAU_Decay/h_3B_kmpimpip_3","/MC_TAU_Decay/h_3B_kmpimpip_4",
-                                  "/MC_TAU_Decay/h_3B_kspimkl_1","/MC_TAU_Decay/h_3B_kspimkl_2","/MC_TAU_Decay/h_3B_kspimkl_3",
-                                  "/MC_TAU_Decay/h_3B_kspimkl_4","/MC_TAU_Decay/h_3B_kspimks_1","/MC_TAU_Decay/h_3B_kspimks_2",
-                                  "/MC_TAU_Decay/h_3B_kspimks_3"]
-analyses["TauDecays"]["3K"   ] = ["/BELLE_2010_I841618/d04-x01-y01","/BABAR_2007_S7266081/d09-x01-y01",
-                                  "/BABAR_2007_S7266081/d10-x01-y01","/BABAR_2007_S7266081/d14-x01-y01"]
-analyses["TauDecays"]["Keta"] = ["/MC_TAU_Decay/h_2B_m2Keta","/MC_TAU_Decay/h_2B_mKeta"]
-analyses["TauDecays"]["lnu" ] = ["/MC_TAU_Decay/h_2B_m2enu","/MC_TAU_Decay/h_2B_m2munu",
-                                 "/MC_TAU_Decay/h_2B_menu","/MC_TAU_Decay/h_2B_mmunu"]
-analyses["TauDecays"]["2pieta"] = ["/MC_TAU_Decay/h_3B_pimpi0eta_1","/MC_TAU_Decay/h_3B_pimpi0eta_2",
-                                   "/MC_TAU_Decay/h_3B_pimpi0eta_3","/MC_TAU_Decay/h_3B_pimpi0eta_4"]
-analyses["TauDecays"]["2pigamma"] = ["/MC_TAU_Decay/h_3B_pimpi0gamma_1","/MC_TAU_Decay/h_3B_pimpi0gamma_2",
-                                     "/MC_TAU_Decay/h_3B_pimpi0gamma_3","/MC_TAU_Decay/h_3B_pimpi0gamma_4"]
-analyses["TauDecays"]["4pi"] = ["/ALEPH_2014_I1267648/d03-x01-y01","/ALEPH_2014_I1267648/d05-x01-y01",
-                                "/MC_TAU_Decay/h_4B_pipi_1","/MC_TAU_Decay/h_4B_pipi_2",
-                                "/MC_TAU_Decay/h_4B_pipi_3","/MC_TAU_Decay/h_4B_pipi_4",
-                                "/MC_TAU_Decay/h_4B_pipi_5","/MC_TAU_Decay/h_4B_pipi_6",
-                                "/MC_TAU_Decay/h_4B_pipipi_1","/MC_TAU_Decay/h_4B_pipipi_2",
-                                "/MC_TAU_Decay/h_4B_pipipi_3","/MC_TAU_Decay/h_4B_pipipi_4",
-                                "/MC_TAU_Decay/h_4B_pipipi_5","/MC_TAU_Decay/h_4B_pipipipi_1",
-                                "/MC_TAU_Decay/h_4B_pipipipi_2"]
-analyses["TauDecays"]["5pi"] = ["/MC_TAU_Decay/h_5B_pipi1_1","/MC_TAU_Decay/h_5B_pipi1_2",
-                                "/MC_TAU_Decay/h_5B_pipi1_3","/MC_TAU_Decay/h_5B_pipi1_4",
-                                "/MC_TAU_Decay/h_5B_pipi1_5","/MC_TAU_Decay/h_5B_pipi2_1",
-                                "/MC_TAU_Decay/h_5B_pipi2_2","/MC_TAU_Decay/h_5B_pipi3_1",
-                                "/MC_TAU_Decay/h_5B_pipi3_2","/MC_TAU_Decay/h_5B_pipi3_3",
-                                "/MC_TAU_Decay/h_5B_pipipi1_1","/MC_TAU_Decay/h_5B_pipipi1_2",
-                                "/MC_TAU_Decay/h_5B_pipipi1_3","/MC_TAU_Decay/h_5B_pipipi1_4",
-                                "/MC_TAU_Decay/h_5B_pipipi1_5","/MC_TAU_Decay/h_5B_pipipi2_1",
-                                "/MC_TAU_Decay/h_5B_pipipi2_2","/MC_TAU_Decay/h_5B_pipipi3_1",
-                                "/MC_TAU_Decay/h_5B_pipipi3_2","/MC_TAU_Decay/h_5B_pipipi3_3",
-                                "/MC_TAU_Decay/h_5B_pipipipi1_1","/MC_TAU_Decay/h_5B_pipipipi1_2",
-                                "/MC_TAU_Decay/h_5B_pipipipi1_3","/MC_TAU_Decay/h_5B_pipipipi2_1",
-                                "/MC_TAU_Decay/h_5B_pipipipi2_2","/MC_TAU_Decay/h_5B_pipipipi3_1",
-                                "/MC_TAU_Decay/h_5B_pipipipi3_2","/MC_TAU_Decay/h_5B_q1",
-                                "/MC_TAU_Decay/h_5B_q2","/MC_TAU_Decay/h_5B_q3"]
+# tau decays
+# 2 body
+analyses["TauDecays"]["KK"   ]["data"] = ["/BABAR_2018_I1679886/d01-x01-y01"]
+analyses["TauDecays"]["KK"   ]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2KK","/MC_TAU_Decay/h_2B_mKK"]
+analyses["TauDecays"]["Kpi"  ]["data"] = ["/BELLE_2007_I753243/d01-x01-y01"]
+analyses["TauDecays"]["Kpi"  ]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2KpiA","/MC_TAU_Decay/h_2B_m2KpiB",
+                                          "/MC_TAU_Decay/h_2B_mKpiA","/MC_TAU_Decay/h_2B_mKpiB"]
+analyses["TauDecays"]["2pi"  ]["data"] = ["/BELLE_2008_I786560/d01-x01-y01","/ALEPH_2014_I1267648/d01-x01-y01",
+                                          "/CLEO_1999_I508944/d01-x01-y01"]
+analyses["TauDecays"]["2pi"  ]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2pipi","/MC_TAU_Decay/h_2B_mpipi"]
+analyses["TauDecays"]["3pi"  ]["data"] = ["/BELLE_2010_I841618/d01-x01-y01","/BABAR_2007_S7266081/d01-x01-y01",
+                                          "/BABAR_2007_S7266081/d02-x01-y01","/BABAR_2007_S7266081/d11-x01-y01",
+                                          "/ALEPH_2014_I1267648/d02-x01-y01","/ALEPH_2014_I1267648/d04-x01-y01"]
+analyses["TauDecays"]["3pi"  ]["MC"  ] = ["/MC_TAU_Decay/h_3B_pi0pi0pim_1","/MC_TAU_Decay/h_3B_pi0pi0pim_2","/MC_TAU_Decay/h_3B_pi0pi0pim_3",
+                                          "/MC_TAU_Decay/h_3B_pippimpim_1","/MC_TAU_Decay/h_3B_pippimpim_2","/MC_TAU_Decay/h_3B_pippimpim_3"]
+analyses["TauDecays"]["Kpipi"]["data"] = ["/BELLE_2010_I841618/d02-x01-y01" ,"/BABAR_2007_S7266081/d03-x01-y01",
+                                          "/BABAR_2007_S7266081/d04-x01-y01","/BABAR_2007_S7266081/d05-x01-y01",
+                                          "/BABAR_2007_S7266081/d12-x01-y01"]
+analyses["TauDecays"]["Kpipi"]["MC"  ]  = ["/MC_TAU_Decay/h_3B_pi0pi0km_1","/MC_TAU_Decay/h_3B_pi0pi0km_2","/MC_TAU_Decay/h_3B_pi0pi0km_3",
+                                           "/MC_TAU_Decay/h_3B_pimk0pi0_1","/MC_TAU_Decay/h_3B_pimk0pi0_2","/MC_TAU_Decay/h_3B_pimk0pi0_3",
+                                           "/MC_TAU_Decay/h_3B_pimk0pi0_4"]
+analyses["TauDecays"]["KKpi" ]["data"] = ["/BELLE_2010_I841618/d03-x01-y01","/BABAR_2007_S7266081/d06-x01-y01",
+                                          "/BABAR_2007_S7266081/d07-x01-y01","/BABAR_2007_S7266081/d08-x01-y01",
+                                          "/BABAR_2007_S7266081/d13-x01-y01"]
+analyses["TauDecays"]["KKpi" ]["MC"  ] = ["/MC_TAU_Decay/h_3B_klpimkl_1","/MC_TAU_Decay/h_3B_klpimkl_2","/MC_TAU_Decay/h_3B_klpimkl_3",
+                                          "/MC_TAU_Decay/h_3B_kmpi0k0_1","/MC_TAU_Decay/h_3B_kmpi0k0_2","/MC_TAU_Decay/h_3B_kmpi0k0_3",
+                                          "/MC_TAU_Decay/h_3B_kmpi0k0_4","/MC_TAU_Decay/h_3B_kmpimkp_1","/MC_TAU_Decay/h_3B_kmpimkp_2",
+                                          "/MC_TAU_Decay/h_3B_kmpimkp_3","/MC_TAU_Decay/h_3B_kmpimkp_4","/MC_TAU_Decay/h_3B_kmpimpip_1",
+                                          "/MC_TAU_Decay/h_3B_kmpimpip_2","/MC_TAU_Decay/h_3B_kmpimpip_3","/MC_TAU_Decay/h_3B_kmpimpip_4",
+                                          "/MC_TAU_Decay/h_3B_kspimkl_1","/MC_TAU_Decay/h_3B_kspimkl_2","/MC_TAU_Decay/h_3B_kspimkl_3",
+                                          "/MC_TAU_Decay/h_3B_kspimkl_4","/MC_TAU_Decay/h_3B_kspimks_1","/MC_TAU_Decay/h_3B_kspimks_2",
+                                          "/MC_TAU_Decay/h_3B_kspimks_3"]
+analyses["TauDecays"]["3K"   ]["data"] = ["/BELLE_2010_I841618/d04-x01-y01","/BABAR_2007_S7266081/d09-x01-y01",
+                                          "/BABAR_2007_S7266081/d10-x01-y01","/BABAR_2007_S7266081/d14-x01-y01"]
+analyses["TauDecays"]["Keta"]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2Keta","/MC_TAU_Decay/h_2B_mKeta"]
+analyses["TauDecays"]["lnu" ]["MC"  ] = ["/MC_TAU_Decay/h_2B_m2enu","/MC_TAU_Decay/h_2B_m2munu",
+                                         "/MC_TAU_Decay/h_2B_menu","/MC_TAU_Decay/h_2B_mmunu"]
+analyses["TauDecays"]["2pieta"]["MC"  ] = ["/MC_TAU_Decay/h_3B_pimpi0eta_1","/MC_TAU_Decay/h_3B_pimpi0eta_2",
+                                           "/MC_TAU_Decay/h_3B_pimpi0eta_3","/MC_TAU_Decay/h_3B_pimpi0eta_4"]
+analyses["TauDecays"]["2pigamma"]["MC"  ] = ["/MC_TAU_Decay/h_3B_pimpi0gamma_1","/MC_TAU_Decay/h_3B_pimpi0gamma_2",
+                                             "/MC_TAU_Decay/h_3B_pimpi0gamma_3","/MC_TAU_Decay/h_3B_pimpi0gamma_4"]
+analyses["TauDecays"]["4pi"]["data"] = ["/ALEPH_2014_I1267648/d03-x01-y01","/ALEPH_2014_I1267648/d05-x01-y01"]
+analyses["TauDecays"]["4pi"]["MC"  ] = ["/MC_TAU_Decay/h_4B_pipi_1","/MC_TAU_Decay/h_4B_pipi_2",
+                                        "/MC_TAU_Decay/h_4B_pipi_3","/MC_TAU_Decay/h_4B_pipi_4",
+                                        "/MC_TAU_Decay/h_4B_pipi_5","/MC_TAU_Decay/h_4B_pipi_6",
+                                        "/MC_TAU_Decay/h_4B_pipipi_1","/MC_TAU_Decay/h_4B_pipipi_2",
+                                        "/MC_TAU_Decay/h_4B_pipipi_3","/MC_TAU_Decay/h_4B_pipipi_4",
+                                        "/MC_TAU_Decay/h_4B_pipipi_5","/MC_TAU_Decay/h_4B_pipipipi_1",
+                                        "/MC_TAU_Decay/h_4B_pipipipi_2"]
+analyses["TauDecays"]["5pi"]["MC"  ] = ["/MC_TAU_Decay/h_5B_pipi1_1","/MC_TAU_Decay/h_5B_pipi1_2",
+                                        "/MC_TAU_Decay/h_5B_pipi1_3","/MC_TAU_Decay/h_5B_pipi1_4",
+                                        "/MC_TAU_Decay/h_5B_pipi1_5","/MC_TAU_Decay/h_5B_pipi2_1",
+                                        "/MC_TAU_Decay/h_5B_pipi2_2","/MC_TAU_Decay/h_5B_pipi3_1",
+                                        "/MC_TAU_Decay/h_5B_pipi3_2","/MC_TAU_Decay/h_5B_pipi3_3",
+                                        "/MC_TAU_Decay/h_5B_pipipi1_1","/MC_TAU_Decay/h_5B_pipipi1_2",
+                                        "/MC_TAU_Decay/h_5B_pipipi1_3","/MC_TAU_Decay/h_5B_pipipi1_4",
+                                        "/MC_TAU_Decay/h_5B_pipipi1_5","/MC_TAU_Decay/h_5B_pipipi2_1",
+                                        "/MC_TAU_Decay/h_5B_pipipi2_2","/MC_TAU_Decay/h_5B_pipipi3_1",
+                                        "/MC_TAU_Decay/h_5B_pipipi3_2","/MC_TAU_Decay/h_5B_pipipi3_3",
+                                        "/MC_TAU_Decay/h_5B_pipipipi1_1","/MC_TAU_Decay/h_5B_pipipipi1_2",
+                                        "/MC_TAU_Decay/h_5B_pipipipi1_3","/MC_TAU_Decay/h_5B_pipipipi2_1",
+                                        "/MC_TAU_Decay/h_5B_pipipipi2_2","/MC_TAU_Decay/h_5B_pipipipi3_1",
+                                        "/MC_TAU_Decay/h_5B_pipipipi3_2","/MC_TAU_Decay/h_5B_q1",
+                                        "/MC_TAU_Decay/h_5B_q2","/MC_TAU_Decay/h_5B_q3"]
 analyses["EventShapes"]["2jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y01"]
 analyses["EventShapes"]["3jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y02"]
 analyses["EventShapes"]["4jet_jade"][35.0 ] = ["/JADE_OPAL_2000_S4300807/d07-x01-y03"]
@@ -2133,6 +2150,12 @@ plotOutput="""<div style="float:left; font-size:smaller; font-weight:bold;">
       <img src="{png}">
     </a></a>
   </div>"""
+plotOutput2="""<div style="float:left; font-size:smaller; font-weight:bold;">
+    <a href="#{name}">&#9875;</a><a href="{dat}">&#8984</a> {name}<br/>
+    <a name="{name}"><a href="{pdf}">
+      <img src="{png}">
+    </a></a>
+  </div>"""
     
 def writePlots(plots,output) :
     global figures
@@ -2163,7 +2186,7 @@ def writePlots2(plots,output) :
         del figures[figures.index(figName)]
         pdf=name[1:] +".pdf"
         png=name[1:] +".png"
-        output.write(plotOutput.format(name=name[1:],pdf=pdf,png=png,dat=dat,energy=""))
+        output.write(plotOutput2.format(name=name[1:],pdf=pdf,png=png,dat=dat))
         output.write("\n")
     output.write("</div>")
 
@@ -2202,37 +2225,66 @@ def writeTauDecays(index) :
     index.write("<li> <a href=\"taus.html\">Tau Decays</a>\n")
     decays=open(os.path.join(directory,"taus.html"),'w')
     decays.write(header.format(title="Comparisions of Herwig7 and Tau Decay Data"))
-    decays.write("<h2 id=\"2pi\">$\\tau\\to\\nu_\\tau\\pi^-\\pi^0$</h2>\n")
-    writePlots2(analyses["TauDecays"]["2pi"],decays)
-    decays.write("<h2 id=\"Kpi\">$\\tau\\to\\nu_\\tau K\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["Kpi"],decays)
-    decays.write("<h2 id=\"KK\">$\\tau\\to\\nu_\\tau KK$</h2>\n")
-    writePlots2(analyses["TauDecays"]["KK"],decays)
-
-    decays.write("<h2 id=\"lnu\">$\\tau\\to\\nu_\\tau \\ell\\nu$</h2>\n")
-    writePlots2(analyses["TauDecays"]["lnu"],decays)
-    decays.write("<h2 id=\"Keta\">$\\tau\\to\\nu_\\tau K\\eta$</h2>\n")
-    writePlots2(analyses["TauDecays"]["Keta"],decays)
-    
-    decays.write("<h2 id=\"3pi\">$\\tau\\to\\nu_\\tau\\pi\\pi\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["3pi"],decays)
-    decays.write("<h2 id=\"Kpipi\">$\\tau\\to\\nu_\\tau K\\pi\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["Kpipi"],decays)
-    decays.write("<h2 id=\"KKpi\">$\\tau\\to\\nu_\\tau KK\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["KKpi"],decays)
-    decays.write("<h2 id=\"3K\">$\\tau\\to\\nu_\\tau KKK$</h2>\n")
-    writePlots2(analyses["TauDecays"]["3K"],decays)
-    decays.write("<h2 id=\"2pieta\">$\\tau\\to\\nu_\\tau\\eta\\pi\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["2pieta"],decays)
-    decays.write("<h2 id=\"2pigamma\">$\\tau\\to\\nu_\\tau\\gamma\\pi\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["2pigamma"],decays)
-
-    
-    decays.write("<h2 id=\"4pi\">$\\tau\\to\\nu_\\tau4\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["4pi"],decays)
-    decays.write("<h2 id=\"5pi\">$\\tau\\to\\nu_\\tau5\\pi$</h2>\n")
-    writePlots2(analyses["TauDecays"]["5pi"],decays)
+    names = { "2pi"      : "$\\tau\\to\\nu_\\tau\\pi^-\\pi^0$",
+              "Kpi"      : "$\\tau\\to\\nu_\\tau K\\pi$",
+              "KK"       : "$\\tau\\to\\nu_\\tau KK$",
+              "lnu"      : "$\\tau\\to\\nu_\\tau \\ell\\nu$",
+              "Keta"     : "$\\tau\\to\\nu_\\tau K\\eta$",
+              "3pi"      : "$\\tau\\to\\nu_\\tau\\pi\\pi\\pi$",
+              "Kpipi"    : "$\\tau\\to\\nu_\\tau K\\pi\\pi$",
+              "KKpi"     : "$\\tau\\to\\nu_\\tau KK\\pi$",
+              "3K"       : "$\\tau\\to\\nu_\\tau K^+K^-K^-$",
+              "2pieta"   : "$\\tau\\to\\nu_\\tau\\eta\\pi\\pi$",
+              "2pigamma" : "$\\tau\\to\\nu_\\tau\\gamma\\pi\\pi$",
+              "4pi"      : "$\\tau\\to\\nu_\\tau4\\pi$",
+              "5pi"      : "$\\tau\\to\\nu_\\tau5\\pi$",}
+    index.write("<ul>\n")
+    # three body
+    decays.write("<h2 id=\"3body\">Three Body</h2>\n")
+    index.write("<li> <a href=\"taus.html#3body\">Three Body:</a>\n")
+    for obs in ["2pi", "Kpi", "KK", "lnu", "Keta" ] :
+        decays.write("<h3 id=\"%s\">%s</h3>\n" % (obs,names[obs]))
+        index.write("<a href=\"taus.html#%s\">%s,<a/>\n" % (obs,names[obs]))
+        for val in ["data","MC"] :
+            if(val not in analyses["TauDecays"][obs]  or len(analyses["TauDecays"][obs][val])==0) : continue
+            if(val=="data") : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Data"))
+            else            : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Monte Carlo"))
+            writePlots2(analyses["TauDecays"][obs][val],decays)
+    # four body
+    decays.write("<h2 id=\"4body\">Four Body</h2>\n")
+    index.write("<li> <a href=\"taus.html#4body\">Four Body:</a>\n")
+    for obs in ["3pi","Kpipi","KKpi","3K","2pieta","2pigamma" ] :
+        decays.write("<h3 id=\"%s\">%s</h3>\n" % (obs,names[obs]))
+        index.write("<a href=\"taus.html#%s\">%s,<a/>\n" % (obs,names[obs]))
+        for val in ["data","MC"] :
+            if(val not in analyses["TauDecays"][obs]  or len(analyses["TauDecays"][obs][val])==0) : continue
+            if(val=="data") : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Data"))
+            else            : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Monte Carlo"))
+            writePlots2(analyses["TauDecays"][obs][val],decays)
+    # five body
+    decays.write("<h2 id=\"5body\">Five Body</h2>\n")
+    index.write("<li> <a href=\"taus.html#5body\">FIve Body:</a>")
+    for obs in ["4pi"] :
+        decays.write("<h3 id=\"%s\">%s</h3>\n" % (obs,names[obs]))
+        index.write("<a href=\"taus.html#%s\">%s,<a/>\n" % (obs,names[obs]))
+        for val in ["data","MC"] :
+            if(val not in analyses["TauDecays"][obs]  or len(analyses["TauDecays"][obs][val])==0) : continue
+            if(val=="data") : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Data"))
+            else            : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Monte Carlo"))
+            writePlots2(analyses["TauDecays"][obs][val],decays)
+    # six body
+    decays.write("<h2 id=\"6body\">Six Body</h2>\n")
+    index.write("<li> <a href=\"taus.html#6body\">Six Body:</a>")
+    for obs in ["5pi"] :
+        decays.write("<h3 id=\"%s\">%s</h3>\n" % (obs,names[obs]))
+        index.write("<a href=\"taus.html#%s\">%s,<a/>\n" % (obs,names[obs]))
+        for val in ["data","MC"] :
+            if(val not in analyses["TauDecays"][obs]  or len(analyses["TauDecays"][obs][val])==0) : continue
+            if(val=="data") : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Data"))
+            else            : decays.write("<h4 id=\"%s_%s\">%s</h4>\n" % (obs,val,"Monte Carlo"))
+            writePlots2(analyses["TauDecays"][obs][val],decays)
     # footer
+    index.write("</ul>\n")
     decays.write("</body>\n</html>")
     decays.close()
 
