@@ -3,8 +3,6 @@
 # For FxFx merging with MadGraph5/aMC@NLO
 # usage: Herwig read FxFx.in
 ##################################################
-read snippets/PPCollider.in
-##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
@@ -22,7 +20,6 @@ create Herwig::FxFxEventHandler LesHouchesHandler
 # set the various step handlers
 set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
 set LesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
-set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 
 # set the weight option (for MC@NLO)
@@ -50,6 +47,7 @@ create Herwig::FxFxHandler FxFxHandler
 set /Herwig/Shower/FxFxHandler:SplittingGenerator /Herwig/Shower/SplittingGenerator
 set /Herwig/Shower/FxFxHandler:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
 set /Herwig/Shower/FxFxHandler:PartnerFinder /Herwig/Shower/PartnerFinder
+set /Herwig/EventHandlers/LesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
 
 ###################################################################################
 # PDF settings									  #
@@ -57,6 +55,7 @@ set /Herwig/Shower/FxFxHandler:PartnerFinder /Herwig/Shower/PartnerFinder
 ###################################################################################
 create ThePEG::LHAPDF /Herwig/Partons/LHAPDF ThePEGLHAPDF.so
 set /Herwig/Partons/LHAPDF:PDFName NAME_OF_PDF
+set /Herwig/Partons/RemnantDecayer:AllowTop Yes
 set /Herwig/Partons/LHAPDF:RemnantHandler /Herwig/Partons/HadronRemnants
 set /Herwig/Particles/p+:PDF /Herwig/Partons/LHAPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/LHAPDF
@@ -72,19 +71,19 @@ set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/LHAPDF
 # multiple scattering. As the generator was tuned with the default values
 # this is STRONGLY DISCOURAGED without retuning the MPI parameters
 # create the reader and set cuts
-create ThePEG::LesHouchesFileReader LesHouchesReader
-set LesHouchesReader:FileName NAME_OF_FILE #(the file can be compressed (gziped,bziped))
-set LesHouchesReader:AllowedToReOpen No
-set LesHouchesReader:InitPDFs 0
-set LesHouchesReader:Cuts /Herwig/Cuts/NoCuts
+set /Herwig/EventHandlers/FxFxLHReader:FileName NAME_OF_FILE #(the file can be compressed (gziped,bziped))
+set /Herwig/EventHandlers/FxFxLHReader:WeightWarnings    false
+set /Herwig/EventHandlers/FxFxLHReader:AllowedToReOpen No
+set /Herwig/EventHandlers/FxFxLHReader:InitPDFs 0
+set /Herwig/EventHandlers/FxFxLHReader:Cuts /Herwig/Cuts/NoCuts
 # option to ensure momentum conservation is O.K. due rounding errors (recommended)
-set LesHouchesReader:MomentumTreatment RescaleEnergy
+set /Herwig/EventHandlers/FxFxLHReader:MomentumTreatment RescaleEnergy
 # set the pdfs
-set LesHouchesReader:PDFA /Herwig/Partons/LHAPDF
-set LesHouchesReader:PDFB /Herwig/Partons/LHAPDF
+set /Herwig/EventHandlers/FxFxLHReader:PDFA /Herwig/Partons/LHAPDF
+set /Herwig/EventHandlers/FxFxLHReader:PDFB /Herwig/Partons/LHAPDF
 # if using BSM models with QNUMBER info
-#set LesHouchesReader:QNumbers Yes
-#set LesHouchesReader:Decayer /Herwig/Decays/Mambo
+#set /Herwig/EventHandlers/FxFxLHReader:QNumbers Yes
+#set /Herwig/EventHandlers/FxFxLHReader:Decayer /Herwig/Decays/Mambo
 
 ##################################################
 #  Shower parameters				 #
