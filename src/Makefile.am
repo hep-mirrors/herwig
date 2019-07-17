@@ -70,8 +70,10 @@ TVT-TTBA.in \
 LHC-LH.in \
 LHC-LHTP.in \
 LHE.in \
-FxFx.in\
-FxFx-Tree.in
+LHE-POWHEG.in \
+LHE-MCatNLO.in \
+LHE-FxFx.in \
+LHE-MGMerging.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
