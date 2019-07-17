@@ -8,7 +8,7 @@
 # Tree-level merging with MG5/aMC@NLO: LHE-MGMerging.in
 # usage: Herwig read LHE.in
 ##################################################
-read snippets/PPCollider.in
+#read snippets/PPCollider.in
 ##################################################
 # Technical parameters for this run
 ##################################################
@@ -51,6 +51,7 @@ create ThePEG::Cuts /Herwig/Cuts/NoCuts
 # You may wish to use the same PDF as the events were generated with
 create ThePEG::LHAPDF /Herwig/Partons/LHAPDF ThePEGLHAPDF.so
 set /Herwig/Partons/LHAPDF:PDFName NAME_OF_PDF
+set /Herwig/Partons/RemnantDecayer:AllowTop Yes
 set /Herwig/Partons/LHAPDF:RemnantHandler /Herwig/Partons/HadronRemnants
 set /Herwig/Particles/p+:PDF /Herwig/Partons/LHAPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/LHAPDF
