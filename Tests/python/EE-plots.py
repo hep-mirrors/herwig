@@ -30,10 +30,13 @@ analyses={ "HadronDecays"     : { },
                                                2   : { "x" : {}, "p" : {}, "xi" : {}},
                                                4   : { "x" : {}, "p" : {}, "xi" : {}},
                                                5   : { "x" : {}, "p" : {}, "xi" : {}},
+                                               21  : { "x" : {}, "p" : {}, "xi" : {}},
                                                "C" : { "x" : {}, "p" : {}, "xi" : {}}},
                         "ChargedRapidityThrust"    : { },
                         "ChargedpTInThrust"        : { },
                         "ChargedpTOutThrust"       : { },
+                        "ChargedpTThrust"          : { },
+                        "ChargedxFThrust"          : { },
                         "ChargedRapiditySphericity": { },
                         "ChargedpTInSphericity"    : { },
                         "ChargedpTOutSphericity"   : { },
@@ -43,67 +46,118 @@ analyses={ "HadronDecays"     : { },
                         "ChargedAveragepT2inSphericity"     : { },
                         "ChargedAveragepT2outSphericity"     : { },
                         "DistChargedMult"  : {0 : {}, 1 : {}, 2 : {}, 4 : {}, 5 : {} , 21 : {}, "C" :{}}},
-           "IdentifiedParticle"  : { 22      : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     111     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     211     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     221     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     331     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     223     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     333     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     321     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     311     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     313     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     323     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     2212    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     413     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     423     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3122    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3212    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     2224    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3312    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3222    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     "3224B" : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     431     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     433     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3112    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3224    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3114    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3324    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3124    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     443     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     9010221 : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     9000211 : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     225     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     335     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     113     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     213     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     421     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     411     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     425     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     511     : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     4122    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     3334    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     4332    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     4132    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     4112    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     4114    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     4124    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
-                                     14122   : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}}},
-           "IdentifiedParticleFlavour" : {111  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 211  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                          321  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 311  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                          313  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 333  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                          2212 : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }, 3122 : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                          413  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} }}, 
-           "MultiplicityFlavour" : {111  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },  211   : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                    321  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },  2212  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                    413  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },  3122  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                    313  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },  333   : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
-                                    311  : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+           "IdentifiedParticle"  : { 22         : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     111        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     211        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     221        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     331        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     223        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     333        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     321        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     311        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     313        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     323        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     2212       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     413        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     423        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3122       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3212       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     2224       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3312       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3222       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     "3224B"    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     431        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     433        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3112       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3224       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3114       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3324       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3124       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     443        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     9010221    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     9000211    : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     225        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     335        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     113        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     213        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     421        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     411        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     425        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     511        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4122       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     3334       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4332       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4132       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4112       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4114       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     4124       : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     14122      : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
+                                     "321/2212" : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}}},
+           "IdentifiedParticleFlavour" : {111        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          211        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          321        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          311        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          313        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          333        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          2212       : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          3122       : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          413        : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },
+                                          "321/2212" : { 1  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         4  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         5  : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         41 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} },
+                                                         51 : {"x" : {}, "xi" : {}, "p" : {}, "Ratio" : {}, "Other" : {} } },},
+           "MultiplicityFlavour" : {111        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    211        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    321        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    2212       : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    413        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    3122       : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    313        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    333        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    311        : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
+                                    "321/2212" : { 1 : {}, 4 : {}, 5 : {}, 41 : {}, 51 : {} },
            }, 
            "Multiplicity"  : { 22: {}, 111 : {}, 211 : {}, 221 : {}, 331 : {}, 113 : {},9010221 : {},9000211 : {}, 213 : {},
                                223 : {}, 333 : {}, 321  : {}, 311 : {}, 411 : {}, 421 : {}, 431 : {}, 521 : {}, 531 : {}, 511 : {},
                                313 : {}, 323 : {}, 2212 : {}, 413 : {}, 423 : {}, 433 : {}, 513 : {}, 515 : {},
-                               3122  : {}, 3312 : {}, 3212 : {}, 3112 : {}, 3114 : {}, 3324: {}, 3334 : {},
+                               3122  : {}, 3312 : {}, 3212 : {}, 3112 : {}, 3114 : {}, 3324: {}, 3334 : {}, "321/2212" : {},
                                443 : {}, 100443 : {}, 553 : {}, 20223 : {}, 20333 : {}, 20443 : {}, 225 :{}, 335 : {}, 20431 : {}, 435 : {}, 315 : {}, 325 : {},
                                3222 : {}, 2224 : {},  3224 : {}, 3114 : {}, 4122 : {}, 5122 :{}, 3124 :{}, 4222 : {}, "3222B" : {}, "3224B" : {},
            },
@@ -118,6 +172,7 @@ analyses={ "HadronDecays"     : { },
                              "1jet_jade" : {}, "2jet_jade" : {}, "3jet_jade" : {}, "4jet_jade" : {}, "5jet_jade" : {}, "6jet_jade" : {},
                              "Moment_T":{}, "Moment_H":{},"Moment_C":{},"Moment_S":{},"Moment_L":{},"Moment_y":{},"Moment_BW":{},
                              "Moment_BN":{},"Moment_BT":{},"Moment_O":{},"Moment_M":{},"Moment_m":{},},
+           "FourJet" : {"BZ" : {}, "KSW" : {}, "NR" : {}, "alpha34" : {} },
            "EventShapesFlavour" : { "T" : { 1 : {}, 2 : {}, 4 : {}, 5 : {}},
                                     "S" : { 1 : {}, 2 : {}, 4 : {}, 5 : {}},
                                     "D" : { 1 : {}, 2 : {}, 4 : {}, 5 : {}},
@@ -163,7 +218,8 @@ particleNames = {
     
     5122 : "$\\Lambda_b^0,\\bar{\\Lambda}^0_b$", 14122 : "$\\Lambda_c(2595)^+,\\bar{\\Lambda}(2595)_c^+$",
     4124 : "$\\Lambda_c(2625)^+,\\bar{\\Lambda}(2595)_c^+$", 4112 : "$\\Sigma_c^0,\\bar{\\Sigma}_c^0$", 4114 : "$\\Sigma_c^{*0},\\bar{\\Sigma}_c^{*0}$",
-    4332 : "$\\Omega_c^0,\\bar{\\Omega}_c^0$", 4132 : "$\\Xi_c^0,\\bar{\\Xi}_c^0$"
+    4332 : "$\\Omega_c^0,\\bar{\\Omega}_c^0$", 4132 : "$\\Xi_c^0,\\bar{\\Xi}_c^0$",
+    "321/2212" : "$K^\\pm,p,\\bar{p}$"
     }
 # hadron species
 mLight   = [211,111,221,331,213,113,223,333,225,335,20223,20333,9010221, 9000211]
@@ -175,7 +231,7 @@ mbbbar   = [553]
 bLight   = [2212,2224]
 bStrange = [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3324,3334,3124]
 bCharm   = [4122,4112,4222,4114,4332,4132,14122,4124]
-bBottom  =  [5122]
+bBottom  = [5122]
 # hadron decays
 analyses["HadronDecays"][111] = ["/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVf","/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mVfbar",
                                  "/MC_Meson_Meson_Leptons_Decay/h2_111p_22p_11_mff"]
@@ -279,7 +335,9 @@ analyses["HadronDecays"][511]=["/BELLE_2011_I878990/d01-x01-y01","/BELLE_2013_I1
                                "/MC_Semi_Leptonic_Decay/h_511p_213m_11m_energy","/MC_Semi_Leptonic_Decay/h_511p_213m_11m_scale",
                                "/MC_Semi_Leptonic_Decay/h_511p_411m_11m_energy","/MC_Semi_Leptonic_Decay/h_511p_411m_11m_scale",
                                "/MC_Semi_Leptonic_Decay/h_511p_413m_11m_energy","/MC_Semi_Leptonic_Decay/h_511p_413m_11m_scale",
-                               "/MC_Semi_Leptonic_Decay/h_511p_415m_11m_energy","/MC_Semi_Leptonic_Decay/h_511p_415m_11m_scale"]
+                               "/MC_Semi_Leptonic_Decay/h_511p_415m_11m_energy","/MC_Semi_Leptonic_Decay/h_511p_415m_11m_scale",
+                               "/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_13_mVf","/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_13_mVfbar",
+                               "/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_13_mff"]
 
 
 analyses["HadronDecays"][521]=["/BELLE_2013_I1238273/d01-x01-y01","/BELLE_2013_I1238273/d03-x01-y01",
@@ -327,7 +385,9 @@ analyses["HadronDecays"][553] = ["/ARGUS_1988_I251097/d01-x01-y01","/ARGUS_1988_
                                  "/PLUTO_1981_I165122/d06-x01-y01",
                                  "/ARGUS_1989_I276860/d01-x01-y01","/ARGUS_1989_I276860/d01-x01-y02",
                                  "/ARGUS_1989_I276860/d02-x01-y01","/ARGUS_1989_I276860/d03-x01-y01",
-                                 "/ARGUS_1989_I276860/d04-x01-y01","/ARGUS_1989_I276860/d04-x01-y02"]
+                                 "/ARGUS_1989_I276860/d04-x01-y01","/ARGUS_1989_I276860/d04-x01-y02",
+                                 "/ARGUS_1993_S2669951/d01-x01-y01","/ARGUS_1993_S2669951/d01-x01-y02",
+                                 "/ARGUS_1993_S2669951/d05-x01-y01"]
 analyses["HadronDecays"][100553] = ["/ARGUS_1988_I251097/d04-x01-y01","/ARGUS_1988_I251097/d08-x01-y01",
                                     "/ARGUS_1989_I262551/d02-x01-y02","/ARGUS_1989_I262551/d04-x01-y01",
                                     "/ARGUS_1990_I278933/d01-x01-y03","/ARGUS_1990_I278933/d02-x01-y03",
@@ -538,9 +598,44 @@ analyses["Charged"]["ChargedSpectrum"][0]["x" ][200.5] = ["/OPAL_2003_I595335/d0
 analyses["Charged"]["ChargedSpectrum"][0]["x" ][206.0] = ["/ALEPH_2004_S5765862/d09-x01-y01","/ALEPH_2004_S5765862/d26-x01-y01"]
 # with cuts
 analyses["Charged"]["ChargedSpectrum"]["C"]["x" ][29.0 ] = ["/HRS_1985_I201482/d11-x01-y01"]
+# flavour separated
+analyses["Charged"]["ChargedSpectrum"][1]["x" ][91.2] = ["/DELPHI_1998_I473409/d32-x01-y01","/DELPHI_1998_I473409/d33-x01-y01",
+                                                         "/DELPHI_1997_I428178/d01-x01-y03","/OPAL_1998_S3780481/d01-x01-y01",
+                                                         "/SLD_2004_S5693039/d08-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][1]["xi"][91.2] = ["/OPAL_1998_S3780481/d05-x01-y01"]
+
+analyses["Charged"]["ChargedSpectrum"][2]["x" ][13.0 ] = ["/OPAL_2004_I648738/d06-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][2]["x" ][28.0 ] = ["/OPAL_2004_I648738/d07-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][2]["x" ][49.0 ] = ["/OPAL_2004_I648738/d08-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][2]["x" ][100.0] = ["/OPAL_2004_I648738/d09-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][2]["x" ][91.2 ] = ["/OPAL_2004_I648738/d10-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][2]["x" ][196.0] = ["/OPAL_2004_I648738/d11-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][2]["xi"][91.2 ] = ["/L3_2004_I652683/d65-x01-y02"]
+
+analyses["Charged"]["ChargedSpectrum"][4]["x" ][91.2 ] = ["/DELPHI_1997_I428178/d01-x01-y02","/OPAL_1998_S3780481/d02-x01-y01",
+                                                         "/SLD_2004_S5693039/d08-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][4]["xi"][91.2 ] = ["/OPAL_1998_S3780481/d06-x01-y01"]
+
+analyses["Charged"]["ChargedSpectrum"][5]["x" ][13.0 ] = ["/OPAL_2004_I648738/d06-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][5]["x" ][28.0 ] = ["/OPAL_2004_I648738/d07-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][5]["x" ][49.0 ] = ["/OPAL_2004_I648738/d08-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][5]["x" ][100.0] = ["/OPAL_2004_I648738/d09-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][5]["x" ][91.2 ] = ["/DELPHI_1998_I473409/d24-x01-y01","/DELPHI_1998_I473409/d25-x01-y01",
+                                                          "/DELPHI_1997_I428178/d01-x01-y01","/OPAL_1998_S3780481/d03-x01-y01",
+                                                          "/SLD_2004_S5693039/d08-x01-y03","/OPAL_2004_I648738/d10-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][5]["xi"][91.2 ] = ["/OPAL_1998_S3780481/d07-x01-y01","/L3_2004_I652683/d65-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][5]["x" ][196.0] = ["/OPAL_2004_I648738/d11-x01-y02"]
+# gluons
+analyses["Charged"]["ChargedSpectrum"][21]["x"][ 6.5 ] = ["/OPAL_2004_I648738/d06-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][21]["x"][14.0 ] = ["/OPAL_2004_I648738/d07-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][21]["x"][14.24] = ["/OPAL_2004_I631361/d05-x01-y01"]
+analyses["Charged"]["ChargedSpectrum"][21]["x"][17.72] = ["/OPAL_2004_I631361/d05-x01-y02"]
+analyses["Charged"]["ChargedSpectrum"][21]["x"][24.5 ] = ["/OPAL_2004_I648738/d08-x01-y03"]
+analyses["Charged"]["ChargedSpectrum"][21]["x"][50.0 ] = ["/OPAL_2004_I648738/d09-x01-y03"]
 # rapidity w.r.t thrust
 analyses["Charged"]["ChargedRapidityThrust"][13.0 ] = ["/TASSO_1980_I143691/d02-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][19.5 ] = ["/TASSO_1980_I143691/d03-x01-y01"]
+analyses["Charged"]["ChargedRapidityThrust"][29.0 ] = ["/HRS_1985_I201482/d19-x01-y01","/HRS_1985_I201482/d20-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][30.0 ] = ["/TASSO_1980_I143691/d04-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][55.2 ] = ["/AMY_1990_I283337/d01-x01-y01"]
 analyses["Charged"]["ChargedRapidityThrust"][91.2 ] = ["/DELPHI_1996_S3430090/d05-x01-y01","/ALEPH_1996_S3486095/d10-x01-y01"]
@@ -584,6 +679,10 @@ analyses["Charged"]["ChargedpTOutThrust"][202.0] = ["/DELPHI_2003_I620250/d37-x0
 analyses["Charged"]["ChargedpTOutThrust"][205.0] = ["/DELPHI_2003_I620250/d37-x01-y03"]
 analyses["Charged"]["ChargedpTOutThrust"][206.0] = ["/ALEPH_2004_S5765862/d35-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][207.0] = ["/DELPHI_2003_I620250/d37-x01-y04"]
+# pT
+analyses["Charged"]["ChargedpTThrust"][29.0] = ["/HRS_1985_I201482/d22-x01-y01","/HRS_1985_I201482/d23-x01-y01"]
+# xF
+analyses["Charged"]["ChargedxFThrust"][29.0] = ["/HRS_1985_I201482/d16-x01-y01","/HRS_1985_I201482/d17-x01-y01"]
 # rapidity sphericity
 analyses["Charged"]["ChargedRapiditySphericity"][35.0 ] = ["/TASSO_1988_I263859/d11-x01-y01"]
 analyses["Charged"]["ChargedRapiditySphericity"][91.2 ] = ["/DELPHI_1996_S3430090/d06-x01-y01"]
@@ -615,57 +714,75 @@ analyses["Charged"]["ChargedAveragepT2outSphericity"][29.0] = ["/HRS_1985_I20148
 analyses["Charged"]["ChargedAveragepT2outSphericity"][35.0] = ["/TASSO_1988_I263859/d05-x01-y01"]
 analyses["Charged"]["ChargedAveragepT2outSphericity"][55.2] = ["/AMY_1990_I283337/d09-x01-y01"]
 # identified particle (flavour sep)
-analyses["IdentifiedParticleFlavour"][111 ][5][91.2]=["/DELPHI_1996_I401100/d03-x01-y01","/SLD_2004_S5693039/d05-x01-y03"]
-analyses["IdentifiedParticleFlavour"][211 ][5][91.2]=["/DELPHI_1998_I473409/d26-x01-y01","/DELPHI_1998_I473409/d27-x01-y01",
+analyses["IdentifiedParticleFlavour"][111 ][5]["x"][91.2]=["/DELPHI_1996_I401100/d03-x01-y01","/SLD_2004_S5693039/d05-x01-y03"]
+analyses["IdentifiedParticleFlavour"][211 ][5]["x"][91.2]=["/DELPHI_1998_I473409/d26-x01-y01","/DELPHI_1998_I473409/d27-x01-y01",
                                                       "/SLD_1999_S3743934/d10-x01-y03"]
-analyses["IdentifiedParticleFlavour"][321 ][5][91.2]=["/DELPHI_1998_I473409/d28-x01-y01","/DELPHI_1998_I473409/d29-x01-y01",
+analyses["IdentifiedParticleFlavour"][321 ][5]["x"][91.2]=["/DELPHI_1998_I473409/d28-x01-y01","/DELPHI_1998_I473409/d29-x01-y01",
                                                       "/SLD_2004_S5693039/d06-x01-y03","/SLD_1999_S3743934/d12-x01-y03"]
-analyses["IdentifiedParticleFlavour"][2212][5][91.2]=["/DELPHI_1998_I473409/d30-x01-y01","/DELPHI_1998_I473409/d31-x01-y01",
+analyses["IdentifiedParticleFlavour"][2212][5]["x"][91.2]=["/DELPHI_1998_I473409/d30-x01-y01","/DELPHI_1998_I473409/d31-x01-y01",
                                                       "/SLD_2004_S5693039/d07-x01-y03","/SLD_1999_S3743934/d16-x01-y03"]
 
-analyses["IdentifiedParticleFlavour"][211 ][4][91.2]=["/SLD_2004_S5693039/d05-x01-y02","/SLD_1999_S3743934/d10-x01-y02"]
+analyses["IdentifiedParticleFlavour"][211 ][4]["x"][91.2]=["/SLD_2004_S5693039/d05-x01-y02","/SLD_1999_S3743934/d10-x01-y02"]
                                                       
-analyses["IdentifiedParticleFlavour"][321 ][4][91.2]=["/SLD_2004_S5693039/d06-x01-y02","/SLD_1999_S3743934/d12-x01-y02"]
-analyses["IdentifiedParticleFlavour"][2212][4][91.2]=["/SLD_2004_S5693039/d07-x01-y02","/SLD_1999_S3743934/d16-x01-y02"]
+analyses["IdentifiedParticleFlavour"][321 ][4]["x"][91.2]=["/SLD_2004_S5693039/d06-x01-y02","/SLD_1999_S3743934/d12-x01-y02"]
+analyses["IdentifiedParticleFlavour"][2212][4]["x"][91.2]=["/SLD_2004_S5693039/d07-x01-y02","/SLD_1999_S3743934/d16-x01-y02"]
 
-analyses["IdentifiedParticleFlavour"][211 ][1][91.2]=["/DELPHI_1998_I473409/d34-x01-y01","/DELPHI_1998_I473409/d35-x01-y01",
+analyses["IdentifiedParticleFlavour"][211 ][1]["x"][91.2]=["/DELPHI_1998_I473409/d34-x01-y01","/DELPHI_1998_I473409/d35-x01-y01",
                                                       "/SLD_2004_S5693039/d05-x01-y01","/SLD_1999_S3743934/d10-x01-y01"]
-analyses["IdentifiedParticleFlavour"][321 ][1][91.2]=["/DELPHI_1998_I473409/d36-x01-y01","/DELPHI_1998_I473409/d37-x01-y01",
+analyses["IdentifiedParticleFlavour"][321 ][1]["x"][91.2]=["/DELPHI_1998_I473409/d36-x01-y01","/DELPHI_1998_I473409/d37-x01-y01",
                                                       "/SLD_2004_S5693039/d05-x01-y03","/SLD_2004_S5693039/d06-x01-y01",
                                                       "/SLD_1999_S3743934/d12-x01-y01"]
-analyses["IdentifiedParticleFlavour"][2212][1][91.2]=["/DELPHI_1998_I473409/d38-x01-y01","/DELPHI_1998_I473409/d39-x01-y01",
+analyses["IdentifiedParticleFlavour"][2212][1]["x"][91.2]=["/DELPHI_1998_I473409/d38-x01-y01","/DELPHI_1998_I473409/d39-x01-y01",
                                                       "/SLD_2004_S5693039/d07-x01-y01","/SLD_1999_S3743934/d16-x01-y01"]
 
-analyses["IdentifiedParticleFlavour"][413][5][91.2]=["/OPAL_1995_I382219/d04-x01-y01"]
-analyses["IdentifiedParticleFlavour"][413][4][91.2]=["/OPAL_1995_I382219/d05-x01-y01"]
+analyses["IdentifiedParticleFlavour"][413][5]["x"][91.2]=["/OPAL_1995_I382219/d04-x01-y01"]
+analyses["IdentifiedParticleFlavour"][413][4]["x"][91.2]=["/OPAL_1995_I382219/d05-x01-y01"]
 
-analyses["IdentifiedParticleFlavour"][313 ][1][91.2]=["/SLD_1999_S3743934/d14-x01-y01"]
-analyses["IdentifiedParticleFlavour"][313 ][4][91.2]=["/SLD_1999_S3743934/d14-x01-y02"]
-analyses["IdentifiedParticleFlavour"][313 ][5][91.2]=["/SLD_1999_S3743934/d14-x01-y03"]
-analyses["IdentifiedParticleFlavour"][3122][1][91.2]=["/SLD_1999_S3743934/d18-x01-y01"]
-analyses["IdentifiedParticleFlavour"][3122][4][91.2]=["/SLD_1999_S3743934/d18-x01-y02"]
-analyses["IdentifiedParticleFlavour"][3122][5][91.2]=["/SLD_1999_S3743934/d18-x01-y03"]
-analyses["IdentifiedParticleFlavour"][311 ][1][91.2]=["/SLD_1999_S3743934/d20-x01-y01"]
-analyses["IdentifiedParticleFlavour"][311 ][4][91.2]=["/SLD_1999_S3743934/d20-x01-y02"]
-analyses["IdentifiedParticleFlavour"][311 ][5][91.2]=["/SLD_1999_S3743934/d20-x01-y03"]
-analyses["IdentifiedParticleFlavour"][333 ][1][91.2]=["/SLD_1999_S3743934/d22-x01-y01"]
-analyses["IdentifiedParticleFlavour"][333 ][4][91.2]=["/SLD_1999_S3743934/d22-x01-y02"]
-analyses["IdentifiedParticleFlavour"][333 ][5][91.2]=["/SLD_1999_S3743934/d22-x01-y03"]
+analyses["IdentifiedParticleFlavour"][313 ][1]["x"][91.2]=["/SLD_1999_S3743934/d14-x01-y01"]
+analyses["IdentifiedParticleFlavour"][313 ][4]["x"][91.2]=["/SLD_1999_S3743934/d14-x01-y02"]
+analyses["IdentifiedParticleFlavour"][313 ][5]["x"][91.2]=["/SLD_1999_S3743934/d14-x01-y03"]
+analyses["IdentifiedParticleFlavour"][3122][1]["x"][91.2]=["/SLD_1999_S3743934/d18-x01-y01"]
+analyses["IdentifiedParticleFlavour"][3122][4]["x"][91.2]=["/SLD_1999_S3743934/d18-x01-y02"]
+analyses["IdentifiedParticleFlavour"][3122][5]["x"][91.2]=["/SLD_1999_S3743934/d18-x01-y03"]
+analyses["IdentifiedParticleFlavour"][311 ][1]["x"][91.2]=["/SLD_1999_S3743934/d20-x01-y01"]
+analyses["IdentifiedParticleFlavour"][311 ][4]["x"][91.2]=["/SLD_1999_S3743934/d20-x01-y02"]
+analyses["IdentifiedParticleFlavour"][311 ][5]["x"][91.2]=["/SLD_1999_S3743934/d20-x01-y03"]
+analyses["IdentifiedParticleFlavour"][333 ][1]["x"][91.2]=["/SLD_1999_S3743934/d22-x01-y01"]
+analyses["IdentifiedParticleFlavour"][333 ][4]["x"][91.2]=["/SLD_1999_S3743934/d22-x01-y02"]
+analyses["IdentifiedParticleFlavour"][333 ][5]["x"][91.2]=["/SLD_1999_S3743934/d22-x01-y03"]
 
-analyses["IdentifiedParticleFlavour"][211 ][41][91.2]=["/SLD_1999_S3743934/d11-x01-y01"]
-analyses["IdentifiedParticleFlavour"][211 ][51][91.2]=["/SLD_1999_S3743934/d11-x01-y02"]
-analyses["IdentifiedParticleFlavour"][321 ][41][91.2]=["/SLD_1999_S3743934/d13-x01-y01"]
-analyses["IdentifiedParticleFlavour"][321 ][51][91.2]=["/SLD_1999_S3743934/d13-x01-y02"]
-analyses["IdentifiedParticleFlavour"][313 ][41][91.2]=["/SLD_1999_S3743934/d15-x01-y01"]
-analyses["IdentifiedParticleFlavour"][313 ][51][91.2]=["/SLD_1999_S3743934/d15-x01-y02"]
-analyses["IdentifiedParticleFlavour"][2212][41][91.2]=["/SLD_1999_S3743934/d17-x01-y01"]
-analyses["IdentifiedParticleFlavour"][2212][51][91.2]=["/SLD_1999_S3743934/d17-x01-y02"]
-analyses["IdentifiedParticleFlavour"][3122][41][91.2]=["/SLD_1999_S3743934/d19-x01-y01"]
-analyses["IdentifiedParticleFlavour"][3122][51][91.2]=["/SLD_1999_S3743934/d19-x01-y02"]
-analyses["IdentifiedParticleFlavour"][311 ][41][91.2]=["/SLD_1999_S3743934/d21-x01-y01"]
-analyses["IdentifiedParticleFlavour"][311 ][51][91.2]=["/SLD_1999_S3743934/d21-x01-y02"]
-analyses["IdentifiedParticleFlavour"][333 ][41][91.2]=["/SLD_1999_S3743934/d23-x01-y01"]
-analyses["IdentifiedParticleFlavour"][333 ][51][91.2]=["/SLD_1999_S3743934/d23-x01-y02"]
+analyses["IdentifiedParticleFlavour"][211 ][41]["x"][91.2]=["/SLD_1999_S3743934/d11-x01-y01"]
+analyses["IdentifiedParticleFlavour"][211 ][51]["x"][91.2]=["/SLD_1999_S3743934/d11-x01-y02"]
+analyses["IdentifiedParticleFlavour"][321 ][41]["x"][91.2]=["/SLD_1999_S3743934/d13-x01-y01"]
+analyses["IdentifiedParticleFlavour"][321 ][51]["x"][91.2]=["/SLD_1999_S3743934/d13-x01-y02"]
+analyses["IdentifiedParticleFlavour"][313 ][41]["x"][91.2]=["/SLD_1999_S3743934/d15-x01-y01"]
+analyses["IdentifiedParticleFlavour"][313 ][51]["x"][91.2]=["/SLD_1999_S3743934/d15-x01-y02"]
+analyses["IdentifiedParticleFlavour"][2212][41]["x"][91.2]=["/SLD_1999_S3743934/d17-x01-y01"]
+analyses["IdentifiedParticleFlavour"][2212][51]["x"][91.2]=["/SLD_1999_S3743934/d17-x01-y02"]
+analyses["IdentifiedParticleFlavour"][3122][41]["x"][91.2]=["/SLD_1999_S3743934/d19-x01-y01"]
+analyses["IdentifiedParticleFlavour"][3122][51]["x"][91.2]=["/SLD_1999_S3743934/d19-x01-y02"]
+analyses["IdentifiedParticleFlavour"][311 ][41]["x"][91.2]=["/SLD_1999_S3743934/d21-x01-y01"]
+analyses["IdentifiedParticleFlavour"][311 ][51]["x"][91.2]=["/SLD_1999_S3743934/d21-x01-y02"]
+analyses["IdentifiedParticleFlavour"][333 ][41]["x"][91.2]=["/SLD_1999_S3743934/d23-x01-y01"]
+analyses["IdentifiedParticleFlavour"][333 ][51]["x"][91.2]=["/SLD_1999_S3743934/d23-x01-y02"]
+
+analyses["IdentifiedParticleFlavour"][211][5]["Ratio"][91.2]=["/DELPHI_1998_I473409/d08-x01-y01"]
+analyses["IdentifiedParticleFlavour"][211][1]["Ratio"][91.2]=["/DELPHI_1998_I473409/d12-x01-y01"]
+
+analyses["IdentifiedParticleFlavour"][321][5]["Ratio"][91.2]=["/DELPHI_1998_I473409/d09-x01-y01"]
+analyses["IdentifiedParticleFlavour"][321][1]["Ratio"][91.2]=["/DELPHI_1998_I473409/d13-x01-y01"]
+
+analyses["IdentifiedParticleFlavour"][2212][5]["Ratio"][91.2]=["/DELPHI_1998_I473409/d10-x01-y01"]
+analyses["IdentifiedParticleFlavour"][2212][1]["Ratio"][91.2]=["/DELPHI_1998_I473409/d14-x01-y01"]
+
+analyses["IdentifiedParticleFlavour"]["321/2212"][5]["Ratio"][91.2]=["/DELPHI_1998_I473409/d11-x01-y01"]
+analyses["IdentifiedParticleFlavour"]["321/2212"][1]["Ratio"][91.2]=["/DELPHI_1998_I473409/d15-x01-y01"]
+analyses["IdentifiedParticleFlavour"][311][4]["Other"][29.0]=["/HRS_1990_I280958/d05-x01-y01"]
+analyses["IdentifiedParticleFlavour"][311][1]["Other"][29.0]=["/HRS_1990_I280958/d06-x01-y01"]
+
+
+analyses["MultiplicityFlavour"]["321/2212"][1][91.2] = ["/DELPHI_1998_I473409/d03-x01-y05"]
+analyses["MultiplicityFlavour"]["321/2212"][5][91.2] = ["/DELPHI_1998_I473409/d02-x01-y05"]
 
 analyses["MultiplicityFlavour"][211 ][41][91.2]=["/SLD_1999_S3743934/d25-x01-y01"]
 analyses["MultiplicityFlavour"][211 ][51][91.2]=["/SLD_1999_S3743934/d25-x01-y02"]
@@ -710,15 +827,6 @@ analyses["MultiplicityFlavour"][3122][1][91.2]=["/SLD_1999_S3743934/d24-x07-y02"
 analyses["MultiplicityFlavour"][3122][4][91.2]=["/SLD_1999_S3743934/d24-x07-y03"]
 analyses["MultiplicityFlavour"][3122][5][91.2]=["/SLD_1999_S3743934/d24-x07-y04"]
 
-analyses["Charged"]["ChargedSpectrum"][1][91.2]=["/DELPHI_1998_I473409/d32-x01-y01","/DELPHI_1998_I473409/d33-x01-y01",
-                                                 "/DELPHI_1997_I428178/d01-x01-y03","/OPAL_1998_S3780481/d01-x01-y01",
-                                                 "/OPAL_1998_S3780481/d05-x01-y01","/SLD_2004_S5693039/d08-x01-y01"]
-analyses["Charged"]["ChargedSpectrum"][2][91.2]=["/L3_2004_I652683/d65-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][4][91.2]=["/DELPHI_1997_I428178/d01-x01-y02","/OPAL_1998_S3780481/d02-x01-y01",
-                                                 "/OPAL_1998_S3780481/d06-x01-y01","/SLD_2004_S5693039/d08-x01-y02"]
-analyses["Charged"]["ChargedSpectrum"][5][91.2]=["/DELPHI_1998_I473409/d24-x01-y01","/DELPHI_1998_I473409/d25-x01-y01",
-                                                 "/DELPHI_1997_I428178/d01-x01-y01","/OPAL_1998_S3780481/d03-x01-y01",
-                                                 "/OPAL_1998_S3780481/d07-x01-y01","/SLD_2004_S5693039/d08-x01-y03","/L3_2004_I652683/d65-x01-y03"]
 
 
 # identified particle distributions
@@ -944,6 +1052,8 @@ analyses["IdentifiedParticle"][431 ]["x"    ][10.5 ] = ["/CLEO_2000_I526554/d02-
 analyses["IdentifiedParticle"][433 ]["x"    ][10.5 ] = ["/CLEO_2000_I526554/d01-x01-y01","/CLEO_2000_I526554/d03-x01-y01"]
 # charmonium
 analyses["IdentifiedParticle"][443 ]["x"    ][91.2 ] = ["/OPAL_1996_S3257789/d01-x01-y01"]
+# other
+analyses["IdentifiedParticle"]["321/2212"]["Ratio"][91.2 ] = ["/DELPHI_1998_I473409/d07-x01-y01"]
 #
 #  Baryons
 #
@@ -1079,6 +1189,7 @@ analyses["IdentifiedParticle"][511]["weak_mean"] = ["/DELPHI_2011_I890503/d02-x0
 analyses["IdentifiedParticle"][511]["lead"     ] = ["/ALEPH_2001_S4656318/d01-x01-y02"]
 analyses["IdentifiedParticle"][511]["lead_mean"] = ["/ALEPH_2001_S4656318/d07-x01-y02"]
 # multiplcities
+analyses["Multiplicity"]["321/2212"][91.2] = ["/DELPHI_1998_I473409/d01-x01-y05"]
 # mesons
 analyses["Multiplicity"][211 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d01-x01-y01"]
 analyses["Multiplicity"][211 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d01-x01-y02"]
@@ -1112,9 +1223,11 @@ analyses["Multiplicity"][331 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d06-x01-y02
 analyses["Multiplicity"][331 ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d06-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d06-x01-y03",
                                          "/DELPHI_1996_S3430090/d36-x01-y06","/ALEPH_1996_S3486095/d44-x01-y04"]
 analyses["Multiplicity"][411 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d07-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y01"]
+analyses["Multiplicity"][411 ][10.58] = ["/CLEO_2004_S5809304/d01-x01-y01"]
 analyses["Multiplicity"][411 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d07-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y02"]
 analyses["Multiplicity"][411 ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d07-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d07-x01-y03","/DELPHI_1996_S3430090/d36-x01-y07"]
 analyses["Multiplicity"][421 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d08-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y01"]
+analyses["Multiplicity"][421 ][10.58] = ["/CLEO_2004_S5809304/d01-x01-y02","/CLEO_2004_S5809304/d01-x01-y03"]
 analyses["Multiplicity"][421 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d08-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y02"]
 analyses["Multiplicity"][421 ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d08-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d08-x01-y03","/DELPHI_1996_S3430090/d36-x01-y08"]
 analyses["Multiplicity"][431 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d09-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d09-x01-y01"]
@@ -1150,10 +1263,12 @@ analyses["Multiplicity"][333 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d20-x01-y02
 analyses["Multiplicity"][333 ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d20-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d20-x01-y03",
                                          "/DELPHI_1996_S3430090/d38-x01-y04","/ALEPH_1996_S3486095/d44-x01-y08","/SLD_1999_S3743934/d24-x05-y01"]
 analyses["Multiplicity"][413 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d21-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y01"]
+analyses["Multiplicity"][413 ][10.58] = ["/CLEO_2004_S5809304/d01-x01-y04","/CLEO_2004_S5809304/d01-x01-y05"]
 analyses["Multiplicity"][413 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d21-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y02"]
 analyses["Multiplicity"][413 ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d21-x01-y03","/PDG_HADRON_MULTIPLICITIES_RATIOS/d21-x01-y03",
                                          "/DELPHI_1996_S3430090/d38-x01-y05","/OPAL_1995_I382219/d03-x01-y01"]
 analyses["Multiplicity"][423 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d22-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d22-x01-y01"]
+analyses["Multiplicity"][423 ][10.58] = ["/CLEO_2004_S5809304/d01-x01-y06","/CLEO_2004_S5809304/d01-x01-y07"]
 analyses["Multiplicity"][423 ][32.0 ] = ["/PDG_HADRON_MULTIPLICITIES/d22-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d22-x01-y02"]
 analyses["Multiplicity"][433 ][10.  ] = ["/PDG_HADRON_MULTIPLICITIES/d23-x01-y01","/PDG_HADRON_MULTIPLICITIES_RATIOS/d23-x01-y01"]
 analyses["Multiplicity"][433 ][91.2 ] = ["/PDG_HADRON_MULTIPLICITIES/d23-x01-y02","/PDG_HADRON_MULTIPLICITIES_RATIOS/d23-x01-y02"]
@@ -1765,6 +1880,11 @@ analyses["EventShapes"]["6jet_dur"][183.0] = ["/ALEPH_2004_S5765862/d231-x01-y01
 analyses["EventShapes"]["6jet_dur"][189.0] = ["/ALEPH_2004_S5765862/d232-x01-y01","/JADE_OPAL_2000_S4300807/d23-x01-y05"]
 analyses["EventShapes"]["6jet_dur"][200.0] = ["/ALEPH_2004_S5765862/d233-x01-y01"]
 analyses["EventShapes"]["6jet_dur"][206.0] = ["/ALEPH_2004_S5765862/d234-x01-y01"]
+# four jet angles
+analyses["FourJet"]["BZ"     ][91.2] = ["/OPAL_2001_S4553896/d03-x01-y01"]
+analyses["FourJet"]["KSW"    ][91.2] = ["/OPAL_2001_S4553896/d04-x01-y01"]
+analyses["FourJet"]["NR"     ][91.2] = ["/OPAL_2001_S4553896/d05-x01-y01"]
+analyses["FourJet"]["alpha34"][91.2] = ["/OPAL_2001_S4553896/d06-x01-y01"]
 # EEC
 analyses["EventShapes"]["EEC" ][7.7 ] = ["/PLUTO_1981_I156315/d01-x01-y01"]
 analyses["EventShapes"]["EEC" ][9.4 ] = ["/PLUTO_1981_I156315/d01-x01-y02"]
@@ -1976,32 +2096,6 @@ analyses["EventShapes"]["4jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01
 analyses["EventShapes"]["5jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y04"]
 analyses["EventShapes"]["6jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y05"]
 
-
-# /OPAL_2001_S4553896/d03-x01-y01
-# /OPAL_2001_S4553896/d04-x01-y01
-# /OPAL_2001_S4553896/d05-x01-y01
-# /OPAL_2001_S4553896/d06-x01-y01
-# /OPAL_2004_I631361/d05-x01-y01
-# /OPAL_2004_I631361/d05-x01-y02
-# /OPAL_2004_I648738/d06-x01-y01
-# /OPAL_2004_I648738/d06-x01-y02
-# /OPAL_2004_I648738/d06-x01-y03
-# /OPAL_2004_I648738/d07-x01-y01
-# /OPAL_2004_I648738/d07-x01-y02
-# /OPAL_2004_I648738/d07-x01-y03
-# /OPAL_2004_I648738/d08-x01-y01
-# /OPAL_2004_I648738/d08-x01-y02
-# /OPAL_2004_I648738/d08-x01-y03
-# /OPAL_2004_I648738/d09-x01-y01
-# /OPAL_2004_I648738/d09-x01-y02
-# /OPAL_2004_I648738/d09-x01-y03
-# /OPAL_2004_I648738/d10-x01-y01
-# /OPAL_2004_I648738/d10-x01-y02
-# /OPAL_2004_I648738/d11-x01-y01
-# /OPAL_2004_I648738/d11-x01-y02
-
-
-
 figures=glob.glob("%s/*/*.dat" % directory)
 
 plotOutput="""<div style="float:left; font-size:smaller; font-weight:bold;">
@@ -2116,7 +2210,7 @@ def writeDecays() :
     # mesons
     decays.write("<h2 id=\"MESONS\">Meson</h2>\n")
     decays.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
-    for val in [221,331,223,333,20113,20213] : 
+    for val in [111,221,331,223,333,20113,20213] : 
         decays.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
         writePlots2(analyses["HadronDecays"][val],decays)
         decays.write("</div>\n")
@@ -2152,7 +2246,7 @@ def writeDecays() :
 def writeMult(index) :
     index.write("<li> <a href=\"mult.html\">Identified Particle Multiplicities</a>\n")
     mult=open(os.path.join(directory,"mult.html"),'w')
-    mult.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Mult Particle Spectra"))
+    mult.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Particle Multiplicities"))
     # mesons
     mult.write("<h2 id=\"MESONS\">Mesons</h2>\n")
     mult.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
@@ -2237,6 +2331,14 @@ def writeMult(index) :
     index.write("<li><a href=\"mult.html#b_bottom\">Bottom:<a/>\n")
     mult.write("<h3 id=\"b_bottom\">Bottom Baryons</h3>\n")
     for val in bBottom:
+        if(val not in analyses["Multiplicity"]) : continue
+        index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
+        mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
+        writePlots(analyses["Multiplicity"][val],mult)
+    # other
+    index.write("<li><a href=\"mult.html#other\">Other:<a/>\n")
+    mult.write("<h3 id=\"other\">Other</h3>\n")
+    for val in ["321/2212"]:
         if(val not in analyses["Multiplicity"]) : continue
         index.write(" <a href=\"mult.html#%s\">%s,<a/>\n" % (val,particleNames[val]))
         mult.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (val,particleNames[val]))
@@ -2409,6 +2511,27 @@ def writeIdentified(index) :
             if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
             ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
             writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+     # other
+    ident.write("<h3 id=\"other\">Other</h3>\n")
+    index.write("<li><a href=\"identified.html#other\">Other:<a/>\n")
+    # loop over particles
+    for pdgId in ["321/2212"] :
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+
+
+            
     # bottom fragmentation
     ident.write("<h2 id=\"b_frag\">Bottom Fragmentation Function</h2>\n")
     index.write("<li><a href=\"identified.html#b_frag\">Bottom Fragmentation Function:<a/>\n")
@@ -2434,180 +2557,115 @@ def writeIdentified(index) :
     ident.write("</body>\n</html>")
     ident.close()
     
-def writeFlavour() :
+def writeFlavour(index) :
     flavour=open(os.path.join(directory,"flavour.html"),'w')
     flavour.write(header.format(title="Comparisions of Herwig7 and Flavour Separated $e^+e^-$ Data"))
+    index.write("<li> <a href=\"flavour.html\">Flavour Separated</a>\n")
+    index.write(" <ul>\n")
     # total multiplicity
     flavour.write("<h2 id=\"mult\">Charged Particle Multiplicity</h2>\n")
-    for flav in [1,4,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["Charged"]["TotalChargedMult"][flav],flavour)
-        flavour.write("</div>\n")
-        
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_51\">Bottom-Light Difference</h3>\n")
-    writePlots(analyses["Charged"]["TotalChargedMult"][51],flavour)
-    flavour.write("</div>\n")
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_41\">Charm-Light Difference</h3>\n")
-    writePlots(analyses["Charged"]["TotalChargedMult"][41],flavour)
-    flavour.write("</div>\n")
+    index.write("<li> <a href=\"flavour.html#mult\">Total Charged Multiplicity: </a> \n")
+    titles={ 1 : "Light (uds)", 2 : "Light (udsc)", 4 : "Charm" , 5 : "Bottom", 41 : "Charm-Light difference", 51 : "Charm-bottom difference"}
+    lFormat="""<div style=\"float:none; overflow:auto; width:100%\">\n<{hlevel} id=\"{tag}\">{name}</{hlevel}>\n"""
+    for flav in [1,4,5,41,51] :
+        if(flav in analyses["Charged"]["TotalChargedMult"] and
+           len(analyses["Charged"]["TotalChargedMult"][flav])!=0) :
+            if(flav!=51) : index.write(" <a href=\"flavour.html#mult_%s\">%s,<a/>\n" % (flav,titles[flav]) )
+            else        : index.write(" <a href=\"flavour.html#mult_%s\">%s.<a/>\n" % (flav,titles[flav]) )
+            flavour.write(lFormat.format(hlevel="h3",tag="mult_%s"%flav,name=titles[flav]))
+            writePlots(analyses["Charged"]["TotalChargedMult"][flav],flavour)
+            flavour.write("</div>\n")
     # multiplicity dist
     flavour.write("<h2 id=\"multdist\">Charged Particle Multiplicity Distribution</h2>\n")
-    for flav in [2,4,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["Charged"]["DistChargedMult"][flav],flavour)
-        flavour.write("</div>\n")
-    flavour.write("</div>\n")
+    index.write("<li> <a href=\"flavour.html#multdist\">Charged Particle Multiplicity Distribution</a>\n")
+    for flav in [1,2,4,5] :
+        if(flav in analyses["Charged"]["DistChargedMult"] and
+           len(analyses["Charged"]["DistChargedMult"][flav])!=0) :
+            if(flav!=5) : index.write(" <a href=\"flavour.html#multdist_%s\">%s,<a/>\n" % (flav,titles[flav]) )
+            else        : index.write(" <a href=\"flavour.html#multdist_%s\">%s.<a/>\n" % (flav,titles[flav]) )
+            flavour.write(lFormat.format(hlevel="h3",tag="multdist_%s"%flav,name=titles[flav]))
+            writePlots(analyses["Charged"]["DistChargedMult"][flav],flavour)
+            flavour.write("</div>\n")
     # event shapes
     flavour.write("<h2 id=\"EVENT\">Event Shapes</h2>\n")
+    index.write("<li> <a href=\"flavour.html#event\">Event Shapes: </a> \n")
+    index.write("<ul>")
     # thrust
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"thrust\">Thrust</h3>\n")
-    for flav in [2,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["EventShapesFlavour"]["T"][flav],flavour)
+    eventShapes = {"T" : "Thrust" , "HeavyJetMass" : "Heavy Jet Mass", "BT" : "Total Jet Broadening",
+                   "BW" : "Wide Jet Broadening", "C" : "C", "D" : "D"}
+    for obs in ["T", "HeavyJetMass","BT","BW","C","D"] :
+        flavour.write(lFormat.format(hlevel="h3",tag="event_%s"%obs,name=eventShapes[obs]))
+        index.write(" <li> <a href=\"flavour.html#event_%s\">%s:<a/>\n" % (obs,eventShapes[obs]))
+        for flav in [1,2,4,5] :
+            if(flav in analyses["EventShapesFlavour"][obs] and
+               len(analyses["EventShapesFlavour"][obs][flav])!=0) :
+                if(flav!=5) : index.write(" <a href=\"flavour.html#event_%s_%s\">%s,<a/>\n" % (obs,flav,titles[flav]) )
+                else        : index.write(" <a href=\"flavour.html#event_%s_%s\">%s.<a/>\n" % (obs,flav,titles[flav]) )
+                flavour.write(lFormat.format(hlevel="h4",tag="event_%s_%s"%(obs,flav),name=titles[flav]))
+            writePlots(analyses["EventShapesFlavour"][obs][flav],flavour)
         flavour.write("</div>\n")
     flavour.write("</div>\n")
-    # heavy jet mass
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"heavyjetmass\">Heavy Jet Mass</h3>\n")
-    for flav in [2,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["EventShapesFlavour"]["HeavyJetMass"][flav],flavour)
-        flavour.write("</div>\n")
-    flavour.write("</div>\n")
-    # BT
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"bt\">Total Jet Broadening</h3>\n")
-    for flav in [2,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["EventShapesFlavour"]["BT"][flav],flavour)
-        flavour.write("</div>\n")
-    flavour.write("</div>\n")
-    # BW
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"bw\">Wide Jet Broadening</h3>\n")
-    for flav in [2,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["EventShapesFlavour"]["BW"][flav],flavour)
-        flavour.write("</div>\n")
-    flavour.write("</div>\n")
-    # C
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"C\">C</h3>\n")
-    for flav in [2,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["EventShapesFlavour"]["C"][flav],flavour)
-        flavour.write("</div>\n")
-    flavour.write("</div>\n")
-    # D
-    flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"D\">D</h3>\n")
-    for flav in [2,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"mult_5\">Bottom</h3>\n")
-        writePlots(analyses["EventShapesFlavour"]["D"][flav],flavour)
-        flavour.write("</div>\n")
-    flavour.write("</div>\n")
-    
-    
+    index.write("</ul>")
     # spectrum
-    flavour.write("<h2 id=\"spectrum\">Charged Particle Spectrum</h2>\n")
+    flavour.write("<h2 id=\"spectrum\">Charged Particle Spectra</h2>\n")
+    index.write("<li> <a href=\"flavour.html#spectrum\">Charged Particle Spectra: </a> \n")
     for flav in [1,2,4,5] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_1\">Light</h3>\n")
-        elif(flav==2) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_2\">u, d, s, c</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"spectrum_5\">Bottom</h3>\n")
-        writePlots(analyses["Charged"]["ChargedSpectrum"][flav],flavour)
-        flavour.write("</div>\n")
-    # identified particle specrtra
-    flavour.write("<h2 id=\"spectrum\">Identified Particle Spectra</h2>\n")
-    for flav in [1,4,5,41,51] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identf_1\">Light</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identf_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identf_5\">Bottom</h3>\n")
-        elif(flav==41) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identf_41\">Ratio Charm to Light</h3>\n")
-        elif(flav==51) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identf_51\">Ratio Bottom to Light</h3>\n")
-        for val in [111,211,311,321,313,333,2212,3122,413] :
-            if(len(analyses["IdentifiedParticleFlavour"][val][flav])==0) : continue
-            flavour.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"f_%s_%s\">%s</h4>\n" % (flav,val,particleNames[val]))
-            writePlots(analyses["IdentifiedParticleFlavour"][val][flav],flavour)
+        if(flav in analyses["Charged"]["ChargedSpectrum"] and
+           len(analyses["Charged"]["ChargedSpectrum"][flav])!=0) :
+            if(flav!=5) : index.write(" <a href=\"flavour.html#spectra_%s\">%s,<a/>\n" % (flav,titles[flav]) )
+            else        : index.write(" <a href=\"flavour.html#spectra_%s\">%s.<a/>\n" % (flav,titles[flav]) )
+            flavour.write(lFormat.format(hlevel="h3",tag="spectra_%s"%flav,name=titles[flav]))
+            for obs in ["x","xi"] :
+                if obs== "x" : name="Scaled Momentum"
+                else         : name="Log of the scaled Momentum"
+                flavour.write(lFormat.format(hlevel="h4",tag="spectra_%s_%s"% (flav,obs),name=name))
+                writePlots(analyses["Charged"]["ChargedSpectrum"][flav][obs],flavour)
+                flavour.write("</div>\n")
             flavour.write("</div>\n")
     # multiplicities
     flavour.write("<h2 id=\"mults\">Identified Particle Multiplicities</h2>\n")
+    index.write("<li> <a href=\"flavour.html#mults\">Identified Particle Multiplicities: </a> \n")
     for flav in [1,4,5,41,51] :
-        if(flav==1) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identm_1\">Light</h3>\n")
-        elif(flav==4) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identm_4\">Charm</h3>\n")
-        elif(flav==5) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identm_5\">Bottom</h3>\n")
-        elif(flav==41) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identm_41\">Charm-Light</h3>\n")
-        elif(flav==51) :
-            flavour.write("<div style=\"float:none; overflow:auto; width:100%\">\n<h3 id=\"identm_51\">Bottom-Light</h3>\n")
-        for val in [211,311,321,313,333,2212,3122] :
-            if(len(analyses["MultiplicityFlavour"][val][flav])==0) : continue
+        if(flav!=51) : index.write(" <a href=\"flavour.html#mults_%s\">%s,<a/>\n" % (flav,titles[flav]) )
+        else        : index.write(" <a href=\"flavour.html#mults_%s\">%s.<a/>\n" % (flav,titles[flav]) )
+        flavour.write(lFormat.format(hlevel="h3",tag="mults_%s"%flav,name=titles[flav]))
+        for val in mLight+mStrange+bLight+bStrange+["321/2212"] :
+            if(val not in analyses["MultiplicityFlavour"] or
+               flav not in analyses["MultiplicityFlavour"][val] or
+               len(analyses["MultiplicityFlavour"][val][flav])==0) : continue
             flavour.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"f_%s_%s\">%s</h4>\n" % (flav,val,particleNames[val]))
             writePlots(analyses["MultiplicityFlavour"][val][flav],flavour)
             flavour.write("</div>\n")
-
-    
+    # identified particle specrtra
+    flavour.write("<h2 id=\"ident\">Identified Particle Spectra</h2>\n")
+    index.write("<li> <a href=\"flavour.html#ident\">Identified Particle Spectra: </a> \n")
+    titles[41] = "Ratio Charm to Light"
+    titles[51] = "Ratio Bottom to Light"
+    obsName = { "x" : "Scaled Momentum",
+                "xi" : "Log of Scaled Momentum",
+                "Ratio" : "Ratios of Particle Multiplicities",
+                "Other" : "Other Distributions" }
+    for flav in [1,4,5,41,51] :
+        if(flav!=51) : index.write(" <a href=\"flavour.html#identf_%s\">%s,<a/>\n" % (flav,titles[flav]) )
+        else        : index.write(" <a href=\"flavour.html#identf_%s\">%s.<a/>\n" % (flav,titles[flav]) )
+        flavour.write(lFormat.format(hlevel="h3",tag="identf_%s"%flav,name=titles[flav]))
+        for val in [111,211,311,321,313,333,2212,3122,413,"321/2212"] :
+            if(val not in analyses["IdentifiedParticleFlavour"]) : continue
+            if(flav not in analyses["IdentifiedParticleFlavour"][val]) : continue
+            aSum=0
+            for key,temp in analyses["IdentifiedParticleFlavour"][val][flav].iteritems():
+                aSum+=len(temp)
+            if(aSum==0) : continue
+            flavour.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"f_%s_%s\">%s</h4>\n" % (flav,val,particleNames[val]))
+            for obs in ["x","xi","Ratio","Other"] :
+                if(obs not in analyses["IdentifiedParticleFlavour"][val][flav] or
+                   len(analyses["IdentifiedParticleFlavour"][val][flav][obs])==0) : continue
+                flavour.write("<div style=\"float:none; overflow:auto; \">\n<h5 id=\"f_%s_%s_%s\">%s</h5>\n" % (flav,val,obs,obsName[obs]))
+                writePlots(analyses["IdentifiedParticleFlavour"][val][flav][obs],flavour)
+                flavour.write("</div>\n")
+            flavour.write("</div>\n")
+    # footer
+    index.write("</ul>\n")
     flavour.write("</body>\n</html>")
     flavour.close()
     
@@ -2688,6 +2746,12 @@ def writeCharged(index) :
             charged.write(lFormat.format(hlevel="h3",tag="%spL"%abbrev,name="$p_\\parallel$"))
             writePlots(analyses["Charged"]["ChargedpL%s"%axis],charged)
             charged.write("</div>\n")
+        # xF
+        if("ChargedxF%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedxF%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sxF\">$p_\\parallel$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sxF"%abbrev,name="$x_F$"))
+            writePlots(analyses["Charged"]["ChargedxF%s"%axis],charged)
+            charged.write("</div>\n")
         # pT
         if("ChargedpT%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpT%s"%axis])!=0) :
             index.write(" <a href=\"charged.html#%spt\">$p_\\perp$.<a/>\n" %abbrev)
@@ -2754,6 +2818,18 @@ def writeJets(index) :
             writePlots(analyses["EventShapes"]["y%s_jade" % yval],jets)
             jets.write("</div>\n")
         jets.write("</div>\n")
+    # 4 jet angles
+    index.write("<li> <a href=\"jets.html#4JET\">Four jet angles:</a> \n")
+    jets.write("<h2 id=\"4JET\">Four Jet Angles</h2>\n")
+    for val in ["BZ","KSW","NR","alpha34"] :
+        if val == "BZ"        : title="Bengtsson-Zerwas angle"
+        elif val == "KSW"     : title="Korner-Schierholz-Willrodt angle"
+        elif val == "NR"      : title="Modified Nachtmann-Reiter angle"
+        elif val == "alpha34" : title="$\\alpha_{34}$"
+        if(val!="alpha34") : index.write(" <a href=\"jets.html#%s\">%s,<a/>\n" %(val,title))
+        else               : index.write(" <a href=\"jets.html#%s\">%s.<a/>\n" %(val,title))
+        jets .write(lFormat.format(hlevel="h3",tag=val,name=title))
+        writePlots(analyses["FourJet"][val],jets)
     # footer
     index.write(" </ul>\n")
     jets.write("</div>\n")
@@ -2882,28 +2958,40 @@ def writeEventShapes(index) :
     event.write("</body>\n</html>")
     event.close()
     
-def writeGluon() :
+def writeGluon(index) :
+    index.write("<li> <a href=\"gluon.html\">Gluons</a>\n")
     gluon=open(os.path.join(directory,"gluon.html"),'w')
     gluon.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Data on Gluon Jets"))
+    index.write("<ul>\n")
     # charged particles dists
     gluon.write("<h2 id=\"multdist\">Charged Particle Multiplicity in Gluon Jets</h2>\n")
+    index.write("<li> <a href=\"gluon.html#multdist\">Charged Particle Multiplicity</a> \n")
     gluon.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
     writePlots(analyses["Charged"]["DistChargedMult"][21],gluon)
     gluon.write("</div>\n")
-    
+    # spectra
+    index.write("<li> <a href=\"gluon.html#spectra\">Charged Spectra</a> \n")
+    gluon.write("<h2 id=\"spectra\">Charged Particle Spectra for Gluon Jets</h2>\n")
+    for val in ["x","p","xi"] :
+        if(len(analyses["Charged"]["ChargedSpectrum"][21][val])==0) : continue
+        if(val=="x") :
+            gluon.write("<h4 id=\"spectra\">Scaled Momentum</h2>\n")
+        elif(val=="p") :
+            gluon.write("<h4 id=\"spectra\">Momentum</h2>\n")
+        elif(val=="xi") :
+            gluon.write("<h4 id=\"spectra\">Log of the Scaled Momentum</h2>\n")
+        gluon.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
+        writePlots(analyses["Charged"]["ChargedSpectrum"][21][val],gluon)
+        gluon.write("</div>\n")
     # footer
+    index.write("</ul>\n")
     gluon.write("</body>\n</html>")
     gluon.close()
-
-
-
     
 print 'Total no of figures',len(figures)
-writeFlavour()
 writeDecays()
 writeTauDecays()
 writeQED()
-writeGluon()
 
 
 index=open(os.path.join(directory,"herwig.html"),'w')
@@ -2919,20 +3007,9 @@ writeIdentified(index)
 # identified particle multiplicity
 writeMult(index)
 # flavour
-index.write("<li> <a href=\"flavour.html\">Flavour Separated</a>\n")
-index.write(" <ul>\n")
-
-index.write("<li> <a href=\"flavour.html#mult\">Total Charged Multiplicity: </a> \n")
-index.write(" <a href=\"flavour.html#mult_1\">light,<a/>\n")
-index.write(" <a href=\"flavour.html#mult_4\">charm,<a/>\n")
-index.write(" <a href=\"flavour.html#mult_5\">bottom.<a/>\n")
-
-index.write("<li> <a href=\"flavour.html#spectrum\">Charged Particle Spectrum: </a> \n")
-index.write(" <a href=\"flavour.html#spectrum_1\">light,<a/>\n")
-index.write(" <a href=\"flavour.html#spectrum_4\">charm,<a/>\n")
-index.write(" <a href=\"flavour.html#spectrum_5\">bottom.<a/>\n")
-
-index.write("</ul>\n")
+writeFlavour(index)
+# gluons
+writeGluon(index)
 # hadron decays
 index.write("<li> <a href=\"decays.html\">Hadron Decays</a>\n")
 index.write(" <ul>\n")
@@ -2974,7 +3051,6 @@ writeMisc()
     # writePlots2(analyses["TauDecays"]["3K"],decays)
 # qed
 index.write("<li> <a href=\"qed.html\">QED Radiation</a>\n")
-index.write("<li> <a href=\"gluon.html\">Gluons</a>\n")
 index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
 # footer
 index.write("</ul>\n")
