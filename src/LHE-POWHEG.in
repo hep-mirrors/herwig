@@ -1,11 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# Generic Les Houches Event file input
-# Look at customised input files for:
-# MadGraph5/aMC@NLO: LHE-MCatNLO.in
-# POWHEG:	     LHE-POWHEG.in
-# FxFx merging with MG5/aMC@NLO: LHE-FxFx.in
-# Tree-level merging with MG5/aMC@NLO: LHE-MGMerging.in
+# For use with POWHEG events
 # usage: Herwig read LHE.in
 ##################################################
 #read snippets/PPCollider.in
@@ -32,7 +27,7 @@ set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 
-# set the weight option (e.g. for MC@NLO)
+# set the weight option 
 set LesHouchesHandler:WeightOption VarNegWeight
 
 # set event hander as one to be used
@@ -97,12 +92,6 @@ set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
 # treatment of wide angle radiation
 set /Herwig/Shower/PartnerFinder:PartnerMethod Random
 set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
-# with MC@NLO these parameters are required for consistency of the subtraction terms
-# suggested parameters (give worse physics results with POWHEG)
-#set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
-#set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
-#set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
-#set /Herwig/Shower/ShowerHandler:SpinCorrelations No
 
 ##################################################
 # LHC physics parameters (override defaults here) 

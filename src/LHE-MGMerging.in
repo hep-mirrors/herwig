@@ -1,0 +1,154 @@
+##################################################
+# Example generator based on LHC parameters
+# For FxFx merging with MadGraph5/aMC@NLO
+# usage: Herwig read FxFx.in
+##################################################
+#read snippets/PPCollider.in
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set EventGenerator:NumberOfEvents 100000000
+set EventGenerator:RandomNumberGenerator:Seed 31122001
+set EventGenerator:PrintEvent     1
+set EventGenerator:MaxErrors      10000
+##################################################################
+#   Create the Les Houches file handler and reader for FxFx events
+##################################################################
+cd /Herwig/EventHandlers
+library HwFxFx.so
+create Herwig::FxFxEventHandler LesHouchesHandler
+
+# set the various step handlers
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
+set LesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
+set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
+
+# set the weight option (for MC@NLO)
+set LesHouchesHandler:WeightOption VarNegWeight
+
+# set event hander as one to be used
+set /Herwig/Generators/EventGenerator:EventHandler  /Herwig/EventHandlers/LesHouchesHandler
+
+# Set up an EMPTY CUTS object
+# Normally you will have imposed any cuts you want
+# when generating the event file and don't want any more
+# in particular for POWHEG and MC@NLO you must not apply cuts on the
+# the extra jet
+create ThePEG::Cuts /Herwig/Cuts/NoCuts
+
+# Create a LH reader specialised for FxFx events
+cd /Herwig/EventHandlers
+create Herwig::FxFxFileReader FxFxLHReader
+insert LesHouchesHandler:FxFxReaders[0] FxFxLHReader
+
+# Create the FxFxHandler for merging with the shower	 
+cd /Herwig/Shower
+library HwFxFxHandler.so
+create Herwig::FxFxHandler FxFxHandler
+set /Herwig/Shower/FxFxHandler:SplittingGenerator /Herwig/Shower/SplittingGenerator
+set /Herwig/Shower/FxFxHandler:KinematicsReconstructor /Herwig/Shower/KinematicsReconstructor
+set /Herwig/Shower/FxFxHandler:PartnerFinder /Herwig/Shower/PartnerFinder
+set /Herwig/EventHandlers/LesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
+
+###################################################################################
+# PDF settings									  #
+# You may wish to use the same PDF as the events were generated with		  #
+###################################################################################
+create ThePEG::LHAPDF /Herwig/Partons/LHAPDF ThePEGLHAPDF.so
+set /Herwig/Partons/LHAPDF:PDFName NAME_OF_PDF
+set /Herwig/Partons/RemnantDecayer:AllowTop Yes
+set /Herwig/Partons/LHAPDF:RemnantHandler /Herwig/Partons/HadronRemnants
+set /Herwig/Particles/p+:PDF /Herwig/Partons/LHAPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/LHAPDF
+set /Herwig/Partons/PPExtractor:FirstPDF  /Herwig/Partons/LHAPDF
+set /Herwig/Partons/PPExtractor:SecondPDF /Herwig/Partons/LHAPDF
+# We would recommend the shower uses the default PDFs with which it was tuned.
+# However it can be argued that the same set as for the sample should be used for
+# matched samples, i.e. MC@NLO (and less so POWHEG)
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/LHAPDF
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/LHAPDF
+
+# You can in principle also change the PDFs for the remnant extraction and
+# multiple scattering. As the generator was tuned with the default values
+# this is STRONGLY DISCOURAGED without retuning the MPI parameters
+# create the reader and set cuts
+set /Herwig/EventHandlers/FxFxLHReader:FileName NAME_OF_FILE #(the file can be compressed (gziped,bziped))
+set /Herwig/EventHandlers/FxFxLHReader:WeightWarnings    false
+set /Herwig/EventHandlers/FxFxLHReader:AllowedToReOpen No
+set /Herwig/EventHandlers/FxFxLHReader:InitPDFs 0
+set /Herwig/EventHandlers/FxFxLHReader:Cuts /Herwig/Cuts/NoCuts
+# option to ensure momentum conservation is O.K. due rounding errors (recommended)
+set /Herwig/EventHandlers/FxFxLHReader:MomentumTreatment RescaleEnergy
+# set the pdfs
+set /Herwig/EventHandlers/FxFxLHReader:PDFA /Herwig/Partons/LHAPDF
+set /Herwig/EventHandlers/FxFxLHReader:PDFB /Herwig/Partons/LHAPDF
+# if using BSM models with QNUMBER info
+#set /Herwig/EventHandlers/FxFxLHReader:QNumbers Yes
+#set /Herwig/EventHandlers/FxFxLHReader:Decayer /Herwig/Decays/Mambo
+
+
+##################################################
+#  Shower parameters				 #
+##################################################
+# normally, especially for POWHEG, you want
+# the scale supplied in the event files (SCALUP)
+# to be used as a pT veto scale in the parton shower
+set /Herwig/Shower/ShowerHandler:MaxPtIsMuF Yes
+set /Herwig/Shower/ShowerHandler:RestrictPhasespace Yes
+# Shower parameters
+# treatment of wide angle radiation
+set /Herwig/Shower/PartnerFinder:PartnerMethod Random
+set /Herwig/Shower/PartnerFinder:ScaleChoice Partner
+# with MC@NLO these parameters are required for consistency of the subtraction terms
+set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
+set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption Rapidity
+set /Herwig/Shower/ShowerHandler:SpinCorrelations No
+
+#############################################################
+# Set up the FxFxHandler			            #
+#############################################################
+cd /Herwig/Shower
+set /Herwig/Shower/FxFxHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
+set /Herwig/Shower/FxFxHandler:RemDecayer  /Herwig/Partons/RemnantDecayer
+set /Herwig/Shower/FxFxHandler:ShowerAlpha  AlphaQCD
+# set the heavy quark decay product vetoing process on/off
+set FxFxHandler:HeavyQVeto Yes
+# Automatic detection of the hard process (experimental)
+set FxFxHandler:HardProcessDetection Automatic
+# Choose the hard process manually according to AlpGen codes (see hep-ph/0206293)
+# and set HardProcessDetection to Manual
+# set FxFxHandler:ihrd        3 # 3 corresponds to W+jets or Z+jets
+# No. of light jets in maximum-multiplicity process
+set FxFxHandler:njetsmax      MAXIMUM_NUMBER_OF_PARTONS_IN_LHE_FILE # Make sure this is set correctly!
+# Mimimum parton-parton R-sep used for generation.
+set FxFxHandler:drjmin      0
+# Recommended key merging parameters below             
+cd /Herwig/Shower
+# turn the Vetoing On or Off completely
+set FxFxHandler:VetoIsTurnedOff VetoingIsOn
+# merging mode: in this case Tree level with MG5 information:
+set FxFxHandler:MergeMode TreeMG5
+# merging scale
+set FxFxHandler:ETClus 25*GeV
+# jet radius used in clustering in merging.
+set FxFxHandler:RClus 1.0
+# Max |eta| for jets in clustering in merging.
+set FxFxHandler:EtaClusMax 10
+# Default 1.5 factor used to decide if a jet matches a parton
+# in merging: if DR(parton,jet)<rclusfactor*rclus the parton 
+# and jet are said to have been matched.
+set FxFxHandler:RClusFactor 1.5
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+# e.g if different top mass used
+#set /Herwig/Particles/t:NominalMass 173.0
+
+##################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+cd /Herwig/Generators
+saverun LHE-MGMerging EventGenerator
