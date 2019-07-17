@@ -32,19 +32,31 @@ analyses={ "HadronDecays"     : { },
                                                5   : { "x" : {}, "p" : {}, "xi" : {}},
                                                21  : { "x" : {}, "p" : {}, "xi" : {}},
                                                "C" : { "x" : {}, "p" : {}, "xi" : {}}},
-                        "ChargedRapidityThrust"    : { },
-                        "ChargedpTInThrust"        : { },
-                        "ChargedpTOutThrust"       : { },
-                        "ChargedpTThrust"          : { },
-                        "ChargedxFThrust"          : { },
-                        "ChargedRapiditySphericity": { },
-                        "ChargedpTInSphericity"    : { },
-                        "ChargedpTOutSphericity"   : { },
-                        "ChargedpLSphericity"      : { },
-                        "ChargedpTSphericity"      : { },
-                        "ChargedpT2Sphericity"     : { },
-                        "ChargedAveragepT2inSphericity"     : { },
-                        "ChargedAveragepT2outSphericity"     : { },
+                        "ChargedRapidityThrust"          : { },
+                        "ChargedpTInThrust"              : { },
+                        "ChargedpTOutThrust"             : { },
+                        "ChargedpTThrust"                : { },
+                        "ChargedpTvsxpThrust"            : { },
+                        "ChargedpTOutvsxpThrust"         : { },
+                        "ChargedxFThrust"                : { },
+                        "ChargedRapiditySphericity"      : { },
+                        "ChargedpTInSphericity"          : { },
+                        "ChargedpTOutSphericity"         : { },
+                        "ChargedpLSphericity"            : { },
+                        "ChargedpTSphericity"            : { },
+                        "ChargedpT2Sphericity"           : { },
+                        "ChargedFlowSphericity"          : { },
+                        "ChargedEnergyFlowSphericity"    : { },
+                        "ChargedAveragepT2inSphericity"  : { },
+                        "ChargedAveragepT2outSphericity" : { },
+                        "ChargedAveragepTThrust"         : { },
+                        "ChargedAveragepT2Thrust"        : { },
+                        "ChargedSumpTThrust"             : { },
+                        "ChargedSumpT2Thrust"            : { },
+                        "ChargedAveragepTSphericity"     : { },
+                        "ChargedAveragepT2Sphericity"    : { },
+                        "ChargedSumpTSphericity"         : { },
+                        "ChargedSumpT2Sphericity"        : { },
                         "DistChargedMult"  : {0 : {}, 1 : {}, 2 : {}, 4 : {}, 5 : {} , 21 : {}, "C" :{}}},
            "IdentifiedParticle"  : { 22         : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
                                      111        : { "x" : {}, "p" : {}, "xi" : {}, "Other" : {}, "Ratio" : {}},
@@ -680,7 +692,18 @@ analyses["Charged"]["ChargedpTOutThrust"][205.0] = ["/DELPHI_2003_I620250/d37-x0
 analyses["Charged"]["ChargedpTOutThrust"][206.0] = ["/ALEPH_2004_S5765862/d35-x01-y01"]
 analyses["Charged"]["ChargedpTOutThrust"][207.0] = ["/DELPHI_2003_I620250/d37-x01-y04"]
 # pT
-analyses["Charged"]["ChargedpTThrust"][29.0] = ["/HRS_1985_I201482/d22-x01-y01","/HRS_1985_I201482/d23-x01-y01"]
+analyses["Charged"]["ChargedpTThrust"       ][29.0] = ["/HRS_1985_I201482/d22-x01-y01","/HRS_1985_I201482/d23-x01-y01"]
+analyses["Charged"]["ChargedpTvsxpThrust"   ][91.2] = ["/DELPHI_1996_S3430090/d10-x01-y01"]
+analyses["Charged"]["ChargedpTOutvsxpThrust"][91.2] = ["/DELPHI_1996_S3430090/d09-x01-y01"]
+# averages
+analyses["Charged"]["ChargedAveragepTThrust"     ][20.] = ["/PLUTO_1983_I191161/d01-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2Thrust"    ][20.] = ["/PLUTO_1983_I191161/d01-x01-y02"]
+analyses["Charged"]["ChargedSumpTThrust"         ][20.] = ["/PLUTO_1983_I191161/d01-x01-y03"]
+analyses["Charged"]["ChargedSumpT2Thrust"        ][20.] = ["/PLUTO_1983_I191161/d01-x01-y04"]
+analyses["Charged"]["ChargedAveragepTSphericity" ][20.] = ["/PLUTO_1983_I191161/d02-x01-y01"]
+analyses["Charged"]["ChargedAveragepT2Sphericity"][20.] = ["/PLUTO_1983_I191161/d02-x01-y02"]
+analyses["Charged"]["ChargedSumpTSphericity"     ][20.] = ["/PLUTO_1983_I191161/d02-x01-y03"]
+analyses["Charged"]["ChargedSumpT2Sphericity"    ][20.] = ["/PLUTO_1983_I191161/d02-x01-y04"]
 # xF
 analyses["Charged"]["ChargedxFThrust"][29.0] = ["/HRS_1985_I201482/d16-x01-y01","/HRS_1985_I201482/d17-x01-y01"]
 # rapidity sphericity
@@ -707,6 +730,8 @@ analyses["Charged"]["ChargedpLSphericity" ][55.2] = ["/AMY_1990_I283337/d03-x01-
 analyses["Charged"]["ChargedpTSphericity" ][55.2] = ["/AMY_1990_I283337/d04-x01-y01" ]
 analyses["Charged"]["ChargedpTSphericity" ][35.0] = ["/TASSO_1988_I263859/d09-x01-y01"]
 analyses["Charged"]["ChargedpT2Sphericity"][55.2] = ["/AMY_1990_I283337/d05-x01-y01" ]
+analyses["Charged"]["ChargedFlowSphericity"][55.2] = ["/AMY_1990_I283337/d10-x01-y01" ]
+analyses["Charged"]["ChargedEnergyFlowSphericity"][55.2] = ["/AMY_1990_I283337/d11-x01-y01" ]
 analyses["Charged"]["ChargedAveragepT2inSphericity" ][29.0] = ["/HRS_1985_I201482/d24-x01-y01"]
 analyses["Charged"]["ChargedAveragepT2inSphericity" ][35.0] = ["/TASSO_1988_I263859/d04-x01-y01"]
 analyses["Charged"]["ChargedAveragepT2inSphericity" ][55.2] = ["/AMY_1990_I283337/d08-x01-y01"]
@@ -2736,45 +2761,93 @@ def writeCharged(index) :
         writePlots(analyses["Charged"]["ChargedpTIn%s"%axis],charged)
         charged.write("</div>\n")
         # pT out
-        index.write(" <a href=\"charged.html#%sptout\">$p_\\perp^{\\text{out}}$.<a/>\n" %abbrev)
+        index.write(" <a href=\"charged.html#%sptout\">$p_\\perp^{\\text{out}}$,<a/>\n" %abbrev)
         charged.write(lFormat.format(hlevel="h3",tag="%sptout"%abbrev,name="$p_\\perp^{\\text{out}}$"))
         writePlots(analyses["Charged"]["ChargedpTOut%s"%axis],charged)
         charged.write("</div>\n")
         # pL
         if("ChargedpL%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpL%s"%axis])!=0) :
-            index.write(" <a href=\"charged.html#%spL\">$p_\\parallel$.<a/>\n" %abbrev)
+            index.write(" <a href=\"charged.html#%spL\">$p_\\parallel$,<a/>\n" %abbrev)
             charged.write(lFormat.format(hlevel="h3",tag="%spL"%abbrev,name="$p_\\parallel$"))
             writePlots(analyses["Charged"]["ChargedpL%s"%axis],charged)
             charged.write("</div>\n")
-        # xF
-        if("ChargedxF%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedxF%s"%axis])!=0) :
-            index.write(" <a href=\"charged.html#%sxF\">$p_\\parallel$.<a/>\n" %abbrev)
-            charged.write(lFormat.format(hlevel="h3",tag="%sxF"%abbrev,name="$x_F$"))
-            writePlots(analyses["Charged"]["ChargedxF%s"%axis],charged)
-            charged.write("</div>\n")
         # pT
         if("ChargedpT%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpT%s"%axis])!=0) :
-            index.write(" <a href=\"charged.html#%spt\">$p_\\perp$.<a/>\n" %abbrev)
+            index.write(" <a href=\"charged.html#%spt\">$p_\\perp$,<a/>\n" %abbrev)
             charged.write(lFormat.format(hlevel="h3",tag="%spt"%abbrev,name="$p_\\perp$"))
             writePlots(analyses["Charged"]["ChargedpT%s"%axis],charged)
             charged.write("</div>\n")
+        # pT average
+        if("ChargedAveragepT%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedAveragepT%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sptaver\">$\langle p_\\perp\\rangle$,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sptaver"%abbrev,name="$\langle p_\\perp\\rangle$"))
+            writePlots(analyses["Charged"]["ChargedAveragepT%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT2 average 
+        if("ChargedAveragepT2%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedAveragepT2%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%spt2aver\">$\langle p^2_\\perp\\rangle$,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%spt2aver"%abbrev,name="$\langle p^2_\\perp\\rangle$"))
+            writePlots(analyses["Charged"]["ChargedAveragepT2%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT sum
+        if("ChargedSumpT%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedSumpT%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sptsum\">$\sum p_\\perp$,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sptsum"%abbrev,name="$\sum p_\\perp$"))
+            writePlots(analyses["Charged"]["ChargedSumpT%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT2 sum
+        if("ChargedSumpT2%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedSumpT2%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sptsum\">$\sum p^2_\\perp$,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sptsum"%abbrev,name="$\sum p^2_\\perp$"))
+            writePlots(analyses["Charged"]["ChargedSumpT2%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT vs xp
+        if("ChargedpTvsxp%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpTvsxp%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%spt\">$p_\\perp$ vs $x_p$,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%spt"%abbrev,name="$p_\\perp$ vs $x_p$"))
+            writePlots(analyses["Charged"]["ChargedpTvsxp%s"%axis],charged)
+            charged.write("</div>\n")
+        # pT out vs xp
+        if("ChargedpTOutvsxp%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpTOutvsxp%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%spt\">$p^{\\text{out}}_\\perp$ vs $x_p$,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%spt"%abbrev,name="$p^{\\text{out}}_\\perp$ vs $x_p$"))
+            writePlots(analyses["Charged"]["ChargedpTOutvsxp%s"%axis],charged)
+            charged.write("</div>\n")
+        # xF
+        if("ChargedxF%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedxF%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sxF\">$x_F$.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sxF"%abbrev,name="$x_F$"))
+            writePlots(analyses["Charged"]["ChargedxF%s"%axis],charged)
+            charged.write("</div>\n")
         # pT2
         if("ChargedpT2%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedpT2%s"%axis])!=0) :
-            index.write(" <a href=\"charged.html#%spt2\">$p^2_\\perp$.<a/>\n" %abbrev)
+            index.write(" <a href=\"charged.html#%spt2\">$p^2_\\perp$,<a/>\n" %abbrev)
             charged.write(lFormat.format(hlevel="h3",tag="%spt2"%abbrev,name="$p^2_\\perp$"))
             writePlots(analyses["Charged"]["ChargedpT2%s"%axis],charged)
             charged.write("</div>\n")
         # average ptin
         if("ChargedAveragepT2in%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedAveragepT2in%s"%axis])!=0) :
-            index.write(" <a href=\"charged.html#%saverpt2in\">$\langle p^2_{\\perp\\text{in}}\\rangle$.<a/>\n" %abbrev)
+            index.write(" <a href=\"charged.html#%saverpt2in\">$\langle p^2_{\\perp\\text{in}}\\rangle$,<a/>\n" %abbrev)
             charged.write(lFormat.format(hlevel="h3",tag="%saverpt2in"%abbrev,name="$\langle p^2_{\\perp\\text{in}}\\rangle$"))
             writePlots(analyses["Charged"]["ChargedAveragepT2in%s"%axis],charged)
             charged.write("</div>\n")
         # average ptout
         if("ChargedAveragepT2out%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedAveragepT2out%s"%axis])!=0) :
-            index.write(" <a href=\"charged.html#%saverpt2out\">$\langle p^2_{\\perp\\text{out}}\\rangle$.<a/>\n" %abbrev)
+            index.write(" <a href=\"charged.html#%saverpt2out\">$\langle p^2_{\\perp\\text{out}}\\rangle$,<a/>\n" %abbrev)
             charged.write(lFormat.format(hlevel="h3",tag="%saverpt2out"%abbrev,name="$\langle p^2_{\\perp\\text{out}}\\rangle$"))
             writePlots(analyses["Charged"]["ChargedAveragepT2out%s"%axis],charged)
+            charged.write("</div>\n")
+        # charged flow
+        if("ChargedFlow%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedFlow%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sFlow\">Charge Flow,<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sFlow"%abbrev,name="Charge Flow"))
+            writePlots(analyses["Charged"]["ChargedFlow%s"%axis],charged)
+            charged.write("</div>\n")
+        # energy flow
+        if("ChargedEnergyFlow%s"%axis in analyses["Charged"] and len(analyses["Charged"]["ChargedEnergyFlow%s"%axis])!=0) :
+            index.write(" <a href=\"charged.html#%sEnergyFlow\">Energy Flow.<a/>\n" %abbrev)
+            charged.write(lFormat.format(hlevel="h3",tag="%sEnergyFlow"%abbrev,name="Energy Flow"))
+            writePlots(analyses["Charged"]["ChargedEnergyFlow%s"%axis],charged)
             charged.write("</div>\n")
     # footer
     index.write(" </ul>\n")
