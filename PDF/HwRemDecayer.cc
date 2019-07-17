@@ -1131,7 +1131,6 @@ if ( cm.m()<3*GeV ){
   // Initialize partons in the ladder
   // The toy masses are needed for the correct calculation of the available energy
   Lorentz5Momentum sumMomenta;
-  cout << "Number of ladder partons = " << N << endl;
   for(unsigned int i = 0; i < N; i++) {
      
       // choose constituents
