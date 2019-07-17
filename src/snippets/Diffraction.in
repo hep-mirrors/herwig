@@ -109,6 +109,12 @@ set QCDDiffraction:CascadeHandler NULL
 set /Herwig/Generators/EventGenerator:EventHandler:CascadeHandler NULL
 
 insert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers[0] QCDDiffraction
+
+
+## These cuts are also set in MB.in
+# If only diffraction is needed, we want the same cuts:
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
+
 ##########################################################################
 ##########################################################################
 

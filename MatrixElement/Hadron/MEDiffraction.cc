@@ -676,20 +676,26 @@ double  MEDiffraction::correctionweight() const {
   if(eh->integratedXSec()>ZERO)sumRew+=rew_;
   if(eh->integratedXSec()>ZERO)countN+=1.;
 
-
-
   if(countUpdateWeight<countN){
     // Summing all diffractive processes (various initial states)
     double sum=0.;
     for(auto xx:weightsmap){
      sum+=xx.second;
     }
-    double avcsNorm2=sumRew/countN;
+    double avRew=sumRew/countN;
     
     CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
     CrossSection XS_wanted=MPIHandler_->diffractiveXSec();
     double deltaN=50;
-    rew_=avcsNorm2*(XS_wanted*(countN+deltaN)-XS_have*countN)/(XS_have*deltaN);
+    
+      // Cross section without reweighting: XS_norew
+      // XS_have = avcsNorm2*XS_norew    (for large N)
+      // We want to determine the rew that allows to get the wanted XS.
+      // In deltaN points we want (left) and we get (right):
+      // XS_wanted*(countN+deltaN) = XS_have*countN + rew*deltaN*XS_norew
+      // Solve for rew:
+    
+    rew_=avRew*(XS_wanted*(countN+deltaN)-XS_have*countN)/(XS_have*deltaN);
     countUpdateWeight+=deltaN;
   }
   //Make sure we dont produce negative weights. 
