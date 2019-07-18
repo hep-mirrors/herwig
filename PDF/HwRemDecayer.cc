@@ -1122,12 +1122,6 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   Lorentz5Momentum cm =r1+r2;
 
-if ( cm.m()<3*GeV ){
- cout << cm.m()/GeV << endl;
- cout << "not enough energy to do soft interactions"<<endl;
- return;
-} 
-
   // Initialize partons in the ladder
   // The toy masses are needed for the correct calculation of the available energy
   Lorentz5Momentum sumMomenta;
@@ -1175,6 +1169,7 @@ if ( cm.m()<3*GeV ){
   Energy availableEnergy = (ig1+ig2).m() - sumMomenta.m();
  
   // If not enough energy then continue
+  // The available energy has to be larger then the rest mass of the remnants
   if ( availableEnergy < ZERO ) {
     continue;
   }
