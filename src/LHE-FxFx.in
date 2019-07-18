@@ -3,7 +3,7 @@
 # For FxFx merging with MadGraph5/aMC@NLO
 # usage: Herwig read FxFx.in
 ##################################################
-#read snippets/PPCollider.in
+read snippets/SoftModel.in
 ##################################################
 # Technical parameters for this run
 ##################################################

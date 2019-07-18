@@ -8,7 +8,7 @@
 # Tree-level merging with MG5/aMC@NLO: LHE-MGMerging.in
 # usage: Herwig read LHE.in
 ##################################################
-#read snippets/PPCollider.in
+read snippets/SoftModel.in
 ##################################################
 # Technical parameters for this run
 ##################################################
