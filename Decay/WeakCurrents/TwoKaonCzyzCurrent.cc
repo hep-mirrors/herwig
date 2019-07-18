@@ -279,7 +279,7 @@ void TwoKaonCzyzCurrent::doinit() {
 	 			       mass_[0].back(),width_[0].back(),mpi_,mpi_));
     dh_  .push_back(Resonance::dHhatds(mass_[0].back(),width_[0].back(),mpi_,mpi_));
     h0_  .push_back(Resonance::H(ZERO,mass_[0].back(),width_[0].back(),
-				    mpi_,mpi_,dh_.back(),hres_.back()));
+				 mpi_,mpi_,dh_.back(),hres_.back()));
   }
   // omega masses and couplings
   gamB = std::tgamma(2.-betaOmega_);

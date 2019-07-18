@@ -32,7 +32,7 @@ OmegaPionSNDCurrent::OmegaPionSNDCurrent() {
   // coupling
   gRhoOmegaPi_   = 15.9/GeV;
   //fRho_        = 4.9583;
-  fRho_ = 5.06325//evaluated with alphaEM in considered energy range
+  fRho_ = 5.06325;//evaluated with alphaEM in considered energy range
 }
 
 IBPtr OmegaPionSNDCurrent::clone() const {
