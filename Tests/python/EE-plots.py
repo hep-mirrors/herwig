@@ -2767,190 +2767,77 @@ def writeMult(index) :
     mult.write("</body>\n</html>")
     mult.close()
 
-# output the identified particle plots
-def writeIdentified(index) :
-    ident=open(os.path.join(directory,"identified.html"),'w')
+def writeSpectrum(particles,index,ident) :
     latexNames = { "x"     : "Scaled Momentum/Energy",
                    "xi"    : "Log of Scaled Momentum/Energy",
                    "p"     : "Momentum/Energy",
                    "Ratio" : "Ratios of particle multiplicities",
                    "Other" : "Other distributions" }
+    for pdgId in particles:
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+            ident.write("</div>\n")
+            
+# output the identified particle plots
+def writeIdentified(index) :
+    ident=open(os.path.join(directory,"identified.html"),'w')
     # header for page
     ident.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Identified Particle Spectra"))
     # line for index
     index.write("<li> <a href=\"identified.html\">Identified Particle Spectra</a>\n")
     index.write("<ul>\n")
     # photons
-    # page
     ident.write("<h2 id=\"gamma\">Photons</h2>\n")
-    ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s\">%s</h3>\n" % (22,particleNames[22]))
-    # index
     index.write("<li> <a href=\"identified.html#gamma\">Photons:<a/>\n")
-    index.write(" <a href=\"identified.html#22\">%s,<a/>\n" % particleNames[22])
-    # plots
-    for val in ["x","p","xi"] :
-        if(len(analyses["IdentifiedParticle"][22][val])==0) : continue
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (22,val,latexNames[val]))
-        writePlots(analyses["IdentifiedParticle"][22][val],ident)
-    ident.write("</div>\n")
+    writeSpectrum([22],index,ident)
     ident.write("<h2 id=\"MESONS\">Mesons</h2>\n")
     # Light unflavoured mesons
-    # page
     ident.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_light\">Light unflavoured mesons:<a/>\n")
-    # loop over particles
-    for pdgId in mLight:
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(mLight,index,ident)
     # Strange mesons
-    # page
     ident.write("<h3 id=\"m_strange\">Strange</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_strange\">Strange mesons:<a/>\n")
-    # loop over particles
-    for pdgId in mStrange:
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
-    # charm meson
-    # page
+    writeSpectrum(mStrange,index,ident)
+    # charm mesons
     ident.write("<h3 id=\"m_charm\">Charm</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_charm\">Charm mesons:<a/>\n")
-    # loop over particles
-    for pdgId in mCharm :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(mCharm,index,ident)
     # charmonium
-    # page
     ident.write("<h3 id=\"m_charm\">Charmonium</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_charm\">Charmonium:<a/>\n")
-    # loop over particles
-    for pdgId in mccbar :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(mccbar,index,ident)
     # Baryons
     ident.write("<h2 id=\"BARYONS\">Baryons</h2>\n")
     # light baryons
     ident.write("<h3 id=\"b_light\">Light, Unflavoured</h3>\n")
     index.write("<li><a href=\"identified.html#b_light\">Light unflavoured baryons:<a/>\n")
-    # loop over particles
-    for pdgId in [2212,2224] :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(bLight,index,ident)
     # hyperons
     ident.write("<h3 id=\"b_strange\">Hyperons</h3>\n")
     index.write("<li><a href=\"identified.html#b_strange\">Hyperons:<a/>\n")
-    # loop over particles
-    for pdgId in [3122,3222,3212,3112,3224,"3224B",3114,3312,3322,3314,3324,3334,3124] :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(bStrange,index,ident)
     # charm baryons
     ident.write("<h3 id=\"b_charm\">Charm Baryons</h3>\n")
     index.write("<li><a href=\"identified.html#b_charm\">Charm baryons:<a/>\n")
     # loop over particles
-    for pdgId in bCharm :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(bCharm,index,ident)
      # other
     ident.write("<h3 id=\"other\">Other</h3>\n")
     index.write("<li><a href=\"identified.html#other\">Other:<a/>\n")
     # loop over particles
-    for pdgId in ["321/2212"] :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
-
-
-            
+    writeSpectrum(["321/2212"],index,ident)
     # bottom fragmentation
     ident.write("<h2 id=\"b_frag\">Bottom Fragmentation Function</h2>\n")
     index.write("<li><a href=\"identified.html#b_frag\">Bottom Fragmentation Function:<a/>\n")
