@@ -427,8 +427,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
         hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238") or
-        hpath.find("1459051")>0 or
-        hpath.find("1634970")>0) :
+        hpath.find("1459051")>0 or hpath.find("1634970")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)

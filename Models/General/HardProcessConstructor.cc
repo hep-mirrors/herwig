@@ -636,7 +636,8 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	// 33bar final state due to the way the vertex rules are defined.
 	int prefact(1);
 	if( ((pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) ||
-	     (pc->iSpin() == PDT::Spin0     && pd->iSpin() == PDT::Spin0    )) &&
+	     (pc->iSpin() == PDT::Spin0     && pd->iSpin() == PDT::Spin0    ) ||
+	     (pc->iSpin() == PDT::Spin1     && pd->iSpin() == PDT::Spin1    )) &&
 	    (outa        == PDT::Colour3   && outb        == PDT::Colour3bar) )
 	  prefact = -1;
 	if(incol && outcol) {

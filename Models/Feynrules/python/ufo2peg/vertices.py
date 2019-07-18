@@ -234,6 +234,12 @@ def colorfactor(vertex,L,pos,lorentztag):
             if match(label): return ("SU3TTFUNDD",('-complex(0.,1.)',))
             label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),)
             if match(label): return ("SU3TTFUNDD",('-complex(0.,1.)',))
+        elif(vertex.lorentz[0].spins.count(3)==4) :
+            label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),
+                     'T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
+                     'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
+            if match(label): return ("SU3TTFUNDS",(('-complex(0.,1.)','complex(0.,1.)'),'1.','1.'))
+            
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
         subs = {
@@ -466,7 +472,7 @@ Herwig may not give correct results, though.
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
             couplingptrs[2] += ' p3'
-        elif (lorentztag == 'VVVV' and qcd < 2) or\
+        elif (lorentztag == 'VVVV' and (qcd < 2 or append)) or\
              (lorentztag == "SSSS" and prepend ):
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
@@ -627,8 +633,6 @@ Herwig may not give correct results, though.
                                                                           all_couplings[color_idx],append,corder["QCD"],order)
                     else:
                         raise SkipThisVertex()
-            # set the coupling ptrs in the setCoupling call
-            couplingptrs = self.setCouplingPtrs(lorentztag,corder["QCD"],append != '',prepend != '')
             # final processing of the couplings
             symbols = set()
             if(lorentztag in ['FFS','FFV']) :
@@ -650,6 +654,9 @@ Herwig may not give correct results, though.
                                             processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
             else :
                 SkipThisVertex()
+            # set the coupling ptrs in the setCoupling call
+            couplingptrs = self.setCouplingPtrs(lorentztag.replace("General",""),
+                                                                   corder["QCD"],append != '',prepend != '')
             ### do we need left/right?
             if 'FF' in lorentztag and lorentztag != "FFT":
                 #leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
