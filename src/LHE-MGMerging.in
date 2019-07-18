@@ -3,7 +3,7 @@
 # For FxFx merging with MadGraph5/aMC@NLO
 # usage: Herwig read FxFx.in
 ##################################################
-#read snippets/PPCollider.in
+read snippets/SoftModel.in
 ##################################################
 # Technical parameters for this run
 ##################################################
@@ -21,7 +21,7 @@ create Herwig::FxFxEventHandler LesHouchesHandler
 
 # set the various step handlers
 set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
-set LesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
+set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 
 # set the weight option (for MC@NLO)
