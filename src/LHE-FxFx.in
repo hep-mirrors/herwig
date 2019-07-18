@@ -21,7 +21,7 @@ create Herwig::FxFxEventHandler LesHouchesHandler
 
 # set the various step handlers
 set LesHouchesHandler:PartonExtractor /Herwig/Partons/PPExtractor
-set LesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
+set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
 
 # set the weight option (for MC@NLO)
