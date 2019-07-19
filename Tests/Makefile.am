@@ -213,15 +213,8 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,2
 	python/merge-EE --with-gg EE
 	python/merge-EE Powheg-EE
 	rivet-mkhtml -o Rivet-EE EE.yoda:Hw Powheg-EE.yoda:Hw-Powheg
+	python/plot-EE Rivet-EE
 	touch $@
-
-
-# Rivet-BFactory/done: 
-# 	rm -rf Rivet-BFactory
-# 	python/merge-BFactory BFactory
-# 	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw
-# 	touch $@
-
 
 Rivet-LowEnergy-%.yoda:
 	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
