@@ -1153,15 +1153,16 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   double param = (1./(valOfN_-1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
-       // physical to use different x's
+       // TODO: physical to use different x's (see comment below)
        x1 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
-       x2 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
-
-  }while(x1 < 0 || x1>=1.0);
+      // x2 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
+  }while(x1 < 0 || x1>=1.0); // x2 < 0 || x2>=1.0);
 
   // Remnants 1 and 2 need to be rescaled later by this amount
   Lorentz5Momentum ig1 = x1*r1;
-  Lorentz5Momentum ig2 = x2*r2;
+  Lorentz5Momentum ig2 = x1*r2;  //TODO: x2*r2
+                                 // requires boost of Ladder in x1/x2-dependent
+                                 // frame.
 
   // The available energy that is used to generate the ladder
   // sumMomenta is the the sum of rest masses of the ladder partons
