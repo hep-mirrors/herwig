@@ -20,25 +20,34 @@ using namespace Herwig;
 HERWIG_INTERPOLATOR_CLASSDESC(TwoKaonCzyzCurrent,double,Energy2)
 
 TwoKaonCzyzCurrent::TwoKaonCzyzCurrent()
-: betaRho_(2.21), betaOmega_(2.75), betaPhi_(1.91),
-  nMax_(1000), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
+// various parameters from 1002.0279, Fit 2 commented out                                                                                         
+// substituted by own fit like Fit 2 but with new data + phi mass and width kept fixed
+//: betaRho_(2.21), betaOmega_(2.75), betaPhi_(1.91),
+//  nMax_(1000), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
+: betaRho_(2.20), betaOmega_(2.52), betaPhi_(1.96),
+  nMax_(200), etaPhi_(1.03), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
   using Constants::pi;
-  // various parameters
-  // rho parameters
-  rhoMag_    = {1.120, 0.107, 0.028,0.032};
-  rhoPhase_  = {0    ,    pi,    pi,    0};
-  rhoMasses_ = {775.49*MeV,1465*MeV,1720*MeV};
-  rhoWidths_ = {149.4 *MeV,400 *MeV, 250*MeV};
+  // rho parameter
+  //rhoMag_    = {1.120, 0.107, 0.028,0.032};
+  //rhoPhase_  = {0    ,    pi,    pi,    0};
+  rhoMag_    = {1.120, 0.101, 0.0347,0.0803};//,0.0692,0.15488};
+  rhoPhase_  = {0    ,    pi,    pi,    0.};//, pi,0.};
+  rhoMasses_ = {775.49*MeV,1465.*MeV,1720.*MeV};//,2150*MeV};
+  rhoWidths_ = {149.4 *MeV,400. *MeV, 250.*MeV};//,150*MeV};
   // omega parameters
-  omegaMag_    = {1.37, 0.173, 0.621,0.43};
-  omegaPhase_  = {0   ,    pi,    pi,   0};
-  omegaMasses_ = {782.65*MeV,1425*MeV,1670*MeV};
-  omegaWidths_ = {8.49  *MeV, 215*MeV, 315*MeV};
+  //omegaMag_    = {1.37, 0.173, 0.621,0.43};
+  //omegaPhase_  = {0   ,    pi,    pi,   0};
+  omegaMag_    = {1.28, 0.0267, 0.742,0.908};//,1.4831};
+  omegaPhase_  = {0   ,    0,    pi,   0};//,pi};
+  omegaMasses_ = {782.65*MeV,1425.*MeV,1670.*MeV};
+  omegaWidths_ = {8.49  *MeV, 215.*MeV, 315.*MeV};
   // phi parameters
-  phiMag_    = {0.947,0.0136,0.0214};
-  phiPhase_  = {0.   ,0.    ,0.    };
-  phiMasses_ = {1019.415*MeV,1680*MeV};
-  phiWidths_ = {4.22    *MeV, 150*MeV};
+  //phiMag_    = {0.947,0.0136,0.0214};
+  //phiPhase_  = {0.   ,0.    ,0.    };
+  phiMag_    = {0.976,0.0138,0.00223};//,0.0842,0.079138};
+  phiPhase_  = {0.   ,0.    ,0.};//   ,0. ,0.};
+  phiMasses_ = {1019.415*MeV,1680.*MeV};//,2183*MeV};
+  phiWidths_ = {4.22    *MeV, 150.*MeV};//,88*MeV};
   // set up for the modes in the base class
   addDecayMode(2,-1);
   addDecayMode(1,-1);
