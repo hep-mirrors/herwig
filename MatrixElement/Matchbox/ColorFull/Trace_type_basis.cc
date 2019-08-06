@@ -22,7 +22,7 @@ Poly_vec Trace_type_basis::decompose( const Col_amp & Ca ) {
 	// To contain the decomposed vector
 	Poly_vec Decv;
 	Polynomial Zero;
-	Zero=Zero*0;
+	Zero*=0;
 	if(cb.size()==0){
 		std::cerr << "Trace_type_basis::decompose: The basis vector cb is empty consider using create_basis or read in basis." << std::endl;
 		assert( 0 );
@@ -43,7 +43,7 @@ Poly_vec Trace_type_basis::decompose( const Col_amp & Ca ) {
 
 	// Initially set all components of the vectors to 0
 	for (uint m2 = 0; m2 < cb.size(); m2++){
-		Decv.push_back(Zero);
+		Decv.append(Zero);
 	}
 
 	// Loop over Cs in Ca and check which basis vector they equal
@@ -56,7 +56,7 @@ Poly_vec Trace_type_basis::decompose( const Col_amp & Ca ) {
 			// is equal to the Col_str in the Ca.
 			if (Ca_copy.ca.at(m1).cs == cb.at(m2).at(0).cs) {
 				found=true;
-				Decv.at(m2)=Decv.at(m2)+Ca_copy.ca.at(m1).Poly;
+				Decv.at(m2) += Ca_copy.ca.at(m1).Poly;
 				Decv.at(m2).simplify();
 			}
 
@@ -175,7 +175,7 @@ int Trace_type_basis::new_vector_number( int old_num, std::pair<int,int> place, 
 
 	std::cout.flush();
 	if( !( nq==0 or nq==1 or nq==2 ) ){
-		std::cerr << "Trace_type_basis::new_vector_number: Function only intended for special case of 1 quark line or 2 open quark lines." << std::endl;
+		std::cerr << "Trace_type_basis::new_vector_number: Function only intended for special case of 1 or 2 open quark-lines." << std::endl;
 		std::cerr.flush();
 		assert( 0 );
 	}

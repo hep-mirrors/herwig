@@ -25,7 +25,9 @@
 using namespace Herwig;
 
 IILightKinematics::IILightKinematics() 
-  : DipoleSplittingKinematics(), theCollinearScheme(true), didCollinear(false) {}
+  : DipoleSplittingKinematics(), theCollinearScheme(true), didCollinear(false),
+    theTransformationCalculated(false) {}
+//theTransformHardOnly(false) {}
 
 IILightKinematics::~IILightKinematics() {}
 
@@ -72,7 +74,6 @@ pair<double,double> IILightKinematics::zBoundaries(Energy pt,
     dInfo.emitterX()*dInfo.spectatorX() :
     dInfo.emitterX();
 
-
   Energy hard=dInfo.hardPt();
   if(openZBoundaries()==1)hard=(1.-x) *dInfo.scale()/(2.*sqrt(x));
   if(openZBoundaries()==2)hard=min(dInfo.scale(),(1.-x) *dInfo.scale()/(2.*sqrt(x)));
@@ -80,7 +81,6 @@ pair<double,double> IILightKinematics::zBoundaries(Energy pt,
 
   double s = sqrt(1.-sqr(pt/hard));
 
-            
   return {0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s)};
 }
 
@@ -117,7 +117,6 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
 		    info,split,weight);
     }
   }
-
   if ( info.index().emitterData()->id() != ParticleID::g ) {
     if ( info.emitterData()->id() != ParticleID::g ) {
       z = generateZ(xi,pt,OneOverOneMinusZ,
@@ -134,7 +133,6 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
   }
 
   double ratio = sqr(pt/info.scale());
-
   double x = z*(1.-z)/(1.-z+ratio);
   double v = ratio*z /(1.-z+ratio);
 
@@ -142,11 +140,11 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
     jacobian(0.0);
     return false;
   }
-
+  
   if ( !theCollinearScheme &&
        (1.-v-x)/(v+x) < 1. ) {
     if ( (x+v) < info.emitterX() ||
-	 x/(x+v) < info.spectatorX() ) {
+         x/(x+v) < info.spectatorX() ) {
       jacobian(0.0);
       return false;
     }
@@ -156,7 +154,7 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
       return false;
     }
   }
-
+  
   double phi = 2.*Constants::pi*rphi;
 
   jacobian(weight*(1./z));
@@ -185,16 +183,16 @@ void IILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,
 					   const DipoleSplittingInfo& dInfo) {
 
-  Energy pt = dInfo.lastPt();
+  Energy pt = dInfo.lastPt(); 
   double z = dInfo.lastZ();
 
   double ratio = sqr(pt)/(2.*pEmitter*pSpectator);
 
   double x = z*(1.-z)/(1.-z+ratio);
   double v = ratio*z /(1.-z+ratio);
-
+    
   Lorentz5Momentum kt =
-    getKt (pEmitter, pSpectator, pt, dInfo.lastPhi());
+    getKt(pEmitter, pSpectator, pt, dInfo.lastPhi());
 
   // Initialise the momenta
   Lorentz5Momentum em;
@@ -223,14 +221,16 @@ void IILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
     
     Ktilde = pEmitter + pSpectator;
     KplusKtilde = K + Ktilde;
-    
     KplusKtilde2 = KplusKtilde.m2();
 
     didCollinear = true;
 
+    // Set indicator that the transformation,
+    // required for spin correlations, hasn't
+    // been calculated.
+    theTransformationCalculated = false;
   }
-
-  
+ 
   em.setMass(ZERO);
   em.rescaleEnergy();
   
@@ -246,15 +246,65 @@ void IILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   
 }
 
+void IILightKinematics::setTransformation () {
+  
+    // Construct transformation for spin correlations
+    // Clear the rotation
+    theRecoilTransformation = LorentzRotation();
+  
+    // Construct boost part
+    Energy KplusKtildeT = KplusKtilde.t();
+    Energy KT = K.t();
+  
+    double tt = 1. - 2.*sqr(KplusKtildeT)/KplusKtilde2            + 2.*KT*Ktilde.t()/K2;
+    double tx =      2.*KplusKtildeT*KplusKtilde.x()/KplusKtilde2 - 2.*KT*Ktilde.x()/K2;
+    double ty =      2.*KplusKtildeT*KplusKtilde.y()/KplusKtilde2 - 2.*KT*Ktilde.y()/K2;  
+    double tz =      2.*KplusKtildeT*KplusKtilde.z()/KplusKtilde2 - 2.*KT*Ktilde.z()/K2;
+    
+    theRecoilTransformation.boost(tx/tt, ty/tt, tz/tt, tt);
+    
+    // Rotate KtildeSpinCorrTrans to z-axis
+    Lorentz5Momentum KtildeSpinCorrTrans = theRecoilTransformation*Lorentz5Momentum(Ktilde);
+    Axis axis(KtildeSpinCorrTrans.vect().unit());
+    if( axis.perp2() > 1e-12 ) {
+      double sinth(sqrt(1.-sqr(axis.z())));
+      theRecoilTransformation.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+    else if( axis.z() < 0. ) {
+      theRecoilTransformation.rotate(Constants::pi,Axis(1.,0.,0.));
+    }
+    
+    // Rotate from z-axis to K
+    Axis axis2(K.vect().unit());
+    if( axis2.perp2() > 1e-12 ) {
+      double sinth(sqrt(1.-sqr(axis2.z())));
+      theRecoilTransformation.rotate(acos(axis2.z()),Axis(-axis2.y()/sinth,axis2.x()/sinth,0.));
+    }
+    else if( axis2.z() < 0. ) {
+      theRecoilTransformation.rotate(Constants::pi,Axis(1.,0.,0.));
+    }
+  
+    // SW 30/01/2019: Test feature only, not for release.
+    // Required for absorbing recoil in hard particles only
+    //splitRecoilMomentum(K);
+
+    // Set indicator that the transformation,
+    // has been calculated
+    theTransformationCalculated = true;
+  }
+
+
 // If needed, insert default implementations of function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void IILightKinematics::persistentOutput(PersistentOStream &) const {
+  //os << theTransformHardOnly;
   //os << theCollinearScheme;
 }
 
 void IILightKinematics::persistentInput(PersistentIStream &, int) {
+  //is >> theTransformHardOnly;
   //is >> theCollinearScheme;
 }
 
@@ -267,6 +317,24 @@ void IILightKinematics::Init() {
     ("IILightKinematics implements massless splittings "
      "off an initial-initial dipole.");
 
+  /*
+  static Switch<IILightKinematics,bool> interfaceTransformHardOnly
+    ("TransformHardOnly",
+     "[Dev only] Apply recoil transformation to colourless particles only.",
+     &IILightKinematics::theTransformHardOnly, false, false, false);
+  static SwitchOption interfaceTransformHardOnlyYes
+    (interfaceTransformHardOnly,
+     "Yes",
+     "Transform only colourless particles.",
+     true);
+  static SwitchOption interfaceTransformHardOnlyNo
+    (interfaceTransformHardOnly,
+     "No",
+     "Transform all particles.",
+     false);
+
+  interfaceTransformHardOnly.rank(-1);
+  */
   /*
   static Switch<IILightKinematics,bool> interfaceCollinearScheme
     ("CollinearScheme",

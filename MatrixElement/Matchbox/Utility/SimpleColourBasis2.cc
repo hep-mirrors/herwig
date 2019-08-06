@@ -1366,7 +1366,21 @@ double SimpleColourBasis2::scalarProduct(size_t a, size_t b,
 double SimpleColourBasis2::tMatrixElement(size_t i, size_t a, 
 					 size_t b,
 					 const vector<PDT::Colour>&,
-					 const vector<PDT::Colour>& basis) const {
+					 const vector<PDT::Colour>& basis,
+					 size_t k, size_t l,
+					 const map<size_t,size_t>& dict) const {
+  // Check indices k and l
+  assert( k == i );
+  assert( l == basis.size() );
+  // Check that dict is the standardMap
+  assert( dict.size()+1 == basis.size() );
+  map<size_t,size_t>::const_iterator tmp;
+  for ( size_t ii = 0; ii < basis.size(); ii++ )
+    if ( ii != i ) {
+      tmp = dict.find(ii);
+      assert( tmp != dict.end() ); 
+      assert( tmp->second == ii );
+    }
 
   if ( id33bar.empty() )
     makeIds();

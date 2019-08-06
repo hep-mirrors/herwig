@@ -28,16 +28,10 @@ public:
 		initialize();
 	}
 
-	/// Constructor for creating a tree level gluon basis for n_g gluons.
+	/// Constructor for creating a tree level gluon basis with n_g gluons.
 	Tree_level_gluon_basis( int n_g ):Trace_type_basis(){
 		initialize();
 		create_basis( n_g );
-	}
-
-	/// Little helper function, called by constructors.
-	void initialize(){
-		tree_level_gluon_basis = true;
-		max_ql=1;
 	}
 
 	/******************** Basis creation **********************/
@@ -61,7 +55,7 @@ public:
 	/// Function reading in the basis from default name
 	/// (see basis_file_name in the Col_basis class).
 	/// The full basis, including the charge conjugated
-	/// part is written out. (This is to simplify
+	/// part should be contained in the file. (This is to simplify
 	/// comparison with other programs, such as ColorMath.)
 	void read_in_Col_basis( );
 
@@ -79,15 +73,21 @@ public:
 	/// comparison with other programs, such as ColorMath.)
 	void write_out_Col_basis( std::string filename ) const;
 
-	/// Function for writing out the basis to cout.
-	/// As the charge conjugated quark_line is implicit,
-	/// a special function is needed for the Tree_level_gluon_basis case.
-	void write_out_Col_basis_to_cout() const;
 
 protected:
 
+	/// Function for writing out the basis in a human readable
+	/// format to an ostream.
+	virtual std::ostream&  write_out_Col_basis_to_stream( std::ostream&  out ) const;
+
 
 private:
+
+	/// Little helper function, called by constructors.
+	void initialize(){
+		tree_level_gluon_basis = true;
+		max_ql=1;
+	}
 
 	/// Calculate element ij in scalar product matrix
 	/// using the implicit presence of a charge conjugated Col_str.
@@ -108,7 +108,7 @@ private:
 	/// Col_amp, and this is the case for Old_basis).
 	/// g_new is the number of the new gluon.
 	/// Used by create_basis.
-	Col_amp add_one_gluon( const Col_amp & Old_basis, int n_g, int g_new ) const;
+	Col_amp add_one_gluon( const Col_amp & Old_basis, int g_new ) const;
 
 };
 

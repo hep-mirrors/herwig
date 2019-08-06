@@ -193,6 +193,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Dipole/Kinematics/Makefile
 		Shower/Dipole/Utility/Makefile
 		Shower/Dipole/AlphaS/Makefile
+		Shower/Dipole/SpinCorrelations/Makefile
 		Utilities/Makefile
 		Utilities/XML/Makefile
 		Utilities/Statistics/Makefile

@@ -85,7 +85,7 @@ Col_amp Trace_basis::create_trace_basis( int n_quark, int n_g, int n_loop ) cons
 	// otherwise from 2*n_quark+1;
 	for( int g_new=std::max(3, 2*n_quark+1); g_new <= 2*n_quark+ n_g; g_new++){
 		// If only gluons start from the 2-gluon state, so add gluon 3
-		Basis=add_one_gluon(Basis, n_quark ,n_g, g_new, n_loop);
+		Basis=add_one_gluon(Basis, n_quark, g_new, n_loop);
 		}
 
 	// Remove basis vectors with too many Quark_lines
@@ -109,7 +109,7 @@ Col_amp Trace_basis::connect_quarks( int n_quark ) const{
 	// If n_quark=1, there is only one state
 	if( n_quark==1 )	{
 		Col_str Cs_tmp("[{1,2}]");
-		Basis=Basis+Cs_tmp;
+		Basis+=Cs_tmp;
 	}
 	else{ // For more than one q qbar pair, build up states iteratively
 		// Start from the state with one less q qbar state
@@ -127,7 +127,7 @@ Col_amp Trace_basis::connect_quarks( int n_quark ) const{
 			Col_str New_state;
 			New_state.cs.push_back(Ql_new);
 			New_state.append( Old_bas.ca.at(old_v).cs );
-			Basis=Basis+New_state;
+			Basis+= New_state;
 		}
 
 		// The other (n_quark-1)*(n_quark-1)! states are obtained by combining the new qbar with any old quark
@@ -151,7 +151,7 @@ Col_amp Trace_basis::connect_quarks( int n_quark ) const{
 				New_state.cs.push_back(Ql_new);
 
 				// Add the new basis tensor to the basis
-				Basis = Basis + New_state;
+				Basis += New_state;
 			}
 		}
 	}
@@ -160,7 +160,9 @@ Col_amp Trace_basis::connect_quarks( int n_quark ) const{
 }
 
 
-Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new, int ) const {
+Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new ) const {
+
+	//(void) n_loop;
 
 	// For storing the new basis
 	Col_amp New_tensors;
@@ -186,7 +188,7 @@ Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new, int ) const {
 
 			// Replace the old Col_str with the new and add to the new basis states
 			New_tensor.cs.at(ql) = New_Ql;
-			New_tensors = New_tensors + New_tensor;
+			New_tensors += New_tensor;
 		}
 
 	}
@@ -194,14 +196,14 @@ Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new, int ) const {
 }
 
 
-Col_amp Trace_basis::add_one_gluon(const Col_amp & Old_basis, int n_q, int, int g_new, int n_loop) const{
+Col_amp Trace_basis::add_one_gluon(const Col_amp & Old_basis, int n_q, int g_new, int n_loop) const{
 
 	// For storing the new basis
 	Col_amp New_bas;
 
 	// Add the new gluon to each of the previous color tensors
 	for (uint t = 0; t < Old_basis.ca.size(); t++) {
-		New_bas = New_bas + add_one_gluon(Old_basis.ca.at(t), g_new, n_loop);
+		New_bas = New_bas + add_one_gluon(Old_basis.ca.at(t), g_new);
 	}
 
 	// Create new states with 2-rings formed from taking the new gluon and any old gluon
@@ -241,7 +243,7 @@ Col_amp Trace_basis::add_one_gluon(const Col_amp & Old_basis, int n_q, int, int 
 						}
 				}
 				Cs_new.cs.push_back(Ql2_ring);
-				New_bas = New_bas + Cs_new;
+				New_bas += Cs_new;
 			}
 		}
 	}

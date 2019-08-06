@@ -290,6 +290,9 @@ void ConstituentReshuffler::reshuffle(PList& out,
     for (PList::iterator p = out.begin();
 	 p != out.end(); ++p) {
 
+      // Flag to update spinInfo
+      bool updateSpin = false;
+
       PPtr rp = new_ptr(Particle((**p).dataPtr()));
 
       DipolePartonSplitter::change(*p,rp,false);
@@ -309,6 +312,8 @@ void ConstituentReshuffler::reshuffle(PList& out,
       // Otherwise the parton is a recoiler 
       // and its invariant mass must be preserved
       else {
+        if ( (*p)-> spinInfo() )
+          updateSpin = true;
 	rm = Lorentz5Momentum (xi*(**p).momentum().x(),
 			       xi*(**p).momentum().y(),
 			       xi*(**p).momentum().z(),
@@ -326,6 +331,10 @@ void ConstituentReshuffler::reshuffle(PList& out,
 
       rp->set5Momentum(rm);
 
+      // Update SpinInfo if required
+      if ( updateSpin )
+        updateSpinInfo(*p, rp);
+      
       intermediates.push_back(*p);
       reshuffled.push_back(rp);
       
@@ -407,7 +416,8 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
   // If there is only one parton, attempt to reshuffle with 
   // the incoming to be consistent with the reshuffle for a
   // hard process with no decays.
-  else if ( partons.size() == 1 && ( DipolePartonSplitter::colourConnected(partons.front(),eventIncoming.first) || 
+  else if ( partons.size() == 1 &&
+            ( DipolePartonSplitter::colourConnected(partons.front(),eventIncoming.first) || 
 				     DipolePartonSplitter::colourConnected(partons.front(),eventIncoming.second) ) ) {
       
     // Erase the parton from the event outgoing
@@ -427,7 +437,7 @@ void ConstituentReshuffler::hardProcDecayReshuffle(PList& decaying,
     PList out;
     // Make an empty list for storing the new intermediates
     PList intermediates;
-    // Empty in particles pair
+    // Empty incoming particles pair
     PPair in;
 
     // A single parton which cannot be reshuffled 
@@ -512,15 +522,15 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
     // constituent mass shell. This is because reshuffling between 2 partons
     // frequently leads to a redoShower exception. This treatment is
     // consistent with the AO shower
+
+      // Populate the out for the reshuffling
+      out.insert(out.end(),partons.begin(),partons.end());
+      out.insert(out.end(),recoilers.begin(),recoilers.end());
+      assert( out.size() > 1 );
     
-    // Populate the out for the reshuffling
-    out.insert(out.end(),partons.begin(),partons.end());
-    out.insert(out.end(),recoilers.begin(),recoilers.end());
-    assert( out.size() > 1 );
-    
-    // Perform the reshuffle with the temporary particle lists
-    reshuffle(out, in, intermediates, true, partons, recoilers);    
-    
+      // Perform the reshuffle with the temporary particle lists
+      reshuffle(out, in, intermediates, true, partons, recoilers);    
+
     // Update the dipole event record and the decay process
     updateEvent(intermediates, eventIntermediates, out, eventOutgoing, eventHard, decayProc );
     return;
@@ -576,6 +586,53 @@ void ConstituentReshuffler::updateEvent( PList& intermediates,
       decayOutIt->first = reshuffled;
     }
   }  
+}
+ 
+void ConstituentReshuffler::updateSpinInfo( PPtr& oldPart,
+                                            PPtr& newPart ) {
+
+  const Lorentz5Momentum& oldMom = oldPart->momentum();
+  const Lorentz5Momentum& newMom = newPart->momentum();
+
+  // Rotation from old momentum to +ve z-axis
+  LorentzRotation oldToZAxis;
+  Axis axisOld(oldMom.vect().unit());
+  if( axisOld.perp2() > 1e-12 ) {
+    double sinth(sqrt(1.-sqr(axisOld.z())));
+    oldToZAxis.rotate( -acos(axisOld.z()),Axis(-axisOld.y()/sinth,axisOld.x()/sinth,0.));
+  }
+
+  // Rotation from new momentum to +ve z-axis
+  LorentzRotation newToZAxis;
+  Axis axisNew(newMom.vect().unit());
+  if( axisNew.perp2() > 1e-12 ) {
+    double sinth(sqrt(1.-sqr(axisNew.z())));
+    newToZAxis.rotate( -acos(axisNew.z()),Axis(-axisNew.y()/sinth,axisNew.x()/sinth,0.));
+  }
+
+  // Boost from old momentum to new momentum along z-axis
+  Lorentz5Momentum momOldRotated = oldToZAxis*Lorentz5Momentum(oldMom);
+  Lorentz5Momentum momNewRotated = newToZAxis*Lorentz5Momentum(newMom);
+  
+  Energy2 a = sqr(momOldRotated.z()) + sqr(momNewRotated.t());
+  Energy2 b = 2.*momOldRotated.t()*momOldRotated.z();
+  Energy2 c = sqr(momOldRotated.t()) - sqr(momNewRotated.t());
+  double beta;
+  
+  // The rotated momentum should always lie along the +ve z-axis
+  if ( momOldRotated.z() > ZERO )
+    beta = (-b + sqrt(sqr(b)-4.*a*c)) / 2. / a;
+  else
+    beta = (-b - sqrt(sqr(b)-4.*a*c)) / 2. / a;
+  
+  LorentzRotation boostOldToNew(0., 0., beta);
+
+  // Total transform
+  LorentzRotation transform = (newToZAxis.inverse())*boostOldToNew*oldToZAxis;
+
+  // Assign the same spin info to the old and new particles
+  newPart->spinInfo(oldPart->spinInfo());
+  newPart->spinInfo()->transform(oldMom, transform);
 }
 
 // If needed, insert default implementations of virtual function defined

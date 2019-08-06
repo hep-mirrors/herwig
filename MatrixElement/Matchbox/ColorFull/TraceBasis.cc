@@ -24,7 +24,7 @@
 
 using namespace ColorFull;
 
-TraceBasis::TraceBasis() {}
+TraceBasis::TraceBasis() { }
 
 TraceBasis::~TraceBasis() {}
 
@@ -118,6 +118,7 @@ double TraceBasis::scalarProduct(size_t i, size_t j,
   Col_str csi = Basis.cb.at(i).at(0);
   Col_str csj = Basis.cb.at(j).at(0);
 
+
   // Rename indices, and make string of new Col_strs, to use in map
   //pair<Col_str, Col_str> Css_new = Basis.rename_indices(csi,csj);
   Basis.rename_indices(csi,csj);
@@ -142,35 +143,171 @@ double TraceBasis::scalarProduct(size_t i, size_t j,
 
 }
 
+
+// m is emitting parton
+// i is new vector number in new large aBasis
+// j is old vector number in old small bBasis
+// k is the new number of the emitter
+// l is the number of the new gluon
+// dict contains the map from old to new numbers of the partons not participating
 double TraceBasis::tMatrixElement(size_t m, size_t i, size_t j,
-				  const vector<PDT::Colour>& aBasis,
-				  const vector<PDT::Colour>& bBasis) const {
+		const vector<PDT::Colour>& aBasis,
+		const vector<PDT::Colour>& bBasis,
+		size_t k, size_t l,
+		const map<size_t,size_t>& dict) const {
 
-  ++m;
+  // Call sMatrixElement if it's a gluon splitting
+  if ( bBasis[m] == PDT::Colour8 && aBasis[k] != PDT::Colour8 ) 
+    return sMatrixElement(m,i,j,aBasis,bBasis,k,l,dict);
 
-  map<vector<PDT::Colour>,Trace_basis>::iterator ait =
-    theBasisMap.find(aBasis);
+	assert( dict.size()+1 == bBasis.size() );
+
+	map<vector<PDT::Colour>,Trace_basis>::const_iterator ait =
+			theBasisMap.find(aBasis);
+	map<vector<PDT::Colour>,Trace_basis>::const_iterator bit =
+			theBasisMap.find(bBasis);
+
+	assert(bit != theBasisMap.end());
+	assert(ait != theBasisMap.end());
 
 
-  map<vector<PDT::Colour>,Trace_basis>::const_iterator bit =
-    theBasisMap.find(bBasis);
-
-  assert(bit != theBasisMap.end());
-  assert(ait != theBasisMap.end());
+	const Trace_basis& ABasis = ait->second;
+	const Trace_basis& BBasis = bit->second;
 
 
-  Trace_basis& ABasis = ait->second;
-  const Trace_basis& BBasis = bit->second;
+	// Initial Col_amp, before emission
+	Col_amp Ca1 = BBasis.at(j);
 
-  pair<int,int> newNumbers = ABasis.new_vector_numbers(BBasis.cb.at(j).at(0),m);
+	int g_new, p_old;
+	p_old = m+1;// ColorFull starts with parton number 1 (normally q or g)
+	int g_old = aBasis.size();//Give the new g an index that isn't used 
 
-  if ( (size_t) newNumbers.first == i )
-    return 1.;
+	// If the emitted parton is not a gluon, this is because
+	// we have backward evolution with a qqbar-> g
+	if( aBasis[l] != PDT::Colour::Colour8 ){
+		// The number of the new gluon is k+1
+		g_new = k+1;
+	} else{ // Standard case, l (+1) is the number of the new gluon
+		g_new = l+1;
+	}
 
-  if ( (size_t) newNumbers.second == i )
-    return -1.;
+	// Color structure after gluon split
+	Col_amp Ca2 = colorFunctions.emit_gluon( Ca1, p_old, g_old);
 
-  return 0.;
+	// The map should be the dict (containing the map of old non-involved partons)
+	// + g_new mapped to itself and p_old mapped
+	std::map<int, int> map;
+	for ( size_t ii = 0; ii < bBasis.size(); ii++ ){
+		if ( ii  != m ) {// exclude splitting gluon
+			int parton = static_cast<int>( dict.at(ii) );
+			map[ii+1] = parton+1;// Parton numbers one unit higher in ColorFull
+		}
+	}
+	// New parton number mapping
+	map[ g_old ] = g_new;
+	// Old emitter should also be mapped
+	if( aBasis[l] != PDT::Colour::Colour8 ){// Exceptional case
+		map[ p_old ] = l+1;
+	}
+	else{ // Standard case
+		map[ p_old ] = k+1;
+	}
+	// Check the size of the map
+	assert( map.size() == aBasis.size() );
+
+	// Color structure when partons have names in map
+	Col_amp Ca3= colorFunctions.rename_partons( Ca2, map );
+
+	// Check if the new color structure has a component for basis vector i in ABasis
+	// Loop over Col_strs in Col_amp after split
+	for ( uint Csi=0; Csi < Ca3.size(); Csi++ ){
+		if( Ca3.at(Csi).cs == ABasis.at(i).at(0).cs ){// If col_strs are the same
+			return colorFunctions.double_num( Ca3.at(Csi).Poly ); // Return Polynomial coefficient in front of Col_str
+		};
+	}
+
+	// If no component corresponding to vector i is found
+	return 0.;
+
+}
+
+// m is splitting gluon
+// i is new vector number new large aBasis
+// j is old vector number in old small bBasis
+// k is the number of the new emitter after (q or qbar)
+// l is the number of the "emission" (q or qbar)
+// dict contains the map from old to new numbers of the partons not participating
+double TraceBasis::sMatrixElement(size_t m, size_t i, size_t j,
+		const vector<PDT::Colour>& aBasis,
+		const vector<PDT::Colour>& bBasis,
+		size_t k, size_t l,
+		const map<size_t,size_t>& dict) const {
+
+	// Check that dict has the right size (splitting gluon missing, hence +1)
+	assert( dict.size()+1 == bBasis.size() );
+
+	map<vector<PDT::Colour>,Trace_basis>::iterator ait =
+			theBasisMap.find(aBasis);
+	map<vector<PDT::Colour>,Trace_basis>::const_iterator bit =
+			theBasisMap.find(bBasis);
+
+	assert(bit != theBasisMap.end());
+	assert(ait != theBasisMap.end());
+
+
+	Trace_basis& ABasis = ait->second; // New basis
+	const Trace_basis& BBasis = bit->second; // Old basis
+
+
+	// Initial Col_amp, before split
+	Col_amp Ca1 = BBasis.at(j);
+
+
+	int g_old = m+1;// ColorFull starts with parton number 1 (normally q or g)
+	int q_old, q_new, qbar_old, qbar_new;
+	q_old = aBasis.size();// Give the q an index that isn't used
+	qbar_old = aBasis.size()+1;// Give the qbar an index that isn't used
+	if ( aBasis[k] == PDT::Colour::Colour3 && aBasis[l] == PDT::Colour::Colour3bar ) {
+	  q_new = k+1;
+	  qbar_new = l+1;
+	} else if ( aBasis[l] == PDT::Colour::Colour3 && aBasis[k] == PDT::Colour::Colour3bar ) {
+	  q_new = l+1;
+	  qbar_new = k+1;
+	} else {
+	  assert(false);
+	}
+
+	// Color structure after gluon split
+	// split_gluon also simplifies, so no polynomial factor in Qls
+	Col_amp Ca2= colorFunctions.split_gluon( Ca1, g_old, q_old, qbar_old );
+
+	// The map should be the dict (containing the map of old non-involved partons)
+	std::map<int, int> map;
+	for ( size_t ii = 0; ii < bBasis.size(); ii++ ){
+		if ( ii  != m ) {// exclude splitting gluon
+			int parton = static_cast<int>( dict.at(ii) );
+			map[ii+1] = parton+1;// Parton numbers one unit higher in ColorFull
+		}
+	}
+
+	map[q_old] = q_new;
+	map[qbar_old] = qbar_new;
+
+	assert( map.size() == aBasis.size() );
+
+	// Color structure when partons have ColorFull default names
+	Col_amp Ca3= colorFunctions.rename_partons( Ca2, map ); // does normal ordering as well
+
+	// Check if the new color structure has a component for basis vector i in ABasis
+	// Loop over Col_strs in Col_amp after split
+	for ( uint Csi=0; Csi < Ca3.size(); Csi++ ){
+		if( Ca3.at(Csi).cs == ABasis.at(i).at(0).cs ){// If col_strs are the same, note that they must be normal ordered
+			return colorFunctions.double_num( Ca3.at(Csi).Poly ); // Return Polynomial coefficient in front of Col_str
+		};
+	}
+
+	// If no component corresponding to vector i is found
+	return 0.;
 
 }
 
@@ -202,6 +339,51 @@ bool TraceBasis::colourConnected(const cPDVector& sub,
 
   return cs.left_neighbor(idAntiColoured,idColoured);
 
+}
+
+map<size_t,size_t> TraceBasis::indexChange(const vector<PDT::Colour>& basis,
+					   const size_t dim,
+					   const map<size_t,size_t>& indPerm) const {
+  // Change the map to indices starting at 1 (colorfull numbering of legs) from
+  // starting at 0 (Herwig numbering of legs).
+  map<int,int> iPerm;
+  for ( map<size_t,size_t>::const_iterator it = indPerm.begin();
+	it != indPerm.end(); it++ ) {
+    iPerm[(it->first) + 1] = (it->second) + 1;
+  }
+
+  // Get the basis
+  map<vector<PDT::Colour>,Trace_basis>::const_iterator bit =
+    theBasisMap.find(basis);
+
+  assert(bit != theBasisMap.end());
+
+  const Trace_basis& Basis = bit->second;
+
+  
+  // Naive way: loop over every basis vector and rename the partons,
+  //            then loop over the basis vectors to see which basis vector it became.
+  //            This is sufficient for the current application, as it will
+  //            only be used on the hard subprocess, which will never have
+  //            a very large colour basis.
+  map<size_t,size_t> indexMap;
+  Col_amp Cai, Cai_re;
+  Col_amp Caj;
+  for ( size_t i = 0; i < dim; i++ ) {
+    // Get the basis vector and change the leg numbering
+    Cai = Basis.at(i);
+    Cai_re = colorFunctions.rename_partons( Cai, iPerm );
+    for ( size_t j = 0; j < dim; j++ ) {
+      Caj = Basis.at(j);
+      if ( Cai_re.at(0).cs == Caj.at(0).cs )
+        indexMap[i] = j;
+    }
+  }
+  // Check that the map was filled (every vector should have been
+  // changed into a new vector)
+  assert( indexMap.size() == dim );
+
+  return indexMap;
 }
 
 // If needed, insert default implementations of virtual function defined

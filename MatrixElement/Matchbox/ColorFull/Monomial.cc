@@ -91,7 +91,7 @@ void Monomial::Monomial_of_str( std::string str ) {
 		num_str.clear();
 		Nc_pow_str.clear();
 		TR_pow_str.clear();
-
+		CF_pow_str.clear();
 
 		// We may have to skip some chars containing spaces and *
 		while (i < str.size() && (str.at(i) == ' ' or str.at(i) == '\n' or str.at(i) == '*' or str.at(i) == '(' or str.at(i) == ')')) i++;
@@ -186,7 +186,7 @@ void Monomial::Monomial_of_str( std::string str ) {
 		if (i < str.size() and (str.at(i) == 'N')) {
 			if( i+1< str.size() and str.at(i + 1) == 'c') i++; // get to c
 			else{// allow only Nc
-				std::cerr << "Monomial::Monomial_of_str: got a string containing N, but N was not followed by c (as in Nc). " << std::endl;
+				std::cerr << "Monomial::Monomial_of_str: got a string containing N, " << str <<", but N was not followed by c (as in Nc). " << std::endl;
 				assert( 0 );
 			}
 			i++; // get to next sign
@@ -338,10 +338,34 @@ void Monomial::read_in_Monomial( std::string filename ) {
 
 	// Copy info from file to string
 	std::string str((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
-	str.erase(str.size()-1);
+
+	// Skip lines starting with #
+	while( str.at(0)== '#' ){
+		while (str.at(0) != '\n'){
+			str.erase(str.begin());
+		}
+		// erase endl sign(s)
+		while(str.at(0)== '\n'){
+			str.erase(str.begin());
+		}
+	}
+
+	// Remove endl chars at the end of the file
+	while( str.at(str.size()-1) == '\n' ) str.erase(str.size()-1);
 	Monomial_of_str( str );
 }
 
+
+void Monomial::write_out_Monomial( std::string filename ) const {
+
+	std::ofstream outfile(filename.c_str());
+
+	if ( !outfile )
+	std::cerr << "Monomial::write_out_Monomial: Cannot write out Monomial as the file \""
+		<< filename.c_str() << "\" could not be opened. (Does the directory exist? Consider creating the directory.)" << std::endl;
+
+	outfile << *this;
+}
 
 std::ostream& operator<<( std::ostream& out, const Monomial & Mon ){
 
@@ -389,18 +413,26 @@ Monomial operator*( const int i, const Monomial & Mon){
 	return Mon*i;
 }
 
+Monomial operator*=( Monomial & Mon, const int i ){
+	return Mon.int_part*=i;
+}
 
-Monomial operator*(const Monomial & Mon, const cnum c){
+
+Monomial operator*( const Monomial & Mon, const cnum c ){
 	Monomial out_Mon(Mon);
 	out_Mon.cnum_part=out_Mon.cnum_part*c;
 	return out_Mon;
 }
 
 
-Monomial operator*(const cnum c, const Monomial & Mon){
+Monomial operator*( const cnum c, const Monomial & Mon ){
   return Mon*c;
 }
 
+Monomial operator*=( Monomial & Mon, const cnum c ){
+	Mon.cnum_part*=c;
+	return Mon;
+}
 
 Monomial operator*(const Monomial & Mon, const double d){
 		Monomial out_Mon(Mon);
@@ -408,16 +440,19 @@ Monomial operator*(const Monomial & Mon, const double d){
 		return out_Mon;
 }
 
-
 Monomial operator*(const double d, const Monomial & Mon){
 	return Mon*d;
 }
 
+Monomial operator*=( Monomial & Mon, const double d ){
+	Mon.cnum_part*=d;
+	return Mon;
+}
 
 Monomial operator*(const Monomial & Mon1, const Monomial & Mon2){
   Monomial Mon_out;
 
-  // Adding powers to get total power of 2, N and CF
+  // Adding powers to get total power of TR, Nc and CF
   Mon_out.pow_TR = Mon1.pow_TR + Mon2.pow_TR;
   Mon_out.pow_Nc = Mon1.pow_Nc + Mon2.pow_Nc;
   Mon_out.pow_CF = Mon1.pow_CF + Mon2.pow_CF;
@@ -427,6 +462,20 @@ Monomial operator*(const Monomial & Mon1, const Monomial & Mon2){
   Mon_out.cnum_part=Mon1.cnum_part * Mon2.cnum_part;
   return Mon_out;
 }
+
+Monomial operator*=( Monomial & Mon1, const Monomial & Mon2){
+
+  // Adding powers to get total power of TR, Nc and CF
+  Mon1.pow_TR += Mon2.pow_TR;
+  Mon1.pow_Nc += Mon2.pow_Nc;
+  Mon1.pow_CF += Mon2.pow_CF;
+
+  // Multiplying factors
+  Mon1.int_part *= Mon2.int_part;
+  Mon1.cnum_part *= Mon2.cnum_part;
+  return Mon1;
+}
+
 
 bool operator==(const Monomial & Mon1 , const Monomial & Mon2){
 

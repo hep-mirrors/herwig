@@ -76,13 +76,40 @@ public:
 			       const vector<PDT::Colour>& abBasis) const;
 
   /**
+   * Return true, if this colour basis supports gluon splittings.
+   */
+  virtual bool canSplitGluons() const {
+    return false;
+  }
+
+  /**
    * Return the matrix element of a colour charge
    * <c_{n+1,a}|T_i|c_{n,b}> between basis tensors a and b, with
    * respect to aBasis and bBasis
    */
   virtual double tMatrixElement(size_t i, size_t a, size_t b,
 				const vector<PDT::Colour>& aBasis,
-				const vector<PDT::Colour>& bBasis) const;
+				const vector<PDT::Colour>& bBasis,
+				size_t k, size_t l,
+				const map<size_t,size_t>& dict) const;
+
+  /**
+   * Return the matrix element of a quark splitting matrix
+   * <c_{n+1,a}|T_i|c_{n,b}> between basis tensors a and b, with
+   * respect to aBasis and bBasis. Here
+   * m is splitting gluon,
+   * i is the new vector number in the new large aBasis,
+   * j is the old vector number in the old small bBasis,
+   * k is the number of the new q,
+   * l is the number of the new qbar,
+   * and dict contains the map from old to new numbers, of the partons not participating.
+   * All parton numbers are given in Herwig conventions.
+   */
+  virtual double sMatrixElement(size_t i, size_t a, size_t b,
+				const vector<PDT::Colour>& aBasis,
+				const vector<PDT::Colour>& bBasis,
+				size_t k, size_t l,
+				const map<size_t,size_t>& dict) const;
 
   /**
    * Return true, if the colour basis is capable of assigning colour
@@ -99,6 +126,15 @@ public:
 			       const pair<int,bool>&, 
 			       const pair<int,bool>&, 
 			       size_t) const;
+
+  /**
+   * Returns a map of how the order of the vectors of a colour basis are 
+   * changed when the indices are changed.
+   */
+  virtual map<size_t,size_t> indexChange(const vector<PDT::Colour>& basis,
+					 const size_t dim,
+					 const map<size_t,size_t>& legPerm) const;
+
 
 public:
 

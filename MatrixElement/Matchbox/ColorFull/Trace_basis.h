@@ -26,16 +26,14 @@ public:
 
 	/// Constructor for creating a trace basis for n_quark qqbar-pairs
 	/// and n_gluon gluons.
-	/// (Note: For electroweak interactions more color structures may
-	/// be needed.)
 	Trace_basis( int n_quark, int n_gluon ){
 		initialize();
 		create_basis( n_quark, n_gluon );
 	}
 
 	/// Constructor for creating a trace basis for n_quark qqbar-pairs
-	/// and ng gluons, keeping only those color structures that
-	/// can appear to order n_loop in QCD.
+	/// and n_gluon gluons, keeping only those color structures that
+	/// can appear to order n_loop in pure QCD.
 	/// (Note: For electroweak interactions more color structures may
 	/// be needed.)
 	Trace_basis( int n_quark, int n_gluon, int n_loop ){
@@ -43,14 +41,6 @@ public:
 		create_basis( n_quark, n_gluon, n_loop );
 	}
 
-	/// Little helper function, called by all constructors.
-	void initialize(){
-		nq=0;
-		ng=0;
-		tree_level_gluon_basis = false;
-		orthogonal_basis = false;
-		trace_basis = true;
-	}
 
 	/******************** Functions for basis creation **********************/
 
@@ -68,6 +58,15 @@ private:
 
 	/******************** Internal function for basis creation **********************/
 
+	/// Little helper function, called by all constructors.
+	void initialize(){
+		nq=0;
+		ng=0;
+		tree_level_gluon_basis = false;
+		orthogonal_basis = false;
+		trace_basis = true;
+	}
+
 	/// Function for creating a basis with n_q=n_qbar
 	/// quarks and ng gluons to order n_loop,
 	/// i.e. each Col_str is a product of at most
@@ -80,11 +79,11 @@ private:
 
 	/// Compute the new basis states coming from
 	/// one old vector when one gluon, g_new, is added.
-	Col_amp add_one_gluon( const Col_str & Cs, int g_new, int n_loop ) const;
+	Col_amp add_one_gluon( const Col_str & Cs, int g_new ) const;
 
 	/// Compute the basis if one gluon is added to the old basis Old_basis.
 	/// If n_loop==0, only tree level states are constructed.
-	Col_amp add_one_gluon( const Col_amp & Old_basis, int n_q, int n_g, int g_new, int n_loop ) const;
+	Col_amp add_one_gluon( const Col_amp & Old_basis, int n_q, int g_new, int n_loop ) const;
 
 };
 

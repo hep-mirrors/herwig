@@ -26,20 +26,22 @@ class Col_functions {
 
 private:
 
-/// The number of colors, used in numerical results. Change here for different value.
+/// The number of colors, used in numerical results,
+/// changed by using set_Nc.
 double Nc;
 
 /// The trace convention Tr( t^a t^a )=TR (no sum).
-/// The normalization of the SU(Nc) generators, to be used in numerical evaluation.
+/// The normalization of the SU(Nc) generators, to be used in numerical evaluation,
+/// changed by using set_TR.
 /// The value 1/2 corresponds to the Gell-Mann normalization.
 double TR;
 
-/// The value of CF=TR (Nc^2-1)/(Nc).
+/// The value of CF=TR*Nc-TR/Nc, changed by using set_CF.
 /// Note that CF can be changed independently of Nc.
 double CF;
 
 /// While evaluating leading terms one may want to keep the full value of CF for
-/// Nc=3, (TR(Nc^2-1)/Nc), or only keep the leading Nc term =TR*Nc (default).
+/// TR(Nc^2-1)/Nc, or only keep the leading Nc term =TR*Nc (default).
 /// full_CF is used by the Polynomial version of leading
 /// (and hence also Poly_vec and Poly_matr versions etc).
 /// The leading functions replaces CF by TR*Nc if full_CF is false (default)
@@ -80,17 +82,17 @@ void set_CF( double cf) {
 /// Switch on/off full_CF.
 void set_full_CF( bool is_full ) { full_CF = is_full; }
 
-/// Get the number of colors.
+/// Returns the number of colors.
 double get_Nc() const { return Nc; }
 
-// Returns the normalization of the generators,
+/// Returns the normalization of the generators,
 /// tr(t^a t^b)=TR*delta^{a,b}.
 double get_TR() const { return TR; }
 
-/// Get the number of colors.
+/// Returns the value of CF.
 double get_CF() const { return CF; }
 
-/// Return true, if full CF is used
+/// Returns true, if full CF is used.
 bool get_full_CF() const { return full_CF; }
 
 
@@ -106,9 +108,11 @@ int  leading_Nc_pow( const Polynomial & Poly ) const;
 /// Function for finding the leading power of Nc in a Poly_vec.
 int  leading_Nc_pow( const Poly_vec & Pv ) const;
 
+/*
 /// Function for finding the leading power of Nc in a
-/// vector of pointer to Polynomials.
+/// vector of pointers to Polynomials.
 int  leading_Nc_pow( const std::vector< shared_ptr<Polynomial> > & Pvp) const;
+*/
 
 /// Takes the leading Nc terms of a Polynonmial, i.e. Monomials with highest
 /// power of Nc+CF. If full_CF is false (default), CF is replaced by TR Nc.
@@ -116,8 +120,8 @@ int  leading_Nc_pow( const std::vector< shared_ptr<Polynomial> > & Pvp) const;
 Polynomial leading( const Polynomial & Poly ) const;
 
 /// Take the leading part of a Poly_vec.
-/// Keeps only Monomials with maximal power of CF + Nc.
-/// Uses leading( const Polynomial & Poly).
+/// Keeps only Monomials with maximal power of CF plus Nc,
+/// uses leading( const Polynomial & Poly).
 /// If full_CF is false (default), CF is replaced by TR Nc.
 /// If full_CF is true CF is replaced by TR(Nc^2-1)/Nc.
 /// Note that taking the leading terms of a Poly_vec is not
@@ -126,7 +130,7 @@ Polynomial leading( const Polynomial & Poly ) const;
 Poly_vec leading( const Poly_vec & Pv ) const;
 
 /// Takes the leading part of a matrix of Polynomials,
-/// keeping only those with maximal power of CF + Nc.
+/// keeping only those with maximal power of CF plus Nc.
 /// If full_CF is false (default), CF is replaced by TR Nc.
 /// If full_CF is true CF is replaced by TR(Nc^2-1)/Nc.
 /// Note that taking the leading terms of a Poly_matr is not
@@ -134,61 +138,73 @@ Poly_vec leading( const Poly_vec & Pv ) const;
 // Used only once in Col_basis
 Poly_matr leading( const Poly_matr & Pm ) const;
 
+/*
 /// Take the leading part of a Poly_vec, given a vector of pointers to the Polynomials.
-/// Keeps only Monomials with maximal power of CF + Nc.
+/// Keeps only Monomials with maximal power of CF plus Nc.
 // Currently never used
 Poly_vec leading( const std::vector<shared_ptr<Polynomial> > & Pvp) const;
 
 /// Take the leading part of a Poly_matr, given a vector of vector of pointers to the Polynomials.
 /// Loops over Monomials in all Polynomials
-/// and keeps only those with maximal power of CF + Nc.
+/// and keeps only those with maximal power of CF plus Nc.
 // used only by scalar_product_matrix_mem in Col_functions
 dmatr leading( const std::vector< std::vector< shared_ptr<Polynomial> > > & Pm ) const;
-
-/// To keep only leading terms in a map.
-// used only on Col_functions by scalar product_matrix_mem_2 and radiation_amplitude_matrix
-std::map< std::string, Polynomial > leading( const std::map< std::string, Polynomial > & mem_map ) const;
-
+*/
 
 /********************* Functions for numerical evaluation *************************/
 // These functions has to be kept in Col_functions class as they need numerical
 // values for evaluation. Letting each Polynomial carry around its own Nc etc.
 // would be messy.
 
-/// To take the numerical value of a map.
-std::map< std::string, double > double_num( const std::map< std::string, shared_ptr<Polynomial> > & mem_map ) const;
 
-/// Numerically evaluates a Monomial using the Nc and CF variables;
+/// Numerically evaluates a Monomial using the Nc, TR and CF data members.
 cnum cnum_num( const Monomial & Mon ) const;
 
-// Numerically evaluates a Monomial to a double.
-double double_num( const Monomial & Mon ) const;
-
-/// Numerically evaluates a Polynomial, using the CF and Nc variables.
+/// Numerically evaluates a Polynomial, using the Nc, TR and CF data members.
 cnum cnum_num( const Polynomial & Poly ) const;
-
-/// Numerically evaluates a Polynomial using the data members Nc, CF and TR.
-double double_num( const Polynomial & Poly ) const;
-
-/// To take the numerical value of a map.
-std::map< std::string, double > double_num(const std::map< std::string, Polynomial > & mem_map) const;
-
-/// Numerically evaluates a Poly_vec (vector of Polynomial) for Nc=3.
-dvec double_num( const Poly_vec & Pv ) const;
-
-/// Returns a double value. The argument is a vector of pointers to Polynomials.
-dvec double_num( const std::vector<shared_ptr<Polynomial> > & Pv ) const;
-
-/// Returns a double value. The argument is a vector of vector of pointers to Polynomials.
-dmatr double_num( const std::vector<std::vector<shared_ptr<Polynomial> > > & Pm ) const;
-
-/// Numerically evaluates a Polynomial for Nc=3,
-/// and stores in the format of a Polynomial with only one term with only a numerical part.
-Polynomial Polynomial_cnum_num( const Polynomial & Poly ) const;
 
 /// Numerically evaluates a Poly_vec (vector of Polynomial),
 /// using cnum_num (Polynomial).
 cvec cnum_num( const Poly_vec & Pv ) const;
+
+/// Numerically evaluates a Poly_matr (vector of Poly_vec),
+/// using cnum_num( Poly_vec ) for each Poly_vec.
+cmatr cnum_num( const Poly_matr & Pm ) const;
+
+/// Numerically evaluates a Monomial to a double using the Nc, TR and CF data members.
+double double_num( const Monomial & Mon ) const;
+
+/// Numerically evaluates a Polynomial to a double using the Nc, TR and CF data members.
+double double_num( const Polynomial & Poly ) const;
+
+/// Numerically evaluates a Poly_vec (vector of Polynomial)
+/// using the Nc, TR and CF data members.
+dvec double_num( const Poly_vec & Pv ) const;
+
+/// Numerically evaluates a Poly_matr (vector of Poly_vec),
+/// using the Nc, TR and CF data members.
+dmatr double_num( const Poly_matr & Pm ) const;
+
+/*
+/// Returns a double vector. The argument is a vector of pointers to Polynomials.
+dvec double_num( const std::vector<std::shared_ptr<Polynomial> > & Pv ) const;
+
+/// Returns a double matrix. The argument is a vector of vector of pointers to Polynomials.
+// (not used 14 06 08)
+dmatr double_num( const std::vector<std::vector<std::shared_ptr<Polynomial> > > & Pm ) const;
+
+/// To take the numerical value of a map.
+// (not used 14 06 08)
+std::map< std::string, double > double_num( std::map< std::string, std::shared_ptr<Polynomial> > mem_map ) const;
+
+/// To take the numerical value of a map.
+// (not used 14 06 08)
+std::map< std::string, double > double_num( std::map< std::string, Polynomial > mem_map ) const;
+*/
+
+/// Numerically evaluates a Polynomial using the value of the data member Nc,
+/// and stores in the format of a Polynomial with only one term with only a numerical part.
+Polynomial Polynomial_cnum_num( const Polynomial & Poly ) const;
 
 /// Numerically evaluates a Poly_vec (vector of Polynomial)
 /// and stores in the form of a Poly_vec, uses polynomial_cnum_num( Pv.at( p ) ).
@@ -199,25 +215,19 @@ Poly_vec Poly_vec_cnum_num( const Poly_vec & Pv ) const;
 /// and stores in the form of a Poly_matr.
 Poly_matr Poly_matr_cnum_num( const Poly_matr & Pm ) const;
 
-/// Numerically evaluates a Poly_matr (vector of Poly_vec),
-/// using cnum_num( Poly_vec ) for each Poly_vec.
-cmatr cnum_num( const Poly_matr & Pm ) const;
-
-/// Numerically evaluates a Poly_matr (vector of Poly_vec).
-dmatr double_num( const Poly_matr & Pm ) const;
 
 /****************** Functions for scalar products *************************/
 
-/// Function for calculating scalar products between Col_amps.
+/// Function for calculating the scalar products between Col_amps.
 /// Does not add implicit state in the gluons only case.
 Polynomial scalar_product( const Col_amp & Ca1, const Col_amp & Ca2 ) const;
 
-/// Function for calculating scalar product between two Col_strs.
+/// Function for calculating the scalar product between two Col_strs.
 /// Does not add implicit state in the gluons only case.
 Polynomial scalar_product( const Col_str & Cs1, const Col_str & Cs2 ) const;
 
 
-/****************** Functions for gluon emission and exchange *************/
+/****************** Functions for gluon emission exchange, and splitting *************/
 
 /// Function for emitting a gluon from a Col_str.
 /// When the gluon is inserted before the emitter in a Quark_line,
@@ -229,6 +239,13 @@ Col_amp emit_gluon( const Col_str & in_Col_str, int emitter, int g_new ) const;
 /// the amplitude comes with a minus sign.
 Col_amp emit_gluon( const Col_amp & Ca_in, int emitter, int g_new ) const;
 
+/// Function for splitting the gluon g_old in a Col_str to a qqbar pair.
+Col_amp split_gluon( const Col_str & in_Col_str, int g_old, int q_new, int qbar_new ) const;
+
+/// Function for splitting the gluon g_old in a Col_amp to a qqbar pair.
+Col_amp split_gluon( const Col_amp & in_Col_amp, int g_old, int q_new, int qbar_new ) const;
+
+
 /// Function for exchanging a gluon between the partons p1 and p2 in the Col_str Cs.
 /// When the gluon is inserted before the emitter in a Quark_line,
 /// the amplitude comes with a minus sign.
@@ -237,18 +254,17 @@ Col_amp exchange_gluon( const Col_str & Cs, int p1, int p2 ) const;
 /// Function for exchanging a gluon between two partons p1 and p2 in the Col_amp Ca.
 /// When the gluon is inserted before the emitter in a Quark_line,
 /// the amplitude comes with a minus sign.
-/// (The incoming amplitude is what it is, there is no special
-/// treatment of glons only cases.)
+/// (There is no special treatment of the glons only cases.)
 Col_amp exchange_gluon( const Col_amp & Ca, int p1, int p2 ) const;
 
-/// Calculates < M | T^(i) T^(j) | M >, the "color correlator"
+/// Calculates < M | T_i T_j | M >, the "color correlator"
 /// relevant for coherent gluon emission of gluon g_new from
 /// parton i and parton j, or gluon exchange between i and j.
-/// The Ca should thus be | M >, g_new should be a unique dummy index,
+/// The Ca should thus be | M >,
 /// and i and j are the partons involved in the emission (exchange).
 /// (The incoming amplitude is what it is, there is no special
 /// treatment of gluons only cases.)
-Polynomial color_correlator( const Col_amp Ca, int i, int j, int g_new ) const;
+Polynomial color_correlator( const Col_amp Ca, int i, int j ) const;
 
 
 /********************* Other functions *************************/
@@ -256,13 +272,14 @@ Polynomial color_correlator( const Col_amp Ca, int i, int j, int g_new ) const;
 // As dvec and dmatr are not classes some read and write functions
 // are contained here.
 
-/// Read in a numerical matrix from filename and save it as a double matrix, dmatr.
-/// The file should be in the format
-/// {d11,...,d1n}.
+/// Reads in a numerical vector and save it as a double vector, dvec.
+/// The file should be of the format
+/// {d11,...,d1n},
+/// and may contain comment lines starting with # at the top.
 dvec read_in_dvec( std::string filename ) const;
 
-/// Read in a numerical matrix from filename and save it as a double matrix, dmatr.
-/// The file should be in the format
+/// Reads in a numerical matrix and save it as a double matrix, dmatr.
+/// The file should be of the format
 /// {{d11,...,d1n},
 /// ...,
 /// {dn1,...,dnn}},
@@ -279,6 +296,29 @@ void write_out_dmatr( const dmatr & matr, std::string filename ) const;
 
 /// The factorial of an int, 0! is defined as 1.
 int factorial( int i ) const;
+
+/// Function that finds the default parton numbers for a Col_str.
+/// The default numbers are 1,...,N_parton, where quarks have the first
+/// odd numbers, anti-quarks have the first even numbers, and gluons have
+/// subsequent numbers. The intended usage is after gluon splitting, where
+/// the gluon g_old has split into q_new and qbar_new, and the parton numbers
+/// before splitting are assumed to be default.
+std::map<int, int> default_parton_numbers( const Col_str &, int g_old, int q_new, int qbar_new ) const;
+
+
+/// Function that renames the partons in a Col_str using a map where, in each pair,
+/// the first number is to be replaced by the second. (The Col_functions member
+/// function default_parton_numbers returns a map where the partons are given
+/// default numbers.)
+Col_str rename_partons( const Col_str &, const std::map <int, int> replacements ) const;
+
+
+/// Function that renames the partons in a Col_amp using a map where, in each pair,
+/// the first number is to be replaced by the second. (The Col_functions member
+/// function default_parton_numbers returns a map where the partons are given
+/// default numbers.)
+Col_amp rename_partons( const Col_amp &, const std::map <int, int> replacements ) const;
+
 
 }; // end class Col_functions
 

@@ -33,6 +33,22 @@ std::ostream& operator<<(std::ostream& out, const Poly_vec & Pv ){
 	return out;
 }
 
+bool operator==( const Poly_vec & Pv1, const Poly_vec & Pv2 ){
+
+	if( Pv1.size() != Pv2.size() ) return false;
+
+	// All terms should be the same
+	for ( uint i=0; i < Pv1.size(); i++ ){
+		if( Pv1.at(i) != Pv2.at(i ) ) return false;
+	}
+
+	return true;
+}
+
+bool operator!=(  const Poly_vec & Pv1, const Poly_vec & Pv2 ){
+	if( Pv1==Pv2 ) return false;
+	else return true;
+}
 
 void Poly_vec::remove_CF()  {
 
@@ -113,18 +129,19 @@ void Poly_vec::read_in_Poly_vec( std::string filename ) {
 
 	// Read the string, starting from 0th element
 	unsigned int i = 0;
-	while ( i < str.size() - 2 ) {
+	while ( i < str.size() - 1 ) {
 
 		// To contain the Polynomial string
 		std::string Poly_str;
 		Poly_str.clear();
 
 		// We may have to skip some spaces, end-lines and {
-		while (i < str.size() - 2 && (str.at(i) == ' ' or str.at(i) == '\n' or str.at(i) == '{'))
+		while (i < str.size() - 1 && (str.at(i) == ' ' or str.at(i) == '\n' or str.at(i) == '{'))
 			i++;
 
 		// Keep reading the number while not ',' or '}'
-		while (i < str.size() - 2 && (str.at(i) != ',' && str.at(i) != '}')) {
+		// Last char }, is at place size -1
+		while (i < str.size() - 1 && (str.at(i) != ',' && str.at(i) != '}')) {
 			Poly_str.push_back(str.at(i));
 			i++;
 		}
@@ -133,7 +150,7 @@ void Poly_vec::read_in_Poly_vec( std::string filename ) {
 		pv.push_back( Poly );
 
 		// If we have a new row
-		if (i < str.size() - 2 && str.at(i) == '}') { i++;}
+		if (i < str.size() - 1 && str.at(i) == '}') { i++;}
 		i++;
 	}
 }

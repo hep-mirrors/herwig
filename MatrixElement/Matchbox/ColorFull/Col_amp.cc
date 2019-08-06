@@ -67,7 +67,7 @@ void Col_amp::erase( int i ) {
 }
 
 
-void Col_amp::append(col_amp ca_in) {
+void Col_amp::append( col_amp ca_in ) {
 	for (uint m = 0; m < ca_in.size(); m++) {
 		ca.push_back(ca_in.at(m));
 	}
@@ -92,9 +92,24 @@ void Col_amp::read_in_Col_amp( std::string filename) {
 
 	// Copy info from file to string
 	std::string str((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
-	str.erase(str.size()-1);
+
+	// Skip lines starting with #
+	while( str.at(0)== '#' ){
+		while (str.at(0) != '\n'){
+			str.erase(str.begin());
+		}
+		// erase endl sign(s)
+		while(str.at(0)== '\n'){
+			str.erase(str.begin());
+		}
+	}
+
+	// Remove endl chars at the end of the file
+	while( str.at(str.size()-1) == '\n' ) str.erase(str.size()-1);
+
 	Col_amp_of_str( str );
 }
+
 
 void Col_amp::write_out_Col_amp( std::string filename ) const {
 
@@ -217,7 +232,7 @@ void Col_amp::remove_0_rings() {
 		// If the result is empty (no Quark_lines), keep the Polynomial (in scalar),
 		// but remove that Col_str
 		if (ca.at(m).cs.empty()) {
-			Scalar = Scalar + ca.at(m).Poly;
+			Scalar += ca.at(m).Poly;
 			erase(m);
 		}
 	}
@@ -228,7 +243,7 @@ void Col_amp::remove_empty_Col_strs() {
 	// Loop Col_strs
 	for (uint m = 0; m < ca.size(); m++) {
 		if ( ca.at(m).cs.empty() ){
-			Scalar=Scalar+ca.at(m).Poly;
+			Scalar+=ca.at(m).Poly;
 			erase(m);
 		}
 	}
@@ -322,7 +337,7 @@ void Col_amp::collect_col_strs() {
 				was_found = true;
 				// Add Polynomial multiplying the Monomial to Polynomial multiplying
 				// existing term
-				ca_out.at(i).Poly = ca_out.at(i).Poly + ca.at(0).Poly;
+				ca_out.at(i).Poly +=  ca.at(0).Poly;
 				// See if Polynomial can be simplified
 				//ca_out.at(i).Poly=simplify( ca_out.at(i).Poly );
 			}
@@ -483,7 +498,7 @@ void Col_amp::contract_Quark_line_gluons( Quark_line & Ql )  {
 					Monomial Mon_tmp;
 					Mon_tmp.pow_TR = 1;
 
-					ca.at(0).Poly = ca.at(0).Poly * Mon_tmp;
+					ca.at(0).Poly *=  Mon_tmp;
 					// The split can generate new (next to) neighbors
 					ca.at(0).contract_next_neighboring_gluons( );
 
@@ -498,7 +513,7 @@ void Col_amp::contract_Quark_line_gluons( Quark_line & Ql )  {
 					Mon_tmp.pow_Nc = -1;
 					Mon_tmp.int_part = -1;
 
-					ca.at(1).Poly = ca.at(1).Poly * Mon_tmp;
+					ca.at(1).Poly *= Mon_tmp;
 
 					// A pair was found, use for stopping
 					found_pair = true;
@@ -559,7 +574,9 @@ void Col_amp::contract_Quark_line_gluons( Col_str & Cs ) {
 		// If the Quark_line is short do nothing with it as no gluons
 		// can not be neighbors or next to neighbors
 		if ( Cs.at(i).size()< 6 ){
-			*this=*this*Col_str( Cs.at(i) );
+			//*this=*this*Col_str( Cs.at(i) );
+			*this=*this*Cs.at(i);
+
 		}
 		else{
 			Col_amp contracted_Ql;
@@ -737,12 +754,12 @@ void Col_amp::contract_a_gluon( Col_str & Cs )  {
 	// Multiply with TR for non-suppressed term
 	Monomial Mon_tmp;
 	Mon_tmp.pow_TR = 1;
-	Cs2.Poly = Cs2.Poly * Mon_tmp;
+	Cs2.Poly *= Mon_tmp;
 
 	// Multiply with -TR/Nc for suppressed term
 	Mon_tmp.pow_Nc = -1;
 	Mon_tmp.int_part = -1;
-	Cs1.Poly = Cs1.Poly * Mon_tmp;
+	Cs1.Poly *= Mon_tmp;
 
 	// Look for simple simplifications in Cs1
 	// This has to be done after Cs1 is used to construct Cs2
@@ -841,36 +858,35 @@ void Col_amp::contract_all_gluons( ) {
 	Col_amp Ca_old; // For comparison
 	// Contract remaining gluons as long as result keep changing
 		// Start with contractions only giving one term
-		while (Ca_old != *this) {
+		while ( Ca_old != *this ) {
 
 			Ca_old = *this;
 
 			// Contract gluons from 2-ring as this gives only one term
 			// and may result in new neighbors or next to neighbors
 			contract_2_rings( );
-
 			//std::cout << "Col_functions::contract_all_gluons: after 2 rings " << Ca << std::endl;
 
 
 			// Remove neighboring and next to neighboring gluon indices
 			// in each quark_line as this gives only (at most) one term
 			contract_next_neighboring_gluons( );
-			//std::cout << "Col_functions::contract_all_gluons: after nn " << Ca << std::endl;
+			contract_2_rings( );
 
 
 			// Contract gluons within same quark_line
 			// This will give >1 term, but at least rings will be shorter and shorter
-			contract_Quark_line_gluons(  );
-			//std::cout << "Col_functions::contract_all_gluons: after Qlg " << Ca << std::endl;
-
-
+			contract_Quark_line_gluons( );
+			contract_2_rings( );
 			// To maximize number of CF's
 			contract_next_neighboring_gluons( );
-			//std::cout << "Col_functions::contract_all_gluons: after nn " << Ca << std::endl;
+			contract_2_rings( );
+
 
 			// Make "arbitrary" gluon contraction when no simple or Ql contraction remains
 			// In each Col_str, contract the first gluon in the first Ql
 			contract_a_gluon( );
+
 
 			// Look if same Col_str is represented more than once in the Col_amp and simplify
 			simplify();
@@ -973,11 +989,19 @@ Col_amp operator+=( Col_amp & Ca1, const Col_amp & Ca2 ){
 	return Ca1;
 }
 
+Col_amp operator+=( Col_amp & Ca, const Col_str & Cs ){
+
+	// Add Col_str Cs to Ca
+	Ca.ca.push_back(Cs);
+
+	return Ca;
+}
+
 Col_amp operator-( const Col_amp & Ca1, const Col_amp & Ca2 ) {
 
 	Col_amp Ca2_out(Ca2);
 
-	// 	Change sign of Ca2 in Polynomial
+	// 	Change sign of Ca2 in Scalar
 	Ca2_out.Scalar=Ca2_out.Scalar*(-1);
 
 	// Loop over Col_strs to change sign for each term
@@ -989,6 +1013,20 @@ Col_amp operator-( const Col_amp & Ca1, const Col_amp & Ca2 ) {
 	return Ca1+Ca2_out;
 }
 
+
+Col_amp operator-( const Col_amp & Ca, const Col_str & Cs ) {
+
+	Col_amp Ca_out(Ca);
+
+	Col_str Cs_tmp=Cs*(-1);
+
+	return Ca_out+Cs_tmp;
+}
+
+Col_amp operator-( const Col_str & Cs, const Col_amp & Ca ) {
+
+	return Ca-Cs;
+}
 
 Col_amp operator*( const Col_amp & Ca, const int i ){
 
@@ -1012,12 +1050,12 @@ Col_amp operator*( const int i, const Col_amp & Ca ) {
 Col_amp operator*(const Col_amp & Ca, const cnum c){
 	Col_amp Ca_res = Ca;
 	// Multiply scalar factor (Polynomial)
-	Ca_res.Scalar = Ca_res.Scalar * c;
+	Ca_res.Scalar *= c;
 
 	// Loop over Col_strs and multiply Polynomials
 	for (uint m = 0; m < Ca_res.ca.size(); m++) {
 		// Multiply Polynomial of Col_str with the complex number
-		Ca_res.ca.at(m).Poly = Ca_res.ca.at(m).Poly * c;
+		Ca_res.ca.at(m).Poly *= c;
 	}
 	return Ca_res;
 }
@@ -1030,11 +1068,11 @@ Col_amp operator*( const cnum c, const Col_amp & Ca ){
 Col_amp operator*( const Col_amp & Ca, const double d ){
 	Col_amp Ca_res = Ca;
 	// Multiply scalar factor (Polynomial)
-	Ca_res.Scalar = Ca_res.Scalar * d;
+	Ca_res.Scalar *=  d;
 	// Loop over Col_strs and multiply Polynomials
 	for (uint m = 0; m < Ca_res.ca.size(); m++) {
 		// Multiply Polynomial of Col_str with the complex number
-		Ca_res.ca.at(m).Poly = Ca_res.ca.at(m).Poly * d;
+		Ca_res.ca.at(m).Poly *= d;
 	}
 	return Ca_res;
 }
@@ -1050,12 +1088,12 @@ Col_amp operator*( const Col_amp & Ca, const Monomial & Mon ){
 	Col_amp Ca_out(Ca);
 
 	// Multiply scalar factor (Polynomial)
-	Ca_out.Scalar=Ca_out.Scalar*Mon;
+	Ca_out.Scalar *= Mon;
 
 	// Loop over Col_strs and multiply Polynomials
 	for(uint m=0; m< Ca_out.ca.size(); m++){
 		// Multiply Polynomial of Col_str with the complex number
-		Ca_out.ca.at(m).Poly=Ca_out.ca.at(m).Poly*Mon;
+		Ca_out.ca.at(m).Poly *= Mon;
 	}
 	return Ca_out;
 }
@@ -1098,7 +1136,9 @@ Col_amp operator*( const Col_amp & Ca, const Col_str & Cs ){
 	for(uint m=0; m< Ca.ca.size(); m++){
 		// Multiply Col_str in Col_amp with the Col_str
 		Col_str Cs_tmp=	Ca.ca.at(m)*Cs;
-		Ca_res=Ca_res+Cs_tmp;
+		//Ca_res=Ca_res+Cs_tmp;
+		Ca_res+=Cs_tmp;
+
 	}
 
 	return Ca_res;
@@ -1106,6 +1146,33 @@ Col_amp operator*( const Col_amp & Ca, const Col_str & Cs ){
 Col_amp operator*( const Col_str & Cs, const Col_amp & Ca ){
 
 	return Ca*Cs;
+}
+
+
+Col_amp operator*( const Col_amp & Ca, const Quark_line & Ql ){
+
+	Col_amp Ca_res;
+
+	// The Scalar part of Ca gives rise to a Col_str=Cs*Scalar when multiplied with Cs
+	// but this should only be kept if the scalar Polynomial is non-zero
+	if(! (Ca.Scalar.size()==1 and Ca.Scalar.at(0).int_part==0) ) {
+		Col_str Cs_tmp=	Ca.Scalar*Col_str(Ql);
+		Ca_res+=Cs_tmp;
+	}
+
+	// Multiply each Col_str in Col_amp with Cs
+	for(uint m=0; m< Ca.ca.size(); m++){
+		// Multiply Col_str in Col_amp with the Col_str
+		Col_str Cs_tmp=	Ca.ca.at(m)*Ql;
+		//Ca_res=Ca_res+Cs_tmp;
+		Ca_res+=Cs_tmp;
+	}
+
+	return Ca_res;
+}
+Col_amp operator*( const Quark_line & Ql, const Col_amp & Ca ){
+
+	return Ca*Ql;
 }
 
 

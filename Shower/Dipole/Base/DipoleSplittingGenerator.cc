@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig/Shower/Dipole/DipoleShowerHandler.h"
+#include "ThePEG/Repository/UseRandom.h"
 
 using namespace Herwig;
 
@@ -64,8 +65,12 @@ void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
           splittingReweight()->firstInteraction() ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
 	   splittingReweight()->secondaryInteractions() ) ) {
-      factor = splittingReweight()->evaluate(generatedSplitting);
-      theSplittingWeight *= (r-factor*p)/(r-p);
+      if ( !splittingReweight()->hintOnly(generatedSplitting) ) {
+	factor = 
+	  splittingReweight()->evaluate(generatedSplitting)/splittingReweight()->hint(generatedSplitting);
+	theSplittingWeight *= (r-factor*p)/(r-p);
+	theSplittingWeightVector.push_back(std::make_tuple(generatedSplitting.lastPt(),(r-factor*p)/(r-p),false));
+      }
     }
   }
   splittingKernel()->veto(generatedSplitting, factor*p, r, currentWeights);
@@ -78,8 +83,14 @@ void DipoleSplittingGenerator::accept(const vector<double>&, double p, double r)
           splittingReweight()->firstInteraction() ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
 	   splittingReweight()->secondaryInteractions() ) ) {
-      factor = splittingReweight()->evaluate(generatedSplitting);
-      theSplittingWeight *= factor;
+      if ( !splittingReweight()->hintOnly(generatedSplitting) ) {
+	factor = 
+	  splittingReweight()->evaluate(generatedSplitting)/splittingReweight()->hint(generatedSplitting);
+	theSplittingWeight *= factor;
+        theSplittingWeightVector.push_back(std::make_tuple(generatedSplitting.lastPt(),factor,true));
+      } else {
+	theSplittingWeightVector.push_back(std::make_tuple(generatedSplitting.lastPt(),1.0,true));
+      }
     }
   }
   splittingKernel()->accept(generatedSplitting, factor*p, r, currentWeights);
@@ -90,6 +101,8 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
   generatedSplitting = sp;
 
   generatedSplitting.splittingKinematics(splittingKernel()->splittingKinematics());
+  // The splitting kernel is needed for spin correlations
+  generatedSplitting.splittingKernel(splittingKernel());
   generatedSplitting.splittingParameters().resize(splittingKernel()->nDimAdditional());
 
   if ( wrapping() ) {
@@ -494,21 +507,43 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
   resetVariations();
   theSplittingWeight = 1.;
   double enhance = 1.;
+  bool detuningOff = false;
   if ( splittingReweight() ) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() &&
           splittingReweight()->firstInteraction() ) ||
 	 ( !ShowerHandler::currentHandler()->firstInteraction() &&
 	   splittingReweight()->secondaryInteractions() ) ) {
       enhance = splittingReweight()->hint(generatedSplitting);
+      if ( splittingReweight()->hintOnly(generatedSplitting) )
+	detuningOff = true;
     }
   }
 
+  bool hintOnly = false;
+  if ( splittingReweight() ) hintOnly = splittingReweight()->hintOnly(generatedSplitting);
   while (true) {
+    theExponentialGenerator->detuning(detuning());
+    if ( detuningOff )
+      theExponentialGenerator->detuning(1.0);
     try {
       if ( optKappaCutoff == 0.0 ) {
+        theSplittingWeightVector.clear();
 	res = theExponentialGenerator->generate(enhance);
       } else {
+	theSplittingWeightVector.clear();
 	res = theExponentialGenerator->generate(optKappaCutoff,enhance);
+      }
+      //Partial unweighting
+      if ( partialUnweighting && !hintOnly ) {
+	if ( abs(theSplittingWeight)/theReferenceWeight < 1.0 ) {
+	  double r = UseRandom::rnd(1.0);
+	  if ( abs(theSplittingWeight)/theReferenceWeight < r ) {
+	    theSplittingWeight = 1.;
+	    continue;
+	  } else {
+	    theSplittingWeight = theSplittingWeight/abs(theSplittingWeight)*theReferenceWeight;
+	  }
+	}
       }
     } catch (exsample::exponential_regenerate&) {
       resetVariations();

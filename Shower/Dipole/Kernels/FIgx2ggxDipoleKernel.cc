@@ -86,6 +86,62 @@ double FIgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
 }
 
+vector< pair<int, Complex> >
+FIgx2ggxDipoleKernel::generatePhi(const DipoleSplittingInfo& dInfo, const RhoDMatrix& rho) const {
+
+  double z = dInfo.lastZ();
+
+  // Altarelli-Parisi spin-indexed kernels:
+  double v_AP_ppp = -sqrt( 1./(z*(1.-z)) );
+  double v_AP_ppm = z*sqrt( z / (1.-z) );
+  double v_AP_pmp = (1.-z)*sqrt( (1.-z)/z );
+
+  //double v_AP_mmm = -v_AP_ppp;
+  double v_AP_mmp = -v_AP_ppm;
+  double v_AP_mpm = -v_AP_pmp;
+  
+  // Initialise variables for the distributions
+  vector< pair<int, Complex> > distPhiDep;
+  double max = (sqr(v_AP_ppp) + sqr(v_AP_ppm) + sqr(v_AP_pmp)) - 2.*abs(rho(0,2))*(v_AP_ppm*v_AP_mpm + v_AP_pmp*v_AP_mmp);
+  
+  distPhiDep.push_back( make_pair(0, (rho(0,0)+rho(2,2))*(sqr(v_AP_ppp) + sqr(v_AP_ppm) + sqr(v_AP_pmp))/max ) );
+  distPhiDep.push_back( make_pair(-2, rho(0,2)*(v_AP_mpm*v_AP_ppm + v_AP_mmp*v_AP_pmp)/max ) );
+  distPhiDep.push_back( make_pair(2, rho(2,0)*(v_AP_ppm*v_AP_mpm + v_AP_pmp*v_AP_mmp)/max) );
+  
+  return distPhiDep;
+}
+
+DecayMEPtr FIgx2ggxDipoleKernel::matrixElement(const DipoleSplittingInfo& dInfo) const {
+
+  double z = dInfo.lastZ();
+  
+  // Altarelli-Parisi spin-indexed kernels:
+  double v_AP_ppp = -sqrt( 1./(z*(1.-z)) );
+  double v_AP_ppm = z*sqrt( z / (1.-z) );
+  double v_AP_pmp = (1.-z)*sqrt( (1.-z)/z );
+
+  double v_AP_mmm = -v_AP_ppp;
+  double v_AP_mmp = -v_AP_ppm;
+  double v_AP_mpm = -v_AP_pmp;
+  
+  // Construct the (phi-dependent) spin-unaveraged splitting kernel
+  DecayMEPtr kernelPhiDep
+    (new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
+  Complex phase = exp(Complex(0.,1.)*dInfo.lastPhi());
+
+  // 0 = -, 2 = +
+  (*kernelPhiDep)(0,0,0) = v_AP_mmm*phase;
+  (*kernelPhiDep)(2,2,2) = v_AP_ppp/phase;
+  (*kernelPhiDep)(0,0,2) = v_AP_mmp/phase;
+  (*kernelPhiDep)(2,2,0) = v_AP_ppm*phase;
+  (*kernelPhiDep)(0,2,0) = v_AP_mpm/phase;
+  (*kernelPhiDep)(2,0,2) = v_AP_pmp*phase;
+  (*kernelPhiDep)(0,2,2) = 0;
+  (*kernelPhiDep)(2,0,0) = 0;
+
+  return kernelPhiDep;
+}
+
 // If needed, insert default implementations of  function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

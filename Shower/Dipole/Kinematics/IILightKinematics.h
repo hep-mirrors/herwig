@@ -18,179 +18,242 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * \ingroup DipoleShower
- * \author Simon Platzer
- *
- * \brief IILightKinematics implements massless splittings
- * off an initial-initial dipole.
- *
- * @see \ref IILightKinematicsInterfaces "The interfaces"
- * defined for IILightKinematics.
- */
-class IILightKinematics: public DipoleSplittingKinematics {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
-   * The default constructor.
+   * \ingroup DipoleShower
+   * \author Simon Platzer
+   *
+   * \brief IILightKinematics implements massless splittings
+   * off an initial-initial dipole.
+   *
+   * @see \ref IILightKinematicsInterfaces "The interfaces"
+   * defined for IILightKinematics.
    */
-  IILightKinematics();
+  class IILightKinematics: public DipoleSplittingKinematics {
 
-  /**
-   * The destructor.
-   */
-  virtual ~IILightKinematics();
-  //@}
+  public:
 
-public:
+    /** @name Standard constructors and destructors. */
+    //@{
+    /**
+     * The default constructor.
+     */
+    IILightKinematics();
 
-  /**
-   * Return the maximum pt for the given dipole scale.
-   */
-  virtual Energy ptMax(Energy dScale, 
-		       double emX, double specX,
-		       const DipoleIndex&,
-		       const DipoleSplittingKernel&) const;
+    /**
+     * The destructor.
+     */
+    virtual ~IILightKinematics();
+    //@}
 
-  /**
-   * Return the maximum virtuality for the given dipole scale.
-   */
-  virtual Energy QMax(Energy dScale, 
-		      double emX, double specX,
-		      const DipoleIndex& dIndex,
-		      const DipoleSplittingKernel&) const;
+  public:
 
-  /**
-   * Return the pt given a virtuality.
-   */
-  virtual Energy PtFromQ(Energy scale, const DipoleSplittingInfo&) const;
+    /**
+     * Return the maximum pt for the given dipole scale.
+     */
+    virtual Energy ptMax(Energy dScale, 
+                         double emX, double specX,
+                         const DipoleIndex&,
+                         const DipoleSplittingKernel&) const;
 
-  /**
-   * Return the virtuality given a pt.
-   */
-  virtual Energy QFromPt(Energy scale, const DipoleSplittingInfo&) const;
+    /**
+     * Return the maximum virtuality for the given dipole scale.
+     */
+    virtual Energy QMax(Energy dScale, 
+                        double emX, double specX,
+                        const DipoleIndex& dIndex,
+                        const DipoleSplittingKernel&) const;
 
-  /**
-   * Return the boundaries on the momentum fraction
-   */
-  virtual pair<double,double> zBoundaries(Energy pt,
-					  const DipoleSplittingInfo& dInfo,
-					  const DipoleSplittingKernel& split) const;
+    /**
+     * Return the pt given a virtuality.
+     */
+    virtual Energy PtFromQ(Energy scale, const DipoleSplittingInfo&) const;
 
-  /**
-   * Generate splitting variables given three random numbers
-   * and the momentum fractions of the emitter and spectator.
-   * Return true on success.
-   */
-  virtual bool generateSplitting(double kappa, double xi, double phi,
-				 DipoleSplittingInfo& dIndex,
-				 const DipoleSplittingKernel&);
+    /**
+     * Return the virtuality given a pt.
+     */
+    virtual Energy QFromPt(Energy scale, const DipoleSplittingInfo&) const;
 
-  /**
-   * Generate the full kinematics given emitter and
-   * spectator momentum and a previously completeted
-   * DipoleSplittingInfo object.
-   */
-  virtual void generateKinematics(const Lorentz5Momentum& pEmitter,
-				  const Lorentz5Momentum& pSpectator,
-				  const DipoleSplittingInfo& dInfo);
+    /**
+     * Return the boundaries on the momentum fraction
+     */
+    virtual pair<double,double> zBoundaries(Energy pt,
+                                            const DipoleSplittingInfo& dInfo,
+                                            const DipoleSplittingKernel& split) const;
 
-  /*
-   * Return true, if there is a transformation which should
-   * be applied to all other final state particles except the ones
-   * involved in the splitting after having performed the splitting
-   */
-  virtual bool doesTransform () const { return theCollinearScheme || didCollinear; }
+    /**
+     * Generate splitting variables given three random numbers
+     * and the momentum fractions of the emitter and spectator.
+     * Return true on success.
+     */
+    virtual bool generateSplitting(double kappa, double xi, double phi,
+                                   DipoleSplittingInfo& dIndex,
+                                   const DipoleSplittingKernel&);
 
-  /*
-   * perform the transformation, if existing
-   */
-  virtual Lorentz5Momentum transform (const Lorentz5Momentum& p) const {
-    if ( !theCollinearScheme && !didCollinear ) return p;
-    return p-(2.*(KplusKtilde*p)/KplusKtilde2)*KplusKtilde+(2.*(Ktilde*p)/K2)*K;
-  }
+    /**
+     * Generate the full kinematics given emitter and
+     * spectator momentum and a previously completeted
+     * DipoleSplittingInfo object.
+     */
+    virtual void generateKinematics(const Lorentz5Momentum& pEmitter,
+                                    const Lorentz5Momentum& pSpectator,
+                                    const DipoleSplittingInfo& dInfo);
 
-public:
+    /**
+     * Return true, if there is a transformation which should
+     * be applied to all other final state particles except the ones
+     * involved in the splitting after having performed the splitting
+     */
+    virtual bool doesTransform () const { return theCollinearScheme || didCollinear; }
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
+    /**
+     * Calculate and store a required Lorentz transformation
+     **/
+    virtual void setTransformation () ;
+    
+    /*
+     * perform the transformation, if existing
+     */
+    virtual void transform (PPtr& part) {
+      if ( !theCollinearScheme && !didCollinear ) return;
 
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
+      Lorentz5Momentum mom = part->momentum();
 
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
+      // If particle has SpinInfo check that we're 
+      // not dealing with an intermediate spectator.
+      if ( part->spinInfo() 
+	   && !(part->spinInfo()->timelike() && part->children().size() == 1 ) 
+	   && !(!part->spinInfo()->timelike() && part->parents()[0]->children().size() == 1 ) ) {
+	  
+        if ( !theTransformationCalculated )
+          setTransformation();
+	 
+        part->spinInfo()->transform(mom,theRecoilTransformation);
+      }
 
-protected:
+      part->set5Momentum(mom-(2.*(KplusKtilde*mom)/KplusKtilde2)*KplusKtilde+(2.*(Ktilde*mom)/K2)*K);
+      
+    }
 
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const;
-  //@}
+    /*
+     * SW 30/01/2019: Test feature only, not for release.
+     * Return true to only apply the transformation to non-coloured particles.
+     * Note this requires careful handling in DipoleEventRecord
+     */
+    //virtual bool transformHardOnly() const { return theTransformHardOnly; }
 
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+    /**
+     * SW 30/01/2019: Test feature only, not for release.
+     * Perform the recoil in the case of a decayed parton
+     */   
+    // virtual void transformHard ( PPtr& hard ) {
+    // if ( !theTransformationCalculated ) {
+    //   setTransformation();
+    //   theTransformationCalculated = true;
+    // }
+    //   hard->setMomentum(splitRecoilMomentum());
+    //   hard->rescaleMass();
+    // }
+
+  
+  public:
+
+    /** @name Functions used by the persistent I/O system. */
+    //@{
+    /**
+     * Function used to write out object persistently.
+     * @param os the persistent output stream written to.
+     */
+    void persistentOutput(PersistentOStream & os) const;
+
+    /**
+     * Function used to read in object persistently.
+     * @param is the persistent input stream read from.
+     * @param version the version number of the object when written.
+     */
+    void persistentInput(PersistentIStream & is, int version);
+    //@}
+
+    /**
+     * The standard Init function used to initialize the interfaces.
+     * Called exactly once for each class by the class description system
+     * before the main function starts or
+     * when this class is dynamically loaded.
+     */
+    static void Init();
+
+  protected:
+
+    /** @name Clone Methods. */
+    //@{
+    /**
+     * Make a simple clone of this object.
+     * @return a pointer to the new object.
+     */
+    virtual IBPtr clone() const;
+
+    /** Make a clone of this object, possibly modifying the cloned object
+     * to make it sane.
+     * @return a pointer to the new object.
+     */
+    virtual IBPtr fullclone() const;
+    //@}
 
 
-private:
+    // If needed, insert declarations of virtual function defined in the
+    // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<IILightKinematics> initIILightKinematics;
 
-  /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
-   */
-  IILightKinematics & operator=(const IILightKinematics &) = delete;
+  private:
 
-private:
+    /**
+     * The static object used to initialize the description of this class.
+     * Indicates that this is a concrete class with persistent data.
+     */
+    static ClassDescription<IILightKinematics> initIILightKinematics;
 
-  /**
-   * Wether or not to choose the `collinear' scheme
-   */
-  bool theCollinearScheme;
+    /**
+     * The assignment operator is private and must never be called.
+     * In fact, it should not even be implemented.
+     */
+    IILightKinematics & operator=(const IILightKinematics &) = delete;
 
-  bool didCollinear;
+  private:
 
-  Lorentz5Momentum K;
-  Energy2 K2;
-  Lorentz5Momentum Ktilde;
-  Lorentz5Momentum KplusKtilde;
-  Energy2 KplusKtilde2;
+    /**
+     * Wether or not to choose the `collinear' scheme
+     */
+    bool theCollinearScheme;
 
-};
+    bool didCollinear;
+
+    /**
+     * SW 30/01/2019: Test feature only, not for release.
+     * Whether to transform only hard (i.e. non-coloured) particles.
+     */
+    //bool theTransformHardOnly;
+  
+    Lorentz5Momentum K;
+    Energy2 K2;
+    Lorentz5Momentum Ktilde;
+    Lorentz5Momentum KplusKtilde;
+    Energy2 KplusKtilde2;
+
+    /**
+     * Store the LorentzRotation object equivalent to the 
+     * transformation applied to the outgoing particles.
+     * Need this to apply to the particle SpinInfo if spin
+     * correlations are included.
+     */
+    LorentzRotation theRecoilTransformation;
+
+    /**
+     * Bool to avoid unecessary recalculation of the 
+     * Lorentz transformation.
+     */
+    bool theTransformationCalculated;
+    
+  };
 
 }
 
@@ -198,34 +261,34 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+  /** @cond TRAITSPECIALIZATIONS */
 
-/** This template specialization informs ThePEG about the
- *  base classes of IILightKinematics. */
-template <>
-struct BaseClassTrait<Herwig::IILightKinematics,1> {
-  /** Typedef of the first base class of IILightKinematics. */
-  typedef Herwig::DipoleSplittingKinematics NthBase;
-};
+  /** This template specialization informs ThePEG about the
+   *  base classes of IILightKinematics. */
+  template <>
+  struct BaseClassTrait<Herwig::IILightKinematics,1> {
+    /** Typedef of the first base class of IILightKinematics. */
+    typedef Herwig::DipoleSplittingKinematics NthBase;
+  };
 
-/** This template specialization informs ThePEG about the name of
- *  the IILightKinematics class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::IILightKinematics>
-  : public ClassTraitsBase<Herwig::IILightKinematics> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::IILightKinematics"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * IILightKinematics is implemented. It may also include several, space-separated,
-   * libraries if the class IILightKinematics depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwDipoleShower.so"; }
-};
+  /** This template specialization informs ThePEG about the name of
+   *  the IILightKinematics class and the shared object where it is defined. */
+  template <>
+  struct ClassTraits<Herwig::IILightKinematics>
+    : public ClassTraitsBase<Herwig::IILightKinematics> {
+    /** Return a platform-independent class name */
+    static string className() { return "Herwig::IILightKinematics"; }
+    /**
+     * The name of a file containing the dynamic library where the class
+     * IILightKinematics is implemented. It may also include several, space-separated,
+     * libraries if the class IILightKinematics depends on other classes (base classes
+     * excepted). In this case the listed libraries will be dynamically
+     * linked in the order they are specified.
+     */
+    static string library() { return "HwDipoleShower.so"; }
+  };
 
-/** @endcond */
+  /** @endcond */
 
 }
 
