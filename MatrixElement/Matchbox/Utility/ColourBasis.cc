@@ -68,9 +68,9 @@ void ColourBasis::clear() {
   theLargeN = false;
   theNormalOrderedLegs.clear();
   theIndexMap.clear();
-  theScalarProducts.clear();
+  theEmissionMaps.clear();
   theCharges.clear();
-  theChargeNonZeros.clear();
+  theScalarProducts.clear();
   theCorrelators.clear();
   theFlowMap.clear();
   theColourLineMap.clear();
@@ -219,6 +219,94 @@ const vector<PDT::Colour>& ColourBasis::normalOrderedLegs(const cPDVector& sub) 
   return empty;
 }
 
+const std::tuple<vector<PDT::Colour>,vector<PDT::Colour>,
+		 size_t,size_t,size_t,map<size_t,size_t> >& 
+ColourBasis::normalOrderEmissionMap(const cPDVector& subFrom,
+				    const cPDVector& subTo,
+				    size_t ij, size_t i, size_t j,
+				    const map<size_t,size_t>& emissionMap) {
+
+  auto key = std::make_tuple(subFrom,subTo,ij,i,j,emissionMap);
+
+  auto em = theEmissionMaps.find(key);
+  if ( em != theEmissionMaps.end() )
+    return em->second;
+
+  auto transFrom = indexMap().find(subFrom);
+  auto transTo = indexMap().find(subTo);
+  const vector<PDT::Colour>& lFrom = normalOrderedLegs(subFrom);
+  const vector<PDT::Colour>& lTo = normalOrderedLegs(subTo);
+
+  assert(transFrom != theIndexMap.end() &&
+	 transTo != theIndexMap.end());
+
+  map<size_t,size_t> res;
+
+  size_t cij, ci, cj;
+  auto tFromIt = transFrom->second.find(ij);
+  assert(tFromIt != transFrom->second.end());
+  cij = tFromIt->second;
+
+  auto tToIt = transTo->second.find(i);
+  assert(tToIt != transTo->second.end());
+  ci = tToIt->second;
+  tToIt = transTo->second.find(j);
+  assert(tToIt != transTo->second.end());
+  cj = tToIt->second;
+
+  for ( auto fromBasisIt = transFrom->second.begin();
+	fromBasisIt != transFrom->second.end(); ++fromBasisIt ) {
+    if ( fromBasisIt->first == ij )
+      continue;
+    auto toProcessIndexIt = emissionMap.find(fromBasisIt->first);
+    assert(toProcessIndexIt != emissionMap.end());
+    auto toBasisIndexIt = transTo->second.find(toProcessIndexIt->second);
+    assert(toBasisIndexIt != transTo->second.end());
+    res[fromBasisIt->second] = toBasisIndexIt->second;
+  }
+
+  return theEmissionMaps[key] = std::make_tuple(lFrom,lTo,cij,ci,cj,res);
+
+}
+
+const pair<compressed_matrix<double>,vector<pair<size_t,size_t> > >&
+ColourBasis::charge(const cPDVector& subFrom,
+		    const cPDVector& subTo,
+		    size_t ij, size_t i, size_t j,
+		    const map<size_t,size_t>& emissionMap) {
+
+  auto bKey = normalOrderEmissionMap(subFrom,subTo,ij,i,j,emissionMap);
+
+  auto it = theCharges.find(bKey);
+
+  if ( it != theCharges.end() )
+    return it->second;
+
+  size_t dimFrom = prepare(subFrom,false);
+  size_t dimTo = prepare(subTo,false);
+
+  compressed_matrix<double> tm(dimTo,dimFrom);
+  vector<pair<size_t,size_t> > nonZero;
+
+  const vector<PDT::Colour>& basisFrom = std::get<0>(bKey);
+  const vector<PDT::Colour>& basisTo = std::get<1>(bKey);
+  size_t cij = std::get<2>(bKey);
+  size_t ci = std::get<3>(bKey);
+  size_t cj = std::get<4>(bKey);
+  const map<size_t,size_t>& dict = std::get<5>(bKey);
+
+  for ( size_t bFrom = 0; bFrom < dimFrom; ++bFrom )
+    for ( size_t aTo = 0; aTo < dimTo; ++aTo ) {
+      tm(aTo,bFrom) =
+	tMatrixElement(cij,aTo,bFrom,basisTo,basisFrom,ci,cj,dict);
+      if ( tm(aTo,bFrom) != 0. )
+	nonZero.push_back(make_pair(aTo,bFrom));
+    }
+
+  return theCharges[bKey] = make_pair(tm,nonZero);
+
+}
+
 size_t ColourBasis::prepare(const cPDVector& sub,
 			    bool noCorrelations) {
 
@@ -245,7 +333,7 @@ size_t ColourBasis::prepare(const cPDVector& sub,
 
   size_t dim = doPrepare ? prepareBasis(legs) : theScalarProducts[legs].size1();
 
-  if ( theCharges.find(legs) != theCharges.end() )
+  if ( theCorrelators.find(legs) != theCorrelators.end() )
     return dim;
 
   if ( !doPrepare && noCorrelations )
@@ -266,7 +354,6 @@ size_t ColourBasis::prepare(const cPDVector& sub,
   legsPlus = normalOrder(legsPlus);
 
   bool doPreparePlus = theScalarProducts.find(legsPlus) == theScalarProducts.end();
-
   size_t dimPlus = doPreparePlus ? prepareBasis(legsPlus) : theScalarProducts[legsPlus].size1();
 
   symmetric_matrix<double,upper>& spPlus = 
@@ -280,19 +367,20 @@ size_t ColourBasis::prepare(const cPDVector& sub,
 	spPlus(a,b) = scalarProduct(a,b,legsPlus);
   }
 
-  typedef map<size_t,compressed_matrix<double> > cMap;
-  cMap& cm = theCharges.insert(make_pair(legs,cMap())).first->second;
-
-  typedef map<size_t,vector<pair<size_t,size_t> > > ccMap;
-  ccMap& ccm = theChargeNonZeros.insert(make_pair(legs,ccMap())).first->second;
+  map<size_t,compressed_matrix<double> > cm;
+  map<size_t,vector<pair<size_t,size_t> > > ccm;
 
   tmp.resize(dimPlus,dim);
   for ( size_t i = 0; i < legs.size(); ++i ) {
     size_t nonZero = 0;
     vector<pair<size_t,size_t> > nonZeros;
+    map<size_t,size_t> standardMap;
+    for ( size_t j = 0; j < legs.size(); ++j )
+      if ( j != i )
+	standardMap[j] = j;
     for ( size_t a = 0; a < dimPlus; ++a )
       for ( size_t b = 0; b < dim; ++b ) {
-	tmp(a,b) = tMatrixElement(i,a,b,legsPlus,legs);
+	tmp(a,b) = tMatrixElement(i,a,b,legsPlus,legs,i,legs.size(),standardMap);
 	if ( tmp(a,b) != 0. ) {
 	  ++nonZero;
 	  nonZeros.push_back(make_pair(a,b));
@@ -831,52 +919,6 @@ const symmetric_matrix<double,upper>& ColourBasis::scalarProducts(const cPDVecto
 
 }
 
-const compressed_matrix<double>& ColourBasis::charge(const cPDVector& sub, size_t iIn) const {
-
-  map<cPDVector,vector<PDT::Colour> >::const_iterator lit =
-    theNormalOrderedLegs.find(sub);
-  assert(lit != theNormalOrderedLegs.end());
-
-  ChargeMap::const_iterator ct =
-    theCharges.find(lit->second);
-  assert(ct != theCharges.end());
-
-  map<cPDVector,map<size_t,size_t> >::const_iterator trans
-    = theIndexMap.find(sub);
-  assert(trans != theIndexMap.end());
-  size_t i = trans->second.find(iIn)->second;
-
-  map<size_t,compressed_matrix<double> >::const_iterator cit
-    = ct->second.find(i);
-  assert(cit != ct->second.end());
-
-  return cit->second;
-
-}
-
-const vector<pair<size_t,size_t> >& ColourBasis::chargeNonZero(const cPDVector& sub, size_t iIn) const {
-
-  map<cPDVector,vector<PDT::Colour> >::const_iterator lit =
-    theNormalOrderedLegs.find(sub);
-  assert(lit != theNormalOrderedLegs.end());
-
-  ChargeNonZeroMap::const_iterator ct =
-    theChargeNonZeros.find(lit->second);
-  assert(ct != theChargeNonZeros.end());
-
-  map<cPDVector,map<size_t,size_t> >::const_iterator trans
-    = theIndexMap.find(sub);
-  assert(trans != theIndexMap.end());
-  size_t i = trans->second.find(iIn)->second;
-
-  map<size_t,vector<pair<size_t,size_t> > >::const_iterator cit
-    = ct->second.find(i);
-  assert(cit != ct->second.end());
-
-  return cit->second;
-
-}
-
 const symmetric_matrix<double,upper>& ColourBasis::correlator(const cPDVector& sub,
 							      const pair<size_t,size_t>& ijIn) const {
 
@@ -1103,19 +1145,8 @@ void ColourBasis::writeBasis(const string& prefix) const {
     const symmetric_matrix<double,upper>& sp = 
       theScalarProducts.find(*known)->second;
     write(sp,out);
-    if ( theCharges.find(*known) != theCharges.end() ) {
-      out << "#charges\n";
-      const map<size_t,compressed_matrix<double> >& tm =
-	theCharges.find(*known)->second;
-      const map<size_t,vector<pair<size_t,size_t> > >& tc =
-	theChargeNonZeros.find(*known)->second;
-      map<size_t,vector<pair<size_t,size_t> > >::const_iterator kc =
-	tc.begin();
-      for ( map<size_t,compressed_matrix<double> >::const_iterator k = tm.begin();
-	    k != tm.end(); ++k, ++kc ) {
-	out << k->first << "\n";
-	write(k->second,out,kc->second);
-      }
+    if ( theCorrelators.find(*known) != theCorrelators.end() ) {
+      out << "#correlators\n";
       const map<pair<size_t,size_t>,symmetric_matrix<double,upper> >& cm =
 	theCorrelators.find(*known)->second;
       for ( map<pair<size_t,size_t>,symmetric_matrix<double,upper> >::const_iterator k =
@@ -1124,7 +1155,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
 	write(k->second,out);
       }
     } else {
-      out << "#nocharges\n";
+      out << "#nocorrelators\n";
     }
     out << flush;
   }
@@ -1147,11 +1178,7 @@ bool ColourBasis::readBasis(const vector<PDT::Colour>& legs) {
     return false;
   read(theScalarProducts[legs],in);
   string tag; in >> tag;
-  if ( tag != "#nocharges" ) {
-    for ( size_t k = 0; k < legs.size(); ++k ) {
-      size_t i; in >> i;
-      read(theCharges[legs][i],in,theChargeNonZeros[legs][i]);
-    }
+  if ( tag == "#correlators" ) {
     for ( size_t k = 0; k < legs.size()*(legs.size()-1)/2; ++k ) {
       size_t i,j; in >> i >> j;
       read(theCorrelators[legs][make_pair(i,j)],in);

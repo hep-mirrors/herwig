@@ -21,6 +21,7 @@
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 #include <iterator>
+#include <tuple>
 
 namespace Herwig {
 
@@ -182,16 +183,6 @@ public:
   const symmetric_matrix<double,upper>& scalarProducts(const cPDVector&) const;
 
   /**
-   * Return the matrix representation of a colour charge.
-   */
-  const compressed_matrix<double>& charge(const cPDVector&, size_t) const;
-
-  /**
-   * Return the non-vanishing elements of a colour charge.
-   */
-  const vector<pair<size_t,size_t> >& chargeNonZero(const cPDVector&, size_t) const;
-
-  /**
    * Return the correlator matrix for the given process.
    */
   const symmetric_matrix<double,upper>& correlator(const cPDVector&,
@@ -261,6 +252,29 @@ public:
   const vector<PDT::Colour>& normalOrderedLegs(const cPDVector& sub) const;
 
   /**
+   * Generate the emission/splitting map for basis labels from sub-process
+   * information; we consider the splitting of leg ij from subprocess subFrom
+   * with the legs not participating in the splitting relabelled according to
+   * emissionMap.
+   */
+  const std::tuple<vector<PDT::Colour>,vector<PDT::Colour>,
+		   size_t,size_t,size_t,map<size_t,size_t> >& 
+  normalOrderEmissionMap(const cPDVector& subFrom,
+			 const cPDVector& subTo,
+			 size_t ij, size_t i, size_t j,
+			 const map<size_t,size_t>& emissionMap);
+
+  /**
+   * Return the colour charge matrix representation for the given splitting ij
+   * -> i,j with other legs relabbeled as indicated by the dictionary map.
+   */
+  const pair<compressed_matrix<double>,vector<pair<size_t,size_t> > >&
+  charge(const cPDVector& subFrom,
+	 const cPDVector& subTo,
+	 size_t ij, size_t i, size_t j,
+	 const map<size_t,size_t>& emissionMap);
+
+  /**
    * Convert the legs to a string.
    */
   string file(const vector<PDT::Colour>&) const;
@@ -305,6 +319,18 @@ public:
    */
   static string cfstring(const list<list<pair<int,bool> > >&);
 
+  /**
+   * Returns a map of how the order of the vectors of a colour basis are 
+   * changed when the indices are changed.
+   */
+  virtual map<size_t,size_t> indexChange(const vector<PDT::Colour>&,
+					 const size_t,
+					 const map<size_t,size_t>&) const {
+    map<size_t,size_t> aMap;
+    return aMap;
+  }
+
+
 protected:
 
   /**
@@ -321,13 +347,17 @@ protected:
 			       const vector<PDT::Colour>& abBasis) const = 0;
 
   /**
-   * Return the matrix element of a colour charge
-   * <c_{n+1,a}|T_i|c_{n,b}> between basis tensors a and b, with
-   * respect to aBasis and bBasis
+   * Return the matrix element of a colour charge or quark splitting
+   * <c_{n+1,a}|T_i|c_{n,b}> between basis tensors a and b, with respect to
+   * aBasis and bBasis; k and l index the splitting product's labels, and dict
+   * encodes how legs not participating in the splitting are relabeled to the
+   * larger basis.
    */
   virtual double tMatrixElement(size_t i, size_t a, size_t b,
 				const vector<PDT::Colour>& aBasis,
-				const vector<PDT::Colour>& bBasis) const = 0;
+				const vector<PDT::Colour>& bBasis,
+				size_t k, size_t l,
+				const map<size_t,size_t>& dict) const = 0;
 
   /**
    * Return true, if a large-N colour connection exists for the
@@ -364,6 +394,7 @@ protected:
    */
   void updateColourLines(Ptr<Tree2toNDiagram>::tcptr);
 
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -424,10 +455,12 @@ private:
   typedef map<vector<PDT::Colour>,symmetric_matrix<double,upper> >
   ScalarProductMap;
 
-  typedef map<vector<PDT::Colour>,map<size_t,compressed_matrix<double> > > ChargeMap;
-  typedef map<vector<PDT::Colour>,map<size_t,vector<pair<size_t,size_t > > > > ChargeNonZeroMap;
+  typedef map<vector<PDT::Colour>,map<pair<size_t,size_t>,symmetric_matrix<double,upper> > >
+  CorrelatorMap;
 
-  typedef map<vector<PDT::Colour>,map<pair<size_t,size_t>,symmetric_matrix<double,upper> > > CorrelatorMap;
+  typedef map<std::tuple<vector<PDT::Colour>,vector<PDT::Colour>,
+			 size_t,size_t,size_t,map<size_t,size_t> >,
+	      pair<compressed_matrix<double>,vector<pair<size_t,size_t> > > > TSMap;
 
   /**
    * True, if this basis is running in large-N mode
@@ -446,21 +479,19 @@ private:
   map<cPDVector,map<size_t,size_t> > theIndexMap;
 
   /**
+   * Translations of emission maps
+   */
+  map<std::tuple<cPDVector,cPDVector,
+		 size_t,size_t,size_t,map<size_t,size_t> >,
+      std::tuple<vector<PDT::Colour>,vector<PDT::Colour>,
+		 size_t,size_t,size_t,map<size_t,size_t> > >
+  theEmissionMaps;
+
+  /**
    * The scalar product matrix S_n = <c_{n,a}|c_{n,b}> , indexed
    * by normal ordered leg assignments.
    */
   ScalarProductMap theScalarProducts;
-
-  /**
-   * The colour charge matrices <c_{n+1,a}|T_i|c_{n,b}> indexed by
-   * the `n' normal ordered legs and the index i.
-   */
-  ChargeMap theCharges;
-
-  /**
-   * The nonzero elements of the charge matrices.
-   */
-  ChargeNonZeroMap theChargeNonZeros;
 
   /**
    * The correlator matrices T_i\cdot T_j -> T_i^\dagger S_{n+1} T_j
@@ -468,6 +499,11 @@ private:
    * normal ordered legs and indices i,j
    */
   CorrelatorMap theCorrelators;
+
+  /**
+   * Colour charge or quark splitting matrix representations
+   */
+  TSMap theCharges;
 
   /**
    * Map diagrams to colour flows indexed by basis tensor.

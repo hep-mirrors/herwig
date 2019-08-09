@@ -19,6 +19,8 @@
 #include "Herwig/Shower/Dipole/Utility/DipoleMCCheck.h"
 #include "Herwig/Sampling/exsample/exponential_generator.h"
 
+#include <tuple>
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -145,6 +147,13 @@ public:
     /// wrapper for sudakovExpansion
   double wrappedSudakovExpansion(DipoleSplittingInfo& split,Energy down,Energy fixedScale);
 
+  /**
+   * Turn on partial unweighting and set the reference weight.
+   */
+  void doPartialUnweighting(double wref) {
+    partialUnweighting = true;
+    theReferenceWeight = wref;
+  }
 
 public:
 
@@ -285,6 +294,15 @@ public:
    * True, if sampler should apply compensation
    */
   void doCompensate(bool yes = true) { theDoCompensate = yes; }
+
+  /**
+   * Return the weight vector associated to the currently generated splitting
+   */
+  vector<std::tuple<Energy,double,bool> > splittingWeightVector() const {
+    if ( wrapping() )
+      return theOtherGenerator->splittingWeightVector();
+    return theSplittingWeightVector;
+  }
 
 public:
 
@@ -456,6 +474,23 @@ private:
    */
   double theSudakovAccuracy=0.05;
 
+  /**
+   * Reference weight to improve convergence for subleading Nc
+   * corrections (by reducing time spent on events with very
+   * small weights)
+   */
+  double theReferenceWeight;
+
+  /**
+   * Flag for partial unweighting.
+   */
+  bool partialUnweighting = false;
+
+  /**
+   * The scale, weight and a bool for all veto steps and the accept step.
+   * The bool is false for a veto step and true for an accept step.
+   */
+  vector<std::tuple<Energy,double,bool> > theSplittingWeightVector;
 
 private:
 

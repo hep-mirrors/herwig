@@ -93,7 +93,7 @@ void Orthogonal_basis::diagonal_scalar_product_matrix( bool save_P_diagonal_spm,
 					// Otherwise, calculate value and save topology
 					else {
 						Polynomial p = Col_fun.scalar_product(Cs1, Cs2);
-						iiEntry_contr = shared_ptr<Polynomial> (new Polynomial(p));
+						iiEntry_contr = std::shared_ptr<Polynomial> (new Polynomial(p));
 						mem_map[Cs_string.str()] = iiEntry_contr;
 
 					}
@@ -120,10 +120,10 @@ void Orthogonal_basis::diagonal_scalar_product_matrix( bool save_P_diagonal_spm,
 				double num_iiRes= Col_fun. double_num( iiRes );
 				iiRes.clear();
 				Monomial Mon( num_iiRes );
-				iiRes.push_back(Mon);
+				iiRes.append(Mon);
 			}
 
-			diagonal_P_spm.push_back( iiRes );
+			diagonal_P_spm.append( iiRes );
 
 		} // end if ( use_mem )
 		else{
@@ -131,7 +131,7 @@ void Orthogonal_basis::diagonal_scalar_product_matrix( bool save_P_diagonal_spm,
 			Polynomial iiRes=Col_fun.scalar_product(cb.at(i), cb.at(i));
 
 			iiRes.simplify();
-			diagonal_P_spm.push_back( iiRes );
+			diagonal_P_spm.append( iiRes );
 
 		} //end if (not mem)
 
@@ -164,18 +164,18 @@ void Orthogonal_basis::scalar_product_matrix( bool save_P_spm, bool save_d_spm, 
 		P_spm.clear();
 
 		Polynomial Zero;
-		Zero=0*Zero;
+		Zero*=0;
 		for (uint i=0; i< diagonal_P_spm.size(); i++ ){
 			Poly_vec rowi;
 			for (uint j=0; j< diagonal_P_spm.size(); j++ ){
 				if(i==j){// diagonal entries
-					rowi.push_back( diagonal_P_spm.at(i));
+					rowi.append( diagonal_P_spm.at(i));
 				}
 				else{// non-diagonal parts
-					rowi.push_back(Zero);
+					rowi.append(Zero);
 				}
 			}
-			P_spm.push_back(rowi);
+			P_spm.append(rowi);
 
 		}
 	}
@@ -243,7 +243,7 @@ Poly_vec Orthogonal_basis::decompose( const Col_amp & Ca ) {
 	// Use matrix information if diagonal spm is empty
 	if( diagonal_P_spm.empty() ){
 		for ( uint i=0; i< P_spm.size(); i++ ){
-			diagonal_P_spm.push_back( P_spm.at(i).at(i) );
+			diagonal_P_spm.append( P_spm.at(i).at(i) );
 		}
 		diagonal_d_spm=Col_fun.double_num(diagonal_P_spm);
 	}
@@ -255,7 +255,7 @@ Poly_vec Orthogonal_basis::decompose( const Col_amp & Ca ) {
 	for (uint i = 0; i < cb.size(); i++) {
 		double inv_norm=1.0/diagonal_d_spm.at(i);
 		//Decv.at(i)= Col_fun.scalar_product( cb.at(i) , Ca )*inv_norm;
-		Decv.push_back( Col_fun.scalar_product( cb.at(i) , Ca )*inv_norm );
+		Decv.append( Col_fun.scalar_product( cb.at(i) , Ca )*inv_norm );
 	}
 
 	return Decv;
@@ -354,7 +354,7 @@ Polynomial Orthogonal_basis::scalar_product( const Col_amp & Ca1, const Col_amp 
 	// If matrix form, but not diagonal exist, copy diagonal entries
 	else if(diagonal_P_spm.empty() ){
 		for( uint i=0; i< P_spm.size(); i++ ){
-			diagonal_P_spm.push_back(P_spm.at(i).at(i));
+			diagonal_P_spm.append(P_spm.at(i).at(i));
 		}
 	}
 
@@ -370,7 +370,7 @@ Polynomial Orthogonal_basis::scalar_product( const Col_amp & Ca1, const Col_amp 
 	// Then add contributions
 	for (uint m1=0; m1< cb.size(); m1++){
 		// Diagonal terms
-		Poly_res=Poly_res+Polyv1.at(m1) *Polyv2.at(m1) *diagonal_P_spm.at(m1);
+		Poly_res+=Polyv1.at(m1) *Polyv2.at(m1) *diagonal_P_spm.at(m1);
 	}
 	return Poly_res;
 }

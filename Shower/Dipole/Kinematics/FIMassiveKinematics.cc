@@ -60,9 +60,9 @@ Energy FIMassiveKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
 }
 
 Energy FIMassiveKinematics::ptMax(Energy dScale, 
-				  double, double specX,
+				double, double specX,
 				  const DipoleSplittingInfo& dInfo,				 
-				  const DipoleSplittingKernel& split) const {
+				const DipoleSplittingKernel& split) const {
 
   DipoleIndex ind = dInfo.index();
 
@@ -109,9 +109,9 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
   
 
 Energy FIMassiveKinematics::QMax(Energy dScale, 
-				 double, double specX,
+			       double, double specX,
 				 const DipoleSplittingInfo&,				 
-				 const DipoleSplittingKernel&) const {
+				const DipoleSplittingKernel&) const {
   generator()->log() << "FIMassiveKinematics::QMax called.\n" << flush;
   assert(false && "implementation missing");
   // this is sqrt( 2qi*q ) -> max;
@@ -133,7 +133,7 @@ Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
   }
   Energy2 mj2 = sqr(split.emissionData()->mass());
   
-  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1-z)*mi2 - z*mj2;
+  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1.-z)*mi2 - z*mj2;
   assert(pt2 >= ZERO);
   return sqrt(pt2);
 }
@@ -153,7 +153,7 @@ Energy FIMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split)
   }
   Energy2 mj2 = sqr(split.emissionData()->mass());
   
-  Energy2 Q2 = (sqr(pt) + (1-z)*mi2 + z*mj2)/(z*(1.-z));
+  Energy2 Q2 = (sqr(pt) + (1.-z)*mi2 + z*mj2)/(z*(1.-z));
   return sqrt(Q2);
 }
 
@@ -311,7 +311,7 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,
 					   const DipoleSplittingInfo& dInfo) {
-  
+
   // Get splitting variables
   Energy pt = dInfo.lastPt();
   double z = dInfo.lastZ();
@@ -320,9 +320,6 @@ void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Energy2 pt2 = sqr(pt);
   Energy2 sbar = sqr(dInfo.scale());
   
-  Lorentz5Momentum kt =
-    getKt (pSpectator, pEmitter, pt, dInfo.lastPhi(),true);
-
   // Construct mass squared variables
   Energy2 mij2 = sqr(dInfo.emitterMass());
   Energy mi = ZERO;
@@ -336,10 +333,12 @@ void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   }
   Energy2 mi2 = sqr(mi);
   Energy2 mj2  = sqr(dInfo.emissionData()->mass());
-  
+
   double xInv = ( 1. +
 		  (pt2+(1.-z)*mi2+z*mj2-z*(1.-z)*mij2) /
 		  (z*(1.-z)*sbar) );
+
+  Lorentz5Momentum kt = getKt(pEmitter, pSpectator, pt, dInfo.lastPhi(), true);
 
   Lorentz5Momentum em = z*pEmitter +
     (pt2+mi2-z*z*mij2)/(z*sbar)*pSpectator + kt;
@@ -352,15 +351,16 @@ void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 
   emm.setMass(dInfo.emissionData()->mass());
   emm.rescaleEnergy();
-  
+
   spe.setMass(ZERO);
   spe.rescaleEnergy();
-  
+
   emitterMomentum(em);
   emissionMomentum(emm);
   spectatorMomentum(spe);
 
 }
+
 
 // If needed, insert default implementations of function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

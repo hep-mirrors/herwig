@@ -724,6 +724,11 @@ CrossSection MatchboxMEBase::dSigHatDRAlphaDiff(double alpha) const {
   return res;
 }
 
+
+
+
+
+
 CrossSection MatchboxMEBase::dSigHatDR() const {
   getPDFWeight();
   

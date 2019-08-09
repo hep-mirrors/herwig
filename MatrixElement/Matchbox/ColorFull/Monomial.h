@@ -23,7 +23,7 @@ namespace ColorFull {
 class Monomial {
 public:
 
-	/// Default constructor sets int_part and cnum_part=1, and Pow_Nc=pow_TR=pow_CF=0.
+	/// Default constructor sets int_part=cnum_part=1, and pow_Nc=pow_TR=pow_CF=0.
 	Monomial(){
 		pow_TR=pow_Nc=pow_CF=0;
 		int_part=1;
@@ -47,14 +47,14 @@ public:
 	}
 
 	/// Constructor taking a string as argument.
-	/// The argument should be of the form given in form (for example)
+	/// The argument should be of the form in for example
 	/// -(20*TR^5)/Nc or -20 TR^(5)/Nc or 20 / TR^(-5)Nc^(1) CF^(3).
 	/// NOTE: All spaces and * are ignored, except in  "*(-1)" and *-1, which
 	/// is understood as (*-1).
 	/// EVERYTHING standing after / is
 	/// divided with, whereas everything standing before is multiplied with.
 	/// Parentheses are ignored unless they appear in powers,
-	/// i.e, directly after ^.
+	/// i.e., directly after ^.
 	/// No spaces are allowed inside the powers.
 	/// If the string contains no info or is empty the Monomial is put to 1,
 	/// pow_TR = pow_Nc = pow_CF = 0, int_part = 1, cnum_part = 1.0.
@@ -67,13 +67,13 @@ public:
 	/// Power of the number of colors.
 	int pow_Nc;
 
-	/// Power of CF=TR (Nc^2-1)/(Nc)
+	/// Power of CF=TR (Nc^2-1)/Nc.
 	int pow_CF;
 
-	/// Integer multiplying monomial, can be 0.
+	/// Integer multiplying the monomial, can be 0.
 	int int_part;
 
-	/// Complex number multiplying monomial.
+	/// Complex number multiplying the monomial.
 	cnum cnum_part;
 
 	/// Take the complex conjugate.
@@ -85,6 +85,11 @@ public:
 	/// Function for reading in the Monomial from the file filename,
 	/// uses Monomial_of_str.
 	void read_in_Monomial( std::string filename );
+
+
+	/// Function for writing out the Monomial to a file
+	/// with name filename.
+	void write_out_Monomial( std::string filename ) const;
 
 
 private:
@@ -99,7 +104,7 @@ private:
 	/// Parentheses are ignored unless they appear in powers,
 	/// i.e, directly after ^.
 	/// No spaces are allowed inside the powers.
-	/// If the string contains no info or is empty the Monomial is put to 1,
+	/// If the string contains no information or is empty, the Monomial is set to 1,
 	/// pow_TR = pow_Nc = pow_CF = 0, int_part = 1, cnum_part = 1.0.
 	void Monomial_of_str( std::string str );
 
@@ -139,6 +144,25 @@ Monomial operator*( const double d, const Monomial & Mon );
 /// and pow_CF are added, and the numbers int_part and mon
 /// are multiplied.
 Monomial operator*( const Monomial & Mon1, const Monomial & Mon2 );
+
+/// Operator *= for Monomial and int.
+/// The int_part member is multiplied by i, whereas other
+/// members are kept constant.
+Monomial operator*=( Monomial & Mon,  const int i );
+
+/// Operator *= for Monomial and cnum.
+/// The cnum_part member is multiplied by c, whereas other
+/// members are kept constant.
+Monomial operator*=( Monomial & Mon, const cnum c );
+
+/// Operator *= for Monomial and double.
+/// The cnum_part member is multiplied by d, whereas other
+/// members are kept constant.
+Monomial operator*=( Monomial & Mon, const double d );
+
+/// Operator *= for Monomials. Mon1 is changed by being multipled with
+/// Mon2.
+Monomial operator*=( Monomial & Mon1, const Monomial & Mon2);
 
 /// Operator == for Monomials, all parts must be equal.
 /// For the numerical part, an accuracy is used for the ratio.

@@ -259,7 +259,8 @@ public:
    * If colourSpectator is true, do not change the spectator.
    */
   pair<Dipole,Dipole> split (DipoleSplittingInfo& dsplit,
-			     bool colourSpectator) const;
+			     bool colourSpectator,
+			     bool subleadingNc = false) const;
 
   /**
    * As split, but without touching the event record.

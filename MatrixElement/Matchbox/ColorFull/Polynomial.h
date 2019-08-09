@@ -30,7 +30,7 @@ typedef std::vector < Monomial > polynomial;
 class Polynomial {
 public:
 
-	/// Default constructor.
+	/// Default constructor, leaves polynomial empty=1.
 	Polynomial(){};
 
 	/// Constructor allow setting the polynomial by using a string.
@@ -39,12 +39,12 @@ public:
 	/// Monomial string constructor.
 	Polynomial( const std::string str );
 
-	/// Constructor allow setting the Polynomial using a double,
+	/// Constructor allowing setting the Polynomial using a double.
 	/// The Polynomial gets one Monomial where the real part of
 	/// cnum_part gets the value of dnum.
 	Polynomial( double dnum );
 
-	/// Constructor allow setting the Polynomial using an int,
+	/// Constructor allowing setting the Polynomial using an int.
 	/// The Polynomial gets one Monomial where int_part
 	/// has the value num.
 	Polynomial( int num );
@@ -58,29 +58,29 @@ public:
 	/// uses Polynomial_of_str.
 	void read_in_Polynomial( std::string filename );
 
-	/// Function for writing out the Quark_linePolynomial to a file
+	/// Function for writing out the Polynomial to a file
 	/// with name filename.
 	void write_out_Polynomial( std::string filename ) const;
 
-	/// Returning Monomial at place i.
+	/// Returns Monomial at place i.
 	const Monomial& at( int i ) const {return poly.at(i);}
 
-	/// Returning Monomial at place i.
+	/// Returns Monomial at place i.
 	Monomial& at( int i ) {return poly.at(i);}
 
-	/// Returning number of terms in Polynomial.
+	/// Returns the number of terms in the Polynomial.
 	int size() const {return poly.size();}
 
-	/// Adding Monomial term.
-	void push_back( const Monomial Mon ) {poly.push_back(Mon);}
+	/// Adding a Monomial term.
+	void append( const Monomial Mon ) {poly.push_back(Mon);}
 
-	/// Erase the Monomial at place i.
+	/// Erases the Monomial at place i.
 	void erase( int i ) {poly.erase(poly.begin() + i);}
 
 	/// Is the polynomial empty?
 	bool empty() const {return poly.empty();}
 
-	/// Erase info in polynomial.
+	/// Erases info in polynomial.
 	void clear() {poly.clear();}
 
 	/// Take complex conjugate of the polynomial.
@@ -90,10 +90,10 @@ public:
 	/// Collects terms with same power of TR and Nc and Cf.
 	void simplify();
 
-	/// Replaces CF as TR*Nc-TR/Nc.
+	/// Replaces CF with TR*Nc-TR/Nc.
 	void remove_CF();
 
-	/// Order terms in Polynomial in a unique form,
+	/// Orders terms in Polynomial in a unique form,
 	/// first according to pow_Nc+pow_CF, then according to pow_Nc (for same pow_Nc+pow_CF)
 	/// then according to int_part*num, then according to int_part, and finally according to pow_TR.
 	void normal_order();
@@ -120,7 +120,6 @@ std::ostream& operator<<(std::ostream& out, const polynomial & poly);
 /// By definition, each Monomial has to be identical,
 /// as order matters 1+2 is not 2+1.
 bool operator==( const Polynomial & Poly1, const Polynomial & Poly2);
-
 
 /// Operator != for Polynomial. Returns false if Poly1==Poly2, and
 /// true otherwise.
@@ -163,20 +162,20 @@ Polynomial operator-(const Polynomial & Poly1, const Polynomial & Poly2);
 /// loops over Monomials and multiplies int_part with i.
 /// If Poly is empty=1, a default Monomial=1 is first
 /// appended to Poly.
-Polynomial operator*(const Polynomial & Poly, int i);
+Polynomial operator*( const Polynomial & Poly, int i );
 
 /// Operator * for int and Polynomial.
 /// Returns Poly*i.
-Polynomial operator*(int i, const Polynomial & Poly);
+Polynomial operator*( int i, const Polynomial & Poly );
 
 /// Operator * for Polynomial and cnum,
 /// loops over Monomials and multiplies cnum_partwith c.
 /// If Poly is empty=1, a default Monomial=1 is first
 /// appended to poly.
-Polynomial operator*( const Polynomial & Poly, const cnum c);
+Polynomial operator*( const Polynomial & Poly, const cnum c );
 
 /// Operator * for cnum and Polynomial, returns Poly*c.
-Polynomial operator*( const cnum c, const Polynomial & Poly);
+Polynomial operator*( const cnum c, const Polynomial & Poly );
 
 /// Operator * for Polynomial and double,
 /// loops over Monomials and multiplies cnum_partwith d.
@@ -198,6 +197,26 @@ Polynomial operator*( const Monomial & Mon, const Polynomial & Poly );
 
 /// Operator * for Polynomials. (For details, see code.)
 Polynomial operator*( const Polynomial & Poly1, const Polynomial & Poly2 );
+
+/// Operator *= for Polynomial and int.
+/// Multiplies Poly with i.
+Polynomial operator*=( Polynomial & Poly, const int i );
+
+/// Operator *= for Polynomial and double.
+/// Multiplies Poly with d.
+Polynomial operator*=( Polynomial & Poly, const double d );
+
+/// Operator *= for Polynomial and cnum.
+/// Multiplies Poly with c.
+Polynomial operator*=( Polynomial & Poly, const cnum c );
+
+/// Operator *= for Polynomial and Monomial.
+/// Multiplies Poly with Mon.
+Polynomial operator*=( Polynomial & Poly, const Monomial & Mon );
+
+/// Operator *= for Polynomial and Polynomial.
+/// Multiplies Poly1 with Poly2.
+Polynomial operator*=( Polynomial & Poly1, const Polynomial & Poly2 );
 
 }
 

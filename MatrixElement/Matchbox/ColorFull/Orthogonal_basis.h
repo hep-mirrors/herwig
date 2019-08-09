@@ -20,15 +20,16 @@ namespace ColorFull {
 /// orthogonal bases, but orthogonal bases
 /// can be read in using read_in _Col_basis.
 class Orthogonal_basis:public Col_basis {
-public:
 
-	/// Default constructor.
+public:
+	/// Default constructor, puts private variable orthogonal_basis=true
+	/// and calls the constructor of Col_basis.
 	Orthogonal_basis():Col_basis(){
 		orthogonal_basis = true;
 	}
 
 	/// To contain information about scalar products as a dvec,
-	/// entry i is the square of vector i.
+	/// i.e., entry i is the square of vector i.
 	dvec diagonal_d_spm;
 
 	/// To contain information about scalar products as a Poly_vec,
@@ -84,13 +85,13 @@ public:
 	/// Nc variable. The filename is then modified accordingly.
 	std::string diagonal_spm_file_name( const bool leading, const bool poly ) const;
 
-	/// Writes out diagonal_d_spm to file filename.
+	/// Writes out diagonal_d_spm to the file filename.
 	void write_out_diagonal_d_spm( std::string filename ) const;
 
 	/// Writes out diagonal_d_spm to the standard filename, see diagonal_spm_file_name.
 	void write_out_diagonal_d_spm( ) const;
 
-	/// Writes out diagonal_P_spm to file filename.
+	/// Writes out diagonal_P_spm to the file filename.
 	void write_out_diagonal_P_spm( std::string filename ) const;
 
 	/// Writes out diagonal_P_spm to the standard filename, see diagonal_spm_file_name.

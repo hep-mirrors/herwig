@@ -31,8 +31,7 @@
 using namespace Herwig;
 
 FFMassiveKinematics::FFMassiveKinematics() 
-  : DipoleSplittingKinematics(),
-    theFullJacobian(true) {}
+  : DipoleSplittingKinematics() {}
 
 FFMassiveKinematics::~FFMassiveKinematics() {}
 
@@ -82,10 +81,10 @@ Energy FFMassiveKinematics::ptMax(Energy dScale,
     mui2 = sqr(dInfo.emitterMass()/dScale);
   }
   
-  double mu2  = sqr(split.emission(ind)->mass() / dScale);
-  double muj = dInfo.spectatorMass()/dScale;  
+  double muj2  = sqr(split.emission(ind)->mass() / dScale);
+  double muk = dInfo.spectatorMass()/dScale;  
   
-  return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*muj ) * dScale;
+  return rootOfKallen(mui2, muj2, sqr(1.-muk)) / ( 2.-2.*muk ) * dScale;
 }
 
 
@@ -103,10 +102,10 @@ Energy FFMassiveKinematics::ptMax(Energy dScale,
   else {
     mui2 = sqr(emitter->mass()/dScale);
   }
-  double mu2 = sqr(split.emission(ind)->mass() / dScale);
-  double muj = spectator->mass()/dScale;
+  double muj2 = sqr(split.emission(ind)->mass() / dScale);
+  double muk = spectator->mass()/dScale;
   
-  return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*muj ) * dScale;
+  return rootOfKallen(mui2, muj2, sqr(1.-muk)) / ( 2.-2.*muk ) * dScale;
 }
 
 
@@ -115,15 +114,15 @@ Energy FFMassiveKinematics::QMax(Energy dScale,
 				 const DipoleSplittingInfo& dInfo,
 				 const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
-  double Muj = dInfo.spectatorMass() / dScale;
-  return dScale * ( 1.-2.*Muj+sqr(Muj) );
+  double Muk = dInfo.spectatorMass() / dScale;
+  return dScale * ( 1.-2.*Muk+sqr(Muk) );
 }
 
 // The name of this function is misleading
 // scale here is defined as sqr(scale) = sqr(qi+qj)
 // Here, scale is Q
 Energy FFMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& split) const {
-  double zPrime=split.lastSplittingParameters()[0];
+  double z=split.lastSplittingParameters()[0];
 
   // masses
   Energy2 mi2 = ZERO;
@@ -137,14 +136,14 @@ Energy FFMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& spl
   }
   Energy2 m2 = sqr(split.emissionData()->mass());
 
-  Energy2 pt2 = zPrime*(1.-zPrime)*sqr(scale) - (1-zPrime)*mi2 - zPrime*m2;  
+  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1.-z)*mi2 - z*m2;  
   assert(pt2 >= ZERO);
   return sqrt(pt2);
 }
 
 // This is simply the inverse of PtFromQ
 Energy FFMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split) const {
-  double zPrime=split.lastSplittingParameters()[0];
+  double z=split.lastSplittingParameters()[0];
 
   
   // masses
@@ -159,7 +158,7 @@ Energy FFMassiveKinematics::QFromPt(Energy pt, const DipoleSplittingInfo& split)
   }
   Energy2 m2  = sqr(split.emissionData()->mass());
 
-  Energy2 Q2 = (sqr(pt) + (1-zPrime)*mi2 + zPrime*m2)/(zPrime*(1.-zPrime));
+  Energy2 Q2 = (sqr(pt) + (1.-z)*mi2 + z*m2)/(z*(1.-z));
   return sqrt(Q2);
 }
 
@@ -170,131 +169,137 @@ double FFMassiveKinematics::ptToRandom(Energy pt, Energy,
   return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
 }
 
-// TODO - SW: Implement if statement to check 
-// for spectator mass when tidying up the notation.
+// SW, 14/02/2019: Tidied to match thesis
 bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi,
 					    DipoleSplittingInfo& info,
 					    const DipoleSplittingKernel&) {
   
-  // scaled masses
-  double Mui2 = sqr(info.emitterMass() / info.scale());
-  double Muj2 = sqr(info.spectatorMass() / info.scale());
-  double muj2 = Muj2;
+  // Scale 's' and masses
+  Energy2 Qijk = sqr(info.scale());
+  Energy2 mij2 = sqr(info.emitterMass());
+  Energy2 Mk2 = sqr(info.spectatorMass());
   
-  double mui2 = 0.;
-  // g->gg and g->qqbar
-  if ( abs(info.emitterData()->id()) == abs(info.emissionData()->id()) ) {
-    mui2 = sqr(info.emitterData()->mass()/info.scale());
-  }
-  // Otherwise have X->Xg (should work for SUSY)
-  else {
-    mui2 = Mui2;
-  }
-  double mu2 = sqr(info.emissionData()->mass()/info.scale() );
-
   // To solve issue with scale during presampling
-  // need to enforce that Qijk-mij2-mk2 = 2*pij.pk > 0,
-  // so combine checks by comparing against square root.
-  if ( 1.-Mui2-Muj2 < sqrt(4.*Mui2*Muj2) ) {
+  // need to enforce that Qijk-mij2-mk2 = 2*pij.pk > 0.
+  // Combine checks by comparing against square root
+  if ( Qijk-mij2-Mk2 < sqrt(4.*mij2*Mk2) ) {
     jacobian(0.0);
     return false;
   }
 
-  Energy2 Qijk = sqr(info.scale());
-  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
-
+  Energy2 mk2 = Mk2;  
+  Energy2 mi2 = ZERO;
+  // g->gg and g->qqbar
+  if ( abs(info.emitterData()->id()) == abs(info.emissionData()->id()) ) {
+    mi2 = sqr(info.emitterData()->mass());
+  }
+  // Otherwise have X->Xg (should work for SUSY)
+  else {
+    mi2 = mij2;
+  }
+  Energy2 mj2 = sqr(info.emissionData()->mass());
+  
   // Calculate pt 
   Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
   Energy2 pt2 = sqr(pt);
-
+  
   if ( pt > info.hardPt() || pt < IRCutoff() ) {
     jacobian(0.0);
     return false;
   }
 
-  // Generate zPrime (i.e. the new definition of z specific to massive FF)
-  double zPrime;
+  // Generate z
+  double z;
   if ( info.index().emitterData()->id() == ParticleID::g ) {
     if ( info.emissionData()->id() != ParticleID::g ) {
-      zPrime = xi;
+      z = xi;
     } 
     else {
-      zPrime = exp(xi)/(1.+exp(xi));
+      z = exp(xi)/(1.+exp(xi));
     }
   } 
   else {
-    zPrime = 1.-exp(-xi);
+    z = 1.-exp(-xi);
   }
 
   // new: 2011-08-31
   // 2011-11-08: this does happen
-  if( sqrt(mui2)+sqrt(mu2)+sqrt(muj2) > 1. ){
+  if( (sqrt(mi2)+sqrt(mj2)+sqrt(mk2))/ sqrt(Qijk) > 1. ){
     jacobian(0.0);
     return false;
   }
 
-  // These apply to zPrime
-  // phasespace constraint to incorporate ptMax
+  // Limits on z.
+  // Phasespace constraint to incorporate ptMax.
   Energy hard = info.hardPt();
+  Energy2 sqrRootQijkMk = sqr(sqrt(Qijk)-sqrt(mk2));
 
   if(openZBoundaries()>0){
 	// From ptMax(..)
-	hard = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
-	       ( 2.-2.*sqrt(muj2) ) * info.scale();
+	hard = rootOfKallen(mi2, mj2, sqrRootQijkMk) / ( 2.*sqrt(sqrRootQijkMk) );
 	assert(pt<=hard);
   }
 
   double ptRatio = sqrt(1.-sqr(pt/hard));  
-  double zp1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
-		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
-    ( 2.*sqr(1.-sqrt(muj2)) );
-  double zm1 = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
-		 rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) * ptRatio) /
-    ( 2.*sqr(1.-sqrt(muj2)) );
-
-  if ( zPrime > zp1 || zPrime < zm1 ) {
+  double zp1 = ( mi2 - mj2 + sqrRootQijkMk +
+                 rootOfKallen(mi2,mj2,sqrRootQijkMk) * ptRatio )
+    / 2. / sqrRootQijkMk ;
+  double zm1 = ( mi2 - mj2 + sqrRootQijkMk -
+                 rootOfKallen(mi2,mj2,sqrRootQijkMk) * ptRatio )
+    / 2. / sqrRootQijkMk ;
+  
+  if ( z > zp1 || z < zm1 ) {
     jacobian(0.0);
     return false;
   }
-    
-  // Calculate A:=xij*w
-  double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
 
-  // Calculate y from A (can also write explicitly in terms of qt, zPrime and masses however we need A anyway)
-  double bar = 1.-mui2-mu2-muj2;
-  double y = (1./bar) * (A*suijk + Mui2 - mui2 - mu2 );
+  // Calculate y
+  Energy2 sbar = Qijk - mi2 - mj2 - mk2;
+  double y = (pt2 + sqr(1.-z)*mi2 + sqr(z)*mj2)
+    / sbar / z / (1.-z);
 
-  // kinematic phasespace boundaries for y
-  // same as in Dittmaier hep-ph/9904440v2 (equivalent to CS)
-  double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
-  double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
+  // Kinematic phasespace boundaries for y.
+  // Same as in Dittmaier hep-ph/9904440v2 (equivalent to CS).
+  double ym = 2.*sqrt(mi2)*sqrt(mj2)/sbar;
+  double yp = 1. - 2.*sqrt(mk2)*sqrt(sqrRootQijkMk) / sbar;
   if ( y < ym || y > yp ) {
     jacobian(0.0);
     return false;
   }
 
+  // Virtuality of emitted pair and other invariant scale
+  Energy2 Qij2 = (pt2 + (1.-z)*mi2 + z*mj2)
+    / z / (1.-z);
+  Energy2 sijk = 0.5*( Qijk - mij2 - Mk2 + rootOfKallen(Qijk,mij2,mk2) );
+  
   // Calculate xk and xij
-  double lambdaK = 1. + (Muj2/suijk);
-  double lambdaIJ = 1. + (Mui2/suijk);
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
-  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
+  double lambdaIJ = 1. + (mij2/sijk);
+  double lambdaK = 1. + (mk2/sijk);
+  double fac1 = lambdaIJ*lambdaK + (mk2 - Qij2)/sijk;
+  double xk =
+    ( fac1 + sqrt( sqr(fac1) - 4.*lambdaIJ*lambdaK*mk2/sijk ) )
+    / 2. / lambdaK ;
+  double xij = 1. - mk2*(1.-xk) / xk / sijk;
 
-  // Transform to standard z definition as used in the kernels (i.e. that used in CS and standard sudakov parametrisations)
-  double z = ( (zPrime*xij*xk*suijk/2.) + (Muj2/ ( 2.*xk*xij*suijk*zPrime))*(pt2/Qijk + mui2) ) /
-    ( (xij*xk*suijk/2.) + (Muj2/(2.*xk*xij))*(Mui2/suijk + A) );
+  // Calculate zi
+  double zi =
+    ( z*xij*xk*sijk + mk2*(pt2+mi2) / (z*xij*xk*sijk) )
+    / (1.-y) / sbar;
 
-  // These apply to z, not zPrime
-  double zm = ( (2.*mui2+bar*y)*(1.-y) - sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
-    ( 2.*(1.-y)*(mui2+mu2+bar*y) );
-  double zp = ( (2.*mui2+bar*y)*(1.-y) + sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
-    ( 2.*(1.-y)*(mui2+mu2+bar*y) );
+  // Limits on zi
+  double facA = (2.*mi2 + sbar*y) / 2. / (mi2 + mj2 + sbar*y);
+  // viji*vijk
+  double facB =
+    sqrt( (sqr(2.*mk2 + sbar*(1.-y)) - 4.*mk2*Qijk) *
+          (sqr(sbar)*sqr(y) - 4.*mi2*mj2))
+    / sbar / (1.-y) / (sbar*y + 2.*mi2);
+  double zim = facA * (1. - facB);
+  double zip = facA * (1. + facB);
 
-  if ( z < zm || z > zp ) {
+  if ( zi < zim || zi > zip ) {
     jacobian(0.0);
     return false;
   }
-
-  double phi = 2.*Constants::pi*rphi;
 
   double mapZJacobian;
   if ( info.index().emitterData()->id() == ParticleID::g ) {
@@ -311,73 +316,22 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 
   // Compute and store the jacobian
   double jac = 0.0;
-  double propCntrb = 1./ ( 1. + (mui2+mu2-Mui2)/(bar*y) );  
-
-  // TODO - SW - Tidy up notation everywhere alongside writing for the manual
-  // The full jacobian including the z->zprime jacobian  
-  if ( theFullJacobian && info.spectatorData()->mass() != ZERO ) {
-
-    // Sort out variables
-    Energy2 sbar = Qijk*bar;
-    Energy2 sijk = Qijk*suijk;
-    Energy2 mi2 = Qijk*mui2;
-    Energy2 mj2 = Qijk*mu2;
-    Energy2 mk2 = Qijk*muj2;    
-    
-    // Compute dy/dzPrime and pt2* dy/dpt2
-    double dyBydzPrime = (1./sbar) * ( -pt2*(1.-2.*zPrime)/sqr(zPrime*(1.-zPrime)) - mi2/sqr(zPrime) + mj2/sqr(1.-zPrime) );
-    InvEnergy2 dyBydpt2 = 1./(sbar*zPrime*(1.-zPrime));
-
-    // Compute dA/dzPrime and dA/dpt2
-    double dABydzPrime = (sbar/sijk) * dyBydzPrime;
-    InvEnergy2 dABydpt2 = (sbar/sijk) * dyBydpt2;
-
-    // Compute dxk/dzPrime, dxk/dpt2, dxij/dzPrime and dxij/dpt2
-    double factor = (0.5/lambdaK) * (-1. - (1./sqrt( sqr(lambdaK + (mk2/sijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*mk2/sijk)) * (lambdaK + (mk2/sijk)*lambdaIJ - A));
-    
-    double dxkBydzPrime = factor * dABydzPrime;
-    InvEnergy2 dxkBydpt2 = factor * dABydpt2;
-
-    double dxijBydzPrime = (mk2/sijk) * (1./sqr(xk)) * dxkBydzPrime;
-    InvEnergy2 dxijBydpt2 = (mk2/sijk) * (1./sqr(xk)) * dxkBydpt2;
-
-    Energy2 dqiDotqkBydzPrime = xij*xk*0.5*sijk + zPrime*dxijBydzPrime*xk*0.5*sijk + zPrime*xij*dxkBydzPrime*0.5*sijk
-      + 0.5*(mk2/sijk)*(pt2 + mi2) * (-1./(xk*xij*sqr(zPrime)) - dxkBydzPrime/(zPrime*xij*sqr(xk)) - dxijBydzPrime/(zPrime*xk*sqr(xij)));
-
-    double dqiDotqkBydpt2 =  dxijBydpt2*zPrime*xk*0.5*sijk + zPrime*xij*dxkBydpt2*0.5*sijk
-      + (0.5*mk2/sijk) * (1./(zPrime*xk*xij)) * (1. + (pt2+mi2)*(-dxkBydpt2/xk - dxijBydpt2/xij) );
-
-    
-    // Compute dzBydzPrime and dzBydpt2
-    Energy2 qiDotqk = (zPrime*xij*xk*sijk*0.5) + (mk2/ ( 2.*xk*xij*sijk*zPrime))*(pt2 + mi2);
-
-    double dzBydzPrime = (1./sbar) * ( 2.*qiDotqk*dyBydzPrime/sqr(1.-y) + (1./(1.-y)) * 2.*dqiDotqkBydzPrime );
-    InvEnergy2 dzBydpt2    = (1./sbar) * ( 2.*qiDotqk*dyBydpt2/sqr(1.-y) + (1./(1.-y)) * 2.*dqiDotqkBydpt2 );
-
-    double pt2Jac = pt2*abs(dzBydpt2*dyBydzPrime - dzBydzPrime*dyBydpt2);
-
-    // Include the other terms and calculate the jacobian
-    jac = propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y)/y * pt2Jac;
-  }
-
-
-  // the exact result when the spectator is massless.
-  else {
-    double jacPt2 = 1. / ( 1. + sqr(1.-zPrime)*Qijk*mui2/pt2 + zPrime*zPrime*Qijk*mu2/pt2 );
-    jac = propCntrb * bar / rootOfKallen(1.,Mui2,Muj2) * (1.-y) * jacPt2;    
-  }
+  jac = sbar / rootOfKallen(Qijk,mij2,mk2) * (1.-y) / ( 1. + (mi2 + mj2 - mij2)/sbar/y )
+    * (pt2 / (pt2 + sqr(1.-z)*mi2+sqr(z)*mj2))
+    * abs(1. - 2.*mk2*Qij2 / (sbar*(1.-y)*xij*xk*sijk));
 
   jacobian(jac * mapZJacobian * 2. * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
 
   // Record the physical variables, as used by the CS kernel definitions
+  double phi = 2.*Constants::pi*rphi;
   lastPt(pt);
   lastZ(z);
   lastPhi(phi);
 
-  // Record zPrime for use in kinematics generation and kernel evaluation
+  // Record zi for use in kinematics generation and kernel evaluation
   splittingParameters().clear();
-  splittingParameters().push_back(zPrime);
-
+  splittingParameters().push_back(zi);
+  
   if ( theMCCheck ) {
     theMCCheck->book(1.,1.,info.scale(),info.hardPt(),pt,z,jacobian());
   }
@@ -388,72 +342,67 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 // revised 2011-08-22
 // revised 2011-11-06
 // revised with new FF kinematics in 2016 - SW
+// SW, 14/02/2019: Tidied to match thesis
 void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					     const Lorentz5Momentum& pSpectator,
 					     const DipoleSplittingInfo& dInfo) {
 
-  // The only value stored in dInfo.lastSplittingParameters() should be zPrime
-  assert(dInfo.lastSplittingParameters().size() == 1 );
-  double zPrime = dInfo.lastSplittingParameters()[0];
+  double z = dInfo.lastZ();
   Energy pt = dInfo.lastPt();
   Energy2 pt2 = sqr(pt);
 
-  // scaled masses
-  double Mui2 = sqr(dInfo.emitterMass() / dInfo.scale());
-  double Muk2 = sqr(dInfo.spectatorMass() / dInfo.scale());
-  //double muk2 = Muk2;
-
-  Energy mi = ZERO;
+  // Masses
+  Energy2 mij2 = sqr(dInfo.emitterMass());
+  Energy2 Mk2 = sqr(dInfo.spectatorMass());
+  Energy2 mk2 = Mk2;
+  
+  Energy2 mi2 = ZERO;
   // g->gg and g->qqbar
   if ( abs(dInfo.emitterData()->id()) == abs(dInfo.emissionData()->id()) ) {
-    mi = dInfo.emitterData()->mass();
+    mi2 = sqr(dInfo.emitterData()->mass());
   }
   // Otherwise have X->Xg (should work for SUSY)
   else {
-    mi = dInfo.emitterMass();
+    mi2 = mij2;
   }
-  double mui2 = sqr(mi/dInfo.scale());
-  double mu2  = sqr(dInfo.emissionData()->mass() / dInfo.scale() );
+  Energy2 mj2 = sqr(dInfo.emissionData()->mass());
 
+  // Scales
   Energy2 Qijk = sqr(dInfo.scale());
-  double suijk = 0.5*( 1. - Mui2 - Muk2 + sqrt( sqr(1.-Mui2-Muk2) - 4.*Mui2*Muk2 ) );
-  double suijk2 = sqr(suijk);
+  Energy2 Qij2 = (pt2 + (1.-z)*mi2 + z*mj2) / z / (1.-z);
+  Energy2 sijk = 0.5*( Qijk - mij2 - Mk2 + rootOfKallen(Qijk,mij2,Mk2) );
+  Energy4 sijk2 = sqr(sijk);
+  
+  // Calculate xk and xij
+  double lambdaIJ = 1. + (mij2/sijk);
+  double lambdaK = 1. + (mk2/sijk);
+  double fac1 = lambdaIJ*lambdaK + (mk2 - Qij2)/sijk;
+  double xk =
+    ( fac1 + sqrt( sqr(fac1) - 4.*lambdaIJ*lambdaK*mk2/sijk ) )
+    / 2. / lambdaK ;
+  double xij = 1. - mk2*(1.-xk) / xk / sijk;
 
-  // Calculate A:=xij*w
-  double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
-
-  // Calculate the scaling factors, xk and xij
-  double lambdaK = 1. + (Muk2/suijk);
-  double lambdaIJ = 1. + (Mui2/suijk);
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muk2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muk2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muk2/suijk) );
-  double xij = 1. - ( (Muk2/suijk) * (1.-xk) / xk );
-
-  // Construct reference momenta nk, nij, nt
-  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muk2) ) * (pEmitter - (Mui2/suijk)*pSpectator);
-  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muk2) ) * (pSpectator - (Muk2/suijk)*pEmitter);
-
-  // Following notation in notes, qt = sqrt(wt)*nt
-  Lorentz5Momentum qt = getKt(nij,nk,pt,dInfo.lastPhi());
+  // Construct reference momenta nk and nij
+  Lorentz5Momentum nij = ( sijk2 / (sijk2-mij2*Mk2) ) * (pEmitter - (mij2/sijk)*pSpectator);
+  Lorentz5Momentum nk = ( sijk2 / (sijk2-mij2*Mk2) ) * (pSpectator - (Mk2/sijk)*pEmitter);
 
   // Construct qij, qk, qi and qj
-  Lorentz5Momentum qij = xij*nij + (Mui2/(xij*suijk))*nk;
-  Lorentz5Momentum qk = xk*nk + (Muk2/(xk*suijk))*nij;
+  Lorentz5Momentum qij = xij*nij + (mij2/(xij*sijk))*nk;
+  Lorentz5Momentum qk = xk*nk + (Mk2/(xk*sijk))*nij;
+
+  Lorentz5Momentum qt = getKt(pEmitter, pSpectator, pt, dInfo.lastPhi());
 
   // For clarity, following notation in notes:
-  //Lorentz5Momentum qi = zPrime*qij + ((pt2 + mi2 - zPrime*zPrime*mij2)/(xij*sijk*zPrime))*nk + sqrt(wt)*nt;
-  //Lorentz5Momentum qj = (1.-zPrime)*qij + ((pt2 + mj2 - sqr(1.-zPrime)*mij2)/(xij*sijk*(1.-zPrime)))*nk - sqrt(wt)*nt;
+  Lorentz5Momentum qi = z*qij + ((pt2 + mi2 - z*z*mij2)/(xij*sijk*z))*nk + qt;
+  Lorentz5Momentum qj = (1.-z)*qij + ((pt2 + mj2 - sqr(1.-z)*mij2)/(xij*sijk*(1.-z)))*nk - qt;
 
-  // No need to actually calculate nt and wt:
-  Lorentz5Momentum qi = zPrime*qij + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
-  Lorentz5Momentum qj = (1.-zPrime)*qij + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
-
-  qi.setMass(mi);
+  qi.setMass(sqrt(mi2));
   qi.rescaleEnergy();
   
-  qj.setMass(dInfo.emissionData()->mass());
+  qj.setMass(sqrt(mj2));
   qj.rescaleEnergy();
   
-  qk.setMass(dInfo.spectatorMass());
+  qk.setMass(sqrt(mk2));
   qk.rescaleEnergy();
   
   emitterMomentum(qi);
@@ -466,12 +415,12 @@ void FFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 // If needed, insert default implementations of function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-void FFMassiveKinematics::persistentOutput(PersistentOStream & os) const {
-  os << theFullJacobian;
+void FFMassiveKinematics::persistentOutput(PersistentOStream &) const {
+  //os << ;
 }
 
-void FFMassiveKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> theFullJacobian;
+void FFMassiveKinematics::persistentInput(PersistentIStream &, int) {
+  //is >> ;
 }
 
 ClassDescription<FFMassiveKinematics> FFMassiveKinematics::initFFMassiveKinematics;
@@ -482,22 +431,6 @@ void FFMassiveKinematics::Init() {
   static ClassDocumentation<FFMassiveKinematics> documentation
     ("FFMassiveKinematics implements massive splittings "
      "off a final-final dipole.");
-
   
-  static Switch<FFMassiveKinematics,bool> interfaceFullJacobian
-    ("FullJacobian",
-     "Use the full jacobian expression for the FF kinematics.",
-     &FFMassiveKinematics::theFullJacobian, true, false, false);
-  static SwitchOption interfaceFullJacobianYes
-    (interfaceFullJacobian,
-     "Yes",
-     "Use the full jacobian.",
-     true);
-  static SwitchOption interfaceFullJacobianNo
-    (interfaceFullJacobian,
-     "No",
-     "Do not use the full jacobian.",
-     false);
-  interfaceFullJacobian.rank(-1);
 }
 

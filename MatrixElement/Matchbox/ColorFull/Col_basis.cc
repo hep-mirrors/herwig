@@ -17,6 +17,13 @@
 
 namespace ColorFull {
 
+
+void Col_basis::append( col_basis cb_in ) {
+	for (uint m = 0; m < cb_in.size(); m++) {
+		cb.push_back( cb_in.at(m) );
+	}
+}
+
 void Col_basis::scalar_product_matrix_no_mem(){
 	if(ng+nq>6){
 		std::cout << "Col_basis::scalar_product_matrix: nq+ng=" << nq+ng << " is large, consider using numerical and/or memory version.  "  << std::endl;
@@ -159,20 +166,18 @@ void Col_basis::write_out_Col_basis( std::string filename ) const {
 	outfile.flush();
 }
 
-
-void Col_basis::write_out_Col_basis_to_cout() const{
+std::ostream& Col_basis::write_out_Col_basis_to_stream( std::ostream& out ) const{
 
 	if(  (cb.size()==0 ) ) {
 		std::cerr << "Col_basis::write_out_Col_basis(): There are no basis vectors in this basis, consider using create_basis or read_in_Col_basis." << std::endl;
 		std::cerr.flush();
-		return ;
 	}
 
 	for (uint m = 0; m < cb.size(); m++) {
-		std::cout << m << "      "<< cb.at(m) << std::endl;
+		out << m << "      "<< cb.at(m) << std::endl;
 	}
+	return out;
 }
-
 
 void Col_basis::write_out_d_spm( std::string filename ) const{
 
@@ -245,6 +250,20 @@ void Col_basis::read_in_Col_basis( std::string filename ) {
 
 	// Copy info from file to string
 	std::string str((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
+
+	// Skip lines starting with #
+	while( str.at(0)== '#' ){
+		while (str.at(0) != '\n'){
+			str.erase(str.begin());
+		}
+		// erase endl sign(s)
+		while(str.at(0)== '\n'){
+			str.erase(str.begin());
+		}
+	}
+
+	// Remove endl chars at the end of the file
+	while( str.at(str.size()-1) == '\n' ) str.erase(str.size()-1);
 
 	Col_basis_of_str( str );
 
@@ -337,7 +356,11 @@ void Col_basis::simplify(){
 }
 
 
-Poly_vec Col_basis::decompose( const Col_amp & ){
+Poly_vec Col_basis::decompose( const Col_amp & Ca ){
+
+	// This line is to avoid compiler warnings
+	// Ca should be an argument despite that it's not used
+	(void) Ca;
 
 	std::cerr << "Col_basis::decompose: This function is not implemented for the Col_basis class. Try using a derived class (such as Trace_basis). " << std::endl;
 
@@ -368,17 +391,17 @@ Col_amp Col_basis::exchange_gluon( uint vec, int p1, int p2 ) {
 
 }
 
-Poly_matr Col_basis::Col_gamma( int p1, int p2 ) {
+Poly_matr Col_basis::color_gamma( int p1, int p2 ) {
 
 	if(  (cb.size()==0 ) ) {
-		std::cerr << "Col_basis::Col_gamma: There are no basis vectors in this basis, consider using create_basis or read_in_Col_basis." << std::endl;
+		std::cerr << "Col_basis::color_gamma: There are no basis vectors in this basis, consider using create_basis or read_in_Col_basis." << std::endl;
 		std::cerr.flush();
 		assert( 0 );
 	}
 
 	// Function not available for Tree_level_gluon basis
 	if( tree_level_gluon_basis ) {
-		std::cerr << "Col_basis::Col_gamma: This function is not available for Tree_level_gluon_basis "
+		std::cerr << "Col_basis::color_gamma: This function is not available for Tree_level_gluon_basis "
 				<< "as the vector resulting after gluon exchange contains vectors which are not in the basis. "
 				<< "Consider using Trace_basis."<< std::endl;
 		std::cerr.flush();
@@ -387,7 +410,7 @@ Poly_matr Col_basis::Col_gamma( int p1, int p2 ) {
 
 	// Function should only be used for Orthogonal_basis and Trace_basis
 	if( ( !trace_basis ) and (! orthogonal_basis) ) {
-		std::cerr << "Col_basis::Col_gamma: This function is only implemented for Trace_basis and Orthogonal_basis. "
+		std::cerr << "Col_basis::color_gamma: This function is only implemented for Trace_basis and Orthogonal_basis. "
 				<< "If your basis is not orthogonal, the result will not be correct. "
 				<< "If your basis is orthogonal, consider using Orthogonal_basis."
 				<< std::endl;
@@ -402,9 +425,9 @@ Poly_matr Col_basis::Col_gamma( int p1, int p2 ) {
 	for( uint i=0; i < cb.size(); i++ ){
 		Poly_vec rowi;
 		for( uint j=0; j < cb.size(); j++ ){
-			rowi.push_back(Zero);
+			rowi.append(Zero);
 		}
-		gamma_res.push_back(rowi);
+		gamma_res.append(rowi);
 	}
 
 	// To contain the Col_amp after gluon exchange
@@ -418,7 +441,7 @@ Poly_matr Col_basis::Col_gamma( int p1, int p2 ) {
 		// Then decompose the result into the basis,
 		Poly_vec col_vi = decompose( Ca_ae );
 
-		// This gives the vi:th column in Col_gamma
+		// This gives the vi:th column in color_gamma
 		// Loop over rows in that column
 		for ( uint vj=0; vj < cb.size(); vj++ ){
 			gamma_res.at(vj).pv.at(vi) = col_vi.at(vj);
@@ -488,7 +511,7 @@ void Col_basis::Col_basis_of_str( std::string str ){
 		// Simplify, for example move Polynomials to multiply Col_strs, rather than Quark-lines
 		Ca.simplify();
 
-		push_back(Ca);
+		append(Ca);
 		i++;
 	}
 
@@ -621,7 +644,7 @@ void Col_basis::scalar_product_matrix( bool save_P_spm, bool save_d_spm, bool us
 						else {
 							if( !tree_level_gluon_basis ){
 								Polynomial p = Col_fun.scalar_product(Cs1, Cs2);
-								ijEntry_contr = shared_ptr<Polynomial> (new Polynomial(p));
+								ijEntry_contr = std::shared_ptr<Polynomial> (new Polynomial(p));
 								mem_map[Cs_string.str()] = ijEntry_contr;
 
 							}
@@ -631,7 +654,7 @@ void Col_basis::scalar_product_matrix( bool save_P_spm, bool save_d_spm, bool us
 								Cs2_conj.conjugate();
 								Polynomial P = 2* Col_fun. scalar_product( Cs1, Cs2 )
 										+ sign*2*Col_fun. scalar_product( Cs1, Cs2_conj );
-								ijEntry_contr = shared_ptr<Polynomial> (new Polynomial(P));
+								ijEntry_contr = std::shared_ptr<Polynomial> (new Polynomial(P));
 								mem_map[Cs_string.str()] = ijEntry_contr;
 							}
 						}
@@ -658,28 +681,28 @@ void Col_basis::scalar_product_matrix( bool save_P_spm, bool save_d_spm, bool us
 					double num_ijRes= Col_fun.double_num(ijRes);
 					ijRes.clear();
 					Monomial Mon( num_ijRes );
-					ijRes.push_back(Mon);
+					ijRes.append(Mon);
 				}
 
-				rowi.push_back( ijRes );
+				rowi.append( ijRes );
 
 			} // end if ( use_mem )
 			else{
 				// Calculate element ij in scalar product matrix
 				ijRes=ij_entry( i, j );
-				rowi.push_back( ijRes );
+				rowi.append( ijRes );
 
 				// Convert to numerical if not saving Polynomial version
 				if ( ! save_P_spm ) {
 					double num_ijRes= Col_fun.double_num(ijRes);
 					ijRes.clear();
 					Monomial Mon( num_ijRes );
-					ijRes.push_back(Mon);
+					ijRes.append(Mon);
 				}
 
 			} //end if (not mem)
 		}
-		P_spm.push_back(rowi);
+		P_spm.append(rowi);
 	}
 
 	// For saving and checking symmetry of numerical version
@@ -884,10 +907,10 @@ Polynomial Col_basis::scalar_product( const Col_amp & Ca1, const Col_amp & Ca2 )
 	// Then add contributions
 	for ( uint m1=0; m1< cb.size(); m1++ ){
 		// Diagonal terms
-		Poly_res=Poly_res+Polyv1.at(m1) *Polyv2.at(m1) *P_spm.at(m1).at(m1);
+		Poly_res+= Polyv1.at(m1) *Polyv2.at(m1) *P_spm.at(m1).at(m1);
 		for (uint m2=0; m2< m1; m2++){
 			// Other terms, use symmetry of scalar product matrix
-			Poly_res=Poly_res+ ( Polyv1.at(m1) *Polyv2.at(m2)+Polyv1.at(m2) *Polyv2.at(m1) ) *P_spm.at(m1).at(m2);
+			Poly_res+= ( Polyv1.at(m1) *Polyv2.at(m2)+Polyv1.at(m2) *Polyv2.at(m1) ) *P_spm.at(m1).at(m2);
 		}
 	}
 	return Poly_res;
@@ -1022,6 +1045,12 @@ cnum Col_basis::scalar_product_num_diagonal( const cvec & v1, const cvec & v2 ) 
 	}
 
 	return res;
+}
+
+
+std::ostream& operator<<( std::ostream& out, const Col_basis & Cb ) {
+
+	return Cb.write_out_Col_basis_to_stream( out );
 }
 
 
