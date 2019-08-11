@@ -173,6 +173,20 @@ void Quark_line::read_in_Quark_line( std::string filename ) {
 
 	// Copy info from file to string
 	std::string str((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
+
+	// Skip lines starting with #
+	while( str.at(0)== '#' ){
+		while (str.at(0) != '\n'){
+			str.erase(str.begin());
+		}
+		// erase endl sign(s)
+		while(str.at(0)== '\n'){
+			str.erase(str.begin());
+		}
+	}
+
+	// Remove endl chars at the end of the file
+	while( str.at(str.size()-1) == '\n' ) str.erase(str.size()-1);
 	Quark_line_of_str( str );
 }
 
@@ -348,7 +362,7 @@ Quark_line Quark_line::after( int j ) const{
 		assert(0);
 	}
 
-	// In first part erase everything after and including j
+	// In first part, erase everything after and including j
 	quark_line::iterator it1=Ql_copy.ql.begin();
 	quark_line::iterator it2=Ql_copy.ql.begin()+j+1;
 	Ql_copy.ql.erase(it1, it2);
@@ -359,11 +373,6 @@ Quark_line Quark_line::after( int j ) const{
 
 void Quark_line::erase( int i ){
 	ql.erase( ql.begin()+i );
-}
-
-
-void Quark_line::append( int p ){
-	ql.insert( ql.end(), p );
 }
 
 
@@ -379,7 +388,7 @@ void Quark_line::prepend( int p){
 }
 
 
-void Quark_line::prepend( std::vector<int> in_ql ){
+void Quark_line::prepend(std::vector <int> in_ql){
 	for (uint j=0; j<ql.size(); j++ ){
 		in_ql.push_back(ql.at(j));
 	}
@@ -498,7 +507,7 @@ void Quark_line::contract_neighboring_gluons(int j) {
 		// This should increase the power of CF
 		Monomial Mon_tmp;
 		Mon_tmp.pow_CF = 1;
-		Poly = Poly * Mon_tmp;
+		Poly *= Mon_tmp;
 		if (j > 2)
 			j = j - 2;
 	}
@@ -516,7 +525,7 @@ void Quark_line::contract_neighboring_gluons(int j) {
 		// This should increase the power of CF
 		Monomial Mon_tmp;
 		Mon_tmp.pow_CF = 1;
-		Poly = Poly * Mon_tmp;
+		Poly *= Mon_tmp;
 
 		// If now, all gluons are removed and there are no quarks,
 		// increase Nc and open the ql (if not already open)
@@ -524,7 +533,7 @@ void Quark_line::contract_neighboring_gluons(int j) {
 		if (empty() && !open) {
 			Monomial Mon_tmp;
 			Mon_tmp.pow_Nc = 1;
-			Poly = Poly * Mon_tmp;
+			Poly *= Mon_tmp;
 			open = true;
 		}
 		j = j - 2;
@@ -623,7 +632,7 @@ void Quark_line::contract_next_neighboring_gluons( int j ) {
 			Mon_tmp.pow_TR = 1;
 			Mon_tmp.int_part=-1;
 			Mon_tmp.pow_Nc=-1;
-			Poly=Poly*Mon_tmp;
+			Poly *= Mon_tmp;
 
 			// Check if new neighbors are equal
 			uint old_size2=ql.size();
@@ -681,7 +690,7 @@ void Quark_line::contract_next_neighboring_gluons(  ) {
 
 Quark_line operator*( const Quark_line & Ql, const int i){
 	Quark_line Ql_out(Ql);
-	Ql_out.Poly=Ql_out.Poly*i;
+	Ql_out.Poly*=i;
 	return Ql_out;
 }
 Quark_line operator*(const int i, const Quark_line & Ql){
@@ -691,7 +700,7 @@ Quark_line operator*(const int i, const Quark_line & Ql){
 
 Quark_line operator*(const Quark_line & Ql, const cnum c){
 	Quark_line Ql_out(Ql);
-	Ql_out.Poly=Ql_out.Poly*c;
+	Ql_out.Poly*= c;
 	return Ql_out;
 }
 Quark_line operator*(const cnum c, const Quark_line & Ql){
@@ -702,7 +711,7 @@ Quark_line operator*(const cnum c, const Quark_line & Ql){
 
 Quark_line operator*(const Quark_line & Ql, const double d){
 	Quark_line Ql_out(Ql);
-	Ql_out.Poly=Ql_out.Poly*d;
+	Ql_out.Poly*=d;
 	return Ql_out;
 }
 Quark_line operator*(const double d, const Quark_line & Ql){
@@ -714,7 +723,7 @@ Quark_line operator*(const double d, const Quark_line & Ql){
 Quark_line operator*(const Quark_line & Ql, const Monomial & Mon){
 
 	Quark_line Ql_out(Ql);
-	Ql_out.Poly=Ql_out.Poly*Mon;
+	Ql_out.Poly*=Mon;
 	return Ql_out;
 }
 Quark_line operator*(const Monomial & Mon, const Quark_line & Ql){
@@ -732,6 +741,28 @@ Quark_line operator*(const Quark_line & Ql, const Polynomial & Poly){
 Quark_line operator*(const Polynomial & Poly, const Quark_line & Ql){
 
 	return Ql*Poly;
+}
+
+bool operator==( const Quark_line & Ql1, const Quark_line & Ql2 ){
+
+	// Quark_lines's must have equal length
+	if( Ql1.size() != Ql2.size() ) return false;
+
+	// Both must be closed, or both must be open
+	if(! (Ql1.open==Ql2.open ) ) return false;
+
+	// The quark_lines must be equal
+	if( Ql1.ql != Ql2.ql ) return false;
+
+	// The Polynomials must be equal
+	if( Ql1.Poly != Ql2.Poly ) return false;
+
+	return true;
+}
+
+bool operator!=( const Quark_line & Ql1, const Quark_line & Ql2 ){
+	if( Ql1==Ql2 ) return false;
+	else return true;
 }
 
 

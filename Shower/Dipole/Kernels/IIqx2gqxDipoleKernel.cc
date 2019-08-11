@@ -53,7 +53,7 @@ bool IIqx2gqxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 
 }
 
-
+  
 tcPDPtr IIqx2gqxDipoleKernel::emitter(const DipoleIndex&) const {
   return getParticleData(ParticleID::g);
 }
@@ -72,12 +72,50 @@ double IIqx2gqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   double z = split.lastZ();
   double ratio = sqr(split.lastPt()/split.scale());
+
   double x = z*(1.-z)/(1.-z+ratio);
 
   ret *= .5 * ( 1.-2.*x*(1.-x) );
 
   return ret > 0. ? ret : 0.;
 
+}
+
+vector< pair<int, Complex> >
+IIqx2gqxDipoleKernel::generatePhi(const DipoleSplittingInfo&, const RhoDMatrix&) const {
+
+  // No dependence on the spin density matrix,
+  // dependence on off-diagonal terms cancels.
+  return {{ {0, 1.} }};
+}
+
+DecayMEPtr IIqx2gqxDipoleKernel::matrixElement(const DipoleSplittingInfo& dInfo) const {
+
+  double z = dInfo.lastZ();
+
+  // Altarelli-Parisi spin-indexed kernels:
+  double v_AP_ppm = z;
+  double v_AP_mpm = (1.-z);
+  
+  double v_AP_mmp = -v_AP_ppm;
+  double v_AP_pmp = -v_AP_mpm;
+  
+  // Construct the (phi-dependent) spin-unaveraged splitting kernel
+  DecayMEPtr kernelPhiDep
+    (new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1, PDT::Spin1Half, PDT::Spin1Half)));
+  Complex phase = exp(Complex(0.,1.)*dInfo.lastPhi());
+
+  // 0 = -, 2 = +
+  (*kernelPhiDep)(0,0,0) = 0.;
+  (*kernelPhiDep)(2,1,1) = 0.;
+  (*kernelPhiDep)(0,0,1) = v_AP_mmp/phase;
+  (*kernelPhiDep)(2,1,0) = v_AP_ppm*phase;
+  (*kernelPhiDep)(0,1,0) = v_AP_mpm/phase;
+  (*kernelPhiDep)(2,0,1) = v_AP_pmp*phase;
+  (*kernelPhiDep)(0,1,1) = 0.;
+  (*kernelPhiDep)(2,0,0) = 0.;
+
+  return kernelPhiDep;
 }
 
 // If needed, insert default implementations of  function defined

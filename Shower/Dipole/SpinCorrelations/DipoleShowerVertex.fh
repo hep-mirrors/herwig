@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DipoleShowerVertex class.
+//
+#ifndef HERWIG_DipoleShowerVertex_FH
+#define HERWIG_DipoleShowerVertex_FH
+
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {  
+  using namespace ThePEG;
+  
+  class DipoleShowerVertex;
+  ThePEG_DECLARE_POINTERS(DipoleShowerVertex, DSVertexPtr);
+}
+
+#endif // HERWIG_DipoleShowerVertex_FH

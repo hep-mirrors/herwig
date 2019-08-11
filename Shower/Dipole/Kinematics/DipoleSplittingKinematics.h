@@ -330,6 +330,11 @@ namespace Herwig {
      */
     virtual bool doesTransform () const { return false; }
 
+    /**
+     * Calculate and store a required Lorentz transformation
+     **/
+    virtual void setTransformation () {};
+
     /*
      * Use the Dipole scale instead of hardpt for z-boundaries.
      */
@@ -338,8 +343,31 @@ namespace Herwig {
     /*
      * perform the transformation if required.
      */
-    virtual Lorentz5Momentum transform (const Lorentz5Momentum& p) const { return p; }
+    virtual void transform (PPtr&) {};
 
+    /*
+     * SW 30/01/2019: Test feature only, not for release.
+     * Return true to only apply the transformation to non-coloured particles.
+     * Note this requires careful handling in DipoleEventRecord
+     */
+    //virtual bool transformHardOnly() const { return false; }
+    
+    /**
+     * SW 30/01/2019: Test feature only, not for release.
+     * In II case use colourless particles only to absorb recoil
+     */   
+    //virtual void transformHard ( PPtr& ) {};
+
+    /**
+     * SW 30/01/2019: Used in DipoleEventRecord to prepare for 
+     * transformHard, test feature only, not for release.
+     * Add to splitRecoilMomentum for transformation
+     */
+    // void addToRecoilMom( const Lorentz5Momentum& mom ) {    
+    //   Lorentz5Momentum newRecoilMom = splitRecoilMomentum() + mom;
+    //   splitRecoilMomentum(newRecoilMom);
+    // }
+    
     /*
      * Return true if this splitting is of a dipole which contains
      * a decayed parton and requires the remnant to absorb the recoil.
@@ -355,6 +383,24 @@ namespace Herwig {
      * Perform the recoil in the case of a decayed parton
      */
     virtual void decayRecoil ( PList& ) {};
+
+    /**
+     * Return the pVector, required for spin correlations.
+     */
+    virtual Lorentz5Momentum pVector(const Lorentz5Momentum& pEmitter,
+                                     const Lorentz5Momentum&,
+                                     const DipoleSplittingInfo&) const {
+      return pEmitter;
+    }
+
+    /**
+     * Return the nVector, required for spin correlations.
+     */
+    virtual Lorentz5Momentum nVector(const Lorentz5Momentum&,
+                                     const Lorentz5Momentum& pSpectator,
+                                     const DipoleSplittingInfo&) const {
+      return pSpectator;
+    }
 
  // {;}
 
@@ -435,22 +481,10 @@ namespace Herwig {
     void emissionMomentum(const Lorentz5Momentum& p) { theEmissionMomentum = p; }
 
     /**
-     * Set the momentum of the recoil system before the splitting.
-     * 25/05/2016 - Not currently used.
-     */
-    //void recoilMomentum( const Lorentz5Momentum& mom ) { theRecoilMomentum = mom; }
-
-    /**
      * Set the momentum of the recoil system after the splitting.
      */
     void splitRecoilMomentum( const Lorentz5Momentum& mom ) { theSplitRecoilMomentum = mom; }
-
-    /**
-     * Return the momentum of the recoil system before splitting.
-     * 25/05/2016 - Not currently used.
-     */
-    //const Lorentz5Momentum& recoilMomentum() const { return theRecoilMomentum; }
-
+    
     /**
      * Return the momentum of the recoil system after splitting.
      */
@@ -566,13 +600,8 @@ namespace Herwig {
     Lorentz5Momentum theSpectatorMomentum;
 
     /**
-     * The momentum of the recoil system used in decay dipole kinematics.
-     * 25/05/2016 - Not currently used
-     */
-    //Lorentz5Momentum theRecoilMomentum;
-
-    /**
-     * The momentum of the recoil system after the splitting, used in decay dipole kinematics.
+     * The momentum of the recoil system after the splitting, 
+     * used in decay dipole kinematics.
      */
     Lorentz5Momentum theSplitRecoilMomentum;
 

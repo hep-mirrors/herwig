@@ -27,10 +27,10 @@ class Poly_matr {
 
 public:
 
-	/// Default constructor, sets nothing.
+	/// Default constructor, leaves pm empty.
 	Poly_matr() {}
 
-	/// To actually contain the polynomial information.
+	/// To actually contain the matrix of Polynomials.
 	poly_matr pm;
 
 	/// Returns the Poly_vec at place i.
@@ -55,29 +55,26 @@ public:
 	/// Erases the matrix information.
 	void clear()  {pm.clear();}
 
-	/// Appends a Poly_vec constructed from a poly_vec to the data member pm.
-	void push_back( poly_vec pv ) {pm.push_back( Poly_vec(pv) );}
-
 	/// Appends a Poly_vec to data member pm.
-	void push_back( Poly_vec Pv ) {pm.push_back( Pv );}
+	void append( Poly_vec Pv ) {pm.push_back( Pv );}
 
 	/// Remove CF in the poly_matr member pm, i.e., replace CF by
 	/// TR (Nc^2-1)/Nc.
 	void remove_CF();
 
-	/// Normal orders all polynomials in the poly_matr member pm.
-	/// (Uses Polynomial.normal_order.)
+	/// Normal orders all polynomials in the poly_matr member pm,
+	/// (uses Polynomial.normal_order.)
 	void normal_order();
 
-	/// Simplifies all polynomials in the poly_matr member pm.
-	/// (Uses Polynomial.simplify.)
+	/// Simplifies all polynomials in the poly_matr member pm,
+	/// (uses Polynomial.simplify.)
 	void simplify();
 
 	/// Conjugates the matrix.
 	void conjugate();
 
 	/// Reads in the matrix from the file filename.
-	/// The file should be in the format
+	/// The file should be of the format
 	/// {{Poly11,...,Poly1n},
 	/// ...,
 	/// {Polyn1,...,Polynn}},
@@ -95,6 +92,13 @@ std::ostream& operator<<( std::ostream& out, const poly_matr & pm );
 /// Operator << for poly_vec.
 std::ostream& operator<<( std::ostream& out, const Poly_matr & Pm );
 
+/// Define the operator == for Poly_matr,
+/// each Poly_vec has to be identical.
+bool operator==( const Poly_matr & Pm1, const Poly_matr & Pm2 );
+
+/// Define the operator == for Poly_matr,
+/// each Poly_vec has to be identical.
+bool operator!=( const Poly_matr & Pm1, const Poly_matr & Pm2 );
 
 }
 

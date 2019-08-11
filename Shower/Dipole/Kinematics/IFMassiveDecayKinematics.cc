@@ -307,7 +307,11 @@ void IFMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
 					    const Lorentz5Momentum& pSpectator,
 					    const DipoleSplittingInfo& dInfo) {
 
-
+  // There is no plan to implement IF-type decays,
+  // therefore these kinematics have not been kept up-to-date,
+  // have not had any bug fixes and have not been kept up-to-date
+  // with other developments since their creation.
+  assert(false && "The should be no initial-final type decay dipoles being showered, something is wrong.");  
 
   // The only value stored in dInfo.lastSplittingParameters() should be zPrime
   assert(dInfo.lastSplittingParameters().size() == 1 );
@@ -344,9 +348,8 @@ void IFMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
   Lorentz5Momentum nij = ( sijk2 / (sijk2-mij2*mk2) ) * (pij - (mij2/sijk)*pk);
   Lorentz5Momentum nk = ( sijk2 / (sijk2-mij2*mk2) ) * (pk - (mk2/sijk)*pij);
 
-  //Lorentz5Momentum nt = getKt(nij,nk,sqrt(sijk),dInfo.lastPhi());
   // Following notation in notes, qt = sqrt(wt)*nt
-  Lorentz5Momentum qt = getKt(nij,nk,pt,dInfo.lastPhi());
+  Lorentz5Momentum qt = getKt(nij, nk, pt, dInfo.lastPhi());
 
   // Construct qij, qk, qi and qj
   Lorentz5Momentum qij = xij*nij + (mij2/(xij*sijk))*nk;
@@ -368,8 +371,7 @@ void IFMassiveDecayKinematics::generateKinematics(const Lorentz5Momentum& pEmitt
 }
 
 
-
-  // If needed, insert default implementations of function defined
+// If needed, insert default implementations of function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 

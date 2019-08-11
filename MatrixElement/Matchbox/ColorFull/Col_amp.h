@@ -25,7 +25,7 @@ class Col_amp {
 
 public:
 
-	/// Default constructor
+	/// Default constructor, sets Scalar=0, and leaves ca empty.
 	Col_amp() {Scalar = Scalar * 0;}
 
 	/// Constructor taking a string as argument.
@@ -34,7 +34,7 @@ public:
 	/// for example:
 	/// Col_amp Ca("13*Nc*[(1, 3, 4, 2)] +2 TR 5 Nc^(-3) [(1, 4) (3,  2)]").
 	/// (The Polynomials should multiply the whole col_strs in square brackets,
-	/// rather than a quark_line inside the [] brackets.)
+	/// rather than a quark_line inside the []-brackets.)
 	Col_amp( const std::string str ){Col_amp_of_str( str );}
 
 	/// Constructor converting a Col_str to a Col_amp.
@@ -43,14 +43,14 @@ public:
 		ca.push_back(Cs);
 	}
 
-	/// To actually contain the info of the Col_strs, ca=Cs1+Cs2+Cs3+... .
+	/// To actually contain the information about the Col_strs, ca=Cs1+Cs2+Cs3+... .
 	/// Technically the ca is a vector of Col_strs, a col_amp.
 	col_amp ca;
 
-	/// Scalar is Polynomial for collecting color factors when the color structure
-	/// has been fully contracted.
-	/// The full color amplitude is Scalar + Cs1+Cs2+Cs3..., the Polynomial should thus be non-zero
-	/// only if all indices can be contracted.
+	/// Scalar is Polynomial for collecting color factors appearing when
+	/// the color structure has been fully contracted.
+	/// The full color amplitude is Scalar + Cs1+Cs2+Cs3....
+	/// Scalar should thus be non-zero only if all indices can be contracted.
 	Polynomial Scalar;
 
 	/// Reads in the Col_amp to the member ca from the file filename.
@@ -74,14 +74,18 @@ public:
 	/// Is the col_amp empty?
 	bool empty() const { return ca.empty(); }
 
-	/// Erase information in col_amp.
+	/// Erases the information in the col_amp.
 	void clear() { ca.clear(); }
 
 	/// Erases the Col_str at place i.
 	void erase( int i );
 
+	/// Appends a Col_str to the data member ca.
+	void append( Col_str Cs ) {ca.push_back( Cs );}
+
 	/// Appends the Col_strs in ca_in to the col_amp member ca.
 	void append( col_amp ca_in );
+
 
 	// Functions for probing the Col_amp
 
@@ -114,7 +118,7 @@ public:
 	/// Remove Col_strs with quark_lines with just 1 gluon, they are 0 as Tr[t^a]=0.
 	void remove_1_rings();
 
-	/// Remove quark_lines with no gluons, they are N if closed, and defined to be 1 if open.
+	/// Remove quark_lines with no gluons, they are Nc if closed, and defined to be 1 if open.
 	void remove_0_rings();
 
 	/// Removes empty Col_strs, an empty Col_str means that all indices have been contracted,
@@ -122,7 +126,7 @@ public:
 	/// of the Col_amp.
 	void remove_empty_Col_strs();
 
-	/// Compares col_strs in a Col_amp, to collect similar col_strs,
+	/// Compares col_strs in a Col_amp to collect similar col_strs
 	/// and only store once in ca.
 	void collect_col_strs();
 
@@ -131,7 +135,7 @@ public:
 
 	/// Normal orders the individual col_strs and then
 	/// orders the Col_strs using the order defined in
-	/// the Col_str function smallest.
+	/// the Col_str member function smallest.
 	void normal_order();
 
 	/// Function for simplifying an amplitude,
@@ -153,13 +157,12 @@ public:
 	/// Contract closed Quark_lines with only 2 gluons in
 	/// each Quark_line in each Col_str in the Col_amp.
 	/// This removes the 2-ring, replaces one of the gluon indices and
-	/// multiplies with a factor tr[t^a t^a]=(1/2) (no sum).
+	/// multiplies with a factor tr[t^a t^a]=TR (no sum).
+	/// only intended for fully contractable Col_strs.
 	void contract_2_rings( );
 
 	/// Function for contracting gluon indices within the Quark_lines.
-	/// Checks only for ONE pair in each Quark_line, i.e.,
-	/// if several gluon indices appear, only one pair is contracted
-	/// in each Quark_line, only intended for closed Quark_lines.
+	/// Checks only for ONE pair in each Quark_line.
 	void contract_Quark_line_gluons( );
 
 	/// Contracts one gluon, the first gluon in first Quark_line (in each Col_str),
@@ -184,8 +187,8 @@ private:
 
 	/// Function for contracting gluon indices within the same Quark_line.
 	/// Checks only for ONE pair, i.e. if several gluon indices appear
-	/// within the Quark_line, only one pair is contracted.
-	/// Only intended for closed Quark_lines.
+	/// within the Quark_line, only one pair is contracted,
+	/// only intended for closed Quark_lines.
 	/// This function is a member of Col_amp as the result is a Col_amp.
 	void contract_Quark_line_gluons( Quark_line & Ql );
 
@@ -238,12 +241,21 @@ Col_amp operator+( const Col_str & Cs, const Col_amp & Ca );
 /// Adds Scalars, and adds Col_strs.
 Col_amp operator+( const Col_amp & Ca1, const Col_amp & Ca2 );
 
+/// Define the operator += for two Col_amp+=Col_str.
+Col_amp operator+=( Col_amp & Ca, const Col_str & Cs );
+
 /// Define the operator += for two Col_amps.
 Col_amp operator+=( Col_amp & Ca1, const Col_amp & Ca2 );
 
 /// Define the operator - for two Col_amps.
 /// Subtract Scalar of Ca2 from Ca1, and subtracts (=appends with minus sign) Col_strs.
 Col_amp operator-( const Col_amp & Ca1, const Col_amp & Ca2 );
+
+/// Define the operator - for Col_amp-Col_str.
+Col_amp operator-( const Col_amp & Ca, const Col_str & Cs );
+
+/// Define the operator - for Col_str-Col_amp.
+Col_amp operator-( const Col_amp & Ca, const Col_str & Cs );
 
 /// Define the operator * for Col_amps and integers.
 Col_amp operator*( const Col_amp & Ca, const int i );
@@ -275,10 +287,16 @@ Col_amp operator*( const Col_amp & Ca, const Polynomial & Poly );
 /// Define the operator * for Monomial and Col_amp.
 Col_amp operator*( const Polynomial & Poly, const  Col_amp & Ca );
 
-/// Define the operator *= for Col_amp and Col_str.
-Col_amp operator*( const Col_amp & Ca, const Col_str & Cs );
+/// Define the operator * for Col_amp and Quark_line.
+Col_amp operator*( const Col_amp & Ca, const Quark_line & Ql );
+
+/// Define the operator * for Quark_line and Col_amp.
+Col_amp operator*( const Quark_line & Ql, const Col_amp & Ca );
 
 /// Define the operator * for Col_amp and Col_str.
+Col_amp operator*( const Col_amp & Ca, const Col_str & Cs );
+
+/// Define the operator * for Col_str and Col_amp.
 Col_amp operator*( const Col_str & Cs, const Col_amp & Ca );
 
 /// Define the operator * for Col_amps.

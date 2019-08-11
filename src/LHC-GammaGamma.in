@@ -32,7 +32,7 @@ set /Herwig/Shower/ShowerHandler:PDFB NULL
 #  Cuts
 ##################################################
 cd /Herwig/Cuts
-set Cuts:ScaleMin 0.0
+set Cuts:ScaleMin 0.0*GeV2
 set Cuts:X1Min 0
 set Cuts:X2Min 0
 set Cuts:X1Max 1.

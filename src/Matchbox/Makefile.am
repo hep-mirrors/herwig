@@ -3,6 +3,7 @@ BUILT_SOURCES = done-all-links
 Matchboxdir = ${pkgdatadir}/Matchbox
 
 INPUTFILES = \
+CMEC.in \
 DefaultEEJets.in \
 DefaultEPJets.in \
 DefaultPPJets.in \

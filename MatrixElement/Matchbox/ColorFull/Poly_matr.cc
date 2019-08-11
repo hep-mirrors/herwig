@@ -59,6 +59,25 @@ std::ostream& operator<<(std::ostream& out, const Poly_matr & Pm){
 }
 
 
+bool operator==( const Poly_matr & Pm1, const Poly_matr & Pm2 ){
+
+	if( Pm1.size() != Pm2.size() ) return false;
+
+	// All terms should be the same
+	for ( uint i=0; i < Pm1.size(); i++ ){
+		if( Pm1.at(i) != Pm2.at(i ) ) return false;
+	}
+
+	return true;
+}
+
+bool operator!=(  const Poly_matr & Pm1, const Poly_matr & Pm2 ){
+	if( Pm1==Pm2 ) return false;
+	else return true;
+}
+
+
+
 void Poly_matr::normal_order( ) {
 
 	// Loop over vectors in matrix
@@ -146,7 +165,7 @@ void Poly_matr::read_in_Poly_matr( std::string filename ) {
 		}
 
 		Polynomial Poly( Poly_str );
-		row.push_back( Poly );
+		row.append( Poly );
 
 		// If we have a new row
 		if (i < str.size() - 2 && str.at(i) == '}') {

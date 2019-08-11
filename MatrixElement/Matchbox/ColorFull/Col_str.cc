@@ -156,6 +156,20 @@ void Col_str::read_in_Col_str( std::string filename ) {
 
 	// Copy info from file to string
 	std::string str((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
+
+	// Skip lines starting with #
+	while( str.at(0)== '#' ){
+		while (str.at(0) != '\n'){
+			str.erase(str.begin());
+		}
+		// erase endl sign(s)
+		while(str.at(0)== '\n'){
+			str.erase(str.begin());
+		}
+	}
+
+	// Remove endl chars at the end of the file
+	while( str.at(str.size()-1) == '\n' ) str.erase(str.size()-1);
 	Col_str_of_str( str );
 }
 
@@ -328,10 +342,10 @@ void Col_str::replace(int old_ind, int new_ind) {
 }
 
 
-std::string Col_str::find_kind( int part_num ) const {
+std::string Col_str::find_kind( int p ) const {
 
 	// Locate the parton in the Col_str
-  std::pair<int, int> place = find_parton(part_num);
+  std::pair<int, int> place = find_parton(p);
 
 	// Check if the quark-line is closed
 	// If the parton is in a closed quark line it's a g
@@ -481,7 +495,7 @@ void Col_str::remove_1_rings() {
 				Poly.clear();
 				Monomial Mon0;
 				Mon0.int_part = 0;
-				Poly.push_back(Mon0);
+				Poly.append(Mon0);
 			}
 
 			// If the Ql is open and has only one element, something is wrong
@@ -509,7 +523,7 @@ void Col_str::remove_0_rings() {
 			if (!cs.at(j).open) {
 				Monomial Mon_tmp;
 				Mon_tmp.pow_Nc = 1;
-				Poly = Poly * Mon_tmp;
+				Poly *=  Mon_tmp;
 			}
 			// If the ql is open and has 0 elements,
 			// it is defined as 1 and can be removed
@@ -582,7 +596,7 @@ void Col_str::contract_2_rings( ) {
 	int the_g;
 
 	// Loop over Quark_lines to find a two-ring
-	for (uint i = 0; i < cs.size(); i++) {
+	for ( uint i = 0; i < cs.size(); i++ ) {
 		place1.clear();
 		place2.clear();
 		// Search for 2-rings
@@ -617,7 +631,7 @@ void Col_str::contract_2_rings( ) {
 			}
 
 			// If the_g was found twice in the same ql
-			if (place1.at(0) == place2.at(0)) {
+			if ( place1.at(0) == place2.at(0) ) {
 				// Keep the Monomial
 				// Multiply with Nc Mon from the contraction
 				Monomial Mon_tmp;
@@ -625,11 +639,11 @@ void Col_str::contract_2_rings( ) {
 				Mon_tmp.pow_CF = 1;
 				// Multiply the Poly of the Col_str with the Poly of the ql
 				// and the color factor from the contraction
-				Poly = Poly * cs.at(place1.at(0)).Poly * Mon_tmp;
+				Poly = Poly* cs.at(place1.at(0)).Poly * Mon_tmp;
 				// Erase the ql
 				erase(place1.at(0));
 			}
-			else{
+			else if ( !place2.empty() ){
 				// That index should be changed to the index of the first gluon
 				// in the 2-ring
 				cs.at(place2.at(0)).ql.at(place2.at(1))
@@ -638,10 +652,11 @@ void Col_str::contract_2_rings( ) {
 				// and the color factor from the contraction
 				Monomial Mon_tmp;
 				Mon_tmp.pow_TR = 1;
-				Poly = Poly * Mon_tmp*cs.at(place1.at(0)).Poly;
+				Poly =  Poly * Mon_tmp*cs.at(place1.at(0)).Poly;
 				// The two ring should be removed
 				cs.erase( cs.begin() + i);
 			}
+			//else {i++;}; // Compensate for i--
 			i--; // if we found a 2-ring, we also erased it
 		} // end if we found a 2-ring
 	}// end looping over Quark_lines
@@ -779,28 +794,27 @@ void  Col_str::contract_next_neighboring_gluons( ) {
   return;
 }
 
-bool operator==(const col_str & cs1, const col_str & cs2){
+bool operator==( const col_str & cs1, const col_str & cs2 ){
 
 	// col_str's must have equal length
 	if( cs1.size() != cs2.size() ) return false;
 
-	// Individual ql's be be equal
+	// Individual Ql's be be equal
 	for ( uint i=0; i< cs1.size(); i++){
-		if(cs1.at(i).ql != cs2.at(i).ql ) return false; // Equal color structure
-		if(cs1.at(i).Poly != cs2.at(i).Poly ) return false; // Equal polynomial structure
+		if(cs1.at(i) != cs2.at(i) ) return false;
 	}
 	//If all ql's equal the cs are considered equal
 	return true;
 }
 
 
-bool operator!=(const col_str & cs1, const col_str & cs2){
+bool operator!=( const col_str & cs1, const col_str & cs2 ){
 	if(cs1==cs2) return false;
 	else return true;
 }
 
 
-std::ostream& operator<<(std::ostream& out, const col_str & cs) {
+std::ostream& operator<<( std::ostream& out, const col_str & cs ) {
 	int max = cs.size();
 	if (max == 0)
 		out << "[]";
@@ -821,20 +835,20 @@ Col_str operator*( const Col_str & Cs, const int i){
 	return Cs_res;
 }
 // Define the operator * for int and Col_str
-Col_str operator*( const int i, const Col_str & Cs){
+Col_str operator*( const int i, const Col_str & Cs ){
 	Col_str Cs_res=Cs;
 	Cs_res.Poly=Cs.Poly*i;
 	return Cs_res;
 }
 
 
-Col_str operator*( const Col_str & Cs, const double d){
+Col_str operator*( const Col_str & Cs, const double d ){
 	// Multiply Polynomial of Col_str with the double
 	Col_str Cs_res=Cs;
-	Cs_res.Poly=Cs.Poly*d;
+	Cs_res.Poly *= d;
 	return Cs_res;
 }
-Col_str operator*( const double d, const Col_str & Cs){
+Col_str operator*( const double d, const Col_str & Cs ){
 	Col_str Cs_res=Cs;
 	Cs_res.Poly=Cs.Poly*d;
 	return Cs_res;
@@ -842,25 +856,25 @@ Col_str operator*( const double d, const Col_str & Cs){
 
 
 
-Col_str operator*(const Col_str & Cs, const cnum c){
+Col_str operator*(const Col_str & Cs, const cnum c ){
 	Col_str Cs_res=Cs;
 	Cs_res.Poly=Cs.Poly*c;
 	return Cs_res;
 	return Cs;
 }
-Col_str operator*(const cnum c, const Col_str & Cs){
+Col_str operator*( const cnum c, const Col_str & Cs ){
 	Col_str Cs_res=Cs;
 	Cs_res.Poly=Cs.Poly*c;
 	return Cs_res;
 }
 
 
-Col_str operator*(const Col_str & Cs, const Monomial & Mon){
+Col_str operator* (const Col_str & Cs, const Monomial & Mon ){
 	Col_str Cs_res=Cs;
-	Cs_res.Poly=Cs.Poly*Mon;
+	Cs_res.Poly =Cs.Poly*Mon;
 	return Cs_res;
 }
-Col_str operator*( Monomial & Mon, const Col_str & Cs){
+Col_str operator*( Monomial & Mon, const Col_str & Cs ){
 	Col_str Cs_res=Cs;
 	Cs_res.Poly=Cs.Poly*Mon;
 	return Cs_res;
@@ -921,6 +935,14 @@ Col_str operator*( const Col_str & Cs1, const Col_str & Cs2 ){
 	return out_Cs;
 }
 
+Col_str operator*( const Quark_line & Ql1, const Quark_line & Ql2 ){
+
+	// Col_str to return
+	Col_str out_Cs(Ql1);
+	out_Cs.simplify();
+
+	return out_Cs*Ql2;
+}
 
 std::ostream& operator<<(std::ostream& out, const Col_str & Cs){
 

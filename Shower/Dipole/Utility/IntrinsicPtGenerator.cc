@@ -42,12 +42,12 @@ IBPtr IntrinsicPtGenerator::fullclone() const {
   return new_ptr(*this);
 }
 
-SpinOneLorentzRotation IntrinsicPtGenerator::kick(PPair& in,
+LorentzRotation IntrinsicPtGenerator::kick(PPair& in,
 						  PList& intermediates) {
 
   if ( theValenceIntrinsicPtScale == 0.0*GeV &&
        theSeaIntrinsicPtScale == 0.0*GeV )
-    return SpinOneLorentzRotation();
+    return LorentzRotation();
 
   assert(ShowerHandler::currentHandler());
 
@@ -153,7 +153,7 @@ SpinOneLorentzRotation IntrinsicPtGenerator::kick(PPair& in,
   Boost beta1 = -Q.boostVector();
   Boost beta2 = nQ.boostVector();
 
-  SpinOneLorentzRotation transform (beta1);
+  LorentzRotation transform (beta1);
   transform.boost(beta2);
 
   return transform;

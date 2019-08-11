@@ -15,6 +15,7 @@ EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
 	DipoleSplittingKernel.h \
+	ColourMatrixElementCorrection.h \
 	FFMqx2qgxDipoleKernel.h \
 	FFMgx2ggxDipoleKernel.h \
 	FFMgx2qqxDipoleKernel.h \
@@ -45,6 +46,7 @@ ALL_H_FILES = \
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
 	DipoleSplittingKernel.cc \
+	ColourMatrixElementCorrection.cc \
 	FFMqx2qgxDipoleKernel.cc \
 	FFMgx2ggxDipoleKernel.cc \
 	FFMgx2qqxDipoleKernel.cc \

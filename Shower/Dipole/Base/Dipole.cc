@@ -78,7 +78,8 @@ void Dipole::update() {
 }
 
 pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
-				  bool colourSpectator) const {  
+				  bool colourSpectator,
+				  bool subleadingNc) const {  
  // check contracts
   assert(dsplit.splittingKinematics());
   assert(dsplit.emitterData() && dsplit.emissionData() && dsplit.spectatorData());
@@ -131,12 +132,28 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
 
   // perform the splitting
   tPPtr oldEmitter = emitter(dsplit.configuration());
-  PPtr newEmitter = 
-    dsplit.emitterData()->produceParticle(
-               dsplit.splittingKinematics()->lastEmitterMomentum());
-  PPtr newEmission = 
-    dsplit.emissionData()->produceParticle(
-               dsplit.splittingKinematics()->lastEmissionMomentum());
+  PPtr newEmitter, newEmission;
+  double z = dsplit.lastZ();
+  // Do not swap momenta for splittings different from g->gg or
+  // initial state emitters 
+  bool noSwap = !(dsplit.emitterData()->id() == ParticleID::g
+		  && dsplit.emissionData()->id() == ParticleID::g )
+    || dsplit.index().initialStateEmitter();
+  if ( noSwap || z > UseRandom::rnd(1.0) ) {
+    newEmitter = 
+      dsplit.emitterData()->produceParticle(
+					    dsplit.splittingKinematics()->lastEmitterMomentum());
+    newEmission = 
+      dsplit.emissionData()->produceParticle(
+					     dsplit.splittingKinematics()->lastEmissionMomentum());
+  } else {
+    newEmitter = 
+      dsplit.emitterData()->produceParticle(
+					    dsplit.splittingKinematics()->lastEmissionMomentum());
+    newEmission = 
+      dsplit.emissionData()->produceParticle(
+					     dsplit.splittingKinematics()->lastEmitterMomentum());
+  }
 
   newEmitter->scale(sqr(dsplit.lastPt()));
   newEmission->scale(sqr(dsplit.lastPt()));

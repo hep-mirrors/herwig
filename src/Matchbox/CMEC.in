@@ -1,0 +1,45 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+## Turn on subleading Nc corrections
+##################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:DoSubleadingNc On
+
+## Set the number of subleading Nc emissions to calculate
+set /Herwig/DipoleShower/DipoleShowerHandler:SubleadingNcEmissionsLimit 5
+
+##################################################
+## Calculate the CMECs
+##################################################
+
+## Set detuning
+set /Herwig/DipoleShower/DipoleShowerHandler:Detuning 2
+
+## Create an object of the CMEC class
+create Herwig::ColourMatrixElementCorrection /Herwig/DipoleShower/DipoleSplittingReweight
+
+## Set the splitting reweight to be the CMEC (it is a derived class of
+## DipoleSplittingReweight)
+set /Herwig/DipoleShower/DipoleShowerHandler:SplittingReweight /Herwig/DipoleShower/DipoleSplittingReweight
+
+##################################################
+## Set the density operator evolution scheme
+##################################################
+## Schemes:
+## 0 - Eikonal with cutoff
+## 1 - Eikonal without cutoff
+## 2 - Constant
+## 3 - Semi-leading Nc, only emitter/spectator have non-zero Vijk
+
+set /Herwig/DipoleShower/DipoleShowerHandler:DensityOperatorEvolution 1
+set /Herwig/DipoleShower/DipoleShowerHandler:DensityOperatorCutoff 1.0*GeV2
+
+##################################################
+## Turn on partial unweighting and set the
+## reference weight
+##################################################
+
+#set /Herwig/DipoleShower/DipoleShowerHandler:DoPartialUnweighting Off
+#set /Herwig/DipoleShower/DipoleShowerHandler:DoPartialUnweightingAtEmission Off
+#set /Herwig/DipoleShower/DipoleShowerHandler:ReferenceWeight 4.0

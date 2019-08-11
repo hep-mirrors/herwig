@@ -118,7 +118,27 @@ public:
    */
   virtual double tMatrixElement(size_t i, size_t a, size_t b,
 				const vector<PDT::Colour>& aBasis,
-				const vector<PDT::Colour>& bBasis) const;
+				const vector<PDT::Colour>& bBasis,
+				size_t k, size_t l,
+				const map<size_t,size_t>& dict) const;
+
+  /**
+   * Return true, if this colour basis supports gluon splittings.
+   */
+  virtual bool canSplitGluons() const {
+    return false;
+  }
+
+  /**
+   * Return the matrix element of a quark splitting matrix
+   * <c_{n+1,a}|T_i|c_{n,b}> between basis tensors a and b, with
+   * respect to aBasis and bBasis
+   */
+  virtual double sMatrixElement(size_t i, size_t a, size_t b,
+				const vector<PDT::Colour>& aBasis,
+				const vector<PDT::Colour>& bBasis,
+				size_t k, size_t l,
+				const map<size_t,size_t>& dict) const;
 
   /**
    * Return true, if the colour basis is capable of assigning colour

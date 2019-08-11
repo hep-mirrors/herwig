@@ -1,4 +1,4 @@
-SUBDIRS = Base Kernels Kinematics Utility AlphaS Merging Colorea
+SUBDIRS = Base Kernels Kinematics Utility AlphaS Merging SpinCorrelations Colorea
 
 pkglib_LTLIBRARIES = HwDipoleShower.la
 
@@ -10,6 +10,7 @@ HwDipoleShower_la_LIBADD = \
 	Kinematics/libHwDipoleShowerKinematics.la \
 	Utility/libHwDipoleShowerUtility.la \
 	Merging/libHwDipoleShowerMerging.la \
+	SpinCorrelations/libHwDipoleShowerSpinCorrelations.la \
         Colorea/libHwDipoleShowerColorea.la
 
 HwDipoleShower_la_SOURCES =  \

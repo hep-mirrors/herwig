@@ -24,8 +24,7 @@
 
 using namespace Herwig;
 
-FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() 
-  : theFullJacobian(true) {}
+FFMassiveInvertedTildeKinematics::FFMassiveInvertedTildeKinematics() {}
 
 FFMassiveInvertedTildeKinematics::~FFMassiveInvertedTildeKinematics() {}
 
@@ -37,10 +36,9 @@ IBPtr FFMassiveInvertedTildeKinematics::fullclone() const {
   return new_ptr(*this);
 }
 
+// Matches Stephen Webster's thesis
 bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
 
-  // todo - SW: Sort out all of the notation in the matchbox
-  // kinematics to match the manual, before manual release. 
   if ( ptMax() < ptCut() ) {
     jacobian(0.0);
     return false;
@@ -57,50 +55,47 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
-  // pt and zPrime = qi.nk / (qi+qj).nk are the generated variables
   Energy pt = ptz.first;
   Energy2 pt2 = sqr(pt);
-  double zPrime = ptz.second;
-  
+  double z = ptz.second;
+
+  // masses
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
+  double muj2 = sqr( realEmissionData()->hardProcessMass() / lastScale() );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
+  double Muij2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
+  double Muk2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
 
   // Define the scale
   Energy2 Qijk = sqr(lastScale());
 
   // Most of the required values have been calculated in ptzAllowed
   double y = values[0];
-  double z = values[1];
-  double A = values[2];
-  double xk = values[3];
-  double xij = values[4];
-  double suijk = values[5];
-  double suijk2 = sqr(suijk);
-  
-  // masses
-  double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
-  //double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
-  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
-  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
+  double zi = values[1];
+  double xk = values[2];
+  double xij = values[3];
+  double QijN2 = values[4];
+  double sijkN = values[5];
+  double sijkN2 = sqr(sijkN);
 
+  // Construct reference momenta nk, nij
+  Lorentz5Momentum nij = ( sijkN2 / (sijkN2-Muij2*Muk2) )
+    * (emitter - (Muij2/sijkN)*spectator);
+  Lorentz5Momentum nk = ( sijkN2 / (sijkN2-Muij2*Muk2) )
+    * (spectator - (Muk2/sijkN)*emitter);
 
-  // Construct reference momenta nk, nij, nt
-  Lorentz5Momentum nij = ( suijk2 / (suijk2-Mui2*Muj2) )
-    * (emitter - (Mui2/suijk)*spectator);
-  Lorentz5Momentum nk = ( suijk2 / (suijk2-Mui2*Muj2) )
-    * (spectator - (Muj2/suijk)*emitter);
-
-  // Following notation in notes, qt = sqrt(wt)*nt
+  // Construct qt
   double phi = 2.*Constants::pi*r[2];
-  Lorentz5Momentum qt = getKt(nij,nk,pt,phi);
+  Lorentz5Momentum qt = getKt(emitter,spectator,pt,phi);
 
   // Construct qij, qk, qi and qj
-  Lorentz5Momentum qij = xij*nij + (Mui2/(xij*suijk))*nk;
-  Lorentz5Momentum spe = xk*nk + (Muj2/(xk*suijk))*nij;
+  Lorentz5Momentum qij = xij*nij + (Muij2/(xij*sijkN))*nk;
+  Lorentz5Momentum spe = xk*nk + (Muk2/(xk*sijkN))*nij;
 
-  Lorentz5Momentum em = zPrime*qij
-    + ((pt2/Qijk + mui2 - zPrime*zPrime*Mui2)/(xij*suijk*zPrime))*nk + qt;
-  Lorentz5Momentum emm = (1.-zPrime)*qij
-    + ((pt2/Qijk + mu2 - sqr(1.-zPrime)*Mui2)/(xij*suijk*(1.-zPrime)))*nk - qt;
+  Lorentz5Momentum em = z*qij
+    + ((pt2/Qijk + mui2 - z*z*Muij2)/(xij*sijkN*z))*nk + qt;
+  Lorentz5Momentum emm = (1.-z)*qij
+    + ((pt2/Qijk + muj2 - sqr(1.-z)*Muij2)/(xij*sijkN*(1.-z)))*nk - qt;
 
   em.setMass(realEmitterData()->hardProcessMass());
   em.rescaleEnergy();
@@ -113,94 +108,27 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   realEmitterMomentum() = em;
   realEmissionMomentum() = emm;
   realSpectatorMomentum() = spe;
+
+  // Calculate the jacobian
+  double bar = 1.-mui2-muj2-muk2;
   
-  // Compute and store the jacobian
-  // The jacobian here corresponds to dpt2 / sqr(lastscale) NOT dpt2 / pt2.
-  // This jacobian is the one-particle phase space
-  
-  // jac s.t.: dy dz = jac* dpt2/sqr(lastScale()) dz
-  double jac = 0.0;
-
-  // SW - Change in notation here that needs to be fixed (j<->nothing<->k)
-  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
-  Energy2 mj2 = sqr(realEmissionData()->hardProcessMass());
-  Energy2 mk2 = sqr(realSpectatorData()->hardProcessMass());
-  Energy2 mij2 = sqr(bornEmitterData()->hardProcessMass());
-  Energy2 sbar = Qijk - mi2 - mj2 -mk2;
-
-  if ( theFullJacobian && bornSpectatorData()->hardProcessMass() != ZERO ) {
-
-    Energy2 sijk = Qijk*suijk;
-
-    double lambdaK = 1. + (mk2/sijk);
-    double lambdaIJ = 1. + (mij2/sijk);
-    
-    // Compute dy/dzPrime and pt2* dy/dpt2
-    double dyBydzPrime = (1./sbar) *
-      ( -pt2*(1.-2.*zPrime)/sqr(zPrime*(1.-zPrime))
-	- mi2/sqr(zPrime) + mj2/sqr(1.-zPrime) );
-    InvEnergy2 dyBydpt2 = 1./(sbar*zPrime*(1.-zPrime));
-
-    // Compute dA/dzPrime and dA/dpt2
-    double dABydzPrime = (sbar/sijk) * dyBydzPrime;
-    InvEnergy2 dABydpt2 = (sbar/sijk) * dyBydpt2;
-
-    // Compute dxk/dzPrime, dxk/dpt2, dxij/dzPrime and dxij/dpt2
-    double factor = (0.5/lambdaK) *
-      (-1. 
-       - (1./sqrt( sqr(lambdaK + (mk2/sijk)*lambdaIJ - A)
-		 - 4.*lambdaK*lambdaIJ*mk2/sijk))
-       * (lambdaK + (mk2/sijk)*lambdaIJ - A) );
-    
-    double dxkBydzPrime = factor * dABydzPrime;
-    InvEnergy2 dxkBydpt2 = factor * dABydpt2;
-
-    double dxijBydzPrime = (mk2/sijk) * (1./sqr(xk)) * dxkBydzPrime;
-    InvEnergy2 dxijBydpt2 = (mk2/sijk) * (1./sqr(xk)) * dxkBydpt2;
-
-    Energy2 dqiDotqkBydzPrime = xij*xk*0.5*sijk
-      + zPrime*dxijBydzPrime*xk*0.5*sijk + zPrime*xij*dxkBydzPrime*0.5*sijk
-      + 0.5*(mk2/sijk)*(pt2 + mi2)
-      * (-1./(xk*xij*sqr(zPrime)) - dxkBydzPrime/(zPrime*xij*sqr(xk))
-	 - dxijBydzPrime/(zPrime*xk*sqr(xij)));
-
-    double dqiDotqkBydpt2 =  dxijBydpt2*zPrime*xk*0.5*sijk
-      + zPrime*xij*dxkBydpt2*0.5*sijk
-      + (0.5*mk2/sijk) * (1./(zPrime*xk*xij))
-      * (1. + (pt2+mi2)*(-dxkBydpt2/xk - dxijBydpt2/xij) );
-
-    
-    // Compute dzBydzPrime and dzBydpt2
-    Energy2 qiDotqk = (zPrime*xij*xk*sijk*0.5)
-      + (mk2/ ( 2.*xk*xij*sijk*zPrime))*(pt2 + mi2);
-
-    double dzBydzPrime = (1./sbar)
-      * ( 2.*qiDotqk*dyBydzPrime/sqr(1.-y) + (1./(1.-y))*2.*dqiDotqkBydzPrime );
-    InvEnergy2 dzBydpt2 = (1./sbar)
-      * ( 2.*qiDotqk*dyBydpt2/sqr(1.-y) + (1./(1.-y))*2.*dqiDotqkBydpt2 );
-
-    // Compute the jacobian    
-    jac = Qijk * abs(dzBydpt2*dyBydzPrime - dzBydzPrime*dyBydpt2);
-
-  }
-
-  // This is correct in the massless spectator case.
-  else {
-    jac = Qijk / (sbar*zPrime*(1.-zPrime));
-  }
+  // mapFactor defined as dy dz = mapFactor * dpt2/sqr(lastScale()) dz
+  double mapFactor = 0.0;
+  mapFactor = y*(sqr(lastScale()) / (pt2 + sqr(1.-z)*mui2*Qijk + sqr(z)*muj2*Qijk))
+      * abs(1. - 2.*Muk2*QijN2 / (bar*(1.-y)*xij*xk*sijkN));
   
   // Mapping includes only the variable changes/jacobians
-  mapping *= jac;
-  jacobian( (sqr(sbar)/rootOfKallen(Qijk,mij2,mk2)) * mapping*(1.-y)/(16.*sqr(Constants::pi)) / sHat() );
+  mapping *= mapFactor;
+  jacobian( (Qijk*sqr(bar)/rootOfKallen(1.,Muij2,Muk2)) * mapping
+            * (1.-y)/(16.*sqr(Constants::pi)) / sHat() );
   
   // Store the parameters
   subtractionParameters().resize(3);
   subtractionParameters()[0] = y;
-  subtractionParameters()[1] = z;
-  subtractionParameters()[2] = zPrime;
-   
+  subtractionParameters()[1] = zi;
+  subtractionParameters()[2] = z;
+  
   return true;
-
 }
 
 
@@ -209,13 +137,13 @@ Energy FFMassiveInvertedTildeKinematics::lastPt() const {
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
   double y = subtractionParameters()[0];
-  double zPrime = subtractionParameters()[2];
+  double z = subtractionParameters()[2];
   
-  Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * zPrime*(1.-zPrime) - sqr(1.-zPrime)*mui2 - sqr(zPrime)*mu2 );
+  Energy ret = scale * sqrt( y * (1.-mui2-muj2-muk2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*muj2 );
 
   return ret;
 }
@@ -229,17 +157,16 @@ Energy FFMassiveInvertedTildeKinematics::ptMax() const {
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
-  Energy ptmax = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
-    ( 2.-2.*sqrt(muj2) ) * scale;
+  Energy ptmax = rootOfKallen( mui2, muj2, sqr(1.-sqrt(muk2)) ) /
+    ( 2.-2.*sqrt(muk2) ) * scale;
   
   return ptmax > 0.*GeV ? ptmax : 0.*GeV;
 }
 
 // NOTE: bounds calculated at this step may be too loose
-// These apply to zPrime, which is stored in lastZ()
 pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
 
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
@@ -248,80 +175,86 @@ pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy 
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
-  double zp = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
-    rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
+  double zp = ( 1.+mui2-muj2+muk2-2.*sqrt(muk2) +
+    rootOfKallen(mui2,muj2,sqr(1.-sqrt(muk2))) *
     sqrt( 1.-sqr(pt/hardPt) ) ) /
-    ( 2.*sqr(1.-sqrt(muj2)) );
-  double zm = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
-    rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
+    ( 2.*sqr(1.-sqrt(muk2)) );
+  double zm = ( 1.+mui2-muj2+muk2-2.*sqrt(muk2) -
+    rootOfKallen(mui2,muj2,sqr(1.-sqrt(muk2))) *
     sqrt( 1.-sqr(pt/hardPt) ) ) /
-    ( 2.*sqr(1.-sqrt(muj2)) );
+    ( 2.*sqr(1.-sqrt(muk2)) );
     
   return make_pair(zm,zp);
 }
 
+// Matches Stephen Webster's thesis
 bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz, vector<double>* values) const {
 
   Energy pt = ptz.first;
   Energy2 pt2 = sqr(pt);
-  double zPrime = ptz.second;
+  double z = ptz.second;
 
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
-  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
-  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
+  double Muij2 = sqr( bornEmitterData()->hardProcessMass() / lastScale() );
+  double Muk2 = sqr( bornSpectatorData()->hardProcessMass() / lastScale() );
   
   // Calculate the scales that we need
   Energy2 Qijk = sqr(lastScale());
-  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
-  double bar = 1.-mui2-mu2-muj2;
+  double QijN2 = (pt2/Qijk + (1.-z)*mui2 + z*muj2) / z / (1.-z);
+  double sijkN = 0.5*( 1. - Muij2 - Muk2 + sqrt( sqr(1.-Muij2-Muk2) - 4.*Muij2*Muk2 ) );
+  double bar = 1.-mui2-muj2-muk2;
 
-  double y = ( pt2/Qijk + sqr(1.-zPrime)*mui2 + zPrime*zPrime*mu2 ) /
-      (zPrime*(1.-zPrime)*bar);
-
-  // Calculate A:=xij*w
-  double A = (1./(suijk*zPrime*(1.-zPrime))) * ( pt2/Qijk + zPrime*mu2 + (1.-zPrime)*mui2 - zPrime*(1.-zPrime)*Mui2 );
+  double y = ( pt2/Qijk + sqr(1.-z)*mui2 + z*z*muj2 ) /
+      (z*(1.-z)*bar);
 
   // Calculate the scaling factors, xk and xij
-  double lambdaK = 1. + (Muj2/suijk);
-  double lambdaIJ = 1. + (Mui2/suijk);
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
-  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
+  double lambdaK = 1. + (Muk2/sijkN);
+  double lambdaIJ = 1. + (Muij2/sijkN);
+  double fac1 = lambdaIJ*lambdaK + (muk2 - QijN2)/sijkN;
+  double xk =
+    ( fac1 + sqrt( sqr(fac1) - 4.*lambdaIJ*lambdaK*muk2/sijkN ) )
+    / 2. / lambdaK ;
+  double xij = 1. - muk2*(1.-xk) / xk / sijkN;
 
-  // Calculate z
-  double z = ( (zPrime*xij*xk*suijk/2.) + (Muj2/ ( 2.*xk*xij*suijk*zPrime))*(pt2/Qijk + mui2) ) /
-    ( (xij*xk*suijk/2.) + (Muj2/(2.*xk*xij))*(Mui2/suijk + A) );
+  // Calculate zi
+  double zi =
+    ( z*xij*xk*sijkN + muk2*(pt2/Qijk + mui2) / (z*xij*xk*sijkN) )
+    / (1.-y) / bar;
+  
+  // Limits on zi
+  double facA = (2.*mui2+bar*y)/2./(mui2 + muj2 + bar*y);
+  double facB =
+    sqrt( (sqr(2.*muk2 + bar*(1.-y)) - 4.*muk2) *
+          (sqr(bar)*sqr(y) - 4.*mui2*muj2))
+    / bar / (1.-y) / (bar*y + 2.*mui2);
+  double zim = facA * (1. - facB);
+  double zip = facA * (1. + facB);
   
   // check (y,z) phase space boundary
-  // TODO: is y boundary necessary?
-  double ym = 2.*sqrt(mui2)*sqrt(mu2)/bar;
-  double yp = 1. - 2.*sqrt(muj2)*(1.-sqrt(muj2))/bar;
-  // These limits apply to z, not zPrime
-  double zm = ( (2.*mui2+bar*y)*(1.-y) - sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
-    ( 2.*(1.-y)*(mui2+mu2+bar*y) );
-  double zp = ( (2.*mui2+bar*y)*(1.-y) + sqrt(y*y-ym*ym)*sqrt(sqr(2.*muj2+bar-bar*y)-4.*muj2) ) /
-    ( 2.*(1.-y)*(mui2+mu2+bar*y) );
-  
-  if ( y<ym || y>yp || z<zm || z>zp ) return false;
+  double ym = 2.*sqrt(mui2)*sqrt(muj2)/bar;
+  double yp = 1. - 2.*sqrt(muk2)*(1.-sqrt(muk2))/bar;
+
+  if ( y<ym || y>yp || zi<zim || zi>zip ) return false;
 
   assert( (*values).size() == 6);
   (*values)[0] = y;
-  (*values)[1] = z;
-  (*values)[2] = A;
-  (*values)[3] = xk;
-  (*values)[4] = xij;
-  (*values)[5] = suijk;
-      
+  (*values)[1] = zi;
+  (*values)[2] = xk;
+  (*values)[3] = xij;
+  (*values)[4] = QijN2;
+  (*values)[5] = sijkN;
+
   return true;
 }
 
 
-// This is used to generate pt and zPrime
+// This is used to generate pt and z
 pair<Energy,double> FFMassiveInvertedTildeKinematics::generatePtZ(double& jac, const double * r, vector<double> * values) const {
 
   double kappaMin = 

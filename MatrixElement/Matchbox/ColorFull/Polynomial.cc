@@ -174,6 +174,23 @@ void Polynomial::Polynomial_of_str( const std::string str ) {
 				}
 			}
 
+			// We can also allow for - after^, for example TR^-1
+			// added 14 11 26
+			if (i < str.size() and  str.at(i) == '-' and ( (i>= 1) and str.at(i-1)=='^'))  {
+				// read in sign
+				Mon_str.push_back(str.at(i));
+				i++; // skip sign
+				// Keep reading in while numbers
+				while (i< str.size() and  (str.at(i) == '0' or str.at(i) == '1' or str.at(i) == '2'
+						or str.at(i) == '3' or str.at(i) == '4'
+								or str.at(i) == '5' or str.at(i) == '6'
+										or str.at(i) == '7' or str.at(i) == '8'
+												or str.at(i) == '9')){
+					Mon_str.push_back(str.at(i));
+					i++;
+				}
+			}
+
 			// We can also allow for - after ( as in (-1)
 			if (i < str.size() and str.at(i) == '-' and (i>= 3) and str.at(i-1)=='(') {
 				// read in sign
@@ -264,6 +281,20 @@ void Polynomial::read_in_Polynomial( std::string filename) {
 	// Copy info from file to string
 	std::string str((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
 	//str.erase(str.size()-1);
+	// Remove endl chars at the end of the file
+	while( str.at( str.size()-1 ) == '\n' ) str.erase(str.size()-1);
+
+	// Skip lines starting with #
+	while( str.at(0)== '#' ){
+		while (str.at(0) != '\n'){
+			str.erase(str.begin());
+		}
+		// erase endl sign(s)
+		while(str.at(0)== '\n'){
+			str.erase(str.begin());
+		}
+	}
+
 	Polynomial_of_str( str );
 }
 
@@ -273,7 +304,7 @@ void Polynomial::write_out_Polynomial( std::string filename ) const {
 	std::ofstream outfile(filename.c_str());
 
 	if ( !outfile )
-	std::cerr << "Polynomial::write_out_Polynomial: Cannot write out diagonal scalar products as the file \""
+	std::cerr << "Polynomial::write_out_Polynomial: Cannot write out Polynomial as the file \""
 		<< filename.c_str() << "\" could not be opened. (Does the directory exist? Consider creating the directory.)" << std::endl;
 
 	outfile << *this;
@@ -522,15 +553,15 @@ bool operator!=( const Polynomial & Poly1, const Polynomial & Poly2){
 Polynomial operator+(const Polynomial & Poly, const Monomial & Mon){
 
 	Polynomial out_Poly(Poly);
-	// If original Polynomial was empty=1, push_back dummy Monomial=1
+	// If original Polynomial was empty=1, append dummy Monomial=1
 	// (such that after the addition the Polynomial has indeed two terms)
 	if(out_Poly.empty()){
 		Monomial dummy_Mon;
-		out_Poly.push_back(dummy_Mon);
+		out_Poly.append(dummy_Mon);
 	}
 
 	// Add term unless it's 0
-	if(Mon.int_part != 0) out_Poly.push_back( Mon );
+	if(Mon.int_part != 0) out_Poly.append( Mon );
 
 	return out_Poly;
 }
@@ -553,7 +584,7 @@ Polynomial operator-(const Monomial & Mon, const Polynomial & Poly){
 	// If Poly is empty=1, add a default Monomial=1, which can change sign
 	if (out_Poly.empty()) {
 		Monomial dummy_Mon;
-		out_Poly.push_back(dummy_Mon);
+		out_Poly.append(dummy_Mon);
 	}
 
 	// Change sing of Polynomial, by looping over terms
@@ -573,14 +604,14 @@ Polynomial operator+(const Monomial & Mon, const Polynomial & Poly ){
 
 Polynomial operator+=( Polynomial & Poly, const Monomial & Mon ) {
 
-	// If original Poly was empty=1, push_back dummy Monomial=1
+	// If original Poly was empty=1, append dummy Monomial=1
 	// to make the Poly 1.
 	if ( Poly.empty() ) {
 		Monomial dummy_Mon;
-		Poly.push_back( dummy_Mon );
+		Poly.append( dummy_Mon );
 	}
 
-	if(Mon.int_part != 0) Poly.push_back( Mon );
+	if(Mon.int_part != 0) Poly.append( Mon );
 
 	return Poly;
 }
@@ -594,15 +625,15 @@ Polynomial operator+=( Polynomial & Poly1, const Polynomial & Poly2 ) {
 		assert(0);
 	}
 
-	// If original Poly2 was empty=1, push_back dummy Monomial=1
+	// If original Poly2 was empty=1, append dummy Monomial=1
 	// add a dummy Monomial to Poly1
 	if ( Poly2.empty() ) {
 		Monomial dummy_Mon;
-		Poly1.push_back( dummy_Mon );
+		Poly1.append( dummy_Mon );
 	}
 	// otherwise add Monomials from Poly2 to Poly 1
 	else for (int i = 0; i < Poly2.size(); i++) {
-		Poly1.push_back( Poly2.at(i) );
+		Poly1.append( Poly2.at(i) );
 	}
 
 	return Poly1;
@@ -614,17 +645,17 @@ Polynomial operator+( const Polynomial & Poly1, const Polynomial & Poly2) {
 	Polynomial out_Poly1(Poly1);
 	Polynomial out_Poly2(Poly2);
 
-	// If original Poly1 was empty=1, push_back dummy Monomial=1
+	// If original Poly1 was empty=1, append dummy Monomial=1
 	// after adding empty Monomial the Polynomial is still 1
 	if (out_Poly1.empty()) {
 		Monomial dummy_Mon;
-		out_Poly1.push_back(dummy_Mon);
+		out_Poly1.append(dummy_Mon);
 	}
-	// If original Poly2 was empty=1, push_back dummy Monomial=1
+	// If original Poly2 was empty=1, append dummy Monomial=1
 	// after adding empty Monomial the Polynomial is still 1
 	if (out_Poly2.empty()) {
 		Monomial dummy_Mon;
-		out_Poly2.push_back(dummy_Mon);
+		out_Poly2.append(dummy_Mon);
 	}
 
 	// Add terms from Poly2 to Poly1
@@ -644,7 +675,7 @@ Polynomial operator-( const Polynomial & Poly1, const Polynomial & Poly2 ) {
 	// as a Monomial by construction is 1
 	if(out_Poly2.empty()) {
 		Monomial dummy_Mon;
-		out_Poly2.push_back(dummy_Mon);
+		out_Poly2.append(dummy_Mon);
 	}
 
 	// Change sing of Poly2, by looping over terms
@@ -660,10 +691,10 @@ Polynomial operator-( const Polynomial & Poly1, const Polynomial & Poly2 ) {
 Polynomial operator*( const Polynomial & Poly, const int in ){
 
 	Polynomial out_Poly(Poly);
-	// If initially empty Polynomial=1, append empty Monomial=1, to have something to multiply with
+	// If initially empty Polynomial=1, append default Monomial=1, to have something to multiply with
 	Monomial dummy_Mon;
 	if (out_Poly.empty())
-		out_Poly.push_back(dummy_Mon);
+		out_Poly.append(dummy_Mon);
 
 	// Loop over terms in Polynomial
 	for (int i=0; i< out_Poly.size(); i++){
@@ -685,7 +716,7 @@ Polynomial operator*( const Polynomial & Poly, const cnum c ) {
 	// If initially empty Polynomial=1, append empty Monomial=1, to have something to multiply with
 	Monomial dummy_Mon;
 	if (out_Poly.empty())
-		out_Poly.push_back(dummy_Mon);
+		out_Poly.append(dummy_Mon);
 
 	// Loop over terms in Polynomial
 	for (int i = 0; i < out_Poly.size(); i++) {
@@ -705,7 +736,7 @@ Polynomial operator*( const Polynomial & Poly, const double d ) {
 	// If initially empty Polynomial=1, append empty Monomial=1, to have something to multiply with
 	Monomial dummy_Mon;
 	if (out_Poly.empty())
-		out_Poly.push_back(dummy_Mon);
+		out_Poly.append(dummy_Mon);
 
 	// Loop over terms in Polynomial
 	for (int i = 0; i < out_Poly.size(); i++) {
@@ -725,12 +756,12 @@ Polynomial operator*( const Polynomial & Poly, const Monomial & Mon ){
 
 	// Special case that the Polynomial is empty=1
 	if( Poly.empty() ) {
-		Poly_res.push_back(Mon);
+		Poly_res.append(Mon);
 		return Poly_res;
 	}
 	else{
 		for (int i1=0; i1< Poly.size(); i1++){
-			Poly_res.push_back( Poly.at(i1)*Mon );
+			Poly_res.append( Poly.at(i1)*Mon );
 		}
 	}
 	return Poly_res;
@@ -761,18 +792,84 @@ Polynomial operator*( const Polynomial & Poly1, const Polynomial & Poly2 ){
 			for (int i2=0; i2< Poly2.size(); i2++){
 				// Add terms if non of them is 0, else just don't add
 				if( Poly1.at(i1).int_part!=0 && Poly2.at(i2).int_part!=0  )
-					Poly_res.push_back(Poly1.at(i1)*Poly2.at(i2));
+					Poly_res.append(Poly1.at(i1)*Poly2.at(i2));
 			}
 		}
 		// If, by now, the Poly_res is empty that's because all terms were 0
 		if( Poly_res.empty() ){
 			Monomial Mon_tmp;
 			Mon_tmp.int_part=0;
-			Poly_res.push_back( Mon_tmp );
+			Poly_res.append( Mon_tmp );
 		}
 	}
 
 	return Poly_res;
+}
+
+
+Polynomial operator*=( Polynomial & Poly, const int in ){
+
+	// If initially empty Polynomial=1, append default Monomial=1, to have something to multiply with
+	Monomial dummy_Mon;
+	if ( Poly.empty())
+		Poly.append(dummy_Mon);
+
+	// Loop over terms in Polynomial
+	for (int i=0; i< Poly.size(); i++){
+		Poly.at(i).int_part*= in;
+	}
+	return  Poly;
+}
+
+
+Polynomial operator*=( Polynomial & Poly, const double d ){
+
+	// If initially empty Polynomial=1, append default Monomial=1, to have something to multiply with
+	Monomial dummy_Mon;
+	if ( Poly.empty())
+		Poly.append(dummy_Mon);
+
+	// Loop over terms in Polynomial
+	for (int i=0; i< Poly.size(); i++){
+		Poly.at(i).cnum_part*= d;
+	}
+	return  Poly;
+}
+
+Polynomial operator*=( Polynomial & Poly, const cnum c ){
+
+	// If initially empty Polynomial=1, append default Monomial=1, to have something to multiply with
+	Monomial dummy_Mon;
+	if ( Poly.empty())
+		Poly.append(dummy_Mon);
+
+	// Loop over terms in Polynomial
+	for (int i=0; i< Poly.size(); i++){
+		Poly.at(i).cnum_part *= c;
+	}
+	return  Poly;
+}
+
+
+Polynomial operator*=( Polynomial & Poly, const Monomial & Mon ){
+
+	// Special case that the Polynomial is empty=1
+	if( Poly.empty() ) {
+		Poly.append(Mon);
+		return Poly;
+	}
+	else{
+		for( int i1=0; i1< Poly.size(); i1++ ){
+			Poly.at(i1)*=Mon;
+		}
+	}
+	return Poly;
+}
+
+Polynomial operator*=( Polynomial & Poly1, const Polynomial & Poly2 ){
+
+	Poly1=Poly1*Poly2;
+	return Poly1;
 }
 
 }// end namespace ColorFull

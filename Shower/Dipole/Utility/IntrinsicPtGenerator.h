@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Handlers/HandlerBase.h"
-#include "ThePEG/Vectors/SpinOneLorentzRotation.h"
+#include "ThePEG/Vectors/LorentzRotation.h"
 
 namespace Herwig {
 
@@ -54,7 +54,7 @@ public:
    * applied on the final state particles. Add the
    * old incoming partons to the given list.
    */
-  SpinOneLorentzRotation kick(PPair& in,
+  LorentzRotation kick(PPair& in,
 			      PList& intermediates);
 
 public:

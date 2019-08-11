@@ -39,17 +39,17 @@ public:
 	/// after radiating a new gluon from the parton emitter.
 	/// The old color structure is Cs, and after emission a linear combination
 	/// of new basis vectors is obtained.
-	/// For emission from a quark or anti-quark there is only one resulting color
+	/// For emission from a quark or an anti-quark there is only one resulting color
 	/// structure, and -1 is returned in the place of the absent color structure.
 	/// The second vector, where the new gluon is inserted before the emitter,
 	/// comes with a minus sign in the new total amplitude.
 	std::pair<int, int>  new_vector_numbers( const Col_str & Cs, int emitter ) ;
 
 
-	/// This function is intended for tree level processes with at most 2 qqbar-pairs.
+	/// This function is intended for tree-level processes with at most 2 qqbar-pairs.
 	/// It finds the new vector numbers in the basis for n_p+1 partons
-	/// after radiating a new parton from the parton emitter.
-	/// This function doesn't actually use the cb, but only calculates the
+	/// after radiating a new gluon from the parton emitter.
+	/// This function does not actually use the cb, but only calculates
 	/// the basis vector number, which makes it much quicker than the general version.
 	/// The old vector has number old_num, and there were, before emission,
 	/// nq quarks (+ nq anti-quarks) and n_g-1 gluons, i.e. n_p=2 nq+ n_g-1.
@@ -61,7 +61,6 @@ public:
 	/// for initial states with 2 qqbar-pairs and up to 5 gluons,
 	/// 1qqbar-pair and up to 7 gluons and 0 qqbar-pairs and up to 8 gluons.
 	std::pair<int, int>  new_vector_numbers( int old_num, int emitter, int n_loop ) const;
-
 
 
 protected:
