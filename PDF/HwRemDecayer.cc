@@ -1100,6 +1100,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
   valOfN_=N;
   if(N <= 1){
+    // j--; //TODO: Do we want to make all Nmpi soft MPIs?
+    // Compare to MaxTryMPI for hard mpis.
     continue;
   }
   
@@ -1150,7 +1152,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
   // Calculate available energy for the partons
   double x1,x2;
-  double param = (1./(valOfN_-1.))*initTotRap_;
+  double param = (1./(valOfN_+1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
        // TODO: physical to use different x's (see comment below)
@@ -1172,12 +1174,14 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // If not enough energy then continue
   // The available energy has to be larger then the rest mass of the remnants
   if ( availableEnergy < ZERO ) {
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
     continue;
   }
 
  unsigned int its(0); 
   // Generate the momenta of the partons in the ladder
   if ( !(doPhaseSpaceGenerationGluons(ladderMomenta,availableEnergy,its)) ){
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
     continue;
   }
  // Add gluon mass and rescale
@@ -1210,6 +1214,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
   // Continue if energy conservation is violated 
   if ( abs(availableEnergy - totalMomPartons.m()) > 1e-8*GeV){
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
     continue;
   }
 
@@ -1230,6 +1235,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
   // Continue if not enough energy
   if(remainingEnergy<ZERO) {
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
     continue;
   }
 
@@ -1398,20 +1404,24 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
   vector<Energy> tempEnergy(ncl);
   Energy sum1(ZERO);
   double yy(0.);
+
+  // We want to make sure that the first Pt is from the 
+  // desired pt-distribution. If we select the first pt in the 
+  // trial loop we introduce a bias. 
+  Energy firstPt=softPt();
+
   while(its < _maxtries) {
     ++its;
     Energy sumx = ZERO;
     Energy sumy = ZERO;
    unsigned int iterations(0);
    unsigned int _maxtriesNew = 100;
-
    while(iterations < _maxtriesNew) {
     iterations++;
     Energy sumxIt = ZERO;
     Energy sumyIt = ZERO;
     bool success=false;
     Energy pTmax=ZERO;
-    Energy firstPt=ZERO;
     for(unsigned int i = 0; i<ncl; ++i) {
       // Different options for soft pt sampling
       //1) pT1>pT2...pTN
@@ -1457,16 +1467,14 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
             break;
          case 4: //flat below first pT
             if ( i==0 ) {
-              pt = softPt();
-              firstPt = pt;
+              pt = firstPt;
             } else {
               pt = firstPt * UseRandom::rnd();
             }
             break;
          case 5: //flat but rising below first pT
             if ( i==0 ) {
-		pt=softPt();
-                firstPt = pt;
+		pt=firstPt;
             } else {
                   pt = firstPt * pow(UseRandom::rnd(),1/2);
             }
