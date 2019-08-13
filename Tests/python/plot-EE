@@ -1,7 +1,35 @@
 #! /usr/bin/env python
 import glob,os
-directory="Rivet-EE"
 
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    parser.add_option("--with-gg",
+                      action='store_true' ,
+                      dest="gg",
+                      default=False,
+                      help="Include gg analyese")
+    parser.add_option("--without-gg",
+                      action='store_false',
+                      dest="gg",
+                      default=False,
+                      help="Don\'t include gg analyses")
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+directory=args[0]
+        
 header="""<html>
 <head>
 <title>{title}</title>
@@ -227,8 +255,9 @@ particleNames = {
     511 : "$B^0,\\bar{B}^0$", "511B" : "$B^0,\\bar{B}^0, B^\\pm$",
     521 : "$B^\\pm$", 531 : "$B^0_s,\\bar{B}^0_s$", 513 : "$B^*$",515 : "$B^{**}$",
     
-    443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$", 441  : "$\\eta_c$", 100553 : "$\Upsilon(2S)$", 300553 : "$\Upsilon(4S)$", 445 : "$\\chi_{c2}(1P)$",
-    
+    443 : "$J/\\psi$" , 100443 : "$\\psi(2S)$", 553 : "$\Upsilon(1S)$", 20443 : "$\\chi_{c1}(1P)$",
+    441  : "$\\eta_c$", 100553 : "$\Upsilon(2S)$", 300553 : "$\Upsilon(4S)$", 445 : "$\\chi_{c2}(1P)$",
+    30443 : "$\\psi(3770)$", 
     2212 : "$p,\\bar{p}$", 2224 : "$\\Delta^{++},\\bar{\\Delta}^{--}$",
 
     3122 : "$\\Lambda^0,\\bar{\\Lambda}^0$",
@@ -251,7 +280,7 @@ mLight   = [211,111,221,331,213,113,223,333,225,335,20213,20113,20223,20333,9010
 mStrange = [311,321,313,323,315,325]
 mCharm   = [411,421,413,423,425,431,433,435,20431]
 mBottom  = [511,"511B",521,531,513,515]
-mccbar   = [441,443,100443,20443]
+mccbar   = [441,443,100443,20443,30443]
 mbbbar   = [553,100553,300553]
 bLight   = [2212,2224]
 bStrange = [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3324,3334,3124]
@@ -295,12 +324,16 @@ analyses["HadronDecays"][331] = { "Modes" : {"$\\eta^\\prime\\to\\pi^0\\pi^0\\pi
                                              "$\\eta^\\prime\\to\\eta\\pi^0\\pi^0$"    : {},
                                              "$\\eta^\\prime\\to\\eta\\pi^+\\pi^-$"    : {},
                                              "$\\eta^\\prime\\to\\gamma e^+e^-$"       : {},
+                                             "$\\eta^\\prime\\to\\gamma \\mu^+\\mu^-$"       : {},
                                              "$\\eta^\\prime\\to\\gamma \\pi^+\\pi^-$" : {},
                                              "$\\eta^\\prime\\to\\gamma\\gamma\\pi^0$" : {} } }
 analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\gamma e^+e^-$"]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h2_331p_22p_11_mVf",
                                                                                        "/MC_Meson_Meson_Leptons_Decay/h2_331p_22p_11_mVfbar",
                                                                                        "/MC_Meson_Meson_Leptons_Decay/h2_331p_22p_11_mff"]
 analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\gamma e^+e^-$"]["data"] = ["/BESIII_2015_I1364494/d01-x01-y03"]
+analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\gamma \\mu^+\\mu^-$"]["MC"] = ["/MC_Meson_Meson_Leptons_Decay/h2_331p_22p_13_mff",
+                                                                                           "/MC_Meson_Meson_Leptons_Decay/h2_331p_22p_13_mVfbar",
+                                                                                           "/MC_Meson_Meson_Leptons_Decay/h2_331p_22p_13_mVf"]
 analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\pi^+\\pi^-\\pi^0$"]["MC"] =  ["/MC_Eta_Decay/dpi0pim_1","/MC_Eta_Decay/dpippim_1",
                                                                                           "/MC_Eta_Decay/dpi0pip_1"]
 analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\gamma \\pi^+\\pi^-$"]["MC"  ] =["/MC_Eta_Decay/mpimgamma_1","/MC_Eta_Decay/mpipgamma_1",
@@ -312,19 +345,24 @@ analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\eta\\pi^0\\pi^0$"]["
 analyses["HadronDecays"][331]["Modes"]["$\\eta^\\prime\\to\\eta\\pi^+\\pi^-$"]["MC"  ] = ["/MC_Eta_Decay/dpimeta","/MC_Eta_Decay/dpipeta",
                                                                                           "/MC_Eta_Decay/dpippim_2"]
 # omega
-analyses["HadronDecays"][223] = { "Modes" : {"$\\omega\\to\\pi^+\\pi^-\\pi^0$"   : {},
-                                             "$\\omega\\to e^+e^-\\pi^0$"   : {},}}
+analyses["HadronDecays"][223] = { "Modes" : {"$\\omega\\to\\pi^+\\pi^-\\pi^0$" : {},
+                                             "$\\omega\\to e^+e^-\\pi^0$"   : {},
+                                             "$\\omega\\to \\mu^+\\mu^-\\pi^0$"   : {},}}
 analyses["HadronDecays"][223]["Modes"]["$\\omega\\to\\pi^+\\pi^-\\pi^0$"]["MC"] = ["/MC_OmegaPhia1_3Pion_Decay/dalitz_1","/MC_OmegaPhia1_3Pion_Decay/m0_1",
                                                                                    "/MC_OmegaPhia1_3Pion_Decay/mminus_1","/MC_OmegaPhia1_3Pion_Decay/mplus_1",
                                                                                    "/MC_OmegaPhia1_3Pion_Decay/xhist_1","/MC_OmegaPhia1_3Pion_Decay/yhist_1"]
 analyses["HadronDecays"][223]["Modes"]["$\\omega\\to e^+e^-\\pi^0$"]["MC"] = ["/MC_Meson_Meson_Leptons_Decay/h_223p_111p_11_mPf",
                                                                               "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_11_mPfbar",
                                                                               "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_11_mff"]
+analyses["HadronDecays"][223]["Modes"]["$\\omega\\to \\mu^+\\mu^-\\pi^0$"]["MC"] = ["/MC_Meson_Meson_Leptons_Decay/h_223p_111p_13_mPf",
+                                                                                    "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_13_mPfbar",
+                                                                                    "/MC_Meson_Meson_Leptons_Decay/h_223p_111p_13_mff"]
 analyses["HadronDecays"][223]["Modes"]["$\\omega\\to e^+e^-\\pi^0$"]["data"] = ["/A2_2017_I1486671/d02-x01-y01"]
 # phi
 analyses["HadronDecays"][333] = { "Modes" : {"$\\phi\\to\\pi^+\\pi^-\\pi^0$"   : {},
                                              "$\\phi\\to e^+e^-\\pi^0$"        : {},
                                              "$\\phi\\to e^+e^-\\eta$"         : {},
+                                             "$\\phi\\to \\mu^+\\mu-\\gamma$"         : {},
                                              "$\\phi\\to \\pi^0\\pi^0\\gamma$" : {},
                                              "$\\phi\\to \\eta\\pi^0\\gamma$"  : {},}}
 analyses["HadronDecays"][333]["Modes"]["$\\phi\\to\\pi^+\\pi^-\\pi^0$"]["MC"] = ["/MC_OmegaPhia1_3Pion_Decay/dalitz_2","/MC_OmegaPhia1_3Pion_Decay/m0_2",
@@ -342,6 +380,8 @@ analyses["HadronDecays"][333]["Modes"]["$\\phi\\to e^+e^-\\eta$"]["data"] = ["/K
 
 analyses["HadronDecays"][333]["Modes"]["$\\phi\\to \\pi^0\\pi^0\\gamma$"]["data"] = ["/KLOE_2002_I585183/d01-x01-y01","/SND_2000_I525398/d01-x01-y01"]
 analyses["HadronDecays"][333]["Modes"]["$\\phi\\to \\eta\\pi^0\\gamma$" ]["data"] = ["/KLOE_2009_I818106/d01-x01-y01","/SND_2000_I527094/d01-x01-y01"]
+analyses["HadronDecays"][333]["Modes"]["$\\phi\\to \\mu^+\\mu-\\gamma$"]["MC"]=["/MC_Meson_Meson_Leptons_Decay/h2_333p_22p_13_mff","/MC_Meson_Meson_Leptons_Decay/h2_333p_22p_13_mVfbar",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h2_333p_22p_13_mVf"]
 # a_1+    
 analyses["HadronDecays"][20213] = { "Modes" : { "$a_1^+\\to\\pi^+\\pi^0\\pi^0$" : {},
                                                 "$a_1^+\\to\\pi^+\\pi^-\\pi^+$" : {},}}
@@ -502,8 +542,11 @@ analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to K^0 e^+\\nu_e$"              
 analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to K^0 \\mu^+\\nu_\\mu$"           ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_431m_311p_13p_energy",
                                                                                                 "/MC_Semi_Leptonic_Decay/h_431m_311p_13p_scale"]
 analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to K^{*0} e^+\\nu_e$"              ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_431p_313p_11m_energy",
-                                                                                                "/MC_Semi_Leptonic_Decay/h_431p_313p_11m_scale"]
-analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to K^{*0} \\mu^+\\nu_\\mu$"        ]["MC"  ] = []
+                                                                                                "/MC_Semi_Leptonic_Decay/h_431p_313p_11m_scale",
+                                                                                                "/MC_Semi_Leptonic_Decay/h_431p_313m_11m_energy",
+                                                                                                "/MC_Semi_Leptonic_Decay/h_431p_313m_11m_scale"]
+analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to K^{*0} \\mu^+\\nu_\\mu$"        ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_431m_313p_13p_scale",
+                                                                                                "/MC_Semi_Leptonic_Decay/h_431m_313p_13p_energy"]
 analyses["HadronDecays"][431]["Modes"]["$D_s^+\\to K^+\\pi^-\\pi^+$"               ]["MC"  ] = ["/MC_D_Dalitz/dalitz6","/MC_D_Dalitz/h_kppim6",
                                                                                                 "/MC_D_Dalitz/h_kppip6","/MC_D_Dalitz/h_pippim6"]
 analyses["HadronDecays"][511]={ "Spectrum" : {},
@@ -525,6 +568,8 @@ analyses["HadronDecays"][511]={ "Spectrum" : {},
                                             "$B^0\\to D^{-}_1(2420) \\mu^+\\nu_\\mu$"  : {},
                                             "$B^0\\to K^{*0} e^+e^-$"        : {},
                                             "$B^0\\to K^{*0} \\mu^+\\mu^-$"  : {},
+                                            "$B^0\\to K^0 e^+e^-$"        : {},
+                                            "$B^0\\to K^0 \\mu^+\\mu^-$"  : {},
                                             "$B\\to X_s\\gamma$"  : {},}}
 analyses["HadronDecays"][521]={"Modes" : { "$B^+\\to\\pi^0 e^+\\nu_e$"       : {},
                                            "$B^+\\to\\pi^0 \\mu^+\\nu_\\mu$" : {},
@@ -534,6 +579,8 @@ analyses["HadronDecays"][521]={"Modes" : { "$B^+\\to\\pi^0 e^+\\nu_e$"       : {
                                            "$B^+\\to\\rho^0 \\mu^+\\nu_\\mu$" : {},
                                            "$B^+\\to\\eta^\\prime e^+\\nu_e$"       : {},
                                            "$B^+\\to\\eta^\\prime \\mu^+\\nu_\\mu$" : {},
+                                           "$B^+\\to\\eta e^+\\nu_e$"       : {},
+                                           "$B^+\\to\\eta \\mu^+\\nu_\\mu$" : {},
                                            "$B^+\\to\\bar{D}^0 e^+\\nu_e$"          : {},
                                            "$B^+\\to\\bar{D}^0 \\mu^+\\nu_\\mu$"    : {},
                                            "$B^+\\to\\bar{D}^{*0} e^+\\nu_e$"       : {},
@@ -545,19 +592,29 @@ analyses["HadronDecays"][521]={"Modes" : { "$B^+\\to\\pi^0 e^+\\nu_e$"       : {
                                            "$B^+\\to\\bar{D}^{0}_1(2430) e^+\\nu_e$"       : {},
                                            "$B^+\\to\\bar{D}^{0}_1(2430) \\mu^+\\nu_\\mu$" : {},
                                            "$B^+\\to\\bar{D}^{0}_1(2420) e^+\\nu_e$"       : {},
-                                           "$B^+\\to\\bar{D}^{0}_1(2420) \\mu^+\\nu_\\mu$" : {},}
+                                           "$B^+\\to\\bar{D}^{0}_1(2420) \\mu^+\\nu_\\mu$" : {},
+                                           "$B^+\\to K^{*+} e^+e^-$"        : {},
+                                           "$B^+\\to K^{*+} \\mu^+\\mu^-$"  : {},
+                                           "$B^+\\to K^- e^+e^-$"        : {},
+                                           "$B^+\\to K^- \\mu^+\\mu^-$"  : {},}
 }
 
 
 analyses["HadronDecays"][511]["Spectrum"][311] = ["/ARGUS_1994_I354224/d01-x01-y01"]
 
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\pi^0 e^+\\nu_e$"          ]["data"] = ["/BELLE_2013_I1238273/d02-x01-y01"]
-#analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\pi^0 \\mu^+\\nu_\\mu$"    ]["data"] = []
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\pi^0 e^+\\nu_e$"          ]["MC"] = ["/MC_Semi_Leptonic_Decay/h_521p_111p_11m_energy",
+                                                                                       "/MC_Semi_Leptonic_Decay/h_521p_111p_11m_scale"]
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\pi^0 \\mu^+\\nu_\\mu$"    ]["MC"] = ["/MC_Semi_Leptonic_Decay/h_521m_111p_13p_energy",
+                                                                                       "/MC_Semi_Leptonic_Decay/h_521m_111p_13p_scale"]
+
+
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\pi^- e^+\\nu_e$"          ]["data"] = ["/BELLE_2011_I878990/d01-x01-y01","/BELLE_2013_I1238273/d01-x01-y01"]
 #analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\pi^- \\mu^+\\nu_\\mu$"    ]["data"] = []
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\pi^- e^+\\nu_e$"          ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_511p_211m_11m_energy",
                                                                                          "/MC_Semi_Leptonic_Decay/h_511p_211m_11m_scale",]
-#analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\pi^- \\mu^+\\nu_\\mu$"    ]["MC"  ] = []
+analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\pi^- \\mu^+\\nu_\\mu$"    ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_511m_211p_13p_scale",
+                                                                                         "/MC_Semi_Leptonic_Decay/h_511m_211p_13p_energy"]
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\rho^- e^+\\nu_e$"         ]["data"] = ["/BELLE_2013_I1238273/d03-x01-y01"]
 #analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\rho^- \\mu^+\\nu_\\mu$"   ]["data"] = []
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\rho^- e^+\\nu_e$"         ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_511p_213m_11m_energy",
@@ -566,13 +623,15 @@ analyses["HadronDecays"][511]["Modes"]["$B^0\\to\\rho^- \\mu^+\\nu_\\mu$"   ]["M
                                                                                          "/MC_Semi_Leptonic_Decay/h_511m_213p_13p_scale",]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\omega e^+\\nu_e$"         ]["data"] = ["/BELLE_2013_I1238273/d05-x01-y01","/BABAR_2013_I1116411/d01-x01-y01"]
 #analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\omega \\mu^+\\nu_\\mu$"   ]["data"] = []
-#analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\omega e^+\\nu_e$"         ]["MC"  ] = []
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\omega e^+\\nu_e$"         ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521m_223p_13p_energy",
+                                                                                         "/MC_Semi_Leptonic_Decay/h_521m_223p_13p_scale"]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\omega \\mu^+\\nu_\\mu$"   ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521p_223p_11m_energy",
                                                                                          "/MC_Semi_Leptonic_Decay/h_521p_223p_11m_scale",]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\rho^0 e^+\\nu_e$"         ]["data"] = ["/BELLE_2013_I1238273/d04-x01-y01"]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\rho^0 e^+\\nu_e$"         ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521p_113p_11m_energy",
                                                                                          "/MC_Semi_Leptonic_Decay/h_521p_113p_11m_scale"]
-#analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\rho^0 \\mu^+\\nu_\\mu$"   ]["MC"  ] = []
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\rho^0 \\mu^+\\nu_\\mu$"   ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521m_113p_13p_energy",
+                                                                                         "/MC_Semi_Leptonic_Decay/h_521m_113p_13p_scale"]
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to D^- e^+\\nu_e$"            ]["data"] = ["/BELLE_2015_I1397632/d01-x01-y01"]
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to D^- \\mu^+\\nu_\\mu$"      ]["data"] = ["/BELLE_2015_I1397632/d01-x01-y02"]
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to D^- e^+\\nu_e$"            ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_511p_411m_11m_energy",
@@ -594,6 +653,10 @@ analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\eta^\\prime e^+\\nu_e$"      ]
                                                                                             "/MC_Semi_Leptonic_Decay/h_521p_331p_11m_scale"]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\eta^\\prime \\mu^+\\nu_\\mu$"]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521m_331p_13p_energy",
                                                                                             "/MC_Semi_Leptonic_Decay/h_521m_331p_13p_scale"]
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\eta e^+\\nu_e$"      ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521p_221p_11m_energy",
+                                                                                    "/MC_Semi_Leptonic_Decay/h_521p_221p_11m_scale"]
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\eta \\mu^+\\nu_\\mu$"]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521m_221p_13p_energy",
+                                                                                    "/MC_Semi_Leptonic_Decay/h_521m_221p_13p_scale"]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\bar{D}^0 e^+\\nu_e$"         ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521p_421m_11m_energy",
                                                                                             "/MC_Semi_Leptonic_Decay/h_521p_421m_11m_scale"]
 analyses["HadronDecays"][521]["Modes"]["$B^+\\to\\bar{D}^0 \\mu^+\\nu_\\mu$"   ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_521m_421p_13p_energy",
@@ -632,12 +695,30 @@ analyses["HadronDecays"][511]["Modes"]["$B^0\\to D^{-}_1(2420) e^+\\nu_e$"      
                                                                                                "/MC_Semi_Leptonic_Decay/h_511p_10413m_11m_scale"]
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to D^{-}_1(2420) \\mu^+\\nu_\\mu$"  ]["MC"  ] = ["/MC_Semi_Leptonic_Decay/h_511m_10413p_13p_energy",
                                                                                                "/MC_Semi_Leptonic_Decay/h_511m_10413p_13p_scale"]
-#analyses["HadronDecays"][511]["Modes"]["$B^0\\to K^{*0} e^+e^-$"      ]["MC"  ] = []
+analyses["HadronDecays"][511]["Modes"]["$B^0\\to K^{*0} e^+e^-$"      ]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_11_mVf",
+                                                                                   "/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_11_mVfbar",
+                                                                                   "/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_11_mff"]
 analyses["HadronDecays"][511]["Modes"]["$B^0\\to K^{*0} \\mu^+\\mu^-$"]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_13_mVf",
                                                                                    "/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_13_mVfbar",
                                                                                    "/MC_Meson_Meson_Leptons_Decay/h2_511p_313p_13_mff"]
+analyses["HadronDecays"][511]["Modes"]["$B^0\\to K^0 e^+e^-$"      ]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h_511p_311p_11_mPf",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511p_311p_11_mPfbar",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511p_311p_11_mff",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511m_311m_11_mPf",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511m_311m_11_mPfbar",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511m_311m_11_mff"]
+analyses["HadronDecays"][511]["Modes"]["$B^0\\to K^0 \\mu^+\\mu^-$"]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h_511m_311m_13_mPf",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511m_311m_13_mPfbar",
+                                                                                "/MC_Meson_Meson_Leptons_Decay/h_511m_311m_13_mff"]
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to K^{*+} e^+e^-$"      ]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h2_521m_323m_11_mVf",
+                                                                                   "/MC_Meson_Meson_Leptons_Decay/h2_521m_323m_11_mff",
+                                                                                   "/MC_Meson_Meson_Leptons_Decay/h2_521m_323m_11_mVfbar"]
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to K^{*+} \\mu^+\\mu^-$"]["MC"  ] = []
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to K^- e^+e^-$"         ]["MC"  ] = []
+analyses["HadronDecays"][521]["Modes"]["$B^+\\to K^- \\mu^+\\mu^-$"   ]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h_521m_321m_13_mPfbar",
+                                                                                   "/MC_Meson_Meson_Leptons_Decay/h_521m_321m_13_mff",
+                                                                                   "/MC_Meson_Meson_Leptons_Decay/h_521m_321m_13_mPf"]
 analyses["HadronDecays"][511]["Modes"]["$B\\to X_s\\gamma$"]["data"]=["/BELLE_2015_I1330289/d01-x01-y02"]
-
 # charmonium
 analyses["HadronDecays"][443] = { "Modes" : { "$J/\\psi\\to\\eta e^+e^-$"   : {},
                                               "$J/\\psi\\to\\gamma e^+e^-$" : {} }}
@@ -648,6 +729,11 @@ analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to\\gamma e^+e^-$"]["MC"  ] = 
 # eta_c
 analyses["HadronDecays"][441] = {"DistChargedMult" : {}}
 analyses["HadronDecays"][441]["DistChargedMult"]["data"] = ["/BESIII_2019_I1724880/d01-x01-y01"]
+# psi(3770)
+analyses["HadronDecays"][30443] = { "Modes" : { "$\\psi(3770)\\to J/\\psi\\pi^0\\pi^0$" : {},
+                                                "$\\psi(3770)\\to J/\\psi\\pi^+\\pi^-$" : {},}}
+analyses["HadronDecays"][30443]["Modes"]["$\\psi(3770)\\to J/\\psi\\pi^0\\pi^0$"]["MC"  ] = ["/MC_Onium_PiPi_Decay/h_30443_443_mpi0pi0","/MC_Onium_PiPi_Decay/h_30443_443_hpi0pi0"]
+analyses["HadronDecays"][30443]["Modes"]["$\\psi(3770)\\to J/\\psi\\pi^+\\pi^-$"]["MC"  ] = ["/MC_Onium_PiPi_Decay/h_30443_443_hpippim","/MC_Onium_PiPi_Decay/h_30443_443_mpippim"]
 # bottomonium
 # upsilon(1s)
 analyses["HadronDecays"][553] = { "Mult" : {}, "Spectrum" : {} }
@@ -690,7 +776,9 @@ analyses["HadronDecays"][553]["Spectrum"][223] = ["/ARGUS_1993_S2789213/d14-x01-
 # upsion(2s)
 analyses["HadronDecays"][100553] = { "Mult" : {}, "Spectrum" : {},
                                      "Modes" : { "$\\Upsilon(2S)\\to J/\\psi\\pi^0\\pi^0$" : {},
-                                                 "$\\Upsilon(2S)\\to J/\\psi\\pi^+\\pi^-$" : {},}}
+                                                 "$\\Upsilon(2S)\\to J/\\psi\\pi^+\\pi^-$" : {},
+                                                 "$\\Upsilon(2S)\\to \\Upsilon(1S))\\pi^0\\pi^0$" : {},
+                                                 "$\\Upsilon(2S)\\to \\Upsilon(1S)\\pi^+\\pi^-$"  : {},}}
 analyses["HadronDecays"][100553]["Mult"][111]= ["/ARGUS_1990_I278933/d01-x01-y03"]
 analyses["HadronDecays"][100553]["Mult"][221]= ["/ARGUS_1990_I278933/d02-x01-y03"]
 analyses["HadronDecays"][100553]["Mult"][333]= ["/ARGUS_1989_I262551/d04-x01-y01"]
@@ -704,8 +792,25 @@ analyses["HadronDecays"][100553]["Modes"]["$\\Upsilon(2S)\\to J/\\psi\\pi^0\\pi^
                                                                                               "/MC_Onium_PiPi_Decay/h_100443_443_mpi0pi0"]
 analyses["HadronDecays"][100553]["Modes"]["$\\Upsilon(2S)\\to J/\\psi\\pi^+\\pi^-$"]["MC"] = ["/MC_Onium_PiPi_Decay/h_100443_443_hpippim",
                                                                                               "/MC_Onium_PiPi_Decay/h_100443_443_mpippim"]
+analyses["HadronDecays"][100553]["Modes"]["$\\Upsilon(2S)\\to \\Upsilon(1S))\\pi^0\\pi^0$"]["MC"] = ["/MC_Onium_PiPi_Decay/h_100553_553_mpi0pi0",
+                                                                                                     "/MC_Onium_PiPi_Decay/h_100553_553_hpi0pi0"]
+analyses["HadronDecays"][100553]["Modes"]["$\\Upsilon(2S)\\to \\Upsilon(1S)\\pi^+\\pi^-$" ]["MC"] = ["/MC_Onium_PiPi_Decay/h_100553_553_mpippim",
+                                                                                                     "/MC_Onium_PiPi_Decay/h_100553_553_hpippim"]
+
 # upsilon(4s)
-analyses["HadronDecays"][300553] = { "Mult" : {}, "Spectrum" : {}, "DistChargedMult" : {}}
+analyses["HadronDecays"][300553] = { "Mult" : {}, "Spectrum" : {}, "DistChargedMult" : {},
+                                     "Modes" : {"$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^0\\pi^0$" : {},
+                                                "$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^+\\pi^-$" : {},
+                                                "$\\Upsilon(4S)\\to J/\\psi\\pi^0\\pi^0$"      : {},
+                                                "$\\Upsilon(4S)\\to J/\\psi\\pi^+\\pi^-$"      : {},}}
+analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^0\\pi^0$"]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_100553_hpi0pi0",
+                                                                                                 "/MC_Onium_PiPi_Decay/h_300553_100553_mpi0pi0"]
+analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to\\Upsilon(1S)\\pi^+\\pi^-$"]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_100553_hpippim",
+                                                                                                 "/MC_Onium_PiPi_Decay/h_300553_100553_mpippim"]
+analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to J/\\psi\\pi^0\\pi^0$"     ]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_553_hpi0pi0",
+                                                                                                 "/MC_Onium_PiPi_Decay/h_300553_553_mpi0pi0"]
+analyses["HadronDecays"][300553]["Modes"]["$\\Upsilon(4S)\\to J/\\psi\\pi^+\\pi^-$"     ]["MC"]=["/MC_Onium_PiPi_Decay/h_300553_553_mpippim",
+                                                                                                 "/MC_Onium_PiPi_Decay/h_300553_553_hpippim"]
 analyses["HadronDecays"][300553]["DistChargedMult"]["data"] = ["/ARGUS_1992_I319102/d03-x01-y01"]
 analyses["HadronDecays"][300553]["Mult"][   211 ] = ["/ARGUS_1993_S2653028/d07-x01-y01","/ARGUS_1993_S2653028/d08-x01-y01",
                                                      "/PDG_Upsilon_4S_HADRON_MULTIPLICITIES/d87-x01-y01"]
@@ -762,6 +867,10 @@ analyses["HadronDecays"][300553]["Spectrum"][443   ] = ["/BABAR_2003_I593379/d06
 analyses["HadronDecays"][300553]["Spectrum"][20443 ] = ["/BABAR_2003_I593379/d07-x01-y01"]
 analyses["HadronDecays"][300553]["Spectrum"][445   ] = ["/BABAR_2003_I593379/d07-x01-y02"]
 analyses["HadronDecays"][300553]["Spectrum"][100443] = ["/BABAR_2003_I593379/d08-x01-y01"]
+
+
+
+
 # charged multiplicity (total)
 analyses["Charged"]["TotalChargedMult"][0][12.0 ] = ["/JADE_1983_I190818/d01-x01-y01"]
 analyses["Charged"]["TotalChargedMult"][0][14.0 ] = ["/TASSO_1989_I277658/d02-x01-y01"]
@@ -2497,6 +2606,8 @@ def writeMisc(index) :
     global figures
     index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
     print 'Unused figures',len(figures)
+    for val in figures:
+        print val
     misc=open(os.path.join(directory,"misc.html"),'w')
     misc.write(header.format(title="Comparisions of Herwig7 and Miscellaneous $e^+e^-$ Data"))
     misc.write("<div style=\"float:none; overflow:auto; width:100%\">\n")
@@ -2767,190 +2878,77 @@ def writeMult(index) :
     mult.write("</body>\n</html>")
     mult.close()
 
-# output the identified particle plots
-def writeIdentified(index) :
-    ident=open(os.path.join(directory,"identified.html"),'w')
+def writeSpectrum(particles,index,ident) :
     latexNames = { "x"     : "Scaled Momentum/Energy",
                    "xi"    : "Log of Scaled Momentum/Energy",
                    "p"     : "Momentum/Energy",
                    "Ratio" : "Ratios of particle multiplicities",
                    "Other" : "Other distributions" }
+    for pdgId in particles:
+        if(pdgId not in analyses["IdentifiedParticle"]) : continue
+        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
+               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
+               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
+        if(sumL==0) : continue
+        # lines in html
+        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
+        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
+        # plots
+        for val in ["x","p","xi","Ratio","Other"] :
+            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
+            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
+            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+            ident.write("</div>\n")
+            
+# output the identified particle plots
+def writeIdentified(index) :
+    ident=open(os.path.join(directory,"identified.html"),'w')
     # header for page
     ident.write(header.format(title="Comparisions of Herwig7 and $e^+e^-$ Identified Particle Spectra"))
     # line for index
     index.write("<li> <a href=\"identified.html\">Identified Particle Spectra</a>\n")
     index.write("<ul>\n")
     # photons
-    # page
     ident.write("<h2 id=\"gamma\">Photons</h2>\n")
-    ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s\">%s</h3>\n" % (22,particleNames[22]))
-    # index
     index.write("<li> <a href=\"identified.html#gamma\">Photons:<a/>\n")
-    index.write(" <a href=\"identified.html#22\">%s,<a/>\n" % particleNames[22])
-    # plots
-    for val in ["x","p","xi"] :
-        if(len(analyses["IdentifiedParticle"][22][val])==0) : continue
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (22,val,latexNames[val]))
-        writePlots(analyses["IdentifiedParticle"][22][val],ident)
-    ident.write("</div>\n")
+    writeSpectrum([22],index,ident)
     ident.write("<h2 id=\"MESONS\">Mesons</h2>\n")
     # Light unflavoured mesons
-    # page
     ident.write("<h3 id=\"m_light\">Light, Unflavoured</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_light\">Light unflavoured mesons:<a/>\n")
-    # loop over particles
-    for pdgId in mLight:
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(mLight,index,ident)
     # Strange mesons
-    # page
     ident.write("<h3 id=\"m_strange\">Strange</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_strange\">Strange mesons:<a/>\n")
-    # loop over particles
-    for pdgId in mStrange:
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
-    # charm meson
-    # page
+    writeSpectrum(mStrange,index,ident)
+    # charm mesons
     ident.write("<h3 id=\"m_charm\">Charm</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_charm\">Charm mesons:<a/>\n")
-    # loop over particles
-    for pdgId in mCharm :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(mCharm,index,ident)
     # charmonium
-    # page
     ident.write("<h3 id=\"m_charm\">Charmonium</h3>\n")
-    # index
     index.write("<li><a href=\"identified.html#m_charm\">Charmonium:<a/>\n")
-    # loop over particles
-    for pdgId in mccbar :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(mccbar,index,ident)
     # Baryons
     ident.write("<h2 id=\"BARYONS\">Baryons</h2>\n")
     # light baryons
     ident.write("<h3 id=\"b_light\">Light, Unflavoured</h3>\n")
     index.write("<li><a href=\"identified.html#b_light\">Light unflavoured baryons:<a/>\n")
-    # loop over particles
-    for pdgId in [2212,2224] :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(bLight,index,ident)
     # hyperons
     ident.write("<h3 id=\"b_strange\">Hyperons</h3>\n")
     index.write("<li><a href=\"identified.html#b_strange\">Hyperons:<a/>\n")
-    # loop over particles
-    for pdgId in [3122,3222,3212,3112,3224,"3224B",3114,3312,3322,3314,3324,3334,3124] :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(bStrange,index,ident)
     # charm baryons
     ident.write("<h3 id=\"b_charm\">Charm Baryons</h3>\n")
     index.write("<li><a href=\"identified.html#b_charm\">Charm baryons:<a/>\n")
     # loop over particles
-    for pdgId in bCharm :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
+    writeSpectrum(bCharm,index,ident)
      # other
     ident.write("<h3 id=\"other\">Other</h3>\n")
     index.write("<li><a href=\"identified.html#other\">Other:<a/>\n")
     # loop over particles
-    for pdgId in ["321/2212"] :
-        if(pdgId not in analyses["IdentifiedParticle"]) : continue
-        sumL = len(analyses["IdentifiedParticle"][pdgId]["x"])+len(analyses["IdentifiedParticle"][pdgId]["p"])+\
-               len(analyses["IdentifiedParticle"][pdgId]["xi"])+len(analyses["IdentifiedParticle"][pdgId]["Ratio"])\
-               +len(analyses["IdentifiedParticle"][pdgId]["Other"])
-        if(sumL==0) : continue
-        # lines in html
-        ident.write("<div style=\"float:none; overflow:auto; \">\n<h4 id=\"%s\">%s</h4>\n" % (pdgId,particleNames[pdgId]))
-        index.write(" <a href=\"identified.html#%s\">%s,<a/>\n" % (pdgId,particleNames[pdgId]))
-        # plots
-        for val in ["x","p","xi","Ratio","Other"] :
-            if(len(analyses["IdentifiedParticle"][pdgId][val])==0) : continue
-            ident.write("<div style=\"float:none; overflow:auto; \">\n<h3 id=\"%s_%s\">%s</h3>\n" % (pdgId,val,latexNames[val]))
-            writePlots(analyses["IdentifiedParticle"][pdgId][val],ident)
-
-
-            
+    writeSpectrum(["321/2212"],index,ident)
     # bottom fragmentation
     ident.write("<h2 id=\"b_frag\">Bottom Fragmentation Function</h2>\n")
     index.write("<li><a href=\"identified.html#b_frag\">Bottom Fragmentation Function:<a/>\n")
