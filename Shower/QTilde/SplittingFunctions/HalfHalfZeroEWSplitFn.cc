@@ -168,7 +168,7 @@ double HalfHalfZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 bool HalfHalfZeroEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
   if(ids[2]->id()==ParticleID::h0) {
-    if(ids[0]->id()==ids[1]->id() && (ids[0]->id()==5 || ids[0]->id()==6)) 
+    if(ids[0]->id()==ids[1]->id() && (ids[0]->id()==4 || ids[0]->id()==5 || ids[0]->id()==6)) 
       return true; 
   }
   return false;

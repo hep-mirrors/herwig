@@ -372,9 +372,9 @@ do SplittingGenerator:AddInitialSplitting c->s,W+; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting d->u,W-; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting s->c,W-; QtoQWZSudakov
 
-# do SplittingGenerator:AddFinalSplitting c->c,h0; QtoQHSudakov
+do SplittingGenerator:AddFinalSplitting c->c,h0; QtoQHSudakov
 do SplittingGenerator:AddFinalSplitting b->b,h0; QtoQHSudakov
 do SplittingGenerator:AddFinalSplitting t->t,h0; QtoQHSudakov
-# do SplittingGenerator:AddInitialSplitting c->c,h0; QtoQHSudakov
+do SplittingGenerator:AddInitialSplitting c->c,h0; QtoQHSudakov
 do SplittingGenerator:AddInitialSplitting b->b,h0; QtoQHSudakov
 do SplittingGenerator:AddInitialSplitting t->t,h0; QtoQHSudakov
