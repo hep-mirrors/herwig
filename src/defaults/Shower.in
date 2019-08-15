@@ -168,6 +168,10 @@ create Herwig::HalfHalfOneEWSplitFn QtoQWZSplitFn
 newdef QtoQWZSplitFn:InteractionType EW
 newdef QtoQWZSplitFn:ColourStructure EW
 
+create Herwig::HalfHalfZeroEWSplitFn QtoQHSplitFn
+newdef QtoQHSplitFn:InteractionType EW
+newdef QtoQHSplitFn:ColourStructure EW
+
 #
 # Now the Sudakovs
 create Herwig::PTCutOff PTCutOff
@@ -199,6 +203,13 @@ set QtoQWZSudakov:Alpha AlphaEW
 set QtoQWZSudakov:PDFmax 1.9
 
 cp QtoQWZSudakov LtoLWZSudakov
+
+cp SudakovCommon QtoQHSudakov
+set QtoQHSudakov:SplittingFunction QtoQHSplitFn
+set QtoQHSudakov:Alpha AlphaEW
+set QtoQHSudakov:PDFmax 1.9
+
+cp QtoQHSudakov LtoLHSudakov
 
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
@@ -361,4 +372,9 @@ do SplittingGenerator:AddInitialSplitting c->s,W+; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting d->u,W-; QtoQWZSudakov
 do SplittingGenerator:AddInitialSplitting s->c,W-; QtoQWZSudakov
 
-
+# do SplittingGenerator:AddFinalSplitting c->c,h0; QtoQHSudakov
+do SplittingGenerator:AddFinalSplitting b->b,h0; QtoQHSudakov
+do SplittingGenerator:AddFinalSplitting t->t,h0; QtoQHSudakov
+# do SplittingGenerator:AddInitialSplitting c->c,h0; QtoQHSudakov
+do SplittingGenerator:AddInitialSplitting b->b,h0; QtoQHSudakov
+do SplittingGenerator:AddInitialSplitting t->t,h0; QtoQHSudakov
