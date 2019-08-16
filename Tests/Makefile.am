@@ -384,7 +384,7 @@ Rivet-LHC-Higgs/done:  \
 
 
 clean-local:
-	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in 
+	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda Rivet/*.in anatohepmc.txt hepmctoana.txt
 	rm -rf Rivet-*
 
 distclean-local:
