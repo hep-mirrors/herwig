@@ -196,6 +196,7 @@ analyses["2K2pi"]["BABAR_2017_I1511276"]   = ["d03-x01-y01","d04-x01-y01"]
 analyses["2K2pi"]["BABAR_2017_I1591716"]   = ["d01-x01-y01","d02-x01-y01"]
 analyses['2K2pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
 # 4K
+analyses["4K"]["BESIII_2019_I1743841"]   = ["d01-x01-y01","d02-x01-y01"]
 analyses["4K"]["BABAR_2005_I676691"]   = ["d03-x01-y01"]
 analyses["4K"]["BABAR_2014_I1287920"]  = ["d12-x01-y01"]
 analyses["4K"]["BABAR_2012_I892684"]   = ["d08-x01-y01"]
