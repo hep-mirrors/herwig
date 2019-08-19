@@ -1028,15 +1028,8 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction type,
 	else if(type==ShowerPartnerType::QCDAntiColourLine) {
 	  tooHard |= particles[ix]->scales().QCD_ac_noAO<hardScale;
 	}
-	else if(type==ShowerPartnerType::EW && 
-	       (particles[1]->id()==ParticleID::Z0 
-		   || particles[2]->id()==ParticleID::Z0)) {
-	  tooHard |= particles[ix]->scales().EW_Z<hardScale;
-	}
-	else if(type==ShowerPartnerType::EW && 
-	       (abs(particles[1]->id())==ParticleID::Wplus 
-	       || abs(particles[2]->id())==ParticleID::Wplus)) {
-	  tooHard |= particles[ix]->scales().EW_W<hardScale;
+	else if(type==ShowerPartnerType::EW) {
+	  tooHard |= particles[ix]->scales().EW<hardScale;
 	}
       }
     }

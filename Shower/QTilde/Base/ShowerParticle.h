@@ -139,8 +139,7 @@ public:
     /**
      *   EW scales
      */
-    Energy EW_Z;
-    Energy EW_W;
+    Energy EW;
     
   };
 
@@ -488,8 +487,7 @@ inline ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales 
   os << "Scales: QED=" << es.QED / GeV
      << " QCD_c=" << es.QCD_c / GeV
      << " QCD_ac=" << es.QCD_ac / GeV
-     << " EW_Z=" << es.EW_Z / GeV
-     << " EW_W=" << es.EW_W / GeV
+     << " EW=" << es.EW / GeV
      << " QED_noAO=" << es.QED_noAO / GeV
      << " QCD_c_noAO=" << es.QCD_c_noAO / GeV
      << " QCD_ac_noAO=" << es.QCD_ac_noAO / GeV

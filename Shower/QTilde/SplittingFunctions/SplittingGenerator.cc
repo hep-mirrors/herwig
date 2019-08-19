@@ -327,8 +327,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
-      Energy startingScale = (abs(particles[1]->id())==ParticleID::Wplus|| 
-			      abs(particles[2]->id())==ParticleID::Wplus) ? particle.scales().EW_W :  particle.scales().EW_Z;
+      Energy startingScale = particle.scales().EW;
       newKin = cit->second.sudakov->
     	generateNextTimeBranching(startingScale,particles,rho,enhance,_deTuning);
     }
@@ -453,14 +452,8 @@ chooseDecayBranching(ShowerParticle &particle,
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
       Energy stoppingScale, startingScale;
-      if(abs(particles[1]->id())==ParticleID::Wplus|| abs(particles[2]->id())==ParticleID::Wplus) {
-         stoppingScale = stoppingScales.EW_W;
-	 startingScale = particle.scales().EW_W;
-      }
-      else {
-	stoppingScale = stoppingScales.EW_Z;
-	startingScale = particle.scales().EW_Z;
-      }
+	stoppingScale = stoppingScales.EW;
+	startingScale = particle.scales().EW;
       if(startingScale < stoppingScale ) { 
     	newKin = cit->second.sudakov->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,particles,rho,enhance,_deTuning);
@@ -578,8 +571,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     }
     else if(cit->second.sudakov->interactionType()==ShowerInteraction::EW) {
       type = ShowerPartnerType::EW;
-      Energy startingScale = (abs(particles[1]->id())==ParticleID::Wplus|| 
-			      abs(particles[2]->id())==ParticleID::Wplus) ? particle.scales().EW_W :  particle.scales().EW_Z;
+      Energy startingScale = particle.scales().EW;
       newKin=cit->second.sudakov->
     	generateNextSpaceBranching(startingScale,particles,particle.x(),rho,enhance,beam,_deTuning);
     }

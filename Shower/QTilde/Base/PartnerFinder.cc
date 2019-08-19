@@ -544,23 +544,20 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
   				 << "PartnerFinder::setEWInitialEvolutionScales"
   				 << (**cit) << Exception::eventerror;
     // Calculate the evolution scales for all possible pairs of of particles
-    vector<pair<Energy,Energy> > scalesW,scalesZ;
+    vector<pair<Energy,Energy> > scales;
     for(unsigned int ix=0;ix< partners.size();++ix) {
-      scalesZ.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
+      scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
 							isDecayCase, 0));
-      scalesW.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
-							isDecayCase, 1));
     }
     // store all the possible partners
     for(unsigned int ix=0;ix<partners.size();++ix) {
       (**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
   							  partners[ix].first,
   							  ShowerPartnerType::EW,
-  							  scalesW[ix].first));
+  							  scales[ix].first));
     }
     // set scales
-    (**cit).scales().EW_Z    = scalesZ[position].first;
-    (**cit).scales().EW_W    = scalesW[position].first;
+    (**cit).scales().EW      = scales[position].first;
   }
 }
 
