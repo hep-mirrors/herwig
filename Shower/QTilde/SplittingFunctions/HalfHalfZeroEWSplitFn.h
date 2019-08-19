@@ -6,6 +6,7 @@
 //
 
 #include "SplittingFunction.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
 
@@ -126,9 +127,14 @@ public:
 protected:
 
   /**
-   *   Get the couplings
+   *   Get the couplings without running masses
    */
   void getCouplings(double & gH, const IdList & ids) const;
+
+  /**
+   *   Get the couplings with running masses
+   */
+  void getCouplings(double & gH, const IdList & ids, const Energy2 t) const;
 
 public:
 
@@ -199,6 +205,12 @@ private:
    *  Higgs couplings
    */
   double ghqq_;
+
+
+  /**
+   * Pointer to the SM object.
+   */
+  tcHwSMPtr _theSM;
 
 };
 

@@ -13,6 +13,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/Models/StandardModel/SMFFHVertex.h"
 
 using namespace Herwig;
 
@@ -48,6 +49,8 @@ void HalfHalfZeroEWSplitFn::doinit() {
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   ghqq_ = 1./sqrt(4.*sw2);
+
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
 }
 
 void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const {
@@ -67,10 +70,28 @@ void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids) const 
     assert(false);
 }
 
+void HalfHalfZeroEWSplitFn::getCouplings(double & gH, const IdList & ids, const Energy2 t) const {
+  if(abs(ids[2]->id())==ParticleID::h0) {
+    //get quark masses
+    Energy mq;
+    if(abs(ids[0]->id())==ParticleID::c)      
+      mq = _theSM->mass(t,getParticleData(ParticleID::c));
+    else if(abs(ids[0]->id())==ParticleID::b)      
+      mq = _theSM->mass(t,getParticleData(ParticleID::b));
+    else if(abs(ids[0]->id())==ParticleID::t) 
+      mq = _theSM->mass(t,getParticleData(ParticleID::t));
+    Energy mW = getParticleData(ParticleID::Wplus)->mass();
+    //Energy mW = _theSM->mass(t,getParticleData(ParticleID::Wplus));
+    gH = ghqq_*(mq/mW);
+  }
+  else
+    assert(false);
+}
+
 double HalfHalfZeroEWSplitFn::P(const double z, const Energy2 t,
 			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
   double gH(0.);
-  getCouplings(gH,ids);
+  getCouplings(gH,ids,t);
   double val = (1.-z);
   Energy mq, mH;
   //get masses
@@ -104,7 +125,7 @@ double HalfHalfZeroEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList & ids, const bool mass,
 				    const RhoDMatrix & rho) const {
   double gH(0.);
-  getCouplings(gH,ids);
+  getCouplings(gH,ids,t);
   double val = 1.;
   Energy mq, mH;
   if(mass) {
@@ -205,7 +226,7 @@ DecayMEPtr HalfHalfZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
     mq = getParticleData(ParticleID::t)->mass();  
   mH = getParticleData(ParticleID::h0)->mass();
   double gH(0.);
-  getCouplings(gH,ids);
+  getCouplings(gH,ids,t);
   double mqt = mq/sqrt(t);
   double mHt = mH/sqrt(t);
   double num1 = gH*(1.+z)*mqt;
