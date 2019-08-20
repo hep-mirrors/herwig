@@ -283,7 +283,7 @@ mBottom  = [511,"511B",521,531,513,515]
 mccbar   = [441,443,100443,20443,30443]
 mbbbar   = [553,100553,300553]
 bLight   = [2212,2224]
-bStrange = [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3324,3334,3124]
+bStrange = [3122,3222,"3222B",3212,3112,3114,3224,"3224B",3312,3322,3324,3334,3124]
 bCharm   = [4122,4112,4222,4114,4332,4132,14122,4124]
 bBottom  = [5122]
 # hadron decays
@@ -724,8 +724,8 @@ analyses["HadronDecays"][443] = { "Modes" : { "$J/\\psi\\to\\eta e^+e^-$"   : {}
                                               "$J/\\psi\\to\\gamma e^+e^-$" : {} }}
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to\\eta e^+e^-$"  ]["data"] = ["/BESIII_2018_I1697377/d01-x01-y01"]
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to\\gamma e^+e^-$"]["MC"  ] = ["/MC_Meson_Meson_Leptons_Decay/h2_443p_22p_11_mVf",
-                                                                                   "/MC_Meson_Meson_Leptons_Decay/h2_443p_22p_11_mVfbar",
-                                                                                   "/MC_Meson_Meson_Leptons_Decay/h2_443p_22p_11_mff"]
+                                                                                 "/MC_Meson_Meson_Leptons_Decay/h2_443p_22p_11_mVfbar",
+                                                                                 "/MC_Meson_Meson_Leptons_Decay/h2_443p_22p_11_mff"]
 # eta_c
 analyses["HadronDecays"][441] = {"DistChargedMult" : {}}
 analyses["HadronDecays"][441]["DistChargedMult"]["data"] = ["/BESIII_2019_I1724880/d01-x01-y01"]
@@ -867,9 +867,41 @@ analyses["HadronDecays"][300553]["Spectrum"][443   ] = ["/BABAR_2003_I593379/d06
 analyses["HadronDecays"][300553]["Spectrum"][20443 ] = ["/BABAR_2003_I593379/d07-x01-y01"]
 analyses["HadronDecays"][300553]["Spectrum"][445   ] = ["/BABAR_2003_I593379/d07-x01-y02"]
 analyses["HadronDecays"][300553]["Spectrum"][100443] = ["/BABAR_2003_I593379/d08-x01-y01"]
+#
+analyses["HadronDecays"][3312] = { "Modes" : { "$\\Xi^-\\to\\Lambda^0\\pi^-$" : {} } }
+analyses["HadronDecays"][3312]["Modes"]["$\\Xi^-\\to\\Lambda^0\\pi^-$"]["data"] = ["/E756_2000_I530367/d01-x01-y01","/E756_2000_I530367/d01-x01-y02"]
+analyses["HadronDecays"][3312]["Modes"]["$\\Xi^-\\to\\Lambda^0\\pi^-$"]["MC"  ] = ["/E756_2000_I530367/cthetaP","/E756_2000_I530367/cthetaM"]
+analyses["HadronDecays"][3322] = { "Modes" : { "$\\Xi^0\\to\\Lambda^0\\pi^0$" : {}, "$\\Xi^0\\to\\Sigma^0\\gamma$" : {},
+                                               "$\\Xi^0\\to\\Lambda^0\\gamma$" : {} } }
+analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Lambda^0\\pi^0$"]["data"] = ["/NA48_2010_I868871/d01-x01-y01"]
+analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Lambda^0\\pi^0$"]["MC"  ] = ["/NA48_2010_I868871/ctheta_pi0"]
+analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Lambda^0\\gamma$"]["data"] = ["/NA48_2010_I868871/d02-x01-y01"]
+analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Lambda^0\\gamma$"]["MC"  ] = ["/NA48_2010_I868871/ctheta_gamma"]
+analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Sigma^0\\gamma$"]["data"] = ["/NA48_2010_I868871/d03-x01-y01"]
+analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Sigma^0\\gamma$"]["MC"  ] = ["/NA48_2010_I868871/ctheta_Sigma_0" ,"/NA48_2010_I868871/ctheta_Sigma_1" ,
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_2" ,"/NA48_2010_I868871/ctheta_Sigma_3" ,
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_4" ,"/NA48_2010_I868871/ctheta_Sigma_5" ,
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_6" ,"/NA48_2010_I868871/ctheta_Sigma_7" ,
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_8" ,"/NA48_2010_I868871/ctheta_Sigma_9" ,
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_10","/NA48_2010_I868871/ctheta_Sigma_11",
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_12","/NA48_2010_I868871/ctheta_Sigma_13",
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_14","/NA48_2010_I868871/ctheta_Sigma_15",
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_16","/NA48_2010_I868871/ctheta_Sigma_17",
+                                                                                   "/NA48_2010_I868871/ctheta_Sigma_18","/NA48_2010_I868871/ctheta_Sigma_19"]
 
+analyses["HadronDecays"][3334] = { "Modes" : { "$\\Omega^-\\to\\Lambda^0K^-$" : {} } }
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Lambda^0K^-$"]["data"] = ["/HyperCP_2005_I677384/d01-x01-y01","/HyperCP_2005_I677384/d01-x01-y02",
+                                                                                   "/HyperCP_2005_I677384/d01-x01-y03"]
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Lambda^0K^-$"]["MC"  ] = ["/HyperCP_2005_I677384/cthetaM","/HyperCP_2005_I677384/cthetaP",
+                                                                                   "/HyperCP_2005_I677384/cthetaAll"]
 
+analyses["HadronDecays"][4132] = { "Modes" : { "$\\Xi^0_c\\to\\Xi^-\\pi^+$" : {} } }
+analyses["HadronDecays"][4132]["Modes"]["$\\Xi^0_c\\to\\Xi^-\\pi^+$"]["data"] = ["/CLEO_2000_I537236/d01-x01-y01"]
+analyses["HadronDecays"][4132]["Modes"]["$\\Xi^0_c\\to\\Xi^-\\pi^+$"]["MC"  ] = ["/CLEO_2000_I537236/ctheta"]
 
+analyses["HadronDecays"][4122] = { "Modes" : { "$\\Lambda^+_c\\to\\Lambda^0\\pi^+$" : {} } }
+analyses["HadronDecays"][4122]["Modes"]["$\\Lambda^+_c\\to\\Lambda^0\\pi^+$"]["data"] = ["/FOCUS_2006_I693639/d01-x01-y01"]
+analyses["HadronDecays"][4122]["Modes"]["$\\Lambda^+_c\\to\\Lambda^0\\pi^+$"]["MC"  ] = ["/FOCUS_2006_I693639/ctheta"]
 
 # charged multiplicity (total)
 analyses["Charged"]["TotalChargedMult"][0][12.0 ] = ["/JADE_1983_I190818/d01-x01-y01"]
@@ -2768,6 +2800,14 @@ def writeDecays(index) :
     decays.write("<h3 id=\"m_bbbar\">Bottomonium</h3>\n")
     index.write("<li><a href=\"decays.html#m_bbbar\">Bottomonium:<a/>\n")
     writeParticleDecays(mbbbar,decays,index)
+    # hyperons
+    decays.write("<h3 id=\"b_strange\">Hyperons</h3>\n")
+    index.write("<li><a href=\"decays.html#b_strange\">Hyperons:<a/>\n")
+    writeParticleDecays(bStrange,decays,index)
+    # hyperons
+    decays.write("<h3 id=\"b_charm\">Charm Baryons</h3>\n")
+    index.write("<li><a href=\"decays.html#b_charm\">Charm Baryons:<a/>\n")
+    writeParticleDecays(bCharm,decays,index)
     # footer
     index.write(" </ul>\n")
     decays.write("</body>\n</html>")
