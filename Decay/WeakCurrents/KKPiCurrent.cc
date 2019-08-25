@@ -18,17 +18,23 @@ using namespace Herwig;
 
 KKPiCurrent::KKPiCurrent() {
   // masses for the isoscalar component
-  isoScalarMasses_ = {782.65*MeV,1019.461*MeV,1425*MeV,1680*MeV,1625*MeV,2188*MeV};
-  isoScalarWidths_ = {  8.49*MeV,   4.249*MeV, 215*MeV, 150*MeV, 315*MeV,  83*MeV};
+  //  isoScalarMasses_ = {782.65*MeV,1019.461*MeV,1425*MeV,1680*MeV,1625*MeV,2188*MeV};
+  //  isoScalarWidths_ = {  8.49*MeV,   4.249*MeV, 215*MeV, 150*MeV, 315*MeV,  83*MeV};
+  isoScalarMasses_ = {1019.461*MeV,1630*MeV,1960*MeV};
+  isoScalarWidths_ = {  4.249*MeV, 218*MeV, 267*MeV};
   // masses for the isovector component
   isoVectorMasses_ = {775.26*MeV,1465*MeV,1720*MeV};
   isoVectorWidths_ = {149.1 *MeV, 400*MeV, 250*MeV};
   // amplitude and phases for the isoscalar
-  isoScalarKStarAmp_  ={ZERO,ZERO,ZERO,0.096/GeV,ZERO,ZERO};
-  isoScalarKStarPhase_={  0.,  0.,  0.,     0.,  0.,  0.};
+  //  isoScalarKStarAmp_  ={ZERO,ZERO,ZERO,0.096/GeV,ZERO,ZERO};
+  //  isoScalarKStarPhase_={  0.,  0.,  0.,     0.,  0.,  0.};
+  isoScalarKStarAmp_  ={ZERO, 0.233/GeV, 0.0405/GeV};
+  isoScalarKStarPhase_={ 0.,  1.1E-07,  5.19};
   // amplitudes and phase for the isovector component
-  isoVectorKStarAmp_  ={ZERO,ZERO,0.04/GeV};
-  isoVectorKStarPhase_={0.,0.,Constants::pi};
+  //  isoVectorKStarAmp_  ={ZERO,ZERO,0.04/GeV};
+  //  isoVectorKStarPhase_={0.,0.,Constants::pi};
+  isoVectorKStarAmp_  ={-2.34/GeV, 0.594/GeV, -0.0179/GeV};
+  isoVectorKStarPhase_={0.,0.317, 2.57};
   // Coupling for the K* to Kpi
   gKStar_ = 5.37392360229;
   // mstar masses
