@@ -56,7 +56,7 @@ cd /Herwig/Generators
 #insert /Herwig/Analysis/Rivet:Analyses 0 XXX_2015_ABC123
 #read snippets/HepMC.in
 #set /Herwig/Analysis/HepMC:PrintEvent NNN
-set /Herwig/Decays/a1Simple:Initialize 1
+
 ###################################################
 # Save run for later usage with 'Herwig run'
 ##################################################

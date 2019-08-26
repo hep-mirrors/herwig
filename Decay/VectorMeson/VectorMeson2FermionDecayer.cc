@@ -217,7 +217,7 @@ void VectorMeson2FermionDecayer::Init() {
 
   static ClassDocumentation<VectorMeson2FermionDecayer> documentation
     ("The VectorMeson2FermionDecayer class is designed for the decay "
-     "of vectro mesons to fermions. It is mainly used for the decay of vector mesons "
+     "of vector mesons to fermions. It is mainly used for the decay of vector mesons "
      "to electrons and muons.");
 
   static ParVector<VectorMeson2FermionDecayer,int> interfaceIncoming
@@ -251,6 +251,7 @@ void VectorMeson2FermionDecayer::Init() {
      0, 0, 0, -10000000, 10000000, false, false, true);
 
 }
+
 void VectorMeson2FermionDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   unsigned int iferm(0),ianti(1);
