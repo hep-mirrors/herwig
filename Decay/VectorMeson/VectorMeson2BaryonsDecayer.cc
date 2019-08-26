@@ -62,7 +62,7 @@ VectorMeson2BaryonsDecayer::VectorMeson2BaryonsDecayer()
     outgoingf_({ 2212           , 2112           , 3122           , 3212            , 3312            , 3322            , 3114           , 3224           , 3214            , 2212           , 2112           , 3122            , 3212            , 3312            , 3322            , 3114            , 3224            , 3214            }),
     outgoinga_({-2212           ,-2112           ,-3122           ,-3212            ,-3312            ,-3322            ,-3114           ,-3224           ,-3214            ,-2212           ,-2112           ,-3122            ,-3212            ,-3312            ,-3322            ,-3114            ,-3224            ,-3214            }),
     maxweight_({1.6             ,1.6             ,2.1             ,1.5              ,2.               ,2.1              ,7.              ,10.             ,6.5              ,1.7             ,1.7             ,2.5              ,2.5              ,2.               ,2.               ,30.              ,35.              ,41.              })
-{
+{}
 
 int VectorMeson2BaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
 					   const tPDVector & children) const {
