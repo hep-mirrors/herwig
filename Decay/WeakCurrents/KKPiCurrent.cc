@@ -63,9 +63,10 @@ void KKPiCurrent::doinit() {
   WeakCurrent::doinit();
   static const Complex ii(0.,1.);
   assert(isoScalarKStarAmp_.size()==isoScalarKStarPhase_.size());
-  for(unsigned int ix=0;ix<isoScalarKStarAmp_.size();++ix)
+  for(unsigned int ix=0;ix<isoScalarKStarAmp_.size();++ix) {
     isoScalarKStarCoup_.push_back(isoScalarKStarAmp_[ix]*(cos(isoScalarKStarPhase_[ix])
-						+ii*sin(isoScalarKStarPhase_[ix])));
+							  +ii*sin(isoScalarKStarPhase_[ix])));
+  }
   assert(isoVectorKStarAmp_.size()==isoVectorKStarPhase_.size());
   for(unsigned int ix=0;ix<isoVectorKStarAmp_.size();++ix)
     isoVectorKStarCoup_.push_back(isoVectorKStarAmp_[ix]*(cos(isoVectorKStarPhase_[ix])
@@ -233,7 +234,7 @@ KKPiCurrent::current(tcPDPtr resonance,
   if(Itotal==IsoSpin::IUnknown ||
      Itotal==IsoSpin::IZero) {
     if(ires>=0) {
-      if(ires<5)
+      if(ires<int(isoScalarMasses_.size()))
 	A0 = isoScalarKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoScalarMasses_[ires],isoScalarWidths_[ires]);
     }
     else {
