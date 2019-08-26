@@ -1164,10 +1164,14 @@ useOne("/BESIII_2016_I1422780/d02-x01-y03","psi")
 useOne("/BESIII_2016_I1422780/d02-x01-y04","psi2s")
 useOne("/BESIII_2016_I1422780/d02-x01-y05","psi2s")
 useOne("/BESIII_2016_I1422780/d02-x01-y06","psi2s")
-for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi"].points:
-    outhistos["/BESIII_2016_I1422780/d01-x01-y03"].addPoint(point)
-for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi2s"].points:
-    outhistos["/BESIII_2016_I1422780/d01-x01-y03"].addPoint(point)
+if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
+     "psi" in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]) :
+    for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi"].points:
+        outhistos["/BESIII_2016_I1422780/d01-x01-y03"].addPoint(point)
+if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
+     "psi2s" in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]) :
+    for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi2s"].points:
+        outhistos["/BESIII_2016_I1422780/d01-x01-y03"].addPoint(point)
 
 # pluto analysis
 for id in range(1,3) :

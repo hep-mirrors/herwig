@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import glob,os
+import glob,os,sys
 
 if __name__ == "__main__":
     import logging
@@ -1259,10 +1259,9 @@ analyses["IdentifiedParticleFlavour"][2212][4]["x"][91.2]=["/SLD_2004_S5693039/d
 analyses["IdentifiedParticleFlavour"][211 ][1]["x"][91.2]=["/DELPHI_1998_I473409/d34-x01-y01","/DELPHI_1998_I473409/d35-x01-y01",
                                                       "/SLD_2004_S5693039/d05-x01-y01","/SLD_1999_S3743934/d10-x01-y01"]
 analyses["IdentifiedParticleFlavour"][321 ][1]["x"][91.2]=["/DELPHI_1998_I473409/d36-x01-y01","/DELPHI_1998_I473409/d37-x01-y01",
-                                                      "/SLD_2004_S5693039/d05-x01-y03","/SLD_2004_S5693039/d06-x01-y01",
-                                                      "/SLD_1999_S3743934/d12-x01-y01"]
+                                                           "/SLD_2004_S5693039/d06-x01-y01","/SLD_1999_S3743934/d12-x01-y01"]
 analyses["IdentifiedParticleFlavour"][2212][1]["x"][91.2]=["/DELPHI_1998_I473409/d38-x01-y01","/DELPHI_1998_I473409/d39-x01-y01",
-                                                      "/SLD_2004_S5693039/d07-x01-y01","/SLD_1999_S3743934/d16-x01-y01"]
+                                                           "/SLD_2004_S5693039/d07-x01-y01","/SLD_1999_S3743934/d16-x01-y01"]
 
 analyses["IdentifiedParticleFlavour"][413][5]["x"][91.2]=["/OPAL_1995_I382219/d04-x01-y01"]
 analyses["IdentifiedParticleFlavour"][413][4]["x"][91.2]=["/OPAL_1995_I382219/d05-x01-y01"]
@@ -1498,7 +1497,7 @@ analyses["IdentifiedParticle"][311 ]["xi"   ][91.2] = ["/DELPHI_1995_I377487/d09
 analyses["IdentifiedParticle"][311 ]["Other"][14.8 ] = ["/TASSO_1990_I284251/d06-x01-y01","/TASSO_1990_I284251/d06-x01-y02"]
 analyses["IdentifiedParticle"][311 ]["Other"][21.5 ] = ["/TASSO_1990_I284251/d07-x01-y01","/TASSO_1990_I284251/d07-x01-y02"]
 analyses["IdentifiedParticle"][311 ]["Other"][29.0 ] = ["/HRS_1990_I280958/d04-x01-y01"]
-analyses["IdentifiedParticle"][311 ]["Other"][35.0 ] = ["/TASSO_1990_I284251/d05-x01-y03","/TASSO_1990_I284251/d05-x01-y04",""]
+analyses["IdentifiedParticle"][311 ]["Other"][35.0 ] = ["/TASSO_1990_I284251/d05-x01-y03","/TASSO_1990_I284251/d05-x01-y04"]
 analyses["IdentifiedParticle"][311 ]["Other"][42.6 ] = ["/TASSO_1990_I284251/d05-x01-y01","/TASSO_1990_I284251/d05-x01-y02"]
 # K+/-
 # x
@@ -2633,7 +2632,7 @@ analyses["EventShapes"]["5jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01
 analyses["EventShapes"]["6jet_jade"][189.0] = ["/JADE_OPAL_2000_S4300807/d14-x01-y05"]
 
 figures=glob.glob("%s/*/*.dat" % directory)
-
+used=[]
 plotOutput="""<div style="float:left; font-size:smaller; font-weight:bold;">
     <a href="#{name}">&#9875;</a><a href="{dat}">&#8984</a> {name}: {energy} GeV<br/>
     <a name="{name}"><a href="{pdf}">
@@ -2658,8 +2657,9 @@ def writePlots(plots,output) :
         for name in sorted(plots[energy]) :
             dat=name[1:] +".dat"
             figName = ("%s/%s" %(directory,dat))
-            if(figName not in figures) : continue
-            del figures[figures.index(figName)]
+            if(figName not in figures) :
+                continue
+            used.append(figName)
             pdf=name[1:] +".pdf"
             png=name[1:] +".png"
             output.write(plotOutput.format(name=name[1:],pdf=pdf,png=png,dat=dat,energy=energy))
@@ -2672,16 +2672,29 @@ def writePlots2(plots,output) :
     for name in sorted(plots) :
         dat=name[1:] +".dat"
         figName = ("%s/%s" %(directory,dat))
-        if(figName not in figures) : continue
-        del figures[figures.index(figName)]
-        pdf=name[1:] +".pdf"
-        png=name[1:] +".png"
-        output.write(plotOutput2.format(name=name[1:],pdf=pdf,png=png,dat=dat))
+        tempName=figName.replace(".dat","")
+        found = False
+        names=[]
+        for name in figures :
+            if(tempName+"_" in name or tempName+".dat"==name) :
+                found=True
+                names.append(name)
+        if(not found) : continue
+        for name in names :
+            used.append(name)
+            trim = name[:-4].replace("%s/"%directory,"")
+            pdf=trim+".pdf"
+            png=trim+".png"
+            dat=trim+".dat"
+            output.write(plotOutput2.format(name=trim,pdf=pdf,png=png,dat=dat))
         output.write("\n")
     output.write("</div>")
 
 def writeMisc(index) :
-    global figures
+    global figures,used
+    for val in used :
+        if(val in figures) :
+            del figures[figures.index(val)]
     index.write("<li> <a href=\"misc.html\">Other Plots</a>\n")
     print 'Unused figures',len(figures)
     for val in figures:
