@@ -185,7 +185,7 @@ double MEDM2Mesons::me2(const int ichan) const {
   vector<unsigned int> ihel(meMomenta().size());
   double output(0.);
   int hI0_size = hadronI0.size();
-  int hI1_size = hadronI0.size();
+  int hI1_size = hadronI1.size();
   int maxsize = max(hadronI0.size(),hadronI1.size());
   for(unsigned int hhel=0;hhel<maxsize;++hhel) {
     // map the index for the hadrons to a helicity state
@@ -196,7 +196,7 @@ double MEDM2Mesons::me2(const int ichan) const {
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
 	Complex amp;
-	// work one coefficients for the I1 and I0 bits
+	// work on coefficients for the I1 and I0 bits
   	if(hI0_size != 0 && hI1_size !=0){
 	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[0]*hadronI0[hhel]+cSMmed_[1]*hadronI1[hhel]);
 	}
