@@ -266,14 +266,14 @@ KKPiCurrent::current(tcPDPtr resonance,
      Resonance::BreitWignerPWave(s1,mKStar0_,wKStar0_,momenta[0].mass(),momenta[2].mass())/sqr(mKStar0_) : InvEnergy2(); 
     complex<InvEnergy2> r2 = (ires<0||ires==1) ?
      Resonance::BreitWignerPWave(s2,mKStar0_,wKStar0_,momenta[1].mass(),momenta[2].mass())/sqr(mKStar0_) : InvEnergy2();
-    amp = sqrt(1./6.)*(A0-A1)*(r1+r2);
+    amp = sqrt(1./6.)*(A0+A1)*(r1+r2);
   }
   else if(imode==1) {
     complex<InvEnergy2> r1 = (ires<0||ires==0) ?
      Resonance::BreitWignerPWave(s1,mKStarP_,wKStarP_,momenta[0].mass(),momenta[2].mass())/sqr(mKStarP_) : InvEnergy2(); 
     complex<InvEnergy2> r2 = (ires<0||ires==1) ?
      Resonance::BreitWignerPWave(s2,mKStarP_,wKStarP_,momenta[1].mass(),momenta[2].mass())/sqr(mKStarP_) : InvEnergy2();
-    amp = sqrt(1./6.)*(A0+A1)*(r1+r2);
+    amp = sqrt(1./6.)*(A0-A1)*(r1+r2);
   }
   else {
     complex<InvEnergy2> r1 = (ires<0||ires==0) ?
