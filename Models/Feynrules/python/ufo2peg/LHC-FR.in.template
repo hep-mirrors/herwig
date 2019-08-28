@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 read snippets/PPCollider.in
 
 read ${ModelName}.model

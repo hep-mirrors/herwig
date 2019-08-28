@@ -115,7 +115,7 @@ def check_effective_vertex(FR,p,ig) :
             return False
     return True
 
-def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
+def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names,hw_higgs):
     plist = []
     antis = {}
     names = []
@@ -142,7 +142,7 @@ def thepeg_particles(FR,parameters,modelname,modelparameters,forbidden_names):
         if p.pdg_code in SMPARTICLES:
             continue
 
-        if p.pdg_code == 25:
+        if p.pdg_code == 25 and not hw_higgs:
             plist.append(
 """
 set /Herwig/Particles/h0:Mass_generator NULL
@@ -154,16 +154,16 @@ rm /Herwig/Widths/hWidth
         if p.name in forbidden_names:
             print 'RENAMING PARTICLE',p.name,'as ',p.name+'_UFO'
             p.name +="_UFO"
-
         subs = ParticleConverter(p,parameters,modelparameters).subs()
-        plist.append( particleT.substitute(subs) )
+        if not (p.pdg_code == 25 and hw_higgs) :
+            plist.append( particleT.substitute(subs) )
 
         pdg, name = subs['pdg_code'],  subs['name']
         names.append(name)
         if -pdg in antis:
             plist.append( 'makeanti %s %s\n' % (antis[-pdg], name) )
 
-        else:
+        elif not (p.pdg_code == 25 and hw_higgs) :
             plist.append( 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name )
             plist.append( 'insert /Herwig/Shower/ShowerHandler:DecayInShower 0 %s #  %s' % (abs(pdg), name) )
             antis[pdg] = name
@@ -226,7 +226,7 @@ do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},gamma; {
         except SkipMe:
             pass
 
-        if p.charge == 0 and p.color == 1 and p.spin == 1:
+        if p.charge == 0 and p.color == 1 and p.spin == 1 and not (p.pdg_code == 25 and hw_higgs) :
             if(check_effective_vertex(FR,p,21)) :
                 plist.append(
 """
