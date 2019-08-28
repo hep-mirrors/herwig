@@ -477,7 +477,8 @@ class VertexConverter:
             sys.stderr.write(
 """
 Error: The conversion was unsuccessful, some vertices could not be
-generated. If you think the missing vertices are not important 
+generated. The new --include-generic option should be able to generate
+these. Otherwise, if you think the missing vertices are not important 
 and want to go ahead anyway, use --ignore-skipped. 
 Herwig may not give correct results, though.
 """

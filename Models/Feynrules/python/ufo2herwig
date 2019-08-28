@@ -46,7 +46,7 @@ parser.add_argument(
 parser.add_argument(
     '--include-generic',
     action="store_true",
-    help="Include support for generic spin structures (still experimental)"
+    help="Include support for generic spin structures"
 )
 parser.add_argument(
     '--use-Herwig-Higgs',
