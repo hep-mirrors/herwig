@@ -178,18 +178,12 @@ WeakBaryonCurrent::current(tcPDPtr ,
 }
 
 bool WeakBaryonCurrent::accept(vector<int> id) {
-  assert(false);
-  // bool allowed(false);
-  // if(id.size()!=2) return false;
-  // if(abs(id[0])%2==0) {
-  //   if((id[0]> 10&&id[0]< 18&&id[1]==-id[0]+1)||
-  //      (id[0]<-10&&id[0]>-18&&id[1]==-id[0]-1)) allowed=true;
-  // }
-  // else {
-  //   if((id[1]> 10&&id[1]< 18&&id[0]==-id[1]+1)||
-  //      (id[1]<-10&&id[1]>-18&&id[0]==-id[1]-1)) allowed=true;
-  // }
-  // return allowed;
+  assert(id.size()==2);
+  int itemp[2] = {id[0],id[1]};
+  for(unsigned int ix=0;ix<2;++ix)
+    if(itemp[ix]<0) itemp[ix]=-itemp[ix];
+  bool cc = false;
+  return formFactor_->formFactorNumber(itemp[0],itemp[1],cc)>=0;
 }
 
 // the decay mode
