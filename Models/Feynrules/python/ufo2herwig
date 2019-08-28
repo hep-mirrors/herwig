@@ -49,6 +49,11 @@ parser.add_argument(
     help="Include support for generic spin structures (still experimental)"
 )
 parser.add_argument(
+    '--use-Herwig-Higgs',
+    action="store_true",
+    help="Use the internal Herwig SM modeling and vertices for Higgs interactions, there may be sign issues but some UFO models have very minimal Higgs interactions"
+)
+parser.add_argument(
     '--use-generic-for-tensors',
     action="store_true",
     help="Use the generic machinery for all tensor vertices (debugging only)"
@@ -66,7 +71,6 @@ args = parser.parse_args()
 import imp
 path,mod = os.path.split(os.path.abspath(args.ufodir))
 FR = imp.load_module(mod,*imp.find_module(mod,[path]))
-
 ##################################################
 ##################################################
 
@@ -220,17 +224,6 @@ for p in FR.all_parameters:
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
-#
-# TODO: WE DO NOT HAVE COMPLEX INTERFACES IN THEPEG (yet?)
-#
-#            interfaceDecls.append( 
-#                interfacedecl_T.format(modelname=modelname,
-#                                       pname=p.name,
-#                                       value='Complex(%s,%s)'%(value.real,value.imag),
-#                                       type=typemap(p.type)) 
-#            )
-#
-#            parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
             parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
         else :
             parmconstr.append('%s_(%s,%s)' % (p.name, 0.,0.))
@@ -362,7 +355,7 @@ parmtextsubs['couplingOrders']  = couplingOrders
 
 # particles
 
-plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name)
+plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters,args.forbidden_particle_name,args.use_Herwig_Higgs)
 
 particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
