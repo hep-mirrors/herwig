@@ -318,11 +318,14 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
   // check the total isospin
   if(Itotal!=IsoSpin::IUnknown) {
     if(Itotal==IsoSpin::IZero) {
-      if(i3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+      //      if(i3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+      if(i3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
     }
     else if(Itotal==IsoSpin::IOne) {
+      //if(i3!=IsoSpin::I3Unknown&&
+      //	 i3!=IsoSpin::I3One) return vector<LorentzPolarizationVectorE>();
       if(i3!=IsoSpin::I3Unknown&&
-	 i3!=IsoSpin::I3One) return vector<LorentzPolarizationVectorE>();
+         i3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
     }
     else
       return vector<LorentzPolarizationVectorE>();
@@ -343,7 +346,9 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
   }
   // isospin zero part of the current
   complex<InvEnergy3> F_I0(ZERO);
-  if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) {
+  //  if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) {
+  if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && !resonance && ichan<0) {
+    cout<<"first if"<<endl;
     // compute H rho
     Complex Hrho = HChannel(irho,rhoMasses_[0],rhoWidths_[0],sp,sm,s0,mpip_,mpi0_);
     // terms in the current
@@ -370,7 +375,9 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
   }
   // isospin = 1
   complex<InvEnergy3> F_I1(ZERO);
-  if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && !resonance && ichan<0) {
+  //  if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && !resonance && ichan<0) {
+  if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) {
+    cout<<"second if"<<endl;
     F_I1 = GW_*
       Resonance::BreitWignerFW(q2,omegaMass_I1_,omegaWidth_I1_)/sqr(omegaMass_I1_)*
       (Resonance::BreitWignerPWave(s0,rhoMasses_I1_[0],
