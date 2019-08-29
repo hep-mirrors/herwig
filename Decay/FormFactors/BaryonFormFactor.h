@@ -7,6 +7,7 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "BaryonFormFactor.fh"
 #include "ThePEG/Config/Complex.h"
+#include "Herwig/Decay/IsoSpin.h"
 
 namespace Herwig {
 using namespace ThePEG;

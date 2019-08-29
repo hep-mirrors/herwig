@@ -17,25 +17,12 @@
 #include "Herwig/Decay/PhaseSpaceMode.h"
 #include "Herwig/Decay/PhaseSpaceChannel.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
+#include "Herwig/Decay/IsoSpin.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using ThePEG::Helicity::LorentzPolarizationVectorE;
-
-namespace IsoSpin {
-
-  /**
-   *   Enum for the total isospin of the system
-   */
-  enum IsoSpin { IUnknown, IZero, IHalf, IOne};
-
-  /**
-   *   Third component
-   */
-  enum I3     { I3Unknown, I3MinusOne, I3MinusHalf, I3Zero, I3Half, I3One};
-  
-}
   
 /** \ingroup Decay
  *
