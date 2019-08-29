@@ -133,20 +133,20 @@ void OmegaPiPiCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool OmegaPiPiCurrent::createMode(int icharge, tcPDPtr resonance,
-			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			       FlavourInfo flavour,
 			       unsigned int, PhaseSpaceModePtr mode,
 			       unsigned int iloc,int ires,
 			       PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
   if(icharge!=0) return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IZero) return false;
-  }
+  if(flavour.I!=IsoSpin::IUnknown && flavour.I!=IsoSpin::IZero) return false;
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    if(i3!=IsoSpin::I3Zero) return false;
-  }
+  if(flavour.I3!=IsoSpin::I3Unknown && flavour.I3!=IsoSpin::I3Zero) return false;
+  // and other flavour
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // check that the mode is are kinematical allowed
   Energy min = getParticleData(ParticleID::omega)->massMin()+
     2.*getParticleData(ParticleID::pi0)->mass();
@@ -195,19 +195,17 @@ void OmegaPiPiCurrent::constructSpinInfo(ParticleVector decay) const {
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 OmegaPiPiCurrent::current(tcPDPtr resonance,
-		       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
-		       const int, const int ichan, Energy & scale, 
-		       const tPDVector & ,
-		       const vector<Lorentz5Momentum> & momenta,
-		       DecayIntegrator::MEOption) const {
-  // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IZero) return vector<LorentzPolarizationVectorE>();
-  }
-  // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    if(i3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
-  }
+			  FlavourInfo flavour,
+			  const int, const int ichan, Energy & scale, 
+			  const tPDVector & ,
+			  const vector<Lorentz5Momentum> & momenta,
+			  DecayIntegrator::MEOption) const {
+  // no isospin/flavour here
+  if(flavour.I!=IsoSpin::IUnknown && flavour.I!=IsoSpin::IZero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.I3!=IsoSpin::I3Unknown && flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   useMe();
   // polarization vectors of the omega
   vector<LorentzPolarizationVector> temp(3);

@@ -134,7 +134,7 @@ void BaryonFactorizedDecayer::doinit() {
       PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1));
       Energy min = incoming[ix]->massMax()-outgoing[ix][0]->massMin();
       int Wcharge = incoming[ix]->iCharge()-outgoing[ix][0]->iCharge();
-      bool done = _current->createMode(Wcharge,tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
+      bool done = _current->createMode(Wcharge,tcPDPtr(),FlavourInfo(),
 				       tcurrmap[ix],mode,1,0,channel,min);
       if(!done){throw InitException() << "Failed to construct mode in "
 				      << "BaryonFactorizedDecayer::doinit()." 
@@ -522,7 +522,7 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan, const Particle & part,
     }
     // construct the weak current
     vector<LorentzPolarizationVectorE> hadron =
-      _current->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
+      _current->current(tcPDPtr(),FlavourInfo(),
 			_currentmap[imode()][mode],ichan,scale,
 			tPDVector(outgoing.begin()+1,outgoing.end()),
 			vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),meopt);
@@ -672,8 +672,7 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan, const Particle & 
       }
     }
     vector<LorentzPolarizationVectorE> hadron =
-      _current->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
-			_currentmap[imode()][mode],ichan,scale,
+      _current->current(tcPDPtr(),FlavourInfo(),_currentmap[imode()][mode],ichan,scale,
 			tPDVector(outgoing.begin()+1,outgoing.end()),
 			vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),meopt);
     // prefactor

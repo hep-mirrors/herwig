@@ -57,8 +57,7 @@ void TauDecayer::doinit() {
     PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(tau,out,maxweight));
     // create the first piece of the channel
     PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1));
-    if(!current_->createMode(-3,tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
-			     ix,mode,1,0,channel,mtau)) continue;
+    if(!current_->createMode(-3,tcPDPtr(),FlavourInfo(),ix,mode,1,0,channel,mtau)) continue;
     // the channel weights
     // the weights for the channel
     if(wgtLoc_.size()>numberModes()&&
@@ -297,8 +296,7 @@ double TauDecayer::me2(const int ichan, const Particle & part,
   // calculate the hadron current
   Energy q;
   vector<LorentzPolarizationVectorE> 
-    hadron(current_->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
-			     mode,ichan,q,tPDVector(outgoing.begin()+1,outgoing.end()),
+    hadron(current_->current(tcPDPtr(),FlavourInfo(),mode,ichan,q,tPDVector(outgoing.begin()+1,outgoing.end()),
 			     vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),meopt));
   // prefactor
   double pre = sqr(pow(part.mass()/q,int(outgoing.size()-3)));

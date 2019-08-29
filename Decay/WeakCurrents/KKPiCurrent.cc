@@ -111,7 +111,7 @@ void KKPiCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
-			     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			     FlavourInfo flavour,
 			     unsigned int imode,PhaseSpaceModePtr mode,
 			     unsigned int iloc,int ires,
 			     PhaseSpaceChannel phase, Energy upp ) {
@@ -119,13 +119,13 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
   if(icharge!=0) return false;
   if(imode>5) return false;
   // check the total isospin
-  //   if(Itotal!=IsoSpin::IUnknown) {
-  //     if(Itotal==IsoSpin::IZero) {
-  //       if(i3!=IsoSpin::I3Unknown) return false;
+  //   if(flavour.I!=IsoSpin::IUnknown) {
+  //     if(flavour.I==IsoSpin::IZero) {
+  //       if(flavour.I3!=IsoSpin::I3Unknown) return false;
   //     }
-  //     else if(Itotal==IsoSpin::IOne) {
-  //       if(i3!=IsoSpin::I3Unknown&&
-  // 	 i3!=IsoSpin::I3One) return false;
+  //     else if(flavour.I==IsoSpin::IOne) {
+  //       if(flavour.I3!=IsoSpin::I3Unknown&&
+  // 	 flavour.I3!=IsoSpin::I3One) return false;
   //     }
   //     else
   //       return false;
@@ -201,19 +201,19 @@ tPDVector KKPiCurrent::particles(int icharge, unsigned int imode,
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 KKPiCurrent::current(tcPDPtr resonance,
-		     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+		     FlavourInfo flavour,
 		     const int imode, const int ichan, Energy & scale, 
 		     const tPDVector & ,
 		     const vector<Lorentz5Momentum> & momenta,
 		     DecayIntegrator::MEOption) const {
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal==IsoSpin::IZero) {
-      if(i3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I==IsoSpin::IZero) {
+      if(flavour.I3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
     }
-    else if(Itotal==IsoSpin::IOne) {
-      if(i3!=IsoSpin::I3Unknown&&
-	 i3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
+    else if(flavour.I==IsoSpin::IOne) {
+      if(flavour.I3!=IsoSpin::I3Unknown&&
+	 flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
     }
     else
       return vector<LorentzPolarizationVectorE>();
@@ -231,8 +231,8 @@ KKPiCurrent::current(tcPDPtr resonance,
   complex<InvEnergy> A0(ZERO);
   int ires=-1;
   if(ichan>=0) ires=ichan/2;
-  if(Itotal==IsoSpin::IUnknown ||
-     Itotal==IsoSpin::IZero) {
+  if(flavour.I==IsoSpin::IUnknown ||
+     flavour.I==IsoSpin::IZero) {
     if(ires>=0) {
       if(ires<int(isoScalarMasses_.size()))
 	A0 = isoScalarKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoScalarMasses_[ires],isoScalarWidths_[ires]);
@@ -246,8 +246,8 @@ KKPiCurrent::current(tcPDPtr resonance,
   ires-=5;
   // I=1 coefficient
   complex<InvEnergy> A1(ZERO);
-  if(Itotal==IsoSpin::IUnknown ||
-     Itotal==IsoSpin::IOne) {
+  if(flavour.I==IsoSpin::IUnknown ||
+     flavour.I==IsoSpin::IOne) {
     if(ires>=0) {
       if(ires<int(isoVectorMasses_.size()))
 	A1  = isoVectorKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoVectorMasses_[ires],isoVectorWidths_[ires]);

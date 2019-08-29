@@ -200,19 +200,19 @@ void OneKaonTwoPionDefaultCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool OneKaonTwoPionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
-					      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+					      FlavourInfo flavour,
 					      unsigned int imode,PhaseSpaceModePtr mode,
 					      unsigned int iloc,int ires,
 					      PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
   if(abs(icharge)!=3) return false; 
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IHalf) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IHalf) return false;
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Half:
       if(icharge ==-3) return false;
       break;
@@ -223,6 +223,13 @@ bool OneKaonTwoPionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  // strangeness
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return false;
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return false;
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // get external particles and check mass
   int iq(0),ia(0);
   tPDVector extpart(particles(1,imode,iq,ia));
@@ -368,28 +375,38 @@ void OneKaonTwoPionDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 OneKaonTwoPionDefaultCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			      FlavourInfo flavour,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
-  // check the isospin
-  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IHalf)
-    return vector<LorentzPolarizationVectorE>();
+  // charge
   int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge()+outgoing[2]->iCharge();
+  // check the isospin
+  // check the total isospin
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IHalf) return vector<LorentzPolarizationVectorE>();
+  }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Half:
       if(icharge ==-3) return vector<LorentzPolarizationVectorE>();
       break;
     case IsoSpin::I3MinusHalf:
-      if(icharge ==3) return vector<LorentzPolarizationVectorE>();
+      if(icharge == 3) return vector<LorentzPolarizationVectorE>();
       break;
     default:
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  // strangeness
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return vector<LorentzPolarizationVectorE>();
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return vector<LorentzPolarizationVectorE>();
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   // check the resonance
   int ires1=-1;
   if(resonance) {

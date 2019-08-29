@@ -44,12 +44,15 @@ void LeptonNeutrinoCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool LeptonNeutrinoCurrent::createMode(int icharge, tcPDPtr ,
-				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				       FlavourInfo flavour,
 				       unsigned int imode,PhaseSpaceModePtr mode,
 				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
-  // no isospin here
-  if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return false;
+  // no isospin or flavour here
+  if(flavour.I!=IsoSpin::IUnknown || flavour.I3 !=IsoSpin::I3Unknown) return false;
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // make sure the the decays are kinematically allowed
   Energy min =
     getParticleData(11+2*int(imode))->mass()+
@@ -98,13 +101,16 @@ void LeptonNeutrinoCurrent::constructSpinInfo(ParticleVector decay) const {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 LeptonNeutrinoCurrent::current(tcPDPtr ,
-			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			       FlavourInfo flavour,
 			       const int, const int, Energy & scale, 
 			       const tPDVector & outgoing,
 			       const vector<Lorentz5Momentum> & momenta,
 			       DecayIntegrator::MEOption) const {
   // no isospin here
-  if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+  if(flavour.I!=IsoSpin::IUnknown || flavour.I3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   useMe();
   Lorentz5Momentum q = momenta[0]+momenta[1];
   q.rescaleMass();

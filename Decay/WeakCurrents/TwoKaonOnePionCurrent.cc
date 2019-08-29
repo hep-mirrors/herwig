@@ -402,19 +402,19 @@ void TwoKaonOnePionCurrent::inita1Width(int iopt) {
 
 // complete the construction of the decay mode for integration
 bool TwoKaonOnePionCurrent::createMode(int icharge, tcPDPtr resonance,
-				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				       FlavourInfo flavour,
 				       unsigned int imode,PhaseSpaceModePtr mode,
 				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
   if(abs(icharge)!=3) return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return false;
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode<=1) return false;
       break;
@@ -720,17 +720,17 @@ Complex TwoKaonOnePionCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 TwoKaonOnePionCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			      FlavourInfo flavour,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
   // check the isospin
-  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
+  if(flavour.I!=IsoSpin::IUnknown && flavour.I!=IsoSpin::IOne)
     return vector<LorentzPolarizationVectorE>();
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       return vector<LorentzPolarizationVectorE>();
       break;

@@ -60,8 +60,7 @@ void MEDM2Mesons::doinit() {
      PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(incomingA_,out,1.,
 						     incomingB_,Emax));
      PhaseSpaceChannel channel(mode);
-     if(!current_->createMode(0,tcPDPtr(), IsoSpin::IUnknown, IsoSpin::I3Unknown,Strangeness::Unknown,
-			      imode,mode,0,-1,channel,Emax)) continue;
+     if(!current_->createMode(0,tcPDPtr(), FlavourInfo(), imode,mode,0,-1,channel,Emax)) continue;
      modeMap_[imode] = nmode;
      addMode(mode);
      ++nmode;
@@ -176,13 +175,13 @@ double MEDM2Mesons::me2(const int ichan) const {
   if(ichan<0) iMode(modeMap_.at(imode));
   // get the hadronic currents for the I=1 and I=0 components
   vector<LorentzPolarizationVectorE> 
-    hadronI0(current_->current(tcPDPtr(), IsoSpin::IZero, IsoSpin::I3Zero,Strangeness::Zero,
+    hadronI0(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IZero, IsoSpin::I3Zero,Strangeness::Zero),
 			       imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
   vector<LorentzPolarizationVectorE> 
-    hadronI1(current_->current(tcPDPtr(), IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::Zero,
+    hadronI1(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::Zero),
 			       imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
   vector<LorentzPolarizationVectorE> 
-    hadronssbar(current_->current(tcPDPtr(), IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::ssbar,
+    hadronssbar(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::ssbar),
 				  imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
   // compute the matrix element
   vector<unsigned int> ihel(meMomenta().size());

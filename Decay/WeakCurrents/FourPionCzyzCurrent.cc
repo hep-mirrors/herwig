@@ -481,7 +481,7 @@ void FourPionCzyzCurrent::createChannels(unsigned int imode,
 
 // complete the construction of the decay mode for integration
 bool FourPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
-				     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				     FlavourInfo flavour,
 				     unsigned int imode,PhaseSpaceModePtr mode,
 				     unsigned int iloc,int ires,
 				     PhaseSpaceChannel phase, Energy upp ) {
@@ -489,12 +489,12 @@ bool FourPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
   if((abs(icharge)!=3&&imode<2) ||
      (imode>=2&&icharge!=0)) return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return false;
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode==0) return false;
       break;
@@ -508,6 +508,10 @@ bool FourPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  // and other flavour
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // check that the modes are kinematical allowed
   Energy min(ZERO);
   if(imode==0)                min =    mpip_+3.*mpi0_;
@@ -587,7 +591,7 @@ tPDVector FourPionCzyzCurrent::particles(int icharge, unsigned int imode,
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 FourPionCzyzCurrent::current(tcPDPtr resonance,
-			     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			     FlavourInfo flavour,
 			     const int imode, const int ichan,Energy & scale,
 			     const tPDVector & outgoing,
 			     const vector<Lorentz5Momentum> & momenta,
@@ -595,12 +599,12 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
   int icharge(0);
   for(tPDPtr out : outgoing) icharge+=out->iCharge();
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode==0) return vector<LorentzPolarizationVectorE>();
       break;
@@ -614,6 +618,9 @@ FourPionCzyzCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   useMe();
   // the momenta of the particles
   Lorentz5Momentum q1(momenta[0]);

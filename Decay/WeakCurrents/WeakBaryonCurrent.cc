@@ -70,13 +70,14 @@ void WeakBaryonCurrent::doinit() {
 
 // complete the construction of the decay mode for integration
 bool WeakBaryonCurrent::createMode(int icharge, tcPDPtr ,
-				   IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				   FlavourInfo flavour,
 				   unsigned int imode,PhaseSpaceModePtr mode,
 				   unsigned int iloc,int ires,
 				   PhaseSpaceChannel phase, Energy upp ) {
   // todo isospin in the form factors
-  // no isospin here
-  if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return false;
+  assert(false);
+  // // no isospin here
+  // if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return false;
   unsigned int iq(0),ia(0);
   tPDVector out = particles(icharge,imode,iq,ia);
   // make sure the the decays are kinematically allowed
@@ -127,13 +128,14 @@ void WeakBaryonCurrent::constructSpinInfo(ParticleVector decay) const {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 WeakBaryonCurrent::current(tcPDPtr ,
-			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			       FlavourInfo flavour,
 			       const int, const int, Energy & scale, 
 			       const tPDVector & outgoing,
 			       const vector<Lorentz5Momentum> & momenta,
 			       DecayIntegrator::MEOption) const {
   // no isospin here
-  if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+  assert(false);
+  // if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
   useMe();
   Lorentz5Momentum q = momenta[0]+momenta[1];
   q.rescaleMass();

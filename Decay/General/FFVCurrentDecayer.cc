@@ -155,8 +155,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & part,
   // calculate the hadron current
   Energy q;
   vector<LorentzPolarizationVectorE> 
-    hadron(weakCurrent()->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
-				  mode(),ichan,q,tPDVector(outgoing.begin()+1,outgoing.end()),
+    hadron(weakCurrent()->current(tcPDPtr(),FlavourInfo(),mode(),ichan,q,tPDVector(outgoing.begin()+1,outgoing.end()),
 				  vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),meopt));
   // prefactor
   double pre = sqr(pow(part.mass()/q,int(outgoing.size()-3)));

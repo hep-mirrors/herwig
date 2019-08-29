@@ -106,12 +106,12 @@ void VectorMesonCurrent::Init() {
 
 // create the decay phase space mode
 bool VectorMesonCurrent::createMode(int icharge, tcPDPtr resonance,
-				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				    FlavourInfo flavour,
 				    unsigned int imode,PhaseSpaceModePtr mode,
 				    unsigned int iloc,int ires,
 				    PhaseSpaceChannel phase, Energy upp ) {
   assert(!resonance);
-  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
+  assert(flavour.I==IsoSpin::IUnknown && flavour.I3==IsoSpin::I3Unknown);
   tPDPtr part(getParticleData(_id[imode]));
   // check the mode has the correct charge
   if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))) return false;
@@ -150,13 +150,13 @@ void VectorMesonCurrent::constructSpinInfo(ParticleVector decay) const {
 
 vector<LorentzPolarizationVectorE> 
 VectorMesonCurrent::current(tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			    FlavourInfo flavour,
 			    const int imode, const int , Energy & scale, 
 			    const tPDVector & outgoing,
 			    const vector<Lorentz5Momentum> & momenta,
 			    DecayIntegrator::MEOption) const {
   assert(!resonance);
-  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
+  assert(flavour.I==IsoSpin::IUnknown && flavour.I3==IsoSpin::I3Unknown);
   // set up the spin information for the particle and calculate the wavefunctions
   vector<LorentzPolarizationVector> temp(3);
   for(unsigned int ix=0;ix<3;++ix) {

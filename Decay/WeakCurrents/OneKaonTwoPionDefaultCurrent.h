@@ -53,8 +53,7 @@ public:
    * Hadronic current. This method is purely virtual and must be implemented in
    * all classes inheriting from this one.
    * @param resonance If specified only include terms with this particle
-   * @param Itotal    If specified the total isospin of the current
-   * @param I3        If specified the thrid component of isospin
+   * @param flavour Information on the required flavours of the quarks
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
@@ -65,7 +64,7 @@ public:
    */
   virtual vector<LorentzPolarizationVectorE> 
   current(tcPDPtr resonance,
-	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+	  FlavourInfo flavour,
 	  const int imode, const int ichan,Energy & scale,
 	  const tPDVector & outgoing,
 	  const vector<Lorentz5Momentum> & momenta,
@@ -130,8 +129,7 @@ public:
    * from WeakCurrent.
    * @param icharge   The total charge of the outgoing particles in the current.
    * @param resonance If specified only include terms with this particle
-   * @param Itotal    If specified the total isospin of the current
-   * @param I3        If specified the thrid component of isospin
+   * @param flavour Information on the required flavours of the quarks
    * @param imode     The mode in the current being asked for.
    * @param mode      The phase space mode for the integration
    * @param iloc      The location of the of the first particle from the current in
@@ -143,7 +141,7 @@ public:
    * @return Whether the current was sucessfully constructed.
    */
   virtual bool createMode(int icharge, tcPDPtr resonance,
-			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			  FlavourInfo flavour,
 			  unsigned int imode,PhaseSpaceModePtr mode,
 			  unsigned int iloc,int ires,
 			  PhaseSpaceChannel phase, Energy upp );

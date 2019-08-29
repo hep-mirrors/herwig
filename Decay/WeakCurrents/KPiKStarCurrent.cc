@@ -218,19 +218,19 @@ void KPiKStarCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool KPiKStarCurrent::createMode(int icharge, tcPDPtr resonance,
-				 IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				 FlavourInfo flavour,
 				 unsigned int imode,PhaseSpaceModePtr mode,
 				 unsigned int iloc,int ires,
 				 PhaseSpaceChannel phase, Energy upp ) {
   // check the charge
   if(abs(icharge)!=3) return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IHalf) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IHalf) return false;
   } 
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Half:
       if(icharge ==-3) return false;
       break;
@@ -311,19 +311,19 @@ tPDVector KPiKStarCurrent::particles(int icharge, unsigned int imode,
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 KPiKStarCurrent::current(tcPDPtr resonance,
-		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+		    FlavourInfo flavour,
 		    const int imode, const int ichan,Energy & scale, 
 		    const tPDVector & outgoing,
 		    const vector<Lorentz5Momentum> & momenta,
 		    DecayIntegrator::MEOption) const {
   useMe();
   // check the isospin
-  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IHalf)
+  if(flavour.I!=IsoSpin::IUnknown && flavour.I!=IsoSpin::IHalf)
     return vector<LorentzPolarizationVectorE>();
   int icharge = outgoing[0]->iCharge()+outgoing[1]->iCharge();
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Half:
       if(icharge ==-3) return vector<LorentzPolarizationVectorE>();
       break;

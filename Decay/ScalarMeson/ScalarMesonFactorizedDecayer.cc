@@ -154,8 +154,7 @@ void ScalarMesonFactorizedDecayer::doinit() {
       Energy min = incoming[ix]->massMax()-outgoing[ix][0]->massMin();
       int Wcharge = incoming[ix]->iCharge()-outgoing[ix][0]->iCharge();
       bool done = _current[tcurrmap[0][ix]]->
-	createMode(Wcharge,tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
-		   tcurrmap[1][ix],mode,1,0,channel,min);
+	createMode(Wcharge,tcPDPtr(),FlavourInfo(),tcurrmap[1][ix],mode,1,0,channel,min);
       if(!done) throw InitException() << "Failed to construct mode in "
    				      << "ScalarMesonFactorizedDecayer::doinit()." 
    				      << Exception::abortnow;
@@ -655,8 +654,7 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan, const Particle & part,
     // calculate the current
     vector<LorentzPolarizationVectorE>
       curr=_current[_currentmapA[mode][iy]]->
-      current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
-	      _currentmapB[mode][iy],ichan,scale,cpart,cmom,meopt);
+      current(tcPDPtr(),FlavourInfo(),_currentmapB[mode][iy],ichan,scale,cpart,cmom,meopt);
     pre = (pow(part.mass()/scale,int(cpart.size()-2)));
     // loop over the helicities to calculate the matrix element
     ihel[0]=0;

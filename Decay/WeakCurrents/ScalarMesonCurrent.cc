@@ -102,12 +102,12 @@ void ScalarMesonCurrent::Init() {
 
 // create the decay phase space mode
 bool ScalarMesonCurrent::createMode(int icharge, tcPDPtr resonance,
-				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				    FlavourInfo flavour,
 				    unsigned int imode,PhaseSpaceModePtr mode,
 				    unsigned int iloc,int ires,
 				    PhaseSpaceChannel phase, Energy upp ) {
   assert(!resonance);
-  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
+  assert(flavour.I==IsoSpin::IUnknown && flavour.I3==IsoSpin::I3Unknown);
   // check the mode has the correct charge
   if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))) return false;
   // check if the particle is kinematically allowed
@@ -142,13 +142,13 @@ tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq,
 
 vector<LorentzPolarizationVectorE> 
 ScalarMesonCurrent::current(tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			    FlavourInfo flavour,
 			    const int imode, const int , Energy & scale, 
 			    const tPDVector & outgoing,
 			    const vector<Lorentz5Momentum> & momenta,
 			    DecayIntegrator::MEOption) const {
   assert(!resonance);
-  assert(Itotal==IsoSpin::IUnknown && i3==IsoSpin::I3Unknown);
+  assert(flavour.I==IsoSpin::IUnknown && flavour.I3==IsoSpin::I3Unknown);
   static const Complex ii(0.,1.);
   scale =momenta[0].mass();
   Complex pre(-ii*_decay_constant[imode]/scale);

@@ -272,7 +272,7 @@ void ThreePionDefaultCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool ThreePionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
-					  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+					  FlavourInfo flavour,
 					  unsigned int imode,PhaseSpaceModePtr mode,
 					  unsigned int iloc,int ires,
 					  PhaseSpaceChannel phase, Energy upp ) {
@@ -288,12 +288,12 @@ bool ThreePionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
   else
     assert(false);
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return false;
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode<=1) return false;
       break;
@@ -307,6 +307,10 @@ bool ThreePionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  // and other flavour
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // get the particles and check the masses
   int iq(0),ia(0);
   tPDVector extpart(particles(1,imode,iq,ia));
@@ -477,17 +481,17 @@ threeBodyMatrixElement(const int       , const Energy2 q2,
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 ThreePionDefaultCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			      FlavourInfo flavour,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
   // check the isospin
-  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
+  if(flavour.I!=IsoSpin::IUnknown && flavour.I!=IsoSpin::IOne)
     return vector<LorentzPolarizationVectorE>();
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode<=1) return vector<LorentzPolarizationVectorE>();
       break;
@@ -501,6 +505,9 @@ ThreePionDefaultCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   useMe();
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;

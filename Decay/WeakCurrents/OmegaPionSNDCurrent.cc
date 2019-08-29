@@ -132,7 +132,7 @@ void OmegaPionSNDCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool OmegaPionSNDCurrent::createMode(int icharge, tcPDPtr resonance,
-					 IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+					 FlavourInfo flavour,
 					 unsigned int imode,PhaseSpaceModePtr mode,
 					 unsigned int iloc,int ires,
 					 PhaseSpaceChannel phase, Energy upp ) {
@@ -141,12 +141,12 @@ bool OmegaPionSNDCurrent::createMode(int icharge, tcPDPtr resonance,
      (   icharge!=0   && imode >= 1))
     return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return false;
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode!=1) return false;
       break;
@@ -215,7 +215,7 @@ void OmegaPionSNDCurrent::constructSpinInfo(ParticleVector decay) const {
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 OmegaPionSNDCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			      FlavourInfo flavour,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
@@ -226,12 +226,12 @@ OmegaPionSNDCurrent::current(tcPDPtr resonance,
      (   icharge!=0   && imode == 1))
     return vector<LorentzPolarizationVectorE>();
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode!=1) return vector<LorentzPolarizationVectorE>();
       break;

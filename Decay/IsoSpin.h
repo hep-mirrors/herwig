@@ -23,14 +23,68 @@ namespace Herwig {
      *   Third component
      */
     enum I3     { I3Unknown, I3MinusOne, I3MinusHalf, I3Zero, I3Half, I3One};
-    
   }
-
   namespace Strangeness {
-
+    /**
+     *  Strange content
+     */
     enum Strange { Unknown, ssbar, Zero, PlusOne, MinusOne};
-    
   }
+  namespace Charm {
+    /**
+     *  Charm content
+     */
+    enum Charm { Unknown, ccbar, Zero, PlusOne, MinusOne};
+  }
+  namespace Beauty {
+    /**
+     *  Bottom content
+     */
+    enum Bottom { Unknown, bbbar, Zero, PlusOne, MinusOne};
+  }
+
+  struct FlavourInfo {
+
+    /**
+     *  Constructor
+     */
+    FlavourInfo() : I(IsoSpin::IUnknown), I3(IsoSpin::I3Unknown),
+		    strange(Strangeness::Unknown), charm(Charm::Unknown), bottom(Beauty::Unknown)
+    {}
+    
+    /**
+     *  Constructor
+     */
+    FlavourInfo(IsoSpin::IsoSpin Iin, IsoSpin::I3 I3in, Strangeness::Strange Sin=Strangeness::Unknown,
+		Charm::Charm Cin=Charm::Unknown, Beauty::Bottom Bin=Beauty::Unknown) :
+      I(Iin), I3(I3in),strange(Sin), charm(Cin), bottom(Bin)
+    {}
+
+    /**
+     *  Total isospin
+     */
+    IsoSpin::IsoSpin I;
+    
+    /**
+     *  \f$I_3\f$
+     */
+    IsoSpin::I3 I3;
+
+    /**
+     * Strange
+     */
+    Strangeness::Strange strange;
+
+    /**
+     * Charm
+     */
+    Charm::Charm charm;
+
+    /**
+     * Strange
+     */
+    Beauty::Bottom bottom;
+  };
 }
 
 #endif /* HERWIG_IsoSpin_H */

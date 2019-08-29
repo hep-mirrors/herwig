@@ -67,8 +67,7 @@ void MEee2Mesons::doinit() {
     if(iq==2&&ia==-2) continue;
     PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(em,out,1.,ep,Emax));
     PhaseSpaceChannel channel(mode);
-    if(!current_->createMode(0,tcPDPtr(), IsoSpin::IUnknown, IsoSpin::I3Unknown,
-			     Strangeness::Unknown,imode,mode,0,-1,channel,Emax)) continue;
+    if(!current_->createMode(0,tcPDPtr(), FlavourInfo(), imode, mode,0,-1,channel,Emax)) continue;
     modeMap_[imode] = nmode;
     addMode(mode);
     ++nmode;
@@ -148,8 +147,8 @@ double MEee2Mesons::helicityME(const int ichan, const cPDVector & particles,
   tPDVector out = mode(modeMap_.at(imode))->outgoing();
   if(ichan<0) iMode(modeMap_.at(imode));
   vector<LorentzPolarizationVectorE> 
-    hadron(current_->current(tcPDPtr(), IsoSpin::IUnknown, IsoSpin::I3Unknown,Strangeness::Unknown,
-			     imode,ichan,q,out,momenta2,DecayIntegrator::Calculate));
+    hadron(current_->current(tcPDPtr(), FlavourInfo(), imode,ichan,
+			     q,out,momenta2,DecayIntegrator::Calculate));
   // compute the matrix element
   vector<unsigned int> ihel(momenta.size());
   double output(0.);

@@ -790,7 +790,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 
 // complete the construction of the decay mode for integration
 bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
-				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				      FlavourInfo flavour,
 				      unsigned int imode,PhaseSpaceModePtr mode,
 				      unsigned int iloc,int ires,
 				      PhaseSpaceChannel phase, Energy upp ) {
@@ -804,12 +804,12 @@ bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
     if(resonance && abs(resonance->id())!=ParticleID::a_1plus) return false;
   }
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal!=IsoSpin::IOne) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I!=IsoSpin::IOne) return false;
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode==2||imode==5) return false;
       break;
@@ -1162,18 +1162,18 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 ThreePionCLEOCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			      FlavourInfo flavour,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,
 			      DecayIntegrator::MEOption) const {
   useMe();
   // check the isospin
-  if(Itotal!=IsoSpin::IUnknown && Itotal!=IsoSpin::IOne)
+  if(flavour.I!=IsoSpin::IUnknown && flavour.I!=IsoSpin::IOne)
     return vector<LorentzPolarizationVectorE>();
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode==2||imode==5) return vector<LorentzPolarizationVectorE>();
       break;

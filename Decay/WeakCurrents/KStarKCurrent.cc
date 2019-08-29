@@ -113,18 +113,18 @@ void KStarKCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool KStarKCurrent::createMode(int icharge, tcPDPtr resonance,
-			     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			     FlavourInfo flavour,
 			     unsigned int imode,PhaseSpaceModePtr mode,
 			     unsigned int iloc,int ires,
 			     PhaseSpaceChannel phase, Energy upp ) {
   if(icharge!=0) return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
-    if(Itotal==IsoSpin::IZero) {
-      if(i3!=IsoSpin::I3Unknown || i3!=IsoSpin::I3Zero) return false;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I==IsoSpin::IZero) {
+      if(flavour.I3!=IsoSpin::I3Unknown || flavour.I3!=IsoSpin::I3Zero) return false;
     }
-    else if(Itotal==IsoSpin::IOne) {
-      if(i3!=IsoSpin::I3Unknown&&i3!=IsoSpin::I3Zero) return false;
+    else if(flavour.I==IsoSpin::IOne) {
+      if(flavour.I3!=IsoSpin::I3Unknown&&flavour.I3!=IsoSpin::I3Zero) return false;
      }
     else
       return false;
@@ -139,14 +139,14 @@ bool KStarKCurrent::createMode(int icharge, tcPDPtr resonance,
 		     getParticleData(  30223),getParticleData( 100333)};//getParticleData(  30333)};
   tPDPtr rho0[3]  = {getParticleData( 113),getParticleData( 100113),getParticleData( 30113)};
   // I=0 channels
-  if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) {
+  if(flavour.I==IsoSpin::IUnknown || flavour.I==IsoSpin::IZero) {
     for(unsigned int ix=0;ix<6;++ix) {
       if(resonance && resonance != omega[ix]) continue;
       mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],ires+1,iloc+1,ires+1,iloc+2));
     }
   }
   // I=1 channels
-  if(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) {
+  if(flavour.I==IsoSpin::IUnknown || flavour.I==IsoSpin::IOne) {
     for(unsigned int ix=0;ix<3;++ix) {
       if(resonance && resonance != rho0[ix]) continue;
       mode->addChannel((PhaseSpaceChannel(phase),ires,rho0[ix],ires+1,iloc+1,ires+1,iloc+2));
@@ -190,16 +190,16 @@ void KStarKCurrent::constructSpinInfo(ParticleVector decay) const {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 KStarKCurrent::current(tcPDPtr resonance,
-		     IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+		     FlavourInfo flavour,
 		     const int imode, const int ichan, Energy & scale, 
 		     const tPDVector & outgoing,
 		     const vector<Lorentz5Momentum> & momenta,
 		     DecayIntegrator::MEOption) const {
   // check the total isospin
-  if(Itotal==IsoSpin::IHalf)
+  if(flavour.I==IsoSpin::IHalf)
     return vector<LorentzPolarizationVectorE>();
   // check I3
-  if(i3!=IsoSpin::I3Unknown&&i3!=IsoSpin::I3Zero)
+  if(flavour.I3!=IsoSpin::I3Unknown&&flavour.I3!=IsoSpin::I3Zero)
     return vector<LorentzPolarizationVectorE>();
   // using this current
   useMe();
@@ -213,7 +213,7 @@ KStarKCurrent::current(tcPDPtr resonance,
   scale=q.mass();
   Energy2 q2=q.mass2();
   complex<InvEnergy> pre(ZERO);
-  if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne) && ichan<6) {
+  if((flavour.I==IsoSpin::IUnknown || flavour.I==IsoSpin::IOne) && ichan<6) {
     unsigned int imin=0, imax = 6;
     if(resonance) {
       if(ichan>0) {
@@ -263,7 +263,7 @@ KStarKCurrent::current(tcPDPtr resonance,
   double isoSign(1.);
   if(imode==2||imode==3||imode==6||imode==7)
     isoSign=-1.;
-  if((Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) &&
+  if((flavour.I==IsoSpin::IUnknown || flavour.I==IsoSpin::IZero) &&
      (ichan<0 || ichan>=6)) {
     unsigned int imin=0, imax = 3;
     if(ichan>0) {

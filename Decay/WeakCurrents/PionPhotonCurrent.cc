@@ -117,7 +117,7 @@ void PionPhotonCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
-				   IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+				   FlavourInfo flavour,
 				   unsigned int imode,PhaseSpaceModePtr mode,
 				   unsigned int iloc,int ires,
 				   PhaseSpaceChannel phase, Energy upp ) {
@@ -126,18 +126,18 @@ bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
      (   icharge!=0   && imode >= 1))
     return false;
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
+  if(flavour.I!=IsoSpin::IUnknown) {
     if(imode==0) {
-      if(Itotal!=IsoSpin::IOne) return false;
+      if(flavour.I!=IsoSpin::IOne) return false;
     }
     else {
-      if(Itotal!=IsoSpin::IOne &&
-	 Itotal!=IsoSpin::IZero) return false;
+      if(flavour.I!=IsoSpin::IOne &&
+	 flavour.I!=IsoSpin::IZero) return false;
     }
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode!=1) return false;
       break;
@@ -163,9 +163,9 @@ bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
     else            res.push_back(getParticleData( 213));
   }
   else {
-    if(Itotal==IsoSpin::IUnknown||Itotal==IsoSpin::IOne)
+    if(flavour.I==IsoSpin::IUnknown||flavour.I==IsoSpin::IOne)
        res.push_back(getParticleData(113));
-    if(Itotal==IsoSpin::IUnknown||Itotal==IsoSpin::IZero) {
+    if(flavour.I==IsoSpin::IUnknown||flavour.I==IsoSpin::IZero) {
       res.push_back(getParticleData(   223));
       res.push_back(getParticleData(   333));
       res.push_back(getParticleData(100223));
@@ -219,7 +219,7 @@ void PionPhotonCurrent::constructSpinInfo(ParticleVector decay) const {
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 PionPhotonCurrent::current(tcPDPtr resonance,
-			   IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
+			   FlavourInfo flavour,
 			   const int imode, const int ichan, Energy & scale, 
 			   const tPDVector & outgoing,
 			   const vector<Lorentz5Momentum> & momenta,
@@ -230,18 +230,18 @@ PionPhotonCurrent::current(tcPDPtr resonance,
      (   icharge!=0   && imode == 1))
     return vector<LorentzPolarizationVectorE>();
   // check the total isospin
-  if(Itotal!=IsoSpin::IUnknown) {
+  if(flavour.I!=IsoSpin::IUnknown) {
     if(imode==0) {
-      if(Itotal!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
+      if(flavour.I!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
     }
     else {
-      if(Itotal!=IsoSpin::IOne &&
-	 Itotal!=IsoSpin::IZero) return vector<LorentzPolarizationVectorE>();
+      if(flavour.I!=IsoSpin::IOne &&
+	 flavour.I!=IsoSpin::IZero) return vector<LorentzPolarizationVectorE>();
     }
   }
   // check I_3
-  if(i3!=IsoSpin::I3Unknown) {
-    switch(i3) {
+  if(flavour.I3!=IsoSpin::I3Unknown) {
+    switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode!=1) return vector<LorentzPolarizationVectorE>();
       break;
@@ -270,13 +270,13 @@ PionPhotonCurrent::current(tcPDPtr resonance,
   Energy2 q2(q.m2());
   unsigned int imin = 0;
   unsigned int imax = imode==0 ? 1 : 5;
-  if(Itotal==IsoSpin::IOne)
+  if(flavour.I==IsoSpin::IOne)
     imax = 1;
-  else if(Itotal==IsoSpin::IZero) {
+  else if(flavour.I==IsoSpin::IZero) {
     imin = 1;
   }
   if(ichan>0) {
-    if(Itotal==IsoSpin::IZero)
+    if(flavour.I==IsoSpin::IZero)
       imin = ichan+1;
     else
       imin = ichan;
