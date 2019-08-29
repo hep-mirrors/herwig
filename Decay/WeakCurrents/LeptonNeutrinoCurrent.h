@@ -70,7 +70,7 @@ public:
    * @return Whether the current was sucessfully constructed.
    */
   virtual bool createMode(int icharge, tcPDPtr resonance,
-			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			  unsigned int imode,PhaseSpaceModePtr mode,
 			  unsigned int iloc,int ires,
 			  PhaseSpaceChannel phase, Energy upp );
@@ -102,7 +102,7 @@ public:
    */
   virtual vector<LorentzPolarizationVectorE> 
   current(tcPDPtr resonance,
-	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+	  IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 	  const int imode, const int ichan,Energy & scale,
 	  const tPDVector & outgoing,
 	  const vector<Lorentz5Momentum> & momenta,

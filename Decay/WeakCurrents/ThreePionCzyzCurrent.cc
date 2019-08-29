@@ -194,7 +194,7 @@ void ThreePionCzyzCurrent::doinit() {
 
 // complete the construction of the decay mode for integration
 bool ThreePionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
-				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				      unsigned int imode,PhaseSpaceModePtr mode,
 				      unsigned int iloc,int ires,
 				      PhaseSpaceChannel phase, Energy upp ) {
@@ -310,7 +310,7 @@ namespace {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 ThreePionCzyzCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			      const int, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,

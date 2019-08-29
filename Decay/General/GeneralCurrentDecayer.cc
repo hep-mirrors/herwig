@@ -108,7 +108,7 @@ void GeneralCurrentDecayer::doinit() {
     // create the first piece of the channel
     PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1));
     bool done=current_->createMode(inpart_->iCharge()-outpart_->iCharge(),
-				   tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+				   tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
 				   ix,mode,1,0,channel,mdiff);
     if(done) {
       // the maximum weight and the channel weights

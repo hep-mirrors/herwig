@@ -70,7 +70,7 @@ void WeakBaryonCurrent::doinit() {
 
 // complete the construction of the decay mode for integration
 bool WeakBaryonCurrent::createMode(int icharge, tcPDPtr ,
-				   IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				   IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				   unsigned int imode,PhaseSpaceModePtr mode,
 				   unsigned int iloc,int ires,
 				   PhaseSpaceChannel phase, Energy upp ) {
@@ -127,7 +127,7 @@ void WeakBaryonCurrent::constructSpinInfo(ParticleVector decay) const {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 WeakBaryonCurrent::current(tcPDPtr ,
-			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			       const int, const int, Energy & scale, 
 			       const tPDVector & outgoing,
 			       const vector<Lorentz5Momentum> & momenta,

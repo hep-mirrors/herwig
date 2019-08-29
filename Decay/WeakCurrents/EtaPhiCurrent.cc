@@ -105,7 +105,7 @@ void EtaPhiCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool EtaPhiCurrent::createMode(int icharge, tcPDPtr resonance,
-			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			       unsigned int, PhaseSpaceModePtr mode,
 			       unsigned int iloc,int ires,
 			       PhaseSpaceChannel phase, Energy upp ) {
@@ -158,7 +158,7 @@ void EtaPhiCurrent::constructSpinInfo(ParticleVector decay) const {
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 EtaPhiCurrent::current(tcPDPtr resonance,
-		       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+		       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 		       const int, const int ichan, Energy & scale, 
 		       const tPDVector & ,
 		       const vector<Lorentz5Momentum> & momenta,

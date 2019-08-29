@@ -218,7 +218,7 @@ void KPiKStarCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool KPiKStarCurrent::createMode(int icharge, tcPDPtr resonance,
-				 IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				 IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				 unsigned int imode,PhaseSpaceModePtr mode,
 				 unsigned int iloc,int ires,
 				 PhaseSpaceChannel phase, Energy upp ) {
@@ -311,7 +311,7 @@ tPDVector KPiKStarCurrent::particles(int icharge, unsigned int imode,
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 KPiKStarCurrent::current(tcPDPtr resonance,
-		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 		    const int imode, const int ichan,Energy & scale, 
 		    const tPDVector & outgoing,
 		    const vector<Lorentz5Momentum> & momenta,

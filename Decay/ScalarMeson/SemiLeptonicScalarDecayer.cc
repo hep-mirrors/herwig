@@ -79,7 +79,7 @@ void SemiLeptonicScalarDecayer::doinit() {
       // create the first piece of the channel
       PhaseSpaceChannel channel((PhaseSpaceChannel(mode),0,1));
       // and the rest
-      bool done = _current->createMode(Wcharge,tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+      bool done = _current->createMode(Wcharge,tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
 				       iy,mode,1,0,channel,min);
       if(done) {
 	// the maximum weight
@@ -297,7 +297,7 @@ double SemiLeptonicScalarDecayer::me2(const int , const Particle & part,
   Energy scale;
   int mode=(abs(outgoing[1]->id())-11)/2;
   vector<LorentzPolarizationVectorE> 
-    lepton(_current->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,
+    lepton(_current->current(tcPDPtr(),IsoSpin::IUnknown,IsoSpin::I3Unknown,Strangeness::Unknown,
 			     mode,-1,scale,tPDVector(outgoing.begin()+1,outgoing.end()),
 			     vector<Lorentz5Momentum>(momenta.begin()+1,momenta.end()),
 			     meopt));

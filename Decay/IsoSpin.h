@@ -25,6 +25,12 @@ namespace Herwig {
     enum I3     { I3Unknown, I3MinusOne, I3MinusHalf, I3Zero, I3Half, I3One};
     
   }
+
+  namespace Strangeness {
+
+    enum Strange { Unknown, ssbar, Zero, PlusOne, MinusOne};
+    
+  }
 }
 
 #endif /* HERWIG_IsoSpin_H */

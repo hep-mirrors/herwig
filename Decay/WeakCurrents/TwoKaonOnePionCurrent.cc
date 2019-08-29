@@ -402,7 +402,7 @@ void TwoKaonOnePionCurrent::inita1Width(int iopt) {
 
 // complete the construction of the decay mode for integration
 bool TwoKaonOnePionCurrent::createMode(int icharge, tcPDPtr resonance,
-				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				       unsigned int imode,PhaseSpaceModePtr mode,
 				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
@@ -720,7 +720,7 @@ Complex TwoKaonOnePionCurrent::TOmegaKStar(Energy2 s1,Energy2 s2,int ires) const
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 TwoKaonOnePionCurrent::current(tcPDPtr resonance,
-			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			      const int imode, const int ichan, Energy & scale, 
 			      const tPDVector & ,
 			      const vector<Lorentz5Momentum> & momenta,

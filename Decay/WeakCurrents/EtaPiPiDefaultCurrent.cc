@@ -144,7 +144,7 @@ void EtaPiPiDefaultCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool EtaPiPiDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
-				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				       unsigned int imode,PhaseSpaceModePtr mode,
 				       unsigned int iloc,int ires,
 				       PhaseSpaceChannel phase, Energy upp ) {
@@ -257,7 +257,7 @@ void EtaPiPiDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 EtaPiPiDefaultCurrent::current(tcPDPtr resonance,
-			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			       IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			       const int imode, const int ichan, Energy & scale, 
 			       const tPDVector & outgoing,
 			       const vector<Lorentz5Momentum> & momenta,

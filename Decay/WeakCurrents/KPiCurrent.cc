@@ -314,7 +314,7 @@ unsigned int KPiCurrent::decayMode(vector<int> id) {
 }
 
 bool KPiCurrent::createMode(int icharge, tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			    unsigned int imode,PhaseSpaceModePtr mode,
 			    unsigned int iloc,int ires,
 			    PhaseSpaceChannel phase, Energy upp ) {
@@ -428,7 +428,7 @@ void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
 
 vector<LorentzPolarizationVectorE> 
 KPiCurrent::current(tcPDPtr resonance,
-		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+		    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 		    const int imode, const int ichan,Energy & scale, 
 		    const tPDVector & outgoing,
 		    const vector<Lorentz5Momentum> & momenta,

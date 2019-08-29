@@ -102,7 +102,7 @@ void ScalarMesonCurrent::Init() {
 
 // create the decay phase space mode
 bool ScalarMesonCurrent::createMode(int icharge, tcPDPtr resonance,
-				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				    unsigned int imode,PhaseSpaceModePtr mode,
 				    unsigned int iloc,int ires,
 				    PhaseSpaceChannel phase, Energy upp ) {
@@ -142,7 +142,7 @@ tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq,
 
 vector<LorentzPolarizationVectorE> 
 ScalarMesonCurrent::current(tcPDPtr resonance,
-			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+			    IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 			    const int imode, const int , Energy & scale, 
 			    const tPDVector & outgoing,
 			    const vector<Lorentz5Momentum> & momenta,

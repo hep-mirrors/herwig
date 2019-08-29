@@ -332,7 +332,7 @@ void TwoKaonOnePionDefaultCurrent::Init() {
 
 // complete the construction of the decay mode for integration
 bool TwoKaonOnePionDefaultCurrent::createMode(int icharge, tcPDPtr resonance,
-					      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+					      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 					      unsigned int imode,PhaseSpaceModePtr mode,
 					      unsigned int iloc,int ires,
 					      PhaseSpaceChannel phase, Energy upp ) {
@@ -584,7 +584,7 @@ threeBodyMatrixElement(const int       , const Energy2 q2,
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
 TwoKaonOnePionDefaultCurrent::current(tcPDPtr resonance,
-				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3,
+				      IsoSpin::IsoSpin Itotal, IsoSpin::I3 i3, Strangeness::Strange S,
 				      const int imode, const int ichan, Energy & scale, 
 				      const tPDVector & ,
 				      const vector<Lorentz5Momentum> & momenta,
