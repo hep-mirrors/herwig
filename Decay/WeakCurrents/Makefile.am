@@ -36,7 +36,6 @@ FourPionCzyzCurrent.h\
 EtaPiPiCurrent.h\
 EtaPrimePiPiCurrent.h\
 KKPiCurrent.h\
-KStarKCurrent.h\
 EtaPhiCurrent.h\
 EtaOmegaCurrent.h\
 OmegaPiPiCurrent.h
@@ -70,7 +69,6 @@ FourPionCzyzCurrent.cc\
 EtaPiPiCurrent.cc\
 EtaPrimePiPiCurrent.cc\
 KKPiCurrent.cc\
-KStarKCurrent.cc\
 EtaPhiCurrent.cc\
 EtaOmegaCurrent.cc\
 OmegaPiPiCurrent.cc
