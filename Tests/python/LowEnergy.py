@@ -12,6 +12,8 @@ op.add_option("--non-perturbative", dest="nonPerturbative" , default=False, acti
 op.add_option("--perturbative"    , dest="perturbative"    , default=False, action="store_true")
 op.add_option("--dest"            , dest="dest"            , default="Rivet")
 op.add_option("--list"            , dest="list"            , default=False, action="store_true")
+op.add_option("--flavour"         , dest="flavour"         , default="All"  )
+op.add_option("--plots"           , dest="plot"           , default=False, action="store_true")
 opts, args = op.parse_args()
 path=opts.path
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
@@ -19,7 +21,7 @@ thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 analyses={ 'KK' : {} , 'pipi' : {}, 'ppbar' : {}, "3pi" : {}, "etapipi" : {},
            "etaprimepipi" : {} , "4pi" : {}, "etaPhi" : {}, "etaOmega" : {},
            "2K1pi" : {} ,"2K2pi" : {} , "4K" : {}, "6m" : {}, "omegapi" : {} , "pigamma" : {}, "etagamma" : {},
-           "KK*" : {} , "phipi" : {}, "omegapipi" : {} , "DD" : {} , "BB" : {}, "5pi"  :{} ,
+           "phipi" : {}, "omegapipi" : {} , "DD" : {} , "BB" : {}, "5pi"  :{} ,
            "LL"  : {} }
 # pi+pi-
 analyses["pipi"]["KLOE_2009_I797438"]    = ["d02-x01-y01"]
@@ -76,9 +78,6 @@ analyses["ppbar"]["FENICE_1998_I471263"] = ["d01-x01-y01"]
 analyses["ppbar"]["FENICE_1994_I377833"] = ["d01-x01-y01"]
 analyses['ppbar']["BESII_2005_I685906"] = ["d01-x01-y01"]
 analyses['ppbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
-# K K*
-analyses['KK*']["BABAR_2008_I765258"] =  ["d06-x01-y01","d07-x01-y01"]
-analyses['KK*']["BABAR_2008_I765258"]  = ["d06-x01-y01","d07-x01-y01"]
 # pi0 gamma
 analyses["pigamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
 analyses["pigamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
@@ -276,6 +275,14 @@ if(opts.list) :
     for process in processes :
         print " ".join(analyses[process])
     quit()
+if(opts.plot) :
+    output=""
+    for process in processes:
+        for analysis in analyses[process] :
+            for plot in analyses[process][analysis]:
+                output+= " -m/%s/%s" % (analysis,plot)
+    print output
+    quit()
 # mapping of process to me to use
 me = { "pipi"     : "MEee2Pions",
        "KK"       : "MEee2Kaons",
@@ -290,7 +297,6 @@ me = { "pipi"     : "MEee2Pions",
        "pigamma"  : "MEee2PiGamma",
        "etagamma" : "MEee2EtaGamma",
        "ppbar"    : "MEee2ppbar",
-       "KK*"      : "MEee2KStarK",
        "2K1pi"    : "MEee2KKPi"}
 
 # energies we need
@@ -357,6 +363,7 @@ for energy in sorted(energies) :
     proc=""
     for matrix in energies[energy][0] :
         proc+="insert SubProcess:MatrixElements 0 %s\n" % matrix
+        proc+="set %s:Flavour %s\n" % (matrix,opts.flavour)
     maxflavour =5
     if(energy<thresholds[1]) :
         maxflavour=2

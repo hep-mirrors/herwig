@@ -59,10 +59,6 @@ create Herwig::WeakBaryonCurrent  /Herwig/Decays/CzyzCurrent
 create Herwig::CzyzNucleonFormFactor  /Herwig/Decays/CzyzFormFactor
 set /Herwig/Decays/CzyzCurrent:FormFactor /Herwig/Decays/CzyzFormFactor
 set MEee2ppbar:WeakCurrent /Herwig/Decays/CzyzCurrent
-# e+e- -> KKstar
-create Herwig::MEee2Mesons MEee2KStarK HwMELeptonLowEnergy.so
-create Herwig::KStarKCurrent /Herwig/Decays/KStarKCurrent 
-set MEee2KStarK:WeakCurrent /Herwig/Decays/KStarKCurrent
 # e+e- -> KKpi
 create Herwig::MEee2Mesons MEee2KKPi HwMELeptonLowEnergy.so
 create Herwig::KKPiCurrent /Herwig/Decays/KKPiCurrent 
