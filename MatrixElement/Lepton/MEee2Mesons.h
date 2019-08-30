@@ -119,12 +119,26 @@ protected:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
+
+  /**
+   *  Set up the flavours allowed in the current
+   */
+  void setFlavour();
   
 private:
 
@@ -135,6 +149,11 @@ private:
   MEee2Mesons & operator=(const MEee2Mesons &) = delete;
 
 private :
+
+  /**
+   *  Option for the flavour of the particles in the current
+   */
+  unsigned int flavOpt_;
   
   /**
    * the hadronic current
@@ -150,6 +169,11 @@ private :
    *  Map for the modes
    */
   map<int,int>  modeMap_;
+
+  /**
+   *  The flavour of the hadronic system
+   */
+  FlavourInfo flavour_;
 };
 
 }

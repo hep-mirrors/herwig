@@ -6,6 +6,7 @@
 
 #include "MEee2Mesons.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -27,7 +28,8 @@ using namespace Herwig;
 
 typedef LorentzVector<complex<InvEnergy> > LorentzPolarizationVectorInvE;
 
-MEee2Mesons::MEee2Mesons() {}
+MEee2Mesons::MEee2Mesons() : flavOpt_(0)
+{}
 
 Energy2 MEee2Mesons::scale() const {
   return sHat();
@@ -49,9 +51,56 @@ IBPtr MEee2Mesons::fullclone() const {
   return new_ptr(*this);
 }
 
+void MEee2Mesons::setFlavour() {
+  flavour_ = FlavourInfo();
+  if(flavOpt_==1) {
+    flavour_.I  = IsoSpin::IZero;
+    flavour_.I3 = IsoSpin::I3Zero;
+    flavour_.strange = Strangeness::Zero;
+    flavour_.charm   = Charm::Zero;
+    flavour_.bottom  = Beauty::Zero;
+  }
+  else if(flavOpt_==2) {
+    flavour_.I  = IsoSpin::IOne;
+    flavour_.I3 = IsoSpin::I3Zero;
+    flavour_.strange = Strangeness::Zero;
+    flavour_.charm   = Charm::Zero;
+    flavour_.bottom  = Beauty::Zero;
+  }
+  else if(flavOpt_==3) {
+    flavour_.I  = IsoSpin::IZero;
+    flavour_.I3 = IsoSpin::I3Zero;
+    flavour_.strange = Strangeness::ssbar;
+    flavour_.charm   = Charm::Zero;
+    flavour_.bottom  = Beauty::Zero;
+  }
+  else if(flavOpt_==4) {
+    flavour_.I  = IsoSpin::IZero;
+    flavour_.I3 = IsoSpin::I3Zero;
+    flavour_.strange = Strangeness::Zero;
+    flavour_.charm   = Charm::ccbar;
+    flavour_.bottom  = Beauty::Zero;
+  }
+  else if(flavOpt_==5) {
+    flavour_.I  = IsoSpin::IZero;
+    flavour_.I3 = IsoSpin::I3Zero;
+    flavour_.strange = Strangeness::Zero;
+    flavour_.charm   = Charm::Zero;
+    flavour_.bottom  = Beauty::bbbar;
+  }
+}
+
+void MEee2Mesons::doinitrun() {
+  // calculate the flavour
+  setFlavour();
+  MEMultiChannel::doinitrun();
+}
+
 void MEee2Mesons::doinit() {
   // make sure the current got initialised
   current_->init();
+  // calculate the flavour
+  setFlavour();
   // max energy
   Energy Emax = generator()->maximumCMEnergy();
   // incoming particles
@@ -67,7 +116,7 @@ void MEee2Mesons::doinit() {
     if(iq==2&&ia==-2) continue;
     PhaseSpaceModePtr mode = new_ptr(PhaseSpaceMode(em,out,1.,ep,Emax));
     PhaseSpaceChannel channel(mode);
-    if(!current_->createMode(0,tcPDPtr(), FlavourInfo(), imode, mode,0,-1,channel,Emax)) continue;
+    if(!current_->createMode(0,tcPDPtr(), flavour_, imode, mode,0,-1,channel,Emax)) continue;
     modeMap_[imode] = nmode;
     addMode(mode);
     ++nmode;
@@ -76,11 +125,11 @@ void MEee2Mesons::doinit() {
 }
 
 void MEee2Mesons::persistentOutput(PersistentOStream & os) const {
-  os << current_ << modeMap_;
+  os << current_ << modeMap_ << flavOpt_;
 }
 
 void MEee2Mesons::persistentInput(PersistentIStream & is, int) {
-  is >> current_ >> modeMap_;
+  is >> current_ >> modeMap_ >> flavOpt_;
 }
 
 
@@ -100,6 +149,41 @@ void MEee2Mesons::Init() {
      "The reference for the decay current to be used.",
      &MEee2Mesons::current_, false, false, true, false, false);
   
+  static Switch<MEee2Mesons,unsigned int> interfaceFlavour
+    ("Flavour",
+     "Control of the flavours of the particles in the hadronic currents",
+     &MEee2Mesons::flavOpt_, 0, false, false);
+  static SwitchOption interfaceFlavourAll
+    (interfaceFlavour,
+     "All",
+     "All flavours",
+     0);
+  static SwitchOption interfaceFlavourI0
+    (interfaceFlavour,
+     "I0",
+     "Only the I=0 non-strange",
+     1);
+  static SwitchOption interfaceFlavourI1
+    (interfaceFlavour,
+     "I1",
+     "Only include the I=1 component",
+     2);
+  static SwitchOption interfaceFlavourStrange
+    (interfaceFlavour,
+     "Strange",
+     "Only include the s sbar component",
+     3);
+  static SwitchOption interfaceFlavourCharm
+    (interfaceFlavour,
+     "Charm",
+     "Only inlude the c cbar component",
+     4);
+  static SwitchOption interfaceFlavourBottom
+    (interfaceFlavour,
+     "Bottom",
+     "Only include the b bbar component",
+     5);
+
 }
 
 double MEee2Mesons::helicityME(const int ichan, const cPDVector & particles,
@@ -147,7 +231,7 @@ double MEee2Mesons::helicityME(const int ichan, const cPDVector & particles,
   tPDVector out = mode(modeMap_.at(imode))->outgoing();
   if(ichan<0) iMode(modeMap_.at(imode));
   vector<LorentzPolarizationVectorE> 
-    hadron(current_->current(tcPDPtr(), FlavourInfo(), imode,ichan,
+    hadron(current_->current(tcPDPtr(), flavour_, imode,ichan,
 			     q,out,momenta2,DecayIntegrator::Calculate));
   // compute the matrix element
   vector<unsigned int> ihel(momenta.size());
