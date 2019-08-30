@@ -6,6 +6,8 @@
 
 #include "KKPiCurrent.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -18,21 +20,15 @@ using namespace Herwig;
 
 KKPiCurrent::KKPiCurrent() {
   // masses for the isoscalar component
-  //  isoScalarMasses_ = {782.65*MeV,1019.461*MeV,1425*MeV,1680*MeV,1625*MeV,2188*MeV};
-  //  isoScalarWidths_ = {  8.49*MeV,   4.249*MeV, 215*MeV, 150*MeV, 315*MeV,  83*MeV};
   isoScalarMasses_ = {1019.461*MeV,1630*MeV,1960*MeV};
   isoScalarWidths_ = {  4.249*MeV, 218*MeV, 267*MeV};
   // masses for the isovector component
   isoVectorMasses_ = {775.26*MeV,1465*MeV,1720*MeV};
   isoVectorWidths_ = {149.1 *MeV, 400*MeV, 250*MeV};
   // amplitude and phases for the isoscalar
-  //  isoScalarKStarAmp_  ={ZERO,ZERO,ZERO,0.096/GeV,ZERO,ZERO};
-  //  isoScalarKStarPhase_={  0.,  0.,  0.,     0.,  0.,  0.};
   isoScalarKStarAmp_  ={ZERO, 0.233/GeV, 0.0405/GeV};
   isoScalarKStarPhase_={ 0.,  1.1E-07,  5.19};
   // amplitudes and phase for the isovector component
-  //  isoVectorKStarAmp_  ={ZERO,ZERO,0.04/GeV};
-  //  isoVectorKStarPhase_={0.,0.,Constants::pi};
   isoVectorKStarAmp_  ={-2.34/GeV, 0.594/GeV, -0.0179/GeV};
   isoVectorKStarPhase_={0.,0.317, 2.57};
   // Coupling for the K* to Kpi
@@ -103,8 +99,87 @@ describeHerwigKKPiCurrent("Herwig::KKPiCurrent", "HwWeakCurrents.so");
 void KKPiCurrent::Init() {
 
   static ClassDocumentation<KKPiCurrent> documentation
-    ("There is no documentation for the KKPiCurrent class");
+    ("The KKPiCurrent class implements a simple model for the production"
+     " of K K pi in e+e- collisions via rho and phi resonances with a"
+     " K*K intermediate state.");
 
+  static ParVector<KKPiCurrent,Energy> interfaceIsoScalarMasses
+    ("IsoScalarMasses",
+     "The masses for I=0 part of the current",
+     &KKPiCurrent::isoScalarMasses_, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+  static ParVector<KKPiCurrent,Energy> interfaceIsoVectorMasses
+    ("IsoVectorMasses",
+     "The masses for I=1 part of the current",
+     &KKPiCurrent::isoVectorMasses_, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static ParVector<KKPiCurrent,Energy> interfaceIsoScalarWidths
+    ("IsoScalarWidths",
+     "The widths for I=0 part of the current",
+     &KKPiCurrent::isoScalarWidths_, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+  static ParVector<KKPiCurrent,Energy> interfaceIsoVectorWidths
+    ("IsoVectorWidths",
+     "The widths for I=1 part of the current",
+     &KKPiCurrent::isoVectorWidths_, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static ParVector<KKPiCurrent,InvEnergy> interfaceIsoScalarKStarAmp
+    ("IsoScalarKStarAmp",
+     "Amplitude for the I=0 K* component",
+     &KKPiCurrent::isoScalarKStarAmp_, 1./GeV, -1, 0.0/GeV, -1000.0/GeV, 1000.0/GeV,
+     false, false, Interface::limited);
+  
+  static ParVector<KKPiCurrent,InvEnergy> interfaceIsoVectorKStarAmp
+    ("IsoVectorKStarAmp",
+     "Amplitude for the I=1 K* component",
+     &KKPiCurrent::isoVectorKStarAmp_, 1./GeV, -1, 0.0/GeV, -1000.0/GeV, 1000.0/GeV,
+     false, false, Interface::limited);
+  
+  static ParVector<KKPiCurrent,double> interfaceIsoScalarKStarPhase
+    ("IsoScalarKStarPhase",
+     "The phase of the couplings for the I=0 part of the current",
+     &KKPiCurrent::isoScalarKStarPhase_, -1, 0., -Constants::pi, Constants::pi,
+     false, false, Interface::limited);
+  
+  static ParVector<KKPiCurrent,double> interfaceIsoVectorKStarPhase
+    ("IsoVectorKStarPhase",
+     "The phase of the couplings for the I=1 part of the current",
+     &KKPiCurrent::isoVectorKStarPhase_, -1, 0., -Constants::pi, Constants::pi,
+     false, false, Interface::limited);
+
+  static Parameter<KKPiCurrent,Energy> interfacemKStarPlus
+    ("mKStarPlus",
+     "The mass of the charged K* resonace",
+     &KKPiCurrent::mKStarP_, GeV, 0.8956*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<KKPiCurrent,Energy> interfacemKStar0
+    ("mKStar0",
+     "The mass of the neutral K* resonace",
+     &KKPiCurrent::mKStar0_, GeV, 0.8956*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<KKPiCurrent,Energy> interfacewKStarPlus
+    ("wKStarPlus",
+     "The width of the charged K* resonance",
+     &KKPiCurrent::wKStarP_, GeV, 0.047*GeV, 0.0*GeV, 1.0*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<KKPiCurrent,Energy> interfacewKStar0
+    ("wKStar0",
+     "The width of the neutral K* resonance",
+     &KKPiCurrent::wKStar0_, GeV, 0.047*GeV, 0.0*GeV, 1.0*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<KKPiCurrent,double> interfacegKStar
+    ("gKStar",
+     "The coupling of K* K pi",
+     &KKPiCurrent::gKStar_, 5.37392360229, 0.0, 10.0,
+     false, false, Interface::limited);
 
 }
 
@@ -119,20 +194,20 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
   if(icharge!=0) return false;
   if(imode>5) return false;
   // check the total isospin
-  //   if(flavour.I!=IsoSpin::IUnknown) {
-  //     if(flavour.I==IsoSpin::IZero) {
-  //       if(flavour.I3!=IsoSpin::I3Unknown) return false;
-  //     }
-  //     else if(flavour.I==IsoSpin::IOne) {
-  //       if(flavour.I3!=IsoSpin::I3Unknown&&
-  // 	 flavour.I3!=IsoSpin::I3One) return false;
-  //     }
-  //     else
-  //       return false;
-  //   }
-  
-  
-  
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I==IsoSpin::IZero) {
+      if(flavour.I3!=IsoSpin::I3Zero) return false;
+    }
+    else if(flavour.I==IsoSpin::IOne) {
+      if(flavour.I3!=IsoSpin::I3Zero) return false;
+    }
+    else
+      return false;
+  }
+  if(flavour.strange != Strangeness::Unknown)
+     if(flavour.strange != Strangeness::Zero and flavour.strange != Strangeness::ssbar) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  != Beauty::Zero      ) return false;
   // get the external particles
   tPDVector out = particles(0,imode,0,0);
   // check the kinematics
@@ -141,10 +216,8 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
     mout += out[ix]->mass();
   if(mout>upp) return false;
   // resonances we need
-  tPDPtr resI1[3] = {getParticleData(   113),getParticleData(100113),getParticleData( 30113)};
-  tPDPtr resI0[6] = {getParticleData(   223),getParticleData(   333),
-		     getParticleData(100223),getParticleData(100333),
-		     getParticleData( 30223)};
+  vector<tPDPtr> resI1 = {getParticleData(   113),getParticleData(100113),getParticleData( 30113)};
+  vector<tPDPtr> resI0 = {getParticleData(   333),getParticleData(100333)};
   tPDPtr res[2];
   if(imode==0) {
     res[0] = getParticleData(ParticleID::Kstar0);
@@ -162,13 +235,15 @@ bool KKPiCurrent::createMode(int icharge, tcPDPtr resonance,
     res[0] = getParticleData(ParticleID::Kstarminus);
     res[1] = getParticleData(ParticleID::Kstar0);
   }
-  for(unsigned int ix=0;ix<5;++ix) {
+  for(unsigned int ix=0;ix<resI0.size();++ix) {
+    if(resonance && resonance != resI0[ix]) continue;
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[0],ires+1,iloc+2,
 		      ires+2,iloc+1,ires+2,iloc+3));
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI0[ix],ires+1,res[1],ires+1,iloc+1,
 		      ires+2,iloc+2,ires+2,iloc+3));
   }
-  for(unsigned int ix=0;ix<3;++ix) {
+  for(unsigned int ix=0;ix<resI1.size();++ix) {
+    if(resonance && resonance != resI1[ix]) continue;
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI1[ix],ires+1,res[0],ires+1,iloc+2,
 		      ires+2,iloc+1,ires+2,iloc+3));
     mode->addChannel((PhaseSpaceChannel(phase),ires,resI1[ix],ires+1,res[1],ires+1,iloc+1,
@@ -209,14 +284,19 @@ KKPiCurrent::current(tcPDPtr resonance,
   // check the total isospin
   if(flavour.I!=IsoSpin::IUnknown) {
     if(flavour.I==IsoSpin::IZero) {
-      if(flavour.I3!=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+      if(flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
     }
     else if(flavour.I==IsoSpin::IOne) {
-      if(flavour.I3!=IsoSpin::I3Unknown&&
-	 flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
+      if(flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
     }
     else
       return vector<LorentzPolarizationVectorE>();
+  }
+  int ssbar=0;
+  if(flavour.strange != Strangeness::Unknown) {
+    if(flavour.strange == Strangeness::Zero) ssbar=1;
+    else if (flavour.strange == Strangeness::ssbar) ssbar=2;
+    else assert(false);
   }
   useMe();
   // calculate q2,s1,s2
@@ -231,8 +311,31 @@ KKPiCurrent::current(tcPDPtr resonance,
   complex<InvEnergy> A0(ZERO);
   int ires=-1;
   if(ichan>=0) ires=ichan/2;
-  if(flavour.I==IsoSpin::IUnknown ||
-     flavour.I==IsoSpin::IZero) {
+  if(resonance) {
+    int ires2=-1;
+    switch(abs(resonance->id())) {
+    case 113:
+      ires2=2;
+      break;
+    case 100113:
+      ires2=3;
+      break;
+    case 30113:
+      ires2=4;
+      break;
+    case 333:
+      ires2=0;
+      break;
+    case 100333:
+      ires2=1;
+      break;
+    };
+    if(ires>=0 && ires!=ires2) {
+      return vector<LorentzPolarizationVectorE>();
+    }
+    ires=ires2;
+  }
+  if((flavour.I==IsoSpin::IUnknown || flavour.I==IsoSpin::IZero) && ssbar!=1) {
     if(ires>=0) {
       if(ires<int(isoScalarMasses_.size()))
 	A0 = isoScalarKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoScalarMasses_[ires],isoScalarWidths_[ires]);
@@ -243,11 +346,10 @@ KKPiCurrent::current(tcPDPtr resonance,
       }
     }
   }
-  ires-=5;
+  ires-=2;
   // I=1 coefficient
   complex<InvEnergy> A1(ZERO);
-  if(flavour.I==IsoSpin::IUnknown ||
-     flavour.I==IsoSpin::IOne) {
+  if((flavour.I==IsoSpin::IUnknown || flavour.I==IsoSpin::IOne) && ssbar!=2) {
     if(ires>=0) {
       if(ires<int(isoVectorMasses_.size()))
 	A1  = isoVectorKStarCoup_[ires]*Resonance::BreitWignerFW(q2,isoVectorMasses_[ires],isoVectorWidths_[ires]);
@@ -338,49 +440,51 @@ void KKPiCurrent::dataBaseOutput(ofstream & output,bool header,
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::KKPiCurrent " 
   		    << name() << " HwWeakCurrents.so\n";
-//   for(unsigned int ix=0;ix<rhoMasses_.size();++ix) {
-//     if(ix<3) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":RhoMassesI0 " << ix << " " << rhoMasses_[ix]/GeV << "\n";
-//   }
-//   for(unsigned int ix=0;ix<rhoWidths_.size();++ix) {
-//     if(ix<3) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":RhoWidthsI0 " << ix << " " << rhoWidths_[ix]/GeV << "\n";
-//   }
-//   for(unsigned int ix=0;ix<omegaMasses_.size();++ix) {
-//     if(ix<3) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":OmegaMassesI0 " << ix << " " << omegaMasses_[ix]/GeV << "\n";
-//   }
-//   for(unsigned int ix=0;ix<omegaWidths_.size();++ix) {
-//     if(ix<3) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":OmegaWidthsI0 " << ix << " " << omegaWidths_[ix]/GeV << "\n";
-//   }
-//   output << "newdef " << name() << ":PhiMass "  << phiMass_/GeV  << "\n";
-//   output << "newdef " << name() << ":PhiWidth " << phiWidth_/GeV << "\n";
-//   for(unsigned int ix=0;ix<coup_I0_.size();++ix) {
-//     if(ix<6) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":CouplingsI0 " << ix << " " << coup_I0_[ix]*GeV*GeV2 << "\n";
-//   }
-  
-//   for(unsigned int ix=0;ix<rhoMasses_I1_.size();++ix) {
-//     if(ix<3) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":RhoMassesI1 " << ix << " " << rhoMasses_I1_[ix]/GeV << "\n";
-//   }
-//   for(unsigned int ix=0;ix<rhoWidths_I1_.size();++ix) {
-//     if(ix<3) output << "newdef ";
-//     else     output << "insert ";
-//     output << name() << ":RhoWidthsI1 " << ix << " " << rhoWidths_I1_[ix]/GeV << "\n";
-//   }
-//   output << "newdef " << name() << ":OmegaMass "  << omegaMass_I1_/GeV  << "\n";
-//   output << "newdef " << name() << ":OmegaWidth " << omegaWidth_I1_/GeV << "\n";
-//   output << "newdef " << name() << ":sigma "      << sigma_     << "\n";  
-//   output << "newdef " << name() << ":GWPrefactor "      << GW_pre_*GeV     << "\n";  
-//   output << "newdef " << name() << ":g_omega_pipi "      << g_omega_pi_pi_ << "\n";
+  for(unsigned int ix=0;ix<isoScalarMasses_.size();++ix) {
+    if(ix<2) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoScalarMasses " << ix << " " << isoScalarMasses_[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<isoVectorMasses_.size();++ix) {
+    if(ix<3) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoVectorMasses " << ix << " " << isoVectorMasses_[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<isoScalarWidths_.size();++ix) {
+    if(ix<2) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoScalarWidths " << ix << " " << isoScalarWidths_[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<isoVectorWidths_.size();++ix) {
+    if(ix<3) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoVectorWidths " << ix << " " << isoVectorWidths_[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<isoScalarKStarAmp_.size();++ix) {
+    if(ix<2) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoScalarKStarAmp " << ix << " " << isoScalarKStarAmp_[ix]*GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<isoVectorKStarAmp_.size();++ix) {
+    if(ix<3) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoVectorKStarAmp " << ix << " " << isoVectorKStarAmp_[ix]*GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<isoScalarKStarPhase_.size();++ix) {
+    if(ix<2) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoScalarKStarPhase " << ix << " " << isoScalarKStarPhase_[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<isoVectorKStarPhase_.size();++ix) {
+    if(ix<3) output << "newdef ";
+    else     output << "insert ";
+    output << name() << "IsoVectorKStarPhase " << ix << " " << isoVectorKStarPhase_[ix] << "\n";
+  }
+  output << "newdef " << name() << ":mKStarPlus " << mKStarP_/GeV  << "\n";
+  output << "newdef " << name() << ":mKStar0 "    << mKStar0_/GeV  << "\n";
+  output << "newdef " << name() << ":wKStarPlus " << wKStarP_/GeV  << "\n";
+  output << "newdef " << name() << ":wKStar0 "    << wKStar0_/GeV  << "\n";
+  output << "newdef " << name() << ":gKStar "     << gKStar_ << "\n";
   WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
   		    << fullName() << "\";" << endl;
