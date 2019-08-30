@@ -202,17 +202,13 @@ bool ThreePionCzyzCurrent::createMode(int icharge, tcPDPtr resonance, FlavourInf
   // check the total isospin
   if(flavour.I!=IsoSpin::IUnknown) {
     if(flavour.I==IsoSpin::IZero) {
-      if(flavour.I3!=IsoSpin::I3Unknown) return false;
-    }
-    else if(flavour.I==IsoSpin::IOne) {
-      if(flavour.I3!=IsoSpin::I3Unknown&&
-	 flavour.I3!=IsoSpin::I3One) return false;
+      if(flavour.I3!=IsoSpin::I3Zero) return false;
     }
     else
       return false;
   }
-  if(flavour.strange != Strangeness::Unknown and
-     (flavour.strange != Strangeness::Zero or flavour.strange != Strangeness::ssbar) ) return false;
+  if(flavour.strange != Strangeness::Unknown)
+     if(flavour.strange != Strangeness::Zero and flavour.strange != Strangeness::ssbar) return false;
   if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
   if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // check the kinematics
@@ -232,7 +228,7 @@ bool ThreePionCzyzCurrent::createMode(int icharge, tcPDPtr resonance, FlavourInf
     if     (flavour.strange == Strangeness::Zero ) imax=3;
     else if(flavour.strange == Strangeness::ssbar) imin=3;
   }
-  for(unsigned int ix=0;ix<4;++ix) {
+  for(unsigned int ix=imin;ix<imax;++ix) {
     if(resonance && resonance != omega[ix]) continue;
     mode->addChannel((PhaseSpaceChannel(phase),ires,omega[ix],
 		      ires+1,rhom[0],ires+1,iloc+1,
@@ -326,10 +322,6 @@ ThreePionCzyzCurrent::current(tcPDPtr resonance,
   if(flavour.I!=IsoSpin::IUnknown) {
     if(flavour.I==IsoSpin::IZero) {
       if(flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
-    }
-    else if(flavour.I==IsoSpin::IOne) {
-      if(flavour.I3!=IsoSpin::I3Unknown&&
-         flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
     }
     else
       return vector<LorentzPolarizationVectorE>();

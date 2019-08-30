@@ -132,7 +132,6 @@ void MEee2Mesons::persistentInput(PersistentIStream & is, int) {
   is >> current_ >> modeMap_ >> flavOpt_;
 }
 
-
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<MEee2Mesons,MEMultiChannel>
