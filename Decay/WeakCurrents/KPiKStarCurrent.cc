@@ -59,16 +59,16 @@ void KPiKStarCurrent::doinit() {
 		 getParticleData(-30323 )};
   // reset the masses in the form-factors if needed
   if(_kstarparameters&&_kstarmasses.size()<3) {
-    for(unsigned int ix=_kstarmasses.size();ix<3;++ix) {
-      if(res[ix+3]) _kstarmasses.push_back(res[ix+3]->mass());
-      if(res[ix+3]) _kstarwidths.push_back(res[ix+3]->width());
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(res[ix+3]) _kstarmasses.push_back(res[ix]->mass());
+      if(res[ix+3]) _kstarwidths.push_back(res[ix]->width());
     }
   }
   else if(!_kstarparameters) {
     _kstarmasses.clear();_kstarwidths.clear();
     for(unsigned int ix=0;ix<3;++ix) {
-      if(res[ix+3]) _kstarmasses.push_back(res[ix+3]->mass());
-      if(res[ix+3]) _kstarwidths.push_back(res[ix+3]->width());
+      if(res[ix+3]) _kstarmasses.push_back(res[ix]->mass());
+      if(res[ix+3]) _kstarwidths.push_back(res[ix]->width());
     }
   }
   // set up for the Breit Wigners

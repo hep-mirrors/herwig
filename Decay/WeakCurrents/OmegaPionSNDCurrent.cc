@@ -141,11 +141,9 @@ bool OmegaPionSNDCurrent::createMode(int icharge, tcPDPtr resonance,
      (   icharge!=0   && imode >= 1))
     return false;
   // check the total isospin
-  if(flavour.I!=IsoSpin::IUnknown) {
+  if(flavour.I!=IsoSpin::IUnknown || flavour.I3!=IsoSpin::I3Unknown) {
     if(flavour.I!=IsoSpin::IOne) return false;
-  }
-  // check I_3
-  if(flavour.I3!=IsoSpin::I3Unknown) {
+    // and check I_3
     switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode!=1) return false;
@@ -160,6 +158,10 @@ bool OmegaPionSNDCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  // other flavour stuff
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  != Beauty::Zero     ) return false;
   // check that the mode is are kinematical allowed
   Energy min = getParticleData(ParticleID::omega)->massMin();
   if(imode==0)
@@ -226,11 +228,9 @@ OmegaPionSNDCurrent::current(tcPDPtr resonance,
      (   icharge!=0   && imode == 1))
     return vector<LorentzPolarizationVectorE>();
   // check the total isospin
-  if(flavour.I!=IsoSpin::IUnknown) {
+  if(flavour.I!=IsoSpin::IUnknown || flavour.I3!=IsoSpin::I3Unknown) {
     if(flavour.I!=IsoSpin::IOne) return vector<LorentzPolarizationVectorE>();
-  }
-  // check I_3
-  if(flavour.I3!=IsoSpin::I3Unknown) {
+    // and check I_3
     switch(flavour.I3) {
     case IsoSpin::I3Zero:
       if(imode!=1) return vector<LorentzPolarizationVectorE>();
