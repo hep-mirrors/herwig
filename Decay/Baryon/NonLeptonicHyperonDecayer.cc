@@ -41,13 +41,13 @@ void NonLeptonicHyperonDecayer::doinit() {
     PhaseSpaceModePtr mode(new_ptr(PhaseSpaceMode(in,out,wgtmax)));
     addMode(mode);
     // test of the asummetries
-//     Energy e1 = (sqr(extpart[0]->mass())+sqr(extpart[1]->mass())-
-// 		 sqr(extpart[2]->mass()))/2./extpart[0]->mass();
-//     double btemp = _b[ix]*sqrt((e1-extpart[1]->mass())/(e1+extpart[1]->mass()));
-//     double alpha = -2.*(_a[ix]*btemp)/(sqr(_a[ix])+sqr(btemp));
-//     generator()->log() << "Asymmetry parameter for " << extpart[0]->PDGName() << "->"
-// 		       << extpart[1]->PDGName() << "," << extpart[2]->PDGName()
-// 		       << " = " << alpha << "\n";
+    // Energy e1 = (sqr(in->mass())+sqr(out[0]->mass())-
+    // 		 sqr(out[1]->mass()))/2./in->mass();
+    // double btemp = _b[ix]*sqrt((e1-out[0]->mass())/(e1+out[0]->mass()));
+    // double alpha = -2.*(_a[ix]*btemp)/(sqr(_a[ix])+sqr(btemp));
+    // generator()->log() << "Asymmetry parameter for " << in->PDGName() << "->"
+    // 		       << out[0]->PDGName() << "," << out[1]->PDGName()
+    // 		       << " = " << alpha << "\n";
   }
 }
 
