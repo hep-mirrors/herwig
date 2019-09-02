@@ -1909,6 +1909,13 @@ create Herwig::TauDecayer  TauEtaPiPi
 create Herwig::EtaPiPiDefaultCurrent TauEtaPiPiCurrent HwWeakCurrents.so
 newdef TauEtaPiPi:WeakCurrent TauEtaPiPiCurrent 
 
+
+create Herwig::VectorMeson2BaryonsDecayer  Vector2Baryons
+newdef Vector2Baryons:Iteration 1
+newdef Vector2Baryons:Ntry 500
+newdef Vector2Baryons:Points 10000
+newdef Vector2Baryons:GenerateIntermediates 0 
+
 #
 create Herwig::VectorMeson2FermionDecayer  Vector2Leptons
 newdef Vector2Leptons:Iteration 1
