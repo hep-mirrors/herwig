@@ -1,0 +1,16 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.0
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.0
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.4
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+
+# argus eta pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I268577
+# argus phi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I276860
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I251097
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262415

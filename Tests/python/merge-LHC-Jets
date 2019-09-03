@@ -317,8 +317,10 @@ for i in range(1,8) :
     yodafiles.append("-7-DiJets-%1.1i-A.yoda" % i)
     yodafiles.append("-7-DiJets-%1.1i-B.yoda" % i)
     yodafiles.append("-7-DiJets-%1.1i-C.yoda" % i)
-for i in range(6,12) :
+for i in range(1,12) :
     yodafiles.append("-13-DiJets-%1.1i-A.yoda" % i)
+for i in range(6,12) :
+    yodafiles.append("-13-DiJets-%1.1i-B.yoda" % i)
 
 for f in yodafiles:
     file='Rivet-'+args[0]+f
@@ -367,15 +369,12 @@ for f in yodafiles:
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         if("RAW" in aopath) :continue
-        if(aopath.find("8817804")>0 or
-           aopath.find("8968497")>0 or 
-           aopath.find("1082936")>0 or
-           aopath.find("I930220")>0 or
-           aopath.find("1261026")>0 or
-           aopath.find("1090423")>0 or
-           aopath.find("1268975")>0 or
-           aopath.find("1519995") >0 or
+        if(aopath.find("8817804")>0 or aopath.find("8968497")>0 or 
+           aopath.find("1082936")>0 or aopath.find("I930220")>0 or
+           aopath.find("1261026")>0 or aopath.find("1090423")>0 or
+           aopath.find("1268975")>0 or aopath.find("1519995") >0 or
            aopath.find("1663452") >0 or
+           aopath.find("1634970" )>0 or
            aopath.find("CMS_2013_I1208923")>0) :
            if not inhistos_mass.has_key(aopath):
                inhistos_mass[aopath] = {}
@@ -428,8 +427,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1393758")>0 or
         hpath.find("ATLAS_2016_CONF_2016_092")>0 or
         hpath.find("1111014")>0 or hpath.find("1385107")>0 or hpath.find("I1486238") or
-        hpath.find("1459051")>0 or
-        hpath.find("1634970")>0 :
+        hpath.find("1459051")>0 or hpath.find("1634970")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)
@@ -454,7 +452,8 @@ for hpath,hsets in inhistos_pt.iteritems():
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_mass.iteritems():
-    if(hpath.find("1268975")>0) :
+    if(hpath.find("1268975")>0 or
+       hpath.find("1634970")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(hsets.values()[0].values()[0].path,
                                                  hsets.values()[0].values()[0].title)

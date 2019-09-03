@@ -1,0 +1,10 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 45.0
+##################################################
+# select the analyses 
+##################################################
+# DELPHI event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250

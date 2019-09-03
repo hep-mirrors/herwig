@@ -1,0 +1,12 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 4.03
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 4.00
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1977_I118873
