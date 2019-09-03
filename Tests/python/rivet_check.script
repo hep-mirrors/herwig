@@ -53,15 +53,6 @@ for idir in glob.glob("Rivet/*") :
                     hw_analyses[anal].append(fshort)
             line=file.readline()
 
-# low energy herwig analysis
-p = subprocess.Popen(["./python/LowEnergy.py","--list","--process","all"],stdout=subprocess.PIPE)
-lowEnergy = p.communicate()[0]
-hw_low_energy_analyses=lowEnergy.strip().split()
-# R analyses
-p = subprocess.Popen(["./python/R.py","--list"],stdout=subprocess.PIPE)
-Rlist = p.communicate()[0]
-hw_R_analyses=Rlist.strip().split()
-
 anatohepmc = open("anatohepmc.txt",'w')
 hepmctoana = open("hepmctoana.txt",'w')
 # check the analyses
@@ -71,10 +62,6 @@ for analysis in sorted(analyses.keys()) :
         anatohepmc.write("%s %s\n" % (analysis,' '.join(sorted(hw_analyses[analysis]))) )
         if("[OBSOLETE]" in analyses[analysis]) :
             print "WARNING Obsolete analysis %s included : %s" % (analysis,analyses[analysis])
-    # we have it low energy or R or skipping
-    elif (analysis in hw_low_energy_analyses or analysis in skip or
-          analysis in hw_R_analyses ) :
-        continue
     # obsolete
     elif("[OBSOLETE]" in analyses[analysis]) :
         if(opts.obsolete) : print "Obsolete analysis %s not included : %s" % (analysis,analyses[analysis])
