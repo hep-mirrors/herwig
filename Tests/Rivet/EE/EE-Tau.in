@@ -1,0 +1,30 @@
+# -*- ThePEG-repository -*-
+erase /Herwig/EventHandlers/EventHandler:PostSubProcessHandlers 0
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 3.5*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 8.*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.58299
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+# Matrix elements
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2ll
+set /Herwig/MatrixElements/MEee2gZ2ll:Allowed Tau
+set /Herwig/Particles/pi0:Stable Stable
+# Babar three pion
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S7266081
+# BELLE pipi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I786560
+# ALEPH spectral functions
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2014_I1267648
+# BELLE Kpi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2007_I753243
+# BELLE 3 charged hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2010_I841618
+# BABAR KK
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2018_I1679886
+# CLEO pi pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1999_I508944
+# MC dists
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_TAU_Decay
+

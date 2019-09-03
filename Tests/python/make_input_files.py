@@ -159,7 +159,7 @@ set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
 ME_Upsilon = """\
 create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
 set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
-set /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809
+set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
 """ + insert_ME("MEUpsilon")
 
 
@@ -177,9 +177,9 @@ print name
 # collider
 KNOWN_COLLIDERS = [
     "GammaGamma",
-    "LEP-Gamma",
+    "EE-Gamma",
     "BFactory",
-    "LEP",
+    "EE",
     "DIS",
     "TVT",
     "LHC-GammaGamma",
@@ -268,7 +268,7 @@ if simulation=="Matchbox" :
     if "Dipole" in parameters["shower"] :
         parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
         
-    if collider not in ['DIS','LEP'] :
+    if collider not in ['DIS','EE'] :
         parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
 # Flavour settings for dipole shower with internal ME
@@ -284,30 +284,30 @@ if simulation=="" :
         templateName="Hadron-Gamma.in"
     elif have_hadronic_collider :
         templateName="Hadron.in"
-    elif collider=="LEP-Gamma" :
+    elif collider=="EE-Gamma" :
         istart+=1
         if("Direct" in name) :
-            templateName="LEP-Gamma-Direct.in"
+            templateName="EE-Gamma-Direct.in"
         elif("Single-Resolved" in name) :
-            templateName="LEP-Gamma-Single-Resolved.in"
+            templateName="EE-Gamma-Single-Resolved.in"
         elif("Double-Resolved" in name) :
-            templateName="LEP-Gamma-Double-Resolved.in"
+            templateName="EE-Gamma-Double-Resolved.in"
         else :
-            print "Unknown type of LEP-Gamma event ",name
+            print "Unknown type of EE-Gamma event ",name
             quit()
     elif collider=="GammaGamma" :
         templateName="GammaGamma.in"
     elif collider != "BFactory" :
         templateName= "%s.in" % collider
     else :
-        templateName= "LEP.in"
+        templateName= "EE.in"
 else :
     if have_hadronic_collider :
         templateName= "Hadron-%s.in" % simulation 
     elif collider != "BFactory" :
         templateName= "%s-%s.in" % (collider,simulation) 
     else :
-        templateName= "LEP-%s.in" % simulation 
+        templateName= "EE-%s.in" % simulation 
 
 # work out the name of the parameter file
 parameterName="-".join(name.split("-")[istart:])
@@ -333,30 +333,9 @@ class StringBuilder(object):
 
 # work out the process and parameters
 process=StringBuilder()
-# Bfactory
-if(collider=="BFactory") :
-    if(simulation=="") :
-        if(parameterName=="10.58-res") :
-            process += ME_Upsilon
-        elif(parameterName=="10.58") :
-            process += ME_Upsilon
-            process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
-        else :
-            process+=insert_ME("MEee2gZ2qq")
-            process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
-    elif(simulation=="Powheg") :
-        process = StringBuilder("set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n")
-    elif(simulation=="Matchbox" ) :
-        process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
-        process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
-        process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
-        process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
-    elif(simulation=="Merging" ) :
-        logging.warning("BFactory not explicitly tested for %s " % simulation)
-        sys.exit(0)
 
 # DIS
-elif(collider=="DIS") :
+if(collider=="DIS") :
     if(simulation=="") :
         if "NoME" in parameterName :
             process = StringBuilder("set /Herwig/Shower/ShowerHandler:HardEmission None")
@@ -376,37 +355,60 @@ elif(collider=="DIS") :
         else :
             process = StringBuilder(addProcess(thefactory,"e+ p -> e+ j","0","2","",2,2))
 
-# LEP
-elif(collider=="LEP") :
+# EE
+elif(collider=="EE") :
     if(simulation=="") :
         if "gg" in parameterName :
             process = StringBuilder("create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n")
             process+=insert_ME("MEee2Higgs2SM","Gluon","Allowed")
         else :
-            process = StringBuilder(insert_ME("MEee2gZ2qq"))
-            if(parameterName=="10") :
-                process+="set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
+            if(parameterName=="10.58-res") :
+                process += ME_Upsilon
+            elif(parameterName=="10.58") :
+                process += ME_Upsilon
+                process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
+            else :
+                process = StringBuilder(insert_ME("MEee2gZ2qq"))
+                try :
+                    ecms = float(parameterName)
+                    if(ecms<=10.1) :
+                        process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
+                except :
+                    pass
     elif(simulation=="Powheg") :
         process = StringBuilder()
         if(parameterName=="10") :
-            process = StringBuilder("set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4")
+            process = StringBuilder()
+            try :
+                ecms = float(parameterName)
+                if(ecms<=10.1) :
+                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
+            except :
+                pass
     elif(simulation=="Matchbox" ) :
-        if(parameterName=="10") :
-            process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
-            process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
-            process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
-            process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
-        else :
+        try :
+            ecms = float(parameterName)
+            if(ecms<=10.1) :
+                process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
+                process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
+                process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
+                process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
+            else :
+                process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",0,0))
+        except:
             process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",0,0))
-
     elif(simulation=="Merging" ) :
-        if(parameterName=="10") :
-          process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",2,2))
-          process+="read Matchbox/FourFlavourScheme.in"
-        else :
-          process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",2,2))
-# LEP-Gamma
-elif(collider=="LEP-Gamma") :
+        try :
+            ecms = float(parameterName)
+            if(ecms<=10.1) :
+                process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",2,2))
+                process+="read Matchbox/FourFlavourScheme.in"
+            else :
+                process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",2,2))
+        except:
+            process = StringBuilder(addProcess(thefactory,"e- e+ -> j j","0","2","",2,2))
+# EE-Gamma
+elif(collider=="EE-Gamma") :
     if(simulation=="") :
         if("mumu" in parameterName) :
             process = StringBuilder(insert_ME("MEgg2ff","Muon"))
@@ -425,10 +427,10 @@ elif(collider=="LEP-Gamma") :
             process+="insert /Herwig/Cuts/Cuts:OneCuts[0] /Herwig/Cuts/JetKtCut"
             process+="set  /Herwig/Cuts/JetKtCut:MinKT 3."
         else :
-            print "process not supported for Gamma Gamma processes at LEP"
+            print "process not supported for Gamma Gamma processes at EE"
             quit()
     else :
-        print "Only internal matrix elements currently supported for Gamma Gamma processes at LEP"
+        print "Only internal matrix elements currently supported for Gamma Gamma processes at EE"
         quit()
 elif(collider=="GammaGamma") :
     if(simulation=="") :
@@ -437,10 +439,10 @@ elif(collider=="GammaGamma") :
             process +="set /Herwig/MatrixElements/MEgg2ff:Process Muon\n"
             process +="set /Herwig/Cuts/Cuts:MHatMin 3.\n"
         else :
-            print "process not supported for Gamma Gamma processes at LEP"
+            print "process not supported for Gamma Gamma processes at EE"
             quit()
     else :
-        print "Only internal matrix elements currently supported for Gamma Gamma processes at LEP"
+        print "Only internal matrix elements currently supported for Gamma Gamma processes at EE"
         quit()
 # TVT
 elif(collider=="TVT") :
@@ -815,6 +817,10 @@ elif(collider=="LHC") :
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  4.8\n"
             else :
                 if "-A" in parameterName :
+                    process+=jet_kt_cut(60.)
+                    process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
+                    process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
+                elif "-B" in parameterName :
                     process+=jet_kt_cut(180.)
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
@@ -1439,7 +1445,12 @@ elif(collider=="LHC") :
                     sys.exit(1)
             else :
                 if "-A" in parameterName :
-                    process+=addFirstJet("220")
+                    process+= addFirstJet("75.")
+                    process+=addSecondJet("60.")
+                    process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
+                    process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"
+                elif "-B" in parameterName :
+                    process+= addFirstJet("220.")
                     process+=addSecondJet("180.")
                     process+="set /Herwig/Cuts/JetKtCut:MinEta -3.\n"
                     process+="set /Herwig/Cuts/JetKtCut:MaxEta  3.\n"

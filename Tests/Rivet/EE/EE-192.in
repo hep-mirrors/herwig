@@ -1,0 +1,15 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 192.
+##################################################
+# select the analyses
+##################################################
+# OPAL b/c/light multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2002_S5361494
+# DELPHI b/c/light multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_S4328825
+# delphi event shapes for a wide energy range
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250
+

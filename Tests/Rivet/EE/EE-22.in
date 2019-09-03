@@ -1,0 +1,28 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 22.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 21*GeV
+##################################################
+# select the analyses 
+##################################################
+# JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1998_S3612880
+# tasso event shapes at various low energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1980_I154270
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I277658
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1982_I12010
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1983_I181470
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1983_I191415
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1984_I202784
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I177174
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1985_I205119
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1981_I156315
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1980_I143691
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I279165
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PLUTO_1983_I191161
+
+
