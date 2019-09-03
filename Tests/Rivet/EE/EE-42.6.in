@@ -7,4 +7,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # select the analyses 
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_I284251
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_I284251

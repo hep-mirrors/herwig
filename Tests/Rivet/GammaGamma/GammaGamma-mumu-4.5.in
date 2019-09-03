@@ -7,4 +7,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 4.5
 # select the analyses 
 ##################################################
 # L3 mu+mu-
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I645127:PROCESS=GG
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I645127:PROCESS=GG
