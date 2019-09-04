@@ -155,7 +155,7 @@ mkdir_p(cachedir)
 
 
 #MG_TMP = tempfile.mkdtemp(prefix='MG_tmp_',dir=cachedir)
-MG_TMP = os.path.join(cachedir, 'MG_tmp')
+MG_TMP = os.path.join(options.cacheprefix, 'MG_tmp')
 mkdir_p(MG_TMP)
 
 pwd=os.getcwd() 
