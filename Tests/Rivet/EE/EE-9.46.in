@@ -8,4 +8,4 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 
 # BELLE charm hadron production
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933
