@@ -155,7 +155,7 @@ mkdir_p(cachedir)
 
 
 #MG_TMP = tempfile.mkdtemp(prefix='MG_tmp_',dir=cachedir)
-MG_TMP = os.path.join(options.cacheprefix, 'MG_tmp')
+MG_TMP = os.path.join(cachedir, 'MG_tmp')
 mkdir_p(MG_TMP)
 
 pwd=os.getcwd() 
@@ -372,8 +372,11 @@ def replacetext(filename, sourceText, replaceText):
 
 os.chdir(pwd)
 os.chdir(options.buildpath)
-replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat", os.path.join(MG_TMP,"ident_card.dat"))
-replacetext("MG5/Source/MODEL/lha_read.f", "param.log", os.path.join(MG_TMP,"param.log"))
+
+replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat", os.path.join(options.cacheprefix,
+                                                                          "MG_tmp","ident_card.dat"))
+replacetext("MG5/Source/MODEL/lha_read.f", "param.log", os.path.join(options.cacheprefix,
+                                                                     "MG_tmp","param.log"))
 if Virtlist:
   replacetext("MG5/SubProcesses/MadLoopCommons.f", 
               "PREFIX='./'",
