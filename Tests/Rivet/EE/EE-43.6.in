@@ -9,6 +9,6 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # tasso charged mult
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I277658
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I279165
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I279165
 

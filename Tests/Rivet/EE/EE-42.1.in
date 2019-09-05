@@ -8,4 +8,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 # select the analyses 
 ##################################################
 # TASSO strange baryons
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I266893
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I266893

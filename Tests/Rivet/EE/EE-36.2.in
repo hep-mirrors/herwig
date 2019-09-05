@@ -7,4 +7,4 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 36.
 # select the analyses 
 ##################################################
 # TASSO D*
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I278856
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1989_I278856
