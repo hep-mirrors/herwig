@@ -14,5 +14,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2000_S4328825
 # L3 event shapes etc for a wide range of CMS energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683
 # delphi event shapes for a wide energy range
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_I620250
 
