@@ -26,7 +26,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
 # eta/omega dalitz
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1486671
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1486671
 # BES eta' dalitz
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1364494
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1641075
