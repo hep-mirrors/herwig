@@ -2,7 +2,7 @@
 # e+ e- -> J/Psi
 create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEJpsi HwMELepton.so
 set /Herwig/MatrixElements/MEJpsi:VectorMeson /Herwig/Particles/Jpsi
-set /Herwig/MatrixElements/MEJpsi:Coupling  13.60507
+set /Herwig/MatrixElements/MEJpsi:Coupling  11.43148
 set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEJpsi
 set EventGenerator:EventHandler:LuminosityFunction:Energy 3.096916
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2

@@ -146,13 +146,11 @@ Rivet-%.yoda : Rivet-%.run
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
 
-
-
-Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{7.7,9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34,34.8,41,42.1,42.6,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,8510,12.8,21.522,25,26.8,34.5,35,36.2,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
+Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{7.7,9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34,34.8,41,42.1,42.6,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,85,10,12.8,21.5,22,25,26.8,34.5,35,36.2,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
                   $(shell echo Rivet/EE{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-{14,14.8}.in) \
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.6,4.8,3.63,4.03,4.5,9.46,10.00,10.52,10.52-sym,10.54,10.45,10.47}.in) \
-                  $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon4,Tau,Phi,JPsi,Psi2S,10.58-res,Lambdac,Omega,Xi0,Xic0,Xim}.in) \
+                  $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon4,JPsi,Psi2S,Tau,Phi,10.58-res,Lambdac,Omega,Xi0,Xic0,Xim}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
 	          $(shell echo Rivet/TVT{,-Dipole}-Run-II-{DiPhoton-GammaGamma,DiPhoton-GammaJet,PromptPhoton}.in) \
@@ -218,7 +216,7 @@ Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,2
 
 Rivet-LowEnergy-%.yoda:
 	$(HWBUILD) -c .cache/$(subst .yoda,,$@) Rivet/$(subst .yoda,.in,$@)
-	$(HWRUN)  $(subst .yoda,.run,$@) 
+	$(HWRUN)  $(subst .yoda,.run,$@)
 
 Rivet-LowEnergy-%:
 	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); fi; OUTPUT=`python/LowEnergy.py $$args --non-perturbative --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
@@ -230,9 +228,6 @@ Rivet-R:
 	python/mergeLowEnergy.py R
 	rivet-mkhtml -o Rivet-R LowEnergy-EE-Perturbative-R.yoda:"Pert"
 #LowEnergy-EE-NonPerturbative-R.yoda:"Non-Pert" 
-
-
-
 
 Rivet-DIS : Rivet-DIS/done
 	touch $@

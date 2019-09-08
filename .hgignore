@@ -114,3 +114,5 @@ __all.cc$
 .ccR$
 ^tmp/*
 PDF/stamp-h2
+Tests/anatohepmc.txt
+Tests/hepmctoana.txt

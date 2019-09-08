@@ -44,7 +44,7 @@ for idir in glob.glob("Rivet/*") :
         file=open(ifile)
         line=file.readline()
         while line:
-            if("RivetAnalysis:Analyses" in line) :
+            if("RivetAnalysis:Analyses" in line and line[0]!="#") :
                 line=line.strip().split()
                 anal = line[-1].strip().split(":")[0]
                 if(anal not in hw_analyses) :
@@ -52,7 +52,7 @@ for idir in glob.glob("Rivet/*") :
                 else :
                     hw_analyses[anal].append(fshort)
             line=file.readline()
-
+            
 # low energy herwig analysis
 p = subprocess.Popen(["./python/LowEnergy.py","--list","--process","all"],stdout=subprocess.PIPE)
 lowEnergy = p.communicate()[0]
@@ -64,6 +64,9 @@ hw_R_analyses=Rlist.strip().split()
 
 anatohepmc = open("anatohepmc.txt",'w')
 hepmctoana = open("hepmctoana.txt",'w')
+
+not_in_rivet=[]
+for val in hw_analyses.keys() : not_in_rivet.append(val) 
 # check the analyses
 for analysis in sorted(analyses.keys()) :
     # we have it high energy
@@ -71,9 +74,13 @@ for analysis in sorted(analyses.keys()) :
         anatohepmc.write("%s %s\n" % (analysis,' '.join(sorted(hw_analyses[analysis]))) )
         if("[OBSOLETE]" in analyses[analysis]) :
             print "WARNING Obsolete analysis %s included : %s" % (analysis,analyses[analysis])
+        if(analysis in not_in_rivet) :
+            not_in_rivet.remove(analysis)
     # we have it low energy or R or skipping
     elif (analysis in hw_low_energy_analyses or analysis in skip or
           analysis in hw_R_analyses ) :
+        if(analysis in not_in_rivet) :
+            not_in_rivet.remove(analysis)
         continue
     # obsolete
     elif("[OBSOLETE]" in analyses[analysis]) :
@@ -101,6 +108,9 @@ for analysis in sorted(analyses.keys()) :
         else :
             print "MISSING ANALYSIS",analysis,analyses[analysis]
             if(opts.output) : print desc
+# outout analyses missing from rivet
+for val in not_in_rivet:
+    print "NOT IN RIVET ",val
 # output second file for rivet
 anatohepmc.close()
 for fname in sorted(files) :

@@ -1,5 +1,9 @@
 SUBDIRS = General Lepton Hadron DIS Powheg Gamma Matchbox Reweighters
 
+if WANT_LIBFASTJET
+SUBDIRS += FxFx
+endif
+
 noinst_LTLIBRARIES = libHwME.la 
 
 libHwME_la_SOURCES =  \

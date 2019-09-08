@@ -318,6 +318,8 @@ void MPIHandler::statistics() const {
 	 << totalXSecExp()/millibarn << '\n'
 	 << "inelastic cross section (mb):        "
 	 << inelXSec_/millibarn << '\n'
+         << "diffractive cross section (mb):      "
+         << diffratio_*totalXSecExp()/millibarn << '\n'  
 	 << "soft inv radius (GeV2):              "
 	 << softMu2_/GeV2 << '\n'
 	 << "slope of soft pt spectrum (1/GeV2):  "
@@ -375,7 +377,10 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 
     //get the inel xsec
     Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);
-    inelXSec_ = integrator.value(inelint, ZERO, bmax);
+
+
+    auto nondiffXS=integrator.value(inelint, ZERO, bmax);
+    inelXSec_ = nondiffXS+diffratio_*totalXSecExp();
 
     avgNhard_ = 0.0;
     avgNsoft_ = 0.0;
@@ -397,7 +402,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	if(Algorithm() > 0){
 	  P = integrator.value(integrand, ZERO, bmax) / *it;
 	}else{
-	  P = integrator.value(integrand, ZERO, bmax) / inelXSec_;
+	  P = integrator.value(integrand, ZERO, bmax) / nondiffXS;
 	}
 	//store the probability
 	if(Algorithm()>-1){
@@ -544,8 +549,12 @@ CrossSection MPIHandler::totalXSecDiff(CrossSection softXSec,
   Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
   Length bmax = 500.0*sqrt(millibarn);
 
-  CrossSection tot = integrator.value(integrand, ZERO, bmax);
-  return (tot-totalXSecExp());
+  CrossSection minbiasXS = integrator.value(integrand, ZERO, bmax);
+
+  auto totalXS=totalXSecExp();
+  CrossSection tot=minbiasXS+diffratio_*totalXS;
+
+  return (tot-totalXS);
 }
 
 InvEnergy2 MPIHandler::slopeDiff(CrossSection softXSec, 
@@ -640,7 +649,7 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_
      << avgNhard_ << avgNsoft_ << softMult_ 
      << ounit(inelXSec_, millibarn) 
-     << ounit(softMu2_, GeV2);
+     << ounit(softMu2_, GeV2) << diffratio_;
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -657,7 +666,7 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_
      >> avgNhard_ >> avgNsoft_ >> softMult_ 
      >> iunit(inelXSec_, millibarn) 
-     >> iunit(softMu2_, GeV2);
+     >> iunit(softMu2_, GeV2) >> diffratio_;
   currentHandler_ = this;
 }
 
@@ -736,6 +745,14 @@ void MPIHandler::Init() {
      "Fraction of connections to additional subprocesses, which are colour disrupted.",
      &MPIHandler::colourDisrupt_, 
      0.0, 0.0, 1.0, 
+     false, false, Interface::limited);
+
+
+  static Parameter<MPIHandler,double> interfaceDiffRatio
+    ("DiffractiveRatio",
+     "Fraction of diffractive cross section in total cross section.",
+     &MPIHandler::diffratio_,
+     0.2, 0.0, 1.0,
      false, false, Interface::limited);
 
   

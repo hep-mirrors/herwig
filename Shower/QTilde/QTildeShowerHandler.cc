@@ -735,9 +735,9 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   //modified pdf's are used for the secondary interactions via 
   //CascadeHandler::resetPDFs(...)
   tcPDFPtr pdf;
-  if(firstPDF().particle() == _beam)
+  if(beam == incomingBeams().first)
     pdf = firstPDF().pdf();
-  if(secondPDF().particle() == _beam)
+  if(beam == incomingBeams().second)
     pdf = secondPDF().pdf();
   Energy freeze = pdfFreezingScale();
   // don't do anything if not needed
