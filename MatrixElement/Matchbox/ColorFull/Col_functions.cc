@@ -42,6 +42,7 @@ int  Col_functions::leading_Nc_pow( const Poly_vec & Pv ) const{
 	return leading_pow;
 }
 
+/*
 int  Col_functions::leading_Nc_pow( const std::vector< shared_ptr<Polynomial> > & Pvp) const{
 	int leading_pow=leading_Nc_pow( *(Pvp.at(0)) );
 
@@ -53,6 +54,7 @@ int  Col_functions::leading_Nc_pow( const std::vector< shared_ptr<Polynomial> > 
 
 	return leading_pow;
 }
+*/
 
 Polynomial Col_functions::leading( const Polynomial & Poly ) const{
 
@@ -66,7 +68,7 @@ Polynomial Col_functions::leading( const Polynomial & Poly ) const{
 
 	// For containing the leading Nc Polynomial
 	Polynomial Leading_pol;
-	Leading_pol.push_back(Poly.at(0));
+	Leading_pol.append(Poly.at(0));
 
 	// If only one term, keep that term
 	if( Poly.size()==1 ) Leading_pol=Poly;
@@ -117,7 +119,7 @@ Poly_vec Col_functions::leading( const Poly_vec & Pv ) const{
 	// after this all Monomials in the SAME Polynomial have the same Nc power
 	for (uint i = 0; i < Pv.size(); i++) {
 		// Take the leading terms in each component
-		Pv_res.push_back( leading( Pv.at(i) ) );
+		Pv_res.append( leading( Pv.at(i) ) );
 	}
 
 	// Find the leading power
@@ -126,7 +128,7 @@ Poly_vec Col_functions::leading( const Poly_vec & Pv ) const{
 	// Loop over entries and keep only those with maximal power
 	for (uint p = 0; p < Pv_res.size(); p++) {
 		if (leading_Nc_pow(Pv_res.at(p)) != leading_pow) {
-			Pv_res.at(p) = 0 * Pv_res.at(p);
+			Pv_res.at(p) *= 0;
 			Pv_res.at(p).simplify();
 		}
 	}
@@ -143,7 +145,7 @@ Poly_matr Col_functions::leading( const Poly_matr & Pm )  const{
 	for (uint i = 0; i < Pm.size(); i++) {
 		// Take the leading terms in each Poly_vec
 		Poly_vec Pvl= leading( Pm.at(i) );
-		Pm_res.push_back( Pvl );
+		Pm_res.append( Pvl );
 	}
 	int cand_pow = leading_Nc_pow( Pm.at(0).pv );
 
@@ -170,7 +172,7 @@ Poly_matr Col_functions::leading( const Poly_matr & Pm )  const{
 	return Pm_res;
 }
 
-
+/*
 Poly_vec Col_functions::leading( const std::vector<shared_ptr<Polynomial> >  & Pvp )  const{
 	Poly_vec Pv_res;
 
@@ -178,7 +180,7 @@ Poly_vec Col_functions::leading( const std::vector<shared_ptr<Polynomial> >  & P
 	// after this each Monomial has the same Nc+CF-power
 	for (uint i = 0; i < Pvp.size(); i++) {
 		// Take the leading terms in each component
-		shared_ptr<Polynomial> the_pointer=Pvp.at(i);
+		std::shared_ptr<Polynomial> the_pointer=Pvp.at(i);
 		Pv_res.push_back( leading( (*the_pointer) ) );
 	}
 
@@ -188,15 +190,16 @@ Poly_vec Col_functions::leading( const std::vector<shared_ptr<Polynomial> >  & P
 	// Loop over entries and keep only those with maximal power
 	for (uint p = 0; p < Pv_res.size(); p++) {
 		if (leading_Nc_pow(Pv_res.at(p)) != leading_pow) {
-			Pv_res.at(p) = 0 * Pv_res.at(p);
+			Pv_res.at(p) *= 0;
 			Pv_res.at(p).simplify();
 		}
 	}
 
 	return Pv_res;
 }
+*/
 
-
+/*
 dmatr Col_functions::leading( const std::vector< std::vector< shared_ptr<Polynomial> > > & Ppm ) const {
 
 	// To contain the result as a matrix of double
@@ -228,30 +231,7 @@ dmatr Col_functions::leading( const std::vector< std::vector< shared_ptr<Polynom
 
 	return res;
 }
-
-std::map< std::string, Polynomial > Col_functions::leading( const std::map< std::string, Polynomial > & mem_map  )  const{
-
-	// To contain (string, leading(Polynomial))
-	std::map< std::string, Polynomial > res;
-
-    // Find the highest power of Nc+CF
-    int pow_cand=leading_Nc_pow( mem_map.begin()->second );
-    for( auto iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter ) {
-    	Polynomial Poly= (iter->second);
-    	if( leading_Nc_pow(Poly) > pow_cand ) pow_cand=leading_Nc_pow(Poly);
-    }
-
-    for( auto iter =  mem_map.begin(); iter !=  mem_map.end(); ++iter ) {
-
-    	// Insert pair of string and the leading versions of the Polynomial
-    	Polynomial lead_Poly= leading( (iter->second) );
-    	if ( leading_Nc_pow(lead_Poly) != pow_cand ) lead_Poly=lead_Poly*0;
-
-    	res.insert( make_pair( iter->first, lead_Poly ) );
-    } // After this only the leading part of each Polynomial contributes
-
-	return res;
-}
+*/
 
 cnum Col_functions::cnum_num( const Monomial & Mon ) const {
 
@@ -364,7 +344,7 @@ Col_amp Col_functions::emit_gluon( const Col_str & in_Col_str, int emitter, int 
     // Change sign Poly for first term
     Monomial Mon_tmp;
     Mon_tmp.int_part=-1;
-    out_Col_str1.Poly=out_Col_str1.Poly*Mon_tmp;
+    out_Col_str1.Poly *= Mon_tmp;
 
     // Inserting the gluon before
     out_Col_str1.insert( place.first, place.second, g_new );
@@ -390,6 +370,134 @@ Col_amp Col_functions::emit_gluon( const Col_amp & Ca_in, int emitter, int g_new
 	for( uint m=0; m< Ca_in.ca.size(); m++ ){
 		Col_amp part_m=emit_gluon(Ca_in.ca.at(m), emitter, g_new);
 		Ca_out.append(part_m.ca);
+	}
+
+	return Ca_out;
+}
+
+Col_amp Col_functions::split_gluon(const Col_str & in_Col_str, int g_old,
+		int q_new, int qbar_new) const {
+
+	// Locate the splitting gluon in the Col_str
+	std::pair<int, int> place = in_Col_str.find_parton(g_old);
+
+	// Find what kind, q qbar or g, the emitter is
+	std::string kind = in_Col_str.find_kind(g_old);
+	if (kind != "g"){
+		std::cerr
+				<< "Col_functions::split_gluon: The splitting parton must be a gluon but was a "
+				<< kind << "." << std::endl;
+		assert( 0 );
+	}
+
+	// Quark_line to be treated
+	Quark_line Ql = in_Col_str.at(place.first);
+
+	// To contain the resulting Col_amp
+	Col_amp out_Col_amp;
+
+	// If the Ql is open we should get two open Qls
+	if (Ql.open) {
+
+		// Col_strs to return in Col_amp
+		Col_str out_Col_str1 = in_Col_str;
+		Col_str out_Col_str2 = in_Col_str;
+
+		// Define Quark_lines, to contain the two new Quark_lines after splitting
+		// For leading part
+		Quark_line Ql1 = in_Col_str.at(place.first);
+		Quark_line Ql2 = in_Col_str.at(place.first);
+		// For suppressed part
+		Quark_line Ql3;
+
+		// Take first part up to place of gluon
+		Ql1 = Ql.before(place.second);
+		// and append qbar_new
+		Ql1.append(qbar_new);
+		Ql1.open = true;
+
+		// Take 2nd part after place of gluon
+		Ql2 = Ql.after(place.second);
+		// and prepend q_new
+		Ql2.prepend(q_new);
+		Ql2.open = true;
+
+		// In the Col_str, replace old Quark_line with two new
+		out_Col_str1.erase(place.first);
+		out_Col_str1 = out_Col_str1 * Ql1 * Ql2;
+
+		// Multiply with TR
+		Monomial Mon1;
+		Mon1.pow_TR=1;
+		out_Col_str1 = out_Col_str1 * Mon1;
+
+
+		// Erase the gluon
+		out_Col_str2.erase(place);
+		// Add quark_line with just qqbar pair
+		Ql3.append(q_new);
+		Ql3.append(qbar_new);
+		out_Col_str2= out_Col_str2*Ql3;
+		// Multiply with -TR/Nc
+		Monomial Mon2;
+		Mon2.pow_TR=1;
+		Mon2.pow_Nc=-1;
+		Mon2*=-1;
+		out_Col_str2 = out_Col_str2 * Mon2;
+
+		// Add parts in resulting Col_amp
+		out_Col_amp.append(out_Col_str1);
+		out_Col_amp.append(out_Col_str2);
+
+	}
+	// If the Ql is closed
+	else {
+
+		Quark_line new_Ql;
+		Col_str out_Col_str = in_Col_str;
+
+		// Leftmost we should have the new quark
+		new_Ql.prepend(q_new);
+
+		// After this should follow the segment after the splitting gluon
+		new_Ql.append(Ql.after(place.second).ql);
+
+		// and after that the first part of the old Ql
+		new_Ql.append(Ql.before(place.second).ql);
+
+		// Rightmost we should have the new anti-quark
+		new_Ql.append(qbar_new);
+
+		// We should not forget the polynomial factor of the old Ql
+		new_Ql.Poly = in_Col_str.at(place.first).Poly;
+
+		// ... and we get a factor TR from the gluon contraction
+		out_Col_str = out_Col_str*Monomial("TR");
+
+		// In the Col_str, replace old Quark_line with new
+		out_Col_str.at(place.first) = new_Ql;
+
+		out_Col_amp.append(out_Col_str);
+	}
+
+	// Normal order
+	out_Col_amp.normal_order();
+
+	out_Col_amp.simplify();
+
+	return out_Col_amp;
+}
+
+
+
+Col_amp Col_functions::split_gluon( const Col_amp & in_Col_amp, int g_old, int q_new, int qbar_new ) const{
+
+	Col_amp Ca_out;
+
+	// Split each Col_str, and append to new Col_amp
+	for( uint m=0; m< in_Col_amp.ca.size(); m++ ){
+		Col_amp Cam = split_gluon( in_Col_amp.ca.at(m), g_old, q_new, qbar_new );
+		Ca_out= Ca_out + Cam;
 	}
 
 	return Ca_out;
@@ -444,7 +552,7 @@ Col_amp Col_functions::exchange_gluon( const Col_str & Cs, int p1, int p2 )  con
 			mon.pow_TR+=1;
 			mon.int_part*=2;
 		}
-		Cs_copy.Poly = Cs_copy.Poly * mon;
+		Cs_copy.Poly *=  mon;
 		Ca.ca.push_back( Cs_copy );
 		return Ca;
 	}
@@ -463,14 +571,14 @@ Col_amp Col_functions::exchange_gluon( const Col_str & Cs, int p1, int p2 )  con
 		Monomial Mon;
 		Mon.pow_TR = 1;
 
-		Cs_copy.Poly = Cs_copy.Poly * Mon;
+		Cs_copy.Poly *= Mon;
 
 		// The suppressed term is a copy of the old term,
 		// but multiplied with -TR /Nc
 		Mon.pow_TR = 1;
 		Mon.int_part = -1;
 		Mon.pow_Nc = -1;
-		Cs2.Poly = Cs2.Poly * Mon;
+		Cs2.Poly *= Mon;
 
 		Ca.ca.push_back(Cs_copy);
 		Ca.ca.push_back(Cs2);
@@ -525,21 +633,21 @@ Col_amp Col_functions::exchange_gluon( const Col_str & Cs, int p1, int p2 )  con
 		// Construct Quark_line={q,qbar}, and append it
 		Quark_line Ql;
 		Ql.open = true;
-		Ql.push_back( the_q );
-		Ql.push_back( the_qbar );
-		Cs_copy.push_back(Ql);
+		Ql.append( the_q );
+		Ql.append( the_qbar );
+		Cs_copy.append(Ql);
 
 		// Multiply with TR
 		Monomial Mon;
 		Mon.pow_TR = 1;
-		Cs_copy.Poly = Cs_copy.Poly * Mon;
+		Cs_copy.Poly *= Mon;
 
 		// The suppressed term is a copy of the old term,
 		// but multiplied with -TR / Nc
 		Mon.pow_TR=1;
 		Mon.int_part = -1;
 		Mon.pow_Nc = -1;
-		Cs2.Poly = Cs2.Poly * Mon;
+		Cs2.Poly *= Mon;
 
 		// Construct  the resulting color_amplitude and return
 		// Make sure there is not only one or 0 gluons in a closed ql
@@ -686,13 +794,13 @@ Col_amp Col_functions::exchange_gluon( const Col_str & Cs, int p1, int p2 )  con
 		// Multiply first part with TR
 		Monomial Mon_tmp;
 		Mon_tmp.pow_TR = 1;
-		Cs1.Poly = Cs1.Poly * Mon_tmp;
+		Cs1.Poly *= Mon_tmp;
 
 		// Multiply second part with -TR
 		Monomial Mon_tmp2;
 		Mon_tmp2.pow_TR = 1;
 		Mon_tmp2.int_part = -1;
-		Cs2.Poly = Cs2.Poly * Mon_tmp2;
+		Cs2.Poly *= Mon_tmp2;
 
 
 		// Add to result
@@ -819,13 +927,13 @@ Col_amp Col_functions::exchange_gluon( const Col_str & Cs, int p1, int p2 )  con
 		// Multiply with TR
 		Monomial Mon_tmp;
 		Mon_tmp.pow_TR = 1;
-		Cs1.Poly = Cs1.Poly * Mon_tmp;
+		Cs1.Poly *= Mon_tmp;
 
 		// Multiply with -TR
 		Monomial Mon_tmp2;
 		Mon_tmp2.pow_TR = 1;
 		Mon_tmp2.int_part = -1;
-		Cs2.Poly = Cs2.Poly * Mon_tmp2;
+		Cs2.Poly *= Mon_tmp2;
 
 		Ca.ca.push_back(Cs1);
 		Ca.ca.push_back(Cs2);
@@ -1034,15 +1142,15 @@ Col_amp Col_functions::exchange_gluon( const Col_str & Cs, int p1, int p2 )  con
 		Monomial Mon_tmp;
 		Mon_tmp.pow_TR = 1;
 
-		Cs2.Poly = Cs2.Poly * Mon_tmp;
-		Cs3.Poly = Cs3.Poly * Mon_tmp;
+		Cs2.Poly *= Mon_tmp;
+		Cs3.Poly *= Mon_tmp;
 
 		// Multiplying with -TR where appropriate
 		Mon_tmp.pow_TR = 1;
 
 		Mon_tmp.int_part = -1;
-		Cs1.Poly = Cs1.Poly * Mon_tmp;
-		Cs4.Poly = Cs4.Poly * Mon_tmp;
+		Cs1.Poly *= Mon_tmp;
+		Cs4.Poly *=  Mon_tmp;
 
 		Ca.ca.push_back(Cs1);
 		Ca.ca.push_back(Cs2);
@@ -1076,136 +1184,6 @@ Col_amp Col_functions::exchange_gluon( const  Col_amp & Ca, int p1, int p2 ) con
 }
 
 /*
-Col_str Col_functions::contract_quarks( Col_str Cs1, Col_str Cs2 )  const{
-
-	std::vector<int> q_place;
-	std::vector<int> q_place2;
-
-	// The conjugate of Cs1
-	Col_str conj_Cs1 = Cs1;
-	conj_Cs1.conjugate();
-
-	// The total color structure
-	Col_str Cs = conj_Cs1*Cs2;
-
-	// Count how many quarks should be contracted
-	int n_q = Cs.n_quark();
-
-	// As long as there are quark_lines left to contract
-	while (n_q > 0) {
-		// Find first quark in Cs1 by looping over Quark_lines
-		for (int i = 0; (n_q>0 && i <  static_cast<int>(Cs.cs.size()) ); i++) {
-			// Check if the quark-line is open, in which case it has a q
-			if (Cs.cs.at(i).open) {
-				// The first quark is located and has position
-				q_place.clear();
-				q_place.push_back(i);
-				q_place.push_back(0);
-				// and number
-				int q = Cs.at(q_place.at(0), q_place.at(1));
-
-				// Locate same quark a second time
-				// Loop over Quark_lines
-				q_place2.clear();
-				int i2 = i + 1; // Quark_line of second occurrence
-				while (q_place2.empty()) { // As long as quark not found a second time
-					if (Cs.cs.at(i2).at(Cs.cs.at(i2).ql.size() - 1) == q) {// If quark found, store place
-						q_place2.push_back(i2);
-						q_place2.push_back(Cs.cs.at(i2).ql.size() - 1);
-					}
-					i2++;
-				}
-				if (q_place2.empty()) {
-					std::cerr << "Col_functions::contract_quarks(Cs1, Cs2): Found q " << q
-							<< " only once in " << Cs << std::endl;
-				}
-
-				// Prepare new Quark_line
-				// to be inserted at the place of found open Quark_line
-				Quark_line new_Quark_line;
-				Quark_line part2_new_Quark_line;
-				// The first part of the new Quark_line should be the Quark_line
-				// containing q in the conjugate
-				new_Quark_line = Cs.cs.at(q_place2.at(0));
-
-				// Erasing q in the end
-				new_Quark_line.ql.erase(--new_Quark_line.ql.end());
-				part2_new_Quark_line = Cs.cs.at(q_place.at(0));
-
-				// Erasing the q in the beginning of second part
-				part2_new_Quark_line.ql.erase(part2_new_Quark_line.ql.begin());
-
-				new_Quark_line.append(part2_new_Quark_line.ql);
-
-				// So far we have not included the Polynomial of part2_new_Quark_line
-				new_Quark_line.Poly=new_Quark_line.Poly*part2_new_Quark_line.Poly;
-
-				// If the first q index and the last qbar index in the new
-				// Quark_line is the same (and the Quark_line is "open"), the indices
-				// should be removed and the Quark_line should be closed
-				if (new_Quark_line.ql.at(0) == new_Quark_line.ql.at(
-						new_Quark_line.ql.size() - 1) && new_Quark_line.open) {
-					// The string is closed
-					new_Quark_line.open = false;
-					// Remove last and first index
-					new_Quark_line.ql.erase(--new_Quark_line.ql.end(),
-							new_Quark_line.ql.end());
-					new_Quark_line.ql.erase(new_Quark_line.ql.begin());
-				}
-
-				// Inserting new Quark_line in the place of the old
-				Cs.cs.at(i) = new_Quark_line;
-
-				// Remove quark_line with q in Cs
-				Cs.cs.erase((Cs.cs.begin() + q_place2.at(0)));
-				i=-1; // reset to keep looking from the beginning in the new Cs (i will be increased to 0)
-			}// end of if (open)
-
-			n_q = Cs.n_quark();
-
-		} // end of for, loop over quark_lines
-
-	}
-
-	return Cs;
-
-}
-
-
-Col_amp Col_functions::contract_quarks( Col_amp Ca1, Col_amp Ca2 ) const{
-
-	if(Ca1.empty()){
-		std::cerr << "Col_functions::contract_quarks: Expects non-empty Col_amps, got first argument "
-				<< Ca1 << std::endl;
-		assert(0);
-	}
-	if(Ca2.empty()){
-		std::cerr << "Col_functions::contract_quarks: Expects non-empty Col_amps, got second argument "
-				<< Ca2 << std::endl;
-		assert(0);
-	}
-
-	Col_amp Ca_res;
-
-	// Make sure the Col_strs are not empty "[]"=1, as all indices contracted
-	Ca1.remove_empty_Col_strs();
-	Ca2.remove_empty_Col_strs();
-
-	// Loop over Col_strs, and contract quarks between all possible combinations
-	  // Loop over Col_strs in Ca1
-	  for(uint m1=0; m1 < Ca1.ca.size(); m1++ ){
-	    // Loop over Col_strs in Ca2
-	    for(uint m2=0; m2 < Ca2.ca.size(); m2++ ){
-	    	Col_str Cs_tmp;
-	    	Cs_tmp.contract_quarks( Ca1.ca.at(m1), Ca2.ca.at(m2));
-	      Ca_res.ca.push_back( Cs_tmp );
-	    }
-	  }
-
-	  return Ca_res;
-}
-*/
-
 std::map< std::string, double > Col_functions::double_num( const std::map< std::string, Polynomial > & mem_map )  const{
 
 	std::map< std::string, double > res;
@@ -1218,7 +1196,7 @@ std::map< std::string, double > Col_functions::double_num( const std::map< std::
 
 	return res;
 }
-
+*/
 
 Polynomial Col_functions::Polynomial_cnum_num( const Polynomial & Poly ) const{
 
@@ -1227,7 +1205,7 @@ Polynomial Col_functions::Polynomial_cnum_num( const Polynomial & Poly ) const{
 	Mon.cnum_part = cnum_num(Poly);
 
 	Polynomial res;
-	res = res * Mon;
+	res *= Mon;
 
 	return res;
 }
@@ -1274,6 +1252,7 @@ dmatr Col_functions::double_num( const Poly_matr & Pm )  const{
 }
 
 
+/*
 dvec Col_functions::double_num( const std::vector<shared_ptr<Polynomial> > & Pv )  const{
 
 	// To contain the numerical result
@@ -1288,6 +1267,7 @@ dvec Col_functions::double_num( const std::vector<shared_ptr<Polynomial> > & Pv 
 	}
 	return res;
 }
+*/
 
 Poly_vec Col_functions::Poly_vec_cnum_num( const Poly_vec & Pv)  const{
 
@@ -1296,7 +1276,7 @@ Poly_vec Col_functions::Poly_vec_cnum_num( const Poly_vec & Pv)  const{
 
 	// Loop over Polynomials in the vector, put each Polynomial to its numerical value
 	for (uint p = 0; p < Pv.size(); p++) {
-		res.push_back( Polynomial_cnum_num( Pv.at( p ) ) );
+		res.append( Polynomial_cnum_num( Pv.at( p ) ) );
 	}
 	return res;
 }
@@ -1310,7 +1290,7 @@ Poly_matr Col_functions::Poly_matr_cnum_num( const Poly_matr & Pm ) const {
 	// Loop over Polynomials in the matrix
 	// and change each Polynomial to its numerical version
 	for (uint v = 0; v < Pm.size(); v++) {
-		res_matr.push_back( Poly_vec_cnum_num( Pm.at( v ).pv ));
+		res_matr.append( Poly_vec_cnum_num( Pm.at( v ).pv ));
 	}
 
 	return res_matr;
@@ -1330,7 +1310,7 @@ cmatr Col_functions::cnum_num( const Poly_matr & Pm )  const{
 	return res;
 }
 
-
+/*
 dmatr Col_functions::double_num( const std::vector<std::vector<shared_ptr<Polynomial> > > & Pm )  const{
 
 	// To contain the numerical result
@@ -1343,7 +1323,7 @@ dmatr Col_functions::double_num( const std::vector<std::vector<shared_ptr<Polyno
 	}
 	return res;
 }
-
+*/
 
 Polynomial Col_functions::scalar_product( const Col_amp & Ca1 , const Col_amp & Ca2 ) const{
 	//std::cout << "Col_functions::scalar_product, incoming Ca1 " << Ca1 <<" and Ca2 " << Ca2 << std::endl;
@@ -1360,19 +1340,15 @@ Polynomial Col_functions::scalar_product( const Col_amp & Ca1 , const Col_amp & 
 				Ca2.Scalar << std::endl;
 		assert(0);
 	}
+
 	// To contain the result
 	Col_amp Ca_res;
 
 	// Contract the quarks
-	//Ca_res = contract_quarks(Ca1, Ca2);
 	Ca_res.contract_quarks( Ca1, Ca2 );
-	//std::cout << "Col_functions::scalar_product, contracted quarks " << Ca_res << std::endl;
 
 	// Look for simple simplifications
 	Ca_res.simplify();
-	//Ca_res.simplify(); // why twice
-
-	//std::cout << "Col_functions::scalar_product, simplified " << Ca_res << std::endl;
 
 	// Contract the gluons
 	Ca_res.contract_all_gluons();
@@ -1412,11 +1388,38 @@ Polynomial  Col_functions::scalar_product( const Col_str & Cs1, const Col_str & 
 }
 
 
-Polynomial Col_functions::color_correlator( const Col_amp Ca, int p1, int p2, int g_new ) const{
+Polynomial Col_functions::color_correlator( const Col_amp Ca, int p1, int p2 ) const{
+
+	// Dummy gluon index to be used
+	int dummy=999;
+
+	bool unique=false;
+
+	while ( unique == false )
+	{
+		// Doesn't matter what number we start from
+		dummy++;
+
+		// Check that the index is not already in use
+		bool was_found = false;
+
+		// Loop over Col_strs
+		for (uint i = 0; i < Ca.size(); i++) {
+			Col_str Cs = Ca.at(i);
+			// Loop over all Quark_lines
+			for ( uint i = 0; i < Cs.size(); i++ ) {
+				// Loop over all places in the Quark_lines
+				for (uint j = 0; j < Cs.at(i).ql.size(); j++) {
+					if ( Cs.at(i).ql.at(j) == dummy ) was_found = true;
+				}
+			}
+		}
+		if ( ! was_found  ) unique = true;
+	}
 
 	// The amplitudes after emission
-	Col_amp Cai = emit_gluon(Ca, p1, g_new);
-	Col_amp Caj = emit_gluon(Ca, p2, g_new);
+	Col_amp Cai = emit_gluon(Ca, p1, dummy );
+	Col_amp Caj = emit_gluon(Ca, p2, dummy);
 
 	Polynomial res=0;
 
@@ -1434,6 +1437,88 @@ int Col_functions::factorial( int i ) const{
 	}
 	if (i==0) return 1;
 	return factorial(i-1)*i; // Recursive call
+}
+
+
+std::map<int, int> Col_functions::default_parton_numbers( const Col_str & Cs, int g_old, int q_new, int qbar_new ) const{
+
+
+	// First check that all parton numbers except g_old, but including q_new, qbar_new
+	// can be found in the Col_str
+	Cs.find_parton( q_new );
+	Cs.find_parton( qbar_new );
+	int n_partons=2*Cs.n_quark() + Cs.n_gluon();
+	// The two highest numbers are missing (instead q_new, qbar_new)
+	for ( int p = 1; p < n_partons-2; p++ ) {
+		if(p != g_old) Cs.find_parton(p);
+	}
+
+
+	// To contain the replacements to be done
+	std::map <int, int> replacements;
+
+	// Find replacing numbers for q_new and qbar_new and insert in map
+	int new_q_new = 2*Cs.n_quark() - 1;
+	int new_qbar_new = 2*Cs.n_quark();
+	replacements.insert( std::make_pair( q_new, new_q_new) );
+	replacements.insert( std::make_pair(qbar_new, new_qbar_new) );
+
+
+	// Loop over old qs and qbars and make sure numbers don't change
+	for ( int p = 1; p <= Cs.n_quark()*2-2; p++ ) {
+		replacements.insert( std::make_pair( p, p ) );
+	}
+
+
+	// Gluons with numbers smaller than g_old should have indices
+	// shifted twice (once for q, once for qbar)
+	for ( int p = Cs.n_quark()*2-1; p < g_old; p++ ) {
+		replacements.insert( std::make_pair( p, p+2) );
+	}
+
+
+	// Gluons with numbers larger than g_old should have indices
+	// shifted once (for qbar)
+	for ( int p = g_old+1; p <= n_partons-1; p++ ) {
+		replacements.insert( std::make_pair( p, p+1) );
+	}
+
+	return replacements;
+}
+
+
+Col_str Col_functions::rename_partons( const Col_str & in_Col_str, const std::map <int, int> replacements ) const{
+
+
+	Col_str out_Col_str = in_Col_str;
+
+	// Loop over Quark_lines
+	for( uint i=0; i < in_Col_str.size(); i++ ){
+		// Loop over partons in Quark_line
+		for( uint j=0; j < in_Col_str.at(i).size(); j++ ){
+			// Find parton number in map and replace
+			out_Col_str.at(i).ql.at(j) = replacements.at(in_Col_str.at(i,j));;
+		}
+	}
+
+	return out_Col_str;
+}
+
+
+Col_amp Col_functions::rename_partons( const Col_amp & in_Col_amp, const std::map <int, int> replacements ) const{
+
+
+	Col_amp out_Col_amp;
+
+	// Loop over Col_strs
+	for( uint i=0; i < in_Col_amp.size(); i++ ){
+		out_Col_amp.append( rename_partons( in_Col_amp.at(i), replacements) );
+	}
+
+	out_Col_amp.normal_order();
+
+
+	return out_Col_amp;
 }
 
 

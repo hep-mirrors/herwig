@@ -760,6 +760,7 @@ void HwRemDecayer::initSoftInteractions(Energy ptmin, InvEnergy2 beta){
   beta_ = beta;
 }
 
+
 Energy HwRemDecayer::softPt() const {
   Energy2 pt2(ZERO);
   double xmin(0.0), xmax(1.0), x(0);
@@ -767,7 +768,6 @@ Energy HwRemDecayer::softPt() const {
   if(beta_ == ZERO){
     return UseRandom::rnd(0.0,(double)(ptmin_/GeV))*GeV;
   }
-
   if(beta_ < ZERO){
     xmin = 1.0;
     xmax = exp( -beta_*sqr(ptmin_) );    
@@ -781,7 +781,12 @@ Energy HwRemDecayer::softPt() const {
   if( pt2 < ZERO || pt2 > sqr(ptmin_) )
     throw Exception() << "HwRemDecayer::softPt generation of pt "
                       << "outside allowed range [0," << ptmin_/GeV << "]."
-                      << Exception::runerror; 
+                      << Exception::runerror;
+ 
+    //ofstream myfile2("softPt.txt", ios::app );
+    //myfile2 << pt2/GeV2 <<" "<<sqrt(pt2)/GeV<< endl;
+    //myfile2.close();
+
 
   return sqrt(pt2);
 }
@@ -847,7 +852,7 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 
   ig1 = x_g1*P1;
   ig2 = x_g2*P2;
-  
+
   ig1.setMass(mp);
   ig2.setMass(mp);
   ig1.rescaleEnergy();
@@ -856,7 +861,6 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   cmf = ig1 + ig2;
   //boost vector from cmf to lab
   Boost boostv(cmf.boostVector());
-
   //outgoing gluons in cmf
   g1.setMass(mp);
   g2.setMass(mp);
@@ -865,27 +869,28 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   g2.setX(-pt*cos(phi));
   g1.setY(pt*sin(phi));
   g2.setY(-pt*sin(phi));
-  
-  pz2 = cmf.m2()/4 - sqr(mp) - sqr(pt);
+  pz2 = cmf.m2()/4 - sqr(mp) - (pt*pt);
 
-  if(pz2/GeV2 < 0.0){
+  if( pz2/GeV2 < 0.0 ){
     if(dbg)
       cerr << "EXCEPTION not enough energy...." << endl;
     throw ExtraSoftScatterVeto();
   }
   
   if(!multiPeriph_){
-  	if(UseRandom::rndbool())
+  	if(UseRandom::rndbool()){
     		pz = sqrt(pz2);
-  	else
-    		pz = -sqrt(pz2);
+
+  	}else
+                pz = -sqrt(pz2);
   }else{
-  	pz = pz2 > ZERO ? sqrt(pz2) : ZERO;
+        pz = pz2 > ZERO ? sqrt(pz2) : ZERO;
+
   }
   
 
   if(dbg)
-    cerr << "pz has been calculated to: " << pz/GeV << endl;
+    cerr << "pz1 has been calculated to: " << pz/GeV << endl;
 
 
   g1.setZ(pz);
@@ -903,10 +908,9 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 
   //recalc the remnant momenta
   Lorentz5Momentum r1old(r1), r2old(r2);
-  
-  r1 -= ig1;
-  r2 -= ig2;
-  
+  r1 -= g1;
+  r2 -= g2;
+
   try{
     reShuffle(r1, r2, r1old.m(), r2old.m());
   }catch(ExtraSoftScatterVeto){
@@ -934,6 +938,7 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
                       << "code has not been called! call initSoftInteractions."
                       << Exception::runerror; 
 
+
   Lorentz5Momentum g1, g2;
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   unsigned int tries(1), i(0);
@@ -954,7 +959,8 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
       i--;
       continue;
     }
-  
+ 
+ 
     PPair oldrems = softRems_;
     PPair gluons = make_pair(addParticle(softRems_.first, ParticleID::g, g1), 
 			     addParticle(softRems_.second, ParticleID::g, g2));
@@ -968,26 +974,23 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
 
     ColinePtr cl1 = new_ptr(ColourLine());
     ColinePtr cl2 = new_ptr(ColourLine());
-    if( UseRandom::rnd() < colourDisrupt_ ){//this is the member variable, i.e. SOFT colour disruption
-      //connect the remnants independent of the gluons
-      oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
-      //connect the gluons to each other
-      cl1->addColoured(gluons.first);
-      cl1->addAntiColoured(gluons.second);
-      cl2->addColoured(gluons.second);
-      cl2->addAntiColoured(gluons.first);	
-    }else{
-      //connect the remnants to the gluons
-      oldrems.first->colourLine(anti.first)->addColoured(gluons.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(gluons.second, anti.second);
-      //and the remaining colour line to the final remnant
-      cl1->addColoured(softRems_.first, anti.first);
-      cl1->addColoured(gluons.first, !anti.first);
-      cl2->addColoured(softRems_.second, anti.second);
-      cl2->addColoured(gluons.second, !anti.second);
-    }
 
+   //  case 2:
+oldrems.first->colourLine(anti.first)
+              ->addColoured(gluons.second,anti.second);
+cl2->addColoured(softRems_.first, anti.second);
+      cl2->addColoured(gluons.second, !anti.second);
+
+
+      oldrems.first->colourLine(anti.first)
+              ->addColoured(gluons.second,anti.second);
+      oldrems.second->colourLine(anti.second)
+              ->addColoured(gluons.first,anti.first);
+
+      cl1->addColoured(softRems_.second, anti.first);
+      cl1->addColoured(gluons.first, !anti.first);
+      cl2->addColoured(softRems_.first, anti.second);
+      cl2->addColoured(gluons.second, !anti.second);
     //reset counter
     tries = 1;
   }
@@ -997,43 +1000,109 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
 
 }
 
+// Solve the reshuffling equation to rescale the remnant momenta
+double bisectReshuffling(const vector<PPtr>& particles,
+                         Energy w,
+                         double target = -16., double maxLevel = 80.) {
+  double level = 0;
+  double left = 0;
+  double right = 1;
+
+  double check = -1.;
+  double xi = -1;
+
+  while ( level < maxLevel ) {
+
+    xi = (left+right)*pow(0.5,level+1.);
+    check = 0.;
+    for (vector<PPtr>::const_iterator p = particles.begin(); p != particles.end(); ++p){
+      check += sqrt(sqr(xi)*((*p)->momentum().vect().mag2())+sqr((*p)->mass()))/w;
+    }
+
+    if ( check==1. || log10(abs(1.-check)) <= target )
+      break;
+
+    left *= 2.;
+    right *= 2.;
+
+    if ( check >= 1. ) {
+      right -= 1.;
+      ++level;
+    }
+
+    if ( check < 1. ) {
+      left += 1.;
+      ++level;
+    }
+
+  }
+  return xi;
+
+}
+
+LorentzRotation HwRemDecayer::rotate(const LorentzMomentum &p) const {
+  LorentzRotation R;
+  static const double ptcut = 1e-20;
+  Energy2 pt2 = sqr(p.x())+sqr(p.y());
+  Energy2 pp2 = sqr(p.z())+pt2;
+  double phi, theta;
+  if(pt2 <= pp2*ptcut) {
+     if(p.z() > ZERO) theta = 0.;
+     else theta = Constants::pi;
+     phi = 0.;
+  } else {
+     Energy pp = sqrt(pp2);
+     Energy pt = sqrt(pt2);
+     double ct = p.z()/pp;
+     double cf = p.x()/pt;
+     phi = -acos(cf);
+     theta = acos(ct);
+  }
+  // Rotate first around the z axis to put p in the x-z plane
+  // Then rotate around the Y axis to put p on the z axis
+  R.rotateZ(phi).rotateY(theta);
+  return R;
+}
+
+struct vectorSort{
+  bool operator() (Lorentz5Momentum i,Lorentz5Momentum j) {return(i.rapidity() < j.rapidity());}
+} ySort;
+
+
+
 void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {	
   if(N == 0) return;
   int Nmpi = N;
+
   for(int j=0;j<Nmpi;j++){
   ///////////////////////
-  // Average number of partons in the ladder
-  
+  // TODO: parametrization of the ladder multiplicity (need to tune to 900GeV, 7Tev and 13Tev) 
   // Parameterize the ladder multiplicity to: ladderMult_ = A_0 * (s/1TeV^2)^alpha  
   // with the two tunable parameters A_0 =ladderNorm_ and alpha = ladderPower_
 
   // Get the collision energy
   Energy energy(generator()->maximumCMEnergy());
 
-  double reference = sqr(energy/TeV);
-  double ladderMult_;
+  //double reference = sqr(energy/TeV);
 
+  // double ladderMult_;
   // Parametrization of the ladder multiplicity
-  ladderMult_ = ladderNorm_ * pow( ( reference ) , ladderPower_ );
+  // ladderMult_ = ladderNorm_ * pow( ( reference ) , ladderPower_ );
 
- 
-  int avgN = floor(ladderMult_*log((softRems_.first->momentum()
-  		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_);
+  double avgN = 2.*ladderMult_*log((softRems_.first->momentum()
+  		+softRems_.second->momentum()).m()/mg_) + ladderbFactor_;
   initTotRap_ = abs(softRems_.first->momentum().rapidity())
   		+abs(softRems_.second->momentum().rapidity());
     
-  //generate the poisson distribution with mean avgN
-  double L = exp(-double(avgN));
-  int k = 0;
-  double p = 1;
-  do {
-      k++;
-      p *= UseRandom::rnd();
-  } while( p > L);
-  N=k-1;
-  
+  // Generate the poisson distribution with mean avgN
+  N=UseRandom::rndPoisson(avgN);
+
   valOfN_=N;
-  if(N == 0) return;
+  if(N <= 1){
+    // j--; //TODO: Do we want to make all Nmpi soft MPIs?
+    // Compare to MaxTryMPI for hard mpis.
+    continue;
+  }
   
   if(!softRems_.first || !softRems_.second)
     throw Exception() << "HwRemDecayer::doSoftInteractions: no "
@@ -1045,166 +1114,486 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
                       << "code has not been called! call initSoftInteractions."
                       << Exception::runerror; 
 
-  Lorentz5Momentum g1, g2, q1, q2;
-  //intermediate gluons; erased in if there is 
-  //another step
-  Lorentz5Momentum gint1, gint2;
- 
-  //momenta of the gluon pair generated in 
-  //each step
-  vector< pair<Lorentz5Momentum,Lorentz5Momentum> > gluonMomPairs;
-  //momenta of remnants
+  // The remnants
+  PPtr rem1 = softRems_.first;
+  PPtr rem2 = softRems_.second;
+  // Vector for the ladder particles
+  vector<Lorentz5Momentum> ladderMomenta;
+  // Remnant momenta
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
-  
-  unsigned int tries(1), i(0);
-  //generate the momenta of particles in the ladder
-  for(i = 0; i < N; i++){
-    //check how often this scattering has been regenerated
-    //and break if exeeded maximal number
-    if(tries > maxtrySoft_) break;
-    	
-    if(dbg){
-      cerr << "new try \n" << *softRems_.first << *softRems_.second << endl;
+  Lorentz5Momentum cm =r1+r2;
+
+  // Initialize partons in the ladder
+  // The toy masses are needed for the correct calculation of the available energy
+  Lorentz5Momentum sumMomenta;
+  for(unsigned int i = 0; i < N; i++) {
+     
+      // choose constituents
+      Energy newMass = ZERO;
+      Energy toyMass;
+      if(i<2){
+        // u and d have the same mass so its enough to use u 
+        toyMass = getParticleData(ParticleID::u)->constituentMass();
+      }
+      else{
+        toyMass = getParticleData(ParticleID::g)->constituentMass();
+      }
+      Lorentz5Momentum cp(ZERO,ZERO,ZERO,newMass,newMass);
+      // dummy container for the momentum that is used for momentum conservation
+      Lorentz5Momentum dummy(ZERO,ZERO,ZERO,toyMass,toyMass);
+      ladderMomenta.push_back(cp);
+      sumMomenta+=dummy;
+  }
+
+  // Get the beam energy
+  tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
+  Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
+
+  // Calculate available energy for the partons
+  double x1,x2;
+  double param = (1./(valOfN_+1.))*initTotRap_;
+  do{
+       // Need 1-x instead of x to get the proper final momenta
+       // TODO: physical to use different x's (see comment below)
+       x1 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
+      // x2 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
+  }while(x1 < 0 || x1>=1.0); // x2 < 0 || x2>=1.0);
+
+  // Remnants 1 and 2 need to be rescaled later by this amount
+  Lorentz5Momentum ig1 = x1*r1;
+  Lorentz5Momentum ig2 = x1*r2;  //TODO: x2*r2
+                                 // requires boost of Ladder in x1/x2-dependent
+                                 // frame.
+
+  // The available energy that is used to generate the ladder
+  // sumMomenta is the the sum of rest masses of the ladder partons
+  // the available energy goes all into the kinematics
+  Energy availableEnergy = (ig1+ig2).m() - sumMomenta.m();
+ 
+  // If not enough energy then continue
+  // The available energy has to be larger then the rest mass of the remnants
+  if ( availableEnergy < ZERO ) {
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
+    continue;
+  }
+
+ unsigned int its(0); 
+  // Generate the momenta of the partons in the ladder
+  if ( !(doPhaseSpaceGenerationGluons(ladderMomenta,availableEnergy,its)) ){
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
+    continue;
+  }
+ // Add gluon mass and rescale
+ Lorentz5Momentum totalMomPartons;
+ Lorentz5Momentum totalMassLessPartons;
+
+ // Sort the ladder partons according to their rapidity and then choose which ones will be the quarks
+ sort(ladderMomenta.begin(),ladderMomenta.end(),ySort);
+
+  int countPartons=0;
+  long quarkID=0;
+  // Choose between up and down quarks
+  int choice = UseRandom::rnd2(1,1);
+  switch (choice) {
+    case 0: quarkID = ParticleID::u; break;
+    case 1: quarkID = ParticleID::d; break;
+  }
+
+  for (auto &p:ladderMomenta){
+    totalMomPartons+=p;
+    // Set the mass of the gluons and the two quarks in the ladder
+    if(countPartons==0 || countPartons==(ladderMomenta.size()-1)){
+      p.setMass( getParticleData(quarkID)->constituentMass() );
+    }else{
+      p.setMass( getParticleData(ParticleID::g)->constituentMass() );
+    }
+    p.rescaleEnergy();
+    countPartons++;
+  }
+
+  // Continue if energy conservation is violated 
+  if ( abs(availableEnergy - totalMomPartons.m()) > 1e-8*GeV){
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
+    continue;
+  }
+
+  // Boost momenta into CM frame
+  const Boost boostv(-totalMomPartons.boostVector());
+  Lorentz5Momentum totalMomentumAfterBoost;
+  for ( unsigned int i=0; i<ladderMomenta.size(); i++){
+    ladderMomenta[i].boost(boostv);
+    totalMomentumAfterBoost +=ladderMomenta[i];
+  }
+
+  const Boost boostvR(-cm.boostVector());
+  r1.boost(boostvR);
+  r2.boost(boostvR);
+
+  // Remainig energy after generation of soft ladder
+  Energy remainingEnergy = cm.m() - totalMomentumAfterBoost.m();
+
+  // Continue if not enough energy
+  if(remainingEnergy<ZERO) {
+    //  j--;  //TODO: Do we want to make all Nmpi soft MPIs?
+    continue;
+  }
+
+  vector<PPtr> remnants;
+  rem1->set5Momentum(r1);
+  rem2->set5Momentum(r2);
+  remnants.push_back(rem1);
+  remnants.push_back(rem2);
+
+  vector<PPtr> reshuffledRemnants;
+  Lorentz5Momentum totalMomentumAll;
+
+  // Bisect reshuffling for rescaling of remnants
+  double xi_remnants = bisectReshuffling(remnants,remainingEnergy);
+
+  // Rescale remnants
+  for ( auto &rems: remnants ) {
+    Lorentz5Momentum reshuffledMomentum;
+    reshuffledMomentum = xi_remnants*rems->momentum();
+
+    reshuffledMomentum.setMass(getParticleData(softRems_.first->id())->constituentMass());
+    reshuffledMomentum.rescaleEnergy();
+    reshuffledMomentum.boost(-boostvR);
+    rems->set5Momentum(reshuffledMomentum);
+    totalMomentumAll+=reshuffledMomentum;
+  }
+  // Then the other particles   
+  for ( auto &p:ladderMomenta ) {
+        p.boost(-boostvR);
+        totalMomentumAll+=p;
+  }
+
+  // Do the colour connections
+  // Original rems are the ones which are connected to other parts of the event
+  PPair oldRems_ = softRems_;
+
+  pair<bool, bool> anti = make_pair(oldRems_.first->hasAntiColour(),
+                                      oldRems_.second->hasAntiColour());
+
+  // Replace first remnant
+  softRems_.first = addParticle(softRems_.first, softRems_.first->id(),
+                               remnants[0]->momentum());
+
+  // Connect the old remnant to the new remnant
+  oldRems_.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
+  // Replace second remnant
+  softRems_.second = addParticle(softRems_.second, softRems_.second->id(),
+                                remnants[1]->momentum());
+  // This connects the old remnants to the new remnants
+  oldRems_.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
+  // Add all partons to the first remnant for the event record
+  vector<PPtr> partons;
+  int count=0;
+
+  // Choose the colour connections and position of quark antiquark
+  // Choose between R1-q-g..g-qbar-R2 or R1-qbar-g...g-q-R2 
+  // (place of quark antiquarks in the ladder)
+  int quarkPosition = UseRandom::rnd2(1,1);
+
+  for (auto &p:ladderMomenta){
+
+    if(p.mass()==getParticleData(ParticleID::u)->constituentMass()){ 
+      if(count==0){
+        if(quarkPosition==0){
+          partons.push_back(addParticle(softRems_.first, quarkID, p));
+          count++;
+        }else{
+          partons.push_back(addParticle(softRems_.first, -quarkID, p));
+          count++;          
+        }
+      }else{
+        if(quarkPosition==0){
+          partons.push_back(addParticle(softRems_.first, -quarkID, p));
+        }else{
+          partons.push_back(addParticle(softRems_.first, quarkID, p));
+        }
+      }
+  }else{
+        partons.push_back(addParticle(softRems_.first, ParticleID::g, p));
+  }
+  softRems_.first = addParticle(softRems_.first, softRems_.first->id(),
+                                        softRems_.first->momentum());
+
+
+   oldRems_.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
+
+  }
+
+
+  // Need to differenciate between the two quark positions, this defines the 
+  // colour connections to the new remnants and old remnants
+  if(quarkPosition==0){
+        // ladder self contained
+        if(partons.size()==2){
+          ColinePtr clq =  new_ptr(ColourLine());
+          clq->addColoured(partons[0]);
+          clq->addAntiColoured(partons[1]);
+         }
+
+         ColinePtr clfirst =  new_ptr(ColourLine());
+         ColinePtr cllast =  new_ptr(ColourLine());
+
+         if(partons.size()>2){
+           clfirst->addColoured(partons[0]);
+    	   clfirst->addAntiColoured(partons[1]);
+    	   cllast->addAntiColoured(partons[partons.size()-1]);
+           cllast->addColoured(partons[partons.size()-2]);
+           //now the remaining gluons
+           for (unsigned int i=1; i<partons.size()-2; i++){
+             ColinePtr cl = new_ptr(ColourLine());
+             cl->addColoured(partons[i]);
+             cl->addAntiColoured(partons[i+1]);
+           }
+         }
+  } else {
+         if(partons.size()==2){
+           ColinePtr clq =  new_ptr(ColourLine());
+           clq->addAntiColoured(partons[0]);
+           clq->addColoured(partons[1]);
+          }
+
+          ColinePtr clfirst =  new_ptr(ColourLine());
+          ColinePtr cllast =  new_ptr(ColourLine());
+
+          if(partons.size()>2){
+            clfirst->addAntiColoured(partons[0]);
+    	    clfirst->addColoured(partons[1]);
+    	    cllast->addColoured(partons[partons.size()-1]);
+            cllast->addAntiColoured(partons[partons.size()-2]);
+            //now the remaining gluons
+            for (unsigned int i=1; i<partons.size()-2; i++){
+              ColinePtr cl = new_ptr(ColourLine());
+              cl->addAntiColoured(partons[i]);
+              cl->addColoured(partons[i+1]);
+            }
+          }
+    }// end colour connection loop
+
+  }// end Nmpi loop
+
+
+}//end function 
+
+// Do the phase space generation here is 1 to 1 the same from UA5 model
+bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGluons, Energy CME, unsigned int &its)
+    const{
+
+  // Define the parameters
+  unsigned int _maxtries = 300;
+
+  double alog = log(CME*CME/GeV2);
+  unsigned int ncl = softGluons.size();
+  // calculate the slope parameters for the different clusters
+  // outside loop to save time
+  vector<Lorentz5Momentum> mom(ncl);
+
+  // Sets the slopes depending on the constituent quarks of the cluster
+  for(unsigned int ix=0;ix<ncl;++ix)
+    { 
+      mom[ix]=softGluons[ix];
     }
 
-    try{
-      if(i==0){
-      	//generated partons in the ladder are quark-antiquark
-      	quarkPair_ = true;
-      	//first splitting: remnant -> remnant + quark
-      	softKinematics(r1, r2, q1, q2);
-      }else if(i==1){
-        
-        //generated pair is gluon-gluon
-      	quarkPair_ = false;
-      	//second splitting; quark -> quark + gluon
-      	softKinematics(q1, q2, g1, g2);
-      	//record generated gluon pair
-      	gluonMomPairs.push_back(make_pair(g1,g2));
-      	
+  // generate the momenta
+  double eps = 1e-10/double(ncl);
+  vector<double> xi(ncl);
+  vector<Energy> tempEnergy(ncl);
+  Energy sum1(ZERO);
+  double yy(0.);
+
+  // We want to make sure that the first Pt is from the 
+  // desired pt-distribution. If we select the first pt in the 
+  // trial loop we introduce a bias. 
+  Energy firstPt=softPt();
+
+  while(its < _maxtries) {
+    ++its;
+    Energy sumx = ZERO;
+    Energy sumy = ZERO;
+   unsigned int iterations(0);
+   unsigned int _maxtriesNew = 100;
+   while(iterations < _maxtriesNew) {
+    iterations++;
+    Energy sumxIt = ZERO;
+    Energy sumyIt = ZERO;
+    bool success=false;
+    Energy pTmax=ZERO;
+    for(unsigned int i = 0; i<ncl; ++i) {
+      // Different options for soft pt sampling
+      //1) pT1>pT2...pTN
+      //2) pT1>pT2>..>pTN
+      //3) flat
+      //4) y dependent
+      //5) Frist then flat
+      int triesPt=0;
+      Energy pt;
+      Energy ptTest;
+      switch(PtDistribution_) {
+        case 0: //default softPt()
+           pt=softPt();
+           break;
+        case 1: //pTordered
+           if(i==0){
+             pt=softPt();
+             pTmax=pt;
+           }else{
+             do{
+              pt=softPt();
+             }while(pt>pTmax);
+           }
+           break;
+         case 2: //strongly pT ordered
+             if ( i==0 ) {
+               pt=softPt();
+               pTmax=pt;
+              } else {
+                do {
+                  if ( triesPt==20 ) { 
+                    pt=pTmax;
+                    break;
+                  }
+                  pt=softPt();
+                  triesPt++;
+                } while ( pt>pTmax );
+                pTmax=pt;
+           }
+           break;
+         case 3: //flat
+            pt = UseRandom::rnd(0.0,(double)(ptmin_/GeV))*GeV;
+            break;
+         case 4: //flat below first pT
+            if ( i==0 ) {
+              pt = firstPt;
+            } else {
+              pt = firstPt * UseRandom::rnd();
+            }
+            break;
+         case 5: //flat but rising below first pT
+            if ( i==0 ) {
+		pt=firstPt;
+            } else {
+                  pt = firstPt * pow(UseRandom::rnd(),1/2);
+            }
+            
+ 
+      }
+ 
+      Energy2 ptp = pt*pt;
+      if(ptp <= ZERO) pt = - sqrt(-ptp);
+      else pt = sqrt(ptp);
+      // randomize azimuth
+      Energy px,py;
+      //randomize the azimuth, but the last one should cancel all others
+      if(i<ncl-1){
+       randAzm(pt,px,py);
+       // set transverse momentum
+       mom[i].setX(px);
+       mom[i].setY(py);
+       sumxIt += px;
+       sumyIt += py;
       }else{
-      	//consequent splittings gluon -> gluon+gluon
-      	//but, the previous gluon gets deleted
-      	quarkPair_ = false;
-      	//save first the previous gluon momentum
-      	g1=gluonMomPairs.back().first;
-      	g2=gluonMomPairs.back().second;
-      	//split gluon momentum
-      	softKinematics(g1, g2, gint1, gint2);
-      	
-      	//erase the last entry
-      	gluonMomPairs.pop_back();
-      	
-      	//add new gluons
-      	gluonMomPairs.push_back(make_pair(g1,g2));
-      	gluonMomPairs.push_back(make_pair(gint1,gint2));  	
+       //calculate azimuth angle s.t 
+      // double factor;
+      Energy pTdummy;
+      pTdummy = sqrt(sumxIt*sumxIt+sumyIt*sumyIt);
+      if( pTdummy < ptmin_ ){
+        px=-sumxIt;
+        py=-sumyIt;
+        mom[i].setX(px);
+        mom[i].setY(py);
+      
+        sumxIt+=px;
+        sumyIt+=py;
+        sumx = sumxIt;
+        sumy = sumyIt;
+        success=true;
       }
       
-    }catch(ExtraSoftScatterVeto){
-      tries++;
-      i--;
-      continue;
-    }
-    //reset counter
-    tries = 1;
-  }
-  //if no gluons discard the ladder
-  if(gluonMomPairs.size()==0) return;
-  
-  if(dbg)
-    cerr << "generated " << i << "th soft scatters\n";
-  
-  //gluons from previous step
-  PPair oldgluons;  				      
-  //quark-antiquark pair
-  PPair quarks;
-  //colour direction of quark-antiquark (true if anticolour)
-  pair<bool, bool> anti_q;
-  //generate particles (quark-antiquark and gluons) in the 
-  //ladder from momenta generated above
-  for(i = 0; i <= gluonMomPairs.size(); i++){
-    //remnants before splitting
-    PPair oldrems = softRems_;
-    //current gluon pair
-    PPair gluons;
-    
-    //add quarks
-    if(i==0){
-    	quarks = make_pair(addParticle(softRems_.first, ParticleID::u, q1), 
-    			     addParticle(softRems_.second, ParticleID::ubar, q2));
-    	anti_q = make_pair(quarks.first->hasAntiColour(),
-    				      quarks.second->hasAntiColour());
-    }
-    			     
-    
-    
-    if(i>0){
-    	
-    	gluons = make_pair(addParticle(softRems_.first, ParticleID::g, 
-    				gluonMomPairs[i-1].first), 
-			     addParticle(softRems_.second, ParticleID::g, 
-			     	gluonMomPairs[i-1].second));
-    }
-    
-    //now reset the remnants with the new ones
-    softRems_.first = addParticle(softRems_.first, softRems_.first->id(), r1);
-    softRems_.second = addParticle(softRems_.second, softRems_.second->id(), r2);
-    
-    
-    //colour direction of remnats
-    pair<bool, bool> anti = make_pair(oldrems.first->hasAntiColour(),
-    				      oldrems.second->hasAntiColour());
-    
-    
-    
-    ColinePtr cl1 = new_ptr(ColourLine());
-    ColinePtr cl2 = new_ptr(ColourLine());
-    //first colour connect remnants and if no 
-    //gluons the quark-antiquark pair 
-      if(i==0){
-      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, 
-      								anti.first);
-      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, 
-      								anti.second);
-      		if(gluonMomPairs.size()==0){
-      			ColinePtr clq = new_ptr(ColourLine());
-      			clq->addColoured(quarks.first, anti_q.first);
-      			clq->addColoured(quarks.second, anti_q.second);
-      		}	
-      }//colour connect remnants from previous step and gluons to quarks or gluons
-      if(i!=0){
-      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, 
-      								anti.first);
-      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, 
-      								anti.second);
-      		if(i==1){
-      			cl1->addColoured(quarks.first, anti_q.first);
-      			cl1->addColoured(gluons.first, !anti_q.first);
-      			cl2->addColoured(quarks.second, anti_q.second);
-      			cl2->addColoured(gluons.second, !anti_q.second);
-      		}else{
-      			cl1->addColoured(oldgluons.first, anti_q.first);
-      			cl1->addColoured(gluons.first, !anti_q.first);
-      			cl2->addColoured(oldgluons.second, anti_q.second);
-      			cl2->addColoured(gluons.second, !anti_q.second);
-      		}
-      		
-      } //last step; connect last gluons 
-      if(i > 0 && i == gluonMomPairs.size()){
-      		ColinePtr clg = new_ptr(ColourLine());
-      		clg->addColoured(gluons.first, anti_q.first);
-      		clg->addColoured(gluons.second, anti_q.second);
       }
-      
-      
-      //save gluons for the next step	    
-      if(i < gluonMomPairs.size()) oldgluons = gluons;
+    }
+   if(success){
+     break;
+   }
+   }
+    sumx /= ncl;
+    sumy /= ncl;
+    // find the sum of the transverse mass
+    Energy sumtm=ZERO;
+    for(unsigned int ix = 0; ix<ncl; ++ix) {
+      mom[ix].setX(mom[ix].x()-sumx);
+      mom[ix].setY(mom[ix].y()-sumy);
+      Energy2 pt2 = mom[ix].perp2();
+      // Use the z component of the clusters momentum for temporary storage
+      mom[ix].setZ(sqrt(pt2+mom[ix].mass2()));
+      sumtm += mom[ix].z();
+    }
+    // if transverse mass greater the CMS try again
+    if(sumtm > CME) continue;
+
+
+    // randomize the mom vector to get the first and the compensating parton 
+    // at all possible positions:
+    long (*p_irnd)(long) = UseRandom::irnd;
+    random_shuffle(mom.begin(),mom.end(),p_irnd);
+
+
+    for(unsigned int i = 0; i<ncl; i++) xi[i] = randUng(0.6,1.0);
+    // sort into ascending order
+    sort(xi.begin(), xi.end());
+    double ximin = xi[0];
+    double ximax = xi.back()-ximin;
+    xi[0] = 0.;
+    for(unsigned int i = ncl-2; i>=1; i--) xi[i+1] = (xi[i]-ximin)/ximax;
+    xi[1] = 1.;
+    yy= log(CME*CME/(mom[0].z()*mom[1].z()));
+    bool suceeded=false;
+    Energy sum2,sum3,sum4;
+    for(unsigned int j = 0; j<10; j++) {
+      sum1 = sum2 = sum3 = sum4 = ZERO;
+      for(unsigned int i = 0; i<ncl; i++) {
+        Energy tm = mom[i].z();
+        double ex = exp(yy*xi[i]);
+        sum1 += tm*ex;
+        sum2 += tm/ex;
+        sum3 += (tm*ex)*xi[i];
+        sum4 += (tm/ex)*xi[i];
+      }
+      double fy = alog-log(sum1*sum2/GeV2);
+      double dd = (sum3*sum2 - sum1*sum4)/(sum1*sum2);
+      double dyy = fy/dd;
+      if(abs(dyy/yy) < eps) {
+        yy += dyy;
+        suceeded=true;
+        break;
+      }
+      yy += dyy;
+    }
+    if(suceeded){
+       break;
+    }
+    if(its > 100) eps *= 10.;
   }
-  
-  ////////
+  if(its==_maxtries){
+    return false;
   }
-  ////////
+//    throw Exception() << "Can't generate soft underlying event in "
+//                      << "UA5Handler::generateCylindricalPS"
+//                      << Exception::eventerror;
+  double zz = log(CME/sum1);
+  for(unsigned int i = 0; i<ncl; i++) {
+    Energy tm = mom[i].z();
+    double E1 = exp(zz + yy*xi[i]);
+    mom[i].setZ(0.5*tm*(1./E1-E1));
+    mom[i].setE( 0.5*tm*(1./E1+E1));
+    softGluons[i]=mom[i];
+
+  }
+  return true;
 }
+
 
 void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
   PPair diquarks;
@@ -1327,17 +1716,17 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_kinCutoff, GeV) << _range << _zbin << _ybin 
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
-     << maxtrySoft_ << colourDisrupt_ << ladderPower_<< ladderNorm_ << ladderbFactor_ << pomeronStructure_
+     << maxtrySoft_ << colourDisrupt_ << ladderPower_<< ladderNorm_ << ladderMult_ << ladderbFactor_ << pomeronStructure_
      << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV))
-     << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_;
+     << allowTop_ << multiPeriph_ << valOfN_ << initTotRap_ << PtDistribution_;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_kinCutoff, GeV) >> _range >> _zbin >> _ybin 
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
-     >> maxtrySoft_ >> colourDisrupt_ >> ladderPower_ >> ladderNorm_ >> ladderbFactor_ >> pomeronStructure_
+     >> maxtrySoft_ >> colourDisrupt_ >> ladderPower_ >> ladderNorm_ >> ladderMult_ >> ladderbFactor_ >> pomeronStructure_
      >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV))
-     >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_;
+     >> allowTop_ >> multiPeriph_ >> valOfN_ >> initTotRap_ >> PtDistribution_;
 }
 
 // The following static variable is needed for the type
@@ -1426,7 +1815,9 @@ void HwRemDecayer::Init() {
      &HwRemDecayer::colourDisrupt_, 
      1.0, 0.0, 1.0, 
      false, false, Interface::limited);
-  
+ 
+
+ 
   static Parameter<HwRemDecayer,double> interaceladderPower
     ("ladderPower",
      "The power factor in the ladder parameterization.",
@@ -1441,7 +1832,13 @@ void HwRemDecayer::Init() {
      1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-  
+    static Parameter<HwRemDecayer,double> interfaceladderMult
+    ("ladderMult",
+     "The ladder multiplicity factor ",
+     &HwRemDecayer::ladderMult_,
+     1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
   static Parameter<HwRemDecayer,double> interfaceladderbFactor
     ("ladderbFactor",
      "The additive factor in the multiperipheral ladder multiplicity.",
@@ -1502,6 +1899,40 @@ void HwRemDecayer::Init() {
      "Yes",
      "Use multiperipheral kinematics",
      true);    
+  static Switch<HwRemDecayer,unsigned int> interfacePtDistribution
+    ("PtDistribution",
+     "Options for different pT generation methods",
+     &HwRemDecayer::PtDistribution_, 0, false, false);
+  static SwitchOption interfacePtDistributionDefault
+    (interfacePtDistribution,
+     "Default",
+     "Default generation of pT",
+     0);
+  static SwitchOption interfacePtDistributionOrdered
+    (interfacePtDistribution,
+     "Ordered",
+     "Ordered generation of pT,where the first pT is the hardest",
+     1);
+  static SwitchOption interfacePtDistributionStronglyOrdered
+    (interfacePtDistribution,
+     "StronglyOrdered",
+     "Strongly ordered generation of pT",
+     2);
+  static SwitchOption interfacePtDistributionFlat
+    (interfacePtDistribution,
+     "Flat",
+     "Sample from a flat pT distribution",
+     3);
+  static SwitchOption interfacePtDistributionFlatOrdered
+    (interfacePtDistribution,
+     "FlatOrdered",
+     "First pT normal, then flat",
+     4);
+  static SwitchOption interfacePtDistributionFlatOrdered2
+    (interfacePtDistribution,
+     "FlatOrdered2",
+     "First pT normal, then flat but steep",
+     5);
 
 }
 

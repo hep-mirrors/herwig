@@ -3,7 +3,7 @@ set /Herwig/Particles/s:ConstituentMass 0.45*GeV
 set /Herwig/Particles/sbar:ConstituentMass 0.45*GeV
 
 # Use Baryonic Colour Reconnection Model
-set /Herwig/Hadronization/ColourReconnector:Algorithm BaryonicReco
+set /Herwig/Hadronization/ColourReconnector:Algorithm Baryonic
 
 # Allow alternative gluon splitting
 set /Herwig/Hadronization/PartonSplitter:Split uds

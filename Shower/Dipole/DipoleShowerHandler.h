@@ -27,6 +27,11 @@
 #include "Herwig/MatrixElement/Matchbox/Base/MergerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
+#include "Herwig/Shower/Dipole/SpinCorrelations/DipoleVertexRecord.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/DensityOperator.h"
+
+#include <tuple>
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -123,6 +128,16 @@ public:
 
   double Nf(Energy Q)const{return theGlobalAlphaS->Nf(sqr(Q));}
 
+  /*
+   * Access the vertex record
+   */
+  DipoleVertexRecord& vertexRecord() { return theVertexRecord; }
+
+  /**
+   * Return the event record
+   */
+  const DipoleVertexRecord& vertexRecord() const { return theVertexRecord; }
+
 
   /**
    * Set the pointer to the Merging Helper.
@@ -131,6 +146,69 @@ public:
   void setMerger(Ptr<MergerBase>::ptr mh){theMergingHelper=mh;}
 
 
+
+public:
+
+  /**
+   * Return the dictionary for the incoming particles and outgoing partons 
+   * in the event, will be empty if subleading Nc is turned off.
+   */
+  const map<PPtr,size_t>& particleIndices() const { return eventRecord().particleIndices(); }
+
+  /**
+   * Return the particle data vector of the particles in the event, will 
+   * be empty if subleading Nc is turned off.
+   */
+  const cPDVector& particlesAfter() const { return eventRecord().particlesAfter(); }
+
+  /**
+   * Return the density operator from the event record.
+   */
+  DensityOperator& densityOperator() { return eventRecord().densityOperator(); }
+
+  /**
+   * Return the colour matrix element correction map, will be empty if
+   * subleading Nc is turned off. NOT USED, REMOVE
+   */
+  const map<pair<vector<PDT::Colour>,pair<size_t,size_t> >,double>& correlatorMap() const {
+    return eventRecord().densityOperator().correlatorMap();
+  }
+
+  /**
+   * Return the colour basis used in the density operator. NOT USED, REMOVE
+   */
+  Ptr<ColourBasis>::tptr colourBasis() {
+    return eventRecord().densityOperator().colourBasis();
+  }
+
+  /**
+   * Return the continue subleading Nc flag from the event record.
+   */
+  bool continueSubleadingNc() const { return eventRecord().getContinueSubleadingNc(); }
+
+protected:
+
+  /**
+   * Add the possible splitting candidates given a pair of emitting particles
+   */
+  void addCandidates(PPair particles, list<DipoleSplittingInfo>& clist) const;
+
+  /**
+   * Get all possible radiating dipoles
+   */
+  void getCandidates(list<DipoleSplittingInfo>& clist) const;
+
+  /**
+   * Perform a splitting independent of any chains
+   */
+  void performSplitting(DipoleSplittingInfo&) const;
+
+  /**
+   * Generate the next subleading Nc improved splitting and return the scale
+   */
+  Energy nextSubleadingSplitting(Energy hardPt,
+				 Energy optHardPt, Energy optCutoff,
+				 const bool decay);
 
 protected:
 
@@ -161,6 +239,11 @@ protected:
    * Setup the hard scales.
    */
   void hardScales(Energy2 scale);
+
+  /**
+   * Setup the hard scales of the dipoles after subleading emissions.//debug
+   */
+  void hardScalesSubleading(list<DipoleSplittingInfo> candidates,Energy hardPt);
 
   /**
    * Return the evolution ordering
@@ -239,6 +322,14 @@ protected:
   Energy getWinner(DipoleSplittingInfo& winner,
 		   const Dipole& dip,
 		   pair<bool,bool> conf,
+		   Energy optHardPt = ZERO,
+		   Energy optCutoff = ZERO);
+
+  /**
+   * Get the winning splitting for the
+   * given dipole and configuration.
+   */
+  Energy getWinner(DipoleSplittingInfo& winner,
 		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
 
@@ -390,10 +481,73 @@ private:
    */
   bool thePowhegDecayEmission;
 
+ /**
+   * Switch to record information required for the 
+   * nearest neighbour analysis.
+   */
+  //bool theAnalyseSpinCorrelations;
+
   /**
    * The realignment scheme
    */
   int realignmentScheme;
+
+  /**
+   * Switch on or off subleading Nc corrections
+   */
+  bool doSubleadingNc;
+  
+  /**
+   * Number of emissions to do subleading Nc corrections to.
+   */
+  size_t subleadingNcEmissionsLimit;
+
+  /**
+   * Current reference weight used for partial unweighting of the 
+   * subleading colour shower (updated each emission).
+   */
+  int currentReferenceWeight;
+
+  /**
+   * Integer used to set which method of evolving the density operator
+   * to use:
+   * 0 - Vijk is Eikonal but there is a cutoff.
+   * 1 - Vijk is Eikonal.
+   * 2 - Vijk=1 for all i,j,k.
+   * 3 - Semi-leading Nc, Vijk=0 for all 
+   */
+  int densityOperatorEvolution;
+
+  /**
+   * Cutoff scale for the invariants (e.g. pEmitter*pEmission) in the 
+   * Eikonal dipole kernel, Vijk.
+   */
+  Energy2 densityOperatorCutoff;
+
+  /**
+   * Switch on or off partial unweighting in after each subleading emission.
+   */
+  bool doPartialUnweightingAtEmission;
+
+  /**
+   * Switch on or off partial unweighting in the splitting generator.
+   */
+  bool doPartialUnweighting;
+
+  /**
+   * Reference weight for the partial unweighting.
+   */
+  double referenceWeight;
+
+  /**
+   * Factor changing the acceptance probability for the veto algorithm.
+   */
+  double cmecReweightFactor;
+
+  /**
+   * Scaling factor for the negative colour matrix element corrections.
+   */
+  double negCMECScaling;
 
 private:
 
@@ -427,6 +581,11 @@ private:
   DipoleEventRecord theEventRecord;
 
   /**
+   * The vertex record.
+   **/
+  DipoleVertexRecord theVertexRecord;
+
+  /**
    * The number of shoer tries so far.
    */
   unsigned int nTries;
@@ -440,6 +599,21 @@ private:
    * Whether or not we did realign the event
    */
   bool didRealign;
+
+  /**
+   * Vector of candidate splittings containing a vector of the
+   * weights, scale and a bool for every step in the reweighted 
+   * veto algorithm. The bool is true for an accept step.
+   */
+  vector<vector<std::tuple<Energy,double,bool> > > theWeightsVector;
+
+  /**
+   * Winning candidate index.
+   */
+  size_t winnerIndex;//debug
+  size_t kernelIndex;//debug
+  size_t winningKernelIndex;//debug
+  vector<Energy> scales;//debug
 
 private:
 

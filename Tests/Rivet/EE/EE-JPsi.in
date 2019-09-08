@@ -1,0 +1,21 @@
+# -*- ThePEG-repository -*-
+# e+ e- -> J/Psi
+create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEJpsi HwMELepton.so
+set /Herwig/MatrixElements/MEJpsi:VectorMeson /Herwig/Particles/Jpsi
+set /Herwig/MatrixElements/MEJpsi:Coupling  11.43148
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEJpsi
+set EventGenerator:EventHandler:LuminosityFunction:Energy 3.096916
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+do /Herwig/Particles/Jpsi:SelectDecayModes /Herwig/Particles/Jpsi/Jpsi->n0,nbar0; /Herwig/Particles/Jpsi/Jpsi->p+,pbar-; /Herwig/Particles/Jpsi/Jpsi->Sigma0,Sigmabar0; /Herwig/Particles/Jpsi/Jpsi->Lambda0,Lambdabar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*-,Sigma*bar+;  /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Sigma*+,Sigma*bar-; /Herwig/Particles/Jpsi/Jpsi->Xi-,Xibar+; /Herwig/Particles/Jpsi/Jpsi->Sigma*0,Sigma*bar0; /Herwig/Particles/Jpsi/Jpsi->Xi0,Xibar0; 
+# J/psi-> lambda anti-lambda and sigma anti-sigma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1510563
+# J/psi -> p pbar and n nbar
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1113599
+# J/Psi -> xi- and Sigma*+/-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1422780
+# J/Psi -> xi0 and Sigma*0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
+# J/psi-> lambda anti-lambda
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1691850

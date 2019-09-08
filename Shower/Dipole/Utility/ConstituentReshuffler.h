@@ -125,6 +125,15 @@ public:
 		    PList& eventHard,
 		    PerturbativeProcessPtr decayProc = PerturbativeProcessPtr() ) ;
 
+
+  /** 
+   * Update the spinInfo of a particle following reshuffling 
+   * to take account of the change in momentum.
+   * Used only for unstable particles that need to be dealt with.
+   **/
+  void updateSpinInfo( PPtr& oldPart,
+                       PPtr& newPart ) ;
+  
 protected:
 
   /**

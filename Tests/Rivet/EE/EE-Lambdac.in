@@ -1,0 +1,16 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.2897*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.2897*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.5792
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
+set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
+set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+decaymode Upsilon(4S)->Lambda_c+,Lambdabar_c-; 1. 1 /Herwig/Decays/DecayME0
+do /Herwig/Particles/Upsilon(4S):SelectDecayModes /Herwig/Particles/Upsilon(4S)/Upsilon(4S)->Lambda_c+,Lambdabar_c-;
+# Xi decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 FOCUS_2006_I693639

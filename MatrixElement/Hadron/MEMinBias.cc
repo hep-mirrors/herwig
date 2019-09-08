@@ -6,11 +6,14 @@
 
 #include "MEMinBias.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 //#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Handlers/SamplerBase.h"
+
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -44,7 +47,7 @@ void MEMinBias::getDiagrams() const {
 }
 
 Energy2 MEMinBias::scale() const {
-  return sqr(10*GeV);
+  return sqr(Scale_);
 }
 
 int MEMinBias::nDim() const {
@@ -80,13 +83,79 @@ bool MEMinBias::generateKinematics(const double *) {
   return true;
 }
 
+
+double  MEMinBias::correctionweight() const {
+
+
+
+  // Here we calculate the weight to restore the inelastic-diffractiveXSec
+  // given by the MPIHandler. 
+  
+  // First get the eventhandler to get the current cross sections. 
+  static Ptr<StandardEventHandler>::tptr eh =
+  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+
+  // All diffractive processes make use of this ME. 
+  // The static map can be used to collect all the sumOfWeights.
+  static map<XCombPtr,double> weightsmap;
+  weightsmap[lastXCombPtr()]=lastXComb().stats().sumWeights();
+  
+
+  // Define static variable to keep trac of reweighting
+  static double rew_=1.;
+  static int countUpdateWeight=50;
+  static double sumRew=0.;
+  static double countN=0;
+
+  // if we produce events we count
+  if(eh->integratedXSec()>ZERO)sumRew+=rew_;
+  if(eh->integratedXSec()>ZERO)countN+=1.;
+
+
+
+  if(countUpdateWeight<countN){
+    // Summing all diffractive processes (various initial states)
+    double sum=0.;
+    for(auto xx:weightsmap){
+     sum+=xx.second;
+    }
+    double avRew=sumRew/countN;
+    
+    CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
+    CrossSection XS_wanted=MPIHandler_->inelasticXSec()-MPIHandler_->diffractiveXSec();
+    double deltaN=50;
+    
+      // Cross section without reweighting: XS_norew
+      // XS_have = avcsNorm2*XS_norew    (for large N)
+      // We want to determine the rew that allows to get the wanted XS.
+      // In deltaN points we want (left) and we get (right):
+      // XS_wanted*(countN+deltaN) = XS_have*countN + rew*deltaN*XS_norew
+      // Solve for rew:
+    rew_=avRew*(XS_wanted*(countN+deltaN)-XS_have*countN)/(XS_have*deltaN);
+    countUpdateWeight+=deltaN;
+  }
+  //Make sure we dont produce negative weights. 
+  // TODO: write finalize method that checks if reweighting was performed correctly. 
+  rew_=max(rew_,0.000001);
+  rew_=min(rew_,10000.0);
+  
+  return rew_;
+
+
+
+
+
+}
+
+
+
 double MEMinBias::me2() const {
   //tuned so it gives the correct normalization for xmin = 0.11
   return csNorm_*(sqr(generator()->maximumCMEnergy())/GeV2);
 }
 
 CrossSection MEMinBias::dSigHatDR() const {
-  return me2()*jacobian()/sHat()*sqr(hbarc);
+  return me2()*jacobian()/sHat()*sqr(hbarc)*correctionweight();
 }
 
 unsigned int MEMinBias::orderInAlphaS() const {
@@ -145,11 +214,11 @@ DescribeClass<MEMinBias,HwMEBase>
 describeHerwigMEMinBias("Herwig::MEMinBias", "HwMEHadron.so");
 
 void MEMinBias::persistentOutput(PersistentOStream & os) const {
-  os << csNorm_;
+  os << csNorm_ << ounit(Scale_,GeV) << MPIHandler_;
 }
 
 void MEMinBias::persistentInput(PersistentIStream & is, int) {
-  is >> csNorm_;
+  is >> csNorm_ >> iunit(Scale_,GeV) >> MPIHandler_;
 }
 
 void MEMinBias::Init() {
@@ -163,5 +232,18 @@ void MEMinBias::Init() {
      &MEMinBias::csNorm_, 
      1.0, 0.0, 100.0, 
      false, false, Interface::limited);
+  static Parameter<MEMinBias,Energy> interfaceScale
+    ("Scale",
+     "Scale for the Min Bias matrix element.",
+     &MEMinBias::Scale_,GeV,
+     2.0*GeV, 0.0*GeV, 100.0*GeV,
+     false, false, Interface::limited);
+
+  static Reference<MEMinBias,UEBase> interfaceMPIHandler
+    ("MPIHandler",
+     "The object that administers all additional scatterings.",
+     &MEMinBias::MPIHandler_, false, false, true, true);
+
+
 }
 

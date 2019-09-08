@@ -13,3 +13,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220
 # charm production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1218996
+# 2b + 2 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2016_I1486238

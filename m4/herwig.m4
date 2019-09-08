@@ -129,6 +129,7 @@ else
   AC_MSG_RESULT([found])
 fi
 
+AM_CONDITIONAL(HAVE_RIVET,[test x$THEPEGHASRIVET = xyes])
 AC_SUBST([CREATE_RIVET])
 ])
 

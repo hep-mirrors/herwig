@@ -141,12 +141,11 @@ void Tree_level_gluon_basis::write_out_Col_basis( std::string filename ) const{
 }
 
 
-void Tree_level_gluon_basis::write_out_Col_basis_to_cout() const{
+std::ostream&  Tree_level_gluon_basis::write_out_Col_basis_to_stream( std::ostream&  out ) const{
 
 	if(  (cb.size()==0 ) ) {
 		std::cout << "Tree_level_gluon_basis::write_out_Col_basis(): There are no basis vectors in this basis, consider using create_basis." << std::endl;
 		std::cout.flush();
-		return ;
 	}
 
 	int sign=pow(-1,cb.at(0).n_gluon());
@@ -157,8 +156,9 @@ void Tree_level_gluon_basis::write_out_Col_basis_to_cout() const{
 		Col_amp Ca_conj=cb.at(m);
 		Ca_conj.conjugate();
 		Ca_conj.normal_order();
-		std::cout << Ca_conj << std::endl;
+		out << Ca_conj << std::endl;
 	}
+	return out;
 }
 
 
@@ -210,7 +210,7 @@ Col_amp Tree_level_gluon_basis::create_trace_basis( int n_g ) const {
 	// otherwise from 2*n_q+1;
 	for (int g_new = 3; g_new <= n_g; g_new++) {
 		// If only gluons start from the 2-gluon state, so add gluon 3
-		Basis = add_one_gluon(Basis, n_g, g_new);
+		Basis = add_one_gluon(Basis, g_new);
 	}
 
 	// Normal order the Col_str's
@@ -268,7 +268,7 @@ Col_amp Tree_level_gluon_basis::add_one_gluon( const Col_str & Cs, int g_new ) c
 }
 
 
-Col_amp Tree_level_gluon_basis::add_one_gluon(const Col_amp & Old_basis, int, int g_new) const {
+Col_amp Tree_level_gluon_basis::add_one_gluon(const Col_amp & Old_basis, int g_new) const {
 
 	// For storing the new basis
 	Col_amp New_bas;

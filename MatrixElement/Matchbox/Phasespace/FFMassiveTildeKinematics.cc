@@ -32,6 +32,7 @@ IBPtr FFMassiveTildeKinematics::fullclone() const {
   return new_ptr(*this);
 }
 
+// Matches Stephen Webster's thesis
 bool FFMassiveTildeKinematics::doMap() {
 
   Lorentz5Momentum emitter = realEmitterMomentum();
@@ -47,49 +48,50 @@ bool FFMassiveTildeKinematics::doMap() {
 
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
-  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / scale );
-  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / scale );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double Muij2 = sqr( bornEmitterData()->hardProcessMass() / scale );
+  double Muk2 = sqr( bornSpectatorData()->hardProcessMass() / scale );
  
   // Calculate the invariants
   Energy2 Qijk = sqr(scale);
-  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
-  double bar = 1. - mui2 - mu2 - muj2;
-
-  // Calculate A (as in notes)
-  double A = (y*bar - Mui2 + mui2 + mu2)/suijk;
-
+  double sijkN = 0.5*( 1. - Muij2 - Muk2 + sqrt( sqr(1.-Muij2-Muk2) - 4.*Muij2*Muk2 ) );
+  double bar = 1. - mui2 - muj2 - muk2;
+  
+  // Calculate Qij2
+  double QijN2 = sqr(emitter + emission)/Qijk;
+  
   // Calculate the scale factors, xk and xij
-  double lambdaK = 1. + (Muj2/suijk);
-  double lambdaIJ = 1. + (Mui2/suijk);
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
-  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
-
-  // Calculate zPrime = qi.nk / (qi+qj).nk from qi.qk and y
-  double l = Muj2 / (2.*xk*xij*suijk);
-  double a = (xij*xk*suijk/2.) - l*(bar*y + mui2 + mu2);
+  double lambdaK = 1. + (Muk2/sijkN);
+  double lambdaIJ = 1. + (Muij2/sijkN);
+  double fac1 = lambdaIJ*lambdaK + (muk2 - QijN2)/sijkN;
+  double xk =
+    ( fac1 + sqrt( sqr(fac1) - 4.*lambdaIJ*lambdaK*muk2/sijkN ) )
+    / 2. / lambdaK ;
+  double xij = 1. - muk2*(1.-xk) / xk / sijkN;
+  
+  // Calculate z = qi.nk / (qi+qj).nk from qi.qk and y
+  double l = Muk2 / (2.*xk*xij*sijkN);
+  double a = (xij*xk*sijkN/2.) - l*(bar*y + mui2 + muj2);
   double b = (-emitter*spectator)/Qijk + l*(bar*y + 2.*mui2);
-  double zPrime = -b/a;
+  double z = -b/a;
 
+  // Calculate zi
+  double zi = emitter*spectator / ((emitter + emission)*spectator);
 
-  // Store z as well
-  double z = emitter*spectator / ((emitter + emission)*spectator);
-
+  // Store the variables
   subtractionParameters().resize(3);
   subtractionParameters()[0] = y;
-  subtractionParameters()[1] = z;
-  subtractionParameters()[2] = zPrime;
+  subtractionParameters()[1] = zi;
+  subtractionParameters()[2] = z;
   
   // Calculate nij and nk from qi, q, qj
-  double B = (Mui2/(xij*suijk) + A/xij) / xk;
-  double den = (xij/B - Muj2/(xk*suijk));
-
-  Lorentz5Momentum nij = (1./den)*( (emitter+emission)/B - spectator);
-  Lorentz5Momentum nk = (1./xk)*(spectator - Muj2*nij/(xk*suijk));
-
+  double L = QijN2/xij/xk/sijkN;
+  Lorentz5Momentum nij = (emitter + emission - L*spectator)/(xij - L*Muk2/xk/sijkN);
+  Lorentz5Momentum nk = (1./xk)*(spectator - Muk2*nij/(xk*sijkN));
+    
   // Calculate the born momenta from nij and nk
-  bornSpectatorMomentum() = nk + (Muj2/suijk)*nij;
+  bornSpectatorMomentum() = nk + (Muk2/sijkN)*nij;
   bornEmitterMomentum() = pTot - bornSpectatorMomentum();
 
   bornEmitterMomentum().setMass( bornEmitterData()->hardProcessMass() );
@@ -106,19 +108,20 @@ Energy FFMassiveTildeKinematics::lastPt() const {
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   
   double y = subtractionParameters()[0];
-  double zPrime = subtractionParameters()[2];
+  double z = subtractionParameters()[2];
   
   // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / scale );
 
-  Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * zPrime*(1.-zPrime) - sqr(1.-zPrime)*mui2 - sqr(zPrime)*mu2 );
-
+  Energy ret = scale * sqrt( y * (1.-mui2-muj2-muk2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*muj2 );
+  
   return ret;
+  
 }
 
-
+// Matches Stephen Webster's thesis
 Energy FFMassiveTildeKinematics::lastPt(Lorentz5Momentum emitter,
 					Lorentz5Momentum emission,
 					Lorentz5Momentum spectator)const {
@@ -135,40 +138,40 @@ Energy FFMassiveTildeKinematics::lastPt(Lorentz5Momentum emitter,
 
   // masses
   double mui2 = sqr( emitter.mass() / scale );
-  double mu2  = sqr( emission.mass() / scale );
-  double muj2 = sqr( spectator.mass() / scale );
+  double muj2  = sqr( emission.mass() / scale );
+  double muk2 = sqr( spectator.mass() / scale );
    // TODO: here we assume a gluon
   bool isgluon= emitter.mass()==emission.mass();
-  double Mui2 = sqr(( isgluon?ZERO:max(emission.mass(),emitter.mass()) )/ scale );
-  double Muj2 = sqr( spectator.mass() / scale );
+  double Muij2 = sqr(( isgluon?ZERO:max(emission.mass(),emitter.mass()) )/ scale );
+  double Muk2 = sqr( spectator.mass() / scale );
  
   // Calculate the invariants
   Energy2 Qijk = sqr(scale);
-  double suijk = 0.5*( 1. - Mui2 - Muj2 + sqrt( sqr(1.-Mui2-Muj2) - 4.*Mui2*Muj2 ) );
-  double bar = 1. - mui2 - mu2 - muj2;
-
-  // Calculate A (as in notes)
-  double A = (y*bar - Mui2 + mui2 + mu2)/suijk;
-
+  double sijkN = 0.5*( 1. - Muij2 - Muk2 + sqrt( sqr(1.-Muij2-Muk2) - 4.*Muij2*Muk2 ) );
+  double bar = 1. - mui2 - muj2 - muk2;
+  
+  // Calculate Qij2
+  double QijN2 = sqr(emitter + emission)/Qijk;
+  
   // Calculate the scale factors, xk and xij
-  double lambdaK = 1. + (Muj2/suijk);
-  double lambdaIJ = 1. + (Mui2/suijk);
-  double xk = (1./(2.*lambdaK)) * ( (lambdaK + (Muj2/suijk)*lambdaIJ - A) + sqrt( sqr(lambdaK + (Muj2/suijk)*lambdaIJ - A) - 4.*lambdaK*lambdaIJ*Muj2/suijk) );
-  double xij = 1. - ( (Muj2/suijk) * (1.-xk) / xk );
-
-  // Calculate zPrime = qi.nk / (qi+qj).nk from qi.qk and y
-  double l = Muj2 / (2.*xk*xij*suijk);
-  double a = (xij*xk*suijk/2.) - l*(bar*y + mui2 + mu2);
+  double lambdaK = 1. + (Muk2/sijkN);
+  double lambdaIJ = 1. + (Muij2/sijkN);
+  double fac1 = lambdaIJ*lambdaK + (muk2 - QijN2)/sijkN;
+  double xk =
+    ( fac1 + sqrt( sqr(fac1) - 4.*lambdaIJ*lambdaK*muk2/sijkN ) )
+    / 2. / lambdaK ;
+  double xij = 1. - muk2*(1.-xk) / xk / sijkN;
+  
+  // Calculate z = qi.nk / (qi+qj).nk from qi.qk and y
+  double l = Muk2 / (2.*xk*xij*sijkN);
+  double a = (xij*xk*sijkN/2.) - l*(bar*y + mui2 + muj2);
   double b = (-emitter*spectator)/Qijk + l*(bar*y + 2.*mui2);
-  double zPrime = -b/a;
+  double z = -b/a;
 
-
-
-  Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * zPrime*(1.-zPrime) - sqr(1.-zPrime)*mui2 - sqr(zPrime)*mu2 );
-
+  Energy ret = scale * sqrt( z*(1.-z)*QijN2 - (1.-z)*mui2 - z*muj2 );
+    
   return ret;
-
-
+  
 }
 
 
@@ -180,17 +183,17 @@ pair<double,double> FFMassiveTildeKinematics::zBounds(Energy pt, Energy hardPt) 
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
     // masses
   double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
-  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
-  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double muj2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muk2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
-  double zp = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
-               rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
+  double zp = ( 1.+mui2-muj2+muk2-2.*sqrt(muk2) +
+               rootOfKallen(mui2,muj2,sqr(1.-sqrt(muk2))) *
                sqrt( 1.-sqr(pt/hardPt) ) ) /
-  ( 2.*sqr(1.-sqrt(muj2)) );
-  double zm = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
-               rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
+  ( 2.*sqr(1.-sqrt(muk2)) );
+  double zm = ( 1.+mui2-muj2+muk2-2.*sqrt(muk2) -
+               rootOfKallen(mui2,muj2,sqr(1.-sqrt(muk2))) *
                sqrt( 1.-sqr(pt/hardPt) ) ) /
-  ( 2.*sqr(1.-sqrt(muj2)) );
+  ( 2.*sqr(1.-sqrt(muk2)) );
   
   return make_pair(zm,zp);
 }

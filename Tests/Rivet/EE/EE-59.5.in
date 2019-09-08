@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 59.5
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+# EEC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOPAZ_1989_I279575

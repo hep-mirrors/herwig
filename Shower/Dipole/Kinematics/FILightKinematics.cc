@@ -141,9 +141,9 @@ void FILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   Energy pt = dInfo.lastPt();
   double z = dInfo.lastZ();
   double x = 1./(1.+sqr(pt/dInfo.scale())/(z*(1.-z)));
-
+  
   Lorentz5Momentum kt =
-    getKt (pSpectator, pEmitter, pt, dInfo.lastPhi(),true);
+    getKt(pEmitter, pSpectator, pt, dInfo.lastPhi(), true);
 
   Lorentz5Momentum em = z*pEmitter + (1.-z)*((1.-x)/x)*pSpectator + kt;
   Lorentz5Momentum emm = (1.-z)*pEmitter + z*((1.-x)/x)*pSpectator - kt;

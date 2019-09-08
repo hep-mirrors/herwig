@@ -17,6 +17,9 @@
 #include "ThePEG/PDF/PDF.h"
 #include "Dipole.h"
 #include "DipoleChain.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/DensityOperator.h"
+
+#include <tuple>
 
 namespace Herwig {
 
@@ -64,7 +67,7 @@ public:
    * Get the starting scale
    */
   Energy startScale() const { return theStartScale; }
-
+  
   /**
    * Set the iterator of the emitter dipole chain
    */
@@ -160,10 +163,92 @@ public:
   const Lorentz5Momentum& pX() const { return thePX; }
 
   /**
-   * Transform all intermediate, hard and outgoing
-   * partciles using the given transformation.
+   * Return the particles after emission.
    */
-  void transform(const SpinOneLorentzRotation& rot);
+  cPDVector& particlesAfter() { return theParticlesAfter; }
+  
+  /**
+   * Return the particles after emission.
+   */
+  const cPDVector& particlesAfter() const { return theParticlesAfter; }
+  
+  /**
+   * Return the particles before emission.
+   */
+  cPDVector& particlesBefore() { return theParticlesBefore; }
+  
+  /**
+   * Return the particles before emission.
+   */
+  const cPDVector& particlesBefore() const { return theParticlesBefore; }
+
+  /**
+   * Return the momenta after emission.
+   */
+  vector<Lorentz5Momentum>& momentaAfter() { return theMomentaAfter; }
+  
+  /**
+   * Return the momenta after emission.
+   */
+  const vector<Lorentz5Momentum>& momentaAfter() const { return theMomentaAfter; }
+
+  /**
+   * Return the dictionary for the particles
+   */
+  map<PPtr,size_t>& particleIndices() { return theParticleIndices; }
+
+  /**
+   * Return the dictionary for the particles
+   */
+  const map<PPtr,size_t>& particleIndices() const { return theParticleIndices; }
+
+  /**
+   * Return the density operator
+   */
+  DensityOperator& densityOperator() { return theDensityOperator; }
+
+  /**
+   * Return the density operator
+   */
+  const DensityOperator& densityOperator() const { return theDensityOperator; }
+  
+  /**
+   * Set the subleading Nc flag and the number of emissions to calculate
+   * subleading Nc corrections for.
+   */
+  void setSubleadingNc( bool doSub, size_t emissionsLimit ) { 
+    doSubleadingNc = doSub;
+    continueSubleadingNc = doSub;
+    subleadingNcEmissionsLimit = emissionsLimit;
+  }
+  
+  /**
+   * Get the continue subleading Nc flag.
+   */
+  bool getContinueSubleadingNc() const { return continueSubleadingNc; }
+
+  /**
+   * Set the scheme and cutoff for the density operator evolution.
+   */
+  void setDensityOperatorEvolution( int scheme, Energy2 cutoff ) {
+    densityOperatorEvolution = scheme;
+    densityOperatorCutoff = cutoff;
+  }
+
+  /**
+   * Calculates the dipole kernel to use for the density operator evolution. Takes
+   * the index of the emitter and spectator, and momentum invariants.
+   */
+  double dipoleKernelForEvolution(size_t em, size_t spec, 
+				  Energy2 pEmitpSpec, Energy2 pEmitpEmis, 
+				  Energy2 pEmispSpec);
+
+  /**
+   * Transform all intermediate, hard and outgoing
+   * particles using the given transformation.
+   * Also update their spinInfo if applicable.
+   */
+  void transform(const LorentzRotation& rot);
 
 public:
 
@@ -316,6 +401,12 @@ public:
   pair<PVector,PVector> tmpupdate(DipoleSplittingInfo& dsplit);
 
   /**
+   * Inverse of update, updateInverse(update(dsplit)) would return the 
+   * event record to the state if update would not have been called.
+   */
+  void updateInverse(DipoleSplittingInfo& dsplit);
+
+  /**
    * Return the dipole(s) containing the incoming
    * partons after the evolution has ended. Put back
    * the chains containing these to the chains to be
@@ -358,6 +449,17 @@ public:
    * on any object involved in the evolution.
    */
   virtual void clear();
+
+  /**
+   * Prepare the dipole chains for the eventRecord after
+   * the subleading shower
+   */
+  void prepareChainsSubleading(const bool decay) {
+    static set<long> empty;
+    continueSubleadingNc = false;
+    PList cordered = colourOrdered(incoming(),outgoing());
+    findChains(cordered,empty,decay);
+  }
 
 public:
 
@@ -433,6 +535,16 @@ public:
    */
   void currentDecay(PerturbativeProcessPtr in) {theCurrentDecay=in;}
 
+  /**
+   * Return the next particle to be decayed.
+   */
+  PPtr nextDecay() {
+    if ( !theNextDecays.empty() )
+      return theNextDecays.back();
+    else
+      return PPtr();
+  }
+  
 
   // SW - Changed from protected to public so that functions can be used in DipoleShowerHandler
 public:
@@ -484,6 +596,91 @@ private:
    * The dipole chains which ceased evolving.
    */
   list<DipoleChain> theDoneChains;
+  
+  /**
+   * Particles after the emission.
+   */
+  cPDVector theParticlesAfter;
+  
+  /**
+   * Particles before the emission.
+   */
+  cPDVector theParticlesBefore;
+  
+  /**
+   * Momenta of the particles after emission.
+   */
+  vector<Lorentz5Momentum> theMomentaAfter;
+  
+  /**
+   * Pair of the emitters index before emission and both the emitters
+   * and the emissions indices after emission, 
+   * <emitter_before,<emitter_after,emission> >
+   */
+  pair<size_t,pair<size_t,size_t> > theEmitterEmissionIndices;
+  
+  /**
+   * Pair of the spectators index before and after emission.
+   */
+  pair<size_t,size_t> theSpectatorIndices;
+  
+  /**
+   * The density operator.
+   */
+  DensityOperator theDensityOperator;
+
+  /**
+   * Switch on or off for subleading Nc corrections.
+   */
+  bool doSubleadingNc;
+  
+  /**
+   * Flag to keep track of when to stop calculating colour
+   * matrix element corrections.
+   */
+  bool continueSubleadingNc;
+  
+  /**
+   * Number of emissions to calculate subleading Nc corrections for.
+   */
+  size_t subleadingNcEmissionsLimit;
+
+  /**
+   * Current number of subleading emissions.
+   */
+  size_t subEmDone;
+
+  
+  /**
+   * Dictionary for particles before emission.
+   */
+  map<PPtr,size_t> theParticleIndices;
+
+  /**
+   * Integer used to set which method of evolving the density operator
+   * to use:
+   * 0 - Vijk is Eikonal but there is a cutoff.
+   * 1 - Vijk is Eikonal.
+   * 2 - Vijk=1 for all i,j,k.
+   * 3 - Semi-leading Nc, Vijk=0 for all 
+   */
+  int densityOperatorEvolution;
+
+  /**
+   * Cutoff scale for the invariants (e.g. pEmitter*pEmission) in the 
+   * Eikonal dipole kernel, Vijk.
+   */
+  Energy2 densityOperatorCutoff;
+
+  /**
+   * Dictionary for emissions, maps the three indices
+   * - emitter before emission
+   * - emitter after emission
+   * - emission
+   * to another map of the indices before emission mapped to the indices after
+   * emission (except the emitters index)
+   */
+  map<std::tuple<size_t,size_t,size_t>,map<size_t,size_t> > theEmissionsMap;
 
   /**
    * The coloured partons that can be off-shell
@@ -503,6 +700,17 @@ private:
    *
    */
   PerturbativeProcessPtr theCurrentDecay;
+
+  /**
+   * List of unstable particles, the decay to be performed
+   * and/or showered next is always at the back.
+   * This list is required to force the dipole shower to shower one decay
+   * chain at a time, without jumping between decay chains.
+   * Note this is not *required* but this is the most 
+   * obvious/intuitive way to treat the decays.
+   **/
+  PList theNextDecays;
+
 };
 
 

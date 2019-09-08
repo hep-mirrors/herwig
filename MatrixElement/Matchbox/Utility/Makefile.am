@@ -5,6 +5,8 @@ AmplitudeCache.h \
 AmplitudeCache.tcc \
 ColourBasis.cc \
 ColourBasis.h \
+DensityOperator.cc \
+DensityOperator.h \
 DiagramDrawer.cc \
 DiagramDrawer.h \
 MatchboxScaleChoice.cc \

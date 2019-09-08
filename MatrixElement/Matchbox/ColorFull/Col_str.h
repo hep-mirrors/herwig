@@ -15,7 +15,7 @@ namespace ColorFull {
 
 /// For containing a vector (or list) of Quark_lines
 /// the color information part of a Col_str.
-/// The col_str is a direct product of Quark_lines,
+/// The col_str is a product of Quark_lines,
 /// contained in a vector of quark-lines.
 typedef std::vector < Quark_line > col_str;
 
@@ -26,7 +26,7 @@ typedef std::vector < Quark_line > col_str;
 class Col_str {
 public:
 
-	/// Default constructor, sets nothing.
+	/// Default constructor, leaves cs empty.
 	Col_str(){};
 
 	/// Constructor for setting the color structure using a string.
@@ -40,12 +40,12 @@ public:
 	/// Make a Col_str of a Quark_line.
 	Col_str( Quark_line Ql ) {cs.push_back(Ql);}
 
-	/// For containing the info on color structure,
+	/// For containing the information about the color structure,
 	/// a direct product of Quark_lines,
 	/// contained in a vector of quark-lines.
 	col_str cs;
 
-	/// Polynomial factor multiplying the whole color structure.
+	/// Polynomial factor multiplying the whole product of quark-lines.
 	Polynomial Poly;
 
 	/// Returns the Quark_line at place i.
@@ -54,7 +54,7 @@ public:
 	/// Returns the Quark_line at place i.
 	Quark_line & at( int i ) {return cs.at(i);}
 
-	/// Returns the parton at place j in in Quark_line i.
+	/// Returns the parton at place j in Quark_line i.
 	int at( int i, int j ) const;
 
 	/// The size of the col_str
@@ -76,7 +76,7 @@ public:
 	void erase(std::pair<int, int> place);
 
 	/// Appends a Quark_line to data member cs.
-	void push_back( Quark_line Ql ) { cs.push_back( Ql ); }
+	void append( Quark_line Ql ) { cs.push_back( Ql ); }
 
 	/// To insert the parton part_num in quark_line i
 	/// at place j.
@@ -107,18 +107,18 @@ public:
 	/// Replaces the parton index old_ind with new_ind.
 	void replace( int old_ind, int new_ind );
 
-	/// Finds out if a parton is a q, qbar or g,
+	/// Finds out if a parton is a quark, anti-quark or a gluon,
 	/// returns "q", "qbar" or "g" respectively.
 	/// This function does NOT loop over all partons, but assumes
 	/// that the parton is a gluon if the Quark_line is closed,
-	/// or if the Quark_line is open, but the parton cannot be found in the ends.
-	std::string find_kind( int part_num ) const;
+	/// or if the Quark_line is open, but p cannot be found in the ends.
+	std::string find_kind( int p ) const;
 
 	/// Checks if the amplitude only has gluons, i.e. if all Quark_lines are closed.
 	bool gluons_only() const;
 
 	/// Counts the number of gluons in a Col_str.
-	/// Counts all gluon indices, both free and contracted.
+	/// Counts all gluon indices, both free and contractable.
 	int n_gluon() const;
 
 	/// Counts the number of quarks (=number of anti-quarks) in a Col_str.
@@ -133,13 +133,13 @@ public:
 	void normal_order();
 
 	/// Finds out the "smallest" Col_str of two Col_strs, i.e.
-	/// which Col_str should stand first in a normal ordered Col_amp or a basis.
+	/// which Col_str should stand first in a normal ordered Col_amp or basis.
 	/// Returns 1, if Cs1 should stand before Cs2
 	/// and 2 if Cs2 should stand before Cs1.
 	/// Both Col_strs have to be normal ordered for the result to be unique.
 	/// The Col_strs are ordered by
-	/// (1) Number of Quark_lines
-	/// (2) if the Quark_line at place 0,1,2... is open or not.
+	/// (1) number of Quark_lines
+	/// (2) if the Quark_line at place 0,1,2... is open or not
 	/// (3) the size of the Quark_line at place 1,2,3...
 	/// (4) the parton numbers in the Quark_lines at place 1,2,3...,
 	/// i.e. first the first parton in the first Quark_line is checked
@@ -159,7 +159,7 @@ public:
 	/// Removes 0 and 1-rings,
 	/// moves factors multiplying the individual Quark_lines to
 	/// multiply the col_str instead (i.e., being stored in Poly)
-	/// simplifys the Polnomial and normal orders the quark_lines.
+	/// simplifies the Polynomial and normal orders the quark_lines.
 	void simplify();
 
 	/// Function for conjugating the Col_str by conjugating each Quark_line in cs,
@@ -172,15 +172,14 @@ public:
 	void contract_next_neighboring_gluons( );
 
 	/// Function for contracting gluon indices in closed Quark_lines with only 2 gluons.
-	/// This removes the 2-ring, replaces one of the gluon indices and
-	/// multiplies with a factor tr[t^a t^a]=TR (no sum),
-	/// only intended for closed Quark_lines.
+	/// This removes the 2-ring, replaces one of the gluon indices,,
+	/// and multiplies with a factor tr[t^a t^a]=TR (no sum),
+	/// only intended for fully contractable Col_strs.
 	void contract_2_rings( );
 
 	/// Function for contracting quarks between two color structures Cs1 and Cs2.
 	/// The result is stored in the Col_str itself.
 	void contract_quarks( const Col_str Cs1, const Col_str Cs2 );
-
 
 
 private:
@@ -211,11 +210,11 @@ private:
 bool operator==(const col_str & cs1, const col_str & cs2);
 
 /// Define the operator != for two col_str's.
-/// Returns fals if cs1==cs2 and false otherwise.
+/// Returns false if cs1==cs2 and false otherwise.
 bool operator!=(const col_str & cs1, const col_str & cs2);
 
 /// Define the operator << for col_str
-std::ostream& operator<<(std::ostream& out, const col_str & cs);
+std::ostream& operator<<( std::ostream& out, const col_str & cs );
 
 /// Define the operator * for Col_str and int.
 Col_str operator*( const Col_str & Cs, const int i );
@@ -255,6 +254,10 @@ Col_str operator*( const Quark_line & Ql, const Col_str & Cs );
 
 /// Define the operator * for two Col_str's, adding Ql and multiplying Polynomial info.
 Col_str operator*( const Col_str & Cs1, const Col_str & Cs2 );
+
+/// Define the operator * for two Quark_lines. Clearly the result cannot be contained in
+/// a Quark_line, but needs (at least) a Col_str.
+Col_str operator*( const Quark_line & Ql1, const Quark_line & Ql2 );
 
 /// Define the operator << for Col_str.
 std::ostream& operator<<(std::ostream& out, const Col_str & Cs);

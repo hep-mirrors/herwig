@@ -37,7 +37,7 @@ public:
 	/// Destructor.
 	virtual ~Col_basis(){}
 
-	/// The number of quarks, initially set to 0 and (possibly)
+	/// The number of qqbar-pairs, initially set to 0 and (possibly)
 	/// changed with create_basis, or while reading in the basis.
 	int nq;
 
@@ -62,9 +62,6 @@ public:
 	dmatr leading_d_spm;
 
 	/// To contain the set of Col_functions used.
-	/// As a pointer to a Col_functions object is used,
-	/// several bases may share the same functions for
-	/// numerical evaluation etc.
 	Col_functions Col_fun;
 
 	/// Is it a Trace_basis?
@@ -92,7 +89,10 @@ public:
 	void clear() { cb.clear(); }
 
 	/// Appends a Col_amp to the basis, stored in cb.
-	void push_back( Col_amp Ca ) { cb.push_back( Ca ); }
+	void append( Col_amp Ca ) { cb.push_back( Ca ); }
+
+	/// Appends the Col_amps in cb_in to the col_basis member cb.
+	void append( col_basis cb_in );
 
 
 	/******************** Functions for scalar products **********************/
@@ -109,7 +109,7 @@ public:
 	void scalar_product_matrix();
 
 	/// This function works as scalar_product_matrix, but does the
-	/// calculation numerically. It hence only saves (and writes out) d_spm.
+	/// calculation numerically. It hence only calculates d_spm.
 	void scalar_product_matrix_num();
 
 	/// This function works like scalar_product_matrix, but does
@@ -128,7 +128,7 @@ public:
 	void leading_scalar_product_matrix();
 
 	/// Function for calculating scalar products algebraically
-	/// knowing the basis and the scalar product matrix (Poly_matr) in the basis.
+	/// using the basis and the scalar product matrix (Poly_matr) in the basis.
 	/// (Does add implicit conjugated part for Tree_level_gluon_basis,
 	/// as these terms are contained in the matrix of scalar products.)
 	virtual Polynomial scalar_product( const Col_amp & Ca1, const Col_amp & Ca2 );
@@ -183,7 +183,7 @@ public:
 	///	2  [(1,3,4,2)]+[(1,2,4,3)]<br>
 	/// and each Col_str may also contain a Polynomial.
 	/// (The Polynomial should multiply the whole col_str,
-	/// rather than a quark_line inside the [] brackets.)
+	/// rather than a quark_line inside the []-brackets.)
 	virtual void read_in_Col_basis( std::string filename );
 
 	/// Function for reading in the basis from default filename
@@ -275,23 +275,19 @@ public:
 	/// with default name (see basis_file_name).
 	virtual void write_out_Col_basis() const;
 
-	/// Function for writing out the basis in a human readable
-	/// format to cout.
-	virtual void write_out_Col_basis_to_cout() const;
-
-	/// Writes out d_spm to file filename.
+	/// Writes out d_spm to the file filename.
 	void write_out_d_spm( std::string filename ) const;
 
 	/// Writes out d_spm to the standard filename, see spm_file_name.
 	void write_out_d_spm( ) const;
 
-	/// Writes out P_spm to file filename.
+	/// Writes out P_spm to the file filename.
 	void write_out_P_spm( std::string filename ) const;
 
 	/// Writes out P_spm to the standard filename, see spm_file_name.
 	void write_out_P_spm( ) const;
 
-	/// Writes out leading_d_spm to file filename.
+	/// Writes out leading_d_spm to the file filename.
 	void write_out_leading_d_spm( std::string filename ) const;
 
 	/// Writes out leading_d_spm to the standard filename, see spm_file_name.
@@ -305,28 +301,30 @@ public:
 
 	/******************** Other functions **********************/
 
-	/// Simplify all the basis vectors by using simplify on the
+	/// Simplifies all the basis vectors by using simplify on the
 	/// individual Col_amps in the basis.
 	void simplify();
 
 	/// Each type of color basis has to implement a function for decomposing
 	/// an amplitude in the color basis.
-	virtual Poly_vec decompose( const Col_amp & Ca ) ;
+	virtual Poly_vec decompose( const Col_amp & Ca );
 
 	/// Function for finding the resulting Col_amp after exchanging
 	/// a gluon between parton p1 and parton p2 in the
 	/// basis vector vec.
-	Col_amp exchange_gluon( uint vec, int p1, int p2 ) ;
+	Col_amp exchange_gluon( uint vec, int p1, int p2 );
 
 	/// Function for calculating the color structure part of the soft anomalous
 	/// dimension matrix. First calculates the effect of gluon exchange on a
 	/// basis vector and then decomposes the result into the basis.
 	/// For this to work the basis must clearly contain all resulting
-	/// bases vectors, meaning for example that it can not be
+	/// basis vectors, meaning for example that it can not be
 	/// used for Tree_level_gluon_basis.
 	/// The function is only available for the Trace_basis
 	/// and the Orthogonal_basis classes.
-	Poly_matr Col_gamma( int p1, int p2 );
+	/// The ij-component of the resulting matrix gives the amplitude
+	/// for ending up in component i if starting in component j.
+	Poly_matr color_gamma( int p1, int p2 );
 
 	/// Returns the number of quarks in the Col_basis after
 	/// checking that each Col_str in each Col_amp
@@ -382,12 +380,23 @@ protected:
 	/// used by the read_in_basis functions.
 	void Col_basis_of_str( std::string str );
 
+	/// Function for writing out the basis in a human readable
+	/// format to an ostream.
+	virtual std::ostream&  write_out_Col_basis_to_stream( std::ostream&  out ) const;
+
+	/// The operator << for Col_basis operator must be able to access the
+	/// write_out_Col_basis_to_stream operator.
+	friend std::ostream& operator<<( std::ostream& out, const Col_basis & Cb );
+
 };// end class Col_basis
 
 
 /// Define the operator << for col_basis.
 std::ostream& operator<<( std::ostream& out, const col_basis & cb );
 
+
+/// Define the operator << for Col_basis.
+std::ostream& operator<<( std::ostream& out, const Col_basis & Cb );
 
 }// end namespace ColorFull
 

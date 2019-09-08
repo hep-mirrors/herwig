@@ -119,6 +119,11 @@ using namespace ThePEG;
       Lorentz5Momentum momentum;
 
       /**
+       * A backward momentum, if needed
+       */
+      Lorentz5Momentum backwardMomentum;
+
+      /**
        * The external leg id of this line, if external.
        */
       int externalId;

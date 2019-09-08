@@ -120,7 +120,6 @@ bool FFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
     theMCCheck->book(1.,1.,info.scale(),info.hardPt(),pt,z,jacobian());
 
   return true;
-
 }
 
 void FFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
@@ -130,10 +129,10 @@ void FFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   double z = dInfo.lastZ();
   Energy pt = dInfo.lastPt();
   double y = sqr(pt / (pEmitter+pSpectator).m()) / (z*(1.-z));
-
+ 
   Lorentz5Momentum kt =
     getKt(pEmitter, pSpectator, pt, dInfo.lastPhi());
-
+  
   Lorentz5Momentum em = z*pEmitter + y*(1.-z)*pSpectator + kt;
   Lorentz5Momentum emm = (1.-z)*pEmitter + z*y*pSpectator - kt;
   Lorentz5Momentum spe = (1.-y)*pSpectator;
@@ -150,7 +149,7 @@ void FFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   emitterMomentum(em);
   emissionMomentum(emm);
   spectatorMomentum(spe);
-
+  
 }
 
 // If needed, insert default implementations of function defined

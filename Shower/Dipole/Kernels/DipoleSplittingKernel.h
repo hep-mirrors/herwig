@@ -20,6 +20,10 @@
 #include "Herwig/Shower/Dipole/Base/DipoleSplittingInfo.h"
 #include "Herwig/Shower/Dipole/Kinematics/DipoleSplittingKinematics.h"
 
+#include "ThePEG/EventRecord/RhoDMatrix.h"
+#include "Herwig/Decay/DecayMatrixElement.h"
+#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -226,6 +230,17 @@ public:
    * dipole splitting.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
+  
+  /**
+   * Evaluate rho_ii' V_ijk V*_i'jk / equivalent for initial-state splitting,
+   * required for generating spin-correlated azimuthal angles.
+   **/
+  virtual vector< pair<int, Complex> >  generatePhi( const DipoleSplittingInfo& dInfo, const RhoDMatrix& rho) const = 0;
+   
+  /**
+   * Return the completely spin-unaveraged (i.e. spin-indexed) splitting kernel.
+   **/
+  virtual DecayMEPtr matrixElement(const DipoleSplittingInfo& dInfo) const = 0;
 
   /**
    * Clear the alphaPDF cache

@@ -495,7 +495,7 @@ void ColourReconnector::_makeBaryonicClusters(
     assert(c1->numComponents()==2);
     assert(c2->numComponents()==2);
     assert(c3->numComponents()==2);
-    //abandon childs
+    //abandon children
     c1->colParticle()->abandonChild(c1);
     c1->antiColParticle()->abandonChild(c1);
     c2->colParticle()->abandonChild(c2);
@@ -508,8 +508,9 @@ void ColourReconnector::_makeBaryonicClusters(
     c2->colParticle()->addChild(newcluster1);
     c3->colParticle()->addChild(newcluster1);
     newcluster1->setVertex(LorentzPoint());
+
     newcluster2 = new_ptr(Cluster(c1->antiColParticle(), c2->antiColParticle(),
-          c3->antiColParticle()));
+    c3->antiColParticle()));
     c1->antiColParticle()->addChild(newcluster2);
     c2->antiColParticle()->addChild(newcluster2);
     c3->antiColParticle()->addChild(newcluster2);
@@ -790,7 +791,7 @@ void ColourReconnector::Init() {
      1);
   static SwitchOption interfaceAlgorithmBaryonic
     (interfaceAlgorithm,
-     "BaryonicReco",
+     "Baryonic",
      "Baryonic cluster reconnection",
      2);
 

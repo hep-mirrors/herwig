@@ -102,7 +102,7 @@ for f in files:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as XML" % file)
-        break
+        continue
     if(file.find("PromptPhoton")>=0) :
         if(file.find("PromptPhoton-1")>0) :
             ptmin=0.

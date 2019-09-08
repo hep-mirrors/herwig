@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DipoleShowerParticle class.
+//
+#ifndef HERWIG_DipoleShowerParticle_FH
+#define HERWIG_DipoleShowerParticle_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+  using namespace ThePEG;
+  
+  class DipoleShowerParticle;
+  ThePEG_DECLARE_POINTERS(DipoleShowerParticle,DSParticlePtr); 
+  
+}
+
+#endif

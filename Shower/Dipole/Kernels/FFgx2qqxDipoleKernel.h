@@ -77,6 +77,17 @@ public:
    */
   virtual double evaluate(const DipoleSplittingInfo&) const;
 
+  /**
+   * Evaluate rho_ii' V_ijk V*_i'jk / equivalent for initial-state splitting,
+   * required for generating spin-correlated azimuthal angles.
+   **/
+  virtual vector< pair<int, Complex> >  generatePhi( const DipoleSplittingInfo& dInfo, const RhoDMatrix& rho) const;
+   
+  /**
+   * Return the completely spin-unaveraged (i.e. spin-indexed) splitting kernel.
+   **/
+  virtual DecayMEPtr matrixElement(const DipoleSplittingInfo& dInfo) const;
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */

@@ -4,3 +4,4 @@
 # ATLAS top
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1468168
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2017_I1495243
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1705857

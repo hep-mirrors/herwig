@@ -172,9 +172,11 @@ public:
    * Triangular / Kallen function
    */
   template <class T>
-  inline double rootOfKallen (T a, T b, T c) const {
-    double sres=a*a + b*b + c*c - 2.*( a*b+a*c+b*c );
-    return sres>0.?sqrt( sres ):0.; }
+  inline T rootOfKallen (T a, T b, T c) const {
+    if ( a*a + b*b + c*c - 2.*(a*b + a*c + b*c) > ZERO )
+      return sqrt(a*a + b*b + c*c - 2.*(a*b + a*c + b*c) ) ;
+    else
+      return ZERO; }
   
   /**
    * Perform a rotation on both momenta such that the first one will

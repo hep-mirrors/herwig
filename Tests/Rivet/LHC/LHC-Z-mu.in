@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # select the analyses
 ##################################################
@@ -32,4 +33,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1351916_MU
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1262703 
 # ATLAS Z inclusive cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1502620:LMODE=ZMU
-
+# ATLAS W/Z ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_MU

@@ -234,6 +234,12 @@ def colorfactor(vertex,L,pos,lorentztag):
             if match(label): return ("SU3TTFUNDD",('-complex(0.,1.)',))
             label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),)
             if match(label): return ("SU3TTFUNDD",('-complex(0.,1.)',))
+        elif(vertex.lorentz[0].spins.count(3)==4) :
+            label = ('f(-1,{g1},{g2})*T(-1,{qq},{qb})'.format(**subs),
+                     'T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
+                     'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
+            if match(label): return ("SU3TTFUNDS",(('-complex(0.,1.)','complex(0.,1.)'),'1.','1.'))
+            
         
     elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
         subs = {
@@ -387,6 +393,7 @@ class VertexConverter:
         self.parmsubs = parmsubs
         self.couplingDefns = defns
         self.genericTensors = False
+        self.hw_higgs = False
         
     def readArgs(self,args) :
         'Extract the relevant command line arguments'
@@ -396,6 +403,7 @@ class VertexConverter:
         self.no_generic_loop_vertices = args.no_generic_loop_vertices
         self.include_generic = args.include_generic
         self.genericTensors = args.use_generic_for_tensors
+        self.hw_higgs = args.use_Herwig_Higgs
         
     def should_print(self) :
         'Check if we should output the results'
@@ -410,6 +418,13 @@ class VertexConverter:
             pprint.pprint(labels)
         # extract the vertices
         self.all_vertices = self.model.all_vertices
+        # find the SM Higgs boson
+        higgs=None
+        if(self.hw_higgs) :
+            for part in self.model.all_particles:
+                if(part.pdg_code==25) :
+                    higgs=part
+                    break
         # convert the vertices
         vertexclasses, vertexheaders = [], set()
         ifile=1
@@ -420,6 +435,29 @@ class VertexConverter:
            self.processVertex(vertexnumber,vertex)
            # check it can be handled
            if(skip) : continue
+           # check if Higgs and skip if using Hw higgs sector
+           if higgs in vertex.particles :
+               nH = vertex.particles.count(higgs) 
+               # skip trilinear and quartic higgs vertices
+               if ( nH == len(vertex.particles) ) :
+                   vertex.herwig_skip_vertex = True
+                   continue
+               elif (len(vertex.particles)-nH==2) :
+                   p=[]
+                   for part in vertex.particles :
+                       if(part!=higgs) : p.append(part)
+                   if(nH==1 and p[0].pdg_code==-p[1].pdg_code and
+                      abs(p[0].pdg_code) in [1,2,3,4,5,6,11,13,15,24]) :
+                       vertex.herwig_skip_vertex = True
+                       continue
+                   elif((nH==1 or nH==2) and p[0].pdg_code==p[1].pdg_code and
+                        p[0].pdg_code ==23) :
+                       vertex.herwig_skip_vertex = True
+                       continue
+                   elif(nH==2 and  p[0].pdg_code==-p[1].pdg_code and
+                        abs(p[0].pdg_code)==24) :
+                       vertex.herwig_skip_vertex = True
+                       continue
            # add to the list
            icount +=1
            vertexclasses.append(vertexClass)
@@ -439,7 +477,8 @@ class VertexConverter:
             sys.stderr.write(
 """
 Error: The conversion was unsuccessful, some vertices could not be
-generated. If you think the missing vertices are not important 
+generated. The new --include-generic option should be able to generate
+these. Otherwise, if you think the missing vertices are not important 
 and want to go ahead anyway, use --ignore-skipped. 
 Herwig may not give correct results, though.
 """
@@ -466,7 +505,7 @@ Herwig may not give correct results, though.
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
             couplingptrs[2] += ' p3'
-        elif (lorentztag == 'VVVV' and qcd < 2) or\
+        elif (lorentztag == 'VVVV' and (qcd < 2 or append)) or\
              (lorentztag == "SSSS" and prepend ):
             couplingptrs[0] += ' p1'
             couplingptrs[1] += ' p2'
@@ -627,8 +666,6 @@ Herwig may not give correct results, though.
                                                                           all_couplings[color_idx],append,corder["QCD"],order)
                     else:
                         raise SkipThisVertex()
-            # set the coupling ptrs in the setCoupling call
-            couplingptrs = self.setCouplingPtrs(lorentztag,corder["QCD"],append != '',prepend != '')
             # final processing of the couplings
             symbols = set()
             if(lorentztag in ['FFS','FFV']) :
@@ -650,6 +687,9 @@ Herwig may not give correct results, though.
                                             processVectorCouplings(lorentztag,vertex,self.model,self.parmsubs,all_couplings,append,header)
             else :
                 SkipThisVertex()
+            # set the coupling ptrs in the setCoupling call
+            couplingptrs = self.setCouplingPtrs(lorentztag.replace("General",""),
+                                                                   corder["QCD"],append != '',prepend != '')
             ### do we need left/right?
             if 'FF' in lorentztag and lorentztag != "FFT":
                 #leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
@@ -843,9 +883,12 @@ Herwig may not give correct results, though.
             if v.herwig_skip_vertex: continue
             for name in self.vertex_names[v.name] :
                 vlist.append( vertexline.format(modelname=self.modelname, classname=name) )
-        if( not self.no_generic_loop_vertices) :
+        
+        if( not self.no_generic_loop_vertices and not self.hw_higgs ) :
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=self.modelname) )
             vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=self.modelname) )
+        # add Hw higgs vertices if required
+        if(self.hw_higgs) :
+            for vertex in ["FFH","HGG","HHH","HPP","HZP","WWHH","WWH"]:
+                vlist.append('insert %s:ExtraVertices 0 /Herwig/Vertices/%sVertex\n' % (self.modelname,vertex) )
         return ''.join(vlist)
-
-

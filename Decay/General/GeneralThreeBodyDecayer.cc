@@ -181,6 +181,7 @@ void GeneralThreeBodyDecayer::doinit() {
 }
 
 void GeneralThreeBodyDecayer::doinitrun() {
+  if(outgoing_.empty()) return;
   setupDiagrams(true);
   DecayIntegrator::doinitrun();
 }

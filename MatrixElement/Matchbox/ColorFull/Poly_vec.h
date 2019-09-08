@@ -27,44 +27,44 @@ class Poly_vec {
 
 public:
 
-	/// Default constructor, sets nothing.
+	/// Default constructor, leaves pv empty.
 	Poly_vec() {}
 
-	/// Make a Poly_vec of a poly_vec.
+	/// Makes a Poly_vec of a poly_vec.
 	Poly_vec( poly_vec poly_v ){pv=poly_v;}
 
 	/// To actually contain the polynomial information.
 	poly_vec pv;
 
-	/// Returning Polynomial at place i.
+	/// Returns the Polynomial at place i.
 	const Polynomial& at( int i ) const { return pv.at(i); }
 
-	/// Returning Polynomial at place i.
+	/// Returns the Polynomial at place i.
 	Polynomial& at( int i ) { return pv.at(i); }
 
 	/// Return the number of Polynomials in the vector,
 	/// i.e., the size of the member pv.
 	uint size() const { return pv.size(); }
 
-	/// Erase information in vector.
+	/// Erases the information in vector.
 	void clear() { pv.clear(); }
 
 	/// Appends a Polynomial to data member pv.
-	void push_back( Polynomial Poly ) { pv.push_back( Poly ); }
+	void append( Polynomial Poly ) { pv.push_back( Poly ); }
 
 	/// Is the vector empty?
 	bool empty() const { return pv.empty(); }
 
 	/// Remove CF in the poly_vec member pv, i.e., replace CF by
-	/// TR (Nc^2-1)/(2 Nc).
+	/// TR*Nc -TR/Nc.
 	void remove_CF();
 
-	/// Normal order all Polynomials in the poly_vec member pv.
-	/// (Uses the Polynomial.normal_order function.)
+	/// Normal order all Polynomials in the poly_vec member pv
+	/// (uses the Polynomial.normal_order function.)
 	void normal_order();
 
-	/// Simplifies all polynomials in the poly_vec member pv.
-	/// (Uses the simplify member function in Polynomial).
+	/// Simplifies all polynomials in the poly_vec member pv
+	/// (uses the simplify member function in Polynomial).
 	void simplify();
 
 	/// Conjugates the Poly_vec.
@@ -78,7 +78,6 @@ public:
 
 	/// Writes out the vector to the file filename.
 	void write_out_Poly_vec( std::string filename ) const;
-
 };
 
 /// Operator << for poly_vec.
@@ -87,6 +86,13 @@ std::ostream& operator<<( std::ostream& out, const poly_vec & poly_v );
 /// Operator << for Poly_vec.
 std::ostream& operator<<( std::ostream& out, const Poly_vec & Pv );
 
+/// Define the operator == for Poly_vec,
+/// each Polynomial has to be identical.
+bool operator==( const Poly_vec & Pv1, const Poly_vec & Pv2 );
+
+/// Define the operator != for Poly_vec,
+/// each Polynomial has to be identical.
+bool operator!=( const Poly_vec & Pv1, const Poly_vec & Pv2 );
 
 }
 

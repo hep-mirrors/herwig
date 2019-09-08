@@ -71,43 +71,105 @@ double FFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   
   double ret = alphaPDF(split);
 
-    // These are the physical variables as used in the 
-    //standard form of the kernel (i.e. do not redefine variables or kernel)
+  // Sudakov parameterisation variables,
+  // needed to calculate y.
   double z = split.lastZ();
   Energy pt = split.lastPt();
 
-  // Need zPrime to calculate y, 
-  // TODO: Should just store y in the dipole splitting info everywhere anyway!!!
-  // The only value stored in dInfo.lastSplittingParameters() should be zPrime
-  //assert(split.lastSplittingParameters().size() == 1 );
-  double zPrime = split.lastSplittingParameters()[0];
-
   // Construct mass squared variables
-  double mui2 = sqr(split.emitterData()->mass() / split.scale());
-  double mu2 = mui2;
-  double muj2 = sqr(split.spectatorMass() / split.scale());
-  double bar = 1. - mui2 - mu2 - muj2;
+  Energy2 Qijk = sqr(split.scale());
+  Energy2 mi2 = sqr(split.emitterData()->mass());
+  Energy2 mj2 = mi2;
+  Energy2 mk2 = sqr(split.spectatorMass());
+  Energy2 sbar = Qijk - mi2 - mj2 - mk2;
 
   // Calculate y
-  double y = (sqr(pt)/sqr(split.scale()) 
-             + sqr(1.-zPrime)*mui2 + sqr(zPrime)*mu2) 
-             / (bar*zPrime*(1.-zPrime));
+  double y = (sqr(pt) + sqr(1.-z)*mi2 + sqr(z)*mj2) / sbar / z / (1.-z);
+  
+  // zi, used in dipole splitting kernel
+  double zi = split.lastSplittingParameters()[0];
+  
+  double vijk = sqrt( sqr(2.*mk2 + sbar*(1.-y)) - 4.*mk2*Qijk ) / sbar / (1.-y);
+  double viji = sqrt( sqr(sbar*y) - 4.*sqr(mi2) ) / (sbar*y + 2.*mi2);
 
-  double vijk = sqrt( sqr(2.*muj2+bar*(1.-y))-4.*muj2 ) / (bar*(1.-y)); 
-  double viji = sqrt( sqr(bar*y)-4.*sqr(mui2) ) / (bar*y+2.*mui2);
-
-  double zp = 0.5*(1.+viji*vijk);
-  double zm = 0.5*(1.-viji*vijk);
+  double zip = 0.5*(1.+viji*vijk);
+  double zim = 0.5*(1.-viji*vijk);
 
   // how to choose kappa??
   double kappa = 0.;
 
   ret *= 0.25 / vijk *
-    ( 1. - 2.*( z*(1.-z) - (1.-kappa)*zp*zm 
-                - kappa*mui2/(2.*mui2+(1.-2.*mui2-muj2)*y) ) );
+    ( 1. - 2.*( zi*(1.-zi) - (1.-kappa)*zip*zim 
+                - kappa*mi2 / ( 2.*mi2 + (Qijk - 2.*mi2 - mk2)*y) ) );
     
   return ret > 0. ? ret : 0.;
   
+}
+
+vector< pair<int, Complex> >
+FFMgx2qqxDipoleKernel::generatePhi(const DipoleSplittingInfo& dInfo, const RhoDMatrix& rho) const {
+
+  // Need variables for the AP kernels
+  double z = dInfo.lastZ();
+  Energy pt = dInfo.lastPt();
+  Energy2 mi2 = sqr(dInfo.emitterData()->mass());
+
+  // Altarelli-Parisi spin-indexed kernels:
+  double ratio = mi2 / ( mi2 + sqr(pt) );
+  double root = sqrt(1.-ratio);
+  double v_AP_ppp = sqrt(ratio);
+  double v_AP_ppm = z*root;
+  double v_AP_pmp = -(1.-z)*root;
+
+  //double v_AP_mmm = v_AP_ppp;
+  double v_AP_mmp = -v_AP_ppm;
+  double v_AP_mpm = -v_AP_pmp;
+
+  // Initialise variables for the distributions
+  vector< pair<int, Complex> > distPhiDep;
+  double max = (sqr(v_AP_ppp) + sqr(v_AP_ppm) + sqr(v_AP_pmp)) + 2.*abs(rho(0,2))*(v_AP_ppm*v_AP_mpm + v_AP_pmp*v_AP_mmp);
+  
+  distPhiDep.push_back( make_pair(0, (rho(0,0)+rho(2,2))*(sqr(v_AP_ppp) + sqr(v_AP_ppm) + sqr(v_AP_pmp) )/max ) );
+  distPhiDep.push_back( make_pair(-2, rho(0,2)*(v_AP_mpm*v_AP_ppm + v_AP_mmp*v_AP_pmp)/max ) );
+  distPhiDep.push_back( make_pair(2, rho(2,0)*(v_AP_ppm*v_AP_mpm + v_AP_pmp*v_AP_mmp)/max) );
+
+  return distPhiDep;
+}
+
+DecayMEPtr FFMgx2qqxDipoleKernel::matrixElement( const DipoleSplittingInfo& dInfo ) const {
+  
+  // Need variables for the AP kernels
+  double z = dInfo.lastZ();
+  Energy pt = dInfo.lastPt();
+  Energy2 mi2 = sqr(dInfo.emitterData()->mass());
+
+  // Altarelli-Parisi spin-indexed kernels:
+  double ratio = mi2 / ( mi2 + sqr(pt) );
+  double root = sqrt(1.-ratio);
+  double v_AP_ppp = sqrt(ratio);
+  double v_AP_ppm = z*root;
+  double v_AP_pmp = -(1.-z)*root;
+
+  double v_AP_mmm = v_AP_ppp;
+  double v_AP_mmp = -v_AP_ppm;
+  double v_AP_mpm = -v_AP_pmp;
+
+  // Construct the (phi-dependent) spin-unaveraged splitting kernel
+  DecayMEPtr kernelPhiDep
+    (new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
+  Complex phase = exp(Complex(0.,1.)*dInfo.lastPhi());
+
+  // 0 = -, 2 = +
+  (*kernelPhiDep)(0,0,0) = v_AP_mmm;
+  (*kernelPhiDep)(2,1,1) = v_AP_ppp;
+  (*kernelPhiDep)(0,0,1) = v_AP_mmp/phase;
+  (*kernelPhiDep)(2,1,0) = v_AP_ppm*phase;
+  (*kernelPhiDep)(0,1,0) = v_AP_mpm/phase;
+  (*kernelPhiDep)(2,0,1) = v_AP_pmp*phase;
+  (*kernelPhiDep)(0,1,1) = 0.;
+  (*kernelPhiDep)(2,0,0) = 0.;
+
+  return kernelPhiDep;
 }
 
 // If needed, insert default implementations of  function defined

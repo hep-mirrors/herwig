@@ -7,10 +7,11 @@
 #include "MEDiffraction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-
+#include "ThePEG/Handlers/SamplerBase.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -457,7 +458,6 @@ bool MEDiffraction::generateKinematics(const double * ) {
 //(for single diffraction). Sample according to f(M2,t)=f(M2)f(t|M2).
 pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTransfer() const {
   Energy2 theM12(ZERO),theM22(ZERO), thet(ZERO);
-  int count = 0;
   //proton mass squared
   const Energy2 m2 = sqr(theProtonMass);
   //delta mass squared
@@ -469,81 +469,90 @@ pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTra
     //check if we want only delta 
     if(deltaOnly) {
       switch(diffDirection){
-        case 0:
-          theM12 = md2;
-          theM22 = m2;
-          M2 = md2;
-          thet = randomt(md2);
-          break;
-        case 1:
-          theM22 = md2;
-          theM12 = m2;
-          M2 = md2;   
-          thet = randomt(md2);
-          break;
-        case 2:
-          theM12 = md2;
-          theM22 = md2;
-          M2 = md2;
-          thet = doublediffrandomt(theM12,theM22);
-          break;  
+      case 0:
+	theM12 = md2;
+	theM22 = m2;
+	M2 = md2;
+	if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+	  continue;
+	}
+	thet = randomt(md2);
+	break;
+      case 1:
+	theM22 = md2;
+	theM12 = m2;
+	M2 = md2;   
+	if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+	  continue;
+	}
+	thet = randomt(md2);
+	break;
+      case 2:
+	theM12 = md2;
+	theM22 = md2;
+	M2 = md2;
+	if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+	  continue;
+	}
+	thet = doublediffrandomt(theM12,theM22);
+	break;  
       }
-
     }
     else {
       switch (diffDirection){
       case 0:
         M2=randomM2();
-        thet = randomt(M2);
         theM12=M2;
-        
         theM22=m2;
-        
+	if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+	  continue;
+	}
+        thet = randomt(M2);
         break;
       case 1:
-        
         theM12=m2;
         M2=randomM2();
-        thet = randomt(M2);
-        
-        
         theM22=M2; 
+	if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+	  continue;
+	}
+        thet = randomt(M2);
         break;
       case 2:
         theM12=randomM2();
         theM22=randomM2();
         M2=(theM12>theM22) ? theM12: theM22;
-        
+	if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
+	  continue;
+	}
         thet = doublediffrandomt(theM12,theM22);
-        
         break;
       }
     }
-    count++;
   
-  const Energy cmEnergy = generator()->maximumCMEnergy();
-  const Energy2 s = sqr(cmEnergy);
+    const Energy cmEnergy = generator()->maximumCMEnergy();
+    const Energy2 s = sqr(cmEnergy);
     if(generator()->maximumCMEnergy()<sqrt(theM12)+sqrt(theM22)) {
       condition = true;
+      continue;
     }
-    else {
-  InvEnergy2 slope;
-  if(diffDirection==2){
-    slope = 2*softPomeronSlope()*log(.1+(sqr(cmEnergy)/softPomeronSlope())/(theM12*theM22));
-  }else{
-    slope = protonPomeronSlope()
-                         + 2*softPomeronSlope()*log(sqr(cmEnergy)/M2);
-  }
-
-  
-  const double expmax = exp(slope*tmaxfun(s,m2,M2));
-  const double expmin = exp(slope*tminfun(s,m2,M2));
-  
-  
-  //without (1-M2/s) constraint
-  condition = (UseRandom::rnd()>(protonPomeronSlope()*GeV2)*(expmax-expmin)/(slope*GeV2))
-      ||((theM12/GeV2)*(theM22/GeV2)>=(sqr(cmEnergy)/GeV2)/(softPomeronSlope()*GeV2));
+    
+    InvEnergy2 slope;
+    if(diffDirection==2)
+      slope = 2*softPomeronSlope()*log(.1+(sqr(cmEnergy)/softPomeronSlope())/(theM12*theM22));
+    else 
+      slope = protonPomeronSlope() + 2*softPomeronSlope()*log(sqr(cmEnergy)/M2);
+    
+    if(theM12*theM22 >= sqr(cmEnergy)/softPomeronSlope()) {
+      condition = true;
+      continue;
     }
+    
+    const double expmax = exp(slope*tmaxfun(s,m2,M2));
+    const double expmin = exp(slope*tminfun(s,m2,M2));
+    
+    // without (1-M2/s) constraint
+    condition = (UseRandom::rnd() > protonPomeronSlope()*(expmax-expmin)/slope );
   }
   while(condition);
   
@@ -587,11 +596,17 @@ Energy2 MEDiffraction::randomt(Energy2 M2) const {
   const Energy cmEnergy = generator()->maximumCMEnergy();
   const Energy2 ttmin = tminfun(sqr(cmEnergy),m2,M2);
   const Energy2 ttmax = tmaxfun(sqr(cmEnergy),m2,M2);
-
   const InvEnergy2 slope = protonPomeronSlope()
                          + 2*softPomeronSlope()*log(sqr(cmEnergy)/M2);
-    return log( exp(slope*ttmin) +
-              UseRandom::rnd()*(exp(slope*ttmax) - exp(slope*ttmin)) ) / slope;
+  double r = UseRandom::rnd();
+  Energy2 newVal;
+  if(slope*ttmax>slope*ttmin) {
+    newVal = ttmax + log( r + (1.-r)*exp(slope*(ttmin-ttmax)) ) / slope;
+  }
+  else {
+    newVal = ttmin + log( 1. - r + r*exp(slope*(ttmax-ttmin))) / slope;
+  }
+  return newVal;
 }
 
 Energy2 MEDiffraction::doublediffrandomt(Energy2 M12, Energy2 M22) const {
@@ -630,17 +645,74 @@ Energy2 MEDiffraction::tminfun(Energy2 s, Energy2 M12, Energy2 M22) const {
 
 Energy2 MEDiffraction::tmaxfun(Energy2 s, Energy2 M12, Energy2 M22) const  {
   const Energy2 m2 = sqr( theProtonMass );
-  
   return 0.5/s*(sqrt(kallen(s, m2, m2)*kallen(s, M12, M22))-sqr(s)+2*s*m2+s*M12+s*M22);
 }
 
 
+
+double  MEDiffraction::correctionweight() const {
+
+
+  // Here we calculate the weight to restore the diffractiveXSec
+  // given by the MPIHandler. 
+  
+  // First get the eventhandler to get the current cross sections. 
+  static Ptr<StandardEventHandler>::tptr eh =
+  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+
+  // All diffractive processes make use of this ME. 
+  // The static map can be used to collect all the sumOfWeights.
+  static map<XCombPtr,double> weightsmap;
+  weightsmap[lastXCombPtr()]=lastXComb().stats().sumWeights();
+  
+
+  // Define static variable to keep trac of reweighting
+  static double rew_=1.;
+  static int countUpdateWeight=50;
+  static double sumRew=0.;
+  static double countN=0;
+
+  // if we produce events we count
+  if(eh->integratedXSec()>ZERO)sumRew+=rew_;
+  if(eh->integratedXSec()>ZERO)countN+=1.;
+
+  if(countUpdateWeight<countN){
+    // Summing all diffractive processes (various initial states)
+    double sum=0.;
+    for(auto xx:weightsmap){
+     sum+=xx.second;
+    }
+    double avRew=sumRew/countN;
+    
+    CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
+    CrossSection XS_wanted=MPIHandler_->diffractiveXSec();
+    double deltaN=50;
+    
+      // Cross section without reweighting: XS_norew
+      // XS_have = avcsNorm2*XS_norew    (for large N)
+      // We want to determine the rew that allows to get the wanted XS.
+      // In deltaN points we want (left) and we get (right):
+      // XS_wanted*(countN+deltaN) = XS_have*countN + rew*deltaN*XS_norew
+      // Solve for rew:
+    
+    rew_=avRew*(XS_wanted*(countN+deltaN)-XS_have*countN)/(XS_have*deltaN);
+    countUpdateWeight+=deltaN;
+  }
+  //Make sure we dont produce negative weights. 
+  // TODO: write finalize method that checks if reweighting was performed correctly. 
+  rew_=max(rew_,0.000001);
+  rew_=min(rew_,10000.0);
+  
+  return rew_;
+  
+}
+
 double MEDiffraction::me2() const{
-  return theme2; 
+  return theme2;
 }
 
 CrossSection MEDiffraction::dSigHatDR() const {
-  return me2()*jacobian()/sHat()*sqr(hbarc);
+  return me2()*jacobian()/sHat()*sqr(hbarc)*correctionweight();
 }
 
 unsigned int MEDiffraction::orderInAlphaS() const {
@@ -792,13 +864,13 @@ describeHerwigMEDiffraction("Herwig::MEDiffraction", "HwMEHadron.so");
 void MEDiffraction::persistentOutput(PersistentOStream & os) const {
   os << theme2 << deltaOnly << diffDirection << theprotonPomeronSlope
      << thesoftPomeronIntercept << thesoftPomeronSlope << dissociationDecay
-     << ounit(theProtonMass,GeV);
+     << ounit(theProtonMass,GeV) << MPIHandler_;
 }
 
 void MEDiffraction::persistentInput(PersistentIStream & is, int) {
   is >> theme2 >> deltaOnly >> diffDirection >> theprotonPomeronSlope
      >> thesoftPomeronIntercept >> thesoftPomeronSlope >> dissociationDecay
-     >> iunit(theProtonMass,GeV);
+     >> iunit(theProtonMass,GeV)>> MPIHandler_;
 }
 
 InvEnergy2 MEDiffraction::protonPomeronSlope() const{
@@ -874,4 +946,14 @@ void MEDiffraction::Init() {
     (interfaceDissociationDecay,"One","Dissociated proton decays into one cluster", 0);
   static SwitchOption two
     (interfaceDissociationDecay,"Two","Dissociated proton decays into two clusters", 1);
+
+
+  static Reference<MEDiffraction,UEBase> interfaceMPIHandler
+    ("MPIHandler",
+     "The object that administers all additional scatterings.",
+     &MEDiffraction::MPIHandler_, false, false, true, true);
+
+
+
+
 } 

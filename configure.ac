@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([Herwig],[devel],[herwig@projects.hepforge.org],[Herwig])
+AC_INIT([Herwig],[7.2.0],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -183,6 +183,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		MatrixElement/Matchbox/External/OpenLoops/Makefile
 		MatrixElement/Matchbox/External/MadGraph/Makefile
 		MatrixElement/Matchbox/External/MadGraph/mg2herwig
+		MatrixElement/FxFx/Makefile
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
 		Shower/Makefile
@@ -194,6 +195,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Dipole/Kinematics/Makefile
 		Shower/Dipole/Utility/Makefile
 		Shower/Dipole/AlphaS/Makefile
+		Shower/Dipole/SpinCorrelations/Makefile
 		Utilities/Makefile
 		Utilities/XML/Makefile
 		Utilities/Statistics/Makefile
