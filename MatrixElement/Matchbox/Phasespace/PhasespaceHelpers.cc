@@ -306,11 +306,17 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   
   if ( !doMirror && externalId == 0 ) {
     init(meMomenta);
-    momentum = meMomenta[0];
+    Energy2 s = (meMomenta[0]+meMomenta[1]).m2();
+    double sign = meMomenta[0].z() >= ZERO ? 1. : -1;
+    momentum = Lorentz5Momentum(ZERO,ZERO,sign*sqrt(s)/2.,sqrt(s)/2.,ZERO);
+    backwardMomentum = Lorentz5Momentum(ZERO,ZERO,-sign*sqrt(s)/2.,sqrt(s)/2.,ZERO);
   }
   else if ( doMirror && externalId == 1) {
     init(meMomenta);
-    momentum = meMomenta[1];
+    Energy2 s = (meMomenta[0]+meMomenta[1]).m2();
+    double sign = meMomenta[0].z() >= ZERO ? 1. : -1;
+    momentum = Lorentz5Momentum(ZERO,ZERO,-sign*sqrt(s)/2.,sqrt(s)/2.,ZERO);
+    backwardMomentum = Lorentz5Momentum(ZERO,ZERO,sign*sqrt(s)/2.,sqrt(s)/2.,ZERO);
   }
 
   if ( children.empty() ) {
@@ -414,7 +420,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   }
 
     // get the CM energy avaialble
-  Energy2 s = (momentum+meMomenta[int(!doMirror)]).m2();
+  Energy2 s = (momentum+backwardMomentum).m2();
   if ( s <= ZERO )
     throw Veto();
 
@@ -456,8 +462,10 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy2 ma2 = sqr(ma);
   if ( ma < ZERO )
     ma2 = -ma2;
-  Energy mb = meMomenta[int(!doMirror)].mass();
+  Energy mb = backwardMomentum.mass();
   Energy2 mb2 = sqr(mb);
+  if ( mb < ZERO )
+    mb2 = -mb2;
 
     // pick the ys variable
   Energy2 ys = ZERO;
@@ -511,8 +519,8 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   Energy pt = sqrt(pt2);
 
   children[1].momentum =
-  xa*momentum + xb*meMomenta[int(!doMirror)] 
-  + info.generateKt(momentum,meMomenta[int(!doMirror)],pt);
+  xa*momentum + xb*backwardMomentum 
+  + info.generateKt(momentum,backwardMomentum,pt);
   children[1].momentum.setMass(mi);
   children[1].momentum.rescaleEnergy();
 
@@ -533,7 +541,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     children[0].generateKinematics(info,meMomenta);
   } else {
     children[0].children[1].momentum =
-    meMomenta[int(!doMirror)] + children[0].momentum;
+    backwardMomentum + children[0].momentum;
     children[0].children[1].momentum.setMass(MW);
     children[0].children[1].momentum.rescaleEnergy();
     children[0].children[1].generateKinematics(info,meMomenta);

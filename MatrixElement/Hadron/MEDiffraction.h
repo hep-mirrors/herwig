@@ -6,6 +6,7 @@
 //
 
 #include "Herwig/MatrixElement/HwMEBase.h"
+#include "Herwig/Shower/UEBase.h"
 
 namespace Herwig {
 
@@ -47,6 +48,12 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
+  
+  /**
+   * Correction weight to reweight the cross section to the diffractive
+   * cross section.
+   */
+  double correctionweight() const;
 
   /**
    * Return the scale associated with the last set phase space point.
@@ -294,6 +301,12 @@ private:
  
   /* The proton mass */
   Energy theProtonMass;
+
+  /**
+   * a MPIHandler to administer the creation of several (semihard) 
+   * partonic interactions.
+   */
+  UEBasePtr MPIHandler_;
   
 };
 

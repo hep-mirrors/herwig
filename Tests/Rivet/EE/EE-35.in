@@ -22,9 +22,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1989_I276764
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1984_I203145
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I177174
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_I284251
-# jade gamma,pi0 and eta spectra
+## jade gamma,pi0 and eta spectra
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1990_I282847
-# TASSO event shapes
+## TASSO event shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1988_I263859
-
-
