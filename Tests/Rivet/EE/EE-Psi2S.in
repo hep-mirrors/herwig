@@ -8,7 +8,7 @@ set EventGenerator:EventHandler:LuminosityFunction:Energy 3.77
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
-do /Herwig/Particles/psi(2S):SelectDecayModes /Herwig/Particles/psi(2S)/psi(2S)->n0,nbar0; /Herwig/Particles/psi(2S)/psi(2S)->p+,pbar-; /Herwig/Particles/psi(2S)/psi(2S)->Sigma0,Sigmabar0; /Herwig/Particles/psi(2S)/psi(2S)->Lambda0,Lambdabar0; /Herwig/Particles/psi(2S)/psi(2S)->Sigma*-,Sigma*bar+;  /Herwig/Particles/psi(2S)/psi(2S)->Sigma*0,Sigma*bar0; /Herwig/Particles/psi(2S)/psi(2S)->Sigma*+,Sigma*bar-; /Herwig/Particles/psi(2S)/psi(2S)->Xi-,Xibar+; /Herwig/Particles/psi(2S)/psi(2S)->Xi0,Xibar0; /Herwig/Particles/psi(2S)/psi(2S)->Sigma*0,Sigma*bar0;
+do /Herwig/Particles/psi(2S):SelectDecayModes /Herwig/Particles/psi(2S)/psi(2S)->n0,nbar0; /Herwig/Particles/psi(2S)/psi(2S)->p+,pbar-; /Herwig/Particles/psi(2S)/psi(2S)->Sigma0,Sigmabar0; /Herwig/Particles/psi(2S)/psi(2S)->Lambda0,Lambdabar0; /Herwig/Particles/psi(2S)/psi(2S)->Sigma*-,Sigma*bar+;  /Herwig/Particles/psi(2S)/psi(2S)->Sigma*0,Sigma*bar0; /Herwig/Particles/psi(2S)/psi(2S)->Sigma*+,Sigma*bar-; /Herwig/Particles/psi(2S)/psi(2S)->Xi-,Xibar+; /Herwig/Particles/psi(2S)/psi(2S)->Xi0,Xibar0; /Herwig/Particles/psi(2S)/psi(2S)->Sigma*0,Sigma*bar0; /Herwig/Particles/psi(2S)/psi(2S)->Xi*-,Xi*bar+;
 # psi(2S) -> lambda anti-lambda and sigma anti-sigma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1510563
 # psi(2S) -> p pbar and n nbar
@@ -17,3 +17,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1658762
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1422780
 # psi(2S) -> xi0 and Sigma*0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
+# psi(2S) -> xi*-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1747092
