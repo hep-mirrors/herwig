@@ -146,7 +146,7 @@ Rivet-%.yoda : Rivet-%.run
 Rivet/%.in :
 	python/make_input_files.py $(notdir $(subst .in,,$@))
 
-Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34.8,41,43.6,45,50,52,55,56,57,60.8,60,61.4,66,76,82,8510,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
+Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34.8,41,43.6,45,50,52,55,56,57,60.8,60,61.4,66,76,82,85,10,12.8,22,26.8,35,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
                   $(shell echo Rivet/EE{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-14.in) \
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
                   $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.6,4.8,4.5,10.52,10.52-sym,10.54,10.45,10.47}.in) \
@@ -181,6 +181,25 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in)
 #                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) $(shell echo Rivet/SppS-{53,63}-UE.in )
 
+Rivet-GammaGamma: Rivet-GammaGamma/done
+	touch $@
+
+Rivet-GammaGamma/done: $(shell echo Rivet-GammaGamma-mumu-{3.5,4.5,5.5,6.5,7.5,9.0,12.5,17.5,30.0}.yoda )
+	rm -rf Rivet-GammaGamma
+	python/merge-GammaGamma GammaGamma
+	rivet-mkhtml -o Rivet-GammaGamma GammaGamma.yoda:Hw
+	touch $@
+
+Rivet-EE-Gamma: Rivet-EE-Gamma/done
+	touch $@
+
+Rivet-EE-Gamma/done: $(shell echo Rivet-EE-Gamma-Direct-mumu-{161,172,183,189,196,206}.yoda ) \
+                      $(shell echo Rivet-EE-Gamma-Direct-tautau-{189,196,206}.yoda ) \
+	              $(shell echo Rivet-EE-Gamma-{Direct,Single-Resolved,Double-Resolved}-Jets-{198,206}.yoda )
+	rm -rf Rivet-EE-Gamma
+	python/merge-EE-Gamma EE-Gamma
+	rivet-mkhtml -o Rivet-EE-Gamma EE-Gamma.yoda:Hw
+	touch $@
 
 Rivet-EE : Rivet-EE/done
 	touch $@
