@@ -150,6 +150,10 @@ bool PhiPiCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  // other flavours
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // check that the mode is are kinematical allowed
   Energy min = getParticleData(ParticleID::phi)->massMin();
   if(imode==0)
@@ -235,6 +239,13 @@ PhiPiCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  // other flavours
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero)
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      )
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      )
+    return vector<LorentzPolarizationVectorE>();
   useMe();
   vector<LorentzPolarizationVector> temp(3);
   for(unsigned int ix=0;ix<3;++ix)

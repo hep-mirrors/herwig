@@ -131,6 +131,10 @@ bool EtaPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   if(flavour.I3!=IsoSpin::I3Unknown) {
     if(flavour.I3!=IsoSpin::I3Zero) return false;
   }
+  if(flavour.strange != Strangeness::Unknown)
+     if(flavour.strange != Strangeness::Zero and flavour.strange != Strangeness::ssbar) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       ) return false;
   // check that the mode is are kinematical allowed
   Energy min = getParticleData(ParticleID::eta)->mass();
   if(min>upp) return false;
@@ -143,6 +147,14 @@ bool EtaPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   // set up the integration channels;
   for(unsigned int ix=0;ix<res.size();++ix) {
     if(resonance && resonance!=res[ix]) continue;
+    if(flavour.strange != Strangeness::Unknown) {
+      if     (flavour.strange == Strangeness::Zero && (ix==2||ix==4)) {
+	continue;
+      }
+      else if(flavour.strange == Strangeness::ssbar && (ix<2||ix==3)) {
+	continue;
+      }
+    }
     mode->addChannel((PhaseSpaceChannel(phase),ires,res[ix],
  		      ires+1,iloc+1,ires+1,iloc+2));
   }
@@ -187,6 +199,13 @@ EtaPhotonCurrent::current(tcPDPtr resonance,
   if(flavour.I3!=IsoSpin::I3Unknown) {
     if(flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
   }
+  if(flavour.strange != Strangeness::Unknown)
+     if(flavour.strange != Strangeness::Zero and flavour.strange != Strangeness::ssbar)
+       return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       )
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       )
+    return vector<LorentzPolarizationVectorE>();
   useMe();
   // polarization vectors of the photon
   vector<LorentzPolarizationVector> temp(3);
@@ -204,6 +223,14 @@ EtaPhotonCurrent::current(tcPDPtr resonance,
   unsigned int imax = couplings_.size();
   if(ichan>0) {
     imin = ichan;
+    if(flavour.strange != Strangeness::Unknown) {
+      if     (flavour.strange == Strangeness::Zero) {
+	if(imin==2) imin=4;
+      }
+      else if(flavour.strange == Strangeness::ssbar) {
+	imin=2*imin+2;
+      } 
+    }
     imax = imin+1;
   }
   if(resonance) {
@@ -232,6 +259,10 @@ EtaPhotonCurrent::current(tcPDPtr resonance,
   complex<InvEnergy> formFactor(ZERO);
   // loop over the resonances
   for(unsigned int ix=imin;ix<imax;++ix) {
+    if(flavour.strange != Strangeness::Unknown) {
+      if     (flavour.strange == Strangeness::Zero && (ix==2||ix==4)) continue;
+      else if(flavour.strange == Strangeness::ssbar && (ix<2||ix==3)) continue; 
+    }
     Energy2 mR2(sqr(resMasses_[ix]));
     // compute the width
     Energy width(ZERO);
