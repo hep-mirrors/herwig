@@ -225,9 +225,10 @@ DecayMEPtr HalfHalfZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
     mq = getParticleData(ParticleID::t)->mass();
   mH = getParticleData(ParticleID::h0)->mass();
   double gH(0.);
-  getCouplings(gH,ids,t);
-  double mqt = mq/sqrt(t);
-  double mHt = mH/sqrt(t);
+  Energy2 tC = t/(z*(1-z));
+  getCouplings(gH,ids,tC);
+  double mqt = mq/sqrt(tC);
+  double mHt = mH/sqrt(tC);
   double num1 = gH*(1.+z)*mqt;
   double num2 = gH*sqrt(-sqr(mqt)*(1.-z) - sqr(mHt)*z + z*(1.-z)*(sqr(mqt)+z*(1.-z))); //watch this
   double dnum = sqrt(2.)*sqrt((1.-z)*sqr(z));
