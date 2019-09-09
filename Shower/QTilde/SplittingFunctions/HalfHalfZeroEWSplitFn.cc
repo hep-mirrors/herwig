@@ -26,11 +26,11 @@ IBPtr HalfHalfZeroEWSplitFn::fullclone() const {
 }
 
 void HalfHalfZeroEWSplitFn::persistentOutput(PersistentOStream & os) const {
-  os << ghqq_;
+  os << ghqq_ << _theSM;
 }
 
 void HalfHalfZeroEWSplitFn::persistentInput(PersistentIStream & is, int) {
-  is >> ghqq_;
+  is >> ghqq_ >> _theSM;
 }
 
 // The following static variable is needed for the type description system in ThePEG.
