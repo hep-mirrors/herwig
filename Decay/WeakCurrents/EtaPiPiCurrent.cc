@@ -137,6 +137,9 @@ bool EtaPiPiCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero ) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       ) return false;
   // make sure that the decays are kinematically allowed
   int iq(0),ia(0);
   tPDVector part = particles(icharge,imode,iq,ia);
@@ -225,6 +228,12 @@ EtaPiPiCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero)
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       )
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       )
+    return vector<LorentzPolarizationVectorE>();
   Lorentz5Momentum q=momenta[0]+momenta[1]+momenta[2];
   q.rescaleMass();
   Energy2 s1 = (momenta[0]+momenta[1]).m2();
