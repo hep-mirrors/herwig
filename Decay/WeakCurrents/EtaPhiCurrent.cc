@@ -119,6 +119,12 @@ bool EtaPhiCurrent::createMode(int icharge, tcPDPtr resonance,
   if(flavour.I3!=IsoSpin::I3Unknown) {
     if(flavour.I3!=IsoSpin::I3Zero) return false;
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::ssbar)
+    return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       )
+    return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       )
+    return false;
   // check that the mode is are kinematical allowed
   Energy min = getParticleData(ParticleID::eta)->mass()+
                getParticleData(ParticleID::phi)->massMin();
@@ -171,6 +177,12 @@ EtaPhiCurrent::current(tcPDPtr resonance,
   if(flavour.I3!=IsoSpin::I3Unknown) {
     if(flavour.I3!=IsoSpin::I3Zero) return vector<LorentzPolarizationVectorE>();
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::ssbar)
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       )
+    return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       )
+    return vector<LorentzPolarizationVectorE>();
   useMe();
   // polarization vectors of the photon
   vector<LorentzPolarizationVector> temp(3);
