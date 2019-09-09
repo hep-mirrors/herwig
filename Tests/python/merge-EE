@@ -121,7 +121,7 @@ if(opts.gg) :
 yodafiles += ["2.2","2.6","3.0","3.2","4.6","4.8","3.63","4.03","4.5","9.46","10.00","10.52","10.52-sym","10.54",
               "10.58-res","10.58","Upsilon",
               "Upsilon2","Upsilon4","10.45","10.47","Tau","Phi",
-              "Lambdac","Omega","Xi0","Xic0","Xim","JPsi","Psi2S"]
+              "Lambdac","Omega","Xi0","Xic0","Omegac0","Xim","JPsi","Psi2S"]
 ## Get histos
 inhistos = {}
 outhistos={}
