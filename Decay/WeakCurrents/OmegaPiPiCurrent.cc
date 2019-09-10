@@ -206,6 +206,7 @@ OmegaPiPiCurrent::current(tcPDPtr resonance,
   if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
   if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
   if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(resonance and resonance->id()!=30223) return vector<LorentzPolarizationVectorE>();
   useMe();
   // polarization vectors of the omega
   vector<LorentzPolarizationVector> temp(3);
@@ -263,8 +264,12 @@ OmegaPiPiCurrent::current(tcPDPtr resonance,
       f0_form = gf0_*mf0_*sqrt(G0*GPiPi)/(s1-mf02+Complex(0.,1.)*mf0_*(GPiPi+Complex(0.,1.)*GKK));
     }
   }
-  formFactor =(Sigma_form+f0_form)*pre*scale*gSigma_;
-
+  if(ichan<0) 
+    formFactor = (Sigma_form+f0_form)*pre*scale*gSigma_;
+  else if(ichan==0)
+    formFactor = Sigma_form*pre*scale*gSigma_;
+  else if(ichan==1)
+    formFactor = f0_form*pre*scale*gSigma_;
 //   // loop over the resonances
 //   for(unsigned int ix=imin;ix<imax;++ix) {
 //     Energy2 mR2(sqr(resMasses_[ix]));
