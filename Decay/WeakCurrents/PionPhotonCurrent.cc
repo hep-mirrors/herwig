@@ -26,13 +26,13 @@ PionPhotonCurrent::PionPhotonCurrent() {
   addDecayMode(2,-2);
   setInitialModes(3);
   // Masses for the resonances
-  resMasses_ = {0.77526*GeV,0.78284*GeV,1.01952*GeV,1.45*GeV,1.70*GeV};
+  resMasses_ = {0.77526*GeV,0.78284*GeV,1.45*GeV,1.70*GeV,1.01952*GeV};
   // widths for the resonances
-  resWidths_ = {0.1491 *GeV,0.00868*GeV,0.00421*GeV,0.40*GeV,0.30*GeV};
+  resWidths_ = {0.1491 *GeV,0.00868*GeV,0.40*GeV,0.30*GeV,0.00421*GeV};
   // amplitudes
-  amp_   = {0.0426/GeV,0.0434/GeV,0.00303/GeV,0.00523/GeV,ZERO};
+  amp_   = {0.0426/GeV,0.0434/GeV,0.00523/GeV,ZERO,0.00303/GeV};
   // phases
-  phase_ = {-12.7,0.,158.,180.,0.};
+  phase_ = {-12.7,0.,180.,0.,158.};
 }
 
 IBPtr PionPhotonCurrent::clone() const {
@@ -151,6 +151,12 @@ bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(imode==0 and flavour.strange != Strangeness::Zero) return false;
+    if(imode==1 and flavour.strange != Strangeness::Zero and flavour.strange != Strangeness::ssbar) return false;
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       ) return false;
   // check that the mode is are kinematical allowed
   Energy min = imode==0 ?
     getParticleData(ParticleID::piplus)->mass() :
@@ -164,12 +170,12 @@ bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   }
   else {
     if(flavour.I==IsoSpin::IUnknown||flavour.I==IsoSpin::IOne)
-       res.push_back(getParticleData(113));
+      res.push_back(getParticleData(113));
     if(flavour.I==IsoSpin::IUnknown||flavour.I==IsoSpin::IZero) {
       res.push_back(getParticleData(   223));
-      res.push_back(getParticleData(   333));
       res.push_back(getParticleData(100223));
       res.push_back(getParticleData( 30223));
+      res.push_back(getParticleData(   333));
     }
   }
   // set up the integration channels;
@@ -181,10 +187,10 @@ bool PionPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   // reset the masses and widths of the resonances if needed
   for(unsigned int ix=0;ix<res.size();++ix) {
     int ires(0);
-    if(res[ix]->id()==213)         ires=1;
-    else if(res[ix]->id()==   223) ires=2;
-    else if(res[ix]->id()==100223) ires=3;
-    else if(res[ix]->id()== 30223) ires=4;
+    if(res[ix]->id()==223)         ires=1;
+    else if(res[ix]->id()==100223) ires=2;
+    else if(res[ix]->id()== 30223) ires=3;
+    else if(res[ix]->id()==   333) ires=4;
     mode->resetIntermediate(res[ix],resMasses_[ires],resWidths_[ires]);
   }
   return true;
@@ -291,13 +297,13 @@ PionPhotonCurrent::current(tcPDPtr resonance,
       imin=1;
       break;
     case 333:
-      imin=2;
+      imin=4;
       break;
     case 100223:
-      imin = 3;
+      imin = 2;
       break;
     case 30223 :
-      imin = 4;
+      imin = 3;
       break;
     default:
       assert(false);
@@ -308,6 +314,8 @@ PionPhotonCurrent::current(tcPDPtr resonance,
   complex<InvEnergy> formFactor(ZERO);
   // loop over the resonances
   for(unsigned int ix=imin;ix<imax;++ix) {
+    if(ix==4 and flavour.strange==Strangeness::Zero) continue;
+    if(ix<4  and flavour.strange==Strangeness::ssbar) continue;
     Energy2 mR2(sqr(resMasses_[ix]));
     // compute the width
     Energy width(ZERO);
