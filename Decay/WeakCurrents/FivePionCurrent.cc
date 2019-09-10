@@ -275,6 +275,9 @@ bool FivePionCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // check that the modes are kinematical allowed
   Energy min(ZERO);
   // 3 pi- 2pi+
@@ -620,6 +623,9 @@ FivePionCurrent::current(tcPDPtr,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   useMe();
   LorentzVector<complex<InvEnergy2> > output;
   Lorentz5Momentum q1(momenta[0]);

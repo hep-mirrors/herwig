@@ -336,6 +336,12 @@ bool KPiCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return false;
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return false;
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -451,6 +457,12 @@ KPiCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return vector<LorentzPolarizationVectorE>();
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return vector<LorentzPolarizationVectorE>();
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(momenta[0]-momenta[1]);
   Lorentz5Momentum psum (momenta[0]+momenta[1]);

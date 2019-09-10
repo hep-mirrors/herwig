@@ -245,6 +245,10 @@ OmegaPionSNDCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  // other flavour stuff
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  != Beauty::Zero     ) return vector<LorentzPolarizationVectorE>();
   useMe();
   vector<LorentzPolarizationVector> temp(3);
   for(unsigned int ix=0;ix<3;++ix)

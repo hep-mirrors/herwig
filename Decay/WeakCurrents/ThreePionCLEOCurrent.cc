@@ -823,6 +823,9 @@ bool ThreePionCLEOCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // get the particles and check the masses
   int iq(0),ia(0);
   tPDVector extpart=particles(1,imode,iq,ia);
@@ -1187,6 +1190,9 @@ ThreePionCLEOCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return vector<LorentzPolarizationVectorE>();
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q;
   for(unsigned int ix=0;ix<momenta.size();++ix)

@@ -210,6 +210,12 @@ bool OneKaonTwoPionCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return false;
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return false;
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // get the external particles and check the mass
   int iq(0),ia(0);
   tPDVector extpart(particles(1,imode,iq,ia));
@@ -487,6 +493,12 @@ OneKaonTwoPionCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return vector<LorentzPolarizationVectorE>();
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return vector<LorentzPolarizationVectorE>();
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   useMe();
   // check the resonance
   int ires1=-1;

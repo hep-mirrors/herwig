@@ -60,15 +60,15 @@ void KPiKStarCurrent::doinit() {
   // reset the masses in the form-factors if needed
   if(_kstarparameters&&_kstarmasses.size()<3) {
     for(unsigned int ix=0;ix<3;++ix) {
-      if(res[ix+3]) _kstarmasses.push_back(res[ix]->mass());
-      if(res[ix+3]) _kstarwidths.push_back(res[ix]->width());
+      if(res[ix]) _kstarmasses.push_back(res[ix]->mass());
+      if(res[ix]) _kstarwidths.push_back(res[ix]->width());
     }
   }
   else if(!_kstarparameters) {
     _kstarmasses.clear();_kstarwidths.clear();
     for(unsigned int ix=0;ix<3;++ix) {
-      if(res[ix+3]) _kstarmasses.push_back(res[ix]->mass());
-      if(res[ix+3]) _kstarwidths.push_back(res[ix]->width());
+      if(res[ix]) _kstarmasses.push_back(res[ix]->mass());
+      if(res[ix]) _kstarwidths.push_back(res[ix]->width());
     }
   }
   // set up for the Breit Wigners
@@ -241,6 +241,12 @@ bool KPiKStarCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return false;
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return false;
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return false;
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -334,6 +340,12 @@ KPiKStarCurrent::current(tcPDPtr resonance,
       return vector<LorentzPolarizationVectorE>();
     }
   }
+  if(flavour.strange != Strangeness::Unknown) {
+    if(icharge== 3 and flavour.strange != Strangeness::PlusOne ) return vector<LorentzPolarizationVectorE>();
+    if(icharge==-3 and flavour.strange != Strangeness::MinusOne) return vector<LorentzPolarizationVectorE>();
+  }
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return vector<LorentzPolarizationVectorE>();
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return vector<LorentzPolarizationVectorE>();
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(momenta[0]-momenta[1]);
   Lorentz5Momentum psum (momenta[0]+momenta[1]);
