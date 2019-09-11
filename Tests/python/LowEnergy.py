@@ -128,7 +128,7 @@ analyses["etaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
 analyses["etaOmega"]["SND_2019_I1726419"]  = ["d01-x01-y01","d01-x01-y02"]
 analyses["etaOmega"]["CMD3_2017_I1606078"] = ["d01-x01-y01","d01-x01-y02"]
 # 4 pions
-analyses["4pi"]["BABAR_2017_I1621593"]  = ["d01-x01-y01"]
+analyses["4pi"]["BABAR_2017_I1621593"]  = ["d01-x01-y01","d02-x01-y01"]
 analyses["4pi"]["BABAR_2012_I1086164"]  = ["d01-x01-y01"]
 analyses["4pi"]["CMD2_2000_I531667"]  = ["d01-x01-y01"]
 analyses["4pi"]["CMD2_2004_I648023"]  = ["d01-x01-y01"]
