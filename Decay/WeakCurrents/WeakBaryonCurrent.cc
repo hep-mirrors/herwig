@@ -74,10 +74,6 @@ bool WeakBaryonCurrent::createMode(int icharge, tcPDPtr ,
 				   unsigned int imode,PhaseSpaceModePtr mode,
 				   unsigned int iloc,int ires,
 				   PhaseSpaceChannel phase, Energy upp ) {
-  // todo isospin in the form factors
-  assert(false);
-  // // no isospin here
-  // if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return false;
   unsigned int iq(0),ia(0);
   tPDVector out = particles(icharge,imode,iq,ia);
   // make sure the the decays are kinematically allowed
@@ -128,14 +124,11 @@ void WeakBaryonCurrent::constructSpinInfo(ParticleVector decay) const {
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
 WeakBaryonCurrent::current(tcPDPtr ,
-			       FlavourInfo flavour,
-			       const int, const int, Energy & scale, 
-			       const tPDVector & outgoing,
-			       const vector<Lorentz5Momentum> & momenta,
-			       DecayIntegrator::MEOption) const {
-  // no isospin here
-  assert(false);
-  // if(Itotal!=IsoSpin::IUnknown || i3 !=IsoSpin::I3Unknown) return vector<LorentzPolarizationVectorE>();
+			   FlavourInfo flavour,
+			   const int, const int, Energy & scale, 
+			   const tPDVector & outgoing,
+			   const vector<Lorentz5Momentum> & momenta,
+			   DecayIntegrator::MEOption) const {
   useMe();
   Lorentz5Momentum q = momenta[0]+momenta[1];
   q.rescaleMass();
@@ -158,7 +151,7 @@ WeakBaryonCurrent::current(tcPDPtr ,
   // get the form factors
   Complex f1v(0.),f2v(0.),f3v(0.),f1a(0.),f2a(0.),f3a(0.);
   formFactor_->SpinHalfSpinHalfFormFactor(sqr(scale),imode,in,out,m1,m2,
-					  f1v,f2v,f3v,f1a,f2a,f3a,
+					  f1v,f2v,f3v,f1a,f2a,f3a,flavour,
 					  BaryonFormFactor::TimeLike);
   Complex left  = f1v - f1a + f2v -double((m1-m2)/(m1+m2))*f2a;
   Complex right = f1v + f1a + f2v +double((m1-m2)/(m1+m2))*f2a;

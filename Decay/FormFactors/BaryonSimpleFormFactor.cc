@@ -212,6 +212,7 @@ void BaryonSimpleFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2,int iloc, int,int,Energy,Energy,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   FlavourInfo,
 			   Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();

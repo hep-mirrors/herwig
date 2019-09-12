@@ -187,6 +187,7 @@ void LightBaryonQuarkModelFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int mode,int, int, Energy m0, Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   FlavourInfo ,
 			   Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();

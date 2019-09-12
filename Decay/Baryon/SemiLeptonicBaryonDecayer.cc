@@ -276,7 +276,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(const Particle & part,
   // calculate the form factors
   Complex f1v,f2v,f3v,f1a,f2a,f3a;
   _form->SpinHalfSpinHalfFormFactor(q2,iloc,id0,id1,m0,m1,
-  				    f1v,f2v,f3v,f1a,f2a,f3a);
+  				    f1v,f2v,f3v,f1a,f2a,f3a,FlavourInfo());
   // calculate the hadronic current for the decay
   vector<LorentzPolarizationVectorE> hadron(4);
   Complex left  =f1v-f1a-f2v-double((m0-m1)/(m0+m1))*f2a;
@@ -404,7 +404,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const Particle & part,
   // calculate the form factors
   Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
   _form->SpinHalfSpinThreeHalfFormFactor(q2,iloc,id0,id1,m0,m1,
-  					 f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a);
+  					 f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a,FlavourInfo());
   LorentzPolarizationVector vtemp;
   complex<InvEnergy2> lS1,lS2,rS1,rS2;
   complex<InvEnergy> lV,rV;

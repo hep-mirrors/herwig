@@ -99,18 +99,18 @@ void BaryonFormFactor::Init() {
 void BaryonFormFactor::SpinHalfSpinHalfFormFactor(Energy2,int,int,int,Energy,Energy,
 						  Complex &,Complex &,Complex &,
 						  Complex &,Complex &,Complex &,
-						  Virtuality) {
+						  FlavourInfo,Virtuality) {
   throw Exception() << "Error in BaryonFormFactor::SpinHalfSpinHalfFormFactor"
-		    << " not implemented"
+		    << " not implemented" << fullName()
 		    << Exception::abortnow;
 }
 void BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor(Energy2,int,int,int,Energy,
 						       Energy,Complex &,Complex &,
 						       Complex &,Complex &,Complex &,
 						       Complex &,Complex &,Complex &,
-						       Virtuality) {
+						       FlavourInfo,Virtuality) {
   throw Exception() << "Error in BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor"
-		    << " not implemented"
+		    << " not implemented" << fullName()
 		    << Exception::abortnow;
 }
 

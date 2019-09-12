@@ -73,6 +73,7 @@ void LambdabExcitedLambdacSumRuleFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   FlavourInfo ,
 			   Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();
@@ -102,6 +103,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 				Complex & f3v,Complex & f4v,
 				Complex & f1a,Complex & f2a,
 				Complex & f3a,Complex & f4a,
+				FlavourInfo ,
 				Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();

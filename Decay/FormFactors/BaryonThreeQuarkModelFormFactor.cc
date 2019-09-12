@@ -369,6 +369,7 @@ void BaryonThreeQuarkModelFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   FlavourInfo ,
 			   Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();
@@ -436,6 +437,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int id1,Energy m0,
 				Energy m1, Complex & f1v,Complex & f2v,
 				Complex & f3v,Complex & f4v,Complex & f1a,
 				Complex & f2a,Complex & f3a,Complex & f4a,
+				FlavourInfo ,
 				Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();
@@ -592,7 +594,7 @@ Energy BaryonThreeQuarkModelFormFactor::widthIntegrand(double omega,Energy m0,
   Energy2 q2 = sqr(m0)+sqr(m1)-2.*m0*m1*omega;
   if(type<=2) {
     Complex f1v,f2v,f3v,f1a,f2a,f3a;
-    SpinHalfSpinHalfFormFactor(q2,0,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);
+    SpinHalfSpinHalfFormFactor(q2,0,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a,FlavourInfo());
     Complex left  =f1v-f1a-f2v-double((m0-m1)/(m0+m1))*f2a;
     Complex right =f1v+f1a-f2v+double((m0-m1)/(m0+m1))*f2a;
     double g1v = 0.5*( left+right).real();
@@ -616,7 +618,7 @@ Energy BaryonThreeQuarkModelFormFactor::widthIntegrand(double omega,Energy m0,
     double  g1v,g2v,g3v,g4v,g1a,g2a,g3a,g4a;
     SpinHalfSpinThreeHalfFormFactor(q2,0,id0,id1,m0,m1,
 				    f1v,f2v,f3v,f4v,
-				    f1a,f2a,f3a,f4a);
+				    f1a,f2a,f3a,f4a,FlavourInfo());
     g1v = f1v.real();
     g1a = -f1a.real();
     g2v = m0/(m0+m1)*f2v.real();

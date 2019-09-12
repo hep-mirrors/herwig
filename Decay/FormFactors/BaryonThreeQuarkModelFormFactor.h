@@ -97,6 +97,7 @@ public:
 					  Energy m0, Energy m1,
 					  Complex & f1v,Complex & f2v,Complex & f3v,
 					  Complex & f1a,Complex & f2a,Complex & f3a,
+					  FlavourInfo flavour,
 					  Virtuality virt=SpaceLike);
 
   /**
@@ -123,6 +124,7 @@ public:
 					       Complex & g1v,Complex & g2v,Complex & g3v,
 					       Complex & g4v,Complex & g1a,Complex & g2a,
 					       Complex & g3a,Complex & g4a,
+					       FlavourInfo flavour,
 					       Virtuality virt=SpaceLike);
   //@}
 

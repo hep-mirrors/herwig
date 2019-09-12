@@ -497,7 +497,7 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan, const Particle & part,
     Complex f1v,f2v,f3v,f1a,f2a,f3a;
     // calculate the form factor piece
     _form->SpinHalfSpinHalfFormFactor(q2,_formmap[imode()][mode],id0,id1,m0,m1,
-				      f1v,f2v,f3v,f1a,f2a,f3a);
+				      f1v,f2v,f3v,f1a,f2a,f3a,FlavourInfo());
     Complex  left = f1v-f1a-f2v-double((m0-m1)/(m0+m1))*f2a;
     Complex right = f1v+f1a-f2v+double((m0-m1)/(m0+m1))*f2a;
     vector<LorentzPolarizationVectorE> baryon(4);
@@ -617,7 +617,7 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan, const Particle & 
     // calculate the form factors
     Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
     _form->SpinHalfSpinThreeHalfFormFactor(q2,_formmap[imode()][mode],id0,id1,m0,m1,
-  					   f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a);
+  					   f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a,FlavourInfo());
     complex<InvEnergy2> lS1,lS2,rS1,rS2;
     Complex left,right;
     complex<InvEnergy> lV,rV;

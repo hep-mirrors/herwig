@@ -152,12 +152,12 @@ void ChengHeavyBaryonFormFactor::doinit() {
       tcPDPtr part1=getParticleData(id1); Energy m1=part1->mass();
       if ( part1->iSpin() == 2 ) {
 	Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a; // dummy variables
-	SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);
+	SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a,FlavourInfo());
       }
       else {
 	Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a; // dummy variables
 	SpinHalfSpinThreeHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,
-					f4v,f1a,f2a,f3a,f4a);
+					f4v,f1a,f2a,f3a,f4a,FlavourInfo());
       }
     }
 }
@@ -320,6 +320,7 @@ void ChengHeavyBaryonFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   FlavourInfo ,
 			   Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();
@@ -360,7 +361,8 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 				Energy m0, Energy m1,
 				Complex & g1v,Complex & g2v,Complex & g3v,
 				Complex & g4v,Complex & g1a,Complex & g2a,
-				Complex & g3a,Complex & g4a, Virtuality virt) {
+				Complex & g3a,Complex & g4a,
+				FlavourInfo , Virtuality virt) {
   assert(virt==SpaceLike);
   useMe();
   id0=abs(id0);

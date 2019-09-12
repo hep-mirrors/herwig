@@ -242,19 +242,40 @@ void CzyzNucleonFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0,int id1,Energy,Energy,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a,
+			   FlavourInfo flavour,
 			   Virtuality virt) {
+  f1a = f2a = f3a = f1v = f2v = f3v = 0.;
   assert(abs(id0)==abs(id1));
   if(iloc==0) assert(abs(id0)==2212);
   else        assert(abs(id0)==2112);
   assert(virt==TimeLike);
+  if(flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero) return;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return;
+  bool I0 = true, I1 = true;
+  if(flavour.I!=IsoSpin::IUnknown) {
+    if(flavour.I==IsoSpin::IZero) {
+      I1=false;
+      if(flavour.I3!=IsoSpin::I3Unknown and flavour.I3!=IsoSpin::I3Zero) return;
+    }
+    else if(flavour.I==IsoSpin::IOne) {
+      I0=false;
+      if(flavour.I3!=IsoSpin::I3Unknown and flavour.I3!=IsoSpin::I3Zero) return;
+    }
+  }
+  if(flavour.I3!=IsoSpin::I3Unknown and flavour.I3!=IsoSpin::I3Zero) return;
   // calculate the form factors
   Complex F1S(0.),F1V(0.),F2S(0.),F2V(0.);
   Complex n1(0.),n2(0.),n3(0.),n4(0.);
   for(unsigned int ix=0;ix<5;++ix) {
-    F1S += c1_[ix]*Resonance::BreitWignerFW(q2,omegaMasses_[ix],omegaWidths_[ix]);
-    F1V += c2_[ix]*Resonance::BreitWignerFW(q2,  rhoMasses_[ix],  rhoWidths_[ix]);
-    F2S += c3_[ix]*Resonance::BreitWignerFW(q2,omegaMasses_[ix],omegaWidths_[ix]);
-    F2V += c4_[ix]*Resonance::BreitWignerFW(q2,  rhoMasses_[ix],  rhoWidths_[ix]);
+    if(I0) {
+      F1S += c1_[ix]*Resonance::BreitWignerFW(q2,omegaMasses_[ix],omegaWidths_[ix]);
+      F2S += c3_[ix]*Resonance::BreitWignerFW(q2,omegaMasses_[ix],omegaWidths_[ix]);
+    }
+    if(I1) {
+      F1V += c2_[ix]*Resonance::BreitWignerFW(q2,  rhoMasses_[ix],  rhoWidths_[ix]);
+      F2V += c4_[ix]*Resonance::BreitWignerFW(q2,  rhoMasses_[ix],  rhoWidths_[ix]);
+    }
     n1 += c1_[ix];
     n2 += c2_[ix];
     n3 += c3_[ix];
@@ -264,7 +285,6 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0,int id1,Energy,Energy,
   F1V *=  0.5   /n2;
   F2S *= -0.5*b_/n3;
   F2V *=  0.5*a_/n4;
-  f1a = f2a = f3v = f3a = 0.;
   if(iloc==0) {
     f1v =  F1S + F1V;
     f2v =  F2S + F2V;
