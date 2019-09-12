@@ -32,7 +32,7 @@ void HalfHalfOneEWSplitFn::persistentInput(PersistentIStream & is, int) {
   is >> gZ_ >> gWL_;
 }
 
-// The following static variable is needed for the type description system in ThePEG. 
+// The following static variable is needed for the type description system in ThePEG.
 DescribeClass<HalfHalfOneEWSplitFn,SplittingFunction>
 describeHerwigHalfHalfOneEWSplitFn("Herwig::HalfHalfOneEWSplitFn", "HwShower.so");
 
@@ -84,10 +84,10 @@ double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
   getCouplings(gL,gR,ids);
   double val = (1. + sqr(z))/(1.-z);
   if(mass) {
-    Energy m = ids[2]->mass();  
+    Energy m = ids[2]->mass();
     val -= sqr(m)/t;
   }
-  val *= (sqr(gL)*norm(rho(0,0))+sqr(gR)*norm(rho(1,1)));
+  val *= (sqr(gL)*abs(rho(0,0))+sqr(gR)*abs(rho(1,1)));
   return colourFactor(ids)*val;
 }
 
@@ -96,7 +96,7 @@ double HalfHalfOneEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
-  return 2.*max(sqr(gL),sqr(gR))*colourFactor(ids)/(1.-z); 
+  return 2.*max(sqr(gL),sqr(gR))*colourFactor(ids)/(1.-z);
 }
 
 double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
@@ -106,12 +106,12 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
   getCouplings(gL,gR,ids);
   double val = 1. + sqr(z);
   if(mass) {
-    Energy m = ids[2]->mass();  
+    Energy m = ids[2]->mass();
     val -= (1.-z)*sqr(m)/t;
   }
   val *= (sqr(gL)*abs(rho(0,0))+sqr(gR)*abs(rho(1,1)))/max(sqr(gL),sqr(gR));
   return 0.5*val;
-} 
+}
 
 double HalfHalfOneEWSplitFn::integOverP(const double z,
 				      const IdList & ids,
@@ -130,7 +130,7 @@ double HalfHalfOneEWSplitFn::integOverP(const double z,
   default:
     throw Exception() << "HalfHalfOneEWSplitFn::integOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
-  } 
+  }
 }
 
 double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
@@ -140,7 +140,7 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = colourFactor(ids)*max(sqr(gL),sqr(gR));
   switch (PDFfactor) {
   case 0:
-    return 1. - exp(- 0.5*r/pre); 
+    return 1. - exp(- 0.5*r/pre);
   case 1:
     return 1./(1.-exp(-0.5*r/pre));
   case 2:
@@ -149,13 +149,13 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   default:
     throw Exception() << "HalfHalfOneEWSplitFn::invIntegOverP() invalid PDFfactor = "
 		      << PDFfactor << Exception::runerror;
-  } 
+  }
 }
 
 bool HalfHalfOneEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
   if(ids[2]->id()==ParticleID::Z0) {
-    if(ids[0]->id()==ids[1]->id() && 
+    if(ids[0]->id()==ids[1]->id() &&
        ((ids[0]->id()>=1 && ids[0]->id()<=6) || (ids[0]->id()>=11&&ids[0]->id()<=16) )) return true;
   }
   else if(abs(ids[2]->id())==ParticleID::Wplus) {
@@ -168,7 +168,7 @@ bool HalfHalfOneEWSplitFn::accept(const IdList &ids) const {
   return false;
 }
 
-vector<pair<int, Complex> > 
+vector<pair<int, Complex> >
 HalfHalfOneEWSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
 				       const RhoDMatrix &) {
   // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
@@ -176,7 +176,7 @@ HalfHalfOneEWSplitFn::generatePhiForward(const double, const Energy2, const IdLi
   return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
-vector<pair<int, Complex> > 
+vector<pair<int, Complex> >
 HalfHalfOneEWSplitFn::generatePhiBackward(const double, const Energy2, const IdList & ,
 					const RhoDMatrix &) {
   // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
@@ -184,7 +184,7 @@ HalfHalfOneEWSplitFn::generatePhiBackward(const double, const Energy2, const IdL
   return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
-DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t, 
+DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              const IdList & ids, const double phi,
                                              bool) {
   // calculate the kernal
