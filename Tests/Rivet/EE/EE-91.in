@@ -108,6 +108,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I360638
 # delphi flavour sep charged
 # lambda, lambdabar correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1997_I428178
+# ALEPH pi0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1997_I427131
 ##################################################
 # unvalidated 
 ##################################################
