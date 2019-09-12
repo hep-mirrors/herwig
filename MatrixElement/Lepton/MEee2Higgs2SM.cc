@@ -201,11 +201,11 @@ MEee2Higgs2SM::colourGeometries(tcDiagPtr diag) const {
 }
 
 void MEee2Higgs2SM::persistentOutput(PersistentOStream & os) const {
-  os << FFHVertex_ << HGGVertex_ << h0_ << allowed_;
+  os << FFHVertex_ << HGGVertex_ << HWWVertex_ << h0_ << allowed_;
 }
 
 void MEee2Higgs2SM::persistentInput(PersistentIStream & is, int) {
-  is >> FFHVertex_ >> HGGVertex_ >> h0_ >> allowed_;
+  is >> FFHVertex_ >> HGGVertex_ >> HWWVertex_ >> h0_ >> allowed_;
 }
 
 // The following static variable is needed for the type
