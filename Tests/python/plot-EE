@@ -1371,6 +1371,15 @@ analyses["IdentifiedParticle"][22  ]["x" ][91.2]=["/OPAL_1998_S3749908/d02-x01-y
 analyses["IdentifiedParticle"][22  ]["xi"][91.2]=["/ALEPH_1996_S3486095/d28-x01-y01","/OPAL_1998_S3749908/d03-x01-y01"]
 # charged pions
 # x
+analyses["IdentifiedParticle"][211 ]["x" ][3.635] = ["/DASP_1979_I132045/d18-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["x" ][4.04 ] = ["/DASP_1979_I132045/d18-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["x" ][4.17 ] = ["/DASP_1979_I132045/d18-x01-y03"]
+analyses["IdentifiedParticle"][211 ]["x" ][4.30 ] = ["/DASP_1979_I132045/d18-x01-y04"]
+analyses["IdentifiedParticle"][211 ]["x" ][4.41 ] = ["/DASP_1979_I132045/d18-x01-y05"]
+analyses["IdentifiedParticle"][211 ]["x" ][4.72 ] = ["/DASP_1979_I132045/d18-x01-y06"]
+analyses["IdentifiedParticle"][211 ]["x" ][5.0  ] = ["/DASP_1979_I132045/d18-x01-y07"]
+analyses["IdentifiedParticle"][211 ]["x" ][5.2  ] = ["/DASP_1979_I132045/d18-x01-y08"]
+
 analyses["IdentifiedParticle"][211 ]["x" ][10.0 ] = ["/ARGUS_1989_I276860/d09-x01-y02"]
 analyses["IdentifiedParticle"][211 ]["x" ][10.52] = ["/BELLE_2013_I1216515/d01-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["x" ][12.0 ] = ["/TASSO_1980_I153656/d02-x01-y02"]
@@ -1387,6 +1396,14 @@ analyses["IdentifiedParticle"][211 ]["Other" ][91.2 ] = ["/SLD_1999_S3743934/d26
                                                          "/SLD_1999_S3743934/d27-x01-y01","/SLD_2004_S5693039/d09-x01-y01",
                                                          "/SLD_2004_S5693039/d09-x01-y02","/SLD_2004_S5693039/d09-x01-y03",]
 # p
+analyses["IdentifiedParticle"][211 ]["p" ][3.635] = ["/DASP_1979_I132045/d01-x01-y01"]
+analyses["IdentifiedParticle"][211 ]["p" ][4.04 ] = ["/DASP_1979_I132045/d01-x01-y02"]
+analyses["IdentifiedParticle"][211 ]["p" ][4.17 ] = ["/DASP_1979_I132045/d01-x01-y03"]
+analyses["IdentifiedParticle"][211 ]["p" ][4.30 ] = ["/DASP_1979_I132045/d01-x01-y04"]
+analyses["IdentifiedParticle"][211 ]["p" ][4.41 ] = ["/DASP_1979_I132045/d01-x01-y05"]
+analyses["IdentifiedParticle"][211 ]["p" ][4.72 ] = ["/DASP_1979_I132045/d01-x01-y06"]
+analyses["IdentifiedParticle"][211 ]["p" ][5.0  ] = ["/DASP_1979_I132045/d01-x01-y07"]
+analyses["IdentifiedParticle"][211 ]["p" ][5.2  ] = ["/DASP_1979_I132045/d01-x01-y08"]
 analyses["IdentifiedParticle"][211 ]["p" ][10.0 ] = ["/ARGUS_1989_I276860/d05-x01-y02"]
 analyses["IdentifiedParticle"][211 ]["p" ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y01","/BABAR_2013_I1238276/d02-x01-y01"]
 analyses["IdentifiedParticle"][211 ]["p" ][12.0 ] = ["/TASSO_1980_I153656/d02-x01-y01"]
@@ -1501,6 +1518,14 @@ analyses["IdentifiedParticle"][311 ]["Other"][35.0 ] = ["/TASSO_1990_I284251/d05
 analyses["IdentifiedParticle"][311 ]["Other"][42.6 ] = ["/TASSO_1990_I284251/d05-x01-y01","/TASSO_1990_I284251/d05-x01-y02"]
 # K+/-
 # x
+analyses["IdentifiedParticle"][321 ]["x" ][3.635] = ["/DASP_1979_I132045/d19-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][4.04 ] = ["/DASP_1979_I132045/d20-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][4.17 ] = ["/DASP_1979_I132045/d21-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][4.30 ] = ["/DASP_1979_I132045/d22-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][4.41 ] = ["/DASP_1979_I132045/d23-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][4.72 ] = ["/DASP_1979_I132045/d24-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][5.0  ] = ["/DASP_1979_I132045/d25-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["x" ][5.2  ] = ["/DASP_1979_I132045/d26-x01-y01"]
 analyses["IdentifiedParticle"][321 ]["x"    ][10.0 ] = ["/ARGUS_1989_I276860/d10-x01-y02"]
 analyses["IdentifiedParticle"][321 ]["x"    ][10.52] = ["/BELLE_2013_I1216515/d01-x01-y02"]
 analyses["IdentifiedParticle"][321 ]["x"    ][12.0 ] = ["/TASSO_1980_I153656/d03-x01-y02"]
@@ -1514,6 +1539,14 @@ analyses["IdentifiedParticle"][321 ]["x"    ][91.2 ] = ["/ALEPH_1995_I382179/d02
                                                         "/DELPHI_1998_I473409/d21-x01-y01","/SLD_1999_S3743934/d02-x01-y02",
                                                         "/ALEPH_1996_S3486095/d26-x01-y01","/SLD_2004_S5693039/d03-x01-y02"]
 # p
+analyses["IdentifiedParticle"][321 ]["p" ][3.635] = ["/DASP_1979_I132045/d02-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][4.04 ] = ["/DASP_1979_I132045/d03-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][4.17 ] = ["/DASP_1979_I132045/d04-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][4.30 ] = ["/DASP_1979_I132045/d05-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][4.41 ] = ["/DASP_1979_I132045/d06-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][4.72 ] = ["/DASP_1979_I132045/d07-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][5.0  ] = ["/DASP_1979_I132045/d08-x01-y01"]
+analyses["IdentifiedParticle"][321 ]["p" ][5.2  ] = ["/DASP_1979_I132045/d09-x01-y01"]
 analyses["IdentifiedParticle"][321 ]["p"    ][10.0 ] = ["/ARGUS_1989_I276860/d06-x01-y02"]
 analyses["IdentifiedParticle"][321 ]["p"    ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y02","/BABAR_2013_I1238276/d02-x01-y02"]
 analyses["IdentifiedParticle"][321 ]["p"    ][12.0 ] = ["/TASSO_1980_I153656/d03-x01-y01"]
@@ -1588,6 +1621,14 @@ analyses["IdentifiedParticle"]["321/2212"]["Ratio"][91.2 ] = ["/DELPHI_1998_I473
 # light unflavoured
 # proton
 # x
+analyses["IdentifiedParticle"][2212]["x" ][3.635] = ["/DASP_1979_I132045/d27-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][4.04 ] = ["/DASP_1979_I132045/d28-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][4.17 ] = ["/DASP_1979_I132045/d29-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][4.30 ] = ["/DASP_1979_I132045/d30-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][4.41 ] = ["/DASP_1979_I132045/d31-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][4.72 ] = ["/DASP_1979_I132045/d32-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][5.0  ] = ["/DASP_1979_I132045/d33-x01-y01"]
+analyses["IdentifiedParticle"][2212]["x" ][5.2  ] = ["/DASP_1979_I132045/d34-x01-y01"]
 analyses["IdentifiedParticle"][2212]["x"    ][10.0 ] = ["/ARGUS_1989_I276860/d12-x01-y02"]
 analyses["IdentifiedParticle"][2212]["x"    ][12.0 ] = ["/TASSO_1980_I153656/d04-x01-y02"]
 analyses["IdentifiedParticle"][2212]["x"    ][14.0 ] = ["/TASSO_1983_I181470/d14-x01-y01"]
@@ -1600,6 +1641,14 @@ analyses["IdentifiedParticle"][2212]["x"    ][91.2 ] = ["/ALEPH_1995_I382179/d03
                                                         "/DELPHI_1998_I473409/d23-x01-y01","/ALEPH_1996_S3486095/d27-x01-y01",
                                                         "/SLD_2004_S5693039/d04-x01-y02","/SLD_1999_S3743934/d03-x01-y02"]
 # p
+analyses["IdentifiedParticle"][2212]["p" ][3.635] = ["/DASP_1979_I132045/d10-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][4.04 ] = ["/DASP_1979_I132045/d11-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][4.17 ] = ["/DASP_1979_I132045/d12-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][4.30 ] = ["/DASP_1979_I132045/d13-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][4.41 ] = ["/DASP_1979_I132045/d14-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][4.72 ] = ["/DASP_1979_I132045/d15-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][5.0  ] = ["/DASP_1979_I132045/d16-x01-y01"]
+analyses["IdentifiedParticle"][2212]["p" ][5.2  ] = ["/DASP_1979_I132045/d17-x01-y01"]
 analyses["IdentifiedParticle"][2212]["p"    ][10.0 ] = ["/ARGUS_1989_I276860/d08-x01-y02"]
 analyses["IdentifiedParticle"][2212]["p"    ][10.54] = ["/BABAR_2013_I1238276/d01-x01-y03","/BABAR_2013_I1238276/d02-x01-y03"] 
 analyses["IdentifiedParticle"][2212]["p"    ][12.0 ] = ["/TASSO_1980_I153656/d04-x01-y01"]
