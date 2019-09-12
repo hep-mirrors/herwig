@@ -26,8 +26,8 @@ FourPionCzyzCurrent::FourPionCzyzCurrent()
   rhoMasses_ = {0.7755*GeV,1.459*GeV,1.72*GeV};
   rhoWidths_ = {0.1494*GeV,0.4  *GeV,0.25*GeV};
   // fitted for F_rho
-  rhoMasses_Frho_ = {0.7755*GeV,1.437*GeV,1.738*GeV,2.12*GeV};
-  rhoWidths_Frho_ = {0.1494*GeV,0.520*GeV,0.450*GeV,0.30*GeV};
+  rhoMasses_Frho_ = {0.7755*GeV,1.437*GeV             ,1.738*GeV             ,2.12*GeV};
+  rhoWidths_Frho_ = {0.1494*GeV,0.6784258847826656*GeV,0.8049153117715863*GeV,0.20924569673342333*GeV};
   // omega
   omegaMass_  = 0.78265*GeV;
   omegaWidth_ = 0.00849*GeV;
@@ -38,20 +38,20 @@ FourPionCzyzCurrent::FourPionCzyzCurrent()
   a1Mass_  = 1.23*GeV;
   a1Width_ = 0.2*GeV;
   // Coefficents for sum over \f$\rho\f$ resonances 
-  beta_a1_    ={1.,-0.066,-0.021,-0.0043};
-  beta_f0_    ={1.,7e4,-2.5e3,1.9e3};
-  beta_omega_ ={1.,-0.33,0.012,-0.0053};
+  beta_a1_    ={1.,-0.051864694215520334, -0.0416090742847935,-0.0018940213981381284 };
+  beta_f0_    ={1.,    73673.55747104406, -26116.259838644528,     332.84652898870786};
+  beta_omega_ ={1., -0.3668543468911129,0.03624673983924276 , -0.0047186283455050064 };
   beta_B_     ={1.,-0.145};
-  beta_bar_   ={1.,0.08,-0.0075};
-  // couplings for the various termsz
-  c_a1_    = -225./GeV2;
-  c_f0_    =   64./GeV2;
-  c_omega_ = -1.47/GeV;
-  c_rho_   = -2.46;
+  beta_bar_   ={1.,0.08,-0.0075};  
+  // couplings for the various terms
+  c_a1_    = -201.7929015686851/GeV2;
+  c_f0_    =  124.09577796839454/GeV2;
+  c_omega_ = -1.5792052826500913/GeV;
+  c_rho_   = -2.308949096570198;
   // meson meson meson couplings
-  g_rho_pi_pi_   = 5.997;
-  g_omega_pi_rho_= 42.3/GeV/GeV2/GeV2;
-  g_rho_gamma_   = 0.1212*GeV2;
+  g_rho_pi_pi_    = 5.997;
+  g_omega_pi_rho_ = 42.3/GeV/GeV2/GeV2;
+  g_rho_gamma_    = 0.1212*GeV2;
   addDecayMode(2,-1);
   addDecayMode(2,-1);
   addDecayMode(1,-1);
