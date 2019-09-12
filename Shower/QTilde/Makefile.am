@@ -8,6 +8,7 @@ QTildeShowerHandler.h QTildeShowerHandler.fh QTildeShowerHandler.cc \
 SplittingFunctions/HalfHalfOneSplitFn.h SplittingFunctions/HalfHalfOneSplitFn.cc\
 SplittingFunctions/HalfHalfOneEWSplitFn.h SplittingFunctions/HalfHalfOneEWSplitFn.cc\
 SplittingFunctions/HalfHalfZeroEWSplitFn.h SplittingFunctions/HalfHalfZeroEWSplitFn.cc\
+SplittingFunctions/OneOneOneEWSplitFn.h SplittingFunctions/OneOneOneEWSplitFn.cc\
 SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
 SplittingFunctions/OneOneOneMassiveSplitFn.h SplittingFunctions/OneOneOneMassiveSplitFn.cc\
 SplittingFunctions/ZeroZeroOneSplitFn.h SplittingFunctions/ZeroZeroOneSplitFn.cc\
