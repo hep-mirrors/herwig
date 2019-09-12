@@ -199,6 +199,19 @@ private:
 			       vector<VectorWaveFunction> g1,
 			       vector<VectorWaveFunction> g2, 
 			       double & me) const;
+  /**
+   *  \f$H\to WW\f$ matrix element
+   * @param fin The incoming spinor wavefunction
+   * @param ain The incoming spinorbar wavefunction
+   * @param g1 Outgoing W wavefunction
+   * @param g2 Outgoing W wavefunction
+   * @param me The spin averaged matrix element
+   */
+  ProductionMatrixElement WWME(vector<SpinorWaveFunction> fin,
+			       vector<SpinorBarWaveFunction> ain,
+			       vector<VectorWaveFunction> g1,
+			       vector<VectorWaveFunction> g2, 
+			       double & me) const;
   
 private:
 
@@ -219,6 +232,11 @@ private:
    *  Pointer to Higgs-gluon-gluon vertex
    */
   AbstractVVSVertexPtr HGGVertex_;
+
+  /**
+   *  Pointer to Higgs-WW vertex
+   */
+  AbstractVVSVertexPtr HWWVertex_;
 
   /**
    * Allowed outgoing particles
