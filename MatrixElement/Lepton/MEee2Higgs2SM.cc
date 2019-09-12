@@ -31,6 +31,7 @@ void MEee2Higgs2SM::doinit() {
   if(hwsm) {
     FFHVertex_ = hwsm->vertexFFH();
     HGGVertex_ = hwsm->vertexHGG();
+    HWWVertex_ = hwsm->vertexWWH();
   }
   else {
     throw InitException() << "Must have Herwig StandardModel object in "
@@ -74,6 +75,14 @@ void MEee2Higgs2SM::getDiagrams() const {
     tcPDPtr g = getParticleData(ParticleID::g);
     add(new_ptr((Tree2toNDiagram(2), em, ep, 1, h0_, 3, g, 3, g, -1)));
   }
+  if(allowed_==0 || allowed_==13) {
+    tcPDPtr Wp = getParticleData(ParticleID::Wplus);
+    add(new_ptr((Tree2toNDiagram(2), em, ep, 1, h0_, 3, Wp, 3, Wp->CC(), -1)));
+  }
+  if(allowed_==0 || allowed_==14) {
+    tcPDPtr Z0 = getParticleData(ParticleID::Z0);
+    add(new_ptr((Tree2toNDiagram(2), em, ep, 1, h0_, 3, Z0, 3, Z0, -1)));
+  }
 }
 
 double MEee2Higgs2SM::me2() const {
@@ -92,7 +101,7 @@ double MEee2Higgs2SM::me2() const {
 					 mePartonData()[ipositron],ihel,incoming));
   }
   // H -> f fbar
-  if(mePartonData()[2]->id()!=ParticleID::g) {
+  if(abs(mePartonData()[2]->id())<20) {
     vector<SpinorWaveFunction> aout;
     vector<SpinorBarWaveFunction> fout;
     for(unsigned int ihel=0;ihel<2;++ihel) {
@@ -104,7 +113,7 @@ double MEee2Higgs2SM::me2() const {
     HelicityME(fin,ain,fout,aout,aver);
     if(mePartonData()[ilm]->id()<=6) aver*=3.;
   }
-  else {
+  else if(mePartonData()[2]->id()==21)  {
     vector<VectorWaveFunction> g1,g2;
     for(unsigned int ihel=0;ihel<2;++ihel) {
       g1.push_back(VectorWaveFunction(meMomenta()[2],mePartonData()[2],
@@ -114,6 +123,19 @@ double MEee2Higgs2SM::me2() const {
     }
     ggME(fin,ain,g1,g2,aver);
     aver *= 8.;
+  }
+  else if(abs(mePartonData()[2]->id())==24 ||mePartonData()[2]->id()==23) {
+    vector<VectorWaveFunction> g1,g2;
+    for(unsigned int ihel=0;ihel<3;++ihel) {
+      g1.push_back(VectorWaveFunction(meMomenta()[2],mePartonData()[2],
+				      ihel,outgoing));
+      g2.push_back(VectorWaveFunction(meMomenta()[3],mePartonData()[3],
+				      ihel,outgoing));
+    }
+    WWME(fin,ain,g1,g2,aver);
+  }
+  else {
+    assert(false);
   }
   return aver;
 }
@@ -267,6 +289,16 @@ void MEee2Higgs2SM::Init() {
      "Gluon",
      "Only gg allowed",
      12);
+  static SwitchOption interfaceallowedW
+    (interfaceallowed,
+     "W",
+     "Only W+W- allowed",
+     13);
+  static SwitchOption interfaceallowedZ
+    (interfaceallowed,
+     "Z",
+     "Only ZZ allowed",
+     14);
 }
 
 void MEee2Higgs2SM::constructVertex(tSubProPtr sub) {
@@ -282,7 +314,7 @@ void MEee2Higgs2SM::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
   double me;
   ProductionMatrixElement prodme;
-  if(hard[2]->id()!=ParticleID::g) {
+  if(abs(hard[2]->id())<20) {
     vector<SpinorWaveFunction>    aout;
     vector<SpinorBarWaveFunction> fout;
     SpinorBarWaveFunction(fout,hard[2],outgoing,true ,true);
@@ -290,13 +322,19 @@ void MEee2Higgs2SM::constructVertex(tSubProPtr sub) {
     // calculate the matrix element
     prodme=HelicityME(fin,ain,fout,aout,me);
   }
-  else {
+  else if(abs(hard[2]->id())==21) {
     vector<VectorWaveFunction> g1,g2;
     VectorWaveFunction(g1,hard[2],outgoing,true,true);
     VectorWaveFunction(g2,hard[3],outgoing,true,true);
     g1[1]=g1[2];
     g2[1]=g2[2];
     prodme=ggME(fin,ain,g1,g2,me);
+  }
+  else {
+    vector<VectorWaveFunction> g1,g2;
+    VectorWaveFunction(g1,hard[2],outgoing,true,false);
+    VectorWaveFunction(g2,hard[3],outgoing,true,false);
+    prodme=WWME(fin,ain,g1,g2,me);
   }
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
@@ -345,7 +383,37 @@ ProductionMatrixElement MEee2Higgs2SM::ggME(vector<SpinorWaveFunction> fin,
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  diag  = HGGVertex_->evaluate(sHat(),g1[outhel1],g2[outhel2],interh);
 	  output(inhel1,inhel2,2*outhel1,2*outhel2)=diag;
-	  aver +=real(diag*conj(diag));
+	  aver += norm(diag);
+	}
+      }
+    }
+  }
+  return output;
+}
+
+// the helicity amplitude matrix element
+ProductionMatrixElement MEee2Higgs2SM::WWME(vector<SpinorWaveFunction> fin,
+					    vector<SpinorBarWaveFunction> ain,
+					    vector<VectorWaveFunction> g1,
+					    vector<VectorWaveFunction> g2,
+					    double & aver) const {
+  ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1Half,
+				 PDT::Spin1,PDT::Spin1);
+  // wavefunctions for the intermediate particles
+  ScalarWaveFunction interh;
+  // temporary storage of the different diagrams
+  Complex diag;
+  aver=0.;
+  // sum over helicities to get the matrix element
+  unsigned int inhel1,inhel2,outhel1,outhel2;
+  for(inhel1=0;inhel1<2;++inhel1) {	  
+    for(inhel2=0;inhel2<2;++inhel2) {
+      interh = FFHVertex_->evaluate(sHat(),1,h0_,fin[inhel1],ain[inhel2]);
+      for(outhel1=0;outhel1<3;++outhel1) {
+	for(outhel2=0;outhel2<3;++outhel2) {
+	  diag  = HWWVertex_->evaluate(sHat(),g1[outhel1],g2[outhel2],interh);
+	  output(inhel1,inhel2,outhel1,outhel2)=diag;
+	  aver += norm(diag);
 	}
       }
     }
