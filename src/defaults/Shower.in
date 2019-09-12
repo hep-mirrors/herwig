@@ -389,10 +389,6 @@ do SplittingGenerator:AddInitialSplitting b->b,h0; QtoQHSudakov
 do SplittingGenerator:AddInitialSplitting t->t,h0; QtoQHSudakov
 
 do SplittingGenerator:AddFinalSplitting gamma->W+,W-; VtoVVSudakov
-do SplittingGenerator:AddFinalSplitting gamma->W-,W+; VtoVVSudakov
 do SplittingGenerator:AddFinalSplitting Z0->W+,W-; VtoVVSudakov
-do SplittingGenerator:AddFinalSplitting Z0->W-,W+; VtoVVSudakov
 do SplittingGenerator:AddFinalSplitting W+->W+,gamma; VtoVVSudakov
-do SplittingGenerator:AddFinalSplitting W-->W-,gamma; VtoVVSudakov
 do SplittingGenerator:AddFinalSplitting W+->W+,Z0; VtoVVSudakov
-do SplittingGenerator:AddFinalSplitting W-->W-,Z0; VtoVVSudakov
