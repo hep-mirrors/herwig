@@ -56,8 +56,6 @@ set /Herwig/UnderlyingEvent/MPIHandler:DiffractiveRatio 0.17
 
 #ordered pTs
 set /Herwig/Partons/RemnantDecayer:PtDistribution 4
-#use random remnant connections
-set /Herwig/Partons/RemnantDecayer:RandomConnection No
 
 # set the correct PDFs
 set /Herwig/Partons/HardLOPDF:PDFName CT14lo
