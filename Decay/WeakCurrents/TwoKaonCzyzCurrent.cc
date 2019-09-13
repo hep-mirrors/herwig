@@ -409,6 +409,11 @@ bool TwoKaonCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
       return false;
     }
   }
+  if(imode==0 && (flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero )) return false;
+  if(imode!=0 && (flavour.strange != Strangeness::Unknown and flavour.strange != Strangeness::Zero and
+		  flavour.strange != Strangeness::ssbar )) return false;
+  if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero       ) return false;
+  if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero       ) return false;
   // make sure that the decays are kinematically allowed
   tPDPtr part[2];
   if(imode==0) {
@@ -533,7 +538,8 @@ TwoKaonCzyzCurrent::current(tcPDPtr resonance,
   double dot(psum*pdiff/q2);
   psum *=dot;
   // calculate the current
-  Complex FK = Fkaon(q2,imode,ichan,flavour.I,resonance,
+  Complex FK = Fkaon(q2,imode,ichan,
+		     flavour.I,flavour.strange,resonance,
 		     momenta[0].mass(),momenta[1].mass());
   // compute the current
   pdiff -= psum;
@@ -647,12 +653,16 @@ void TwoKaonCzyzCurrent::dataBaseOutput(ofstream & output,bool header,
 }
 
 Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
-				  IsoSpin::IsoSpin Itotal, tcPDPtr resonance,
-				  Energy ma, Energy mb) const {
+				  IsoSpin::IsoSpin Itotal, Strangeness::Strange strange,
+				  tcPDPtr resonance, Energy ma, Energy mb) const {
   unsigned int imin=0, imax = 4;
   bool on[3] = {(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IOne),
 		(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && imode!=0,
 		(Itotal==IsoSpin::IUnknown || Itotal==IsoSpin::IZero) && imode!=0};
+  if(strange!=Strangeness::Unknown) {
+    if(strange==Strangeness::Zero) on[2] = false;
+    else if(strange==Strangeness::ssbar) on[0]=on[1]=false;
+  }
   if(ichan>=0) {
     if(ichan<3) {
       on[1]=on[2]=false;

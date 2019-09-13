@@ -111,7 +111,9 @@ public:
    *  Calculation of the kaon form factor
    */
   Complex Fkaon(Energy2 q2,const int imode, const int ichan,
-		IsoSpin::IsoSpin Itotal, tcPDPtr resonance,
+		IsoSpin::IsoSpin Itotal,
+		Strangeness::Strange strange,
+		tcPDPtr resonance,
 		Energy ma, Energy mb) const;
   
   /**
