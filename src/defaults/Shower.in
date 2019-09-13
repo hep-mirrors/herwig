@@ -32,8 +32,8 @@ create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
 create Herwig::ShowerAlphaQED AlphaQED
 create Herwig::PartnerFinder PartnerFinder
-newdef PartnerFinder:PartnerMethod 1
-newdef PartnerFinder:ScaleChoice 1
+newdef PartnerFinder:PartnerMethod 0
+newdef PartnerFinder:ScaleChoice 0
 create Herwig::KinematicsReconstructor KinematicsReconstructor
 newdef KinematicsReconstructor:ReconstructionOption Colour3
 newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
