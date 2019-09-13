@@ -259,7 +259,7 @@ DecayMEPtr OneOneOneEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              const IdList & ids, const double phi,
                                              bool) {
   // calculate the kernal
-  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   double gvvv(0.);
   getCouplings(gvvv,ids);
   // defining dummies
