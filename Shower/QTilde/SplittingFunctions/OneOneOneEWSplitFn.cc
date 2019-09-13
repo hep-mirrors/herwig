@@ -90,35 +90,38 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
   double gvvv(0.);
   getCouplings(gvvv,ids);
   double val(0.);
-  val = ((2.*sqr(1.-(1.-z)*z))/((1.-z)*z))*(abs(rho(0,0))+abs(rho(2,2)));
+  double abs_rho_00 = sqrt(norm(rho(0,0)));
+  double abs_rho_11 = sqrt(norm(rho(1,1)));
+  double abs_rho_22 = sqrt(norm(rho(2,2)));
+  val = ((2.*sqr(1.-(1.-z)*z))/((1.-z)*z))*(abs_rho_00+abs_rho_22);
   if(mass) {
     double mWt2 = sqr(getParticleData(ParticleID::Wplus)->mass())/t;
     double mZt2 = sqr(getParticleData(ParticleID::Z0)->mass())/t;
     // G > WW
     if(ids[0]->id()==ParticleID::gamma && abs(ids[1]->id())==ParticleID::Wplus
                                        && abs(ids[2]->id())==ParticleID::Wplus){
-      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2))))/((1.-z)*z);
+      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
     }
     // Z > WW
     else if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
                                          && abs(ids[2]->id())==ParticleID::Wplus){
-      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2))))/((1.-z)*z);
-      val += (-2.*mZt2*(z*(-2.+z*(8.+z*(-13.-2.*(-4.+z)*z)))*abs(rho(1,1))
-           - (1.-z)*sqr(1.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2)))))/(sqr(1.-z)*z);
+      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
+      val += (-2.*mZt2*(z*(-2.+z*(8.+z*(-13.-2.*(-4.+z)*z)))*abs_rho_11
+           - (1.-z)*sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/(sqr(1.-z)*z);
     }
     // W > WG
     else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
                                                  && ids[2]->id()==ParticleID::gamma){
-      val += 4.*mWt2*sqr(1.-z)*abs(rho(1,1));
-      val -= 2.*mWt2*(1.+sqr(1.-z))*(abs(rho(0,0)) + abs(rho(2,2)));
+      val += 4.*mWt2*sqr(1.-z)*abs_rho_11;
+      val -= 2.*mWt2*(1.+sqr(1.-z))*(abs_rho_00 + abs_rho_22);
     }
     // W > WZ
     else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
                                                  && ids[2]->id()==ParticleID::Z0){
-      val += (2.*mZt2*(pow(z,3)*abs(rho(1,1)) + (1.-z)*(-1.+sqr(1.-z)*z)
-           * (abs(rho(0,0))+abs(rho(2,2)))))/(sqr(1.-z)*z);
-      val += -2.*mWt2*(-2.*sqr(1.-z)*abs(rho(1,1))+(2.+(-2.+z)*z)
-           * (abs(rho(0,0))+abs(rho(2,2))));
+      val += (2.*mZt2*(pow(z,3)*abs_rho_11 + (1.-z)*(-1.+sqr(1.-z)*z)
+           * (abs_rho_00+abs_rho_22)))/(sqr(1.-z)*z);
+      val += -2.*mWt2*(-2.*sqr(1.-z)*abs_rho_11+(2.+(-2.+z)*z)
+           * (abs_rho_00+abs_rho_22));
     }
   }
   return sqr(gvvv)*val;
@@ -138,35 +141,38 @@ double OneOneOneEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const RhoDMatrix & rho) const {
   double gvvv(0.);
   getCouplings(gvvv,ids);
-  double val = sqr(1.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2)));
+  double abs_rho_00 = sqrt(norm(rho(0,0)));
+  double abs_rho_11 = sqrt(norm(rho(1,1)));
+  double abs_rho_22 = sqrt(norm(rho(2,2)));
+  double val = sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22);
   if(mass) {
     double mWt2 = sqr(getParticleData(ParticleID::Wplus)->mass())/t;
     double mZt2 = sqr(getParticleData(ParticleID::Z0)->mass())/t;
     // G > WW
     if(ids[0]->id()==ParticleID::gamma && abs(ids[1]->id())==ParticleID::Wplus
                                        && abs(ids[2]->id())==ParticleID::Wplus) {
-      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2))))/((1.-z)*z);
+      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
     }
     // Z > WW
     else if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
                                          && abs(ids[2]->id())==ParticleID::Wplus){
-      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2))))/((1.-z)*z);
-      val += (-2.*mZt2*(z*(-2.+z*(8.+z*(-13.-2.*(-4.+z)*z)))*abs(rho(1,1))
-           - (1.-z)*sqr(1.-(1.-z)*z)*(abs(rho(0,0))+abs(rho(2,2)))))/(sqr(1.-z)*z);
+      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
+      val += (-2.*mZt2*(z*(-2.+z*(8.+z*(-13.-2.*(-4.+z)*z)))*abs_rho_11
+           - (1.-z)*sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/(sqr(1.-z)*z);
     }
     // W > WG
     else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
                                                  && ids[2]->id()==ParticleID::gamma) {
-      val += 4.*mWt2*sqr(1.-z)*abs(rho(1,1));
-      val -= 2.*mWt2*(1.+sqr(1.-z))*(abs(rho(0,0)) + abs(rho(2,2)));
+      val += 4.*mWt2*sqr(1.-z)*abs_rho_11;
+      val -= 2.*mWt2*(1.+sqr(1.-z))*(abs_rho_00 + abs_rho_22);
     }
     // W > WZ
     else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
                                                  && ids[2]->id()==ParticleID::Z0) {
-      val += (2.*mZt2*(pow(z,3)*abs(rho(1,1)) + (1.-z)*(-1.+sqr(1.-z)*z)
-             * (abs(rho(0,0))+abs(rho(2,2)))))/(sqr(1.-z)*z);
-      val += -2.*mWt2*(-2.*sqr(1.-z)*abs(rho(1,1))+(2.+(-2.+z)*z)
-             * (abs(rho(0,0))+abs(rho(2,2))));
+      val += (2.*mZt2*(pow(z,3)*abs_rho_11 + (1.-z)*(-1.+sqr(1.-z)*z)
+             * (abs_rho_00+abs_rho_22)))/(sqr(1.-z)*z);
+      val += -2.*mWt2*(-2.*sqr(1.-z)*abs_rho_11+(2.+(-2.+z)*z)
+             * (abs_rho_00+abs_rho_22));
     }
   }
   return sqr(gvvv)*val;
