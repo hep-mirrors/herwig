@@ -32,6 +32,7 @@ MCatNLO-DefaultShower.in \
 MCatNLO-Dipole-HardAlphaSTune.in \
 MCatNLO-DipoleShower.in \
 MMHT2014.in \
+CT14.in \
 MuDown.in \
 MuQDown.in \
 MuQUp.in \

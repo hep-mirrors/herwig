@@ -32,7 +32,7 @@ set Factory:OrderInAlphaEW 2
 set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
 ${shower}
 ${bscheme}
-read Matchbox/MMHT2014.in
+read Matchbox/CT14.in
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 

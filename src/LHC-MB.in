@@ -58,10 +58,7 @@ set /Herwig/UnderlyingEvent/MPIHandler:DiffractiveRatio 0.17
 set /Herwig/Partons/RemnantDecayer:PtDistribution 4
 
 # set the correct PDFs
-set /Herwig/Partons/HardLOPDF:PDFName CT14lo
-set /Herwig/Partons/ShowerLOPDF:PDFName CT14lo
-set /Herwig/Partons/MPIPDF:PDFName CT14lo
-set /Herwig/Partons/RemnantPDF:PDFName CT14lo
+read Matchbox/CT14.in
 
 #set /Herwig/Shower/ShowerHandler:CascadeHandler NULL     # Switch off parton shower
 #set /Herwig/Hadronization/HadronizationHandler:HadronizationHandler  NULL

@@ -1,0 +1,12 @@
+# -*- ThePEG-repository -*-
+
+cd /Herwig/Partons
+
+set HardLOPDF:PDFName CT14lo
+set HardNLOPDF:PDFName CT14nlo
+
+set ShowerLOPDF:PDFName CT14lo
+set ShowerNLOPDF:PDFName CT14nlo
+
+set MPIPDF:PDFName CT14lo
+set RemnantPDF:PDFName CT14lo
