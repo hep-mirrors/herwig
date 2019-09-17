@@ -107,7 +107,8 @@ create Herwig::MEQCD2to2       MEQCD2to2
 
 # MinBias
 create Herwig::MEMinBias MEMinBias
-
+newdef MEMinBias:csNorm 0.01
+newdef MEMinBias:Scale 2.0
 ###################################
 #  Heavy Quark
 ###################################

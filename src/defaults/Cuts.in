@@ -113,6 +113,6 @@ insert Cuts:MultiCuts[0] MassCut
 # create diffrent cuts object for MinBias to avoid numerical problems
 create ThePEG::Cuts MinBiasCuts
 newdef MinBiasCuts:ScaleMin 2.0*GeV2
-newdef MinBiasCuts:X1Min 0.055
-newdef MinBiasCuts:X2Min 0.055
+newdef MinBiasCuts:X1Min 0.011
+newdef MinBiasCuts:X2Min 0.011
 newdef MinBiasCuts:MHatMin 0.0*GeV

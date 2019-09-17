@@ -26,59 +26,23 @@ set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 # Minimum Bias
 read snippets/MB.in
 
-# Read in parameters of the soft model recommended for MB/UE simulations
-read snippets/SoftTune.in
-
-
 #Diffraction model
 read snippets/Diffraction.in
 
-#Turn on Baryonic reconnection
-read snippets/BaryonicReconnection.in
 
-
-# Normalization of the Min bias cross section for correct diffractive cross section
-set /Herwig/MatrixElements/MEMinBias:csNorm 0.01
-
-
-# Use LHC parametrization of the cross section
-set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2
-
-
-#some preliminary parameters for the MPI model which need to be tuned
-#TODO
-set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.02
-set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.4
-set /Herwig/UnderlyingEvent/MPIHandler:Power 0.308
-set /Herwig/Partons/RemnantDecayer:ladderMult 0.45
-set /Herwig/Partons/RemnantDecayer:ladderbFactor 1.0
-set /Herwig/UnderlyingEvent/MPIHandler:DiffractiveRatio 0.17
-
-#ordered pTs
-set /Herwig/Partons/RemnantDecayer:PtDistribution 4
-
-# set the correct PDFs
-read Matchbox/CT14.in
-
-#set /Herwig/Shower/ShowerHandler:CascadeHandler NULL     # Switch off parton shower
-#set /Herwig/Hadronization/HadronizationHandler:HadronizationHandler  NULL
-# do Soft interactions
-
-#set /Herwig/Hadronization/ColourReconnector:ColourReconnection No
 #################################################
 # Analyses
 ##################################################
 
-#Comment these lines out in order to use rivet analyses
-cd /Herwig/Analysis
-create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
-
-cd /Herwig/Generators
-insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-
-#Some example analyses
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+## Comment these lines out in order to use rivet analyses
+# cd /Herwig/Analysis
+# create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+ 
+# cd /Herwig/Generators
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+## Some example analyses
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
 
 #set /Herwig/Analysis/Plot:EventNumber 54
 #cd /Herwig/Generators

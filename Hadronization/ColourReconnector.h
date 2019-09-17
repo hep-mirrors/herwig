@@ -152,27 +152,38 @@ private:
   int _algorithm = 0;
 
   /**
-   * The annealing factor is the ratio of two successive temperature steps:
-   * T_n = _annealingFactor * T_(n-1)
-   */
-  double _annealingFactor = 0.9;
-
-  /**
-   * Number of temperature steps in the statistical annealing algorithm
-   */
-  unsigned int _annealingSteps = 50;
-
-  /**
    * Do we do colour reconnections?
    */
   int _clreco = 0;
 
+
   /**
+   * Statistical Reco: 
    * Factor used to determine the initial temperature according to
    * InitialTemperature = _initTemp * median {energy changes in a few random
    * rearrangements}
    */
-  double _initTemp = 0.1;
+  double _initTemp = 0.01;
+
+  /**
+   * Statistical Reco: 
+   * The annealing factor is the ratio of two successive temperature steps:
+   * T_n = _annealingFactor * T_(n-1)
+   */
+  double _annealingFactor = 0.21;
+
+  /**
+   * Statistical Reco: 
+   * Number of temperature steps in the statistical annealing algorithm
+   */
+  unsigned int _annealingSteps = 10;
+
+  /**
+   * Statistical Reco:
+   * The number of tries per temperature steps is the number of clusters times
+   * this factor.
+   */
+  double _triesPerStepFactor = 0.66;
 
   /**
    * Probability that a found reconnection possibility is actually accepted.
@@ -181,12 +192,7 @@ private:
 
 
   double _precoBaryonic = 0.5;
-  
-  /**
-   * The number of tries per temperature steps is the number of clusters times
-   * this factor.
-   */
-  double _triesPerStepFactor = 5.0;
+ 
   /**
    * maximum allowed distance in the eta phi space for reconnection to occur
    */
