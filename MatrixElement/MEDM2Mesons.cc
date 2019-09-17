@@ -21,7 +21,7 @@ using namespace Herwig;
 typedef LorentzVector<complex<InvEnergy> > LorentzPolarizationVectorInvE;
 
 MEDM2Mesons::MEDM2Mesons() {
-  cSMmed_ = {1.0,1.0};
+  cSMmed_ = {1.0,1.0,1.0};
 }
 
 Energy2 MEDM2Mesons::scale() const {
@@ -188,7 +188,11 @@ double MEDM2Mesons::me2(const int ichan) const {
   double output(0.);
   int hI0_size = hadronI0.size();
   int hI1_size = hadronI1.size();
-  int maxsize = max(hadronI0.size(),hadronI1.size());
+  int hss_size = hadronssbar.size();
+  cout<<"hI0 size: "<<hI0_size<<endl;
+  cout<<"hI1 size: "<<hI1_size<<endl;
+  cout<<"hss size: "<<hss_size<<endl;
+  int maxsize = max(max(hadronI0.size(),hadronI1.size()),hss_size);
   for(unsigned int hhel=0;hhel<maxsize;++hhel) {
     // map the index for the hadrons to a helicity state
     for(int ix=nOut;ix>0;--ix) {
@@ -200,13 +204,28 @@ double MEDM2Mesons::me2(const int ichan) const {
 	Complex amp;
 	// work on coefficients for the I1 and I0 bits
   	if(hI0_size != 0 && hI1_size !=0){
-	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[0]*hadronI0[hhel]+cSMmed_[1]*hadronI1[hhel]);
+	  if(hss_size !=0){
+	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2)+(cSMmed_[0]+cSMmed_[1])*hadronI1[hhel]/sqrt(2)+cSMmed_[2]*hadronssbar[hhel]);
+	  }
+	  else {
+	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2)+(cSMmed_[0]+cSMmed_[1])*hadronI1[hhel]/sqrt(2));
+          }
 	}
 	else if(hI0_size != 0 && hI1_size == 0){
-	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[0]*hadronI0[hhel]);
+	  if(hss_size !=0){
+	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2)+cSMmed_[2]*hadronssbar[hhel]);
+	  }
+	  else {
+	  amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2));
+	  }
 	}
 	else {
+	  if(hss_size !=0){
+	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]+cSMmed_[1])*hadronI1[hhel]/sqrt(2)+cSMmed_[2]*hadronssbar[hhel]);
+	  }
+	  else{
 	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[1]*hadronI1[hhel]);
+	  }
 	}
 	me_(ihel)= amp;
   	output += std::norm(amp);
