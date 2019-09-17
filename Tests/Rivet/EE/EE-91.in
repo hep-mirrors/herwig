@@ -110,6 +110,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I360638
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1997_I428178
 # ALEPH pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1997_I427131
+# ALEPH Lambda polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_I415745
+# DELPHI Lambda/K asymmetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I382285
 ##################################################
 # unvalidated 
 ##################################################
