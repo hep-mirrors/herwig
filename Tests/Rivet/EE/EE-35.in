@@ -1,0 +1,28 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 35.
+##################################################
+# select the analyses 
+##################################################
+# OPAL/JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_OPAL_2000_S4300807
+# JADE jet rates at many energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1998_S3612880
+# tasso event shapes at various low energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048
+# PDG hadron multiplicities and ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1983_I190818
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1987_I248660
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1990_I283026
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CELLO_1989_I276764
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1984_I203145
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1982_I177174
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_I284251
+## jade gamma,pi0 and eta spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 JADE_1990_I282847
+## TASSO event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1988_I263859

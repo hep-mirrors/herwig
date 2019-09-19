@@ -244,6 +244,16 @@ void MEMinBias::Init() {
      "The object that administers all additional scatterings.",
      &MEMinBias::MPIHandler_, false, false, true, true);
 
+  static Switch<MEMinBias , bool> interfaceOnlyVal
+    ("OnlyValence" ,
+     "Allow the dummy process to only extract valence quarks." ,
+     &MEMinBias::onlyValQuarks_ , false , false , false );
+  static SwitchOption interfaceOnlyValYes
+  ( interfaceOnlyVal , "Yes" , "" , true );
+  static SwitchOption interfaceOnlyValNo
+  ( interfaceOnlyVal , "No" , "" , false );
+
+ 
 
 }
 

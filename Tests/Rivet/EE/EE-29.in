@@ -1,0 +1,24 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 29.0
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.0
+##################################################
+# select the analyses
+##################################################
+#  Validated
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1986_I18502
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I250824
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1987_I235694
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1985_I205868
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MAC_1985_I202924
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1992_I339573
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I205869
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1986_I217416
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1990_I280958
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1988_I262143
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I201482
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I200105
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I23360

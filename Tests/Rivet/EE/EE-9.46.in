@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 4.73
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 4.73
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.4
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+
+# BELLE charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1990_I278933

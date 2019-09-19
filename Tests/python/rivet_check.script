@@ -1,0 +1,106 @@
+#!/usr/bin/python
+import glob,subprocess,os,optparse
+
+op = optparse.OptionParser(usage=__doc__)
+op.add_option("--obsolete", dest="obsolete" , default=False, action="store_true" , help="Warn if obsolete analyses not included")
+op.add_option("--search", dest="search" , default=False, action="store_true" , help="Warn if search analyses not included")
+op.add_option("--heavy-ion", dest="heavy_ion" , default=False, action="store_true" , help="Warn if heavy ion analyses not included")
+op.add_option("--MC", dest="MC" , default=False, action="store_true" , help="Warn if MC analyses not included")
+op.add_option("--print-descriptions", dest="output" , default=False, action="store_true" , help="Print analysis descriptions")
+opts, args = op.parse_args()
+
+# analyses to skip
+skip = [ "ATLAS_2010_I849050", # alias
+         "TOTEM_2012_002"    , # alias
+         "TEST"              , # test analysis
+        ]
+searches=["ALEPH_2016_I1492968"]
+
+
+p=subprocess.Popen(["rivet","--list"],stdout=subprocess.PIPE)
+analyses={}
+for line in p.communicate()[0].split("\n") :
+    line=line.strip()
+    if(line=="") : continue
+    temp =  line.split(None,1)
+    if(len(temp)==2) :
+        analyses[temp[0].strip()] = temp[1].strip()
+    elif(len(temp)==1) :
+        analyses[temp[0].strip()] = ""
+    else :
+        print line
+        quit()
+
+# main line hw analyses at high energy
+hw_analyses={}
+files=[]
+for idir in glob.glob("Rivet/*") :
+    if( "Powheg" in idir or "MCatNLO" in idir) : continue
+    if ( not os.path.isdir(idir) ) : continue
+    if ( "Templates" in idir ) : continue
+    for ifile in glob.glob("%s/*.in" % idir) :
+        fshort=ifile.split("/")[-1].replace(".in","")
+        files.append(fshort)
+        file=open(ifile)
+        line=file.readline()
+        while line:
+            if("RivetAnalysis:Analyses" in line and line[0]!="#") :
+                line=line.strip().split()
+                anal = line[-1].strip().split(":")[0]
+                if(anal not in hw_analyses) :
+                    hw_analyses[anal] = [fshort]
+                else :
+                    hw_analyses[anal].append(fshort)
+            line=file.readline()
+
+anatohepmc = open("anatohepmc.txt",'w')
+hepmctoana = open("hepmctoana.txt",'w')
+not_in_rivet=[]
+for val in hw_analyses.keys() : not_in_rivet.append(val) 
+# check the analyses
+for analysis in sorted(analyses.keys()) :
+    # we have it high energy
+    if(analysis in hw_analyses) :
+        anatohepmc.write("%s %s\n" % (analysis,' '.join(sorted(hw_analyses[analysis]))) )
+        if("[OBSOLETE]" in analyses[analysis]) :
+            print "WARNING Obsolete analysis %s included : %s" % (analysis,analyses[analysis])
+        if(analysis in not_in_rivet) :
+            not_in_rivet.remove(analysis)
+    # obsolete
+    elif("[OBSOLETE]" in analyses[analysis]) :
+        if(opts.obsolete) : print "Obsolete analysis %s not included : %s" % (analysis,analyses[analysis])
+    # searches
+    elif("Search" in analyses[analysis] or "search" in analyses[analysis] or analysis in searches) :
+        if(opts.search) : print "Search   analysis %s not included  : %s" % (analysis,analyses[analysis])
+    # mc only
+    elif(analysis[0:3]=="MC_") :
+        if(opts.MC) : print "MC   analysis %s not included  : %s" % (analysis,analyses[analysis])
+    # examples
+    elif("[EXAMPLE]" in analyses[analysis]) :
+        continue
+    # we don't have it
+    else :
+        p=subprocess.Popen(["rivet","--show-analysis",analysis],stdout=subprocess.PIPE)
+        desc=p.communicate()[0]
+        beams=[]
+        for line in desc.split("\n") :
+            if("Beams:" in line) :
+                beams=line.replace("Beams:","").split()
+        nHeavy = sum((part=="Pb" or part=="Au") for part in beams)
+        if(nHeavy == len(beams) or nHeavy+1 == len(beams)) :
+            if(opts.heavy_ion) : print "Heavy Ion analysis %s not included  : %s" % (analysis,analyses[analysis])
+        else :
+            print "MISSING ANALYSIS",analysis,analyses[analysis]
+            if(opts.output) : print desc
+# outout analyses missing from rivet
+for val in not_in_rivet:
+    print "NOT IN RIVET ",val
+# output second file for rivet
+anatohepmc.close()
+for fname in sorted(files) :
+    anals=[]
+    for anal in hw_analyses :
+        if(fname in hw_analyses[anal]) :
+            anals.append(anal)
+    hepmctoana.write("%s %s\n" % (fname,' '.join(sorted(anals))) )
+hepmctoana.close()

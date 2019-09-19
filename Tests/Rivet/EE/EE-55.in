@@ -1,0 +1,15 @@
+# -*- ThePEG-repository -*-
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 55.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+# AMY charged mult
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 AMY_1990_I295160
+# L3 event shapes etc for a wide range of CMS energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_2004_I652683
+# AMY event shapes 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 AMY_1990_I283337

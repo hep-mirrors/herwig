@@ -161,7 +161,8 @@ read Merging/FactorCMWScheme.in
 ##################################################
 
 read Matchbox/FiveFlavourNoBMassScheme.in
-read Matchbox/MMHT2014.in
+read Matchbox/CT14.in
+# read Matchbox/MMHT2014.in
 
 ##################################################
 ## Analyses

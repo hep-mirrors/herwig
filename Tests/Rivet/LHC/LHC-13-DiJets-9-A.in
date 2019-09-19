@@ -1,6 +1,5 @@
 ##################################################
 # select the analyses
 ##################################################
-# CMS High mass jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2018_I1663452
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2017_I1519995
+# ATLAS jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970

@@ -1004,7 +1004,6 @@ cl2->addColoured(softRems_.first, anti.second);
 double bisectReshuffling(const vector<PPtr>& particles,
                          Energy w,
                          double target = -16., double maxLevel = 80.) {
-
   double level = 0;
   double left = 0;
   double right = 1;
@@ -1020,7 +1019,7 @@ double bisectReshuffling(const vector<PPtr>& particles,
       check += sqrt(sqr(xi)*((*p)->momentum().vect().mag2())+sqr((*p)->mass()))/w;
     }
 
-    if ( log10(abs(1.-check)) <= target )
+    if ( check==1. || log10(abs(1.-check)) <= target )
       break;
 
     left *= 2.;
@@ -1084,7 +1083,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // Get the collision energy
   Energy energy(generator()->maximumCMEnergy());
 
-  double reference = sqr(energy/TeV);
+  //double reference = sqr(energy/TeV);
 
   // double ladderMult_;
   // Parametrization of the ladder multiplicity
