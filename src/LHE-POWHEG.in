@@ -3,8 +3,6 @@
 # For use with POWHEG events
 # usage: Herwig read LHE.in
 ##################################################
-read snippets/SoftModel.in
-##################################################
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators

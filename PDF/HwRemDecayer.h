@@ -65,7 +65,7 @@ public:
   /**
    * The default constructor.
    */
-  HwRemDecayer() : allowTop_(false), multiPeriph_(false), quarkPair_(false),
+  HwRemDecayer() : allowTop_(false), multiPeriph_(true), quarkPair_(false),
                    ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0),
