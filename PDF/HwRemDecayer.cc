@@ -1095,6 +1095,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   initTotRap_ = abs(softRems_.first->momentum().rapidity())
   		+abs(softRems_.second->momentum().rapidity());
     
+
   // Generate the poisson distribution with mean avgN
   N=UseRandom::rndPoisson(avgN);
 
@@ -1157,6 +1158,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
        // Need 1-x instead of x to get the proper final momenta
        // TODO: physical to use different x's (see comment below)
        x1 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
+ 
       // x2 = UseRandom::rndGauss( gaussWidth_ , exp(-param) );
   }while(x1 < 0 || x1>=1.0); // x2 < 0 || x2>=1.0);
 
@@ -1268,6 +1270,9 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
         totalMomentumAll+=p;
   }
 
+ // sort again
+ sort(ladderMomenta.begin(),ladderMomenta.end(),ySort);
+
   // Do the colour connections
   // Original rems are the ones which are connected to other parts of the event
   PPair oldRems_ = softRems_;
@@ -1288,6 +1293,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   oldRems_.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
   // Add all partons to the first remnant for the event record
   vector<PPtr> partons;
+  vector<PPtr> quarks;
   int count=0;
 
   // Choose the colour connections and position of quark antiquark
@@ -1300,17 +1306,17 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     if(p.mass()==getParticleData(ParticleID::u)->constituentMass()){ 
       if(count==0){
         if(quarkPosition==0){
-          partons.push_back(addParticle(softRems_.first, quarkID, p));
+          quarks.push_back(addParticle(softRems_.first, quarkID, p));
           count++;
         }else{
-          partons.push_back(addParticle(softRems_.first, -quarkID, p));
+          quarks.push_back(addParticle(softRems_.first, -quarkID, p));
           count++;          
         }
       }else{
         if(quarkPosition==0){
-          partons.push_back(addParticle(softRems_.first, -quarkID, p));
+          quarks.push_back(addParticle(softRems_.first, -quarkID, p));
         }else{
-          partons.push_back(addParticle(softRems_.first, quarkID, p));
+          quarks.push_back(addParticle(softRems_.first, quarkID, p));
         }
       }
   }else{
@@ -1329,44 +1335,44 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // colour connections to the new remnants and old remnants
   if(quarkPosition==0){
         // ladder self contained
-        if(partons.size()==2){
+        if(partons.size()==0 && quarks.size()>0){
           ColinePtr clq =  new_ptr(ColourLine());
-          clq->addColoured(partons[0]);
-          clq->addAntiColoured(partons[1]);
+          clq->addColoured(quarks[0]);
+          clq->addAntiColoured(quarks[1]);
          }
 
          ColinePtr clfirst =  new_ptr(ColourLine());
          ColinePtr cllast =  new_ptr(ColourLine());
 
-         if(partons.size()>2){
-           clfirst->addColoured(partons[0]);
-    	   clfirst->addAntiColoured(partons[1]);
-    	   cllast->addAntiColoured(partons[partons.size()-1]);
-           cllast->addColoured(partons[partons.size()-2]);
+         if(partons.size()>0){
+           clfirst->addColoured(quarks[0]);
+    	   clfirst->addAntiColoured(partons[0]);
+    	   cllast->addAntiColoured(quarks[1]);
+           cllast->addColoured(partons[partons.size()-1]);
            //now the remaining gluons
-           for (unsigned int i=1; i<partons.size()-2; i++){
+           for (unsigned int i=0; i<partons.size()-1; i++){
              ColinePtr cl = new_ptr(ColourLine());
              cl->addColoured(partons[i]);
              cl->addAntiColoured(partons[i+1]);
            }
          }
   } else {
-         if(partons.size()==2){
+         if(partons.size()==0 && quarks.size()>0){
            ColinePtr clq =  new_ptr(ColourLine());
-           clq->addAntiColoured(partons[0]);
-           clq->addColoured(partons[1]);
+           clq->addAntiColoured(quarks[0]);
+           clq->addColoured(quarks[1]);
           }
 
           ColinePtr clfirst =  new_ptr(ColourLine());
           ColinePtr cllast =  new_ptr(ColourLine());
 
-          if(partons.size()>2){
-            clfirst->addAntiColoured(partons[0]);
-    	    clfirst->addColoured(partons[1]);
-    	    cllast->addColoured(partons[partons.size()-1]);
-            cllast->addAntiColoured(partons[partons.size()-2]);
+          if(partons.size()>0){
+            clfirst->addAntiColoured(quarks[0]);
+    	    clfirst->addColoured(partons[0]);
+    	    cllast->addColoured(quarks[1]);
+            cllast->addAntiColoured(partons[partons.size()-1]);
             //now the remaining gluons
-            for (unsigned int i=1; i<partons.size()-2; i++){
+            for (unsigned int i=0; i<partons.size()-1; i++){
               ColinePtr cl = new_ptr(ColourLine());
               cl->addAntiColoured(partons[i]);
               cl->addColoured(partons[i+1]);

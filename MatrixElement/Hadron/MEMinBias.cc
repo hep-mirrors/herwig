@@ -41,7 +41,7 @@ void MEMinBias::getDiagrams() const {
       //qqb -> qqb
       add(new_ptr((Tree2toNDiagram(3), q1, pom, q2b, 1, q1, 2, q2b, -2)));
       //qbqb -> qbqb
-      add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
+     add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
     }
   }
 }
