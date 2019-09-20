@@ -40,6 +40,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1724880
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416990
 # kaons in b decays
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1994_I354224
+# charm hadrons in b decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2006_I719111
+# phi spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
+# D_s spectrum
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
 # # MC analyses based on old internal ones
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay
