@@ -22,3 +22,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1988_I262143
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1985_I201482
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1984_I200105
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 HRS_1988_I23360
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TPC_1991_I316132

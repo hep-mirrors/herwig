@@ -175,6 +175,7 @@ for f in yodafiles:
            aopath.find("165122" )>0 or aopath.find("118873" )>0 or
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
+           aopath.find("132410" )>0 or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -214,7 +215,7 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("276860" )>0 or hpath.find("165122" )>0 or
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
         hpath.find("284251" )>0 or hpath.find("191161" )>0 or
-        hpath.find("1422780")>0) :
+        hpath.find("1422780")>0 or hpath.find("132410" )>0 ):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
@@ -1157,7 +1158,7 @@ useOne("/TASSO_1990_I284251/d08-x01-y03","34.5")
 merge("/TASSO_1990_I284251/d09-x01-y01")
 useOne("/TASSO_1990_I284251/d10-x01-y01","35")
 useOne("/TASSO_1990_I284251/d10-x01-y02","35")
-
+merge("/DASP_1979_I132410/d01-x01-y01")
 # BES xi analysis
 useOne("/BESIII_2016_I1422780/d02-x01-y01","psi")
 useOne("/BESIII_2016_I1422780/d02-x01-y02","psi")

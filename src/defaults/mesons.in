@@ -725,6 +725,10 @@ newdef Upsilon(4S):WidthUpCut 0.205
 #
 # the 5^3S_1 multiplet
 #
+create ThePEG::ParticleData Upsilon(5S)
+setup Upsilon(4S) 300553 Upsilon(4S) 10.5794 0.0205 0.11275 0 0 0 3 0 
+newdef Upsilon(4S):WidthLoCut 0.0205
+newdef Upsilon(4S):WidthUpCut 0.205
 #
 # The meson which are not part of a multiplet
 #
