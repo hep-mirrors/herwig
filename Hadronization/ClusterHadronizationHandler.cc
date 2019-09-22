@@ -36,7 +36,7 @@ using namespace Herwig;
 ClusterHadronizationHandler * ClusterHadronizationHandler::currentHandler_ = 0;
 
 DescribeClass<ClusterHadronizationHandler,HadronizationHandler>
-describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","");
+describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","Herwig.so");
 
 IBPtr ClusterHadronizationHandler::clone() const {
   return new_ptr(*this);

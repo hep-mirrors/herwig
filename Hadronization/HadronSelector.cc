@@ -29,7 +29,7 @@
 using namespace Herwig;
 
 DescribeAbstractClass<HadronSelector,Interfaced>
-describeHadronSelector("Herwig::HadronSelector","");
+describeHadronSelector("Herwig::HadronSelector","Herwig.so");
 
 namespace {
   // // debug helper

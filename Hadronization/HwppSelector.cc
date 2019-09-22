@@ -27,7 +27,7 @@
 using namespace Herwig;
 
 DescribeClass<HwppSelector,HadronSelector>
-describeHwppSelector("Herwig::HwppSelector","");
+describeHwppSelector("Herwig::HwppSelector","Herwig.so");
 
 IBPtr HwppSelector::clone() const {
   return new_ptr(*this);

@@ -21,7 +21,7 @@
 using namespace Herwig;
 
 DescribeNoPIOClass<Hw64Selector,HadronSelector>
-describeHw64Selector("Herwig::Hw64Selector","");
+describeHw64Selector("Herwig::Hw64Selector","Herwig.so");
 
 IBPtr Hw64Selector::clone() const {
   return new_ptr(*this);

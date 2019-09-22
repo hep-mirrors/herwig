@@ -33,7 +33,7 @@ using Constants::twopi;
 
 
 DescribeClass<ColourReconnector,Interfaced>
-describeColourReconnector("Herwig::ColourReconnector","");
+describeColourReconnector("Herwig::ColourReconnector","Herwig.so");
 
 IBPtr ColourReconnector::clone() const {
   return new_ptr(*this);

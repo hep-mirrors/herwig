@@ -145,7 +145,7 @@ Energy Cluster::sumConstituentMasses() const
 
 void Cluster::calculateP() {
   Lorentz5Momentum m;
-  for(int i = 0; i<_numComp; i++) 
+  for(unsigned int i = 0; i<_numComp; i++) 
     m += _component[i]->momentum();
   m.rescaleMass();
   set5Momentum(m);
@@ -213,14 +213,14 @@ LorentzPoint Cluster::calculateX(tPPtr q1, tPPtr q2) {
 }
 
 bool Cluster::isBeamCluster() const {
-  for(int i = 0; i<_numComp; i++)
+  for(unsigned int i = 0; i<_numComp; i++)
     if(_isBeamRemnant[i]) return true;
   return false;
 }
 
 
 void Cluster::isBeamCluster(tPPtr part) {
-  for(int i = 0; i<_numComp; i++) {
+  for(unsigned int i = 0; i<_numComp; i++) {
     if(_original[i] == part) {
       _isBeamRemnant[i] = true;
       break;

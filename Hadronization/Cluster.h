@@ -94,7 +94,7 @@ public:
   /**
    * Number of quark (diquark) constituents (normally two).    
    */
-  int numComponents() const
+  unsigned int numComponents() const
   { return _numComp; }
   
   /**
@@ -296,7 +296,7 @@ private:
   tParticleVector _original;        //!< The original components
   vector<bool> _isBeamRemnant;     //!< Whether a parton is a beam remnant
   vector<bool> _isPerturbative;    //!< Whether a parton is perturbative
-  int _numComp;                    //!< The number of constituents
+  unsigned int _numComp;                    //!< The number of constituents
   long _id;                        //!< The id of this cluster
 };
   

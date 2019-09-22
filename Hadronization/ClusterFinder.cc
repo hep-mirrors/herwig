@@ -29,7 +29,7 @@
 using namespace Herwig;
 
 DescribeClass<ClusterFinder,Interfaced>
-describeClusterFinder("Herwig::ClusterFinder","");
+describeClusterFinder("Herwig::ClusterFinder","Herwig.so");
 
 IBPtr ClusterFinder::clone() const {
   return new_ptr(*this);
@@ -332,7 +332,7 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
 	 ! (*cluIter)->isAvailable() ) continue;
     
     tPPtr other;
-    for(int i = 0; i<(*cluIter)->numComponents(); i++) {
+    for(unsigned int i = 0; i<(*cluIter)->numComponents(); i++) {
       tPPtr part = (*cluIter)->particle(i);
       if(!DiquarkMatcher::Check(*(part->dataPtr())))
 	vec.push_back(part);

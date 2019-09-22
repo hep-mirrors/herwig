@@ -28,7 +28,7 @@
 using namespace Herwig;
 
 DescribeClass<LightClusterDecayer,Interfaced>
-describeLightClusterDecayer("Herwig::LightClusterDecayer","");
+describeLightClusterDecayer("Herwig::LightClusterDecayer","Herwig.so");
 
 IBPtr LightClusterDecayer::clone() const {
   return new_ptr(*this);

@@ -29,7 +29,7 @@
 using namespace Herwig;
 
 DescribeClass<ClusterDecayer,Interfaced>
-describeClusterDecayer("Herwig::ClusterDecayer","");
+describeClusterDecayer("Herwig::ClusterDecayer","Herwig.so");
 
 ClusterDecayer::ClusterDecayer() :
   _clDirLight(1),

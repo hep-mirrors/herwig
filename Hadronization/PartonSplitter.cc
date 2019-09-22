@@ -54,7 +54,7 @@ void PartonSplitter::persistentInput(PersistentIStream & is, int) {
 }
 
 DescribeClass<PartonSplitter,Interfaced>
-describePartonSplitter("Herwig::PartonSplitter","");
+describePartonSplitter("Herwig::PartonSplitter","Herwig.so");
 
 
 void PartonSplitter::Init() {

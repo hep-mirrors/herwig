@@ -29,7 +29,7 @@
 using namespace Herwig;
 
 DescribeClass<ClusterFissioner,Interfaced>
-describeClusterFissioner("Herwig::ClusterFissioner","");
+describeClusterFissioner("Herwig::ClusterFissioner","Herwig.so");
 
 ClusterFissioner::ClusterFissioner() :
   _clMaxLight(3.35*GeV),
