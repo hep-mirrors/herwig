@@ -103,6 +103,7 @@ newdef EventHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 newdef EventHandler:DecayHandler /Herwig/Decays/DecayHandler
 newdef EventHandler:Sampler /Herwig/ACDCSampler
 insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SubProcess
+insert EventHandler:PostHadronizationHandlers 0 /Herwig/Hadronization/SpinHadronizer
 
 mkdir /Herwig/Generators 
 cd /Herwig/Generators 
