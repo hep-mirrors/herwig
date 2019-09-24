@@ -7,6 +7,7 @@
 #include "SpinHadronizer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -44,10 +45,10 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
   // and its a cluster
   if(parent->id()!=ParticleID::Cluster) return;
   tClusterPtr cluster = dynamic_ptr_cast<tClusterPtr>(parent);
-  int prim_quark = (abs(baryon->id())/1000)%10;
+  unsigned int prim_quark = (abs(baryon->id())/1000)%10;
   int sign_quark = baryon->id()>0 ? prim_quark : -prim_quark;
   // only strange, charm and bottom for the moment
-  if(prim_quark<3) return;
+  if(prim_quark<minFlav_ || prim_quark>maxFlav_ ) return;
   tPPtr quark;
   for(unsigned int ix=0;ix<cluster->numComponents();++ix) {
     if(cluster->particle(ix)->id()==sign_quark) {
@@ -78,8 +79,17 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
   }
   // extract the polarization of the quark
   double pol = 2.*sp->rhoMatrix()(1,1).real()-1.;
+  if(sign_quark<0) {
+    qPol_[prim_quark-3].first  += pol;
+    qPol_[prim_quark-3].second += 1.;
+  }
+  else {
+    qPol_[prim_quark].first  += pol;
+    qPol_[prim_quark].second += 1.;
+  }
+
+  
   // the different options for different spin types
-  vector<double> polB(baryon->dataPtr()->iSpin(),1./double(baryon->dataPtr()->iSpin()));
   const int mult = prim_quark*1000;
   int bid = abs(baryon->id());
   // lambda and Xi spin 1/2 (spin0 diquark)
@@ -142,8 +152,58 @@ void SpinHadronizer::Init() {
 
   static Parameter<SpinHadronizer,double> interfaceOmegaHalf
     ("OmegaHalf",
-     "The omega_1/2 Falk-Psekin parameter",
+     "The omega_1/2 Falk-Peskin parameter",
      &SpinHadronizer::omegaHalf_, 2./3., 0.0, 1.0,
      false, false, Interface::limited);
 
+  static Parameter<SpinHadronizer,unsigned int> interfaceMinimumFlavour
+    ("MinimumFlavour",
+     "The minimum flavour of quark for which to transfer the polarization",
+     &SpinHadronizer::minFlav_, 3, 3, 5,
+     false, false, Interface::limited);
+
+  static Parameter<SpinHadronizer,unsigned int> interfaceMaximumFlavour
+    ("MaximumFlavour",
+     "The maximum flavour of quark for which to transfer the polarization",
+     &SpinHadronizer::maxFlav_, 5, 3, 5,
+     false, false, Interface::limited);
+
+  static Switch<SpinHadronizer,bool> interfaceDebug
+    ("Debug",
+     "Output info on polarizations each for debugging",
+     &SpinHadronizer::debug_, false, false, false);
+  static SwitchOption interfaceDebugYes
+    (interfaceDebug,
+     "Yes",
+     "Debug",
+     true);
+  static SwitchOption interfaceDebugNo
+    (interfaceDebug,
+     "No",
+     "No info",
+     false);
+
+}
+
+void SpinHadronizer::doinit() {
+  StepHandler::doinit();
+  if(minFlav_>maxFlav_)
+    throw InitException() << "The minimum flavour " << minFlav_  
+			  << "must be lower the than maximum flavour " << maxFlav_
+			  << " in SpinHadronizer::doinit() " 
+			  << Exception::runerror;
+}
+
+void SpinHadronizer::dofinish() {
+  StepHandler::dofinish();
+  for(unsigned int ix=0;ix<3;++ix) {
+    cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName() << " antiquarks "
+	 << qPol_[ix].first/qPol_[ix].second << "\n";
+    cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName()    << "     quarks "
+	 << qPol_[ix+3].first/qPol_[ix+3].second << "\n";
+  }
+}
+
+void SpinHadronizer::doinitrun() {
+  StepHandler::doinitrun();
 }

@@ -26,7 +26,8 @@ public:
   /**
    * The default constructor.
    */
-  SpinHadronizer() : omegaHalf_(2./3.)
+  SpinHadronizer() : omegaHalf_(2./3.), minFlav_(3), maxFlav_(5), debug_(false),
+		     qPol_(6,make_pair(0.,0.))		     
   {}
 
 public:
@@ -92,8 +93,30 @@ protected:
   
   //@}
 
+protected:
 
-  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
@@ -129,6 +152,26 @@ private:
    *  Falk-Peskin \f$\omega_\frac12\f$ parameter
    */
   double omegaHalf_;
+
+  /**
+   *  Minimum quark flavour
+   */
+  unsigned int minFlav_;
+  
+  /**
+   *  Maximum quark flavour
+   */
+  unsigned int maxFlav_;
+
+  /**
+   *  Print out debugging info
+   */
+  bool debug_;
+
+  /**
+   *  Polarization of the quarks
+   */
+  vector<pair<double,double> > qPol_;
   //@}
 
 };
