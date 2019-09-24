@@ -196,11 +196,15 @@ void SpinHadronizer::doinit() {
 
 void SpinHadronizer::dofinish() {
   StepHandler::dofinish();
-  for(unsigned int ix=0;ix<3;++ix) {
-    cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName() << " antiquarks "
-	 << qPol_[ix].first/qPol_[ix].second << "\n";
-    cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName()    << "     quarks "
-	 << qPol_[ix+3].first/qPol_[ix+3].second << "\n";
+  if(debug_) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(qPol_[ix].second!=0)
+	cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName() << " antiquarks "
+	     << qPol_[ix].first/qPol_[ix].second << "\n";
+      if(qPol_[ix+3].second!=0)
+	cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName()    << "     quarks "
+	     << qPol_[ix+3].first/qPol_[ix+3].second << "\n";
+    }
   }
 }
 
