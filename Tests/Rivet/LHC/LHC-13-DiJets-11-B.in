@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2018_I1634970

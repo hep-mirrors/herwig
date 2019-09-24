@@ -1,8 +1,0 @@
-# Recommended set of parameters for MB/UE runs
-
-set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.5
-set /Herwig/UnderlyingEvent/MPIHandler:pTmin0 3.502683
-set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.402055
-set /Herwig/UnderlyingEvent/MPIHandler:Power 0.416852
-set /Herwig/Partons/RemnantDecayer:ladderPower -0.08
-set /Herwig/Partons/RemnantDecayer:ladderNorm 0.95

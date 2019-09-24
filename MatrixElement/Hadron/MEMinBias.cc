@@ -7,6 +7,7 @@
 #include "MEMinBias.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 //#include "ThePEG/Repository/EventGenerator.h"
@@ -23,11 +24,27 @@ using namespace Herwig;
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
+
+inline bool checkValence(int i,int side,Ptr<StandardEventHandler>::tptr eh){
+   // Inline function to check for valence quarks of the beam.
+   // i:     pdgid of quark
+   // side:  beam side
+   // eh:    pointer to the eventhandler
+   int beam= ( side == 0 ) ? eh->incoming().first->id() : eh->incoming().second->id();
+   vector<int> val;
+   if( beam == ParticleID::pplus || beam == ParticleID::n0 ) val = {1,2};
+   if( beam == ParticleID::pbarminus || beam == ParticleID::nbar0 ) val = { -1 , -2 };
+   if( val.size() == 0 ) assert(false && ("MEMinBias: Valence Quarks not defined for pid "+beam));
+   for(auto v:val)if(v==i)return true;
+   return false;
+}
+
+
 void MEMinBias::getDiagrams() const {
   int maxflav(2);
   // Pomeron data
   tcPDPtr pom = getParticleData(990);
-
+  Ptr<StandardEventHandler>::tptr eh =  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
   for ( int i = 1; i <= maxflav; ++i ) {
     for( int j=1; j <= i; ++j){
       tcPDPtr q1 = getParticleData(i);
@@ -37,11 +54,14 @@ void MEMinBias::getDiagrams() const {
 
       // For each flavour we add:
       //qq -> qq
-      add(new_ptr((Tree2toNDiagram(3), q1, pom, q2, 1, q1, 2, q2, -1)));
+      if(!onlyValQuarks_)                                              add(new_ptr((Tree2toNDiagram(3), q1, pom, q2, 1, q1, 2, q2, -1)));
+      else if(checkValence(i,0,eh) && checkValence(j,1,eh) )           add(new_ptr((Tree2toNDiagram(3), q1, pom, q2, 1, q1, 2, q2, -1)));
       //qqb -> qqb
-      add(new_ptr((Tree2toNDiagram(3), q1, pom, q2b, 1, q1, 2, q2b, -2)));
+      if(!onlyValQuarks_)                                              add(new_ptr((Tree2toNDiagram(3), q1, pom, q2b, 1, q1, 2, q2b, -2)));
+      else if(checkValence(i,0,eh) && checkValence(-j,1,eh) )          add(new_ptr((Tree2toNDiagram(3), q1, pom, q2b, 1, q1, 2, q2b, -2)));
       //qbqb -> qbqb
-      add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
+      if(!onlyValQuarks_)                                              add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
+      else if(checkValence(-i,0,eh) && checkValence(-j,1,eh) )         add(new_ptr((Tree2toNDiagram(3), q1b, pom, q2b, 1, q1b, 2, q2b, -3)));
     }
   }
 }
@@ -244,6 +264,16 @@ void MEMinBias::Init() {
      "The object that administers all additional scatterings.",
      &MEMinBias::MPIHandler_, false, false, true, true);
 
+  static Switch<MEMinBias , bool> interfaceOnlyVal
+    ("OnlyValence" ,
+     "Allow the dummy process to only extract valence quarks." ,
+     &MEMinBias::onlyValQuarks_ , false , false , false );
+  static SwitchOption interfaceOnlyValYes
+  ( interfaceOnlyVal , "Yes" , "" , true );
+  static SwitchOption interfaceOnlyValNo
+  ( interfaceOnlyVal , "No" , "" , false );
+
+ 
 
 }
 

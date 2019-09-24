@@ -37,7 +37,7 @@ set /Herwig/Merging/MergingFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/S
 ## PDF and AlphaS choice
 ##################################################
 read Matchbox/FiveFlavourNoBMassScheme.in
-read Matchbox/MMHT2014.in
+read Matchbox/CT14.in
 set /Herwig/Couplings/NLOAlphaS:input_alpha_s  0.118
 read Merging/FactorCMWScheme.in
 

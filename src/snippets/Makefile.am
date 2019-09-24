@@ -22,10 +22,7 @@ PDF-NNPDF30NLO.in \
 PPCollider.in \
 RivetFixedOrder.in \
 Rivet.in \
-SoftModel.in \
-SoftTune.in \
 YFS.in \
-BaryonicReconnection.in \
 CMWinQtiledShower.in \
 Dipole_AutoTune_prel.in \
 Tune-DotProduct.in  \

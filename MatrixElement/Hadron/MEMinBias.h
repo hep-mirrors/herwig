@@ -193,6 +193,11 @@ private:
   Energy Scale_;
 
   /**
+   * Allow only valence quark extraction.
+   */ 
+  bool onlyValQuarks_=false;
+
+  /**
    * a MPIHandler to administer the creation of several (semihard) 
    * partonic interactions.
    * Needed to comunicate the non-diffractive cross section.
