@@ -131,3 +131,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_I393503
 ##################################################
 # OPAL 4 jet angles 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
+##################################################
+# MC
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Bottom_Hadrons
