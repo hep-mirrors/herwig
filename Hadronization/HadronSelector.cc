@@ -67,8 +67,8 @@ ostream & operator<< (ostream & os,
 }
 
 HadronSelector::HadronSelector(unsigned int opt) 
-  : _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 1.0 ),
-    _pwtBquark( 1.0 ),_pwtDIquark( 1.0 ),
+  : _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 0.0 ),
+    _pwtBquark( 0.0 ),_pwtDIquark( 1.0 ),
     _weight1S0(Nmax,1.),_weight3S1(Nmax,1.),_weight1P1(Nmax,1.),_weight3P0(Nmax,1.),
     _weight3P1(Nmax,1.),_weight3P2(Nmax,1.),_weight1D2(Nmax,1.),_weight3D1(Nmax,1.),
     _weight3D2(Nmax,1.),_weight3D3(Nmax,1.),
@@ -150,12 +150,12 @@ void HadronSelector::Init() {
 
   static Parameter<HadronSelector,double>
     interfacePwtCquark("PwtCquark","Weight for choosing a quark C",
-		       &HadronSelector::_pwtCquark, 0, 1.0, 0.0, 10.0,
+		       &HadronSelector::_pwtCquark, 0, 0.0, 0.0, 10.0,
 		       false,false,false);
 
   static Parameter<HadronSelector,double>
     interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
-		       &HadronSelector::_pwtBquark, 0, 1.0, 0.0, 10.0,
+		       &HadronSelector::_pwtBquark, 0, 0.0, 0.0, 10.0,
 		       false,false,false);
 
   static Parameter<HadronSelector,double>
