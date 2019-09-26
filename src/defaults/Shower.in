@@ -176,9 +176,9 @@ create Herwig::OneOneOneEWSplitFn VtoVVSplitFn
 newdef VtoVVSplitFn:InteractionType EW
 newdef VtoVVSplitFn:ColourStructure EW
 
-create Herwig::ZeroZeroOneEWSplitFn HtoHZSplitFn
-newdef HtoHZSplitFn:InteractionType EW
-newdef HtoHZSplitFn:ColourStructure EW
+create Herwig::OneOneZeroEWSplitFn VtoVHSplitFn
+newdef VtoVHSplitFn:InteractionType EW
+newdef VtoVHSplitFn:ColourStructure EW
 
 #
 # Now the Sudakovs
@@ -224,10 +224,10 @@ set VtoVVSudakov:SplittingFunction VtoVVSplitFn
 set VtoVVSudakov:Alpha AlphaEW
 set VtoVVSudakov:PDFmax 1.9
 
-cp SudakovCommon HtoHZSudakov
-set HtoHZSudakov:SplittingFunction HtoHZSplitFn
-set HtoHZSudakov:Alpha AlphaEW
-set HtoHZSudakov:PDFmax 1.9
+cp SudakovCommon VtoVHSudakov
+set VtoVHSudakov:SplittingFunction VtoVHSplitFn
+set VtoVHSudakov:Alpha AlphaEW
+set VtoVHSudakov:PDFmax 1.9
 
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
@@ -402,4 +402,5 @@ do SplittingGenerator:AddFinalSplitting Z0->W+,W-; VtoVVSudakov
 do SplittingGenerator:AddFinalSplitting W+->W+,gamma; VtoVVSudakov
 do SplittingGenerator:AddFinalSplitting W+->W+,Z0; VtoVVSudakov
 
-do SplittingGenerator:AddFinalSplitting h0->h0,Z0; HtoHZSudakov
+do SplittingGenerator:AddFinalSplitting W+->W+,h0; VtoVHSudakov
+do SplittingGenerator:AddFinalSplitting Z0->Z0,h0; VtoVHSudakov

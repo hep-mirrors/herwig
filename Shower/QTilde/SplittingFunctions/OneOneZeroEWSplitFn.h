@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_ZeroZeroOneEWSplitFn_H
-#define Herwig_ZeroZeroOneEWSplitFn_H
+#ifndef Herwig_OneOneZeroEWSplitFn_H
+#define Herwig_OneOneZeroEWSplitFn_H
 //
-// This is the declaration of the ZeroZeroOneEWSplitFn class.
+// This is the declaration of the OneOneZeroEWSplitFn class.
 //
 
 #include "SplittingFunction.h"
@@ -13,14 +13,15 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The ZeroZeroOneEWSplitFn class implements the splitting function for
- * \f$\0\to q\0 1\f$ where the spin-0 particles are massive Higgs bosons and
- * the spin-1 particle is the Z0 massive electroweak gauge boson.
+ * The OneOneZeroEWSplitFn class implements the splitting function for
+ * \f$\1\to q\1 0\f$ where the spin-1 particles are the W / Z massive
+ * electroweak gauge bosons and the spin-0 particle is the massive Higgs
+ * boson.
  *
- * @see \ref ZeroZeroOneEWSplitFnInterfaces "The interfaces"
- * defined for ZeroZeroOneEWSplitFn.
+ * @see \ref OneOneZeroEWSplitFnInterfaces "The interfaces"
+ * defined for OneOneZeroEWSplitFn.
  */
-class ZeroZeroOneEWSplitFn: public SplittingFunction {
+class OneOneZeroEWSplitFn: public SplittingFunction {
 
 public:
 
@@ -193,14 +194,19 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ZeroZeroOneEWSplitFn & operator=(const ZeroZeroOneEWSplitFn &) = delete;
+  OneOneZeroEWSplitFn & operator=(const OneOneZeroEWSplitFn &) = delete;
 
 private:
 
   /**
-   *  H -> H Z0 couplings
+   *  W -> W H couplings
    */
-  double gHHZ_;
+  double gWWH_;
+
+  /**
+   *  Z0 -> Z0 H couplings
+   */
+  double gZZH_;
 
   /**
    * Pointer to the SM object.
@@ -210,4 +216,4 @@ private:
 
 }
 
-#endif /* Herwig_ZeroZeroOneEWSplitFn_H */
+#endif /* Herwig_OneOneZeroEWSplitFn_H */
