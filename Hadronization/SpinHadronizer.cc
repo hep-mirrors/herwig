@@ -64,16 +64,16 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
   if(baryon->dataPtr()->iSpin()==PDT::Spin1Half) {
     vector<SpinorWaveFunction> waves;
     RhoDMatrix rho;
-    SpinorWaveFunction::calculateWaveFunctions(waves,rho,baryon,outgoing);
+    SpinorWaveFunction::calculateWaveFunctions(waves,rho,baryon,baryon->id() >0 ? incoming : outgoing);
     SpinorWaveFunction::constructSpinInfo(waves,baryon,outgoing,true);
   }
   else if(baryon->dataPtr()->iSpin()==PDT::Spin3Half) {
     vector<RSSpinorWaveFunction> waves;
     RhoDMatrix rho;
-    RSSpinorWaveFunction::calculateWaveFunctions(waves,rho,baryon,outgoing);
+    RSSpinorWaveFunction::calculateWaveFunctions(waves,rho,baryon,baryon->id() >0 ? incoming : outgoing);
     RSSpinorWaveFunction::constructSpinInfo(waves,baryon,outgoing,true);
   }
-  // can't handle spin 5/2 > 3/2
+  // can't handle spin > 3/2
   else {
     return;
   }
@@ -106,15 +106,12 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
   // sigma*, xi* and omegab* spin 3/2 (spin1 diquark)
   else if(bid== mult+114|| bid== mult+214|| bid== mult+224|| bid== mult+334) { 
     baryon->spinInfo()->rhoMatrix()(0,0) = 0.375*(1.-pol)*omegaHalf_;
-    baryon->spinInfo()->rhoMatrix()(1,1) = 0.5*(1.-pol)-omegaHalf_/6.*(3.-5.*pol);
-    baryon->spinInfo()->rhoMatrix()(2,2) = 0.5*(1.+pol)-omegaHalf_/6.*(3.+5.*pol);
+    baryon->spinInfo()->rhoMatrix()(1,1) = 0.5*(1.-pol)-omegaHalf_/8.*(3.-5.*pol);
+    baryon->spinInfo()->rhoMatrix()(2,2) = 0.5*(1.+pol)-omegaHalf_/8.*(3.+5.*pol);
     baryon->spinInfo()->rhoMatrix()(3,3) = 0.375*(1.+pol)*omegaHalf_;
   }
   else
-    return;
-  
-
-  
+    return;  
   // generator()->log() << "Baryon: " << *baryon << "\n";
   // generator()->log() << "Parent: " << *cluster << "\n";
   // generator()->log() << "Quark: " << *quark << "\n";
@@ -199,11 +196,11 @@ void SpinHadronizer::dofinish() {
   if(debug_) {
     for(unsigned int ix=0;ix<3;++ix) {
       if(qPol_[ix].second!=0)
-	cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName() << " antiquarks "
-	     << qPol_[ix].first/qPol_[ix].second << "\n";
+	generator()->log() << "Average polarization of " << getParticleData(long(3+ix))->PDGName() << " antiquarks "
+			   << qPol_[ix].first/qPol_[ix].second << "\n";
       if(qPol_[ix+3].second!=0)
-	cerr << "Average polarization of " << getParticleData(long(3+ix))->PDGName()    << "     quarks "
-	     << qPol_[ix+3].first/qPol_[ix+3].second << "\n";
+	generator()->log() << "Average polarization of " << getParticleData(long(3+ix))->PDGName()    << "     quarks "
+			   << qPol_[ix+3].first/qPol_[ix+3].second << "\n";
     }
   }
 }
