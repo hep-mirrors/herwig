@@ -650,10 +650,10 @@ threeHalfHalfScalar(const int,const Particle & part, const tPDVector & outgoing,
   // double r23(sqrt(2./3.));
   // Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
   // complex<Energy> h1(-2.*r23*pcm*Qm*B/(m1+m2)),h2( 2.*r23*pcm*Qp*A/(m1+m2));
-  // cout << "testing 3/2->1/2 0 " << part.id() << " "
-  //      << output << "   " 
-  //      << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass()) << "   " 
-  //      << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass())/output << endl;
+  // generator()->log() << "testing 3/2->1/2 0 " << part.id() << " "
+  // 		     << output << "   " 
+  // 		     << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass()) << "   " 
+  // 		     << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass())/output << endl;
   // return the answer
   return output;
 }

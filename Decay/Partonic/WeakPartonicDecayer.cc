@@ -196,6 +196,24 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     bool Wcol = partons[0]->coloured();
     // particle data object
     tcPDPtr dec = getParticleData(idQ);
+    // spin density matrix for the decaying quark
+    RhoDMatrix rhoin(PDT::Spin1Half,true);
+    if(parent.dataPtr()->iSpin()!=PDT::Spin0 && parent.spinInfo()) {
+      parent.spinInfo()->decay();
+      RhoDMatrix rhoHadron = parent.spinInfo()->rhoMatrix();
+      // particles with spin 0 diquark
+      if(abs(parent.id())==5122 || abs(parent.id())==4122 ||
+	 abs(parent.id())==5122 || abs(parent.id())==4122 ||
+	 abs(parent.id())==5132 || abs(parent.id())==4132 ||
+	 abs(parent.id())==5232 || abs(parent.id())==4232) {
+	for(unsigned int ix=0;ix<2;++ix) rhoin(ix,ix) = rhoHadron(ix,ix);
+      }
+      // particles with spin 1 diquark
+      else if(abs(parent.id())==5332 || abs(parent.id())==4332) {
+	rhoin(0,0) = 2./3.*rhoHadron(1,1)+1./3.*rhoHadron(0,0);
+	rhoin(1,1) = 2./3.*rhoHadron(0,0)+1./3.*rhoHadron(1,1);
+      }
+    }
     // momenta of the decay products
     vector<Lorentz5Momentum> pout(3,Lorentz5Momentum());
     for(unsigned int ix=0;ix<3;++ix) pout[ix].setMass(partons[ix]->mass());
@@ -222,7 +240,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     }
     // decide if three or four body using prob
     bool threeBody = UseRandom::rnd() > _radprob;
-    // if four body not kinematically possible must be four body
+    // if four body not kinematically possible must be three body
     if(pdec.mass()<gluon->constituentMass()+pout[0].mass()+
        pout[1].mass()+pout[2].mass()) threeBody=true;
     // if code ==0 always three body
@@ -256,15 +274,19 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	  wgt = 
 	    Kinematics::pstarTwoBodyDecay(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
 	    Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
-	  // piece to improve weight variation
+	  // piece to improve weight variation (not kinematics dependent)
 	  wgt *= pdec.mass()/Kinematics::pstarTwoBodyDecay(pdec.mass(),sqrt(mb2min),pout[2].mass());
+	  // integration over m23^2
+	  wgt *= (mb2max-mb2min)/sqr(pdec.mass());
+	  // set momenta of particles
+	  for(unsigned int ix=0;ix<pout.size();++ix) partons[ix]->setMomentum(pout[ix]);
 	  // matrix element piece
-	  wgt *= 16.*(pdec*pout[1])*(pout[0]*pout[2])/sqr(mb2max-mb2min);
+	  wgt *= threeBodyMatrixElement(dec,rhoin,pdec,partons);
 	  // check doesn't violate max
 	  if(wgt>_threemax) {
 	    ostringstream message;
 	    message << "Maximum weight for three-body decay "
-		    << "violated in WeakPartonicDecayer2::decay()"
+		    << "violated in WeakPartonicDecayer::decay()"
 		    << "Maximum = " << _threemax << " weight = " << wgt;
 	    generator()->logWarning( Exception(message.str(),Exception::warning) );
 	  }
@@ -272,15 +294,9 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	while( wgt < _threemax*UseRandom::rnd() && ntry < _maxtry );
 	if(ntry==_maxtry) throw Exception() 
 	  << "Too many attempts to generate three body kinematics in "
-	  << "WeakPartonicDecayer2::decay()" << Exception::eventerror;
+	  << "WeakPartonicDecayer::decay()" << Exception::eventerror;
       }
-      // set momenta of particles
-      for(unsigned int ix=0;ix<pout.size();++ix) partons[ix]->setMomentum(pout[ix]);
       partons[3]->setMomentum(pspect);
-      // special for tau leptons to get correlations
-      if(abs(partons[0]->id())==ParticleID::tauminus||
-	 abs(partons[1]->id())==ParticleID::tauminus)
-	threeBodyMatrixElement(dec,pdec,partons);
       // set up the colour connections
       if(rearranged) swap(partons[1],partons[2]);
       if(Wcol) {
@@ -358,9 +374,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
       partons[3]->setMomentum(pspect);
       partons[4]->setMomentum(pout[3]);
       // special for tau leptons to get correlations
-      if(abs(partons[0]->id())==ParticleID::tauminus||
-	 abs(partons[1]->id())==ParticleID::tauminus)
-	threeBodyMatrixElement(dec,pdec,partons);
+      threeBodyMatrixElement(dec,rhoin,pdec,partons);
       // set up the colour connections
       if(rearranged) swap(partons[1],partons[2]);
       // radiation from initial-state
@@ -477,8 +491,9 @@ void WeakPartonicDecayer::dataBaseOutput(ofstream & output,
 }
 
 
-void WeakPartonicDecayer::
-threeBodyMatrixElement(tcPDPtr dec,Lorentz5Momentum & pdec,
+double WeakPartonicDecayer::
+threeBodyMatrixElement(tcPDPtr dec, const RhoDMatrix & rhoin,
+		       Lorentz5Momentum & pdec,
 		       ParticleVector & partons) const {
   // spinors
   LorentzSpinor   <SqrtEnergy> w0[2],w2[2];
@@ -507,82 +522,93 @@ threeBodyMatrixElement(tcPDPtr dec,Lorentz5Momentum & pdec,
     w0[1] = wout.dimensionedWave();
   }
   // spinors for the W decay products
-  bool taufirst = true;
+  bool lorder = true;
   if(partons[0]->id()<0) {
     SpinorWaveFunction    wout2(partons[0]->momentum(),
 				partons[0]->dataPtr(),0,outgoing);
     SpinorBarWaveFunction wout3(partons[1]->momentum(),
 				partons[1]->dataPtr(),0,outgoing);
+    lorder = partons[0]->dataPtr()->charged();
     w2[0] = wout2.dimensionedWave();
     w3[0] = wout3.dimensionedWave();
     wout2.reset(1);
     wout3.reset(1);
     w2[1] = wout2.dimensionedWave();
     w3[1] = wout3.dimensionedWave();
-    if(abs(partons[0]->id())!=ParticleID::tauminus) taufirst=false;
   }
   else {
     SpinorWaveFunction    wout2(partons[1]->momentum(),
 				partons[1]->dataPtr(),0,outgoing);
     SpinorBarWaveFunction wout3(partons[0]->momentum(),
 				partons[0]->dataPtr(),0,outgoing);
+    lorder = partons[1]->dataPtr()->charged();
     w2[0] = wout2.dimensionedWave();
     w3[0] = wout3.dimensionedWave();
     wout2.reset(1);
     wout3.reset(1);
     w2[1] = wout2.dimensionedWave();
     w3[1] = wout3.dimensionedWave();
-    if(abs(partons[1]->id())!=ParticleID::tauminus) taufirst=false;
   }
+  bool tau = abs(partons[0]->id())==ParticleID::tauminus || abs(partons[1]->id())==ParticleID::tauminus;
   // calculate the currents
   LorentzPolarizationVectorE Jbc[2][2],Jdec[2][2];
   for(unsigned int ix=0;ix<2;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {
-      Jbc [ix][iy] = w0[ix].leftCurrent(w1[iy]);
-      Jdec[ix][iy] = w2[ix].leftCurrent(w3[iy]);
+      if(dec->id()>0)
+	Jbc [ix][iy] = w0[ix].leftCurrent(w1[iy]);
+      else
+	Jbc [ix][iy] = w0[iy].leftCurrent(w1[ix]);
+      if(lorder)
+	Jdec[ix][iy] = w2[ix].leftCurrent(w3[iy]);
+      else 
+	Jdec[ix][iy] = w2[iy].leftCurrent(w3[ix]);
     }
   }
   // compute the matrix element
   Complex me[2][2][2][2];
+  double total=0.;
   for(unsigned int i0=0;i0<2;++i0) {
     for(unsigned int i1=0;i1<2;++i1) {
       for(unsigned int i2=0;i2<2;++i2) {
 	for(unsigned int i3=0;i3<2;++i3) {
 	  me[i0][i1][i2][i3] = Jbc[i0][i1].dot(Jdec[i2][i3])/sqr(pdec.mass());
+	  total += rhoin(i0,i0).real()*norm(me[i0][i1][i2][i3]);
 	}
       }
     }
   }
-  RhoDMatrix rho(PDT::Spin1Half);
-  for(unsigned int it1=0;it1<2;++it1) {
-    for(unsigned int it2=0;it2<2;++it2) {
-      for(unsigned int i0=0;i0<2;++i0) {
-	for(unsigned int i1=0;i1<2;++i1) {
-	  for(unsigned int i2=0;i2<2;++i2) {
-	    rho(it1,it2) += taufirst ? 
-	      me[i0][i1][it1][i2 ]*conj(me[i0][i1][it2][i2 ]) :
-	      me[i0][i1][i2 ][it1]*conj(me[i0][i1][i2 ][it2]);
+  total *=2.;
+  if(tau) {
+    RhoDMatrix rho(PDT::Spin1Half);
+    for(unsigned int it1=0;it1<2;++it1) {
+      for(unsigned int it2=0;it2<2;++it2) {
+	for(unsigned int i0=0;i0<2;++i0) {
+	  for(unsigned int i1=0;i1<2;++i1) {
+	    for(unsigned int i2=0;i2<2;++i2) {
+	      rho(it1,it2) += me[i0][i1][it1][i2 ]*conj(me[i0][i1][it2][i2 ]);
+	    }
 	  }
 	}
       }
     }
-  }
-  // normalize matrix to unit trace
-  rho.normalize();
-  for(unsigned int ix=0;ix<2;++ix) {
-    if(abs(partons[ix]->id())!=ParticleID::tauminus) continue;
-    bool loc = partons[ix]->id() < 0;
-    // create the spin info object
-    FermionSpinPtr spin = new_ptr(FermionSpinInfo(partons[ix]->momentum(),true));
-    // assign spinors
-    for(unsigned int iy=0;iy<2;++iy) {
-      spin->setBasisState(iy, loc ? w2[iy] : w3[iy].bar());
+    // normalize matrix to unit trace
+    rho.normalize();
+    for(unsigned int ix=0;ix<2;++ix) {
+      if(abs(partons[ix]->id())!=ParticleID::tauminus) continue;
+      bool loc = partons[ix]->id() < 0;
+      // create the spin info object
+      FermionSpinPtr spin = new_ptr(FermionSpinInfo(partons[ix]->momentum(),true));
+      // assign spinors
+      for(unsigned int iy=0;iy<2;++iy) {
+	spin->setBasisState(iy, loc ? w2[iy] : w3[iy].bar());
+      }
+      // assign rho
+      spin->rhoMatrix() = rho;
+      // assign spin info
+      partons[ix]->spinInfo(spin);
     }
-    // assign rho
-    spin->rhoMatrix() = rho;
-    // assign spin info
-    partons[ix]->spinInfo(spin);
   }
+  return total;
 }
 
 double WeakPartonicDecayer::

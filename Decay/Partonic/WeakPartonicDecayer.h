@@ -136,11 +136,13 @@ protected:
   /**
    *  Compute \f$\rho\f$ matrix for tau decay in three body case
    * @param dec ParticleData object of decaying quark
+   * @param rhoin Spin density matrix for the decaying quark
    * @param pdec The momentum of the decaying particle
    * @param partons The partons produced
    */
-  void threeBodyMatrixElement(tcPDPtr dec,Lorentz5Momentum & pdec,
-			      ParticleVector& partons) const;
+  double threeBodyMatrixElement(tcPDPtr dec,const RhoDMatrix & rhoin,
+				Lorentz5Momentum & pdec,
+				ParticleVector& partons) const;
 
   /**
    *  Four body matrix element for weak decay including an extra gluon
