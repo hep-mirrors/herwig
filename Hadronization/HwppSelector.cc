@@ -166,40 +166,34 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     // if too massive skip
     if(cluMass <= T1.begin()->mass +
                   T2.begin()->mass) continue;
+    // quark weight
+    double quarkWeight =  pwt(quarktopick->id());
+    if (quarktopick->id() == 3) {
+      // Scaling strangeness enhancement
+      if (_enhanceSProb == 1){
+	double scale = double(sqr(_m0Decay/cluMass));
+	quarkWeight = (_maxScale < scale) ? 0. : pow(quarkWeight,scale);
+      }
+      // Exponential strangeness enhancement
+      else if (_enhanceSProb == 2) {
+	Energy2 mass2;
+	Energy endpointmass = par1->mass() + par2->mass();
+	// Choose to use either the cluster mass
+	// or to use the lambda measure
+	mass2 = (_massMeasure == 0) ? sqr(cluMass) :
+	  sqr(cluMass) - sqr(endpointmass);
+	double scale = double(sqr(_m0Decay)/mass2);
+	quarkWeight = (_maxScale < scale) ? 0. : exp(-scale);
+      }
+    }
     // loop over the hadrons
     KupcoData::const_iterator H1,H2;
     for(H1 = T1.begin();H1 != T1.end(); ++H1) {
       for(H2 = T2.begin();H2 != T2.end(); ++H2) {
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
- 	// calculate the weight
-	double pwtstrange;
-	if (quarktopick->id() == 3) {
-	  // Strangeness weight takes the automatic flat weight
-	  pwtstrange = pwt(3);
-	  // Scaling strangeness enhancement
-	  if (_enhanceSProb == 1){
-	    double scale = double(sqr(_m0Decay/cluMass));
-	    pwtstrange = (_maxScale < scale) ? 0. : pow(pwtstrange,scale);
-	  }
-	  // Exponential strangeness enhancement
-	  else if (_enhanceSProb == 2){
-	    Energy2 mass2;
-	    Energy endpointmass = par1->mass() + par2->mass();
-	    // Choose to use either the cluster mass
-	    // or to use the lambda measure
-	    mass2 = (_massMeasure == 0) ? sqr(cluMass) :
-	      sqr(cluMass) - sqr(endpointmass);
-	    double scale = double(sqr(_m0Decay)/mass2);
-	    pwtstrange = (_maxScale < scale) ? 0. : exp(-scale);
-	  }
-	  weight = pwtstrange * H1->overallWeight * H2->overallWeight *
-	    Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
-	}
-	else {
-	  weight = pwt(quarktopick->id()) * H1->overallWeight * H2->overallWeight *
-	    Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
-	}
+	weight = quarkWeight * H1->overallWeight * H2->overallWeight *
+	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
 
 	int signQ = 0;
 	assert (par1 && quarktopick);
