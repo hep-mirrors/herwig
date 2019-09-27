@@ -172,7 +172,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     }
   }
   // 4-body decays
-  else if(partons.size()==4) {  
+  else if(partons.size()==4) {
     // swap 0 and 1 if needed
     if(partons[1]->dataPtr()->iColour()!=PDT::Colour0&&
        partons[1]->dataPtr()->iColour()!=partons[2]->dataPtr()->iColour())
@@ -275,9 +275,9 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 	    Kinematics::pstarTwoBodyDecay(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
 	    Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
 	  // piece to improve weight variation (not kinematics dependent)
-	  wgt *= pdec.mass()/Kinematics::pstarTwoBodyDecay(pdec.mass(),sqrt(mb2min),pout[2].mass());
-	  // integration over m23^2
-	  wgt *= (mb2max-mb2min)/sqr(pdec.mass());
+	  // and integration over m23^2 (N.B. m23^2 fac on bottom for efficiency)
+	  wgt *= pdec.mass()/Kinematics::pstarTwoBodyDecay(pdec.mass(),sqrt(mb2min),pout[2].mass())
+	    /(mb2max-mb2min)*sqr(pdec.mass());
 	  // set momenta of particles
 	  for(unsigned int ix=0;ix<pout.size();++ix) partons[ix]->setMomentum(pout[ix]);
 	  // matrix element piece
