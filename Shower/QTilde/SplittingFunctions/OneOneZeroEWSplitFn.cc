@@ -83,14 +83,10 @@ double OneOneZeroEWSplitFn::P(const double z, const Energy2 t,
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t;
-    if(abs(ids[0]->id())==ParticleID::Wplus)
-      m0t = _theSM->mass(t,getParticleData(ParticleID::Wplus))/sqrt(t);
-    else if(ids[0]->id()==ParticleID::Z0)
-      m0t = _theSM->mass(t,getParticleData(ParticleID::Z0))/sqrt(t);
-    double mHt = _theSM->mass(t,getParticleData(ParticleID::h0))/sqrt(t);
-    val += -sqr(mHt)*((2.*rho11)/z+z*(rho00+rho22));
-    val += -sqr(m0t)*(((-4.+2.*z)*rho11)/z-(1.+(2.-z)*z)*(rho00+rho22));
+    double m0t = _theSM->mass(t,ids[0]->id())/sqrt(t);
+    double m2t = _theSM->mass(t,ids[2]->id())/sqrt(t);
+    val += -sqr(m2t)*((2.*rho11)/z+z*(rho00+rho22));
+    val += -sqr(m0t)*(((2.*z-4.)*rho11)/z-(1.+(2.-z)*z)*(rho00+rho22));
   }
   return sqr(gvvh)*val;
 }
@@ -115,13 +111,9 @@ double OneOneZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t;
-    if(abs(ids[0]->id())==ParticleID::Wplus)
-      m0t = _theSM->mass(t,getParticleData(ParticleID::Wplus))/sqrt(t);
-    else if(ids[0]->id()==ParticleID::Z0)
-      m0t = _theSM->mass(t,getParticleData(ParticleID::Z0))/sqrt(t);
-    double mHt = _theSM->mass(t,getParticleData(ParticleID::h0))/sqrt(t);
-    val += -sqr(mHt)*0.5*z*((2.*rho11)/z+(rho00+rho22)*z);
+    double m0t = _theSM->mass(t,ids[0]->id())/sqrt(t);
+    double m2t = _theSM->mass(t,ids[2]->id())/sqrt(t);
+    val += -sqr(m2t)*0.5*z*((2.*rho11)/z+(rho00+rho22)*z);
     val += -sqr(m0t)*0.5*z*((rho11*(-4.+2.*z))/z-(rho00+rho22)*(1.+(2.-z)*z));
   }
   return val;
@@ -206,15 +198,9 @@ DecayMEPtr OneOneZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
   double r2 = sqrt(2.);
-  double m0t;
-  if(abs(ids[0]->id())==ParticleID::Wplus)
-    m0t = _theSM->mass(t,getParticleData(ParticleID::Wplus))/sqrt(t);
-  else if(ids[0]->id()==ParticleID::Z0)
-    m0t = _theSM->mass(t,getParticleData(ParticleID::Z0))/sqrt(t);
-  else
-    assert(false);
-  double mHt = _theSM->mass(t,getParticleData(ParticleID::h0))/sqrt(t);
-  double sqrtmass = sqrt(sqr(m0t)-sqr(m0t)/z-sqr(mHt)/(1.-z)+1.);
+  double m0t = _theSM->mass(t,ids[0]->id())/sqrt(t);
+  double m2t = _theSM->mass(t,ids[2]->id())/sqrt(t);
+  double sqrtmass = sqrt(sqr(m0t)-sqr(m0t)/z-sqr(m2t)/(1.-z)+1.);
   // assign kernel
   (*kernal)(0,0,0) = -gvvh*r2*m0t; // 111
   (*kernal)(0,1,0) = -gvvh*cphase*sqrt((1.-z)*z)*sqrtmass; // 121
@@ -223,7 +209,7 @@ DecayMEPtr OneOneZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,1,0) = 0.; // 221 > 441
   (*kernal)(1,2,0) = -gvvh*cphase*sqrt((1.-z)/z)*sqrtmass; // 231
   (*kernal)(2,0,0) = 0.; // 311
-  (*kernal)(2,1,0) = gvvh*phase*sqrt((1.-z)*z)*sqrtmass;     // 321 > 341
+  (*kernal)(2,1,0) = gvvh*phase*sqrt((1.-z)*z)*sqrtmass; // 321 > 341
   (*kernal)(2,2,0) = -gvvh*r2*m0t; // 331
   // return the answer
   return kernal;
