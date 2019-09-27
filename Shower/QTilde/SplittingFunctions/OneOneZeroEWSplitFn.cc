@@ -83,8 +83,8 @@ double OneOneZeroEWSplitFn::P(const double z, const Energy2 t,
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t = _theSM->mass(t,ids[0]->id())/sqrt(t);
-    double m2t = _theSM->mass(t,ids[2]->id())/sqrt(t);
+    double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+    double m2t = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
     val += -sqr(m2t)*((2.*rho11)/z+z*(rho00+rho22));
     val += -sqr(m0t)*(((2.*z-4.)*rho11)/z-(1.+(2.-z)*z)*(rho00+rho22));
   }
@@ -111,8 +111,8 @@ double OneOneZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t = _theSM->mass(t,ids[0]->id())/sqrt(t);
-    double m2t = _theSM->mass(t,ids[2]->id())/sqrt(t);
+    double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+    double m2t = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
     val += -sqr(m2t)*0.5*z*((2.*rho11)/z+(rho00+rho22)*z);
     val += -sqr(m0t)*0.5*z*((rho11*(-4.+2.*z))/z-(rho00+rho22)*(1.+(2.-z)*z));
   }
@@ -198,8 +198,8 @@ DecayMEPtr OneOneZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
   double r2 = sqrt(2.);
-  double m0t = _theSM->mass(t,ids[0]->id())/sqrt(t);
-  double m2t = _theSM->mass(t,ids[2]->id())/sqrt(t);
+  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+  double m2t = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
   double sqrtmass = sqrt(sqr(m0t)-sqr(m0t)/z-sqr(m2t)/(1.-z)+1.);
   // assign kernel
   (*kernal)(0,0,0) = -gvvh*r2*m0t; // 111
