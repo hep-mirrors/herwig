@@ -95,7 +95,7 @@ void EtaOmegaCurrent::Init() {
   static ParVector<EtaOmegaCurrent,InvEnergy> interfaceAmplitude
     ("Amplitude",
      "The amplitudes of the couplings",
-     &EtaOmegaCurrent::amp_, 0.00115/GeV, 1, 1./GeV, 0.0/GeV, 10/GeV,
+     &EtaOmegaCurrent::amp_, 1./GeV, 2, 0.0648/GeV, 0.0/GeV, 10/GeV,
      false, false, Interface::limited);
 
   static ParVector<EtaOmegaCurrent,double> interfacePhase
