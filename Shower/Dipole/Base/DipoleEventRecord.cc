@@ -1909,7 +1909,7 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
       theDecays[newDecayed] = newDecayProc;
 
       // Update the list of next decays
-      if ( decayProc = theCurrentDecay )
+      if ( decayProc == theCurrentDecay )
         theNextDecays.push_back(newDecayed);
 	
       // Iteratively update theDecays from the decay chain
