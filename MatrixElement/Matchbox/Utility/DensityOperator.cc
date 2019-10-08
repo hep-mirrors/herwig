@@ -248,7 +248,7 @@ double DensityOperator::colourMatrixElementCorrection(const std::tuple<size_t,si
 									const cPDVector& particles) {
 	const int i = std::get<0>(ikemission);
 	const int k = std::get<1>(ikemission);
-	const long emissionID = std::get<2>(ikemission);
+	//const long emissionID = std::get<2>(ikemission);
 
 
 	// Get the density operator

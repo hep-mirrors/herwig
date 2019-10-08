@@ -284,11 +284,7 @@ namespace Herwig {
      * In fact, it should not even be implemented.
      */
     FIMassiveDecayKinematics & operator=(const FIMassiveDecayKinematics &) = delete;
-
-    /**
-     * Option to use the full jacobian, including the z->zprime jacobian.
-     **/
-    bool  theFullJacobian;
+    
   };
 
 }

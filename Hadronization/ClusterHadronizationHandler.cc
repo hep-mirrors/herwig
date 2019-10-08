@@ -238,7 +238,7 @@ handle(EventHandler & ch, const tPVector & tagged,
       clusters = savedclusters;
       for_each(clusters.begin(),
 	       clusters.end(),
-	       mem_fun(&Particle::undecay));
+	       mem_fn(&Particle::undecay));
     }
   }
   if (!lightOK) {
@@ -296,7 +296,7 @@ void ClusterHadronizationHandler::_setChildren(const ClusterVector & clusters) c
     partons.push_back( cl->antiColParticle() );
   }
   // erase all previous information about parent child relationship
-  for_each(partons.begin(), partons.end(), mem_fun(&Particle::undecay));
+  for_each(partons.begin(), partons.end(), mem_fn(&Particle::undecay));
 
   // give new parents to the clusters: their constituents
   for ( const auto & cl : clusters ) {

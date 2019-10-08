@@ -422,29 +422,6 @@ private:
   mutable Energy mW_;
 
 
-  // TODO: delete this
-  mutable double mu_;
-
-  /**
-   *  The reduced mass of particle 1
-   */
-  mutable double mu1_;
-  /**
-   *  The reduced mass of particle 1 squared
-   */
-  mutable double mu12_;
-
-  /**
-   *  The reduceed mass of particle 2
-   */
-  mutable double mu2_;
-
-  /**
-   *  The reduceed mass of particle 2 squared
-   */
-  mutable double mu22_;
-
-
   /**
    *  The strong coupling
    */

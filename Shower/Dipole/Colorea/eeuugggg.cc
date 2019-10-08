@@ -1564,7 +1564,6 @@ double eeuugggg::matrix_1_epem_uuxgggg()
   // Local variables
 //  const int ngraphs = 1032; 
   const int ncolor = 24;
-  std::complex<double> ztemp; 
   std::complex<double> jamp[ncolor]; 
   // The color matrix;
   //static const double denom[ncolor] = {54, 54, 54, 54, 54, 54, 54, 54, 54, 54,

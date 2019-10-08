@@ -95,7 +95,7 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr p1, tcPDPtr,tcPDPtr) {
       // e +=  4.*lpr*lmass*( 2.*(C11A + C22B) + C1A  + C2B);
     }
     else if(type[i] == PDT::Spin1) {
-      Complex B0W(LT::B0(ps2 ,mls,mls));
+      //Complex B0W(LT::B0(ps2 ,mls,mls));
       double mr(sqr(p1->mass()/masses[i]));
       Complex loop = 2.*lc*( -(6.+mr)*(C12A+C12B) + 4.*(C0A +C0B));
       a -= loop;

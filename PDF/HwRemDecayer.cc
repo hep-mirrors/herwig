@@ -1081,7 +1081,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   // with the two tunable parameters A_0 =ladderNorm_ and alpha = ladderPower_
 
   // Get the collision energy
-  Energy energy(generator()->maximumCMEnergy());
+  //Energy energy(generator()->maximumCMEnergy());
 
   //double reference = sqr(energy/TeV);
 
@@ -1148,10 +1148,10 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
   // Get the beam energy
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
-  Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
+  //Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
 
   // Calculate available energy for the partons
-  double x1,x2;
+  double x1;//,x2;
   double param = (1./(valOfN_+1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
@@ -1204,7 +1204,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   for (auto &p:ladderMomenta){
     totalMomPartons+=p;
     // Set the mass of the gluons and the two quarks in the ladder
-    if(countPartons==0 || countPartons==(ladderMomenta.size()-1)){
+    if(countPartons==0 || countPartons==int(ladderMomenta.size()-1)){
       p.setMass( getParticleData(quarkID)->constituentMass() );
     }else{
       p.setMass( getParticleData(ParticleID::g)->constituentMass() );
@@ -1436,7 +1436,7 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
       //5) Frist then flat
       int triesPt=0;
       Energy pt;
-      Energy ptTest;
+      //Energy ptTest;
       switch(PtDistribution_) {
         case 0: //default softPt()
            pt=softPt();

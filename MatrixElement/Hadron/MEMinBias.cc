@@ -34,7 +34,8 @@ inline bool checkValence(int i,int side,Ptr<StandardEventHandler>::tptr eh){
    vector<int> val;
    if( beam == ParticleID::pplus || beam == ParticleID::n0 ) val = {1,2};
    if( beam == ParticleID::pbarminus || beam == ParticleID::nbar0 ) val = { -1 , -2 };
-   if( val.size() == 0 ) assert(false && ("MEMinBias: Valence Quarks not defined for pid "+beam));
+   if( val.size() == 0 ) 
+      {cerr<<"\n\n MEMinBias: Valence Quarks not defined for pid "<<beam;assert(false);}
    for(auto v:val)if(v==i)return true;
    return false;
 }

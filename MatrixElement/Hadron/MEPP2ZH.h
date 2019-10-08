@@ -98,12 +98,6 @@ private:
    */
   MEPP2ZH & operator=(const MEPP2ZH &) = delete;
 
-private:
-
-  /**
-   *  The allowed flavours of the incoming quarks
-   */
-  int _maxflavour;
 };
 
 }

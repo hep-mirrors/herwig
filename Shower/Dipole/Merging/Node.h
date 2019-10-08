@@ -152,7 +152,7 @@ namespace Herwig {
        */
     int theCutStage;
       /// tell if node belongs to an ordered history
-    bool isOrdered;
+    // bool isOrdered;
       /// flag to tell if node is subtracted real
     bool theSubtractedReal;
       /// flag to tell if node is virtual contribution
