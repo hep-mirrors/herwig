@@ -143,7 +143,7 @@ double  MEMinBias::correctionweight() const {
     double avRew=sumRew/countN;
     
     CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
-    CrossSection XS_wanted=MPIHandler_->inelasticXSec()-MPIHandler_->diffractiveXSec();
+    CrossSection XS_wanted=MPIHandler_->nonDiffractiveXSec();
     double deltaN=50;
     
       // Cross section without reweighting: XS_norew

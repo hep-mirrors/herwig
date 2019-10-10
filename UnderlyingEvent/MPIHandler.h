@@ -205,15 +205,22 @@ public:
    */
   CrossSection inelasticXSec() const { return inelXSec_; }
 
+  /**
+   * Return the non-diffractive cross section assumed by the model.
+   * TODO: See comment at diffractiveXSec.
+   */
+  CrossSection nonDiffractiveXSec() const {
+      return (1.-diffratio_)*inelXSec_;
+  }
 
   /**
    * Return the diffractive cross section assumed by the model.
-   * The diffractive cross section is seen as part of the
+   * For now the diffractive cross section is seen as a fixed part of the
    * inelastic cross section. 
+   * TODO: Energy dependence and/or Include diffraction in Eikonalisation.
    */
   CrossSection diffractiveXSec() const {
-      static auto totalXS=totalXSecExp();
-      return diffratio_*totalXS;
+      return diffratio_*inelXSec_;
   }
 
 
@@ -362,11 +369,6 @@ private:
    */
   double poisson(Length b, CrossSection sigma, 
 		 unsigned int N, Energy2 mu2=ZERO) const;
-
-  /**
-   *  Return n!
-   */
-  double factorial (unsigned int n) const;
 
   /**
    * Returns the total cross section for the current CMenergy.  The
@@ -584,7 +586,7 @@ private:
   double b_;
 
   /**
-   * Parameters to set the fraction of diffractive cross section in the total cross section.
+   * Parameters to set the fraction of diffractive cross section in the inelastic cross section.
    */
   double diffratio_=0.2;
 

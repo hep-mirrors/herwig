@@ -195,7 +195,7 @@ private:
   /**
    * Allow only valence quark extraction.
    */ 
-  bool onlyValQuarks_=false;
+  bool onlyValQuarks_=true;
 
   /**
    * a MPIHandler to administer the creation of several (semihard) 
