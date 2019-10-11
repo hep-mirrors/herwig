@@ -19,9 +19,9 @@ create ThePEG::ConstituentParticleData cbar
 setup cbar -4 cbar 1.25 0.  0 0 -2 -3 2 1  1.6
 makeanti cbar c
 create ThePEG::ConstituentParticleData sbar
-setup sbar -3 sbar 0.095 0.  0 0 1 -3 2 1  0.5
+setup sbar -3 sbar 0.095 0.  0 0 1 -3 2 1  0.45
 create ThePEG::ConstituentParticleData s
-setup s 3 s 0.095 0.  0 0 -1 3 2 1  0.5
+setup s 3 s 0.095 0.  0 0 -1 3 2 1  0.45
 makeanti s sbar
 create ThePEG::ConstituentParticleData b
 setup b 5 b 4.2 0.  0 0 -1 3 2 1  5

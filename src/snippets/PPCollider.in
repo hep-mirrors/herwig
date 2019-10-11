@@ -27,6 +27,4 @@ cd /Herwig/Generators/
 set /Herwig/MatrixElements/SubProcess:PartonExtractor /Herwig/Partons/PPExtractor
 
 
-# Read in parameters to use the soft model
-read snippets/SoftModel.in
 

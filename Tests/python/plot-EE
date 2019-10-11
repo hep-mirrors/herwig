@@ -746,7 +746,17 @@ analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Sigma^{*0}\\bar\\Sigma^{*
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Sigma^{*+}\\bar\\Sigma^{*-}$"]["data"] = ["/BESIII_2016_I1422780/d02-x01-y03","/BESIII_2016_I1422780/d01-x01-y03"]
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Xi^{-}\\bar\\Xi^{+}$"        ]["data"] = ["/BESIII_2016_I1422780/d02-x01-y01","/BESIII_2016_I1422780/d01-x01-y03"]
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Xi^{0}\\bar\\Xi^{0}$"        ]["data"] = ["/BESIII_2017_I1506414/d01-x01-y02","/BESIII_2017_I1506414/d02-x02-y01"]
-analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Lambda^{0}\\bar\\Lambda^{0}$"]["data"] = ["/BESIII_2017_I1510563/d01-x01-y01","/BESIII_2017_I1510563/d02-x01-y01"]
+analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Lambda^{0}\\bar\\Lambda^{0}$"]["data"] = ["/BESIII_2017_I1510563/d01-x01-y01","/BESIII_2017_I1510563/d02-x01-y01",
+                                                                                                 "/BESIII_2019_I1691850/d01-x01-y01","/BESIII_2019_I1691850/d01-x02-y01",
+                                                                                                 "/BESIII_2019_I1691850/d01-x03-y01","/BESIII_2019_I1691850/d01-x04-y01",
+                                                                                                 "/BESIII_2019_I1691850/d01-x05-y01",]
+analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Lambda^{0}\\bar\\Lambda^{0}$"]["MC"  ] = ["/BESIII_2019_I1691850/T1_n","/BESIII_2019_I1691850/T1_p",
+                                                                                                 "/BESIII_2019_I1691850/T2_n","/BESIII_2019_I1691850/T2_p",
+                                                                                                 "/BESIII_2019_I1691850/T3_n","/BESIII_2019_I1691850/T3_p",
+                                                                                                 "/BESIII_2019_I1691850/T4_n","/BESIII_2019_I1691850/T4_p",
+                                                                                                 "/BESIII_2019_I1691850/T5_n","/BESIII_2019_I1691850/T5_p",
+                                                                                                 "/BESIII_2019_I1691850/mu_n","/BESIII_2019_I1691850/mu_p",
+                                                                                                 "/BESIII_2019_I1691850/cThetaL",]
 analyses["HadronDecays"][443]["Modes"]["$J/\\psi\\to \\Sigma^{0}\\bar\\Sigma^{0}$"  ]["data"] = ["/BESIII_2017_I1510563/d01-x01-y03","/BESIII_2017_I1510563/d02-x02-y01"]
 
 # eta_c
