@@ -158,10 +158,11 @@ analyses["omegapi"]["CMD2_1999_I483994" ] = ["d03-x01-y01"]
 analyses['omegapi']["ND_1991_I321108"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                           "d04-x01-y01","d10-x01-y03"]
 # 5 pion and related
-analyses["omegapipi"]["DM1_1981_I166964"]   = ["d01-x01-y01"]
-analyses["omegapipi"]["DM2_1992_I339265"]= ["d02-x01-y01"]
-analyses["omegapipi"]["CMD2_2000_I532970"]   = ["d01-x01-y01"]
+analyses["omegapipi"]["DM1_1981_I166964"   ] = ["d01-x01-y01"]
+analyses["omegapipi"]["DM2_1992_I339265"   ] = ["d02-x01-y01"]
+analyses["omegapipi"]["CMD2_2000_I532970"  ] = ["d01-x01-y01"]
 analyses["omegapipi"]["BABAR_2018_I1700745"] = ["d03-x01-y01"]
+analyses["omegapipi"]["BABAR_2007_I758568" ] = ["d03-x01-y01","d04-x01-y01"]
 analyses["5pi"]["CMD2_2000_I532970"]   = ["d03-x01-y01"]
 analyses["5pi"]["BABAR_2007_I758568"]   = ["d01-x01-y01"]
 analyses['5pi']["ND_1991_I321108"] = ["d14-x01-y01"]
@@ -210,7 +211,7 @@ analyses["6m"]["BABAR_2018_I1700745"] = ["d04-x01-y01","d05-x01-y01"]
 analyses["6m"]["SND_2016_I1471515"] = ["d01-x01-y06"]
 analyses["6m"]["DM1_1981_I166353"]   = ["d01-x01-y01"]
 analyses["6m"]["BABAR_2006_I709730"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
-analyses["6m"]["BABAR_2007_I758568"]   = ["d03-x01-y01","d04-x01-y01","d05-x01-y01","d07-x01-y01",
+analyses["6m"]["BABAR_2007_I758568"]   = ["d05-x01-y01","d07-x01-y01",
                                           "d08-x01-y01","d09-x01-y01","d10-x01-y01","d11-x01-y01"]
 analyses["etaprimepipi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
 analyses["6m"]["BESII_2007_I763880"]   = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04",
@@ -284,20 +285,21 @@ if(opts.plot) :
     print output
     quit()
 # mapping of process to me to use
-me = { "pipi"     : "MEee2Pions",
-       "KK"       : "MEee2Kaons",
-       "3pi"      : "MEee3Pions",
-       "4pi"      : "MEee4Pions",
-       "etapipi"  : "MEee2EtaPiPi",
-       "etaprimepipi"  : "MEee2EtaPrimePiPi",
-       "etaPhi"   : "MEee2EtaPhi",
-       "etaOmega" : "MEee2EtaOmega",
-       "omegapi"  : "MEee2OmegaPi",
-       "phipi"    : "MEee2PhiPi",
-       "pigamma"  : "MEee2PiGamma",
-       "etagamma" : "MEee2EtaGamma",
-       "ppbar"    : "MEee2ppbar",
-       "2K1pi"    : "MEee2KKPi"}
+me = { "pipi"         : "MEee2Pions",
+       "KK"           : "MEee2Kaons",
+       "3pi"          : "MEee3Pions",
+       "4pi"          : "MEee4Pions",
+       "etapipi"      : "MEee2EtaPiPi",
+       "etaprimepipi" : "MEee2EtaPrimePiPi",
+       "etaPhi"       : "MEee2EtaPhi",
+       "etaOmega"     : "MEee2EtaOmega",
+       "omegapi"      : "MEee2OmegaPi",
+       "omegapipi"    : "MEee2OmegaPiPi",
+       "phipi"        : "MEee2PhiPi",
+       "pigamma"      : "MEee2PiGamma",
+       "etagamma"     : "MEee2EtaGamma",
+       "ppbar"        : "MEee2ppbar",
+       "2K1pi"        : "MEee2KKPi"}
 
 # energies we need
 energies={}
