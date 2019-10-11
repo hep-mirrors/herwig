@@ -19,3 +19,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2016_I1422780
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1506414
 # J/psi-> lambda anti-lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2019_I1691850
+# J/psi-> lambda anti-Sigma0 +cc
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2012_I1121378
