@@ -200,7 +200,7 @@ private:
   /**
    *   Coupling of the resonance
    */
-  double gRes_;
+  Energy gRes_;
   //@}
 
   /**
@@ -225,22 +225,22 @@ private:
   /**
    *  \f$f_0\f$ coupling to \f$\pi\pi\f$
    */
-  double gPiPi_;
+  Energy2 gPiPi_;
 
   /**
    *  \f$f_0\f$ coupling to KK
    */
-  double gKK_;
+  Energy2 gKK_;
 
   /**
    *   Sigma coupling
    */
-  double gSigma_;
+  Energy2 gSigma_;
   
   /**
    *   f_0 coupling
    */
-  double gf0_;
+  Energy2 gf0_;
   //@}
 };
 
