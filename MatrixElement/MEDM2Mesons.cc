@@ -189,9 +189,6 @@ double MEDM2Mesons::me2(const int ichan) const {
   int hI0_size = hadronI0.size();
   int hI1_size = hadronI1.size();
   int hss_size = hadronssbar.size();
-  cout<<"hI0 size: "<<hI0_size<<endl;
-  cout<<"hI1 size: "<<hI1_size<<endl;
-  cout<<"hss size: "<<hss_size<<endl;
   int maxsize = max(max(hadronI0.size(),hadronI1.size()),hss_size);
   for(unsigned int hhel=0;hhel<maxsize;++hhel) {
     // map the index for the hadrons to a helicity state
