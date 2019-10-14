@@ -22,11 +22,16 @@ for runType in ["NonPerturbative","Perturbative"]:
                 continue
             # create histo if it doesn't exist
             elif(hpath not in outhistos) :
-                outhistos[hpath] = yoda.core.Scatter2D(histo.path,
-                                                       histo.title)
+                title=""
+                path=""
+                if hasattr(histo, 'title'):
+                    title=histo.title()
+                if hasattr(histo, 'path'):
+                    path=histo.path()
+                outhistos[hpath] = yoda.core.Scatter2D(path,title)
             matched = False
-            for i in range(0,aos[hpath].numPoints) :
-                x = aos[hpath].points[i].x
+            for i in range(0,aos[hpath].numPoints()) :
+                x = aos[hpath].points()[i].x()
                 delta=1e-5
                 if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
                    "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
@@ -35,18 +40,18 @@ for runType in ["NonPerturbative","Perturbative"]:
                    delta=1e-3
                 if(abs(x-energy)<1e-3*delta or abs(x-energyMeV)<delta) :
                     duplicate = False
-                    for j in range(0,outhistos[hpath].numPoints) :
-                        if(outhistos[hpath].points[j].x==aos[hpath].points[i].x) :
+                    for j in range(0,outhistos[hpath].numPoints()) :
+                        if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
                             duplicate = True
                             break
                     if(not duplicate) :
-                        outhistos[hpath].addPoint(aos[hpath].points[i])
+                        outhistos[hpath].addPoint(aos[hpath].points()[i])
                     matched = True
                     break
             if(matched) : continue
-            for i in range(0,aos[hpath].numPoints) :
-                xmin = aos[hpath].points[i].xMin
-                xmax = aos[hpath].points[i].xMax
+            for i in range(0,aos[hpath].numPoints()) :
+                xmin = aos[hpath].points()[i].xMin()
+                xmax = aos[hpath].points()[i].xMax()
                 if("KLOE_2009_I797438"   in hpath or "KLOE_2005_I655225"   in hpath or 
                    "KLOE2_2017_I1634981" in hpath or "FENICE_1994_I377833" in hpath or
                    "FENICE_1996_I426675" in hpath) :
@@ -55,12 +60,12 @@ for runType in ["NonPerturbative","Perturbative"]:
                 if((energy    > xmin and energy    < xmax) or
                    (energyMeV > xmin and energyMeV < xmax) ) :
                     duplicate = False
-                    for j in range(0,outhistos[hpath].numPoints) :
-                        if(outhistos[hpath].points[j].x==aos[hpath].points[i].x) :
+                    for j in range(0,outhistos[hpath].numPoints()) :
+                        if(outhistos[hpath].points()[j].x()==aos[hpath].points()[i].x()) :
                             duplicate = True
                             break
                     if(not duplicate) :
-                        outhistos[hpath].addPoint(aos[hpath].points[i])
+                        outhistos[hpath].addPoint(aos[hpath].points()[i])
                     break
     if len(outhistos) == 0: continue
     yoda.writeYODA(outhistos,"LowEnergy-EE-%s-%s.yoda" % (runType,args[0]))

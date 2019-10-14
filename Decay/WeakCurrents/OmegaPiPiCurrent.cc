@@ -18,16 +18,18 @@
 
 using namespace Herwig;
 
-OmegaPiPiCurrent::OmegaPiPiCurrent() :mRes_(1.62*GeV) { 
+OmegaPiPiCurrent::OmegaPiPiCurrent() {
+  mRes_ = 1.67*GeV;
   wRes_ = 0.288*GeV;
-  gRes_ = 2.83;
+  gRes_ = 0.469*GeV;
+  
   mSigma_ = 0.6*GeV;
   wSigma_ = 1.0*GeV;
-  gSigma_ = 1.0;
   mf0_ = 0.98*GeV;
-  gPiPi_ = 0.331;
-  gKK_ = 0.144;
-  gf0_ = 0.85;
+  gSigma_ = 1.0 *GeV2;
+  gf0_    = 0.85*GeV2;
+  gPiPi_ = 0.165*GeV2;
+  gKK_   = 0.695*GeV2;
   addDecayMode(1,-1);
   addDecayMode(1,-1);
   setInitialModes(2);
@@ -42,15 +44,15 @@ IBPtr OmegaPiPiCurrent::fullclone() const {
 }
 
 void OmegaPiPiCurrent::persistentOutput(PersistentOStream & os) const {
-  os << ounit(mRes_,GeV) << ounit(wRes_,GeV) << gRes_
+  os << ounit(mRes_,GeV) << ounit(wRes_,GeV) << ounit(gRes_,GeV)
      << ounit(mSigma_,GeV) << ounit(wSigma_,GeV) << ounit(mf0_,GeV)
-     << gPiPi_ << gKK_ << gSigma_ << gf0_;
+     << ounit(gPiPi_,GeV2) << ounit(gKK_,GeV2) << ounit(gSigma_,GeV2) << ounit(gf0_,GeV2);
 }
 
 void OmegaPiPiCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(mRes_,GeV) >> iunit(wRes_,GeV) >> gRes_
+  is >> iunit(mRes_,GeV) >> iunit(wRes_,GeV) >> iunit(gRes_,GeV)
      >> iunit(mSigma_,GeV) >> iunit(wSigma_,GeV) >> iunit(mf0_,GeV)
-     >> gPiPi_ >> gKK_ >> gSigma_ >> gf0_;
+     >> iunit(gPiPi_,GeV2) >> iunit(gKK_,GeV2) >> iunit(gSigma_,GeV2) >> iunit(gf0_,GeV2);
 }
 
 void OmegaPiPiCurrent::doinit() {
@@ -79,10 +81,10 @@ void OmegaPiPiCurrent::Init() {
      &OmegaPiPiCurrent::wRes_, GeV, 0.288*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<OmegaPiPiCurrent,double> interfacegRes
+  static Parameter<OmegaPiPiCurrent,Energy> interfacegRes
     ("gRes",
      "The coupling of the s-channel resonance",
-     &OmegaPiPiCurrent::gRes_, 2.83, 0.0, 10.0,
+     &OmegaPiPiCurrent::gRes_, GeV, 2.83*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<OmegaPiPiCurrent,Energy> interfacemSigma
@@ -96,11 +98,11 @@ void OmegaPiPiCurrent::Init() {
      "The width of the Sigma",
      &OmegaPiPiCurrent::wSigma_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
-
-  static Parameter<OmegaPiPiCurrent,double> interfacegSigma
+  
+  static Parameter<OmegaPiPiCurrent,Energy2> interfacegSigma
     ("gSigma",
      "The coupling of the Sigma resonance",
-     &OmegaPiPiCurrent::gSigma_, 1.0, 0.0, 10.0,
+     &OmegaPiPiCurrent::gSigma_, GeV2, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
   
   static Parameter<OmegaPiPiCurrent,Energy> interfacemf0
@@ -108,25 +110,24 @@ void OmegaPiPiCurrent::Init() {
      "The mass of the f_0(980)",
      &OmegaPiPiCurrent::mf0_, GeV, 0.98*GeV, 0.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
-
-  static Parameter<OmegaPiPiCurrent,double> interfacegf0
+  
+  static Parameter<OmegaPiPiCurrent,Energy2> interfacegf0
     ("gf0",
-     "The coupling of the f_0(980) meson",
-     &OmegaPiPiCurrent::gf0_, 0.85, 0.0, 10.0,
+     "The coupling of the f0(980) resonance",
+     &OmegaPiPiCurrent::gf0_, GeV2, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
   
-  static Parameter<OmegaPiPiCurrent,double> interfacegPiPi
+  static Parameter<OmegaPiPiCurrent,Energy2> interfacegPiPi
     ("gPiPi",
      "The coupling of the f_0(980) to pipi",
-     &OmegaPiPiCurrent::gPiPi_, .331, 0.0, 10.0,
+     &OmegaPiPiCurrent::gPiPi_, GeV2, 0.165*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
   
-  static Parameter<OmegaPiPiCurrent,double> interfacegKK
+  static Parameter<OmegaPiPiCurrent,Energy2> interfacegKK
     ("gKK",
      "The coupling of the f_0(980) to KK",
-     &OmegaPiPiCurrent::gKK_, .144, 0.0, 10.0,
+     &OmegaPiPiCurrent::gKK_, GeV2, 0.695*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
-  
 }
 
 
@@ -218,66 +219,51 @@ OmegaPiPiCurrent::current(tcPDPtr resonance,
   // overall hadronic mass
   q.rescaleMass();
   scale=q.mass();
+  Complex ii(0.,1.);
   Energy2 q2(q.m2());
   // resonance factor for s channel resonance
   Energy2 mR2=sqr(mRes_);
-  Complex pre= mR2*gRes_/(q2-mR2 + Complex(0.,1.)*scale*wRes_);
-  // compute the form factor
-  complex<Energy> formFactor(ZERO);
-
-  //formFactor = pre*scale*gSigma_;
-
-  // needs to be multiplied by thing inside || in 1.9
+  complex<Energy> pre= mR2*gRes_/(q2-mR2 - ii*scale*wRes_);
   
-  //cm energy for intermediate f0 channel
+  //cerr << "pre factor " << scale/GeV << " " << q2/GeV2 << " " << pre/GeV << "\n";
+  // for(auto p : momenta) cerr << p/GeV << " " << p.m()/GeV << "\n";
+
+  
+  
+  // virtual mass energy for intermediate f0 channel
   Energy2 s1 = (momenta[1]+momenta[2]).m2();
   Energy sqrs1 = sqrt(s1);
   
   //sigma meson
   Energy2 mSigma2 = sqr(mSigma_);
-  Complex Sigma_form = mSigma2/(s1-mSigma2 + Complex(0.,1.)*sqrs1*wSigma_);
-  
-  //f0(980) following Phys. Lett. B 63, 224 (1976)
+  Complex Sigma_form = gSigma_/(mSigma2 -s1 - ii*sqrs1*wSigma_);
+
+  // compute the form factor
   Energy2 mf02 = sqr(mf0_);
-  Energy mPi = getParticleData(211)->mass();
+  Energy   mPi = getParticleData(211)->mass();
   Energy2 mPi2 = sqr(mPi);
-  Energy pcm_pipi = 0.5*sqrt(s1-4*mPi2);
-  Energy pcm_f0 = 0.5*sqrt(mf0_*mf0_-4*mPi2);
-  Energy GPiPi = gPiPi_*pcm_pipi;
-  Energy G0 = gPiPi_*pcm_f0;
-  Energy m_kaon0 = getParticleData(311)->mass();
-  Energy2 m_kaon02 = sqr(m_kaon0);
-  Energy m_kaonP = getParticleData(321)->mass();
-  Energy2 m_kaonP2 = sqr(m_kaonP);
-  Energy GKK;
-  Complex f0_form;
-  if(0.25*s1>m_kaon02){
-    GKK = 0.5*gKK_*(sqrt(0.25*s1-m_kaon02)+sqrt(0.25*s1-m_kaonP2));
-    f0_form = gf0_*mf0_*sqrt(G0*GPiPi)/(s1-mf02+Complex(0.,1.)*mf0_*(GPiPi+GKK));
-  }
-  else{
-    if(0.25*s1>m_kaonP2){
-      f0_form = gf0_*mf0_*sqrt(G0*GPiPi)/(s1-mf02+Complex(0.,1.)*mf0_*(GPiPi+0.5*gKK_*(Complex(0.,1.)*sqrt(m_kaon02-0.25*s1)+sqrt(0.25*s1-m_kaonP2))));
-    }
-    else{
-      GKK = 0.5*gKK_*(sqrt(m_kaon02-0.25*s1)+sqrt(m_kaonP2-0.25*s1));
-      f0_form = gf0_*mf0_*sqrt(G0*GPiPi)/(s1-mf02+Complex(0.,1.)*mf0_*(GPiPi+Complex(0.,1.)*GKK));
-    }
-  }
-  if(ichan<0) 
-    formFactor = (Sigma_form+f0_form)*pre*scale*gSigma_;
-  else if(ichan==0)
-    formFactor = Sigma_form*pre*scale*gSigma_;
-  else if(ichan==1)
-    formFactor = f0_form*pre*scale*gSigma_;
-//   // loop over the resonances
-//   for(unsigned int ix=imin;ix<imax;++ix) {
-//     Energy2 mR2(sqr(resMasses_[ix]));
-//     // compute the width
-//     Energy width = resWidths_[ix];
-//     formFactor += couplings_[ix]*mR2/(mR2-q2-Complex(0.,1.)*q.mass()*width);
-//   }
+
+  complex<Energy2> mGamma = gPiPi_*sqrt(max(0.,1.-4.*mPi2/s1));
+  // cerr << "testing pi " << mGamma/GeV2 << " " << gPiPi_/GeV2 << " " << sqrt(max(0.,1.-4.*mPi2/s1))<< "\n";
+  Energy2 mKp2 = sqr(getParticleData(321)->mass());
+  double val = 1.-4.*mKp2/s1;
+  if(val>=0.) mGamma += 0.5*gKK_*   sqrt( val);
+  else        mGamma += 0.5*gKK_*ii*sqrt(-val);
+  Energy2 mK02 = sqr(getParticleData(311)->mass());
+  val = 1.-4.*mK02/s1;
+  if(val>=0.) mGamma += 0.5*gKK_*   sqrt( val);
+  else        mGamma += 0.5*gKK_*ii*sqrt(-val);
   
+  Complex f0_form = gf0_/(mf02-s1-Complex(0.,1.)*mGamma);
+  // cerr << "f0 pieces " << mGamma/GeV2 << "\n";
+  // cerr << "testing form factor " << s1/GeV2 << " " << f0_form << " " << Sigma_form << "\n";
+  complex<Energy> formFactor(ZERO);
+  if(ichan<0) 
+    formFactor = (Sigma_form+f0_form)*pre;
+  else if(ichan==0)
+    formFactor = Sigma_form*pre;
+  else if(ichan==1)
+    formFactor = f0_form*pre;
   // calculate the current
   vector<LorentzPolarizationVectorE> ret(3);
   for(unsigned int ix=0;ix<3;++ix) {
@@ -317,11 +303,11 @@ void OmegaPiPiCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "newdef " << name() << ":mSigma " << " " << mSigma_/GeV << "\n";
   output << "newdef " << name() << ":wSigma " << " " << wSigma_/GeV << "\n";
   output << "newdef " << name() << ":mf0 "    << " " << mf0_/GeV    << "\n";
-  output << "newdef " << name() << ":gRes "   << " " << gRes_       << "\n";
-  output << "newdef " << name() << ":gSigma " << " " << gSigma_     << "\n";
-  output << "newdef " << name() << ":gf0 "    << " " << gf0_        << "\n";
-  output << "newdef " << name() << ":gPiPi "  << " " << gPiPi_      << "\n";
-  output << "newdef " << name() << ":gKK "    << " " << gKK_        << "\n";
+  output << "newdef " << name() << ":gRes "   << " " << gRes_/GeV   << "\n";
+  output << "newdef " << name() << ":gSigma " << " " << gSigma_/GeV2<< "\n";
+  output << "newdef " << name() << ":gf0 "    << " " << gf0_/GeV2   << "\n";
+  output << "newdef " << name() << ":gPiPi "  << " " << gPiPi_/GeV2 << "\n";
+  output << "newdef " << name() << ":gKK "    << " " << gKK_/GeV2   << "\n";
   WeakCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
    		    << fullName() << "\";" << endl;

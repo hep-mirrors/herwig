@@ -181,8 +181,11 @@ double MEDM2Mesons::me2(const int ichan) const {
     hadronI1(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::Zero),
 			       imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
   vector<LorentzPolarizationVectorE> 
-    hadronssbar(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::ssbar),
+    hadronssbar(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IZero, IsoSpin::I3Zero,Strangeness::ssbar),
 				  imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
+
+
+  
   // compute the matrix element
   vector<unsigned int> ihel(meMomenta().size());
   double output(0.);
@@ -198,32 +201,14 @@ double MEDM2Mesons::me2(const int ichan) const {
     // loop over the helicities of the incoming particles
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
-	Complex amp;
+	Complex amp = 0.;
 	// work on coefficients for the I1 and I0 bits
-  	if(hI0_size != 0 && hI1_size !=0){
-	  if(hss_size !=0){
-	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2)+(cSMmed_[0]+cSMmed_[1])*hadronI1[hhel]/sqrt(2)+cSMmed_[2]*hadronssbar[hhel]);
-	  }
-	  else {
-	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2)+(cSMmed_[0]+cSMmed_[1])*hadronI1[hhel]/sqrt(2));
-          }
-	}
-	else if(hI0_size != 0 && hI1_size == 0){
-	  if(hss_size !=0){
-	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2)+cSMmed_[2]*hadronssbar[hhel]);
-	  }
-	  else {
-	  amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]-cSMmed_[1])*hadronI0[hhel]/sqrt(2));
-	  }
-	}
-	else {
-	  if(hss_size !=0){
-	    amp = lepton[ihel[0]][ihel[1]].dot((cSMmed_[0]+cSMmed_[1])*hadronI1[hhel]/sqrt(2)+cSMmed_[2]*hadronssbar[hhel]);
-	  }
-	  else{
-	  amp = lepton[ihel[0]][ihel[1]].dot(cSMmed_[1]*hadronI1[hhel]);
-	  }
-	}
+	if(hI0_size != 0 )
+	  amp += (cSMmed_[0]-cSMmed_[1])/sqrt(2.)*(lepton[ihel[0]][ihel[1]].dot(hadronI0[hhel]));
+  	if(hI1_size !=0)
+	  amp += (cSMmed_[0]+cSMmed_[1])/sqrt(2.)*(lepton[ihel[0]][ihel[1]].dot(hadronI1[hhel]));
+	if(hss_size !=0)
+	  amp += cSMmed_[2]*                      (lepton[ihel[0]][ihel[1]].dot(hadronssbar[hhel]));
 	me_(ihel)= amp;
   	output += std::norm(amp);
       }
