@@ -563,7 +563,11 @@ bool Colorea::produceSwapping(list<Dipole>::iterator dipi,
 
 void Colorea::rearrange4(list<Dipole>::iterator dipi,
                          list<Dipole>::iterator dipj,
+#ifndef NDEBUG
                          list<Dipole>::iterator dipk,
+#else
+                         list<Dipole>::iterator ,
+#endif
                          list<Dipole>::iterator dipl){
   
   assert(dipk->leftParticle()==dipj->rightParticle());
@@ -636,7 +640,11 @@ void Colorea::rearrange4(list<Dipole>::iterator dipi,
 
 void Colorea::rearrange5(list<Dipole>::iterator dipi,
                          list<Dipole>::iterator dipj,
+#ifndef NDEBUG
                          list<Dipole>::iterator dipk,
+#else
+                         list<Dipole>::iterator ,
+#endif
                          list<Dipole>::iterator dipl,
                          list<Dipole>::iterator dipm){
   

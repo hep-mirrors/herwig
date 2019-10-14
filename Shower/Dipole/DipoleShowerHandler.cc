@@ -438,7 +438,9 @@ void DipoleShowerHandler::decayConstituentReshuffle(PerturbativeProcessPtr decay
     
     testInvMassAfter = testOutMomAfter.m();
     
+#ifndef NDEBUG
     Energy incomingMass = decayProc->incoming()[0].first->momentum().m();
+#endif
     assert( abs(testInvMassBefore-incomingMass)/GeV < 1e-5 );
     assert( abs(testInvMassBefore-testInvMassAfter)/GeV < 1e-5);
     
@@ -1065,14 +1067,18 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       // remove the added weights that are under the winning scale
       if ( hardPt != ZERO ) {
         Energy maxq = 0.0*GeV;
+#ifndef NDEBUG
 	size_t iwinner = theWeightsVector.size();//check
+#endif
 	for ( size_t i = 0; i < theWeightsVector.size(); i++ ) {
 	  if ( theWeightsVector[i].size() > 0 ) {
 	    // get<2> is true for an accept step.
 	    if ( std::get<2>(theWeightsVector[i].back()) 
 		 && std::get<0>(theWeightsVector[i].back()) > maxq) {
 	      maxq = std::get<0>(theWeightsVector[i].back());
+#ifndef NDEBUG
 	      iwinner = i;//check
+#endif
 	    }
 	  }
 	}

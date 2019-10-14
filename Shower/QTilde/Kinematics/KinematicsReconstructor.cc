@@ -1071,8 +1071,10 @@ bool KinematicsReconstructor::deconstructHardJets(HardTreePtr tree,
   else if(_reconopt == 3 || _reconopt == 4 ) {
     return deconstructColourPartner(tree,type);
   }
-  else
+  else {
     assert(false);
+    return false;
+  }
 }
 
 bool KinematicsReconstructor::

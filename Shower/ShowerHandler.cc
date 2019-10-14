@@ -369,6 +369,7 @@ void ShowerHandler::Init() {
 
 Energy ShowerHandler::hardScale() const {
   assert(false);
+  return ZERO;
 }
 
 void ShowerHandler::cascade() {
@@ -682,6 +683,7 @@ string ShowerHandler::doAddVariation(string in) {
 
 tPPair ShowerHandler::cascade(tSubProPtr, XCPtr) {
   assert(false);
+  return tPPair();
 }
 
 ShowerHandler::RemPair 

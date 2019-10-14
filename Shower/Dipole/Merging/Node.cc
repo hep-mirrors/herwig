@@ -356,10 +356,8 @@ bool Node::inShowerPS(Energy hardpT)const {
       dipole()->tildeKinematics()->zBounds(pT(), hardpT);
       return (zbounds.first<z_&&z_<zbounds.second);
   }
-  
-  
   assert(false);
-  
+  return false;
 }
 
 

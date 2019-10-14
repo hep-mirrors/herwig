@@ -282,6 +282,7 @@ protected:
       return make_pair(scale2/(pT2+scale2),pT2/(pT2+scale2));
     default:
       assert(false);
+      return make_pair(0.,0.);
     }
   }
 
