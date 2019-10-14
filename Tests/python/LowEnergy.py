@@ -256,7 +256,7 @@ analyses["DD"]["BESIII_2014_I1323621"]  = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2015_I1406939"]  = ["d02-x01-y06","d03-x01-y06"]
 analyses["DD"]["BESIII_2017_I1628093"]  = ["d01-x01-y01"]
 analyses["DD"]["BESIII_2019_I1723934"]  = ["d01-x01-y01"]
-
+analyses["DD"]["BESIII_2019_I1756876"]  = ["d01-x01-y09","d01-x01-y10"]
 # BB
 analyses["BB"]["BELLE_2016_I1389855"]  = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"]   = ["d01-x01-y01","d02-x01-y01",
@@ -324,8 +324,8 @@ for process in processes:
         if(len(aos)==0) : continue
         for plot in analyses[process][analysis] :
             histo = aos["/REF/%s/%s" %(analysis,plot)]
-            for point in histo.points :
-                energy = point.x
+            for point in histo.points() :
+                energy = point.x()
                 if(analysis=="KLOE_2009_I797438" or
                    analysis=="KLOE_2005_I655225" or
                    analysis=="KLOE2_2017_I1634981" or
