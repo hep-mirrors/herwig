@@ -538,6 +538,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   children[1].generateKinematics(info,meMomenta);
 
   if ( !lastScatter ) {
+    children[0].backwardMomentum = backwardMomentum;
     children[0].generateKinematics(info,meMomenta);
   } else {
     children[0].children[1].momentum =
