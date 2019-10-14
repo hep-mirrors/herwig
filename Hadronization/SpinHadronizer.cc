@@ -13,27 +13,31 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/PDT/StandardMatchers.h"
-# include "Herwig/Utilities/EnumParticles.h"
+#include "Herwig/Utilities/EnumParticles.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Cluster.h"
 
 using namespace Herwig;
 
+// choose only baryons
 void SpinHadronizer::
 handle(EventHandler &, const tPVector & tagged,const Hint & ) {
   for(const tPPtr & hadron : tagged) {
     // mesons
     if(MesonMatcher::Check(hadron->data())) {
-      continue;
+      mesonSpin(hadron);
     }
     // baryons
     else if(BaryonMatcher::Check(hadron->data())) {
       baryonSpin(hadron);
     }
-    else 
+    else
       continue;
   }
 }
@@ -87,8 +91,6 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
     qPol_[prim_quark].first  += pol;
     qPol_[prim_quark].second += 1.;
   }
-
-  
   // the different options for different spin types
   const int mult = prim_quark*1000;
   int bid = abs(baryon->id());
@@ -104,14 +106,14 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
     baryon->spinInfo()->rhoMatrix()(1,1) = 0.5*(1.+pol) -pol*omegaHalf_;
   }
   // sigma*, xi* and omegab* spin 3/2 (spin1 diquark)
-  else if(bid== mult+114|| bid== mult+214|| bid== mult+224|| bid== mult+334) { 
+  else if(bid== mult+114|| bid== mult+214|| bid== mult+224|| bid== mult+334) {
     baryon->spinInfo()->rhoMatrix()(0,0) = 0.375*(1.-pol)*omegaHalf_;
     baryon->spinInfo()->rhoMatrix()(1,1) = 0.5*(1.-pol)-omegaHalf_/8.*(3.-5.*pol);
     baryon->spinInfo()->rhoMatrix()(2,2) = 0.5*(1.+pol)-omegaHalf_/8.*(3.+5.*pol);
     baryon->spinInfo()->rhoMatrix()(3,3) = 0.375*(1.+pol)*omegaHalf_;
   }
   else
-    return;  
+    return;
   // generator()->log() << "Baryon: " << *baryon << "\n";
   // generator()->log() << "Parent: " << *cluster << "\n";
   // generator()->log() << "Quark: " << *quark << "\n";
@@ -119,6 +121,91 @@ void SpinHadronizer::baryonSpin(tPPtr baryon) {
   // generator()->log() << "testing is decayed " << sp->decayed() <<" \n";
   // generator()->log() << baryon->spinInfo()->rhoMatrix() << "\n";
 }
+
+void SpinHadronizer::mesonSpin(tPPtr meson) {
+  // check only one parent
+  if(meson->parents().size()!=1) return;
+  tPPtr parent = meson->parents()[0];
+  // and its a cluster
+  if(parent->id()!=ParticleID::Cluster) return;
+  tClusterPtr cluster = dynamic_ptr_cast<tClusterPtr>(parent);
+  unsigned int prim_quark = (abs(meson->id())/100)%10;
+  int sign_quark = meson->id()>0 ? prim_quark : -prim_quark;
+  // only strange, charm and bottom for the moment
+  if(prim_quark<minFlav_ || prim_quark>maxFlav_ ) return;
+  tPPtr quark;
+  for(unsigned int ix=0;ix<cluster->numComponents();++ix) {
+    if(cluster->particle(ix)->id()==sign_quark) {
+      quark = cluster->particle(ix);
+    }
+  }
+  if(!quark) return;
+  if(!quark->spinInfo()) return;
+  tcFermionSpinPtr sp(dynamic_ptr_cast<tcFermionSpinPtr>(quark->spinInfo()));
+  // decay it
+  sp->decay();
+  // create the spin info
+  if(meson->dataPtr()->iSpin()==PDT::Spin0) {
+    RhoDMatrix rho;
+    ScalarWaveFunction::calculateWaveFunctions(rho,meson,meson->id() > 0 ? incoming : outgoing);
+    ScalarWaveFunction::constructSpinInfo(meson,outgoing,true);
+  }
+  else if(meson->dataPtr()->iSpin()==PDT::Spin1) {
+    vector<VectorWaveFunction> waves;
+    RhoDMatrix rho;
+    VectorWaveFunction::calculateWaveFunctions(waves,rho,meson,meson->id() > 0 ? incoming : outgoing,true);
+    VectorWaveFunction::constructSpinInfo(waves,meson,outgoing,true,true);
+  }
+  else if(meson->dataPtr()->iSpin()==PDT::Spin2) {
+    vector<TensorWaveFunction> waves;
+    RhoDMatrix rho;
+    TensorWaveFunction::calculateWaveFunctions(waves,rho,meson,meson->id() > 0 ? incoming : outgoing,true);
+    TensorWaveFunction::constructSpinInfo(waves,meson,outgoing,true,true);
+  }
+  else {
+    return;
+  }
+  // extract the polarization of the quark
+  double pol = 2.*sp->rhoMatrix()(1,1).real()-1.;
+  if(sign_quark<0) {
+    qPol_[prim_quark-3].first  += pol;
+    qPol_[prim_quark-3].second += 1.;
+  }
+  else {
+    qPol_[prim_quark].first  += pol;
+    qPol_[prim_quark].second += 1.;
+  }
+  // the different options for different spin types
+  int bid = abs(meson->id())%1000;
+  // light-quark spin 1/2+ -> exited spin 0 heavy meson
+  if(bid==311 || bid==321 || bid==331 || bid==411 || bid==421  || bid==431
+              || bid==511 || bid==521 || bid==531) {
+      return;
+  }
+  // light-quark spin 1/2+
+  else if(bid==313 || bid==323 || bid==333 || bid==413 || bid==423  || bid==433
+                   || bid==513 || bid==523 || bid==533) {
+    // Falk-Peskin "no-win" theorem for non-excited heavy mesons:
+    // no polarization information would be find in the non-excited meson
+    // for the excted mesons
+    meson->spinInfo()->rhoMatrix()(0,0) = (1.-pol)/16. + (omega3Half_/16.)*(3.-5.*pol);
+    meson->spinInfo()->rhoMatrix()(1,1) = 0.25*(1.-omega3Half_);
+    meson->spinInfo()->rhoMatrix()(2,2) = (1.+pol)/16. + (omega3Half_/16.)*(3.+5.*pol);
+  }
+  // light-quark spin 3/2+ -> exited spin 2 meson
+  else if(bid==315 || bid==325 || bid==335 || bid==415 || bid==425  || bid==435
+                   || bid==515 || bid==525 || bid==535) {
+    meson->spinInfo()->rhoMatrix()(0,0) = 0.25*(1.-pol)*omega3Half_;
+    meson->spinInfo()->rhoMatrix()(1,1) = 0.1875*(1.-pol)-0.125*(1.-pol)*omega3Half_;
+    meson->spinInfo()->rhoMatrix()(2,2) = 0.25*(1.-omega3Half_);
+    meson->spinInfo()->rhoMatrix()(3,3) = 0.1875*(1.+pol)-0.125*(1.+pol)*omega3Half_;
+    meson->spinInfo()->rhoMatrix()(4,4) = 0.25*(1.+pol)*omega3Half_;
+  }
+  else {
+    return;
+  }
+}
+
 
 IBPtr SpinHadronizer::clone() const {
   return new_ptr(*this);
@@ -185,9 +272,9 @@ void SpinHadronizer::Init() {
 void SpinHadronizer::doinit() {
   StepHandler::doinit();
   if(minFlav_>maxFlav_)
-    throw InitException() << "The minimum flavour " << minFlav_  
+    throw InitException() << "The minimum flavour " << minFlav_
 			  << "must be lower the than maximum flavour " << maxFlav_
-			  << " in SpinHadronizer::doinit() " 
+			  << " in SpinHadronizer::doinit() "
 			  << Exception::runerror;
 }
 

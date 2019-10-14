@@ -22,12 +22,12 @@ using namespace ThePEG;
 class SpinHadronizer: public StepHandler {
 
 public:
-  
+
   /**
    * The default constructor.
    */
-  SpinHadronizer() : omegaHalf_(2./3.), minFlav_(3), maxFlav_(5), debug_(false),
-		     qPol_(6,make_pair(0.,0.))		     
+  SpinHadronizer() : omegaHalf_(2./3.), omega3Half_(0.2),
+        minFlav_(3), maxFlav_(5), debug_(false), qPol_(6,make_pair(0.,0.))
   {}
 
 public:
@@ -90,7 +90,12 @@ protected:
    *  Calculate the spin of a baryon
    */
   void baryonSpin(tPPtr baryon);
-  
+
+  /**
+   *  Calculate the spin of a meson
+   */
+  void mesonSpin(tPPtr meson);
+
   //@}
 
 protected:
@@ -154,10 +159,15 @@ private:
   double omegaHalf_;
 
   /**
+   *  Falk-Peskin \f$\omega_\frac32\f$ parameter
+   */
+  double omega3Half_;
+
+  /**
    *  Minimum quark flavour
    */
   unsigned int minFlav_;
-  
+
   /**
    *  Maximum quark flavour
    */
