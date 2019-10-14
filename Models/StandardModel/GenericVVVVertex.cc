@@ -104,7 +104,7 @@ void GenericVVVVertex::setCoupling(Energy2,
 				   tcPDPtr,
 #endif
 #ifndef NDEBUG
-				   tcPDPtr part1,
+				   tcPDPtr part1) {
 #else
 				   tcPDPtr) {
 #endif

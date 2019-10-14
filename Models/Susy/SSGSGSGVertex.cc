@@ -48,8 +48,8 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,
 #ifndef NDEBUG
 				tcPDPtr part2,
 #else
-#endif
 				tcPDPtr ,
+#endif
 #ifndef NDEBUG
 				tcPDPtr part3) {
 #else

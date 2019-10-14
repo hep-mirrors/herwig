@@ -100,7 +100,7 @@ void SMHZPVertex::Init() {
 void SMHZPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
 			      tcPDPtr part3,
 #ifndef NDEBUG
-			      tcPDPtr part1,
+			      tcPDPtr part1) {
 #else
 			      tcPDPtr) {
 #endif
