@@ -1075,6 +1075,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   int Nmpi = N;
 
   for(int j=0;j<Nmpi;j++){
+
   ///////////////////////
   // TODO: parametrization of the ladder multiplicity (need to tune to 900GeV, 7Tev and 13Tev) 
   // Parameterize the ladder multiplicity to: ladderMult_ = A_0 * (s/1TeV^2)^alpha  
@@ -1167,9 +1168,16 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
                                  // requires boost of Ladder in x1/x2-dependent
                                  // frame.
 
+  // If the remaining remnant energy is not sufficient for the restmass of the remnants
+  // then continue/try again
+  if ( cm.m() - (ig1+ig2).m() < r1.m()+r2.m() ){
+     continue; 
+  }
+
   // The available energy that is used to generate the ladder
   // sumMomenta is the the sum of rest masses of the ladder partons
   // the available energy goes all into the kinematics
+  
   Energy availableEnergy = (ig1+ig2).m() - sumMomenta.m();
  
   // If not enough energy then continue
@@ -1231,7 +1239,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   r1.boost(boostvR);
   r2.boost(boostvR);
 
-  // Remainig energy after generation of soft ladder
+  // Remaining energy after generation of soft ladder
+  
   Energy remainingEnergy = cm.m() - totalMomentumAfterBoost.m();
 
   // Continue if not enough energy
@@ -1269,8 +1278,13 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
         totalMomentumAll+=p;
   }
 
- // sort again
- sort(ladderMomenta.begin(),ladderMomenta.end(),ySort);
+  // sanity check 
+  if ( abs(cm.m() - totalMomentumAll.m()) > 1e-8*GeV) {
+     continue;
+  }
+
+  // sort again
+  sort(ladderMomenta.begin(),ladderMomenta.end(),ySort);
 
   // Do the colour connections
   // Original rems are the ones which are connected to other parts of the event
