@@ -79,7 +79,7 @@ void Dipole::update() {
 
 pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
 				  bool colourSpectator,
-				  bool subleadingNc) const {  
+				  bool ) const {  
  // check contracts
   assert(dsplit.splittingKinematics());
   assert(dsplit.emitterData() && dsplit.emissionData() && dsplit.spectatorData());

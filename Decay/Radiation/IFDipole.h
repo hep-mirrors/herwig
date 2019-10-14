@@ -46,7 +46,7 @@ public:
     _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
     _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
     _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
-    _mode(1), _maxtry(500), _energyopt(1), _betaopt(1), _dipoleopt()
+    _mode(1), _maxtry(500), _energyopt(1), _betaopt(1)
   {}
   //@}
 
@@ -374,10 +374,6 @@ private:
    */
   unsigned int _betaopt;
 
-  /**
-   *  Option for the form of the primary distribution
-   */
-  unsigned int _dipoleopt;
 };
 
 }

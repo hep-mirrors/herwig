@@ -34,7 +34,8 @@ inline bool checkValence(int i,int side,Ptr<StandardEventHandler>::tptr eh){
    vector<int> val;
    if( beam == ParticleID::pplus || beam == ParticleID::n0 ) val = {1,2};
    if( beam == ParticleID::pbarminus || beam == ParticleID::nbar0 ) val = { -1 , -2 };
-   if( val.size() == 0 ) assert(false && ("MEMinBias: Valence Quarks not defined for pid "+beam));
+   if( val.size() == 0 ) 
+      {cerr<<"\n\n MEMinBias: Valence Quarks not defined for pid "<<beam;assert(false);}
    for(auto v:val)if(v==i)return true;
    return false;
 }
@@ -142,7 +143,7 @@ double  MEMinBias::correctionweight() const {
     double avRew=sumRew/countN;
     
     CrossSection XS_have =eh->sampler()->maxXSec()/eh->sampler()->attempts()*sum;
-    CrossSection XS_wanted=MPIHandler_->inelasticXSec()-MPIHandler_->diffractiveXSec();
+    CrossSection XS_wanted=MPIHandler_->nonDiffractiveXSec();
     double deltaN=50;
     
       // Cross section without reweighting: XS_norew

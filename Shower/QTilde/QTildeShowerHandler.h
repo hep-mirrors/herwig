@@ -784,11 +784,6 @@ private :
    *  Truncated shower switch
    */
   bool _trunc_Mode;
-  
-  /**
-   *  Count of the number of truncated emissions
-   */
-  unsigned int _truncEmissions;
 
   /**
    *  Mode for the hard emissions

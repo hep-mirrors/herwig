@@ -161,7 +161,7 @@ halfHalfScalar(const int,const Particle & inpart,
   // get the couplings
   Complex A,B;
   halfHalfScalarCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),A,B);
-  Complex left,right,meout;
+  Complex left,right;
   // coupling for an incoming particle
   if(inpart.id()>0) {
     left  = (A-B);
@@ -812,7 +812,7 @@ threeHalfHalfVector(const int,const Particle & inpart,
   ME()->zero();
   VectorWaveFunction::calculateWaveFunctions(_inVec,decay[1],outgoing,photon);
   // get the couplings
-  Complex A1,A2,A3,B1,B2,B3,prod,meout;
+  Complex A1,A2,A3,B1,B2,B3,prod;
   threeHalfHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			      A1,A2,A3,B1,B2,B3);
   Energy msum(inpart.mass()+decay[0]->mass());

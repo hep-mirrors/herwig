@@ -40,8 +40,7 @@ public:
    * Default Constructor
    */
   GaussianIntegrator() 
-    : _abserr(1.E-35), _relerr(5.E-5), _binwidth(1.E-5), 
-      _maxint(100), _maxeval(100000) {
+    : _abserr(1.E-35), _relerr(5.E-5), _binwidth(1.E-5), _maxeval(100000) {
     // setup the weights and abscissae
     Init();
   }
@@ -51,13 +50,12 @@ public:
    * @param abserr Absolute error.
    * @param relerr Relative error.
    * @param binwidth Width of the bin as a fraction of the integration region.
-   * @param maxint Maximum number of intervals
    * @param maxeval Maximum number of function evaluations
    */
   GaussianIntegrator(double abserr, double relerr, double binwidth,
-		     int maxint, int maxeval)
+                     int maxeval)
     : _abserr(abserr), _relerr(relerr), 
-      _binwidth(binwidth), _maxint(maxint),
+      _binwidth(binwidth),
       _maxeval(maxeval) {
     // setup the weights and abscissae
     Init();
@@ -112,11 +110,6 @@ private:
    * The minimum width of a bin as a fraction of the integration region.
    */
   double _binwidth;
-
-  /**
-   * Maximum number of bins.
-   */
-  int _maxint;
 
   /**
    * Maximum number of function evaluations.
