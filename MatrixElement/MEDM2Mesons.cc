@@ -181,7 +181,7 @@ double MEDM2Mesons::me2(const int ichan) const {
     hadronI1(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::Zero),
 			       imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
   vector<LorentzPolarizationVectorE> 
-    hadronssbar(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IOne, IsoSpin::I3Zero,Strangeness::ssbar),
+    hadronssbar(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IZero, IsoSpin::I3Zero,Strangeness::ssbar),
 				  imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
 
 
