@@ -734,6 +734,7 @@ double colourCharge(PDT::Colour icol) {
     return 10./3.;
   default :
     assert(false);
+    return 0.;
   }
 }
 }

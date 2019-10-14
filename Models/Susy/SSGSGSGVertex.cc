@@ -39,8 +39,22 @@ void SSGSGSGVertex::Init() {
 
 }
 
-void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-				tcPDPtr part2,tcPDPtr part3) {
+void SSGSGSGVertex::setCoupling(Energy2 q2,
+#ifndef NDEBUG
+				tcPDPtr part1,
+#else
+				tcPDPtr ,
+#endif
+#ifndef NDEBUG
+				tcPDPtr part2,
+#else
+#endif
+				tcPDPtr ,
+#ifndef NDEBUG
+				tcPDPtr part3) {
+#else
+				tcPDPtr ) {
+#endif
   assert(part1->id()==ParticleID::SUSY_g &&
 	 part2->id()==ParticleID::SUSY_g &&
 	 part3->id() == ParticleID::g);

@@ -24,9 +24,17 @@ void LHFFGVertex::Init() {
 }
 
 // coupling for FFG vertex
-void LHFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+void LHFFGVertex::setCoupling(Energy2 q2,
+#ifndef NDEBUG
+			      tcPDPtr a,
+#else
+			      tcPDPtr ,
+#endif
+			      tcPDPtr,tcPDPtr) {
   // check allowed
+#ifndef NDEBUG
   int iferm=abs(a->id());
+#endif
   assert((iferm>=1 && iferm<=6) || iferm==8);
   // first the overall normalisation
   if(q2!=_q2last) {

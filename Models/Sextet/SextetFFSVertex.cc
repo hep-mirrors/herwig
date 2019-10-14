@@ -122,7 +122,9 @@ void SextetFFSVertex::setCoupling(Energy2,tcPDPtr part1,
   //check quarks
   assert(!(q1ID>6) && !(q2ID>6));
   bool part1Up = (q1ID==2 || q1ID==4 || q1ID==6);
+#ifndef NDEBUG
   bool part2Up = (q2ID==2 || q2ID==4 || q2ID==6);
+#endif
   Complex cRight, cLeft, prefactor(1.);
   if(sDQID==ParticleID::ScalarDQSingletY43){
     //should both be up type
