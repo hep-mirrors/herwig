@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  SpinHadronizer() : omegaHalf_(2./3.), omega3Half_(0.2),
+  SpinHadronizer() : omegaHalf_(2./3.), omegaThreeHalf_(0.2),
         minFlav_(3), maxFlav_(5), debug_(false), qPol_(6,make_pair(0.,0.))
   {}
 
@@ -161,7 +161,7 @@ private:
   /**
    *  Falk-Peskin \f$\omega_\frac32\f$ parameter
    */
-  double omega3Half_;
+  double omegaThreeHalf_;
 
   /**
    *  Minimum quark flavour

@@ -130,7 +130,10 @@ void SpinHadronizer::mesonSpin(tPPtr meson) {
   if(parent->id()!=ParticleID::Cluster) return;
   tClusterPtr cluster = dynamic_ptr_cast<tClusterPtr>(parent);
   unsigned int prim_quark = (abs(meson->id())/100)%10;
+  // find the quark id
   int sign_quark = meson->id()>0 ? prim_quark : -prim_quark;
+  // B and K mesons have antiquarks bbar,sbar in mesons and quarks, b,s, in antimesons
+  if(prim_quark%2==1) sign_quark *= -1.;
   // only strange, charm and bottom for the moment
   if(prim_quark<minFlav_ || prim_quark>maxFlav_ ) return;
   tPPtr quark;
@@ -177,7 +180,7 @@ void SpinHadronizer::mesonSpin(tPPtr meson) {
   }
   // the different options for different spin types
   int bid = abs(meson->id())%1000;
-  // light-quark spin 1/2+ -> exited spin 0 heavy meson
+  // light-quark spin 1/2+ -> spin 0 heavy meson
   if(bid==311 || bid==321 || bid==331 || bid==411 || bid==421  || bid==431
               || bid==511 || bid==521 || bid==531) {
       return;
@@ -188,18 +191,18 @@ void SpinHadronizer::mesonSpin(tPPtr meson) {
     // Falk-Peskin "no-win" theorem for non-excited heavy mesons:
     // no polarization information would be find in the non-excited meson
     // for the excted mesons
-    meson->spinInfo()->rhoMatrix()(0,0) = (1.-pol)/16. + (omega3Half_/16.)*(3.-5.*pol);
-    meson->spinInfo()->rhoMatrix()(1,1) = 0.25*(1.-omega3Half_);
-    meson->spinInfo()->rhoMatrix()(2,2) = (1.+pol)/16. + (omega3Half_/16.)*(3.+5.*pol);
+    meson->spinInfo()->rhoMatrix()(0,0) = (1.-pol)/16. + (omegaThreeHalf_/16.)*(3.-5.*pol);
+    meson->spinInfo()->rhoMatrix()(1,1) = 0.25*(1.-omegaThreeHalf_);
+    meson->spinInfo()->rhoMatrix()(2,2) = (1.+pol)/16. + (omegaThreeHalf_/16.)*(3.+5.*pol);
   }
   // light-quark spin 3/2+ -> exited spin 2 meson
   else if(bid==315 || bid==325 || bid==335 || bid==415 || bid==425  || bid==435
                    || bid==515 || bid==525 || bid==535) {
-    meson->spinInfo()->rhoMatrix()(0,0) = 0.25*(1.-pol)*omega3Half_;
-    meson->spinInfo()->rhoMatrix()(1,1) = 0.1875*(1.-pol)-0.125*(1.-pol)*omega3Half_;
-    meson->spinInfo()->rhoMatrix()(2,2) = 0.25*(1.-omega3Half_);
-    meson->spinInfo()->rhoMatrix()(3,3) = 0.1875*(1.+pol)-0.125*(1.+pol)*omega3Half_;
-    meson->spinInfo()->rhoMatrix()(4,4) = 0.25*(1.+pol)*omega3Half_;
+    meson->spinInfo()->rhoMatrix()(0,0) = 0.25*(1.-pol)*omegaThreeHalf_;
+    meson->spinInfo()->rhoMatrix()(1,1) = 0.1875*(1.-pol)-0.125*(1.-pol)*omegaThreeHalf_;
+    meson->spinInfo()->rhoMatrix()(2,2) = 0.25*(1.-omegaThreeHalf_);
+    meson->spinInfo()->rhoMatrix()(3,3) = 0.1875*(1.+pol)-0.125*(1.+pol)*omegaThreeHalf_;
+    meson->spinInfo()->rhoMatrix()(4,4) = 0.25*(1.+pol)*omegaThreeHalf_;
   }
   else {
     return;
@@ -216,11 +219,11 @@ IBPtr SpinHadronizer::fullclone() const {
 }
 
 void SpinHadronizer::persistentOutput(PersistentOStream & os) const {
-  os << omegaHalf_;
+  os << omegaHalf_ << omegaThreeHalf_;
 }
 
 void SpinHadronizer::persistentInput(PersistentIStream & is, int) {
-  is >> omegaHalf_;
+  is >> omegaHalf_ >> omegaThreeHalf_;
 }
 
 // The following static variable is needed for the type
@@ -238,6 +241,12 @@ void SpinHadronizer::Init() {
     ("OmegaHalf",
      "The omega_1/2 Falk-Peskin parameter",
      &SpinHadronizer::omegaHalf_, 2./3., 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<SpinHadronizer,double> interfaceOmegaThreeHalf
+    ("OmegaThreeHalf",
+     "The omega_3/2 Falk-Peskin parameter",
+     &SpinHadronizer::omegaThreeHalf_, 0.2, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Parameter<SpinHadronizer,unsigned int> interfaceMinimumFlavour
