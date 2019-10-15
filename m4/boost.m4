@@ -448,12 +448,14 @@ for boost_lib_ in $2; do
 for boost_tag_ in -$boost_cv_lib_tag ''; do
 for boost_ver_ in -$boost_cv_lib_version ''; do
 for boost_mt_ in $boost_mt -mt ''; do
+for boost_x64_ in  -x64 ''; do
 for boost_rtopt_ in $boost_rtopt '' -d; do
   for boost_full_suffix in \
     $boost_last_suffix \
     x$boost_tag_$boost_mt_$boost_rtopt_$boost_ver_ \
     x$boost_tag_$boost_rtopt_$boost_ver_ \
     x$boost_tag_$boost_mt_$boost_ver_ \
+    x$boost_tag_$boost_mt_$boost_x64_$boost_ver_ \
     x$boost_tag_$boost_ver_
   do
     boost_real_suffix=`echo "$boost_full_suffix" | sed 's/^x//'`
@@ -529,6 +531,7 @@ dnl generated only once above (before we start the for loops).
       fi
     done
   done
+done
 done
 done
 done
