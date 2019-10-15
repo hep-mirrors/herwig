@@ -229,7 +229,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Matchbox/Powheg-DipoleShower.in
 		src/Merging/Makefile
 		Shower/Dipole/Merging/Makefile
-		Shower/Dipole/Colorea/Makefile
 		src/defaults/MatchboxMergingDefaults.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh

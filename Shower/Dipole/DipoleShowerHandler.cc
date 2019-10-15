@@ -1124,11 +1124,6 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   
   
   while ( eventRecord().haveChain() ) {
-    
-     // allow the dipole chain to be rearranged according to arXiv:1801.06113
-    if( _rearrange && ( _rearrangeNEmissions < 0 || _rearrangeNEmissions >= int(emDone) ) ){
-      eventRecord().currentChain().rearrange(_dipmax,_diplong);
-    }
 
     if ( verbosity > 2 ) {
       generator()->log() << "DipoleShowerHandler selecting splittings for the chain:\n"
@@ -1555,7 +1550,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV)<< theMergingHelper << theColouredOffShellInShower
      << theInputColouredOffShellInShower
-     << _rearrange << _dipmax << _diplong << _rearrangeNEmissions << theZBoundaries;
+      << theZBoundaries;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -1578,7 +1573,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV)>>theMergingHelper >> theColouredOffShellInShower
      >> theInputColouredOffShellInShower
-     >> _rearrange >> _dipmax >> _diplong >> _rearrangeNEmissions >> theZBoundaries;
+      >> theZBoundaries;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1886,38 +1881,7 @@ void DipoleShowerHandler::Init() {
     (interfaceAnalyseSpinCorrelations,"No","Do not record extra information.", false);
   */
 
-  static Switch<DipoleShowerHandler, bool> interfacerearrange
-  ("Rearrange",
-   "Allow rearranging of dipole chains according to arXiv:1801.06113",
-   &DipoleShowerHandler::_rearrange, false, false, false);
-
-  static SwitchOption interfacerearrangeYes
-  (interfacerearrange,"Yes","_rearrange on", true);
-
-  static SwitchOption interfacerearrangeNo
-  (interfacerearrange,"No","_rearrange off", false);
-
-  static Parameter<DipoleShowerHandler,unsigned int> interfacedipmax
-  ("DipMax",
-   "Allow rearrangment of color chains with ME including dipmax dipoles.",
-   &DipoleShowerHandler::_dipmax, 0, 0, 0,
-   false, false, Interface::lowerlim);
-
-  static Parameter<DipoleShowerHandler,unsigned int> interfacediplong
-  ("DipLong",
-   "Dipole chains with more than dipmax dipoles are treated as long. \
-    diplong=3 rearranges these chains with eeuugg MEs,  \
-    diplong=4 rearranges these chains with eeuuggg MEs (slower),  \
-    diplong=5 rearranges these chains with eeuugggg MEs (slow).\
-    Note: Numerically there is no difference between the options. ",
-   &DipoleShowerHandler::_diplong, 0, 0, 0,
-   false, false, Interface::lowerlim);
-
-  static Parameter<DipoleShowerHandler, int> interfacedcorrectNemissions
-  ("RearrangeNEmissions",
-   "Allow rearrangment of color chains up to the nth emission.",
-   &DipoleShowerHandler::_rearrangeNEmissions, 0, 0, 0,
-   false, false, Interface::lowerlim);
+  
 
   
 }
