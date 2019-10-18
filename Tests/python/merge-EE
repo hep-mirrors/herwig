@@ -218,21 +218,25 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("1422780")>0 or hpath.find("132410" )>0 ):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
-        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
-                                                   hsets.values()[0].title)
-        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,
-                                                   hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
-                                        hsets.values()[0].bins[i].xMax)
-        elif(type(hsets.values()[0])==yoda.core.Histo1D) :
-            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].path,
-                                                hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
-                                        hsets.values()[0].bins[i].xMax)
+        title=""
+        path=""
+        histo = hsets.values()[0]
+        if hasattr(histo, 'title'):
+            title=histo.title()
+        if hasattr(histo, 'path'):
+            path=histo.path()
+        if(type(histo)==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(path,title)
+        elif(type(histo)==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
