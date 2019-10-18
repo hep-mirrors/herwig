@@ -156,14 +156,14 @@ void SpinHadronizer::mesonSpin(tPPtr meson) {
   else if(meson->dataPtr()->iSpin()==PDT::Spin1) {
     vector<VectorWaveFunction> waves;
     RhoDMatrix rho;
-    VectorWaveFunction::calculateWaveFunctions(waves,rho,meson,meson->id() > 0 ? incoming : outgoing,true);
-    VectorWaveFunction::constructSpinInfo(waves,meson,outgoing,true,true);
+    VectorWaveFunction::calculateWaveFunctions(waves,rho,meson,meson->id() > 0 ? incoming : outgoing,false);
+    VectorWaveFunction::constructSpinInfo(waves,meson,outgoing,true,false);
   }
   else if(meson->dataPtr()->iSpin()==PDT::Spin2) {
     vector<TensorWaveFunction> waves;
     RhoDMatrix rho;
-    TensorWaveFunction::calculateWaveFunctions(waves,rho,meson,meson->id() > 0 ? incoming : outgoing,true);
-    TensorWaveFunction::constructSpinInfo(waves,meson,outgoing,true,true);
+    TensorWaveFunction::calculateWaveFunctions(waves,rho,meson,meson->id() > 0 ? incoming : outgoing,false);
+    TensorWaveFunction::constructSpinInfo(waves,meson,outgoing,true,false);
   }
   else {
     return;
@@ -179,15 +179,10 @@ void SpinHadronizer::mesonSpin(tPPtr meson) {
     qPol_[prim_quark].second += 1.;
   }
   // the different options for different spin types
-  int bid = abs(meson->id())%1000;
+  int bid = abs(meson->id());
   // light-quark spin 1/2+ -> spin 0 heavy meson
-  if(bid==311 || bid==321 || bid==331 || bid==411 || bid==421  || bid==431
-              || bid==511 || bid==521 || bid==531) {
-      return;
-  }
-  // light-quark spin 1/2+
-  else if(bid==313 || bid==323 || bid==333 || bid==413 || bid==423  || bid==433
-                   || bid==513 || bid==523 || bid==533) {
+  if(bid==10313 || bid==10323 || bid==10333 || bid==10413 || bid==10423  || bid==10433
+                || bid==10513 || bid==10523 || bid==10533) {
     // Falk-Peskin "no-win" theorem for non-excited heavy mesons:
     // no polarization information would be find in the non-excited meson
     // for the excted mesons
