@@ -576,7 +576,6 @@ void MPIHandler::overrideUECuts() {
   }else if(energyExtrapolation_==3){
   // New parametrization that works for small CME: pTmin0*((c+sqrt(s))/E0)^b
     Ptmin_ = pT0_*pow(double((offset_+generator()->maximumCMEnergy())/refScale_),b_);
-    cout << Ptmin_/GeV << endl;
   }  
   else
     assert(false);
