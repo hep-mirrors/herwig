@@ -18,3 +18,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1606201
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1998_I467595
 # CLEO D* polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1991_I314060
+# CLEO D_1/D_2 decay
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_1990_I281039

@@ -11,11 +11,9 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS
 # ARGUS D2 spectrum
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1988_I268577
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I268577
 # ARGUS D1/D2 spectrum and decay angles
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I280943
-# argus eta pi0
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I268577
 # argus phi
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I262551
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1989_I276860

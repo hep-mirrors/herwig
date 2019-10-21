@@ -945,11 +945,21 @@ analyses["HadronDecays"][3322]["Modes"]["$\\Xi^0\\to\\Sigma^0\\gamma$"]["MC"  ] 
                                                                                    "/NA48_2010_I868871/ctheta_Sigma_16","/NA48_2010_I868871/ctheta_Sigma_17",
                                                                                    "/NA48_2010_I868871/ctheta_Sigma_18","/NA48_2010_I868871/ctheta_Sigma_19"]
 
-analyses["HadronDecays"][3334] = { "Modes" : { "$\\Omega^-\\to\\Lambda^0K^-$" : {} } }
-analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Lambda^0K^-$"]["data"] = ["/HyperCP_2005_I677384/d01-x01-y01","/HyperCP_2005_I677384/d01-x01-y02",
-                                                                                   "/HyperCP_2005_I677384/d01-x01-y03"]
-analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Lambda^0K^-$"]["MC"  ] = ["/HyperCP_2005_I677384/cthetaM","/HyperCP_2005_I677384/cthetaP",
-                                                                                   "/HyperCP_2005_I677384/cthetaAll"]
+analyses["HadronDecays"][3334] = { "Modes" : { "$\\Omega^-\\to\\Lambda^0K^-$" : {},"$\\Omega^-\\to\\Xi^0\\pi^-$" : {},
+                                               "$\\Omega^-\\to\\Xi^-\\pi^0$" : {} } }
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Lambda^0K^-$"]["data"] = ["/HyperCP_2005_I677384/d01-x01-y01",
+                                                                                   "/HyperCP_2005_I677384/d01-x01-y02",
+                                                                                   "/HyperCP_2005_I677384/d01-x01-y03",
+                                                                                   "/WA46_1984_I206647/d01-x01-y01"]
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Lambda^0K^-$"]["MC"  ] = ["/HyperCP_2005_I677384/cthetaM",
+                                                                                   "/HyperCP_2005_I677384/cthetaP",
+                                                                                   "/HyperCP_2005_I677384/cthetaAll",
+                                                                                   "/WA46_1984_I206647/Lambda"]
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Xi^0\\pi^-$"]["data"]=["/WA46_1984_I206647/d01-x01-y02"]
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Xi^0\\pi^-$"]["MC"  ]=["/WA46_1984_I206647/Xi0"]
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Xi^-\\pi^0$"]["data"]=["/WA46_1984_I206647/d01-x01-y03"]
+analyses["HadronDecays"][3334]["Modes"]["$\\Omega^-\\to\\Xi^-\\pi^0$"]["MC"  ]=["/WA46_1984_I206647/Xim"]
+
 
 analyses["HadronDecays"][4132] = { "Modes" : { "$\\Xi^0_c\\to\\Xi^-\\pi^+$" : {} } }
 analyses["HadronDecays"][4132]["Modes"]["$\\Xi^0_c\\to\\Xi^-\\pi^+$"]["data"] = ["/CLEO_2000_I537236/d01-x01-y01"]
