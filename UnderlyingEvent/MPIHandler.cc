@@ -570,8 +570,14 @@ InvEnergy2 MPIHandler::slopeExp() const{
 void MPIHandler::overrideUECuts() {
   if(energyExtrapolation_==1)
     Ptmin_ = EEparamA_ * log(generator()->maximumCMEnergy() / EEparamB_);
-  else if(energyExtrapolation_==2)
+  else if(energyExtrapolation_==2){
+  // For small CME <900GeV the old power law does not work (hard cross section diverges)
     Ptmin_ = pT0_*pow(double(generator()->maximumCMEnergy()/refScale_),b_);
+  }else if(energyExtrapolation_==3){
+  // New parametrization that works for small CME: pTmin0*((c+sqrt(s))/E0)^b
+    Ptmin_ = pT0_*pow(double((offset_+generator()->maximumCMEnergy())/refScale_),b_);
+    cout << Ptmin_/GeV << endl;
+  }  
   else
     assert(false);
   // create a new SimpleKTCut object with the calculated ptmin value
@@ -600,7 +606,7 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
      << DLmode_ << ounit(totalXSecExp_, millibarn)
      << energyExtrapolation_ << ounit(EEparamA_, GeV) << ounit(EEparamB_, GeV)
-     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_
+     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_ << ounit(offset_,GeV)
      << avgNhard_ << avgNsoft_ << softMult_ 
      << ounit(inelXSec_, millibarn) 
      << ounit(softMu2_, GeV2) << diffratio_;
@@ -617,7 +623,7 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
      >> DLmode_ >> iunit(totalXSecExp_, millibarn)
      >> energyExtrapolation_ >> iunit(EEparamA_, GeV) >> iunit(EEparamB_, GeV)
-     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_
+     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_ >> iunit(offset_,GeV)
      >> avgNhard_ >> avgNsoft_ >> softMult_ 
      >> iunit(inelXSec_, millibarn) 
      >> iunit(softMu2_, GeV2) >> diffratio_;
@@ -742,6 +748,13 @@ void MPIHandler::Init() {
      "Power",
      "Use power law, ptmin = pt_0 * (sqrt(s) / E_0)^b.",
      2);
+  static SwitchOption interEnergyExtrapolationPowerModified
+    (interEnergyExtrapolation,
+     "PowerModified",
+     "Use modified power law with offset to work for small center of mass energies." 
+     "ptmin = pt_0 * ((offset+sqrt(s)) / E_0)^b.",
+     3);
+
   static SwitchOption interEnergyExtrapolationNo
     (interEnergyExtrapolation,
      "No",
@@ -825,4 +838,12 @@ void MPIHandler::Init() {
      "The power for power law extrapolation of the pTmin cut-off.",
      &MPIHandler::b_, 0.21, 0.0, 10.0,
      false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfaceOffset
+    ("Offset",
+     "The offset used in the modified power law extrapolation of the pTmin cut-off.",
+     &MPIHandler::offset_, GeV, 622.0*GeV, 500.0*GeV, 1000.0*GeV,
+     false, false, Interface::limited);
+
 }
+

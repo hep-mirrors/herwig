@@ -88,9 +88,9 @@ public:
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
 		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0),
-                energyExtrapolation_(2), EEparamA_(0.6*GeV),
+                energyExtrapolation_(3), EEparamA_(0.6*GeV),
                 EEparamB_(37.5*GeV), refScale_(7000.*GeV),
-		pT0_(3.11*GeV), b_(0.21) {}
+		pT0_(2.875*GeV), b_(0.3101), offset_(622.204*GeV) {}
 
   /**
    * The destructor.
@@ -584,6 +584,7 @@ private:
   Energy refScale_;
   Energy pT0_;
   double b_;
+  Energy offset_;
 
   /**
    * Parameters to set the fraction of diffractive cross section in the inelastic cross section.
