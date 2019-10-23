@@ -168,7 +168,7 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-7-Top-{L,SL}.in) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox,-Matchbox-Powheg,-Merging}-{8,13}-Top-{All,L,SL}.in) \
                   $(shell echo Rivet/Star{,-Dipole}-{UE,Jets-{1..4}}.in ) \
-	          $(shell echo Rivet/SppS{,-Dipole}-{200,500,900,546}-UE.in ) \
+	          $(shell echo Rivet/SppS{,-Dipole}-{53,63,200,500,546,900}-UE.in ) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{W-{e,mu},13-Z-{e,mu},Z-HighMass{1,2}-e,{8,13}-W-mu,8-Z-Mass{1..4}-{e,mu},Z-{e,mu,mu-SOPHTY},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},{8,13}-WZ,8-ZZ-lv,8-WW-ll,Z-mu-Short}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-7-{W,Z}Gamma-{e,mu}.in) \
                   $(shell echo Rivet/LHC{,-Dipole}-8-ZGamma-{e,mu}.in) \
@@ -178,8 +178,9 @@ Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatN
 	          $(shell echo Rivet/LHC{,-Powheg}-{7,8}-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.in) \
 	          $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-{ggH,VBF,WH,ZH}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-8-{{ggH,VBF,WH,ZH}{,-GammaGamma},ggH-WW}.in) \
-                  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in)
-#                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) $(shell echo Rivet/SppS-{53,63}-UE.in )
+                  $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Merging}-ggHJet.in) \
+                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) Rivet/EHS-UE.in
+
 
 Rivet-GammaGamma: Rivet-GammaGamma/done
 	touch $@
@@ -274,19 +275,13 @@ Rivet-Star/done : $(shell echo Rivet-Star-{UE,Jets-{1..4}}.yoda )
 Rivet-SppS : Rivet-SppS/done
 	touch $@
 
-## $(shell echo Rivet-ISR-{30,44,53,62}-UE.yoda ) \
-## {53,63,200,500,900,546} EHS-UE
 
-Rivet-SppS/done : $(shell echo Rivet-SppS-{200,500,900,546}-UE.yoda )
+Rivet-SppS/done : $(shell echo Rivet-SppS-{53,63,200,500,546,900}-UE.yoda ) \
+	          $(shell echo Rivet-ISR-{30,44,53,62}-UE.yoda ) Rivet-EHS-UE.yoda
 	rm -rf Rivet-SppS
 	python/merge-SppS SppS
 	rivet-mkhtml -o Rivet-SppS SppS.yoda:Hw
 	touch $@
-
-
-
-
-
 
 Rivet-LHC-Jets : Rivet-LHC-Jets/done
 	touch $@
