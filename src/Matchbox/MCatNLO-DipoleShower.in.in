@@ -13,7 +13,7 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:ShowerApproximation DipoleMatching
 
 # tunes
-read snippets/Dipole_AutoTune_prel.in
+read snippets/Dipole_AutoTunes_gss.in
 
 cd /Herwig/Analysis
 

@@ -28,6 +28,7 @@ HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh
 noinst_LTLIBRARIES += libHwMPIPDF.la
 libHwMPIPDF_la_SOURCES = \
 MPIPDF.h MPIPDF.cc MPIPDF.fh \
+MPIPDF2.h MPIPDF2.cc MPIPDF2.fh \
 MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
 
 pkglib_LTLIBRARIES += HwSatPDF.la
