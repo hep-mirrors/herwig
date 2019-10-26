@@ -116,7 +116,7 @@ if(opts.gg) :
     
 yodafiles += ["2.2","2.6","3.0","3.2","4.6","4.8","3.63","4.03","4.17","4.3",
               "4.41","5.0","5.2","4.5","9.46","10.52","10.52-sym","10.54",
-              "10.58-res","10.58","Upsilon",
+              "10.58-res","10.58","Upsilon","10.6-sym",
               "Upsilon2","Upsilon4","10.45","10.47","Tau","Phi",
               "Lambdac","Omega","Xi0","Xic0","Omegac0","Xim","JPsi","Psi2S"]
 ## Get histos
@@ -191,6 +191,15 @@ for f in yodafiles:
                     outhistos[aopath] = ao
             else :
                 if(aopath.find("y03")<0) :
+                    outhistos[aopath] = ao
+        elif(aopath.find("ARGUS_1991_I315059")>=0) :
+            if(file.find("sym")>=0) :
+                if("d01" in aopath or "d02" in aopath or
+                   "d03" in aopath or "d04" in aopath) : 
+                    outhistos[aopath] = ao
+            else :
+                if("d05" in aopath or "d07" in aopath or
+                   "d07" in aopath) : 
                     outhistos[aopath] = ao
         else :
             if("ARGUS_1992_I319102" in aopath) :

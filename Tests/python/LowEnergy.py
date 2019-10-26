@@ -266,6 +266,7 @@ analyses["BB"]["BABAR_2001_I558091"]   = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1991_I29927"]     = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
 analyses["LL"]["DM2_1990_I297706"]     = ["d02-x01-y01"]
+analyses["LL"]["BESIII_2019_I1758883"]     = ["d01-x01-y05"]
 analyses["LL"]["BABAR_2007_I760730"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
 if "all" in opts.processes :

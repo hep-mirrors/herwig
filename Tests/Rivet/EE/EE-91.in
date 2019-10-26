@@ -112,6 +112,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1997_I428178
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1997_I427131
 # ALEPH Lambda polarization
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_I415745
+# OPAL Lambda polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I447188
 # DELPHI Lambda/K asymmetry
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I382285
 # OPAL b baryon polarization
@@ -128,6 +130,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1999_I448370
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_I393503
 # OPAL phi, D*, B* spin
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I440103
+# DELPHI B*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I395026
+# ALEPH B*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1995_I398426
 ##################################################
 # unvalidated 
 ##################################################
