@@ -12,6 +12,8 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 91.
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1991_S2435284
 # OPAL charged particle multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1992_I321190
+# OPAL charged particle multiplicity (light flavour separated)
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_I536266
 # DELPHI charged particle multiplicity
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1991_I301657
 # ALEPH main LEP I QCD summary paper
@@ -134,6 +136,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_I440103
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1995_I395026
 # ALEPH B*
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1995_I398426
+# OPAL B*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1996_I428493
+# L3 B*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 L3_1995_I381046
 ##################################################
 # unvalidated 
 ##################################################

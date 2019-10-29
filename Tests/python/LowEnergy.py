@@ -262,6 +262,7 @@ analyses["BB"]["BELLE_2016_I1389855"]  = ["d01-x01-y02","d01-x01-y03"]
 analyses["BB"]["BELLE_2008_I764099"]   = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
 analyses["BB"]["CLEO_1999_I474676"]    = ["d01-x01-y01","d01-x01-y02"]
+analyses["BB"]["CUSB_1991_I325661"]    = ["d01-x01-y01"]
 analyses["BB"]["BABAR_2001_I558091"]   = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1991_I29927"]     = ["d01-x01-y01"]
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
