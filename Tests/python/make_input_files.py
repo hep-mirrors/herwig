@@ -176,7 +176,6 @@ print name
 # select the template to load
 # collider
 KNOWN_COLLIDERS = [
-    "GammaGamma",
     "EE-Gamma",
     "BFactory",
     "EE",
@@ -188,6 +187,7 @@ KNOWN_COLLIDERS = [
     "SppS",
     "Star",
     "EHS",
+    "GammaGamma",
 ]
 collider = ""
 for cand_collider in KNOWN_COLLIDERS:
