@@ -117,11 +117,13 @@ analyses["etapipi"]["BABAR_2007_I758568"]   = ["d01-x01-y01","d02-x01-y01"]
 analyses["etapipi"]["CMD2_2000_I532970"]   = ["d02-x01-y01"]
 analyses["etapipi"]["DM2_1988_I264144"]   = ["d01-x01-y01"]
 analyses['etapipi']["ND_1991_I321108"] = ["d06-x01-y01","d14-x01-y01"]
+analyses['etapipi']["CMD3_2019_I1744510"] = ["d02-x01-y01"]
 # eta Phi
 analyses["etaPhi"]["BABAR_2008_I765258"]   = ["d04-x01-y01","d05-x01-y01"]
 analyses["etaPhi"]["SND_2018_I1693737"]   = ["d01-x01-y01"]
 analyses["etaPhi"]["BABAR_2017_I1511276"]   = ["d03-x01-y01"]
 analyses["etaPhi"]["SND_2019_I1726419"]  = ["d01-x01-y03"]
+analyses["etaPhi"]["CMD3_2019_I1740541"]  = ["d01-x01-y06","d02-x01-y06","d03-x01-y06"]
 # eta Omega
 analyses["etaOmega"]["SND_2016_I1473343"]  = ["d01-x01-y01"]
 analyses["etaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
@@ -301,7 +303,8 @@ me = { "pipi"         : "MEee2Pions",
        "pigamma"      : "MEee2PiGamma",
        "etagamma"     : "MEee2EtaGamma",
        "ppbar"        : "MEee2ppbar",
-       "2K1pi"        : "MEee2KKPi"}
+       "LL"           : "MEee2LL"   ,
+       "2K1pi"        : "MEee2KKPi" }
 
 # energies we need
 energies={}
