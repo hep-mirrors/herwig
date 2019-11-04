@@ -84,7 +84,8 @@ double OneOneZeroEWSplitFn::P(const double z, const Energy2 t,
   if(mass){
     // get the running mass
     double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-    val += (2./sqr(z))*sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
+    //val += (2./sqr(z))*sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
+    val += 2.*sqr(m0t)*(rho00+rho22);
   }
   return sqr(gvvh)*val;
 }
@@ -94,7 +95,7 @@ double OneOneZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double gvvh(0.);
   getCouplings(gvvh,ids);
-  return sqr(gvvh)*(2./sqr(z));
+  return sqr(gvvh)*2.;
 }
 
 
@@ -110,7 +111,7 @@ double OneOneZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   if(mass){
     // get the running mass
     double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-    val += sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
+    val += sqr(m0t)*(rho00+rho22);
   }
   return val;
 }
@@ -124,7 +125,7 @@ double OneOneZeroEWSplitFn::integOverP(const double z,
   double pre = sqr(gvvh);
   switch (PDFfactor) {
   case 0:
-    return -pre*(2./z);
+    return pre*2.*z;
   case 1:
   case 2:
   case 3:
@@ -141,7 +142,7 @@ double OneOneZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = sqr(gvvh);
   switch (PDFfactor) {
   case 0:
-    return -pre*(2./r);
+    return r/(pre*2.);
   case 1:
   case 2:
   case 3:
@@ -201,7 +202,7 @@ DecayMEPtr OneOneZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(0,1,0) = 0.; // 121
   (*kernal)(0,2,0) = 0.; // 131
   (*kernal)(1,0,0) = 0.; // 211
-  (*kernal)(1,1,0) = -gvvh*r2*m0t/z; // 221 > 241
+  (*kernal)(1,1,0) = 0.; // 221 > 441
   (*kernal)(1,2,0) = 0.; // 231
   (*kernal)(2,0,0) = 0.; // 311
   (*kernal)(2,1,0) = 0.; // 321 > 341
