@@ -96,35 +96,12 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
   double val = ((2.*sqr(1.-(1.-z)*z))/((1.-z)*z))*(abs_rho_00+abs_rho_22);
   // massive limits
   if(mass) {
-    double mWt2 = sqr(getParticleData(ParticleID::Wplus)->mass())/t;
-    double mZt2 = sqr(getParticleData(ParticleID::Z0)->mass())/t;
-    // G > WW
-    if(ids[0]->id()==ParticleID::gamma && abs(ids[1]->id())==ParticleID::Wplus
-                                       && abs(ids[2]->id())==ParticleID::Wplus){
-      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
+    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
+    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
+    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+    val += (-2.*(m2t2*(1.-sqr(1.-z)*z)+m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))/((1.-z)*z)
+        + (2.*m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/((1.-z)*z);
     }
-    // Z > WW
-    else if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
-                                         && abs(ids[2]->id())==ParticleID::Wplus){
-      val += (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
-      val += -2*mZt2*(((-2.+z*(8.+z*(-13.-2.*(-4.+z)*z)))*abs_rho_00)/sqr(1.-z)
-           + (sqr(1.-z+sqr(z))*(abs_rho_00+abs_rho_22))/((-1.+z)*z));
-    }
-    // W > WG
-    else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
-                                                 && ids[2]->id()==ParticleID::gamma){
-      val += 4.*mWt2*sqr(1.-z)*abs_rho_11;
-      val -= 2.*mWt2*(1.+sqr(1.-z))*(abs_rho_00 + abs_rho_22);
-    }
-    // W > WZ
-    else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
-                                                 && ids[2]->id()==ParticleID::Z0){
-      val += (2.*mZt2*(pow(z,3)*abs_rho_11 + (1.-z)*(-1.+sqr(1.-z)*z)
-           * (abs_rho_00+abs_rho_22)))/(sqr(1.-z)*z);
-      val += -2.*mWt2*(-2.*sqr(1.-z)*abs_rho_11+(2.+(-2.+z)*z)
-           * (abs_rho_00+abs_rho_22))/(sqr(1.-z)*z);
-    }
-  }
   return sqr(gvvv)*val;
 }
 
@@ -141,47 +118,20 @@ double OneOneOneEWSplitFn::ratioP(const double z, const Energy2 t,
 				    const IdList & ids, const bool mass,
 				    const RhoDMatrix & rho) const {
   double val(0.);
-  double val_mass(0.);
-  assert(rho.iSpin()==PDT::Spin1);
-  //TODO : rho(0,0) and rho(2,2) return zero -> why?
   double abs_rho_00 = abs(rho(0,0));
   double abs_rho_11 = abs(rho(1,1));
   double abs_rho_22 = abs(rho(2,2));
   // massless limit
-  val = sqr(1.-(1.-z)*z);//*(abs_rho_00+abs_rho_22);
+  val = sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22);
   // massive limit
   if(mass) {
-    double mWt2 = sqr(getParticleData(ParticleID::Wplus)->mass())/t;
-    double mZt2 = sqr(getParticleData(ParticleID::Z0)->mass())/t;
-    // G > WW
-    if(ids[0]->id()==ParticleID::gamma && abs(ids[1]->id())==ParticleID::Wplus
-                                       && abs(ids[2]->id())==ParticleID::Wplus){
-      val_mass = (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
-    }
-    // Z > WW
-    else if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
-                                         && abs(ids[2]->id())==ParticleID::Wplus){
-      val_mass = (-2.*mWt2*(2.-(1.-z)*z)*(abs_rho_00+abs_rho_22))/((1.-z)*z);
-      val_mass += -2*mZt2*(((-2.+z*(8.+z*(-13.-2.*(-4.+z)*z)))*abs_rho_00)/sqr(1.-z)
-           + (sqr(1.-z+sqr(z))*(abs_rho_00+abs_rho_22))/((-1.+z)*z));
-    }
-    // W > WG
-    else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
-                                                 && ids[2]->id()==ParticleID::gamma){
-      val_mass += 4.*mWt2*sqr(1.-z)*abs_rho_11;
-      val_mass -= 2.*mWt2*(1.+sqr(1.-z))*(abs_rho_00 + abs_rho_22);
-    }
-    // W > WZ
-    else if(abs(ids[0]->id())==ParticleID::Wplus && abs(ids[1]->id())==ParticleID::Wplus
-                                                 && ids[2]->id()==ParticleID::Z0){
-      val_mass = (2.*mZt2*(pow(z,3)*abs_rho_11 + (1.-z)*(-1.+sqr(1.-z)*z)
-           * (abs_rho_00+abs_rho_22)))/(sqr(1.-z)*z);
-      val_mass += -2.*mWt2*(-2.*sqr(1.-z)*abs_rho_11+(2.+(-2.+z)*z)
-           * (abs_rho_00+abs_rho_22))/(sqr(1.-z)*z);
-    }
-    val_mass /= 2./(z*(1.-z));
+    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
+    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
+    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+    val += -(m2t2*(1.-sqr(1.-z)*z) + m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22)
+         + m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22));
   }
-  return val+val_mass;
+  return val;
 }
 
 
@@ -292,9 +242,9 @@ DecayMEPtr OneOneOneEWSplitFn::matrixElement(const double z, const Energy2 t,
   (*kernal)(1,0,0) = 0.;
   (*kernal)(1,0,1) = 0.; //2>4
   (*kernal)(1,0,2) = -gvvv*r2*m0t*(1.-z); //2>4
-  (*kernal)(1,1,0) = gvvv*phase*(m0t/m1t)*sqrt(z/(1.-z));   //221>421
-  (*kernal)(1,1,1) = gvvv*r2*(m0t*m2t/m1t)*(z/(1.-z));      //222>424
-  (*kernal)(1,1,2) = -gvvv*cphase*(m0t/m1t)*sqrt(z/(1.-z)); //223>423
+  (*kernal)(1,1,0) = 0.; //221>441
+  (*kernal)(1,1,1) = 0.; //222>444
+  (*kernal)(1,1,2) = 0.; //223>443
   (*kernal)(1,2,0) = -gvvv*r2*m0t*(1.-z); //2>4
   (*kernal)(1,2,1) = 0.; //2>4
   (*kernal)(1,2,2) = 0.; //2>4
