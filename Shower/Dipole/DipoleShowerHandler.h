@@ -288,6 +288,14 @@ protected:
   const set<long>& offShellPartons() { return theColouredOffShellInShower; }
   
   /**
+   * In a merging setup this function checks if the next shower
+   * configuration is part of the matrix element region.
+   */
+  bool isMERegion(const Energy winnerScale,
+                  const DipoleSplittingInfo & winner,
+                  const list<Dipole>::iterator winnerDip);
+  
+  /**
    * Realign the event such as to have the incoming partons along thre
    * beam axes.
    */

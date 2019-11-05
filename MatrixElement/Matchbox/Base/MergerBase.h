@@ -77,10 +77,6 @@ public:
   virtual size_t maxLegs() const = 0;
     /// return the current merging scale,
   virtual Energy mergingScale() const = 0;
-    /// Potential additional emission probability for unitarising LO contributions.
-  virtual double emissionProbability() const = 0;
-    /// set the potential additional emission probability.
-  virtual void setEmissionProbability( double ) = 0;
   //@}
 
 public:
