@@ -149,7 +149,7 @@ Rivet/%.in :
 Rivet-inputfiles: $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{7.7,9.4,12,13,17,27.6,29,30.2,30.7,30,31.3,34,34.8,41,42.1,42.6,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,82,85,10,12.8,21.5,22,25,26.8,34.5,35,36.2,44,48.0,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.in) \
                   $(shell echo Rivet/EE{,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Powheg,-Matchbox-Powheg}-{14,14.8}.in) \
 	          $(shell echo Rivet/EE{,-Dipole}-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.in) \
-                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.17,4.3,4.41,5.0,5.2,4.6,4.8,3.63,4.03,4.5,9.46,10.52,10.52-sym,10.54,10.45,10.47}.in) \
+                  $(shell echo Rivet/EE{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg}-{2.2,2.6,3.0,3.2,4.17,4.3,4.41,5.0,5.2,4.6,4.8,5.8,6.2,6.6,7.0,7.4,3.63,4.03,4.5,9.46,10.52,10.52-sym,10.54,10.45,10.47}.in) \
                   $(shell echo Rivet/EE-{Upsilon,Upsilon2,Upsilon4,JPsi,Psi2S,Tau,Phi,10.58-res,Lambdac,Omega,Xi0,Xic0,Omegac0,Xim}.in) \
                   $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
                   $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole,-Dipole-MCatNLO,-Dipole-Matchbox-Powheg,-Matchbox-Powheg,-Merging}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-{,LowMass-,HighMass-}mu,Run-II-W}.in) \
@@ -206,7 +206,7 @@ Rivet-EE : Rivet-EE/done
 
 Rivet-EE/done : $(shell echo Rivet{,-Powheg}-EE-{7.7,9.4,12,13,14,14.8,17,27.6,29,30.2,30.7,30,31.3,34,34.8,43.6,45,50,52,53.3,55,56,57,58,59.5,60.8,60,61.4,66,76,10,12.8,21.5,22,25,26.8,34.5,35,36.2,41,42.1,42.6,44,48.0,82,85,91,93.0,130,133,136,161,172,177,183,189,192,196,197,200,202,205,206,207,91-nopi}.yoda) \
 	   $(shell echo Rivet-EE-{10.5,11.96,12.8,13.96,16.86,21.84,26.8,28.48,35.44,48.0,97.0}-gg.yoda) \
-	   $(shell echo Rivet-EE-{10.52,10.52-sym,2.2,2.6,3.0,3.2,4.6,4.8,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,9.46,10.54,10.45,10.47,Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res,10.58,Lambdac,Omega,Xi0,Xic0,Omegac0,Xim,JPsi,Psi2S}.yoda)
+	   $(shell echo Rivet-EE-{10.52,10.52-sym,2.2,2.6,3.0,3.2,4.6,4.8,5.8,6.2,6.6,7.0,7.4,3.63,4.03,4.17,4.3,4.41,5.0,5.2,4.5,9.46,10.54,10.45,10.47,Upsilon,Upsilon2,Upsilon4,Tau,Phi,10.58-res,10.58,Lambdac,Omega,Xi0,Xic0,Omegac0,Xim,JPsi,Psi2S}.yoda)
 	rm -rf Rivet-EE
 	python/merge-EE --with-gg EE
 	python/merge-EE Powheg-EE

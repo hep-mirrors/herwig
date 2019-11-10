@@ -30,6 +30,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1995_S3198391
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1996_S3257789
 # ALEPH eta/omega analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2002_S4823664
+# ALEPH pi0,eta,eta',K0,lambda in 2/3 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2000_I507531
 # OPAL K*0 analysis
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1997_S3608263
 # OPAL flavour specific charged multiplicities etc
@@ -107,8 +109,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1992_I334948
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1991_I324035
 # lambda, lambdabar correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1993_I360638
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2000_I474010
 # delphi flavour sep charged
-# lambda, lambdabar correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1997_I428178
 # ALEPH pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1997_I427131
