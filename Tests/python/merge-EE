@@ -173,6 +173,7 @@ for f in yodafiles:
            aopath.find("177174" )>0 or aopath.find("284251" )>0 or
            aopath.find("191161" )>0 or aopath.find("1422780")>0 or
            aopath.find("132410" )>0 or
+           ("OPAL_2000_I513476" in aopath and ("d14" in aopath or "d20" in aopath )) or
            (aopath.find("MULTIPLICITIES")>0 and aopath.find("Upsilon_4S")<0)) :
             if not inhistos.has_key(aopath):
                 inhistos[aopath] = {}
@@ -221,7 +222,8 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("276860" )>0 or hpath.find("165122" )>0 or
         hpath.find("118873" )>0 or hpath.find("143691" )>0 or
         hpath.find("284251" )>0 or hpath.find("191161" )>0 or
-        hpath.find("1422780")>0 or hpath.find("132410" )>0 ):
+        hpath.find("1422780")>0 or hpath.find("132410" )>0 or
+        "OPAL_2000_I513476" in hpath ):
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
         title=""
@@ -1190,6 +1192,11 @@ for id in range(1,3) :
     for iy in range(1,5) :
         merge("/PLUTO_1983_I191161/d0%s-x01-y0%s" % (id,iy))
 
+merge("/OPAL_2000_I513476/d14-x01-y01")
+merge("/OPAL_2000_I513476/d20-x01-y01")
+merge("/OPAL_2000_I513476/d20-x01-y02")
+merge("/OPAL_2000_I513476/d20-x01-y03")
+merge("/OPAL_2000_I513476/d20-x01-y04")
 # Choose output file
 name = args[0]+".yoda"
 # output the yoda file
