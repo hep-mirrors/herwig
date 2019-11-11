@@ -21,7 +21,7 @@ HERWIG_INTERPOLATOR_CLASSDESC(TwoPionCzyzCurrent,double,Energy2)
 TwoPionCzyzCurrent::TwoPionCzyzCurrent()
   : omegaMag_(18.7e-4), omegaPhase_(0.106),
     omegaMass_(782.4*MeV),omegaWidth_(8.33*MeV), beta_(2.148),
-    nMax_(1000), eMax_(ZERO) {
+    nMax_(2000), eMax_(ZERO) {
   // various parameters
   rhoMag_  =  {1.,1.,0.59,0.048,0.40,0.43};
   rhoPhase_ = {0.,0.,-2.20,-2.0,-2.9,1.19}; 
@@ -123,13 +123,13 @@ void TwoPionCzyzCurrent::Init() {
   static Parameter<TwoPionCzyzCurrent,Energy> interfaceOmegaMass
     ("OmegaMass",
      "The mass of the omega meson",
-     &TwoPionCzyzCurrent::omegaMass_, MeV,782.4*MeV, 0.0*MeV, 100.0*MeV,
+     &TwoPionCzyzCurrent::omegaMass_, MeV,782.4*MeV, 0.0*MeV, 1000.0*MeV,
      false, false, Interface::limited);
   
   static Parameter<TwoPionCzyzCurrent,Energy> interfaceOmegaWidth
     ("OmegaWidth",
      "The mass of the omega meson",
-     &TwoPionCzyzCurrent::omegaWidth_, MeV, 8.33*MeV, 0.0*MeV, 100.0*MeV,
+     &TwoPionCzyzCurrent::omegaWidth_, MeV, 8.33*MeV, 0.0*MeV, 500.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<TwoPionCzyzCurrent,double> interfaceOmegaMagnitude
