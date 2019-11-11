@@ -115,7 +115,7 @@ void MEDM2Mesons::Init() {
   static ParVector<MEDM2Mesons,double> interfacecSMmed
     ("cSMmed",
      "coupling of SM to dark mediator",
-     &MEDM2Mesons::cSMmed_, -1 , 1.0 , 0. , 10. , false, false, Interface::limited);
+     &MEDM2Mesons::cSMmed_, -1 , 1.0 , -10. , 10. , false, false, Interface::limited);
 
 }
 
