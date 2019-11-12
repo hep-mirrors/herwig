@@ -294,8 +294,8 @@ if __name__ == "__main__":
             else :
                 outhistos[aopath] = ao
     for hpath,hsets in inhistos_mass.iteritems():
-        if(hpath!="/ATLAS_2015_I1408516_EL/d41-x01-y01" and
-           hpath!="/ATLAS_2015_I1408516_MU/d41-x01-y02" and
+        if(hpath!="/ATLAS_2015_I1408516:LMODE=EL/d41-x01-y01" and
+           hpath!="/ATLAS_2015_I1408516:LMODE=MU/d41-x01-y02" and
            hpath!="/ATLAS_2013_I1234228/d01-x01-y02" ) :
             continue
         title=""
@@ -324,22 +324,22 @@ if __name__ == "__main__":
     for ltype in ["EL","MU"] :
         if(ltype=="EL") :
             y = "y01"
-            mergeByMass("/ATLAS_2015_I1408516_EL/d41-x01-y01", "8000")
+            mergeByMass("/ATLAS_2015_I1408516:LMODE=EL/d41-x01-y01", "8000")
         else :
             y = "y04"
-            mergeByMass("/ATLAS_2015_I1408516_MU/d41-x01-y02", "8000")
+            mergeByMass("/ATLAS_2015_I1408516:LMODE=MU/d41-x01-y02", "8000")
         for d in [2,3,04,14,26,38]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
         for d in [5,6,7,8,9,10,15,17,18,19,20,21,22,27,29,30,31,32,33,34,39]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "66" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "66" )
         for d in [11,12,13,16,28,40]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "116" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "116" )
         for d in [23,35]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
         for d in [24,36]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
         for d in [25,37]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
     # sort out ratios for ATLAS W+c
     if("/ATLAS_2014_I1282447/d02-x01-y01_plus" in outhistos and 
        "/ATLAS_2014_I1282447/d02-x01-y01_minus" in outhistos) :

@@ -117,7 +117,7 @@ if(opts.gg) :
 yodafiles += ["2.2","2.6","3.0","3.2","4.6","4.8","3.63","4.03","4.5","9.46","10.00","10.52","10.52-sym","10.54",
               "10.58-res","10.58","Upsilon",
               "Upsilon2","Upsilon4","10.45","10.47","Tau","Phi",
-              "Lambdac","Omega","Xi0","Xic0","Xim","JPsi","Psi2S"]
+              "Lambdac","Omega-Meson","Omega-Baryon","Eta","Xi0","Xic0","Xim","JPsi","Psi2S"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -133,13 +133,16 @@ for f in yodafiles:
         sqrts="U1"
     elif(file.find("Phi")>0) :
         sqrts="phi"
+    elif(file.find("Omega-Meson")>0) :
+        sqrts="omega"
     elif(file.find("JPsi")>0) :
         sqrts="psi"
     elif(file.find("Psi2S")>0) :
         sqrts="psi2s"
     elif(file.find("Lambdac")>0 or file.find("Xic0")>0 or
          file.find("Omega")>0 or file.find("Xi0")>0 or
-         file.find("Xim")>0) :
+         file.find("Xim")>0 or
+         file.find("Eta")>0) :
         sqrts="baryon"
     else :
         sqrts=float(f.split("-")[0])
@@ -190,14 +193,25 @@ for f in yodafiles:
             else :
                 if(aopath.find("y03")<0) :
                     outhistos[aopath] = ao
-        else :
-            if("ARGUS_1992_I319102" in aopath) :
-                if("d02" in aopath and sqrts==10.47) :
-                    outhistos[aopath] = ao
-                elif("d03"in aopath and sqrts=="U4") :
-                    outhistos[aopath] = ao
-            else:
+        elif(aopath.find("A2_2017_I1486671")>=0) :
+            if("Eta" in file) :
+                if "d01" in aopath : outhistos[aopath] = ao
+            elif("Omega" in file) :
+                if "d02" in aopath : outhistos[aopath] = ao
+            else :
                 outhistos[aopath] = ao
+        elif("ARGUS_1992_I319102" in aopath) :
+            if("d02" in aopath and sqrts==10.47) :
+                outhistos[aopath] = ao
+            elif("d03"in aopath and sqrts=="U4") :
+                outhistos[aopath] = ao
+        elif("MC_OmegaPhia1_3Pion_Decay" in aopath) :
+            if("_1" in aopath and "Omega" in file) :
+                outhistos[aopath] = ao
+            elif("_2" in aopath and "Phi" in file) :
+                outhistos[aopath] = ao
+        else:
+            outhistos[aopath] = ao
 
 # ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
