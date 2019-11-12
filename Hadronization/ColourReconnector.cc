@@ -292,6 +292,7 @@ double calculateRapidityRF(const Lorentz5Momentum & q1,
   //angle between the particles in the RF of cluster of q1
 
   // calculate the z component of p2 w.r.t the direction of q1
+  if(q1.rho2()==ZERO) return 0.;
   const Energy pz = p2.vect() * q1.vect().unit();
   if ( pz == ZERO ) return 0.;
         
