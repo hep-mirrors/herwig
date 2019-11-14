@@ -56,7 +56,7 @@ def addFirstJet(ptcut):
     res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
     res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
     if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+".*GeV\n"
+        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
     didaddfirstjet=True
     return res
 
@@ -69,7 +69,7 @@ def addSecondJet(ptcut):
       logging.error("Can only add second jetcut once.")
       sys.exit(1)
     res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+".*GeV\n"
+    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
     didaddsecondjet=True
     return res
 
@@ -85,7 +85,7 @@ create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
 set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
 set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
 insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
-set /Herwig/Cuts/JetPairMass:MassMin {mm}.*GeV
+set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
 """.format(mm=minmass)
   didaddjetpair=True
   return res
