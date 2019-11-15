@@ -1,4 +1,4 @@
-// -*- C++ -*-
++// -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
 // functions of the OmegaPiPiCurrent class.
@@ -19,15 +19,15 @@
 using namespace Herwig;
 
 OmegaPiPiCurrent::OmegaPiPiCurrent() {
-  mRes_ = 1.67*GeV;
-  wRes_ = 0.288*GeV;
-  gRes_ = 0.469*GeV;
+  mRes_ = 1.69*GeV;
+  wRes_ = 0.285*GeV;
+  gRes_ = 1.63*GeV;
   
   mSigma_ = 0.6*GeV;
   wSigma_ = 1.0*GeV;
   mf0_ = 0.98*GeV;
   gSigma_ = 1.0 *GeV2;
-  gf0_    = 0.85*GeV2;
+  gf0_    = 0.883*GeV2;
   gPiPi_ = 0.165*GeV2;
   gKK_   = 0.695*GeV2;
   addDecayMode(1,-1);
