@@ -270,7 +270,11 @@ void SMHiggsGGHiggsPPDecayer::dataBaseOutput(ofstream & os,bool header) const {
 
 double SMHiggsGGHiggsPPDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
 						   const ParticleVector & decay3, MEOption,
+#ifndef NDEBUG
 						   ShowerInteraction inter) {
+#else
+						   ShowerInteraction ) {
+#endif
   assert(inter==ShowerInteraction::QCD);
   // extract partons and LO momentas
   vector<cPDPtr> partons(1,inpart.dataPtr());

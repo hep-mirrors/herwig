@@ -699,10 +699,11 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
                                                             *splittingKernel());
  
 
-
+  
+#ifndef NDEBUG
   pair<double,double> kSupport =
     generatedSplitting.splittingKinematics()->kappaSupport(generatedSplitting);
-
+#endif
   assert(kSupport.first==0&&kSupport.second==1);
 
   pair<double,double> xSupport =

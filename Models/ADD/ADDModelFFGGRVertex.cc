@@ -70,7 +70,6 @@ void ADDModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
 #endif
   // work out the particles
   assert(cc->id()==ParticleID::g && abs(aa->id()) <= 6);
-  Complex coup;
   // overall factor
   if(q2last_!=q2||couplast_==0.) {
     couplast_ = strongCoupling(q2);

@@ -42,6 +42,9 @@ DipoleSplittingKernel::DipoleSplittingKernel()
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
 
+// initialize static variable out of line
+double DipoleSplittingKernel::theMaxPDFRatio = 1000000.;
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
@@ -164,14 +167,14 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   }
 
   if ( evaluatePDF && variations ) {
-    thePDFCache[fScaleFactor] = pdf;
+    thePDFCache[fScaleFactor] = min(pdf,theMaxPDFRatio);
   }
 
   if ( evaluateAlphaS && variations ) {
     theAlphaSCache[rScaleFactor] = alphas;
   }
 
-  double ret = pdf*
+  double ret = min(pdf,theMaxPDFRatio)*
                (split.calcFixedExpansion()?
                 1.:(alphas / (2.*Constants::pi)));
 

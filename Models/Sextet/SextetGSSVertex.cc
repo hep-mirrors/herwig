@@ -67,10 +67,17 @@ void SextetGSSVertex::doinit() {
   Helicity::VSSVertex::doinit();
 }
 
-void SextetGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
+void SextetGSSVertex::setCoupling(Energy2 q2,
+#ifndef NDEBUG
+				  tcPDPtr part1,
+#else
+				  tcPDPtr ,
+#endif
 				  tcPDPtr part2, tcPDPtr ) {
   assert(part1->id()==ParticleID::g);
+#ifndef NDEBUG
   long idq = abs(part2->id());
+#endif
   assert(idq == ParticleID::ScalarDQSingletY43 ||
 	 idq == ParticleID::ScalarDQSingletY13 ||
 	 idq == ParticleID::ScalarDQSingletY23 ||

@@ -122,7 +122,10 @@ public:
       Energy2 scale2 = meMomenta()[3].mass2()+meMomenta()[3].perp2();
       return scaleFactor_*max(scale1,scale2);
     }
-    else assert(false);
+    else {
+      assert(false);
+      return ZERO;
+    }
   }
 
   /**

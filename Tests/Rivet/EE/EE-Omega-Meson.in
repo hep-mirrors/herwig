@@ -1,0 +1,14 @@
+# -*- ThePEG-repository -*-
+# e+ e- -> omega
+create Herwig::MEee2VectorMeson  /Herwig/MatrixElements/MEOmega HwMELepton.so
+set /Herwig/MatrixElements/MEOmega:VectorMeson /Herwig/Particles/omega
+set /Herwig/MatrixElements/MEOmega:Coupling  17.31158
+set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEOmega
+set EventGenerator:EventHandler:LuminosityFunction:Energy 0.78265
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+# eta/omega dalitz
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 A2_2017_I1486671
+# omega/phi -> 3pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay

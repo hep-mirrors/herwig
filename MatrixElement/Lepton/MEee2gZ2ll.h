@@ -325,10 +325,7 @@ private:
    * The allowed outgoing
    */
   int allowed_;
-  /**
-   * The initial kappa-tilde values for radiation from the quark
-   */
-  double d_kt1_;
+
   /**
    *  Pointer to the EM coupling
    */

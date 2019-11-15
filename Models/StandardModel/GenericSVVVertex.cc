@@ -92,7 +92,22 @@ void GenericSVVVertex::Init() {
      false, false, Interface::lowerlim);
 }
 
-void GenericSVVVertex::setCoupling(Energy2, tcPDPtr part2, tcPDPtr part3, tcPDPtr part1) {
+void GenericSVVVertex::setCoupling(Energy2,
+#ifndef NDEBUG
+				   tcPDPtr part2,
+#else
+				   tcPDPtr,
+#endif
+#ifndef NDEBUG
+				   tcPDPtr part3,
+#else
+				   tcPDPtr,
+#endif
+#ifndef NDEBUG
+				   tcPDPtr part1) {
+#else
+				   tcPDPtr) {
+#endif
   assert(part1 && part2 && part3);
   assert(part1->id() == pids[0] &&
 	 part2->id() == pids[1]  && part3->id() == pids[2] );

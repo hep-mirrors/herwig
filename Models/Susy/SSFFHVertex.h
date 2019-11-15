@@ -122,11 +122,6 @@ private:
   Energy theMw;
 
   /**
-   * The value of \f$\sin\theta_W\f$
-   */
-  double theSw;
-
-  /**
    * The value of \f$\sin\alpha\f$ 
    */
   double theSa;

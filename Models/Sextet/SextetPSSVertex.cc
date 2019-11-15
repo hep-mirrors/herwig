@@ -67,7 +67,12 @@ void SextetPSSVertex::doinit() {
   Helicity::VSSVertex::doinit();
 }
 
-void SextetPSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
+void SextetPSSVertex::setCoupling(Energy2 q2,
+#ifndef NDEBUG
+				  tcPDPtr part1,
+#else
+				  tcPDPtr ,
+#endif
 				  tcPDPtr part2, tcPDPtr ) {
   assert(part1->id()==ParticleID::gamma);
   tcPDPtr sca = part2->id()>0 ? part2 : tcPDPtr(part2->CC());

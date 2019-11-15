@@ -212,7 +212,7 @@ halfHalfScalar(const int,const Particle & part, const tPDVector & outgoing,
   // get the couplings
   Complex A,B;
   halfHalfScalarCoupling(imode(),part.mass(),momenta[0].mass(),momenta[1].mass(),A,B);
-  Complex left,right,meout;
+  Complex left,right;
   // coupling for an incoming particle
   if(part.id()>0) {
     left  = (A-B);
@@ -792,7 +792,7 @@ threeHalfHalfVector(const int,const Particle & part, const tPDVector & outgoing,
     _inVec[ix] = HelicityFunctions::polarizationVector(-momenta[1],ix,Helicity::outgoing);
   }
   // get the couplings
-  Complex A1,A2,A3,B1,B2,B3,prod,meout;
+  Complex A1,A2,A3,B1,B2,B3,prod;
   threeHalfHalfVectorCoupling(imode(),part.mass(),momenta[0].mass(),momenta[1].mass(),
 			      A1,A2,A3,B1,B2,B3);
   Energy msum(part.mass()+momenta[0].mass());

@@ -151,7 +151,7 @@ void ChengHeavyBaryonFormFactor::doinit() {
       tcPDPtr part0=getParticleData(id0); Energy m0=part0->mass();
       tcPDPtr part1=getParticleData(id1); Energy m1=part1->mass();
       if ( part1->iSpin() == 2 ) {
-	Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a; // dummy variables
+	Complex f1v,f2v,f3v,f1a,f2a,f3a; // dummy variables
 	SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a,FlavourInfo());
       }
       else {

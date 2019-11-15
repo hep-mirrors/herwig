@@ -171,10 +171,6 @@ private:
    */
   FFMassiveInvertedTildeKinematics & operator=(const FFMassiveInvertedTildeKinematics &) = delete;
 
-  /**
-   * Option to use the full jacobian, including the z->zprime jacobian.
-   **/
-  bool  theFullJacobian;
 
 };
 

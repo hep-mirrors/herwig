@@ -858,7 +858,12 @@ Energy HadronSelector::massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const 
   return currentSum;
 }
 
-tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,tcPDPtr ptr3) const {
+tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+#ifndef NDEBUG
+				      tcPDPtr ptr3) const {
+#else
+				      tcPDPtr ) const {
+#endif
   // The method assumes ptr3 == 0 rest not implemented
   assert(ptr1 && ptr2 && !ptr3);
   // find entry in the table
@@ -899,7 +904,12 @@ tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,tcPDPtr ptr3) 
 
 vector<pair<tcPDPtr,double> > 
 HadronSelector::hadronsBelowThreshold(Energy threshold, tcPDPtr ptr1,
-				      tcPDPtr ptr2, tcPDPtr ptr3) const {
+				      tcPDPtr ptr2,
+#ifndef NDEBUG
+				      tcPDPtr ptr3) const {
+#else
+				      tcPDPtr ) const {
+#endif
   // The method assumes ptr3 == 0 rest not implemented
   assert(ptr1 && ptr2 && !ptr3);
   // find entry in the table

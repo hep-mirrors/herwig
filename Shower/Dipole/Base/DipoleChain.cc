@@ -13,7 +13,6 @@
 
 #include "DipoleChain.h"
 #include "Herwig/Shower/Dipole/Utility/DipolePartonSplitter.h"
-#include "Herwig/Shower/Dipole/Colorea/Colorea.h"
 
 #include <iterator>
 
@@ -91,13 +90,6 @@ void DipoleChain::check() {
       ggSingleDipole = true;
     }
   }
-}
-
-
-void DipoleChain::rearrange(int dipmax,int diplong){
-  static auto colorea = Colorea();
-  colorea.setChain(this);
-  colorea.rearrange( dipmax, diplong);
 }
 
 list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emittingDipole,

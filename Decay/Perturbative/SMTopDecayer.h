@@ -380,20 +380,6 @@ private:
    */
   double _ktc;
 
-  /**
-   *  Two times the energy fraction of the gluon.
-   */
-  double _xg;
-
-  /**
-   *  Two times the energy fraction of a.
-   */
-  double _xa;
-
-  /**
-   *  Two times the energy fraction of c.
-   */
-  double _xc;
 
   /**
    *  This determines the hard matrix element importance 

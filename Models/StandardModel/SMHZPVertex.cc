@@ -98,7 +98,12 @@ void SMHZPVertex::Init() {
 }
 
 void SMHZPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
-			      tcPDPtr part3, tcPDPtr part1) {
+			      tcPDPtr part3,
+#ifndef NDEBUG
+			      tcPDPtr part1) {
+#else
+			      tcPDPtr) {
+#endif
   if(part3->id()==ParticleID::Z0) swap(part2,part3);
   assert( part1->id() == ParticleID::h0 &&
  	  part2->id() == ParticleID::Z0 && part3->id() == ParticleID::gamma );
@@ -170,8 +175,10 @@ Complex SMHZPVertex::f(double tau) const {
     double lx = log(sqrt(tau)+sqrt(tau-1));
     return -sqr(lx)+0.25*sqr(Constants::pi)+Complex(0.,1.)*Constants::pi*lx;
   }
-  else
+  else {
     assert(false);
+    return 0.;
+  }
 }
 
 Complex SMHZPVertex::g(double tau) const {
@@ -183,6 +190,8 @@ Complex SMHZPVertex::g(double tau) const {
     double root = sqrt((tau-1.)/tau);
     return root*(lx-0.5*Complex(0,1)*Constants::pi);
   }
-  else
+  else {
     assert(false);
+    return 0.;
+  }
 }

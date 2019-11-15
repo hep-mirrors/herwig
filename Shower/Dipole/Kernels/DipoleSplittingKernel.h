@@ -402,7 +402,13 @@ private:
    * to generate a splitting.
    */
   unsigned long theMaxtry;
-
+  
+  /**
+   * The maximum value for any pdf ratio.
+   * TODO: JB:Should this be an interfaced value? Is there a reasobable case where it should be allowed to be bigger than 1000000.?
+   */
+  static double theMaxPDFRatio;
+  
   /**
    * Return the number of accepted points after which the grid should
    * be frozen

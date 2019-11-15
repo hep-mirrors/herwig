@@ -50,10 +50,22 @@ void SSGSSVertex::Init() {
 
 }
 
-void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-			      tcPDPtr part2, tcPDPtr part3) {
+void SSGSSVertex::setCoupling(Energy2 q2,
+#ifndef NDEBUG
+			      tcPDPtr part1,
+#else
+			      tcPDPtr,
+#endif
+			      tcPDPtr part2,
+#ifndef NDEBUG
+				tcPDPtr part3) {
+#else
+				tcPDPtr ) {
+#endif
   assert(part1->id()==ParticleID::g);
+#ifndef NDEBUG
   long isf = abs(part2->id());
+#endif
   assert( (isf >= 1000001 && isf <= 1000006) || 
 	  (isf >= 2000001 && isf <= 2000006) );
   assert(part2->id()==-part3->id());
