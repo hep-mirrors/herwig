@@ -70,7 +70,7 @@ insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
 # read Matchbox/MadGraph-GoSam.in
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
-read Matchbox/MadGraph-OpenLoops.in
+#read Matchbox/MadGraph-OpenLoops.in
 
 
 ##################################################

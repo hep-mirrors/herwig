@@ -2,9 +2,6 @@
 # CMW scheme
 #######
 
-cd /Herwig/Merging
-set Merger:CMWScheme Factor
-
 cd /Herwig/DipoleShower/Kernels
 set FFgx2ggxDipoleKernel:CMWScheme Factor
 set FFqx2qgxDipoleKernel:CMWScheme Factor
@@ -84,7 +81,17 @@ set IFMgx2bbarbxDipoleKernel:CMWScheme Factor
 set IIgx2bbbarxDipoleKernel:CMWScheme Factor
 set IIgx2bbarbxDipoleKernel:CMWScheme Factor
 
-
+set FIMDecaygx2bbxDipoleKernel:CMWScheme Factor
+set FIMDecaygx2ccxDipoleKernel:CMWScheme Factor
+set FIMDecaygx2ssxDipoleKernel:CMWScheme Factor
+set FIMDecaygx2uuxDipoleKernel:CMWScheme Factor
+set FIMDecaygx2ddxDipoleKernel:CMWScheme Factor
+set FIMDecaygx2ggxDipoleKernel:CMWScheme Factor
+set FIMDecaycx2cgxDipoleKernel:CMWScheme Factor
+set FIMDecaysx2sgxDipoleKernel:CMWScheme Factor
+set FIMDecayux2ugxDipoleKernel:CMWScheme Factor
+set FIMDecaydx2dgxDipoleKernel:CMWScheme Factor
+set FIMDecaybx2bgxDipoleKernel:CMWScheme Factor
 
 
 

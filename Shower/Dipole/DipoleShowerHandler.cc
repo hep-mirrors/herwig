@@ -1182,54 +1182,23 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       }
       continue;
     }
-    
-      // otherwise perform the splitting
-      // but first see if the emission would produce a configuration in the ME region.
-    if (   theMergingHelper
-	&& eventHandler()->currentCollision()
-	&& !decay
-	&& firstInteraction() ) {
-      if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+
-                                      eventRecord().hard().size()
-                                      +2){//incoming
-        
-	if (theMergingHelper->mergingScale()<winnerScale && 
-            theMergingHelper->emissionProbability() < UseRandom::rnd()) {
-            
-          theMergingHelper->setEmissionProbability(0.);
 
-          const bool transparent=true;
-          if (transparent) {
-            pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
-            DipoleSplittingInfo tmpwinner=winner;
-            DipoleChain* tmpfirstChain = nullptr;
-            DipoleChain* tmpsecondChain = nullptr;
-            
-            auto New=eventRecord().tmpsplit(winnerDip,tmpwinner,
-                                            tmpchildren,tmpfirstChain,
-                                            tmpsecondChain);
-            
-            
-            if (theMergingHelper->matrixElementRegion(New.first,
-                                                      New.second,
-                                                      winnerScale,
-                                                      theMergingHelper->mergingScale())) {
-              optHardPt=winnerScale;
-              continue;
-            }
-          }else{
-            optHardPt=winnerScale;
-            continue;
-            
-          }
-        }
+    // Check if the produced splitting would be part
+    // of a matrix element region in a multi jet merging.
+    // If so, the optHardPt is set to the current winner scale and the slitting
+    // is vetoed. Note: It is possible that the current scale is larger than the
+    // merging scale but another shower configuration shows a scale that is
+    // below the required scale.
+    if(firstInteraction() && !decay){
+      if ( isMERegion( winnerScale , winner , winnerDip) ){
+        optHardPt=winnerScale; // Vetoed shower.
+        continue;
+      }else if( theMergingHelper ){
+         optHardPt=ZERO;
       }
     }
-    if(theMergingHelper&&firstInteraction())
-       optHardPt=ZERO;  
-  
-   
     
+    // otherwise perform the splitting
     didRadiate = true;
     
     eventRecord().isMCatNLOSEvent(false);
@@ -1291,6 +1260,46 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   }
   
 }
+
+
+
+bool DipoleShowerHandler::isMERegion(const Energy winnerScale,
+                                     const DipoleSplittingInfo & winner,
+                                     list<Dipole>::iterator winnerDip ){
+  // First check if we have a merging setup adn additional conditions.
+  if(!theMergingHelper)return false;
+  if(!eventHandler()->currentCollision())return false;
+  if(theMergingHelper->maxLegs()<=eventRecord().outgoing().size()+
+     eventRecord().hard().size()
+     +2)//incoming
+    return false;
+  
+  if( theMergingHelper->mergingScale() > winnerScale ) return false;
+  
+  // Now produce a temporary splitting to check if the final configuration is
+  // part of the matrix element region
+  pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
+  DipoleSplittingInfo tmpwinner=winner;
+  DipoleChain* tmpfirstChain = nullptr;
+  DipoleChain* tmpsecondChain = nullptr;
+  
+  auto New=eventRecord().tmpsplit(winnerDip,tmpwinner,
+                                  tmpchildren,tmpfirstChain,
+                                  tmpsecondChain);
+  // This is the same function that is used in the ME calculations of the
+  // multi jet merging.
+  if (theMergingHelper->matrixElementRegion(New.first,
+                                            New.second,
+                                            winnerScale,
+                                            theMergingHelper->mergingScale())) {
+    return true;
+  }else return false;
+}
+
+
+
+
+
 
 bool DipoleShowerHandler::realign() {
   

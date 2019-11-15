@@ -172,9 +172,6 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
   	throw InitException() 
   	<< "Born ME "<< pname << " already existing.";
   
-  if (MH()->gamma()!=1.)
-    getVirtuals(bornme,false);
-  
   
   NodePtr clusternode = new_ptr(Node(bornme, 0, MH()));
   
