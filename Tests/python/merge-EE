@@ -22,28 +22,24 @@ def fillAbove(desthisto, sourcehistosbysqrts):
                 sqrts2=10.58
             else :
                 sqrts2=float(sqrts)
-            if("ARGUS_1989_I276860" in desthisto.path and sqrts2==10.00) : sqrts2=9.98
+            if("ARGUS_1989_I276860" in desthisto.path() and sqrts2==10.) : sqrts2=9.98
             step = 0.001
-            if("TASSO_1980_I143691" in desthisto.path) : step=0.3
-            for i in range(0,h.numPoints) :
-                xmin = min(h.points[i].xMin,h.points[i].x-step)
-                xmax = max(h.points[i].xMax,h.points[i].x+step)
+            if("TASSO_1980_I143691" in desthisto.path()) : step=0.3
+            for i in range(0,h.numPoints()) :
+                xmin = min(h.points()[i].xMin(),h.points()[i].x()-step)
+                xmax = max(h.points()[i].xMax(),h.points()[i].x()+step)
                 if(sqrts2>=xmin and sqrts2<=xmax) :
-                    desthisto.addPoint(h.points[i])
+                    desthisto.addPoint(h.points()[i])
 
     elif(type(desthisto)==yoda.core.Profile1D) :
         for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
             step = 0.001
-            for i in range(0,h.numBins) :
-                try :
-                    xmin = min(h.bins[i].xMin,h.bins[i].xMid-step)
-                    xmax = max(h.bins[i].xMax,h.bins[i].xMid+step)
-                    if(sqrts>=xmin and sqrts<=xmax) :
-                        desthisto.bins[i] += h.bins[i]
-                        break
-                except:
-                    print 'exception'
-                    quit()
+            for i in range(0,h.numBins()) :
+                xmin = min(h.bins()[i].xMin(),h.bins()[i].xMid()-step)
+                xmax = max(h.bins()[i].xMax(),h.bins()[i].xMid()+step)
+                if(sqrts>=xmin and sqrts<=xmax) :
+                    desthisto.bins()[i] += h.bins()[i]
+                    break
     else :
         logging.error("Unknown analysis object" + desthisto.path)
         sys.exit(1)
@@ -71,7 +67,7 @@ def average(hpath, sqrts1,sqrts2):
     global inhistos
     global outhistos
     outhistos[hpath] = inhistos[hpath][float(sqrts1)]+inhistos[hpath][float(sqrts2)]
-    outhistos[hpath].path=hpath
+    outhistos[hpath].setPath(hpath)
     outhistos[hpath].scaleW(0.5)
         
 if __name__ == "__main__":
@@ -121,7 +117,7 @@ if(opts.gg) :
 yodafiles += ["2.2","2.6","3.0","3.2","4.6","4.8","3.63","4.03","4.5","9.46","10.00","10.52","10.52-sym","10.54",
               "10.58-res","10.58","Upsilon",
               "Upsilon2","Upsilon4","10.45","10.47","Tau","Phi",
-              "Lambdac","Omega","Xi0","Xic0","Xim","JPsi","Psi2S"]
+              "Lambdac","Omega-Meson","Omega-Baryon","Eta","Xi0","Xic0","Xim","JPsi","Psi2S"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -137,13 +133,16 @@ for f in yodafiles:
         sqrts="U1"
     elif(file.find("Phi")>0) :
         sqrts="phi"
+    elif(file.find("Omega-Meson")>0) :
+        sqrts="omega"
     elif(file.find("JPsi")>0) :
         sqrts="psi"
     elif(file.find("Psi2S")>0) :
         sqrts="psi2s"
     elif(file.find("Lambdac")>0 or file.find("Xic0")>0 or
          file.find("Omega")>0 or file.find("Xi0")>0 or
-         file.find("Xim")>0) :
+         file.find("Xim")>0 or
+         file.find("Eta")>0) :
         sqrts="baryon"
     else :
         sqrts=float(f.split("-")[0])
@@ -194,14 +193,25 @@ for f in yodafiles:
             else :
                 if(aopath.find("y03")<0) :
                     outhistos[aopath] = ao
-        else :
-            if("ARGUS_1992_I319102" in aopath) :
-                if("d02" in aopath and sqrts==10.47) :
-                    outhistos[aopath] = ao
-                elif("d03"in aopath and sqrts=="U4") :
-                    outhistos[aopath] = ao
-            else:
+        elif(aopath.find("A2_2017_I1486671")>=0) :
+            if("Eta" in file) :
+                if "d01" in aopath : outhistos[aopath] = ao
+            elif("Omega" in file) :
+                if "d02" in aopath : outhistos[aopath] = ao
+            else :
                 outhistos[aopath] = ao
+        elif("ARGUS_1992_I319102" in aopath) :
+            if("d02" in aopath and sqrts==10.47) :
+                outhistos[aopath] = ao
+            elif("d03"in aopath and sqrts=="U4") :
+                outhistos[aopath] = ao
+        elif("MC_OmegaPhia1_3Pion_Decay" in aopath) :
+            if("_1" in aopath and "Omega" in file) :
+                outhistos[aopath] = ao
+            elif("_2" in aopath and "Phi" in file) :
+                outhistos[aopath] = ao
+        else:
+            outhistos[aopath] = ao
 
 # ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
@@ -216,21 +226,25 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("1422780")>0) :
         if(hpath=="/PLUTO_1981_I165122/d01-x01-y01"  or
            hpath=="/PLUTO_1981_I165122/d03-x01-y01" ) : continue
-        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
-                                                   hsets.values()[0].title)
-        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,
-                                                   hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
-                                        hsets.values()[0].bins[i].xMax)
-        elif(type(hsets.values()[0])==yoda.core.Histo1D) :
-            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].path,
-                                                hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
-                                        hsets.values()[0].bins[i].xMax)
+        title=""
+        path=""
+        histo = hsets.values()[0]
+        if hasattr(histo, 'title'):
+            title=histo.title()
+        if hasattr(histo, 'path'):
+            path=histo.path()
+        if(type(histo)==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(path,title)
+        elif(type(histo)==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
@@ -1166,11 +1180,11 @@ useOne("/BESIII_2016_I1422780/d02-x01-y05","psi2s")
 useOne("/BESIII_2016_I1422780/d02-x01-y06","psi2s")
 if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
      "psi" in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]) :
-    for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi"].points:
+    for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi"].points():
         outhistos["/BESIII_2016_I1422780/d01-x01-y03"].addPoint(point)
 if ( "/BESIII_2016_I1422780/d01-x01-y03" in inhistos and
      "psi2s" in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]) :
-    for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi2s"].points:
+    for point in inhistos["/BESIII_2016_I1422780/d01-x01-y03"]["psi2s"].points():
         outhistos["/BESIII_2016_I1422780/d01-x01-y03"].addPoint(point)
 
 # pluto analysis

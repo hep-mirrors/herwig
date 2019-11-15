@@ -15,10 +15,10 @@ def fillAbove(desthisto, sourcehistosbyq2):
     q2low=-1e100
     for q2,h in  sorted(sourcehistosbyq2.iteritems(),reverse=True) :
         q2low=q2
-        for i in range(0,h.numBins) :
-            if(h.bins[i].xMin  >= q2low and 
-               h.bins[i].xMin  <  q2high ) :
-                desthisto.bins[i] += h.bins[i]
+        for i in range(0,h.numBins()) :
+            if(h.bins()[i].xMin()  >= q2low and 
+               h.bins()[i].xMin()  <  q2high ) :
+                desthisto.bins()[i] += h.bins()[i]
         q2high=q2
 
 def merge(hpath):
@@ -101,12 +101,19 @@ for f in yodafiles:
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
     if( hpath.find("4129130")>0 and (hpath.find("d33")>0 or hpath.find("d34")>0)) :
-        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,hsets.values()[0].title)
-        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,hsets.values()[0].title)
-            for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,hsets.values()[0].bins[i].xMax)
+        title=""
+        path=""
+        histo = hsets.values()[0]
+        if hasattr(histo, 'title'):
+            title=histo.title()
+        if hasattr(histo, 'path'):
+            path=histo.path()
+        if(type(histo)==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(path,title)
+        elif(type(histo)==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)

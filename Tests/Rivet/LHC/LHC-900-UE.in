@@ -39,12 +39,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
 # ALICE single/double diffractive and inelastic sigma
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
-# ATLAS inelastic cross section
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I894867
 # underlying event forward rapidities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
-# ATLAS two particle correlation
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
 # ATLAS correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 # ALICE pion and eta pT

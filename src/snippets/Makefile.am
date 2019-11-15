@@ -24,7 +24,7 @@ RivetFixedOrder.in \
 Rivet.in \
 YFS.in \
 CMWinQtiledShower.in \
-Dipole_AutoTune_prel.in \
+Dipole_AutoTunes_gss.in \
 Tune-DotProduct.in  \
 Tune-DotProduct-Veto.in  \
 Tune-pT.in  \

@@ -5,7 +5,7 @@ read Matchbox/LO.in
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-read snippets/Dipole_AutoTune_prel.in
+read snippets/Dipole_AutoTunes_gss.in
 
 cd /Herwig/Analysis
 

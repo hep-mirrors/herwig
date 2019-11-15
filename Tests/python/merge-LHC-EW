@@ -21,15 +21,15 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
                     xMin*scale <  pthigh ) :
                     desthisto.addPoint(h.points[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
-            for i in range(0,h.numBins) :
-                if(h.bins[i].xMin*scale  >= ptlow and 
-                   h.bins[i].xMin*scale  <  pthigh ) :
-                    desthisto.bins[i] += h.bins[i]
+            for i in range(0,h.numBins()) :
+                if(h.bins()[i].xMin()*scale  >= ptlow and 
+                   h.bins()[i].xMin()*scale  <  pthigh ) :
+                    desthisto.bins()[i] += h.bins()[i]
         elif(type(desthisto)==yoda.core.Histo1D) :
-            for i in range(0,h.numBins) :
-                if(h.bins[i].xMin*scale  >= ptlow and 
-                   h.bins[i].xMin*scale  <  pthigh ) :
-                    desthisto.bins[i] += h.bins[i]
+            for i in range(0,h.numBins()) :
+                if(h.bins()[i].xMin()*scale  >= ptlow and 
+                   h.bins()[i].xMin()*scale  <  pthigh ) :
+                    desthisto.bins()[i] += h.bins()[i]
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
@@ -289,30 +289,34 @@ if __name__ == "__main__":
                     raise Exception("A set with mass = %s already exists" % ( mass))
             elif ( "2015_041_" in aopath) :
                 aopath=aopath.replace("_EL","").replace("_MU","")
-                ao.path = aopath
+                ao.setPath(aopath)
                 outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
     for hpath,hsets in inhistos_mass.iteritems():
-        if(hpath!="/ATLAS_2015_I1408516_EL/d41-x01-y01" and
-           hpath!="/ATLAS_2015_I1408516_MU/d41-x01-y02" and
+        if(hpath!="/ATLAS_2015_I1408516:LMODE=EL/d41-x01-y01" and
+           hpath!="/ATLAS_2015_I1408516:LMODE=MU/d41-x01-y02" and
            hpath!="/ATLAS_2013_I1234228/d01-x01-y02" ) :
             continue
-        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
-            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
-                                                   hsets.values()[0].values()[0].title)
-        elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
-            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].values()[0].path,
-                                                   hsets.values()[0].values()[0].title)
-            for i in range(0,hsets.values()[0].values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
-                                        hsets.values()[0].values()[0].bins[i].xMax)
-        elif(type(hsets.values()[0].values()[0])==yoda.core.Histo1D) :
-            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].values()[0].path,
-                                                hsets.values()[0].values()[0].title)
-            for i in range(0,hsets.values()[0].values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
-                                        hsets.values()[0].values()[0].bins[i].xMax)
+        title=""
+        path=""
+        histo = hsets.values()[0].values()[0]
+        if hasattr(histo, 'title'):
+            title=histo.title()
+        if hasattr(histo, 'path'):
+            path=histo.path()
+        if(type(histo)==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(path,title)
+        elif(type(histo)==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
+        elif(type(histo)==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(path,title)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
@@ -320,29 +324,29 @@ if __name__ == "__main__":
     for ltype in ["EL","MU"] :
         if(ltype=="EL") :
             y = "y01"
-            mergeByMass("/ATLAS_2015_I1408516_EL/d41-x01-y01", "8000")
+            mergeByMass("/ATLAS_2015_I1408516:LMODE=EL/d41-x01-y01", "8000")
         else :
             y = "y04"
-            mergeByMass("/ATLAS_2015_I1408516_MU/d41-x01-y02", "8000")
+            mergeByMass("/ATLAS_2015_I1408516:LMODE=MU/d41-x01-y02", "8000")
         for d in [2,3,04,14,26,38]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
         for d in [5,6,7,8,9,10,15,17,18,19,20,21,22,27,29,30,31,32,33,34,39]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "66" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "66" )
         for d in [11,12,13,16,28,40]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "116" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "116" )
         for d in [23,35]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
         for d in [24,36]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "12" )
         for d in [25,37]:
-            useOneMass("/ATLAS_2015_I1408516_%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
+            useOneMass("/ATLAS_2015_I1408516:LMODE=%s/d%02d-x01-%s" % (ltype,d,y), "8000", "30" )
     # sort out ratios for ATLAS W+c
     if("/ATLAS_2014_I1282447/d02-x01-y01_plus" in outhistos and 
        "/ATLAS_2014_I1282447/d02-x01-y01_minus" in outhistos) :
         d02y01_plus  = outhistos["/ATLAS_2014_I1282447/d02-x01-y01_plus"]
         d02y01_minus = outhistos["/ATLAS_2014_I1282447/d02-x01-y01_minus"]
         ratio_d02y01 = d02y01_plus/d02y01_minus
-        ratio_d02y01.path = "/ATLAS_2014_I1282447/d02-x01-y01"
+        ratio_d02y01.setPath("/ATLAS_2014_I1282447/d02-x01-y01")
         del outhistos["/ATLAS_2014_I1282447/d02-x01-y01_plus"]
         del outhistos["/ATLAS_2014_I1282447/d02-x01-y01_minus"]
         outhistos["/ATLAS_2014_I1282447/d02-x01-y01"] = ratio_d02y01
@@ -351,7 +355,7 @@ if __name__ == "__main__":
         d02y02_plus  = outhistos["/ATLAS_2014_I1282447/d02-x01-y02_plus"]
         d02y02_minus = outhistos["/ATLAS_2014_I1282447/d02-x01-y02_minus"]
         ratio_d02y02 = d02y02_plus/d02y02_minus
-        ratio_d02y02.path = "/ATLAS_2014_I1282447/d02-x01-y02"
+        ratio_d02y02.setPath("/ATLAS_2014_I1282447/d02-x01-y02")
         del outhistos["/ATLAS_2014_I1282447/d02-x01-y02_plus"]
         del outhistos["/ATLAS_2014_I1282447/d02-x01-y02_minus"]
         outhistos["/ATLAS_2014_I1282447/d02-x01-y02"] = ratio_d02y02
@@ -360,7 +364,7 @@ if __name__ == "__main__":
         d08y01_plus  = outhistos["/ATLAS_2014_I1282447/d08-x01-y01_plus"]
         d08y01_minus = outhistos["/ATLAS_2014_I1282447/d08-x01-y01_minus"]
         ratio_d08y01 = d08y01_plus/d08y01_minus
-        ratio_d08y01.path = "/ATLAS_2014_I1282447/d08-x01-y01"
+        ratio_d08y01.setPath("/ATLAS_2014_I1282447/d08-x01-y01")
         del outhistos["/ATLAS_2014_I1282447/d08-x01-y01_plus"]
         del outhistos["/ATLAS_2014_I1282447/d08-x01-y01_minus"]
         outhistos["/ATLAS_2014_I1282447/d08-x01-y01"] = ratio_d08y01
@@ -369,14 +373,14 @@ if __name__ == "__main__":
         h_winc = outhistos["/ATLAS_2014_I1282447/d05-x01-y01"]
         h_d    = outhistos["/ATLAS_2014_I1282447/d01-x01-y02"]
         ratio_wd      =  h_d/h_winc
-        ratio_wd.path = "/ATLAS_2014_I1282447/d05-x01-y02"
+        ratio_wd.setPath("/ATLAS_2014_I1282447/d05-x01-y02")
         outhistos["/ATLAS_2014_I1282447/d05-x01-y02"] = ratio_wd
     if ("/ATLAS_2014_I1282447/d05-x01-y01" in outhistos and
         "/ATLAS_2014_I1282447/d01-x01-y03" in outhistos) :
         h_winc = outhistos["/ATLAS_2014_I1282447/d05-x01-y01"]
         h_dstar= outhistos["/ATLAS_2014_I1282447/d01-x01-y03"]
         ratio_wdstar      =  h_dstar/h_winc
-        ratio_wdstar.path = "/ATLAS_2014_I1282447/d05-x01-y03"
+        ratio_wdstar.setPath("/ATLAS_2014_I1282447/d05-x01-y03")
         outhistos["/ATLAS_2014_I1282447/d05-x01-y03"] = ratio_wdstar
     if("/ATLAS_2014_I1282447/d06-x01-y01_winc" in outhistos and
        "/ATLAS_2014_I1282447/d06-x01-y02_winc" in outhistos) :
@@ -385,25 +389,25 @@ if __name__ == "__main__":
         if( "/ATLAS_2014_I1282447/d06-x01-y01_wplus" in outhistos ) :
             h_wd_plus      = outhistos["/ATLAS_2014_I1282447/d06-x01-y01_wplus"]
             ratio_wd_plus       =  h_wd_plus/h_winc_plus
-            ratio_wd_plus.path  = "/ATLAS_2014_I1282447/d06-x01-y01"
+            ratio_wd_plus.setPath("/ATLAS_2014_I1282447/d06-x01-y01")
             outhistos["/ATLAS_2014_I1282447/d06-x01-y01"] = ratio_wd_plus
             del outhistos["/ATLAS_2014_I1282447/d06-x01-y01_wplus"]
         if( "/ATLAS_2014_I1282447/d06-x01-y02_wminus" in outhistos ) :
             h_wd_minus     = outhistos["/ATLAS_2014_I1282447/d06-x01-y02_wminus"]
             ratio_wd_minus      =  h_wd_minus/h_winc_minus
-            ratio_wd_minus.path = "/ATLAS_2014_I1282447/d06-x01-y02"
+            ratio_wd_minus.setPath("/ATLAS_2014_I1282447/d06-x01-y02")
             outhistos["/ATLAS_2014_I1282447/d06-x01-y02"] = ratio_wd_minus
             del outhistos["/ATLAS_2014_I1282447/d06-x01-y02_wminus"]
         if ( "/ATLAS_2014_I1282447/d06-x01-y03_wplus" in outhistos) : 
             h_wdstar_plus  = outhistos["/ATLAS_2014_I1282447/d06-x01-y03_wplus"]
             ratio_wdstar_plus       =  h_wdstar_plus/h_winc_plus
-            ratio_wdstar_plus.path  = "/ATLAS_2014_I1282447/d06-x01-y03"
+            ratio_wdstar_plus.setPath("/ATLAS_2014_I1282447/d06-x01-y03")
             outhistos["/ATLAS_2014_I1282447/d06-x01-y03"] = ratio_wdstar_plus 
             del outhistos["/ATLAS_2014_I1282447/d06-x01-y03_wplus"]
         if ( "/ATLAS_2014_I1282447/d06-x01-y04_wminus" in outhistos) :
             h_wdstar_minus = outhistos["/ATLAS_2014_I1282447/d06-x01-y04_wminus"]
             ratio_wdstar_minus      =  h_wdstar_minus/h_winc_minus
-            ratio_wdstar_minus.path = "/ATLAS_2014_I1282447/d06-x01-y04"
+            ratio_wdstar_minus.setPath("/ATLAS_2014_I1282447/d06-x01-y04")
             outhistos["/ATLAS_2014_I1282447/d06-x01-y04"] = ratio_wdstar_minus
             del outhistos["/ATLAS_2014_I1282447/d06-x01-y04_wminus"]
         del outhistos["/ATLAS_2014_I1282447/d06-x01-y01_winc"]
@@ -421,7 +425,7 @@ if __name__ == "__main__":
             den = "%sd%02d-x03-y%02d" % (basePath,ihist,iy)
             if(den in outhistos and num in outhistos) :
                 ratio = outhistos[num]/outhistos[den]
-                ratio.path = "%sd%02d-x01-y%02d" % (basePath,ihist,iy)
+                ratio.setPath("%sd%02d-x01-y%02d" % (basePath,ihist,iy))
                 del outhistos[num]
                 del outhistos[den]
                 outhistos[ "%sd%02d-x01-y%02d" % (basePath,ihist,iy)]=ratio

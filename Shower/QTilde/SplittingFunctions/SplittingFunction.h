@@ -111,11 +111,15 @@ public:
 	  fact *= abs(double(ids[1]->iColour()));
 	return fact;
       }
-      else
+      else {
 	assert(false);
+	return 0.;
+      }
     }
-    else
+    else {
       assert(false);
+      return 0.;
+    }
   }
   //@}
 

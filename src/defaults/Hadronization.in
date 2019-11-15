@@ -42,8 +42,8 @@ newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
 
 newdef ColourReconnector:ColourReconnection Yes
-newdef ColourReconnector:ReconnectionProbabilityBaryonic 0.57
-newdef ColourReconnector:ReconnectionProbability 0.89
+newdef ColourReconnector:ReconnectionProbabilityBaryonic 0.7
+newdef ColourReconnector:ReconnectionProbability 0.95
 newdef ColourReconnector:Algorithm Baryonic
 newdef ColourReconnector:OctetTreatment All
 

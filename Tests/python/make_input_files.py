@@ -56,7 +56,7 @@ def addFirstJet(ptcut):
     res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
     res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
     if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+".*GeV\n"
+        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
     didaddfirstjet=True
     return res
 
@@ -69,7 +69,7 @@ def addSecondJet(ptcut):
       logging.error("Can only add second jetcut once.")
       sys.exit(1)
     res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+".*GeV\n"
+    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
     didaddsecondjet=True
     return res
 
@@ -85,7 +85,7 @@ create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
 set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
 set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
 insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
-set /Herwig/Cuts/JetPairMass:MassMin {mm}.*GeV
+set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
 """.format(mm=minmass)
   didaddjetpair=True
   return res
@@ -176,7 +176,6 @@ print name
 # select the template to load
 # collider
 KNOWN_COLLIDERS = [
-    "GammaGamma",
     "EE-Gamma",
     "BFactory",
     "EE",
@@ -188,6 +187,7 @@ KNOWN_COLLIDERS = [
     "SppS",
     "Star",
     "EHS",
+    "GammaGamma",
 ]
 collider = ""
 for cand_collider in KNOWN_COLLIDERS:
@@ -217,7 +217,7 @@ if "Dipole-Matchbox-Powheg" in name :
     elif "Dipole-Powheg" in name :
     istart = 3
     simulation="Powheg"
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
     '''
 
 # Dipole shower with MCatNLO
@@ -236,7 +236,7 @@ elif "Dipole-Matchbox-LO" in name :
 elif "Dipole" in name :
     istart = 2
     simulation=""
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
     
 # AO shower with Matchbox Powheg
 elif "Matchbox-Powheg" in name :

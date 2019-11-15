@@ -540,7 +540,11 @@ void ConstituentReshuffler::decayReshuffle(PerturbativeProcessPtr& decayProc,
 
 void ConstituentReshuffler::updateEvent( PList& intermediates,
 					 PList& eventIntermediates,
+#ifndef NDEBUG
 					 PList& out,
+#else
+					 PList&,
+#endif
 					 PList& eventOutgoing,
 					 PList& eventHard,
 					 PerturbativeProcessPtr decayProc ) {

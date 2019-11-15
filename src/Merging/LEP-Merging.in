@@ -109,7 +109,7 @@ set /Herwig/Merging/MergingFactory:ScaleChoice SHatScale
 ##################################################
 ## CMW - Scheme
 ##################################################
-read snippets/Dipole_AutoTune_prel.in
+read snippets/Dipole_AutoTunes_gss.in
 
 ### Use factor in alpha_s argument: alpha_s(q) -> alpha_s(fac*q)
 ### with fac=exp(-(67-3pi^2-10/3*Nf)/(33-2Nf))

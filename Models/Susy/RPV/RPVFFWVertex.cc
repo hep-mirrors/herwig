@@ -199,7 +199,12 @@ void RPVFFWVertex::Init() {
 }
 
 void RPVFFWVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-			       tcPDPtr part2,tcPDPtr part3) {
+			       tcPDPtr part2,
+#ifndef NDEBUG
+  tcPDPtr part3) {
+#else
+  tcPDPtr) {
+#endif
   assert(abs(part3->id()) == ParticleID::Wplus);
   // normalization
   // first the overall normalisation
