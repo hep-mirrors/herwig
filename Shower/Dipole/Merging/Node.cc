@@ -16,7 +16,6 @@ Node::Node(MatchboxMEBasePtr nodeME, int cutstage, MergerPtr mh)
  thedipol(), 
  theparent(),
  theCutStage(cutstage), 
- //isOrdered(true), 
  theSubtractedReal(false), 
  theVirtualContribution(false), 
  theMergingHelper(mh)
@@ -37,7 +36,6 @@ thedipol(dipol),
 theparent(head), 
 theDeepHead(deephead), 
 theCutStage(cutstage), 
-//isOrdered(true), 
 theSubtractedReal(false), 
 theVirtualContribution(false),
  theMergingHelper() //The subnodes have no merging helper
@@ -212,40 +210,12 @@ bool Node::firstgenerateKinematics(const double *r, bool directCut) {
     if ( !rc->dipole()->generateKinematics(r) ) { return false; }
     rc->nodeME()->setXComb(rc->xcomb());
     
-    if(MH()->gamma() == 1.){
+
       if(!MH()->matrixElementRegion( inOutPair.first ,
                                      inOutPair.second ,
                                      rc->pT() ,
                                     MH()->mergePt() ) ){
         return false;
-      }
-      
-    }else{
-        
-          // Different  treatment if gamma is not 1.
-          // Since the dipoles need to be calculated always
-          // their alpha region is touched.
-          // AlphaRegion != MERegion !!!
-        bool inAlphaPS = false;
-        for (auto const & ch: thechildren) {
-          ch->dipole()->setXComb(ch->xcomb());
-          if ( !ch->dipole()->generateKinematics(r) )
-            return false;
-          MH()->treefactory()->setAlphaParameter( MH()->gamma() );
-          inAlphaPS |= ch->dipole()->aboveAlpha();
-          MH()->treefactory()->setAlphaParameter( 1. );
-        }
-        NodePtr rc = randomChild();
-        if(!inAlphaPS&&
-           !MH()->matrixElementRegion( inOutPair.first ,
-                                      inOutPair.second ,
-                                      rc->pT() ,
-                                      MH()->mergePt()    ) )
-             return false;
-             
-           
-        
-      
     }
   }
   for (auto const & ch: thechildren) {
@@ -356,10 +326,8 @@ bool Node::inShowerPS(Energy hardpT)const {
       dipole()->tildeKinematics()->zBounds(pT(), hardpT);
       return (zbounds.first<z_&&z_<zbounds.second);
   }
-  
-  
   assert(false);
-  
+  return false;
 }
 
 

@@ -28,7 +28,14 @@ namespace Herwig {
     using namespace ThePEG;
   
   /**
-   * Here is the documentation of the Node class.
+   * The Node class represents a part of the shower history
+   * in the merging procedure.
+   * Each node can search for its "childen" in the "birth" step.
+   * The children processes that can be created by clustering two legs
+   * with a given spectator -- just like in the shower.
+   * To perform the "birth" a vector of processes is given to the node
+   * and the possible dipoles are given by the factory object.
+   *
    *
    * @see \ref NodeInterfaces "The interfaces"
    * defined for Node.
@@ -151,13 +158,11 @@ namespace Herwig {
        * -> virtual and normal tree level ME get 0.
        */
     int theCutStage;
-      /// tell if node belongs to an ordered history
-    // bool isOrdered;
       /// flag to tell if node is subtracted real
     bool theSubtractedReal;
       /// flag to tell if node is virtual contribution
     bool theVirtualContribution;
-      /// the merging helper
+      /// the merging helper (should be static)
     MergerPtr theMergingHelper;
       //the xcomb of the node
     StdXCombPtr thexcomb;

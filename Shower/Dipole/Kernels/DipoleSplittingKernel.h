@@ -316,6 +316,11 @@ public:
    */
   void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
 
+  /**
+   * Return the CMW sheme used by the kernel
+   */
+  unsigned int cmwScheme() const {return theCMWScheme;}
+  
 protected:
 
   /**
