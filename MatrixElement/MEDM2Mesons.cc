@@ -20,7 +20,7 @@
 using namespace Herwig;
 typedef LorentzVector<complex<InvEnergy> > LorentzPolarizationVectorInvE;
 
-MEDM2Mesons::MEDM2Mesons() {
+MEDM2Mesons::MEDM2Mesons() : cDMmed_(0.) {
   cSMmed_ = {1.0,1.0,1.0};
 }
 
@@ -183,16 +183,13 @@ double MEDM2Mesons::me2(const int ichan) const {
   vector<LorentzPolarizationVectorE> 
     hadronssbar(current_->current(tcPDPtr(), FlavourInfo(IsoSpin::IZero, IsoSpin::I3Zero,Strangeness::ssbar),
 				  imode,ichan,q,out,momenta,DecayIntegrator::Calculate));
-
-
-  
   // compute the matrix element
   vector<unsigned int> ihel(meMomenta().size());
   double output(0.);
-  int hI0_size = hadronI0.size();
-  int hI1_size = hadronI1.size();
-  int hss_size = hadronssbar.size();
-  int maxsize = max(max(hadronI0.size(),hadronI1.size()),hss_size);
+  unsigned int hI0_size = hadronI0.size();
+  unsigned int hI1_size = hadronI1.size();
+  unsigned int hss_size = hadronssbar.size();
+  unsigned int maxsize = max(max(hadronI0.size(),hadronI1.size()),hss_size);
   for(unsigned int hhel=0;hhel<maxsize;++hhel) {
     // map the index for the hadrons to a helicity state
     for(int ix=nOut;ix>0;--ix) {

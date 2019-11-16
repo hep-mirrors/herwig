@@ -95,11 +95,11 @@ CrossSection MEMultiChannel::dSigHatDR() const {
 
 Selector<MEBase::DiagramIndex>
 MEMultiChannel::diagrams(const DiagramVector & diags) const {
-   Selector<DiagramIndex> sel;
-   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-       double wgt = me2(channelMap_[iMode_][-diags[i]->id()] );
-       sel.insert(wgt, i);
-   }
+  Selector<DiagramIndex> sel;
+  for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+    double wgt = me2(channelMap_[iMode_][-diags[i]->id()] );
+    sel.insert(wgt, i);
+  }
   return sel;
 }
 

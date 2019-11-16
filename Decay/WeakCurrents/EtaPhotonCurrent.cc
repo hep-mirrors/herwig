@@ -142,7 +142,7 @@ bool EtaPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   tPDVector res = {getParticleData(113),
 		   getParticleData(   223),
 		   getParticleData(   333),
-		   getParticleData(100213),
+		   getParticleData(100223),
 		   getParticleData( 100333)};
   // set up the integration channels;
   for(unsigned int ix=0;ix<res.size();++ix) {
@@ -221,16 +221,16 @@ EtaPhotonCurrent::current(tcPDPtr resonance,
   Energy2 q2(q.m2());
   unsigned int imin = 0;
   unsigned int imax = couplings_.size();
+  if(flavour.strange != Strangeness::Unknown) {
+    if     (flavour.strange == Strangeness::Zero) {
+      if(imin==2) imin=4;
+    }
+    else if(flavour.strange == Strangeness::ssbar) {
+      imin=2*imin+2;
+    } 
+  }
   if(ichan>0) {
     imin = ichan;
-    if(flavour.strange != Strangeness::Unknown) {
-      if     (flavour.strange == Strangeness::Zero) {
-	if(imin==2) imin=4;
-      }
-      else if(flavour.strange == Strangeness::ssbar) {
-	imin=2*imin+2;
-      } 
-    }
     imax = imin+1;
   }
   if(resonance) {
