@@ -21,7 +21,7 @@ HERWIG_INTERPOLATOR_CLASSDESC(TwoPionCzyzCurrent,double,Energy2)
 TwoPionCzyzCurrent::TwoPionCzyzCurrent()
   : omegaMag_(18.7e-4), omegaPhase_(0.106),
     omegaMass_(782.4*MeV),omegaWidth_(8.33*MeV), beta_(2.148),
-    nMax_(2000), eMax_(ZERO) {
+    nMax_(2000), eMax_(10.*GeV) {
   // various parameters
   rhoMag_  =  {1.,1.,0.59,0.048,0.40,0.43};
   rhoPhase_ = {0.,0.,-2.20,-2.0,-2.9,1.19}; 

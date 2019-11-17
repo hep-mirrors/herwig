@@ -23,20 +23,20 @@ TwoKaonCzyzCurrent::TwoKaonCzyzCurrent()
 // changed parameters from 1002.0279, Fit 2 
 // substituted by own fit
 : betaRho_(2.19680665014), betaOmega_(2.69362046884), betaPhi_(1.94518176513),
-  nMax_(200), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV) {
+  nMax_(200), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV), eMax_(10.*GeV) {
   using Constants::pi;
   // rho parameter
-  rhoMag_    = {1.1148916618504967,0.050374779737077324, 0.014908906283692132,0.03902475997619905,0.038341465215871416,0.07754754066393918};
-  rhoPhase_  = {0    ,    pi,    pi,    pi, pi,0.};
+  rhoMag_    = {1.1148916618504967,0.050374779737077324, 0.014908906283692132,0.03902475997619905,0.038341465215871416};
+  rhoPhase_  = {0    ,    pi,    pi,    pi, pi};
   rhoMasses_ = {775.49*MeV,1520.6995754050117*MeV,1740.9719246639341*MeV,1992.2811314327789*MeV};
   rhoWidths_ = {149.4 *MeV,213.41728317817743*MeV, 84.12224414791908*MeV,289.9733272437917*MeV};
   // omega parameters
-  omegaMag_    = {1.3653229680598022, 0.02775156567495144, 0.32497165559032715,1.3993153161869765,2.80467861385469};
+  omegaMag_    = {1.3653229680598022, 0.02775156567495144, 0.32497165559032715,1.3993153161869765};
   omegaPhase_  = {0   ,    pi,    pi,   0,pi};
   omegaMasses_ = {782.65*MeV,1414.4344268685891*MeV,1655.375231284883*MeV};
   omegaWidths_ = {8.490000000000001*MeV, 85.4413887755723*MeV, 160.31760444832305*MeV};
   // phi parameters
-  phiMag_    = {0.965842498579515,0.002379766320723148,0.1956211640216197,0.16527771485190898,0.11946284383201744};
+  phiMag_    = {0.965842498579515,0.002379766320723148,0.1956211640216197,0.16527771485190898};
   phiPhase_  = {0.   ,pi    ,pi   ,0. ,0.};
   phiMasses_ = {1019.4209171596993*MeV,1594.759278457624*MeV,2156.971341201067*MeV};
   phiWidths_ = {4.252653332329334*MeV, 28.741821847408196*MeV,673.7556174184005*MeV};
@@ -178,7 +178,7 @@ void TwoKaonCzyzCurrent::Init() {
     ("nMax",
      "The maximum number of resonances to include in the sum,"
      " should be approx infinity",
-     &TwoKaonCzyzCurrent::nMax_, 1000, 10, 10000,
+     &TwoKaonCzyzCurrent::nMax_, 200, 10, 10000,
      false, false, Interface::limited);
 
   static Parameter<TwoKaonCzyzCurrent,double> interfacebetaRho
@@ -249,6 +249,7 @@ void TwoKaonCzyzCurrent::doinit() {
   mass_.push_back(vector<Energy>());
   width_.push_back(vector<Energy>());
   coup_.push_back(vector<Complex>());
+  Complex total(0.);
   for(unsigned int ix=0;ix<nMax_;++ix) {
     // this is gam(2-beta+n)/gam(n+1)
     if(ix>0) {
@@ -258,12 +259,8 @@ void TwoKaonCzyzCurrent::doinit() {
       sin(Constants::pi*(betaRho_-1.-double(ix)))/Constants::pi*gamB;
     if(ix%2!=0) c_n *= -1.;
     // couplings
-    if(ix>=rhoWgt_.size()) {
-      coup_[0].push_back(c_n);
-    }
-    else {
-      coup_[0].push_back(rhoWgt_[ix]);
-    }
+    coup_[0].push_back(c_n);
+    total+=c_n;
     // set the masses and widths
     // calc for higher resonances
     if(ix>=rhoMasses_.size()) {
@@ -282,11 +279,17 @@ void TwoKaonCzyzCurrent::doinit() {
     h0_  .push_back(Resonance::H(ZERO,mass_[0].back(),width_[0].back(),
 				 mpi_,mpi_,dh_.back(),hres_.back()));
   }
+  for(unsigned int ix=0;ix<rhoWgt_.size();++ix) {
+    total += rhoWgt_[ix]-coup_[0][ix];
+    coup_[0][ix] = rhoWgt_[ix];
+  }
+  coup_[0][rhoWgt_.size()] += 1. - total;
   // omega masses and couplings
   gamB = std::tgamma(2.-betaOmega_);
   mass_.push_back(vector<Energy>());
   width_.push_back(vector<Energy>());
   coup_.push_back(vector<Complex>());
+  total=0.;
   for(unsigned int ix=0;ix<nMax_;++ix) {
     // this is gam(2-beta+n)/gam(n+1)
     if(ix>0) {
@@ -296,12 +299,8 @@ void TwoKaonCzyzCurrent::doinit() {
       sin(Constants::pi*(betaOmega_-1.-double(ix)))/Constants::pi*gamB;
     if(ix%2!=0) c_n *= -1.;
     // couplings
-    if(ix>=omegaWgt_.size()) {
-      coup_[1].push_back(c_n);
-    }
-    else {
-      coup_[1].push_back(omegaWgt_[ix]);
-    }
+    coup_[1].push_back(c_n);
+    total+=c_n;
     // set the masses and widths
     // calc for higher resonances
     if(ix>=omegaMasses_.size()) {
@@ -314,11 +313,17 @@ void TwoKaonCzyzCurrent::doinit() {
       width_[1].push_back(omegaWidths_[ix]);
     }
   }
+  for(unsigned int ix=0;ix<omegaWgt_.size();++ix) {
+    total += omegaWgt_[ix]-coup_[1][ix];
+    coup_[1][ix] = omegaWgt_[ix];
+  }
+  coup_[1][omegaWgt_.size()] += 1. - total;
   // phi masses and couplings
   gamB = std::tgamma(2.-betaPhi_);
   mass_.push_back(vector<Energy>());
   width_.push_back(vector<Energy>());
   coup_.push_back(vector<Complex>());
+  total=0.;
   for(unsigned int ix=0;ix<nMax_;++ix) {
     // this is gam(2-beta+n)/gam(n+1)
     if(ix>0) {
@@ -328,12 +333,8 @@ void TwoKaonCzyzCurrent::doinit() {
       sin(Constants::pi*(betaPhi_-1.-double(ix)))/Constants::pi*gamB;
     if(ix%2!=0) c_n *= -1.;
     // couplings
-    if(ix>=phiWgt_.size()) {
-      coup_[2].push_back(c_n);
-    }
-    else {
-      coup_[2].push_back(phiWgt_[ix]);
-    }
+    coup_[2].push_back(c_n);
+    total +=c_n;
     // set the masses and widths
     // calc for higher resonances
     if(ix>=phiMasses_.size()) {
@@ -346,6 +347,11 @@ void TwoKaonCzyzCurrent::doinit() {
       width_[2].push_back(phiWidths_[ix]);
     }
   }
+  for(unsigned int ix=0;ix<phiWgt_.size();++ix) {
+    total += phiWgt_[ix]-coup_[2][ix];
+    coup_[2][ix] = phiWgt_[ix];
+  }
+  coup_[2][phiWgt_.size()] += 1. - total;
 }
 
 void TwoKaonCzyzCurrent::constructInterpolators() const {
@@ -711,7 +717,7 @@ Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
     // rho exchange
     if(on[0]) {
       Complex term = coup_[0][ix]*Resonance::BreitWignerGS(q2,mass_[0][ix],width_[0][ix],
-							   mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
+    							   mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
       FK += imode!=1 ? 0.5*term : -0.5*term;
     }
     // omega exchange
@@ -740,22 +746,19 @@ Complex TwoKaonCzyzCurrent::Fkaon(Energy2 q2,const int imode, const int ichan,
 
 Complex  TwoKaonCzyzCurrent::FkaonRemainderI1(Energy2 q2) const {
   Complex output(0.);
-  for(unsigned int ix=4;ix<coup_[0].size();++ix) {
+  for(unsigned int ix=4;ix<coup_[0].size();++ix)
     output += 0.5*coup_[0][ix]*Resonance::BreitWignerGS(q2,mass_[0][ix],width_[0][ix],
-						    mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
-  }
+							mpi_,mpi_,h0_[ix],dh_[ix],hres_[ix]);
   return output;
 }
 
 Complex  TwoKaonCzyzCurrent::FkaonRemainderI0(Energy2 q2,Energy ma, Energy mb) const {
   Complex output(0.);
   // omega exchange
-  for(unsigned int ix=4;ix<coup_[1].size();++ix) {
+  for(unsigned int ix=4;ix<coup_[1].size();++ix)
     output += 1./6.*coup_[1][ix]*Resonance::BreitWignerFW(q2,mass_[1][ix],width_[1][ix]);
-  }
   // phi exchange
-  for(unsigned int ix=4;ix<coup_[2].size();++ix) {
+  for(unsigned int ix=4;ix<coup_[2].size();++ix)
     output += 1./3.*coup_[2][ix]*Resonance::BreitWignerPWave(q2,mass_[2][ix],width_[2][ix],ma,mb);
-  }
   return output;
 }
