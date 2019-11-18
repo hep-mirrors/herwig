@@ -216,12 +216,12 @@ bool MEDiffraction::generateKinematics(const double * ) {
   
   Energy2 Mx2;
   switch(diffDirection){
-    case 0:
-      Mx2=M12;
-      break;
-    case 1: 
-      Mx2=M22;
-      break;
+  case 0:
+    Mx2=M12;
+    break;
+  case 1: 
+    Mx2=M22;
+    break;
   }
    
     
@@ -235,190 +235,189 @@ bool MEDiffraction::generateKinematics(const double * ) {
   double frac = UseRandom::rnd();
   
   switch(dissociationDecay){
-    case 0:
-      if(!deltaOnly)
-      {
+  case 0:
+    if(!deltaOnly) {
+      pair<Lorentz5Momentum,Lorentz5Momentum> decayMomenta;
+      pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;	
+      //absolute collinear dissociation of the hadron 
+      const double phiprime = phi; 
+      //aligned with outgoing dissociated proton
+      const double costhetaprime = costheta;
+      
+      const double sinthetaprime=sqrt(1-sqr(costhetaprime));
+      //axis along which diquark from associated proton is aligned
+      Axis dir = Axis(sinthetaprime*cos(phiprime), sinthetaprime*sin(phiprime), costhetaprime);
+      
+      switch (diffDirection){
+      case 0://Left single diffraction
+	meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
+	////////////////////////////////////////////////////
+        
+	do{}
+	while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
+	///////////
+        
+	meMomenta()[2] = p4;
+	meMomenta()[3] = decayMomenta. first;
+	meMomenta()[4] = decayMomenta.second;
+	break;
+      case 1://Right single diffraction
+	meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
+	////////////////////////////////////////////////////
+        
+	do{}
+	while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomenta.first,decayMomenta.second));
+        
+	meMomenta()[2] = p3;
+	meMomenta()[3] = decayMomenta. first;
+	meMomenta()[4] = decayMomenta.second; 
+	break;
+      case 2://double diffraction
+	
+	do{}
+	while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
+        
+	do{}
+	while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomentaTwo.first,decayMomentaTwo.second));
+        
+	meMomenta()[2] = decayMomenta. first;
+	meMomenta()[3] = decayMomenta.second;  
+	meMomenta()[4] = decayMomentaTwo.second;
+	meMomenta()[5] = decayMomentaTwo. first;
+	break;            
+      }
+      
+    }
+    else {
+      const auto tmp=diffDirection==1?1:0;
+      meMomenta()[2+tmp] = p3;
+      meMomenta()[3-tmp] = p4;
+    }
+    break;
+  case 1:
+    switch(diffDirection){
+    case 0: 
+      //quark and diquark masses
+      meMomenta()[2].setMass(mqq());
+      meMomenta()[3].setMass(mq());
+      
+      //gluon constituent mass
+      meMomenta()[4].setMass(getParticleData(21)->constituentMass());
+      
+      //outgoing proton
+      meMomenta()[5].setVect(p4.vect());
+      meMomenta()[5].setT(p4.t());
+      
+      //two body decay of the outgoing dissociation proton
+      do{}
+      while(!Kinematics::twoBodyDecay(p3,mqq()+mq(),getParticleData(21)->constituentMass(),
+				      p3.vect().unit(),momPair.first,momPair.second));
+      //put gluon back-to-back with quark-diquark   
+      //set momenta of quark and diquark
+      frac = mqq()/(mqq()+mq());
+      meMomenta()[2].setVect(frac*momPair.first.vect());
+      meMomenta()[2].setT(sqrt(sqr(frac)*momPair.first.vect().mag2()+sqr(mqq())));
+      meMomenta()[3].setVect((1-frac)*momPair.first.vect());
+      meMomenta()[3].setT(sqrt(sqr(1-frac)*momPair.first.vect().mag2()+sqr(mq())));
+      //set momentum of gluon
+      meMomenta()[4].setVect(momPair.second.vect());
+      meMomenta()[4].setT(momPair.second.t());
+      
+      break;
+    case 1: 
+      //quark and diquark masses
+      meMomenta()[5].setMass(mqq());
+      meMomenta()[4].setMass(mq());
+      
+      //gluon constituent mass
+      meMomenta()[3].setMass(getParticleData(21)->constituentMass());
+      
+      //outgoing proton
+      meMomenta()[2].setVect(p3.vect());
+      meMomenta()[2].setT(p3.t());
+      
+      //two body decay of the outgoing dissociation proton
+      do{}
+      while(!Kinematics::twoBodyDecay(p4,mqq()+mq(),getParticleData(21)->constituentMass(),
+				      p4.vect().unit(),momPair.first,momPair.second));
+      
+      //put gluon back-to-back with quark-diquark   
+      //set momenta of quark and diquark
+      frac = mqq()/(mqq()+mq());
+      meMomenta()[5].setVect(frac*momPair.first.vect());
+      meMomenta()[5].setT(sqrt(sqr(frac)*momPair.first.vect().mag2()+sqr(mqq())));
+      meMomenta()[4].setVect((1-frac)*momPair.first.vect());
+      meMomenta()[4].setT(sqrt(sqr(1-frac)*momPair.first.vect().mag2()+sqr(mq())));
+      //set momentum of gluon
+      meMomenta()[3].setVect(momPair.second.vect());
+      meMomenta()[3].setT(momPair.second.t());
+      
+      
+      
+      break;
+    case 2: 
+      //first dissociated proton constituents
+      meMomenta()[2].setMass(mqq());
+      meMomenta()[3].setMass(mq());
+      meMomenta()[4].setMass(getParticleData(21)->constituentMass());
+      //second dissociated proton constituents
+      meMomenta()[5].setMass(getParticleData(21)->constituentMass());
+      meMomenta()[6].setMass(mq());
+      meMomenta()[7].setMass(mqq());
+      
+      
+      //two body decay of the outgoing dissociation proton
+      do{}
+      while(!Kinematics::twoBodyDecay(p3,mqq()+mq(),getParticleData(21)->constituentMass(),
+				      p3.vect().unit(),momPair.first,momPair.second));
+      
+      do{}
+      while(!Kinematics::twoBodyDecay(p4,mqq()+mq(),getParticleData(21)->constituentMass(),
+				      p4.vect().unit(),momPair1.first,momPair1.second));    
+      
+      //put gluon back-to-back with quark-diquark
+      frac = mqq()/(mqq()+mq());
+      
+      //first dissociated proton
+      //set momenta of quark and diquark
+      
+      meMomenta()[2].setVect(frac*momPair.first.vect());
+      meMomenta()[2].setT(sqrt(sqr(frac)*momPair.first.vect().mag2()+sqr(mqq())));
+      meMomenta()[3].setVect((1-frac)*momPair.first.vect());
+      meMomenta()[3].setT(sqrt(sqr(1-frac)*momPair.first.vect().mag2()+sqr(mq())));
+      //set momentum of gluon
+      meMomenta()[4].setVect(momPair.second.vect());
+      meMomenta()[4].setT(momPair.second.t());
+      
+      //first dissociated proton
+      //set momenta of quark and diquark
+      
+      meMomenta()[7].setVect(frac*momPair1.first.vect());
+      meMomenta()[7].setT(sqrt(sqr(frac)*momPair1.first.vect().mag2()+sqr(mqq())));
+      meMomenta()[6].setVect((1-frac)*momPair1.first.vect());
+      meMomenta()[6].setT(sqrt(sqr(1-frac)*momPair1.first.vect().mag2()+sqr(mq())));
+      //set momentum of gluon
+      meMomenta()[5].setVect(momPair1.second.vect());
+      meMomenta()[5].setT(momPair1.second.t());
+      break;
+      
+    }
+    meMomenta()[2].rescaleEnergy();
+    meMomenta()[3].rescaleEnergy();
+    meMomenta()[4].rescaleEnergy();
+    meMomenta()[5].rescaleEnergy();
+    if(diffDirection==2){
+      meMomenta()[6].rescaleEnergy();
+      meMomenta()[7].rescaleEnergy();
+    }
     
-        pair<Lorentz5Momentum,Lorentz5Momentum> decayMomenta;
-        pair<Lorentz5Momentum,Lorentz5Momentum> decayMomentaTwo;	
- 	//absolute collinear dissociation of the hadron 
-        const double phiprime = phi; 
-        //aligned with outgoing dissociated proton
-        const double costhetaprime = costheta;
-        
-        const double sinthetaprime=sqrt(1-sqr(costhetaprime));
-        //axis along which diquark from associated proton is aligned
-         Axis dir = Axis(sinthetaprime*cos(phiprime), sinthetaprime*sin(phiprime), costhetaprime);
-        
-        switch (diffDirection){
-            case 0://Left single diffraction
-              meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
-              ////////////////////////////////////////////////////
-              
-              do{}
-              while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
-              ///////////
-              
-              meMomenta()[2] = p4;
-              meMomenta()[3] = decayMomenta. first;
-              meMomenta()[4] = decayMomenta.second;
-              break;
-            case 1://Right single diffraction
-              meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
-              ////////////////////////////////////////////////////
-              
-              do{}
-              while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomenta.first,decayMomenta.second));
-              
-              meMomenta()[2] = p3;
-              meMomenta()[3] = decayMomenta. first;
-              meMomenta()[4] = decayMomenta.second; 
-                break;
-            case 2://double diffraction
-              
-              do{}
-              while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
-              
-              do{}
-              while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomentaTwo.first,decayMomentaTwo.second));
-              
-              meMomenta()[2] = decayMomenta. first;
-              meMomenta()[3] = decayMomenta.second;  
-              meMomenta()[4] = decayMomentaTwo.second;
-              meMomenta()[5] = decayMomentaTwo. first;
-              break;            
-      }
-      
-      }else
-      {
-            const auto tmp=diffDirection==1?1:0;
-            meMomenta()[2+tmp] = p3;
-            meMomenta()[3-tmp] = p4;
-      }
-      break;
-    case 1:
-      switch(diffDirection){
-        case 0: 
-          //quark and diquark masses
-          meMomenta()[2].setMass(mqq());
-          meMomenta()[3].setMass(mq());
-          
-          //gluon constituent mass
-          meMomenta()[4].setMass(getParticleData(21)->constituentMass());
-          
-          //outgoing proton
-          meMomenta()[5].setVect(p4.vect());
-          meMomenta()[5].setT(p4.t());
-          
-          //two body decay of the outgoing dissociation proton
-          do{}
-            while(!Kinematics::twoBodyDecay(p3,mqq()+mq(),getParticleData(21)->constituentMass(),
-                p3.vect().unit(),momPair.first,momPair.second));
-            //put gluon back-to-back with quark-diquark   
-            //set momenta of quark and diquark
-            frac = mqq()/(mqq()+mq());
-            meMomenta()[2].setVect(frac*momPair.first.vect());
-            meMomenta()[2].setT(sqrt(sqr(frac)*momPair.first.vect().mag2()+sqr(mqq())));
-            meMomenta()[3].setVect((1-frac)*momPair.first.vect());
-            meMomenta()[3].setT(sqrt(sqr(1-frac)*momPair.first.vect().mag2()+sqr(mq())));
-            //set momentum of gluon
-            meMomenta()[4].setVect(momPair.second.vect());
-            meMomenta()[4].setT(momPair.second.t());
-                    
-          break;
-        case 1: 
-          //quark and diquark masses
-          meMomenta()[5].setMass(mqq());
-          meMomenta()[4].setMass(mq());
-          
-          //gluon constituent mass
-          meMomenta()[3].setMass(getParticleData(21)->constituentMass());
-          
-          //outgoing proton
-          meMomenta()[2].setVect(p3.vect());
-          meMomenta()[2].setT(p3.t());
-          
-          //two body decay of the outgoing dissociation proton
-          do{}
-            while(!Kinematics::twoBodyDecay(p4,mqq()+mq(),getParticleData(21)->constituentMass(),
-                p4.vect().unit(),momPair.first,momPair.second));
-            
-            //put gluon back-to-back with quark-diquark   
-            //set momenta of quark and diquark
-            frac = mqq()/(mqq()+mq());
-            meMomenta()[5].setVect(frac*momPair.first.vect());
-            meMomenta()[5].setT(sqrt(sqr(frac)*momPair.first.vect().mag2()+sqr(mqq())));
-            meMomenta()[4].setVect((1-frac)*momPair.first.vect());
-            meMomenta()[4].setT(sqrt(sqr(1-frac)*momPair.first.vect().mag2()+sqr(mq())));
-            //set momentum of gluon
-            meMomenta()[3].setVect(momPair.second.vect());
-            meMomenta()[3].setT(momPair.second.t());
-          
-          
-        
-          break;
-        case 2: 
-          //first dissociated proton constituents
-          meMomenta()[2].setMass(mqq());
-          meMomenta()[3].setMass(mq());
-          meMomenta()[4].setMass(getParticleData(21)->constituentMass());
-          //second dissociated proton constituents
-          meMomenta()[5].setMass(getParticleData(21)->constituentMass());
-          meMomenta()[6].setMass(mq());
-          meMomenta()[7].setMass(mqq());
-          
-          
-          //two body decay of the outgoing dissociation proton
-          do{}
-            while(!Kinematics::twoBodyDecay(p3,mqq()+mq(),getParticleData(21)->constituentMass(),
-                p3.vect().unit(),momPair.first,momPair.second));
-            
-            do{}
-            while(!Kinematics::twoBodyDecay(p4,mqq()+mq(),getParticleData(21)->constituentMass(),
-                p4.vect().unit(),momPair1.first,momPair1.second));    
-          
-          //put gluon back-to-back with quark-diquark
-          frac = mqq()/(mqq()+mq());
-          
-          //first dissociated proton
-          //set momenta of quark and diquark
-            
-            meMomenta()[2].setVect(frac*momPair.first.vect());
-            meMomenta()[2].setT(sqrt(sqr(frac)*momPair.first.vect().mag2()+sqr(mqq())));
-            meMomenta()[3].setVect((1-frac)*momPair.first.vect());
-            meMomenta()[3].setT(sqrt(sqr(1-frac)*momPair.first.vect().mag2()+sqr(mq())));
-            //set momentum of gluon
-            meMomenta()[4].setVect(momPair.second.vect());
-            meMomenta()[4].setT(momPair.second.t());
-            
-            //first dissociated proton
-          //set momenta of quark and diquark
-            
-            meMomenta()[7].setVect(frac*momPair1.first.vect());
-            meMomenta()[7].setT(sqrt(sqr(frac)*momPair1.first.vect().mag2()+sqr(mqq())));
-            meMomenta()[6].setVect((1-frac)*momPair1.first.vect());
-            meMomenta()[6].setT(sqrt(sqr(1-frac)*momPair1.first.vect().mag2()+sqr(mq())));
-            //set momentum of gluon
-            meMomenta()[5].setVect(momPair1.second.vect());
-            meMomenta()[5].setT(momPair1.second.t());
-          break;
-        
-      }
-      meMomenta()[2].rescaleEnergy();
-      meMomenta()[3].rescaleEnergy();
-      meMomenta()[4].rescaleEnergy();
-      meMomenta()[5].rescaleEnergy();
-      if(diffDirection==2){
-        meMomenta()[6].rescaleEnergy();
-        meMomenta()[7].rescaleEnergy();
-      }
-      
-      break;
+    break;
   }
   
   jacobian(sqr(cmEnergy)/GeV2);
   return true;
 }
+
 //Generate masses of dissociated protons and momentum transfer from probability f(M2,t) 
 //(for single diffraction). Sample according to f(M2,t)=f(M2)f(t|M2).
 pair<pair<Energy2,Energy2>,Energy2> MEDiffraction::diffractiveMassAndMomentumTransfer() const {
