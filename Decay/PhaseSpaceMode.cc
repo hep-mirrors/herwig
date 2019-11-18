@@ -378,8 +378,8 @@ Energy PhaseSpaceMode::initializePhaseSpace(bool init, tcDecayIntegratorPtr deca
     Energy fact = (widthGen_&&partial_>=0) ? 
       widthGen_->partialWidth(partial_,inpart->nominalMass()) :
       inpart->dataPtr()->width();
-    output=totsum*fact;
     if(fact==ZERO) fact=MeV;
+    output=totsum*fact;
     if ( Debug::level > 1 ) {
       CurrentGenerator::log() << "Initialized the phase space for the decay " 
      			      << incoming_.first->PDGName() << " -> ";
