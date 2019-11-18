@@ -111,19 +111,23 @@ public:
   /**
    *  Default constructior
    */
-  PhaseSpaceChannel() : weight_(1.), initialized_(false)  {};
+  PhaseSpaceChannel() : weight_(1.), initialized_(false), skipFirst_(false)  {};
   
   /** 
    *  Constructor with incoming particles
    */
-  PhaseSpaceChannel(tPhaseSpaceModePtr inm);
+  PhaseSpaceChannel(tPhaseSpaceModePtr inm, bool skip=false);
   
   /**
    * If less than zero indicate that this channel is competed. Otherwise
    * signal the parent of the next added parton.
    */
   PhaseSpaceChannel & operator , (tPDPtr res) {
-    intermediates_.push_back(PhaseSpaceResonance(res));
+    if(intermediates_.size()==1&&skipFirst_) {
+      skipFirst_=false;
+    }
+    else
+      intermediates_.push_back(PhaseSpaceResonance(res));
     if(iAdd_<0) return *this;
     if(intermediates_[iAdd_].children.first==0)
       intermediates_[iAdd_].children.first  = 1-int(intermediates_.size());
@@ -361,6 +365,11 @@ private:
    *  Whether or not its been initialized
    */
   bool initialized_;
+
+  /**
+   *  Wheter or not to skiip the first resonance
+   */
+  bool skipFirst_;
 
 };
 

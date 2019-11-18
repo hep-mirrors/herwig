@@ -11,8 +11,9 @@
 /** 
  *  Constructor with incoming particles
  */
-PhaseSpaceChannel::PhaseSpaceChannel(tPhaseSpaceModePtr inm) : mode_(inm), weight_(1.),
-							       initialized_(false) {
+PhaseSpaceChannel::PhaseSpaceChannel(tPhaseSpaceModePtr inm, bool skip) : mode_(inm), weight_(1.),
+									  initialized_(false),
+									  skipFirst_(skip) {
   if(!inm->incoming().second)
      intermediates_.push_back(PhaseSpaceResonance(inm->incoming().first));
 }
