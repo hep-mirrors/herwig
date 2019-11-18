@@ -142,7 +142,7 @@ bool EtaPhotonCurrent::createMode(int icharge, tcPDPtr resonance,
   tPDVector res = {getParticleData(113),
 		   getParticleData(   223),
 		   getParticleData(   333),
-		   getParticleData(100223),
+		   getParticleData(100113),
 		   getParticleData( 100333)};
   // set up the integration channels;
   for(unsigned int ix=0;ix<res.size();++ix) {
