@@ -4,6 +4,7 @@ GeneralTwoBodyDecayer.h GeneralTwoBodyDecayer.fh GeneralTwoBodyDecayer.cc \
 GeneralThreeBodyDecayer.h GeneralThreeBodyDecayer.fh \
 GeneralThreeBodyDecayer.cc \
 GeneralCurrentDecayer.h GeneralCurrentDecayer.fh GeneralCurrentDecayer.cc \
+DMMediatorDecayer.h DMMediatorDecayer.fh DMMediatorDecayer.cc \
 GeneralFourBodyDecayer.h GeneralFourBodyDecayer.fh \
 GeneralFourBodyDecayer.cc \
 StoFFFFDecayer.h StoFFFFDecayer.cc
