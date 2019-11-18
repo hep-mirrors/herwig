@@ -259,17 +259,9 @@ bool MEDiffraction::generateKinematics(const double * ) {
               while(!Kinematics::twoBodyDecay(p3,mqq(),mq(),-dir,decayMomenta.first,decayMomenta.second));
               ///////////
               
-              meMomenta()[2].setVect(p4.vect());
-              meMomenta()[2].setT(p4.t());
-        
-              meMomenta()[3].setVect(decayMomenta.first.vect());
-              meMomenta()[3].setT(decayMomenta.first.t());
-              meMomenta()[4].setVect(decayMomenta.second.vect());
-              meMomenta()[4].setT(decayMomenta.second.t());
-        
-              meMomenta()[2].rescaleEnergy();
-              meMomenta()[3].rescaleEnergy();
-              meMomenta()[4].rescaleEnergy(); 
+              meMomenta()[2] = p4;
+              meMomenta()[3] = decayMomenta. first;
+              meMomenta()[4] = decayMomenta.second;
               break;
             case 1://Right single diffraction
               meMomenta()[4].setT(sqrt(mq2+sqr(meMomenta()[4].x())+sqr(meMomenta()[4].y())+sqr(meMomenta()[4].z())));
@@ -278,17 +270,9 @@ bool MEDiffraction::generateKinematics(const double * ) {
               do{}
               while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomenta.first,decayMomenta.second));
               
-              meMomenta()[2].setVect(p3.vect());
-              meMomenta()[2].setT(p3.t());
-        
-              meMomenta()[3].setVect(decayMomenta.first.vect());
-              meMomenta()[3].setT(decayMomenta.first.t());
-              meMomenta()[4].setVect(decayMomenta.second.vect());
-              meMomenta()[4].setT(decayMomenta.second.t());
-        
-              meMomenta()[2].rescaleEnergy();
-              meMomenta()[3].rescaleEnergy();
-              meMomenta()[4].rescaleEnergy(); 
+              meMomenta()[2] = p3;
+              meMomenta()[3] = decayMomenta. first;
+              meMomenta()[4] = decayMomenta.second; 
                 break;
             case 2://double diffraction
               
@@ -298,37 +282,18 @@ bool MEDiffraction::generateKinematics(const double * ) {
               do{}
               while(!Kinematics::twoBodyDecay(p4,mqq(),mq(),dir,decayMomentaTwo.first,decayMomentaTwo.second));
               
-              meMomenta()[2].setVect(decayMomenta.first.vect());
-              meMomenta()[2].setT(decayMomenta.first.t());
-              meMomenta()[3].setVect(decayMomenta.second.vect());
-              meMomenta()[3].setT(decayMomenta.second.t());
-              
-              meMomenta()[4].setVect(decayMomentaTwo.second.vect());
-              meMomenta()[4].setT(decayMomentaTwo.second.t());
-              meMomenta()[5].setVect(decayMomentaTwo.first.vect());
-              meMomenta()[5].setT(decayMomentaTwo.first.t());
-              
-              
-              meMomenta()[2].rescaleEnergy();
-              meMomenta()[3].rescaleEnergy();
-              meMomenta()[4].rescaleEnergy(); 
-        
-              meMomenta()[5].rescaleEnergy();
-        
+              meMomenta()[2] = decayMomenta. first;
+              meMomenta()[3] = decayMomenta.second;  
+              meMomenta()[4] = decayMomentaTwo.second;
+              meMomenta()[5] = decayMomentaTwo. first;
               break;            
       }
       
       }else
       {
             const auto tmp=diffDirection==1?1:0;
-            meMomenta()[2+tmp].setVect(p3.vect());
-            meMomenta()[2+tmp].setT(p3.t());
-            meMomenta()[3-tmp].setVect(p4.vect());
-            meMomenta()[3-tmp].setT(p4.t());
-    
-            meMomenta()[2].rescaleEnergy();
-            meMomenta()[3].rescaleEnergy();
- 
+            meMomenta()[2+tmp] = p3;
+            meMomenta()[3-tmp] = p4;
       }
       break;
     case 1:
