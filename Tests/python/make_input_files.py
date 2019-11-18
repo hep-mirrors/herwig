@@ -371,24 +371,30 @@ elif(collider=="EE") :
                 process = StringBuilder(insert_ME("MEee2gZ2qq"))
                 try :
                     ecms = float(parameterName)
-                    if(ecms<=10.1) :
+                    if(ecms<=3.75) :
+                        process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 3\n"
+                    elif(ecms<=10.6) :
                         process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
                 except :
                     pass
     elif(simulation=="Powheg") :
         process = StringBuilder()
-        if(parameterName=="10") :
-            process = StringBuilder()
-            try :
-                ecms = float(parameterName)
-                if(ecms<=10.1) :
-                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
-            except :
-                pass
+        try :
+            ecms = float(parameterName)
+            if(ecms<=3.75) :
+                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
+            elif(ecms<=10.6) :
+                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
+        except :
+            pass
     elif(simulation=="Matchbox" ) :
         try :
             ecms = float(parameterName)
-            if(ecms<=10.1) :
+            if(ecms<=3.75) :
+                process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
+                process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
+                process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
+            elif(ecms<=10.6) :
                 process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
                 process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
                 process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
