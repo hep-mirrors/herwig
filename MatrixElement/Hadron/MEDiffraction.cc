@@ -289,9 +289,8 @@ bool MEDiffraction::generateKinematics(const double * ) {
       
     }
     else {
-      const auto tmp=diffDirection==1?1:0;
-      meMomenta()[2+tmp] = p3;
-      meMomenta()[3-tmp] = p4;
+      meMomenta()[2] = p3;
+      meMomenta()[3] = p4;
     }
     break;
   case 1:
