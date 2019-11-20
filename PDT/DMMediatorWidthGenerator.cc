@@ -56,6 +56,14 @@ void DMMediatorWidthGenerator::doinit() {
       current->decayModeInfo(imode,iq,ia);
       if(iq==2&&ia==-2) continue;
       // order the particles
+      bool skip=false;
+      for(unsigned int ix=0;ix<out.size();++ix) {
+	if(!out[ix]) {
+	  skip=true;
+	  break;
+	}
+      }
+      if(skip) continue;
       multiset<tcPDPtr,ParticleOrdering> outgoing(out.begin(),out.end());
       string tag = parent_->PDGName() + "->";
       bool first=false;
