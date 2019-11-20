@@ -174,8 +174,10 @@ vector<Energy> PhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
   // set masses of stable particles and limits 
   for(unsigned int ix=0;ix<outgoing_.size();++ix) {
     // get the mass of the particle if can't use weight
-    if(onShell)
+    if(onShell) {
       mass[ix] = outgoing_[ix]->mass();
+      if(massGen_[ix]) rStack_.pop();
+    }
     else if(!massGen_[ix] || outgoing_[ix]->stable()) {
       if(massGen_[ix]) rStack_.pop();
       mass[ix] = outgoing_[ix]->generateMass();
