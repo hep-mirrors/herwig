@@ -280,6 +280,9 @@ void ColourReconnector::_doRecoBaryonic(ClusterVector & cv) const {
         clustervector.push_back(cluster);
 
     swap(cv,clustervector);
+
+
+
 }
 
 
