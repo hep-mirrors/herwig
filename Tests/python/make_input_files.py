@@ -1346,7 +1346,7 @@ elif(collider=="LHC") :
         elif "ggH" in parameterName :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             if(simulation=="Merging"):
-                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff On\nset MadGraph:Model heft\n"
+                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff Yes\nset MadGraph:Model heft\n"
                 process+="cd /Herwig/Merging/\n"
             process+=setHardProcessWidthToZero(["h0"])
             if(simulation=="Matchbox"):
