@@ -97,13 +97,15 @@ bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadron
   // components). 
   vector<tClusterPtr> redefinedClusters;
 
+
   for (ClusterVector::const_iterator it = clusters.begin();
        it != clusters.end(); ++it) {
-        
+    
     // Skip the clusters that are not available or that are 
     // heavy, intermediate, clusters that have undergone to fission,
-    if ( ! (*it)->isAvailable()  ||  ! (*it)->isReadyToDecay() ) continue; 
-                                     
+    if ( ! (*it)->isAvailable()  ||  ! (*it)->isReadyToDecay() ){
+     continue; 
+    }                                 
     // We need to require (at least at the moment, maybe in the future we 
     // could change it) that the cluster has exactly two components, 
     // because otherwise we don't know how to deal with the kinematics.
@@ -122,8 +124,9 @@ bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadron
 							 (*it)->particle(1)->dataPtr(),
 							 (**it).mass());
     // if not single decay continue
-    if(!hadron) continue;
-
+    if(!hadron){ 
+continue;    
+    }
     // We assume that the candidate reshuffling cluster partner, 
     // with whom the light cluster can exchange momenta,
     // is chosen as the closest in space-time between the available

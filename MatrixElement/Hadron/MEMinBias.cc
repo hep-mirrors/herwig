@@ -82,7 +82,7 @@ void MEMinBias::setKinematics() {
 bool MEMinBias::generateKinematics(const double *) {
   // generate the masses of the particles
   for ( int i = 2, N = meMomenta().size(); i < N; ++i ) {
-    meMomenta()[i] = Lorentz5Momentum(mePartonData()[i]->generateMass());
+    meMomenta()[i] = Lorentz5Momentum(mePartonData()[i]->constituentMass());
   }
 
   Energy q = ZERO;

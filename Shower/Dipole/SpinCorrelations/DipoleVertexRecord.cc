@@ -323,12 +323,14 @@ void DipoleVertexRecord::updateSpinInfo( PPtr& oldPart,
   Energy2 b = 2.*momOldRotated.t()*momOldRotated.z();
   Energy2 c = sqr(momOldRotated.t()) - sqr(momNewRotated.t());
   double beta;
+  Energy4 disc2 = sqr(b)-4.*a*c;
+  Energy2 disc = sqrt(max(ZERO,disc2));
   
   // The rotated momentum should always lie along the +ve z-axis
   if ( momOldRotated.z() > ZERO )
-    beta = (-b + sqrt(sqr(b)-4.*a*c)) / 2. / a;
+    beta = 0.5*(-b + disc) / a;
   else
-    beta = (-b - sqrt(sqr(b)-4.*a*c)) / 2. / a;
+    beta = 0.5*(-b - disc) / a;
   
   LorentzRotation boostOldToNew(0., 0., beta);
 
