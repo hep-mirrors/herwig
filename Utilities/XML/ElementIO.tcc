@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ElementIO.tpp is a part of myXML
-// Copyright (C) 2012-2017 Simon Platzer, The Herwig Collaboration
+// Copyright (C) 2012-2019 Simon Platzer, The Herwig Collaboration
 //
 // myXML is licenced under version 3 of the GPL, see COPYING for details.
 //
