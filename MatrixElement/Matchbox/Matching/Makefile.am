@@ -13,7 +13,7 @@ ShowerApproximationGenerator.cc \
 MEMatching.h \
 MEMatching.cc
 
-HwQTildeMatching_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
+HwQTildeMatching_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:1
 HwQTildeMatching_la_SOURCES = \
 QTildeMatching.h \
 QTildeMatching.cc
