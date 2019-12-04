@@ -41,7 +41,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
-#include "Herwig/MatrixElement/Hadron/MEMinBias.h"
+#include "Herwig/MatrixElement/MEMinBias.h"
 
 using namespace Herwig;
 
