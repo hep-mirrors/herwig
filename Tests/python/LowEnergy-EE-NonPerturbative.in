@@ -8,77 +8,8 @@ read snippets/EECollider.in
 # leading-order processes
 ##################################################
 cd /Herwig/MatrixElements
-# e+ e- -> pi+pi-
-create Herwig::MEee2Mesons MEee2Pions HwMELeptonLowEnergy.so
-create Herwig::TwoPionCzyzCurrent /Herwig/Decays/TwoPionCzyzCurrent 
-set MEee2Pions:WeakCurrent /Herwig/Decays/TwoPionCzyzCurrent
-# e+ e- -> K+K-/ K0K0
-create Herwig::MEee2Mesons MEee2Kaons HwMELeptonLowEnergy.so
-create Herwig::TwoKaonCzyzCurrent /Herwig/Decays/TwoKaonCzyzCurrent 
-set MEee2Kaons:WeakCurrent /Herwig/Decays/TwoKaonCzyzCurrent
-# e+ e- -> pi+ pi- pi0
-create Herwig::MEee2Mesons MEee3Pions HwMELeptonLowEnergy.so
-create Herwig::ThreePionCzyzCurrent /Herwig/Decays/ThreePionCzyzCurrent
-set MEee3Pions:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
-# e+ e- -> 2pi+ 2pi-, 2pi0, pi+ pi-
-create Herwig::MEee2Mesons MEee4Pions HwMELeptonLowEnergy.so
-create Herwig::FourPionCzyzCurrent /Herwig/Decays/FourPionCzyzCurrent
-set MEee4Pions:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
-# e+ e- -> eta pi+ pi-
-create Herwig::MEee2Mesons MEee2EtaPiPi HwMELeptonLowEnergy.so
-create Herwig::EtaPiPiCurrent /Herwig/Decays/EtaPiPiCurrent 
-set MEee2EtaPiPi:WeakCurrent /Herwig/Decays/EtaPiPiCurrent
-# e+ e- -> eta' pi+ pi-
-create Herwig::MEee2Mesons MEee2EtaPrimePiPi HwMELeptonLowEnergy.so
-create Herwig::EtaPrimePiPiCurrent /Herwig/Decays/EtaPrimePiPiCurrent 
-set MEee2EtaPrimePiPi:WeakCurrent /Herwig/Decays/EtaPrimePiPiCurrent
-# e+ e- -> omega pi (omega -> pi0 gamma)
-create Herwig::MEee2Mesons MEee2OmegaPi HwMELeptonLowEnergy.so
-create Herwig::TwoPionPhotonSNDCurrent /Herwig/Decays/OmegaPiCurrent 
-#create Herwig::TwoPionPhotonCurrent /Herwig/Decays/OmegaPiCurrent 
-set MEee2OmegaPi:WeakCurrent /Herwig/Decays/OmegaPiCurrent
-# e+ e- > pi0 gamma
-create Herwig::MEee2Mesons MEee2PiGamma HwMELeptonLowEnergy.so
-create Herwig::PionPhotonCurrent /Herwig/Decays/PiGammaCurrent
-set MEee2PiGamma:WeakCurrent /Herwig/Decays/PiGammaCurrent
-# e+e- -> eta gamma
-create Herwig::MEee2Mesons MEee2EtaGamma HwMELeptonLowEnergy.so
-create Herwig::EtaPhotonCurrent /Herwig/Decays/EtaGammaCurrent
-set MEee2EtaGamma:WeakCurrent /Herwig/Decays/EtaGammaCurrent
-# e+e- -> eta phi
-create Herwig::MEee2Mesons MEee2EtaPhi HwMELeptonLowEnergy.so
-create Herwig::EtaPhiCurrent /Herwig/Decays/EtaPhiCurrent
-set MEee2EtaPhi:WeakCurrent /Herwig/Decays/EtaPhiCurrent
-# e+e- -> eta omega
-create Herwig::MEee2Mesons MEee2EtaOmega HwMELeptonLowEnergy.so
-create Herwig::EtaOmegaCurrent /Herwig/Decays/EtaOmegaCurrent
-set MEee2EtaOmega:WeakCurrent /Herwig/Decays/EtaOmegaCurrent
-# e+e- > p pbar
-create Herwig::MEee2Mesons MEee2ppbar HwMELeptonLowEnergy.so
-create Herwig::WeakBaryonCurrent  /Herwig/Decays/CzyzCurrent
-create Herwig::CzyzNucleonFormFactor  /Herwig/Decays/CzyzFormFactor
-set /Herwig/Decays/CzyzCurrent:FormFactor /Herwig/Decays/CzyzFormFactor
-set MEee2ppbar:WeakCurrent /Herwig/Decays/CzyzCurrent
-# e+e- > hyperons
-create Herwig::MEee2Mesons MEee2LL HwMELeptonLowEnergy.so
-create Herwig::WeakBaryonCurrent  /Herwig/Decays/KornerKurodaCurrent
-create Herwig::KornerKurodaFormFactor  /Herwig/Decays/KornerKurodaFormFactor
-set /Herwig/Decays/KornerKurodaCurrent:FormFactor /Herwig/Decays/KornerKurodaFormFactor
-set MEee2LL:WeakCurrent /Herwig/Decays/KornerKurodaCurrent
-# e+e- -> KKpi
-create Herwig::MEee2Mesons MEee2KKPi HwMELeptonLowEnergy.so
-create Herwig::KKPiCurrent /Herwig/Decays/KKPiCurrent 
-set MEee2KKPi:WeakCurrent /Herwig/Decays/KKPiCurrent
-# e+e- -> phi pi
-create Herwig::MEee2Mesons MEee2PhiPi HwMELeptonLowEnergy.so
-create Herwig::PhiPiCurrent /Herwig/Decays/PhiPiCurrent 
-set MEee2PhiPi:WeakCurrent /Herwig/Decays/PhiPiCurrent
-# e+ e- -> omega pi pi 
-create Herwig::MEee2Mesons MEee2OmegaPiPi HwMELeptonLowEnergy.so
-create Herwig::OmegaPiPiCurrent /Herwig/Decays/OmegaPiPiCurrent 
-set MEee2OmegaPiPi:WeakCurrent /Herwig/Decays/OmegaPiPiCurrent
 
-# default e+e- > q qbar (5 flavours d,u,s,c,b)
+# set the process
 ${processes}
 
 ##################################################
