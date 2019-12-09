@@ -9,8 +9,12 @@ EXTRA_DIST = $(ALL_H_FILES) $(ALL_CC_FILES)
 
 DIR_H_FILES = $(addprefix $(srcdir)/,$(ALL_H_FILES))
 ALL_H_FILES = \
-DMModel.h DMModel.fh
+DMModel.h DMModel.fh \
+DMMediatorQuarksVertex.h \
+DMDMMediatorVertex.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
-DMModel.cc
+DMModel.cc \
+DMMediatorQuarksVertex.cc \
+DMDMMediatorVertex.cc

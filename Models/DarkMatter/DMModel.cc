@@ -6,6 +6,8 @@
 
 #include "DMModel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -15,7 +17,7 @@
 
 using namespace Herwig;
 
-DMModel::DMModel() {}
+DMModel::DMModel() : cDMmed_(0.), cSMmed_({1.0,1.0,1.0}) {}
 
 IBPtr DMModel::clone() const {
   return new_ptr(*this);
@@ -26,9 +28,11 @@ IBPtr DMModel::fullclone() const {
 }
 
 void DMModel::persistentOutput(PersistentOStream & os) const {
+  os << cDMmed_ << cSMmed_;
 }
 
 void DMModel::persistentInput(PersistentIStream & is, int) {
+  is >> cDMmed_ >> cSMmed_;
 }
 
 
@@ -51,6 +55,16 @@ void DMModel::Init() {
      "%``Hadronic Footprint of GeV-Mass Dark Matter,''"
      "arXiv:1911.11147 [hep-ph]."
      "%%CITATION = ARXIV:1911.11147;%%");
+
+  static Parameter<DMModel,double> interfacecDMmed
+    ("cDMmed",
+     "coupling of DM to dark mediator",
+     &DMModel::cDMmed_, 1.0, 0., 10., false, false, Interface::limited);
+
+  static ParVector<DMModel,double> interfacecSMmed
+    ("cSMmed",
+     "coupling of SM to dark mediator",
+     &DMModel::cSMmed_, -1 , 1.0 , -10. , 10. , false, false, Interface::limited);
 
 }
 

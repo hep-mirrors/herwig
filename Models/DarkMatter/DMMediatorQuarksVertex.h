@@ -1,32 +1,39 @@
 // -*- C++ -*-
-#ifndef Herwig_DMModel_H
-#define Herwig_DMModel_H
+#ifndef Herwig_DMMediatorQuarksVertex_H
+#define Herwig_DMMediatorQuarksVertex_H
 //
-// This is the declaration of the DMModel class.
+// This is the declaration of the DMMediatorQuarksVertex class.
 //
 
-#include "Herwig/Models/General/BSMModel.h"
-#include "DMModel.fh"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The DMModel class is designed to implement a simple dark matter mode
- * with fermionic dark matter and a vector mediator, as described in  arXiv:1911.11147 
+ * The DMMediatorQuarksVertex class implements the couplings of the quarks to the mediator 
  *
- * @see \ref DMModelInterfaces "The interfaces"
- * defined for DMModel.
+ * @see \ref DMMediatorQuarksVertexInterfaces "The interfaces"
+ * defined for DMMediatorQuarksVertex.
  */
-class DMModel: public BSMModel {
+class DMMediatorQuarksVertex: public FFVVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  DMModel();
+  DMMediatorQuarksVertex();
+  
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
 public:
 
@@ -54,24 +61,18 @@ public:
    */
   static void Init();
 
-public:
+protected:
 
-  /**
-   *  Access to the couplings
-   */
+  /** @name Standard Interfaced functions. */
   //@{
-
   /**
-   * DM coupling to the mediator
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
    */
-  const double & cDMmed() const {return cDMmed_;}
-  
-  /**
-   *   The couplings of the quarks to the mediators
-   */
-  const vector<double> & cSMmed() const {return cSMmed_;}
+  virtual void doinit();
   //@}
-  
+
 protected:
 
   /** @name Clone Methods. */
@@ -95,22 +96,16 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DMModel & operator=(const DMModel &) = delete;
+  DMMediatorQuarksVertex & operator=(const DMMediatorQuarksVertex &);
 
-private:
-
-  /**
-   * DM coupling to the dark mediator
-   */
-  double cDMmed_;
-
-  /**                                                                                                                                                       
+  /**                           
    * SM couplings to the dark mediator
    */
   vector<double> cSMmed_;
-
+  //@}
+  
 };
 
 }
 
-#endif /* Herwig_DMModel_H */
+#endif /* Herwig_DMMediatorQuarksVertex_H */
