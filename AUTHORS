@@ -1,5 +1,5 @@
 ================================================================================
-Herwig 7.1.4
+Herwig 7.2.0
 ================================================================================
 
 Please contact <herwig@projects.hepforge.org> for any queries.
@@ -8,9 +8,11 @@ Please contact <herwig@projects.hepforge.org> for any queries.
 Herwig is actively developed by:
 --------------------------------------------------------------------------------
 
-Johannes Bellm
+Gavin Bewick
+Silvia Ferrario Ravasio
 Stefan Gieseke
 Patrick Kirchgaeßer
+Mohammad R. Masouminia
 Graeme Nail
 Andreas Papaefstathiou
 Simon Plätzer
@@ -18,8 +20,6 @@ Christian Reuschle
 Peter Richardson
 Mike Seymour
 Andrzej Siödmok
-Stephen Webster
-
 
 --------------------------------------------------------------------------------
 Former authors are:
@@ -27,6 +27,7 @@ Former authors are:
 
 Ken Arnold
 Manuel Bähr
+Johannes Bellm
 Luca d'Errico
 Martyn Gigg
 David Grellscheid
@@ -50,6 +51,7 @@ Martin Stoll
 Louise Suter
 Jon Tully
 Bryan Webber
+Stephen Webster
 Alix Wilcock
 David Winn
 Benedikt Zimmermann

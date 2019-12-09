@@ -240,6 +240,11 @@ for p in FR.all_parameters:
         text = add_brackets(expression, symbols)
         text=text.replace('()()','()')
         doinit.append('   %s_ = %s;'  % (p.name, text) )
+        if(p.type == 'complex') :
+            doinit.append('   if(std::isnan(%s_.real()) || std::isnan(%s_.imag()) || std::isinf(%s_.real()) || std::isinf(%s_.imag())) {throw InitException() << "Calculated parameter %s is nan or inf in Feynrules model. Check your input parameters.";}' % (p.name,p.name,p.name,p.name,p.name) )
+
+        else :
+            doinit.append('   if(std::isnan(%s_) || std::isinf(%s_)) {throw InitException() << "Calculated parameter %s is nan or inf in Feynrules model. Check your input parameters.";}' % (p.name,p.name,p.name) )
         if p in massnames:
             for idCode in massnames[p] :
                 doinit.append('   resetMass(%s,%s_ * GeV);'  % (idCode, p.name) )

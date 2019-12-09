@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-    yodafiles=["-Run-II-Z-e","-Run-II-Z-mu","-Run-II-Z-LowMass-mu","-Run-II-Z-HighMass-mu","-Run-I-W","-Run-I-Z","-Run-I-WZ"]
+    yodafiles=["-Run-II-W","-Run-II-Z-e","-Run-II-Z-mu","-Run-II-Z-LowMass-mu","-Run-II-Z-HighMass-mu","-Run-I-W","-Run-I-Z","-Run-I-WZ"]
 
     ## Get histos
     outhistos={}

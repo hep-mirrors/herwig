@@ -15,6 +15,7 @@ SextetGSSVertex.h  \
 SextetPSSVertex.h  \
 SextetGGSSVertex.h \
 SextetGVVVertex.h  \
+SextetPVVVertex.h  \
 SextetGGVVVertex.h \
 SextetFFSVertex.h \
 SextetFFVVertex.h
