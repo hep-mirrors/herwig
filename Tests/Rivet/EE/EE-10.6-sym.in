@@ -9,3 +9,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 
 # ARGUS charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
+# BELLE Lambda polarization
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1687566

@@ -8,5 +8,5 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
 # Babar charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
-# Babar charm hadron production
+# ARGUS charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
