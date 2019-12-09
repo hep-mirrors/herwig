@@ -202,7 +202,7 @@ double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
 					       incoming,false);
   }
   // spin 1/2
-  if(outgoing[0]->iSpin()==PDT::Spin1Half) {
+  if(outgoing[0]->iSpin()==PDT::Spin1Half && outgoing[1]->iSpin()==PDT::Spin1Half) {
     wave_.resize(2);
     wavebar_.resize(2);
     for(unsigned int ix=0;ix<2;++ix) {
@@ -235,7 +235,7 @@ double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
     return me;
   }
   // spin 3/2
-  else if(outgoing[0]->iSpin()==PDT::Spin3Half) {
+  else if(outgoing[0]->iSpin()==PDT::Spin3Half && outgoing[0]->iSpin()==PDT::Spin3Half) {
     wave2_.resize(4);
     wave2bar_.resize(4);
     wave_.resize(4);
