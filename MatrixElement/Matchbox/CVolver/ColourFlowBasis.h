@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ColourFlowBasis.h is a part of CVolver
-// Copyright (C) 2013-2017 Simon Platzer, The Herwig Collaboration
+// Copyright (C) 2013-2019 Simon Platzer, The Herwig Collaboration
 //
 // CVolver is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.

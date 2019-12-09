@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = HwFxFx.la HwFxFxHandler.la
 HwFxFx_la_SOURCES = \
 FxFxFileReader.cc FxFxFileReader.fh FxFxFileReader.h\
-FxFxEventHandler.cc FxFxEventHandler.h\
+FxFxEventHandler.cc FxFxEventHandler.h FxFxEventHandler.fh\
 FxFxReader.cc FxFxReader.fh FxFxReader.h\
 FxFx.h
 HwFxFx_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) -I$(FASTJETPATH)

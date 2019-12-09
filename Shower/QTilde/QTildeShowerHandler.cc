@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -41,7 +41,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
-
+#include "Herwig/MatrixElement/MEMinBias.h"
 
 using namespace Herwig;
 
@@ -496,7 +496,6 @@ void QTildeShowerHandler::doinitrun() {
 }
   
 void QTildeShowerHandler::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
-  _intrinsic.clear();
   if ( !ipTon() || !doISR() ) return;
   // don't do anything for the moment for secondary scatters
   if( !firstInteraction() ) return;
@@ -2072,8 +2071,10 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   // specific stuff for hard processes and decays
   Energy minmass(ZERO), mIn(ZERO);
   // hard process generate the intrinsic p_T once and for all
+  bool minBias = dynamic_ptr_cast<Ptr<MEMinBias>::ptr>(_hardme);
   if(hard) {
-    generateIntrinsicpT(particlesToShower);
+    _intrinsic.clear();
+    if(!minBias) generateIntrinsicpT(particlesToShower);
   }
   // decay compute the minimum mass of the final-state
   else {
@@ -2120,6 +2121,8 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   unsigned int ntry(0);
   bool reconstructed = false;
   do {
+    // type of recon to use
+    bool generalRecon = minBias >> (switchRecon && ntry>maximumTries()/2);
     // clear results of last attempt if needed
     if(ntry!=0) {
       currentTree()->clear();
@@ -2213,8 +2216,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
     // do the kinematic reconstruction, checking if it worked
     reconstructed = hard ?
       kinematicsReconstructor()->
-      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,
-			   switchRecon && ntry>maximumTries()/2) :
+      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,generalRecon) :
       kinematicsReconstructor()->
       reconstructDecayJets(currentTree(),interaction_);
     if(!reconstructed) continue;

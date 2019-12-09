@@ -49,6 +49,7 @@ def divide(name,numer,denom) :
             relerr_2 = 0.
         if yupp==0. or ylow== 0. :
             y=0.
+            ey=0.
         else :
             y = yupp / ylow
             ey = y * math.sqrt(relerr_1**2 + relerr_2**2)
@@ -146,10 +147,10 @@ yodafiles=["-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
            "-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
            "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
            "-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
-           "-630-Jets-3.yoda", "-300-UE.yoda", "-900-UE.yoda"]
+           "-630-Jets-3.yoda"]
 if(opts.ue) :
     yodafiles += ["-Run-II-UE.yoda"    ,"-Run-I-UE.yoda"    ,"-630-UE.yoda"      ,\
-                  "-300-Jets-1.yoda", "-900-Jets-1.yoda"]
+                  "-300-Jets-1.yoda", "-900-Jets-1.yoda", "-300-UE.yoda", "-900-UE.yoda"]
 
 ## Get histos
 inhistos = {}

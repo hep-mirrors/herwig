@@ -1,6 +1,6 @@
 SUBDIRS = Matching
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 26:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 27:0:0
 HwShower_la_SOURCES =  \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\
@@ -17,6 +17,7 @@ Kinematics/Decay_QTildeShowerKinematics1to2.cc \
 Kinematics/Decay_QTildeShowerKinematics1to2.h  \
 Kinematics/IS_QTildeShowerKinematics1to2.cc    Kinematics/IS_QTildeShowerKinematics1to2.h  \
 Kinematics/FS_QTildeShowerKinematics1to2.cc    Kinematics/FS_QTildeShowerKinematics1to2.h  \
+Kinematics/KinematicHelpers.h \
 Kinematics/KinematicsReconstructor.cc \
 Kinematics/KinematicsReconstructor.tcc \
 Kinematics/KinematicsReconstructor.h \

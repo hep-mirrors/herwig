@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ClusterHadronizationHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -210,12 +210,14 @@ handle(EventHandler & ch, const tPVector & tagged,
     // colour reconnection
     _colourReconnector->rearrange(CRclusters);
 
+
     // tag new clusters as children of the partons to hadronize
     _setChildren(CRclusters);
-
+    
+   
     // forms diquarks
     _clusterFinder->reduceToTwoComponents(CRclusters);
-
+    
     // recombine vectors of (possibly) reconnected and BV clusters
     clusters.clear();
     clusters.insert( clusters.end(), CRclusters.begin(), CRclusters.end() );
@@ -224,6 +226,7 @@ handle(EventHandler & ch, const tPVector & tagged,
     // fission of heavy clusters
     // NB: during cluster fission, light hadrons might be produced straight away
     finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
+
 
     // if clusters not previously reduced to two components do it now
     if(!_reduceToTwoComponents)
@@ -242,10 +245,9 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
   }
   if (!lightOK) {
-    throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!",
+    throw Exception( "CluHad::handle(): tried LightClusterDecayer 10 times!",
 		    Exception::eventerror);
   }
-
 
   // decay the remaining clusters
   _clusterDecayer->decay(clusters,finalHadrons);
@@ -254,6 +256,7 @@ handle(EventHandler & ch, const tPVector & tagged,
   // *****************************************
   // *****************************************
 
+  bool finalStateCluster=false;
   StepPtr pstep = newStep();
   set<PPtr> allDecendants;
   for (tPVector::const_iterator it = tagged.begin();
@@ -265,14 +268,24 @@ handle(EventHandler & ch, const tPVector & tagged,
       it != allDecendants.end(); ++it) {
     // this is a workaround because the set sometimes
     // re-orders parents after their children
-    if ((*it)->children().empty())
+    if ((*it)->children().empty()){
+      // If there is a cluster in the final state throw an event error
+      if((*it)->id()==81) {
+         finalStateCluster=true;
+      }
       pstep->addDecayProduct(*it);
+    }
     else {
       pstep->addDecayProduct(*it);
       pstep->addIntermediate(*it);
     }
   }
 
+  // For very small center of mass energies it might happen that baryonic clusters cannot decay into hadrons
+  if (finalStateCluster){
+     throw Exception( "CluHad::Handle(): Cluster in the final state", 
+                     Exception::eventerror);
+  }
   // *****************************************
   // *****************************************
   // *****************************************

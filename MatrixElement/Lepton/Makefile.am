@@ -8,7 +8,7 @@ MEee2HiggsVBF.h MEee2HiggsVBF.cc \
 MEee2VV.h MEee2VV.cc \
 MEee2VectorMeson.h MEee2VectorMeson.cc \
 MEee2Higgs2SM.h MEee2Higgs2SM.cc
-HwMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
+HwMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:1
 
 HwMELeptonLowEnergy_la_SOURCES = \
 MEee2Mesons.h MEee2Mesons.cc

@@ -21,11 +21,11 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
-            for i in range(0,h.numPoints) :
-                xMin = h.points[i].x-h.points[i].xErrs.minus
+            for i in range(0,h.numPoints()) :
+                xMin = h.points()[i].x()-h.points()[i].xErrs().minus
                 if( xMin*scale >= ptlow and 
                     xMin*scale <  pthigh ) :
-                    desthisto.addPoint(h.points[i])
+                    desthisto.addPoint(h.points()[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins()) :
                 if(h.bins()[i].xMin()*scale  >= ptlow and 
@@ -81,16 +81,16 @@ def useOneMass(hpath, sqrts, ptmin):
     global inhistos_pt
     global outhistos
     try:
-       ## Find best pT_min match
+        ## Find best pT_min match
         ptmins = inhistos_mass[hpath][float(sqrts)].keys()
         closest_ptmin = None
         for ptm in ptmins:
             if closest_ptmin is None or \
-                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
+               abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
                 closest_ptmin = ptm
         if closest_ptmin != float(ptmin):
             logging.warning("Inexact match for requested mass=%s: " % ptmin + \
-                                "using mass=%e instead" % closest_ptmin)
+                            "using mass=%e instead" % closest_ptmin)
         outhistos[hpath] =  inhistos_mass[hpath][float(sqrts)][closest_ptmin]
     except:
         pass
@@ -138,7 +138,7 @@ for i in range(1,11) :
     for j in [7,8,13] :
         yodafiles.append("-%1.1i-Jets-%1.1i.yoda" % (j,i))
         
-for i in range(1,3) :
+for i in range(1,4) :
     yodafiles.append("-2760-Jets-%1.1i.yoda" % i)
 
 if(opts.ue) :
@@ -252,6 +252,8 @@ for f in yodafiles:
            aopath.find("I1486238")>0 or aopath.find("1634970" )>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
+           if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
+               continue
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
            tmpE = inhistos_pt[aopath]
@@ -263,7 +265,21 @@ for f in yodafiles:
                tmpE[sqrts][ptmin] += ao
                #raise Exception("A set with ptmin = %s already exists" % ( ptmin))
         else :
-            if(aopath.find("I1243871")>0) :
+            if("1509919" in aopath and "Ctr_cut" in aopath) :
+                continue
+            elif "I1393758" in aopath and ("d02" in aopath or "d04" in aopath or
+                                           "d06" in aopath or "d08" in aopath or
+                                           "d10" in aopath or "d12" in aopath) :
+                continue
+            elif "1387176" in aopath and "y02" in aopath:
+                continue
+            elif "1454211" in aopath and "cutflow" in aopath :
+                continue
+            elif("ATLAS_2016_I1468168" in aopath) :
+                newPath=aopath.replace("Passed_events","d02-x01-y01")
+                outhistos[newPath] = ao
+                ao.setPath(newPath)
+            elif(aopath.find("I1243871")>0) :
                 if(aopath.find("x01")>0 and file.find("-7-Top-L.yoda")>0 ) :
                     outhistos[aopath] = ao
                 elif(aopath.find("x02")>0 and file.find("-7-Top-SL.yoda")>0 ) :
@@ -329,7 +345,7 @@ for i in range(1,12) :
 
 for f in yodafiles:
     file='Rivet-'+args[0]+f
-    if    "-7-Jets" in file or  "-7-DiJets" in file :
+    if    "-7-Jets" in file or  "-7-DiJets" in file or "-7-Bottom" in file :
         sqrts =  7000
     elif "-13-Jets" in file or "-13-DiJets" in file :
         sqrts = 13000

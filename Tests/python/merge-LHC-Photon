@@ -84,7 +84,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
 files=["-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda",
-       "-8-DiPhoton-GammaGamma.yoda","-8-DiPhoton-GammaJet.yoda","-GammaGamma-8.yoda"]
+       "-8-DiPhoton-GammaGamma.yoda","-8-DiPhoton-GammaJet.yoda"]
 
 for i in [7,8,13] :
     for j in range(1,5) :

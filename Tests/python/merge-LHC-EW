@@ -228,6 +228,14 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
                 elif(file.find("-e")>=0 and ihist<=30) :
                     outhistos[aopath] = ao
+
+            elif "ATLAS_2016_I1502620" in aopath :
+                newPath = aopath.split(":")[0]+"/"+aopath.split("/")[-1]
+                if newPath in outhistos :
+                    continue
+                else :                
+                    outhistos[newPath] = ao
+                    ao.setPath(newPath)
             elif ("CMS_2015_I1310737" in aopath or "ATLAS_2013_I1219109" in aopath or
                   ("ATLAS_2014_I1319490" in aopath and "y01" in aopath )) :
                 if aopath in outhistos :
@@ -235,12 +243,19 @@ if __name__ == "__main__":
                 else :
                     outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2015_I1351916")>=0) :
-                if(aopath.find("-y01")>=0) :
-                    pathBase = aopath.replace("-y01","")
-                    hp = aos[pathBase+"-y02"]
-                    hm = aos[pathBase+"-y03"]
+                if(aopath.find("-y02")>=0) :
+                    pathBase = "/%s/" % aopath.split("/")[1]
+                    if("d03" in aopath) :
+                        hp = aos[pathBase+"_ncf_pos"]
+                        hm = aos[pathBase+"_ncf_neg"]
+                    else :
+                        hp = aos[pathBase+"_ncc_pos"]
+                        hm = aos[pathBase+"_ncc_neg"]
                     ratio = (hp-hm)/(hp+hm)
-                    hnew = yoda.Scatter2D(aopath,ao.title)
+                    title=""
+                    if hasattr(ao, 'title'):
+                        title=ao.title()
+                    hnew = yoda.Scatter2D(aopath,title)
                     hnew.combineWith(ratio)
                     outhistos[aopath] = hnew
                 else :
@@ -287,6 +302,12 @@ if __name__ == "__main__":
                     tmpP[mass] = ao
                 else:
                     raise Exception("A set with mass = %s already exists" % ( mass))
+            elif (aopath.find("ATLAS_2017_I1514251")>=0) :
+                outhistos[aopath] = ao
+                if(type(ao)==yoda.core.Scatter2D) :
+                    ao.scaleY(2.)
+                elif(type(ao)==yoda.core.Histo1D) :
+                    ao.scaleW(2.)
             elif ( "2015_041_" in aopath) :
                 aopath=aopath.replace("_EL","").replace("_MU","")
                 ao.setPath(aopath)
@@ -429,6 +450,10 @@ if __name__ == "__main__":
                 del outhistos[num]
                 del outhistos[den]
                 outhistos[ "%sd%02d-x01-y%02d" % (basePath,ihist,iy)]=ratio
+            elif den in outhistos :
+                del outhistos[den]
+            elif num in outhistos :
+                del outhistos[num]
     # Choose output file
     name = args[0]+"-EW.yoda"
     yoda.writeYODA(outhistos,name)
