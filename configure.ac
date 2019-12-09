@@ -126,6 +126,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/RPV/Makefile
 		Models/UED/Makefile
 		Models/LH/Makefile
+		Models/DarkMatter/Makefile
 		Models/LHTP/Makefile
 		Models/Transplanckian/Makefile
 		Models/Leptoquarks/Makefile

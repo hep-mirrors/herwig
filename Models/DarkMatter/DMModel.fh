@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DMModel class.
+//
+#ifndef Herwig_DMModel_FH
+#define Herwig_DMModel_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class DMModel;
+
+ThePEG_DECLARE_POINTERS(Herwig::DMModel,DMModelPtr);
+
+}
+
+#endif

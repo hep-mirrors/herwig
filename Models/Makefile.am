@@ -1,6 +1,6 @@
 SUBDIRS = RSModel  StandardModel General Susy UED Zprime \
           Transplanckian ADD Leptoquarks Sextet TTbAsymm \
-          LH LHTP Feynrules
+          LH LHTP Feynrules DarkMatter
 
 noinst_LTLIBRARIES = libHwStandardModel.la
 nodist_libHwStandardModel_la_SOURCES = \
@@ -34,6 +34,7 @@ HwLeptoquarkModel.la \
 HwSextetModel.la \
 HwTTbAModel.la \
 HwLHModel.la \
+HwDMModel.la \
 HwLHTPModel.la
 
 endif
@@ -163,6 +164,17 @@ $(AM_CPPFLAGS) -I$(srcdir)/LH
 
 nodist_HwLHModel_la_SOURCES = \
 LH/LH__all.cc
+
+#############
+
+HwDMModel_la_LDFLAGS = \
+$(AM_LDFLAGS) -module -version-info 7:0:0
+
+HwDMModel_la_CPPFLAGS = \
+$(AM_CPPFLAGS) -I$(srcdir)/DarkMatter
+
+nodist_HwDMModel_la_SOURCES = \
+DarkMatter/DM__all.cc
 
 #############
 
