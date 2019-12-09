@@ -460,6 +460,7 @@ Energy6 SMTopDecayer::dGammaIntegrand(Energy2 mffb2, Energy2 mbf2, Energy mt,
 
 void SMTopDecayer::initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 					  double & final) {
+  if(born->bornOutgoing().size()!=2) return;
   // check the outgoing particles
   PPtr part[2];
   for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
