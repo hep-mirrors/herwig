@@ -113,8 +113,6 @@ void MEDM2Mesons::doinit() {
   if(!foundS) {
     throw InitException() << "Cannot find strange quark coupling in MEDM2Mesons::doinit()";
   }
-  cDMmed_ = 1.;
-  cSMmed_ = {1.0,1.0,1.0};
   MEMultiChannel::doinit();
 }
 

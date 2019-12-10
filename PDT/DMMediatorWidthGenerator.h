@@ -141,16 +141,6 @@ private:
    */
   vector<WeakCurrentPtr> weakCurrents_;
 
-  /**
-   * DM coupling to the dark mediator
-   */
-  double cDMmed_;
-
-  /**                                                                                                                                                       
-   * SM couplings to the dark mediator
-   */
-  vector<double> cSMmed_;
-
 };
 
 }

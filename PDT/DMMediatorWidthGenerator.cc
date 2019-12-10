@@ -34,9 +34,8 @@ struct ParticleOrdering {
 };
 }
 
-DMMediatorWidthGenerator::DMMediatorWidthGenerator() : cDMmed_(0.) {
-  cSMmed_ = {1.0,1.0,1.0};
-}
+DMMediatorWidthGenerator::DMMediatorWidthGenerator()
+{}
 
 IBPtr DMMediatorWidthGenerator::clone() const {
   return new_ptr(*this);
@@ -87,7 +86,7 @@ void DMMediatorWidthGenerator::doinit() {
       string classname = "Herwig::DMMediatorDecayer";
       DMMediatorDecayerPtr decayer = dynamic_ptr_cast<DMMediatorDecayerPtr>
 	(generator()->preinitCreate(classname,fullname.str()));
-      decayer->setDecayInfo(parent_,out,current,cDMmed_,cSMmed_);
+      decayer->setDecayInfo(parent_,out,current);
       // // set decayer options from base class
       // setDecayerInterfaces(fullname.str());
       // initialize the decayer
@@ -116,11 +115,11 @@ void DMMediatorWidthGenerator::doinit() {
 
 
 void DMMediatorWidthGenerator::persistentOutput(PersistentOStream & os) const {
-  os << weakCurrents_ << cDMmed_ << cSMmed_;
+  os << weakCurrents_;
 }
 
 void DMMediatorWidthGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> weakCurrents_ >> cDMmed_ >> cSMmed_;
+  is >> weakCurrents_;
 }
 
 // The following static variable is needed for the type
@@ -142,16 +141,6 @@ void DMMediatorWidthGenerator::Init() {
     ("Parent",
      "The decaying particle",
      &DMMediatorWidthGenerator::parent_, false, false, true, false, false);
-
-  static Parameter<DMMediatorWidthGenerator,double> interfacecDMmed
-    ("cDMmed",
-     "coupling of DM to dark mediator",
-     &DMMediatorWidthGenerator::cDMmed_, 1.0, 0., 10., false, false, Interface::limited);
-
-  static ParVector<DMMediatorWidthGenerator,double> interfacecSMmed
-    ("cSMmed",
-     "coupling of SM to dark mediator",
-     &DMMediatorWidthGenerator::cSMmed_, -1 , 1.0 , -10. , 10. , false, false, Interface::limited);
 }
 
 

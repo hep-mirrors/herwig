@@ -35,7 +35,8 @@ public:
   /**
    * The default constructor.
    */
-  DMMediatorDecayer() : wgtmax_(0.) {}
+  DMMediatorDecayer() : cSMmed_({0.,0.,0.}), wgtmax_(0.)
+  {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -83,8 +84,7 @@ public:
    *  set up the decay
    */
   void setDecayInfo(PDPtr in, const vector<tPDPtr> & outCurrent,
-		    WeakCurrentPtr current,
-		    double normin, vector<double> sm);
+		    WeakCurrentPtr current);
 
 public:
 
@@ -190,12 +190,12 @@ private:
   /**
    * DM coupling to the dark mediator
    */
-  double cDMmed_;
+  Complex cDMmed_;
 
   /**                                                                                                                                                       
    * SM couplings to the dark mediator
    */
-  vector<double> cSMmed_;
+  vector<Complex> cSMmed_;
 
   /**
    * Pointer to the current

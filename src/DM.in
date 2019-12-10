@@ -39,10 +39,6 @@ set /Herwig/Widths/DMWidth:Parent /Herwig/Particles/Zp
 insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/TwoKaonCzyzCurrent
 insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/TwoPionCzyzCurrent
 insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/PhiPiCurrent
-set /Herwig/Widths/DMWidth:cDMmed 1.0 
-set /Herwig/Widths/DMWidth:cSMmed[0] 1.0 
-set /Herwig/Widths/DMWidth:cSMmed[1] 1.0 
-set /Herwig/Widths/DMWidth:cSMmed[2] 1.0 
 
 
 

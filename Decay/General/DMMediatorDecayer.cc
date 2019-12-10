@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Models/General/BSMModel.h"
 
 using namespace Herwig;
 
@@ -32,11 +33,11 @@ IBPtr DMMediatorDecayer::fullclone() const {
 }
 
 void DMMediatorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << inpart_ << currentOut_ << current_ << mode_ << wgtloc_ << wgtmax_ << weights_ << cDMmed_ << cSMmed_;
+  os << inpart_ << currentOut_ << current_ << mode_ << wgtloc_ << wgtmax_ << weights_ << cSMmed_;
 }
 
 void DMMediatorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> inpart_ >> currentOut_ >> current_ >> mode_ >> wgtloc_ >> wgtmax_ >> weights_ >> cDMmed_ >> cSMmed_;
+  is >> inpart_ >> currentOut_ >> current_ >> mode_ >> wgtloc_ >> wgtmax_ >> weights_ >> cSMmed_;
 }
 
 // The following static variable is needed for the type
@@ -51,16 +52,50 @@ void DMMediatorDecayer::Init() {
   
 }
 
-void DMMediatorDecayer::setDecayInfo(PDPtr in, const vector<tPDPtr> & outCurrent,
-				     WeakCurrentPtr current, double normin, vector<double> sm) {
+void DMMediatorDecayer::setDecayInfo(PDPtr in, const vector<tPDPtr> & outCurrent, WeakCurrentPtr current) {
   inpart_ = in;
   currentOut_ = outCurrent;
   current_ = current;
-  cDMmed_=normin;
-  cSMmed_=sm;
+  // cast the model
+  Ptr<BSMModel>::ptr model = dynamic_ptr_cast<Ptr<BSMModel>::ptr>(generator()->standardModel());
+  bool foundU(false),foundD(false),foundS(false);
+  // find the vertices we need and extract the couplings
+  for(unsigned int ix = 0; ix < model->numberOfVertices(); ++ix ) {
+    VertexBasePtr vertex = model->vertex(ix);
+    if(vertex->getNpoint()!=3) continue;
+    for(unsigned int iloc = 0;iloc < 3; ++iloc) {
+      vector<long> ext = vertex->search(iloc, in->id());
+      if(ext.empty()) continue;
+      for(unsigned int ioff=0;ioff<ext.size();ioff+=3) {
+	if(iloc!=2) assert(false);
+	if(abs(ext[ioff])==1 && abs(ext[ioff+1])==1 &&  ext[ioff]==-ext[ioff+1]) {
+	  foundD = true;
+	  vertex->setCoupling(sqr(in->mass()),getParticleData(1),getParticleData(-1),in);
+	  cSMmed_[0] = vertex->norm();
+	}
+	else if(abs(ext[ioff])==2 && abs(ext[ioff+1])==2 &&  ext[ioff]==-ext[ioff+1]) {
+	  foundU = true;
+	  vertex->setCoupling(sqr(in->mass()),getParticleData(2),getParticleData(-2),in);
+	  cSMmed_[1] = vertex->norm();
+	}
+	else if(abs(ext[ioff])==3 && abs(ext[ioff+1])==3 &&  ext[ioff]==-ext[ioff+1]) {
+	  foundS = true;
+	  vertex->setCoupling(sqr(in->mass()),getParticleData(3),getParticleData(-3),in);
+	  cSMmed_[2] = vertex->norm();
+	}
+      }
+    }
+  }
+  if(!foundD) {
+    throw InitException() << "Cannot find down quark coupling in DMMediatorDecayer::doinit()";
+  }
+  if(!foundU) {
+    throw InitException() << "Cannot find up quark coupling in DMMediatorDecayer::doinit()";
+  }
+  if(!foundS) {
+    throw InitException() << "Cannot find strange quark coupling in DMMediatorDecayer::doinit()";
+  }
 }
-
-
 
 int DMMediatorDecayer::modeNumber(bool & cc, tcPDPtr parent, 
 				  const tPDVector & children) const {
@@ -217,7 +252,7 @@ double DMMediatorDecayer::me2(const int ichan, const Particle & part,
 	amp += (cSMmed_[0]-cSMmed_[1])/sqrt(2.)/q*(vectors_[ihel[0]].wave().dot(hadronI1[hhel]));
       if(hss_size !=0)
 	amp += cSMmed_[2]                      /q*(vectors_[ihel[0]].wave().dot(hadronssbar[hhel]));
-      (*newME)(ihel) = cDMmed_*amp;
+      (*newME)(ihel) = amp;
     }
   }
   // store the matrix element
