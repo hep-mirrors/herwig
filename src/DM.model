@@ -110,14 +110,9 @@ set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/DM/Model
 cd /Herwig/MatrixElements
 # X X -> mesons
 create Herwig::MEDM2Mesons DMMatrixElement
-set DMMatrixElement:IncomingA /Herwig/Particles/chi 
+set DMMatrixElement:IncomingA /Herwig/Particles/chi
 set DMMatrixElement:IncomingB /Herwig/Particles/chi
-# mediator coupling to u,d,s
-set DMMatrixElement:cSMmed[0] 1.0 
-set DMMatrixElement:cSMmed[1] 1.0 
-set DMMatrixElement:cSMmed[2] 1.0 
-# DM to mediator coupling
-set DMMatrixElement:cDMmed 1.0 
+# DM to mediator 
 set DMMatrixElement:Mediator /Herwig/Particles/Zp 
 # create the matrix elements for the different processes
 cp DMMatrixElement MEDM2Pions

@@ -41,7 +41,7 @@ void DMMediatorQuarksVertex::persistentInput(PersistentIStream & is, int) {
 void DMMediatorQuarksVertex::setCoupling(Energy2 ,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   int iferm=abs(aa->id());
   assert(iferm>0 && iferm<4);
-  norm(cSMmed_[iferm]);
+  norm(cSMmed_[iferm-1]);
   left(1.);
   right(1.);
 }

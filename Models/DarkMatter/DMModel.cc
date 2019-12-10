@@ -79,3 +79,9 @@ void DMModel::Init() {
 
 }
 
+void DMModel::doinit() {
+  // additional vertices
+  if(QQZpVertex_)   addVertex(QQZpVertex_);
+  if(DMDMZpVertex_) addVertex(DMDMZpVertex_);
+  BSMModel::doinit();
+}

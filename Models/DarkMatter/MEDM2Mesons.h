@@ -159,17 +159,12 @@ private :
   /**
    * DM coupling to the dark mediator
    */
-  double cDMmed_;
+  Complex cDMmed_;
 
   /**                                                                                                                                                       
    * SM couplings to the dark mediator
    */
-  vector<double> cSMmed_;
-
-  /**
-   * DM mediator mass
-   */
-  Energy MMed_;
+  vector<Complex> cSMmed_;
 
   /**
    * DM vector mediator

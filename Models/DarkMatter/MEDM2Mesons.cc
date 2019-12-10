@@ -16,13 +16,13 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig/Models/General/BSMModel.h"
 
 using namespace Herwig;
 typedef LorentzVector<complex<InvEnergy> > LorentzPolarizationVectorInvE;
 
-MEDM2Mesons::MEDM2Mesons() : cDMmed_(0.) {
-  cSMmed_ = {1.0,1.0,1.0};
-}
+MEDM2Mesons::MEDM2Mesons() : cDMmed_(0.), cSMmed_({0.0,0.0,0.0})
+{}
 
 Energy2 MEDM2Mesons::scale() const {
   return sHat();
@@ -65,15 +65,65 @@ void MEDM2Mesons::doinit() {
      addMode(mode);
      ++nmode;
   }
+  // cast the model
+  Ptr<BSMModel>::ptr model = dynamic_ptr_cast<Ptr<BSMModel>::ptr>(generator()->standardModel());
+  bool foundDM(false),foundU(false),foundD(false),foundS(false);
+  // find the vertices we need and extract the couplings
+  for(unsigned int ix = 0; ix < model->numberOfVertices(); ++ix ) {
+    VertexBasePtr vertex = model->vertex(ix);
+    if(vertex->getNpoint()!=3) continue;
+    for(unsigned int iloc = 0;iloc < 3; ++iloc) {
+      vector<long> ext = vertex->search(iloc, Mediator_->id());
+      if(ext.empty()) continue;
+      for(unsigned int ioff=0;ioff<ext.size();ioff+=3) {
+	if(iloc!=2) assert(false);
+	if((ext[ioff]==incomingA_->id() && ext[ioff+1]==incomingB_->id()) || 
+	   (ext[ioff]==incomingB_->id() && ext[ioff+1]==incomingA_->id())) {
+	  foundDM = true;
+	  vertex->setCoupling(sqr(Emax),incomingA_,incomingB_,Mediator_);
+	  cDMmed_ = vertex->norm();
+	}
+	else if(abs(ext[ioff])==1 && abs(ext[ioff+1])==1 &&  ext[ioff]==-ext[ioff+1]) {
+	  foundD = true;
+	  vertex->setCoupling(sqr(Emax),getParticleData(1),getParticleData(-1),Mediator_);
+	  cSMmed_[0] = vertex->norm();
+	}
+	else if(abs(ext[ioff])==2 && abs(ext[ioff+1])==2 &&  ext[ioff]==-ext[ioff+1]) {
+	  foundU = true;
+	  vertex->setCoupling(sqr(Emax),getParticleData(2),getParticleData(-2),Mediator_);
+	  cSMmed_[1] = vertex->norm();
+	}
+	else if(abs(ext[ioff])==3 && abs(ext[ioff+1])==3 &&  ext[ioff]==-ext[ioff+1]) {
+	  foundS = true;
+	  vertex->setCoupling(sqr(Emax),getParticleData(3),getParticleData(-3),Mediator_);
+	  cSMmed_[2] = vertex->norm();
+	}
+      }
+    }
+  }
+  if(!foundDM) {
+    throw InitException() << "Cannot find DM coupling in MEDM2Mesons::doinit()";
+  }
+  if(!foundD) {
+    throw InitException() << "Cannot find down quark coupling in MEDM2Mesons::doinit()";
+  }
+  if(!foundU) {
+    throw InitException() << "Cannot find up quark coupling in MEDM2Mesons::doinit()";
+  }
+  if(!foundS) {
+    throw InitException() << "Cannot find strange quark coupling in MEDM2Mesons::doinit()";
+  }
+  cDMmed_ = 1.;
+  cSMmed_ = {1.0,1.0,1.0};
   MEMultiChannel::doinit();
 }
 
 void MEDM2Mesons::persistentOutput(PersistentOStream & os) const {
-  os << current_ << modeMap_ << incomingA_ << incomingB_ << Mediator_ << cDMmed_ << cSMmed_ << ounit(MMed_,GeV);
+  os << current_ << modeMap_ << incomingA_ << incomingB_ << Mediator_ << cDMmed_ << cSMmed_;
 }
 
 void MEDM2Mesons::persistentInput(PersistentIStream & is, int) {
-  is >> current_ >> modeMap_ >> incomingA_ >> incomingB_ >> Mediator_ >> cDMmed_ >> cSMmed_ >> iunit(MMed_,GeV);
+  is >> current_ >> modeMap_ >> incomingA_ >> incomingB_ >> Mediator_ >> cDMmed_ >> cSMmed_;
 }
 
 //The following static variable is needed for the type
@@ -106,16 +156,6 @@ void MEDM2Mesons::Init() {
     ("Mediator",
      "DM mediator",
      &MEDM2Mesons::Mediator_, false, false, true, false, false);
-
-  static Parameter<MEDM2Mesons,double> interfacecDMmed
-    ("cDMmed",
-     "coupling of DM to dark mediator",
-     &MEDM2Mesons::cDMmed_, 1.0, 0., 10., false, false, Interface::limited);
-
-  static ParVector<MEDM2Mesons,double> interfacecSMmed
-    ("cSMmed",
-     "coupling of SM to dark mediator",
-     &MEDM2Mesons::cSMmed_, -1 , 1.0 , -10. , 10. , false, false, Interface::limited);
 
 }
 
