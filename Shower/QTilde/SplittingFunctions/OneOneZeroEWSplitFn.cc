@@ -79,14 +79,9 @@ double OneOneZeroEWSplitFn::P(const double z, const Energy2 t,
   double rho11 = abs(rho(1,1));
   double rho22 = abs(rho(2,2));
   // the splitting in the massless limit
-  double val = 0.;
-  // the massive limit
-  if(mass){
-    // get the running mass
-    double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
     //val += (2./sqr(z))*sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
-    val += 2.*sqr(m0t)*(rho00+rho22);
-  }
+  double val = 2.*sqr(m0t)*(rho00+rho22);
   return sqr(gvvh)*val;
 }
 
@@ -105,14 +100,8 @@ double OneOneZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   double rho00 = abs(rho(0,0));
   double rho11 = abs(rho(1,1));
   double rho22 = abs(rho(2,2));
-  // ratio in the massless limit
-  double val = 0.;
-  // the massive limit
-  if(mass){
-    // get the running mass
-    double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-    val += sqr(m0t)*(rho00+rho22);
-  }
+  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+  double val = sqr(m0t)*(rho00+rho22);
   return val;
 }
 
