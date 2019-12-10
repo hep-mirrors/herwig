@@ -206,7 +206,7 @@ double DMMediatorDecayer::me2(const int ichan, const Particle & part,
   for(unsigned int hhel=0;hhel<maxsize;++hhel) {
     // map the index for the hadrons to a helicity state
     for(int ix=nOut;ix>0;--ix) {
-      ihel[ix+1]=(hhel%constants[ix-1])/constants[ix];
+      ihel[ix]=(hhel%constants[ix-1])/constants[ix];
     }
     for(ihel[0]=0;ihel[0]<3;++ihel[0]) {
       Complex amp = 0.;

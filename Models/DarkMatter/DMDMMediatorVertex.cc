@@ -16,7 +16,11 @@
 
 using namespace Herwig;
 
-DMDMMediatorVertex::DMDMMediatorVertex() : cDMmed_(0.) {}
+DMDMMediatorVertex::DMDMMediatorVertex() : cDMmed_(0.) {
+  orderInGem(1);
+  orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
+}
 
 IBPtr DMDMMediatorVertex::clone() const {
   return new_ptr(*this);

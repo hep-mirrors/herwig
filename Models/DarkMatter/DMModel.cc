@@ -7,6 +7,7 @@
 #include "DMModel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -28,11 +29,11 @@ IBPtr DMModel::fullclone() const {
 }
 
 void DMModel::persistentOutput(PersistentOStream & os) const {
-  os << cDMmed_ << cSMmed_;
+  os << cDMmed_ << cSMmed_ << QQZpVertex_ << DMDMZpVertex_;
 }
 
 void DMModel::persistentInput(PersistentIStream & is, int) {
-  is >> cDMmed_ >> cSMmed_;
+  is >> cDMmed_ >> cSMmed_ >> QQZpVertex_ >> DMDMZpVertex_;
 }
 
 
@@ -65,6 +66,16 @@ void DMModel::Init() {
     ("cSMmed",
      "coupling of SM to dark mediator",
      &DMModel::cSMmed_, -1 , 1.0 , -10. , 10. , false, false, Interface::limited);
+
+  static Reference<DMModel,AbstractFFVVertex> interfaceQQZpVertex
+    ("Vertex/QQZpVertex",
+     "The vertex coupling the quarks and the mediator",
+     &DMModel::QQZpVertex_, false, false, true, false, false);
+
+  static Reference<DMModel,AbstractFFVVertex> interfaceDMDMZpVertex
+    ("Vertex/DMDMZpVertex",
+     "The vertex coupling the DM to the mediator",
+     &DMModel::DMDMZpVertex_, false, false, true, false, false);
 
 }
 

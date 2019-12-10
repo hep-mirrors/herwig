@@ -15,5 +15,4 @@ HardVertex.fh HardVertex.h HardVertex.cc \
 ProductionMatrixElement.h ProductionMatrixElement.cc \
 DrellYanBase.h DrellYanBase.cc \
 BlobME.h BlobME.cc \
-MEMinBias.h MEMinBias.cc \
-MEDM2Mesons.h MEDM2Mesons.cc
+MEMinBias.h MEMinBias.cc

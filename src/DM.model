@@ -1,0 +1,153 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+# Common setup for Zprime models
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# DM.in
+#
+###################################################
+#
+#  Particle Data object for the new resonances
+#
+###################################################
+cd /Herwig/Particles
+
+# Dark model
+
+create ThePEG::ParticleData Zp
+setup Zp 32 Zp 2.0 0.0001 0.0 0.0 0 0 3 0
+create ThePEG::BeamParticleData chi
+setup chi 52 chi 1.0 0.0 0.0 0.0 0 0 2 0
+
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/NewPhysics/DM
+cd /Herwig/NewPhysics/DM
+create Herwig::DMModel Model HwDMModel.so
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set Model:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+
+# Z prime couplings 
+# quark-anti-quark
+set Model:cDMmed 1.
+set Model:cSMmed 0 1.0
+set Model:cSMmed 1 1.0
+set Model:cSMmed 2 1.0
+
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create model vertices
+mkdir /Herwig/Vertices/DM
+cd /Herwig/Vertices/DM
+library HwDMModel.so
+create Herwig::DMMediatorQuarksVertex DM_QQZPVertex
+create Herwig::DMDMMediatorVertex DM_DMDMZPVertex
+
+cd /Herwig/NewPhysics/DM
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/WWHH /Herwig/Vertices/WWHHVertex
+
+set Model:Vertex/HHH /Herwig/Vertices/HHHVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# model vertices
+set Model:Vertex/QQZpVertex    /Herwig/Vertices/DM/DM_QQZPVertex
+set Model:Vertex/DMDMZpVertex  /Herwig/Vertices/DM/DM_DMDMZPVertex
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes No
+
+# which particles get the off-shell treatment
+set NewModel:WhichOffshell All
+# particles for which decays are included
+#insert NewModel:DecayParticles 0 /Herwig/Particles/Zp
+
+###################################################
+# Set up the model framework
+###################################################
+set DM/Model:ModelGenerator NewModel
+###################################################
+#
+#  Choose Model over SM
+#
+###################################################
+cd /Herwig/Generators
+set EventGenerator:StandardModelParameters  /Herwig/NewPhysics/DM/Model
+
+
+###################################################
+# Matrix Elements for the low energy annhilation
+###################################################
+
+cd /Herwig/MatrixElements
+# X X -> mesons
+create Herwig::MEDM2Mesons DMMatrixElement
+set DMMatrixElement:IncomingA /Herwig/Particles/chi 
+set DMMatrixElement:IncomingB /Herwig/Particles/chi
+# mediator coupling to u,d,s
+set DMMatrixElement:cSMmed[0] 1.0 
+set DMMatrixElement:cSMmed[1] 1.0 
+set DMMatrixElement:cSMmed[2] 1.0 
+# DM to mediator coupling
+set DMMatrixElement:cDMmed 1.0 
+set DMMatrixElement:Mediator /Herwig/Particles/Zp 
+# create the matrix elements for the different processes
+cp DMMatrixElement MEDM2Pions
+set MEDM2Pions:WeakCurrent /Herwig/Decays/TwoPionCzyzCurrent
+cp DMMatrixElement MEDM2Kaons
+set MEDM2Kaons:WeakCurrent /Herwig/Decays/TwoKaonCzyzCurrent
+cp DMMatrixElement MEDM3Pions
+set MEDM3Pions:WeakCurrent /Herwig/Decays/ThreePionCzyzCurrent
+cp DMMatrixElement MEDM4Pions
+set MEDM4Pions:WeakCurrent /Herwig/Decays/FourPionCzyzCurrent
+cp DMMatrixElement MEDM2EtaPiPi
+set MEDM2EtaPiPi:WeakCurrent /Herwig/Decays/EtaPiPiCurrent
+cp DMMatrixElement MEDM2EtaPrimePiPi
+set MEDM2EtaPrimePiPi:WeakCurrent /Herwig/Decays/EtaPrimePiPiCurrent
+cp DMMatrixElement MEDM2OmegaPiPi
+set MEDM2OmegaPiPi:WeakCurrent /Herwig/Decays/OmegaPiPiCurrent
+cp DMMatrixElement MEDM2OmegaPi
+set MEDM2OmegaPi:WeakCurrent /Herwig/Decays/OmegaPiCurrent
+cp DMMatrixElement MEDM2PiGamma
+set MEDM2PiGamma:WeakCurrent /Herwig/Decays/PiGammaCurrent
+cp DMMatrixElement MEDM2EtaPhoton
+set MEDM2EtaPhoton:WeakCurrent /Herwig/Decays/EtaGammaCurrent
+cp DMMatrixElement MEDM2EtaPhi
+set MEDM2EtaPhi:WeakCurrent /Herwig/Decays/EtaPhiCurrent
+cp DMMatrixElement MEDM2EtaOmega
+set MEDM2EtaOmega:WeakCurrent /Herwig/Decays/EtaOmegaCurrent
+cp DMMatrixElement MEDM2ppbar
+set /Herwig/Decays/CzyzCurrent:FormFactor /Herwig/Decays/CzyzFormFactor
+set MEDM2ppbar:WeakCurrent /Herwig/Decays/CzyzCurrent
+cp DMMatrixElement MEDM2KKPi
+set MEDM2KKPi:WeakCurrent /Herwig/Decays/KKPiCurrent
+cp DMMatrixElement MEDM2PhiPi
+set MEDM2PhiPi:WeakCurrent /Herwig/Decays/PhiPiCurrent

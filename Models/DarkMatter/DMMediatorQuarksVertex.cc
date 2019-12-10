@@ -16,7 +16,11 @@
 
 using namespace Herwig;
 
-DMMediatorQuarksVertex::DMMediatorQuarksVertex() {}
+DMMediatorQuarksVertex::DMMediatorQuarksVertex() {
+  orderInGem(1);
+  orderInGs(0);
+  colourStructure(ColourStructure::DELTA);
+}
 
 IBPtr DMMediatorQuarksVertex::clone() const {
   return new_ptr(*this);

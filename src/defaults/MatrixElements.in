@@ -79,7 +79,6 @@ set MEee2EtaPrimePiPi:WeakCurrent /Herwig/Decays/EtaPrimePiPiCurrent
 # e+ e- -> omega pi (omega -> pi0 gamma)
 create Herwig::MEee2Mesons MEee2OmegaPi HwMELeptonLowEnergy.so
 create Herwig::TwoPionPhotonSNDCurrent /Herwig/Decays/OmegaPiCurrent 
-#create Herwig::TwoPionPhotonCurrent /Herwig/Decays/OmegaPiCurrent 
 set MEee2OmegaPi:WeakCurrent /Herwig/Decays/OmegaPiCurrent
 # e+ e- > pi0 gamma
 create Herwig::MEee2Mesons MEee2PiGamma HwMELeptonLowEnergy.so

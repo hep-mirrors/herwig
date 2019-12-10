@@ -1,0 +1,82 @@
+# -*- ThePEG-repository -*-
+
+
+##################################################
+# Read the model parameters
+##################################################
+read DM.model
+
+##################################################
+# Set the beams
+##################################################
+
+read snippets/EECollider.in
+cd /Herwig/EventHandlers
+set EventHandler:BeamA /Herwig/Particles/chi
+set EventHandler:BeamB /Herwig/Particles/chi
+set /Herwig/Particles/chi:PDF /Herwig/Partons/NoPDF
+
+##################################################
+# Set long-lived hadrons/muon to be unstable
+##################################################
+set /Herwig/Particles/pi0:Stable Unstable
+set /Herwig/Particles/pi+:Stable Unstable
+set /Herwig/Particles/mu-:Stable Unstable
+set /Herwig/Particles/n0:Stable Unstable
+set /Herwig/Particles/K_L0:Stable Unstable
+set /Herwig/Particles/K+:Stable Unstable
+
+##################################################
+# Selected the hard process 
+##################################################
+# leading-order processes
+##################################################
+
+
+create Herwig::DMMediatorWidthGenerator /Herwig/Widths/DMWidth
+set /Herwig/Particles/Zp:Width_generator /Herwig/Widths/DMWidth
+set /Herwig/Widths/DMWidth:Parent /Herwig/Particles/Zp
+insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/TwoKaonCzyzCurrent
+insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/TwoPionCzyzCurrent
+insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/PhiPiCurrent
+set /Herwig/Widths/DMWidth:cDMmed 1.0 
+set /Herwig/Widths/DMWidth:cSMmed[0] 1.0 
+set /Herwig/Widths/DMWidth:cSMmed[1] 1.0 
+set /Herwig/Widths/DMWidth:cSMmed[2] 1.0 
+
+
+
+
+
+
+cd /Herwig/MatrixElements
+
+
+
+# Set Processes
+insert SubProcess:MatrixElements 0 MEDM2Kaons
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+# must be slightly greater than 2 x DM mass
+set EventGenerator:EventHandler:LuminosityFunction:Energy  2.0001
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
+cd /Herwig/Generators
+##################################################
+## prepare for Rivet analysis or HepMC output
+## when running with parton shower
+##################################################
+# create ThePEG::RivetAnalysis /Herwig/Analysis/Rivet RivetAnalysis.so
+# insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Rivet
+# insert /Herwig/Analysis/Rivet:Analyses 0 ANALYSIS
+
+
+###################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+set EventGenerator:MaxErrors 10000
+set EventGenerator:EventHandler:StatLevel Full
+set EventGenerator:EventHandler:CascadeHandler NULL
+saverun DM EventGenerator

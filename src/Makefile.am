@@ -29,6 +29,7 @@ NMSSM.model \
 RPV-Bi.model \
 RPV-Tri.model \
 RS.model \
+DM.model \
 Sextet.model \
 TTBA.model \
 Zprime.model \
@@ -73,7 +74,8 @@ LHE.in \
 LHE-POWHEG.in \
 LHE-MCatNLO.in \
 LHE-FxFx.in \
-LHE-MGMerging.in
+LHE-MGMerging.in \
+DM.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
@@ -108,7 +110,8 @@ check-LHC-TRP \
 check-LHC-TTBA check-TVT-TTBA \
 check-LHC-ZP \
 check-LHC-LQ \
-check-LHC-Sextet
+check-LHC-Sextet \
+check-DM
 
 endif
 check_BSM_Full_valgrind = $(subst check,check-valgrind,$(check_BSM_Full))

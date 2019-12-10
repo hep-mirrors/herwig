@@ -71,6 +71,26 @@ public:
    */
   const vector<double> & cSMmed() const {return cSMmed_;}
   //@}
+
+public:
+  
+  /**
+   * Pointers to the objects handling the vertices.
+   */
+  //@{
+  /**
+   * Pointer to the quark-quark mediator vertex
+   */
+  virtual tAbstractFFVVertexPtr  vertexQQZp() const {
+    return QQZpVertex_;
+  }
+
+  /**
+   * Pointer to the DM-DM mediator vertex
+   */
+  virtual tAbstractFFVVertexPtr  vertexDMDMZp() const {
+    return DMDMZpVertex_;
+  }
   
 protected:
 
@@ -104,11 +124,22 @@ private:
    */
   double cDMmed_;
 
-  /**                                                                                                                                                       
+  /**
    * SM couplings to the dark mediator
    */
   vector<double> cSMmed_;
 
+private:
+  
+  /**
+   * Pointer to the quark-quark mediator vertex
+   */
+  AbstractFFVVertexPtr QQZpVertex_;
+
+  /**
+   * Pointer to the DM-DM mediator vertex
+   */
+  AbstractFFVVertexPtr DMDMZpVertex_;
 };
 
 }
