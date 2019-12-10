@@ -1101,6 +1101,10 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   while ( !theOriginals.empty() ) {
     PPtr outSubPro = theOriginals.begin()->first;
     PPtr outParton = theOriginals.begin()->second;
+    outSubPro->setLifeLength(Lorentz5Distance());
+    outSubPro->setVertex(LorentzPoint());
+    outParton->setLifeLength(Lorentz5Distance());
+    outParton->setVertex(LorentzPoint());
     // workaround for OS X Mavericks LLVM libc++
 #ifdef _LIBCPP_VERSION
     map<PPtr,PPtr>::const_iterator beg = theOriginals.begin();
