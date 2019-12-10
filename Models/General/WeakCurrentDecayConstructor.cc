@@ -38,8 +38,7 @@ IBPtr WeakCurrentDecayConstructor::fullclone() const {
 
 void WeakCurrentDecayConstructor::doinit() {
   NBodyDecayConstructorBase::doinit();
-  _theModel = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>
-    (generator()->standardModel());
+  model_ = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>(generator()->standardModel());
   unsigned int isize=decayTags_.size();
   if(isize!=_norm .size()||isize!=_current.size())
     throw InitException() << "Invalid sizes for the decay mode vectors in "
@@ -67,11 +66,11 @@ void WeakCurrentDecayConstructor::doinit() {
 }
 
 void WeakCurrentDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_masscut,GeV) << decayTags_ << particles_ << _norm << _current;
+  os << ounit(massCut_,GeV) << decayTags_ << particles_ << _norm << _current;
 }
 
 void WeakCurrentDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_masscut,GeV) >> decayTags_ >> particles_ >> _norm >> _current;
+  is >> iunit(massCut_,GeV) >> decayTags_ >> particles_ >> _norm >> _current;
 }
 
 // The following static variable is needed for the type
@@ -105,19 +104,19 @@ void WeakCurrentDecayConstructor::Init() {
   static Parameter<WeakCurrentDecayConstructor,Energy> interfaceMassCut
     ("MassCut",
      "The maximum mass difference for the decay",
-     &WeakCurrentDecayConstructor::_masscut, GeV, 5.0*GeV, 1.0*GeV, 10.0*GeV,
+     &WeakCurrentDecayConstructor::massCut_, GeV, 5.0*GeV, 1.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
 }
 
 void WeakCurrentDecayConstructor::DecayList(const set<PDPtr> & part) {
   if( part.empty() ) return;
-  unsigned int nv(_theModel->numberOfVertices());
+  unsigned int nv(model_->numberOfVertices());
   for(set<PDPtr>::const_iterator ip=part.begin();ip!=part.end();++ip) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
       for(unsigned int ilist = 0; ilist < 3; ++ilist) { 
 	vector<TwoBodyDecay> decays =
-	  createModes(*ip, _theModel->vertex(iv),ilist);
+	  createModes(*ip, model_->vertex(iv),ilist);
 	if(!decays.empty()) createDecayMode(decays);
       }
     }
@@ -151,7 +150,7 @@ vector<TwoBodyDecay> WeakCurrentDecayConstructor::createModes(const PDPtr inpart
     //allowed on-shell decay and passes mass cut
     if( m1 >= pb->mass() + pc->mass() ) continue;
     if( m1 < mp ) continue;
-    if( m1 - mp >= _masscut ) continue;
+    if( m1 - mp >= massCut_ ) continue;
     //vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
@@ -189,7 +188,7 @@ GeneralCurrentDecayerPtr  WeakCurrentDecayConstructor::createDecayer(PDPtr in, P
   string classname = "Herwig::" + name;
   GeneralCurrentDecayerPtr decayer = dynamic_ptr_cast<GeneralCurrentDecayerPtr>
     (generator()->preinitCreate(classname,fullname.str()));
-  decayer->setDecayInfo(in,out1,outCurrent,vertex,current,_masscut);
+  decayer->setDecayInfo(in,out1,outCurrent,vertex,current,massCut_);
   // set decayer options from base class
   setDecayerInterfaces(fullname.str());
   // initialize the decayer

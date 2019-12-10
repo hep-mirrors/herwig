@@ -37,7 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  WeakCurrentDecayConstructor() : _masscut(5.*GeV) {}
+  WeakCurrentDecayConstructor() : massCut_(5.*GeV) {}
   
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -54,7 +54,7 @@ public:
   /**
    *  Cut off
    */
-  Energy massCut() const { return _masscut;}
+  Energy massCut() const { return massCut_;}
 
 public:
 
@@ -161,12 +161,12 @@ private:
   /**
    * Model Pointer
    */
-  Ptr<Herwig::StandardModel>::pointer _theModel;
+  Ptr<Herwig::StandardModel>::pointer model_;
 
   /**
    *  Cut-off on the mass difference
    */
-  Energy _masscut;
+  Energy massCut_;
 
   /**
    *  Tags for the modes
