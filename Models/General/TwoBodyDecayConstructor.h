@@ -41,7 +41,7 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor() : inter_(ShowerInteraction::Both) {
+  TwoBodyDecayConstructor() : inter_(ShowerInteraction::Both), weakMassCut_(-GeV) {
     radiationVertices_[ShowerInteraction::QCD] = map<tPDPtr,VertexBasePtr>();
     radiationVertices_[ShowerInteraction::QED] = map<tPDPtr,VertexBasePtr>();
   }
@@ -169,6 +169,11 @@ private:
    *  Which type of corrections to the decays to include
    */
   ShowerInteraction inter_; 
+
+  /**
+   *  Cut off or decays via the weak current
+   */
+  Energy weakMassCut_;
   
 };
   
