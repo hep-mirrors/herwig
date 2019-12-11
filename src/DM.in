@@ -27,14 +27,27 @@ set /Herwig/Particles/K_L0:Stable Unstable
 set /Herwig/Particles/K+:Stable Unstable
 
 ##################################################
-# Selected the hard process 
+# Selected the hard processes
 ##################################################
 cd /Herwig/MatrixElements
 
-
-
-# Set Processes
 insert SubProcess:MatrixElements 0 MEDM2Kaons
+insert SubProcess:MatrixElements 0 MEDM2Pions
+insert SubProcess:MatrixElements 0 MEDM2Kaons
+insert SubProcess:MatrixElements 0 MEDM3Pions
+insert SubProcess:MatrixElements 0 MEDM4Pions
+insert SubProcess:MatrixElements 0 MEDM2EtaPiPi
+insert SubProcess:MatrixElements 0 MEDM2EtaPrimePiPi
+insert SubProcess:MatrixElements 0 MEDM2OmegaPiPi
+insert SubProcess:MatrixElements 0 MEDM2OmegaPi
+insert SubProcess:MatrixElements 0 MEDM2PiGamma
+insert SubProcess:MatrixElements 0 MEDM2EtaPhoton
+insert SubProcess:MatrixElements 0 MEDM2EtaPhi
+insert SubProcess:MatrixElements 0 MEDM2EtaOmega
+insert SubProcess:MatrixElements 0 MEDM2ppbar
+insert SubProcess:MatrixElements 0 MEDM2KKPi
+insert SubProcess:MatrixElements 0 MEDM2PhiPi
+
 
 ##################################################
 # LEP physics parameters (override defaults) 
