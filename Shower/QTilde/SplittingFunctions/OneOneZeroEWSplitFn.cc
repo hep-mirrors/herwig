@@ -199,19 +199,19 @@ DecayMEPtr OneOneZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
   double r2 = sqrt(2.);
-  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-  double m2t = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
-  double sqrtmass = sqrt(sqr(m0t)-sqr(m0t)/z-sqr(m2t)/(1.-z)+1.);
+  double mBt = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+  double mHt = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
+  double sqrtmass = sqrt(-(sqr(mBt)*sqr(1.-z))-sqr(mHt)*z+(1.-z)*z);
   // assign kernel
-  (*kernal)(0,0,0) = -gvvh*r2*m0t; // 111
-  (*kernal)(0,1,0) = 0.; // 121
+  (*kernal)(0,0,0) = -gvvh*mBt/r2; // 111
+  (*kernal)(0,1,0) = -(cphase/2.)*sqrtmass; // 121
   (*kernal)(0,2,0) = 0.; // 131
-  (*kernal)(1,0,0) = 0.; // 211
+  (*kernal)(1,0,0) =  ( phase/2.*z)*sqrtmass; // 211
   (*kernal)(1,1,0) = 0.; // 221 > 441
-  (*kernal)(1,2,0) = 0.; // 231
+  (*kernal)(1,2,0) = -(cphase/2.*z)*sqrtmass; // 231
   (*kernal)(2,0,0) = 0.; // 311
-  (*kernal)(2,1,0) = 0.; // 321 > 341
-  (*kernal)(2,2,0) = -gvvh*r2*m0t; // 331
+  (*kernal)(2,1,0) =  ( phase/2.)*sqrtmass;; // 321
+  (*kernal)(2,2,0) = -gvvh*mBt/r2; // 331
   // return the answer
   return kernal;
 }
