@@ -74,5 +74,5 @@ Energy BSMWidthGenerator::partial2BodyWidth(int iloc, Energy m0,
 					       make_pair(partb, m2));
   }
   else
-    return ZERO;
+    return theModes[iloc].first->brat()*theModes[iloc].first->parent()->width();
 }
