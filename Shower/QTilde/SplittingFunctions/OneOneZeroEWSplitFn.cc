@@ -79,9 +79,17 @@ double OneOneZeroEWSplitFn::P(const double z, const Energy2 t,
   double rho11 = abs(rho(1,1));
   double rho22 = abs(rho(2,2));
   // the splitting in the massless limit
-  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+  double val = ((1.-z)*(2.*rho11+sqr(z)*(rho00+rho22)))/(4.*z);
+  // the massive limit
+  if(mass){
+    // get the running mass
+    double mBt = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+    double mHt = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
     //val += (2./sqr(z))*sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
-  double val = 2.*sqr(m0t)*(rho00+rho22);
+    val += -(sqr(mHt)*(2.*rho11+sqr(z)*(rho00+rho22)))/(4.*z)
+         - (sqr(mBt)*(2.*rho11+z*(-4.*rho11+z*(2.*rho11+(-1.+(-2.+z)*z)*(rho00+rho22)))))
+         /(4.*sqr(z));
+  }
   return sqr(gvvh)*val;
 }
 
@@ -90,7 +98,7 @@ double OneOneZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double gvvh(0.);
   getCouplings(gvvh,ids);
-  return sqr(gvvh)*2.;
+  return sqr(gvvh)/(2.*z);
 }
 
 
@@ -100,8 +108,16 @@ double OneOneZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   double rho00 = abs(rho(0,0));
   double rho11 = abs(rho(1,1));
   double rho22 = abs(rho(2,2));
-  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-  double val = sqr(m0t)*(rho00+rho22);
+  // ratio in the massless limit
+  double val = ((1.-z)*(2.*rho11+sqr(z)*(rho00+rho22)))/2.;
+  // the massive limit
+  if(mass){
+    // get the running mass
+    double mBt = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+    double mHt = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
+    val += -(sqr(mHt)*(2.*rho11+ sqr(z)*(rho00+rho22)))/2.
+         - (sqr(mBt)*(2.*rho11+z*(-4.*rho11+2.*z*rho11+z*(-1.+(-2.+z)*z)*(rho00+rho22))))/(2.*z);
+  }
   return val;
 }
 
@@ -114,7 +130,7 @@ double OneOneZeroEWSplitFn::integOverP(const double z,
   double pre = sqr(gvvh);
   switch (PDFfactor) {
   case 0:
-    return pre*2.*z;
+    return pre*log(z)/2.;
   case 1:
   case 2:
   case 3:
@@ -131,7 +147,7 @@ double OneOneZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = sqr(gvvh);
   switch (PDFfactor) {
   case 0:
-    return r/(pre*2.);
+    return exp(2.*r/(pre));
   case 1:
   case 2:
   case 3:
