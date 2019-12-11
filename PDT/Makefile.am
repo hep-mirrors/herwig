@@ -22,8 +22,7 @@ WidthCalculatorBase.cc WidthCalculatorBase.fh \
 WidthCalculatorBase.h \
 StandardMatchers.h StandardMatchers.cc \
 SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.h \
-SMHiggsMassGenerator.cc SMHiggsMassGenerator.h \
-DMMediatorWidthGenerator.cc DMMediatorWidthGenerator.h 
+SMHiggsMassGenerator.cc SMHiggsMassGenerator.h
 
 
 libHwBaryonWidth_la_SOURCES = \

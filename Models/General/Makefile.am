@@ -23,6 +23,7 @@ HPDiagram.h \
 ThreeBodyDecayConstructor.h \
 FourBodyDecayConstructor.h  \
 WeakCurrentDecayConstructor.h \
+VectorCurrentDecayConstructor.h \
 ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
 VVSLoopVertex.fh VVSLoopVertex.h \
@@ -47,6 +48,7 @@ QQHiggsProcessConstructor.cc \
 ThreeBodyDecayConstructor.cc \
 FourBodyDecayConstructor.cc \
 WeakCurrentDecayConstructor.cc \
+VectorCurrentDecayConstructor.cc \
 ResonantProcessConstructor.cc \
 VVSLoopVertex.cc \
 GenericHGGVertex.cc \

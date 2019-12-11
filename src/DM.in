@@ -29,22 +29,6 @@ set /Herwig/Particles/K+:Stable Unstable
 ##################################################
 # Selected the hard process 
 ##################################################
-# leading-order processes
-##################################################
-
-
-create Herwig::DMMediatorWidthGenerator /Herwig/Widths/DMWidth
-set /Herwig/Particles/Zp:Width_generator /Herwig/Widths/DMWidth
-set /Herwig/Widths/DMWidth:Parent /Herwig/Particles/Zp
-insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/TwoKaonCzyzCurrent
-insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/TwoPionCzyzCurrent
-insert /Herwig/Widths/DMWidth:WeakCurrents 0 /Herwig/Decays/PhiPiCurrent
-
-
-
-
-
-
 cd /Herwig/MatrixElements
 
 

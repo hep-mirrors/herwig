@@ -59,10 +59,10 @@ void DMMediatorQuarksVertex::Init() {
 }
 
 void DMMediatorQuarksVertex::doinit() {
-  FFVVertex::doinit();
   cDMModelPtr model = dynamic_ptr_cast<cDMModelPtr>(generator()->standardModel());
   cSMmed_ = model->cSMmed();
   for(int ix=1;ix<4;++ix) {
     addToList(-ix, ix, 32);
   }
+  FFVVertex::doinit();
 }

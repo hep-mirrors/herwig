@@ -59,8 +59,8 @@ void DMDMMediatorVertex::setCoupling(Energy2 ,tcPDPtr aa,tcPDPtr,tcPDPtr) {
 }
 
 void DMDMMediatorVertex::doinit() {
-  FFVVertex::doinit();
   cDMModelPtr model = dynamic_ptr_cast<cDMModelPtr>(generator()->standardModel());
   cDMmed_ = model->cDMmed();
   addToList(52, 52, 32);
+  FFVVertex::doinit();
 }

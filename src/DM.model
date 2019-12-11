@@ -20,7 +20,7 @@ create ThePEG::ParticleData Zp
 setup Zp 32 Zp 2.0 0.0001 0.0 0.0 0 0 3 0
 create ThePEG::BeamParticleData chi
 setup chi 52 chi 1.0 0.0 0.0 0.0 0 0 2 0
-
+set chi:Stable Stable
 ###################################################
 #
 #  Main directory and model object
@@ -81,14 +81,14 @@ set Model:Vertex/DMDMZpVertex  /Herwig/Vertices/DM/DM_DMDMZPVertex
 #
 ###################################################
 cd /Herwig/NewPhysics
-
+insert DecayConstructor:NBodyDecayConstructors 0 VectorDecayConstructor
 set TwoBodyDC:CreateDecayModes Yes
 set ThreeBodyDC:CreateDecayModes No
 
 # which particles get the off-shell treatment
 set NewModel:WhichOffshell All
 # particles for which decays are included
-#insert NewModel:DecayParticles 0 /Herwig/Particles/Zp
+insert NewModel:DecayParticles 0 /Herwig/Particles/Zp
 
 ###################################################
 # Set up the model framework
@@ -140,7 +140,6 @@ set MEDM2EtaPhi:WeakCurrent /Herwig/Decays/EtaPhiCurrent
 cp DMMatrixElement MEDM2EtaOmega
 set MEDM2EtaOmega:WeakCurrent /Herwig/Decays/EtaOmegaCurrent
 cp DMMatrixElement MEDM2ppbar
-set /Herwig/Decays/CzyzCurrent:FormFactor /Herwig/Decays/CzyzFormFactor
 set MEDM2ppbar:WeakCurrent /Herwig/Decays/CzyzCurrent
 cp DMMatrixElement MEDM2KKPi
 set MEDM2KKPi:WeakCurrent /Herwig/Decays/KKPiCurrent

@@ -1,11 +1,11 @@
 // -*- C++ -*-
-#ifndef Herwig_DMMediatorWidthGenerator_H
-#define Herwig_DMMediatorWidthGenerator_H
+#ifndef Herwig_VectorCurrentDecayConstructor_H
+#define Herwig_VectorCurrentDecayConstructor_H
 //
-// This is the declaration of the DMMediatorWidthGenerator class.
+// This is the declaration of the VectorCurrentDecayConstructor class.
 //
 
-#include "ThePEG/PDT/WidthGenerator.h"
+#include "NBodyDecayConstructorBase.h"
 #include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 
 namespace Herwig {
@@ -13,41 +13,38 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the DMMediatorWidthGenerator class.
+ * The VectorCurrentDecayConstructor class constructs the decay of low mass vector bosons via the weak currents.
  *
- * @see \ref DMMediatorWidthGeneratorInterfaces "The interfaces"
- * defined for DMMediatorWidthGenerator.
+ * @see \ref VectorCurrentDecayConstructorInterfaces "The interfaces"
+ * defined for VectorCurrentDecayConstructor.
  */
-class DMMediatorWidthGenerator: public WidthGenerator {
+class VectorCurrentDecayConstructor: public NBodyDecayConstructorBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  DMMediatorWidthGenerator();
-
-
-  /** @name Virtual functions to be overridden by sub-classes. */
-  //@{
-  /**
-   * Return true if this object can be used for the given particle
-   * type with the given decay map.
-   */
-  virtual bool accept(const ParticleData &) const;
-
-  /**
-   * Given a particle type and a mass of an instance of that particle
-   * type, calculate a width.
-   */
-  virtual Energy width(const ParticleData &, Energy m) const;
-
-  /**
-   * Return decay map for the given particle type.
-   */
-  virtual DecayMap rate(const ParticleData &) const;
-  //@}
+  VectorCurrentDecayConstructor() : massCut_(2.*GeV)
+  {}
   
+  /**
+   * Function used to determine allowed decaymodes, to be implemented
+   * in derived class.
+   *@param part vector of ParticleData pointers containing particles in model
+   */
+  virtual void DecayList(const set<PDPtr> & part);
+
+  /**
+   * Number of outgoing lines. Required for correct ordering (do this one next-to-last)
+   */
+  virtual unsigned int numBodies() const { return 999; }
+
+  /**
+   *  Cut off
+   */
+  Energy massCut() const { return massCut_;}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -73,24 +70,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
-  /**
-   * Overloaded function from Interfaced
-   */
-  virtual bool preInitialize() const {
-    return true;
-  }
-
-protected:
-  
-  /**
-   * Set the branching ratio of this mode. This requires 
-   * calculating a new width for the decaying particle and reweighting
-   * the current branching fractions.
-   * @param dm The decaymode for which to set the branching ratio
-   * @param pwidth The calculated width of the mode
-   */
-  void setBranchingRatio(tDMPtr dm, Energy pwidth);
 
 protected:
 
@@ -127,22 +106,26 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DMMediatorWidthGenerator & operator=(const DMMediatorWidthGenerator &);
+  VectorCurrentDecayConstructor & operator=(const VectorCurrentDecayConstructor &) = delete;
 
 private:
 
   /**
-   *  The particle
+   * Model Pointer
    */
-  PDPtr parent_;
-  
-  /**
-   *  Weak currents to use for the decay
-   */
-  vector<WeakCurrentPtr> weakCurrents_;
+  Ptr<Herwig::StandardModel>::pointer model_;
 
+  /**
+   *  Cut-off on the mass difference
+   */
+  Energy massCut_;
+
+  /**
+   *  The current for the mode
+   */
+  vector<WeakCurrentPtr> current_;
 };
 
 }
 
-#endif /* Herwig_DMMediatorWidthGenerator_H */
+#endif /* Herwig_VectorCurrentDecayConstructor_H */

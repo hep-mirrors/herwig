@@ -122,6 +122,26 @@ insert WeakDecayConstructor:Current 0 /Herwig/Decays/Tau2PionCurrent
 insert WeakDecayConstructor:DecayModes 0 K+,Kbar0;
 insert WeakDecayConstructor:Normalisation 0 1.62501804004
 
+create Herwig::VectorCurrentDecayConstructor VectorDecayConstructor
+set VectorDecayConstructor:InitPoints 10000
+set VectorDecayConstructor:MassCut 2.
+
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/TwoPionCzyzCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/TwoKaonCzyzCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/ThreePionCzyzCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/FourPionCzyzCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/EtaPiPiCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/EtaPrimePiPiCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/OmegaPiPiCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/OmegaPiCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/PiGammaCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/EtaGammaCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/EtaPhiCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/EtaOmegaCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/CzyzCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/KKPiCurrent
+insert VectorDecayConstructor:Current 0 /Herwig/Decays/PhiPiCurrent
+
 insert NewModel:HardProcessConstructors[0] HPConstructor
 insert NewModel:HardProcessConstructors[1] ResConstructor
 insert NewModel:HardProcessConstructors[2] HVConstructor
