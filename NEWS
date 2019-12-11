@@ -1,6 +1,18 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.1.6 release: 2019-12-11
+
+** fix if no W in top in external events
+
+** vertex position fix for dip[ole shower events
+
+** update boost m4
+
+** add max,min, re, im to functions for ufo conversion
+
+** comparision operators should be const, issues with C++17, thanks to Ivan Razumov (GENSER)
+
 * Herwig 7.1.5 release: 2019-04-04
 
 ** Add option of producing partons on physically mass shell after the parton shower
