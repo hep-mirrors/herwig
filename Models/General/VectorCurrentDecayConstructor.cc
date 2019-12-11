@@ -12,7 +12,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Decay/General/DMMediatorDecayer.h"
+#include "Herwig/Decay/General/VectorCurrentDecayer.h"
 
 
 namespace {
@@ -144,8 +144,8 @@ void VectorCurrentDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	fullname << "/Herwig/Decays/DMMediator_" << part->PDGName();
 	for(tcPDPtr part : out)
 	  fullname  << "_" << part->PDGName();
-	string classname = "Herwig::DMMediatorDecayer";
-	DMMediatorDecayerPtr decayer = dynamic_ptr_cast<DMMediatorDecayerPtr>
+	string classname = "Herwig::VectorCurrentDecayer";
+	VectorCurrentDecayerPtr decayer = dynamic_ptr_cast<VectorCurrentDecayerPtr>
 	  (generator()->preinitCreate(classname,fullname.str()));
 	decayer->setDecayInfo(part,out,current);
 	// // set decayer options from base class

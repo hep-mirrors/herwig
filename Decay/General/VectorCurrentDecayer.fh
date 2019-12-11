@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the VectorCurrentDecayer class.
+//
+#ifndef HERWIG_VectorCurrentDecayer_FH
+#define HERWIG_VectorCurrentDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class VectorCurrentDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::VectorCurrentDecayer,VectorCurrentDecayerPtr);
+
+}
+
+#endif

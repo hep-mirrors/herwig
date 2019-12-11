@@ -1,41 +1,41 @@
 // -*- C++ -*-
 //
-// DMMediatorDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// VectorCurrentDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_DMMediatorDecayer_H
-#define HERWIG_DMMediatorDecayer_H
+#ifndef HERWIG_VectorCurrentDecayer_H
+#define HERWIG_VectorCurrentDecayer_H
 //
-// This is the declaration of the DMMediatorDecayer class.
+// This is the declaration of the VectorCurrentDecayer class.
 //
 
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/WeakCurrents/WeakCurrent.h"
 #include "Herwig/Decay/PhaseSpaceMode.h"
-#include "DMMediatorDecayer.fh"
+#include "VectorCurrentDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::VectorWaveFunction;
 
 /**
- * Here is the documentation of the DMMediatorDecayer class.
+ * Here is the documentation of the VectorCurrentDecayer class.
  *
- * @see \ref DMMediatorDecayerInterfaces "The interfaces"
- * defined for DMMediatorDecayer.
+ * @see \ref VectorCurrentDecayerInterfaces "The interfaces"
+ * defined for VectorCurrentDecayer.
  */
-class DMMediatorDecayer: public DecayIntegrator {
+class VectorCurrentDecayer: public DecayIntegrator {
 
 public:
 
   /**
    * The default constructor.
    */
-  DMMediatorDecayer() : cSMmed_({0.,0.,0.}), wgtmax_(0.)
+  VectorCurrentDecayer() : cSMmed_({0.,0.,0.}), wgtmax_(0.)
   {}
 
   /** @name Virtual functions required by the Decayer class. */
@@ -173,7 +173,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DMMediatorDecayer & operator=(const DMMediatorDecayer &) = delete;
+  VectorCurrentDecayer & operator=(const VectorCurrentDecayer &) = delete;
 
 private:
   
@@ -235,4 +235,4 @@ private:
 
 }
 
-#endif /* HERWIG_DMMediatorDecayer_H */
+#endif /* HERWIG_VectorCurrentDecayer_H */

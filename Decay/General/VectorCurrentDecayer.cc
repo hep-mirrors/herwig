@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// DMMediatorDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
+// VectorCurrentDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the DMMediatorDecayer class.
+// functions of the VectorCurrentDecayer class.
 //
 
-#include "DMMediatorDecayer.h"
+#include "VectorCurrentDecayer.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -24,35 +24,35 @@
 
 using namespace Herwig;
 
-IBPtr DMMediatorDecayer::clone() const {
+IBPtr VectorCurrentDecayer::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr DMMediatorDecayer::fullclone() const {
+IBPtr VectorCurrentDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void DMMediatorDecayer::persistentOutput(PersistentOStream & os) const {
+void VectorCurrentDecayer::persistentOutput(PersistentOStream & os) const {
   os << inpart_ << currentOut_ << current_ << mode_ << wgtloc_ << wgtmax_ << weights_ << cSMmed_;
 }
 
-void DMMediatorDecayer::persistentInput(PersistentIStream & is, int) {
+void VectorCurrentDecayer::persistentInput(PersistentIStream & is, int) {
   is >> inpart_ >> currentOut_ >> current_ >> mode_ >> wgtloc_ >> wgtmax_ >> weights_ >> cSMmed_;
 }
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<DMMediatorDecayer,DecayIntegrator>
-describeHerwigDMMediatorDecayer("Herwig::DMMediatorDecayer", "Herwig.so");
+DescribeClass<VectorCurrentDecayer,DecayIntegrator>
+describeHerwigVectorCurrentDecayer("Herwig::VectorCurrentDecayer", "Herwig.so");
 
-void DMMediatorDecayer::Init() {
+void VectorCurrentDecayer::Init() {
 
-  static ClassDocumentation<DMMediatorDecayer> documentation
-    ("The DMMediatorDecayer class is designed for the decays of low mass vector bosons");
+  static ClassDocumentation<VectorCurrentDecayer> documentation
+    ("The VectorCurrentDecayer class is designed for the decays of low mass vector bosons");
   
 }
 
-void DMMediatorDecayer::setDecayInfo(PDPtr in, const vector<tPDPtr> & outCurrent, WeakCurrentPtr current) {
+void VectorCurrentDecayer::setDecayInfo(PDPtr in, const vector<tPDPtr> & outCurrent, WeakCurrentPtr current) {
   inpart_ = in;
   currentOut_ = outCurrent;
   current_ = current;
@@ -87,17 +87,17 @@ void DMMediatorDecayer::setDecayInfo(PDPtr in, const vector<tPDPtr> & outCurrent
     }
   }
   if(!foundD) {
-    throw InitException() << "Cannot find down quark coupling in DMMediatorDecayer::doinit()";
+    throw InitException() << "Cannot find down quark coupling in VectorCurrentDecayer::doinit()";
   }
   if(!foundU) {
-    throw InitException() << "Cannot find up quark coupling in DMMediatorDecayer::doinit()";
+    throw InitException() << "Cannot find up quark coupling in VectorCurrentDecayer::doinit()";
   }
   if(!foundS) {
-    throw InitException() << "Cannot find strange quark coupling in DMMediatorDecayer::doinit()";
+    throw InitException() << "Cannot find strange quark coupling in VectorCurrentDecayer::doinit()";
   }
 }
 
-int DMMediatorDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+int VectorCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent, 
 				  const tPDVector & children) const {
   vector<long> id;
   id.push_back(parent->id());
@@ -105,12 +105,12 @@ int DMMediatorDecayer::modeNumber(bool & cc, tcPDPtr parent,
   return modeNumber(cc,id);
 }
 
-void DMMediatorDecayer::doinitrun() {
+void VectorCurrentDecayer::doinitrun() {
   current_->initrun();
   DecayIntegrator::doinitrun();
 }
 
-void DMMediatorDecayer::doinit() {
+void VectorCurrentDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   current_->init();
@@ -165,7 +165,7 @@ void DMMediatorDecayer::doinit() {
   }
 }
 
-int DMMediatorDecayer::modeNumber(bool & cc, vector<long> id) const {
+int VectorCurrentDecayer::modeNumber(bool & cc, vector<long> id) const {
   // incoming particle
   long idtemp;
   tPDPtr p0=getParticleData(id[0]);
@@ -182,14 +182,14 @@ int DMMediatorDecayer::modeNumber(bool & cc, vector<long> id) const {
   else             return -1;
 }
 
-void DMMediatorDecayer::
+void VectorCurrentDecayer::
 constructSpinInfo(const Particle & part, ParticleVector decay) const {
   VectorWaveFunction::constructSpinInfo(vectors_,const_ptr_cast<tPPtr>(&part),
 					Helicity::incoming,true,false);
   weakCurrent()->constructSpinInfo(ParticleVector(decay.begin(),decay.end()));
 }
 
-double DMMediatorDecayer::me2(const int ichan, const Particle & part,
+double VectorCurrentDecayer::me2(const int ichan, const Particle & part,
 			      const tPDVector & outgoing,
 			      const vector<Lorentz5Momentum> & momenta,
 			      MEOption meopt) const {
@@ -262,7 +262,7 @@ double DMMediatorDecayer::me2(const int ichan, const Particle & part,
   return output;
 }
  
-Energy DMMediatorDecayer::partialWidth(tPDPtr part, vector<tPDPtr> out) {
+Energy VectorCurrentDecayer::partialWidth(tPDPtr part, vector<tPDPtr> out) {
   vector<long> id;
   id.push_back(part->id());
   for(unsigned int ix=0;ix<out.size();++ix) id.push_back(out[ix]->id());
