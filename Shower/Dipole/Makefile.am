@@ -2,7 +2,7 @@ SUBDIRS = Base Kernels Kinematics Utility AlphaS Merging
 
 pkglib_LTLIBRARIES = HwDipoleShower.la
 
-HwDipoleShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 10:0:0
+HwDipoleShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 10:0:1
 
 HwDipoleShower_la_LIBADD = \
 	Base/libHwDipoleShowerBase.la \

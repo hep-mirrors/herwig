@@ -238,7 +238,7 @@ Radiation/QEDRadiationHandler.h
 pkglib_LTLIBRARIES += HwSOPHTY.la
 
 HwSOPHTY_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 5:0:0
+$(AM_LDFLAGS) -module -version-info 5:1:0
 
 HwSOPHTY_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Radiation
