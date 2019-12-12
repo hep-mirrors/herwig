@@ -242,6 +242,11 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
 	dum.setMass(dm);
 	dum.rescaleEnergy();
+	if(abs(particleJetParent->id())==15&&particleJetParent->spinInfo()) {
+	  if(particleJetParent->spinInfo()->isNear(particleJetParent->momentum())) {
+	    particleJetParent->spinInfo()->SpinInfo::transform(dum,LorentzRotation());
+	  }
+	}
 	particleJetParent->set5Momentum(dum);
       } 
       else {
