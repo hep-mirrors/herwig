@@ -55,6 +55,20 @@ insert SubProcess:MatrixElements 0 MEDM2PhiPi
 cd /Herwig/Generators
 # must be slightly greater than 2 x DM mass
 set EventGenerator:EventHandler:LuminosityFunction:Energy  2.0001
+# mass of the DM particle
+set /Herwig/Particles/chi:NominalMass 1.0
+# mass of the mediator
+set /Herwig/Particles/Zp:NominalMass 2.0
+# mediator couplings
+# DM
+set /Herwig/NewPhysics/DM/Model:cDMmed 1.
+# quark-anti-quark
+set /Herwig/NewPhysics/DM/Model:cSMmed 0 1.0
+set /Herwig/NewPhysics/DM/Model:cSMmed 1 1.0
+set /Herwig/NewPhysics/DM/Model:cSMmed 2 1.0
+# cut-off for partonic mediator decays
+set /Herwig/NewPhysics/VectorDecayConstructor:MassCut 2.
+# limit for isr
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 0.2
 cd /Herwig/Generators
 ##################################################
