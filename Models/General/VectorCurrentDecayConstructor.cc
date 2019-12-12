@@ -135,7 +135,7 @@ void VectorCurrentDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	  else
 	    tag+=",";
 	  tag+=part->PDGName();
-	  minMass+=part->massMin();
+	  minMass+=part->mass();
 	  charge+=part->iCharge();
 	}
 	tag+=";";
