@@ -41,11 +41,11 @@ IBPtr VectorCurrentDecayConstructor::fullclone() const {
 }
 
 void VectorCurrentDecayConstructor::persistentOutput(PersistentOStream & os) const {
-os << ounit(massCut_,GeV) << current_;
+  os << ounit(massCut_,GeV) << current_;
 }
 
 void VectorCurrentDecayConstructor::persistentInput(PersistentIStream & is, int) {
-is >> iunit(massCut_,GeV) >> current_;
+  is >> iunit(massCut_,GeV) >> current_;
 }
 
 
@@ -125,19 +125,21 @@ void VectorCurrentDecayConstructor::DecayList(const set<PDPtr> & particles) {
 	}
 	if(skip) continue;
 	multiset<tcPDPtr,ParticleOrdering> outgoing(out.begin(),out.end());
+	Energy minMass(ZERO);
 	string tag = part->PDGName() + "->";
 	bool first=false;
+	int charge(0);
 	for(tcPDPtr part : outgoing) {
 	  if(!first)
 	    first=true;
 	  else
 	    tag+=",";
 	  tag+=part->PDGName();
+	  minMass+=part->massMin();
+	  charge+=part->iCharge();
 	}
 	tag+=";";
-	int charge(0);
-	for(tcPDPtr part : outgoing)
-	  charge+=part->iCharge();
+	if(minMass>part->mass()) continue;
 	if(charge!=0) continue;
 	// create the decayer
 	ostringstream fullname;
