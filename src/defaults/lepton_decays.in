@@ -25,7 +25,7 @@ decaymode tau+->K+,pi0,nu_taubar; 0.004286 1 /Herwig/Decays/TauKPi
 decaymode tau+->K0,pi+,pi0,nu_taubar; 0.004000 1 /Herwig/Decays/Tau1K2Pi
 decaymode tau+->K+,pi+,pi-,nu_taubar; 0.002936 1 /Herwig/Decays/Tau1K2Pi
 decaymode tau+->pi+,pi0,gamma,nu_taubar; 0.001647 1 /Herwig/Decays/Tau2MesonPhoton
-decaymode tau+->K+,Kbar0,nu_taubar; 0.001585 1 /Herwig/Decays/Tau2Pion
+decaymode tau+->K+,Kbar0,nu_taubar; 0.001585 1 /Herwig/Decays/Tau2Kaon
 decaymode tau+->K+,Kbar0,pi0,nu_taubar; 0.001583 1 /Herwig/Decays/Tau2K1Pi
 decaymode tau+->K+,K-,pi+,nu_taubar; 0.001440 1 /Herwig/Decays/Tau2K1Pi
 decaymode tau+->eta,pi+,pi0,nu_taubar; 0.001388 1 /Herwig/Decays/TauEtaPiPi
@@ -65,7 +65,7 @@ decaymode tau-->K-,pi0,nu_tau; 0.004286 1 /Herwig/Decays/TauKPi
 decaymode tau-->Kbar0,pi-,pi0,nu_tau; 0.004000 1 /Herwig/Decays/Tau1K2Pi
 decaymode tau-->K-,pi+,pi-,nu_tau; 0.002936 1 /Herwig/Decays/Tau1K2Pi
 decaymode tau-->pi-,pi0,gamma,nu_tau; 0.001647 1 /Herwig/Decays/Tau2MesonPhoton
-decaymode tau-->K-,K0,nu_tau; 0.001585 1 /Herwig/Decays/Tau2Pion
+decaymode tau-->K-,K0,nu_tau; 0.001585 1 /Herwig/Decays/Tau2Kaon
 decaymode tau-->K-,K0,pi0,nu_tau; 0.001583 1 /Herwig/Decays/Tau2K1Pi
 decaymode tau-->K+,K-,pi-,nu_tau; 0.001440 1 /Herwig/Decays/Tau2K1Pi
 decaymode tau-->eta,pi-,pi0,nu_tau; 0.001388 1 /Herwig/Decays/TauEtaPiPi

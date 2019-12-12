@@ -128,6 +128,17 @@ newdef Tau2PionCurrent:Quark 1  2
 newdef Tau2PionCurrent:AntiQuark 1  -1
 newdef Tau2Pion:WeakCurrent Tau2PionCurrent 
 
+create Herwig::TauDecayer  Tau2Kaon
+newdef Tau2Kaon:Ntry 500
+newdef Tau2Kaon:Points 10000
+newdef Tau2Kaon:GenerateIntermediates 1 
+insert Tau2Kaon:WeightLocation 0 0
+insert Tau2Kaon:MaximumWeight 0 0.0106543
+insert Tau2Kaon:Weights 0 0.505259
+insert Tau2Kaon:Weights 1 0.43015
+insert Tau2Kaon:Weights 2 0.064591
+newdef Tau2Kaon:WeakCurrent TwoKaonCzyzCurrent
+
 #
 create Herwig::TauDecayer  TauKEta
 newdef TauKEta:Iteration 10
