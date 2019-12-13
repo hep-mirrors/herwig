@@ -97,11 +97,11 @@ create Herwig::MEee2Mesons MEee2EtaOmega HwMELeptonLowEnergy.so
 create Herwig::EtaOmegaCurrent /Herwig/Decays/EtaOmegaCurrent
 set MEee2EtaOmega:WeakCurrent /Herwig/Decays/EtaOmegaCurrent
 # e+e- > p pbar
-create Herwig::MEee2Mesons MEee2ppbar HwMELeptonLowEnergy.so
+create Herwig::MEee2Mesons MEee2PPbar HwMELeptonLowEnergy.so
 create Herwig::WeakBaryonCurrent  /Herwig/Decays/CzyzCurrent
 create Herwig::CzyzNucleonFormFactor  /Herwig/Decays/CzyzFormFactor HwFormFactors.so
 set /Herwig/Decays/CzyzCurrent:FormFactor /Herwig/Decays/CzyzFormFactor
-set MEee2ppbar:WeakCurrent /Herwig/Decays/CzyzCurrent
+set MEee2PPbar:WeakCurrent /Herwig/Decays/CzyzCurrent
 # e+e- > hyperons
 create Herwig::MEee2Mesons MEee2LL HwMELeptonLowEnergy.so
 create Herwig::WeakBaryonCurrent  /Herwig/Decays/KornerKurodaCurrent

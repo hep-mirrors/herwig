@@ -18,28 +18,28 @@ opts, args = op.parse_args()
 path=opts.path
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
-analyses={ 'KK' : {} , 'pipi' : {}, 'ppbar' : {}, "3pi" : {}, "etapipi" : {},
-           "etaprimepipi" : {} , "4pi" : {}, "etaPhi" : {}, "etaOmega" : {},
-           "2K1pi" : {} ,"2K2pi" : {} , "4K" : {}, "6m" : {}, "omegapi" : {} , "pigamma" : {}, "etagamma" : {},
-           "phipi" : {}, "omegapipi" : {} , "DD" : {} , "BB" : {}, "5pi"  :{} ,
+analyses={ 'KK' : {} , 'PiPi' : {}, 'PPbar' : {}, "3Pi" : {}, "EtaPiPi" : {},
+           "EtaprimePiPi" : {} , "4Pi" : {}, "EtaPhi" : {}, "EtaOmega" : {},
+           "2K1Pi" : {} ,"2K2Pi" : {} , "4K" : {}, "6m" : {}, "OmegaPi" : {} , "PiGamma" : {}, "EtaGamma" : {},
+           "PhiPi" : {}, "OmegaPiPi" : {} , "DD" : {} , "BB" : {}, "5Pi"  :{} ,
            "LL"  : {} }
 # pi+pi-
-analyses["pipi"]["KLOE_2009_I797438"]    = ["d02-x01-y01"]
-analyses["pipi"]["KLOE_2005_I655225"]    = ["d02-x01-y01"]
-analyses["pipi"]["KLOE2_2017_I1634981"]    = ["d01-x01-y01"]
-analyses["pipi"]["BABAR_2009_I829441"]   = ["d01-x01-y01"]
-analyses["pipi"]["DM1_1978_I134061"]     = ["d01-x01-y01"]
-analyses["pipi"]["DM2_1989_I267118"]     = ["d01-x01-y01"]
-analyses["pipi"]["CMD2_2007_I728302"]    = ["d02-x01-y01"]
-analyses["pipi"]["CMD2_2006_I728191"]    = ["d03-x01-y01"]
-analyses["pipi"]["BESIII_2016_I1385603"] = ["d01-x01-y01"]
-analyses["pipi"]["SND_2005_I686349"]     = ["d01-x01-y01"]
-analyses["pipi"]["CMD_1985_I221309"]     = ["d01-x01-y01","d02-x01-y01"]
-analyses["pipi"]["CMD2_2002_I568807"]    = ["d01-x01-y02"]
-analyses["pipi"]["CMD2_1999_I498859"]    = ["d01-x01-y01"]
-analyses['pipi']["CLEOC_2005_I693873"]   = ["d01-x01-y01"]
-analyses['pipi']["ND_1991_I321108"]      = ["d11-x01-y01"]
-analyses['pipi']["OLYA_1984_I208231"]    = ["d01-x01-y01"]
+analyses["PiPi"]["KLOE_2009_I797438"]    = ["d02-x01-y01"]
+analyses["PiPi"]["KLOE_2005_I655225"]    = ["d02-x01-y01"]
+analyses["PiPi"]["KLOE2_2017_I1634981"]    = ["d01-x01-y01"]
+analyses["PiPi"]["BABAR_2009_I829441"]   = ["d01-x01-y01"]
+analyses["PiPi"]["DM1_1978_I134061"]     = ["d01-x01-y01"]
+analyses["PiPi"]["DM2_1989_I267118"]     = ["d01-x01-y01"]
+analyses["PiPi"]["CMD2_2007_I728302"]    = ["d02-x01-y01"]
+analyses["PiPi"]["CMD2_2006_I728191"]    = ["d03-x01-y01"]
+analyses["PiPi"]["BESIII_2016_I1385603"] = ["d01-x01-y01"]
+analyses["PiPi"]["SND_2005_I686349"]     = ["d01-x01-y01"]
+analyses["PiPi"]["CMD_1985_I221309"]     = ["d01-x01-y01","d02-x01-y01"]
+analyses["PiPi"]["CMD2_2002_I568807"]    = ["d01-x01-y02"]
+analyses["PiPi"]["CMD2_1999_I498859"]    = ["d01-x01-y01"]
+analyses['PiPi']["CLEOC_2005_I693873"]   = ["d01-x01-y01"]
+analyses['PiPi']["ND_1991_I321108"]      = ["d11-x01-y01"]
+analyses['PiPi']["OLYA_1984_I208231"]    = ["d01-x01-y01"]
 # K+K- and K_S^0 K_L^0
 analyses['KK']["BESIII_2018_I1704558"] = ["d01-x01-y01"]
 analyses['KK']["BABAR_2013_I1238807"] = ["d01-x01-y01"]
@@ -63,140 +63,140 @@ analyses['KK']["ND_1991_I321108"] = ["d12-x01-y01","d13-x01-y01"]
 analyses['KK']["OLYA_1981_I173076"] = ["d01-x01-y01"]
 analyses['KK']["SND_2016_I1484677"] = ["d01-x01-y01","d02-x01-y01"]
 # proton-antiproton
-analyses['ppbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
-analyses['ppbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
-analyses['ppbar']["BESIII_2015_I1358937"] = ["d01-x01-y05"]
-analyses['ppbar']["BABAR_2013_I1217421"]  = ["d01-x01-y01"]
-analyses['ppbar']["SND_2014_I1321689"] = ["d01-x01-y01","d02-x01-y01"]
-analyses['ppbar']["CMD3_2016_I1385598"] = ["d01-x01-y06"]
-analyses['ppbar']["CLEOC_2005_I693873"] = ["d01-x01-y03"]
-analyses['ppbar']["BABAR_2006_I700020"] = ["d01-x01-y01","d02-x01-y01"]
-analyses['ppbar']["DM2_1983_I190558"] = ["d01-x01-y01"]
-analyses["ppbar"]["DM2_1990_I297706"] = ["d01-x01-y01"]
-analyses["ppbar"]["DM1_1979_I141565"] = ["d01-x01-y01"]
-analyses["ppbar"]["FENICE_1998_I471263"] = ["d01-x01-y01"]
-analyses["ppbar"]["FENICE_1994_I377833"] = ["d01-x01-y01"]
-analyses['ppbar']["BESII_2005_I685906"] = ["d01-x01-y01"]
-analyses['ppbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
+analyses['PPbar']["BESIII_2019_I1736235"] = ["d01-x01-y01"]
+analyses['PPbar']["BESIII_2019_I1718337"] = ["d01-x01-y01"]
+analyses['PPbar']["BESIII_2015_I1358937"] = ["d01-x01-y05"]
+analyses['PPbar']["BABAR_2013_I1217421"]  = ["d01-x01-y01"]
+analyses['PPbar']["SND_2014_I1321689"] = ["d01-x01-y01","d02-x01-y01"]
+analyses['PPbar']["CMD3_2016_I1385598"] = ["d01-x01-y06"]
+analyses['PPbar']["CLEOC_2005_I693873"] = ["d01-x01-y03"]
+analyses['PPbar']["BABAR_2006_I700020"] = ["d01-x01-y01","d02-x01-y01"]
+analyses['PPbar']["DM2_1983_I190558"] = ["d01-x01-y01"]
+analyses["PPbar"]["DM2_1990_I297706"] = ["d01-x01-y01"]
+analyses["PPbar"]["DM1_1979_I141565"] = ["d01-x01-y01"]
+analyses["PPbar"]["FENICE_1998_I471263"] = ["d01-x01-y01"]
+analyses["PPbar"]["FENICE_1994_I377833"] = ["d01-x01-y01"]
+analyses['PPbar']["BESII_2005_I685906"] = ["d01-x01-y01"]
+analyses['PPbar']["BESIII_2014_I1286898"] = ["d01-x01-y06"]
 # pi0 gamma
-analyses["pigamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
-analyses["pigamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
-analyses["pigamma"]["SND_2003_I612867"] = ["d01-x01-y01"]
-analyses["pigamma"]["CMD2_2005_I658856"] = ["d02-x01-y01"]
-analyses["pigamma"]["SND_2000_I524221"] = ["d01-x01-y02"]
-# eta gamma
-analyses["etagamma"]["CMD2_2005_I658856"] = ["d01-x01-y01"]
-analyses["etagamma"]["SND_2006_I717778" ] = ["d01-x01-y01","d02-x01-y01"]
-analyses["etagamma"]["SND_2014_I1275333"] = ["d01-x01-y01"]
-analyses["etagamma"]["SND_2000_I524221"] = ["d01-x01-y01"]
-analyses["etagamma"]["CMD2_1999_I503154"] = ["d01-x01-y01"]
-analyses["etagamma"]["CMD2_2001_I554522"] = ["d01-x01-y01"]
-analyses['etagamma']["CMD2_1995_I406880"] = ["d01-x01-y04"]
-analyses['etagamma']["BABAR_2006_I716277"] = ["d01-x01-y01"]
+analyses["PiGamma"]["SND_2018_I1694988"] = ["d01-x01-y01"]
+analyses["PiGamma"]["SND_2016_I1418483"] = ["d01-x01-y05"]
+analyses["PiGamma"]["SND_2003_I612867"] = ["d01-x01-y01"]
+analyses["PiGamma"]["CMD2_2005_I658856"] = ["d02-x01-y01"]
+analyses["PiGamma"]["SND_2000_I524221"] = ["d01-x01-y02"]
+# Eta gamma
+analyses["EtaGamma"]["CMD2_2005_I658856"] = ["d01-x01-y01"]
+analyses["EtaGamma"]["SND_2006_I717778" ] = ["d01-x01-y01","d02-x01-y01"]
+analyses["EtaGamma"]["SND_2014_I1275333"] = ["d01-x01-y01"]
+analyses["EtaGamma"]["SND_2000_I524221"] = ["d01-x01-y01"]
+analyses["EtaGamma"]["CMD2_1999_I503154"] = ["d01-x01-y01"]
+analyses["EtaGamma"]["CMD2_2001_I554522"] = ["d01-x01-y01"]
+analyses['EtaGamma']["CMD2_1995_I406880"] = ["d01-x01-y04"]
+analyses['EtaGamma']["BABAR_2006_I716277"] = ["d01-x01-y01"]
 # 3 meson
-analyses["3pi"]["BABAR_2004_I656680"]   = ["d01-x01-y01"]
-analyses["3pi"]["SND_2002_I582183"] = ["d01-x01-y01"]
-analyses["3pi"]["SND_2003_I619011"]     = ["d01-x01-y01"]
-analyses["3pi"]["SND_1999_I508003"]     = ["d01-x01-y01"]
-analyses["3pi"]["SND_2001_I533574"]     = ["d01-x01-y04","d02-x01-y04"]
-analyses["3pi"]["CMD2_2000_I523691"] = ["d01-x01-y01"]
-analyses["3pi"]["CMD2_1998_I480170"] = ["d01-x01-y01"]
-analyses['3pi']["CMD2_1995_I406880"] = ["d01-x01-y03"]
-analyses['3pi']["DM2_1992_I339265" ] = ["d01-x01-y01"]
-analyses['3pi']["DM1_1980_I140174" ] = ["d01-x01-y01"]
-analyses['3pi']["ND_1991_I321108"] = ["d05-x01-y01","d10-x01-y04"]
-analyses['3pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y01"]
-analyses["3pi"]["CLEO_2006_I691720"]   = ["d01-x01-y01"]
-analyses["3pi"]["SND_2015_I1389908"]   = ["d01-x01-y01"]
-# etapipi
-analyses["etapipi"]["BABAR_2018_I1700745"] = ["d02-x01-y01"]
-analyses["etapipi"]["BABAR_2018_I1647139"] = ["d01-x01-y01"]
-analyses["etapipi"]["SND_2015_I1332929"]   = ["d01-x01-y01"]
-analyses["etapipi"]["SND_2018_I1638368"]   = ["d01-x01-y01"]
-analyses["etapipi"]["BABAR_2007_I758568"]   = ["d01-x01-y01","d02-x01-y01"]
-analyses["etapipi"]["CMD2_2000_I532970"]   = ["d02-x01-y01"]
-analyses["etapipi"]["DM2_1988_I264144"]   = ["d01-x01-y01"]
-analyses['etapipi']["ND_1991_I321108"] = ["d06-x01-y01","d14-x01-y01"]
-analyses['etapipi']["CMD3_2019_I1744510"] = ["d02-x01-y01"]
-# eta Phi
-analyses["etaPhi"]["BABAR_2008_I765258"]   = ["d04-x01-y01","d05-x01-y01"]
-analyses["etaPhi"]["SND_2018_I1693737"]   = ["d01-x01-y01"]
-analyses["etaPhi"]["BABAR_2017_I1511276"]   = ["d03-x01-y01"]
-analyses["etaPhi"]["SND_2019_I1726419"]  = ["d01-x01-y03"]
-analyses["etaPhi"]["CMD3_2019_I1740541"]  = ["d01-x01-y06","d02-x01-y06","d03-x01-y06"]
-# eta Omega
-analyses["etaOmega"]["SND_2016_I1473343"]  = ["d01-x01-y01"]
-analyses["etaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
-analyses["etaOmega"]["SND_2019_I1726419"]  = ["d01-x01-y01","d01-x01-y02"]
-analyses["etaOmega"]["CMD3_2017_I1606078"] = ["d01-x01-y01","d01-x01-y02"]
+analyses["3Pi"]["BABAR_2004_I656680"]   = ["d01-x01-y01"]
+analyses["3Pi"]["SND_2002_I582183"] = ["d01-x01-y01"]
+analyses["3Pi"]["SND_2003_I619011"]     = ["d01-x01-y01"]
+analyses["3Pi"]["SND_1999_I508003"]     = ["d01-x01-y01"]
+analyses["3Pi"]["SND_2001_I533574"]     = ["d01-x01-y04","d02-x01-y04"]
+analyses["3Pi"]["CMD2_2000_I523691"] = ["d01-x01-y01"]
+analyses["3Pi"]["CMD2_1998_I480170"] = ["d01-x01-y01"]
+analyses['3Pi']["CMD2_1995_I406880"] = ["d01-x01-y03"]
+analyses['3Pi']["DM2_1992_I339265" ] = ["d01-x01-y01"]
+analyses['3Pi']["DM1_1980_I140174" ] = ["d01-x01-y01"]
+analyses['3Pi']["ND_1991_I321108"] = ["d05-x01-y01","d10-x01-y04"]
+analyses['3Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y01"]
+analyses["3Pi"]["CLEO_2006_I691720"]   = ["d01-x01-y01"]
+analyses["3Pi"]["SND_2015_I1389908"]   = ["d01-x01-y01"]
+# EtaPiPi
+analyses["EtaPiPi"]["BABAR_2018_I1700745"] = ["d02-x01-y01"]
+analyses["EtaPiPi"]["BABAR_2018_I1647139"] = ["d01-x01-y01"]
+analyses["EtaPiPi"]["SND_2015_I1332929"]   = ["d01-x01-y01"]
+analyses["EtaPiPi"]["SND_2018_I1638368"]   = ["d01-x01-y01"]
+analyses["EtaPiPi"]["BABAR_2007_I758568"]   = ["d01-x01-y01","d02-x01-y01"]
+analyses["EtaPiPi"]["CMD2_2000_I532970"]   = ["d02-x01-y01"]
+analyses["EtaPiPi"]["DM2_1988_I264144"]   = ["d01-x01-y01"]
+analyses['EtaPiPi']["ND_1991_I321108"] = ["d06-x01-y01","d14-x01-y01"]
+analyses['EtaPiPi']["CMD3_2019_I1744510"] = ["d02-x01-y01"]
+# Eta Phi
+analyses["EtaPhi"]["BABAR_2008_I765258"]   = ["d04-x01-y01","d05-x01-y01"]
+analyses["EtaPhi"]["SND_2018_I1693737"]   = ["d01-x01-y01"]
+analyses["EtaPhi"]["BABAR_2017_I1511276"]   = ["d03-x01-y01"]
+analyses["EtaPhi"]["SND_2019_I1726419"]  = ["d01-x01-y03"]
+analyses["EtaPhi"]["CMD3_2019_I1740541"]  = ["d01-x01-y06","d02-x01-y06","d03-x01-y06"]
+# Eta Omega
+analyses["EtaOmega"]["SND_2016_I1473343"]  = ["d01-x01-y01"]
+analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
+analyses["EtaOmega"]["SND_2019_I1726419"]  = ["d01-x01-y01","d01-x01-y02"]
+analyses["EtaOmega"]["CMD3_2017_I1606078"] = ["d01-x01-y01","d01-x01-y02"]
 # 4 pions
-analyses["4pi"]["BABAR_2017_I1621593"]  = ["d01-x01-y01","d02-x01-y01"]
-analyses["4pi"]["BABAR_2012_I1086164"]  = ["d01-x01-y01"]
-analyses["4pi"]["CMD2_2000_I531667"]  = ["d01-x01-y01"]
-analyses["4pi"]["CMD2_2004_I648023"]  = ["d01-x01-y01"]
-analyses["4pi"]["BABAR_2005_I676691"]   = ["d01-x01-y01"]
-analyses["4pi"]["CMD2_2000_I511375"]   = ["d01-x01-y01"]
-analyses["4pi"]["CMD2_1999_I483994"] = ["d01-x01-y01","d02-x01-y01"]
-analyses["4pi"]["BESII_2008_I801210"] = ["d01-x01-y01"]
-analyses["4pi"]["KLOE_2008_I791841"] = ["d01-x01-y01"]
-analyses['4pi']["ND_1991_I321108"] = ["d07-x01-y01","d08-x01-y01","d10-x01-y01","d10-x01-y02"]
-analyses['4pi']["BESII_2007_I750713"] = ["d01-x01-y03"]
-analyses['4pi']["SND_2001_I579319"] = ["d01-x01-y01","d02-x01-y01"]
-analyses['4pi']["DM1_1982_I168552"] = ["d01-x01-y01"]
-analyses['4pi']["DM1_1979_I132828"] = ["d01-x01-y01"]
-analyses['4pi']["GAMMAGAMMA_1980_I153382"] = ["d01-x01-y01"]
-analyses['4pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y02"]
-# (these are omega(-> pi0 gamma) pi0)
-analyses["omegapi"]["SND_2016_I1489182"  ] = ["d01-x01-y01"]
-analyses["omegapi"]["SND_2000_I527752"  ]  = ["d01-x01-y01"]
-analyses["omegapi"]["SND_2000_I503946"  ]  = ["d01-x01-y01"]
-analyses["omegapi"]["CMD2_2003_I616446"  ] = ["d01-x01-y01"]
-# non omega
-analyses["omegapi"]["SND_2002_I587084"  ] = ["d01-x01-y01"]
-analyses["omegapi"]["CMD2_2004_I630009" ] = ["d01-x01-y01"]
-analyses["omegapi"]["KLOE_2008_I791841"] = ["d02-x01-y01"]
-# from 4pion
-analyses["omegapi"]["CMD2_1999_I483994" ] = ["d03-x01-y01"]
-analyses['omegapi']["ND_1991_I321108"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+analyses["4Pi"]["BABAR_2017_I1621593"]  = ["d01-x01-y01","d02-x01-y01"]
+analyses["4Pi"]["BABAR_2012_I1086164"]  = ["d01-x01-y01"]
+analyses["4Pi"]["CMD2_2000_I531667"]  = ["d01-x01-y01"]
+analyses["4Pi"]["CMD2_2004_I648023"]  = ["d01-x01-y01"]
+analyses["4Pi"]["BABAR_2005_I676691"]   = ["d01-x01-y01"]
+analyses["4Pi"]["CMD2_2000_I511375"]   = ["d01-x01-y01"]
+analyses["4Pi"]["CMD2_1999_I483994"] = ["d01-x01-y01","d02-x01-y01"]
+analyses["4Pi"]["BESII_2008_I801210"] = ["d01-x01-y01"]
+analyses["4Pi"]["KLOE_2008_I791841"] = ["d01-x01-y01"]
+analyses['4Pi']["ND_1991_I321108"] = ["d07-x01-y01","d08-x01-y01","d10-x01-y01","d10-x01-y02"]
+analyses['4Pi']["BESII_2007_I750713"] = ["d01-x01-y03"]
+analyses['4Pi']["SND_2001_I579319"] = ["d01-x01-y01","d02-x01-y01"]
+analyses['4Pi']["DM1_1982_I168552"] = ["d01-x01-y01"]
+analyses['4Pi']["DM1_1979_I132828"] = ["d01-x01-y01"]
+analyses['4Pi']["GAMMAGAMMA_1980_I153382"] = ["d01-x01-y01"]
+analyses['4Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y02"]
+# (these are Omega(-> pi0 gamma) pi0)
+analyses["OmegaPi"]["SND_2016_I1489182"  ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["SND_2000_I527752"  ]  = ["d01-x01-y01"]
+analyses["OmegaPi"]["SND_2000_I503946"  ]  = ["d01-x01-y01"]
+analyses["OmegaPi"]["CMD2_2003_I616446"  ] = ["d01-x01-y01"]
+# non Omega
+analyses["OmegaPi"]["SND_2002_I587084"  ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["CMD2_2004_I630009" ] = ["d01-x01-y01"]
+analyses["OmegaPi"]["KLOE_2008_I791841"] = ["d02-x01-y01"]
+# from 4 Pion
+analyses["OmegaPi"]["CMD2_1999_I483994" ] = ["d03-x01-y01"]
+analyses['OmegaPi']["ND_1991_I321108"] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                           "d04-x01-y01","d10-x01-y03"]
 # 5 pion and related
-analyses["omegapipi"]["DM1_1981_I166964"   ] = ["d01-x01-y01"]
-analyses["omegapipi"]["DM2_1992_I339265"   ] = ["d02-x01-y01"]
-analyses["omegapipi"]["CMD2_2000_I532970"  ] = ["d01-x01-y01"]
-analyses["omegapipi"]["BABAR_2018_I1700745"] = ["d03-x01-y01"]
-analyses["omegapipi"]["BABAR_2007_I758568" ] = ["d03-x01-y01","d04-x01-y01"]
-analyses["5pi"]["CMD2_2000_I532970"]   = ["d03-x01-y01"]
-analyses["5pi"]["BABAR_2007_I758568"]   = ["d01-x01-y01"]
-analyses['5pi']["ND_1991_I321108"] = ["d14-x01-y01"]
-analyses['5pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y03"]
-analyses["5pi"]["BABAR_2018_I1700745"] = ["d01-x01-y01"]
+analyses["OmegaPiPi"]["DM1_1981_I166964"   ] = ["d01-x01-y01"]
+analyses["OmegaPiPi"]["DM2_1992_I339265"   ] = ["d02-x01-y01"]
+analyses["OmegaPiPi"]["CMD2_2000_I532970"  ] = ["d01-x01-y01"]
+analyses["OmegaPiPi"]["BABAR_2018_I1700745"] = ["d03-x01-y01"]
+analyses["OmegaPiPi"]["BABAR_2007_I758568" ] = ["d03-x01-y01","d04-x01-y01"]
+analyses["5Pi"]["CMD2_2000_I532970"]   = ["d03-x01-y01"]
+analyses["5Pi"]["BABAR_2007_I758568"]   = ["d01-x01-y01"]
+analyses['5Pi']["ND_1991_I321108"] = ["d14-x01-y01"]
+analyses['5Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y03"]
+analyses["5Pi"]["BABAR_2018_I1700745"] = ["d01-x01-y01"]
 # 2K 1 pi
-analyses["2K1pi"]["BABAR_2008_I765258"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
-analyses["2K1pi"]["DM1_1982_I176801"]   = ["d01-x01-y01"]
-analyses["2K1pi"]["DM2_1991_I318558"]   = ["d01-x01-y01","d02-x01-y01"]
-analyses["2K1pi"]["BESII_2008_I801208"]   = ["d01-x01-y01"]
-analyses["2K1pi"]["SND_2018_I1637194"]    = ["d01-x01-y01"]
-analyses["2K1pi"]["BESIII_2018_I1691798"] = ["d01-x01-y01"]
-analyses["2K1pi"]["BABAR_2017_I1511276"]  = ["d01-x01-y01"]
-analyses["phipi"]["BABAR_2017_I1511276"]  = ["d01-x01-y01","d02-x01-y01"]
-analyses["phipi"]["BABAR_2008_I765258"]   = ["d02-x01-y01","d03-x01-y01"]
+analyses["2K1Pi"]["BABAR_2008_I765258"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+analyses["2K1Pi"]["DM1_1982_I176801"]   = ["d01-x01-y01"]
+analyses["2K1Pi"]["DM2_1991_I318558"]   = ["d01-x01-y01","d02-x01-y01"]
+analyses["2K1Pi"]["BESII_2008_I801208"]   = ["d01-x01-y01"]
+analyses["2K1Pi"]["SND_2018_I1637194"]    = ["d01-x01-y01"]
+analyses["2K1Pi"]["BESIII_2018_I1691798"] = ["d01-x01-y01"]
+analyses["2K1Pi"]["BABAR_2017_I1511276"]  = ["d01-x01-y01"]
+analyses["PhiPi"]["BABAR_2017_I1511276"]  = ["d01-x01-y01","d02-x01-y01"]
+analyses["PhiPi"]["BABAR_2008_I765258"]   = ["d02-x01-y01","d03-x01-y01"]
 # 2K 2 pi
-analyses["2K2pi"]["DM1_1982_I169382"]   = ["d01-x01-y01"]
-analyses["2K2pi"]["BABAR_2005_I676691"]   = ["d02-x01-y01"]
-analyses["2K2pi"]["BABAR_2014_I1287920"]  = ["d09-x01-y01","d10-x01-y01","d11-x01-y01"]
-analyses["2K2pi"]["BABAR_2012_I892684"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+analyses["2K2Pi"]["DM1_1982_I169382"]   = ["d01-x01-y01"]
+analyses["2K2Pi"]["BABAR_2005_I676691"]   = ["d02-x01-y01"]
+analyses["2K2Pi"]["BABAR_2014_I1287920"]  = ["d09-x01-y01","d10-x01-y01","d11-x01-y01"]
+analyses["2K2Pi"]["BABAR_2012_I892684"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                              "d04-x01-y01","d05-x01-y01",
                                              "d06-x01-y01","d07-x01-y01"]
-analyses["2K2pi"]["BABAR_2007_I747875"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
+analyses["2K2Pi"]["BABAR_2007_I747875"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01",
                                              "d04-x01-y01","d05-x01-y01","d07-x01-y01"]
-analyses["2K2pi"]["BESII_2008_I801210"] = ["d01-x01-y02"]
-analyses["2K2pi"]["BESII_2008_I801208"] = ["d01-x01-y02"]
-analyses["2K2pi"]["BELLE_2009_I809630"] = ["d01-x01-y01"]
-analyses["2K2pi"]["CMD3_2016_I1395968"] = ["d01-x01-y01"]
-analyses['2K2pi']["BESII_2007_I750713"] = ["d01-x01-y04"]
-analyses["2K2pi"]["BABAR_2017_I1511276"]   = ["d03-x01-y01","d04-x01-y01"]
-analyses["2K2pi"]["BABAR_2017_I1591716"]   = ["d01-x01-y01","d02-x01-y01"]
-analyses['2K2pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
+analyses["2K2Pi"]["BESII_2008_I801210"] = ["d01-x01-y02"]
+analyses["2K2Pi"]["BESII_2008_I801208"] = ["d01-x01-y02"]
+analyses["2K2Pi"]["BELLE_2009_I809630"] = ["d01-x01-y01"]
+analyses["2K2Pi"]["CMD3_2016_I1395968"] = ["d01-x01-y01"]
+analyses['2K2Pi']["BESII_2007_I750713"] = ["d01-x01-y04"]
+analyses["2K2Pi"]["BABAR_2017_I1511276"]   = ["d03-x01-y01","d04-x01-y01"]
+analyses["2K2Pi"]["BABAR_2017_I1591716"]   = ["d01-x01-y01","d02-x01-y01"]
+analyses['2K2Pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
 # 4K
 analyses["4K"]["BESIII_2019_I1743841"]   = ["d01-x01-y01","d02-x01-y01"]
 analyses["4K"]["BABAR_2005_I676691"]   = ["d03-x01-y01"]
@@ -215,7 +215,7 @@ analyses["6m"]["DM1_1981_I166353"]   = ["d01-x01-y01"]
 analyses["6m"]["BABAR_2006_I709730"]   = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 analyses["6m"]["BABAR_2007_I758568"]   = ["d05-x01-y01","d07-x01-y01",
                                           "d08-x01-y01","d09-x01-y01","d10-x01-y01","d11-x01-y01"]
-analyses["etaprimepipi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
+analyses["EtaprimePiPi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
 analyses["6m"]["BESII_2007_I763880"]   = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04",
                                           "d01-x01-y05","d01-x01-y06","d01-x01-y07"]
 analyses["6m"]["BESII_2007_I762901"]   = ["d01-x01-y01","d01-x01-y02","d01-x01-y03","d01-x01-y04",
@@ -289,22 +289,22 @@ if(opts.plot) :
     print output
     quit()
 # mapping of process to me to use
-me = { "pipi"         : "MEee2Pions",
+me = { "PiPi"         : "MEee2Pions",
        "KK"           : "MEee2Kaons",
-       "3pi"          : "MEee3Pions",
-       "4pi"          : "MEee4Pions",
-       "etapipi"      : "MEee2EtaPiPi",
-       "etaprimepipi" : "MEee2EtaPrimePiPi",
-       "etaPhi"       : "MEee2EtaPhi",
-       "etaOmega"     : "MEee2EtaOmega",
-       "omegapi"      : "MEee2OmegaPi",
-       "omegapipi"    : "MEee2OmegaPiPi",
-       "phipi"        : "MEee2PhiPi",
-       "pigamma"      : "MEee2PiGamma",
-       "etagamma"     : "MEee2EtaGamma",
-       "ppbar"        : "MEee2ppbar",
+       "3Pi"          : "MEee3Pions",
+       "4Pi"          : "MEee4Pions",
+       "EtaPiPi"      : "MEee2EtaPiPi",
+       "EtaprimePiPi" : "MEee2EtaPrimePiPi",
+       "EtaPhi"       : "MEee2EtaPhi",
+       "EtaOmega"     : "MEee2EtaOmega",
+       "OmegaPi"      : "MEee2OmegaPi",
+       "OmegaPiPi"    : "MEee2OmegaPiPi",
+       "PhiPi"        : "MEee2PhiPi",
+       "PiGamma"      : "MEee2PiGamma",
+       "EtaGamma"     : "MEee2EtaGamma",
+       "PPbar"        : "MEee2PPbar",
        "LL"           : "MEee2LL"   ,
-       "2K1pi"        : "MEee2KKPi" }
+       "2K1Pi"        : "MEee2KKPi" }
 
 # energies we need
 energies={}
