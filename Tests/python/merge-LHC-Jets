@@ -250,7 +250,8 @@ for f in yodafiles:
            aopath.find("I1605749")>0 or aopath.find("I1682495")>0 or
            aopath.find("I1609253")>0 or aopath.find("1385107" )>0 or
            aopath.find("I1486238")>0 or aopath.find("1634970" )>0 or
-           aopath.find("I1604271" )>0 or aopath.find("I1598460" )>0 or
+           aopath.find("I1604271")>0 or aopath.find("I1598460")>0 or
+           aopath.find("1724098" )>0 or
            aopath.find("ATLAS_2016_CONF_2016_092")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if("1419070" in aopath and ("forward" in aopath or "central" in aopath )) :
@@ -1635,6 +1636,12 @@ logging.info("Processing CMS_2017_I1598460")
 for i in range(1,7) :
     mergeByPt("/CMS_2017_I1598460/d%02d-x01-y01" % i, "8000")
 
+logging.info("Processing ATLAS_2019_I1724098")
+for i in range(1,45) :
+    if(i<=6 or (i>=23 and i<=28)) :
+        useOnePt("/ATLAS_2019_I1724098/d%02d-x01-y01" % i, "13000", "400")
+    else :
+        useOnePt("/ATLAS_2019_I1724098/d%02d-x01-y01" % i, "13000", "0")
 # rescaling for semi-leptonic top decays (we only simulate 1 charge combination)
 for i in range(96,116,2) :
     rescale("/ATLAS_2018_I1656578/d%s-x01-y01" % i,2.)
