@@ -18,11 +18,12 @@ opts, args = op.parse_args()
 path=opts.path
 thresholds = [0.7,2.*.5,2.*1.87,2.*5.28]
 # the list of analyses and processes
-analyses={ 'KK' : {} , 'PiPi' : {}, 'PPbar' : {}, "3Pi" : {}, "EtaPiPi" : {},
-           "EtaprimePiPi" : {} , "4Pi" : {}, "EtaPhi" : {}, "EtaOmega" : {},
-           "2K1Pi" : {} ,"2K2Pi" : {} , "4K" : {}, "6m" : {}, "OmegaPi" : {} , "PiGamma" : {}, "EtaGamma" : {},
-           "PhiPi" : {}, "OmegaPiPi" : {} , "DD" : {} , "BB" : {}, "5Pi"  :{} ,
-           "LL"  : {} }
+analyses = { 'KK'           : {}, 'PiPi'      : {}, 'PPbar'   : {}, "3Pi"      : {},
+             "EtaprimePiPi" : {}, "4Pi"       : {}, "EtaPhi"  : {}, "EtaOmega" : {},
+             "2K1Pi"        : {}, "2K2Pi"     : {}, "4K"      : {}, "6m"       : {},
+             "EtaPiPi"      : {}, "OmegaPi"   : {}, "PiGamma" : {}, "EtaGamma" : {},
+             "PhiPi"        : {}, "OmegaPiPi" : {}, "DD"      : {}, "BB"       : {},
+             "5Pi"          : {}, "LL"        : {} }
 # pi+pi-
 analyses["PiPi"]["KLOE_2009_I797438"   ] = ["d02-x01-y01"]
 analyses["PiPi"]["KLOE_2005_I655225"   ] = ["d02-x01-y01"]
