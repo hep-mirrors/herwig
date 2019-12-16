@@ -40,8 +40,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2007_I728872
 # D_s spectrum
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
 # # MC analyses based on old internal ones
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Meson_Meson_Leptons_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_D_Dalitz
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102

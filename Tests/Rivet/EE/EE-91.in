@@ -150,5 +150,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
 ##################################################
 # MC
 ##################################################
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Bottom_Hadrons
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Particle_Multiplicities
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Bottom_Hadrons
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Particle_Multiplicities
