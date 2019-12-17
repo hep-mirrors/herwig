@@ -13,8 +13,10 @@ opts, args = op.parse_args()
 skip = [ "ATLAS_2010_I849050", # alias
          "TOTEM_2012_002"    , # alias
          "TEST"              , # test analysis
+         "ATLAS_2015_I1351916", # same as _EL version
+         "ATLAS_2015_CONF_2015_041", # superseeded
         ]
-searches=["ALEPH_2016_I1492968"]
+searches=["ALEPH_2016_I1492968","ATLAS_2019_I1725190"]
 
 
 p=subprocess.Popen(["rivet","--list"],stdout=subprocess.PIPE)
@@ -92,7 +94,7 @@ for analysis in sorted(analyses.keys()) :
     elif(analysis[0:3]=="MC_") :
         if(opts.MC) : print "MC   analysis %s not included  : %s" % (analysis,analyses[analysis])
     # examples
-    elif("[EXAMPLE]" in analyses[analysis]) :
+    elif("EXAMPLE" in analyses[analysis]) :
         continue
     # we don't have it
     else :
