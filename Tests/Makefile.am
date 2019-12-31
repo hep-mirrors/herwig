@@ -221,12 +221,11 @@ Rivet-LowEnergy-%.yoda:
 	$(HWRUN)  $(subst .yoda,.run,$@)
 
 Rivet-LowEnergy-%:
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); fi; OUTPUT=`python/LowEnergy.py $$args --non-perturbative --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
-	python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@)
-	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); plots=`python/LowEnergy.py $$args --plots`; if [ -e LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda ] && [ -e LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@)  LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert" $$plots; fi
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); if [ -n "$(strip $(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))))" ]; then args+=" --flavour "$(word 2,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); fi; OUTPUT=`python/LowEnergy.py $$args --non-perturbative --perturbative`; $(MAKE) $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	args="--process "$(word 1,$(subst -, ,$(subst Rivet-LowEnergy-,,$@))); plots=`python/LowEnergy.py $$args --plots`; python/mergeLowEnergy.py $(subst Rivet-LowEnergy-,,$@) $$plots; if [ -e LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda ] && [ -e LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert" $$plots; elif [ -e LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@) LowEnergy-EE-NonPerturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Non-Pert" $$plots; elif [ -e  LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda ]; then  rivet-mkhtml -o Rivet-LowEnergy-$(subst Rivet-LowEnergy-,,$@)  LowEnergy-EE-Perturbative-$(subst Rivet-LowEnergy-,,$@).yoda:"Pert" $$plots; fi
 
 Rivet-R:
-	OUTPUT=`python/R.py --perturbative`; make -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
+	OUTPUT=`python/R.py --perturbative`; $(MAKE) -j12 $$OUTPUT NUMEVENTS=$${NUMEVENTS:-10000};
 	python/mergeLowEnergy.py R
 	rivet-mkhtml -o Rivet-R LowEnergy-EE-Perturbative-R.yoda:"Pert"
 #LowEnergy-EE-NonPerturbative-R.yoda:"Non-Pert" 

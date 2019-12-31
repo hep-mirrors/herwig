@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import yoda,glob,math,optparse
 op = optparse.OptionParser(usage=__doc__)
+op.add_option("-m"         , dest="plots"       , default=[], action="append")
 
 opts, args = op.parse_args()
 
@@ -8,7 +9,18 @@ if(len(args)!=1) :
     print 'Must be one and only 1 name'
     quit()
 
+print opts
 
+cmd3_weights = { 2007. : [0.5 ,4259], 1980 : [1 , 2368], 1951 : [11,5230],
+                 1907.5: [17.5,5497], 1877 : [7 ,16803], 1830 : [30,8287],
+                 1740. : [40  ,8728], 1640 : [40, 7299] }
+wSum=0.
+for key in cmd3_weights.keys() :
+    wSum+= cmd3_weights[key][1]
+
+for key in cmd3_weights.keys() :
+    cmd3_weights[key][1] /= wSum 
+    
 for runType in ["NonPerturbative","Perturbative"]:
     outhistos={}
     for fileName in glob.glob("Rivet-LowEnergy-EE-%s-*.yoda" % runType):
@@ -16,9 +28,21 @@ for runType in ["NonPerturbative","Perturbative"]:
         energyMeV = energy*1000.
         aos = yoda.read(fileName)
         for hpath,histo in aos.iteritems():
-            if("/_" in hpath or "TMP" in hpath) : continue
+            if("/_" in hpath or "TMP" in hpath or "RAW" in hpath) : continue
+            if(len(opts.plots)>0 and hpath not in opts.plots) : continue
             if(type(histo)==yoda.core.Histo1D) :
-                outhistos[hpath] = histo
+                if( "CMD3_2019_I1770428" in path ) :
+                    val=0.
+                    for key in cmd3_weights.keys() :
+                        if(abs(energyMeV-val)>abs(energyMeV-key)) :
+                            val=key
+                    histo.scaleW(cmd3_weights[val][1])
+                    if(hpath in outhistos) :
+                        outhistos[hpath] += histo
+                    else :
+                        outhistos[hpath] = histo
+                else :
+                    outhistos[hpath] = histo
                 continue
             # create histo if it doesn't exist
             elif(hpath not in outhistos) :

@@ -96,6 +96,7 @@ analyses['EtaGamma']["CMD2_1995_I406880" ] = ["d01-x01-y04"]
 analyses['EtaGamma']["BABAR_2006_I716277"] = ["d01-x01-y01"]
 # 3 pion
 analyses["3Pi"]["BABAR_2004_I656680"     ] = ["d01-x01-y01"]
+analyses["3Pi"]["BESIII_2019_I1773081"   ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2002_I582183"       ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2003_I619011"       ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_1999_I508003"       ] = ["d01-x01-y01"]
@@ -110,7 +111,7 @@ analyses['3Pi']["GAMMAGAMMA_1981_I158474"] = ["d01-x01-y01"]
 analyses["3Pi"]["CLEO_2006_I691720"      ] = ["d01-x01-y01"]
 analyses["3Pi"]["SND_2015_I1389908"      ] = ["d01-x01-y01"]
 # eta pipi
-analyses["EtaPiPi"]["BABAR_2018_I1700745"] = ["d02-x01-y01"]
+analyses["EtaPiPi"]["BABAR_2018_I1700745"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["EtaPiPi"]["BABAR_2018_I1647139"] = ["d01-x01-y01"]
 analyses["EtaPiPi"]["SND_2015_I1332929"  ] = ["d01-x01-y01"]
 analyses["EtaPiPi"]["SND_2018_I1638368"  ] = ["d01-x01-y01"]
@@ -123,9 +124,10 @@ analyses['EtaPiPi']["CMD3_2019_I1744510" ] = ["d02-x01-y01"]
 analyses["EtaprimePiPi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
 # Eta Phi
 analyses["EtaPhi"]["BABAR_2008_I765258"  ] = ["d04-x01-y01","d05-x01-y01"]
+analyses["EtaPhi"]["BABAR_2007_I758568"  ] = ["d09-x01-y01"]
 analyses["EtaPhi"]["SND_2018_I1693737"   ] = ["d01-x01-y01"]
 analyses["EtaPhi"]["BABAR_2017_I1511276" ] = ["d03-x01-y01"]
-analyses["EtaPhi"]["SND_2019_I1726419"   ] = ["d01-x01-y03"]
+analyses["EtaPhi"]["SND_2019_I1726419"   ] = ["d01-x01-y01","d01-x01-y03"]
 analyses["EtaPhi"]["CMD3_2019_I1740541"  ] = ["d01-x01-y06","d02-x01-y06","d03-x01-y06"]
 # Eta Omega
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
@@ -166,7 +168,7 @@ analyses['OmegaPi']["ND_1991_I321108"   ] = ["d01-x01-y01","d02-x01-y01","d03-x0
 analyses["OmegaPiPi"]["DM1_1981_I166964"   ] = ["d01-x01-y01"]
 analyses["OmegaPiPi"]["DM2_1992_I339265"   ] = ["d02-x01-y01"]
 analyses["OmegaPiPi"]["CMD2_2000_I532970"  ] = ["d01-x01-y01"]
-analyses["OmegaPiPi"]["BABAR_2018_I1700745"] = ["d03-x01-y01"]
+analyses["OmegaPiPi"]["BABAR_2018_I1700745"] = ["d01-x01-y01","d03-x01-y01"]
 analyses["OmegaPiPi"]["BABAR_2007_I758568" ] = ["d03-x01-y01","d04-x01-y01"]
 analyses["5Pi"]["CMD2_2000_I532970"        ] = ["d03-x01-y01"]
 analyses["5Pi"]["BABAR_2007_I758568"       ] = ["d01-x01-y01"]
@@ -174,7 +176,7 @@ analyses['5Pi']["ND_1991_I321108"          ] = ["d14-x01-y01"]
 analyses['5Pi']["GAMMAGAMMA_1981_I158474"  ] = ["d01-x01-y03"]
 analyses["5Pi"]["BABAR_2018_I1700745"      ] = ["d01-x01-y01"]
 # 2K 1 pi
-analyses["2K1Pi"]["BABAR_2008_I765258"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+analyses["2K1Pi"]["BABAR_2008_I765258"  ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["2K1Pi"]["DM1_1982_I176801"    ] = ["d01-x01-y01"]
 analyses["2K1Pi"]["DM2_1991_I318558"    ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["2K1Pi"]["BESII_2008_I801208"  ] = ["d01-x01-y01"]
@@ -200,6 +202,7 @@ analyses['2K2Pi']["BESII_2007_I750713"  ] = ["d01-x01-y04"]
 analyses["2K2Pi"]["BABAR_2017_I1511276" ] = ["d03-x01-y01","d04-x01-y01"]
 analyses["2K2Pi"]["BABAR_2017_I1591716" ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['2K2Pi']["BESIII_2018_I1699641"] = ["d01-x01-y01","d02-x01-y01"]
+analyses['2K2Pi']["CMD3_2019_I1770428"  ] = ["d01-x01-y06"]
 # 4K
 analyses["4K"]["BESIII_2019_I1743841"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["4K"]["BABAR_2005_I676691"  ] = ["d03-x01-y01"]
@@ -277,7 +280,7 @@ analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
-if "all" in opts.processes :
+if "All" in opts.processes :
     processes = sorted(list(analyses.keys()))
 else :
     processes = sorted(list(set(opts.processes)))
@@ -289,6 +292,9 @@ if(opts.plot) :
     output=""
     for process in processes:
         for analysis in analyses[process] :
+            if(analysis=="CMD3_2019_I1770428") :
+                output+= " -m/%s/%s" % (analysis,"d02-x01-y01")
+                output+= " -m/%s/%s" % (analysis,"d02-x01-y02")
             for plot in analyses[process][analysis]:
                 output+= " -m/%s/%s" % (analysis,plot)
     print output
@@ -311,6 +317,34 @@ me = { "PiPi"         : "MEee2Pions",
        "LL"           : "MEee2LL"   ,
        "2K1Pi"        : "MEee2KKPi" }
 
+# get the particle masses from Herwig
+particles = { "pi+" : 0., "pi0" : 0. ,"eta" : 0. ,"eta'" : 0. ,"phi" : 0. ,"omega" : 0. ,"p+" : 0. ,"K+" : 0.}
+for val in particles :
+    tempTxt = "get /Herwig/Particles/%s:NominalMass\nget /Herwig/Particles/%s:WidthLoCut\n" % (val,val)
+    with open("temp.in",'w') as f:
+        f.write(tempTxt)
+    p = subprocess.Popen(["../src/Herwig", "read","temp.in"],stdout=subprocess.PIPE)
+    vals = p.communicate()[0].split()
+    mass = float(vals[0])-float(vals[1])
+    particles[val]=mass
+    os.remove("temp.in")
+# minimum CMS energies for specific processes
+minMass = { "PiPi"         : 2.*particles["pi+"],
+            "KK"           : 2.*particles["K+"],
+            "3Pi"          : 2.*particles["pi+"]+particles["pi0"],
+            "4Pi"          : 2.*particles["pi+"]+2.*particles["pi0"],
+            "EtaPiPi"      : particles["eta"]+2.*particles["pi+"],
+            "EtaprimePiPi" : particles["eta'"]+2.*particles["pi+"],
+            "EtaPhi"       : particles["phi"]+particles["eta"],
+            "EtaOmega"     : particles["omega"]+particles["eta"],
+            "OmegaPi"      : particles["omega"]+particles["pi0"],
+            "OmegaPiPi"    : particles["omega"]+2.*particles["pi0"],
+            "PhiPi"        : particles["phi"]+particles["pi0"],
+            "PiGamma"      : particles["pi0"],
+            "EtaGamma"     : particles["eta"],
+            "PPbar"        : 2.*particles["p+"],
+            "LL"           : 0.,
+            "2K1Pi"        : 2.*particles["K+"]+particles["pi0"] }
 # energies we need
 energies={}
 def nearestEnergy(en) :
@@ -347,17 +381,19 @@ for process in processes:
                 if(energy in energies) :
                     if(analysis not in energies[energy][1]) :
                         energies[energy][1].append(analysis)
-                    if(matrix!="" and matrix not in energies[energy][0]) :
+                    if(matrix!="" and matrix not in energies[energy][0] and
+                       minMass[process]<=energy) :
                         energies[energy][0].append(matrix)
                 elif(delta<1e-7) :
                     if(analysis not in anals[1]) :
                         anals[1].append(analysis)
-                    if(matrix!="" and matrix not in anals[0]) :
+                    if(matrix!="" and matrix not in anals[0] and
+                       minMass[process]<=energy) :
                         anals[0].append(matrix)
                 else :
                     if(matrix=="") :
                         energies[energy]=[[],[analysis]]
-                    else :
+                    elif(minMass[process]<=energy) :
                         energies[energy]=[[matrix],[analysis]]
 
 with open("python/LowEnergy-EE-Perturbative.in", 'r') as f:
