@@ -106,6 +106,7 @@ set MEee2PPbar:WeakCurrent /Herwig/Decays/CzyzCurrent
 create Herwig::MEee2Mesons MEee2LL HwMELeptonLowEnergy.so
 create Herwig::WeakBaryonCurrent  /Herwig/Decays/KornerKurodaCurrent
 create Herwig::KornerKurodaFormFactor  /Herwig/Decays/KornerKurodaFormFactor
+set /Herwig/Decays/KornerKurodaFormFactor:IncludeNucleon No
 set /Herwig/Decays/KornerKurodaCurrent:FormFactor /Herwig/Decays/KornerKurodaFormFactor
 set MEee2LL:WeakCurrent /Herwig/Decays/KornerKurodaCurrent
 # e+e- -> KKpi

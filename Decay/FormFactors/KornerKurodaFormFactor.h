@@ -121,6 +121,11 @@ private:
 private:
 
   /**
+   *  Whether or not to include the nucleon modes
+   */
+  bool includeNucleon_;
+
+  /**
    * Masses for the form-factors
    */
   //@{

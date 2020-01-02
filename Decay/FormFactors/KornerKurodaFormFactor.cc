@@ -6,6 +6,7 @@
 
 #include "KornerKurodaFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -17,7 +18,8 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-KornerKurodaFormFactor::KornerKurodaFormFactor() : mRho_(775.26*MeV), mOmega_(782.65*MeV), mPhi_(1019.461*MeV),
+KornerKurodaFormFactor::KornerKurodaFormFactor() : includeNucleon_(true),
+						   mRho_(775.26*MeV), mOmega_(782.65*MeV), mPhi_(1019.461*MeV),
 						   aPrime_(1./GeV2) {
   const double o3=1./3., o6=1./6., o9=1./6.;
   c1Rho_    = {  0.5,  -0.5,    1.,   0.,    -1.,     0.5,   -0.5,  0., 0.};
@@ -26,7 +28,6 @@ KornerKurodaFormFactor::KornerKurodaFormFactor() : mRho_(775.26*MeV), mOmega_(78
   c12Rho_   = {5.*o6,  1.25, 2.*o3,   0.,     2.,    0.25,   -0.5,  0., 1.};
   c12Omega_ = {   o6, -0.25, 2.*o9,2.*o3, -2.*o3, 0.25*o3,     o6,  0., 0.};
   c12Phi_   = {   0.,    0.,    o9,   o3,    -o3,   2.*o3,  4.*o3,  1., 0.};
-  // mu_       = {2.792847,-1.192304,2.458,0.930949,-1.160,-1.250,-0.6507,-0.613,1.61};
   mu_       = {2.792847,-1.192304,2.458,0.930949,-1.160,-1.250,-0.6507,-2.792847/3.,1.61};
   // set up the form factors
   addFormFactor(2212,2212,2,2,2,2,1,1);
@@ -51,14 +52,14 @@ IBPtr KornerKurodaFormFactor::fullclone() const {
 
 void KornerKurodaFormFactor::persistentOutput(PersistentOStream & os) const {
   os << ounit(mRho_,GeV) << ounit(mOmega_,GeV) <<  ounit(mPhi_, GeV)
-     << ounit(aPrime_,1./GeV2)
+     << ounit(aPrime_,1./GeV2) << includeNucleon_
      << c1Rho_ << c1Omega_ << c1Phi_ << c12Rho_ << c12Omega_ << c12Phi_
      << c2Rho_ << c2Omega_ << c2Phi_ << mu_;
 }
 
 void KornerKurodaFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> iunit(mRho_,GeV) >> iunit(mOmega_,GeV) >>  iunit(mPhi_, GeV)
-     >> iunit(aPrime_,1./GeV2)
+     >> iunit(aPrime_,1./GeV2) >> includeNucleon_
      >> c1Rho_ >> c1Omega_ >> c1Phi_ >> c12Rho_ >> c12Omega_ >> c12Phi_
      >> c2Rho_ >> c2Omega_ >> c2Phi_ >> mu_;
 }
@@ -113,6 +114,24 @@ void KornerKurodaFormFactor::Init() {
      "The regge slope",
      &KornerKurodaFormFactor::aPrime_, 1./GeV2, 1./GeV2, 0.5/GeV2, 1.5/GeV2,
      false, false, Interface::limited);
+
+  
+  static Switch<KornerKurodaFormFactor,bool> interfaceIncludeNucleon
+    ("IncludeNucleon",
+     "Whether or not to include the nucleon (i.e. proton and neutron) modes or not."
+     " Often omit these as other currents do a better job.",
+     &KornerKurodaFormFactor::includeNucleon_, true, false, false);
+  static SwitchOption interfaceIncludeNucleonYes
+    (interfaceIncludeNucleon,
+     "Yes",
+     "Include proton and neutron modes",
+     true);
+  static SwitchOption interfaceIncludeNucleonNo
+    (interfaceIncludeNucleon,
+     "No",
+     "Don't include neutron and proton modes",
+     false);
+
 }
 
 void KornerKurodaFormFactor::
@@ -125,6 +144,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int ,int ,Energy,Energy,
   f1a = f2a = f3a = f1v = f2v = f3v = 0.;
   if(flavour.charm   != Charm::Unknown       and flavour.charm   != Charm::Zero      ) return;
   if(flavour.bottom  != Beauty::Unknown      and flavour.bottom  !=Beauty::Zero      ) return;
+  if(!includeNucleon_&&iloc<=1) return;
   bool rho = true, omega = true, phi = true;
   // strange content
   if(flavour.strange != Strangeness::Unknown) {
