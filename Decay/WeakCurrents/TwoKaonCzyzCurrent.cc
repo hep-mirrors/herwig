@@ -23,7 +23,7 @@ TwoKaonCzyzCurrent::TwoKaonCzyzCurrent()
 // changed parameters from 1002.0279, Fit 2 
 // substituted by own fit
 : betaRho_(2.19680665014), betaOmega_(2.69362046884), betaPhi_(1.94518176513),
-  nMax_(200), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV), eMax_(10.*GeV) {
+  nMax_(200), etaPhi_(1.055), gammaOmega_(0.5), gammaPhi_(0.2), mpi_(140.*MeV), eMax_(-GeV) {
   using Constants::pi;
   // rho parameter
   rhoMag_    = {1.1148916618504967,0.050374779737077324, 0.014908906283692132,0.03902475997619905,0.038341465215871416};
@@ -360,7 +360,8 @@ void TwoKaonCzyzCurrent::constructInterpolators() const {
   vector<double> re0,im0;
   vector<double> re1,im1;
   Energy mK = getParticleData(ParticleID::Kplus)->mass();
-  Energy2 step = (sqr(eMax_)-sqr(2.*mK))/nMax_;
+  Energy maxE = eMax_>ZERO ? eMax_ : 10.*GeV; 
+  Energy2 step = (sqr(maxE)-sqr(2.*mK))/nMax_;
   Energy2 Q2 = sqr(2.*mK);
   for(unsigned int ix=0;ix<nMax_+1;++ix) {
     Complex value = FkaonRemainderI1(Q2);
@@ -428,7 +429,7 @@ bool TwoKaonCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
-  eMax_=upp;
+  eMax_=max(upp,eMax_);
   // set the resonances
   vector<tPDPtr> res;
   if(icharge==0) {

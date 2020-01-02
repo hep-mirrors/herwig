@@ -21,7 +21,7 @@ HERWIG_INTERPOLATOR_CLASSDESC(TwoPionCzyzCurrent,double,Energy2)
 TwoPionCzyzCurrent::TwoPionCzyzCurrent()
   : omegaMag_(18.7e-4), omegaPhase_(0.106),
     omegaMass_(782.4*MeV),omegaWidth_(8.33*MeV), beta_(2.148),
-    nMax_(2000), eMax_(10.*GeV) {
+    nMax_(2000), eMax_(-GeV) {
   // various parameters
   rhoMag_  =  {1.,1.,0.59,0.048,0.40,0.43};
   rhoPhase_ = {0.,0.,-2.20,-2.0,-2.9,1.19}; 
@@ -204,7 +204,8 @@ void TwoPionCzyzCurrent::constructInterpolators() const {
   Energy mpi(getParticleData(ParticleID::piplus)->mass());
   vector<Energy2> en;
   vector<double> re,im;
-  Energy step = (eMax_-2.*mpi)/nMax_;
+  Energy maxE = eMax_>ZERO ? eMax_ : 10.*GeV;
+  Energy step = (maxE-2.*mpi)/nMax_;
   Energy Q = 2.*mpi;
   for(unsigned int ix=0;ix<nMax_+1;++ix) {
     Complex value = FpiRemainder(sqr(Q),mpi,mpi);
@@ -261,7 +262,7 @@ bool TwoPionCzyzCurrent::createMode(int icharge, tcPDPtr resonance,
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;
-  eMax_=upp;
+  eMax_=max(upp,eMax_);
   // set up the resonances
   tPDPtr res[3];
   if(icharge==0) {
