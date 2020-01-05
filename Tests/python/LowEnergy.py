@@ -124,16 +124,20 @@ analyses['EtaPiPi']["CMD3_2019_I1744510" ] = ["d02-x01-y01"]
 analyses["EtaprimePiPi"]["BABAR_2007_I758568"] = ["d05-x01-y01","d06-x01-y01"]
 # Eta Phi
 analyses["EtaPhi"]["BABAR_2008_I765258"  ] = ["d04-x01-y01","d05-x01-y01"]
-analyses["EtaPhi"]["BABAR_2007_I758568"  ] = ["d09-x01-y01"]
+analyses["EtaPhi"]["BABAR_2007_I758568"  ] = ["d08-x01-y01","d09-x01-y01"]
 analyses["EtaPhi"]["SND_2018_I1693737"   ] = ["d01-x01-y01"]
 analyses["EtaPhi"]["BABAR_2017_I1511276" ] = ["d03-x01-y01"]
 analyses["EtaPhi"]["SND_2019_I1726419"   ] = ["d01-x01-y01","d01-x01-y03"]
 analyses["EtaPhi"]["CMD3_2019_I1740541"  ] = ["d01-x01-y06","d02-x01-y06","d03-x01-y06"]
+analyses["EtaPhi"]["CMD3_2017_I1606078"  ] = ["d01-x01-y01"]
+analyses["EtaPhi"]["BABAR_2006_I709730"  ] = ["d02-x01-y01"]
+analyses["EtaPhi"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
 # Eta Omega
 analyses["EtaOmega"]["SND_2016_I1473343" ] = ["d01-x01-y01"]
 analyses["EtaOmega"]["BABAR_2006_I709730"] = ["d02-x01-y01"]
 analyses["EtaOmega"]["SND_2019_I1726419" ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["EtaOmega"]["CMD3_2017_I1606078"] = ["d01-x01-y01","d01-x01-y02"]
+analyses["EtaOmega"]["BESII_2008_I801210"  ] = ["d01-x01-y03"]
 # 4 pions
 analyses["4Pi"]["BABAR_2017_I1621593"    ] = ["d01-x01-y01","d02-x01-y01"]
 analyses["4Pi"]["BABAR_2012_I1086164"    ] = ["d01-x01-y01"]
@@ -170,7 +174,8 @@ analyses["OmegaPiPi"]["DM1_1981_I166964"   ] = ["d01-x01-y01"]
 analyses["OmegaPiPi"]["DM2_1992_I339265"   ] = ["d02-x01-y01"]
 analyses["OmegaPiPi"]["CMD2_2000_I532970"  ] = ["d01-x01-y01"]
 analyses["OmegaPiPi"]["BABAR_2018_I1700745"] = ["d01-x01-y01","d03-x01-y01"]
-analyses["OmegaPiPi"]["BABAR_2007_I758568" ] = ["d03-x01-y01","d04-x01-y01"]
+analyses["OmegaPiPi"]["BABAR_2007_I758568" ] = ["d01-x01-y01","d03-x01-y01","d04-x01-y01"]
+analyses['OmegaPiPi']["ND_1991_I321108"    ] = ["d14-x01-y01"]
 analyses["5Pi"]["CMD2_2000_I532970"        ] = ["d03-x01-y01"]
 analyses["5Pi"]["BABAR_2007_I758568"       ] = ["d01-x01-y01"]
 analyses['5Pi']["ND_1991_I321108"          ] = ["d14-x01-y01"]
@@ -231,7 +236,6 @@ analyses["6m"]["CLEO_2006_I691720"  ] = ["d01-x01-y02","d01-x01-y03","d01-x01-y0
                                          "d01-x01-y12","d01-x01-y13","d01-x01-y14","d01-x01-y15","d01-x01-y17"]
 analyses["6m"]["BESII_2008_I801210" ] = ["d01-x01-y03","d01-x01-y04","d01-x01-y05"]
 analyses["6m"]["BESII_2008_I801208" ] = ["d01-x01-y03","d01-x01-y04","d01-x01-y05","d01-x01-y06"]
-analyses["6m"]["JADE_1979_I142874"  ] = ["d02-x01-y01"]
 analyses["6m"]["MARKI_1982_I169326" ] = ["d06-x01-y01"]
 analyses["6m"]["MARKI_1975_I100592" ] = ["d01-x01-y01","d02-x01-y01"]
 analyses['6m']["BESII_2007_I750713" ] = ["d01-x01-y08","d01-x01-y09","d01-x01-y11",
@@ -273,7 +277,6 @@ analyses["BB"]["BELLE_2008_I764099"  ] = ["d01-x01-y01","d02-x01-y01",
                                           "d03-x01-y01","d04-x01-y01"]
 analyses["BB"]["CLEO_1999_I474676"   ] = ["d01-x01-y01","d01-x01-y02"]
 analyses["BB"]["CUSB_1991_I325661"   ] = ["d01-x01-y01"]
-analyses["BB"]["BABAR_2001_I558091"  ] = ["d01-x01-y01"]
 analyses["BB"]["CLEO_1991_I29927"    ] = ["d01-x01-y01"]
 # hyperons
 analyses["LL"]["BESIII_2018_I1627871"] = ["d01-x01-y01"]
@@ -281,7 +284,9 @@ analyses["LL"]["DM2_1990_I297706"    ] = ["d02-x01-y01"]
 analyses["LL"]["BESIII_2019_I1758883"] = ["d01-x01-y05"]
 analyses["LL"]["BABAR_2007_I760730"  ] = ["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 # list the analysis if required and quit()
+allProcesses=False
 if "All" in opts.processes :
+    allProcesses=True
     processes = sorted(list(analyses.keys()))
 else :
     processes = sorted(list(set(opts.processes)))
@@ -410,7 +415,9 @@ for energy in sorted(energies) :
     for analysis in energies[energy][1]: 
         anal+= "insert /Herwig/Analysis/Rivet:Analyses 0 %s\n" %analysis
     proc=""
-    for matrix in energies[energy][0] :
+    matrices = energies[energy][0]
+    if(allProcesses) : matrices = me.values()
+    for matrix in  matrices:
         proc+="insert SubProcess:MatrixElements 0 %s\n" % matrix
         proc+="set %s:Flavour %s\n" % (matrix,opts.flavour)
     maxflavour =5
