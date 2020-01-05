@@ -13,6 +13,8 @@ op.add_option("--non-perturbative", dest="nonPerturbative" , default=False, acti
 op.add_option("--perturbative"    , dest="perturbative"    , default=False, action="store_true")
 op.add_option("--dest"            , dest="dest"            , default="Rivet")
 op.add_option("--list"            , dest="list"            , default=False, action="store_true")
+op.add_option("--max-energy"      , dest="maxEnergy"       , default=11.5, type="float", action="store")
+op.add_option("--plots"           , dest="plot"           , default=False, action="store_true")
 opts, args = op.parse_args()
 path=opts.path
 # list of analyses
@@ -36,8 +38,8 @@ analyses["VENUS_1999_I500179"] = ["d01-x01-y01"]
 analyses["MD1_1986_I364141"] = ["d01-x01-y01"]
 analyses["MUPI_1972_I84978"] = ["d01-x01-y01"]
 analyses["MUPI_1973_I95215"] = ["d01-x01-y01"]
-analyses["NMD_1974_I745"] = ["d01-x01-y01"]
-analyses["GAMMAGAMMA_1979_I141722"] = ["d01-x01-y01","d02-x01-y01"]
+analyses["NMD_1974_I745"   ] = ["d01-x01-y01","d01-x01-y02"]
+analyses["GAMMAGAMMA_1979_I141722"] = ["d01-x01-y01","d02-x01-y01","d02-x01-y02"]
 analyses["MARKI_1975_I100733"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["MARKI_1977_I119979"] = ["d01-x01-y01","d02-x01-y01"]
 analyses["MARKI_1976_I108144"] = ["d01-x01-y01"]
@@ -91,6 +93,15 @@ analyses["PLUTO_1981_I165122"]=["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
 if(opts.list) :
     print " ".join(analyses.keys())
     quit()
+if(opts.plot) :
+    output=""
+    for analysis in analyses.keys():
+        for plot in analyses[analysis]:
+            output+= " -m/%s/%s" % (analysis,plot)
+    for i in xrange(1,7) :
+        output += " -m/BESII_2004_I622224/d0%s-x01-y01" % i
+    print output
+    quit()
 
 energies={}
 def nearestEnergy(en) :
@@ -109,8 +120,8 @@ for analysis in analyses :
     if(len(aos)==0) : continue
     for plot in analyses[analysis] :
         histo = aos["/REF/%s/%s" %(analysis,plot)]
-        for point in histo.points :
-            energy = point.x
+        for point in histo.points() :
+            energy = point.x()
             if(analysis=="FENICE_1996_I426675") :
                 energy = math.sqrt(energy)
             if(energy>200) :
@@ -125,14 +136,13 @@ for analysis in analyses :
             else :
                 energies[energy]=[analysis]
 
-if "BESII_2004_I622224" in analyses :
-    for val in [2.2,2.6,3.0,3.2,4.6,4.8] :
-        if val in energies :
-            energies[val].append("BESII_2004_I622224")
-        else:
-            energies[val] = ["BESII_2004_I622224"]
-
-
+# add the bes spectra
+for val in [2.2,2.6,3.0,3.2,4.6,4.8] :
+    if val in energies :
+        energies[val].append("BESII_2004_I622224")
+    else:
+        energies[val] = ["BESII_2004_I622224"]
+        
 # set up the templates
 with open("python/LowEnergy-EE-Perturbative.in", 'r') as f:
     templateText = f.read()
@@ -145,9 +155,10 @@ nonPerturbative=Template( templateText )
 # lepton matrix element
 lepton_me="insert SubProcess:MatrixElements 0 MEee2gZ2ll\nset MEee2gZ2ll:Allowed Muon\n"
 # low energy matrix element
-mes = ["MEee2Pions","MEee2Kaons","MEee3Pions","MEee4Pions",
-       "MEee2EtaPiPi","MEee2OmegaPi","MEee2PhiPi","MEee2PiGamma",
-       "MEee2EtaGamma","MEee2ppbar","MEee2KStarK"]
+mes = ["MEee2Pions", "MEee2Kaons", "MEee3Pions", "MEee4Pions", "MEee2EtaPiPi",
+       "MEee2EtaPrimePiPi", "MEee2EtaPhi", "MEee2EtaOmega", "MEee2OmegaPi",
+       "MEee2OmegaPiPi", "MEee2PhiPi", "MEee2PiGamma", "MEee2EtaGamma",
+       "MEee2PPbar", "MEee2LL"   , "MEee2KKPi" ]
 proc=lepton_me
 for matrix in mes :
     proc+="insert SubProcess:MatrixElements 0 %s\n" % matrix
@@ -170,7 +181,7 @@ for energy in sorted(energies) :
             f.write(inputPerturbative)
         targets += "Rivet-LowEnergy-EE-Perturbative-%8.6f.yoda " % energy
     # input file for currents
-    if(opts.nonPerturbative) :
+    if(opts.nonPerturbative and energy <= opts.maxEnergy) :
         inputNonPerturbative = nonPerturbative.substitute({"ECMS" : "%8.6f" % energy, "ANALYSES" : anal,
                                                            "processes" : proc})
         with open(opts.dest+"/Rivet-LowEnergy-EE-NonPerturbative-%8.6f.in" % energy ,'w') as f:

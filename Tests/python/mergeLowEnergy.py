@@ -9,8 +9,6 @@ if(len(args)!=1) :
     print 'Must be one and only 1 name'
     quit()
 
-print opts
-
 cmd3_weights = { 2007. : [0.5 ,4259], 1980 : [1 , 2368], 1951 : [11,5230],
                  1907.5: [17.5,5497], 1877 : [7 ,16803], 1830 : [30,8287],
                  1740. : [40  ,8728], 1640 : [40, 7299] }
@@ -92,5 +90,16 @@ for runType in ["NonPerturbative","Perturbative"]:
                         outhistos[hpath].addPoint(aos[hpath].points()[i])
                     break
     if len(outhistos) == 0: continue
+    for val in outhistos.keys() :
+        if type(outhistos[val]) is yoda.core.Scatter2D :
+            if(outhistos[val].numPoints()==0) : del outhistos[val]
+        elif (type(outhistos[val]) is yoda.core.Histo1D or
+              type(outhistos[val]) is yoda.core.Profile1D) :
+            if(outhistos[val].numBins()==0) : del outhistos[val]
+        else :
+            print  type(outhistos[val]) 
+
+
+    
     yoda.writeYODA(outhistos,"LowEnergy-EE-%s-%s.yoda" % (runType,args[0]))
 
