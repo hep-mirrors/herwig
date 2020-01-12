@@ -55,19 +55,17 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   _coupling[5] = 0.0088/GeV; _maxweight[5] = 1.; 
   _incoming[6] = 10441; _outgoing1[6] = 313; _outgoing2[6] = -313; 
   _coupling[6] = 0.0088/GeV; _maxweight[6] = 1.; 
-  _incoming[7] = 10441; _outgoing1[7] = 333; _outgoing2[7] = 333; 
+  _incoming[7] = 10441; _outgoing1[7] = 333; _outgoing2[7] = 333;
   _coupling[7] = 0.0067/GeV; _maxweight[7] = 1.; 
-  _incoming[8] = 10441; _outgoing1[8] = 22; _outgoing2[8] = 22; 
+  _incoming[8] = 10441; _outgoing1[8] = 22; _outgoing2[8] = 22;
   _coupling[8] = 0.0027/GeV; _maxweight[8] = 1.; 
-  _incoming[12] = 10441; _outgoing1[12] = 223; _outgoing2[12] = 223; 
-  _coupling[12] = 0.0093/GeV; _maxweight[12] = 1.; 
+  _incoming[11] = 10441; _outgoing1[11] = 223; _outgoing2[11] = 223;
+  _coupling[11] = 0.0093/GeV; _maxweight[11] = 1.;
   // a'_0 -> omega rho
-  _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223; 
+  _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223;
   _coupling[9] = 27.09/GeV; _maxweight[9] = 20.;
-  _incoming[10] = 10211; _outgoing1[10] = 213; _outgoing2[10] = 223; 
+  _incoming[10] = 10211; _outgoing1[10] = 213; _outgoing2[10] = 223;
   _coupling[10] = 27.09/GeV; _maxweight[10] = 20.;
-  _incoming[11] =-10211; _outgoing1[11] =-213; _outgoing2[11] = 223; 
-  _coupling[11] = 27.09/GeV; _maxweight[11] = 20.; 
   // size of arrays
   _initsize = _incoming.size();
   // intermediates
@@ -107,13 +105,27 @@ int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
   int id0(parent->id());
   int id1(children[0]->id());
   int id2(children[1]->id());
+  int ccid0(parent     ->CC() ? parent     ->CC()->id() : parent     ->id());
+  int ccid1(children[0]->CC() ? children[0]->CC()->id() : children[0]->id());
+  int ccid2(children[1]->CC() ? children[1]->CC()->id() : children[1]->id());
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
   int imode(-1);
   do {
     if(_incoming[ix]==id0) {
       if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
-	 (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)) imode=ix;
+	 (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)) {
+	imode=ix;
+	break;
+      }
+    }
+    if(_incoming[ix]==ccid0) {
+      if((_outgoing1[ix]==ccid1&&_outgoing2[ix]==ccid2)||
+	 (_outgoing1[ix]==ccid2&&_outgoing2[ix]==ccid1)) {
+	imode=ix;
+	cc=true;
+	break;
+      }
     }
     ++ix;
   }
@@ -207,7 +219,9 @@ double ScalarVectorVectorDecayer::me2(const int,const Particle & part,
   Energy2 p1p2(momenta[0]*momenta[1]);
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
+    if(photon[0] && ix==1) continue;
     for(iy=0;iy<3;++iy) {
+      if(photon[1] && iy==1) continue;
       (*ME())(0,ix,iy)=Complex(fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
 				     (_vectors[1][iy]*momenta[0])*
 				     (_vectors[0][ix]*momenta[1])));

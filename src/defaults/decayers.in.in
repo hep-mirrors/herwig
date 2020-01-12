@@ -22211,16 +22211,11 @@ newdef SVV:FirstOutgoing  10 213
 newdef SVV:SecondOutgoing 10 223
 newdef SVV:Coupling   10 27.09
 newdef SVV:MaxWeight  10 8.
-newdef SVV:Incoming   11 -10211
-newdef SVV:FirstOutgoing  11 -213
+newdef SVV:Incoming   11 10441
+newdef SVV:FirstOutgoing  11 223
 newdef SVV:SecondOutgoing 11 223
-newdef SVV:Coupling   11 27.09
-newdef SVV:MaxWeight  11 8.
-newdef SVV:Incoming   12 10441
-newdef SVV:FirstOutgoing  12 223
-newdef SVV:SecondOutgoing 12 223
-newdef SVV:Coupling   12 0.0093
-newdef SVV:MaxWeight  12 11.5
+newdef SVV:Coupling   11 0.0093
+newdef SVV:MaxWeight  11 11.5
 
 #
 create Herwig::a1SimpleDecayer  a1Simple
