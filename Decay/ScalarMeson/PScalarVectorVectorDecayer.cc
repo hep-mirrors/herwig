@@ -199,7 +199,9 @@ double PScalarVectorVectorDecayer::me2(const int,const Particle & part,
   // now compute the matrix element
   InvEnergy2 fact(_coupling[imode()]/part.mass());
   for(unsigned int ix=0;ix<3;++ix) {
+    if(photon[0] && ix==1) continue;
     for(unsigned int iy=0;iy<3;++iy) {
+      if(photon[1] && iy==1) continue;
       (*ME())(0,ix,iy)=fact*epsilon(_vectors[0][ix],momenta[1],
 				    _vectors[1][iy])*momenta[0];
     }
