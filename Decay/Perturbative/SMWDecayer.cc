@@ -132,7 +132,7 @@ ParticleVector SMWDecayer::decay(const Particle & parent,
   // generate the decay
   bool cc;
   unsigned int imode = modeNumber(cc,parent.dataPtr(),children);
-  ParticleVector output = generate(false,false,imode,parent);
+  ParticleVector output = generate(false,cc,imode,parent);
   if(output[0]->hasColour())      output[0]->antiColourNeighbour(output[1]);
   else if(output[1]->hasColour()) output[1]->antiColourNeighbour(output[0]);
   return output;

@@ -108,7 +108,7 @@ InvEnergy2 DecayIntegrator::realEmissionME(unsigned int,
 }
 
 ParticleVector DecayIntegrator::decay(const Particle & parent,
-				       const tPDVector & children) const {
+				      const tPDVector & children) const {
   // return empty vector if products heavier than parent
   Energy mout(ZERO);
   for(tPDPtr pd : children)  mout += pd->massMin();
