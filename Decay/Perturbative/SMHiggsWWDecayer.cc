@@ -174,11 +174,10 @@ ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
   // generate the kinematics
   ParticleVector decay = generate(true,false,imode,parent);
   // set up the colour flows
-  if(decay[0]->coloured()) {
-    decay[0]->antiColourNeighbour(decay[1]);
-  }
-  if(decay[2]->coloured()) {
-    decay[2]->antiColourNeighbour(decay[3]);
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(decay[ix]->children()[0]->coloured()) {
+      decay[ix]->children()[0]->antiColourNeighbour(decay[ix]->children()[1]);
+    }
   }
   return decay;
 }
