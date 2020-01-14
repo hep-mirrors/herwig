@@ -78,12 +78,15 @@ libHwFormFactor_la_SOURCES = \
 FormFactors/BaryonFormFactor.cc \
 FormFactors/ScalarFormFactor.cc \
 FormFactors/BtoSGammaHadronicMass.cc \
+FormFactors/KMatrix.cc \
 FormFactors/BaryonFormFactor.fh \
 FormFactors/BaryonFormFactor.h \
 FormFactors/ScalarFormFactor.fh \
 FormFactors/ScalarFormFactor.h \
 FormFactors/BtoSGammaHadronicMass.h \
-FormFactors/BtoSGammaHadronicMass.fh
+FormFactors/BtoSGammaHadronicMass.fh \
+FormFactors/KMatrix.h \
+FormFactors/KMatrix.fh
 
 pkglib_LTLIBRARIES += HwFormFactors.la
 

@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the KMatrix class.
+//
+#ifndef Herwig_KMatrix_FH
+#define Herwig_KMatrix_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class KMatrix;
+
+ThePEG_DECLARE_POINTERS(Herwig::KMatrix,KMatrixPtr);
+
+}
+
+#endif
