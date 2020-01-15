@@ -11882,7 +11882,7 @@ insert BaryonLight1:MaximumWeight 3 4.63043e-10
 insert BaryonLight1:MaximumWeight 4 2.99887e-20 
 insert BaryonLight1:MaximumWeight 5 1.02435e-09 
 insert BaryonLight1:MaximumWeight 6 0.0037
-insert BaryonLight1:MaximumWeight 7 0.0005
+insert BaryonLight1:MaximumWeight 7 0.00055
 insert BaryonLight1:MaximumWeight 8 9.60594e-13 
 insert BaryonLight1:MaximumWeight 9 3.14573e-13 
 insert BaryonLight1:MaximumWeight 10 0.00404325 
@@ -16108,25 +16108,22 @@ insert SU3Decuplet:MaxWeight 11 4.06786
 insert SU3Decuplet:MaxWeight 12 4.8
 insert SU3Decuplet:MaxWeight 13 3.0
 insert SU3Decuplet:MaxWeight 14 12.761
-insert SU3Decuplet:MaxWeight 15 0.0169452
-insert SU3Decuplet:MaxWeight 16 3.20000
-insert SU3Decuplet:MaxWeight 17 6.30188
-insert SU3Decuplet:MaxWeight 18 6.54799
-insert SU3Decuplet:MaxWeight 19 3.0
-insert SU3Decuplet:MaxWeight 20 3.8
-insert SU3Decuplet:MaxWeight 21 4.8
-insert SU3Decuplet:MaxWeight 22 0.0160214
-insert SU3Decuplet:MaxWeight 23 3.0
+insert SU3Decuplet:MaxWeight 15 3.20000
+insert SU3Decuplet:MaxWeight 16 6.30188
+insert SU3Decuplet:MaxWeight 17 6.54799
+insert SU3Decuplet:MaxWeight 18 3.0
+insert SU3Decuplet:MaxWeight 19 3.8
+insert SU3Decuplet:MaxWeight 20 4.8
+insert SU3Decuplet:MaxWeight 21 3.0
+insert SU3Decuplet:MaxWeight 22 3.2
+insert SU3Decuplet:MaxWeight 23 14.29
 insert SU3Decuplet:MaxWeight 24 3.2
-insert SU3Decuplet:MaxWeight 25 14.29
-insert SU3Decuplet:MaxWeight 26 3.2
-insert SU3Decuplet:MaxWeight 27 0.668873
-insert SU3Decuplet:MaxWeight 28 4.2
-insert SU3Decuplet:MaxWeight 29 5.2
-insert SU3Decuplet:MaxWeight 30 0.356554
-insert SU3Decuplet:MaxWeight 31 4.8
-insert SU3Decuplet:MaxWeight 32 4.8
-insert SU3Decuplet:MaxWeight 33 1.72199
+insert SU3Decuplet:MaxWeight 25 4.2
+insert SU3Decuplet:MaxWeight 26 5.2
+insert SU3Decuplet:MaxWeight 27 0.356554
+insert SU3Decuplet:MaxWeight 28 4.8
+insert SU3Decuplet:MaxWeight 29 4.8
+insert SU3Decuplet:MaxWeight 30 1.72199
 
 #
 create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3RoperDecuplet
