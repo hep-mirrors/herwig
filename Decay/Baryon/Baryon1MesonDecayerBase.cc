@@ -542,8 +542,8 @@ halfThreeHalfVector(const int,const Particle & part, const tPDVector & outgoing,
       for(unsigned int ixa=0;ixa<2;++ixa) {
 	ispin[0]=ixa;
 	if(outgoing[0]->id()>0) stemp  = _inHalf[ixa];
-	else        
-	  (*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/part.mass());
+	else                    sbtemp = _inHalfBar[ixa];
+	(*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/part.mass());
       }
     }
   }
