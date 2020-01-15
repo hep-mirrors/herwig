@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/Utilities/Kinematics.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -259,7 +260,9 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & part,
   InvEnergy2 fact(_coupling[imode()]/part.mass());
   complex<Energy2> me;
   for(unsigned int ix=0;ix<3;++ix) {
+    if(photon[0]&&ix==1) continue;
     for(unsigned iy=0;iy<3;++iy) {
+      if(photon[1]&&iy==1) continue;
       e1e2=_vectors[0][ix].dot(_vectors[1][iy]);
       te1e2=complex<Energy2>(p1p2)*
 	(LorentzTensor<double>(_vectors[0][ix],_vectors[1][iy])+
@@ -277,8 +280,7 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & part,
   double output = ME()->contract(_rho).real();
   // testing the matrix element 
   // Energy2 m02(sqr(part.mass())),m12(sqr(momenta[0].mass())),m22(sqr(momenta[1].mass()));
-  // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),
-  // 					     momenta[1].mass());
+  // Energy pcm = Kinematics::pstarTwoBodyDecay(part.mass(),momenta[0].mass(),momenta[1].mass());
   // Energy2 pcm2(sqr(pcm));
   // double test = 4./15./m02/m02*sqr(_coupling[imode()])*
   //   (3.*m02*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))-5.*(m12-m22)*(m12-m22)*pcm2);
