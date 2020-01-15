@@ -193,16 +193,13 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
     _baryondecayers[imode]->threeHalfHalfScalarCoupling(_modeloc[imode],q,m1,m2,A1,B1);
     double Afact1((A1*conj(A1)).real()),Bfact1((B1*conj(B1)).real());
     gam = 0.125/3./pi/msum/msum/q2*pcm*pcm2*(Afact1*fact1+Bfact1*fact2);
-    /*
-      Energy2 Qp(sqrt(pow(q+m1,2)-pow(m2,2))),Qm(sqrt(pow(q-m1,2)-pow(m2,2)));
-      double r23(sqrt(2./3.));
-      Complex h1(-2.*r23*pcm*Qm*B1/(q+m1)),
-      h2( 2.*r23*pcm*Qp*A1/(q+m1));
-      cout << "testing 3/2->1/2 0 "
-      << gam << "   " 
-      << real(h1*conj(h1)+h2*conj(h2))/64./pi*pcm/q2     << "   " 
-      << real(h1*conj(h1)+h2*conj(h2))/64./pi*pcm/q2/gam << endl;
-    */
+    // Energy Qp(sqrt(sqr(q+m1)-sqr(m2))),Qm(sqrt(sqr(q-m1)-sqr(m2)));
+    // double r23(sqrt(2./3.));
+    // complex<Energy> h1(-2.*r23*pcm*Qm*B1/(q+m1)), h2( 2.*r23*pcm*Qp*A1/(q+m1));
+    // generator()->log() << "testing 3/2->1/2 0 "
+    // 		       << gam/GeV << "   " 
+    // 		       << real(h1*conj(h1)+h2*conj(h2))/64./pi*pcm/q2/GeV     << "   " 
+    // 		       << real(h1*conj(h1)+h2*conj(h2))/64./pi*pcm/q2/gam << endl;
   }
   // 3/2 -> 1/2 1
   else if(mecode==106) {
