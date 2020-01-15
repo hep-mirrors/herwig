@@ -122,47 +122,35 @@ makeanti Deltabar- Delta+
 newdef Deltabar-:WidthLoCut 0.15
 newdef Deltabar-:WidthUpCut 0.6
 create ThePEG::ParticleData Delta++
-setup Delta++ 2224 Delta++ 1.232 0.12 0.375 0 6 0 4 0 
+setup Delta++ 2224 Delta++ 1.232 0.12 0.375 0 6 0 4 0
 newdef Delta++:WidthLoCut 0.15
 newdef Delta++:WidthUpCut 0.6
 create ThePEG::ParticleData Deltabar--
-setup Deltabar-- -2224 Deltabar-- 1.232 0.12 0.375 0 -6 0 4 0 
+setup Deltabar-- -2224 Deltabar-- 1.232 0.12 0.375 0 -6 0 4 0
 makeanti Deltabar-- Delta++
 newdef Deltabar--:WidthLoCut 0.15
 newdef Deltabar--:WidthUpCut 0.6
 create ThePEG::ParticleData Sigma*-
-setup Sigma*- 3114 Sigma*- 1.3872 0.0394 0.257 0 -3 0 4 0 
+setup Sigma*- 3114 Sigma*- 1.3872 0.0394 0.12 0 -3 0 4 0
 newdef Sigma*-:VariableRatio 1
-newdef Sigma*-:WidthLoCut 0.12
-newdef Sigma*-:WidthUpCut 0.394
 create ThePEG::ParticleData Sigma*bar+
-setup Sigma*bar+ -3114 Sigma*bar+ 1.3872 0.0394 0.257 0 3 0 4 0 
+setup Sigma*bar+ -3114 Sigma*bar+ 1.3872 0.0394 0.12 0 3 0 4 0 
 makeanti Sigma*bar+ Sigma*-
 newdef Sigma*bar+:VariableRatio 1
-newdef Sigma*bar+:WidthLoCut 0.12
-newdef Sigma*bar+:WidthUpCut 0.394
 create ThePEG::ParticleData Sigma*0
-setup Sigma*0 3214 Sigma*0 1.3837 0.036 0.24 0 0 0 4 0 
+setup Sigma*0 3214 Sigma*0 1.3837 0.036 0.12 0 0 0 4 0 
 newdef Sigma*0:VariableRatio 1
-newdef Sigma*0:WidthLoCut 0.12
-newdef Sigma*0:WidthUpCut 0.36
 create ThePEG::ParticleData Sigma*bar0
-setup Sigma*bar0 -3214 Sigma*bar0 1.3837 0.036 0.24 0 0 0 4 0 
+setup Sigma*bar0 -3214 Sigma*bar0 1.3837 0.036 0.12 0 0 0 4 0 
 makeanti Sigma*bar0 Sigma*0
 newdef Sigma*bar0:VariableRatio 1
-newdef Sigma*bar0:WidthLoCut 0.12
-newdef Sigma*bar0:WidthUpCut 0.36
 create ThePEG::ParticleData Sigma*+
-setup Sigma*+ 3224 Sigma*+ 1.3828 0.0358 0.239 0 3 0 4 0 
+setup Sigma*+ 3224 Sigma*+ 1.3828 0.0358 0.12 0 3 0 4 0 
 newdef Sigma*+:VariableRatio 1
-newdef Sigma*+:WidthLoCut 0.12
-newdef Sigma*+:WidthUpCut 0.358
 create ThePEG::ParticleData Sigma*bar-
-setup Sigma*bar- -3224 Sigma*bar- 1.3828 0.0358 0.239 0 -3 0 4 0 
+setup Sigma*bar- -3224 Sigma*bar- 1.3828 0.0358 0.12 0 -3 0 4 0 
 makeanti Sigma*bar- Sigma*+
 newdef Sigma*bar-:VariableRatio 1
-newdef Sigma*bar-:WidthLoCut 0.12
-newdef Sigma*bar-:WidthUpCut 0.358
 create ThePEG::ParticleData Xi*-
 setup Xi*- 3314 Xi*- 1.535 0.0099 0.0845 0 -3 0 4 0 
 newdef Xi*-:WidthLoCut 0.07
