@@ -301,6 +301,15 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCombPtr,
       throw ShowerTriesVeto(maxtry());
       
       eventRecord().clear();
+      // reset the spininfos
+      if(sub->incoming().first->spinInfo())
+	sub->incoming().first->spinInfo()->reset();
+      if(sub->incoming().second->spinInfo())
+	sub->incoming().second->spinInfo()->reset();
+      for(PPtr out : sub->outgoing()) {
+	if(out->spinInfo()) out->spinInfo()->reset();
+      }
+      // prepare for the new shower
       eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()), newStep(), pdfs(),
                             ShowerHandler::currentHandler()->generator()->currentEvent()->incoming(),
 			    firstInteraction(), offShellPartons(),
