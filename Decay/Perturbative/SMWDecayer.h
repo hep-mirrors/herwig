@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMWDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -420,29 +420,6 @@ private:
    *  The W mass
    */
   mutable Energy mW_;
-
-
-  // TODO: delete this
-  mutable double mu_;
-
-  /**
-   *  The reduced mass of particle 1
-   */
-  mutable double mu1_;
-  /**
-   *  The reduced mass of particle 1 squared
-   */
-  mutable double mu12_;
-
-  /**
-   *  The reduceed mass of particle 2
-   */
-  mutable double mu2_;
-
-  /**
-   *  The reduceed mass of particle 2 squared
-   */
-  mutable double mu22_;
 
 
   /**

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DipoleChain.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,7 +13,6 @@
 
 #include "DipoleChain.h"
 #include "Herwig/Shower/Dipole/Utility/DipolePartonSplitter.h"
-#include "Herwig/Shower/Dipole/Colorea/Colorea.h"
 
 #include <iterator>
 
@@ -91,13 +90,6 @@ void DipoleChain::check() {
       ggSingleDipole = true;
     }
   }
-}
-
-
-void DipoleChain::rearrange(int dipmax,int diplong){
-  static auto colorea = Colorea();
-  colorea.setChain(this);
-  colorea.rearrange( dipmax, diplong);
 }
 
 list<Dipole>::iterator DipoleChain::insertSplitting(list<Dipole>::iterator emittingDipole,

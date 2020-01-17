@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -318,8 +318,9 @@ void MPIHandler::statistics() const {
 	 << totalXSecExp()/millibarn << '\n'
 	 << "inelastic cross section (mb):        "
 	 << inelXSec_/millibarn << '\n'
-         << "diffractive cross section (mb):      "
-         << diffratio_*totalXSecExp()/millibarn << '\n'  
+       // TODO: Include diffrative Cross Section in calculation
+       //  << "diffractive cross section (mb):      "
+       //  << diffratio_*totalXSecExp()/millibarn << '\n'  
 	 << "soft inv radius (GeV2):              "
 	 << softMu2_/GeV2 << '\n'
 	 << "slope of soft pt spectrum (1/GeV2):  "
@@ -377,10 +378,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 
     //get the inel xsec
     Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);
-
-
-    auto nondiffXS=integrator.value(inelint, ZERO, bmax);
-    inelXSec_ = nondiffXS+diffratio_*totalXSecExp();
+    inelXSec_ = integrator.value(inelint, ZERO, bmax);
 
     avgNhard_ = 0.0;
     avgNsoft_ = 0.0;
@@ -402,7 +400,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	if(Algorithm() > 0){
 	  P = integrator.value(integrand, ZERO, bmax) / *it;
 	}else{
-	  P = integrator.value(integrand, ZERO, bmax) / nondiffXS;
+	  P = integrator.value(integrand, ZERO, bmax) / inelXSec_;
 	}
 	//store the probability
 	if(Algorithm()>-1){
@@ -486,46 +484,6 @@ LengthDiff slopeInt::operator() (Length b) const {
   return fac * b2 * ( 1 - exp(-chiTot) );
 }
 
-double MPIHandler::factorial (unsigned int n) const {
-
-  static double f[] = {1.,1.,2.,6.,24.,120.,720.,5040.,40320.,362880.,3.6288e6,
-		3.99168e7,4.790016e8,6.2270208e9,8.71782912e10,1.307674368e12,
-		2.0922789888e13,3.55687428096e14,6.402373705728e15,1.21645100408832e17,
-		2.43290200817664e18,5.10909421717094e19,1.12400072777761e21,
-		2.5852016738885e22,6.20448401733239e23,1.5511210043331e25,
-		4.03291461126606e26,1.08888694504184e28,3.04888344611714e29,
-		8.8417619937397e30,2.65252859812191e32,8.22283865417792e33,
-		2.63130836933694e35,8.68331761881189e36,2.95232799039604e38,
-		1.03331479663861e40,3.71993326789901e41,1.37637530912263e43,
-		5.23022617466601e44,2.03978820811974e46,8.15915283247898e47,
-		3.34525266131638e49,1.40500611775288e51,6.04152630633738e52,
-		2.65827157478845e54,1.1962222086548e56,5.50262215981209e57,
-		2.58623241511168e59,1.24139155925361e61,6.08281864034268e62,
-		3.04140932017134e64,1.55111875328738e66,8.06581751709439e67,
-		4.27488328406003e69,2.30843697339241e71,1.26964033536583e73,
-		7.10998587804863e74,4.05269195048772e76,2.35056133128288e78,
-		1.3868311854569e80,8.32098711274139e81,5.07580213877225e83,
-		3.14699732603879e85,1.98260831540444e87,1.26886932185884e89,
-		8.24765059208247e90,5.44344939077443e92,3.64711109181887e94,
-		2.48003554243683e96,1.71122452428141e98,1.19785716699699e100,
-		8.50478588567862e101,6.12344583768861e103,4.47011546151268e105,
-		3.30788544151939e107,2.48091408113954e109,1.88549470166605e111,
-		1.45183092028286e113,1.13242811782063e115,8.94618213078298e116,
-		7.15694570462638e118,5.79712602074737e120,4.75364333701284e122,
-		3.94552396972066e124,3.31424013456535e126,2.81710411438055e128,
-		2.42270953836727e130,2.10775729837953e132,1.85482642257398e134,
-		1.65079551609085e136,1.48571596448176e138,1.3520015276784e140,
-		1.24384140546413e142,1.15677250708164e144,1.08736615665674e146,
-		1.03299784882391e148,9.9167793487095e149,9.61927596824821e151,
-		9.42689044888325e153,9.33262154439442e155,9.33262154439442e157};
-
-  if(n > maxScatters_) 
-        throw Exception() << "MPIHandler::factorial called with too large argument"
-                      << Exception::runerror;
-  else
-    return f[n];
-}
-
 InvArea MPIHandler::OverlapFunction(Length b, Energy2 mu2) const {
   if(mu2 == ZERO)
     mu2 = invRadius_;
@@ -549,12 +507,8 @@ CrossSection MPIHandler::totalXSecDiff(CrossSection softXSec,
   Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
   Length bmax = 500.0*sqrt(millibarn);
 
-  CrossSection minbiasXS = integrator.value(integrand, ZERO, bmax);
-
-  auto totalXS=totalXSecExp();
-  CrossSection tot=minbiasXS+diffratio_*totalXS;
-
-  return (tot-totalXS);
+  CrossSection tot = integrator.value(integrand, ZERO, bmax);
+  return (tot-totalXSecExp());
 }
 
 InvEnergy2 MPIHandler::slopeDiff(CrossSection softXSec, 
@@ -593,7 +547,7 @@ CrossSection MPIHandler::totalXSecExp() const {
     break;
     
   case 3://new DL extrapolation
-    return coef_new_hard * pow(energy/GeV, 2*pom_new_hard) + 
+    return 0.8*coef_new_hard * pow(energy/GeV, 2*pom_new_hard) + 
       coef_new_soft * pow(energy/GeV, 2*pom_new_soft);
     break;
     
@@ -616,8 +570,13 @@ InvEnergy2 MPIHandler::slopeExp() const{
 void MPIHandler::overrideUECuts() {
   if(energyExtrapolation_==1)
     Ptmin_ = EEparamA_ * log(generator()->maximumCMEnergy() / EEparamB_);
-  else if(energyExtrapolation_==2)
+  else if(energyExtrapolation_==2){
+  // For small CME <900GeV the old power law does not work (hard cross section diverges)
     Ptmin_ = pT0_*pow(double(generator()->maximumCMEnergy()/refScale_),b_);
+  }else if(energyExtrapolation_==3){
+  // New parametrization that works for small CME: pTmin0*((c+sqrt(s))/E0)^b
+    Ptmin_ = pT0_*pow(double((offset_+generator()->maximumCMEnergy())/refScale_),b_);
+  }  
   else
     assert(false);
   // create a new SimpleKTCut object with the calculated ptmin value
@@ -646,7 +605,7 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
      << DLmode_ << ounit(totalXSecExp_, millibarn)
      << energyExtrapolation_ << ounit(EEparamA_, GeV) << ounit(EEparamB_, GeV)
-     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_
+     << ounit(refScale_,GeV) << ounit(pT0_,GeV) << b_ << ounit(offset_,GeV)
      << avgNhard_ << avgNsoft_ << softMult_ 
      << ounit(inelXSec_, millibarn) 
      << ounit(softMu2_, GeV2) << diffratio_;
@@ -663,7 +622,7 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
      >> DLmode_ >> iunit(totalXSecExp_, millibarn)
      >> energyExtrapolation_ >> iunit(EEparamA_, GeV) >> iunit(EEparamB_, GeV)
-     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_
+     >> iunit(refScale_,GeV) >> iunit(pT0_,GeV) >> b_ >> iunit(offset_,GeV)
      >> avgNhard_ >> avgNsoft_ >> softMult_ 
      >> iunit(inelXSec_, millibarn) 
      >> iunit(softMu2_, GeV2) >> diffratio_;
@@ -750,7 +709,7 @@ void MPIHandler::Init() {
 
   static Parameter<MPIHandler,double> interfaceDiffRatio
     ("DiffractiveRatio",
-     "Fraction of diffractive cross section in total cross section.",
+     "Fraction of diffractive cross section in inelastic cross section.",
      &MPIHandler::diffratio_,
      0.2, 0.0, 1.0,
      false, false, Interface::limited);
@@ -788,6 +747,13 @@ void MPIHandler::Init() {
      "Power",
      "Use power law, ptmin = pt_0 * (sqrt(s) / E_0)^b.",
      2);
+  static SwitchOption interEnergyExtrapolationPowerModified
+    (interEnergyExtrapolation,
+     "PowerModified",
+     "Use modified power law with offset to work for small center of mass energies." 
+     "ptmin = pt_0 * ((offset+sqrt(s)) / E_0)^b.",
+     3);
+
   static SwitchOption interEnergyExtrapolationNo
     (interEnergyExtrapolation,
      "No",
@@ -871,4 +837,12 @@ void MPIHandler::Init() {
      "The power for power law extrapolation of the pTmin cut-off.",
      &MPIHandler::b_, 0.21, 0.0, 10.0,
      false, false, Interface::limited);
+
+  static Parameter<MPIHandler,Energy> interfaceOffset
+    ("Offset",
+     "The offset used in the modified power law extrapolation of the pTmin cut-off.",
+     &MPIHandler::offset_, GeV, 622.0*GeV, 500.0*GeV, 1000.0*GeV,
+     false, false, Interface::limited);
+
 }
+

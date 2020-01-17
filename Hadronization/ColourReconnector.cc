@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ColourReconnector.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -280,6 +280,9 @@ void ColourReconnector::_doRecoBaryonic(ClusterVector & cv) const {
         clustervector.push_back(cluster);
 
     swap(cv,clustervector);
+
+
+
 }
 
 
@@ -292,6 +295,7 @@ double calculateRapidityRF(const Lorentz5Momentum & q1,
   //angle between the particles in the RF of cluster of q1
 
   // calculate the z component of p2 w.r.t the direction of q1
+  if(q1.rho2()==ZERO) return 0.;
   const Energy pz = p2.vect() * q1.vect().unit();
   if ( pz == ZERO ) return 0.;
         

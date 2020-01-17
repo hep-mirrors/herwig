@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ClusterFissioner.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -44,10 +44,10 @@ ClusterFissioner::ClusterFissioner() :
   _pSplitBottom(1.0),
   _pSplitCharm(1.0),
   _pSplitExotic(1.0),
-  _fissionCluster(0),
   _fissionPwtUquark(1),
   _fissionPwtDquark(1),
   _fissionPwtSquark(0.5),
+  _fissionCluster(0),
   _btClM(1.0*GeV),
   _iopRem(1),
   _kappa(1.0e15*GeV/meter),

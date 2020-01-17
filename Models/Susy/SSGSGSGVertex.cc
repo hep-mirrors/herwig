@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SSGSGSGVertex.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -39,8 +39,22 @@ void SSGSGSGVertex::Init() {
 
 }
 
-void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-				tcPDPtr part2,tcPDPtr part3) {
+void SSGSGSGVertex::setCoupling(Energy2 q2,
+#ifndef NDEBUG
+				tcPDPtr part1,
+#else
+				tcPDPtr ,
+#endif
+#ifndef NDEBUG
+				tcPDPtr part2,
+#else
+				tcPDPtr ,
+#endif
+#ifndef NDEBUG
+				tcPDPtr part3) {
+#else
+				tcPDPtr ) {
+#endif
   assert(part1->id()==ParticleID::SUSY_g &&
 	 part2->id()==ParticleID::SUSY_g &&
 	 part3->id() == ParticleID::g);

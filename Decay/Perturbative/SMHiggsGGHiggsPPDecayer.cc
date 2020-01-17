@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMHiggsGGHiggsPPDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -286,7 +286,11 @@ void SMHiggsGGHiggsPPDecayer::dataBaseOutput(ofstream & os,bool header) const {
 
 double SMHiggsGGHiggsPPDecayer::matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
 						   const ParticleVector & decay3, MEOption,
+#ifndef NDEBUG
 						   ShowerInteraction inter) {
+#else
+						   ShowerInteraction ) {
+#endif
   assert(inter==ShowerInteraction::QCD);
   // extract partons and LO momentas
   vector<cPDPtr> partons(1,inpart.dataPtr());

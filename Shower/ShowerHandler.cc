@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -369,6 +369,7 @@ void ShowerHandler::Init() {
 
 Energy ShowerHandler::hardScale() const {
   assert(false);
+  return ZERO;
 }
 
 void ShowerHandler::cascade() {
@@ -682,6 +683,7 @@ string ShowerHandler::doAddVariation(string in) {
 
 tPPair ShowerHandler::cascade(tSubProPtr, XCPtr) {
   assert(false);
+  return tPPair();
 }
 
 ShowerHandler::RemPair 

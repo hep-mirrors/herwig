@@ -2,6 +2,7 @@
 # import lighthisto
 import logging
 import sys
+import math
 
 if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
@@ -39,15 +40,25 @@ if __name__ == "__main__":
 
 #######################################
 
-yodafiles=["ISR-44-UE.yoda","ISR-62-UE.yoda",args[0]+"-63-UE.yoda","ISR-30-UE.yoda", \
-           "ISR-53-UE.yoda",args[0]+"-200-UE.yoda",args[0]+"-500-UE.yoda",args[0]+"-900-UE.yoda", \
-           args[0]+"-546-UE.yoda",args[0]+"-53-UE.yoda"]
+name=args[0].replace("SppS","")
+yodafiles=["ISR%s-44-UE.yoda"  %name,
+           "ISR%s-62-UE.yoda"  %name,
+           "SppS%s-63-UE.yoda" %name,
+           "ISR%s-30-UE.yoda"  %name, 
+           "ISR%s-53-UE.yoda"  %name,
+           "SppS%s-200-UE.yoda"%name,
+           "SppS%s-500-UE.yoda"%name,
+           "SppS%s-900-UE.yoda"%name,
+           "SppS%s-546-UE.yoda"%name,
+           "SppS%s-53-UE.yoda" %name,
+           "EHS%s-UE.yoda"     %name]
            
 ## Get histos
 inhistos = {}
 outhistos={}
-for file in yodafiles:
-    file = 'Rivet-'+file
+for fname in yodafiles:
+    file = 'Rivet-'+fname
+    print file
     if(file.find("44")>0) :
         sqrts=44
     elif(file.find("63")>0) :
@@ -66,7 +77,8 @@ for file in yodafiles:
         sqrts=546
     elif(file.find("53")>0) :
         sqrts=53
-
+    elif(file.find("EHS")>0) :
+        sqrts=math.sqrt(2.*.938*250.)
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         continue

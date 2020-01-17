@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MPIHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -88,9 +88,9 @@ public:
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
 		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0),
-                energyExtrapolation_(2), EEparamA_(0.6*GeV),
+                energyExtrapolation_(3), EEparamA_(0.6*GeV),
                 EEparamB_(37.5*GeV), refScale_(7000.*GeV),
-		pT0_(3.11*GeV), b_(0.21) {}
+		pT0_(2.875*GeV), b_(0.3101), offset_(622.204*GeV) {}
 
   /**
    * The destructor.
@@ -205,15 +205,22 @@ public:
    */
   CrossSection inelasticXSec() const { return inelXSec_; }
 
+  /**
+   * Return the non-diffractive cross section assumed by the model.
+   * TODO: See comment at diffractiveXSec.
+   */
+  CrossSection nonDiffractiveXSec() const {
+      return (1.-diffratio_)*inelXSec_;
+  }
 
   /**
    * Return the diffractive cross section assumed by the model.
-   * The diffractive cross section is seen as part of the
+   * For now the diffractive cross section is seen as a fixed part of the
    * inelastic cross section. 
+   * TODO: Energy dependence and/or Include diffraction in Eikonalisation.
    */
   CrossSection diffractiveXSec() const {
-      static auto totalXS=totalXSecExp();
-      return diffratio_*totalXS;
+      return diffratio_*inelXSec_;
   }
 
 
@@ -362,11 +369,6 @@ private:
    */
   double poisson(Length b, CrossSection sigma, 
 		 unsigned int N, Energy2 mu2=ZERO) const;
-
-  /**
-   *  Return n!
-   */
-  double factorial (unsigned int n) const;
 
   /**
    * Returns the total cross section for the current CMenergy.  The
@@ -582,9 +584,10 @@ private:
   Energy refScale_;
   Energy pT0_;
   double b_;
+  Energy offset_;
 
   /**
-   * Parameters to set the fraction of diffractive cross section in the total cross section.
+   * Parameters to set the fraction of diffractive cross section in the inelastic cross section.
    */
   double diffratio_=0.2;
 

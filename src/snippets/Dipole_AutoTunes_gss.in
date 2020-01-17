@@ -1,62 +1,41 @@
-# This is a preliminary Tune.
-# With this version (7.1.3) various changes to the dipole shower are done.
-# The dipole shower will be retuned for version 7.1.4.
+set /Herwig/Shower/AlphaQCD:AlphaIn           0.118
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
+set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.118
+cd /Herwig/Particles/
+set g:ConstituentMass                         0.95
+set b:NominalMass                             4.700501
+set b:ConstituentMass                         4.084889
+cd /Herwig/Hadronization/
+set ClusterDecayer:ClSmrBottom                0.085964
+set ClusterDecayer:ClSmrLight                 0.698877
+set ClusterDecayer:ClSmrCharm                 0.246296
+set ClusterFissioner:ClPowBottom              0.591646
+set ClusterFissioner:ClPowLight               0.99945
+set ClusterFissioner:ClPowCharm               3.386187
+set ClusterFissioner:ClMaxBottom              3.771649
+set ClusterFissioner:ClMaxCharm               4.780456
+set ClusterFissioner:ClMaxLight               3.055256
+set ClusterFissioner:PSplitLight              0.7779
+set ClusterFissioner:PSplitCharm              0.628766
+set ClusterFissioner:PSplitBottom             0.662911
+set HadronSelector:SingleHadronLimitBottom    0.000446
+set HadronSelector:SingleHadronLimitCharm     0.000508
+set HadronSelector:SngWt                      0.927141
+set HadronSelector:DecWt                      0.630787
 
-# Note: The gluon ConstituentMass is lower than the strange quark
-# threshold assumed in the BaryonicReconnection.
-# Using both snippets will produce no resonable results.
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 1.000896
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff   1.000896
+set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 1.000896
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff   1.000896
+set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 1.000896
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff   1.000896
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff   1.000896
 
-set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s                 0.118
-set /Herwig/DipoleShower/NLOAlphaS:input_scale                   91.18*GeV
-set /Herwig/Couplings/NLOAlphaS:input_alpha_s                    0.118
-set /Herwig/Couplings/NLOAlphaS:input_scale                      91.18*GeV
-
-set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 0.80399886545
-set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff   0.80399886545
-set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 0.80399886545
-set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff   0.80399886545
-set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 0.80399886545
-set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff   0.80399886545
-set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff   0.80399886545
-
-set /Herwig/Particles/g:ConstituentMass                          0.762996296601
-
-set /Herwig/Hadronization/ClusterDecayer:ClSmrLight              0.342544255421
-set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm              0.237545842862
-set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom             0.0620545338048
-
-set /Herwig/Hadronization/ClusterFissioner:ClPowLight            0.950949552153
-set /Herwig/Hadronization/ClusterFissioner:ClPowCharm            0.725163909065
-set /Herwig/Hadronization/ClusterFissioner:ClPowBottom           0.809774254452
-
-set /Herwig/Hadronization/ClusterFissioner:ClMaxLight            2.80478186219
-set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm            3.13483791689
-set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom           5.79181302131
-
-set /Herwig/Hadronization/ClusterFissioner:PSplitLight           0.995391682928
-set /Herwig/Hadronization/ClusterFissioner:PSplitCharm           0.769749617516
-set /Herwig/Hadronization/ClusterFissioner:PSplitBottom          0.479199412481
-
-set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm  0.0485533655422
-set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom 0.0968582906399
-
-set /Herwig/Hadronization/HadronSelector:PwtUquark               0.718641969264
-set /Herwig/Hadronization/HadronSelector:PwtDquark               0.674967529289
-set /Herwig/Hadronization/HadronSelector:PwtSquark               0.542042947191
-set /Herwig/Hadronization/HadronSelector:PwtCquark               0.251544496683
-set /Herwig/Hadronization/HadronSelector:PwtBquark               0.426714635544
-set /Herwig/Hadronization/HadronSelector:PwtDIquark              0.296781084091
-set /Herwig/Hadronization/HadronSelector:SngWt                   0.541287379336
-set /Herwig/Hadronization/HadronSelector:DecWt                   0.569933528697
-
-set /Herwig/Particles/b:NominalMass                              5.38329996032
-set /Herwig/Particles/b:ConstituentMass                          4.84231667563
 
 #######
 # CMW scheme:
 # Tune was done with CMW for all kernels, as merging currently only is consistent if applied to all.
 #######
-
 
 cd /Herwig/DipoleShower/Kernels
 set FFgx2ggxDipoleKernel:CMWScheme Factor
@@ -136,4 +115,5 @@ set IFMgx2bbbarxDipoleKernel:CMWScheme Factor
 set IFMgx2bbarbxDipoleKernel:CMWScheme Factor
 set IIgx2bbbarxDipoleKernel:CMWScheme Factor
 set IIgx2bbarbxDipoleKernel:CMWScheme Factor
+
 

@@ -41,7 +41,7 @@ endif
 #############
 
 HwRSModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 11:0:0
+$(AM_LDFLAGS) -module -version-info 12:0:0
 
 HwRSModel_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/RSModel
@@ -52,7 +52,7 @@ RSModel/RS__all.cc
 #############
 
 HwUED_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 11:0:0
+$(AM_LDFLAGS) -module -version-info 12:0:0
 
 HwUED_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/UED
@@ -63,7 +63,7 @@ UED/UED__all.cc
 #############
 
 HwSusy_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 14:0:0
+$(AM_LDFLAGS) -module -version-info 15:0:0
 
 HwSusy_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Susy
@@ -74,7 +74,7 @@ Susy/Susy__all.cc
 #############
 
 HwNMSSM_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 6:0:0
+$(AM_LDFLAGS) -module -version-info 7:0:0
 
 HwNMSSM_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Susy/NMSSM
@@ -85,7 +85,7 @@ Susy/NMSSM/NMSSM__all.cc
 #############
 
 HwRPV_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 4:0:0
+$(AM_LDFLAGS) -module -version-info 5:0:0
 
 HwRPV_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Susy/RPV
@@ -96,7 +96,7 @@ Susy/RPV/RPV__all.cc
 #############
 
 HwZprimeModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 4:0:0
+$(AM_LDFLAGS) -module -version-info 5:0:0
 
 HwZprimeModel_la_SOURCES = \
 Zprime/ZprimeModel.cc  Zprime/ZprimeModelZPQQVertex.cc
@@ -104,7 +104,7 @@ Zprime/ZprimeModel.cc  Zprime/ZprimeModelZPQQVertex.cc
 #############
 
 HwTransplanck_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 5:0:0
+$(AM_LDFLAGS) -module -version-info 6:0:0
 
 HwTransplanck_la_SOURCES = \
 Transplanckian/METRP2to2.cc
@@ -112,7 +112,7 @@ Transplanckian/METRP2to2.cc
 #############
 
 HwADDModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 5:0:0
+$(AM_LDFLAGS) -module -version-info 6:0:0
 
 HwADDModel_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/ADD
@@ -123,7 +123,7 @@ ADD/ADD__all.cc
 #############
 
 HwLeptoquarkModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 6:0:0
+$(AM_LDFLAGS) -module -version-info 7:0:0
 
 HwLeptoquarkModel_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Leptoquarks
@@ -134,7 +134,7 @@ Leptoquarks/Leptoquark__all.cc
 #############
 
 HwSextetModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 4:0:0
+$(AM_LDFLAGS) -module -version-info 5:0:0
 
 HwSextetModel_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/Sextet
@@ -145,7 +145,7 @@ Sextet/Sextet__all.cc
 #############
 
 HwTTbAModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 4:0:0
+$(AM_LDFLAGS) -module -version-info 5:0:0
 
 HwTTbAModel_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/TTbAsymm
@@ -156,7 +156,7 @@ TTbAsymm/TTbA__all.cc
 #############
 
 HwLHModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 6:0:0
+$(AM_LDFLAGS) -module -version-info 7:0:0
 
 HwLHModel_la_CPPFLAGS = \
 $(AM_CPPFLAGS) -I$(srcdir)/LH
@@ -167,7 +167,7 @@ LH/LH__all.cc
 #############
 
 HwLHTPModel_la_LDFLAGS = \
-$(AM_LDFLAGS) -module -version-info 6:0:0
+$(AM_LDFLAGS) -module -version-info 7:0:0
 
 HwLHTPModel_la_LIBADD = \
 $(GSLLIBS)

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DipoleVertexRecord.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -323,12 +323,14 @@ void DipoleVertexRecord::updateSpinInfo( PPtr& oldPart,
   Energy2 b = 2.*momOldRotated.t()*momOldRotated.z();
   Energy2 c = sqr(momOldRotated.t()) - sqr(momNewRotated.t());
   double beta;
+  Energy4 disc2 = sqr(b)-4.*a*c;
+  Energy2 disc = sqrt(max(ZERO,disc2));
   
   // The rotated momentum should always lie along the +ve z-axis
   if ( momOldRotated.z() > ZERO )
-    beta = (-b + sqrt(sqr(b)-4.*a*c)) / 2. / a;
+    beta = 0.5*(-b + disc) / a;
   else
-    beta = (-b - sqrt(sqr(b)-4.*a*c)) / 2. / a;
+    beta = 0.5*(-b - disc) / a;
   
   LorentzRotation boostOldToNew(0., 0., beta);
 
@@ -345,14 +347,16 @@ void DipoleVertexRecord::prepareParticleDecay( const PPtr& decayIncoming ) {
 
   // Need to set stopUpdate flag in the latest parent with spinInfo
   PPtr parent = decayIncoming;
-  while ( !parent->spinInfo() )
+  while ( !parent->spinInfo() && !parent->parents().empty() )
     parent = parent->parents()[0];
+  if(!parent->spinInfo()) return;
   parent->spinInfo()->stopUpdate();
   theDecayParentSpinInfo = parent->spinInfo();
 }
 
 
 void DipoleVertexRecord::updateParticleDecay() {
+  if(!theDecayParentSpinInfo) return;
   theDecayParentSpinInfo->needsUpdate();
   theDecayParentSpinInfo->develop();
   // Clear theDecayParentSpinInfo

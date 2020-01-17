@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DipoleSplittingKernel.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -316,6 +316,11 @@ public:
    */
   void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
 
+  /**
+   * Return the CMW sheme used by the kernel
+   */
+  unsigned int cmwScheme() const {return theCMWScheme;}
+  
 protected:
 
   /**
@@ -397,7 +402,13 @@ private:
    * to generate a splitting.
    */
   unsigned long theMaxtry;
-
+  
+  /**
+   * The maximum value for any pdf ratio.
+   * TODO: JB:Should this be an interfaced value? Is there a reasobable case where it should be allowed to be bigger than 1000000.?
+   */
+  static double theMaxPDFRatio;
+  
   /**
    * Return the number of accepted points after which the grid should
    * be frozen

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ADDModelFFGGRVertex.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -70,7 +70,6 @@ void ADDModelFFGGRVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
 #endif
   // work out the particles
   assert(cc->id()==ParticleID::g && abs(aa->id()) <= 6);
-  Complex coup;
   // overall factor
   if(q2last_!=q2||couplast_==0.) {
     couplast_ = strongCoupling(q2);

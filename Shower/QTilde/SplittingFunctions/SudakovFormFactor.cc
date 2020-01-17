@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SudakovFormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -534,7 +534,8 @@ ShoKinPtr SudakovFormFactor::generateNextDecayBranching(const Energy startingSca
 }
 
 bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
-			       double enhance, double detune) {
+				   double enhance, double detune) {
+  minmass = max(minmass,GeV);
   // previous scale
   Energy2 told = t;
   // overestimated limits on z
@@ -545,9 +546,9 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   Energy2 tm2 = tmax-masssquared_[0];
   Energy tm  = sqrt(tm2); 
   zlimits_ = make_pair(sqr(minmass/masses_[0]),
-				       1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
-					       0.25*sqr(masssquared_[2])/tm2)/tm
-				       +0.5*masssquared_[2]/tm2);
+		       1.-sqrt(masssquared_[2]+cutoff_->pT2min()+
+			       0.25*sqr(masssquared_[2])/tm2)/tm
+		       +0.5*masssquared_[2]/tm2);
   if(zlimits_.second<zlimits_.first) {
     t=-1.0*GeV2;
     return false;

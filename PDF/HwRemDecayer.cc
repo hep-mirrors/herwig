@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HwRemDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -1075,13 +1075,14 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   int Nmpi = N;
 
   for(int j=0;j<Nmpi;j++){
+
   ///////////////////////
   // TODO: parametrization of the ladder multiplicity (need to tune to 900GeV, 7Tev and 13Tev) 
   // Parameterize the ladder multiplicity to: ladderMult_ = A_0 * (s/1TeV^2)^alpha  
   // with the two tunable parameters A_0 =ladderNorm_ and alpha = ladderPower_
 
   // Get the collision energy
-  Energy energy(generator()->maximumCMEnergy());
+  //Energy energy(generator()->maximumCMEnergy());
 
   //double reference = sqr(energy/TeV);
 
@@ -1148,10 +1149,10 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
 
   // Get the beam energy
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
-  Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
+  //Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
 
   // Calculate available energy for the partons
-  double x1,x2;
+  double x1;//,x2;
   double param = (1./(valOfN_+1.))*initTotRap_;
   do{
        // Need 1-x instead of x to get the proper final momenta
@@ -1167,9 +1168,16 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
                                  // requires boost of Ladder in x1/x2-dependent
                                  // frame.
 
+  // If the remaining remnant energy is not sufficient for the restmass of the remnants
+  // then continue/try again
+  if ( cm.m() - (ig1+ig2).m() < r1.m()+r2.m() ){
+     continue; 
+  }
+
   // The available energy that is used to generate the ladder
   // sumMomenta is the the sum of rest masses of the ladder partons
   // the available energy goes all into the kinematics
+  
   Energy availableEnergy = (ig1+ig2).m() - sumMomenta.m();
  
   // If not enough energy then continue
@@ -1204,7 +1212,7 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   for (auto &p:ladderMomenta){
     totalMomPartons+=p;
     // Set the mass of the gluons and the two quarks in the ladder
-    if(countPartons==0 || countPartons==(ladderMomenta.size()-1)){
+    if(countPartons==0 || countPartons==int(ladderMomenta.size()-1)){
       p.setMass( getParticleData(quarkID)->constituentMass() );
     }else{
       p.setMass( getParticleData(ParticleID::g)->constituentMass() );
@@ -1231,7 +1239,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   r1.boost(boostvR);
   r2.boost(boostvR);
 
-  // Remainig energy after generation of soft ladder
+  // Remaining energy after generation of soft ladder
+  
   Energy remainingEnergy = cm.m() - totalMomentumAfterBoost.m();
 
   // Continue if not enough energy
@@ -1269,8 +1278,13 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
         totalMomentumAll+=p;
   }
 
- // sort again
- sort(ladderMomenta.begin(),ladderMomenta.end(),ySort);
+  // sanity check 
+  if ( abs(cm.m() - totalMomentumAll.m()) > 1e-8*GeV) {
+     continue;
+  }
+
+  // sort again
+  sort(ladderMomenta.begin(),ladderMomenta.end(),ySort);
 
   // Do the colour connections
   // Original rems are the ones which are connected to other parts of the event
@@ -1436,7 +1450,7 @@ bool HwRemDecayer::doPhaseSpaceGenerationGluons(vector<Lorentz5Momentum> &softGl
       //5) Frist then flat
       int triesPt=0;
       Energy pt;
-      Energy ptTest;
+      //Energy ptTest;
       switch(PtDistribution_) {
         case 0: //default softPt()
            pt=softPt();

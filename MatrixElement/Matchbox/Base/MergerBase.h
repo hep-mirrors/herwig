@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MergerBase.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -77,10 +77,6 @@ public:
   virtual size_t maxLegs() const = 0;
     /// return the current merging scale,
   virtual Energy mergingScale() const = 0;
-    /// Potential additional emission probability for unitarising LO contributions.
-  virtual double emissionProbability() const = 0;
-    /// set the potential additional emission probability.
-  virtual void setEmissionProbability( double ) = 0;
   //@}
 
 public:

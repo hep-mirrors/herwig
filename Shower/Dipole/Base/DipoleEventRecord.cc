@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DipoleEventRecord.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -1448,6 +1448,10 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   while ( !theOriginals.empty() ) {
     PPtr outSubPro = theOriginals.begin()->first;
     PPtr outParton = theOriginals.begin()->second;
+    outSubPro->setLifeLength(Lorentz5Distance());
+    outSubPro->setVertex(LorentzPoint());
+    outParton->setLifeLength(Lorentz5Distance());
+    outParton->setVertex(LorentzPoint());
     // workaround for OS X Mavericks LLVM libc++
 #ifdef _LIBCPP_VERSION
     map<PPtr,PPtr>::const_iterator beg = theOriginals.begin();
@@ -1909,7 +1913,7 @@ void DipoleEventRecord::updateDecays(PerturbativeProcessPtr decayProc, bool iter
       theDecays[newDecayed] = newDecayProc;
 
       // Update the list of next decays
-      if ( decayProc = theCurrentDecay )
+      if ( decayProc == theCurrentDecay )
         theNextDecays.push_back(newDecayed);
 	
       // Iteratively update theDecays from the decay chain

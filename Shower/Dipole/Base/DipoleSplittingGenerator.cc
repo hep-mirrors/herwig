@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DipoleSplittingGenerator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -699,10 +699,11 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
                                                             *splittingKernel());
  
 
-
+  
+#ifndef NDEBUG
   pair<double,double> kSupport =
     generatedSplitting.splittingKinematics()->kappaSupport(generatedSplitting);
-
+#endif
   assert(kSupport.first==0&&kSupport.second==1);
 
   pair<double,double> xSupport =

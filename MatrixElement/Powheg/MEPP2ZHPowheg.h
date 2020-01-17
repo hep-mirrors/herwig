@@ -322,10 +322,6 @@ private:
    */
   double _p;
 
-  /**
-   *  Cut-off for the correction function
-   */
-  double _eps;
   //@}
 
   /**

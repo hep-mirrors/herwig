@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SMTopDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -460,6 +460,7 @@ Energy6 SMTopDecayer::dGammaIntegrand(Energy2 mffb2, Energy2 mbf2, Energy mt,
 
 void SMTopDecayer::initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 					  double & final) {
+  if(born->bornOutgoing().size()!=2) return;
   // check the outgoing particles
   PPtr part[2];
   for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {

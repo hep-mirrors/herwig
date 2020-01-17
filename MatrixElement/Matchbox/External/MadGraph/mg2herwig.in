@@ -380,7 +380,7 @@ replacetext("MG5/Source/MODEL/lha_read.f", "param.log", os.path.join(options.cac
 if Virtlist:
   replacetext("MG5/SubProcesses/MadLoopCommons.f", 
               "PREFIX='./'",
-              "PREFIX='%s'" % MG_TMP)
+              "PREFIX='%s/'" % MG_TMP)
 
 os.system("make")
 if not os.path.isfile("InterfaceMadGraph.so"):

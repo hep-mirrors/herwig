@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Tree2toNGenerator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -155,8 +155,8 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	     theExcludeVertices.end() )
 	  continue;
 	bool noMatch =
-	  v->orderInGs() != orderInGs ||
-	  v->orderInGem() != orderInGem ||
+	  v->orderInGs() != int(orderInGs) ||
+	  v->orderInGem() != int(orderInGem) ||
 	  !v->isIncoming(children[0].parent);
 	long idij = children[0].parent->id();
 	long idi  = children[2].parent->id();
@@ -205,8 +205,8 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	continue;
       bool noMatch = false;
       noMatch |=
-	v->orderInGs() != orderInGs ||
-	v->orderInGem() != orderInGem;
+	v->orderInGs() != int(orderInGs) ||
+	v->orderInGem() != int(orderInGem);
       if ( !externalCluster )
 	noMatch |=
 	  !v->isOutgoing(children[1].parent) ||
@@ -261,8 +261,8 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), v) !=
 	     theExcludeVertices.end() )
 	  continue;
-	if ( v->orderInGs() != orderInGs ||
-	     v->orderInGem() != orderInGem ||
+	if ( v->orderInGs() != int(orderInGs) ||
+	     v->orderInGem() != int(orderInGem) ||
 	     !v->isOutgoing(children[i].parent) ||
 	     !v->isOutgoing(children[j].parent) )
 	  continue;

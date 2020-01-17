@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2gZ2ll.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -325,10 +325,7 @@ private:
    * The allowed outgoing
    */
   int allowed_;
-  /**
-   * The initial kappa-tilde values for radiation from the quark
-   */
-  double d_kt1_;
+
   /**
    *  Pointer to the EM coupling
    */

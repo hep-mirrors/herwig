@@ -1,7 +1,7 @@
   // -*- C++ -*-
   //
   // MergeboxFactory.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-  // Copyright (C) 2002-2017 The Herwig Collaboration
+  // Copyright (C) 2002-2019 The Herwig Collaboration
   //
   // Herwig is licenced under version 3 of the GPL, see COPYING for details.
   // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -171,9 +171,6 @@ void MergingFactory::pushB(MatchboxMEBasePtr born, int i) {
   if ( !(generator()->preinitRegister(bornme, pname)) ) 
   	throw InitException() 
   	<< "Born ME "<< pname << " already existing.";
-  
-  if (MH()->gamma()!=1.)
-    getVirtuals(bornme,false);
   
   
   NodePtr clusternode = new_ptr(Node(bornme, 0, MH()));

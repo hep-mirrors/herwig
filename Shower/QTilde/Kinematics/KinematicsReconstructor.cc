@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // KinematicsReconstructor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -225,6 +225,11 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
 	dum.setMass(dm);
 	dum.rescaleEnergy();
+	if(abs(particleJetParent->id())==15&&particleJetParent->spinInfo()) {
+	  if(particleJetParent->spinInfo()->isNear(particleJetParent->momentum())) {
+	    particleJetParent->spinInfo()->SpinInfo::transform(dum,LorentzRotation());
+	  }
+	}
 	particleJetParent->set5Momentum(dum);
       } 
       else {
@@ -1071,8 +1076,10 @@ bool KinematicsReconstructor::deconstructHardJets(HardTreePtr tree,
   else if(_reconopt == 3 || _reconopt == 4 ) {
     return deconstructColourPartner(tree,type);
   }
-  else
+  else {
     assert(false);
+    return false;
+  }
 }
 
 bool KinematicsReconstructor::

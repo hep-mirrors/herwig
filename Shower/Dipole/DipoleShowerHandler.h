@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DipoleShowerHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -286,6 +286,14 @@ protected:
    * Return the set of offshell parton ids.
    **/
   const set<long>& offShellPartons() { return theColouredOffShellInShower; }
+  
+  /**
+   * In a merging setup this function checks if the next shower
+   * configuration is part of the matrix element region.
+   */
+  bool isMERegion(const Energy winnerScale,
+                  const DipoleSplittingInfo & winner,
+                  const list<Dipole>::iterator winnerDip);
   
   /**
    * Realign the event such as to have the incoming partons along thre
@@ -694,27 +702,6 @@ private:
    *  this is a vector that is interfaced so they can be changed
    */
   vector<long> theInputColouredOffShellInShower;
-  
-  /**
-   * Allow the dipole chains to be rearranged
-   */
-  bool _rearrange=false;
-
-  /**
-   * number of maximal ME dipoles in the rearrangement.
-   */
-  unsigned int _dipmax=3;
-
-  /**
-   * If a chain is considered long (more than dipmax dipoles)
-   * ME with diplong dipoles are used to test for rearrangement.
-   */
-  unsigned int _diplong=3;
-  
-  /**
-   * Number of emissions to be rearranged.
-   */
-  int _rearrangeNEmissions=-1;
   
   /**
    * The choice of z boundaries; 0 = restricted, 1 = open, 2 = mixed/other

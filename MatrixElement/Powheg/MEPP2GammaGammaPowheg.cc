@@ -422,8 +422,10 @@ double MEPP2GammaGammaPowheg::me2() const {
       return 2.*Constants::twopi*alphaS_*
 	loGammaqbarME(mePartonData(),meMomenta(),true);
     }
-    else
+    else {
       assert(false);
+      return 0.;
+    }
   }
   // hard emission configurations
   else {
@@ -433,8 +435,10 @@ double MEPP2GammaGammaPowheg::me2() const {
       return sHat()*realGammaGammaqME   (mePartonData(),meMomenta(),dipole_,Hard,true);
     else if(mePartonData()[4]->id()<0&&mePartonData()[4]->id()>-6)
       return sHat()*realGammaGammaqbarME(mePartonData(),meMomenta(),dipole_,Hard,true);
-    else
+    else {
       assert(false);
+      return 0.;
+    }
   }
 }
 

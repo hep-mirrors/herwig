@@ -13,4 +13,5 @@ MEfftoffH.h MEfftoffH.cc \
 HardVertex.fh HardVertex.h HardVertex.cc \
 ProductionMatrixElement.h ProductionMatrixElement.cc \
 DrellYanBase.h DrellYanBase.cc \
-BlobME.h BlobME.cc
+BlobME.h BlobME.cc \
+MEMinBias.h MEMinBias.cc

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEPP2Higgs.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -1197,7 +1197,8 @@ tPDPtr MEPP2Higgs::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
 }
 
 Complex MEPP2Higgs::B(Energy2 s,Energy2 mf2) const {
-  Complex output,pii(0.,Constants::pi);
+  Complex output;
+  const Complex pii(0.,Constants::pi);
   double rat=s/(4.*mf2);
   if(s<ZERO)
     output=2.-2.*sqrt(1.-1./rat)*log(sqrt(-rat)+sqrt(1.-rat));
@@ -1210,7 +1211,7 @@ Complex MEPP2Higgs::B(Energy2 s,Energy2 mf2) const {
 
 complex<InvEnergy2> MEPP2Higgs::C(Energy2 s,Energy2 mf2) const {
   complex<InvEnergy2> output;
-  Complex pii(0.,Constants::pi);
+  const Complex pii(0.,Constants::pi);
   double rat=s/(4.*mf2);
   if(s<ZERO)
     output=2.*sqr(log(sqrt(-rat)+sqrt(1.-rat)))/s;
@@ -1240,7 +1241,7 @@ Complex MEPP2Higgs::dIntegral(Energy2 a, Energy2 b, double y0) const {
 
 complex<InvEnergy4> MEPP2Higgs::D(Energy2 s,Energy2 t, Energy2,
 						Energy2 mf2) const {
-  Complex output,pii(0.,Constants::pi);
+  Complex output;
   Energy4 st=s*t;
   Energy4 root=sqrt(sqr(st)-4.*st*mf2*(s+t-mh2_));
   double xp=0.5*(st+root)/st,xm=1-xp;
@@ -1276,7 +1277,7 @@ complex<Energy> MEPP2Higgs::me2(Energy2 s,Energy2 t,Energy2 u,
 Complex MEPP2Higgs::F(double x) const {
   if(x<.25) {
     double root = sqrt(1.-4.*x);
-    Complex pii(0.,Constants::pi);
+    const Complex pii(0.,Constants::pi);
     return 0.5*sqr(log((1.+root)/(1.-root))-pii);
   }
   else {

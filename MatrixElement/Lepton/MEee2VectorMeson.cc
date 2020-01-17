@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEee2VectorMeson.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -131,7 +131,7 @@ MEee2VectorMeson::diagrams(const DiagramVector &) const {
 CrossSection MEee2VectorMeson::dSigHatDR() const {
   InvEnergy2 wgt;
   Energy  M(vector_->mass()),G(vector_->width());
-  Energy2 M2(sqr(M)),GM(G*M);
+  Energy2 M2(sqr(M));
   if(massGen_&&lineShape_)
     wgt = Constants::pi*massGen_->BreitWignerWeight(sqrt(sHat()));
   else
@@ -181,7 +181,6 @@ ProductionMatrixElement MEee2VectorMeson::HelicityME(vector<SpinorWaveFunction> 
   unsigned int inhel1,inhel2,outhel1;
   aver = 0.;
   LorentzPolarizationVectorE vec;
-  Complex ii(0.,1.);
   Energy ecms = sqrt(sHat());
   for(inhel1=0;inhel1<2;++inhel1) {	  
     for(inhel2=0;inhel2<2;++inhel2) {

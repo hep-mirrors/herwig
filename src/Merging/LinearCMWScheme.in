@@ -1,9 +1,6 @@
 #######
 # CMW scheme
 #######
-cd /Herwig/Merging
-set Merger:CMWScheme Linear
-
 
 cd /Herwig/DipoleShower/Kernels
 set FFgx2ggxDipoleKernel:CMWScheme Linear
@@ -83,3 +80,17 @@ set IFMgx2bbbarxDipoleKernel:CMWScheme Linear
 set IFMgx2bbarbxDipoleKernel:CMWScheme Linear
 set IIgx2bbbarxDipoleKernel:CMWScheme Linear
 set IIgx2bbarbxDipoleKernel:CMWScheme Linear
+
+
+set FIMDecaygx2bbxDipoleKernel:CMWScheme Linear
+set FIMDecaygx2ccxDipoleKernel:CMWScheme Linear
+set FIMDecaygx2ssxDipoleKernel:CMWScheme Linear
+set FIMDecaygx2uuxDipoleKernel:CMWScheme Linear
+set FIMDecaygx2ddxDipoleKernel:CMWScheme Linear
+set FIMDecaygx2ggxDipoleKernel:CMWScheme Linear
+set FIMDecaycx2cgxDipoleKernel:CMWScheme Linear
+set FIMDecaysx2sgxDipoleKernel:CMWScheme Linear
+set FIMDecayux2ugxDipoleKernel:CMWScheme Linear
+set FIMDecaydx2dgxDipoleKernel:CMWScheme Linear
+set FIMDecaybx2bgxDipoleKernel:CMWScheme Linear
+

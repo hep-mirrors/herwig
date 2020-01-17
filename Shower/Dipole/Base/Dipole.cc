@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Dipole.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -79,7 +79,7 @@ void Dipole::update() {
 
 pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
 				  bool colourSpectator,
-				  bool subleadingNc) const {  
+				  bool ) const {  
  // check contracts
   assert(dsplit.splittingKinematics());
   assert(dsplit.emitterData() && dsplit.emissionData() && dsplit.spectatorData());

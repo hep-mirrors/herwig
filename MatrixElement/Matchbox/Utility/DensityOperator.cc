@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // DensityOperator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -248,7 +248,7 @@ double DensityOperator::colourMatrixElementCorrection(const std::tuple<size_t,si
 									const cPDVector& particles) {
 	const int i = std::get<0>(ikemission);
 	const int k = std::get<1>(ikemission);
-	const long emissionID = std::get<2>(ikemission);
+	//const long emissionID = std::get<2>(ikemission);
 
 
 	// Get the density operator

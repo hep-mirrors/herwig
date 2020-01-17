@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // GeneralHardME.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -122,7 +122,10 @@ public:
       Energy2 scale2 = meMomenta()[3].mass2()+meMomenta()[3].perp2();
       return scaleFactor_*max(scale1,scale2);
     }
-    else assert(false);
+    else {
+      assert(false);
+      return ZERO;
+    }
   }
 
   /**

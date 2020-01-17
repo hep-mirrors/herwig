@@ -1140,6 +1140,7 @@ double DISBase::NLOWeight() const {
   virt /= jac_;
   // PDF from leading-order
   double loPDF = hadron_->pdf()->xfx(hadron_,mePartonData()[1],mu2,xB_)/xB_;
+  if(loPDF==0.) return 0.;
   // NLO gluon PDF
   tcPDPtr gluon = getParticleData(ParticleID::g);
   double gPDF   = hadron_->pdf()->xfx(hadron_,gluon,mu2,xB_/xp_)*xp_/xB_;

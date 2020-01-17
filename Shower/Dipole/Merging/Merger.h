@@ -1,7 +1,7 @@
   /// -*- C++ -*-
   //
   /// Merger.h is a part of Herwig - A multi-purpose Monte Carlo event generator
-  /// Copyright (C) 2002-2017 The Herwig Collaboration
+  /// Copyright (C) 2002-2019 The Herwig Collaboration
   //
   /// Herwig is licenced under version 3 of the GPL, see COPYING for details.
   /// Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -62,7 +62,32 @@ namespace Herwig {
    * \ingroup DipoleShower
    * \author Johannes Bellm
    *
-   * \brief Merger handles the Merger ....... //TODO .
+   * \brief This class is responsible for the handling of the merging process
+   * after the setup stage, performed by the merging factory.
+   * The class is inherited from the MergerBase class that is visible
+   * (and the interface) to the shower and matrix elements.
+   *
+   * The main functions of the Merger are:
+   * - matrixElementRegion:
+   *           Given vectors of incoming and outgoing particles, the
+   *           function defines the matrix element region.
+   *           This function is used by the shower after an emission
+   *           that produces a multiplicity still handeld by the merging
+   *           and the Matrix element to determine the region to calculate the
+   *           full ME contribution.
+   * - mergingScale:
+   *           This is the possibly smeared version of the merging pt
+   *           (centralMergePt) given as input to the Merger. This scaleis used
+   *           in the definitions of ME regions.
+   * - N and M:
+   *           are the number of additional legs of the highest LO or NLO (virtual)
+   *           contribution.
+   * - MergingDSigDR:
+   *           The main function to call the calculation of the underlying
+   *           process and the history reweights.
+   *           Here it is also decided if the process should be
+   *           clustered/projected to a process with less legs.
+   *
    *
    * @see \ref MergerInterfaces "The interfaces"
    * defined for Merger.
@@ -111,11 +136,6 @@ namespace Herwig {
       assert(theFirstNodeMap.count(theCurrentME));
       theCurrentNode=theFirstNodeMap[theCurrentME];
     }
-      /// allow emissions with a given probability.in the ME region
-    double emissionProbability() const{ return theEmissionProbability; }
-      /// set a probability of allowed emission into ME region.
-    void setEmissionProbability(double x){theEmissionProbability=x;}
-
 
   protected:
       /// the merging factory needs to set the legsize of the production process
@@ -133,9 +153,6 @@ namespace Herwig {
     MatchboxMEBasePtr currentME() const { return theCurrentME; }
       /// return the current Node
     NodePtr currentNode() const { return theCurrentNode; }
-      /// the gamma parameter to subtract dipoles above a alpha parameter
-      /// and subtract the corresponding IPK operator
-    double gamma()const{return theGamma;}
     
   private:
       /// calculate a single sudakov step for a given dipole
@@ -171,12 +188,6 @@ namespace Herwig {
   private:
       /// calculate the history weighted born cross section
     CrossSection MergingDSigDRBornStandard();
-      /**
-       * calculate the history weighted born cross section
-       * add the difference of IPK with and without alpha parameter
-       * subtract the dipoles above the alpha parameter
-       */ 
-    CrossSection MergingDSigDRBornGamma();
       /// calculate the history weighted virtual contribution
     CrossSection MergingDSigDRVirtualStandard();
       /**
@@ -199,8 +210,7 @@ namespace Herwig {
       /// max legssize the shower should veto for LO
     size_t maxLegsLO() const {return N0()+N();}
       /// Calculate the LO partonic cross section.
-      /// if diffalpha != 1, add the difference of IPK(1)-IPK(diffalpha)
-    CrossSection TreedSigDR(Energy startscale, double diffalpha=1.);
+    CrossSection TreedSigDR(Energy startscale);
       /// fill the projecting xcomb
     Energy fillProjector(int);
       /// fill the history, including calculation of sudakov supression
@@ -256,7 +266,6 @@ namespace Herwig {
                    double, double, double, NodePtr,CrossSection) const;
       /// debug output for reals
     void debugReal( string, double, CrossSection, CrossSection) const;
-
     
   private:
     
@@ -278,21 +287,8 @@ namespace Herwig {
     int theOnlyN = -1;
       /// the current maxlegs (either LO or NLO maxlegs)
     int theCurrentMaxLegs = -1;
-      /// current weight and weight of clustered born
-    double weight = 1.0;
-    double weightCB = 1.0;
-      /// subtract the dipole contribution above a given gamma
-    double theGamma = 1.0;
       /// smearing factor for merging scale
     double theSmearing = 0.;
-
-     /** 
-      * Allow emissions for the unitarising LO contributions 
-      *  according to the prob 1-min(B_n/sum Dip_n,Dip_n/B_n)
-      */
-    bool emitDipoleMEDiff = false;
-      /// The conditional emission probability if emitDipoleMEDiff is true.
-    double theEmissionProbability = 0.;
       /// cutoff for real emission contribution
     Energy theIRSafePT = 1_GeV;
       /// current merging scale

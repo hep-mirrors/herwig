@@ -11,7 +11,7 @@ AC_CANONICAL_HOST
 
 dnl === disable debug symbols by default =====
 if test "x$CXXFLAGS" = "x"; then
-   CXXFLAGS=-O2
+   CXXFLAGS="-O2 -DBOOST_UBLAS_NDEBUG"
 fi
 if test "x$CFLAGS" = "x"; then
    CFLAGS=-O2
@@ -230,7 +230,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Matchbox/Powheg-DipoleShower.in
 		src/Merging/Makefile
 		Shower/Dipole/Merging/Makefile
-		Shower/Dipole/Colorea/Makefile
 		src/defaults/MatchboxMergingDefaults.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh

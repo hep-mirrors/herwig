@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PhasespaceHelpers.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2017 The Herwig Collaboration
+// Copyright (C) 2002-2019 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -538,6 +538,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
   children[1].generateKinematics(info,meMomenta);
 
   if ( !lastScatter ) {
+    children[0].backwardMomentum = backwardMomentum;
     children[0].generateKinematics(info,meMomenta);
   } else {
     children[0].children[1].momentum =

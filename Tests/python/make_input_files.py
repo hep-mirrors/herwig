@@ -56,7 +56,7 @@ def addFirstJet(ptcut):
     res+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
     res+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
     if(ptcut!=""):
-        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+".*GeV\n"
+        res+="set /Herwig/Cuts/FirstJet:PtMin "+ptcut+"*GeV\n"
     didaddfirstjet=True
     return res
 
@@ -69,7 +69,7 @@ def addSecondJet(ptcut):
       logging.error("Can only add second jetcut once.")
       sys.exit(1)
     res="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
-    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+".*GeV\n"
+    res+="set /Herwig/Cuts/SecondJet:PtMin "+ptcut+"*GeV\n"
     didaddsecondjet=True
     return res
 
@@ -85,7 +85,7 @@ create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so
 set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet
 set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet
 insert /Herwig/Cuts/JetCuts:JetPairRegions 0  /Herwig/Cuts/JetPairMass
-set /Herwig/Cuts/JetPairMass:MassMin {mm}.*GeV
+set /Herwig/Cuts/JetPairMass:MassMin {mm}*GeV
 """.format(mm=minmass)
   didaddjetpair=True
   return res
@@ -139,22 +139,17 @@ def insert_ME(me,process=None,ifname='Process',subprocess="SubProcess"):
         result += "set /Herwig/MatrixElements/{me}:{ifname} {process}".format(**locals())
     return result
 
-def particlegroup(name,*particles):
-    result = ["do /Herwig/MatrixElements/Matchbox/Factory:StartParticleGroup {n}".format(n=name)]
+def particlegroup(factory,name,*particles):
+    directory="MatrixElements/Matchbox"
+    if(factory!="Factory") : directory="Merging"
+    result = ["do /Herwig/{dir}/{fact}:StartParticleGroup {n}".format(n=name,fact=factory,dir=directory)]
     for p in particles:
         result.append(
-            "insert /Herwig/MatrixElements/Matchbox/Factory:ParticleGroup 0 /Herwig/Particles/{p}".format(p=p)
+            "insert /Herwig/{dir}/{fact}:ParticleGroup 0 /Herwig/Particles/{p}".format(p=p,fact=factory,dir=directory)
         )
-    result.append("do /Herwig/MatrixElements/Matchbox/Factory:EndParticleGroup")
+    result.append("do /Herwig/{dir}/{fact}:EndParticleGroup".format(fact=factory,dir=directory))
     return '\n'.join(result)
 
-# settings for four flavour scheme
-fourFlavour="""
-read Matchbox/FourFlavourScheme.in
-{bjetgroup}
-set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
-""".format(bjetgroup=particlegroup('bjet','b','bbar','c', 'cbar',
-                                   's','sbar','d','dbar','u','ubar','g'))
 
 ME_Upsilon = """\
 create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
@@ -176,7 +171,6 @@ print name
 # select the template to load
 # collider
 KNOWN_COLLIDERS = [
-    "GammaGamma",
     "EE-Gamma",
     "BFactory",
     "EE",
@@ -188,6 +182,7 @@ KNOWN_COLLIDERS = [
     "SppS",
     "Star",
     "EHS",
+    "GammaGamma",
 ]
 collider = ""
 for cand_collider in KNOWN_COLLIDERS:
@@ -217,7 +212,7 @@ if "Dipole-Matchbox-Powheg" in name :
     elif "Dipole-Powheg" in name :
     istart = 3
     simulation="Powheg"
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
     '''
 
 # Dipole shower with MCatNLO
@@ -236,7 +231,7 @@ elif "Dipole-Matchbox-LO" in name :
 elif "Dipole" in name :
     istart = 2
     simulation=""
-    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTune_prel.in\n"
+    parameters["shower"]  = "set /Herwig/EventHandlers/EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler\nread snippets/Dipole_AutoTunes_gss.in\n"
     
 # AO shower with Matchbox Powheg
 elif "Matchbox-Powheg" in name :
@@ -307,7 +302,15 @@ else :
     elif collider != "BFactory" :
         templateName= "%s-%s.in" % (collider,simulation) 
     else :
-        templateName= "EE-%s.in" % simulation 
+        templateName= "EE-%s.in" % simulation
+        
+# settings for four flavour scheme
+fourFlavour="""
+read Matchbox/FourFlavourScheme.in
+{bjetgroup}
+set /Herwig/Cuts/MatchboxJetMatcher:Group bjet
+""".format(bjetgroup=particlegroup(thefactory,'bjet','b','bbar','c', 'cbar',
+                                   's','sbar','d','dbar','u','ubar','g'))
 
 # work out the name of the parameter file
 parameterName="-".join(name.split("-")[istart:])
@@ -371,24 +374,30 @@ elif(collider=="EE") :
                 process = StringBuilder(insert_ME("MEee2gZ2qq"))
                 try :
                     ecms = float(parameterName)
-                    if(ecms<=10.1) :
+                    if(ecms<=3.75) :
+                        process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 3\n"
+                    elif(ecms<=10.6) :
                         process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
                 except :
                     pass
     elif(simulation=="Powheg") :
         process = StringBuilder()
-        if(parameterName=="10") :
-            process = StringBuilder()
-            try :
-                ecms = float(parameterName)
-                if(ecms<=10.1) :
-                    process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
-            except :
-                pass
+        try :
+            ecms = float(parameterName)
+            if(ecms<=3.75) :
+                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 3\n"
+            elif(ecms<=10.6) :
+                process+= "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
+        except :
+            pass
     elif(simulation=="Matchbox" ) :
         try :
             ecms = float(parameterName)
-            if(ecms<=10.1) :
+            if(ecms<=3.75) :
+                process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
+                process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
+                process+=addProcess(thefactory,"e- e+ -> s sbar","0","2","",0,0)
+            elif(ecms<=10.6) :
                 process = StringBuilder(addProcess(thefactory,"e- e+ -> u ubar","0","2","",0,0))
                 process+=addProcess(thefactory,"e- e+ -> d dbar","0","2","",0,0)
                 process+=addProcess(thefactory,"e- e+ -> c cbar","0","2","",0,0)
@@ -597,8 +606,8 @@ elif(collider=="TVT") :
                 process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=particlegroup('epm','e+','e-')
-                process+=particlegroup('epmnu','e+','e-','nu_e','nu_ebar')
+                process+=particlegroup(thefactory,'epm','e+','e-')
+                process+=particlegroup(thefactory,'epmnu','e+','e-','nu_e','nu_ebar')
                 process+=addProcess(thefactory,"p pbar epm epmnu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif "Run-II-W" in parameterName or "Run-I-W" in parameterName :
@@ -606,7 +615,7 @@ elif(collider=="TVT") :
                 process+=addProcess(thefactory,"p pbar e+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p pbar e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=particlegroup('epm','e+','e-')
+                process+=particlegroup(thefactory,'epm','e+','e-')
                 process+=addProcess(thefactory,"p pbar epm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif "Run-II-Z-e" in parameterName or "Run-I-Z" in parameterName :
@@ -1337,7 +1346,7 @@ elif(collider=="LHC") :
         elif "ggH" in parameterName :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             if(simulation=="Merging"):
-                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff On\nset MadGraph:Model heft\n"
+                process+= "cd /Herwig/MatrixElements/Matchbox/Amplitudes\nset OpenLoops:HiggsEff Yes\nset MadGraph:Model heft\n"
                 process+="cd /Herwig/Merging/\n"
             process+=setHardProcessWidthToZero(["h0"])
             if(simulation=="Matchbox"):
@@ -1656,8 +1665,8 @@ elif(collider=="LHC") :
               process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
               process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-              process+=particlegroup('epm','e+','e-')
-              process+=particlegroup('epmnu','e+','e-','nu_e','nu_ebar')
+              process+=particlegroup(thefactory,'epm','e+','e-')
+              process+=particlegroup(thefactory,'epmnu','e+','e-','nu_e','nu_ebar')
               process+=addProcess(thefactory,"p p epm epmnu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif "W-Z-mu" in parameterName :
@@ -1666,8 +1675,8 @@ elif(collider=="LHC") :
               process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
               process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-              process+=particlegroup('mupm','mu+','mu-')
-              process+=particlegroup('mupmnu','mu+','mu-','nu_mu','nu_mubar')
+              process+=particlegroup(thefactory,'mupm','mu+','mu-')
+              process+=particlegroup(thefactory,'mupmnu','mu+','mu-','nu_mu','nu_mubar')
               process+=addProcess(thefactory,"p p mupm mupmnu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
         elif "W-e" in parameterName :
@@ -1675,7 +1684,7 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p e+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p p e- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=particlegroup('epm','e+','e-')
+                process+=particlegroup(thefactory,'epm','e+','e-')
                 process+=addProcess(thefactory,"p p epm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
 
@@ -1684,7 +1693,7 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p mu+ nu","0","2","LeptonPairMassScale",0,0)
                 process+=addProcess(thefactory,"p p mu- nu","0","2","LeptonPairMassScale",0,0)
             elif(simulation=="Merging"):
-                process+=particlegroup('mupm','mu+','mu-')
+                process+=particlegroup(thefactory,'mupm','mu+','mu-')
                 process+=addProcess(thefactory,"p p mupm nu","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("60","120")
 
@@ -1862,7 +1871,7 @@ elif(collider=="LHC") :
             if(simulation=="Merging"):
               logging.warning("Z-b not explicitly tested for %s " % simulation)
               sys.exit(0)
-            process+=particlegroup('bjet','b','bbar')
+            process+=particlegroup(thefactory,'bjet','b','bbar')
             process+=addProcess(thefactory,"p p e+ e- bjet","1","2","FixedScale",0,0)
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\n"
             process+=addLeptonPairCut("60","120")

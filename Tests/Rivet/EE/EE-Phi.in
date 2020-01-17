@@ -20,3 +20,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2016_I1416825
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 KLOE2_2014_I1317236
 # phi -> pi+pi-pi0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SND_2001_I558279
+# omega/phi -> 3pi
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_OmegaPhia1_3Pion_Decay
