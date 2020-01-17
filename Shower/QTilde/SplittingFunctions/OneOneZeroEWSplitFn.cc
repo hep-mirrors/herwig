@@ -79,12 +79,16 @@ double OneOneZeroEWSplitFn::P(const double z, const Energy2 t,
   double rho11 = abs(rho(1,1));
   double rho22 = abs(rho(2,2));
   // the splitting in the massless limit
-  double val = 0.;
+  double val = ((1.-z)*(2.*rho11+sqr(z)*(rho00+rho22)))/(4.*z);
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-    val += (2./sqr(z))*sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
+    double mBt = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+    double mHt = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
+    //val += (2./sqr(z))*sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
+    val += -(sqr(mHt)*(2.*rho11+sqr(z)*(rho00+rho22)))/(4.*z)
+         - (sqr(mBt)*(2.*rho11+z*(-4.*rho11+z*(2.*rho11+(-1.+(-2.+z)*z)*(rho00+rho22)))))
+         /(4.*sqr(z));
   }
   return sqr(gvvh)*val;
 }
@@ -94,7 +98,7 @@ double OneOneZeroEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double gvvh(0.);
   getCouplings(gvvh,ids);
-  return sqr(gvvh)*(2./sqr(z));
+  return sqr(gvvh)/(2.*z);
 }
 
 
@@ -105,12 +109,14 @@ double OneOneZeroEWSplitFn::ratioP(const double z, const Energy2 t,
   double rho11 = abs(rho(1,1));
   double rho22 = abs(rho(2,2));
   // ratio in the massless limit
-  double val = 0.;
+  double val = ((1.-z)*(2.*rho11+sqr(z)*(rho00+rho22)))/2.;
   // the massive limit
   if(mass){
     // get the running mass
-    double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-    val += sqr(m0t)*(rho11+sqr(z)*(rho00+rho22));
+    double mBt = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+    double mHt = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
+    val += -(sqr(mHt)*(2.*rho11+ sqr(z)*(rho00+rho22)))/2.
+         - (sqr(mBt)*(2.*rho11+z*(-4.*rho11+2.*z*rho11+z*(-1.+(-2.+z)*z)*(rho00+rho22))))/(2.*z);
   }
   return val;
 }
@@ -124,7 +130,7 @@ double OneOneZeroEWSplitFn::integOverP(const double z,
   double pre = sqr(gvvh);
   switch (PDFfactor) {
   case 0:
-    return -pre*(2./z);
+    return pre*log(z)/2.;
   case 1:
   case 2:
   case 3:
@@ -141,7 +147,7 @@ double OneOneZeroEWSplitFn::invIntegOverP(const double r, const IdList & ids,
   double pre = sqr(gvvh);
   switch (PDFfactor) {
   case 0:
-    return -pre*(2./r);
+    return exp(2.*r/(pre));
   case 1:
   case 2:
   case 3:
@@ -193,19 +199,19 @@ DecayMEPtr OneOneZeroEWSplitFn::matrixElement(const double z, const Energy2 t,
   Complex phase  = exp(Complex(0.,1.)*phi);
   Complex cphase = conj(phase);
   double r2 = sqrt(2.);
-  double m0t = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
-  double m2t = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
-  double sqrtmass = sqrt(sqr(m0t)-sqr(m0t)/z-sqr(m2t)/(1.-z)+1.);
+  double mBt = _theSM->mass(t,getParticleData(ids[0]->id()))/sqrt(t);
+  double mHt = _theSM->mass(t,getParticleData(ids[2]->id()))/sqrt(t);
+  double sqrtmass = sqrt(-(sqr(mBt)*sqr(1.-z))-sqr(mHt)*z+(1.-z)*z);
   // assign kernel
-  (*kernal)(0,0,0) = -gvvh*r2*m0t; // 111
-  (*kernal)(0,1,0) = 0.; // 121
+  (*kernal)(0,0,0) = -gvvh*mBt/r2; // 111
+  (*kernal)(0,1,0) = -(cphase/2.)*sqrtmass; // 121
   (*kernal)(0,2,0) = 0.; // 131
-  (*kernal)(1,0,0) = 0.; // 211
-  (*kernal)(1,1,0) = -gvvh*r2*m0t/z; // 221 > 241
-  (*kernal)(1,2,0) = 0.; // 231
+  (*kernal)(1,0,0) =  ( phase/2.*z)*sqrtmass; // 211
+  (*kernal)(1,1,0) = 0.; // 221 > 441
+  (*kernal)(1,2,0) = -(cphase/2.*z)*sqrtmass; // 231
   (*kernal)(2,0,0) = 0.; // 311
-  (*kernal)(2,1,0) = 0.; // 321 > 341
-  (*kernal)(2,2,0) = -gvvh*r2*m0t; // 331
+  (*kernal)(2,1,0) =  ( phase/2.)*sqrtmass;; // 321
+  (*kernal)(2,2,0) = -gvvh*mBt/r2; // 331
   // return the answer
   return kernal;
 }
