@@ -19,15 +19,15 @@
 using namespace Herwig;
 
 KMatrix::KMatrix(FlavourInfo flavour, vector<Channels> channels,
-		 vector<Energy> poles) : flavour_(flavour), channels_(channels), poles_(poles)
+		 vector<Energy2> poles) : flavour_(flavour), channels_(channels), poles_(poles)
 {}
 
 void KMatrix::persistentOutput(PersistentOStream & os) const {
-  os << ounit(poles_,GeV);
+  os << ounit(poles_,GeV2);
 }
 
 void KMatrix::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(poles_,GeV);
+  is >> iunit(poles_,GeV2);
 }
 
 

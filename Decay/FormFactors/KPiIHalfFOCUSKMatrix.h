@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_KPiIThreeHalfFOCUSKMatrix_H
-#define Herwig_KPiIThreeHalfFOCUSKMatrix_H
+#ifndef Herwig_KPiIHalfFOCUSKMatrix_H
+#define Herwig_KPiIHalfFOCUSKMatrix_H
 //
-// This is the declaration of the KPiIThreeHalfFOCUSKMatrix class.
+// This is the declaration of the KPiIHalfFOCUSKMatrix class.
 //
 
 #include "KMatrix.h"
@@ -12,21 +12,21 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The KPiIThreeHalfFOCUSKMatrix class implements the K-matrix fit of
- * the FOCUS collaboration (Phys.Lett. B653 (2007) 1-11) for the \f$I=\frac32\f$
+ * The KPiIHalfFOCUSKMatrix class implements the K-matrix fit of
+ * the FOCUS collaboration (Phys.Lett. B653 (2007) 1-11) for the \f$I=\frac12\f$
  * component of the \f$K\pi\f$ K-matrix. 
  *
- * @see \ref KPiIThreeHalfFOCUSKMatrixInterfaces "The interfaces"
- * defined for KPiIThreeHalfFOCUSKMatrix.
+ * @see \ref KPiIHalfFOCUSKMatrixInterfaces "The interfaces"
+ * defined for KPiIHalfFOCUSKMatrix.
  */
-class KPiIThreeHalfFOCUSKMatrix: public KMatrix {
+class KPiIHalfFOCUSKMatrix: public KMatrix {
 
 public:
 
   /**
    * The default constructor.
    */
-  KPiIThreeHalfFOCUSKMatrix();
+  KPiIHalfFOCUSKMatrix();
 
   /**
    *  Compute the K-matrix for a given scale
@@ -93,19 +93,24 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KPiIThreeHalfFOCUSKMatrix & operator=(const KPiIThreeHalfFOCUSKMatrix &);
+  KPiIHalfFOCUSKMatrix & operator=(const KPiIHalfFOCUSKMatrix &);
 
 private:
 
   /**
-   *  Constants \f$D_{22,i}\f$ from Eqn 9
+   *  Constants \f$C_{ij,k}\f$ from Eqn 8
    */
-  vector<double> D_;
+  vector<double> C11_,C22_,C12_;
+
+  /**
+   *  Couplings for the resonances
+   */
+  vector<Energy> g_;
 
   /**
    *   Adler zero position
    */
-  Energy2 sThreeHalf_;
+  Energy2 sHalf_;
 
   /**
    *  Normalisation scale
@@ -115,4 +120,4 @@ private:
 
 }
 
-#endif /* Herwig_KPiIThreeHalfFOCUSKMatrix_H */
+#endif /* Herwig_KPiIHalfFOCUSKMatrix_H */

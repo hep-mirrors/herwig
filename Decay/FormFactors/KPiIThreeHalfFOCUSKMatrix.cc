@@ -23,6 +23,7 @@ KPiIThreeHalfFOCUSKMatrix::KPiIThreeHalfFOCUSKMatrix()
     D_({-0.22147,0.026637,-0.00092057}),
     sThreeHalf_(0.27*GeV2)
 {}
+
 IBPtr KPiIThreeHalfFOCUSKMatrix::clone() const {
   return new_ptr(*this);
 }
@@ -71,13 +72,15 @@ void KPiIThreeHalfFOCUSKMatrix::doinit() {
   sNorm_ = sqr(mK)+sqr(mpi);
 }
 
-double KPiIThreeHalfFOCUSKMatrix::K(Energy2 s) {
+boost::numeric::ublas::matrix<double> KPiIThreeHalfFOCUSKMatrix::K(Energy2 s) {
   double st = s/sNorm_-1.;
   double param=1.;
-  double output=0.;
+  boost::numeric::ublas::matrix<double> output =
+    boost::numeric::ublas::zero_matrix<double>(1,1);
   for(unsigned int ix=0;ix<D_.size();++ix) {
-    output+=D_[ix]*param;
+    output(0,0) += D_[ix]*param;
     param *= st;
   }
-  return output*(s-sThreeHalf_)/sNorm_;
+  output *=(s-sThreeHalf_)/sNorm_;
+  return output;
 }

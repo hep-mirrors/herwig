@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig/Decay/IsoSpin.h"
 #include "KMatrix.fh"
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace Herwig {
 
@@ -36,7 +37,7 @@ public:
    */
   KMatrix(FlavourInfo flavour=FlavourInfo(),
 	  vector<Channels> channels=vector<Channels>(),
-	  vector<Energy> poles=vector<Energy>());
+	  vector<Energy2> poles=vector<Energy2>());
 
   /**
    *   The quantum numbers of the K-matrix
@@ -48,7 +49,12 @@ public:
   /**
    *  Compute the K-matrix for a given scale
    */
-  virtual double K(Energy2 s) =0;
+  virtual boost::numeric::ublas::matrix<double> K(Energy2 s) = 0;
+
+  /**
+   *  Vector containing the locations of the poles
+   */
+  const vector<Energy2> & poles() const {return poles_;}
   
 public:
 
@@ -99,7 +105,7 @@ private:
   /**
    *  The positions of the poles
    */
-  vector<Energy> poles_;
+  vector<Energy2> poles_;
 };
 
 }

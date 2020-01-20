@@ -28,7 +28,8 @@ BtoSGammaKagan.h \
 HQETFormFactor.h \
 CzyzNucleonFormFactor.h \
 KornerKurodaFormFactor.h \
-KPiIThreeHalfFOCUSKMatrix.h
+KPiIThreeHalfFOCUSKMatrix.h \
+KPiIHalfFOCUSKMatrix.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -51,4 +52,5 @@ BtoSGammaKagan.cc \
 HQETFormFactor.cc \
 CzyzNucleonFormFactor.cc \
 KornerKurodaFormFactor.cc \
-KPiIThreeHalfFOCUSKMatrix.cc
+KPiIThreeHalfFOCUSKMatrix.cc \
+KPiIHalfFOCUSKMatrix.cc
