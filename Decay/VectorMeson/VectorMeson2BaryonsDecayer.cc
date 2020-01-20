@@ -61,7 +61,7 @@ VectorMeson2BaryonsDecayer::VectorMeson2BaryonsDecayer()
     incoming_ ({443             ,443             ,443             ,443              ,443              ,443              ,443             ,443             ,443              ,100443          ,100443          ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           ,100443           }),
     outgoingf_({ 2212           , 2112           , 3122           , 3212            , 3312            , 3322            , 3114           , 3224           , 3214            , 2212           , 2112           , 3122            , 3212            , 3312            , 3322            , 3114            , 3224            , 3214            , 3314            }),
     outgoinga_({-2212           ,-2112           ,-3122           ,-3212            ,-3312            ,-3322            ,-3114           ,-3224           ,-3214            ,-2212           ,-2112           ,-3122            ,-3212            ,-3312            ,-3322            ,-3114            ,-3224            ,-3214            ,-3314            }),
-    maxweight_({1.6             ,1.6             ,2.1             ,1.5              ,2.               ,2.1              ,7.              ,10.             ,6.5              ,1.7             ,1.7             ,2.5              ,2.5              ,2.               ,2.               ,30.              ,35.              ,41.              , 0.001           })
+    maxweight_({1.6             ,1.6             ,2.1             ,1.5              ,2.               ,2.1              ,5.              ,7.              ,5.5              ,1.7             ,1.7             ,2.5              ,1.6              ,2.               ,2.               ,5.               ,5.               ,4.5              , 0.0012          })
 {}
 
 int VectorMeson2BaryonsDecayer::modeNumber(bool & cc,tcPDPtr parent,
@@ -257,7 +257,6 @@ double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
     LorentzPolarizationVector c2 = -2.*outgoing[0]->mass()/(4.*sqr(outgoing[0]->mass())-sqr(part.mass()))*
       (GM-GE)*(momenta[iferm]-momenta[ianti]);
     // now compute the currents
-    //double mesum(0.);
     for(unsigned ix=0;ix<4;++ix) {
       for(unsigned iy=0;iy<4;++iy) {
 	// q(al)q(be) piece
@@ -302,15 +301,14 @@ double VectorMeson2BaryonsDecayer::me2(const int,const Particle & part,
 	for(unsigned int iz=0;iz<3;++iz) {
 	  if(iferm>ianti) (*ME())(iz,ix,iy)=vectors_[iz].dot(temp);
 	  else            (*ME())(iz,iy,ix)=vectors_[iz].dot(temp);
-	  //mesum += norm(vectors_[iz].dot(temp));
 	}
       }
     }
-    double me = ME()->contract(rho_).real();
-    // cerr << "testing decay " << part.PDGName() << " -> " << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << "\n";
-    // cerr << "testing ME " << mesum/3. << " " << me << " " << 1./3.*(40.*norm(GM)/9.+16.*sqr(outgoing[0]->mass()/part.mass())*norm(GE)) << "\n";
+    // double mesum = ME()->contract(RhoDMatrix(PDT::Spin1)).real();
+    // generator()->log() << "testing decay " << part.PDGName() << " -> " << outgoing[0]->PDGName() << " " << outgoing[1]->PDGName() << "\n";
+    // generator()->log() << "testing ME " << mesum  << " " << me << " " << 1./3.*(40.*norm(GM)/9.+16.*sqr(outgoing[0]->mass()/part.mass())*norm(GE)) << "\n";
     // return the answer
-    return me;
+    return ME()->contract(rho_).real();
   }
   else
     assert(false);

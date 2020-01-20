@@ -542,8 +542,8 @@ halfThreeHalfVector(const int,const Particle & part, const tPDVector & outgoing,
       for(unsigned int ixa=0;ixa<2;++ixa) {
 	ispin[0]=ixa;
 	if(outgoing[0]->id()>0) stemp  = _inHalf[ixa];
-	else        
-	  (*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/part.mass());
+	else                    sbtemp = _inHalfBar[ixa];
+	(*ME())(ispin) += Complex(stemp.generalScalar(sbtemp,left,right)/part.mass());
       }
     }
   }
@@ -643,19 +643,19 @@ threeHalfHalfScalar(const int,const Particle & part, const tPDVector & outgoing,
 			       UnitRemoval::E/msum/part.mass());
     }
   }
-  double output = (ME()->contract(_rho)).real();
   // test of the matrix element
+  // double test = (ME()->contract(RhoDMatrix(PDT::Spin3Half))).real();
   // Energy m1(part.mass()),m2(momenta[0].mass()),m3(momenta[1].mass());
   // Energy Qp(sqrt(sqr(m1+m2)-sqr(m3))),Qm(sqrt(sqr(m1-m2)-sqr(m3)));
   // double r23(sqrt(2./3.));
   // Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
   // complex<Energy> h1(-2.*r23*pcm*Qm*B/(m1+m2)),h2( 2.*r23*pcm*Qp*A/(m1+m2));
   // generator()->log() << "testing 3/2->1/2 0 " << part.id() << " "
-  // 		     << output << "   " 
+  // 		     << test << "   " 
   // 		     << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass()) << "   " 
-  // 		     << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass())/output << endl;
+  // 		     << 0.125*(h1*conj(h1)+h2*conj(h2))/sqr(part.mass())/test << endl;
   // return the answer
-  return output;
+  return (ME()->contract(_rho)).real();;
 }
 
 // matrix element for the decay of a spin-3/2 fermion to a spin-3/2 fermion and

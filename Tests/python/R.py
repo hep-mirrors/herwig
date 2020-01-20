@@ -89,6 +89,7 @@ analyses["TASSO_1984_I195333"] = ["d01-x01-y01","d04-x01-y01"]
 analyses["PLUTO_1977_I110272"]=["d02-x01-y01"]
 analyses["FENICE_1996_I426675"]=["d01-x01-y01"]
 analyses["PLUTO_1981_I165122"]=["d01-x01-y01","d02-x01-y01","d03-x01-y01"]
+analyses["KEDR_2019_I1673357"]=["d01-x01-y01","d01-x01-y02"]
 # list analyses if needed
 if(opts.list) :
     print " ".join(analyses.keys())

@@ -50832,11 +50832,11 @@ insert Sigma*-Width:NumberofEntries 0 0
 insert Sigma*-Width:NumberofEntries 1 0
 insert Sigma*-Width:NumberofEntries 2 0
 insert Sigma*-Width:BaryonDecayers 0 /Herwig/Decays/SU3Decuplet
-insert Sigma*-Width:ModeLocation 0 26
+insert Sigma*-Width:ModeLocation 0 24
 insert Sigma*-Width:BaryonDecayers 1 /Herwig/Decays/SU3Decuplet
-insert Sigma*-Width:ModeLocation 1 23
+insert Sigma*-Width:ModeLocation 1 21
 insert Sigma*-Width:BaryonDecayers 2 /Herwig/Decays/SU3Decuplet
-insert Sigma*-Width:ModeLocation 2 24
+insert Sigma*-Width:ModeLocation 2 22
 
 newdef /Herwig/Particles/Sigma*-:Width_generator Sigma*-Width
 newdef /Herwig/Particles/Sigma*bar+:Width_generator Sigma*-Width
@@ -50888,11 +50888,11 @@ insert Sigma*0Width:NumberofEntries 3 0
 insert Sigma*0Width:BaryonDecayers 0 NULL 
 insert Sigma*0Width:ModeLocation 0 -1
 insert Sigma*0Width:BaryonDecayers 1 /Herwig/Decays/SU3Decuplet
-insert Sigma*0Width:ModeLocation 1 21
+insert Sigma*0Width:ModeLocation 1 20
 insert Sigma*0Width:BaryonDecayers 2 /Herwig/Decays/SU3Decuplet
-insert Sigma*0Width:ModeLocation 2 19
+insert Sigma*0Width:ModeLocation 2 18
 insert Sigma*0Width:BaryonDecayers 3 /Herwig/Decays/SU3Decuplet
-insert Sigma*0Width:ModeLocation 3 20
+insert Sigma*0Width:ModeLocation 3 29
 
 newdef /Herwig/Particles/Sigma*0:Width_generator Sigma*0Width
 newdef /Herwig/Particles/Sigma*bar0:Width_generator Sigma*0Width
@@ -50933,7 +50933,7 @@ insert Sigma*+Width:NumberofEntries 0 0
 insert Sigma*+Width:NumberofEntries 1 0
 insert Sigma*+Width:NumberofEntries 2 0
 insert Sigma*+Width:BaryonDecayers 0 /Herwig/Decays/SU3Decuplet
-insert Sigma*+Width:ModeLocation 0 16
+insert Sigma*+Width:ModeLocation 0 15
 insert Sigma*+Width:BaryonDecayers 1 /Herwig/Decays/SU3Decuplet
 insert Sigma*+Width:ModeLocation 1 12
 insert Sigma*+Width:BaryonDecayers 2 /Herwig/Decays/SU3Decuplet
@@ -50974,9 +50974,9 @@ insert Xi*-Width:DecayModes 1 Xi*-->Xi0,pi-;
 insert Xi*-Width:NumberofEntries 0 0
 insert Xi*-Width:NumberofEntries 1 0
 insert Xi*-Width:BaryonDecayers 0 /Herwig/Decays/SU3Decuplet
-insert Xi*-Width:ModeLocation 0 32
+insert Xi*-Width:ModeLocation 0 29
 insert Xi*-Width:BaryonDecayers 1 /Herwig/Decays/SU3Decuplet
-insert Xi*-Width:ModeLocation 1 31
+insert Xi*-Width:ModeLocation 1 28
 
 newdef /Herwig/Particles/Xi*-:Width_generator Xi*-Width
 newdef /Herwig/Particles/Xi*bar+:Width_generator Xi*-Width
@@ -51008,9 +51008,9 @@ insert Xi*0Width:DecayModes 1 Xi*0->Xi0,pi0;
 insert Xi*0Width:NumberofEntries 0 0
 insert Xi*0Width:NumberofEntries 1 0
 insert Xi*0Width:BaryonDecayers 0 /Herwig/Decays/SU3Decuplet
-insert Xi*0Width:ModeLocation 0 28
+insert Xi*0Width:ModeLocation 0 25
 insert Xi*0Width:BaryonDecayers 1 /Herwig/Decays/SU3Decuplet
-insert Xi*0Width:ModeLocation 1 29
+insert Xi*0Width:ModeLocation 1 26
 
 newdef /Herwig/Particles/Xi*0:Width_generator Xi*0Width
 newdef /Herwig/Particles/Xi*bar0:Width_generator Xi*0Width

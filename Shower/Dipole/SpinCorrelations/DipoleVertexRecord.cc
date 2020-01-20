@@ -347,14 +347,16 @@ void DipoleVertexRecord::prepareParticleDecay( const PPtr& decayIncoming ) {
 
   // Need to set stopUpdate flag in the latest parent with spinInfo
   PPtr parent = decayIncoming;
-  while ( !parent->spinInfo() )
+  while ( !parent->spinInfo() && !parent->parents().empty() )
     parent = parent->parents()[0];
+  if(!parent->spinInfo()) return;
   parent->spinInfo()->stopUpdate();
   theDecayParentSpinInfo = parent->spinInfo();
 }
 
 
 void DipoleVertexRecord::updateParticleDecay() {
+  if(!theDecayParentSpinInfo) return;
   theDecayParentSpinInfo->needsUpdate();
   theDecayParentSpinInfo->develop();
   // Clear theDecayParentSpinInfo
