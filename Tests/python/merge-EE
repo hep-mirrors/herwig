@@ -223,6 +223,11 @@ for f in yodafiles:
                 outhistos[aopath] = ao
             elif("_2" in aopath and "Phi" in file) :
                 outhistos[aopath] = ao
+        elif("BABAR_2006_I719581" in aopath) :
+            if("d02" in aopath and "Omega" in file) :
+                outhistos[aopath] = ao
+            elif("d01" in aopath and "Xi" in file) :
+                outhistos[aopath] = ao
         else:
             outhistos[aopath] = ao
 

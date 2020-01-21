@@ -58,7 +58,6 @@ inhistos = {}
 outhistos={}
 for fname in yodafiles:
     file = 'Rivet-'+fname
-    print file
     if(file.find("44")>0) :
         sqrts=44
     elif(file.find("63")>0) :
