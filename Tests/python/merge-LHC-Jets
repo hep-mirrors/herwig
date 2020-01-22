@@ -21,25 +21,25 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
-            for i in range(0,h.numPoints) :
-                xMin = h.points[i].x-h.points[i].xErrs.minus
+            for i in range(0,h.numPoints()) :
+                xMin = h.points()[i].x()-h.points()[i].xErrs().minus
                 if( xMin*scale >= ptlow and 
                     xMin*scale <  pthigh ) :
-                    desthisto.addPoint(h.points[i])
+                    desthisto.addPoint(h.points()[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
-            for i in range(0,h.numBins) :
-                if(h.bins[i].xMin*scale  >= ptlow and 
-                   h.bins[i].xMin*scale  <  pthigh ) :
-                    desthisto.bins[i] += h.bins[i]
+            for i in range(0,h.numBins()) :
+                if(h.bins()[i].xMin()*scale  >= ptlow and 
+                   h.bins()[i].xMin()*scale  <  pthigh ) :
+                    desthisto.bins()[i] += h.bins()[i]
         elif(type(desthisto)==yoda.core.Histo1D) :
-            for i in range(0,h.numBins) :
-                if(h.bins[i].xMin*scale  >= ptlow and 
-                   h.bins[i].xMin*scale  <  pthigh ) :
-                    desthisto.bins[i] += h.bins[i]
+            for i in range(0,h.numBins()) :
+                if(h.bins()[i].xMin()*scale  >= ptlow and 
+                   h.bins()[i].xMin()*scale  <  pthigh ) :
+                    desthisto.bins()[i] += h.bins()[i]
         elif(type(desthisto)==yoda.core.Counter) :
                     desthisto += h
         else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path)
+            logging.error("Can't merge %s, unknown type" % desthisto.path())
             sys.exit(1)
         pthigh=pt
 
@@ -311,24 +311,24 @@ for f in yodafiles:
                         if hasattr(ao, 'title'):
                             title=ao.title
                         if hasattr(ao, 'path'):
-                            path=ao.path
+                            path=ao.path()
                         temp = yoda.core.Histo1D(path,title)
-                        for i in range(0,ao.numBins) :
-                            temp.addBin(ao.bins[i].xMin,ao.bins[i].xMax)
+                        for i in range(0,ao.numBins()) :
+                            temp.addBin(ao.bins()[i].xMin(),ao.bins()[i].xMax())
                         if("-SL" in file) :
-                            temp.bins[0] += outhistos[aopath].bins[0]
-                            temp.bins[1] += outhistos[aopath].bins[1]
-                            temp.bins[2] += ao.bins[2]
-                            temp.bins[3] += ao.bins[3]
-                            temp.bins[2] += ao.bins[2]
-                            temp.bins[3] += ao.bins[3]
+                            temp.bins()[0] += outhistos[aopath].bins()[0]
+                            temp.bins()[1] += outhistos[aopath].bins()[1]
+                            temp.bins()[2] += ao.bins()[2]
+                            temp.bins()[3] += ao.bins()[3]
+                            temp.bins()[2] += ao.bins()[2]
+                            temp.bins()[3] += ao.bins()[3]
                         else :
-                            temp.bins[0] += ao.bins[0]
-                            temp.bins[1] += ao.bins[1]
-                            temp.bins[2] += outhistos[aopath].bins[2]
-                            temp.bins[3] += outhistos[aopath].bins[3]
-                            temp.bins[2] += outhistos[aopath].bins[2]
-                            temp.bins[3] += outhistos[aopath].bins[3]
+                            temp.bins()[0] += ao.bins()[0]
+                            temp.bins()[1] += ao.bins()[1]
+                            temp.bins()[2] += outhistos[aopath].bins()[2]
+                            temp.bins()[3] += outhistos[aopath].bins()[3]
+                            temp.bins()[2] += outhistos[aopath].bins()[2]
+                            temp.bins()[3] += outhistos[aopath].bins()[3]
                         outhistos[aopath] = temp
             else :
                 outhistos[aopath] = ao
@@ -459,21 +459,21 @@ for hpath,hsets in inhistos_pt.iteritems():
         if hasattr(histo, 'title'):
             title=histo.title
         if hasattr(histo, 'path'):
-            path=histo.path
+            path=histo.path()
         if(type(histo)==yoda.core.Counter) :
             outhistos[hpath] = yoda.core.Counter(path,title)
         elif(type(histo)==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(path,title)
         elif(type(histo)==yoda.core.Profile1D) :
             outhistos[hpath] = yoda.core.Profile1D(path,title)
-            for i in range(0,histo.numBins) :
-                outhistos[hpath].addBin(histo.bins[i].xMin,
-                                        histo.bins[i].xMax)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         elif(type(histo)==yoda.core.Histo1D) :
             outhistos[hpath] = yoda.core.Histo1D(path,title)
-            for i in range(0,histo.numBins) :
-                outhistos[hpath].addBin(histo.bins[i].xMin,
-                                        histo.bins[i].xMax)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1) 
@@ -495,14 +495,14 @@ for hpath,hsets in inhistos_mass.iteritems():
             outhistos[hpath] = yoda.core.Scatter2D(path,title)
         elif(type(histo)==yoda.core.Profile1D) :
             outhistos[hpath] = yoda.core.Profile1D(path,title)
-            for i in range(0,histo.numBins) :
-                outhistos[hpath].addBin(histo.bins[i].xMin,
-                                        histo.bins[i].xMax)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         elif(type(histo)==yoda.core.Histo1D) :
             outhistos[hpath] = yoda.core.Histo1D(path,title)
-            for i in range(0,histo.numBins) :
-                outhistos[hpath].addBin(histo.bins[i].xMin,
-                                        histo.bins[i].xMax)
+            for i in range(0,histo.numBins()) :
+                outhistos[hpath].addBin(histo.bins()[i].xMin(),
+                                        histo.bins()[i].xMax())
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
@@ -1420,24 +1420,24 @@ for ihist in range(1,4) :
     hsum  = yoda.Scatter2D(sstring,sstring)
     outhistos[dstring]= hdiff
     outhistos[sstring]= hsum
-    for nbin in range(0,h2.numBins) :
-        bsum  = h1.bins[nbin]+h2.bins[nbin]
+    for nbin in range(0,h2.numBins()) :
+        bsum  = h1.bins()[nbin]+h2.bins()[nbin]
         try:
-          ydiff = h2.bins[nbin].mean-h1.bins[nbin].mean
+          ydiff = h2.bins()[nbin].mean()-h1.bins()[nbin].mean()
         except:
           ydiff = 0
         try:
-          ysum  = bsum.mean
-          bstderr = bsum.stdErr
+          ysum  = bsum.mean()
+          bstderr = bsum.stdErr()
         except:
           ysum  = 0
           bstderr = 0
         try:
-          yerr  = math.sqrt(h1.bins[nbin].stdErr**2+h2.bins[nbin].stdErr**2)
+          yerr  = math.sqrt(h1.bins()[nbin].stdErr()**2+h2.bins()[nbin].stdErr()**2)
         except:
           yerr  = 0
-        x    = h1.bins[nbin].xMid
-        xerr = 0.5*h1.bins[nbin].xWidth
+        x    = h1.bins()[nbin].xMid()
+        xerr = 0.5*h1.bins()[nbin].xWidth()
         hdiff.addPoint(x,ydiff,xerr,yerr)
         hsum.addPoint(x,ysum ,xerr,bstderr)
 

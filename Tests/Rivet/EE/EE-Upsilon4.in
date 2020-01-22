@@ -25,8 +25,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2015_I1330289
 # BES D -> K, pi semi-leptonic
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2015_I1391138
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2017_I1519425
-# BES J/psi dalitz
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BESIII_2018_I1697377
 # multiplicities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_Upsilon_4S_HADRON_MULTIPLICITIES
 # BES multiplicty in eta_c decays
@@ -45,3 +43,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
+# ARGUS charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
+# BELLE B0 -> D* semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299

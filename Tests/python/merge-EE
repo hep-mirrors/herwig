@@ -84,12 +84,22 @@ if __name__ == "__main__":
                       action='store_true' ,
                       dest="gg",
                       default=False,
-                      help="Include gg analyese")
+                      help="Include gg analyses")
     parser.add_option("--without-gg",
                       action='store_false',
                       dest="gg",
                       default=False,
                       help="Don\'t include gg analyses")
+    parser.add_option("--with-decay",
+                      action='store_true' ,
+                      dest="decay",
+                      default=False,
+                      help="Include decay analyses")
+    parser.add_option("--without-decay",
+                      action='store_false',
+                      dest="decay",
+                      default=False,
+                      help="Don\'t include decay analyses")
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
     ## Check args
@@ -107,19 +117,21 @@ yodafiles=["130","133","136","177","192",
            "12","13","17","27.6","29","30.2","34.5",\
            "30.7","30","31.3","34","34.8","43.6","50","52","53.3",\
            "55","56","57","58","59.5","60.8","60","61.4","7.7",
-           "9.4","45","66","76","41","42.6","82","85"]
+           "9.4","45","66","76","41","42.6","82","85","2.2","2.6","3.0","3.2","4.6","4.8",
+           "5.8","6.2","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
+           "4.41","5.0","5.2","4.5","9.46","10.52","10.52-sym","10.54","10.58",
+           "10.6","10.45","10.47"]
 # add gg if needed
 if(opts.gg) :
     yodafiles += ["10.5-gg","12.8-gg","16.86-gg","26.8-gg",\
                   "35.44-gg","97.0-gg","11.96-gg","13.96-gg",\
                   "21.84-gg","28.48-gg","48.0-gg"]
-    
-yodafiles += ["2.2","2.6","3.0","3.2","4.6","4.8",
-              "5.8","6.2","6.6","7.0","7.4","3.63","4.03","4.17","4.3",
-              "4.41","5.0","5.2","4.5","9.46","10.52","10.52-sym","10.54",
-              "10.58-res","10.58","Upsilon","10.6-sym",
-              "Upsilon2","Upsilon4","10.45","10.47","Tau","Phi",
-              "Lambdac","Omega-Meson","Omega-Baryon","Eta","Xi0","Xic0","Omegac0","Xim","JPsi","Psi2S"]
+# add decays if needed
+if(opts.decay) :
+    yodafiles += ["Upsilon","Upsilon2","Upsilon4","Upsilon4-asym",
+                  "Tau","Phi","Lambdac","Omega-Meson",
+                  "Omega-Baryon","Eta","Xi0","Xic0",
+                  "Omegac0","Xim","JPsi","Psi2S"]
 ## Get histos
 inhistos = {}
 outhistos={}
@@ -222,6 +234,11 @@ for f in yodafiles:
             if("_1" in aopath and "Omega" in file) :
                 outhistos[aopath] = ao
             elif("_2" in aopath and "Phi" in file) :
+                outhistos[aopath] = ao
+        elif("BABAR_2006_I719581" in aopath) :
+            if("d02" in aopath and "Omega" in file) :
+                outhistos[aopath] = ao
+            elif("d01" in aopath and "Xi" in file) :
                 outhistos[aopath] = ao
         else:
             outhistos[aopath] = ao

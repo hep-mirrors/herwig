@@ -9,3 +9,5 @@ set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/Ev
 
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1216515
+# BABAR Xi_c production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
