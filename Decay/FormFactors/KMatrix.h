@@ -54,6 +54,11 @@ public:
   virtual boost::numeric::ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false) = 0;
 
   /**
+   *   The \f$\rho\f$ matrix
+   */
+  virtual boost::numeric::ublas::matrix<Complex> rho(Energy2 s);
+  
+  /**
    *  Vector containing the locations of the poles
    */
   const vector<Energy2> & poles() const {return poles_;}
@@ -84,6 +89,18 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
 private:
 
   /**
@@ -108,6 +125,43 @@ private:
    *  The positions of the poles
    */
   vector<Energy2> poles_;
+
+private:
+
+  /**
+   *  Common masses for the \f$\rho\f$ matrix
+   */
+  //@{
+  /**
+   *   The charged pion mass
+   */
+  Energy mPiPlus_;
+
+  /**
+   *   The neutra; pion mass
+   */
+  Energy mPi0_;
+
+  /**
+   *   The charged kaon mass
+   */
+  Energy mKPlus_;
+
+  /**
+   *   The neutral kaon mass
+   */
+  Energy mK0_;
+
+  /**
+   *  The \f$\eta\f$ mass
+   */
+  Energy mEta_;
+
+  /**
+   *  The \f$\eta^\prime\f$ mass
+   */
+  Energy mEtaPrime_;
+  //@}
 };
 
 }
