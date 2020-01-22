@@ -45,3 +45,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CLEO_2005_I1649168
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Onium_PiPi_Decay
 #insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_Semi_Leptonic_Decay
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1992_I319102
+# ARGUS charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1991_I315059
+# BELLE B0 -> D* semi-leptonic
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2017_I1512299
