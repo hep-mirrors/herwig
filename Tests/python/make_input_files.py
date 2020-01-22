@@ -365,21 +365,15 @@ elif(collider=="EE") :
             process = StringBuilder("create Herwig::MEee2Higgs2SM /Herwig/MatrixElements/MEee2Higgs2SM\n")
             process+=insert_ME("MEee2Higgs2SM","Gluon","Allowed")
         else :
-            if(parameterName=="10.58-res") :
-                process += ME_Upsilon
-            elif(parameterName=="10.58") :
-                process += ME_Upsilon
-                process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
-            else :
-                process = StringBuilder(insert_ME("MEee2gZ2qq"))
-                try :
-                    ecms = float(parameterName)
-                    if(ecms<=3.75) :
-                        process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 3\n"
-                    elif(ecms<=10.6) :
-                        process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
-                except :
-                    pass
+            process = StringBuilder(insert_ME("MEee2gZ2qq"))
+            try :
+                ecms = float(parameterName)
+                if(ecms<=3.75) :
+                    process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 3\n"
+                elif(ecms<=10.6) :
+                    process+= "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
+            except :
+                pass
     elif(simulation=="Powheg") :
         process = StringBuilder()
         try :

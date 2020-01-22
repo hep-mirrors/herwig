@@ -6,14 +6,7 @@ set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.99
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
-create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
-set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
-set /Herwig/MatrixElements/MEUpsilon:Coupling 96.72794
-set /Herwig/MatrixElements/SubProcess:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
-# BELLE charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2001_S4598261
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S6895344
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2003_I593379
+# BELLE distributions
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2019_I1718551
-# Babar charm hadron production
+# BABAR Xi_c production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
