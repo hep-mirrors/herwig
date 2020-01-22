@@ -72,7 +72,7 @@ void KPiIThreeHalfFOCUSKMatrix::doinit() {
   sNorm_ = sqr(mK)+sqr(mpi);
 }
 
-boost::numeric::ublas::matrix<double> KPiIThreeHalfFOCUSKMatrix::K(Energy2 s) {
+boost::numeric::ublas::matrix<double> KPiIThreeHalfFOCUSKMatrix::K(Energy2 s,bool) {
   double st = s/sNorm_-1.;
   double param=1.;
   boost::numeric::ublas::matrix<double> output =

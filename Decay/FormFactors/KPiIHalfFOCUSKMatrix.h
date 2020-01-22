@@ -30,8 +30,10 @@ public:
 
   /**
    *  Compute the K-matrix for a given scale
+   * @param s The scale
+   * @param Whether or not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
    */
-  virtual boost::numeric::ublas::matrix<double> K(Energy2 s);
+  virtual boost::numeric::ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false);
 
 public:
 

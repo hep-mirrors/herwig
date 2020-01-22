@@ -76,20 +76,20 @@ void KPiIHalfFOCUSKMatrix::doinit() {
   sNorm_ = sqr(mK)+sqr(mpi);
 }
 
-boost::numeric::ublas::matrix<double> KPiIHalfFOCUSKMatrix::K(Energy2 s) {
+boost::numeric::ublas::matrix<double> KPiIHalfFOCUSKMatrix::K(Energy2 s, bool includePoles) {
   double st = s/sNorm_-1.;
   double pre = (s-sHalf_)/sNorm_;
-  Energy2 denom = poles()[0]-s;
+  Energy2 denom = !includePoles ? poles()[0]-s : poles()[0];
   boost::numeric::ublas::matrix<double> output =
     boost::numeric::ublas::zero_matrix<double>(2,2);
   output(0,0) = g_[0]*g_[0]/denom;
   output(0,1) = g_[0]*g_[1]/denom;
   output(1,1) = g_[1]*g_[1]/denom;
-  double param=1.;
+  double param = !includePoles ? 1. : (1.-s/poles()[0]);
   for(unsigned int ix=0;ix<C11_.size();++ix) {
     output(0,0) += C11_[ix]*param;
-    output(1,1)+= C22_[ix]*param;
-    output(0,1)+= C12_[ix]*param;
+    output(1,1) += C22_[ix]*param;
+    output(0,1) += C12_[ix]*param;
     param *= st;
   }
   output(1,0) = output(0,1);
