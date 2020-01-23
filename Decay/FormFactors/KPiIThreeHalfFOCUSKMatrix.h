@@ -33,7 +33,7 @@ public:
    * @param s The scale
    * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
    */
-  virtual boost::numeric::ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false);
+  virtual boost::numeric::ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false) const;
 
 public:
 

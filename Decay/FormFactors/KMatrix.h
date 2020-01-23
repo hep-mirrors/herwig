@@ -11,7 +11,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 namespace Herwig {
-
+namespace ublas = boost::numeric::ublas;
 using namespace ThePEG;
 
 /**
@@ -51,17 +51,25 @@ public:
    * @param s The scale
    * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
    */
-  virtual boost::numeric::ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false) = 0;
+  virtual ublas::matrix<double> K(Energy2 s, bool multiplyByPoles=false) const = 0;
 
   /**
    *   The \f$\rho\f$ matrix
    */
-  virtual boost::numeric::ublas::matrix<Complex> rho(Energy2 s);
+  virtual ublas::matrix<Complex> rho(Energy2 s) const;
   
   /**
    *  Vector containing the locations of the poles
    */
   const vector<Energy2> & poles() const {return poles_;}
+
+  /**
+   *  Compute the amplitdes given the \f$P\f$-vector
+   * @param Whether ot not to multiply by \f$\prod_i(1-s/m^2_i\f$ to regularise the poles
+   */
+  virtual ublas::vector<Complex>
+  amplitudes(Energy2 s, ublas::vector<Complex> pVector,
+	     bool multiplyByPoles=false) const;
   
 public:
 

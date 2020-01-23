@@ -14,6 +14,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <boost/numeric/ublas/banded.hpp>
+#include <boost/numeric/ublas/lu.hpp>
 
 using namespace Herwig;
 
@@ -70,9 +71,9 @@ namespace {
   }
 }
 
-boost::numeric::ublas::matrix<Complex> KMatrix::rho(Energy2 s) {
+ublas::matrix<Complex> KMatrix::rho(Energy2 s) const {
   size_t msize = channels_.size();
-  boost::numeric::ublas::diagonal_matrix<Complex> rho(msize,msize);
+  ublas::diagonal_matrix<Complex> rho(msize,msize);
   for(unsigned int iChan=0;iChan<msize;++iChan) {
     double val(0);
     switch (channels_[iChan]) {
@@ -97,4 +98,30 @@ boost::numeric::ublas::matrix<Complex> KMatrix::rho(Energy2 s) {
       rho(iChan,iChan) = Complex(0.,1.)*sqrt(-val);
   }
   return rho;
+}
+
+ublas::vector<Complex> KMatrix::
+amplitudes(Energy2 s, ublas::vector<Complex> pVector, bool multiplyByPoles) const {
+  static const Complex ii(0.,1.);
+  const ublas::identity_matrix<Complex> I(channels_.size());
+  double fact(1.);
+  if(multiplyByPoles) {
+    for (Energy2 pole : poles_ ) fact *= 1.-s/pole;
+  }
+  // matrix for which we need the inverse
+  ublas::matrix<Complex> m = fact*I-ii*prod(K(s,multiplyByPoles),rho(s));
+  // create a permutation matrix for the LU-factorization
+  ublas::permutation_matrix<std::size_t>  pm(m.size1());
+  // perform LU-factorization
+  int res = ublas::lu_factorize(m,pm);
+  if( res != 0 ) {
+    cerr << "problem with factorization\n";
+    exit(1);
+  }
+  // matrix for the output
+  ublas::matrix<Complex> inverse = ublas::identity_matrix<Complex>(m.size1());
+  // backsubstitute to get the inverse
+  ublas::lu_substitute(m, pm, inverse);
+  // compute the amplitudes
+  return prod(inverse,pVector);
 }
