@@ -24,6 +24,7 @@ ScalarMesonFactorizedDecayer.h \
 ScalarVectorVectorDecayer.h  \
 DtoKPiPiCLEO.h \
 DtoKPiPiE691.h \
+DtoKPiPiFOCUS.h \
 DtoKPiPiMarkIII.h 
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
@@ -43,4 +44,5 @@ ScalarMesonFactorizedDecayer.cc \
 ScalarVectorVectorDecayer.cc \
 DtoKPiPiCLEO.cc \
 DtoKPiPiE691.cc\
+DtoKPiPiFOCUS.cc\
 DtoKPiPiMarkIII.cc

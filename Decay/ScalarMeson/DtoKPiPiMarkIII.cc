@@ -29,9 +29,9 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
 Complex DtoKPiPiMarkIII::amplitude(bool rho, Energy mD, 
-					  Energy mA , Energy mB , Energy mC ,
-					  Energy mAB, Energy mAC, Energy mBC,
-					  Energy mres, Energy wres) const {
+				   Energy mA , Energy mB , Energy mC ,
+				   Energy mAB, Energy mAC, Energy mBC,
+				   Energy mres, Energy wres) const {
   InvEnergy radius = rho ? _rrho : _rKstar;
   Energy  pAB  = Kinematics::pstarTwoBodyDecay(mAB ,mA,mB);
   Energy  pR   = Kinematics::pstarTwoBodyDecay(mres,mA,mB);

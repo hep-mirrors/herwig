@@ -110,18 +110,24 @@ amplitudes(Energy2 s, ublas::vector<Complex> pVector, bool multiplyByPoles) cons
   }
   // matrix for which we need the inverse
   ublas::matrix<Complex> m = fact*I-ii*prod(K(s,multiplyByPoles),rho(s));
-  // create a permutation matrix for the LU-factorization
-  ublas::permutation_matrix<std::size_t>  pm(m.size1());
-  // perform LU-factorization
-  int res = ublas::lu_factorize(m,pm);
-  if( res != 0 ) {
-    cerr << "problem with factorization\n";
-    exit(1);
-  }
-  // matrix for the output
+  // inverse matrix
   ublas::matrix<Complex> inverse = ublas::identity_matrix<Complex>(m.size1());
-  // backsubstitute to get the inverse
-  ublas::lu_substitute(m, pm, inverse);
+  // just a number
+  if(m.size1()==1) {
+    inverse(0,0) = 1./m(0,0);
+  }
+  else {
+    // create a permutation matrix for the LU-factorization
+    ublas::permutation_matrix<std::size_t>  pm(m.size1());
+    // perform LU-factorization
+    int res = ublas::lu_factorize(m,pm);
+    if( res != 0 ) {
+      cerr << "problem with factorization\n";
+      exit(1);
+    }
+    // backsubstitute to get the inverse
+    ublas::lu_substitute(m, pm, inverse);
+  }
   // compute the amplitudes
   return prod(inverse,pVector);
 }
