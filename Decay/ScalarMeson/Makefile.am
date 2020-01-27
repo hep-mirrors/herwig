@@ -25,7 +25,9 @@ ScalarVectorVectorDecayer.h  \
 DtoKPiPiCLEO.h \
 DtoKPiPiE691.h \
 DtoKPiPiFOCUS.h \
-DtoKPiPiMarkIII.h 
+DtoKPiPiMarkIII.h \
+WeakDalitzDecay.h\
+CLEOKPiPiDalitz.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -45,4 +47,6 @@ ScalarVectorVectorDecayer.cc \
 DtoKPiPiCLEO.cc \
 DtoKPiPiE691.cc\
 DtoKPiPiFOCUS.cc\
-DtoKPiPiMarkIII.cc
+DtoKPiPiMarkIII.cc \
+WeakDalitzDecay.cc\
+CLEOKPiPiDalitz.cc
