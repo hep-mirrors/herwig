@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the CLEOKPiPiDalitz class.
+// functions of the CLEODptoKmPipPipDalitz class.
 //
 
-#include "CLEOKPiPiDalitz.h"
+#include "CLEODptoKmPipPipDalitz.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -17,17 +17,18 @@
 
 using namespace Herwig;
 
-CLEOKPiPiDalitz::CLEOKPiPiDalitz() {}
+CLEODptoKmPipPipDalitz::CLEODptoKmPipPipDalitz() : WeakDalitzDecay(5./GeV,1.5/GeV,false)
+{}
 
-IBPtr CLEOKPiPiDalitz::clone() const {
+IBPtr CLEODptoKmPipPipDalitz::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr CLEOKPiPiDalitz::fullclone() const {
+IBPtr CLEODptoKmPipPipDalitz::fullclone() const {
   return new_ptr(*this);
 }
 
-void CLEOKPiPiDalitz::doinit() {
+void CLEODptoKmPipPipDalitz::doinit() {
   WeakDalitzDecay::doinit();
   static const double degtorad = Constants::pi/180.;
   // create the resonances
@@ -48,31 +49,31 @@ void CLEOKPiPiDalitz::doinit() {
 		 getParticleData(ParticleID::piplus)});
 }
 
-void CLEOKPiPiDalitz::doinitrun() {
+void CLEODptoKmPipPipDalitz::doinitrun() {
   WeakDalitzDecay::doinitrun();
 }
 
-void CLEOKPiPiDalitz::persistentOutput(PersistentOStream & os) const {
+void CLEODptoKmPipPipDalitz::persistentOutput(PersistentOStream & os) const {
 }
 
-void CLEOKPiPiDalitz::persistentInput(PersistentIStream & is, int) {
+void CLEODptoKmPipPipDalitz::persistentInput(PersistentIStream & is, int) {
 }
 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<CLEOKPiPiDalitz,WeakDalitzDecay>
-describeHerwigCLEOKPiPiDalitz("Herwig::CLEOKPiPiDalitz", "HwSMDecay.so");
+DescribeClass<CLEODptoKmPipPipDalitz,WeakDalitzDecay>
+describeHerwigCLEODptoKmPipPipDalitz("Herwig::CLEODptoKmPipPipDalitz", "HwSMDecay.so");
 
-void CLEOKPiPiDalitz::Init() {
+void CLEODptoKmPipPipDalitz::Init() {
 
-  static ClassDocumentation<CLEOKPiPiDalitz> documentation
-    ("There is no documentation for the CLEOKPiPiDalitz class");
+  static ClassDocumentation<CLEODptoKmPipPipDalitz> documentation
+    ("There is no documentation for the CLEODptoKmPipPipDalitz class");
 
 }
 
 
-int CLEOKPiPiDalitz::modeNumber(bool & cc,tcPDPtr parent,
+int CLEODptoKmPipPipDalitz::modeNumber(bool & cc,tcPDPtr parent,
 				const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D+
@@ -92,7 +93,7 @@ int CLEOKPiPiDalitz::modeNumber(bool & cc,tcPDPtr parent,
   else return -1;
 }
 
-Complex CLEOKPiPiDalitz::amplitude(int ichan) const {
+Complex CLEODptoKmPipPipDalitz::amplitude(int ichan) const {
   Complex output(0.);
   unsigned int imin=0, imax(nRes());
   if(ichan>=0) {

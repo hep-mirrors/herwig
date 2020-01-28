@@ -112,7 +112,7 @@ public:
   /**
    * The default constructor.
    */
-  WeakDalitzDecay(InvEnergy rP=5./GeV, InvEnergy rR=1.5/GeV);
+  WeakDalitzDecay(InvEnergy rP=5./GeV, InvEnergy rR=1.5/GeV, bool useResonanceMass=false);
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -236,10 +236,16 @@ private:
   vector<DalitzResonance> resonances_;
 
   /**
-   *  Spin density matrix
+   *  Choice of the mass to use in the denominator of the expressions
    */
-  mutable RhoDMatrix _rho;
-
+  bool useResonanceMass_;
+  
+private:
+  
+  /**
+   *   Parameters for the phase-space sampling
+   */
+  //@{
   /**
    *  Maximum weight for the decay
    */
@@ -249,7 +255,8 @@ private:
    *  Weights for the phase-space channels
    */
   vector<double> weights_;
-
+  //@}
+  
 private :
 
   /**
@@ -271,6 +278,11 @@ private :
    */
   mutable Energy m2_[3][3];
   //@}
+
+  /**
+   *  Spin density matrix
+   */
+  mutable RhoDMatrix _rho;
 };
 
 }

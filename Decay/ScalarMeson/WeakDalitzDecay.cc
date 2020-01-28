@@ -15,15 +15,16 @@
 
 using namespace Herwig;
 
-WeakDalitzDecay::WeakDalitzDecay(InvEnergy rP, InvEnergy rR) : rParent_(rP), rResonance_(rR), maxWgt_(1.)
+WeakDalitzDecay::WeakDalitzDecay(InvEnergy rP, InvEnergy rR, bool useResonanceMass)
+  : rParent_(rP), rResonance_(rR), useResonanceMass_(useResonanceMass), maxWgt_(1.)
 {}
 
 void WeakDalitzDecay::persistentOutput(PersistentOStream & os) const {
-  os << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV) << resonances_ << maxWgt_ << weights_;
+  os << resonances_ << maxWgt_ << weights_;
 }
 
 void WeakDalitzDecay::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV) >> resonances_ >> maxWgt_ >> weights_;
+  is >> resonances_ >> maxWgt_ >> weights_;
 }
 
 // The following static variable is needed for the type
@@ -81,13 +82,7 @@ double WeakDalitzDecay::me2(const int ichan, const Particle & part,
       m2_[iy][ix]=m2_[ix][iy];
     }
   }
-  // m2_[0][1]=1.41425 *GeV;
-  // m2_[0][2]=0.887522*GeV;
-  // m2_[1][2]=0.995171*GeV;
-  // m2_[1][0]=1.41425 *GeV;
-  // m2_[2][0]=0.887522*GeV;
-  // m2_[2][1]=0.995171*GeV;
-  
+  // compute the amplitude (in inherited class)
   Complex amp = amplitude(ichan);
   // now compute the matrix element
   (*ME())(0,0,0,0)=amp;
@@ -105,6 +100,7 @@ void WeakDalitzDecay::createMode(tPDPtr in, tPDVector out) {
     resetIntermediate(res.resonance,res.mass,res.width);
     ++ix;
   }
+  cerr << *mode << "\n";
   addMode(mode);
 }
 
@@ -130,6 +126,9 @@ Complex WeakDalitzDecay::resAmp(unsigned int i, bool gauss) const {
   unsigned int power(1);
   double r1A(rResonance_*pR),r1B(rResonance_*pAB );
   double r2A(rParent_   *pD),r2B(rParent_   *pDAB);
+  // mass for thre denominator
+  Energy mDen = useResonanceMass_ ? mR : m2_[d1][d2];
+  // Blatt-Weisskopf factors and spin piece
   switch (resonances_[i].resonance->iSpin()) {
   case PDT::Spin0:
     if(gauss) {
@@ -142,37 +141,20 @@ Complex WeakDalitzDecay::resAmp(unsigned int i, bool gauss) const {
     fD=sqrt( (1. + sqr(r2A)) / (1. + sqr(r2B)) );
     power=3;
     output *= fR*fD*(sqr(m2_[d2][sp])-sqr(m2_[d1][sp])
-		  + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(m2_[d1][d2]) )/GeV2;
+		  + (  sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/sqr(mDen) )/GeV2;
     break;
   case PDT::Spin2:
     fR = sqrt( (9. + sqr(r1A)*(3.+sqr(r1A))) / (9. + sqr(r1B)*(3.+sqr(r1B))));
     fD = sqrt( (9. + sqr(r2A)*(3.+sqr(r2A))) / (9. + sqr(r2B)*(3.+sqr(r2B))));
     power=5;
-    output *= fR*fD/GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(m2_[d1][d2]))) -
-				(sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/m2_[d1][d2]))*
-				(sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/m2_[d1][d2]))/3.);
-
-    // cerr << "testing pieces B " << 1./GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(m2_[d1][d2]))) +
-    // 						  (sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/m2_[d1][d2]))*
-    // 						  (sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/m2_[d1][d2]))/3.) << "\n";
-    // cerr << "testing pieces C " << 1./GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(m2_[d1][d2])))) << "\n";
-    
-    // cerr << "testing pieces D " << 1./GeV2/GeV2*((sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/m2_[d1][d2]))*
-    // 						  (sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/m2_[d1][d2]))/3.) << "\n";
-    
-    
-    
+    output *= fR*fD/GeV2/GeV2*( sqr( sqr(m2_[d2][sp]) - sqr(m2_[d1][sp]) +(sqr(mD_)-sqr(mOut_[sp]))*(sqr(mOut_[d1])-sqr(mOut_[d2]))/(sqr(mDen))) -
+				(sqr(m2_[d1][d2])-2*      sqr(mD_)-2*sqr(mOut_[sp]) + sqr((sqr(      mD_) - sqr(mOut_[sp]))/mDen))*
+				(sqr(m2_[d1][d2])-2*sqr(mOut_[d1])-2*sqr(mOut_[d2]) + sqr((sqr(mOut_[d1]) - sqr(mOut_[d2]))/mDen))/3.);
     break;
   default :
     assert(false);
   }
+  // multiply by Breit-Wigner piece and return
   Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
-
-  // cerr << "testing pieces A " << fR*fD << " " << GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*Complex(0.,1.)) << "\n";
-
-  // std::cerr << " in amp   " << fR << " " << fD << " " << mR/GeV << " " << gam/GeV << "\n";
-  // std::cerr << " in amp   " << pAB/GeV << " " << pR/GeV << " " << pD/GeV << " " << pDAB/GeV << "\n";
-  // std::cerr << " in amp C " << output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*Complex(0.,1.)) << "\n";
-  
   return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*Complex(0.,1.));
 }

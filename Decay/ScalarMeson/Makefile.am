@@ -27,7 +27,8 @@ DtoKPiPiE691.h \
 DtoKPiPiFOCUS.h \
 DtoKPiPiMarkIII.h \
 WeakDalitzDecay.h\
-CLEOKPiPiDalitz.h
+CLEODptoKmPipPipDalitz.h\
+CLEOD0toKmPipPi0.h
 
 DIR_CC_FILES = $(addprefix $(srcdir)/,$(ALL_CC_FILES))
 ALL_CC_FILES = \
@@ -49,4 +50,5 @@ DtoKPiPiE691.cc\
 DtoKPiPiFOCUS.cc\
 DtoKPiPiMarkIII.cc \
 WeakDalitzDecay.cc\
-CLEOKPiPiDalitz.cc
+CLEODptoKmPipPipDalitz.cc\
+CLEOD0toKmPipPi0.cc
