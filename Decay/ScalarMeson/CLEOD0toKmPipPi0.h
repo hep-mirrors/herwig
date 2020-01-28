@@ -12,7 +12,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the CLEOD0toKmPipPi0 class.
+ * The CLEOD0toKmPipPi0 class implements model of CLEO for the decay 
+ * \f$D^0\to K^-\pi^+\pi^0\f$, Phys. Rev. D63 (2001) 092001.
  *
  * @see \ref CLEOD0toKmPipPi0Interfaces "The interfaces"
  * defined for CLEOD0toKmPipPi0.
@@ -36,22 +37,6 @@ public:
 			 const tPDVector & children) const;
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.

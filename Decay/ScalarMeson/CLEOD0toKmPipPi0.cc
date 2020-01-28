@@ -28,22 +28,20 @@ IBPtr CLEOD0toKmPipPi0::fullclone() const {
   return new_ptr(*this);
 }
 
-void CLEOD0toKmPipPi0::persistentOutput(PersistentOStream & ) const {
-}
-
-void CLEOD0toKmPipPi0::persistentInput(PersistentIStream & , int) {
-}
-
-
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeClass<CLEOD0toKmPipPi0,WeakDalitzDecay>
+DescribeNoPIOClass<CLEOD0toKmPipPi0,WeakDalitzDecay>
 describeHerwigCLEOD0toKmPipPi0("Herwig::CLEOD0toKmPipPi0", "HwSMDecay.so");
 
 void CLEOD0toKmPipPi0::Init() {
 
   static ClassDocumentation<CLEOD0toKmPipPi0> documentation
-    ("There is no documentation for the CLEOD0toKmPipPi0 class");
+    ("The CLEOD0toKmPipPi0 class implements the model of CLEO for "
+     "D0 -> K- pi+ pi0, Phys. Rev. D63 (2001) 092001.",
+     "The CLEO fit of \\cite{Kopp:2000gv} was"
+     " used for the decay $D^0\\to K^-\\pi^+\\pi^0$.",
+     "\\bibitem{Kopp:2000gv} S.~Kopp {\\it et al.}  [CLEO Collaboration], "
+     "Phys.\\ Rev.\\  D {\\bf 63} (2001) 092001 [arXiv:hep-ex/0011065].");
 
 }
 
