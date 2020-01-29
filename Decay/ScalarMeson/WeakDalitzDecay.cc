@@ -100,7 +100,6 @@ void WeakDalitzDecay::createMode(tPDPtr in, tPDVector out) {
     resetIntermediate(res.resonance,res.mass,res.width);
     ++ix;
   }
-  cerr << *mode << "\n";
   addMode(mode);
 }
 
