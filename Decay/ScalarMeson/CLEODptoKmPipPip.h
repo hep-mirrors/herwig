@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef Herwig_CLEODptoKmPipPipDalitz_H
-#define Herwig_CLEODptoKmPipPipDalitz_H
+#ifndef Herwig_CLEODptoKmPipPip_H
+#define Herwig_CLEODptoKmPipPip_H
 //
-// This is the declaration of the CLEODptoKmPipPipDalitz class.
+// This is the declaration of the CLEODptoKmPipPip class.
 //
 
 #include "WeakDalitzDecay.h"
@@ -12,19 +12,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The CLEODptoKmPipPipDalitz class implements the CLEO model from arXiv:0802.4214 for \f$D^+\toK^-\pi^+\pi^+\f$
+ * The CLEODptoKmPipPip class implements the CLEO model from arXiv:0802.4214 for \f$D^+\toK^-\pi^+\pi^+\f$
  *
- * @see \ref CLEODptoKmPipPipDalitzInterfaces "The interfaces"
- * defined for CLEODptoKmPipPipDalitz.
+ * @see \ref CLEODptoKmPipPipInterfaces "The interfaces"
+ * defined for CLEODptoKmPipPip.
  */
-class CLEODptoKmPipPipDalitz: public WeakDalitzDecay {
+class CLEODptoKmPipPip: public WeakDalitzDecay {
 
 public:
 
   /**
    * The default constructor.
    */
-  CLEODptoKmPipPipDalitz();
+  CLEODptoKmPipPip();
   
   /**
    * Which of the possible decays is required
@@ -109,10 +109,10 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  CLEODptoKmPipPipDalitz & operator=(const CLEODptoKmPipPipDalitz &);
+  CLEODptoKmPipPip & operator=(const CLEODptoKmPipPip &);
 
 };
 
 }
 
-#endif /* Herwig_CLEODptoKmPipPipDalitz_H */
+#endif /* Herwig_CLEODptoKmPipPip_H */

@@ -866,16 +866,16 @@ double DtoKPiPiCLEO::me2(const int ichan, const Particle & part,
   else {
     if(ichan<0) {
       amp = _c2NR
-	+_c2Kstarm     *amplitude(1,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK892B ,_wK892B )
-	+Complex(_c2K14300/GeV2)*amplitude(0,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300,_wK14300)
-	+Complex(_c2K14302*GeV2)*amplitude(2,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302,_wK14302)
-	+_c2K1680      *amplitude(1,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK1680 ,_wK1680 )
-	+_c2Kstarp     *amplitude(1,false ,mD,mA,mB,mC,mAB,mAC,mBC,_mK892B ,_wK892B )
-	+_c2rho        *amplitude(1,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mrhoB  ,_wrhoB  )
-	+_c2omega      *amplitude(1,false ,mD,mB,mC,mA,mBC,mAB,mAC,_momega ,_womega )
-	+Complex(_c2f980/GeV2  )*amplitude(0,_f0opt,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )
-	+Complex(_c2f1370/GeV2 )*amplitude(0,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )
-	+Complex(_c2f2*GeV2    )*amplitude(2,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf2    ,_wf2    );
+      	+_c2Kstarm     *amplitude(1,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK892B ,_wK892B )
+      	+Complex(_c2K14300/GeV2)*amplitude(0,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300,_wK14300)
+      	+Complex(_c2K14302*GeV2)*amplitude(2,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302,_wK14302)
+      	+_c2K1680      *amplitude(1,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK1680 ,_wK1680 )
+      	+_c2Kstarp     *amplitude(1,false ,mD,mA,mB,mC,mAB,mAC,mBC,_mK892B ,_wK892B )
+      	+_c2rho        *amplitude(1,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mrhoB  ,_wrhoB  )
+      	+_c2omega      *amplitude(1,false ,mD,mB,mC,mA,mBC,mAB,mAC,_momega ,_womega )
+      	+Complex(_c2f980/GeV2  )*amplitude(0,_f0opt,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )
+      	+Complex(_c2f1370/GeV2 )*amplitude(0,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )
+      	+Complex(_c2f2*GeV2    )*amplitude(2,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf2    ,_wf2    );
     }
     else if(ichan==0) {
       amp=_c2Kstarp     *amplitude(1,false ,mD,mA,mB,mC,mAB,mAC,mBC,_mK892B ,_wK892B );
@@ -1020,9 +1020,9 @@ void DtoKPiPiCLEO::doinitrun() {
 }
 
 Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
-					Energy mA , Energy mB , Energy mC ,
-					Energy mAB, Energy mAC, Energy mBC,
-					Energy mres, Energy wres) const{
+				Energy mA , Energy mB , Energy mC ,
+				Energy mAB, Energy mAC, Energy mBC,
+				Energy mres, Energy wres) const{
   // compute the production momenta
   Energy pDR  = Kinematics::pstarTwoBodyDecay(mD,mres,mC);
   Energy pDAB = Kinematics::pstarTwoBodyDecay(mD,mAB ,mC);

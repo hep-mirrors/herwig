@@ -91,7 +91,7 @@ int CLEOD0toKmPipPi0::modeNumber(bool & cc,tcPDPtr parent,
 
 Complex CLEOD0toKmPipPi0::amplitude(int ichan) const {
   Complex output(0.);
-  unsigned int imin=0, imax(nRes());
+  unsigned int imin=0, imax(resonances().size());
   if(ichan>=0) {
     imin=ichan;
     imax=imin+1;

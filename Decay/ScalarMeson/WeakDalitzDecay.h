@@ -183,9 +183,23 @@ protected:
   Complex resAmp(unsigned int i,bool gauss=false) const;
 
   /**
-   *   Number of resonances
+   *  Access to the resonances
    */
-  unsigned int nRes()  const {return resonances_.size();}
+  const vector<DalitzResonance> & resonances() const {return resonances_;}
+
+  /**
+   *  Access to the invariants
+   */
+  const Energy & mInv(unsigned int i,unsigned int j) const {
+    return m2_[i][j];
+  }
+
+  /**
+   *  Masses of the children
+   */
+  const Energy & mOut(unsigned int i) const {
+    return mOut_[i];
+  }
   
 protected:
 
