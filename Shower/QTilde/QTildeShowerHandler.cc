@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QTildeShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2019 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -41,7 +41,7 @@
 #include "Herwig/Shower/QTilde/Kinematics/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig/Shower/QTilde/Kinematics/Decay_QTildeShowerKinematics1to2.h"
-#include "Herwig/MatrixElement/MEMinBias.h"
+
 
 using namespace Herwig;
 
@@ -496,6 +496,7 @@ void QTildeShowerHandler::doinitrun() {
 }
   
 void QTildeShowerHandler::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
+  _intrinsic.clear();
   if ( !ipTon() || !doISR() ) return;
   // don't do anything for the moment for secondary scatters
   if( !firstInteraction() ) return;
@@ -701,7 +702,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // update the children
   particle->showerKinematics()->
-    updateChildren(particle, children,fb.type);
+    updateChildren(particle, children,_evolutionScheme,fb.type);
   // update number of emissions
   ++_nfs;
   if(_limitEmissions!=0) {
@@ -804,13 +805,13 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     }
   }
   particle->showerKinematics()->
-    updateChildren(newParent, theChildren,bb.type);
+    updateChildren(newParent, theChildren,_evolutionScheme,bb.type);
   if(_limitEmissions!=0) {
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return true;
   }
   // perform the shower of the final-state particle
-  timeLikeShower(otherChild,type,Branching(),true);
+  //timeLikeShower(otherChild,type,Branching(),true);
   updateHistory(otherChild);
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
@@ -905,7 +906,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // updateChildren the children
   particle->showerKinematics()->
-    updateChildren(particle, children, fb.type);
+    updateChildren(particle, children,_evolutionScheme,fb.type);
   // select branchings for children
   fc[0] = selectSpaceLikeDecayBranching(children[0],maxScales,minmass,
 					type,HardBranchingPtr());
@@ -1551,7 +1552,7 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // update the children
   particle->showerKinematics()->
-    updateChildren(particle, children,fb.type);
+    updateChildren(particle, children,_evolutionScheme,fb.type);
   // select branchings for children
   if(!fc[0].kinematics) {
     // select branching for first particle
@@ -1715,7 +1716,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
       }
     }
     particle->showerKinematics()->
-      updateChildren( newParent, theChildren,bb.type);
+      updateChildren( newParent, theChildren,_evolutionScheme,bb.type);
     if(hardOnly()) return true;
     // perform the shower of the final-state particle
     if( timelike->children().empty() ) {
@@ -1762,7 +1763,7 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
     }
   }
   particle->showerKinematics()->
-    updateChildren( newParent, theChildren, bb.type);
+    updateChildren( newParent, theChildren,_evolutionScheme, bb.type);
   // perform the shower of the final-state particle
   timeLikeShower( otherChild , type,Branching(),true);
   updateHistory(otherChild);
@@ -1790,7 +1791,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
   children = createTimeLikeChildren(particle,fb.ids);
   // updateChildren the children
   particle->showerKinematics()->
-    updateChildren(particle, children, fb.type);
+    updateChildren(particle, children,_evolutionScheme, fb.type);
   // select branchings for children
   if(!fc[0].kinematics) {
     if(children[0]->id()==particle->id()) {
@@ -2071,10 +2072,8 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   // specific stuff for hard processes and decays
   Energy minmass(ZERO), mIn(ZERO);
   // hard process generate the intrinsic p_T once and for all
-  bool minBias = dynamic_ptr_cast<Ptr<MEMinBias>::ptr>(_hardme);
   if(hard) {
-    _intrinsic.clear();
-    if(!minBias) generateIntrinsicpT(particlesToShower);
+    generateIntrinsicpT(particlesToShower);
   }
   // decay compute the minimum mass of the final-state
   else {
@@ -2121,8 +2120,6 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   unsigned int ntry(0);
   bool reconstructed = false;
   do {
-    // type of recon to use
-    bool generalRecon = minBias >> (switchRecon && ntry>maximumTries()/2);
     // clear results of last attempt if needed
     if(ntry!=0) {
       currentTree()->clear();
@@ -2216,7 +2213,8 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
     // do the kinematic reconstruction, checking if it worked
     reconstructed = hard ?
       kinematicsReconstructor()->
-      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,generalRecon) :
+      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,
+			   switchRecon && ntry>maximumTries()/2) :
       kinematicsReconstructor()->
       reconstructDecayJets(currentTree(),interaction_);
     if(!reconstructed) continue;

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // IS_QTildeShowerKinematics1to2.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2019 The Herwig Collaboration
+// Copyright (C) 2002-2017 The Herwig Collaboration
 //
 // Herwig is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,6 +19,7 @@
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Kinematics/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Kinematics/KinematicHelpers.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 #include <cassert>
 
@@ -27,12 +28,58 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & children,
+		unsigned int pTscheme,
 		ShowerPartnerType) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();
   ShowerParticle::Parameters & child1 = children[1]->showerParameters();
   double cphi = cos(phi());
   double sphi = sin(phi());
+  //////////////////////////////////////////////////////////////////////////////////
+  ///////// GAVIN & SILVIA MODIFICATION ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+  Energy2 m02 = ZERO;
+  Energy2 m12 = ZERO;
+  // Time like children, which can be massive
+  IdList ids(1);
+  ids[0] =  children[1]->dataPtr();
+  Energy2 m22 = ZERO;
+  if (ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma) {
+    const vector<Energy> & onshellMasses = SudakovFormFactor()->virtualMasses(ids);
+    m22 =  sqr(onshellMasses[0]);
+  }
+
+  Energy2 pt2;
+  if(pTscheme==0) {
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
+					m12          ,m22,
+					m02          ,m22);
+  }
+  else if(pTscheme==1) {
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
+					m12          ,m22,
+					sqr(theParent->virtualMass()), sqr(children[1]->virtualMass()));
+  }
+  else if(pTscheme==2) {
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), sqr(theParent->virtualMass()),
+					m12          ,sqr(children[1]->virtualMass()),
+				        sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
+  }
+  else
+    assert(false);
+  
+  if(pt2>ZERO) {
+    pT(sqrt(pt2));
+  }
+  else {
+    pt2=ZERO;
+    pT(ZERO);
+  }
+  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), m02, m22);
+  theParent->virtualMass(sqrt(q2));
+  //////////////////////////////////////////////////////////////////////////////////
+  /////  END MODIFICATION //////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
 
   child1.alpha = (1.-z()) * parent.alpha;
 
@@ -50,7 +97,7 @@ updateChildren( const tShowerParticlePtr theParent,
 void IS_QTildeShowerKinematics1to2::
 updateParent(const tShowerParticlePtr parent, 
 	     const ShowerParticleVector & children,
-	     unsigned int ,
+	     unsigned int,
 	     ShowerPartnerType partnerType) const {
   // calculate the scales
   splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
