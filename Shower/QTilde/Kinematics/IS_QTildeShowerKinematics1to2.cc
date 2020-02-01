@@ -75,8 +75,8 @@ updateChildren( const tShowerParticlePtr theParent,
     pt2=ZERO;
     pT(ZERO);
   }
-  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), m02, m22);
-  theParent->virtualMass(sqrt(q2));
+  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
+  children[0]->virtualMass(sqrt(q2));
   //////////////////////////////////////////////////////////////////////////////////
   /////  END MODIFICATION //////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////
