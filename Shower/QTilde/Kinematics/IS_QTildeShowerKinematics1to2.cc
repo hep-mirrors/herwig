@@ -83,8 +83,12 @@ updateChildren( const tShowerParticlePtr theParent,
     pt2=ZERO;
     pT(ZERO);
   }
-  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
+  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), -sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
   // the virtuality is negative
+  if(q2/sqr(1_GeV) > 0.){
+      std::cout<<" virtuality of spacelike parton >0 !! ERROR!! Q2="<<q2/sqr(1_GeV)<<std::endl;
+      abort();
+    }
   children[0]->virtualMass(sqrt(-q2));
   //////////////////////////////////////////////////////////////////////////////////
   /////  END MODIFICATION //////////////////////////////////////////////////////////
