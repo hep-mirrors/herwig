@@ -111,8 +111,239 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  CLEOD0toK0PipPim & operator=(const CLEOD0toK0PipPim &);
+  CLEOD0toK0PipPim & operator=(const CLEOD0toK0PipPim &) = delete;
 
+private:
+
+  /**
+   *  Mass, Widths and related parameters
+   */
+  //@{
+  /**
+   *  Mass of the \f$\rho(770)\f$
+   */
+  Energy mrho_;
+
+  /**
+   *  Width of the \f$\rho(770)\f$
+   */
+  Energy wrho_;
+  
+  /**
+   *  Mass of the \f$\omega\f$
+   */
+  Energy momega_;
+
+  /**
+   *  Width of the \f$\omega\f$
+   */
+  Energy womega_;
+
+  /**
+   *  Mass of the \f$f_0(980)\f$
+   */
+  Energy mf980_;
+
+  /**
+   *  Width of the \f$f_0(980)\f$
+   */
+  Energy wf980_;
+
+  /**
+   * \f$g_\pi\f$ coupling for the \f$f_0(980)\f$ width
+   */
+  double gpi_;
+
+  /**
+   *\f$g_K\f$ coupling for the \f$f_0(980)\f$ width
+   */
+  double gK_;
+
+  /**
+   *  Option for handling the width of the \f$f_0(980)\f$
+   */
+  bool f0opt_;
+
+  /**
+   *  Mass of the \f$f_2(1270)\f$
+   */
+  Energy mf2_;
+
+  /**
+   *  Width of the \f$f_2(1270)\f$
+   */
+  Energy wf2_;
+
+  /**
+   *  Mass of the \f$f_0(1370)\f$
+   */
+  Energy mf1370_;
+
+  /**
+   *  Width of the \f$f_0(1370)\f$
+   */
+  Energy wf1370_;
+
+  /**
+   *  Mass of the \f$K^{*+}(892)\f$
+   */
+  Energy mK892_;
+
+  /**
+   *  Width of the \f$K^{*+}(892)\f$
+   */
+  Energy wK892_;
+  /**
+   *  Mass of the \f$K_0^*(1430)\f$
+   */
+  Energy mK14300_;
+
+  /**
+   *  Width of the \f$K_0^*(1430)\f$
+   */
+  Energy wK14300_;
+
+  /**
+   *  Mass of the \f$K_2^*(1430)\f$
+   */
+  Energy mK14302_;
+
+  /**
+   *  Width of the \f$K_2^*(1430)\f$
+   */
+  Energy wK14302_;
+
+  /**
+   *  Mass of the \f$K^*(1680)\f$
+   */
+  Energy mK1680_;
+
+  /**
+   *  Width of the \f$K^*(1680)\f$
+   */
+  Energy wK1680_;
+  //@}
+
+  /**
+   *  Magnitudes and phases of the amplitudes for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$ 
+   */
+  //@{
+  /**
+   *  Amplitude for the \f$K^{*+}\f$
+   */
+  double aKstarp_;
+
+  /**
+   *  Phase for the \f$K^{*+}\f$
+   */
+  double phiKstarp_;
+
+  /**
+   *  Amplitude for the \f$\rho^0(770)\f$
+   */
+  double arho_;
+
+  /**
+   *  Phase for the \f$\rho^0(770)\f$
+   */
+  double phirho_;
+
+  /**
+   *  Amplitude for the \f$\omega\f$
+   */
+  double aomega_;
+
+  /**
+   *  Phase for the \f$\omega\f$
+   */
+  double phiomega_;
+
+  /**
+   *  Amplitude for the \f$K^{*-}\f$
+   */
+  double aKstarm_;
+
+  /**
+   *  Phase for the \f$K^{*-}\f$
+   */
+  double phiKstarm_;
+
+  /**
+   *  Amplitude for the \f$f_0(980)\f$
+   */
+  Energy2 af980_;
+
+  /**
+   *  Phase for the \f$f_0(980)\f$
+   */
+  double phif980_;
+
+  /**
+   *  Amplitude for the \f$f_2(1270)\f$
+   */
+  InvEnergy2 af2_;
+
+  /**
+   *  Phase for the \f$f_2(1270)\f$
+   */
+  double phif2_;
+
+  /**
+   *  Amplitude for the \f$f_0(1370)\f$
+   */
+  Energy2 af1370_;
+
+  /**
+   *  Phase for the \f$f_0(1370)\f$
+   */
+  double phif1370_;
+
+  /**
+   *  Amplitude for the \f$K^*_0(1430)^-\f$
+   */
+  Energy2 aK14300_;
+
+  /**
+   *  Phase for the \f$K^*_0(1430)^-\f$
+   */
+  double phiK14300_;
+
+  /**
+   *  Amplitude for the \f$K^*_2(1430)^-\f$
+   */
+  InvEnergy2 aK14302_;
+
+  /**
+   *  Phase for the \f$K^*_2(1430)^-\f$
+   */
+  double phiK14302_;
+
+  /**
+   *  Amplitude for the \f$K^*(1680)^-\f$
+   */
+  double aK1680_;
+
+  /**
+   *  Phase for the \f$K^*(1680)^-\f$
+   */
+  double phiK1680_;
+
+  /**
+   *  Amplitude of the non-resonant component
+   */
+  double aNR_;
+
+  /**
+   *  Phase of the non=resonant component
+   */
+  double phiNR_;
+  
+  /**
+   *  Complex amplitude of the non-resonant component
+   */
+  Complex cNR_;
+  //@}
+  
 };
 
 }

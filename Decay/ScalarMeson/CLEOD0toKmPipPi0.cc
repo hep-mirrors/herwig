@@ -6,19 +6,36 @@
 
 #include "CLEOD0toKmPipPi0.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-CLEOD0toKmPipPi0::CLEOD0toKmPipPi0() : WeakDalitzDecay(5./GeV,1.5/GeV,true)
-{}
+CLEOD0toKmPipPi0::CLEOD0toKmPipPi0() : WeakDalitzDecay(5./GeV,1.5/GeV,true) {
+  // masses and widths
+  mrho_     =  770   *MeV; wrho_     = 150.7 *MeV;
+  mK892_    =  891.5 *MeV; wK892_    =  50   *MeV;
+  mK8920_   =  896.1 *MeV; wK8920_   =  50.5 *MeV;
+  mK14300_  = 1412   *MeV; wK14300_  = 294   *MeV;
+  mrho1700_ = 1700   *MeV; wrho1700_ = 240   *MeV;
+  mK1680_   = 1717   *MeV; wK1680_   = 322   *MeV;
+  // amplitudes and phases for D0 -> K-pi+pi0
+  aNR_      = 1.75     ; phiNR_      =  31.2;
+  arho_     = 1.00     ; phirho_     =   0. ;
+  aKstarm_  = 0.44     ; phiKstarm_  = 163  ;
+  aKstar0_  = 0.39     ; phiKstar0_  =  -0.2;
+  aK1430m_  = 0.77*GeV2; phiK1430m_  =  55.5;
+  aK14300_  = 0.85*GeV2; phiK14300_  = 166  ;
+  arho1700_ = 2.50     ; phirho1700_ = 171  ;
+  aK1680_   = 2.50     ; phiK1680_   = 103  ;  
+  // intermediates
+  generateIntermediates(true);
+}
 
 IBPtr CLEOD0toKmPipPi0::clone() const {
   return new_ptr(*this);
@@ -30,8 +47,26 @@ IBPtr CLEOD0toKmPipPi0::fullclone() const {
 
 // The following static variable is needed for the type
 // description system in ThePEG.
-DescribeNoPIOClass<CLEOD0toKmPipPi0,WeakDalitzDecay>
+DescribeClass<CLEOD0toKmPipPi0,WeakDalitzDecay>
 describeHerwigCLEOD0toKmPipPi0("Herwig::CLEOD0toKmPipPi0", "HwSMDecay.so");
+
+void CLEOD0toKmPipPi0::persistentOutput(PersistentOStream & os) const {
+  os << ounit(mK14300_,GeV) << ounit(wK14300_,GeV) << ounit(mK1680_,GeV) << ounit(wK1680_,GeV)
+     << ounit(mrho1700_,GeV) << ounit(wrho1700_,GeV) << ounit(mK8920_,GeV) << ounit(wK8920_,GeV)
+     << ounit(mK892_,GeV) << ounit(wK892_,GeV) << ounit(mrho_,GeV) << ounit(wrho_,GeV)
+     << aNR_ << phiNR_ << arho_ << phirho_ << aKstarm_ << phiKstarm_ << aKstar0_ << phiKstar0_
+     <<  ounit(aK1430m_,GeV2) << phiK1430m_ << ounit(aK14300_,GeV2) << phiK14300_
+     << arho1700_ << phirho1700_ << aK1680_ << phiK1680_ << cNR_;
+}
+
+void CLEOD0toKmPipPi0::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(mK14300_,GeV) >> iunit(wK14300_,GeV) >> iunit(mK1680_,GeV) >> iunit(wK1680_,GeV)
+     >> iunit(mrho1700_,GeV) >> iunit(wrho1700_,GeV) >> iunit(mK8920_,GeV) >> iunit(wK8920_,GeV)
+     >> iunit(mK892_,GeV) >> iunit(wK892_,GeV) >> iunit(mrho_,GeV) >> iunit(wrho_,GeV)
+     >> aNR_ >> phiNR_ >> arho_ >> phirho_ >> aKstarm_ >> phiKstarm_ >> aKstar0_ >> phiKstar0_
+     >>  iunit(aK1430m_,GeV2) >> phiK1430m_ >> iunit(aK14300_,GeV2) >> phiK14300_
+     >> arho1700_ >> phirho1700_ >> aK1680_ >> phiK1680_ >> cNR_;
+}
 
 void CLEOD0toKmPipPi0::Init() {
 
@@ -43,19 +78,188 @@ void CLEOD0toKmPipPi0::Init() {
      "\\bibitem{Kopp:2000gv} S.~Kopp {\\it et al.}  [CLEO Collaboration], "
      "Phys.\\ Rev.\\  D {\\bf 63} (2001) 092001 [arXiv:hep-ex/0011065].");
 
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceK_01430Mass
+    ("K_01430Mass",
+     "The mass of the K_0(1430) meson",
+     &CLEOD0toKmPipPi0::mK14300_, MeV, 1412   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceK_01430Width
+    ("K_01430Width",
+     "The width of the K_0(1430) meson",
+     &CLEOD0toKmPipPi0::wK14300_, MeV, 294   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceKstar1680Mass
+    ("Kstar1680Mass",
+     "The mass of the K*(1680) meson",
+     &CLEOD0toKmPipPi0::mK1680_, MeV, 1717   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceKstar1680Width
+    ("Kstar1680Width",
+     "The width of the K*(1680) meson",
+     &CLEOD0toKmPipPi0::wK1680_, MeV, 322   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfacerho1700Mass
+    ("rho1700Mass",
+     "The mass of the rho(1700) meson",
+     &CLEOD0toKmPipPi0::mrho1700_, MeV, 1700   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfacerho1700Width
+    ("rho1700Width",
+     "The width of the rho(1700) meson",
+     &CLEOD0toKmPipPi0::wrho1700_, MeV, 240   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceKstar0892Mass
+    ("Kstar0892Mass",
+     "The mass of the K*0(892) meson",
+     &CLEOD0toKmPipPi0::mK8920_, MeV, 896.1 *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceKstar0892Width
+    ("Kstar0892Width",
+     "The width of the K*0(892) meson",
+     &CLEOD0toKmPipPi0::wK8920_, MeV, 50.5 *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceKstarPlus892Mass
+    ("KstarPlus892Mass",
+     "The mass of the K*+(892) meson",
+     &CLEOD0toKmPipPi0::mK892_, MeV, 891.5 *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfaceKstarPlus892Width
+    ("KstarPlus892Width",
+     "The width of the K*+(892) meson in D0 -> K-pi+pi0",
+     &CLEOD0toKmPipPi0::wK892_, MeV,  50   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfacerhoMass
+    ("RhoMass",
+     "The mass of the rho+ meson",
+     &CLEOD0toKmPipPi0::mrho_, MeV, 770   *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,Energy> interfacerhoWidth
+    ("RhoWidth",
+     "The width of the rho+ meson",
+     &CLEOD0toKmPipPi0::wrho_, MeV, 150.7 *MeV, ZERO, 10000.0*MeV,
+     false, false, Interface::limited);
+  
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedNonResonantAmplitude
+    ("ChargedNonResonantAmplitude",
+     "Amplitude for the non-resonant component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::aNR_, 1.75, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedNonResonantPhase
+    ("ChargedNonResonantPhase",
+     "Phase for the non-resonant component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phiNR_, 31.2, -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRhoAmplitude
+    ("ChargedRhoAmplitude",
+     "Amplitude for the rho+ component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::arho_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRhoPhase
+    ("ChargedRhoPhase",
+     "Phase for the rho+ component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phirho_, 0.0, -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStarMinusAmplitude
+    ("ChargedKStarMinusAmplitude",
+     "Amplitude for the K*(892)- component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::aKstarm_, 0.44, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStarMinusPhase
+    ("ChargedKStarMinusPhase",
+     "Phase for the K*(892)- component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phiKstarm_, 163, -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStar0Amplitude
+    ("ChargedKStar0Amplitude",
+     "Amplitude for the K*(892)0 component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::aKstar0_, 0.39, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStar0Phase
+    ("ChargedKStar0Phase",
+     "Phase for the K*(892)0 component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phiKstar0_, -0.2, -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy2> interfaceChargedK_0MinusAmplitude
+    ("ChargedK_0MinusAmplitude",
+     "Amplitude for the K_0(1430)- component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::aK1430m_, GeV2, 0.77*GeV2, ZERO, 10.0*GeV2,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK_0MinusPhase
+    ("ChargedK_0MinusPhase",
+     "Phase for the K_0(1430)- component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phiK1430m_, 55.5, -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,Energy2> interfaceChargedK_00Amplitude
+    ("ChargedK_00Amplitude",
+     "Amplitude for the K_0(1430)0 component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::aK14300_, GeV2, 0.85*GeV2, ZERO, 10.0*GeV2,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK_00Phase
+    ("ChargedK_00Phase",
+     "Phase for the K_0(1430)0 component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phiK14300_, 166, -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRho1700Amplitude
+    ("ChargedRho1700Amplitude",
+     "Amplitude for the rho1700+ component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::arho1700_, 2.5, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRho1700Phase
+    ("ChargedRho1700Phase",
+     "Phase for the rho1700+ component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phirho1700_, 171., -180.0, 180.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK1680MinusAmplitude
+    ("ChargedK1680MinusAmplitude",
+     "Amplitude for the K*(1680)- component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::aK1680_, 2.5, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK1680MinusPhase
+    ("ChargedK1680MinusPhase",
+     "Phase for the K*(1680)- component for D0 -> K- pi+ pi0",
+     &CLEOD0toKmPipPi0::phiK1680_, 103, -180.0, 180.0,
+     false, false, Interface::limited);
 }
 
 void CLEOD0toKmPipPi0::doinit() {
   WeakDalitzDecay::doinit();
-  static const double degtorad = Constants::pi/180.;
+  static const double degtorad = Constants::pi/180.;  
+  // non-resonant amplitude
+  cNR_ = aNR_*Complex(cos(phiNR_*degtorad),sin(phiNR_*degtorad));
   // create the resonances
-  addResonance(DalitzResonance(getParticleData( 213)  , 0.770*GeV,0.1507*GeV,1,2,0,-1.  , 0.            ));
-  addResonance(DalitzResonance(getParticleData(-323)  ,0.8915*GeV,0.050 *GeV,0,2,1,-0.44, 163  *degtorad));
-  addResonance(DalitzResonance(getParticleData(-313)  ,0.8961*GeV,0.0505*GeV,0,1,2,-0.39,-  0.2*degtorad));
-  addResonance(DalitzResonance(getParticleData(-10321),1.412 *GeV,0.294*GeV ,0,2,1, 0.77,  55.5*degtorad));
-  addResonance(DalitzResonance(getParticleData(-10311),1.412 *GeV,0.294*GeV ,0,1,2, 0.85, 166. *degtorad));
-  addResonance(DalitzResonance(getParticleData( 30213),1.717 *GeV,0.322*GeV ,1,2,0,-2.50, 171  *degtorad));
-  addResonance(DalitzResonance(getParticleData(-30323),1.717 *GeV,0.322*GeV ,0,2,1,-2.50, 103  *degtorad));
+  addResonance(DalitzResonance(getParticleData( 213)  , mrho_   , wrho_    ,1,2,0,-arho_        , phirho_    *degtorad));
+  addResonance(DalitzResonance(getParticleData(-323)  , mK892_  , wK892_   ,0,2,1,-aKstarm_     , phiKstarm_ *degtorad));
+  addResonance(DalitzResonance(getParticleData(-313)  ,mK8920_  , wK8920_  ,0,1,2,-aKstar0_     , phiKstar0_ *degtorad));
+  addResonance(DalitzResonance(getParticleData(-10321),mK14300_ , wK14300_ ,0,2,1, aK1430m_/GeV2, phiK1430m_ *degtorad));
+  addResonance(DalitzResonance(getParticleData(-10311),mK14300_ , wK14300_ ,0,1,2, aK14300_/GeV2, phiK14300_ *degtorad));
+  addResonance(DalitzResonance(getParticleData( 30213),mrho1700_, wrho1700_,1,2,0,-arho1700_    , phirho1700_*degtorad));
+  addResonance(DalitzResonance(getParticleData(-30323),mK1680_  , wK1680_  ,0,2,1,-aK1680_      , phiK1680_  *degtorad));
   // D+ -> K- pi+ pi+
   createMode(getParticleData(ParticleID::D0),
 	     {getParticleData(ParticleID::Kminus),

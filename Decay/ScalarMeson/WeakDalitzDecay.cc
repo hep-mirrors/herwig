@@ -20,11 +20,13 @@ WeakDalitzDecay::WeakDalitzDecay(InvEnergy rP, InvEnergy rR, bool useResonanceMa
 {}
 
 void WeakDalitzDecay::persistentOutput(PersistentOStream & os) const {
-  os << resonances_ << maxWgt_ << weights_;
+  os << resonances_ << maxWgt_ << weights_
+     << ounit(rParent_,1./GeV) << ounit(rResonance_,1./GeV);
 }
 
 void WeakDalitzDecay::persistentInput(PersistentIStream & is, int) {
-  is >> resonances_ >> maxWgt_ >> weights_;
+  is >> resonances_ >> maxWgt_ >> weights_
+     >> iunit(rParent_,1./GeV) >> iunit(rResonance_,1./GeV);
 }
 
 // The following static variable is needed for the type
@@ -38,6 +40,30 @@ void WeakDalitzDecay::Init() {
     ("The WeakDalitzDecay class provides a base class for "
      "weak three-body decays of bottom and charm mesons");
 
+  static Parameter<WeakDalitzDecay,InvEnergy> interfaceDRadius
+    ("DRadius",
+     "The radius parameter for the Blatt-Weisskopf form-factor for the D",
+     &WeakDalitzDecay::rParent_, 1./GeV, 5./GeV, ZERO, 10./GeV,
+     false, false, Interface::limited);
+
+  static Parameter<WeakDalitzDecay,InvEnergy> interfaceResonanceRadius
+    ("ResonanceRadius",
+     "The radius parameter for the Blatt-Weisskopf form-factor for the"
+     "intermediate resonances",
+     &WeakDalitzDecay::rResonance_, 1./GeV, 1.5/GeV, ZERO, 10./GeV,
+     false, false, Interface::limited);
+
+  static Parameter<WeakDalitzDecay,double> interfaceMaximumWeight
+    ("MaximumWeight",
+     "The maximum weight for the phase-space sampling",
+     &WeakDalitzDecay::maxWgt_, 1.0, 0.0, 1e10,
+     false, false, Interface::limited);
+
+  static ParVector<WeakDalitzDecay,double> interfaceWeights
+    ("Weights",
+     "The weights for the different channels for the phase-space integration",
+     &WeakDalitzDecay::weights_, -1, 1.0, 0.0, 1.0,
+     false, false, Interface::limited);
 }
 
 void WeakDalitzDecay::
