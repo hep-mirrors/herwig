@@ -51,9 +51,9 @@ void OneOneOneEWSplitFn::doinit() {
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   // WWZ coupling
-  gWWZ_ = 1.;
+  gWWZ_ = sqrt((1.-sw2)/sw2);
   // WWG coupling
-  gWWG_ = sqrt((1.-sw2)/sw2);
+  gWWG_ = 1.;
   // to employ running masses, wherever needed
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
 }
@@ -100,8 +100,8 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
     double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
     double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
     val += (-2.*(m2t2*(1.-sqr(1.-z)*z)+m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))/((1.-z)*z)
-        + (2.*m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/((1.-z)*z);
-    }
+      + (2.*m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/((1.-z)*z);
+  }
   return sqr(gvvv)*val;
 }
 
