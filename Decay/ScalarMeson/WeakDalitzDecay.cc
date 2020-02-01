@@ -104,7 +104,7 @@ void WeakDalitzDecay::createMode(tPDPtr in, tPDVector out) {
 }
 
 Complex WeakDalitzDecay::resAmp(unsigned int i, bool gauss) const {
-  Complex output = resonances_[i].amplitude*Complex(cos(resonances_[i].phase),sin(resonances_[i].phase));
+  Complex output = resonances_[i].amp;
   // locations of the outgoing particles
   const unsigned int &d1 = resonances_[i].daughter1;
   const unsigned int &d2 = resonances_[i].daughter2;

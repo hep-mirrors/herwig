@@ -122,7 +122,7 @@ Complex CLEOD0toK0PipPim::amplitude(int ichan) const {
       Energy Gamma_pi = gpi*sqrt(0.25*sqr(mAB)-sqr(mOut(resonances()[ix].daughter1)));
       Energy2 arg = 0.25*sqr(mAB)-sqr(mOut(resonances()[ix].spectator));
       complex<Energy> Gamma_K  = arg>=ZERO ? gK*sqrt(arg) : gK*ii*sqrt(-arg);
-      output += resonances()[ix].amplitude*Complex(cos(resonances()[ix].phase),sin(resonances()[ix].phase))*GeV2/
+      output += resonances()[ix].amp*GeV2/
       	(sqr(resonances()[ix].mass)-sqr(mAB)-ii*resonances()[ix].mass*(Gamma_pi+Gamma_K));
     }
   }

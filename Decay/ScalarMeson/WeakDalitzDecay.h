@@ -28,10 +28,10 @@ struct DalitzResonance {
    */
   DalitzResonance(tPDPtr res, Energy m, Energy w,
 		  unsigned int d1, unsigned int d2, unsigned int s,
-		  double amp, double phi)
+		  double mag, double phi)
     : resonance(res), mass(m),width(w),
       daughter1(d1),daughter2(d2),spectator(s),
-      amplitude(amp),phase(phi)
+      amp(mag*exp(Complex(0,phi)))
   {}
 
   /**
@@ -63,12 +63,7 @@ struct DalitzResonance {
   /**
    *  The amplitude
    */
-  double amplitude;
-
-  /**
-   *  The phase
-   */
-  double phase;
+  Complex amp;
 };
 
 /** 
@@ -80,7 +75,7 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
 				      const DalitzResonance  & x) {
   os << x.resonance << ounit(x.mass,GeV) << ounit(x.width,GeV)
      << x.daughter1 << x.daughter2 << x.spectator
-     << x.amplitude << x.phase;
+     << x.amp;
   return os;
 }
 
@@ -93,7 +88,7 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
 					DalitzResonance  & x) {
   is >> x.resonance >> iunit(x.mass,GeV) >> iunit(x.width,GeV)
      >> x.daughter1 >> x.daughter2 >> x.spectator
-     >> x.amplitude >> x.phase;
+     >> x.amp;
   return is;
 }
   
