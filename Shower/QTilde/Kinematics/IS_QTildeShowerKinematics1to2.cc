@@ -49,6 +49,14 @@ updateChildren( const tShowerParticlePtr theParent,
     m22 =  sqr(onshellMasses[0]);
   }
 
+  
+  if(theParent->parents().empty()) theParent->virtualMass(ZERO);
+  if(children[1]->children().empty()) children[1]->virtualMass(sqrt(m22));
+
+
+  // each particle contains a pointer to its mass, that we can use to calculate the virtuality.
+  // onshell incoming partons are massless, while offshell ones have negative virtuality q2
+  // q2 = - virtualMass**2  for ISR [THIS IS NOT TRUE FOR RESONANCES]
   Energy2 pt2;
   if(pTscheme==0) {
     pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
@@ -58,12 +66,12 @@ updateChildren( const tShowerParticlePtr theParent,
   else if(pTscheme==1) {
     pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
 					m12          ,m22,
-					sqr(theParent->virtualMass()), sqr(children[1]->virtualMass()));
+					-sqr(theParent->virtualMass()), sqr(children[1]->virtualMass()));
   }
   else if(pTscheme==2) {
-    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), sqr(theParent->virtualMass()),
+    pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), -sqr(theParent->virtualMass()),
 					m12          ,sqr(children[1]->virtualMass()),
-				        sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
+				        -sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
   }
   else
     assert(false);
@@ -76,7 +84,8 @@ updateChildren( const tShowerParticlePtr theParent,
     pT(ZERO);
   }
   Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), sqr(theParent->virtualMass()) ,sqr(children[1]->virtualMass()));
-  children[0]->virtualMass(sqrt(q2));
+  // the virtuality is negative
+  children[0]->virtualMass(sqrt(-q2));
   //////////////////////////////////////////////////////////////////////////////////
   /////  END MODIFICATION //////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////
