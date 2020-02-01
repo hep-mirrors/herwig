@@ -445,3 +445,55 @@ Complex CLEOD0toK0PipPim::amplitude(int ichan) const {
   if(ichan<0) output += cNR_;
   return output;
 }
+
+void CLEOD0toK0PipPim::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  output << "newdef " << name() << ":Rho0Mass "           << mrho_/MeV    << "\n";
+  output << "newdef " << name() << ":Rho0Width "          << wrho_/MeV    << "\n";
+  output << "newdef " << name() << ":OmegaMass "          << momega_/MeV  << "\n";
+  output << "newdef " << name() << ":OmegaWidth "         << womega_/MeV  << "\n";
+  output << "newdef " << name() << ":f980Mass "           << mf980_/MeV   << "\n";
+  output << "newdef " << name() << ":f980Width "          << wf980_/MeV   << "\n";
+  output << "newdef " << name() << ":gPi "      << gpi_   << "\n";
+  output << "newdef " << name() << ":gK "       << gK_    << "\n";
+  output << "newdef " << name() << ":f0Option " << f0opt_ << "\n";
+  output << "newdef " << name() << ":f_2Mass "     << mf2_/MeV     << "\n";
+  output << "newdef " << name() << ":f_2Width "    << wf2_/MeV     << "\n";
+  output << "newdef " << name() << ":f1370Mass "   << mf1370_/MeV  << "\n";
+  output << "newdef " << name() << ":f1370Width "  << wf1370_/MeV  << "\n";
+  output << "newdef " << name() << ":KstarMass "   << mK892_/MeV   << "\n";
+  output << "newdef " << name() << ":KstarWidth "  << wK892_/MeV   << "\n";
+  output << "newdef " << name() << ":K_01430Mass "        << mK14300_/MeV  << "\n";
+  output << "newdef " << name() << ":K_01430Width "       << wK14300_/MeV  << "\n";
+  output << "newdef " << name() << ":K_21430Mass "        << mK14302_/MeV  << "\n";
+  output << "newdef " << name() << ":K_21430Width "       << wK14302_/MeV  << "\n";
+  output << "newdef " << name() << ":Kstar1680Mass "      << mK1680_/MeV   << "\n";
+  output << "newdef " << name() << ":Kstar1680Width "     << wK1680_/MeV   << "\n";
+  output << "newdef " << name() << ":KStarPlusAmplitude "   << aKstarp_      << "\n";
+  output << "newdef " << name() << ":KStarPlusPhase "       << phiKstarp_    << "\n";
+  output << "newdef " << name() << ":RhoAmplitude "         << arho_         << "\n";
+  output << "newdef " << name() << ":RhoPhase "             << phirho_       << "\n";
+  output << "newdef " << name() << ":OmegaAmplitude "       << aomega_       << "\n";
+  output << "newdef " << name() << ":OmegaPhase "           << phiomega_     << "\n";
+  output << "newdef " << name() << ":KStarMinusAmplitude "  << aKstarm_      << "\n";
+  output << "newdef " << name() << ":KStarMinusPhase "      << phiKstarm_    << "\n";
+  output << "newdef " << name() << ":f980Amplitude "        << af980_/GeV2   << "\n";
+  output << "newdef " << name() << ":f980Phase "            << phif980_      << "\n";
+  output << "newdef " << name() << ":f2Amplitude "          << af2_*GeV2     << "\n";
+  output << "newdef " << name() << ":f2Phase "              << phif2_        << "\n";
+  output << "newdef " << name() << ":f1370Amplitude "       << af1370_/GeV2  << "\n";
+  output << "newdef " << name() << ":f1370Phase "           << phif1370_     << "\n";
+  output << "newdef " << name() << ":KK_0MinusAmplitude "   << aK14300_/GeV2 << "\n";
+  output << "newdef " << name() << ":KK_0MinusPhase "       << phiK14300_    << "\n";
+  output << "newdef " << name() << ":KK_2MinusAmplitude "   << aK14302_*GeV2 << "\n";
+  output << "newdef " << name() << ":KK_2MinusPhase "       << phiK14302_    << "\n";
+  output << "newdef " << name() << ":K1680MinusAmplitude "  << aK1680_       << "\n";
+  output << "newdef " << name() << ":K1680MinusPhase "      << phiK1680_     << "\n";
+  output << "newdef " << name() << ":NonResonantAmplitude " << aNR_          << "\n";
+  output << "newdef " << name() << ":NonResonantPhase "     << phiNR_        << "\n";
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
+}

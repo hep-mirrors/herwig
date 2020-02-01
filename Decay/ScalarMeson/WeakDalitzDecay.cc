@@ -183,3 +183,19 @@ Complex WeakDalitzDecay::resAmp(unsigned int i, bool gauss) const {
   Energy gam = wR*pow(pAB/pR,power)*(mR/m2_[d1][d2])*fR*fR;
   return output*GeV2/(sqr(mR)-sqr(m2_[d1][d2])-mR*gam*Complex(0.,1.));
 }
+
+void WeakDalitzDecay::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  output << "newdef " << name() << ":DRadius " << rParent_*GeV << "\n";
+  output << "newdef " << name() << ":ResonanceRadius " << rResonance_*GeV << "\n";
+  output << "newdef " << name() << ":MaximumWeight " << maxWgt_ << "\n";
+  for(unsigned int ix=0;ix<weights_.size();++ix) {
+    output << "insert " << name() << ":Weights "
+	   << ix << " " << weights_[ix] << "\n";
+  }
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
+}
