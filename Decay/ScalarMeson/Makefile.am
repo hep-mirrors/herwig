@@ -23,7 +23,7 @@ SemiLeptonicScalarDecayer.h  \
 ScalarMesonFactorizedDecayer.h \
 ScalarVectorVectorDecayer.h  \
 DtoKPiPiE691.h \
-DtoKPiPiFOCUS.h \
+FOCUSDptoKmPipPip.h \
 DtoKPiPiMarkIII.h \
 WeakDalitzDecay.h\
 CLEODptoKmPipPip.h\
@@ -46,7 +46,7 @@ SemiLeptonicScalarDecayer.cc \
 ScalarMesonFactorizedDecayer.cc \
 ScalarVectorVectorDecayer.cc \
 DtoKPiPiE691.cc\
-DtoKPiPiFOCUS.cc\
+FOCUSDptoKmPipPip.cc\
 DtoKPiPiMarkIII.cc \
 WeakDalitzDecay.cc\
 CLEODptoKmPipPip.cc\
