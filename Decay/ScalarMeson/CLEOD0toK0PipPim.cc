@@ -460,9 +460,9 @@ Complex CLEOD0toK0PipPim::amplitude(int ichan) const {
 void CLEOD0toK0PipPim::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
-  output << "newdef " << name() << ":Rho0Mass "           << mrho_/MeV    << "\n";
-  output << "newdef " << name() << ":Rho0Width "          << wrho_/MeV    << "\n";
+  WeakDalitzDecay::dataBaseOutput(output,false);
+  output << "newdef " << name() << ":RhoMass "            << mrho_/MeV    << "\n";
+  output << "newdef " << name() << ":RhoWidth "           << wrho_/MeV    << "\n";
   output << "newdef " << name() << ":OmegaMass "          << momega_/MeV  << "\n";
   output << "newdef " << name() << ":OmegaWidth "         << womega_/MeV  << "\n";
   output << "newdef " << name() << ":f980Mass "           << mf980_/MeV   << "\n";

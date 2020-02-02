@@ -56,7 +56,7 @@ void WeakDalitzDecay::Init() {
   static Parameter<WeakDalitzDecay,double> interfaceMaximumWeight
     ("MaximumWeight",
      "The maximum weight for the phase-space sampling",
-     &WeakDalitzDecay::maxWgt_, 1.0, 0.0, 1e10,
+     &WeakDalitzDecay::maxWgt_, 1.0, 0.0, 1e20,
      false, false, Interface::limited);
 
   static ParVector<WeakDalitzDecay,double> interfaceWeights

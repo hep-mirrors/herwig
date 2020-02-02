@@ -23601,6 +23601,114 @@ newdef HQETFormFactor:R2         0.836
 newdef HQET:FormFactor HQETFormFactor 
 
 #
+create Herwig::CLEOD0toKmPipPi0 D0KmPipPi0CLEO
+newdef D0KmPipPi0CLEO:Iteration 10
+newdef D0KmPipPi0CLEO:Ntry 500
+newdef D0KmPipPi0CLEO:Points 100000
+newdef D0KmPipPi0CLEO:GenerateIntermediates 1 
+newdef D0KmPipPi0CLEO:DRadius 5
+newdef D0KmPipPi0CLEO:ResonanceRadius 1.5
+newdef D0KmPipPi0CLEO:MaximumWeight 1.52393e+10
+insert D0KmPipPi0CLEO:Weights 0 0.279469
+insert D0KmPipPi0CLEO:Weights 1 0.14109
+insert D0KmPipPi0CLEO:Weights 2 0.0801408
+insert D0KmPipPi0CLEO:Weights 3 0.093447
+insert D0KmPipPi0CLEO:Weights 4 0.166967
+insert D0KmPipPi0CLEO:Weights 5 0.0844772
+insert D0KmPipPi0CLEO:Weights 6 0.154409
+newdef D0KmPipPi0CLEO:K_01430Mass 1412
+newdef D0KmPipPi0CLEO:K_01430Width 294
+newdef D0KmPipPi0CLEO:Kstar1680Mass 1717
+newdef D0KmPipPi0CLEO:Kstar1680Width 322
+newdef D0KmPipPi0CLEO:rho1700Mass 1700
+newdef D0KmPipPi0CLEO:rho1700Width 240
+newdef D0KmPipPi0CLEO:Kstar0892Mass 896.1
+newdef D0KmPipPi0CLEO:Kstar0892Width 50.5
+newdef D0KmPipPi0CLEO:KstarPlus892Mass 891.5
+newdef D0KmPipPi0CLEO:KstarPlus892Width 50
+newdef D0KmPipPi0CLEO:RhoMass 770
+newdef D0KmPipPi0CLEO:RhoWidth 150.7
+newdef D0KmPipPi0CLEO:NonResonantAmplitude 1.75
+newdef D0KmPipPi0CLEO:NonResonantPhase 31.2
+newdef D0KmPipPi0CLEO:RhoAmplitude 1
+newdef D0KmPipPi0CLEO:RhoPhase 0
+newdef D0KmPipPi0CLEO:KStarMinusAmplitude 0.44
+newdef D0KmPipPi0CLEO:KStarMinusPhase 163
+newdef D0KmPipPi0CLEO:KStar0Amplitude 0.39
+newdef D0KmPipPi0CLEO:KStar0Phase -0.2
+newdef D0KmPipPi0CLEO:K_0MinusAmplitude 0.77
+newdef D0KmPipPi0CLEO:K_0MinusPhase 55.5
+newdef D0KmPipPi0CLEO:K_00Amplitude 0.85
+newdef D0KmPipPi0CLEO:K_00Phase 166
+newdef D0KmPipPi0CLEO:Rho1700Amplitude 2.5
+newdef D0KmPipPi0CLEO:Rho1700Phase 171
+newdef D0KmPipPi0CLEO:K1680MinusAmplitude 2.5
+newdef D0KmPipPi0CLEO:K1680MinusPhase 103
+
+#
+create Herwig::CLEOD0toK0PipPim D0K0PipPimCLEO
+newdef D0K0PipPimCLEO:Iteration 10
+newdef D0K0PipPimCLEO:Ntry 500
+newdef D0K0PipPimCLEO:Points 100000
+newdef D0K0PipPimCLEO:GenerateIntermediates 1 
+newdef D0K0PipPimCLEO:DRadius 5
+newdef D0K0PipPimCLEO:ResonanceRadius 1.5
+newdef D0K0PipPimCLEO:MaximumWeight 4.0e+10
+insert D0K0PipPimCLEO:Weights 0 0.0315344
+insert D0K0PipPimCLEO:Weights 1 0.143317
+insert D0K0PipPimCLEO:Weights 2 0.0614656
+insert D0K0PipPimCLEO:Weights 3 0.316689
+insert D0K0PipPimCLEO:Weights 4 0.0334101
+insert D0K0PipPimCLEO:Weights 5 0.108971
+insert D0K0PipPimCLEO:Weights 6 0.112036
+insert D0K0PipPimCLEO:Weights 7 0.070267
+insert D0K0PipPimCLEO:Weights 8 0.0527859
+insert D0K0PipPimCLEO:Weights 9 0.0695232
+newdef D0K0PipPimCLEO:RhoMass 769.3
+newdef D0K0PipPimCLEO:RhoWidth 150.2
+newdef D0K0PipPimCLEO:OmegaMass 782.57
+newdef D0K0PipPimCLEO:OmegaWidth 8.44
+newdef D0K0PipPimCLEO:f980Mass 977
+newdef D0K0PipPimCLEO:f980Width 50
+newdef D0K0PipPimCLEO:gPi 0.09
+newdef D0K0PipPimCLEO:gK 0.02
+newdef D0K0PipPimCLEO:f0Option 1
+newdef D0K0PipPimCLEO:f_2Mass 1275.4
+newdef D0K0PipPimCLEO:f_2Width 185.1
+newdef D0K0PipPimCLEO:f1370Mass 1310
+newdef D0K0PipPimCLEO:f1370Width 272
+newdef D0K0PipPimCLEO:KstarMass 891.66
+newdef D0K0PipPimCLEO:KstarWidth 50.8
+newdef D0K0PipPimCLEO:K_01430Mass 1412
+newdef D0K0PipPimCLEO:K_01430Width 294
+newdef D0K0PipPimCLEO:K_21430Mass 1425.6
+newdef D0K0PipPimCLEO:K_21430Width 98.5
+newdef D0K0PipPimCLEO:Kstar1680Mass 1717
+newdef D0K0PipPimCLEO:Kstar1680Width 322
+newdef D0K0PipPimCLEO:KStarPlusAmplitude 0.11
+newdef D0K0PipPimCLEO:KStarPlusPhase 321
+newdef D0K0PipPimCLEO:RhoAmplitude 1
+newdef D0K0PipPimCLEO:RhoPhase 0
+newdef D0K0PipPimCLEO:OmegaAmplitude 0.037
+newdef D0K0PipPimCLEO:OmegaPhase 114
+newdef D0K0PipPimCLEO:KStarMinusAmplitude 1.56
+newdef D0K0PipPimCLEO:KStarMinusPhase 150
+newdef D0K0PipPimCLEO:f980Amplitude 0.34
+newdef D0K0PipPimCLEO:f980Phase 188
+newdef D0K0PipPimCLEO:f2Amplitude 0.7
+newdef D0K0PipPimCLEO:f2Phase 308
+newdef D0K0PipPimCLEO:f1370Amplitude 1.8
+newdef D0K0PipPimCLEO:f1370Phase 85
+newdef D0K0PipPimCLEO:KK_0MinusAmplitude 2
+newdef D0K0PipPimCLEO:KK_0MinusPhase 3
+newdef D0K0PipPimCLEO:KK_2MinusAmplitude 1
+newdef D0K0PipPimCLEO:KK_2MinusPhase 335
+newdef D0K0PipPimCLEO:K1680MinusAmplitude 5.6
+newdef D0K0PipPimCLEO:K1680MinusPhase 174
+newdef D0K0PipPimCLEO:NonResonantAmplitude 1.1
+newdef D0K0PipPimCLEO:NonResonantPhase 340
+
+#
 create Herwig::DtoKPiPiE691  DKPiPiE691
 newdef DKPiPiE691:Iteration 10
 newdef DKPiPiE691:Ntry 500

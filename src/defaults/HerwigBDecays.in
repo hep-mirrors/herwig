@@ -3478,14 +3478,14 @@ do D-:SelectDecayModes none
 do D_s+:SelectDecayModes none
 do D_s-:SelectDecayModes none
 #
-decaymode D0->K-,pi+,pi0; 0.141 1 /Herwig/Decays/DKPiPiCLEO
+decaymode D0->K-,pi+,pi0; 0.141 1 /Herwig/Decays/D0KmPipPi0CLEO
 decaymode D0->K-,a_1+; 0.075 1 /Herwig/Decays/WSBHadronic
 decaymode D0->K*-,rho+; 0.064 1 /Herwig/Decays/WSBHadronic
 decaymode D0->K-,pi+; 0.038 1 /Herwig/Decays/WSBHadronic
 decaymode D0->K-,e+,nu_e; 0.0344 1 /Herwig/Decays/ISGW2
 decaymode D0->K-,mu+,nu_mu; 0.0333 1 /Herwig/Decays/ISGW2
-decaymode D0->K_L0,pi+,pi-; 0.029 1 /Herwig/Decays/DKPiPiCLEO
-decaymode D0->K_S0,pi+,pi-; 0.029 1 /Herwig/Decays/DKPiPiCLEO
+decaymode D0->K_L0,pi+,pi-; 0.029 1 /Herwig/Decays/D0K0PipPimCLEO
+decaymode D0->K_S0,pi+,pi-; 0.029 1 /Herwig/Decays/D0K0PipPimCLEO
 decaymode D0->K-,pi+,omega; 0.023 1 /Herwig/Decays/DecayME0
 decaymode D0->Kbar0,pi+,pi-,pi0; 0.022 1 /Herwig/Decays/Mambo
 decaymode D0->K*-,e+,nu_e; 0.0214 1 /Herwig/Decays/ISGW2
@@ -3687,14 +3687,15 @@ decaymode D+->K+,K+,K-; 9.0E-5 1 /Herwig/Decays/DecayME0
 decaymode D+->f_0,K+; 9.0E-5 1 /Herwig/Decays/DecayME0
 decaymode D+->K*_20,pi+; 7.8E-5 1 /Herwig/Decays/DecayME0
 #
-decaymode Dbar0->K+,pi-,pi0; 0.141 1 /Herwig/Decays/DKPiPiCLEO
+
+decaymode Dbar0->K+,pi-,pi0; 0.141 1 /Herwig/Decays/D0KmPipPi0CLEO
 decaymode Dbar0->K+,a_1-; 0.075 1 /Herwig/Decays/WSBHadronic
 decaymode Dbar0->K*+,rho-; 0.064 1 /Herwig/Decays/WSBHadronic
 decaymode Dbar0->K+,pi-; 0.038 1 /Herwig/Decays/WSBHadronic
 decaymode Dbar0->K+,e-,nu_ebar; 0.0344 1 /Herwig/Decays/ISGW2
 decaymode Dbar0->K+,mu-,nu_mubar; 0.0333 1 /Herwig/Decays/ISGW2
-decaymode Dbar0->K_L0,pi-,pi+; 0.029 1 /Herwig/Decays/DKPiPiCLEO
-decaymode Dbar0->K_S0,pi-,pi+; 0.029 1 /Herwig/Decays/DKPiPiCLEO
+decaymode Dbar0->K_L0,pi-,pi+; 0.029 1 /Herwig/Decays/D0K0PipPimCLEO
+decaymode Dbar0->K_S0,pi-,pi+; 0.029 1 /Herwig/Decays/D0K0PipPimCLEO
 decaymode Dbar0->K+,pi-,omega; 0.023 1 /Herwig/Decays/DecayME0
 decaymode Dbar0->K0,pi-,pi+,pi0; 0.022 1 /Herwig/Decays/Mambo
 decaymode Dbar0->K*+,e-,nu_ebar; 0.0214 1 /Herwig/Decays/ISGW2

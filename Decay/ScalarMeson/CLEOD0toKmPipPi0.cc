@@ -310,7 +310,7 @@ Complex CLEOD0toKmPipPi0::amplitude(int ichan) const {
 void CLEOD0toKmPipPi0::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
-  DecayIntegrator::dataBaseOutput(output,false);
+  WeakDalitzDecay::dataBaseOutput(output,false);
   output << "newdef " << name() << ":K_01430Mass "        << mK14300_/MeV  << "\n";
   output << "newdef " << name() << ":K_01430Width "       << wK14300_/MeV  << "\n";
   output << "newdef " << name() << ":Kstar1680Mass "      << mK1680_/MeV   << "\n";
@@ -321,7 +321,7 @@ void CLEOD0toKmPipPi0::dataBaseOutput(ofstream & output, bool header) const {
   output << "newdef " << name() << ":Kstar0892Width "     << wK8920_/MeV   << "\n";
   output << "newdef " << name() << ":KstarPlus892Mass "   << mK892_/MeV    << "\n";
   output << "newdef " << name() << ":KstarPlus892Width "  << wK892_/MeV    << "\n";
-  output << "newdef " << name() << ":RhoPlusMass "        << mrho_/MeV     << "\n";
+  output << "newdef " << name() << ":RhoMass "            << mrho_/MeV     << "\n";
   output << "newdef " << name() << ":RhoWidth "           << wrho_/MeV     << "\n";
   output << "newdef " << name() << ":NonResonantAmplitude " << aNR_          << "\n";
   output << "newdef " << name() << ":NonResonantPhase "     << phiNR_        << "\n";
