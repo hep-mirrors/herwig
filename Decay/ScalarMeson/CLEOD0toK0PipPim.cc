@@ -379,7 +379,15 @@ void CLEOD0toK0PipPim::doinit() {
   addResonance(DalitzResonance(getParticleData( -10321),mK14300_, wK14300_,0,2,1, aK14300_/GeV2, phiK14300_*degtorad));
   addResonance(DalitzResonance(getParticleData(   -325),mK14302_, wK14302_,0,2,1, aK14302_*GeV2, phiK14302_*degtorad));
   addResonance(DalitzResonance(getParticleData( -30323),mK1680_ , wK1680_ ,0,2,1,-aK1680_      , phiK1680_ *degtorad));
-  // D0 -> K- pi+ pi0
+  // D0 -> Kbar0 pi+ pi-
+  createMode(getParticleData(ParticleID::D0),
+	     {getParticleData(ParticleID::K_S0),
+		 getParticleData(ParticleID::piplus),
+		 getParticleData(ParticleID::piminus)});
+  createMode(getParticleData(ParticleID::D0),
+	     {getParticleData(ParticleID::K_L0),
+		 getParticleData(ParticleID::piplus),
+		 getParticleData(ParticleID::piminus)});
   createMode(getParticleData(ParticleID::D0),
 	     {getParticleData(ParticleID::Kbar0),
 		 getParticleData(ParticleID::piplus),
@@ -399,19 +407,19 @@ int CLEOD0toK0PipPim::modeNumber(bool & cc,tcPDPtr parent,
   // must be three decay products
   if(children.size()!=3) return -1;
   tPDVector::const_iterator pit = children.begin();
-  unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
+  unsigned int npip(0),npim(0),nks0(0),nkl0(0),nkbar0(0);
   for( ;pit!=children.end();++pit) {
     id0=(**pit).id();
-    if(id0          ==ParticleID::piplus)  ++npip;
-    else if(id0     ==ParticleID::pi0)     ++npi0;
-    else if(id0     ==ParticleID::piminus) ++npim;
-    else if(abs(id0)==ParticleID::K0)      ++nk0;
-    else if(id0     ==ParticleID::K_L0)    ++nk0;
-    else if(id0     ==ParticleID::K_S0)    ++nk0;
-    else if(abs(id0)==ParticleID::Kplus)   ++nkm;
+    if(     id0==ParticleID::piplus)  ++npip;
+    else if(id0==ParticleID::piminus) ++npim;
+    else if(id0==ParticleID::Kbar0)   ++nkbar0;
+    else if(id0==ParticleID::K_L0)    ++nkl0;
+    else if(id0==ParticleID::K_S0)    ++nks0;
   }
-  if(npim==1&&npip==1&&nk0==1) return  0;
-  else                        return -1;
+  if     (npim==1&&npip==1&&nks0==1  ) return  0;
+  else if(npim==1&&npip==1&&nkl0==1  ) return  1;
+  else if(npim==1&&npip==1&&nkbar0==1) return  2;
+  else                                 return -1;
 }
 
 Complex CLEOD0toK0PipPim::amplitude(int ichan) const {
@@ -424,7 +432,10 @@ Complex CLEOD0toK0PipPim::amplitude(int ichan) const {
   }
   for(unsigned int ix=imin;ix<imax;++ix) {
     // all resonances bar f0(980)
-    if(resonances()[ix].resonance->id()!=9010221) {
+    if(ix==0 && imode()!=0) {
+      if(imode()==1) output -= resAmp(ix);
+    }
+    else if(resonances()[ix].resonance->id()!=9010221) {
       output += resAmp(ix);
     }
     // special treatment (Flatte) for f0(980)
