@@ -1,31 +1,32 @@
 // -*- C++ -*-
-#ifndef Herwig_DtoKPiPiFOCUS_H
-#define Herwig_DtoKPiPiFOCUS_H
+#ifndef Herwig_FOCUSDptoKmPipPip_H
+#define Herwig_FOCUSDptoKmPipPip_H
 //
-// This is the declaration of the DtoKPiPiFOCUS class.
+// This is the declaration of the FOCUSDptoKmPipPip class.
 //
 
-#include "Herwig/Decay/DecayIntegrator.h"
 #include "Herwig/Decay/FormFactors/KMatrix.h"
+#include "WeakDalitzDecay.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the DtoKPiPiFOCUS class.
+ * The FOCUSDptoKmPipPip class implements the fits of FOCUS,
+ * Phys.Lett. B653 (2007) 1-11 for the decay \f$D^+\toK^-\pi^+\pi^-\f$
  *
- * @see \ref DtoKPiPiFOCUSInterfaces "The interfaces"
- * defined for DtoKPiPiFOCUS.
+ * @see \ref FOCUSDptoKmPipPipInterfaces "The interfaces"
+ * defined for FOCUSDptoKmPipPip.
  */
-class DtoKPiPiFOCUS: public DecayIntegrator {
+class FOCUSDptoKmPipPip: public WeakDalitzDecay {
 
 public:
 
   /**
    * The default constructor.
    */
-  DtoKPiPiFOCUS();
+  FOCUSDptoKmPipPip();
   
   /**
    * Which of the possible decays is required
@@ -35,33 +36,6 @@ public:
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
 			 const tPDVector & children) const;
-
-  /**
-   * Return the matrix element squared for a given mode and phase-space channel.
-   * @param ichan The channel we are calculating the matrix element for. 
-   * @param part The decaying Particle.
-   * @param outgoing The particles produced in the decay
-   * @param momenta  The momenta of the particles produced in the decay
-   * @param meopt Option for the calculation of the matrix element
-   * @return The matrix element squared for the phase-space configuration.
-   */
-  double me2(const int ichan,const Particle & part,
-	     const tPDVector & outgoing,
-	     const vector<Lorentz5Momentum> & momenta,
-	     MEOption meopt) const;
-
-  /**
-   *   Construct the SpinInfos for the particles produced in the decay
-   */
-  virtual void constructSpinInfo(const Particle & part,
-				 ParticleVector outgoing) const;
-
-  /**
-   * Output the setup information for the particle database
-   * @param os The stream to output the information to
-   * @param header Whether or not to output the information for MySQL
-   */
-  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
 
@@ -88,7 +62,24 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-  
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -109,20 +100,10 @@ protected:
 
 protected:
 
-  /** @name Clone Methods. */
-  //@{
   /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
+   *  Calculate the amplitude
    */
-  virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  virtual IBPtr fullclone() const;
-  //@}
+  virtual Complex amplitude(int ichan) const;
 
 private:
 
@@ -130,24 +111,9 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DtoKPiPiFOCUS & operator=(const DtoKPiPiFOCUS &);
+  FOCUSDptoKmPipPip & operator=(const FOCUSDptoKmPipPip &) = delete;
 
 private:
-
-  /**
-   *  Parameters for the Blatt-Weisskopf form-factors
-   */
-  //@{
-  /**
-   *  Radial size for the \f$D^0\f$
-   */
-  InvEnergy rD0_;
-
-  /**
-   *  Radial size for the light resonances
-   */
-  InvEnergy rRes_;
-  //@}
 
   /**
    *  The K-matrices for the s-wave component
@@ -203,44 +169,8 @@ private:
    */
   vector<double> c3_;
   //@}
-
-  /**
-   *  Parameters for the phase-space integration
-   */
-  //@{
-  /**
-   *  Maximum weights for the various modes
-   */
-  double maxWgt_;
-
-  /**
-   *  Weights for the different integration channels
-   */
-  vector<double> weights_;
-  //@}
-
-  /**
-   *  Masses and widths of the resonances
-   */
-  //@{
-  /**
-   *  Masses
-   */
-  vector<Energy> mRes_;
-
-  /**
-   * Widths
-   */
-  vector<Energy> wRes_;
-  //@}
-
-  /**
-   *  Spin density matrix
-   */
-  mutable RhoDMatrix rho_;
-
 };
 
 }
 
-#endif /* Herwig_DtoKPiPiFOCUS_H */
+#endif /* Herwig_FOCUSDptoKmPipPip_H */
