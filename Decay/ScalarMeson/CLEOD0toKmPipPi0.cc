@@ -150,98 +150,98 @@ void CLEOD0toKmPipPi0::Init() {
      &CLEOD0toKmPipPi0::wrho_, MeV, 150.7 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
   
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedNonResonantAmplitude
-    ("ChargedNonResonantAmplitude",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceNonResonantAmplitude
+    ("NonResonantAmplitude",
      "Amplitude for the non-resonant component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::aNR_, 1.75, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedNonResonantPhase
-    ("ChargedNonResonantPhase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceNonResonantPhase
+    ("NonResonantPhase",
      "Phase for the non-resonant component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phiNR_, 31.2, -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRhoAmplitude
-    ("ChargedRhoAmplitude",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceRhoAmplitude
+    ("RhoAmplitude",
      "Amplitude for the rho+ component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::arho_, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRhoPhase
-    ("ChargedRhoPhase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceRhoPhase
+    ("RhoPhase",
      "Phase for the rho+ component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phirho_, 0.0, -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStarMinusAmplitude
-    ("ChargedKStarMinusAmplitude",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceKStarMinusAmplitude
+    ("KStarMinusAmplitude",
      "Amplitude for the K*(892)- component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::aKstarm_, 0.44, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStarMinusPhase
-    ("ChargedKStarMinusPhase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceKStarMinusPhase
+    ("KStarMinusPhase",
      "Phase for the K*(892)- component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phiKstarm_, 163, -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStar0Amplitude
-    ("ChargedKStar0Amplitude",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceKStar0Amplitude
+    ("KStar0Amplitude",
      "Amplitude for the K*(892)0 component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::aKstar0_, 0.39, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedKStar0Phase
-    ("ChargedKStar0Phase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceKStar0Phase
+    ("KStar0Phase",
      "Phase for the K*(892)0 component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phiKstar0_, -0.2, -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,Energy2> interfaceChargedK_0MinusAmplitude
-    ("ChargedK_0MinusAmplitude",
+  static Parameter<CLEOD0toKmPipPi0,Energy2> interfaceK_0MinusAmplitude
+    ("K_0MinusAmplitude",
      "Amplitude for the K_0(1430)- component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::aK1430m_, GeV2, 0.77*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK_0MinusPhase
-    ("ChargedK_0MinusPhase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceK_0MinusPhase
+    ("K_0MinusPhase",
      "Phase for the K_0(1430)- component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phiK1430m_, 55.5, -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,Energy2> interfaceChargedK_00Amplitude
-    ("ChargedK_00Amplitude",
+  static Parameter<CLEOD0toKmPipPi0,Energy2> interfaceK_00Amplitude
+    ("K_00Amplitude",
      "Amplitude for the K_0(1430)0 component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::aK14300_, GeV2, 0.85*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK_00Phase
-    ("ChargedK_00Phase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceK_00Phase
+    ("K_00Phase",
      "Phase for the K_0(1430)0 component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phiK14300_, 166, -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRho1700Amplitude
-    ("ChargedRho1700Amplitude",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceRho1700Amplitude
+    ("Rho1700Amplitude",
      "Amplitude for the rho1700+ component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::arho1700_, 2.5, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedRho1700Phase
-    ("ChargedRho1700Phase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceRho1700Phase
+    ("Rho1700Phase",
      "Phase for the rho1700+ component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phirho1700_, 171., -180.0, 180.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK1680MinusAmplitude
-    ("ChargedK1680MinusAmplitude",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceK1680MinusAmplitude
+    ("K1680MinusAmplitude",
      "Amplitude for the K*(1680)- component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::aK1680_, 2.5, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<CLEOD0toKmPipPi0,double> interfaceChargedK1680MinusPhase
-    ("ChargedK1680MinusPhase",
+  static Parameter<CLEOD0toKmPipPi0,double> interfaceK1680MinusPhase
+    ("K1680MinusPhase",
      "Phase for the K*(1680)- component for D0 -> K- pi+ pi0",
      &CLEOD0toKmPipPi0::phiK1680_, 103, -180.0, 180.0,
      false, false, Interface::limited);
@@ -305,4 +305,41 @@ Complex CLEOD0toKmPipPi0::amplitude(int ichan) const {
   }
   if(ichan<0) output += 1.75*Complex(cos(0.5445427266222308),sin(0.5445427266222308));
   return output;
+}
+
+void CLEOD0toKmPipPi0::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  output << "newdef " << name() << ":K_01430Mass "        << mK14300_/MeV  << "\n";
+  output << "newdef " << name() << ":K_01430Width "       << wK14300_/MeV  << "\n";
+  output << "newdef " << name() << ":Kstar1680Mass "      << mK1680_/MeV   << "\n";
+  output << "newdef " << name() << ":Kstar1680Width "     << wK1680_/MeV   << "\n";
+  output << "newdef " << name() << ":rho1700Mass "        << mrho1700_/MeV << "\n";
+  output << "newdef " << name() << ":rho1700Width "       << wrho1700_/MeV << "\n";
+  output << "newdef " << name() << ":Kstar0892Mass "      << mK8920_/MeV   << "\n";
+  output << "newdef " << name() << ":Kstar0892Width "     << wK8920_/MeV   << "\n";
+  output << "newdef " << name() << ":KstarPlus892Mass "   << mK892_/MeV    << "\n";
+  output << "newdef " << name() << ":KstarPlus892Width "  << wK892_/MeV    << "\n";
+  output << "newdef " << name() << ":RhoPlusMass "        << mrho_/MeV     << "\n";
+  output << "newdef " << name() << ":RhoWidth "           << wrho_/MeV     << "\n";
+  output << "newdef " << name() << ":NonResonantAmplitude " << aNR_          << "\n";
+  output << "newdef " << name() << ":NonResonantPhase "     << phiNR_        << "\n";
+  output << "newdef " << name() << ":RhoAmplitude "         << arho_         << "\n";
+  output << "newdef " << name() << ":RhoPhase "             << phirho_       << "\n";
+  output << "newdef " << name() << ":KStarMinusAmplitude "  << aKstarm_      << "\n";
+  output << "newdef " << name() << ":KStarMinusPhase "      << phiKstarm_    << "\n";
+  output << "newdef " << name() << ":KStar0Amplitude "      << aKstar0_      << "\n";
+  output << "newdef " << name() << ":KStar0Phase "          << phiKstar0_    << "\n";
+  output << "newdef " << name() << ":K_0MinusAmplitude "    << aK1430m_/GeV2 << "\n";
+  output << "newdef " << name() << ":K_0MinusPhase "        << phiK1430m_    << "\n";
+  output << "newdef " << name() << ":K_00Amplitude "        << aK14300_/GeV2 << "\n";
+  output << "newdef " << name() << ":K_00Phase "            << phiK14300_    << "\n";
+  output << "newdef " << name() << ":Rho1700Amplitude "     << arho1700_     << "\n";
+  output << "newdef " << name() << ":Rho1700Phase "         << phirho1700_   << "\n";
+  output << "newdef " << name() << ":K1680MinusAmplitude "  << aK1680_       << "\n";
+  output << "newdef " << name() << ":K1680MinusPhase "      << phiK1680_     << "\n";
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
 }
