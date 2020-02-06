@@ -974,25 +974,37 @@ elif(collider=="LHC") :
             process+=insert_ME("MEqq2gZ2ff","Muon")
             process+=mhat_minm_maxm(10,10,70)
         elif "Z-Mass1" in parameterName :
-            process+=mhat_minm_maxm(10,10,35)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(10,10,35)
+            else :
+                process+=mhat_minm_maxm(10,10,30)
             if "-e" in parameterName :
                 process+=insert_ME("MEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("MEqq2gZ2ff","Muon")
         elif "Z-Mass2" in parameterName :
-            process+=mhat_minm_maxm(25,25,70)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(25,25,70)
+            else :
+                process+=mhat_minm_maxm(30,30,65)
             if "-e" in parameterName :
                 process+=insert_ME("MEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("MEqq2gZ2ff","Muon")
         elif "Z-Mass3" in parameterName :
-            process+=mhat_minm_maxm(60,60,120)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(60,60,120)
+            else :
+                process+=mhat_minm_maxm(65,65,115)
             if "-e" in parameterName :
                 process+=insert_ME("MEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("MEqq2gZ2ff","Muon")
         elif "Z-Mass4" in parameterName :
-            process+=mhat_minm_maxm(110,110,8000)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(110,110,8000)
+            else :
+                process+=mhat_minm_maxm(115,115,8000)
             if "-e" in parameterName :
                 process+=insert_ME("MEqq2gZ2ff","Electron")
             else :
@@ -1245,25 +1257,37 @@ elif(collider=="LHC") :
             process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
             process+=mhat_minm_maxm(10,10,70)
         elif "Z-Mass1" in parameterName :
-            process+=mhat_minm_maxm(10,10,35)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(10,10,35)
+            else :
+                process+=mhat_minm_maxm(10,10,30)
             if "-e" in parameterName :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
         elif "Z-Mass2" in parameterName :
-            process+=mhat_minm_maxm(25,25,70)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(25,25,70)
+            else :
+                process+=mhat_minm_maxm(30,30,65)
             if "-e" in parameterName :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
         elif "Z-Mass3" in parameterName :
-            process+=mhat_minm_maxm(60,60,120)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(60,60,120)
+            else :
+                process+=mhat_minm_maxm(65,65,115)
             if "-e" in parameterName :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
             else :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Muon")
         elif "Z-Mass4" in parameterName :
-            process+=mhat_minm_maxm(110,110,8000)
+            if parameterName.startswith("13-") : 
+                process+=mhat_minm_maxm(110,110,8000)
+            else:
+                process+=mhat_minm_maxm(115,115,8000)
             if "-e" in parameterName :
                 process+=insert_ME("PowhegMEqq2gZ2ff","Electron")
             else :
@@ -1730,7 +1754,10 @@ elif(collider=="LHC") :
                 process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
             process+=addLeptonPairCut("10","70")
         elif "Z-Mass1" in parameterName :
-            process+=addLeptonPairCut("10","35")
+            if parameterName.startswith("13-") : 
+                process+=addLeptonPairCut("10","35")
+            else :
+                process+=addLeptonPairCut("10","30")
             if "-e" in parameterName :
                 if(simulation=="Matchbox"):
                     process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
@@ -1742,7 +1769,10 @@ elif(collider=="LHC") :
                 elif(simulation=="Merging"):
                     process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif "Z-Mass2" in parameterName :
-            process+=addLeptonPairCut("25","70")
+            if parameterName.startswith("13-") : 
+                process+=addLeptonPairCut("25","70")
+            else :
+                process+=addLeptonPairCut("30","75")
             if "-e" in parameterName :
                 if(simulation=="Matchbox"):
                     process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
@@ -1754,7 +1784,10 @@ elif(collider=="LHC") :
                 elif(simulation=="Merging"):
                     process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif "Z-Mass3" in parameterName :
-            process+=addLeptonPairCut("60","120")
+            if parameterName.startswith("13-") : 
+                process+=addLeptonPairCut("60","125")
+            else :
+                process+=addLeptonPairCut("65","120")
             if "-e" in parameterName :
                 if(simulation=="Matchbox"):
                     process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)
@@ -1766,7 +1799,10 @@ elif(collider=="LHC") :
                 elif(simulation=="Merging"):
                     process+=addProcess(thefactory,"p p mu+ mu-","0","2","LeptonPairMassScale",2,2)
         elif "Z-Mass4" in parameterName :
-            process+=addLeptonPairCut("115","8000")
+            if parameterName.startswith("13-") : 
+                process+=addLeptonPairCut("115","8000")
+            else :
+                process+=addLeptonPairCut("120","8000")
             if "-e" in parameterName :
                 if(simulation=="Matchbox"):
                   process+=addProcess(thefactory,"p p e+ e-","0","2","LeptonPairMassScale",0,0)

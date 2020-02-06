@@ -85,7 +85,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     yodafiles=["-13-Z-e","-13-Z-mu","-Z-HighMass1-e","-Z-HighMass2-e",
-               "-8-Z-Mass1-e","-8-Z-Mass1-mu","-8-Z-Mass2-e","-8-Z-Mass2-mu","-8-Z-Mass3-e","-8-Z-Mass3-mu","-8-Z-Mass4-e","-8-Z-Mass4-mu",
+               "-8-Z-Mass1-e" ,"-8-Z-Mass1-mu" ,"-8-Z-Mass2-e" ,"-8-Z-Mass2-mu" ,"-8-Z-Mass3-e" ,"-8-Z-Mass3-mu" ,"-8-Z-Mass4-e" ,"-8-Z-Mass4-mu" ,
+               "-13-Z-Mass1-e","-13-Z-Mass1-mu","-13-Z-Mass2-e","-13-Z-Mass2-mu","-13-Z-Mass3-e","-13-Z-Mass3-mu","-13-Z-Mass4-e","-13-Z-Mass4-mu",
                "-W-e","-W-mu","-Z-e","-Z-mu","-Z-mu-Short","-Z-LowMass-e","-Z-LowMass-mu",
                "-Z-MedMass-e",
                "-WW-emu","-WW-ll","-WZ","-ZZ-ll","-ZZ-lv","-8-WZ","-13-WZ","-8-ZZ-lv","-8-WW-ll",
@@ -190,6 +191,17 @@ if __name__ == "__main__":
                         outhistos[aopath] = ao
                     elif(file.find("Z")>0 and aopath.find("x03")>0) :
                         outhistos[aopath] = ao
+            elif (aopath.find("CMS_2018_I1711625")>0) :
+                if( file.find("-e")>0 and aopath.find("d06-x01-y01") > 0 ):
+                    if aopath in outhistos :
+                        outhistos[aopath] += ao
+                    else :
+                        outhistos[aopath]  = ao
+                elif( file.find("-mu")>0 and (aopath.find("d03-x01-y01") > 0 or aopath.find("d05-x01-y01") > 0) ):
+                    if aopath in outhistos :
+                        outhistos[aopath] += ao
+                    else :
+                        outhistos[aopath]  = ao
             elif (aopath.find("CMS_2013_I1224539_WJET" )>0) :
                 if(file.find("-1-e")>0 and (aopath.find("d52")>0 or aopath.find("d53")>0 or aopath.find("d56")>0 or aopath.find("d57")>0 or aopath.find("d60")>0 or aopath.find("d61")>0 or aopath.find("d64")>0 or aopath.find("d65")>0 or aopath.find("d68")>0 or aopath.find("d69")>0 or aopath.find("d72")>0)) :
                     outhistos[aopath] = ao
