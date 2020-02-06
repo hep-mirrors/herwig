@@ -291,7 +291,7 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
   // loop over all the particles
   for(const auto & sp : particles) {
     // not charged or photon continue
-    if(!sp->dataPtr()->charged()) continue;
+    if(!sp->dataPtr()->charged() && sp->dataPtr()->id()!=ParticleID::gamma) continue;
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(sp,particles,isDecayCase);
     if(partners.empty()) {
