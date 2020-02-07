@@ -108,7 +108,6 @@ double OneOneOneQEDSplitFn::ratioP(const double z, const Energy2 t,
   val = sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22);
   // massive limit
   if(mass) {
-        cerr<<getParticleData(ids[1]->id())->mass()/GeV<<" "<<ids[1]->mass()/GeV<<"\n";
         double m0t2 = sqr(ids[0]->mass())/t;
         double m1t2 = sqr(ids[1]->mass())/t;
         double m2t2 = sqr(ids[2]->mass())/t;
