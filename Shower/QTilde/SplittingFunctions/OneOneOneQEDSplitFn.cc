@@ -79,9 +79,9 @@ double OneOneOneQEDSplitFn::P(const double z, const Energy2 t,
   double val = ((2.*sqr(1.-(1.-z)*z))/((1.-z)*z))*(abs_rho_00+abs_rho_22);
   // massive limits
   if(mass) {
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+    double m0t2 = sqr(ids[0]->mass())/t;
+    double m1t2 = sqr(ids[1]->mass())/t;
+    double m2t2 = sqr(ids[2]->mass())/t;
     val += (-2.*(m2t2*(1.-sqr(1.-z)*z)+m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))/((1.-z)*z)
       + (2.*m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/((1.-z)*z);
   }
@@ -108,9 +108,10 @@ double OneOneOneQEDSplitFn::ratioP(const double z, const Energy2 t,
   val = sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22);
   // massive limit
   if(mass) {
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+        cerr<<getParticleData(ids[1]->id())->mass()/GeV<<" "<<ids[1]->mass()/GeV<<"\n";
+        double m0t2 = sqr(ids[0]->mass())/t;
+        double m1t2 = sqr(ids[1]->mass())/t;
+        double m2t2 = sqr(ids[2]->mass())/t;
     val += -(m2t2*(1.-sqr(1.-z)*z) + m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22)
          + m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22));
   }
