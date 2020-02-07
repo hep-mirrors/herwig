@@ -60,13 +60,8 @@ void OneOneOneEWSplitFn::doinit() {
 
 
 void OneOneOneEWSplitFn::getCouplings(double & gvvv, const IdList & ids) const {
-  // G > WW
-  if(ids[0]->id()==ParticleID::gamma && abs(ids[1]->id())==ParticleID::Wplus
-                                     && abs(ids[2]->id())==ParticleID::Wplus){
-    gvvv = gWWG_;
-  }
   // Z > WW
-  else if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
+  if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
                                        && abs(ids[2]->id())==ParticleID::Wplus){
     gvvv = gWWZ_;
   }
@@ -96,9 +91,9 @@ double OneOneOneEWSplitFn::P(const double z, const Energy2 t,
   double val = ((2.*sqr(1.-(1.-z)*z))/((1.-z)*z))*(abs_rho_00+abs_rho_22);
   // massive limits
   if(mass) {
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+    double m0t2 = sqr(ids[0]->mass())/t;
+    double m1t2 = sqr(ids[1]->mass())/t;
+    double m2t2 = sqr(ids[2]->mass())/t;
     val += (-2.*(m2t2*(1.-sqr(1.-z)*z)+m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22))/((1.-z)*z)
       + (2.*m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22)))/((1.-z)*z);
   }
@@ -125,9 +120,9 @@ double OneOneOneEWSplitFn::ratioP(const double z, const Energy2 t,
   val = sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22);
   // massive limit
   if(mass) {
-    double m0t2 = sqr(getParticleData(ids[0]->id())->mass())/t;
-    double m1t2 = sqr(getParticleData(ids[1]->id())->mass())/t;
-    double m2t2 = sqr(getParticleData(ids[2]->id())->mass())/t;
+    double m0t2 = sqr(ids[0]->mass())/t;
+    double m1t2 = sqr(ids[1]->mass())/t;
+    double m2t2 = sqr(ids[2]->mass())/t;
     val += -(m2t2*(1.-sqr(1.-z)*z) + m1t2*(1.-(1.-z)*sqr(z)))*(abs_rho_00+abs_rho_22)
          + m0t2*(2.*pow(1.-z,3)*z*abs_rho_11+sqr(1.-(1.-z)*z)*(abs_rho_00+abs_rho_22));
   }
@@ -175,17 +170,16 @@ double OneOneOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 
 bool OneOneOneEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
-  if(ids[0]->id()==ParticleID::gamma && abs(ids[1]->id())==ParticleID::Wplus
-                                     && ids[1]->id()==-ids[2]->id())
-    return true;
-
+  // Z > WW
   if(ids[0]->id()==ParticleID::Z0 && abs(ids[1]->id())==ParticleID::Wplus
                                        && ids[1]->id()==-ids[2]->id())
     return true;
 
   if(abs(ids[0]->id())==ParticleID::Wplus) {
+    // W > WG
     if(ids[1]->id()==ids[0]->id() && ids[2]->id()==ParticleID::gamma)
       return true;
+    // W > WZ
     if(ids[1]->id()==ids[0]->id() && ids[2]->id()==ParticleID::Z0)
       return true;
   }
