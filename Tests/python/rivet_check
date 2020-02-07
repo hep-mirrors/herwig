@@ -94,7 +94,7 @@ for analysis in sorted(analyses.keys()) :
     elif(analysis[0:3]=="MC_") :
         if(opts.MC) : print "MC   analysis %s not included  : %s" % (analysis,analyses[analysis])
     # examples
-    elif("EXAMPLE" in analyses[analysis]) :
+    elif("EXAMPLE" in analyses[analysis]) or "EXAMPLE" in analysis:
         continue
     # we don't have it
     else :
