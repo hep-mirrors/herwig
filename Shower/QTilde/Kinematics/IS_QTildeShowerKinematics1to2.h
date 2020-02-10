@@ -46,6 +46,13 @@ public:
     : ShowerKinematics(scale,z,phi,pt,sud) {}
   //@}
 
+private:
+
+  void updateParameters(tShowerParticlePtr theParent,
+			tShowerParticlePtr theChild0,
+			tShowerParticlePtr theChild1,
+			bool setAlpha) const; 
+
 public:
 
   /**
@@ -69,6 +76,9 @@ public:
 			       const ShowerParticleVector & children,
 			       unsigned int pTscheme,
 			       ShowerPartnerType partnerType) const;
+
+  virtual void resetChildren( const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics

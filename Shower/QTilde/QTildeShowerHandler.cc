@@ -803,18 +803,30 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 				kt.first*sin(kt.second));
     }
   }
-  particle->showerKinematics()->
-    updateChildren(newParent, theChildren,_evolutionScheme,bb.type);
+ 
   if(_limitEmissions!=0) {
+    particle->showerKinematics()->
+    updateChildren(newParent, theChildren,_evolutionScheme,bb.type);
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return true;
   }
   // perform the shower of the final-state particle
-  //timeLikeShower(otherChild,type,Branching(),true);
+  timeLikeShower(otherChild,type,Branching(),true);
+ 
+  // recalculates the pT and the kinematics
+  particle->showerKinematics()->
+    updateChildren(newParent, theChildren,_evolutionScheme,bb.type);
+
   updateHistory(otherChild);
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
   if(particle->spinInfo()) particle->spinInfo()->develop();
+
+
+  if(!theChildren.empty()){
+    particle->showerKinematics()->resetChildren(newParent,theChildren);
+  }
+
   return true;
 }
 
