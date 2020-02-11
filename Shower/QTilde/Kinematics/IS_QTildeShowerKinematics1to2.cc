@@ -70,6 +70,10 @@ updateChildren( const tShowerParticlePtr parent,
     m22 =  sqr(onshellMasses[0]);
   }
 
+  if(parent->parents().empty()) parent->virtualMass(ZERO);
+  if(children[1]->children().empty()) children[1]->virtualMass(sqrt(m22));
+
+
   Energy2 pt2;
   if(pTscheme==0) {
     pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
@@ -79,12 +83,12 @@ updateChildren( const tShowerParticlePtr parent,
   else if(pTscheme==1) {
     pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), m02,
 					m12          ,m22,
-					sqr(parent->virtualMass()), sqr(children[1]->virtualMass()));
+					-sqr(parent->virtualMass()), sqr(children[1]->virtualMass()));
   }
   else if(pTscheme==2) {
     pt2 = QTildeKinematics::pT2_ISR_new(sqr(scale()), z(), sqr(parent->virtualMass()),
 					m12          ,sqr(children[1]->virtualMass()),
-				        sqr(parent->virtualMass()) ,sqr(children[1]->virtualMass()));
+				        -sqr(parent->virtualMass()) ,sqr(children[1]->virtualMass()));
   }
   else
     assert(false);
@@ -96,8 +100,13 @@ updateChildren( const tShowerParticlePtr parent,
     pt2=ZERO;
     pT(ZERO);
   }
-  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(), m02, m22);
-  parent->virtualMass(sqrt(q2));
+  Energy2 q2 = QTildeKinematics::q2_ISR_new(pt2, z(),  -sqr(parent->virtualMass()) ,sqr(children[1]->virtualMass()));
+  parent->virtualMass(sqrt(-q2));
+    // the virtuality is negative
+  if(q2/sqr(1_GeV) > 0.){
+      std::cout<<" virtuality of spacelike parton >0 !! ERROR!! Q2="<<q2/sqr(1_GeV)<<std::endl;
+      abort();
+    }
 // update the parameters  --> shall we do it?
   updateParameters(parent, children[0], children[1], true);
 
@@ -209,17 +218,26 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
 }
 
 void IS_QTildeShowerKinematics1to2::
-resetChildren(const tShowerParticlePtr parent, 
-	      const ShowerParticleVector & children) const {
-  if(children.size()==2){
-    updateParameters(parent, children[0], children[1], false);  
-    for(unsigned int ix=0;ix<children.size();++ix) {
-      if(children[ix]->children().empty()) continue;
-      ShowerParticleVector newChildren;
-      for(unsigned int iy=0;iy<children[ix]->children().size();++iy)
-	newChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
-			      (children[ix]->children()[iy]));
-      children[ix]->showerKinematics()->resetChildren(children[ix],newChildren);
+resetChildren(const tShowerParticlePtr parent, const ShowerParticleVector &) const {
+  if(parent->children().size() == 2){
+
+    tShowerParticlePtr timelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[1]);    
+    if( ! timelikeChild->children().empty()){
+      ShowerParticleVector timelikeGrandChildren;
+      for(unsigned int iy=0;iy<timelikeChild->children().size();++iy)
+	timelikeGrandChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+			      (timelikeChild->children()[iy]));
+      //timelike reset children
+      timelikeChild->showerKinematics()->resetChildren(timelikeChild, timelikeGrandChildren);
     }
+    
+    tShowerParticlePtr spacelikeChild = dynamic_ptr_cast<ShowerParticlePtr>(parent->children()[0]);
+    if(! spacelikeChild->children().empty()) {
+      ShowerParticleVector dummyChildren;
+      spacelikeChild->showerKinematics()->resetChildren(spacelikeChild, dummyChildren);
+    }
+      
+    
   }
+  
 }
