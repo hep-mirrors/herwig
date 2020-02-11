@@ -46,13 +46,6 @@ public:
     : ShowerKinematics(scale,z,phi,pt,sud) {}
   //@}
 
-private:
-
-  void updateParameters(tShowerParticlePtr theParent,
-			tShowerParticlePtr theChild0,
-			tShowerParticlePtr theChild1,
-			bool setAlpha) const; 
-
 public:
 
   /**
